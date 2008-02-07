@@ -9,6 +9,9 @@
 
 2008-02-07  Larry Ewing  <lewing@novell.com>
 
+	* brush.cpp (GradientBrush::SetupGradient): treat stops > 1.0 the
+	same as out of bounds stops.
+
 	* shape.cpp: cache the results of CompouteShapeBounds in
 	extents rect, use that value in GetSizeForBrush.
 

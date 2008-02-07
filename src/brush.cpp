@@ -355,36 +355,36 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 
 	// negative value are "mostly" ignored, the one nearest to zero may ne used
 	int n = 0;
-	GradientStop *negative = NULL;
+	GradientStop *out_of_bounds = NULL;
 
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		GradientStop *stop = (GradientStop *) node->obj;
 		double offset = gradient_stop_get_offset (stop);
-		if (offset >= 0.0) {
+		if (offset >= 0.0 && offset <= 1.0) {
 			Color *color = gradient_stop_get_color (stop);
 			cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a * opacity);
 			n++;
 		} else if (n < 2) {
 			// we don't have enough stops so we might need the negative one
-			if (!negative) {
+			if (!out_of_bounds) {
 				// keep in mind our first stop with a negative offset
-				negative = stop;
+				out_of_bounds = stop;
 			} else {
 				// keep the stop with the negative offset closer to zero
-				if (offset > gradient_stop_get_offset (negative))
-					negative = stop;
+				if (offset > gradient_stop_get_offset (out_of_bounds))
+					out_of_bounds = stop;
 			}
 		} else {
 			// we have at least 2 stops so we don't need to consider negative ones
-			negative = NULL;
+			out_of_bounds = NULL;
 		}
 	}
 
 	// if the negative stop is required...
-	if (negative && (n < 2)) {
+	if (out_of_bounds && (n < 2)) {
 		// add it to the mix
-		double offset = gradient_stop_get_offset (negative);
-		Color *color = gradient_stop_get_color (negative);
+		double offset = gradient_stop_get_offset (out_of_bounds);
+		Color *color = gradient_stop_get_color (out_of_bounds);
 		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a * opacity);
 	}
 }
