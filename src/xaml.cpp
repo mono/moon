@@ -920,7 +920,7 @@ flush_char_data (XamlParserInfo *p, bool start)
 	// and use that code
 	
 	if ((content->value_type) == Type::STRING && p->cdata) {
-		g_strchomp (p->cdata->str);
+		// Note: Do NOT g_strchomp() here in at least the case of a <Run> element...
 		p->current_element->item->SetValue (content, Value (p->cdata->str));
 	} else if (p->current_element->item && is_instance_of (p->current_element, Type::TEXTBLOCK)) {
 		Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);

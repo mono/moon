@@ -1,3 +1,14 @@
+2008-02-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes a rendering glitch for xaml similar to:
+
+	<TextBlock>
+           <Run FontStyle="Italic">This </Run>is Dodger Blue
+        </TextBlock>
+
+	* xaml.cpp (flush_char_data): Don't g_strchomp() the cdata when
+	setting the value of a content_property (e.g. a Run).
+
 2008-02-07  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/color.cpp: Added support to parse scRGB-style color specificators
