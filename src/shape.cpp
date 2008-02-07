@@ -2089,6 +2089,15 @@ Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Dep
 		Shape::OnSubPropertyChanged (prop, obj, subprop);
 }
 
+/*
+ * Right now implementing Path::ComputeLargestRectangle doesn't seems like a good idea. That would require
+ * - checking the path for curves (and either flatten it or return an empty Rect)
+ * - checking for polygon simplicity (finding intersections)
+ * - checking for a convex polygon (if concave we can turn it into several convex or return an empty Rect)
+ * - find the largest rectangle inside the (or each) convex polygon(s)
+ * 	http://cgm.cs.mcgill.ca/~athens/cs507/Projects/2003/DanielSud/complete.html
+ */
+
 Geometry *
 path_get_data (Path *path)
 {
