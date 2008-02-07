@@ -1,3 +1,8 @@
+2008-02-07  Chris Toshok  <toshok@ximian.com>
+
+	* media.cpp (MediaElement::Render): snap to the pixel grid if
+	we're not rotated/skewed.
+
 2008-02-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Add comment about (missing) Path::ComputeLargestRectangle

@@ -659,7 +659,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	}
 	
 	cairo_pattern_set_matrix (pattern, &matrix);
-	
+
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 	
@@ -667,8 +667,38 @@ MediaElement::Render (cairo_t *cr, Region *region)
 
 	cairo_set_matrix (cr, &absolute_xform);
 
+	// if we're opaque, we can likely do this and hopefully get a
+	// speed up since the server won't have to blend.
+	//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 	cairo_new_path (cr);
-	cairo_rectangle (cr, 0, 0, w, h);
+
+	double x1, y1, x2, y2;
+
+	x1 = y1 = 0;
+	x2 = w;
+	y2 = h;
+
+	if (absolute_xform.xy == 0
+	    && absolute_xform.yx == 0) {
+		// we're not skewed/rotated, so let's snap to the pixel grid
+		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+
+		cairo_user_to_device (cr, &x1, &y1);
+		cairo_user_to_device (cr, &x2, &y2);
+
+		// effectively RoundIn.  not sure if this is what we want..
+		x1 = ceil (x1);
+		y1 = ceil (y1);
+
+		x2 = floor (x2);
+		y2 = floor (y2);
+
+		cairo_device_to_user (cr, &x1, &y1);
+		cairo_device_to_user (cr, &x2, &y2);
+	}
+
+	cairo_rectangle (cr, x1, y1, x2 - x1, y2 - y1);
+
 	cairo_fill (cr);
 
 	cairo_restore (cr);
