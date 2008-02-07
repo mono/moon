@@ -319,7 +319,7 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 void
 Shape::ComputeBounds ()
 {
-	Rect shape_bounds = ComputeShapeBounds ();
+	hape_bounds = ComputeShapeBounds ();
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
 		       IntersectBoundsWithClipPath (shape_bounds, false));
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
@@ -363,26 +363,8 @@ Shape::ComputeLargestRectangle ()
 void
 Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	double h = framework_element_get_height (this);
-	double w = framework_element_get_width (this);
-	Stretch stretch = shape_get_stretch (this);
-	switch (stretch) {
-	case StretchUniform:
-		w = h = (w < h) ? w : h;
-		break;
-	case StretchUniformToFill:
-		w = h = (w > h) ? w : h;
-		break;
-	case StretchFill:
-		/* nothing needed here.  the assignment of w/h above
-		   is correct for this case. */
-		break;
-	case StretchNone:
-		break;
-	}
-
-	*height = h;
-	*width = w;
+	*height = shape_bounds.h;
+	*width = shape_bounds.w;
 }
 
 bool
@@ -1637,17 +1619,6 @@ Polygon::OnCollectionChanged (Collection *col, CollectionChangeType type, Depend
 	Invalidate ();
 }
 
-void
-Polygon::GetSizeForBrush (cairo_t *cr, double *width, double *height)
-{
-	double x1, y1, x2, y2;
-	
-	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	
-	*height = fabs (y2 - y1);
-	*width = fabs (x2 - x1);
-}
-
 FillRule
 polygon_get_fill_rule (Polygon *polygon)
 {
@@ -1907,19 +1878,6 @@ Polyline::OnCollectionChanged (Collection *col, CollectionChangeType type, Depen
 	Invalidate ();
 }
 
-void
-Polyline::GetSizeForBrush (cairo_t *cr, double *width, double *height)
-{
-	double x1, y1, x2, y2;
-	
-	cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	
-	*height = fabs (y2 - y1);
-	*width = fabs (x2 - x1);
-}
-
-
-
 FillRule
 polyline_get_fill_rule (Polyline *polyline)
 {
@@ -2129,26 +2087,6 @@ Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Dep
 	}
 	else
 		Shape::OnSubPropertyChanged (prop, obj, subprop);
-}
-
-void
-Path::GetSizeForBrush (cairo_t *cr, double *width, double *height)
-{
-	Geometry* geometry = path_get_data (this);
-	if (geometry) {
-		// in some cases it's possible that GetSizeForBrush will be called before the geometry is built
-		if (!geometry->IsBuilt ())
-			Draw (cr);
-
-		double x1, y1, x2, y2;
-		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	
-		*height = fabs (y2 - y1);
-		*width = fabs (x2 - x1);
-	} else {
-		*height = 0.0;
-		*width = 0.0;
-	}
 }
 
 Geometry *

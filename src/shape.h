@@ -52,6 +52,8 @@ class Shape : public FrameworkElement {
 
 	virtual Rect ComputeShapeBounds ();
 	virtual Rect ComputeLargestRectangle ();
+	
+	Rect shape_bounds;
  public: 
 	static DependencyProperty* FillProperty;
 	static DependencyProperty* StretchProperty;
@@ -246,7 +248,6 @@ class Polygon : public Shape {
 
 	virtual bool CanFill () { return true; }
 
-	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual void OnPropertyChanged (DependencyProperty *prop);
@@ -280,7 +281,6 @@ class Polyline : public Shape {
 	virtual void BuildPath ();
 
 	virtual bool CanFill () { return true; }
-	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual FillRule GetFillRule ();
@@ -318,7 +318,6 @@ class Path : public Shape {
 
 	virtual void Draw (cairo_t *cr);
 
-	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
 	virtual bool CanFill () { return true; }
