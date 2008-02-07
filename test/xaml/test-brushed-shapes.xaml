@@ -1,0 +1,171 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="600">
+	<Rectangle Canvas.Left="100" Height="50" Width="200" >
+	<Rectangle.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</LinearGradientBrush.GradientStops>
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Polyline Points="100,50 300,50 300,100 100,100 100,50" >
+	<Polyline.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</LinearGradientBrush.GradientStops>
+		</LinearGradientBrush>
+	</Polyline.Fill>
+	</Polyline>
+	<Polyline Points="100,100 300,100 300,150 100,150 100,100" >
+	<Polyline.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</LinearGradientBrush.GradientStops>
+		</LinearGradientBrush>
+	</Polyline.Fill>
+	<Polyline.RenderTransform>
+		<TranslateTransform X="50" Y="0" />
+	</Polyline.RenderTransform>
+	</Polyline>
+	<Rectangle Canvas.Left="100" Canvas.Top="150" Height="50" Width="200" >
+	<Rectangle.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</LinearGradientBrush.GradientStops>
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	<Rectangle.RenderTransform>
+		<TranslateTransform X="50" Y="0" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+	<Path Data="M100,200 L300,200 L300,250 L100,250 Z" >
+	<Path.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</LinearGradientBrush.GradientStops>
+		</LinearGradientBrush>
+	</Path.Fill>
+	</Path>
+	<Polygon Points="100,250 300,250 300,300 100,300" >
+	<Polygon.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</LinearGradientBrush.GradientStops>
+		</LinearGradientBrush>
+	</Polygon.Fill>
+	</Polygon>
+	<Path Data="M100,300 L300,300 L300,350 L100,350 Z" Stretch="Fill"> 
+	<Path.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</LinearGradientBrush.GradientStops>
+		</LinearGradientBrush>
+	</Path.Fill>
+	</Path>
+	<Rectangle Canvas.Left="300" Height="50" Width="200" >
+	<Rectangle.Fill>
+		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Polyline Points="300,50 500,50 500,100 300,100 300,50" >
+	<Polyline.Fill>
+		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Polyline.Fill>
+	</Polyline>
+	<Polyline Points="300,100 500,100 500,150 300,150 300,100" >
+	<Polyline.Fill>
+		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Polyline.Fill>
+	<Polyline.RenderTransform>
+		<TranslateTransform X="50" Y="0" />
+	</Polyline.RenderTransform>
+	</Polyline>
+	<Rectangle Canvas.Left="300" Canvas.Top="150" Height="50" Width="200" >
+	<Rectangle.Fill>
+		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	<Rectangle.RenderTransform>
+		<TranslateTransform X="50" Y="0" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+	<Path Data="M300,200 L500,200 L500,250 L300,250 Z" >
+	<Path.Fill>
+		<RadialGradientBrush StartPoint="0,0" EndPoint="1,0">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Offset="0" Color="Red" />
+				<GradientStop Offset="0.15" Color="Green" />
+				<GradientStop Offset="0.5" Color="Blue" />
+				<GradientStop Offset="0.85" Color="Green" />
+				<GradientStop Offset="1" Color="Red" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Path.Fill>
+	</Path>
+
+</Canvas>
