@@ -641,7 +641,7 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
 
-	if (offset.x != 0.0 && offset.y != 0.0) {
+	if (offset.x != 0.0 || offset.y != 0.0) {
 		cairo_matrix_init_translate (&offset_matrix, offset.x, offset.y);
 		cairo_matrix_multiply (&matrix, &matrix, &offset_matrix);
 	}
