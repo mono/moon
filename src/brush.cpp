@@ -1007,6 +1007,8 @@ ImageBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
 
 	image_brush_compute_pattern_matrix (&matrix, width, height, image->GetWidth (), image->GetHeight (), stretch, ax, ay, transform, relative_transform);
+	Point offset = uielement->GetOriginPoint ();
+	cairo_matrix_translate (&matrix, -offset.x, -offset.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	cairo_set_source (cr, pattern);
@@ -1077,6 +1079,8 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 	pattern = cairo_pattern_create_for_surface (surface);
 
 	image_brush_compute_pattern_matrix (&matrix, width, height, mplayer->width, mplayer->height, stretch, ax, ay, transform, relative_transform);
+	Point offset = uielement->GetOriginPoint ();
+	cairo_matrix_translate (&matrix, -offset.x, -offset.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	cairo_set_source (cr, pattern);
@@ -1198,6 +1202,8 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 					    (int)bounds.w, (int)bounds.h,
 					    stretch, ax, ay, transform, relative_transform);
 
+	Point offset = uielement->GetOriginPoint ();
+	cairo_matrix_translate (&matrix, -offset.x, -offset.y);
  	cairo_pattern_set_matrix (pattern, &matrix);
 
  	cairo_set_source (cr, pattern);

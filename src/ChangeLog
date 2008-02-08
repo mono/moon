@@ -1,3 +1,7 @@
+2008-02-08  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* brush.cpp: fix Image|Video|VisualBrushes for Shapes.
+
 2008-02-07  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp (MediaElement::Render): snap to the pixel grid if
