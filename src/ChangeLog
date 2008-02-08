@@ -1,5 +1,14 @@
 2008-02-08  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (TextFont::TextFont): If the loaded font's family_name
+	doesn't match the requested family name, fall back to the default
+	font (it means the requested font doesn't exist on the system).
+	(TextLayout::Layout): Added a 'first_char' state variable that can
+	be used to figure out if if the current char is the first char on
+	a line. This is needed for the wrapping logic.
+
+2008-02-08  Jeffrey Stedfast  <fejj@novell.com>
+
 	Fixes some text layout bugs in TextBlockFontFamilies.xaml
 
 	* xaml.cpp (flush_char_data): Now takes a string 'next_element'

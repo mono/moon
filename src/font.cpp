@@ -609,23 +609,30 @@ found:
 	return FT_New_Face (libft2, file->path, fface->index, &face) == 0;
 }
 
-TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *name)
+TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name)
 {
 	const char *fallback_fonts[] = { "Lucida Sans Unicode", "Lucida Sans", "Sans" };
 	FcChar8 *family = NULL, *filename = NULL;
 	FcPattern *matched, *fallback;
+	char **families = NULL;
 	uint attempt = 0;
 	FcResult result;
 	FT_Error err;
 	double size;
-	int id;
+	int id, i;
 	
-	d(fprintf (stderr, "\nAttempting to load %s\n", name));
+	d(fprintf (stderr, "\nAttempting to load %s\n", debug_name));
 	
 	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
 	FcPatternGetDouble (pattern, FC_SCALE, 0, &scale);
 	FcPatternReference (pattern);
 	matched = pattern;
+	
+	if (family_name) {
+		families = g_strsplit (family_name, ",", -1);
+		for (i = 0; families[i]; i++)
+			families[i] = g_strstrip (families[i]);
+	}
 	
 	do {
 		if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
@@ -636,8 +643,25 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *name)
 		
 		d(fprintf (stderr, "\t* loading font from `%s' (index=%d)... ", filename, id));
 		if ((err = FT_New_Face (libft2, (const char *) filename, id, &face)) == 0) {
-			d(fprintf (stderr, "success!\n"));
-			break;
+			if (fromFile || attempt > 0 || !family_name || !face->family_name) {
+				d(fprintf (stderr, "success!\n"));
+				break;
+			}
+			
+			// make sure the font family name matches what was requested...
+			for (i = 0; families[i]; i++) {
+				if (!strcmp (face->family_name, families[i]))
+					break;
+			}
+			
+			if (families[i]) {
+				d(fprintf (stderr, "success!\n"));
+				break;
+			}
+			
+			d(fprintf (stderr, "no; incorrect family\n"));
+			FT_Done_Face (face);
+			face = NULL;
 		} else {
 			d(fprintf (stderr, "failed :(\n"));
 		}
@@ -691,6 +715,9 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *name)
 	
 	FcPatternDestroy (matched);
 	
+	if (families)
+		g_strfreev (families);
+	
 	if (face != NULL) {
 		FT_Set_Pixel_Sizes (face, 0, (int) size);
 		
@@ -735,7 +762,7 @@ TextFont::~TextFont ()
 }
 
 TextFont *
-TextFont::Load (FcPattern *pattern, bool fromFile, const char *name)
+TextFont::Load (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name)
 {
 	TextFont *font;
 	
@@ -744,7 +771,7 @@ TextFont::Load (FcPattern *pattern, bool fromFile, const char *name)
 		return font;
 	}
 	
-	return new TextFont (pattern, fromFile, name);
+	return new TextFont (pattern, fromFile, family_name, debug_name);
 }
 
 void
@@ -1271,15 +1298,15 @@ TextFontDescription::CreatePattern ()
 TextFont *
 TextFontDescription::GetFont ()
 {
+	char *debug_name = NULL;
 	FcPattern *pattern;
-	char *name = NULL;
 	
 	if (font == NULL) {
-		d(name = ToString ());
+		d(debug_name = ToString ());
 		pattern = CreatePattern ();
-		font = TextFont::Load (pattern, (set & FontMaskFilename), name);
+		font = TextFont::Load (pattern, (set & FontMaskFilename), GetFamily (), debug_name);
 		FcPatternDestroy (pattern);
-		d(g_free (name));
+		d(g_free (debug_name));
 	}
 	
 	if (font)
@@ -1878,6 +1905,7 @@ struct Space {
 void
 TextLayout::Layout ()
 {
+	bool first_char = true;
 	TextSegment *segment;
 	bool clipped = false;
 	gunichar prev = 0;
@@ -1997,7 +2025,7 @@ TextLayout::Layout ()
 						lw = spc.width;
 						i = spc.index;
 						wrap = true;
-					} else if (i > segment->start) {
+					} else if (/*i > segment->start*/ !first_char) {
 						// Wrap before this char
 						segment->end = i;
 						wrap = true;
@@ -2025,6 +2053,7 @@ TextLayout::Layout ()
 					break;
 				}
 			} else {
+				first_char = false;
 				wrap = false;
 			}
 			
@@ -2047,6 +2076,7 @@ TextLayout::Layout ()
 				//ascend = run->font->Ascender ();
 				lh = run->font->Height ();
 				line = new TextLine ();
+				first_char = true;
 				spc.index = -1;
 				sx = lw = 0.0;
 				

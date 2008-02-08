@@ -119,7 +119,7 @@ class TextFont {
 	
 	GlyphInfo *glyphs;
 	
-	TextFont (FcPattern *pattern, bool fromFile, const char *name);
+	TextFont (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name);
 	
 	bool OpenZipArchiveFont (FcPattern *pattern, const char *path);
 	
@@ -133,7 +133,7 @@ public:
 	void ref ();
 	void unref ();
 	
-	static TextFont *Load (FcPattern *pattern, bool fromFile, const char *name);
+	static TextFont *Load (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name);
 	
 	GlyphInfo *GetGlyphInfo (gunichar unichar);
 	GlyphInfo *GetGlyphInfoByIndex (uint32_t index);
