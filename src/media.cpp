@@ -647,16 +647,49 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	}
 
 	cairo_save (cr);
-	if (!EnableAntiAlias ())
+	
+	cairo_set_matrix (cr, &absolute_xform);
+
+	// if we're opaque, we can likely do this and hopefully get a
+	// speed up since the server won't have to blend.
+	//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+	cairo_new_path (cr);
+
+	double x, y, x2, y2;
+
+	x = y = 0;
+	x2 = w;
+	y2 = h;
+
+	if (absolute_xform.xy == 0
+	    && absolute_xform.yx == 0) {
+
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-	
-	pattern = cairo_pattern_create_for_surface (surface);	
-	
+
+		cairo_user_to_device (cr, &x, &y);
+		cairo_user_to_device (cr, &x2, &y2);
+
+		// effectively RoundIn.  not sure if this is what we want..
+		x = floor (x);
+		y = floor (y);
+
+		x2 = ceil (x2);
+		y2 = ceil (y2);
+
+		cairo_device_to_user (cr, &x, &y);
+		cairo_device_to_user (cr, &x2, &y2);
+	}
+
+	w = x2 - x;
+	h = y2 - y;
+
 	if (flags & RecalculateMatrix) {
 		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch,
 						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 		flags &= ~RecalculateMatrix;
 	}
+
+	pattern = cairo_pattern_create_for_surface (surface);	
 	
 	cairo_pattern_set_matrix (pattern, &matrix);
 
@@ -665,39 +698,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	
 	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
 
-	cairo_set_matrix (cr, &absolute_xform);
-
-	// if we're opaque, we can likely do this and hopefully get a
-	// speed up since the server won't have to blend.
-	//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-	cairo_new_path (cr);
-
-	double x1, y1, x2, y2;
-
-	x1 = y1 = 0;
-	x2 = w;
-	y2 = h;
-
-	if (absolute_xform.xy == 0
-	    && absolute_xform.yx == 0) {
-		// we're not skewed/rotated, so let's snap to the pixel grid
-		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-
-		cairo_user_to_device (cr, &x1, &y1);
-		cairo_user_to_device (cr, &x2, &y2);
-
-		// effectively RoundIn.  not sure if this is what we want..
-		x1 = ceil (x1);
-		y1 = ceil (y1);
-
-		x2 = floor (x2);
-		y2 = floor (y2);
-
-		cairo_device_to_user (cr, &x1, &y1);
-		cairo_device_to_user (cr, &x2, &y2);
-	}
-
-	cairo_rectangle (cr, x1, y1, x2 - x1, y2 - y1);
+	cairo_rectangle (cr, x, y, w, h);
 
 	cairo_fill (cr);
 

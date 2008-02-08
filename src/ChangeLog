@@ -1,3 +1,8 @@
+2008-02-08  Chris Toshok  <toshok@ximian.com>
+
+	* media.cpp (MediaElement::Render): reorder things so that we're
+	calculating the brush pattern matrix with the snapped pixels.
+
 2008-02-08  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* brush.cpp: fix Image|Video|VisualBrushes for Shapes.
