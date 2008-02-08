@@ -1,3 +1,18 @@
+2008-02-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes some text layout bugs in TextBlockFontFamilies.xaml
+
+	* xaml.cpp (flush_char_data): Now takes a string 'next_element'
+	argument rather than a bool 'start' argument so that we can make
+	sure that the previous and next element types are <Run>'s because
+	lwsp between a <LineBreak/> and a <Run> or a </Run> and a
+	<LineBreak/> should be ignored. Also, never g_strchomp() this
+	cdata.
+	(start_element_handler): Pass the name of the next element to
+	flush_char_data().
+	(end_element_handler): Pass NULL to flush_char_data() as the
+	next_element argument.
+
 2008-02-08  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp (MediaElement::Render): reorder things so that we're

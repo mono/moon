@@ -891,7 +891,7 @@ start_element (void *data, const char *el, const char **attr)
 }
 
 static void
-flush_char_data (XamlParserInfo *p, bool start)
+flush_char_data (XamlParserInfo *p, const char *next_element)
 {
 	DependencyProperty *content;
 	const char *prop_name = NULL;
@@ -899,7 +899,7 @@ flush_char_data (XamlParserInfo *p, bool start)
 	
 	if (!p->has_cdata || !p->current_element)
 		return;
-
+	
 	if (p->current_element->info)
 		prop_name = p->current_element->info->content_property;
 	
@@ -924,15 +924,16 @@ flush_char_data (XamlParserInfo *p, bool start)
 		p->current_element->item->SetValue (content, Value (p->cdata->str));
 	} else if (p->current_element->item && is_instance_of (p->current_element, Type::TEXTBLOCK)) {
 		Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);
+		List::Node *last = inlines ? inlines->list->Last () : NULL;
 		
-		if (!p->cdata && inlines && !inlines->list->IsEmpty () && start) {
+		if (!p->cdata && next_element && !strcmp (next_element, "Run") && inlines &&
+		    last && ((Collection::Node *) last)->obj->GetObjectType () == Type::RUN) {
 			// LWSP between <Run> elements is to be treated as a single-SPACE <Run> element
 			p->cdata = g_string_new (" ");
-		} else if (p->cdata) {
-			// This is the normal case
-			g_strchomp (p->cdata->str);
-		} else {
-			// This is either LWSP before the first <Run> element or after the last <Run> element
+		} else if (!p->cdata) {
+			// This is either LWSP before the first <Run> element,
+			// after the last <Run> element, or between a <Run>
+			// element and a <LineBreak> element.
 			goto done;
 		}
 		
@@ -968,22 +969,28 @@ start_element_handler (void *data, const char *el, const char **attr)
 		return;
 
 	char **name = g_strsplit (el, "|",  -1);
+	XamlNamespace *next_namespace = NULL;
 	char *element = NULL;
-
-	flush_char_data (p, true);
-
-	p->current_namespace = NULL;
+	
 	if (g_strv_length (name) == 2) {
-		// Find the proper namespace
-		p->current_namespace = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, name [0]);
+		// Find the proper namespace for our next element
+		next_namespace = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, name [0]);
 		element = name [1];
 	}
-
-	if (!p->current_namespace && p->implicit_default_namespace) {
-		p->current_namespace = default_namespace;
+	
+	if (!next_namespace && p->implicit_default_namespace) {
+		// Use the default namespace for the next element
+		next_namespace = default_namespace;
 		element = name [0];
 	}
-
+	
+	// Flush our cdata, passing the name of the next element so it
+	// can do smart things for TextBlock cdata (and maybe others).
+	flush_char_data (p, element);
+	
+	// Now update our namespace
+	p->current_namespace = next_namespace;
+	
 	if (!p->current_namespace) {
 		if (name [1])
 			parser_error (p, name [1], NULL, -1, g_strdup_printf ("No handlers available for namespace: '%s' (%s)\n", name [0], el));
@@ -1009,7 +1016,7 @@ end_element_handler (void *data, const char *el)
 
 	switch (info->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
-		flush_char_data (info, false);
+		flush_char_data (info, NULL);
 		break;
 	case XamlElementInstance::PROPERTY: {
 		List::Node *walk = info->current_element->children->First ();
