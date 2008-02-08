@@ -650,7 +650,7 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 			
 			// make sure the font family name matches what was requested...
 			for (i = 0; families[i]; i++) {
-				if (!strcmp (face->family_name, families[i]))
+				if (!g_ascii_strcasecmp (face->family_name, families[i]))
 					break;
 			}
 			
@@ -659,7 +659,8 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 				break;
 			}
 			
-			d(fprintf (stderr, "no; incorrect family\n"));
+			d(fprintf (stderr, "no; incorrect family: '%s' does not match '%s'\n",
+				   face->family_name, family_name));
 			FT_Done_Face (face);
 			face = NULL;
 		} else {
