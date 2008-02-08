@@ -167,5 +167,14 @@
 		</RadialGradientBrush>
 	</Path.Fill>
 	</Path>
-
+	<Path Data="M100,300 L300,300 L300,350 L100,350 Z" >
+	<Path.Fill>
+		<ImageBrush ImageSource="mono.png" />
+	</Path.Fill>
+	</Path>
+	<Polyline Points="100,350 300,350 300,400 100,400 100,350" >
+	<Polyline.Fill>
+		<ImageBrush ImageSource="mono.png" />
+	</Polyline.Fill>
+	</Polyline>
 </Canvas>
