@@ -3,8 +3,9 @@
  *
  * Authors: Jeffrey Stedfast <fejj@novell.com>
  *          Rolf Bjarne Kvinge  <RKvinge@novell.com>
+ *          Michael Dominic K. <mkostrzewa@novell.com>
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007, 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  */
@@ -49,6 +50,7 @@ G_END_DECLS
 
 static uint64_t audio_play (Audio *audio, struct pollfd *ufds, int nfds);
 static void    *audio_loop (void *data);
+static void    *audio_loop_null (void *data);
 
 extern guint32 moonlight_flags;
 
@@ -652,9 +654,14 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	
 	if (!playing) {
 		// Start up the decoder/audio threads
-		if (audio->pcm != NULL && HasAudio ()) {
+		if (HasAudio ()) {
 			pthread_mutex_lock (&audio->init_mutex);
-			audio_thread = g_thread_create (audio_loop, this, true, NULL);
+
+			if (audio->pcm != NULL)
+				audio_thread = g_thread_create (audio_loop, this, true, NULL);
+			else
+				audio_thread = g_thread_create (audio_loop_null, this, true, NULL);
+
 			pthread_cond_wait (&audio->init_cond, &audio->init_mutex);
 			pthread_mutex_unlock (&audio->init_mutex);
 		}
@@ -1169,5 +1176,67 @@ audio_loop (void *data)
 	
 	g_free (ufds);
 	
+	return NULL;
+}
+
+/* This is a different variant of the audio_loop that is used when we
+ * have no audio devices present/working in the system. It's essentially a
+ * null loop that decodes/reads audio and discards it. Reading the audio
+ * data is required so that we don't block the pipeline/playback. */
+static void *
+audio_loop_null (void *data)
+{
+	MediaPlayer *mplayer = (MediaPlayer *) data;
+	Audio *audio = mplayer->audio;
+	IMediaStream *stream;
+	Packet *pkt = NULL;
+	MediaFrame *frame;
+
+	// signal the main thread that we are ready to begin audio playback
+	pthread_mutex_lock (&mplayer->audio->init_mutex);
+	pthread_cond_signal (&mplayer->audio->init_cond);
+	pthread_mutex_unlock (&mplayer->audio->init_mutex);
+
+	while (!mplayer->stop) {
+		pthread_mutex_lock (&mplayer->pause_mutex);
+
+		while (mplayer->paused && !mplayer->stop) {
+			pthread_cond_wait (&mplayer->pause_cond, &mplayer->pause_mutex);
+		}
+		pthread_mutex_unlock (&mplayer->pause_mutex);
+
+		if (mplayer->stop)
+			break;
+
+		if (!pkt && (pkt = (Packet *) audio->queue->Pop ())) {
+
+			stream = pkt->frame->stream;
+			frame = pkt->frame;
+
+			if (frame->event == FrameEventEOF) {
+				mplayer->eof = true;
+				break;
+			}
+
+			if (!frame->IsDecoded ())
+				stream->decoder->DecodeFrame (frame);
+
+			mplayer->SetTargetPts (frame->pts);
+
+			/* Calculate the sleep time... this assumes (like all the rest
+			 * of the code around here) that the stream is 16bit. */
+			long samples = frame->buflen / audio->stream->channels / 2;
+			long usecs = ((float) samples / (float) audio->stream->sample_rate) * 1000000;
+			usleep (usecs);
+
+			media_player_enqueue_frames (mplayer, 1, 0);
+		}
+
+		if (pkt != NULL) {
+			delete pkt;
+			pkt = NULL;
+		}
+	}
+
 	return NULL;
 }

@@ -1,5 +1,11 @@
-2008-02-08  Jeffrey Stedfast  <fejj@novell.com>
+2008-02-09  Michael Dominic K.  <mdk@mdk.am> 
 
+	* src/mplayer.cpp: If we have no audio devices present in the system,
+	launch a special audio loop variant to still read/fetch audio (and discard
+	it) so that the video playback is not blocked. Fixes: #341835.
+
+2008-02-08  Jeffrey Stedfast  <fejj@novell.com>
+	
 	* font.cpp (TextFont::TextFont): If the loaded font's family_name
 	doesn't match the requested family name, fall back to the default
 	font (it means the requested font doesn't exist on the system).
