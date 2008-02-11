@@ -1,3 +1,8 @@
+2008-02-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/runtime.h: Fixing our debug-timing routine. It reported 10x as much
+	as it should... yes, our redraws are slow, but not *that* slow ;)
+
 2008-02-09  Michael Dominic K.  <mdk@mdk.am> 
 
 	* src/mplayer.cpp: If we have no audio devices present in the system,
