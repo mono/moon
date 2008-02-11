@@ -87,3 +87,12 @@ Moonlight: Silverlight 2.0 API support
 		* Install the "olive" module from SVN, and use the
 		  --with-moonlight=yes option to configure.
 			
+	The current public API reflects the API as it was published in
+	Mix 07.  The 1.1 API.
+
+	Currently the 2.0 API is availble by checking out the module
+	`oil' from the Novell private repository (this is private
+	until the Mix 2008 conference). 
+
+	See the README in `oil' for details on how to build the
+	olive-oil based system.
