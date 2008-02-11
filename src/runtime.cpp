@@ -100,23 +100,23 @@ fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
 cairo_t *
 runtime_cairo_create (GdkWindow *drawable)
 {
-      GdkVisual *visual = NULL;
-      int width, height;
-      cairo_surface_t *surface;
-      cairo_t *cr;
+	GdkVisual *visual = NULL;
+	int width, height;
+	cairo_surface_t *surface;
+	cairo_t *cr;
 
-      visual = gdk_drawable_get_visual (drawable);
+	visual = gdk_drawable_get_visual (drawable);
 
-      gdk_drawable_get_size (drawable, &width, &height);
-      surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
-					   gdk_x11_drawable_get_xid (drawable),
-					   GDK_VISUAL_XVISUAL (visual),
-					   width, height);
+	gdk_drawable_get_size (drawable, &width, &height);
+	surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
+					     gdk_x11_drawable_get_xid (drawable),
+					     GDK_VISUAL_XVISUAL (visual),
+					     width, height);
       
-      cr = cairo_create (surface);
-      cairo_surface_destroy (surface);
+	cr = cairo_create (surface);
+	cairo_surface_destroy (surface);
 			    
-      return cr;
+	return cr;
 }
 
 void
