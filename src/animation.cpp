@@ -641,6 +641,40 @@ point_animation_new (void)
 	return new PointAnimation ();
 }
 
+/* Fills in the given table with "lookup values" (y for x) for our spline.
+ * This is used later on in the GetSplineProgress */
+static double generate_table (Point p1, Point p2, Point p3, Point p4, unsigned char table [257])
+{
+	memset (table, 0, 257);
+	double t;
+
+	for (t = 0.0; t <= 1.0; t += 1.0 / 256.0) {
+		double y = p1.y * (1.0 - t) * (1.0 - t) * (1.0 - t) +
+			   p2.y * 3.0 * t * (1.0 - t) * (1.0 - t) +
+			   p3.y * 3.0 * t * t * (1.0 - t) +
+			   p4.y * t * t * t;
+
+		double x = p1.x * (1.0 - t) * (1.0 - t) * (1.0 - t) +
+			   p2.x * 3.0 * t * (1.0 - t) * (1.0 - t) +
+			   p3.x * 3.0 * t * t * (1.0 - t) +
+			   p4.x * t * t * t;
+
+		// Just to be on the safe side...
+		x = MIN (x, 1.0); x = MAX (x, 0.0);
+		y = MIN (y, 1.0); y = MAX (y, 0.0);
+
+		table [(int) (x * 256.0)] = (int) (y * 255.0);
+	}
+
+	// Fill in the values that we "missed"
+	unsigned char last_val = 0;
+	int i;
+	for (i = 0; i < 257; i++) {
+		if (table [i] == 0)
+			table [i] = last_val;
+		last_val = table [i];
+	}
+}
 
 KeySpline::KeySpline () : controlPoint1 (Point (0.0, 0.0)), controlPoint2 (Point (1.0, 1.0))
 {
@@ -650,6 +684,7 @@ KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
 	: controlPoint1 (controlPoint1),
 	  controlPoint2 (controlPoint2)
 {
+	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
 KeySpline::KeySpline (double x1, double y1,
@@ -657,6 +692,7 @@ KeySpline::KeySpline (double x1, double y1,
 	: controlPoint1 (Point (x1, y1)),
 	  controlPoint2 (Point (x2, y2))
 {
+	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
 Point
@@ -668,6 +704,7 @@ void
 KeySpline::SetControlPoint1 (Point controlPoint1)
 {
 	this->controlPoint1 = controlPoint1;
+	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
 Point
@@ -679,6 +716,7 @@ void
 KeySpline::SetControlPoint2 (Point controlPoint2)
 {
 	this->controlPoint2 = controlPoint2;
+	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
 KeySpline *
@@ -687,94 +725,12 @@ key_spline_new (void)
 	return new KeySpline ();
 }
 
-
-
-// the following is from:
-// http://steve.hollasch.net/cgindex/curves/cbezarclen.html
-//
-
-#define sqr(x) (x * x)
-
-#define _ABS(x) (x < 0 ? -x : x)
-
-const double TOLERANCE = 0.0001;  // Application specific tolerance
-
-
-//---------------------------------------------------------------------------
-static double
-balf(double t, double q1, double q2, double q3, double q4, double q5) // Bezier Arc Length Function
-{
-	double result = q5 + t*(q4 + t*(q3 + t*(q2 + t*q1)));
-	result = sqrt(_ABS(result));
-	return result;
-}
-
-//---------------------------------------------------------------------------
-// NOTES:       TOLERANCE is a maximum error ratio
-//                      if n_limit isn't a power of 2 it will be act like the next higher
-//                      power of two.
-static double
-Simpson (double (*f)(double, double, double, double, double, double),
-	 double a,
-	 double b,
-	 int n_limit,
-	 double q1, double q2, double q3, double q4, double q5)
-{
-	int n = 1;
-	double multiplier = (b - a)/6.0;
-	double endsum = f(a, q1, q2, q3, q4, q5) + f(b, q1, q2, q3, q4, q5);
-	double interval = (b - a)/2.0;
-	double asum = 0;
-	double bsum = f(a + interval, q1, q2, q3, q4, q5);
-	double est1 = multiplier * (endsum + 2 * asum + 4 * bsum);
-	double est0 = 2 * est1;
-
-	while(n < n_limit 
-	      && (_ABS(est1) > 0 && _ABS((est1 - est0) / est1) > TOLERANCE)) {
-		n *= 2;
-		multiplier /= 2;
-		interval /= 2;
-		asum += bsum;
-		bsum = 0;
-		est0 = est1;
-		double interval_div_2n = interval / (2.0 * n);
-
-		for (int i = 1; i < 2 * n; i += 2) {
-			double t = a + i * interval_div_2n;
-			bsum += f(t, q1, q2, q3, q4, q5);
-		}
-
-		est1 = multiplier*(endsum + 2*asum + 4*bsum);
-	}
-
-	return est1;
-}
-
-static double
-BezierArcLength(Point p1, Point p2, Point p3, Point p4, double t)
-{
-	Point k1, k2, k3, k4;
-
-	k1 = p1*-1 + (p2 - p3)*3 + p4;
-	k2 = (p1 + p3)*3 - p2*6;
-	k3 = (p2 - p1)*3;
-	k4 = p1;
-
-	double q1 = 9.0*(sqr(k1.x) + sqr(k1.y));
-	double q2 = 12.0*(k1.x*k2.x + k1.y*k2.y);
-	double q3 = 3.0*(k1.x*k3.x + k1.y*k3.y) + 4.0*(sqr(k2.x) + sqr(k2.y));
-	double q4 = 4.0*(k2.x*k3.x + k2.y*k3.y);
-	double q5 = sqr(k3.x) + sqr(k3.y);
-
-	return Simpson(balf, 0, t, 1024,
-		       q1, q2, q3, q4, q5);
-}
-
 double
 KeySpline::GetSplineProgress (double linearProgress)
 {
-	return (BezierArcLength (Point(0,0), controlPoint1, controlPoint2, Point (1,1), linearProgress) /
-		BezierArcLength (Point(0,0), controlPoint1, controlPoint2, Point (1,1), 1.0));
+	linearProgress = MIN (linearProgress, 1.0);
+	linearProgress = MAX (linearProgress, 0.0);
+	return value_table [(int) (linearProgress * 256.0)] / 255.0;
 }
 
 

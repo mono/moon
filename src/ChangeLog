@@ -1,3 +1,31 @@
+2008-02-12  Michael Dominic K.  <mdk@mdk.am> 
+
+	* src/animation.cpp:
+	* src/animation.h: Massive fix for our KeySpline animation calculation
+	routines (which were broken and giving wrong values). According to:
+
+	http://msdn2.microsoft.com/en-us/library/ms533119(VS.85).aspx
+
+	"...think of the horizontal axis as the pace with which the interpolation
+	proceeds along the timing interval. The vertical axis is the resulting
+	value for the animation's progress, yielded by the function that underlies
+	the keySplines property. Another way of describing this is that the
+	horizontal axis is the input unit time for the interval, and the vertical
+	axis is the output unit time."
+
+	Therfore, we need to perform an "Y for X" bezier lookup. The current fix is
+	a little bit ugly -- we waste 256 bytes per KeySpline to store
+	pre-calculated values in a lookup table. But maybe it's not soo bad, since
+	balf function (from prev implementation) was coming up top in the
+	profiles anyways.
+
+	The only other way I can (currently) think of would be to solve a cubic
+	equation each time we poll the KeySpline for a value. That would be,
+	however, a *massive* performance hit. 
+
+	Hence the lookup solution for now (note: the generation of the table is
+	very fast, no cubics involved).
+
 2008-02-11  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/runtime.h: Fixing our debug-timing routine. It reported 10x as much
