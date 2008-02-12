@@ -643,7 +643,7 @@ point_animation_new (void)
 
 /* Fills in the given table with "lookup values" (y for x) for our spline.
  * This is used later on in the GetSplineProgress */
-static double generate_table (Point p1, Point p2, Point p3, Point p4, unsigned char table [257])
+static void generate_table (Point p1, Point p2, Point p3, Point p4, unsigned char table [257])
 {
 	memset (table, 0, 257);
 	double t;
