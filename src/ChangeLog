@@ -1,3 +1,8 @@
+2008-02-14  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/uielement.cpp: Commenting out the timer in post-pre render as it's
+	broken and blocks the compilation with timers on.
+
 2008-02-12  Michael Dominic K.  <mdk@mdk.am> 
 
 	* src/animation.cpp:
