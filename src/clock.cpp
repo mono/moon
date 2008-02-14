@@ -41,8 +41,8 @@
 
 
 #define MINIMUM_FPS 5
-#define DEFAULT_FPS 24
-#define MAXIMUM_FPS 24
+#define DEFAULT_FPS 50
+#define MAXIMUM_FPS 50
 
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
 #define DELAY_TO_FPS(delay) (1000.0 / delay)

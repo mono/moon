@@ -1,5 +1,12 @@
 2008-02-14  Michael Dominic K.  <mdk@mdk.am>
 
+	* src/clock.cpp: Changing max/default FPS to 50. Empirical experience
+	shows that SL runs by default at something around that. Also, with the
+	recent fixes some sites are suffering from 24 (can run/look much better
+	at higher fps).
+
+2008-02-14  Michael Dominic K.  <mdk@mdk.am> 
+
 	* src/shape.cpp:
 	* src/shape.h: Adding surface caching for shapes. The strategy
 	is to cache big surfaces that have little transformations (such as
