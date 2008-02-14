@@ -4,6 +4,7 @@
  * Author:
  *   Miguel de Icaza (miguel@novell.com)
  *   Sebastien Pouliot  <sebastien@ximian.com>
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
@@ -36,6 +37,8 @@ class Shape : public FrameworkElement {
  protected:
 	Brush *stroke, *fill;
 	Point origin;
+	cairo_surface_t *cached_surface;
+
 	void DoDraw (cairo_t *cr, bool do_op);
 
 	void SetupLineCaps (cairo_t *cr);
@@ -49,6 +52,8 @@ class Shape : public FrameworkElement {
 
 	moon_path *path;
 	virtual void InvalidatePathCache (bool free = false);
+	void InvalidateSurfaceCache (void);
+	bool IsCandidateForCaching (void);
 
 	virtual Rect ComputeShapeBounds ();
 	virtual Rect ComputeLargestRectangle ();

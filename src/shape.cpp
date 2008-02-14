@@ -5,6 +5,7 @@
  *   Miguel de Icaza (miguel@novell.com)
  *   Sebastien Pouliot  <sebastien@ximian.com>
  *   Stephane Delcroix  <sdelcroix@novell.com>
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
@@ -107,6 +108,7 @@ Shape::Shape ()
 	fill = NULL;
 	path = NULL;
 	origin = Point (0, 0);
+	cached_surface = NULL;
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 }
 
@@ -121,6 +123,8 @@ Shape::~Shape ()
 		fill->Detach (NULL, this);
 		fill->unref ();
 	}
+
+	// That also destroys the cached surface
 	InvalidatePathCache (true);
 }
 
@@ -270,6 +274,28 @@ Shape::Clip (cairo_t *cr)
 	}
 }
 
+int number = 0;
+
+//
+// Returns TRUE if surface is a good candidate for caching.
+// Our current strategy is to cache big surfaces (likely backgrounds)
+// that don't scale tranformations. We accept a little bit of scaling though.
+//
+bool
+Shape::IsCandidateForCaching (void)
+{
+	if (bounds.w + bounds.h < 300)
+		return FALSE;
+
+	int diffw = fabs (bounds.w - extents.w);
+	int diffh = fabs (bounds.h - extents.h);
+
+	if (diffw > 5 || diffh > 5)
+		return FALSE;
+
+	return TRUE;
+}
+
 //
 // This routine is useful for Shape derivatives: it can be used
 // to either get the bounding box from cairo, or to paint it
@@ -277,30 +303,50 @@ Shape::Clip (cairo_t *cr)
 void
 Shape::DoDraw (cairo_t *cr, bool do_op)
 {
+	int w;
+	int h;
+	cairo_t *cached_cr = NULL;
+	cairo_pattern_t *cached_pattern = NULL;
+	bool ret = FALSE;
+	gchar *fname;
+
 	// quick out if, when building the path, we detected a empty shape
 	if (IsEmpty ())
 		goto cleanpath;
 
-	cairo_set_matrix (cr, &absolute_xform);
+	if (!do_op) {
+		cairo_set_matrix (cr, &absolute_xform);
+		Clip (cr);
 
-// 	printf ("Draw, xform: %g %g %g %g %g %g\n", 
-// 		absolute_xform.xy,
-// 		absolute_xform.xx,
-// 		absolute_xform.yx,
-// 		absolute_xform.yy,
-// 		absolute_xform.x0,
-// 		absolute_xform.y0);
-
-	Clip (cr);
-
-	// if building the path detected a degenerate case
-	if (IsDegenerate ()) {
-		// FIXME: needs a DrawDegenerateShape to get more control over output
 		if (DrawShape (cr, do_op))
 			return;
 	} else {
-		if (DrawShape (cr, do_op))
-			return;
+		if (cached_surface == NULL && IsCandidateForCaching ()) {
+			w = extents.w + extents.x;
+			h = extents.h + extents.y;
+			w = MAX (w, 1);
+			h = MAX (h, 1);
+
+			cached_surface = image_brush_create_similar (cr, w, h);
+			cached_cr = cairo_create (cached_surface);
+			ret = DrawShape (cached_cr, do_op);
+			cairo_destroy (cached_cr);
+		}
+
+		cairo_set_matrix (cr, &absolute_xform);
+		Clip (cr);
+
+		if (cached_surface) {
+			cached_pattern = cairo_pattern_create_for_surface (cached_surface);
+			cairo_set_source (cr, cached_pattern);
+			cairo_paint (cr);
+			cairo_pattern_destroy (cached_pattern);
+			if (ret)
+				return;
+		} else {
+			if (DrawShape (cr, do_op))
+				return;
+		}
 	}
 
 cleanpath:
@@ -397,6 +443,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 void
 Shape::OnPropertyChanged (DependencyProperty *prop)
 {
+
 	if (prop->type != Type::SHAPE) {
 		if ((prop == FrameworkElement::HeightProperty) || (prop == FrameworkElement::WidthProperty))
 			InvalidatePathCache ();
@@ -420,6 +467,7 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 			stroke->ref ();
 		}
 
+		InvalidateSurfaceCache ();
 		UpdateBounds ();
 	} else if (prop == Shape::FillProperty) {
 		if (fill != NULL) {
@@ -432,6 +480,7 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 			fill->ref ();
 		}
 
+		InvalidateSurfaceCache ();
 		UpdateBounds ();
 	} else if (prop == Shape::StrokeThicknessProperty) {
 		InvalidatePathCache ();
@@ -442,6 +491,7 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 		   || prop == Shape::StrokeMiterLimitProperty
 		   || prop == Shape::StrokeStartLineCapProperty) {
 		UpdateBounds ();
+		InvalidateSurfaceCache ();
 	}
 	
 	Invalidate ();
@@ -454,6 +504,7 @@ Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, De
 {
 	if (prop == Shape::FillProperty || prop == Shape::StrokeProperty) {
 		Invalidate ();
+		InvalidateSurfaceCache ();
 	}
 	else
 		FrameworkElement::OnSubPropertyChanged (prop, obj, subprop);
@@ -468,7 +519,6 @@ Shape::GetTransformOrigin ()
 		framework_element_get_height (this) * user_xform_origin.y);
 }
 
-
 void
 Shape::InvalidatePathCache (bool free)
 {
@@ -480,6 +530,17 @@ Shape::InvalidatePathCache (bool free)
 		} else {
 			moon_path_clear (path);
 		}
+	}
+
+	InvalidateSurfaceCache ();
+}
+
+void
+Shape::InvalidateSurfaceCache (void)
+{
+	if (cached_surface) {
+		cairo_surface_destroy (cached_surface);
+		cached_surface = NULL;
 	}
 }
 
@@ -762,6 +823,7 @@ Ellipse::OnPropertyChanged (DependencyProperty *prop)
 	if ((prop == Shape::StrokeThicknessProperty) || (prop == Shape::StretchProperty) ||
 		(prop == FrameworkElement::WidthProperty) || (prop == FrameworkElement::HeightProperty)) {
 		BuildPath ();
+		InvalidateSurfaceCache ();
 	}
 
 	// Ellipse has no property of it's own
