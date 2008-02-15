@@ -1,3 +1,7 @@
+2008-02-02  Miguel de Icaza  <miguel@novell.com>
+
+	* mopen.cs: Release the Cairo Context when we are done.
+
 2007-10-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mopen.cs: Use GtkSilver's LoadFile method instead of
