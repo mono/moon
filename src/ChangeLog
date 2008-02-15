@@ -1,5 +1,10 @@
 2008-02-15  Michael Dominic K.  <mdk@mdk.am> 
 
+	* src/uielement.cpp: Moving the debug timers for rendering slightly and
+	uncommenting them so that they work when TIMERS is enabled.
+
+2008-02-15  Michael Dominic K.  <mdk@mdk.am> 
+
 	* src/runtime.cpp:
 	* src/runtime.h: Adding an extra DEBUG_MARKER_KEY define (disabled by
 	default) that changes your 'd' key into a special debug key. When pressed,

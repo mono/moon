@@ -490,11 +490,15 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 	GetSurface()->uielements_rendered_back_to_front ++;
 #endif
 
+	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
+
 	PreRender (cr, region, false);
 
 	Render (cr, region);
 
 	PostRender (cr, region, false);
+
+	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 }
 
 void
@@ -584,7 +588,6 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
 {
 	double local_opacity = GetValue (OpacityProperty)->AsDouble();
 
-	// STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 	cairo_save (cr);
 
 	cairo_set_matrix (cr, &absolute_xform);
@@ -631,8 +634,6 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	}
 	cairo_restore (cr);
 	
-	// ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
-
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {
 		cairo_save (cr);
 		cairo_new_path (cr);
