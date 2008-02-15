@@ -1,5 +1,12 @@
 2008-02-15  Michael Dominic K.  <mdk@mdk.am> 
 
+	* src/clock.cpp: Before processing dirty enter/leave gdk threads. We're
+	being called from a timeout (unprotected) and we're potentially calling
+	gdk_ invalidation functions. I think it only matters (in this case) 
+	on non-X backends though. 
+
+2008-02-15  Michael Dominic K.  <mdk@mdk.am> 
+
 	* src/uielement.cpp: Moving the debug timers for rendering slightly and
 	uncommenting them so that they work when TIMERS is enabled.
 

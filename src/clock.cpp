@@ -356,7 +356,9 @@ TimeManager::Tick ()
 	  //	  fprintf (stderr, "rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
 		STARTTIMER (tick_dirty, "TimeManager::Tick - Dirty");
+		GDK_THREADS_ENTER ();
 		process_dirty_elements ();
+		GDK_THREADS_LEAVE ();
 		ENDTIMER (tick_dirty, "TimeManager::Tick - Dirty");
 
 		Emit (RenderEvent);
