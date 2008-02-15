@@ -308,7 +308,6 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 	cairo_t *cached_cr = NULL;
 	cairo_pattern_t *cached_pattern = NULL;
 	bool ret = FALSE;
-	gchar *fname;
 
 	// quick out if, when building the path, we detected a empty shape
 	if (IsEmpty ())
