@@ -32,6 +32,7 @@ G_BEGIN_DECLS
 #define FRONT_TO_BACK_STATS 0
 
 #define TIMERS 0
+#define DEBUG_MARKER_KEY 0
 #if TIMERS
 #define STARTTIMER(id,str) TimeSpan id##_t_start = get_now(); printf ("timing of '%s' started at %lld\n", str, id##_t_start)
 #define ENDTIMER(id,str) TimeSpan id##_t_end = get_now(); printf ("timing of '%s' ended at %lld (%f seconds)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 10000000)

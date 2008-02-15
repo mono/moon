@@ -1540,6 +1540,18 @@ Surface::key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data)
 	if (s->FullScreenKeyHandled (key))
 		return TRUE;
 
+#if DEBUG_MARKER_KEY
+	static int debug_marker_key_in = 0;
+	if (key->keyval == GDK_d || key->keyval == GDK_D) {
+		if (! debug_marker_key_in)
+			printf ("<--- DEBUG MARKER KEY IN (%f) --->\n", get_now () / 10000000.0);
+		else
+			printf ("<--- DEBUG MARKER KEY OUT (%f) --->\n", get_now () / 10000000.0);
+		debug_marker_key_in = ! debug_marker_key_in;
+		return TRUE;
+	}
+#endif
+
 	s->SetCanFullScreen (true);
 	// key events are only ever delivered to the toplevel
 	s->toplevel->EmitKeyDown (key->state, gdk_keyval_to_key (key->keyval), key->hardware_keycode);

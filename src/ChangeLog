@@ -1,3 +1,14 @@
+2008-02-15  Michael Dominic K.  <mdk@mdk.am> 
+
+	* src/runtime.cpp:
+	* src/runtime.h: Adding an extra DEBUG_MARKER_KEY define (disabled by
+	default) that changes your 'd' key into a special debug key. When pressed,
+	a message is printed to the console (region start). When pressed again,
+	another message is printed (region end). This is usefull to see what
+	happens in a particular part of the program timeline (ie. after click). 
+
+	Makes sense obviously only with timers debugging on and stuff.
+
 2008-02-14  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/clock.cpp: Changing max/default FPS to 50. Empirical experience
