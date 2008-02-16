@@ -1,3 +1,9 @@
+2008-02-15  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightStoryboardObject::Invoke): the seek
+	method can take either an integer or a string representing a
+	timespan.  Fixes the JS errors I mentioned in bug #362380.
+
 2008-02-06  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp|h: Store all MoonlightDependencyObject classes

@@ -2691,11 +2691,21 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 		return true;
 
 	case MoonId_Seek: {
-		// XXX JS doesn't have 64bit ints?
-		if (argCount != 1 || !NPVARIANT_IS_INT32 (args[0]))
+		if (argCount != 1)
 			THROW_JS_EXCEPTION ("seek");
+		
+		TimeSpan ts;
 
-		TimeSpan ts = (TimeSpan)NPVARIANT_TO_INT32(args[0]);
+		if (NPVARIANT_IS_INT32 (args[0])) {
+			ts = (TimeSpan)NPVARIANT_TO_INT32(args[0]);
+		}
+		else if (NPVARIANT_IS_STRING (args[0])) {
+			if (!time_span_from_str (STR_FROM_VARIANT (args[0]), &ts))
+				THROW_JS_EXCEPTION ("seek");
+		}
+		else
+			THROW_JS_EXCEPTION ("seek");
+		      
 		sb->Seek (ts);
 
 		VOID_TO_NPVARIANT (*result);
