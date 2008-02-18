@@ -1,3 +1,12 @@
+2008-02-18  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/media.cpp:
+	* src/media.h: Load images slightly faster by skipping one pixbuf blit and
+	doing the expansion + conversion in one step.
+
+	Also fixing an ugly memory leak where all RGBA images loaded were leaked
+	(two times in memory).
+
 2008-02-15  Michael Dominic K.  <mdk@mdk.am> 
 
 	* src/clock.cpp: Before processing dirty enter/leave gdk threads. We're

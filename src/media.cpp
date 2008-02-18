@@ -4,6 +4,7 @@
  * Authors:
  *   Jeffrey Stedfast <fejj@novell.com>
  *   Jb Evain <jbevain@novell.com>
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -1611,6 +1612,8 @@ Image::CleanupSurface ()
 			cairo_surface_destroy (surface->cairo);
 			if (surface->backing_pixbuf)
 				g_object_unref (surface->backing_pixbuf);
+			if (surface->backing_data)
+				g_free (surface->backing_data);
 			g_free (surface);
 		}
 
@@ -1735,9 +1738,82 @@ Image::DownloaderFailed (const char *msg)
 		g = ((color & 0x0000ff00) >> 8); \
 		b = (color & 0x000000ff); \
 	} while(0)
+#define get_pixel_bgr(color, b, g, r) do { \
+		r = ((color & 0x00ff0000) >> 16); \
+		g = ((color & 0x0000ff00) >> 8); \
+		b = (color & 0x000000ff); \
+	} while(0)
 
 #include "alpha-premul-table.inc"
 
+//
+// Expands RGB to ARGB allocating new buffer for it.
+//
+static guchar*
+expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
+{
+	guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
+	guchar *p;
+	int w = gdk_pixbuf_get_width (pixbuf);
+	int h = gdk_pixbuf_get_height (pixbuf);
+	*stride = w * 4;
+	guchar *data = (guchar *) g_malloc (*stride * h);
+	guchar *out;
+
+	for (int y = 0; y < h; y ++) {
+		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
+		out = data + y * (*stride);
+		for (int x = 0; x < w; x ++) {
+			guint32 color = *(guint32*)p;
+			guchar r, g, b;
+
+			get_pixel_bgr (color, b, g, r);
+			set_pixel_bgra (out, 0, r, g, b, 255);
+
+			p += 3;
+			out += 4;
+		}
+	}
+
+	return data;
+}
+
+//
+// Converts RGBA unmultiplied alpha to ARGB pre-multiplied alpha.
+//
+static void
+unmultiply_rgba_in_place (GdkPixbuf *pixbuf)
+{
+	guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
+	guchar *p;
+	int w = gdk_pixbuf_get_width (pixbuf);
+	int h = gdk_pixbuf_get_height (pixbuf);
+
+	for (int y = 0; y < h; y ++) {
+		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
+		for (int x = 0; x < w; x ++) {
+			guint32 color = *(guint32*)p;
+			guchar r, g, b, a;
+
+			get_pixel_bgra (color, b, g, r, a);
+
+			/* pre-multipled alpha */
+			if (a == 0) {
+				r = g = b = 0;
+			}
+			else if (a < 255) {
+				r = pre_multiplied_table [r][a];
+				g = pre_multiplied_table [g][a];
+				b = pre_multiplied_table [b][a];
+			}
+
+			/* store it back, swapping red and blue */
+			set_pixel_bgra (p, 0, r, g, b, a);
+
+			p += 4;
+		}
+	}
+}
 
 bool
 Image::CreateSurface (const char *fname)
@@ -1784,52 +1860,23 @@ Image::CreateSurface (const char *fname)
 		surface->width = gdk_pixbuf_get_width (pixbuf);
 		
 		bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
+		guchar *data;
+		int stride;
 
 		if (has_alpha) {
-			g_object_ref (pixbuf);
+			surface->backing_pixbuf = pixbuf;
+			surface->backing_data = NULL;
+			unmultiply_rgba_in_place (pixbuf);
+			stride = gdk_pixbuf_get_rowstride (pixbuf);
+			data = gdk_pixbuf_get_pixels (pixbuf);
 		} else {
-			/* gdk-pixbuf packs its pixel data into 24 bits for
-			   rgb, instead of 32 with an unused byte for alpha,
-			   like cairo expects */
-
-			GdkPixbuf *pb = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, surface->width, surface->height);
-			gdk_pixbuf_copy_area (pixbuf,
-					      0, 0, surface->width, surface->height,
-					      pb,
-					      0, 0);
+			surface->backing_pixbuf = NULL;
+			surface->backing_data = expand_rgb_to_argb (pixbuf, &stride);
+			data = surface->backing_data;
 			g_object_unref (pixbuf);
-			pixbuf = pb;
 		}
 
-		guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
-		guchar *p;
-		for (int y = 0; y < surface->height; y ++) {
-			p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
-			for (int x = 0; x < surface->width; x ++) {
-				guint32 color = *(guint32*)p;
-				guchar r, g, b, a;
-
-				get_pixel_bgra (color, b, g, r, a);
-
-				/* pre-multipled alpha */
-				if (a == 0) {
-					r = g = b = 0;
-				}
-				else if (a < 255) {
-					r = pre_multiplied_table [r][a];
-					g = pre_multiplied_table [g][a];
-					b = pre_multiplied_table [b][a];
-				}
-
-				/* store it back, swapping red and blue */
-				set_pixel_bgra (p, 0, r, g, b, a);
-
-				p += 4;
-			}
-		}
-
-		surface->backing_pixbuf = pixbuf;
-		surface->cairo = cairo_image_surface_create_for_data (pb_pixels,
+		surface->cairo = cairo_image_surface_create_for_data (data,
 #if USE_OPT_RGB24
 								      has_alpha ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24,
 #else
@@ -1837,7 +1884,7 @@ Image::CreateSurface (const char *fname)
 #endif
 								      surface->width,
 								      surface->height,
-								      gdk_pixbuf_get_rowstride (pixbuf));
+								      stride);
 
 #if USE_OPT_RGB24
 		surface->has_alpha = has_alpha;
@@ -1897,8 +1944,17 @@ Image::Render (cairo_t *cr, Region *region)
 		cairo_destroy (cr);
 
 		cairo_surface_destroy (surface->cairo);
-		g_object_unref (surface->backing_pixbuf);
-		surface->backing_pixbuf = NULL;
+
+		if (surface->backing_pixbuf) {
+			g_object_unref (surface->backing_pixbuf);
+			surface->backing_pixbuf = NULL;
+		}
+
+		if (surface->backing_data) {
+			g_free (surface->backing_data);
+			surface->backing_data =NULL;
+		}
+
 		surface->cairo = xlib_surface;
 	}
 

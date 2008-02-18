@@ -1,7 +1,9 @@
 /*
  * media.h:
  *
- * Author: Jeffrey Stedfast <fejj@novell.com>
+ * Authors:
+ *   Jeffrey Stedfast <fejj@novell.com>
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -117,6 +119,7 @@ public:
 		cairo_surface_t *cairo;
 		bool xlib_surface_created;
 		GdkPixbuf *backing_pixbuf;
+		guchar *backing_data;
 		
 		bool has_alpha;
 		int width;
