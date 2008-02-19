@@ -2763,16 +2763,18 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 
 		if (!owner) {
 			g_strfreev (prop_name);
-			parser_error (p, parent->element_name, NULL, 2007, g_strdup_printf ("Unknown element: %s.", parent->element_name));
-			return;
+			return parser_error (p, parent->element_name, NULL, 2007, g_strdup_printf ("Unknown element: %s.", parent->element_name));
 		}
 
 		DependencyProperty *dep = DependencyObject::GetDependencyProperty (owner->type, prop_name [1]);
 
 		g_strfreev (prop_name);
 
+		if (!dep)
+			return parser_error (p, parent->element_name, NULL, 2007, g_strdup_printf ("Unknown element: %s.", parent->element_name));
+
 		// Don't add the child element, if it is the entire collection
-		if (!dep || dep->value_type == child->info->dependency_type)
+		if (dep->value_type == child->info->dependency_type)
 			return;
 
 		Type *col_type = Type::Find (dep->value_type);
