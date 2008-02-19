@@ -243,6 +243,7 @@ class Glyphs : public FrameworkElement {
 	gunichar *text;
 	List *attrs;
 	Brush *fill;
+	int index;
 	
 	bool origin_y_specified;
 	double origin_x;

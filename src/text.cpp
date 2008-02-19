@@ -1342,6 +1342,7 @@ Glyphs::Glyphs ()
 	
 	attrs = new List ();
 	text = NULL;
+	index = 0;
 	
 	origin_y_specified = false;
 	origin_x = 0.0;
@@ -1691,28 +1692,13 @@ void
 Glyphs::DownloaderComplete ()
 {
 	char *filename = downloader_get_response_file (downloader, "");
-	Value *value = downloader->GetValue (Downloader::UriProperty);
-	const char *str;
-	int id = 0;
-	Uri *uri;
 	
 	/* the download was aborted */
 	if (!filename)
 		return;
 	
-	if (value && (str = value->AsString ())) {
-		uri = new Uri ();
-		
-		if (uri->Parse (str) && uri->fragment) {
-			if ((id = strtol (uri->fragment, NULL, 10)) < 0)
-				id = 0;
-		}
-		
-		delete uri;
-	}
-	
 	desc->SetFilename (filename);
-	desc->SetIndex (id);
+	desc->SetIndex (index);
 	g_free (filename);
 	dirty = true;
 	
@@ -1823,19 +1809,28 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 	}
 	
 	if (prop == Glyphs::FontUriProperty) {
-		char *uri = glyphs_get_font_uri (this);
+		char *str = glyphs_get_font_uri (this);
+		Uri *uri = new Uri ();
 		
 		if (downloader) {
 			downloader_abort (downloader);
 			downloader->unref ();
 			downloader = NULL;
+			index = 0;
 		}
 		
-		if (uri && *uri) {
+		if (str && *str && uri->Parse (str)) {
 			downloader = Surface::CreateDownloader (this);
 			
-			//printf ("setting media source to %s\n", uri);
-			downloader_open (downloader, "GET", uri);
+			if (uri->fragment) {
+				if ((index = strtol (uri->fragment, NULL, 10)) < 0 || index == LONG_MAX)
+					index = 0;
+			}
+			
+			str = uri->ToString (UriHideFragment);
+			downloader_open (downloader, "GET", str);
+			g_free (str);
+			
 			downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 			if (downloader->Started () || downloader->Completed ()) {
 				if (downloader->Completed ())
@@ -1847,6 +1842,8 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 				downloader->Send ();
 			}
 		}
+		
+		delete uri;
 		
 		invalidate = false;
 	} else if (prop == Glyphs::FillProperty) {

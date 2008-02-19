@@ -1,3 +1,18 @@
+2008-02-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uri.cpp (Uri::ToString): Now takes a 'flags' argument to let us
+	know which, if any, parts of the URI to hide.
+	(Uri::Parse): If we don't have a protocol, don't simply assume
+	that the entire string is the filename. We might have a fragment
+	attached, for example.
+
+	* text.cpp (Glyphs::OnPropertyChanged): Decode the URI here and
+	get the font index (if a fragment is set). Also, use the parsed
+	Uri's ::ToString() method to hide the fragment so that requesting
+	the file actually works.
+	(Glyphs::DownloaderComplete): Don't need to parse the URI here
+	anymore, we've already got the index from OnPropertyChanged().
+
 2008-02-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Parser error if we can't find the owner type or

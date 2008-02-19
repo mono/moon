@@ -112,17 +112,9 @@ Uri::Parse (const char *uri)
 	start = uri;
 	if (!(inptr = strchr (start, ':'))) {
 		protocol = g_strdup ("file");
+		inptr = uri;
 		
-		/* canonicalise and save the path component */
-		if ((n = strlen (start))) {
-			value = g_strndup (start, n);
-			url_decode (value, uri);
-			
-			if (!(path = canon_path (value, true)))
-				g_free (value);
-		}
-		
-		goto done;
+		goto decode_path;
 	}
 	
 	protocol = g_ascii_strdown (start, inptr - start);
@@ -247,6 +239,7 @@ Uri::Parse (const char *uri)
 	}
 	
 	if (*inptr == '/') {
+	decode_path:
 		/* look for params, query, or fragment */
 		start = inptr;
 		while (*inptr && *inptr != ';' && *inptr != '?' && *inptr != '#')
@@ -385,15 +378,17 @@ append_param (GQuark key_id, gpointer value, gpointer user_data)
 }
 
 char *
-Uri::ToString ()
+Uri::ToString (UriToStringFlags flags)
 {
 	GString *string;
 	char *uri;
 	
-	string = g_string_new (this->protocol);
-	g_string_append (string, "://");
+	string = g_string_new ("");
 	
 	if (this->host) {
+		g_string_append (string, this->protocol);
+		g_string_append (string, "://");
+		
 		if (this->user) {
 			append_url_encoded (string, this->user, ":;@/");
 			
@@ -402,7 +397,7 @@ Uri::ToString ()
 				append_url_encoded (string, this->auth, ":@/");
 			}
 			
-			if (this->passwd) {
+			if (this->passwd && !(flags & UriHidePasswd)) {
 				g_string_append_c (string, ':');
 				append_url_encoded (string, this->passwd, "@/");
 			}
@@ -433,7 +428,7 @@ Uri::ToString ()
 		append_url_encoded (string, this->query, "#");
 	}
 	
-	if (this->fragment) {
+	if (this->fragment && !(flags & UriHideFragment)) {
 		g_string_append_c (string, '#');
 		append_url_encoded (string, this->fragment, "");
 	}

@@ -13,6 +13,11 @@
 
 #include <glib.h>
 
+enum UriToStringFlags {
+	UriHidePasswd   = 1 << 0,
+	UriHideFragment = 1 << 1,
+};
+
 class Uri {
 public:
 	char *protocol;
@@ -31,7 +36,8 @@ public:
 	
 	bool Parse (const char *uri);
 	
-	char *ToString ();
+	char *ToString (UriToStringFlags flags);
+	char *ToString () { return ToString ((UriToStringFlags) 0); }
 };
 
 #endif /* __URI_H__ */
