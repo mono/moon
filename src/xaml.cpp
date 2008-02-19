@@ -855,8 +855,12 @@ start_element (void *data, const char *el, const char **attr)
 		if (!inst->item)
 			return;
 
-		if (p->current_element && p->current_element->info)
+		if (p->current_element && p->current_element->info) {
 			p->current_element->info->add_child (p, p->current_element, inst);
+			if (p->error_args)
+				return;
+		}
+				
 
 	} else {
 		bool property = false;
@@ -1397,7 +1401,7 @@ xaml_create_from_str (XamlLoader* loader, const char *xaml, bool create_namescop
 	XamlParserInfo *parser_info = NULL;
 	DependencyObject *res = NULL;
 	char *start = (char*)xaml;
-	
+
 	if (!p) {
 #ifdef DEBUG_XAML
 		printf ("can not create parser\n");
@@ -2756,6 +2760,13 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	if (parent->element_type == XamlElementInstance::PROPERTY) {
 		char **prop_name = g_strsplit (parent->element_name, ".", -1);
 		Type *owner = Type::Find (prop_name [0]);
+
+		if (!owner) {
+			g_strfreev (prop_name);
+			parser_error (p, parent->element_name, NULL, 2007, g_strdup_printf ("Unknown element: %s.", parent->element_name));
+			return;
+		}
+
 		DependencyProperty *dep = DependencyObject::GetDependencyProperty (owner->type, prop_name [1]);
 
 		g_strfreev (prop_name);

@@ -1,3 +1,8 @@
+2008-02-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Parser error if we can't find the owner type when
+	setting	properties.
+
 2008-02-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* geometry.cpp|h: #if out GetOriginPoint which calls moon_get_origin
