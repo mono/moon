@@ -1,3 +1,9 @@
+2008-02-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moon-path.c: #if out moon_get_origin since it's not used 
+	anymore. Change cairo_path_display output to be easier to read 
+	with negative numbers.
+
 2008-02-18  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/media.cpp:

@@ -546,6 +546,7 @@ moon_close_path (moon_path *path)
 	path->cairo.num_data += MOON_PATH_CLOSE_PATH_LENGTH;
 }
 
+#if FALSE
 /**
  * moon_get_origin
  * @path: a #moon_path
@@ -598,6 +599,7 @@ moon_get_origin (moon_path *path, double *ox, double *oy)
 	if (ox) *ox = x;
 	if (oy) *oy = y;
 }
+#endif
 
 /**
  * moon_merge:
@@ -646,17 +648,17 @@ cairo_path_display (cairo_path_t *path)
 		cairo_path_data_t *data = &path->data[i];
 		switch (data->header.type) {
 		case CAIRO_PATH_CURVE_TO:
-			g_warning ("\tCAIRO_PATH_CURVE_TO (%d) %g,%g - %g,%g - %g,%g", data->header.length, 
+			g_warning ("\tCAIRO_PATH_CURVE_TO (size %d) (%g, %g) (%g, %g) (%g, %g)", data->header.length, 
 				data[1].point.x, data[1].point.y, data[2].point.x, data[2].point.y, data[3].point.x, data[3].point.y);
 			break;
 		case CAIRO_PATH_LINE_TO:
-			g_warning ("\tCAIRO_PATH_LINE_TO (%d) %g,%g", data->header.length, data[1].point.x, data[1].point.y);
+			g_warning ("\tCAIRO_PATH_LINE_TO (size %d) (%g, %g)", data->header.length, data[1].point.x, data[1].point.y);
 			break;
 		case CAIRO_PATH_MOVE_TO:
-			g_warning ("\tCAIRO_PATH_MOVE_TO (%d) %g,%g", data->header.length, data[1].point.x, data[1].point.y);
+			g_warning ("\tCAIRO_PATH_MOVE_TO (size %d) (%g, %g)", data->header.length, data[1].point.x, data[1].point.y);
 			break;
 		case CAIRO_PATH_CLOSE_PATH:
-			g_warning ("\tCAIRO_PATH_CLOSE_PATH (%d)", data->header.length);
+			g_warning ("\tCAIRO_PATH_CLOSE_PATH (size %d)", data->header.length);
 			break;
 		}
 	}
