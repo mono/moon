@@ -230,6 +230,7 @@ PluginInstance::Properties ()
 	table_add (table, "Background:", 0, row++);
 	table_add (table, "Kind:", 0, row++);
 	table_add (table, "Windowless:", 0, row++);
+	table_add (table, "MaxFrameRate:", 0, row++);
 	
 	row = 0;
 	table_add (table, source, 1, row++);
@@ -240,6 +241,8 @@ PluginInstance::Properties ()
 	table_add (table, background, 1, row++);
 	table_add (table, xaml_loader == NULL ? "(Unknown)" : (xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)"), 1, row++);
 	table_add (table, windowless ? "yes" : "no", 1, row++);
+	snprintf (buffer, sizeof (buffer), "%i", maxFrameRate);
+	table_add (table, buffer, 1, row++);
 	
 	row++;
 	properties_fps_label = gtk_label_new ("");
@@ -296,6 +299,11 @@ PluginInstance::PluginInstance (NPP instance, uint16_t mode)
 	this->background = NULL;
 
 	this->windowless = false;
+	
+	// MSDN says the default is 24: http://msdn2.microsoft.com/en-us/library/bb979688.aspx
+	// blog says the default is 60: http://blogs.msdn.com/seema/archive/2007/10/07/perf-debugging-tips-enableredrawregions-a-performance-bug-in-videobrush.aspx
+	// testing seems to confirm that the default is 60.
+	this->maxFrameRate = 60;
 
 	this->vm_missing_file = NULL;
 	this->xaml_loader = NULL;
@@ -391,6 +399,16 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 		if (!g_ascii_strcasecmp (argn[i], "background")) {
 			this->background = g_strdup (argv[i]);
+			continue;
+		}
+		
+		if (!g_ascii_strcasecmp (argn [i], "windowless")) {
+			this->windowless = !g_ascii_strcasecmp (argv [i], "true");
+			continue;
+		}
+		
+		if (!g_ascii_strcasecmp (argn [i], "framerate")) {
+			this->maxFrameRate = atoi (argv [i]);
 			continue;
 		}
 	}
@@ -533,6 +551,8 @@ PluginInstance::CreateWindow ()
 	display = gdk_drawable_get_display (this->surface->GetDrawingArea()->window);
 	gtk_widget_show_all (this->container);
 	this->UpdateSource ();
+	
+	TimeManager::Instance ()->SetMaximumRefreshRate (maxFrameRate);
 }
 
 void
@@ -1073,6 +1093,20 @@ bool
 PluginInstance::getWindowless ()
 {
 	return this->windowless;
+}
+
+int
+PluginInstance::getMaxFrameRate ()
+{
+	return this->maxFrameRate;
+}
+
+void
+PluginInstance::setMaxFrameRate (int value)
+{
+	this->maxFrameRate = value;
+	
+	TimeManager::Instance ()->SetMaximumRefreshRate (MAX (value, 64));
 }
 
 int32

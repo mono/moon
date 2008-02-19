@@ -41,6 +41,7 @@ class PluginInstance
 	char *onError;
 
 	bool windowless;
+	int maxFrameRate;
 
 	GtkWidget *properties_fps_label;
 
@@ -127,6 +128,8 @@ class PluginInstance
 	void setEnableRedrawRegions (bool value);
 	bool getEnableHtmlAccess ();
 	bool getWindowless ();
+	void setMaxFrameRate (int value);
+	int  getMaxFrameRate ();
 
 	MoonlightScriptControlObject *getRootObject ();
 	NPP getInstance ();

@@ -1,3 +1,9 @@
+2008-02-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline-ffmpeg.cpp: Comment out error message which just shows ffmpeg's
+	  shortcomings.
+	* media.cpp: Remove printf.
+
 2008-02-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moon-path.c: #if out moon_get_origin since it's not used 

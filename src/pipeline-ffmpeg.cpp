@@ -299,7 +299,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		length = avcodec_decode_audio2 (context, (int16_t *) audio_buffer, &frame_size, mf->buffer, mf->buflen);
 		
 		if (length < 0 || (uint32_t) frame_size < mf->buflen) {
-			media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding audio frame (length: %i, frame_size. %i, buflen: %u).", length, frame_size, mf->buflen));
+			//media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding audio frame (length: %i, frame_size. %i, buflen: %u).", length, frame_size, mf->buflen));
 			return MEDIA_CODEC_ERROR;
 		}
 		

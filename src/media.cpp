@@ -517,7 +517,6 @@ MediaElement::Reinitialize ()
 	}
 	
 	if (advance_frame_timeout_id != 0) {
-		printf ("MediaElement::Reinitialize (): removing timeout\n");
 		TimeManager::Instance ()->RemoveTimeout (advance_frame_timeout_id);
 		advance_frame_timeout_id = 0;
 	}

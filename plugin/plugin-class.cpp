@@ -1656,7 +1656,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier, const NPVariant *val
 
 	// not implemented yet.
 	case MoonId_MaxFrameRate:
-		DEBUG_WARN_NOTIMPLEMENTED ("maxFrameRate property");
+		plugin->setMaxFrameRate (NPVARIANT_TO_INT32 (*value));
 		return true;
 
 	// Cant be set after initialization so return true

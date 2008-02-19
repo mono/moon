@@ -1,3 +1,10 @@
+2008-02-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp, plugin-class.cpp, plugin.h: Add MaxFrameRate to the properties
+	  page, and parse windowless and framerate properties during
+	  initialization and store the values on the plugin instance, so that the
+	  property page can show the correct values.
+
 2008-02-15  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (MoonlightStoryboardObject::Invoke): the seek
