@@ -1,3 +1,8 @@
+2008-02-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* configure.ac: Fix --with-debug to not be confused with --with-ffmpeg. If
+	  --with-debug is defined, disable inlining and -O2 optimizations.
+
 2008-02-06  Michael Dominic K.  <mdk@mdk.am> 
 
 	* configure.ac: Configure embedded cairo with '--diable-png' since now

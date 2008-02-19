@@ -68,10 +68,10 @@ fi
 
 DEBUG=yes
 AC_ARG_WITH(debug, [ --with-debug=yes,no.   If you want to enable debug support (default=yes)],[
-	if test x$with_ffmpeg = xyes; then
+	if test x$with_debug = xyes; then
 		DEBUG=yes
 	fi
-	if test x$with_ffmpeg = xno; then
+	if test x$with_debug = xno; then
 		DEBUG=no
 	fi
 ])
@@ -364,12 +364,20 @@ AC_SUBST(PLUGIN_LIBS)
 MOON_PROG_LIBS=`pkg-config --libs $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS`
 AC_SUBST(MOON_PROG_LIBS)
 
+if test x$DEBUG = xyes; then
+	DEBUG_OPTIONS="-fno-inline -O1 -g -fno-inline-functions"
+	CFLAGS=`echo $CFLAGS | sed 's/-O2//'`
+	CFLAGS+=$DEBUG_OPTIONS
+	CXXFLAGS=`echo $CXXFLAGS | sed 's/-O2//'`
+	CXXFLAGS+=$DEBUG_OPTIONS
+fi
+
 #CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 #CXXFLAGS="$CXXFLAGS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 #LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 
-#AC_SUBST(CFLAGS)
-#AC_SUBST(CXXFLAGS)
+AC_SUBST(CFLAGS)
+AC_SUBST(CXXFLAGS)
 #AC_SUBST(LIBS)
 
 AC_OUTPUT([
