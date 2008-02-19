@@ -53,7 +53,7 @@ class Geometry : public DependencyObject {
 	virtual void Draw (Path *path, cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path) { return Rect (0.0, 0.0, 0.0, 0.0); };
 
-	virtual Point GetOriginPoint (Path *path);
+//	virtual Point GetOriginPoint (Path *path);
 
 	virtual bool IsFilled () { return true; };
 

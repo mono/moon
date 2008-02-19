@@ -1,3 +1,7 @@
+2008-02-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* geometry.cpp|h: #if out GetOriginPoint which calls moon_get_origin
+
 2008-02-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline-ffmpeg.cpp: Comment out error message which just shows ffmpeg's

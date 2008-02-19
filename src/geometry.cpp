@@ -185,6 +185,7 @@ GeometryGroup::ComputeBounds (Path *path)
 	return bounds;
 }
 
+#if FALSE
 Point
 Geometry::GetOriginPoint (Path *shape)
 {
@@ -197,6 +198,7 @@ Geometry::GetOriginPoint (Path *shape)
 	moon_get_origin (path, &x, &y);
 	return Point (x, y);
 }
+#endif
 
 GeometryCollection*
 geometry_group_get_children (GeometryGroup *geometry_group)
