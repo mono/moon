@@ -1,3 +1,10 @@
+2008-02-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: Add a printf to inform when we're trying to load an mms stream.
+	  Helps a lot when trying to identify sites depending on mms/streaming
+	  support.
+	* runtime.cpp: Unref debug_selected_element upon destruction. Fixes a leak.
+
 2008-02-20  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/shape.cpp: Fixing the shape caching to work also with Path/Geometry.

@@ -232,6 +232,13 @@ Surface::~Surface ()
 		buffer = NULL;
 	}
 	
+#if DEBUG
+	if (debug_selected_element) {
+		debug_selected_element->unref ();
+		debug_selected_element = NULL;
+	}
+#endif
+	
 	if (full_screen_message) {
 		HideFullScreenMessage ();
 	}

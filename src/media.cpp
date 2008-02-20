@@ -1063,6 +1063,12 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 {
 	g_return_if_fail (dl->GetObjectType () == Type::DOWNLOADER);
 	
+#if DEBUG
+	if (g_str_has_prefix (dl->GetValue (Downloader::UriProperty)->AsString (), "mms")) 
+		printf ("MediaElement is trying to load an mms stream, which isn't supported yet (%s)\n", dl->GetValue (Downloader::UriProperty)->AsString ());
+#endif	
+	
+	
 	Reinitialize ();
 	
 	downloader = (Downloader *) dl;
