@@ -1,14 +1,32 @@
+2008-02-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes the TextBlockFontDownloads.htm test.
+
+	* font.cpp (TextFontDescription::Set*): If the new value is not
+	the same as the old, invalidate the loaded TextFont.
+	(TextFont::TextFont): Always compare family names unless we're
+	requesting the "Sans" (e.g. last) fallback font.
+	(TextFont::TextFont): If the requested family name does not match
+	the specified font file, fall back to a system font of the same
+	name (we were doing this for zip archievs before, but not for
+	specified ttf font files).
+
+	* text.cpp (TextBlock::SetFontSource): If the downloader is null,
+	set the font filename to null and invalidate the textblock.
+
 2008-02-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* media.cpp: Add a printf to inform when we're trying to load an mms stream.
-	  Helps a lot when trying to identify sites depending on mms/streaming
-	  support.
-	* runtime.cpp: Unref debug_selected_element upon destruction. Fixes a leak.
+	* media.cpp: Add a printf to inform when we're trying to load an
+	mms stream.  Helps a lot when trying to identify sites depending
+	on mms/streaming support.
+
+	* runtime.cpp: Unref debug_selected_element upon
+	destruction. Fixes a leak.
 
 2008-02-20  Michael Dominic K.  <mdk@mdk.am>
 
-	* src/shape.cpp: Fixing the shape caching to work also with Path/Geometry.
-	Fixes: #362021.
+	* src/shape.cpp: Fixing the shape caching to work also with
+	Path/Geometry.  Fixes: #362021.
 
 2008-02-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 

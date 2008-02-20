@@ -448,6 +448,12 @@ TextBlock::SetFontSource (DependencyObject *dl)
 			// This is what actually triggers the download
 			downloader->Send ();
 		}
+	} else {
+		font.custom->SetFilename (NULL);
+		dirty = true;
+		
+		UpdateBounds (true);
+		Invalidate ();
 	}
 }
 

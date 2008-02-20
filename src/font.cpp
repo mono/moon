@@ -458,7 +458,13 @@ ExtractFontPack (const char *path)
 		
 		d(fprintf (stderr, "\t\t* extracting %s...\n", filename));
 		
-		g_string_append (packdir, filename);
+		// use the file's base name, we don't care about recreating the file heirarchy
+		if (!(name = strrchr (filename, '/')))
+			name = filename;
+		else
+			name++;
+		
+		g_string_append (packdir, name);
 		
 		// we first try using the file's original name...
 		fd = open (packdir->str, O_WRONLY | O_CREAT | O_EXCL, 0600);
@@ -643,7 +649,7 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 		
 		d(fprintf (stderr, "\t* loading font from `%s' (index=%d)... ", filename, id));
 		if ((err = FT_New_Face (libft2, (const char *) filename, id, &face)) == 0) {
-			if (fromFile || attempt > 0 || !family_name || !face->family_name) {
+			if (!family_name || !face->family_name) {
 				d(fprintf (stderr, "success!\n"));
 				break;
 			}
@@ -667,17 +673,18 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 			d(fprintf (stderr, "failed :(\n"));
 		}
 		
-		if (fromFile && err == FT_Err_Unknown_File_Format) {
-			// fromFile indicates that an absolute path was given...
+		// fromFile indicates that an absolute path was given...
+		if (fromFile) {
 			// check if it is a zipped font collection.
-			if (OpenZipArchiveFont (pattern, (const char *) filename)) {
+			if (err == FT_Err_Unknown_File_Format &&
+			    OpenZipArchiveFont (pattern, (const char *) filename)) {
 				d(fprintf (stderr, "\t* success!\n"));
 				break;
 			}
 			
 			fromFile = false;
 			
-			// We couldn't find the font in the zip archive, but if the pattern
+			// We couldn't find the font in the zip archive/specified font file, but if the pattern
 			// has a family specified then try checking if we have a font that
 			// matches it on the system.
 			if (FcPatternGetString (matched, FC_FAMILY, 0, &family) == FcResultMatch) {
@@ -712,6 +719,10 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 		
 		face = NULL;
 		attempt++;
+		
+		// if we're on our last attempt, the family_name no longer matters
+		if (attempt == G_N_ELEMENTS (fallback_fonts))
+			family_name = NULL;
 	} while (attempt <= G_N_ELEMENTS (fallback_fonts));
 	
 	FcPatternDestroy (matched);
@@ -1440,14 +1451,27 @@ TextFontDescription::GetFilename ()
 void
 TextFontDescription::SetFilename (const char *filename)
 {
-	g_free (this->filename);
+	bool changed;
 	
 	if (filename) {
-		this->filename = g_strdup (filename);
-		set |= FontMaskFilename;
+		if (!this->filename || strcmp (this->filename, filename) != 0) {
+			g_free (this->filename);
+			this->filename = g_strdup (filename);
+			set |= FontMaskFilename;
+			changed = true;
+		} else {
+			changed = false;
+		}
 	} else {
-		this->filename = NULL;
+		changed = this->filename != NULL;
 		set &= ~FontMaskFilename;
+		g_free (this->filename);
+		this->filename = NULL;
+	}
+	
+	if (changed && font != NULL) {
+		font->unref ();
+		font = NULL;
 	}
 }
 
@@ -1460,7 +1484,14 @@ TextFontDescription::GetIndex ()
 void
 TextFontDescription::SetIndex (int index)
 {
+	bool changed = this->index != index;
+	
 	this->index = index;
+	
+	if (changed && font != NULL) {
+		font->unref ();
+		font = NULL;
+	}
 }
 
 const char *
@@ -1475,14 +1506,27 @@ TextFontDescription::GetFamily ()
 void
 TextFontDescription::SetFamily (const char *family)
 {
-	g_free (this->family);
+	bool changed;
 	
 	if (family) {
-		this->family = g_strdup (family);
-		set |= FontMaskFamily;
+		if (!this->family || g_ascii_strcasecmp (this->family, family) != 0) {
+			g_free (this->family);
+			this->family = g_strdup (family);
+			set |= FontMaskFamily;
+			changed = true;
+		} else {
+			changed = false;
+		}
 	} else {
-		this->family = NULL;
+		changed = this->family != NULL;
 		set &= ~FontMaskFamily;
+		g_free (this->family);
+		this->family = NULL;
+	}
+	
+	if (changed && font != NULL) {
+		font->unref ();
+		font = NULL;
 	}
 }
 
@@ -1495,8 +1539,15 @@ TextFontDescription::GetStyle ()
 void
 TextFontDescription::SetStyle (FontStyles style)
 {
+	bool changed = this->style != style;
+	
 	this->style = style;
 	set |= FontMaskStyle;
+	
+	if (changed && font != NULL) {
+		font->unref ();
+		font = NULL;
+	}
 }
 
 FontWeights
@@ -1508,8 +1559,15 @@ TextFontDescription::GetWeight ()
 void
 TextFontDescription::SetWeight (FontWeights weight)
 {
+	bool changed = this->weight != weight;
+	
 	this->weight = weight;
 	set |= FontMaskWeight;
+	
+	if (changed && font != NULL) {
+		font->unref ();
+		font = NULL;
+	}
 }
 
 FontStretches
@@ -1521,8 +1579,15 @@ TextFontDescription::GetStretch ()
 void
 TextFontDescription::SetStretch (FontStretches stretch)
 {
+	bool changed = this->stretch != stretch;
+	
 	this->stretch = stretch;
 	set |= FontMaskStretch;
+	
+	if (changed && font != NULL) {
+		font->unref ();
+		font = NULL;
+	}
 }
 
 double
@@ -1534,8 +1599,15 @@ TextFontDescription::GetSize ()
 void
 TextFontDescription::SetSize (double size)
 {
+	bool changed = this->size != size;
+	
 	this->size = size;
 	set |= FontMaskSize;
+	
+	if (changed && font != NULL) {
+		font->unref ();
+		font = NULL;
+	}
 }
 
 char *
