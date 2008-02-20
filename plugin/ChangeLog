@@ -1,3 +1,7 @@
+2008-02-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	
+
 2008-02-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp, plugin-class.cpp, plugin.h: Add MaxFrameRate to the properties

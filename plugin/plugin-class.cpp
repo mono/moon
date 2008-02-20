@@ -1518,40 +1518,60 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 	}
 
 	case MoonId_IsVersionSupported: {
-		/* we support all 1.0.* and 1.1.* versions. */
-		BOOLEAN_TO_NPVARIANT (false, *result);
-		if (argCount != 1 || !NPVARIANT_IS_STRING(args[0])) {
-			printf ("invalid arg types\n");
-			return true;
+		/* we support all 0.*, 1.0.* and 1.1.* versions. */
+		
+		if (argCount != 1 || !NPVARIANT_IS_STRING (args [0])) {
+			return false;
 		}
 
-		char *v = STR_FROM_VARIANT (args [0]);
-		printf ("version requested = %s\n",v);
+		bool supported = true;
+		gchar **versions = g_strsplit (STR_FROM_VARIANT (args [0]), ".", 4);
+		char *version = NULL;
+		uint64_t numbers [4];
 
-		gchar** versions = g_strsplit (v, ".", 3);
+		supported = versions [0] != NULL && versions [1] != NULL;
 
-		if (versions[0] == NULL || versions[1] == NULL) {
-			g_strfreev (versions);
-			return true;
-		}
-
-		if (/* we advertise support for 0.9x, although this is probably a bad idea.. */
-		    (!strcmp (versions[0], "0") &&
-		     (versions[1][0] == '9' ||
-		      versions[1][0] == '8'))
-
-		    /* and we should work with any 1.0.* and 1.1.* instance */
-		    || (!strcmp (versions[0], "1") &&
-			(!strcmp (versions[1], "0")
-			/* If we don't include the mono runtime, we won't work with 1.1.* instances */
+		if (supported) {
+			for (int k = 0; k < 4; k++) {
+				numbers [k] = 0;
+				version = versions [k];
+				
+				if (version == NULL)
+					break;
+							
+				// Only allow ascii 0-9 characters in the numbers
+				for (int i = 0; version [i] != 0; i++) {
+					if (version [i] < '0' || version [i] > '9') {
+						supported = false;
+						break;
+					}
+				}
+				
+				numbers [k] = atoll (version	);
+			}
+			
+			switch (numbers [0]) {
+			case 0: // We support all versions of the format "0.*"
+				break;
 #if INCLUDE_MONO_RUNTIME
-			 || !strcmp (versions[1], "1")
+			case 1:
+				supported &= numbers [1] <= 1; // 1.0* or 1.1*
+				break;
+#else				
+			case 1:
+				supported &= numbers [1] == 0; // 1.0*
+				break;
 #endif
-			 ))
-		   ){
-
-			BOOLEAN_TO_NPVARIANT (true, *result);
+			default:
+				supported = false;
+				break;
+			}
 		}
+
+#if DEBUG
+		printf ("version requested = '%s' (%s)\n", STR_FROM_VARIANT (args [0]), supported ? "yes" : "no");
+#endif
+		BOOLEAN_TO_NPVARIANT (supported, *result);
 
 		g_strfreev (versions);
 
