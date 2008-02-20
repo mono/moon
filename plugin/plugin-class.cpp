@@ -2971,8 +2971,7 @@ moonlight_text_block_allocate (NPP instance, NPClass *klass)
 }
 
 
-static const MoonNameIdMapping
-moonlight_text_block_mapping [] = {
+static const MoonNameIdMapping moonlight_text_block_mapping[] = {
 	{ "setfontsource", MoonId_SetFontSource }
 };
 
@@ -2983,24 +2982,23 @@ MoonlightTextBlockObject::Invoke (int id, NPIdentifier name,
 				  NPVariant *result)
 {
 	TextBlock *tb = (TextBlock *) GetDependencyObject ();
-
+	DependencyObject *downloader = NULL;
+	
 	switch (id) {
-	case MoonId_SetFontSource: {
-		if (argCount != 1 || !NPVARIANT_IS_OBJECT (args[0]))
+	case MoonId_SetFontSource:
+		if (argCount != 1 || !(NPVARIANT_IS_OBJECT (args[0]) || NPVARIANT_IS_NULL(args[0])))
 			THROW_JS_EXCEPTION ("setFontSource");
-
-		DependencyObject *downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
-
+		
+		if (NPVARIANT_IS_OBJECT (args[0]))
+			downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT(args[0]))->GetDependencyObject ();
+		
 		tb->SetFontSource (downloader);
-
+		
 		VOID_TO_NPVARIANT (*result);
-
+		
 		return true;
-	}
 	default:
-		return MoonlightDependencyObjectObject::Invoke (id, name,
-								args, argCount,
-								result);
+		return MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);
 	}
 }
 
