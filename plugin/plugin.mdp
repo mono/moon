@@ -32,6 +32,11 @@
     <File name="TODO" subtype="Code" buildaction="Nothing" />
     <File name="plugin-downloader.cpp" subtype="Code" buildaction="Nothing" />
     <File name="plugin-downloader.h" subtype="Code" buildaction="Nothing" />
+    <File name="browser-http.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="browser-http.h" subtype="Code" buildaction="Nothing" />
+    <File name="install.js" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-debug.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-debug.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>
