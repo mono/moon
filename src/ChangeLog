@@ -1,3 +1,8 @@
+2008-02-20  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/shape.cpp: Fixing the shape caching to work also with Path/Geometry.
+	Fixes: #362021.
+
 2008-02-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: MediaElement/Image: Remove event handlers when we abort the

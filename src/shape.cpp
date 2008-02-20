@@ -321,18 +321,21 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 			return;
 	} else {
 		if (cached_surface == NULL && IsCandidateForCaching ()) {
-			w = extents.w + extents.x;
-			h = extents.h + extents.y;
-			w = MAX (w, 1);
-			h = MAX (h, 1);
+			w = extents.w;
+			h = extents.h;
+			w = MAX (w, 1) + 2;
+			h = MAX (h, 1) + 2;
 
 			cached_surface = image_brush_create_similar (cr, w, h);
 			cached_cr = cairo_create (cached_surface);
+			cairo_translate (cached_cr, (int) - extents.x + 1, (int) - extents.y + 1);
 			ret = DrawShape (cached_cr, do_op);
 			cairo_destroy (cached_cr);
 		}
 
 		cairo_set_matrix (cr, &absolute_xform);
+		if (cached_surface)
+			cairo_translate (cr, (int) extents.x - 1, (int) extents.y - 1);
 		Clip (cr);
 
 		if (cached_surface) {
