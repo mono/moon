@@ -618,8 +618,8 @@ found:
 TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name)
 {
 	const char *fallback_fonts[] = { "Lucida Sans Unicode", "Lucida Sans", "Sans" };
-	FcChar8 *family = NULL, *filename = NULL;
 	FcPattern *matched, *fallback;
+	FcChar8 *filename = NULL;
 	char **families = NULL;
 	uint attempt = 0;
 	FcResult result;
@@ -684,30 +684,29 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 			
 			fromFile = false;
 			
-			// We couldn't find the font in the zip archive/specified font file, but if the pattern
-			// has a family specified then try checking if we have a font that
-			// matches it on the system.
-			if (FcPatternGetString (matched, FC_FAMILY, 0, &family) == FcResultMatch) {
-				d(fprintf (stderr, "\t* falling back to specified family, %s...\n", family));
-				fallback = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, family,
-							   FC_PIXEL_SIZE, FcTypeDouble, size,
-							   FC_DPI, FcTypeDouble, dpi, NULL);
-				
-				FcPatternDestroy (matched);
-				matched = FcFontMatch (NULL, fallback, &result);
-				FcPatternDestroy (fallback);
-				filename = NULL;
-				continue;
-			}
+			// We couldn't find a matching font in the zip archive/specified font file, so
+			// let's try removing the filename from the pattern and see if that gets us
+			// what we are looking for.
+			d(fprintf (stderr, "\t* falling back to specified family, '%s'...\n", family_name));
+			fallback = FcPatternDuplicate (pattern);
+			FcPatternDel (fallback, FC_FILE);
+			FcPatternDestroy (matched);
+			
+			matched = FcFontMatch (NULL, fallback, &result);
+			FcPatternDestroy (fallback);
+			filename = NULL;
+			continue;
 		}
 		
 	fail:
 		d(fprintf (stderr, "\t* failed.\n"));
 		
 		if (attempt < G_N_ELEMENTS (fallback_fonts)) {
-			d(fprintf (stderr, "\t* falling back to %s...\n", fallback_fonts[attempt]));
+			family_name = fallback_fonts[attempt++];
 			
-			fallback = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, fallback_fonts[attempt],
+			d(fprintf (stderr, "\t* falling back to %s...\n", family_name));
+			
+			fallback = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, family_name,
 						   FC_PIXEL_SIZE, FcTypeDouble, size,
 						   FC_DPI, FcTypeDouble, dpi, NULL);
 			
@@ -715,14 +714,23 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 			matched = FcFontMatch (NULL, fallback, &result);
 			FcPatternDestroy (fallback);
 			filename = NULL;
+			
+			if (families)
+				g_strfreev (families);
+			
+			// if we're on our last attempt, the family_name is no longer needed for
+			// comparison purposes.
+			if (attempt == G_N_ELEMENTS (fallback_fonts)) {
+				family_name = NULL;
+				families = NULL;
+			} else {
+				families = g_new (char *, 2);
+				families[0] = g_strdup (family_name);
+				families[1] = NULL;
+			}
 		}
 		
 		face = NULL;
-		attempt++;
-		
-		// if we're on our last attempt, the family_name no longer matters
-		if (attempt == G_N_ELEMENTS (fallback_fonts))
-			family_name = NULL;
 	} while (attempt <= G_N_ELEMENTS (fallback_fonts));
 	
 	FcPatternDestroy (matched);
@@ -1316,7 +1324,7 @@ TextFontDescription::GetFont ()
 	if (font == NULL) {
 		d(debug_name = ToString ());
 		pattern = CreatePattern ();
-		font = TextFont::Load (pattern, (set & FontMaskFilename), GetFamily (), debug_name);
+		font = TextFont::Load (pattern, (set & FontMaskFilename), family, debug_name);
 		FcPatternDestroy (pattern);
 		d(g_free (debug_name));
 	}
