@@ -67,8 +67,24 @@ class PluginInstance
 	
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
 	static void properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin);
-
+	
  public:
+ 
+#if DEBUG
+	struct moon_source : List::Node {
+		char *uri;
+		char *filename;
+		virtual ~moon_source ()
+		{
+			g_free (uri);
+			g_free (filename);
+		}
+	};
+	List *moon_sources;
+	void AddSource (const char *uri, const char *filename);
+	List *GetSources ();
+#endif
+
 	PluginInstance (NPP instance, uint16_t mode);
 	~PluginInstance ();
 	

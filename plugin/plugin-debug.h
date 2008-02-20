@@ -15,6 +15,7 @@
 G_BEGIN_DECLS
 
 void plugin_debug (PluginInstance *plugin);
+void plugin_sources (PluginInstance *plugin);
 
 G_END_DECLS
 

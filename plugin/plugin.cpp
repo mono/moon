@@ -91,6 +91,10 @@ plugin_show_menu (PluginInstance *plugin)
 	menu_item = gtk_menu_item_new_with_label ("Debug");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_debug), plugin);
+	
+	menu_item = gtk_menu_item_new_with_label ("Sources");
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_sources), plugin);
 #endif
 
 	gtk_widget_show_all (menu);
@@ -317,6 +321,10 @@ PluginInstance::PluginInstance (NPP instance, uint16_t mode)
 
 	/* back pointer to us */
 	instance->pdata = this;
+	
+#if DEBUG
+	moon_sources = NULL;
+#endif	
 }
 
 PluginInstance::~PluginInstance ()
@@ -358,7 +366,31 @@ PluginInstance::~PluginInstance ()
 
 	if (plugin_unload)
 		plugin_unload (this);
+		
+#if DEBUG
+	delete moon_sources;
+	moon_sources = NULL;
+#endif
 }
+
+#if DEBUG
+void
+PluginInstance::AddSource (const char *uri, const char *filename)
+{
+	moon_source *src = new moon_source ();
+	src->uri = g_strdup (uri);
+	src->filename = g_strdup (filename);
+	if (moon_sources == NULL)
+		moon_sources = new List ();
+	moon_sources->Append (src);
+}
+
+List*
+PluginInstance::GetSources ()
+{
+	return moon_sources;
+}
+#endif
 
 void
 PluginInstance::SetUnloadCallback (plugin_unload_callback* puc)
@@ -879,6 +911,10 @@ void
 PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 {
   //	DEBUGMSG ("StreamAsFile: %s", fname);
+
+#if DEBUG
+	AddSource (stream->url, fname);
+#endif
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 	  //		DEBUGMSG ("LoadFromXaml: %s", fname);

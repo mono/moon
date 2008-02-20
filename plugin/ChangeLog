@@ -1,5 +1,11 @@
 2008-02-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin.cpp, plugin.h, plugin-debug.cpp, plugin-debug.h: Add a 'Sources'
+	  entry to the plugin context menu, shows a list of all the files the
+	  plugin has loaded, with the ability to open the files.
+
+2008-02-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin.mdp: Updated.
 
 2008-02-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 

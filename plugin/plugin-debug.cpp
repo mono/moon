@@ -129,4 +129,121 @@ plugin_debug (PluginInstance *plugin)
 	gtk_widget_show_all (tree_win);
 }
 
+static void
+populate_tree_from_surface (PluginInstance *plugin, GtkTreeStore *store, GtkTreeIter *parent)
+{
+	if (plugin == NULL)
+		return;
+
+	GtkTreeIter iter;
+	PluginInstance::moon_source *src = (PluginInstance::moon_source*) plugin->GetSources ()->First ();
+	for (; src != NULL; src = (PluginInstance::moon_source*) src->next) {
+		gtk_tree_store_append (store, &iter, parent);
+
+		gtk_tree_store_set (store, &iter,
+				    0, src->uri,
+				    1, src->filename,
+				    2, src,
+				    -1);
+
+	}
+}
+
+PluginInstance::moon_source *selected_source = NULL;
+
+static void
+selection_changed_sources (GtkTreeSelection *selection, PluginInstance *plugin)
+{
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+
+	selected_source = NULL;
+	
+	if (!gtk_tree_selection_get_selected (selection, 
+					      &model,
+					      &iter)) {
+		return;
+	}
+
+	gtk_tree_model_get (model, &iter,
+			    2, &selected_source,
+			    -1);
+
+}
+
+static void clicked_callback (GtkWidget *widget, gpointer data)
+{
+	if (selected_source == NULL) {
+		printf ("Select a source first.\n");
+	} else {
+		gchar* argv [3];
+		argv [0] = (gchar*) "xdg-open";
+		argv [1] = (gchar*) selected_source->filename;
+		argv [2] = NULL;
+		g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL); 
+	}
+}
+
+void
+plugin_sources (PluginInstance *plugin)
+{	
+	GtkWidget *tree_win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title (GTK_WINDOW (tree_win), "Sources");
+	gtk_window_set_default_size (GTK_WINDOW (tree_win), 600, 400);
+	GtkBox *vbox = GTK_BOX (gtk_vbox_new (false, 0));
+
+	GtkTreeStore *tree_store = gtk_tree_store_new (3,
+						       G_TYPE_STRING,
+						       G_TYPE_STRING,
+						       G_TYPE_POINTER);
+
+	populate_tree_from_surface (plugin, tree_store, NULL);
+
+	GtkWidget* tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (tree_store));
+
+	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view));
+
+	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
+
+	g_signal_connect (G_OBJECT (selection), "changed", 
+			  G_CALLBACK (selection_changed_sources), plugin);
+
+	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+	GtkTreeViewColumn *col;
+
+	/* The Name column */
+	col = gtk_tree_view_column_new();
+	gtk_tree_view_column_set_title(col, "Uri");
+	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
+
+	gtk_tree_view_column_pack_start(col, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (col, renderer, "text", 0);
+
+	/* The Type column */
+	col = gtk_tree_view_column_new();
+	gtk_tree_view_column_set_title(col, "Filename");
+	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
+
+	gtk_tree_view_column_pack_start(col, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (col, renderer, "text", 1);
+
+	GtkWidget *scrolled = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled),
+					GTK_POLICY_AUTOMATIC,
+					GTK_POLICY_AUTOMATIC);
+
+	gtk_container_add (GTK_CONTAINER (scrolled), tree_view);
+	//gtk_container_add (GTK_CONTAINER (tree_win), scrolled);
+
+	GtkWidget *button = gtk_button_new_with_label ("Open file");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (clicked_callback), NULL);
+		      
+	gtk_box_pack_start (vbox, scrolled, TRUE, TRUE, 0);
+	gtk_box_pack_start (vbox, button, FALSE, FALSE, 0);
+	
+	gtk_container_add (GTK_CONTAINER (tree_win), GTK_WIDGET (vbox));
+
+	gtk_widget_show_all (tree_win);
+}
+
 #endif
