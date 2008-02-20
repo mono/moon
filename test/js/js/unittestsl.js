@@ -137,3 +137,19 @@ var Plugin = {
 	Silverlight: Host.Windows || Host.Mac,
 	Moonlight: Host.X11
 };
+
+function is1_0 (plugin)
+{
+	return plugin.IsVersionSupported ("1.0") && !plugin.IsVersionSupported ("1.1");
+}
+
+function is1_1 (plugin)
+{
+	return plugin.IsVersionSupported ("1.1") && !plugin.IsVersionSupported ("1.2");
+}
+
+function is2_0 (plugin)
+{
+	return plugin.IsVersionSupported ("2.0") && !plugin.IsVersionSupported ("2.1");
+}
+
