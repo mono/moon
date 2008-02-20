@@ -1,6 +1,6 @@
 2008-02-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	
+	* plugin-class.cpp: Fix IsVersionSupported according to tests.	
 
 2008-02-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
