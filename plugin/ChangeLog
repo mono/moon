@@ -1,3 +1,8 @@
+2008-02-21  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin/plugin.cpp: Small fix for table ("Properties") formatting so that
+	it doesn't expand like crazy because of long URL's in sources.
+
 2008-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightTextBlockObject::Invoke): The

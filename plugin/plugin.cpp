@@ -225,7 +225,7 @@ PluginInstance::Properties ()
 	gtk_box_pack_start (vbox, title ("Properties"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
 	
-	table = gtk_table_new (11, 2, TRUE);
+	table = gtk_table_new (11, 2, FALSE);
 	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
 	
 	table_add (table, "Source:", 0, row++);
