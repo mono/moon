@@ -1,5 +1,9 @@
 2008-02-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (TextFont::TextFont): Simplified the fallback code.
+
+2008-02-21  Jeffrey Stedfast  <fejj@novell.com>
+
 	Fixes Glyphs.xaml
 
 	* text.cpp (Glyphs::SetIndices): Fixed to properly parse glyph

@@ -617,11 +617,9 @@ found:
 
 TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name)
 {
-	const char *fallback_fonts[] = { "Lucida Sans Unicode", "Lucida Sans", "Sans" };
-	FcPattern *matched, *fallback;
+	FcPattern *matched, *fallback = NULL;
 	FcChar8 *filename = NULL;
 	char **families = NULL;
-	uint attempt = 0;
 	FcResult result;
 	FT_Error err;
 	double size;
@@ -684,54 +682,47 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 			
 			fromFile = false;
 			
-			// We couldn't find a matching font in the zip archive/specified font file, so
-			// let's try removing the filename from the pattern and see if that gets us
-			// what we are looking for.
-			d(fprintf (stderr, "\t* falling back to specified family, '%s'...\n", family_name));
-			fallback = FcPatternDuplicate (pattern);
-			FcPatternDel (fallback, FC_FILE);
-			FcPatternDestroy (matched);
-			
-			matched = FcFontMatch (NULL, fallback, &result);
-			FcPatternDestroy (fallback);
-			filename = NULL;
-			continue;
-		}
-		
-	fail:
-		d(fprintf (stderr, "\t* failed.\n"));
-		
-		if (attempt < G_N_ELEMENTS (fallback_fonts)) {
-			family_name = fallback_fonts[attempt++];
-			
-			d(fprintf (stderr, "\t* falling back to %s...\n", family_name));
-			
-			fallback = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, family_name,
-						   FC_PIXEL_SIZE, FcTypeDouble, size,
-						   FC_DPI, FcTypeDouble, dpi, NULL);
-			
-			FcPatternDestroy (matched);
-			matched = FcFontMatch (NULL, fallback, &result);
-			FcPatternDestroy (fallback);
-			filename = NULL;
-			
-			if (families)
-				g_strfreev (families);
-			
-			// if we're on our last attempt, the family_name is no longer needed for
-			// comparison purposes.
-			if (attempt == G_N_ELEMENTS (fallback_fonts)) {
-				family_name = NULL;
-				families = NULL;
-			} else {
-				families = g_new (char *, 2);
-				families[0] = g_strdup (family_name);
-				families[1] = NULL;
+			if (family_name) {
+				// We couldn't find a matching font in the zip archive/specified font file, so
+				// let's try removing the filename from the pattern and see if that gets us
+				// what we are looking for.
+				d(fprintf (stderr, "\t* falling back to specified family, '%s'...\n", family_name));
+				fallback = FcPatternDuplicate (pattern);
+				FcPatternDel (fallback, FC_FILE);
+				FcPatternDestroy (matched);
+				
+				matched = FcFontMatch (NULL, fallback, &result);
+				FcPatternDestroy (fallback);
+				fallback = NULL;
+				filename = NULL;
+				continue;
 			}
 		}
 		
+	fail:
+		
+		if (fallback != NULL) {
+			face = NULL;
+			break;
+		}
+		
+		d(fprintf (stderr, "\t* falling back to default font\n"));
+		
+		fallback = FcPatternCreate ();
+		FcPatternAddString (fallback, FC_FAMILY, (FcChar8 *) "Lucida Sans Unicode");
+		FcPatternAddString (fallback, FC_FAMILY, (FcChar8 *) "Lucida Sans");
+		FcPatternAddString (fallback, FC_FAMILY, (FcChar8 *) "Sans");
+		FcPatternAddDouble (fallback, FC_PIXEL_SIZE, size);
+		FcPatternAddDouble (fallback, FC_SCALE, scale);
+		FcPatternAddDouble (fallback, FC_DPI, dpi);
+		
+		FcPatternDestroy (matched);
+		matched = FcFontMatch (NULL, fallback, &result);
+		FcPatternDestroy (fallback);
+		family_name = NULL;
+		filename = NULL;
 		face = NULL;
-	} while (attempt <= G_N_ELEMENTS (fallback_fonts));
+	} while (true);
 	
 	FcPatternDestroy (matched);
 	
