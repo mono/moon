@@ -1,3 +1,7 @@
+2008-02-21  Michael Dominic K.  <mdk@mdk.am> 
+
+	* src/value.cpp: Implementing ToString () for DOUBLE.
+
 2008-02-21  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/color.cpp: A slightly more relaxed/tolerant way of parsing the

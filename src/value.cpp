@@ -282,6 +282,11 @@ Value::ToString ()
 	char *t = NULL;
 	
 	switch (k){
+
+	case Type::DOUBLE:
+		g_string_append_printf (str, "{ %f }", u.d);
+		break;
+
 	case Type::STRING:
 		g_string_append (str, u.s);
 		break;
