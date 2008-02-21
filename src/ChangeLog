@@ -1,11 +1,21 @@
+2008-02-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes Glyphs.xaml
+
+	* text.cpp (Glyphs::SetIndices): Fixed to properly parse glyph
+	cluster mappings.
+	(Glyphs::Layout): Properly handle glyph clusters.
+	(Glyphs::Render): Same.
+
 2008-02-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* media.cpp: When aborting a downloader, null out the write functions too.
+	* media.cpp: When aborting a downloader, null out the write
+	functions too.
 
 2008-02-21  Michael Dominic K.  <mdk@mdk.am>
 
-	* src/clock.cpp: Emit the Completed event when Filling as well. Together
-	with prev commit fixes: #359024 and #324935.
+	* src/clock.cpp: Emit the Completed event when Filling as
+	well. Together with prev commit fixes: #359024 and #324935.
 
 2008-02-21  Michael Dominic K.  <mdk@mdk.am>
 
@@ -20,9 +30,9 @@
 
 2008-02-21  Michael Dominic K.  <mdk@mdk.am>
 
-	* src/color.cpp: A slightly more relaxed/tolerant way of parsing the
-	colors... it's the web and it's broken by default. Fixes: #362287 (the US
-	candidates website).
+	* src/color.cpp: A slightly more relaxed/tolerant way of parsing
+	the colors... it's the web and it's broken by default. Fixes:
+	#362287 (the US candidates website).
 
 2008-02-21  Stephane Delcroix  <sdelcroix@novell.com>
 

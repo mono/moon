@@ -24,6 +24,9 @@
 #include "uri.h"
 
 
+#define d(x) x
+
+
 #define TEXTBLOCK_FONT_FAMILY  "Lucida Sans Unicode, Lucida Sans"
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
 #define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
@@ -1315,14 +1318,17 @@ DependencyProperty *Glyphs::StyleSimulationsProperty;
 DependencyProperty *Glyphs::UnicodeStringProperty;
 
 enum GlyphAttrMask {
-	Index   = 1 << 1,
-	Advance = 1 << 2,
-	uOffset = 1 << 3,
-	vOffset = 1 << 4,
+	Cluster = 1 << 1,
+	Index   = 1 << 2,
+	Advance = 1 << 3,
+	uOffset = 1 << 4,
+	vOffset = 1 << 5,
 };
 
 class GlyphAttr : public List::Node {
 public:
+	uint32_t glyph_count;
+	uint32_t code_units;
 	uint32_t index;
 	double advance;
 	double uoffset;
@@ -1334,6 +1340,8 @@ public:
 
 GlyphAttr::GlyphAttr ()
 {
+	glyph_count = 1;
+	code_units = 1;
 	set = 0;
 }
 
@@ -1385,10 +1393,12 @@ Glyphs::~Glyphs ()
 void
 Glyphs::Layout ()
 {
+	uint32_t code_units, glyph_count, i;
 	double x, y, w, h, v;
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
 	TextFont *font;
+	bool cluster;
 	double scale;
 	int n = 0;
 	
@@ -1437,49 +1447,87 @@ Glyphs::Layout ()
 		gunichar *c = text;
 		
 		while (*c != 0) {
-			if (attr && (attr->set & Index))
-				glyph = font->GetGlyphInfoByIndex (attr->index);
-			else
-				glyph = font->GetGlyphInfo (*c);
-			
-			if (!glyph)
-				goto next1;
-			
-			if (attr && (attr->set & vOffset)) {
-				v = y - (attr->voffset * scale);
-				h = MAX (v, h);
+			if ((cluster = attr && (attr->set & Cluster))) {
+				// get the cluster's GlyphCount and CodeUnitCount
+				glyph_count = attr->glyph_count;
+				code_units = attr->code_units;
+			} else {
+				glyph_count = 1;
+				code_units = 1;
 			}
 			
-			if (attr && (attr->set & uOffset))
-				v = x + (attr->uoffset * scale);
-			else
-				v = x;
+			// render the glyph cluster
+			i = 0;
+			do {
+				if (attr && (attr->set & Index)) {
+					glyph = font->GetGlyphInfoByIndex (attr->index);
+					if (glyph->index != attr->index)
+						goto next1;
+				} else if (cluster) {
+					// indexes MUST be specified for each glyph in a cluster
+					invalid = true;
+					goto done;
+				} else {
+					glyph = font->GetGlyphInfo (*c);
+				}
+				
+				if (attr && (attr->set & vOffset)) {
+					v = y - (attr->voffset * scale);
+					h = MAX (v, h);
+				}
+				
+				if (attr && (attr->set & uOffset))
+					v = x + (attr->uoffset * scale);
+				else
+					v = x;
+				
+				v += glyph->metrics.horiAdvance;
+				w = MAX (v, w);
+				
+				if (attr && (attr->set & Advance))
+					x += attr->advance * scale;
+				else
+					x += glyph->metrics.horiAdvance;
+				
+			next1:
+				
+				attr = attr ? (GlyphAttr *) attr->next : NULL;
+				i++;
+				
+				if (i == glyph_count)
+					break;
+				
+				if (!attr) {
+					// there MUST be an attr for each glyph in a cluster
+					invalid = true;
+					goto done;
+				}
+				
+				if ((attr->set & Cluster)) {
+					// only the first glyph in a cluster may specify a cluster mapping
+					invalid = true;
+					goto done;
+				}
+			} while (true);
 			
-			v += glyph->metrics.horiAdvance;
-			w = MAX (v, w);
+			// consume the code units
+			for (i = 0; i < code_units && *c != 0; i++)
+				c++;
 			
-			if (attr && (attr->set & Advance))
-				x += attr->advance * scale;
-			else
-				x += glyph->metrics.horiAdvance;
-			
-		next1:
-			
-			attr = attr ? (GlyphAttr *) attr->next : NULL;
 			n++;
-			c++;
 		}
 	}
 	
 	while (attr) {
 		if (!(attr->set & Index)) {
-			fprintf (stderr, "No index specified for glyph %d\n", n + 1);
+			d(fprintf (stderr, "No index specified for glyph %d\n", n + 1));
 			invalid = true;
 			goto done;
 		}
 		
-		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
-			goto next2;
+		glyph = font->GetGlyphInfoByIndex (attr->index);
+		if (glyph->index != attr->index)
+			goto next;
 		
 		if ((attr->set & vOffset)) {
 			v = y - (attr->voffset * scale);
@@ -1499,7 +1547,7 @@ Glyphs::Layout ()
 		else
 			x += glyph->metrics.horiAdvance;
 		
-	next2:
+	next:
 		
 		attr = (GlyphAttr *) attr->next;
 		n++;
@@ -1526,27 +1574,35 @@ Glyphs::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 Point 
 Glyphs::GetOriginPoint () 
 {
-	if (!origin_y_specified)
-		return Point (origin_x, 0);
-	else {
+	if (origin_y_specified) {
 		double d = desc->GetFont ()->Descender ();
 		double h = desc->GetFont ()->Height ();
 		return Point (origin_x, origin_y - d - h);
+	} else {
+		return Point (origin_x, 0);
 	}
 }
 
 void
 Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 {
+	uint32_t code_units, glyph_count, i;
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
 	TextFont *font;
 	double x0, y0;
 	double x1, y1;
 	double scale;
+	bool cluster;
 	
-	if ((this->width == 0.0 && this->height == 0.0) || invalid)
+	if (this->width == 0.0 && this->height == 0.0)
 		return;
+	
+	if (invalid) {
+		// do not render anything if our state is invalid to keep with Silverlight's behavior.
+		// (Note: rendering code also assumes everything is kosher)
+		return;
+	}
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
@@ -1582,44 +1638,60 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		gunichar *c = text;
 		
 		while (*c != 0) {
-			if (attr && (attr->set & Index))
-				glyph = font->GetGlyphInfoByIndex (attr->index);
-			else
-				glyph = font->GetGlyphInfo (*c);
+			if ((cluster = attr && (attr->set & Cluster))) {
+				// get the cluster's GlyphCount and CodeUnitCount
+				glyph_count = attr->glyph_count;
+				code_units = attr->code_units;
+			} else {
+				glyph_count = 1;
+				code_units = 1;
+			}
 			
-			if (!glyph)
-				goto next1;
+			// render the glyph cluster
+			for (i = 0; i < glyph_count; i++) {
+				if (attr && (attr->set & Index)) {
+					glyph = font->GetGlyphInfoByIndex (attr->index);
+					if (glyph->index != attr->index)
+						goto next1;
+				} else {
+					glyph = font->GetGlyphInfo (*c);
+				}
+				
+				if (attr && (attr->set & vOffset))
+					y1 = y0 - (attr->voffset * scale);
+				else
+					y1 = y0;
+				
+				if (attr && (attr->set & uOffset))
+					x1 = x0 + (attr->uoffset * scale);
+				else
+					x1 = x0;
+				
+				if (!font->IsScalable ())
+					font->Render (cr, glyph, x1, y1);
+				else
+					font->Path (cr, glyph, x1, y1);
+				
+				if (attr && (attr->set & Advance))
+					x0 += attr->advance * scale;
+				else
+					x0 += glyph->metrics.horiAdvance;
+				
+			next1:
+				
+				attr = attr ? (GlyphAttr *) attr->next : NULL;
+			}
 			
-			if (attr && (attr->set & vOffset))
-				y1 = y0 - (attr->voffset * scale);
-			else
-				y1 = y0;
-			
-			if (attr && (attr->set & uOffset))
-				x1 = x0 + (attr->uoffset * scale);
-			else
-				x1 = x0;
-			
-			if (!font->IsScalable ())
-				font->Render (cr, glyph, x1, y1);
-			else
-				font->Path (cr, glyph, x1, y1);
-			
-			if (attr && (attr->set & Advance))
-				x0 += attr->advance * scale;
-			else
-				x0 += glyph->metrics.horiAdvance;
-			
-		next1:
-			
-			attr = attr ? (GlyphAttr *) attr->next : NULL;
-			c++;
+			// consume the code units
+			for (i = 0; i < code_units && *c != 0; i++)
+				c++;
 		}
 	}
 	
 	while (attr) {
-		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
-			goto next2;
+		glyph = font->GetGlyphInfoByIndex (attr->index);
+		if (glyph->index != attr->index)
+			goto next;
 		
 		if ((attr->set & vOffset))
 			y1 = y0 - (attr->voffset * scale);
@@ -1641,7 +1713,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		else
 			x0 += glyph->metrics.horiAdvance;
 		
-	next2:
+	next:
 		
 		attr = (GlyphAttr *) attr->next;
 	}
@@ -1724,6 +1796,18 @@ Glyphs::DownloaderComplete ()
 	Invalidate ();
 }
 
+static void
+print_parse_error (const char *in, const char *where, const char *reason)
+{
+	int i;
+	
+	fprintf (stderr, "Glyph Indices parse error: \"%s\": %s\n", in, reason);
+	fprintf (stderr, "                            ");
+	for (i = 0; i < (where - in); i++)
+		fputc (' ', stderr);
+	fprintf (stderr, "^\n");
+}
+
 void
 Glyphs::SetIndices (const char *in)
 {
@@ -1748,13 +1832,79 @@ Glyphs::SetIndices (const char *in)
 		while (g_ascii_isspace (*inptr))
 			inptr++;
 		
-		glyph->index = strtoul (inptr, &end, 10);
-		if (end > inptr)
-			glyph->set |= Index;
-		
-		inptr = end;
-		while (g_ascii_isspace (*inptr))
+		// check for a cluster
+		if (*inptr == '(') {
 			inptr++;
+			while (g_ascii_isspace (*inptr))
+				inptr++;
+			
+			errno = 0;
+			glyph->code_units = strtoul (inptr, &end, 10);
+			if (glyph->code_units == 0 || (glyph->code_units == LONG_MAX && errno != 0)) {
+				// invalid cluster
+				d(print_parse_error (in, inptr, errno ? strerror (errno) : "invalid cluster mapping; CodeUnitCount cannot be 0"));
+				delete glyph;
+				return;
+			}
+			
+			inptr = end;
+			while (g_ascii_isspace (*inptr))
+				inptr++;
+			
+			if (*inptr != ':') {
+				// invalid cluster
+				d(print_parse_error (in, inptr, "expected ':'"));
+				delete glyph;
+				return;
+			}
+			
+			inptr++;
+			while (g_ascii_isspace (*inptr))
+				inptr++;
+			
+			errno = 0;
+			glyph->glyph_count = strtoul (inptr, &end, 10);
+			if (glyph->glyph_count == 0 || (glyph->glyph_count == LONG_MAX && errno != 0)) {
+				// invalid cluster
+				d(print_parse_error (in, inptr, errno ? strerror (errno) : "invalid cluster mapping; GlyphCount cannot be 0"));
+				delete glyph;
+				return;
+			}
+			
+			inptr = end;
+			while (g_ascii_isspace (*inptr))
+				inptr++;
+			
+			if (*inptr != ')') {
+				// invalid cluster
+				d(print_parse_error (in, inptr, "expected ')'"));
+				delete glyph;
+				return;
+			}
+			
+			glyph->set |= Cluster;
+			inptr++;
+			
+			while (g_ascii_isspace (*inptr))
+				inptr++;
+		}
+		
+		if (*inptr >= '0' && *inptr <= '9') {
+			errno = 0;
+			glyph->index = strtoul (inptr, &end, 10);
+			if ((glyph->index == 0 || glyph->index == LONG_MAX) && errno != 0) {
+				// invalid glyph index
+				d(print_parse_error (in, inptr, strerror (errno)));
+				delete glyph;
+				return;
+			}
+			
+			glyph->set |= Index;
+			
+			inptr = end;
+			while (g_ascii_isspace (*inptr))
+				inptr++;
+		}
 		
 		bit = (uint) Advance;
 		n = 0;
@@ -1764,7 +1914,17 @@ Glyphs::SetIndices (const char *in)
 			while (g_ascii_isspace (*inptr))
 				inptr++;
 			
-			value = g_ascii_strtod (inptr, &end);
+			if (*inptr != ',') {
+				value = g_ascii_strtod (inptr, &end);
+				if ((value == 0.0 || value == HUGE_VAL || value == -HUGE_VAL) && errno != 0) {
+					// invalid advance or offset
+					d(print_parse_error (in, inptr, strerror (errno)));
+					delete glyph;
+					return;
+				}
+			} else {
+				end = (char *) inptr;
+			}
 			
 			if (end > inptr) {
 				switch ((GlyphAttrMask) bit) {
@@ -1798,19 +1958,13 @@ Glyphs::SetIndices (const char *in)
 		while (g_ascii_isspace (*inptr))
 			inptr++;
 		
-		if (*inptr != ';') {
-			if (*inptr) {
-				int i;
-				
-				fprintf (stderr, "Parse error: %s\n", in);
-				fprintf (stderr, "             ");
-				for (i = 0; i < (inptr - in); i++)
-					fputc (' ', stderr);
-				fprintf (stderr, "^\n");
-			}
-			
-			break;
+		if (*inptr && *inptr != ';') {
+			d(print_parse_error (in, inptr, "expected ';'"));
+			return;
 		}
+		
+		if (*inptr == '\0')
+			break;
 		
 		inptr++;
 	}
