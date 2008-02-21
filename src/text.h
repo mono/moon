@@ -282,6 +282,7 @@ public:
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
+	virtual Point GetOriginPoint ();
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 };

@@ -1,3 +1,7 @@
+2008-02-21  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* text.h|cpp: compute GetOriginPoint and fix GetSizeForBrush
+
 2008-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes the TextBlockFontDownloads.htm test.

@@ -1519,8 +1519,21 @@ Glyphs::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	if (dirty)
 		Layout ();
 	
-	*height = this->height;
-	*width = this->width;
+	*height = desc->GetFont ()->Height ();
+	*width = this->width - origin_x;
+}
+
+Point 
+Glyphs::GetOriginPoint () 
+{
+	if (!origin_y_specified)
+		return Point (origin_x, 0);
+	else {
+		double d = desc->GetFont ()->Descender ();
+		double h = desc->GetFont ()->Height ();
+		printf ("y d h: %f %f %f\n", origin_y, d, h);
+		return Point (origin_x, origin_y - d - h);
+	}
 }
 
 void
