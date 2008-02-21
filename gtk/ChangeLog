@@ -1,3 +1,8 @@
+2008-02-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedDownloader.cs: Don't do anything in the tick callbacks if the
+	  downloader has been aborted or destroyed.
+
 2008-01-10  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Remove reference to docs/Gtk.Moonlight.xml

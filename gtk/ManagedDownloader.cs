@@ -98,12 +98,16 @@ namespace Gtk.Moonlight {
 			if (fname != null) {
 				if (File.Exists (fname)) {
 					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+						if (!downloading)
+							return;
 						tick_call = null;
 						downloader_notify_finished (downloader, fname);
 					}, IntPtr.Zero);
 				}
 				else {
 					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+						if (!downloading)
+							return;
 						tick_call = null;
 						downloader_notify_error (downloader, String.Format ("File `{0}' not found", fname));
 					}, IntPtr.Zero);
@@ -120,6 +124,8 @@ namespace Gtk.Moonlight {
 			try {
 				using (WebResponse r = request.GetResponse ()){
 					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+						if (!downloading)
+							return;
 						downloader_notify_size (downloader, r.ContentLength);
 						tick_call = null;
 						auto_reset.Set ();
@@ -139,6 +145,8 @@ namespace Gtk.Moonlight {
 							output.Write (buffer, 0, count);
 
 							time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+								if (!downloading)
+									return;
 								tick_call = null;
 								downloader_write (downloader, buffer, 0, count);
 								auto_reset.Set ();
@@ -148,6 +156,8 @@ namespace Gtk.Moonlight {
 					}
 					// We are done
 					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+						if (!downloading)
+							return;
 						tick_call = null;
 						downloader_notify_finished (downloader, path);
 					}, IntPtr.Zero);
@@ -231,8 +241,7 @@ namespace Gtk.Moonlight {
 
 			downloaders [state] = null;
 			
-			if (m.async_result != null)
-				m.downloading = false;
+			m.downloading = false;
 		}
 
 		public static void Open (string verb, string uri, IntPtr state)
