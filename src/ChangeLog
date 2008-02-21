@@ -1,3 +1,9 @@
+2008-02-21  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/color.cpp: A slightly more relaxed/tolerant way of parsing the
+	colors... it's the web and it's broken by default. Fixes: #362287 (the US
+	candidates website).
+
 2008-02-21  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* text.h|cpp: compute GetOriginPoint and fix GetSizeForBrush

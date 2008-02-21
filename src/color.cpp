@@ -218,37 +218,35 @@ color_from_str (const char *name)
 		char g [3] = "FF";
 		char b [3] = "FF";
 
-		switch (len - 1) {
-		case 3:
-			// rgb
-			r [1] = r [0] = name [1];
-			g [1] = g [0] = name [2];
-			b [1] = b [0] = name [3];
-			break;
-		case 4:
-			// argb
-			a [1] = a [0] = name [1];
-			r [1] = r [0] = name [2];
-			g [1] = g [0] = name [3];
-			b [1] = b [0] = name [4];
-			break;
-		case 6:
-			// rrggbb
-			r [0] = name [1]; r [1] = name [2];
-			g [0] = name [3]; g [1] = name [4];
-			b [0] = name [5]; b [1] = name [6];
-			break;
-		case 8:
+		// Relaxed parsing with some it's-the-web-and-it's-broken
+		// "error tolerance"
+		int real_len = len - 1;
+		if (real_len >= 8) {
 			// aarrggbb
 			a [0] = name [1]; a [1] = name [2];
 			r [0] = name [3]; r [1] = name [4];
 			g [0] = name [5]; g [1] = name [6];
 			b [0] = name [7]; b [1] = name [8];
-			break;			
+		} else if (real_len >= 6) {
+			// rrggbb
+			r [0] = name [1]; r [1] = name [2];
+			g [0] = name [3]; g [1] = name [4];
+			b [0] = name [5]; b [1] = name [6];
+		} else if (real_len >= 4) {
+			// argb
+			a [1] = a [0] = name [1];
+			r [1] = r [0] = name [2];
+			g [1] = g [0] = name [3];
+			b [1] = b [0] = name [4];
+		} else if (real_len == 3) {
+			// rgb
+			r [1] = r [0] = name [1];
+			g [1] = g [0] = name [2];
+			b [1] = b [0] = name [3];
 		}
 
 		return new Color (strtol (r, NULL, 16) / 255.0F, strtol (g, NULL, 16) / 255.0F,
-				strtol (b, NULL, 16) / 255.0F, strtol (a, NULL, 16) / 255.0F);
+				  strtol (b, NULL, 16) / 255.0F, strtol (a, NULL, 16) / 255.0F);
 	}
 
 	if (name [0] == 's' && name [1] == 'c' && name [2] == '#') {
