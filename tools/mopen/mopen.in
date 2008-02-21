@@ -1,4 +1,7 @@
 #!/bin/sh
+
+EXEC="exec "
+
 if test x$1 = x--debug; then
    DEBUG=--debug
    shift
@@ -6,12 +9,12 @@ fi
 
 if test x$1 = x--gdb; then
    shift
-   echo ""
-   echo Type the followig command:
-   echo -n '(gdb) ' 
-   echo run "$MONO_OPTIONS @moondir@/mopen.exe $@"
-   echo ""
-   gdb mono 
+   EXEC="gdb --eval-command=run --args "
 fi
 
-exec mono $DEBUG $MONO_OPTIONS @moondir@/mopen.exe $@
+if test x$1 = x--valgrind; then
+  shift
+  EXEC="valgrind $VALGRIND_OPTIONS"   
+fi
+
+$EXEC mono $DEBUG $MONO_OPTIONS @moondir@/mopen.exe $@

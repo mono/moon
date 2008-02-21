@@ -1,3 +1,8 @@
+2008-02-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mopen.in: Improve gdb support (no need to manually specify command line),
+	  and add valgrind support.
+
 2008-02-02  Miguel de Icaza  <miguel@novell.com>
 
 	* mopen.cs: Release the Cairo Context when we are done.
