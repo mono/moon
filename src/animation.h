@@ -3,6 +3,7 @@
  *
  * Author:
  *   Chris Toshok (toshok@novell.com)
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -122,6 +123,7 @@ class AnimationStorage {
 	~AnimationStorage ();
 	
 	void ResetPropertyValue ();
+	void DetachUpdateHandler ();
 
  private:
 	void TargetObjectDestroyed ();

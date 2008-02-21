@@ -1,3 +1,10 @@
+2008-02-21  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/animation.cpp:
+	* src/animation.h: Detach the AnimationStorage update handler from the
+	clock when the clock is stopped -- prevents us from overriding the (just
+	reset) base value with another update.
+
 2008-02-21  Michael Dominic K.  <mdk@mdk.am> 
 
 	* src/value.cpp: Implementing ToString () for DOUBLE.

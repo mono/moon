@@ -3,6 +3,7 @@
  *
  * Author:
  *   Chris Toshok (toshok@novell.com)
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -84,14 +85,19 @@ AnimationStorage::ResetPropertyValue ()
 	targetobj->SetValue (targetprop, *baseValue);
 }
 
+void AnimationStorage::DetachUpdateHandler ()
+{
+	if (clock != NULL) {
+		clock->RemoveHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
+	}
+}
+
 AnimationStorage::~AnimationStorage ()
 {
 	if (baseValue)
 		delete baseValue;
-	
-	if (clock != NULL) {
-		clock->RemoveHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
-	}
+
+	DetachUpdateHandler ();
 	
 	if (targetobj != NULL) {
 		targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
@@ -120,8 +126,10 @@ AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestin
 void
 AnimationClock::Stop ()
 {
-	if (storage)
+	if (storage) {
 		storage->ResetPropertyValue ();
+		storage->DetachUpdateHandler ();
+	}
 }
 
 AnimationClock::~AnimationClock ()
