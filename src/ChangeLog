@@ -1,3 +1,7 @@
+2008-02-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: When aborting a downloader, null out the write functions too.
+
 2008-02-21  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/clock.cpp: Emit the Completed event when Filling as well. Together

@@ -1,3 +1,8 @@
+2008-02-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/test-rectangle-fill-with-image-brush.xaml: Add a xaml file that was
+	  crashing moonlight.
+
 2008-02-06  Michael Dominic K.  <mdk@mdk.am> 
 
 	* test/harness/xaml2png.cpp: Use GdkPixbuf to save the PNG instead of the

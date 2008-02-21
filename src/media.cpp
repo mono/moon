@@ -556,6 +556,7 @@ MediaElement::DownloaderAbort ()
 {
 	if (downloader) {
 		downloader->RemoveHandler (downloader->CompletedEvent, downloader_complete, this);
+		downloader->SetWriteFunc (NULL, NULL, NULL);
 		downloader_abort (downloader);
 		downloader->unref ();
 		downloader = NULL;
@@ -1591,6 +1592,7 @@ Image::DownloaderAbort ()
 	if (downloader){
 		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
+		downloader->SetWriteFunc (NULL, NULL, NULL);
 		downloader_abort (downloader);
 		downloader->unref ();
 		downloader = NULL;
