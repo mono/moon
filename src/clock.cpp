@@ -3,6 +3,7 @@
  *
  * Author:
  *   Chris Toshok (toshok@novell.com)
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -1135,7 +1136,7 @@ ClockGroup::RaiseAccumulatedEvents ()
 	/* now cause our children to raise theirs */
 	clock_list_foreach (child_clocks, CallRaiseAccumulatedEvents);
 	
-	if (GetHasStarted() && state == Clock::Stopped && !emitted_complete) {
+	if (GetHasStarted() && (state == Clock::Stopped || state == Clock::Filling) && !emitted_complete) {
 		Emit (CompletedEvent);
 		emitted_complete = true;
 	}

@@ -1,5 +1,10 @@
 2008-02-21  Michael Dominic K.  <mdk@mdk.am>
 
+	* src/clock.cpp: Emit the Completed event when Filling as well. Together
+	with prev commit fixes: #359024 and #324935.
+
+2008-02-21  Michael Dominic K.  <mdk@mdk.am>
+
 	* src/animation.cpp:
 	* src/animation.h: Detach the AnimationStorage update handler from the
 	clock when the clock is stopped -- prevents us from overriding the (just
