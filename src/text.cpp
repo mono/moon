@@ -1531,7 +1531,6 @@ Glyphs::GetOriginPoint ()
 	else {
 		double d = desc->GetFont ()->Descender ();
 		double h = desc->GetFont ()->Height ();
-		printf ("y d h: %f %f %f\n", origin_y, d, h);
 		return Point (origin_x, origin_y - d - h);
 	}
 }
