@@ -1,5 +1,13 @@
 2008-02-22  Michael Dominic K.  <mdk@mdk.am>
 
+	* src/runtime.cpp:
+	* src/runtime.h:
+	* src/shape.cpp:
+	* src/shape.h: Adding functionality to report the cache size usage. By
+	default it's turned off. MOONLIGHT_OVERRIDES="cache=show" to turn it on. 
+
+2008-02-22  Michael Dominic K.  <mdk@mdk.am>
+
 	* src/shape.cpp: RoundOut to pixels the extents of the shapes. Causes us
 	to expose a few more pixels but helps with surface caching.
 

@@ -38,6 +38,7 @@ class Shape : public FrameworkElement {
 	Brush *stroke, *fill;
 	Point origin;
 	cairo_surface_t *cached_surface;
+	int64_t cached_size;
 
 	void DoDraw (cairo_t *cr, bool do_op);
 

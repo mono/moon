@@ -86,7 +86,9 @@ static struct {
 	{ "fps=show",          RUNTIME_INIT_SHOW_FPS,              true  },
 	{ "fps=hide",          RUNTIME_INIT_SHOW_FPS,              false },
 	{ "render=ftb",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  true  },
-	{ "render=btf",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  false  }
+	{ "render=btf",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  false },
+	{ "cache=show",	       RUNTIME_INIT_SHOW_CACHE_SIZE,       true  },
+	{ "cache=hide",        RUNTIME_INIT_SHOW_CACHE_SIZE,       false }
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
@@ -95,6 +97,12 @@ static void
 fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
 {
 	printf ("Rendered %d frames in %.3fs = %.3f FPS\n", nframes, nsecs, nframes / nsecs);
+}
+
+static void
+cache_report_default (Surface *surface, long bytes, void *user_data)
+{
+	printf ("Cache size is ~%.3f MB\n", bytes / 1048576.0);
 }
 
 cairo_t *
@@ -190,9 +198,15 @@ Surface::Surface(int w, int h)
 	
 	fps_report = fps_report_default;
 	fps_data = NULL;
-	
+
 	fps_nframes = 0;
 	fps_start = 0;
+
+	cache_report = cache_report_default;
+	cache_data = NULL;
+
+	cache_size_in_bytes = 0;
+	cache_size_ticker = 0;
 
 	emittingMouseEvent = false;
 	pendingCapture = NULL;
@@ -812,7 +826,7 @@ Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 {
 	Surface *s = (Surface *) closure;
 	int64_t now;
-	
+
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
 		s->fps_start = get_now ();
 	
@@ -828,6 +842,17 @@ Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 			s->fps_nframes = 0;
 			s->fps_start = now;
 		}
+	}
+
+	if ((moonlight_flags & RUNTIME_INIT_SHOW_CACHE_SIZE) && s->cache_report) {
+		// By default we report cache status every 50 render's.
+		// Should be enough for everybody, but syncing to ie. 1s sounds
+		// better.
+		if (s->cache_size_ticker == 50) {
+			s->cache_report (s, s->cache_size_in_bytes, s->cache_data);
+			s->cache_size_ticker = 0;
+		} else
+			s->cache_size_ticker++;
 	}
 }
 

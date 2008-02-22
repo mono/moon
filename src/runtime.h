@@ -50,7 +50,8 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_SHOW_CLIPPING         = 1 << 5,
 	RUNTIME_INIT_SHOW_BOUNDING_BOXES   = 1 << 6,
 	RUNTIME_INIT_SHOW_FPS              = 1 << 7,
-	RUNTIME_INIT_RENDER_FRONT_TO_BACK  = 1 << 8
+	RUNTIME_INIT_RENDER_FRONT_TO_BACK  = 1 << 8,
+	RUNTIME_INIT_SHOW_CACHE_SIZE	   = 1 << 9
 };
 
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT)
@@ -58,6 +59,7 @@ enum RuntimeInitFlags {
 
 class Surface;
 typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
+typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *user_data);
 typedef void (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
@@ -140,6 +142,22 @@ class Surface : public EventObject {
 	{
 		fps_report = report;
 		fps_data = user_data;
+	}
+
+	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data)
+	{
+		cache_report = report;
+		cache_data = user_data;
+	}
+
+	void AddToCacheSizeCounter (int64_t size)
+	{
+		cache_size_in_bytes += size;
+	}
+
+	void RemoveFromCacheSizeCounter (int64_t size)
+	{
+		cache_size_in_bytes -= size;
 	}
 
 #if FRONT_TO_BACK_STATS
@@ -240,6 +258,12 @@ private:
 	int64_t fps_start;
 	int fps_nframes;
 	void *fps_data;
+
+	// Variables for reporting cache size
+	MoonlightCacheReportFunc cache_report;
+	int64_t cache_size_in_bytes;
+	int cache_size_ticker;
+	void *cache_data;
 	
 	void ConnectEvents (bool realization_signals);
 	void Realloc ();

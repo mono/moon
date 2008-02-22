@@ -331,6 +331,13 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 			cairo_translate (cached_cr, - extents.x, - extents.y);
 			ret = DrawShape (cached_cr, do_op);
 			cairo_destroy (cached_cr);
+
+			// Increase our cache size
+			// w * h * 4 might be incorrect in some cases actually...
+			// but in 99% it should be okay. If you're running on a 16bit
+			// server you're prolly screwed with cairo perf anyways.
+			cached_size = w * h * 4;
+			GetSurface ()->AddToCacheSizeCounter (cached_size);
 		}
 
 		cairo_set_matrix (cr, &absolute_xform);
@@ -543,7 +550,10 @@ Shape::InvalidateSurfaceCache (void)
 {
 	if (cached_surface) {
 		cairo_surface_destroy (cached_surface);
+		if (GetSurface ())
+			GetSurface ()->RemoveFromCacheSizeCounter (cached_size);
 		cached_surface = NULL;
+		cached_size = 0;
 	}
 }
 
