@@ -554,7 +554,7 @@ PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 	char *msg;
 
 	if (bytes < 1048576)
-		msg = g_strdup_printf ("Cache size is ~%d KB", bytes / 1024);
+		msg = g_strdup_printf ("Cache size is ~%d KB", (int) (bytes / 1024));
 	else
 		msg = g_strdup_printf ("Cache size is ~%.2f MB", bytes / 1048576.0);
 
