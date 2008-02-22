@@ -3,6 +3,7 @@
  *
  * Author:
  *   Everaldo Canuto (ecanuto@novell.com)
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -203,6 +204,7 @@ void
 PluginInstance::properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin)
 {
 	plugin->properties_fps_label = NULL;
+	plugin->properties_cache_label = NULL;
 	gtk_widget_destroy (dialog);
 }
 
@@ -253,6 +255,11 @@ PluginInstance::Properties ()
 	gtk_misc_set_alignment (GTK_MISC (properties_fps_label), 0.0, 0.5);
 	gtk_table_attach (GTK_TABLE(table), properties_fps_label, 0, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
 
+	row++;
+	properties_cache_label = gtk_label_new ("");
+	gtk_misc_set_alignment (GTK_MISC (properties_cache_label), 0.0, 0.5);
+	gtk_table_attach (GTK_TABLE(table), properties_cache_label, 0, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
+
 	// Runtime debug options
 	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
@@ -288,6 +295,7 @@ PluginInstance::PluginInstance (NPP instance, uint16_t mode)
 	this->window = NULL;
 
 	this->properties_fps_label = NULL;
+	this->properties_cache_label = NULL;
 
 	this->rootobject = NULL;
 
@@ -540,6 +548,26 @@ PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *use
 }
 
 void
+PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
+{
+	PluginInstance *plugin = (PluginInstance *) user_data;
+	char *msg;
+
+	if (bytes < 1048576)
+		msg = g_strdup_printf ("Cache size is ~%d KB", bytes / 1024);
+	else
+		msg = g_strdup_printf ("Cache size is ~%.2f MB", bytes / 1048576.0);
+
+	NPN_Status (plugin->instance, msg);
+
+	if (plugin->properties_cache_label) {
+		gtk_label_set_text (GTK_LABEL (plugin->properties_cache_label), msg);
+	}
+
+	g_free (msg);
+}
+
+void
 PluginInstance::CreateWindow ()
 {
 	//DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
@@ -569,6 +597,7 @@ PluginInstance::CreateWindow ()
 
 	this->surface = new Surface (window->width, window->height);
 	this->surface->SetFPSReportFunc (ReportFPS, this);
+	this->surface->SetCacheReportFunc (ReportCache, this);
 	this->surface->SetDownloaderContext (this);
 	
 	if (background) {

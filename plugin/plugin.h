@@ -3,6 +3,7 @@
  *
  * Author:
  *   Everaldo Canuto (everaldo@novell.com)
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -44,6 +45,7 @@ class PluginInstance
 	int maxFrameRate;
 
 	GtkWidget *properties_fps_label;
+	GtkWidget *properties_cache_label;
 
 	//
 	// The XAML loader, contains a handle to a MonoObject *
@@ -66,6 +68,7 @@ class PluginInstance
 	void SetPageURL ();
 	
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
+	static void ReportCache (Surface *surface, long bytes, void *user_data);
 	static void properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin);
 	
  public:

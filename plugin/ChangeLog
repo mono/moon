@@ -1,3 +1,10 @@
+2008-02-22  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin/plugin.cpp:
+	* plugin/plugin.h: Add support for the cache-size reporting interface. The
+	UI now reports cache size when running with
+	MOONLIGHT_OVERRIDES="cache=show".
+
 2008-02-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp: Add a null check.
