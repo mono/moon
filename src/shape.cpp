@@ -323,19 +323,19 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		if (cached_surface == NULL && IsCandidateForCaching ()) {
 			w = extents.w;
 			h = extents.h;
-			w = MAX (w, 1) + 2;
-			h = MAX (h, 1) + 2;
+			w = MAX (w, 1);
+			h = MAX (h, 1);
 
 			cached_surface = image_brush_create_similar (cr, w, h);
 			cached_cr = cairo_create (cached_surface);
-			cairo_translate (cached_cr, (int) - extents.x + 1, (int) - extents.y + 1);
+			cairo_translate (cached_cr, - extents.x, - extents.y);
 			ret = DrawShape (cached_cr, do_op);
 			cairo_destroy (cached_cr);
 		}
 
 		cairo_set_matrix (cr, &absolute_xform);
 		if (cached_surface)
-			cairo_translate (cr, (int) extents.x - 1, (int) extents.y - 1);
+			cairo_translate (cr, extents.x, extents.y);
 		Clip (cr);
 
 		if (cached_surface) {
@@ -368,8 +368,9 @@ void
 Shape::ComputeBounds ()
 {
 	extents = ComputeShapeBounds ();
+	extents = extents.RoundOut ();
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-		       IntersectBoundsWithClipPath (extents, false));
+						     IntersectBoundsWithClipPath (extents, false));
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
 }
 

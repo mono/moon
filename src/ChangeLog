@@ -1,3 +1,8 @@
+2008-02-22  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/shape.cpp: RoundOut to pixels the extents of the shapes. Causes us
+	to expose a few more pixels but helps with surface caching.
+
 2008-02-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* downloader.cpp: downloader_get_response_file: remove any directory
