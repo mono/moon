@@ -1,3 +1,12 @@
+2008-02-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/test-directory-in-zip.html, xaml/test-directory-in-zip.zip,
+	  xaml/test-directory-in-zip.xaml, xaml/test-empty-element-source.html:
+	  New test.
+	* xaml/Silverlight.js, harness/masters/test-directory-in-zip.htmlMaster.png,
+	  harness/masters/test-empty-element-source.htmlMaster.png: Added.
+	* xaml/drtlist.xml: Added 2 more tests.
+
 2008-02-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/test-rectangle-fill-with-image-brush.xaml: Add a xaml file that was

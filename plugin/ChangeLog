@@ -1,3 +1,9 @@
+2008-02-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Add a null check.
+	* plugin-debug.cpp: Add a Save button to the Sources list, which will save
+	  every source file to a directory in /tmp.
+
 2008-02-21  Michael Dominic K.  <mdk@mdk.am>
 
 	* plugin/plugin.cpp: Small fix for table ("Properties") formatting so that

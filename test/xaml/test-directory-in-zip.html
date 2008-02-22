@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="jtr.js"></script>
+</head>
+<body>
+
+<div id="Moonlight">
+
+</div>
+
+<script type="text/javascript">
+        ontestready = OnTestReady;
+
+        function OnTestReady ()
+        {
+                var moonlight_control = document.getElementById ("JoltActiveX");
+		TestHost.TakeSingleSnapshotAndShutdown (moonlight_control, "test-directory-in-zip.html.png", 300, 300);
+        }
+
+        function ErrorHandler (sender, args)
+        {
+            TestLogger.LogError (errorString);
+            TestLogger.LogResult (-1)
+        }
+
+	function onLoaded (o, e)
+	{
+		var pl = document.getElementById ("JoltActiveX");
+		var host = o.getHost ();
+		var img = host.content.findName ("img");
+		var dl = host.createObject ("Downloader");
+
+		dl.Open ("GET", "test-directory-in-zip.zip");
+		// This doesn't work in SL on my machine and I have no idea as to why.
+		// (it shows error dialog #2207 signaling SetSource as the error).
+		img.SetSource (dl, "dir/mono.png");
+	}
+
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="800" height="580"
+     id="JoltActiveX" Source="test-directory-in-zip.xaml" OnError="ErrorHandler" OnLoad="onLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+</body>
+</body>
+</html>

@@ -1652,7 +1652,7 @@ Image::SetSource (DependencyObject *dl, const char *PartName)
 	dl->ref ();
 
 	if (downloader)
-		downloader->unref ();
+		DownloaderAbort ();
 
 	part_name = g_strdup (PartName);
 

@@ -527,4 +527,12 @@
 	inputFile="video-player.xaml"
 	masterFile10="../harness/masters/video-playerMaster.png"
    />
+   <Test id="133"
+	inputFile="test-directory-in-zip.html"
+	masterFile10="../harness/masters/test-directory-in-zip.htmlMaster.png"
+   />
+   <Test id="133"
+	inputFile="test-empty-element-source.html"
+	masterFile10="../harness/masters/test-empty-element-source.htmlMaster.png"
+   />
 </DRTList>

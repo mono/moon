@@ -1,3 +1,12 @@
+2008-02-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* downloader.cpp: downloader_get_response_file: remove any directory
+	  components from the part name, otherwise the creation of the tmp file
+	  fails. If we're aborted, don't call any callbacks.
+	* media.cpp: If we have a downloader and SetSource is called with a new
+	  downloader, abort the previous download, not only unref it, otherwise
+	  our callbacks and events may still get called from the old downloader.
+
 2008-02-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (TextFont::TextFont): Simplified the fallback code.

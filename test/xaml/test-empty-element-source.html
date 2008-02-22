@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script src="Silverlight.js" type="text/javascript"></script>
+</head>
+<body>
+
+<div id="Moonlight">
+      <script type="text/xaml" id="xamlContent">
+      
+         <?xml version="1.0"?>
+         <Canvas Width="300" Height="300" xmlns="http://schemas.microsoft.com/client/2007"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="rootCanvas" >
+	  <Image Source="mono.png" x:Name="img">
+	  </Image>
+         </Canvas> 
+
+      </script>
+      <script src="jtr.js"></script>
+
+      <script language="javascript">
+        ontestready = OnTestReady;
+
+        function OnTestReady (sender, args)
+        {
+                var moonlight_control = document.getElementById ("JoltActiveX");
+		TestHost.TakeSingleSnapshotAndShutdown (moonlight_control, "test-empty-element-source.html.png", 100, 100);
+        }
+
+        function ErrorHandler (sender, args)
+        {
+            TestLogger.LogError (errorString);
+            TestLogger.LogResult (-1)
+        }
+      </script>
+
+	<script type="text/javascript">
+		function onLoaded (o, e)
+		{
+		}
+
+	Silverlight.createObjectEx ({
+	source: "#xamlContent",
+	parentElement: document.getElementById("Moonlight"),
+	id: "JoltActiveX",
+	properties: {
+		width: "100",
+		height: "100",
+		version: "1.0",
+		background: "#cccccc",
+		isWindowless: "false"
+	},
+	events: {
+                onError: "",
+                onLoad: onLoaded
+        }
+
+});
+	</script>
+</div>
+
+</body>
+</html>

@@ -3917,7 +3917,7 @@ html_get_element_text (PluginInstance *plugin, const char *element_id)
 	nsString ns_id = NS_ConvertUTF8toUTF16 (element_id, strlen (element_id));
 	nsCOMPtr<nsIDOMElement> element;
 	rv = document->GetElementById (ns_id, getter_AddRefs (element));
-	if (NS_FAILED (rv))
+	if (NS_FAILED (rv) || element == NULL)
 		return NULL;
 
 	nsCOMPtr<nsIDOMDocument> owner;

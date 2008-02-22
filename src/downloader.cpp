@@ -156,7 +156,7 @@ Downloader::GetResponseText (const char *PartName, uint64_t *size)
 char *
 Downloader::ll_downloader_get_response_file (const char *PartName)
 {
-	char *name, *tmpname = NULL;
+	char *base, *name, *tmpname = NULL;
 	unzFile zipfile;
 	int fd;
 	
@@ -184,9 +184,11 @@ Downloader::ll_downloader_get_response_file (const char *PartName)
 	}
 	
 	// create a tmp file...
-	name = g_strdup_printf ("%s.XXXXXX", PartName);
+	base = g_path_get_basename (PartName); // PartName may have directory components, strip off those
+	name = g_strdup_printf ("%s.XXXXXX", base);
 	tmpname = g_build_filename (g_get_tmp_dir (), name, NULL);
 	g_free (name);
+	g_free (base);
 	
 	if ((fd = g_mkstemp (tmpname)) == -1) {
 		g_free (tmpname);
@@ -269,6 +271,9 @@ void
 Downloader::Write (void *buf, int32_t offset, int32_t n)
 {
 	double progress;
+
+	if (aborted)
+		return;
 	
 	// Update progress
 	if (n > 0)
@@ -278,6 +283,7 @@ Downloader::Write (void *buf, int32_t offset, int32_t n)
 		progress = total / (double) file_size;
 	else 
 		progress = 0;
+	
 	
 	SetValue (Downloader::DownloadProgressProperty, Value (progress));
 	Emit (DownloadProgressChangedEvent);
@@ -289,6 +295,9 @@ Downloader::Write (void *buf, int32_t offset, int32_t n)
 void
 Downloader::NotifyFinished (const char *fname)
 {
+	if (aborted)
+		return;
+		
 	filename = g_strdup (fname);
 	
 	SetValue (Downloader::DownloadProgressProperty, Value (1.0));
@@ -320,6 +329,9 @@ void
 Downloader::NotifySize (int64_t size)
 {
 	file_size = size;
+	
+	if (aborted)
+		return;
 	
 	if (notify_size)
 		notify_size (size, consumer_closure);
