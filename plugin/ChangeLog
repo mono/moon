@@ -1,3 +1,8 @@
+2008-02-22  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-debug.cpp: mkdir and friends needs sys/stat.h on some
+	systems.
+
 2008-02-22  Michael Dominic K.  <mdk@mdk.am>
 
 	* plugin/plugin.cpp:

@@ -1,5 +1,6 @@
 
 #include "plugin-debug.h"
+#include <sys/stat.h>
 #include <gtk/gtkmessagedialog.h>
 
 #ifdef DEBUG
