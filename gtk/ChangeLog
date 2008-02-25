@@ -1,3 +1,7 @@
+2008-02-25  Chris Toshok  <toshok@ximian.com>
+
+	* gtk.cs: use surface_get_widget, not surface_get_drawing_area.
+
 2008-02-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* ManagedDownloader.cs: Don't do anything in the tick callbacks if the

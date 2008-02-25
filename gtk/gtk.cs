@@ -117,7 +117,7 @@ public class GtkSilver : EventBox {
 	{
 		surface = NativeMethods.surface_new (width, height);
 		Mono.Xaml.XamlLoader.SurfaceInDomain = surface;
-		Raw = NativeMethods.surface_get_drawing_area (surface);
+		Raw = NativeMethods.surface_get_widget (surface);
 	}
 
 	/// <summary>

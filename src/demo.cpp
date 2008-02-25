@@ -189,7 +189,7 @@ main (int argc, char *argv [])
 	Surface *t = new Surface (600, 600);
 	gtk_signal_connect (GTK_OBJECT (w), "delete-event", G_CALLBACK (delete_event), t);
 	gtk_signal_connect (GTK_OBJECT (w), "expose-event", G_CALLBACK (expose_event), GUINT_TO_POINTER (do_trans));
-	gtk_container_add (GTK_CONTAINER(w), t->GetDrawingArea ());
+	gtk_container_add (GTK_CONTAINER(w), t->GetWidget ());
 		
 	if (file){
 		Type::Kind kind;
@@ -473,11 +473,11 @@ main (int argc, char *argv [])
 		Storyboard::SetTargetProperty (square_y_anim, "Y");
 #endif
 
-		gtk_widget_add_events (t->GetDrawingArea(), GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+		gtk_widget_add_events (t->GetWidget(), GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 
-		gtk_signal_connect (GTK_OBJECT (t->GetDrawingArea()), "button_press_event", G_CALLBACK (button_press_event), NULL);
-		gtk_signal_connect (GTK_OBJECT (t->GetDrawingArea()), "button_release_event", G_CALLBACK (button_release_event), NULL);
-		gtk_signal_connect (GTK_OBJECT (t->GetDrawingArea()), "motion_notify_event", G_CALLBACK (button_motion_event), NULL);
+		gtk_signal_connect (GTK_OBJECT (t->GetWidget()), "button_press_event", G_CALLBACK (button_press_event), NULL);
+		gtk_signal_connect (GTK_OBJECT (t->GetWidget()), "button_release_event", G_CALLBACK (button_release_event), NULL);
+		gtk_signal_connect (GTK_OBJECT (t->GetWidget()), "motion_notify_event", G_CALLBACK (button_motion_event), NULL);
 
 		sb->Begin ();
 	}		

@@ -1,5 +1,10 @@
 2008-02-25  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.cpp (PluginInstance::CreateWindow): use GetWidget instead
+	of GetDrawingArea.
+
+2008-02-25  Chris Toshok  <toshok@ximian.com>
+
 	* plugin.cpp: add windowless creation stuff.  move some code
 	around, and put some in (!windowless) blocks.
 

@@ -1,3 +1,10 @@
+2008-02-25  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: s/drawing_area/widget and
+	s/DrawingArea/Widget
+
+	* demo.cpp: same.
+
 2008-02-25  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/uielement.h: Adding a virtual CacheInvalidateHint () function that

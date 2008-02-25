@@ -92,7 +92,7 @@ class Surface : public EventObject {
 
 	void Invalidate (Rect r);
 
-	GtkWidget *GetDrawingArea () { return drawing_area; }
+	GtkWidget *GetWidget () { return widget; }
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
 
@@ -205,7 +205,7 @@ private:
 	Color *background_color;
 
 	// The widget where we draw.
-	GtkWidget *drawing_area;
+	GtkWidget *widget;
 
 	// This currently can only be a canvas.
 	UIElement *toplevel;
@@ -237,11 +237,11 @@ private:
 
 	// Here we keep a reference to the normal drawing area when
 	// we are in fullscreen mode.
-	GtkWidget *drawing_area_normal;
+	GtkWidget *widget_normal;
 
-	// We set drawing_area to this whenever we are in
+	// We set widget to this whenever we are in
 	// fullscreen mode.
-	GtkWidget *drawing_area_fullscreen;
+	GtkWidget *widget_fullscreen;
 
 	// The clock group (toplevel clock) for this surface.
 	// Registered with the TimeManager.  All storyboards created
@@ -267,8 +267,8 @@ private:
 	
 	void ConnectEvents (bool realization_signals);
 	void Realloc ();
-	void InitializeDrawingArea (GtkWidget *drawing_area);
-	void DestroyDrawingArea (GtkWidget *drawing_area);
+	void InitializeWidget (GtkWidget *widget);
+	void DestroyWidget (GtkWidget *widget);
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
 
@@ -278,8 +278,8 @@ private:
 
 	static void render_cb (EventObject *sender, gpointer calldata, gpointer closure);
 	static void update_input_cb (EventObject *sender, gpointer calldata, gpointer closure);
-	static void drawing_area_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
-	static void drawing_area_destroyed (GtkWidget *w, gpointer data);
+	static void widget_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
+	static void widget_destroyed (GtkWidget *w, gpointer data);
 	static gboolean expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data);
 
 	void FindFirstCommonElement (List *l1, int *index1,
@@ -335,7 +335,7 @@ void     surface_set_trans (Surface *s, bool trans);
 bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
 
-void    *surface_get_drawing_area (Surface *s);
+void    *surface_get_widget (Surface *s);
 
 cairo_t *measuring_context_create (void);
 void     measuring_context_destroy (cairo_t *cr);

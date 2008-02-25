@@ -649,7 +649,7 @@ PluginInstance::CreateWindow ()
 
 	if (windowless) {
 		// XXX do we need this?
-		GTK_WIDGET_SET_FLAGS (this->surface->GetDrawingArea(), GTK_NO_WINDOW);
+		GTK_WIDGET_SET_FLAGS (this->surface->GetWidget(), GTK_NO_WINDOW);
 	}
 	else {
 		// Connect signals to container
@@ -672,8 +672,8 @@ PluginInstance::CreateWindow ()
 
 		g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
 
-		gtk_container_add (GTK_CONTAINER (container), this->surface->GetDrawingArea());
-		//display = gdk_drawable_get_display (this->surface->GetDrawingArea()->window);
+		gtk_container_add (GTK_CONTAINER (container), this->surface->GetWidget());
+		//display = gdk_drawable_get_display (this->surface->GetWidget()->window);
 		gtk_widget_show_all (this->container);
 	}
 }
