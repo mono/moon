@@ -158,9 +158,6 @@ NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 		case NPPVpluginDescriptionString:
 			*((char **)result) = (char *) PLUGIN_DESCRIPTION;
 			break;
-		case NPPVpluginNeedsXEmbed:
-			*((PRBool *)result) = PR_TRUE;
-			break;
 		default:
 			if (instance == NULL)
 				return NPERR_INVALID_INSTANCE_ERROR;

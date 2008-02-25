@@ -17,6 +17,11 @@
 #include "moon-mono.h"
 #include "downloader.h"
 #include "plugin-downloader.h"
+#define Visual _XxVisual
+#define Region _XxRegion
+#include "gdk/gdkx.h"
+#undef Visual
+#undef Region
 
 extern guint32 moonlight_flags;
 
@@ -452,6 +457,51 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			continue;
 		}
 	}
+
+	NPBool supportsWindowless = FALSE;
+#if (NP_VERSION_MAJOR >= 1 || NP_VERSION_MINOR >= 18)
+	int plugin_major, plugin_minor;
+	int netscape_major, netscape_minor;
+
+	/* Find the version numbers. */
+	NPN_Version(&plugin_major, &plugin_minor,
+		    &netscape_major, &netscape_minor);
+
+	printf(" Browser NPAPI version = %d.%d\n",
+	       netscape_major, netscape_minor);
+
+	if (netscape_major >= 1 || netscape_minor >= 18) {
+		if (windowless)
+			NPN_GetValue(this->instance,
+				     // XXX
+				     //
+				     // use this line instead of
+				     // NPNVSupportsWindowless if you
+				     // want to compile this against
+				     // an earlier version of the
+				     // npapi. (you'll also need to
+				     // disable the #if and the if
+				     // version checks.)
+				     //
+				     // (NPNVariable)17
+				     NPNVSupportsWindowless,
+				     &supportsWindowless);
+	}
+#endif
+
+	if (windowless) {
+		if (supportsWindowless) {
+			NPN_SetValue(this->instance, NPPVpluginWindowBool, (void*)FALSE);
+			NPN_SetValue(this->instance, NPPVpluginTransparentBool, (void*)TRUE);
+			printf ("windowless mode\n");
+		}
+		else {
+			printf ("browser doesn't support windowless mode.\n");
+			windowless = FALSE;
+		}
+	}
+	  
+
 }
 
 void
@@ -466,7 +516,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 
 	switch (variable) {
 		case NPPVpluginNeedsXEmbed:
-			*((PRBool *)result) = PR_TRUE;
+			*((PRBool *)result) = !windowless;
 			break;
 
 		case NPPVpluginScriptableNPObject:
@@ -488,16 +538,19 @@ PluginInstance::SetValue (NPNVariable variable, void *value)
 NPError
 PluginInstance::SetWindow (NPWindow* window)
 {
-	if (window == this->window)
-		return NPERR_NO_ERROR;
-
-	NPN_GetValue(this->instance, NPNVSupportsXEmbedBool, &this->xembed_supported);
-	if (!this->xembed_supported) {
-		DEBUGMSG ("*** XEmbed not supported");
-		return NPERR_GENERIC_ERROR;
-	}
+ 	if (window == this->window)
+ 		return NPERR_NO_ERROR;
 
 	this->window = window;
+
+	if (!windowless) {
+		NPN_GetValue(this->instance, NPNVSupportsXEmbedBool, &this->xembed_supported);
+		if (!this->xembed_supported) {
+			DEBUGMSG ("*** XEmbed not supported");
+			return NPERR_GENERIC_ERROR;
+		}
+	}
+
 	this->CreateWindow ();
 
 	return NPERR_NO_ERROR;
@@ -572,48 +625,57 @@ PluginInstance::CreateWindow ()
 {
 	//DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
-	//  GtkPlug container and surface inside
-	this->container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
-
-	// Connect signals to container
-	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (this->container), GTK_CAN_FOCUS);
-
-	gtk_widget_add_events (
-		this->container,
-		GDK_BUTTON_PRESS_MASK |
-		GDK_BUTTON_RELEASE_MASK |
-		GDK_KEY_PRESS_MASK |
-		GDK_KEY_RELEASE_MASK |
-		GDK_POINTER_MOTION_MASK |
-		GDK_SCROLL_MASK |
-		GDK_EXPOSURE_MASK |
-		GDK_VISIBILITY_NOTIFY_MASK |
-		GDK_ENTER_NOTIFY_MASK |
-		GDK_LEAVE_NOTIFY_MASK |
-		GDK_FOCUS_CHANGE_MASK
-	);
-
-	g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
-
 	this->surface = new Surface (window->width, window->height);
+
 	this->surface->SetFPSReportFunc (ReportFPS, this);
 	this->surface->SetCacheReportFunc (ReportCache, this);
 	this->surface->SetDownloaderContext (this);
 	
+	SetPageURL ();
+
+	this->UpdateSource ();
+	
+	TimeManager::Instance ()->SetMaximumRefreshRate (maxFrameRate);
+
 	if (background) {
 		Color *c = color_from_str (background);
 		surface->SetBackgroundColor (c);
 		delete c;
 	}
 
-	SetPageURL ();
 
-	gtk_container_add (GTK_CONTAINER (container), this->surface->GetDrawingArea());
-	display = gdk_drawable_get_display (this->surface->GetDrawingArea()->window);
-	gtk_widget_show_all (this->container);
-	this->UpdateSource ();
-	
-	TimeManager::Instance ()->SetMaximumRefreshRate (maxFrameRate);
+	//  GtkPlug container and surface inside
+	this->container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
+
+	if (windowless) {
+		// XXX do we need this?
+		GTK_WIDGET_SET_FLAGS (this->surface->GetDrawingArea(), GTK_NO_WINDOW);
+	}
+	else {
+		// Connect signals to container
+		GTK_WIDGET_SET_FLAGS (GTK_WIDGET (this->container), GTK_CAN_FOCUS);
+
+		gtk_widget_add_events (
+				       this->container,
+				       GDK_BUTTON_PRESS_MASK |
+				       GDK_BUTTON_RELEASE_MASK |
+				       GDK_KEY_PRESS_MASK |
+				       GDK_KEY_RELEASE_MASK |
+				       GDK_POINTER_MOTION_MASK |
+				       GDK_SCROLL_MASK |
+				       GDK_EXPOSURE_MASK |
+				       GDK_VISIBILITY_NOTIFY_MASK |
+				       GDK_ENTER_NOTIFY_MASK |
+				       GDK_LEAVE_NOTIFY_MASK |
+				       GDK_FOCUS_CHANGE_MASK
+				       );
+
+		g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
+
+		gtk_container_add (GTK_CONTAINER (container), this->surface->GetDrawingArea());
+		//display = gdk_drawable_get_display (this->surface->GetDrawingArea()->window);
+		gtk_widget_show_all (this->container);
+	}
 }
 
 void
@@ -1077,7 +1139,12 @@ PluginInstance::Print (NPPrint *platformPrint)
 int16_t
 PluginInstance::EventHandle (void *event)
 {
-	return 0;
+	XEvent *xev = (XEvent*)event;
+	int handled = 0;
+
+	printf ("EventHandle (%d)\n", xev->type);
+
+	return handled;
 }
 
 void

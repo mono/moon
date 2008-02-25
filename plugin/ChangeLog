@@ -1,3 +1,13 @@
+2008-02-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp: add windowless creation stuff.  move some code
+	around, and put some in (!windowless) blocks.
+
+	* plugin-entry.cpp (NP_Initialize): set handleEvent.
+
+	* plugin-glue.cpp (NPP_GetValue): don't handle NeedsXEmbed here -
+	let PluginInstance::GetValue do it.
+
 2008-02-22  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-debug.cpp: mkdir and friends needs sys/stat.h on some

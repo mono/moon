@@ -409,7 +409,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 	plugin_funcs->write         = NewNPP_WriteProc (NPP_Write);
 	plugin_funcs->print         = NewNPP_PrintProc (NPP_Print);
 	plugin_funcs->urlnotify     = NewNPP_URLNotifyProc (NPP_URLNotify);
-	plugin_funcs->event         = NULL;
+	plugin_funcs->event         = NewNPP_HandleEventProc (NPP_HandleEvent);
 #ifdef OJI
 	plugin_funcs->javaClass     = NULL;
 #endif
