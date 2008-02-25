@@ -339,6 +339,21 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	}
 }
 
+void
+Panel::CacheInvalidateHint (void)
+{
+	VisualCollection *children = GetChildren ();
+	Collection::Node *cn;
+
+	if (children != NULL) {
+		cn = (Collection::Node *) children->list->First ();
+		for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
+			UIElement *item = (UIElement *) cn->obj;
+			item->CacheInvalidateHint ();
+		}
+	}
+}
+
 bool
 Panel::InsideObject (cairo_t *cr, double x, double y)
 {

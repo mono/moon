@@ -451,6 +451,13 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
+Shape::CacheInvalidateHint (void)
+{
+	// Also kills the surface cache
+	InvalidatePathCache ();
+}
+
+void
 Shape::OnPropertyChanged (DependencyProperty *prop)
 {
 

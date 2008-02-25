@@ -303,6 +303,14 @@ public:
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 
+    //
+    // CacheInvalidateHint:
+    //   Give a hint to this UIElement that it should free any possible
+    //   cached (mem-intensive) data it has. This ie. can happen when the
+    //   element is removed from a collection, becomes invisible, etc.
+    //
+    virtual void CacheInvalidateHint () {}
+
 	Point GetRenderTransformOrigin () {
 		Value *vu = GetValue (UIElement::RenderTransformOriginProperty);
 		return *vu->AsPoint ();

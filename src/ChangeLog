@@ -1,3 +1,19 @@
+2008-02-25  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/uielement.h: Adding a virtual CacheInvalidateHint () function that
+	can be called on the element to give it a hint that it should free it's
+	cache for the time being.
+
+	* src/collection.cpp:
+	* src/panel.cpp:
+	* src/panel.h: Forward CacheInvalidateHint to all children.
+
+	* src/shape.cpp:
+	* src/shape.h: Destroy the surface and path cache when hinted.
+
+	In total improves our memory usage with surface/path caching, ie. in the
+	Showcase.
+
 2008-02-22  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/runtime.cpp:

@@ -111,6 +111,7 @@ class Shape : public FrameworkElement {
 	bool NeedsClipping ();
 	bool MixedHeightWidth (Value **width, Value **height);
 
+	virtual void CacheInvalidateHint (void);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 

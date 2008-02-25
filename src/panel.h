@@ -59,6 +59,8 @@ class Panel : public FrameworkElement {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 
+	virtual void CacheInvalidateHint ();
+
 	virtual void OnLoaded ();
 
 	Rect bounds_with_children;
