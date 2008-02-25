@@ -233,6 +233,7 @@ static struct {
 	const char *name;
 	int value;
 } style_weights[] = {
+	// FIXME: are these strings all correct (e.g. spaces vs no spaces)?
 	{ "Ultra Light", FC_WEIGHT_ULTRALIGHT },
 	{ "Light",       FC_WEIGHT_LIGHT      },
 	{ "Semi Bold",   FC_WEIGHT_DEMIBOLD   },
@@ -261,6 +262,7 @@ static struct {
 	const char *name;
 	int value;
 } style_widths[] = {
+	// FIXME: are these strings all correct (e.g. spaces vs no spaces, Cond vs Condensed)?
 	{ "Ultra Condensed", FC_WIDTH_ULTRACONDENSED },
 	{ "Extra Condensed", FC_WIDTH_EXTRACONDENSED },
 	{ "Semi Condensed",  FC_WIDTH_SEMICONDENSED  },
@@ -335,6 +337,9 @@ style_name (FontStyleInfo *style, char *namebuf)
 	
 	for (i = 0; i < G_N_ELEMENTS (style_weights); i++) {
 		if (style_weights[i].value == style->weight) {
+			if (p != namebuf)
+				*p++ = ' ';
+			
 			p = g_stpcpy (p, style_weights[i].name);
 			break;
 		}
@@ -342,6 +347,9 @@ style_name (FontStyleInfo *style, char *namebuf)
 	
 	for (i = 0; i < G_N_ELEMENTS (style_slants); i++) {
 		if (style_slants[i].value == style->slant) {
+			if (p != namebuf)
+				*p++ = ' ';
+			
 			p = g_stpcpy (p, style_slants[i].name);
 			break;
 		}
@@ -353,6 +361,9 @@ style_name (FontStyleInfo *style, char *namebuf)
 
 FontPackFileFace::FontPackFileFace (FontPackFile *file, FT_Face face)
 {
+	d(fprintf (stderr, "\t\t\t* index=%d: family=\"%s\"; style=\"%s\"\n",
+		   (int) face->face_index, face->family_name, face->style_name));
+	
 	style_info_parse (face->style_name, &style);
 	family_name = g_strdup (face->family_name);
 	index = face->face_index;
@@ -509,6 +520,123 @@ ExtractFontPack (const char *path)
 }
 
 
+struct FontFamilyInfo {
+	char *name;
+	int weight;
+	int width;
+	int slant;
+};
+
+struct Token {
+	Token *next;
+	const char *value;
+	size_t len;
+};
+
+enum StyleType {
+	Weight,
+	Width,
+	Slant
+};
+
+static struct {
+	const char *name;
+	StyleType type;
+	int value;
+} style_values[] = {
+	// FIXME: what other names can be specified?
+	{ "Light",    Weight, FC_WEIGHT_LIGHT        },
+	{ "SemiBold", Weight, FC_WEIGHT_DEMIBOLD     },
+	{ "Bold",     Weight, FC_WEIGHT_BOLD         },
+	{ "Black",    Weight, FC_WEIGHT_BLACK        },
+	
+	{ "SemiCond", Width,  FC_WIDTH_SEMICONDENSED },
+	{ "Cond",     Width,  FC_WIDTH_CONDENSED     },
+	
+	{ "Oblique",  Slant,  FC_SLANT_OBLIQUE       },
+	{ "Italic",   Slant,  FC_SLANT_ITALIC        }
+};
+
+
+static FontFamilyInfo *
+parse_font_family (const char *in)
+{
+	register const char *inptr = in;
+	Token *tokens, *token, *tail;
+	const char *start, *end;
+	FontFamilyInfo *family;
+	bool style_info;
+	uint i;
+	
+	// tokenize the font name so we can check for stretch/weight/style info in the name
+	tail = tokens = token = new Token ();
+	token->value = start = inptr;
+	
+	while (*inptr) {
+		if (*inptr == ' ') {
+			token->len = (inptr - token->value);
+			while (*inptr == ' ')
+				inptr++;
+			
+			if (*inptr) {
+				token = new Token ();
+				token->value = inptr;
+				tail->next = token;
+				tail = token;
+			}
+		} else {
+			inptr++;
+		}
+	}
+	
+	token->len = (inptr - token->value);
+	token->next = NULL;
+	
+	family = new FontFamilyInfo ();
+	family->weight = FC_WEIGHT_NORMAL;
+	family->width = FC_WIDTH_NORMAL;
+	family->slant = FC_SLANT_ROMAN;
+	
+	// assume at least the first token is part of the face name
+	end = tokens->value + tokens->len;
+	token = tokens->next;
+	style_info = false;
+	delete tokens;
+	
+	while (token != NULL) {
+		for (i = 0; i < G_N_ELEMENTS (style_values); i++) {
+			if (!strncmp (style_values[i].name, token->value, token->len)) {
+				switch (style_values[i].type) {
+				case Weight:
+					family->weight = style_values[i].value;
+					break;
+				case Width:
+					family->width = style_values[i].value;
+					break;
+				case Slant:
+					family->slant = style_values[i].value;
+					break;
+				}
+				
+				style_info = true;
+				break;
+			}
+		}
+		
+		if (!style_info)
+			end = token->value + token->len;
+		
+		tail = token->next;
+		delete token;
+		token = tail;
+	}
+	
+	family->name = g_strndup (start, (end - start));
+	
+	return family;
+}
+
+
 struct FontFaceSimilarity {
 	FontPackFileFace *face;
 	int weight;
@@ -518,19 +646,17 @@ struct FontFaceSimilarity {
 
 
 bool
-TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path)
+TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path, const char **families)
 {
 	char stylebuf1[128], stylebuf2[128];
 	FontFaceSimilarity similar;
 	FontPackFileFace *fface;
-	FcChar8 *family_name;
+	FontFamilyInfo *family;
 	FontStyleInfo style;
 	FontPackFile *file;
+	GPtrArray *array;
 	FontPack *pack;
-	uint i;
-	
-	if (FcPatternGetString (pattern, FC_FAMILY, 0, &family_name) != FcResultMatch)
-		return false;
+	uint i, j;
 	
 	if (FcPatternGetInteger (pattern, FC_WEIGHT, 0, &style.weight) != FcResultMatch)
 		return false;
@@ -551,6 +677,21 @@ TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path)
 		d(fprintf (stderr, "\t* reusing an extracted zip archive...\n"));
 	}
 	
+	array = g_ptr_array_new ();
+	for (i = 0; families[i]; i++) {
+		// parse the family name to extract any additional style info
+		family = parse_font_family ((const char *) families[i]);
+		g_ptr_array_add (array, family);
+		
+		// FIXME: which style info should take prioriy?
+		if (family->weight == FC_WEIGHT_NORMAL)
+			family->weight = style.weight;
+		if (family->width == FC_WIDTH_NORMAL)
+			family->width = style.width;
+		if (family->slant == FC_SLANT_ROMAN)
+			family->slant = style.slant;
+	}
+	
 	similar.weight = INT_MAX;
 	similar.width = INT_MAX;
 	similar.slant = INT_MAX;
@@ -563,34 +704,44 @@ TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path)
 			if (!fface->family_name)
 				continue;
 			
-			d(fprintf (stderr, "\t\t* checking if '%s' matches '%s'... ", fface->family_name, family_name));
-			if (strcmp ((const char *) family_name, fface->family_name) != 0) {
-				d(fprintf (stderr, "no\n"));
-				continue;
-			}
-			
-			d(fprintf (stderr, "yes\n\t\t* checking if '%s' matches '%s'... ",
-				   style_name (&fface->style, stylebuf1), style_name (&style, stylebuf2)));
-			
-			if (fface->style.weight == style.weight &&
-			    fface->style.width == style.width &&
-			    fface->style.slant == style.slant) {
-				// found an exact match
-				d(fprintf (stderr, "yes\n"));
-				goto found;
-			}
-			
-			// not an exact match, but similar...
-			if (abs (fface->style.weight - style.weight) < similar.weight &&
-			    abs (fface->style.width - style.width) < similar.width &&
-			    abs (fface->style.slant - style.slant) < similar.slant) {
-				d(fprintf (stderr, "no, but is the closest match so far\n"));
-				similar.weight = abs (fface->style.weight - style.weight);
-				similar.width = abs (fface->style.width - style.width);
-				similar.slant = abs (fface->style.slant - style.slant);
-				similar.face = fface;
-			} else {
-				d(fprintf (stderr, "no\n"));
+			for (j = 0; j < array->len; j++) {
+				family = (FontFamilyInfo *) array->pdata[i];
+				style.weight = family->weight;
+				style.width = family->width;
+				style.slant = family->slant;
+				
+				d(fprintf (stderr, "\t\t* checking if '%s' matches '%s'... ",
+					   fface->family_name, family->name));
+				
+				// compare against parsed family name (don't want to include style info)
+				if (strcmp (family->name, fface->family_name) != 0) {
+					d(fprintf (stderr, "no\n"));
+					continue;
+				}
+				
+				d(fprintf (stderr, "yes\n\t\t\t* checking if '%s' matches '%s'... ",
+					   style_name (&fface->style, stylebuf1), style_name (&style, stylebuf2)));
+				
+				if (fface->style.weight == style.weight &&
+				    fface->style.width == style.width &&
+				    fface->style.slant == style.slant) {
+					// found an exact match
+					d(fprintf (stderr, "yes\n"));
+					goto found;
+				}
+				
+				// not an exact match, but similar...
+				if (abs (fface->style.weight - style.weight) <= similar.weight &&
+				    abs (fface->style.width - style.width) <= similar.width &&
+				    abs (fface->style.slant - style.slant) <= similar.slant) {
+					d(fprintf (stderr, "no, but closest match\n"));
+					similar.weight = abs (fface->style.weight - style.weight);
+					similar.width = abs (fface->style.width - style.width);
+					similar.slant = abs (fface->style.slant - style.slant);
+					similar.face = fface;
+				} else {
+					d(fprintf (stderr, "no\n"));
+				}
 			}
 		}
 		
@@ -601,6 +752,9 @@ TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path)
 	
 	if (similar.face == NULL) {
 		// no similar fonts, I guess we just fail?
+		for (i = 0; i < array->len; i++)
+			delete (FontFamilyInfo *) array->pdata[i];
+		g_ptr_array_free (array, true);
 		return false;
 	}
 	
@@ -611,6 +765,10 @@ TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path)
 found:
 	
 	d(fprintf (stderr, "\t\t* using font '%s, %s'\n", fface->family_name, style_name (&fface->style, stylebuf1)));
+	
+	for (i = 0; i < array->len; i++)
+		delete (FontFamilyInfo *) array->pdata[i];
+	g_ptr_array_free (array, true);
 	
 	return FT_New_Face (libft2, file->path, fface->index, &face) == 0;
 }
@@ -675,7 +833,7 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 		if (fromFile) {
 			// check if it is a zipped font collection.
 			if (err == FT_Err_Unknown_File_Format &&
-			    OpenZipArchiveFont (pattern, (const char *) filename)) {
+			    OpenZipArchiveFont (pattern, (const char *) filename, (const char **) families)) {
 				d(fprintf (stderr, "\t* success!\n"));
 				break;
 			}
@@ -1641,21 +1799,44 @@ TextFontDescription::ToString ()
 		g_string_append (str, "\"Lucida Sans Unicode, Lucida Sans\"");
 	}
 	
-	if ((set & FontMaskStyle) && style != FontStylesNormal) {
+	if ((set & FontMaskStretch) && stretch != FontStretchesNormal) {
 		if (!attrs) {
 			g_string_append_c (str, ',');
 			attrs = true;
 		}
 		
 		g_string_append_c (str, ' ');
-		switch (style) {
-		case FontStylesNormal:
+		switch (stretch) {
+		case FontStretchesUltraCondensed:
+			g_string_append (str, "UltraCondensed");
 			break;
-		case FontStylesOblique:
-			g_string_append (str, "Oblique");
+		case FontStretchesExtraCondensed:
+			g_string_append (str, "ExtraCondensed");
 			break;
-		case FontStylesItalic:
-			g_string_append (str, "Italic");
+		case FontStretchesCondensed:
+			g_string_append (str, "Condensed");
+			break;
+		case FontStretchesSemiCondensed:
+			g_string_append (str, "SemiCondensed");
+			break;
+		case FontStretchesNormal:
+			break;
+#if 0
+		case FontStretchesMedium:
+			g_string_append (str, "Medium");
+			break;
+#endif
+		case FontStretchesSemiExpanded:
+			g_string_append (str, "SemiExpanded");
+			break;
+		case FontStretchesExpanded:
+			g_string_append (str, "Expanded");
+			break;
+		case FontStretchesExtraExpanded:
+			g_string_append (str, "ExtraExpanded");
+			break;
+		case FontStretchesUltraExpanded:
+			g_string_append (str, "UltraExpanded");
 			break;
 		}
 	}
@@ -1700,44 +1881,21 @@ TextFontDescription::ToString ()
 		}
 	}
 	
-	if ((set & FontMaskStretch) && stretch != FontStretchesNormal) {
+	if ((set & FontMaskStyle) && style != FontStylesNormal) {
 		if (!attrs) {
 			g_string_append_c (str, ',');
 			attrs = true;
 		}
 		
 		g_string_append_c (str, ' ');
-		switch (stretch) {
-		case FontStretchesUltraCondensed:
-			g_string_append (str, "UltraCondensed");
+		switch (style) {
+		case FontStylesNormal:
 			break;
-		case FontStretchesExtraCondensed:
-			g_string_append (str, "ExtraCondensed");
+		case FontStylesOblique:
+			g_string_append (str, "Oblique");
 			break;
-		case FontStretchesCondensed:
-			g_string_append (str, "Condensed");
-			break;
-		case FontStretchesSemiCondensed:
-			g_string_append (str, "SemiCondensed");
-			break;
-		case FontStretchesNormal:
-			break;
-#if 0
-		case FontStretchesMedium:
-			g_string_append (str, "Medium");
-			break;
-#endif
-		case FontStretchesSemiExpanded:
-			g_string_append (str, "SemiExpanded");
-			break;
-		case FontStretchesExpanded:
-			g_string_append (str, "Expanded");
-			break;
-		case FontStretchesExtraExpanded:
-			g_string_append (str, "ExtraExpanded");
-			break;
-		case FontStretchesUltraExpanded:
-			g_string_append (str, "UltraExpanded");
+		case FontStylesItalic:
+			g_string_append (str, "Italic");
 			break;
 		}
 	}

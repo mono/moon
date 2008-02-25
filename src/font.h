@@ -121,7 +121,7 @@ class TextFont {
 	
 	TextFont (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name);
 	
-	bool OpenZipArchiveFont (FcPattern *pattern, const char *path);
+	bool OpenZipArchiveFont (FcPattern *pattern, const char *path, const char **families);
 	
 	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y);
