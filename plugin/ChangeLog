@@ -1,5 +1,11 @@
 2008-02-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* plugin/plugin-class.cpp: Throw js exception when object passed to
+	Collection.Remove is NULL (instead of returning false). Fixes mostly
+	OM_RemoveClearRemoveAt but still fails because of ArcSweep problem.
+
+2008-02-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* plugin/plugin-class.cpp: Throw js exception when Collection.Insert
 	returns -1.
 

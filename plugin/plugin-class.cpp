@@ -2550,10 +2550,8 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		if (argCount < 1)
 			THROW_JS_EXCEPTION ("remove");
 
-		if (NPVARIANT_IS_NULL (args [0])) {
-			BOOLEAN_TO_NPVARIANT (false, *result);
-			return true;
-		}
+		if (NPVARIANT_IS_NULL (args [0]))
+			THROW_JS_EXCEPTION ("remove");
 
 		if (!npobject_is_dependency_object (NPVARIANT_TO_OBJECT (args [0])))
 			THROW_JS_EXCEPTION ("remove");
