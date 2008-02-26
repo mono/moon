@@ -185,6 +185,7 @@ Panel::Render (cairo_t *cr, Region *region)
 			background->SetupBrush (cr, this);
 
 			// FIXME - UIElement::Opacity may play a role here
+			cairo_new_path (cr);
 			cairo_rectangle (cr, 0, 0, fwidth, fheight);
 			cairo_fill (cr);
 		}
