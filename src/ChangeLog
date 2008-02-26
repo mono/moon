@@ -1,5 +1,10 @@
 2008-02-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* src/collection.cpp: Don't add the object to the collection if it already
+	contains the object (return -1 instead).
+
+2008-02-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* src/animation.cpp:
 	* src/animation.h:
 	* src/collection.cpp:

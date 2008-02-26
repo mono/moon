@@ -83,7 +83,12 @@ Collection::Add (DependencyObject *data)
 			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
 		return -1;
 	}
-	
+
+	// Make sure we don't have it already
+	if (list->Find (CollectionNodeFinder, data)) {
+		return -1;
+	}
+
 	generation++;
 	list->Append (new Collection::Node (data, this));
 	data->Attach (NULL, this);
