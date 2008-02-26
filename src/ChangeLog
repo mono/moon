@@ -3,6 +3,8 @@
 	* font.cpp (TextFont::TextFont): Precalculate underline position
 	and thickness. Also, we need to adjust the position based on 1/2
 	the underline thickness.
+	(TextLayout::Layout): Only adjust by the horiBearingX if < 0.
+	(TextLayout::RenderLine): Same.
 
 2008-02-26  Chris Toshok  <toshok@ximian.com>
 

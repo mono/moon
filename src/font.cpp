@@ -2222,7 +2222,7 @@ TextLayout::Layout ()
 			
 			if (prev != 0)
 				advance += run->font->Kerning (prev, glyph->index);
-			else
+			else if (glyph->metrics.horiBearingX < 0)
 				advance -= glyph->metrics.horiBearingX;
 			
 			if ((is_space = isSpace (run->text[i]))) {
@@ -2511,7 +2511,7 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 				
 				if (prev != 0)
 					x1 += font->Kerning (prev, glyph->index);
-				else
+				else if (glyph->metrics.horiBearingX < 0)
 					x1 -= glyph->metrics.horiBearingX;
 				
 				prev = glyph->index;
