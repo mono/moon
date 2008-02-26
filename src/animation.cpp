@@ -803,13 +803,13 @@ KeyFrameCollection::~KeyFrameCollection ()
 	g_ptr_array_free (sorted_list, true);
 }
 
-bool
+int
 KeyFrameCollection::Add (DependencyObject *data)
 {
-	bool b = Collection::Add (data);
-	if (b)
+	int n = Collection::Add (data);
+	if (n != -1)
 		resolved = false;
-	return b;
+	return n;
 }
 
 bool

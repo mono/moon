@@ -1,3 +1,13 @@
+2008-02-26  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/animation.cpp:
+	* src/animation.h:
+	* src/collection.cpp:
+	* src/collection.h: The "Add" method of collections returns int (index of
+	the element added), not bool. As explained in:
+
+	http://msdn2.microsoft.com/en-us/library/system.windows.media.visualcollection.add.aspx
+
 2008-02-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (TextFont::OpenZipArchiveFont): Since we aren't going

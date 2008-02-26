@@ -46,7 +46,7 @@ class Collection : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::COLLECTION; };	
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 
-	virtual bool Add    (DependencyObject *data);
+	virtual int  Add    (DependencyObject *data);
 	virtual bool Remove (DependencyObject *data);
 	virtual bool RemoveAt (int index);
 	virtual bool Insert (int index, DependencyObject *data);
@@ -92,7 +92,7 @@ class VisualCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::VISUAL_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::VISUAL; }
 
-	virtual bool Add    (DependencyObject *data);
+	virtual int  Add    (DependencyObject *data);
 	virtual bool Remove (DependencyObject *data);
 	virtual bool RemoveAt (int index);
 	virtual bool Insert (int index, DependencyObject *data);
@@ -113,7 +113,7 @@ class TriggerCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::EVENTTRIGGER; }
 
-	virtual bool Add    (DependencyObject *data);
+	virtual int  Add    (DependencyObject *data);
 	virtual bool Remove (DependencyObject *data);
 	virtual bool RemoveAt (int index);
 	virtual bool Insert (int index, DependencyObject *data);

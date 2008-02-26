@@ -75,13 +75,13 @@ Collection::EmitChanged (CollectionChangeType type, DependencyObject *obj, Depen
 		closure->OnCollectionChanged (this, type, obj, prop);
 }
 
-bool
+int
 Collection::Add (DependencyObject *data)
 {
 	if (!Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType())) {
 		g_warning ("Cannot add children of type `%s' to a collection of type `%s'.  Its children must be subclasses of `%s'.",
 			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
-		return false;
+		return -1;
 	}
 	
 	generation++;
@@ -109,7 +109,7 @@ Collection::Add (DependencyObject *data)
 		EmitChanged (CollectionChangeTypeItemAdded, data, NULL);
 	}
 
-	return true;
+	return list->Length () - 1;
 }
 
 bool
@@ -485,14 +485,14 @@ VisualCollection::VisualRemoved (Visual *visual)
 	item->SetVisualParent (NULL);
 }
 
-bool
+int
 VisualCollection::Add (DependencyObject *data)
 {
 	UIElement *item = (UIElement *) data;
 	
-	bool b = Collection::Add (item);
+	int n = Collection::Add (item);
 
-	if (b) {
+	if (n != -1) {
 		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
 
 		VisualAdded (item);
@@ -503,7 +503,7 @@ VisualCollection::Add (DependencyObject *data)
 			item->OnLoaded ();
 		}
 	}
-	return b;
+	return n;
 }
 
 DependencyObject *
@@ -600,19 +600,19 @@ VisualCollection::Clear ()
 }
 
 
-bool
+int
 TriggerCollection::Add (DependencyObject *data)
 {
-	bool b = Collection::Add (data);
+	int n = Collection::Add (data);
 
-	if (b) {
+	if (n != -1) {
 		FrameworkElement *fwe = (FrameworkElement *) closure;
 		EventTrigger *trigger = (EventTrigger *) data;
 
 		trigger->SetTarget (fwe);
 	}
 
-	return b;
+	return n;
 }
 
 DependencyObject *
