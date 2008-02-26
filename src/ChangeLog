@@ -1,5 +1,11 @@
 2008-02-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* src/text.cpp: TextBlock when constructed by default has an empty Inlines
+	collection instead of NULL. Along with all the previous commits fixes the
+	OM_CreateAddInsert.htm test.
+
+2008-02-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* src/collection.cpp: Don't allow collection insert at negative position.
 
 2008-02-26  Michael Dominic K.  <mdk@mdk.am>

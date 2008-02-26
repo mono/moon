@@ -391,6 +391,7 @@ TextBlock::TextBlock ()
 	Color *color = color_from_str ("black");
 	solid_color_brush_set_color ((SolidColorBrush *) brush, color);
 	SetValue (TextBlock::ForegroundProperty, Value (brush));
+	SetValue (TextBlock::InlinesProperty, Value::CreateUnref (new Inlines ()));
 	delete color;
 	brush->unref();
 }
