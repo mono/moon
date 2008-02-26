@@ -1,5 +1,11 @@
 2008-02-26  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.cpp (PluginInstance::EventHandle): fix some x64 build
+	issues.
+	(PluginInstance::InvalidateSurface): same.
+
+2008-02-26  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-proxy.cpp: use RTLD_LAZY, not RTLD_NOW.
 
 	* moonlight.h: more #include hackery to get the right members to

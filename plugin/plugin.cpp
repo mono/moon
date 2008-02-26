@@ -590,10 +590,12 @@ PluginInstance::InvalidateSurface (Surface *surface, Rect rect, void *user_data)
 
 	NPRect nprect;
 
-	nprect.left = rect.x;
-	nprect.top = rect.y;
-	nprect.right = rect.x + rect.w;
-	nprect.bottom = rect.y + rect.h;
+	rect = rect.RoundOut();
+
+	nprect.left = (uint16)rect.x;
+	nprect.top = (uint16)rect.y;
+	nprect.right = (uint16)(rect.x + rect.w);
+	nprect.bottom = (uint16)(rect.y + rect.h);
 
 	NPN_InvalidateRect (plugin->instance, &nprect);
 }
@@ -1160,9 +1162,9 @@ PluginInstance::EventHandle (void *event)
 
 	switch (xev->type) {
 	case GraphicsExpose: {
-		GdkDrawable *drawable = gdk_pixmap_foreign_new (xev->xgraphicsexpose.drawable);
+		GdkDrawable *drawable = gdk_pixmap_foreign_new ((GdkNativeWindow)xev->xgraphicsexpose.drawable);
 		if (!drawable)
-			drawable = gdk_window_foreign_new (xev->xgraphicsexpose.drawable);
+		  drawable = gdk_window_foreign_new ((GdkNativeWindow)xev->xgraphicsexpose.drawable);
 
 		if (drawable) {
 			GdkVisual *visual = gdkx_visual_get (((NPSetWindowCallbackStruct*)window->ws_info)->visual->visualid);
