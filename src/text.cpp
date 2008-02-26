@@ -385,8 +385,6 @@ TextBlock::TextBlock ()
 		font.custom->SetSize (TEXTBLOCK_FONT_SIZE);
 	}
 	
-	text_block_set_text (this, "");
-	
 	Brush *brush = new SolidColorBrush ();
 	Color *color = color_from_str ("black");
 	solid_color_brush_set_color ((SolidColorBrush *) brush, color);

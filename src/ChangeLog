@@ -1,5 +1,9 @@
 2008-02-26  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (TextBlock::TextBlock): Removed the useless
+	text_block_set_text() call. This was just a broken hack meant to
+	do what MDK's previous commit fixed the right way.
+
 	* font.cpp (TextFont::UnderlinePosition): Fixed to take font
 	y_scale metrics into consideration.
 	(TextFont::UnderlineThickness): Same.
