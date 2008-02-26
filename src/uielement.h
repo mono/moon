@@ -241,43 +241,43 @@ public:
 	//   handles an mouse motion event, and dispatches it to anyone that
 	//   might want it.
 	//
-	void EmitMouseMove (GdkEvent *event);
+	bool EmitMouseMove (GdkEvent *event);
 
 	//
 	// EmitMouseLeftButtonDown:
 	//   handles the button press event and dispatches it to all
 	//   the objects that might be interested in it.
 	//
-	void EmitMouseLeftButtonDown (GdkEvent *event);
+	bool EmitMouseLeftButtonDown (GdkEvent *event);
 
 	//
 	// EmitMouseLeftButtonUp:
 	//   handles the button release event and dispatches it to all
 	//   the objects that might be interested in it.
 	//
-	void EmitMouseLeftButtonUp (GdkEvent *event);
+	bool EmitMouseLeftButtonUp (GdkEvent *event);
 
 	//
 	// EmitKeyDown:
 	//
-	void EmitKeyDown (int state, Key key, int platform_key_code);
+	bool EmitKeyDown (int state, Key key, int platform_key_code);
 
 	//
 	// EmitKeyUp:
 	//
-	void EmitKeyUp (int state, Key key, int platform_key_code);
+	bool EmitKeyUp (int state, Key key, int platform_key_code);
 
 	//
 	// EmitMouseEnter:
 	//   Invoked when the mouse first enters this given object
 	//
-	void EmitMouseEnter (GdkEvent *event);
+	bool EmitMouseEnter (GdkEvent *event);
 	
 	//
 	// Leave:
 	//   Invoke when the mouse leaves this given object
 	//
-	void EmitMouseLeave ();
+	bool EmitMouseLeave ();
 
 
 	//

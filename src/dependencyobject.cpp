@@ -191,29 +191,29 @@ EventObject::RemoveHandler (int event_id, int token)
 	}
 }
 
-void
+bool
 EventObject::Emit (char *event_name, gpointer calldata)
 {
 	int id = GetType()->LookupEvent (event_name);
 
 	if (id == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
-		return;
+		return false;
 	}
 
-	Emit (id, calldata);
+	return Emit (id, calldata);
 }
 
-void
+bool
 EventObject::Emit (int event_id, gpointer calldata)
 {
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
-		return;
+		return false;
 	}
 
 	if (events == NULL || events[event_id].event_list->IsEmpty ())
-		return;
+		return false;
 	
 	EventClosure *next, *closure = (EventClosure *) events[event_id].event_list->First ();
 	List *event_list = new List ();
@@ -240,6 +240,8 @@ EventObject::Emit (int event_id, gpointer calldata)
 	}
 	
 	delete event_list;
+
+	return true;
 }
 
 void

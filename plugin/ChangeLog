@@ -1,3 +1,27 @@
+2008-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-proxy.cpp: use RTLD_LAZY, not RTLD_NOW.
+
+	* moonlight.h: more #include hackery to get the right members to
+	be there for NPSetWindowCallbackStruct on X.
+
+	* plugin.h (class PluginInstance): add our
+	RenderSurface/InvalidateSurface methods.
+
+	* plugin.cpp (PluginInstance::Initialize): initialize the
+	windowless stuff if we need it and the browser supports it.
+	(PluginInstance::RenderSurface): our render method - call
+	NPN_ForceRedraw.
+	(PluginInstance::InvalidateSurface): our invalidate method - call
+	NPN_InvalidateRect.
+	(PluginInstance::CreateWindow): set our invalidate/render funcs
+	accordingly, and SetTrans on the surface (err, why?) if we're
+	windowless, and only do the widget stuff if we aren't windowless.
+	(PluginInstance::EventHandle): kind of gross, but fill in enough
+	of the gdk events to fool the surface machinery.  Currently
+	missing are all key events, GdkDevice support for mouse events,
+	and Expose event aggregation.
+
 2008-02-26  Michael Dominic K.  <mdk@mdk.am>
 
 	* plugin/plugin-class.cpp: Throw js exception when object passed to

@@ -393,31 +393,34 @@ UIElement::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 	uielement_list->Prepend (new UIElementNode (this));
 }
 
-void
+bool
 UIElement::EmitMouseMove (GdkEvent *event)
 {
 	MouseEventArgs *e = new MouseEventArgs(event);
-	Emit (MouseMoveEvent, e);
+	bool rv = Emit (MouseMoveEvent, e);
 	e->unref ();
+	return rv;
 }
 
-void
+bool
 UIElement::EmitMouseLeftButtonDown (GdkEvent *event)
 {
 	MouseEventArgs *e = new MouseEventArgs (event);
-	Emit (MouseLeftButtonDownEvent, e);
+	bool rv = Emit (MouseLeftButtonDownEvent, e);
 	e->unref ();
+	return rv;
 }
 
-void
+bool
 UIElement::EmitMouseLeftButtonUp (GdkEvent *event)
 {
 	MouseEventArgs *e = new MouseEventArgs (event);
-	Emit (MouseLeftButtonUpEvent, e);
+	bool rv = Emit (MouseLeftButtonUpEvent, e);
 	e->unref ();
+	return rv;
 }
 
-void
+bool
 UIElement::EmitKeyDown (int state, Key key, int platform_key_code)
 {
 	KeyboardEventArgs e;
@@ -425,10 +428,10 @@ UIElement::EmitKeyDown (int state, Key key, int platform_key_code)
 	e.key = key;
 	e.platformcode = platform_key_code;
 
-	Emit (KeyDownEvent, &e);
+	return Emit (KeyDownEvent, &e);
 }
 
-void
+bool
 UIElement::EmitKeyUp (int state, Key key, int platform_key_code)
 {
 	KeyboardEventArgs e;
@@ -436,21 +439,21 @@ UIElement::EmitKeyUp (int state, Key key, int platform_key_code)
 	e.key = key;
 	e.platformcode = platform_key_code;
 
-	Emit (KeyUpEvent, &e);
+	return Emit (KeyUpEvent, &e);
 }
 
-void
+bool
 UIElement::EmitMouseEnter (GdkEvent *event)
 {
 	MouseEventArgs *e = new MouseEventArgs (event);
 	Emit (MouseEnterEvent, e);
-	e->unref ();
+	return e->unref ();
 }
 
-void
+bool
 UIElement::EmitMouseLeave ()
 {
-	Emit (MouseLeaveEvent);
+	return Emit (MouseLeaveEvent);
 }
 
 bool
@@ -525,6 +528,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		if (subtract) {
 			if (Is (Type::MEDIAELEMENT)) {
 				MediaElement *me = (MediaElement*)this;
+
 				subtract = (!me->IsClosed ()
 					    && me->mplayer
 					    && me->mplayer->rendered_frame
@@ -533,6 +537,9 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 						||
 						(media_base_get_stretch (me) == StretchFill
 						 || media_base_get_stretch (me) == StretchUniformToFill)));
+
+				//Rect r = me->GetBounds();
+				//printf ("r.bounds = %g %g %g %g\n", r.x, r.y, r.w, r.h);
 			}
 			else if (Is (Type::IMAGE)) {
 				Image *image = (Image*)this;
@@ -558,11 +565,11 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 					   we're also a little more conservative than we need to be, regarding stroke
 					   thickness. */
 					double xr = (rectangle->GetValue(Rectangle::RadiusXProperty)->AsDouble() +
-						     rectangle->GetValue(Rectangle::StrokeThicknessProperty)->AsDouble());
+						     rectangle->GetValue(Rectangle::StrokeThicknessProperty)->AsDouble()/2);
 					double yr = (rectangle->GetValue(Rectangle::RadiusYProperty)->AsDouble() +
-						     rectangle->GetValue(Rectangle::StrokeThicknessProperty)->AsDouble());
+						     rectangle->GetValue(Rectangle::StrokeThicknessProperty)->AsDouble()/2);
 
-					Rect r = bounds.GrowBy (-xr, -yr).RoundIn();
+					Rect r = bounds.GrowBy (-xr, -yr).RoundOut();
 
 					Region *inner_rect_region = new Region (self_region);
 					inner_rect_region->Intersect (r);
@@ -579,7 +586,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		}
 
 		if (subtract)
-			surface_region->Subtract (bounds.RoundIn());
+			surface_region->Subtract (bounds);
 	}
 }
 

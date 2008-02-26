@@ -105,15 +105,12 @@ cache_report_default (Surface *surface, long bytes, void *user_data)
 	printf ("Cache size is ~%.3f MB\n", bytes / 1048576.0);
 }
 
-cairo_t *
-runtime_cairo_create (GdkWindow *drawable)
+static cairo_t *
+runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual)
 {
-	GdkVisual *visual = NULL;
 	int width, height;
 	cairo_surface_t *surface;
 	cairo_t *cr;
-
-	visual = gdk_drawable_get_visual (drawable);
 
 	gdk_drawable_get_size (drawable, &width, &height);
 	surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
@@ -133,7 +130,7 @@ Surface::CreateSimilarSurface ()
 	if (widget == NULL || widget->window == NULL)
 		return;
 	
-	cairo_t *ctx = runtime_cairo_create (widget->window);
+	cairo_t *ctx = runtime_cairo_create (widget->window, gdk_drawable_get_visual (widget->window));
 	
 	if (cairo_xlib)
 		cairo_destroy (cairo_xlib);
@@ -150,25 +147,26 @@ Surface::CreateSimilarSurface ()
 }
 
 
-Surface::Surface(int w, int h)
+Surface::Surface(int w, int h, bool windowless)
   : downloader_context (NULL),
     width (w), height (h), buffer (0), pixbuf (NULL),
     using_cairo_xlib_surface(0),
     cairo_buffer_surface (NULL), cairo_buffer(NULL),
     cairo_xlib(NULL), cairo (NULL), transparent(false),
     background_color(NULL),
-    cursor (MouseCursorDefault),
+    widget (NULL),
     widget_normal (NULL),
     widget_fullscreen (NULL),
+    cursor (MouseCursorDefault),
     mouse_event (NULL)
 {
-	widget = gtk_event_box_new ();
-
 	background_color = new Color (1, 1, 1, 0);
-	
-	gtk_widget_set_size_request (widget, width, height);
-	
-	InitializeWidget (widget);
+
+	if (!windowless) {
+		widget = gtk_event_box_new ();
+		gtk_widget_set_size_request (widget, width, height);
+		InitializeWidget (widget);
+	}
 	
 	buffer = NULL;
 
@@ -195,7 +193,13 @@ Surface::Surface(int w, int h)
 
 	full_screen_message = NULL;
 	source_location = NULL;
-	
+
+	render = NULL;
+	render_data = NULL;
+
+	invalidate = NULL;
+	invalidate_data = NULL;
+
 	fps_report = fps_report_default;
 	fps_data = NULL;
 
@@ -294,7 +298,7 @@ Surface::SetCursor (MouseCursor new_cursor)
 	if (new_cursor != cursor) {
 		cursor = new_cursor;
 
-		if (widget == NULL)
+		if (!widget)
 			return;
 
 		GdkCursor *c = NULL;
@@ -332,6 +336,9 @@ Surface::SetCursor (MouseCursor new_cursor)
 void
 Surface::ConnectEvents (bool realization_signals)
 {
+	if (!widget)
+		return;
+
 	gtk_signal_connect (GTK_OBJECT (widget), "expose_event",
 			    G_CALLBACK (Surface::expose_event_callback), this);
 
@@ -449,10 +456,13 @@ Surface::Attach (UIElement *element)
 void
 Surface::Invalidate (Rect r)
 {
-	gtk_widget_queue_draw_area (widget,
-				    (int) (widget->allocation.x + r.x), 
-				    (int) (widget->allocation.y + r.y), 
-				    (int) r.w, (int)r.h);
+	if (invalidate)
+		invalidate (this, r, invalidate_data);
+	else if (widget)
+		gtk_widget_queue_draw_area (widget,
+					    (int) (widget->allocation.x + r.x), 
+					    (int) (widget->allocation.y + r.y), 
+					    (int) r.w, (int)r.h);
 }
 
 
@@ -467,6 +477,9 @@ Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
 void
 Surface::Paint (cairo_t *ctx, Region *region)
 {
+	if (!toplevel)
+		return;
+
 #if FRONT_TO_BACK_STATS
 	uielements_rendered_front_to_back = 0;
 	uielements_rendered_back_to_front = 0;
@@ -830,7 +843,10 @@ Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
 		s->fps_start = get_now ();
 	
-	gdk_window_process_updates (GTK_WIDGET (s->widget)->window, FALSE);
+	if (s->render)
+		s->render (s, s->render_data);
+	else if (s->widget)
+		gdk_window_process_updates (GTK_WIDGET (s->widget)->window, FALSE);
 	
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_report) {
 		s->fps_nframes++;
@@ -920,42 +936,44 @@ Surface::unrealized_callback (GtkWidget *widget, gpointer data)
 }
 
 gboolean
-Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y)
 {
-	Surface *s = (Surface *) data;
-
-	s->frames++;
-
-	if (event->area.x > s->width || event->area.y > s->height)
+	if (event->area.x > width || event->area.y > height)
 		return TRUE;
 
-	if (widget->window == NULL)
-		return TRUE;
-		
 #if TIME_REDRAW
 	STARTTIMER (expose, "redraw");
 #endif
-	s->cairo = s->cairo_xlib;
+	cairo = cairo_xlib;
 
-	//
-	// BIG DEBUG BLOB
-	// 
-	if (cairo_status (s->cairo) != CAIRO_STATUS_SUCCESS){
-		printf ("expose event: the cairo context has an error condition and refuses to paint: %s\n", 
-			cairo_status_to_string (cairo_status (s->cairo)));
+	if (cairo) {
+		//
+		// BIG DEBUG BLOB
+		// 
+		if (cairo_status (cairo) != CAIRO_STATUS_SUCCESS){
+			printf ("expose event: the cairo context has an error condition and refuses to paint: %s\n", 
+				cairo_status_to_string (cairo_status (cairo)));
+		}
 	}
 
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
-	GdkPixmap *pixmap = gdk_pixmap_new (widget->window, MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
-	cairo_t *ctx = runtime_cairo_create (pixmap);
+	GdkPixmap *pixmap = NULL;
+	if (widget) {
+		/* create our own backbuffer if we're windowed.  in
+		   the windowless case we assume we're drawing to the
+		   backbuffer already, so no need for the additional
+		   step. */
+		pixmap = gdk_pixmap_new (drawable, MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
+	}
+	cairo_t *ctx = runtime_cairo_create (widget ? pixmap : drawable, visual);
 	Region *region = new Region (event->region);
-	region->Offset (-widget->allocation.x, -widget->allocation.y);
 
+	region->Offset (-off_x, -off_y);
 	cairo_surface_set_device_offset (cairo_get_target (ctx),
-					 widget->allocation.x - event->area.x, 
-					 widget->allocation.y - event->area.y);
+					 off_x - event->area.x, 
+					 off_y - event->area.y);
 
 	region->Draw (ctx);
 	cairo_clip (ctx);
@@ -963,7 +981,7 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 	// These are temporary while we change this to paint at the offset position
 	// instead of using the old approach of modifying the topmost Canvas (a no-no),
 	//
-	// The flag "s->transparent" is here because I could not
+	// The flag "transparent" is here because I could not
 	// figure out what is painting the background with white now.
 	// The change that made the white painting implicit instead of
 	// explicit is patch 80632.   I would appreciate any help in tracking down
@@ -981,48 +999,50 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 
 
 
-	if (s->transparent) {
-		cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
-		region->Draw (ctx);
-		cairo_paint (ctx);
+	if (transparent) {
+// 		cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
+// 		region->Draw (ctx);
+// 		cairo_paint (ctx);
 
 		cairo_set_source_rgba (ctx,
-				       s->background_color->r,
-				       s->background_color->g,
-				       s->background_color->b,
-				       s->background_color->a);
+				       background_color->r,
+				       background_color->g,
+				       background_color->b,
+				       background_color->a);
 	} else
 		cairo_set_source_rgb (ctx,
-				      s->background_color->r,
-				      s->background_color->g,
-				      s->background_color->b);
+				      background_color->r,
+				      background_color->g,
+				      background_color->b);
 	cairo_paint (ctx);
 
 
 	cairo_save (ctx);
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-	s->Paint (ctx, region);
+	Paint (ctx, region);
 
 	if (RENDER_EXPOSE) {
 		region->Draw (ctx);
 		cairo_set_line_width (ctx, 2.0);
-		cairo_set_source_rgb (ctx, (double)(s->frames % 2), (double)((s->frames + 1) % 2), (double)((s->frames / 3) % 2));
+		cairo_set_source_rgb (ctx, (double)(frames % 2), (double)((frames + 1) % 2), (double)((frames / 3) % 2));
 		cairo_stroke (ctx);
 	}
 
 	delete (region);
 
-	GdkGC *gc = gdk_gc_new (pixmap);
+	if (widget) {
+		GdkGC *gc = gdk_gc_new (pixmap);
 
-	gdk_gc_set_clip_region (gc, event->region);
+		gdk_gc_set_clip_region (gc, event->region);
 
-	gdk_draw_drawable (widget->window, gc, pixmap,
-			   0, 0,
-			   event->area.x, event->area.y,
-			   event->area.width, event->area.height);
+		gdk_draw_drawable (drawable, gc, pixmap,
+				   0, 0,
+				   event->area.x, event->area.y,
+				   event->area.width, event->area.height);
 	
-	g_object_unref (pixmap);
-	g_object_unref (gc);
+		g_object_unref (pixmap);
+		g_object_unref (gc);
+	}
 	cairo_destroy (ctx);
 
 #if TIME_REDRAW
@@ -1031,6 +1051,23 @@ Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpoint
 
 	
 	return TRUE;
+}
+
+gboolean
+Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
+	Surface *s = (Surface *) data;
+
+	s->frames++;
+
+	if (widget == NULL)
+		return TRUE;
+
+	return s->expose_to_drawable (widget->window,
+				      gdk_drawable_get_visual (widget->window),
+				      event,
+				      widget->allocation.x,
+				      widget->allocation.y);
 }
 
 RenderNode::RenderNode (UIElement *el,
@@ -1072,34 +1109,34 @@ UIElementNode::~UIElementNode ()
 }
 
 // I really wish C++ had anonymous delegates...
-static void
+static bool
 emit_MouseLeftButtonDown (UIElement *element, GdkEvent *event)
 {
-	element->EmitMouseLeftButtonDown (event);
+	return element->EmitMouseLeftButtonDown (event);
 }
 
-static void
+static bool
 emit_MouseLeftButtonUp (UIElement *element, GdkEvent *event)
 {
-	element->EmitMouseLeftButtonUp (event);
+	return element->EmitMouseLeftButtonUp (event);
 }
 
-static void
+static bool
 emit_MouseMove (UIElement *element, GdkEvent *event)
 {
-	element->EmitMouseMove (event);
+	return element->EmitMouseMove (event);
 }
 
-static void
+static bool
 emit_MouseEnter (UIElement *element, GdkEvent *event)
 {
-	element->EmitMouseEnter (event);
+	return element->EmitMouseEnter (event);
 }
 
-static void
+static bool
 emit_MouseLeave (UIElement *element, GdkEvent *)
 {
-	element->EmitMouseLeave ();
+	return element->EmitMouseLeave ();
 }
 
 void
@@ -1170,11 +1207,13 @@ Surface::SetMouseCapture (UIElement *capture)
 	return true;
 }
 
-void
+bool
 Surface::EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *event, int end_idx)
 {
+	bool handled = false;
+
 	if (emitter == NULL)
-		return;
+		return handled;
 
 	int idx;
 	UIElementNode *node;
@@ -1184,9 +1223,13 @@ Surface::EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *
 
 	emittingMouseEvent = true;
 	for (node = (UIElementNode*)list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-		emitter (node->uielement, event);
+		bool h = emitter (node->uielement, event);
+		if (h)
+			handled = true;
 	}
 	emittingMouseEvent = false;
+
+	return handled;
 }
 
 void
@@ -1233,9 +1276,11 @@ Surface::FindFirstCommonElement (List *l1, int *index1,
 	}
 }
 
-void
+bool
 Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event)
 {
+	bool handled = false;
+
 	// we can end up here if mozilla pops up the JS timeout
 	// dialog.  The problem is that JS might have registered a
 	// handler for the event we're going to emit, so when we end
@@ -1245,18 +1290,17 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 	// input_list is deleted.  the crossing-notify event is
 	// handled, then we return to the event that tripped the
 	// timeout, we crash.
-	if (emittingMouseEvent) {
-		return;
-	}
+	if (emittingMouseEvent)
+		return false;
 
-	if (event == NULL)
-		return;
+	if (toplevel == NULL || event == NULL)
+		return false;
 
 	if (captured) {
 		// if the mouse is captured, the input_list doesn't ever
 		// change, and we don't emit enter/leave events.  just emit
 		// the event on the input_list.
-		EmitEventOnList (emitter, input_list, event, -1);
+		handled = EmitEventOnList (emitter, input_list, event, -1);
 	}
 	else {
 		int surface_index;
@@ -1271,8 +1315,19 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 
 		gdk_event_get_coords (event, &x, &y);
 
-		toplevel->HitTest (cairo, x, y, new_input_list);
+		cairo_t *ctx = cairo;
+		bool destroy_ctx = false;
+		if (ctx == NULL) {
+			// this will happen in the windowless case
+			ctx = measuring_context_create ();
+			destroy_ctx = true;
+		}
+
+		toplevel->HitTest (ctx, x, y, new_input_list);
 		
+		if (destroy_ctx)
+			measuring_context_destroy (ctx);
+
 		// for 2 lists:
 		//   l1:  [a1, a2, a3, a4, ... ]
 		//   l2:  [b1, b2, b3, b4, ... ]
@@ -1303,16 +1358,16 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 					new_input_list, &new_index);
 
 		if (emit_leave)
-			EmitEventOnList (emit_MouseLeave, input_list, event, surface_index);
+			handled = EmitEventOnList (emit_MouseLeave, input_list, event, surface_index);
 
 		delete input_list;
 		input_list = new_input_list;
 
 		if (emit_enter)
-			EmitEventOnList (emit_MouseEnter, input_list, event, new_index);
+			handled = EmitEventOnList (emit_MouseEnter, input_list, event, new_index) || handled;
 
 		if ((surface_index == 0 && new_index == 0) || force_emit) {
-			EmitEventOnList (emitter, input_list, event, -1);
+			handled = EmitEventOnList (emitter, input_list, event, -1) || handled;
 		}
 	}
 
@@ -1322,6 +1377,8 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 		PerformCapture (pendingCapture);
 	else if (pendingReleaseCapture)
 		PerformReleaseCapture ();
+
+	return handled;
 }
 
 void
@@ -1372,7 +1429,8 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 {
 	Surface *s = (Surface *) data;
 
-	gtk_widget_grab_focus (widget);
+	if (widget)
+		gtk_widget_grab_focus (widget);
 
 	if (button->button != 1)
 		return FALSE;
@@ -1383,12 +1441,12 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *button, gpoin
 		gdk_event_free (s->mouse_event);
 	s->mouse_event = gdk_event_copy ((GdkEvent*)button);
 
-	s->HandleMouseEvent (emit_MouseLeftButtonDown, true, true, true, s->mouse_event);
+	bool handled = s->HandleMouseEvent (emit_MouseLeftButtonDown, true, true, true, s->mouse_event);
 
 	s->UpdateCursorFromInputList ();
 	s->SetCanFullScreen (false);
 	
-	return TRUE;
+	return handled;
 }
 
 gboolean
@@ -1400,7 +1458,7 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 		gdk_event_free (s->mouse_event);
 	s->mouse_event = gdk_event_copy ((GdkEvent*)event);
 
-	s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event);
+	bool handled = s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event);
 
 	if (event->is_hint) {
 #if GTK_CHECK_VERSION(2,12,0)
@@ -1417,20 +1475,21 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 
 	s->UpdateCursorFromInputList ();
 
-	return TRUE;
+	return handled;
 }
 
 gboolean
 Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
+	bool handled;
 
 	if (event->type == GDK_ENTER_NOTIFY) {
 		if (s->mouse_event)
 			gdk_event_free (s->mouse_event);
 		s->mouse_event = gdk_event_copy ((GdkEvent*)event);
 		
-		s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event);
+		handled = s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event);
 
 		s->UpdateCursorFromInputList ();
 	
@@ -1440,7 +1499,7 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 		// should be the same as the current one since we pass
 		// in the same x,y but I'm not sure that's something
 		// we can rely on.
-		s->HandleMouseEvent (emit_MouseLeave, false, false, true, s->mouse_event);
+		handled = s->HandleMouseEvent (emit_MouseLeave, false, false, true, s->mouse_event);
 
 		// MS specifies that mouse capture is lost when you mouse out of the control
 		if (s->captured)
@@ -1452,7 +1511,7 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 		s->input_list = new List();
 	}
 
-	return TRUE;
+	return handled;
 }
 
 Key

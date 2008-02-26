@@ -58,13 +58,17 @@ enum RuntimeInitFlags {
 #define RUNTIME_INIT_BROWSER (RUNTIME_INIT_MICROSOFT_CODECS)
 
 class Surface;
+typedef void (* MoonlightInvalidateFunc) (Surface *surface, Rect r, void *user_data);
+typedef void (* MoonlightRenderFunc) (Surface *surface, void *user_data);
 typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
 typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *user_data);
-typedef void (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
+typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
  public:
-	Surface (int width, int height);
+	// if we're windowed, @d will be NULL.
+	Surface (int width, int height, bool windowless = false);
+
 	virtual ~Surface ();
 
 	// allows you to redirect painting of the surface to an
@@ -137,7 +141,19 @@ class Surface : public EventObject {
 		
 		return new Downloader ();
 	}
-	
+
+	void SetRenderFunc (MoonlightRenderFunc render, void *user_data)
+	{
+		this->render = render;
+		this->render_data = user_data;
+	}
+
+	void SetInvalidateFunc (MoonlightInvalidateFunc invalidate, void *user_data)
+	{
+		this->invalidate = invalidate;
+		this->invalidate_data = user_data;
+	}
+
 	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data)
 	{
 		fps_report = report;
@@ -168,6 +184,19 @@ class Surface : public EventObject {
 #ifdef DEBUG
 	UIElement *debug_selected_element;
 #endif
+
+	gboolean expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y);
+
+	// widget callbacks
+	static gboolean expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data);
+	static gboolean motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data);
+	static gboolean crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data);
+	static gboolean key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data);
+	static gboolean key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data);
+	static gboolean button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer data);
+	static gboolean button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data);
+	static gboolean realized_callback (GtkWidget *widget, gpointer data);
+	static gboolean unrealized_callback (GtkWidget *widget, gpointer data);
 
 private:
 	gpointer downloader_context;
@@ -204,8 +233,15 @@ private:
 
 	Color *background_color;
 
-	// The widget where we draw.
+	// The widget where we draw.  NULL if we're windowless
 	GtkWidget *widget;
+
+	// Here we keep a reference to the normal drawing area when
+	// we are in fullscreen mode.
+	GtkWidget *widget_normal;
+
+	// We set widget to this whenever we are in fullscreen mode.
+	GtkWidget *widget_fullscreen;
 
 	// This currently can only be a canvas.
 	UIElement *toplevel;
@@ -235,14 +271,6 @@ private:
 
 	void UpdateFullScreen (bool value);
 
-	// Here we keep a reference to the normal drawing area when
-	// we are in fullscreen mode.
-	GtkWidget *widget_normal;
-
-	// We set widget to this whenever we are in
-	// fullscreen mode.
-	GtkWidget *widget_fullscreen;
-
 	// The clock group (toplevel clock) for this surface.
 	// Registered with the TimeManager.  All storyboards created
 	// within this surface are children of this ClockGroup.
@@ -252,7 +280,13 @@ private:
 	int frames;
 
 	GdkEvent *mouse_event;
-	
+
+	MoonlightInvalidateFunc invalidate;
+	void *invalidate_data;
+
+	MoonlightRenderFunc render;
+	void *render_data;
+
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
 	int64_t fps_start;
@@ -280,25 +314,15 @@ private:
 	static void update_input_cb (EventObject *sender, gpointer calldata, gpointer closure);
 	static void widget_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
 	static void widget_destroyed (GtkWidget *w, gpointer data);
-	static gboolean expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data);
 
 	void FindFirstCommonElement (List *l1, int *index1,
 				     List *l2, int *index2);
-	void EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *event, int end_idx);
+	bool EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *event, int end_idx);
 	void UpdateCursorFromInputList ();
-	void HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit,
+	bool HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit,
 			       GdkEvent *event);
 	void PerformCapture (UIElement *capture);
 	void PerformReleaseCapture ();
-
-	static gboolean motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data);
-	static gboolean crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data);
-	static gboolean key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data);
-	static gboolean key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data);
-	static gboolean button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer data);
-	static gboolean button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data);
-	static gboolean realized_callback (GtkWidget *widget, gpointer data);
-	static gboolean unrealized_callback (GtkWidget *widget, gpointer data);
 };
 
 /* for hit testing */

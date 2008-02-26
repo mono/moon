@@ -194,8 +194,8 @@ class EventObject {
 	static int DestroyedEvent;
 
  protected:
-	void Emit (char *event_name, gpointer calldata = NULL);
-	void Emit (int event_id, gpointer calldata = NULL);
+	bool Emit (char *event_name, gpointer calldata = NULL);
+	bool Emit (int event_id, gpointer calldata = NULL);
 
  private:
 	void FreeHandlers ();

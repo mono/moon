@@ -1,3 +1,40 @@
+2008-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (runtime_cairo_create): take the visual too, so the
+	plugin can send ours in - we can't rely on the pixmap having a
+	visual associated with it, because it's initialized with the
+	_foreign api which doesn't fill in the colormap. yay.
+	(Surface::Surface): if we're windowless don't create the widget.
+	also, init render/render_data and invalidate/invalidate_data to
+	NULL.
+	(Surface::ConnectEvents): exit early if we're windowless.
+	(Surface::Invalidate): call through the invalidate function if
+	there is one.  otherwise, default behavior (if we have a widget).
+	(Surface::Paint): exit early if no toplevel.
+	(Surface::render_cb): call through the render function if there is
+	on.
+	(Surface::expose_to_drawable): this is most of the guts of
+	expose_callback, changed to handle the case where we're already
+	drawing to the backbuffer (in the windowless case) and therefore
+	don't need the temporary pixmap.  Also, commented out some code
+	that clears the contents - do we actually need this?  The comment
+	for it is enormous...
+	(Surface::expose_event_callback): just call expose_to_drawable
+	with the widget's window.
+
+	* runtime.h (class Surface): we need to make the gtk callbacks
+	public since the plugin will be invoking them directly.  Also,
+	switch the event methods to returning bools, and add a new method
+	called expose_to_drawable, so the plugin can direct rendering to a
+	pixmap in the windowless case.
+
+	* uielement.h, uielement.cpp: change all the Emit* methods to
+	return bool.
+
+	* dependencyobject.h, dependency.cpp: make EventObject::Emit
+	return true if there were handlers for the event, and false
+	otherwise.
+
 2008-02-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::TextBlock): Removed the useless

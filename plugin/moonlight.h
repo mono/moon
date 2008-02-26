@@ -17,9 +17,16 @@
 #include <string.h>
 #include <config.h>
 
+#define XP_UNIX
+#define MOZ_X11
+
+#define Region _XxRegion
+#define Visual _XxVisual
 #include <npapi.h>
 #include <npupp.h>
 #include <npruntime.h>
+#undef Region
+#undef Visual
 
 #include <glib.h>
 

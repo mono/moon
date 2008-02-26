@@ -459,7 +459,11 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	}
 
 	NPBool supportsWindowless = FALSE;
-#if (NP_VERSION_MAJOR >= 1 || NP_VERSION_MINOR >= 18)
+
+	// XXX we should be using newer plugin api headers so we won't
+	// need the #if 1 hack here, nor the constant 17 below
+	// (instead of NPNVSupportsWindowless)
+#if 1 || (NP_VERSION_MAJOR >= 1 || NP_VERSION_MINOR >= 18)
 	int plugin_major, plugin_minor;
 	int netscape_major, netscape_minor;
 
@@ -473,18 +477,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	if (netscape_major >= 1 || netscape_minor >= 18) {
 		if (windowless)
 			NPN_GetValue(this->instance,
-				     // XXX
-				     //
-				     // use this line instead of
-				     // NPNVSupportsWindowless if you
-				     // want to compile this against
-				     // an earlier version of the
-				     // npapi. (you'll also need to
-				     // disable the #if and the if
-				     // version checks.)
-				     //
-				     // (NPNVariable)17
-				     NPNVSupportsWindowless,
+				     (NPNVariable)17, //XXX NPNVSupportsWindowless
 				     &supportsWindowless);
 	}
 #endif
@@ -583,6 +576,29 @@ PluginInstance::SetPageURL ()
 }
 
 void
+PluginInstance::RenderSurface (Surface *surface, void *user_data)
+{
+	PluginInstance *plugin = (PluginInstance *) user_data;
+
+	NPN_ForceRedraw (plugin->instance);
+}
+
+void
+PluginInstance::InvalidateSurface (Surface *surface, Rect rect, void *user_data)
+{
+	PluginInstance *plugin = (PluginInstance *) user_data;
+
+	NPRect nprect;
+
+	nprect.left = rect.x;
+	nprect.top = rect.y;
+	nprect.right = rect.x + rect.w;
+	nprect.bottom = rect.y + rect.h;
+
+	NPN_InvalidateRect (plugin->instance, &nprect);
+}
+
+void
 PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data)
 {
 	PluginInstance *plugin = (PluginInstance *) user_data;
@@ -625,15 +641,21 @@ PluginInstance::CreateWindow ()
 {
 	//DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
 
-	this->surface = new Surface (window->width, window->height);
+	surface = new Surface (window->width, window->height, windowless);
 
-	this->surface->SetFPSReportFunc (ReportFPS, this);
-	this->surface->SetCacheReportFunc (ReportCache, this);
-	this->surface->SetDownloaderContext (this);
+	if (windowless) {
+		surface->SetInvalidateFunc (InvalidateSurface, this);
+		surface->SetRenderFunc (RenderSurface, this);
+		surface->SetTrans (true);
+	}
+
+	surface->SetFPSReportFunc (ReportFPS, this);
+	surface->SetCacheReportFunc (ReportCache, this);
+	surface->SetDownloaderContext (this);
 	
 	SetPageURL ();
 
-	this->UpdateSource ();
+	UpdateSource ();
 	
 	TimeManager::Instance ()->SetMaximumRefreshRate (maxFrameRate);
 
@@ -643,20 +665,14 @@ PluginInstance::CreateWindow ()
 		delete c;
 	}
 
+	if (!windowless) {
+		//  GtkPlug container and surface inside
+		container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
 
-	//  GtkPlug container and surface inside
-	this->container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
-
-	if (windowless) {
-		// XXX do we need this?
-		GTK_WIDGET_SET_FLAGS (this->surface->GetWidget(), GTK_NO_WINDOW);
-	}
-	else {
 		// Connect signals to container
-		GTK_WIDGET_SET_FLAGS (GTK_WIDGET (this->container), GTK_CAN_FOCUS);
+		GTK_WIDGET_SET_FLAGS (GTK_WIDGET (container), GTK_CAN_FOCUS);
 
-		gtk_widget_add_events (
-				       this->container,
+		gtk_widget_add_events (container,
 				       GDK_BUTTON_PRESS_MASK |
 				       GDK_BUTTON_RELEASE_MASK |
 				       GDK_KEY_PRESS_MASK |
@@ -670,11 +686,11 @@ PluginInstance::CreateWindow ()
 				       GDK_FOCUS_CHANGE_MASK
 				       );
 
-		g_signal_connect (G_OBJECT(this->container), "event", G_CALLBACK (plugin_event_callback), this);
+		g_signal_connect (G_OBJECT(container), "event", G_CALLBACK (plugin_event_callback), this);
 
-		gtk_container_add (GTK_CONTAINER (container), this->surface->GetWidget());
-		//display = gdk_drawable_get_display (this->surface->GetWidget()->window);
-		gtk_widget_show_all (this->container);
+		gtk_container_add (GTK_CONTAINER (container), surface->GetWidget());
+		//display = gdk_drawable_get_display (surface->GetWidget()->window);
+		gtk_widget_show_all (container);
 	}
 }
 
@@ -1140,9 +1156,119 @@ int16_t
 PluginInstance::EventHandle (void *event)
 {
 	XEvent *xev = (XEvent*)event;
-	int handled = 0;
+	int16_t handled = 0;
 
-	printf ("EventHandle (%d)\n", xev->type);
+	switch (xev->type) {
+	case GraphicsExpose: {
+		GdkDrawable *drawable = gdk_pixmap_foreign_new (xev->xgraphicsexpose.drawable);
+		if (!drawable)
+			drawable = gdk_window_foreign_new (xev->xgraphicsexpose.drawable);
+
+		if (drawable) {
+			GdkVisual *visual = gdkx_visual_get (((NPSetWindowCallbackStruct*)window->ws_info)->visual->visualid);
+
+			if (visual) {
+				GdkEventExpose expose;
+
+				expose.type = GDK_EXPOSE;
+				expose.window = NULL;
+				expose.send_event = FALSE;
+				expose.area = Rect (xev->xgraphicsexpose.x,
+						    xev->xgraphicsexpose.y,
+						    xev->xgraphicsexpose.width,
+						    xev->xgraphicsexpose.height).ToGdkRectangle ();
+				/* XXX ugh */
+				expose.region = gdk_region_rectangle (&expose.area);
+
+				handled = surface->expose_to_drawable (drawable, visual, &expose, window->x, window->y);
+
+				gdk_region_destroy (expose.region);
+			}
+			else {
+				printf ("no gdk visual\n");
+			}
+			g_object_unref (drawable);
+		}
+		else {
+			printf ("no gdk drawable\n");
+		}
+		break;
+	}
+	case MotionNotify: {
+		GdkEventMotion motion;
+
+		motion.type = GDK_MOTION_NOTIFY;
+		motion.window = NULL;
+		motion.send_event = xev->xmotion.send_event;
+		motion.x = xev->xmotion.x;
+		motion.y = xev->xmotion.y;
+		motion.axes = NULL;
+		motion.state = xev->xmotion.state;
+		motion.is_hint = xev->xmotion.is_hint;
+		motion.device = NULL; // XXX
+		motion.x_root = xev->xmotion.x_root;
+		motion.y_root = xev->xmotion.y_root;
+
+		handled = Surface::motion_notify_callback (NULL, &motion, surface);
+		break;
+	}
+	case ButtonPress:
+	case ButtonRelease: {
+		GdkEventButton button;
+
+		button.type = xev->type == ButtonPress ? GDK_BUTTON_PRESS : GDK_BUTTON_RELEASE;
+		button.window = NULL;
+		button.send_event = xev->xbutton.send_event;
+		button.time = xev->xbutton.time;
+		button.x = xev->xbutton.x;
+		button.y = xev->xbutton.y;
+		button.x_root = xev->xbutton.x_root;
+		button.y_root = xev->xbutton.y_root;
+		button.state = xev->xbutton.state;
+		button.button = xev->xbutton.button;
+		button.axes = NULL;
+
+		handled = plugin_event_callback (NULL, (GdkEvent*)&button, this);
+		if (!handled) {
+			if (xev->type == ButtonPress)
+				handled = Surface::button_press_callback (NULL, &button, surface);
+			else
+				handled = Surface::button_release_callback (NULL, &button, surface);
+		}
+		break;
+	}
+	case EnterNotify:
+	case LeaveNotify: {
+		GdkEventCrossing crossing;
+
+		crossing.type = xev->type == EnterNotify ? GDK_ENTER_NOTIFY : GDK_LEAVE_NOTIFY;
+		crossing.window = crossing.subwindow = NULL;
+		crossing.send_event = xev->xcrossing.send_event;
+		crossing.time = xev->xcrossing.time;
+		crossing.x = xev->xcrossing.x;
+		crossing.y = xev->xcrossing.y;
+		crossing.x_root = xev->xcrossing.x_root;
+		crossing.y_root = xev->xcrossing.y_root;
+		crossing.mode = (GdkCrossingMode)xev->xcrossing.mode; // XXX
+		crossing.detail = (GdkNotifyType)xev->xcrossing.detail; // XXX
+		crossing.focus = xev->xcrossing.focus;
+		crossing.state = xev->xcrossing.state;
+
+		Surface::crossing_notify_callback (NULL, &crossing, surface);
+		break;
+	}
+	case FocusIn:
+	case FocusOut: {
+		// don't think there's anything to do for these.
+		// maybe we shouldn't respond to keypresses at all
+		// unless we're focused?  will mozilla even send them
+		// to us?
+		break;
+	}
+	default:
+		printf ("Unhandled Xlib event %d\n", xev->type);
+		break;
+	}
 
 	return handled;
 }
