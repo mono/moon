@@ -2537,10 +2537,10 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("add");
 
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]);
-		col->Add (el->GetDependencyObject ());
+		int n = col->Add (el->GetDependencyObject ());
 		
-		VOID_TO_NPVARIANT (*result);
-		
+		INT32_TO_NPVARIANT (n, *result);
+
 		return true;
 	}
 	case MoonId_Remove: {
