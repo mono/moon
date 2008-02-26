@@ -446,8 +446,9 @@ bool
 UIElement::EmitMouseEnter (GdkEvent *event)
 {
 	MouseEventArgs *e = new MouseEventArgs (event);
-	Emit (MouseEnterEvent, e);
-	return e->unref ();
+	bool rv = Emit (MouseEnterEvent, e);
+	e->unref ();
+	return rv;
 }
 
 bool
