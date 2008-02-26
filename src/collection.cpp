@@ -125,6 +125,9 @@ Collection::Insert (int index, DependencyObject *data)
 			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
 		return false;
 	}
+
+	if (index < 0)
+		return false;
 	
 	generation++;
 	list->Insert (new Collection::Node (data, this), index);
