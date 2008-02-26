@@ -1,5 +1,10 @@
 2008-02-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* plugin/plugin-class.cpp: Throw js exception when Collection.Insert
+	returns -1.
+
+2008-02-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* plugin/plugin-class.cpp: Throw js exception when Collection.Add returns
 	-1.
 

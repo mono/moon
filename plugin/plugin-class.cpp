@@ -2593,7 +2593,9 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		int index = NPVARIANT_TO_INT32 (args[0]);
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args[1]);
 		
-		col->Insert (index, el->GetDependencyObject ());
+		bool b = col->Insert (index, el->GetDependencyObject ());
+		if (! b)
+			THROW_JS_EXCEPTION ("insert");
 		
 		VOID_TO_NPVARIANT (*result);
 		
