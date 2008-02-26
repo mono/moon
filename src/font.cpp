@@ -977,7 +977,7 @@ TextFont::Kerning (gunichar left, gunichar right)
 	
 	FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
 	
-	return (double) (kerning.x / scale) / 64;
+	return (double) kerning.x / (scale * 64);
 }
 
 double
@@ -986,7 +986,7 @@ TextFont::Descender ()
 	if (!face)
 		return 0.0;
 	
-	return (double) (face->size->metrics.descender / scale) / 64;
+	return (double) face->size->metrics.descender / (scale * 64);
 }
 
 double
@@ -995,7 +995,7 @@ TextFont::Ascender ()
 	if (!face)
 		return 0.0;
 	
-	return (double) (face->size->metrics.ascender / scale) / 64;
+	return (double) face->size->metrics.ascender / (scale * 64);
 }
 
 double
@@ -1004,7 +1004,7 @@ TextFont::Height ()
 	if (!face)
 		return 0.0;
 	
-	return (double) (face->size->metrics.height / scale) / 64;
+	return (double) face->size->metrics.height / (scale * 64);
 }
 
 static int
@@ -1299,7 +1299,9 @@ TextFont::UnderlinePosition ()
 	if (!face)
 		return 0.0;
 	
-	return (double) -((face->underline_position / scale) / 64.0);
+	FT_Long position = FT_MulFix (-face->underline_position, face->size->metrics.y_scale);
+	
+	return ((double) position) / (scale * 64);
 }
 
 double
@@ -1308,8 +1310,9 @@ TextFont::UnderlineThickness ()
 	if (!face)
 		return 0.0;
 	
-	// Note: integer math seems to match more closely with Silverlight here.
-	return (double) ((face->underline_thickness / scale) / 64);
+	FT_Long thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
+	
+	return ((double) thickness) / (scale * 64);
 }
 
 void

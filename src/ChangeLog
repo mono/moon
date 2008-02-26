@@ -1,17 +1,24 @@
-2008-02-26  Michael Dominic K.  <mdk@mdk.am>
+2008-02-26  Jeffrey Stedfast  <fejj@novell.com>
 
-	* src/text.cpp: TextBlock when constructed by default has an empty Inlines
-	collection instead of NULL. Along with all the previous commits fixes the
-	OM_CreateAddInsert.htm test.
-
-2008-02-26  Michael Dominic K.  <mdk@mdk.am>
-
-	* src/collection.cpp: Don't allow collection insert at negative position.
+	* font.cpp (TextFont::UnderlinePosition): Fixed to take font
+	y_scale metrics into consideration.
+	(TextFont::UnderlineThickness): Same.
 
 2008-02-26  Michael Dominic K.  <mdk@mdk.am>
 
-	* src/collection.cpp: Don't add the object to the collection if it already
-	contains the object (return -1 instead).
+	* src/text.cpp: TextBlock when constructed by default has an empty
+	Inlines collection instead of NULL. Along with all the previous
+	commits fixes the OM_CreateAddInsert.htm test.
+
+2008-02-26  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/collection.cpp: Don't allow collection insert at negative
+	position.
+
+2008-02-26  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/collection.cpp: Don't add the object to the collection if it
+	already contains the object (return -1 instead).
 
 2008-02-26  Michael Dominic K.  <mdk@mdk.am>
 
