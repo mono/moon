@@ -115,6 +115,8 @@ class TextFont {
 	FcPattern *pattern;
 	FT_Face face;
 	
+	double underline_thickness;
+	double underline_position;
 	double scale;
 	
 	GlyphInfo *glyphs;

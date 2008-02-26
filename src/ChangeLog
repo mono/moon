@@ -1,3 +1,9 @@
+2008-02-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (TextFont::TextFont): Precalculate underline position
+	and thickness. Also, we need to adjust the position based on 1/2
+	the underline thickness.
+
 2008-02-26  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (runtime_cairo_create): take the visual too, so the

@@ -776,6 +776,7 @@ found:
 TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name)
 {
 	FcPattern *matched, *fallback = NULL;
+	FT_Long position, thickness;
 	FcChar8 *filename = NULL;
 	char **families = NULL;
 	FcResult result;
@@ -892,7 +893,17 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 		
 		glyphs = g_new0 (GlyphInfo, 256);
 		glyphs[0].unichar = 1; /* invalidate */
+		
+		// calculate underline thickness
+		thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
+		underline_thickness = ((double) thickness) / (scale * 64);
+		
+		// calculate underline position
+		position = FT_MulFix (-face->underline_position, face->size->metrics.y_scale);
+		underline_position = ((double) position) / (scale * 64) + ((underline_thickness + 1) / 2.0);
 	} else {
+		underline_thickness = 0.0;
+		underline_position = 0.0;
 		glyphs = NULL;
 	}
 	
@@ -1296,23 +1307,13 @@ TextFont::GetGlyphInfoByIndex (uint32_t index)
 double
 TextFont::UnderlinePosition ()
 {
-	if (!face)
-		return 0.0;
-	
-	FT_Long position = FT_MulFix (-face->underline_position, face->size->metrics.y_scale);
-	
-	return ((double) position) / (scale * 64);
+	return underline_position;
 }
 
 double
 TextFont::UnderlineThickness ()
 {
-	if (!face)
-		return 0.0;
-	
-	FT_Long thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
-	
-	return ((double) thickness) / (scale * 64);
+	return underline_thickness;
 }
 
 void
