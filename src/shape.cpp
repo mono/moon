@@ -2133,6 +2133,11 @@ Path::ComputeShapeBounds ()
 
 	shape_bounds = bounding_rect_for_transformed_rect (&stretch_transform, shape_bounds);
 
+	if (vh && vw) {
+		shape_bounds.w = MIN (shape_bounds.w, vw->AsDouble () - shape_bounds.x);
+		shape_bounds.h = MIN (shape_bounds.h, vh->AsDouble () - shape_bounds.y);
+	}
+	
 	origin = Point (shape_bounds.x, shape_bounds.y);
 	return shape_bounds;
 }
