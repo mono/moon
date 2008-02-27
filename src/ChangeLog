@@ -1,5 +1,8 @@
-2008-02-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-02-27  Larry Ewing  <lewing@novell.com>
+	* shape.cpp: center the filled image within the new bounds.
 
+2008-02-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+	
 	* media.h, media.cpp: When a media is opened, seek to the current position.
 	* value.cpp: ToString: Return 'NULL' if we're null.
 

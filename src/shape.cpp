@@ -375,7 +375,7 @@ void
 Shape::ComputeBounds ()
 {
 	extents = ComputeShapeBounds ();
-	extents = extents.RoundOut ();
+	//extents = extents.RoundOut ();
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
 						     IntersectBoundsWithClipPath (extents, false));
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
@@ -2118,9 +2118,11 @@ Path::ComputeShapeBounds ()
 		break;
 		}
 		
+		cairo_matrix_translate (&stretch_transform, w * 0.5, h * 0.5);
 		cairo_matrix_scale (&stretch_transform, sw, sh);
+		cairo_matrix_translate (&stretch_transform, -shape_bounds.w * 0.5, -shape_bounds.h * 0.5);
 		cairo_matrix_translate (&stretch_transform, -shape_bounds.x, -shape_bounds.y);
-		
+
 		// Double check our math
 		cairo_matrix_t test = stretch_transform;
 		if (cairo_matrix_invert (&test)) {
@@ -2130,11 +2132,6 @@ Path::ComputeShapeBounds ()
 	}
 
 	shape_bounds = bounding_rect_for_transformed_rect (&stretch_transform, shape_bounds);
-		
-	if (vh && vw) {
-		shape_bounds.w = MIN (shape_bounds.w, vw->AsDouble ());
-		shape_bounds.h = MIN (shape_bounds.h, vh->AsDouble ());
-	}
 
 	origin = Point (shape_bounds.x, shape_bounds.y);
 	return shape_bounds;
