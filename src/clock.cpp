@@ -695,6 +695,9 @@ Clock::ComputeNewTime ()
 		our_delta = (TimeSpan)(our_delta * timeline->GetSpeedRatio());
 	}
 
+	if (! forward)
+		our_delta = - our_delta;
+
 	if (seeking) {
 		/* MS starts up animations if you seek them */
 		if (state != Clock::Active)
@@ -708,7 +711,7 @@ Clock::ComputeNewTime ()
 		if (state == Clock::Stopped)
 			return ret_time;
 
-		ret_time = current_time + (forward ? our_delta : -our_delta);
+		ret_time = current_time + our_delta;
 	}
 
 	/* if our duration is automatic or forever, we're done. */
