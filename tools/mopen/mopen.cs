@@ -67,6 +67,7 @@ class MonoOpen {
 	static List<Storyboard> storyboards = null;
 	static int current_storyboard = 0;
 	static bool all_stories = false;
+	static bool sync = false;
 	
 	static void Help ()
 	{
@@ -79,6 +80,7 @@ class MonoOpen {
 				   "   --parseonly     Only parse (don't display) the XAML input\n" + 
 				   "   --story N1[,Nx] Plays the storyboard name N1, N2, .. Nx when the clicked\n" +
 				   "   -s,--stories    Automatically prepare to play all stories on click\n" + 
+				   "   --sync          Make the gdk connection synchronous\n"
 				   "   --transparent   Transparent toplevel\n" 
 				   );
 	}
@@ -130,7 +132,12 @@ class MonoOpen {
 
 	static int LoadXaml (string file, ArrayList args)
 	{
-		Application.Init ();
+		string [] test = { "" };
+
+		if (sync)
+			test [0] = "--sync";
+
+		Application.Init ("mopen", ref test);
 		GtkSilver.Init ();
 		window = new Window (file);
 
@@ -282,7 +289,9 @@ class MonoOpen {
 			case "-f": case "--fixed":
 				fixedwindow = true;
 				break;
-
+			case "--sync":
+				sync = true;
+				break;
 			case "--desklet": case "-d":
 				desklet = true;
 				transparent = true;
