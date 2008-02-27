@@ -253,6 +253,7 @@ private:
 	void ReadMarkers ();
 	void CheckMarkers (uint64_t from, uint64_t to);
 	void CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *col, bool remove);
+	TimeSpan UpdatePlayerPosition (Value *value);
 	
 public:
 	// properties

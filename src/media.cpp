@@ -549,6 +549,8 @@ MediaElement::Reinitialize ()
 	val = GetValue (MediaElement::AttributesProperty);
 	if (val != NULL && val->AsCollection () != NULL)
 		val->AsCollection ()->Clear ();
+
+	SetValue (PositionProperty, Value (0, Type::TIMESPAN));
 }
 
 void
@@ -581,6 +583,8 @@ MediaElement::MediaOpened (Media *media)
 	mplayer->SetMuted (media_element_get_is_muted (this));
 	mplayer->SetVolume (media_element_get_volume (this));
 	mplayer->SetBalance (media_element_get_balance (this));
+
+	UpdatePlayerPosition (GetValue (MediaElement::PositionProperty));
 
 	Emit (MediaElement::MediaOpenedEvent);
 }
@@ -1172,12 +1176,31 @@ Value *
 MediaElement::GetValue (DependencyProperty *prop)
 {
 	if (prop == MediaElement::PositionProperty) {
-		uint64_t position = mplayer->Position ();
-		Value v = Value (TimeSpan_FromPts (position), Type::TIMESPAN);
+		bool use_mplayer = true;
+		switch (state) {
+		case Opening:
+		case Closed:
+		case Error:
+			use_mplayer = false;
+			break;
+		case Stopped:
+		case Buffering:
+		case Playing:
+		case Paused:
+			use_mplayer = true;
+			break;
+		}
 		
-		flags |= UpdatingPosition;
-		SetValue (prop, &v);
-		flags &= ~UpdatingPosition;
+		if (use_mplayer) {
+			uint64_t position = mplayer->Position ();
+			Value v = Value (TimeSpan_FromPts (position), Type::TIMESPAN);
+			
+			flags |= UpdatingPosition;
+			SetValue (prop, &v);
+			flags &= ~UpdatingPosition;
+		} else {
+			Value *v = MediaBase::GetValue (prop);
+		}
 	}
 	
 	return MediaBase::GetValue (prop);
@@ -1187,6 +1210,25 @@ void
 MediaElement::SetValue (DependencyProperty *prop, Value value)
 {
 	MediaBase::SetValue (prop, value);
+}
+
+TimeSpan
+MediaElement::UpdatePlayerPosition (Value *value)
+{
+	Duration *duration = media_element_get_natural_duration (this);
+	TimeSpan position = value->AsTimeSpan ();
+	
+	if (duration->HasTimeSpan () && position > duration->GetTimeSpan ())
+		position = duration->GetTimeSpan ();
+	else if (position < 0)
+		position = 0;
+	
+	// position is a timespan, while mplayer expects time pts
+	buffering_pts = TimeSpan_ToPts (position); 
+	mplayer->Seek (TimeSpan_ToPts (position));
+	Invalidate ();
+	
+	return position;
 }
 
 void
@@ -1202,6 +1244,7 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 		case Opening:
 		case Closed:
 		case Error:
+			MediaBase::SetValue (prop, value);
 			return;
 		case Buffering:
 		case Playing: // Play
@@ -1211,21 +1254,7 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 			break;
 		}
 		
-		// Buffering, Playing: playing
-		// Paused, Stopped: paused
-		
-		Duration *duration = media_element_get_natural_duration (this);
-		TimeSpan position = value->AsTimeSpan ();
-		
-		if (duration->HasTimeSpan () && position > duration->GetTimeSpan ())
-			position = duration->GetTimeSpan ();
-		else if (position < 0)
-			position = 0;
-		
-		// position is a timespan, while mplayer expects time pts
-		buffering_pts = TimeSpan_ToPts (position); 
-		mplayer->Seek (TimeSpan_ToPts (position));
-		Invalidate ();
+		TimeSpan position = UpdatePlayerPosition (value);
 		
 		if (IsStopped ())
 			SetState (Paused);

@@ -278,6 +278,9 @@ Value::FreeValue ()
 char *
 Value::ToString ()
 {
+	if (this == NULL)
+		return "NULL";
+
 	GString *str = g_string_new ("");
 	char *t = NULL;
 	
