@@ -465,6 +465,16 @@ Shape::OnPropertyChanged (DependencyProperty *prop)
 		if ((prop == FrameworkElement::HeightProperty) || (prop == FrameworkElement::WidthProperty))
 			InvalidatePathCache ();
 
+		if (prop == UIElement::OpacityProperty) {
+			if (GetValue (prop)->AsDouble () < 0.003)
+				InvalidateSurfaceCache ();
+		} else {
+			if (prop == UIElement::VisibilityProperty) {
+				if (GetValue (prop)->AsInt32() != VisibilityVisible)
+					InvalidateSurfaceCache ();
+			}
+		}
+
 		FrameworkElement::OnPropertyChanged (prop);
 		return;
 	}

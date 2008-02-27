@@ -1,3 +1,7 @@
+2008-02-27  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp: More cases to invalidate (free mem) of the surface cache.
+
 2008-02-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (TextFont::TextFont): Precalculate underline position
