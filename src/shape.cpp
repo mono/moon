@@ -2136,7 +2136,6 @@ Path::ComputeShapeBounds ()
 		shape_bounds.h = MIN (shape_bounds.h, vh->AsDouble ());
 	}
 
-	//FIXME
 	origin = Point (shape_bounds.x, shape_bounds.y);
 	return shape_bounds;
 }
