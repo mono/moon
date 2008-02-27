@@ -32,6 +32,12 @@
 
 2008-02-27  Michael Dominic K.  <mdk@mdk.am>
 
+	* src/animation.cpp: When storyboard is completed, Teardown the clocks
+	only if we're realling stopping (not holding). Fixes the
+	StoryBoard_ModifyProperty test.
+
+2008-02-27  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: Make sure we actually hit the our_delta < 0 code 
 	path. Fixes the AutoReversed/Repeated animations.
 

@@ -261,7 +261,11 @@ void
 Storyboard::teardown_clockgroup (EventObject *sender, gpointer calldata, gpointer closure)
 {
 	Storyboard *sb = (Storyboard *)closure;
-	sb->TeardownClockGroup ();
+
+	// Only teardown the clocks if the whole storyboard is stopped.
+	// Otherwise just keep running.
+	if (sb->root_clock->GetClockState () == Clock::Stopped)
+		sb->TeardownClockGroup ();
 }
 
 void
