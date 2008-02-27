@@ -1,0 +1,10 @@
+<DRTList>
+   <Test id="1"
+	inputFile="video-seek.html"
+	masterFile10="masters/video-seek.html.png"
+   />
+   <Test id="2"
+	inputFile="video-seek-7.html"
+	masterFile10="masters/video-seek-7.html.png"
+   />
+</DRTList>

@@ -1,3 +1,10 @@
+2008-02-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml, masters, masters/video-seek.html.png,
+	  masters/video-seek-7.html.png, timecode-long.wmv, video.xaml,
+	  video-auto.xaml, video-seek.html, video-seek-7.html: Added a drtlist and
+	  a few media tests.
+
 2007-12-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Created a web page to test for markers, added some videos.
