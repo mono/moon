@@ -80,7 +80,7 @@ class MonoOpen {
 				   "   --parseonly     Only parse (don't display) the XAML input\n" + 
 				   "   --story N1[,Nx] Plays the storyboard name N1, N2, .. Nx when the clicked\n" +
 				   "   -s,--stories    Automatically prepare to play all stories on click\n" + 
-				   "   --sync          Make the gdk connection synchronous\n"
+				   "   --sync          Make the gdk connection synchronous\n" +
 				   "   --transparent   Transparent toplevel\n" 
 				   );
 	}
