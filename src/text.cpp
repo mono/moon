@@ -126,6 +126,7 @@ DependencyProperty *Inline::TextDecorationsProperty;
 Inline::Inline ()
 {
 	foreground = NULL;
+	autogen = false;
 	
 	/* initialize the font description */
 	if (RENDER_USING_PANGO)
@@ -1064,6 +1065,7 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 				if (inptr > str) {
 					*inptr = '\0';
 					run = new Run ();
+					run->autogen = true;
 					run_set_text ((Run *) run, str);
 					inlines->Add (run);
 					run->unref ();
@@ -1071,6 +1073,7 @@ TextBlock::SetValue (DependencyProperty *property, Value *value)
 				
 				if (inptr < d) {
 					run = new LineBreak ();
+					run->autogen = true;
 					inlines->Add (run);
 					run->unref ();
 					inptr++;

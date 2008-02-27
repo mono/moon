@@ -36,18 +36,19 @@ class Inline : public DependencyObject {
 	static DependencyProperty *ForegroundProperty;
 	static DependencyProperty *TextDecorationsProperty;
 	
-	Inline ();
-	virtual ~Inline ();
-	virtual Type::Kind GetObjectType () { return Type::INLINE; }
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
-	
 	union {
 		PangoFontDescription *pango;
 		TextFontDescription *custom;
 	} font;
 	
 	Brush *foreground;
+	bool autogen;
+	
+	Inline ();
+	virtual ~Inline ();
+	virtual Type::Kind GetObjectType () { return Type::INLINE; }
+	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 };
 
 char *inline_get_font_family (Inline *inline_);

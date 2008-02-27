@@ -928,17 +928,23 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		p->current_element->item->SetValue (content, Value (p->cdata->str));
 	} else if (p->current_element->item && is_instance_of (p->current_element, Type::TEXTBLOCK)) {
 		Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);
-		List::Node *last = inlines ? inlines->list->Last () : NULL;
 		
-		if (!p->cdata && next_element && !strcmp (next_element, "Run") && inlines &&
-		    last && ((Collection::Node *) last)->obj->GetObjectType () == Type::RUN) {
-			// LWSP between <Run> elements is to be treated as a single-SPACE <Run> element
-			p->cdata = g_string_new (" ");
-		} else if (!p->cdata) {
-			// This is either LWSP before the first <Run> element,
-			// after the last <Run> element, or between a <Run>
-			// element and a <LineBreak> element.
-			goto done;
+		if (!p->cdata) {
+			Collection::Node *last = inlines ? (Collection::Node *) inlines->list->Last () : NULL;
+			DependencyObject *obj = last ? last->obj : NULL;
+			
+			if (next_element && !strcmp (next_element, "Run") && obj && obj->GetObjectType () == Type::RUN &&
+			    !((Inline *) last->obj)->autogen) {
+				// LWSP between <Run> elements is to be treated as a single-SPACE <Run> element
+				p->cdata = g_string_new (" ");
+			} else {
+				// This is one of the following cases:
+				//
+				// 1. LWSP before the first <Run> element
+				// 2. LWSP after the last <Run> element
+				// 3. LWSP between <Run> and <LineBreak> elements
+				goto done;
+			}
 		}
 		
 		Run *run = new Run ();
