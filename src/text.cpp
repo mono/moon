@@ -1396,6 +1396,7 @@ void
 Glyphs::Layout ()
 {
 	uint32_t code_units, glyph_count, i;
+	bool first_char = true;
 	double x, y, w, h, v;
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
@@ -1478,10 +1479,18 @@ Glyphs::Layout ()
 					h = MAX (v, h);
 				}
 				
-				if (attr && (attr->set & uOffset))
+				if (attr && (attr->set & uOffset)) {
 					v = x + (attr->uoffset * scale);
-				else
+				} else {
+					if (first_char) {
+						if (glyph->metrics.horiBearingX < 0)
+							x -= glyph->metrics.horiBearingX;
+						
+						first_char = false;
+					}
+					
 					v = x;
+				}
 				
 				v += glyph->metrics.horiAdvance;
 				w = MAX (v, w);
@@ -1536,10 +1545,18 @@ Glyphs::Layout ()
 			h = MAX (v, h);
 		}
 		
-		if ((attr->set & uOffset))
+		if ((attr->set & uOffset)) {
 			v = x + (attr->uoffset * scale);
-		else
+		} else {
+			if (first_char) {
+				if (glyph->metrics.horiBearingX < 0)
+					x -= glyph->metrics.horiBearingX;
+				
+				first_char = false;
+			}
+			
 			v = x;
+		}
 		
 		v += glyph->metrics.horiAdvance;
 		w = MAX (v, w);
@@ -1589,6 +1606,7 @@ void
 Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	uint32_t code_units, glyph_count, i;
+	bool first_char = true;
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
 	TextFont *font;
@@ -1664,10 +1682,18 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 				else
 					y1 = y0;
 				
-				if (attr && (attr->set & uOffset))
+				if (attr && (attr->set & uOffset)) {
 					x1 = x0 + (attr->uoffset * scale);
-				else
+				} else {
+					if (first_char) {
+						if (glyph->metrics.horiBearingX < 0)
+							x0 -= glyph->metrics.horiBearingX;
+						
+						first_char = false;
+					}
+					
 					x1 = x0;
+				}
 				
 				if (!font->IsScalable ())
 					font->Render (cr, glyph, x1, y1);
@@ -1700,10 +1726,18 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		else
 			y1 = y0;
 		
-		if ((attr->set & uOffset))
+		if ((attr->set & uOffset)) {
 			x1 = x0 + (attr->uoffset * scale);
-		else
+		} else {
+			if (first_char) {
+				if (glyph->metrics.horiBearingX < 0)
+					x0 -= glyph->metrics.horiBearingX;
+				
+				first_char = false;
+			}
+			
 			x1 = x0;
+		}
 		
 		if (!font->IsScalable ())
 			font->Render (cr, glyph, x1, y1);

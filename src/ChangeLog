@@ -1,5 +1,10 @@
 2008-02-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (Glyphs::Render): Use horiBearingX for the first char
+	in the Glyphs string just like we do for TextBlock rendering.
+
+2008-02-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	Fixes the last remaining issue in the TextRegressions.htm test.
 
 	* xaml.cpp (flush_char_data): Only preserve LWSP in CDATA between
