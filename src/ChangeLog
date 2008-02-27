@@ -15,7 +15,9 @@
 
 2008-02-27  Larry Ewing  <lewing@novell.com>
 
-	* shape.cpp: add corrected bounds clamping back in.
+	* shape.cpp: change the shape surface cache to cache in device
+	coordinates and rework the candidate restrictions to reject
+	huge shapes and allow scaled caches.
 
 2008-02-27  Larry Ewing  <lewing@novell.com>
 

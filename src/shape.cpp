@@ -284,13 +284,16 @@ int number = 0;
 bool
 Shape::IsCandidateForCaching (void)
 {
-	if (bounds.w + bounds.h < 300)
+	
+	if (IsEmpty ())
 		return FALSE;
 
-	int diffw = fabs (bounds.w - extents.w);
-	int diffh = fabs (bounds.h - extents.h);
+	if (bounds.w * bounds.h < 60000)
+		return FALSE;
 
-	if (diffw > 5 || diffh > 5)
+	// one last line of defense, lets not cache things 
+	// much larger than the screen.
+	if (bounds.w * bounds.h > 4000000)
 		return FALSE;
 
 	return TRUE;
@@ -303,8 +306,6 @@ Shape::IsCandidateForCaching (void)
 void
 Shape::DoDraw (cairo_t *cr, bool do_op)
 {
-	int w;
-	int h;
 	cairo_t *cached_cr = NULL;
 	cairo_pattern_t *cached_pattern = NULL;
 	bool ret = FALSE;
@@ -321,38 +322,45 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 			return;
 	} else {
 		if (cached_surface == NULL && IsCandidateForCaching ()) {
-			w = extents.w;
-			h = extents.h;
-			w = MAX (w, 1);
-			h = MAX (h, 1);
+			Rect cache_extents = bounds.RoundOut ();
 
-			cached_surface = image_brush_create_similar (cr, w, h);
+			g_warning ("bounds (%f, %f), extents (%f, %f), cache_extents (%f, %f)", 
+				   bounds.w, bounds.h,
+				   extents.w, extents.h,
+				   cache_extents.w, cache_extents.h);
+
+			cached_surface = image_brush_create_similar (cr, cache_extents.w, cache_extents.h);
+			cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
 			cached_cr = cairo_create (cached_surface);
-			cairo_translate (cached_cr, - extents.x, - extents.y);
+
+			cairo_set_matrix (cached_cr, &absolute_xform);
+			Clip (cached_cr);
+	
 			ret = DrawShape (cached_cr, do_op);
+
 			cairo_destroy (cached_cr);
 
 			// Increase our cache size
 			// w * h * 4 might be incorrect in some cases actually...
 			// but in 99% it should be okay. If you're running on a 16bit
 			// server you're prolly screwed with cairo perf anyways.
-			cached_size = w * h * 4;
+			cached_size = cache_extents.w * cache_extents.h * 4;
 			GetSurface ()->AddToCacheSizeCounter (cached_size);
 		}
 
-		cairo_set_matrix (cr, &absolute_xform);
-		if (cached_surface)
-			cairo_translate (cr, extents.x, extents.y);
-		Clip (cr);
-
 		if (cached_surface) {
 			cached_pattern = cairo_pattern_create_for_surface (cached_surface);
+			cairo_identity_matrix (cr);
 			cairo_set_source (cr, cached_pattern);
 			cairo_paint (cr);
 			cairo_pattern_destroy (cached_pattern);
+
 			if (ret)
 				return;
 		} else {
+			cairo_set_matrix (cr, &absolute_xform);
+			Clip (cr);
+
 			if (DrawShape (cr, do_op))
 				return;
 		}
@@ -374,8 +382,8 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 void
 Shape::ComputeBounds ()
 {
+	InvalidateSurfaceCache ();
 	extents = ComputeShapeBounds ();
-	//extents = extents.RoundOut ();
 	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
 						     IntersectBoundsWithClipPath (extents, false));
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
