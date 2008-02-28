@@ -1,3 +1,17 @@
+2008-02-28  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin/plugin-class.cpp: When getting property value try to resolve it
+	to string if it's an enum. This way from js we ie. get:
+
+	Arc.SweepDirection == "Counterclockwise" 
+
+	instead of:
+
+	Arc.SweepDirection == 0 (enum int value).
+
+	Fixes finally the OM_RemoveClearRemoveAt.htm test (with other collection
+	fixes) and #353960.
+
 2008-02-28  Fernando Herrera  <fherrera@novell.com>
 
 	* Makefile.am:

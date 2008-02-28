@@ -3,6 +3,7 @@
  *
  * Author:
  *   Everaldo Canuto (everaldo@novell.com)
+ *   Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -2132,7 +2133,11 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 			return true;
 		}
 
-		value_to_variant (this, value, result);
+		const char *s = NULL;
+		if (convert_property_value_to_enum_str (p, value, &s))
+			string_to_npvariant (s, result);
+		else
+			value_to_variant (this, value, result);
 
 		return true;
 	}
