@@ -1,5 +1,10 @@
 2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin-downloader.cpp: Don't call dl->NotifySize with the partial size of
+	  the file, should only be called with the final size of the file.
+
+2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin.mdp: Updated.
 
 2008-02-28  Jeffrey Stedfast  <fejj@novell.com>

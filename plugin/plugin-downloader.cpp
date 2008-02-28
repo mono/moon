@@ -52,7 +52,6 @@ p_downloader_mmsh_reader (BrowserMmshResponse *response, gpointer context, char 
 	StreamNotify *notify = (StreamNotify*) context;
 	Downloader *dl = (Downloader *) notify->pdata;
 
-	dl->NotifySize (length);
 	dl->Write (buffer, offset, length);
 }
 
@@ -65,6 +64,7 @@ p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
 
 	fname = dl->GetResponseFile (NULL);
         dl->NotifyFinished (fname);
+	// TODO: call dl->NotifySize with the final size of the downloaded file.
 
 	g_print ("FINISHED %s\n", fname);
 }
