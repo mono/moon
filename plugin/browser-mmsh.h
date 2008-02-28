@@ -39,11 +39,12 @@
 typedef void (* HttpHeaderHandler) (const char *name, const char *value);
 
 class BrowserMmshResponse : public nsIHttpHeaderVisitor {
-private:
 	nsCOMPtr<nsIChannel> channel;
 	HttpHeaderHandler handler;
+
 protected:
 	NS_DECL_NSIHTTPHEADERVISITOR
+
 public:
 	NS_DECL_ISUPPORTS
 
@@ -72,9 +73,9 @@ class AsyncBrowserMmshResponse : public BrowserMmshResponse, public nsIStreamLis
 	AsyncMmshResponseDataAvailableHandler reader;
 	gpointer context;
 	char *tmp_buffer;
-	int tmp_size;
-	int size;
-	int asf_packet_size;
+	uint32_t tmp_size;
+	uint32_t size;
+	uint32_t asf_packet_size;
 	
 protected:
 	NS_DECL_NSIREQUESTOBSERVER

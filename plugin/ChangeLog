@@ -1,5 +1,9 @@
 2008-02-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* browser-mmsh.cpp (AsyncBrowserMmshResponse::OnDataAvailable):
+	'size' needs to be a uint32 so that the comparison is between 2
+	uint32's rather than a uint32 and an int32.
+
 	* browser-mmsh.h (class AsyncBrowserMmshResponse): Fixed a
 	compiler warning.
 

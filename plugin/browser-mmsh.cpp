@@ -129,10 +129,10 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 	tmp_size = 0;
 
 	while (length > 0) {
-		guint8 type;
-		guint16 size;
+		uint8_t type;
+	        uint32_t size;
 		char *mms_packet;
-		guint16 packet_size;
+		uint16_t packet_size;
 
 		if (length < 3) { // Incomplete packet
 			tmp_buffer = (char*) NS_Alloc (length);
@@ -140,7 +140,8 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 			tmp_size = length;
 			return NS_OK;
 		}
-		type = (guint8) read_buffer[1];
+		
+		type = (uint8_t) read_buffer[1];
 		size = LE_16 (&read_buffer[2]);
 
 		if (length < size + 4) { // Incomplete Data packet
