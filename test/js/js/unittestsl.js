@@ -75,7 +75,7 @@ Object.extend (Test.Unit.Testcase.prototype, {
 	_checkModelValues: function (model, obj) {
 		if (model.properties) {
 			for (var i = 0; i < model.properties.length; i++) {
-				var name = model.properties [length];
+				var name = model.properties [i];
 				var fullname = model.name + "." + name;
 				var prop = Properties [fullname];
 				if (!prop)
