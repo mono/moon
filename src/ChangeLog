@@ -1,5 +1,13 @@
 2008-02-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* shape.cpp: Commenting a left-over debug g_warning.
+
+	Additionally adding a protection against NULL in cache-size reporting (as
+	experienced by rolf). However, if GetSurface () returns NULL in the Render
+	callback... I guess we're screwed anyways.
+
+2008-02-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml.cpp:
 	* xaml.h: Adding convert_property_value_to_enum_str function to
 	check/convert if the value for the given property can be represented by an

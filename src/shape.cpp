@@ -324,10 +324,10 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		if (cached_surface == NULL && IsCandidateForCaching ()) {
 			Rect cache_extents = bounds.RoundOut ();
 
-			g_warning ("bounds (%f, %f), extents (%f, %f), cache_extents (%f, %f)", 
-				   bounds.w, bounds.h,
-				   extents.w, extents.h,
-				   cache_extents.w, cache_extents.h);
+			// g_warning ("bounds (%f, %f), extents (%f, %f), cache_extents (%f, %f)", 
+			// bounds.w, bounds.h,
+			// extents.w, extents.h,
+			// cache_extents.w, cache_extents.h);
 
 			cached_surface = image_brush_create_similar (cr, cache_extents.w, cache_extents.h);
 			cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
@@ -345,7 +345,8 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 			// but in 99% it should be okay. If you're running on a 16bit
 			// server you're prolly screwed with cairo perf anyways.
 			cached_size = cache_extents.w * cache_extents.h * 4;
-			GetSurface ()->AddToCacheSizeCounter (cached_size);
+			if (GetSurface ())
+				GetSurface ()->AddToCacheSizeCounter (cached_size);
 		}
 
 		if (cached_surface) {
