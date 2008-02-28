@@ -1,3 +1,13 @@
+2008-02-28  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml.cpp:
+	* xaml.h: Adding convert_property_value_to_enum_str function to
+	check/convert if the value for the given property can be represented by an
+	enum string. 
+
+	It would be nicer to mover all the enums tables/resolving to a separate
+	place in future instead of gluing it to xaml.cpp.
+
 2008-02-28  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* shape.h|cpp: override GetSizeForBrush for Rectangle to honor the

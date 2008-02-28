@@ -36,6 +36,7 @@ bool        xaml_set_property_from_str (DependencyObject *obj, DependencyPropert
 
 Value*      value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str);
 Value*      value_from_str (Type::Kind type, const char *prop_name, const char *str);
+bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s);
 
 void xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks);
 

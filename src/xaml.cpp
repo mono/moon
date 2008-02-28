@@ -2484,6 +2484,17 @@ enum_from_str (const enum_map_t *emu, const char *str)
 	return (int) strtol (str, NULL, 10);
 }
 
+const char*
+str_from_enum (const enum_map_t *emu, int e)
+{
+	for (int i = 0; emu [i].name; i++) {
+		if (emu [i].value == e)
+			return emu [i].name;
+	}
+
+    return NULL;
+}
+
 Value *
 value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str)
 {
@@ -2700,6 +2711,24 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 
 	return v;
 }
+
+bool
+convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s)
+{
+	if (v->GetKind () != Type::INT32)
+        return false;
+
+    enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, prop->name);
+
+    if (! emu)
+        return false;
+    else {
+        int vv = v->AsInt32 ();
+        *s = str_from_enum (emu, vv);
+        return true;
+    }
+}
+
 
 XamlElementInstance *
 default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
