@@ -1,5 +1,5 @@
 <Project name="plugin" fileversion="2.0" language="C" ctype="CProject">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="plugin" />
       <Build debugmode="True" target="Bin" />
@@ -37,6 +37,8 @@
     <File name="install.js" subtype="Code" buildaction="Nothing" />
     <File name="plugin-debug.cpp" subtype="Code" buildaction="Nothing" />
     <File name="plugin-debug.h" subtype="Code" buildaction="Nothing" />
+    <File name="browser-mmsh.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="browser-mmsh.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

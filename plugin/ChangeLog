@@ -1,3 +1,7 @@
+2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.mdp: Updated.
+
 2008-02-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* browser-mmsh.cpp (AsyncBrowserMmshResponse::OnDataAvailable):
