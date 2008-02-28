@@ -1,0 +1,75 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+  <Rectangle Canvas.Top="0" Canvas.Left="0" Width="300" Height="50">
+    <Rectangle.Fill>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" >
+        <GradientStop Color="Yellow" Offset="-.2" />
+        <GradientStop Color="Red" Offset="0.25" />
+        <GradientStop Color="Blue" Offset="0.75" />
+        <GradientStop Color="Black" Offset="1.0" />
+      </LinearGradientBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="50" Canvas.Left="0" Width="300" Height="50">
+    <Rectangle.Fill>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" >
+        <GradientStop Color="Yellow" Offset="0.0" />
+        <GradientStop Color="Red" Offset="0.25" />
+        <GradientStop Color="Blue" Offset="0.75" />
+        <GradientStop Color="Black" Offset="1.0" />
+      </LinearGradientBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="100" Canvas.Left="0" Width="300" Height="50">
+    <Rectangle.Fill>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" >
+        <GradientStop Color="Yellow" Offset="0.0" />
+        <GradientStop Color="Red" Offset="0.25" />
+        <GradientStop Color="Blue" Offset="0.75" />
+        <GradientStop Color="Black" Offset="1.5" />
+      </LinearGradientBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="150" Canvas.Left="0" Width="300" Height="50">
+    <Rectangle.Fill>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" >
+        <GradientStop Color="Yellow" Offset="0.0" />
+        <GradientStop Color="Red" Offset="0.25" />
+        <GradientStop Color="Blue" Offset="0.75" />
+      </LinearGradientBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="200" Canvas.Left="0" Width="300" Height="50">
+    <Rectangle.Fill>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" >
+        <GradientStop Color="Yellow" Offset="0" />
+        <GradientStop Color="Blue" Offset="1" />
+      </LinearGradientBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="250" Canvas.Left="0" Width="300" Height="50">
+    <Rectangle.Fill>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" >
+        <GradientStop Color="Yellow" Offset="-.5" />
+        <GradientStop Color="Blue" Offset="1.5" />
+      </LinearGradientBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="300" Canvas.Left="0" Width="300" Height="50" Stroke="Black">
+    <Rectangle.Fill>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" >
+        <GradientStop Color="Yellow" Offset="-.5" />
+        <GradientStop Color="Blue" Offset="-1.5" />
+      </LinearGradientBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Canvas.Top="350" Canvas.Left="0" Width="300" Height="50" Stroke="Black">
+    <Rectangle.Fill>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" >
+        <GradientStop Color="Blue" Offset="1.2" />
+        <GradientStop Color="Yellow" Offset="1.5" />
+      </LinearGradientBrush>
+    </Rectangle.Fill>
+  </Rectangle>
+</Canvas>
+
+
