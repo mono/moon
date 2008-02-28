@@ -1,3 +1,9 @@
+2008-02-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Inline::GetValue): Return our inherited values from
+	our parent TextBlock's property if our own value for the requested
+	property is unset.
+
 2008-02-28  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* stylus.cpp: if there's an outline, draw a line of at least 2px.

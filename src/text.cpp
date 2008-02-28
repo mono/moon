@@ -148,6 +148,126 @@ Inline::~Inline ()
 	}
 }
 
+Value *
+Inline::GetValue (DependencyProperty *prop)
+{
+	DependencyObject *textblock = GetLogicalParent ();
+	
+	if (prop->type != Type::INLINE)
+		return DependencyObject::GetValue (prop);
+	
+	// FIXME: if the Inline hasn't been added to a TextBlock, then
+	// we will leak a newly allocated Value
+	
+	if (prop == Inline::ForegroundProperty) {
+		if (foreground == NULL) {
+			if (textblock)
+				return textblock->GetValue (TextBlock::ForegroundProperty);
+			
+			Brush *brush = new SolidColorBrush ();
+			Color *color = color_from_str ("black");
+			solid_color_brush_set_color ((SolidColorBrush *) brush, color);
+			delete color;
+			
+			return new Value (brush);
+		}
+		
+		return DependencyObject::GetValue (prop);
+	}
+	
+	if (RENDER_USING_PANGO) {
+		PangoFontMask fields = pango_font_description_get_set_fields (font.pango);
+		
+		if (prop == Inline::FontFamilyProperty) {
+			if (!(fields & PANGO_FONT_MASK_FAMILY)) {
+				// return parent TextBlock's FontFamily
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontFamilyProperty);
+				
+				return new Value (TEXTBLOCK_FONT_FAMILY);
+			}
+		} else if (prop == Inline::FontSizeProperty) {
+			if (!(fields & PANGO_FONT_MASK_SIZE)) {
+				// return parent TextBlock's FontSize
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontSizeProperty);
+				
+				return new Value (TEXTBLOCK_FONT_SIZE);
+			}
+		} else if (prop == Inline::FontStretchProperty) {
+			if (!(fields & PANGO_FONT_MASK_STRETCH)) {
+				// return parent TextBlock's FontStretch
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontStretchProperty);
+				
+				return new Value (TEXTBLOCK_FONT_STRETCH);
+			}
+		} else if (prop == Inline::FontStyleProperty) {
+			if (!(fields & PANGO_FONT_MASK_STYLE)) {
+				// return parent TextBlock's FontStyle
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontStyleProperty);
+				
+				return new Value (TEXTBLOCK_FONT_STYLE);
+			}
+		} else if (prop == Inline::FontWeightProperty) {
+			if (!(fields & PANGO_FONT_MASK_WEIGHT)) {
+				// return parent TextBlock's FontWeight
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontWeightProperty);
+				
+				return new Value (TEXTBLOCK_FONT_WEIGHT);
+			}
+		}
+	} else {
+		uint8_t fields = font.custom->GetFields ();
+		
+		if (prop == Inline::FontFamilyProperty) {
+			if (!(fields & FontMaskFamily)) {
+				// return parent TextBlock's FontFamily
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontFamilyProperty);
+				
+				return new Value (TEXTBLOCK_FONT_FAMILY);
+			}
+		} else if (prop == Inline::FontSizeProperty) {
+			if (!(fields & FontMaskSize)) {
+				// return parent TextBlock's FontSize
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontSizeProperty);
+				
+				return new Value (TEXTBLOCK_FONT_SIZE);
+			}
+		} else if (prop == Inline::FontStretchProperty) {
+			if (!(fields & FontMaskStretch)) {
+				// return parent TextBlock's FontStretch
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontStretchProperty);
+				
+				return new Value (TEXTBLOCK_FONT_STRETCH);
+			}
+		} else if (prop == Inline::FontStyleProperty) {
+			if (!(fields & FontMaskStyle)) {
+				// return parent TextBlock's FontStyle
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontStyleProperty);
+				
+				return new Value (TEXTBLOCK_FONT_STYLE);
+			}
+		} else if (prop == Inline::FontWeightProperty) {
+			if (!(fields & FontMaskWeight)) {
+				// return parent TextBlock's FontWeight
+				if (textblock)
+					return textblock->GetValue (TextBlock::FontWeightProperty);
+				
+				return new Value (TEXTBLOCK_FONT_WEIGHT);
+			}
+		}
+	}
+	
+	return DependencyObject::GetValue (prop);
+}
+
 void
 Inline::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -963,6 +1083,7 @@ TextBlock::GetValue (DependencyProperty *property)
 			}
 		}
 		
+		// FIXME: this will leak...
 		res = new Value (block->str);
 		g_string_free (block, true);
 		return res;

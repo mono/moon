@@ -47,6 +47,7 @@ class Inline : public DependencyObject {
 	Inline ();
 	virtual ~Inline ();
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
+	virtual Value *GetValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
 };
