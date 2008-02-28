@@ -353,9 +353,14 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 		node = (Collection::Node *) children->list->First ();
 	}
 
-	// negative value are "mostly" ignored, the one nearest to zero may ne used
-	int n = 0;
-	GradientStop *out_of_bounds = NULL;
+	GradientStop *negative_stop = NULL;	//the biggest negative stop
+	double neg_offset;			//the cached associated offset
+	GradientStop *first_stop = NULL;	//the smallest positive stop
+	double first_offset;			//idem
+	GradientStop *last_stop = NULL;		//the biggest stop <= 1
+	double last_offset;			//idem
+	GradientStop *outofbounds_stop = NULL;	//the smallest stop > 1
+	double out_offset;			//idem
 
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		GradientStop *stop = (GradientStop *) node->obj;
@@ -363,30 +368,73 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 		if (offset >= 0.0 && offset <= 1.0) {
 			Color *color = gradient_stop_get_color (stop);
 			cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a * opacity);
-			n++;
-		} else if (n < 2) {
-			// we don't have enough stops so we might need the negative one
-			if (!out_of_bounds) {
-				// keep in mind our first stop with a negative offset
-				out_of_bounds = stop;
-			} else {
-				// keep the stop with the negative offset closer to zero
-				if (offset > gradient_stop_get_offset (out_of_bounds))
-					out_of_bounds = stop;
+			if (!first_stop || (first_offset != 0.0 && offset < first_offset)) {
+				first_offset = offset;
+				first_stop = stop;
 			}
-		} else {
-			// we have at least 2 stops so we don't need to consider negative ones
-			out_of_bounds = NULL;
+			if (!last_stop || (last_offset != 1.0 && offset > last_offset)) {
+				last_offset = offset;
+				last_stop = stop;
+			}
+		} else if (offset < 0.0 && (!negative_stop || offset > neg_offset)) {
+				negative_stop = stop;
+				neg_offset = offset;
+		} else if (offset > 1.0 && (!outofbounds_stop || offset < out_offset)) {
+				outofbounds_stop = stop;
+				out_offset = offset;
 		}
 	}
 
-	// if the negative stop is required...
-	if (out_of_bounds && (n < 2)) {
-		// add it to the mix
-		double offset = gradient_stop_get_offset (out_of_bounds);
-		Color *color = gradient_stop_get_color (out_of_bounds);
-		cairo_pattern_add_color_stop_rgba (pattern, offset, color->r, color->g, color->b, color->a * opacity);
+	if (negative_stop && first_stop && first_offset != 0.0) { //take care of the negative stop
+		Color *neg_color = gradient_stop_get_color (negative_stop);
+		Color *first_color = gradient_stop_get_color (first_stop);
+		double ratio = neg_offset / (neg_offset - first_offset);
+		cairo_pattern_add_color_stop_rgba (pattern, 0.0, 
+			neg_color->r + ratio * (first_color->r - neg_color->r),
+			neg_color->g + ratio * (first_color->g - neg_color->g),
+			neg_color->b + ratio * (first_color->b - neg_color->b),
+			(neg_color->a + ratio * (first_color->a - neg_color->a)) * opacity);
 	}
+	if (outofbounds_stop && last_stop && last_offset != 1.0) { //take care of the >1 stop
+		Color *last_color = gradient_stop_get_color (last_stop);
+		Color *out_color = gradient_stop_get_color (outofbounds_stop);
+		double ratio = (1.0 - last_offset) / (out_offset - last_offset);
+		cairo_pattern_add_color_stop_rgba (pattern, 1.0, 
+			last_color->r + ratio * (out_color->r - last_color->r),
+			last_color->g + ratio * (out_color->g - last_color->g),
+			last_color->b + ratio * (out_color->b - last_color->b),
+			(last_color->a + ratio * (out_color->a - last_color->a)) * opacity);	
+	}
+
+	if (negative_stop && outofbounds_stop && !first_stop && !last_stop) { //only 2 stops, one < 0, the other > 1
+		Color *neg_color = gradient_stop_get_color (negative_stop);
+		Color *out_color = gradient_stop_get_color (outofbounds_stop);
+		double ratio = neg_offset / (neg_offset - out_offset);
+		cairo_pattern_add_color_stop_rgba (pattern, 0.0, 
+			neg_color->r + ratio * (out_color->r - neg_color->r),
+			neg_color->g + ratio * (out_color->g - neg_color->g),
+			neg_color->b + ratio * (out_color->b - neg_color->b),
+			(neg_color->a + ratio * (out_color->a - neg_color->a)) * opacity);
+		ratio = (1.0 - neg_offset) / (out_offset - neg_offset);
+		cairo_pattern_add_color_stop_rgba (pattern, 1.0, 
+			neg_color->r + ratio * (out_color->r - neg_color->r),
+			neg_color->g + ratio * (out_color->g - neg_color->g),
+			neg_color->b + ratio * (out_color->b - neg_color->b),
+			(neg_color->a + ratio * (out_color->a - neg_color->a)) * opacity);	
+	}
+
+	if (negative_stop && !outofbounds_stop && !first_stop && !last_stop) { //only negative stops
+		Color *color = gradient_stop_get_color (negative_stop);
+		cairo_pattern_add_color_stop_rgba (pattern, 0.0, color->r, color->g, color->b, color->a * opacity);	
+	}
+
+	if (outofbounds_stop && !negative_stop && !first_stop && !last_stop) { //only > 1 stops
+		Color *color = gradient_stop_get_color (outofbounds_stop);
+		cairo_pattern_add_color_stop_rgba (pattern, 1.0, color->r, color->g, color->b, color->a * opacity);	
+	}
+
+	
+
 }
 
 bool
