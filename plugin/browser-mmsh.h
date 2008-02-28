@@ -68,7 +68,6 @@ typedef void (* AsyncMmshResponseFinishedHandler) (BrowserMmshResponse *response
 typedef void (* AsyncMmshResponseDataAvailableHandler) (BrowserMmshResponse *response, gpointer context, char* buffer, int offset, PRUint32 length);
 
 class AsyncBrowserMmshResponse : public BrowserMmshResponse, public nsIStreamListener {
-private:
 	AsyncMmshResponseFinishedHandler handler;
 	AsyncMmshResponseDataAvailableHandler reader;
 	gpointer context;
@@ -76,16 +75,23 @@ private:
 	int tmp_size;
 	int size;
 	int asf_packet_size;
+	
 protected:
 	NS_DECL_NSIREQUESTOBSERVER
 	NS_DECL_NSISTREAMLISTENER
+
 public:
 	NS_DECL_ISUPPORTS
 
 	AsyncBrowserMmshResponse (nsCOMPtr<nsIChannel> channel, AsyncMmshResponseDataAvailableHandler reader, 
 				  AsyncMmshResponseFinishedHandler handler, gpointer context)
-		: BrowserMmshResponse (channel), tmp_buffer (NULL), size (0), tmp_size (0)
+		: BrowserMmshResponse (channel)
 	{
+		this->asf_packet_size = 0;
+		this->tmp_buffer = NULL;
+		this->tmp_size = 0;
+		this->size = 0;
+		
 		this->handler = handler;
 		this->context = context;
 		this->reader = reader;
@@ -98,7 +104,6 @@ public:
 };
 
 class BrowserMmshRequest {
-private:
 	const char *uri;
 	const char *method;
 
