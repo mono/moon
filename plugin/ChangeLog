@@ -1,3 +1,11 @@
+2008-02-28  Fernando Herrera  <fherrera@novell.com>
+
+	* Makefile.am:
+	* browser-mmsh.cpp:
+	* browser-mmsh.h:
+	* plugin-downloader.cpp:
+	* plugin-downloader.h: Add initial mms over http support.
+
 2008-02-26  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::EventHandle): fix some x64 build

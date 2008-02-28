@@ -53,7 +53,9 @@ libmoonplugin_la_SOURCES = \
 	plugin-debug.cpp	\
 	plugin-debug.h		\
 	browser-http.h		\
-	browser-http.cpp
+	browser-http.cpp	\
+	browser-mmsh.h		\
+	browser-mmsh.cpp
 
 if PLUGIN_INSTALL
 novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.js \

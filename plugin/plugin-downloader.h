@@ -27,6 +27,8 @@ public:
 		this->verb = NULL;
 		this->uri = NULL;
 
+		this->mmsh = false;
+
 		// these are set after the stream is created, and used for destroying the stream
 		this->npp = NULL;
 		this->stream = NULL;
@@ -55,6 +57,7 @@ public:
 	Downloader *dl;
 	char *uri;
 	char *verb;
+	bool mmsh;
 	NPStream *stream;
 	NPP npp;
 };
