@@ -184,6 +184,7 @@ class Rectangle : public Shape {
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
 
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void OnPropertyChanged (DependencyProperty *prop);
 
 	bool GetRadius (double *rx, double *ry);

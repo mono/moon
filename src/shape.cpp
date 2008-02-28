@@ -1082,6 +1082,21 @@ Rectangle::OnPropertyChanged (DependencyProperty *prop)
 	NotifyAttachersOfPropertyChange (prop);
 }
 
+void
+Rectangle::GetSizeForBrush (cairo_t *cr, double *width, double *height)
+{
+	switch (shape_get_stretch (this)) {
+	case StretchUniform:
+		*width = *height = (extents.w < extents.h) ? extents.w : extents.h;
+		break;
+	case StretchUniformToFill:
+		*width = *height = (extents.w > extents.h) ? extents.w : extents.h;
+		break;
+	default:
+		return Shape::GetSizeForBrush (cr, width, height);
+	}
+}
+
 bool
 Rectangle::GetRadius (double *rx, double *ry)
 {
