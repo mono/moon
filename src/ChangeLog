@@ -1,5 +1,9 @@
 2008-02-28  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* stylus.cpp: if there's an outline, draw a line of at least 2px.
+
+2008-02-28  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* brush.cpp: No longer ignore out-of-bounds offest in SetupGradient. Add the
 	bounds stop with linearinterpolation between the nearest stop and the 
 	outofbounds one. Handle the degenerated case with only outofbounds stops.

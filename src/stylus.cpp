@@ -725,7 +725,7 @@ drawing_attributes_normal_render (cairo_t *cr, double width, double height, Colo
 // FIXME: use cairo_stroke_to_path once available
 // until then draw bigger with the outline color and smaller with the inner color
 	drawing_attributes_quick_render (cr, height + 2.0, outline, collection);
-	drawing_attributes_quick_render (cr, height - 2.0, color, collection);
+	drawing_attributes_quick_render (cr, (height > 4.0) ? height - 2.0 : 2.0, color, collection);
 }
 
 void
