@@ -29,7 +29,7 @@ regprop (CodeModel.Accessibility, "Title", "string", "Silverlight Content");
 
 regprop (CodeModel.Downloader, "DownloadProgress", "number", 0);
 regprop (CodeModel.Downloader, "Status", "number", 0);
-regprop (CodeModel.Downloader, "StatusText", "number", 0);
+regprop (CodeModel.Downloader, "StatusText", "string", "");
 
 regprop (CodeModel.UIElement, "Canvas.Left", "number", 0);
 regprop (CodeModel.UIElement, "Canvas.Top", "number", 0);
@@ -137,10 +137,7 @@ regprop (CodeModel.DrawingAttributes, "Height", "number", 3);
 regprop (CodeModel.DrawingAttributes, "OutlineColor", "number", 0);
 regprop (CodeModel.DrawingAttributes, "Width", "number", 3);
 
-regprop (CodeModel.Path, "Data", "object", null);
-
 regprop (CodeModel.Shape, "Fill", "object", null);
-regprop (CodeModel.Shape, "Stretch", "string", "None");
 regprop (CodeModel.Shape, "Stroke", "object", null);
 regprop (CodeModel.Shape, "StrokeDashArray", "exception");
 regprop (CodeModel.Shape, "StrokeDashCap", "string", "Flat");
@@ -151,15 +148,22 @@ regprop (CodeModel.Shape, "StrokeMiterLimit", "number", 10);
 regprop (CodeModel.Shape, "StrokeStartLineCap", "string", "Flat");
 regprop (CodeModel.Shape, "StrokeThickness", "number", 1);
 
+regprop (CodeModel.Path, "Data", "object", null);
+regprop (CodeModel.Path, "Stretch", "string", "None");
+
 regprop (CodeModel.Polygon, "FillRule", "string", "EvenOdd");
-regprop (CodeModel.Polygon, "Points", "object", "PointCollection");
+regprop (CodeModel.Polygon, "Points", "exception");
+regprop (CodeModel.Polygon, "Stretch", "string", "None");
 
 regprop (CodeModel.Polyline, "FillRule", "string", "EvenOdd");
-regprop (CodeModel.Polyline, "Points", "object", "PointCollection");
+regprop (CodeModel.Polyline, "Points", "exception");
+regprop (CodeModel.Polyline, "Stretch", "string", "None");
 
 regprop (CodeModel.GeometryGroup, "Children", "object", "GeometryCollection");
 
 regprop (CodeModel.Geometry, "Transform", "object", null);
+
+regprop (CodeModel.Ellipse, "Stretch", "string", "Fill");
 
 regprop (CodeModel.EllipseGeometry, "RadiusX", "number", 0);
 regprop (CodeModel.EllipseGeometry, "RadiusY", "number", 0);
@@ -167,6 +171,8 @@ regprop (CodeModel.EllipseGeometry, "Center", "exception");
 
 regprop (CodeModel.PathGeometry, "Figures", "object", null);
 regprop (CodeModel.PathGeometry, "FillRule", "string", "EvenOdd");
+
+regprop (CodeModel.Rectangle, "Stretch", "string", "Fill");
 
 regprop (CodeModel.RectangleGeometry, "RadiusX", "number", 0);
 regprop (CodeModel.RectangleGeometry, "RadiusY", "number", 0);
@@ -198,6 +204,7 @@ regprop (CodeModel.InkPresenter, "Background", "object", null);
 regprop (CodeModel.InkPresenter, "Children", "object", "VisualCollection");
 regprop (CodeModel.InkPresenter, "Strokes", "object", "StrokeCollection");
 
+regprop (CodeModel.Line, "Stretch", "string", "None");
 regprop (CodeModel.Line, "X1", "number", 0);
 regprop (CodeModel.Line, "X2", "number", 0);
 regprop (CodeModel.Line, "Y1", "number", 0);
@@ -278,8 +285,8 @@ regprop (CodeModel.SilverlightPlugin, "Settings", "object", "Settings");
 regprop (CodeModel.SilverlightPlugin, "Content", "object", "Content");
 
 regprop (CodeModel.SilverlightPluginContent, "Accessibility", "object", "AccessibilityObject");
-regprop (CodeModel.SilverlightPluginContent, "ActualHeight", "number", 0);
-regprop (CodeModel.SilverlightPluginContent, "ActualWidth", "number", 0);
+regprop (CodeModel.SilverlightPluginContent, "ActualHeight", "number", 1);
+regprop (CodeModel.SilverlightPluginContent, "ActualWidth", "number", 1);
 regprop (CodeModel.SilverlightPluginContent, "FullScreen", "boolean", false);
 regprop (CodeModel.SilverlightPluginContent, "Root", "object", "Canvas");
 

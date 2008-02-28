@@ -851,7 +851,9 @@ CodeModel.Ellipse = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Ellipse />");
-	}
+	},
+
+	properties: ["Stretch"]
 };
 
 CodeModel.Path = {
@@ -863,7 +865,7 @@ CodeModel.Path = {
 		return plugin.content.createFromXaml ("<Path />");
 	},
 
-	properties: ["Data"]
+	properties: ["Data", "Stretch"]
 };
 
 CodeModel.Polygon = {
@@ -875,7 +877,7 @@ CodeModel.Polygon = {
 		return plugin.content.createFromXaml ("<Polygon />");
 	},
 
-	properties: ["FillRule", "Points"]
+	properties: ["FillRule", "Points", "Stretch"]
 };
 
 CodeModel.Polyline = {
@@ -887,7 +889,7 @@ CodeModel.Polyline = {
 		return plugin.content.createFromXaml ("<Polyline />");
 	},
 
-	properties: ["FillRule", "Points"]
+	properties: ["FillRule", "Points", "Stretch"]
 };
 
 CodeModel.Rectangle = {
@@ -897,7 +899,9 @@ CodeModel.Rectangle = {
 
 	create: function (plugin) {
 		return plugin.content.createFromXaml ("<Rectangle />");
-	}
+	},
+
+	properties: [ "Stretch" ]
 };
 
 CodeModel.Geometry = {
@@ -1088,6 +1092,7 @@ CodeModel.Line = {
 	},
 
 	properties: [
+		"Stretch",
 		"X1",
 		"X2",
 		"Y1",
