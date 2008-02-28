@@ -257,6 +257,11 @@ class asf
 			line = line.Trim ();
 			line_number++;
 			
+			if (line.Contains ("//"))
+				line = line.Substring (0, line.IndexOf ("//"));
+
+			line = line.Trim ();
+
 			if (!in_struct) {
 				if (line.EndsWith (";"))
 					continue;
@@ -289,7 +294,7 @@ class asf
 					field.name = vars [1];
 					result.Add (field);
 				} else {
-					Console.WriteLine ("Weird line: {0}", line_number);
+					Console.WriteLine ("Weird line in asf-structures.h: {0} '{1}', '{2}'", line_number, l, line);
 				}
 			}
 		}

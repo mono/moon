@@ -1,4 +1,4 @@
-ASF_COMPILER_ARGUMENTS=-MMD -Wall -g -O0 -DDEBUG -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I../.. -I.prec -c --coverage
+ASF_COMPILER_ARGUMENTS=-MMD -Wall -g -O0 -DDEBUG -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I../.. -I.prec -I/usr/include/cairo -c --coverage
 ASF_DUMP_ARGUMENTS=-Ddump -DDEBUG -Dlog
 ASF_BIN=asf
 
@@ -33,12 +33,12 @@ generate: asf.h asf.cs
 corrupt: default
 	valgrind --tool=memcheck -v --leak-check=full --log-file=v.log --smc-check=all $(ASF_BIN) -in:a.wmv -test -corruption:2000
 
-asf-dump:
+asf-dump: asf.cpp asf-generated.cpp asf-guids.cpp asf-structures.cpp asf-debug.cpp asf-test.cpp
 	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS)  asf.cpp -o asf-d.o
 	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS) asf-generated.cpp -o asf-generated-d.o
 	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS) asf-guids.cpp -o asf-guids-d.o
 	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS) asf-structures.cpp -o asf-structures-d.o
 	g++ $(ASF_COMPILER_ARGUMENTS) $(ASF_DUMP_ARGUMENTS) asf-debug.cpp -o asf-debug-d.o
 	g++ $(ASF_COMPILER_ARGUMENTS)                       asf-test.cpp -o asf-test-d.o	
-	g++ -o $(ASF_BIN)-dump asf-d.o asf-generated-d.o asf-guids-d.o asf-structures-d.o asf-debug-d.o asf-test-d.o -lglib-2.0 -lgcov
+	g++ -o $(ASF_BIN)-dump asf-d.o asf-generated-d.o asf-guids-d.o asf-structures-d.o asf-debug-d.o asf-test-d.o -lglib-2.0 -lgcov  -Wl,--rpath -Wl,/mono/head/moon/src/.libs -Wl,--rpath -Wl,/mono/install/lib -Wl,--rpath -Wl,/mono/install/lib ../.libs/libmoon.so 
 	

@@ -35,6 +35,8 @@ struct asf_content_description;
 struct asf_extended_content_description;
 struct asf_stream_bitrate_properties;
 struct asf_data;
+struct asf_extended_stream_name;
+struct asf_payload_extension_system;
 struct asf_extended_stream_properties;
 
 class ASFSource;
@@ -69,6 +71,8 @@ bool asf_content_description_validate (const asf_content_description* obj, ASFPa
 bool asf_extended_content_description_validate (const asf_extended_content_description* obj, ASFParser* parser);
 bool asf_stream_bitrate_properties_validate (const asf_stream_bitrate_properties* obj, ASFParser* parser);
 bool asf_data_validate (const asf_data* obj, ASFParser* parser);
+bool asf_extended_stream_name_validate (const asf_extended_stream_name* obj, ASFParser* parser);
+bool asf_payload_extension_system_validate (const asf_payload_extension_system* obj, ASFParser* parser);
 bool asf_extended_stream_properties_validate (const asf_extended_stream_properties* obj, ASFParser* parser);
 
 /* Debug functions */ 

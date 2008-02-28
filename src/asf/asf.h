@@ -248,7 +248,7 @@ private:
 	void Initialize ();
 	bool ReadData ();
 	asf_object *ReadObject (asf_object *guid);
-	void SetStream (int stream_id, asf_stream_properties *stream);
+	void SetStream (int stream_id, const asf_stream_properties *stream);
 	Media *media;
 	
 public:
@@ -283,7 +283,7 @@ public:
 	
 	// Stream index: valid values range from 1 to 127
 	// If the stream_index doesn't specify a valid stream (for whatever reason), NULL is returned.
-	asf_stream_properties *GetStream (int stream_index);
+	const asf_stream_properties *GetStream (int stream_index);
 	
 	// Checks if the stream_index (range 1 - 127) is a valid stream index in the asf file.
 	bool IsValidStream (int stream_index);
@@ -330,7 +330,7 @@ public:
 	asf_object **header_objects;
 	asf_file_properties *file_properties;
 	asf_header_extension *header_extension;
-	asf_stream_properties *stream_properties[127];
+	const asf_stream_properties *stream_properties[127];
 	asf_marker *marker;
 	asf_script_command *script_command;
 	

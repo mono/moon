@@ -359,7 +359,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 	stream_id = stream_id & 0x7F;
 	
 	if (!source->parser->IsValidStream (stream_id)) {
-		ASF_LOG ("asf_single_payload::FillInAll: Invalid stream number (%d).\n", (int) stream_id);
+		source->parser->AddError (g_strdup_printf ("asf_single_payload::FillInAll: Invalid stream number (%d).\n", (int) stream_id));
 		return false;
 	}
 	
@@ -470,7 +470,7 @@ void
 asf_single_payload_dump (asf_single_payload* obj)
 {
 	ASF_DUMP ("ASF_SINGLE_PAYLOAD\n");
-	ASF_DUMP ("\tstream_number = %u\n", (asf_dword) obj->stream_number);
+	ASF_DUMP ("\tstream_number = %u\n", (asf_dword) obj->stream_id);
 	ASF_DUMP ("\tis_key_frame = %s\n", obj->is_key_frame ? "true" : "false");
 	ASF_DUMP ("\tmedia_object_number = %u\n", (asf_dword) obj->media_object_number);
 	ASF_DUMP ("\toffset_into_media_object = %u\n", (asf_dword) obj->offset_into_media_object);
@@ -831,7 +831,7 @@ void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj)
 	for (i = 0; i < obj->command_count; i++) {
 		ASF_DUMP ("\tASF_SCRIPT_COMMAND #%u\n", i);
 		asf_script_command_entry* entry = entries [i];
-		ASF_DUMP ("\t\tpts = %llu\n", entry->pts);
+		ASF_DUMP ("\t\tpts = %u\n", entry->pts);
 		ASF_DUMP ("\t\ttype_index = %d\n", (asf_dword) entry->type_index);
 		ASF_DUMP ("\t\tname_length = %d\n", (asf_dword) entry->name_length);
 		ASF_DUMP ("\t\tname = %s\n", entry->get_name ());
@@ -873,3 +873,62 @@ bool asf_extended_stream_properties_validate (const asf_extended_stream_properti
 	return true;
 }
 
+void asf_extended_stream_properties_dump (const asf_extended_stream_properties* obj)
+{
+#ifdef ASF_DUMPING
+	ASF_DUMP ("ASF_EXTENDED_STREAM_PROPERTIES\n");
+	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
+	ASF_DUMP ("\tsize = %llu\n", obj->size);
+	ASF_DUMP ("\tstart_time = %llu\n", obj->start_time);
+	ASF_DUMP ("\tend_time = %llu\n", obj->end_time);
+	ASF_DUMP ("\tdata_bitrate = %u\n", (asf_dword) obj->data_bitrate);
+	ASF_DUMP ("\tbuffer_size = %u\n", (asf_dword) obj->buffer_size);
+	ASF_DUMP ("\tinitial_buffer_fullness = %u\n", (asf_dword) obj->initial_buffer_fullness);
+	ASF_DUMP ("\talternate_data_bitrate = %u\n", (asf_dword) obj->alternate_data_bitrate);
+	ASF_DUMP ("\talternate_buffer_size = %u\n", (asf_dword) obj->alternate_buffer_size);
+	ASF_DUMP ("\talternate_initial_buffer_fullness = %u\n", (asf_dword) obj->alternate_initial_buffer_fullness);
+	ASF_DUMP ("\tmaximum_object_size = %u\n", (asf_dword) obj->maximum_object_size);
+	ASF_DUMP ("\tflags = %u\n", (asf_dword) obj->flags);
+	ASF_DUMP ("\tstream_id = %u\n", (asf_dword) obj->stream_id);
+	ASF_DUMP ("\tstream_language_id_index = %u\n", (asf_dword) obj->stream_language_id_index);
+	ASF_DUMP ("\taverage_time_per_frame = %llu\n", obj->average_time_per_frame);
+	ASF_DUMP ("\tstream_name_count = %u\n", (asf_dword) obj->stream_name_count);
+	ASF_DUMP ("\tpayload_extension_system_count = %u\n", (asf_dword) obj->payload_extension_system_count);
+
+	asf_extended_stream_name **names = obj->get_stream_names ();
+	ASF_DUMP ("\tstream_names: %p\n", names);
+	if (names != NULL) {
+		for (int i = 0; names [i] != NULL; i++)
+			asf_extended_stream_name_dump (names [i]);
+	}
+	g_free (names);
+
+	asf_payload_extension_system **systems = obj->get_payload_extension_systems ();
+	ASF_DUMP ("\tpayload_extension_systems: %p\n", systems);
+	if (systems != NULL) {
+		for (int i = 0; systems [i] != NULL; i++)
+			asf_payload_extension_system_dump (systems [i]);
+	}
+	g_free (systems);
+	
+	const asf_stream_properties *asp = obj->get_stream_properties ();
+	ASF_DUMP ("\tasf_stream_properties = %p\n", asp);
+	if (asp != NULL)
+		asf_stream_properties_dump (asp);
+#endif
+}
+
+void asf_extended_stream_name_dump (const asf_extended_stream_name* obj)
+{
+	ASF_DUMP ("ASF_EXTENDED_STREAM_NAME\n");
+	ASF_DUMP ("\tlanguage_id_index = %i\n", (int) obj->language_id_index);
+	ASF_DUMP ("\tstream_name_length = %i\n", (int) obj->stream_name_length);
+	ASF_DUMP ("\tstream_name = %s\n", obj->get_stream_name ());
+}
+
+void asf_payload_extension_system_dump (const asf_payload_extension_system* obj)
+{
+	ASF_DUMP ("ASF_PAYLOAD_EXTENSION_SYSTEM\n");
+	ASF_DUMP ("\textension_system_id = %s\n", asf_guid_tostring (&obj->extension_system_id));
+	ASF_DUMP ("\textension_data_size = %i\n", (int) obj->extension_data_size);
+}

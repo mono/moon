@@ -1,3 +1,15 @@
+2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h: Check if there are stream properties in any extended
+	  stream properties object, and put them in our streams list. Fixed a few
+	  warnings, sprinkled some 'const' modifiers here and there.
+	* asf-generated.h, Makefile, asf-generated.cpp: Updated.
+	* asf-structures.cpp: Fixed warnings, added debug output.
+	* asf-structures.h: Implemented getters for the variable sized data on
+	  asf_extended_stream_properties. Sprinkled some const modifiers.
+	* asf-test.cpp: Some API updates.
+	* asf.cs: Handle comments.
+
 2008-02-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Free the index upon destruction.

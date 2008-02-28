@@ -243,7 +243,7 @@ ASFParser::ReadPacket (ASFPacket *packet)
 	asf_payload_parsing_information ppi;
 	asf_error_correction_data ecd;
 	
-	ASF_LOG ("ASFParser::ReadPacket (%p): Reading packet at %lld (index: %d) of %lld packets.\n",
+	ASF_LOG ("ASFParser::ReadPacket (%p): Reading packet at %lld (index: %lld) of %lld packets.\n",
 		 packet, source->Position (), GetPacketIndex (source->Position ()),
 		 data->data_packet_count);
 	
@@ -284,6 +284,7 @@ ASFParser::ReadData ()
 	}
 	
 	if (!source->Seek ((int64_t) header->size, SEEK_SET)) {
+		AddError ("ReadData could not seek to the beginning of the data.\n");
 		return false;
 	}
 	
@@ -392,6 +393,32 @@ ASFParser::ReadHeader ()
 		asf_object_dump_exact (header_objects [i]);
 	}
 
+	// Check if there are stream properties in any extended stream properties object.
+	if (header_extension != NULL) {
+		asf_object **objects = header_extension->get_objects ();
+		for (int i = 0; objects [i] != NULL; i++) {
+			if (asf_guid_compare (&asf_guids_extended_stream_properties, &objects [i]->id)) {
+				asf_extended_stream_properties *aesp = (asf_extended_stream_properties *) objects [i];
+				const asf_stream_properties *stream = aesp->get_stream_properties ();
+				if (stream != NULL) {
+					if (stream->get_stream_id () != aesp->stream_id) {
+						g_free (objects);
+						AddError ("There is an invalid extended stream properties object (it contains a stream properties object whose stream id doesn't match the stream id of the extended stream properties object).");
+						return false;
+					} else {
+						SetStream (stream->get_stream_id (), stream);
+					}
+				} else if (!IsValidStream (aesp->stream_id)) {
+					g_free (objects);
+					AddError ("There is an extended stream properties object that doesn't have a corresponding strem properties object.");
+					return false;
+				}
+				any_streams = true;
+			}
+		}
+		g_free (objects);
+	}
+
 	// Check for required objects.
 	
 	if (file_properties == NULL) {
@@ -408,8 +435,6 @@ ASFParser::ReadHeader ()
 		AddError ("No streams in the asf data.");
 		return false;
 	}
-
-	// 
 	
 	data_offset = header->size;
 	packet_offset = data_offset + sizeof (asf_data);
@@ -463,7 +488,7 @@ ASFParser::AddError (char *msg)
 	}
 }
 
-asf_stream_properties* 
+const asf_stream_properties* 
 ASFParser::GetStream (int stream_index)
 {
 	if (stream_index < 1 || stream_index > 127)
@@ -473,7 +498,7 @@ ASFParser::GetStream (int stream_index)
 }
 
 void
-ASFParser::SetStream (int stream_index, asf_stream_properties *stream)
+ASFParser::SetStream (int stream_index, const asf_stream_properties *stream)
 {
 	if (stream_index < 1 || stream_index > 127) {
 		printf ("ASFParser::SetStream (%i, %p): Invalid stream index.\n", stream_index, stream);
@@ -770,7 +795,7 @@ ASFFrameReader::IsAudio ()
 bool
 ASFFrameReader::IsAudio (int stream)
 {
-	asf_stream_properties *asp = parser->GetStream (stream);
+	const asf_stream_properties *asp = parser->GetStream (stream);
 	return asp != NULL && asp->is_audio ();
 }
 
@@ -856,7 +881,7 @@ ASFFrameReader::FindScriptCommandStream ()
 		return;
 	
 	for (int i = 1; i <= 127; i++) {
-		asf_stream_properties* stream = parser->GetStream (i);
+		const asf_stream_properties* stream = parser->GetStream (i);
 		//printf ("Checking guid of stream %i (%p): %s against %s\n", i, stream, stream == NULL ? "-" : asf_guid_tostring (&stream->stream_type), stream == NULL ? "-" : asf_guid_tostring (&asf_guids_media_command));
 		if (stream != NULL && asf_guid_compare (&stream->stream_type, &asf_guids_media_command)) {
 			script_command_stream_index = i;
@@ -933,7 +958,7 @@ ASFFrameReader::Seek (uint64_t pts)
 		if (!MEDIA_SUCCEEDED (result))
 			break;
 			
-		ASF_LOG ("ASFFrameReader::Seek (%d, %llu): Checking pts: %llu, last_packet_index = %i, key_frame_pts = %llu\n", 
+		ASF_LOG ("ASFFrameReader::Seek (%d, %llu): Checking pts: %llu, last_packet_index = %lld, key_frame_pts = %llu\n", 
 			stream_number, pts, Pts (), kf_packet_index, kf_pts);
 		if (Pts () > pts) {
 			if (kf_packet_index == UINT64_MAX && start_pi > 0) {
@@ -942,13 +967,13 @@ ASFFrameReader::Seek (uint64_t pts)
 				RemoveAll ();
 				continue;
 			}
-			ASF_LOG ("ASFFrameReader::Seek (%d, %llu): Found pts: %llu, kf_packet_index = %i, kf_pts = %llu\n", stream_number, pts, Pts (), kf_packet_index, kf_pts);
+			ASF_LOG ("ASFFrameReader::Seek (%d, %llu): Found pts: %llu, kf_packet_index = %lld, kf_pts = %llu\n", stream_number, pts, Pts (), kf_packet_index, kf_pts);
 			found = true;
 			break;
 		} else if (IsKeyFrame () || IsAudio ()) {
 			kf_pts = Pts ();
 			kf_packet_index = start_pi;
-			ASF_LOG ("ASFFrameReader::Seek (%d, %llu): Found key frame: kf_packet_index = %i, kf_pts = %llu\n", stream_number, pts, kf_packet_index, kf_pts);
+			ASF_LOG ("ASFFrameReader::Seek (%d, %llu): Found key frame: kf_packet_index = %lld, kf_pts = %llu\n", stream_number, pts, kf_packet_index, kf_pts);
 		}
 	}
 	
@@ -963,7 +988,7 @@ ASFFrameReader::Seek (uint64_t pts)
 	current_packet_index = (kf_packet_index == UINT64_MAX) ? 0 : kf_packet_index;
 	RemoveAll ();
 
-	ASF_LOG ("ASFFrameReader::Seek (%d, %llu): Seeked to packet index %i with first pts %llu\n", stream_number, pts, current_packet_index, first_pts);
+	ASF_LOG ("ASFFrameReader::Seek (%d, %llu): Seeked to packet index %lld with first pts %llu\n", stream_number, pts, current_packet_index, first_pts);
 	
 	return true;
 }
@@ -999,7 +1024,7 @@ start:
 	}
 	
 	if (first == NULL) {
-		ASF_LOG ("ASFFrameReader::Advance (): reading more data, current packet index: %i\n", current_packet_index);
+		ASF_LOG ("ASFFrameReader::Advance (): reading more data, current packet index: %llu\n", current_packet_index);
 		read_result = ReadMore ();
 		if (read_result == MEDIA_NO_MORE_DATA || !MEDIA_SUCCEEDED (read_result)) {
 			ASF_LOG ("ASFFrameReader::Advance (): couldn't read more (%i).\n", read_result);

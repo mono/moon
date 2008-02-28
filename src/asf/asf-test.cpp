@@ -204,13 +204,15 @@ test_file (const char* filename)
 	fs->Initialize ();
 	
 	asf_src = new ASFMediaSource (NULL, fs);
-	
-	parser = new ASFParser (asf_src);
+	parser = new ASFParser (asf_src, NULL);
+	asf_src->parser = parser;
+
 	if (!parser->ReadHeader ()) {
 		printf ("test_file (%s): read header failed.\n", filename);
 		goto end;
 	}
 
+#if 1
 	packet = new ASFPacket ();
 	while (parser->ReadPacket (packet) == true) {
 		delete packet;
@@ -218,11 +220,15 @@ test_file (const char* filename)
 	}
 	delete packet;
 	
-	reader = new ASFFrameReader (parser);
-	while (reader->Advance ()) {
+	for (int i = 1; i < 128; i++) {
+		if (!parser->IsValidStream (i))
+			continue;
+		reader = new ASFFrameReader (parser, i, NULL);
+		while (MEDIA_SUCCEEDED (reader->Advance ())) {
+		}
+		delete reader;
 	}
-	delete reader;
-
+#endif
 	
 #if OBJECT_TRACKING
 	ObjectTracker::PrintStatus ("ASFPacket");

@@ -352,6 +352,8 @@ struct asf_multiple_payloads {
 
 void asf_multiple_payloads_dump (asf_multiple_payloads* obj);
 void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj);
+void asf_payload_extension_system_dump (const asf_payload_extension_system* obj);
+void asf_extended_stream_name_dump (const asf_extended_stream_name* obj);
 
 struct asf_object {
 	asf_guid id;
@@ -406,32 +408,32 @@ struct asf_stream_properties : public asf_object {
 	// asf_byte type_specific_data;
 	// asf_byte error_correction_data;
 
-	bool is_audio ()
+	bool is_audio () const
 	{
 		return asf_guid_compare (&stream_type, &asf_guids_media_audio);
 	}
 	
-	bool is_video ()
+	bool is_video () const
 	{
 		return asf_guid_compare (&stream_type, &asf_guids_media_video);
 	}
 	
-	bool is_command ()
+	bool is_command () const
 	{
 		return asf_guid_compare (&stream_type, &asf_guids_media_command);
 	}
 
-	asf_dword get_stream_id () 
+	asf_dword get_stream_id ()  const
 	{
 		return flags & 0x7F;
 	}
 	
-	bool is_encrypted ()
+	bool is_encrypted () const
 	{
 		return flags & 1 << 15;
 	}
 	
-	const WAVEFORMATEX* get_audio_data ()
+	const WAVEFORMATEX* get_audio_data () const
 	{
 		if (size < sizeof (WAVEFORMATEX) + sizeof (asf_stream_properties))
 			return NULL;
@@ -439,7 +441,7 @@ struct asf_stream_properties : public asf_object {
 		return (const WAVEFORMATEX*) (((char*) this) + sizeof (asf_stream_properties));
 	}
 	
-	const asf_video_stream_data* get_video_data ()
+	const asf_video_stream_data* get_video_data () const
 	{
 		if (size < sizeof (asf_video_stream_data) + sizeof (asf_stream_properties))
 			return NULL;
@@ -622,6 +624,35 @@ struct asf_data : public asf_object {
 	asf_word reserved;
 };
 
+struct asf_extended_stream_name {
+	asf_word language_id_index;
+	asf_word stream_name_length; // The number of bytes in the stream name
+	// Followed by a variable sized stream name (WCHAR)
+
+	// Caller must free the returned string
+	char *get_stream_name () const
+	{
+			return wchar_to_utf8 (4 + (char* ) this, stream_name_length);
+	}
+
+	int get_size () const
+	{
+		return sizeof (asf_word) * 2 + stream_name_length;
+	}
+};
+
+struct asf_payload_extension_system {
+	asf_guid extension_system_id;
+	asf_word extension_data_size;
+	asf_dword system_info_length;
+	// Followed by variable sized system_info.
+	int get_size () const
+	{
+		return sizeof (asf_guid) + sizeof (asf_word) + sizeof (asf_dword) + system_info_length;
+	}
+};
+
+
 struct asf_extended_stream_properties : public asf_object {
 	asf_qword start_time;
 	asf_qword end_time;
@@ -638,6 +669,85 @@ struct asf_extended_stream_properties : public asf_object {
 	asf_qword average_time_per_frame;
 	asf_word stream_name_count;
 	asf_word payload_extension_system_count;
+	
+	// Returns a NULL terminated array.
+	// Caller must free the array, but not the individual elements.
+	asf_extended_stream_name** get_stream_names () const
+	{
+		asf_extended_stream_name **result;
+		asf_extended_stream_name *current;
+
+		if (stream_name_count == 0)
+			return NULL;
+
+		result = (asf_extended_stream_name **)  g_malloc0 (stream_name_count + 1);
+		current = (asf_extended_stream_name *) (sizeof (asf_extended_stream_properties) + (char*) this);
+		for (int i = 0; i < stream_name_count; i++) {
+			result [i] = current;
+			current = (asf_extended_stream_name*) (result [i]->get_size () + (char*) current);
+		}
+		return result;
+	}
+
+	int get_stream_names_size ()  const
+	{
+		int result = 0;
+		asf_extended_stream_name **names = get_stream_names ();
+		if (names == NULL)
+			return 0;
+
+		for (int i = 0; i < stream_name_count; i++)
+			result += names [i]->get_size ();
+	
+		g_free (names);
+
+		return result;
+	}
+
+	// Returns a NULL terminated array.
+	// Caller must free the array, but not the individual elements.
+	asf_payload_extension_system** get_payload_extension_systems () const
+	{
+		asf_payload_extension_system **result;
+		asf_payload_extension_system *current;
+		
+		if (payload_extension_system_count == 0)
+			return NULL;
+
+		result = (asf_payload_extension_system**) g_malloc0 (payload_extension_system_count + 1);
+		current = (asf_payload_extension_system *) (sizeof (asf_extended_stream_properties) + get_stream_names_size () + (char*) this);
+		for (int i = 0; i < payload_extension_system_count; i++) {
+			result [i] = current;
+			current = (asf_payload_extension_system*) (result [i]->get_size () + (char*) current);
+		}
+		return result;
+	}
+
+	int get_payload_extension_system_size () const
+	{
+		int result = 0;
+		asf_payload_extension_system **systems = get_payload_extension_systems ();
+		
+		if (systems == NULL)
+			return 0;
+
+		for (int i = 0; i < payload_extension_system_count; i++)
+			result += systems [i]->get_size ();
+
+		g_free (systems);
+
+		return result;
+	}
+
+	const asf_stream_properties* get_stream_properties () const
+	{
+		int offset = sizeof (asf_extended_stream_properties) + get_stream_names_size () + get_payload_extension_system_size ();
+
+		if (offset + sizeof (asf_stream_properties) > size)
+			return NULL;
+
+		return (asf_stream_properties*) (offset + (char*) this);
+	}
 };
 
 #pragma pack(pop)

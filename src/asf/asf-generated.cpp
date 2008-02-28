@@ -173,28 +173,6 @@ void asf_data_dump (const asf_data* obj)
 	ASF_DUMP ("\treserved = %u\n", (asf_dword) obj->reserved);
 }
 
-void asf_extended_stream_properties_dump (const asf_extended_stream_properties* obj)
-{
-	ASF_DUMP ("ASF_EXTENDED_STREAM_PROPERTIES\n");
-	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
-	ASF_DUMP ("\tsize = %llu\n", obj->size);
-	ASF_DUMP ("\tstart_time = %llu\n", obj->start_time);
-	ASF_DUMP ("\tend_time = %llu\n", obj->end_time);
-	ASF_DUMP ("\tdata_bitrate = %u\n", (asf_dword) obj->data_bitrate);
-	ASF_DUMP ("\tbuffer_size = %u\n", (asf_dword) obj->buffer_size);
-	ASF_DUMP ("\tinitial_buffer_fullness = %u\n", (asf_dword) obj->initial_buffer_fullness);
-	ASF_DUMP ("\talternate_data_bitrate = %u\n", (asf_dword) obj->alternate_data_bitrate);
-	ASF_DUMP ("\talternate_buffer_size = %u\n", (asf_dword) obj->alternate_buffer_size);
-	ASF_DUMP ("\talternate_initial_buffer_fullness = %u\n", (asf_dword) obj->alternate_initial_buffer_fullness);
-	ASF_DUMP ("\tmaximum_object_size = %u\n", (asf_dword) obj->maximum_object_size);
-	ASF_DUMP ("\tflags = %u\n", (asf_dword) obj->flags);
-	ASF_DUMP ("\tstream_id = %u\n", (asf_dword) obj->stream_id);
-	ASF_DUMP ("\tstream_language_id_index = %u\n", (asf_dword) obj->stream_language_id_index);
-	ASF_DUMP ("\taverage_time_per_frame = %llu\n", obj->average_time_per_frame);
-	ASF_DUMP ("\tstream_name_count = %u\n", (asf_dword) obj->stream_name_count);
-	ASF_DUMP ("\tpayload_extension_system_count = %u\n", (asf_dword) obj->payload_extension_system_count);
-}
-
 void asf_object_dump (const asf_object* obj)
 {
 	ASF_DUMP ("ASF_OBJECT\n");
