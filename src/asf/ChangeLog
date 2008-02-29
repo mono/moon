@@ -1,5 +1,9 @@
 2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp: Fix MIN/MAX confusion.
+
+2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp, asf.h: Check if there are stream properties in any extended
 	  stream properties object, and put them in our streams list. Fixed a few
 	  warnings, sprinkled some 'const' modifiers here and there.

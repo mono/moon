@@ -839,13 +839,15 @@ ASFFrameReader::AddFrameIndex (uint64_t packet_index)
 	}
 	 
 	// index_size can't be 0 here.
-	uint32_t k = MAX (packet_index, index_size - 1);
+	uint32_t k = MIN (packet_index, index_size - 1);
 	uint64_t current_start = index [k].start_pts;
 	index [k].start_pts = MIN (index [k].start_pts, Pts ());
 	index [k].end_pts = MAX (index [k].end_pts, Pts ());
 	if (k > 1 && current_start != INVALID_START_PTS) {
 		index [k].start_pts = MAX (index [k - 1].end_pts, current_start);		
 	}
+
+	//printf ("ASFFrameReader::AddFrameIndex (%llu). k = %u, start_pts = %llu, end_pts = %llu, stream = %i\n", packet_index, k, index [k].start_pts, index [k].end_pts, stream_number);
 }
 
 uint32_t
