@@ -535,4 +535,8 @@
 	inputFile="test-empty-element-source.html"
 	masterFile10="../harness/masters/test-empty-element-source.htmlMaster.png"
    />
+   <Test id="134"
+	inputFile="test-geometry-transform.xaml"
+	masterFile10="../harness/masters/test-geometry-transformMaster.png"
+   />
 </DRTList>

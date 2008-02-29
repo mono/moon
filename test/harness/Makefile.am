@@ -11,6 +11,7 @@ MOON_TESTS= \
 	../xaml/test-canvas-inside-canvas.xaml \
 	../xaml/test-colors.xaml \
 	../xaml/test-geometry-collection.xaml \
+	../xaml/test-geometry-transform.xaml \
 	../xaml/test-imagebrush-opacity.xaml \
 	../xaml/test-imagebrush-transform.xaml \
 	../xaml/test-imagebrush.xaml \

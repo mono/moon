@@ -1,0 +1,84 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+   <Path Fill="Green" Stroke="Black" Canvas.Left="120" Canvas.Top="30">
+      <Path.Data>
+         <PathGeometry>
+            <PathGeometry.Transform>
+               <RotateTransform Angle="45" />  
+            </PathGeometry.Transform>
+            <PathGeometry.Figures>
+               <PathFigure StartPoint="10,10">
+                  <PathFigure.Segments>
+		     <LineSegment Point="10,40"/>
+		     <LineSegment Point="40,30"/>
+                  </PathFigure.Segments>
+               </PathFigure>
+            </PathGeometry.Figures>
+         </PathGeometry>
+      </Path.Data>
+   </Path>
+   <Path Stroke="Red" StrokeThickness="5" Canvas.Left="120" Canvas.Top="100">
+      <Path.Data>
+	<LineGeometry StartPoint="10,10" EndPoint="10,40">
+	  <LineGeometry.Transform>
+	    <RotateTransform Angle="45"/>
+	  </LineGeometry.Transform>
+        </LineGeometry>
+      </Path.Data>
+   </Path>
+   <Path Fill="Orange" Stroke="green" StrokeThickness="5" Canvas.Left="120" Canvas.Top="150">
+      <Path.Data>
+	<EllipseGeometry Center="10,10" RadiusX="20" RadiusY="30">
+	  <EllipseGeometry.Transform>
+	    <RotateTransform Angle="-30"/>
+	  </EllipseGeometry.Transform>
+        </EllipseGeometry>
+      </Path.Data>
+   </Path>
+   <Path Fill="Orange" Stroke="blue" StrokeThickness=".7" Canvas.Left="120" Canvas.Top="200">
+      <Path.Data>
+	<RectangleGeometry Rect="10,10,10,40">
+	  <RectangleGeometry.Transform>
+	    <RotateTransform Angle="70"/>
+	  </RectangleGeometry.Transform>
+        </RectangleGeometry>
+      </Path.Data>
+   </Path>
+   <Path Fill="Red" Stroke="blue" StrokeThickness=".7" Canvas.Left="180" Canvas.Top="10">
+      <Path.Data>
+	<GeometryGroup>
+	  <GeometryGroup.Transform>
+	    <RotateTransform Angle="70"/>
+	  </GeometryGroup.Transform>
+          <PathGeometry>
+            <PathGeometry.Transform>
+	      <TranslateTransform Y="50"/>
+            </PathGeometry.Transform>
+            <PathGeometry.Figures>
+              <PathFigure StartPoint="10,10">
+              <PathFigure.Segments>
+		<LineSegment Point="10,40"/>
+		<LineSegment Point="40,30"/>
+                </PathFigure.Segments>
+	      </PathFigure>
+            </PathGeometry.Figures>
+          </PathGeometry>
+	<LineGeometry StartPoint="10,10" EndPoint="10,40">
+	  <LineGeometry.Transform>
+	    <TranslateTransform Y="100"/>
+	    
+	  </LineGeometry.Transform>
+        </LineGeometry>
+	<RectangleGeometry Rect="10,10,10,40">
+	  <RectangleGeometry.Transform>
+	    <TranslateTransform Y="150"/>
+	  </RectangleGeometry.Transform>
+        </RectangleGeometry>
+	<EllipseGeometry Center="10,10" RadiusX="20" RadiusY="30">
+	  <EllipseGeometry.Transform>
+	    <TranslateTransform Y="200"/>
+	  </EllipseGeometry.Transform>
+        </EllipseGeometry>
+         </GeometryGroup>
+      </Path.Data>
+   </Path>
+</Canvas>
