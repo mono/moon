@@ -473,30 +473,26 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 }
 
 Value *
+DependencyObject::GetDefaultValue (DependencyProperty *property)
+{
+	return property->default_value;
+}
+
+Value *
 DependencyObject::GetValue (DependencyProperty *property)
 {
 	void *value = NULL;
-
-	bool found;
-	found = g_hash_table_lookup_extended (current_values, property, NULL, &value);
-
-	if (found)
-		return (Value*)value;
-
-	return property->default_value;
+	
+	if (g_hash_table_lookup_extended (current_values, property, NULL, &value))
+		return (Value *) value;
+	
+	return GetDefaultValue (property);
 }
 
 Value *
 DependencyObject::GetValueNoDefault (DependencyProperty *property)
 {
-	Value *value = NULL;
-
-	value = (Value *) g_hash_table_lookup (current_values, property);
-
-	if (value != NULL)
-		return value;
-
-	return NULL;
+	return (Value *) g_hash_table_lookup (current_values, property);
 }
 
 Value *

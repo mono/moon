@@ -1,3 +1,14 @@
+2008-02-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (TextFont::TextFont): Don't let the underline thickness
+	be < 1.0
+
+	* dependencyobject.cpp (DependencyObject::GetValueNoDefault):
+	Simplified.
+	(DependencyObject::GetValue): Simplified.
+	(DependencyObject::GetDefaultValue): New method to get the default
+	value for a property (now used by GetValue()).
+
 2008-02-29  Larry Ewing  <lewing@novell.com>
 
 	* shape.h:
@@ -20,9 +31,10 @@
 
 2008-02-28  Stephane Delcroix  <sdelcroix@novell.com>
 
-	* brush.cpp: No longer ignore out-of-bounds offest in SetupGradient. Add the
-	bounds stop with linearinterpolation between the nearest stop and the 
-	outofbounds one. Handle the degenerated case with only outofbounds stops.
+	* brush.cpp: No longer ignore out-of-bounds offest in
+	SetupGradient. Add the bounds stop with linearinterpolation
+	between the nearest stop and the outofbounds one. Handle the
+	degenerated case with only outofbounds stops.
 
 2008-02-28  Michael Dominic K.  <mdk@mdk.am>
 

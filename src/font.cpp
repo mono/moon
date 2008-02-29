@@ -31,7 +31,7 @@
 #include FT_OUTLINE_H
 
 
-#define d(x) x
+#define d(x)
 
 
 static const FT_Matrix invert_y = {
@@ -901,8 +901,11 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 		// calculate underline position
 		position = FT_MulFix (-face->underline_position, face->size->metrics.y_scale);
 		underline_position = ((double) position) / (scale * 64) + ((underline_thickness + 1) / 2.0);
+		
+		if (underline_thickness < 1.0)
+			underline_thickness = 1.0;
 	} else {
-		underline_thickness = 0.0;
+		underline_thickness = 1.0;
 		underline_position = 0.0;
 		glyphs = NULL;
 	}

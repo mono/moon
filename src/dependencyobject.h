@@ -222,6 +222,7 @@ class DependencyObject : public EventObject {
 	virtual void SetValue (DependencyProperty *property, Value value);
 	void SetValue (const char *name, Value *value);
 	void SetValue (const char *name, Value value);
+	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual Value *GetValue (DependencyProperty *property);
 	Value *GetValueNoDefault (DependencyProperty *property);
 	Value *GetValue (const char *name);
