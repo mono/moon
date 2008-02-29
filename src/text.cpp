@@ -966,7 +966,7 @@ TextBlock::GetValue (DependencyProperty *property)
 	
 	if (property == TextBlock::TextProperty) {
 		GString *block;
-		Value val;
+		Value *val;
 		
 		// The Text property is a concatenation of the Inlines */
 		Inlines *inlines = text_block_get_inlines (this);
@@ -1002,9 +1002,9 @@ TextBlock::GetValue (DependencyProperty *property)
 			}
 		}
 		
-		val = Value (block->str);
-		SetValue (property, &val);
+		val = new Value (block->str);
 		g_string_free (block, true);
+		return val;
 	}
 	
 	return DependencyObject::GetValue (property);
