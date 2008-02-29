@@ -151,48 +151,87 @@ Inline::~Inline ()
 void
 Inline::OnPropertyChanged (DependencyProperty *prop)
 {
+	Value *value;
+	
 	if (prop->type != Type::INLINE) {
 		DependencyObject::OnPropertyChanged (prop);
 		return;
 	}
 	
+	value = GetValueNoDefault (prop);
+	
 	if (prop == Inline::FontFamilyProperty) {
-		char *family = inline_get_font_family (this);
-		if (RENDER_USING_PANGO)
-			pango_font_description_set_family (font.pango, family);
-		else
-			font.custom->SetFamily (family);
+		if (value) {
+			char *family = value->AsString ();
+			if (RENDER_USING_PANGO)
+				pango_font_description_set_family (font.pango, family);
+			else
+				font.custom->SetFamily (family);
+		} else {
+			if (RENDER_USING_PANGO)
+				pango_font_description_unset_fields (font.pango, PANGO_FONT_MASK_FAMILY);
+			else
+				font.custom->UnsetFields (FontMaskFamily);
+		}
 	} else if (prop == Inline::FontSizeProperty) {
-		double size = inline_get_font_size (this);
-		if (RENDER_USING_PANGO)
-			pango_font_description_set_absolute_size (font.pango, size * PANGO_SCALE);
-		else
-			font.custom->SetSize (size);
+		if (value) {
+			double size = value->AsDouble ();
+			if (RENDER_USING_PANGO)
+				pango_font_description_set_absolute_size (font.pango, size * PANGO_SCALE);
+			else
+				font.custom->SetSize (size);
+		} else {
+			if (RENDER_USING_PANGO)
+				pango_font_description_unset_fields (font.pango, PANGO_FONT_MASK_SIZE);
+			else
+				font.custom->UnsetFields (FontMaskSize);
+		}
 	} else if (prop == Inline::FontStretchProperty) {
-		FontStretches stretch = inline_get_font_stretch (this);
-		if (RENDER_USING_PANGO)
-			pango_font_description_set_stretch (font.pango, font_stretch (stretch));
-		else
-			font.custom->SetStretch (stretch);
+		if (value) {
+			FontStretches stretch = (FontStretches) value->AsInt32 ();
+			if (RENDER_USING_PANGO)
+				pango_font_description_set_stretch (font.pango, font_stretch (stretch));
+			else
+				font.custom->SetStretch (stretch);
+		} else {
+			if (RENDER_USING_PANGO)
+				pango_font_description_unset_fields (font.pango, PANGO_FONT_MASK_STRETCH);
+			else
+				font.custom->UnsetFields (FontMaskStretch);
+		}
 	} else if (prop == Inline::FontStyleProperty) {
-		FontStyles style = inline_get_font_style (this);
-		if (RENDER_USING_PANGO)
-			pango_font_description_set_style (font.pango, font_style (style));
-		else
-			font.custom->SetStyle (style);
+		if (value) {
+			FontStyles style = (FontStyles) value->AsInt32 ();
+			if (RENDER_USING_PANGO)
+				pango_font_description_set_style (font.pango, font_style (style));
+			else
+				font.custom->SetStyle (style);
+		} else {
+			if (RENDER_USING_PANGO)
+				pango_font_description_unset_fields (font.pango, PANGO_FONT_MASK_STYLE);
+			else
+				font.custom->UnsetFields (FontMaskStyle);
+		}
 	} else if (prop == Inline::FontWeightProperty) {
-		FontWeights weight = inline_get_font_weight (this);
-		if (RENDER_USING_PANGO)
-			pango_font_description_set_weight (font.pango, font_weight (weight));
-		else
-			font.custom->SetWeight (weight);
+		if (value) {
+			FontWeights weight = (FontWeights) value->AsInt32 ();
+			if (RENDER_USING_PANGO)
+				pango_font_description_set_weight (font.pango, font_weight (weight));
+			else
+				font.custom->SetWeight (weight);
+		} else {
+			if (RENDER_USING_PANGO)
+				pango_font_description_unset_fields (font.pango, PANGO_FONT_MASK_WEIGHT);
+			else
+				font.custom->UnsetFields (FontMaskWeight);
+		}
 	} else if (prop == Inline::ForegroundProperty) {
 		if (foreground != NULL) {
 			foreground->Detach (NULL, this);
 			foreground->unref ();
 		}
 		
-		if ((foreground = inline_get_foreground (this)) != NULL) {
+		if ((foreground = value ? value->AsBrush () : NULL) != NULL) {
 			foreground->Attach (NULL, this);
 			foreground->ref ();
 		}

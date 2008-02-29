@@ -1,5 +1,8 @@
 2008-02-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (Inline::OnPropertyChanged): Use GetValueNoDefault()
+	rather than calling inline_get_*() which use GetValue().
+
 	* font.cpp (TextFont::TextFont): Don't let the underline thickness
 	be < 1.0
 
