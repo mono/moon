@@ -1404,7 +1404,7 @@ TextFontDescription::TextFontDescription ()
 	style = FontStylesNormal;
 	weight = FontWeightsNormal;
 	stretch = FontStretchesNormal;
-	size = 14.666f;
+	size = 14.666666984558105;
 	index = 0;
 }
 
