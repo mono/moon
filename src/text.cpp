@@ -511,8 +511,7 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 TextBlock::ComputeBounds ()
 {
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
-						     IntersectBoundsWithClipPath (Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ()), false));
+	bounds = IntersectBoundsWithClipPath (Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ()), false).Transform (&absolute_xform);
 }
 
 bool
@@ -1814,8 +1813,7 @@ Glyphs::ComputeBounds ()
 	if (dirty)
 		Layout ();
 	
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform, 
-						     IntersectBoundsWithClipPath (Rect (0, 0, width, height), false));
+	bounds = IntersectBoundsWithClipPath (Rect (0, 0, width, height), false).Transform (&absolute_xform);
 }
 
 Point

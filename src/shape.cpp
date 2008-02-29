@@ -385,8 +385,7 @@ Shape::ComputeBounds ()
 {
 	InvalidateSurfaceCache ();
 	extents = ComputeShapeBounds ();
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-						     IntersectBoundsWithClipPath (extents, false));
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
 }
 
@@ -414,8 +413,7 @@ Shape::ComputeLargestRectangleBounds ()
 	if (largest.IsEmpty ())
 		return largest;
 
-	return bounding_rect_for_transformed_rect (&absolute_xform,
-						    IntersectBoundsWithClipPath (largest, false));
+	return IntersectBoundsWithClipPath (largest, false).Transform (&absolute_xform);
 }
 
 Rect
@@ -2159,7 +2157,7 @@ Path::ComputeShapeBounds ()
 		}		
 	}
 
-	shape_bounds = bounding_rect_for_transformed_rect (&stretch_transform, shape_bounds);
+	shape_bounds = shape_bounds.Transform (&stretch_transform);
 
 	if (vh && vw) {
 		shape_bounds.w = MIN (shape_bounds.w, vw->AsDouble () - shape_bounds.x);

@@ -50,9 +50,8 @@ FrameworkElement::ComputeBounds ()
 	y2 = framework_element_get_height (this);
 
 	if (x2 != 0.0 && y2 != 0.0)
-		bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-							     IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2),
-											  false));
+		bounds = IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2), false).Transform (&absolute_xform);
+
 }
 
 bool

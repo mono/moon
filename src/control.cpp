@@ -66,8 +66,7 @@ Control::ComputeBounds ()
 	       
 	}
 	
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-						     IntersectBoundsWithClipPath (bounds, false));
+	bounds = IntersectBoundsWithClipPath (bounds, false).Transform (&absolute_xform);
 	bounds_with_children = IntersectBoundsWithClipPath (bounds_with_children.Union (bounds), false);
 							    
 }

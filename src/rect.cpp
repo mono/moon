@@ -31,8 +31,13 @@ rect_from_str (const char *s, Rect *r)
 }
 
 Rect
-bounding_rect_for_transformed_rect (cairo_matrix_t *transform, Rect rect)
+Rect::Transform (cairo_matrix_t *transform)
 {
+	Rect rect = *this;
+
+	if (!transform)
+		return rect;
+
 	double p1_x = rect.x;        double p1_y = rect.y;
 	double p2_x = rect.x+rect.w; double p2_y = rect.y;
 	double p3_x = rect.x+rect.w; double p3_y = rect.y+rect.h;

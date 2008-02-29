@@ -616,8 +616,7 @@ MediaElement::ComputeBounds ()
 	
 	Rect box = Rect (0, 0, w, h);
 	
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-						     IntersectBoundsWithClipPath (box, false));
+	bounds = IntersectBoundsWithClipPath (box, false).Transform (&absolute_xform); 
 }
 
 Point
@@ -2028,8 +2027,8 @@ Image::ComputeBounds ()
 			 framework_element_get_width (this),
 			 framework_element_get_height (this));
 								   
-	bounds = bounding_rect_for_transformed_rect (&absolute_xform,
-						     IntersectBoundsWithClipPath (box, false));
+	bounds = IntersectBoundsWithClipPath (box, false).Transform (&absolute_xform);
+						     
 }
 
 Point

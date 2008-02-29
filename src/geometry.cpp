@@ -199,7 +199,7 @@ GeometryGroup::ComputeBounds (Path *path)
 	if (transform) {
 		cairo_matrix_t matrix;
 		transform->GetTransform (&matrix);
-		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+		bounds = bounds.Transform (&matrix);
 	}
 
 //g_warning ("GeometryGroup::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
@@ -347,7 +347,7 @@ EllipseGeometry::ComputeBounds (Path *path)
 	if (transform) {
 		cairo_matrix_t matrix;
 		transform->GetTransform (&matrix);
-		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+		bounds = bounds.Transform (&matrix);
 	}
 
 	return bounds;
@@ -417,7 +417,7 @@ LineGeometry::ComputeBounds (Path *shape)
 	if (transform) {
 		cairo_matrix_t matrix;
 		transform->GetTransform (&matrix);
-		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+		bounds = bounds.Transform (&matrix);
 	}
 
 	return bounds;
@@ -481,7 +481,7 @@ PathGeometry::ComputeBounds (Path *shape)
 	if (transform) {
 		cairo_matrix_t matrix;
 		transform->GetTransform (&matrix);
-		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+		bounds = bounds.Transform (&matrix);
 	}
 
 //g_warning ("PathGeometry::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
@@ -608,7 +608,7 @@ RectangleGeometry::ComputeBounds (Path *path)
 	if (transform) {
 		cairo_matrix_t matrix;
 		transform->GetTransform (&matrix);
-		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+		bounds = bounds.Transform (&matrix);
 	}
 
 	return bounds;

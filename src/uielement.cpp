@@ -97,8 +97,7 @@ UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 		box = Rect (0,0,0,0);
 
 	if (transform)
-		box = bounding_rect_for_transformed_rect (&absolute_xform,
-							  box);
+		box = box.Transform (&absolute_xform);
 
 	return box.Intersection (unclipped);
 }

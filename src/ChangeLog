@@ -4,6 +4,19 @@
 	an even more fun memory corruption bug.
 
 2008-02-29  Larry Ewing  <lewing@novell.com>
+	
+	src/control.cpp:
+	src/frameworkelement.cpp:
+	src/geometry.cpp:
+	src/media.cpp:
+	src/rect.cpp:
+	src/rect.h:
+	src/shape.cpp:
+	src/text.cpp:
+	src/uielement.cpp: Fix Rect::Transform, replace all occurances of
+	bounding_rect_for_transformed_rect with Rect::Transform.
+
+2008-02-29  Larry Ewing  <lewing@novell.com>
 
 	* geometry.cpp: apply transform to all bounds calculations.  Fixes
 	test-geometry-bounds.xaml.
