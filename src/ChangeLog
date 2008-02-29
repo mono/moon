@@ -1,3 +1,9 @@
+2008-02-29  Larry Ewing  <lewing@novell.com>
+
+	* geometry.cpp: Make sure geometry groups draw their children
+	rather than just copying the paths so that local transforms are
+	applied correctly.
+
 2008-02-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::GetValue): Fixed memory leak.

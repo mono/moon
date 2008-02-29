@@ -65,6 +65,7 @@ Geometry::~Geometry ()
 void
 Geometry::Draw (Path *shape, cairo_t *cr)
 {
+	cairo_save (cr);
 	cairo_set_fill_rule (cr, convert_fill_rule (geometry_get_fill_rule (this)));
 	Transform* transform = geometry_get_transform (this);
 	if (transform) {
@@ -79,6 +80,7 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 	if (path)
 		cairo_append_path (cr, &path->cairo);
 
+	cairo_restore (cr);
 }
 
 /*
@@ -161,6 +163,7 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, 
 void
 GeometryGroup::Draw (Path *shape, cairo_t *cr)
 {
+	cairo_save (cr);
 	cairo_set_fill_rule (cr, convert_fill_rule (geometry_get_fill_rule (this)));
 	Transform* transform = geometry_get_transform (this);
 	if (transform) {
@@ -175,11 +178,10 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 	node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		Geometry *geometry = (Geometry *) node->obj;
-
-		if (!geometry->IsBuilt ())
-			geometry->Build (shape);
-		cairo_append_path (cr, geometry->GetCairoPath ());
+		
+		geometry->Draw  (shape, cr);
 	}
+	cairo_restore (cr);
 }
 
 Rect
