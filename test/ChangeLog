@@ -1,3 +1,11 @@
+2008-02-29  Geoff Norton  <gnorton@novell.com>
+
+	* index.aspx:
+	* xamlize.aspx:
+	* Silverlight.js: A few helper asp.net pages to test all our tests in here
+	in browser.  Simply run "xsp2" in this directory and you'll get a list of 
+	all the xamls you can startup.
+
 2008-02-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/test-directory-in-zip.html, xaml/test-directory-in-zip.zip,
