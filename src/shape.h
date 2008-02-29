@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 //
 
 cairo_fill_rule_t convert_fill_rule (FillRule fill_rule);
+void calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds);
 
 
 //

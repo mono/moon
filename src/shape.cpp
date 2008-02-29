@@ -1262,7 +1262,7 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 	return true; 
 }
 
-static void
+void
 calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds)
 {
 	if (x1 == x2) {
@@ -1277,9 +1277,13 @@ calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, 
 		bounds->h = thickness;
 	} else {
 		double m = fabs ((y1 - y2) / (x1 - x2));
+#if EXACT_BOUNDS
+		double dx = sin (atan (m)) * thickness;
+		double dy = cos (atan (m)) * thickness;
+#else
 		double dx = (m > 1.0) ? thickness : thickness * m;
 		double dy = (m < 1.0) ? thickness : thickness / m;
-
+#endif
 		bounds->x = MIN (x1, x2) - dx / 2.0;
 		bounds->y = MIN (y1, y2) - dy / 2.0;
 		bounds->w = fabs (x2 - x1) + dx;

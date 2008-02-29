@@ -1,3 +1,11 @@
+2008-02-29  Larry Ewing  <lewing@novell.com>
+
+	* shape.h:
+	* shape.cpp: export calc_line_bounds.
+
+	* geometry.cpp: use calc_line_bounds from shape.h.  Fixes bounds
+	problems on Animation_TargetingAndHandoff.xaml.
+
 2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: Add a missing const modifier.

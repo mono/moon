@@ -81,6 +81,17 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 
 }
 
+/*
+Rect
+Geometry::ComputeBounds (Path *shape)
+{
+	if (!path || (path->cairo.num_data == 0))
+		Build (shape);
+
+	return path ? path_get_bounds (shape, &path->cairo) : Rect (0, 0, 0, 0);
+}
+*/
+
 void
 Geometry::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -372,34 +383,15 @@ LineGeometry::Build (Path *shape)
 }
 
 Rect
-LineGeometry::ComputeBounds (Path *path)
+LineGeometry::ComputeBounds (Path *shape)
 {
+	Rect bounds;
 	Point *p1 = line_geometry_get_start_point (this);
 	Point *p2 = line_geometry_get_end_point (this);
-	double thickness = shape_get_stroke_thickness (path);
+	double thickness = shape_get_stroke_thickness (shape);
 
-	if (thickness <= 0.0)
-		return Rect (0.0, 0.0, 0.0, 0.0);
-
-	double dx = p1->x - p2->x;
-	double dy = p1->y - p2->y;
-
-	if (thickness <= 1.0)
-		return Rect (MIN (p1->x, p2->x), MIN (p1->y, p2->y), fabs (dx), fabs (dy));
-
-	thickness /= 2.0;
-	// vertical line
-	if (dx == 0.0)
-		return Rect (p1->x - thickness, MIN (p1->y, p2->y), thickness * 2.0, fabs (dy));
-	// horizontal line
-	if (dy == 0.0)
-		return Rect (MIN (p1->x, p2->x), p1->y - thickness, fabs (dx), thickness * 2.0);
-
-	// slopped line
-	double m = fabs (dy / dx);
-	double tx = (m > 1.0) ? thickness : thickness * m;
-	double ty = (m < 1.0) ? thickness : thickness / m;
-	return Rect (MIN (p1->x, p2->x) - tx / 2.0, MIN (p1->y, p2->y) - ty / 2.0, fabs (dx) + tx, fabs (dy) + ty);
+	calc_line_bounds (p1->x, p2->x, p1->y, p2->y, thickness, &bounds);
+	return bounds;
 }
 
 //
