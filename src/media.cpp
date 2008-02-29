@@ -1176,7 +1176,8 @@ Value *
 MediaElement::GetValue (DependencyProperty *prop)
 {
 	if (prop == MediaElement::PositionProperty) {
-		bool use_mplayer = true;
+		bool use_mplayer;
+		
 		switch (state) {
 		case Opening:
 		case Closed:
@@ -1187,6 +1188,7 @@ MediaElement::GetValue (DependencyProperty *prop)
 		case Buffering:
 		case Playing:
 		case Paused:
+		default:
 			use_mplayer = true;
 			break;
 		}
@@ -1198,8 +1200,6 @@ MediaElement::GetValue (DependencyProperty *prop)
 			flags |= UpdatingPosition;
 			SetValue (prop, &v);
 			flags &= ~UpdatingPosition;
-		} else {
-			Value *v = MediaBase::GetValue (prop);
 		}
 	}
 	

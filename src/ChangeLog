@@ -1,5 +1,9 @@
 2008-02-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (TextBlock::GetValue): Fixed memory leak.
+
+	* media.cpp (MediaElement::GetValue): Fixed compile warning.
+
 	* text.cpp (Inline::OnPropertyChanged): Use GetValueNoDefault()
 	rather than calling inline_get_*() which use GetValue().
 
