@@ -1,5 +1,9 @@
 2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Add a missing const modifier.
+
+2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp: Use the first streams found in the media, not the last.
 
 2008-02-28  Stephane Delcroix  <sdelcroix@novell.com>

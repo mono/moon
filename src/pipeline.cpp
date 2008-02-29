@@ -912,7 +912,7 @@ ASFDemuxer::ReadHeader ()
 			goto failure;
 		}
 		
-		asf_stream_properties* stream_properties = asf_parser->GetStream (current_stream);
+		const asf_stream_properties* stream_properties = asf_parser->GetStream (current_stream);
 		IMediaStream* stream = NULL;
 		
 		if (stream_properties == NULL) {
