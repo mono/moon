@@ -11,6 +11,12 @@
 
 2008-02-29  Larry Ewing  <lewing@novell.com>
 
+	* geometry.cpp (PathGeometry::ComputeBounds): take the geometry
+	transform into account when computing bounds.  Fixes
+	CGeometry_AddToRenderList.xaml
+
+2008-02-29  Larry Ewing  <lewing@novell.com>
+
 	* shape.h:
 	* shape.cpp: export calc_line_bounds.
 

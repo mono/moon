@@ -447,6 +447,14 @@ PathGeometry::ComputeBounds (Path *shape)
 		PathFigure *pf = (PathFigure *) node->obj;
 		bounds = bounds.Union (pf->ComputeBounds (shape));
 	}
+	
+
+	Transform* transform = geometry_get_transform (this);
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+	}
 
 //g_warning ("PathGeometry::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
 	// some AA glitches occurs when no stroke is present or when drawning unfilled curves
