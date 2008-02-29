@@ -194,6 +194,14 @@ GeometryGroup::ComputeBounds (Path *path)
 		Geometry *geometry = (Geometry *) node->obj;
 		bounds = bounds.Union (geometry->ComputeBounds (path));
 	}
+
+	Transform* transform = geometry_get_transform (this);
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+	}
+
 //g_warning ("GeometryGroup::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
 	return bounds;
 }
@@ -331,7 +339,18 @@ EllipseGeometry::ComputeBounds (Path *path)
 	Point *pt = ellipse_geometry_get_center (this);
 	double x = pt ? pt->x : 0.0;
 	double y = pt ? pt->y : 0.0;
-	return Rect (x - hw, y - hh, hw * 2.0, hh * 2.0);
+	Rect bounds;
+
+	bounds = Rect (x - hw, y - hh, hw * 2.0, hh * 2.0);
+
+	Transform* transform = geometry_get_transform (this);
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+	}
+
+	return bounds;
 }
 
 //
@@ -393,6 +412,14 @@ LineGeometry::ComputeBounds (Path *shape)
 	double thickness = shape_get_stroke_thickness (shape);
 
 	calc_line_bounds (p1->x, p2->x, p1->y, p2->y, thickness, &bounds);
+
+	Transform* transform = geometry_get_transform (this);
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+	}
+
 	return bounds;
 }
 
@@ -450,7 +477,6 @@ PathGeometry::ComputeBounds (Path *shape)
 		bounds = bounds.Union (pf->ComputeBounds (shape));
 	}
 	
-
 	Transform* transform = geometry_get_transform (this);
 	if (transform) {
 		cairo_matrix_t matrix;
@@ -566,6 +592,8 @@ Rect
 RectangleGeometry::ComputeBounds (Path *path)
 {
 	Rect *rect = rectangle_geometry_get_rect (this);
+	Rect bounds;
+
 	if (!rect)
 		return Rect (0.0, 0.0, 0.0, 0.0);
 
@@ -574,7 +602,16 @@ RectangleGeometry::ComputeBounds (Path *path)
 	if ((thickness > rect->w) || (thickness > rect->h))
 		thickness += 2.0;
 
-	return rect->GrowBy (thickness / 2.0);
+	bounds = rect->GrowBy (thickness / 2.0);
+
+	Transform* transform = geometry_get_transform (this);
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		bounds = bounding_rect_for_transformed_rect (&matrix, bounds);
+	}
+
+	return bounds;
 }
 
 bool

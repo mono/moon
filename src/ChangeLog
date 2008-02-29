@@ -1,5 +1,10 @@
 2008-02-29  Larry Ewing  <lewing@novell.com>
 
+	* geometry.cpp: apply transform to all bounds calculations.  Fixes
+	test-geometry-bounds.xaml.
+
+2008-02-29  Larry Ewing  <lewing@novell.com>
+
 	* geometry.cpp: Make sure geometry groups draw their children
 	rather than just copying the paths so that local transforms are
 	applied correctly.
