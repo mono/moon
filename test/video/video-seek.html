@@ -39,7 +39,7 @@
 
         function ErrorHandler (sender, args)
         {
-            TestLogger.LogError (errorString);
+            TestLogger.LogError (args.toString ());
             TestLogger.LogResult (-1);
         }
 
@@ -48,7 +48,8 @@
 		var ml = document.getElementById ("JoltActiveX");
 		var me = ml.content.findName ("TestVideo");
 		me.Position = "00:00:07.000";
-		if (me.Position.Seconds = 7) {
+
+		if (me.Position.Seconds == 7) {
 			result = 0;
 		} else {
 			result = -1;

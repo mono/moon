@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Test Sample</title>    
+    <script type="text/javascript">
+	var playlist_source = "playlist.asx";
+function media_stop(sender, args) 
+{
+    sender.findName("MediaPlayer").stop();
+}
+
+function media_pause(sender, args) 
+{
+    sender.findName("MediaPlayer").pause();
+}
+
+function media_begin(sender, args) 
+{
+    player = sender.findName("MediaPlayer");
+    player.Source = "nonexistent.asx";
+    player.play();
+    alert (player.Source);
+}
+
+function onCurrentStateChanged(sender, args)
+{
+        player = sender.findName("MediaPlayer");
+        alert(player.currentState);
+}
+
+function media_forward(sender, args)
+{
+    player = sender.findName("MediaPlayer");
+    player.source = "test.asx";
+}
+
+function plog (html)
+{
+	var d = document.getElementById ("plog");
+	d.innerHTML = html + d.innerHTML;
+}
+
+function media_state_changed(sender, args)
+{
+    // Get the TextBlock object to display the current status.
+    var mediaStateTextBlock = sender.findName("mediaStateTextBlock");
+    // Get the MediaElement object
+    var media = sender.findName("MediaPlayer");
+   
+    mediaStateTextBlock.Text = media.CurrentState;
+
+	plog ("<hr />");
+	plog ("attributes: " + media.Attributes + "<br />");
+	plog ("count: " + media.Attributes.count + "<br />");
+
+	for (var i = 0; i < media.Attributes.count; i++) {
+		var attribute = media.Attributes.getItem (i);
+
+		plog ("name: " + attribute.Name + ", value:" + attribute.Value + "<br />");
+	}
+}
+    </script>
+    <script src="Silverlight.js" type="text/javascript"></script>
+
+</head>
+<body>
+    <form>
+        <div id="PlaylistHost" style="background:#FFFFFF">     
+		<script type="text/javascript">                                         
+    Silverlight.createObject (
+		"playlist.xaml", document.getElementById("PlaylistHost"), "Player",
+		{
+			width:'1024',
+			height:'530',
+			inplaceInstallPrompt:false,
+			background:'white',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		},
+	        {
+			onError:null,
+			onLoad:null
+		},
+        	null
+	);
+
+        </script>  
+        </div>
+    </form>
+
+<div id="plog"></div>
+            
+</body>                
+</html>
+

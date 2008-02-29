@@ -1,0 +1,12 @@
+<ASX version="3.0">
+  <TITLE>My Test Playlist</TITLE>
+  <EVENT>
+    <ENTRYREF HREF="nested-1.asx" />
+  </EVENT>
+  <ENTRY>
+    <TITLE>Short timecode video</TITLE>
+    <AUTHOR>Novell, Inc</AUTHOR>
+    <COPYRIGHT>(c) 2008 Novell, Inc</COPYRIGHT>
+    <REF HREF="../timecode-short.wmv" />
+  </ENTRY>
+</ASX>

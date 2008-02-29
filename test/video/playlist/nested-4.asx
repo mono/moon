@@ -1,0 +1,9 @@
+<ASX version="3.0">
+  <TITLE>My Test Playlist</TITLE>
+  <ENTRY>
+    <TITLE>Oh a cute butterfly</TITLE>
+    <AUTHOR>Novell, Inc</AUTHOR>
+    <COPYRIGHT>(c) 2008 Novell, Inc</COPYRIGHT>
+    <REF HREF="nested-3.asx" />
+  </ENTRY>
+</ASX>

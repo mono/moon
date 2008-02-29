@@ -1,0 +1,6 @@
+<ASX version="3.0">
+  <TITLE>My Test Playlist</TITLE>
+  <REPEAT count="2">
+    <ENTRYREF HREF="../nested-1.asx" />
+  </REPEAT>
+</ASX>
