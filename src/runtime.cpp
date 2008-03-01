@@ -1784,7 +1784,7 @@ surface_get_trans (Surface *s)
 cairo_t*
 measuring_context_create (void)
 {
-	cairo_surface_t* surf = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 1, 1);
+	cairo_surface_t* surf = cairo_image_surface_create (CAIRO_FORMAT_A1, 1, 1);
 	return cairo_create (surf);
 }
 
