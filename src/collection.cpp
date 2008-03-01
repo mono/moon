@@ -427,15 +427,15 @@ VisualCollection::VisualCollection ()
 
 VisualCollection::~VisualCollection ()
 {
+	Collection::Node *n = (Collection::Node *) list->First ();
+	
 	g_ptr_array_free (z_sorted, true);
 	
-	Collection::Node *n;
-	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
-		UIElement* el = (UIElement*) n->obj;
-		if (el) {
-			el->SetVisualParent (NULL);
-			el->SetSurface (NULL);
-		}
+	while (n) {
+		((UIElement *) n->obj)->SetVisualParent (NULL);
+		((UIElement *) n->obj)->SetSurface (NULL);
+		
+		n = (Collection::Node *) n->next;
 	}
 }
 
@@ -444,13 +444,25 @@ UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 {
 	int z1 = (*((UIElement **) ui1))->GetValue (UIElement::ZIndexProperty)->AsInt32 ();
 	int z2 = (*((UIElement **) ui2))->GetValue (UIElement::ZIndexProperty)->AsInt32 ();
-
+	
 	return z1 - z2;
 }
 
 void
 VisualCollection::ResortByZIndex ()
 {
+	Collection::Node *node;
+	uint i = 0;
+	
+	if (z_sorted->len < 2)
+		return;
+	
+	node = (Collection::Node *) list->First ();
+	while (node) {
+		z_sorted->pdata[i++] = node->obj;
+		node = (Collection::Node *) node->next;
+	}
+	
 	g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
 }
 
@@ -511,6 +523,7 @@ VisualCollection::Add (DependencyObject *data)
 			item->OnLoaded ();
 		}
 	}
+	
 	return n;
 }
 
@@ -545,21 +558,21 @@ VisualCollection::Insert (int index, DependencyObject *data)
 {
 	UIElement *item = (UIElement *) data;
 	
-	bool b = Collection::Insert (index, item);
-
-	if (b) {
-		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
+	if (!Collection::Insert (index, item))
+		return false;
 	
-		if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
-			/* emit loaded events on the new item if the tree
-			   we're adding it to has already been "loaded" */
-			item->OnLoaded ();
-		}
-
-		VisualAdded (item);
+	g_ptr_array_set_size (z_sorted, z_sorted->len + 1);
+	ResortByZIndex ();
+	
+	if (closure && ((UIElement *)closure)->flags & UIElement::IS_LOADED) {
+		/* emit loaded events on the new item if the tree
+		   we're adding it to has already been "loaded" */
+		item->OnLoaded ();
 	}
-
-	return b;
+	
+	VisualAdded (item);
+	
+	return true;
 }
 
 bool
@@ -569,12 +582,12 @@ VisualCollection::Remove (DependencyObject *data)
 
 	VisualRemoved (item);
 
-	bool b = Collection::Remove (item);
-	
-	if (b)
+	if (Collection::Remove (item)) {
 		g_ptr_array_remove (z_sorted, item);
-
-	return b;
+		return true;
+	}
+	
+	return false;
 }
 
 bool
@@ -588,12 +601,12 @@ VisualCollection::RemoveAt (int index)
 
 	VisualRemoved (item);
 
-	bool b = Collection::RemoveAt (index);
-
-	if (b)
+	if (Collection::RemoveAt (index)) {
 		g_ptr_array_remove (z_sorted, item);
-
-	return b;
+		return true;
+	}
+	
+	return false;
 }
 
 void

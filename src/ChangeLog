@@ -1,5 +1,12 @@
 2008-02-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* collection.cpp (VisualCollection::ResortByZIndex): Reinitialize
+	the z_sorted array before sorting so that we can be sure the end
+	result will be a stable sort.
+	(VisualCollection::Insert): Don't use g_ptr_array_insert_sorted()
+	because we need to take index into account. Instead, grow our
+	array and call ResortByZIndex().
+
 	* text.cpp (TextBlock::GetValue): Revert memleak fix, it created
 	an even more fun memory corruption bug.
 
