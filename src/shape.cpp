@@ -344,7 +344,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 			// w * h * 4 might be incorrect in some cases actually...
 			// but in 99% it should be okay. If you're running on a 16bit
 			// server you're prolly screwed with cairo perf anyways.
-			cached_size = cache_extents.w * cache_extents.h * 4;
+			cached_size = (int64_t) cache_extents.w * (int64_t) cache_extents.h * 4;
 			if (GetSurface ())
 				GetSurface ()->AddToCacheSizeCounter (cached_size);
 		}
