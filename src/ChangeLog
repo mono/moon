@@ -1,5 +1,7 @@
 2008-03-01  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp (Shape::DoDraw): refactor slightly.
+
 	* geometry.cpp: fix extents calculation when there is only a fill
 	on the shape.  Fixes test-path-stretch-fill-extents.xaml.
 	
