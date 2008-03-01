@@ -1,8 +1,12 @@
 2008-03-01  Larry Ewing  <lewing@novell.com>
 
+	* geometry.cpp: fix extents calculation when there is only a fill
+	on the shape.  Fixes test-path-stretch-fill-extents.xaml.
+	
 	* shape.cpp (Shape::ComputeShapeBounds): make sure shapes with
 	negative widths or heights have no bounds.
 	(Shape::DoDraw): Silence warning.
+	
 
 2008-02-29  Larry Ewing  <lewing@novell.com>
 
