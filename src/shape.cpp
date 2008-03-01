@@ -329,7 +329,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 			// extents.w, extents.h,
 			// cache_extents.w, cache_extents.h);
 
-			cached_surface = image_brush_create_similar (cr, cache_extents.w, cache_extents.h);
+			cached_surface = image_brush_create_similar (cr, (int)cache_extents.w, (int)cache_extents.h);
 			cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
 			cached_cr = cairo_create (cached_surface);
 

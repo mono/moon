@@ -2,6 +2,7 @@
 
 	* shape.cpp (Shape::ComputeShapeBounds): make sure shapes with
 	negative widths or heights have no bounds.
+	(Shape::DoDraw): Silence warning.
 
 2008-02-29  Larry Ewing  <lewing@novell.com>
 
