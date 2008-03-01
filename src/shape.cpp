@@ -398,10 +398,11 @@ Shape::ComputeShapeBounds ()
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
 
-	if ((w == 0.0) || (h == 0.0))
+	if ((w <= 0.0) || (h <= 0.0))
 		return Rect ();
+	
 
-	double t = shape_get_stroke_thickness (this) * .5;
+	//double t = shape_get_stroke_thickness (this) * .5;
 
 	return Rect (0, 0, w, h);
 }

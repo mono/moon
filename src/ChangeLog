@@ -1,3 +1,8 @@
+2008-03-01  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (Shape::ComputeShapeBounds): make sure shapes with
+	negative widths or heights have no bounds.
+
 2008-02-29  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Shape::ComputeShapeBounds): tweak shape bounds to
