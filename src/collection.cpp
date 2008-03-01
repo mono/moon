@@ -578,6 +578,9 @@ VisualCollection::Insert (int index, DependencyObject *data)
 bool
 VisualCollection::Remove (DependencyObject *data)
 {
+	if (!list->Find (CollectionNodeFinder, data))
+		return false;
+
 	UIElement *item = (UIElement *) data;
 
 	VisualRemoved (item);

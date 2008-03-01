@@ -1,3 +1,9 @@
+2008-02-29  Larry Ewing  <lewing@novell.com>
+
+	* collection.cpp (VisualCollection::Remove): don't fire
+	VisualRemoved unless we are going to actually remove the item.
+	Fixes OM_RemoveClearRemoveAt.htm.
+
 2008-02-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* collection.cpp (VisualCollection::ResortByZIndex): Reinitialize
