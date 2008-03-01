@@ -23,6 +23,7 @@
 
 
 
+#define             <link linkend="CAIRO-HAS-WIN32-FONT:CAPS">CAIRO_HAS_WIN32_FONT</link>
 <link linkend="cairo-font-face-t">cairo_font_face_t</link>*  <link linkend="cairo-win32-font-face-create-for-logfontw">cairo_win32_font_face_create_for_logfontw</link>
                                                         (<link linkend="LOGFONTW:CAPS">LOGFONTW</link> *logfont);
 <link linkend="cairo-font-face-t">cairo_font_face_t</link>*  <link linkend="cairo-win32-font-face-create-for-hfont">cairo_win32_font_face_create_for_hfont</link>
@@ -55,12 +56,21 @@
 <refsect1 role="desc">
 <title role="desc.title">Description</title>
 <para>
-
+The Microsoft Windows font backend is primarily used to render text on
+Microsoft Windows systems.
 </para>
 </refsect1>
 
 <refsect1 role="details">
 <title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="CAIRO-HAS-WIN32-FONT:CAPS" role="macro"/>CAIRO_HAS_WIN32_FONT</title>
+<indexterm><primary>CAIRO_HAS_WIN32_FONT</primary></indexterm><programlisting>#define CAIRO_HAS_WIN32_FONT 1
+</programlisting>
+<para>
+Defined if the Microsoft Windows font backend is available.
+This macro can be used to conditionally compile backend-specific code.
+</para></refsect2>
 <refsect2>
 <title><anchor id="cairo-win32-font-face-create-for-logfontw" role="function"/>cairo_win32_font_face_create_for_logfontw ()</title>
 <indexterm><primary>cairo_win32_font_face_create_for_logfontw</primary></indexterm><programlisting><link linkend="cairo-font-face-t">cairo_font_face_t</link>*  cairo_win32_font_face_create_for_logfontw
@@ -243,5 +253,13 @@ used by <parameter>scaled_font</parameter>.</para>
 
 
 
+<refsect1>
+<title>See Also</title>
+<para>
+<itemizedlist>
+<listitem><link linkend="cairo-font-face-t"><type>cairo_font_face_t</type></link></listitem>
+</itemizedlist>
+</para>
+</refsect1>
 
 </refentry>

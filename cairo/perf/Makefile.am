@@ -115,3 +115,5 @@ perf-callgrind:
 	    valgrind $(VALGRIND_CALLGRIND_FLAGS) $(EXTRA_VALGRIND_FLAGS)'
 
 .PHONY: perf html check-valgrind perf-valgrind perf-callgrind
+
+EXTRA_DIST += Makefile.win32

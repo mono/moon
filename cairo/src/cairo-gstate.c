@@ -42,7 +42,7 @@
 #include "cairo-clip-private.h"
 #include "cairo-gstate-private.h"
 
-#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE
+#if _XOPEN_SOURCE >= 600 || defined (_ISOC99_SOURCE)
 #define ISFINITE(x) isfinite (x)
 #else
 #define ISFINITE(x) ((x) * (x) >= 0.) /* check for NaNs */
@@ -126,7 +126,7 @@ _cairo_gstate_init (cairo_gstate_t  *gstate,
  * _cairo_gstate_init_copy:
  *
  * Initialize @gstate by performing a deep copy of state fields from
- * @other. Note that gstate->next is not copied but is set to NULL by
+ * @other. Note that gstate->next is not copied but is set to %NULL by
  * this function.
  **/
 static cairo_status_t
@@ -215,14 +215,14 @@ _cairo_gstate_destroy (cairo_gstate_t *gstate)
 
 /**
  * _cairo_gstate_clone:
- * @other: a #cairo_gstate_t to be copied, not NULL.
+ * @other: a #cairo_gstate_t to be copied, not %NULL.
  *
  * Create a new #cairo_gstate_t setting all graphics state parameters
  * to the same values as contained in @other. gstate->next will be set
- * to NULL and may be used by the caller to chain cairo_gstate_t
+ * to %NULL and may be used by the caller to chain #cairo_gstate_t
  * objects together.
  *
- * Return value: a new cairo_gstate_t or NULL if there is insufficient
+ * Return value: a new #cairo_gstate_t or %NULL if there is insufficient
  * memory.
  **/
 static cairo_gstate_t*
@@ -364,8 +364,8 @@ _cairo_gstate_redirect_target (cairo_gstate_t *gstate, cairo_surface_t *child)
  * _cairo_gstate_is_redirected
  * @gstate: a #cairo_gstate_t
  *
- * Return value: TRUE if the gstate is redirected to a target
- * different than the original, FALSE otherwise.
+ * Return value: %TRUE if the gstate is redirected to a target
+ * different than the original, %FALSE otherwise.
  **/
 cairo_bool_t
 _cairo_gstate_is_redirected (cairo_gstate_t *gstate)
@@ -393,7 +393,7 @@ _cairo_gstate_get_target (cairo_gstate_t *gstate)
  * @gstate: a #cairo_gstate_t
  *
  * Return the parent surface of the current drawing target surface;
- * if this particular gstate isn't a redirect gstate, this will return NULL.
+ * if this particular gstate isn't a redirect gstate, this will return %NULL.
  **/
 cairo_surface_t *
 _cairo_gstate_get_parent_target (cairo_gstate_t *gstate)
@@ -422,7 +422,7 @@ _cairo_gstate_get_original_target (cairo_gstate_t *gstate)
  * _cairo_gstate_get_clip:
  * @gstate: a #cairo_gstate_t
  *
- * Return value: a pointer to the gstate's cairo_clip_t structure.
+ * Return value: a pointer to the gstate's #cairo_clip_t structure.
  */
 cairo_clip_t *
 _cairo_gstate_get_clip (cairo_gstate_t *gstate)
@@ -900,85 +900,6 @@ _cairo_gstate_paint (cairo_gstate_t *gstate)
     return status;
 }
 
-/**
- * _cairo_operator_bounded_by_mask:
- * @op: a #cairo_operator_t
- *
- * A bounded operator is one where mask pixel
- * of zero results in no effect on the destination image.
- *
- * Unbounded operators often require special handling; if you, for
- * example, draw trapezoids with an unbounded operator, the effect
- * extends past the bounding box of the trapezoids.
- *
- * Return value: %TRUE if the operator is bounded by the mask operand
- **/
-cairo_bool_t
-_cairo_operator_bounded_by_mask (cairo_operator_t op)
-{
-    switch (op) {
-    case CAIRO_OPERATOR_CLEAR:
-    case CAIRO_OPERATOR_SOURCE:
-    case CAIRO_OPERATOR_OVER:
-    case CAIRO_OPERATOR_ATOP:
-    case CAIRO_OPERATOR_DEST:
-    case CAIRO_OPERATOR_DEST_OVER:
-    case CAIRO_OPERATOR_DEST_OUT:
-    case CAIRO_OPERATOR_XOR:
-    case CAIRO_OPERATOR_ADD:
-    case CAIRO_OPERATOR_SATURATE:
-	return TRUE;
-    case CAIRO_OPERATOR_OUT:
-    case CAIRO_OPERATOR_IN:
-    case CAIRO_OPERATOR_DEST_IN:
-    case CAIRO_OPERATOR_DEST_ATOP:
-	return FALSE;
-    }
-
-    ASSERT_NOT_REACHED;
-    return FALSE;
-}
-
-/**
- * _cairo_operator_bounded_by_source:
- * @op: a #cairo_operator_t
- *
- * A bounded operator is one where source pixels of zero
- * (in all four components, r, g, b and a) effect no change
- * in the resulting destination image.
- *
- * Unbounded operators often require special handling; if you, for
- * example, copy a surface with the SOURCE operator, the effect
- * extends past the bounding box of the source surface.
- *
- * Return value: %TRUE if the operator is bounded by the source operand
- **/
-cairo_bool_t
-_cairo_operator_bounded_by_source (cairo_operator_t op)
-{
-    switch (op) {
-    case CAIRO_OPERATOR_OVER:
-    case CAIRO_OPERATOR_ATOP:
-    case CAIRO_OPERATOR_DEST:
-    case CAIRO_OPERATOR_DEST_OVER:
-    case CAIRO_OPERATOR_DEST_OUT:
-    case CAIRO_OPERATOR_XOR:
-    case CAIRO_OPERATOR_ADD:
-    case CAIRO_OPERATOR_SATURATE:
-	return TRUE;
-    case CAIRO_OPERATOR_CLEAR:
-    case CAIRO_OPERATOR_SOURCE:
-    case CAIRO_OPERATOR_OUT:
-    case CAIRO_OPERATOR_IN:
-    case CAIRO_OPERATOR_DEST_IN:
-    case CAIRO_OPERATOR_DEST_ATOP:
-	return FALSE;
-    }
-
-    ASSERT_NOT_REACHED;
-    return FALSE;
-}
-
 cairo_status_t
 _cairo_gstate_mask (cairo_gstate_t  *gstate,
 		    cairo_pattern_t *mask)
@@ -1151,13 +1072,15 @@ BAIL:
 cairo_status_t
 _cairo_gstate_copy_page (cairo_gstate_t *gstate)
 {
-    return cairo_surface_copy_page (gstate->target);
+    cairo_surface_copy_page (gstate->target);
+    return cairo_surface_status (gstate->target);
 }
 
 cairo_status_t
 _cairo_gstate_show_page (cairo_gstate_t *gstate)
 {
-    return cairo_surface_show_page (gstate->target);
+    cairo_surface_show_page (gstate->target);
+    return cairo_surface_status (gstate->target);
 }
 
 static void
@@ -1467,7 +1390,7 @@ _cairo_gstate_get_scaled_font (cairo_gstate_t       *gstate,
  * and then ignored by the "scaled-font" layer.
  *
  * In order to perform any action on a font, we must build an object
- * called a cairo_font_scale_t; this contains the central 2x2 matrix
+ * called a #cairo_font_scale_t; this contains the central 2x2 matrix
  * resulting from "font matrix * CTM" (sans the font matrix translation
  * components as stated in the previous paragraph).
  *

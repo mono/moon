@@ -41,16 +41,16 @@
 #include "cairo-scaled-font-private.h"
 
 /*
- *  NOTES:
+ *  Notes:
  *
  *  To store rasterizations of glyphs, we use an image surface and the
  *  device offset to represent the glyph origin.
  *
  *  A device_transform converts from device space (a conceptual space) to
  *  surface space.  For simple cases of translation only, it's called a
- *  device_offset and is public API (cairo_surface_[gs]et_device_offset).
+ *  device_offset and is public API (cairo_surface_[gs]et_device_offset()).
  *  A possibly better name for those functions could have been
- *  cairo_surface_[gs]et_origing.  So, that's what they do: they set where
+ *  cairo_surface_[gs]et_origin().  So, that's what they do: they set where
  *  the device-space origin (0,0) is in the surface.  If the origin is inside
  *  the surface, device_offset values are positive.  It may look like this:
  *
@@ -178,7 +178,7 @@ _cairo_scaled_glyph_destroy (void *abstract_glyph)
 }
 
 #define ZOMBIE 0
-const cairo_scaled_font_t _cairo_scaled_font_nil = {
+static const cairo_scaled_font_t _cairo_scaled_font_nil = {
     { ZOMBIE },			/* hash_entry */
     CAIRO_STATUS_NO_MEMORY,	/* status */
     CAIRO_REFERENCE_COUNT_INVALID,	/* ref_count */
@@ -191,6 +191,7 @@ const cairo_scaled_font_t _cairo_scaled_font_nil = {
       CAIRO_HINT_STYLE_DEFAULT,
       CAIRO_HINT_METRICS_DEFAULT} ,
     { 1., 0., 0., 1., 0, 0},	/* scale */
+    { 1., 0., 0., 1., 0, 0},	/* scale_inverse */
     { 0., 0., 0., 0., 0. },	/* extents */
     CAIRO_MUTEX_NIL_INITIALIZER,/* mutex */
     NULL,			/* glyphs */
@@ -270,21 +271,21 @@ cairo_scaled_font_status (cairo_scaled_font_t *scaled_font)
 slim_hidden_def (cairo_scaled_font_status);
 
 /* Here we keep a unique mapping from
- * cairo_font_face_t/matrix/ctm/options => cairo_scaled_font_t.
+ * font_face/matrix/ctm/font_options => #cairo_scaled_font_t.
  *
  * Here are the things that we want to map:
  *
- *  a) All otherwise referenced cairo_scaled_font_t's
- *  b) Some number of not otherwise referenced cairo_scaled_font_t's
+ *  a) All otherwise referenced #cairo_scaled_font_t's
+ *  b) Some number of not otherwise referenced #cairo_scaled_font_t's
  *
  * The implementation uses a hash table which covers (a)
  * completely. Then, for (b) we have an array of otherwise
  * unreferenced fonts (holdovers) which are expired in
  * least-recently-used order.
  *
- * The cairo_scaled_font_create code gets to treat this like a regular
+ * The cairo_scaled_font_create() code gets to treat this like a regular
  * hash table. All of the magic for the little holdover cache is in
- * cairo_scaled_font_reference and cairo_scaled_font_destroy.
+ * cairo_scaled_font_reference() and cairo_scaled_font_destroy().
  */
 
 /* This defines the size of the holdover array ... that is, the number
@@ -452,7 +453,7 @@ _cairo_scaled_font_keys_equal (const void *abstract_key_a, const void *abstract_
 #define MAX_GLYPHS_CACHED_PER_FONT 256
 
 /*
- * Basic cairo_scaled_font_t object management
+ * Basic #cairo_scaled_font_t object management
  */
 
 cairo_status_t
@@ -463,17 +464,12 @@ _cairo_scaled_font_init (cairo_scaled_font_t               *scaled_font,
 			 const cairo_font_options_t	   *options,
 			 const cairo_scaled_font_backend_t *backend)
 {
-    cairo_matrix_t inverse;
     cairo_status_t status;
 
-    if (options != NULL) {
-	status = cairo_font_options_status ((cairo_font_options_t *) options);
-	if (status)
-	    return status;
-    }
+    status = cairo_font_options_status ((cairo_font_options_t *) options);
+    if (status)
+	return status;
 
-    /* Initialize scaled_font->scale early for easier bail out on an
-     * invalid matrix. */
     _cairo_scaled_font_init_key (scaled_font, font_face,
 				 font_matrix, ctm, options);
 
@@ -481,10 +477,27 @@ _cairo_scaled_font_init (cairo_scaled_font_t               *scaled_font,
 			   &scaled_font->font_matrix,
 			   &scaled_font->ctm);
 
-    inverse = scaled_font->scale;
-    status = cairo_matrix_invert (&inverse);
-    if (status)
-	return status;
+    scaled_font->scale_inverse = scaled_font->scale;
+    status = cairo_matrix_invert (&scaled_font->scale_inverse);
+    if (status) {
+	/* If the font scale matrix is rank 0, just using an all-zero inverse matrix
+	 * makes everything work correctly.  This make font size 0 work without
+	 * producing an error.
+	 *
+	 * FIXME:  If the scale is rank 1, we still go into error mode.  But then
+	 * again, that's what we doo everywhere in cairo.
+	 *
+	 * Also, the check for == 0. below may bee too harsh...
+	 */
+        if (scaled_font->scale.xx == 0. && scaled_font->scale.xy == 0. &&
+	    scaled_font->scale.yx == 0. && scaled_font->scale.yy == 0.)
+	    cairo_matrix_init (&scaled_font->scale_inverse,
+			       0, 0, 0, 0,
+			       -scaled_font->scale.x0,
+			       -scaled_font->scale.y0);
+	else
+	    return status;
+    }
 
     scaled_font->glyphs = _cairo_cache_create (_cairo_scaled_glyph_keys_equal,
 					       _cairo_scaled_glyph_destroy,
@@ -529,15 +542,18 @@ _cairo_scaled_font_reset_cache (cairo_scaled_font_t *scaled_font)
 					       MAX_GLYPHS_CACHED_PER_FONT);
 }
 
-void
+cairo_status_t
 _cairo_scaled_font_set_metrics (cairo_scaled_font_t	    *scaled_font,
 				cairo_font_extents_t	    *fs_metrics)
 {
+    cairo_status_t status;
     double  font_scale_x, font_scale_y;
 
-    _cairo_matrix_compute_scale_factors (&scaled_font->font_matrix,
-					 &font_scale_x, &font_scale_y,
-					 /* XXX */ 1);
+    status = _cairo_matrix_compute_scale_factors (&scaled_font->font_matrix,
+						  &font_scale_x, &font_scale_y,
+						  /* XXX */ 1);
+    if (status)
+	return status;
 
     /*
      * The font responded in unscaled units, scale by the font
@@ -549,6 +565,8 @@ _cairo_scaled_font_set_metrics (cairo_scaled_font_t	    *scaled_font,
     scaled_font->extents.height = fs_metrics->height * font_scale_y;
     scaled_font->extents.max_x_advance = fs_metrics->max_x_advance * font_scale_x;
     scaled_font->extents.max_y_advance = fs_metrics->max_y_advance * font_scale_y;
+
+    return CAIRO_STATUS_SUCCESS;
 }
 
 void
@@ -603,23 +621,18 @@ cairo_scaled_font_create (cairo_font_face_t          *font_face,
     cairo_scaled_font_t key, *scaled_font = NULL;
 
     if (font_face->status)
-	return (cairo_scaled_font_t *)&_cairo_scaled_font_nil;
+	return _cairo_scaled_font_create_in_error (font_face->status);
 
-    if (options != NULL &&
-	cairo_font_options_status ((cairo_font_options_t *) options))
-    {
-	return (cairo_scaled_font_t *)&_cairo_scaled_font_nil;
-    }
+    status = cairo_font_options_status ((cairo_font_options_t *) options);
+    if (status)
+	return _cairo_scaled_font_create_in_error (status);
 
-    if (! _cairo_matrix_is_invertible (font_matrix))
-	return (cairo_scaled_font_t *)&_cairo_scaled_font_nil;
-
-    if (! _cairo_matrix_is_invertible (ctm))
-	return (cairo_scaled_font_t *)&_cairo_scaled_font_nil;
+    /* Note that degenerate ctm or font_matrix *are* allowed.
+     * We want to support a font size of 0. */
 
     font_map = _cairo_scaled_font_map_lock ();
     if (font_map == NULL)
-	return (cairo_scaled_font_t *)&_cairo_scaled_font_nil;
+	return _cairo_scaled_font_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 
     _cairo_scaled_font_init_key (&key, font_face,
 				 font_matrix, ctm, options);
@@ -670,7 +683,7 @@ cairo_scaled_font_create (cairo_font_face_t          *font_face,
     if (status) {
 	_cairo_scaled_font_map_unlock ();
 	status = _cairo_font_face_set_error (font_face, status);
-	return (cairo_scaled_font_t *)&_cairo_scaled_font_nil;
+	return _cairo_scaled_font_create_in_error (status);
     }
 
     status = _cairo_hash_table_insert (font_map->hash_table,
@@ -683,16 +696,66 @@ cairo_scaled_font_create (cairo_font_face_t          *font_face,
 	 * hash table. */
 	_cairo_scaled_font_fini (scaled_font);
 	free (scaled_font);
-	return (cairo_scaled_font_t *)&_cairo_scaled_font_nil;
+	return _cairo_scaled_font_create_in_error (status);
     }
 
     return scaled_font;
 }
 slim_hidden_def (cairo_scaled_font_create);
 
+static cairo_scaled_font_t *_cairo_scaled_font_nil_objects[CAIRO_STATUS_LAST_STATUS + 1];
+
+/* XXX This should disappear in favour of a common pool of error objects. */
+cairo_scaled_font_t *
+_cairo_scaled_font_create_in_error (cairo_status_t status)
+{
+    cairo_scaled_font_t *scaled_font;
+
+    assert (status != CAIRO_STATUS_SUCCESS);
+
+    if (status == CAIRO_STATUS_NO_MEMORY)
+	return (cairo_scaled_font_t *) &_cairo_scaled_font_nil;
+
+    CAIRO_MUTEX_LOCK (_cairo_scaled_font_error_mutex);
+    scaled_font = _cairo_scaled_font_nil_objects[status];
+    if (scaled_font == NULL) {
+	scaled_font = malloc (sizeof (cairo_scaled_font_t));
+	if (scaled_font == NULL) {
+	    CAIRO_MUTEX_UNLOCK (_cairo_scaled_font_error_mutex);
+	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
+	    return (cairo_scaled_font_t *) &_cairo_scaled_font_nil;
+	}
+
+	*scaled_font = _cairo_scaled_font_nil;
+	scaled_font->status = status;
+	_cairo_scaled_font_nil_objects[status] = scaled_font;
+    }
+    CAIRO_MUTEX_UNLOCK (_cairo_scaled_font_error_mutex);
+
+    return scaled_font;
+}
+
+void
+_cairo_scaled_font_reset_static_data (void)
+{
+    int status;
+
+    CAIRO_MUTEX_LOCK (_cairo_scaled_font_error_mutex);
+    for (status = CAIRO_STATUS_SUCCESS;
+	 status <= CAIRO_STATUS_LAST_STATUS;
+	 status++)
+    {
+	if (_cairo_scaled_font_nil_objects[status] != NULL) {
+	    free (_cairo_scaled_font_nil_objects[status]);
+	    _cairo_scaled_font_nil_objects[status] = NULL;
+	}
+    }
+    CAIRO_MUTEX_UNLOCK (_cairo_scaled_font_error_mutex);
+}
+
 /**
  * cairo_scaled_font_reference:
- * @scaled_font: a #cairo_scaled_font_t, (may be NULL in which case
+ * @scaled_font: a #cairo_scaled_font_t, (may be %NULL in which case
  * this function does nothing)
  *
  * Increases the reference count on @scaled_font by one. This prevents
@@ -1130,8 +1193,8 @@ _cairo_scaled_font_glyph_device_extents (cairo_scaled_font_t	 *scaled_font,
 {
     cairo_status_t status = CAIRO_STATUS_SUCCESS;
     int i;
-    cairo_point_int_t min = { CAIRO_RECT_INT_MIN, CAIRO_RECT_INT_MIN };
-    cairo_point_int_t max = { CAIRO_RECT_INT_MAX, CAIRO_RECT_INT_MAX };
+    cairo_point_int_t min = { CAIRO_RECT_INT_MAX, CAIRO_RECT_INT_MAX };
+    cairo_point_int_t max = { CAIRO_RECT_INT_MIN, CAIRO_RECT_INT_MIN };
 
     if (scaled_font->status)
 	return scaled_font->status;
@@ -1258,7 +1321,8 @@ _cairo_scaled_font_show_glyphs (cairo_scaled_font_t    *scaled_font,
 	/* If we have glyphs of different formats, we "upgrade" the mask
 	 * to the wider of the formats. */
 	if (glyph_surface->format != mask_format &&
-	    _cairo_format_width (mask_format) < _cairo_format_width (glyph_surface->format) )
+	    _cairo_format_bits_per_pixel (mask_format) <
+	    _cairo_format_bits_per_pixel (glyph_surface->format) )
 	{
 	    cairo_surface_t *new_mask;
 	    cairo_surface_pattern_t mask_pattern;
@@ -1442,7 +1506,7 @@ _add_unit_rectangle_to_path (cairo_path_fixed_t *path, int x, int y)
 
 /**
  * _trace_mask_to_path:
- * @bitmap: An alpha mask (either CAIRO_FORMAT_A1 or _A8)
+ * @bitmap: An alpha mask (either %CAIRO_FORMAT_A1 or %CAIRO_FORMAT_A8)
  * @path: An initialized path to hold the result
  *
  * Given a mask surface, (an alpha image), fill out the provided path
@@ -1689,7 +1753,7 @@ _cairo_scaled_glyph_set_path (cairo_scaled_glyph_t *scaled_glyph,
  * @scaled_glyph_ret: a #cairo_scaled_glyph_t * where the glyph
  * is returned.
  *
- * Returns a glyph with the requested portions filled in. Glyph
+ * Returns: a glyph with the requested portions filled in. Glyph
  * lookup is cached and glyph will be automatically freed along
  * with the scaled_font so no explicit free is required.
  * @info can be one or more of:
@@ -1701,7 +1765,7 @@ _cairo_scaled_glyph_set_path (cairo_scaled_glyph_t *scaled_glyph,
  * get INFO_PATH with a bitmapped font), this function will return
  * CAIRO_INT_STATUS_UNSUPPORTED.
  *
- * NOTE: This function must be called with scaled_font->mutex held.
+ * Note: This function must be called with scaled_font->mutex held.
  **/
 cairo_int_status_t
 _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,

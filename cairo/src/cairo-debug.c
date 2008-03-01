@@ -44,9 +44,9 @@
  *
  * This function is intended to be useful when using memory-checking
  * tools such as valgrind. When valgrind's memcheck analyzes a
- * cairo-using program without a call to cairo_debug_reset_static_data,
+ * cairo-using program without a call to cairo_debug_reset_static_data(),
  * it will report all data reachable via cairo's static objects as
- * "still reachable". Calling cairo_debug_reset_static_data just prior
+ * "still reachable". Calling cairo_debug_reset_static_data() just prior
  * to program termination will make it easier to get squeaky clean
  * reports from valgrind.
  *
@@ -68,6 +68,8 @@ cairo_debug_reset_static_data (void)
 #endif
 
     _cairo_pattern_reset_static_data ();
+
+    _cairo_scaled_font_reset_static_data ();
 
     CAIRO_MUTEX_FINALIZE ();
 }

@@ -23,6 +23,7 @@
 
 
 
+#define             <link linkend="CAIRO-HAS-WIN32-SURFACE:CAPS">CAIRO_HAS_WIN32_SURFACE</link>
 <link linkend="cairo-surface-t">cairo_surface_t</link>*    <link linkend="cairo-win32-surface-create">cairo_win32_surface_create</link>          (<link linkend="HDC:CAPS">HDC</link> hdc);
 <link linkend="cairo-surface-t">cairo_surface_t</link>*    <link linkend="cairo-win32-surface-create-with-dib">cairo_win32_surface_create_with_dib</link> (<link linkend="cairo-format-t">cairo_format_t</link> format,
                                                          <link linkend="int">int</link> width,
@@ -48,12 +49,30 @@
 <refsect1 role="desc">
 <title role="desc.title">Description</title>
 <para>
-
+The Microsoft Windows surface is used to render cairo graphics to
+Microsoft Windows windows, bitmaps, and printing device contexts.
+</para>
+<para>
+The surface returned by <link linkend="cairo-win32-printing-surface-create"><function>cairo_win32_printing_surface_create()</function></link> is of surface
+type <link linkend="CAIRO-SURFACE-TYPE-WIN32-PRINTING:CAPS"><literal>CAIRO_SURFACE_TYPE_WIN32_PRINTING</literal></link> and is a multi-page vector surface
+type.
+</para>
+<para>
+The surface returned by the other win32 constructors is of surface type
+<link linkend="CAIRO-SURFACE-TYPE-WIN32:CAPS"><literal>CAIRO_SURFACE_TYPE_WIN32</literal></link> and is a raster surface type.
 </para>
 </refsect1>
 
 <refsect1 role="details">
 <title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="CAIRO-HAS-WIN32-SURFACE:CAPS" role="macro"/>CAIRO_HAS_WIN32_SURFACE</title>
+<indexterm><primary>CAIRO_HAS_WIN32_SURFACE</primary></indexterm><programlisting>#define CAIRO_HAS_WIN32_SURFACE 1
+</programlisting>
+<para>
+Defined if the Microsoft Windows surface backend is available.
+This macro can be used to conditionally compile backend-specific code.
+</para></refsect2>
 <refsect2>
 <title><anchor id="cairo-win32-surface-create" role="function"/>cairo_win32_surface_create ()</title>
 <indexterm><primary>cairo_win32_surface_create</primary></indexterm><programlisting><link linkend="cairo-surface-t">cairo_surface_t</link>*    cairo_win32_surface_create          (<link linkend="HDC:CAPS">HDC</link> hdc);</programlisting>
@@ -155,15 +174,15 @@ associated methods must be used for correct output.</para>
 <title><anchor id="cairo-win32-surface-get-dc" role="function" condition="since:1.2"/>cairo_win32_surface_get_dc ()</title>
 <indexterm role="1.2"><primary>cairo_win32_surface_get_dc</primary></indexterm><programlisting><link linkend="HDC:CAPS">HDC</link>                 cairo_win32_surface_get_dc          (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface);</programlisting>
 <para>
-Returns the HDC associated with this surface, or NULL if none.
-Also returns NULL if the surface is not a win32 surface.</para>
+Returns the HDC associated with this surface, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if none.
+Also returns <link linkend="NULL:CAPS"><literal>NULL</literal></link> if the surface is not a win32 surface.</para>
 <para>
 
 </para><variablelist role="params">
 <varlistentry><term><parameter>surface</parameter>&nbsp;:</term>
 <listitem><simpara> a <link linkend="cairo-surface-t"><type>cairo_surface_t</type></link>
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> HDC or NULL if no HDC available.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> HDC or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if no HDC available.
 
 </simpara></listitem></varlistentry>
 </variablelist><para role="since">Since  1.2
@@ -174,15 +193,15 @@ Also returns NULL if the surface is not a win32 surface.</para>
 <para>
 Returns a <link linkend="cairo-surface-t"><type>cairo_surface_t</type></link> image surface that refers to the same bits
 as the DIB of the Win32 surface.  If the passed-in win32 surface
-is not a DIB surface, NULL is returned.</para>
+is not a DIB surface, <link linkend="NULL:CAPS"><literal>NULL</literal></link> is returned.</para>
 <para>
 
 </para><variablelist role="params">
 <varlistentry><term><parameter>surface</parameter>&nbsp;:</term>
 <listitem><simpara> a <link linkend="cairo-surface-t"><type>cairo_surface_t</type></link>
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a <link linkend="cairo-surface-t"><type>cairo_surface_t</type></link> (owned by the win32 cairo_surface_t),
-or NULL if the win32 surface is not a DIB.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a <link linkend="cairo-surface-t"><type>cairo_surface_t</type></link> (owned by the win32 <link linkend="cairo-surface-t"><type>cairo_surface_t</type></link>),
+or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if the win32 surface is not a DIB.
 
 </simpara></listitem></varlistentry>
 </variablelist><para role="since">Since  1.4
@@ -192,5 +211,13 @@ or NULL if the win32 surface is not a DIB.
 
 
 
+<refsect1>
+<title>See Also</title>
+<para>
+<itemizedlist>
+<listitem><link linkend="cairo-surface-t"><type>cairo_surface_t</type></link></listitem>
+</itemizedlist>
+</para>
+</refsect1>
 
 </refentry>

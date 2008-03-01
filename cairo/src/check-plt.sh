@@ -11,7 +11,7 @@ test -z "$srcdir" && srcdir=.
 test -z "$MAKE" && MAKE=make
 status=0
 
-$MAKE check-has-hidden-symbols.i || exit 1
+$MAKE check-has-hidden-symbols.i > /dev/null || exit 1
 if tail -1 check-has-hidden-symbols.i | grep CAIRO_HAS_HIDDEN_SYMBOLS >/dev/null; then
 	echo "Compiler doesn't support symbol visibility; skipping test"
 	exit 0

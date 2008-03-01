@@ -205,7 +205,7 @@ _create_dc_and_bitmap (cairo_win32_surface_t *surface,
      * break if we do, especially if we don't set up an image
      * fallback.  It could be a bug with using a 24bpp pixman image
      * (and creating one with masks).  So treat them like 32bpp.
-     * NOTE: This causes problems when using BitBlt/AlphaBlend/etc!
+     * Note: This causes problems when using BitBlt/AlphaBlend/etc!
      * see end of file.
      */
     case CAIRO_FORMAT_RGB24:
@@ -354,7 +354,8 @@ _cairo_win32_surface_create_for_dc (HDC             original_dc,
     surface->clip_rect.width = width;
     surface->clip_rect.height = height;
 
-    surface->saved_clip = NULL;
+    surface->initial_clip_rgn = NULL;
+    surface->had_simple_clip = FALSE;
 
     surface->extents = surface->clip_rect;
 
@@ -473,26 +474,11 @@ _cairo_win32_surface_finish (void *abstract_surface)
 	DeleteObject (surface->bitmap);
 	DeleteDC (surface->dc);
     } else {
-	/* otherwise, restore the old clip region on the DC */
-	SelectClipRgn (surface->dc, surface->saved_clip);
-
-	if (surface->saved_clip == NULL) {
-	    /* We never had a clip region, so just restore the clip
-	     * to the bounds. */
-	    if (surface->clip_rect.width != 0 &&
-		surface->clip_rect.height != 0)
-	    {
-		IntersectClipRect (surface->dc,
-				   surface->clip_rect.x,
-				   surface->clip_rect.y,
-				   surface->clip_rect.x + surface->clip_rect.width,
-				   surface->clip_rect.y + surface->clip_rect.height);
-	    }
-	}
+	_cairo_win32_restore_initial_clip (surface);
     }
 
-    if (surface->saved_clip)
-	DeleteObject (surface->saved_clip);
+    if (surface->initial_clip_rgn)
+	DeleteObject (surface->initial_clip_rgn);
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -565,8 +551,8 @@ _cairo_win32_surface_acquire_source_image (void                    *abstract_sur
     }
 
     status = _cairo_win32_surface_get_subimage (abstract_surface, 0, 0,
-						surface->clip_rect.width,
-						surface->clip_rect.height, &local);
+						surface->extents.width,
+						surface->extents.height, &local);
     if (status)
 	return status;
 
@@ -605,8 +591,8 @@ _cairo_win32_surface_acquire_dest_image (void                    *abstract_surfa
 
 	image_rect->x = 0;
 	image_rect->y = 0;
-	image_rect->width = surface->clip_rect.width;
-	image_rect->height = surface->clip_rect.height;
+	image_rect->width = surface->extents.width;
+	image_rect->height = surface->extents.height;
 
 	*image_out = (cairo_image_surface_t *)surface->image;
 	*image_extra = NULL;
@@ -1275,7 +1261,7 @@ UNSUPPORTED:
 /* This big function tells us how to optimize operators for the
  * case of solid destination and constant-alpha source
  *
- * NOTE: This function needs revisiting if we add support for
+ * Note: This function needs revisiting if we add support for
  *       super-luminescent colors (a == 0, r,g,b > 0)
  */
 static enum { DO_CLEAR, DO_SOURCE, DO_NOTHING, DO_UNSUPPORTED }
@@ -1440,13 +1426,11 @@ _cairo_win32_surface_set_clip_region (void           *abstract_surface,
      * save the original clip when first setting a clip on surface.
      */
 
-    if (region == NULL) {
-	/* Clear any clip set by cairo, return to the original */
-	if (SelectClipRgn (surface->dc, surface->saved_clip) == ERROR)
-	    return _cairo_win32_print_gdi_error ("_cairo_win32_surface_set_clip_region (reset)");
+    /* Clear any clip set by cairo, return to the original first */
+    status = _cairo_win32_restore_initial_clip (surface);
 
-	status = CAIRO_STATUS_SUCCESS;
-    } else {
+    /* Then combine any new region with it */
+    if (region) {
 	cairo_rectangle_int_t extents;
 	cairo_box_int_t *boxes;
 	int num_boxes;
@@ -1480,6 +1464,13 @@ _cairo_win32_surface_set_clip_region (void           *abstract_surface,
 
 	    _cairo_region_boxes_fini (region, boxes);
 	} else {
+	    /* XXX see notes in _cairo_win32_save_initial_clip --
+	     * this code will interact badly with a HDC which had an initial
+	     * world transform -- we should probably manually transform the
+	     * region rects, because SelectClipRgn takes device units, not
+	     * logical units (unlike IntersectClipRect).
+	     */
+
 	    data_size = sizeof (RGNDATAHEADER) + num_boxes * sizeof (RECT);
 	    data = malloc (data_size);
 	    if (!data) {
@@ -1512,17 +1503,9 @@ _cairo_win32_surface_set_clip_region (void           *abstract_surface,
 	    if (!gdi_region)
 		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
-	    /* Combine the new region with the original clip */
-	    if (surface->saved_clip) {
-		if (CombineRgn (gdi_region, gdi_region, surface->saved_clip, RGN_AND) == ERROR)
-		    status = _cairo_win32_print_gdi_error ("_cairo_win32_surface_set_clip_region");
-	    }
-
-	    /* Then select the new clip region into our surface if everything went ok */
-	    if (status == CAIRO_STATUS_SUCCESS) {
-		if (SelectClipRgn (surface->dc, gdi_region) == ERROR)
-		    status = _cairo_win32_print_gdi_error ("_cairo_win32_surface_set_clip_region");
-	    }
+	    /* AND the new region into our DC */
+	    if (ExtSelectClipRgn (surface->dc, gdi_region, RGN_AND) == ERROR)
+		status = _cairo_win32_print_gdi_error ("_cairo_win32_surface_set_clip_region");
 
 	    DeleteObject (gdi_region);
 	}
@@ -1704,19 +1687,10 @@ cairo_surface_t *
 cairo_win32_surface_create (HDC hdc)
 {
     cairo_win32_surface_t *surface;
-    RECT rect;
+
     int depth;
     cairo_format_t format;
-    int clipBoxType;
-
-    /* Try to figure out the drawing bounds for the Device context
-     */
-    clipBoxType = GetClipBox (hdc, &rect);
-    if (clipBoxType == ERROR) {
-	_cairo_win32_print_gdi_error ("cairo_win32_surface_create");
-	/* XXX: Can we make a more reasonable guess at the error cause here? */
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
-    }
+    RECT rect;
 
     if (GetDeviceCaps(hdc, TECHNOLOGY) == DT_RASDISPLAY) {
 	depth = GetDeviceCaps(hdc, BITSPIXEL);
@@ -1742,6 +1716,11 @@ cairo_win32_surface_create (HDC hdc)
     if (surface == NULL)
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 
+    if (_cairo_win32_save_initial_clip (hdc, surface) != CAIRO_STATUS_SUCCESS) {
+	free (surface);
+	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+    }
+
     surface->image = NULL;
     surface->format = format;
 
@@ -1752,26 +1731,13 @@ cairo_win32_surface_create (HDC hdc)
     surface->brush = NULL;
     surface->old_brush = NULL;
 
-    surface->clip_rect.x = (int16_t) rect.left;
-    surface->clip_rect.y = (int16_t) rect.top;
-    surface->clip_rect.width = (uint16_t) (rect.right - rect.left);
-    surface->clip_rect.height = (uint16_t) (rect.bottom - rect.top);
-
-    if (clipBoxType == COMPLEXREGION) {
-	surface->saved_clip = CreateRectRgn (0, 0, 0, 0);
-	if (GetClipRgn (hdc, surface->saved_clip) == 0) {
-	    /* this should never happen */
-	    DeleteObject(surface->saved_clip);
-	    surface->saved_clip = NULL;
-	}
-    } else {
-	surface->saved_clip = NULL;
-    }
-
-    surface->extents = surface->clip_rect;
+    GetClipBox(hdc, &rect);
+    surface->extents.x = rect.left;
+    surface->extents.y = rect.top;
+    surface->extents.width = rect.right - rect.left;
+    surface->extents.height = rect.bottom - rect.top;
 
     surface->flags = _cairo_win32_flags_for_dc (surface->dc);
-    surface->clip_saved_dc = 0;
 
     _cairo_surface_init (&surface->base, &cairo_win32_surface_backend,
 			 _cairo_content_from_format (format));
@@ -1895,10 +1861,10 @@ _cairo_surface_is_win32 (cairo_surface_t *surface)
  * cairo_win32_surface_get_dc
  * @surface: a #cairo_surface_t
  *
- * Returns the HDC associated with this surface, or NULL if none.
- * Also returns NULL if the surface is not a win32 surface.
+ * Returns the HDC associated with this surface, or %NULL if none.
+ * Also returns %NULL if the surface is not a win32 surface.
  *
- * Return value: HDC or NULL if no HDC available.
+ * Return value: HDC or %NULL if no HDC available.
  *
  * Since: 1.2
  **/
@@ -1922,10 +1888,10 @@ cairo_win32_surface_get_dc (cairo_surface_t *surface)
  *
  * Returns a #cairo_surface_t image surface that refers to the same bits
  * as the DIB of the Win32 surface.  If the passed-in win32 surface
- * is not a DIB surface, NULL is returned.
+ * is not a DIB surface, %NULL is returned.
  *
- * Return value: a #cairo_surface_t (owned by the win32 cairo_surface_t),
- * or NULL if the win32 surface is not a DIB.
+ * Return value: a #cairo_surface_t (owned by the win32 #cairo_surface_t),
+ * or %NULL if the win32 surface is not a DIB.
  *
  * Since: 1.4
  */
@@ -2041,3 +2007,119 @@ DllMain (HINSTANCE hinstDLL,
 
 #endif
 
+cairo_int_status_t
+_cairo_win32_save_initial_clip (HDC hdc, cairo_win32_surface_t *surface)
+{
+    RECT rect;
+    int clipBoxType;
+    int gm;
+    XFORM saved_xform;
+
+    /* GetClipBox/GetClipRgn and friends interact badly with a world transform
+     * set.  GetClipBox returns values in logical (transformed) coordinates;
+     * it's unclear what GetClipRgn returns, because the region is empty in the
+     * case of a SIMPLEREGION clip, but I assume device (untransformed) coordinates.
+     * Similarily, IntersectClipRect works in logical units, whereas SelectClipRgn
+     * works in device units.
+     *
+     * So, avoid the whole mess and get rid of the world transform
+     * while we store our initial data and when we restore initial coordinates.
+     *
+     * XXX we may need to modify x/y by the ViewportOrg or WindowOrg
+     * here in GM_COMPATIBLE; unclear.
+     */
+    gm = GetGraphicsMode (hdc);
+    if (gm == GM_ADVANCED) {
+	GetWorldTransform (hdc, &saved_xform);
+	ModifyWorldTransform (hdc, NULL, MWT_IDENTITY);
+    }
+
+    clipBoxType = GetClipBox (hdc, &rect);
+    if (clipBoxType == ERROR) {
+	_cairo_win32_print_gdi_error ("cairo_win32_surface_create");
+	SetGraphicsMode (hdc, gm);
+	/* XXX: Can we make a more reasonable guess at the error cause here? */
+	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    }
+
+    surface->clip_rect.x = rect.left;
+    surface->clip_rect.y = rect.top;
+    surface->clip_rect.width = rect.right - rect.left;
+    surface->clip_rect.height = rect.bottom - rect.top;
+
+    surface->initial_clip_rgn = NULL;
+    surface->had_simple_clip = FALSE;
+
+    if (clipBoxType == COMPLEXREGION) {
+	surface->initial_clip_rgn = CreateRectRgn (0, 0, 0, 0);
+	if (GetClipRgn (hdc, surface->initial_clip_rgn) <= 0) {
+	    DeleteObject(surface->initial_clip_rgn);
+	    surface->initial_clip_rgn = NULL;
+	}
+    } else if (clipBoxType == SIMPLEREGION) {
+	surface->had_simple_clip = TRUE;
+    }
+
+    if (gm == GM_ADVANCED)
+	SetWorldTransform (hdc, &saved_xform);
+
+    return CAIRO_STATUS_SUCCESS;
+}
+
+cairo_int_status_t
+_cairo_win32_restore_initial_clip (cairo_win32_surface_t *surface)
+{
+    cairo_int_status_t status = CAIRO_STATUS_SUCCESS;
+
+    XFORM saved_xform;
+    int gm = GetGraphicsMode (surface->dc);
+    if (gm == GM_ADVANCED) {
+	GetWorldTransform (surface->dc, &saved_xform);
+	ModifyWorldTransform (surface->dc, NULL, MWT_IDENTITY);
+    }
+
+    /* initial_clip_rgn will either be a real region or NULL (which means reset to no clip region) */
+    SelectClipRgn (surface->dc, surface->initial_clip_rgn);
+
+    if (surface->had_simple_clip) {
+	/* then if we had a simple clip, intersect */
+	IntersectClipRect (surface->dc,
+			   surface->clip_rect.x,
+			   surface->clip_rect.y,
+			   surface->clip_rect.x + surface->clip_rect.width,
+			   surface->clip_rect.y + surface->clip_rect.height);
+    }
+
+    if (gm == GM_ADVANCED)
+	SetWorldTransform (surface->dc, &saved_xform);
+
+    return status;
+}
+
+void
+_cairo_win32_debug_dump_hrgn (HRGN rgn, char *header)
+{
+    RGNDATA *rd;
+    int z;
+
+    if (header)
+	fprintf (stderr, "%s\n", header);
+
+    if (rgn == NULL) {
+	fprintf (stderr, " NULL\n");
+    }
+
+    z = GetRegionData(rgn, 0, NULL);
+    rd = (RGNDATA*) malloc(z);
+    z = GetRegionData(rgn, z, rd);
+
+    fprintf (stderr, " %d rects, bounds: %d %d %d %d\n", rd->rdh.nCount, rd->rdh.rcBound.left, rd->rdh.rcBound.top, rd->rdh.rcBound.right - rd->rdh.rcBound.left, rd->rdh.rcBound.bottom - rd->rdh.rcBound.top);
+
+    for (z = 0; z < rd->rdh.nCount; z++) {
+	RECT r = ((RECT*)rd->Buffer)[z];
+	fprintf (stderr, " [%d]: [%d %d %d %d]\n", z, r.left, r.top, r.right - r.left, r.bottom - r.top);
+    }
+
+    free(rd);
+    fflush (stderr);
+}

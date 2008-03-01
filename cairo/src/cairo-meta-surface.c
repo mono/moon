@@ -485,7 +485,7 @@ _cairo_meta_surface_show_glyphs (void			*abstract_surface,
  *
  * The caller owns the return value and should call
  * cairo_surface_destroy when finished with it. This function will not
- * return NULL, but will return a nil surface instead.
+ * return %NULL, but will return a nil surface instead.
  *
  * Return value: The snapshot surface.
  **/
@@ -583,7 +583,7 @@ _cairo_meta_surface_get_extents (void			 *abstract_surface,
  *
  * Checks if a surface is a #cairo_meta_surface_t
  *
- * Return value: TRUE if the surface is a meta surface
+ * Return value: %TRUE if the surface is a meta surface
  **/
 cairo_bool_t
 _cairo_surface_is_meta (const cairo_surface_t *surface)
@@ -662,7 +662,6 @@ _cairo_meta_surface_replay_internal (cairo_surface_t	     *surface,
     cairo_bool_t has_device_transform = _cairo_surface_has_device_transform (target);
     cairo_matrix_t *device_transform = &target->device_transform;
     cairo_path_fixed_t path_copy, *dev_path;
-    double tolerance_multiplier = _cairo_matrix_transformed_circle_major_axis (device_transform, 1.0);
 
     if (surface->status)
 	return surface->status;
@@ -735,7 +734,7 @@ _cairo_meta_surface_replay_internal (cairo_surface_t	     *surface,
 					    &command->stroke.style,
 					    &dev_ctm,
 					    &dev_ctm_inverse,
-					    command->stroke.tolerance * tolerance_multiplier,
+					    command->stroke.tolerance,
 					    command->stroke.antialias);
 	    break;
 	}
@@ -744,7 +743,12 @@ _cairo_meta_surface_replay_internal (cairo_surface_t	     *surface,
 	    cairo_command_t *stroke_command;
 
 	    stroke_command = (i < num_elements - 1) ? elements[i + 1] : NULL;
-
+	    if (stroke_command != NULL &&
+		type == CAIRO_META_REPLAY && region != CAIRO_META_REGION_ALL)
+	    {
+		if (stroke_command->header.region != region)
+		    stroke_command = NULL;
+	    }
 	    if (stroke_command != NULL &&
 		stroke_command->header.type == CAIRO_COMMAND_STROKE &&
 		_cairo_path_fixed_is_equal (dev_path, _cairo_command_get_path (stroke_command))) {
@@ -767,7 +771,7 @@ _cairo_meta_surface_replay_internal (cairo_surface_t	     *surface,
 						     command->fill.op,
 						     &command->fill.source.base,
 						     command->fill.fill_rule,
-						     command->fill.tolerance * tolerance_multiplier,
+						     command->fill.tolerance,
 						     command->fill.antialias,
 						     dev_path,
 						     stroke_command->stroke.op,
@@ -775,16 +779,24 @@ _cairo_meta_surface_replay_internal (cairo_surface_t	     *surface,
 						     &stroke_command->stroke.style,
 						     &dev_ctm,
 						     &dev_ctm_inverse,
-						     stroke_command->stroke.tolerance * tolerance_multiplier,
+						     stroke_command->stroke.tolerance,
 						     stroke_command->stroke.antialias);
 		i++;
+		if (type == CAIRO_META_CREATE_REGIONS) {
+		    if (status == CAIRO_STATUS_SUCCESS) {
+			stroke_command->header.region = CAIRO_META_REGION_NATIVE;
+		    } else if (status == CAIRO_INT_STATUS_IMAGE_FALLBACK) {
+			stroke_command->header.region = CAIRO_META_REGION_IMAGE_FALLBACK;
+			status = CAIRO_STATUS_SUCCESS;
+		    }
+		}
 	    } else
 		status = _cairo_surface_fill (target,
 					      command->fill.op,
 					      &command->fill.source.base,
 					      dev_path,
 					      command->fill.fill_rule,
-					      command->fill.tolerance * tolerance_multiplier,
+					      command->fill.tolerance,
 					      command->fill.antialias);
 	    break;
 	}
@@ -827,7 +839,7 @@ _cairo_meta_surface_replay_internal (cairo_surface_t	     *surface,
 	    else
 		status = _cairo_clip_clip (&clip, dev_path,
 					   command->intersect_clip_path.fill_rule,
-					   command->intersect_clip_path.tolerance * tolerance_multiplier,
+					   command->intersect_clip_path.tolerance,
 					   command->intersect_clip_path.antialias,
 					   target);
             assert (status == 0);
@@ -868,7 +880,7 @@ _cairo_meta_surface_replay (cairo_surface_t *surface,
 }
 
 /* Replay meta to surface. When the return status of each operation is
- * one of CAIRO_STATUS_SUCCESS, CAIRO_INT_STATUS_UNSUPPORTED, or
+ * one of %CAIRO_STATUS_SUCCESS, %CAIRO_INT_STATUS_UNSUPPORTED, or
  * CAIRO_INT_STATUS_FLATTEN_TRANSPARENCY the status of each operation
  * will be stored in the meta surface. Any other status will abort the
  * replay and return the status.

@@ -28,10 +28,7 @@
 
 #include "cairo-perf.h"
 
-/* For getopt */
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+#include "cairo-boilerplate-getopt.h"
 
 /* For basename */
 #ifdef HAVE_LIBGEN_H
@@ -276,7 +273,7 @@ parse_options (cairo_perf_t *perf, int argc, char *argv[])
     perf->num_names = 0;
 
     while (1) {
-	c = getopt (argc, argv, "i:lr");
+	c = _cairo_getopt (argc, argv, "i:lr");
 	if (c == -1)
 	    break;
 

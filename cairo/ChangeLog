@@ -1,3 +1,2986 @@
+commit 35295546ef63821c5eee5336ec73eef2e03a035d
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Fri Feb 22 22:06:25 2008 +1030
+
+    Add mask pdf ref images
+    
+    The mask test pdf output is now correct. Poppler ref images
+    are required due to minor gradient rendering differences.
+
+ test/mask-pdf-argb32-ref.png |  Bin 0 -> 7834 bytes
+ test/mask-pdf-rgb24-ref.png  |  Bin 0 -> 7383 bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 1df969158c83b31acbcf0963913bc4d4a9d20730
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Fri Feb 22 21:59:47 2008 +1030
+
+    Refresh clip-operator ps/pdf ref images
+    
+    Because the meta surface analysis fix increased the size of some of
+    the fallback images.
+
+ test/clip-operator-pdf-argb32-ref.png |  Bin 9096 -> 11005 bytes
+ test/clip-operator-ps-argb32-ref.png  |  Bin 9062 -> 9084 bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit eae259168fc4318f2a67f3107f953648e7ab925e
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Fri Feb 22 21:07:31 2008 +1030
+
+    Using correct surface size and clip when analyzing meta surface patterns
+    
+    The surface size and clip needs to be saved before and restored after
+    replaying meta surface patterns back to the analysis surface. The clip
+    is reset and the correct surface size is set before replaying the meta
+    surface.
+
+ src/cairo-analysis-surface.c |   20 ++++++++++++++++++++
+ 1 files changed, 20 insertions(+), 0 deletions(-)
+
+commit 0db2c67cc5b29623070465f2cf6eafbff174ed30
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Thu Feb 21 20:51:20 2008 +1030
+
+    PS: Replace gsave/grestore with q/Q
+
+ src/cairo-ps-surface.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 187ace8024ffadc3ee0b69bbd99c52d189cb7be2
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Fri Feb 22 19:36:11 2008 +1030
+
+    PS: Make debug code compile
+
+ src/cairo-ps-surface.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 8f0ec1174ad3c7a59ecdcf7724b8e8b96801b3e0
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Feb 21 08:05:27 2008 -0800
+
+    Patch hole in fabric of time-space continuum
+
+ NEWS |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 70bb2abed04ed25abccbb2d6a5bdc58136701b0a
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Wed Feb 20 20:54:01 2008 -0500
+
+    [cairo-ft] Handle font sizes smaller than 1px correctly
+    
+    The FT_Set_Char_Size() docs say it replaces sizes smaller than 1.0 with 1.0.
+    So, we can't use x_scale and y_scale values less than one.  The fix is easy thouh,
+    cap them to 1.0 and let the FT transform do the scaling down.
+
+ src/cairo-ft-font.c |   36 ++++++++++++++++++++++--------------
+ 1 files changed, 22 insertions(+), 14 deletions(-)
+
+commit dcab5019d5d9cb70aed0f473642ee840b785c4af
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 17:35:48 2008 -0800
+
+    Add poppler-specific reference image for radial-gradient
+    
+    This is justified by the previously mentioned bug on poppler
+    gradients. Note that this test only passes with a patch
+    to fix a bug in poppler (not yet upstream). Here it is:
+    
+    	PATCH: Keep 'cairo_shape' and 'cairo' consistent
+    	https://bugs.freedesktop.org/show_bug.cgi?id=14593
+
+ test/Makefile.am                 |    1 +
+ test/README                      |    1 +
+ test/radial-gradient-pdf-ref.png |  Bin 0 -> 79490 bytes
+ 3 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 70b683363f6e37d8952c8f857dd687022a02ada5
+Author: Emmanuel Pacaud <emmanuel.pacaud@free.fr>
+Date:   Wed Feb 20 23:46:27 2008 +0100
+
+    [SVG] Fix a8-mask test failure.
+    
+    For A8 and A1 masks, the embedded mask image doesn't have an alpha channel.
+    In this case, the feColorMatrix should not be used, since it's goal is to
+    discard the color channels and to only keep the alpha one (which is what
+    we want when we have an ARGB32 mask image, since SVG uses all the channels
+    for the mask operation, where cairo only use the alpha channel).
+
+ src/cairo-svg-surface.c |   21 ++++++++++++++++-----
+ 1 files changed, 16 insertions(+), 5 deletions(-)
+
+commit c5d056aaebe51d2c3430807de559b0d8ab3431d5
+Author: Emmanuel Pacaud <emmanuel.pacaud@free.fr>
+Date:   Wed Feb 20 21:42:24 2008 +0100
+
+    [SVG] Fix the extend-reflect-similar test failure.
+    
+    SVG doesn't support extend reflect for image pattern, and there isn't
+    any trivial way to emulate this feature. So we use the image fallback
+    for now. This fix also forces an image fallback for extend-reflect, but
+    in the end, it generates more or less the same file (one big image for
+    the pattern). No other test is forced to use an image fallback by this
+    patch.
+
+ src/cairo-svg-surface.c |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+commit 1d236521a527d8b07962d1d671daff35134f4d31
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 10:00:41 2008 -0800
+
+    Increment cairo version to 1.5.11 after the 1.5.10 snapshot
+
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 83489f623f1239a731c5377d634ea8e9b782d448
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 10:00:31 2008 -0800
+
+    SGML churn
+
+ doc/public/tmpl/cairo-paths.sgml |   10 +++++++++-
+ 1 files changed, 9 insertions(+), 1 deletions(-)
+
+commit 0f2ecb5ec65ff13c3aafbe57600c1906f3fe7978
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 08:24:32 2008 -0800
+
+    Update REFERENCE_IMAGES for distcheck
+
+ test/Makefile.am |   64 +++++++++++++++++++++++++++++++++++++++--------------
+ 1 files changed, 47 insertions(+), 17 deletions(-)
+
+commit ee62a5fad6a32a6997600caac8b292aef4e2fe54
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 08:08:52 2008 -0800
+
+    Mention that cairo_get_current_point is void again
+
+ NEWS |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+commit 118657136d3323f4769bee28ec2435a61540f0eb
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 08:06:39 2008 -0800
+
+    Increment cairo version to 1.5.10 and libtool versioning to 17:0:15
+
+ configure.in |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 5aacc54c430a982b51992d6fac186b955e478045
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 08:02:45 2008 -0800
+
+    NEWS: Add notes for cairo 1.5.10
+
+ NEWS |   99 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 94 insertions(+), 5 deletions(-)
+
+commit f954db72dd33de837296ede353ad9823b0e32fcd
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 06:24:48 2008 -0800
+
+    Add svg-specific reference image for mask-alpha
+    
+    There's no apparent bug here.
+
+ test/mask-alpha-svg-argb32-ref.png |  Bin 0 -> 615 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+commit c197c684a6b002ad8549d92f15d7f68b7c0068bd
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 05:58:42 2008 -0800
+
+    Update ps-specific reference images for ghostscript 8.61
+    
+    I was wrong in the previous message where I said I had ghostscript 8.61
+    installed. I do now, (and "gs --version" says the same thing), and
+    here are the new reference images.
+
+ test/clip-fill-rule-ps-argb32-ref.png          |  Bin 322 -> 310 bytes
+ test/clip-fill-rule-ps-rgb24-ref.png           |  Bin 309 -> 302 bytes
+ test/dash-caps-joins-ps-argb32-ref.png         |  Bin 3854 -> 3870 bytes
+ test/dash-caps-joins-ps-rgb24-ref.png          |  Bin 3852 -> 3870 bytes
+ test/dash-curve-ps-ref.png                     |  Bin 27206 -> 27293 bytes
+ test/dash-state-ps-argb32-ref.png              |  Bin 8652 -> 0 bytes
+ test/dash-state-ps-ref.png                     |  Bin 0 -> 10219 bytes
+ test/dash-state-ps-rgb24-ref.png               |  Bin 8650 -> 0 bytes
+ test/dash-zero-length-ps-argb32-ref.png        |  Bin 319 -> 0 bytes
+ test/dash-zero-length-ps-ref.png               |  Bin 0 -> 319 bytes
+ test/dash-zero-length-ps-rgb24-ref.png         |  Bin 0 -> 304 bytes
+ test/degenerate-pen-ps-argb32-ref.png          |  Bin 771 -> 795 bytes
+ test/font-matrix-translation-ps-argb32-ref.png |  Bin 785 -> 749 bytes
+ test/font-matrix-translation-ps-rgb24-ref.png  |  Bin 783 -> 749 bytes
+ test/ft-text-vertical-layout-type1-ps-ref.png  |  Bin 1894 -> 1911 bytes
+ test/ft-text-vertical-layout-type3-ps-ref.png  |  Bin 1879 -> 1867 bytes
+ test/glyph-cache-pressure-ps-ref.png           |  Bin 1667 -> 1413 bytes
+ test/gradient-alpha-ps-argb32-ref.png          |  Bin 179 -> 189 bytes
+ test/line-width-scale-ps-argb32-ref.png        |  Bin 3903 -> 0 bytes
+ test/line-width-scale-ps-ref.png               |  Bin 0 -> 3911 bytes
+ test/line-width-scale-ps-rgb24-ref.png         |  Bin 3901 -> 0 bytes
+ test/linear-gradient-ps-argb32-ref.png         |  Bin 613 -> 0 bytes
+ test/linear-gradient-ps-ref.png                |  Bin 0 -> 718 bytes
+ test/linear-gradient-ps-rgb24-ref.png          |  Bin 613 -> 0 bytes
+ test/linear-gradient-reflect-ps-ref.png        |  Bin 315 -> 314 bytes
+ test/meta-surface-pattern-ps-argb32-ref.png    |  Bin 3246 -> 3257 bytes
+ test/meta-surface-pattern-ps-rgb24-ref.png     |  Bin 3823 -> 3873 bytes
+ test/new-sub-path-ps-argb32-ref.png            |  Bin 559 -> 556 bytes
+ test/operator-clear-ps-argb32-ref.png          |  Bin 1409 -> 1437 bytes
+ test/operator-source-ps-argb32-ref.png         |  Bin 4026 -> 3893 bytes
+ test/operator-source-ps-rgb24-ref.png          |  Bin 3366 -> 3241 bytes
+ test/pixman-rotate-ps-argb32-ref.png           |  Bin 411 -> 0 bytes
+ test/pixman-rotate-ps-rgb24-ref.png            |  Bin 392 -> 0 bytes
+ test/random-intersections-ps-argb32-ref.png    |  Bin 89733 -> 0 bytes
+ test/random-intersections-ps-ref.png           |  Bin 0 -> 89253 bytes
+ test/random-intersections-ps-rgb24-ref.png     |  Bin 89733 -> 0 bytes
+ test/select-font-face-ps-ref.png               |  Bin 1352 -> 1079 bytes
+ test/show-text-current-point-ps-ref.png        |  Bin 1475 -> 1454 bytes
+ test/text-pattern-ps-argb32-ref.png            |  Bin 998 -> 984 bytes
+ test/text-pattern-ps-rgb24-ref.png             |  Bin 969 -> 936 bytes
+ test/text-rotate-ps-argb32-ref.png             |  Bin 7156 -> 0 bytes
+ test/text-rotate-ps-rgb24-ref.png              |  Bin 7156 -> 0 bytes
+ test/trap-clip-ps-argb32-ref.png               |  Bin 5715 -> 5591 bytes
+ test/trap-clip-ps-rgb24-ref.png                |  Bin 5630 -> 5512 bytes
+ 44 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 8d2d4130146d16676c9ed6cf7d82d6aeaadf1c56
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 05:11:53 2008 -0800
+
+    Expand the documentation of cairo/test/README
+    
+    Add notes on CAIRO_REF_DIR and the version requirements of
+    poppler and ghostscript necessary for getting no failures.
+
+ test/README |   99 +++++++++++++++++++++++++++++++++++++++++++++++++++-------
+ 1 files changed, 87 insertions(+), 12 deletions(-)
+
+commit 4d42f569007f23e4cf9713c14f8c3dc640cf0f2c
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 04:22:58 2008 -0800
+
+    Update ps-specific reference images
+    
+    Presumably these are due to ghostscript version churn. I don't
+    know what version was used in the past, but we're going to be
+    more careful about documenting versions now.
+    
+    The ghostscript package I used here advertises itself as "8.61"
+    and "gs --version" reports 8.15.3.
+
+ ...ft-text-vertical-layout-type1-ps-argb32-ref.png |  Bin 1879 -> 0 bytes
+ test/ft-text-vertical-layout-type1-ps-ref.png      |  Bin 0 -> 1894 bytes
+ ...ft-text-vertical-layout-type3-ps-argb32-ref.png |  Bin 1882 -> 0 bytes
+ test/ft-text-vertical-layout-type3-ps-ref.png      |  Bin 0 -> 1879 bytes
+ test/text-pattern-ps-rgb24-ref.png                 |  Bin 969 -> 969 bytes
+ 5 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 78b270601ce54545a0c68075a60a3b85a2f37adb
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 03:49:16 2008 -0800
+
+    Add poppler-specific reference image for source-clip-scale
+    
+    This one doesn't have any associated poppler bug report. The
+    rendering by poppler is totally reasonable, and not problematic
+    at all with respect to what the test is actually testing for.
+
+ test/source-clip-scale-pdf-ref.png |  Bin 0 -> 113 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 64b7489a50808bd660a47615d0775842c77dd0f2
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 03:47:34 2008 -0800
+
+    Add poppler-specific reference image for push-group
+    
+    This is justified by the following new bug report:
+    
+    	Incorrect clipping of group object (regression?)
+    	https://bugs.freedesktop.org/show_bug.cgi?id=14580
+
+ test/README                       |    5 +++++
+ test/push-group-pdf-ref.png       |  Bin 0 -> 2694 bytes
+ test/push-group-pdf-rgb24-ref.png |  Bin 0 -> 2611 bytes
+ 3 files changed, 5 insertions(+), 0 deletions(-)
+
+commit 7aaa3e67c5016357e28476b10d768101e1e5bd41
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 03:38:07 2008 -0800
+
+    Add poppler-specific reference images for tests needing EXTEND_PAD
+    
+    This is justified by the following new bug report:
+    
+    	Poppler should paint images with CAIRO_EXTEND_PAD
+    	https://bugs.freedesktop.org/show_bug.cgi?id=14578
+    
+    The four affected tests are:
+    
+    	paint-source-alpha
+    	paint-with-alpha
+    	rotate-image-surface-paint
+    	scale-source-surface-paint
+
+ test/README                                       |    9 +++++++--
+ test/paint-source-alpha-pdf-ref.png               |  Bin 0 -> 473 bytes
+ test/paint-with-alpha-pdf-ref.png                 |  Bin 0 -> 466 bytes
+ test/rotate-image-surface-paint-pdf-rgb24-ref.png |  Bin 0 -> 207 bytes
+ test/scale-source-surface-paint-pdf-rgb24-ref.png |  Bin 0 -> 198 bytes
+ 5 files changed, 7 insertions(+), 2 deletions(-)
+
+commit fdd046edccf283bfedb59733516f6110cc96ea82
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 03:23:38 2008 -0800
+
+    Add poppler-specific reference image for text-pattern
+    
+    This is justified with the following new bug report:
+    
+    	Poppler renders patterned text as black
+    	https://bugs.freedesktop.org/show_bug.cgi?id=14577
+
+ test/README                          |    6 ++++++
+ test/text-pattern-pdf-argb32-ref.png |  Bin 0 -> 1823 bytes
+ test/text-pattern-pdf-rgb24-ref.png  |  Bin 0 -> 508 bytes
+ 3 files changed, 6 insertions(+), 0 deletions(-)
+
+commit 43302f0408d92138ac12afcd855d44c430074859
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 03:15:17 2008 -0800
+
+    Re-enable pdf tests with gradients and add poppler-based reference images
+    
+    This freezes the current (buggy) poppler result in the test suite
+    so that we will notice any future regressions.
+
+ boilerplate/cairo-boilerplate-pdf.c             |   42 --------------------
+ test/README                                     |   47 +++++++++++++++++++++++
+ test/gradient-alpha-pdf-argb32-ref.png          |  Bin 0 -> 126 bytes
+ test/gradient-alpha-pdf-rgb24-ref.png           |  Bin 0 -> 121 bytes
+ test/gradient-alpha.c                           |    3 +-
+ test/linear-gradient-pdf-ref.png                |  Bin 0 -> 935 bytes
+ test/linear-gradient-reflect-pdf-argb32-ref.png |  Bin 0 -> 248 bytes
+ test/linear-gradient-reflect-pdf-rgb24-ref.png  |  Bin 0 -> 248 bytes
+ test/linear-gradient.c                          |    3 +-
+ test/text-pattern.c                             |    3 +-
+ test/trap-clip-pdf-argb32-ref.png               |  Bin 0 -> 5809 bytes
+ test/trap-clip-pdf-rgb24-ref.png                |  Bin 0 -> 5768 bytes
+ test/trap-clip.c                                |    3 +-
+ 13 files changed, 51 insertions(+), 50 deletions(-)
+
+commit 635fed77676f2446cbedfcf52a85f96e32c3a241
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 02:24:28 2008 -0800
+
+    Re-enable some pdf tests now that poppler has knockout support
+    
+    We had several pdf tests disabled waiting for this bug fix:
+    
+    	Poppler does not correctly handle knockout groups
+    	https://bugs.freedesktop.org/show_bug.cgi?id=12185
+    
+    That's in place for poppler now, so we're turning the tests
+    back on. Some of the affected tests now pass perfectly:
+    
+    	over-above-source
+    	over-around-source
+    	over-below-source
+    	over-between-source
+    
+    Some just needed new reference images:
+    
+    	operator-clear
+    	clip-operator-pdf-argb32
+    
+    The remaining tests still fail, but none of the failures can
+    obviously be ascribed to just poppler problems:
+    
+    	clip-operator-pdf-rgb24
+    	operator-source
+    	unbounded-operator
+    
+    The first two have some serious problems, while in the case
+    of unbounded-operator the problem is extremely minor (a white
+    grid appears in the background where the reference image is
+    all black).
+
+ boilerplate/cairo-boilerplate-pdf.c    |   13 -------------
+ test/clip-operator-pdf-argb32-ref.png  |  Bin 0 -> 9096 bytes
+ test/operator-clear-pdf-argb32-ref.png |  Bin 0 -> 1438 bytes
+ test/operator-clear-pdf-rgb24-ref.png  |  Bin 0 -> 1170 bytes
+ 4 files changed, 0 insertions(+), 13 deletions(-)
+
+commit 98189d860e2c4219f994dd19fb199fcf4b457852
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 01:43:51 2008 -0800
+
+    svg: Add support for flattening SOURCE painting when there's nothing beneath it
+    
+    This avoids unnecessary rasterization in many cases when using
+    cairo_surface_create_similar with an SVG surface. Because of that
+    it eliminates test-suite failures for the -similar cases where we
+    have svg-specific reference images. Namely:
+    
+    	font-matrix-translation, ft-text-vertical-layout-type1,
+    	ft-text-vertical-layout-type3, mask, meta-surface-pattern,
+    	paint-source-alpha, paint-with-alpha, rotate-image-surface-paint,
+    	scale-source-surface-paint, source-clip-scale, text-pattern,
+    	text-rotate
+    
+    In all of these cases the test suite was kindly noticing that we
+    weren't getting the same 'native' SVG output that was desired.
+
+ src/cairo-svg-surface.c |   15 +++++++++++----
+ 1 files changed, 11 insertions(+), 4 deletions(-)
+
+commit e7c6e291a64391004ae7bafc4d69830af5b0c8b1
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 01:43:22 2008 -0800
+
+    Add svg-specific reference images for meta-surface-pattern test
+
+ test/meta-surface-pattern-svg-argb32-ref.png |  Bin 0 -> 3896 bytes
+ test/meta-surface-pattern-svg-rgb24-ref.png  |  Bin 0 -> 4593 bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit a1867412210db667a02e7b656729e2cf6a64a2d7
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 20 01:38:59 2008 -0800
+
+    cairo-svg: Make operation_supported depend on analyze_operation instead of the other way around.
+    
+    This prepares for analyze_operation to be able to return more than
+    just two values, (which will allow the svg backend to take advantage
+    of CAIRO_INT_STATUS_FLATTEN_TRANSPARENCY).
+
+ src/cairo-svg-surface.c |   27 +++++++++++++++------------
+ 1 files changed, 15 insertions(+), 12 deletions(-)
+
+commit 8f11c4583f58f97c348aafcd71db059ac7791fe7
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Feb 18 17:32:35 2008 -0800
+
+    Revert "[meta-surface] Adjust tolerance when replaying to surfaces with device scale"
+    
+    This reverts commit 7f21bfb0a8265095d68bb5ff6afae7553683a776.
+    
+    We don't yet have consensus on whether this is a good change or not.
+    So for now, we're favoring the existing behavior until we can work
+    that out.
+
+ src/cairo-meta-surface.c |   11 +++++------
+ 1 files changed, 5 insertions(+), 6 deletions(-)
+
+commit 1747718406b3450bc8869f0e050f9a18b3036030
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Feb 14 12:27:47 2008 -0800
+
+    Add a spline to the degenerate-pen test case
+    
+    This was triggering an infinite loop (with 24.8 fixed-point) just before
+    the previous fix.
+    
+    NOTE: I usually put bug demonstrations just before the fixes, but this
+    one was quite harsh---not only was cairo looping infinitely, but it
+    was appending to an array on each iteration---so not kind at all.
+
+ test/degenerate-pen-ps-argb32-ref.png |  Bin 374 -> 771 bytes
+ test/degenerate-pen-ref.png           |  Bin 278 -> 788 bytes
+ test/degenerate-pen.c                 |    3 +++
+ 3 files changed, 3 insertions(+), 0 deletions(-)
+
+commit d6d81c92b501b32be6c48d134683ebd51f63c134
+Author: Carl Worth <cworth@cworth.org>
+Date:   Sat Feb 16 13:27:02 2008 -0800
+
+    Eliminate a potential infinite loop in spline stroking
+    
+    Sometimes > rather than >= can make a bug difference. The infinite loop
+    was noticed here:
+    
+    	Infinite loop when scaling very small values using 24.8
+    	http://bugs.freedesktop.org/show_bug.cgi?id=14280
+    
+    Note that that particular test case only exposes the infinite
+    loop when using 24.8 instead of 16.16 fixed-point values by
+    setting CAIRO_FIXED_FRAC_BITS to 8.
+
+ src/cairo-pen.c |   13 ++++++++++++-
+ 1 files changed, 12 insertions(+), 1 deletions(-)
+
+commit 770b058c9e53c6d0e3a3f600cd5a9631eee39dff
+Author: Carl Worth <cworth@cworth.org>
+Date:   Sat Feb 16 13:17:49 2008 -0800
+
+    Remove _cairo_slope_[counter_]clockwise
+    
+    These two functions were hiding away some important details
+    about strictness of inequalities. Also, the callers differ
+    on the strictness they need. Everything is cleaner and more
+    flexible by making the callers just call _cairo_slope_compare
+    directly.
+
+ src/cairo-path-stroke.c |    2 +-
+ src/cairo-pen.c         |   30 ++++++++++++++++--------------
+ src/cairo-slope.c       |   23 -----------------------
+ src/cairoint.h          |    6 ------
+ 4 files changed, 17 insertions(+), 44 deletions(-)
+
+commit 2d22d698d32575fd883d2be072c041709254c86d
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Feb 14 11:50:26 2008 -0800
+
+    Make _cairo_slope_compare return a non-zero result for slopes that differ by pi
+    
+    This was an initial attempt to fix the infinite loop bug
+    described here:
+    
+    	Infinite loop when scaling very small values using 24.8
+    	http://bugs.freedesktop.org/show_bug.cgi?id=14280
+    
+    This doesn't actually fix that bug, but having a more robust
+    comparison function can only be a good thing.
+
+ src/cairo-slope.c |   30 ++++++++++++++++++++++++++++--
+ 1 files changed, 28 insertions(+), 2 deletions(-)
+
+commit 9292c0a1b509ecea8415cdbc21415d9ce7615e04
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Wed Feb 20 10:54:14 2008 +0000
+
+    [gitignore] Ignore cairo-no-features.h
+    
+    Add the autogenerated header to the ignore list.
+
+ src/.gitignore |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit e6a8768a0446b9e537bb77bd309ad5719fe74451
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Wed Feb 20 10:53:15 2008 +0000
+
+    [cairo-scaled-font-subsets] Fix memleak on failure to reserve .notdef glyph.
+    
+    Remember to destroy the sub_font if we fail to reserve the .notdef glyph
+    during construction.
+    
+    Whilst in the vicinity, adjust the function prototype to remove
+    duplicated calls to _cairo_error().
+
+ src/cairo-scaled-font-subsets.c |   57 ++++++++++++++++++++------------------
+ 1 files changed, 30 insertions(+), 27 deletions(-)
+
+commit e208f31236af6b2012d725696485f96fe4acd863
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Feb 19 15:14:37 2008 +0000
+
+    [cairo-surface] Check surface status on internal paths as well.
+    
+    Return any error status on the surface to the caller.
+
+ src/cairo-surface.c |   50 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 49 insertions(+), 1 deletions(-)
+
+commit 1d59daecfe1078ba2ad56f80b35c934312dc4f6b
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Feb 19 15:13:53 2008 +0000
+
+    [cairo-pdf-operators] Cleanup word_wrap_stream
+    
+    Ensure that the stream is destroyed on the error paths.
+
+ src/cairo-pdf-operators.c |   10 +++++++---
+ 1 files changed, 7 insertions(+), 3 deletions(-)
+
+commit aac5650beebb40068767a7d3ffedf634a3da5002
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Feb 19 14:39:13 2008 +0000
+
+    [pdf-operators] Missing private markup.
+    
+    Fixup make check by adding the required cairo_private markup.
+
+ src/cairo-pdf-operators-private.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit eaaa1415a9becb8f11ddde4094fcf0aec6d1458f
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Wed Feb 20 21:05:23 2008 +1030
+
+    Change PDF newline characters from \r\n to \n
+    
+    The PDF backend has always used "\r\n" for the newline character.
+    There was no particular reason for this choice. PDF allows "\n", "\r",
+    or "\r\n" as the end of line marker.
+    
+    Since the PS backend (which uses "\n") has started sharing
+    cairo-pdf-operators.c with the PDF backend, the PS output has been
+    getting mixed "\n" and "\r\n" newlines.
+    
+    Fix this by changing the PDF backend to use "\n".
+
+ src/cairo-pdf-operators.c |   40 +-
+ src/cairo-pdf-surface.c   |  878 ++++++++++++++++++++++----------------------
+ 2 files changed, 459 insertions(+), 459 deletions(-)
+
+commit 24c319fbae9ea4a43bf4e1fdf94d069b4ad78904
+Author: Bertram Felgenhauer <int-e@gmx.de>
+Date:   Sat Feb 16 09:22:01 2008 +0100
+
+    [perf] add tests for magnified and minified image sources.
+    With this change, cairo's performance testsuite will catch performance
+    regressions in pixman's fbFetchTransformed path.
+
+ perf/cairo-perf-cover.c |   34 ++++++++++++++++++++++++++++++++++
+ 1 files changed, 34 insertions(+), 0 deletions(-)
+
+commit 21049a9a5eb7ba0873771428bde0db8f8b1ece08
+Author: Antoine Azar <cairo@antoineazar.com>
+Date:   Mon Feb 18 23:57:38 2008 -0500
+
+    Added cairo-misc.c to makefile
+
+ src/Makefile.win32 |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit f2d21e73827d81da559ee4cd046bfb02dfd66a83
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Mon Feb 18 17:18:51 2008 -0800
+
+    [stroker] fix _compute_normalized_device_slope to return correct sign
+    
+    The optimization to avoid sqrt() for horizontal/vertical lines in
+    _compute_normalized_device_slope was causing us to return a negative
+    magnitude with a positive slope for left-to-right and bottom-to-top
+    lines, instead of always returning a positive magnitude and a slope
+    with an appropriate sign.
+
+ src/cairo-path-stroke.c |   18 ++++++++++++++----
+ 1 files changed, 14 insertions(+), 4 deletions(-)
+
+commit 8fb624dbf2c660fbbf6d6964f7876656e1b62e41
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 17 19:49:39 2008 +1030
+
+    Use correct prefix for _cairo_pdf_operators_stroke
+    
+    s/operator/operators/
+
+ src/cairo-pdf-operators-private.h |   10 +++++-----
+ src/cairo-pdf-operators.c         |   10 +++++-----
+ src/cairo-pdf-surface.c           |   20 ++++++++++----------
+ src/cairo-ps-surface.c            |   10 +++++-----
+ 4 files changed, 25 insertions(+), 25 deletions(-)
+
+commit d2a1576941e46fb71eda8b27bd3df4de691df6ff
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 17 19:48:01 2008 +1030
+
+    PDF/PS: Fix mismatched save restore when using fill-stroke
+
+ src/cairo-pdf-surface.c |   11 +++++++++--
+ 1 files changed, 9 insertions(+), 2 deletions(-)
+
+commit 3a05b5d2d5989386e1500ffcf8738ca89ef8457d
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 17 19:45:45 2008 +1030
+
+    PDF/PS: No need to use save/restore for solid colors
+
+ src/cairo-pdf-surface-private.h |    1 +
+ src/cairo-pdf-surface.c         |    7 +++++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+commit c7204adcf3ff6614aae75c4c1c5ef0fc5269d834
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Sun Feb 17 02:32:00 2008 -0500
+
+    [cairo-misc.c] Add misc functions to this file
+    
+    Anything functions that doesn't group with other functions enough to
+    justify its own file should go here now.
+
+ src/Makefile.am    |    1 +
+ src/cairo-gstate.c |   79 ----------
+ src/cairo-misc.c   |  407 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/cairo.c        |  287 ------------------------------------
+ 4 files changed, 408 insertions(+), 366 deletions(-)
+
+commit a1360322c4e2867d7060a7f65bf0d96d9af36174
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 17 17:16:53 2008 +1030
+
+    PS: Remove unused code
+
+ src/cairo-ps-surface.c |    9 ---------
+ 1 files changed, 0 insertions(+), 9 deletions(-)
+
+commit 2dfe32a0ff9272ade481796f0f25fd83863c7600
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 17 16:45:15 2008 +1030
+
+    Implement PDF fill-stroke
+
+ src/cairo-meta-surface.c          |   15 ++++++-
+ src/cairo-pdf-operators-private.h |    8 +++
+ src/cairo-pdf-operators.c         |   51 ++++++++++++++++++++-
+ src/cairo-pdf-surface.c           |   92 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 164 insertions(+), 2 deletions(-)
+
+commit 1e7fa4b9f5c478bcb7c49667192f239c2bd1d03e
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Sat Feb 16 22:47:31 2008 -0500
+
+    [cairo-pdf-operators] Pass matrix by reference, not by value
+
+ src/cairo-pdf-operators-private.h |    4 ++--
+ src/cairo-pdf-operators.c         |    8 ++++----
+ src/cairo-pdf-surface.c           |   12 ++++++------
+ src/cairo-ps-surface.c            |    9 +++++----
+ 4 files changed, 17 insertions(+), 16 deletions(-)
+
+commit 357f2334f0bd518815c80905e451b6ac1ba43553
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sat Feb 16 20:37:16 2008 +1030
+
+    PDF: Allow word_wrap_stream to split hex strings
+
+ src/cairo-pdf-operators.c |   50 +++++++++++++++++++++++++++++++++++++++-----
+ 1 files changed, 44 insertions(+), 6 deletions(-)
+
+commit 204a27aadb2390b62bd75857d8736b34870f79b1
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sat Feb 16 20:35:42 2008 +1030
+
+    PDF: Word wrap _cairo_pdf_operators_show_glyphs output
+
+ src/cairo-pdf-operators.c |   38 ++++++++++++++++++++++++--------------
+ 1 files changed, 24 insertions(+), 14 deletions(-)
+
+commit bcb0395288128da7dd8f24c503b8badacc806720
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Feb 15 15:56:29 2008 -0500
+
+    [docs] Fix typo
+
+ src/cairo-font-options.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 536e1963b774038d9afc7fbf63303e118b0250a2
+Author: Shailendra Jain <shailen.n.jain@gmail.com>
+Date:   Fri Feb 15 13:21:29 2008 +0000
+
+    Compile fix for AIX.
+    
+    Minor correction for a build failure on AIX:
+    "mozilla/gfx/cairo/cairo/src/cairo-gstate.c", line 45.43: 1506-294 (S)
+    Syntax error in expression on #if directive.
+    
+    (Fixes https://bugzilla.mozilla.org/show_bug.cgi?id=415867.)
+
+ src/cairo-gstate.c    |    2 +-
+ src/cairo-matrix.c    |    2 +-
+ test/invalid-matrix.c |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 31a67c5f22eb2cbb94878d47be19b32ff319c5b3
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Feb 15 13:16:58 2008 +0000
+
+    [pdf] Minor make check fix.
+    
+    Add a missing '%' in the documentation.
+
+ src/cairo-pdf-operators.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 9e9fda047879f0336c2627483c78499af8ef5458
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Feb 12 11:16:37 2008 +0000
+
+    [test/bitmap-font] Destroy the font options after use.
+    
+    Fix the leak of the font options.
+
+ test/bitmap-font.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 92970ec83687435e75e60110cb7434670515ae57
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Feb 11 17:00:30 2008 +0000
+
+    [test/invalid-matrix] Test detection of infinities.
+    
+    Feed infinities into the API and check that we correctly return
+    INVALID_MATRIX.
+
+ test/invalid-matrix.c |  123 ++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 122 insertions(+), 1 deletions(-)
+
+commit 012f68e043d3594fa6cb5235eafb1ca1bfe2d099
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Feb 11 16:48:24 2008 +0000
+
+    [test/invalid-matrix] Check scale(0,0)
+    
+    Test that INVALID_MATRIX is returned if the user calls cairo_scale(0,0)
+    or a variant thereof.
+
+ test/invalid-matrix.c |   16 ++++++++++++++++
+ 1 files changed, 16 insertions(+), 0 deletions(-)
+
+commit eb7488e1e67b872d29d1bd459bb7994ad3789576
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Feb 11 16:45:18 2008 +0000
+
+    [test/invalid-matrix] Promote incorrect status warning to an error.
+    
+    As the last warning for an incorrect status has been resolved, throw an
+    error if we regress and no longer report an INVALID_MATRIX under testing.
+
+ test/invalid-matrix.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit fc732c3aaa53d8abcea46ad28da696ad08d09b63
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Feb 11 16:17:34 2008 +0000
+
+    [cairo-scaled-font] Create error objects on demand.
+    
+    In order to correctly report the error back to the user during the
+    creation of a scaled font, we need to support a nil object per error.
+    Instead of statically allocating all possible errors, lazily allocate
+    the nil object the first time we need to report a particular error.
+    
+    This fixes the misreporting of an INVALID_MATRIX or NULL_POINTER that
+    are common user errors during the construction of a scaled font.
+
+ src/cairo-debug.c              |    2 +
+ src/cairo-mutex-list-private.h |    1 +
+ src/cairo-scaled-font.c        |   65 +++++++++++++++++++++++++++++++++++----
+ src/cairo.c                    |   10 +-----
+ src/cairo.h                    |    2 +-
+ src/cairoint.h                 |   15 ++++++++-
+ test/font-options.c            |    2 +-
+ 7 files changed, 79 insertions(+), 18 deletions(-)
+
+commit 38fcc015a5106e5007035c22355da863b3bc9def
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Feb 11 16:14:40 2008 +0000
+
+    [cairo-ft-font] Propagate error detected during determination of scale factors.
+    
+    Ensure that if an invalid matrix is detected when creating the toy font,
+    the error is propagated to the caller.
+
+ src/cairo-ft-font.c |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+commit ad265cc9f26a20f2336747d69b28bc6ca0d91f4b
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Feb 11 14:58:21 2008 +0000
+
+    [cairo-font-options] Disallow use of NULL font-options.
+    
+    Partial revert of commit 0086db893cba90dc73824d77c661d2965ad48112.
+    
+    This is a follow to the earlier commit that allowed creation of scaled
+    fonts using a NULL font options (by interpreting the NULL as meaning
+    use the default options) to reflect the comments made by Behdad
+    (http://lists.cairographics.org/archives/cairo/2008-January/012714.html).
+    
+    The intent is that the public font options getter/setter API has similar
+    defensive behaviour to that of the core objects - i.e. do not overwrite
+    the nil object and if the object is in error then return the default
+    value. For the indirect use of a NULL/nil font options (e.g. creation of
+    scaled fonts), then an error should be returned rather than crashing.
+
+ src/cairo-font-face.c    |    8 ++----
+ src/cairo-font-options.c |   36 ++++++++++++-------------------
+ src/cairo-ft-font.c      |    8 ++----
+ src/cairo-scaled-font.c  |   13 +++--------
+ src/cairo-win32-font.c   |    4 +-
+ src/cairo.c              |   10 +++-----
+ test/font-options.c      |   51 ++++++++++++++++++++++++++-------------------
+ 7 files changed, 59 insertions(+), 71 deletions(-)
+
+commit 790eaef71cbd30e1994c9499ab553f2ef5e5d620
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Feb 11 10:31:33 2008 +0000
+
+    [boilerplage] Add getopts to the boilerplate library.
+    
+    Remember to compile the _cairo_getopts() function into the boilerplate
+    convenience library for cairo-perf.
+
+ boilerplate/Makefile.am |   14 ++++++++------
+ 1 files changed, 8 insertions(+), 6 deletions(-)
+
+commit fe93038ef343c769b38b9e7f15c1be415e6bcdd9
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Feb 8 08:36:34 2008 +0000
+
+    [test/font-options] Check for HAVE_FCFINI
+    
+    Only pull in the fontconfig headers if we actually use FcFini().
+
+ test/font-options.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 2eb03b8cf2b2c0520d018127b377071a8a63799d
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Feb 7 17:07:43 2008 +0000
+
+    [cairo-ps-surface] Tidy return from _analyze_image_transparency().
+    
+    _analyze_image_transparency() only returned SUCCESS, so use the return
+    parameter to pass back the transparency type instead of using an out
+    parameter.
+
+ src/cairo-ps-surface.c |   37 +++++++++++++------------------------
+ 1 files changed, 13 insertions(+), 24 deletions(-)
+
+commit bc83e028b8d12223164263a9f9cfc822ed40f8c8
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Feb 7 11:47:11 2008 +0000
+
+    [cairo-output-stream] Add format(printf) markup.
+    
+    Add CAIRO_PRINTF_FORMAT attribute to the printf-esque output stream
+    functions, and fixup the one warning caught by the compiler.
+
+ src/cairo-output-stream-private.h |    6 ++++--
+ src/cairo-pdf-surface.c           |    4 ++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+commit 4430157841d4b55061c6af58576cfe6ec66fcfe5
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Wed Feb 6 11:37:13 2008 +0000
+
+    [test] Summarise the tests failures per backend.
+    
+    After the summary, show the total number of failures per backend.
+
+ test/Makefile.am |   15 +++++++++++++++
+ 1 files changed, 15 insertions(+), 0 deletions(-)
+
+commit af88d4d9ae66152ac885531bfc73a47eb78d1d03
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Wed Jan 30 15:20:50 2008 +0000
+
+    [test/a8-mask] Fix memleak.
+    
+    Destroy the auxiallary surfaces and contexts.
+
+ test/a8-mask.c |   14 ++++++++------
+ 1 files changed, 8 insertions(+), 6 deletions(-)
+
+commit a3f071aee707e66e637587f1e9ae327b21243a60
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Wed Jan 30 15:19:49 2008 +0000
+
+    [cairo-ft-font] Tidy usage of cairo_error().
+    
+    Remove a redundant use of cairo_error(NO_MEMORY).
+
+ src/cairo-ft-font.c |    7 +++----
+ 1 files changed, 3 insertions(+), 4 deletions(-)
+
+commit a4c960a93cf5f37819b933d19f92e17e6c047c66
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Jan 18 17:14:17 2008 +0000
+
+    [test] Add tests using each backend as a source.
+    
+    Inspired by bug 7362 (painting a glitz surface onto an xlib surface
+    crashes cairo) and the lack of coverage for
+    _cairo_paginated_surface_acquire_source_image(), these tests attempt
+    to use each backend as a source surface for all the other backends.
+    For example, this checks that one can construct a PS file ready for
+    printing and then copy that surface to an image/xlib for previewing.
+
+ test/.gitignore                   |    6 +
+ test/Makefile.am                  |   19 +++-
+ test/glitz-surface-source-ref.png |  Bin 0 -> 268 bytes
+ test/glitz-surface-source.c       |  196 +++++++++++++++++++++++++++++++++++++
+ test/image-surface-source-ref.png |  Bin 0 -> 268 bytes
+ test/image-surface-source.c       |   35 +++++++
+ test/pdf-surface-source-ref.png   |  Bin 0 -> 268 bytes
+ test/pdf-surface-source.c         |   41 ++++++++
+ test/ps-surface-source-ref.png    |  Bin 0 -> 268 bytes
+ test/ps-surface-source.c          |   41 ++++++++
+ test/surface-source.c             |   93 +++++++++++++++++
+ test/svg-surface-source-ref.png   |  Bin 0 -> 268 bytes
+ test/svg-surface-source.c         |   41 ++++++++
+ test/xlib-surface-source-ref.png  |  Bin 0 -> 268 bytes
+ test/xlib-surface-source.c        |   76 ++++++++++++++
+ 15 files changed, 544 insertions(+), 4 deletions(-)
+
+commit f59f22eecba7cbf2151e01533ba936ca94d25056
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Jan 29 09:29:10 2008 +0000
+
+    [check] Only build documents during make check if we have GTK_DOC
+    
+    Check that gtk-doc has been enabled before running attempting to build
+    the docs during make check.
+
+ doc/public/Makefile.am |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit e5f0253b67801ad79eb881e189b9835aea0fcf57
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Jan 29 09:07:14 2008 +0000
+
+    [cairo-surface] Hide the compiler warnings.
+    
+    Assign the return value from _cairo_surface_set_error() to hide the
+    compiler warnings.
+
+ src/cairo-surface.c |   18 ++++++++++++------
+ 1 files changed, 12 insertions(+), 6 deletions(-)
+
+commit 53c1ed25abb7e8e22b24aa64fcd29d210c6b7903
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Jan 29 08:52:28 2008 +0000
+
+    [test/a1-sample-image] Fix the memleak.
+    
+    Destroy the surface after use.
+
+ test/a1-image-sample.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 5efc88e9108df2331772cc22dc52ef0a9cc93869
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Jan 29 08:50:25 2008 +0000
+
+    [xmalloc] Hide valgrind warning.
+    
+    Allocate the string to the next integer boundary to hide a valgrind
+    warning.
+
+ boilerplate/xmalloc.c |   27 +++++++++++++++++++--------
+ 1 files changed, 19 insertions(+), 8 deletions(-)
+
+commit 1faf208093a8cce77d2f7d6b248bc1eb1bd19a8a
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Jan 18 14:41:03 2008 +0000
+
+    [cairo-png] Improve error return for invalid parameters.
+    
+    Only translate an UNSUPPORTED error into a SURFACE_TYPE_MISMATCH, all
+    others can be returned to the user unadulterated.
+    
+    PNG doesn't support width==0 or height==0 and generates an error
+    whilst writing - which without further information is assumed to be
+    a NO_MEMORY error. So check the image size at the start and return a
+    WRITE_ERROR for a zero sized image.
+
+ src/cairo-png.c |   24 +++++++++++++-----------
+ 1 files changed, 13 insertions(+), 11 deletions(-)
+
+commit d0cc1d929119d2e05578a60af3b873af1d7f6b13
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Jan 18 14:34:41 2008 +0000
+
+    [cairo-pdf-surface] Minor code tidy.
+    
+    Remove code duplication.
+
+ src/cairo-pdf-surface.c |    6 ++----
+ 1 files changed, 2 insertions(+), 4 deletions(-)
+
+commit d7ce0582f1eb86b2af5964820378b75297822dd1
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Jan 17 23:18:46 2008 +0000
+
+    [test/font-options] Check the defaults values.
+    
+    Exercise the getters by checking that a fresh cairo_font_options_t has
+    the default values.
+
+ test/font-options.c |   24 ++++++++++++++++++++----
+ 1 files changed, 20 insertions(+), 4 deletions(-)
+
+commit f40f24e272cf05a7a727217ae7a35844bf95f5d2
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Jan 17 23:05:53 2008 +0000
+
+    [test/invalid] Test cairo_translate() and friends for NaN safety.
+    
+    Pass NaNs to cairo_translate() and friends and check that they raise
+    an INVALID_MATRIX error.
+
+ test/invalid-matrix.c |   37 +++++++++++++++++++++++++++++++++++++
+ 1 files changed, 37 insertions(+), 0 deletions(-)
+
+commit 896da0305a09e53518d6d1af6f58bbfaf3ddc89c
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Fri Feb 15 23:54:55 2008 +1030
+
+    Win32-printing: Fix meta surface patterns
+    
+    Ensure the win32-printing surface has the same fixes for meta surface
+    patterns with more than one level of push/pop group that PS/PDF
+    received in 060f384310e887f7f431a98e847b8a36fc303a0c
+
+ src/cairo-win32-printing-surface.c |   28 ++++++++++++++++------------
+ 1 files changed, 16 insertions(+), 12 deletions(-)
+
+commit fbde0fb872a3af78236f4cbc8024d4df245de9c8
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Fri Feb 15 08:17:25 2008 +1030
+
+    Update PS ref images
+
+ test/degenerate-pen-ps-argb32-ref.png       |  Bin 390 -> 374 bytes
+ test/extend-reflect-ps-ref.png              |  Bin 0 -> 153322 bytes
+ test/extend-reflect-similar-ps-ref.png      |  Bin 0 -> 153322 bytes
+ test/glyph-cache-pressure-ps-ref.png        |  Bin 0 -> 1667 bytes
+ test/meta-surface-pattern-ps-argb32-ref.png |  Bin 0 -> 3246 bytes
+ test/meta-surface-pattern-ps-rgb24-ref.png  |  Bin 0 -> 3823 bytes
+ test/random-intersections-ps-argb32-ref.png |  Bin 89416 -> 89733 bytes
+ test/random-intersections-ps-rgb24-ref.png  |  Bin 89414 -> 89733 bytes
+ test/select-font-face-ps-ref.png            |  Bin 0 -> 1352 bytes
+ test/show-text-current-point-ps-ref.png     |  Bin 0 -> 1475 bytes
+ test/text-pattern-ps-argb32-ref.png         |  Bin 997 -> 998 bytes
+ test/text-rotate-ps-argb32-ref.png          |  Bin 7198 -> 7156 bytes
+ test/text-rotate-ps-rgb24-ref.png           |  Bin 7196 -> 7156 bytes
+ test/trap-clip-ps-argb32-ref.png            |  Bin 5700 -> 5715 bytes
+ test/trap-clip-ps-rgb24-ref.png             |  Bin 5616 -> 5630 bytes
+ 15 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 40d5082c24819968a5ee5a8f72e3b9cd61cb6105
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 10 14:53:17 2008 +1030
+
+    PS: Use currentfile as the image data source
+    
+    When the emitted image is not inside a PS procedure we can use the
+    currentfile operator as the datasource instead of an array of strings.
+    This avoids having to read to entire image data into printer memory
+    before the image can be decoded. This improves the performance and
+    reduces the chance of running out of memory on printers with limited
+    memory.
+
+ src/cairo-ps-surface-private.h |    1 +
+ src/cairo-ps-surface.c         |  268 +++++++++++++++++++++++++---------------
+ 2 files changed, 168 insertions(+), 101 deletions(-)
+
+commit fe334bb476bb1d7496b197b47ac60167e3fb10bd
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 10 14:52:39 2008 +1030
+
+    PS: Use InterleaveType 2 for image and mask
+    
+    To be able to use the currentfile operator we need to combine the
+    image data and mask data into the one data source. InterleaveType 2
+    scan line interleaves the image and data.
+
+ src/cairo-ps-surface.c |  129 +++++++++++++++++------------------------------
+ 1 files changed, 47 insertions(+), 82 deletions(-)
+
+commit b053aaba80e1118ddd7f9c695f6491458f4f5794
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Feb 5 22:46:01 2008 +1030
+
+    PS: Don't use patterns for fill surface extend none
+    
+    _ps_surface_fill() can also avoid using PS patterns for EXTEND_NONE
+    surface patterns. A clip path is set around the fill path then the
+    surface is painted.
+
+ src/cairo-ps-surface.c |   38 ++++++++++++++++++++++++++++++--------
+ 1 files changed, 30 insertions(+), 8 deletions(-)
+
+commit 2324a48c95d88ae0b6a066bfc9b6722f42945efa
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Feb 5 22:35:06 2008 +1030
+
+    Update rotate-image-surface-paint ps ref image
+
+ test/rotate-image-surface-paint-ps-argb32-ref.png |  Bin 276 -> 0 bytes
+ test/rotate-image-surface-paint-ps-ref.png        |  Bin 0 -> 275 bytes
+ test/rotate-image-surface-paint-ps-rgb24-ref.png  |  Bin 274 -> 0 bytes
+ 3 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 67374af22fe60c27517dd3bef2c8f3cc2f683b12
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Feb 5 22:31:58 2008 +1030
+
+    PS: Don't use patterns for paint surface extend none
+    
+    This is the first of four patches intended to fix the bug reported in
+    
+    http://lists.cairographics.org/archives/cairo/2007-December/012226.html
+    
+    Previously the PS backend would draw all cairo patterns (except solid
+    colors) by emitting a PS pattern. As PS does not support non repeating
+    patterns, the PS backend would set a large repeat step to ensure that
+    only one copy of the pattern is on the page.
+    
+    Some printers with limited memory are unable to print large images
+    inside a pattern. This was probably because when using patterns the
+    printer tries to keep the uncompressed image in memory so it can tile
+    the pattern.
+    
+    When painting surface patterns with the extend mode EXTEND_NONE we do
+    not need to use PS patterns. The image or meta surface commands can be
+    emitted directly.
+
+ src/cairo-ps-surface-private.h |    2 +
+ src/cairo-ps-surface.c         |  234 +++++++++++++++++++++++++++-------------
+ 2 files changed, 162 insertions(+), 74 deletions(-)
+
+commit 6f9d71c10bf3e38c88378950037d1c81a2413617
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Thu Feb 7 00:28:19 2008 +1030
+
+    Make PS backend use cairo-pdf-operators.c
+    
+    Changes include:
+    - Replace PS prolog with new prolog that emulates PDF operators
+    - Remove the [1 0 0 -1 0 height] ctm on each page. PS and PDF surfaces
+      now both transform all output to PS/PDF coordinates.
+    - Invert images to match PDF images where (0,0) is top left
+    - emit_surface_pattern now uses the same transform as PDF
+    - move the special dash handling into cairo-pdf-operators.c
+
+ src/cairo-pdf-operators.c      |   82 ++++-
+ src/cairo-ps-surface-private.h |    4 +
+ src/cairo-ps-surface.c         |  767 +++++++--------------------------------
+ 3 files changed, 219 insertions(+), 634 deletions(-)
+
+commit 49f755ed2d517adabcdbe9f3834ff18b220dfa7f
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Wed Jan 30 20:42:28 2008 +1100
+
+    PS: Remove the Type 3 outline glyph code
+    
+    This code is never used because outline glyphs that go through the
+    fallback path are always embedded with Type 1 fallback. The only fonts
+    that are embedded as Type 3 are bitmap fonts.
+
+ src/cairo-ps-surface.c |   54 ++++-------------------------------------------
+ 1 files changed, 5 insertions(+), 49 deletions(-)
+
+commit 0c6a362122657d5c9804fa7f45c3404aef052688
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Wed Jan 30 20:38:17 2008 +1100
+
+    pdf-operators: only one path matrix is required
+    
+    The PDF emit path orginally had two matrix transforms in the path
+    struct. One for strokes and one for fill/clip. As only one transform
+    at a time is ever used this can be simplified.
+
+ src/cairo-pdf-operators.c |   41 ++++++++---------------------------------
+ 1 files changed, 8 insertions(+), 33 deletions(-)
+
+commit 5639643efe12bee4252e8cb433d343999e34ec32
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Wed Jan 30 20:16:08 2008 +1100
+
+    Add PS linecap path workarounds to pdf_operators
+    
+    So that pdf_operators can be used by the PS backend. PDF also needs
+    this workaround.
+
+ src/cairo-pdf-operators.c |  123 +++++++++++++++++++++++++++++++-------------
+ 1 files changed, 86 insertions(+), 37 deletions(-)
+
+commit 0987fdee24d60573249a7fa3acc15e67454bd8b3
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Wed Jan 30 17:22:52 2008 +1100
+
+    Add word_wrap stream to pdf-operators
+    
+    The word_wrap stream in ps-surface will be removed in a later commit.
+
+ src/cairo-pdf-operators.c |  114 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 114 insertions(+), 0 deletions(-)
+
+commit d05f08bceebe832844ab97a5660af4fa1452697d
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Feb 12 15:44:21 2008 -0500
+
+    [configure.in] Make PS/PDF/SVG default enabled
+    
+    Previously they were default auto-detected.  We really want people
+    have to go out of their way to not build them, hence the change.
+
+ configure.in |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit fd3181c7bfdb468557d8c845a016b19c5a897955
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Feb 12 20:22:38 2008 +1030
+
+    PDF: Remove stale comments
+
+ src/cairo-pdf-surface.c |   23 -----------------------
+ 1 files changed, 0 insertions(+), 23 deletions(-)
+
+commit bdb857a78b41d926b1c239cf988539842a72130b
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Feb 12 20:19:03 2008 +1030
+
+    PDF: Fix uninitialized variable in previous commit
+
+ src/cairo-pdf-surface.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit ba6788fc968477cfae6ed76414dd91b21671d028
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Mon Feb 11 13:44:48 2008 -0500
+
+    [pdf] Use compressed PDF stream instead of compress_dup()
+    
+    The deflate stream has bounded (constant) memory overhead, whereas
+    compress_dup() allocates memory proportional to the uncompressed data.
+    
+    This replaces compress_dup() usage with a compressed PDF stream for
+    emitting images, alpha masks and font subsets, and eliminates the
+    compress_dup() function.
+
+ src/cairo-pdf-surface.c |  204 +++++++++++++----------------------------------
+ 1 files changed, 55 insertions(+), 149 deletions(-)
+
+commit e68584d3a16da7db30bc53a42fa8367c8356bd7e
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Feb 8 17:36:59 2008 -0500
+
+    [xlib] Move multiple CAIRO_MUTEX_INITIALIZE into one place they all end up anyway
+
+ src/cairo-xlib-surface.c |    8 ++------
+ 1 files changed, 2 insertions(+), 6 deletions(-)
+
+commit 0626cac6dba91d0ee20458858275745b7c6a1bfd
+Author: Peter Weilbacher <mozilla@weilbacher.org>
+Date:   Fri Feb 8 15:09:19 2008 +0100
+
+    [os2] fix typo in comment
+
+ src/cairo-os2-surface.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit b4fe25d9afff5d5b0ebaa315ad0e42f36853d5d1
+Author: Peter Weilbacher <mozilla@weilbacher.org>
+Date:   Fri Feb 8 15:04:49 2008 +0100
+
+    [os2] only call FcInit/Fini when compiled with FT font backend
+
+ src/cairo-os2-surface.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+commit 5e9cdcca00a490f3a36b4229f5353d795ca53a5d
+Author: Antoine Azar <cairo@antoineazar.com>
+Date:   Thu Feb 7 17:09:41 2008 -0500
+
+    Fixed rounding function call
+
+ test/get-path-extents.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 80e11a85a95c5f2c814eef90a8e6ab60c8835104
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Thu Feb 7 14:36:39 2008 -0800
+
+    [pdf] restore alpha_size back to correct bit size
+
+ src/cairo-pdf-surface.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+commit 95db215cc15d228fcb38bc43d2d918fccec0a9cd
+Author: Azar@.(none) <Azar@.(none)>
+Date:   Fri Feb 1 18:45:59 2008 -0800
+
+    Some fixes and improvements to the Win32 build
+
+ Makefile.win32                         |   32 ++++-
+ boilerplate/Makefile.win32             |   25 +++-
+ boilerplate/cairo-boilerplate-getopt.c |  250 ++++++++++++++++++++++++++++++++
+ boilerplate/cairo-boilerplate-getopt.h |   63 ++++++++
+ boilerplate/cairo-boilerplate.h        |    4 +
+ perf/Makefile.win32                    |   54 ++++++-
+ perf/cairo-perf.c                      |    7 +-
+ perf/cairo-perf.h                      |    2 +-
+ perf/world-map.c                       |    2 +
+ src/Makefile.win32                     |   36 ++++-
+ test/Makefile.win32                    |   25 +++-
+ test/font-matrix-translation.c         |    2 +-
+ test/pdiff/Makefile.win32              |    3 +
+ 13 files changed, 470 insertions(+), 35 deletions(-)
+
+commit 7800cfd7de347bb8c54fc36ed886018a2d9ec503
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Feb 6 17:00:29 2008 -0800
+
+    Add several Makefile.win32 files to EXTRA_DIST
+    
+    Otherwise, these files were being omitted from the tar files.
+
+ Makefile.am             |    2 ++
+ boilerplate/Makefile.am |    2 ++
+ perf/Makefile.am        |    2 ++
+ src/Makefile.am         |    2 ++
+ test/Makefile.am        |    2 ++
+ 5 files changed, 10 insertions(+), 0 deletions(-)
+
+commit ac743e25fa7f8bd720219a5c909fe8bbd20b11b2
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Jan 31 16:13:44 2008 +1100
+
+    cairo_xlib_surface_create_similar: Pass the original drawable to XCreatePixmap
+    
+    Previously we were passing the root window of the same screen.
+    Letting the X server know the actual Drawable for which we're
+    trying to be similar allows the X server to be more efficient.
+
+ src/cairo-xlib-surface.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit cb9f9086a1c8ad312cfc5314fc8e352a6046d75e
+Merge: c11b036... a9b0e54...
+Author: Peter Weilbacher <mozilla@weilbacher.org>
+Date:   Thu Feb 7 00:07:20 2008 +0100
+
+    Merge branch 'master' of ssh://pmw@git.freedesktop.org/git/cairo
+
+commit c11b036b75f3c71ff57ff4578b388bf5e35b2057
+Author: Peter Weilbacher <mozilla@weilbacher.org>
+Date:   Thu Feb 7 00:03:33 2008 +0100
+
+    [os2] Improve documentation
+    
+    Move the API documentation for the OS/2 backend from the .h file to the .c file and use the correct format.
+
+ src/cairo-os2-surface.c |  139 +++++++++++++++++++++++++++++++++++++++++++++++
+ src/cairo-os2.h         |  115 ---------------------------------------
+ 2 files changed, 139 insertions(+), 115 deletions(-)
+
+commit a9b0e54d386811dc750b5e676a0dfd84c32f4625
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Wed Feb 6 13:52:33 2008 -0800
+
+    Avoid buffer overflow in ps/pdf surface
+    
+    A few places weren't using _cairo_malloc_*; fixed.
+
+ src/cairo-pdf-surface.c |   22 ++++++++++++++++------
+ src/cairo-ps-surface.c  |    4 ++--
+ 2 files changed, 18 insertions(+), 8 deletions(-)
+
+commit bf1f7f70b61b5bb657b2531dab63c541ac8fb59d
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Wed Feb 6 13:01:52 2008 -0800
+
+    Do correct calculation of pen dimensions for stroke optimization
+
+ src/cairo-path-stroke.c  |   33 +++++++++++++--------------------
+ src/cairo-rectangle.c    |    2 +-
+ src/cairo-stroke-style.c |   17 +++++++++++++++++
+ src/cairoint.h           |   11 ++++++++++-
+ 4 files changed, 41 insertions(+), 22 deletions(-)
+
+commit e104fcab1c8c8d9a7a7962a1dbea0c87867c8f9a
+Author: Alp Toker <alp@atoker.com>
+Date:   Thu Jan 31 01:33:50 2008 +0000
+
+    Introduce cairo_has_current_point()
+    
+    cairo_has_current_point() can be used to determine whether a current
+    point is defined. We introduce this new symbol with a boolean return
+    value to avoid the versioning ambiguity of modifying
+    cairo_get_current_point(). This way we also don't have to map what
+    should be a routine operation to an error condition as was previously
+    proposed.
+
+ doc/public/cairo-sections.txt |    1 +
+ src/cairo.c                   |   25 +++++++++++++++++++++++--
+ src/cairo.h                   |    3 +++
+ 3 files changed, 27 insertions(+), 2 deletions(-)
+
+commit 1f0c3d06895ebcbfbae252e6b7298da0b64b37a9
+Author: Alp Toker <alp@atoker.com>
+Date:   Thu Jan 31 00:54:52 2008 +0000
+
+    Revert "Change cairo_get_current_point() to return cairo_status_t instead of void"
+    
+    This reverts commit b3eea75d1f7b56c2046b5387a5eb186d8f154184.
+    
+    Reverted in favour of an alternative approach.
+    
+    Conflicts:
+    
+    	src/cairo.c
+
+ src/cairo.c |   22 ++++------------------
+ src/cairo.h |    2 +-
+ 2 files changed, 5 insertions(+), 19 deletions(-)
+
+commit 4c005f7ce385f3f8b161cffac11bb9766f4ef9a9
+Author: Azar@.(none) <Azar@.(none)>
+Date:   Fri Feb 1 14:29:24 2008 -0800
+
+    replaced round with _cairo_lround. Round doesn't compile on Win32
+
+ test/get-path-extents.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 1d93e148766ded8f3105277f944849f6297974fb
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Feb 5 16:14:51 2008 -0800
+
+    Followup patch to dashed stroke optimization
+    
+    Make sure that we don't test lines that start or end inside the box,
+    since our algorithm will find intersections on the wrong ends on the
+    line, and not count them.
+
+ src/cairo-rectangle.c |   10 ++++++++--
+ 1 files changed, 8 insertions(+), 2 deletions(-)
+
+commit 7b788ce7cace4fd24c568248c22b4ec6c88b563b
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Feb 5 15:04:38 2008 -0800
+
+    Update test ref images that changed with stroking changes
+
+ test/dash-scale-ref.png |  Bin 7908 -> 8035 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 4471e58c12c20723f1ddac3d0284239be6eb27a8
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Mon Feb 4 03:55:55 2008 -0800
+
+    Optimize dashed strokes, part 2
+    
+    Pass down the bounding box to the stroker, and avoid doing expensive
+    calculations for dash segments that are outside the box.
+
+ src/cairo-path-stroke.c |  122 ++++++++++++++++++++++++++++++++---------------
+ src/cairo-rectangle.c   |   94 ++++++++++++++++++++++++++++++++++++
+ src/cairo-traps.c       |    8 +++
+ src/cairoint.h          |   10 ++++
+ 4 files changed, 195 insertions(+), 39 deletions(-)
+
+commit afbd82671fe5ebebe5d58bef3d372312be1c5aeb
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Sat Feb 2 23:48:16 2008 -0800
+
+    Optimize stroker by hoisting some calculations out of loops
+    
+    sqrt and a few other floating-point operations were being done
+    repeatedly within a loop; those are now precalculated and passed
+    down where needed.
+
+ src/cairo-path-stroke.c |  142 +++++++++++++++++++++++++++++------------------
+ 1 files changed, 87 insertions(+), 55 deletions(-)
+
+commit bda0baa255801dbc21b63b364eff32de98dd6c7f
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Feb 5 15:04:15 2008 -0800
+
+    Fix text-zero-len on ATSUI to not infinite loop
+
+ src/cairo-atsui-font.c |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+commit 03256d0f2be15e7ba57bc041f8cdfc1c3e718660
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Feb 5 15:04:11 2008 -0800
+
+    Remove get-xrender-format from list of tests to be run on all platforms
+
+ test/Makefile.am |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+commit 6140776b4e7d5787467606fbe8a961dbee6bd9fb
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Feb 5 00:22:26 2008 +1030
+
+    Update operator-source ps ref images
+
+ test/operator-source-ps-argb32-ref.png |  Bin 4053 -> 4026 bytes
+ test/operator-source-ps-rgb24-ref.png  |  Bin 2567 -> 3366 bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit dee6e27537a26e93266c0a2d2071ad8d4ed2c9ee
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Feb 5 00:12:48 2008 +1030
+
+    Add dash-curve ps ref image
+
+ test/dash-curve-ps-ref.png |  Bin 0 -> 27206 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 2b0da0503baba111085a23e5e5e5feb8788d6650
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Feb 5 00:02:17 2008 +1030
+
+    Ensure PS/PDF miter is >= 1.0
+    
+    The PS Language Reference requires the PS miter to be >= 1.
+    
+    The PDF Reference does not specify miter limits however acroread fails
+    to display pages when the miter is < 1. Older versions of ghostscript
+    crash when the PDF miter is < 1.
+
+ src/cairo-pdf-operators.c |    2 +-
+ src/cairo-ps-surface.c    |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 381fcf01d71d6c83183f9764507ebbafd783d18a
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 3 20:05:41 2008 +1030
+
+    Update over-around-source ps ref image
+
+ test/over-around-source-ps-argb32-ref.png |  Bin 637 -> 632 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 9dda017af9bffeda59756cb3b15028ae83ed19ef
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 3 19:53:35 2008 +1030
+
+    Update gradient-alpha ps ref images
+
+ test/gradient-alpha-ps-argb32-ref.png |  Bin 187 -> 179 bytes
+ test/gradient-alpha-ps-rgb24-ref.png  |  Bin 184 -> 179 bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 3f943a98f69b90b066217b19c47851ce03e50551
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 3 19:49:23 2008 +1030
+
+    Add linear-gradient-reflect ps ref image
+
+ test/linear-gradient-reflect-ps-ref.png |  Bin 0 -> 315 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+commit a74e6692341daeff9ab266b3b29fcc8b8e917d88
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 3 19:34:53 2008 +1030
+
+    PS: Implement reflected surface patterns
+    
+    The image/meta-pattern is written once. A PS pattern twice the size of
+    the cairo pattern is created and the surface drawn four times in a
+    reflect pattern inside the PS pattern.
+    
+    This fixes the extend-reflect and extend-reflect-similar PS test
+    failures.
+
+ src/cairo-ps-surface.c |   41 +++++++++++++++++++++++++++++++++--------
+ 1 files changed, 33 insertions(+), 8 deletions(-)
+
+commit 7c5bc5fde819014f62ebb9bac86d4529f056956d
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 3 18:58:02 2008 +1030
+
+    Add operator-clear ps ref image
+
+ test/operator-clear-ps-argb32-ref.png |  Bin 0 -> 1409 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 06b2d009ba50a2908fd9c93ff3e467f511b233cf
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 3 18:50:14 2008 +1030
+
+    Update clip-operator ps ref image
+
+ test/clip-operator-ps-argb32-ref.png |  Bin 8594 -> 9062 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 13663d1d500a6c2254097011e66199d6dd81c62d
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sun Feb 3 17:10:56 2008 +1030
+
+    PS: Implement linear gradient repeat and reflect
+
+ src/cairo-ps-surface.c |  250 +++++++++++++++++++++++++++++++++++++-----------
+ 1 files changed, 196 insertions(+), 54 deletions(-)
+
+commit 92a2e851df6668f60c63165466d2ee85dd600f47
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sat Feb 2 23:00:30 2008 +1030
+
+    Update operator-source PS ref images
+
+ test/operator-source-ps-argb32-ref.png |  Bin 3885 -> 4053 bytes
+ test/operator-source-ps-rgb24-ref.png  |  Bin 3548 -> 2567 bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 367e50137eb1b2b3952a87c580eed08a79fd211f
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Sat Feb 2 20:59:56 2008 +1030
+
+    PDF: Use correct surface size when emitting patterns
+    
+    Store the surface size in each pattern and smask group and use this
+    size when the pattern/group is emitted. This is required as a pattern
+    or group may be used from a meta surface with a different size to the
+    PDF surface. However the pattern or group is emitted after the the meta
+    surface content has been emitted and the surface size has been
+    restored to the the page size.
+    
+    This fixes the following pdf test failures:
+      extend-reflect-similar
+      extend-repeat-similar
+      mask
+
+ src/cairo-pdf-surface-private.h |    4 +++
+ src/cairo-pdf-surface.c         |   53 ++++++++++++++++++++++++++++++++++----
+ 2 files changed, 51 insertions(+), 6 deletions(-)
+
+commit d08d5c421a45c4e5f30b308823e90a86f1ec2052
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Jan 30 05:35:50 2008 -0800
+
+    Increment cairo version to 1.5.9 after the 1.5.8 snapshot
+
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 4ccb8cb29546432858e778e1b88cada1327f6f45
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Jan 30 05:16:26 2008 -0800
+
+    Add some more reference images to REFERENCE_IMAGES
+
+ test/Makefile.am |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+commit b31a7a904f8413c34970beabce6fecf6e1fdc925
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Jan 30 05:13:53 2008 -0800
+
+    Increment cairo version to 1.5.8 and libtool version to 16:0:14
+
+ configure.in |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit ca10920cc9f3a673e2199112541d5a1472423c47
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Jan 30 05:07:20 2008 -0800
+
+    Add a1-image-sample and a1-traps-sample reference images to the dist list
+
+ test/Makefile.am |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 2fee01e2d40715defe9143456101533c1f1aafcf
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Jan 30 04:54:39 2008 -0800
+
+    check-doc-syntax.sh: Fix for non-srcdir builds (such as make distcheck)
+
+ src/check-doc-syntax.sh |    5 +----
+ 1 files changed, 1 insertions(+), 4 deletions(-)
+
+commit 78022f3aa16cf8a629aec4595c5a542ca68a78cc
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Jan 30 04:54:05 2008 -0800
+
+    Add doc/public test scripts to EXTRA_DIST
+    
+    This prevents failures of make distcheck
+
+ doc/public/Makefile.am |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit d49b1220b2feeca82050de05c9c01012e8420acb
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Jan 30 04:52:23 2008 -0800
+
+    Remove extend-pad-similar test case
+    
+    This seems redundant with the recent testing of all test cases
+    against similar surfaces. Plus, it hasn't had a reference image
+    anyway which was causing problems with the recent extra checks
+    for missing reference images.
+
+ test/Makefile.am          |    3 -
+ test/extend-pad-similar.c |  105 ---------------------------------------------
+ 2 files changed, 0 insertions(+), 108 deletions(-)
+
+commit 7d2fda54f9bf6ae48cf8048b4836dea7f20cccee
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Jan 30 04:23:19 2008 -0800
+
+    NEWS: Add notes for the 1.5.8 snapshot
+
+ NEWS |  103 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 103 insertions(+), 0 deletions(-)
+
+commit 3b0adf4f5ac78e3f19b4e19267da2aa1b3c7d57b
+Author: Jeff Muizelaar <jeff@infidigm.net>
+Date:   Tue Jan 29 09:07:54 2008 -0800
+
+    Use ADD instead of IN for clipping.
+    
+    ADD is already special-cased by pixman, so using it instead avoids hitting
+    the slower general path.
+
+ src/cairo-clip.c |   34 ++++++++++++++++++++++++++++++++--
+ 1 files changed, 32 insertions(+), 2 deletions(-)
+
+commit fa6aedf2d68941bf8532bf487d5412cfc508e0a9
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Jan 29 09:01:47 2008 -0800
+
+    Fix typo in printf arguments in error message
+
+ test/font-matrix-translation.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit e2bb36fe08546e6461fcbd40f5f3f81e5efc7686
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Jan 29 08:41:21 2008 -0800
+
+    wAdd proper error propagation to _cairo_matrix_compute_scale_factors
+    
+    Before there was just an assert statement here that the
+    determinant of the matrix was not infinite. That was bogus
+    since a user-provided can end up here. So instead, do the
+    correct error propagation of any CAIRO_STATUS_INVALID_MATRIX
+    error as necessary.
+    
+    This eliminates the current failure of the invalid-matrix
+    test case.
+
+ src/cairo-atsui-font.c  |   56 ++++++++++++++++++++++++++++++++++------------
+ src/cairo-ft-font.c     |   20 +++++++++++-----
+ src/cairo-matrix.c      |    7 ++++-
+ src/cairo-scaled-font.c |   13 +++++++---
+ src/cairo-win32-font.c  |   20 ++++++++++------
+ src/cairoint.h          |    4 +-
+ 6 files changed, 83 insertions(+), 37 deletions(-)
+
+commit 849322235764f570a4a3a1217960d096d16165cf
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Jan 29 05:40:39 2008 -0800
+
+    Initialize return values for cairo_*_extents in case of error
+    
+    Previously we left the return values alone, which set the
+    user up for a nasty trap, (using potentially uninitialized
+    values with no indication that there was an error). So now
+    we initialize these values to 0.0 if the cairo_t is in error.
+    
+    The fixed functions include:
+    
+    	cairo_path_extents
+    	cairo_stroke_extents
+    	cairo_fill_extents
+    	cairo_clip_extents
+    	cairo_font_extents
+
+ src/cairo.c |   54 ++++++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 files changed, 50 insertions(+), 4 deletions(-)
+
+commit 6bdba4b4be5e66ffa61e164f8098b76d848e8f32
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Jan 29 05:27:10 2008 -0800
+
+    Add missing libcairo_font_subset_sources to fix the build
+
+ src/Makefile.am |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 3d82056cee0ba960ebb61877fec8aa646e60e990
+Author: Nis Martensen <nis.martensen@web.de>
+Date:   Tue Jan 29 05:32:24 2008 -0500
+
+    Fix typos
+
+ src/cairo.h             |    4 ++--
+ src/check-doc-syntax.sh |    4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+commit b28f4f57f21ac4091c9457873abe1465ec3f7fed
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Jan 29 04:32:39 2008 -0500
+
+    [src/Makefile.am] Reorganize
+    
+    Main goal was to be able to pass list of all cairo sources, enabled or
+    not, to check-doc-syntax.sh such that it doesn't check *.h, *.c, *.cpp
+    because that can be annoying when bisecting.
+
+ src/Makefile.am         |  352 +++++++++++++++++++++++++---------------------
+ src/check-doc-syntax.sh |    5 +-
+ 2 files changed, 195 insertions(+), 162 deletions(-)
+
+commit 41a57007939a3e206647fda1b6e5a554ca125c5f
+Author: Adrian Johnson <ajohnson@redneon.com>
+Date:   Tue Jan 29 20:27:06 2008 +1100
+
+    Fix undefined macro that was preventing the tests from compiling
+
+ test/pattern-getters.c |   28 ++++++++++++++--------------
+ 1 files changed, 14 insertions(+), 14 deletions(-)
+
+commit cfce362375963502c4d29089b369d8e5ce2b7dcb
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Jan 29 01:27:47 2008 -0500
+
+    [cairo_operator_t] Mark DestAtop unbounded and document boundedness
+
+ src/cairo.h |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+commit f9b90e475ed6009e58e5f11ac713f9ea639a6900
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Jan 29 01:20:03 2008 -0500
+
+    [doc] Fix cairo_operator_t docs to make Carl (and Keith) happy
+
+ src/cairo.h |   17 ++++++++++++-----
+ 1 files changed, 12 insertions(+), 5 deletions(-)
+
+commit 9ee7a48b33f11a42b0ffd12a9192a328e35233f3
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Jan 29 00:50:48 2008 -0500
+
+    [Makefile.am] Minor wording change
+
+ Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 013781137ff4940d0b9e04b656c20af37bbd5333
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Jan 29 00:42:51 2008 -0500
+
+    [cairo-image-surface.c] Cleanup stride checking and improve docs
+
+ src/cairo-image-surface.c |   16 ++++++++--------
+ 1 files changed, 8 insertions(+), 8 deletions(-)
+
+commit 8e3250b8564a346c61e926a6aa61f18ae3f60c93
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Jan 29 00:36:38 2008 -0500
+
+    [Makefile.am] Remove ROADMAP and TODO from dist files
+
+ Makefile.am |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
+
+commit 81e4cc3bd7d1fec659a19f8b37253aaebe12c99b
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Jan 29 00:36:16 2008 -0500
+
+    [cairo_image_surface_create_for_data] Document stride error status
+
+ src/cairo-image-surface.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+commit 6153a3b620641b1fb7b64a050a168482d2a42f2c
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Jan 29 00:34:00 2008 -0500
+
+    [doc] Run check-doc-syntax.sh for SGML docs too
+
+ doc/public/Makefile.am         |    4 ++--
+ doc/public/check-doc-syntax.sh |   11 +++++++++++
+ src/check-doc-syntax.sh        |   33 ++++++++++++++++++++++++---------
+ 3 files changed, 37 insertions(+), 11 deletions(-)
+
+commit 3f7d301786ce345cc4221f434bda6751e9b97ad1
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 23:56:23 2008 -0500
+
+    [src/check-doc-syntax.sh] Skip test if GNU grep is not available
+
+ src/check-doc-syntax.sh |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+commit 247e1011995b0241526262cc36eb34c7e5edd47c
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jan 28 21:24:56 2008 -0800
+
+    Fix bitmap-font test by using near-equality for double comparison
+
+ test/bitmap-font.c     |   11 ++++++-----
+ test/cairo-test.h      |    2 ++
+ test/pattern-getters.c |    4 +---
+ 3 files changed, 9 insertions(+), 8 deletions(-)
+
+commit 468caac068d3d25507d901f069e3e55731a27ae9
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 23:30:09 2008 -0500
+
+    [configure.in] Minor change to cairo-features.h comments to make tests pass
+
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit b4c7a0dc6e996e47390ae544f82024afbb7859ed
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 23:27:10 2008 -0500
+
+    [doc] Document CAIRO_HAS_* macros.  We now finally have real 100% coverage.
+
+ doc/public/Makefile.am                  |    2 ++
+ doc/public/cairo-sections.txt           |    9 +++++++++
+ doc/public/tmpl/cairo-ft.sgml           |    8 ++++++++
+ doc/public/tmpl/cairo-pdf.sgml          |    8 ++++++++
+ doc/public/tmpl/cairo-png.sgml          |    9 +++++++++
+ doc/public/tmpl/cairo-ps.sgml           |    8 ++++++++
+ doc/public/tmpl/cairo-svg.sgml          |    8 ++++++++
+ doc/public/tmpl/cairo-win32-fonts.sgml  |    8 ++++++++
+ doc/public/tmpl/cairo-win32.sgml        |    8 ++++++++
+ doc/public/tmpl/cairo-xlib-xrender.sgml |    8 ++++++++
+ doc/public/tmpl/cairo-xlib.sgml         |    8 ++++++++
+ 11 files changed, 84 insertions(+), 0 deletions(-)
+
+commit 47e0ecbea51cae73a85db277972b80eff0c4b9f6
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 23:26:35 2008 -0500
+
+    [configure.in] Generate a cairo-no-features.h with macros for disabled supported backends
+    to trick gtk-doc with it.
+
+ configure.in         |   33 ++++++++++++++++++++++++++++++++-
+ src/Makefile.am      |    6 +++---
+ src/check-headers.sh |    2 +-
+ 3 files changed, 36 insertions(+), 5 deletions(-)
+
+commit 9d8990b6bdec8e574e37346c363b3a850a246452
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 23:23:00 2008 -0500
+
+    [doc] Remove excess paranthesis
+
+ src/cairo-xlib-surface.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 6e495e94886dfa80f11f675a4b7fa3a767671cc0
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 23:10:28 2008 -0500
+
+    [doc] More syntax fixes
+
+ doc/public/tmpl/cairo-version.sgml |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit a00d71968285fc8c49903c1c84835a8be32cfbd3
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 23:05:00 2008 -0500
+
+    [configure.in] Add commented-out #undef's for disable stable backends in cairo-features.h
+
+ configure.in |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+commit 6a089247a180cbc85e222520d2d93914434027be
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 22:45:06 2008 -0500
+
+    [doc] Rename cairo-font.sgml to cairo-font-face.sgml
+
+ doc/public/cairo-docs.xml            |    2 +-
+ doc/public/cairo-sections.txt        |    2 +-
+ doc/public/tmpl/cairo-font-face.sgml |  112 ++++++++++++++++++++++++++++++++++
+ doc/public/tmpl/cairo-font.sgml      |  112 ----------------------------------
+ 4 files changed, 114 insertions(+), 114 deletions(-)
+
+commit 1d17a7f7811b15c72a4091663e01a448f538bc68
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 22:42:46 2008 -0500
+
+    [doc] Document the surface type of win32-printing surface being different
+
+ doc/public/tmpl/cairo-win32.sgml |   11 ++++++++++-
+ 1 files changed, 10 insertions(+), 1 deletions(-)
+
+commit a55f65b5d29060a7f8033ceea211252431d20b77
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 22:25:37 2008 -0500
+
+    [doc] Fix typo
+
+ src/cairo-pattern.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 52cc603db1a805a0b3a8d7eba3171cd2785f10a7
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 22:10:20 2008 -0500
+
+    [doc] Stricter syntax check for type names, update test
+
+ src/cairo-array.c                       |    2 +-
+ src/cairo-cache-private.h               |    2 +-
+ src/cairo-font-face.c                   |    4 ++--
+ src/cairo-ft-font.c                     |    4 ++--
+ src/cairo-image-surface.c               |    2 +-
+ src/cairo-paginated-private.h           |    8 ++++----
+ src/cairo-ps-surface.c                  |    2 +-
+ src/cairo-ps.h                          |    2 +-
+ src/cairo-region-private.h              |    2 +-
+ src/cairo-scaled-font-subsets-private.h |   16 ++++++++--------
+ src/cairo-scaled-font.c                 |    2 +-
+ src/cairo-svg.h                         |    2 +-
+ src/cairo-types-private.h               |    2 +-
+ src/cairo-win32-font.c                  |    2 +-
+ src/cairo.c                             |    2 +-
+ src/cairo.h                             |   24 ++++++++++++------------
+ src/cairoint.h                          |    2 +-
+ src/check-doc-syntax.sh                 |    9 +++++----
+ 18 files changed, 45 insertions(+), 44 deletions(-)
+
+commit b790c5a6bcdd890c16d21753407188ed200ce445
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 21:53:44 2008 -0500
+
+    [doc] Replace 'NOTE' by 'Note' and add it to test
+
+ src/cairo-bentley-ottmann.c       |    2 +-
+ src/cairo-cache.c                 |    4 ++--
+ src/cairo-ft-font.c               |    4 ++--
+ src/cairo-lzw.c                   |    4 ++--
+ src/cairo-output-stream-private.h |    2 +-
+ src/cairo-paginated-private.h     |    4 ++--
+ src/cairo-path.c                  |    2 +-
+ src/cairo-pen.c                   |    4 ++--
+ src/cairo-scaled-font.c           |    4 ++--
+ src/cairo-slope.c                 |    2 +-
+ src/cairo-surface.c               |    4 ++--
+ src/cairo-win32-surface.c         |    4 ++--
+ src/cairo-xcb-surface.c           |    4 ++--
+ src/cairo-xlib-surface.c          |    4 ++--
+ src/cairo.c                       |    4 ++--
+ src/check-doc-syntax.sh           |    7 +++++++
+ 16 files changed, 33 insertions(+), 26 deletions(-)
+
+commit f0633f4449c39a8f78c582790fb5dc85899b5d82
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 21:49:57 2008 -0500
+
+    [doc] Make sure all function names in docs are followed by ()
+
+ src/cairo-array.c                       |    2 +-
+ src/cairo-base85-stream.c               |    3 +--
+ src/cairo-beos-surface.cpp              |    2 +-
+ src/cairo-cache-private.h               |    4 ++--
+ src/cairo-debug.c                       |    4 ++--
+ src/cairo-deflate-stream.c              |    3 +--
+ src/cairo-ft-font.c                     |    4 ++--
+ src/cairo-image-surface.c               |    4 ++--
+ src/cairo-output-stream-private.h       |    3 +--
+ src/cairo-output-stream.c               |    3 +--
+ src/cairo-paginated-private.h           |    2 +-
+ src/cairo-path-fixed-private.h          |    2 +-
+ src/cairo-path.c                        |    6 +++---
+ src/cairo-pdf-surface.c                 |    4 ++--
+ src/cairo-ps-surface.c                  |    6 +++---
+ src/cairo-quartz-surface.c              |    2 +-
+ src/cairo-scaled-font-subsets-private.h |    2 +-
+ src/cairo-scaled-font.c                 |    8 ++++----
+ src/cairo-surface.c                     |    6 +++---
+ src/cairo-svg-surface.c                 |    4 ++--
+ src/cairo-traps.c                       |    2 +-
+ src/cairo-types-private.h               |    4 ++--
+ src/cairo-unicode.c                     |    3 +--
+ src/cairo.c                             |   30 ++++++++++++++----------------
+ src/cairo.h                             |   22 +++++++++++-----------
+ src/cairoint.h                          |    8 ++++----
+ 26 files changed, 68 insertions(+), 75 deletions(-)
+
+commit 9ba8f6b1b0a4fbf2407e0dbd767f043c6920344c
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 21:49:26 2008 -0500
+
+    [src/check-doc-syntax.sh] Check for various doc syntax consistency rules
+
+ src/Makefile.am         |    2 +-
+ src/check-doc-syntax.sh |   36 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+), 1 deletions(-)
+
+commit e15fcdd74734e922183afd4732ec4ba090f313c9
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 21:48:23 2008 -0500
+
+    [doc] Improve syntax
+
+ doc/public/tmpl/cairo-font.sgml         |    7 +++++--
+ doc/public/tmpl/cairo-matrix.sgml       |    2 +-
+ doc/public/tmpl/cairo-pattern.sgml      |   12 +++++++++---
+ doc/public/tmpl/cairo-status.sgml       |    5 +++--
+ doc/public/tmpl/cairo-surface.sgml      |    8 +++++++-
+ doc/public/tmpl/cairo-xcb-xrender.sgml  |    3 ++-
+ doc/public/tmpl/cairo-xcb.sgml          |    3 ++-
+ doc/public/tmpl/cairo-xlib-xrender.sgml |    3 ++-
+ doc/public/tmpl/cairo-xlib.sgml         |    3 ++-
+ 9 files changed, 33 insertions(+), 13 deletions(-)
+
+commit 587508528c4a318649ecb347b96fbc89a40175ea
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 21:12:16 2008 -0500
+
+    [doc] Minor improvement
+
+ doc/public/tmpl/cairo-beos.sgml |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit fd5dfedbb75593539eeda92013042ce5423a65c4
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 21:02:44 2008 -0500
+
+    [doc/public/check-doc-coverage.sh] Test that doc coverage is 100%
+    
+    Yay!
+
+ doc/public/Makefile.am           |    2 +
+ doc/public/check-doc-coverage.sh |   43 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 45 insertions(+), 0 deletions(-)
+
+commit c133ee5acc7c97fcd43d61f5aad160ca96c47941
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 21:00:21 2008 -0500
+
+    [doc] Improve docs for new API
+
+ src/cairo-image-surface.c |    8 ++++----
+ src/cairo-xlib-surface.c  |   20 +++++++++++++-------
+ 2 files changed, 17 insertions(+), 11 deletions(-)
+
+commit 0d898f2badf41d3b0ae5ee88943c44cf49690f5d
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 20:49:44 2008 -0500
+
+    [doc] Make sure all type names in docs are prefixed by #
+
+ src/cairo-array.c                       |    2 +-
+ src/cairo-bentley-ottmann.c             |    4 ++--
+ src/cairo-cache-private.h               |    4 ++--
+ src/cairo-cache.c                       |    2 +-
+ src/cairo-fixed-type-private.h          |    2 +-
+ src/cairo-font-face.c                   |   12 ++++++------
+ src/cairo-font-options.c                |    2 +-
+ src/cairo-ft-font.c                     |   12 ++++++------
+ src/cairo-gstate.c                      |    8 ++++----
+ src/cairo-hash.c                        |    2 +-
+ src/cairo-image-surface.c               |    4 ++--
+ src/cairo-matrix.c                      |   10 +++++-----
+ src/cairo-mutex-type-private.h          |    6 +++---
+ src/cairo-pattern.c                     |   10 +++++-----
+ src/cairo-pdf-surface.c                 |    2 +-
+ src/cairo-png.c                         |    2 +-
+ src/cairo-ps-surface.c                  |   12 ++++++------
+ src/cairo-quartz-surface.c              |    2 +-
+ src/cairo-rectangle.c                   |    8 ++++----
+ src/cairo-region.c                      |    2 +-
+ src/cairo-scaled-font-subsets-private.h |    8 ++++----
+ src/cairo-scaled-font.c                 |    8 ++++----
+ src/cairo-traps.c                       |    2 +-
+ src/cairo-types-private.h               |    2 +-
+ src/cairo-win32-surface.c               |    2 +-
+ src/cairo-xlib-surface.c                |    4 ++--
+ src/cairo.c                             |    4 ++--
+ src/cairo.h                             |   16 ++++++++--------
+ src/cairoint.h                          |    4 ++--
+ 29 files changed, 79 insertions(+), 79 deletions(-)
+
+commit 9ecde82d35ead4975ce110bb2012264e3ca9d2e1
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 20:48:48 2008 -0500
+
+    [doc] Make sure all macro names in docs are prefixed by %
+
+ src/cairo-array.c                       |    6 ++--
+ src/cairo-bentley-ottmann.c             |    8 +++---
+ src/cairo-cache.c                       |    6 ++--
+ src/cairo-deprecated.h                  |    2 +-
+ src/cairo-directfb.h                    |    4 +-
+ src/cairo-fixed-type-private.h          |    2 +-
+ src/cairo-freelist-private.h            |    4 +-
+ src/cairo-ft-font.c                     |    6 ++--
+ src/cairo-gstate.c                      |   14 +++++-----
+ src/cairo-hash.c                        |   36 +++++++++++++-------------
+ src/cairo-image-surface.c               |    4 +-
+ src/cairo-lzw.c                         |   14 +++++-----
+ src/cairo-meta-surface.c                |    6 ++--
+ src/cairo-mutex-private.h               |    4 +-
+ src/cairo-mutex-type-private.h          |   24 +++++++++---------
+ src/cairo-os2.h                         |    6 ++--
+ src/cairo-output-stream-private.h       |    6 ++--
+ src/cairo-paginated-private.h           |    4 +-
+ src/cairo-path-fill.c                   |    2 +-
+ src/cairo-path.c                        |   12 ++++----
+ src/cairo-pattern.c                     |    2 +-
+ src/cairo-pdf-surface.c                 |    2 +-
+ src/cairo-png.c                         |   10 +++---
+ src/cairo-ps-surface.c                  |   12 ++++----
+ src/cairo-scaled-font-subsets-private.h |   42 +++++++++++++++---------------
+ src/cairo-scaled-font.c                 |    4 +-
+ src/cairo-surface-fallback.c            |    6 ++--
+ src/cairo-surface.c                     |   10 +++---
+ src/cairo-svg-surface.c                 |    4 +-
+ src/cairo-types-private.h               |    4 +-
+ src/cairo-win32-font.c                  |    4 +-
+ src/cairo-win32-surface.c               |   10 +++---
+ src/cairo-xcb-surface.c                 |    2 +-
+ src/cairo-xlib-surface.c                |    4 +-
+ src/cairo.c                             |   26 +++++++++---------
+ src/cairo.h                             |   10 +++---
+ src/cairoint.h                          |    6 ++--
+ src/test-fallback-surface.c             |    4 +-
+ 38 files changed, 166 insertions(+), 166 deletions(-)
+
+commit 099c3c2602b59fbf9424044caa1fec7eb92f71df
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 20:32:35 2008 -0500
+
+    [doc] Another enum nick expansion
+
+ src/cairo-scaled-font.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 72feed5b54e1aa725c3c5238b21946b6250503fe
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 20:16:01 2008 -0500
+
+    [doc] Update templates for recently added APIs
+
+ doc/public/cairo-sections.txt           |    2 ++
+ doc/public/tmpl/cairo-image.sgml        |   10 ++++++++++
+ doc/public/tmpl/cairo-paths.sgml        |    2 +-
+ doc/public/tmpl/cairo-status.sgml       |    1 +
+ doc/public/tmpl/cairo-xlib-xrender.sgml |    9 +++++++++
+ 5 files changed, 23 insertions(+), 1 deletions(-)
+
+commit b7d43d235c01480b5a5a34db6fea8a3d86161d91
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 20:14:52 2008 -0500
+
+    [src/check-*] Shut make up
+
+ src/check-def.sh |    4 ++--
+ src/check-plt.sh |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+commit dd7ce762946ec03fc115310c7e295b3327d7e805
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 19:54:27 2008 -0500
+
+    [doc] Expand a couple nicks to full enum names
+
+ src/cairo.h |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit c624ff46541b311c226ad7a026db3495b59dee41
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 19:45:10 2008 -0500
+
+    [cairo_operator_t] Improve docs
+
+ src/cairo.h |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+commit f1271babcd4df1140019b258ca0af0d7da0d1328
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 19:37:46 2008 -0500
+
+    [doc] Add Long_Description and some See_Also for all chapters
+
+ doc/public/tmpl/cairo-atsui.sgml        |    6 +++-
+ doc/public/tmpl/cairo-beos.sgml         |    7 ++++-
+ doc/public/tmpl/cairo-font-options.sgml |   11 +++++++--
+ doc/public/tmpl/cairo-font.sgml         |   12 +++++++++-
+ doc/public/tmpl/cairo-ft.sgml           |    7 ++++-
+ doc/public/tmpl/cairo-glitz.sgml        |    7 ++++-
+ doc/public/tmpl/cairo-image.sgml        |   15 +++++++------
+ doc/public/tmpl/cairo-matrix.sgml       |    5 ++-
+ doc/public/tmpl/cairo-paths.sgml        |    4 ++-
+ doc/public/tmpl/cairo-pattern.sgml      |   13 ++++++++---
+ doc/public/tmpl/cairo-pdf.sgml          |    7 ++++-
+ doc/public/tmpl/cairo-png.sgml          |    7 ++++-
+ doc/public/tmpl/cairo-ps.sgml           |    7 ++++-
+ doc/public/tmpl/cairo-quartz.sgml       |    7 ++++-
+ doc/public/tmpl/cairo-scaled-font.sgml  |   13 ++++++++---
+ doc/public/tmpl/cairo-status.sgml       |   19 +++++++++++++++-
+ doc/public/tmpl/cairo-surface.sgml      |    8 +++++-
+ doc/public/tmpl/cairo-svg.sgml          |    7 ++++-
+ doc/public/tmpl/cairo-text.sgml         |   34 ++++++++++++++++++++++++++++--
+ doc/public/tmpl/cairo-transforms.sgml   |   10 +++++++-
+ doc/public/tmpl/cairo-types.sgml        |    4 +-
+ doc/public/tmpl/cairo-win32-fonts.sgml  |    7 ++++-
+ doc/public/tmpl/cairo-win32.sgml        |    7 ++++-
+ doc/public/tmpl/cairo-xcb-xrender.sgml  |   10 +++++++-
+ doc/public/tmpl/cairo-xcb.sgml          |    8 ++++++-
+ doc/public/tmpl/cairo-xlib-xrender.sgml |   12 ++++++++--
+ doc/public/tmpl/cairo-xlib.sgml         |    8 ++++++-
+ doc/public/tmpl/cairo.sgml              |    4 ++-
+ 28 files changed, 202 insertions(+), 64 deletions(-)
+
+commit 73b184fb9c41f26365c99dbb5f81aa5166632722
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 19:19:27 2008 -0500
+
+    [src] Fix gtk-doc warnings
+
+ src/cairo-scaled-font.c |    2 +-
+ src/cairo-surface.c     |    2 +-
+ src/cairo.c             |    6 +++---
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 8709b943c6f0025c65081b23ea24ce606150cf49
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jan 28 16:15:28 2008 -0800
+
+    Fix some documentation typos
+
+ src/cairo.h |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit e48d7ca802acba300aee99def0eb01727fe2f58a
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jan 28 16:11:39 2008 -0800
+
+    Add example to documentation of cairo_pattern_set_filter
+    
+    It's helpful to let the reade know about cairo_get_source here.
+
+ src/cairo-pattern.c |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+commit cd26fa266b51ffd91aa9f2c60dd353c53729291e
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jan 28 16:10:10 2008 -0800
+
+    Add documentation for cairo_filter_t
+
+ src/cairo.h |   18 ++++++++++++++++++
+ 1 files changed, 18 insertions(+), 0 deletions(-)
+
+commit 7c00269e00332974c3a2843272f84960a90b9fb7
+Author: Carl Worth <cworth@cworth.org>
+Date:   Sun Jan 27 12:36:19 2008 -0800
+
+    Add pdf-specific reference images for meta-surface-pattern
+    
+    This test has been "failing" ever since we had native
+    replay of metasurfaces to pdf. But looking at the results,
+    they are actually superior to the image-backend reference
+    images.
+
+ test/meta-surface-pattern-pdf-ref.png       |  Bin 0 -> 4111 bytes
+ test/meta-surface-pattern-pdf-rgb24-ref.png |  Bin 0 -> 4009 bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 9cd198d200e4470d3451581b9e672a87d5d91719
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jan 28 15:37:22 2008 -0800
+
+    Test the no-Render-extension-available case in get-xrender-format
+
+ test/get-xrender-format.c |   13 ++++++++++++-
+ 1 files changed, 12 insertions(+), 1 deletions(-)
+
+commit d7fd3bd536465881446686305622d31fdc6fd48f
+Author: Carl Worth <cworth@cworth.org>
+Date:   Sun Jan 27 12:14:51 2008 -0800
+
+    Add get-xrender-format test to test cairo_xlib_surface_get_xrender_format
+
+ test/.gitignore           |    1 +
+ test/Makefile.am          |    5 ++
+ test/get-xrender-format.c |  104 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 110 insertions(+), 0 deletions(-)
+
+commit cc94dce25085fef936b7cb36cf9fc41569668eba
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jan 28 15:26:15 2008 -0800
+
+    Return NULL from cairo_xlib_surface_get_xrender_format without an error
+    
+    The NULL return value will only happen if the X Render extension
+    is not available. We've already got that NULL return value
+    documented, so it's not an error if the user asks for it. In
+    particular, it's definitely not a surface-type mismatch.
+
+ src/cairo-xlib-surface.c |    6 +-----
+ 1 files changed, 1 insertions(+), 5 deletions(-)
+
+commit 3c018a6e5abe099fa916f45ecf0c8e9dd5771fae
+Author: Carl Worth <cworth@cworth.org>
+Date:   Sun Jan 27 12:13:13 2008 -0800
+
+    Add new API cairo_xlib_surface_get_render_format
+
+ src/cairo-xlib-surface.c |   27 +++++++++++++++++++++++++++
+ src/cairo-xlib-xrender.h |    3 +++
+ 2 files changed, 30 insertions(+), 0 deletions(-)
+
+commit 88811540722d891b987efa6fa8edcbab7e10feeb
+Author: Carl Worth <cworth@cworth.org>
+Date:   Sun Jan 27 11:12:14 2008 -0800
+
+    Add missing cairo_private (for _pixman_format_to_masks)
+
+ src/cairoint.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 3841cc0932ac77540c306c1c70a6171d7d00cf3e
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jan 28 15:12:38 2008 -0800
+
+    Clarify the documentation of stride within cairo_image_surface_create_for_data
+
+ src/cairo-image-surface.c |   23 +++++++++++++++--------
+ 1 files changed, 15 insertions(+), 8 deletions(-)
+
+commit 13a5624277adf7e87f66d674ce8073013b53bece
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jan 28 14:29:36 2008 -0800
+
+    Rename cairo_image_surface_stride_for_width to cairo_format_stride_for_width
+    
+    Thanks for Behdad for the suggested name improvement. Also, make
+    it more clear that the stride passed to cairo_image_surface_create_for_data
+    should come from calling cairo_format_stride_for_width with the
+    same width.
+
+ src/cairo-image-surface.c |   21 +++++++++++----------
+ src/cairo.h               |    4 ++--
+ test/a8-mask.c            |   11 ++++++-----
+ 3 files changed, 19 insertions(+), 17 deletions(-)
+
+commit dc67de3d8b6154b74a243cd7b63e45f343520256
+Author: Carl Worth <cworth@cworth.org>
+Date:   Sat Jan 26 23:12:14 2008 -0800
+
+    Add cairo_image_surface_stride_for_width
+    
+    Document this function as a required call to get the correct
+    stride value before calling cairo_image_surface_create_for_data.
+    This means that previously-failing calls with non-multiple-of-4
+    stride values are now documented as errors. Also, we now have
+    the possibility of moving to more stringent alignment constraints,
+    (one can imagine doing 64-bit or 128-bit boundaries for example).
+
+ src/cairo-image-surface.c |   60 +++++++++++++++++----
+ src/cairo-surface.c       |    3 +
+ src/cairo.c               |    4 +-
+ src/cairo.h               |    8 +++-
+ test/Makefile.am          |    4 --
+ test/a8-mask.c            |  132 +++++++++++++++++++++++++++++++++++++++------
+ 6 files changed, 179 insertions(+), 32 deletions(-)
+
+commit b151cb0709364bed03e4918b79f26ef3243948ca
+Author: Carl Worth <cworth@cworth.org>
+Date:   Sat Jan 26 16:42:26 2008 -0800
+
+    Rename cairo_format_width to cairo_format_bits_per_pixel and correct its logic
+
+ src/cairo-image-surface.c |    6 +++---
+ src/cairo-scaled-font.c   |    3 ++-
+ src/cairoint.h            |    4 ++--
+ 3 files changed, 7 insertions(+), 6 deletions(-)
+
+commit 538ace5b51c968a81ea1d4c8d7538f0a227661c6
+Author: Nis Martensen <nis.martensen@web.de>
+Date:   Sat Jan 26 19:11:26 2008 +0100
+
+    re-indent xml after removal of structuring level
+
+ doc/public/cairo-docs.xml |   76 ++++++++++++++++++++++----------------------
+ 1 files changed, 38 insertions(+), 38 deletions(-)
+
+commit 642e1af892353d55edd6ebe71720fb541c9deb22
+Author: Nis Martensen <nis.martensen@web.de>
+Date:   Sat Jan 26 19:05:16 2008 +0100
+
+    remove empty tutorial stub and one level of structuring
+
+ doc/public/cairo-docs.xml |    6 ------
+ 1 files changed, 0 insertions(+), 6 deletions(-)
+
+commit be93e61d70f4e32069448b79cca7eacab6035c6c
+Author: Nis Martensen <nis.martensen@web.de>
+Date:   Sat Jan 26 18:44:32 2008 +0100
+
+    Add index of new symbols in 1.6
+
+ doc/public/cairo-docs.xml |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+commit 0874834ec4606c5ff960588077d5310927d560ba
+Author: Nis Martensen <nis.martensen@web.de>
+Date:   Sat Jan 26 16:59:21 2008 +0100
+
+    Describe cairo_operator_t, add link to operators/ wiki page
+
+ src/cairo.h |   28 ++++++++++++++++++++++++++++
+ 1 files changed, 28 insertions(+), 0 deletions(-)
+
+commit b18bc660c6d5d5018b4cfaf0eaf0278669cac1ac
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Mon Jan 28 02:33:58 2008 -0500
+
+    [test/font-matrix-translation] Fix function signature
+
+ test/font-matrix-translation.c |   13 ++++++++++---
+ 1 files changed, 10 insertions(+), 3 deletions(-)
+
+commit 936edecb35b94213997fdb172f0256c658f416aa
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Sun Jan 27 16:52:39 2008 -0800
+
+    [quartz] only use DrawTiledImage if transformed image is integer aligned
+    
+    This Quartz API seems to only tile at integer coordinates; if the source image is
+    scaled to anything less than integer-aligned, seams appear between tiles.  Detect
+    this and fall back to slower but more general CGPattern path.
+
+ src/cairo-quartz-surface.c |  144 +++++++++++++++++++++++--------------------
+ 1 files changed, 77 insertions(+), 67 deletions(-)
+
+commit 182b02240192c03b1fae5367573962d527f8aad4
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Sat Jan 26 10:57:20 2008 -0800
+
+    [win32] Fix initial clip region test
+    
+    I misread the docs; GetClipBox's return value doesn't necessarily correspond to
+    GetClipRgn's region type.
+
+ src/cairo-win32-surface.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+commit 0e737632905e61f4d76b6b2c4e5908d75a5cddda
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Sun Jan 27 02:19:47 2008 -0500
+
+    [src] Fix make check
+
+ src/cairo-quartz-surface.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit b3eea75d1f7b56c2046b5387a5eb186d8f154184
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Sat Jan 26 13:56:08 2008 -0500
+
+    Change cairo_get_current_point() to return cairo_status_t instead of void
+    
+    So we can return CAIRO_STATUS_NO_CURRENT_POINT.  Previously it wasn't easy
+    to fetch that information.
+
+ src/cairo.c |   22 ++++++++++++++++++----
+ src/cairo.h |    2 +-
+ 2 files changed, 19 insertions(+), 5 deletions(-)
+
+commit 79383841520af3a7de3018befca37be6a037f9ba
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 19:48:36 2008 -0500
+
+    [doc] Update list of private header files
+
+ doc/public/Headers.mk |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+commit 58f6aed93d137b77a2550bcace16f8d5573d45ef
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 19:47:07 2008 -0500
+
+    [doc] Update for recent API changes
+
+ doc/public/tmpl/cairo-paths.sgml   |    2 ++
+ doc/public/tmpl/cairo-status.sgml  |    1 +
+ doc/public/tmpl/cairo-surface.sgml |    2 --
+ 3 files changed, 3 insertions(+), 2 deletions(-)
+
+commit 45e7ba356d308f67f674a20484a55d41fe922d13
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 19:46:43 2008 -0500
+
+    [cairo-pdf-operators] Reformat typedef to not confuse gtk-doc
+
+ src/cairo-pdf-operators-private.h |    7 +++----
+ 1 files changed, 3 insertions(+), 4 deletions(-)
+
+commit 756420a780e870bed6f174ca7f3f14421d1ff7d2
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 19:38:27 2008 -0500
+
+    [cairo_surface_show/copy_page()] Make them return void, like cairo_show/copy_page() do
+
+ src/cairo-gstate.c            |    6 ++++--
+ src/cairo-paginated-surface.c |   12 ++++++++----
+ src/cairo-surface.c           |   33 ++++++++++++++++++---------------
+ src/cairo-svg-surface.c       |    5 +++--
+ src/cairo.h                   |    4 ++--
+ 5 files changed, 35 insertions(+), 25 deletions(-)
+
+commit c4ec5539ca7380dccf1a2f797e536c7273b5c2b5
+Author: Nis Martensen <nis.martensen@web.de>
+Date:   Fri Jan 25 19:13:13 2008 -0500
+
+    [cairo-surface] Fix doc typo
+
+ src/cairo-surface.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit ab188f2e90b49fc4e07f04dc512f9fb9864efa0b
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 17:44:26 2008 -0500
+
+    [cairo-ft] Disable embedded bitmaps if hinting style NONE is requested
+
+ src/cairo-ft-font.c |   11 ++++++++---
+ 1 files changed, 8 insertions(+), 3 deletions(-)
+
+commit 2df9944a8ac48cb43845e56c5483bf77dafda584
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 17:12:34 2008 -0500
+
+    [.gitignore] Add check-has-hidden-symbols.i
+
+ src/.gitignore |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 3d2144b6af07ca44b6fbf1c96080b7e2b7c0285c
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 17:06:11 2008 -0500
+
+    [cairo-ft] Fix font metrics computation for bitmap fonts and no metrics-hinting
+    
+    Preivously we were returning NAN font metrics.  Fixed now.  Makes bitmap-font
+    test pass again.
+
+ src/cairo-ft-font.c |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+commit c621d8d7191bfa8c1bca533bf9d53d514d01f529
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Fri Jan 25 15:01:44 2008 -0800
+
+    [ps] Pad image mask lines out to full lines
+    
+    The PostScript backend was generating image masks with packed mask
+    bits, when PS seems to expect each line of the mask to be padded out
+    to 8 bytes.
+    
+    Ref: https://bugzilla.mozilla.org/show_bug.cgi?id=407360
+
+ src/cairo-ps-surface.c |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+commit bae496df11247a1e4aff8b0df3356701f8a11792
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 08:03:32 2008 -0500
+
+    [test/bitmap-font] Test under all combinations of hinting, test font metrics too
+    
+    This is now failing as we compute NAN font metrics for bitmap-only fonts under
+    disabled metrics hinting.  A very infamous bug excercised with PangoCairo's PDF
+    output.
+
+ test/bitmap-font.c |  102 +++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 files changed, 94 insertions(+), 8 deletions(-)
+
+commit 20c8531243c2f2ee220bd1f234cdba6fc3d6d4c7
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 07:14:07 2008 -0500
+
+    [test/text-zero-len] Test text and font extents for font size 0
+
+ test/text-zero-len.c |   52 ++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 50 insertions(+), 2 deletions(-)
+
+commit 83bd590760629b61898ed403e273046545f26767
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 07:02:25 2008 -0500
+
+    [test] Test that cairo_text_extents() and cairo_scaled_font_text_extents() match
+    in results.
+
+ test/font-matrix-translation.c |   31 ++++++++++++++++++++++++++++++-
+ 1 files changed, 30 insertions(+), 1 deletions(-)
+
+commit 4c432b09557f52fa35be981743272b33baca6232
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 04:16:44 2008 -0500
+
+    [cairo-scaled-font] Fix bug in glyphs bounding box computation
+    
+    In 02970ac8cf27bc9d42cf27848a97019d9dd13b6d Vlad introduced the following
+    innocent-looking change:
+    
+    -    short min_x = INT16_MAX, max_x = INT16_MIN;
+    -    short min_y = INT16_MAX, max_y = INT16_MIN;
+    +    cairo_point_int_t min = { CAIRO_RECT_INT_MIN, CAIRO_RECT_INT_MIN };
+    +    cairo_point_int_t max = { CAIRO_RECT_INT_MAX, CAIRO_RECT_INT_MAX };
+    
+    Well, read it carefully... yeah.  That caused each show glyph operation
+    upload a mask the size of the surface.  With evince/poppler and certain
+    PDF files that each glyph is rendered in its own cairo_show_glyphs()
+    call, that meant a 20x slowdown in rendering a page of PDF.
+    
+    If still wondering what's wrong with that change, here is the answer:
+    
+    -    cairo_point_int_t min = { CAIRO_RECT_INT_MIN, CAIRO_RECT_INT_MIN };
+    -    cairo_point_int_t max = { CAIRO_RECT_INT_MAX, CAIRO_RECT_INT_MAX };
+    +    cairo_point_int_t min = { CAIRO_RECT_INT_MAX, CAIRO_RECT_INT_MAX };
+    +    cairo_point_int_t max = { CAIRO_RECT_INT_MIN, CAIRO_RECT_INT_MIN };
+    
+    Yay for git-bisect.
+
+ src/cairo-scaled-font.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 8983208f456c6f570698df46174faa0208d6de5f
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 01:00:21 2008 -0500
+
+    [configure.in] Require pixman >= 0.9.6
+    
+    I was experiencing very weird rendering problems and crashes in evince with
+    pixman 0.9.4.  Upgrading to pixman 0.9.6 fixed the all.  Lets just require it.
+
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 5dfe47a3f14ee8597395dc53ff57fd429e9804cd
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Fri Jan 25 00:35:11 2008 -0500
+
+    [cairo-scaled-font] Unbreak it after my recent commit
+    
+    Sigh.
+
+ src/cairo-scaled-font.c |   41 +++++++++++++++++++----------------------
+ 1 files changed, 19 insertions(+), 22 deletions(-)
+
+commit efd3a965244305a069ec231b7ec28cff8d6c67c8
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Jan 24 23:35:06 2008 -0500
+
+    [cairo-scaled-font] Don't err on font size 0, really
+    
+    First, seems like we were rejecting degenerate font matrix right away
+    at the constructor.  Don't do that.
+    
+    Next, PS/PDF were inverting the font scale matrix, assuming that it's
+    invertible.  We now keep the inverse too, so they can use it.  For the
+    case of a size 0 font, both the scale matrix and its invert are set to
+    0,0,0,0.  That's safe, even if slightly inconsistent.
+
+ src/cairo-pdf-surface.c         |    5 +----
+ src/cairo-ps-surface.c          |    5 +----
+ src/cairo-scaled-font-private.h |    1 +
+ src/cairo-scaled-font.c         |   19 ++++++++-----------
+ 4 files changed, 11 insertions(+), 19 deletions(-)
+
+commit 45f269e33020d8d7cf247926712b9c64c1fb8959
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Jan 24 22:39:28 2008 -0500
+
+    [cairo-scaled-font] Oops, return err if not handling it
+
+ src/cairo-scaled-font.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+commit 6d0dc3e0760e6bc6b0eceab48674410b4e865287
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Thu Jan 24 22:24:23 2008 -0500
+
+    [cairo-scaled-font] Don't err on font size 0
+
+ src/cairo-scaled-font.c |   18 ++++++++++++++++--
+ 1 files changed, 16 insertions(+), 2 deletions(-)
+
+commit ea9afecc9aaa87c2df14dc9126c75ac0e3e5b13f
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Thu Jan 24 11:48:02 2008 -0800
+
+    [quartz] Do dynamic symbol lookups for 10.4/10.5 optimization symbols
+    
+    The gcc-__attribute-__ based weak linking was causing all sorts of problems;
+    do dlsym lookups at runtime instead.
+
+ src/cairo-quartz-surface.c |   39 ++++++++++++++++++++++++++++-----------
+ 1 files changed, 28 insertions(+), 11 deletions(-)
+
+commit 287de2ce5883daa4238c534e0d4890cb640d7fb7
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Wed Jan 23 21:30:42 2008 -0800
+
+    [quartz] Clean up unused APIs a bit
+    
+    The data parameter from get_image was never really used; get rid of it and clean up
+    callers.  Also get rid of a chunk of dead code in release_dest_image.
+
+ src/cairo-quartz-surface.c |   76 +++++++------------------------------------
+ 1 files changed, 13 insertions(+), 63 deletions(-)
+
+commit b96c6c26c2d6b0b5f79ee569ece602338c4146b2
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Thu Jan 24 11:04:26 2008 -0800
+
+    [win32] Print non-black/white text correctly in show_glyphs
+
+ src/cairo-win32-printing-surface.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 8e7c0db8018b258fc367da1e5502e9e13bad098c
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Thu Jan 24 11:01:55 2008 -0800
+
+    [win32] Better tracking of initial clip
+    
+    There were a few corner cases that the win32 surface was failing
+    at when there was an initial clip set; the win32-printing surface
+    had more serious problems when painting meta surface patterns.
+    This cleans up the initial DC clip tracking for both surfaces.
+
+ src/cairo-win32-printing-surface.c |   69 +++++-------
+ src/cairo-win32-private.h          |   23 +++-
+ src/cairo-win32-surface.c          |  221 +++++++++++++++++++++++++-----------
+ 3 files changed, 197 insertions(+), 116 deletions(-)
+
+commit c05e3b08b4cfa820a18e33b5012a6138b931788f
+Author: Carl Worth <cworth@cworth.org>
+Date:   Thu Jan 24 09:51:58 2008 -0800
+
+    Remove ROADMAP and TODO, mentioning their URLs in README
+    
+    We're maintaining these as part of cairo's website now,
+    rather than as part of the source code.
+
+ README  |   18 +++----
+ ROADMAP |  149 ---------------------------------------------------------------
+ TODO    |  111 -----------------------------------------------
+ 3 files changed, 8 insertions(+), 270 deletions(-)
+
+commit 21823842775988c0b58e3868dce053544ed246e2
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Wed Jan 23 15:06:52 2008 -0500
+
+    [test] Minor fix for check-ref-dups rule
+
+ test/Makefile.am |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit e7c0a69dcb627abb677f84473a9e3857b2d89a69
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Wed Jan 23 14:57:42 2008 -0500
+
+    [test] Also check for reference images listed in Makefile.am but missing
+    in git, and if this is not a git checkout, in source directory.
+
+ test/Makefile.am |   36 +++++++++++++++++++++++++++---------
+ 1 files changed, 27 insertions(+), 9 deletions(-)
+
 commit 188765c8e857c88a66656a454a3dbd27c32170f7
 Author: Bertram Felgenhauer <int-e@gmx.de>
 Date:   Wed Jan 23 19:22:18 2008 +0100

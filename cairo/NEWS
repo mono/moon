@@ -1,3 +1,199 @@
+Snapshot 1.5.10 (2008-02-20 Carl Worth <cworth@cworth.org>)
+===========================================================
+This is the fifth snapshot in cairo's unstable 1.5 series. It comes 3
+weeks after the 1.5.8 snapshot. This snapshot adds one new API
+function, (cairo_has_current_point), and the usual mix of
+improvements, (more efficient PostScript/PDF output, optimized
+stroking), and fixes (more robust error-handling, etc.). See below for
+details.
+
+New API
+-------
+Add a new function to query if there is a current point:
+
+	cairo_bool_t
+	cairo_has_current_point (cairo_t *cr);
+
+There is no current point immediately after cairo_create(), nor after
+cairo_new_path() or cairo_new_sub_path(). There is a current point
+after any of the path-creation functions, (cairo_move_to,
+cairo_line_to, cairo_curve_to, etc.).
+
+With this new function, we also revert the change of the return type
+of cairo_get_current_point from cairo 1.5.8, (it's now a void function
+again).
+
+Optimizations
+-------------
+Optimize stroking code to avoid repeated calculation of redundant
+values, (particularly significant for very large, offscreen paths).
+
+General fixes
+-------------
+Patch a few more potential buffer overruns, (due to integer
+overflow).
+
+Many fixes and improvements to cairo's error-handling, (ensure that
+correct error values are returned, clean up memory leaks on
+error-handling paths, etc.).
+
+Fix a potential infinite loop when stroking a spline with a pen that
+has been transformed to a line segment.
+
+Remove treating NULL as a synonym for a valid cairo_font_options_t*
+with default values, (a change that had been introduced as of cairo
+1.5.8).
+
+Remove the altered handling of tolerance and fallback-resolution that
+had been introduced as of cairo 1.5.4.
+
+cairo-xlib
+----------
+Pass the original Drawable, (as opposed to the root window), to
+XCreatePixmap when creating a similar surface. This gives the X server
+more information so that it can be clever and efficient.
+
+cairo-pdf
+---------
+Fix the rendering of repeating and reflecting patterns.
+
+Ensure miter limit is always >= 1, (smaller limits are not meaningful,
+but they can cause some PDF viewers to fail to display pages).
+
+Generate more efficient output when the same path is used for both
+fill and stroke.
+
+cairo-ps
+--------
+Start sharing much of the cairo-pdf code rather than implementing very
+similar code in cairo-ps.
+
+Implement native support for repeating and reflecting linear
+gradients.
+
+Implement reflected surface patterns.
+
+Ensure miter limit is always >= 1, (smaller limits are not meaningful,
+but they can cause some PostScript viewers to crash).
+
+Generate PostScript that will perform more efficiently and use less
+memory on printers, (use currentfile instead of a giant string array
+for image data, and avoid using PostScript patterns for paint() and
+fill() when possible).
+
+cairo-svg
+---------
+Avoid unnecessary rasterization when copying a "similar" surface to
+another svg surface, (allow the SOURCE operator to be implemented with
+all-vector operations if there are no underlying objects).
+
+cairo-atsui
+-----------
+Eliminate infinite loop when attempting to render an empty string.
+
+Snapshot 1.5.8 (2008-01-30 Carl Worth <cworth@cworth.org>)
+==========================================================
+This is the fourth snapshot in cairo's unstable 1.5 series. It comes 2
+weeks after the 1.5.6 snapshot. It adds a few new API functions. Most
+notably all callers of cairo_image_surface_create_for_data should now
+be calling cairo_format_stride_for_width to compute a legal stride
+value. See below for more details.
+
+New API in cairo 1.5.8
+----------------------
+We've added a new function that should be called to compute a legal
+stride value before allocating data to be used with
+cairo_image_surface_create_for_data:
+
+	int
+	cairo_format_stride_for_width (cairo_format_t	format,
+				       int		width);
+
+We've also added a new cairo_path_extents function that can be used to
+compute a bounding box for geometry such as a single line segment,
+(contrast with cairo_path_extents and cairo_stroke_extents):
+
+	void
+	cairo_path_extents (cairo_t *cr,
+			    double *x1, double *y1,
+			    double *x2, double *y2);
+
+And finally, we've added a function to allow for querying the
+XRenderPictFormat of a cairo-xlib surface:
+
+	XRenderPictFormat *
+	cairo_xlib_surface_get_xrender_format (cairo_surface_t *surface);
+
+API changes
+-----------
+Fix return types of cairo_surface_show_page and
+cairo_surface_copy_page. This is an API change to functions that are
+new in the 1.5 series, so not an API break compared to any stable
+cairo release, (1.0.x, 1.2.x, 1.4.x).
+
+Change the return type of cairo_get_current_point() from void to
+cairo_status_t. This allows the caller to receive a
+CAIRO_STATUS_NO_CURRENT_POINT value to distinguish the a current point
+at the origin from no current point existing.
+
+Performance improvement
+-----------------------
+Improve performance of clipping by using an optimized code path
+internally, (with the ADD operator instead of IN).
+
+General bug fixes
+-----------------
+Fix various cairo_*_extents functions to initialize the return-value
+variables even in the case of a cairo_t in error.
+
+Treat NULL as a legitimate value for cairo_font_options_t*. [NOTE:
+On discussion afterwards, we decided against this change so it has
+been removed as of cairo 1.5.10.]
+
+Fix rendering with CAIRO_ANTIALIAS_NONE to be more predictable, (that
+is, to avoid seams appearing when geometry and imagery share an
+identical edge). Portions of this fix are in the pixman library and
+will appear in a future release of that library.
+
+Avoid triggering an error for a font size of 0.
+
+Miscellaneous changes
+---------------------
+Require pixman >= 0.9.6.
+
+There has been a tremendous amount improvement to cairo's
+documentation. We're delighted that 100% of the public API has at
+least some documentation in the API reference manual. Many thanks to
+Behdad Esfahbod and Nis Martensen for leading this effort.
+
+cairo-pdf and cairo-ps
+----------------------
+Eliminate failure when a Type 1 font is embedded with an explicit
+glyph 0.
+
+cairo-pdf
+---------
+Implement a more correct and more efficient approach for patterns with
+an extend mode of CAIRO_EXTEND_REFLECT.
+
+cairo-ps
+--------
+Fix image masks to properly pack and pad mask bits.
+
+cairo-quartz
+------------
+Take care to only use DrawTiledImage for integer-aligned images, (and
+use slower paths to get the correct result in other cases).
+
+cairo-win32
+-----------
+Fix for older versions of mingw.
+
+Improve the handling of the clipping with the win32 and win32-printing
+surfaces.
+
+Fix rendering of non black/white text.
+
 Snapshot 1.5.6 (2008-01-15 Carl Worth <cworth@cworth.org>)
 ==========================================================
 This is the third snapshot in cairo's unstable 1.5 series. It comes
@@ -106,8 +302,8 @@ General improvements
 Use less memory for spline approximation calculations.
 
 Change how the tolerance value is interpreted with regard to
-fallback-resolution. [XXX: Is this user-visible? If so, how? Will
-follow up on the cairo mailing list for more details.]
+fallback-resolution. [Note: On further discussion, we decided against
+this change for now. It is removed as of cairo 1.5.10.]
 
 Fix precision of floating-point values in vector-output backends to
 avoid rounding errors with very small numbers.

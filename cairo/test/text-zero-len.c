@@ -66,11 +66,22 @@ text_extents_equal (const cairo_text_extents_t *A,
 	   A->y_advance == B->y_advance;
 }
 
+static cairo_bool_t
+font_extents_equal (const cairo_font_extents_t *A,
+	            const cairo_font_extents_t *B)
+{
+    return A->ascent    == B->ascent        &&
+	   A->descent   == B->descent       &&
+	   A->height    == B->height        &&
+       A->max_x_advance == B->max_x_advance &&
+       A->max_y_advance == B->max_y_advance;
+}
+
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    cairo_text_extents_t nil_extents;
-    cairo_text_extents_t extents;
+    cairo_text_extents_t extents, nil_extents;
+    cairo_font_extents_t font_extents, nil_font_extents;
     cairo_scaled_font_t *scaled_font;
 
     cairo_select_font_face (cr, "Bitstream Vera Sans",
@@ -151,6 +162,43 @@ draw (cairo_t *cr, int width, int height)
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
+	return CAIRO_TEST_FAILURE;
+    }
+
+    /* Lets also try font size 0 while here */
+    cairo_set_font_size (cr, 0);
+
+    memset (&extents, 0xff, sizeof (cairo_text_extents_t));
+    cairo_text_extents (cr, "test", &extents);
+    if (! text_extents_equal (&extents, &nil_extents)) {
+	cairo_test_log ("Error: cairo_set_font_size(0); cairo_text_extents(\"test\"); extents (%g, %g, %g, %g, %g, %g)\n",
+		        extents.x_bearing, extents.y_bearing,
+			extents.width, extents.height,
+			extents.x_advance, extents.y_advance);
+	return CAIRO_TEST_FAILURE;
+    }
+
+    memset (&nil_font_extents, 0, sizeof (cairo_font_extents_t));
+
+    memset (&font_extents, 0xff, sizeof (cairo_font_extents_t));
+    cairo_font_extents (cr,  &font_extents);
+    if (! font_extents_equal (&font_extents, &nil_font_extents)) {
+	cairo_test_log ("Error: cairo_set_font_size(0); cairo_font_extents(); extents (%g, %g, %g, %g, %g)\n",
+		        font_extents.ascent, font_extents.descent,
+			font_extents.height,
+			font_extents.max_x_advance, font_extents.max_y_advance);
+	return CAIRO_TEST_FAILURE;
+    }
+
+    scaled_font = cairo_get_scaled_font (cr);
+
+    memset (&font_extents, 0xff, sizeof (cairo_font_extents_t));
+    cairo_scaled_font_extents (scaled_font,  &font_extents);
+    if (! font_extents_equal (&font_extents, &nil_font_extents)) {
+	cairo_test_log ("Error: cairo_set_font_size(0); cairo_scaled_font_extents(); extents (%g, %g, %g, %g, %g)\n",
+		        font_extents.ascent, font_extents.descent,
+			font_extents.height,
+			font_extents.max_x_advance, font_extents.max_y_advance);
 	return CAIRO_TEST_FAILURE;
     }
 

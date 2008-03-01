@@ -84,7 +84,7 @@ convert_data_to_bytes (png_structp png, png_row_infop row_info, png_bytep data)
 }
 
 /* Use a couple of simple error callbacks that do not print anything to
- * stderr and rely on the user to check for errors via the cairo_status_t
+ * stderr and rely on the user to check for errors via the #cairo_status_t
  * return.
  */
 static void
@@ -132,21 +132,23 @@ write_png (cairo_surface_t	*surface,
 						  &image,
 						  &image_extra);
 
-    if (status == CAIRO_STATUS_NO_MEMORY)
-        return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-    else if (status != CAIRO_STATUS_SUCCESS)
+    if (status == CAIRO_INT_STATUS_UNSUPPORTED)
 	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    else if (status)
+        return status;
 
-    if (image->height && image->width) {
-	rows = _cairo_malloc_ab (image->height, sizeof (png_byte*));
-	if (rows == NULL) {
-	    status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
-	    goto BAIL1;
-	}
+    /* PNG complains about "Image width or height is zero in IHDR" */
+    if (image->width == 0 || image->height == 0)
+	return _cairo_error (CAIRO_STATUS_WRITE_ERROR);
 
-	for (i = 0; i < image->height; i++)
-	    rows[i] = (png_byte *) image->data + i * image->stride;
+    rows = _cairo_malloc_ab (image->height, sizeof (png_byte*));
+    if (rows == NULL) {
+	status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	goto BAIL1;
     }
+
+    for (i = 0; i < image->height; i++)
+	rows[i] = (png_byte *) image->data + i * image->stride;
 
     png = png_create_write_struct (PNG_LIBPNG_VER_STRING, &status,
 	                           png_simple_error_callback,
@@ -260,11 +262,11 @@ stdio_write_func (png_structp png, png_bytep data, png_size_t size)
  * Writes the contents of @surface to a new file @filename as a PNG
  * image.
  *
- * Return value: CAIRO_STATUS_SUCCESS if the PNG file was written
- * successfully. Otherwise, CAIRO_STATUS_NO_MEMORY if memory could not
+ * Return value: %CAIRO_STATUS_SUCCESS if the PNG file was written
+ * successfully. Otherwise, %CAIRO_STATUS_NO_MEMORY if memory could not
  * be allocated for the operation or
  * CAIRO_STATUS_SURFACE_TYPE_MISMATCH if the surface does not have
- * pixel contents, or CAIRO_STATUS_WRITE_ERROR if an I/O error occurs
+ * pixel contents, or %CAIRO_STATUS_WRITE_ERROR if an I/O error occurs
  * while attempting to write the file.
  **/
 cairo_status_t
@@ -320,8 +322,8 @@ stream_write_func (png_structp png, png_bytep data, png_size_t size)
  *
  * Writes the image surface to the write function.
  *
- * Return value: CAIRO_STATUS_SUCCESS if the PNG file was written
- * successfully.  Otherwise, CAIRO_STATUS_NO_MEMORY is returned if
+ * Return value: %CAIRO_STATUS_SUCCESS if the PNG file was written
+ * successfully.  Otherwise, %CAIRO_STATUS_NO_MEMORY is returned if
  * memory could not be allocated for the operation,
  * CAIRO_STATUS_SURFACE_TYPE_MISMATCH if the surface does not have
  * pixel contents.

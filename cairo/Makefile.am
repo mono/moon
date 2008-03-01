@@ -66,9 +66,7 @@ EXTRA_DIST = \
 	NEWS \
 	PORTING_GUIDE \
 	README \
-	RELEASING \
-	ROADMAP \
-	TODO
+	RELEASING
 DISTCLEANFILES = config.cache
 distclean-local: lcov-clean
 
@@ -152,7 +150,7 @@ release-verify-sane-changelogs: changelogs
 	@echo "Good."
 
 release-verify-sane-tests:
-	@echo "Checking that the TESTS are sane..."
+	@echo "Checking that the test suite is sane..."
 	@cd test && $(MAKE) $(AM_MAKEFLAGS) release-verify-sane-tests
 
 release-verify-soname-major:
@@ -243,3 +241,5 @@ doc-publish: doc
 	ssh $(RELEASE_UPLOAD_HOST) "cd $(MANUAL_UPLOAD_DIR) && tar xzf $(MANUAL_TAR_FILE) && rm -f manual && ln -s $(MANUAL_DATED) manual && ln -sf $(MANUAL_TAR_FILE) cairo-manual.tar.gz"
 
 .PHONY: release-verify-even-micro release-verify-newer release-remove-old release-cleanup-group-sticky release-check release-upload release-publish docs-publish lcov lcov-perf lcov-clean genlcov
+
+EXTRA_DIST += Makefile.win32

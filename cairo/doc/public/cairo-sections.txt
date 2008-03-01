@@ -1,6 +1,7 @@
 <SECTION>
 <FILE>cairo-ft</FILE>
 <TITLE>FreeType Fonts</TITLE>
+CAIRO_HAS_FT_FONT
 cairo_ft_font_face_create_for_ft_face
 cairo_ft_font_face_create_for_pattern
 cairo_ft_font_options_substitute
@@ -11,6 +12,7 @@ cairo_ft_scaled_font_unlock_face
 <SECTION>
 <FILE>cairo-win32-fonts</FILE>
 <TITLE>Win32 Fonts</TITLE>
+CAIRO_HAS_WIN32_FONT
 cairo_win32_font_face_create_for_logfontw
 cairo_win32_font_face_create_for_hfont
 cairo_win32_font_face_create_for_logfontw_hfont
@@ -25,6 +27,7 @@ cairo_win32_scaled_font_get_device_to_logical
 <FILE>cairo-image</FILE>
 <TITLE>Image Surfaces</TITLE>
 cairo_format_t
+cairo_format_stride_for_width
 cairo_image_surface_create
 cairo_image_surface_create_for_data
 cairo_image_surface_get_data
@@ -37,6 +40,7 @@ cairo_image_surface_get_stride
 <SECTION>
 <FILE>cairo-pdf</FILE>
 <TITLE>PDF Surfaces</TITLE>
+CAIRO_HAS_PDF_SURFACE
 cairo_pdf_surface_create
 cairo_pdf_surface_create_for_stream
 cairo_pdf_surface_set_size
@@ -45,6 +49,7 @@ cairo_pdf_surface_set_size
 <SECTION>
 <FILE>cairo-png</FILE>
 <TITLE>PNG Support</TITLE>
+CAIRO_HAS_PNG_FUNCTIONS
 cairo_image_surface_create_from_png
 cairo_read_func_t
 cairo_image_surface_create_from_png_stream
@@ -56,6 +61,7 @@ cairo_surface_write_to_png_stream
 <SECTION>
 <FILE>cairo-ps</FILE>
 <TITLE>PostScript Surfaces</TITLE>
+CAIRO_HAS_PS_SURFACE
 cairo_ps_surface_create
 cairo_ps_surface_create_for_stream
 cairo_ps_surface_restrict_to_level
@@ -73,6 +79,7 @@ cairo_ps_surface_dsc_comment
 <SECTION>
 <FILE>cairo-win32</FILE>
 <TITLE>Win32 Surfaces</TITLE>
+CAIRO_HAS_WIN32_SURFACE
 cairo_win32_surface_create
 cairo_win32_surface_create_with_dib
 cairo_win32_surface_create_with_ddb
@@ -84,6 +91,7 @@ cairo_win32_surface_get_image
 <SECTION>
 <FILE>cairo-xlib</FILE>
 <TITLE>XLib Surfaces</TITLE>
+CAIRO_HAS_XLIB_SURFACE
 cairo_xlib_surface_create
 cairo_xlib_surface_create_for_bitmap
 cairo_xlib_surface_set_size
@@ -100,12 +108,15 @@ cairo_xlib_surface_get_depth
 <SECTION>
 <FILE>cairo-xlib-xrender</FILE>
 <TITLE>XLib/Xrender Backend</TITLE>
+CAIRO_HAS_XLIB_XRENDER_SURFACE
 cairo_xlib_surface_create_with_xrender_format
+cairo_xlib_surface_get_xrender_format
 </SECTION>
 
 <SECTION>
 <FILE>cairo-svg</FILE>
 <TITLE>SVG Surfaces</TITLE>
+CAIRO_HAS_SVG_SURFACE
 cairo_svg_surface_create
 cairo_svg_surface_create_for_stream
 cairo_svg_surface_restrict_to_version
@@ -216,7 +227,7 @@ cairo_debug_reset_static_data
 </SECTION>
 
 <SECTION>
-<FILE>cairo-font</FILE>
+<FILE>cairo-font-face</FILE>
 <TITLE>cairo_font_face_t</TITLE>
 cairo_font_face_t
 cairo_font_face_reference
@@ -311,6 +322,7 @@ cairo_copy_path
 cairo_copy_path_flat
 cairo_path_destroy
 cairo_append_path
+cairo_has_current_point
 cairo_get_current_point
 cairo_new_path
 cairo_new_sub_path

@@ -23,51 +23,69 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <cairo.h>
 #include <assert.h>
 #include <stdlib.h>
 
+#if HAVE_FCFINI
+#include <fontconfig/fontconfig.h>
+#endif
+
 int
 main (void)
 {
-    cairo_font_options_t *options1;
-    cairo_font_options_t *options2;
+    cairo_font_options_t *default_options;
+    cairo_font_options_t *nil_options;
     cairo_surface_t *surface;
     cairo_matrix_t identity;
     cairo_t *cr;
     cairo_scaled_font_t *scaled_font;
 
     /* first check NULL handling of cairo_font_options_t */
-    options1 = cairo_font_options_create ();
-    options2 = cairo_font_options_copy (NULL);
+    default_options = cairo_font_options_create ();
+    assert (cairo_font_options_status (default_options) == CAIRO_STATUS_SUCCESS);
+    nil_options = cairo_font_options_copy (NULL);
+    assert (cairo_font_options_status (nil_options) == CAIRO_STATUS_NO_MEMORY);
 
-    assert (cairo_font_options_equal (options1, options2));
-    assert (cairo_font_options_equal (NULL, options2));
-    assert (cairo_font_options_equal (options1, NULL));
+    assert (cairo_font_options_equal (default_options, default_options));
+    assert (! cairo_font_options_equal (default_options, nil_options));
+    assert (! cairo_font_options_equal (NULL, nil_options));
+    assert (! cairo_font_options_equal (nil_options, nil_options));
+    assert (! cairo_font_options_equal (default_options, NULL));
+    assert (! cairo_font_options_equal (NULL, default_options));
 
-    assert (cairo_font_options_hash (options1) == cairo_font_options_hash (options2));
-    assert (cairo_font_options_hash (NULL) == cairo_font_options_hash (options2));
-    assert (cairo_font_options_hash (options1) == cairo_font_options_hash (NULL));
+    assert (cairo_font_options_hash (default_options) == cairo_font_options_hash (nil_options));
+    assert (cairo_font_options_hash (NULL) == cairo_font_options_hash (nil_options));
+    assert (cairo_font_options_hash (default_options) == cairo_font_options_hash (NULL));
 
     cairo_font_options_merge (NULL, NULL);
-    cairo_font_options_merge (options1, NULL);
-    cairo_font_options_merge (options1, options2);
-
-    cairo_font_options_destroy (NULL);
-    cairo_font_options_destroy (options1);
-    cairo_font_options_destroy (options2);
+    cairo_font_options_merge (default_options, NULL);
+    cairo_font_options_merge (default_options, nil_options);
 
     cairo_font_options_set_antialias (NULL, CAIRO_ANTIALIAS_DEFAULT);
     cairo_font_options_get_antialias (NULL);
+    assert (cairo_font_options_get_antialias (default_options) == CAIRO_ANTIALIAS_DEFAULT);
 
     cairo_font_options_set_subpixel_order (NULL, CAIRO_SUBPIXEL_ORDER_DEFAULT);
     cairo_font_options_get_subpixel_order (NULL);
+    assert (cairo_font_options_get_subpixel_order (default_options) ==  CAIRO_SUBPIXEL_ORDER_DEFAULT);
 
     cairo_font_options_set_hint_style (NULL, CAIRO_HINT_STYLE_DEFAULT);
     cairo_font_options_get_hint_style (NULL);
+    assert (cairo_font_options_get_hint_style (default_options) == CAIRO_HINT_STYLE_DEFAULT);
 
     cairo_font_options_set_hint_metrics (NULL, CAIRO_HINT_METRICS_DEFAULT);
     cairo_font_options_get_hint_metrics (NULL);
+    assert (cairo_font_options_get_hint_metrics (default_options) == CAIRO_HINT_METRICS_DEFAULT);
+
+    cairo_font_options_destroy (NULL);
+    cairo_font_options_destroy (default_options);
+    cairo_font_options_destroy (nil_options);
+
 
     /* Now try creating fonts with NULLs */
     surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 0, 0);
@@ -78,14 +96,21 @@ main (void)
     scaled_font = cairo_scaled_font_create (cairo_get_font_face (cr),
 	                                    &identity, &identity,
 					    NULL);
-    assert (cairo_scaled_font_status (scaled_font) == CAIRO_STATUS_SUCCESS);
+    assert (cairo_scaled_font_status (scaled_font) == CAIRO_STATUS_NULL_POINTER);
     cairo_scaled_font_get_font_options (scaled_font, NULL);
     cairo_scaled_font_destroy (scaled_font);
 
-    cairo_set_font_options (cr, NULL);
+    assert (cairo_status (cr) == CAIRO_STATUS_SUCCESS);
     cairo_get_font_options (cr, NULL);
+    cairo_set_font_options (cr, NULL);
+    assert (cairo_status (cr) == CAIRO_STATUS_NULL_POINTER);
 
     cairo_destroy (cr);
+
+    cairo_debug_reset_static_data ();
+#if HAVE_FCFINI
+    FcFini ();
+#endif
 
     return 0;
 }

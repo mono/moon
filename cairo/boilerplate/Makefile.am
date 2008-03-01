@@ -1,11 +1,15 @@
+EXTRA_DIST = Makefile.win32
+
 EXTRA_LTLIBRARIES = libcairoboilerplate.la
 
-libcairoboilerplate_la_SOURCES =\
-cairo-boilerplate.c	\
-cairo-boilerplate.h	\
-cairo-boilerplate-scaled-font.h	\
-xmalloc.c		\
-xmalloc.h
+libcairoboilerplate_la_SOURCES =	\
+	cairo-boilerplate.c		\
+	cairo-boilerplate.h		\
+	cairo-boilerplate-getopt.c	\
+	cairo-boilerplate-getopt.h	\
+	cairo-boilerplate-scaled-font.h	\
+	xmalloc.c			\
+	xmalloc.h
 libcairoboilerplate_la_LIBADD = $(top_builddir)/src/libcairo.la $(CAIRO_LDADD)
 
 if CAIRO_HAS_BEOS_SURFACE

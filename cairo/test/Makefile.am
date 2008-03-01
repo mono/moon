@@ -38,7 +38,6 @@ degenerate-pen$(EXEEXT)					\
 device-offset$(EXEEXT)					\
 device-offset-positive$(EXEEXT)				\
 extend-pad$(EXEEXT)					\
-extend-pad-similar$(EXEEXT)				\
 extend-reflect$(EXEEXT)					\
 extend-reflect-similar$(EXEEXT)				\
 extend-repeat$(EXEEXT)					\
@@ -60,9 +59,10 @@ get-group-target$(EXEEXT)				\
 get-path-extents$(EXEEXT)				\
 gradient-alpha$(EXEEXT)					\
 gradient-zero-stops$(EXEEXT)				\
+image-surface-source$(EXEEXT)				\
 infinite-join$(EXEEXT)					\
 in-fill-empty-trapezoid$(EXEEXT)			\
-in-fill-trapezoid$(EXEEXT)			\
+in-fill-trapezoid$(EXEEXT)				\
 invalid-matrix$(EXEEXT)					\
 leaky-dash$(EXEEXT)					\
 leaky-polygon$(EXEEXT)					\
@@ -195,21 +195,34 @@ TESTS += ft-text-vertical-layout-type3$(EXEEXT)
 TESTS += ft-text-antialias-none$(EXEEXT)
 endif
 
-if CAIRO_HAS_SVG_SURFACE
-TESTS += svg-surface$(EXEEXT)
-TESTS += svg-clip$(EXEEXT)
+# Need to add win32-surface-source, quartz-surface-source
+if CAIRO_HAS_GLITZ_SURFACE
+TESTS += glitz-surface-source$(EXEEXT)
 endif
 
 if CAIRO_HAS_PDF_SURFACE
 TESTS += pdf-features$(EXEEXT)
+TESTS += pdf-surface-source$(EXEEXT)
 endif
 
 if CAIRO_HAS_PS_SURFACE
 TESTS += ps-features$(EXEEXT)
+TESTS += ps-surface-source$(EXEEXT)
+endif
+
+if CAIRO_HAS_SVG_SURFACE
+TESTS += svg-surface$(EXEEXT)
+TESTS += svg-clip$(EXEEXT)
+TESTS += svg-surface-source$(EXEEXT)
 endif
 
 if CAIRO_HAS_XLIB_SURFACE
 TESTS += xlib-surface$(EXEEXT)
+TESTS += xlib-surface-source$(EXEEXT)
+endif
+
+if CAIRO_HAS_XLIB_XRENDER_SURFACE
+TESTS += get-xrender-format$(EXEEXT)
 endif
 
 if CAIRO_HAS_MULTI_PAGE_SURFACES
@@ -226,6 +239,8 @@ endif
 
 # All tests which have a reference image go here.
 REFERENCE_IMAGES = \
+	a1-image-sample-ref.png		\
+	a1-traps-sample-ref.png		\
 	a8-mask-ref.png	\
 	bitmap-font-pdf-argb32-ref.png	\
 	bitmap-font-ref.png	\
@@ -250,6 +265,7 @@ REFERENCE_IMAGES = \
 	clip-nesting-ref.png	\
 	clip-nesting-rgb24-ref.png	\
 	clip-operator-ref.png	\
+	clip-operator-pdf-argb32-ref.png \
 	clip-operator-ps-argb32-ref.png	\
 	clip-operator-rgb24-ref.png	\
 	clip-push-group-ps-argb32-ref.png	\
@@ -276,15 +292,16 @@ REFERENCE_IMAGES = \
 	dash-caps-joins-quartz-ref.png	\
 	dash-caps-joins-ref.png	\
 	dash-curve-ref.png	\
+	dash-curve-ps-ref.png \
 	dash-no-dash-ref.png	\
 	dash-offset-negative-ref.png	\
 	dash-scale-ps-argb32-ref.png	\
 	dash-scale-ps-rgb24-ref.png	\
 	dash-scale-ref.png	\
-	dash-state-ps-argb32-ref.png	\
-	dash-state-ps-rgb24-ref.png	\
+	dash-state-ps-ref.png	\
 	dash-state-ref.png	\
-	dash-zero-length-ps-argb32-ref.png	\
+	dash-zero-length-ps-ref.png	\
+	dash-zero-length-ps-rgb24-ref.png	\
 	dash-zero-length-ref.png	\
 	dash-zero-length-rgb24-ref.png	\
 	degenerate-pen-ref.png		\
@@ -298,9 +315,10 @@ REFERENCE_IMAGES = \
 	device-offset-ref.png	\
 	device-offset-rgb24-ref.png	\
 	extend-pad-ref.png	\
-	extend-pad-similar-ref.png	\
 	extend-reflect-ref.png	\
 	extend-reflect-similar-ref.png	\
+	extend-reflect-similar-ps-ref.png	\
+	extend-reflect-ps-ref.png \
 	extend-repeat-ref.png	\
 	extend-repeat-similar-ref.png	\
 	fill-and-stroke-alpha-add-quartz-ref.png	\
@@ -326,6 +344,7 @@ REFERENCE_IMAGES = \
 	fill-rule-quartz-rgb24-ref.png	\
 	fill-rule-ref.png	\
 	fill-rule-rgb24-ref.png	\
+	fill-rule-ps-rgb24-ref.png \
 	filter-nearest-offset-ref.png	\
 	font-matrix-translation-ps-argb32-ref.png	\
 	font-matrix-translation-ps-rgb24-ref.png	\
@@ -333,36 +352,44 @@ REFERENCE_IMAGES = \
 	font-matrix-translation-svg-ref.png	\
 	ft-text-antialias-none-ps-argb32-ref.png	\
 	ft-text-antialias-none-ref.png	\
-	ft-text-vertical-layout-type1-ps-argb32-ref.png	\
+	ft-text-vertical-layout-type1-ps-ref.png	\
 	ft-text-vertical-layout-type1-ref.png	\
 	ft-text-vertical-layout-type1-svg-ref.png	\
-	ft-text-vertical-layout-type3-ps-argb32-ref.png	\
+	ft-text-vertical-layout-type3-ps-ref.png	\
 	ft-text-vertical-layout-type3-ref.png	\
 	ft-text-vertical-layout-type3-svg-ref.png	\
 	get-group-target-ref.png	\
+	glitz-surface-source-ref.png \
 	glyph-cache-pressure-ref.png	\
+	glyph-cache-pressure-ps-ref.png	\
+	gradient-alpha-pdf-argb32-ref.png	\
+	gradient-alpha-pdf-rgb24-ref.png	\
 	gradient-alpha-ps-argb32-ref.png	\
 	gradient-alpha-ps-rgb24-ref.png	\
 	gradient-alpha-ref.png	\
 	gradient-alpha-rgb24-ref.png	\
 	gradient-zero-stops-ref.png	\
 	gradient-zero-stops-rgb24-ref.png	\
+	image-surface-source-ref.png \
 	infinite-join-ref.png	\
 	leaky-dash-ps-argb32-ref.png	\
 	leaky-dash-ps-rgb24-ref.png	\
 	leaky-dash-ref.png	\
 	leaky-polygon-ref.png	\
 	linear-gradient-reflect-ref.png	\
-	linear-gradient-ps-argb32-ref.png	\
-	linear-gradient-ps-rgb24-ref.png	\
+	linear-gradient-reflect-pdf-argb32-ref.png	\
+	linear-gradient-reflect-pdf-rgb24-ref.png	\
+	linear-gradient-reflect-ps-ref.png	\
+	linear-gradient-pdf-ref.png	\
+	linear-gradient-ps-ref.png	\
 	linear-gradient-ref.png	\
 	linear-gradient-svg-ref.png	\
 	line-width-ref.png	\
-	line-width-scale-ps-argb32-ref.png	\
-	line-width-scale-ps-rgb24-ref.png	\
+	line-width-scale-ps-ref.png	\
 	line-width-scale-ref.png	\
 	long-lines-ref.png	\
 	mask-alpha-ref.png	\
+	mask-alpha-svg-argb32-ref.png	\
 	mask-alpha-rgb24-ref.png	\
 	mask-ctm-ref.png	\
 	mask-ctm-rgb24-ref.png	\
@@ -376,6 +403,12 @@ REFERENCE_IMAGES = \
 	mask-svg-argb32-ref.png	\
 	meta-surface-pattern-ref.png		\
 	meta-surface-pattern-rgb24-ref.png	\
+	meta-surface-pattern-pdf-ref.png	\
+	meta-surface-pattern-pdf-rgb24-ref.png	\
+	meta-surface-pattern-ps-argb32-ref.png	\
+	meta-surface-pattern-ps-rgb24-ref.png	\
+	meta-surface-pattern-svg-argb32-ref.png	\
+	meta-surface-pattern-svg-rgb24-ref.png	\
 	miter-precision-ref.png \
 	move-to-show-surface-ref.png	\
 	new-sub-path-ps-argb32-ref.png	\
@@ -390,6 +423,9 @@ REFERENCE_IMAGES = \
 	operator-clear-quartz-rgb24-ref.png	\
 	operator-clear-ref.png	\
 	operator-clear-rgb24-ref.png	\
+	operator-clear-pdf-argb32-ref.png	\
+	operator-clear-pdf-rgb24-ref.png	\
+	operator-clear-ps-argb32-ref.png	\
 	operator-source-ps-argb32-ref.png	\
 	operator-source-ps-rgb24-ref.png	\
 	operator-source-ref.png	\
@@ -413,19 +449,23 @@ REFERENCE_IMAGES = \
 	paint-source-alpha-svg-ref.png	\
 	paint-with-alpha-ref.png	\
 	paint-with-alpha-svg-ref.png	\
+	paint-source-alpha-pdf-ref.png \
+	paint-with-alpha-pdf-ref.png \
 	pattern-getters-ref.png	\
-	pixman-rotate-ps-argb32-ref.png	\
-	pixman-rotate-ps-rgb24-ref.png	\
+	pdf-surface-source-ref.png \
 	pixman-rotate-ref.png	\
 	pixman-rotate-rgb24-ref.png	\
+	ps-surface-source-ref.png \
+	push-group-pdf-ref.png \
+	push-group-pdf-rgb24-ref.png \
 	push-group-ref.png	\
 	push-group-rgb24-ref.png	\
 	push-group-svg-argb32-ref.png	\
 	radial-gradient-ref.png	\
+	radial-gradient-pdf-ref.png \
 	radial-gradient-svg-ref.png	\
-	random-intersections-ps-argb32-ref.png	\
-	random-intersections-ps-rgb24-ref.png	\
 	random-intersections-ref.png	\
+	random-intersections-ps-ref.png \
 	rgb24-ignore-alpha-ref.png \
 	rectangle-rounding-error-ref.png	\
 	rectilinear-miter-limit-ref.png		\
@@ -435,9 +475,9 @@ REFERENCE_IMAGES = \
 	rel-path-ps-rgb24-ref.png	\
 	rel-path-ref.png	\
 	rel-path-rgb24-ref.png	\
+	rotate-image-surface-paint-pdf-rgb24-ref.png \
+	rotate-image-surface-paint-ps-ref.png \
 	rotate-image-surface-paint-pdf-argb32-ref.png	\
-	rotate-image-surface-paint-ps-argb32-ref.png	\
-	rotate-image-surface-paint-ps-rgb24-ref.png	\
 	rotate-image-surface-paint-ref.png	\
 	rotate-image-surface-paint-svg-ref.png	\
 	scale-down-source-surface-paint-ref.png	\
@@ -446,7 +486,9 @@ REFERENCE_IMAGES = \
 	scale-source-surface-paint-rgb24-ref.png	\
 	scale-source-surface-paint-svg-argb32-ref.png	\
 	scale-source-surface-paint-svg-rgb24-ref.png	\
+	scale-source-surface-paint-pdf-rgb24-ref.png \
 	select-font-face-ref.png	\
+	select-font-face-ps-ref.png \
 	self-copy-ref.png	\
 	self-intersecting-ref.png	\
 	self-intersecting-rgb24-ref.png	\
@@ -455,6 +497,7 @@ REFERENCE_IMAGES = \
 	set-source-svg-argb32-ref.png	\
 	show-glyphs-many-ref.png	\
 	show-text-current-point-ref.png	\
+	show-text-current-point-ps-ref.png \
 	skew-extreme-ref.png \
 	source-clip-ref.png	\
 	source-clip-scale-quartz-ref.png	\
@@ -462,6 +505,7 @@ REFERENCE_IMAGES = \
 	source-clip-scale-ps-rgb24-ref.png	\
 	source-clip-scale-ref.png	\
 	source-clip-scale-svg-ref.png	\
+	source-clip-scale-pdf-ref.png \
 	source-surface-scale-paint-ref.png	\
 	source-surface-scale-paint-rgb24-ref.png	\
 	surface-pattern-big-scale-down-ref.png	\
@@ -475,6 +519,7 @@ REFERENCE_IMAGES = \
 	surface-pattern-scale-up-ps-argb32-ref.png	\
 	surface-pattern-scale-up-ref.png	\
 	surface-pattern-svg-ref.png	\
+	svg-surface-source-ref.png \
 	text-antialias-gray-ref.png	\
 	text-antialias-none-ref.png	\
 	text-antialias-subpixel-ref.png	\
@@ -486,8 +531,8 @@ REFERENCE_IMAGES = \
 	text-pattern-rgb24-ref.png	\
 	text-pattern-svg-argb32-ref.png	\
 	text-pattern-svg-rgb24-ref.png	\
-	text-rotate-ps-argb32-ref.png	\
-	text-rotate-ps-rgb24-ref.png	\
+	text-pattern-pdf-argb32-ref.png \
+	text-pattern-pdf-rgb24-ref.png \
 	text-rotate-ref.png	\
 	text-rotate-svg-ref.png	\
 	text-zero-len-ref.png	\
@@ -499,15 +544,19 @@ REFERENCE_IMAGES = \
 	trap-clip-ps-rgb24-ref.png	\
 	trap-clip-ref.png	\
 	trap-clip-rgb24-ref.png	\
+	trap-clip-pdf-argb32-ref.png \
+	trap-clip-pdf-rgb24-ref.png \
 	unantialiased-shapes-ref.png	\
 	unbounded-operator-ref.png	\
 	unbounded-operator-rgb24-ref.png	\
+	xlib-surface-source-ref.png \
 	zero-alpha-ref.png
 
 EXTRA_DIST =		\
 6x13.pcf		\
 make-html.pl		\
 romedalen.png		\
+surface-source.c	\
 $(REFERENCE_IMAGES)
 
 # Any test for which the code committed to CVS is expected to fail
@@ -520,14 +569,9 @@ $(REFERENCE_IMAGES)
 # Of course, before any "release" of cairo we should eliminate
 # everything from this list by fixing the bugs. (We don't necessarily
 # have to be that strict for "snapshots" though.)
-#
-# Also, any test listed here should call cairo_test_expect_failure and
-# provide an explanation for the expected failure.
 XFAIL_TESTS =					\
-a8-mask$(EXEEXT)				\
 big-trap$(EXEEXT)				\
 extend-pad$(EXEEXT)				\
-extend-pad-similar$(EXEEXT)			\
 filter-nearest-offset$(EXEEXT)			\
 long-lines$(EXEEXT)				\
 self-intersecting$(EXEEXT)			\
@@ -558,11 +602,26 @@ check-local:
 	done; \
 	if test -n "$$FAILED_TESTS"; then \
 	    echo "Failed tests:"; \
+	    surfaces=""; \
 	    for t in $$FAILED_TESTS; do \
 		echo -n "     $$t: "; \
 		grep -e '\<FAIL\>' $$t.log | sed -e 's/.*TARGET: \([^ ]*\).*/\1/' | sort | uniq | tr '\n' ' '; \
 		echo; \
+		for s in `grep -e '\<FAIL\>' $$t.log | sed -e 's/.*TARGET: \([^ ]*\).*/\1/' | sort | uniq`; do \
+		    eval ss=`echo $$s | tr '-' '_'`; \
+		    eval $$ss=$$[$$ss + 1]; \
+		    echo $$surfaces | grep $$ss >/dev/null || surfaces="$$surfaces $$ss"; \
+		done; \
 	    done; \
+	    echo -n "Failures per surface - "; \
+	    first=""; \
+	    for s in $$surfaces; do \
+	        eval ss=`echo $$s | tr '_' '-'`; \
+		test -n "$$first" && echo -n ", "; \
+	        echo -n "$$ss: $$[$$s + 0]"; \
+		first="false"; \
+	    done; \
+	    echo "."; \
 	fi
 
 check_PROGRAMS =
@@ -712,21 +771,42 @@ index.html: $(srcdir)/make-html.pl $(TESTS:$(EXEEXT)=.log)
 
 # Identify identical reference images
 check-ref-dups:
-	@sha1sum *-ref.png > ref.hash
-	@join ref.hash ref.hash | grep -v -E '( .*-ref.png).*\1' | cut -d' ' -f 1-2 | sort -u
+	@LANG=C; \
+	( cd "$(scrdir)" && sha1sum *-ref.png | sort ) > ref.hash; \
+	join ref.hash ref.hash | grep -v -E '( .*-ref.png).*\1' | cut -d' ' -f 1-2 | sort -u
 
 # Not exactly the best script in the world...
 check-ref-missing:
-	@missing=""; \
-	for i in `git ls-files *-ref.png`; do \
-	    echo ${REFERENCE_IMAGES} | grep -sq $$i || missing="$$missing $$i" ; \
+	@cd "$(srcdir)"; \
+	REFS=`git ls-files "*-ref.png"`; \
+	test x = "x$$REFS" && REFS=`ls *-ref.png`; \
+	ret=true; \
+	missing=""; \
+	for i in $$REFS; do \
+	    echo "" $(REFERENCE_IMAGES) "" | grep -sq " $$i " || missing="$$missing $$i" ; \
 	done ; \
 	if test -n "$$missing"; then \
-		echo "Some reference files are not included in the distribution." ;\
-		echo "Missing from REFERENCE_IMAGES:$$missing" ; \
-		exit 1; \
-	fi
+		echo "*** Error: Sanity check failed"; \
+		echo "Some reference files are not included in the distribution."; \
+		echo "You probably need to add these to Makefile.am's REFERENCE_IMAGES."; \
+		echo "Missing: $$missing"; \
+		ret=false; \
+	fi >&2; \
+	missing=""; \
+	for i in $(REFERENCE_IMAGES); do \
+	    echo "" $$REFS "" | grep -sq " $$i " || missing="$$missing $$i" ; \
+	done ; \
+	if test -n "$$missing"; then \
+		echo "*** Error: Sanity check failed"; \
+		echo "Some reference files included in the distribution do not exist"; \
+		echo "or are not in git.  You probably want to add these to git first."; \
+		echo "Missing: $$missing"; \
+		ret=false; \
+	fi >&2; \
+	$$ret
 
 release-verify-sane-tests: check-ref-missing
 
 .PHONY: check-valgrind test recheck retest html rehtml check-ref-dups check-ref-missing release-verify-sane-tests
+
+EXTRA_DIST += Makefile.win32

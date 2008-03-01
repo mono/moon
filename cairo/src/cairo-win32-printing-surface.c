@@ -201,15 +201,21 @@ _cairo_win32_printing_surface_analyze_operation (cairo_win32_surface_t *surface,
     if (! pattern_supported (surface, pattern))
 	return CAIRO_INT_STATUS_UNSUPPORTED;
 
+    if (!(op == CAIRO_OPERATOR_SOURCE ||
+	  op == CAIRO_OPERATOR_OVER ||
+	  op == CAIRO_OPERATOR_CLEAR))
+	return CAIRO_INT_STATUS_UNSUPPORTED;
+
+    if (pattern->type == CAIRO_PATTERN_TYPE_SURFACE) {
+	cairo_surface_pattern_t *surface_pattern = (cairo_surface_pattern_t *) pattern;
+
+	if ( _cairo_surface_is_meta (surface_pattern->surface))
+	    return CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN;
+    }
+
     if (op == CAIRO_OPERATOR_SOURCE ||
 	op == CAIRO_OPERATOR_CLEAR)
 	return CAIRO_STATUS_SUCCESS;
-
-    /* If the operation is anything other than CLEAR, SOURCE, or
-     * OVER, we have to go to fallback.
-     */
-    if (op != CAIRO_OPERATOR_OVER)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
 
     /* CAIRO_OPERATOR_OVER is only supported for opaque patterns. If
      * the pattern contains transparency, we return
@@ -224,10 +230,7 @@ _cairo_win32_printing_surface_analyze_operation (cairo_win32_surface_t *surface,
     if (pattern->type == CAIRO_PATTERN_TYPE_SURFACE) {
 	cairo_surface_pattern_t *surface_pattern = (cairo_surface_pattern_t *) pattern;
 
-	if ( _cairo_surface_is_meta (surface_pattern->surface))
-	    return CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN;
-	else
-	    return analyze_surface_pattern_transparency (surface_pattern);
+	return analyze_surface_pattern_transparency (surface_pattern);
     }
 
     if (_cairo_pattern_is_opaque (pattern))
@@ -460,11 +463,15 @@ _cairo_win32_printing_surface_paint_meta_pattern (cairo_win32_surface_t   *surfa
 	    EndPath (surface->dc);
 	    SelectClipPath (surface->dc, RGN_AND);
 
-	    status = _cairo_meta_surface_replay (meta_surface, &surface->base);
+	    SaveDC (surface->dc); /* Allow clip path to be reset during replay */
+	    status = _cairo_meta_surface_replay_region (meta_surface, &surface->base,
+							CAIRO_META_REGION_NATIVE);
+	    assert (status != CAIRO_INT_STATUS_UNSUPPORTED);
+	    /* Restore both the clip save and our earlier path SaveDC */
+	    RestoreDC (surface->dc, -2);
+
 	    if (status)
 		return status;
-
-	    RestoreDC (surface->dc, -1);
 	}
     }
 
@@ -970,9 +977,8 @@ _cairo_win32_printing_surface_show_page (void *abstract_surface)
 {
     cairo_win32_surface_t *surface = abstract_surface;
 
-    if (surface->clip_saved_dc != 0)
-	RestoreDC (surface->dc, surface->clip_saved_dc);
-    RestoreDC (surface->dc, -1);
+    /* Undo both SaveDC's that we did in start_page */
+    RestoreDC (surface->dc, -2);
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -991,10 +997,9 @@ _cairo_win32_printing_surface_intersect_clip_path (void		      *abstract_surface
 	return CAIRO_STATUS_SUCCESS;
 
     if (path == NULL) {
-	if (surface->clip_saved_dc != 0) {
-	    RestoreDC (surface->dc, surface->clip_saved_dc);
-	    surface->clip_saved_dc = 0;
-	}
+	RestoreDC (surface->dc, -1);
+	SaveDC (surface->dc);
+
 	return CAIRO_STATUS_SUCCESS;
     }
 
@@ -1013,8 +1018,6 @@ _cairo_win32_printing_surface_intersect_clip_path (void		      *abstract_surface
 	ASSERT_NOT_REACHED;
     }
 
-    if (surface->clip_saved_dc == 0)
-	surface->clip_saved_dc = SaveDC (surface->dc);
     SelectClipPath (surface->dc, RGN_AND);
 
     return status;
@@ -1329,9 +1332,9 @@ _cairo_win32_printing_surface_show_glyphs (void                 *abstract_surfac
 
 	color = _cairo_win32_printing_surface_flatten_transparency (surface,
 								    &solid->color);
-	opaque = cairo_pattern_create_rgb (GetRValue (color),
-					   GetGValue (color),
-					   GetBValue (color));
+	opaque = cairo_pattern_create_rgb (GetRValue (color) / 255.0,
+					   GetGValue (color) / 255.0,
+					   GetBValue (color) / 255.0);
 	if (opaque->status)
 	    return opaque->status;
 	source = opaque;
@@ -1417,7 +1420,8 @@ _cairo_win32_printing_surface_start_page (void *abstract_surface)
     cairo_win32_surface_t *surface = abstract_surface;
     XFORM xform;
 
-    SaveDC (surface->dc);
+    SaveDC (surface->dc); /* Save application context first, before doing MWT */
+
     SetGraphicsMode (surface->dc, GM_ADVANCED);
     GetWorldTransform(surface->dc, &xform);
     surface->ctm.xx = xform.eM11;
@@ -1429,6 +1433,8 @@ _cairo_win32_printing_surface_start_page (void *abstract_surface)
     surface->has_ctm = !_cairo_matrix_is_identity (&surface->ctm);
     if (!ModifyWorldTransform (surface->dc, NULL, MWT_IDENTITY))
 	return _cairo_win32_print_gdi_error ("_cairo_win32_printing_surface_start_page:ModifyWorldTransform");
+
+    SaveDC (surface->dc); /* Then save Cairo's known-good clip state, so the clip path can be reset */
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -1462,20 +1468,17 @@ cairo_surface_t *
 cairo_win32_printing_surface_create (HDC hdc)
 {
     cairo_win32_surface_t *surface;
-    RECT rect;
     int xr, yr;
-
-    /* Try to figure out the drawing bounds for the Device context
-     */
-    if (GetClipBox (hdc, &rect) == ERROR) {
-	_cairo_win32_print_gdi_error ("cairo_win32_surface_create");
-	/* XXX: Can we make a more reasonable guess at the error cause here? */
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
-    }
+    RECT rect;
 
     surface = malloc (sizeof (cairo_win32_surface_t));
     if (surface == NULL)
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+
+    if (_cairo_win32_save_initial_clip (hdc, surface) != CAIRO_STATUS_SUCCESS) {
+	free (surface);
+	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+    }
 
     surface->image = NULL;
     surface->format = CAIRO_FORMAT_RGB24;
@@ -1488,28 +1491,14 @@ cairo_win32_printing_surface_create (HDC hdc)
     surface->brush = NULL;
     surface->old_brush = NULL;
 
-    surface->clip_rect.x = (int16_t) rect.left;
-    surface->clip_rect.y = (int16_t) rect.top;
-    surface->clip_rect.width = (uint16_t) (rect.right - rect.left);
-    surface->clip_rect.height = (uint16_t) (rect.bottom - rect.top);
-
-    if (surface->clip_rect.width == 0 ||
-	surface->clip_rect.height == 0)
-    {
-	surface->saved_clip = NULL;
-    } else {
-	surface->saved_clip = CreateRectRgn (0, 0, 0, 0);
-	if (GetClipRgn (hdc, surface->saved_clip) == 0) {
-	    DeleteObject(surface->saved_clip);
-	    surface->saved_clip = NULL;
-	}
-    }
-
-    surface->extents = surface->clip_rect;
+    GetClipBox(hdc, &rect);
+    surface->extents.x = rect.left;
+    surface->extents.y = rect.top;
+    surface->extents.width = rect.right - rect.left;
+    surface->extents.height = rect.bottom - rect.top;
 
     surface->flags = _cairo_win32_flags_for_dc (surface->dc);
     surface->flags |= CAIRO_WIN32_SURFACE_FOR_PRINTING;
-    surface->clip_saved_dc = 0;
 
     _cairo_win32_printing_surface_init_ps_mode (surface);
     _cairo_surface_init (&surface->base, &cairo_win32_printing_surface_backend,
@@ -1521,8 +1510,8 @@ cairo_win32_printing_surface_create (HDC hdc)
 
     return _cairo_paginated_surface_create (&surface->base,
                                             CAIRO_CONTENT_COLOR_ALPHA,
-                                            rect.right - rect.left,
-                                            rect.bottom - rect.top,
+					    surface->extents.width,
+					    surface->extents.height,
                                             &cairo_win32_surface_paginated_backend);
 }
 

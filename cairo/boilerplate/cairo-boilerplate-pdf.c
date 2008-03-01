@@ -44,54 +44,6 @@ typedef struct _pdf_target_closure
 
 #define ARRAY_LENGTH(__array) ((int) (sizeof (__array) / sizeof (__array[0])))
 
-/* We currently ignore tests that generate valid PDF output, but which
- * poppler currently misrenders. This lets us avoid false negatives in
- * the test suite, (at the significant cost that we won't notice any
- * regressions in the PDF output of these tests).
- *
- * So obviously, we have an interest in ensuring that the poppler bugs
- * get fixed sooner rather than later, so that we can re-enable these
- * tests. As such, we're trying to be good citizens by reporting all
- * such poppler bugs that we identify to the poppler bugzilla.
- *
- * Here's a tracking bug explaining the situation:
- *
- *	Poppler does not yet handle everything in the cairo test suite
- *	https://bugs.freedesktop.org/show_bug.cgi?id=12143
- *
- * Here's the rule: To add any test to this list (based on a poppler
- * bug), you must first create a new bug report against poppler,
- * marked as blocking 12143, and list that bug here in a comment for
- * the ignored test(s).
- *
- * And when this list shrinks to nothing, we can close bug 12143.
- */
-static const char *pdf_ignored_tests[] = {
-    /* These first four failures are due to:
-     *
-     *	Poppler doesn't correctly handle gradients with transparency
-     *	https://bugs.freedesktop.org/show_bug.cgi?id=12144
-     */
-    "gradient-alpha",
-    "linear-gradient",
-    "radial-gradient",
-    "text-pattern",
-    "trap-clip",
-    /* These next 7 failures are due to:
-     *
-     *	Poppler does not correctly handle knockout groups
-     *	https://bugs.freedesktop.org/show_bug.cgi?id=12185
-     */
-    "clip-operator",
-    "operator-clear",
-    "operator-source",
-    "over-above-source",
-    "over-around-source",
-    "over-below-source",
-    "over-between-source",
-    "unbounded-operator"
-};
-
 cairo_surface_t *
 _cairo_boilerplate_pdf_create_surface (const char		 *name,
 				       cairo_content_t		  content,
@@ -102,13 +54,6 @@ _cairo_boilerplate_pdf_create_surface (const char		 *name,
 {
     pdf_target_closure_t *ptc;
     cairo_surface_t *surface;
-
-    if (mode == CAIRO_BOILERPLATE_MODE_TEST) {
-	int i;
-	for (i = 0; i < ARRAY_LENGTH (pdf_ignored_tests); i++)
-	    if (strcmp (name, pdf_ignored_tests[i]) == 0)
-		return NULL;
-    }
 
     /* Sanitize back to a real cairo_content_t value. */
     if (content == CAIRO_TEST_CONTENT_COLOR_ALPHA_FLATTENED)

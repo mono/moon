@@ -37,25 +37,23 @@ The primary source of information about cairo is:
 
 	http://cairographics.org/
 
-The latest releases of cairo can be found at:
+The latest versions of cairo can always be found at:
 
-	http://cairographics.org/releases
+	http://cairographics.org/download
 
-Snapshots of in-development versions of cairo:
+Documentation on using cairo and frequently-asked questions:
 
-	http://cairographics.org/snapshots
-
-The programming manual for using cairo:
-
-	http://cairographics.org/manual
+	http://cairographics.org/documentation
+	http://cairographics.org/FAQ
 
 Mailing lists for contacting cairo users and developers:
 
 	http://cairographics.org/lists
 
-Answers to some frequently asked questions about cairo:
+Roadmap and unscheduled things to do, (please feel free to help out):
 
-	http://cairographics.org/FAQ
+	http://cairographics.org/roadmap
+	http://cairographics.org/todo
 
 Compiling
 =========
