@@ -398,12 +398,12 @@ Shape::ComputeShapeBounds ()
 	double w = framework_element_get_width (this);
 	double h = framework_element_get_height (this);
 
-	if ((w == 0.0) && (h == 0.0))
+	if ((w == 0.0) || (h == 0.0))
 		return Rect ();
 
 	double t = shape_get_stroke_thickness (this) * .5;
 
-	return Rect (-t, -t, w + 2 * t, h + 2 * t);
+	return Rect (0, 0, w, h);
 }
 
 Rect
@@ -2130,11 +2130,13 @@ Path::ComputeShapeBounds ()
 	if (stretch != StretchNone) {
 		double sh = h / shape_bounds.h;
 		double sw = w / shape_bounds.w;
+		bool center = false;
 		switch (stretch) {
 		case StretchFill:
 			break;
 		case StretchUniform:
 			sw = sh = (sw < sh) ? sw : sh;
+			center = true;
 			break;
 		case StretchUniformToFill:
 			sw = sh = (sw > sh) ? sw : sh;
@@ -2144,9 +2146,11 @@ Path::ComputeShapeBounds ()
 		break;
 		}
 		
-		cairo_matrix_translate (&stretch_transform, w * 0.5, h * 0.5);
+		if (center)
+			cairo_matrix_translate (&stretch_transform, w * 0.5, h * 0.5);
 		cairo_matrix_scale (&stretch_transform, sw, sh);
-		cairo_matrix_translate (&stretch_transform, -shape_bounds.w * 0.5, -shape_bounds.h * 0.5);
+		if (center)
+			cairo_matrix_translate (&stretch_transform, -shape_bounds.w * 0.5, -shape_bounds.h * 0.5);
 		cairo_matrix_translate (&stretch_transform, -shape_bounds.x, -shape_bounds.y);
 
 		// Double check our math

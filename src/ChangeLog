@@ -1,5 +1,8 @@
 2008-02-29  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp (Shape::ComputeShapeBounds): tweak shape bounds to
+	match StretchAndShapes.xaml.
+
 	* collection.cpp (VisualCollection::Remove): don't fire
 	VisualRemoved unless we are going to actually remove the item.
 	Fixes OM_RemoveClearRemoveAt.htm.
