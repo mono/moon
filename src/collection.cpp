@@ -454,7 +454,7 @@ VisualCollection::ResortByZIndex ()
 	Collection::Node *node;
 	uint i = 0;
 	
-	if (z_sorted->len < 2)
+	if (z_sorted->len < 1)
 		return;
 	
 	node = (Collection::Node *) list->First ();
