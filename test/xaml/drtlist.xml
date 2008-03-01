@@ -539,4 +539,8 @@
 	inputFile="test-geometry-transform.xaml"
 	masterFile10="../harness/masters/test-geometry-transformMaster.png"
    />
+   <Test id="135"
+	inputFile="test-path-stretch-fill-extents.xaml"
+	masterFile10="../harness/masters/test-path-stretch-fill-extentsMaster.png"
+   />
 </DRTList>

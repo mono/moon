@@ -284,7 +284,8 @@ int number = 0;
 bool
 Shape::IsCandidateForCaching (void)
 {
-	
+	return FALSE;
+
 	if (IsEmpty ())
 		return FALSE;
 
@@ -306,65 +307,58 @@ Shape::IsCandidateForCaching (void)
 void
 Shape::DoDraw (cairo_t *cr, bool do_op)
 {
-	cairo_t *cached_cr = NULL;
-	cairo_pattern_t *cached_pattern = NULL;
 	bool ret = FALSE;
 
 	// quick out if, when building the path, we detected a empty shape
 	if (IsEmpty ())
 		goto cleanpath;
 
-	if (!do_op) {
-		cairo_set_matrix (cr, &absolute_xform);
-		Clip (cr);
+	if (do_op && cached_surface == NULL && IsCandidateForCaching ()) {
+		Rect cache_extents = bounds.RoundOut ();
+		cairo_t *cached_cr = NULL;
+		
+		// g_warning ("bounds (%f, %f), extents (%f, %f), cache_extents (%f, %f)", 
+		// bounds.w, bounds.h,
+		// extents.w, extents.h,
+		// cache_extents.w, cache_extents.h);
+		
+		cached_surface = image_brush_create_similar (cr, (int)cache_extents.w, (int)cache_extents.h);
+		cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
+		cached_cr = cairo_create (cached_surface);
+		
+		cairo_set_matrix (cached_cr, &absolute_xform);
+		Clip (cached_cr);
+	
+		ret = DrawShape (cached_cr, do_op);
+		
+		cairo_destroy (cached_cr);
+		
+		// Increase our cache size
+		// w * h * 4 might be incorrect in some cases actually...
+		// but in 99% it should be okay. If you're running on a 16bit
+		// server you're prolly screwed with cairo perf anyways.
+		cached_size = (int64_t) cache_extents.w * (int64_t) cache_extents.h * 4;
+		if (GetSurface ())
+			GetSurface ()->AddToCacheSizeCounter (cached_size);
+	}
+	
+	if (do_op && cached_surface) {
+		cairo_pattern_t *cached_pattern = NULL;
 
-		if (DrawShape (cr, do_op))
+		cached_pattern = cairo_pattern_create_for_surface (cached_surface);
+		cairo_identity_matrix (cr);
+		cairo_set_source (cr, cached_pattern);
+		cairo_paint (cr);
+		cairo_pattern_destroy (cached_pattern);
+		
+		if (ret)
 			return;
 	} else {
-		if (cached_surface == NULL && IsCandidateForCaching ()) {
-			Rect cache_extents = bounds.RoundOut ();
-
-			// g_warning ("bounds (%f, %f), extents (%f, %f), cache_extents (%f, %f)", 
-			// bounds.w, bounds.h,
-			// extents.w, extents.h,
-			// cache_extents.w, cache_extents.h);
-
-			cached_surface = image_brush_create_similar (cr, (int)cache_extents.w, (int)cache_extents.h);
-			cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
-			cached_cr = cairo_create (cached_surface);
-
-			cairo_set_matrix (cached_cr, &absolute_xform);
-			Clip (cached_cr);
-	
-			ret = DrawShape (cached_cr, do_op);
-
-			cairo_destroy (cached_cr);
-
-			// Increase our cache size
-			// w * h * 4 might be incorrect in some cases actually...
-			// but in 99% it should be okay. If you're running on a 16bit
-			// server you're prolly screwed with cairo perf anyways.
-			cached_size = (int64_t) cache_extents.w * (int64_t) cache_extents.h * 4;
-			if (GetSurface ())
-				GetSurface ()->AddToCacheSizeCounter (cached_size);
-		}
-
-		if (cached_surface) {
-			cached_pattern = cairo_pattern_create_for_surface (cached_surface);
-			cairo_identity_matrix (cr);
-			cairo_set_source (cr, cached_pattern);
-			cairo_paint (cr);
-			cairo_pattern_destroy (cached_pattern);
-
-			if (ret)
-				return;
-		} else {
-			cairo_set_matrix (cr, &absolute_xform);
-			Clip (cr);
-
-			if (DrawShape (cr, do_op))
-				return;
-		}
+		cairo_set_matrix (cr, &absolute_xform);
+		Clip (cr);
+		
+		if (DrawShape (cr, do_op))
+			return;
 	}
 
 cleanpath:
@@ -2065,7 +2059,19 @@ Path::SetupLine (cairo_t* cr)
 bool
 Path::DrawShape (cairo_t *cr, bool do_op)
 {
+#if 1
+	if (do_op) {
+		cairo_new_path (cr);
+		cairo_set_source_rgba (cr, 1.0, 1.0, 0.0, 1.0);
+		cairo_set_line_width (cr, .1);
+		extents.Draw (cr);
+		g_warning ("extents: (%f, %f, %f, %f) fe: (%f, %f)", extents.x, extents.y, extents.w, extents.h, framework_element_get_height (this), framework_element_get_width (this));
+		cairo_stroke (cr);
+	}
+#endif
+
 	bool drawn = Shape::Fill (cr, do_op);
+
 	if (stroke) {
 		if (!SetupLine (cr))
 			return drawn;	// return if we have a path in the cairo_t
@@ -2076,6 +2082,7 @@ Path::DrawShape (cairo_t *cr, bool do_op)
 			Draw (cr);
 		Stroke (cr, do_op);
 	}
+
 	return true;
 }
 
@@ -2132,6 +2139,7 @@ Path::ComputeShapeBounds ()
 		double sh = h / shape_bounds.h;
 		double sw = w / shape_bounds.w;
 		bool center = false;
+
 		switch (stretch) {
 		case StretchFill:
 			break;
@@ -2162,6 +2170,7 @@ Path::ComputeShapeBounds ()
 		}		
 	}
 
+	g_warning ("shape_bounds: (%f, %f, %f, %f)", shape_bounds.x, shape_bounds.y, shape_bounds.w, shape_bounds.h);
 	shape_bounds = shape_bounds.Transform (&stretch_transform);
 
 	if (vh && vw) {
@@ -2185,6 +2194,7 @@ Path::Draw (cairo_t *cr)
 	cairo_save (cr);
 	cairo_transform (cr, &stretch_transform);
 	geometry->Draw (this, cr);
+
 	cairo_restore (cr);
 }
 

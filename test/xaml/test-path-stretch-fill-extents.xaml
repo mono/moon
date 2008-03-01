@@ -1,0 +1,19 @@
+﻿<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="32" Height="32">
+  <Canvas.RenderTransform>
+    <TransformGroup>
+      <ScaleTransform x:Name="scaler" ScaleX="5.0" ScaleY="5.0"/>
+      <RotateTransform x:Name="rotator" Angle="0" CenterX="16" CenterY="16"/>
+      <TranslateTransform x:Name="translator" X="0" Y="0"/>
+    </TransformGroup>
+  </Canvas.RenderTransform>
+	<Canvas x:Name="Group" Width="32" Height="32">
+		<Canvas Width="10.2399" Height="10.2397" RenderTransformOrigin="0.5,0.5" Canvas.Left="11" Canvas.Top="10">
+			<Path x:Name="Red" Fill="red" Width="7.80612" Height="1.54333" Canvas.Left="1.12613" Canvas.Top="0" Stretch="Fill" Data="F1 M 1.12613,0L 8.93226,0L 8.92813,0.602997L 5.25948,0.602997L 5.25358,1.52252L 4.77442,1.54333L 4.76715,0.623962L 1.13026,0.623962L 1.12613,0 Z "/>
+			<Path x:Name="Blue" Fill="blue" Width="7.80956" Height="1.29599" Canvas.Left="1.17593" Canvas.Top="8.94366" Stretch="Fill" Data="F1 M 8.98549,10.2397L 1.17595,10.2394L 1.17593,9.63049L 4.84843,9.63654L 4.84833,8.94366L 5.34117,8.94366L 5.34127,9.61548L 8.98199,9.61499L 8.98549,10.2397 Z "/>
+			<Path x:Name="Green" Fill="green" Width="1.30455" Height="7.73947" Canvas.Left="8.9354" Canvas.Top="1.30234" Stretch="Fill" Data="F1 M 10.2399,1.3078L 10.2344,9.04181L 9.63683,9.03754L 9.63445,5.40305L 8.93566,5.4035L 8.9354,4.91574L 9.61299,4.91531L 9.6216,1.30234L 10.2399,1.3078 Z "/>
+			<Path x:Name="Orange" Fill="orange" Width="1.29952" Height="7.7489" Canvas.Left="0" Canvas.Top="1.34485" Stretch="Fill" Data="F1 M 0,9.09229L 0,1.34485L 0.592932,1.34485L 0.600727,5.00269L 1.29952,5.00269L 1.29946,5.49048L 0.621864,5.49048L 0.621864,9.09375L 0,9.09229 Z "/>
+			<Path x:Name="yellow" Fill="yellow" Width="7.67998"
+Height="7.68" Canvas.Left="1.29004" Canvas.Top="1.44231" Stretch="Fill" Data="F1 M 5.1595,1.44244C 7.28022,1.45959 8.98618,3.14191 8.9699,5.20004C 8.95363,7.25812 7.21898,9.13934 5.09827,9.12219C 2.97757,9.10501 1.27388,7.19598 1.29016,5.13788C 1.30643,3.07974 3.03877,1.42526 5.1595,1.44244 Z " />
+		</Canvas>
+	</Canvas>
+</Canvas>

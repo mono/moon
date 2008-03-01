@@ -1,5 +1,8 @@
 2008-03-01  Larry Ewing  <lewing@novell.com>
 
+	* geometry.cpp (path_get_bounds): use fill extents if there is no
+	stroke.
+
 	* shape.cpp (Shape::ComputeShapeBounds): make sure shapes with
 	negative widths or heights have no bounds.
 	(Shape::DoDraw): Silence warning.

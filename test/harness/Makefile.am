@@ -48,6 +48,7 @@ MOON_TESTS= \
 	../xaml/test-path-smoothbezier.xaml \
 	../xaml/test-path-smoothquadraticbezier-stroke.xaml \
 	../xaml/test-path-smoothquadraticbezier.xaml \
+	../xaml/test-path-stretch-fill-extents.xaml \
 	../xaml/test-property-path.xaml \
 	../xaml/test-render-xorigin.xaml \
 	../xaml/test-rtol.xaml \
