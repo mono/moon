@@ -1,3 +1,12 @@
+2008-03-03  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp:  Call FullInvalidate when clip changes so that
+	our subtree bounds are updated and invalidated.  Make sure we
+	don't reset the forced invalidate flag.
+
+	* dirty.cpp: invalidate subtree bounds on forced invalidations.
+	Fixes test-clip-invalid-update.htm.
+	
 2008-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::GetText): New method to generate a string

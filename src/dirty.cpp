@@ -254,7 +254,9 @@ process_dirty_elements ()
 				
 			if (el->force_invalidate_of_new_bounds) {
 				el->force_invalidate_of_new_bounds = false;
-				el->Invalidate ();
+				// Invalidate everything including the
+				// visible area of our children.
+				el->Invalidate (el->GetSubtreeBounds ());
 			}
 		}
 

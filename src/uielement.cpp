@@ -41,10 +41,10 @@ int UIElement::GotFocusEvent = -1;
 int UIElement::LostFocusEvent = -1;
 
 void
-UIElement::UpdateBounds (bool force_redraw_of_new_bounds)
+UIElement::UpdateBounds (bool force_redraw)
 {
 	add_dirty_element (this, DirtyBounds);
-	force_invalidate_of_new_bounds = force_redraw_of_new_bounds;
+	force_invalidate_of_new_bounds |= force_redraw;
 }
 
 void
@@ -146,7 +146,9 @@ UIElement::OnPropertyChanged (DependencyProperty *prop)
 		UpdateTotalHitTestVisibility();
 	}
 	else if (prop == UIElement::ClipProperty) {
-		Invalidate ();
+		// Since clip modifies bounds and subtreebounds
+		// we need to invalidate everything
+		FullInvalidate (false);
 	}
 	else if (prop == UIElement::OpacityMaskProperty) {
 		if (opacityMask != NULL) {
@@ -274,10 +276,11 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 	if (prop == UIElement::RenderTransformProperty) {
 		UpdateTransform ();
 	}
-	else if (prop == UIElement::ClipProperty ||
-		 prop == UIElement::OpacityMaskProperty) {
-
-		Invalidate ();
+	else if (prop == UIElement::ClipProperty) {
+		FullInvalidate (true);
+	}
+	else if (prop == UIElement::OpacityMaskProperty) {
+	        Invalidate ();
 	}
 	
 	Visual::OnSubPropertyChanged (prop, obj, subprop);
