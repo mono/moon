@@ -38,7 +38,7 @@ class Transform : public DependencyObject {
 	bool need_update;
 };
 
-Transform* transform_new ();
+Transform *transform_new (void);
 void   transform_get_transform (Transform *t, cairo_matrix_t *value);
 
 class RotateTransform : public Transform {
@@ -53,7 +53,7 @@ class RotateTransform : public Transform {
 	static DependencyProperty* CenterYProperty;
 };
 
-RotateTransform * rotate_transform_new ();
+RotateTransform *rotate_transform_new (void);
 
 void   rotate_transform_set_angle (RotateTransform *t, double angle);
 double rotate_transform_get_angle (RotateTransform *t);
@@ -75,7 +75,7 @@ class TranslateTransform : public Transform {
 	static DependencyProperty* YProperty;
 };
 
-TranslateTransform *translate_transform_new ();
+TranslateTransform *translate_transform_new (void);
 void   translate_transform_set_x (TranslateTransform *t, double x);
 double translate_transform_get_x (TranslateTransform *t);
 
@@ -96,7 +96,7 @@ public:
 	static DependencyProperty* CenterYProperty;
 };
 
-ScaleTransform * scale_transform_new ();
+ScaleTransform *scale_transform_new (void);
 void   scale_transform_set_scale_x (ScaleTransform *t, double scaleX);
 double scale_transform_get_scale_x (ScaleTransform *t);
 
@@ -123,7 +123,7 @@ public:
 	static DependencyProperty* CenterYProperty;
 };
 
-SkewTransform * skew_transform_new ();
+SkewTransform *skew_transform_new (void);
 void   skew_transform_set_angle_x (SkewTransform *t, double angleX);
 double skew_transform_get_angle_x (SkewTransform *t);
 
@@ -149,16 +149,14 @@ public:
 
 	Matrix ();
 
-	virtual Value *GetValue (DependencyProperty *prop);
-	virtual void SetValue (DependencyProperty *prop, Value value);
-	virtual void SetValue (DependencyProperty *prop, Value *value);
+	virtual void OnPropertyChanged (DependencyProperty *prop);
 
 	virtual Type::Kind GetObjectType () { return Type::MATRIX; }
 
 	cairo_matrix_t *GetUnderlyingMatrix ();
 };
 
-Matrix *matrix_new ();
+Matrix *matrix_new (void);
 double matrix_get_m11 (Matrix *matrix);
 void matrix_set_m11 (Matrix *matrix, double value);
 double matrix_get_m12 (Matrix *matrix);
@@ -185,7 +183,7 @@ class MatrixTransform : public Transform {
 	virtual void UpdateTransform ();
 };
 
-MatrixTransform *matrix_transform_new ();
+MatrixTransform *matrix_transform_new (void);
 void	matrix_transform_set_matrix (MatrixTransform *t, Matrix* matrix);
 Matrix*	matrix_transform_get_matrix (MatrixTransform *t);
 
@@ -212,7 +210,7 @@ public:
 	virtual void UpdateTransform ();
 };
 
-TransformGroup *transform_group_new ();
+TransformGroup *transform_group_new (void);
 
 void transform_init (void);
 

@@ -239,7 +239,6 @@ scale_transform_get_scale_x (ScaleTransform *t)
 void
 scale_transform_set_scale_y (ScaleTransform *t, double scaleY)
 {
-	printf ("Setting to %g\n", scaleY);
 	t->SetValue (ScaleTransform::ScaleYProperty, Value(scaleY));
 }
 
@@ -372,38 +371,18 @@ Matrix::Matrix ()
 	cairo_matrix_init_identity (&matrix);
 }
 
-Value *
-Matrix::GetValue (DependencyProperty *prop)
+void
+Matrix::OnPropertyChanged (DependencyProperty *prop)
 {
-	double value;
-
-	if (prop == Matrix::M11Property)
-		value = matrix.xx;
-	else if (prop == Matrix::M12Property)
-		value = matrix.yx;
-	else if (prop == Matrix::M21Property)
-		value = matrix.xy;
-	else if (prop == Matrix::M22Property)
-		value = matrix.yy;
-	else if (prop == Matrix::OffsetXProperty)
-		value = matrix.x0;
-	else if (prop == Matrix::OffsetYProperty)
-		value = matrix.y0;
-	else
-		return DependencyObject::GetValue (prop);
+	Value *value;
 	
-	return new Value (value);
-}
-
-void
-Matrix::SetValue (DependencyProperty *prop, Value value)
-{
-	DependencyObject::SetValue (prop, value);
-}
-
-void
-Matrix::SetValue (DependencyProperty *prop, Value *value)
-{
+	if (prop->type != Type::MATRIX) {
+		DependencyObject::OnPropertyChanged (prop);
+		return;
+	}
+	
+	value = GetValue (prop);
+	
 	if (prop == Matrix::M11Property)
 		matrix.xx = value->AsDouble ();
 	else if (prop == Matrix::M12Property)
@@ -416,8 +395,8 @@ Matrix::SetValue (DependencyProperty *prop, Value *value)
 		matrix.x0 = value->AsDouble ();
 	else if (prop == Matrix::OffsetYProperty)
 		matrix.y0 = value->AsDouble ();
-	else
-		DependencyObject::SetValue (prop, value);
+	
+	DependencyObject::OnPropertyChanged (prop);
 }
 
 cairo_matrix_t *
@@ -427,7 +406,7 @@ Matrix::GetUnderlyingMatrix ()
 }
 
 Matrix *
-matrix_new ()
+matrix_new (void)
 {
 	return new Matrix ();
 }
