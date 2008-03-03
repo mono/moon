@@ -211,7 +211,7 @@ public class GtkSilver : EventBox {
 		XamlLoader loader = XamlLoader.CreateManagedXamlLoader (surface, IntPtr.Zero);
 		object top = loader.CreateDependencyObjectFromString (xaml, true);
 
-		if (top != null)
+		if (top == null)
 			return false;
 
 		canvas = top as Canvas;
