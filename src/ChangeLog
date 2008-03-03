@@ -1,5 +1,8 @@
 2008-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (text_init): Register ActualWidth and ActualHeight
+	properties as ReadOnly.
+
 	* transform.cpp (Matrix::GetValue): Removed.
 	(Matrix::SetValue): Removed.
 	(Matrix::OnPropertyChanged): Implemented.

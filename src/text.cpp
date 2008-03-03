@@ -2278,8 +2278,8 @@ text_init (void)
 	
 	
 	// TextBlock
-	TextBlock::ActualHeightProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualHeight", Type::DOUBLE);
-	TextBlock::ActualWidthProperty = DependencyObject::Register (Type::TEXTBLOCK, "ActualWidth", Type::DOUBLE);
+	TextBlock::ActualHeightProperty = DependencyObject::RegisterFull (Type::TEXTBLOCK, "ActualHeight", NULL, Type::DOUBLE, false, true);
+	TextBlock::ActualWidthProperty = DependencyObject::RegisterFull (Type::TEXTBLOCK, "ActualWidth", NULL, Type::DOUBLE, false, true);
 	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
 	TextBlock::FontSizeProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));
 	TextBlock::FontStretchProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
