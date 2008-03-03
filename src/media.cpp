@@ -2128,20 +2128,21 @@ media_init (void)
 	
 	/* MediaElement */
 	MediaElement::AttributesProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Attributes", Type::MEDIAATTRIBUTE_COLLECTION);
-	MediaElement::AudioStreamCountProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AudioStreamCount", new Value (0));
+	MediaElement::AudioStreamCountProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "AudioStreamCount", new Value (0), Type::INT32, false, true);
+	// FIXME: AudioStreamIndex is a nullable int
 	MediaElement::AudioStreamIndexProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AudioStreamIndex", new Value (-1));
 	MediaElement::AutoPlayProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AutoPlay", new Value (true));
 	MediaElement::BalanceProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Balance", new Value (0.0));
-	MediaElement::BufferingProgressProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0));
+	MediaElement::BufferingProgressProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0), Type::DOUBLE, false, true);
 	MediaElement::BufferingTimeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "BufferingTime", new Value (TimeSpan_FromSeconds (5), Type::TIMESPAN));
-	MediaElement::CanPauseProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanPause", new Value (false));
-	MediaElement::CanSeekProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CanSeek", new Value (false));
-	MediaElement::CurrentStateProperty = DependencyObject::Register (Type::MEDIAELEMENT, "CurrentState", Type::STRING);
+	MediaElement::CanPauseProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "CanPause", new Value (false), Type::BOOL, false, true);
+	MediaElement::CanSeekProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "CanSeek", new Value (false), Type::BOOL, false, true);
+	MediaElement::CurrentStateProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "CurrentState", NULL, Type::STRING, false, true);
 	MediaElement::IsMutedProperty = DependencyObject::Register (Type::MEDIAELEMENT, "IsMuted", new Value (false));
 	MediaElement::MarkersProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Markers", Type::TIMELINEMARKER_COLLECTION);
-	MediaElement::NaturalDurationProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalDuration", new Value(Duration::FromSeconds (0)));
-	MediaElement::NaturalVideoHeightProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalVideoHeight", new Value (0.0));
-	MediaElement::NaturalVideoWidthProperty = DependencyObject::Register (Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0));
+	MediaElement::NaturalDurationProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "NaturalDuration", new Value (Duration::FromSeconds (0)), Type::DURATION, false, true);
+	MediaElement::NaturalVideoHeightProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoHeight", new Value (0.0), Type::DOUBLE, false, true);
+	MediaElement::NaturalVideoWidthProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::DOUBLE, false, true);
 	MediaElement::PositionProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::VolumeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
 

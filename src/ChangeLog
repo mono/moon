@@ -1,5 +1,10 @@
 2008-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.cpp (media_init): Register AudioStreamCount,
+	BufferingProgress, CanPause, CanSeek, CurrentState,
+	NaturalDuration, NaturalVideoWidth, NaturalVideoHeight properties
+	as being read-only.
+
 	* text.cpp (text_init): Register ActualWidth and ActualHeight
 	properties as ReadOnly.
 
@@ -17,7 +22,6 @@
 	* shape.cpp (Shape::ComputeShapeBounds): make sure shapes with
 	negative widths or heights have no bounds.
 	(Shape::DoDraw): Silence warning.
-	
 
 2008-02-29  Larry Ewing  <lewing@novell.com>
 

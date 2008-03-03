@@ -291,7 +291,7 @@ class DependencyObject : public EventObject {
 //
 class DependencyProperty {
  public:
-	DependencyProperty () {} ;
+	DependencyProperty () {};
 	~DependencyProperty ();
 	DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly);
 
