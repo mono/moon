@@ -399,10 +399,10 @@ Matrix::OnPropertyChanged (DependencyProperty *prop)
 	DependencyObject::OnPropertyChanged (prop);
 }
 
-cairo_matrix_t *
+cairo_matrix_t
 Matrix::GetUnderlyingMatrix ()
 {
-	return &matrix;
+	return matrix;
 }
 
 Matrix *
@@ -488,12 +488,11 @@ DependencyProperty* MatrixTransform::MatrixProperty;
 void
 MatrixTransform::UpdateTransform ()
 {
-	cairo_matrix_t* matrix = matrix_transform_get_matrix (this)->GetUnderlyingMatrix ();
+	Matrix *matrix = GetValue (MatrixTransform::MatrixProperty)->AsMatrix();
 	if (matrix)
-		_matrix = *matrix;
+		_matrix = matrix->GetUnderlyingMatrix();
 	else
 		cairo_matrix_init_identity (&_matrix);
-	//printf ("Returning1 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
 MatrixTransform *

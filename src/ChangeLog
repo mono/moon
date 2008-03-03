@@ -1,3 +1,9 @@
+2008-03-03  Chris Toshok  <toshok@ximian.com>
+
+	* transform.h, transform.cpp: Make Matrix::GetUnderlyingMatrix
+	return a cairo_matrix_t instead of a pointer to the
+	internal (mutable) field, and update its only use.
+
 2008-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (media_element_get_audio_stream_index): Fixed to

@@ -153,7 +153,7 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::MATRIX; }
 
-	cairo_matrix_t *GetUnderlyingMatrix ();
+	cairo_matrix_t GetUnderlyingMatrix ();
 };
 
 Matrix *matrix_new (void);
