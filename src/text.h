@@ -115,11 +115,15 @@ class TextBlock : public FrameworkElement {
 	double actual_width;
 	double bbox_height;
 	double bbox_width;
+	bool setvalue;
 	bool dirty;
 	
 	void CalcActualWidthHeight (cairo_t *cr);
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
+	
+	char *GetText ();
+	bool SetText (const char *text);
 	
 	double GetBoundingWidth ()
 	{
@@ -191,8 +195,6 @@ public:
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
 	
 	virtual Value *GetValue (DependencyProperty *property);
-	virtual void SetValue (DependencyProperty *property, Value *value);
-	virtual void SetValue (DependencyProperty *property, Value value);
 };
 
 TextBlock *text_block_new (void);

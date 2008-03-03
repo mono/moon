@@ -1,3 +1,19 @@
+2008-03-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::GetText): New method to generate a string
+	representing the Text property from the inlines.
+	(TextBlock::SetText): New method (split out from the old
+	::SetValue code) to parse the newly set text string into a list of
+	Inlines and update out InlinesProperty if changed. Returns whether
+	or not the inlines property changed.
+	(TextBlock::OnPropertyChanged): Call SetText() to update out
+	Inlines if the TextProperty value was changed by an outside
+	source. If the InlinesProperty was changed by an outside source,
+	update our TextProperty.
+	(TextBlock::OnCollectionChanged): Update our TextProperty if an
+	Inline was added or removed or if a Run element had its
+	TextProperty changed.
+
 2008-03-03  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp: plug a memory leak in the 3
@@ -61,6 +77,8 @@
 	(VisualCollection::Insert): Don't use g_ptr_array_insert_sorted()
 	because we need to take index into account. Instead, grow our
 	array and call ResortByZIndex().
+
+2008-02-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::GetValue): Revert memleak fix, it created
 	an even more fun memory corruption bug.

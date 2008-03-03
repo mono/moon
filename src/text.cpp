@@ -31,7 +31,7 @@
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
 #define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
-#define TEXTBLOCK_FONT_SIZE    14.666
+#define TEXTBLOCK_FONT_SIZE    14.666666984558105
 
 
 extern guint32 moonlight_flags;
@@ -394,7 +394,9 @@ TextBlock::TextBlock ()
 	foreground = NULL;
 	downloader = NULL;
 	
+	setvalue = true;
 	dirty = true;
+	
 	actual_height = 0.0;
 	actual_width = 0.0;
 	bbox_height = 0.0;
@@ -851,6 +853,170 @@ TextBlock::Paint (cairo_t *cr)
 	}
 }
 
+char *
+TextBlock::GetText ()
+{
+	Inlines *inlines = text_block_get_inlines (this);
+	GString *block;
+	char *text;
+	
+	block = g_string_new ("");
+	
+	if (inlines != NULL) {
+		Collection::Node *node = (Collection::Node *) inlines->list->First ();
+		Inline *item;
+		Run *run;
+		
+		while (node != NULL) {
+			item = (Inline *) node->obj;
+			
+			switch (item->GetObjectType ()) {
+			case Type::RUN:
+				run = (Run *) item;
+				
+				text = run_get_text (run);
+				
+				if (text && text[0])
+					g_string_append (block, text);
+				break;
+			case Type::LINEBREAK:
+				g_string_append_c (block, '\n');
+				break;
+			default:
+				break;
+			}
+			
+			node = (Collection::Node *) node->next;
+		}
+	}
+	
+	text = block->str;
+	g_string_free (block, false);
+	
+	return text;
+}
+
+static bool
+inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
+{
+	Collection::Node *node1, *node2;
+	const char *text1, *text2;
+	Inline *run1, *run2;
+	
+	node1 = (Collection::Node *) curInlines->list->First ();
+	node2 = (Collection::Node *) newInlines->list->First ();
+	
+	while (node1 && node2) {
+		run1 = (Inline *) node1->obj;
+		run2 = (Inline *) node2->obj;
+		
+		if (run1->GetObjectType () != run2->GetObjectType ())
+			return false;
+		
+		if (run1->GetObjectType () == Type::RUN) {
+			text1 = run_get_text ((Run *) run1);
+			text2 = run_get_text ((Run *) run2);
+			
+			if (text1 && text2 && strcmp (text1, text2) != 0)
+				return false;
+			else if ((text1 && !text2) || (!text1 && text2))
+				return false;
+		}
+		
+		// newInlines uses TextBlock font/brush properties, so
+		// if curInlines uses any non-default props then they
+		// are not equal.
+		
+		if (RENDER_USING_PANGO) {
+			if (pango_font_description_get_set_fields (run1->font.pango) != 0)
+				return false;
+		} else {
+			if (run1->font.custom->GetFields () != 0)
+				return false;
+		}
+		
+		if (run1->GetValueNoDefault (Inline::TextDecorationsProperty) != NULL)
+			return false;
+		
+		if (run1->foreground != NULL)
+			return false;
+		
+		node1 = (Collection::Node *) node1->next;
+		node2 = (Collection::Node *) node2->next;
+	}
+	
+	if (node1 != NULL || node2 != NULL)
+		return false;
+	
+	return true;
+}
+
+bool
+TextBlock::SetText (const char *text)
+{
+	Inlines *curInlines = text_block_get_inlines (this);
+	Inlines *inlines = NULL;
+	char *inptr, *buf, *d;
+	const char *txt;
+	Inline *run;
+	
+	if (text && text[0]) {
+		inlines = new Inlines ();
+		
+		d = buf = (char *) g_malloc (strlen (text) + 1);
+		txt = text;
+		
+		while (*txt) {
+			if (*txt != '\r')
+				*d++ = *txt;
+			txt++;
+		}
+		*d = '\n';
+		
+		inptr = buf;
+		while (inptr < d) {
+			txt = inptr;
+			while (*inptr != '\n')
+				inptr++;
+			
+			if (inptr > txt) {
+				*inptr = '\0';
+				run = new Run ();
+				run->autogen = true;
+				run_set_text ((Run *) run, txt);
+				inlines->Add (run);
+				run->unref ();
+			}
+			
+			if (inptr < d) {
+				run = new LineBreak ();
+				run->autogen = true;
+				inlines->Add (run);
+				run->unref ();
+				inptr++;
+			}
+		}
+		
+		g_free (buf);
+		
+		if (curInlines && inlines_simple_text_equal (curInlines, inlines)) {
+			// old/new inlines are equal, don't set the new value
+			inlines->unref ();
+			return false;
+		}
+		
+		setvalue = false;
+		text_block_set_inlines (this, inlines);
+		setvalue = true;
+		
+		inlines->unref ();
+	} else if (curInlines) {
+		curInlines->Clear ();
+	}
+	
+	return true;
+}
+
 void
 TextBlock::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -907,10 +1073,34 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		
 		dirty = true;
 	} else if (prop == TextBlock::TextProperty) {
-		// handled elsewhere
-		dirty = true;
+		if (setvalue) {
+			// result of a change to the TextBlock.Text property
+			char *text = text_block_get_text (this);
+			
+			if (!SetText (text)) {
+				// no change so nothing to invalidate
+				invalidate = false;
+			} else {
+				dirty = true;
+			}
+		} else {
+			// result of a change to the TextBlock.Inlines property
+			invalidate = false;
+		}
 	} else if (prop == TextBlock::InlinesProperty) {
-		dirty = true;
+		if (setvalue) {
+			// result of a change to the TextBlock.Inlines property
+			char *text = GetText ();
+			
+			setvalue = false;
+			SetValue (TextBlock::TextProperty, Value (text));
+			setvalue = true;
+			g_free (text);
+			dirty = true;
+		} else {
+			// result of a change to the TextBlock.Text property
+			invalidate = false;
+		}
 	} else if (prop == TextBlock::ForegroundProperty) {
 		if (foreground != NULL) {
 			foreground->Detach (NULL, this);
@@ -950,6 +1140,28 @@ void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
 {
 	if (prop != Inline::ForegroundProperty) {
+		bool update_text = false;
+		
+		if (type == CollectionChangeTypeItemAdded || type == CollectionChangeTypeItemRemoved) {
+			// an Inline element has been added or removed, update our TextProperty
+			update_text = true;
+		} else if (prop == Run::TextProperty && type == CollectionChangeTypeItemChanged) {
+			// a Run element's TextProperty has been changed, update our TextProperty
+			update_text = true;
+		} else if (type == CollectionChangeTypeChanged) {
+			// the collection has changed, only update our TextProperty if it was the result of a SetValue
+			update_text = setvalue;
+		}
+		
+		if (update_text) {
+			char *text = GetText ();
+			
+			setvalue = false;
+			SetValue (TextBlock::TextProperty, Value (text));
+			setvalue = true;
+			g_free (text);
+		}
+		
 		dirty = true;
 		UpdateBounds (true);
 	}
@@ -963,187 +1175,7 @@ TextBlock::GetValue (DependencyProperty *property)
 	if (dirty && ((property == TextBlock::ActualHeightProperty) || (property == TextBlock::ActualWidthProperty)))
 		CalcActualWidthHeight (NULL);
 	
-	if (property == TextBlock::TextProperty) {
-		GString *block;
-		Value *val;
-		
-		// The Text property is a concatenation of the Inlines */
-		Inlines *inlines = text_block_get_inlines (this);
-		
-		block = g_string_new ("");
-		
-		if (inlines != NULL) {
-			Collection::Node *node = (Collection::Node *) inlines->list->First ();
-			Inline *item;
-			char *text;
-			Run *run;
-			
-			while (node != NULL) {
-				item = (Inline *) node->obj;
-				
-				switch (item->GetObjectType ()) {
-				case Type::RUN:
-					run = (Run *) item;
-					
-					text = run_get_text (run);
-					
-					if (text && text[0])
-						g_string_append (block, text);
-					break;
-				case Type::LINEBREAK:
-					g_string_append_c (block, '\n');
-					break;
-				default:
-					break;
-				}
-				
-				node = (Collection::Node *) node->next;
-			}
-		}
-		
-		val = new Value (block->str);
-		g_string_free (block, true);
-		return val;
-	}
-	
 	return DependencyObject::GetValue (property);
-}
-
-static bool
-inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
-{
-	Collection::Node *node1, *node2;
-	const char *text1, *text2;
-	Inline *run1, *run2;
-	
-	node1 = (Collection::Node *) curInlines->list->First ();
-	node2 = (Collection::Node *) newInlines->list->First ();
-	
-	while (node1 && node2) {
-		run1 = (Inline *) node1->obj;
-		run2 = (Inline *) node2->obj;
-		
-		if (run1->GetObjectType () != run2->GetObjectType ())
-			return false;
-		
-		if (run1->GetObjectType () == Type::RUN) {
-			text1 = run_get_text ((Run *) run1);
-			text2 = run_get_text ((Run *) run2);
-			
-			if (text1 && text2 && strcmp (text1, text2) != 0)
-				return false;
-			else if ((text1 && !text2) || (!text1 && text2))
-				return false;
-		}
-		
-		// newInlines uses TextBlock font/brush properties, so
-		// if curInlines uses any non-default props then they
-		// are not equal.
-		
-		if (RENDER_USING_PANGO) {
-			if (pango_font_description_get_set_fields (run1->font.pango) != 0)
-				return false;
-		} else {
-			if (run1->font.custom->GetFields () != 0)
-				return false;
-		}
-		
-		if (run1->GetValue (Inline::TextDecorationsProperty) != NULL)
-			return false;
-		
-		if (run1->foreground != NULL)
-			return false;
-		
-		node1 = (Collection::Node *) node1->next;
-		node2 = (Collection::Node *) node2->next;
-	}
-	
-	if (node1 != NULL || node2 != NULL)
-		return false;
-	
-	return true;
-}
-
-void
-TextBlock::SetValue (DependencyProperty *property, Value *value)
-{
-	if (value) {
-		if (property == TextBlock::ActualHeightProperty)
-			actual_height = value->AsDouble ();
-		else if (property == TextBlock::ActualWidthProperty)
-			actual_width = value->AsDouble ();
-	}
-	
-	if (property == TextBlock::TextProperty) {
-		// Text is a virtual property and setting it deletes all current runs,
-		// creating a new collection of runs/linebreaks
-		const char *str = value ? value->AsString () : NULL;
-		Inlines *curInlines = text_block_get_inlines (this);
-		Inlines *inlines = NULL;
-		char *inptr, *text, *d;
-		Inline *run;
-		
-		if (str && str[0]) {
-			inlines = new Inlines ();
-			
-			d = text = (char *) g_malloc (strlen (str) + 1);
-			while (*str) {
-				if (*str != '\r')
-					*d++ = *str;
-				str++;
-			}
-			*d = '\n';
-			
-			inptr = text;
-			while (inptr < d) {
-				str = inptr;
-				while (*inptr != '\n')
-					inptr++;
-				
-				if (inptr > str) {
-					*inptr = '\0';
-					run = new Run ();
-					run->autogen = true;
-					run_set_text ((Run *) run, str);
-					inlines->Add (run);
-					run->unref ();
-				}
-				
-				if (inptr < d) {
-					run = new LineBreak ();
-					run->autogen = true;
-					inlines->Add (run);
-					run->unref ();
-					inptr++;
-				}
-			}
-			
-			g_free (text);
-			
-			if (curInlines && inlines_simple_text_equal (curInlines, inlines)) {
-				// old/new inlines are equal, don't set the new value
-				inlines->unref ();
-				return;
-			}
-			
-			text_block_set_inlines (this, inlines);
-			inlines->unref ();
-			dirty = true;
-		} else if (curInlines) {
-			curInlines->Clear ();
-			dirty = true;
-		}
-		
-		return;
-	}
-	
-	return DependencyObject::SetValue (property, value);
-}
-
-void
-TextBlock::SetValue (DependencyProperty *property, Value value)
-{
-	SetValue (property, &value);
 }
 
 void
