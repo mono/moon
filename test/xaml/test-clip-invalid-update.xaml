@@ -1,0 +1,12 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded">
+        <Canvas Opacity="0.5">
+                <Canvas.Clip>
+                    <RectangleGeometry x:Name="clipRect" Rect="0,0,10,50"/>
+                </Canvas.Clip>
+     	        <Rectangle Fill="Red" StrokeThickness="10" Stroke="Green" Width="100" Height="100" />
+                <!-- this should be drawn over the previous rectangle (no blending) -->
+                <Rectangle Canvas.Left="50" Canvas.Top="50" Fill="Blue"
+			   Width="100" Height="100" />
+	</Canvas>
+</Canvas>

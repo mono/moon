@@ -543,4 +543,8 @@
 	inputFile="test-path-stretch-fill-extents.xaml"
 	masterFile10="../harness/masters/test-path-stretch-fill-extentsMaster.png"
    />
+   <Test id="136"
+        inputFile="test-clip-update-invalid.htm"
+	masterFile10="../harness/masters/test-clip-update-invalidMaster.png"
+   />
 </DRTList>
