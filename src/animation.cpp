@@ -1320,6 +1320,7 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	DoubleKeyFrame *previous_keyframe;
 	DoubleKeyFrame** keyframep = &previous_keyframe;
 	Value *baseValue;
+	bool deleteBaseValue;
 
 	current_keyframe = (DoubleKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
 	if (current_keyframe == NULL) {
@@ -1333,12 +1334,14 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	if (previous_keyframe == NULL) {
 		/* the first keyframe, start at the animation's base value */
 		baseValue = defaultOriginValue;
+		deleteBaseValue = false;
 		key_start_time = 0;
 	}
 	else {
 		/* start at the previous keyframe's target value */
-		baseValue = new Value(*previous_keyframe->GetValue ());
 		/* XXX DoubleKeyFrame::Value is nullable */
+		baseValue = new Value (*previous_keyframe->GetValue ());
+		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
 	}
 
@@ -1356,7 +1359,10 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	}
 
 	/* get the current value out of that segment */
-	return current_keyframe->InterpolateValue (baseValue, progress);
+	Value *rv = current_keyframe->InterpolateValue (baseValue, progress);
+	if (deleteBaseValue)
+		delete baseValue;
+	return rv;
 }
 
 Duration
@@ -1427,6 +1433,7 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	ColorKeyFrame *previous_keyframe;
 	ColorKeyFrame** keyframep = &previous_keyframe;
 	Value *baseValue;
+	bool deleteBaseValue;
 
 	current_keyframe = (ColorKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
 	if (current_keyframe == NULL)
@@ -1438,12 +1445,14 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	if (previous_keyframe == NULL) {
 		/* the first keyframe, start at the animation's base value */
 		baseValue = defaultOriginValue;
+		deleteBaseValue = false;
 		key_start_time = 0;
 	}
 	else {
 		/* start at the previous keyframe's target value */
-		baseValue = new Value(*previous_keyframe->GetValue ());
 		/* XXX ColorKeyFrame::Value is nullable */
+		baseValue = new Value(*previous_keyframe->GetValue ());
+		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
 	}
 
@@ -1461,7 +1470,10 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	}
 
 	/* get the current value out of that segment */
-	return current_keyframe->InterpolateValue (baseValue, progress);
+	Value *rv = current_keyframe->InterpolateValue (baseValue, progress);
+	if (deleteBaseValue)
+		delete baseValue;
+	return rv;;
 }
 
 Duration
@@ -1532,6 +1544,7 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	PointKeyFrame *previous_keyframe;
 	PointKeyFrame** keyframep = &previous_keyframe;
 	Value *baseValue;
+	bool deleteBaseValue;
 
 	current_keyframe = (PointKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
 	if (current_keyframe == NULL)
@@ -1543,12 +1556,14 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	if (previous_keyframe == NULL) {
 		/* the first keyframe, start at the animation's base value */
 		baseValue = defaultOriginValue;
+		deleteBaseValue = false;
 		key_start_time = 0;
 	}
 	else {
 		/* start at the previous keyframe's target value */
-		baseValue = new Value(*previous_keyframe->GetValue ());
 		/* XXX PointKeyFrame::Value is nullable */
+		baseValue = new Value(*previous_keyframe->GetValue ());
+		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
 	}
 
@@ -1566,7 +1581,10 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	}
 
 	/* get the current value out of that segment */
-	return current_keyframe->InterpolateValue (baseValue, progress);
+	Value *rv = current_keyframe->InterpolateValue (baseValue, progress);
+	if (deleteBaseValue)
+		delete baseValue;
+	return rv;
 }
 
 Duration

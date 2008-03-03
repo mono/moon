@@ -1,5 +1,10 @@
 2008-03-03  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp: plug a memory leak in the 3
+	UsingKeyFrames::GetCurrentValue methods.
+
+2008-03-03  Chris Toshok  <toshok@ximian.com>
+
 	* transform.h, transform.cpp: Make Matrix::GetUnderlyingMatrix
 	return a cairo_matrix_t instead of a pointer to the
 	internal (mutable) field, and update its only use.
