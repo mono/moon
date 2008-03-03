@@ -1,3 +1,10 @@
+2008-03-03  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::EventHandle): add
+	KeyPress/KeyRelease handling.  there are some XXX's involing the
+	call to gdk_keymap_translate_keyboard_state, but I have no test
+	case at present to test this stuff against.  Use at your own risk.
+
 2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-downloader.cpp: Don't call dl->NotifySize with the partial size of

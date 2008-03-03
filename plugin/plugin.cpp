@@ -1239,6 +1239,37 @@ PluginInstance::EventHandle (void *event)
 		}
 		break;
 	}
+	case KeyPress:
+	case KeyRelease: {
+		GdkEventKey key;
+
+		key.type = xev->type == KeyPress ? GDK_KEY_PRESS : GDK_KEY_RELEASE;
+		key.window = NULL;
+		key.send_event = xev->xkey.send_event;
+		key.time = xev->xkey.time;
+		key.state = xev->xkey.state;
+		key.hardware_keycode = xev->xkey.keycode;
+
+		gint effective_group;
+
+		gdk_keymap_translate_keyboard_state (gdk_keymap_get_default (),
+						     xev->xkey.keycode,
+						     (GdkModifierType)xev->xkey.state, // XXX
+						     0, // XXX
+						     &key.keyval,
+						     &effective_group,
+						     NULL,
+						     NULL);
+
+		key.group = (guint8)effective_group;
+
+		if (xev->type == KeyPress)
+			handled = Surface::key_press_callback (NULL, &key, surface);
+		else
+			handled = Surface::key_release_callback (NULL, &key, surface);
+
+		break;
+	}
 	case EnterNotify:
 	case LeaveNotify: {
 		GdkEventCrossing crossing;
