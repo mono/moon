@@ -1673,6 +1673,9 @@ TextFontDescription::SetFamily (const char *family)
 	bool changed;
 	
 	if (family) {
+		if (!g_ascii_strcasecmp (family, "Portable User Interface"))
+			family = "Lucida Sans Unicode, Lucida Sans";
+		
 		if (!this->family || g_ascii_strcasecmp (this->family, family) != 0) {
 			g_free (this->family);
 			this->family = g_strdup (family);

@@ -27,7 +27,7 @@
 #define d(x) x
 
 
-#define TEXTBLOCK_FONT_FAMILY  "Lucida Sans Unicode, Lucida Sans"
+#define TEXTBLOCK_FONT_FAMILY  "Portable User Interface"
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
 #define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
