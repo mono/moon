@@ -16,6 +16,8 @@
 	(media_element_set_audio_stream_index): Same.
 	(media_init): Register the AudioStreamIndex property as being
 	nullable.
+	(MediaElement::Reinitialize): Set the CurrentStateProperty to
+	"Closed".
 
 2008-03-03  Jeffrey Stedfast  <fejj@novell.com>
 

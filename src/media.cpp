@@ -511,6 +511,7 @@ MediaElement::Reinitialize ()
 		delete media;
 		media = NULL;
 	}
+	
 	if (closure) {
 		delete closure;
 		closure = NULL;
@@ -522,6 +523,7 @@ MediaElement::Reinitialize ()
 	}
 	
 	flags = (flags & (Loaded | PlayRequested)) | RecalculateMatrix;
+	SetValue (MediaElement::CurrentStateProperty, "Closed");
 	prev_state = Closed;
 	state = Closed;
 	
@@ -549,7 +551,7 @@ MediaElement::Reinitialize ()
 	val = GetValue (MediaElement::AttributesProperty);
 	if (val != NULL && val->AsCollection () != NULL)
 		val->AsCollection ()->Clear ();
-
+	
 	SetValue (PositionProperty, Value (0, Type::TIMESPAN));
 }
 
@@ -573,31 +575,31 @@ MediaElement::MediaOpened (Media *media)
 	
 	ReadMarkers ();
 	
-	media_element_set_can_seek (this, mplayer->CanSeek ());
-	media_element_set_can_pause (this, mplayer->CanPause ());
-	media_element_set_audio_stream_count (this, mplayer->GetAudioStreamCount ());
-	media_element_set_natural_duration (this, Duration (TimeSpan_FromPts (mplayer->Duration ())));
-	media_element_set_natural_video_height (this, mplayer->height);
-	media_element_set_natural_video_width (this, mplayer->width);
+	SetValue (MediaElement::CanSeekProperty, mplayer->CanSeek ());
+	SetValue (MediaElement::CanPauseProperty, mplayer->CanPause ());
+	SetValue (MediaElement::AudioStreamCountProperty, mplayer->GetAudioStreamCount ());
+	SetValue (MediaElement::NaturalDurationProperty, Duration (TimeSpan_FromPts (mplayer->Duration ())));
+	SetValue (MediaElement::NaturalVideoHeightProperty, mplayer->height);
+	SetValue (MediaElement::NaturalVideoWidthProperty, mplayer->width);
 	
-	mplayer->SetMuted (media_element_get_is_muted (this));
-	mplayer->SetVolume (media_element_get_volume (this));
-	mplayer->SetBalance (media_element_get_balance (this));
-
+	mplayer->SetMuted (GetValue (MediaElement::IsMutedProperty)->AsBool ());
+	mplayer->SetVolume (GetValue (MediaElement::VolumeProperty)->AsDouble ());
+	mplayer->SetBalance (GetValue (MediaElement::BalanceProperty)->AsDouble ());
+	
 	UpdatePlayerPosition (GetValue (MediaElement::PositionProperty));
-
+	
 	Emit (MediaElement::MediaOpenedEvent);
 }
 
 void
 MediaElement::MediaFailed ()
 {
-	media_element_set_can_seek (this, false);
-	media_element_set_can_pause (this, false);
-	media_element_set_audio_stream_count (this, 0);
-	media_element_set_natural_duration (this, Duration (0));
-	media_element_set_natural_video_height (this, 0);
-	media_element_set_natural_video_width (this, 0);
+	SetValue (MediaElement::CanSeekProperty, false);
+	SetValue (MediaElement::CanPauseProperty, false);
+	SetValue (MediaElement::AudioStreamCountProperty, 0);
+	SetValue (MediaElement::NaturalDurationProperty, Duration::FromSeconds (0));
+	SetValue (MediaElement::NaturalVideoHeightProperty, 0);
+	SetValue (MediaElement::NaturalVideoWidthProperty, 0);
 	
 	SetState (MediaElement::Error);
 	Emit (MediaElement::MediaFailedEvent);
@@ -814,7 +816,7 @@ MediaElement::SetState (MediaElementState state)
 	prev_state = this->state;
 	this->state = state;
 	
-	media_element_set_current_state (this, name);		
+	SetValue (MediaElement::CurrentStateProperty, name);
 }
 
 void 
