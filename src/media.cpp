@@ -1404,9 +1404,13 @@ media_element_set_audio_stream_count (MediaElement *media, int value)
 int
 media_element_get_audio_stream_index (MediaElement *media)
 {
-	int idx = (int) media->GetValue (MediaElement::AudioStreamIndexProperty)->AsInt32 ();
+	Value *value = media->GetValue (MediaElement::AudioStreamIndexProperty);
+	int index = -1;
 	
-	return idx < 0 ? -1 : idx;
+	if (value && value->AsNullableInt32 ())
+		index = *value->AsNullableInt32 ();
+	
+	return index;
 }
 
 void
@@ -1415,7 +1419,7 @@ media_element_set_audio_stream_index (MediaElement *media, int value)
 	if (value >= 0)
 		media->SetValue (MediaElement::AudioStreamIndexProperty, Value (value));
 	else
-		media->SetValue (MediaElement::AudioStreamIndexProperty, Value (-1));
+		media->SetValue (MediaElement::AudioStreamIndexProperty, NULL);
 }
 
 bool
@@ -2129,8 +2133,7 @@ media_init (void)
 	/* MediaElement */
 	MediaElement::AttributesProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Attributes", Type::MEDIAATTRIBUTE_COLLECTION);
 	MediaElement::AudioStreamCountProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "AudioStreamCount", new Value (0), Type::INT32, false, true);
-	// FIXME: AudioStreamIndex is a nullable int
-	MediaElement::AudioStreamIndexProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AudioStreamIndex", new Value (-1));
+	MediaElement::AudioStreamIndexProperty = DependencyObject::RegisterNullable (Type::MEDIAELEMENT, "AudioStreamIndex", Type::INT32);
 	MediaElement::AutoPlayProperty = DependencyObject::Register (Type::MEDIAELEMENT, "AutoPlay", new Value (true));
 	MediaElement::BalanceProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Balance", new Value (0.0));
 	MediaElement::BufferingProgressProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0), Type::DOUBLE, false, true);

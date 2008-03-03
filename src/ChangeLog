@@ -1,5 +1,13 @@
 2008-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.cpp (media_element_get_audio_stream_index): Fixed to
+	handle nullable value.
+	(media_element_set_audio_stream_index): Same.
+	(media_init): Register the AudioStreamIndex property as being
+	nullable.
+
+2008-03-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* media.cpp (media_init): Register AudioStreamCount,
 	BufferingProgress, CanPause, CanSeek, CurrentState,
 	NaturalDuration, NaturalVideoWidth, NaturalVideoHeight properties
