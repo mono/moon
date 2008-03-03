@@ -29,6 +29,11 @@
 				sb.AppendFormat ("<li><a class=\"{2}\" href=\"xamlize.aspx?xaml={1}\">{0}</a></li>\n",
 						Path.GetFileName (fileName), fileName, extension.Substring (1));
 			}
+			if (extension == ".htm") {
+			        sb.AppendFormat ("<li><a class=\"{2}\" href=\"{1}\">{0}</a></li>\n",
+						Path.GetFileName (fileName), fileName, extension.Substring (1));
+  	   
+			}
 		}
 		return sb.ToString ();
 	}
