@@ -1,3 +1,8 @@
+2008-03-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* gtk.cs: Specify the surface when loading xaml, allowing multiple surfaces
+	  to be loaded in the same appdomain.
+
 2008-02-25  Chris Toshok  <toshok@ximian.com>
 
 	* gtk.cs: use surface_get_widget, not surface_get_drawing_area.

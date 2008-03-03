@@ -32,6 +32,7 @@ using Gtk;
 using System.Windows;
 using System.Windows.Controls;
 using Mono;
+using Mono.Xaml;
 using System.Reflection;
 
 namespace Gtk.Moonlight {
@@ -205,12 +206,15 @@ public class GtkSilver : EventBox {
 		if (xaml == null)
 			throw new ArgumentNullException ("xaml");
 
-		DependencyObject dob = XamlReader.Load (xaml, true);
+		XamlLoader.AllowMultipleSurfacesPerDomain = true;
 
-		if (dob == null)
+		XamlLoader loader = XamlLoader.CreateManagedXamlLoader (surface, IntPtr.Zero);
+		object top = loader.CreateDependencyObjectFromString (xaml, true);
+
+		if (top != null)
 			return false;
 
-		canvas = dob as Canvas;
+		canvas = top as Canvas;
 		if (canvas == null)
 			return false;
 	
