@@ -1,12 +1,22 @@
-2008-03-04  Jeffrey Stedfast  <fejj@novell.com>
+2008-03-04  Larry Ewing  <lewing@novell.com>
 
-	* text.cpp (Inline::GetDefaultValue): Implemented.
+	* runtime.cpp (Surface::HandleMouseEvent): process dirty elements
+	here so that our hit testing has up to date bounds.
 
+	* dirty.h: remove the prototypes for up/down since it isn't safe
+	to split the up/down passes.
+
+	* src/uielement.cpp: remove dirty processing.
+	
 2008-03-04  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* media.cpp: use a pixbuf_loader instead of the pixbuf_new_from_file to
 	create the pixbuf from a file, allowing partial rendering of broken
 	imagefiles, like in Image.htm
+
+2008-03-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Inline::GetDefaultValue): Implemented.
 
 2008-03-04  Michael Dominic K.  <mdk@mdk.am>
 

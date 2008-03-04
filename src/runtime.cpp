@@ -1296,6 +1296,9 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 	if (toplevel == NULL || event == NULL)
 		return false;
 
+	if (is_anything_dirty())
+		process_dirty_elements();
+
 	if (captured) {
 		// if the mouse is captured, the input_list doesn't ever
 		// change, and we don't emit enter/leave events.  just emit
