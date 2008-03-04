@@ -11,6 +11,7 @@
 #include "uielement.h"
 #include "collection.h"
 #include "stylus.h"
+#include "dirty.h"
 
 MouseEventArgs::MouseEventArgs (GdkEvent *event)
 {
@@ -35,8 +36,15 @@ MouseEventArgs::GetPosition (UIElement *relative_to, double *x, double *y)
 {
 	*x = *y = 0.0;
 	if (gdk_event_get_coords (event, x, y)) {
-		if (relative_to)
+		if (relative_to) {
+			// FIXME this a nasty place to do this we should be able to
+			// reduce the problem for this kind of hit testing.
+			if (is_anything_dirty())
+				process_dirty_elements();
+
+
 			uielement_transform_point (relative_to, x, y);
+		}
 	}
 }
 
@@ -96,11 +104,9 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 	double x, y;
 	double pressure;
 
-	gdk_event_get_coords (event, &x, &y);
+	GetPosition (ink_presenter, &x, &y);
 	if (!gdk_event_get_axis (event, GDK_AXIS_PRESSURE, &pressure))
 		pressure = 0.0;
-
-	uielement_transform_point (ink_presenter, &x, &y);
 
 	StylusPoint *point = new StylusPoint ();
 	point->SetValue (StylusPoint::XProperty, Value(x));

@@ -10,8 +10,12 @@
 
 2008-03-04  Larry Ewing  <lewing@novell.com>
 
+	* eventargs.cpp: update the dirty list before trying calculating
+	relative locations.
+	
 	* runtime.cpp (Surface::HandleMouseEvent): process dirty elements
 	here so that our hit testing has up to date bounds.
+
 
 	* dirty.h: remove the prototypes for up/down since it isn't safe
 	to split the up/down passes.

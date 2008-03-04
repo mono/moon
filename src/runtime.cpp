@@ -1296,6 +1296,7 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 	if (toplevel == NULL || event == NULL)
 		return false;
 
+	// FIXME this should probably use mouse event args
 	if (is_anything_dirty())
 		process_dirty_elements();
 
