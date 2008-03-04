@@ -18,11 +18,13 @@
         function RunTest (sender, eventArgs)
         {
 	       var clip = sender.findName ("clipRect");
+	       var clip2 = sender.findName ("clipRect2");
 	       //alert ("clip " + clip);
 	       //alert ("rect: " + clip.Rect);
 	       clip.rect = "0,0,100,100";
 	       //alert ("set clip");
 	       //alert ("clip.Rect = " + clip.Rect);
+	       clip2.rect = "0,0,100,100";
 	       $RUN_TEST_BODY	
         }
 

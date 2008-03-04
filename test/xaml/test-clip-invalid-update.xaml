@@ -9,4 +9,14 @@
                 <Rectangle Canvas.Left="50" Canvas.Top="50" Fill="Blue"
 			   Width="100" Height="100" />
 	</Canvas>
+
+        <Canvas Canvas.Top="80" Opacity="0.5">
+                <Canvas.Clip>
+                    <RectangleGeometry x:Name="clipRect2"/>
+                </Canvas.Clip>
+     	        <Rectangle Fill="Green" StrokeThickness="10" Stroke="Red" Width="100" Height="100" />
+                <!-- this should be drawn over the previous rectangle (no blending) -->
+                <Rectangle Canvas.Left="50" Canvas.Top="50" Fill="Yellow"
+			   Width="100" Height="100" />
+	</Canvas>
 </Canvas>
