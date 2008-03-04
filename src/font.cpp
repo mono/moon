@@ -2173,15 +2173,6 @@ TextLayout::Layout ()
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
-#if 0
-		if (max_height >= 0.0 && height > max_height) {
-			// Stop calculating layout at this point, any
-			// text beyond this point won't be rendered
-			// anyway.
-			break;
-		}
-#endif
-		
 		if (run->text == NULL /* LineBreak */) {
 			if (lh == 0.0) {
 				descend = run->font->Descender ();
@@ -2202,6 +2193,7 @@ TextLayout::Layout ()
 			else
 				line = 0;
 			
+			first_char = true;
 			clipped = false;
 			lw = lh = 0.0;
 			descend = 0.0;
@@ -2218,7 +2210,7 @@ TextLayout::Layout ()
 		
 		sx = lw;
 		spc.index = -1;
-		spc.width = -1.0;
+		spc.width = lw;
 		segment = new TextSegment (run, 0);
 		for (i = 0, prev = 0; run->text[i]; i++) {
 			if (!(glyph = run->font->GetGlyphInfo (run->text[i])))
@@ -2265,21 +2257,30 @@ TextLayout::Layout ()
 						lw = spc.width;
 						i = spc.index;
 						wrap = true;
-					} else if (/*i > segment->start*/ !first_char) {
-						// Wrap before this char
-						segment->end = i;
+					} else if (!first_char) {
+						if (spc.width > 0.0) {
+							// Not the first Run on the line,
+							// wrap from the beginning of the
+							// Run
+							lw = spc.width;
+							i = -1;
+						} else {
+							// Wrap before this char
+							segment->end = i;
+							i--;
+						}
+						
 						wrap = true;
-						i--;
 					} else {
 						// Wrap after this char
 						segment->end = i + 1;
+						lw += advance;
 						wrap = true;
 					}
 					break;
 				case TextWrappingNoWrap:
 				default:
 					// Never wrap.
-					
 					if (is_space && !clipped) {
 						lw += advance;
 						if (lw > bbox_width)
@@ -2298,11 +2299,13 @@ TextLayout::Layout ()
 			}
 			
 			if (wrap) {
-				// end this segment and line
-				line->segments->Append (segment);
-				segment->width = lw - sx;
-				
-				segment = new TextSegment (run, i + 1);
+				// end this segment and line if it has content
+				if (segment->end > segment->start) {
+					line->segments->Append (segment);
+					segment->width = lw - sx;
+					
+					segment = new TextSegment (run, i + 1);
+				}
 				
 				width = MAX (width, lw);
 				lines->Append (line);
@@ -2317,6 +2320,7 @@ TextLayout::Layout ()
 				lh = run->font->Height ();
 				line = new TextLine ();
 				first_char = true;
+				spc.width = 0.0;
 				spc.index = -1;
 				sx = lw = 0.0;
 				
