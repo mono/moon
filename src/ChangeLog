@@ -1,3 +1,9 @@
+2008-03-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* media.cpp: use a pixbuf_loader instead of the pixbuf_new_from_file to
+	create the pixbuf from a file, allowing partial rendering of broken
+	imagefiles, like in Image.htm
+
 2008-03-04  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/uielement.cpp: When calling uielement_transform_point, make sure our

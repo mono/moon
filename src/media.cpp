@@ -1879,7 +1879,20 @@ Image::CreateSurface (const char *fname)
 	else {
 		GError *error = NULL;
 
-		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (fname, &error);
+		GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+		FILE *f = NULL;
+		long n = 0;
+		guchar *buffer = NULL;
+
+		buffer = (guchar*)g_try_malloc (1024);
+		f = fopen (fname, "r");
+		while (n = fread (buffer, 1, 1024, f))
+			gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buffer, n, &error);	
+		fclose (f);
+		g_free (buffer);
+
+		GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (GDK_PIXBUF_LOADER (loader));
+
 		if (!pixbuf){
 			char *msg;
 
