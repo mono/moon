@@ -832,6 +832,9 @@ uielement_get_opacity_mask (UIElement *item)
 void
 uielement_transform_point (UIElement *item, double *x, double *y)
 {
+	if (is_anything_dirty ())
+		process_down_dirty_elements ();
+
 	cairo_matrix_t inverse = item->absolute_xform;
 	cairo_matrix_invert (&inverse);
 

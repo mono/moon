@@ -1,3 +1,18 @@
+2008-03-04  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/uielement.cpp: When calling uielement_transform_point, make sure our
+	transforms are up-to-date (not dirty).
+
+	Since we're updating the transform matrices only in the expose (dirty)
+	callback it can happen that two ie. mouse events arrive before we get to
+	the expose. If the first mouse event invalidated the transform and the
+	second one relies on the transform (ie. tries to obtain relative mouse
+	position) it'd get bogus values since the transform has not been
+	regenerated yet.
+
+	Fixes the drag & drop behaviour in SL ink journal (the selection tool).
+	Fixes: #362227.
+
 2008-03-04  Michael Dominic K.  <mdk@mdk.am> 
 
 	* src/dirty.cpp:
