@@ -1,5 +1,8 @@
 2008-03-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp (style_simulations_map): There's only one
+	StyleSimulation value, and that is None.
+
 	* font.cpp (TextLayout::Layout): In Wrap mode, if we overflow the
 	width and the text is not part of the first run on a line, break
 	at the beginning of the Run. This seems to be what Silverlight

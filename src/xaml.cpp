@@ -2404,10 +2404,7 @@ enum_map_t font_weights_map [] = {
 };
 
 enum_map_t style_simulations_map [] = {
-	{ "BoldItalicSimulation", 0 },
-	{ "BoldSimulation",       1 },
-	{ "ItalicSimulation",     2 },
-	{ "None",                 3 },
+	{ "None",                 0 },
 	{ NULL,                   0 },
 };
 
