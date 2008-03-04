@@ -1,9 +1,19 @@
+2008-03-04  Michael Dominic K.  <mdk@mdk.am> 
+
+	* src/dirty.cpp:
+	* src/dirty.h: Splitting the process_dirty_elements () into two individual
+	chunks -- process_down_dirty_elements () and process_up_dirty_elements ().
+	process_dirty_elements () now calls both. 
+
+	The point here is that we need to process down dirty elements (call
+	process_down_dirty_elements ()) from other contextes as well.
+
 2008-03-03  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp:  Call FullInvalidate when clip changes so that
 	our subtree bounds are updated and invalidated.  Make sure we
 	don't reset the forced invalidate flag.
-
+	
 	* dirty.cpp: invalidate subtree bounds on forced invalidations.
 	Fixes test-clip-invalid-update.htm.
 	

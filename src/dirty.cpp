@@ -83,6 +83,7 @@ remove_dirty_element (UIElement *element)
 	}
 }
 
+
 /*
 ** There are 2 types of changes that need to propagate around the
 ** tree.
@@ -104,7 +105,7 @@ remove_dirty_element (UIElement *element)
 */
 
 void
-process_dirty_elements ()
+process_down_dirty_elements ()
 {
 	if (!down_dirty)
 		return;
@@ -212,6 +213,20 @@ process_dirty_elements ()
 			el->down_dirty_node = NULL;
 		}
 	}
+	
+	g_assert (down_dirty->IsEmpty());
+}
+
+/*
+** Note that since this calls GDK invalidation functions 
+** it's a good idea to call it with a GDK lock held (all gtk callbacks
+** are automatically protected except for timeouts and idle)
+*/
+void
+process_up_dirty_elements ()
+{
+	if (!up_dirty)
+		return;
 
 	while (DirtyNode *node = (DirtyNode*)up_dirty->First()) {
 		UIElement* el = (UIElement*)node->element;
@@ -298,7 +313,13 @@ process_dirty_elements ()
 			el->up_dirty_node = NULL;
 		}
 	}
-
+	
 	g_assert (up_dirty->IsEmpty());
-	g_assert (down_dirty->IsEmpty());
+}
+
+void
+process_dirty_elements ()
+{
+	process_down_dirty_elements ();
+	process_up_dirty_elements ();
 }

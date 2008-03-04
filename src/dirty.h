@@ -43,5 +43,7 @@ enum DirtyType {
 
 void add_dirty_element (UIElement *element, DirtyType dirt);
 void remove_dirty_element (UIElement *element);
+void process_up_dirty_elements ();
+void process_down_dirty_elements ();
 void process_dirty_elements ();
 bool is_anything_dirty ();
