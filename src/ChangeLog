@@ -1,3 +1,7 @@
+2008-03-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Inline::GetDefaultValue): Implemented.
+
 2008-03-04  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* media.cpp: use a pixbuf_loader instead of the pixbuf_new_from_file to

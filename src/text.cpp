@@ -148,6 +148,65 @@ Inline::~Inline ()
 	}
 }
 
+static DependencyProperty *
+textblock_property (DependencyProperty *prop)
+{
+	if (prop == Inline::FontFamilyProperty)
+		return TextBlock::FontFamilyProperty;
+	
+	if (prop == Inline::FontStretchProperty)
+		return TextBlock::FontStretchProperty;
+	
+	if (prop == Inline::FontWeightProperty)
+		return TextBlock::FontWeightProperty;
+	
+	if (prop == Inline::FontStyleProperty)
+		return TextBlock::FontStyleProperty;
+	
+	if (prop == Inline::FontSizeProperty)
+		return TextBlock::FontSizeProperty;
+	
+	if (prop == Inline::ForegroundProperty)
+		return TextBlock::ForegroundProperty;
+	
+	if (prop == Inline::TextDecorationsProperty)
+		return TextBlock::TextDecorationsProperty;
+	
+	return NULL;
+}
+
+Value *
+Inline::GetDefaultValue (DependencyProperty *prop)
+{
+	DependencyObject *parent = GetLogicalParent ();
+	
+	if (parent && parent->Is (Type::TEXTBLOCK)) {
+		DependencyProperty *text_prop = textblock_property (prop);
+		
+		if (text_prop)
+			return parent->GetValue (text_prop);
+		
+		return prop->default_value;
+	}
+	
+	// not yet attached to a textblock
+	
+	if (prop == Inline::ForegroundProperty) {
+		SolidColorBrush *brush = new SolidColorBrush ();
+		Color *color = color_from_str ("black");
+		solid_color_brush_set_color (brush, color);
+		delete color;
+		
+		SetValue (prop, Value (brush));
+		brush->unref ();
+		
+		return GetValue (prop);
+	}
+	
+	// all other properties have a default value
+	return prop->default_value;
+}
+
 void
 Inline::OnPropertyChanged (DependencyProperty *prop)
 {
@@ -2296,13 +2355,13 @@ text_init (void)
 	font_init ();
 	
 	// Inline
-	Inline::FontFamilyProperty = DependencyObject::Register (Type::INLINE, "FontFamily", Type::STRING);
-	Inline::FontSizeProperty = DependencyObject::Register (Type::INLINE, "FontSize", Type::DOUBLE);
-	Inline::FontStretchProperty = DependencyObject::Register (Type::INLINE, "FontStretch", Type::INT32);
-	Inline::FontStyleProperty = DependencyObject::Register (Type::INLINE, "FontStyle", Type::INT32);
-	Inline::FontWeightProperty = DependencyObject::Register (Type::INLINE, "FontWeight", Type::INT32);
+	Inline::FontFamilyProperty = DependencyObject::Register (Type::INLINE, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
+	Inline::FontSizeProperty = DependencyObject::Register (Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));
+	Inline::FontStretchProperty = DependencyObject::Register (Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
+	Inline::FontStyleProperty = DependencyObject::Register (Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
+	Inline::FontWeightProperty = DependencyObject::Register (Type::INLINE, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
 	Inline::ForegroundProperty = DependencyObject::Register (Type::INLINE, "Foreground", Type::BRUSH);
-	Inline::TextDecorationsProperty = DependencyObject::Register (Type::INLINE, "TextDecorations", Type::INT32);
+	Inline::TextDecorationsProperty = DependencyObject::Register (Type::INLINE, "TextDecorations", new Value (TextDecorationsNone));
 	
 	
 	// Run
