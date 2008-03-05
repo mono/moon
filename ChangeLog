@@ -1,3 +1,8 @@
+2008-03-05  Larry Ewing  <lewing@novell.com>
+
+	* src/dependencyobject.cpp: avoid a null dereference crash.
+	Avoids death in showcase and sprawl after toshoks big patch.
+
 2008-02-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* configure.ac: Fix --with-debug to not be confused with --with-ffmpeg. If

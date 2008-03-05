@@ -392,7 +392,7 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 	// attached properties are implicitly listened to by the
 	// object's logical parent.  Notify them, but sure not to do
 	// it twice.
-	if (args->property->is_attached_property && !notified_parent) {
+	if (args->property && args->property->is_attached_property && !notified_parent) {
 		if (logical_parent && args->property->type == logical_parent->GetObjectType ())
 			logical_parent->OnSubPropertyChanged (NULL, this, args);
 	}
