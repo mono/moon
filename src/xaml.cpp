@@ -2380,7 +2380,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 	}
 	case Type::STRING: {
 		//v = new Value (str);
-		printf ("value = \"%s\"\n", str);
 		return new Value (str);
 		break;
 	}
