@@ -104,7 +104,7 @@ remove_dirty_element (UIElement *element)
 **
 */
 
-void
+static void
 process_down_dirty_elements ()
 {
 	if (!down_dirty)
@@ -222,7 +222,7 @@ process_down_dirty_elements ()
 ** it's a good idea to call it with a GDK lock held (all gtk callbacks
 ** are automatically protected except for timeouts and idle)
 */
-void
+static void
 process_up_dirty_elements ()
 {
 	if (!up_dirty)
