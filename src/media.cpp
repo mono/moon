@@ -580,7 +580,7 @@ MediaElement::MediaOpened (Media *media)
 	SetValue (MediaElement::AudioStreamCountProperty, Value (mplayer->GetAudioStreamCount ()));
 	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (TimeSpan_FromPts (mplayer->Duration ()))));
 	SetValue (MediaElement::NaturalVideoHeightProperty, Value ((double) mplayer->height));
-	SetValue (MediaElement::NaturalVideoWidthProperty, Value (mplayer->width));
+	SetValue (MediaElement::NaturalVideoWidthProperty, Value ((double) mplayer->width));
 	
 	mplayer->SetMuted (GetValue (MediaElement::IsMutedProperty)->AsBool ());
 	mplayer->SetVolume (GetValue (MediaElement::VolumeProperty)->AsDouble ());
