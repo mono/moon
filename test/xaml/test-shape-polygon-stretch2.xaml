@@ -1,19 +1,19 @@
 <Canvas xmlns="http://schemas.microsoft.com/client/2007">
 <!-- default == None -->
-        <Polyline Stroke="Red" Fill="Green" StrokeThickness="5" Points="0,0
+        <Polygon Stroke="Red" Fill="Green" StrokeThickness="5" Points="0,0
 10,10, 50,10, 50,50 25,25"/>
-        <Polyline Stroke="Blue" Width="75" Height="25" Canvas.Left="100" Fill="Green" StrokeThickness="5" Points="0,0
+        <Polygon Stroke="Blue" Width="75" Height="25" Canvas.Left="100" Fill="Green" StrokeThickness="5" Points="0,0
 10,10, 50,10, 50,50 25,25"/>
-        <Polyline Stroke="Orange" Width="75" Height="25"
+        <Polygon Stroke="Orange" Width="75" Height="25"
 Canvas.Top="50" Fill="Green" StrokeThickness="5" Points="0,0
 10,10, 50,10, 50,50 25,25" Stretch="Fill"/>
-        <Polyline Stroke="Purple" Width="75" Height="25" Canvas.Left="100"
+        <Polygon Stroke="Purple" Width="75" Height="25" Canvas.Left="100"
 Canvas.Top="50" Fill="Green" StrokeThickness="5" Points="0,0
 10,10, 50,10, 50,50 25,25" Stretch="Uniform"/>
-        <Polyline Stroke="Yellow" Width="75" Height="25"
+        <Polygon Stroke="Yellow" Width="75" Height="25"
 Canvas.Top="100" Fill="Green" StrokeThickness="5" Points="0,0
 10,10, 50,10, 50,50 25,25" Stretch="UniformToFill"/>
-        <Polyline Stroke="Brown" Width="75" Height="25" Canvas.Left="100"
+        <Polygon Stroke="Brown" Width="75" Height="25" Canvas.Left="100"
 Canvas.Top="100" Fill="Green" StrokeThickness="5" StrokeDashArray="2" Points="0,0
 10,10, 50,10, 50,50 25,25" Stretch="Fill"/>
 </Canvas>
