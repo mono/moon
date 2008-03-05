@@ -288,7 +288,7 @@ Shape::IsCandidateForCaching (void)
 
 	return TRUE;
 #else
-	return FALSE
+	return FALSE;
 #endif
 }
 
