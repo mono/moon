@@ -1,8 +1,8 @@
 /*
  * pipeline.cpp: Pipeline for the media
  *
- * Author:
- *   Rolf Bjarne Kvinge (RKvinge@novell.com)
+ * Authors: Rolf Bjarne Kvinge (RKvinge@novell.com)
+ *          Jeffrey Stedfast <fejj@novell.com>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
