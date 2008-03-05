@@ -141,11 +141,6 @@ Inline::~Inline ()
 		pango_font_description_free (font.pango);
 	else
 		delete font.custom;
-	
-	if (foreground != NULL) {
-		foreground->Detach (NULL, this);
-		foreground->unref ();
-	}
 }
 
 static DependencyProperty *
@@ -208,18 +203,18 @@ Inline::GetDefaultValue (DependencyProperty *prop)
 }
 
 void
-Inline::OnPropertyChanged (DependencyProperty *prop)
+Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	Value *value;
 	
-	if (prop->type != Type::INLINE) {
-		DependencyObject::OnPropertyChanged (prop);
+	if (args->property->type != Type::INLINE) {
+		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
 	
-	value = GetValueNoDefault (prop);
+	value = GetValueNoDefault (args->property);
 	
-	if (prop == Inline::FontFamilyProperty) {
+	if (args->property == Inline::FontFamilyProperty) {
 		if (value) {
 			char *family = value->AsString ();
 			if (RENDER_USING_PANGO)
@@ -232,7 +227,7 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 			else
 				font.custom->UnsetFields (FontMaskFamily);
 		}
-	} else if (prop == Inline::FontSizeProperty) {
+	} else if (args->property == Inline::FontSizeProperty) {
 		if (value) {
 			double size = value->AsDouble ();
 			if (RENDER_USING_PANGO)
@@ -245,7 +240,7 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 			else
 				font.custom->UnsetFields (FontMaskSize);
 		}
-	} else if (prop == Inline::FontStretchProperty) {
+	} else if (args->property == Inline::FontStretchProperty) {
 		if (value) {
 			FontStretches stretch = (FontStretches) value->AsInt32 ();
 			if (RENDER_USING_PANGO)
@@ -258,7 +253,7 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 			else
 				font.custom->UnsetFields (FontMaskStretch);
 		}
-	} else if (prop == Inline::FontStyleProperty) {
+	} else if (args->property == Inline::FontStyleProperty) {
 		if (value) {
 			FontStyles style = (FontStyles) value->AsInt32 ();
 			if (RENDER_USING_PANGO)
@@ -271,7 +266,7 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 			else
 				font.custom->UnsetFields (FontMaskStyle);
 		}
-	} else if (prop == Inline::FontWeightProperty) {
+	} else if (args->property == Inline::FontWeightProperty) {
 		if (value) {
 			FontWeights weight = (FontWeights) value->AsInt32 ();
 			if (RENDER_USING_PANGO)
@@ -284,28 +279,21 @@ Inline::OnPropertyChanged (DependencyProperty *prop)
 			else
 				font.custom->UnsetFields (FontMaskWeight);
 		}
-	} else if (prop == Inline::ForegroundProperty) {
-		if (foreground != NULL) {
-			foreground->Detach (NULL, this);
-			foreground->unref ();
-		}
-		
-		if ((foreground = value ? value->AsBrush () : NULL) != NULL) {
-			foreground->Attach (NULL, this);
-			foreground->ref ();
-		}
+	} else if (args->property == Inline::ForegroundProperty) {
+		foreground = args->new_value ? args->new_value->AsBrush() : NULL;
 	}
 	
-	NotifyAttachersOfPropertyChange (prop);
+	
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop == Inline::ForegroundProperty) {
 		// this isn't exactly what we want, I don't
 		// think... but it'll have to do.
-		NotifyAttachersOfPropertyChange (prop);
+		NotifyListenersOfPropertyChange (prop);
 	}
 }
 
@@ -450,7 +438,6 @@ DependencyProperty *TextBlock::TextWrappingProperty;
 
 TextBlock::TextBlock ()
 {
-	foreground = NULL;
 	downloader = NULL;
 	
 	setvalue = true;
@@ -512,11 +499,6 @@ TextBlock::~TextBlock ()
 	if (downloader != NULL) {
 		downloader_abort (downloader);
 		downloader->unref ();
-	}
-	
-	if (foreground != NULL) {
-		foreground->Detach (NULL, this);
-		foreground->unref ();
 	}
 }
 
@@ -899,8 +881,12 @@ void
 TextBlock::Paint (cairo_t *cr)
 {
 	Brush *fg;
-	
-	if (!(fg = foreground))
+	Value *v;
+
+	v = GetValue (TextBlock::ForegroundProperty);
+	fg = v ? v->AsBrush() : NULL;
+
+	if (!fg)
 		fg = default_foreground ();
 	
 	if (RENDER_USING_PANGO) {
@@ -1077,64 +1063,62 @@ TextBlock::SetText (const char *text)
 }
 
 void
-TextBlock::OnPropertyChanged (DependencyProperty *prop)
+TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	bool invalidate = true;
 	
-	if (prop->type != Type::TEXTBLOCK) {
-		FrameworkElement::OnPropertyChanged (prop);
-		if (prop == FrameworkElement::WidthProperty) {
+	if (args->property->type != Type::TEXTBLOCK) {
+		FrameworkElement::OnPropertyChanged (args);
+		if (args->property == FrameworkElement::WidthProperty) {
 			UpdateBounds (true);
-			Invalidate ();
 		}
-		
 		return;
 	}
 	
-	if (prop == TextBlock::FontFamilyProperty) {
-		char *family = text_block_get_font_family (this);
+	if (args->property == TextBlock::FontFamilyProperty) {
+		char *family = args->new_value ? args->new_value->AsString () : NULL;
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_family (font.pango, family);
 		else
 			font.custom->SetFamily (family);
 		
 		dirty = true;
-	} else if (prop == TextBlock::FontSizeProperty) {
-		double size = text_block_get_font_size (this);
+	} else if (args->property == TextBlock::FontSizeProperty) {
+		double size = args->new_value->AsDouble ();
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_absolute_size (font.pango, size * PANGO_SCALE);
 		else
 			font.custom->SetSize (size);
 		
 		dirty = true;
-	} else if (prop == TextBlock::FontStretchProperty) {
-		FontStretches stretch = text_block_get_font_stretch (this);
+	} else if (args->property == TextBlock::FontStretchProperty) {
+		FontStretches stretch = (FontStretches)args->new_value->AsInt32();
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_stretch (font.pango, font_stretch (stretch));
 		else
 			font.custom->SetStretch (stretch);
 		
 		dirty = true;
-	} else if (prop == TextBlock::FontStyleProperty) {
-		FontStyles style = text_block_get_font_style (this);
+	} else if (args->property == TextBlock::FontStyleProperty) {
+		FontStyles style = (FontStyles)args->new_value->AsInt32();
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_style (font.pango, font_style (style));
 		else
 			font.custom->SetStyle (style);
 		
 		dirty = true;
-	} else if (prop == TextBlock::FontWeightProperty) {
-		FontWeights weight = text_block_get_font_weight (this);
+	} else if (args->property == TextBlock::FontWeightProperty) {
+		FontWeights weight = (FontWeights)args->new_value->AsInt32();
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_weight (font.pango, font_weight (weight));
 		else
 			font.custom->SetWeight (weight);
 		
 		dirty = true;
-	} else if (prop == TextBlock::TextProperty) {
+	} else if (args->property == TextBlock::TextProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Text property
-			char *text = text_block_get_text (this);
+			char *text = args->new_value ? args->new_value->AsString() : NULL;
 			
 			if (!SetText (text)) {
 				// no change so nothing to invalidate
@@ -1146,7 +1130,7 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			// result of a change to the TextBlock.Inlines property
 			invalidate = false;
 		}
-	} else if (prop == TextBlock::InlinesProperty) {
+	} else if (args->property == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
 			char *text = GetText ();
@@ -1160,19 +1144,9 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 			// result of a change to the TextBlock.Text property
 			invalidate = false;
 		}
-	} else if (prop == TextBlock::ForegroundProperty) {
-		if (foreground != NULL) {
-			foreground->Detach (NULL, this);
-			foreground->unref ();
-		}
-		
-		if ((foreground = text_block_get_foreground (this)) != NULL) {
-			foreground->Attach (NULL, this);
-			foreground->ref ();
-		}
-	} else if (prop == TextBlock::ActualHeightProperty) {
+	} else if (args->property == TextBlock::ActualHeightProperty) {
 		invalidate = false;
-	} else if (prop == TextBlock::ActualWidthProperty) {
+	} else if (args->property == TextBlock::ActualWidthProperty) {
 		invalidate = false;
 	}
 	
@@ -1183,28 +1157,28 @@ TextBlock::OnPropertyChanged (DependencyProperty *prop)
 		Invalidate ();
 	}
 	
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop == TextBlock::ForegroundProperty)
 		Invalidate ();
 	else
-		FrameworkElement::OnSubPropertyChanged (prop, obj, subprop);
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 void
-TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
-	if (prop != Inline::ForegroundProperty) {
+	if (element_args && element_args->property != Inline::ForegroundProperty) {
 		bool update_text = false;
 		
 		if (type == CollectionChangeTypeItemAdded || type == CollectionChangeTypeItemRemoved) {
 			// an Inline element has been added or removed, update our TextProperty
 			update_text = true;
-		} else if (prop == Run::TextProperty && type == CollectionChangeTypeItemChanged) {
+		} else if (element_args->property == Run::TextProperty && type == CollectionChangeTypeItemChanged) {
 			// a Run element's TextProperty has been changed, update our TextProperty
 			update_text = true;
 		} else if (type == CollectionChangeTypeChanged) {
@@ -1916,12 +1890,12 @@ Glyphs::GetTransformOrigin ()
 }
 
 void
-Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop == Glyphs::FillProperty)
 		Invalidate ();
 	else
-		FrameworkElement::OnSubPropertyChanged (prop, obj, subprop);
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 void
@@ -2135,17 +2109,17 @@ Glyphs::SetIndices (const char *in)
 }
 
 void
-Glyphs::OnPropertyChanged (DependencyProperty *prop)
+Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	bool invalidate = true;
 	
-	if (prop->type != Type::GLYPHS) {
-		FrameworkElement::OnPropertyChanged (prop);
+	if (args->property->type != Type::GLYPHS) {
+		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}
 	
-	if (prop == Glyphs::FontUriProperty) {
-		char *str = glyphs_get_font_uri (this);
+	if (args->property == Glyphs::FontUriProperty) {
+		char *str = args->new_value ? args->new_value->AsString() : NULL;
 		Uri *uri = new Uri ();
 		
 		if (downloader) {
@@ -2182,18 +2156,10 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 		delete uri;
 		
 		invalidate = false;
-	} else if (prop == Glyphs::FillProperty) {
-		if (fill != NULL) {
-			fill->Detach (NULL, this);
-			fill->unref ();
-		}
-		
-		if ((fill = glyphs_get_fill (this)) != NULL) {
-			fill->Attach (NULL, this);
-			fill->ref ();
-		}
-	} else if (prop == Glyphs::UnicodeStringProperty) {
-		char *str = glyphs_get_unicode_string (this);
+	} else if (args->property == Glyphs::FillProperty) {
+		fill = args->new_value ? args->new_value->AsBrush() : NULL;
+	} else if (args->property == Glyphs::UnicodeStringProperty) {
+		char *str = args->new_value ? args->new_value->AsString() : NULL;
 		g_free (text);
 		
 		if (str != NULL)
@@ -2202,22 +2168,22 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 			text = NULL;
 		
 		dirty = true;
-	} else if (prop == Glyphs::IndicesProperty) {
-		char *str = glyphs_get_indices (this);
+	} else if (args->property == Glyphs::IndicesProperty) {
+		char *str = args->new_value ? args->new_value->AsString() : NULL;
 		SetIndices (str);
 		dirty = true;
-	} else if (prop == Glyphs::FontRenderingEmSizeProperty) {
-		double size = glyphs_get_font_rendering_em_size (this);
+	} else if (args->property == Glyphs::FontRenderingEmSizeProperty) {
+		double size = args->new_value->AsDouble();
 		desc->SetSize (size);
 		dirty = true;
-	} else if (prop == Glyphs::OriginXProperty) {
-		origin_x = glyphs_get_origin_x (this);
+	} else if (args->property == Glyphs::OriginXProperty) {
+		origin_x = args->new_value->AsDouble ();
 		dirty = true;
-	} else if (prop == Glyphs::OriginYProperty) {
-		origin_y = glyphs_get_origin_y (this);
+	} else if (args->property == Glyphs::OriginYProperty) {
+		origin_y = args->new_value->AsDouble ();
 		origin_y_specified = true;
 		dirty = true;
-	} else if (prop == Glyphs::StyleSimulationsProperty) {
+	} else if (args->property == Glyphs::StyleSimulationsProperty) {
 		// Silverlight 1.0 does not implement this property
 		invalidate = false;
 	}
@@ -2228,7 +2194,7 @@ Glyphs::OnPropertyChanged (DependencyProperty *prop)
 	if (dirty)
 		UpdateBounds (true);
 	
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 Glyphs *

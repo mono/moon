@@ -204,6 +204,14 @@ class EventObject {
 };
 
 
+struct PropertyChangedEventArgs {
+	PropertyChangedEventArgs (DependencyProperty *p, Value *ov, Value *nv) : property(p), old_value(ov), new_value (nv) { }
+
+	DependencyProperty *property;
+	Value *old_value;
+	Value *new_value;
+};
+
 class DependencyObject : public EventObject {
  public:
 
@@ -217,44 +225,39 @@ class DependencyObject : public EventObject {
 	
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
-	static DependencyProperty *NameProperty;
+	DependencyProperty *GetDependencyProperty (const char *name);
+
 	virtual void SetValue (DependencyProperty *property, Value *value);
 	virtual void SetValue (DependencyProperty *property, Value value);
 	void SetValue (const char *name, Value *value);
 	void SetValue (const char *name, Value value);
+
 	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual Value *GetValue (DependencyProperty *property);
 	Value *GetValueNoDefault (DependencyProperty *property);
 	Value *GetValue (const char *name);
+
 	void ClearValue (DependencyProperty *property);
 	bool HasProperty (const char *name, bool inherits);
-	DependencyProperty *GetDependencyProperty (const char *name);
-	DependencyObject *FindName (const char *name);
-	NameScope *FindNameScope ();
 
 	static GHashTable *properties;
 
-	virtual void OnPropertyChanged (DependencyProperty *property);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop) { }
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
-	//
-	// OnChildPropertyChanged:
-	//    This is raised on objects when a child of this object has had one of its
-	//    properties changed.   This is used so that owning objects can monitor if
-	//    one of the attached properties in a child must be acted upon
-	//
-	//    This code will go up in the ownership chain until this is handled, by 
-	//    returning TRUE.
-	//
-	virtual bool OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child) { return FALSE; }
-
+	// See the comment below about AddPropertyChangeListener for
+	// the meaning of the @prop arg in this method.  it's not what
+	// you might think it is.
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args) { }
 
 	//
 	// OnCollectionChanged:
 	//
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop) { }
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args) { }
 
 	virtual Type::Kind GetObjectType ();
+
+	DependencyObject *FindName (const char *name);
+	NameScope *FindNameScope ();
 
 	const char *GetName ()
 	{
@@ -267,21 +270,40 @@ class DependencyObject : public EventObject {
 
 	static void Shutdown ();
 
-	void Attach (DependencyProperty *property, DependencyObject *container);
-	void Detach (DependencyProperty *property, DependencyObject *container);
+	// These methods are a little confusing.  @child_property is
+	// *not* the property you're interested in receiving change
+	// notifications on.  Listeners are always notified of all
+	// changes.  What @child_property is used for is so that the
+	// listener can look at it and know which of its *own*
+	// properties is reporting the change.  So, if a object wants
+	// to listen for changes on its BackgroundProperty, it would
+	// essentially do:
+	//
+	// background = GetValue(BackgroundProperty)->AsDependencyObject();
+	// background->AddPropertyChangeListener (this, BackgroundProperty);
+	//
+	// then in its OnSubPropertyChanged method, it could check prop to
+	// see if it's == BackgroundProperty and act accordingly.  The
+	// child's changed property is contained in the @subobj_args
+	// argument of OnSubPropertyChanged.
+
+	void AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property = NULL);
+	void RemovePropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property = NULL);
 	
 	virtual Surface *GetSurface () { return NULL; }
 	virtual void SetSurface (Surface *surface) { } // Do nothing here.
 
- protected:
-	void NotifyAttachersOfPropertyChange (DependencyProperty *property);
-	void NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type);
+	static DependencyProperty *NameProperty;
 
-	void DetachAll ();
+ protected:
+	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args);
+	void NotifyListenersOfPropertyChange (DependencyProperty *property);
+
+	void RemoveAllListeners ();
 
  private:
 	GHashTable        *current_values;
-	GSList            *attached_list;
+	GSList            *listener_list;
 	DependencyObject  *logical_parent;
 };
 

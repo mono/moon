@@ -48,7 +48,7 @@ class Geometry : public DependencyObject {
 	virtual ~Geometry ();
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; };
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual void Draw (Path *path, cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path) { return Rect (0.0, 0.0, 0.0, 0.0); };
@@ -88,8 +88,8 @@ class GeometryGroup : public Geometry {
 	GeometryGroup ();
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; };
 
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 
 	virtual void Draw (Path *path, cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path);
@@ -167,7 +167,7 @@ class PathGeometry : public Geometry {
 	PathGeometry () {}
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 	virtual Rect ComputeBounds (Path *path);
 
 	// this is an element-by-element decision
@@ -230,8 +230,8 @@ class PathFigure : public DependencyObject {
 	virtual ~PathFigure ();
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; };
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 	virtual void Build (Path *shape);
 
 	virtual bool IsBuilt () {return ( path != NULL); }

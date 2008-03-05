@@ -56,26 +56,22 @@ Canvas::ComputeBounds ()
 	}
 }
 
-bool
-Canvas::OnChildPropertyChanged (DependencyProperty *prop, DependencyObject *child)
+void
+Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == TopProperty || prop == LeftProperty) {
+	if (subobj_args->property == TopProperty || subobj_args->property == LeftProperty) {
 		//
 		// Technically the canvas cares about Visuals, but we cant do much
 		// with them, all the logic to relayout is in UIElement
 		//
-		if (!Type::Find (child->GetObjectType ())->IsSubclassOf (Type::UIELEMENT)){
-			printf ("Child %s is not a UIELEMENT\n", dependency_object_get_name (child));
-			return false;
+		if (!Type::Find (obj->GetObjectType ())->IsSubclassOf (Type::UIELEMENT)){
+			printf ("Child %s is not a UIELEMENT\n", dependency_object_get_name (obj));
+			return;
 		}
-		UIElement *ui = (UIElement *) child;
+		UIElement *ui = (UIElement *) obj;
 
 		ui->UpdateTransform ();
-
-		return true;
 	}
-	
-	return false;
 }
 
 Point

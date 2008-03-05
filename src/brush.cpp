@@ -210,17 +210,6 @@ SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, do
 	SetupBrush (cr, uielement);
 }
 
-void 
-SolidColorBrush::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::SOLIDCOLORBRUSH) {
-		Brush::OnPropertyChanged (prop);
-		return;
-	}
-
-	NotifyAttachersOfPropertyChange (prop);
-}
-
 Color *
 SolidColorBrush::GetColor ()
 {
@@ -328,11 +317,11 @@ GradientBrush::GradientBrush ()
 }
 
 void
-GradientBrush::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+GradientBrush::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	// GeometryGroup only has one collection, so let's save the hash lookup
 	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
-		NotifyAttachersOfPropertyChange (GradientBrush::GradientStopsProperty);
+		NotifyListenersOfPropertyChange (GradientBrush::GradientStopsProperty);
 }
 
 void
@@ -354,13 +343,13 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 	}
 
 	GradientStop *negative_stop = NULL;	//the biggest negative stop
-	double neg_offset;			//the cached associated offset
+	double neg_offset = 0.0;		//the cached associated offset
 	GradientStop *first_stop = NULL;	//the smallest positive stop
-	double first_offset;			//idem
+	double first_offset = 0.0;		//idem
 	GradientStop *last_stop = NULL;		//the biggest stop <= 1
-	double last_offset;			//idem
+	double last_offset = 0.0;		//idem
 	GradientStop *outofbounds_stop = NULL;	//the smallest stop > 1
-	double out_offset;			//idem
+	double out_offset = 0.0;		//idem
 
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		GradientStop *stop = (GradientStop *) node->obj;
@@ -560,22 +549,6 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	cairo_pattern_destroy (pattern);
 }
 
-void 
-LinearGradientBrush::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::LINEARGRADIENTBRUSH) {
-		GradientBrush::OnPropertyChanged (prop);
-		return;
-	}
-
-	//
-	// If any of our properties change, we have to notify our
-	// owners that they must repaint (all of our properties have
-	// a visible effect
-	//
-	NotifyAttachersOfPropertyChange (prop);
-}
-
 //
 // RadialGradientBrush
 //
@@ -704,22 +677,6 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
-}
-
-void 
-RadialGradientBrush::OnPropertyChanged (DependencyProperty *prop)
-{
-	if (prop->type != Type::RADIALGRADIENTBRUSH) {
-		GradientBrush::OnPropertyChanged (prop);
-		return;
-	}
-
-	//
-	// If any of our properties change, we have to notify our
-	// owners that they must repaint (all of our properties have
-	// a visible effect
-	//
-	NotifyAttachersOfPropertyChange (prop);
 }
 
 //
@@ -912,24 +869,21 @@ ImageBrush::SetSurface (Surface *surface)
 }
 
 void
-ImageBrush::OnPropertyChanged (DependencyProperty *prop)
+ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::IMAGEBRUSH) {
-		TileBrush::OnPropertyChanged (prop);
+	if (args->property->type != Type::IMAGEBRUSH) {
+		TileBrush::OnPropertyChanged (args);
 		return;
 	}
 
-	if (prop == ImageBrush::DownloadProgressProperty) {
-		double progress = GetValue (ImageBrush::DownloadProgressProperty)->AsDouble();
-		image->SetValue (Image::DownloadProgressProperty, Value (progress));
+	if (args->property == ImageBrush::DownloadProgressProperty) {
+		image->SetValue (Image::DownloadProgressProperty, args->new_value);
 	}
-	else if (prop == ImageBrush::ImageSourceProperty) {
-		Value *value = GetValue (ImageBrush::ImageSourceProperty);
-		char *source = value ? value->AsString () : NULL;
-		image->SetValue (MediaBase::SourceProperty, Value (source));
+	else if (args->property == ImageBrush::ImageSourceProperty) {
+		image->SetValue (MediaBase::SourceProperty, args->new_value);
 	}
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 bool
@@ -1078,7 +1032,7 @@ VideoBrush::VideoBrush ()
 VideoBrush::~VideoBrush ()
 {
 	if (media != NULL) {
-		media->Detach (MediaElement::PositionProperty, this);
+		media->RemovePropertyChangeListener (this);
 		media->unref ();
 	}
 }
@@ -1106,7 +1060,7 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 			return;
 		
 		if ((obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
-			obj->Attach (MediaElement::PositionProperty, this);
+			obj->AddPropertyChangeListener (this);
 			media = (MediaElement *) obj;
 			mplayer = media->mplayer;
 			obj->ref ();
@@ -1136,26 +1090,25 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 }
 
 void
-VideoBrush::OnPropertyChanged (DependencyProperty *prop)
+VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::VIDEOBRUSH) {
-		TileBrush::OnPropertyChanged (prop);
+	if (args->property->type != Type::VIDEOBRUSH) {
+		TileBrush::OnPropertyChanged (args);
 		return;
 	}
 
-	if (prop == VideoBrush::SourceNameProperty) {
-		Value *value = GetValue (VideoBrush::SourceNameProperty);
-		char *name = value ? value->AsString () : NULL;
+	if (args->property == VideoBrush::SourceNameProperty) {
+		char *name = args->new_value ? args->new_value->AsString () : NULL;
 		DependencyObject *obj;
 		
 		if (media != NULL) {
-			media->Detach (MediaElement::PositionProperty, this);
+			media->RemovePropertyChangeListener (this);
 			media->unref ();
 			media = NULL;
 		}
 		
 		if ((obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
-			obj->Attach (MediaElement::PositionProperty, this);
+			obj->AddPropertyChangeListener (this);
 			media = (MediaElement *) obj;
 			obj->ref ();
 		} else {
@@ -1164,20 +1117,20 @@ VideoBrush::OnPropertyChanged (DependencyProperty *prop)
 		}
 	}
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (subprop == MediaElement::PositionProperty) {
+	if (subobj_args->property == MediaElement::PositionProperty) {
 		// We to changes in this MediaElement property so we
 		// can notify whoever is using us to paint that they
 		// need to redraw themselves.
-		NotifyAttachersOfPropertyChange (Brush::ChangedProperty);
+		NotifyListenersOfPropertyChange (Brush::ChangedProperty);
 	}
 	
-	TileBrush::OnSubPropertyChanged (prop, obj, subprop);
+	TileBrush::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 bool
@@ -1263,24 +1216,25 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 void
 VisualBrush::update_brush (EventObject *, gpointer, gpointer closure)
 {
-	((VisualBrush*)closure)->NotifyAttachersOfPropertyChange (Brush::ChangedProperty);
+	VisualBrush *b = (VisualBrush*)closure;
+	b->NotifyListenersOfPropertyChange (Brush::ChangedProperty);
 }
 
 void
-VisualBrush::OnPropertyChanged (DependencyProperty *prop)
+VisualBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::VISUALBRUSH) {
-		TileBrush::OnPropertyChanged (prop);
+	if (args->property->type != Type::VISUALBRUSH) {
+		TileBrush::OnPropertyChanged (args);
 		return;
 	}
 
-	if (prop == VisualBrush::VisualProperty) {
+	if (args->property == VisualBrush::VisualProperty) {
 		// XXX we really need a way to disconnect from the preview visual
-		Visual *v = GetValue (prop)->AsVisual();
+		Visual *v = args->new_value->AsVisual();
 		v->AddHandler (((UIElement*)v)->InvalidatedEvent, update_brush, this);
 	}
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 bool

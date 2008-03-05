@@ -300,8 +300,8 @@ public:
 
 	virtual void OnLoaded ();
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
     //
     // CacheInvalidateHint:

@@ -114,16 +114,6 @@ Shape::Shape ()
 
 Shape::~Shape ()
 {
-	if (stroke != NULL) {
-		stroke->Detach (NULL, this);
-		stroke->unref ();
-	}
-	
-	if (fill != NULL) {
-		fill->Detach (NULL, this);
-		fill->unref ();
-	}
-
 	// That also destroys the cached surface
 	InvalidatePathCache (true);
 }
@@ -458,83 +448,64 @@ Shape::CacheInvalidateHint (void)
 }
 
 void
-Shape::OnPropertyChanged (DependencyProperty *prop)
+Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-
-	if (prop->type != Type::SHAPE) {
-		if ((prop == FrameworkElement::HeightProperty) || (prop == FrameworkElement::WidthProperty))
+	if (args->property->type != Type::SHAPE) {
+		if ((args->property == FrameworkElement::HeightProperty) || (args->property == FrameworkElement::WidthProperty))
 			InvalidatePathCache ();
 
-		if (prop == UIElement::OpacityProperty) {
-			if (GetValue (prop)->AsDouble () < 0.003)
+		if (args->property == UIElement::OpacityProperty) {
+			if (IS_INVISIBLE (args->new_value->AsDouble ()))
 				InvalidateSurfaceCache ();
 		} else {
-			if (prop == UIElement::VisibilityProperty) {
-				if (GetValue (prop)->AsInt32() != VisibilityVisible)
+			if (args->property == UIElement::VisibilityProperty) {
+				if (args->new_value->AsInt32() != VisibilityVisible)
 					InvalidateSurfaceCache ();
 			}
 		}
 
-		FrameworkElement::OnPropertyChanged (prop);
+		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}
 
-	if (prop == Shape::StretchProperty) {
+	if (args->property == Shape::StretchProperty) {
 		InvalidatePathCache ();
-		UpdateBounds ();
+		UpdateBounds (true);
 	}
-	else if (prop == Shape::StrokeProperty) {
-		if (stroke != NULL) {
-			stroke->Detach (NULL, this);
-			stroke->unref ();
-		}
-		
-		if ((stroke = shape_get_stroke (this)) != NULL) {
-			stroke->Attach (NULL, this);
-			stroke->ref ();
-		}
-
+	else if (args->property == Shape::StrokeProperty) {
+		stroke = args->new_value ? args->new_value->AsBrush() : NULL;
 		InvalidateSurfaceCache ();
 		UpdateBounds ();
-	} else if (prop == Shape::FillProperty) {
-		if (fill != NULL) {
-			fill->Detach (NULL, this);
-			fill->unref ();
-		}
-		
-		if ((fill = shape_get_fill (this)) != NULL) {
-			fill->Attach (NULL, this);
-			fill->ref ();
-		}
-
+	} else if (args->property == Shape::FillProperty) {
+		fill = args->new_value ? args->new_value->AsBrush() : NULL;
 		InvalidateSurfaceCache ();
 		UpdateBounds ();
-	} else if (prop == Shape::StrokeThicknessProperty) {
+	} else if (args->property == Shape::StrokeThicknessProperty) {
 		InvalidatePathCache ();
 		UpdateBounds ();
-	} else if (prop == Shape::StrokeDashCapProperty
-		   || prop == Shape::StrokeEndLineCapProperty
-		   || prop == Shape::StrokeLineJoinProperty
-		   || prop == Shape::StrokeMiterLimitProperty
-		   || prop == Shape::StrokeStartLineCapProperty) {
+	} else if (args->property == Shape::StrokeDashCapProperty
+		   || args->property == Shape::StrokeEndLineCapProperty
+		   || args->property == Shape::StrokeLineJoinProperty
+		   || args->property == Shape::StrokeMiterLimitProperty
+		   || args->property == Shape::StrokeStartLineCapProperty) {
 		UpdateBounds ();
 		InvalidateSurfaceCache ();
 	}
 	
 	Invalidate ();
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop == Shape::FillProperty || prop == Shape::StrokeProperty) {
 		Invalidate ();
 		InvalidateSurfaceCache ();
 	}
 	else
-		FrameworkElement::OnSubPropertyChanged (prop, obj, subprop);
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 Point
@@ -543,7 +514,7 @@ Shape::GetTransformOrigin ()
 	Point user_xform_origin = GetRenderTransformOrigin ();
 
 	return Point (framework_element_get_width (this) * user_xform_origin.x, 
-		framework_element_get_height (this) * user_xform_origin.y);
+		      framework_element_get_height (this) * user_xform_origin.y);
 }
 
 void
@@ -848,8 +819,10 @@ Ellipse::ComputeLargestRectangle ()
 }
 
 void
-Ellipse::OnPropertyChanged (DependencyProperty *prop)
+Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
+	DependencyProperty *prop = args->property;
+
 	if ((prop == Shape::StrokeThicknessProperty) || (prop == Shape::StretchProperty) ||
 		(prop == FrameworkElement::WidthProperty) || (prop == FrameworkElement::HeightProperty)) {
 		BuildPath ();
@@ -857,7 +830,7 @@ Ellipse::OnPropertyChanged (DependencyProperty *prop)
 	}
 
 	// Ellipse has no property of it's own
-	Shape::OnPropertyChanged (prop);
+	Shape::OnPropertyChanged (args);
 }
 
 Ellipse *
@@ -1054,24 +1027,20 @@ shape:
 }
 
 void
-Rectangle::OnPropertyChanged (DependencyProperty *prop)
+Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::RECTANGLE) {
-		if (prop == Shape::StretchProperty) {
-			InvalidatePathCache ();
-			UpdateBounds (true);
-		}
-		Shape::OnPropertyChanged (prop);
+	if (args->property->type != Type::RECTANGLE) {
+		Shape::OnPropertyChanged (args);
 		return;
 	}
 
-	if ((prop == Rectangle::RadiusXProperty) || (prop == Rectangle::RadiusYProperty)) {
+	if ((args->property == Rectangle::RadiusXProperty) || (args->property == Rectangle::RadiusYProperty)) {
 		InvalidatePathCache ();
 		// note: changing the X and/or Y radius doesn't affect the bounds
 	}
 
 	Invalidate ();
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
@@ -1329,24 +1298,22 @@ Line::ComputeShapeBounds ()
 }
 
 void
-Line::OnPropertyChanged (DependencyProperty *prop)
+Line::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::LINE) {
-		if (prop == Shape::StretchProperty) {
-			InvalidatePathCache ();
-			UpdateBounds (true);
-		}
-		Shape::OnPropertyChanged (prop);
+	if (args->property->type != Type::LINE) {
+		Shape::OnPropertyChanged (args);
 		return;
 	}
 
-	if ((prop == Line::X1Property) || (prop == Line::X2Property) || prop == Line::Y1Property || prop == Line::Y2Property) {
+	if (args->property == Line::X1Property ||
+	    args->property == Line::X2Property ||
+	    args->property == Line::Y1Property ||
+	    args->property == Line::Y2Property) {
 		InvalidatePathCache ();
 		UpdateBounds (true);
 	}
 
-	Invalidate ();
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 double
@@ -1703,28 +1670,24 @@ Polygon::BuildPath ()
 }
 
 void
-Polygon::OnPropertyChanged (DependencyProperty *prop)
+Polygon::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::POLYGON) {
-		if (prop == Shape::StretchProperty) {
-			InvalidatePathCache ();
-			UpdateBounds (true);
-		}
-		Shape::OnPropertyChanged (prop);
+	if (args->property->type != Type::POLYGON) {
+		Shape::OnPropertyChanged (args);
 		return;
 	}
 
-	if (prop == Polygon::PointsProperty) {
+	if (args->property == Polygon::PointsProperty) {
 		InvalidatePathCache ();
 		UpdateBounds (true /* force one here, even if the bounds don't change */);
 	}
 
 	Invalidate ();
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-Polygon::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+Polygon::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	UpdateBounds (true);
 	Invalidate ();
@@ -1962,28 +1925,24 @@ Polyline::BuildPath ()
 }
 
 void
-Polyline::OnPropertyChanged (DependencyProperty *prop)
+Polyline::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::POLYLINE) {
-		if (prop == Shape::StretchProperty) {
-			InvalidatePathCache ();
-			UpdateBounds (true);
-		}
-		Shape::OnPropertyChanged (prop);
+	if (args->property->type != Type::POLYLINE) {
+		Shape::OnPropertyChanged (args);
 		return;
 	}
 
-	if (prop == Polyline::PointsProperty) {
+	if (args->property == Polyline::PointsProperty) {
 		InvalidatePathCache ();
 		UpdateBounds (true /* force one here, even if the bounds don't change */);
 	}
 
 	Invalidate ();
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-Polyline::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+Polyline::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	UpdateBounds ();
 	Invalidate ();
@@ -2185,28 +2144,28 @@ Path::Draw (cairo_t *cr)
 }
 
 void
-Path::OnPropertyChanged (DependencyProperty *prop)
+Path::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::PATH) {
-		Shape::OnPropertyChanged (prop);
+	if (args->property->type != Type::PATH) {
+		Shape::OnPropertyChanged (args);
 		return;
 	}
 
 	InvalidatePathCache ();
 	FullInvalidate (false);
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop == Path::DataProperty) {
 		InvalidatePathCache ();
 		FullInvalidate (false);
 	}
 	else
-		Shape::OnSubPropertyChanged (prop, obj, subprop);
+		Shape::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 /*

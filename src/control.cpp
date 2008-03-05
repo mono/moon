@@ -72,13 +72,13 @@ Control::ComputeBounds ()
 }
 
 void
-Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (subprop == Canvas::TopProperty || subprop == Canvas::LeftProperty) {
+	if (subobj_args->property == Canvas::TopProperty || subobj_args->property == Canvas::LeftProperty) {
 		real_object->UpdateTransform ();
 	}
 
-	UIElement::OnSubPropertyChanged (prop, obj, subprop);
+	UIElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 void
@@ -144,7 +144,7 @@ Control::InitializeFromXaml (const char *xaml,
 	real_object = (FrameworkElement *) element;
 	real_object->SetVisualParent (this);
 
-	real_object->Attach (NULL,this);
+	real_object->AddPropertyChangeListener (this);
 	real_object->UpdateTotalRenderVisibility ();
 	real_object->UpdateTransform ();
 	UpdateBounds ();

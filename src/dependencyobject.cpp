@@ -318,67 +318,97 @@ GHashTable *DependencyObject::properties = NULL;
 typedef struct {
 	DependencyObject *dob;
 	DependencyProperty *prop;
-} Attacher;
+} Listener;
 
 //
-// Attaches the dependency object to the container on the given property.
+// Registers @listener as a listener on changes to @child_property of this DO.
 //
 void
-DependencyObject::Attach (DependencyProperty *property, DependencyObject *container)
+DependencyObject::AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
-	Attacher *att = new Attacher ();
-	att->dob = container;
-	att->prop = property;
-	attached_list = g_slist_append (attached_list, att);
+	Listener *listen = new Listener ();
+	listen->dob = listener;
+	listen->prop = child_property;
+	listener_list = g_slist_append (listener_list, listen);
 }
 
+//
+// Unregisters @container as a listener on changes to @child_property of this DO.
+//
 void
-DependencyObject::Detach (DependencyProperty *property, DependencyObject *container)
+DependencyObject::RemovePropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
-	for (GSList *l = attached_list; l; l = l->next) {
-		Attacher *att = (Attacher*)l->data;
+	for (GSList *l = listener_list; l; l = l->next) {
+		Listener *listen = (Listener*)l->data;
 
-		if (att->dob == container && (property == NULL || att->prop == property)) {
-			attached_list = g_slist_remove_link (attached_list, l);
-			delete att;
+		if (listen->dob == listener && (child_property == NULL || listen->prop == child_property)) {
+			listener_list = g_slist_remove_link (listener_list, l);
+			delete listen;
 		}
 	}
 }
 
 static void
-detach_depobj_values (gpointer  key,
-		      gpointer  value,
-		      gpointer  user_data)
+unregister_depobj_values (gpointer  key,
+			  gpointer  value,
+			  gpointer  user_data)
 {
 	DependencyObject *this_obj = (DependencyObject*)user_data;
 	//DependencyProperty *prop = (DependencyProperty*)key;
 	Value *v = (Value*)value;
 
 	if (v != NULL && v->GetKind() >= Type::DEPENDENCY_OBJECT && v->AsDependencyObject() != NULL) {
-		//printf ("detaching from property %s\n", prop->name);
+		//printf ("unregistering from property %s\n", prop->name);
 		DependencyObject *obj = v->AsDependencyObject ();
-		obj->Detach (NULL, this_obj);
+		obj->RemovePropertyChangeListener (this_obj);
 		obj->SetLogicalParent (NULL);
 	}
 }
 
 void
-DependencyObject::DetachAll ()
+DependencyObject::RemoveAllListeners ()
 {
-	g_hash_table_foreach (current_values, detach_depobj_values, this);
+	g_hash_table_foreach (current_values, unregister_depobj_values, this);
 }
 
-static bool attachers_notified;
+static bool listeners_notified;
 
 void
-DependencyObject::NotifyAttachersOfPropertyChange (DependencyProperty *subproperty)
+DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args)
 {
-	attachers_notified = true;
-	for (GSList *l = attached_list; l != NULL; l = l->next){
-		Attacher *att = (Attacher*)l->data;
+	DependencyObject *logical_parent = GetLogicalParent ();
+	bool notified_parent = false;
 
-		att->dob->OnSubPropertyChanged (att->prop, this, subproperty);
+	listeners_notified = true;
+
+	for (GSList *l = listener_list; l != NULL; l = l->next){
+		Listener *listener = (Listener*)l->data;
+
+		listener->dob->OnSubPropertyChanged (listener->prop, this, args);
+		if (listener->dob == logical_parent)
+			notified_parent = true;
 	}
+
+	// attached properties are implicitly listened to by the
+	// object's logical parent.  Notify them, but sure not to do
+	// it twice.
+	if (args->property->is_attached_property && !notified_parent) {
+		if (logical_parent && args->property->type == logical_parent->GetObjectType ())
+			logical_parent->OnSubPropertyChanged (NULL, this, args);
+	}
+}
+
+void
+DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproperty)
+{
+	// XXX I really think this method should go away.  we only use it in
+	// a couple of places, and it abuses things.
+
+	Value *new_value = subproperty ? GetValue (subproperty) : NULL;
+
+	PropertyChangedEventArgs args (subproperty, NULL, new_value);
+
+	NotifyListenersOfPropertyChange (&args);
 }
 
 void
@@ -415,15 +445,16 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 	    (current_value != NULL && value == NULL) ||
 	    (current_value != NULL && value != NULL && *current_value != *value)) {
 
-		// detach from the existing value if there is one
 		if (current_value) {
+			// unregister from the existing value
 			if (current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
 				DependencyObject *dob = current_value->AsDependencyObject();
 
 				if (dob != NULL)
-					dob->Detach (property, this);
+					dob->RemovePropertyChangeListener (this, property);
 			}
 
+			// and remove its closure.
 			if (Type::Find(current_value->GetKind())->IsSubclassOf (Type::COLLECTION)) {
 				Collection *col = current_value->AsCollection ();
 				if (col)
@@ -431,20 +462,23 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 			}
 		}
 
-		// store the new value in the hash
-		g_hash_table_insert (current_values, property, value ? new Value (*value) : NULL);
+		Value *new_value = value ? new Value (*value) : NULL;
 
-		// and attach to the new value
-		if (value) {
-			if (value->GetKind () >= Type::DEPENDENCY_OBJECT){
-				DependencyObject *dob = value->AsDependencyObject();
+		// store the new value in the hash
+		g_hash_table_insert (current_values, property, new_value);
+
+		if (new_value) {
+			// listen for property changes on the new object
+			if (new_value->GetKind () >= Type::DEPENDENCY_OBJECT){
+				DependencyObject *dob = new_value->AsDependencyObject();
 				
 				if (dob != NULL)
-					dob->Attach (property, this);
+					dob->AddPropertyChangeListener (this, property);
 			}
 
-			if (Type::Find(value->GetKind())->IsSubclassOf (Type::COLLECTION)) {
-				Collection *col = value->AsCollection ();
+			// and set its closure to us.
+			if (Type::Find(new_value->GetKind())->IsSubclassOf (Type::COLLECTION)) {
+				Collection *col = new_value->AsCollection ();
 				if (col) {
 					if (col->closure)
 						g_warning ("Collection added as property of more than 1 dependency object");
@@ -453,16 +487,18 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 			}
 		}
 
-		attachers_notified = false;
+		listeners_notified = false;
 
-		OnPropertyChanged (property);
+		PropertyChangedEventArgs args (property, current_value, new_value ? new_value : GetDefaultValue (property));
 
-		if (!attachers_notified)
-			g_warning ("setting property %s::%s on object of type %s didn't result in attachers being notified\n",
+		OnPropertyChanged (&args);
+
+		if (!listeners_notified)
+			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
 				   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
 
-		if (property->is_attached_property)
-			NotifyParentOfPropertyChange (property, true);
+		if (current_value)
+			delete current_value;
 	}
 }
 
@@ -519,27 +555,35 @@ DependencyObject::ClearValue (DependencyProperty *property)
 		return;
 	}
 
-	// much of this logic is c&p from SetValue.
-
+	// detach from the existing value
 	if (current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
 		DependencyObject *dob = current_value->AsDependencyObject();
 
 		if (dob != NULL)
-			dob->Detach (property, this);
+			dob->RemovePropertyChangeListener (this, property);
+
+	}
+
+	// and remove it's closure
+	if (Type::Find(current_value->GetKind())->IsSubclassOf (Type::COLLECTION)) {
+		Collection *col = current_value->AsCollection ();
+		if (col)
+			col->closure = NULL;
 	}
 
 	g_hash_table_remove (current_values, property);
 
-	attachers_notified = false;
+	listeners_notified = false;
 
-	OnPropertyChanged (property);
+	PropertyChangedEventArgs args (property, current_value, NULL);
 
-	if (!attachers_notified)
-		g_warning ("setting property %s::%s on object of type %s didn't result in attachers being notified\n",
+	OnPropertyChanged (&args);
+
+	if (!listeners_notified)
+		g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
 			   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
 
-	if (property->is_attached_property)
-		NotifyParentOfPropertyChange (property, true);
+	delete current_value;
 }
 
 void 
@@ -563,15 +607,15 @@ DependencyObject::SetValue (const char *name, Value *value)
 }
 
 static void
-free_value (void *v)
+free_value (gpointer key, gpointer value, gpointer data)
 {
-	delete (Value*)v;
+	delete (Value*)value;
 }
 
 DependencyObject::DependencyObject ()
 {
-	current_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, free_value);
-	this->attached_list = NULL;
+	current_values = g_hash_table_new (g_direct_hash, g_direct_equal);
+	this->listener_list = NULL;
 	this->logical_parent = NULL;
 }
 
@@ -592,20 +636,21 @@ DependencyObject::GetObjectType ()
 	return Type::DEPENDENCY_OBJECT; 
 }
 
-void free_attacher (gpointer data, gpointer user_data)
+void free_listener (gpointer data, gpointer user_data)
 {
-	Attacher* att = (Attacher*) data;
-	delete att;
+	Listener* listener = (Listener*) data;
+	delete listener;
 }
 
 DependencyObject::~DependencyObject ()
 {
-	if (attached_list != NULL) {
-		g_slist_foreach (attached_list, free_attacher, NULL);
-		g_slist_free (attached_list);
+	if (listener_list != NULL) {
+		g_slist_foreach (listener_list, free_listener, NULL);
+		g_slist_free (listener_list);
 	}
 
-	DetachAll ();
+	RemoveAllListeners();
+	g_hash_table_foreach (current_values, free_value, NULL);
 	g_hash_table_destroy (current_values);
 }
 
@@ -863,21 +908,6 @@ DependencyObject::GetLogicalParent ()
 	return res;
 }
 
-void
-DependencyObject::NotifyParentOfPropertyChange (DependencyProperty *property, bool only_exact_type)
-{
-	DependencyObject *current = GetLogicalParent ();
-	while (current != NULL) {
-		if (!only_exact_type || property->type == current->GetObjectType ()) {	
-
-			// Only handle up to the first one that catches the attached change
-			if (only_exact_type && current->OnChildPropertyChanged (property, this))
-				return;
-		}
-		current = current->GetLogicalParent ();
-	}
-}
-
 Value *
 dependency_object_get_value (DependencyObject *object, DependencyProperty *prop)
 {
@@ -1054,16 +1084,15 @@ resolve_property_path (DependencyObject **o, const char *path)
 DependencyProperty* DependencyObject::NameProperty;
 
 void
-DependencyObject::OnPropertyChanged (DependencyProperty *property)
+DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (DependencyObject::NameProperty == property) {
+	if (DependencyObject::NameProperty == args->property) {
 		NameScope *scope = FindNameScope ();
-		Value *v = GetValue (NameProperty);
-		if (scope && v)
-			scope->RegisterName (v->AsString (), this);
+		if (scope && args->new_value)
+			scope->RegisterName (args->new_value->AsString (), this);
 	}
 
-	NotifyAttachersOfPropertyChange (property);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void

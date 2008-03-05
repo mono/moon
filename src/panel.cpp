@@ -58,16 +58,11 @@ panel_new (void)
 Panel::Panel ()
 {
 	this->SetValue (Panel::ChildrenProperty, Value::CreateUnref (new VisualCollection ()));
-	background = NULL;
 	mouse_over = NULL;
 }
 
 Panel::~Panel ()
 {
-	if (background != NULL) {
-		background->Detach (NULL, this);
-		background->unref ();
-	}
 }
 
 #define DEBUG_BOUNDS 0
@@ -445,43 +440,32 @@ Panel::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 // own variable
 //
 void
-Panel::OnPropertyChanged (DependencyProperty *prop)
+Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::PANEL) {
-		FrameworkElement::OnPropertyChanged (prop);
+	if (args->property->type != Type::PANEL) {
+		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}
 
-	if (prop == Panel::BackgroundProperty) {
-		if (background != NULL) {
-			background->Detach (NULL, this);
-			background->unref ();
-		}
-		
-		if ((background = panel_get_background (this)) != NULL) {
-			background->Attach (NULL, this);
-			background->ref ();
-		}
-		
+	if (args->property == Panel::BackgroundProperty)
 		Invalidate ();
-	}
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop == Panel::BackgroundProperty) {
 		Invalidate ();
 	}
 	else {
-		FrameworkElement::OnSubPropertyChanged (prop, obj, subprop);
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 	}
 }
 
 void
-Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	switch (type) {
 	case CollectionChangeTypeItemAdded:
@@ -492,7 +476,7 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, Dependen
 		break;
 	case CollectionChangeTypeItemChanged:
 		// if a child changes its ZIndex property we need to resort our Children
-		if (prop == UIElement::ZIndexProperty) {
+		if (element_args->property == UIElement::ZIndexProperty) {
 			// FIXME: it would probably be faster to remove the
 			// changed item and then re-add it using
 			// g_ptr_array_insert_sorted() because

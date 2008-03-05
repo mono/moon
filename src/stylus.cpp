@@ -518,7 +518,7 @@ Stroke::ComputeBounds ()
 }
 
 void
-Stroke::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+Stroke::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	old_bounds = bounds;
 
@@ -533,7 +533,7 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangeType type, Depende
 		break;
 	}
 
-	NotifyAttachersOfPropertyChange (Stroke::StylusPointsProperty);
+	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty);
 }
 
 Stroke*
@@ -804,7 +804,7 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 }
 
 void
-InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_Args)
 {
 	switch (type) {
 	case CollectionChangeTypeItemAdded:

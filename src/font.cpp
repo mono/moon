@@ -30,8 +30,11 @@
 
 #include FT_OUTLINE_H
 
-
+#if FONT_DEBUG
+#define d(x) x
+#else
 #define d(x)
+#endif
 
 
 static const FT_Matrix invert_y = {
@@ -319,6 +322,7 @@ style_info_parse (const char *style, FontStyleInfo *info)
 	info->slant = style_slant_parse (style);
 }
 
+#if FONT_DEBUG
 static const char *
 style_name (FontStyleInfo *style, char *namebuf)
 {
@@ -357,7 +361,7 @@ style_name (FontStyleInfo *style, char *namebuf)
 	
 	return namebuf;
 }
-
+#endif
 
 FontPackFileFace::FontPackFileFace (FontPackFile *file, FT_Face face)
 {
@@ -648,7 +652,6 @@ struct FontFaceSimilarity {
 bool
 TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path, const char **families)
 {
-	char stylebuf1[128], stylebuf2[128];
 	FontFaceSimilarity similar;
 	FontPackFileFace *fface;
 	FontFamilyInfo *family;

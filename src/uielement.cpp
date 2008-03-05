@@ -73,11 +73,6 @@ UIElement::UIElement () : opacityMask(NULL), flags (UIElement::RENDER_VISIBLE | 
 
 UIElement::~UIElement ()
 {
-	if (opacityMask != NULL) {
-		opacityMask->Detach (NULL, this);
-		opacityMask->unref ();
-	}
-	
 	delete dirty_region;
 
 	remove_dirty_element (this);
@@ -118,56 +113,47 @@ UIElement::RenderClipPath (cairo_t *cr)
 }
 
 void
-UIElement::OnPropertyChanged (DependencyProperty *prop)
+UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::UIELEMENT) {
-		Visual::OnPropertyChanged (prop);
+	if (args->property->type != Type::UIELEMENT) {
+		Visual::OnPropertyChanged (args);
 		return;
 	}
 	  
-	if (prop == UIElement::OpacityProperty) {
+	if (args->property == UIElement::OpacityProperty) {
 		UpdateTotalRenderVisibility ();
 	}
-	else if (prop == UIElement::VisibilityProperty) {
+	else if (args->property == UIElement::VisibilityProperty) {
 		// note: invalid enum values are only validated in 1.1 (managed code),
 		// the default value for VisibilityProperty is VisibilityCollapsed
 		// (see bug #340799 for more details)
-		if (GetValue (prop)->AsInt32() == VisibilityVisible)
+		if (args->new_value->AsInt32() == VisibilityVisible)
 			flags |= UIElement::RENDER_VISIBLE;
 		else
 			flags &= ~UIElement::RENDER_VISIBLE;
 		UpdateTotalRenderVisibility();
 	}
-	else if (prop == UIElement::IsHitTestVisibleProperty) {
-		if (GetValue (prop)->AsBool())
+	else if (args->property == UIElement::IsHitTestVisibleProperty) {
+		if (args->new_value->AsBool())
 			flags |= UIElement::HIT_TEST_VISIBLE;
 		else
 			flags &= ~UIElement::HIT_TEST_VISIBLE;
 		UpdateTotalHitTestVisibility();
 	}
-	else if (prop == UIElement::ClipProperty) {
+	else if (args->property == UIElement::ClipProperty) {
 		// Since clip modifies bounds and subtreebounds
 		// we need to invalidate everything
 		FullInvalidate (false);
 	}
-	else if (prop == UIElement::OpacityMaskProperty) {
-		if (opacityMask != NULL) {
-			opacityMask->Detach (NULL, this);
-			opacityMask->unref ();
-		}
-		
-		if ((opacityMask = uielement_get_opacity_mask (this)) != NULL) {
-			opacityMask->Attach (NULL, this);
-			opacityMask->ref ();
-		}
-		
+	else if (args->property == UIElement::OpacityMaskProperty) {
+		opacityMask = args->new_value ? args->new_value->AsBrush() : NULL;
 		Invalidate ();
 	}
-	else if (prop == UIElement::RenderTransformProperty || prop == UIElement::RenderTransformOriginProperty) {
+	else if (args->property == UIElement::RenderTransformProperty || args->property == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
 	}
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 #if true
@@ -271,7 +257,7 @@ UIElement::ComputeTransform ()
 }
 
 void
-UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop == UIElement::RenderTransformProperty) {
 		UpdateTransform ();
@@ -283,7 +269,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 	        Invalidate ();
 	}
 	
-	Visual::OnSubPropertyChanged (prop, obj, subprop);
+	Visual::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 bool 

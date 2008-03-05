@@ -19,15 +19,15 @@ FrameworkElement::FrameworkElement ()
 }
 
 void
-FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
+FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::FRAMEWORKELEMENT) {
-		UIElement::OnPropertyChanged (prop);
+	if (args->property->type != Type::FRAMEWORKELEMENT) {
+		UIElement::OnPropertyChanged (args);
 		return;
 	}
 
-	if (prop == FrameworkElement::WidthProperty ||
-	    prop == FrameworkElement::HeightProperty) {
+	if (args->property == FrameworkElement::WidthProperty ||
+	    args->property == FrameworkElement::HeightProperty) {
 		Point p = GetRenderTransformOrigin ();
 
 		/* normally we'd only update the bounds of this
@@ -37,7 +37,7 @@ FrameworkElement::OnPropertyChanged (DependencyProperty *prop)
 		FullInvalidate (p.x != 0.0 || p.y != 0.0);
 	}
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void

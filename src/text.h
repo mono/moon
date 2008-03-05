@@ -40,17 +40,16 @@ class Inline : public DependencyObject {
 		PangoFontDescription *pango;
 		TextFontDescription *custom;
 	} font;
-	
+
 	Brush *foreground;
 	bool autogen;
 	
 	Inline ();
 	virtual ~Inline ();
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
-	
 	virtual Value *GetDefaultValue (DependencyProperty *prop);
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 };
 
 char *inline_get_font_family (Inline *inline_);
@@ -111,7 +110,6 @@ class TextBlock : public FrameworkElement {
 	} layout;
 	MangoRenderer *renderer;
 	Downloader *downloader;
-	Brush *foreground;
 	
 	double actual_height;
 	double actual_width;
@@ -192,9 +190,9 @@ public:
 	virtual void ComputeBounds ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 	
 	virtual Value *GetValue (DependencyProperty *property);
 };
@@ -288,8 +286,8 @@ public:
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint ();
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 };
 
 Glyphs *glyphs_new (void);

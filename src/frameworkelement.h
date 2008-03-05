@@ -23,7 +23,7 @@ class FrameworkElement : public UIElement {
 
 	virtual void ComputeBounds ();
 
-	void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 

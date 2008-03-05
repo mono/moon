@@ -1,3 +1,111 @@
+2008-03-04  Chris Toshok  <toshok@ximian.com>
+
+	[ rather large change, reworking much of the property change event
+	system to be a little smaller api surface-wise, and also cleaning
+	up uses of it to remove some of the accumulated cruft that we'd
+	developed over the past 10 months.]
+	
+	* dependencyobject.h, dependencyobject.cpp: A few key changes:
+
+	1. Attach -> AddPropertyChangeListener
+	   Detach -> RemovePropertyChangeListener
+	   NotifyAttachersOfPropertyChange -> NotifyListenersOfPropertyChange
+
+	   This was done to remove the confusion between "attached"
+	   properties and our use of the word "attach" to mean "listen for
+	   property changes".  Attached properties are those which
+	   implicitly notify the parent when they're changed.
+	
+	   OnChildPropertyChanged is gone.  Canvas (the only user of it)
+	   now uses OnSubPropertyChanged to deal with child property
+	   changes.
+
+	2. *PropertyChanged methods take a
+	   structure (PropertyChangedEventArgs) that contains the
+	   DependencyProperty, as well as the old and new values of it.
+	   This was to remove the need for almost every
+	   OnPropertyChangedMethod to immediately call GetValue on the
+	   property.  Passing the old value requires changing the
+	   current_values hash to not have a value destructor, so we have
+	   to manually delete values again.
+
+	3. Reordered the args for
+	   AddPropertyChangeListener/RemovePropertyChangeListener so that
+	   the listener comes first and the second arg defaults to NULL.
+	   Cleans up a bit of the use of this method globally.
+
+	* animation.h, animation.cpp: track OnSubPropertyChanged changes.
+
+	* brush.h, brush.cpp (SolidColorBrush::OnPropertyChanged,
+	LinearGradientBrush::OnPropertyChanged,
+	RadialGradientBrush::OnPropertyChanged): remove, unnecessary.
+
+	also lots of changes to use args->new_value instead of calling
+	GetValue(property).
+
+	Clear up confusion regarding the meaning of the property passed to
+	AddPropertyChangeListener.
+
+	* canvas.h, canvas.cpp: switch OnChildPropertyChanged to
+	OnSubPropertyChanged.
+	
+	* collection.h, collection.cpp (Node::Node): don't add parent as a
+	listener for every property change here.  We handle this
+	specifically (and automatically) in
+	DependencyObject::NotifyListenersOfPropertyChange, but only for
+	attached properties.
+	(Node::~Node): don't remove the listener here either.
+
+	lots of tracking the DO api changes here too.
+
+	* control.h, control.cpp: track On*PropertyChanged changes.
+
+	* font.cpp: fix some warnings
+
+	* frameworkelement.h, frameworkelement.cpp: track
+	On*PropertyChanged changes.
+	
+	* geometry.h, geometry.cpp: track On*PropertyChanged changes.
+	
+	* media.h, media.cpp (MediaElement::OnPropertyChanged): remove a
+	lot of the empty blocks here - there's nothing to do for these
+	properties, so we might as well not bloat the code.  Also, use
+	new_value when we can.
+	(Image::DownloaderComplete): add a (I hope) suitably nasty comment
+	about calling brush->OnPropertyChanged directly.  code shouldn't
+	do this, we should figure out if we can just set the property, and
+	if so, do that.  otherwise something else is broken.
+	(Image::OnPropertyChanged): use new_value where we can.
+
+	* panel.h, panel.cpp: remove the cached background field.  It
+	wasn't used except to Attach/ref + Detach/unref it, and that's
+	handled automatically by the DependencyProperty machinery.
+	Otherwise just track the On*PropertyChanged api changes.
+
+	* shape.h, shape.cpp: similarly, we don't need to ref/attach our
+	cached stroke and fill fields.  They're populated for us (and
+	ref'ed/unref'ed as needed), so we don't need anything additional
+	here.  Use new_value instead of GetValue in OnPropertyChanged.
+	Also, factor out some redundant code from all the subclass
+	OnPropertyChanged methods that was nearly the same as the
+	Shape::OnPropertyChanged code for it.
+
+	* stylus.h, stylus.cpp: On*PropertyChanged api changes.
+
+	* text.h, text.cpp: mostly On*PropertyChanged api changes, and
+	lots of using new_value instead of GetValue, but also get rid of
+	the cached TextBlock foreground instance field.  It's easy enough
+	to fetch when we need it in the ::Paint method, and the
+	dependencyobject stuff already refs and attaches to it.
+
+	* transform.h, transform.cpp: lots of On*PropertyChanged api
+	changes, and using new_value instead of GetValue.
+
+	* uielement.h, uielement.cpp: remove the cached opacityMask
+	field (it wasn't used except for attach/detach, which is handled
+	for us.)  The usual On*PropertyChanged changes as well as using
+	new_value instead of GetValue.
+	
 2008-03-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp (style_simulations_map): There's only one

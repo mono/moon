@@ -95,14 +95,14 @@ Geometry::ComputeBounds (Path *shape)
 */
 
 void
-Geometry::OnPropertyChanged (DependencyProperty *prop)
+Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	// no need to clear the path for Geometry itself as FillRule and Transform properties are 
 	// only used when drawing, i.e. they do not affect the path itself
-	if ((prop->type != Type::GEOMETRY) && path)
+	if ((args->property->type != Type::GEOMETRY) && path)
 		moon_path_clear (path);
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 static Rect
@@ -147,17 +147,17 @@ GeometryGroup::GeometryGroup ()
 }
 
 void
-GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (prop);
 }
 
 void
-GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	// GeometryGroup only has one collection, so let's save the hash lookup
 	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
-		NotifyAttachersOfPropertyChange (GeometryGroup::ChildrenProperty);
+		NotifyListenersOfPropertyChange (GeometryGroup::ChildrenProperty);
 }
 
 void
@@ -436,11 +436,11 @@ path_geometry_new ()
 }
 
 void
-PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	// PathGeometry only has one collection, so let's save the hash lookup
 	//if (col == GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection ())
-		NotifyAttachersOfPropertyChange (PathGeometry::FiguresProperty);
+		NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
 }
 
 void
@@ -657,26 +657,26 @@ PathFigure::~PathFigure ()
 }
 
 void
-PathFigure::OnPropertyChanged (DependencyProperty *prop)
+PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::PATHFIGURE) {
-		DependencyObject::OnPropertyChanged (prop);
+	if (args->property->type != Type::PATHFIGURE) {
+		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
 
 	if (path)
 		moon_path_clear (path);
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-PathFigure::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+PathFigure::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	if (path)
 		moon_path_clear (path);
 	// PathFigure only has one collection, so let's save the hash lookup
 	//if (col == GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection())
-		NotifyAttachersOfPropertyChange (PathFigure::SegmentsProperty);
+		NotifyListenersOfPropertyChange (PathFigure::SegmentsProperty);
 }
 
 void

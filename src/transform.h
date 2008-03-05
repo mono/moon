@@ -22,7 +22,7 @@ G_BEGIN_DECLS
 class Transform : public DependencyObject {
  public:
 	Transform () : need_update (true) { }
-	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };
 	virtual void GetTransform (cairo_matrix_t *value) {
 		if (need_update) {
@@ -149,7 +149,7 @@ public:
 
 	Matrix ();
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual Type::Kind GetObjectType () { return Type::MATRIX; }
 
@@ -191,7 +191,7 @@ Matrix*	matrix_transform_get_matrix (MatrixTransform *t);
 class TransformCollection : public Collection {
  public:
 	TransformCollection () {}
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM_COLLECTION; }
 };
 TransformCollection* transform_collection_new ();
@@ -205,8 +205,8 @@ public:
 	virtual ~TransformGroup ();
 	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
 
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
-	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void UpdateTransform ();
 };
 

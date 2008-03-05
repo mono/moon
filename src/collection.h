@@ -58,9 +58,9 @@ class Collection : public DependencyObject {
 	virtual DependencyObject *SetVal (int index, DependencyObject *data);
 	virtual Value *GetValue (DependencyProperty *property);
 	
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
-	void EmitChanged (CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	void EmitChanged (CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 
 	static DependencyProperty *CountProperty;
 

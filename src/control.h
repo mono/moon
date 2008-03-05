@@ -31,7 +31,7 @@ class Control : public FrameworkElement {
 	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 

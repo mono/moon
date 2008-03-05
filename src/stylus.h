@@ -111,7 +111,7 @@ class Stroke : public DependencyObject {
 	Rect GetOldBounds ();
 	bool HitTest (StylusPointCollection *stylusPoints);
 
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 
 	static DependencyProperty* DrawingAttributesProperty;
 	static DependencyProperty* StylusPointsProperty;
@@ -163,7 +163,7 @@ class InkPresenter : public Canvas {
 	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };
 
 	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 
 	static DependencyProperty* StrokesProperty;
 };

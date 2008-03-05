@@ -113,8 +113,8 @@ class Shape : public FrameworkElement {
 	bool MixedHeightWidth (Value **width, Value **height);
 
 	virtual void CacheInvalidateHint (void);
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
 	//
 	bool IsEmpty () { return (flags & UIElement::SHAPE_EMPTY); };
@@ -163,7 +163,7 @@ class Ellipse : public Shape {
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 };
 
 Ellipse *ellipse_new (void);
@@ -186,7 +186,7 @@ class Rectangle : public Shape {
 	virtual bool CanFill () { return true; }
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	bool GetRadius (double *rx, double *ry);
 	virtual Rect ComputeLargestRectangle ();
@@ -217,7 +217,7 @@ class Line : public Shape {
 	virtual void BuildPath ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
@@ -259,8 +259,8 @@ class Polygon : public Shape {
 
 	virtual bool ClipOnHeightAndWidth () { return true; }
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 };
 
 Polygon	       *polygon_new (void);
@@ -294,8 +294,8 @@ class Polyline : public Shape {
 
 	virtual FillRule GetFillRule ();
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 };
 
 Polyline       *polyline_new		(void);
@@ -332,8 +332,8 @@ class Path : public Shape {
 	virtual bool CanFill () { return true; }
 	virtual FillRule GetFillRule ();
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 };
 
 Path *path_new (void);

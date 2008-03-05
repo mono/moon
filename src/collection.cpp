@@ -22,7 +22,6 @@
 
 Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 {
-	dob->Attach (NULL, parent);
 	dob->SetLogicalParent (parent);
 	dob->ref ();
 	obj = dob;
@@ -31,7 +30,6 @@ Collection::Node::Node (DependencyObject *dob, DependencyObject *parent)
 
 Collection::Node::~Node ()
 {
-	obj->Detach (NULL, parent);
 	obj->SetLogicalParent (NULL);
 	obj->unref ();
 }
@@ -56,23 +54,24 @@ Collection::~Collection ()
 	Collection::Node *n;
 
 	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next)
-		n->obj->Detach (NULL, this);
+		n->obj->RemovePropertyChangeListener (this);
 
 	list->Clear(true);
 	delete list;
 }
 
 void
-Collection::EmitChanged (CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop)
+Collection::EmitChanged (CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	Collection::ChangeEventArgs args;
 	args.type = type;
 	args.obj = obj;
-	args.prop = prop;
+	args.prop = element_args ? element_args->property : NULL;
 	Emit (ChangedEvent, &args);
 
-	if (closure)
-		closure->OnCollectionChanged (this, type, obj, prop);
+	if (closure) {
+		closure->OnCollectionChanged (this, type, obj, element_args);
+	}
 }
 
 int
@@ -91,7 +90,7 @@ Collection::Add (DependencyObject *data)
 
 	generation++;
 	list->Append (new Collection::Node (data, this));
-	data->Attach (NULL, this);
+	data->AddPropertyChangeListener (this);
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (data);
@@ -132,7 +131,7 @@ Collection::Insert (int index, DependencyObject *data)
 	generation++;
 	list->Insert (new Collection::Node (data, this), index);
 
-	data->Attach (NULL, this);
+	data->AddPropertyChangeListener (this);
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (data);
@@ -149,11 +148,9 @@ Collection::Insert (int index, DependencyObject *data)
 }
 
 void
-Collection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+Collection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	/* unfortunately OnSubPropertyChanged doesn't give us
-	   enough info to fill in the obj parameter here */
-	EmitChanged (CollectionChangeTypeItemChanged, obj, subprop);
+	EmitChanged (CollectionChangeTypeItemChanged, obj, subobj_args);
 }
 
 DependencyObject *
@@ -168,8 +165,8 @@ Collection::SetVal (int index, DependencyObject *data)
 	generation++;
 	Node *old = (Collection::Node *) list->Replace (new Collection::Node (data, this), index);
 	
-	data->Attach (NULL, this);
-	old->obj->Detach (NULL, this);
+	data->AddPropertyChangeListener (this);
+	old->obj->RemovePropertyChangeListener (this);
 	
 	if (closure) {
 		EmitChanged (CollectionChangeTypeItemRemoved, old->obj, NULL);
@@ -201,7 +198,7 @@ Collection::Remove (DependencyObject *data)
 	
 	list->Unlink (n);
 
-	data->Detach (NULL, this);
+	data->RemovePropertyChangeListener (this);
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (data);
@@ -230,7 +227,7 @@ Collection::RemoveAt (int index)
 
 	list->Unlink (n);
 	
-	n->obj->Detach (NULL, this);
+	n->obj->RemovePropertyChangeListener (this);
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (n->obj);
@@ -254,7 +251,7 @@ Collection::Clear ()
 
 	generation++;
 	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
-		n->obj->Detach (NULL, this);
+		n->obj->RemovePropertyChangeListener (this);
 
 		NameScope *ns = NameScope::GetNameScope (n->obj);
 		if (ns && ns->GetMerged ()) {

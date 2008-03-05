@@ -21,10 +21,10 @@
 #include "math.h"
 
 void
-Transform::OnPropertyChanged (DependencyProperty *prop)
+Transform::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type == Type::DEPENDENCY_OBJECT) {
-		DependencyObject::OnPropertyChanged (prop);
+	if (args->property->type == Type::DEPENDENCY_OBJECT) {
+		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
 
@@ -40,7 +40,7 @@ Transform::OnPropertyChanged (DependencyProperty *prop)
 	// of transform from C#, and in that case, we would only
 	// be slower.
 	//
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
@@ -372,31 +372,27 @@ Matrix::Matrix ()
 }
 
 void
-Matrix::OnPropertyChanged (DependencyProperty *prop)
+Matrix::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	Value *value;
-	
-	if (prop->type != Type::MATRIX) {
-		DependencyObject::OnPropertyChanged (prop);
+	if (args->property->type != Type::MATRIX) {
+		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
 	
-	value = GetValue (prop);
-	
-	if (prop == Matrix::M11Property)
-		matrix.xx = value->AsDouble ();
-	else if (prop == Matrix::M12Property)
-		matrix.yx = value->AsDouble ();
-	else if (prop == Matrix::M21Property)
-		matrix.xy = value->AsDouble ();
-	else if (prop == Matrix::M22Property)
-		matrix.yy = value->AsDouble ();
-	else if (prop == Matrix::OffsetXProperty)
-		matrix.x0 = value->AsDouble ();
-	else if (prop == Matrix::OffsetYProperty)
-		matrix.y0 = value->AsDouble ();
-	
-	DependencyObject::OnPropertyChanged (prop);
+	if (args->property == Matrix::M11Property)
+		matrix.xx = args->new_value->AsDouble ();
+	else if (args->property == Matrix::M12Property)
+		matrix.yx = args->new_value->AsDouble ();
+	else if (args->property == Matrix::M21Property)
+		matrix.xy = args->new_value->AsDouble ();
+	else if (args->property == Matrix::M22Property)
+		matrix.yy = args->new_value->AsDouble ();
+	else if (args->property == Matrix::OffsetXProperty)
+		matrix.x0 = args->new_value->AsDouble ();
+	else if (args->property == Matrix::OffsetYProperty)
+		matrix.y0 = args->new_value->AsDouble ();
+
+	NotifyListenersOfPropertyChange (args);
 }
 
 cairo_matrix_t
@@ -525,25 +521,25 @@ TransformGroup::~TransformGroup ()
 }
 
 void
-TransformGroup::OnPropertyChanged (DependencyProperty *prop)
+TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop->type != Type::TRANSFORMGROUP) {
-		Transform::OnPropertyChanged (prop);
+	if (args->property->type != Type::TRANSFORMGROUP) {
+		Transform::OnPropertyChanged (args);
 		return;
 	}
 
-	if (prop == TransformGroup::ChildrenProperty) {
+	if (args->property == TransformGroup::ChildrenProperty) {
 		need_update = true;
 	}
 
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void
-TransformGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+TransformGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	need_update = true;
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (prop);
 }
 
 void
@@ -580,9 +576,9 @@ transform_collection_new (void)
 }
 
 void
-TransformCollection::OnSubPropertyChanged  (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop)
+TransformCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (prop);
 }
 
 void

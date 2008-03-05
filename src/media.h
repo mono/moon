@@ -103,7 +103,7 @@ public:
 	
 	void SetSource (DependencyObject *Downloader, const char *PartName);
 	
-	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	int GetHeight () { return surface ? surface->height : 0; };
 	int GetWidth  () { return surface ? surface->width : 0; };
@@ -298,7 +298,7 @@ public:
 	virtual Value *GetValue (DependencyProperty *prop);
 	virtual void SetValue (DependencyProperty *prop, Value value);
 	virtual void SetValue (DependencyProperty *prop, Value *value);
-	virtual void OnPropertyChanged (DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	void SetSource (DependencyObject *Downloader, const char *PartName);
 	

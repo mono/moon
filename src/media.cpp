@@ -1284,10 +1284,10 @@ MediaElement::OnLoaded ()
 }
 
 void
-MediaElement::OnPropertyChanged (DependencyProperty *prop)
+MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop == MediaBase::SourceProperty) {
-		char *uri = media_base_get_source (this);
+	if (args->property == MediaBase::SourceProperty) {
+		char *uri = args->new_value ? args->new_value->AsString() : NULL;
 		
 		if (uri && *uri) {
 			Downloader *dl = Surface::CreateDownloader (this);
@@ -1300,49 +1300,39 @@ MediaElement::OnPropertyChanged (DependencyProperty *prop)
 		}
 		
 		flags |= RecalculateMatrix;
-	} else if (prop == MediaElement::AudioStreamCountProperty) {
-		// read-only property
-	} else if (prop == MediaElement::AudioStreamIndexProperty) {
+	} else if (args->property == MediaElement::AudioStreamIndexProperty) {
 		// FIXME: set the audio stream index
-	} else if (prop == MediaElement::AutoPlayProperty) {
+	} else if (args->property == MediaElement::AutoPlayProperty) {
 		// no state to change
 		//printf ("AutoPlay set to %s\n", media_element_get_auto_play (this) ? "true" : "false");
-	} else if (prop == MediaElement::BalanceProperty) {
+	} else if (args->property == MediaElement::BalanceProperty) {
 		mplayer->SetBalance (media_element_get_balance (this));
-	} else if (prop == MediaElement::BufferingProgressProperty) {
+	} else if (args->property == MediaElement::BufferingProgressProperty) {
 		Emit (BufferingProgressChangedEvent);
-	} else if (prop == MediaElement::BufferingTimeProperty) {
-		// nothing to do here
-	} else if (prop == MediaElement::CanPauseProperty) {
-		// read-only property
-	} else if (prop == MediaElement::CanSeekProperty) {
-		// read-only property
-	} else if (prop == MediaElement::CurrentStateProperty) {
+	} else if (args->property == MediaElement::CurrentStateProperty) {
 		Emit (CurrentStateChangedEvent);
-	} else if (prop == MediaElement::IsMutedProperty) {
+	} else if (args->property == MediaElement::IsMutedProperty) {
 		mplayer->SetMuted (media_element_get_is_muted (this));
-	} else if (prop == MediaElement::MarkersProperty) {
+	} else if (args->property == MediaElement::MarkersProperty) {
 		// FIXME: keep refs to these?
-	} else if (prop == MediaElement::NaturalDurationProperty) {
-		// read-only property
-	} else if (prop == MediaElement::NaturalVideoHeightProperty) {
+	} else if (args->property == MediaElement::NaturalVideoHeightProperty) {
 		// read-only property
 		flags |= RecalculateMatrix;
-	} else if (prop == MediaElement::NaturalVideoWidthProperty) {
+	} else if (args->property == MediaElement::NaturalVideoWidthProperty) {
 		// read-only property
 		flags |= RecalculateMatrix;
-	} else if (prop == MediaElement::PositionProperty) {
+	} else if (args->property == MediaElement::PositionProperty) {
 		if (IsPlaying() && mplayer->HasVideo ())
 			Invalidate ();
-	} else if (prop == MediaElement::VolumeProperty) {
+	} else if (args->property == MediaElement::VolumeProperty) {
 		mplayer->SetVolume (media_element_get_volume (this));
 	}
 	
-	if (prop->type == Type::MEDIAELEMENT) {
-		NotifyAttachersOfPropertyChange (prop);
+	if (args->property->type == Type::MEDIAELEMENT) {
+		NotifyListenersOfPropertyChange (args);
 	} else {
 		// propagate to parent class
-		MediaBase::OnPropertyChanged (prop);
+		MediaBase::OnPropertyChanged (args);
 		flags |= RecalculateMatrix;
 	}
 }
@@ -1744,8 +1734,15 @@ Image::DownloaderComplete ()
 	if (width != NULL && height == NULL)
 		SetValue (FrameworkElement::HeightProperty, (double) surface->height * width->AsDouble () / (double)surface->width);
 		
-	if (brush)
-		brush->OnPropertyChanged (ImageBrush::DownloadProgressProperty);
+	if (brush) {
+		// XXX this is wrong, we property need to set the
+		// property, or use some other mechanism, but this is
+		// gross.
+		PropertyChangedEventArgs args (ImageBrush::DownloadProgressProperty, NULL, 
+					       brush->GetValue (ImageBrush::DownloadProgressProperty));
+
+		brush->OnPropertyChanged (&args);
+	}
 	else 
 		Invalidate ();
 }
@@ -1886,7 +1883,7 @@ Image::CreateSurface (const char *fname)
 
 		buffer = (guchar*)g_try_malloc (1024);
 		f = fopen (fname, "r");
-		while (n = fread (buffer, 1, 1024, f))
+		while ((n = fread (buffer, 1, 1024, f)))
 			gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buffer, n, &error);	
 		fclose (f);
 		g_free (buffer);
@@ -2066,12 +2063,12 @@ Image::GetCairoSurface ()
 }
 
 void
-Image::OnPropertyChanged (DependencyProperty *prop)
+Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (prop == MediaBase::SourceProperty) {
+	if (args->property == MediaBase::SourceProperty) {
 		DownloaderAbort ();
 		
-		char *source = media_base_get_source (this);
+		char *source = args->new_value ? args->new_value->AsString() : NULL;
 		
 		Downloader *dl = Surface::CreateDownloader (this);
 		downloader_open (dl, "GET", source);
@@ -2079,13 +2076,13 @@ Image::OnPropertyChanged (DependencyProperty *prop)
 		dl->unref ();
 	}
 
-	if (prop->type != Type::IMAGE) {
-		MediaBase::OnPropertyChanged (prop);
+	if (args->property->type != Type::IMAGE) {
+		MediaBase::OnPropertyChanged (args);
 		return;
 	}
 
 	// we need to notify attachees if our DownloadProgress changed.
-	NotifyAttachersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (args);
 }
 
 bool

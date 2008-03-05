@@ -14,8 +14,6 @@
 
 /* @ContentProperty="Children" */
 class Panel : public FrameworkElement {
-	Brush *background;
-
 	//
 	// Contains the last element where the mouse entered
 	//
@@ -55,9 +53,9 @@ class Panel : public FrameworkElement {
 	virtual void UpdateTotalRenderVisibility ();
 	virtual void UpdateTotalHitTestVisibility ();
 
-	virtual void OnPropertyChanged (DependencyProperty *prop);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, DependencyProperty *subprop);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, DependencyProperty *prop);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 
 	virtual void CacheInvalidateHint ();
 
