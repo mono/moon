@@ -1,3 +1,14 @@
+2008-03-05  Michael Dominic K.  <mdk@mdk.am>
+
+	* Makefile.am:
+	* enums.c:
+	* enums.h:
+	* xaml.cpp: Taking out all the enum->str (and vice versa) code from
+	xaml.cpp and putting it into a new file -> enum.c + some utilities. 
+
+	The enum<->str code is not specific to xaml and is usefull from plugin as
+	well.
+
 2008-03-05  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* media.cpp: close the pixbuf_loader to load the small images too.

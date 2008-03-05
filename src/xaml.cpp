@@ -44,8 +44,6 @@
 #define ANTIBOM (gunichar2) 0xFFFE
 
 
-static GHashTable *enum_map = NULL;
-
 class XamlElementInfo;
 class XamlElementInstance;
 class XamlParserInfo;
@@ -58,7 +56,7 @@ static DefaultNamespace *default_namespace = NULL;
 static XNamespace *x_namespace = NULL;
 
 
-const char* default_namespace_names [] = {
+static const char* default_namespace_names [] = {
 	"http://schemas.microsoft.com/winfx/2006/xaml/presentation",
 	"http://schemas.microsoft.com/client/2007",
 	"http://schemas.microsoft.com/xps/2005/06",
@@ -2289,209 +2287,6 @@ geometry_from_str (const char *str)
 	return pg;
 }
 
-///
-/// ENUMS
-///
-
-typedef struct {
-	const char *name;
-	int value;
-} enum_map_t;
-
-enum_map_t alignment_x_map [] = {
-	{ "Left", 0 },
-	{ "Center", 1 },
-	{ "Right", 2 },
-	{ NULL, 0 },
-};
-
-enum_map_t alignment_y_map [] = {
-	{ "Top", 0 },
-	{ "Center", 1 },
-	{ "Bottom", 2 },
-	{ NULL, 0 },
-};
-
-enum_map_t brush_mapping_mode_map [] = {
-	{ "Absolute", 0 },
-	{ "RelativeToBoundingBox", 1},
-	{ NULL, 0 },
-};
-
-
-enum_map_t color_interpolation_mode_map [] = {
-	{ "ScRgbLinearInterpolation", 0 },
-	{ "SRgbLinearInterpolation", 1 },
-	{ NULL, 0 },
-};
-
-enum_map_t cursors_map [] = {
-	{ "Default", 0 },
-	{ "Arrow", 1 },
-	{ "Hand", 2 },
-	{ "Wait", 3 },
-	{ "IBeam", 4 },
-	{ "Stylus", 5 },
-	{ "Eraser", 6 },
-	{ "None", 7 },
-	{ NULL, 0 },
-};
-
-enum_map_t error_type_map [] = {
-	{ "NoError", 0 },
-	{ "UnknownError", 1 },
-	{ "InitializeError", 2 },
-	{ "ParserError", 3 },
-	{ "ObjectModelError", 4 },
-	{ "RuntimeError", 5 },
-	{ "DownloadError", 6 },
-	{ "MediaError", 7 },
-	{ "ImageError", 8 },
-	{ NULL, 0 },
-};
-
-enum_map_t fill_behavior_map [] = {
-	{ "HoldEnd", 0 },
-	{ "Stop", 1 },
-	{ NULL, 0 },
-};
-
-enum_map_t fill_rule_map [] = {
-	{ "EvenOdd", 0 },
-	{ "Nonzero", 1},
-	{ NULL, 0 },
-};
-
-enum_map_t font_stretches_map [] = {
-	{ "UltraCondensed", 1 },
-	{ "ExtraCondensed", 2 },
-	{ "Condensed",      3 },
-	{ "SemiCondensed",  4 },
-	{ "Normal",         5 },
-	{ "Medium",         5 },
-	{ "SemiExpanded",   6 },
-	{ "Expanded",       7 },
-	{ "ExtraExpanded",  8 },
-	{ "UltraExpanded",  9 },
-	{ NULL, 0 },
-};
-
-enum_map_t font_styles_map [] = {
-	{ "Normal",  0 },
-	{ "Oblique", 1 },
-	{ "Italic",  2 },
-	{ NULL, 0 },
-};
-
-enum_map_t font_weights_map [] = {
-	{ "Thin",       100 },
-	{ "ExtraLight", 200 },
-	{ "UltraLight", 200 },  /* deprecated as of July 2007 */
-	{ "Light",      300 },
-	{ "Normal",     400 },
-	{ "Regular",    400 },  /* deprecated as of July 2007 */
-	{ "Medium",     500 },
-	{ "SemiBold",   600 },
-	{ "DemiBold",   600 },  /* deprecated as of July 2007 */
-	{ "Bold",       700 },
-	{ "ExtraBold",  800 },
-	{ "UltraBold",  800 },  /* deprecated as of July 2007 */
- 	{ "Black",      900 },
-	{ "Heavy",      900 },  /* deprecated as of July 2007 */
-	{ "ExtraBlack", 950 },
-	{ "UltraBlack", 950 },  /* deprecated as of July 2007 */
-	{ NULL, 0 },
-};
-
-enum_map_t style_simulations_map [] = {
-	{ "None",                 0 },
-	{ NULL,                   0 },
-};
-
-enum_map_t gradient_spread_method_map [] = {
-	{ "Pad", 0 },
-	{ "Reflect", 1 },
-	{ "Repeat", 2 },
-	{ NULL, 0 },
-};
-
-enum_map_t pen_line_cap_map [] = {
-	{ "Flat", 0 },
-	{ "Square", 1 },
-	{ "Round", 2 },
-	{ "Triangle", 3 },
-	{ NULL, 0 },
-};
-
-enum_map_t pen_line_join_map [] = {
-	{ "Miter", 0 },
-	{ "Bevel", 1 },
-	{ "Round", 2 },
-	{ NULL, 0 },
-};
-
-enum_map_t stretch_map [] = {
-	{ "None", 0 },
-	{ "Fill", 1 },
-	{ "Uniform", 2 },
-	{ "UniformToFill", 3 },
-	{ NULL, 0 },
-};
-
-enum_map_t sweep_direction_map [] = {
-	{ "Counterclockwise", 0 },
-	{ "Clockwise", 1 },
-	{ NULL, 0 },
-};
-
-enum_map_t tablet_device_type_map [] = {
-	{ "Mouse", 0 },
-	{ "Stylus", 1 },
-	{ "Touch", 2 },
-	{ NULL, 0 },
-};
-
-enum_map_t text_decorations_map [] = {
-	{ "None", 0 },
-	{ "Underline", 1 },
-	{ NULL, 0 },
-};
-
-enum_map_t text_wrapping_map [] = {
-	{ "Wrap", 0 },
-	{ "NoWrap", 1 },
-	{ "WrapWithOverflow", 2 },
-	{ NULL, 0 },
-};
-
-enum_map_t visibility_map [] = {
-	{ "Visible", 0 },
-	{ "Collapsed", 1 },
-	{ NULL, 0 },
-};
-
-int
-enum_from_str (const enum_map_t *emu, const char *str)
-{
-	for (int i = 0; emu [i].name; i++) {
-		if (!g_strcasecmp (emu [i].name, str))
-			return emu [i].value;
-	}
-
-	return (int) strtol (str, NULL, 10);
-}
-
-const char*
-str_from_enum (const enum_map_t *emu, int e)
-{
-	for (int i = 0; emu [i].name; i++) {
-		if (emu [i].value == e)
-			return emu [i].name;
-	}
-
-    return NULL;
-}
-
 Value *
 value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str)
 {
@@ -2501,7 +2296,6 @@ value_from_str_with_typename (const char *type_name, const char *prop_name, cons
 
 	return value_from_str (t->type, prop_name, str);
 }
-
 		
 // Will return NULL if there are any errors
 Value *
@@ -2560,11 +2354,8 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		int i;
 
 		if (isalpha (str [0]) && prop_name) {
-			enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, prop_name);
-
-			if (emu)
-				i = enum_from_str (emu, str);
-			else
+			i = enums_str_to_int (prop_name, str);
+			if (i == -1)
 				return NULL;
 		} else {
 			errno = 0;
@@ -2708,24 +2499,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 
 	return v;
 }
-
-bool
-convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s)
-{
-	if (v->GetKind () != Type::INT32)
-        return false;
-
-    enum_map_t *emu = (enum_map_t *) g_hash_table_lookup (enum_map, prop->name);
-
-    if (! emu)
-        return false;
-    else {
-        int vv = v->AsInt32 ();
-        *s = str_from_enum (emu, vv);
-        return true;
-    }
-}
-
 
 XamlElementInstance *
 default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
@@ -3151,7 +2924,6 @@ xaml_init (void)
 {
 	GHashTable *dem = g_hash_table_new (g_str_hash, g_str_equal); // default element map
 	GHashTable *x_dem = g_hash_table_new (g_str_hash, g_str_equal); // x element map
-	enum_map = g_hash_table_new (g_str_hash, g_str_equal);
 
 	XamlElementInfo *col = register_ghost_element ("Collection", NULL, Type::COLLECTION);
 
@@ -3382,34 +3154,4 @@ xaml_init (void)
 	
 	default_namespace = new DefaultNamespace (dem);
 	x_namespace = new XNamespace (x_dem);
-	
-	///
-	/// ENUMS
-	///
-
-	g_hash_table_insert (enum_map, (char *) "AlignmentX", GINT_TO_POINTER (alignment_x_map));
-	g_hash_table_insert (enum_map, (char *) "AlignmentY", GINT_TO_POINTER (&alignment_y_map));
-	g_hash_table_insert (enum_map, (char *) "MappingMode", GINT_TO_POINTER (brush_mapping_mode_map));
-	g_hash_table_insert (enum_map, (char *) "ColorInterpolationMode", GINT_TO_POINTER (color_interpolation_mode_map));
-	g_hash_table_insert (enum_map, (char *) "Cursor", GINT_TO_POINTER (cursors_map));
-	g_hash_table_insert (enum_map, (char *) "ErrorType", GINT_TO_POINTER (error_type_map));
-	g_hash_table_insert (enum_map, (char *) "FillBehavior", GINT_TO_POINTER (fill_behavior_map));
-	g_hash_table_insert (enum_map, (char *) "FillRule", GINT_TO_POINTER (fill_rule_map));
-	g_hash_table_insert (enum_map, (char *) "FontStretch", GINT_TO_POINTER (font_stretches_map));
-	g_hash_table_insert (enum_map, (char *) "FontStyle", GINT_TO_POINTER (font_styles_map));
-	g_hash_table_insert (enum_map, (char *) "FontWeight", GINT_TO_POINTER (font_weights_map));
-	g_hash_table_insert (enum_map, (char *) "SpreadMethod", GINT_TO_POINTER (gradient_spread_method_map));
-
-	g_hash_table_insert (enum_map, (char *) "StrokeDashCap", GINT_TO_POINTER (pen_line_cap_map));
-	g_hash_table_insert (enum_map, (char *) "StrokeStartLineCap", GINT_TO_POINTER (pen_line_cap_map));
-	g_hash_table_insert (enum_map, (char *) "StrokeEndLineCap", GINT_TO_POINTER (pen_line_cap_map));
-	
-	g_hash_table_insert (enum_map, (char *) "StrokeLineJoin", GINT_TO_POINTER (pen_line_join_map));
-	g_hash_table_insert (enum_map, (char *) "Stretch", GINT_TO_POINTER (stretch_map));
-	g_hash_table_insert (enum_map, (char *) "StyleSimulations", GINT_TO_POINTER (style_simulations_map));
-	g_hash_table_insert (enum_map, (char *) "SweepDirection", GINT_TO_POINTER (sweep_direction_map));
-	g_hash_table_insert (enum_map, (char *) "DeviceType", GINT_TO_POINTER (tablet_device_type_map));
-	g_hash_table_insert (enum_map, (char *) "TextDecorations", GINT_TO_POINTER (text_decorations_map));
-	g_hash_table_insert (enum_map, (char *) "TextWrapping", GINT_TO_POINTER (text_wrapping_map));
-	g_hash_table_insert (enum_map, (char *) "Visibility", GINT_TO_POINTER (visibility_map));
 }

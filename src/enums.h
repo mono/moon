@@ -1,5 +1,5 @@
 /*
- * enums.h: various enumerated types
+ * enums.c: various enumerated types + enum -> str helpers
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -162,5 +162,12 @@ enum Key {
 	KeyDIVIDE = 82,
 	KeyKEYUNKNOWN = 255
 };
+
+G_BEGIN_DECLS
+
+int		enums_str_to_int (const char *prop_name, const char *str);
+const char*	enums_int_to_str (const char *prop_name, int e);
+
+G_END_DECLS
 
 #endif

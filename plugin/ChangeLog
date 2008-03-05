@@ -1,3 +1,8 @@
+2008-03-05  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin-class.cpp: Making the plugin class use the new enum<->str code
+	for enum getters.
+
 2008-03-03  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::EventHandle): add

@@ -2133,10 +2133,13 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 			return true;
 		}
 
-		const char *s = NULL;
-		if (convert_property_value_to_enum_str (p, value, &s))
-			string_to_npvariant (s, result);
-		else
+		if (value->GetKind () == Type::INT32) {
+			const char *s = enums_int_to_str (p->name, value->AsInt32 ());
+			if (s)
+				string_to_npvariant (s, result);
+			else
+				value_to_variant (this, value, result);
+		} else
 			value_to_variant (this, value, result);
 
 		return true;
