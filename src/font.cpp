@@ -37,6 +37,10 @@
 #endif
 
 
+// ASCII lwsp characters
+#define isSpace(c) (((c) >= 0x09 && (c) <= 0x0D) || (c) == 0x20)
+
+
 static const FT_Matrix invert_y = {
         65535, 0,
         0, -65535,
@@ -1921,7 +1925,23 @@ TextFontDescription::ToString ()
 
 TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg)
 {
+	int s, d;
+	
 	this->text = g_utf8_to_ucs4_fast (utf8, len, NULL);
+	
+	// convert all wspc chars to SPACE except \n and drop \r's
+	for (s = d = 0; text[s]; s++) {
+		if (text[s] == '\r')
+			continue;
+		
+		if (!isSpace (text[s]) || text[s] == '\n')
+			text[d++] = text[s];
+		else
+			text[d++] = ' ';
+	}
+	
+	text[d] = '\0';
+	
 	this->font = font->GetFont ();
 	this->deco = deco;
 	this->fg = fg;
@@ -2134,8 +2154,6 @@ TextLayout::GetLayoutExtents (double *width, double *height)
 	*width = this->bbox_width;
 }
 
-// ASCII lwsp characters
-#define isSpace(c) (((c) >= 0x09 && (c) <= 0x0D) || (c) == 0x20)
 
 struct Space {
 	double width;
@@ -2216,6 +2234,18 @@ TextLayout::Layout ()
 		spc.width = lw;
 		segment = new TextSegment (run, 0);
 		for (i = 0, prev = 0; run->text[i]; i++) {
+			if (run->text[i] == '\n') {
+				if (segment->start == i) {
+					delete segment;
+					segment = NULL;
+				} else {
+					segment->end = i;
+				}
+				
+				wrap = true;
+				goto wrap;
+			}
+			
 			if (!(glyph = run->font->GetGlyphInfo (run->text[i])))
 				continue;
 			
@@ -2227,7 +2257,7 @@ TextLayout::Layout ()
 				advance -= glyph->metrics.horiBearingX;
 			
 			if ((is_space = isSpace (run->text[i]))) {
-				spc.width = lw + advance;
+				spc.width = lw /*+ advance*/;
 				spc.index = i;
 			}
 			
@@ -2302,10 +2332,13 @@ TextLayout::Layout ()
 			}
 			
 			if (wrap) {
+			wrap:
 				// end this segment and line if it has content
-				if (segment->end > segment->start) {
-					line->segments->Append (segment);
-					segment->width = lw - sx;
+				if (!segment || segment->end > segment->start) {
+					if (segment) {
+						line->segments->Append (segment);
+						segment->width = lw - sx;
+					}
 					
 					segment = new TextSegment (run, i + 1);
 				}
@@ -2353,8 +2386,8 @@ TextLayout::Layout ()
 		height += lh;
 	}
 	
-	height += 1.0;
-	width += 1.0;
+	//height += 1.0;
+	//width += 2.0;
 	
 	// height is never clipped
 	bbox_height = height;

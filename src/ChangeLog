@@ -4,6 +4,18 @@
 
 2008-03-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (TextRun::TextRun): Drop \r's and convert non-new-line
+	white space into a simple space.
+	(TextLayout::Layout): Treat embedded \n's as LineBreaks
+	(TextLayout::Layout): When calculating the width of a line that
+	ends in a space, don't include the width of the space char -
+	Silverlight doesn't seem to.
+	(TextLayout::Layout): Don't pad the height. Don't pad the width
+	either, altho it seems like a padding of +2.0 is about right but
+	ONLY if the text is in a canvas? See OMTextInline.htm's
+	actualWidth/Height measurements as well as the out-of-tree
+	measurement.
+
 	* xaml.cpp (char_data_handler): Always create the GString cdata,
 	we need to note leading lwsp which the old implementation didn't.
 	(flush_char_data): Try to emulate Silverlight's chug/chomp

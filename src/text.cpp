@@ -672,10 +672,8 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 				
 				text = run_get_text (run);
 				
-				if (text && text[0]) {
-					printf ("Run.Text = \"%s\"\n", text);
+				if (text && text[0])
 					runs->Append (new TextRun (text, -1, deco, ifont, &item->foreground));
-				}
 				
 				break;
 			case Type::LINEBREAK:
