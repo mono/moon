@@ -389,6 +389,9 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 			notified_parent = true;
 	}
 
+	if (!args->property)
+		g_warning ("toshok should test sprawl before committing");
+	
 	// attached properties are implicitly listened to by the
 	// object's logical parent.  Notify them, but sure not to do
 	// it twice.
