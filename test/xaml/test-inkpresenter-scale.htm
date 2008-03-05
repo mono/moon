@@ -26,8 +26,13 @@
 	       strans.scalex = 1;
 	       strans.scaley = 1;
 
-               $RUN_TEST_BODY	
+	       setTimeout ("Finish", 100)
         }
+
+	function Finish ()
+	{
+	       $RUN_TEST_BODY	
+	}
 
         function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
         {
