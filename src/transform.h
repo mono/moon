@@ -191,7 +191,6 @@ Matrix*	matrix_transform_get_matrix (MatrixTransform *t);
 class TransformCollection : public Collection {
  public:
 	TransformCollection () {}
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM_COLLECTION; }
 };
 TransformCollection* transform_collection_new ();

@@ -576,12 +576,6 @@ transform_collection_new (void)
 }
 
 void
-TransformCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
-{
-	NotifyListenersOfPropertyChange (prop);
-}
-
-void
 transform_init (void)
 {
 	/* RotateTransform fields */
