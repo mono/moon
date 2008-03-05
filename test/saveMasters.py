@@ -8,26 +8,69 @@
 
 
 import sys,os
+import getopt
 
-files = os.listdir(os.path.join(os.getcwd(),'xaml'))
+def usage():
+	print "\nUsage: saveMasters.py [--missing, --regen]\n"
 
-for curfile in files:
-	newfile = ''
-	if curfile.endswith('.xaml.png'):
-		newfile = curfile[:-9] + 'Master.png'
+def main():
+	
+	# saveMasters.py --missing, --regen
+	
+	regen = False
+	missing = False
+	
+	try:
+		shortopts = 'hmr'
+		longopts = ['help','missing','regen']
+		opts, args = getopt.getopt(sys.argv[1:],shortopts, longopts)
+	except getopt.GetoptError, err:
+		print str(err)
+		sys.exit(1)
+	
 		
-	if curfile.endswith('.xaml.tif'):
-		newfile = curfile[:-9] + 'Master.tif'
-	
-	if newfile != '':
-		curpath = os.path.join('xaml',curfile)
-		newpath = os.path.join('harness','masters',newfile)
+	for o, a in opts:
+		if o in ('-h','--help'):
+			usage()
+			return
+		if o in ('-m','--missing'):
+			missing = True
+		if o in ('-r','--regen'):
+			regen = True
+			
+	if not (missing or regen):
+		usage()
+		sys.exit(1)
+		
+	files = os.listdir(os.path.join(os.getcwd(),'xaml'))
 
-		if os.path.exists(newpath): # Delete existing master
-			#print 'Deleting master %s' % newpath
-			print 'Master exists at %s' % newpath
-			#os.remove(newpath)
-		else:
-			print 'Moving %s to %s' % (curpath, newpath)
-			os.rename(curpath, newpath)
+	for curfile in files:
+		newfile = ''
+		testname = curfile[:-9]
+		if curfile.endswith('.xaml.png'):
+			newfile = curfile[:-9] + 'Master.png'
+
+		if curfile.endswith('.xaml.tif'):
+			newfile = curfile[:-9] + 'Master.tif'
+
+		if newfile != '':
+			curpath = os.path.join('xaml',curfile)
+			newpath = os.path.join('harness','masters',newfile)
+
+			if regen:
+				if os.path.exists(newpath): 
+					print 'Deleting master for %s' % testname
+					os.remove(newpath)
+				print 'Moving %s to %s' % (curpath, newpath)
+				os.rename(curpath, newpath)
+					
+			else: # missing only - not regen
+				if os.path.exists(newpath):
+					print 'Master exists at %s' % newpath
+				else:					
+					print 'Moving %s to %s' % (curpath, newpath)
+					os.rename(curpath, newpath)
 	
+
+if __name__ == '__main__':
+	main()
