@@ -8,7 +8,7 @@
 		<TransformGroup.Children>
 		    <TransformCollection>
 		        <ScaleTransform x:Name="strans" ScaleX=".2" ScaleY=".2" />
-			<TranslateTransform X="100" />
+			<TranslateTransform X="50" />
 		    </TransformCollection>
 		</TransformGroup.Children>
             </TransformGroup>
