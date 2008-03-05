@@ -547,4 +547,12 @@
         inputFile="test-clip-invalid-update.htm"
 	masterFile10="../harness/masters/test-clip-invalid-updateMaster.png"
    />
+   <Test id="137"
+        inputFile="test-inkpresenter-position.htm"
+	masterFile10="../harness/masters/test-inkpresenter-positionMaster.png"
+   />
+   <Test id="138"
+        inputFile="test-inkpresenter-scale.htm"
+	masterFile10="../harness/masters/test-inkpresenter-scaleMaster.png"
+   />
 </DRTList>
