@@ -175,9 +175,9 @@ class XamlParserInfo {
 	XamlElementInstance *current_element;
 
 	GHashTable *namespace_map;
+	bool cdata_content;
 	GString *cdata;
-	bool has_cdata;
-
+	
 	bool implicit_default_namespace;
 
 	ParserErrorEventArgs *error_args;
@@ -194,7 +194,7 @@ class XamlParserInfo {
 	  
 		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL),
-		cdata (NULL), has_cdata(false), implicit_default_namespace (false), error_args (NULL),
+		cdata_content (false), cdata (NULL), implicit_default_namespace (false), error_args (NULL),
 		loader (NULL), created_elements (NULL)
 	{
 		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
@@ -899,13 +899,13 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	const char *prop_name = NULL;
 	Type::Kind prop_type;
 	
-	if (!p->has_cdata || !p->current_element)
+	if (!p->cdata || !p->current_element)
 		return;
 	
 	if (p->current_element->info)
 		prop_name = p->current_element->info->content_property;
 	
-	if (!prop_name && p->cdata) {
+	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
 		parser_error (p, NULL, NULL, 2011, err);
 		goto done;
@@ -921,20 +921,18 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	// types, i should pull the property setting out of set_attributes
 	// and use that code
 	
-	if ((content->value_type) == Type::STRING && p->cdata) {
-		// Note: Do NOT g_strchomp() here in at least the case of a <Run> element...
-		p->current_element->item->SetValue (content, Value (p->cdata->str));
+	if ((content->value_type) == Type::STRING && p->cdata_content) {
+		p->current_element->item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 	} else if (p->current_element->item && is_instance_of (p->current_element, Type::TEXTBLOCK)) {
 		Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);
+		Collection::Node *last = inlines ? (Collection::Node *) inlines->list->Last () : NULL;
+		DependencyObject *obj = last ? last->obj : NULL;
 		
-		if (!p->cdata) {
-			Collection::Node *last = inlines ? (Collection::Node *) inlines->list->Last () : NULL;
-			DependencyObject *obj = last ? last->obj : NULL;
-			
+		if (!p->cdata_content) {
 			if (next_element && !strcmp (next_element, "Run") && obj && obj->GetObjectType () == Type::RUN &&
 			    !((Inline *) last->obj)->autogen) {
 				// LWSP between <Run> elements is to be treated as a single-SPACE <Run> element
-				p->cdata = g_string_new (" ");
+				// Note: p->cdata is already canonicalized
 			} else {
 				// This is one of the following cases:
 				//
@@ -943,6 +941,15 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 				// 3. LWSP between <Run> and <LineBreak> elements
 				goto done;
 			}
+		} else {
+			if (!next_element)
+				g_strchomp (p->cdata->str);
+			
+			//if (next_element && !strcmp (next_element, "Run"))
+			//	g_strchug (p->cdata->str);
+			
+			if (!obj || obj->GetObjectType () != Type::RUN || ((Inline *) last->obj)->autogen)
+				g_strchug (p->cdata->str);
 		}
 		
 		Run *run = new Run ();
@@ -962,10 +969,9 @@ done:
 	
 	if (p->cdata) {
 		g_string_free (p->cdata, FALSE);
+		p->cdata_content = false;
 		p->cdata = NULL;
 	}
-	
-	p->has_cdata = false;
 }
 
 static void
@@ -1050,47 +1056,50 @@ static void
 char_data_handler (void *data, const char *in, int inlen)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
+	register const char *inptr = in;
 	const char *inend = in + inlen;
-	const char *inptr = in;
-	bool lwsp = false;
-	size_t len = 0;
-	char *s, *d;
+	const char *start;
 	
 	if (p->error_args)
 		return;
 	
 	if (!p->cdata) {
-		p->has_cdata = true;
+		p->cdata = g_string_new ("");
 		
-		// unless we already have significant char data, ignore lwsp
-		while (inptr < inend && g_ascii_isspace (*inptr))
+		if (g_ascii_isspace (*inptr)) {
+			g_string_append_c (p->cdata, ' ');
 			inptr++;
+			
+			while (inptr < inend && g_ascii_isspace (*inptr))
+				inptr++;
+		}
 		
 		if (inptr == inend)
 			return;
-		
-		p->cdata = g_string_new_len (inptr, inend - inptr);
-	} else {
-		len = p->cdata->len;
-		g_string_append_len (p->cdata, in, inlen);
-		lwsp = g_ascii_isspace (p->cdata->str[len - 1]);
+	} else if (g_ascii_isspace (p->cdata->str[p->cdata->len - 1])) {
+		// previous cdata chunk ended with lwsp, skip over leading lwsp for this chunk
+		while (inptr < inend && g_ascii_isspace (*inptr))
+			inptr++;
 	}
 	
-	// Condense multi-lwsp blocks into a single space (and make all lwsp chars a literal space, not '\n', etc)
-	s = d = p->cdata->str + len;
-	while (*s != '\0') {
-		if (g_ascii_isspace (*s)) {
-			if (!lwsp)
-				*d++ = ' ';
-			lwsp = true;
-			s++;
-		} else {
-			lwsp = false;
-			*d++ = *s++;
+	while (inptr < inend) {
+		start = inptr;
+		while (inptr < inend && !g_ascii_isspace (*inptr))
+			inptr++;
+		
+		if (inptr > start) {
+			g_string_append_len (p->cdata, start, inptr - start);
+			p->cdata_content = true;
+		}
+		
+		if (inptr < inend) {
+			g_string_append_c (p->cdata, ' ');
+			inptr++;
+			
+			while (inptr < inend && g_ascii_isspace (*inptr))
+				inptr++;
 		}
 	}
-	
-	g_string_truncate (p->cdata, d - p->cdata->str);
 }
 
 static void
@@ -1114,7 +1123,6 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	}
 		
 	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml", uri)) {
-
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
 	} else {
 		if (!p->loader) {
@@ -1368,7 +1376,6 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 #endif
 
 	if (parser_info->top_element) {
-	
 		res = parser_info->top_element->item;
 		if (element_type)
 			*element_type = parser_info->top_element->info->dependency_type;
@@ -2372,6 +2379,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 	}
 	case Type::STRING: {
 		//v = new Value (str);
+		printf ("value = \"%s\"\n", str);
 		return new Value (str);
 		break;
 	}
@@ -2781,7 +2789,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 
 start_parse:
 	for (int i = 0; attr [i]; i += 2) {
-
 		if (i == skip_attribute)
 			continue;
 
@@ -2843,7 +2850,6 @@ start_parse:
 		}
 
 		if (prop) {
-
 			if (item->IsPropertySet (prop->name)) {
 				parser_error (p, item->element_name, attr [i], 2033,
 						g_strdup_printf ("Cannot specify the value multiple times for property: %s.", prop->name));
@@ -2864,7 +2870,6 @@ start_parse:
 			delete v;
 			item->MarkPropertyAsSet (prop->name);
 		} else {
-
 			// This might be a property of a managed object
 			if (p->loader && p->loader->SetAttribute (item->item, attr [i], attr [i + 1])) {
 				if (atchname)

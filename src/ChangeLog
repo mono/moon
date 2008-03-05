@@ -1,3 +1,10 @@
+2008-03-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp (char_data_handler): Always create the GString cdata,
+	we need to note leading lwsp which the old implementation didn't.
+	(flush_char_data): Try to emulate Silverlight's chug/chomp
+	behavior more closely.
+
 2008-03-05  Chris Toshok  <toshok@ximian.com>
 
 	* canvas.cpp (Canvas::OnSubPropertyChanged): make sure to chain up
