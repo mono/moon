@@ -814,12 +814,32 @@ InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 		Invalidate (stroke->GetBounds().Transform (&absolute_xform));
 		if (type != CollectionChangeTypeItemAdded)
 			Invalidate (stroke->GetOldBounds().Transform (&absolute_xform));
+		UpdateBounds ();
 		break;
 	}
 	case CollectionChangeTypeChanged:
 		Invalidate ();
+		UpdateBounds ();
 		break;
 	}
+}
+
+void
+InkPresenter::ComputeBounds ()
+{
+	Canvas::ComputeBounds ();
+
+	Value* value = GetValue (InkPresenter::StrokesProperty);
+	if (!value)
+		return;
+
+	StrokeCollection *strokes = value->AsStrokeCollection ();
+	if (!strokes)
+		return;
+
+	Rect stroke_bounds = strokes->GetBounds ();
+	stroke_bounds = stroke_bounds.Transform (&absolute_xform);
+	bounds_with_children = bounds_with_children.Union (stroke_bounds);
 }
 
 InkPresenter*
