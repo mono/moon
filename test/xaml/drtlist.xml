@@ -531,7 +531,7 @@
 	inputFile="test-directory-in-zip.html"
 	masterFile10="../harness/masters/test-directory-in-zip.htmlMaster.png"
    />
-   <Test id="133"
+   <Test id="139"
 	inputFile="test-empty-element-source.html"
 	masterFile10="../harness/masters/test-empty-element-source.htmlMaster.png"
    />
@@ -554,5 +554,9 @@
    <Test id="138"
         inputFile="test-inkpresenter-scale.htm"
 	masterFile10="../harness/masters/test-inkpresenter-scaleMaster.png"
+   />
+   <Test id="139"
+	inputFile="test-empty-element-source.html"
+	masterFile10="../harness/masters/test-empty-element-source.htmlMaster.png"
    />
 </DRTList>
