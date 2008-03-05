@@ -60,6 +60,7 @@ UIElement::UIElement () : opacityMask(NULL), flags (UIElement::RENDER_VISIBLE | 
 
 	dirty_flags = 0;
 	up_dirty_node = down_dirty_node = NULL;
+	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
 
 	// XXX bad bad bad.  no virtual method calls in ctors
