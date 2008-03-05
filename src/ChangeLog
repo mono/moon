@@ -1,3 +1,7 @@
+2008-03-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml.cpp: Add a null at the end of the namespace array.
+
 2008-03-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp (char_data_handler): Always create the GString cdata,

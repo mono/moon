@@ -60,6 +60,7 @@ static const char* default_namespace_names [] = {
 	"http://schemas.microsoft.com/winfx/2006/xaml/presentation",
 	"http://schemas.microsoft.com/client/2007",
 	"http://schemas.microsoft.com/xps/2005/06",
+	NULL
 };
 
 
