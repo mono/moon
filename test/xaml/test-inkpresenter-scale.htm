@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <title>Moonlight Test Template</title>
+
+      <script language="javascript">
+	var control;
+ 
+	function OnLoaded(sender, eventArgs)
+        {
+                if (document.body == null) {
+                        setTimeout (function(){ OnLoaded(sender, eventArgs)}, 100);
+                        return;
+                }
+	        
+                setTimeout (function(){ RunTest(sender, eventArgs)}, 1000);
+        }
+	
+        function RunTest (sender, eventArgs)
+        {
+	       var inky = sender.findName ("inky");
+	       var strans = sender.findName ("strans");
+
+	       inky.SetValue ("Canvas.Left", 50);
+               inky.SetValue ("Canvas.Top", 50);
+               inky.width = 200;
+
+	       strans.scalex = 1;
+	       strans.scaley = 1;
+
+               $RUN_TEST_BODY	
+        }
+
+        function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
+        {
+	         var test_plugin = document.getElementById ("_TestPlugin");
+                 if (initial_delay) {
+                         window.setTimeout (function () {
+			         var test_plugin = document.getElementById ("_TestPlugin");
+			         test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
+				 test_plugin.SignalShutdown ();
+		         }, initial_delay);
+			 return;
+	         }
+                 test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
+		 test_plugin.SignalShutdown ();
+        }
+
+        function TakeMultipleSnapshotsAndShutdown (control, max_images_to_capture, capture_interval, initial_delay, width, height)
+	{
+                 var test_plugin = document.getElementById ("_TestPlugin");
+
+		 test_plugin.CaptureMultipleImages ("", "", 0, 0, width, height, max_images_to_capture, capture_interval, initial_delay);
+		 test_plugin.SignalShutdown ();
+	}
+
+        function ErrorHandler (sender, args)
+        {
+	alert (args.ErrorMessage);
+        }
+      </script>
+  </head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="$MOONLIGHT_CONTROL_WIDTH"
+             height="$MOONLIGHT_CONTROL_HEIGHT"
+             id="_MoonlightControl" Source="test-inkpresenter-scale.xaml" OnError="ErrorHandler" 
+             style="position:absolute; left:0px; top:0px" >
+        </embed>
+    </div>
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+  </body>
+</html>
+
+
