@@ -279,7 +279,7 @@ char *
 Value::ToString ()
 {
 	if (this == NULL)
-		return "NULL";
+		return g_strdup ("NULL");
 
 	GString *str = g_string_new ("");
 	char *t = NULL;
