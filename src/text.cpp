@@ -205,18 +205,14 @@ Inline::GetDefaultValue (DependencyProperty *prop)
 void
 Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	Value *value;
-	
 	if (args->property->type != Type::INLINE) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
 	
-	value = GetValueNoDefault (args->property);
-	
 	if (args->property == Inline::FontFamilyProperty) {
-		if (value) {
-			char *family = value->AsString ();
+		if (args->new_value) {
+			char *family = args->new_value->AsString ();
 			if (RENDER_USING_PANGO)
 				pango_font_description_set_family (font.pango, family);
 			else
@@ -228,8 +224,8 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
 				font.custom->UnsetFields (FontMaskFamily);
 		}
 	} else if (args->property == Inline::FontSizeProperty) {
-		if (value) {
-			double size = value->AsDouble ();
+		if (args->new_value) {
+			double size = args->new_value->AsDouble ();
 			if (RENDER_USING_PANGO)
 				pango_font_description_set_absolute_size (font.pango, size * PANGO_SCALE);
 			else
@@ -241,8 +237,8 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
 				font.custom->UnsetFields (FontMaskSize);
 		}
 	} else if (args->property == Inline::FontStretchProperty) {
-		if (value) {
-			FontStretches stretch = (FontStretches) value->AsInt32 ();
+		if (args->new_value) {
+			FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
 			if (RENDER_USING_PANGO)
 				pango_font_description_set_stretch (font.pango, font_stretch (stretch));
 			else
@@ -254,8 +250,8 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
 				font.custom->UnsetFields (FontMaskStretch);
 		}
 	} else if (args->property == Inline::FontStyleProperty) {
-		if (value) {
-			FontStyles style = (FontStyles) value->AsInt32 ();
+		if (args->new_value) {
+			FontStyles style = (FontStyles) args->new_value->AsInt32 ();
 			if (RENDER_USING_PANGO)
 				pango_font_description_set_style (font.pango, font_style (style));
 			else
@@ -267,8 +263,8 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
 				font.custom->UnsetFields (FontMaskStyle);
 		}
 	} else if (args->property == Inline::FontWeightProperty) {
-		if (value) {
-			FontWeights weight = (FontWeights) value->AsInt32 ();
+		if (args->new_value) {
+			FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
 			if (RENDER_USING_PANGO)
 				pango_font_description_set_weight (font.pango, font_weight (weight));
 			else
@@ -280,7 +276,7 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
 				font.custom->UnsetFields (FontMaskWeight);
 		}
 	} else if (args->property == Inline::ForegroundProperty) {
-		foreground = args->new_value ? args->new_value->AsBrush() : NULL;
+		foreground = args->new_value ? args->new_value->AsBrush () : NULL;
 	}
 	
 	
@@ -1069,9 +1065,9 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	if (args->property->type != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args);
-		if (args->property == FrameworkElement::WidthProperty) {
+		if (args->property == FrameworkElement::WidthProperty)
 			UpdateBounds (true);
-		}
+		
 		return;
 	}
 	
@@ -1092,7 +1088,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		dirty = true;
 	} else if (args->property == TextBlock::FontStretchProperty) {
-		FontStretches stretch = (FontStretches)args->new_value->AsInt32();
+		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_stretch (font.pango, font_stretch (stretch));
 		else
@@ -1100,7 +1096,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		dirty = true;
 	} else if (args->property == TextBlock::FontStyleProperty) {
-		FontStyles style = (FontStyles)args->new_value->AsInt32();
+		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_style (font.pango, font_style (style));
 		else
@@ -1108,7 +1104,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		dirty = true;
 	} else if (args->property == TextBlock::FontWeightProperty) {
-		FontWeights weight = (FontWeights)args->new_value->AsInt32();
+		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
 		if (RENDER_USING_PANGO)
 			pango_font_description_set_weight (font.pango, font_weight (weight));
 		else
@@ -1118,7 +1114,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBlock::TextProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Text property
-			char *text = args->new_value ? args->new_value->AsString() : NULL;
+			char *text = args->new_value ? args->new_value->AsString () : NULL;
 			
 			if (!SetText (text)) {
 				// no change so nothing to invalidate
@@ -1172,7 +1168,7 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
-	if (element_args && element_args->property != Inline::ForegroundProperty) {
+	if (!element_args || element_args->property != Inline::ForegroundProperty) {
 		bool update_text = false;
 		
 		if (type == CollectionChangeTypeItemAdded || type == CollectionChangeTypeItemRemoved) {
