@@ -672,8 +672,10 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 				
 				text = run_get_text (run);
 				
-				if (text && text[0])
+				if (text && text[0]) {
+					printf ("Run.Text = \"%s\"\n", text);
 					runs->Append (new TextRun (text, -1, deco, ifont, &item->foreground));
+				}
 				
 				break;
 			case Type::LINEBREAK:
@@ -1168,32 +1170,47 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
-	if (!element_args || element_args->property != Inline::ForegroundProperty) {
-		bool update_text = false;
+	bool update_bounds = false;
+	bool update_text = false;
+	
+	switch (type) {
+	case CollectionChangeTypeItemAdded:
+	case CollectionChangeTypeItemRemoved:
+		// an Inline element has been added or removed, update our TextProperty
+		update_bounds = true;
+		update_text = true;
+		dirty = true;
+		break;
+	case CollectionChangeTypeItemChanged:
+		// only update bounds if a property other than the Foreground changed
+		update_bounds = element_args->property != Inline::ForegroundProperty;
 		
-		if (type == CollectionChangeTypeItemAdded || type == CollectionChangeTypeItemRemoved) {
-			// an Inline element has been added or removed, update our TextProperty
-			update_text = true;
-		} else if (element_args->property == Run::TextProperty && type == CollectionChangeTypeItemChanged) {
-			// a Run element's TextProperty has been changed, update our TextProperty
-			update_text = true;
-		} else if (type == CollectionChangeTypeChanged) {
-			// the collection has changed, only update our TextProperty if it was the result of a SetValue
-			update_text = setvalue;
-		}
-		
-		if (update_text) {
-			char *text = GetText ();
-			
-			setvalue = false;
-			SetValue (TextBlock::TextProperty, Value (text));
-			setvalue = true;
-			g_free (text);
-		}
+		// only update our TextProperty if change was in a Run's Text property
+		update_text = element_args->property == Run::TextProperty;
 		
 		dirty = true;
-		UpdateBounds (true);
+		break;
+	case CollectionChangeTypeChanged:
+		// the collection has changed, only update our TextProperty if it was the result of a SetValue
+		update_bounds = setvalue;
+		update_text = setvalue;
+		dirty = true;
+		break;
+	default:
+		break;
 	}
+	
+	if (update_text) {
+		char *text = GetText ();
+		
+		setvalue = false;
+		SetValue (TextBlock::TextProperty, Value (text));
+		setvalue = true;
+		g_free (text);
+	}
+	
+	if (update_bounds)
+		UpdateBounds (true);
 	
 	Invalidate ();
 }
