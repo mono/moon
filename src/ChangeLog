@@ -1,5 +1,12 @@
 2008-03-04  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::expose_to_drawable): re-enable the
+	clearing of the cairo surface, but only if we have a
+	widget (i.e. not in the windowless plugin case.)  Should fix
+	translucent desklets without breaking the plugin.
+
+2008-03-04  Chris Toshok  <toshok@ximian.com>
+
 	[ rather large change, reworking much of the property change event
 	system to be a little smaller api surface-wise, and also cleaning
 	up uses of it to remove some of the accumulated cruft that we'd

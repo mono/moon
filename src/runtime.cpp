@@ -1000,20 +1000,25 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 
 
 	if (transparent) {
-// 		cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
-// 		region->Draw (ctx);
-// 		cairo_paint (ctx);
+		if (widget) {
+			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
+			region->Draw (ctx);
+			cairo_paint (ctx);
+		}
 
 		cairo_set_source_rgba (ctx,
 				       background_color->r,
 				       background_color->g,
 				       background_color->b,
 				       background_color->a);
-	} else
+	}
+	else {
 		cairo_set_source_rgb (ctx,
 				      background_color->r,
 				      background_color->g,
 				      background_color->b);
+	}
+
 	cairo_paint (ctx);
 
 
