@@ -559,4 +559,8 @@
 	inputFile="test-empty-element-source.html"
 	masterFile10="../harness/masters/test-empty-element-source.htmlMaster.png"
    />
+   <Test id="140"
+	inputFile="test-shape-line-stretch2.xaml"
+	masterFile10="../harness/masters/test-shape-line-stretch2Master.png"
+   />
 </DRTList>
