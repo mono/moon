@@ -72,6 +72,8 @@ Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 
 		ui->UpdateTransform ();
 	}
+	else
+		Panel::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 Point

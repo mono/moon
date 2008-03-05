@@ -1,3 +1,21 @@
+2008-03-05  Chris Toshok  <toshok@ximian.com>
+
+	* canvas.cpp (Canvas::OnSubPropertyChanged): make sure to chain up
+	to panel's OnSubPropertyChanged if we don't handle it.
+
+	* dependencyobject.cpp (DependencyObject::NotifyListenersOfPropertyChange):
+	make sure we don't call this method with NULL args.  Also, remove
+	larry's g_warning (which wasn't the case, i tested with sprawl!),
+	and also remove the check for matching property/parent type for
+	attached properties.  this will break controls.
+
+	* transform.h, transform.cpp: it used to be that logical parents
+	of children could rely on OnSubPropertyChanged being invoked for
+	any property change.  This is no longer the case - the only
+	instance where it still happens is if there's an attached property
+	involved.  All other cases have to use OnCollectionChanged.  So,
+	switch OnSubPropertyChanged to OnCollectionChanged here.
+
 2008-03-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::OnCollectionChanged): We need to update

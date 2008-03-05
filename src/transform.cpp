@@ -536,10 +536,10 @@ TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args)
 }
 
 void
-TransformGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+TransformGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
 	need_update = true;
-	NotifyListenersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (TransformGroup::ChildrenProperty);
 }
 
 void

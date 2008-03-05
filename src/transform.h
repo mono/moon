@@ -204,7 +204,7 @@ public:
 	virtual ~TransformGroup ();
 	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
 
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void UpdateTransform ();
 };

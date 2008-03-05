@@ -376,6 +376,8 @@ static bool listeners_notified;
 void
 DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args)
 {
+	g_return_if_fail (args);
+
 	DependencyObject *logical_parent = GetLogicalParent ();
 	bool notified_parent = false;
 
@@ -389,14 +391,11 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 			notified_parent = true;
 	}
 
-	if (!args->property)
-		g_warning ("toshok should test sprawl before committing");
-	
 	// attached properties are implicitly listened to by the
 	// object's logical parent.  Notify them, but sure not to do
 	// it twice.
-	if (args->property && args->property->is_attached_property && !notified_parent) {
-		if (logical_parent && args->property->type == logical_parent->GetObjectType ())
+	if (args->property->is_attached_property && !notified_parent) {
+		if (logical_parent /*&& args->property->type == logical_parent->GetObjectType ()*/)
 			logical_parent->OnSubPropertyChanged (NULL, this, args);
 	}
 }
