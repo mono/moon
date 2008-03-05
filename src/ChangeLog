@@ -1,3 +1,7 @@
+2008-03-05  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* media.cpp: close the pixbuf_loader to load the small images too.
+
 2008-03-04  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::expose_to_drawable): re-enable the

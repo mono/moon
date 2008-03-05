@@ -1884,7 +1884,9 @@ Image::CreateSurface (const char *fname)
 		buffer = (guchar*)g_try_malloc (1024);
 		f = fopen (fname, "r");
 		while ((n = fread (buffer, 1, 1024, f)))
-			gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buffer, n, &error);	
+			gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buffer, n, &error);
+
+		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), &error);
 		fclose (f);
 		g_free (buffer);
 
