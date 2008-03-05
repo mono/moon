@@ -523,7 +523,7 @@ MediaElement::Reinitialize ()
 	}
 	
 	flags = (flags & (Loaded | PlayRequested)) | RecalculateMatrix;
-	SetValue (MediaElement::CurrentStateProperty, "Closed");
+	SetValue (MediaElement::CurrentStateProperty, Value ("Closed"));
 	prev_state = Closed;
 	state = Closed;
 	
@@ -575,12 +575,12 @@ MediaElement::MediaOpened (Media *media)
 	
 	ReadMarkers ();
 	
-	SetValue (MediaElement::CanSeekProperty, mplayer->CanSeek ());
-	SetValue (MediaElement::CanPauseProperty, mplayer->CanPause ());
-	SetValue (MediaElement::AudioStreamCountProperty, mplayer->GetAudioStreamCount ());
-	SetValue (MediaElement::NaturalDurationProperty, Duration (TimeSpan_FromPts (mplayer->Duration ())));
-	SetValue (MediaElement::NaturalVideoHeightProperty, mplayer->height);
-	SetValue (MediaElement::NaturalVideoWidthProperty, mplayer->width);
+	SetValue (MediaElement::CanSeekProperty, Value (mplayer->CanSeek ()));
+	SetValue (MediaElement::CanPauseProperty, Value (mplayer->CanPause ()));
+	SetValue (MediaElement::AudioStreamCountProperty, Value (mplayer->GetAudioStreamCount ()));
+	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (TimeSpan_FromPts (mplayer->Duration ()))));
+	SetValue (MediaElement::NaturalVideoHeightProperty, Value ((double) mplayer->height));
+	SetValue (MediaElement::NaturalVideoWidthProperty, Value (mplayer->width));
 	
 	mplayer->SetMuted (GetValue (MediaElement::IsMutedProperty)->AsBool ());
 	mplayer->SetVolume (GetValue (MediaElement::VolumeProperty)->AsDouble ());
@@ -594,12 +594,12 @@ MediaElement::MediaOpened (Media *media)
 void
 MediaElement::MediaFailed ()
 {
-	SetValue (MediaElement::CanSeekProperty, false);
-	SetValue (MediaElement::CanPauseProperty, false);
-	SetValue (MediaElement::AudioStreamCountProperty, 0);
-	SetValue (MediaElement::NaturalDurationProperty, Duration::FromSeconds (0));
-	SetValue (MediaElement::NaturalVideoHeightProperty, 0);
-	SetValue (MediaElement::NaturalVideoWidthProperty, 0);
+	SetValue (MediaElement::CanSeekProperty, Value (false));
+	SetValue (MediaElement::CanPauseProperty, Value (false));
+	SetValue (MediaElement::AudioStreamCountProperty, Value (0));
+	SetValue (MediaElement::NaturalDurationProperty, Value (Duration::FromSeconds (0)));
+	SetValue (MediaElement::NaturalVideoHeightProperty, Value (0.0));
+	SetValue (MediaElement::NaturalVideoWidthProperty, Value (0.0));
 	
 	SetState (MediaElement::Error);
 	Emit (MediaElement::MediaFailedEvent);
@@ -816,7 +816,7 @@ MediaElement::SetState (MediaElementState state)
 	prev_state = this->state;
 	this->state = state;
 	
-	SetValue (MediaElement::CurrentStateProperty, name);
+	SetValue (MediaElement::CurrentStateProperty, Value (name));
 }
 
 void 
