@@ -1,3 +1,8 @@
+2008-03-05  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h (RUNTIME_INIT_DESKTOP, RUNTIME_INIT_BROWSER): make
+	front-to-back rendering the default.
+
 2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* clock.h, playlist.h, trigger.h, text.h, clock.cpp, playlist.cpp,
