@@ -203,7 +203,7 @@ runTest (const char *xaml_file, const char *output_prefix, bool multiple, int de
 
 			printf ("generating image for timestamp %lld\n", t);
 
-			((ManualTimeSource*)TimeManager::Instance()->GetSource())->SetCurrentTime (t);
+			((ManualTimeSource*)s->GetTimeManager()->GetSource())->SetCurrentTime (t);
 
 			s->Paint (cr, 0, 0, s->GetWidth(), s->GetHeight());
 
