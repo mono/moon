@@ -1,3 +1,13 @@
+2008-03-06  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/test-storyboard-simple-autoreverse-forever.xaml:
+	* xaml/test-storyboard-simple-autoreverse.xaml:
+	* xaml/test-storyboard-simple-fill-fill.xaml:
+	* xaml/test-storyboard-simple-fill-stop.xaml:
+	* xaml/test-storyboard-simple-stop-fill.xaml:
+	* xaml/test-storyboard-simple-stop-stop.xaml: Adding few base
+	clock/storyboard tests. Not yet added to the drtlist.
+
 2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* harness/xaml2png.cpp: Can't delete a surface anymore, unref it.
