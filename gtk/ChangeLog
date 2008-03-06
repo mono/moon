@@ -1,3 +1,9 @@
+2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* gtk.cs: Added CreateFromString and InitializeFromXaml allowing xaml to be
+	  loaded when multiple surfaces are used (these methods should be called 
+	  instead of XamlReader.Load/Control.InitializeFromXaml in agclr).
+
 2008-03-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* gtk.cs: Specify the surface when loading xaml, allowing multiple surfaces

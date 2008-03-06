@@ -116,8 +116,8 @@ public class GtkSilver : EventBox {
 	/// </remarks>
 	public GtkSilver (int width, int height)
 	{
+		Mono.Xaml.XamlLoader.AllowMultipleSurfacesPerDomain = true;
 		surface = NativeMethods.surface_new (width, height);
-		Mono.Xaml.XamlLoader.SurfaceInDomain = surface;
 		Raw = NativeMethods.surface_get_widget (surface);
 	}
 
@@ -206,10 +206,7 @@ public class GtkSilver : EventBox {
 		if (xaml == null)
 			throw new ArgumentNullException ("xaml");
 
-		XamlLoader.AllowMultipleSurfacesPerDomain = true;
-
-		XamlLoader loader = XamlLoader.CreateManagedXamlLoader (surface, IntPtr.Zero);
-		object top = loader.CreateDependencyObjectFromString (xaml, true);
+		DependencyObject top = CreateFromString (xaml, true);
 
 		if (top == null)
 			return false;
@@ -252,6 +249,58 @@ public class GtkSilver : EventBox {
 	{
 		Canvas canvas;
 		return LoadFile (file, out canvas);
+	}
+
+	/// <summary>
+	///    Loads xaml within the context of the current GtkSilver widget
+	/// </summary>
+	/// <param name="xaml">The contents of the string.</param>
+	/// <param name="createNamescope"></param>
+	public DependencyObject CreateFromString (string xaml, bool createNamescope)
+	{
+		object result;
+		XamlLoader loader;
+
+		if (xaml == null)
+			throw new ArgumentNullException ("xaml");
+
+		XamlLoader.AllowMultipleSurfacesPerDomain = true;
+
+		loader = XamlLoader.CreateManagedXamlLoader (surface, IntPtr.Zero);
+		result = loader.CreateDependencyObjectFromString (xaml, true);
+
+		return result as DependencyObject;
+	}
+
+	/// <summary>
+	///    Initializes xaml on a dependency object within the context of the current GtkSilver widget
+	/// </summary>
+	/// <param name="xaml">The contents of the string.</param>
+	/// <param name="native">The native handle of the DependencyObject on which to call InitializeFromXaml</param>
+	private FrameworkElement InitializeFromXaml (string xaml, IntPtr native)
+	{
+		object result;
+		XamlLoader loader;
+
+		if (xaml == null)
+			throw new ArgumentNullException ("xaml");
+
+		XamlLoader.AllowMultipleSurfacesPerDomain = true;
+
+		loader = XamlLoader.CreateManagedXamlLoader (surface, IntPtr.Zero);
+		result = loader.InitializeFromXaml (xaml, native);
+
+		return result as FrameworkElement;
+	}
+
+	/// <summary>
+	///    Initializes xaml on a dependency object within the context of the current GtkSilver widget
+	/// </summary>
+	/// <param name="xaml">The contents of the string.</param>
+	/// <param name="dependency_object">The DependencyObject on which to call InitializeFromXaml</param>
+	public FrameworkElement InitializeFromXaml (string xaml, DependencyObject dependency_object)
+	{
+		return InitializeFromXaml (xaml, Helper.GetNativeObject (dependency_object));
 	}
 }
 }
