@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <libmoon.h>
@@ -163,7 +165,7 @@ write_surface_to_png (cairo_surface_t *s, const char *fname)
 void
 runTest (const char *xaml_file, const char *output_prefix, bool multiple, int delta, int max)
 {
-	Surface *s = surface_new (TEST_WIDTH, TEST_HEIGHT);
+	Surface *s = new Surface (TEST_WIDTH, TEST_HEIGHT);
 	Type::Kind type;
 
 	XamlLoader* loader = new XamlLoader (xaml_file, NULL, s);
