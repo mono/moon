@@ -2166,11 +2166,11 @@ struct Space {
 void
 TextLayout::Layout ()
 {
+	double nslw, lw, lh, sx, dy;
 	bool first_char = true;
 	TextSegment *segment;
 	bool clipped = false;
 	gunichar prev = 0;
-	double lw, lh, sx;
 	GlyphInfo *glyph;
 	TextLine *line;
 	double advance;
@@ -2188,9 +2188,15 @@ TextLayout::Layout ()
 	lh = height = 0.0;
 	lw = width = 0.0;
 	descend = 0.0;
+	nslw = 0.0;
+	dy = 0.0;
+	sx = 0.0;
 	
 	if (!runs || runs->IsEmpty () || max_width == 0 || max_height == 0)
 		return;
+	
+	spc.width = 0.0;
+	spc.index = -1;
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
@@ -2205,9 +2211,12 @@ TextLayout::Layout ()
 			line->descend = descend;
 			//line->ascend = ascend;
 			line->height = lh;
-			height += lh;
+			dy += lh;
 			
-			width = MAX (width, lw);
+			if (nslw > 0.0)
+				height = dy;
+			
+			width = MAX (width, nslw);
 			
 			if (run->next)
 				line = new TextLine ();
@@ -2216,9 +2225,12 @@ TextLayout::Layout ()
 			
 			first_char = true;
 			clipped = false;
+			spc.width = 0.0;
+			spc.index = -1;
 			lw = lh = 0.0;
 			descend = 0.0;
 			//ascend = 0.0;
+			nslw = 0.0;
 			continue;
 		}
 		
@@ -2231,7 +2243,7 @@ TextLayout::Layout ()
 		
 		sx = lw;
 		spc.index = -1;
-		spc.width = lw;
+		spc.width = nslw;
 		segment = new TextSegment (run, 0);
 		for (i = 0, prev = 0; run->text[i]; i++) {
 			if (run->text[i] == '\n') {
@@ -2257,11 +2269,11 @@ TextLayout::Layout ()
 				advance -= glyph->metrics.horiBearingX;
 			
 			if ((is_space = isSpace (run->text[i]))) {
-				spc.width = lw /*+ advance*/;
+				spc.width = nslw;
 				spc.index = i;
 			}
 			
-			if (max_width >= 0.0 && (lw + advance + 1.0) > max_width) {
+			if (!is_space && max_width >= 0.0 && (lw + advance + 1.0) > max_width) {
 				double overflow = (lw + advance) - max_width;
 				
 				switch (wrapping) {
@@ -2271,7 +2283,7 @@ TextLayout::Layout ()
 					if (spc.index != -1) {
 						// wrap at the Space
 						segment->end = spc.index + 1;
-						lw = spc.width;
+						nslw = spc.width;
 						i = spc.index;
 						wrap = true;
 					} else {
@@ -2287,7 +2299,7 @@ TextLayout::Layout ()
 					} else if (spc.index != -1) {
 						// Wrap at the Space
 						segment->end = spc.index + 1;
-						lw = spc.width;
+						nslw = spc.width;
 						i = spc.index;
 						wrap = true;
 					} else if (!first_char) {
@@ -2295,7 +2307,7 @@ TextLayout::Layout ()
 							// Not the first Run on the line,
 							// wrap from the beginning of the
 							// Run
-							lw = spc.width;
+							nslw = spc.width;
 							i = -1;
 						} else {
 							// Wrap before this char
@@ -2308,6 +2320,8 @@ TextLayout::Layout ()
 						// Wrap after this char
 						segment->end = i + 1;
 						lw += advance;
+						if (!is_space)
+							nslw = lw;
 						wrap = true;
 					}
 					break;
@@ -2343,12 +2357,15 @@ TextLayout::Layout ()
 					segment = new TextSegment (run, i + 1);
 				}
 				
-				width = MAX (width, lw);
+				width = MAX (width, nslw);
 				lines->Append (line);
 				line->descend = descend;
 				//line->ascend = ascend;
 				line->height = lh;
-				height += lh;
+				dy += lh;
+				
+				if (nslw > 0.0)
+					height = dy;
 				
 				// create a new line
 				descend = run->font->Descender ();
@@ -2359,12 +2376,15 @@ TextLayout::Layout ()
 				spc.width = 0.0;
 				spc.index = -1;
 				sx = lw = 0.0;
+				nslw = 0.0;
 				
 				prev = 0;
 			} else {
 				// add this glyph to the current line
 				prev = glyph->index;
 				lw += advance;
+				if (!is_space)
+					nslw = lw;
 			}
 		}
 		
@@ -2374,7 +2394,7 @@ TextLayout::Layout ()
 		line->segments->Append (segment);
 		segment->width = lw - sx;
 		
-		width = MAX (width, lw);
+		width = MAX (width, nslw);
 	}
 	
 	if (line) {
@@ -2383,7 +2403,10 @@ TextLayout::Layout ()
 		line->descend = descend;
 		//line->ascend = ascend;
 		line->height = lh;
-		height += lh;
+		dy += lh;
+		
+		if (nslw > 0.0)
+			height = dy;
 	}
 	
 	//height += 1.0;

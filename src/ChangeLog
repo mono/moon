@@ -1,3 +1,11 @@
+2008-03-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (TextLayout::Layout): Don't wrap on a space char, ever.
+	(TextLayout::Layout): Don't include trailing lwsp in the line
+	width calculation unless it is the last line.
+	(TextLayout::Layout): Don't include trailing empty lines in the
+	height calculation.
+
 2008-03-06  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h, clock.cpp: some changes to make TimeManager a
