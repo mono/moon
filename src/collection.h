@@ -13,6 +13,7 @@
 #include "dependencyobject.h"
 #include "utils.h"
 #include "list.h"
+#include "eventargs.h"
 
 //
 // Collection: provides a collection that we can monitor for
@@ -22,10 +23,12 @@
 //
 class Collection : public DependencyObject {
  public:
-	struct ChangeEventArgs {
+	class ChangeEventArgs : public EventArgs {
+	public:
 		CollectionChangeType type;
 		DependencyObject *obj;
 		DependencyProperty *prop;
+		virtual const char *GetTypeName () { return "Collection::ChangeEventArgs"; }
 	};
 
 	class Node : public List::Node {

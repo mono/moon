@@ -1,5 +1,22 @@
 2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* clock.h, playlist.h, trigger.h, text.h, clock.cpp, playlist.cpp,
+	  trigger.cpp, dependencyobject.h, downloader.cpp, dependencyobject.cpp,
+	  media.h, animation.h, brush.h, runtime.h, media.cpp, animation.cpp,
+	  runtime.cpp, text.cpp: Updated event handling to take an EventArgs*
+	  calldata instead of a gpointer.
+	* error.h: Added EventArgs, a base class for all *EventArgs.
+	* collection.h: Make ChangeEventArgs inherit from EventArgs.
+	* uielement.cpp: Create all *EventArgs on the heap and simply the code a
+	  bit.
+	* collection.cpp: Don't allocate Collection::ChangeEventArgs on the stack.
+	* eventargs.cpp, eventargs.h: Added EventArgs, a base class for all
+	  *EventArgs. Added MarkerReachedEventArgs.
+	* brush.cpp: Updated event handling to take an EventArgs* calldata instead
+	  of a gpointer. ~ImageBrush: don't delete, unref.
+
+2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* value.cpp: Fix warning.
 
 2008-03-05  Larry Ewing  <lewing@novell.com>

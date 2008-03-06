@@ -173,8 +173,8 @@ private:
 
 	void PopulateMediaAttributes ();
 
-	static void on_media_ended (EventObject *sender, gpointer calldata, gpointer userdata);
-	static void on_downloader_complete (EventObject *sender, gpointer calldata, gpointer userdata);
+	static void on_media_ended (EventObject *sender, EventArgs *calldata, gpointer userdata);
+	static void on_downloader_complete (EventObject *sender, EventArgs *calldata, gpointer userdata);
 	static void on_downloader_data_write (void *buf, int32_t offset, int32_t n, gpointer data);
 	static void on_downloader_size_notify (int64_t size, gpointer data);
 	

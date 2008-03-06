@@ -478,61 +478,36 @@ EventListenerProxy::RemoveHandler ()
 	}
 }
 
-EventArgsWrapper
-EventListenerProxy::get_wrapper_for_event_name (const char *event_name)
+void
+EventListenerProxy::create_wrapper_for_event_args (NPP instance, EventArgs *calldata, NPVariant *value)
 {
-	if (!g_ascii_strcasecmp ("mousemove", event_name) ||
-	    !g_ascii_strcasecmp ("mouseleftbuttonup", event_name) ||
-	    !g_ascii_strcasecmp ("mouseleftbuttondown", event_name) ||
-	    !g_ascii_strcasecmp ("mouseenter", event_name)) {
+	MoonlightEventArgs *args = NULL;
+	MoonlightObjectType *type = NULL;
+	const char *event_type = calldata ? calldata->GetTypeName () : NULL;
 
-		return mouse_event_wrapper;
-	} else if (!g_ascii_strcasecmp ("keydown", event_name) || !g_ascii_strcasecmp ("keyup", event_name)) {
-		return keyboard_event_wrapper;
-	} else if (!g_ascii_strcasecmp ("markerreached", event_name)) {
-		return timeline_marker_wrapper;
-	} else
-		return default_wrapper;
+	if (event_type == NULL) 
+		type = NULL;
+	else if (strcmp (event_type, "MouseEventArgs") == 0)
+		type = MoonlightMouseEventArgsClass;
+	else if (strcmp (event_type, "KeyboardEventArgs") == 0)
+		type = MoonlightKeyboardEventArgsClass;
+	else if (strcmp (event_type, "MarkerReachedEventArgs") == 0)
+		type = MoonlightMarkerReachedEventArgsClass;
+	else if (strcmp (event_type, "ErrorEventArgs") == 0)
+		type = MoonlightErrorEventArgsClass;
+	else
+		type = MoonlightEventArgsClass;
+
+	if (type != NULL) {
+		args = (MoonlightEventArgs *) NPN_CreateObject (instance, type);
+		args->SetEventArgs (calldata);
+	}
+
+	OBJECT_TO_NPVARIANT (args, *value);
 }
 
 void
-EventListenerProxy::timeline_marker_wrapper (NPP instance, gpointer calldata, NPVariant *value)
-{
-	TimelineMarker *marker = (TimelineMarker *) calldata;
-	MoonlightMarkerReachedEventArgsObject *obj = (MoonlightMarkerReachedEventArgsObject *) NPN_CreateObject (instance, MoonlightMarkerReachedEventArgsClass);
-	obj->SetMarker (marker);
-
-	OBJECT_TO_NPVARIANT (obj, *value);
-}
-
-void
-EventListenerProxy::default_wrapper (NPP instance, gpointer calldata, NPVariant *value)
-{
-	NULL_TO_NPVARIANT (*value);
-}
-
-void
-EventListenerProxy::mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value)
-{
-	MouseEventArgs *ea = (MouseEventArgs *) calldata;
-	MoonlightMouseEventArgsObject *jsea = (MoonlightMouseEventArgsObject *) NPN_CreateObject (instance, MoonlightMouseEventArgsClass);
-	jsea->SetEventArgs (ea);
-
-	OBJECT_TO_NPVARIANT (jsea, *value);
-}
-
-void
-EventListenerProxy::keyboard_event_wrapper (NPP instance, gpointer calldata, NPVariant *value)
-{
-	KeyboardEventArgs *ea = (KeyboardEventArgs *) calldata;
-	MoonlightKeyboardEventArgsObject *jsea = (MoonlightKeyboardEventArgsObject*)NPN_CreateObject (instance, MoonlightKeyboardEventArgsClass);
-	KeyboardEventArgsPopulate (jsea, ea);
-
-	OBJECT_TO_NPVARIANT (jsea, *value);
-}
-
-void
-EventListenerProxy::on_target_object_destroyed (EventObject *sender, gpointer calldata, gpointer closure)
+EventListenerProxy::on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	EventListenerProxy *proxy = (EventListenerProxy *) closure;
 	
@@ -540,13 +515,21 @@ EventListenerProxy::on_target_object_destroyed (EventObject *sender, gpointer ca
 }
 
 void
-EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure)
+EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	EventListenerProxy *proxy = (EventListenerProxy *) closure;
 	EventObject *js_sender = sender;
 	NPVariant args[2];
 	NPVariant result;
 	
+	if (proxy->instance->pdata == NULL) {
+		// Firefox can invalidate our NPObjects after the plugin itself
+		// has been destroyed. During this invalidation our NPObjects call 
+		// into the moonlight runtime, which then emits events.
+		printf ("Moonlight: The plugin has been deleted, but we're still emitting events?\n");
+		return;
+	}
+
 	if (js_sender->GetObjectType () == Type::SURFACE) {
 		// This is somewhat hackish, but is required for
 		// the FullScreenChanged event (js expects the
@@ -559,11 +542,9 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, gpointer 
 	
 	OBJECT_TO_NPVARIANT (depobj, args[0]);
 	
-	EventArgsWrapper event_args_wrapper = get_wrapper_for_event_name (proxy->event_name);
-	
 	//printf ("proxying event %s to javascript, sender = %p (%s)\n", proxy->event_name, sender, sender->GetTypeName ());
 	
-	event_args_wrapper (proxy->instance, calldata, &args[1]);
+	create_wrapper_for_event_args (proxy->instance, calldata, &args [1]);
 	
 	if (proxy->is_func) {
 		/* the event listener was added with a JS function object */
@@ -591,6 +572,54 @@ event_object_add_javascript_listener (EventObject *obj, PluginInstance *plugin, 
 	proxy->AddHandler (obj);
 }
 
+/*** EventArgs **/
+
+static const MoonNameIdMapping
+event_args_mapping[] = {
+	{ "tostring", MoonId_ToString },
+};
+
+static NPObject *
+event_args_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightEventArgs (instance);
+}
+
+MoonlightEventArgsType::MoonlightEventArgsType ()
+{
+	allocate = event_args_allocate;
+	AddMapping (event_args_mapping, COUNT (event_args_mapping));
+}
+
+MoonlightEventArgsType *MoonlightEventArgsClass;
+
+void
+MoonlightEventArgs::Dispose ()
+{
+	MoonlightObject::Dispose ();
+
+	if (args)
+		args->unref ();
+	args = NULL;
+}
+
+bool
+MoonlightEventArgs::Invoke (int id, NPIdentifier name,
+				       const NPVariant *args, uint32_t argCount,
+				       NPVariant *result)
+{
+	switch (id) {
+	case MoonId_ToString:
+		if (argCount != 0)
+			return false;
+
+		string_to_npvariant (this->args->GetTypeName (), result);
+		return true;
+	default:
+		return false;
+	}
+}
+
 /*** ErrorEventArgs ***/
 static NPObject *
 erroreventargs_allocate (NPP instance, NPClass *klass)
@@ -612,6 +641,8 @@ erroreventargs_mapping[] = {
 bool
 MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier, NPVariant *result)
 {
+	ErrorEventArgs *args = GetErrorEventArgs ();
+
 	switch (id) {
 	case MoonId_ErrorCode:
 		INT32_TO_NPVARIANT (args->error_code, *result);
@@ -942,21 +973,9 @@ mouse_event_allocate (NPP instance, NPClass *klass)
 }
 
 void
-MoonlightMouseEventArgsObject::SetEventArgs (MouseEventArgs *args)
-{
-	event_args = args;
-	event_args->ref ();
-}
-
-void
 MoonlightMouseEventArgsObject::Dispose ()
 {
-	MoonlightObject::Dispose ();
-
-	if (event_args) {
-		event_args->unref();
-		event_args = NULL;
-	}
+	MoonlightEventArgs::Dispose ();
 }
 
 static const MoonNameIdMapping
@@ -971,6 +990,7 @@ mouse_event_mapping[] = {
 bool
 MoonlightMouseEventArgsObject::GetProperty (int id, NPIdentifier, NPVariant *result)
 {
+	MouseEventArgs *event_args = GetMouseEventArgs ();
 	int state = event_args->GetState ();
 
 	switch (id) {
@@ -992,6 +1012,8 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 				       const NPVariant *args, uint32_t argCount,
 				       NPVariant *result)
 {
+	MouseEventArgs *event_args = GetMouseEventArgs ();
+
 	switch (id) {
 	case MoonId_GetPosition: {
 		if (argCount != 1)
@@ -1050,7 +1072,7 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	default:
-		return false;
+		return MoonlightEventArgs::Invoke (id, name, args, argCount, result);
 	}
 }
 
@@ -1073,26 +1095,17 @@ marker_reached_event_allocate (NPP instance, NPClass *klass)
 	return new MoonlightMarkerReachedEventArgsObject (instance);
 }
 
-void
-MoonlightMarkerReachedEventArgsObject::Dispose ()
-{
-	MoonlightObject::Dispose ();
-
-	if (marker) {
-		marker->unref ();
-		marker = NULL;
-	}
-}
-
 static const MoonNameIdMapping
 marker_reached_event_mapping[] = {
-	{ "marker", MoonId_Marker },
-	{ "tostring", MoonId_ToString }
+	{ "marker", MoonId_Marker }
 };
 
 bool
 MoonlightMarkerReachedEventArgsObject::GetProperty (int id, NPIdentifier, NPVariant *result)
 {
+	MarkerReachedEventArgs *args = GetMarkerReachedEventArgs ();
+	TimelineMarker *marker = args ? args->GetMarker () : NULL;
+
 	switch (id) {
 	case MoonId_Marker: {
 		MoonlightEventObjectObject *meoo = EventObjectCreateWrapper (instance, marker);
@@ -1104,19 +1117,6 @@ MoonlightMarkerReachedEventArgsObject::GetProperty (int id, NPIdentifier, NPVari
 	}
 }
 
-bool
-MoonlightMarkerReachedEventArgsObject::Invoke (int id, NPIdentifier name,
-		     const NPVariant *args, uint32_t argCount, NPVariant *result)
- {
- 	switch (id) {
-	case MoonId_ToString: {
-		string_to_npvariant ("TimelineMarkerEventArgs", result);
-		return true;
-	}
-	default:
-		return false;
- 	}
- }
 MoonlightMarkerReachedEventArgsType::MoonlightMarkerReachedEventArgsType ()
 {
 	allocate = marker_reached_event_allocate;
@@ -1146,21 +1146,23 @@ keyboard_event_mapping[] = {
 bool
 MoonlightKeyboardEventArgsObject::GetProperty (int id, NPIdentifier, NPVariant *result)
 {
+	KeyboardEventArgs *args = GetKeyboardEventArgs ();
+
 	switch (id) {
 	case MoonId_Shift:
-		BOOLEAN_TO_NPVARIANT (state & GDK_SHIFT_MASK != 0, *result);
+		BOOLEAN_TO_NPVARIANT (args->state & GDK_SHIFT_MASK != 0, *result);
 		return true;
 
 	case MoonId_Ctrl:
-		BOOLEAN_TO_NPVARIANT (state & GDK_CONTROL_MASK != 0, *result);
+		BOOLEAN_TO_NPVARIANT (args->state & GDK_CONTROL_MASK != 0, *result);
 		return true;
 
 	case MoonId_Key:
-		INT32_TO_NPVARIANT (key, *result);
+		INT32_TO_NPVARIANT (args->key, *result);
 		return true;
 
 	case MoonId_PlatformKeyCode:
-		INT32_TO_NPVARIANT (platformcode, *result);
+		INT32_TO_NPVARIANT (args->platformcode, *result);
 		return true;
 
 	default:
@@ -1176,15 +1178,6 @@ MoonlightKeyboardEventArgsType::MoonlightKeyboardEventArgsType ()
 }
 
 MoonlightKeyboardEventArgsType *MoonlightKeyboardEventArgsClass;
-
-void
-KeyboardEventArgsPopulate (MoonlightKeyboardEventArgsObject *ea, KeyboardEventArgs *args)
-{
-	ea->state = args->state;
-	ea->platformcode = args->platformcode;
-	ea->key = args->key;
-}
-
 
 /*** our object base class */
 NPObject *

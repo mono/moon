@@ -127,10 +127,10 @@ class AnimationStorage {
 
  private:
 	void TargetObjectDestroyed ();
-	static void target_object_destroyed (EventObject *sender, gpointer calldata, gpointer data);
+	static void target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer data);
 
 	void UpdatePropertyValue ();
-	static void update_property_value (EventObject *sender, gpointer calldata, gpointer data);
+	static void update_property_value (EventObject *sender, EventArgs *calldata, gpointer data);
 
 	AnimationClock *clock;
 	Animation/*Timeline*/* timeline;
@@ -563,10 +563,10 @@ class Storyboard : public ParallelTimeline {
 
 	gboolean Tick ();
 	static gboolean storyboard_tick (gpointer data);
-	static void invoke_completed (EventObject *sender, gpointer calldata, gpointer data);
+	static void invoke_completed (EventObject *sender, EventArgs *calldata, gpointer data);
 
 	void TeardownClockGroup ();
-	static void teardown_clockgroup (EventObject *sender, gpointer calldata, gpointer data);
+	static void teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpointer data);
 };
 
 /* @ContentProperty="Storyboard" */

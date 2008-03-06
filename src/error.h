@@ -15,9 +15,17 @@
 #define __MOON_ERROR_H__
 
 #include "enums.h"
+#include "eventargs.h"
 
-class ErrorEventArgs /* : public EventArgs */ {
- public:
+class ErrorEventArgs  : public EventArgs  {
+protected:
+	virtual ~ErrorEventArgs ()
+	{
+		g_free (error_message);
+	}
+
+
+public:
 	ErrorEventArgs (ErrorType type, int code, const char *msg)
 	{
 		error_type = type;
@@ -25,10 +33,7 @@ class ErrorEventArgs /* : public EventArgs */ {
 		error_message = g_strdup (msg);
 	}
 	
-	~ErrorEventArgs ()
-	{
-		g_free (error_message);
-	}
+	virtual const char *GetTypeName () { return "ErrorEventArgs"; }
 
 	int error_code;
 	char *error_message;
@@ -36,16 +41,28 @@ class ErrorEventArgs /* : public EventArgs */ {
 };
 
 class ImageErrorEventArgs : public ErrorEventArgs {
-  public:
+protected:
+	virtual ~ImageErrorEventArgs () {}
+
+public:
 	ImageErrorEventArgs (const char *msg)
 	  : ErrorEventArgs (ImageError, 0, msg)
 	{
 	}
+
+	virtual const char *GetTypeName () { return "ImageErrorEventArgs"; }
 };
 
 class ParserErrorEventArgs : public ErrorEventArgs {
- public:
+protected:
+	virtual ~ParserErrorEventArgs ()
+	{
+		g_free (xaml_file);
+		g_free (xml_element);
+		g_free (xml_attribute);
+	}
 
+public:
 	ParserErrorEventArgs (const char *msg,
 			      const char *file,
 			      int line, int column,
@@ -61,13 +78,8 @@ class ParserErrorEventArgs : public ErrorEventArgs {
 	  {
 	  }
 
-	~ParserErrorEventArgs ()
-	{
-		g_free (xaml_file);
-		g_free (xml_element);
-		g_free (xml_attribute);
-	}
-	
+	virtual const char *GetTypeName () { return "ParserErrorEventArgs"; }
+
 	int char_position;
 	int line_number;
 	char *xaml_file;

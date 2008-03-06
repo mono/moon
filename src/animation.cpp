@@ -44,7 +44,7 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 }
 
 void
-AnimationStorage::target_object_destroyed (EventObject *, gpointer, gpointer closure)
+AnimationStorage::target_object_destroyed (EventObject *, EventArgs *, gpointer closure)
 {
 	((AnimationStorage*)closure)->TargetObjectDestroyed ();
 }
@@ -56,7 +56,7 @@ AnimationStorage::TargetObjectDestroyed ()
 }
 
 void
-AnimationStorage::update_property_value (EventObject *, gpointer, gpointer closure)
+AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer closure)
 {
 	((AnimationStorage*)closure)->UpdatePropertyValue ();
 }
@@ -239,7 +239,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 }
 
 void
-Storyboard::invoke_completed (EventObject *sender, gpointer calldata, gpointer closure)
+Storyboard::invoke_completed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Storyboard *sb = (Storyboard *) closure;
 	sb->Emit (sb->CompletedEvent);
@@ -258,7 +258,7 @@ Storyboard::TeardownClockGroup ()
 }
 
 void
-Storyboard::teardown_clockgroup (EventObject *sender, gpointer calldata, gpointer closure)
+Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Storyboard *sb = (Storyboard *)closure;
 

@@ -26,8 +26,9 @@
 #endif
 
 class EventObject;
+class EventArgs;
 
-typedef void (* EventHandler) (EventObject *sender, gpointer calldata, gpointer closure);
+typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 
 struct EventList {
 	int current_token;
@@ -118,6 +119,11 @@ class EventObject {
 			g_hash_table_destroy (weak_refs);
 			weak_refs = NULL;
 		}
+
+		if (refcount != 0) {
+			printf ("Object #%i was deleted before its refcount reached 0 (current refcount: %i)\n", id, refcount);
+			//print_stack_trace ();
+		}
 #endif
 		OBJECT_TRACK ("Destroyed", "");
 
@@ -156,7 +162,10 @@ class EventObject {
 
 		if (delete_me) {
 			Emit (DestroyedEvent);
-
+#if OBJECT_TRACKING
+			if (refcount != 0)
+				printf ("Object %i of type %s has been woken up from the dead.\n", id, GetTypeName ());
+#endif
 			delete this;
 		}
 	}
@@ -194,8 +203,10 @@ class EventObject {
 	static int DestroyedEvent;
 
  protected:
-	bool Emit (char *event_name, gpointer calldata = NULL);
-	bool Emit (int event_id, gpointer calldata = NULL);
+	// To enable scenarios like Emit ("Event", new EventArgs ())
+	// Emit will call unref on the calldata.
+	bool Emit (char *event_name, EventArgs *calldata = NULL);
+	bool Emit (int event_id, EventArgs *calldata = NULL);
 
  private:
 	void FreeHandlers ();

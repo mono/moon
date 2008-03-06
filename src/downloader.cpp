@@ -50,6 +50,7 @@
 #include "downloader.h"
 #include "zip/unzip.h"
 #include "utils.h"
+#include "error.h"
 
 //
 // Downloader
@@ -254,7 +255,7 @@ Downloader::Send ()
 	
 	if (failed_msg != NULL) {
 		// Consumer is re-sending a request which failed.
-		Emit (DownloadFailedEvent, failed_msg);
+		Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError, 1, failed_msg));
 		return;
 	}
 	
@@ -305,7 +306,7 @@ Downloader::NotifyFinished (const char *fname)
 	
 	// HACK, we should provide the status code
 	SetValue (Downloader::StatusProperty, Value (200));
-	Emit (CompletedEvent, (gpointer) fname);
+	Emit (CompletedEvent, NULL);
 }
 
 void
@@ -318,7 +319,7 @@ Downloader::NotifyFailed (const char *msg)
 	// dl->SetValue (Downloader::StatusProperty, Value (400))
 	// For some reason the status is 0, not updated on errors?
 	
-	Emit (DownloadFailedEvent, (gpointer) msg);
+	Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError, 1, msg));
 	
 	// save the error in case someone else calls ::Send() on this
 	// downloader for the same uri.

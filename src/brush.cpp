@@ -824,7 +824,7 @@ image_brush_set_source (ImageBrush *brush, DependencyObject *dl, const char *Par
 }
 
 void
-ImageBrush::image_progress_changed (EventObject *sender, gpointer calldata, gpointer closure)
+ImageBrush::image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	ImageBrush *brush = (ImageBrush*)closure;
 	double progress = brush->image->GetValue (Image::DownloadProgressProperty)->AsDouble();
@@ -833,7 +833,7 @@ ImageBrush::image_progress_changed (EventObject *sender, gpointer calldata, gpoi
 }
 
 void
-ImageBrush::image_failed (EventObject *sender, gpointer calldata, gpointer closure)
+ImageBrush::image_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((ImageBrush*)closure)->Emit (ImageBrush::ImageFailedEvent);
 }
@@ -851,8 +851,7 @@ ImageBrush::ImageBrush ()
 ImageBrush::~ImageBrush ()
 {
 	image->brush = NULL;
-	
-	delete image;
+	image->unref ();
 }
 
 void
@@ -1214,7 +1213,7 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 }
 
 void
-VisualBrush::update_brush (EventObject *, gpointer, gpointer closure)
+VisualBrush::update_brush (EventObject *, EventArgs *, gpointer closure)
 {
 	VisualBrush *b = (VisualBrush*)closure;
 	b->NotifyListenersOfPropertyChange (Brush::ChangedProperty);

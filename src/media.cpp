@@ -402,9 +402,7 @@ MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection
 		//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
 		
 		if (pts >= from && pts <= to) {
-			marker->ref ();
-			Emit (MarkerReachedEvent, marker);
-			marker->unref ();
+			Emit (MarkerReachedEvent, new MarkerReachedEventArgs (marker));
 		}
 		
 		next = (Collection::Node *) node->next;
@@ -856,7 +854,7 @@ MediaElement::size_notify (int64_t size, gpointer data)
 }
 
 void
-MediaElement::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
+MediaElement::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((MediaElement *) closure)->DownloaderComplete ();
 }
@@ -1748,13 +1746,9 @@ Image::DownloaderComplete ()
 }
 
 void
-Image::DownloaderFailed (const char *msg)
+Image::DownloaderFailed (ErrorEventArgs *args)
 {
-	ImageErrorEventArgs *ea = new ImageErrorEventArgs (msg);
-
-	Emit (ImageFailedEvent, ea);
-
-	delete ea;
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (args ? args->error_message : NULL));
 }
 
 
@@ -1900,11 +1894,8 @@ Image::CreateSurface (const char *fname)
 			else
 				msg = g_strdup_printf ("Failed to load image %s", fname);
 		  
-			ImageErrorEventArgs *ea = new ImageErrorEventArgs (msg);
+			Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
 
-			Emit (ImageFailedEvent, ea);
-
-			delete ea;
 			return false;
 		}
 
@@ -1961,16 +1952,22 @@ Image::size_notify (int64_t size, gpointer data)
 }
 
 void
-Image::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
+Image::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Image *image = (Image*)closure;
 	image->DownloaderComplete ();
 }
 
 void
-Image::downloader_failed (EventObject *sender, gpointer calldata, gpointer closure)
+Image::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	((Image*)closure)->DownloaderFailed ((const char *)calldata);
+	Image *image = (Image *) closure;
+	ErrorEventArgs *err = NULL;
+
+	if (calldata && strcmp (calldata->GetTypeName (), "ErrorEventArgs") == 0)
+		err = (ErrorEventArgs *) calldata;
+
+	image->DownloaderFailed (err);
 }
 
 void

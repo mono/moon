@@ -1,3 +1,16 @@
+2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp, plugin-class.h: Make our Moonlight*EventArgs mirror the
+	  runtime *EventArgs Updated runtime event handling to receive an
+	  EventArgs* calldata instead of a gpointer. This allows us to create the
+	  correct Moonlight*EventArgs based on the actual type of the runtime
+	  *EventArgs, instead of making a decision based on the event name,
+	  obsoleting all the *_event_wrapper functions.
+	* plugin-glue.cpp: Set the pdata field of the instance to NULL before
+	  deleting the plugin, this allows us to detect plugin usage during plugin
+	  destruction (we might cause destruction of EventObjects -> events are
+	  raised -> plugin tries to send those events to js -> crash)
+
 2008-03-05  Michael Dominic K.  <mdk@mdk.am>
 
 	* plugin-class.cpp: Making the plugin class use the new enum<->str code

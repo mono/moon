@@ -835,7 +835,7 @@ Surface::InitializeWidget (GtkWidget *widget)
 }
 
 void
-Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
+Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Surface *s = (Surface *) closure;
 	int64_t now;
@@ -873,7 +873,7 @@ Surface::render_cb (EventObject *sender, gpointer calldata, gpointer closure)
 }
 
 void
-Surface::update_input_cb (EventObject *sender, gpointer calldata, gpointer closure)
+Surface::update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 #if notyet
 	Surface *s = (Surface *) closure;

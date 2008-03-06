@@ -1235,7 +1235,7 @@ TextBlock::size_notify (int64_t size, gpointer data)
 }
 
 void
-TextBlock::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
+TextBlock::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((TextBlock *) closure)->DownloaderComplete ();
 }
@@ -1922,7 +1922,7 @@ Glyphs::size_notify (int64_t size, gpointer data)
 }
 
 void
-Glyphs::downloader_complete (EventObject *sender, gpointer calldata, gpointer closure)
+Glyphs::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((Glyphs *) closure)->DownloaderComplete ();
 }

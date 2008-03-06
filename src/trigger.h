@@ -36,7 +36,7 @@ class EventTrigger : public DependencyObject {
 	static DependencyProperty* ActionsProperty;
 
  private:
-	static void event_trigger_fire_actions (EventObject *sender, gpointer calldata, gpointer closure);
+	static void event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
 
 G_BEGIN_DECLS

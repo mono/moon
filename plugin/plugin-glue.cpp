@@ -41,8 +41,8 @@ NPP_Destroy (NPP instance, NPSavedData **save)
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
 	plugin->Finalize ();
 
-	delete plugin;
 	instance->pdata = NULL;
+	delete plugin;
 
 	return NPERR_NO_ERROR;
 }

@@ -43,7 +43,7 @@ EventTrigger::~EventTrigger ()
 }
 
 void
-EventTrigger::event_trigger_fire_actions (EventObject *sender, gpointer calldata, gpointer closure)
+EventTrigger::event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	EventTrigger *trigger = (EventTrigger*)closure;
 	g_assert (trigger);

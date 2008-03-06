@@ -385,59 +385,37 @@ UIElement::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 bool
 UIElement::EmitMouseMove (GdkEvent *event)
 {
-	MouseEventArgs *e = new MouseEventArgs(event);
-	bool rv = Emit (MouseMoveEvent, e);
-	e->unref ();
-	return rv;
+	return Emit (MouseMoveEvent, new MouseEventArgs (event));
 }
 
 bool
 UIElement::EmitMouseLeftButtonDown (GdkEvent *event)
 {
-	MouseEventArgs *e = new MouseEventArgs (event);
-	bool rv = Emit (MouseLeftButtonDownEvent, e);
-	e->unref ();
-	return rv;
+	return Emit (MouseLeftButtonDownEvent, new MouseEventArgs (event));
 }
 
 bool
 UIElement::EmitMouseLeftButtonUp (GdkEvent *event)
 {
-	MouseEventArgs *e = new MouseEventArgs (event);
-	bool rv = Emit (MouseLeftButtonUpEvent, e);
-	e->unref ();
-	return rv;
+	return Emit (MouseLeftButtonUpEvent, new MouseEventArgs (event));
 }
 
 bool
 UIElement::EmitKeyDown (int state, Key key, int platform_key_code)
 {
-	KeyboardEventArgs e;
-	e.state = state;
-	e.key = key;
-	e.platformcode = platform_key_code;
-
-	return Emit (KeyDownEvent, &e);
+	return Emit (KeyDownEvent, new KeyboardEventArgs (state, platform_key_code, key));
 }
 
 bool
 UIElement::EmitKeyUp (int state, Key key, int platform_key_code)
 {
-	KeyboardEventArgs e;
-	e.state = state;
-	e.key = key;
-	e.platformcode = platform_key_code;
-
-	return Emit (KeyUpEvent, &e);
+	return Emit (KeyUpEvent, new KeyboardEventArgs (state, platform_key_code, key));
 }
 
 bool
 UIElement::EmitMouseEnter (GdkEvent *event)
 {
-	MouseEventArgs *e = new MouseEventArgs (event);
-	bool rv = Emit (MouseEnterEvent, e);
-	e->unref ();
-	return rv;
+	return Emit (MouseEnterEvent, new MouseEventArgs (event));
 }
 
 bool

@@ -299,7 +299,7 @@ class TimeManager : public EventObject {
 	TimeSpan current_global_time_usec;
 	TimeSpan start_time_usec;
 
-	static void tick_callback (EventObject *sender, gpointer calldata, gpointer closure);
+	static void tick_callback (EventObject *sender, EventArgs *calldata, gpointer closure);
 	int current_timeout;
 	int max_fps;
 	bool first_tick;

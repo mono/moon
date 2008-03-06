@@ -296,7 +296,7 @@ TimeManager::Shutdown ()
 }
 
 void
-TimeManager::tick_callback (EventObject *sender, gpointer calldata, gpointer closure)
+TimeManager::tick_callback (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((TimeManager *) closure)->Tick ();
 }

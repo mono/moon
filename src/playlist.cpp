@@ -111,14 +111,14 @@ Playlist::IsPlaylistFile (IMediaSource *source)
 }
 
 void
-Playlist::on_media_ended (EventObject *sender, gpointer calldata, gpointer userdata)
+Playlist::on_media_ended (EventObject *sender, EventArgs *calldata, gpointer userdata)
 {
 	Playlist *playlist = (Playlist *) userdata;
 	playlist->OnMediaEnded ();
 }
 
 void
-Playlist::on_downloader_complete (EventObject *sender, gpointer calldata, gpointer userdata)
+Playlist::on_downloader_complete (EventObject *sender, EventArgs *calldata, gpointer userdata)
 {
 	Playlist *playlist = (Playlist *) userdata;
 	playlist->OnMediaDownloaded ();

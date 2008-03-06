@@ -148,8 +148,8 @@ void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 
 class ImageBrush : public TileBrush {
 
-	static void image_progress_changed (EventObject *sender, gpointer calldata, gpointer closure);
-	static void image_failed (EventObject *sender, gpointer calldata, gpointer closure);
+	static void image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
 	Image *image;
  public:
@@ -273,7 +273,7 @@ void	gradient_stop_set_offset	(GradientStop *stop, double offset);
 class VisualBrush : public TileBrush {
 	cairo_surface_t *surface;
 
-	static void update_brush (EventObject *, gpointer, gpointer closure);
+	static void update_brush (EventObject *, EventArgs *, gpointer closure);
 
  public:
 	static DependencyProperty* VisualProperty;

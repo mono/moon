@@ -31,7 +31,7 @@ typedef struct {
 } MoonNameIdMapping;
 
 /*** EventListenerProxy */
-typedef void (*EventArgsWrapper)(NPP instance, gpointer calldata, NPVariant *value);
+typedef void (*EventArgsWrapper)(NPP instance, EventArgs *calldata, NPVariant *value);
 
 class EventListenerProxy : public List::Node {
  public:
@@ -60,13 +60,9 @@ class EventListenerProxy : public List::Node {
 	int event_id;
 	EventObject *target_object;
 
-	static EventArgsWrapper get_wrapper_for_event_name (const char *event_name);
-	static void default_wrapper (NPP instance, gpointer calldata, NPVariant *value);
-	static void mouse_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
-	static void keyboard_event_wrapper (NPP instance, gpointer calldata, NPVariant *value);
-	static void timeline_marker_wrapper (NPP instance, gpointer calldata, NPVariant *value);
-	static void on_target_object_destroyed (EventObject *sender, gpointer calldata, gpointer closure);
-	static void proxy_listener_to_javascript (EventObject *sender, gpointer calldata, gpointer closure);
+	static void create_wrapper_for_event_args (NPP instance, EventArgs *calldata, NPVariant *value);
+	static void on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void proxy_listener_to_javascript (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
 
 /*** MoonlightObjectClass **************************************************************/
@@ -122,20 +118,48 @@ struct MoonlightObject : public NPObject
 	GHashTable *event_listener_proxies;
 };
 
+/*** MoonlightEventArgsClass ******************************************************/
+struct MoonlightEventArgsType : MoonlightObjectType {
+	MoonlightEventArgsType ();
+};
+
+extern MoonlightEventArgsType* MoonlightEventArgsClass;
+
+struct MoonlightEventArgs : MoonlightObject {
+	MoonlightEventArgs (NPP instance) : MoonlightObject (instance)
+	{
+		args = NULL;
+	}
+	virtual void Dispose ();
+
+	void SetEventArgs (EventArgs *args)
+	{
+		if (this->args)
+			this->args->unref ();
+
+		this->args = args;
+
+		if (this->args)
+			this->args->ref ();
+	}
+	virtual bool Invoke (int id, NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result);
+
+	EventArgs *args;
+};
+
 /*** MoonlightErrorEventArgsClass ******************************************************/
-struct MoonlightErrorEventArgsType : MoonlightObjectType {
+struct MoonlightErrorEventArgsType : MoonlightEventArgsType {
 	MoonlightErrorEventArgsType ();
 };
 
 extern MoonlightErrorEventArgsType* MoonlightErrorEventArgsClass;
 
-struct MoonlightErrorEventArgs : MoonlightObject {
-	MoonlightErrorEventArgs (NPP instance) : MoonlightObject(instance)
+struct MoonlightErrorEventArgs : MoonlightEventArgs {
+	MoonlightErrorEventArgs (NPP instance) : MoonlightEventArgs (instance)
 	{
 	}
 
-	ErrorEventArgs *args;
-
+	ErrorEventArgs *GetErrorEventArgs () { return (ErrorEventArgs *) args; }
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 };
 
@@ -217,15 +241,14 @@ struct MoonlightTimeSpan : MoonlightObject {
 };
 
 /*** MoonlightMouseEventArgsClass  **************************************************************/
-struct MoonlightMouseEventArgsType : MoonlightObjectType {
+struct MoonlightMouseEventArgsType : MoonlightEventArgsType {
 	MoonlightMouseEventArgsType ();
 };
 
 extern MoonlightMouseEventArgsType* MoonlightMouseEventArgsClass;
 
-struct MoonlightMouseEventArgsObject : MoonlightObject {
-	MoonlightMouseEventArgsObject (NPP instance)
-	  : MoonlightObject (instance), event_args (NULL)
+struct MoonlightMouseEventArgsObject : MoonlightEventArgs {
+	MoonlightMouseEventArgsObject (NPP instance) : MoonlightEventArgs (instance)
 	{
 	}
 
@@ -236,63 +259,41 @@ struct MoonlightMouseEventArgsObject : MoonlightObject {
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 
-	void SetEventArgs (MouseEventArgs *args);
-
-	MouseEventArgs *event_args;
+	MouseEventArgs *GetMouseEventArgs () { return (MouseEventArgs *) args; };
 };
 
 /*** MoonlightMarkerReachedEventArgsClass ******************************************/
-struct MoonlightMarkerReachedEventArgsType : MoonlightObjectType {
+struct MoonlightMarkerReachedEventArgsType : MoonlightEventArgsType {
 	MoonlightMarkerReachedEventArgsType ();
 };
 
 extern MoonlightMarkerReachedEventArgsType* MoonlightMarkerReachedEventArgsClass;
 
-struct MoonlightMarkerReachedEventArgsObject : MoonlightObject {
-	MoonlightMarkerReachedEventArgsObject (NPP instance)
-		: MoonlightObject (instance), marker (NULL)
+struct MoonlightMarkerReachedEventArgsObject : MoonlightEventArgs {
+	MoonlightMarkerReachedEventArgsObject (NPP instance) : MoonlightEventArgs (instance)
 	{
-	}
-
-	virtual void Dispose ();
-	void SetMarker (TimelineMarker* tm)
-	{
-		if (marker)
-			marker->unref ();
-		marker = tm;
-		if (marker)
-			marker->ref ();
 	}
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
-	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 
-	TimelineMarker* marker;
+	MarkerReachedEventArgs *GetMarkerReachedEventArgs () { return (MarkerReachedEventArgs *) args; }
 };
 
 /*** MoonlightKeyboardEventArgsClass  **************************************************************/
-struct MoonlightKeyboardEventArgsType : MoonlightObjectType {
+struct MoonlightKeyboardEventArgsType : MoonlightEventArgsType {
 	MoonlightKeyboardEventArgsType ();
 };
 
 extern MoonlightKeyboardEventArgsType* MoonlightKeyboardEventArgsClass;
 
-struct MoonlightKeyboardEventArgsObject : MoonlightObject {
-	MoonlightKeyboardEventArgsObject (NPP instance)
-	  : MoonlightObject (instance), state (0), key (0), platformcode (0)
+struct MoonlightKeyboardEventArgsObject : MoonlightEventArgs {
+	MoonlightKeyboardEventArgsObject (NPP instance) : MoonlightEventArgs (instance)
 	{
 	}
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
-
-	int state;
-	int key;
-	int platformcode;
+	KeyboardEventArgs *GetKeyboardEventArgs () { return (KeyboardEventArgs *) args; }
 };
-
-extern void KeyboardEventArgsPopulate (MoonlightKeyboardEventArgsObject *ea, KeyboardEventArgs *args);
-
 
 /*** MoonlightSettingsClass ***********************************************************/
 

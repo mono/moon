@@ -25,7 +25,7 @@
 // Define the ID of the object you want to track
 // Object creation, destruction and all ref/unrefs
 // are logged to the console, with a stacktrace.
-#define OBJECT_TRACK_ID (-1)
+#define OBJECT_TRACK_ID (0)
 
 int EventObject::objects_created = 0;
 int EventObject::objects_destroyed = 0;
@@ -192,7 +192,7 @@ EventObject::RemoveHandler (int event_id, int token)
 }
 
 bool
-EventObject::Emit (char *event_name, gpointer calldata)
+EventObject::Emit (char *event_name, EventArgs *calldata)
 {
 	int id = GetType()->LookupEvent (event_name);
 
@@ -205,15 +205,18 @@ EventObject::Emit (char *event_name, gpointer calldata)
 }
 
 bool
-EventObject::Emit (int event_id, gpointer calldata)
+EventObject::Emit (int event_id, EventArgs *calldata)
 {
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
 		return false;
 	}
 
-	if (events == NULL || events[event_id].event_list->IsEmpty ())
+	if (events == NULL || events[event_id].event_list->IsEmpty ()) {
+		if (calldata)
+			calldata->unref ();
 		return false;
+	}
 	
 	EventClosure *next, *closure = (EventClosure *) events[event_id].event_list->First ();
 	List *event_list = new List ();
@@ -240,6 +243,9 @@ EventObject::Emit (int event_id, gpointer calldata)
 	}
 	
 	delete event_list;
+
+	if (calldata)
+		calldata->unref ();
 
 	return true;
 }
@@ -425,7 +431,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		}
 	} else {
 		if (!(property->value_type >= Type::DEPENDENCY_OBJECT) && !property->IsNullable ()) {
-			g_warning ("Can not set a non-nullable scalar type to NULL");
+			g_warning ("Can not set a non-nullable scalar type to NULL (property: %s)", property->name);
 			return;
 		}
 	}

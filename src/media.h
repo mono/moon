@@ -25,7 +25,7 @@ G_BEGIN_DECLS
 #include "value.h"
 #include "brush.h"
 #include "frameworkelement.h"
-
+#include "error.h"
 
 class MediaAttribute : public DependencyObject {
  public:
@@ -74,12 +74,12 @@ class Image : public MediaBase {
 	// downloader callbacks
 	void PixbufWrite (void *buf, int32_t offset, int32_t n);
 	void DownloaderComplete ();
-	void DownloaderFailed (const char *msg);
+	void DownloaderFailed (ErrorEventArgs *args);
 	void UpdateProgress ();
 	
 	static void pixbuf_write (void *buf, int32_t offset, int32_t n, gpointer data);
-	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
-	static void downloader_failed (EventObject *sender, gpointer calldata, gpointer closure);
+	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
 	Downloader *downloader;
@@ -247,7 +247,7 @@ private:
 	void MediaFailed ();
 	
 	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
-	static void downloader_complete (EventObject *sender, gpointer calldata, gpointer closure);
+	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
 	void ReadMarkers ();

@@ -13,31 +13,75 @@
 #include <stdint.h>
 #include <cairo.h>
 #include <gtk/gtk.h>
-
 #include "dependencyobject.h"
 
 class StylusInfo;
 class StylusPointCollection;
 class UIElement;
 
-struct KeyboardEventArgs {
+/*
+ * EventArgs needs to be ref counted since js can keep objects around until
+ * after the event has been emitted.
+ */
+
+class EventArgs : public EventObject {
+protected:
+	virtual ~EventArgs () {};
+
+public:
+	EventArgs () {}
+	virtual const char *GetTypeName () = 0;
+};
+
+class KeyboardEventArgs : public EventArgs {
+protected:
+	virtual ~KeyboardEventArgs () {}
+
+public:
+	KeyboardEventArgs () {}
+	KeyboardEventArgs (int state_, int platformcode_, int key_) : 
+		state (state_), platformcode (platformcode_), key (key_)
+	{
+	}
+
 	int state;
 	int platformcode;
 	int key;
+
+	virtual const char *GetTypeName () { return "KeyboardEventArgs"; }
 };
 
-class MouseEventArgs : public EventObject {
+class MouseEventArgs : public EventArgs {
+protected:
+	virtual ~MouseEventArgs ();
+
 public:
 	MouseEventArgs (GdkEvent *event);
-	~MouseEventArgs ();
 
 	int GetState ();
 	void GetPosition (UIElement *relative_to, double *x, double *y);
 	StylusInfo *GetStylusInfo ();
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
 
+	virtual const char *GetTypeName () { return "MouseEventArgs"; }
+
  private:
 	GdkEvent *event;
+};
+
+class MarkerReachedEventArgs : public EventArgs {
+private:
+	TimelineMarker *marker;
+
+protected:
+	virtual ~MarkerReachedEventArgs ();
+
+public:
+	MarkerReachedEventArgs (TimelineMarker *marker);
+
+	TimelineMarker *GetMarker () { return marker; }
+
+	virtual const char *GetTypeName () { return "MarkerReachedEventArgs"; }
 };
 
 G_BEGIN_DECLS
