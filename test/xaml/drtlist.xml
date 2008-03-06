@@ -563,4 +563,12 @@
 	inputFile="test-shape-line-stretch2.xaml"
 	masterFile10="../harness/masters/test-shape-line-stretch2Master.png"
    />
+   <Test id="141"
+	inputFile="test-shape-polyline-stretch2.xaml"
+	masterFile10="../harness/masters/test-shape-polyline-stretch2Master.png"
+   />
+   <Test id="142"
+	inputFile="test-shape-polygon-stretch2.xaml"
+	masterFile10="../harness/masters/test-shape-polygon-stretch2Master.png"
+   />
 </DRTList>
