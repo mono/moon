@@ -26,6 +26,13 @@
 
 2008-03-05  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp: Fix line, polyline and polygon to apply stretches
+	properly (modulo pesimistic shape bounds bugs).  Mostly fixes
+	test-shape-line-stretch2.xaml, test-shape-polyline-stretch2.xaml
+	and test-shape-polygon-stretch2.xaml. 
+
+	* shape.h: move stretch transform out of Path and into Shape.
+
 	* stylus.h:
 	* stylus.cpp: include the strokes in the subtree bounds so that we
 	will get invalidations and update bounds when the collection

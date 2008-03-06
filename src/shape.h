@@ -60,6 +60,8 @@ class Shape : public FrameworkElement {
 	virtual Rect ComputeShapeBounds ();
 	virtual Rect ComputeLargestRectangle ();
 	
+	cairo_matrix_t stretch_transform;
+	cairo_matrix_t ComputeStretchTransform (Rect shape_bounds, double w, double h);
 	Rect extents;
  public: 
 	static DependencyProperty* FillProperty;
@@ -314,7 +316,6 @@ class Path : public Shape {
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds ();
 
-	cairo_matrix_t stretch_transform;
  public:
 	static DependencyProperty* DataProperty;
 

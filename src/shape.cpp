@@ -110,6 +110,7 @@ Shape::Shape ()
 	origin = Point (0, 0);
 	cached_surface = NULL;
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
+	cairo_matrix_init_identity (&stretch_transform);
 }
 
 Shape::~Shape ()
@@ -141,10 +142,13 @@ Shape::Draw (cairo_t *cr)
 	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
 
+	cairo_save (cr);
+	cairo_transform (cr, &stretch_transform);
+
 	cairo_new_path (cr);
 	cairo_append_path (cr, &path->cairo);
 
-//	moon_path_display (path);
+	cairo_restore (cr);
 }
 
 // break up operations so we can exclude optional stuff, like:
@@ -228,6 +232,50 @@ Shape::Fill (cairo_t *cr, bool do_op)
 		cairo_fill_preserve (cr);
 	}
 	return true;
+}
+
+cairo_matrix_t
+Shape::ComputeStretchTransform (Rect shape_bounds, double w, double h)
+{
+	cairo_matrix_t transform;
+	cairo_matrix_init_identity (&transform);
+
+	Stretch stretch = shape_get_stretch (this);
+	if (stretch != StretchNone) {
+		double sh = h / shape_bounds.h;
+		double sw = w / shape_bounds.w;
+		bool center = false;
+
+		switch (stretch) {
+		case StretchFill:
+			break;
+		case StretchUniform:
+			sw = sh = (sw < sh) ? sw : sh;
+			center = true;
+			break;
+		case StretchUniformToFill:
+			sw = sh = (sw > sh) ? sw : sh;
+			break;
+		case StretchNone:
+			/* not reached */
+		break;
+		}
+		
+		if (center)
+			cairo_matrix_translate (&transform, w * 0.5, h * 0.5);
+		cairo_matrix_scale (&transform, sw, sh);
+		if (center)
+			cairo_matrix_translate (&transform, -shape_bounds.w * 0.5, -shape_bounds.h * 0.5);
+		cairo_matrix_translate (&transform, -shape_bounds.x, -shape_bounds.y);
+
+		// Double check our math
+		cairo_matrix_t test = transform;
+		if (cairo_matrix_invert (&test)) {
+			cairo_matrix_init_identity (&transform);
+			g_warning ("Unable to compute stretch transform %f %f %f %f \n", sw, sh, shape_bounds.x, shape_bounds.y);
+		}		
+	}
+	return transform;
 }
 
 void
@@ -1273,6 +1321,7 @@ Rect
 Line::ComputeShapeBounds ()
 {
 	Rect shape_bounds = Rect ();
+	cairo_matrix_init_identity (&stretch_transform);
 
 	Value *vh, *vw;
 	if (Shape::MixedHeightWidth (&vh, &vw))
@@ -1290,6 +1339,11 @@ Line::ComputeShapeBounds ()
 	calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
 	origin.x = MIN (x1, x2);
 	origin.y = MIN (y1, y2);
+
+	stretch_transform = ComputeStretchTransform (shape_bounds, 
+						     vw ? vw->AsDouble (): shape_bounds.w, 
+						     vh ? vh->AsDouble (): shape_bounds.h);
+	shape_bounds = shape_bounds.Transform (&stretch_transform);
 
 	// if Height and Width are specified (they could be both missing)
 	// then we must clip the line those values
@@ -1536,6 +1590,7 @@ Rect
 Polygon::ComputeShapeBounds ()
 {
 	Rect shape_bounds = Rect ();
+	cairo_matrix_init_identity (&stretch_transform);
 
 	Value *vh, *vw;
 	if (Shape::MixedHeightWidth (&vh, &vw))
@@ -1606,10 +1661,10 @@ Polygon::ComputeShapeBounds ()
 		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 	}
 
-	if (shape_get_stretch (this) != StretchNone) {
-		shape_bounds.x -= x0;
-		shape_bounds.y -= y0;
-	}
+	stretch_transform = ComputeStretchTransform (shape_bounds, 
+						     vw ? vw->AsDouble (): shape_bounds.w, 
+						     vh ? vh->AsDouble (): shape_bounds.h);
+	shape_bounds = shape_bounds.Transform (&stretch_transform);
 
 	// if Height and Width are specified (they could be both missing)
 	// then we must clip the path those values, and this also defines
@@ -1826,6 +1881,7 @@ Rect
 Polyline::ComputeShapeBounds ()
 {
 	Rect shape_bounds = Rect ();
+	cairo_matrix_init_identity (&stretch_transform);
 
 	Value *vh, *vw;
 	if (Shape::MixedHeightWidth (&vh, &vw))
@@ -1875,10 +1931,10 @@ Polyline::ComputeShapeBounds ()
 		shape_bounds = shape_bounds.Union (line_bounds);
 	}
 
-	if (shape_get_stretch (this) != StretchNone) {
-		shape_bounds.x -= points [0].x;
-		shape_bounds.y -= points [0].y;
-	}
+	stretch_transform = ComputeStretchTransform (shape_bounds, 
+						     vw ? vw->AsDouble (): shape_bounds.w, 
+						     vh ? vh->AsDouble (): shape_bounds.h);
+	shape_bounds = shape_bounds.Transform (&stretch_transform);
 
 	// if Height and Width are specified (they could be both missing)
 	// then we must clip the path those values, and this also defines
@@ -2083,43 +2139,7 @@ Path::ComputeShapeBounds ()
 	}
 
 	// Compute the transformation we use for stretching
-
-	Stretch stretch = shape_get_stretch (this);
-	if (stretch != StretchNone) {
-		double sh = h / shape_bounds.h;
-		double sw = w / shape_bounds.w;
-		bool center = false;
-
-		switch (stretch) {
-		case StretchFill:
-			break;
-		case StretchUniform:
-			sw = sh = (sw < sh) ? sw : sh;
-			center = true;
-			break;
-		case StretchUniformToFill:
-			sw = sh = (sw > sh) ? sw : sh;
-			break;
-		case StretchNone:
-			/* not reached */
-		break;
-		}
-		
-		if (center)
-			cairo_matrix_translate (&stretch_transform, w * 0.5, h * 0.5);
-		cairo_matrix_scale (&stretch_transform, sw, sh);
-		if (center)
-			cairo_matrix_translate (&stretch_transform, -shape_bounds.w * 0.5, -shape_bounds.h * 0.5);
-		cairo_matrix_translate (&stretch_transform, -shape_bounds.x, -shape_bounds.y);
-
-		// Double check our math
-		cairo_matrix_t test = stretch_transform;
-		if (cairo_matrix_invert (&test)) {
-			cairo_matrix_init_identity (&stretch_transform);
-			g_warning ("Unable to compute stretch transform %f %f %f %f \n", sw, sh, shape_bounds.x, shape_bounds.y);
-		}		
-	}
-
+	stretch_transform = ComputeStretchTransform (shape_bounds, w, h);
 	shape_bounds = shape_bounds.Transform (&stretch_transform);
 
 	if (vh && vw) {
