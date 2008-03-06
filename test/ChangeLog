@@ -1,5 +1,14 @@
 2008-03-06  Michael Dominic K.  <mdk@mdk.am>
 
+	* test/xaml/test-storyboard-constrained-autoreverse.xaml:
+	* test/xaml/test-storyboard-constrained-fill.xaml:
+	* test/xaml/test-storyboard-constrained-stop.xaml: Few more tests for
+	clocks/storyboard, this time contrained ones. Contrained as in: the
+	storyboard duration is smaller than the duration of it's children
+	animations. Not yet added to the drtlist.
+
+2008-03-06  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/test-storyboard-simple-autoreverse-forever.xaml:
 	* xaml/test-storyboard-simple-autoreverse.xaml:
 	* xaml/test-storyboard-simple-fill-fill.xaml:
