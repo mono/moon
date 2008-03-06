@@ -7,7 +7,7 @@
 			<EventTrigger.Actions>
 				<BeginStoryboard>
 					<Storyboard FillBehavior="Stop">
-						<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" From="10" To="100" Duration="0:0:2" FillBahvior="Stop"/>
+						<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" From="10" To="100" Duration="0:0:2" FillBehavior="Stop"/>
 					</Storyboard>
 				</BeginStoryboard>
 			</EventTrigger.Actions>
