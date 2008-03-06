@@ -571,4 +571,40 @@
 	inputFile="test-shape-polygon-stretch2.xaml"
 	masterFile10="../harness/masters/test-shape-polygon-stretch2Master.png"
    />
+   <Test id="143"
+	inputFile="test-storyboard-constrained-autoreverse.xaml"
+	puts masterFile10="../harness/masters/test-storyboard-constrained-autoreverseMaster.png"
+   />
+   <Test id="144"
+	inputFile="test-storyboard-constrained-fill.xaml"
+	puts masterFile10="../harness/masters/test-storyboard-constrained-fillMaster.png"
+   />
+   <Test id="145"
+	inputFile="test-storyboard-constrained-stop.xaml"
+	puts masterFile10="../harness/masters/test-storyboard-constrained-stopMaster.png"
+   />
+   <Test id="146"
+	inputFile="test-storyboard-simple-autoreverse-forever.xaml"
+	puts masterFile10="../harness/masters/test-storyboard-simple-autoreverse-foreverMaster.png"
+   />
+   <Test id="147"
+	inputFile="test-storyboard-simple-autoreverse.xaml"
+	puts masterFile10="../harness/masters/test-storyboard-simple-autoreverseMaster.png"
+   />
+   <Test id="148"
+	inputFile="test-storyboard-simple-fill-fill.xaml"
+	puts masterFile10="../harness/masters/test-storyboard-simple-fill-fillMaster.png"
+   />
+   <Test id="149"
+	inputFile="test-storyboard-simple-fill-stop.xaml"
+	puts masterFile10="../harness/masters/test-storyboard-simple-fill-stopMaster.png"
+   />
+   <Test id="150"
+	inputFile="test-storyboard-simple-stop-fill.xaml"
+	puts masterFile10="../harness/masters/test-storyboard-simple-stop-fillMaster.png"
+   />
+   <Test id="151"
+	inputFile="test-storyboard-simple-stop-stop.xaml"
+	puts masterFile10="../harness/masters/test-storyboard-simple-stop-stopMaster.png"
+   />
 </DRTList>

@@ -1,5 +1,10 @@
 2008-03-06  Michael Dominic K.  <mdk@mdk.am>
 
+	* test/xaml/drtlist.xml: Adding the new storyboard tests to the
+	drtlist.
+
+2008-03-06  Michael Dominic K.  <mdk@mdk.am>
+
 	* test/xaml/test-storyboard-constrained-autoreverse.xaml:
 	* test/xaml/test-storyboard-constrained-fill.xaml:
 	* test/xaml/test-storyboard-constrained-stop.xaml: Few more tests for
