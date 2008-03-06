@@ -600,10 +600,10 @@ transform_init (void)
 	SkewTransform::CenterYProperty = DependencyObject::Register (Type::SKEWTRANSFORM, "CenterY", new Value (0.0));
 	
 	/* Matrix fields */
-	Matrix::M11Property = DependencyObject::Register (Type::MATRIX, "M11", new Value (0.0));
+	Matrix::M11Property = DependencyObject::Register (Type::MATRIX, "M11", new Value (1.0));
 	Matrix::M12Property = DependencyObject::Register (Type::MATRIX, "M12", new Value (0.0));
 	Matrix::M21Property = DependencyObject::Register (Type::MATRIX, "M21", new Value (0.0));
-	Matrix::M22Property = DependencyObject::Register (Type::MATRIX, "M22", new Value (0.0));
+	Matrix::M22Property = DependencyObject::Register (Type::MATRIX, "M22", new Value (1.0));
 	Matrix::OffsetXProperty = DependencyObject::Register (Type::MATRIX, "OffsetX", new Value (0.0));
 	Matrix::OffsetYProperty = DependencyObject::Register (Type::MATRIX, "OffsetY", new Value (0.0));
 
