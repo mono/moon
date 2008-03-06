@@ -1,5 +1,12 @@
 2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.h: Made destructors in objects deriving from EventObject protected,
+	  preventing 'delete obj' and stack-allocation for these objects.
+	
+	* playlist.cpp: Can't delete downloaders anymore, unref it.
+
+2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* animation.h, brush.h, canvas.h, clock.h, collection.h, control.h,
 	  dependencyobject.h, downloader.h, frameworkelement.h, geometry.h,
 	  namescope.h, panel.h, runtime.h, shape.h, stylus.h, text.h, transform.h,

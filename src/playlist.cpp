@@ -35,7 +35,8 @@ Playlist::~Playlist ()
 {
 	entries->Clear (true);
 	delete entries;
-	delete downloader;
+	if (downloader)
+		downloader->unref ();
 }
 
 bool

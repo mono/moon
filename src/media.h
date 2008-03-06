@@ -28,6 +28,9 @@ G_BEGIN_DECLS
 #include "error.h"
 
 class MediaAttribute : public DependencyObject {
+ protected:
+	virtual ~MediaAttribute () {}
+
  public:
 	static DependencyProperty *ValueProperty;
 	
@@ -41,6 +44,9 @@ void media_attribute_set_value (MediaAttribute *attribute, const char *value);
 
 
 class MediaBase : public FrameworkElement {
+ protected:
+	virtual ~MediaBase () {}
+
 public:
 	static DependencyProperty *SourceProperty;
 	static DependencyProperty *StretchProperty;
@@ -64,6 +70,7 @@ double media_base_get_download_progress (MediaBase *media);
 
 
 class Image : public MediaBase {
+private:
 	bool create_xlib_surface;
 	
 	bool CreateSurface (const char *fname);
@@ -89,9 +96,11 @@ class Image : public MediaBase {
 	// pattern caching
 	cairo_pattern_t *pattern;
 
+protected:
+	virtual ~Image ();
+
 public:
 	Image ();
-	virtual ~Image ();
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	
@@ -186,6 +195,9 @@ public:
 
 
 class MediaElement : public MediaBase {
+ protected:
+	virtual ~MediaElement ();
+
 public:
 	enum MediaElementState {
 		Closed,
@@ -284,7 +296,6 @@ public:
 	static int MediaOpenedEvent;
 	
 	MediaElement ();
-	virtual ~MediaElement ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
 	
 	bool AdvanceFrame ();
