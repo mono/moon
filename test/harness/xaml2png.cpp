@@ -163,7 +163,7 @@ write_surface_to_png (cairo_surface_t *s, const char *fname)
 void
 runTest (const char *xaml_file, const char *output_prefix, bool multiple, int delta, int max)
 {
-	Surface *s = new Surface (TEST_WIDTH, TEST_HEIGHT);
+	Surface *s = surface_new (TEST_WIDTH, TEST_HEIGHT);
 	Type::Kind type;
 
 	XamlLoader* loader = new XamlLoader (xaml_file, NULL, s);
@@ -224,20 +224,7 @@ runTest (const char *xaml_file, const char *output_prefix, bool multiple, int de
 	cairo_surface_destroy (surf);
 	cairo_destroy (cr);
 
-	//s->unref ();
-	g_warning ("Unreffing surface here double-frees in the Surface dtor!  FIX IT!");
-
-	// #0  0xb7f1c410 in __kernel_vsyscall ()
-	// #1  0xb6b9edc5 in raise () from /lib/libc.so.6
-	// #2  0xb6ba06a1 in abort () from /lib/libc.so.6
-	// #3  0xb6bd6c0c in __libc_message () from /lib/libc.so.6
-	// #4  0xb6bdc836 in malloc_printerr () from /lib/libc.so.6
-	// #5  0xb6bde4d9 in free () from /lib/libc.so.6
-	// #6  0xb6d93851 in operator delete () from /usr/lib/libstdc++.so.6
-	// #7  0xb7982132 in ~Surface (this=0xbff2feb7) at runtime.cpp:291
-	// #8  0x0804a2eb in EventObject::unref (this=0x8080990) at ./../../src/dependencyobject.h:171
-	// #9  0x08049ed7 in runTest (xaml_file=0xbff31347 "../xaml/test-shape-polyline.xaml", output_prefix=0xbff31368 "test.png", multiple=false, delta=0, max=0) at xaml2png.cpp:227
-	// #10 0x0804a043 in main (argc=Cannot access memory at address 0x0) at xaml2png.cpp:274
+	s->unref ();
 }
 
 int
