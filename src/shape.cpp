@@ -290,7 +290,8 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 		cairo_matrix_scale (&stretch_transform, sw, sh);
 		if (center)
 			cairo_matrix_translate (&stretch_transform, -shape_bounds.w * 0.5, -shape_bounds.h * 0.5);
-		if (vh && vw)
+		
+		if ((vh && vw) || !this->Is (Type::LINE))
 			cairo_matrix_translate (&stretch_transform, -shape_bounds.x, -shape_bounds.y);
 
 		// Double check our math
@@ -1718,21 +1719,9 @@ Polygon::BuildPath ()
 		moon_move_to (path, x1, y1);
 		moon_line_to (path, x2, y2);
 	} else {
-		Stretch stretch = shape_get_stretch (this);
-		switch (stretch) {
-		case StretchNone:
-			moon_move_to (path, points [0].x, points [0].y);
-			for (i = 1; i < count; i++)
-				moon_line_to (path, points [i].x, points [i].y);
-			break;
-		default:
-			double x = points [0].x;
-			double y = points [0].y;
-			moon_move_to (path, 0.0, 0.0);
-			for (i = 1; i < count; i++)
-				moon_line_to (path, points [i].x - x, points [i].y - y);
-			break;
-		}
+		moon_move_to (path, points [0].x, points [0].y);
+		for (i = 1; i < count; i++)
+			moon_line_to (path, points [i].x, points [i].y);
 	}
 	moon_close_path (path);
 }
@@ -1964,21 +1953,9 @@ Polyline::BuildPath ()
 	// 2 data per [move|line]_to
 	path = moon_path_renew (path, count * 2);
 
-	Stretch stretch = shape_get_stretch (this);
-	switch (stretch) {
-	case StretchNone:
-		moon_move_to (path, points [0].x, points [0].y);
-		for (i = 1; i < count; i++)
-			moon_line_to (path, points [i].x, points [i].y);
-		break;
-	default:
-		double x = points [0].x;
-		double y = points [0].y;
-		moon_move_to (path, 0.0, 0.0);
-		for (i = 1; i < count; i++)
-			moon_line_to (path, points [i].x - x, points [i].y - y);
-		break;
-	}
+	moon_move_to (path, points [0].x, points [0].y);
+	for (i = 1; i < count; i++)
+		moon_line_to (path, points [i].x, points [i].y);
 }
 
 void

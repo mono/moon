@@ -1,5 +1,10 @@
 2008-03-05  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp: drop the code that checks stretch when building the
+	paths for polyline and polygon.  Fix the condition for translation.
+
+2008-03-05  Larry Ewing  <lewing@novell.com>
+
 	* shape.h:
 	* shape.cpp: refactor the stretch code slightly and fix the
 	original stretch tests (that passed the harness but are clearly
