@@ -43,7 +43,8 @@ int UIElement::LostFocusEvent = -1;
 void
 UIElement::UpdateBounds (bool force_redraw)
 {
-	add_dirty_element (this, DirtyBounds);
+	if (GetSurface ())
+		GetSurface ()->AddDirtyElement (this, DirtyBounds);
 	force_invalidate_of_new_bounds |= force_redraw;
 }
 
@@ -75,8 +76,16 @@ UIElement::UIElement () : opacityMask(NULL), flags (UIElement::RENDER_VISIBLE | 
 UIElement::~UIElement ()
 {
 	delete dirty_region;
+}
 
-	remove_dirty_element (this);
+void
+UIElement::SetSurface (Surface *s)
+{
+	if (s == NULL && GetSurface()) {
+		/* we're losing our surface, delete ourselves from the dirty list if we're on it */
+		GetSurface()->RemoveDirtyElement (this);
+	}
+	Visual::SetSurface (s);
 }
 
 Rect
@@ -175,13 +184,15 @@ UIElement::DumpHierarchy (UIElement *obj)
 void
 UIElement::UpdateTotalRenderVisibility ()
 {
-	add_dirty_element (this, DirtyRenderVisibility);
+	if (GetSurface())
+		GetSurface()->AddDirtyElement (this, DirtyRenderVisibility);
 }
 
 void
 UIElement::UpdateTotalHitTestVisibility ()
 {
-	add_dirty_element (this, DirtyHitTestVisibility);
+	if (GetSurface())
+		GetSurface ()->AddDirtyElement (this, DirtyHitTestVisibility);
 }
 
 void
@@ -225,7 +236,8 @@ UIElement::ComputeTotalHitTestVisibility ()
 void
 UIElement::UpdateTransform ()
 {
-	add_dirty_element (this, DirtyLocalTransform);
+	if (GetSurface())
+		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
 }
 
 void
@@ -350,11 +362,13 @@ UIElement::Invalidate (Rect r)
 #endif
 
 
-	add_dirty_element (this, DirtyInvalidate);
+	if (GetSurface ()) {
+		GetSurface()->AddDirtyElement (this, DirtyInvalidate);
 
-	dirty_region->Union (r);
+		dirty_region->Union (r);
 
-	Emit (InvalidatedEvent);
+		Emit (InvalidatedEvent);
+	}
 }
 
 void
@@ -363,11 +377,13 @@ UIElement::Invalidate (Region *region)
 	if (!GetRenderVisible () || IS_INVISIBLE (total_opacity))
 		return;
 
-	add_dirty_element (this, DirtyInvalidate);
+	if (GetSurface ()) {
+		GetSurface()->AddDirtyElement (this, DirtyInvalidate);
 
-	dirty_region->Union (region);
+		dirty_region->Union (region);
 
-	Emit (InvalidatedEvent);
+		Emit (InvalidatedEvent);
+	}
 }
 
 void

@@ -190,7 +190,7 @@ SingleMedia::ClearTimeout ()
 	if (advance_frame_timeout_id == 0)
 		return;
 
-	TimeManager::Instance()->RemoveTimeout (advance_frame_timeout_id);
+	element->GetTimeManager()->RemoveTimeout (advance_frame_timeout_id);
 	advance_frame_timeout_id = 0;
 }
 
@@ -493,6 +493,21 @@ MediaElement::~MediaElement ()
 }
 
 void
+MediaElement::SetSurface (Surface *s)
+{
+	// if we previously had a surface and are losing it, we need
+	// to remove our timeout (if we had one)
+	if (s == NULL && GetSurface()) {
+		if (advance_frame_timeout_id != 0) {
+			GetTimeManager()->RemoveTimeout (advance_frame_timeout_id);
+			advance_frame_timeout_id = 0;
+		}
+	}
+
+	UIElement::SetSurface (s);
+}
+
+void
 MediaElement::Reinitialize ()
 {
 	Value *val;
@@ -516,7 +531,7 @@ MediaElement::Reinitialize ()
 	}
 	
 	if (advance_frame_timeout_id != 0) {
-		TimeManager::Instance ()->RemoveTimeout (advance_frame_timeout_id);
+		GetTimeManager()->RemoveTimeout (advance_frame_timeout_id);
 		advance_frame_timeout_id = 0;
 	}
 	
@@ -902,7 +917,7 @@ media_element_open_callback (MediaClosure *closure)
 		memcpy (element->closure, closure, sizeof (MediaClosure));
 		pthread_mutex_unlock (&element->open_mutex);
 		// We need to call TryOpenFinished on the main thread, so 
-		TimeManager::Instance ()->AddTimeout (0, MediaElement::TryOpenFinished, element);
+		element->GetTimeManager()->AddTimeout (0, MediaElement::TryOpenFinished, element);
 		base_unref_delayed (element);
 	}
 	return MEDIA_SUCCESS;

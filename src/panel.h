@@ -31,6 +31,8 @@ class Panel : public FrameworkElement {
 	VisualCollection *GetChildren ();
 	void SetChildren (VisualCollection *col);
 
+	virtual void SetSurface (Surface *s);
+
 	virtual void ComputeBounds ();
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual void RenderChildren (cairo_t *cr, Region *region);

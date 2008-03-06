@@ -208,7 +208,7 @@ public:
 		Stopped,
 		Error
 	};
-	
+
 private:
 	
 	// The current state of the media element.
@@ -297,6 +297,8 @@ public:
 	
 	MediaElement ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
+
+	virtual void SetSurface (Surface *surface);
 	
 	bool AdvanceFrame ();
 	MediaPlayer *mplayer;

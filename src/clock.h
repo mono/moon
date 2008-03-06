@@ -241,107 +241,11 @@ class ManualTimeSource : public TimeSource {
 	TimeSpan current_time;
 };
 
-// our root level time manager (basically the object that registers
-// the gtk_timeout and drives all Clock objects
-class Clock;
-
-class TimeManager : public EventObject {
- public:
-	void Start ();
-	void Shutdown ();
-
-	void Tick ();
-
-	static TimeManager* Instance()
-	{
-		if (_instance == NULL) _instance = new TimeManager ();
-		return _instance;
-	}
-
-	TimeSource *GetSource() { return source; }
-
-	TimeSpan GetCurrentTime ()     { return current_global_time - start_time; }
-	TimeSpan GetCurrentTimeUsec () { return current_global_time_usec - start_time_usec; }
-	TimeSpan GetLastTime ()        { return last_global_time - start_time; }
-
-	void AddChild (Clock *clock);
-	void RemoveChild (Clock *clock);
-
-	guint AddTimeout (guint ms_interval, GSourceFunc func, gpointer timeout_data);
-	void  AddTickCall (void (*func)(gpointer), gpointer tick_data);
-
-	void RemoveTimeout (guint timeout_id);
-
-	void SetMaximumRefreshRate (int hz);
-
-	// Events you can AddHandler to
-	static int UpdateInputEvent;
-	static int RenderEvent;
-
-	virtual Type::Kind GetObjectType () { return Type::TIMEMANAGER; };
-
-	void ListClocks ();
- private:
-	TimeManager ();
-	virtual ~TimeManager ();
-
-	void AddGlibTimeout ();
-	void RemoveGlibTimeout ();
-
-	void RaiseEnqueuedEvents ();
-
-	void RemoveAllRegisteredTimeouts ();
-
-	void InvokeTickCall ();
-
-	static TimeManager *_instance;
-
-	GList *child_clocks; // XXX should we just have a ClockGroup?
-
-	TimeSpan current_global_time;
-	TimeSpan last_global_time;
-	TimeSpan start_time;
-
-	TimeSpan current_global_time_usec;
-	TimeSpan start_time_usec;
-
-	static void tick_callback (EventObject *sender, EventArgs *calldata, gpointer closure);
-	int current_timeout;
-	int max_fps;
-	bool first_tick;
-
-	TimeSpan previous_smoothed;
-
-	enum TimeManagerOp {
-		TIME_MANAGER_UPDATE_CLOCKS = 0x01,
-		TIME_MANAGER_RENDER = 0x02,
-		TIME_MANAGER_TICK_CALL = 0x04,
-		TIME_MANAGER_UPDATE_INPUT = 0x08
-	};
-
-	TimeManagerOp flags;
-
-	TimeSource *source;
-
-	GMutex *tick_call_mutex;
-
-	GList *tick_calls;
-
-	GList *registered_timeouts;
-};
-
-void time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data);
-
-guint time_manager_add_timeout (guint ms_interval, GSourceFunc func, gpointer timeout_data);
-void  time_manager_remove_timeout (guint timeout_id);
-
-void time_manager_list_clocks (void);
-
-
 //
 // Clocks and timelines
 //
 
+class TimeManager;
 class Timeline;
 class TimelineGroup;
 
@@ -358,8 +262,8 @@ class Clock : public DependencyObject {
 
 	ClockGroup* GetParent ()          { return parent_clock; }
 	double      GetCurrentProgress () { return progress; }
-	TimeSpan    GetCurrentTime ()     { return current_time; }
-	TimeSpan    GetLastTime ()        { return last_time; }
+	virtual TimeSpan    GetCurrentTime ()     { return current_time; }
+	virtual TimeSpan    GetLastTime ()        { return last_time; }
 	Timeline*   GetTimeline ()        { return timeline; }
 	Duration    GetNaturalDuration ();
 	bool        GetIsPaused ()        { return is_paused; }
@@ -368,6 +272,7 @@ class Clock : public DependencyObject {
 	void        ClearHasStarted ()    { has_started = false; }
 	bool        GetIsReversed ()      { return !forward; }
 	TimeSpan    GetBeginTime ()       { return begin_time; }
+	TimeManager* GetTimeManager ()    { return time_manager; }
 
 	TimeSpan begin_time;
 
@@ -399,6 +304,7 @@ class Clock : public DependencyObject {
 	virtual void RaiseAccumulatedEvents ();
 	virtual void Tick ();
 	void SetParent (ClockGroup *parent) { parent_clock = parent; }
+	void SetTimeManager (TimeManager *manager) { time_manager = manager; }
 
 	// Events you can AddHandler to
 	static int CurrentTimeInvalidatedEvent;
@@ -447,6 +353,7 @@ class Clock : public DependencyObject {
 
  private:
 
+	TimeManager *time_manager;
 	ClockGroup *parent_clock;
 
 	bool is_paused;
@@ -493,6 +400,86 @@ class ClockGroup : public Clock {
 	TimelineGroup *timeline;
 	bool emitted_complete;
 };
+
+
+// our root level time manager (basically the object that registers
+// the gtk_timeout and drives all Clock objects
+class TimeManager : public EventObject {
+ public:
+	TimeManager ();
+
+	void Start ();
+
+	TimeSource *GetSource() { return source; }
+	ClockGroup *GetRootClock() { return root_clock; }
+
+	virtual TimeSpan GetCurrentTime ()     { return current_global_time - start_time; }
+	virtual TimeSpan GetLastTime ()        { return last_global_time - start_time; }
+	TimeSpan GetCurrentTimeUsec () { return current_global_time_usec - start_time_usec; }
+
+	guint AddTimeout (guint ms_interval, GSourceFunc func, gpointer timeout_data);
+	void  AddTickCall (void (*func)(gpointer), gpointer tick_data);
+
+	void RemoveTimeout (guint timeout_id);
+
+	void SetMaximumRefreshRate (int hz);
+
+	// Events you can AddHandler to
+	static int UpdateInputEvent;
+	static int RenderEvent;
+
+	virtual Type::Kind GetObjectType () { return Type::TIMEMANAGER; };
+
+	void ListClocks ();
+
+ protected:
+	~TimeManager ();
+
+ private:
+
+	TimelineGroup *timeline;
+	ClockGroup *root_clock;
+
+	void SourceTick ();
+
+	void RemoveAllRegisteredTimeouts ();
+
+	void InvokeTickCall ();
+
+	TimeSpan current_global_time;
+	TimeSpan last_global_time;
+	TimeSpan start_time;
+
+	TimeSpan current_global_time_usec;
+	TimeSpan start_time_usec;
+
+	static void source_tick_callback (EventObject *sender, EventArgs *calldata, gpointer closure);
+	int current_timeout;
+	int max_fps;
+	bool first_tick;
+
+	TimeSpan previous_smoothed;
+
+	enum TimeManagerOp {
+		TIME_MANAGER_UPDATE_CLOCKS = 0x01,
+		TIME_MANAGER_RENDER = 0x02,
+		TIME_MANAGER_TICK_CALL = 0x04,
+		TIME_MANAGER_UPDATE_INPUT = 0x08
+	};
+
+	TimeManagerOp flags;
+
+	TimeSource *source;
+
+	GMutex *tick_call_mutex;
+
+	GList *tick_calls;
+
+	GList *registered_timeouts;
+};
+
+void time_manager_add_tick_call (TimeManager *manager, void (*func)(gpointer), gpointer tick_data);
+void time_manager_list_clocks   (TimeManager *manager);
 
 
 

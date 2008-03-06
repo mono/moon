@@ -35,6 +35,23 @@ Panel::SetChildren (VisualCollection *col)
 	SetValue (Panel::ChildrenProperty, col);
 }
 
+void
+Panel::SetSurface (Surface *s)
+{
+	UIElement::SetSurface (s);
+
+	VisualCollection *children = GetChildren ();
+	Collection::Node *cn;
+
+	if (children != NULL) {
+		cn = (Collection::Node *) children->list->First ();
+		for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
+			UIElement *item = (UIElement *) cn->obj;
+			item->SetSurface (s);
+		}
+	}
+}
+
 void 
 panel_child_add (Panel *panel, UIElement *child)
 {

@@ -1,3 +1,45 @@
+2008-03-06  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h, clock.cpp: some changes to make TimeManager a
+	per-surface item, instead of a singleton/global.  The time manager
+	creates a root clock group, just like Surface used to, which is
+	the parent of all storyboards for a surface.
+	
+	* dirty.h, dirty.cpp: remove the method prototypes and globals -
+	switch everything to be Surface:: methods.
+	
+	* runtime.h, runtime.cpp: get rid of our ClockGroup and Timeline
+	for the root clock, and create a TimeManager instead.  Also, add
+	the dirty methods/fields to Surface, even though the
+	implementation still lives in dirty.cpp.  Also, call
+	toplevel->SetSurface(NULL) early in our dtor so that elements can
+	react before, e.g., the time manager has been destroyed.
+
+	* media.h, media.cpp: use the surface's TimeManager instead of a
+	global one.  Also override SetSurface so we can tell if we're
+	losing access to it, and remove our timeout accordingly.
+
+	* mplayer.cpp: use the media element's TimeManager.
+
+	* visual.h, visual.cpp: add GetTimeManager() method, which just
+	does GetSurface()->GetTimeManager().
+
+	* dependencyobject.cpp (base_unref_delayed): as much as I hate to
+	do this, use a g_idle instead of a tick call here, since we have
+	no access to the surface.
+
+	* animation.cpp (Storyboard::Begin): the surface no longer has the
+	root clock group, the surface's TimeManager does.
+
+	* panel.h, panel.cpp (SetSurface): recursively call SetSurface on
+	our children.
+
+	* uielement.h, uielement.cpp: translate global dirty calls into
+	surface calls, and override SetSurface to remove ourselves from
+	the dirty list if we're losing our surface.
+
+	* eventargs.cpp: translate global dirty calls into surface calls.
+	
 2008-03-06  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/clock.cpp: In ClockGroup Clamp the time *before* ticking on

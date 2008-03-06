@@ -226,16 +226,14 @@ typedef struct {
 	gpointer data;
 } TickCall;
 
-TimeManager* TimeManager::_instance = NULL;
 int TimeManager::UpdateInputEvent = -1;
 int TimeManager::RenderEvent = -1;
 
 TimeManager::TimeManager ()
-  : child_clocks (NULL),
-    current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
-    max_fps (MAXIMUM_FPS),
-    flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
-    tick_calls (NULL)
+    : current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
+      max_fps (MAXIMUM_FPS),
+      flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
+      tick_calls (NULL)
 {
 	if (moonlight_flags & RUNTIME_INIT_MANUAL_TIMESOURCE)
 		source = new ManualTimeSource();
@@ -244,23 +242,46 @@ TimeManager::TimeManager ()
 
 	start_time = source->GetNow ();
 	start_time_usec = start_time / 10;
-	source->AddHandler (TimeSource::TickEvent, tick_callback, this);
+	source->AddHandler (TimeSource::TickEvent, source_tick_callback, this);
 
 	tick_call_mutex = g_mutex_new ();
 	registered_timeouts = NULL;
 	first_tick = true;
+
+	timeline = new ParallelTimeline();
+	timeline->SetDuration (Duration::Forever);
+	root_clock = new ClockGroup (timeline);
+	char *name = g_strdup_printf ("Surface clock group for time manager (%p)", this);
+	root_clock->SetValue(DependencyObject::NameProperty, name);
+	g_free (name);
+	root_clock->SetTimeManager (this);
 }
 
 TimeManager::~TimeManager ()
 {
 	g_mutex_free (tick_call_mutex);
 	tick_call_mutex = NULL;
+
+	source->RemoveHandler (TimeSource::TickEvent, source_tick_callback, this);
+	source->unref ();
+	source = NULL;
+
+	timeline->unref ();
+	timeline = NULL;
+
+	root_clock->unref ();
+	root_clock = NULL;
+
+	RemoveAllRegisteredTimeouts ();
 }
 
 void
 TimeManager::SetMaximumRefreshRate (int hz)
 {
 	max_fps = hz;
+	current_timeout = FPS_TO_DELAY (hz);
+	source->SetTimerFrequency (current_timeout);
+	first_tick = true;
 }
 
 void
@@ -273,32 +294,9 @@ TimeManager::Start()
 }
 
 void
-TimeManager::Shutdown ()
+TimeManager::source_tick_callback (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	source->unref ();
-
-        GList *node = child_clocks;
-        GList *next;
-	
-	while (node != NULL) {
-		next = node->next;
-		((Clock*)node->data)->unref ();
-		g_list_free_1 (node);
-		node = next;
-	}
-	
-	RemoveAllRegisteredTimeouts ();
-
-	child_clocks = NULL;
-	
-	_instance->unref ();
-	_instance = NULL;
-}
-
-void
-TimeManager::tick_callback (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	((TimeManager *) closure)->Tick ();
+	((TimeManager *) closure)->SourceTick ();
 }
 
 void
@@ -323,7 +321,7 @@ TimeManager::InvokeTickCall ()
 }
 
 void
-TimeManager::Tick ()
+TimeManager::SourceTick ()
 {
 	STARTTICKTIMER (tick, "TimeManager::Tick");
 	TimeSpan pre_tick = source->GetNow();
@@ -331,19 +329,11 @@ TimeManager::Tick ()
 		STARTTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 		current_global_time = source->GetNow();
 		current_global_time_usec = current_global_time / 10;
-		// loop over all toplevel clocks, updating their time (and
-		// triggering them to queue up their events) using the
-		// value of current_global_time...
 
-		for (GList *l = child_clocks; l; l = l->next) {
-			Clock *c = (Clock*)l->data;
-			if (c->GetClockState() != Clock::Stopped) {
-				c->Tick ();
-			}
-		}
+		root_clock->Tick ();
 	
 		// ... then cause all clocks to raise the events they've queued up
-		RaiseEnqueuedEvents ();
+		root_clock->RaiseAccumulatedEvents ();
 		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 	}
 
@@ -356,12 +346,6 @@ TimeManager::Tick ()
 	if (flags & TIME_MANAGER_RENDER) {
 	  //	  fprintf (stderr, "rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
-		STARTTIMER (tick_dirty, "TimeManager::Tick - Dirty");
-		GDK_THREADS_ENTER ();
-		process_dirty_elements ();
-		GDK_THREADS_LEAVE ();
-		ENDTIMER (tick_dirty, "TimeManager::Tick - Dirty");
-
 		Emit (RenderEvent);
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
@@ -372,7 +356,7 @@ TimeManager::Tick ()
 		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 	}
 
-	//	time_manager_list_clocks ();
+	//ListClocks ();
 
 	ENDTICKTIMER (tick, "TimeManager::Tick");
 	TimeSpan post_tick = source->GetNow();
@@ -407,18 +391,21 @@ TimeManager::Tick ()
 	
 	
 	int suggested_timeout = current_smoothed / 10000;
-	if (suggested_timeout < FPS_TO_DELAY (max_fps))
-		suggested_timeout= FPS_TO_DELAY (max_fps);
-	else if (suggested_timeout > FPS_TO_DELAY (MINIMUM_FPS))
+	if (suggested_timeout < FPS_TO_DELAY (max_fps)) {
+		suggested_timeout = FPS_TO_DELAY (max_fps);
+	}
+	else if (suggested_timeout > FPS_TO_DELAY (MINIMUM_FPS)) {
 		suggested_timeout = FPS_TO_DELAY (MINIMUM_FPS);
+	}
 
-	//	printf ("new timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
-	
+// 	printf ("suggested timeout is %dms (%.2ffps)\n", suggested_timeout, DELAY_TO_FPS (suggested_timeout));
+// 	printf ("current timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
+
 	if (ABS(suggested_timeout - current_timeout) > TIMEOUT_ERROR_DELTA) {
 		source->SetTimerFrequency (suggested_timeout);
 		current_timeout = suggested_timeout;
 	}
-
+	
 	previous_smoothed = current_smoothed;
 
 #if SHOW_SMOOTHING_COST
@@ -430,12 +417,6 @@ TimeManager::Tick ()
 #endif
 
 	last_global_time = current_global_time;
-}
-
-void
-TimeManager::RaiseEnqueuedEvents ()
-{
-	clock_list_foreach (child_clocks, CallRaiseAccumulatedEvents);
 }
 
 guint
@@ -464,18 +445,6 @@ TimeManager::RemoveAllRegisteredTimeouts ()
 	registered_timeouts = NULL;
 }
 
-guint
-time_manager_add_timeout (guint ms_interval, GSourceFunc func, gpointer timeout_data)
-{
-	return TimeManager::Instance ()->AddTimeout (ms_interval, func, timeout_data);
-}
-
-void
-time_manager_remove_timeout (guint timeout_id)
-{
-	return TimeManager::Instance ()->RemoveTimeout (timeout_id);
-}
-
 void
 TimeManager::AddTickCall (void (*func)(gpointer), gpointer tick_data)
 {
@@ -488,25 +457,9 @@ TimeManager::AddTickCall (void (*func)(gpointer), gpointer tick_data)
 }
 
 void
-time_manager_add_tick_call (void (*func)(gpointer), gpointer tick_data)
+time_manager_add_tick_call (TimeManager *manager, void (*func)(gpointer), gpointer tick_data)
 {
-	TimeManager::Instance ()->AddTickCall (func, tick_data);
-}
-
-void
-TimeManager::AddChild (Clock *child)
-{
-	child->GetNaturalDuration(); // ugh
-
-	child_clocks = g_list_append (child_clocks, child);
-	child->ref ();
-}
-
-void
-TimeManager::RemoveChild (Clock *child)
-{
-	child_clocks = g_list_remove (child_clocks, child);
-	child->unref ();
+	manager->AddTickCall (func, tick_data);
 }
 
 static void
@@ -566,23 +519,19 @@ TimeManager::ListClocks()
 	printf ("Currently registered clocks:\n");
 	printf ("============================\n");
 
-	for (GList *l = child_clocks; l; l = l->next) {
-// 		if (((Clock*)l->data)->GetClockState () != Clock::Filling)
-			output_clock ((Clock*)l->data, 2);
-	}
+	output_clock (root_clock, 2);
 }
 
 void
-time_manager_list_clocks (void)
+time_manager_list_clocks (TimeManager *manager)
 {
-	TimeManager::Instance()->ListClocks();
+	manager->ListClocks();
 }
 
 int Clock::CurrentTimeInvalidatedEvent = -1;
 int Clock::CurrentStateInvalidatedEvent = -1;
 int Clock::CurrentGlobalSpeedInvalidatedEvent = -1;
 int Clock::CompletedEvent = -1;
-
 
 Clock::Clock (Timeline *tl)
   : calculated_natural_duration (false),
@@ -592,6 +541,7 @@ Clock::Clock (Timeline *tl)
     current_time (0), last_time (0),
     seeking (false), seek_time (0),
     speed (1.0),
+    time_manager (NULL),
     parent_clock (NULL),
     is_paused (false),
     has_started (false),
@@ -610,19 +560,13 @@ Clock::Clock (Timeline *tl)
 TimeSpan
 Clock::GetParentTime ()
 {
-	if (parent_clock)
-		return parent_clock->GetCurrentTime();
-	else
-		return TimeManager::Instance()->GetCurrentTime();
+	return parent_clock ? parent_clock->GetCurrentTime() : time_manager ? time_manager->GetCurrentTime () : 0LL;
 }
 
 TimeSpan
 Clock::GetLastParentTime ()
 {
-	if (parent_clock)
-		return parent_clock->GetLastTime();
-	else
-		return TimeManager::Instance()->GetLastTime();
+	return parent_clock ? parent_clock->GetLastTime() : time_manager ? time_manager->GetLastTime () : 0LL;
 }
 
 Duration
@@ -970,7 +914,6 @@ Clock::Stop ()
 	SetClockState (Clock::Stopped);
 	was_stopped = true;
 }
-
 
 
 ClockGroup::ClockGroup (TimelineGroup *timeline)

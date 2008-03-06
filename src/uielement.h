@@ -103,6 +103,8 @@ public:
 	virtual void UpdateTotalHitTestVisibility ();
 	void ComputeTotalHitTestVisibility ();
 
+	virtual void SetSurface (Surface *s);
+
 	//
 	// UpdateTransform:
 	//   Updates the absolute_xform for this item

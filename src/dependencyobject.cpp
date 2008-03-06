@@ -280,13 +280,14 @@ static GStaticRecMutex delayed_unref_mutex = G_STATIC_REC_MUTEX_INIT;
 static bool drain_tick_call_added = false;
 static GSList *pending_unrefs = NULL;
 
-static void
-drain_unrefs_tick_call (gpointer data)
+static gboolean
+drain_unrefs_idle_call (gpointer data)
 {
 	g_static_rec_mutex_lock (&delayed_unref_mutex);
 	drain_unrefs ();
 	drain_tick_call_added = false;
 	g_static_rec_mutex_unlock (&delayed_unref_mutex);
+	return FALSE;
 }
 
 void
@@ -303,7 +304,7 @@ base_unref_delayed (EventObject *obj)
 #endif
 
 	if (!drain_tick_call_added) {
-		time_manager_add_tick_call (drain_unrefs_tick_call, NULL);
+		g_idle_add (drain_unrefs_idle_call, NULL);
 		drain_tick_call_added = true;
 	}
 	g_static_rec_mutex_unlock (&delayed_unref_mutex);

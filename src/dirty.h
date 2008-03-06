@@ -7,6 +7,9 @@
  * 
  */
 
+#ifndef __DIRTY_H__
+#define __DIRTY_H__
+
 enum DirtyType {
 	// DirtyTransform
 	//
@@ -49,7 +52,4 @@ enum DirtyType {
 	DirtyInDownDirtyList = 0x100
 };
 
-void add_dirty_element (UIElement *element, DirtyType dirt);
-void remove_dirty_element (UIElement *element);
-void process_dirty_elements ();
-bool is_anything_dirty ();
+#endif // __DIRTY_H__

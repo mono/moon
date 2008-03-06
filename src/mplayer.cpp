@@ -247,7 +247,7 @@ media_player_callback (MediaClosure *closure)
 		player->video->queue->Push (new Packet (frame));
 		if (player->load_frame) {
 			// We need to call LoadVideoFrame on the main thread
-			TimeManager::Instance ()->AddTimeout (0, load_video_frame, player);
+			player->element->GetTimeManager()->AddTimeout (0, load_video_frame, player);
 		}
 		return MEDIA_SUCCESS;
 	case MediaTypeAudio: 
@@ -512,7 +512,7 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = GetTargetPts ();	
 	} else {
 		// no audio to sync to
-		uint64_t now = TimeSpan_ToPts (TimeManager::Instance ()->GetCurrentTime ());
+		uint64_t now = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
 		uint64_t elapsed_pts = now - start_time;
 		
 		target_pts = elapsed_pts;
@@ -677,16 +677,16 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	
 	PauseInternal (false);
 	
-	start_time = TimeSpan_ToPts (TimeManager::Instance ()->GetCurrentTime ());
+	start_time = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
 	seeking = false;
 	
 	media_player_enqueue_frames (this, 1, 1);
 		
 	if (HasVideo ()) {
 		// TODO: Calculate correct framerate (in the pipeline)
-		return TimeManager::Instance ()->AddTimeout (MAX (video->stream->msec_per_frame, 1000 / 60), callback, user_data);
+		return element->GetTimeManager()->AddTimeout (MAX (video->stream->msec_per_frame, 1000 / 60), callback, user_data);
 	} else {
-		return TimeManager::Instance ()->AddTimeout (33, callback, user_data);
+		return element->GetTimeManager()->AddTimeout (33, callback, user_data);
 	}
 	
 	return 0;
@@ -863,7 +863,7 @@ MediaPlayer::Seek (uint64_t pts)
 		
 		if (resume) {
 			// Resume playback
-			start_time = TimeManager::Instance ()->GetCurrentTime ();
+			start_time = element->GetTimeManager()->GetCurrentTime ();
 			
 			PauseInternal (false);
 		}

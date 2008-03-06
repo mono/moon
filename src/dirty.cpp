@@ -15,9 +15,6 @@
 #include "dirty.h"
 #include "list.h"
 
-static List *down_dirty = NULL;
-static List *up_dirty = NULL;
-
 class DirtyNode : public List::Node {
 public:
 	DirtyNode (UIElement *element) 
@@ -28,22 +25,14 @@ public:
 };
 
 bool
-is_anything_dirty ()
+Surface::IsAnythingDirty ()
 {
-	if (!down_dirty)
-		return false;
-
 	return !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
 }
 
 void
-add_dirty_element (UIElement *element, DirtyType dirt)
+Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 {
-	if (!down_dirty) {
-		down_dirty = new List ();
-		up_dirty = new List ();
-	}
-
   // XXX this should really be here...
 //	if (element->dirty_flags & dirt)
 //		return;
@@ -68,11 +57,8 @@ add_dirty_element (UIElement *element, DirtyType dirt)
 }
 
 void
-remove_dirty_element (UIElement *element)
+Surface::RemoveDirtyElement (UIElement *element)
 {
-	if (!down_dirty)
-		return;
-
 	if (element->up_dirty_node) {
 		up_dirty->Remove (element->up_dirty_node); // deletes the node
 		element->up_dirty_node = NULL;
@@ -104,12 +90,9 @@ remove_dirty_element (UIElement *element)
 **
 */
 
-static void
-process_down_dirty_elements ()
+void
+Surface::ProcessDownDirtyElements ()
 {
-	if (!down_dirty)
-		return;
-
 	/* push down the transforms opacity, and visibility changes first */
 	while (DirtyNode *node = (DirtyNode*)down_dirty->First()) {
 		UIElement* el = (UIElement*)node->element;
@@ -196,7 +179,7 @@ process_down_dirty_elements ()
 						// we don't call n->obj->UpdateTransform here
 						// because that causes the element to recompute
 						// its local transform as well, which isn't necessary.
-						add_dirty_element ((UIElement *) n->obj, DirtyTransform);
+						AddDirtyElement ((UIElement *) n->obj, DirtyTransform);
 						n = (Collection::Node *) n->next;
 					}
 				}
@@ -204,7 +187,7 @@ process_down_dirty_elements ()
 			else if (el->Is (Type::CONTROL)) {
 				Control *c = (Control*)el;
 				if (c->real_object)
-					add_dirty_element (c->real_object, DirtyTransform);
+					AddDirtyElement (c->real_object, DirtyTransform);
 			}
 		}
 
@@ -222,12 +205,9 @@ process_down_dirty_elements ()
 ** it's a good idea to call it with a GDK lock held (all gtk callbacks
 ** are automatically protected except for timeouts and idle)
 */
-static void
-process_up_dirty_elements ()
+void
+Surface::ProcessUpDirtyElements ()
 {
-	if (!up_dirty)
-		return;
-
 	while (DirtyNode *node = (DirtyNode*)up_dirty->First()) {
 		UIElement* el = (UIElement*)node->element;
 
@@ -318,8 +298,8 @@ process_up_dirty_elements ()
 }
 
 void
-process_dirty_elements ()
+Surface::ProcessDirtyElements ()
 {
-	process_down_dirty_elements ();
-	process_up_dirty_elements ();
+	ProcessDownDirtyElements ();
+	ProcessUpDirtyElements ();
 }

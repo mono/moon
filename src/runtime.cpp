@@ -182,14 +182,8 @@ Surface::Surface(int w, int h, bool windowless)
 	full_screen = false;
 	can_full_screen = false;
 
-	timeline = new ParallelTimeline();
-	timeline->SetDuration (Duration::Forever);
-	clock_group = new ClockGroup (timeline);
-	char *name = g_strdup_printf ("Surface clock group for surface (%p)", this);
-	clock_group->SetValue(DependencyObject::NameProperty, name);
-	g_free (name);
-
-	TimeManager::Instance()->AddChild (clock_group);
+	time_manager = new TimeManager ();
+	time_manager->Start ();
 
 	full_screen_message = NULL;
 	source_location = NULL;
@@ -219,6 +213,9 @@ Surface::Surface(int w, int h, bool windowless)
 #ifdef DEBUG
 	debug_selected_element = NULL;
 #endif
+
+	up_dirty = new List ();
+	down_dirty = new List ();
 }
 
 Surface::~Surface ()
@@ -237,10 +234,11 @@ Surface::~Surface ()
 	// And I have yet to track what causes this, the stack trace is not 
 	// very useful
 	//
-	TimeManager::Instance()->RemoveHandler (TimeManager::Instance()->RenderEvent, render_cb, this);
-	TimeManager::Instance()->RemoveHandler (TimeManager::Instance()->UpdateInputEvent, update_input_cb, this);
+	time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
+	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 
 	if (toplevel) {
+		toplevel->SetSurface (NULL);
 		toplevel->unref ();
 		toplevel = NULL;
 	}
@@ -261,15 +259,8 @@ Surface::~Surface ()
 		HideFullScreenMessage ();
 	}
 
-	TimeManager::Instance()->RemoveChild (clock_group);
-	clock_group->unref();
-	clock_group = NULL;
-
 	delete input_list;
 	input_list = NULL;
-
-	timeline->unref();
-	timeline = NULL;
 
 	if (source_location) {
 		g_free (source_location);
@@ -290,6 +281,12 @@ Surface::~Surface ()
 	
 	delete background_color;
 	background_color = NULL;
+
+	time_manager->unref ();
+	time_manager = NULL;
+
+	delete up_dirty;
+	delete down_dirty;
 }
 
 void
@@ -485,8 +482,8 @@ Surface::Paint (cairo_t *ctx, Region *region)
 	uielements_rendered_back_to_front = 0;
 #endif
 
-	if (is_anything_dirty())
-		process_dirty_elements();
+	if (IsAnythingDirty())
+		ProcessDirtyElements ();
 
 	bool did_front_to_back = false;
 
@@ -772,9 +769,9 @@ Surface::UpdateFullScreen (bool value)
 	
 	Realloc ();
 
-	TimeManager::Instance()->GetSource()->Stop();
+	time_manager->GetSource()->Stop();
 	Emit (FullScreenChangeEvent);
-	TimeManager::Instance()->GetSource()->Start();
+	time_manager->GetSource()->Start();
 }
 
 void 
@@ -839,6 +836,10 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Surface *s = (Surface *) closure;
 	int64_t now;
+
+	GDK_THREADS_ENTER ();
+	s->ProcessDirtyElements ();
+	GDK_THREADS_LEAVE ();
 
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
 		s->fps_start = get_now ();
@@ -908,14 +909,14 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
 								 root);
 		short rate = XRRConfigCurrentRate (info);
 		printf ("screen refresh rate = %d\n", rate);
- 		TimeManager::Instance()->SetMaximumRefreshRate (rate);
+ 		time_manager->SetMaximumRefreshRate (rate);
 		XRRFreeScreenConfigInfo (info);
 	}
 #endif
 #endif
 	
-	TimeManager::Instance()->AddHandler (TimeManager::Instance()->RenderEvent, render_cb, s);
-	TimeManager::Instance()->AddHandler (TimeManager::Instance()->UpdateInputEvent, update_input_cb, s);
+	s->time_manager->AddHandler (TimeManager::RenderEvent, render_cb, s);
+	s->time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, s);
 	return TRUE;
 }
 
@@ -930,8 +931,8 @@ Surface::unrealized_callback (GtkWidget *widget, gpointer data)
 	}
 
 	s->cairo = s->cairo_buffer;
-	TimeManager::Instance()->RemoveHandler (TimeManager::Instance()->RenderEvent, render_cb, s);
-	TimeManager::Instance()->RemoveHandler (TimeManager::Instance()->UpdateInputEvent, update_input_cb, s);
+	s->time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, s);
+	s->time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, s);
 	return TRUE;
 }
 
@@ -1302,8 +1303,8 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 		return false;
 
 	// FIXME this should probably use mouse event args
-	if (is_anything_dirty())
-		process_dirty_elements();
+	if (IsAnythingDirty())
+		ProcessDirtyElements();
 
 	if (captured) {
 		// if the mouse is captured, the input_list doesn't ever
@@ -1905,8 +1906,6 @@ runtime_init (guint32 flags)
 	Surface::ResizeEvent = t->LookupEvent ("Resize");
 	Surface::FullScreenChangeEvent = t->LookupEvent ("FullScreenChange");
 	Surface::ErrorEvent = t->LookupEvent ("Error");
-
-	TimeManager::Instance()->Start();
 }
 
 //
@@ -1964,7 +1963,6 @@ runtime_shutdown (void)
 	text_destroy ();
 	font_shutdown ();
 	
-	TimeManager::Instance()->Shutdown ();
 	DependencyObject::Shutdown ();
 
 #if OBJECT_TRACKING

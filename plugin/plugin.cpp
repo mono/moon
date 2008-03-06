@@ -356,6 +356,15 @@ PluginInstance::~PluginInstance ()
 	// Remove us from the list.
 	plugin_instances = g_slist_remove (plugin_instances, this->instance);
 
+	if (rootobject)
+		NPN_ReleaseObject ((NPObject*)rootobject);
+
+	if (background)
+		g_free (background);
+
+	delete xaml_loader;
+	xaml_loader = NULL;
+
 	//
 	// The code below was an attempt at fixing this, but we are still getting spurious errors
 	// we might have another source of problems
@@ -367,15 +376,6 @@ PluginInstance::~PluginInstance ()
 		//gdk_display_sync (this->display);
 		//gdk_error_trap_pop ();
 	}
-
-	if (rootobject)
-		NPN_ReleaseObject ((NPObject*)rootobject);
-
-	if (background)
-		g_free (background);
-
-	delete xaml_loader;
-	xaml_loader = NULL;
 
 	if (plugin_unload)
 		plugin_unload (this);
@@ -452,7 +452,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			continue;
 		}
 		
-		if (!g_ascii_strcasecmp (argn [i], "framerate")) {
+		if (!g_ascii_strcasecmp (argn [i], "maxFramerate")) {
 			this->maxFrameRate = atoi (argv [i]);
 			continue;
 		}
@@ -659,7 +659,7 @@ PluginInstance::CreateWindow ()
 
 	UpdateSource ();
 	
-	TimeManager::Instance ()->SetMaximumRefreshRate (maxFrameRate);
+	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
 
 	if (background) {
 		Color *c = color_from_str (background);
@@ -1397,7 +1397,7 @@ PluginInstance::setMaxFrameRate (int value)
 {
 	this->maxFrameRate = value;
 	
-	TimeManager::Instance ()->SetMaximumRefreshRate (MAX (value, 64));
+	surface->GetTimeManager()->SetMaximumRefreshRate (MAX (value, 64));
 }
 
 int32

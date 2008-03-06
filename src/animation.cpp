@@ -302,7 +302,7 @@ Storyboard::Begin ()
 			g_warning ("unable to find surface to add storyboard clock to.");
 			return;
 		}
-		group = surface->GetClockGroup();
+		group = surface->GetTimeManager()->GetRootClock();
 	}
 
 	// This creates the clock tree for the hierarchy.  if a

@@ -23,6 +23,7 @@ G_BEGIN_DECLS
 #include "point.h"
 #include "uielement.h"
 #include "dependencyobject.h"
+#include "dirty.h"
 #include "value.h"
 #include "type.h"
 #include "list.h"
@@ -57,7 +58,9 @@ enum RuntimeInitFlags {
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK)
 #define RUNTIME_INIT_BROWSER (RUNTIME_INIT_MICROSOFT_CODECS | RUNTIME_INIT_RENDER_FRONT_TO_BACK)
 
+class TimeManager;
 class Surface;
+
 typedef void (* MoonlightInvalidateFunc) (Surface *surface, Rect r, void *user_data);
 typedef void (* MoonlightRenderFunc) (Surface *surface, void *user_data);
 typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
@@ -113,7 +116,7 @@ class Surface : public EventObject {
 	int GetActualWidth () { return width; }
 	int GetActualHeight () { return height; }
 
-	ClockGroup *GetClockGroup () { return clock_group; }
+	TimeManager *GetTimeManager () { return time_manager; }
 
 	virtual Type::Kind GetObjectType () { return Type::SURFACE; };
 	
@@ -199,7 +202,21 @@ class Surface : public EventObject {
 	static gboolean realized_callback (GtkWidget *widget, gpointer data);
 	static gboolean unrealized_callback (GtkWidget *widget, gpointer data);
 
+
+	// bad, but these live in dirty.cpp, not runtime.cpp
+	void AddDirtyElement (UIElement *element, DirtyType dirt);
+	void RemoveDirtyElement (UIElement *element);
+	void ProcessDirtyElements ();
+	bool IsAnythingDirty ();
+
 private:
+	// bad, but these two live in dirty.cpp, not runtime.cpp
+	void ProcessDownDirtyElements ();
+	void ProcessUpDirtyElements ();
+
+	List *down_dirty;
+	List *up_dirty;
+
 	gpointer downloader_context;
 	
 	int normal_width, normal_height;
@@ -272,11 +289,7 @@ private:
 
 	void UpdateFullScreen (bool value);
 
-	// The clock group (toplevel clock) for this surface.
-	// Registered with the TimeManager.  All storyboards created
-	// within this surface are children of this ClockGroup.
-	ClockGroup *clock_group;
-	TimelineGroup *timeline;
+	TimeManager *time_manager;
 
 	int frames;
 
