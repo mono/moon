@@ -186,9 +186,11 @@ struct RepeatBehavior {
 };
 
 class TimeSource : public EventObject {
+ protected:
+	virtual ~TimeSource ();
+
  public:
 	TimeSource ();
-	virtual ~TimeSource ();
 
 	virtual void Start ();
 	virtual void Stop ();
@@ -202,9 +204,11 @@ class TimeSource : public EventObject {
 };
 
 class SystemTimeSource : public TimeSource {
+ protected:
+	virtual ~SystemTimeSource ();
+
  public:
 	SystemTimeSource ();
-	virtual ~SystemTimeSource ();
 
 	virtual void Start ();
 	virtual void Stop ();
@@ -221,9 +225,11 @@ class SystemTimeSource : public TimeSource {
 };
 
 class ManualTimeSource : public TimeSource {
+ protected:
+	virtual ~ManualTimeSource ();
+
  public:
 	ManualTimeSource ();
-	virtual ~ManualTimeSource ();
 
 	virtual TimeSpan GetNow ();
 
@@ -277,7 +283,7 @@ class TimeManager : public EventObject {
 	void ListClocks ();
  private:
 	TimeManager ();
-	~TimeManager ();
+	virtual ~TimeManager ();
 
 	void AddGlibTimeout ();
 	void RemoveGlibTimeout ();
@@ -342,9 +348,11 @@ class TimelineGroup;
 /* our clock is a mixture of the WPF Clock and ClockController
    classes.  as such, all clocks are controllable */
 class Clock : public DependencyObject {
+ protected:
+	virtual ~Clock () {};
+
  public:
 	Clock (Timeline *timeline);
-	virtual ~Clock () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::CLOCK; };
 
@@ -455,9 +463,11 @@ class Clock : public DependencyObject {
 
 
 class ClockGroup : public Clock {
+ protected:
+	virtual ~ClockGroup ();
+
  public:
 	ClockGroup (TimelineGroup *timeline);
-	virtual ~ClockGroup ();
 	virtual Type::Kind GetObjectType () { return Type::CLOCKGROUP; };
 
 	void AddChild (Clock *clock);
@@ -489,6 +499,9 @@ class ClockGroup : public Clock {
 
 
 class Timeline : public DependencyObject {
+ protected:
+	virtual ~Timeline () {}
+
  public:
 	Timeline ();
 	virtual Type::Kind GetObjectType () { return Type::TIMELINE; };
@@ -526,6 +539,9 @@ class Timeline : public DependencyObject {
 
 
 class TimelineCollection : public Collection {
+ protected:
+	virtual ~TimelineCollection () {}
+
  public:
 	TimelineCollection () {}
 	virtual Type::Kind GetObjectType() { return Type::TIMELINE_COLLECTION; }
@@ -536,9 +552,11 @@ class TimelineCollection : public Collection {
 TimelineCollection *timeline_collection_new (void);
 
 class TimelineGroup : public Timeline {
+ protected:
+	virtual ~TimelineGroup ();
+
  public:
 	TimelineGroup ();
-	virtual ~TimelineGroup ();
 	
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEGROUP; };
 
@@ -557,6 +575,9 @@ TimelineGroup *timeline_group_new (void);
 
 
 class ParallelTimeline : public TimelineGroup {
+ protected:
+	virtual ~ParallelTimeline () {}
+
  public:
 	ParallelTimeline () { }
 	virtual Type::Kind GetObjectType () { return Type::PARALLELTIMELINE; };
@@ -567,6 +588,9 @@ class ParallelTimeline : public TimelineGroup {
 ParallelTimeline * parallel_timeline_new ();
 
 class TimelineMarker : public DependencyObject {
+ protected:
+	virtual ~TimelineMarker () {}
+
  public:
 	TimelineMarker () {}
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER; };

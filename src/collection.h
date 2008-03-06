@@ -22,6 +22,9 @@
 // chance to reflect the changes
 //
 class Collection : public DependencyObject {
+ protected:
+	virtual ~Collection ();
+
  public:
 	class ChangeEventArgs : public EventArgs {
 	public:
@@ -45,7 +48,6 @@ class Collection : public DependencyObject {
 	DependencyObject *closure;
 	
 	Collection ();
-	virtual ~Collection ();
 	virtual Type::Kind GetObjectType () { return Type::COLLECTION; };	
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 
@@ -89,9 +91,11 @@ class CollectionIterator {
 };
 
 class VisualCollection : public Collection {
+ protected:
+	virtual ~VisualCollection ();
+
  public:
 	VisualCollection ();
-	virtual ~VisualCollection ();
 	virtual Type::Kind GetObjectType () { return Type::VISUAL_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::VISUAL; }
 
@@ -111,6 +115,9 @@ class VisualCollection : public Collection {
 };
 
 class TriggerCollection : public Collection {
+ protected:
+	virtual ~TriggerCollection () {}
+
  public:
 	TriggerCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
@@ -124,6 +131,9 @@ class TriggerCollection : public Collection {
 };
 
 class TriggerActionCollection : public Collection {
+ protected:
+	virtual ~TriggerActionCollection () {}
+
  public:
 	TriggerActionCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION_COLLECTION; }
@@ -132,6 +142,9 @@ class TriggerActionCollection : public Collection {
 };
 
 class ResourceDictionary : public Collection {
+ protected:
+	virtual ~ResourceDictionary () {}
+
  public:
 	ResourceDictionary () {}
 	virtual Type::Kind GetObjectType () { return Type::RESOURCE_DICTIONARY; }
@@ -139,6 +152,9 @@ class ResourceDictionary : public Collection {
 };
 
 class TimelineMarkerCollection : public Collection {
+ protected:
+	virtual ~TimelineMarkerCollection () {}
+
  public:
 	TimelineMarkerCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
@@ -146,6 +162,9 @@ class TimelineMarkerCollection : public Collection {
 };
 
 class MediaAttributeCollection : public Collection {
+ protected:
+	virtual ~MediaAttributeCollection () {}
+
 public:
 	MediaAttributeCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
@@ -155,6 +174,9 @@ public:
 };
 
 class Inlines : public Collection {
+ protected:
+	virtual ~Inlines () {}
+
  public:
 	Inlines () {}
 	virtual Type::Kind GetObjectType () { return Type::INLINES; }

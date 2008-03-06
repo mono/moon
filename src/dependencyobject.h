@@ -98,6 +98,7 @@ class EventObject {
 		events = NULL;
 	}
 
+protected:
 	virtual ~EventObject ()
 	{
 #if OBJECT_TRACKING
@@ -130,6 +131,7 @@ class EventObject {
 		FreeHandlers ();
 	}
 
+public:
 #if OBJECT_TRACKING
 	void weak_ref (EventObject* base)
 	{
@@ -224,10 +226,12 @@ struct PropertyChangedEventArgs {
 };
 
 class DependencyObject : public EventObject {
+ protected:
+	virtual ~DependencyObject ();
+
  public:
 
 	DependencyObject ();
-	virtual ~DependencyObject ();
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);

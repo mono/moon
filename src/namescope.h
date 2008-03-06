@@ -15,9 +15,11 @@
 #include "list.h"
 
 class NameScope : public DependencyObject {
+ protected:
+	virtual ~NameScope ();
+
  public:
 	NameScope ();
-	virtual ~NameScope ();
 
 	virtual Type::Kind GetObjectType () { return Type::NAMESCOPE; }
 

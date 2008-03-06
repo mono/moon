@@ -20,6 +20,9 @@ G_BEGIN_DECLS
 #include "collection.h"
 
 class Transform : public DependencyObject {
+ protected:
+	virtual ~Transform () {}
+
  public:
 	Transform () : need_update (true) { }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -42,6 +45,9 @@ Transform *transform_new (void);
 void   transform_get_transform (Transform *t, cairo_matrix_t *value);
 
 class RotateTransform : public Transform {
+ protected:
+	virtual ~RotateTransform () {}
+
  public:
 
 	RotateTransform () { }
@@ -65,6 +71,9 @@ void   rotate_transform_set_center_y (RotateTransform *t, double centerY);
 double rotate_transform_get_center_y (RotateTransform *t);
 
 class TranslateTransform : public Transform {
+ protected:
+	virtual ~TranslateTransform () {}
+
  public:
 
 	TranslateTransform () {  }
@@ -84,6 +93,9 @@ double translate_transform_get_y (TranslateTransform *t);
 
 
 class ScaleTransform : public Transform {
+ protected:
+	virtual ~ScaleTransform () {}
+
 public:
 
 	ScaleTransform () {  }
@@ -111,6 +123,9 @@ double scale_transform_get_center_y (ScaleTransform *t);
 
 
 class SkewTransform : public Transform {
+ protected:
+	virtual ~SkewTransform () {}
+
 public:
 
 	SkewTransform () {  }
@@ -139,6 +154,10 @@ double skew_transform_get_center_y (SkewTransform *t);
 class Matrix : public DependencyObject {
 private:
 	cairo_matrix_t matrix;
+
+protected:
+	virtual ~Matrix () {}
+
 public:
 	static DependencyProperty *M11Property;
 	static DependencyProperty *M12Property;
@@ -171,6 +190,9 @@ double matrix_get_offset_y (Matrix *matrix);
 void matrix_set_offset_y (Matrix *matrix, double value);
 
 class MatrixTransform : public Transform {
+ protected:
+	virtual ~MatrixTransform () {}
+
  public:
 	static DependencyProperty* MatrixProperty;
 
@@ -189,6 +211,9 @@ Matrix*	matrix_transform_get_matrix (MatrixTransform *t);
 
 
 class TransformCollection : public Collection {
+ protected:
+	virtual ~TransformCollection () {}
+
  public:
 	TransformCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM_COLLECTION; }
@@ -197,11 +222,13 @@ TransformCollection* transform_collection_new ();
 
 /* @ContentProperty="Children" */
 class TransformGroup : public Transform {
+protected:
+	virtual ~TransformGroup ();
+
 public:
 	static DependencyProperty* ChildrenProperty;
 
 	TransformGroup ();
-	virtual ~TransformGroup ();
 	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
 
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);

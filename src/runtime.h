@@ -65,11 +65,12 @@ typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *us
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
+ protected:
+	virtual ~Surface();
+
  public:
 	// if we're windowed, @d will be NULL.
 	Surface (int width, int height, bool windowless = false);
-
-	virtual ~Surface ();
 
 	// allows you to redirect painting of the surface to an
 	// arbitrary cairo context.

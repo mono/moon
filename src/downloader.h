@@ -33,6 +33,9 @@ typedef void     (*downloader_send_func) (gpointer state);
 typedef void     (*downloader_abort_func) (gpointer state);
 
 class Downloader : public DependencyObject {
+ protected:
+	virtual ~Downloader ();
+
  public:
 	// Properties
 	static DependencyProperty *DownloadProgressProperty;
@@ -47,7 +50,6 @@ class Downloader : public DependencyObject {
 	static int DownloadFailedEvent;
 	
 	Downloader ();
-	virtual ~Downloader ();
 
 	virtual Type::Kind GetObjectType () { return Type::DOWNLOADER; };	
 

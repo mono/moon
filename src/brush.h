@@ -49,6 +49,9 @@ enum GradientSpreadMethod {
 
 
 class Brush : public DependencyObject {
+ protected:
+	virtual ~Brush () {}
+
  public:
 	static DependencyProperty* OpacityProperty;
 	static DependencyProperty* RelativeTransformProperty;
@@ -78,6 +81,9 @@ void		brush_set_transform		(Brush *brush, TransformGroup* transform);
 
 
 class SolidColorBrush : public Brush {
+ protected:
+	virtual ~SolidColorBrush () {}
+
  public:
 	static DependencyProperty* ColorProperty;
 
@@ -102,6 +108,9 @@ void		solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *co
 // note: abstract in C#
 /* @ContentProperty="GradientStops" */
 class GradientBrush : public Brush {
+ protected:
+	virtual ~GradientBrush () {}
+
  public:
 	static DependencyProperty* ColorInterpolationModeProperty;
 	static DependencyProperty* GradientStopsProperty;
@@ -129,6 +138,9 @@ GradientSpreadMethod gradient_brush_get_spread (GradientBrush *brush);
 void gradient_brush_set_spread (GradientBrush *brush, GradientSpreadMethod method);
 
 class TileBrush : public Brush {
+ protected:
+	virtual ~TileBrush () {}
+
  public:
 	static DependencyProperty* AlignmentXProperty;
 	static DependencyProperty* AlignmentYProperty;
@@ -147,11 +159,15 @@ void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 
 
 class ImageBrush : public TileBrush {
-
+ private:
 	static void image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
 	Image *image;
+
+ protected:
+	virtual ~ImageBrush ();
+
  public:
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ImageSourceProperty;
@@ -160,7 +176,6 @@ class ImageBrush : public TileBrush {
 	static int ImageFailedEvent;
 
 	ImageBrush ();
-	virtual ~ImageBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGEBRUSH; }
 
@@ -181,12 +196,16 @@ void	image_brush_set_source			(ImageBrush *brush, DependencyObject *dl, const ch
 cairo_surface_t *image_brush_create_similar     (cairo_t *, int width, int height);
 
 class VideoBrush : public TileBrush {
+private:
 	MediaElement *media;
+
+protected:
+	virtual ~VideoBrush ();
+
 public:
 	static DependencyProperty *SourceNameProperty;
 	
 	VideoBrush ();
-	virtual ~VideoBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::VIDEOBRUSH; }
 	
@@ -203,6 +222,9 @@ void video_brush_set_source_name (VideoBrush *brush, const char *source);
 
 
 class LinearGradientBrush : public GradientBrush {
+ protected:
+	virtual ~LinearGradientBrush () {}
+
  public:
 	static DependencyProperty* EndPointProperty;
 	static DependencyProperty* StartPointProperty;
@@ -221,6 +243,9 @@ void	linear_gradient_brush_set_start_point	(LinearGradientBrush *brush, Point *p
 
 
 class RadialGradientBrush : public GradientBrush {
+ protected:
+	virtual ~RadialGradientBrush () {}
+
  public:
 	static DependencyProperty* CenterProperty;
 	static DependencyProperty* GradientOriginProperty;
@@ -245,6 +270,9 @@ void	radial_gradient_brush_set_radius_y		(RadialGradientBrush *brush, double rad
 
 
 class GradientStopCollection : public Collection {
+ protected:
+	virtual ~GradientStopCollection () {}
+
  public:
 	GradientStopCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP_COLLECTION; }
@@ -256,6 +284,9 @@ GradientStopCollection *gradient_stop_collection_new ();
 
 
 class GradientStop : public DependencyObject {
+ protected:
+	virtual ~GradientStop () {}
+
  public:
 	static DependencyProperty* ColorProperty;
 	static DependencyProperty* OffsetProperty;
@@ -271,9 +302,13 @@ void	gradient_stop_set_offset	(GradientStop *stop, double offset);
 
 
 class VisualBrush : public TileBrush {
+ private:
 	cairo_surface_t *surface;
 
 	static void update_brush (EventObject *, EventArgs *, gpointer closure);
+
+ protected:
+	virtual ~VisualBrush () {}
 
  public:
 	static DependencyProperty* VisualProperty;

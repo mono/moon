@@ -1,3 +1,14 @@
+2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* animation.h, brush.h, canvas.h, clock.h, collection.h, control.h,
+	  dependencyobject.h, downloader.h, frameworkelement.h, geometry.h,
+	  namescope.h, panel.h, runtime.h, shape.h, stylus.h, text.h, transform.h,
+	  trigger.h, uielement.h, visual.h: Made destructors in objects deriving
+	  from EventObject protected, preventing 'delete obj' and stack-allocation
+	  for these objects.
+	* demo.cpp, runtime.cpp: Can't delete a surface anymore, unref it.
+	* dirty.h: Added header.
+
 2008-03-05  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h (RUNTIME_INIT_DESKTOP, RUNTIME_INIT_BROWSER): make

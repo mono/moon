@@ -171,7 +171,7 @@ runTest (const char *xaml_file, const char *output_prefix, bool multiple, int de
 	delete loader;
 
 	if (canvas == NULL) {
-		delete s;
+		s->unref ();
 		return;
 	}
 
@@ -224,7 +224,7 @@ runTest (const char *xaml_file, const char *output_prefix, bool multiple, int de
 	cairo_surface_destroy (surf);
 	cairo_destroy (cr);
 
-	delete s;
+	s->unref ();
 }
 
 int

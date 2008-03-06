@@ -21,6 +21,9 @@
 // children can use
 //
 class Canvas : public Panel {
+ protected:
+	virtual ~Canvas () {}
+
  public:
 	Canvas ();
 

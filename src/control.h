@@ -17,11 +17,13 @@
 // Control Class
 //
 class Control : public FrameworkElement {
+ protected:
+	virtual ~Control ();
+
  public:
 	FrameworkElement *real_object;
 
 	Control () : real_object (NULL) { };
-	virtual ~Control ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
 

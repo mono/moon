@@ -26,9 +26,10 @@ typedef enum {
 } TabletDeviceType;
 
 class StylusInfo : public DependencyObject {
+ protected:
+	virtual ~StylusInfo () {}
  public:
 	StylusInfo () { }
-	virtual ~StylusInfo () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSINFO; };
 
@@ -43,9 +44,10 @@ bool	stylus_info_get_inverted	(StylusInfo* stylus_info);
 void	stylus_info_set_inverted	(StylusInfo* stylus_info, bool inverted);
 
 class StylusPoint : public DependencyObject {
+ protected:
+	virtual ~StylusPoint () {}
  public:
 	StylusPoint () { }
-	virtual ~StylusPoint () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT; };
 
@@ -75,9 +77,11 @@ StylusPointCollection *stylus_point_collection_new (void);
 double stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection);
 
 class DrawingAttributes : public DependencyObject {
+ protected:
+	virtual ~DrawingAttributes () {}
+
  public:
 	DrawingAttributes () { }
-	virtual ~DrawingAttributes () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::DRAWINGATTRIBUTES; };
 
@@ -101,10 +105,11 @@ double	drawing_attributes_get_width (DrawingAttributes* da);
 void	drawing_attributes_set_width (DrawingAttributes* da, double width);
 
 class Stroke : public DependencyObject {
+ protected:
+	virtual ~Stroke () {}
  public:
 	Stroke ();
-	virtual ~Stroke () { };
-	
+
 	virtual Type::Kind GetObjectType () { return Type::STROKE; };
 
 	Rect GetBounds ();
@@ -141,6 +146,9 @@ void                   stroke_get_bounds (Stroke *stroke, Rect* bounds);
 bool                   stroke_hit_test (Stroke *stroke, StylusPointCollection *stylusPointCollection);
 
 class StrokeCollection : public Collection {
+ protected:
+	virtual ~StrokeCollection () {}
+
  public:
 	StrokeCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
@@ -156,9 +164,11 @@ StrokeCollection *stroke_collection_hit_test (StrokeCollection *col, StylusPoint
 
 
 class InkPresenter : public Canvas {
+ protected:
+	virtual ~InkPresenter () {}
+
  public:
 	InkPresenter ();
-	virtual ~InkPresenter () { };
 	
 	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };
 

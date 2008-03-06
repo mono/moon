@@ -27,6 +27,9 @@ void text_init (void);
 void text_destroy (void);
 
 class Inline : public DependencyObject {
+ protected:
+	virtual ~Inline ();
+
  public:
 	static DependencyProperty *FontFamilyProperty;
 	static DependencyProperty *FontSizeProperty;
@@ -45,7 +48,6 @@ class Inline : public DependencyObject {
 	bool autogen;
 	
 	Inline ();
-	virtual ~Inline ();
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual Value *GetDefaultValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -75,6 +77,9 @@ void inline_set_text_decorations (Inline *inline_, TextDecorations value);
 
 
 class LineBreak : public Inline {
+protected:
+	virtual ~LineBreak () {}
+
 public:
 	LineBreak () { }
 	virtual Type::Kind GetObjectType () { return Type::LINEBREAK; };
@@ -85,6 +90,9 @@ LineBreak *line_break_new (void);
 
 /* @ContentProperty="Text" */
 class Run : public Inline {
+protected:
+	virtual ~Run () {}
+
 public:
 	static DependencyProperty *TextProperty;
 	
@@ -148,6 +156,9 @@ class TextBlock : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
+protected:
+	virtual ~TextBlock();
+
 public:
 	static DependencyProperty *ActualHeightProperty;
 	static DependencyProperty *ActualWidthProperty;
@@ -163,7 +174,6 @@ public:
 	static DependencyProperty *TextWrappingProperty;
 	
 	TextBlock ();
-	virtual ~TextBlock ();
 	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; };
 	
 	void SetFontSource (DependencyObject *downloader);
@@ -266,6 +276,9 @@ class Glyphs : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
+protected:
+	virtual ~Glyphs ();
+
 public:
 	static DependencyProperty *FillProperty;
 	static DependencyProperty *FontRenderingEmSizeProperty;
@@ -277,7 +290,6 @@ public:
 	static DependencyProperty *UnicodeStringProperty;
 	
 	Glyphs ();
-	~Glyphs ();
 	
 	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };
 	

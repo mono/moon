@@ -14,6 +14,9 @@
 #include "dependencyobject.h"
 
 class FrameworkElement : public UIElement {
+ protected:
+	virtual ~FrameworkElement () {}
+
  public:
 	static DependencyProperty* HeightProperty;
 	static DependencyProperty* WidthProperty;

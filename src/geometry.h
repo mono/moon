@@ -27,6 +27,9 @@ G_BEGIN_DECLS
 //
 class Geometry : public DependencyObject {
  protected:
+	virtual ~Geometry ();
+
+ protected:
 	enum GeometryFlags {
 		GEOMETRY_NORMAL		= 0x01,	// normal drawing
 		GEOMETRY_DEGENERATE	= 0x02,	// degenerate drawing, use the Stroke brush for filling
@@ -45,7 +48,6 @@ class Geometry : public DependencyObject {
 	static DependencyProperty* TransformProperty;
 
 	Geometry () : flags (GEOMETRY_NORMAL), path (NULL) {};
-	virtual ~Geometry ();
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; };
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -70,6 +72,9 @@ void geometry_set_transform (Geometry *geometry, Transform *transform);
 // GeometryCollection
 //
 class GeometryCollection : public Collection {
+ protected:
+	virtual ~GeometryCollection () {}
+
  public:
 	GeometryCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY_COLLECTION; }
@@ -82,6 +87,9 @@ GeometryCollection* geometry_collection_new ();
 //
 /* @ContentProperty="Children" */
 class GeometryGroup : public Geometry {
+ protected:
+	virtual ~GeometryGroup () {}
+
  public:
 	static DependencyProperty* ChildrenProperty;
 
@@ -102,6 +110,9 @@ void			geometry_group_set_children	(GeometryGroup *geometry_group, GeometryColle
 // EllipseGeometry
 //
 class EllipseGeometry : public Geometry {
+ protected:
+	virtual ~EllipseGeometry () {}
+
  protected:
 	virtual void Build (Path *path);
  public:
@@ -127,6 +138,9 @@ void ellipse_geometry_set_radius_y (EllipseGeometry *ellipse_geometry, double ra
 //
 class LineGeometry : public Geometry {
  protected:
+	virtual ~LineGeometry () {}
+
+ protected:
 	virtual void Build (Path *path);
  public:
 	static DependencyProperty* EndPointProperty;
@@ -147,6 +161,9 @@ void line_geometry_set_start_point (LineGeometry* line_geometry, Point *start_po
 // PathFigureCollection
 //
 class PathFigureCollection : public Collection {
+ protected:
+	virtual ~PathFigureCollection () {}
+
  public:
 	PathFigureCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE_COLLECTION; }
@@ -160,7 +177,9 @@ PathFigureCollection* path_figure_collection_new ();
 /* @ContentProperty="Figures" */
 class PathGeometry : public Geometry {
  protected:
+	virtual ~PathGeometry () {}
 	virtual void Build (Path *path);
+
  public:
 	static DependencyProperty* FiguresProperty;
 
@@ -182,7 +201,9 @@ void			path_geometry_set_figures	(PathFigureCollection *path_geometry, PathFigur
 //
 class RectangleGeometry : public Geometry {
  protected:
+	virtual ~RectangleGeometry () {}
 	virtual void Build (Path *path);
+
  public:
 	static DependencyProperty* RadiusXProperty;
 	static DependencyProperty* RadiusYProperty;
@@ -207,6 +228,9 @@ void rectangle_geometry_set_rect (RectangleGeometry *rectangle_geometry, Rect *r
 // PathSegmentCollection
 //
 class PathSegmentCollection : public Collection {
+ protected:
+	virtual ~PathSegmentCollection () {}
+
  public:
 	PathSegmentCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT_COLLECTION; }
@@ -219,6 +243,9 @@ PathSegmentCollection* path_segment_collection_new ();
 //
 /* @ContentProperty="Segments" */
 class PathFigure : public DependencyObject {
+ protected:
+	virtual ~PathFigure ();
+
  public:
 	static DependencyProperty* IsClosedProperty;
 	static DependencyProperty* SegmentsProperty;
@@ -227,7 +254,6 @@ class PathFigure : public DependencyObject {
 	moon_path *path;
 
 	PathFigure ();
-	virtual ~PathFigure ();
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; };
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -251,6 +277,9 @@ void			path_figure_set_segments	(PathFigure *path_figure, PathSegmentCollection*
 // PathSegment
 //
 class PathSegment : public DependencyObject {
+ protected:
+	virtual ~PathSegment () {}
+
 	virtual void Build (Path *path) {};
  public:
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT; }
@@ -263,6 +292,9 @@ class PathSegment : public DependencyObject {
 // ArcSegment
 //
 class ArcSegment : public PathSegment {
+ protected:
+	virtual ~ArcSegment () {}
+
  public:
 	static DependencyProperty* IsLargeArcProperty;
 	static DependencyProperty* PointProperty;
@@ -292,6 +324,9 @@ void		arc_segment_set_sweep_direction	(ArcSegment *segment, SweepDirection direc
 // BezierSegment
 //
 class BezierSegment : public PathSegment {
+ protected:
+	virtual ~BezierSegment () {}
+
  public:
 	static DependencyProperty* Point1Property;
 	static DependencyProperty* Point2Property;
@@ -315,6 +350,9 @@ void		bezier_segment_set_point3	(BezierSegment *segment, Point *point);
 // LineSegment
 //
 class LineSegment : public PathSegment {
+ protected:
+	virtual ~LineSegment () {}
+
  public:
 	static DependencyProperty* PointProperty;
 
@@ -333,6 +371,9 @@ void		line_segment_set_point	(LineSegment *segment, Point *point);
 //
 
 class PolyBezierSegment : public PathSegment {
+ protected:
+	virtual ~PolyBezierSegment () {}
+
  public:
 	static DependencyProperty* PointsProperty;
 
@@ -351,6 +392,9 @@ void			poly_bezier_segment_set_points	(PolyBezierSegment *segment, Point *points
 //
 
 class PolyLineSegment : public PathSegment {
+ protected:
+	virtual ~PolyLineSegment () {}
+
  public:
 	static DependencyProperty* PointsProperty;
 
@@ -369,6 +413,9 @@ void		poly_line_segment_set_points	(PolyLineSegment *segment, Point *points, int
 //
 
 class PolyQuadraticBezierSegment : public PathSegment {
+ protected:
+	virtual ~PolyQuadraticBezierSegment () {}
+
  public:
 	static DependencyProperty* PointsProperty;
 
@@ -387,6 +434,9 @@ void	poly_quadratic_bezier_segment_set_points	(PolyQuadraticBezierSegment *segme
 //
 
 class QuadraticBezierSegment : public PathSegment {
+ protected:
+	virtual ~QuadraticBezierSegment () {}
+
  public:
 	static DependencyProperty* Point1Property;
 	static DependencyProperty* Point2Property;

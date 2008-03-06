@@ -13,6 +13,9 @@
 #include "dependencyobject.h"
 
 class TriggerAction : public DependencyObject {
+ protected:
+	virtual ~TriggerAction () {}
+
  public:
 	TriggerAction () { };
 
@@ -23,9 +26,11 @@ class TriggerAction : public DependencyObject {
 
 /* @ContentProperty="Actions" */
 class EventTrigger : public DependencyObject {
+ protected:
+	virtual ~EventTrigger ();
+
  public:
 	EventTrigger ();
-	virtual ~EventTrigger ();
 	
 	virtual Type::Kind GetObjectType () { return Type::EVENTTRIGGER; };
 

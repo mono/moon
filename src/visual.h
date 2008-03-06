@@ -16,6 +16,9 @@
 #include "dependencyobject.h"
 
 class Visual : public DependencyObject {
+ protected:
+	virtual ~Visual () {}
+
  public:
 	Visual () : surface (NULL), visual_parent (NULL) {};
 	virtual Type::Kind GetObjectType () { return Type::VISUAL; };	

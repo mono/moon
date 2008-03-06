@@ -117,6 +117,7 @@ text_block_append_run (TextBlock *tb)
 	return run;
 }
 
+#ifdef VIDEO_DEMO
 static MediaElement *
 video_new (char *uri)
 {
@@ -125,6 +126,7 @@ video_new (char *uri)
 	video->Play ();
 	return video;
 }
+#endif
 
 static gboolean
 expose_event (GtkWidget	    *widget,
@@ -491,7 +493,7 @@ main (int argc, char *argv [])
 	gtk_widget_show_all (w);
 	gtk_main ();
 	
-	delete t;
+	t->unref ();
 	runtime_shutdown ();
 	
 	return 0;

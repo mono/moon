@@ -14,17 +14,18 @@
 
 /* @ContentProperty="Children" */
 class Panel : public FrameworkElement {
+ private:
 	//
 	// Contains the last element where the mouse entered
 	//
 	UIElement *mouse_over;
 
  protected:
+	virtual ~Panel ();
 	bool UseBackToFront ();
 
  public:
 	Panel ();
-	virtual ~Panel ();
 	virtual Type::Kind GetObjectType () { return Type::PANEL; }
 
 	VisualCollection *GetChildren ();

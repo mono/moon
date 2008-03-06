@@ -1733,7 +1733,7 @@ surface_new (int width, int height)
 void 
 surface_destroy (Surface *s)
 {
-	delete s;
+	s->unref ();
 }
 
 void

@@ -36,6 +36,8 @@ void calc_line_bounds (double x1, double x2, double y1, double y2, double thickn
 // 
 class Shape : public FrameworkElement {
  protected:
+	virtual ~Shape ();
+
 	Brush *stroke, *fill;
 	Point origin;
 	cairo_surface_t *cached_surface;
@@ -77,7 +79,6 @@ class Shape : public FrameworkElement {
 	static DependencyProperty* StrokeThicknessProperty;
 
 	Shape ();
-	virtual ~Shape ();
 	virtual Type::Kind GetObjectType () { return Type::SHAPE; };
 
 	//
@@ -156,6 +157,7 @@ void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 //
 class Ellipse : public Shape {
  protected:
+	virtual ~Ellipse () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeLargestRectangle ();
  public:
@@ -176,6 +178,7 @@ Ellipse *ellipse_new (void);
 // 
 class Rectangle : public Shape {
  protected:
+	virtual ~Rectangle () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
  public:
 	static DependencyProperty* RadiusXProperty;
@@ -206,6 +209,7 @@ void       rectangle_set_radius_y (Rectangle *rectangle, double value);
 // 
 class Line : public Shape {
  protected:
+	virtual ~Line () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds ();
  public:
@@ -241,6 +245,7 @@ void line_set_y2 (Line *line, double value);
 //
 class Polygon : public Shape {
  protected:
+	virtual ~Polygon () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds ();
  public:
@@ -277,6 +282,7 @@ void		polygon_set_points	(Polygon *polygon, Point* points, int count);
 //
 class Polyline : public Shape {
  protected:
+	virtual ~Polyline () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds ();
  public:
@@ -312,6 +318,7 @@ void		polyline_set_points	(Polyline *polyline, Point* points, int count);
 //
 class Path : public Shape {
  protected:
+	virtual ~Path () {}
 	virtual bool SetupLine (cairo_t* cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds ();
