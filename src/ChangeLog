@@ -1,3 +1,13 @@
+2008-03-06  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/clock.cpp: In ClockGroup Clamp the time *before* ticking on
+	child clocks. Othewise children always get a small delta and keep
+	going beyond the parent Duration bounds. Fixes the contrained
+	storyboard examples.
+
+	Also making the forward/backward ComputeNewTime behavior depend on
+	'forward' instead of out_delta (which can be 0 if hitting bounds).
+
 2008-03-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* transform.cpp: Fix Matrix default values to match identity 

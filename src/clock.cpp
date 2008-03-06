@@ -724,7 +724,7 @@ Clock::ComputeNewTime ()
 
 	TimeSpan duration_timespan = natural_duration.GetTimeSpan();
 
-	if (our_delta > 0) {
+	if (forward) {
 		// time is progressing in the normal way
 
 		if (ret_time >= duration_timespan) {
@@ -1061,6 +1061,7 @@ ClockGroup::Tick ()
 	last_time = current_time;
 
 	SetCurrentTime (Clock::ComputeNewTime());
+	ClampTime ();
 
 	for (GList *l = child_clocks; l; l = l->next) {
 		/* start the child clock here if we need to,
@@ -1078,7 +1079,6 @@ ClockGroup::Tick ()
 #if false
 	if (GetClockState() == Clock::Active)
 #endif
-		ClampTime ();
 
 	CalcProgress ();
 
