@@ -1,5 +1,11 @@
 2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.cpp: Make the output in EventObject::Track print
+	  atomically. Really avoids a lot of confusion if several threads are
+	  printfing at the same time.
+
+2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* debug.cpp: Add a couple of null checks.
 
 2008-03-06  Jeffrey Stedfast  <fejj@novell.com>

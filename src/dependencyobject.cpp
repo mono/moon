@@ -36,8 +36,9 @@ EventObject::Track (const char* done, const char* typname)
 {
 #if OBJECT_TRACK_ID
 	if (id == OBJECT_TRACK_ID) {
-		printf ("%s tracked object of type '%s': %i, current refcount: %i\n", done, typname, id, refcount);
-		PrintStackTrace ();
+		char *st = get_stack_trace ();
+		printf ("%s tracked object of type '%s': %i, current refcount: %i\n%s", done, typname, id, refcount, st);
+		g_free (st);
 	}
 #endif
 }
