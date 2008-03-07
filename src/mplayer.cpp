@@ -234,8 +234,10 @@ media_player_callback (MediaClosure *closure)
 	switch (stream->GetType ()) {
 	case MediaTypeVideo:
 		player->video->queue->Push (new Packet (frame));
-		if (player->load_frame) {
+		if (player->load_frame && player->element->GetTimeManager ()) {
 			// We need to call LoadVideoFrame on the main thread
+			// TODO: We need a way to marshal calls on to the main thread in a thread-safe way.
+			// currently there's a race between the null check above and accessing the timemanager
 			player->element->GetTimeManager()->AddTimeout (0, load_video_frame, player);
 		}
 		return MEDIA_SUCCESS;

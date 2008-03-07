@@ -1,5 +1,9 @@
 2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: Add a null check before accessing any time managers.
+
+2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* brush.cpp, uielement.cpp: Use MediaElement::GetMediaPlayer instead of
 	  accessing the field.
 	* media.cpp, media.h: Use MediaElement::GetMediaPlayer instead of accessing
