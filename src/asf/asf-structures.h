@@ -714,7 +714,7 @@ struct asf_extended_stream_properties : public asf_object {
 		if (payload_extension_system_count == 0)
 			return NULL;
 
-		result = (asf_payload_extension_system**) g_malloc0 (payload_extension_system_count + 1);
+		result = (asf_payload_extension_system**) g_malloc0 (sizeof (asf_payload_extension_system*) * (payload_extension_system_count + 1));
 		current = (asf_payload_extension_system *) (sizeof (asf_extended_stream_properties) + get_stream_names_size () + (char*) this);
 		for (int i = 0; i < payload_extension_system_count; i++) {
 			result [i] = current;

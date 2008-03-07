@@ -1,3 +1,8 @@
+2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-structures.h: Fix crash, we need to allocate the size of the memory,
+	  not the length of the array.
+
 2008-02-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Fix MIN/MAX confusion.
