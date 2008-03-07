@@ -204,6 +204,8 @@ MediaPlayer::~MediaPlayer ()
 gboolean
 load_video_frame (void *user_data)
 {
+	LOG_MEDIAPLAYER ("load_video_frame\n");
+
 	MediaPlayer *player = (MediaPlayer*) user_data;
 	if (player != NULL && player->load_frame)
 		return player->LoadVideoFrame ();
@@ -605,6 +607,8 @@ MediaPlayer::LoadVideoFrame ()
 	Packet *packet;
 	bool cont = false;
 	
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, load_frame: %i, queue size: %i\n", HasVideo (), load_frame, video->queue->Length ());
+
 	if (!HasVideo ())
 		return false;
 	
@@ -612,11 +616,17 @@ MediaPlayer::LoadVideoFrame ()
 		return false;
 	
 	packet = (Packet*) video->queue->Pop ();
+
+	if (packet != NULL && packet->frame->event == FrameEventEOF)
+		return false;
+
 	media_player_enqueue_frames (this, 0, 1);
 	
 	if (packet == NULL)
 		return false;
 	
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %llu, target pts: %llu\n", packet->frame->pts, GetTargetPts ());
+
 	if (packet->frame->pts >= GetTargetPts ()) {
 		load_frame = false;
 		render_frame (this, packet->frame);

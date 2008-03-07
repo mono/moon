@@ -1,3 +1,8 @@
+2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: LoadVideoFrame: if we got the last frame, don't request any
+	  more frames.
+
 2008-03-07  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp: Fix default value for ColorInterpolationMode (js
