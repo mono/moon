@@ -367,9 +367,9 @@ AC_SUBST(MOON_PROG_LIBS)
 if test x$DEBUG = xyes; then
 	DEBUG_OPTIONS="-fno-inline -O1 -g -fno-inline-functions"
 	CFLAGS=`echo $CFLAGS | sed 's/-O2//'`
-	CFLAGS+=$DEBUG_OPTIONS
+	CFLAGS="$DEBUG_OPTIONS $CFLAGS"
 	CXXFLAGS=`echo $CXXFLAGS | sed 's/-O2//'`
-	CXXFLAGS+=$DEBUG_OPTIONS
+	CXXFLAGS="$DEBUG_OPTIONS $CXXFLAGS"
 fi
 
 #CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
