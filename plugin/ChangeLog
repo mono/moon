@@ -1,3 +1,9 @@
+2008-03-08  Fernando Herrera  <fherrera@novell.com>
+
+	* browser-mmsh.cpp:
+	* browser-mmsh.h:
+	* plugin-downloader.cpp: Stop properly the mms download.
+
 2008-03-06  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::Initialize): make sure we look for

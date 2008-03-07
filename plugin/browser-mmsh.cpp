@@ -15,8 +15,9 @@
 #define LE_16(val) (GINT16_FROM_LE (*((u_int16_t*)(val))))
 #define LE_64(val) (GINT64_FROM_LE (*((u_int64_t*)(val))))
 
-#define MMS_DATA   0x44
-#define MMS_HEADER 0x48
+#define MMS_DATA     0x44
+#define MMS_HEADER   0x48
+#define MMS_METADATA 0x4D
 
 // BrowserMmshResponse
 
@@ -109,6 +110,12 @@ get_asf_packet_size (char *asf_header)
 	return 2888;
 }
 
+void
+BrowserMmshResponse::Abort ()
+{
+	this->channel->Cancel (NS_BINDING_ABORTED);
+}
+
 
 
 NS_IMETHODIMP
@@ -154,7 +161,10 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 		mms_packet = read_buffer + 4;
 		packet_size = LE_16 (&mms_packet[6]);
 
-		if (type == MMS_HEADER) {
+		if (type == MMS_METADATA) {
+			
+			/* Get Metadata and figure out file size and so */
+		} else if (type == MMS_HEADER) {
 				asf_packet_size = get_asf_packet_size (mms_packet+8);
 				reader (this, this->context, mms_packet+8, this->size, packet_size - 8);
 				this->size += packet_size - 8;
@@ -213,12 +223,6 @@ BrowserMmshRequest::CreateChannel ()
 	nsEmbedCString meth;
 	meth = this->method;
 	httpchannel->SetRequestMethod (meth);
-}
-
-void
-BrowserMmshRequest::Abort ()
-{
-	channel->Cancel (NS_BINDING_ABORTED);
 }
 
 

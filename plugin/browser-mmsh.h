@@ -57,6 +57,7 @@ public:
 	{
 	}
 
+	void Abort ();
 	void VisitHeaders (HttpHeaderHandler handler);
 	char *GetStatus (int *code);
 
@@ -127,7 +128,6 @@ public:
 		g_free ((gpointer) method);
 	}
 
-	void Abort ();
 	bool GetAsyncResponse (AsyncMmshResponseDataAvailableHandler reader, 
 			       AsyncMmshResponseFinishedHandler handler, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
