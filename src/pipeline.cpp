@@ -98,8 +98,10 @@ Media::~Media ()
 	pthread_detach (queue_thread);
 	
 	g_free (file_or_url);
-	source->unref ();
-	demuxer->unref ();
+	if (source)
+		source->unref ();
+	if (demuxer)
+		demuxer->unref ();
 	delete markers;
 }
 
@@ -1203,7 +1205,10 @@ ASXDemuxerInfo::Supports (IMediaSource *source)
 	if (!source->Peek (buffer, 4))
 		return false;
 	
-	return buffer [0] == '<' && buffer [1] == 'A' && buffer [2] == 'S' && buffer [3] == 'X';
+	return buffer [0] == '<' && 
+			(buffer [1] == 'A' || buffer [1] == 'a') && 
+			(buffer [2] == 'S' || buffer [2] == 's') &&
+			(buffer [3] == 'X' || buffer [3] == 'x');
 }
 
 IMediaDemuxer *

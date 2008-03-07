@@ -1,5 +1,10 @@
 2008-03-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Add a couple of null checks in ~Media. Detect ASX files
+	  case-insensitively.
+
+2008-03-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.h, pipeline.cpp: Refcount IMediaObject, and make dtors in all
 	  derived classes protected.
 	* media.cpp: Update according to pipeline changes. TryOpen: our
