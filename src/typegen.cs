@@ -292,6 +292,10 @@ class gen {
 		text.AppendLine (File.ReadAllText ("type.cpp.in"));
 		text.AppendLine ("void\ntypes_init (void)");
 		text.AppendLine ("{");
+		text.AppendLine ("\tif (types_initialized)");
+		text.AppendLine ("\t\treturn;");
+		text.AppendLine ("\ttypes_initialized = true;\n");
+		text.AppendLine ("");
 		foreach (string c in classes) {
 			string p = null;
 			if (hash.ContainsKey (c))

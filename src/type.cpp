@@ -41,7 +41,7 @@
 #include "xaml.h"
 
 
-
+bool types_initialized = false;
 
 /*
 	Type implementation
@@ -208,6 +208,11 @@ Type::Find (const char *name)
 {
 	Type *result;
 
+	if (!types_initialized) {
+		fprintf (stderr, "Warning: Moonlight type system is accessed after it has shutdown. It will be reinitialized.\n");
+		types_init ();
+	}
+
 	if (types_by_name == NULL)
 		return NULL;
 
@@ -219,6 +224,11 @@ Type::Find (const char *name)
 Type *
 Type::Find (Type::Kind type)
 {
+	if (!types_initialized) {
+		fprintf (stderr, "Warning: Moonlight type system is accessed after it has shutdown. It will be reinitialized.\n");
+		types_init ();
+	}
+
 	return types [type];
 }
 
@@ -256,6 +266,8 @@ Type::Shutdown ()
 		g_hash_table_destroy (types_by_name);
 		types_by_name = NULL;
 	}
+
+	types_initialized = false;
 }
 
 bool
@@ -404,6 +416,11 @@ types_init_register_events (void)
 void
 types_init (void)
 {
+	if (types_initialized)
+		return;
+	types_initialized = true;
+
+
 	Type::RegisterType ("DependencyObject", Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, NULL, NULL);
 	Type::RegisterType ("Animation", Type::ANIMATION, Type::TIMELINE, NULL, NULL);
 	Type::RegisterType ("AnimationClock", Type::ANIMATIONCLOCK, Type::CLOCK, NULL, NULL);

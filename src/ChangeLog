@@ -1,3 +1,8 @@
+2008-03-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* type.cpp.in, typegen.cs, type.cpp: If the type system is accessed when
+	  it's not initialized, print a warning and re-initialize it.
+
 2008-03-08  Fernando Herrera  <fherrera@novell.com>
 
 	* pipeline.cpp:
