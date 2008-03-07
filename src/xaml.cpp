@@ -2295,22 +2295,23 @@ geometry_from_str (const char *str)
 	return pg;
 }
 
-Value *
-value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str)
+bool
+value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v)
 {
 	Type *t = Type::Find (type_name);
 	if (!t)
-		return NULL;
+		return false;
 
-	return value_from_str (t->type, prop_name, str);
+	return value_from_str (t->type, prop_name, str, v);
 }
-		
-// Will return NULL if there are any errors
-Value *
-value_from_str (Type::Kind type, const char *prop_name, const char *str)
+
+#define IS_NULL_OR_EMPTY(str)	(!str || (*str == 0))
+
+bool
+value_from_str (Type::Kind type, const char *prop_name, const char *str, Value** v)
 {
-	Value *v;
 	char *endptr;
+	*v = NULL;
 
 	switch (type) {
 	case Type::BOOL: {
@@ -2320,21 +2321,25 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		else if (!g_strcasecmp ("false", str))
 			b = false;
 		else
-			return NULL;
+			return false;
 
-		v = new Value (b);
+		*v = new Value (b);
 		break;
 	}
 	case Type::DOUBLE: {
 		double d;
 
+		// empty string should not reset default values with 0
+		if (IS_NULL_OR_EMPTY(str))
+			return true;
+
 		errno = 0;
 		d = g_ascii_strtod (str, &endptr);
 
 		if (errno || endptr == str || *endptr)
-			d = 0.0;
+			return false;
 
-		v = new Value (d);
+		*v = new Value (d);
 		break;
 	}
 	case Type::INT64: {
@@ -2344,18 +2349,18 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		l = strtol (str, &endptr, 10);
 
 		if (errno || endptr == str || *endptr)
-			return NULL;
+			return false;
 
-		v = new Value (l, Type::INT64);
+		*v = new Value (l, Type::INT64);
 		break;
 	}
 	case Type::TIMESPAN: {
 		TimeSpan ts;
 
 		if (!time_span_from_str (str, &ts))
-			return NULL;
+			return false;
 
-		v = new Value (ts, Type::TIMESPAN);
+		*v = new Value (ts, Type::TIMESPAN);
 		break;
 	}
 	case Type::INT32: {
@@ -2364,28 +2369,27 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		if (isalpha (str [0]) && prop_name) {
 			i = enums_str_to_int (prop_name, str);
 			if (i == -1)
-				return NULL;
+				return false;
 		} else {
 			errno = 0;
 			long l = strtol (str, &endptr, 10);
 
 			if (errno || endptr == str || *endptr)
-				return NULL;
+				return false;
 
 			i = (int) l;
 		}
 
-		v = new Value (i);
+		*v = new Value (i);
 		break;
 	}
 	case Type::STRING: {
-		//v = new Value (str);
-		return new Value (str);
+		*v = new Value (str);
 		break;
 	}
 	case Type::COLOR: {
 		Color *c = color_from_str (str);
-		v = new Value (*c);
+		*v = new Value (*c);
 		delete c;
 		break;
 	}
@@ -2393,36 +2397,36 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		RepeatBehavior rb = RepeatBehavior::Forever;
 
 		if (!repeat_behavior_from_str (str, &rb))
-			return NULL;
+			return false;
 
-		v = new Value (rb);
+		*v = new Value (rb);
 		break;
 	}
 	case Type::DURATION: {
 		Duration d = Duration::Forever;
 
 		if (!duration_from_str (str, &d))
-			return NULL;
+			return false;
 
-		v = new Value (d);
+		*v = new Value (d);
 		break;
 	}
 	case Type::KEYTIME: {
 		KeyTime kt = KeyTime::Paced;
 
 		if (!keytime_from_str (str, &kt))
-			return NULL;
+			return false;
 
-		v = new Value (kt);
+		*v = new Value (kt);
 		break;
 	}
 	case Type::KEYSPLINE: {
 		KeySpline *ks;
 
 		if (!key_spline_from_str (str, &ks))
-			return NULL;
+			return false;
 
-		v = Value::CreateUnrefPtr (ks);
+		*v = Value::CreateUnrefPtr (ks);
 		break;
 	}
 	case Type::BRUSH:
@@ -2432,7 +2436,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		Color *c = color_from_str (str);
 		solid_color_brush_set_color (scb, c); // copies c
 		delete c;
-		v = new Value (scb);
+		*v = new Value (scb);
 		scb->unref ();
 		break;
 	}
@@ -2440,54 +2444,57 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		Point p;
 
 		if (!point_from_str (str, &p))
-			return NULL;
+			return false;
 
-		v = new Value (p);
+		*v = new Value (p);
 		break;
 	}
 	case Type::RECT: {
 		Rect rect;
 
 		if (!rect_from_str (str, &rect))
-			return NULL;
+			return false;
 
-		v = new Value (rect);
+		*v = new Value (rect);
 		break;
 	}
 	case Type::DOUBLE_ARRAY: {
 		int count = 0;
 		double *doubles = double_array_from_str (str, &count);
 
-		v = new Value (doubles, count);
+		*v = new Value (doubles, count);
 		break;
 	}
 	case Type::POINT_ARRAY:	{
 		int count = 0;
 		Point *points = point_array_from_str (str, &count);
 
-		v = new Value (points, count);
+		*v = new Value (points, count);
 		break;
 	}
 	case Type::TRANSFORM: {
-		Matrix *mv = matrix_from_str (str);
+		if (IS_NULL_OR_EMPTY(str))
+			return true;
 
+		Matrix *mv = matrix_from_str (str);
 		if (!mv)
-			return NULL;
+			return false;
 
 		MatrixTransform *t = new MatrixTransform ();
 		t->SetValue (MatrixTransform::MatrixProperty, Value (mv));
 
-		v = new Value (t);
+		*v = new Value (t);
 		t->unref ();
 		mv->unref ();
 		break;
 	}
 	case Type::MATRIX: {
+		// note: unlike TRANSFORM this creates an empty, identity, matrix for an empty string
 		Matrix *matrix = matrix_from_str (str);
 		if (!matrix)
-			return NULL;
+			return false;
 
-		v = new Value (matrix);
+		*v = new Value (matrix);
 		matrix->unref ();
 		break;
 	}
@@ -2495,17 +2502,18 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str)
 		Geometry *geometry = geometry_from_str (str);
 
 		if (!geometry)
-			return NULL;
+			return false;
 
-		v = new Value (geometry);
+		*v = new Value (geometry);
 		geometry->unref ();
 		break;
 	}
 	default:
-		return NULL;
+		// we don't care about NULL or empty values
+		return IS_NULL_OR_EMPTY(str);
 	}
 
-	return v;
+	return true;
 }
 
 XamlElementInstance *
@@ -2725,13 +2733,15 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 bool
 xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value)
 {
-	Value *v = value_from_str (prop->value_type, prop->name, value);
-
-	if (!v)
+	Value *v = NULL;
+	if (!value_from_str (prop->value_type, prop->name, value, &v))
 		return false;
 
-	obj->SetValue (prop, v);
-	delete v;
+	// it's possible for (a valid) value to be NULL (and we must keep the default value)
+	if (v) {
+		obj->SetValue (prop, v);
+		delete v;
+	}
 	return true;
 }
 
@@ -2856,9 +2866,8 @@ start_parse:
 				return;
 			}
 
-			Value *v = value_from_str (prop->value_type, prop->name, attr [i + 1]);
-
-			if (!v) {
+			Value *v = NULL;
+			if (!value_from_str (prop->value_type, prop->name, attr [i + 1], &v)) {
 				parser_error (p, item->element_name, attr [i], 2024, g_strdup_printf ("Invalid attribute value %s for property %s.",
 						attr [i + 1], attr [i]));
 				if (atchname)
@@ -2866,9 +2875,11 @@ start_parse:
 				return;
 			}
 
-			dep->SetValue (prop, v);
-			delete v;
-			item->MarkPropertyAsSet (prop->name);
+			if (v) {
+				dep->SetValue (prop, v);
+				delete v;
+				item->MarkPropertyAsSet (prop->name);
+			}
 		} else {
 			// This might be a property of a managed object
 			if (p->loader && p->loader->SetAttribute (item->item, attr [i], attr [i + 1])) {

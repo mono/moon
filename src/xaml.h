@@ -34,8 +34,8 @@ DependencyObject  *xaml_create_from_file (XamlLoader* loader, const char *xaml, 
 DependencyObject  *xaml_create_from_str  (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
 bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
 
-Value*      value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str);
-Value*      value_from_str (Type::Kind type, const char *prop_name, const char *str);
+bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v);
+bool        value_from_str (Type::Kind type, const char *prop_name, const char *str, Value **v);
 bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s);
 
 void xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks);

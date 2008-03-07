@@ -1,7 +1,11 @@
-2008-03-07  Sebastien Pouliot  <sebastien@ximian.com>
+2008-03-07  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.cpp: Fix default value for ColorInterpolationMode (js
 	unit tests)
+	* parsertest.cpp: Adapt to API change.
+	* xaml.cpp|h: Change value_from_str[_with_typename] to return a
+	bool since NULL can be a valid Value in some cases (e.g. empty
+	stuff that should not reset the DO default values).
 
 2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
