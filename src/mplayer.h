@@ -16,6 +16,8 @@
 #include <stdint.h>
 #include <pthread.h>
 
+class MediaPlayer;
+
 #include "asf/asf.h"
 #include "pipeline.h"
 
@@ -47,6 +49,8 @@ public:
 	Video *video;
 	
 	bool rendered_frame;
+	
+	gint32 GetTimeoutInterval ();
 
 	// sync
 	pthread_mutex_t target_pts_lock;
@@ -72,11 +76,12 @@ public:
 	cairo_surface_t *GetSurface ();
 	
 	bool Open (Media *media);
+	void Initialize ();
 	void Close ();
 	
 	bool IsPlaying ();
 	bool MediaEnded ();
-	guint Play (GSourceFunc callback, void *user_data);
+	void Play ();
 	bool CanPause ();
 	bool IsPaused ();
 	void Pause ();

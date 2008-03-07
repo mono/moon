@@ -1,5 +1,9 @@
 2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp, asf.h: Implemented SeekToStart.
+
+2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf-structures.h: Fix crash, we need to allocate the size of the memory,
 	  not the length of the array.
 

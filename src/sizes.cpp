@@ -95,7 +95,6 @@ main()
   PRINT_SIZEOF (MediaAttribute);
   PRINT_SIZEOF (MediaBase);
   PRINT_SIZEOF (Image);
-  PRINT_SIZEOF (SingleMedia);
   PRINT_SIZEOF (MediaElement);
   PRINT_SIZEOF (NameScope);
   PRINT_SIZEOF (Panel);

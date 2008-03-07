@@ -11,188 +11,148 @@
 #ifndef __PLAYLIST_H__
 #define __PLAYLIST_H__
 
+class PlaylistContent;
+class PlaylistEntry;
+class Playlist;
+class MediaSource;
+class SingleMedia;
+
 #include <expat.h>
 
 #include "downloader.h"
 #include "media.h"
 #include "pipeline.h"
+#include "error.h"
+#include "dependencyobject.h"
 
-class PlaylistContent {
+class PlaylistNode : public List::Node {
+private:
+	PlaylistEntry *entry;
+
+public:
+	PlaylistNode (PlaylistEntry *entry);
+	virtual ~PlaylistNode ();
+	PlaylistEntry *GetEntry () { return entry; }
+};
+
+class PlaylistContent : public EventObject {
 private:
 	char *base;
 	char *title;
 	char *author;
 	char *abstract;
 	char *copyright;
+
+protected:
+	virtual ~PlaylistContent ();
+
 public:
-	PlaylistContent () : base (NULL), title (NULL), author (NULL), abstract (NULL), copyright (NULL)
-	{
-	}
+	PlaylistContent ();
 
-	~PlaylistContent ()
-	{
-		g_free (base);
-		g_free (title);
-		g_free (author);
-		g_free (abstract);
-	}
-
-	const char *GetBase ()
-	{
-		return base;
-	}
-
-	void SetBase (char *base)
-	{
-		this->base = base;
-	}
-
-	const char *GetTitle ()
-	{
-		return title;
-	}
-
-	void SetTitle (char *title)
-	{
-		this->title = title;
-	}
-
-	const char *GetAuthor ()
-	{
-		return author;
-	}
-
-	void SetAuthor (char *author)
-	{
-		this->author = author;
-	}
-
-	const char *GetAbstract ()
-	{
-		return abstract;
-	}
-
-	void SetAbstract (char *abstract)
-	{
-		this->abstract = abstract;
-	}
-
-	const char *GetCopyright ()
-	{
-		return copyright;
-	}
-
-	void SetCopyright (char *copyright)
-	{
-		this->copyright = copyright;
-	}
+	const char *GetBase () { return base; }
+	const char *GetTitle () { return title; }
+	const char *GetAuthor () { 	return author; }
+	const char *GetAbstract () { return abstract; }
+	const char *GetCopyright () { return copyright; }
+	void SetBase (char *base) { this->base = base; }
+	void SetTitle (char *title) { this->title = title; }
+	void SetAuthor (char *author) { this->author = author; }
+	void SetAbstract (char *abstract) { this->abstract = abstract; }
+	void SetCopyright (char *copyright) { this->copyright = copyright; }
 };
 
-class PlaylistEntry : public List::Node, public PlaylistContent {
+class PlaylistEntry : public PlaylistContent {
 private:
 	char *source_name;
-	gint64 start_time;
-	gint64 duration;
-	MediaSource *source;
+	char *full_source_name;
+
+	TimeSpan start_time;
+	TimeSpan duration;
 	bool play_when_available;
+
+	Playlist *parent;
+	MediaElement *element;
+	Media *media;
+
+	static MediaResult playlist_entry_open_callback (MediaClosure *closure);
+	void Init (Playlist *parent);
+
+protected:
+	virtual ~PlaylistEntry ();
+
 public:
-	PlaylistEntry () : source_name (NULL), start_time (0), duration (0), source (NULL), play_when_available (true)
-	{
-	}
+	PlaylistEntry (MediaElement *element, Playlist *parent, Media *media = NULL);
 
-	~PlaylistEntry ()
-	{
-		delete source;
-		g_free (source_name);
-	}
+	// ASX properties
 
-	const char *GetSourceName ()
-	{
-		return source_name;
-	}
+	const char *GetSourceName () { return source_name; }
+	void SetSourceName (char *source_name) { this->source_name = source_name; }
 
-	void SetSourceName (char *source_name)
-	{
-		this->source_name = source_name;
-	}
+	TimeSpan GetStartTime () { return start_time; }
+	void SetStartTime (TimeSpan start_time) { this->start_time = start_time; }
 
-	gint64 GetStartTime ()
-	{
-		return start_time;
-	}
+	TimeSpan GetDuration () { return duration; }
+	void SetDuration (TimeSpan duration) { this->duration = duration; }
 
-	void SetStartTime (gint64 start_time)
-	{
-		this->start_time = start_time;
-	}
+	// non-ASX properties
 
-	gint64 GetDuration ()
-	{
-		return duration;
-	}
+	Playlist *GetParent () { return parent; }
 
-	void SetDuration (gint64 duration)
-	{
-		this->duration = duration;
-	}
+	MediaElement *GetElement () { return element; }
+	void SetElement (MediaElement *element) { this->element = element; }
 
-	MediaSource *GetSource ()
-	{
-		return source;
-	}
+	Media *GetMedia ();
+	void SetMedia (Media *media);
 
-	void SetSource (MediaSource *source)
-	{
-		this->source = source;
-	}
+	const char *GetFullSourceName ();
+	virtual bool IsPlaylist () { return false; }
 
-	bool PlayWhenAvailable ()
-	{
-		return play_when_available;
-	}
+	// Playback methods
 
-	void PlayWhenAvailable (bool play_when_available)
-	{
-		this->play_when_available = play_when_available;
-	}
+	virtual void Open ();
+	virtual bool Play ();
+	virtual bool Pause ();
+	virtual void Stop ();
+	virtual void PopulateMediaAttributes ();
+	
 };
 
-class Playlist : public MediaSource, public PlaylistContent {
+class Playlist : public PlaylistEntry {
 private:
 	List *entries;
-	PlaylistEntry *current_entry;
-	Downloader *downloader;
+	PlaylistNode *current_node;
+	MediaElement *element;
+	IMediaSource *source;
 
-	bool Parse ();
+	void Init (MediaElement *element);
+
 	bool HasMediaSource ();
-	bool OpenEntry (PlaylistEntry *entry);
-	bool OpenCurrentSource ();
 	void OnMediaEnded ();
 	void OnMediaDownloaded ();
-	FileSource *GetFileSource () { return (FileSource*) GetSource (); }
-
-	void PopulateMediaAttributes ();
 
 	static void on_media_ended (EventObject *sender, EventArgs *calldata, gpointer userdata);
-	static void on_downloader_complete (EventObject *sender, EventArgs *calldata, gpointer userdata);
-	static void on_downloader_data_write (void *buf, int32_t offset, int32_t n, gpointer data);
-	static void on_downloader_size_notify (int64_t size, gpointer data);
-	
+	void MergeWith (PlaylistEntry *entry);
+
 protected:
-	virtual bool OpenInternal ();
-	
-public:
-	Playlist (MediaElement *element, const char *source_name, FileSource *source);
 	virtual ~Playlist ();
 
-	virtual void Play ();
-	virtual void Pause ();
-	virtual void Stop (bool media_ended);
-	virtual void Close ();
+public:
+	Playlist (MediaElement *element, IMediaSource *source);
+	Playlist (MediaElement *element, Media *media);
 
-	void AddEntry (PlaylistEntry *entry);
+	virtual void Open ();
+	virtual bool Play ();
+	virtual bool Pause ();
+	virtual void Stop ();
+	virtual void PopulateMediaAttributes ();
+	
+	virtual void AddEntry (PlaylistEntry *entry);
 
-	static bool IsPlaylistFile (IMediaSource *source);
+	virtual MediaElement *GetElement () { return element; }
+	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetEntry () : NULL; }
+	void ReplaceCurrentEntry (Playlist *entry);
+
+	virtual bool IsPlaylist () { return true; }
 };
 
 class PlaylistParser {
@@ -200,6 +160,10 @@ private:
 	Playlist *playlist;
 	PlaylistEntry *current_entry;
 	XML_Parser parser;
+	IMediaSource *source;
+	MediaElement *element;
+
+	char *current_text;
 
 	enum PlaylistNodeKind {
 		Unknown		= 0,
@@ -220,6 +184,16 @@ private:
 		Title		= 1 << 14,
 	};
 
+	struct PlaylistKind {
+		const char *str;
+		PlaylistNodeKind kind;
+		PlaylistKind (const char *str, PlaylistNodeKind kind)
+		{
+			this->str = str;
+			this->kind = kind;
+		}
+	};
+
 	class KindNode : public List::Node {
 	public:
 		PlaylistNodeKind kind;
@@ -230,12 +204,17 @@ private:
 		}
 	};
 
+	static PlaylistParser::PlaylistKind playlist_kinds [];
 	List *kind_stack;
+
+	void OnStartElement (const char *name, const char **attrs);
+	void OnEndElement (const char *name);
+	void OnText (const char *text, int len);
+	char *GetHrefAttribute (const char **attrs);
 
 	static void on_start_element (gpointer user_data, const char *name, const char **attrs);
 	static void on_end_element (gpointer user_data, const char *name);
 	static void on_text (gpointer user_data, const char *text, int len);
-	static char *get_href_attribute (gpointer user_data, const char **attrs);
 
 	void OnEntry ();
 	void EndEntry ();
@@ -247,14 +226,21 @@ private:
 	void PopCurrentKind ();
 	PlaylistNodeKind GetCurrentKind ();
 	PlaylistNodeKind GetParentKind ();
-	void AssertParentKind (int kind);
+	bool AssertParentKind (int kind);
 
-	void ParsingError ();
+	void ParsingError (ErrorEventArgs *args = NULL);
 public:
-	PlaylistParser (Playlist *list);
+	PlaylistParser (MediaElement *element, IMediaSource *source);
 	~PlaylistParser ();
 
-	bool Parse (const char *text, int len);
+	Playlist *GetPlaylist () { return playlist; }
+
+	bool Parse ();
+	static bool IsASX (IMediaSource *source);
+	bool IsPlaylistFile (IMediaSource *source);
+
+	static PlaylistNodeKind StringToKind (const char *str);
+	static const char *KindToString (PlaylistNodeKind kind);
 };
 
 #endif /* __PLAYLIST_H__ */

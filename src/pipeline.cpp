@@ -52,12 +52,13 @@ DemuxerInfo *Media::registered_demuxers = NULL;
 DecoderInfo *Media::registered_decoders = NULL;
 ConverterInfo *Media::registered_converters = NULL;
  
-Media::Media ()
+Media::Media (MediaElement *element)
 {
 	pthread_attr_t attribs;
 	
+	this->element = element;
+
 	queued_requests = new List ();
-	queue_closure = NULL;
 	
 	file_or_url = NULL;
 	source = NULL;
@@ -99,9 +100,6 @@ Media::~Media ()
 	g_free (file_or_url);
 	delete source;
 	delete demuxer;
-	
-	delete queue_closure;
-	
 	delete markers;
 }
 
@@ -173,6 +171,7 @@ Media::Initialize ()
 	// register stuff
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
+	Media::RegisterDemuxer (new ASXDemuxerInfo ());
 #ifdef INCLUDE_FFMPEG
 	register_ffmpeg ();
 #else
@@ -242,10 +241,19 @@ Media::SeekAsync (uint64_t pts, MediaClosure *closure)
 	
 	MediaWork *work = new MediaWork (WorkTypeSeek);
 	work->data.seek.seek_pts = pts;
-	work->data.seek.closure = closure;
+	work->closure = closure;
 	EnqueueWork (work);
 	
 	return MEDIA_SUCCESS;
+}
+
+MediaResult
+Media::SeekToStart ()
+{
+	if (demuxer == NULL)
+		return MEDIA_FAIL;
+
+	return demuxer->SeekToStart ();
 }
 
 MediaResult
@@ -331,8 +339,8 @@ Media::OpenAsync (IMediaSource *source, MediaClosure *closure)
 {
 	MediaWork *work = new MediaWork (WorkTypeOpen);
 	work->data.open.source = source;
-	work->data.open.closure = closure;
-	closure->media = this;
+	work->closure = closure;
+	work->closure->SetMedia (this);
 	
 	EnqueueWork (work);
 	
@@ -394,6 +402,11 @@ Media::Open (IMediaSource *source)
 	
 	//printf ("Media::Open (): Starting to select codecs...\n");
 	
+	// If the demuxer has no streams (ASXDemuxer for instance)
+	// then just return success.
+	if (demuxer->GetStreamCount () == 0)
+		return result;
+
 	result = MEDIA_FAIL; // Only set to SUCCESS if at least 1 stream can be used
 	
 	// Select codecs for each stream
@@ -538,25 +551,25 @@ Media::WorkerLoop (void *data)
 	return NULL;
 }
 
-#define LOG_FRAMEREADERLOOP(x, ...)// printf (x, __VA_ARGS__);
+#define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
 
 void
 Media::WorkerLoop ()
 {
 	MediaResult result;
 	
-	LOG_FRAMEREADERLOOP ("Media::WorkerLoop ().\n", 0);
+	LOG_FRAMEREADERLOOP ("Media::WorkerLoop ().\n");
 	while (queued_requests != NULL) {
 		MediaWork *node = NULL;
 		
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): entering mutex.\n", 0);
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): entering mutex.\n");
 		
 		// Wait until we have something in the queue
 		pthread_mutex_lock (&queue_mutex);
 		while (queued_requests != NULL && queued_requests->IsEmpty ())
 			pthread_cond_wait (&queue_condition, &queue_mutex);
 		
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got something.\n", 0);
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got something.\n");
 		
 		if (queued_requests != NULL) {
 			// Find the first audio node
@@ -574,60 +587,49 @@ Media::WorkerLoop ()
 		if (node == NULL)
 			continue; // Found nothing, continue waiting.
 		
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processing node.\n");
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processing node %p with type %i.\n", node, node->type);
 		
 		switch (node->type) {
 		case WorkTypeSeek:
 			//printf ("Media::WorkerLoop (): Seeking, current count: %d\n", queued_requests->Length ());
 			result = Seek (node->data.seek.seek_pts);
-			if (node->data.seek.closure != NULL) {
-				node->data.seek.closure->result = result ? MEDIA_SUCCESS : MEDIA_FAIL;
-				node->data.seek.closure->Call ();
-				delete node->data.seek.closure;
-				node->data.seek.closure = NULL;
-			}
 			break;
 		case WorkTypeAudio:
 		case WorkTypeVideo:
 		case WorkTypeMarker:
 			// Now demux and decode what we found and send it to who asked for it
-			result = GetNextFrame (node->data.frame.frame, node->data.frame.states);
-			if (MEDIA_SUCCEEDED (result)) {
-				MediaClosure *closure = new MediaClosure ();
-				memcpy (closure, queue_closure, sizeof (MediaClosure));
-				closure->frame = node->data.frame.frame;
-				closure->Call ();
-				delete closure;
-			}
+			result = GetNextFrame (node->closure->frame, node->data.frame.states);
 			break;
 		case WorkTypeOpen:
 			result = Open (node->data.open.source);
-			if (node->data.open.closure != NULL) {
-				node->data.open.closure->result = result;
-				node->data.open.closure->Call ();
-				delete node->data.open.closure;
-				node->data.open.closure = NULL;
-			}
 			break;
 		}
 		
+		node->closure->result = result;
+		node->closure->Call ();
+		delete node->closure;
+		node->closure = NULL;
+
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processed node %p with type %i, result: %i.\n", node, node->type, result);
+
 		delete node;
 	}
 	
-	LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): exiting.\n", 0);
+	LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): exiting.\n");
 }
 
 void
-Media::GetNextFrameAsync (MediaFrame *frame)
+Media::GetNextFrameAsync (MediaClosure *closure)
 {
-	Media::GetNextFrameAsync (frame, FRAME_DEMUXED | FRAME_DECODED);
+	Media::GetNextFrameAsync (closure, FRAME_DEMUXED | FRAME_DECODED);
 }
 
 void
-Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
+Media::GetNextFrameAsync (MediaClosure *closure, uint16_t states)
 {
 	MoonWorkType type;
-	
+	MediaFrame *frame = closure->frame;
+
 	if (frame == NULL) {
 		AddMessage (MEDIA_INVALID_ARGUMENT, "frame is NULL.");
 		return;
@@ -655,8 +657,8 @@ Media::GetNextFrameAsync (MediaFrame *frame, uint16_t states)
 	}
 	
 	MediaWork *node = new MediaWork (type);
-	node->data.frame.frame = frame;
 	node->data.frame.states = states;
+	node->closure = closure;
 	EnqueueWork (node);
 }
 
@@ -701,6 +703,8 @@ Media::EnqueueWork (MediaWork *work)
 		queued_requests->Append (work);
 	}
 	
+	//printf ("Media::EnqueueWork (%p), count: %i\n", work, queued_requests->Length ());
+
 	pthread_cond_signal (&queue_condition);
 	
 	pthread_mutex_unlock (&queue_mutex);
@@ -781,6 +785,24 @@ ASFDemuxer::Seek (uint64_t pts)
 		result &= readers [i]->Seek (pts);
 	}
 		
+	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
+}
+
+MediaResult
+ASFDemuxer::SeekToStart ()
+{
+	bool result = true;
+
+	if (readers == NULL)
+		return MEDIA_FAIL;
+
+	if (GetStreamCount () <= 0)
+		return MEDIA_SUCCESS;
+
+	for (int i = 0; i < GetStreamCount (); i++) {
+		result &= readers [i]->SeekToStart ();
+	}
+
 	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
@@ -1117,6 +1139,61 @@ ASFDemuxerInfo::Create (Media *media, IMediaSource *source)
 }
 
 
+/*
+ * ASXDemuxer
+ */
+
+ASXDemuxer::ASXDemuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source)
+{
+	playlist = NULL;
+}
+
+ASXDemuxer::~ASXDemuxer ()
+{
+	if (playlist)
+		playlist->unref ();
+}
+
+MediaResult
+ASXDemuxer::ReadHeader ()
+{
+	MediaResult result;
+
+	PlaylistParser *parser = new PlaylistParser (media->GetElement (), source);
+
+	if (parser->Parse ()) {
+		result = MEDIA_SUCCESS;
+		playlist = parser->GetPlaylist ();
+		playlist->ref ();
+	} else {
+		result = MEDIA_FAIL;
+	}
+
+	delete parser;
+
+	return result;
+}
+
+/*
+ * ASXDemuxerInfo
+ */
+
+bool
+ASXDemuxerInfo::Supports (IMediaSource *source)
+{
+	uint8_t buffer[4];
+	
+	if (!source->Peek (buffer, 4))
+		return false;
+	
+	return buffer [0] == '<' && buffer [1] == 'A' && buffer [2] == 'S' && buffer [3] == 'X';
+}
+
+IMediaDemuxer *
+ASXDemuxerInfo::Create (Media *media, IMediaSource *source)
+{
+	return new ASXDemuxer (media, source);
+}
 
 /*
  * MPEG Audio Demuxer
@@ -1589,6 +1666,13 @@ Mp3FrameReader::EstimatePtsPosition (uint64_t pts, bool *estimate)
 }
 
 bool
+Mp3FrameReader::SeekToStart ()
+{
+	// The Seek implementation already is special cased for pts = 0.
+	return Seek (0);
+}
+
+bool
 Mp3FrameReader::Seek (uint64_t pts)
 {
 	int64_t offset = stream->GetPosition ();
@@ -1793,6 +1877,15 @@ Mp3Demuxer::Seek (uint64_t pts)
 	if (reader && reader->Seek (pts))
 		return MEDIA_SUCCESS;
 	
+	return MEDIA_FAIL;
+}
+
+MediaResult
+Mp3Demuxer::SeekToStart ()
+{
+	if (reader && reader->SeekToStart ())
+		return MEDIA_SUCCESS;
+
 	return MEDIA_FAIL;
 }
 
@@ -2687,14 +2780,22 @@ ProgressiveSource::GetWritePosition ()
  * MediaClosure
  */ 
 
-MediaClosure::MediaClosure () : 
-	callback (NULL), frame (NULL), media (NULL), context (NULL), result (0)
+MediaClosure::MediaClosure (MediaCallback *cb)
 {
+	callback = cb;
+	frame = NULL;
+	media = NULL;
+	context = NULL;
+	result = 0;
 }
 
 MediaClosure::~MediaClosure ()
 {
 	delete frame;
+
+	// Use delayed unref to be thread-safe.
+	base_unref_delayed (context);
+	base_unref_delayed (media);
 }
 
 MediaResult
@@ -2704,6 +2805,50 @@ MediaClosure::Call ()
 		return callback (this);
 		
 	return MEDIA_NOCALLBACK;
+}
+
+void
+MediaClosure::SetMedia (Media *media)
+{
+	if (this->media)
+		this->media->unref ();
+	this->media = media;
+	if (this->media)
+		this->media->ref ();
+}
+
+Media *
+MediaClosure::GetMedia ()
+{
+	return media;
+}
+
+void
+MediaClosure::SetContext (EventObject *context)
+{
+	if (this->context)
+		this->context->unref ();
+	this->context = context;
+	if (this->context)
+		this->context->ref ();
+}
+
+EventObject *
+MediaClosure::GetContext ()
+{
+	return context;
+}
+
+MediaClosure *
+MediaClosure::Clone ()
+{
+	MediaClosure *closure = new MediaClosure (callback);
+	closure->SetContext (context);
+	closure->SetMedia (media);
+	closure->frame = frame;
+	closure->marker = marker;
+	closure->result = result;
+	return closure;
 }
 
 /*

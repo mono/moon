@@ -1,5 +1,22 @@
 2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* brush.cpp, uielement.cpp: Use MediaElement::GetMediaPlayer instead of
+	  accessing the field.
+	* media.cpp, media.h: Use MediaElement::GetMediaPlayer instead of accessing
+	  the field. Update according to pipeline changes.
+	* mplayer.cpp, mplayer.h: Update according to pipeline changes.
+	* pipeline.cpp, pipeline.h: Make Media inherit from EventObject so that it
+	  can be ref counted. Make MediaClosure more intelligent by ref/unreffing
+	  the context and media fields. All variations of MediaWork has a closure,
+	  so move the closure field out of the union. This simplifies
+	  Media::WorkerLoop a bit. Add a Media::SeekToStart, which is required to
+	  not cause any reads/seeks which may block. Remove SetQueueCallback, the
+	  request takes a closure now. Implement an ASXDemuxer to read ASX files.
+	* sizes.cpp: Updated.
+	* playlist.h, playlist.cpp: First part of the new playlist support.
+
+2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.cpp: Make the output in EventObject::Track print
 	  atomically. Really avoids a lot of confusion if several threads are
 	  printfing at the same time.

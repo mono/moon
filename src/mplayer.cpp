@@ -48,6 +48,8 @@ G_END_DECLS
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
 #define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
+#define LOG_MEDIAPLAYER(...)// printf (__VA_ARGS__);
+
 static uint64_t audio_play (Audio *audio, struct pollfd *ufds, int nfds);
 static void    *audio_loop (void *data);
 static void    *audio_loop_null (void *data);
@@ -174,33 +176,17 @@ Video::~Video ()
 MediaPlayer::MediaPlayer (MediaElement *el)
 {
 	element = el;
-	media = NULL;
-	
 	pthread_mutex_init (&pause_mutex, NULL);
 	pthread_cond_init (&pause_cond, NULL);
-	playing = false;
-	opened = false;
-	paused = true;
-	stop = false;
-	eof = false;
-	seeking = false;
-	rendered_frame = false;
-	load_frame = false;
-	caught_up_with_seek = true;
-	
+	pthread_mutex_init (&target_pts_lock, NULL);
+
+	media = NULL;
 	audio_thread = NULL;
 	
 	audio = new Audio ();
 	video = new Video ();
 	
-	start_time = 0;
-	
-	pthread_mutex_init (&target_pts_lock, NULL);
-	current_pts = 0;
-	target_pts = 0;
-	
-	height = 0;
-	width = 0;
+	Initialize ();
 }
 
 MediaPlayer::~MediaPlayer ()
@@ -228,10 +214,13 @@ load_video_frame (void *user_data)
 MediaResult
 media_player_callback (MediaClosure *closure)
 {
-	MediaPlayer *player = (MediaPlayer *) closure->context;
+	MediaElement *element = (MediaElement *) closure->GetContext ();
+	MediaPlayer *player = element->GetMediaPlayer ();
 	MediaFrame *frame = closure->frame;
-	IMediaStream *stream = frame->stream;
+	IMediaStream *stream = frame ? frame->stream : NULL;
 	
+	//printf ("media_player_callback (%p), seeking: %i, frame: %p\n", closure, player->seeking, closure->frame);
+
 	if (player->seeking) {
 		// We don't want any frames while we're waiting for a seek.
 		return MEDIA_SUCCESS;
@@ -261,34 +250,41 @@ media_player_callback (MediaClosure *closure)
 void
 media_player_enqueue_frames (MediaPlayer *mplayer, int audio_frames, int video_frames)
 {
-	MediaFrame *frame;
+	MediaElement *element = mplayer->element;
+	MediaClosure *closure;
 	int states, i;
+
+	//printf ("media_player_enqueue_frames (%p, %i, %i)\n", mplayer, audio_frames, video_frames);
 	
 	if (mplayer->HasAudio ()) {	
 		for (i = 0; i < audio_frames; i++) {
-			frame = new MediaFrame (mplayer->audio->stream);
+			closure = new MediaClosure (media_player_callback);
+			closure->SetContext (element);
+			closure->frame = new MediaFrame (mplayer->audio->stream);
 			
 			// To decode on the main thread comment out FRAME_DECODED.
 			states = FRAME_DEMUXED | FRAME_DECODED;
 			
 			if ((states & FRAME_DECODED) == FRAME_DECODED)
-				frame->AddState (FRAME_COPY_DECODED_DATA);
+				closure->frame->AddState (FRAME_COPY_DECODED_DATA);
 			
-			mplayer->media->GetNextFrameAsync (frame, states);
+			mplayer->media->GetNextFrameAsync (closure, states);
 		}
 	}
 	
 	if (mplayer->HasVideo ()) {
 		for (i = 0; i < video_frames; i++) {
-			frame = new MediaFrame (mplayer->video->stream);
+			closure = new MediaClosure (media_player_callback);
+			closure->SetContext (element);
+			closure->frame = new MediaFrame (mplayer->video->stream);
 			
 			// To decode on the main thread comment out FRAME_DECODED.
 			states = FRAME_DEMUXED | FRAME_DECODED;
 			
 			if ((states & FRAME_DECODED) == FRAME_DECODED)
-				frame->AddState (FRAME_COPY_DECODED_DATA);
+				closure->frame->AddState (FRAME_COPY_DECODED_DATA);
 			
-			mplayer->media->GetNextFrameAsync (frame, states);
+			mplayer->media->GetNextFrameAsync (closure, states);
 		}
 	}
 }
@@ -299,27 +295,23 @@ MediaPlayer::Open (Media *media)
 	IMediaDecoder *encoding;
 	IMediaStream *stream;
 	
-	//printf ("MediaPlayer::Open ().\n");
+	LOG_MEDIAPLAYER ("MediaPlayer::Open (%p), current media: %p\n", media, this->media);
 	
+	Close ();
+
 	if (media == NULL) {
 		printf ("MediaPlayer::Open (): media is NULL.\n");
 		return false;
 	}
 	
 	if (!media->IsOpened ()) {
-		printf ("MediaPlayer::open (): media isn't open.\n");
+		printf ("MediaPlayer::Open (): media isn't opened.\n");
 		return false;
 	}
 	
 	this->media = media;
+	this->media->ref ();
 	opened = true;
-	
-	// Set our frame reader callback
-	MediaClosure *closure = new MediaClosure ();
-	closure->media = media;
-	closure->context = this;
-	closure->callback = media_player_callback;
-	media->SetQueueCallback (closure);
 	
 	// Find audio/video streams
 	IMediaDemuxer *demuxer = media->GetDemuxer ();
@@ -395,9 +387,34 @@ MediaPlayer::Open (Media *media)
 	return true;
 }
 
+void 
+MediaPlayer::Initialize ()
+{
+	LOG_MEDIAPLAYER ("MediaPlayer::Initialize ()\n");
+
+	playing = false;
+	opened = false;
+	paused = true;
+	stop = false;
+	eof = false;
+	seeking = false;
+	rendered_frame = false;
+	load_frame = false;
+	caught_up_with_seek = true;
+	
+	start_time = 0;
+	current_pts = 0;
+	target_pts = 0;
+	
+	height = 0;
+	width = 0;
+}
+
 void
 MediaPlayer::Close ()
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::Close ()\n");
+
 	Stop ();
 	
 	// Reset state back to what it was at instantiation
@@ -411,30 +428,18 @@ MediaPlayer::Close ()
 		cairo_surface_destroy (video->surface);
 		video->surface = NULL;
 	}
-	
-	media = NULL;
-	
-	playing = false;
-	opened = false;
-	eof = false;
+	video->stream = NULL;
 	
 	audio->stream_count = 0;
 	audio->stream = NULL;
 	audio->sample_size = 0;
 	audio->pts_per_frame = 0;
 	
-	video->stream = NULL;
-	
-	start_time = 0;
-	
-	duration = 0;
-	current_pts = 0;
-	target_pts = 0;
-	
-	height = 0;
-	width = 0;
+	if (media)
+		media->unref ();
+	media = NULL;
 
-	rendered_frame = false;
+	Initialize ();
 }
 
 //
@@ -650,11 +655,13 @@ MediaPlayer::MediaEnded ()
 	return true;
 }
 
-guint
-MediaPlayer::Play (GSourceFunc callback, void *user_data)
+void
+MediaPlayer::Play ()
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::Play (), paused: %i, opened: %i, seeking: %i, playing: %i\n", paused, opened, seeking, playing);
+
 	if (!paused || !opened)
-		return 0;
+		return;
 	
 	if (!playing) {
 		// Start up the decoder/audio threads
@@ -681,15 +688,19 @@ MediaPlayer::Play (GSourceFunc callback, void *user_data)
 	seeking = false;
 	
 	media_player_enqueue_frames (this, 1, 1);
-		
+
+	LOG_MEDIAPLAYER ("MediaPlayer::Play (), paused: %i, opened: %i, seeking: %i, playing: %i [Done]\n", paused, opened, seeking, playing);
+}
+
+gint32
+MediaPlayer::GetTimeoutInterval ()
+{
 	if (HasVideo ()) {
 		// TODO: Calculate correct framerate (in the pipeline)
-		return element->GetTimeManager()->AddTimeout (MAX (video->stream->msec_per_frame, 1000 / 60), callback, user_data);
+		return MAX (video->stream->msec_per_frame, 1000 / 60);
 	} else {
-		return element->GetTimeManager()->AddTimeout (33, callback, user_data);
+		return 33;
 	}
-	
-	return 0;
 }
 
 bool
@@ -708,6 +719,8 @@ MediaPlayer::IsPaused ()
 void
 MediaPlayer::PauseInternal (bool value)
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::PauseInternal (%i), paused: %i\n", value, paused);	
+
 	pthread_mutex_lock (&pause_mutex);
 
 	caught_up_with_seek = true;
@@ -721,11 +734,14 @@ MediaPlayer::PauseInternal (bool value)
 	}
 
 	pthread_mutex_unlock (&pause_mutex);
+	LOG_MEDIAPLAYER ("MediaPlayer::PauseInternal (%i), paused: %i [Done]\n", value, paused);	
 }
 
 void
 MediaPlayer::Pause ()
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), paused: %i\n", paused);
+
 	if (paused || !CanPause ())
 		return;
 	
@@ -792,7 +808,8 @@ MediaPlayer::StopThreads ()
 MediaResult
 media_player_seek_callback (MediaClosure *closure)
 {
-	MediaPlayer *mplayer = (MediaPlayer*) closure->context;
+	MediaElement *element = (MediaElement *) closure->GetContext ();
+	MediaPlayer *mplayer = element->GetMediaPlayer ();
 	mplayer->seeking = false;
 	mplayer->current_pts = 0;
 	return MEDIA_SUCCESS;
@@ -801,14 +818,20 @@ media_player_seek_callback (MediaClosure *closure)
 void
 MediaPlayer::SeekInternal (uint64_t pts)
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::SeekInternal (%llu), media: %p, seeking: %i\n", pts, media, seeking);
+
 	if (media == NULL)
 		return;
 		
+	if (pts == 0) {
+		media->SeekToStart ();
+		return;
+	}
+
 	seeking = true;
 	caught_up_with_seek = false;
-	MediaClosure *closure = new MediaClosure ();
-	closure->callback = media_player_seek_callback;
-	closure->context = this;
+	MediaClosure *closure = new MediaClosure (media_player_seek_callback);
+	closure->SetContext (element);
 	media->ClearQueue ();
 	media->SeekAsync (pts, closure);
 }
@@ -816,10 +839,12 @@ MediaPlayer::SeekInternal (uint64_t pts)
 void
 MediaPlayer::Stop ()
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::Stop ()\n");
+
 	StopThreads ();
 	
 	playing = false;
-	SeekInternal (0);
+	//SeekInternal (0);
 }
 
 bool
@@ -832,12 +857,19 @@ MediaPlayer::CanSeek ()
 void
 MediaPlayer::Seek (uint64_t pts)
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu), media: %p, seeking: %i\n", pts, media, seeking);
+
 	uint64_t duration = Duration ();
 	bool resume = !paused;
 	
 	if (!CanSeek ())
 		return;
 	
+	if (pts == 0) {
+		SeekInternal (0);
+		return;
+	}
+
 	seeking = true;
 	
 	if (pts > duration)
@@ -1089,6 +1121,8 @@ audio_loop (void *data)
 	uint32_t n;
 	int ndfs;
 	
+	LOG_MEDIAPLAYER ("audio_loop (): entered.\n");
+
 	outend = audio->outbuf + AUDIO_BUFLEN;
 	inptr = NULL;
 	inleft = 0;
@@ -1173,7 +1207,7 @@ audio_loop (void *data)
 		}
 	}
 	
-	//printf ("audio_loop (): exited.\n");
+	LOG_MEDIAPLAYER ("audio_loop (): exited.\n");
 	
 	if (pkt != NULL)
 		delete pkt;

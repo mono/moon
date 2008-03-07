@@ -208,6 +208,7 @@ public:
 	
 	// Seek to the frame with the provided pts 
 	bool Seek (uint64_t pts);
+	bool SeekToStart ();
 	
 	// Advance to the next frame
 	MediaResult Advance ();

@@ -146,56 +146,8 @@ public:
 Image *image_new (void);
 void   image_set_source (Image *img, DependencyObject *Downloader, const char *PartName);
 
-
-class MediaSource {
-protected:
-	MediaElement *element;
-	char *source_name;
-	IMediaSource *source;
-	
-	MediaSource (MediaElement *element, const char *source_name, IMediaSource *source);
-	
-	MediaPlayer *GetMediaPlayer ();
-	
-	virtual bool OpenInternal () = 0;
-	
-public:
-	virtual ~MediaSource ();
-	
-	const char *GetSourceName ();
-	IMediaSource *GetSource ();
-	
-	virtual bool Open ();
-	virtual void Play () = 0;
-	virtual void Pause () = 0;
-	virtual void Stop (bool media_ended) = 0;
-	virtual void Close () = 0;
-	
-	static MediaSource *CreateSource (MediaElement *element, const char *source_name, IMediaSource *source);
-};
-
-
-class SingleMedia : public MediaSource {
-	guint advance_frame_timeout_id;
-	
-	void ClearTimeout ();
-	
-protected:
-	virtual bool OpenInternal ();
-	
-public:
-	SingleMedia (MediaElement *element, const char *source_name, IMediaSource *source);
-	virtual ~SingleMedia ();
-	
-	virtual void Play ();
-	virtual void Pause ();
-	virtual void Stop (bool media_ended);
-	virtual void Close ();
-};
-
-
 class MediaElement : public MediaBase {
- protected:
+protected:
 	virtual ~MediaElement ();
 
 public:
@@ -219,6 +171,8 @@ private:
 	
 	uint32_t flags;
 	
+	MediaPlayer *mplayer;
+	Playlist *playlist;
 	
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
@@ -252,11 +206,9 @@ private:
 	// Try to open the media (i.e. read the headers).
 	void TryOpen ();
 	
+	// Checks if the media was actually a playlist, in which case false is returned.
 	// Fill in all information from the opened media and raise MediaOpenedEvent. Does not change any state.
-	void MediaOpened (Media *media);
-	
-	// Reset all information to defaults, set state to 'Error' and raise MediaFailedEvent
-	void MediaFailed ();
+	bool MediaOpened (Media *media);
 	
 	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -301,7 +253,8 @@ public:
 	virtual void SetSurface (Surface *surface);
 	
 	bool AdvanceFrame ();
-	MediaPlayer *mplayer;
+
+	MediaPlayer *GetMediaPlayer () { return mplayer;  }
 	
 	// overrides
 	virtual void Render (cairo_t *cr, Region *region);
@@ -314,11 +267,17 @@ public:
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	void SetSource (DependencyObject *Downloader, const char *PartName);
+	void SetSourceInternal (Downloader *downloader, const char *PartName);
 	
 	void Pause ();
 	void Play ();
 	void Stop ();
 	
+	// These methods are the ones that actually call the appropiate methods on the MediaPlayer
+	void PlayInternal ();
+	//void PauseInternal ();
+	//void StopInternal ();
+
 	// State methods
 	bool IsClosed () { return state == Closed; }
 	bool IsOpening () { return state == Opening; }
@@ -330,6 +289,9 @@ public:
 	pthread_mutex_t open_mutex; // Used when accessing closure.
 	MediaClosure *closure;
 	static gboolean TryOpenFinished (void *user_data);
+	
+	// Reset all information to defaults, set state to 'Error' and raise MediaFailedEvent
+	void MediaFailed (ErrorEventArgs *args = NULL);
 	
 	static const char *GetStateName (MediaElementState state);
 	
@@ -343,6 +305,7 @@ public:
 	}
 	
 	void AddStreamedMarker (TimelineMarker *marker);
+	void SetMedia (Media *media);
 };
 
 MediaElement *media_element_new (void);

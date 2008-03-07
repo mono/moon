@@ -17,8 +17,6 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#include "debug.h"
-
 /*
  *	Should be capable of:
  *	- play files and live streams
@@ -89,6 +87,7 @@ class MediaFrame;
 class VideoStream;
 class IImageConverter;
 class MediaMarker;
+class ProgressiveSource;
 
 typedef int32_t MediaResult;
 
@@ -169,23 +168,36 @@ typedef MediaResult MediaCallback (MediaClosure *closure);
 
 #include "list.h"
 #include "asf/asf.h"
+#include "debug.h"
+#include "dependencyobject.h"
+#include "playlist.h"
 
 class MediaClosure {
+private:
+	Media *media; // Set when this is the callback in Media::GetNextFrameAsync
+	EventObject *context; // The property of whoever creates the closure.
+	MediaCallback *callback; // The callback to call
+
 public:
-	MediaClosure ();
+	MediaClosure (MediaCallback *callback);
 	~MediaClosure ();
 	
-	MediaCallback *callback;
 	MediaFrame *frame; // Set when this is the callback in Media::GetNextFrameAsync
-	Media *media; // Set when this is the callback in Media::GetNextFrameAsync
 	MediaMarker *marker; // Set when this is the callback in MarkerStream
-	void *context; // The property of whoever creates the closure.
-	// Set when this is a seek callback, contains the result of the seek
-	// also set for OpenAsync.
+	// The result of the work done in GetNextFrameAsync, OpenAsync or SeekAsync.
 	MediaResult result;
+
 	// Calls the callback and returns the callback's return value
 	// If no callback is set, returns MEDIA_NO_CALLBACK
 	MediaResult Call ();
+
+	void SetMedia (Media *media);
+	Media *GetMedia ();
+
+	void SetContext (EventObject *context);
+	EventObject *GetContext ();
+
+	MediaClosure *Clone ();
 }; 
 
 /*
@@ -223,18 +235,16 @@ public:
 class MediaWork : public List::Node {
 public:
 	MoonWorkType type;
+	MediaClosure *closure;
 	union {
 		struct {
 			uint64_t seek_pts;
-			MediaClosure *closure;
 		} seek;
 		struct {
-			MediaFrame *frame;
 			uint16_t states;
 		} frame;
 		struct {
 			IMediaSource *source;
-			MediaClosure *closure;
 		} open;
 	} data;
 	
@@ -246,7 +256,7 @@ public:
 	virtual ~MediaWork () {}
 };
 
-class Media {
+class Media : public EventObject {
 private:	
 	static ConverterInfo *registered_converters;
 	static DemuxerInfo *registered_demuxers;
@@ -256,7 +266,6 @@ private:
 	pthread_t queue_thread;
 	pthread_cond_t queue_condition;
 	pthread_mutex_t queue_mutex;
-	MediaClosure *queue_closure;
 	
 	char *file_or_url;
 	IMediaSource *source;
@@ -264,6 +273,8 @@ private:
 	List *markers;
 	bool opened;
 	
+	MediaElement *element;
+
 	//	Called on another thread, loops the queue of requested frames 
 	//	and calls GetNextFrame and FrameReadCallback.
 	//	If there are any requests for audio frames in the queue
@@ -272,9 +283,11 @@ private:
 	static void *WorkerLoop (void *data);
 	void EnqueueWork (MediaWork *work);	
 	
-public:
-	Media ();
+protected:
 	~Media ();
+
+public:
+	Media (MediaElement *element);
 	
 	// 1. Initialize the media with a file or url (this does not read any data, but it creates the source objects and prepares for downloading content, if necessary).
 	// 2. Open it (this reads headers and initializes streams)
@@ -299,6 +312,7 @@ public:
 	// Seeks to the specified pts (if seekable).
 	MediaResult Seek (uint64_t pts);
 	MediaResult SeekAsync (uint64_t pts, MediaClosure *closure);
+	MediaResult SeekToStart (); // This must be safe to call on the main thread, i.e. it must not cause any reads/seeks on the source.
 	
 	//	Reads the next frame from the demuxer
 	//	Requests the decoder to decode the frame
@@ -307,16 +321,16 @@ public:
 	MediaResult GetNextFrame (MediaFrame *frame, uint16_t states); 
 	
 	//	Requests reading of the next frame
-	void GetNextFrameAsync (MediaFrame *frame); 
-	void GetNextFrameAsync (MediaFrame *frame, uint16_t states); 
+	void GetNextFrameAsync (MediaClosure *closure); 
+	void GetNextFrameAsync (MediaClosure *closure, uint16_t states); 
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
-	void SetQueueCallback (MediaClosure *closure) { queue_closure = closure; }
 	
 	IMediaSource *GetSource () { return source; }
 	void SetSource (IMediaSource *value) { source = value; }
 	IMediaDemuxer *GetDemuxer () { return demuxer; }
 	const char *GetFileOrUrl () { return file_or_url; }
 	void SetFileOrUrl (const char *value);
+	MediaElement *GetElement () { return element; }
 	
 	void AddMessage (MediaResult result, const char *msg);
 	void AddMessage (MediaResult result, char *msg);
@@ -463,6 +477,7 @@ public:
 	// Fills the uncompressed_data field in the frame with data.
 	virtual MediaResult ReadFrame (MediaFrame *frame) = 0;
 	virtual MediaResult Seek (uint64_t pts) = 0;
+	virtual MediaResult SeekToStart () = 0;
 	int GetStreamCount () { return stream_count; }
 	// Estimate a position for the pts.
 	// This value is used when calculating the buffering progress percentage
@@ -473,6 +488,7 @@ public:
 	IMediaStream *GetStream (int index);
 	// Gets the longest duration from all the streams
 	virtual uint64_t GetDuration (); // 100-nanosecond units (pts)
+	virtual const char *GetName () = 0;
 };
 
 class IMediaDecoder : public IMediaObject {
@@ -666,6 +682,34 @@ public:
 };
 
 /*
+ * ASX demuxer
+ */ 
+class ASXDemuxer : public IMediaDemuxer {
+private:
+	Playlist *playlist;
+
+public:
+	ASXDemuxer (Media *media, IMediaSource *source);
+	~ASXDemuxer ();
+
+	virtual MediaResult ReadHeader ();
+	virtual MediaResult ReadFrame (MediaFrame *frame) { return MEDIA_FAIL; }
+	virtual MediaResult Seek (uint64_t pts) { return MEDIA_FAIL; }
+	virtual MediaResult SeekToStart () { return MEDIA_FAIL; }
+	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate) { return 0; }
+
+	Playlist *GetPlaylist () { return playlist; }
+	virtual const char *GetName () { return "ASXDemuxer"; }
+};
+
+class ASXDemuxerInfo : public DemuxerInfo {
+public:
+	virtual bool Supports (IMediaSource *source);
+	virtual IMediaDemuxer *Create (Media *media, IMediaSource *source); 
+	virtual const char *GetName () { return "ASXDemuxer"; }
+};
+
+/*
  * ASF related implementations
  */
 class ASFDemuxer : public IMediaDemuxer {
@@ -682,9 +726,11 @@ public:
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (uint64_t pts);
+	virtual MediaResult SeekToStart ();
 	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
 	
 	ASFParser *GetParser () { return parser; }
+	virtual const char *GetName () { return "ASFDemuxer"; }
 };
 
 class ASFDemuxerInfo : public DemuxerInfo {
@@ -751,6 +797,7 @@ public:
 	~Mp3FrameReader ();
 	
 	bool Seek (uint64_t pts);
+	bool SeekToStart ();
 	
 	MediaResult ReadFrame (MediaFrame *frame);
 	
@@ -768,7 +815,9 @@ public:
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (uint64_t pts);
+	virtual MediaResult SeekToStart ();
 	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
+	virtual const char *GetName () { return "Mp3Demuxer"; }
 };
 
 class Mp3DemuxerInfo : public DemuxerInfo {

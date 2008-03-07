@@ -512,12 +512,12 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		if (subtract) {
 			if (Is (Type::MEDIAELEMENT)) {
 				MediaElement *me = (MediaElement*)this;
-
+				MediaPlayer *mplayer = me->GetMediaPlayer ();
 				subtract = (!me->IsClosed ()
-					    && me->mplayer
-					    && me->mplayer->rendered_frame
-					    && ((me->mplayer->width == me->GetBounds().w
-						 && me->mplayer->height == me->GetBounds().h)
+					    && mplayer
+					    && mplayer->rendered_frame
+					    && ((mplayer->width == me->GetBounds().w
+						 && mplayer->height == me->GetBounds().h)
 						||
 						(media_base_get_stretch (me) == StretchFill
 						 || media_base_get_stretch (me) == StretchUniformToFill)));

@@ -1039,7 +1039,7 @@ VideoBrush::~VideoBrush ()
 void
 VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
-	MediaPlayer *mplayer = media ? media->mplayer : NULL;
+	MediaPlayer *mplayer = media ? media->GetMediaPlayer () : NULL;
 	Transform *transform = brush_get_transform (this);
 	Transform *relative_transform = brush_get_relative_transform (this);
 	AlignmentX ax = tile_brush_get_alignment_x (this);
@@ -1061,7 +1061,7 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 		if ((obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
 			obj->AddPropertyChangeListener (this);
 			media = (MediaElement *) obj;
-			mplayer = media->mplayer;
+			mplayer = media->GetMediaPlayer ();
 			obj->ref ();
 		} else if (obj == NULL) {
 			printf ("could not find element `%s'\n", name);

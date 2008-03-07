@@ -920,6 +920,15 @@ ASFFrameReader::ResizeList (int size)
 }
 
 bool
+ASFFrameReader::SeekToStart ()
+{
+	ASF_LOG ("ASFFrameReader::SeekToStart (%d).\n", stream_number);
+	
+	// Our Seek implementation already has a fast special case for pts = 0.
+	return Seek (0);
+}
+
+bool
 ASFFrameReader::Seek (uint64_t pts)
 {
 	ASF_LOG ("ASFFrameReader::Seek (%d, %llu).\n", stream_number, pts);
