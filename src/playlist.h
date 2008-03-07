@@ -236,7 +236,8 @@ public:
 	Playlist *GetPlaylist () { return playlist; }
 
 	bool Parse ();
-	static bool IsASX (IMediaSource *source);
+	bool ParseASX2();
+	bool IsASX2 (IMediaSource *source);
 	bool IsPlaylistFile (IMediaSource *source);
 
 	static PlaylistNodeKind StringToKind (const char *str);

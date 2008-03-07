@@ -18,7 +18,7 @@
 #include "xaml.h"
 #include "runtime.h"
 
-#define LOG_PLAYLISTS(...)// printf (__VA_ARGS__);
+#define LOG_PLAYLISTS(...) printf (__VA_ARGS__);
 
 /*
  * PlaylistNode
@@ -702,12 +702,66 @@ PlaylistParser::IsPlaylistFile (IMediaSource *source)
 }
 
 bool
+PlaylistParser::IsASX2 (IMediaSource *source)
+{
+	static const char *asx2_header = "[Reference]";
+	int asx2_header_length = strlen (asx2_header);
+	char buffer [20];
+	
+	if (!source->Peek (buffer, asx2_header_length))
+		return false;
+		
+	return strncmp (asx2_header, buffer, asx2_header_length) == 0;
+}
+
+
+
+bool
+PlaylistParser::ParseASX2 ()
+{
+#define BUFFER_SIZE 1024
+	int bytes_read;
+	char buffer[BUFFER_SIZE];
+	char *mms_uri;
+	char *end;
+
+	bytes_read = source->Read (buffer, BUFFER_SIZE);
+	if (bytes_read < 0) {
+		fprintf (stderr, "Could not read asx document for parsing.\n");
+		return false;
+	}
+	if (!g_str_has_prefix (buffer, "[Reference]\r\nRef1=http://") ||
+	    !strstr (buffer, "?MSWMExt=.asf")) {
+		return false;
+	}
+
+	end = strstr (buffer, "?MSWMExt=.asf");
+	*end = '\0';
+
+	mms_uri = g_strdup_printf ("mms://%s", buffer + strlen ("[Reference]\r\nRef1=http://"));
+
+	playlist = new Playlist (element, source);
+
+	PlaylistEntry *entry = new PlaylistEntry (element, playlist);
+	entry->SetSourceName (mms_uri);
+        playlist->AddEntry (entry);
+        current_entry = entry;
+
+	return true;
+}
+
+bool
 PlaylistParser::Parse ()
 {
 	LOG_PLAYLISTS ("PlaylistParser::Parse ()\n");
 
 	int bytes_read;
 	void *buffer;
+
+	if (!this->IsPlaylistFile (source) && this->IsASX2 (source)) {
+		/* Parse as a asx1 mms file */
+		return this->ParseASX2 ();
+	}
 
 // asx documents don't tend to be very big, so there's no need for a big buffer
 #define BUFFER_SIZE 1024

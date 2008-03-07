@@ -1,3 +1,11 @@
+2008-03-08  Fernando Herrera  <fherrera@novell.com>
+
+	* pipeline.cpp:
+	* playlist.cpp:
+	* playlist.h: Add support for ASX2 playlist files returned by
+	mediaservers when requesting a mmsh file over plain http. Fixes
+	http://channel9.msdn.com.
+
 2008-03-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: Add a couple of null checks in ~Media. Detect ASX files
