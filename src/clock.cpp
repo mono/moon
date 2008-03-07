@@ -462,6 +462,12 @@ time_manager_add_tick_call (TimeManager *manager, void (*func)(gpointer), gpoint
 	manager->AddTickCall (func, tick_data);
 }
 
+void
+TimeManager::InvokeOnMainThread (GSourceFunc func, gpointer data)
+{
+	gtk_timeout_add (0, func, data);
+}
+
 static void
 spaces (int n)
 {

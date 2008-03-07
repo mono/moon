@@ -432,6 +432,7 @@ class TimeManager : public EventObject {
 
 	void ListClocks ();
 
+	static void InvokeOnMainThread (GSourceFunc func, gpointer data);
  protected:
 	~TimeManager ();
 

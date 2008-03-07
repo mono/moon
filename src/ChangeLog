@@ -1,3 +1,9 @@
+2008-03-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* clock.cpp, clock.h: Added TimeManager::InvokeOnMainThread.
+	* mplayer.cpp: Use TimeManager::InvokeOnMainThread instead of finding a
+	  TimeManager instance to add the timeout to.
+
 2008-03-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* downloader.cpp: Fix access to Status from JScript.
