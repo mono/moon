@@ -1,3 +1,8 @@
+2008-03-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Fix default value for ColorInterpolationMode (js
+	unit tests)
+
 2008-03-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Add a null check before accessing any time managers.
