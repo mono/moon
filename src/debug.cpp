@@ -161,8 +161,8 @@ library_of_ip (gpointer ip, gpointer* base_address)
 		char* end_range = strtok (NULL, "-");
 		
 		char* tail;
-		start = (gpointer) strtoull (start_range, &tail, 16);
-		end = (gpointer) strtoull (end_range, &tail, 16);
+		start = start_range ? (gpointer) strtoull (start_range, &tail, 16) : NULL;
+		end = end_range ? (gpointer) strtoull (end_range, &tail, 16) : NULL;
 		
 		if (current_library == NULL || strcmp (lib, current_library) != 0) {
 			current_library = lib;
