@@ -413,7 +413,7 @@ MediaElement::Reinitialize ()
 	part_name = NULL;
 	
 	if (downloaded_file) {
-		delete downloaded_file;
+		downloaded_file->unref ();
 		downloaded_file = NULL;
 	}
 	
@@ -908,10 +908,14 @@ MediaElement::TryOpen ()
 	LOG_MEDIAELEMENT ("MediaElement::TryOpen ()\n");
 
 	if (flags & DownloadComplete) {
+		IMediaSource *current_downloaded_file = downloaded_file;
 		char *filename = downloader_get_response_file (downloader, part_name);
 		Media *media = new Media (this);
 		IMediaSource *source;
 		
+		if (current_downloaded_file)
+			current_downloaded_file->ref ();
+
 		source = new FileSource (media, filename);
 		g_free (filename);
 		
@@ -928,15 +932,16 @@ MediaElement::TryOpen ()
 			}
 		} else {
 			MediaFailed ();
-			delete source;
+			source->unref ();
+			source = NULL;
 			media->unref ();
 			media = NULL;
 		}
 		
 		// If we have a downloaded file ourselves, delete it, we no longer need it.
-		if (downloaded_file) {
-			delete downloaded_file;
-			downloaded_file = NULL;
+		if (current_downloaded_file) {
+			current_downloaded_file->unref ();
+			current_downloaded_file = NULL;
 		}
 	} else if (part_name != NULL && part_name[0] != 0) {
 		// PartName is set, we can't buffer, download the entire file.

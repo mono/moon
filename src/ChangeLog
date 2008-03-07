@@ -1,5 +1,13 @@
 2008-03-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.h, pipeline.cpp: Refcount IMediaObject, and make dtors in all
+	  derived classes protected.
+	* media.cpp: Update according to pipeline changes. TryOpen: our
+	  downloaded_file field may change when we call MediaOpened, so save a
+	  local copy before calling MediaOpened.
+
+2008-03-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* clock.cpp, clock.h: Added TimeManager::InvokeOnMainThread.
 	* mplayer.cpp: Use TimeManager::InvokeOnMainThread instead of finding a
 	  TimeManager instance to add the timeout to.

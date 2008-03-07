@@ -98,9 +98,25 @@ Media::~Media ()
 	pthread_detach (queue_thread);
 	
 	g_free (file_or_url);
-	delete source;
-	delete demuxer;
+	source->unref ();
+	demuxer->unref ();
 	delete markers;
+}
+
+void
+Media::SetSource (IMediaSource *source)
+{
+	if (this->source)
+		this->source->unref ();
+	this->source = source;
+	if (this->source)
+		this->source->ref ();
+}
+
+IMediaSource *
+Media::GetSource ()
+{
+	return source;
 }
 
 void
@@ -263,7 +279,7 @@ Media::Initialize (const char *file_or_url)
 	
 	Uri* uri = new Uri ();
 	MediaResult result = MEDIA_FAIL;
-	source = NULL;
+	SetSource (NULL);
 	
 	this->file_or_url = g_strdup (file_or_url);
 	
@@ -276,7 +292,7 @@ Media::Initialize (const char *file_or_url)
 			result = source->Initialize ();
 			if (!MEDIA_SUCCEEDED (result)) {
 				printf ("Media::Open ('%s'): live source failed, trying progressive source.\n", file_or_url);
-				delete source;
+				source->unref ();
 				source = new ProgressiveSource (this);
 				result = source->Initialize ();
 			}
@@ -285,7 +301,7 @@ Media::Initialize (const char *file_or_url)
 			result = source->Initialize ();
 			if (!MEDIA_SUCCEEDED (result)) {
 				printf ("Media::Open ('%s'): progressive source failed, trying live source.\n", file_or_url);
-				delete source;
+				source->unref ();
 				source = new LiveSource (this);
 				result = source->Initialize ();
 			}
@@ -309,7 +325,7 @@ Media::Initialize (const char *file_or_url)
 	
 	if (!MEDIA_SUCCEEDED (result)) {
 		printf ("Media::Open ('%s'): failed, result: %i.\n", file_or_url, result);
-		delete source;
+		source->unref ();
 		source = NULL;
 	} else {
 		printf ("Media::Open ('%s'): succeeded.\n", file_or_url);
@@ -339,6 +355,7 @@ Media::OpenAsync (IMediaSource *source, MediaClosure *closure)
 {
 	MediaWork *work = new MediaWork (WorkTypeOpen);
 	work->data.open.source = source;
+	work->data.open.source->ref ();
 	work->closure = closure;
 	work->closure->SetMedia (this);
 	
@@ -438,7 +455,7 @@ Media::Open (IMediaSource *source)
 		if (decoder != NULL) {
 			result = decoder->Open ();
 			if (!MEDIA_SUCCEEDED (result)) {
-				delete decoder;
+				decoder->unref ();
 				decoder = NULL;
 			}
 		}
@@ -467,7 +484,7 @@ Media::Open (IMediaSource *source)
 					converter->input_format = decoder->pixel_format;
 					converter->output_format = MoonPixelFormatRGB32;
 					if (!MEDIA_SUCCEEDED (converter->Open ())) {
-						delete converter;
+						converter->unref ();
 						converter = NULL;
 					}
 				}
@@ -475,7 +492,7 @@ Media::Open (IMediaSource *source)
 				if (converter != NULL) {
 					vs->converter = converter;
 				} else {
-					delete decoder;
+					decoder->unref ();
 					decoder = NULL;
 				}
 			}
@@ -488,7 +505,7 @@ Media::Open (IMediaSource *source)
 	}
 	
 	if (result == MEDIA_SUCCESS) {
-		this->source = source;
+		SetSource (source);
 		opened = true;
 	}
 	
@@ -1056,7 +1073,7 @@ failure:
 	if (streams != NULL) {
 		for (int i = 0; i < stream_count; i++) {
 			if (streams [i] != NULL) {
-				delete streams [i];
+				streams [i]->unref ();
 				streams [i] = NULL;
 			}
 		}
@@ -2875,7 +2892,7 @@ IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 
 IMediaStream::~IMediaStream ()
 {
-	delete decoder;
+	decoder->unref ();
 	
 	g_free (extra_data);
 }
@@ -2887,6 +2904,7 @@ IMediaStream::~IMediaStream ()
 IMediaDemuxer::IMediaDemuxer (Media *media, IMediaSource *source) : IMediaObject (media)
 {
 	this->source = source;
+	this->source->ref ();
 	stream_count = 0;
 	streams = NULL;
 }
@@ -2895,10 +2913,11 @@ IMediaDemuxer::~IMediaDemuxer ()
 {
 	if (streams != NULL) {
 		for (int i = 0; i < stream_count; i++)
-			delete streams[i];
+			streams[i]->unref ();
 		
 		g_free (streams);
 	}
+	source->unref ();
 }
 
 uint64_t
@@ -3018,7 +3037,7 @@ VideoStream::VideoStream (Media *media) : IMediaStream (media)
 VideoStream::~VideoStream ()
 {
 	if (converter)
-		delete converter;
+		converter->unref ();
 }
 
 /*
@@ -3066,3 +3085,12 @@ MarkerStream::SetCallback (MediaClosure *closure)
 	this->closure = closure;
 }
 
+/*
+ * MediaWork
+ */ 
+
+MediaWork::~MediaWork ()
+{
+	if (type == WorkTypeOpen && data.open.source != NULL)
+		data.open.source->unref ();
+}

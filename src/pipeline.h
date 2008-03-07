@@ -253,7 +253,7 @@ public:
 		type = tp;
 		memset (&data, 0, sizeof (data));
 	}
-	virtual ~MediaWork () {}
+	virtual ~MediaWork ();
 };
 
 class Media : public EventObject {
@@ -325,8 +325,8 @@ public:
 	void GetNextFrameAsync (MediaClosure *closure, uint16_t states); 
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
 	
-	IMediaSource *GetSource () { return source; }
-	void SetSource (IMediaSource *value) { source = value; }
+	IMediaSource *GetSource ();
+	void SetSource (IMediaSource *value);
 	IMediaDemuxer *GetDemuxer () { return demuxer; }
 	const char *GetFileOrUrl () { return file_or_url; }
 	void SetFileOrUrl (const char *value);
@@ -409,25 +409,28 @@ public:
 
 // Interfaces
 
-class IMediaObject {
+class IMediaObject : public EventObject {
 protected:
 	Media *media;
-	
+	virtual ~IMediaObject ();
+
 public:
 	IMediaObject (Media *media);
-	virtual ~IMediaObject ();
 	
 	Media *GetMedia () { return media; }
 };
 
 
 class IMediaStream : public IMediaObject {
+private:
 	void *context;
 	bool enabled;
-	
+
+protected:
+	virtual ~IMediaStream ();
+
 public:
 	IMediaStream (Media *media);
-	virtual ~IMediaStream ();
 	
 	//	Video, Audio, Markers, etc.
 	virtual MoonMediaType GetType () = 0; 
@@ -461,6 +464,7 @@ public:
 };
 
 class IMediaDemuxer : public IMediaObject {
+private:
 	IMediaStream **streams;
 	int stream_count;
 	
@@ -468,10 +472,10 @@ protected:
 	IMediaSource *source;
 	
 	void SetStreams (IMediaStream **streams, int count);
+	virtual ~IMediaDemuxer ();
 	
 public:
 	IMediaDemuxer (Media *media, IMediaSource *source);
-	virtual ~IMediaDemuxer ();
 	
 	virtual MediaResult ReadHeader () = 0;
 	// Fills the uncompressed_data field in the frame with data.
@@ -492,9 +496,11 @@ public:
 };
 
 class IMediaDecoder : public IMediaObject {
+protected:
+	virtual ~IMediaDecoder () {}
+
 public:
 	IMediaDecoder (Media *media, IMediaStream *stream);
-	virtual ~IMediaDecoder () {}
 	
 	virtual MediaResult DecodeFrame (MediaFrame *frame) = 0;
 	virtual MediaResult Open () = 0;
@@ -512,13 +518,15 @@ public:
  * Inherit from this class to provide image converters (yuv->rgb for instance) 
  */
 class IImageConverter : public IMediaObject {
+protected:
+	virtual ~IImageConverter () {}
+
 public:
 	MoonPixelFormat output_format;
 	MoonPixelFormat input_format;
 	VideoStream *stream;
 	
 	IImageConverter (Media *media, VideoStream *stream);
-	virtual ~IImageConverter () {}
 	
 	virtual MediaResult Open () = 0;
 	virtual MediaResult Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t *dest[], int dstStride []) = 0;
@@ -528,9 +536,11 @@ public:
 // Another way is to always do the read/demux/decode stuff on another thread, 
 // in which case we can block here
 class IMediaSource : public IMediaObject {
+protected:
+	virtual ~IMediaSource () {}
+
 public:
 	IMediaSource (Media *media) : IMediaObject (media) {}
-	virtual ~IMediaSource () {}
 	
 	// Initializes this stream (and if it succeeds, it can be read from later on).
 	// streams based on remote content (live/progress) should contact the server
@@ -565,10 +575,11 @@ protected:
 	
 	bool eof;
 	
+	virtual ~FileSource ();
+
 public:
 	FileSource (Media *media);
 	FileSource (Media *media, const char *filename);
-	~FileSource ();
 	
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeFile; }
@@ -587,6 +598,7 @@ public:
 };
 
 class ProgressiveSource : public FileSource {
+private:
 	pthread_mutex_t write_mutex;
 	pthread_cond_t write_cond;
 	bool cancel_wait;
@@ -598,10 +610,12 @@ class ProgressiveSource : public FileSource {
 	
 	static void write (void *buf, int32_t offset, int32_t n, gpointer cb_data);
 	static void notify_size (int64_t size, gpointer cb_data);
-	
+
+protected:
+	virtual ~ProgressiveSource ();
+
 public:
 	ProgressiveSource (Media *media);
-	virtual ~ProgressiveSource ();
 	
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeProgressive; }
@@ -636,6 +650,9 @@ public:
 };
 
 class LiveSource : public IMediaSource {
+protected:
+	virtual ~LiveSource () {}
+
 public:
 	LiveSource (Media *media) : IMediaSource (media) {}
 	
@@ -654,6 +671,9 @@ public:
 };
 
 class VideoStream : public IMediaStream {
+protected:
+	virtual ~VideoStream ();
+
 public:
 	IImageConverter *converter; // This stream has the ownership of the converter, it will be deleted upon destruction.
 	uint32_t bits_per_sample;
@@ -663,12 +683,14 @@ public:
 	uint32_t width;
 	
 	VideoStream (Media *media);
-	virtual ~VideoStream ();
 	
 	virtual MoonMediaType GetType () { return MediaTypeVideo; } 
 };
  
 class AudioStream : public IMediaStream {
+protected:
+	virtual ~AudioStream () {}
+
 public:
 	int bits_per_sample;
 	int block_align;
@@ -688,10 +710,12 @@ class ASXDemuxer : public IMediaDemuxer {
 private:
 	Playlist *playlist;
 
+protected:
+	virtual ~ASXDemuxer ();
+
 public:
 	ASXDemuxer (Media *media, IMediaSource *source);
-	~ASXDemuxer ();
-
+	
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame) { return MEDIA_FAIL; }
 	virtual MediaResult Seek (uint64_t pts) { return MEDIA_FAIL; }
@@ -713,15 +737,18 @@ public:
  * ASF related implementations
  */
 class ASFDemuxer : public IMediaDemuxer {
+private:
 	int32_t *stream_to_asf_index;
 	ASFFrameReader **readers;
 	ASFParser *parser;
 	
 	void ReadMarkers ();
-	
+
+protected:
+	virtual ~ASFDemuxer ();
+
 public:
 	ASFDemuxer (Media *media, IMediaSource *source);
-	~ASFDemuxer ();
 	
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
@@ -741,11 +768,14 @@ public:
 };
 
 class MarkerStream : public IMediaStream {
+private:
 	MediaClosure *closure;
-	
+
+protected:
+	virtual ~MarkerStream ();
+
 public:
 	MarkerStream (Media *media);
-	~MarkerStream ();
 	
 	virtual MoonMediaType GetType () { return MediaTypeMarker; }
 	
@@ -753,6 +783,9 @@ public:
 };
 
 class ASFMarkerDecoder : public IMediaDecoder {
+protected:
+	virtual ~ASFMarkerDecoder () {};
+
 public:
 	ASFMarkerDecoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream) {}
 	
@@ -805,12 +838,15 @@ public:
 };
 
 class Mp3Demuxer : public IMediaDemuxer {
+private:
 	Mp3FrameReader *reader;
 	bool xing;
-	
+
+protected:
+	virtual ~Mp3Demuxer ();
+
 public:
 	Mp3Demuxer (Media *media, IMediaSource *source);
-	~Mp3Demuxer ();
 	
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
@@ -828,6 +864,9 @@ public:
 };
 
 class NullMp3Decoder : public IMediaDecoder {
+protected:
+	virtual ~NullMp3Decoder () {};
+
 public:
 	NullMp3Decoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream) {}
 	
@@ -856,6 +895,9 @@ public:
  */
 
 class MSDecoder : public IMediaDecoder {
+protected:
+	virtual ~MSDecoder () {};
+
 public:
 	MSDecoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream) {}
 	
