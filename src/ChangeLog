@@ -15,6 +15,11 @@
 
 2008-03-08  Geoff Norton  <gnorton@novell.com>
 
+	* yuv-converter.cpp: Clear the mmx state when we're done
+	processing.  Fixes most problems on x86_32.
+
+2008-03-08  Geoff Norton  <gnorton@novell.com>
+
 	* pipeline.cpp: Disable YUV converter, its crashing on x86_32
 	currently.
 

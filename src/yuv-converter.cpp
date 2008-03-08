@@ -257,6 +257,8 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 		u_plane += planar_delta >> 1;
 		v_plane += planar_delta >> 1;
 	}
+
+	__asm__ __volatile__ ("emms");
 #else
 	for (i = 0; i < height; i += 2, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 		for (j = 0; j < width; j += 2, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
