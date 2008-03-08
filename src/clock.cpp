@@ -356,7 +356,9 @@ TimeManager::SourceTick ()
 		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 	}
 
-	//ListClocks ();
+#if CLOCK_DEBUG
+	ListClocks ();
+#endif
 
 	ENDTICKTIMER (tick, "TimeManager::Tick");
 	TimeSpan post_tick = source->GetNow();
@@ -526,6 +528,8 @@ TimeManager::ListClocks()
 	printf ("============================\n");
 
 	output_clock (root_clock, 2);
+
+	printf ("============================\n");
 }
 
 void
@@ -557,6 +561,7 @@ Clock::Clock (Timeline *tl)
 {
 	was_stopped = false;
 	begin_time = -1;
+	begin_on_tick = false;
 
 	if (timeline->HasBeginTime ())
 		begintime = timeline->GetBeginTime ();
@@ -599,9 +604,7 @@ Clock::Tick ()
 	last_time = current_time;
 	SetCurrentTime (Clock::ComputeNewTime());
 
-#if false
 	if (GetClockState() == Clock::Active)
-#endif
 		ClampTime ();
 	CalcProgress ();
 }
@@ -674,7 +677,7 @@ Clock::ComputeNewTime ()
 
 	TimeSpan duration_timespan = natural_duration.GetTimeSpan();
 
-	if (forward) {
+	if (our_delta >= 0) {
 		// time is progressing in the normal way
 
 		if (ret_time >= duration_timespan) {
@@ -717,17 +720,21 @@ Clock::ComputeNewTime ()
 		// we're moving backward in time.
 
 		if (ret_time <= 0) {
-			forward = true;
-			ret_time = -ret_time;
-
-			if (repeat_count > 0) {
-				repeat_count --;
-				if (repeat_count < 0)
-					repeat_count = 0;
+			// if this timeline isn't autoreversed it means the parent is, so don't flip ourselves to forward
+			if (timeline->GetAutoReverse ()) {
+				forward = true;
+				ret_time = -ret_time;
 			}
+			else {
+				if (repeat_count > 0) {
+					repeat_count --;
+					if (repeat_count < 0)
+						repeat_count = 0;
+				}
 
-			if (repeat_count == 0) {
-				SkipToFill ();
+				if (repeat_count == 0) {
+					SkipToFill ();
+				}
 			}
 		}
 		else if (ret_time <= duration_timespan && GetClockState() != Clock::Active) {
@@ -1020,16 +1027,17 @@ ClockGroup::Tick ()
 		if (c->GetClockState() != Clock::Stopped) {
 			c->Tick ();
 		}
-		else if (!c->GetHasStarted() && !c->GetWasStopped() && c->GetBeginTime () <= current_time) {
+		else if (!c->GetHasStarted() && !c->GetWasStopped() && (c->GetBeginOnTick() || c->GetBeginTime () <= current_time)) {
+			if (c->GetBeginOnTick()) {
+				c->BeginOnTick (false);
+				c->ComputeBeginTime ();
+			}
 			c->Begin ();
 		}
 	}
 
-#if false
 	if (GetClockState() == Clock::Active)
-#endif
-
-	CalcProgress ();
+		CalcProgress ();
 
 	if (GetClockState() == Clock::Stopped)
 		return;

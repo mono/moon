@@ -319,8 +319,14 @@ Storyboard::Begin ()
 	// creating AnimationStorage's for AnimationClocks.
 	HookupAnimationsRecurse (root_clock);
 
-	group->AddChild (root_clock);
 	group->ComputeBeginTime ();
+
+	group->AddChild (root_clock);
+
+	if (HasBeginTime ())
+		root_clock->ComputeBeginTime ();
+	else
+		root_clock->BeginOnTick ();
 
 	// we delay starting the surface's ClockGroup until the first
 	// child has been added.  otherwise we run into timing issues

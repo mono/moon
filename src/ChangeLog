@@ -1,5 +1,28 @@
 2008-03-08  Chris Toshok  <toshok@ximian.com>
 
+	* clock.h, clock.cpp, animation.cpp: a few clock related changes.
+
+	1. Revert the change that uses "forward" to tell if we're moving
+	forward or not.  This isn't the only indicator, as a parent clock
+	might be ticking backward, so we really do need to use "our_delta"
+
+	2. Also, we need to not clamp the time of the clock (on either
+	end) when we're filling, as if the parent's duration is longer
+	than ours and they autoreverse, there needs to be some padding in
+	the reverse direction before we start again.
+
+	3. Only call ComputeBeginTime() on a newly created clock if the
+	timeline has a begin time specified.  Otherwise, use
+	BeginOnTick/GetBeginOnTick to make it begin on the next tick.
+	This fixes the chess animation breakage.  The problem was caused
+	by us computing the begin time immediately in Storyboard::Begin,
+	which would calculate the clock's begin time relative to the
+	*previous* tick.  on the next tick, the clock was almost always at
+	1.0 progress, which caused the animations to skip directly to the
+	end.
+
+2008-03-08  Chris Toshok  <toshok@ximian.com>
+
 	* value.cpp, type.cpp, type.cpp.in, trigger.cpp, runtime.cpp,
 	dirty.cpp, dependencyobject.cpp: more assert removal.  we can't
 	assert in a plugin (even if people are running a debug build it's

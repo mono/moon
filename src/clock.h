@@ -298,6 +298,9 @@ class Clock : public DependencyObject {
 	virtual void SkipToFill ();
 	virtual void Stop ();
 
+	void BeginOnTick (bool begin = true) { this->begin_on_tick = begin; }
+	bool GetBeginOnTick () { return begin_on_tick; }
+
 	virtual void ComputeBeginTime ();
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
@@ -335,6 +338,7 @@ class Clock : public DependencyObject {
 	Duration natural_duration;
 
 	TimeSpan begintime;
+	bool begin_on_tick;
 
 	ClockState state;
 
