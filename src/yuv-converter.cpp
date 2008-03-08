@@ -36,12 +36,12 @@ G_END_DECLS
 
 
 static const uint64_t mmx_table [6] __attribute__ ((aligned (16))) = {
-									0x005a005a005a005a, /* Red V coefficient */
-									0xffe9ffe9ffe9ffe9, /* Green V coefficient */
-									0xffd1ffd1ffd1ffd1, /* Green U coefficient */
-									0x0071007100710071, /* Blue U coefficient */
-									0x0080008000800080, /* 128 */
-									0xFFFFFFFFFFFFFFFF, /* Alpha channel */
+									0x005a005a005a005aULL, /* Red V coefficient */
+									0xffe9ffe9ffe9ffe9ULL, /* Green V coefficient */
+									0xffd1ffd1ffd1ffd1ULL, /* Green U coefficient */
+									0x0071007100710071ULL, /* Blue U coefficient */
+									0x0080008000800080ULL, /* 128 */
+									0xFFFFFFFFFFFFFFFFULL, /* Alpha channel */
 };
 #endif
 
