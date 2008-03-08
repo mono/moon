@@ -19,6 +19,7 @@ libmooninclude_headers = \
 	clock.h		\
 	collection.h	\
 	color.h		\
+	yuv-converter.h	\
 	control.h	\
 	debug.h		\
 	dependencyobject.h \
@@ -72,6 +73,7 @@ libmoon_la_SOURCES = 	\
 	brush.cpp	\
 	canvas.cpp	\
 	color.cpp	\
+	yuv-converter.cpp	\
 	clock.cpp	\
 	collection.cpp	\
 	control.cpp	\

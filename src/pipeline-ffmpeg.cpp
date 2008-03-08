@@ -32,6 +32,7 @@ G_END_DECLS
 
 #include "pipeline-ffmpeg.h"
 #include "pipeline.h"
+#include "yuv-converter.h"
 #include "debug.h"
 
 bool ffmpeg_initialized = false;
@@ -59,7 +60,7 @@ register_ffmpeg ()
 	if (ffmpeg_registered)
 		return;
 	
-	Media::RegisterConverter (new FfmpegConverterInfo ());
+	Media::RegisterConverter (new YUVConverterInfo ());
 	Media::RegisterDecoder (new FfmpegDecoderInfo ());
 	//Media::RegisterDemuxer (new FfmpegDemuxerInfo ());
 	
