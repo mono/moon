@@ -164,10 +164,10 @@ Type::RegisterType (const char *name, Type::Kind type, Type::Kind parent, create
 						       NULL, free_type);
 	}
 
+	g_return_val_if_fail (types[type] == NULL, NULL);
+
 	Type *result = new Type (name, type, parent);
 	result->value_type = value_type;
-
-	g_assert (types [type] == NULL);
 
 	types [type] = result;
 	g_hash_table_insert (types_by_name, result->name, result);

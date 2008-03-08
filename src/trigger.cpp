@@ -24,7 +24,7 @@ EventTrigger::EventTrigger ()
 void
 EventTrigger::SetTarget (DependencyObject *target)
 {
-	g_assert (target);
+	g_return_if_fail (target);
 
 	// Despite the name, it can only be loaded (according to the docs)
 	target->AddHandler (UIElement::LoadedEvent, event_trigger_fire_actions, this);
@@ -33,7 +33,7 @@ EventTrigger::SetTarget (DependencyObject *target)
 void
 EventTrigger::RemoveTarget (DependencyObject *target)
 {
-	g_assert (target);
+	g_return_if_fail (target);
 
 	target->RemoveHandler (UIElement::LoadedEvent, event_trigger_fire_actions, this);
 }
@@ -46,7 +46,9 @@ void
 EventTrigger::event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	EventTrigger *trigger = (EventTrigger*)closure;
-	g_assert (trigger);
+
+	g_return_if_fail (trigger);
+
 	TriggerActionCollection *actions = trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection();
 	Collection::Node *n = (Collection::Node *) actions->list->First ();
 	

@@ -197,7 +197,8 @@ Surface::ProcessDownDirtyElements ()
 		}
 	}
 	
-	g_assert (down_dirty->IsEmpty());
+	if (!down_dirty->IsEmpty())
+		g_warning ("after down dirty pass, down dirty list is not empty");
 }
 
 /*
@@ -294,7 +295,8 @@ Surface::ProcessUpDirtyElements ()
 		}
 	}
 	
-	g_assert (up_dirty->IsEmpty());
+	if (!up_dirty->IsEmpty())
+		g_warning ("after up dirty pass, up dirty list is not empty");
 }
 
 void

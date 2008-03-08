@@ -1,3 +1,10 @@
+2008-03-08  Chris Toshok  <toshok@ximian.com>
+
+	* value.cpp, type.cpp, type.cpp.in, trigger.cpp, runtime.cpp,
+	dirty.cpp, dependencyobject.cpp: more assert removal.  we can't
+	assert in a plugin (even if people are running a debug build it's
+	not exactly nice to bring down their browser.)
+
 2008-03-07  Chris Toshok  <toshok@ximian.com>
 
 	* value.cpp (Value::CreateUnrefPtr): don't assert here.

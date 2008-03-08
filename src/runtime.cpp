@@ -628,8 +628,8 @@ Surface::IsTopLevel (UIElement* top)
 void
 Surface::ShowFullScreenMessage ()
 {
-	g_assert (full_screen_message == NULL);
-	g_assert (toplevel && toplevel->Is (Type::PANEL));
+	g_return_if_fail (full_screen_message == NULL);
+	g_return_if_fail (toplevel && toplevel->Is (Type::PANEL));
 	
 	Type::Kind dummy;
 	DependencyObject* message = xaml_create_from_str (NULL, FULLSCREEN_MESSAGE, false, &dummy);

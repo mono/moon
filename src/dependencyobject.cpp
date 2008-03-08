@@ -1003,8 +1003,8 @@ dependency_property_is_nullable (DependencyProperty *property)
 DependencyProperty *
 resolve_property_path (DependencyObject **o, const char *path)
 {
-	g_assert (o);
-	g_assert (path);
+	g_return_val_if_fail (o != NULL, NULL);
+	g_return_val_if_fail (path != NULL, NULL);
 
 	int c;
 	int len = strlen (path);
@@ -1065,15 +1065,17 @@ resolve_property_path (DependencyObject **o, const char *path)
 			int indexer = 0;
 
 			// Need to be a little more loving
-			g_assert (path [i + 1]);
+			if (path [i + 1] == 0)
+				break;
 
 			char *p;
 
 			indexer = strtol (path + i + 1, &p, 10);
 			i = p - path;
 
-			g_assert (path [i] == ']');
-			g_assert (path [i + 1] == '.');
+			if (path [i] != ']'
+			    || path [i + 1] != '.')
+				break;
 
 			Collection *col = lu->GetValue (res)->AsCollection ();
 			List::Node *n = col->list->Index (indexer);
