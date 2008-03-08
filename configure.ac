@@ -328,6 +328,22 @@ XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 AC_SUBST(XPIDL)
 AC_SUBST(XPFLAGS)
 
+HAVE_MMX=no
+AC_COMPILE_IFELSE([
+int main () {
+        int i = 0;
+        int j = -1;
+        __asm__ __volatile__ (
+                "movd (%0), %%mm1;"
+                "movd %%mm1, (%1);"
+                : : "r" (&i), "r" (&j));
+        return j;
+}], HAVE_MMX=yes)
+
+if test x$HAVE_MMX = xyes; then
+	AC_DEFINE(HAVE_MMX, 1, [MMX support])
+fi
+
 if test x$FFMPEG = xyes; then
 FFMPEG_PKGS="libswscale libavcodec libavformat"
 else
@@ -365,7 +381,7 @@ MOON_PROG_LIBS=`pkg-config --libs $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS`
 AC_SUBST(MOON_PROG_LIBS)
 
 if test x$DEBUG = xyes; then
-	DEBUG_OPTIONS="-fno-inline -O1 -g -fno-inline-functions"
+	DEBUG_OPTIONS="-fno-inline -g -fno-inline-functions"
 	CFLAGS=`echo $CFLAGS | sed 's/-O2//'`
 	CFLAGS="$DEBUG_OPTIONS $CFLAGS"
 	CXXFLAGS=`echo $CXXFLAGS | sed 's/-O2//'`
@@ -404,5 +420,6 @@ Moonlight configuration:
 	Support for 1.0: yes
 	Support for 2.0: $MONO_RUNTIME
 	Support for ffmpeg: $FFMPEG
+	Support for mmx: $HAVE_MMX
 
 EOF
