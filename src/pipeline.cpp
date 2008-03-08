@@ -31,6 +31,7 @@
 #include "media.h"
 #include "asf/asf.h"
 #include "asf/asf-structures.h"
+#include "yuv-converter.h"
 #include "runtime.h"
 
 
@@ -190,6 +191,7 @@ Media::Initialize ()
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 	Media::RegisterDemuxer (new ASXDemuxerInfo ());
+	Media::RegisterConverter (new YUVConverterInfo ());
 #ifdef INCLUDE_FFMPEG
 	register_ffmpeg ();
 #else

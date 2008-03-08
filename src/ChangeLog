@@ -1,4 +1,9 @@
 2008-03-08  Geoff Norton  <gnorton@novell.com>
+	
+	* pipeline-ffmpeg.cpp:  Dont register YUV converter here.
+	* pipeline.cpp: Register YUV converter here.
+
+2008-03-08  Geoff Norton  <gnorton@novell.com>
 
 	* yuv-converter.cpp:  Remove some code duplication and refactor
 	to support register starved implementations.
