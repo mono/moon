@@ -48,8 +48,6 @@
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
 #define DELAY_TO_FPS(delay) (1000.0 / delay)
 
-extern guint32 moonlight_flags;
-
 struct ClockNode {
 	ClockNode *next;
 	Clock *clock;

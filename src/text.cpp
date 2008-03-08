@@ -34,8 +34,6 @@
 #define TEXTBLOCK_FONT_SIZE    14.666666984558105
 
 
-extern guint32 moonlight_flags;
-
 #ifdef ENABLE_PANGO_SUPPORT
 #define RENDER_USING_PANGO (moonlight_flags & RUNTIME_INIT_PANGO_TEXT_LAYOUT)
 #else

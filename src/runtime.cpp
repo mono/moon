@@ -88,7 +88,9 @@ static struct {
 	{ "render=ftb",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  true  },
 	{ "render=btf",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  false },
 	{ "cache=show",	       RUNTIME_INIT_SHOW_CACHE_SIZE,       true  },
-	{ "cache=hide",        RUNTIME_INIT_SHOW_CACHE_SIZE,       false }
+	{ "cache=hide",        RUNTIME_INIT_SHOW_CACHE_SIZE,       false },
+	{ "converter=yuv",     RUNTIME_INIT_CONVERTER_YUV,         true  },
+	{ "converter=ffmpeg",  RUNTIME_INIT_CONVERTER_YUV,         false }
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)

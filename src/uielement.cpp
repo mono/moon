@@ -25,9 +25,6 @@
 
 //#define DEBUG_INVALIDATE 0
 
-extern guint32 moonlight_flags;
-
-
 int UIElement::LoadedEvent = -1;
 int UIElement::MouseMoveEvent = -1;
 int UIElement::MouseLeftButtonDownEvent = -1;

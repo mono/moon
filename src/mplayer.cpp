@@ -54,8 +54,6 @@ static uint64_t audio_play (Audio *audio, struct pollfd *ufds, int nfds);
 static void    *audio_loop (void *data);
 static void    *audio_loop_null (void *data);
 
-extern guint32 moonlight_flags;
-
 class Packet : public List::Node {
 public:
 	MediaFrame *frame;

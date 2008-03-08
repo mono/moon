@@ -1,3 +1,18 @@
+2008-03-08  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp, text.cpp, clock.cpp, mplayer.cpp: remove the
+	extern guint32 moonlight_flags.
+
+	* pipeline.cpp: if RUNTIME_INIT_CONVERTER_YUV, use the yuv
+	converter, otherwise use ffmpeg.
+
+	* runtime.h: add RUNTIME_INIT_CONVERTER_YUV to the list of init
+	flags, and (my god) put the extern moonlight_flags here.
+
+	* runtime.cpp: add yuv converter options. use
+	MOONLIGHT_OVERRIDES=converter=yuv to enable it.  default is
+	"converter=ffmpeg".
+
 2008-03-08  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline.cpp: Disable YUV converter, its crashing on x86_32
