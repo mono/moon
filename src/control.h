@@ -27,6 +27,8 @@ class Control : public FrameworkElement {
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
 
+	virtual void SetSurface (Surface *s);
+
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual void FrontToBack (Region *surface_region, List *render_list);
 	virtual void ComputeBounds ();

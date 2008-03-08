@@ -72,6 +72,15 @@ Control::ComputeBounds ()
 }
 
 void
+Control::SetSurface (Surface *s)
+{
+	FrameworkElement::SetSurface (s);
+
+	if (real_object)
+		real_object->SetSurface (s);
+}
+
+void
 Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (subobj_args->property == Canvas::TopProperty || subobj_args->property == Canvas::LeftProperty) {
