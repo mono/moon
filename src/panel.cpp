@@ -38,7 +38,7 @@ Panel::SetChildren (VisualCollection *col)
 void
 Panel::SetSurface (Surface *s)
 {
-	UIElement::SetSurface (s);
+	FrameworkElement::SetSurface (s);
 
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
