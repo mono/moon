@@ -1,5 +1,10 @@
 2008-03-08  Geoff Norton  <gnorton@novell.com>
 
+	* yuv-converter.cpp:  Remove some code duplication and refactor
+	to support register starved implementations.
+
+2008-03-08  Geoff Norton  <gnorton@novell.com>
+
 	* Makefile.am: Add yuv-converter.cpp to the build
 	* yuv-conveter.*: Our YUV2RGB 420P converter.  Replaces
 	libswscale.
