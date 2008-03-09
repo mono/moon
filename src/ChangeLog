@@ -1,3 +1,8 @@
+2008-03-08  Geoff Norton  <gnorton@novell.com>
+
+	* yuv-converter.cpp: Fix the luminance problem (Y needs shift;
+	and b was pulling the wrong l/h value.
+
 2008-03-08  Chris Toshok  <toshok@ximian.com>
 
 	* value.cpp (Value::CreateUnrefPtr): use GetRefCount() instead of

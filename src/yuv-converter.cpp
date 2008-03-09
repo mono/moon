@@ -31,12 +31,13 @@ G_END_DECLS
  */
 
 
-static const uint64_t mmx_table [6] __attribute__ ((aligned (16))) = {
+static const uint64_t mmx_table [7] __attribute__ ((aligned (16))) = {
 									0x005a005a005a005aULL, /* Red V coefficient */
 									0xffe9ffe9ffe9ffe9ULL, /* Green V coefficient */
 									0xffd1ffd1ffd1ffd1ULL, /* Green U coefficient */
 									0x0071007100710071ULL, /* Blue U coefficient */
 									0x0080008000800080ULL, /* 128 */
+									0x1010101010101010ULL, /* 16 */
 									0xFFFFFFFFFFFFFFFFULL, /* Alpha channel */
 };
 
@@ -56,6 +57,9 @@ static const uint64_t mmx_table [6] __attribute__ ((aligned (16))) = {
 #define YUV2RGB_MMX(y_plane, dest) do { \
 			__asm__ __volatile__ ( \
 				"movq (%0), %%mm0;"		/* mm0 [Y0 Y1 Y2 Y3 Y4 Y5 Y6 Y7] */	\
+				"movq 40(%2), %%mm7;"							\
+				"psubusb %%mm7, %%mm0;"		/* Y = Y - 16 */			\
+													\
 				"movq %%mm0, %%mm4;"		/* mm4 == mm0 */			\
 													\
 				"psllw $8, %%mm0;"		/* mm0 [00 Y0 00 Y2 00 Y4 00 Y6] */	\
@@ -90,7 +94,7 @@ static const uint64_t mmx_table [6] __attribute__ ((aligned (16))) = {
 				"movq %%mm3, %%mm7;"							\
 				"movq %%mm1, %%mm6;"							\
 													\
-				"movq 40(%2), %%mm4;"							\
+				"movq 48(%2), %%mm4;"							\
 				"punpcklbw %%mm2, %%mm1;"	/* mm1 [B0 R0 B1 R1 B2 R2 B3 R3] */	\
 				"punpcklbw %%mm4, %%mm3;"	/* mm4 [G0 FF G1 FF G2 FF G3 FF] */	\
 													\
@@ -102,7 +106,7 @@ static const uint64_t mmx_table [6] __attribute__ ((aligned (16))) = {
 				"movq %%mm1, (%1);"		/* output BGRA[0] BGRA[1] */ 		\
 				"movq %%mm4, 8(%1);"		/* output BGRA[2] BGRA[3] */ 		\
 													\
-				"movq 40(%2), %%mm4;"							\
+				"movq 48(%2), %%mm4;"							\
 				"punpckhbw %%mm5, %%mm6;"	/* mm5 [B4 R4 B5 R6 B7 R7 B8 R8] */	\
 				"punpckhbw %%mm4, %%mm7;"	/* mm6 [G4 FF G5 FF G6 FF G7 FF] */	\
 													\
@@ -222,7 +226,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 				"paddsw %%mm4, %%mm3;"		/* Dgreen = Ugreen + Vgreen */
 
 				"movq 24(%3), %%mm7;"
-				"pmulhw %%mm7, %%mm1;"		/* calculate Dblue */
+				"pmullw %%mm7, %%mm1;"		/* calculate Dblue */
 				"psraw $6, %%mm1;"		/* Dblue = Dblue / 64 */
 
 				"movq %%mm2, (%2);"		/* backup Dred */
