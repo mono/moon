@@ -13,6 +13,7 @@
 
 #include <gtk/gtk.h>
 
+#include "debug.h"
 #include "namescope.h"
 #include "list.h"
 #include "collection.h"
@@ -20,6 +21,53 @@
 #include "clock.h"
 #include "runtime.h"
 #include "uielement.h"
+
+EventObject::EventObject ()
+  : refcount (1), events (NULL)
+{
+#if OBJECT_TRACKING
+	id = ++objects_created;
+	if (objects_alive == NULL)
+		objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
+	g_hash_table_insert (objects_alive, this, GINT_TO_POINTER (1));
+	weak_refs = NULL;
+
+	Track ("Created", "");
+#endif
+}
+
+EventObject::~EventObject()
+{
+#if OBJECT_TRACKING
+	objects_destroyed++;
+	g_hash_table_remove (objects_alive, this);
+	if (weak_refs) {
+		int length = g_hash_table_size (weak_refs);
+		if (length > 0) {
+			printf ("Destroying id=%i with %i weak refs.\n", id, length);
+			GList* list = g_hash_table_get_values (weak_refs);
+			GList* first = list;
+			while (list != NULL) {
+				EventObject* eo = (EventObject*) list->data;
+				printf ("\t%s %i.\n", eo->GetTypeName (), eo->id);
+				list = list->next;
+			}
+			g_list_free (first);
+		}
+		g_hash_table_destroy (weak_refs);
+		weak_refs = NULL;
+	}
+
+	if (refcount != 0) {
+		printf ("Object #%i was deleted before its refcount reached 0 (current refcount: %i)\n", id, refcount);
+		//print_stack_trace ();
+	}
+
+	Track ("Destroyed", "");
+#endif
+
+		FreeHandlers ();
+}
 
 #if OBJECT_TRACKING
 // Define the ID of the object you want to track
@@ -41,6 +89,22 @@ EventObject::Track (const char* done, const char* typname)
 		g_free (st);
 	}
 #endif
+}
+
+void
+EventObject::weak_ref (EventObject* base)
+{
+	if (weak_refs == NULL)
+		weak_refs = g_hash_table_new (g_direct_hash, g_direct_equal);
+	g_hash_table_insert (weak_refs, base, base);
+}
+
+void
+EventObject::weak_unref (EventObject* base)
+{
+	// if you get a glib assertion here, you're most likely accessing an already 
+	// destroyed object (or you have mismatched ref/unrefs).
+	g_hash_table_remove (weak_refs, base);
 }
 
 char* 
@@ -639,7 +703,7 @@ Type::Kind
 DependencyObject::GetObjectType ()
 {
 	g_critical ("%p This class is missing an override of GetObjectType ()", this);
-#if STACK_DEBUG
+#if DEBUG
 	print_stack_trace ();
 #endif
 	g_hash_table_foreach (current_values, dump, NULL);

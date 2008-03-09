@@ -10,12 +10,7 @@
 #ifndef __MOONLIGHT_DEBUG_H__
 #define __MOONLIGHT_DEBUG_H__
 
-// Define STACK_DEBUG here to enable debugging with stack frames.
-// Object tracking depends on this being defined in order to work.
-
-#define STACK_DEBUG 0
-
-#if STACK_DEBUG
+#if DEBUG
 
 #include <glib.h>
 #include <unistd.h>
@@ -36,11 +31,6 @@ void print_stack_trace ();
 void enable_vm_stack_trace ();
 void print_gdb_trace ();
 G_END_DECLS
-
-#else
-
-#define enable_vm_stack_trace()
-#define print_stack_trace()
 
 #endif
 

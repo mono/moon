@@ -33,8 +33,8 @@ Value::CreateUnrefPtr (DependencyObject* dob)
 {
 	Value* result = new Value (dob);
 	dob->unref ();
-	if (dob->refcount != 1)
-		g_warning ("reference count in CreateUnrefPtr = %d\n", dob->refcount);
+	if (dob->GetRefCount() != 1)
+		g_warning ("reference count in CreateUnrefPtr = %d\n", dob->GetRefCount());
 	return result;
 }
 
@@ -43,8 +43,8 @@ Value::CreateUnref (DependencyObject* dob)
 {
 	Value result = Value (dob);
 	dob->unref ();
-	if (dob->refcount != 1)
-		g_warning ("reference count in CreateUnref = %d\n", dob->refcount);
+	if (dob->GetRefCount() != 1)
+		g_warning ("reference count in CreateUnref = %d\n", dob->GetRefCount());
 	return result;
 }
 

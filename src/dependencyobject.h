@@ -12,12 +12,9 @@
 
 #include "value.h"
 #include "enums.h"
-#include "debug.h"
 #include "list.h"
 
-#if STACK_DEBUG
-#define OBJECT_TRACKING 1
-#endif
+//#define OBJECT_TRACKING 1
 
 #if OBJECT_TRACKING
 #define GET_OBJ_ID(x) (x ? x->id : 0)
@@ -35,19 +32,13 @@ struct EventList {
 	List *event_list;
 };
 
-//
-// This guy provide reference counting
-// and type management.
 // 
-// An object starts out with a reference
-// count of 1 (no need to ref it after 
-// creation), and will be deleted once
-// the count reaches 0.
+// An EventObject starts out with a reference count of 1 (no need to
+// ref it after creation), and will be deleted once the count reaches
+// 0.
 //
 // DEBUGGING
 // 
-// first define STACK_TRACE in debug.h to 1
-//
 // To log all creation/destruction/ref/unref of an object,
 // define OBJECT_TRACK_ID to that object's in dependencyobject.cpp.
 // (this will require that you first run the program once to print
@@ -63,89 +54,19 @@ struct EventList {
 // most likely crash when the child tries to call weak_unref on 
 // its destructed parent.
 //
-
-class EventObject {
- public:	
-	gint32 refcount;
-
 #if OBJECT_TRACKING
-	static int objects_created;
-	static int objects_destroyed;
-	static GHashTable* objects_alive;
-	int id;
-	GHashTable* weak_refs;
-
-	char* GetStackTrace (const char* prefix);
-	char* GetStackTrace () { return GetStackTrace (""); }
-	void PrintStackTrace ();
-	void Track (const char* done, const char* typname);
 #define OBJECT_TRACK(x,y) Track((x),(y))
 #else
 #define OBJECT_TRACK(x,y)
 #endif
 
-	EventObject () : refcount(1)
-	{
+class EventObject {
+ public:
+	EventObject ();
+
 #if OBJECT_TRACKING
-		id = ++objects_created;
-		if (objects_alive == NULL)
-			objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
-		g_hash_table_insert (objects_alive, this, GINT_TO_POINTER (1));
-		weak_refs = NULL;
-#endif
-		OBJECT_TRACK ("Created", "");
-
-		events = NULL;
-	}
-
-protected:
-	virtual ~EventObject ()
-	{
-#if OBJECT_TRACKING
-		objects_destroyed++;
-		g_hash_table_remove (objects_alive, this);
-		if (weak_refs) {
-			int length = g_hash_table_size (weak_refs);
-			if (length > 0) {
-				printf ("Destroying id=%i with %i weak refs.\n", id, length);
-				GList* list = g_hash_table_get_values (weak_refs);
-				GList* first = list;
-				while (list != NULL) {
-					EventObject* eo = (EventObject*) list->data;
-					printf ("\t%s %i.\n", eo->GetTypeName (), eo->id);
-					list = list->next;
-				}
-				g_list_free (first);
-			}
-			g_hash_table_destroy (weak_refs);
-			weak_refs = NULL;
-		}
-
-		if (refcount != 0) {
-			printf ("Object #%i was deleted before its refcount reached 0 (current refcount: %i)\n", id, refcount);
-			//print_stack_trace ();
-		}
-#endif
-		OBJECT_TRACK ("Destroyed", "");
-
-		FreeHandlers ();
-	}
-
-public:
-#if OBJECT_TRACKING
-	void weak_ref (EventObject* base)
-	{
-		if (weak_refs == NULL)
-			weak_refs = g_hash_table_new (g_direct_hash, g_direct_equal);
-		g_hash_table_insert (weak_refs, base, base);
-	}
-	
-	void weak_unref (EventObject* base)
-	{
-		// if you get a glib assertion here, you're most likely accessing an already 
-		// destroyed object (or you have mismatched ref/unrefs).
-		g_hash_table_remove (weak_refs, base);
-	}
+	void weak_ref (EventObject* base);
+	void weak_unref (EventObject* base);
 #endif
 
 	void ref ()
@@ -156,21 +77,22 @@ public:
 	
 	void unref ()
 	{
-		bool delete_me;
-
-		delete_me = g_atomic_int_dec_and_test (&refcount);
-	
 		OBJECT_TRACK ("Unref", GetTypeName ());
 
-		if (delete_me) {
+		if (g_atomic_int_dec_and_test (&refcount)) {
 			Emit (DestroyedEvent);
+			if (refcount != 0) {
 #if OBJECT_TRACKING
-			if (refcount != 0)
-				printf ("Object %i of type %s has been woken up from the dead.\n", id, GetTypeName ());
+				g_warning ("Object %i of type %s has been woken up from the dead.\n", id, GetTypeName ());
+#else
+				g_warning ("Object %p of type %s has been woken up from the dead.\n", this, GetTypeName ());
 #endif
+			}
 			delete this;
 		}
 	}
+
+	int GetRefCount () { return refcount; }
 
 	//
 	// Is:
@@ -204,16 +126,35 @@ public:
 
 	static int DestroyedEvent;
 
+
  protected:
+	virtual ~EventObject ();
+
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
 	bool Emit (char *event_name, EventArgs *calldata = NULL);
 	bool Emit (int event_id, EventArgs *calldata = NULL);
 
  private:
+
+	gint32 refcount;
+
 	void FreeHandlers ();
 	
 	EventList *events;
+
+#if OBJECT_TRACKING
+	static int objects_created;
+	static int objects_destroyed;
+	static GHashTable* objects_alive;
+	int id;
+	GHashTable* weak_refs;
+
+	char* GetStackTrace (const char* prefix);
+	char* GetStackTrace () { return GetStackTrace (""); }
+	void PrintStackTrace ();
+	void Track (const char* done, const char* typname);
+#endif
 };
 
 

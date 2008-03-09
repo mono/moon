@@ -6,10 +6,11 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
- 
+
+#include "config.h"
 #include "debug.h"
  
-#if STACK_DEBUG
+#if DEBUG
 
 #if INCLUDE_MONO_RUNTIME
 // Define to enable stack traces for managed frames.

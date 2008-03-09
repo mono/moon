@@ -1,5 +1,24 @@
 2008-03-08  Chris Toshok  <toshok@ximian.com>
 
+	* value.cpp (Value::CreateUnrefPtr): use GetRefCount() instead of
+	accessing dob->refcount.
+	(Value::CreateUnref): same.
+
+	* dependencyobject.h, dependency.cpp (class EventObject): reorder
+	this class definition so that we don't have multiple
+	public/protected/private areas.  confusing as hell :) Also, move
+	the implementations of the non-performance critical things into
+	the .cpp file, as they were making the .h rather cluttered (ctor,
+	dtor, weak ref/unref.)  Lastly, make almost everything private
+	instead of public (most importantly the refcount.)
+
+	* debug.h, debug.cpp: random code cleanup.  we don't need to be
+	concerned with adding some additional stack methods to the plugin
+	in the DEBUG case, so go ahead and just use DEBUG here instead of
+	STACK_DEBUG.
+
+2008-03-08  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.cpp, text.cpp, clock.cpp, mplayer.cpp: remove the
 	extern guint32 moonlight_flags.
 
