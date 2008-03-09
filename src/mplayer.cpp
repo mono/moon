@@ -312,6 +312,7 @@ MediaPlayer::Open (Media *media)
 	this->media = media;
 	this->media->ref ();
 	opened = true;
+	int stride;
 	
 	// Find audio/video streams
 	IMediaDemuxer *demuxer = media->GetDemuxer ();
@@ -336,14 +337,14 @@ MediaPlayer::Open (Media *media)
 			
 			height = video->stream->height;
 			width = video->stream->width;
-			
+			stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);			
 			// for conversion to rgb32 format needed for rendering
-			video->rgb_buffer = (uint8_t *) g_malloc0 (width * height * 4);
+			video->rgb_buffer = (uint8_t *) g_malloc0 (height * stride);
 			
 			// rendering surface
 			video->surface = cairo_image_surface_create_for_data (
 				video->rgb_buffer, CAIRO_FORMAT_ARGB32,
-				width, height, width * 4);
+				width, height, stride);
 			
 			// printf ("video size: %i, %i\n", video->stream->width, video->stream->height);
 			break;
@@ -472,7 +473,7 @@ render_frame (MediaPlayer *mplayer, MediaFrame *frame)
 	}
 	
 	uint8_t *rgb_dest[3] = { video->rgb_buffer, NULL, NULL };
-	int rgb_stride [3] = { video->stream->width * 4, 0, 0 };
+	int rgb_stride [3] = { cairo_image_surface_get_stride (video->surface), 0, 0 };
 	
 	stream->converter->Convert (frame->data_stride, frame->srcStride, frame->srcSlideY,
 				    frame->srcSlideH, rgb_dest, rgb_stride);
