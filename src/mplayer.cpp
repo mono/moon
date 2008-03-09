@@ -337,7 +337,13 @@ MediaPlayer::Open (Media *media)
 			
 			height = video->stream->height;
 			width = video->stream->width;
-			stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);			
+
+			stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);
+			if (stride % 16) {
+				int remain = stride % 16;
+				stride += 16 - remain;
+			}
+
 			// for conversion to rgb32 format needed for rendering
 			video->rgb_buffer = (uint8_t *) g_malloc0 (height * stride);
 			

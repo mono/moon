@@ -1,7 +1,11 @@
 2008-03-09  Larry Ewing  <lewing@novell.com>
 
+	* mplayer.cpp (MediaPlayer::Open): make the stride % 16 for now.
+
+2008-03-09  Larry Ewing  <lewing@novell.com>
+
 	* mplayer.cpp (MediaPlayer::Open): use the proper stride
-	caculation functions.
+	calculation functions.
 
 2008-03-08  Geoff Norton  <gnorton@novell.com>
 
