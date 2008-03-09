@@ -30,6 +30,9 @@ public:
 	
 	MediaResult Open ();
 	MediaResult Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride []);
+private:
+	bool have_mmx;
+	bool have_sse2;
 };
 
 class YUVConverterInfo : public ConverterInfo {

@@ -22,7 +22,6 @@ G_END_DECLS
 
 #include "yuv-converter.h"
 
-#if HAVE_MMX
 /* R = 1.164 * (Y - 16)		+ 1.596 * (V - 128)
  * G = 1.164 * (Y - 16)		- 0.813 * (V - 128)	- 0.391 * (U - 128)	
  * B = 1.164 * (Y - 16)					+ 2.018 * (U - 128)
@@ -33,94 +32,154 @@ G_END_DECLS
  * B U coefficient = 2.018*64 = 129 = 0x81
  * Y coefficient   = 1.164*64 =  74 = 0x4a
  */
-static const uint64_t mmx_table [8] __attribute__ ((aligned (16))) = {
-									0x0066006600660066ULL, /* Red V coefficient */
-									0xffccffccffccffccULL, /* Green V coefficient */
-									0xffe7ffe7ffe7ffe7ULL, /* Green U coefficient */
-									0x0081008100810081ULL, /* Blue U coefficient */
-									0x004a004a004a004aULL, /* Y coefficient */
-									0x0080008000800080ULL, /* 128 */
-									0x1010101010101010ULL, /* 16 */
-									0xFFFFFFFFFFFFFFFFULL, /* Alpha channel */
+
+#define RED_V_C 0x0066006600660066ULL
+#define GREEN_V_C 0xffccffccffccffccULL
+#define GREEN_U_C 0xffe7ffe7ffe7ffe7ULL
+#define BLUE_U_C 0x0081008100810081ULL
+#define Y_C 0x004a004a004a004aULL
+#define UV_128 0x0080008000800080ULL
+#define Y_16 0x1010101010101010ULL
+#define ALPHA_MASK 0xFFFFFFFFFFFFFFFFULL
+
+#if HAVE_SSE2 || HAVE_MMX
+static const uint64_t simd_table [16] __attribute__ ((aligned (32))) = {
+									RED_V_C, RED_V_C,
+									GREEN_V_C, GREEN_V_C,
+									GREEN_U_C, GREEN_U_C,
+									BLUE_U_C, BLUE_U_C,
+									Y_C, Y_C,
+									UV_128, UV_128,
+									Y_16, Y_16,
+									ALPHA_MASK, ALPHA_MASK,
 };
 
-/* We process 2 lines per so we fold this into a define:
- * Register usage:
- * 	%mm2: Rcoeff * V
- * 	%mm3: GUcoeff * U + GVcoeff * V
- * 	%mm1: Bcoeff * U 
- */
-#define YUV2RGB_MMX(y_plane, dest) do { \
-			__asm__ __volatile__ ( \
-				"movq (%0), %%mm0;"		/* mm0 [Y0 Y1 Y2 Y3 Y4 Y5 Y6 Y7] */	\
-				"movq 48(%2), %%mm7;"							\
-				"psubusb %%mm7, %%mm0;"		/* Y = Y - 16 */			\
-													\
-				"movq %%mm0, %%mm4;"		/* mm4 == mm0 */			\
-													\
-				"psllw $8, %%mm0;"		/* mm0 [00 Y0 00 Y2 00 Y4 00 Y6] */	\
-				"psrlw $8, %%mm0;"		/* mm0 [Y0 00 Y2 00 Y4 00 Y6 00] */	\
-				"psrlw $8, %%mm4;"		/* mm4 [Y1 00 Y3 00 Y5 00 Y7 00] */	\
-													\
-				"movq 32(%2), %%mm7;"							\
-				"pmullw %%mm7, %%mm0;"		/* calculate Y*Yc[even] */		\
-				"pmullw %%mm7, %%mm4;"		/* calculate Y*Yc[odd] */		\
-				"psraw $6, %%mm0;"		/* Yyc[even] = Yyc[even] / 64 */	\
-				"psraw $6, %%mm4;"		/* Yyc[odd] = Yyc[odd] / 64 */		\
-													\
-				"movq %%mm2, %%mm6;"							\
-				"movq %%mm3, %%mm7;"							\
-				"movq %%mm1, %%mm5;"							\
-													\
-				"paddsw %%mm0, %%mm2;"		/* CY[even] + DR */			\
-				"paddsw %%mm0, %%mm3;"		/* CY[even] + DG */			\
-				"paddsw %%mm0, %%mm1;"		/* CY[even] + DB */			\
-													\
-				"paddsw %%mm4, %%mm6;"		/* CY[odd] + DR */			\
-				"paddsw %%mm4, %%mm7;"		/* CY[odd] + DG */			\
-				"paddsw %%mm4, %%mm5;"		/* CY[odd] + DB */			\
-													\
-				"packuswb %%mm2, %%mm2;"	/* Clamp RGB to [0-255] */		\
-				"packuswb %%mm3, %%mm3;"						\
-				"packuswb %%mm1, %%mm1;"						\
-													\
-				"packuswb %%mm6, %%mm6;"						\
-				"packuswb %%mm7, %%mm7;"						\
-				"packuswb %%mm5, %%mm5;"						\
-													\
-				"punpcklbw %%mm6, %%mm2;"	/* mm2 [R0 R1 R2 R3 R4 R5 R6 R7] */	\
-				"punpcklbw %%mm7, %%mm3;"	/* mm3 [G0 G1 G2 G3 G4 G5 G6 G7] */	\
-				"punpcklbw %%mm5, %%mm1;"	/* mm1 [B0 B1 B2 B3 B4 B5 B6 B7] */	\
-													\
-				"movq %%mm2, %%mm5;"		/* copy RGB */				\
-				"movq %%mm3, %%mm7;"							\
-				"movq %%mm1, %%mm6;"							\
-													\
-				"movq 56(%2), %%mm4;"							\
-				"punpcklbw %%mm2, %%mm1;"	/* mm1 [B0 R0 B1 R1 B2 R2 B3 R3] */	\
-				"punpcklbw %%mm4, %%mm3;"	/* mm4 [G0 FF G1 FF G2 FF G3 FF] */	\
-													\
-				"movq %%mm1, %%mm4;"		/* mm3 [G0 FF G1 FF G2 FF G3 FF] */	\
-													\
-				"punpcklbw %%mm3, %%mm1;"	/* mm2 [B0 G0 R0 FF B1 G1 R1 FF] */	\
-				"punpckhbw %%mm3, %%mm4;"	/* mm3 [B2 G2 R2 FF B3 G3 R3 FF] */	\
-													\
-				"movq %%mm1, (%1);"		/* output BGRA[0] BGRA[1] */ 		\
-				"movq %%mm4, 8(%1);"		/* output BGRA[2] BGRA[3] */ 		\
-													\
-				"movq 56(%2), %%mm4;"							\
-				"punpckhbw %%mm5, %%mm6;"	/* mm5 [B4 R4 B5 R6 B7 R7 B8 R8] */	\
-				"punpckhbw %%mm4, %%mm7;"	/* mm6 [G4 FF G5 FF G6 FF G7 FF] */	\
-													\
-				"movq %%mm6, %%mm4;"		/* mm7 [G4 FF G5 FF G6 FF G7 FF] */	\
-													\
-				"punpcklbw %%mm7, %%mm6;"	/* mm6 [B4 G4 R4 FF B5 G5 R5 FF] */	\
-				"punpckhbw %%mm7, %%mm4;"	/* mm7 [B6 G6 R6 FF B7 G7 R7 FF] */	\
-													\
-				"movq %%mm6, 16(%1);"		/* output BGRA[4] BGRA[5] */ 		\
-				"movq %%mm4, 24(%1);"		/* output BGRA[6] BGRA[7] */ 		\
-				: : "r" (y_plane), "r" (dest), "r" (&mmx_table));			\
+#define CALC_COLOR_MODIFIERS(mov_instr, movu_instr, shift_instr, reg_type, zeros, output_offset1, output_offset2, u, v, coeff_storage) do {	\
+			__asm__ __volatile__ (										\
+				shift_instr " $" zeros ", %%"reg_type"7;"						\
+															\
+				movu_instr " (%0), %%"reg_type"1;"							\
+				movu_instr " (%1), %%"reg_type"2;"							\
+															\
+				"punpcklbw %%"reg_type"7, %%"reg_type"1;"						\
+				"punpcklbw %%"reg_type"7, %%"reg_type"2;"						\
+															\
+				mov_instr " 80(%3), %%"reg_type"7;"							\
+				"psubsw %%"reg_type"7, %%"reg_type"1;"			/* U = U - 128 */		\
+				"psubsw %%"reg_type"7, %%"reg_type"2;"			/* V = V - 128 */		\
+															\
+				mov_instr " %%"reg_type"1, %%"reg_type"3;"						\
+				mov_instr " %%"reg_type"2, %%"reg_type"4;"						\
+															\
+				mov_instr " (%3), %%"reg_type"7;"							\
+				"pmullw %%"reg_type"7, %%"reg_type"2;"			/* calculate Dred */		\
+				"psraw $6, %%"reg_type"2;"				/* Dred = Dred / 64 */		\
+															\
+				mov_instr " 32(%3), %%"reg_type"7;"							\
+				"pmullw %%"reg_type"7, %%"reg_type"3;"			/* calculate Ugreen */		\
+				"psraw $6, %%"reg_type"3;"				/* Ugreen = Ugreen / 64 */	\
+				mov_instr " 16(%3), %%"reg_type"7;"							\
+				"pmullw %%"reg_type"7, %%"reg_type"4;"			/* calculate Vgreen */		\
+				"psraw $6, %%"reg_type"4;"				/* Vgreen = Vgreen / 64 */	\
+				"paddsw %%"reg_type"4, %%"reg_type"3;"			/* Dgreen = Ugreen + Vgreen */	\
+															\
+				mov_instr " 48(%3), %%"reg_type"7;"							\
+				"pmullw %%"reg_type"7, %%"reg_type"1;"			/* calculate Dblue */		\
+				"psraw $6, %%"reg_type"1;"				/* Dblue = Dblue / 64 */	\
+															\
+				mov_instr " %%"reg_type"2, (%2);"			/* backup Dred */		\
+				mov_instr " %%"reg_type"3, "output_offset1"(%2);"	/* backup Dgreen */		\
+				mov_instr " %%"reg_type"1, "output_offset2"(%2);"	/* backup Dblue */		\
+				: : "r" (u), "r" (v), "r" (coeff_storage), "r" (&simd_table));				\
+	} while (0);
+
+#define RESTORE_COLOR_MODIFIERS(mov_instr, reg_type, coeff_storage, input_offset1, input_offset2) do {			\
+			__asm__ __volatile__ (										\
+				mov_instr " (%0), %%"reg_type"2;"				/* restore Dred */	\
+				mov_instr " "input_offset1"(%0), %%"reg_type"3;"		/* restore Dgreen */	\
+				mov_instr " "input_offset2"(%0), %%"reg_type"1;"		/* restore Dblue */	\
+				: : "r" (coeff_storage));								\
+	} while (0);
+
+#define YUV2RGB_INTEL_SIMD(mov_instr, movu_instr, reg_type, output_offset1, output_offset2, output_offset3, y_plane, dest) do { 	\
+			__asm__ __volatile__ ( 										\
+				movu_instr " (%0), %%"reg_type"0;"		/* Load Y plane into r0 */		\
+				mov_instr " 96(%2), %%"reg_type"7;"		/* Load 16 into r7 */			\
+				"psubusb %%"reg_type"7, %%"reg_type"0;"		/* Y = Y - 16 */			\
+															\
+				mov_instr " %%"reg_type"0, %%"reg_type"4;"	/* r4 == r0 */				\
+															\
+				"psllw $8, %%"reg_type"0;"			/* r0 [00 Y0 00 Y2 ...] */		\
+				"psrlw $8, %%"reg_type"0;"			/* r0 [Y0 00 Y2 00 ...] */		\
+				"psrlw $8, %%"reg_type"4;"			/* r4 [Y1 00 Y3 00 ...] */		\
+															\
+				mov_instr " 64(%2), %%"reg_type"7;"							\
+				"pmullw %%"reg_type"7, %%"reg_type"0;"		/* calculate Y*Yc[even] */		\
+				"pmullw %%"reg_type"7, %%"reg_type"4;"		/* calculate Y*Yc[odd] */		\
+				"psraw $6, %%"reg_type"0;"			/* Yyc[even] = Yyc[even] / 64 */	\
+				"psraw $6, %%"reg_type"4;"			/* Yyc[odd] = Yyc[odd] / 64 */		\
+															\
+				mov_instr " %%"reg_type"2, %%"reg_type"6;"						\
+				mov_instr " %%"reg_type"3, %%"reg_type"7;"						\
+				mov_instr " %%"reg_type"1, %%"reg_type"5;"						\
+															\
+				"paddsw %%"reg_type"0, %%"reg_type"2;"		/* CY[even] + DR */			\
+				"paddsw %%"reg_type"0, %%"reg_type"3;"		/* CY[even] + DG */			\
+				"paddsw %%"reg_type"0, %%"reg_type"1;"		/* CY[even] + DB */			\
+															\
+				"paddsw %%"reg_type"4, %%"reg_type"6;"		/* CY[odd] + DR */			\
+				"paddsw %%"reg_type"4, %%"reg_type"7;"		/* CY[odd] + DG */			\
+				"paddsw %%"reg_type"4, %%"reg_type"5;"		/* CY[odd] + DB */			\
+															\
+				"packuswb %%"reg_type"2, %%"reg_type"2;"	/* Clamp RGB to [0-255] */		\
+				"packuswb %%"reg_type"3, %%"reg_type"3;"						\
+				"packuswb %%"reg_type"1, %%"reg_type"1;"						\
+															\
+				"packuswb %%"reg_type"6, %%"reg_type"6;"						\
+				"packuswb %%"reg_type"7, %%"reg_type"7;"						\
+				"packuswb %%"reg_type"5, %%"reg_type"5;"						\
+															\
+				"punpcklbw %%"reg_type"6, %%"reg_type"2;"	/* r2 [R0 R1 R2 R3 ...] */		\
+				"punpcklbw %%"reg_type"7, %%"reg_type"3;"	/* r3 [G0 G1 G2 G3 ...] */		\
+				"punpcklbw %%"reg_type"5, %%"reg_type"1;"	/* r1 [B0 B1 B2 B3 ...] */		\
+															\
+				mov_instr " %%"reg_type"2, %%"reg_type"5;"	/* copy RGB */				\
+				mov_instr " %%"reg_type"3, %%"reg_type"7;"						\
+				mov_instr " %%"reg_type"1, %%"reg_type"6;"						\
+															\
+				mov_instr " 112(%2), %%"reg_type"4;"							\
+				"punpcklbw %%"reg_type"2, %%"reg_type"1;"	/* r1 [B0 R0 B1 R1 ...] */		\
+				"punpcklbw %%"reg_type"4, %%"reg_type"3;"	/* r4 [G0 FF G1 FF ...] */		\
+															\
+				mov_instr " %%"reg_type"1, %%"reg_type"4;"	/* r3 [G0 FF G1 FF ...] */		\
+															\
+				"punpcklbw %%"reg_type"3, %%"reg_type"1;"	/* r2 [B0 G0 R0 FF B1 G1 R1 FF ...] */	\
+				"punpckhbw %%"reg_type"3, %%"reg_type"4;"	/* r3 [B2 G2 R2 FF B3 G3 R3 FF ...] */	\
+															\
+				movu_instr " %%"reg_type"1, (%1);"		/* output BGRA */	 		\
+				movu_instr " %%"reg_type"4, "output_offset1"(%1);"					\
+															\
+				mov_instr " 112(%2), %%"reg_type"4;"							\
+				"punpckhbw %%"reg_type"5, %%"reg_type"6;"						\
+				"punpckhbw %%"reg_type"4, %%"reg_type"7;"						\
+															\
+				mov_instr " %%"reg_type"6, %%"reg_type"4;"						\
+															\
+				"punpcklbw %%"reg_type"7, %%"reg_type"6;"						\
+				"punpckhbw %%"reg_type"7, %%"reg_type"4;"						\
+															\
+				movu_instr " %%"reg_type"6, "output_offset2"(%1);"					\
+				movu_instr " %%"reg_type"4, "output_offset3"(%1);"					\
+				: : "r" (y_plane), "r" (dest), "r" (&simd_table));					\
 		} while (0);
+#endif
+
+#if HAVE_SSE2
+#define YUV2RGB_SSE(y_plane, dest) YUV2RGB_INTEL_SIMD("movdqa", "movdqu", "xmm", "16", "32", "48", y_plane, dest)
+#endif
+
+#if HAVE_MMX
+#define YUV2RGB_MMX(y_plane, dest) YUV2RGB_INTEL_SIMD("movq", "movq", "mm", "8", "16", "24", y_plane, dest)
 #endif
 
 static inline void YUV444ToBGRA(uint8_t Y, uint8_t U, uint8_t V, uint8_t *dst)
@@ -153,6 +212,24 @@ YUVConverterInfo::Create (Media* media, VideoStream* stream)
 
 YUVConverter::YUVConverter (Media* media, VideoStream* stream) : IImageConverter (media, stream)
 {
+#if !defined(__amd64__) && !defined(__x86_64__)
+	have_mmx = true;
+	have_sse2 = true;
+#else
+	// FIXME: We need to detect this at runtime
+#  if HAVE_MMX
+	have_mmx = true;
+#  else
+	have_mmx = false;
+#  endif
+
+#  if HAVE_SSE2
+	have_sse2 = true;
+#  else
+	have_sse2 = false;
+#  endif
+
+#endif
 }
 
 YUVConverter::~YUVConverter ()
@@ -175,6 +252,10 @@ YUVConverter::Open ()
 	return MEDIA_SUCCESS;
 }
 
+/* 
+ * FIXME: We need to use the have_* runtime detection code so we can distribute a MMX/SSE2 build that will gracefully
+ * fall back on ancient processors / processors without those features
+ */
 MediaResult
 YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride [])
 {
@@ -193,56 +274,48 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 	int height = srcSlideH;
 	int planar_delta = srcStride[0] - (dstStride[0]/4);
 
-#if HAVE_MMX
+#if HAVE_SSE2
+	uint64_t rgb_uv [6];
+
+	/* YUV420p processes 2 lines at a time */
+	for (i = 0; i < height/2; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
+		for (j = 0; j < width/16; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
+			CALC_COLOR_MODIFIERS("movdqa", "movdqu", "pslldq", "xmm", "128", "16", "32", u_plane, v_plane, &rgb_uv);
+			
+			YUV2RGB_SSE(y_row1, dest_row1);
+			
+			RESTORE_COLOR_MODIFIERS("movdqa", "xmm", &rgb_uv, "16", "32");
+
+			YUV2RGB_SSE(y_row2, dest_row2);
+		}
+		/* We currently dont SSE convert these pixel
+		 * the srcStride is padded enough that we could; but we'd have to track and clamp output
+		 * we should measure the metric for that check on output for the extra 2/4/6 pixels on the
+		 * end.  I presume that its faster to do it this way
+		 */
+		for (j = 0; j < (width-(width/16)*16); j+= 2, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
+			YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);
+			YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));
+			
+			YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);
+			YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));
+		}
+		y_row1 += planar_delta;
+		y_row2 += planar_delta;
+		u_plane += planar_delta >> 1;
+		v_plane += planar_delta >> 1;
+	}
+#elif HAVE_MMX
 	uint64_t rgb_uv [3];
 
 	/* YUV420p processes 2 lines at a time */
 	for (i = 0; i < height/2; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 		for (j = 0; j < width/8; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
-			__asm__ __volatile__ (
-				"psllq $64, %%mm7;"		/* mm7 [00 00 00 00 00 00 00 00] */ 
-
-				"movd (%0), %%mm1;"		/* mm1 [U0 U1 U2 U3 00 00 00 00] */
-				"movd (%1), %%mm2;"		/* mm2 [V0 V1 V2 V3 00 00 00 00] */
-
-				"punpcklbw %%mm7, %%mm1;"	/* mm1 [U0 00 U1 00 U2 00 U3 00] */	
-				"punpcklbw %%mm7, %%mm2;"	/* mm2 [V0 00 V1 00 V2 00 V3 00] */	
-
-				"movq 40(%3), %%mm7;"
-				"psubsw %%mm7, %%mm1;"		/* U = U - 128 */
-				"psubsw %%mm7, %%mm2;"		/* V = V - 128 */
-
-				"movq %%mm1, %%mm3;"		/* mm3 = mm1 */
-				"movq %%mm2, %%mm4;"		/* mm4 = mm1 */
-
-				"movq (%3), %%mm7;"
-				"pmullw %%mm7, %%mm2;"		/* calculate Dred */
-				"psraw $6, %%mm2;"		/* Dred = Dred / 64 */
-
-				"movq 16(%3), %%mm7;"
-				"pmullw %%mm7, %%mm3;"		/* calculate Ugreen */ 
-				"psraw $6, %%mm3;"		/* Ugreen = Ugreen / 64 */
-				"movq 8(%3), %%mm7;"
-				"pmullw %%mm7, %%mm4;"		/* calculate Vgreen */ 
-				"psraw $6, %%mm4;"		/* Vgreen = Vgreen / 64 */
-				"paddsw %%mm4, %%mm3;"		/* Dgreen = Ugreen + Vgreen */
-
-				"movq 24(%3), %%mm7;"
-				"pmullw %%mm7, %%mm1;"		/* calculate Dblue */
-				"psraw $6, %%mm1;"		/* Dblue = Dblue / 64 */
-
-				"movq %%mm2, (%2);"		/* backup Dred */
-				"movq %%mm3, 8(%2);"		/* backup Dgreen */
-				"movq %%mm1, 16(%2);"		/* backup Dblue */
-				: : "r" (u_plane), "r" (v_plane), "r" (&rgb_uv), "r" (&mmx_table));
+			CALC_COLOR_MODIFIERS("movq", "movd", "psllq", "mm", "64", "8", "16", u_plane, v_plane, &rgb_uv);
 
 			YUV2RGB_MMX(y_row1, dest_row1);
 
-			__asm__ __volatile__ (
-				"movq (%0), %%mm2;"		/* restore Dred */
-				"movq 8(%0), %%mm3;"		/* restore Dgreen */
-				"movq 16(%0), %%mm1;"		/* restore Dblue */
-				: : "r" (&rgb_uv));
+			RESTORE_COLOR_MODIFIERS("movq", "mm", &rgb_uv, "8", "16");
 
 			YUV2RGB_MMX(y_row2, dest_row2);
 		}

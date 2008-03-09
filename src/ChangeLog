@@ -1,5 +1,11 @@
 2008-03-08  Geoff Norton  <gnorton@novell.com>
 
+	* yuv-converter.cpp:  Implement a SSE2 version of the YUV2RGB
+	codepath along with some code cleanup.  Still some more cleanup
+	to do for runtime detection of CPU features.
+
+2008-03-08  Geoff Norton  <gnorton@novell.com>
+
 	* yuv-converter.cpp:  Fix some erroneous math.  U' != U.
 	These coefficients are far more sane now and our lum change is 
 	reflected properly.
