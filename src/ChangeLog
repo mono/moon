@@ -1,3 +1,8 @@
+2008-03-09  Geoff Norton  <gnorton@novell.com>
+
+	* yuv-converter.cpp: Implement runtime fallbacks in the Convert
+	function (TODO: Still need to runtime detect SSE2/MMX) 
+
 2008-03-09  Larry Ewing  <lewing@novell.com>
 
 	* mplayer.cpp (MediaPlayer::Open): make the stride % 16 for now.

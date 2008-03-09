@@ -54,6 +54,16 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (32))) = {
 									ALPHA_MASK, ALPHA_MASK,
 };
 
+#define PROCESS_REMAINDER(simd_stride) do {										\
+			for (j = 0; j < (width-(width/simd_stride)*simd_stride); j+= 2, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) { \
+				YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);					\
+				YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));				\
+															\
+				YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);					\
+				YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));				\
+			}												\
+	} while (0); 
+	
 #define CALC_COLOR_MODIFIERS(mov_instr, movu_instr, shift_instr, reg_type, zeros, output_offset1, output_offset2, u, v, coeff_storage) do {	\
 			__asm__ __volatile__ (										\
 				shift_instr " $" zeros ", %%"reg_type"7;"						\
@@ -182,6 +192,13 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (32))) = {
 #define YUV2RGB_MMX(y_plane, dest) YUV2RGB_INTEL_SIMD("movq", "movq", "mm", "8", "16", "24", y_plane, dest)
 #endif
 
+#define CORRECT_PLANES() do {				\
+			y_row1 += planar_delta;		\
+			y_row2 += planar_delta;		\
+			u_plane += planar_delta >> 1;	\
+			v_plane += planar_delta >> 1;	\
+	} while (0); 
+
 static inline void YUV444ToBGRA(uint8_t Y, uint8_t U, uint8_t V, uint8_t *dst)
 {
 	dst[2] = CLAMP((298 * (Y - 16) + 409 * (V - 128) + 128) >> 8, 0, 255);
@@ -212,7 +229,7 @@ YUVConverterInfo::Create (Media* media, VideoStream* stream)
 
 YUVConverter::YUVConverter (Media* media, VideoStream* stream) : IImageConverter (media, stream)
 {
-#if !defined(__amd64__) && !defined(__x86_64__)
+#if defined(__amd64__) && defined(__x86_64__)
 	have_mmx = true;
 	have_sse2 = true;
 #else
@@ -252,10 +269,6 @@ YUVConverter::Open ()
 	return MEDIA_SUCCESS;
 }
 
-/* 
- * FIXME: We need to use the have_* runtime detection code so we can distribute a MMX/SSE2 build that will gracefully
- * fall back on ancient processors / processors without those features
- */
 MediaResult
 YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride [])
 {
@@ -273,86 +286,60 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 	int width = dstStride[0]/4;
 	int height = srcSlideH;
 	int planar_delta = srcStride[0] - (dstStride[0]/4);
-
-#if HAVE_SSE2
+	
 	uint64_t rgb_uv [6];
 
-	/* YUV420p processes 2 lines at a time */
-	for (i = 0; i < height/2; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
-		for (j = 0; j < width/16; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
-			CALC_COLOR_MODIFIERS("movdqa", "movdqu", "pslldq", "xmm", "128", "16", "32", u_plane, v_plane, &rgb_uv);
+#if HAVE_SSE2
+	if (have_sse2) {
+		for (i = 0; i < height/2; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
+			for (j = 0; j < width/16; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
+				CALC_COLOR_MODIFIERS("movdqa", "movdqu", "pslldq", "xmm", "128", "16", "32", u_plane, v_plane, &rgb_uv);
 			
-			YUV2RGB_SSE(y_row1, dest_row1);
+				YUV2RGB_SSE(y_row1, dest_row1);
 			
-			RESTORE_COLOR_MODIFIERS("movdqa", "xmm", &rgb_uv, "16", "32");
+				RESTORE_COLOR_MODIFIERS("movdqa", "xmm", &rgb_uv, "16", "32");
 
-			YUV2RGB_SSE(y_row2, dest_row2);
+				YUV2RGB_SSE(y_row2, dest_row2);
+			}
+			PROCESS_REMAINDER(16);
+
+			CORRECT_PLANES();
 		}
-		/* We currently dont SSE convert these pixel
-		 * the srcStride is padded enough that we could; but we'd have to track and clamp output
-		 * we should measure the metric for that check on output for the extra 2/4/6 pixels on the
-		 * end.  I presume that its faster to do it this way
-		 */
-		for (j = 0; j < (width-(width/16)*16); j+= 2, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
-			YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);
-			YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));
+	} else {
+#endif
+#if HAVE_MMX
+		if (have_mmx) {
+			for (i = 0; i < height/2; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
+				for (j = 0; j < width/8; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
+					CALC_COLOR_MODIFIERS("movq", "movd", "psllq", "mm", "64", "8", "16", u_plane, v_plane, &rgb_uv);
+
+					YUV2RGB_MMX(y_row1, dest_row1);
+
+					RESTORE_COLOR_MODIFIERS("movq", "mm", &rgb_uv, "8", "16");
+
+					YUV2RGB_MMX(y_row2, dest_row2);
+				}
+				PROCESS_REMAINDER(8);
+
+				CORRECT_PLANES();
+			}
+		} else {
+#endif
+			for (i = 0; i < height; i += 2, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
+				for (j = 0; j < width; j += 2, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
+					YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);
+					YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));
 			
-			YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);
-			YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));
+					YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);
+					YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));
+				}
+				CORRECT_PLANES();
+			}
+#if HAVE_MMX
 		}
-		y_row1 += planar_delta;
-		y_row2 += planar_delta;
-		u_plane += planar_delta >> 1;
-		v_plane += planar_delta >> 1;
-	}
-#elif HAVE_MMX
-	uint64_t rgb_uv [3];
-
-	/* YUV420p processes 2 lines at a time */
-	for (i = 0; i < height/2; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
-		for (j = 0; j < width/8; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
-			CALC_COLOR_MODIFIERS("movq", "movd", "psllq", "mm", "64", "8", "16", u_plane, v_plane, &rgb_uv);
-
-			YUV2RGB_MMX(y_row1, dest_row1);
-
-			RESTORE_COLOR_MODIFIERS("movq", "mm", &rgb_uv, "8", "16");
-
-			YUV2RGB_MMX(y_row2, dest_row2);
-		}
-		/* We currently dont MMX convert these pixel
-		 * the srcStride is padded enough that we could; but we'd have to track and clamp output
-		 * we should measure the metric for that check on output for the extra 2/4/6 pixels on the
-		 * end.  I presume that its faster to do it this way
-		 */
-		for (j = 0; j < (width-(width/8)*8); j+= 2, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
-			YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);
-			YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));
-			
-			YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);
-			YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));
-		}
-		y_row1 += planar_delta;
-		y_row2 += planar_delta;
-		u_plane += planar_delta >> 1;
-		v_plane += planar_delta >> 1;
-	}
-
-	__asm__ __volatile__ ("emms");
-#else
-	for (i = 0; i < height; i += 2, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
-		for (j = 0; j < width; j += 2, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
-			YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);
-			YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));
-			
-			YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);
-			YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));
-		}
-		y_row1 += planar_delta;
-		y_row2 += planar_delta;
-		u_plane += planar_delta >> 1;
-		v_plane += planar_delta >> 1;
+#endif
+#if HAVE_SSE2
 	}
 #endif
-
 	return MEDIA_SUCCESS;
 }
