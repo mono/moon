@@ -398,13 +398,8 @@ TimeManager::SourceTick ()
 		suggested_timeout = FPS_TO_DELAY (MINIMUM_FPS);
 	}
 
-// 	printf ("suggested timeout is %dms (%.2ffps)\n", suggested_timeout, DELAY_TO_FPS (suggested_timeout));
-// 	printf ("current timeout is %dms (%.2ffps)\n", current_timeout, DELAY_TO_FPS (current_timeout));
-
-	if (ABS(suggested_timeout - current_timeout) > TIMEOUT_ERROR_DELTA) {
-		source->SetTimerFrequency (suggested_timeout);
-		current_timeout = suggested_timeout;
-	}
+	current_timeout = suggested_timeout;
+	source->SetTimerFrequency (MAX (0, current_timeout - xt / 10000));
 	
 	previous_smoothed = current_smoothed;
 

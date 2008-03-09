@@ -1,3 +1,13 @@
+2008-03-08  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (TimeManager::SourceTick): larry gets credit for
+	spotting this problem and suggesting the fix.  remove the
+	hysteresis code, and *always* set a new timeout, based on what our
+	idea of the timeout and the amount of time we spent rendering the
+	previous frame.  This smooths things out immensely, removes (for
+	me) the animation stutters induced by audio in sprawl, and results
+	in fewer dropped frames.
+
 2008-03-08  Geoff Norton  <gnorton@novell.com>
 
 	* yuv-converter.cpp: Fix the luminance problem (Y needs shift;
