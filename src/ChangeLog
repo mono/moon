@@ -1,5 +1,9 @@
 2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* playlist.cpp: Playlist::AddEntry: unref the entry after adding it.
+
+2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp: When stopping, we need to seek to the beginning again. Fixes
 	  #368461.
 

@@ -258,7 +258,6 @@ Playlist::~Playlist ()
 {
 	LOG_PLAYLISTS ("Playlist::~Playlist ()\n");
 
-	entries->Clear (true);
 	delete entries;
 	element->RemoveHandler (element->MediaEndedEvent, on_media_ended, this);
 }
@@ -380,6 +379,7 @@ Playlist::AddEntry (PlaylistEntry *entry)
 	LOG_PLAYLISTS ("Playlist::AddEntry (%p)\n", entry);
 
 	entries->Append (new PlaylistNode (entry));
+	entry->unref ();
 }
 
 void
