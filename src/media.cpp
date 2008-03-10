@@ -1075,7 +1075,7 @@ MediaElement::Pause ()
 	case Playing:
 	case Stopped: // docs: pause
 		if (mplayer->CanPause ()) {
-			if (playlist->Pause ()) {
+			if (playlist && playlist->Pause ()) {
 				SetState (Paused);
 		}
 		}
