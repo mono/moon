@@ -467,7 +467,7 @@ render_frame (MediaPlayer *mplayer, MediaFrame *frame)
 	
 	if (!frame->IsPlanar ()) {
 		// Just copy the data
-		memcpy (video->rgb_buffer, frame->buffer, MIN (frame->buflen, (uint32_t) (mplayer->width * mplayer->height * 4)));
+		memcpy (video->rgb_buffer, frame->buffer, MIN (frame->buflen, (uint32_t) (cairo_image_surface_get_stride (video->surface) * mplayer->height)));
 		mplayer->rendered_frame = true;
 		return;
 	}
