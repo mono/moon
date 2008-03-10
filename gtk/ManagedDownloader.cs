@@ -99,6 +99,10 @@ namespace Gtk.Moonlight {
 
 		void Download ()
 		{
+			// we can't call downloader_get_surface (or other stuff) if the download has been aborted
+			if (!downloading)
+				return;
+
 			IntPtr time_manager = surface_get_time_manager (downloader_get_surface (downloader));
 			// Special case: local file, just notify that we are done
 			
