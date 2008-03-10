@@ -4,6 +4,11 @@
 
 2008-03-09  Geoff Norton  <gnorton@novell.com>
 
+	* yuv-converter.cpp: Make sure we emms after finishing sse/mmx 
+	instrucitons.
+
+2008-03-09  Geoff Norton  <gnorton@novell.com>
+
 	* yuv-converter.cpp: Detect the CPU features at runtime.  We
 	should now be able to distribute a 32-bit SSE2/MMX build to
 	non SSE2/MMX machines

@@ -335,6 +335,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 
 			CORRECT_PLANES();
 		}
+		__asm__ __volatile__ ("emms");
 	} else {
 #endif
 #if HAVE_MMX
@@ -353,6 +354,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 
 				CORRECT_PLANES();
 			}
+			__asm__ __volatile__ ("emms");
 		} else {
 #endif
 			for (i = 0; i < height; i += 2, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
