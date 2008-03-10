@@ -1,5 +1,9 @@
 2008-03-10  Michael Dominic K.  <mdk@mdk.am>
 
+	* shape.cpp: Tiny refactoring to the surface-size calculation code.
+
+2008-03-10  Michael Dominic K.  <mdk@mdk.am>
+
 	* runtime.h:
 	* shape.cpp: Adding functionality to limit the amount of caching
 	happening on one surface. Currently set to ~6mb. 

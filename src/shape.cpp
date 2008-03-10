@@ -30,6 +30,12 @@
 // SL-Cairo convertion and helper routines
 //
 
+// Hmm... w * h * 4 might be incorrect in some cases actually...
+// but in 99% it should be okay. If you're running on a 16bit
+// server you're prolly screwed with cairo perf anyways.
+// This should be eventually moved to Surface:: code. 
+#define CALCULATE_SURFACE_BYTE_SIZE(w,h) ((int64_t) w * (int64_t) h * 4)
+
 static cairo_line_join_t
 convert_line_join (PenLineJoin pen_line_join)
 {
@@ -368,7 +374,7 @@ Shape::IsCandidateForCaching (void)
 	// This is not 100% correct check -- the actual surface size might be
 	// a tiny little bit larger. It's not a problem though if we go few
 	// bytes above the cache limit.
-	if (! GetSurface ()->VerifyWithCacheSizeCounter (bounds.w * bounds.h * 4))
+	if (! GetSurface ()->VerifyWithCacheSizeCounter (CALCULATE_SURFACE_BYTE_SIZE (bounds.w, bounds.h)))
 		return FALSE;
 
 	// one last line of defense, lets not cache things 
@@ -416,10 +422,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_destroy (cached_cr);
 		
 		// Increase our cache size
-		// w * h * 4 might be incorrect in some cases actually...
-		// but in 99% it should be okay. If you're running on a 16bit
-		// server you're prolly screwed with cairo perf anyways.
-		cached_size = (int64_t) cache_extents.w * (int64_t) cache_extents.h * 4;
+		cached_size = CALCULATE_SURFACE_BYTE_SIZE (cache_extents.w, cache_extents.h);
 		if (GetSurface ())
 			GetSurface ()->AddToCacheSizeCounter (cached_size);
 	}
