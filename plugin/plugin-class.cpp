@@ -2059,9 +2059,8 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 				char *val = NULL;
 				
 				dob->SetValue (p, Value (val));
-			} else {
-				DEBUGWARN ("Setting NULL for unsupported type (%s::%s)", dob->GetTypeName (), p->name);
-			}
+			} else 
+				dob->SetValue (p, NULL);
 			
 			return true;
 		} else if (NPVARIANT_IS_VOID (*value)) {

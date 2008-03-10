@@ -1,3 +1,10 @@
+2008-03-10  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin-class.cpp: Don't scream about the unsupported type when
+	setting a property to NULL. Instead, pass NULL and let the
+	SetValue do it's thing (ie. nullable handling). This fixes the 
+	Animation_CornerCases.htm.
+
 2008-03-08  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp:  I suppose I'm one of these for real now.
