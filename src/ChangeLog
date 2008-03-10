@@ -1,3 +1,9 @@
+2008-03-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (TextLayout::Layout): More line-wrap fixes - implement
+	Silverlights TextWrapping="Wrap" bug where it doesn't ever break
+	the last word.
+
 2008-03-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Updated.

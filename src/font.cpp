@@ -1969,6 +1969,7 @@ public:
 	cairo_path_t *path;
 	int start, end;
 	TextRun *run;
+	double uwidth;
 	double width;
 	
 	TextSegment (TextRun *run, int start);
@@ -1977,6 +1978,7 @@ public:
 
 TextSegment::TextSegment (TextRun *run, int start)
 {
+	this->uwidth = -1.0;
 	this->width = -1.0;
 	this->path = NULL;
 	this->run = run;
@@ -2163,13 +2165,44 @@ struct Space {
 #define BBOX_MARGIN 1.0
 #define BBOX_PADDING 2.0
 
+static int
+IndexOfLastWord (gunichar *text)
+{
+	gunichar *inptr = text;
+	gunichar *word = NULL;
+	
+	while (*inptr == ' ' || *inptr == '\n')
+		inptr++;
+	
+	while (*inptr) {
+		// skip over the word
+		word = inptr++;
+		while (*inptr && *inptr != ' ' && *inptr != '\n')
+			inptr++;
+		
+		if (*inptr == '\n')
+			word = NULL;
+		
+		// skip over lwsp
+		while (*inptr == ' ' || *inptr == '\n')
+			inptr++;
+	}
+	
+	if (word != NULL)
+		return (word - text);
+	
+	return -1;
+}
+
 void
 TextLayout::Layout ()
 {
 	double nslw, lw, lh, sx, dy;
 	bool first_char = true;
+	bool first_run = true;
 	TextSegment *segment;
 	bool clipped = false;
+	int last_word = -1;
 	gunichar prev = 0;
 	GlyphInfo *glyph;
 	TextLine *line;
@@ -2224,6 +2257,7 @@ TextLayout::Layout ()
 				line = 0;
 			
 			first_char = true;
+			first_run = true;
 			clipped = false;
 			spc.width = 0.0;
 			spc.index = -1;
@@ -2236,6 +2270,9 @@ TextLayout::Layout ()
 		
 		if (!run->text[0])
 			continue;
+		
+		if (!run->next)
+			last_word = IndexOfLastWord (run->text);
 		
 		descend = MIN (descend, run->font->Descender ());
 		//ascend = MAX (ascend, run->font->Ascender ());
@@ -2293,7 +2330,10 @@ TextLayout::Layout ()
 					break;
 				case TextWrappingWrap:
 					// Wrap at word boundaries if at all possible, failing that break the word.
-					if (overflow <= 1.0 && (run->text[i + 1] == 0 || isSpace (run->text[i + 1]))) {
+					if (last_word != -1 && i >= last_word && spc.index == -1 && first_run) {
+						// Silverlight has a bug where it will never break the last word
+						wrap = false;
+					} else if (overflow <= 1.0 && (run->text[i + 1] == 0 || isSpace (run->text[i + 1]))) {
 						// Force-fit this last char
 						wrap = false;
 					} else if (spc.index != -1) {
@@ -2303,7 +2343,7 @@ TextLayout::Layout ()
 						i = spc.index;
 						wrap = true;
 					} else if (!first_char) {
-						if (spc.width > 0.0) {
+						if (!first_run) {
 							// Not the first Run on the line,
 							// wrap from the beginning of the
 							// Run
@@ -2351,6 +2391,7 @@ TextLayout::Layout ()
 				if (!segment || segment->end > segment->start) {
 					if (segment) {
 						line->segments->Append (segment);
+						segment->uwidth = nslw - sx;
 						segment->width = lw - sx;
 					}
 					
@@ -2373,6 +2414,7 @@ TextLayout::Layout ()
 				lh = run->font->Height ();
 				line = new TextLine ();
 				first_char = true;
+				first_run = true;
 				spc.width = 0.0;
 				spc.index = -1;
 				sx = lw = 0.0;
@@ -2392,9 +2434,12 @@ TextLayout::Layout ()
 			segment->end = i;
 		
 		line->segments->Append (segment);
+		segment->uwidth = lw - sx;
 		segment->width = lw - sx;
 		
 		width = MAX (width, nslw);
+		
+		first_run = false;
 	}
 	
 	if (line) {
@@ -2498,7 +2543,10 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 				if (segment->path->data)
 					cairo_append_path (cr, segment->path);
 				
-				x1 = x0 + segment->width;
+				if (!segment->next)
+					x1 = x0 + segment->uwidth;
+				else
+					x1 = x0 + segment->width;
 				cairo_fill (cr);
 			}
 			
