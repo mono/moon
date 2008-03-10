@@ -169,7 +169,19 @@ Collection::SetVal (int index, DependencyObject *data)
 	old->obj->RemovePropertyChangeListener (this);
 	
 	if (closure) {
+		NameScope *con_ns = closure->FindNameScope ();
+		const char *n;
+
+		n = old->obj->GetName();
+		if (con_ns && n)
+			con_ns->UnregisterName (n);
+
 		EmitChanged (CollectionChangeTypeItemRemoved, old->obj, NULL);
+
+		n = data->GetName();
+		if (con_ns && n)
+			con_ns->RegisterName (n, data);
+
 		EmitChanged (CollectionChangeTypeItemAdded, data, NULL);
 	}
 
@@ -202,11 +214,18 @@ Collection::Remove (DependencyObject *data)
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (data);
+		NameScope *con_ns = closure->FindNameScope ();
+
 		if (ns && ns->GetMerged ()) {
-			NameScope *con_ns = closure->FindNameScope();
 			if (con_ns)
 				con_ns->UnmergeTemporaryScope (ns);
 		}
+
+		const char *n;
+
+		n = data->GetName();
+		if (con_ns && n)
+			con_ns->UnregisterName (n);
 
 		EmitChanged (CollectionChangeTypeItemRemoved, data, NULL);
 	}
@@ -231,11 +250,17 @@ Collection::RemoveAt (int index)
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (n->obj);
+		NameScope *con_ns = closure->FindNameScope();
 		if (ns && ns->GetMerged ()) {
-			NameScope *con_ns = closure->FindNameScope();
 			if (con_ns)
 				con_ns->UnmergeTemporaryScope (ns);
 		}
+
+		const char *name;
+
+		name = n->obj->GetName();
+		if (con_ns && name)
+			con_ns->UnregisterName (name);
 
 		EmitChanged (CollectionChangeTypeItemRemoved, n->obj, NULL);
 	}
@@ -248,8 +273,11 @@ void
 Collection::Clear ()
 {
 	Collection::Node *n;
-
+	NameScope *con_ns = NULL;
 	generation++;
+
+	if (closure)
+		con_ns = closure->FindNameScope ();
 	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
 		n->obj->RemovePropertyChangeListener (this);
 
@@ -259,6 +287,12 @@ Collection::Clear ()
 			if (parent_ns)
 				parent_ns->UnmergeTemporaryScope (ns);
 		}
+
+		const char *name;
+
+		name = n->obj->GetName();
+		if (con_ns && name)
+			con_ns->UnregisterName (name);
 	}
 
 	list->Clear (true);

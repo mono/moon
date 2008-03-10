@@ -1,3 +1,15 @@
+2008-03-10  Chris Toshok  <toshok@ximian.com>
+
+	[ Fixes bug #368460 ]
+	* collection.cpp (Collection::SetVal): make sure to unregister the
+	name of the object(s) we remove from the collection.
+	(Collection::Remove): same.
+	(Collection::RemoveAt): same.
+	(Collection::Clear): same.
+
+	* namescope.cpp (NameScope::RegisterName): ref the object.
+	(NameScope::UnregisterName): unref the object.
+
 2008-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (TextLayout::Layout): More line-wrap fixes - implement

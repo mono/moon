@@ -48,12 +48,16 @@ NameScope::~NameScope ()
 void
 NameScope::RegisterName (const char *name, DependencyObject *object)
 {
+	object->ref();
 	g_hash_table_insert (names, g_strdup (name), object);
 }
 
 void
 NameScope::UnregisterName (const char *name)
 {
+	DependencyObject *object = (DependencyObject*)g_hash_table_lookup (names, name);
+	if (object != NULL)
+		object->unref ();
 	g_hash_table_remove (names, name);
 }
 
