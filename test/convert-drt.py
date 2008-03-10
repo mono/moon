@@ -23,7 +23,7 @@ class drtTest:
 		self.master10 = "../harness/masters/%s" % filename
 			
 		
-	def toXML(self):
+	def toBadXML(self):
 		self._tif_or_png()
 		x = '\t<Test id="%s">\n' % (self.id)
 		x += '\t\t<inputFile="%s"/>\n' % self.input
@@ -34,35 +34,67 @@ class drtTest:
 		x += '\t\t<featureName="%s"/>\n' % self.feature
 		x += '\t</Test>'
 		return x
-		
+def usage():
+	print "\nUsage: convert-drt.py [--missing]\n"
+	print " --missing 	Creates a drtlist.txt of only test with missing master files"
 
-doc = xml.dom.minidom.parse("xaml/drtlist.xml")
-drtnode = doc.childNodes[0]
+def main():
 
-print "<DRTList>"
+	# saveMasters.py --missing, --regen
 
-for testnode in drtnode.childNodes:
-	if ((testnode.localName is not None) and (testnode.localName != "")):
-		#print'\t<Test id="%s">' % (testnode.getAttribute("id"))
-		
-		test = drtTest(testnode.getAttribute("id"))
-		test.input = testnode.getAttribute("inputFile")
-		test.master10 = testnode.getAttribute('masterFile10')
-		test.master11 = testnode.getAttribute('masterFile11')
-		
-		if testnode.getAttribute('inputFile').find('animation') != -1:
-			test.feature = "Animation"
-		elif testnode.getAttribute('featureName') != '':
-			test.feature = testnode.getAttribute('featureName')
-				
-		#print '\t\t<featureName="%s"/>' % feature
+	regen = False
+	missing = False
+
+	try:
+		shortopts = 'hm'
+		longopts = ['help','missing',]
+		opts, args = getopt.getopt(sys.argv[1:],shortopts, longopts)
+	except getopt.GetoptError, err:
+		print str(err)
+		sys.exit(1)
+
+
+	for o, a in opts:
+		if o in ('-h','--help'):
+			usage()
+			return
+		if o in ('-m','--missing'):
+			missing = True
+
 			
-		# Added these attributes if non-existent
-		if testnode.getAttribute('owner') != '':
-			test.owner = testnode.getAttribute('owner')
-			
-			
-		print test.toXML()
-		#print "\t</Test>"	
+	doc = xml.dom.minidom.parse("xaml/drtlist.xml")
+	drtnode = doc.childNodes[0]
 
-print "</DRTList>"	
+	print "<DRTList>"
+
+	for testnode in drtnode.childNodes:
+		if ((testnode.localName is not None) and (testnode.localName != "")):
+			#print'\t<Test id="%s">' % (testnode.getAttribute("id"))
+			
+			if os.path.exists(
+
+			test = drtTest(testnode.getAttribute("id"))
+			test.input = testnode.getAttribute("inputFile")
+			test.master10 = testnode.getAttribute('masterFile10')
+			test.master11 = testnode.getAttribute('masterFile11')
+
+			if testnode.getAttribute('inputFile').find('animation') != -1:
+				test.feature = "Animation"
+			elif testnode.getAttribute('featureName') != '':
+				test.feature = testnode.getAttribute('featureName')
+
+			#print '\t\t<featureName="%s"/>' % feature
+
+			# Added these attributes if non-existent
+			if testnode.getAttribute('owner') != '':
+				test.owner = testnode.getAttribute('owner')
+
+
+			print test.toBadXML()
+			#print "\t</Test>"	
+
+	print "</DRTList>"	
+
+
+if __name__ == '__main__':
+	main()

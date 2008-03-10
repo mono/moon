@@ -43,6 +43,9 @@ def main():
 		sys.exit(1)
 		
 	files = os.listdir(os.path.join(os.getcwd(),'xaml'))
+	
+	new_masters_count = 0
+	new_masters = []
 
 	for curfile in files:
 		newfile = ''
@@ -61,15 +64,23 @@ def main():
 				if os.path.exists(newpath): 
 					print 'Deleting master for %s' % testname
 					os.remove(newpath)
-				print 'Moving %s to %s' % (curpath, newpath)
+				new_masters.append(testname)
+				#print 'Moving %s to %s' % (curpath, newpath)
 				os.rename(curpath, newpath)
 					
 			else: # missing only - not regen
 				if os.path.exists(newpath):
-					print 'Master exists at %s' % newpath
-				else:					
-					print 'Moving %s to %s' % (curpath, newpath)
+					pass
+					#print 'Master exists at %s' % newpath
+				else:		
+					new_masters.append(testname)
+					#new_masters_count += 1
+					#print 'Moving %s to %s' % (curpath, newpath)
 					os.rename(curpath, newpath)
+	
+	print "\n%s new masters found" % len(new_masters)
+	for testname in new_masters:
+		print "\t%s" % testname
 	
 
 if __name__ == '__main__':
