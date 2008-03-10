@@ -182,8 +182,11 @@ public:
 	MediaClosure (MediaCallback *callback);
 	~MediaClosure ();
 	
-	MediaFrame *frame; // Set when this is the callback in Media::GetNextFrameAsync
-	MediaMarker *marker; // Set when this is the callback in MarkerStream
+	// If this is a GetNextFrameAsync callback, and the result is positive,
+	// this contains the resulting frame.
+	MediaFrame *frame; 
+	// Set when this is the callback in a MarkerStream
+	MediaMarker *marker; 
 	// The result of the work done in GetNextFrameAsync, OpenAsync or SeekAsync.
 	MediaResult result;
 
@@ -242,18 +245,17 @@ public:
 		} seek;
 		struct {
 			uint16_t states;
+			IMediaStream *stream;
 		} frame;
 		struct {
 			IMediaSource *source;
 		} open;
 	} data;
 	
-	MediaWork (MoonWorkType tp) 
-	{
-		type = tp;
-		memset (&data, 0, sizeof (data));
-	}
-	virtual ~MediaWork ();
+	MediaWork (MediaClosure *closure, IMediaStream *stream, uint16_t states);
+	MediaWork (MediaClosure *closure, uint64_t seek_pts);
+	MediaWork (MediaClosure *closure, IMediaSource *source);
+	~MediaWork ();
 };
 
 class Media : public EventObject {
@@ -317,12 +319,10 @@ public:
 	//	Reads the next frame from the demuxer
 	//	Requests the decoder to decode the frame
 	//	Returns the decoded frame
-	MediaResult GetNextFrame (MediaFrame *frame);
-	MediaResult GetNextFrame (MediaFrame *frame, uint16_t states); 
+	MediaResult GetNextFrame (MediaWork *work);
 	
 	//	Requests reading of the next frame
-	void GetNextFrameAsync (MediaClosure *closure); 
-	void GetNextFrameAsync (MediaClosure *closure, uint16_t states); 
+	void GetNextFrameAsync (MediaClosure *closure, IMediaStream *stream, uint16_t states); 
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
 	
 	IMediaSource *GetSource ();

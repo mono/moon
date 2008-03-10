@@ -357,6 +357,8 @@ MediaElement::~MediaElement ()
 	Reinitialize ();
 	
 	delete mplayer;
+	if (playlist)
+		playlist->unref ();
 	pthread_mutex_destroy (&open_mutex);
 }
 
@@ -384,11 +386,6 @@ MediaElement::Reinitialize ()
 		mplayer->Close ();
 	
 	if (media != NULL) {
-		// Media will delete its source upon destruction
-		// so clear out our reference if they're the same.
-		if (media->GetSource () == downloaded_file)
-			downloaded_file = NULL;
-		
 		media->unref ();
 		media = NULL;
 	}
@@ -951,7 +948,6 @@ MediaElement::TryOpen ()
 		Media *media = new Media (this);
 		
 		MediaClosure *closure = new MediaClosure (media_element_open_callback);
-		closure->SetMedia (media);
 		closure->SetContext (this);
 		media->OpenAsync (downloaded_file, closure);
 	}

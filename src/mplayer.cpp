@@ -252,39 +252,31 @@ media_player_enqueue_frames (MediaPlayer *mplayer, int audio_frames, int video_f
 {
 	MediaElement *element = mplayer->element;
 	MediaClosure *closure;
-	int states, i;
+	int states;
 
 	//printf ("media_player_enqueue_frames (%p, %i, %i)\n", mplayer, audio_frames, video_frames);
 	
 	if (mplayer->HasAudio ()) {	
-		for (i = 0; i < audio_frames; i++) {
+		for (int i = 0; i < audio_frames; i++) {
 			closure = new MediaClosure (media_player_callback);
 			closure->SetContext (element);
-			closure->frame = new MediaFrame (mplayer->audio->stream);
 			
-			// To decode on the main thread comment out FRAME_DECODED.
-			states = FRAME_DEMUXED | FRAME_DECODED;
+			// To decode on the main thread comment out FRAME_DECODED and FRAME_COPY_DECODED_DATA.
+			states = FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA;
 			
-			if ((states & FRAME_DECODED) == FRAME_DECODED)
-				closure->frame->AddState (FRAME_COPY_DECODED_DATA);
-			
-			mplayer->media->GetNextFrameAsync (closure, states);
+			mplayer->media->GetNextFrameAsync (closure, mplayer->audio->stream, states);
 		}
 	}
 	
 	if (mplayer->HasVideo ()) {
-		for (i = 0; i < video_frames; i++) {
+		for (int i = 0; i < video_frames; i++) {
 			closure = new MediaClosure (media_player_callback);
 			closure->SetContext (element);
-			closure->frame = new MediaFrame (mplayer->video->stream);
 			
-			// To decode on the main thread comment out FRAME_DECODED.
-			states = FRAME_DEMUXED | FRAME_DECODED;
-			
-			if ((states & FRAME_DECODED) == FRAME_DECODED)
-				closure->frame->AddState (FRAME_COPY_DECODED_DATA);
-			
-			mplayer->media->GetNextFrameAsync (closure, states);
+			// To decode on the main thread comment out FRAME_DECODED and FRAME_COPY_DECODED_DATA.
+			states = FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA;
+				
+			mplayer->media->GetNextFrameAsync (closure, mplayer->video->stream, states);
 		}
 	}
 }

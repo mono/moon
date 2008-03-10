@@ -1,3 +1,8 @@
+2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: Always print out asf errors.
+	* asf-structures.cpp: Remove newline from error message.
+
 2008-03-11  Fernando Herrera  <fherrera@novell.com>
 
 	* asf.cpp:

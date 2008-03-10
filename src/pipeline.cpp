@@ -77,6 +77,7 @@ Media::Media (MediaElement *element)
 	
 	pthread_create (&queue_thread, &attribs, WorkerLoop, this); 	
 	pthread_attr_destroy (&attribs);
+	printf ("Media::Media (), id = %i\n", id);
 }
 
 Media::~Media ()
@@ -104,6 +105,8 @@ Media::~Media ()
 	if (demuxer)
 		demuxer->unref ();
 	delete markers;
+
+	printf ("Media::~Media (), id = %i\n", id);
 }
 
 void
@@ -260,10 +263,7 @@ Media::SeekAsync (uint64_t pts, MediaClosure *closure)
 	if (demuxer == NULL)
 		return MEDIA_FAIL;
 	
-	MediaWork *work = new MediaWork (WorkTypeSeek);
-	work->data.seek.seek_pts = pts;
-	work->closure = closure;
-	EnqueueWork (work);
+	EnqueueWork (new MediaWork (closure, pts));
 	
 	return MEDIA_SUCCESS;
 }
@@ -358,13 +358,9 @@ Media::Open ()
 MediaResult
 Media::OpenAsync (IMediaSource *source, MediaClosure *closure)
 {
-	MediaWork *work = new MediaWork (WorkTypeOpen);
-	work->data.open.source = source;
-	work->data.open.source->ref ();
-	work->closure = closure;
-	work->closure->SetMedia (this);
-	
-	EnqueueWork (work);
+	closure->SetMedia (this);
+
+	EnqueueWork (new MediaWork (closure, source));
 	
 	return MEDIA_SUCCESS;
 }
@@ -518,49 +514,59 @@ Media::Open (IMediaSource *source)
 }
 
 MediaResult
-Media::GetNextFrame (MediaFrame *frame, uint16_t states)
+Media::GetNextFrame (MediaWork *work)
 {
+	MediaFrame *frame = NULL;
+	uint16_t states= work->data.frame.states;	
+	IMediaStream *stream = work->data.frame.stream;
+	MediaResult result = MEDIA_SUCCESS;
+	
 	//printf ("Media::GetNextFrame (%p).\n", stream);
 	
-	if (frame == NULL) {
-		AddMessage (MEDIA_INVALID_ARGUMENT, "frame is NULL.");
+	if (work == NULL) {
+		AddMessage (MEDIA_INVALID_ARGUMENT, "work is NULL.");
 		return MEDIA_INVALID_ARGUMENT;
 	}
 	
-	if (frame->stream == NULL) {
-		AddMessage (MEDIA_INVALID_ARGUMENT, "frame->stream is NULL.");
+	if (stream == NULL) {
+		AddMessage (MEDIA_INVALID_ARGUMENT, "work->stream is NULL.");
 		return MEDIA_INVALID_ARGUMENT;
 	}
-	
-	MediaResult result = MEDIA_SUCCESS;
 	
 	if ((states & FRAME_DEMUXED) != FRAME_DEMUXED)
 		return result; // Nothing to do?
-	
-	result = demuxer->ReadFrame (frame);
-	if (!MEDIA_SUCCEEDED (result))
-		return result;
-	
-	if ((states & FRAME_DECODED) != FRAME_DECODED)
-		return result;
-	
-	if (frame->event == 0) {
-		result = frame->stream->decoder->DecodeFrame (frame);
+
+	do {
+		if (frame) {
+			printf ("Media::GetNextFrame (): delayed a frame\n");
+			delete frame;
+		}
+		frame = new MediaFrame (stream);
+		frame->AddState (states);
+
+		// TODO: get the last frame out of delayed codecs (when the demuxer returns NO_MORE_DATA)
+
+		result = demuxer->ReadFrame (frame);
 		if (!MEDIA_SUCCEEDED (result))
-			return result;
-	} else {
-		frame->AddState (FRAME_DECODED);
-	}
+			break;
+		
+		if ((states & FRAME_DECODED) != FRAME_DECODED) {
+			// We weren't requested to decode the frame
+			// This might cause some errors on delayed codecs (such as the wmv ones).
+			break;
+		}
+		
+		if (frame->event != 0)
+			break;
 	
+		result = stream->decoder->DecodeFrame (frame);
+	} while (result == MEDIA_CODEC_DELAYED);
+
+	work->closure->frame = frame;
+
 	//printf ("Media::GetNextFrame (%p) finished, size: %i.\n", stream, frame->buflen);
 	
-	return MEDIA_SUCCESS;
-}
-
-MediaResult
-Media::GetNextFrame (MediaFrame *frame)
-{
-	return GetNextFrame (frame, FRAME_DEMUXED | FRAME_DECODED);
+	return result;
 }
 
 void * 
@@ -620,7 +626,7 @@ Media::WorkerLoop ()
 		case WorkTypeVideo:
 		case WorkTypeMarker:
 			// Now demux and decode what we found and send it to who asked for it
-			result = GetNextFrame (node->closure->frame, node->data.frame.states);
+			result = GetNextFrame (node);
 			break;
 		case WorkTypeOpen:
 			result = Open (node->data.open.source);
@@ -629,8 +635,6 @@ Media::WorkerLoop ()
 		
 		node->closure->result = result;
 		node->closure->Call ();
-		delete node->closure;
-		node->closure = NULL;
 
 		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processed node %p with type %i, result: %i.\n", node, node->type, result);
 
@@ -641,28 +645,16 @@ Media::WorkerLoop ()
 }
 
 void
-Media::GetNextFrameAsync (MediaClosure *closure)
-{
-	Media::GetNextFrameAsync (closure, FRAME_DEMUXED | FRAME_DECODED);
-}
-
-void
-Media::GetNextFrameAsync (MediaClosure *closure, uint16_t states)
+Media::GetNextFrameAsync (MediaClosure *closure, IMediaStream *stream, uint16_t states)
 {
 	MoonWorkType type;
-	MediaFrame *frame = closure->frame;
-
-	if (frame == NULL) {
-		AddMessage (MEDIA_INVALID_ARGUMENT, "frame is NULL.");
+	
+	if (stream == NULL) {
+		AddMessage (MEDIA_INVALID_ARGUMENT, "stream is NULL.");
 		return;
 	}
 	
-	if (frame->stream == NULL) {
-		AddMessage (MEDIA_INVALID_ARGUMENT, "frame->stream is NULL.");
-		return;
-	}
-	
-	switch (frame->stream->GetType ()) {
+	switch (stream->GetType ()) {
 	case MediaTypeAudio:
 		type = WorkTypeAudio;
 		break;
@@ -678,10 +670,7 @@ Media::GetNextFrameAsync (MediaClosure *closure, uint16_t states)
 		return;
 	}
 	
-	MediaWork *node = new MediaWork (type);
-	node->data.frame.states = states;
-	node->closure = closure;
-	EnqueueWork (node);
+	EnqueueWork (new MediaWork (closure, stream, states));
 }
 
 void
@@ -2821,8 +2810,8 @@ MediaClosure::~MediaClosure ()
 	delete frame;
 
 	// Use delayed unref to be thread-safe.
-	base_unref_delayed (context);
-	base_unref_delayed (media);
+	base_unref (context); //base_unref_delayed (context);
+	base_unref (media); // base_unref_delayed (media);
 }
 
 MediaResult
@@ -3098,9 +3087,53 @@ MarkerStream::SetCallback (MediaClosure *closure)
 /*
  * MediaWork
  */ 
+MediaWork::MediaWork (MediaClosure *closure, IMediaStream *stream, uint16_t states)
+{
+	switch (stream->GetType ()) {
+	case MediaTypeVideo:
+		type = WorkTypeVideo; break;
+	case MediaTypeAudio:
+		type = WorkTypeAudio; break;
+	case MediaTypeMarker:
+		type = WorkTypeMarker; break;
+	default:
+		fprintf (stderr, "MediaWork::MediaWork (%p, %p, %i): Invalid stream type %u\n", closure, stream, (uint) states, stream->GetType ());
+		break;
+	}
+	this->closure = closure;
+	this->data.frame.states = states;
+	this->data.frame.stream = stream;
+	this->data.frame.stream->ref ();
+}
+
+MediaWork::MediaWork (MediaClosure *closure, uint64_t seek_pts)
+{
+	type = WorkTypeSeek;
+	this->closure = closure;
+	this->data.seek.seek_pts = seek_pts;
+}
+
+MediaWork::MediaWork (MediaClosure *closure, IMediaSource *source)
+{
+	type = WorkTypeOpen;
+	this->closure = closure;
+	this->data.open.source = source;
+	this->data.open.source->ref ();
+}
 
 MediaWork::~MediaWork ()
 {
-	if (type == WorkTypeOpen && data.open.source != NULL)
+	switch (type) {
+	case WorkTypeOpen:
 		data.open.source->unref ();
+		break;
+	case WorkTypeVideo:
+	case WorkTypeAudio:
+	case WorkTypeMarker:
+		data.frame.stream->unref ();
+		break;
+	case WorkTypeSeek:
+		break; // Nothing to do
+	}
+	delete closure;
 }

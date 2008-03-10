@@ -524,7 +524,7 @@ ASFParser::AddError (const char *msg)
 void
 ASFParser::AddError (char *msg)
 {
-	ASF_LOG ("ASFParser::AddError ('%s').\n", msg);
+	fprintf (stderr, "ASFParser::AddError ('%s').\n", msg);
 	
 	error *err = (error *) g_malloc0 (sizeof (error));
 	err->msg = msg;

@@ -359,7 +359,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 	stream_id = stream_id & 0x7F;
 	
 	if (!source->parser->IsValidStream (stream_id)) {
-		source->parser->AddError (g_strdup_printf ("asf_single_payload::FillInAll: Invalid stream number (%d).\n", (int) stream_id));
+		source->parser->AddError (g_strdup_printf ("asf_single_payload::FillInAll: Invalid stream number (%d).", (int) stream_id));
 		return false;
 	}
 	
@@ -453,6 +453,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 		if (!source->Read (payload_data, payload_data_length))
 			return false;
 	}
+
 
 	return true;
 }
