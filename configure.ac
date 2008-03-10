@@ -344,6 +344,26 @@ if test x$HAVE_MMX = xyes; then
 	AC_DEFINE(HAVE_MMX, 1, [MMX support])
 fi
 
+HAVE_SSE2=no
+AC_COMPILE_IFELSE([
+#include <stdio.h>
+#include <string.h>
+int main () {
+	char buffer[[128]];
+	int j = 1;
+
+	memset(buffer, 0x0, 128);
+        __asm__ __volatile__ (
+                "movdqu (%0), %%xmm1;"
+                "movd %%xmm1, (%1);"
+                : : "r" (buffer), "r" (&j));
+        return (int)j;
+}], HAVE_SSE2=yes)
+
+if test x$HAVE_SSE2 = xyes; then
+	AC_DEFINE(HAVE_SSE2, 1, [SSE2 support])
+fi
+
 if test x$FFMPEG = xyes; then
 FFMPEG_PKGS="libswscale libavcodec libavformat"
 else
@@ -421,5 +441,6 @@ Moonlight configuration:
 	Support for 2.0: $MONO_RUNTIME
 	Support for ffmpeg: $FFMPEG
 	Support for mmx: $HAVE_MMX
+	Support for sse2: $HAVE_SSE2
 
 EOF
