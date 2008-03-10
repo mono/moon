@@ -55,6 +55,7 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_RENDER_FRONT_TO_BACK  = 1 << 8,
 	RUNTIME_INIT_SHOW_CACHE_SIZE	   = 1 << 9,
 	RUNTIME_INIT_CONVERTER_YUV	   = 1 << 10,
+	RUNTIME_INIT_USE_SHAPE_CACHE	   = 1 << 11,
 };
 
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_CONVERTER_YUV)
@@ -176,6 +177,9 @@ class Surface : public EventObject {
 
 	bool VerifyWithCacheSizeCounter (int64_t size)
 	{
+		if (! (moonlight_flags & RUNTIME_INIT_USE_SHAPE_CACHE))
+			return FALSE;
+
 		if (cache_size_in_bytes + size < MAXIMUM_CACHE_SIZE)
 			return TRUE;
 		else

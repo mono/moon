@@ -361,7 +361,6 @@ int number = 0;
 bool
 Shape::IsCandidateForCaching (void)
 {
-#if USE_OPT_SHAPE_SURFACE_CACHING
 	if (IsEmpty ())
 		return FALSE;
 
@@ -383,9 +382,6 @@ Shape::IsCandidateForCaching (void)
 		return FALSE;
 
 	return TRUE;
-#else
-	return FALSE;
-#endif
 }
 
 //

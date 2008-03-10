@@ -1,5 +1,12 @@
 2008-03-10  Michael Dominic K.  <mdk@mdk.am>
 
+	* runtime.cpp:
+	* runtime.h:
+	* shape.cpp: Making the shape-caching a runtime parameter
+	(shapecache=yes). Turned off right now.
+
+2008-03-10  Michael Dominic K.  <mdk@mdk.am>
+
 	* shape.cpp: Tiny refactoring to the surface-size calculation code.
 
 2008-03-10  Michael Dominic K.  <mdk@mdk.am>

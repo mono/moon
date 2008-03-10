@@ -90,7 +90,9 @@ static struct {
 	{ "cache=show",	       RUNTIME_INIT_SHOW_CACHE_SIZE,       true  },
 	{ "cache=hide",        RUNTIME_INIT_SHOW_CACHE_SIZE,       false },
 	{ "converter=yuv",     RUNTIME_INIT_CONVERTER_YUV,         true  },
-	{ "converter=ffmpeg",  RUNTIME_INIT_CONVERTER_YUV,         false }
+	{ "converter=ffmpeg",  RUNTIME_INIT_CONVERTER_YUV,         false },
+	{ "shapecache=yes",    RUNTIME_INIT_USE_SHAPE_CACHE,	   true  },
+	{ "shapecache=no",     RUNTIME_INIT_USE_SHAPE_CACHE,	   false }
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
