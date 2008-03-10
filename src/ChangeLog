@@ -1,5 +1,9 @@
 2008-03-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* src.mdp: Updated.
+
+2008-03-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.h: Make the OBJECT_TRACKING stuff public.
 	* runtime.cpp: Use GetRefCount, not refcount.
 

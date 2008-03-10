@@ -139,6 +139,8 @@
     <File name="eventargs.h" subtype="Code" buildaction="Nothing" />
     <File name="eventargs.cpp" subtype="Code" buildaction="Compile" />
     <File name="alpha-premul-table.inc" subtype="Code" buildaction="Nothing" />
+    <File name="yuv-converter.cpp" subtype="Code" buildaction="Compile" />
+    <File name="yuv-converter.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
