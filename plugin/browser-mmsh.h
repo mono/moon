@@ -67,16 +67,20 @@ public:
 class AsyncBrowserMmshResponse;
 
 typedef void (* AsyncMmshResponseFinishedHandler) (BrowserMmshResponse *response, gpointer context);
+typedef void (* AsyncMmshResponseNotifierHandler) (BrowserMmshResponse *response, gpointer context, char* name, int64_t size);
 typedef void (* AsyncMmshResponseDataAvailableHandler) (BrowserMmshResponse *response, gpointer context, char* buffer, int offset, PRUint32 length);
 
 class AsyncBrowserMmshResponse : public BrowserMmshResponse, public nsIStreamListener {
-	AsyncMmshResponseFinishedHandler handler;
+	AsyncMmshResponseFinishedHandler finisher;
+	AsyncMmshResponseNotifierHandler notifier;
 	AsyncMmshResponseDataAvailableHandler reader;
 	gpointer context;
 	char *tmp_buffer;
 	uint32_t tmp_size;
 	uint32_t size;
-	uint32_t asf_packet_size;
+	uint16_t asf_packet_size;
+	int64_t notify_size;
+	char *notify_name;
 	
 protected:
 	NS_DECL_NSIREQUESTOBSERVER
@@ -85,20 +89,27 @@ protected:
 public:
 	NS_DECL_ISUPPORTS
 
-	AsyncBrowserMmshResponse (nsCOMPtr<nsIChannel> channel, AsyncMmshResponseDataAvailableHandler reader, 
-				  AsyncMmshResponseFinishedHandler handler, gpointer context)
+	AsyncBrowserMmshResponse (nsCOMPtr<nsIChannel> channel,
+				  AsyncMmshResponseDataAvailableHandler reader, 
+				  AsyncMmshResponseNotifierHandler notifier, 
+				  AsyncMmshResponseFinishedHandler finisher,
+				  gpointer context)
 		: BrowserMmshResponse (channel)
 	{
-		this->asf_packet_size = 0;
 		this->tmp_buffer = NULL;
 		this->tmp_size = 0;
+		this->asf_packet_size = 0;
 		this->size = 0;
+		this->notify_size = 0;
+		this->notify_name = NULL;
 		
-		this->handler = handler;
-		this->context = context;
+		this->notifier = notifier;
 		this->reader = reader;
+		this->finisher = finisher;
+		this->context = context;
 	}
 
+	void MmsMetadataParse (int, const char*);
 	virtual ~AsyncBrowserMmshResponse ()
 	{
 	}
@@ -129,7 +140,8 @@ public:
 	}
 
 	bool GetAsyncResponse (AsyncMmshResponseDataAvailableHandler reader, 
-			       AsyncMmshResponseFinishedHandler handler, gpointer context);
+			       AsyncMmshResponseNotifierHandler notifier,
+			       AsyncMmshResponseFinishedHandler finisher, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
 	void SetBody (const char *body, int size);
 };

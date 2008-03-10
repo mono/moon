@@ -11,6 +11,7 @@
  */
 
 #include "browser-mmsh.h"
+#include <asf/asf.h>
 
 #define LE_16(val) (GINT16_FROM_LE (*((u_int16_t*)(val))))
 #define LE_64(val) (GINT64_FROM_LE (*((u_int64_t*)(val))))
@@ -18,6 +19,7 @@
 #define MMS_DATA     0x44
 #define MMS_HEADER   0x48
 #define MMS_METADATA 0x4D
+#define ASF_DEFAULT_PACKET_SIZE 2888
 
 // BrowserMmshResponse
 
@@ -99,21 +101,100 @@ AsyncBrowserMmshResponse::OnStartRequest (nsIRequest *request, nsISupports *cont
 NS_IMETHODIMP
 AsyncBrowserMmshResponse::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
-	handler (this, this->context);
+	this->finisher (this, this->context);
 	return NS_OK;
 }
 
-static int
-get_asf_packet_size (char *asf_header)
+static void
+asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_packet_size)
 {
-	//FIXME: do the real parsing!
-	return 2888;
+	ASFBufferSource *asf_src = new ASFBufferSource (NULL, asf_header, size);
+	ASFParser *parser = new ASFParser (asf_src, NULL);
+	asf_src->parser = parser;
+	if (!parser->ReadHeader ()) {
+		g_print ("Error reading header\n");
+		*file_size = 0;
+		*asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
+		return;
+	}
+	
+        asf_file_properties *properties = parser->GetFileProperties ();
+
+	delete asf_src;
+
+	//g_print ("FILE_SIZE: %d\n", properties->file_size);
+	//g_print ("MAX: %d\n", properties->max_packet_size);
+	//g_print ("MIN: %d\n", properties->min_packet_size);
+	 
+	if (properties->max_packet_size == properties->min_packet_size)
+		*asf_packet_size = properties->max_packet_size;
+	else
+		*asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
+
+	*file_size = properties->file_size;
 }
+
 
 void
 BrowserMmshResponse::Abort ()
 {
 	this->channel->Cancel (NS_BINDING_ABORTED);
+}
+
+
+void
+AsyncBrowserMmshResponse::MmsMetadataParse (int packet_size, const char *data)
+{
+	int offset = 0;
+	int i = 0;
+	char **metadata = g_strsplit ((char*) data, ",", 0);
+	if (metadata[0]) {
+		g_print ("playlist-gen-id:%s\n", metadata[0]);
+		offset += strlen (metadata[0]);
+	}
+	if (metadata[1]) {
+		g_print ("broadcast-id:%s\n", metadata[1]);
+		offset += strlen (metadata[1]) + 1;
+	}
+	if (metadata[2]) {
+		g_print ("features:%s", metadata[2]);
+		offset += strlen (metadata[2]) + 1;
+	}
+	for (i = 3; metadata[i]; i++) {
+		g_print (",%s", metadata[i]);
+		offset += strlen (metadata[i]) + 1;
+	}
+	g_print ("\n");
+	g_strfreev (metadata);
+
+	if (packet_size > offset) {
+		int cdl_index;
+		char **cdls = g_strsplit (data + offset + 1, "\r\n", 0);
+
+		for (cdl_index = 0; cdls[cdl_index]; cdl_index++) {
+			if (*cdls[cdl_index] == '$') {
+				/* It's not a CDL but the real packet */
+				break;
+			}
+			char **items = g_strsplit (cdls[cdl_index], ",", 0);
+			int i;
+			for (i = 0; items[i]; i += 5) {
+				g_print ("Item %d:%s", i, items[i + 1]);
+				g_print (" value:%s\n", items[i + 4]);
+				if (strcmp (items[i+1], "WMS_CONTENT_DESCRIPTION_PLAYLIST_ENTRY_DURATION") == 0) {
+					notify_size = atoll (items[i + 4]);
+				}
+				if (strcmp (items[i+1], "WMS_CONTENT_DESCRIPTION_PLAYLIST_ENTRY_URL") == 0) {
+					notify_name = g_strdup (items[i + 4]);
+				}
+			}
+			g_strfreev (items);
+			/*if (notifier && notify_size)
+				notifier (this, this->context, notify_name, notify_size);*/
+			
+		}
+		g_strfreev (cdls);
+	}
 }
 
 
@@ -162,10 +243,12 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 		packet_size = LE_16 (&mms_packet[6]);
 
 		if (type == MMS_METADATA) {
-			
-			/* Get Metadata and figure out file size and so */
+			MmsMetadataParse (packet_size, mms_packet+8);
 		} else if (type == MMS_HEADER) {
-				asf_packet_size = get_asf_packet_size (mms_packet+8);
+				int64_t file_size;
+				asf_header_parse (mms_packet+8, packet_size - 8, &file_size, &asf_packet_size);
+				if (file_size && notifier)
+					notifier (this, this->context, NULL, file_size);
 				reader (this, this->context, mms_packet+8, this->size, packet_size - 8);
 				this->size += packet_size - 8;
 		} else if (type == MMS_DATA) {
@@ -228,12 +311,13 @@ BrowserMmshRequest::CreateChannel ()
 
 bool
 BrowserMmshRequest::GetAsyncResponse (AsyncMmshResponseDataAvailableHandler reader,
-				      AsyncMmshResponseFinishedHandler handler, gpointer context)
+				      AsyncMmshResponseNotifierHandler notifier,
+				      AsyncMmshResponseFinishedHandler finisher, gpointer context)
 {
 	nsresult rs = NS_OK;
 	AsyncBrowserMmshResponse *response;
 
-	response = new AsyncBrowserMmshResponse (channel, reader, handler, context);
+	response = new AsyncBrowserMmshResponse (channel, reader, notifier, finisher, context);
 	rs = channel->AsyncOpen (response, (BrowserMmshResponse *) response);
 	return !NS_FAILED (rs);
 }

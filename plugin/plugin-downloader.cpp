@@ -58,7 +58,19 @@ p_downloader_mmsh_reader (BrowserMmshResponse *response, gpointer context, char 
 	}
 
 	dl->Write (buffer, offset, length);
+
 }
+
+static void
+p_downloader_mmsh_notifier (BrowserMmshResponse *response, gpointer context, char *name, int64_t size)
+{
+	StreamNotify *notify = (StreamNotify*) context;
+	Downloader *dl = (Downloader *) notify->pdata;
+
+	g_print ("Notifing a size of %d\n", size);
+	dl->NotifySize (size);
+}
+
 
 static void
 p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
@@ -73,7 +85,6 @@ p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
 
 	fname = dl->GetResponseFile (NULL);
         dl->NotifyFinished (fname);
-	// TODO: call dl->NotifySize with the final size of the downloaded file.
 
 }
 
@@ -88,7 +99,7 @@ p_downloader_mmsh_send (NPP_t *plugin, const char *uri, StreamNotify *notify)
 	mmsh_request->SetHttpHeader ("Pragma", "xPlayStrm=1");
 	mmsh_request->SetHttpHeader ("Pragma", "stream-switch-count=0");
 	mmsh_request->SetHttpHeader ("Pragma", "stream-switch-entry=ffff:1:0 ffff:4:0");
-	return mmsh_request->GetAsyncResponse (p_downloader_mmsh_reader, p_downloader_mmsh_finished, notify);
+	return mmsh_request->GetAsyncResponse (p_downloader_mmsh_reader, p_downloader_mmsh_notifier, p_downloader_mmsh_finished, notify);
 	
 }
 
