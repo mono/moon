@@ -58,6 +58,58 @@ ASFMediaSource::Eof ()
 }
 
 /*
+ * ASFBufferSource
+ */
+
+
+ASFBufferSource::ASFBufferSource (ASFParser *parser, char *buffer, int64_t size) : ASFSource (parser)
+{
+        this->buffer = buffer;
+        this->size = size;
+	pos = 0;
+}
+
+bool
+ASFBufferSource::ReadInternal (void *buf, uint32_t n)
+{
+	if ((pos + n) > size)
+		return false;
+
+	memcpy (buf, buffer + pos, n);
+	pos += n;
+	return true;
+}
+
+bool
+ASFBufferSource::SeekInternal (int64_t offset, int mode)
+{
+	if (offset > size)
+		return false;
+
+	pos = offset;
+	return true;
+}
+
+int64_t
+ASFBufferSource::Position ()
+{
+        return pos;
+}
+
+bool
+ASFBufferSource::CanSeek ()
+{
+        return true;
+}
+
+bool
+ASFBufferSource::Eof ()
+{
+        return pos == size;
+}
+
+
+/*
 	ASFParser
 */
 

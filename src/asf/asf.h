@@ -96,6 +96,26 @@ public:
 	ASFMediaSource (ASFParser *parser, IMediaSource *source);
 };
 
+
+class ASFBufferSource : public ASFSource {
+
+private:
+	char *buffer;
+	int64_t size;
+	int64_t pos;
+
+protected:
+        virtual bool ReadInternal (void *buf, uint32_t n);
+        virtual bool SeekInternal (int64_t offset, int mode);
+        virtual int64_t Position ();
+        virtual bool CanSeek ();
+        virtual bool Eof ();
+
+public:
+        ASFBufferSource (ASFParser *parser, char *buffer, int64_t size);
+};
+
+
 class ASFPacket {
 	int64_t position; // The position of this packet. -1 if not known.
 	int index; // The index of this packet. -1 if not known.
