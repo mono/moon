@@ -233,19 +233,49 @@ YUVConverter::YUVConverter (Media* media, VideoStream* stream) : IImageConverter
 	have_mmx = true;
 	have_sse2 = true;
 #else
-	// FIXME: We need to detect this at runtime
 #  if HAVE_MMX
-	have_mmx = true;
+	int have_cpuid = 0;
+	int features = 0;
+
+	have_mmx = false;
+	have_sse2 = false;
+
+	__asm__ __volatile__ (
+		"pushfl;"
+		"popl %%eax;"
+		"movl %%eax, %%edx;"
+		"xorl $0x200000, %%eax;"
+		"pushl %%eax;"
+		"popfl;"
+		"pushfl;"
+		"popl %%eax;"
+		"xorl %%edx, %%eax;"
+		"andl $0x200000, %%eax;"
+		"movl %%eax, %0"
+		: "=r" (have_cpuid)
+		:
+		: "%eax", "%edx"
+	);
+
+	if (have_cpuid) {
+		__asm__ __volatile__ (
+			"movl $0x0000001, %%eax;"
+			"pushl %%ebx;"
+			"cpuid;"
+			"popl %%ebx;"
+			"movl %%edx, %0;"
+			: "=r" (features)
+			:
+			: "%eax"
+		);
+
+		have_mmx = features & 0x00800000;
+		have_sse2 = features & 0x04000000;
+	}
 #  else
 	have_mmx = false;
-#  endif
-
-#  if HAVE_SSE2
-	have_sse2 = true;
-#  else
 	have_sse2 = false;
 #  endif
-
 #endif
 }
 

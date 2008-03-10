@@ -1,5 +1,11 @@
 2008-03-09  Geoff Norton  <gnorton@novell.com>
 
+	* yuv-converter.cpp: Detect the CPU features at runtime.  We
+	should now be able to distribute a 32-bit SSE2/MMX build to
+	non SSE2/MMX machines
+
+2008-03-09  Geoff Norton  <gnorton@novell.com>
+
 	* yuv-converter.cpp: Implement runtime fallbacks in the Convert
 	function (TODO: Still need to runtime detect SSE2/MMX) 
 
