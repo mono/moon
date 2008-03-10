@@ -786,6 +786,8 @@ MediaPlayer::IncTargetPts (uint64_t value)
 void
 MediaPlayer::StopThreads ()
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::StopThreads ()\n");
+
 	stop = true;
 	
 	PauseInternal (false);
@@ -851,7 +853,7 @@ MediaPlayer::Stop ()
 	StopThreads ();
 	
 	playing = false;
-	//SeekInternal (0);
+	SeekInternal (0);
 }
 
 bool

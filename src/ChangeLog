@@ -1,5 +1,10 @@
 2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: When stopping, we need to seek to the beginning again. Fixes
+	  #368461.
+
+2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: Update according to pipeline changes. TryOpen: our
 	  downloaded_file field may change when we call MediaOpened, so save a
 	  local copy before calling MediaOpened. Unref our playlist upon
