@@ -1994,7 +1994,7 @@ runtime_shutdown (void)
 			printf ("\tOldest %d objects alive:\n", counter);
 			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
 				EventObject* obj = (EventObject *) last_n->pdata[i];
-				printf ("\t\t%i = %s, refcount: %i\n", obj->id, obj->GetTypeName (), obj->refcount);
+				printf ("\t\t%i = %s, refcount: %i\n", obj->id, obj->GetTypeName (), obj->GetRefCount ());
 			}
 		}
 

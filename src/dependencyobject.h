@@ -67,7 +67,19 @@ class EventObject {
 #if OBJECT_TRACKING
 	void weak_ref (EventObject* base);
 	void weak_unref (EventObject* base);
+
+	static int objects_created;
+	static int objects_destroyed;
+	static GHashTable* objects_alive;
+	int id;
+	GHashTable* weak_refs;
+
+	char* GetStackTrace (const char* prefix);
+	char* GetStackTrace () { return GetStackTrace (""); }
+	void PrintStackTrace ();
+	void Track (const char* done, const char* typname);
 #endif
+
 
 	void ref ()
 	{
@@ -126,7 +138,6 @@ class EventObject {
 
 	static int DestroyedEvent;
 
-
  protected:
 	virtual ~EventObject ();
 
@@ -143,18 +154,6 @@ class EventObject {
 	
 	EventList *events;
 
-#if OBJECT_TRACKING
-	static int objects_created;
-	static int objects_destroyed;
-	static GHashTable* objects_alive;
-	int id;
-	GHashTable* weak_refs;
-
-	char* GetStackTrace (const char* prefix);
-	char* GetStackTrace () { return GetStackTrace (""); }
-	void PrintStackTrace ();
-	void Track (const char* done, const char* typname);
-#endif
 };
 
 
