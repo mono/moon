@@ -29,6 +29,7 @@ G_BEGIN_DECLS
 #include "list.h"
 #include "downloader.h"
 
+#define MAXIMUM_CACHE_SIZE 6000000
 
 #define FRONT_TO_BACK_STATS 0
 
@@ -171,6 +172,14 @@ class Surface : public EventObject {
 	{
 		cache_report = report;
 		cache_data = user_data;
+	}
+
+	bool VerifyWithCacheSizeCounter (int64_t size)
+	{
+		if (cache_size_in_bytes + size < MAXIMUM_CACHE_SIZE)
+			return TRUE;
+		else
+			return FALSE;
 	}
 
 	void AddToCacheSizeCounter (int64_t size)

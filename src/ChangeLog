@@ -1,3 +1,9 @@
+2008-03-10  Michael Dominic K.  <mdk@mdk.am>
+
+	* runtime.h:
+	* shape.cpp: Adding functionality to limit the amount of caching
+	happening on one surface. Currently set to ~6mb. 
+
 2008-03-09  Larry Ewing  <lewing@novell.com>
 
 	* mplayer.cpp: fix another place that used the wrong stride.

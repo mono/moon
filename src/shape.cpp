@@ -359,7 +359,16 @@ Shape::IsCandidateForCaching (void)
 	if (IsEmpty ())
 		return FALSE;
 
+	if (! GetSurface ())
+		return FALSE;
+
 	if (bounds.w * bounds.h < 60000)
+		return FALSE;
+
+	// This is not 100% correct check -- the actual surface size might be
+	// a tiny little bit larger. It's not a problem though if we go few
+	// bytes above the cache limit.
+	if (! GetSurface ()->VerifyWithCacheSizeCounter (bounds.w * bounds.h * 4))
 		return FALSE;
 
 	// one last line of defense, lets not cache things 
