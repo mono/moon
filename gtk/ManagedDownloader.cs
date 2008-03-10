@@ -51,7 +51,13 @@ namespace Gtk.Moonlight {
 		public delegate void TickCall (IntPtr data);
 
 		[DllImport ("moon")]
-		internal extern static void time_manager_add_tick_call (TickCall func, IntPtr data);
+		internal extern static void time_manager_add_tick_call (IntPtr time_manager, TickCall func, IntPtr data);
+
+		[DllImport ("moon")]
+		internal extern static IntPtr surface_get_time_manager (IntPtr surface);
+
+		[DllImport ("moon")]
+		internal extern static IntPtr downloader_get_surface (IntPtr downloader);
 		
 		static int keyid;
 		static Hashtable downloaders = new Hashtable ();
@@ -93,11 +99,12 @@ namespace Gtk.Moonlight {
 
 		void Download ()
 		{
+			IntPtr time_manager = surface_get_time_manager (downloader_get_surface (downloader));
 			// Special case: local file, just notify that we are done
 			
 			if (fname != null) {
 				if (File.Exists (fname)) {
-					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+					time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 						if (!downloading)
 							return;
 						tick_call = null;
@@ -105,7 +112,7 @@ namespace Gtk.Moonlight {
 					}, IntPtr.Zero);
 				}
 				else {
-					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+					time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 						if (!downloading)
 							return;
 						tick_call = null;
@@ -123,7 +130,7 @@ namespace Gtk.Moonlight {
 			
 			try {
 				using (WebResponse r = request.GetResponse ()){
-					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+					time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 						if (!downloading)
 							return;
 						downloader_notify_size (downloader, r.ContentLength);
@@ -144,7 +151,7 @@ namespace Gtk.Moonlight {
 							}
 							output.Write (buffer, 0, count);
 
-							time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+							time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 								if (!downloading)
 									return;
 								tick_call = null;
@@ -155,7 +162,7 @@ namespace Gtk.Moonlight {
 						}
 					}
 					// We are done
-					time_manager_add_tick_call (tick_call = delegate (IntPtr data) {
+					time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 						if (!downloading)
 							return;
 						tick_call = null;

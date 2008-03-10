@@ -140,6 +140,8 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_send_func send,
 			       downloader_abort_func abort);
 
+Surface *downloader_get_surface    (Downloader *dl);
+
 void  downloader_abort             (Downloader *dl);
 void *downloader_get_response_text (Downloader *dl, const char *PartName, uint64_t *size);
 char *downloader_get_response_file (Downloader *dl, const char *PartName);

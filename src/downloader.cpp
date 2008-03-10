@@ -388,6 +388,12 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 }
 
 
+Surface *
+downloader_get_surface (Downloader *dl)
+{
+	return dl->GetSurface ();
+}
+
 void
 downloader_abort (Downloader *dl)
 {

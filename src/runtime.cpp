@@ -1765,6 +1765,12 @@ surface_get_widget (Surface *s)
 	return s->GetWidget ();
 }
 
+TimeManager*
+surface_get_time_manager (Surface* s)
+{
+	return s->GetTimeManager();
+}
+
 void
 Surface::SetTrans (bool trans)
 {

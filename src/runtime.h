@@ -390,6 +390,7 @@ bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
 
 void    *surface_get_widget (Surface *s);
+TimeManager* surface_get_time_manager (Surface* s);
 
 cairo_t *measuring_context_create (void);
 void     measuring_context_destroy (cairo_t *cr);

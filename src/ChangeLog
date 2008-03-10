@@ -1,3 +1,9 @@
+2008-03-10  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: add surface_get_time_manager.
+
+	* downloader.h, downloader.cpp: add downloader_get_surface.
+	
 2008-03-10  Michael Dominic K.  <mdk@mdk.am>
 
 	* runtime.cpp:
