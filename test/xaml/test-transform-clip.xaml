@@ -1,0 +1,17 @@
+<Canvas x:Name="page0" xmlns="http://schemas.microsoft.com/client/2007"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="blue" Loaded="OnLoaded"
+  Width="500" Height="500">
+  <Canvas.Clip>
+    <PathGeometry>
+      <PathFigure>
+        <LineSegment x:Name="clipPoint0" Point="0,570"/>
+        <LineSegment x:Name="clipPoint1" Point="0,570"/>
+        <LineSegment x:Name="clipPoint2" Point="0,570"/>
+        <LineSegment x:Name="clipPoint3" Point="0,570"/>
+        <LineSegment x:Name="clipPoint4" Point="0,570"/>
+      </PathFigure>
+    </PathGeometry>
+  </Canvas.Clip>
+  <Rectangle Height="1000" Width="20" Opacity="0.6" Fill="Red">
+  </Rectangle>
+</Canvas>

@@ -607,4 +607,8 @@
 	inputFile="test-storyboard-simple-stop-stop.xaml"
 	masterFile10="../harness/masters/test-storyboard-simple-stop-stopMaster.png"
    />
+   <Test id="152"
+	inputFile="test-transform-clip.xaml"
+	masterFile10="../harness/masters/test-transform-clipMaster.png"
+   />
 </DRTList>
