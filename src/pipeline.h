@@ -488,7 +488,8 @@ public:
 	// (as well as determining when to stop buffering)
 	// This method will be called on the main thread, so it can't
 	// do anything that might block (such as read/seek ahead).
-	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate) = 0;
+	// It's generally better to make an over-estimation than an under-estimation.
+	virtual int64_t EstimatePtsPosition (uint64_t pts) = 0;
 	IMediaStream *GetStream (int index);
 	// Gets the longest duration from all the streams
 	virtual uint64_t GetDuration (); // 100-nanosecond units (pts)
@@ -720,7 +721,7 @@ public:
 	virtual MediaResult ReadFrame (MediaFrame *frame) { return MEDIA_FAIL; }
 	virtual MediaResult Seek (uint64_t pts) { return MEDIA_FAIL; }
 	virtual MediaResult SeekToStart () { return MEDIA_FAIL; }
-	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate) { return 0; }
+	virtual int64_t EstimatePtsPosition (uint64_t pts) { return 0; }
 
 	Playlist *GetPlaylist () { return playlist; }
 	virtual const char *GetName () { return "ASXDemuxer"; }
@@ -754,7 +755,7 @@ public:
 	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (uint64_t pts);
 	virtual MediaResult SeekToStart ();
-	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
+	virtual int64_t EstimatePtsPosition (uint64_t pts);
 	
 	ASFParser *GetParser () { return parser; }
 	virtual const char *GetName () { return "ASFDemuxer"; }
@@ -834,7 +835,7 @@ public:
 	
 	MediaResult ReadFrame (MediaFrame *frame);
 	
-	int64_t EstimatePtsPosition (uint64_t pts, bool *estimate);
+	int64_t EstimatePtsPosition (uint64_t pts);
 };
 
 class Mp3Demuxer : public IMediaDemuxer {
@@ -852,7 +853,7 @@ public:
 	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (uint64_t pts);
 	virtual MediaResult SeekToStart ();
-	virtual int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
+	virtual int64_t EstimatePtsPosition (uint64_t pts);
 	virtual const char *GetName () { return "Mp3Demuxer"; }
 };
 

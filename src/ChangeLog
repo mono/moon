@@ -1,5 +1,10 @@
 2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.h, media.cpp, pipeline.cpp: Rename GetPositionOfPts to
+	  EstimatePtsPosition and remove the estimate parameter, it's never used.
+
+2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* runtime.cpp: No need to scream in printfs.
 
 2008-03-11  Jeffrey Stedfast  <fejj@novell.com>

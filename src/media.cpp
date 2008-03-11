@@ -668,11 +668,10 @@ MediaElement::UpdateProgress ()
 	// CHECK: if buffering, will DownloadCompletedEvent be emitted?
 	
 	if (IsBuffering ()) {
-		bool estimate;
 		int64_t size = downloaded_file->GetSize ();
 		int64_t buffering_time = TimeSpan_ToPts (GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ());
 		int64_t write_pos = downloaded_file->GetWritePosition ();
-		int64_t wait_pos = media == NULL ? 0 : media->GetDemuxer ()->GetPositionOfPts (buffering_pts + buffering_time, &estimate);
+		int64_t wait_pos = media == NULL ? 0 : media->GetDemuxer ()->EstimatePtsPosition (buffering_pts + buffering_time);
 		int64_t buffer_size = wait_pos - buffering_start;
 		int64_t buffered_size = write_pos - buffering_start;
 		
@@ -680,15 +679,9 @@ MediaElement::UpdateProgress ()
 			wait_pos = size;
 		
 		if (wait_pos < write_pos) {
-			if (estimate) {
-				// Just wait a bit more, estimate is clearly wrong.
-				buffer_size = 1024 * 16;
-				wait_pos = write_pos + buffer_size;
-			} else {
-				// 100% done
-				wait_pos = write_pos;
-				buffered_size = buffer_size; 
-			}
+			// Just wait a bit more, estimate is clearly wrong.
+			buffer_size = 1024 * 16;
+			wait_pos = write_pos + buffer_size;
 		}
 		
 		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();

@@ -760,17 +760,12 @@ ASFDemuxer::~ASFDemuxer ()
 }
 
 int64_t
-ASFDemuxer::GetPositionOfPts (uint64_t pts, bool *estimate)
+ASFDemuxer::EstimatePtsPosition (uint64_t pts)
 {
 	int64_t result = -1;
-	bool e = false;
-	
-	*estimate = false;
 	
 	for (int i = 0; i < GetStreamCount (); i++) {
-		result = MAX (result, readers [i]->GetPositionOfPts (pts, &e));
-		if (e)
-			*estimate = true;
+		result = MAX (result, readers [i]->EstimatePtsPosition(pts));
 	}
 	
 	return result;
@@ -1634,23 +1629,19 @@ Mp3FrameReader::MpegFrameSearch (uint64_t pts)
 }
 
 int64_t
-Mp3FrameReader::EstimatePtsPosition (uint64_t pts, bool *estimate)
+Mp3FrameReader::EstimatePtsPosition (uint64_t pts)
 {
 	uint32_t frame;
 	int64_t pos;
 	uint64_t n;
 	
-	if (pts == cur_pts) {
-		*estimate = false;
-		
+	if (pts == cur_pts) {		
 		return stream->GetPosition ();
 	}
 	
 	// if the pts requested is some place we've been, then we can use our jump table
 	if (used > 0) {
 		if (pts < (jmptab[used - 1].pts + jmptab[used - 1].dur)) {
-			*estimate = false;
-			
 			if (pts >= jmptab[used - 1].pts)
 				return jmptab[used - 1].offset;
 			
@@ -1672,8 +1663,6 @@ Mp3FrameReader::EstimatePtsPosition (uint64_t pts, bool *estimate)
 	
 	// FIXME: Xing mp3's sometimes have a pts table encoded in the
 	// first frame... should use that data if available.
-	
-	*estimate = true;
 	
 	return pos;
 }
@@ -1903,10 +1892,10 @@ Mp3Demuxer::SeekToStart ()
 }
 
 int64_t
-Mp3Demuxer::GetPositionOfPts (uint64_t pts, bool *estimate)
+Mp3Demuxer::EstimatePtsPosition (uint64_t pts)
 {
 	if (reader != NULL)
-		return reader->EstimatePtsPosition (pts, estimate);
+		return reader->EstimatePtsPosition (pts);
 	
 	return -1;
 }

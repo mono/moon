@@ -248,8 +248,8 @@ public:
 	// returns UINT32_MAX if not found in the index.
 	uint32_t FrameSearch (uint64_t pts);
 
-	int64_t GetPositionOfPts (uint64_t pts, bool *estimate);
-	uint64_t GetPacketIndexOfPts (uint64_t pts, bool *estimate);
+	int64_t EstimatePtsPosition (uint64_t pts);
+	uint64_t EstimatePacketIndexOfPts (uint64_t pts);
 
 	// Adds the current frame to the index.
 	void AddFrameIndex (uint64_t packet_index);

@@ -1001,10 +1001,9 @@ ASFFrameReader::Seek (uint64_t pts)
 	// We just read until we find what we want.
 	
 	bool found = false;
-	bool estimate;
 	MediaResult result;
 	
-	uint64_t start_pi = GetPacketIndexOfPts (pts, &estimate);
+	uint64_t start_pi = EstimatePacketIndexOfPts (pts);
 	uint64_t kf_packet_index = UINT64_MAX; // The last packet index which had a key frame and pts below the requested one
 	uint64_t kf_pts = 0; // The last key frame with pts below the requested one
 	
@@ -1225,15 +1224,15 @@ end_frame:
 }
 
 int64_t
-ASFFrameReader::GetPositionOfPts (uint64_t pts, bool *estimate)
+ASFFrameReader::EstimatePtsPosition  (uint64_t pts)
 {
-	return parser->GetPacketOffset (MIN (parser->GetPacketCount () - 1, GetPacketIndexOfPts (pts, estimate) + 1));
+	return parser->GetPacketOffset (MIN (parser->GetPacketCount () - 1, EstimatePacketIndexOfPts (pts) + 1));
 }
 
 uint64_t
-ASFFrameReader::GetPacketIndexOfPts (uint64_t pts, bool *estimate)
+ASFFrameReader::EstimatePacketIndexOfPts (uint64_t pts)
 {
-	//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p)\n", pts, estimate);
+	//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu)\n", pts);
 	
 	int32_t counter = 0;
 	uint64_t average = 0; // average duration per packet
@@ -1243,8 +1242,6 @@ ASFFrameReader::GetPacketIndexOfPts (uint64_t pts, bool *estimate)
 	uint64_t total_duration = 0;
 	uint64_t result = 0;
 	uint64_t packet_index = 0;
-	
-	*estimate = false;
 	
 	if (pts == 0) {
 		return 0;
@@ -1258,11 +1255,9 @@ ASFFrameReader::GetPacketIndexOfPts (uint64_t pts, bool *estimate)
 	packet_index = FrameSearch (pts);
 	
 	if (packet_index != UINT32_MAX) {
-		//printf ("ASFFrameReader::GetPositionOfPts (%llu, %p): Found pts in index, position: %lld, pi: %i\n", pts, estimate, parser->GetPacketOffset (packet_index), packet_index);
+		//printf ("ASFFrameReader::GetPositionOfPts (%llu): Found pts in index, position: %lld, pi: %i\n", pts, parser->GetPacketOffset (packet_index), packet_index);
 		return packet_index;
 	}
-	
-	*estimate = true;
 	
 	for (uint32_t i = 0; i < index_size; i++) {
 		if (!(index [i].start_pts != INVALID_START_PTS && index [i].end_pts > index [i].start_pts))
@@ -1278,7 +1273,7 @@ ASFFrameReader::GetPacketIndexOfPts (uint64_t pts, bool *estimate)
 		counter++;
 		average = (average / (double) counter) * (counter - 1) + (duration / (double) counter);
 			
-		//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p): Calculated average %llu after pi: %i, duration: %llu, start_pts: %llu, end_pts: %llu\n", pts, estimate, average, i, duration, index [i].start_pts, index [i].end_pts);
+		//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu): Calculated average %llu after pi: %i, duration: %llu, start_pts: %llu, end_pts: %llu\n", pts, average, i, duration, index [i].start_pts, index [i].end_pts);
 	}
 	
 	if (average == 0) {
@@ -1286,18 +1281,18 @@ ASFFrameReader::GetPacketIndexOfPts (uint64_t pts, bool *estimate)
 		uint64_t duration = MAX (1, parser->GetFileProperties ()->play_duration - MilliSeconds_ToPts (parser->GetFileProperties ()->preroll));
 		double percent = MAX (0, pts / (double) duration);
 		result = percent * parser->GetPacketCount ();
-		//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p): No average, calculated by percent %.2f, pi: %i, pts: %llu, preroll: %llu\n", pts, estimate, percent, pi, pts, preroll);
+		//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu): No average, calculated by percent %.2f, pi: %i, pts: %llu, preroll: %llu\n", pts, percent, pi, pts, preroll);
 	} else {
 		// calculate packet index from the last known packet index / pts and average pts per packet index
 		last_good_pts = MIN (last_good_pts, pts);
 		result = last_good_pi + (pts - last_good_pts) / average;
-		//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p): Calculated by averate %llu, last_good_pts: %llu, pi: %i\n", pts, estimate, average, last_good_pts, pi);
+		//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu): Calculated by averate %llu, last_good_pts: %llu, pi: %i\n", pts, average, last_good_pts, pi);
 	}
 	
 	result = MAX (0, result);
 	result = MIN (result, MAX (0, parser->GetPacketCount () - 1));
 	
-	//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu, %p): Final position: %lld of pi: %i. Total packets: %llu, total duration: %llu\n", pts, estimate, parser->GetPacketOffset (pi), pi, parser->GetFileProperties ()->data_packet_count, parser->GetFileProperties ()->play_duration);
+	//printf ("ASFFrameReader::GetPacketIndexOfPts (%llu): Final position: %lld of pi: %i. Total packets: %llu, total duration: %llu\n", pts, parser->GetPacketOffset (pi), pi, parser->GetFileProperties ()->data_packet_count, parser->GetFileProperties ()->play_duration);
 	return result;
 }
 
