@@ -505,6 +505,10 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 				 && opacityMask == NULL
 				 && !IS_TRANSLUCENT (local_opacity));
 
+		UIElement *parent = this;
+		while (subtract && (parent = parent->GetVisualParent ()))
+			subtract = subtract && (parent->GetValue (UIElement::ClipProperty) == NULL);
+
 		// element type specific checks
 		if (subtract) {
 			if (Is (Type::MEDIAELEMENT)) {

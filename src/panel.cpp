@@ -336,6 +336,10 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 				 && uielement_get_opacity_mask (this) == NULL
 				 && !IS_TRANSLUCENT (local_opacity));
 
+		UIElement *parent = this;
+		while (subtract && (parent = parent->GetVisualParent ()))
+			subtract = subtract && (parent->GetValue (UIElement::ClipProperty) == NULL);
+
 		if (subtract) {
 			Value *brush_value = GetValue (Panel::BackgroundProperty);
 			if (brush_value && brush_value->AsBrush()) {

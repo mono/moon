@@ -9,6 +9,13 @@
 	body of Collection::Clear into a non-virtual method that we can
 	call from the dtor.
 
+2008-03-10  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp:
+	* panel.cpp: make sure we don't subtract the region unless non of
+	our anscestors have a slip mask.  This should be implemented in a
+	more efficient way.
+
 2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* playlist.cpp, playlist.h: Move PlaylistContent info PlaylistEntry.
