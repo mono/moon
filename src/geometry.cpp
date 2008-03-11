@@ -74,7 +74,7 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 		cairo_transform (cr, &matrix);
 	}
 
-	if (!path || (path->cairo.num_data == 0))
+	if (!IsBuilt ())
 		Build (shape);
 
 	if (path)
@@ -87,7 +87,7 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 Rect
 Geometry::ComputeBounds (Path *shape)
 {
-	if (!path || (path->cairo.num_data == 0))
+	if (!IsBuilt ())
 		Build (shape);
 
 	return path ? path_get_bounds (shape, &path->cairo) : Rect (0, 0, 0, 0);
@@ -213,7 +213,7 @@ Geometry::GetOriginPoint (Path *shape)
 	double x = 0.0;
 	double y = 0.0;
 
-	if (!path || (path->cairo.num_data == 0))
+	if (!IsBuilt ())
 		Build (shape);
 
 	moon_get_origin (path, &x, &y);
@@ -438,9 +438,12 @@ path_geometry_new ()
 void
 PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
+	if (path)
+		moon_path_clear (path);
+
 	// PathGeometry only has one collection, so let's save the hash lookup
 	//if (col == GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection ())
-		NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
+	        NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
 }
 
 void
@@ -666,6 +669,7 @@ PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	if (path)
 		moon_path_clear (path);
+
 	NotifyListenersOfPropertyChange (args);
 }
 
@@ -713,7 +717,7 @@ PathFigure::Build (Path *shape)
 Rect
 PathFigure::ComputeBounds (Path *shape)
 {
-	if (!path || (path->cairo.num_data == 0))
+	if (!IsBuilt ())
 		Build (shape);
 
 	return path_get_bounds (shape, &path->cairo);

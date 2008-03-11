@@ -1,3 +1,10 @@
+2008-03-10  Larry Ewing  <lewing@novell.com>
+
+	* geometry.h:
+	* geometry.cpp: make IsBuilt check for actual path data as well
+	then use it everywhere we need it.  Invalidate the path if the
+	figures change.  Fixes test-transform-clip.htm.
+
 2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* playlist.cpp: Playlist::AddEntry: unref the entry after adding it.

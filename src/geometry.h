@@ -60,7 +60,7 @@ class Geometry : public DependencyObject {
 	virtual bool IsFilled () { return true; };
 
 	virtual void Build (Path *path) {}
-	virtual bool IsBuilt () {return ( path != NULL); }
+	virtual bool IsBuilt () { return path && path->cairo.num_data != 0; }
 	virtual cairo_path_t* GetCairoPath () { return (path) ? &path->cairo : NULL; }
 };
 FillRule geometry_get_fill_rule (Geometry *geometry);
@@ -260,7 +260,7 @@ class PathFigure : public DependencyObject {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 	virtual void Build (Path *shape);
 
-	virtual bool IsBuilt () {return ( path != NULL); }
+	virtual bool IsBuilt () { return path && path->cairo.num_data != 0; }
 	virtual cairo_path_t* GetCairoPath () { return (path) ? &path->cairo : NULL; }
 
 	Rect ComputeBounds (Path *shape);
