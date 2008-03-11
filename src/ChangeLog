@@ -1,5 +1,11 @@
 2008-03-10  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.cpp (~DependencyObject): use
+	g_hash_table_foreach_remove, so the dtor of one value can't access
+	an already destroyed DO from another value.
+
+2008-03-10  Chris Toshok  <toshok@ximian.com>
+
 	* namescope.cpp: don't explicitly unref the object when removing
 	it.  instead use base_unref as the value-dtor for the GHashTable.
 	This will cause unrefs when the hash table is destroyed in the

@@ -687,10 +687,11 @@ DependencyObject::SetValue (const char *name, Value *value)
 	SetValue (property, value);
 }
 
-static void
+static gboolean
 free_value (gpointer key, gpointer value, gpointer data)
 {
 	delete (Value*)value;
+	return TRUE;
 }
 
 DependencyObject::DependencyObject ()
@@ -731,7 +732,7 @@ DependencyObject::~DependencyObject ()
 	}
 
 	RemoveAllListeners();
-	g_hash_table_foreach (current_values, free_value, NULL);
+	g_hash_table_foreach_remove (current_values, free_value, NULL);
 	g_hash_table_destroy (current_values);
 }
 
