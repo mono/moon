@@ -1,3 +1,9 @@
+2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml.cpp: xaml_create_from_file: if there was some error loading the file,
+	  don't crash, print an error message. Dup all strings put into
+	  namespace_map, and free them all upon its destruction.
+
 2008-03-11  Larry Ewing  <lewing@novell.com>
 	
 	* collection.cpp (VisualCollection::VisualAdded): make sure we set

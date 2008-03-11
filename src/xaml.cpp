@@ -198,7 +198,7 @@ class XamlParserInfo {
 		cdata_content (false), cdata (NULL), implicit_default_namespace (false), error_args (NULL),
 		loader (NULL), created_elements (NULL)
 	{
-		namespace_map = g_hash_table_new (g_str_hash, g_str_equal);
+		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	}
 
 	~XamlParserInfo ()
@@ -1138,7 +1138,7 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 
 
 		CustomNamespace *c = new CustomNamespace (g_strdup (uri));
-		g_hash_table_insert (p->namespace_map, c->xmlns, c);
+		g_hash_table_insert (p->namespace_map, g_strdup (c->xmlns), c);
 	}
 }
 
@@ -1159,8 +1159,8 @@ static void
 add_default_namespaces (XamlParserInfo *p)
 {
 	p->implicit_default_namespace = true;
-	g_hash_table_insert (p->namespace_map, (char *) "http://schemas.microsoft.com/winfx/2006/xaml/presentation", default_namespace);
-	g_hash_table_insert (p->namespace_map, (char *) "http://schemas.microsoft.com/winfx/2006/xaml", x_namespace);
+	g_hash_table_insert (p->namespace_map, g_strdup ("http://schemas.microsoft.com/winfx/2006/xaml/presentation"), default_namespace);
+	g_hash_table_insert (p->namespace_map, g_strdup ("http://schemas.microsoft.com/winfx/2006/xaml"), x_namespace);
 }
 
 static void
@@ -1390,7 +1390,10 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 	}
 
  cleanup_and_return:
-	if (parser_info->error_args) {
+	if (!parser_info) {
+		printf ("error opening xaml file\n");
+		loader->error_args = new ParserErrorEventArgs ("Error opening xaml file", xaml_file, 0, 0, 1, "", "");
+	} else if (parser_info->error_args) {
 		printf ("setting error args\n");
 		loader->error_args = parser_info->error_args;
 	}
