@@ -77,7 +77,6 @@ Media::Media (MediaElement *element)
 	
 	pthread_create (&queue_thread, &attribs, WorkerLoop, this); 	
 	pthread_attr_destroy (&attribs);
-	printf ("Media::Media (), id = %i\n", id);
 }
 
 Media::~Media ()
@@ -105,8 +104,6 @@ Media::~Media ()
 	if (demuxer)
 		demuxer->unref ();
 	delete markers;
-
-	printf ("Media::~Media (), id = %i\n", id);
 }
 
 void

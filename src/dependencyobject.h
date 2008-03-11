@@ -14,7 +14,7 @@
 #include "enums.h"
 #include "list.h"
 
-//#define OBJECT_TRACKING 1
+#define OBJECT_TRACKING 1
 
 #if OBJECT_TRACKING
 #define GET_OBJ_ID(x) (x ? x->id : 0)
@@ -64,12 +64,15 @@ class EventObject {
  public:
 	EventObject ();
 
+#if DEBUG
+	static int objects_created;
+	static int objects_destroyed;
+#endif
+
 #if OBJECT_TRACKING
 	void weak_ref (EventObject* base);
 	void weak_unref (EventObject* base);
 
-	static int objects_created;
-	static int objects_destroyed;
 	static GHashTable* objects_alive;
 	int id;
 	GHashTable* weak_refs;

@@ -33,6 +33,8 @@ EventObject::EventObject ()
 	weak_refs = NULL;
 
 	Track ("Created", "");
+#elif DEBUG
+	objects_created++;
 #endif
 }
 
@@ -64,10 +66,17 @@ EventObject::~EventObject()
 	}
 
 	Track ("Destroyed", "");
+#elif DEBUG
+	objects_destroyed++;
 #endif
 
 		FreeHandlers ();
 }
+
+#if DEBUG
+int EventObject::objects_created = 0;
+int EventObject::objects_destroyed = 0;
+#endif
 
 #if OBJECT_TRACKING
 // Define the ID of the object you want to track
@@ -75,8 +84,6 @@ EventObject::~EventObject()
 // are logged to the console, with a stacktrace.
 #define OBJECT_TRACK_ID (0)
 
-int EventObject::objects_created = 0;
-int EventObject::objects_destroyed = 0;
 GHashTable* EventObject::objects_alive = NULL;
 
 void

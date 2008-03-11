@@ -1,3 +1,10 @@
+2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.h, dependencyobject.cpp: Enable object counting when
+	  DEBUG is defined.
+	* runtime.cpp: Show a message if we leak objects and DEBUG is defined.
+	* pipeline.cpp: Remove printfs.
+
 2008-03-10  Larry Ewing  <lewing@novell.com>
 
 	* geometry.h:
