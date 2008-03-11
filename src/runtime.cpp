@@ -2028,7 +2028,7 @@ runtime_shutdown (void)
 	if (EventObject::objects_created == EventObject::objects_destroyed) {
 		printf ("Runtime destroyed, no leaked objects.\n");
 	} else {
-		printf ("Runtime destroyed, with LEAKED EventObjects:\n");
+		printf ("Runtime destroyed, with leaked EventObjects:\n");
 		printf ("\tObjects created: %i\n", EventObject::objects_created);
 		printf ("\tObjects destroyed: %i\n", EventObject::objects_destroyed);
 		printf ("\tDifference: %i (%.1f%%)\n", EventObject::objects_created - EventObject::objects_destroyed, (100.0 * EventObject::objects_destroyed) / EventObject::objects_created);
@@ -2051,7 +2051,7 @@ runtime_shutdown (void)
 	}
 #elif DEBUG
 	if (EventObject::objects_created != EventObject::objects_destroyed) {
-		printf ("Runtime destroyed, with %i LEAKED EventObjects.\n", EventObject::objects_created - EventObject::objects_destroyed);
+		printf ("Runtime destroyed, with %i leaked EventObjects.\n", EventObject::objects_created - EventObject::objects_destroyed);
 	}
 #endif
 
