@@ -331,14 +331,17 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 
 	if (!self_region->IsEmpty()) {
 
-		bool subtract = (GetValue (UIElement::ClipProperty) == NULL
-				 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
-				 && uielement_get_opacity_mask (this) == NULL
+		bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
 				 && !IS_TRANSLUCENT (local_opacity));
 
-		UIElement *parent = this;
-		while (subtract && (parent = parent->GetVisualParent ()))
-			subtract = subtract && (parent->GetValue (UIElement::ClipProperty) == NULL);
+		UIElement *el = this;
+		while (subtract && el) {
+			subtract = subtract 
+				&& (el->GetValue (UIElement::ClipProperty) == NULL)
+				&& (uielement_get_opacity_mask (el) == NULL)
+				&& !IS_TRANSLUCENT (uielement_get_opacity (el));
+			el = el->GetVisualParent ();
+		}
 
 		if (subtract) {
 			Value *brush_value = GetValue (Panel::BackgroundProperty);

@@ -500,14 +500,17 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 	if (!self_region->IsEmpty()) {
 		render_list->Prepend (new RenderNode (this, self_region, true, CallPreRender, CallPostRender));
 
-		bool subtract = (GetValue (UIElement::ClipProperty) == NULL
-				 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
-				 && opacityMask == NULL
+		bool subtract =  ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
 				 && !IS_TRANSLUCENT (local_opacity));
 
-		UIElement *parent = this;
-		while (subtract && (parent = parent->GetVisualParent ()))
-			subtract = subtract && (parent->GetValue (UIElement::ClipProperty) == NULL);
+		UIElement *el = this;
+		while (subtract && el) {
+			subtract = subtract 
+				&& (el->GetValue (UIElement::ClipProperty) == NULL)
+				&& (uielement_get_opacity_mask (el) == NULL)
+				&& !IS_TRANSLUCENT (uielement_get_opacity (el));
+			el = el->GetVisualParent ();
+		}
 
 		// element type specific checks
 		if (subtract) {
