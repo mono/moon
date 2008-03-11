@@ -1,3 +1,8 @@
+2008-03-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Avoid crashing if the PML does not start with a 
+	M(ove) instruction.
+
 2008-03-11  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/: Moving implementations from .h to .cpp, leaving only

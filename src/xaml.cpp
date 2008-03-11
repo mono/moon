@@ -1940,6 +1940,9 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'L':
 		{
+			if (!psc)
+				return pg;
+
 			while (more_points_available (&inptr)) {
 				if (!get_point (&cp1, &inptr))
 					break;
@@ -1965,6 +1968,9 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'H':
 		{
+			if (!psc)
+				return pg;
+
 			double x = g_ascii_strtod (inptr, &end);
 			if (end == inptr)
 				break;
@@ -1989,6 +1995,9 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'V':
 		{
+			if (!psc)
+				return pg;
+
 			double y = g_ascii_strtod (inptr, &end);
 			if (end == inptr)
 				break;
@@ -2013,6 +2022,9 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'C':
 		{
+			if (!psc)
+				return pg;
+
 			if (!get_point (&cp1, &inptr))
 				break;
 			
@@ -2075,6 +2087,9 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'S':
 		{
+			if (!psc)
+				return pg;
+
 			while (more_points_available (&inptr)) {
 				if (!get_point (&cp2, &inptr))
 					break;
@@ -2115,6 +2130,9 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'Q':
 		{
+			if (!psc)
+				return pg;
+
 			if (!get_point (&cp1, &inptr))
 				break;
 			
@@ -2166,6 +2184,9 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'T':
 		{
+			if (!psc)
+				return pg;
+
 			while (more_points_available (&inptr)) {
 				if (!get_point (&cp2, &inptr))
 					break;
@@ -2199,6 +2220,9 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'A':
 		{
+			if (!psc)
+				return pg;
+
 			while (more_points_available (&inptr)) {
 				if (!get_point (&cp1, &inptr))
 					break;
@@ -2251,6 +2275,9 @@ geometry_from_str (const char *str)
 		}
 		case 'z':
 		case 'Z': {
+			if (!psc)
+				return pg;
+
 			Point *p = path_figure_get_start_point (pf);
 
 			if (!p)
