@@ -51,12 +51,7 @@ Collection::Collection ()
 
 Collection::~Collection ()
 {
-	Collection::Node *n;
-
-	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next)
-		n->obj->RemovePropertyChangeListener (this);
-
-	list->Clear(true);
+	Clear (false);
 	delete list;
 }
 
@@ -270,7 +265,7 @@ Collection::RemoveAt (int index)
 }
 
 void
-Collection::Clear ()
+Collection::Clear (bool emit_event)
 {
 	Collection::Node *n;
 	NameScope *con_ns = NULL;
@@ -297,7 +292,14 @@ Collection::Clear ()
 
 	list->Clear (true);
 
-	EmitChanged (CollectionChangeTypeChanged, NULL, NULL);
+	if (emit_event)
+		EmitChanged (CollectionChangeTypeChanged, NULL, NULL);
+}
+
+void
+Collection::Clear ()
+{
+	Clear(true);
 }
 
 DependencyProperty *Collection::CountProperty;

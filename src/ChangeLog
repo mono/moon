@@ -1,3 +1,14 @@
+2008-03-10  Chris Toshok  <toshok@ximian.com>
+
+	* namescope.cpp: don't explicitly unref the object when removing
+	it.  instead use base_unref as the value-dtor for the GHashTable.
+	This will cause unrefs when the hash table is destroyed in the
+	dtor (a case we were missing before.)
+
+	* collection.h, collection.cpp (class Collection): factor out the
+	body of Collection::Clear into a non-virtual method that we can
+	call from the dtor.
+
 2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* playlist.cpp, playlist.h: Move PlaylistContent info PlaylistEntry.

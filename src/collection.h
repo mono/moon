@@ -57,6 +57,9 @@ class Collection : public DependencyObject {
 	virtual bool Insert (int index, DependencyObject *data);
 	virtual void Clear  ();
 
+	// non virtual version callable from the dtor.
+	void Clear (bool emit_event);
+
 	//
 	// Returns the old value
 	//
