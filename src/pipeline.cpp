@@ -1962,10 +1962,11 @@ FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source,
 						return offset + len;
 					}
 					
-					if (source->Seek (offset + len, SEEK_SET) && source->Peek (hdr, 4)
-					    && mpeg_parse_header (&next, hdr) && next.bit_rate) {
-						/* everything checks out A-OK */
-						return offset;
+					if (source->Seek (offset + len, SEEK_SET) && source->Peek (hdr, 4)) {
+						if (mpeg_parse_header (&next, hdr)) {
+							/* everything checks out A-OK */
+							return offset;
+						}
 					}
 					
 					/* restore state */

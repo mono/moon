@@ -2368,18 +2368,19 @@ TextLayout::Layout ()
 				case TextWrappingNoWrap:
 				default:
 					// Never wrap.
-					if (is_space && !clipped) {
-						lw += advance;
-						if (lw > bbox_width)
-							bbox_width = lw;
-						
-						segment->end = i + 1;
-						clipped = true;
-					}
-					
 					wrap = false;
 					break;
 				}
+			} else if (is_space) {
+				if (max_width >= 0.0 && (lw + advance + 1.0) > max_width &&
+				    wrapping == TextWrappingNoWrap && !clipped) {
+					segment->end = i;
+					bbox_width = lw;
+					clipped = true;
+				}
+				
+				first_char = false;
+				wrap = false;
 			} else {
 				first_char = false;
 				wrap = false;
@@ -2434,7 +2435,7 @@ TextLayout::Layout ()
 			segment->end = i;
 		
 		line->segments->Append (segment);
-		segment->uwidth = lw - sx;
+		segment->uwidth = nslw - sx;
 		segment->width = lw - sx;
 		
 		width = MAX (width, nslw);
@@ -2466,117 +2467,6 @@ TextLayout::Layout ()
 	
 	//printf ("layout extents are %.3f, %.3f, bounding box extents are %.3f, %.3f\n", width, height, bbox_width, bbox_height);
 }
-
-#if 0
-void
-TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y)
-{
-	TextSegment *segment;
-	TextDecorations deco;
-	TextFont *font = NULL;
-	const gunichar *text;
-	Brush *cur_fg = NULL;
-	gunichar prev = 0;
-	GlyphInfo *glyph;
-	TextLine *line;
-	double x1, y1;
-	double x0;
-	Brush *fg;
-	int i;
-	
-	Layout ();
-	
-	x1 = x;
-	
-	line = (TextLine *) lines->First ();
-	
-	while (line) {
-		segment = (TextSegment *) line->segments->First ();
-		
-		// set y1 to the baseline (descend is a negative value)
-		y1 = y + line->height + line->descend;
-		
-		while (segment) {
-			text = segment->run->text;
-			deco = segment->run->deco;
-			font = segment->run->font;
-			x0 = x1;
-			
-			if (segment->run->fg && *segment->run->fg)
-				fg = *segment->run->fg;
-			else
-				fg = default_fg;
-			
-			if (fg != cur_fg) {
-				fg->SetupBrush (cr, element);
-				cur_fg = fg;
-			}
-			
-			if (!segment->path) {
-				if (font->IsScalable ())
-					cairo_new_path (cr);
-				
-				for (i = segment->start, prev = 0; i < segment->end; i++) {
-					if (!(glyph = font->GetGlyphInfo (text[i])))
-						continue;
-					
-					if (glyph->index > 0) {
-						x1 += font->Kerning (prev, glyph->index);
-						prev = glyph->index;
-						
-						if (!font->IsScalable ())
-							font->Render (cr, glyph, x1, y1);
-						else
-							font->Path (cr, glyph, x1, y1);
-					}
-					
-					x1 += glyph->metrics.horiAdvance;
-				}
-				
-				if (font->IsScalable ()) {
-					cairo_close_path (cr);
-					segment->path = cairo_copy_path (cr);
-					cairo_fill (cr);
-				}
-			} else {
-				// it is an error to append a path with no data
-				if (segment->path->data)
-					cairo_append_path (cr, segment->path);
-				
-				if (!segment->next)
-					x1 = x0 + segment->uwidth;
-				else
-					x1 = x0 + segment->width;
-				cairo_fill (cr);
-			}
-			
-			if (deco == TextDecorationsUnderline) {
-				cairo_antialias_t aa = cairo_get_antialias (cr);
-				double thickness = font->UnderlineThickness ();
-				double pos = y1 + font->UnderlinePosition ();
-				
-				cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-				cairo_set_line_width (cr, thickness);
-				
-				cairo_new_path (cr);
-				cairo_move_to (cr, x0, pos);
-				cairo_line_to (cr, x1, pos);
-				cairo_stroke (cr);
-				
-				cairo_set_antialias (cr, aa);
-			}
-			
-			segment = (TextSegment *) segment->next;
-		}
-		
-		y += (double) line->height;
-		
-		line = (TextLine *) line->next;
-		x1 = x;
-	}
-}
-
-#else
 
 static inline void
 RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, double x, double y)
@@ -2655,7 +2545,7 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 			cairo_fill (cr);
 		}
 		
-		if (deco == TextDecorationsUnderline) {
+		if (deco == TextDecorationsUnderline && segment->uwidth > 0.0) {
 			cairo_antialias_t aa = cairo_get_antialias (cr);
 			double thickness = font->UnderlineThickness ();
 			double pos = y1 + font->UnderlinePosition ();
@@ -2665,7 +2555,7 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 			
 			cairo_new_path (cr);
 			cairo_move_to (cr, 0.0, pos);
-			cairo_line_to (cr, x1, pos);
+			cairo_line_to (cr, segment->uwidth, pos);
 			cairo_stroke (cr);
 			
 			cairo_set_antialias (cr, aa);
@@ -2694,6 +2584,3 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 		line = (TextLine *) line->next;
 	}
 }
-
-#endif
-
