@@ -97,15 +97,9 @@ struct Duration {
 		return true;
 	}
 
-	gint32 ToSeconds ()
-	{
-		return TimeSpan_ToSeconds (timespan);
-	}
+	gint32 ToSeconds () { return TimeSpan_ToSeconds (timespan); }
 
-	double ToSecondsFloat ()
-	{
-		return TimeSpan_ToSecondsFloat (timespan);
-	}
+	double ToSecondsFloat () { return TimeSpan_ToSecondsFloat (timespan); }
 
 	// This should live in a TimeSpan class, but oh well.. */
 	static Duration FromSeconds (int seconds) { return Duration (TimeSpan_FromSeconds (seconds)); }

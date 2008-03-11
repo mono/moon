@@ -128,3 +128,18 @@ Region::ClipBox ()
 	gdk_region_get_clipbox (gdkregion, &clip);
 	return Rect (clip.x, clip.y, clip.width, clip.height);
 }
+
+void 
+Region::Draw (cairo_t *cr)
+{
+	int i, count;
+	GdkRectangle *rects;
+
+	gdk_region_get_rectangles (gdkregion, &rects, &i);
+
+	for (count = 0; count < i; count++)
+		cairo_rectangle (cr, rects [count].x, rects [count].y, rects [count].width, rects [count].height);
+
+	g_free (rects);
+}
+

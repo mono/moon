@@ -1,3 +1,8 @@
+2008-03-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/: Moving implementations from .h to .cpp, leaving only
+	setters/getters + simple constructors in .h.
+
 2008-03-10  Larry Ewing  <lewing@novell.com>
 
 	* panel.cpp:
@@ -67,7 +72,7 @@
 	  handle the case when the codec returns MEDIA_CODEC_DELAYED, in which
 	  case just try again with the next frame. Make MediaWork ref/unref the
 	  fields that can be ref counted. 
-
+	
 2008-03-10  Chris Toshok  <toshok@ximian.com>
 
 	[ Fixes bug #368460 ]

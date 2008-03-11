@@ -298,11 +298,7 @@ public:
 	MediaElementState GetState () { return state; }
 	void SetState (MediaElementState state);
 	
-	virtual bool EnableAntiAlias ()
-	{
-		return !(absolute_xform.xx == absolute_xform.yy /* no rotation */
-			 && (absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */);
-	}
+	virtual bool EnableAntiAlias ();
 	
 	void AddStreamedMarker (TimelineMarker *marker);
 	void SetMedia (Media *media);

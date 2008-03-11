@@ -128,28 +128,8 @@ class Surface : public EventObject {
 	void SetDownloaderContext (gpointer context) { downloader_context = context; }
 	gpointer GetDownloaderContext () { return downloader_context; }
 	
-	Downloader *CreateDownloader () 
-	{
-		Downloader *downloader = new Downloader ();
-		downloader->SetSurface (this);
-		downloader->SetContext (downloader_context);
-		return downloader;
-	}
-	
-	static Downloader *CreateDownloader (UIElement *element)
-	{
-		Surface *surface = element ? element->GetSurface () : NULL;
-		
-		if (surface)
-			return surface->CreateDownloader ();
-		
-		//printf ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n",
-		//	element, GET_OBJ_ID (element));
-		
-		//print_stack_trace ();
-		
-		return new Downloader ();
-	}
+	Downloader *CreateDownloader ();
+	static Downloader *CreateDownloader (UIElement *element);
 
 	void SetRenderFunc (MoonlightRenderFunc render, void *user_data)
 	{
@@ -175,26 +155,9 @@ class Surface : public EventObject {
 		cache_data = user_data;
 	}
 
-	bool VerifyWithCacheSizeCounter (int64_t size)
-	{
-		if (! (moonlight_flags & RUNTIME_INIT_USE_SHAPE_CACHE))
-			return FALSE;
-
-		if (cache_size_in_bytes + size < MAXIMUM_CACHE_SIZE)
-			return TRUE;
-		else
-			return FALSE;
-	}
-
-	void AddToCacheSizeCounter (int64_t size)
-	{
-		cache_size_in_bytes += size;
-	}
-
-	void RemoveFromCacheSizeCounter (int64_t size)
-	{
-		cache_size_in_bytes -= size;
-	}
+	bool VerifyWithCacheSizeCounter (int64_t size);
+	void AddToCacheSizeCounter (int64_t size);
+	void RemoveFromCacheSizeCounter (int64_t size);
 
 #if FRONT_TO_BACK_STATS
 	int uielements_rendered_front_to_back;

@@ -1623,6 +1623,55 @@ Surface::gdk_keyval_to_key (guint keyval)
 	}
 }
 
+Downloader*
+Surface::CreateDownloader (void) 
+{
+	Downloader *downloader = new Downloader ();
+	downloader->SetSurface (this);
+	downloader->SetContext (downloader_context);
+	return downloader;
+}
+
+Downloader*
+Surface::CreateDownloader (UIElement *element)
+{
+	Surface *surface = element ? element->GetSurface () : NULL;
+
+	if (surface)
+		return surface->CreateDownloader ();
+
+	//printf ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n",
+	//	element, GET_OBJ_ID (element));
+
+	//print_stack_trace ();
+
+	return new Downloader ();
+}
+
+bool 
+Surface::VerifyWithCacheSizeCounter (int64_t size)
+{
+	if (! (moonlight_flags & RUNTIME_INIT_USE_SHAPE_CACHE))
+		return FALSE;
+
+	if (cache_size_in_bytes + size < MAXIMUM_CACHE_SIZE)
+		return TRUE;
+	else
+		return FALSE;
+}
+
+void 
+Surface::AddToCacheSizeCounter (int64_t size)
+{
+	cache_size_in_bytes += size;
+}
+
+void 
+Surface::RemoveFromCacheSizeCounter (int64_t size)
+{
+	cache_size_in_bytes -= size;
+}
+
 bool
 Surface::FullScreenKeyHandled (GdkEventKey *key)
 {

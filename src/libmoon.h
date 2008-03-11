@@ -20,6 +20,7 @@
 #include "control.h"
 #include "dependencyobject.h"
 #include "downloader.h"
+#include "enums.h"
 #include "error.h"
 #include "eventargs.h"
 #include "frameworkelement.h"

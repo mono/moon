@@ -1307,6 +1307,14 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 }
 
+bool 
+MediaElement::EnableAntiAlias (void)
+{
+	return !(absolute_xform.xx == absolute_xform.yy &&		/* no rotation */
+		 (absolute_xform.yx == 0 && absolute_xform.xy == 0));	/* no skew */
+
+}
+
 MediaElement *
 media_element_new (void)
 {
