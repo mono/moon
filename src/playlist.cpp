@@ -40,23 +40,6 @@ PlaylistNode::~PlaylistNode ()
 }
 
 /*
- * PlaylistContent
- */ 
-
-PlaylistContent::PlaylistContent () : base (NULL), title (NULL), author (NULL), abstract (NULL), copyright (NULL)
-{
-}
-
-PlaylistContent::~PlaylistContent ()
-{
-	g_free (base);
-	g_free (title);
-	g_free (author);
-	g_free (abstract);
-	g_free (copyright);
-}
-
-/*
  * PlaylistEntry
  */
 
@@ -74,6 +57,11 @@ PlaylistEntry::PlaylistEntry (MediaElement *element, Playlist *parent, Media *me
 	start_time = 0;
 	duration = 0;
 	play_when_available = true;
+	base = NULL;
+	title = NULL;
+	author = NULL;
+	abstract = NULL;
+	copyright = NULL;
 }
 
 
@@ -86,6 +74,12 @@ PlaylistEntry::~PlaylistEntry ()
 
 	if (media)
 		media->unref ();
+
+	g_free (base);
+	g_free (title);
+	g_free (author);
+	g_free (abstract);
+	g_free (copyright);
 }
 
 static void
@@ -791,7 +785,7 @@ PlaylistParser::Parse ()
 	return playlist != NULL;
 }
 
-PlaylistContent *
+PlaylistEntry *
 PlaylistParser::GetCurrentContent ()
 {
 	if (current_entry != NULL)

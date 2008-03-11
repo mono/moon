@@ -1,5 +1,9 @@
 2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* playlist.cpp, playlist.h: Move PlaylistContent info PlaylistEntry.
+
+2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.h, dependencyobject.cpp: Enable object counting when
 	  DEBUG is defined.
 	* runtime.cpp: Show a message if we leak objects and DEBUG is defined.

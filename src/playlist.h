@@ -11,7 +11,6 @@
 #ifndef __PLAYLIST_H__
 #define __PLAYLIST_H__
 
-class PlaylistContent;
 class PlaylistEntry;
 class Playlist;
 class MediaSource;
@@ -35,41 +34,21 @@ public:
 	PlaylistEntry *GetEntry () { return entry; }
 };
 
-class PlaylistContent : public EventObject {
+class PlaylistEntry : public EventObject {
 private:
+	// ASX Properties 
 	char *base;
 	char *title;
 	char *author;
 	char *abstract;
 	char *copyright;
-
-protected:
-	virtual ~PlaylistContent ();
-
-public:
-	PlaylistContent ();
-
-	const char *GetBase () { return base; }
-	const char *GetTitle () { return title; }
-	const char *GetAuthor () { 	return author; }
-	const char *GetAbstract () { return abstract; }
-	const char *GetCopyright () { return copyright; }
-	void SetBase (char *base) { this->base = base; }
-	void SetTitle (char *title) { this->title = title; }
-	void SetAuthor (char *author) { this->author = author; }
-	void SetAbstract (char *abstract) { this->abstract = abstract; }
-	void SetCopyright (char *copyright) { this->copyright = copyright; }
-};
-
-class PlaylistEntry : public PlaylistContent {
-private:
 	char *source_name;
-	char *full_source_name;
-
 	TimeSpan start_time;
 	TimeSpan duration;
-	bool play_when_available;
 
+	// Non ASX properties
+	char *full_source_name;
+	bool play_when_available;
 	Playlist *parent;
 	MediaElement *element;
 	Media *media;
@@ -84,6 +63,21 @@ public:
 	PlaylistEntry (MediaElement *element, Playlist *parent, Media *media = NULL);
 
 	// ASX properties
+
+	const char *GetBase () { return base; }
+	void SetBase (char *base) { this->base = base; }
+
+	const char *GetTitle () { return title; }
+	void SetTitle (char *title) { this->title = title; }
+
+	const char *GetAuthor () { 	return author; }
+	void SetAuthor (char *author) { this->author = author; }
+
+	const char *GetAbstract () { return abstract; }
+	void SetAbstract (char *abstract) { this->abstract = abstract; }
+
+	const char *GetCopyright () { return copyright; }
+	void SetCopyright (char *copyright) { this->copyright = copyright; }
 
 	const char *GetSourceName () { return source_name; }
 	void SetSourceName (char *source_name) { this->source_name = source_name; }
@@ -220,7 +214,7 @@ private:
 	void EndEntry ();
 	PlaylistEntry *GetCurrentEntry ();
 
-	PlaylistContent *GetCurrentContent ();
+	PlaylistEntry *GetCurrentContent ();
 
 	void PushCurrentKind (PlaylistNodeKind kind);
 	void PopCurrentKind ();
