@@ -491,12 +491,14 @@ TimeManager::AddTickCall (void (*func)(gpointer), gpointer tick_data)
 	g_mutex_lock (tick_call_mutex);
 	tick_calls = g_list_append (tick_calls, call);
 
+#if PUT_TIME_MANAGER_TO_SLEEP
 	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
 	if (!source_tick_pending) {
 		source_tick_pending = true;
 		source->SetTimerFrequency (0);
 		source->Start();
 	}
+#endif
 
 	g_mutex_unlock (tick_call_mutex);
 }
