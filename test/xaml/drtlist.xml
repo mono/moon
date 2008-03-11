@@ -571,4 +571,12 @@
 	inputFile="test-shape-polygon-stretch2.xaml"
 	masterFile10="../harness/masters/test-shape-polygon-stretch2Master.png"
    />
+   <Test id="143"
+	inputFile="test-transform-clip.htm"
+	masterFile10="../harness/masters/test-transform-clipMaster.png"
+   />
+   <Test id="144"
+        inputFile="test-property-parsing.xaml"
+        masterFile10="../harness/masters/test-property-parsingMaster.png"
+   />
 </DRTList>
