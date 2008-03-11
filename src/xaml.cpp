@@ -753,15 +753,15 @@ parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_cod
 	if (p->error_args)
 		return;
 
-	p->error_args = new ParserErrorEventArgs (message,
-						  p->file_name,
-						  XML_GetCurrentLineNumber (p->parser),
-						  XML_GetCurrentColumnNumber (p->parser),
-						  error_code,
-						  el, attr);
+	// if parsing fails too early it's not safe (i.e. sigsegv) to call some functions, e.g. XML_GetCurrentLineNumber
+	bool report_line_col = (error_code != XML_ERROR_XML_DECL);
+	int line_number = report_line_col ? XML_GetCurrentLineNumber (p->parser) : 0;
+	int char_position = report_line_col ? XML_GetCurrentColumnNumber (p->parser) : 0;
+
+	p->error_args = new ParserErrorEventArgs (message, p->file_name, line_number, char_position, error_code, el, attr);
 
 	g_warning ("PARSER ERROR, STOPPING PARSING:  (%d) %s  line: %d   char: %d\n", error_code, message,
-			p->error_args->line_number, p->error_args->char_position);
+			line_number, char_position);
 
 	XML_StopParser (p->parser, FALSE);
 }

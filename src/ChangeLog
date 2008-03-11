@@ -1,3 +1,9 @@
+2008-03-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Work around the fact that it's not always safe to 
+	call some expat functions, like XML_GetCurrentLineNumber, if the
+	parsing failed early.
+
 2008-03-11  Chris Toshok  <toshok@ximian.com>
 
 	* namescope.h, namescope.cpp: switch from reffing the objects to
