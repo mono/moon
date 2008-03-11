@@ -35,6 +35,7 @@ class Canvas : public Panel {
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	static DependencyProperty* TopProperty;
 	static DependencyProperty* LeftProperty;

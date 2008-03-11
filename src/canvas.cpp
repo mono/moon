@@ -57,6 +57,22 @@ Canvas::ComputeBounds ()
 }
 
 void
+Canvas::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property->type != Type::CANVAS) {
+		Panel::OnPropertyChanged (args);
+		return;
+	}
+
+	if (args->property == TopProperty || args->property == LeftProperty) {
+		if (GetVisualParent () == NULL)
+			UpdateTransform ();
+	}
+
+	NotifyListenersOfPropertyChange (args);
+}
+
+void
 Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (subobj_args->property == TopProperty || subobj_args->property == LeftProperty) {
