@@ -579,4 +579,8 @@
         inputFile="test-property-parsing.xaml"
         masterFile10="../harness/masters/test-property-parsingMaster.png"
    />
+   <Test id="145"
+        inputFile="test-canvas-toplevel.xaml"
+        masterFile10="../harness/masters/test-canvas-toplevelMaster.png"
+   />
 </DRTList>
