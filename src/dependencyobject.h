@@ -14,7 +14,7 @@
 #include "enums.h"
 #include "list.h"
 
-#define OBJECT_TRACKING 1
+//#define OBJECT_TRACKING 1
 
 #if OBJECT_TRACKING
 #define GET_OBJ_ID(x) (x ? x->id : 0)
