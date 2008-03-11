@@ -2725,6 +2725,14 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	DependencyObject *dep = (DependencyObject *) item->item;
 	DependencyProperty *prop = NULL;
 	XamlElementInfo *walk = item->info;
+
+	if (!dep) {
+		// FIXME is this really where this check should live
+		parser_error (p, item->element_name, NULL, 2030,
+			      g_strdup_printf ("Property element %s cannot be used inside another property element.", property->element_name));
+		return;
+	}
+
 	while (walk) {
 		prop = DependencyObject::GetDependencyProperty (walk->dependency_type, prop_name [1]);
 		if (prop)

@@ -61,6 +61,12 @@
 	* src/: Moving implementations from .h to .cpp, leaving only
 	setters/getters + simple constructors in .h.
 
+2008-03-11  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp (dependency_object_set_property): throw an error if we
+	get here without a DependencyObject.  Fixes
+	test-property-parsing.xaml
+
 2008-03-10  Larry Ewing  <lewing@novell.com>
 
 	* panel.cpp:
