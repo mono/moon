@@ -1,3 +1,8 @@
+2008-03-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Add NULL check in dependency_object_add_child since
+	parent->parent->item may be NULL in malformed XAML files.
+
 2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.h, media.cpp, pipeline.cpp: Rename GetPositionOfPts to

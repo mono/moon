@@ -2631,6 +2631,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 
 		// Most common case, we will have a parent that we can snag the collection from
 		DependencyObject *obj = (DependencyObject *) parent->parent->item;
+		if (!obj)
+			return;
+
 		Value *col_v = obj->GetValue (dep);
 		Collection *col = NULL;
 
