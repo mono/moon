@@ -299,9 +299,9 @@ class Clock : public DependencyObject {
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
-	virtual void Tick ();
+	virtual bool Tick ();
 	void SetParent (ClockGroup *parent) { parent_clock = parent; }
-	void SetTimeManager (TimeManager *manager) { time_manager = manager; }
+	virtual void SetTimeManager (TimeManager *manager) { time_manager = manager; }
 
 	// Events you can AddHandler to
 	static int CurrentTimeInvalidatedEvent;
@@ -378,6 +378,8 @@ class ClockGroup : public Clock {
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
 
+	virtual void SetTimeManager (TimeManager *manager);
+
 	virtual void Begin ();
 	virtual void Seek (TimeSpan timespan);
 	virtual void SkipToFill ();
@@ -387,7 +389,7 @@ class ClockGroup : public Clock {
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
-	virtual void Tick ();
+	virtual bool Tick ();
 
 	GList *child_clocks;
 
@@ -415,9 +417,11 @@ class TimeManager : public EventObject {
 	virtual TimeSpan GetLastTime ()        { return last_global_time - start_time; }
 	TimeSpan GetCurrentTimeUsec () { return current_global_time_usec - start_time_usec; }
 
-	guint AddTimeout (guint ms_interval, GSourceFunc func, gpointer timeout_data);
-	void  AddTickCall (void (*func)(gpointer), gpointer tick_data);
+	void AddTickCall (void (*func)(gpointer), gpointer tick_data);
+	void NeedRedraw ();
+	void NeedClockTick ();
 
+	guint AddTimeout (guint ms_interval, GSourceFunc func, gpointer timeout_data);
 	void RemoveTimeout (guint timeout_id);
 
 	void SetMaximumRefreshRate (int hz);
@@ -443,7 +447,7 @@ class TimeManager : public EventObject {
 
 	void RemoveAllRegisteredTimeouts ();
 
-	void InvokeTickCall ();
+	bool InvokeTickCall ();
 
 	TimeSpan current_global_time;
 	TimeSpan last_global_time;
@@ -453,6 +457,7 @@ class TimeManager : public EventObject {
 	TimeSpan start_time_usec;
 
 	static void source_tick_callback (EventObject *sender, EventArgs *calldata, gpointer closure);
+	bool source_tick_pending;
 	int current_timeout;
 	int max_fps;
 	bool first_tick;

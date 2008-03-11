@@ -364,6 +364,8 @@ UIElement::Invalidate (Rect r)
 
 		dirty_region->Union (r);
 
+		GetSurface()->GetTimeManager()->NeedRedraw ();
+
 		Emit (InvalidatedEvent);
 	}
 }
@@ -378,6 +380,8 @@ UIElement::Invalidate (Region *region)
 		GetSurface()->AddDirtyElement (this, DirtyInvalidate);
 
 		dirty_region->Union (region);
+
+		GetSurface()->GetTimeManager()->NeedRedraw ();
 
 		Emit (InvalidatedEvent);
 	}

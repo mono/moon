@@ -1,3 +1,25 @@
+2008-03-11  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h, clock.cpp: a few changes, the most important
+	being (ifdefed for now) code to put the timemanager to sleep when
+	it's not needed for animations, rendering, or tick calls.  To do
+	this we need a couple of changes to the clock code.  1) propagate
+	the time_manager out to all clocks, so we can force it to tick the
+	clock hierarchy the first time whenever a storyboard is started.
+	2) make Clock/ClockGroup::Tick return a bool, which means "i'll be
+	in need of another tick."  Do the same for the tick call stuff,
+	where the bool return value means "we have more tick calls
+	pending."  Also, add a couple of methods to the
+	TimeManager (NeedRedraw, NeedClockTick) which will start up the
+	timemanager if it's asleep, and set the proper flag so it'll do
+	the right work on the next tick.
+
+	* uielement.cpp: notify the timemanager that we have a redraw to
+	process.
+	
+	* runtime.cpp (Surface::realized_callback): tell the time manager
+	to redraw us to get the process moving.
+
 2008-03-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Work around the fact that it's not always safe to 

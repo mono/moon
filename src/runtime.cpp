@@ -961,6 +961,9 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
 	
 	s->time_manager->AddHandler (TimeManager::RenderEvent, render_cb, s);
 	s->time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, s);
+
+	s->time_manager->NeedRedraw ();
+
 	return TRUE;
 }
 

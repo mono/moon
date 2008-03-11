@@ -31,6 +31,7 @@
 #define CLOCK_DEBUG 0
 #define TIME_TICK 0
 #define USE_SMOOTHING 1
+//#define PUT_TIME_MANAGER_TO_SLEEP 1
 
 #if TIME_TICK
 #define STARTTICKTIMER(id,str) STARTTIMER(id,str)
@@ -244,10 +245,11 @@ TimeManager::TimeManager ()
 
 	tick_call_mutex = g_mutex_new ();
 	registered_timeouts = NULL;
+	source_tick_pending = false;
 	first_tick = true;
 
 	timeline = new ParallelTimeline();
-	timeline->SetDuration (Duration::Forever);
+	timeline->SetDuration (Duration::Automatic);
 	root_clock = new ClockGroup (timeline);
 	char *name = g_strdup_printf ("Surface clock group for time manager (%p)", this);
 	root_clock->SetValue(DependencyObject::NameProperty, name);
@@ -289,6 +291,7 @@ TimeManager::Start()
 	current_global_time_usec = current_global_time / 10;
 	source->SetTimerFrequency (current_timeout);
 	source->Start ();
+	source_tick_pending = true;
 }
 
 void
@@ -297,7 +300,7 @@ TimeManager::source_tick_callback (EventObject *sender, EventArgs *calldata, gpo
 	((TimeManager *) closure)->SourceTick ();
 }
 
-void
+bool
 TimeManager::InvokeTickCall ()
 {
 	if (tick_calls) {
@@ -316,41 +319,66 @@ TimeManager::InvokeTickCall ()
 		call->func (call->data);
 		g_free (call);
 	}
+	return tick_calls != NULL;
 }
 
 void
 TimeManager::SourceTick ()
 {
+// 	printf ("TimeManager::SourceTick\n");
 	STARTTICKTIMER (tick, "TimeManager::Tick");
 	TimeSpan pre_tick = source->GetNow();
-	if (flags & TIME_MANAGER_UPDATE_CLOCKS) {
+
+	TimeManagerOp current_flags = flags;
+
+#if PUT_TIME_MANAGER_TO_SLEEP
+	flags = (TimeManagerOp)0;
+#endif
+
+	source_tick_pending = false;
+
+	if (current_flags & TIME_MANAGER_UPDATE_CLOCKS) {
 		STARTTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 		current_global_time = source->GetNow();
 		current_global_time_usec = current_global_time / 10;
 
-		root_clock->Tick ();
-	
+		bool need_another_tick = root_clock->Tick ();
+		if (need_another_tick)
+			flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
+
 		// ... then cause all clocks to raise the events they've queued up
 		root_clock->RaiseAccumulatedEvents ();
+
+#if PUT_TIME_MANAGER_TO_SLEEP
+		// kind of a hack to make sure we render animation
+		// changes in the same tick as when they happen.
+		if (flags & TIME_MANAGER_RENDER) {
+			current_flags = (TimeManagerOp)(current_flags | TIME_MANAGER_RENDER);
+			flags = (TimeManagerOp)(flags & ~TIME_MANAGER_RENDER);
+		}
+#endif
+
 		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 	}
 
-	if (flags & TIME_MANAGER_UPDATE_INPUT) {
+	if (current_flags & TIME_MANAGER_UPDATE_INPUT) {
 		STARTTICKTIMER (tick_input, "TimeManager::Tick - Input");
 		Emit (UpdateInputEvent);
 		ENDTICKTIMER (tick_input, "TimeManager::Tick - Input");
 	}
 
-	if (flags & TIME_MANAGER_RENDER) {
+	if (current_flags & TIME_MANAGER_RENDER) {
 	  //	  fprintf (stderr, "rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
 		Emit (RenderEvent);
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
 
-	if (flags & TIME_MANAGER_TICK_CALL) {
+	if (current_flags & TIME_MANAGER_TICK_CALL) {
 		STARTTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
-		InvokeTickCall ();
+		bool remaining_tick_calls = InvokeTickCall ();
+		if (remaining_tick_calls)
+			flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
 		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 	}
 
@@ -399,7 +427,21 @@ TimeManager::SourceTick ()
 	}
 
 	current_timeout = suggested_timeout;
-	source->SetTimerFrequency (MAX (0, current_timeout - xt / 10000));
+
+#if PUT_TIME_MANAGER_TO_SLEEP
+	// set up the next timeout here, but only if we need to
+	if (flags || registered_timeouts) {
+		source->SetTimerFrequency (MAX (0, current_timeout - xt / 10000));
+		source->Start();
+		source_tick_pending = true;
+	}
+	else {
+		printf ("no work to do, TimeManager going to sleep\n");
+		source->Stop ();
+	}
+#else
+		source->SetTimerFrequency (MAX (0, current_timeout - xt / 10000));
+#endif
 	
 	previous_smoothed = current_smoothed;
 
@@ -448,7 +490,41 @@ TimeManager::AddTickCall (void (*func)(gpointer), gpointer tick_data)
 	call->data = tick_data;
 	g_mutex_lock (tick_call_mutex);
 	tick_calls = g_list_append (tick_calls, call);
+
+	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
+	if (!source_tick_pending) {
+		source_tick_pending = true;
+		source->SetTimerFrequency (0);
+		source->Start();
+	}
+
 	g_mutex_unlock (tick_call_mutex);
+}
+
+void
+TimeManager::NeedRedraw ()
+{
+#if PUT_TIME_MANAGER_TO_SLEEP
+	flags = (TimeManagerOp)(flags | TIME_MANAGER_RENDER);
+	if (!source_tick_pending) {
+		source_tick_pending = true;
+		source->SetTimerFrequency (0);
+		source->Start();
+	}
+#endif
+}
+
+void
+TimeManager::NeedClockTick ()
+{
+#if PUT_TIME_MANAGER_TO_SLEEP
+	flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
+	if (!source_tick_pending) {
+		source_tick_pending = true;
+		source->SetTimerFrequency (0);
+		source->Start();
+	}
+#endif
 }
 
 void
@@ -591,7 +667,7 @@ Clock::GetNaturalDuration ()
 	return natural_duration;
 }
 
-void
+bool
 Clock::Tick ()
 {
 	last_time = current_time;
@@ -600,6 +676,8 @@ Clock::Tick ()
 	if (GetClockState() == Clock::Active)
 		ClampTime ();
 	CalcProgress ();
+
+	return state != Clock::Stopped;
 }
 
 void
@@ -843,6 +921,9 @@ Clock::Begin ()
 
 	forward = true;
 	SetClockState (Clock::Active);
+
+	// force the time manager to tick the clock hierarchy to wake it up
+	time_manager->NeedClockTick ();
 }
 
 void
@@ -938,6 +1019,17 @@ ClockGroup::AddChild (Clock *clock)
 	child_clocks = g_list_append (child_clocks, clock);
 	clock->ref ();
 	clock->SetParent (this);
+	clock->SetTimeManager (GetTimeManager());
+}
+
+void
+ClockGroup::SetTimeManager (TimeManager *manager)
+{
+	Clock::SetTimeManager (manager);
+	for (GList *l = child_clocks; l; l = l->next) {
+		Clock *c = (Clock*)l->data;
+		c->SetTimeManager (manager);
+	}
 }
 
 void
@@ -1004,9 +1096,11 @@ ClockGroup::Stop ()
 	Clock::Stop ();
 }
 
-void
+bool
 ClockGroup::Tick ()
 {
+	bool child_running = false;
+
 	last_time = current_time;
 
 	SetCurrentTime (Clock::ComputeNewTime());
@@ -1018,7 +1112,7 @@ ClockGroup::Tick ()
 		   method */
 		Clock *c = (Clock*)l->data;
 		if (c->GetClockState() != Clock::Stopped) {
-			c->Tick ();
+			child_running |= c->Tick ();
 		}
 		else if (!c->GetHasStarted() && !c->GetWasStopped() && (c->GetBeginOnTick() || c->GetBeginTime () <= current_time)) {
 			if (c->GetBeginOnTick()) {
@@ -1026,6 +1120,7 @@ ClockGroup::Tick ()
 				c->ComputeBeginTime ();
 			}
 			c->Begin ();
+			child_running = true;
 		}
 	}
 
@@ -1033,7 +1128,7 @@ ClockGroup::Tick ()
 		CalcProgress ();
 
 	if (GetClockState() == Clock::Stopped)
-		return;
+		return false;
 
 	/* if we're automatic and no child clocks are still running, we need to stop.
 
@@ -1045,7 +1140,7 @@ ClockGroup::Tick ()
 		for (GList *l = child_clocks; l; l = l->next) {
 			Clock *c = (Clock*)l->data;
 			if (!c->GetHasStarted () || c->GetClockState() == Clock::Active)
-				return;
+				return child_running;
 		}
 
 		if (repeat_count > 0)
@@ -1058,6 +1153,8 @@ ClockGroup::Tick ()
 			DoRepeat ();
 		}
 	}
+
+	return state != Clock::Stopped;
 }
 
 void
