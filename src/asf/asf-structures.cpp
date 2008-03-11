@@ -39,13 +39,13 @@ asf_header_validate (const asf_header* header, ASFParser* parser)
 		
 	// SPEC: valid values are at least 30 bytes
 	if (header->size < 30) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 30, got %llu).\n", header->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 30, got %llu).", header->size));
 		return false;
 	}
 	
 	// SPEC: This field must be set to the value 0x02. If the this value is different when read, the application should fail to source the content.
 	if (header->reserved2 != 0x02) {
-		parser->AddError (g_strdup_printf ("Invalid reserved2 value (expected 0x02, got: %x).\n", header->reserved2));
+		parser->AddError (g_strdup_printf ("Invalid reserved2 value (expected 0x02, got: %x).", header->reserved2));
 		return false;
 	}
 	
@@ -62,7 +62,7 @@ asf_file_properties_validate (const asf_file_properties* obj, ASFParser* parser)
 	
 	// SPEC: Valid values are at least 104 bytes
 	if (obj->size < 104) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 104, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 104, got %llu).", obj->size));
 		return false;
 	}
 
@@ -72,12 +72,12 @@ asf_file_properties_validate (const asf_file_properties* obj, ASFParser* parser)
 	if (obj->min_packet_size != obj->max_packet_size) {
 		// This is not logical at all, but it's what the spec says.
 		// besides, our code depends on it (it makes a few minor things easier).
-		parser->AddError (g_strdup_printf ("The min packet size (%d) is different from the max packet size (%d).\n", obj->min_packet_size, obj->max_packet_size));
+		parser->AddError (g_strdup_printf ("The min packet size (%d) is different from the max packet size (%d).", obj->min_packet_size, obj->max_packet_size));
 		return false;
 	}
 
 	if (obj->size > parser->header->size) {
-		parser->AddError (g_strdup_printf ("The size of the file property object (%llu) is bigger than the sizeof the entire header itself (%llu).\n", obj->size, parser->header->size)); 
+		parser->AddError (g_strdup_printf ("The size of the file property object (%llu) is bigger than the sizeof the entire header itself (%llu).", obj->size, parser->header->size)); 
 		return false;
 	}
 
@@ -92,7 +92,7 @@ asf_stream_properties_validate (const asf_stream_properties* obj, ASFParser* par
 	}
 	
 	if (obj->size < 78) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 78, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 78, got %llu).", obj->size));
 		return false;
 	}
 
@@ -107,15 +107,15 @@ asf_header_extension_validate (const asf_header_extension* obj, ASFParser* parse
 	}
 	
 	if (obj->size < 46) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 46, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 46, got %llu).", obj->size));
 		return false;
 	}
 	
 	if (obj->data_size < 24 && obj->data_size > 1) {
-		parser->AddError (g_strdup_printf ("Invalid data_size (expected >= 24 or 0, got %u).\n", obj->data_size));
+		parser->AddError (g_strdup_printf ("Invalid data_size (expected >= 24 or 0, got %u).", obj->data_size));
 		return false;
 	} else if (obj->data_size != 0 && obj->data_size + 46 != obj->size) {
-		parser->AddError (g_strdup_printf ("Invalid data_size (expected size - 46, got %llu - 46 = %u).\n", obj->size, obj->data_size)); 
+		parser->AddError (g_strdup_printf ("Invalid data_size (expected size - 46, got %llu - 46 = %u).", obj->size, obj->data_size)); 
 		return false;
 	}
 	
@@ -129,7 +129,7 @@ bool asf_codec_list_validate (const asf_codec_list* obj, ASFParser* parser)
 	}
 	
 	if (obj->size < 44) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 44, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 44, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -143,7 +143,7 @@ bool asf_script_command_validate (const asf_script_command* obj, ASFParser* pars
 	}
 
 	if (obj->size < 44) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 44, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 44, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -157,7 +157,7 @@ bool asf_marker_validate (const asf_marker* obj, ASFParser* parser)
 	}
 
 	if (obj->size < 48) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 48, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 48, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -171,7 +171,7 @@ bool asf_bitrate_mutual_exclusion_validate (const asf_bitrate_mutual_exclusion* 
 	}
 
 	if (obj->size < 42) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 42, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 42, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -185,7 +185,7 @@ bool asf_error_correction_validate (const asf_error_correction* obj, ASFParser* 
 	}
 
 	if (obj->size < 44) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 44, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 44, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -199,7 +199,7 @@ bool asf_content_description_validate (const asf_content_description* obj, ASFPa
 	}
 
 	if (obj->size < 34) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 34, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 34, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -213,7 +213,7 @@ bool asf_extended_content_description_validate (const asf_extended_content_descr
 	}
 
 	if (obj->size < 26) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 26, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 26, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -227,7 +227,7 @@ bool asf_stream_bitrate_properties_validate (const asf_stream_bitrate_properties
 	}
 	
 	if (obj->size < 26) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 26, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 26, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -241,7 +241,7 @@ bool asf_data_validate (const asf_data* obj, ASFParser* parser)
 	}
 
 	if (obj->size < 50) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 50, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 50, got %llu).", obj->size));
 		return false;
 	}
 	
