@@ -1,0 +1,92 @@
+{
+   pcm open param check
+   Memcheck:Param
+   semctl(IPC_SET, arg.buf)
+   fun:semctl@@GLIBC_2.2
+   fun:snd_pcm_direct_semaphore_create_or_connect
+   fun:snd_pcm_dmix_open
+   fun:_snd_pcm_dmix_open
+   obj:/usr/lib/libasound.so.2.0.0
+   obj:/usr/lib/libasound.so.2.0.0
+   fun:snd_pcm_open_slave
+   fun:_snd_pcm_softvol_open
+   obj:/usr/lib/libasound.so.2.0.0
+   fun:snd_pcm_open_slave
+   fun:_snd_pcm_plug_open
+   obj:/usr/lib/libasound.so.2.0.0
+}
+
+{
+   pcm snd_pcm_prepare
+   Memcheck:Param
+   ioctl(arg)
+   fun:ioctl
+   fun:snd_pcm_prepare
+}
+
+{
+   pcm snd_pcm_start
+   Memcheck:Param
+   ioctl(arg)
+   fun:ioctl
+   fun:snd_pcm_start
+}
+
+{
+   pcm snd_timer_start
+   Memcheck:Param
+   ioctl(arg)
+   fun:ioctl
+   fun:snd_timer_start
+}
+
+{
+   pcm snd_pcm_hwsync
+   Memcheck:Param
+   ioctl(arg)
+   fun:ioctl
+   fun:snd_pcm_hwsync
+}
+{
+   pcm snd_timer_stop
+   Memcheck:Param
+   ioctl(arg)
+   fun:ioctl
+   fun:snd_timer_stop
+}
+{
+   snd_config_search_definition leak
+   Memcheck:Leak
+   fun:malloc
+   fun:snd_dlobj_cache_add
+   obj:/usr/lib/libasound.so.2.0.0
+   obj:/usr/lib/libasound.so.2.0.0
+   fun:snd_determine_driver
+   fun:snd_config_hook_load_for_all_cards
+   obj:/usr/lib/libasound.so.2.0.0
+   fun:snd_config_searcha_hooks
+   fun:snd_config_search_alias_hooks
+   fun:snd_config_search_definition
+}
+
+{
+   snd_pcm_open leak
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib/libasound.so.2.0.0
+   obj:/usr/lib/libasound.so.2.0.0
+   obj:/usr/lib/libasound.so.2.0.0
+   obj:/usr/lib/libasound.so.2.0.0
+   obj:/usr/lib/libasound.so.2.0.0
+   fun:snd_config_update_r
+   fun:snd_config_update
+   fun:snd_pcm_open
+}
+
+{
+   snd_pcm_mmap leak
+   Memcheck:Leak
+   fun:malloc
+   fun:snd_pcm_mmap
+}
+

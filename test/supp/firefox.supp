@@ -1,0 +1,22 @@
+{
+   Firefox - libORBit 
+   Memcheck:Param
+   writev(vector[...])
+   fun:do_writev
+   obj:*libORBit*
+}
+
+{
+   Firefox - memory overlap in memcpy
+   Memcheck:Overlap
+   fun:memcpy
+}
+
+{
+   Firefox - pthread/param/PR_Write
+   Memcheck:Param
+   write(buf)
+   obj:/lib/libpthread-2.6.1.so
+   obj:/usr/lib/libnspr4.so
+   fun:PR_Write
+}

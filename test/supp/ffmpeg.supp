@@ -1,0 +1,21 @@
+{
+   put_h264_chroma_mc8_c addr1
+   Memcheck:Addr1
+   fun:put_h264_chroma_mc8_c
+}
+
+{
+   put_no_rnd_h264_chroma_mc8_c
+   Memcheck:Addr1
+   fun:put_no_rnd_h264_chroma_mc8_c
+}
+{
+   avg_h264_chroma_mc8_c
+   Memcheck:Addr1
+   fun:avg_h264_chroma_mc8_c
+}
+{
+   add_pixels_clamped_c
+   Memcheck:Value4
+   fun:add_pixels_clamped_c
+}

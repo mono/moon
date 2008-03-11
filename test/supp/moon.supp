@@ -1,0 +1,47 @@
+{
+   gtk_parse_args leak
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:type_node_any_new_W
+   fun:type_node_fundamental_new_W
+   fun:g_type_register_fundamental
+   fun:g_value_types_init
+   fun:g_type_init_with_debug_flags
+   fun:g_type_init
+   fun:gdk_pre_parse_libgtk_only
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   fun:g_option_context_parse
+   fun:gtk_parse_args
+}
+{
+   gdk_display_open leak
+   Memcheck:Leak
+   fun:memalign
+   fun:posix_memalign
+   fun:slab_allocator_alloc_chunk
+   fun:g_slice_alloc
+   fun:g_slice_alloc0
+   fun:g_type_create_instance
+   fun:g_object_constructor
+   fun:g_object_newv
+   fun:g_object_new_valist
+   fun:g_object_new
+   fun:gdk_display_open
+}
+{
+   gtk_main_do_event leak
+   Memcheck:Leak
+   fun:memalign
+   fun:posix_memalign
+   fun:slab_allocator_alloc_chunk
+   fun:g_slice_alloc
+   fun:g_slice_alloc0
+   fun:g_type_create_instance
+   fun:g_object_constructor
+   fun:g_object_newv
+   fun:g_object_new_valist
+   fun:g_object_new
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   fun:gtk_main_do_event
+}
