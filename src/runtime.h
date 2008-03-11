@@ -131,29 +131,10 @@ class Surface : public EventObject {
 	Downloader *CreateDownloader ();
 	static Downloader *CreateDownloader (UIElement *element);
 
-	void SetRenderFunc (MoonlightRenderFunc render, void *user_data)
-	{
-		this->render = render;
-		this->render_data = user_data;
-	}
-
-	void SetInvalidateFunc (MoonlightInvalidateFunc invalidate, void *user_data)
-	{
-		this->invalidate = invalidate;
-		this->invalidate_data = user_data;
-	}
-
-	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data)
-	{
-		fps_report = report;
-		fps_data = user_data;
-	}
-
-	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data)
-	{
-		cache_report = report;
-		cache_data = user_data;
-	}
+	void SetRenderFunc (MoonlightRenderFunc render, void *user_data);
+	void SetInvalidateFunc (MoonlightInvalidateFunc invalidate, void *user_data);
+	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data);
+	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
 
 	bool VerifyWithCacheSizeCounter (int64_t size);
 	void AddToCacheSizeCounter (int64_t size);
@@ -188,7 +169,19 @@ class Surface : public EventObject {
 	void ProcessDirtyElements ();
 	bool IsAnythingDirty ();
 
+
+	// pending unref support.  objects that are slated for death
+	// on a tick call so they happen on the proper thread.
+	void AddPendingUnref (EventObject *eo);
+
 private:
+	GStaticMutex delayed_unref_mutex;
+	bool drain_tick_call_added;
+	GSList *pending_unrefs;
+
+	void DrainUnrefs ();
+	static void DrainUnrefsTickCall (gpointer data);
+
 	// bad, but these two live in dirty.cpp, not runtime.cpp
 	void ProcessDownDirtyElements ();
 	void ProcessUpDirtyElements ();

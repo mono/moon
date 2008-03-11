@@ -43,6 +43,10 @@ class NameScope : public DependencyObject {
 	static DependencyProperty *NameScopeProperty;
 	
  private:
+	static void ObjectDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
+
+	static gboolean remove_handler (gpointer key, gpointer value, gpointer data);
+
 	GHashTable *names;
 
 	List *merged_child_namescopes;

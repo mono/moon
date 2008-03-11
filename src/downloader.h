@@ -90,19 +90,7 @@ class Downloader : public DependencyObject {
 	gpointer GetContext () { return context; }
 	gpointer GetDownloaderState () { return downloader_state; }
 
-	virtual Surface *GetSurface ()
-	{
-		return surface;
-	}
-
-	virtual void SetSurface (Surface *surface)
-	{
-		this->surface = surface;
-	}
-
  private:
-	Surface *surface;
-
 	GHashTable *part_hash;
 
 	int64_t file_size;

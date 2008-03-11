@@ -9,6 +9,7 @@
 
 #include <config.h>
 #include <glib.h>
+#include <stdio.h>
 
 #include "namescope.h"
 
@@ -32,29 +33,59 @@ NameScope::NameScope ()
 {
 	names = g_hash_table_new_full (g_str_hash, g_str_equal,
 				       (GDestroyNotify)g_free,
-				       (GDestroyNotify)base_unref);
+				       NULL);
 	merged_child_namescopes = new List ();
 	temporary = false;
 	merged = false;
+}
+
+gboolean
+NameScope::remove_handler (gpointer key, gpointer value, gpointer data)
+{
+	DependencyObject *depobj = (DependencyObject*)value;
+	depobj->RemoveHandler (EventObject::DestroyedEvent, NameScope::ObjectDestroyedEvent, data);
+	return TRUE;
 }
 
 NameScope::~NameScope ()
 {
 	merged_child_namescopes->Clear (true);
 	delete merged_child_namescopes;
+	g_hash_table_foreach_remove (names, remove_handler, this);
 	g_hash_table_destroy (names);
+}
+
+void
+NameScope::ObjectDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	NameScope *ns = (NameScope*)closure;
+	// XXX this method worries me.. using GetName like this.
+	DependencyObject *depobj = (DependencyObject*)sender;
+	g_hash_table_remove (ns->names, depobj->GetName());
 }
 
 void
 NameScope::RegisterName (const char *name, DependencyObject *object)
 {
-	object->ref();
+	DependencyObject *existing_object = (DependencyObject*)g_hash_table_lookup (names, name);
+	if (existing_object == object)
+		return;
+
+	if (existing_object) {
+		existing_object->RemoveHandler (EventObject::DestroyedEvent, ObjectDestroyedEvent, this);
+	}
+
+	object->AddHandler (EventObject::DestroyedEvent, NameScope::ObjectDestroyedEvent, this);
 	g_hash_table_insert (names, g_strdup (name), object);
 }
 
 void
 NameScope::UnregisterName (const char *name)
 {
+	DependencyObject *depobj = (DependencyObject*)g_hash_table_lookup (names, name);
+	if (depobj)
+		depobj->RemoveHandler (EventObject::DestroyedEvent, ObjectDestroyedEvent, this);
+
 	g_hash_table_remove (names, name);
 }
 

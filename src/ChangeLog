@@ -1,3 +1,37 @@
+2008-03-11  Chris Toshok  <toshok@ximian.com>
+
+	* namescope.h, namescope.cpp: switch from reffing the objects to
+	using the DestroyedEvent.  Otherwise our toplevel canvas has a ref
+	cycle with its namescope.  Also, short circuit out if we're
+	registering the same object twice.  keeps us from having too many
+	DestroyedEvents (since RemoveHandler only removes one).
+
+	* dependencyobject.h, dependencyobject.cpp: move
+	GetSurface/SetSurface to EventObject, and add unref_delayed as a
+	method.  If the event object has a surface associated with it, add
+	it to the surface's pending list of unrefs.  otherwise warn us and
+	add it to the global list.  The warnings should be fixed as the
+	global list really should go away.
+
+	Also, before we free a value, make sure to remove our handler and
+	unset the closure.
+
+	Also, get rid of OBJECT_TRACK_ID.  use an environment variable for
+	this.  So if you compile with OBJECT_TRACKING on, nothing new
+	happens unless you set the "MOONLIGHT_OBJECT_TRACK_ID" environment
+	variable to the id of the object you want to track.  Makes the
+	turnaround time a little quicker.
+
+	shift some things around in the header file while I'm making this
+	change.
+
+	* runtime.h, runtime.cpp: move some more methods to the .cpp from
+	the .h, and also add the per-surface pending unrefs list.  This is
+	basically a c&p of the global list from dependency.cpp.
+
+	* downloader.h, downloader.cpp: remove Get/Set Surface in favor of
+	using EventObject's.
+	
 2008-03-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Add NULL check in dependency_object_add_child since

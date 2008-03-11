@@ -57,7 +57,7 @@ namespace Gtk.Moonlight {
 		internal extern static IntPtr surface_get_time_manager (IntPtr surface);
 
 		[DllImport ("moon")]
-		internal extern static IntPtr downloader_get_surface (IntPtr downloader);
+		internal extern static IntPtr event_object_get_surface (IntPtr eventobject);
 		
 		static int keyid;
 		static Hashtable downloaders = new Hashtable ();
@@ -99,11 +99,11 @@ namespace Gtk.Moonlight {
 
 		void Download ()
 		{
-			// we can't call downloader_get_surface (or other stuff) if the download has been aborted
+			// we can't call event_object_get_surface (or other stuff) if the download has been aborted
 			if (!downloading)
 				return;
 
-			IntPtr time_manager = surface_get_time_manager (downloader_get_surface (downloader));
+			IntPtr time_manager = surface_get_time_manager (event_object_get_surface (downloader));
 			// Special case: local file, just notify that we are done
 			
 			if (fname != null) {

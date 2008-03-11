@@ -82,6 +82,9 @@ int EventObject::objects_destroyed = 0;
 // Define the ID of the object you want to track
 // Object creation, destruction and all ref/unrefs
 // are logged to the console, with a stacktrace.
+static bool object_id_fetched = false;
+static int object_id = -1;
+
 #define OBJECT_TRACK_ID (0)
 
 GHashTable* EventObject::objects_alive = NULL;
@@ -89,13 +92,17 @@ GHashTable* EventObject::objects_alive = NULL;
 void
 EventObject::Track (const char* done, const char* typname)
 {
-#if OBJECT_TRACK_ID
-	if (id == OBJECT_TRACK_ID) {
+	if (!object_id_fetched) {
+		object_id_fetched = true;
+		char *sval = getenv ("MOONLIGHT_OBJECT_TRACK_ID");
+		if (sval)
+			object_id = atoi (sval);
+	}
+	if (id == object_id) {
 		char *st = get_stack_trace ();
 		printf ("%s tracked object of type '%s': %i, current refcount: %i\n%s", done, typname, id, refcount, st);
 		g_free (st);
 	}
-#endif
 }
 
 void
@@ -233,11 +240,12 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 		if (closure->func == handler && closure->data == data) {
 			events[event_id].event_list->Unlink (closure);
 			delete closure;
-			break;
+			return;
 		}
 		
 		closure = (EventClosure *) closure->next;
 	}
+	printf ("didn't find handler for %d event (DestroyedEvent = %d)\n", event_id, DestroyedEvent);
 }
 
 void
@@ -322,6 +330,12 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 	return true;
 }
 
+Surface*
+event_object_get_surface (EventObject *o)
+{
+	return o->GetSurface ();
+}
+
 void
 event_object_add_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure)
 {
@@ -348,6 +362,15 @@ base_unref (EventObject *obj)
 		obj->unref ();
 }
 
+void
+base_unref_delayed (EventObject *obj)
+{
+	if (!obj)
+		return;
+
+	obj->unref_delayed ();
+}
+
 static GStaticRecMutex delayed_unref_mutex = G_STATIC_REC_MUTEX_INIT;
 static bool drain_tick_call_added = false;
 static GSList *pending_unrefs = NULL;
@@ -363,26 +386,6 @@ drain_unrefs_idle_call (gpointer data)
 }
 
 void
-base_unref_delayed (EventObject *obj)
-{
-	if (!obj)
-		return;
-		
-	g_static_rec_mutex_lock (&delayed_unref_mutex);
-	pending_unrefs = g_slist_prepend (pending_unrefs, obj);
-
-#if OBJECT_TRACKING
-	obj->Track ("DelayedUnref", obj->GetTypeName ());
-#endif
-
-	if (!drain_tick_call_added) {
-		g_idle_add (drain_unrefs_idle_call, NULL);
-		drain_tick_call_added = true;
-	}
-	g_static_rec_mutex_unlock (&delayed_unref_mutex);
-}
-
-void
 drain_unrefs ()
 {
 	g_static_rec_mutex_lock (&delayed_unref_mutex);
@@ -391,6 +394,31 @@ drain_unrefs ()
 	pending_unrefs = NULL;
 	g_static_rec_mutex_unlock (&delayed_unref_mutex);
 }
+
+void
+EventObject::unref_delayed ()
+{
+	OBJECT_TRACK ("DelayedUnref", GetTypeName ());
+	
+#if false
+	if (surface) {
+		surface->AddPendingUnref (this);
+	}
+	else {
+#endif
+	  {
+		g_warning ("unable to associate delayed unref to a surface, using global pending unref list");
+		g_static_rec_mutex_lock (&delayed_unref_mutex);
+		pending_unrefs = g_slist_prepend (pending_unrefs, this);
+
+		if (!drain_tick_call_added) {
+			g_idle_add (drain_unrefs_idle_call, NULL);
+			drain_tick_call_added = true;
+		}
+		g_static_rec_mutex_unlock (&delayed_unref_mutex);
+	}
+}
+
 
 GHashTable *DependencyObject::properties = NULL;
 
@@ -531,8 +559,10 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 			if (current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
 				DependencyObject *dob = current_value->AsDependencyObject();
 
-				if (dob != NULL)
+				if (dob != NULL) {
 					dob->RemovePropertyChangeListener (this, property);
+					dob->SetSurface (NULL);
+				}
 			}
 
 			// and remove its closure.
@@ -553,8 +583,10 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 			if (new_value->GetKind () >= Type::DEPENDENCY_OBJECT){
 				DependencyObject *dob = new_value->AsDependencyObject();
 				
-				if (dob != NULL)
+				if (dob != NULL) {
 					dob->AddPropertyChangeListener (this, property);
+					dob->SetSurface (GetSurface ());
+				}
 			}
 
 			// and set its closure to us.
@@ -690,6 +722,24 @@ DependencyObject::SetValue (const char *name, Value *value)
 static gboolean
 free_value (gpointer key, gpointer value, gpointer data)
 {
+	Value *v = (Value*)value;
+
+	// detach from the existing value
+	if (v->GetKind () >= Type::DEPENDENCY_OBJECT){
+		DependencyObject *dob = v->AsDependencyObject();
+
+		if (dob != NULL)
+			dob->RemovePropertyChangeListener ((DependencyObject*)data, NULL);
+
+	}
+
+	// and remove it's closure
+	if (Type::Find(v->GetKind())->IsSubclassOf (Type::COLLECTION)) {
+		Collection *col = v->AsCollection ();
+		if (col)
+			col->closure = NULL;
+	}
+
 	delete (Value*)value;
 	return TRUE;
 }
@@ -718,7 +768,8 @@ DependencyObject::GetObjectType ()
 	return Type::DEPENDENCY_OBJECT; 
 }
 
-void free_listener (gpointer data, gpointer user_data)
+static void
+free_listener (gpointer data, gpointer user_data)
 {
 	Listener* listener = (Listener*) data;
 	delete listener;
@@ -732,7 +783,7 @@ DependencyObject::~DependencyObject ()
 	}
 
 	RemoveAllListeners();
-	g_hash_table_foreach_remove (current_values, free_value, NULL);
+	g_hash_table_foreach_remove (current_values, free_value, this);
 	g_hash_table_destroy (current_values);
 }
 
