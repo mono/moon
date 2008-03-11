@@ -240,12 +240,11 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 		if (closure->func == handler && closure->data == data) {
 			events[event_id].event_list->Unlink (closure);
 			delete closure;
-			return;
+			break;
 		}
 		
 		closure = (EventClosure *) closure->next;
 	}
-	printf ("didn't find handler for %d event (DestroyedEvent = %d)\n", event_id, DestroyedEvent);
 }
 
 void
