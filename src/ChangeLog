@@ -1,3 +1,20 @@
+2008-03-11  Larry Ewing  <lewing@novell.com>
+	
+	* collection.cpp (VisualCollection::VisualAdded): make sure we set
+	the surface as the first step, dirty processing depends on it.
+	Fixes OM_RemoveClearRemoveAt.htm regression.
+
+2008-03-11  Larry Ewing  <lewing@novell.com>
+
+	* canvas.h:
+	* canvas.cpp (Canvas::OnPropertyChanged): listen to changes on Top
+	and Left when we are toplevel so that we can recompute our
+	transform.
+
+	* uielement.cpp: if we don't have a parent call GetTransformFor on
+	ourself so that Top and Left are taken into account on toplevel
+	canvases.  Fixes test-canvas-toplevel.xaml
+
 2008-03-11  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h, clock.cpp: a few changes, the most important
@@ -13,6 +30,7 @@
 	TimeManager (NeedRedraw, NeedClockTick) which will start up the
 	timemanager if it's asleep, and set the proper flag so it'll do
 	the right work on the next tick.
+
 
 	* uielement.cpp: notify the timemanager that we have a redraw to
 	process.

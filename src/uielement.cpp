@@ -252,10 +252,11 @@ UIElement::ComputeLocalTransform ()
 void
 UIElement::ComputeTransform ()
 {
+	//printf ("Compute transform for %s\n", GetName ());
 	if (GetVisualParent () != NULL)
 		absolute_xform = GetVisualParent ()->absolute_xform;
-	else
-		cairo_matrix_init_identity (&absolute_xform);
+	else 
+		GetTransformFor (this, &absolute_xform);
 
 	cairo_matrix_multiply (&absolute_xform, &parent_transform, &absolute_xform);
 	cairo_matrix_translate (&absolute_xform, transform_origin.x, transform_origin.y);

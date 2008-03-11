@@ -509,12 +509,12 @@ VisualCollection::VisualAdded (Visual *visual)
 	if (panel == NULL)
 		return;
 	
+	item->SetSurface (panel->GetSurface ());
 	item->SetVisualParent (panel);
 	item->UpdateTransform ();
 	item->UpdateTotalRenderVisibility ();
 	item->UpdateTotalHitTestVisibility ();
 	item->Invalidate ();
-	item->SetSurface (panel->GetSurface ());
 }
 
 void
