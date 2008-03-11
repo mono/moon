@@ -20,3 +20,11 @@ clock19 - tests 2 storyboards, 1 with keyframes (SplineDouble)
 clock20 - tests BeginTime set on the storyboard with a repeatforever animation inside it.
 clock21 - tests BeginTime set on the storyboard, which also has repeatforever set on it.
 clock22 - tests BeginTime set on the animation, with repeatforever on the parent storyboard.
+clock23 - same as clock1, but FillBehavior = "Stop" applied to storyboard and animation
+clock24 - same as clock1, but storyboard Duration < animation Duration
+clock25 - same as clock2, but storyboard Duration < animation Duration
+clock26 - same as clock3, but storyboard Duration < animation Duration
+clock27 - same as clock23, but storyboard Duration < animation Duration
+clock28 - same as clock6, but storyboard Duration < animation Duration
+clock29 - same as clock28, but storyboard behavior is Stop
+

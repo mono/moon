@@ -1,3 +1,11 @@
+2008-03-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* harness/masters/:
+	* xaml/: Removing the storyboard tests...
+
+	* xaml/clock/: ...Instead adding those tests here following the
+	existing semantics (adding only the ones which were not already there).
+
 2008-03-06  Michael Dominic K.  <mdk@mdk.am>
 
 	* test/xaml/drtlist.xml: Adding the new storyboard tests to the

@@ -1,0 +1,22 @@
+<Canvas x:Name="parentCanvas"
+        xmlns="http://schemas.microsoft.com/client/2007" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+	Width="640" Height="200">
+
+	<Canvas.Triggers>
+		<EventTrigger RoutedEvent="Canvas.Loaded">
+			<BeginStoryboard>
+				<Storyboard Duration="00:00:02" FillBehavior="Stop">
+					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:04" />
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Canvas.Triggers>
+
+		<Rectangle x:Name="measure1" Canvas.Left="10" Canvas.Top="7" Width="350" Height="3" Fill="Black" />
+		<Rectangle x:Name="measure2" Canvas.Left="10" Canvas.Top="110" Width="350" Height="3" Fill="Black" />
+		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" Fill="Red" />
+		
+	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="150" Width="600" Height="30"
+			   Text="The red block should take 2 seconds to move half-way to the right, and bounce left."/>
+</Canvas>
