@@ -1,3 +1,8 @@
+2008-03-11  Chris Toshok  <toshok@ximian.com>
+
+	* ManagedDownloader.cs: downloader_get_surface ->
+	event_object_get_surface.
+
 2008-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ManagedDownloader.cs: Avoid crash if the download was aborted 
