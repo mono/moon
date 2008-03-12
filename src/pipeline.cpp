@@ -46,6 +46,9 @@
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
 
+#define LOG_PIPELINE(...)// printf (__VA_ARGS__);
+#define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
+
 /*
  * Media 
  */
@@ -55,6 +58,8 @@ ConverterInfo *Media::registered_converters = NULL;
  
 Media::Media (MediaElement *element)
 {
+	LOG_PIPELINE ("Media::Media (%p <id:%i>), id: %i\n", element, GET_OBJ_ID (element), GET_OBJ_ID (this));
+
 	pthread_attr_t attribs;
 	
 	this->element = element;
@@ -82,6 +87,8 @@ Media::Media (MediaElement *element)
 
 Media::~Media ()
 {
+	LOG_PIPELINE ("Media::~Media (), id: %i\n", GET_OBJ_ID (this));
+
 	pthread_mutex_lock (&queue_mutex);
 	queued_requests->Clear (true);
 	delete queued_requests;
@@ -110,6 +117,8 @@ Media::~Media ()
 void
 Media::SetSource (IMediaSource *source)
 {
+	LOG_PIPELINE ("Media::SetSource (%p <id:%i>)\n", source, GET_OBJ_ID (source));
+
 	if (this->source)
 		this->source->unref ();
 	this->source = source;
@@ -126,6 +135,8 @@ Media::GetSource ()
 void
 Media::SetFileOrUrl (const char *value)
 {
+	LOG_PIPELINE ("Media::SetFileOrUrl ('%s')\n", value);
+
 	if (file_or_url)
 		g_free (file_or_url);
 	file_or_url = g_strdup (value);
@@ -204,6 +215,8 @@ Media::Initialize ()
 void
 Media::Shutdown ()
 {
+	LOG_PIPELINE ("Media::Shutdown (), id: %i\n", GET_OBJ_ID (this));
+
 	MediaInfo *current;
 	MediaInfo *next;
 	
@@ -246,6 +259,22 @@ Media::AddMessage (MediaResult result, char *msg)
 	g_free (msg);
 }
 
+void
+Media::AddError (MediaErrorEventArgs *args)
+{
+	LOG_PIPELINE ("Media::AddError (%p), message: %s, code: %i\n", args, args->error_message, args->error_code);
+
+	//TODO: We should probably reaise MediaFailed when errors occur,
+	// but it will need some testing to see what MS does (especially
+	// with corrupt media during playback).
+	//
+	//if (element) {
+	//	element->MediaFailed (args);
+	//} else {
+		fprintf (stderr, "Media error: %s\n", args->error_message);
+	//}
+}
+
 MediaResult
 Media::Seek (uint64_t pts)
 {
@@ -258,6 +287,8 @@ Media::Seek (uint64_t pts)
 MediaResult
 Media::SeekAsync (uint64_t pts, MediaClosure *closure)
 {
+	LOG_PIPELINE ("Media::SeekAsync (%llu, %p), id: %i\n", pts, closure, GET_OBJ_ID (this));
+
 	if (demuxer == NULL)
 		return MEDIA_FAIL;
 	
@@ -269,6 +300,8 @@ Media::SeekAsync (uint64_t pts, MediaClosure *closure)
 MediaResult
 Media::SeekToStart ()
 {
+	LOG_PIPELINE ("Media::SeekToStart (), id: %i\n", GET_OBJ_ID (this));
+
 	if (demuxer == NULL)
 		return MEDIA_FAIL;
 
@@ -278,7 +311,7 @@ Media::SeekToStart ()
 MediaResult
 Media::Initialize (const char *file_or_url)
 {
-	printf ("Media::Initialize ('%s').\n", file_or_url);
+	LOG_PIPELINE ("Media::Initialize ('%s'), id: %i\n", file_or_url, GET_OBJ_ID (this));
 	
 	Uri* uri = new Uri ();
 	MediaResult result = MEDIA_FAIL;
@@ -287,14 +320,14 @@ Media::Initialize (const char *file_or_url)
 	this->file_or_url = g_strdup (file_or_url);
 	
 	if (uri->Parse (file_or_url)) {
-		printf ("Media::Open ('%s'): uri parsing succeeded, protocol: '%s'.\n", file_or_url, uri->protocol);
+		LOG_PIPELINE ("Media::Open ('%s'): uri parsing succeeded, protocol: '%s'.\n", file_or_url, uri->protocol);
 		if (uri->protocol == NULL) {
 			result = MEDIA_INVALID_PROTOCOL;
 		} else if (strcmp (uri->protocol, "mms") == 0) {
 			source = new LiveSource (this);
 			result = source->Initialize ();
 			if (!MEDIA_SUCCEEDED (result)) {
-				printf ("Media::Open ('%s'): live source failed, trying progressive source.\n", file_or_url);
+				LOG_PIPELINE ("Media::Open ('%s'): live source failed, trying progressive source.\n", file_or_url);
 				source->unref ();
 				source = new ProgressiveSource (this);
 				result = source->Initialize ();
@@ -303,7 +336,7 @@ Media::Initialize (const char *file_or_url)
 			source = new ProgressiveSource (this);
 			result = source->Initialize ();
 			if (!MEDIA_SUCCEEDED (result)) {
-				printf ("Media::Open ('%s'): progressive source failed, trying live source.\n", file_or_url);
+				LOG_PIPELINE ("Media::Open ('%s'): progressive source failed, trying live source.\n", file_or_url);
 				source->unref ();
 				source = new LiveSource (this);
 				result = source->Initialize ();
@@ -312,14 +345,14 @@ Media::Initialize (const char *file_or_url)
 			source = new FileSource (this),
 			result = source->Initialize ();
 			if (!MEDIA_SUCCEEDED (result)) {
-				printf ("Media::Open ('%s'): file source failed.\n", file_or_url);
+				LOG_PIPELINE ("Media::Open ('%s'): file source failed.\n", file_or_url);
 			}
 		} else {
 			result = MEDIA_INVALID_PROTOCOL;
 		}
 	} else {
 		// FIXME: Is it safe to assume that if the path cannot be parsed as an uri it is a filename?
-		printf ("Media::Open ('%s'): uri parsing failed, assuming source is a filename.\n", file_or_url);
+		LOG_PIPELINE ("Media::Open ('%s'): uri parsing failed, assuming source is a filename.\n", file_or_url);
 		source = new FileSource (this);	
 		result = source->Initialize ();
 	}
@@ -327,11 +360,11 @@ Media::Initialize (const char *file_or_url)
 	delete uri;
 	
 	if (!MEDIA_SUCCEEDED (result)) {
-		printf ("Media::Open ('%s'): failed, result: %i.\n", file_or_url, result);
+		LOG_PIPELINE ("Media::Open ('%s'): failed, result: %i.\n", file_or_url, result);
 		source->unref ();
 		source = NULL;
 	} else {
-		printf ("Media::Open ('%s'): succeeded.\n", file_or_url);
+		LOG_PIPELINE ("Media::Open ('%s'): succeeded.\n", file_or_url);
 	}
 	
 	return result;
@@ -340,6 +373,8 @@ Media::Initialize (const char *file_or_url)
 MediaResult
 Media::Open ()
 {
+	LOG_PIPELINE ("Media::Open (), id: %i\n", GET_OBJ_ID (this));
+
 	if (source == NULL) {
 		AddMessage (MEDIA_INVALID_ARGUMENT, "Media::Initialize () hasn't been called (or didn't succeed).");
 		return MEDIA_INVALID_ARGUMENT;
@@ -356,6 +391,8 @@ Media::Open ()
 MediaResult
 Media::OpenAsync (IMediaSource *source, MediaClosure *closure)
 {
+	LOG_PIPELINE ("Media::OpenAsync (%p <id:%i>, %p), id: %i\n", source, GET_OBJ_ID (source), closure, GET_OBJ_ID (this));
+
 	closure->SetMedia (this);
 
 	EnqueueWork (new MediaWork (closure, source));
@@ -366,9 +403,11 @@ Media::OpenAsync (IMediaSource *source, MediaClosure *closure)
 MediaResult
 Media::Open (IMediaSource *source)
 {
+	LOG_PIPELINE ("Media::Open (%p <id:%i>), id: %i\n", source, GET_OBJ_ID (source), GET_OBJ_ID (this));
+
 	MediaResult result;
 	
-	//printf ("Media::Open ().\n");
+	LOG_PIPELINE ("Media::Open ().\n");
 	
 	if (source == NULL || IsOpened ()) // Initialize wasn't called (or didn't succeed) or already open.
 		return MEDIA_INVALID_ARGUMENT;
@@ -379,7 +418,7 @@ Media::Open (IMediaSource *source)
 		if (demuxerInfo->Supports (source))
 			break;
 		
-		//printf ("Media::Open (): '%s' can't handle this media.\n", demuxerInfo->GetName ());
+		LOG_PIPELINE ("Media::Open (): '%s' can't handle this media.\n", demuxerInfo->GetName ());
 		demuxerInfo = (DemuxerInfo *) demuxerInfo->next;
 	}
 	
@@ -414,9 +453,9 @@ Media::Open (IMediaSource *source)
 	if (!MEDIA_SUCCEEDED (result))
 		return result;
 	
-	//printf ("Media::Open (): Found %i streams in this source.\n", demuxer->GetStreamCount ());
+	LOG_PIPELINE ("Media::Open (): Found %i streams in this source.\n", demuxer->GetStreamCount ());
 	
-	//printf ("Media::Open (): Starting to select codecs...\n");
+	LOG_PIPELINE ("Media::Open (): Starting to select codecs...\n");
 	
 	// If the demuxer has no streams (ASXDemuxer for instance)
 	// then just return success.
@@ -434,20 +473,20 @@ Media::Open (IMediaSource *source)
 		const char *codec = stream->GetCodec ();
 		IMediaDecoder *decoder = NULL;
 		
-		//printf ("Media::Open (): Selecting codec for codec %s, id %i.\n", codec, stream->codec_id);
+		LOG_PIPELINE ("Media::Open (): Selecting codec for codec %s, id %i.\n", codec, stream->codec_id);
 		
 		DecoderInfo *current_decoder = registered_decoders;
 		while (current_decoder != NULL && !current_decoder->Supports (codec)) {
-			//printf ("Checking registered decoder '%s' if it supports codec '%s': no.\n",
-			//	current_decoder->GetName (), codec);
+			LOG_PIPELINE ("Checking registered decoder '%s' if it supports codec '%s': no.\n",
+				current_decoder->GetName (), codec);
 			current_decoder = (DecoderInfo*) current_decoder->next;
 		}
 
 		if (current_decoder == NULL) {
 			AddMessage (MEDIA_UNKNOWN_CODEC, g_strdup_printf ("Unknown codec: '%s'.", codec));	
 		} else {
-			//printf ("Checking registered decoder '%s' if it supports codec '%s': yes.\n",
-			//	current_decoder->GetName (), codec);
+			LOG_PIPELINE ("Checking registered decoder '%s' if it supports codec '%s': yes.\n",
+				current_decoder->GetName (), codec);
 			decoder = current_decoder->Create (this, stream);
 		}
 		
@@ -467,8 +506,8 @@ Media::Open (IMediaSource *source)
 				
 				ConverterInfo* current_conv = registered_converters;
 				while (current_conv != NULL && !current_conv->Supports (decoder->pixel_format, MoonPixelFormatRGB32)) {
-					//printf ("Checking whether '%s' supports input '%d' and output '%d': no.\n",
-					//	current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
+					LOG_PIPELINE ("Checking whether '%s' supports input '%d' and output '%d': no.\n",
+						current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
 					current_conv = (ConverterInfo*) current_conv->next;
 				}
 				
@@ -477,8 +516,8 @@ Media::Open (IMediaSource *source)
 						    g_strdup_printf ("Can't convert from %d to %d: No converter found.",
 								     vs->decoder->pixel_format, MoonPixelFormatRGB32));	
 				} else {
-					//printf ("Checking whether '%s' supports input '%d' and output '%d': yes.\n",
-					//	current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
+					LOG_PIPELINE ("Checking whether '%s' supports input '%d' and output '%d': yes.\n",
+						current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
 					converter = current_conv->Create (this, vs);
 					converter->input_format = decoder->pixel_format;
 					converter->output_format = MoonPixelFormatRGB32;
@@ -508,6 +547,8 @@ Media::Open (IMediaSource *source)
 		opened = true;
 	}
 	
+	LOG_PIPELINE ("Media::Open (): result = %s\n", MEDIA_SUCCEEDED (result) ? "true" : "false");
+
 	return result;
 }
 
@@ -536,7 +577,7 @@ Media::GetNextFrame (MediaWork *work)
 
 	do {
 		if (frame) {
-			printf ("Media::GetNextFrame (): delayed a frame\n");
+			LOG_PIPELINE ("Media::GetNextFrame (): delayed a frame\n");
 			delete frame;
 		}
 		frame = new MediaFrame (stream);
@@ -576,8 +617,6 @@ Media::WorkerLoop (void *data)
 	
 	return NULL;
 }
-
-#define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
 
 void
 Media::WorkerLoop ()
@@ -722,7 +761,7 @@ Media::EnqueueWork (MediaWork *work)
 void
 Media::ClearQueue ()
 {
-	//printf ("Media::ClearQueue ().\n");
+	LOG_PIPELINE ("Media::ClearQueue ().\n");
 	if (queued_requests != NULL) {
 		pthread_mutex_lock (&queue_mutex);
 		queued_requests->Clear (true);
@@ -766,6 +805,9 @@ ASFDemuxer::EstimatePtsPosition (uint64_t pts)
 	int64_t result = -1;
 	
 	for (int i = 0; i < GetStreamCount (); i++) {
+		if (!GetStream (i)->selected)
+			continue;
+
 		result = MAX (result, readers [i]->EstimatePtsPosition(pts));
 	}
 	
@@ -912,7 +954,7 @@ ASFDemuxer::ReadHeader ()
 	if (!asf_parser->ReadHeader ()) {
 		result = MEDIA_INVALID_MEDIA;
 		GetMedia ()->AddMessage (MEDIA_INVALID_MEDIA, "asf_parser->ReadHeader () failed:");
-		GetMedia ()->AddMessage (MEDIA_FAIL, asf_parser->GetLastError ());
+		GetMedia ()->AddMessage (MEDIA_FAIL, asf_parser->GetLastErrorStr ());
 		goto failure;
 	}
 	
@@ -1086,7 +1128,7 @@ ASFDemuxer::ReadFrame (MediaFrame *frame)
 	}
 	
 	if (!MEDIA_SUCCEEDED (result)) {
-		media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while advancing to the next frame.");
+		media->AddMessage (MEDIA_DEMUXER_ERROR, g_strdup_printf ("Error while advancing to the next frame (%i)", result));
 		return result;
 	}
 	
@@ -2808,7 +2850,7 @@ MediaClosure::Call ()
 	if (callback)
 		return callback (this);
 		
-	return MEDIA_NOCALLBACK;
+	return MEDIA_NO_CALLBACK;
 }
 
 void
@@ -3125,4 +3167,8 @@ MediaWork::~MediaWork ()
 		break; // Nothing to do
 	}
 	delete closure;
+
+#if DEBUG
+	memset (&data, 0, sizeof (data));
+#endif
 }

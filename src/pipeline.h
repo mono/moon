@@ -91,8 +91,6 @@ class ProgressiveSource;
 
 typedef int32_t MediaResult;
 
-#define MEDIA_NOCALLBACK ((MediaResult) 0)
-#define MEDIA_NO_MORE_DATA ((MediaResult) -1)
 #define MEDIA_SUCCESS ((MediaResult) 0)
 #define MEDIA_FAIL ((MediaResult) 1)
 #define MEDIA_INVALID_PROTOCOL ((MediaResult) 2)
@@ -109,6 +107,9 @@ typedef int32_t MediaResult;
 #define MEDIA_UNKNOWN_CONVERTER ((MediaResult) 13)
 #define MEDIA_UNKNOWN_MEDIA_TYPE ((MediaResult) 14)
 #define MEDIA_CODEC_DELAYED ((MediaResult) 15)
+#define MEDIA_NO_MORE_DATA ((MediaResult) 16)
+#define MEDIA_CORRUPTED_MEDIA ((MediaResult) 17)
+#define MEDIA_NO_CALLBACK ((MediaResult) 18)
 
 #define MEDIA_SUCCEEDED(x) ((x <= 0))
 
@@ -171,6 +172,7 @@ typedef MediaResult MediaCallback (MediaClosure *closure);
 #include "debug.h"
 #include "dependencyobject.h"
 #include "playlist.h"
+#include "error.h"
 
 class MediaClosure {
 private:
@@ -334,14 +336,14 @@ public:
 	
 	void AddMessage (MediaResult result, const char *msg);
 	void AddMessage (MediaResult result, char *msg);
-	
+	void AddError (MediaErrorEventArgs *args);
+
 	// A list of MediaMarker::Node.
 	// This is the list of markers found in the metadata/headers (not as a separate stream).
 	// Will never return NULL.
 	List *GetMarkers ();
 	
 	bool IsOpened () { return opened; }
-	
 	
 	// Registration functions
 	// This class takes ownership of the infos and will delete them (not free) when the Media is shutdown.

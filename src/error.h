@@ -14,8 +14,13 @@
 #ifndef __MOON_ERROR_H__
 #define __MOON_ERROR_H__
 
+class ErrorEventArgs;
+class MediaErrorEventArgs;
+
+
 #include "enums.h"
 #include "eventargs.h"
+#include "pipeline.h"
 
 class ErrorEventArgs  : public EventArgs  {
 protected:
@@ -85,6 +90,19 @@ public:
 	char *xaml_file;
 	char *xml_element;
 	char *xml_attribute;
+};
+
+class MediaErrorEventArgs : public ErrorEventArgs {
+protected:
+	virtual ~MediaErrorEventArgs () {}
+
+public:
+	MediaErrorEventArgs (MediaResult result, const char *msg)
+		: ErrorEventArgs (MediaError, (int) result, msg)
+	{
+	}
+
+	MediaResult GetMediaResult () { return (MediaResult) error_code; }
 };
 
 #endif /* __MOON_ERROR_H__ */
