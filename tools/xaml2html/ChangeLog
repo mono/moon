@@ -1,0 +1,7 @@
+2008-03-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml2html.cs:
+	* xaml2html.in:
+	* Makefile.am: Adding a trivial tool to convert a .xaml file
+	into an .html with embeded xaml.
+

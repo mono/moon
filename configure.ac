@@ -428,6 +428,7 @@ tools/Makefile
 tools/mopen/Makefile
 tools/svg2xaml/Makefile
 tools/xamlg/Makefile
+tools/xaml2html/Makefile
 plugin/Makefile
 plugin/install.js
 plugin/test/Makefile
