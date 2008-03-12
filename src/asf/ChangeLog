@@ -1,5 +1,9 @@
 2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.h: Spaces to tabs.
+
+2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf-structures.cpp: Remove newlines from error messages.
 
 2008-03-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 

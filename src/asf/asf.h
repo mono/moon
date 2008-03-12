@@ -105,14 +105,14 @@ private:
 	int64_t pos;
 
 protected:
-        virtual bool ReadInternal (void *buf, uint32_t n);
-        virtual bool SeekInternal (int64_t offset, int mode);
-        virtual int64_t Position ();
-        virtual bool CanSeek ();
-        virtual bool Eof ();
-
+	virtual bool ReadInternal (void *buf, uint32_t n);
+	virtual bool SeekInternal (int64_t offset, int mode);
+	virtual int64_t Position ();
+	virtual bool CanSeek ();
+	virtual bool Eof ();
+	
 public:
-        ASFBufferSource (ASFParser *parser, char *buffer, int64_t size);
+	ASFBufferSource (ASFParser *parser, char *buffer, int64_t size);
 };
 
 
