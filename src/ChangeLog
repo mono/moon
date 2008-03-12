@@ -1,3 +1,9 @@
+2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyobject.cpp: Add NULL check in method 
+	RemovePropertyChangeListener since a bad XAML input can cause a
+	NULL entry in the list.
+
 2008-03-12  Michael Dominic K.  <mdk@mdk.am>
 
 	* runtime.cpp:
