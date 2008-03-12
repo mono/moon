@@ -1,5 +1,10 @@
 2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.cpp: DependencyObject: Initialize our surface field to
+	  NULL.
+
+2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.h, pipeline.cpp: Add logging macros. Use ErrorEventArgs for error
 	  reporting so that the errors can easily be bubbled up the pipeline. Add
 	  a 'selected' field to IMediaStream, whether the media player is using
