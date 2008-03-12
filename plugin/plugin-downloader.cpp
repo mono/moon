@@ -38,12 +38,11 @@ p_downloader_open (const char *verb, const char *uri, gpointer state)
 
 	pd->verb = g_strdup (verb);
 	pd->uri = g_strdup (uri);
-	if (strncmp (uri, "mms://", 6) == 0) {
+	if (uri && strncmp (uri, "mms://", 6) == 0) {
 		pd->uri = g_strdup_printf ("http://%s", uri + 6);
 		pd->mmsh = true;
 	} else
 		pd->uri = g_strdup (uri);
-
 }
 
 static void

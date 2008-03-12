@@ -1,3 +1,8 @@
+2008-03-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin-downloader.cpp: Adding an extra NULL check. Fixes the
+	flowers-for-you.com website.
+
 2008-03-12  Miguel de Icaza  <miguel@novell.com>
 
 	* browser-mmsh.cpp (AsyncBrowserMmshResponse::MmsMetadataParse):
