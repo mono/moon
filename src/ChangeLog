@@ -1,3 +1,9 @@
+2008-03-12  Chris Toshok  <toshok@ximian.com>
+
+	* media.cpp (expand_rgb_to_argb): use a different codepath if the
+	rowstride isn't padded out to be divisible by 4 (or else we read
+	off the end by a byte).
+
 2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: ASFDemuxer: Only seek in the selected streams.

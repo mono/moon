@@ -1726,32 +1726,47 @@ Image::DownloaderFailed (ErrorEventArgs *args)
 
 
 #ifdef WORDS_BIGENDIAN
-#define set_pixel_bgra(pixel,index,b,g,r,a) do { \
+#define set_pixel_bgra(pixel,index,b,g,r,a) \
+	G_STMT_START { \
 		((unsigned char *)(pixel))[index]   = a; \
 		((unsigned char *)(pixel))[index+1] = r; \
 		((unsigned char *)(pixel))[index+2] = g; \
 		((unsigned char *)(pixel))[index+3] = b; \
-	} while (0)
+	} G_STMT_END
+#define get_pixel_bgr_p(p,b,g,r) \
+	G_STMT_START { \
+		r = *(p);   \
+		g = *(p+1); \
+		b = *(p+2); \
+	} G_STMT_END
 #else
-#define set_pixel_bgra(pixel,index,b,g,r,a) do { \
+#define set_pixel_bgra(pixel,index,b,g,r,a) \
+	G_STMT_START { \
 		((unsigned char *)(pixel))[index]   = b; \
 		((unsigned char *)(pixel))[index+1] = g; \
 		((unsigned char *)(pixel))[index+2] = r; \
 		((unsigned char *)(pixel))[index+3] = a; \
-	} while (0)
+	} G_STMT_END
+#define get_pixel_bgr_p(p,b,g,r) \
+	G_STMT_START { \
+		b = *(p);   \
+		g = *(p+1); \
+		r = *(p+2); \
+	} G_STMT_END
 #endif
-#define get_pixel_bgra(color, b, g, r, a) do { \
+#define get_pixel_bgra(color, b, g, r, a) \
+	G_STMT_START { \
 		a = ((color & 0xff000000) >> 24); \
 		r = ((color & 0x00ff0000) >> 16); \
 		g = ((color & 0x0000ff00) >> 8); \
 		b = (color & 0x000000ff); \
-	} while(0)
-#define get_pixel_bgr(color, b, g, r) do { \
+	} G_STMT_END
+#define get_pixel_bgr(color, b, g, r) \
+	G_STMT_START { \
 		r = ((color & 0x00ff0000) >> 16); \
 		g = ((color & 0x0000ff00) >> 8); \
 		b = (color & 0x000000ff); \
-	} while(0)
-
+	} G_STMT_END
 #include "alpha-premul-table.inc"
 
 //
@@ -1771,15 +1786,28 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
 	for (int y = 0; y < h; y ++) {
 		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
 		out = data + y * (*stride);
-		for (int x = 0; x < w; x ++) {
-			guint32 color = *(guint32*)p;
-			guchar r, g, b;
+		if (gdk_pixbuf_get_rowstride (pixbuf) % 4 == 0) {
+			for (int x = 0; x < w; x ++) {
+				guint32 color = *(guint32*)p;
+				guchar r, g, b;
 
-			get_pixel_bgr (color, b, g, r);
-			set_pixel_bgra (out, 0, r, g, b, 255);
+				get_pixel_bgr (color, b, g, r);
+				set_pixel_bgra (out, 0, r, g, b, 255);
 
-			p += 3;
-			out += 4;
+				p += 3;
+				out += 4;
+			}
+		}
+		else {
+			for (int x = 0; x < w; x ++) {
+				guchar r, g, b;
+
+				get_pixel_bgr_p (p, b, g, r);
+				set_pixel_bgra (out, 0, r, g, b, 255);
+
+				p += 3;
+				out += 4;
+			}
 		}
 	}
 
