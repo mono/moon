@@ -2099,6 +2099,8 @@ runtime_shutdown (void)
 
 	drain_unrefs ();
 	
+	Media::Shutdown ();
+
 	animation_destroy ();
 	text_destroy ();
 	font_shutdown ();

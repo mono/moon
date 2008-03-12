@@ -276,6 +276,8 @@ private:
 	IMediaDemuxer *demuxer;
 	List *markers;
 	bool opened;
+	bool stopping;
+	bool stopped; // If the worker thread has been stopped.
 	
 	MediaElement *element;
 
@@ -286,6 +288,7 @@ private:
 	void WorkerLoop ();
 	static void *WorkerLoop (void *data);
 	void EnqueueWork (MediaWork *work);	
+	void StopThread (); // Stops the worker thread.
 	
 protected:
 	~Media ();
@@ -353,6 +356,9 @@ public:
 	
 	static void Initialize ();
 	static void Shutdown ();
+
+	static Queue* media_objects;
+	static int media_thread_count;
 };
  
 class MediaFrame {

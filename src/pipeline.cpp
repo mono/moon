@@ -49,16 +49,29 @@
 #define LOG_PIPELINE(...)// printf (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
 
+class MediaNode : public List::Node {
+public:
+	Media *media;
+	MediaNode (Media *media)
+	{
+		this->media = media;
+	}
+};
+
 /*
  * Media 
  */
 DemuxerInfo *Media::registered_demuxers = NULL;
 DecoderInfo *Media::registered_decoders = NULL;
 ConverterInfo *Media::registered_converters = NULL;
- 
+Queue *Media::media_objects = NULL;
+
 Media::Media (MediaElement *element)
 {
 	LOG_PIPELINE ("Media::Media (%p <id:%i>), id: %i\n", element, GET_OBJ_ID (element), GET_OBJ_ID (this));
+
+	// Add ourselves to the global list of medias
+	media_objects->Push (new MediaNode (this));
 
 	pthread_attr_t attribs;
 	
@@ -74,6 +87,8 @@ Media::Media (MediaElement *element)
 	markers = NULL;
 	
 	opened = false;
+	stopping = false;
+	stopped = false;
 	
 	pthread_attr_init (&attribs);
 	pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
@@ -87,6 +102,8 @@ Media::Media (MediaElement *element)
 
 Media::~Media ()
 {
+	MediaNode *node;
+
 	LOG_PIPELINE ("Media::~Media (), id: %i\n", GET_OBJ_ID (this));
 
 	pthread_mutex_lock (&queue_mutex);
@@ -100,8 +117,9 @@ Media::~Media ()
 		ProgressiveSource *ps = (ProgressiveSource *) source;
 		ps->CancelWait ();
 	}
-	
-	pthread_join (queue_thread, NULL);
+
+	if (!stopped)
+		pthread_join (queue_thread, NULL);
 	pthread_mutex_destroy (&queue_mutex);
 	pthread_cond_destroy (&queue_condition);
 	pthread_detach (queue_thread);
@@ -112,6 +130,18 @@ Media::~Media ()
 	if (demuxer)
 		demuxer->unref ();
 	delete markers;
+
+	// Remove ourselves from the global list of medias
+	media_objects->Lock ();
+	node = (MediaNode *) media_objects->LinkedList ()->First ();
+	while (node != NULL) {
+		if (node->media == this) {
+			media_objects->LinkedList ()->Remove (node);
+			break;
+		}
+		node = (MediaNode *) node->next;
+	}
+	media_objects->Unlock ();
 }
 
 void
@@ -199,6 +229,10 @@ Media::RegisterDecoder (DecoderInfo *info)
 void
 Media::Initialize ()
 {
+	LOG_PIPELINE ("Media::Initialize ()\n");
+
+	media_objects = new Queue ();	
+
 	// register stuff
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
@@ -215,10 +249,11 @@ Media::Initialize ()
 void
 Media::Shutdown ()
 {
-	LOG_PIPELINE ("Media::Shutdown (), id: %i\n", GET_OBJ_ID (this));
+	LOG_PIPELINE ("Media::Shutdown ()\n");
 
 	MediaInfo *current;
 	MediaInfo *next;
+	MediaNode *node;
 	
 	current = registered_decoders;
 	while (current != NULL) {
@@ -242,7 +277,22 @@ Media::Shutdown ()
 		delete current;
 		current = next;
 	}
-	registered_converters = NULL;	
+	registered_converters = NULL;
+
+	// Make sure all threads are stopped
+	media_objects->Lock ();
+	node = (MediaNode *) media_objects->LinkedList ()->First ();
+	while (node != NULL) {
+		node->media->StopThread ();
+		node = (MediaNode *) node->next;
+	}
+	
+	media_objects->Unlock ();
+
+	delete media_objects;
+	media_objects = NULL;
+
+	LOG_PIPELINE ("Media::Shutdown () [Done]\n");
 }
 
 void
@@ -623,15 +673,16 @@ Media::WorkerLoop ()
 {
 	MediaResult result;
 	
-	LOG_FRAMEREADERLOOP ("Media::WorkerLoop ().\n");
-	while (queued_requests != NULL) {
+	LOG_PIPELINE ("Media::WorkerLoop ().\n");
+
+	while (queued_requests != NULL && !stopping) {
 		MediaWork *node = NULL;
 		
 		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): entering mutex.\n");
 		
 		// Wait until we have something in the queue
 		pthread_mutex_lock (&queue_mutex);
-		while (queued_requests != NULL && queued_requests->IsEmpty ())
+		while (queued_requests != NULL && !stopping && queued_requests->IsEmpty ())
 			pthread_cond_wait (&queue_condition, &queue_mutex);
 		
 		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got something.\n");
@@ -678,7 +729,9 @@ Media::WorkerLoop ()
 		delete node;
 	}
 	
-	LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): exiting.\n");
+	stopped = true;
+
+	LOG_PIPELINE ("Media::WorkerLoop (): exiting.\n");
 }
 
 void
@@ -768,10 +821,28 @@ Media::ClearQueue ()
 		pthread_mutex_unlock (&queue_mutex);
 	}
 	
-	if (source->GetType () == MediaSourceTypeProgressive) {
+	if (source && source->GetType () == MediaSourceTypeProgressive) {
 		ProgressiveSource *ps = (ProgressiveSource *) source;
 		ps->CancelWait ();
 	}
+}
+
+void
+Media::StopThread ()
+{
+	LOG_PIPELINE ("Media::ClearQueue ().\n");
+
+	if (stopped)
+		return;
+
+	stopping = true;
+	ClearQueue ();
+	pthread_mutex_lock (&queue_mutex);
+	pthread_cond_signal (&queue_condition);
+	pthread_join (queue_thread, NULL);
+	pthread_mutex_unlock (&queue_mutex);
+
+	LOG_PIPELINE ("Media::ClearQueue () [Done]\n");
 }
 
 /*
@@ -2922,7 +2993,8 @@ IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 
 IMediaStream::~IMediaStream ()
 {
-	decoder->unref ();
+	if (decoder)
+		decoder->unref ();
 	
 	g_free (extra_data);
 }
