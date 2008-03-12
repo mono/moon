@@ -136,8 +136,8 @@ class Surface : public EventObject {
 	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data);
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
 
-	bool VerifyWithCacheSizeCounter (int64_t size);
-	void AddToCacheSizeCounter (int64_t size);
+	bool VerifyWithCacheSizeCounter (int w, int h);
+	int64_t AddToCacheSizeCounter (int w, int h);
 	void RemoveFromCacheSizeCounter (int64_t size);
 
 #if FRONT_TO_BACK_STATS
@@ -284,6 +284,7 @@ private:
 	int64_t cache_size_in_bytes;
 	int cache_size_ticker;
 	void *cache_data;
+	int cache_size_multiplier;
 	
 	void ConnectEvents (bool realization_signals);
 	void Realloc ();

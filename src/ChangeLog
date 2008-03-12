@@ -1,3 +1,9 @@
+2008-03-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* runtime.cpp:
+	* runtime.h:
+	* shape.cpp: Properly calculate the shape cache depending on our bpp etc.
+
 2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml.cpp: xaml_create_from_file: if there was some error loading the file,

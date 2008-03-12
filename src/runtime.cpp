@@ -209,6 +209,7 @@ Surface::Surface(int w, int h, bool windowless)
 
 	cache_size_in_bytes = 0;
 	cache_size_ticker = 0;
+	cache_size_multiplier = -1;
 
 	emittingMouseEvent = false;
 	pendingCapture = NULL;
@@ -1004,6 +1005,9 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 		}
 	}
 
+	if (cache_size_multiplier == -1)
+		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
+
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
@@ -1721,21 +1725,26 @@ Surface::CreateDownloader (UIElement *element)
 }
 
 bool 
-Surface::VerifyWithCacheSizeCounter (int64_t size)
+Surface::VerifyWithCacheSizeCounter (int w, int h)
 {
 	if (! (moonlight_flags & RUNTIME_INIT_USE_SHAPE_CACHE))
 		return FALSE;
 
-	if (cache_size_in_bytes + size < MAXIMUM_CACHE_SIZE)
+	if (cache_size_multiplier == -1)
+		return FALSE;
+
+	if (cache_size_in_bytes + (w * h * cache_size_multiplier) < MAXIMUM_CACHE_SIZE)
 		return TRUE;
 	else
 		return FALSE;
 }
 
-void 
-Surface::AddToCacheSizeCounter (int64_t size)
+int64_t
+Surface::AddToCacheSizeCounter (int w, int h)
 {
-	cache_size_in_bytes += size;
+	int64_t new_size = w * h * cache_size_multiplier;
+	cache_size_in_bytes += new_size;
+	return new_size;
 }
 
 void 
