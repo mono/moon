@@ -899,6 +899,9 @@ ASFDemuxer::Seek (uint64_t pts)
 		return MEDIA_SUCCESS;
 		
 	for (int i = 0; i < GetStreamCount (); i++) {
+		if (!GetStream (i)->selected)
+			continue;
+
 		result &= readers [i]->Seek (pts);
 	}
 		

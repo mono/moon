@@ -1,3 +1,7 @@
+2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: ASFDemuxer: Only seek in the selected streams.
+
 2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp, pipeline.h: Break all media threads upon media shutdown.
