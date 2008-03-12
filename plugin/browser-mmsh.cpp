@@ -141,54 +141,197 @@ BrowserMmshResponse::Abort ()
 	this->channel->Cancel (NS_BINDING_ABORTED);
 }
 
+typedef struct {
+	const char *key;
+	void (*handle_key) (AsyncBrowserMmshResponse *obj, const char *val);
+} MetadataParseTable;
+
+static void
+parse_features (AsyncBrowserMmshResponse *abmr, const char *val)
+{
+	g_print ("features: %s\n", val);
+}
+
+static MetadataParseTable pragma_table [] = {
+	//{ "playlist-gen-id=", parse_playlist_gen_id },
+	//{ "broadcast-id=", parse_broadcast_id },
+	{ "features=", parse_features },
+	{ NULL, NULL }
+};
+
+//
+// Parses a N,STR from P and returns the position after the STR, and
+// the value of STR is copied to RETVAL
+//
+static const char *
+get_sized_item (const char *p, char **retval)
+{
+	*retval = NULL;
+	int n = atoi (p);
+
+	while (*p && *p != ',')
+		p++;
+	if (*p == 0)
+		return p;
+
+	p++;
+	*retval = (char *) malloc (n+1);
+	if (*retval == NULL)
+		return "";
+
+	strncpy (*retval, p, n);
+	(*retval) [n] = 0;
+
+	p += n + 1;
+
+	return p;
+}
+
+static const char *
+get_number (const char *p, int *ret)
+{
+	*ret = 0;
+	*ret = atoi (p);
+	
+	while (*p && *p != ',')
+		p++;
+	if (*p == 0)
+		return p;
+
+	p++;
+	return p;
+}
+
+static const char *
+get_string (const char *data, const char *end, char **res)
+{
+	*res = NULL;
+
+	// skip over white space
+	while (data < end && *data == ' ')
+		data++;
+
+	// if we have quoted text.
+	if (*data == '"'){
+		const char *p = ++data;
+		
+		while (data < end && *data && *data != '"')
+			data++;
+
+		if (*data == '"'){
+			// the quote ended properly, data-1 is the last character
+			*res = (char *) g_malloc (data - p + 1);
+			(*res) [data-p] = 0;
+			strncpy (*res, p, data-p);
+
+			// consume the comma
+			while (data < end && *data && *data != ',')
+				data++;
+			if (*data == ',')
+				data++;
+		} else {
+			// we found a null before the end of the quote
+			*res = (char *) g_malloc (data - p + 1);
+			(*res) [data-p] = 0;
+			strncpy (*res, p, data-p);
+		}
+
+		return data;
+	}
+
+	const char *q = data;
+	
+	while (data < end && *data && *data != ',')
+		data++;
+	*res = (char *) g_malloc (data - q + 1);
+	(*res) [data-q] = 0;
+	strncpy (*res, q, data-q);
+
+	if (*data == ',')
+		data++;
+	
+	return data;
+}
 
 void
 AsyncBrowserMmshResponse::MmsMetadataParse (int packet_size, const char *data)
 {
-	int offset = 0;
-	int i = 0;
-	char **metadata = g_strsplit ((char*) data, ",", 0);
-	if (metadata[0]) {
-		g_print ("playlist-gen-id:%s\n", metadata[0]);
-		offset += strlen (metadata[0]);
-	}
-	if (metadata[1]) {
-		g_print ("broadcast-id:%s\n", metadata[1]);
-		offset += strlen (metadata[1]) + 1;
-	}
-	if (metadata[2]) {
-		g_print ("features:%s", metadata[2]);
-		offset += strlen (metadata[2]) + 1;
-	}
-	for (i = 3; metadata[i]; i++) {
-		g_print (",%s", metadata[i]);
-		offset += strlen (metadata[i]) + 1;
+	const char *end = data + packet_size;
+
+	while (data < end && *data != 0){
+		int j = 0;
+		while (data < end && *data == ' ')
+			data++;
+			
+		for (; pragma_table [j].key; j++){
+			int l = strlen (pragma_table [j].key);
+
+			if (strncmp (data, pragma_table [j].key, l) == 0){
+				char *str;
+				
+				data = get_string (data + l, end, &str);
+				(*pragma_table [j].handle_key) (this, str);
+				g_free (str);
+				break;
+			} 
+		}
+
+		// If we did not find a match, just display it
+		if (pragma_table [j].key == NULL){
+			const char *p = data;
+			// skip over key and = 
+			while (data < end && *data && *data != '=')
+				data++;
+			char *res = (char *) g_malloc (data - p + 1);
+			char *str;
+			res [data-p] = 0;
+			strncpy (res, p, data-p);
+			
+			// get value, and ignore it.
+			data = get_string (data, end, &str);
+
+			printf ("KEY: %s=%s\n", res, data);
+			g_free (str);
+			g_free (res);
+		}
 	}
 	g_print ("\n");
-	g_strfreev (metadata);
 
-	if (packet_size > offset) {
+	if (data < end) {
 		int cdl_index;
-		char **cdls = g_strsplit (data + offset + 1, "\r\n", 0);
-
+		char **cdls = g_strsplit (data + 1, "\r\n", 0);
+		
 		for (cdl_index = 0; cdls[cdl_index]; cdl_index++) {
-			if (*cdls[cdl_index] == '$') {
+			const char *p = cdls [cdl_index];
+
+			if (*p == '$') {
 				/* It's not a CDL but the real packet */
 				break;
 			}
-			char **items = g_strsplit (cdls[cdl_index], ",", 0);
-			int i;
-			for (i = 0; items[i]; i += 5) {
-				g_print ("Item %d:%s", i, items[i + 1]);
-				g_print (" value:%s\n", items[i + 4]);
-				if (strcmp (items[i+1], "WMS_CONTENT_DESCRIPTION_PLAYLIST_ENTRY_DURATION") == 0) {
-					notify_size = atoll (items[i + 4]);
-				}
-				if (strcmp (items[i+1], "WMS_CONTENT_DESCRIPTION_PLAYLIST_ENTRY_URL") == 0) {
-					notify_name = g_strdup (items[i + 4]);
-				}
+
+			while (*p){
+				char *item, *strval;
+				int type;
+				
+				p = get_sized_item (p, &item);
+
+				// If we reach the end. 
+				if (item == NULL)
+					break;
+				
+				p = get_number (p, &type);
+				p = get_sized_item (p, &strval);
+
+				printf ("%s = %s\n", item, strval);
+				if (strcmp (item, "WMS_CONTENT_DESCRIPTION_PLAYLIST_ENTRY_DURATION") == 0)
+					notify_size = atoll (strval);
+				else if (strcmp (item, "WMS_CONTENT_DESCRIPTION_PLAYLIST_ENTRY_URL") == 0)
+					notify_size = atoll (strval);
+				
+				g_free (item);
+				g_free (strval);
 			}
-			g_strfreev (items);
+
 			/*if (notifier && notify_size)
 				notifier (this, this->context, notify_name, notify_size);*/
 			

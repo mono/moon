@@ -1,3 +1,12 @@
+2008-03-12  Miguel de Icaza  <miguel@novell.com>
+
+	* browser-mmsh.cpp (AsyncBrowserMmshResponse::MmsMetadataParse):
+	Rewrote this routine to have a regular parser instead of splitting
+	strings with g_strsplit, copes with commas inside metadata.
+
+	Fernando mentioned that most of this code is no longer useful,
+	except for a few flags.  
+
 2008-03-11  Fernando Herrera  <fherrera@novell.com>
 
 	* browser-mmsh.cpp:
