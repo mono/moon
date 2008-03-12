@@ -2874,6 +2874,7 @@ IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 	
 	min_padding = 0;
 	index = -1;
+	selected = false;
 }
 
 IMediaStream::~IMediaStream ()

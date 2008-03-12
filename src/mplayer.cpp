@@ -318,14 +318,17 @@ MediaPlayer::Open (Media *media)
 		switch (stream->GetType ()) {
 		case MediaTypeAudio:
 			audio->stream_count++;			
-			if (audio->stream == NULL)
+			if (audio->stream == NULL) {
 				audio->stream = (AudioStream *) stream;
+				audio->stream->selected = true;
+			}
 			break;
 		case MediaTypeVideo: 
 			if (video->stream != NULL)
 				break;
 
 			video->stream = (VideoStream *) stream;
+			video->stream->selected = true;
 			
 			height = video->stream->height;
 			width = video->stream->width;

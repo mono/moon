@@ -461,6 +461,7 @@ public:
 	// 0-based index of the stream in the media
 	// set by the demuxer, until then its value must be -1
 	int index; 
+	bool selected;
 };
 
 class IMediaDemuxer : public IMediaObject {

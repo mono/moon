@@ -1,3 +1,8 @@
+2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp, pipeline.cpp, pipeline.h: Add a 'selected' field to the
+	  IMediaStream, indicates whether the stream is being played or not.
+
 2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyobject.cpp: Add NULL check in method 
