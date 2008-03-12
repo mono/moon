@@ -1,5 +1,9 @@
 2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Propagate the surface from the media element to the media.
+
+2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp, pipeline.cpp, pipeline.h: Add a 'selected' field to the
 	  IMediaStream, indicates whether the stream is being played or not.
 

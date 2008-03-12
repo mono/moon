@@ -58,6 +58,7 @@ Media::Media (MediaElement *element)
 	pthread_attr_t attribs;
 	
 	this->element = element;
+	this->SetSurface (element->GetSurface ());
 
 	queued_requests = new List ();
 	
