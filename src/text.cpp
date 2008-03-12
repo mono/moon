@@ -670,8 +670,27 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 				
 				text = run_get_text (run);
 				
-				if (text && text[0])
-					runs->Append (new TextRun (text, -1, deco, ifont, &item->foreground));
+				if (text && text[0]) {
+					const char *inptr, *inend;
+					
+					inptr = text;
+					
+					do {
+						inend = inptr;
+						while (*inend && *inend != '\n')
+							inend++;
+						
+						if (inend > inptr)
+							runs->Append (new TextRun (inptr, inend - inptr, deco,
+										   ifont, &item->foreground));
+						
+						if (*inend == '\0')
+							break;
+						
+						runs->Append (new TextRun (ifont));
+						inptr = inend + 1;
+					} while (*inptr);
+				}
 				
 				break;
 			case Type::LINEBREAK:
