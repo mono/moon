@@ -867,7 +867,7 @@ bool asf_extended_stream_properties_validate (const asf_extended_stream_properti
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 112) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 112, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 112, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?

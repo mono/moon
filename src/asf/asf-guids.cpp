@@ -260,7 +260,7 @@ asf_guid_validate (const asf_guid* guid_actual, const asf_guid* guid_expected, A
 	if (!asf_guid_compare (guid_actual, guid_expected)) {
 		char* expected = asf_guid_tostring (guid_expected);
 		char* actual = asf_guid_tostring (guid_actual);
-		parser->AddError (g_strdup_printf ("Invalid id (expected: %s, got: %s).\n", expected, actual));
+		parser->AddError (g_strdup_printf ("Invalid id (expected: %s, got: %s).", expected, actual));
 		g_free (actual);
 		g_free (expected);
 		return false;

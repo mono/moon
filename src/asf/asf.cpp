@@ -168,7 +168,7 @@ ASFParser::Initialize ()
 	script_command = NULL;
 	marker = NULL;
 	file_properties = NULL;
-	errors = NULL;
+	error = NULL;
 	embedded_script_command = NULL;
 	embedded_script_command_state = NULL;
 	memset (stream_properties, 0, sizeof (asf_stream_properties *) * 127);
@@ -179,18 +179,8 @@ ASFParser::~ASFParser ()
 	ASF_LOG ("ASFParser::~ASFParser ().\n");
 	
 	delete source;
-		
-	if (errors) {
-		error *next;
-		
-		while (errors != NULL) {
-			next = errors->next;
-			g_free (errors->msg);
-			g_free (errors);
-			errors = next;
-		}
-	}
-	
+	if (error)
+		error->unref ();
 	g_free (header);
 	g_free (data);
 	
@@ -299,6 +289,25 @@ ASFParser::ReadPacket (ASFPacket *packet)
 		 packet, source->Position (), GetPacketIndex (source->Position ()),
 		 data->data_packet_count);
 	
+#if DEBUG
+	// Check if we're positioned at the start of a packet.
+	bool ok = false;
+	int64_t current_pos = source->Position ();
+	int64_t offset;
+	for (uint64_t i = 0; i < data->data_packet_count; i++) {
+		offset = GetPacketOffset (i);
+		if (current_pos == offset) {
+			ok = true; 
+			break;
+		} else if (current_pos < offset) {
+			break;
+		}
+	}
+	if (!ok) {
+		fprintf (stderr, "ASFParser::ReadPacket (%p): The source isn't positioned at the start of any packet. Reading errors will occur.\n", packet);
+	}
+#endif
+
 	if (!ecd.FillInAll (this))
 		return false;
 	
@@ -331,12 +340,12 @@ ASFParser::ReadData ()
 	ASF_LOG ("ASFParser::ReadData ().\n");
 	
 	if (this->data != NULL) {
-		AddError ("ReadData has already been called.\n");
+		AddError ("ReadData has already been called.");
 		return false;
 	}
 	
 	if (!source->Seek ((int64_t) header->size, SEEK_SET)) {
-		AddError ("ReadData could not seek to the beginning of the data.\n");
+		AddError ("ReadData could not seek to the beginning of the data.");
 		return false;
 	}
 	
@@ -500,44 +509,47 @@ ASFParser::ReadHeader ()
 	return true;
 }
 
-const char *
+ErrorEventArgs *
 ASFParser::GetLastError ()
 {
-	error *last = errors;
-	
-	while (last != NULL && last->next != NULL)
-		last = last->next;
-	
-	if (last != NULL) {
-		return last->msg;
-	} else {
-		return NULL;
-	}
+	return error;
+}
+
+const char *
+ASFParser::GetLastErrorStr ()
+{
+	return error ? error->error_message : "";
 }
 
 void
 ASFParser::AddError (const char *msg)
 {
-	AddError (g_strdup (msg));
+	AddError (MEDIA_CORRUPTED_MEDIA, msg);
 }
 
 void
 ASFParser::AddError (char *msg)
 {
-	fprintf (stderr, "ASFParser::AddError ('%s').\n", msg);
+	AddError (MEDIA_CORRUPTED_MEDIA, msg);
+}
+
+void
+ASFParser::AddError (MediaResult code, const char *msg)
+{
+	AddError (code, g_strdup (msg));
+}
+
+void
+ASFParser::AddError (MediaResult code, char *msg)
+{
+	fprintf (stdout, "ASF error: %s.\n", msg);
 	
-	error *err = (error *) g_malloc0 (sizeof (error));
-	err->msg = msg;
-	
-	error *last = errors;
-	while (last != NULL && last->next != NULL)
-		last = last->next;
-	
-	if (last == NULL) {
-		errors = err;
-	} else {
-		last->next = err;
+	if (error == NULL) {
+		error = new MediaErrorEventArgs (code, msg);
+		if (media)
+			media->AddError (error);
 	}
+	g_free (msg);
 }
 
 const asf_stream_properties* 

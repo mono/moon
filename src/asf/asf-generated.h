@@ -41,6 +41,7 @@ struct asf_extended_stream_properties;
 
 class ASFSource;
 class ASFMediaSource;
+class ASFBufferSource;
 class ASFPacket;
 class ASFFrameReader;
 class ASFParser;

@@ -193,6 +193,7 @@ test_file (const char* filename)
 {	
 	printf ("test_file (%s)\n", filename);
 	
+	int counter = 0;
 	bool result = false;
 	ASFParser* parser = NULL;
 	ASFPacket* packet = NULL;
@@ -214,9 +215,11 @@ test_file (const char* filename)
 
 #if 1
 	packet = new ASFPacket ();
+	printf ("Reading packet #0...\n");
 	while (parser->ReadPacket (packet) == true) {
 		delete packet;
 		packet = new ASFPacket ();
+		printf ("Reading packet #%i...\n", ++counter);
 	}
 	delete packet;
 	
@@ -238,7 +241,7 @@ test_file (const char* filename)
 #endif
 
 	if (parser->GetLastError () != NULL) {
-		printf ("Errors were reported, last error is: '%s'.\n", parser->GetLastError ());
+		printf ("Errors were reported, last error is: '%s'.\n", parser->GetLastErrorStr ());
 		result = false;
 	} else {
 		result = true;
@@ -248,6 +251,7 @@ end:
 	printf ("test_file (%s): %s.\n", filename, result ? "OK" : "FAILED");
 	delete parser;
 	parser = NULL;
+	fs->unref ();
 	
 	return result;
 }

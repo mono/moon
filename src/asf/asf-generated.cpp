@@ -60,7 +60,7 @@ bool asf_object_validate_exact (const asf_object* obj, ASFParser* parser)
 	case ASF_EXTENDED_STREAM_PROPERTIES:
 		return asf_extended_stream_properties_validate ((asf_extended_stream_properties*) obj, parser);
 	default:
-		parser->AddError (g_strdup_printf ("No validation implemented for %s.\n", asf_guid_get_name (&obj->id)));
+		parser->AddError (g_strdup_printf ("No validation implemented for %s.", asf_guid_get_name (&obj->id)));
 		return false;
 	}
 }
@@ -263,7 +263,7 @@ bool asf_header_validate (const asf_header* obj, ASFParser* parser)
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 54) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 54, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 54, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -277,7 +277,7 @@ bool asf_file_properties_validate (const asf_file_properties* obj, ASFParser* pa
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 128) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 128, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 128, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -291,7 +291,7 @@ bool asf_stream_properties_validate (const asf_stream_properties* obj, ASFParser
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 102) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 102, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 102, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -305,7 +305,7 @@ bool asf_header_extension_validate (const asf_header_extension* obj, ASFParser* 
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 70) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 70, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 70, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -319,7 +319,7 @@ bool asf_codec_list_validate (const asf_codec_list* obj, ASFParser* parser)
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 68) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 68, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 68, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -333,7 +333,7 @@ bool asf_script_command_validate (const asf_script_command* obj, ASFParser* pars
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 68) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 68, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 68, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -347,7 +347,7 @@ bool asf_marker_validate (const asf_marker* obj, ASFParser* parser)
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 72) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 72, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 72, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -361,7 +361,7 @@ bool asf_bitrate_mutual_exclusion_validate (const asf_bitrate_mutual_exclusion* 
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 66) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 66, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 66, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -375,7 +375,7 @@ bool asf_error_correction_validate (const asf_error_correction* obj, ASFParser* 
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 68) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 68, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 68, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -389,7 +389,7 @@ bool asf_content_description_validate (const asf_content_description* obj, ASFPa
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 58) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 58, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 58, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -403,7 +403,7 @@ bool asf_extended_content_description_validate (const asf_extended_content_descr
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 50) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 50, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 50, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -417,7 +417,7 @@ bool asf_stream_bitrate_properties_validate (const asf_stream_bitrate_properties
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 50) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 50, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 50, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -431,7 +431,7 @@ bool asf_data_validate (const asf_data* obj, ASFParser* parser)
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 74) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 74, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 74, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -445,7 +445,7 @@ bool asf_extended_stream_properties_validate (const asf_extended_stream_properti
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 112) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 112, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 112, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?
@@ -459,7 +459,7 @@ bool asf_object_validate (const asf_object* obj, ASFParser* parser)
 	}
 	// FIXME: Verify that this size is correct.
 	if (obj->size < 48) {
-		parser->AddError (g_strdup_printf ("Invalid size (expected >= 48, got %llu).\n", obj->size));
+		parser->AddError (g_strdup_printf ("Invalid size (expected >= 48, got %llu).", obj->size));
 		return false;
 	}
 	// TODO: More verifications?

@@ -55,6 +55,7 @@ class ASFSource;
 
 #include "../pipeline.h"
 #include "../clock.h"
+#include "../error.h"
 
 class ASFSource {
 protected:
@@ -258,13 +259,8 @@ public:
 };
 
 class ASFParser {
-private:
-	struct error {
-		error *next;
-		char *msg;
-	};
-	
-	error *errors;
+private:	
+	MediaErrorEventArgs *error;
 	
 	void Initialize ();
 	bool ReadData ();
@@ -298,9 +294,12 @@ public:
 	void *Malloc (uint32_t size);
 	
 	// Error handling
-	const char *GetLastError ();
-	void AddError (const char *err);
-	void AddError (char *err);
+	ErrorEventArgs *GetLastError ();
+	const char *GetLastErrorStr ();
+	void AddError (char *msg);
+	void AddError (const char *msg);
+	void AddError (MediaResult code, char *msg);
+	void AddError (MediaResult code, const char *msg);
 	
 	// Stream index: valid values range from 1 to 127
 	// If the stream_index doesn't specify a valid stream (for whatever reason), NULL is returned.

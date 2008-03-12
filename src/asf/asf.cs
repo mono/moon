@@ -162,7 +162,7 @@ class asf
 				writer.WriteLine ("\t\treturn {0}_validate (({0}*) obj, parser);", str);
 			}
 			writer.WriteLine ("\tdefault:");
-			writer.WriteLine ("\t\tparser->AddError (g_strdup_printf (\"No validation implemented for %s.\\n\", asf_guid_get_name (&obj->id)));");
+			writer.WriteLine ("\t\tparser->AddError (g_strdup_printf (\"No validation implemented for %s.\", asf_guid_get_name (&obj->id)));");
 			writer.WriteLine ("\t\treturn false;");
 			writer.WriteLine ("\t}");
 			writer.WriteLine ("}");
@@ -220,7 +220,7 @@ class asf
 				writer.WriteLine ("\t}");
 				writer.WriteLine ("\t// FIXME: Verify that this size is correct.");
 				writer.WriteLine ("\tif (obj->size < " + size.ToString () + ") {");
-				writer.WriteLine ("\t\tparser->AddError (g_strdup_printf (\"Invalid size (expected >= " + size.ToString () + ", got %llu).\\n\", obj->size));");
+				writer.WriteLine ("\t\tparser->AddError (g_strdup_printf (\"Invalid size (expected >= " + size.ToString () + ", got %llu).\", obj->size));");
 				writer.WriteLine ("\t\treturn false;");
 				writer.WriteLine ("\t}");
 				writer.WriteLine ("\t// TODO: More verifications?");

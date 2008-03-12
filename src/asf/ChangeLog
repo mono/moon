@@ -1,5 +1,14 @@
 2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp, asf.h: Use ErrorEventArgs for error reporting so that the errors
+	  can easily be bubbled up the pipeline.
+	* asf.cs, asf-generated.cpp, asf-guids.cpp, asf-structures.cpp: Remove
+	  newlines in error messages.
+	* asf-generated.h: Updated.
+	* asf-test.cpp: More debug spew.
+
+2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.h: Spaces to tabs.
 
 2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
