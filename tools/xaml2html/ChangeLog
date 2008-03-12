@@ -1,3 +1,10 @@
+2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml2html.cs: Add support to process multiple files and, 
+	optionally, chain them (using refresh).
+	* Makefile.am: Remove manual reference to System.dll (since it's
+	one of the few automatic we have).
+
 2008-03-12  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml2html.cs:
