@@ -1,7 +1,11 @@
+2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-downloader.cpp: Fix duplicate g_strdup on pd->uri. 
+
 2008-03-12  Michael Dominic K.  <mdk@mdk.am>
 
 	* plugin-downloader.cpp: Adding an extra NULL check. Fixes the
-	flowers-for-you.com website.
+	flowers-for-you.com.my website.
 
 2008-03-12  Miguel de Icaza  <miguel@novell.com>
 
