@@ -1,3 +1,9 @@
+
+Thu Mar 13 23:13:59 CET 2008 Paolo Molaro <lupus@ximian.com>
+
+	* Makefile.am: don't overwrite binary files when installing the
+	plugin (avoids crashes in the running browser).
+
 2008-03-13  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-entry.cpp: fix backward compatibility of the plugin api.

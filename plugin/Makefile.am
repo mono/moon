@@ -114,7 +114,7 @@ endif PLUGIN_INSTALL
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la moonlight.exe
 	mkdir -p ~/.mozilla/plugins
-	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so ~/.mozilla/plugins/moonlight.exe
+	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so ~/.mozilla/plugins/moonlight.exe ~/.mozilla/plugins/libmoonloader.so
 	cp .libs/libmoonloader.so ~/.mozilla/plugins
 
 untest-plugin:
