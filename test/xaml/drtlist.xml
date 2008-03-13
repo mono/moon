@@ -587,4 +587,8 @@
         inputFile="test-lineargradientbrush-absolute.xaml"
         masterFile10="../harness/masters/test-lineargradientbrush-absoluteMaster.png"
    />
+   <Test id="147"
+        inputFile="test-radialgradientbrush-absolute.xaml"
+        masterFile10="../harness/masters/test-radialgradientbrush-absoluteMaster.png"
+   />
 </DRTList>

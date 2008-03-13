@@ -1,0 +1,45 @@
+<Canvas
+  xmlns="http://schemas.microsoft.com/client/2007"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  Width="230" Height="230">
+  <Rectangle Width="100" Height="100" Canvas.Top="10" Canvas.Left="10">
+   <Rectangle.Fill>
+    <RadialGradientBrush SpreadMethod="Reflect" Center="50,50" GradientOrigin="50,50" RadiusX="50" RadiusY="50" MappingMode="Absolute">
+     <RadialGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="1.0" />
+     </RadialGradientBrush.GradientStops> 
+    </RadialGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="100" Height="100" Canvas.Top="10" Canvas.Left="120">
+   <Rectangle.Fill>
+    <RadialGradientBrush SpreadMethod="Reflect" Center="50,50" GradientOrigin="50,50" RadiusX="10" RadiusY="10" MappingMode="Absolute">
+     <RadialGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="1.0" />
+     </RadialGradientBrush.GradientStops> 
+    </RadialGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="100" Height="100" Canvas.Top="120" Canvas.Left="10">
+   <Rectangle.Fill>
+    <RadialGradientBrush SpreadMethod="Reflect" Center="50,50" GradientOrigin="50,50" RadiusX="2" RadiusY="2" MappingMode="Absolute">
+     <RadialGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="1.0" />
+     </RadialGradientBrush.GradientStops> 
+    </RadialGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="100" Height="100" Canvas.Top="120" Canvas.Left="120">
+   <Rectangle.Fill>
+    <RadialGradientBrush SpreadMethod="Reflect" Center="50,50" GradientOrigin="50,50" RadiusX="1" RadiusY="1" MappingMode="Absolute">
+     <RadialGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="1.0" />
+     </RadialGradientBrush.GradientStops> 
+    </RadialGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+</Canvas>

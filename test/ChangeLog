@@ -1,5 +1,13 @@
 2008-03-13  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/test-radialgradientbrush-absolute.xaml:
+	* xaml/drtlist.xml: Adding a similiar radial-gradient absolute
+	mapping test. 
+
+	Master needed.
+
+2008-03-13  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/test-lineargradientbrush-absolute.xaml:
 	* xaml/drtlist.xml: Adding a new test for our (broken) corner
 	cases with LinearGradientBrush in MappingMode = Absolute. 
