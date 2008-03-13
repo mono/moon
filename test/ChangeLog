@@ -1,3 +1,11 @@
+2008-03-13  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/test-lineargradientbrush-absolute.xaml:
+	* xaml/drtlist.xml: Adding a new test for our (broken) corner
+	cases with LinearGradientBrush in MappingMode = Absolute. 
+
+	Master needed.
+
 2008-03-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	

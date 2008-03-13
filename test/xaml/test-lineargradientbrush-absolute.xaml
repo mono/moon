@@ -1,0 +1,73 @@
+<Canvas
+  xmlns="http://schemas.microsoft.com/client/2007"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  Width="230" Height="340">
+  <Rectangle Width="100" Height="100" Canvas.Top="10" Canvas.Left="10">
+   <Rectangle.Fill>
+    <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1,1" MappingMode="Absolute">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="1.0" />
+     </LinearGradientBrush.GradientStops> 
+    </LinearGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="100" Height="100" Canvas.Top="10" Canvas.Left="120">
+   <Rectangle.Fill>
+    <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="2,2" MappingMode="Absolute">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="1.0" />
+     </LinearGradientBrush.GradientStops> 
+    </LinearGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="100" Height="100" Canvas.Top="120" Canvas.Left="10">
+   <Rectangle.Fill>
+    <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="4,4" MappingMode="Absolute">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="1.0" />
+     </LinearGradientBrush.GradientStops> 
+    </LinearGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="100" Height="100" Canvas.Top="120" Canvas.Left="120">
+   <Rectangle.Fill>
+    <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="10,10" MappingMode="Absolute">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="1.0" />
+     </LinearGradientBrush.GradientStops> 
+    </LinearGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="100" Height="100" Canvas.Top="230" Canvas.Left="10">
+   <Rectangle.Fill>
+    <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1,1" MappingMode="Absolute">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="0.2" />
+      <GradientStop Color="Yellow" Offset="0.4" />
+      <GradientStop Color="Green" Offset="0.6" />
+      <GradientStop Color="White" Offset="0.8" />
+      <GradientStop Color="Orange" Offset="1.0" />
+     </LinearGradientBrush.GradientStops> 
+    </LinearGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+  <Rectangle Width="100" Height="100" Canvas.Top="230" Canvas.Left="120">
+   <Rectangle.Fill>
+    <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="2,2" MappingMode="Absolute">
+     <LinearGradientBrush.GradientStops>
+      <GradientStop Color="Blue" Offset="0.0" />
+      <GradientStop Color="Red" Offset="0.2" />
+      <GradientStop Color="Yellow" Offset="0.4" />
+      <GradientStop Color="Green" Offset="0.6" />
+      <GradientStop Color="White" Offset="0.8" />
+      <GradientStop Color="Orange" Offset="1.0" />
+     </LinearGradientBrush.GradientStops> 
+    </LinearGradientBrush>
+   </Rectangle.Fill>
+  </Rectangle>
+</Canvas>
