@@ -1,3 +1,17 @@
+2008-03-13  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Modyfying the KeyFrameCollection::GetKeyFrameForTime
+	behavior. When getting the keyframe for time additionally crawl back (if
+	needed) to find the last non-null keyframe and non-null previous
+	keyframe. By doing so we silently ignore the frames without values set
+	and don't crash on nullable types.
+
+	Fixes the crash in AnimationMatrix2.html/xaml and in the
+	test-animation-null-keyframe.xaml test.
+
+	Remving the XXX warnings about nullabled types from file since they
+	don't apply anymore.
+
 2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* visual.h, uielement.cpp, visual.cpp: Remove the 'surface' field from

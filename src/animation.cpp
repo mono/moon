@@ -853,25 +853,38 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 {
 	KeyFrame *current_keyframe = NULL;
 	KeyFrame *previous_keyframe = NULL;
-	guint i;
+	gint i = 0;
 	
 	*prev_frame = NULL;
 
-	/* figure out what segment to use (this assumes the list is sorted) */
-	for (i = 0; i < sorted_list->len; i++) {
+	/* Crawl forward to figure out what segment to use (this assumes the list is sorted) */
+	for (; i < (int) sorted_list->len; i++) {
 		KeyFrame *keyframe = (KeyFrame *) sorted_list->pdata[i];
 		TimeSpan key_end_time = keyframe->resolved_keytime;
 		
-		if (key_end_time >= t || (i + 1) >= sorted_list->len) {
+		if (key_end_time >= t || (i + 1) >= (int) sorted_list->len) 
+			break;
+	}
+
+	/* Crawl backward to find first non-null frame */
+	for (; i >= 0; i--) {
+		KeyFrame *keyframe = (KeyFrame *) sorted_list->pdata[i];
+		if (keyframe->GetValue ("Value") != NULL) {
 			current_keyframe = keyframe;
-			
-			if (i > 0)
-				previous_keyframe = (KeyFrame *) sorted_list->pdata[i - 1];
-			
+			break;
+		}
+	}
+
+	/* Crawl backward some more to find first non-null prev frame */
+	for (i--; i >= 0; i--) {
+		KeyFrame *keyframe = (KeyFrame *) sorted_list->pdata[i];
+		if (keyframe->GetValue ("Value") != NULL) {
+			previous_keyframe = keyframe;
 			break;
 		}
 	}
 	
+	/* Assign prev frame */
 	if (prev_frame != NULL)
 		*prev_frame = previous_keyframe;
 	
@@ -1345,7 +1358,6 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 	}
 	else {
 		/* start at the previous keyframe's target value */
-		/* XXX DoubleKeyFrame::Value is nullable */
 		baseValue = new Value (*previous_keyframe->GetValue ());
 		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
@@ -1456,7 +1468,6 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	}
 	else {
 		/* start at the previous keyframe's target value */
-		/* XXX ColorKeyFrame::Value is nullable */
 		baseValue = new Value(*previous_keyframe->GetValue ());
 		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
@@ -1567,7 +1578,6 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 	}
 	else {
 		/* start at the previous keyframe's target value */
-		/* XXX PointKeyFrame::Value is nullable */
 		baseValue = new Value(*previous_keyframe->GetValue ());
 		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
