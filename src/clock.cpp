@@ -17,6 +17,7 @@
 #include <malloc.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "clock.h"
 
@@ -94,6 +95,13 @@ get_now (void)
 {
         struct timeval tv;
         TimeSpan res;
+#ifdef CLOCK_MONOTONIC
+	struct timespec tspec;
+	if (clock_gettime (CLOCK_MONOTONIC, &tspec) == 0) {
+		res = (TimeSpan)((gint64)tspec.tv_sec * 10000000 + tspec.tv_nsec / 100);
+		return res;
+	}
+#endif
 
         if (gettimeofday (&tv, NULL) == 0) {
                 res = (TimeSpan)(tv.tv_sec * 1000000 + tv.tv_usec) * 10;

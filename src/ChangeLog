@@ -1,3 +1,9 @@
+
+Thu Mar 13 23:25:41 CET 2008 Paolo Molaro <lupus@ximian.com>
+
+	* clock.cpp: use a monotonic clock if available to avoid issues with
+	the system time changing.
+
 2008-03-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextRun::TextRun): Don't drop non-printable
