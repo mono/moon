@@ -312,7 +312,7 @@ MediaElement::AdvanceFrame ()
 	// might raise two events).
 	previous_position = position + 1;
 	
-	if (!advanced && mplayer->eof) {
+	if (!advanced && mplayer->GetEof ()) {
 		mplayer->Stop ();
 		SetState (Stopped);
 		Emit (MediaEndedEvent);
