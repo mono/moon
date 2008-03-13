@@ -22,8 +22,7 @@ TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescr
 	
 	d = this->text = g_utf8_to_ucs4_fast (utf8, len, NULL);
 	
-	// drop all non-printable characters and convert all ascii
-	// lwsp into a SPACE, conserving only \n's
+	// convert all ascii lwsp into a SPACE, conserving only \n's
 	for (s = this->text; *s; s++) {
 		if (g_unichar_isspace (*s)) {
 			if (*s == '\n')
@@ -32,7 +31,7 @@ TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescr
 				*d++ = ' ';
 			else
 				*d++ = *s;
-		} else if (g_unichar_isprint (*s)) {
+		} else {
 			*d++ = *s;
 		}
 	}
@@ -581,42 +580,35 @@ TextLayout::LayoutNoWrap ()
 			if (*inptr == 0)
 				break;
 			
-			// only the first 'word' on a line may start past max_width
-			if (blank || max_width <= 0.0 || x1 < max_width) {
-				// append this word onto the line
-				while (*inptr && *inptr != ' ') {
-					if ((glyph = run->font->GetGlyphInfo (*inptr))) {
-						advance = glyph->metrics.horiAdvance;
-						
-						if (prev != 0)
-							advance += run->font->Kerning (prev, glyph->index);
-						else if (glyph->metrics.horiBearingX < 0)
-							advance -= glyph->metrics.horiBearingX;
-						
-						prev = glyph->index;
-						x1 += advance;
-					}
+			// append this word onto the line
+			while (*inptr && *inptr != ' ') {
+				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
+					advance = glyph->metrics.horiAdvance;
 					
-					inptr++;
+					if (prev != 0)
+						advance += run->font->Kerning (prev, glyph->index);
+					else if (glyph->metrics.horiBearingX < 0)
+						advance -= glyph->metrics.horiBearingX;
+					
+					prev = glyph->index;
+					x1 += advance;
 				}
 				
-				actual_width = MAX (actual_width, x1);
-				segment->end = inptr - run->text;
-				segment->width = x1 - x0;
-				blank = false;
-				
-				if (max_width > 0.0 && x1 >= max_width) {
-					// cut the remainder of the run unless it is underlined
-					// (in which case we need to underline trailing lwsp).
-					if (run->deco != TextDecorationsUnderline) {
-						clipped = true;
-						break;
-					}
+				inptr++;
+			}
+			
+			actual_width = MAX (actual_width, x1);
+			segment->end = inptr - run->text;
+			segment->width = x1 - x0;
+			blank = false;
+			
+			if (max_width > 0.0 && x1 >= max_width) {
+				// cut the remainder of the run unless it is underlined
+				// (in which case we need to underline trailing lwsp).
+				if (run->deco != TextDecorationsUnderline) {
+					clipped = true;
+					break;
 				}
-			} else {
-				// next word would overflow max specified width
-				clipped = true;
-				break;
 			}
 		} while (*inptr);
 		

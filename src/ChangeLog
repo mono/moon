@@ -1,3 +1,12 @@
+2008-03-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextRun::TextRun): Don't drop non-printable
+	chars... somehow soft-hyphen (0xAD) is non-printable according to
+	glib and so breaks the LineBreakBasic1.htm test.
+	(TextLayout::LayoutNoWrap): Keep appending words to the line until
+	a line ends beyond max_width, we don't care where it begins (it
+	could begin way beyond max_width for all we care).
+
 2008-03-13  Chris Toshok  <toshok@ximian.com>
 
 	* text.cpp (~Glyphs): don't unref the fill, since we don't take a
@@ -13,8 +22,8 @@
 
 2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* mplayer.cpp, mplayer.h, pipeline.cpp: Play audio on a single thread. Fixes
-	  #326902.
+	* mplayer.cpp, mplayer.h, pipeline.cpp: Play audio on a single
+	thread. Fixes #326902.
 
 2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
