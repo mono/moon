@@ -18,7 +18,7 @@ if (!re.exec(platform)) {
 
 /* For some reason Mozilla can only tell us the global plugin directory,
  * so we have to guess it from the user's profile. */
-var plugins = getFolder("Profile", "../../plugins");
+var plugins = getFolder("Profile", "../../../.mozilla/plugins");
 addFile (PLID, VERSION, LOADER, plugins, null, true);
 addDirectory (PLID, VERSION, DIR, plugins, "moonlight", true);
 

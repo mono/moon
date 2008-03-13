@@ -1,3 +1,8 @@
+2008-03-13  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* install.js.in: Change the install path so that the plugin
+	should work in debian (iceweasel)
+
 2008-03-13  Chris Toshok  <toshok@ximian.com>
 
 	* moz-sdk/*: import the trunk firefox plugin headers.
