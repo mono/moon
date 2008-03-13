@@ -595,4 +595,8 @@
         inputFile="test-lineargradientbrush-moire-scaled.xaml"
         masterFile10="../harness/masters/test-lineargradientbrush-moire-scaled.xamlMaster.png"
    />
+   <Test id="149"
+        inputFile="test-animation-null-keyframe.xaml"
+        masterFile10="../harness/masters/test-animation-null-keyframeMaster.png"
+   />
 </DRTList>

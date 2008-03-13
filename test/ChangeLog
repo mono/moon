@@ -1,3 +1,13 @@
+2008-03-13  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/test-animation-null-keyframe.xaml:
+	* xaml/drtlist.xml: Adding a test-case for a discrete animation
+	which has a null (no value) keyframe. It currently crashes our
+	stuff. 
+
+	This is taken from AnimationMatrix2.xaml test. 
+	Master needed.
+
 2008-03-13  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* xaml/test-relativetransform-bug-354892-2.xaml:
