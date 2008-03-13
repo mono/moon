@@ -280,6 +280,8 @@ Media::Shutdown ()
 	registered_converters = NULL;
 
 	// Make sure all threads are stopped
+	AudioPlayer::Shutdown ();
+
 	media_objects->Lock ();
 	node = (MediaNode *) media_objects->LinkedList ()->First ();
 	while (node != NULL) {

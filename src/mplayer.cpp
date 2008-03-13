@@ -49,10 +49,10 @@ G_END_DECLS
 #define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
 #define LOG_MEDIAPLAYER(...)// printf (__VA_ARGS__);
-
-static uint64_t audio_play (Audio *audio, struct pollfd *ufds, int nfds);
-static void    *audio_loop (void *data);
-static void    *audio_loop_null (void *data);
+#define DEBUG_ADVANCEFRAME 0
+#define LOG_AUDIO(...)// printf (__VA_ARGS__)
+// This one prints out spew on every frame/sample
+#define LOG_AUDIO_EX(...)// printf (__VA_ARGS__)
 
 class Packet : public List::Node {
 public:
@@ -87,17 +87,6 @@ struct Audio {
 	int stream_count;
 	AudioStream *stream;
 	
-	// buffering
-	uint8_t buffer[AUDIO_BUFLEN + 1];
-	uint8_t *outbuf;
-	uint8_t *outptr;
-	
-	// output
-	snd_pcm_t *pcm;
-	snd_pcm_uframes_t sample_size;
-	struct pollfd *ufds;
-	int nfds;
-	
 	// sync
 	uint64_t pts_per_frame;
 	
@@ -119,26 +108,11 @@ Audio::Audio ()
 	stream_count = 0;
 	stream = NULL;
 	
-	memset (buffer, 0, AUDIO_BUFLEN + 1);
-	outbuf = ALIGN (buffer, 2);
-	outptr = outbuf;
-	
-	pcm = NULL;
-	sample_size = 0;
-	
 	pts_per_frame = 0;
-	
-	ufds = NULL;
-	nfds = 0;
 }
 
 Audio::~Audio ()
 {	
-	g_free (ufds);
-	
-	if (pcm != NULL)
-		snd_pcm_close (pcm);
-	
 	delete queue;
 }
 
@@ -353,28 +327,13 @@ MediaPlayer::Open (Media *media)
 			break;
 		}
 	}
-		
-	// Prepare audio playback
-	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_AUDIO) && audio->pcm == NULL && HasAudio ()) {
- 		if (snd_pcm_open (&audio->pcm, "default", SND_PCM_STREAM_PLAYBACK, 0) != 0) {
- 			fprintf (stderr, "Moonlight: cannot open audio device: %s\n", strerror (errno));
- 			audio->pcm = NULL;
- 		}
-	}
-	
-	if (audio->pcm != NULL && HasAudio ()) {
-		snd_pcm_uframes_t buf_size;
-		
-		snd_pcm_set_params (audio->pcm, SND_PCM_FORMAT_S16,
-				    SND_PCM_ACCESS_RW_INTERLEAVED,
-				    audio->stream->channels,
-				    audio->stream->sample_rate,
-				    1, 0);
-		
-		snd_pcm_get_params (audio->pcm, &buf_size, &audio->sample_size);
-		
-		// 2 bytes per channel, we always calculate as 2-channel audio because it gets converted into such
-		audio->pts_per_frame = (buf_size * 2 * 2) / (audio->stream->sample_rate / 100);
+
+	if (audio->stream != NULL) {
+		if (!AudioPlayer::Add (this)) {
+			// Can't play audio
+			audio->stream->selected = false;
+			audio->stream = NULL;
+		}
 	}
 	
 	if (HasVideo ()) {
@@ -417,6 +376,8 @@ MediaPlayer::Close ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Close ()\n");
 
+	AudioPlayer::Remove (this);
+
 	Stop ();
 	
 	// Reset state back to what it was at instantiation
@@ -434,7 +395,6 @@ MediaPlayer::Close ()
 	
 	audio->stream_count = 0;
 	audio->stream = NULL;
-	audio->sample_size = 0;
 	audio->pts_per_frame = 0;
 	
 	if (media)
@@ -481,7 +441,6 @@ render_frame (MediaPlayer *mplayer, MediaFrame *frame)
 	mplayer->rendered_frame = true;
 }
 
-#define DEBUG_AF 0
 
 bool
 MediaPlayer::AdvanceFrame ()
@@ -496,7 +455,10 @@ MediaPlayer::AdvanceFrame ()
 	uint64_t target_pts_delta = MilliSeconds_ToPts (100);
 	bool update = false;
 	
-#if DEBUG_AF
+#if DEBUG_ADVANCEFRAME
+	static int frames_per_second = 0;
+	static int skipped_per_second = 0;
+	static uint64_t last_second_pts = 0;
 	int skipped = 0;
 #endif
 	
@@ -508,7 +470,7 @@ MediaPlayer::AdvanceFrame ()
 	if (seeking)
 		return false;
 	
-	if (eof)
+	if (GetEof ())
 		return false;
 
 	if (!HasVideo ())
@@ -531,7 +493,7 @@ MediaPlayer::AdvanceFrame ()
 	target_pts_end = target_pts + target_pts_delta;
 	
 	if (current_pts >= target_pts_end && caught_up_with_seek) {
-#if DEBUG_AF
+#if DEBUG_ADVANCEFRAME
 		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %llu, target_pts: %llu, delta: %llu, diff: %lld).\n",
 			current_pts, target_pts, target_pts_delta, current_pts - target_pts);
 #endif
@@ -541,7 +503,7 @@ MediaPlayer::AdvanceFrame ()
 	while ((pkt = (Packet *) video->queue->Pop ())) {
 		if (pkt->frame->event == FrameEventEOF) {
 			delete pkt;
-			eof = true;
+			SetEof (true);
 			return false;
 		}
 		
@@ -576,8 +538,8 @@ MediaPlayer::AdvanceFrame ()
 		}
 		
 		// we are lagging behind, drop this frame
-#if DEBUG_AF
-		printf ("MediaPlayer::AdvanceFrame (): skipped frame with pts %llu, target pts: %llu, diff: %lld, milliseconds: %lld\n", frame->pts, target_pts, target_pts - frame->pts, MilliSeconds_FromPts ((target_pts - frame->pts)));
+#if DEBUG_ADVANCEFRAME
+		//printf ("MediaPlayer::AdvanceFrame (): skipped frame with pts %llu, target pts: %llu, diff: %lld, milliseconds: %lld\n", frame->pts, target_pts, target_pts - frame->pts, MilliSeconds_FromPts ((target_pts - frame->pts)));
 		skipped++;
 #endif
 		frame = NULL;
@@ -585,8 +547,21 @@ MediaPlayer::AdvanceFrame ()
 	}
 	
 	if (update && frame && caught_up_with_seek) {
-#if DEBUG_AF
-		printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu (target pts: %llu, current pts: %llu, caught_up_with_seek: %s, skipped frames: %i)\n", frame->pts, target_pts, current_pts, caught_up_with_seek ? "true" : "false", skipped);
+#if DEBUG_ADVANCEFRAME
+		int fps = 0, sps = 0;
+		uint64_t ms = 0;
+		frames_per_second++;
+		skipped_per_second += skipped;
+		if (MilliSeconds_FromPts (target_pts - last_second_pts) > 1000) {
+			fps = frames_per_second;
+			sps = skipped_per_second;
+			frames_per_second = 0;
+			skipped_per_second = 0;
+			ms = MilliSeconds_FromPts (target_pts - last_second_pts);
+			last_second_pts = target_pts;
+		}
+		if (fps > 0)
+			printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu (target pts: %llu, current pts: %llu, caught_up_with_seek: %s, skipped frames: %i, fps: %i, sps: %i, ms: %llu)\n", frame->pts, target_pts, current_pts, caught_up_with_seek ? "true" : "false", skipped, fps, sps, ms);
 #endif
 		render_frame (this, frame);
 		delete pkt;
@@ -596,12 +571,14 @@ MediaPlayer::AdvanceFrame ()
 	
 	delete pkt;
 		
-	return !eof;
+	return !GetEof ();
 }
 
 bool
 MediaPlayer::LoadVideoFrame ()
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame ()\n");
+
 	Packet *packet;
 	bool cont = false;
 	
@@ -653,7 +630,7 @@ MediaPlayer::IsPlaying ()
 bool
 MediaPlayer::MediaEnded ()
 {
-	if (!eof)
+	if (!GetEof ())
 		return false;
 	
 	if ((audio->queue && !audio->queue->IsEmpty ()))
@@ -666,6 +643,19 @@ MediaPlayer::MediaEnded ()
 }
 
 void
+MediaPlayer::SetEof (bool value)
+{
+	LOG_MEDIAPLAYER ("MediaPlayer::SetEof (%i)\n", value);
+	g_atomic_int_set (&eof, (gint) value);
+}
+
+bool
+MediaPlayer::GetEof ()
+{
+	return g_atomic_int_get (&eof);
+}
+
+void
 MediaPlayer::Play ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Play (), paused: %i, opened: %i, seeking: %i, playing: %i\n", paused, opened, seeking, playing);
@@ -675,18 +665,7 @@ MediaPlayer::Play ()
 	
 	if (!playing) {
 		// Start up the decoder/audio threads
-		if (HasAudio ()) {
-			pthread_mutex_lock (&audio->init_mutex);
-
-			if (audio->pcm != NULL)
-				audio_thread = g_thread_create (audio_loop, this, true, NULL);
-			else
-				audio_thread = g_thread_create (audio_loop_null, this, true, NULL);
-
-			pthread_cond_wait (&audio->init_cond, &audio->init_mutex);
-			pthread_mutex_unlock (&audio->init_mutex);
-		}
-		
+		AudioPlayer::Play (this);
 		playing = true;
 	} else {
 		// We are simply paused...
@@ -737,6 +716,7 @@ MediaPlayer::PauseInternal (bool value)
 
 	if (paused != value) {
 		paused = value;
+		AudioPlayer::Pause (this, paused);
 		if (!paused) {
 			// Wake up the audio loop
 			pthread_cond_signal (&pause_cond);
@@ -767,12 +747,15 @@ MediaPlayer::GetTargetPts ()
 	result = target_pts;
 	pthread_mutex_unlock (&target_pts_lock);
 	
+	//printf ("MediaPlayer::GetTargetPts (): result: %llu\n", result);
+	
 	return result;
 }
 
 void
 MediaPlayer::SetTargetPts (uint64_t pts)
 {
+	//printf ("MediaPlayer::SetTargetPts (%llu)\n", pts);
 	pthread_mutex_lock (&target_pts_lock);
 	target_pts = pts;
 	pthread_mutex_unlock (&target_pts_lock);
@@ -781,6 +764,8 @@ MediaPlayer::SetTargetPts (uint64_t pts)
 void
 MediaPlayer::IncTargetPts (uint64_t value)
 {
+	//printf ("MediaPlayer::IncTargetPts (%llu): final target_pts: %llu\n", value, value + target_pts);
+	
 	pthread_mutex_lock (&target_pts_lock);
 	target_pts += value;
 	pthread_mutex_unlock (&target_pts_lock);
@@ -808,8 +793,6 @@ MediaPlayer::StopThreads ()
 	
 	start_time = 0;
 	
-	audio->outptr = audio->outbuf;
-	
 	current_pts = 0;
 	target_pts = 0;
 	
@@ -830,7 +813,7 @@ media_player_seek_callback (MediaClosure *closure)
 void
 MediaPlayer::SeekInternal (uint64_t pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::SeekInternal (%llu), media: %p, seeking: %i\n", pts, media, seeking);
+	LOG_MEDIAPLAYER ("MediaPlayer::SeekInternal (%llu), media: %p, seeking: %i, Position (): %llu\n", pts, media, seeking, Position ());
 
 	if (media == NULL)
 		return;
@@ -839,6 +822,9 @@ MediaPlayer::SeekInternal (uint64_t pts)
 		media->SeekToStart ();
 		return;
 	}
+
+	if (pts == Position ())
+		return;
 
 	seeking = true;
 	caught_up_with_seek = false;
@@ -898,12 +884,7 @@ MediaPlayer::Seek (uint64_t pts)
 		media_player_enqueue_frames (this, 4, 4);
 		 
 		// Restart the audio/io threads
-		if (audio->pcm != NULL && HasAudio ()) {
-			pthread_mutex_lock (&audio->init_mutex);
-			audio_thread = g_thread_create (audio_loop, this, true, NULL);
-			pthread_cond_wait (&audio->init_cond, &audio->init_mutex);
-			pthread_mutex_unlock (&audio->init_mutex);
-		}
+		AudioPlayer::Play (this);
 		
 		if (resume) {
 			// Resume playback
@@ -994,299 +975,992 @@ MediaPlayer::SetVolume (double volume)
 	audio->volume = volume;
 }
 
-// Audio playback thread
+/*
+ * AudioPlayer
+ */
 
-static int
-pcm_poll (snd_pcm_t *pcm, struct pollfd *ufds, int nfds)
+AudioPlayer *AudioPlayer::instance = NULL;
+
+AudioPlayer*
+AudioPlayer::Instance ()
 {
-	unsigned short revents;
-	
-	if (ufds == NULL)
-		return 0;
-	
-	while (true) {
-		poll (ufds, nfds, -1);
-		snd_pcm_poll_descriptors_revents (pcm, ufds, nfds, &revents);
-		if (revents & POLLERR)
-			return -1;
-		if (revents & POLLOUT)
-			return 0;
-	}
+	// There is no need to lock here 
+	// since we should only be called
+	// on the main thread.
+
+	if (instance == NULL)
+		instance = new AudioPlayer ();
+
+	return instance;
 }
 
-// Returns the frame pts or 0 if insufficient audio data
-static uint64_t
-audio_play (Audio *audio, struct pollfd *ufds, int nfds)
+void
+AudioPlayer::Shutdown ()
 {
-	int frame_size, samples, outlen, channels, n;
-	uint8_t *outbuf;
+	delete instance;
+	instance = NULL;
+}
+
+bool
+AudioPlayer::Initialize ()
+{
+	return Instance () != NULL;
+}
+
+AudioPlayer::AudioPlayer ()
+{
+	int result;
+
+	audio_thread = NULL;
 	
-	channels = audio->stream->channels;
-	frame_size = audio->sample_size * channels * 2;
-	outlen = audio->outptr - audio->outbuf;
-	samples = audio->sample_size;
-	outbuf = audio->outbuf;
-	
-	// make sure we have enough data to play a frame of audio
-	if (outlen < frame_size) {
-		outbuf = ALIGN (audio->buffer, 2);
+	shutdown = false;
+	initialized = false;
+
+	pthread_mutex_init (&list_mutex, NULL);
+	list = NULL;
+	list_count = 0;
+	list_size = 0;
+
+	udfs = NULL;
+	ndfs = 0;
+
+	fds [0] = -1;
+	fds [1] = -1;
+	if (pipe (fds) != 0) {
+		fprintf (stderr, "AudioPlayer::Initialize (): Unable to create pipe (%s).\n", strerror (errno));
+		return;
+	}
+	ndfs = 1;
+	udfs = (pollfd*) g_malloc0 (sizeof (pollfd) * ndfs);
+	udfs [0].fd = fds [0];
+	udfs [0].events = POLLIN;
 		
-		if (outlen > 0) {
-			// make room for more audio to be buffered
-			memmove (outbuf, audio->outbuf, outlen);
-			audio->outptr = outbuf + outlen;
-		} else {
-			audio->outptr = outbuf;
-		}
-		
-		audio->outbuf = outbuf;
-		
-		return 0;
+	result = pthread_create (&audio_thread, NULL, Loop, this);
+	if (result != 0) {
+		fprintf (stderr, "AudioPlayer::Initialize (): could not create audio thread (error code: %i).\n", result);
+		return;
 	}
 	
-	if (!audio->muted) {
-		// set balance/volume
-		int16_t volume = (uint16_t) (audio->volume * 8192);
-		int16_t *inptr = (int16_t *) outbuf;
-		int16_t leftvol, rightvol;
-		int32_t vol;
-		
-		if (audio->balance < 0.0) {
-			rightvol = (uint16_t) (1.0 + audio->balance) * volume;
-			leftvol = volume;
-		} else if (audio->balance > 0.0) {
-			leftvol = (uint16_t) (1.0 - audio->balance) * volume;
-			rightvol = volume;
-		} else {
-			leftvol = rightvol = volume;
+	initialized = true;
+	
+	LOG_AUDIO ("AudioPlayer::Initialize (): the audio player has been initialized.");
+}
+
+AudioPlayer::~AudioPlayer ()
+{
+	LOG_AUDIO ("AudioPlayer::~AudioPlayer (): the audio player is being shut down.\n");
+	
+	int result;
+	
+	if (!initialized)
+		return;
+	
+	if (shutdown)
+		return;
+	
+	shutdown = true;
+	
+	WakeUp ();
+	
+	result = pthread_join (audio_thread, NULL);
+	if (result != 0) {
+		fprintf (stderr, "AudioPlayer::~AudioPlayer (): failed to join the audio thread (error code: %i).\n", result);
+	}
+
+	if (list != NULL) {	
+		for (uint32_t i = 0; i < list_count; i++)
+			delete list [i];
+		g_free (list);
+		list = NULL;
+	}
+
+	close (fds [0]);
+	close (fds [1]);
+	
+	g_free (udfs);
+	udfs = NULL;
+	
+	shutdown = false;
+	initialized = false;
+
+	pthread_mutex_destroy (&list_mutex);
+	
+	LOG_AUDIO ("AudioPlayer::~AudioPlayer (): the audio player has been shut down.\n");
+}
+
+bool
+AudioPlayer::Add (MediaPlayer *mplayer)
+{
+	if (!Initialize ())
+		return false;
+
+	return Instance ()->AddInternal (mplayer);
+}
+
+bool
+AudioPlayer::AddInternal (MediaPlayer *mplayer)
+{
+	LOG_AUDIO ("AudioPlayer::Add (%p)\n", mplayer);
+	
+	if (!Initialize ())
+		return false;
+
+	AudioNode *node = new AudioNode ();
+	AudioNode **new_list = NULL;
+
+	node->mplayer = mplayer;	
+	if (!node->Initialize ()) {
+		delete node;
+		return false;
+	}
+	
+	Lock ();
+	
+	list_count++;
+	if (list_count > list_size) {
+		// Grow the list a bit
+		list_size = (list_size == 0) ? 1 : list_size << 1;
+		new_list = (AudioNode**) g_malloc0 (sizeof (AudioNode*) * (list_size + 1));
+		if (list != NULL) {
+			for (uint32_t i = 0; i < list_count - 1; i++)
+				new_list [i] = list [i];
+			g_free (list);
 		}
-		
-		for (n = 0; n < frame_size / 2; n += 2) {
-			vol = (((int32_t) *inptr) * ((int32_t) leftvol)) >> 13;
-			*inptr++ = (int16_t) CLAMP (vol, -32768, 32767);
+		list = new_list;
+	}
+	list [list_count - 1] = node;
+	
+	UpdatePollList (true);
+
+	Unlock ();
+
+	return true;
+}
+
+void
+AudioPlayer::Remove (MediaPlayer *mplayer)
+{
+	if (!Initialize ())
+		return;
+	
+	Instance ()->RemoveInternal (mplayer);
+}
+
+void
+AudioPlayer::RemoveInternal (MediaPlayer *mplayer)
+{
+	LOG_AUDIO ("AudioPlayer::Remove (%p)\n", mplayer);
+	
+	Lock ();
+	
+	for (uint32_t i = 0; i < list_count; i++) {
+		if (list [i]->mplayer == mplayer) {
+			// printf ("AudioPlayer::Remove (%p): removing... (node: %p)\n", list [i]->mplayer, list [i]);
+			delete list [i];
+
+			for (uint32_t k = i + 1; k < list_count; k++)
+				list [k - 1] = list [k];
 			
-			vol = (((int32_t) *inptr) * ((int32_t) rightvol)) >> 13;
-			*inptr++ = (int16_t) CLAMP (vol, -32768, 32767);
+			list [list_count - 1] = NULL;
+			list_count--;
+
+			break;
 		}
+	}
+
+	UpdatePollList (true);
+	Unlock ();
+}
+
+void
+AudioPlayer::Play (MediaPlayer *mplayer)
+{
+	if (!Initialize ())
+		return;
+
+	Instance ()->PlayInternal (mplayer);
+}
+
+
+void
+AudioPlayer::PlayInternal (MediaPlayer *mplayer)
+{
+	LOG_AUDIO ("AudioPlayer::PlayInternal (%p)\n", mplayer);
+
+	AudioNode *node = Find (mplayer);
+	
+	if (node == NULL)
+		return;
+	
+	node->state = Playing;
+	node->Unlock ();
+
+	UpdatePollList (false);
+	
+	WakeUp ();
+}
+
+AudioPlayer::AudioNode*
+AudioPlayer::Find (MediaPlayer *mplayer)
+{
+	AudioNode *result = NULL;
+	
+	Lock();
+	
+	for (uint32_t i = 0; i < list_count; i++) {
+		if (list [i]->mplayer == mplayer) {
+			result = list [i];
+			result->Lock ();
+			break;
+		}	
+	}
+	
+	Unlock ();
+	
+	return result;
+}
+
+bool
+AudioPlayer::AudioNode::XrunRecovery (int err)
+{
+	switch (err) {
+	case -EPIPE: // under-run
+		err = snd_pcm_prepare (pcm);
+		if (err < 0)
+			fprintf (stderr, "AudioPlayer: Can't recover from underrun, prepare failed: %s.\n", snd_strerror (err));
+		break;
+	case -ESTRPIPE:
+		while ((err = snd_pcm_resume (pcm)) == -EAGAIN) {
+			//printf ("XrunRecovery: waiting for resume\n");
+			sleep (1); // wait until the suspend flag is released
+		}
+		if (err >= 0)
+			break;
+
+		err = snd_pcm_prepare (pcm);
+		if (err < 0)
+			fprintf (stderr, "AudioPlayer: Can't recover from suspend, prepare failed: %s.\n", snd_strerror (err));
+
+		break;
+	default:
+		fprintf (stderr, "AudioPlayer:: Can't recover from underrun: %s\n", snd_strerror (err));
+		break;
+	}
+	
+	return err >= 0;
+}
+
+void
+AudioPlayer::UpdatePollList (bool locked)
+{
+	int current;
+
+	/*
+	 * We need to update the list of file descriptors we poll on
+	 * to only include audio nodes which are playing.
+	 */
+
+	/*
+	 * We can't just wake up the poll and then lock on a poll mutex,
+	 * since when we lock the mutex we might be in a poll again.
+	 * So we lock the list mutex, and then wake up the poll. This means that 
+	 * the audio loop will be waiting for the list mutex, instead of entering
+	 * another poll.
+	 */
+
+	if (!locked) {
+		Lock ();
+	}
+
+	WakeUp ();
+	
+	ndfs = 1;
+	for (uint32_t i = 0; i < list_count; i++) {
+		if (list [i]->state == Playing)
+			ndfs += list [i]->ndfs;
+	}
+	
+	g_free (udfs);
+	udfs = (pollfd*) g_malloc0 (sizeof (pollfd) * ndfs);
+	udfs [0].fd = fds [0];
+	udfs [0].events = POLLIN;
+
+	current = 1;
+	for (uint32_t i = 0; i < list_count; i++) {
+		if (list [i]->state == Playing) {
+			memcpy (&udfs [current], list [i]->udfs, list [i]->ndfs * sizeof (pollfd));
+			current += list[i]->ndfs;
+		}
+	}
+
+	if (!locked)
+		Unlock ();
+}
+
+void*
+AudioPlayer::Loop (void *data)
+{
+	((AudioPlayer *) data)->Loop ();
+	return NULL;
+}
+
+void
+AudioPlayer::Loop ()
+{
+	AudioNode *current = NULL;
+	uint32_t current_index = 0;
+	// Keep track of how many of the audio nodes actually played something
+	// If none of the nodes played anything, then we poll until something happens.
+	int pc = 0; // The number of consecutive nodes which haven't played anything
+	int lc = 0; // Save a copy of the list count for ourselves to avoid some locking.
+	
+	LOG_AUDIO ("AudioPlayer: entering audio .\n");
+	
+	while (!shutdown) {
+		Lock ();
+
+		current = NULL;
+		lc = list_count;
+		if (list_count > 0) {
+			// Get the next node in the list
+			if (current_index >= list_count)
+				current_index = 0;
+			current = list [current_index];
+			current_index++;
+			if (current != NULL) {
+				current->Lock ();
+			}
+		}
+				
+		Unlock ();
+
+		pc++;
+
+		// Play something from the node we got
+		if (current != NULL) {
+			if (current->state == Playing) {
+				if (current->Play ())
+					pc = 0;
+			}
+			current->Unlock ();
+		}
+		
+		
+		if (lc < pc) {
+			// None of the audio nodes in the list played anything
+			// (or there are no audio nodes), so wait for something
+			// to happen. We handle spurious wakeups correctly, so 
+			// there is no find out exactly what happened.
+
+			int result;
+			int buffer;
+
+			do {
+				pc = 0;
+				udfs [0].events = POLLIN;
+				udfs [0].revents = 0;
+				
+				LOG_AUDIO_EX ("AudioPlayer::Loop (): polling... (lc: %i, pc: %i)\n", lc, pc);
+				result = poll (udfs, ndfs, 10000); // Have a timeout of 10 seconds, just in case something goes wrong.
+				LOG_AUDIO_EX ("AudioPlayer::Loop (): poll result: %i, fd: %i, fd [0].revents: %i, errno: %i, err: %s, ndfs = %i\n", result, udfs [0].fd, (int) udfs [0].revents, errno, strerror (errno), ndfs);
+	
+				if (result == 0) { // Timed out
+					LOG_AUDIO ("AudioPlayer::Loop (): poll timed out.\n");
+				} else if (result < 0) { // Some error poll exit condition
+					// Doesn't matter what happened (happens quite often due to interrupts)
+					LOG_AUDIO ("AudioPlayer::Loop (): poll failed: %i (%s)\n", errno, strerror (errno));
+				} else { // Something woke up the poll
+					if (udfs [0].revents & POLLIN) {
+						// We were asked to wake up by the audio player
+						// Read whatever was written into the pipe so that the pipe doesn't fill up.
+						read (udfs [0].fd, &buffer, sizeof (int));
+						LOG_AUDIO ("AudioPlayer::Loop (): woken up by ourselves.\n");
+					} else {
+						// Something happened on any of the audio streams
+					}
+				}
+			} while (result == -1 && errno == EINTR); 
+		}
+	}
+			
+	LOG_AUDIO ("AudioPlayer: exiting audio loop.\n");
+}
+
+void
+AudioPlayer::Pause (MediaPlayer *mplayer, bool value)
+{
+	if (!Initialize ())
+		return;
+
+	Instance ()->PauseInternal (mplayer, value);
+}
+
+void
+AudioPlayer::PauseInternal (MediaPlayer *mplayer, bool value)
+{
+	AudioNode *node = Find (mplayer);
+	int err = 0;
+	
+	if (node == NULL)
+		return;
+	
+	if (value != (node->state == Paused)) {
+		if (value) {
+			node->state = Paused;
+			// We need to stop the pcm
+			if (snd_pcm_state (node->pcm) == SND_PCM_STATE_RUNNING) {
+				// FIXME:
+				// Alsa provides a pause method, but it's hardware
+				// dependent (and it doesn't work on my hardware),
+				// so just drop all the data we've put into the pcm
+				// device. This means that for the moment when we resume
+				// we will skip all the data we drop here.
+				err = snd_pcm_drop (node->pcm);
+				if (err < 0) {
+					fprintf (stderr, "AudioPlayer::Pause (%p, %s): Could not stop/drain pcm: %s\n", mplayer, value ? "true" : "false", snd_strerror (err)); 
+				}
+			}
+		} else {
+			node->state = Playing;
+		}
+
+	}
+	node->Unlock ();
+	UpdatePollList (false);
+}
+
+void
+AudioPlayer::Lock ()
+{
+	LOG_AUDIO_EX ("AudioPlayer::Lock ()\n");
+	pthread_mutex_lock (&Instance ()->list_mutex);
+}
+
+void
+AudioPlayer::Unlock ()
+{
+	LOG_AUDIO_EX ("AudioPlayer::UnLock ()\n");
+	pthread_mutex_unlock (&Instance ()->list_mutex);
+}
+
+void
+AudioPlayer::WakeUp ()
+{
+	int result;
+		
+	if (!Initialize ())
+		return;
+
+	LOG_AUDIO ("AudioPlayer::WakeUp ()\n");
+	
+	// Write until something has been written.	
+	do {
+		result = write (Instance ()->fds [1], "c", 1);
+	} while (result == 0);
+	
+	if (result == -1)
+		fprintf (stderr, "AudioPlayer::WakeUp (): Could not wake up audio thread: %s\n", strerror (errno));
+		
+	LOG_AUDIO ("AudioPlayer::WakeUp (): thread should now wake up.\n");
+	
+}
+
+/*
+ * AudioPlayer::AudioNode
+ */
+
+#define AUDIO_HW_DEBUG 0
+#define MOON_AUDIO_FORMAT SND_PCM_FORMAT_S16
+
+bool
+AudioPlayer::AudioNode::SetupHW ()
+{
+	bool result = false;
+	
+	snd_pcm_hw_params_t *params = NULL;
+	uint32_t buffer_time = 500000; // request 0.5 seconds of buffer time.
+	int err = 0;
+	int dir = 0;
+	int channels = mplayer->audio->stream->channels;
+	unsigned int rate = mplayer->audio->stream->sample_rate;
+	unsigned int actual_rate = rate;
+
+#if AUDIO_HW_DEBUG
+	snd_output_t *output = NULL;
+	err = snd_output_stdio_attach (&output, stdout, 0);
+	if (err < 0) {
+		fprintf(stderr, "AudioNode::SetupHW (): Could not create alsa output: %s\n", snd_strerror (err));
+	}
+#endif
+
+	err = snd_pcm_hw_params_malloc (&params);
+	if (err < 0) {
+		fprintf(stderr, "AudioNode::SetupHW (): Audio HW setup failed (malloc): %s\n", snd_strerror (err));
+		return false;
+	}
+
+	// choose all parameters
+	err = snd_pcm_hw_params_any (pcm, params);
+	if (err < 0) {
+		fprintf (stderr, "AudioNode::SetupHW (): Audio HW setup failed (no configurations available): %s\n", snd_strerror (err));
+		goto cleanup;
+	}
+	
+#if AUDIO_HW_DEBUG
+	if (output != NULL) {
+		printf ("AudioNode::SetupHW (): hw configurations:\n");
+		snd_pcm_hw_params_dump (params, output);
+	}
+#endif
+	
+	// enable software resampling
+	err = snd_pcm_hw_params_set_rate_resample (pcm, params, 1);
+	if (err < 0) {
+		fprintf (stderr, "AudioNode::SetupHW (): Audio HW setup failed (could not enable resampling): %s\n", snd_strerror (err));
+		goto cleanup;
+	}
+	
+	// set transfer mode (mmap in our case)
+	err = snd_pcm_hw_params_set_access (pcm, params, SND_PCM_ACCESS_MMAP_INTERLEAVED);
+	if (err < 0) {
+		fprintf (stderr, "AudioNode::SetupHW (): Audio HW setup failed (access type not available for playback): %s\n", snd_strerror(err));
+		goto cleanup;
+	}
+
+	// set audio format
+	err = snd_pcm_hw_params_set_format (pcm, params, MOON_AUDIO_FORMAT);
+	if (err < 0) {
+		fprintf (stderr, "AudioNode::SetupHW (): Audio HW setup failed (sample format not available for playback): %s\n", snd_strerror(err));
+		goto cleanup;
+	}
+	
+	// set channel count
+	err = snd_pcm_hw_params_set_channels (pcm, params, channels);
+	if (err < 0) {
+		fprintf (stderr, "AudioNode::SetupHW (): Audio HW setup failed (channels count %i not available for playback): %s\n", channels, snd_strerror (err));
+		goto cleanup;
+	}
+	
+	// set sample rate
+	err = snd_pcm_hw_params_set_rate_near (pcm, params, &actual_rate, 0);
+	if (err < 0) {
+		fprintf (stderr, "AudioNode::SetupHW (): Audio HW setup failed (sample rate %i Hz not available for playback): %s\n", rate, snd_strerror (err));
+		goto cleanup;
+	} else if (actual_rate != rate) {
+		fprintf (stderr, "AudioNode::SetupHW (): Audio HW setup failed (sample rate %i Hz not available for playback, only got %i Hz).\n", rate, actual_rate);
+		goto cleanup;
+	}
+	
+	// set the buffer time
+	err = snd_pcm_hw_params_set_buffer_time_near (pcm, params, &buffer_time, &dir);
+	if (err < 0) {
+		fprintf (stderr, "AudioNode::SetupHW (): Audio HW setup failed (unable to set buffer time %i for playback: %s\n", buffer_time, snd_strerror (err));
+		goto cleanup;
+	}
+
+	// write the parameters to device
+	err = snd_pcm_hw_params (pcm, params);
+	if (err < 0) {
+		fprintf (stderr, "AudioNode::SetupHW (): Audio HW setup failed (unable to set hw params for playback: %s)\n", snd_strerror (err));
+		goto cleanup;
+	}
+	
+#if AUDIO_HW_DEBUG
+	printf ("AudioNode::SetupHW (): succeeded\n");
+	if (output != NULL) {
+		snd_pcm_hw_params_dump (params, output);
+	}
+#endif
+
+	LOG_AUDIO ("AudioNode::SetupHW (): hardware pause support: %s\n", snd_pcm_hw_params_can_pause (params) == 0 ? "no" : "yes"); 
+
+	result = true;
+	
+cleanup:
+	snd_pcm_hw_params_free (params);
+	
+	return result;
+}
+
+bool
+AudioPlayer::AudioNode::PreparePcm (snd_pcm_sframes_t *avail)
+{
+	int err;
+	snd_pcm_state_t state = snd_pcm_state (pcm);
+	int32_t period_size = sample_size;
+	
+	switch (state) {
+	case SND_PCM_STATE_XRUN:
+		LOG_AUDIO ("AudioNode::PreparePcm (): SND_PCM_STATE_XRUN.\n");
+
+		if (!XrunRecovery (-EPIPE))
+			return false;
+
+		started = false;
+		break;
+	case SND_PCM_STATE_SUSPENDED:
+		if (!XrunRecovery (-ESTRPIPE))
+			return false;
+		break;
+	case SND_PCM_STATE_SETUP:
+		if (!XrunRecovery (-EPIPE))
+			return false;
+
+		started = false;
+		break;
+	case SND_PCM_STATE_RUNNING:
+	case SND_PCM_STATE_PREPARED:
+		break;
+	case SND_PCM_STATE_PAUSED:
+	case SND_PCM_STATE_DRAINING:
+	default:
+		LOG_AUDIO ("AudioNode::PreparePcm (): state: %s (prepare failed)\n", snd_pcm_state_name (state));
+		return false;
+	}
+	
+	*avail = snd_pcm_avail_update (pcm);
+	if (*avail < 0) {
+		if (!XrunRecovery (*avail))
+			return false;
+
+		started = false;
+		return false;
+	}
+
+	if (*avail < period_size) {
+		if (!started) {
+			LOG_AUDIO ("AudioPlayer::PreparePcm (): starting pcm (period size: %i, available: %li)\n", period_size, *avail);
+			err = snd_pcm_start (pcm);
+			if (err < 0) {
+				fprintf (stderr, "AudioPlayer: Could not start pcm: %s\n", snd_strerror (err));
+				return false;
+			}
+			started = true;
+		} else {
+			return false;
+		}
+		return false;
+	}
+
+	LOG_AUDIO_EX ("AudioPlayer::PreparePcm (): Prepared, avail: %li\n", *avail);
+
+	return true;
+}
+
+bool
+AudioPlayer::AudioNode::Play ()
+{
+	LOG_AUDIO_EX ("AudioPlayer::AudioNode::Play ()\n");
+
+	bool result = false;	
+	Audio *audio = mplayer->audio;
+	uint32_t channels = audio->stream->channels;
+	const snd_pcm_channel_area_t *areas = NULL;
+	snd_pcm_uframes_t offset = 0, frames, size;
+	snd_pcm_sframes_t avail, commitres;
+	int err = 0;
+	
+	int32_t bpf = snd_pcm_format_width (MOON_AUDIO_FORMAT) / 8 * channels; // bytes per frame
+	int32_t steps [channels];
+	int32_t count;
+	int16_t *samples [channels];
+	int16_t *outptr;
+	
+	if (state != Playing)
+		return false;
+
+	if (!PreparePcm (&avail))
+		return false;
+	
+	LOG_AUDIO_EX ("AudioPlayer::AudioNode::Play (): entering play loop, avail: %lld, sample size: %i\n", (int64_t) avail, (int) sample_size);
+
+	// Set the volume
+	int32_t	volume = audio->volume * 8192;
+	int32_t volumes [channels]; // channel #0 = left, #1 = right 
+	
+	// FIXME: Can we get audio with channels != 2?
+
+	if (audio->muted) {
+		volumes [0] = volumes [1] = 0;
+	} else 	if (audio->balance < 0.0) {
+		volumes [0] = volume;
+		volumes [1] = (1.0 + audio->balance) * volume;
+	} else if (audio->balance > 0.0) {
+		volumes [0] = (1.0 - audio->balance) * volume;
+		volumes [1] = volume;
 	} else {
-		// mute by playing dead silence
-		memset (outbuf, 0, frame_size);
+		volumes [0] = volumes [1] = volume;
 	}
 	
-	// play only 1 frame
-	while (samples > 0) {
-		if (pcm_poll (audio->pcm, ufds, nfds) != 0) {
-			switch (snd_pcm_state (audio->pcm)) {
-			case SND_PCM_STATE_XRUN:
-				printf ("SND_PCM_STATE_XRUN\n");
-				snd_pcm_prepare (audio->pcm);
-				break;
-			case SND_PCM_STATE_SUSPENDED:
-				printf ("SND_PCM_STATE_SUSPENDED\n");
-				while ((n = snd_pcm_resume (audio->pcm)) == -EAGAIN)
-					sleep (1);
-				
-				if (n < 0) {
-					snd_pcm_prepare (audio->pcm);
-					snd_pcm_start (audio->pcm);
-				}
-				break;
-			default:
-				break;
+	size = sample_size;
+	
+	while (size > 0 && state == Playing) {
+		frames = size;
+		
+		err = snd_pcm_mmap_begin (pcm, &areas, &offset, &frames);
+		if (err < 0) {
+			if (!XrunRecovery (err)) {
+				fprintf (stderr, "AudioPlayer: could not get mmapped memory: %s\n", snd_strerror (err));
+				return result;
 			}
-		} else {
-			if ((n = snd_pcm_writei (audio->pcm, outbuf, samples)) > 0) {
-				outbuf += (n * 2 * channels);
-				samples -= n;
-			} else if (n == -ESTRPIPE) {
-				while ((n = snd_pcm_resume (audio->pcm)) == -EAGAIN)
-					sleep (1);
-				
-				if (n < 0) {
-					snd_pcm_prepare (audio->pcm);
-					snd_pcm_start (audio->pcm);
+			started = false;
+		}
+
+		count = frames;
+		
+		for (uint32_t channel = 0; channel < channels; channel++) {
+			// number of 16bit samples between each sample
+			steps [channel] = areas [channel].step / 16;
+			// pointer to the first sample to write to
+			samples [channel] = ((int16_t*) areas [channel].addr) + (areas [channel].first / 16);
+			samples [channel] += offset * steps [channel];
+		}
+
+#if DEBUG
+		//printf ("after mmap begin: size: %i, sample_size: %i, offset: %i, frames: %i, err: %i, bpf: %i\n", size, sample_size, offset, frames, err, bpf);
+/*
+		for (int i = 0; i < channels; i++) {
+			printf ("  %i: addr: %p, first: %u, step: %u\n", i, areas [i].addr, areas [i].first, areas [i].step);
+			printf ("  steps [%i] = %i, samples [%i] = %p\n", i, steps [i], i, samples [i]); 
+			printf ("  volume [%i] = %i\n", i, volumes [i]); 
+		}
+*/
+		/* fill the channel areas */
+		//printf ("play: writing %i samples @ %i Hz = %.2f seconds (%.2f pts per sample)\n", count, mplayer->audio->stream->sample_rate, 
+		//	count / (double) mplayer->audio->stream->sample_rate, 10000000.0 / mplayer->audio->stream->sample_rate);
+#endif
+		
+		bool update_target_pts = false;
+		while (count-- > 0) {
+			if (first_size == 0 || first_used + bpf > first_size) {
+				// FIXME: if the buffer doesn't have a size which is a multiple of the bits per frame, we currently drop the extra bits.
+				GetNextBuffer ();
+				if (first_size == 0 || first_used + bpf > first_size) {
+					return result;
 				}
-			} else if (n == -EPIPE) {
-				snd_pcm_prepare (audio->pcm);
+				//printf ("play: sent_pts = %llu (from frame, old pts: %llu, diff: %lld, time: %lld milliseconds), samples sent: %i\n", first_pts, 
+				//	sent_pts, first_pts - sent_pts, (int64_t) MilliSeconds_FromPts ((int64_t) first_pts - (int64_t) sent_pts), sent_samples);
+				sent_pts = first_pts;
+				sent_samples = 0;
+				update_target_pts = true;
+			} else {
+				sent_pts = first_pts + sent_samples * 10000000 / mplayer->audio->stream->sample_rate;
+			}
+
+			outptr = (int16_t*) &first_buffer [first_used];
+			first_used += bpf;
+			sent_samples++;
+			for (uint32_t channel = 0; channel < channels; channel++) {
+				int32_t value = (outptr [channel] * volumes [channel]) >> 13;
+				*(samples[channel]) = (int16_t) CLAMP (value, -32768, 32767);
+				samples[channel] += steps[channel];
 			}
 		}
+
+		commitres = snd_pcm_mmap_commit (pcm, offset, frames);
+		if (commitres < 0 || (snd_pcm_uframes_t) commitres != frames) {
+			if (!XrunRecovery (commitres >= 0 ? -EPIPE : commitres)) {
+				fprintf (stderr, "AudioPlayer: could not commit mmapped memory: %s\n", snd_strerror(err));
+				return result;
+			}
+			started = false;
+		}
+		size -= frames;
+		
+		if (update_target_pts || (sent_pts - updated_pts) > 10000) {
+			snd_pcm_sframes_t delay;
+			uint64_t pts = sent_pts;
+			err = snd_pcm_delay (pcm, &delay);
+			if (err >= 0) {
+				pts += delay * 10000000 / mplayer->audio->stream->sample_rate;
+			}
+			mplayer->SetTargetPts (pts);
+			updated_pts = pts;
+		}
+		
+		result = true;
 	}
 	
-	audio->outbuf = outbuf;
-	
-	return audio->pts_per_frame;
+	return result;
 }
 
-static void *
-audio_loop (void *data)
+bool
+AudioPlayer::AudioNode::Initialize ()
 {
-	MediaPlayer *mplayer = (MediaPlayer *) data;
-	Audio *audio = mplayer->audio;
-	struct pollfd *ufds = NULL;
-	IMediaStream *stream;
-	uint64_t frame_pts;
-	Packet *pkt = NULL;
-	MediaFrame *frame;
-	uint8_t *outend;
-	uint32_t inleft;
-	uint8_t *inptr;
-	uint32_t n;
-	int ndfs;
+	int result;
+	AudioStream *stream;
 	
-	LOG_MEDIAPLAYER ("audio_loop (): entered.\n");
+	LOG_AUDIO ("AudioNode::Initialize (%p)\n", this);
+	
+	if (moonlight_flags & RUNTIME_INIT_DISABLE_AUDIO) {
+		LOG_AUDIO ("Moonlight: audio is disabled.\n");
+		return false;
+	}
+	
+	if (pcm != NULL) {
+		fprintf (stderr, "AudioNode::Initialize (): trying to initialize an audio stream more than once.\n");
+		return false;
+	}
+	
+	stream = mplayer->audio->stream;
+	
+	if (stream == NULL) {
+		// Shouldn't really happen, but handle this case anyway.
+		fprintf (stderr, "AudioNode::Initialize (): trying to initialize an audio device, but there's no audio to play.\n");
+		return false;
+	}
+	
+	// Open a pcm device
+	result = snd_pcm_open (&pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+	if (result != 0) {
+		fprintf (stderr, "AudioNode::Initialize (): cannot open audio device: %s\n", snd_strerror (result));
+		pcm = NULL;
+		return false;
+	}
 
-	outend = audio->outbuf + AUDIO_BUFLEN;
-	inptr = NULL;
-	inleft = 0;
-	
-	pthread_mutex_lock (&mplayer->audio->init_mutex);
-	
-	if ((ndfs = snd_pcm_poll_descriptors_count (audio->pcm)) > 0) {
-		ufds = (struct pollfd *) g_malloc0 (sizeof (struct pollfd) * ndfs);
-		
-		if (snd_pcm_poll_descriptors (audio->pcm, ufds, ndfs) < 0) {
-			g_free (ufds);
-			ufds = NULL;
-		}
+	// Configure the hardware
+	if (!SetupHW ()) {
+		fprintf (stderr, "AudioNode::Initialize (): could not configure hardware for audio playback\n");
+		Close ();
+		return false;
 	}
 	
-	// signal the main thread that we are ready to begin audio playback
-	pthread_cond_signal (&mplayer->audio->init_cond);
-	pthread_mutex_unlock (&mplayer->audio->init_mutex);
-	
-	while (!mplayer->stop) {
-		pthread_mutex_lock (&mplayer->pause_mutex);
-		while (mplayer->paused && !mplayer->stop) {
-			//printf ("audio_loop (): paused.\n");
-			// wait for main thread to relinquish pause lock
-			pthread_cond_wait (&mplayer->pause_cond, &mplayer->pause_mutex);
-			//printf ("audio_loop (): resumed.\n");
-		}
-		pthread_mutex_unlock (&mplayer->pause_mutex);
-		
-		if (mplayer->stop)
-			break;
-		
-		if ((frame_pts = audio_play (audio, ufds, ndfs)) > 0) {
-			// calculated pts
-			mplayer->IncTargetPts (frame_pts);
-		} else {
-			if (!pkt && (pkt = (Packet *) audio->queue->Pop ())) {
-				// decode an audio packet
-				stream = pkt->frame->stream;
-				frame = pkt->frame;
-				
-				if (frame->event == FrameEventEOF) {
-					mplayer->eof = true;
-					break;
-				}
-				
-				if (!frame->IsDecoded ())
-					stream->decoder->DecodeFrame (frame);
-				
-				mplayer->SetTargetPts (frame->pts);
-				
-				inleft = frame->buflen;
-				inptr = frame->buffer;
-				
-				media_player_enqueue_frames (mplayer, 1, 0);
-			} else if (!pkt) {
-				// need to either wait for another
-				// audio packet to be queued
-			}
-			
-			if (pkt != NULL) {
-				// calculate how much room in the output buffer we have
-				n = (outend - audio->outptr);
-				
-				if (inleft <= n) {
-					// blit the remainder of the decompressed audio frame
-					memcpy (audio->outptr, inptr, inleft);
-					audio->outptr += inleft;
-					
-					inptr = NULL;
-					inleft = 0;
-					delete pkt;
-					pkt = NULL;
-				} else {
-					// blit what we can...
-					memcpy (audio->outptr, inptr, n);
-					audio->outptr += n;
-					inleft -= n;
-					inptr += n;
-				}
-			}
-		}
+	result = snd_pcm_get_params (pcm, &buffer_size, &sample_size);
+	if (result != 0) {
+		fprintf (stderr, "AudioNode::Initialize (): error while getting parameters: %s\n", snd_strerror (result));
+		Close ();
+		return false;
+	}
+
+	// Get the file descriptors to poll on
+	ndfs = snd_pcm_poll_descriptors_count (pcm);
+	if (ndfs <= 0) {
+		fprintf (stderr, "AudioNode::Initialize(): Unable to initialize audio for playback (could not get poll descriptor count).\n");
+		Close ();
+		return false;
+	}
+
+	udfs = (pollfd *) g_malloc0 (sizeof (pollfd) * ndfs);
+	if (snd_pcm_poll_descriptors (pcm, udfs, ndfs) < 0) {
+		fprintf (stderr, "AudioNode::Initialize (): Unable to initialize audio for playback (could not get poll descriptors).\n");
+		g_free (udfs);
+		udfs = NULL;
+		Close ();
+		return false;
 	}
 	
-	LOG_MEDIAPLAYER ("audio_loop (): exited.\n");
+	LOG_AUDIO ("AudioNode::Initialize (%p): Succeeded. Buffer size: %lu, sample size (period size): %lu\n", this, buffer_size, sample_size);
 	
-	if (pkt != NULL)
-		delete pkt;
-	
-	g_free (ufds);
-	
-	return NULL;
+	return true;
 }
 
-/* This is a different variant of the audio_loop that is used when we
- * have no audio devices present/working in the system. It's essentially a
- * null loop that decodes/reads audio and discards it. Reading the audio
- * data is required so that we don't block the pipeline/playback. */
-static void *
-audio_loop_null (void *data)
+AudioPlayer::AudioNode::AudioNode ()
 {
-	MediaPlayer *mplayer = (MediaPlayer *) data;
-	Audio *audio = mplayer->audio;
-	IMediaStream *stream;
-	Packet *pkt = NULL;
-	MediaFrame *frame;
+	pthread_mutex_init (&mutex, NULL);
+	mplayer = NULL;
+	pcm = NULL;
+	sample_size = 0;
+	buffer_size = 0;
+	state = Stopped;
+	
+	first_buffer = NULL;
+	first_used = 0;
+	first_size = 0;
+	first_pts = 0;
 
-	// signal the main thread that we are ready to begin audio playback
-	pthread_mutex_lock (&mplayer->audio->init_mutex);
-	pthread_cond_signal (&mplayer->audio->init_cond);
-	pthread_mutex_unlock (&mplayer->audio->init_mutex);
+	sent_pts = 0;
+	updated_pts = 0;
+	started = false;
 
-	while (!mplayer->stop) {
-		pthread_mutex_lock (&mplayer->pause_mutex);
+	udfs = NULL;
+	ndfs = 0;
+}
 
-		while (mplayer->paused && !mplayer->stop) {
-			pthread_cond_wait (&mplayer->pause_cond, &mplayer->pause_mutex);
-		}
-		pthread_mutex_unlock (&mplayer->pause_mutex);
+AudioPlayer::AudioNode::~AudioNode ()
+{
+	LOG_AUDIO ("AudioNode::~AudioNode ()\n");
 
-		if (mplayer->stop)
-			break;
+	Close ();
+}
 
-		if (!pkt && (pkt = (Packet *) audio->queue->Pop ())) {
-
-			stream = pkt->frame->stream;
-			frame = pkt->frame;
-
-			if (frame->event == FrameEventEOF) {
-				mplayer->eof = true;
-				break;
-			}
-
-			if (!frame->IsDecoded ())
-				stream->decoder->DecodeFrame (frame);
-
-			mplayer->SetTargetPts (frame->pts);
-
-			/* Calculate the sleep time... this assumes (like all the rest
-			 * of the code around here) that the stream is 16bit. */
-			long samples = frame->buflen / audio->stream->channels / 2;
-			long usecs = ((float) samples / (float) audio->stream->sample_rate) * 1000000;
-			usleep (usecs);
-
-			media_player_enqueue_frames (mplayer, 1, 0);
-		}
-
-		if (pkt != NULL) {
-			delete pkt;
-			pkt = NULL;
-		}
+bool
+AudioPlayer::AudioNode::GetNextBuffer ()
+{
+	MediaFrame *frame = NULL;
+	Packet *packet = NULL;
+	
+	if (first_buffer) {
+		g_free (first_buffer);
+		first_buffer = NULL;
 	}
 
-	return NULL;
+	first_used = 0;
+	first_size = 0;
+	first_pts = 0;
+
+	packet = (Packet*) mplayer->audio->queue->Pop ();
+	
+	if (packet == NULL)
+		return false;
+	
+	frame = packet->frame;
+	
+	if (frame->event == FrameEventEOF) {
+		mplayer->SetEof (true);
+		return false;
+	}
+	
+	if (!frame->IsDecoded ())
+		frame->stream->decoder->DecodeFrame (frame);
+		
+	media_player_enqueue_frames (mplayer, 1, 0);
+				
+	first_used = 0;
+	first_buffer = frame->buffer;
+	first_size = frame->buflen;
+	first_pts = frame->pts;
+	frame->buffer = NULL;
+	
+	delete packet;
+	
+	return true;
 }
+
+void
+AudioPlayer::AudioNode::Close ()
+{
+	LOG_AUDIO ("AudioNode::Close () %p\n", this);
+	
+	Lock ();
+	
+	if (pcm != NULL) {
+		snd_pcm_close (pcm);
+		pcm = NULL;
+	}
+	
+	g_free (udfs);
+	udfs = NULL;
+	
+	g_free (first_buffer);
+	first_buffer = NULL;	
+
+	Unlock ();
+	
+	pthread_mutex_destroy (&mutex);
+}
+ 
+void
+AudioPlayer::AudioNode::Lock ()
+{
+	LOG_AUDIO_EX ("AudioNode::Lock () %p\n", this);
+	pthread_mutex_lock (&mutex);
+}
+
+void
+AudioPlayer::AudioNode::Unlock ()
+{
+	LOG_AUDIO_EX ("AudioNode::UnLock () %p\n", this);
+	pthread_mutex_unlock (&mutex);
+}
+
+

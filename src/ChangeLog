@@ -1,5 +1,10 @@
 2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp, mplayer.h, pipeline.cpp: Play audio on a single thread. Fixes
+	  #326902.
+
+2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile.am: Set our G_LOG_DOMAIN.
 
 2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
