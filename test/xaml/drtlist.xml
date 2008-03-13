@@ -591,4 +591,8 @@
         inputFile="test-radialgradientbrush-absolute-moire.xaml"
         masterFile10="../harness/masters/test-radialgradientbrush-absolute-moireMaster.png"
    />
+   <Test id="148"
+        inputFile="test-lineargradientbrush-moire-scaled.xaml"
+        masterFile10="../harness/masters/test-lineargradientbrush-moire-scaled.xamlMaster.png"
+   />
 </DRTList>

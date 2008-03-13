@@ -1,4 +1,13 @@
 2008-03-13  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/test-lineargradientbrush-moire-scaled.xaml:
+	* xaml/drtlist.xml: Adding another moire gradient test. This
+	time the gradient is moirish but because the canvas is scaled
+	it's not.
+
+	Master needed.
+
+2008-03-13  Michael Dominic K.  <mdk@mdk.am>
 	
 	* xaml/test-lineargradientbrush-absolute.xaml:
 	* xaml/test-radialgradientbrush-absolite.xaml:

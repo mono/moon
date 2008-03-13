@@ -1,0 +1,50 @@
+<Canvas
+  xmlns="http://schemas.microsoft.com/client/2007"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  Width="230" Height="230">
+  <Canvas.RenderTransform>
+   <TransformGroup>
+    <ScaleTransform x:Name="scaler" ScaleX="10" ScaleY="10"/>
+   </TransformGroup>
+  </Canvas.RenderTransform>
+   <Rectangle Width="10" Height="10" Canvas.Top="1" Canvas.Left="1">
+    <Rectangle.Fill>
+     <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="0.1,0.1">
+      <LinearGradientBrush.GradientStops>
+       <GradientStop Color="Blue" Offset="0.0" />
+       <GradientStop Color="Red" Offset="1.0" />
+      </LinearGradientBrush.GradientStops> 
+     </LinearGradientBrush>
+    </Rectangle.Fill>
+   </Rectangle>
+   <Rectangle Width="10" Height="10" Canvas.Top="1" Canvas.Left="12">
+    <Rectangle.Fill>
+     <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="0.2,0.2">
+      <LinearGradientBrush.GradientStops>
+       <GradientStop Color="Blue" Offset="0.0" />
+       <GradientStop Color="Red" Offset="1.0" />
+      </LinearGradientBrush.GradientStops> 
+     </LinearGradientBrush>
+    </Rectangle.Fill>
+   </Rectangle>
+   <Rectangle Width="10" Height="10" Canvas.Top="12" Canvas.Left="1">
+    <Rectangle.Fill>
+     <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="0.5,0.5">
+      <LinearGradientBrush.GradientStops>
+       <GradientStop Color="Blue" Offset="0.0" />
+       <GradientStop Color="Red" Offset="1.0" />
+      </LinearGradientBrush.GradientStops> 
+     </LinearGradientBrush>
+    </Rectangle.Fill>
+   </Rectangle>
+   <Rectangle Width="10" Height="10" Canvas.Top="12" Canvas.Left="12">
+    <Rectangle.Fill>
+     <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1,1">
+      <LinearGradientBrush.GradientStops>
+       <GradientStop Color="Blue" Offset="0.0" />
+       <GradientStop Color="Red" Offset="1.0" />
+      </LinearGradientBrush.GradientStops> 
+     </LinearGradientBrush>
+    </Rectangle.Fill>
+   </Rectangle>
+</Canvas>
