@@ -18,11 +18,6 @@
 
 #include "moonlight.h"
 
-// Version information
-#define NP_VERSION_MIN_SUPPORTED  13
-#define NP_VERSION_HAS_RUNTIME    14
-#define NP_VERSION_HAS_POPUP      16
-
 // Global function table
 static NPNetscapeFuncs MozillaFuncs;
 
@@ -259,6 +254,13 @@ NPN_HasProperty (NPP npp, NPObject *obj, NPIdentifier propertyName)
 }
 
 bool
+NPN_Enumerate (NPP npp, NPObject *obj, NPIdentifier **values,
+	       uint32_t *count)
+{
+	return CallNPN_EnumerateProc (MozillaFuncs.enumerate, npp, obj, values, count);
+}
+
+bool
 NPN_HasMethod (NPP npp, NPObject *obj, NPIdentifier methodName)
 {
 	return CallNPN_HasMethodProc (MozillaFuncs.hasmethod, npp, obj, methodName);
@@ -313,11 +315,21 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 	if (mozilla_funcs == NULL || plugin_funcs == NULL)
 		return NPERR_INVALID_FUNCTABLE_ERROR;
 
+	// remove these checks, since we compile against trunk firefox
+	// np*.h now, sizeof (struct) will be > if we run against
+	// firefox 2.
+	//
+	// everything is ok, though.  we just need to check against
+	// the NPVERS_HAS_* defines when filling in the function
+	// table.
+#if 0
 	if (mozilla_funcs->size < sizeof (NPNetscapeFuncs))
 		return NPERR_INVALID_FUNCTABLE_ERROR;
 
+
 	if (plugin_funcs->size < sizeof (NPPluginFuncs))
 		return NPERR_INVALID_FUNCTABLE_ERROR;
+#endif
 
 	if ((mozilla_funcs->version >> 8) > NP_VERSION_MAJOR)
 		return NPERR_INCOMPATIBLE_VERSION_ERROR;
@@ -366,7 +378,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 	MozillaFuncs.invalidateregion        = mozilla_funcs->invalidateregion;
 	MozillaFuncs.forceredraw             = mozilla_funcs->forceredraw;
 
-	if (mozilla_funcs->version >= NP_VERSION_HAS_RUNTIME) {
+	if (mozilla_funcs->version >= NPVERS_HAS_NPRUNTIME_SCRIPTING) {
 		MozillaFuncs.getstringidentifier    = mozilla_funcs->getstringidentifier;
 		MozillaFuncs.getstringidentifiers   = mozilla_funcs->getstringidentifiers;
 		MozillaFuncs.getintidentifier       = mozilla_funcs->getintidentifier;
@@ -388,7 +400,11 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 		MozillaFuncs.setexception           = mozilla_funcs->setexception;
 	}
 
-	if (mozilla_funcs->version >= NP_VERSION_HAS_POPUP) {
+	if (mozilla_funcs->version >= NPVERS_HAS_NPOBJECT_ENUM) {
+		MozillaFuncs.enumerate = mozilla_funcs->enumerate;
+	}
+
+	if (mozilla_funcs->version >= NPVERS_HAS_POPUPS_ENABLED_STATE) {
 		MozillaFuncs.pushpopupsenabledstate = mozilla_funcs->pushpopupsenabledstate;
 		MozillaFuncs.poppopupsenabledstate  = mozilla_funcs->poppopupsenabledstate;
 	}
@@ -413,7 +429,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 #ifdef OJI
 	plugin_funcs->javaClass     = NULL;
 #endif
-	if (mozilla_funcs->version >= NP_VERSION_HAS_RUNTIME) {
+	if (mozilla_funcs->version >= NPVERS_HAS_NPRUNTIME_SCRIPTING) {
 		plugin_funcs->getvalue    = NewNPP_GetValueProc (NPP_GetValue);
 		plugin_funcs->setvalue    = NewNPP_SetValueProc (NPP_SetValue);
 	}

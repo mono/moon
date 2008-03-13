@@ -1,3 +1,9 @@
+2008-03-13  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-entry.cpp: fix backward compatibility of the plugin api.
+	also, use the NPVERS_ defines for feature tests instead of our own
+	set.  Also, add NPN_Enumerate.
+
 2008-03-13  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* install.js.in: Change the install path so that the plugin
