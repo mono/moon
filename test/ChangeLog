@@ -1,4 +1,11 @@
 2008-03-13  Michael Dominic K.  <mdk@mdk.am>
+	
+	* xaml/test-lineargradientbrush-absolute.xaml:
+	* xaml/test-radialgradientbrush-absolite.xaml:
+	* xaml/drtlist.xml: Adding a '-moire' suffix to those tests for
+	better representation of what it's testing.
+	
+2008-03-13  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/test-radialgradientbrush-absolute.xaml:
 	* xaml/drtlist.xml: Adding a similiar radial-gradient absolute

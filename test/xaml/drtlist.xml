@@ -584,11 +584,11 @@
         masterFile10="../harness/masters/test-canvas-toplevelMaster.png"
    />
    <Test id="146"
-        inputFile="test-lineargradientbrush-absolute.xaml"
-        masterFile10="../harness/masters/test-lineargradientbrush-absoluteMaster.png"
+        inputFile="test-lineargradientbrush-absolute-moire.xaml"
+        masterFile10="../harness/masters/test-lineargradientbrush-absolute-moireMaster.png"
    />
    <Test id="147"
-        inputFile="test-radialgradientbrush-absolute.xaml"
-        masterFile10="../harness/masters/test-radialgradientbrush-absoluteMaster.png"
+        inputFile="test-radialgradientbrush-absolute-moire.xaml"
+        masterFile10="../harness/masters/test-radialgradientbrush-absolute-moireMaster.png"
    />
 </DRTList>
