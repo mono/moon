@@ -1,3 +1,6 @@
+2008-03-13  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp, plugin-class.h: fix up our toString support.
 
 Thu Mar 13 23:13:59 CET 2008 Paolo Molaro <lupus@ximian.com>
 

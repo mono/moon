@@ -312,6 +312,9 @@ struct MoonlightSettingsObject : MoonlightObject {
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 };
 
 

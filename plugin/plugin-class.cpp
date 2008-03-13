@@ -1248,6 +1248,18 @@ bool
 MoonlightObject::Invoke (int id, NPIdentifier name,
 			 const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
+	switch (id) {
+	case MoonId_ToString:
+		if (argCount != 0)
+			return false;
+
+		if (moonlight_type != Type::INVALID) {
+			string_to_npvariant (Type::Find (moonlight_type)->name, result);
+			return true;
+		}
+		break;
+	}
+
 	return false;
 }
 
@@ -1340,6 +1352,11 @@ _invoke_default (NPObject *npobj,
 	return false;
 }
 
+static const MoonNameIdMapping
+object_mapping[] = {
+	{ "tostring", MoonId_ToString },
+};
+
 MoonlightObjectType::MoonlightObjectType ()
 {
 	allocate       = _allocate;
@@ -1356,6 +1373,8 @@ MoonlightObjectType::MoonlightObjectType ()
 
 	mapping = NULL;
 	mapping_count = 0;
+
+	AddMapping (object_mapping, COUNT (object_mapping));
 
 	last_lookup = NULL;
 	last_id = 0;
@@ -1709,6 +1728,22 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier, const NPVariant *val
 	return false;
 }
 
+bool
+MoonlightSettingsObject::Invoke (int id, NPIdentifier name,
+				 const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	switch (id) {
+	case MoonId_ToString:
+		if (argCount != 0)
+			return false;
+
+		string_to_npvariant ("Settings", result);
+		return true;
+	}
+
+	return false;
+}
+
 MoonlightSettingsType::MoonlightSettingsType ()
 {
 	allocate = moonlight_settings_allocate;
@@ -1935,6 +1970,14 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 
+	case MoonId_ToString: {
+		if (argCount != 0)
+			return false;
+
+		string_to_npvariant ("Content", result);
+		return true;
+	}
+
 	default:
 		return false;
 	}
@@ -1978,7 +2021,6 @@ moonlight_dependency_object_mapping [] = {
 	{ "releasemousecapture", MoonId_ReleaseMouseCapture },
 	{ "removeeventlistener", MoonId_RemoveEventListener },
 	{ "setvalue", MoonId_SetValue },
-	{ "tostring", MoonId_ToString }
 };
 
 static NPObject *
@@ -2293,10 +2335,6 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 
-	case MoonId_ToString:
-		string_to_npvariant (dob->GetTypeName(), result);
-		return true;
-
 	case MoonId_GetHost: {
 		PluginInstance *plugin = (PluginInstance*) instance->pdata;
 
@@ -2405,6 +2443,7 @@ MoonlightEventObjectObject::Dispose ()
 			plugin->RemoveWrappedObject (eo);
 		}
 		eo->unref ();
+		moonlight_type = Type::INVALID;
 	}
 	eo = NULL;
 }
@@ -2419,6 +2458,7 @@ MoonlightEventObjectObject::SetEventObject (EventObject *eventobject)
 	if (eo) {
 		plugin->RemoveWrappedObject (eo);
 		eo->unref ();
+		moonlight_type = Type::INVALID;
 	}
 
 	eo = eventobject;
@@ -2426,6 +2466,7 @@ MoonlightEventObjectObject::SetEventObject (EventObject *eventobject)
 	if (eo) {
 		plugin->AddWrappedObject (eo, this);
 		eo->ref ();
+		moonlight_type = eo->GetObjectType();
 	}
 }
 
@@ -2550,7 +2591,6 @@ MoonlightCollectionObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 		return MoonlightDependencyObjectObject::GetProperty (id, name, result);
 	}
 }
-
 
 bool
 MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
