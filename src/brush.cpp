@@ -106,53 +106,11 @@ brush_set_transform (Brush *brush, Transform* transform)
 void
 transform_get_absolute_transform (Transform *relative_transform, double width, double height, cairo_matrix_t *result)
 {
-	// note about de-relativisation of transforms
-	//
-	// applying a transormation with a different center than 0,0 is equ. to : translate the center to 0,0, 
-	// apply the transform, re-translate. So, finding the (relative) center for the transform is solving
-	// the following linear equation
-	//
-	// |  1   0  0 |   | xx yx 0 |   | 1  0  0 |   | xx yx 0 |
-	// |  0   1  0 | x | xy yy 0 | x | 0  1  0 | = | xy yy 0 |
-	// | -rx -ry 1 |   | 0  0  1 |   | rx ry 1 |   | xo y0 1 |
-	//
-	// the de-relativized translation is then tx = width * rx and ty = height * ry
-	//
-	// (at that point, I don't know which method is faster: let cairo recompute T1 x M x T2 or 
-	// substitute the new x0 and y0 in the matrix)
-	//
-	// end of note
-
-	double rx, ry, tx, ty;
-	transform_get_transform (relative_transform, result);
-	if (result->xx != 1.0) {
-		if (result->yy - result->xx*result->yy + result->xy*result->yx + result->xx != 1 ) {
-			ry = (result->y0 - result->xx * result->y0 + result->yx * result->x0) / (1 - result->xx - result->yy + result->yy * result->yy - result->xy * result->yx);
-			rx = (result->x0 + result->xy * ry) / (1 - result->xx);
-		} else { //yy - xxyy + xyyx + xx == 1
-			//indetermined case
-			rx = ry = 0;
-		}
-	} else { //xx == 1
-		if (result->xy != 0) {
-			ry = -result->x0 / result->xy;
-			if (result->yx != 0) {
-				rx = (result->x0 * result->yy / result->xy - result->y0 - result->x0 / result->xy) / result->yx;
-			} else { //yx ==0
-				//indetermined case
-				rx = 0;					
-			}
-		} else { //xy == 0
-			//indetermined case
-			rx = ry = 0;	
-		}
-	}
-
-
-	tx = rx * width;
-	ty = ry * height;
-	result->x0 = (1 - result->xx) * tx - result->xy * ty;
-	result->y0 = (1 - result->yy) * ty - result->yx * tx;
+	cairo_matrix_init_scale (result, width, height);
+	cairo_matrix_t tm;
+	transform_get_transform (relative_transform, &tm);
+	cairo_matrix_multiply (result, &tm, result);
+	cairo_matrix_scale (result, 1.0/width, 1.0/height);
 }
 
 bool

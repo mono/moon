@@ -1,3 +1,11 @@
+2008-03-13  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* brush.cpp: compute relative transform as it's done in SL. We used to
+	derelativize transform to match the absolute ones. Now we map the brush
+	to a 1x1 square, apply the transform, and unmap back. It simplify the 
+	computation a lot too. Fixes bnc #354892 and a bad gradient in 
+	brushes.xaml.
+
 2008-03-12  Chris Toshok  <toshok@ximian.com>
 
 	* media.cpp (expand_rgb_to_argb): use a different codepath if the
