@@ -434,6 +434,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		// onError.
 		if (!g_ascii_strcasecmp (argn[i], "onError")) {
 			this->onError = argv[i];
+			printf ("onError = %s\n", this->onError);
 			continue;
 		}
 
@@ -461,10 +462,6 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 	NPBool supportsWindowless = FALSE;
 
-	// XXX we should be using newer plugin api headers so we won't
-	// need the #if 1 hack here, nor the constant 17 below
-	// (instead of NPNVSupportsWindowless)
-#if 1 || (NP_VERSION_MAJOR >= 1 || NP_VERSION_MINOR >= 18)
 	int plugin_major, plugin_minor;
 	int netscape_major, netscape_minor;
 
@@ -478,10 +475,9 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	if (netscape_major >= 1 || netscape_minor >= 18) {
 		if (windowless)
 			NPN_GetValue(this->instance,
-				     (NPNVariable)17, //XXX NPNVSupportsWindowless
+				     NPNVSupportsWindowless,
 				     &supportsWindowless);
 	}
-#endif
 
 	if (windowless) {
 		if (supportsWindowless) {
@@ -1568,8 +1564,8 @@ PluginXamlLoader::TryLoad (int *error)
 		return GetMissing ();
 	}
 
-	if (element_type != Type::CANVAS) {
-		printf ("PluginXamlLoader::TryLoad: Return value is not a Canvas, its a %s\n", element->GetTypeName ());
+	if (!Type::Find(element_type)->IsSubclassOf(Type::CANVAS)) {
+		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, its a %s\n", element->GetTypeName ());
 		element->unref ();
 		return NULL;
 	}

@@ -16,6 +16,7 @@ endif
 
 INCLUDES = \
 	-I$(top_srcdir)/src \
+	-I$(srcdir)/moz-sdk \
 	-I/usr/include/X11 \
 	$(PLUGIN_CFLAGS) \
 	-Wall
@@ -123,6 +124,10 @@ untest-plugin:
 
 EXTRA_DIST = moonlight.cs install.js.in moon.config
 DISTCLEANFILES=moonlight.exe moonlight.exe.mdb novell-moonlight.xpi
+
+dist-hook:
+	mkdir $(distdir)/moz-sdk
+	-cp $(distdir)/moz-sdk/*.h $(distdir)/moz-sdk
 
 moonlight_CS=  $(srcdir)/moonlight.cs
 

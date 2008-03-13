@@ -1,3 +1,18 @@
+2008-03-13  Chris Toshok  <toshok@ximian.com>
+
+	* moz-sdk/*: import the trunk firefox plugin headers.
+	
+	* plugin.cpp (PluginInstance::Initialize): fix the hack I needed
+	due to xulrunner-1.8.10 headers not having NPNVSupportsWindowless.
+
+	* plugin-class.h, plugin-class.cpp (MoonlightObjectType): add
+	Enumerate, which just iterates over the mapping filling in the
+	array to return.
+
+	* Makefile.am: add dist-hook to copy the moz-sdk headers.
+
+	* mono.cpp (vm_init): missed this STACK_DEBUG -> DEBUG change.
+
 2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-downloader.cpp: Fix duplicate g_strdup on pd->uri. 

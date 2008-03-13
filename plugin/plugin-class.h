@@ -74,6 +74,8 @@ struct MoonlightObjectType : NPClass {
 
 	void AddMapping (const MoonNameIdMapping* mapping, int count);
 
+	bool Enumerate (NPIdentifier **value, uint32_t *count);
+
 	int LookupName (NPIdentifier name);
 
 	MoonNameIdMapping* mapping;

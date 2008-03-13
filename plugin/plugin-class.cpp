@@ -1316,6 +1316,12 @@ _remove_property (NPObject *npobj, NPIdentifier name)
 }
 
 static bool
+_enumerate (NPObject *npobj, NPIdentifier **value, uint32_t *count)
+{
+	return ((MoonlightObjectType*)npobj->_class)->Enumerate (value, count);
+}
+
+static bool
 _invoke (NPObject *npobj, NPIdentifier name,
 	 const NPVariant *args, uint32_t argCount,
 	 NPVariant *result)
@@ -1346,12 +1352,34 @@ MoonlightObjectType::MoonlightObjectType ()
 	getProperty    = _get_property;
 	setProperty    = _set_property;
 	removeProperty = _remove_property;
+	enumerate      = _enumerate;
 
 	mapping = NULL;
 	mapping_count = 0;
 
 	last_lookup = NULL;
 	last_id = 0;
+}
+
+bool
+MoonlightObjectType::Enumerate (NPIdentifier **value, uint32_t *count)
+{
+	if (mapping_count == 0) {
+		*value = NULL;
+		*count = 0;
+		return true;
+	}
+
+	// caller frees this
+	NPIdentifier *ids = (NPIdentifier*)NPN_MemAlloc (sizeof (NPIdentifier) * mapping_count);
+
+	for (int i = 0; i < mapping_count; i ++)
+		ids[i] = NPN_GetStringIdentifier (mapping[i].name);
+
+	*count = mapping_count;
+	*value = ids;
+
+	return true;
 }
 
 void

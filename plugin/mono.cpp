@@ -89,7 +89,7 @@ vm_init (void)
 
 	moon_vm_loaded = TRUE;
 
-#if STACK_DEBUG
+#if DEBUG
 	enable_vm_stack_trace ();
 #endif
 
