@@ -1,5 +1,9 @@
 2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: Make this build on SLED until I find a proper workaround.
+
+2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: Update according to MediaPlayer changes.
 
 2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
