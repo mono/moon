@@ -1,3 +1,8 @@
+2008-03-13  Chris Toshok  <toshok@ximian.com>
+
+	* text.cpp (~Glyphs): don't unref the fill, since we don't take a
+	ref on it.
+
 2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Make this build on SLED until I find a proper workaround.

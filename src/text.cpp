@@ -1504,9 +1504,6 @@ Glyphs::Glyphs ()
 
 Glyphs::~Glyphs ()
 {
-	if (fill)
-		fill->unref ();
-	
 	if (path)
 		cairo_path_destroy (path);
 	
