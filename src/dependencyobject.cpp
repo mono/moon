@@ -399,14 +399,13 @@ EventObject::unref_delayed ()
 {
 	OBJECT_TRACK ("DelayedUnref", GetTypeName ());
 	
-#if false
 	if (surface) {
 		surface->AddPendingUnref (this);
-	}
-	else {
-#endif
-	  {
-		g_warning ("unable to associate delayed unref to a surface, using global pending unref list");
+	} else {
+		//TODO: Either the warning or the current code is broken,
+		// because when we remove an object from a collection, we set
+		// its surface to NULL, in which case we take this codepath.
+		//g_warning ("unable to associate delayed unref to a surface, using global pending unref list (id: %i, Type: %s)", GET_OBJ_ID (this), GetTypeName ());
 		g_static_rec_mutex_lock (&delayed_unref_mutex);
 		pending_unrefs = g_slist_prepend (pending_unrefs, this);
 

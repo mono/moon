@@ -82,7 +82,7 @@ UIElement::SetSurface (Surface *s)
 		/* we're losing our surface, delete ourselves from the dirty list if we're on it */
 		GetSurface()->RemoveDirtyElement (this);
 	}
-	Visual::SetSurface (s);
+	DependencyObject::SetSurface (s);
 }
 
 Rect

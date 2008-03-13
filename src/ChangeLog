@@ -1,3 +1,11 @@
+2008-03-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* visual.h, uielement.cpp, visual.cpp: Remove the 'surface' field from
+	  Visual, we're already storing the surface in the EventObject.
+	* dependencyobject.cpp: EventObject::unref_delayed: remove the #if false,
+	  and comment out the warning, since with the current code it's entirely
+	  possible to unref a dependecyobject with no surface.
+
 2008-03-13  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* brush.cpp: compute relative transform as it's done in SL. We used to

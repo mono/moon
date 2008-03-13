@@ -22,7 +22,7 @@ class Visual : public DependencyObject {
 	virtual ~Visual () {}
 
  public:
-	Visual () : surface (NULL), visual_parent (NULL) {};
+	Visual () : visual_parent (NULL) {};
 	virtual Type::Kind GetObjectType () { return Type::VISUAL; };	
 
 	//
@@ -31,15 +31,12 @@ class Visual : public DependencyObject {
 	//
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
-	virtual Surface *GetSurface () { return surface; }
-	virtual void SetSurface (Surface *surface);
-
 	virtual TimeManager *GetTimeManager ();
 	
 	void SetVisualParent (UIElement* visual_parent) { this->visual_parent = visual_parent; }
 	UIElement* GetVisualParent () { return visual_parent; }
+
 private:
-	Surface* surface;
 	UIElement *visual_parent;
 };
 

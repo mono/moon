@@ -25,12 +25,6 @@ Visual::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
-Visual::SetSurface (Surface *surface)
-{
-	this->surface = surface;
-}
-
-void
 visual_set_surface (Visual* visual, Surface* surface)
 {
 	if (visual)
@@ -40,5 +34,6 @@ visual_set_surface (Visual* visual, Surface* surface)
 TimeManager*
 Visual::GetTimeManager ()
 {
+	Surface *surface = GetSurface ();
 	return surface ? surface->GetTimeManager() : NULL;
 }
