@@ -1,5 +1,18 @@
 2008-03-14  Michael Dominic K.  <mdk@mdk.am>
-	
+
+	* animation.cpp: Check correctly if we have object and property
+	before trying to hookup storage.
+
+	Fixes the crash in test-crash-non-existing-animation-target-prop.xaml
+	but the warning message is still incorrect:
+
+		"No object named ball!"
+
+	The object named "ball" exists but it doesn't have the requested
+	property.
+
+2008-03-14  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: Changing few printf's to g_warnings.
 
 2008-03-14  Stephane Delcroix  <sdelcroix@novell.com>
