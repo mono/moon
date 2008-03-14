@@ -11,6 +11,16 @@
 
 2008-03-14  Larry Ewing  <lewing@novell.com>
 
+	* collection.h:
+	* error.h:     
+	* eventargs.h, enventargs.cpp:
+	* type.h, type.cpp: make EventArgs a subclass of DependencyObject
+	and all that entails.  Still need to look over the properties.
+
+	* runtime.cpp, runtime.h: expose EmitError for now.
+	
+2008-03-14  Larry Ewing  <lewing@novell.com>
+
 	* mplayer.cpp (MediaPlayer::Open): use posix_memalign to allocate
 	with a a 16bit alignment for the yuv converter.
 

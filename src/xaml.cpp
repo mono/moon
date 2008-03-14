@@ -2804,6 +2804,7 @@ is_valid_event_name (const char *name)
 		!strcmp (name, "DownloadFailed") ||
 		!strcmp (name, "FullScreenChange") ||
 		!strcmp (name, "Resize") ||
+		!strcmp (name, "Error") ||
 		!strcmp (name, "Completed") ||
 		!strcmp (name, "ImageFailed") ||
 		!strcmp (name, "GotFocus") ||

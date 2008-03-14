@@ -14,6 +14,7 @@
 #include "plugin.h"
 #include "plugin-class.h"
 #include "plugin-debug.h"
+#include "plstr.h"
 #include "moon-mono.h"
 #include "downloader.h"
 #include "plugin-downloader.h"
@@ -490,8 +491,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			windowless = FALSE;
 		}
 	}
-	  
-
+	
 }
 
 void
@@ -646,6 +646,17 @@ PluginInstance::CreateWindow ()
 		surface->SetInvalidateFunc (InvalidateSurface, this);
 		surface->SetRenderFunc (RenderSurface, this);
 		surface->SetTrans (true);
+	}
+
+	if (this->onError != NULL) {
+		char *retval = PL_strdup (this->onError);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onError");
+		NPN_SetProperty (this->instance, 
+				 this->getRootObject ()->content, 
+				 identifier, &npvalue);
 	}
 
 	surface->SetFPSReportFunc (ReportFPS, this);
@@ -1559,7 +1570,11 @@ PluginXamlLoader::TryLoad (int *error)
 	}
 
 	if (!element) {
-		printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), GetMissing ());
+		if (error_args) {
+			printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (error: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), error_args->GetTypeName ());
+			GetSurface()->EmitError (error_args);
+		} else 
+			printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), GetMissing ());
 		xaml_is_managed = true;
 		return GetMissing ();
 	}
@@ -1624,7 +1639,7 @@ PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, Plugi
 	this->plugin = plugin;
 	this->initialized = FALSE;
 	this->xaml_is_managed = FALSE;
-
+	this->error_args = NULL;
 #if INCLUDE_MONO_RUNTIME
 	this->managed_loader = NULL;
 #endif

@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 #include "type.h"
 #include "list.h"
 #include "downloader.h"
+#include "error.h"
 
 #define MAXIMUM_CACHE_SIZE 6000000
 
@@ -95,6 +96,7 @@ class Surface : public EventObject {
 	int GetWidth () { return width; }
 	int GetHeight () { return height; }
 
+	void EmitError (ErrorEventArgs *args);
 	void SetTrans (bool trans);
 	bool GetTrans () { return transparent; }
 

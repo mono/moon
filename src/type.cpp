@@ -429,6 +429,7 @@ types_init (void)
 	Type::RegisterType ("BezierSegment", Type::BEZIERSEGMENT, Type::PATHSEGMENT, (create_inst_func *) bezier_segment_new, NULL);
 	Type::RegisterType ("Brush", Type::BRUSH, Type::DEPENDENCY_OBJECT, (create_inst_func *) brush_new, NULL);
 	Type::RegisterType ("Canvas", Type::CANVAS, Type::PANEL, (create_inst_func *) canvas_new, NULL);
+	Type::RegisterType ("ChangeEventArgs", Type::CHANGEEVENTARGS, Type::EVENTARGS, NULL, NULL);
 	Type::RegisterType ("Clock", Type::CLOCK, Type::DEPENDENCY_OBJECT, NULL, NULL);
 	Type::RegisterType ("ClockGroup", Type::CLOCKGROUP, Type::CLOCK, NULL, NULL);
 	Type::RegisterType ("Collection", Type::COLLECTION, Type::DEPENDENCY_OBJECT, NULL, NULL);
@@ -448,6 +449,8 @@ types_init (void)
 	Type::RegisterType ("DrawingAttributes", Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT, (create_inst_func *) drawing_attributes_new, NULL);
 	Type::RegisterType ("Ellipse", Type::ELLIPSE, Type::SHAPE, (create_inst_func *) ellipse_new, NULL);
 	Type::RegisterType ("EllipseGeometry", Type::ELLIPSEGEOMETRY, Type::GEOMETRY, (create_inst_func *) ellipse_geometry_new, NULL);
+	Type::RegisterType ("ErrorEventArgs", Type::ERROREVENTARGS, Type::EVENTARGS, NULL, NULL);
+	Type::RegisterType ("EventArgs", Type::EVENTARGS, Type::DEPENDENCY_OBJECT, NULL, NULL);
 	Type::RegisterType ("EventTrigger", Type::EVENTTRIGGER, Type::DEPENDENCY_OBJECT, (create_inst_func *) event_trigger_new, "Actions");
 	Type::RegisterType ("FrameworkElement", Type::FRAMEWORKELEMENT, Type::UIELEMENT, (create_inst_func *) framework_element_new, NULL);
 	Type::RegisterType ("Geometry", Type::GEOMETRY, Type::DEPENDENCY_OBJECT, NULL, NULL);
@@ -459,9 +462,11 @@ types_init (void)
 	Type::RegisterType ("GradientStopCollection", Type::GRADIENTSTOP_COLLECTION, Type::COLLECTION, (create_inst_func *) gradient_stop_collection_new, NULL);
 	Type::RegisterType ("Image", Type::IMAGE, Type::MEDIABASE, (create_inst_func *) image_new, NULL);
 	Type::RegisterType ("ImageBrush", Type::IMAGEBRUSH, Type::TILEBRUSH, (create_inst_func *) image_brush_new, NULL);
+	Type::RegisterType ("ImageErrorEventArgs", Type::IMAGEERROREVENTARGS, Type::ERROREVENTARGS, NULL, NULL);
 	Type::RegisterType ("InkPresenter", Type::INKPRESENTER, Type::CANVAS, (create_inst_func *) ink_presenter_new, NULL);
 	Type::RegisterType ("Inline", Type::INLINE, Type::DEPENDENCY_OBJECT, NULL, NULL);
 	Type::RegisterType ("Inlines", Type::INLINES, Type::COLLECTION, (create_inst_func *) inlines_new, NULL);
+	Type::RegisterType ("KeyboardEventArgs", Type::KEYBOARDEVENTARGS, Type::EVENTARGS, NULL, NULL);
 	Type::RegisterType ("KeyFrame", Type::KEYFRAME, Type::DEPENDENCY_OBJECT, (create_inst_func *) key_frame_new, NULL);
 	Type::RegisterType ("KeyFrameCollection", Type::KEYFRAME_COLLECTION, Type::COLLECTION, NULL, NULL);
 	Type::RegisterType ("KeySpline", Type::KEYSPLINE, Type::DEPENDENCY_OBJECT, (create_inst_func *) key_spline_new, NULL);
@@ -473,15 +478,19 @@ types_init (void)
 	Type::RegisterType ("LineBreak", Type::LINEBREAK, Type::INLINE, (create_inst_func *) line_break_new, NULL);
 	Type::RegisterType ("LineGeometry", Type::LINEGEOMETRY, Type::GEOMETRY, (create_inst_func *) line_geometry_new, NULL);
 	Type::RegisterType ("LineSegment", Type::LINESEGMENT, Type::PATHSEGMENT, (create_inst_func *) line_segment_new, NULL);
+	Type::RegisterType ("MarkerReachedEventArgs", Type::MARKERREACHEDEVENTARGS, Type::EVENTARGS, NULL, NULL);
 	Type::RegisterType ("Matrix", Type::MATRIX, Type::DEPENDENCY_OBJECT, (create_inst_func *) matrix_new, NULL);
 	Type::RegisterType ("MatrixTransform", Type::MATRIXTRANSFORM, Type::TRANSFORM, (create_inst_func *) matrix_transform_new, NULL);
 	Type::RegisterType ("MediaAttribute", Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, (create_inst_func *) media_attribute_new, NULL);
 	Type::RegisterType ("MediaAttributeCollection", Type::MEDIAATTRIBUTE_COLLECTION, Type::COLLECTION, (create_inst_func *) media_attribute_collection_new, NULL);
 	Type::RegisterType ("MediaBase", Type::MEDIABASE, Type::FRAMEWORKELEMENT, (create_inst_func *) media_base_new, NULL);
 	Type::RegisterType ("MediaElement", Type::MEDIAELEMENT, Type::MEDIABASE, (create_inst_func *) media_element_new, NULL);
+	Type::RegisterType ("MediaErrorEventArgs", Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, NULL, NULL);
+	Type::RegisterType ("MouseEventArgs", Type::MOUSEEVENTARGS, Type::EVENTARGS, NULL, NULL);
 	Type::RegisterType ("NameScope", Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, NULL, NULL);
 	Type::RegisterType ("Panel", Type::PANEL, Type::FRAMEWORKELEMENT, (create_inst_func *) panel_new, "Children");
 	Type::RegisterType ("ParallelTimeline", Type::PARALLELTIMELINE, Type::TIMELINEGROUP, (create_inst_func *) parallel_timeline_new, NULL);
+	Type::RegisterType ("ParserErrorEventArgs", Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, NULL, NULL);
 	Type::RegisterType ("Path", Type::PATH, Type::SHAPE, (create_inst_func *) path_new, NULL);
 	Type::RegisterType ("PathFigure", Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, (create_inst_func *) path_figure_new, "Segments");
 	Type::RegisterType ("PathFigureCollection", Type::PATHFIGURE_COLLECTION, Type::COLLECTION, (create_inst_func *) path_figure_collection_new, NULL);

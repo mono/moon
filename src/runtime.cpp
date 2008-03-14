@@ -399,8 +399,16 @@ Surface::Attach (UIElement *element)
 	}
 	
 	if (toplevel) {
-		toplevel->Invalidate ();
+		//toplevel->Invalidate ();
+		down_dirty->Clear (true);
+		up_dirty->Clear (true);
+		toplevel->SetSurface (NULL);
 		toplevel->unref ();
+		time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
+		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
+		time_manager->GetSource()->Stop ();
+		time_manager->unref ();
+		time_manager = new TimeManager ();
 	} else 
 		first = TRUE;
 
@@ -589,6 +597,12 @@ Surface::Resize (int width, int height)
 	
 	if (!full_screen)
 		Emit (ResizeEvent);
+}
+
+void
+Surface::EmitError (ErrorEventArgs *args)
+{
+	Emit (ErrorEvent, args);
 }
 
 void

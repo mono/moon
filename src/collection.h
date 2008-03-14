@@ -31,7 +31,7 @@ class Collection : public DependencyObject {
 		CollectionChangeType type;
 		DependencyObject *obj;
 		DependencyProperty *prop;
-		virtual const char *GetTypeName () { return "Collection::ChangeEventArgs"; }
+		virtual Type::Kind GetObjectType () { return Type::CHANGEEVENTARGS; };
 	};
 
 	class Node : public List::Node {

@@ -22,7 +22,7 @@ class MediaErrorEventArgs;
 #include "eventargs.h"
 #include "pipeline.h"
 
-class ErrorEventArgs  : public EventArgs  {
+class ErrorEventArgs : public EventArgs  {
 protected:
 	virtual ~ErrorEventArgs ()
 	{
@@ -37,8 +37,7 @@ public:
 		error_code = code;
 		error_message = g_strdup (msg);
 	}
-	
-	virtual const char *GetTypeName () { return "ErrorEventArgs"; }
+	virtual Type::Kind GetObjectType () { return Type::ERROREVENTARGS; };
 
 	int error_code;
 	char *error_message;
@@ -54,8 +53,7 @@ public:
 	  : ErrorEventArgs (ImageError, 0, msg)
 	{
 	}
-
-	virtual const char *GetTypeName () { return "ImageErrorEventArgs"; }
+	virtual Type::Kind GetObjectType () { return Type::IMAGEERROREVENTARGS; };
 };
 
 class ParserErrorEventArgs : public ErrorEventArgs {
@@ -66,6 +64,7 @@ protected:
 		g_free (xml_element);
 		g_free (xml_attribute);
 	}
+
 
 public:
 	ParserErrorEventArgs (const char *msg,
@@ -82,8 +81,7 @@ public:
 	  xml_attribute (g_strdup (attribute))
 	  {
 	  }
-
-	virtual const char *GetTypeName () { return "ParserErrorEventArgs"; }
+	virtual Type::Kind GetObjectType () { return Type::PARSERERROREVENTARGS; };
 
 	int char_position;
 	int line_number;
@@ -101,8 +99,11 @@ public:
 		: ErrorEventArgs (MediaError, (int) result, msg)
 	{
 	}
+	virtual Type::Kind GetObjectType () { return Type::MEDIAERROREVENTARGS; };
 
 	MediaResult GetMediaResult () { return (MediaResult) error_code; }
 };
+
+
 
 #endif /* __MOON_ERROR_H__ */

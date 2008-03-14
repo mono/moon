@@ -35,6 +35,7 @@ class BeginStoryboard;
 class BezierSegment;
 class Brush;
 class Canvas;
+class ChangeEventArgs;
 class Clock;
 class ClockGroup;
 class Collection;
@@ -54,6 +55,8 @@ class Downloader;
 class DrawingAttributes;
 class Ellipse;
 class EllipseGeometry;
+class ErrorEventArgs;
+class EventArgs;
 class EventTrigger;
 class FrameworkElement;
 class Geometry;
@@ -65,9 +68,11 @@ class GradientStop;
 class GradientStopCollection;
 class Image;
 class ImageBrush;
+class ImageErrorEventArgs;
 class InkPresenter;
 class Inline;
 class Inlines;
+class KeyboardEventArgs;
 class KeyFrame;
 class KeyFrameCollection;
 class KeySpline;
@@ -79,15 +84,19 @@ class LinearPointKeyFrame;
 class LineBreak;
 class LineGeometry;
 class LineSegment;
+class MarkerReachedEventArgs;
 class Matrix;
 class MatrixTransform;
 class MediaAttribute;
 class MediaAttributeCollection;
 class MediaBase;
 class MediaElement;
+class MediaErrorEventArgs;
+class MouseEventArgs;
 class NameScope;
 class Panel;
 class ParallelTimeline;
+class ParserErrorEventArgs;
 class Path;
 class PathFigure;
 class PathFigureCollection;
@@ -239,6 +248,7 @@ public:
 	BezierSegment*                 AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
 	Brush*                         AsBrush () { checked_get_subclass (Type::BRUSH, Brush) }
 	Canvas*                        AsCanvas () { checked_get_subclass (Type::CANVAS, Canvas) }
+	ChangeEventArgs*               AsChangeEventArgs () { checked_get_subclass (Type::CHANGEEVENTARGS, ChangeEventArgs) }
 	Clock*                         AsClock () { checked_get_subclass (Type::CLOCK, Clock) }
 	ClockGroup*                    AsClockGroup () { checked_get_subclass (Type::CLOCKGROUP, ClockGroup) }
 	Collection*                    AsCollection () { checked_get_subclass (Type::COLLECTION, Collection) }
@@ -258,6 +268,8 @@ public:
 	DrawingAttributes*             AsDrawingAttributes () { checked_get_subclass (Type::DRAWINGATTRIBUTES, DrawingAttributes) }
 	Ellipse*                       AsEllipse () { checked_get_subclass (Type::ELLIPSE, Ellipse) }
 	EllipseGeometry*               AsEllipseGeometry () { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }
+	ErrorEventArgs*                AsErrorEventArgs () { checked_get_subclass (Type::ERROREVENTARGS, ErrorEventArgs) }
+	EventArgs*                     AsEventArgs () { checked_get_subclass (Type::EVENTARGS, EventArgs) }
 	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
 	FrameworkElement*              AsFrameworkElement () { checked_get_subclass (Type::FRAMEWORKELEMENT, FrameworkElement) }
 	Geometry*                      AsGeometry () { checked_get_subclass (Type::GEOMETRY, Geometry) }
@@ -269,9 +281,11 @@ public:
 	GradientStopCollection*        AsGradientStopCollection () { checked_get_subclass (Type::GRADIENTSTOP_COLLECTION, GradientStopCollection) }
 	Image*                         AsImage () { checked_get_subclass (Type::IMAGE, Image) }
 	ImageBrush*                    AsImageBrush () { checked_get_subclass (Type::IMAGEBRUSH, ImageBrush) }
+	ImageErrorEventArgs*           AsImageErrorEventArgs () { checked_get_subclass (Type::IMAGEERROREVENTARGS, ImageErrorEventArgs) }
 	InkPresenter*                  AsInkPresenter () { checked_get_subclass (Type::INKPRESENTER, InkPresenter) }
 	Inline*                        AsInline () { checked_get_subclass (Type::INLINE, Inline) }
 	Inlines*                       AsInlines () { checked_get_subclass (Type::INLINES, Inlines) }
+	KeyboardEventArgs*             AsKeyboardEventArgs () { checked_get_subclass (Type::KEYBOARDEVENTARGS, KeyboardEventArgs) }
 	KeyFrame*                      AsKeyFrame () { checked_get_subclass (Type::KEYFRAME, KeyFrame) }
 	KeyFrameCollection*            AsKeyFrameCollection () { checked_get_subclass (Type::KEYFRAME_COLLECTION, KeyFrameCollection) }
 	KeySpline*                     AsKeySpline () { checked_get_subclass (Type::KEYSPLINE, KeySpline) }
@@ -283,15 +297,19 @@ public:
 	LineBreak*                     AsLineBreak () { checked_get_subclass (Type::LINEBREAK, LineBreak) }
 	LineGeometry*                  AsLineGeometry () { checked_get_subclass (Type::LINEGEOMETRY, LineGeometry) }
 	LineSegment*                   AsLineSegment () { checked_get_subclass (Type::LINESEGMENT, LineSegment) }
+	MarkerReachedEventArgs*        AsMarkerReachedEventArgs () { checked_get_subclass (Type::MARKERREACHEDEVENTARGS, MarkerReachedEventArgs) }
 	Matrix*                        AsMatrix () { checked_get_subclass (Type::MATRIX, Matrix) }
 	MatrixTransform*               AsMatrixTransform () { checked_get_subclass (Type::MATRIXTRANSFORM, MatrixTransform) }
 	MediaAttribute*                AsMediaAttribute () { checked_get_subclass (Type::MEDIAATTRIBUTE, MediaAttribute) }
 	MediaAttributeCollection*      AsMediaAttributeCollection () { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
 	MediaBase*                     AsMediaBase () { checked_get_subclass (Type::MEDIABASE, MediaBase) }
 	MediaElement*                  AsMediaElement () { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
+	MediaErrorEventArgs*           AsMediaErrorEventArgs () { checked_get_subclass (Type::MEDIAERROREVENTARGS, MediaErrorEventArgs) }
+	MouseEventArgs*                AsMouseEventArgs () { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
 	NameScope*                     AsNameScope () { checked_get_subclass (Type::NAMESCOPE, NameScope) }
 	Panel*                         AsPanel () { checked_get_subclass (Type::PANEL, Panel) }
 	ParallelTimeline*              AsParallelTimeline () { checked_get_subclass (Type::PARALLELTIMELINE, ParallelTimeline) }
+	ParserErrorEventArgs*          AsParserErrorEventArgs () { checked_get_subclass (Type::PARSERERROREVENTARGS, ParserErrorEventArgs) }
 	Path*                          AsPath () { checked_get_subclass (Type::PATH, Path) }
 	PathFigure*                    AsPathFigure () { checked_get_subclass (Type::PATHFIGURE, PathFigure) }
 	PathFigureCollection*          AsPathFigureCollection () { checked_get_subclass (Type::PATHFIGURE_COLLECTION, PathFigureCollection) }

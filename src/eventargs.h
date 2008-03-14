@@ -24,14 +24,15 @@ class UIElement;
  * after the event has been emitted.
  */
 
-class EventArgs : public EventObject {
+class EventArgs : public DependencyObject {
 protected:
 	virtual ~EventArgs () {};
 
 public:
 	EventArgs () {}
-	virtual const char *GetTypeName () = 0;
+	virtual Type::Kind GetObjectType () { return Type::EVENTARGS; };
 };
+
 
 class KeyboardEventArgs : public EventArgs {
 protected:
@@ -43,12 +44,12 @@ public:
 		state (state_), platformcode (platformcode_), key (key_)
 	{
 	}
+	virtual Type::Kind GetObjectType () { return Type::KEYBOARDEVENTARGS; };
 
 	int state;
 	int platformcode;
 	int key;
 
-	virtual const char *GetTypeName () { return "KeyboardEventArgs"; }
 };
 
 class MouseEventArgs : public EventArgs {
@@ -57,13 +58,12 @@ protected:
 
 public:
 	MouseEventArgs (GdkEvent *event);
+	virtual Type::Kind GetObjectType () { return Type::MOUSEEVENTARGS; };
 
 	int GetState ();
 	void GetPosition (UIElement *relative_to, double *x, double *y);
 	StylusInfo *GetStylusInfo ();
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
-
-	virtual const char *GetTypeName () { return "MouseEventArgs"; }
 
  private:
 	GdkEvent *event;
@@ -78,10 +78,9 @@ protected:
 
 public:
 	MarkerReachedEventArgs (TimelineMarker *marker);
+	virtual Type::Kind GetObjectType () { return Type::MARKERREACHEDEVENTARGS; };
 
 	TimelineMarker *GetMarker () { return marker; }
-
-	virtual const char *GetTypeName () { return "MarkerReachedEventArgs"; }
 };
 
 G_BEGIN_DECLS

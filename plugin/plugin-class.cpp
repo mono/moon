@@ -376,6 +376,11 @@ enum DependencyObjectClassNames {
 	STROKE_COLLECTION_CLASS,
 	STROKE_CLASS,
 	TEXT_BLOCK_CLASS,
+	EVENT_ARGS_CLASS,
+	ERROR_EVENT_ARGS_CLASS,
+	KEYBOARD_EVENT_ARGS_CLASS,
+	MARKER_REACHED_EVENT_ARGS_CLASS,
+	MOUSE_EVENT_ARGS_CLASS,
 
 	DEPENDENCY_OBJECT_CLASS_NAMES_LAST
 };
@@ -479,34 +484,6 @@ EventListenerProxy::RemoveHandler ()
 }
 
 void
-EventListenerProxy::create_wrapper_for_event_args (NPP instance, EventArgs *calldata, NPVariant *value)
-{
-	MoonlightEventArgs *args = NULL;
-	MoonlightObjectType *type = NULL;
-	const char *event_type = calldata ? calldata->GetTypeName () : NULL;
-
-	if (event_type == NULL) 
-		type = NULL;
-	else if (strcmp (event_type, "MouseEventArgs") == 0)
-		type = MoonlightMouseEventArgsClass;
-	else if (strcmp (event_type, "KeyboardEventArgs") == 0)
-		type = MoonlightKeyboardEventArgsClass;
-	else if (strcmp (event_type, "MarkerReachedEventArgs") == 0)
-		type = MoonlightMarkerReachedEventArgsClass;
-	else if (strcmp (event_type, "ErrorEventArgs") == 0)
-		type = MoonlightErrorEventArgsClass;
-	else
-		type = MoonlightEventArgsClass;
-
-	if (type != NULL) {
-		args = (MoonlightEventArgs *) NPN_CreateObject (instance, type);
-		args->SetEventArgs (calldata);
-	}
-
-	OBJECT_TO_NPVARIANT (args, *value);
-}
-
-void
 EventListenerProxy::on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	EventListenerProxy *proxy = (EventListenerProxy *) closure;
@@ -538,13 +515,22 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		js_sender = ((Surface*) js_sender)->GetToplevel ();
 	}
 
-	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (proxy->instance, js_sender);
-	
-	OBJECT_TO_NPVARIANT (depobj, args[0]);
-	
+	MoonlightEventObjectObject *depobj = NULL; 
+	if (js_sender) {
+		depobj = EventObjectCreateWrapper (proxy->instance, js_sender);
+		OBJECT_TO_NPVARIANT (depobj, args[0]);
+	} else {
+		NULL_TO_NPVARIANT (args[0]);
+	}
+
 	//printf ("proxying event %s to javascript, sender = %p (%s)\n", proxy->event_name, sender, sender->GetTypeName ());
-	
-	create_wrapper_for_event_args (proxy->instance, calldata, &args [1]);
+	MoonlightEventObjectObject *depargs = NULL; 
+	if (calldata) {
+		depargs = EventObjectCreateWrapper (proxy->instance, calldata);
+		OBJECT_TO_NPVARIANT (depargs, args[1]);
+	} else {
+		NULL_TO_NPVARIANT (args[1]);
+	}
 	
 	if (proxy->is_func) {
 		/* the event listener was added with a JS function object */
@@ -561,7 +547,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	}
 
 	NPN_ReleaseObject (depobj);
-	NPN_ReleaseObject (NPVARIANT_TO_OBJECT (args [1]));
+	NPN_ReleaseObject (depargs);
 }
 
 
@@ -574,11 +560,6 @@ event_object_add_javascript_listener (EventObject *obj, PluginInstance *plugin, 
 
 /*** EventArgs **/
 
-static const MoonNameIdMapping
-event_args_mapping[] = {
-	{ "tostring", MoonId_ToString },
-};
-
 static NPObject *
 event_args_allocate (NPP instance, NPClass *klass)
 {
@@ -588,37 +569,9 @@ event_args_allocate (NPP instance, NPClass *klass)
 MoonlightEventArgsType::MoonlightEventArgsType ()
 {
 	allocate = event_args_allocate;
-	AddMapping (event_args_mapping, COUNT (event_args_mapping));
 }
 
 MoonlightEventArgsType *MoonlightEventArgsClass;
-
-void
-MoonlightEventArgs::Dispose ()
-{
-	MoonlightObject::Dispose ();
-
-	if (args)
-		args->unref ();
-	args = NULL;
-}
-
-bool
-MoonlightEventArgs::Invoke (int id, NPIdentifier name,
-				       const NPVariant *args, uint32_t argCount,
-				       NPVariant *result)
-{
-	switch (id) {
-	case MoonId_ToString:
-		if (argCount != 0)
-			return false;
-
-		string_to_npvariant (this->args->GetTypeName (), result);
-		return true;
-	default:
-		return false;
-	}
-}
 
 /*** ErrorEventArgs ***/
 static NPObject *
@@ -639,7 +592,7 @@ erroreventargs_mapping[] = {
 };
 
 bool
-MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	ErrorEventArgs *args = GetErrorEventArgs ();
 
@@ -701,7 +654,7 @@ MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier, NPVariant *result)
 		}
 		return true;
 	default:
-		return false;
+		return MoonlightEventArgs::GetProperty (id, name, result);
 	}
 }
 
@@ -1020,12 +973,6 @@ mouse_event_allocate (NPP instance, NPClass *klass)
 	return new MoonlightMouseEventArgsObject (instance);
 }
 
-void
-MoonlightMouseEventArgsObject::Dispose ()
-{
-	MoonlightEventArgs::Dispose ();
-}
-
 static const MoonNameIdMapping
 mouse_event_mapping[] = {
 	{ "ctrl", MoonId_Ctrl },
@@ -1036,7 +983,7 @@ mouse_event_mapping[] = {
 };
 
 bool
-MoonlightMouseEventArgsObject::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightMouseEventArgsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	MouseEventArgs *event_args = GetMouseEventArgs ();
 	int state = event_args->GetState ();
@@ -1051,7 +998,7 @@ MoonlightMouseEventArgsObject::GetProperty (int id, NPIdentifier, NPVariant *res
 		return true;
 
 	default:
-		return false;
+		return MoonlightEventArgs::GetProperty (id, name, result);
 	}
 }
 
@@ -1149,7 +1096,7 @@ marker_reached_event_mapping[] = {
 };
 
 bool
-MoonlightMarkerReachedEventArgsObject::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightMarkerReachedEventArgsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	MarkerReachedEventArgs *args = GetMarkerReachedEventArgs ();
 	TimelineMarker *marker = args ? args->GetMarker () : NULL;
@@ -1161,7 +1108,7 @@ MoonlightMarkerReachedEventArgsObject::GetProperty (int id, NPIdentifier, NPVari
 		return true;
 	}
 	default:
-		return false;
+		return MoonlightEventArgs::GetProperty (id, name, result);;
 	}
 }
 
@@ -1192,7 +1139,7 @@ keyboard_event_mapping[] = {
 
 
 bool
-MoonlightKeyboardEventArgsObject::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightKeyboardEventArgsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	KeyboardEventArgs *args = GetKeyboardEventArgs ();
 
@@ -1214,7 +1161,7 @@ MoonlightKeyboardEventArgsObject::GetProperty (int id, NPIdentifier, NPVariant *
 		return true;
 
 	default:
-		return false;
+		return MoonlightEventArgs::GetProperty (id, name, result);
 	}
 }
 
@@ -1908,9 +1855,8 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier, const NPVariant *valu
 	case MoonId_FullScreen:
 		plugin->surface->SetFullScreen (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
-
-	case MoonId_OnResize:
 	case MoonId_OnFullScreenChange:
+	case MoonId_OnResize:
 	case MoonId_OnError: {
 		const char *event_name = map_moon_id_to_event_name (id);
 		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
@@ -2563,10 +2509,9 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::TEXTBLOCK:
 		np_class = dependency_object_classes [TEXT_BLOCK_CLASS];
 		break;
-	case Type::EVENTOBJECT:
-	case Type::SURFACE:
+	case Type::EVENTOBJECT: 
+	case Type::SURFACE: 
 		np_class = MoonlightEventObjectClass;
-		break;
 	case Type::STYLUSINFO:
 		np_class = dependency_object_classes [STYLUS_INFO_CLASS];
 		break;
@@ -2579,9 +2524,26 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::STROKE:
 		np_class = dependency_object_classes [STROKE_CLASS];
 		break;
+	case Type::MOUSEEVENTARGS:
+		np_class = dependency_object_classes [MOUSE_EVENT_ARGS_CLASS];
+		break;
+	case Type::KEYBOARDEVENTARGS:
+		np_class = dependency_object_classes [KEYBOARD_EVENT_ARGS_CLASS];
+		break;
+	case Type::MARKERREACHEDEVENTARGS:
+		np_class = dependency_object_classes [MARKER_REACHED_EVENT_ARGS_CLASS];
+		break;
+	case Type::ERROREVENTARGS:
+	case Type::PARSERERROREVENTARGS:
+	case Type::IMAGEERROREVENTARGS:
+	case Type::MEDIAERROREVENTARGS:
+		np_class = dependency_object_classes [ERROR_EVENT_ARGS_CLASS];
+		break;
 	default:
 		if (Type::Find (kind)->IsSubclassOf (Type::COLLECTION))
 			np_class = dependency_object_classes [COLLECTION_CLASS];
+		else if (Type::Find (kind)->IsSubclassOf (Type::EVENTARGS)) 
+			np_class = dependency_object_classes [EVENT_ARGS_CLASS];
 		else
 			np_class = dependency_object_classes [DEPENDENCY_OBJECT_CLASS];
 	}
@@ -4185,14 +4147,20 @@ plugin_init_classes (void)
 	dependency_object_classes [STROKE_COLLECTION_CLASS] = new MoonlightStrokeCollectionType ();
 	dependency_object_classes [STROKE_CLASS] = new MoonlightStrokeType ();
 	dependency_object_classes [TEXT_BLOCK_CLASS] = new MoonlightTextBlockType ();
-
+	/* Event Arg Types */
+	dependency_object_classes [EVENT_ARGS_CLASS] = new MoonlightEventArgsType ();
+	dependency_object_classes [ERROR_EVENT_ARGS_CLASS] = new MoonlightErrorEventArgsType ();
+	dependency_object_classes [KEYBOARD_EVENT_ARGS_CLASS] = new MoonlightKeyboardEventArgsType ();
+	dependency_object_classes [MARKER_REACHED_EVENT_ARGS_CLASS] = new MoonlightMarkerReachedEventArgsType ();
+	dependency_object_classes [MOUSE_EVENT_ARGS_CLASS] = new MoonlightMouseEventArgsType ();
+	
 	MoonlightContentClass = new MoonlightContentType ();
 	MoonlightDurationClass = new MoonlightDurationType ();
-	MoonlightErrorEventArgsClass = new MoonlightErrorEventArgsType ();
+	//MoonlightErrorEventArgsClass = new MoonlightErrorEventArgsType ();
 	MoonlightEventObjectClass = new MoonlightEventObjectType ();
-	MoonlightKeyboardEventArgsClass = new MoonlightKeyboardEventArgsType ();
-	MoonlightMarkerReachedEventArgsClass = new MoonlightMarkerReachedEventArgsType ();
-	MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
+	//MoonlightKeyboardEventArgsClass = new MoonlightKeyboardEventArgsType ();
+	//MoonlightMarkerReachedEventArgsClass = new MoonlightMarkerReachedEventArgsType ();
+	//MoonlightMouseEventArgsClass = new MoonlightMouseEventArgsType ();
 	MoonlightObjectClass = new MoonlightObjectType ();
 	MoonlightPointClass = new MoonlightPointType ();
 	MoonlightRectClass = new MoonlightRectType ();

@@ -1,3 +1,10 @@
+2008-03-14  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.h, plugin-class.cpp: wrap all EventArg subclasses
+	as dependencyobjects.
+
+	* plugin.cpp: connect to the plugin onerror event.
+
 2008-03-14  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h, plugin-class.cpp: wrapped TimeSpan and Duration
