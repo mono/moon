@@ -322,6 +322,49 @@ if test -z $mozilla_plugin; then
    AC_MSG_ERROR([You need to install the Mozilla PLUGIN development package.])
 fi
 
+# Testing support
+TESTING_SUPPORTED=yes
+AC_MSG_CHECKING(xulrunner-gtkmozembed)
+if pkg-config xulrunner-gtkmozembed; then
+   AC_MSG_RESULT(found)
+else
+   echo You need to install the Mozilla gtkmozembed development package if you want to run the Moonlight tests.
+   TESTING_SUPPORTED=no
+fi
+
+AC_MSG_CHECKING(xtst 1.0)
+if pkg-config xtst; then
+   AC_MSG_RESULT(found)
+else
+   echo You need to install XTEST if you want to run the Moonlight tests.
+   TESTING_SUPPORTED=no
+fi
+
+AC_MSG_CHECKING(ImageMagick++ 6.3.5)
+if pkg-config ImageMagick++; then
+   AC_MSG_RESULT(found)
+else
+   echo You need to install ImageMagick++ if you want to run the Moonlight tests.
+   TESTING_SUPPORTED=no
+fi
+
+AC_MSG_CHECKING(dbus-glib-1 0.74)
+if pkg-config dbus-glib-1; then
+   AC_MSG_RESULT(found)
+else
+   echo You need to install dbus-glib-1 if you want to run the Moonlight tests.
+   TESTING_SUPPORTED=no
+fi
+
+AC_MSG_CHECKING(ndesk-dbus-1.0 0.6.0)
+if pkg-config ndesk-dbus-1.0; then
+   AC_MSG_RESULT(found)
+else
+   echo You need to install ndesk-dbus if you want to run the Moonlight tests.
+   TESTING_SUPPORTED=no
+fi
+
+
 XPIDL=`pkg-config --variable=libdir $mozilla_xpcom`/xpidl
 XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
 
@@ -412,6 +455,28 @@ fi
 #CXXFLAGS="$CXXFLAGS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 #LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 
+
+SHOCKER_CFLAGS=`pkg-config --cflags glib-2.0 gdk-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin`
+SHOCKER_LIBS=`pkg-config --libs glib-2.0 gdk-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin`
+
+AGVIEWER_CFLAGS=`pkg-config --cflags glib-2.0 gtk+-2.0 xulrunner-gtkmozembed dbus-glib-1`
+AGVIEWER_LIBS=`pkg-config --libs glib-2.0 gtk+-2.0 xulrunner-gtkmozembed dbus-glib-1`
+
+AC_SUBST(SHOCKER_CFLAGS)
+AC_SUBST(SHOCKER_LIBS)
+
+AC_SUBST(AGVIEWER_CFLAGS)
+AC_SUBST(AGVIEWER_LIBS)
+
+
+MS_DRTLIST=none
+# Look to see if the MS tests are installed
+if test -f $PWD/../moonlight-ms/tests/port/drop1030/built/drtlist.xml; then
+   MS_DRTLIST=$PWD/../moonlight-ms/tests/port/drop1030/built/drtlist.xml
+   AC_SUBST(MS_DRTLIST)
+fi
+
+
 AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
 #AC_SUBST(LIBS)
@@ -423,7 +488,11 @@ src/Makefile
 gtk/Makefile
 man/Makefile
 gtk/gtksilver.pc
+test/Makefile
 test/harness/Makefile
+test/harness/shocker/Makefile
+test/harness/agviewer/Makefile
+test/harness/test-runner/Makefile
 tools/Makefile
 tools/mopen/Makefile
 tools/svg2xaml/Makefile
@@ -443,5 +512,5 @@ Moonlight configuration:
 	Support for ffmpeg: $FFMPEG
 	Support for mmx: $HAVE_MMX
 	Support for sse2: $HAVE_SSE2
-
+	Support for running the test harness: $TESTING_SUPPORTED
 EOF
