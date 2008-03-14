@@ -1,5 +1,10 @@
 2008-03-14  Michael Dominic K.  <mdk@mdk.am>
 
+	* brush.cpp: In ImageBrush, if the image has not been downloaded
+	yet, draw nothing like SL does -- instead of the grayish shadow.
+
+2008-03-14  Michael Dominic K.  <mdk@mdk.am>
+
 	* dependencyobject.cpp: Check the types of objects when
 	resolving_property_paths and some more verbosity to the error
 	reporting. Now test-crash-non-existing-animation-target-prop3
