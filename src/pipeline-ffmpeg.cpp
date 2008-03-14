@@ -194,7 +194,7 @@ FfmpegDecoder::Cleanup (MediaFrame *frame)
 	if (av_frame != NULL) {
 		if (av_frame->data[0] != frame->data_stride[0]) {
 			for (int i = 0; i < 4; i++)
-				g_free (frame->data_stride[i]);
+				free (frame->data_stride[i]);
 		}
 		
 		frame->decoder_specific_data = NULL;
@@ -268,7 +268,9 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 			
 			for (int i = 0; i < 4; i++) {
 				if (plane_bytes [i] != 0) {
-					mf->data_stride [i] = (uint8_t *) g_malloc (plane_bytes[i] + stream->min_padding);
+					if (posix_memalign ((void **)&mf->data_stride [i], 16, plane_bytes[i] + stream->min_padding)) {
+						g_error ("Could not allocate memory");
+					}
 					memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);
 				} else {
 					mf->data_stride[i] = frame->data[i];

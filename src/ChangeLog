@@ -1,3 +1,9 @@
+2008-03-14  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline-ffmpeg.cpp: Use posix_memalign for the YUV data buffers
+	to get a 16byte alignment for SSE2.
+	* yuv-converter.cpp: Remove most of our unaligned load/stores.
+
 2008-03-14  Larry Ewing  <lewing@novell.com>
 
 	* mplayer.cpp (MediaPlayer::Open): use posix_memalign to allocate

@@ -111,9 +111,9 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (32))) = {
 				: : "r" (coeff_storage));								\
 	} while (0);
 
-#define YUV2RGB_INTEL_SIMD(mov_instr, movu_instr, reg_type, output_offset1, output_offset2, output_offset3, y_plane, dest) do { 	\
+#define YUV2RGB_INTEL_SIMD(mov_instr, reg_type, output_offset1, output_offset2, output_offset3, y_plane, dest) do { 	\
 			__asm__ __volatile__ ( 										\
-				movu_instr " (%0), %%"reg_type"0;"		/* Load Y plane into r0 */		\
+				mov_instr " (%0), %%"reg_type"0;"		/* Load Y plane into r0 */		\
 				mov_instr " 96(%2), %%"reg_type"7;"		/* Load 16 into r7 */			\
 				"psubusb %%"reg_type"7, %%"reg_type"0;"		/* Y = Y - 16 */			\
 															\
@@ -166,8 +166,8 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (32))) = {
 				"punpcklbw %%"reg_type"3, %%"reg_type"1;"	/* r2 [B0 G0 R0 FF B1 G1 R1 FF ...] */	\
 				"punpckhbw %%"reg_type"3, %%"reg_type"4;"	/* r3 [B2 G2 R2 FF B3 G3 R3 FF ...] */	\
 															\
-				movu_instr " %%"reg_type"1, (%1);"		/* output BGRA */	 		\
-				movu_instr " %%"reg_type"4, "output_offset1"(%1);"					\
+				mov_instr " %%"reg_type"1, (%1);"		/* output BGRA */	 		\
+				mov_instr " %%"reg_type"4, "output_offset1"(%1);"					\
 															\
 				mov_instr " 112(%2), %%"reg_type"4;"							\
 				"punpckhbw %%"reg_type"5, %%"reg_type"6;"						\
@@ -178,18 +178,18 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (32))) = {
 				"punpcklbw %%"reg_type"7, %%"reg_type"6;"						\
 				"punpckhbw %%"reg_type"7, %%"reg_type"4;"						\
 															\
-				movu_instr " %%"reg_type"6, "output_offset2"(%1);"					\
-				movu_instr " %%"reg_type"4, "output_offset3"(%1);"					\
+				mov_instr " %%"reg_type"6, "output_offset2"(%1);"					\
+				mov_instr " %%"reg_type"4, "output_offset3"(%1);"					\
 				: : "r" (y_plane), "r" (dest), "r" (&simd_table));					\
 		} while (0);
 #endif
 
 #if HAVE_SSE2
-#define YUV2RGB_SSE(y_plane, dest) YUV2RGB_INTEL_SIMD("movdqa", "movdqu", "xmm", "16", "32", "48", y_plane, dest)
+#define YUV2RGB_SSE(y_plane, dest) YUV2RGB_INTEL_SIMD("movdqa", "xmm", "16", "32", "48", y_plane, dest)
 #endif
 
 #if HAVE_MMX
-#define YUV2RGB_MMX(y_plane, dest) YUV2RGB_INTEL_SIMD("movq", "movq", "mm", "8", "16", "24", y_plane, dest)
+#define YUV2RGB_MMX(y_plane, dest) YUV2RGB_INTEL_SIMD("movq", "mm", "8", "16", "24", y_plane, dest)
 #endif
 
 #define CORRECT_PLANES() do {				\
