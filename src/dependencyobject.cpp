@@ -1169,12 +1169,22 @@ resolve_property_path (DependencyObject **o, const char *path)
 				g_free (propn);
 				if (typen)
 					g_free (typen);
+				*o = NULL;
 				return NULL;
 			}
 	
 			res = DependencyObject::GetDependencyProperty (t->type, propn);
-			if (!res)
+			if (!res) {
 				g_warning ("Can't find %s property in %s", propn, typen);
+				*o = NULL;
+				return NULL;
+			}
+
+			if (!lu->Is (t->type)) {
+				g_warning ("Got %s but expected a type of %s!", typen, lu->GetTypeName ());
+				*o = NULL;
+				return NULL;
+			}
 
 			g_free (propn);
 			if (typen)
@@ -1210,7 +1220,8 @@ resolve_property_path (DependencyObject **o, const char *path)
 				lu = ((Collection::Node *) n)->obj;
 			else {
 				g_warning ("%s collection doesn't have element %d!", lu->GetTypeName (), indexer);
-				lu = NULL;
+				*o = NULL;
+				return NULL;
 			}
 
 			i += 1;

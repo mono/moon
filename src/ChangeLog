@@ -1,5 +1,14 @@
 2008-03-14  Michael Dominic K.  <mdk@mdk.am>
 
+	* dependencyobject.cpp: Check the types of objects when
+	resolving_property_paths and some more verbosity to the error
+	reporting. Now test-crash-non-existing-animation-target-prop3
+	fails with the proper warning.
+
+	Also, terminate first on first error found.
+
+2008-03-14  Michael Dominic K.  <mdk@mdk.am>
+
 	* dependencyobject.cpp: Even more verbose error reporting in the
 	resolve_property_path ().
 
