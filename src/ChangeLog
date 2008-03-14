@@ -1,3 +1,7 @@
+2008-03-14  Michael Dominic K.  <mdk@mdk.am>
+	
+	* animation.cpp: Changing few printf's to g_warnings.
+
 2008-03-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* shape.cpp: Deal with different [start|end|dash] caps for lines 
@@ -12,7 +16,6 @@
 	* mplayer.cpp: AudioNode::Play: property calculate the delay between the
 	  play position in the hardware and the pts we just sent to alsa, and
 	  subtract it from that pts.
-
 
 Thu Mar 13 23:25:41 CET 2008 Paolo Molaro <lupus@ximian.com>
 

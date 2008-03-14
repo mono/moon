@@ -193,7 +193,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 				break;
 		}
 		if (!targetProperty) {
-			printf ("no target property\n");
+			g_warning ("No target property!");
 			return;
 		}
 
@@ -204,20 +204,20 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 				break;
 		}
 		if (!targetName) {
-			printf ("no target name\n");
+			g_warning ("No target name!");
 			return;
 		}
 
 		//printf ("Got %s %s\n", targetProperty, targetName);
 		DependencyObject *o = FindName (targetName);
 		if (!o) {
-			printf ("no object named %s\n", targetName);
+			g_warning ("No object named %s!", targetName);
 			return;
 		}
 
 		DependencyProperty *prop = resolve_property_path (&o, targetProperty);
 		if (!prop) {
-			printf ("no property named %s on object %s, which has type %s\n", targetProperty, targetName, o->GetTypeName());
+			g_warning ("No property named %s on object %s, which has type %s!", targetProperty, targetName, o->GetTypeName());
 			return;
 		}
 
