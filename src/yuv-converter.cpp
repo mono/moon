@@ -43,7 +43,7 @@ G_END_DECLS
 #define ALPHA_MASK 0xFFFFFFFFFFFFFFFFULL
 
 #if HAVE_SSE2 || HAVE_MMX
-static const uint64_t simd_table [16] __attribute__ ((aligned (32))) = {
+static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 									RED_V_C, RED_V_C,
 									GREEN_V_C, GREEN_V_C,
 									GREEN_U_C, GREEN_U_C,
@@ -64,12 +64,15 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (32))) = {
 			}												\
 	} while (0); 
 	
-#define CALC_COLOR_MODIFIERS(mov_instr, movu_instr, shift_instr, reg_type, zeros, output_offset1, output_offset2, u, v, coeff_storage) do {	\
+#define CALC_COLOR_MODIFIERS(mov_instr, shift_instr, reg_type, u, v, coeff_storage) do {				\
 			__asm__ __volatile__ (										\
-				shift_instr " $" zeros ", %%"reg_type"7;"						\
+				"pxor %%"reg_type"7, %%"reg_type"7;"							\
 															\
-				movu_instr " (%0), %%"reg_type"1;"							\
-				movu_instr " (%1), %%"reg_type"2;"							\
+				mov_instr " (%0), %%"reg_type"1;"							\
+				mov_instr " (%1), %%"reg_type"2;"							\
+															\
+				mov_instr " %%"reg_type"1, %%"reg_type"5;"						\
+				mov_instr " %%"reg_type"2, %%"reg_type"6;"						\
 															\
 				"punpcklbw %%"reg_type"7, %%"reg_type"1;"						\
 				"punpcklbw %%"reg_type"7, %%"reg_type"2;"						\
@@ -98,16 +101,59 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (32))) = {
 				"psraw $6, %%"reg_type"1;"				/* Dblue = Dblue / 64 */	\
 															\
 				mov_instr " %%"reg_type"2, (%2);"			/* backup Dred */		\
-				mov_instr " %%"reg_type"3, "output_offset1"(%2);"	/* backup Dgreen */		\
-				mov_instr " %%"reg_type"1, "output_offset2"(%2);"	/* backup Dblue */		\
+				mov_instr " %%"reg_type"3, 16(%2);"			/* backup Dgreen */		\
+				mov_instr " %%"reg_type"1, 32(%2);"			/* backup Dblue */		\
+															\
+				"pxor %%"reg_type"7, %%"reg_type"7;"							\
+															\
+				"punpckhbw %%"reg_type"7, %%"reg_type"5;"						\
+				"punpckhbw %%"reg_type"7, %%"reg_type"6;"						\
+															\
+				mov_instr " 80(%3), %%"reg_type"7;"							\
+				"psubsw %%"reg_type"7, %%"reg_type"5;"			/* U = U - 128 */		\
+				"psubsw %%"reg_type"7, %%"reg_type"6;"			/* V = V - 128 */		\
+															\
+				mov_instr " %%"reg_type"5, %%"reg_type"3;"						\
+				mov_instr " %%"reg_type"6, %%"reg_type"4;"						\
+															\
+				mov_instr " (%3), %%"reg_type"7;"							\
+				"pmullw %%"reg_type"7, %%"reg_type"6;"			/* calculate Dred */		\
+				"psraw $6, %%"reg_type"6;"				/* Dred = Dred / 64 */		\
+															\
+				mov_instr " 32(%3), %%"reg_type"7;"							\
+				"pmullw %%"reg_type"7, %%"reg_type"3;"			/* calculate Ugreen */		\
+				"psraw $6, %%"reg_type"3;"				/* Ugreen = Ugreen / 64 */	\
+				mov_instr " 16(%3), %%"reg_type"7;"							\
+				"pmullw %%"reg_type"7, %%"reg_type"4;"			/* calculate Vgreen */		\
+				"psraw $6, %%"reg_type"4;"				/* Vgreen = Vgreen / 64 */	\
+				"paddsw %%"reg_type"4, %%"reg_type"3;"			/* Dgreen = Ugreen + Vgreen */	\
+															\
+				mov_instr " 48(%3), %%"reg_type"7;"							\
+				"pmullw %%"reg_type"7, %%"reg_type"5;"			/* calculate Dblue */		\
+				"psraw $6, %%"reg_type"5;"				/* Dblue = Dblue / 64 */	\
+															\
+				mov_instr " %%"reg_type"6, 48(%2);"			/* backup Dred */		\
+				mov_instr " %%"reg_type"3, 64(%2);"			/* backup Dgreen */		\
+				mov_instr " %%"reg_type"5, 80(%2);"			/* backup Dblue */		\
 				: : "r" (u), "r" (v), "r" (coeff_storage), "r" (&simd_table));				\
 	} while (0);
 
-#define RESTORE_COLOR_MODIFIERS(mov_instr, reg_type, coeff_storage, input_offset1, input_offset2) do {			\
+#define COPY_COLOR_MODIFIERS(mov_instr, reg_type, coeff_storage) do {							\
 			__asm__ __volatile__ (										\
-				mov_instr " (%0), %%"reg_type"2;"				/* restore Dred */	\
-				mov_instr " "input_offset1"(%0), %%"reg_type"3;"		/* restore Dgreen */	\
-				mov_instr " "input_offset2"(%0), %%"reg_type"1;"		/* restore Dblue */	\
+				mov_instr " 48(%0), %%"reg_type"2;"			/* restore Dred */		\
+				mov_instr " 64(%0), %%"reg_type"3;"			/* restore Dgreen */		\
+				mov_instr " 80(%0), %%"reg_type"1;"			/* restore Dblue */		\
+				mov_instr " %%"reg_type"2, (%0);"			/* backup Dred */		\
+				mov_instr " %%"reg_type"3, 16(%0);"			/* backup Dgreen */		\
+				mov_instr " %%"reg_type"1, 32(%0);"			/* backup Dblue */		\
+				: : "r" (coeff_storage));								\
+	} while (0);
+
+#define RESTORE_COLOR_MODIFIERS(mov_instr, reg_type, coeff_storage) do {						\
+			__asm__ __volatile__ (										\
+				mov_instr " (%0), %%"reg_type"2;"			/* restore Dred */		\
+				mov_instr " 16(%0), %%"reg_type"3;"			/* restore Dgreen */		\
+				mov_instr " 32(%0), %%"reg_type"1;"			/* restore Dblue */		\
 				: : "r" (coeff_storage));								\
 	} while (0);
 
@@ -313,59 +359,58 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 
 	int i, j;
 
-	int width = dstStride[0]/4;
+	int width = dstStride[0] >> 2;
 	int height = srcSlideH;
-	int planar_delta = srcStride[0] - (dstStride[0]/4);
 	
-	uint64_t rgb_uv [6];
+	uint64_t rgb_uv [12] __attribute__ ((aligned (16)));
 
 #if HAVE_SSE2
 	if (have_sse2) {
-		for (i = 0; i < height/2; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
-			for (j = 0; j < width/16; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
-				CALC_COLOR_MODIFIERS("movdqa", "movdqu", "pslldq", "xmm", "128", "16", "32", u_plane, v_plane, &rgb_uv);
+		for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
+			for (j = 0; j < width >> 4; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
+				if ((int)u_plane % 16) {
+					COPY_COLOR_MODIFIERS("movdqa", "xmm", &rgb_uv)
+				} else {
+					CALC_COLOR_MODIFIERS("movdqa", "pslldq", "xmm", u_plane, v_plane, &rgb_uv);
+				}
 			
 				YUV2RGB_SSE(y_row1, dest_row1);
 			
-				RESTORE_COLOR_MODIFIERS("movdqa", "xmm", &rgb_uv, "16", "32");
+				RESTORE_COLOR_MODIFIERS("movdqa", "xmm", &rgb_uv);
 
 				YUV2RGB_SSE(y_row2, dest_row2);
 			}
-			PROCESS_REMAINDER(16);
-
-			CORRECT_PLANES();
 		}
-		__asm__ __volatile__ ("emms");
 	} else {
 #endif
 #if HAVE_MMX
 		if (have_mmx) {
-			for (i = 0; i < height/2; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
-				for (j = 0; j < width/8; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
-					CALC_COLOR_MODIFIERS("movq", "movd", "psllq", "mm", "64", "8", "16", u_plane, v_plane, &rgb_uv);
+			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
+				for (j = 0; j <  width >> 3; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
+					if ((int)u_plane % 8) {
+						COPY_COLOR_MODIFIERS("movq", "mm", &rgb_uv)
+					} else {
+						CALC_COLOR_MODIFIERS("movq", "psllq", "mm", u_plane, v_plane, &rgb_uv);
+					}
 
 					YUV2RGB_MMX(y_row1, dest_row1);
 
-					RESTORE_COLOR_MODIFIERS("movq", "mm", &rgb_uv, "8", "16");
+					RESTORE_COLOR_MODIFIERS("movq", "mm", &rgb_uv);
 
 					YUV2RGB_MMX(y_row2, dest_row2);
 				}
-				PROCESS_REMAINDER(8);
-
-				CORRECT_PLANES();
 			}
 			__asm__ __volatile__ ("emms");
 		} else {
 #endif
-			for (i = 0; i < height; i += 2, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
-				for (j = 0; j < width; j += 2, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
+			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
+				for (j = 0; j < width >> 1; j ++, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
 					YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);
 					YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));
 			
 					YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);
 					YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));
 				}
-				CORRECT_PLANES();
 			}
 #if HAVE_MMX
 		}

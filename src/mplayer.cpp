@@ -309,9 +309,9 @@ MediaPlayer::Open (Media *media)
 			width = video->stream->width;
 
 			stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);
-			if (stride % 16) {
-				int remain = stride % 16;
-				stride += 16 - remain;
+			if (stride % 64) {
+				int remain = stride % 64;
+				stride += 64 - remain;
 			}
 			
 			// for conversion to rgb32 format needed for rendering with 16 byte alignment

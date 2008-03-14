@@ -1,3 +1,10 @@
+2008-03-14  Geoff Norton  <gnorton@novell.com>
+
+	* mplayer.cpp: We actually need to align % 64 bytes on a 16 byte 
+	bounary.  Each pel will expand to 4 bytes.  Since we process 16
+	pels at a time in SSE2 we need 64 output bytes per iteration.
+	* yuv-converter.cpp: Remove the rest of the unaligned move/stores
+
 2008-03-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: (flush_char_data) free data inside GString since the
