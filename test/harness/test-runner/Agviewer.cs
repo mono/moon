@@ -46,7 +46,7 @@ namespace MoonlightTests {
 
 		public static TestResult RunTest (Test test, int timeout, out string stdout, out string stderr)
 		{
-			string args = String.Format ("-working-dir {0} {1}", Path.GetDirectoryName (test.InputFile), test.InputFile);
+			string args = String.Format ("-working-dir {0} {1}", Path.GetFullPath (Path.GetDirectoryName (test.InputFile)), Path.GetFullPath (test.InputFile));
 			ExternalProcess ep = new ExternalProcess (GetProcessPath (), args, timeout);
 
 			ep.Run (true);
