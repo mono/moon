@@ -603,4 +603,8 @@
         inputFile="test-crash-non-existing-animation-target-prop.xaml"
         masterFile10="../harness/masters/test-crash-non-existing-animation-target-propMaster.png"
    />
+   <Test id="151"
+        inputFile="test-crash-non-existing-animation-target-prop2.xaml"
+        masterFile10="../harness/masters/test-crash-non-existing-animation-target-prop2Master.png"
+   />
 </DRTList>

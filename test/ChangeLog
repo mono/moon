@@ -1,6 +1,15 @@
 2008-03-13  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/drtlist.xml:
+	* xalm/test-crash-non-existing-animation-target-prop2.xaml:
+	Adding another (different) test-case for trying to access something that
+	doesn't exist.
+
+	Master needed.
+
+22008-03-13  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/drtlist.xml:
 	* xalm/test-crash-non-existing-animation-target-prop.xaml:
 	Adding a test-case against trying to animate a property that
 	doesn't exist. Currently crashes ML. 
