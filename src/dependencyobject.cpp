@@ -446,7 +446,7 @@ DependencyObject::RemovePropertyChangeListener (DependencyObject *listener, Depe
 	for (GSList *l = listener_list; l; l = l->next) {
 		Listener *listen = (Listener*)l->data;
 
-		if (listen && (listen->dob == listener) && (child_property == NULL || listen->prop == child_property)) {
+		if ((listen->dob == listener) && (child_property == NULL || listen->prop == child_property)) {
 			listener_list = g_slist_remove_link (listener_list, l);
 			delete listen;
 		}
