@@ -363,7 +363,7 @@ else
    echo You need to install ndesk-dbus if you want to run the Moonlight tests.
    TESTING_SUPPORTED=no
 fi
-
+AM_CONDITIONAL(INCLUDE_TESTING, test $TESTING_SUPPORTED = yes)
 
 XPIDL=`pkg-config --variable=libdir $mozilla_xpcom`/xpidl
 XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
