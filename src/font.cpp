@@ -899,7 +899,7 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 		FT_Set_Pixel_Sizes (face, 0, (int) size);
 		
 		glyphs = g_new0 (GlyphInfo, 256);
-		glyphs[0].unichar = 1; /* invalidate */
+		glyphs[0].index = 1; /* invalidate */
 		
 		// calculate underline thickness
 		thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
