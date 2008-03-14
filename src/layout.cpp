@@ -16,6 +16,10 @@
 #include "layout.h"
 
 
+#define BBOX_MARGIN 1.0
+#define BBOX_PADDING 2.0
+
+
 TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg)
 {
 	register gunichar *s, *d;
@@ -258,53 +262,13 @@ TextLayout::GetLayoutExtents (double *width, double *height)
 }
 
 
-struct Space {
-	double width;
-	int index;
-};
-
-#define BBOX_MARGIN 1.0
-#define BBOX_PADDING 2.0
-
-static int
-IndexOfLastWord (gunichar *text)
-{
-	gunichar *inptr = text;
-	gunichar *word = NULL;
-	
-	while (g_unichar_isspace (*inptr))
-		inptr++;
-	
-	while (*inptr) {
-		// skip over the word
-		word = inptr++;
-		while (*inptr && !g_unichar_isspace (*inptr))
-			inptr++;
-		
-		if (*inptr == '\n') {
-			word = NULL;
-			inptr++;
-		}
-		
-		// skip over lwsp
-		while (g_unichar_isspace (*inptr))
-			inptr++;
-	}
-	
-	if (word != NULL)
-		return (word - text);
-	
-	return -1;
-}
-
-
 static void
 print_run_text (const char *msg, gunichar *start, gunichar *end)
 {
 	GString *str = g_string_new ("");
 	
 	while (*start && (end ? start < end : true)) {
-		g_string_append_unichar (str, *start);
+		g_string_append_unichar (str, *start == 0xA0 ? '_' : *start);
 		start++;
 	}
 	
@@ -313,11 +277,78 @@ print_run_text (const char *msg, gunichar *start, gunichar *end)
 	g_string_free (str, true);
 }
 
+static const char *unicode_break_types[] = {
+	"G_UNICODE_BREAK_MANDATORY",
+	"G_UNICODE_BREAK_CARRIAGE_RETURN",
+	"G_UNICODE_BREAK_LINE_FEED",
+	"G_UNICODE_BREAK_COMBINING_MARK",
+	"G_UNICODE_BREAK_SURROGATE",
+	"G_UNICODE_BREAK_ZERO_WIDTH_SPACE",
+	"G_UNICODE_BREAK_INSEPARABLE",
+	"G_UNICODE_BREAK_NON_BREAKING_GLUE",
+	"G_UNICODE_BREAK_CONTINGENT",
+	"G_UNICODE_BREAK_SPACE",
+	"G_UNICODE_BREAK_AFTER",
+	"G_UNICODE_BREAK_BEFORE",
+	"G_UNICODE_BREAK_BEFORE_AND_AFTER",
+	"G_UNICODE_BREAK_HYPHEN",
+	"G_UNICODE_BREAK_NON_STARTER",
+	"G_UNICODE_BREAK_OPEN_PUNCTUATION",
+	"G_UNICODE_BREAK_CLOSE_PUNCTUATION",
+	"G_UNICODE_BREAK_QUOTATION",
+	"G_UNICODE_BREAK_EXCLAMATION",
+	"G_UNICODE_BREAK_IDEOGRAPHIC",
+	"G_UNICODE_BREAK_NUMERIC",
+	"G_UNICODE_BREAK_INFIX_SEPARATOR",
+	"G_UNICODE_BREAK_SYMBOL",
+	"G_UNICODE_BREAK_ALPHABETIC",
+	"G_UNICODE_BREAK_PREFIX",
+	"G_UNICODE_BREAK_POSTFIX",
+	"G_UNICODE_BREAK_COMPLEX_CONTEXT",
+	"G_UNICODE_BREAK_AMBIGUOUS",
+	"G_UNICODE_BREAK_UNKNOWN",
+	"G_UNICODE_BREAK_NEXT_LINE",
+	"G_UNICODE_BREAK_WORD_JOINER",
+	"G_UNICODE_BREAK_HANGUL_L_JAMO",
+	"G_UNICODE_BREAK_HANGUL_V_JAMO",
+	"G_UNICODE_BREAK_HANGUL_T_JAMO",
+	"G_UNICODE_BREAK_HANGUL_LV_SYLLABLE",
+	"G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE"
+};
+
+static void
+print_break_info (gunichar *text)
+{
+	register gunichar *inptr = text;
+	GUnicodeBreakType btype;
+	char c[7];
+	int i;
+	
+	printf ("Unicode break info:\n");
+	
+	while (*inptr) {
+		btype = g_unichar_break_type (*inptr);
+		i = g_unichar_to_utf8 (*inptr, c);
+		c[i] = '\0';
+		
+		printf ("\t%u %s: break type = %s\n", *inptr, c,
+			unicode_break_types[btype]);
+		
+		inptr++;
+	}
+}
+
+
+#define BreakSpace(btype) (btype == G_UNICODE_BREAK_SPACE || btype == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+#define BreakAfter(btype) (btype == G_UNICODE_BREAK_AFTER || btype == G_UNICODE_BREAK_NEXT_LINE || btype == G_UNICODE_BREAK_INSEPARABLE)
+#define BreakBefore(btype) (btype == G_UNICODE_BREAK_BEFORE || btype == G_UNICODE_BREAK_PREFIX)
+
 void
 TextLayout::LayoutWrapWithOverflow ()
 {
 	double x0 = 0.0, x1 = 0.0, wx = 0.0, dy = 0.0;
 	register gunichar *start, *word, *inptr;
+	GUnicodeBreakType btype;
 	bool underlined = false;
 	TextSegment *segment;
 	double descend = 0.0;
@@ -376,7 +407,8 @@ TextLayout::LayoutWrapWithOverflow ()
 		
 		do {
 			// always include the lwsp, it is allowed to go past max_width
-			while (*inptr == ' ') {
+			btype = g_unichar_break_type (*inptr);
+			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					advance = glyph->metrics.horiAdvance;
 					
@@ -390,6 +422,8 @@ TextLayout::LayoutWrapWithOverflow ()
 				}
 				
 				inptr++;
+				
+				btype = g_unichar_break_type (*inptr);
 			}
 			
 			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
@@ -442,7 +476,8 @@ TextLayout::LayoutWrapWithOverflow ()
 			
 			// append this word onto the line
 			inptr = word;
-			while (*inptr && *inptr != ' ') {
+			btype = g_unichar_break_type (*inptr);
+			while (*inptr && !BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					advance = glyph->metrics.horiAdvance;
 					
@@ -459,6 +494,8 @@ TextLayout::LayoutWrapWithOverflow ()
 				}
 				
 				inptr++;
+				
+				btype = g_unichar_break_type (*inptr);
 			}
 			
 			actual_width = MAX (actual_width, x1);
@@ -492,6 +529,7 @@ TextLayout::LayoutNoWrap ()
 {
 	double x0 = 0.0, x1 = 0.0, dy = 0.0;
 	register gunichar *inptr;
+	GUnicodeBreakType btype;
 	bool underlined = false;
 	bool clipped = false;
 	TextSegment *segment;
@@ -555,7 +593,8 @@ TextLayout::LayoutNoWrap ()
 		
 		do {
 			// always include the lwsp, it is allowed to go past max_width
-			while (*inptr == ' ') {
+			btype = g_unichar_break_type (*inptr);
+			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					advance = glyph->metrics.horiAdvance;
 					
@@ -569,6 +608,8 @@ TextLayout::LayoutNoWrap ()
 				}
 				
 				inptr++;
+				
+				btype = g_unichar_break_type (*inptr);
 			}
 			
 			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
@@ -581,7 +622,8 @@ TextLayout::LayoutNoWrap ()
 				break;
 			
 			// append this word onto the line
-			while (*inptr && *inptr != ' ') {
+			btype = g_unichar_break_type (*inptr);
+			while (*inptr && !BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					advance = glyph->metrics.horiAdvance;
 					
@@ -595,6 +637,8 @@ TextLayout::LayoutNoWrap ()
 				}
 				
 				inptr++;
+				
+				btype = g_unichar_break_type (*inptr);
 			}
 			
 			actual_width = MAX (actual_width, x1);
@@ -631,13 +675,6 @@ TextLayout::LayoutNoWrap ()
 			actual_height = dy;
 	}
 }
-
-
-struct LastWord {
-	TextRun *run;
-	gunichar *word;
-};
-
 
 static bool
 isLastWord (TextRun *run, gunichar *word, bool *include_lwsp)
@@ -678,6 +715,13 @@ isLastWord (TextRun *run, gunichar *word, bool *include_lwsp)
 }
 
 
+struct WordChar {
+	GUnicodeBreakType btype;
+	gunichar *c;
+	double x1;
+};
+
+
 /**
  * Notes: The last 'word' of any line must not be broken (bug in
  * Silverlight's text layout)
@@ -687,6 +731,7 @@ TextLayout::LayoutWrap ()
 {
 	double x0 = 0.0, x1 = 0.0, wx = 0.0, dy = 0.0;
 	register gunichar *start, *word, *inptr;
+	GUnicodeBreakType btype;
 	bool include_lwsp = false;
 	bool underlined = false;
 	bool last_word = false;
@@ -697,8 +742,14 @@ TextLayout::LayoutWrap ()
 	GlyphInfo *glyph;
 	TextLine *line;
 	double advance;
+	GArray *array;
 	uint32_t prev;
 	TextRun *run;
+	WordChar wc;
+	bool after;
+	guint i;
+	
+	array = g_array_new (false, false, sizeof (WordChar));
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
@@ -743,6 +794,7 @@ TextLayout::LayoutWrap ()
 		
 		segment = new TextSegment (run, 0);
 		print_run_text ("Laying out Run.Text", run->text, NULL);
+		print_break_info (run->text);
 		inptr = run->text;
 		prev = 0;
 		x1 = x0;
@@ -750,7 +802,8 @@ TextLayout::LayoutWrap ()
 		do {
 			// always include the lwsp, it is allowed to go past max_width
 			start = inptr;
-			while (*inptr == ' ') {
+			btype = g_unichar_break_type (*inptr);
+			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					advance = glyph->metrics.horiAdvance;
 					
@@ -764,6 +817,8 @@ TextLayout::LayoutWrap ()
 				}
 				
 				inptr++;
+				
+				btype = g_unichar_break_type (*inptr);
 			}
 			
 			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
@@ -819,7 +874,9 @@ TextLayout::LayoutWrap ()
 			
 			// append this word onto the line
 			inptr = word;
-			while (*inptr && *inptr != ' ') {
+			g_array_set_size (array, 0);
+			btype = g_unichar_break_type (*inptr);
+			while (*inptr && !BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					advance = glyph->metrics.horiAdvance;
 					
@@ -831,6 +888,7 @@ TextLayout::LayoutWrap ()
 					if (max_width > 0.0 && (x1 + advance) > (max_width + 1.0)) {
 						if (wx == 0.0 && inptr > word && !last_word) {
 							// break in the middle of a word
+							// FIXME: need to respect unicode breaking
 							actual_width = MAX (actual_width, x1);
 							segment->end = inptr - run->text;
 							segment->advance = x1 - x0;
@@ -839,18 +897,73 @@ TextLayout::LayoutWrap ()
 							word = inptr;
 							goto linebreak;
 						} else if (wx > 0.0) {
-							// break before this word
-							segment->advance = wx - x0;
-							segment->width = wx - x0;
-							goto linebreak;
+							// scan backwards for a char to break after
+							i = array->len;
+							after = false;
+							
+							while (i > 0 && !after) {
+								wc = g_array_index (array, WordChar, i - 1);
+								
+								switch (wc.btype) {
+								case G_UNICODE_BREAK_INSEPARABLE:
+								case G_UNICODE_BREAK_NEXT_LINE:
+								case G_UNICODE_BREAK_AFTER:
+									// break after this char
+									after = true;
+									break;
+								case G_UNICODE_BREAK_BEFORE_AND_AFTER:
+									// only break after if there are chars before
+									after = (i > 1);
+									break;
+								case G_UNICODE_BREAK_BEFORE:
+								case G_UNICODE_BREAK_PREFIX:
+									if (i > 1) {
+										// break after the previous char
+										wc = g_array_index (array, WordChar, i - 2);
+										after = true;
+									}
+									break;
+								default:
+									// don't break here
+									break;
+								}
+								
+								i--;
+							}
+							
+							if (after) {
+								// break after a previous char in the word
+								inptr = wc.c + 1;
+								x1 = wc.x1;
+								
+								actual_width = MAX (actual_width, x1);
+								segment->end = inptr - run->text;
+								segment->advance = x1 - x0;
+								segment->width = x1 - x0;
+								blank = false;
+								word = inptr;
+								goto linebreak;
+							} else {
+								// break before this word
+								segment->advance = wx - x0;
+								segment->width = wx - x0;
+								goto linebreak;
+							}
 						}
 					}
 					
-					prev = glyph->index;
 					x1 += advance;
+					
+					wc.btype = btype;
+					wc.c = inptr;
+					wc.x1 = x1;
+					
+					g_array_append_val (array, wc);
 				}
 				
 				inptr++;
+				
+				btype = g_unichar_break_type (*inptr);
 			}
 			
 			actual_width = MAX (actual_width, x1);
@@ -877,6 +990,8 @@ TextLayout::LayoutWrap ()
 		if (!blank || underlined)
 			actual_height = dy;
 	}
+	
+	g_array_free (array, true);
 }
 
 
@@ -901,7 +1016,7 @@ print_lines (List *lines)
 		
 		while (segment) {
 			for (i = segment->start; i < segment->end; i++)
-				g_string_append_unichar (str, segment->run->text[i]);
+				g_string_append_unichar (str, segment->run->text[i] == 0xA0 ? '_' : segment->run->text[i]);
 			
 			printf ("\"%s\", ", str->str);
 			g_string_truncate (str, 0);
