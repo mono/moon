@@ -1,3 +1,8 @@
+2008-03-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* shape.cpp: Deal with different [start|end|dash] caps for lines 
+	and polylines.
+
 2008-03-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Comment out printf.
