@@ -1,3 +1,13 @@
+2008-03-14  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/drtlist.xml:
+	* xalm/test-crash-non-existing-animation-target-prop4.xaml:
+	Adding yet another one test-case for trying to access something that
+	doesn't exist. This time we're not getting any error even though it's
+	clearly wrong. Need to investigate.
+
+	Master needed.
+
 2008-03-13  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/drtlist.xml:
