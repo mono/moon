@@ -65,7 +65,7 @@ p_downloader_mmsh_notifier (BrowserMmshResponse *response, gpointer context, cha
 	StreamNotify *notify = (StreamNotify*) context;
 	Downloader *dl = (Downloader *) notify->pdata;
 
-	g_print ("Notifing a size of %d\n", size);
+	g_print ("Notifing a size of %lld\n", size);
 	dl->NotifySize (size);
 }
 
