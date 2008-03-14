@@ -16,6 +16,7 @@
 #endif
 
 #include <glib.h>
+#include <stdlib.h>
 
 #include <poll.h>
 #include <stdio.h>
@@ -312,9 +313,11 @@ MediaPlayer::Open (Media *media)
 				int remain = stride % 16;
 				stride += 16 - remain;
 			}
-
-			// for conversion to rgb32 format needed for rendering
-			video->rgb_buffer = (uint8_t *) g_malloc0 (height * stride);
+			
+			// for conversion to rgb32 format needed for rendering with 16 byte alignment
+			if (posix_memalign ((void **)(&video->rgb_buffer), 16, height * stride)) {
+				g_error ("Could not allocate memory");
+			}
 			
 			// rendering surface
 			video->surface = cairo_image_surface_create_for_data (
@@ -381,12 +384,12 @@ MediaPlayer::Close ()
 	Stop ();
 	
 	// Reset state back to what it was at instantiation
-	
+
 	if (video->rgb_buffer != NULL) {
-		g_free (video->rgb_buffer);
+		free (video->rgb_buffer);
 		video->rgb_buffer = NULL;
 	}
-	
+
 	if (video->surface != NULL) {
 		cairo_surface_destroy (video->surface);
 		video->surface = NULL;
