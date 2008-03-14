@@ -80,6 +80,11 @@ namespace MoonlightTests {
 
 			public void SetTestResult (TestResult result)
 			{
+				if (result == TestResult.Pass && result_set && this.result == TestResult.Fail) {
+					AddLogLine ("Error", "You can not change the result of a test from fail to pass.");
+					return;
+				}
+
 				this.result = result;
 				result_set = true;
 			}
