@@ -755,7 +755,7 @@ MediaPlayer::GetTargetPts ()
 void
 MediaPlayer::SetTargetPts (uint64_t pts)
 {
-	//printf ("MediaPlayer::SetTargetPts (%llu)\n", pts);
+	//printf ("MediaPlayer::SetTargetPts (%llu = %llu ms)\n", pts, MilliSeconds_FromPts (pts));
 	pthread_mutex_lock (&target_pts_lock);
 	target_pts = pts;
 	pthread_mutex_unlock (&target_pts_lock);
@@ -1772,7 +1772,7 @@ AudioPlayer::AudioNode::Play ()
 			uint64_t pts = sent_pts;
 			err = snd_pcm_delay (pcm, &delay);
 			if (err >= 0) {
-				pts += delay * 10000000 / mplayer->audio->stream->sample_rate;
+				pts -= delay * (uint64_t) 10000000 / mplayer->audio->stream->sample_rate;
 			}
 			mplayer->SetTargetPts (pts);
 			updated_pts = pts;

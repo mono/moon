@@ -1,3 +1,9 @@
+2008-03-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: AudioNode::Play: property calculate the delay between the
+	  play position in the hardware and the pts we just sent to alsa, and
+	  subtract it from that pts.
+
 
 Thu Mar 13 23:25:41 CET 2008 Paolo Molaro <lupus@ximian.com>
 
