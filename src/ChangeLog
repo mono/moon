@@ -1,3 +1,8 @@
+2008-03-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Glyphs::Layout): Don't error out on (1:1) clusters
+	without a specified index, these are ok.
+
 2008-03-14  Michael Dominic K.  <mdk@mdk.am>
 
 	* brush.cpp: In ImageBrush, if the image has not been downloaded

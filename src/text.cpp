@@ -1578,7 +1578,7 @@ Glyphs::Layout ()
 		gunichar *c = text;
 		
 		while (*c != 0) {
-			if ((cluster = attr && (attr->set & Cluster))) {
+			if (attr && (attr->set & Cluster)) {
 				// get the cluster's GlyphCount and CodeUnitCount
 				glyph_count = attr->glyph_count;
 				code_units = attr->code_units;
@@ -1586,6 +1586,11 @@ Glyphs::Layout ()
 				glyph_count = 1;
 				code_units = 1;
 			}
+			
+			if (glyph_count == 1 && code_units == 1)
+				cluster = false;
+			else
+				cluster = true;
 			
 			// render the glyph cluster
 			i = 0;
@@ -1658,6 +1663,12 @@ Glyphs::Layout ()
 	}
 	
 	while (attr) {
+		if (attr->set & Cluster) {
+			d(fprintf (stderr, "Can't use clusters past the end of the UnicodeString\n"));
+			invalid = true;
+			goto done;
+		}
+		
 		if (!(attr->set & Index)) {
 			d(fprintf (stderr, "No index specified for glyph %d\n", n + 1));
 			invalid = true;
@@ -1741,7 +1752,6 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	double x0, y0;
 	double x1, y1;
 	double scale;
-	bool cluster;
 	
 	if (this->width == 0.0 && this->height == 0.0)
 		return;
@@ -1786,7 +1796,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		gunichar *c = text;
 		
 		while (*c != 0) {
-			if ((cluster = attr && (attr->set & Cluster))) {
+			if (attr && (attr->set & Cluster)) {
 				// get the cluster's GlyphCount and CodeUnitCount
 				glyph_count = attr->glyph_count;
 				code_units = attr->code_units;
