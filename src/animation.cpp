@@ -210,20 +210,21 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 
 		//printf ("Got %s %s\n", targetProperty, targetName);
 		DependencyObject *o = FindName (targetName);
-		DependencyProperty *prop = o ? resolve_property_path (&o, targetProperty) : NULL;
-
 		if (!o) {
 			g_warning ("No object named %s!", targetName);
 			return;
 		}
 
-		if (!prop) {
+		DependencyObject *real_target_o = o;
+		DependencyProperty *prop = resolve_property_path (&real_target_o, targetProperty);
+
+		if (!prop || !real_target_o) {
 			g_warning ("No property named %s on object %s, which has type %s!", targetProperty, targetName, o->GetTypeName());
 			return;
 		}
 
 		((Animation*)ac->GetTimeline())->Resolve ();
-		ac->HookupStorage (o, prop);
+		ac->HookupStorage (real_target_o, prop);
 		break;
 	}
 	case Type::CLOCKGROUP: {

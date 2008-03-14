@@ -1,5 +1,14 @@
 2008-03-14  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp: Making the warning report proper error when can't
+	resolve property on object. Now we're getting:
+
+	"No property named
+	(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)
+	on object ball, which has type Ellipse!"
+
+2008-03-14  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: Check correctly if we have object and property
 	before trying to hookup storage.
 
