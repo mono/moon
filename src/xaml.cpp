@@ -794,6 +794,8 @@ expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 	}
 
 	parser_error (p, NULL, NULL, error_code, message);
+
+	g_free (message);
 }
 
 static DependencyObject *
