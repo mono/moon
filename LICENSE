@@ -1,7 +1,16 @@
 This code is licensed under the terms of the GNU LGPL 2 license only (no "later versions").
 
 In addition to the GNU LGPL, this code is available for relicensing
-for non-LGPL use, contact Novell for details (mono@novell.com)
+for non-LGPL use, contact Novell for details (mono@novell.com).  
+
+We consider non-LGPL use instances where you use this on an embedded
+system where the end user is not able to upgrade the Moonlight
+installation or distribution that is part of your product (Section 6
+and 7), you would have to obtain a commercial license from Novell
+(consider software burned into a ROM, systems where end users would
+not be able to upgrade, an embedded console, a game console that
+imposes limitations on the distribution and access to the code, a
+phone platform that prevents end users from upgrading Moonlight).
 
 This code might contain code that optionally links to LGPL and
 GPL code, in those cases, if the library is built with those 
