@@ -1168,24 +1168,19 @@ prepare_bitmap (GlyphInfo *glyph, FT_Bitmap *bitmap)
 }
 
 GlyphInfo *
-TextFont::GetGlyphInfo (gunichar unichar)
+TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 {
 	double scale = 1.0 / (64.0 * this->scale);
 	GlyphInfo *glyph;
-	uint32_t i;
 	
 	if (!face)
 		return NULL;
 	
-	i = unichar & 0xff;
-	glyph = &glyphs[i];
+	glyph = &glyphs[index & 0xff];
 	
-	if (glyph->unichar != unichar) {
-		if (unichar)
-			glyph->index = FcFreeTypeCharIndex (face, unichar);
-		else
-			glyph->index = 0;
+	if (glyph->index != index) {
 		glyph->unichar = unichar;
+		glyph->index = index;
 		
 		if (glyph->bitmap) {
 			if (glyph->bitmap->surface) {
@@ -1292,6 +1287,19 @@ TextFont::GetGlyphInfo (gunichar unichar)
 }
 
 GlyphInfo *
+TextFont::GetGlyphInfo (gunichar unichar)
+{
+	uint32_t index;
+	
+	if (!face)
+		return NULL;
+	
+	index = FcFreeTypeCharIndex (face, unichar);
+	
+	return GetGlyphInfo (unichar, index);
+}
+
+GlyphInfo *
 TextFont::GetGlyphInfoByIndex (uint32_t index)
 {
 	gunichar unichar;
@@ -1311,7 +1319,7 @@ TextFont::GetGlyphInfoByIndex (uint32_t index)
 		unichar = 0;
 	}
 	
-	return GetGlyphInfo (unichar);
+	return GetGlyphInfo (unichar, index);
 }
 
 double
@@ -1934,7 +1942,7 @@ TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescr
 	for (s = this->text; *s; s++) {
 		if (g_unichar_isspace (*s)) {
 			if (*s == '\n')
-				*d++ == *s;
+				*d++ = *s;
 			else if (*s < 128)
 				*d++ = ' ';
 			else

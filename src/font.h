@@ -139,6 +139,7 @@ public:
 	
 	GlyphInfo *GetGlyphInfo (gunichar unichar);
 	GlyphInfo *GetGlyphInfoByIndex (uint32_t index);
+	GlyphInfo *GetGlyphInfo (gunichar unichar, uint32_t index);
 	
 	bool IsScalable ();
 	

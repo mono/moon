@@ -1596,8 +1596,7 @@ Glyphs::Layout ()
 			i = 0;
 			do {
 				if (attr && (attr->set & Index)) {
-					glyph = font->GetGlyphInfoByIndex (attr->index);
-					if (glyph->index != attr->index)
+					if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 						goto next1;
 				} else if (cluster) {
 					// indexes MUST be specified for each glyph in a cluster
@@ -1675,8 +1674,7 @@ Glyphs::Layout ()
 			goto done;
 		}
 		
-		glyph = font->GetGlyphInfoByIndex (attr->index);
-		if (glyph->index != attr->index)
+		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 			goto next;
 		
 		if ((attr->set & vOffset)) {
@@ -1808,8 +1806,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 			// render the glyph cluster
 			for (i = 0; i < glyph_count; i++) {
 				if (attr && (attr->set & Index)) {
-					glyph = font->GetGlyphInfoByIndex (attr->index);
-					if (glyph->index != attr->index)
+					if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 						goto next1;
 				} else {
 					glyph = font->GetGlyphInfo (*c);
@@ -1855,8 +1852,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	}
 	
 	while (attr) {
-		glyph = font->GetGlyphInfoByIndex (attr->index);
-		if (glyph->index != attr->index)
+		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 			goto next;
 		
 		if ((attr->set & vOffset))

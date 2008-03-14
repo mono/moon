@@ -1,5 +1,17 @@
 2008-03-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (Glyphs::Layout): Check for NULL glyphs (which can
+	happen now if the glyph does not exist in the font).
+	(Glyphs::Render): Same.
+
+	* font.cpp (TextFont::GetGlyphInfo): Added a new GetGlyphInfo
+	which takes a unichar and index. This is now the main
+	implementation that the other GetGlyphInfo() and
+	GetGlyphInfoByIndex() use. The glyph table is now indexed by index
+	rather than unichar.
+
+2008-03-14  Jeffrey Stedfast  <fejj@novell.com>
+
 	* text.cpp (Glyphs::Layout): Don't error out on (1:1) clusters
 	without a specified index, these are ok.
 
