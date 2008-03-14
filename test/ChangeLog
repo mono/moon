@@ -1,5 +1,14 @@
 2008-03-13  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/drtlist.xml:
+	* xalm/test-crash-non-existing-animation-target-prop.xaml:
+	Adding a test-case against trying to animate a property that
+	doesn't exist. Currently crashes ML. 
+
+	Master needed.
+
+2008-03-13  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/test-animation-null-keyframe.xaml:
 	* xaml/drtlist.xml: Adding a test-case for a discrete animation
 	which has a null (no value) keyframe. It currently crashes our

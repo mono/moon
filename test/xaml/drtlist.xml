@@ -599,4 +599,8 @@
         inputFile="test-animation-null-keyframe.xaml"
         masterFile10="../harness/masters/test-animation-null-keyframeMaster.png"
    />
+   <Test id="150"
+        inputFile="test-crash-non-existing-animation-target-prop.xaml"
+        masterFile10="../harness/masters/test-crash-non-existing-animation-target-propMaster.png"
+   />
 </DRTList>
