@@ -1162,17 +1162,23 @@ resolve_property_path (DependencyObject **o, const char *path)
 			Type *t = NULL;
 			if (typen) {
 				t = Type::Find (typen);
-				g_free (typen);
 			} else
 				t = Type::Find (lu->GetObjectType ());
 
 			if (!t) {
 				g_free (propn);
+				if (typen)
+					g_free (typen);
 				return NULL;
 			}
 	
 			res = DependencyObject::GetDependencyProperty (t->type, propn);
+			if (!res)
+				g_warning ("Can't find %s property in %s", propn, typen);
+
 			g_free (propn);
+			if (typen)
+				g_free (typen);
 			break;
 		}
 		case '.':
@@ -1200,7 +1206,13 @@ resolve_property_path (DependencyObject **o, const char *path)
 
 			Collection *col = lu->GetValue (res)->AsCollection ();
 			List::Node *n = col->list->Index (indexer);
-			lu = n ? ((Collection::Node *) n)->obj : NULL;
+			if (n)
+				lu = ((Collection::Node *) n)->obj;
+			else {
+				g_warning ("%s collection doesn't have element %d!", lu->GetTypeName (), indexer);
+				lu = NULL;
+			}
+
 			i += 1;
 			break;
 		}

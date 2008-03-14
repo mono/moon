@@ -1,5 +1,10 @@
 2008-03-14  Michael Dominic K.  <mdk@mdk.am>
 
+	* dependencyobject.cpp: Even more verbose error reporting in the
+	resolve_property_path ().
+
+2008-03-14  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: Making the warning report proper error when can't
 	resolve property on object. Now we're getting:
 
