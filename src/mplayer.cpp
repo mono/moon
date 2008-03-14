@@ -48,7 +48,7 @@ G_END_DECLS
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
 #define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
-#define LOG_MEDIAPLAYER(...) printf (__VA_ARGS__);
+#define LOG_MEDIAPLAYER(...)// printf (__VA_ARGS__);
 #define DEBUG_ADVANCEFRAME 0
 #define LOG_AUDIO(...)// printf (__VA_ARGS__)
 // This one prints out spew on every frame/sample
