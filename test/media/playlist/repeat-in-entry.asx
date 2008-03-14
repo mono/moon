@@ -1,0 +1,11 @@
+<ASX version="3.0">
+  <TITLE>My Test Playlist</TITLE>
+  <ENTRY>
+    <TITLE>Short timecode video</TITLE>
+    <AUTHOR>Novell, Inc</AUTHOR>
+    <COPYRIGHT>(c) 2008 Novell, Inc</COPYRIGHT>
+    <REPEAT count="2">
+      <REF HREF="../../video/timecode-short.wmv" />
+    </REPEAT>
+  </ENTRY>
+</ASX>

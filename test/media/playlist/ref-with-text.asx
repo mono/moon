@@ -1,0 +1,6 @@
+<ASX version="3.0">
+  <TITLE>My Test Playlist</TITLE>
+  <ENTRY>
+    <REF HREF="../../video/timecode-short.wmv">some text here</REF>
+  </ENTRY>
+</ASX>

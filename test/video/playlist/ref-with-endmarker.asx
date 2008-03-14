@@ -1,8 +1,0 @@
-<ASX version="3.0">
-  <TITLE>My Test Playlist</TITLE>
-  <ENTRY>
-    <REF HREF="../timecode-short.wmv">
-      <ENDMARKER/>
-    </REF>
-  </ENTRY>
-</ASX>

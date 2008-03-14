@@ -1,9 +1,0 @@
-<ASX version="3.0">
-  <TITLE>My Test Playlist</TITLE>
-  <ENTRY>
-    <TITLE>Short timecode video</TITLE>
-    <AUTHOR>Novell, Inc</AUTHOR>
-    <COPYRIGHT><TAG/></COPYRIGHT>
-    <REF HREF="../timecode-short.wmv" />
-  </ENTRY>
-</ASX>
