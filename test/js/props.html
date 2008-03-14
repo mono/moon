@@ -119,6 +119,11 @@ PropertiesTestSuite.prototype = {
 		this.assertEqual (1.0, da.Time.seconds);
 		da.Time.seconds = 1.1;
 		this.assertEqual (1.1, Math.round (da.Time.seconds * 1000) / 1000);
+		var foo = da.Time;
+		this.assertEqual (1.1, Math.round (foo.seconds * 1000) / 1000);
+		foo.seconds = 1;
+		this.assertEqual (1.0, foo.seconds);
+		this.assertEqual (1.0, da.Time.seconds);
 	},
 	testTimeSpan: function () {
 		var da = $plugin ().content.createFromXaml ("<TimelineMarker />");
