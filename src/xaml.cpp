@@ -971,7 +971,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 done:
 	
 	if (p->cdata) {
-		g_string_free (p->cdata, FALSE);
+		g_string_free (p->cdata, TRUE);
 		p->cdata_content = false;
 		p->cdata = NULL;
 	}

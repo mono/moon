@@ -1,3 +1,8 @@
+2008-03-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: (flush_char_data) free data inside GString since the
+	Value constructed around it creates it's own copy.
+
 2008-03-14  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline-ffmpeg.cpp: Use posix_memalign for the YUV data buffers
