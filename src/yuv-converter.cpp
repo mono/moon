@@ -54,16 +54,6 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 									ALPHA_MASK, ALPHA_MASK,
 };
 
-#define PROCESS_REMAINDER(simd_stride) do {										\
-			for (j = 0; j < (width-(width/simd_stride)*simd_stride); j+= 2, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) { \
-				YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);					\
-				YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));				\
-															\
-				YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);					\
-				YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));				\
-			}												\
-	} while (0); 
-	
 #define CALC_COLOR_MODIFIERS(mov_instr, shift_instr, reg_type, u, v, coeff_storage) do {				\
 			__asm__ __volatile__ (										\
 				"pxor %%"reg_type"7, %%"reg_type"7;"							\
@@ -237,13 +227,6 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 #if HAVE_MMX
 #define YUV2RGB_MMX(y_plane, dest) YUV2RGB_INTEL_SIMD("movq", "mm", "8", "16", "24", y_plane, dest)
 #endif
-
-#define CORRECT_PLANES() do {				\
-			y_row1 += planar_delta;		\
-			y_row2 += planar_delta;		\
-			u_plane += planar_delta >> 1;	\
-			v_plane += planar_delta >> 1;	\
-	} while (0); 
 
 static inline void YUV444ToBGRA(uint8_t Y, uint8_t U, uint8_t V, uint8_t *dst)
 {

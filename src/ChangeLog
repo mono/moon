@@ -1,4 +1,8 @@
 2008-03-14  Geoff Norton  <gnorton@novell.com>
+	
+	* yuv-converter.cpp: Remove some dead code.
+
+2008-03-14  Geoff Norton  <gnorton@novell.com>
 
 	* mplayer.cpp: We actually need to align % 64 bytes on a 16 byte 
 	bounary.  Each pel will expand to 4 bytes.  Since we process 16
