@@ -1,5 +1,10 @@
 2008-03-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (TextRun::TextRun): Can't drop non-printable chars
+	because soft-hyphen is apparently non-printable.
+
+2008-03-14  Jeffrey Stedfast  <fejj@novell.com>
+
 	* text.cpp (Glyphs::Layout): Check for NULL glyphs (which can
 	happen now if the glyph does not exist in the font).
 	(Glyphs::Render): Same.

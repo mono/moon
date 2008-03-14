@@ -1937,8 +1937,7 @@ TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescr
 	
 	d = this->text = g_utf8_to_ucs4_fast (utf8, len, NULL);
 	
-	// drop all non-printable characters and convert all ascii
-	// lwsp into a SPACE, conserving only \n's
+	// convert all ascii lwsp into a SPACE, conserving only \n's
 	for (s = this->text; *s; s++) {
 		if (g_unichar_isspace (*s)) {
 			if (*s == '\n')
@@ -1947,10 +1946,12 @@ TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescr
 				*d++ = ' ';
 			else
 				*d++ = *s;
-		} else if (g_unichar_isprint (*s)) {
+		} else {
 			*d++ = *s;
 		}
 	}
+	
+	*d = '\0';
 	
 	this->font = font->GetFont ();
 	this->deco = deco;
