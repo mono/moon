@@ -7,7 +7,7 @@ install-test-plugin:
 	$(MAKE) $(AM_MAKEFLAGS) -C harness/shocker install-test-plugin
 
 run-tests: all install-test-plugin
-	GNOME_DISABLE_CRASH_DIALOG=1 LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(PWD)/xaml/drtlist.xml -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -html-report
+	GNOME_DISABLE_CRASH_DIALOG=1 LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(top_builddir)/test/xaml/drtlist.xml -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -html-report
 
 run-ms-tests: all install-test-plugin
 	GNOME_DISABLE_CRASH_DIALOG=1 LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(MS_DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v  -html-report
