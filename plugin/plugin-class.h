@@ -212,15 +212,21 @@ struct MoonlightDurationType : MoonlightObjectType {
 extern MoonlightDurationType* MoonlightDurationClass;
 
 struct MoonlightDuration : MoonlightObject {
-	MoonlightDuration (NPP instance) : MoonlightObject (instance), duration (Duration (0))
+	MoonlightDuration (NPP instance) : MoonlightObject (instance), parent_obj(NULL), parent_property(NULL)
 	{
 		moonlight_type = Type::DURATION;
 	}
 
+	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
+
+	double GetValue ();
+
+	virtual void Dispose ();
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 
-	Duration duration;
+	DependencyObject *parent_obj;
+	DependencyProperty *parent_property;
 };
 
 /*** MoonlightTimeSpanClass  **************************************************************/
@@ -231,15 +237,21 @@ struct MoonlightTimeSpanType : MoonlightObjectType {
 extern MoonlightTimeSpanType* MoonlightTimeSpanClass;
 
 struct MoonlightTimeSpan : MoonlightObject {
-	MoonlightTimeSpan (NPP instance) : MoonlightObject (instance), timespan (0)
+	MoonlightTimeSpan (NPP instance) : MoonlightObject (instance), parent_obj(NULL), parent_property(NULL)
 	{
 		moonlight_type = Type::TIMESPAN;
 	}
 
+	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
+
+	TimeSpan GetValue ();
+
+	virtual void Dispose ();
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 
-	TimeSpan timespan;
+	DependencyObject *parent_obj;
+	DependencyProperty *parent_property;
 };
 
 /*** MoonlightMouseEventArgsClass  **************************************************************/

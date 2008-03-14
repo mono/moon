@@ -262,7 +262,7 @@ string_to_npvariant (const char *value, NPVariant *result)
 }
 
 static void
-value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
+value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject *parent_obj = NULL, DependencyProperty *parent_property = NULL)
 {
 	switch (v->GetKind ()) {
 	case Type::BOOL:
@@ -298,7 +298,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
 	}
 	case Type::DURATION: {
 		MoonlightDuration *duration = (MoonlightDuration *) NPN_CreateObject (((MoonlightObject *) npobj)->instance, MoonlightDurationClass);
-		duration->duration = *v->AsDuration ();
+		duration->SetParentInfo (parent_obj, parent_property);
 
 		OBJECT_TO_NPVARIANT (duration, *result);
 		break;
@@ -306,7 +306,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result)
 
 	case Type::TIMESPAN: {
 		MoonlightTimeSpan *timespan = (MoonlightTimeSpan *) NPN_CreateObject (((MoonlightObject *) npobj)->instance, MoonlightTimeSpanClass);
-		timespan->timespan = v->AsTimeSpan ();
+		timespan->SetParentInfo (parent_obj, parent_property);
 
 		OBJECT_TO_NPVARIANT (timespan, *result);
 		break;
@@ -858,6 +858,21 @@ duration_mapping[] = {
 	{ "seconds", MoonId_Seconds }
 };
 
+void
+MoonlightDuration::SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property)
+{
+	this->parent_obj = parent_obj;
+	this->parent_property = parent_property;
+	parent_obj->ref();
+}
+
+double
+MoonlightDuration::GetValue()
+{
+	Value *v = parent_obj->GetValue (parent_property);
+	return v ? v->AsDuration()->ToSecondsFloat () : 0.0;
+}
+
 bool
 MoonlightDuration::GetProperty (int id, NPIdentifier, NPVariant *result)
 {
@@ -867,7 +882,7 @@ MoonlightDuration::GetProperty (int id, NPIdentifier, NPVariant *result)
 		return true;
 
 	case MoonId_Seconds:
-		DOUBLE_TO_NPVARIANT (duration.ToSecondsFloat (), *result);
+		DOUBLE_TO_NPVARIANT (GetValue(), *result);
 		return true;
 
 	default:
@@ -883,7 +898,7 @@ MoonlightDuration::SetProperty (int id, NPIdentifier, const NPVariant *value)
 		return true;
 
 	case MoonId_Seconds:
-		duration = Duration::FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
+		parent_obj->SetValue (parent_property, Value(Duration::FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value))));
 		return true;
 
 	default:
@@ -891,6 +906,15 @@ MoonlightDuration::SetProperty (int id, NPIdentifier, const NPVariant *value)
 	}
 }
 
+void
+MoonlightDuration::Dispose ()
+{
+	MoonlightObject::Dispose ();
+	if (parent_obj)
+		parent_obj->unref();
+	parent_obj = NULL;
+	parent_property = NULL;
+}
 
 MoonlightDurationType::MoonlightDurationType ()
 {
@@ -915,6 +939,21 @@ timespan_mapping[] = {
 	{ "seconds", MoonId_Seconds }
 };
 
+void
+MoonlightTimeSpan::SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property)
+{
+	this->parent_obj = parent_obj;
+	this->parent_property = parent_property;
+	parent_obj->ref();
+}
+
+TimeSpan
+MoonlightTimeSpan::GetValue()
+{
+	Value *v = parent_obj->GetValue (parent_property);
+	return v ? v->AsTimeSpan() : (TimeSpan)0;
+}
+
 bool
 MoonlightTimeSpan::GetProperty (int id, NPIdentifier, NPVariant *result)
 {
@@ -923,7 +962,7 @@ MoonlightTimeSpan::GetProperty (int id, NPIdentifier, NPVariant *result)
 		string_to_npvariant ("", result);
 		return true;
 	case MoonId_Seconds:
-		DOUBLE_TO_NPVARIANT (TimeSpan_ToSecondsFloat (timespan), *result);
+		DOUBLE_TO_NPVARIANT (TimeSpan_ToSecondsFloat (GetValue ()), *result);
 		return true;
 	default:
 		return false;
@@ -939,9 +978,9 @@ MoonlightTimeSpan::SetProperty (int id, NPIdentifier, const NPVariant *value)
 
 	case MoonId_Seconds:
 		if (NPVARIANT_IS_INT32 (*value)) {
-			timespan = TimeSpan_FromSecondsFloat (NPVARIANT_TO_INT32 (*value));
+			parent_obj->SetValue (parent_property, Value(TimeSpan_FromSecondsFloat (NPVARIANT_TO_INT32 (*value)), Type::TIMESPAN));
 		} else if (NPVARIANT_IS_DOUBLE (*value)) {
-			timespan = TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
+			parent_obj->SetValue (parent_property, Value(TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value)), Type::TIMESPAN));
 		} else {
 			return false;
 		}
@@ -952,6 +991,15 @@ MoonlightTimeSpan::SetProperty (int id, NPIdentifier, const NPVariant *value)
 	}
 }
 
+void
+MoonlightTimeSpan::Dispose ()
+{
+	MoonlightObject::Dispose ();
+	if (parent_obj)
+		parent_obj->unref();
+	parent_obj = NULL;
+	parent_property = NULL;
+}
 
 MoonlightTimeSpanType::MoonlightTimeSpanType ()
 {
@@ -2076,12 +2124,12 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 		switch (obj->moonlight_type) {
 		case Type::TIMESPAN: {
 			MoonlightTimeSpan *ts = (MoonlightTimeSpan*) obj;
-			dob->SetValue (p, Value(ts->timespan, Type::TIMESPAN));
+			dob->SetValue (p, Value(ts->GetValue(), Type::TIMESPAN));
 			break;
 		}
 		case Type::DURATION: {
 			MoonlightDuration *duration = (MoonlightDuration*) obj;
-			dob->SetValue (p, Value(duration->duration));
+			dob->SetValue (p, Value(duration->GetValue()));
 			break;
 		}
 		case Type::RECT: {
@@ -2200,9 +2248,9 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 			if (s)
 				string_to_npvariant (s, result);
 			else
-				value_to_variant (this, value, result);
+				value_to_variant (this, value, result, dob, p);
 		} else
-			value_to_variant (this, value, result);
+			value_to_variant (this, value, result, dob, p);
 
 		return true;
 	}
@@ -3462,7 +3510,7 @@ MoonlightControlObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 	if (!value)
 		return false;
 
-	value_to_variant (this, value, result);
+	value_to_variant (this, value, result, dob, p);
 
 	return true;
 }

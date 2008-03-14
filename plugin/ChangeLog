@@ -1,3 +1,15 @@
+2008-03-14  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h, plugin-class.cpp: wrapped TimeSpan and Duration
+	objects aren't actually values.  they're references to the
+	particular DependencyObject/Property we got them from, so doing
+	something like:
+
+	var foo = storyboard.Duration;  foo.seconds=5;
+
+	updates the original storyboard's Duration property, not just the
+	duration contained in the "foo" variable.
+
 2008-03-13  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp, plugin-class.h: fix up our toString support.
