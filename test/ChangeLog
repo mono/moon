@@ -1,3 +1,8 @@
+2008-03-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/test-mediaelement-clip.xaml, xaml/test-videobrush.xaml,
+	  xaml/test-videobrush-text.xaml, xaml/video-player.xaml: Fix video paths.
+
 2008-03-14  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/drtlist.xml:
