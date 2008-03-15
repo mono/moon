@@ -5,6 +5,6 @@
     <AUTHOR>Novell, Inc</AUTHOR>
     <COPYRIGHT>(c) 2008 Novell, Inc</COPYRIGHT>
     <!-- SilverLight doesn't support the wmv9 screen codec -->
-    <REF HREF="../../video/timecode-short.wmv9src.wmv" />
+    <REF HREF="../video/timecode-short.wmv9src.wmv" />
   </ENTRY>
 </ASX>

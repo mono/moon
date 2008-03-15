@@ -31,7 +31,10 @@ function printf_formatted (message, action) {
 
 function log_to_div (msg)
 {
-	test_plugin.LogMessage (msg);
+	try {
+		test_plugin.LogMessage (msg);
+	} catch (ex) {
+	}
 	document.getElementById ("log").innerHTML += msg + "<BR/>";
 }
 
@@ -96,17 +99,19 @@ function OnTestFinished ()
 	if (!failed)
 		log_to_div ("Test succeeded");
 
-	//if (window.opener)
-	//	window.opener.document.getElementById ("result").innerHTML = failed ? "Failed" : "Success";
+	if (window.opener)
+		window.opener.document.getElementById ("result").innerHTML = failed ? "Failed" : "Success";
 
-	if (failed) {
-		test_plugin.LogResult (-1);
-	} else {
-		test_plugin.LogResult (0);
+	try {
+		if (failed) {
+			test_plugin.LogResult (-1);
+		} else {
+			test_plugin.LogResult (0);
+		}
+
+		test_plugin.SignalShutdown ();
+	} catch (ex) {
 	}
-
-	test_plugin.SignalShutdown ();
-
 }
 
 function OnMediaOpened (e, args)
@@ -192,3 +197,29 @@ Silverlight.createObject (
 },
 	null
 );
+
+
+function createTestPlugin () {
+	var found = false;
+	for (var i = 0; i < navigator.plugins.length; i++) {
+		var pl = navigator.plugins [i];
+		for (var j = 0; j < pl.length; j++) {
+			if (pl.item (j).type == "application/x-jolttest") {
+				found = true;
+				break;
+			}
+		}
+		if (found)
+			break;	}
+
+	if (found) {
+		document.write (
+			"<div>"+
+				"<embed id=\"_TestPlugin\" width=\"0\" height=\"0\" type=\"application/x-jolttest\">" +
+				"</embed>" +
+			"</div>");
+	}
+}
+
+createTestPlugin ();
+

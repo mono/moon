@@ -4,7 +4,7 @@
     <TITLE>Short timecode video</TITLE>
     <AUTHOR>Novell, Inc</AUTHOR>
     <COPYRIGHT>(c) 2008 Novell, Inc</COPYRIGHT>
-    <REF HREF="../../video/timecode-short.wmv" />
+    <REF HREF="../video/timecode-short.wmv" />
   </ENTRY>
   <BASE HREF="example.com"> <BASE HREF="second.example.com" /> </BASE>
 </ASX>
