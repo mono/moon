@@ -31,6 +31,7 @@ libmooninclude_headers = \
 	frameworkelement.h \
 	fullscreen.h	\
 	geometry.h	\
+	layout.h	\
 	list.h		\
 	mango.h		\
 	media.h		\
@@ -86,6 +87,7 @@ libmoon_la_SOURCES = 	\
 	font.cpp	\
 	frameworkelement.cpp	\
 	geometry.cpp	\
+	layout.cpp	\
 	list.cpp	\
 	mango.cpp	\
 	media.cpp	\

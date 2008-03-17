@@ -18,6 +18,7 @@ G_BEGIN_DECLS
 
 #include "downloader.h"
 #include "moon-path.h"
+#include "layout.h"
 #include "brush.h"
 #include "mango.h"
 #include "font.h"

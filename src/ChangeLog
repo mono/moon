@@ -1,8 +1,11 @@
 2008-03-17  Jeffrey Stedfast  <fejj@novell.com>
 
-	* font.cpp (TextFont::HasGlyph): It seems that Silverlight may
-	wrap text differently depending on whether the glyph is in the
-	font?
+	* text.h: Added #include "layout.h"
+
+	* font.cpp: Removed font.cpp's layout logic which has been
+	rewritten in layout.cpp.
+	(TextFont::HasGlyph): It seems that Silverlight may wrap text
+	differently depending on whether the glyph is in the font?
 
 	* layout.cpp (TextLayout::LayoutWrap): More tweaking action...
 
