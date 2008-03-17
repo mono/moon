@@ -1,3 +1,7 @@
+2008-03-17  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: test must be included in dist
+
 2008-03-10  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Changed version to 0.4 (released 0.3 tarball)

@@ -6,7 +6,7 @@ if INCLUDE_TESTING
 TEST_SUBDIR=test
 endif
 
-DIST_SUBDIRS = $(subdirs) src gtk tools plugin man $(TEST_SUBDIR)
+DIST_SUBDIRS = $(subdirs) src gtk tools plugin man test
 SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) plugin $(TEST_SUBDIR)
 
 pkgconfigdir = $(libdir)/pkgconfig
