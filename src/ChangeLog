@@ -11,6 +11,16 @@
 	
 2008-03-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (FontPackFileFace::FontPackFileFace): Now takes an
+	index argument, apparently FreeType2 always set face->face_index
+	to 0 for these type fonts, so don't rely on it being accurate.
+	(FontPack::CacheFileInfo): Pass the index value as an argument to
+	FontPackFileFace's ctor.
+	(TextFont::TextFont): Do hash lookups based on the matched
+	pattern, not the original pattern passed in.
+
+2008-03-17  Jeffrey Stedfast  <fejj@novell.com>
+
 	* text.h: Added #include "layout.h"
 
 	* font.cpp: Removed font.cpp's layout logic which has been

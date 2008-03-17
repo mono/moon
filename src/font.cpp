@@ -78,7 +78,7 @@ struct FontPackFileFace {
 	char *family_name;
 	int index;
 	
-	FontPackFileFace (FontPackFile *file, FT_Face face);
+	FontPackFileFace (FontPackFile *file, FT_Face face, int index);
 	
 	~FontPackFileFace ()
 	{
@@ -367,14 +367,14 @@ style_name (FontStyleInfo *style, char *namebuf)
 }
 #endif
 
-FontPackFileFace::FontPackFileFace (FontPackFile *file, FT_Face face)
+FontPackFileFace::FontPackFileFace (FontPackFile *file, FT_Face face, int index)
 {
 	d(fprintf (stderr, "\t\t\t* index=%d: family=\"%s\"; style=\"%s\"\n",
-		   (int) face->face_index, face->family_name, face->style_name));
+		   index, face->family_name, face->style_name));
 	
 	style_info_parse (face->style_name, &style);
 	family_name = g_strdup (face->family_name);
-	index = face->face_index;
+	this->index = index;
 	this->file = file;
 }
 
@@ -414,7 +414,7 @@ FontPack::CacheFileInfo (const char *filename, FT_Face face)
 		if (i > 0 && FT_New_Face (libft2, filename, i, &face) != 0)
 			break;
 		
-		fface = new FontPackFileFace (file, face);
+		fface = new FontPackFileFace (file, face, i);
 		g_ptr_array_add (file->faces, fface);
 		
 		FT_Done_Face (face);
@@ -656,6 +656,9 @@ struct FontFaceSimilarity {
 bool
 TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path, const char **families)
 {
+#if FONT_DEBUG
+	char stylebuf1[256], stylebuf2[256];
+#endif
 	FontFaceSimilarity similar;
 	FontPackFileFace *fface;
 	FontFamilyInfo *family;
@@ -791,7 +794,7 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 	double size;
 	int id, i;
 	
-	d(fprintf (stderr, "\nAttempting to load %s\n", debug_name));
+	d(fprintf (stderr, "\nTextFont %p: Attempting to load %s\n", this, debug_name));
 	
 	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
 	FcPatternGetDouble (pattern, FC_SCALE, 0, &scale);
@@ -831,6 +834,7 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 			
 			d(fprintf (stderr, "no; incorrect family: '%s' does not match '%s'\n",
 				   face->family_name, family_name));
+			
 			FT_Done_Face (face);
 			face = NULL;
 		} else {
@@ -890,8 +894,6 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 		face = NULL;
 	} while (true);
 	
-	FcPatternDestroy (matched);
-	
 	if (families)
 		g_strfreev (families);
 	
@@ -918,8 +920,7 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 	}
 	
 	g_hash_table_insert (font_cache, pattern, this);
-	FcPatternReference (pattern);
-	this->pattern = pattern;
+	this->pattern = matched;
 	ref_count = 1;
 }
 
