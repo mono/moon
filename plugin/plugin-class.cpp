@@ -682,7 +682,7 @@ point_mapping[] = {
 
 
 bool
-MoonlightPoint::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightPoint::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	switch (id) {
 	case MoonId_X:
@@ -694,12 +694,12 @@ MoonlightPoint::GetProperty (int id, NPIdentifier, NPVariant *result)
 		return true;
 
 	default:
-		return false;
+		return MoonlightObject::GetProperty (id, name, result);
 	}
 }
 
 bool
-MoonlightPoint::SetProperty (int id, NPIdentifier, const NPVariant *value)
+MoonlightPoint::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	switch (id) {
 	case MoonId_X:
@@ -709,7 +709,7 @@ MoonlightPoint::SetProperty (int id, NPIdentifier, const NPVariant *value)
 		point.y = NPVARIANT_TO_DOUBLE (*value);
 		return true;
 	default:
-		return false;
+		return MoonlightObject::SetProperty (id, name, value);
 	}
 }
 
@@ -738,7 +738,7 @@ rect_mapping[] = {
 };
 
 bool
-MoonlightRect::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightRect::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	switch (id) {
 	case MoonId_X:
@@ -758,12 +758,12 @@ MoonlightRect::GetProperty (int id, NPIdentifier, NPVariant *result)
 		return true;
 
 	default:
-		return false;
+		return MoonlightObject::GetProperty (id, name, result);
 	}
 }
 
 bool
-MoonlightRect::SetProperty (int id, NPIdentifier, const NPVariant *value)
+MoonlightRect::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	switch (id) {
 	case MoonId_X:
@@ -783,7 +783,7 @@ MoonlightRect::SetProperty (int id, NPIdentifier, const NPVariant *value)
 		return true;
 
 	default:
-		return false;
+		return MoonlightObject::SetProperty (id, name, value);;
 	}
 }
 
@@ -827,7 +827,7 @@ MoonlightDuration::GetValue()
 }
 
 bool
-MoonlightDuration::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightDuration::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	switch (id) {
 	case MoonId_Name:
@@ -839,12 +839,12 @@ MoonlightDuration::GetProperty (int id, NPIdentifier, NPVariant *result)
 		return true;
 
 	default:
-		return false;
+		return MoonlightObject::GetProperty (id, name, result);
 	}
 }
 
 bool
-MoonlightDuration::SetProperty (int id, NPIdentifier, const NPVariant *value)
+MoonlightDuration::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	switch (id) {
 	case MoonId_Name:
@@ -855,7 +855,7 @@ MoonlightDuration::SetProperty (int id, NPIdentifier, const NPVariant *value)
 		return true;
 
 	default:
-		return false;
+		return MoonlightObject::SetProperty (id, name, value);
 	}
 }
 
@@ -908,7 +908,7 @@ MoonlightTimeSpan::GetValue()
 }
 
 bool
-MoonlightTimeSpan::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightTimeSpan::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	switch (id) {
 	case MoonId_Name:
@@ -918,12 +918,12 @@ MoonlightTimeSpan::GetProperty (int id, NPIdentifier, NPVariant *result)
 		DOUBLE_TO_NPVARIANT (TimeSpan_ToSecondsFloat (GetValue ()), *result);
 		return true;
 	default:
-		return false;
+		return MoonlightObject::GetProperty (id, name, result);
 	}
 }
 
 bool
-MoonlightTimeSpan::SetProperty (int id, NPIdentifier, const NPVariant *value)
+MoonlightTimeSpan::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	switch (id) {
 	case MoonId_Name:
@@ -940,7 +940,7 @@ MoonlightTimeSpan::SetProperty (int id, NPIdentifier, const NPVariant *value)
 		return true;
 
 	default:
-		return false;
+		return MoonlightObject::SetProperty (id, name, value);
 	}
 }
 
@@ -1251,6 +1251,10 @@ MoonlightObject::Invoke (int id, NPIdentifier name,
 		if (moonlight_type != Type::INVALID) {
 			string_to_npvariant (Type::Find (moonlight_type)->name, result);
 			return true;
+		} else {
+			//string_to_npvariant ("", result);
+			NULL_TO_NPVARIANT (*result);
+			return true;
 		}
 		break;
 	}
@@ -1476,7 +1480,7 @@ MoonlightScriptControlObject::Dispose ()
 }
 
 bool
-MoonlightScriptControlObject::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 
@@ -1504,12 +1508,12 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier, NPVariant *resu
 		return true;
 
 	default:
-		return false;
+		return MoonlightObject::GetProperty (id, name, result);
 	}
 }
 
 bool
-MoonlightScriptControlObject::SetProperty (int id, NPIdentifier, const NPVariant *value)
+MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 
@@ -1518,7 +1522,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier, const NPVariant
 		plugin->setSource (STR_FROM_VARIANT (*value));
 		return true;
 	default:
-		return false;
+		return MoonlightObject::SetProperty (id, name, value);
 	}
 }
 
@@ -1615,7 +1619,7 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 	}
 
 	default:
-		return false;
+		return MoonlightObject::Invoke (id, name, args, argCount, result);
 	}
 }
 
@@ -1648,7 +1652,7 @@ moonlight_settings_mapping [] = {
 };
 
 bool
-MoonlightSettingsObject::GetProperty (int id, NPIdentifier, NPVariant *result)
+MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 
@@ -1683,12 +1687,12 @@ MoonlightSettingsObject::GetProperty (int id, NPIdentifier, NPVariant *result)
 		return true;
 
 	default:
-		return false;
+		return MoonlightObject::GetProperty (id, name, result);
 	}
 }
 
 bool
-MoonlightSettingsObject::SetProperty (int id, NPIdentifier, const NPVariant *value)
+MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 
@@ -1718,9 +1722,9 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier, const NPVariant *val
 	// Cant be set after initialization so return true
 	case MoonId_Windowless:
 		return true;
+	default:
+		return MoonlightObject::SetProperty (id, name, value);
 	}
-
-	return false;
 }
 
 bool
@@ -1734,9 +1738,9 @@ MoonlightSettingsObject::Invoke (int id, NPIdentifier name,
 
 		string_to_npvariant ("Settings", result);
 		return true;
+	default:
+		return MoonlightObject::Invoke (id, name, args, argCount, result);
 	}
-
-	return false;
 }
 
 MoonlightSettingsType::MoonlightSettingsType ()
@@ -1842,12 +1846,12 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		return true;
 	}
 	default:
-		return false;
+		return MoonlightObject::GetProperty (id, name, result);
 	}
 }
 
 bool
-MoonlightContentObject::SetProperty (int id, NPIdentifier, const NPVariant *value)
+MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 
@@ -1877,7 +1881,7 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier, const NPVariant *valu
 		}
 	}
 	default:
-		return false;
+		return MoonlightObject::SetProperty (id, name, value);
 	}
 }
 
@@ -1973,7 +1977,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 	}
 
 	default:
-		return false;
+		return MoonlightObject::Invoke (id, name, args, argCount, result);
 	}
 }
 
@@ -2218,7 +2222,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 #endif
 	}
 
-	return false;
+	return MoonlightObject::GetProperty (id, name, result);
 }
 
 bool
@@ -2257,7 +2261,7 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 		}
 	}
 #endif
-	return false;
+	return MoonlightObject::SetProperty (id, name, value);
 }
 
 bool
@@ -3444,7 +3448,7 @@ MoonlightControlObject::HasProperty (NPIdentifier name)
 	if (real_object->HasProperty (name))
 		return true;
 
-	return MoonlightDependencyObjectObject::HasProperty (name);
+	return false;
 }
 
 bool
@@ -3569,7 +3573,7 @@ bool
 MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 {
 	return (g_hash_table_lookup (properties, name) != NULL
-		|| g_hash_table_lookup (events, name));
+		|| g_hash_table_lookup (events, name)) || MoonlightObject::HasProperty (name);
 }
 
 bool
@@ -3577,7 +3581,7 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 {
 	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (properties, name);
 	if (!prop)
-		return false;
+		return MoonlightObject::GetProperty (id, name, result);
 
 #if DEBUG_SCRIPTABLE
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
@@ -3638,7 +3642,7 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 		return true;
 	}
 
-	return false;
+	return MoonlightObject::SetProperty (id, name, value);
 }
 
 bool
@@ -3654,7 +3658,7 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 {
 	ScriptableMethod *method = (ScriptableMethod*)g_hash_table_lookup (methods, name);
 	if (!method)
-		return false;
+		return MoonlightObject::Invoke (id, name, args, argCount, result);
 
 #if DEBUG_SCRIPTABLE
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);

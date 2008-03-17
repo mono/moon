@@ -1,3 +1,9 @@
+2008-03-16  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.cpp: make objects chain up to their parent class
+	rather than simply returning false directly to make the logic
+	clearer and to allow toplevel handling of tostring.
+
 2008-03-14  Larry Ewing  <lewing@novell.com>
 
 	* plugin-class.h, plugin-class.cpp: wrap all EventArg subclasses
