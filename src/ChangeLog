@@ -1,3 +1,8 @@
+2008-03-14  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Fixes to the way we generate the KeySpline values to be
+	more smooth an precise.
+
 2008-03-17  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp: go ahead and invalidate the toplevel before

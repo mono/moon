@@ -664,10 +664,10 @@ point_animation_new (void)
  * This is used later on in the GetSplineProgress */
 static void generate_table (Point p1, Point p2, Point p3, Point p4, unsigned char table [257])
 {
-	memset (table, 0, 257);
+	memset (table, 255, 257);
 	double t;
 
-	for (t = 0.0; t <= 1.0; t += 1.0 / 256.0) {
+	for (t = 0.0; t <= 1.0; t += 1.0 / 257.0) {
 		double y = p1.y * (1.0 - t) * (1.0 - t) * (1.0 - t) +
 			   p2.y * 3.0 * t * (1.0 - t) * (1.0 - t) +
 			   p3.y * 3.0 * t * t * (1.0 - t) +
@@ -682,14 +682,14 @@ static void generate_table (Point p1, Point p2, Point p3, Point p4, unsigned cha
 		x = MIN (x, 1.0); x = MAX (x, 0.0);
 		y = MIN (y, 1.0); y = MAX (y, 0.0);
 
-		table [(int) (x * 256.0)] = (int) (y * 255.0);
+		table [(int) (x * 256.0)] = MIN ((int) (y * 255.0), table [(int) (x * 256.0)]);
 	}
 
 	// Fill in the values that we "missed"
 	unsigned char last_val = 0;
 	int i;
-	for (i = 0; i < 257; i++) {
-		if (table [i] == 0)
+	for (i = 1; i < 256; i++) {
+		if (table [i] == 255)
 			table [i] = last_val;
 		last_val = table [i];
 	}
