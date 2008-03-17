@@ -100,6 +100,21 @@ AC_DEFINE([INCLUDE_FFMPEG], [1], [Include support for ffmpeg])
 fi
 AM_CONDITIONAL(INCLUDE_FFMPEG, test x$FFMPEG = xyes)
 
+SWSCALE=no
+AC_ARG_WITH(swscale,[ --with-swscale=yes,no   If you want to enable support for swscale ],[
+	if test x$with_swscale = xyes; then
+		SWSCALE=yes
+	fi
+	if test x$with_swscale = xno; then
+		SWSCALE=no
+	fi
+])
+
+if test x$SWSCALE = xyes; then
+AC_DEFINE([INCLUDE_SWSCALE], [1], [Include support for swscale])
+fi
+AM_CONDITIONAL(INCLUDE_SWSCALE, test x$SWSCALE = xyes)
+
 #
 # Check for cairo "extensions"
 #
@@ -164,23 +179,33 @@ fi
 # these come from ffmpeg
 #
 if test x$FFMPEG = xyes; then
-	AC_MSG_CHECKING(libavcodec, libavformat libswscale)
-	if pkg-config libavcodec libavformat libswscale ; then
+	AC_MSG_CHECKING(libavcodec, libavformat)
+	if pkg-config libavcodec libavformat ; then
 	   AC_MSG_RESULT(found)
 	else
-	   AC_MSG_ERROR([ffmpeg and its associated libraries are not installed. You need libavcodec, libavformat and libswscale development kits])
+	   AC_MSG_ERROR([ffmpeg and its associated libraries are not installed. You need libavcodec and libavformat development kits])
 	fi
 
 	avutil_libdir="$(pkg-config --variable=libdir libavutil)"
-	swscale_libdir="$(pkg-config --variable=libdir libswscale)"
 	avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
 	avformat_libdir="$(pkg-config --variable=libdir libavformat)"
 
 	AC_SUBST([avutil_libdir])
-	AC_SUBST([swscale_libdir])
 	AC_SUBST([avcodec_libdir])
 	AC_SUBST([avformat_libdir])
 fi # ffmpeg
+
+if test x$SWSCALE = xyes; then
+	AC_MSG_CHECKING(libswscale)
+	if pkg-config libswscale ; then
+	   AC_MSG_RESULT(found)
+	else
+	   AC_MSG_ERROR([You need the libswscale development kit to enable swscale support])
+	fi
+	
+	swscale_libdir="$(pkg-config --variable=libdir libswscale)"
+	AC_SUBST([swscale_libdir])
+fi
 
 mono_libdir="$(pkg-config --variable=libdir mono)"
 mono_dlldir="$(pkg-config --variable=prefix mono)/lib"
@@ -410,20 +435,26 @@ if test x$HAVE_SSE2 = xyes; then
 fi
 
 if test x$FFMPEG = xyes; then
-FFMPEG_PKGS="libswscale libavcodec libavformat"
+FFMPEG_PKGS="libavcodec libavformat"
 else
 FFMPEG_PKGS=""
+fi
+
+if test x$SWSCALE = xyes; then
+SWSCALE_PKGS="libswscale"
+else
+SWSCALE_PKGS=""
 fi
 
 CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
 CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
 
 MOON_PKGS="gtk+-2.0 pango gthread-2.0 alsa freetype2 fontconfig $RANDR_PKG"
-MOON_CFLAGS="$LARGEFILE_CFLAGS $CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS $FFMPEG_PKGS)"
+MOON_CFLAGS="$LARGEFILE_CFLAGS $CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS $FFMPEG_PKGS $SWSCALE_PKGS)"
 MOON_LIBS="$CAIRO_LIBS $(pkg-config --libs $MOON_PKGS)"
 
 if test $user_plugin != yes; then
-MOON_LIBS="$MOON_LIBS $(pkg-config --libs $FFMPEG_PKGS)"
+MOON_LIBS="$MOON_LIBS $(pkg-config --libs $FFMPEG_PKGS $SWSCALE_PKGS)"
 fi
 
 # Remove glitz from the link flags (should fix Bug 338506)
@@ -442,7 +473,7 @@ PLUGIN_LIBS="$(echo $PLUGIN_LIBS | sed -e s/-lglitz//g)"
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)
 
-MOON_PROG_LIBS=`pkg-config --libs $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS`
+MOON_PROG_LIBS=`pkg-config --libs $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS $SWSCALE_PKGS`
 AC_SUBST(MOON_PROG_LIBS)
 
 if test x$DEBUG = xyes; then
@@ -512,6 +543,7 @@ Moonlight configuration:
 	Support for 1.0: yes
 	Support for 2.0: $MONO_RUNTIME
 	Support for ffmpeg: $FFMPEG
+	Support for swscale: $SWSCALE
 	Support for mmx: $HAVE_MMX
 	Support for sse2: $HAVE_SSE2
 	Support for running the test harness: $TESTING_SUPPORTED

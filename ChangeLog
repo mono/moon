@@ -1,4 +1,8 @@
 2008-03-17  Geoff Norton  <gnorton@novell.com>
+	
+	* configure.ac: Make our swscale dependency optional.
+
+2008-03-17  Geoff Norton  <gnorton@novell.com>
 
 	* configure.ac: Search for clock_gettime in -lrt.
 	
