@@ -19,7 +19,6 @@ libmooninclude_headers = \
 	clock.h		\
 	collection.h	\
 	color.h		\
-	yuv-converter.h	\
 	control.h	\
 	debug.h		\
 	dependencyobject.h \
@@ -49,6 +48,7 @@ libmooninclude_headers = \
 	runtime.h	\
 	shape.h		\
 	stylus.h	\
+	swscale-converter.h	\
 	text.h		\
 	transform.h	\
 	trigger.h	\
@@ -59,6 +59,7 @@ libmooninclude_headers = \
 	value.h		\
 	visual.h	\
 	xaml.h		\
+	yuv-converter.h	\
 	libmoon.h
 
 
@@ -74,7 +75,6 @@ libmoon_la_SOURCES = 	\
 	brush.cpp	\
 	canvas.cpp	\
 	color.cpp	\
-	yuv-converter.cpp	\
 	clock.cpp	\
 	collection.cpp	\
 	control.cpp	\
@@ -106,6 +106,7 @@ libmoon_la_SOURCES = 	\
 	runtime.cpp	\
 	shape.cpp	\
 	stylus.cpp	\
+	swscale-converter.cpp	\
 	text.cpp	\
 	transform.cpp	\
 	trigger.cpp	\
@@ -116,6 +117,7 @@ libmoon_la_SOURCES = 	\
 	value.cpp	\
 	visual.cpp	\
 	xaml.cpp	\
+	yuv-converter.cpp	\
 	zip/ioapi.c	\
 	zip/ioapi.h	\
 	zip/unzip.c	\

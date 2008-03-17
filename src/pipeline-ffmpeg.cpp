@@ -27,8 +27,11 @@ G_BEGIN_DECLS
 #include <limits.h>
 #include <avformat.h>
 #include <avcodec.h>
-#include <swscale.h>
 G_END_DECLS
+
+#if INCLUDE_SWSCALE
+#include <swscale-converter.h>
+#endif
 
 #include "pipeline-ffmpeg.h"
 #include "pipeline.h"
@@ -56,7 +59,9 @@ register_ffmpeg ()
 {
 	initialize_ffmpeg ();
 		
+#if INCLUDE_SWSCALE
 	Media::RegisterConverter (new FfmpegConverterInfo ());
+#endif
 	Media::RegisterDecoder (new FfmpegDecoderInfo ());
 	//Media::RegisterDemuxer (new FfmpegDemuxerInfo ());
 }
@@ -78,6 +83,31 @@ FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream)
 	
 
 }
+
+PixelFormat 
+FfmpegDecoder::ToFfmpegPixFmt (MoonPixelFormat format)
+{
+	switch (format) {
+	case MoonPixelFormatYUV420P: return PIX_FMT_YUV420P;  
+	case MoonPixelFormatRGB32: return PIX_FMT_RGB32;
+	default:
+		//printf ("FfmpegDecoder::ToFfmpegPixFmt (%i): Unknown pixel format.\n", format);
+		return PIX_FMT_NONE;
+	}
+}
+
+MoonPixelFormat
+FfmpegDecoder::ToMoonPixFmt (PixelFormat format)
+{
+	switch (format) {
+	case PIX_FMT_YUV420P: return MoonPixelFormatYUV420P;
+	case PIX_FMT_RGB32: return MoonPixelFormatRGB32;
+	default:
+		//printf ("FfmpegDecoder::ToMoonPixFmt (%i): Unknown pixel format.\n", format);
+		return MoonPixelFormatNone;
+	};
+}
+
 
 MediaResult
 FfmpegDecoder::Open ()
@@ -143,7 +173,7 @@ FfmpegDecoder::Open ()
 		goto failure;
 	}
 	
-	pixel_format = FfmpegConverter::ToMoonPixFmt (context->pix_fmt);
+	pixel_format = FfmpegDecoder::ToMoonPixFmt (context->pix_fmt);
 		
 	//printf ("FfmpegDecoder::Open (): Opened codec successfully.\n");
 	
@@ -334,106 +364,6 @@ IMediaDecoder*
 FfmpegDecoderInfo::Create (Media* media, IMediaStream* stream)
 {
 	return new FfmpegDecoder (media, stream);
-}
-
-
-/*
- * FfmpegConverter
- */
-
-FfmpegConverter::FfmpegConverter (Media* media, VideoStream* stream) : IImageConverter (media, stream)
-{
-	scaler = NULL;
-}
-
-FfmpegConverter::~FfmpegConverter ()
-{
-	if (scaler != NULL) {
-		sws_freeContext (scaler);
-		scaler = NULL;
-	}
-}
-
-PixelFormat 
-FfmpegConverter::ToFfmpegPixFmt (MoonPixelFormat format)
-{
-	switch (format) {
-	case MoonPixelFormatYUV420P: return PIX_FMT_YUV420P;  
-	case MoonPixelFormatRGB32: return PIX_FMT_RGB32;
-	default:
-		//printf ("FfmpegConverter::ToFfmpegPixFmt (%i): Unknown pixel format.\n", format);
-		return PIX_FMT_NONE;
-	}
-}
-
-MoonPixelFormat
-FfmpegConverter::ToMoonPixFmt (PixelFormat format)
-{
-	switch (format) {
-	case PIX_FMT_YUV420P: return MoonPixelFormatYUV420P;
-	case PIX_FMT_RGB32: return MoonPixelFormatRGB32;
-	default:
-		//printf ("FfmpegConverter::ToMoonPixFmt (%i): Unknown pixel format.\n", format);
-		return MoonPixelFormatNone;
-	};
-}
-
-MediaResult
-FfmpegConverter::Open ()
-{
-	PixelFormat in_format = ToFfmpegPixFmt (input_format);
-	PixelFormat out_format = ToFfmpegPixFmt (output_format);
-	
-	if (in_format == PIX_FMT_NONE) {
-		media->AddMessage (MEDIA_CONVERTER_ERROR, "Invalid input format.");
-		return MEDIA_CONVERTER_ERROR;
-	}
-	
-	if (out_format == PIX_FMT_NONE) {
-		media->AddMessage (MEDIA_CONVERTER_ERROR, "Invalid output format.");
-		return MEDIA_CONVERTER_ERROR;
-	}
-	
-	scaler = sws_getContext (stream->width, stream->height, in_format,
-			stream->width, stream->height, out_format,
-			SWS_BICUBIC, NULL, NULL, NULL);
-			
-	return MEDIA_SUCCESS;
-}
-
-MediaResult
-FfmpegConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride [])
-{
-	if (scaler == NULL) {
-		media->AddMessage (MEDIA_CONVERTER_ERROR, "Converter closed.");
-		return MEDIA_CONVERTER_ERROR;
-	}
-	
-	//printf ("converting...\n");
-
-	// There seems to be no documentation about what
-	// sws_scale's return value means.
-	sws_scale (scaler, src, srcStride, srcSlideY, srcSlideH, dest, dstStride);
-	
-	return MEDIA_SUCCESS;
-}
-
-
-/*
- * FfmpegConverterInfo
- */
-
-bool
-FfmpegConverterInfo::Supports (MoonPixelFormat input, MoonPixelFormat output)
-{
-	return FfmpegConverter::ToFfmpegPixFmt (input)  != PIX_FMT_NONE 
-		&& FfmpegConverter::ToFfmpegPixFmt (output) != PIX_FMT_NONE;
-}
-
-IImageConverter*
-FfmpegConverterInfo::Create (Media* media, VideoStream* stream)
-{
-	return new FfmpegConverter (media, stream);
 }
 
 #endif // INCLUDE_FFMPEG

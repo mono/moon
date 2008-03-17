@@ -47,6 +47,9 @@ public:
 	virtual void Cleanup (MediaFrame* frame);
 	virtual void CleanState () { has_delayed_frame = false; }
 	virtual bool HasDelayedFrame () {return has_delayed_frame; }
+
+	static PixelFormat ToFfmpegPixFmt (MoonPixelFormat format);	
+	static MoonPixelFormat ToMoonPixFmt (PixelFormat format);
 private:
 	AVCodecContext *context;
 	uint8_t* audio_buffer;
@@ -58,29 +61,6 @@ public:
 	virtual bool Supports (const char* codec);
 	virtual IMediaDecoder* Create (Media* media, IMediaStream* stream);
 	virtual const char* GetName () { return "FfmpegDecoder"; }
-};
-
-class FfmpegConverter : public IImageConverter {
-public:
-	FfmpegConverter (Media* media, VideoStream* stream);	
-	~FfmpegConverter ();
-	
-	MediaResult Open ();
-	MediaResult Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride []);
-	
-	static PixelFormat ToFfmpegPixFmt (MoonPixelFormat format);	
-	static MoonPixelFormat ToMoonPixFmt (PixelFormat format);
-	
-private:
-	struct SwsContext *scaler;
-};
-
-
-class FfmpegConverterInfo : public ConverterInfo {
-public:
-	virtual bool Supports (MoonPixelFormat input, MoonPixelFormat output);
-	virtual IImageConverter* Create (Media* media, VideoStream* stream);
-	virtual const char* GetName () { return "FfmpegConverter"; }
 };
 
 #endif // __MOON_PIPELINE_FFMPEG__

@@ -1,3 +1,12 @@
+2008-03-17  Geoff Norton  <gnorton@novell.com>
+
+	* Makefile.am:
+	* pipeline-ffmpeg.cpp:
+	* pipeline-ffmpeg.h:
+	* swscale-converter.cpp:
+	* swscale-converter.h:  Refactor the swscale based yuv2rgb converter
+	out to a seperate file so it can be included optionally in the build.
+
 2008-03-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Show error message, not only error number, upon thread
