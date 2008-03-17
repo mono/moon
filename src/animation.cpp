@@ -749,10 +749,16 @@ KeySpline::GetSplineProgress (double linearProgress)
 {
 	linearProgress = MIN (linearProgress, 1.0);
 	linearProgress = MAX (linearProgress, 0.0);
-	return value_table [(int) (linearProgress * 256.0)] / 255.0;
+
+	double base;
+	double v;
+	double frac = modf ((linearProgress * 256.0), &base);
+
+	v = ((value_table [(int) base] / 255.0) * (1.0 - frac)) + 
+	    ((value_table [MIN (((int) base) + 1, 256)] / 255.0) * frac);
+
+	return v;
 }
-
-
 
 DependencyProperty* KeyFrame::KeyTimeProperty;
 

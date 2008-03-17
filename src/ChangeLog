@@ -1,4 +1,9 @@
-2008-03-14  Michael Dominic K.  <mdk@mdk.am>
+2008-03-17  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Interpolate linearly between keyspline values. This
+	fixes the jags in test-animation-slow-keyspline.xaml.
+
+2008-03-17  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: Fixes to the way we generate the KeySpline values to be
 	more smooth an precise.
