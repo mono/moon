@@ -65,7 +65,25 @@ namespace MoonlightTests {
 		
 		private static string GetProcessPath ()
 		{
+			if (!File.Exists (process_path))
+				process_path = FindAgviewerRecursive (Directory.GetCurrentDirectory ());
+
 			return process_path;
+		}
+
+		private static string FindAgviewerRecursive (string cd)
+		{
+			string ag = Path.Combine (cd, "agviewer");
+			if (File.Exists (ag))
+				return ag;
+
+			foreach (string dir in Directory.GetDirectories (cd)) {
+				string res = FindAgviewerRecursive (dir);
+				if (res != null)
+					return res;
+			}
+
+			return null;
 		}
 	}
 }
