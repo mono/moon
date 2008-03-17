@@ -435,7 +435,6 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		// onError.
 		if (!g_ascii_strcasecmp (argn[i], "onError")) {
 			this->onError = argv[i];
-			printf ("onError = %s\n", this->onError);
 			continue;
 		}
 
@@ -658,6 +657,19 @@ PluginInstance::CreateWindow ()
 				 this->getRootObject ()->content, 
 				 identifier, &npvalue);
 	}
+
+	/*
+	if (this->onLoad != NULL) {
+		char *retval = PL_strdup (this->onLoad);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onLoad");
+		NPN_SetProperty (this->instance, 
+				 this->getRootObject ()->content, 
+				 identifier, &npvalue);
+	}
+	*/
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
@@ -1579,8 +1591,15 @@ PluginXamlLoader::TryLoad (int *error)
 		return GetMissing ();
 	}
 
-	if (!Type::Find(element_type)->IsSubclassOf(Type::CANVAS)) {
-		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, its a %s\n", element->GetTypeName ());
+	Type *t = Type::Find(element_type);
+	if (!t) {
+		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is an unregistered type\n");
+		element->unref ();
+		return NULL;
+	}
+
+	if (!t->IsSubclassOf(Type::CANVAS)) {
+		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is a %s\n", element->GetTypeName ());
 		element->unref ();
 		return NULL;
 	}

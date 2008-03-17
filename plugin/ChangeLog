@@ -1,5 +1,8 @@
 2008-03-17  Larry Ewing  <lewing@novell.com>
 
+	* plugin.cpp (PluginXamlLoader::TryLoad): add a quick check to
+	avoid a crash.  Better error handling on the way.
+
 	* plugin-class.cpp (MoonlightCollectionObject::Invoke): do some
 	very basic argument type checking.
 
