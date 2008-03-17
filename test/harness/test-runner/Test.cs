@@ -135,6 +135,10 @@ namespace MoonlightTests {
 			get { return input_file; }
 		}
 
+		public string InputFileName {
+			get { return Path.GetFileName (input_file); }
+		}
+
 		public bool IsKnownFailure {
 			get { return known_failure; }
 		}
@@ -236,12 +240,13 @@ namespace MoonlightTests {
 				return result;
 			}
 
-			if (master_file != "None")
+			if (Path.GetFileName (master_file) != "None")
 				result = CompareResults (compare_to_moon);
 
 			StopXsp ();
 
 			Teardown ();
+
 			return result;
 		}
 
