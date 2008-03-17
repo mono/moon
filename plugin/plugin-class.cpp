@@ -2615,10 +2615,14 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 
 	switch (id) {
 	case MoonId_Add: {
-		if (argCount < 1 || NPVARIANT_IS_NULL (args [0]))
+		if (argCount < 1 || !NPVARIANT_IS_OBJECT (args [0]))
+			THROW_JS_EXCEPTION ("add");
+
+		if (!npobject_is_dependency_object (NPVARIANT_TO_OBJECT (args [0])))
 			THROW_JS_EXCEPTION ("add");
 
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]);
+
 		int n = col->Add (el->GetDependencyObject ());
 
 		if (n == -1)
@@ -2632,7 +2636,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		if (argCount < 1)
 			THROW_JS_EXCEPTION ("remove");
 
-		if (NPVARIANT_IS_NULL (args [0]))
+		if (!NPVARIANT_IS_OBJECT (args [0]))
 			THROW_JS_EXCEPTION ("remove");
 
 		if (!npobject_is_dependency_object (NPVARIANT_TO_OBJECT (args [0])))
@@ -2646,7 +2650,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_RemoveAt: {
-		if (argCount < 1)
+		if (argCount < 1 || !NPVARIANT_IS_INT32 (args[0]))
 			THROW_JS_EXCEPTION ("removeAt");
 		
 		int index = NPVARIANT_TO_INT32 (args [0]);
@@ -2662,13 +2666,19 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_Insert: {
-		if (argCount < 1 || NPVARIANT_IS_NULL (args [1]))
+		if (argCount < 1)
 			THROW_JS_EXCEPTION ("insert");
 
 		if (argCount < 2) {
 			VOID_TO_NPVARIANT (*result);
 			return true;
 		}
+
+		if (!NPVARIANT_IS_INT32 (args[0]))
+			THROW_JS_EXCEPTION ("insert");
+
+		if (!NPVARIANT_IS_OBJECT (args [1]) || !npobject_is_dependency_object (NPVARIANT_TO_OBJECT (args [1])))
+			THROW_JS_EXCEPTION ("insert");
 
 		int index = NPVARIANT_TO_INT32 (args[0]);
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args[1]);
@@ -2693,6 +2703,9 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 	}
 	case MoonId_GetItem: {
 		if (argCount < 1)
+			THROW_JS_EXCEPTION ("getItem");
+		
+		if (!NPVARIANT_IS_INT32 (args[0]))
 			THROW_JS_EXCEPTION ("getItem");
 
 		int index = NPVARIANT_TO_INT32 (args[0]);
