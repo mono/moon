@@ -399,15 +399,15 @@ Surface::Attach (UIElement *element)
 	}
 	
 	if (toplevel) {
-		//toplevel->Invalidate ();
+		toplevel->Invalidate ();
 		down_dirty->Clear (true);
 		up_dirty->Clear (true);
 		toplevel->SetSurface (NULL);
-		toplevel->unref ();
 		time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		time_manager->GetSource()->Stop ();
 		time_manager->unref ();
+		toplevel->unref ();
 		time_manager = new TimeManager ();
 	} else 
 		first = TRUE;
@@ -805,9 +805,6 @@ void
 Surface::DestroyWidget (GtkWidget *widget)
 {
 	if (widget) {
-		g_signal_handlers_disconnect_matched (widget,
-						      (GSignalMatchType) G_SIGNAL_MATCH_DATA,
-						      0, 0, NULL, NULL, this);
 		gtk_widget_destroy (widget);
 	}
 }
@@ -1856,8 +1853,6 @@ Surface::widget_destroyed (GtkWidget *widget, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	// This is never called, why?
-	printf ("------------------ WE ARE DESTROYED ---------------\n");
 	if (s->widget_normal != NULL && s->widget_normal != widget) {
 		// The fullscreen area have been destroyed.
 		// If we are destroying it, widget_fullscreen is NULL.

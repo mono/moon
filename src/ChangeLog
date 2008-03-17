@@ -1,3 +1,10 @@
+2008-03-17  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: go ahead and invalidate the toplevel before
+	cleaning everything up. remove the disconnect call in
+	DestroyWidget, all the handlers should be ok with getting called
+	on fullscreen or the normal widget.
+
 2008-03-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::LayoutWrap): Added some improved unicode
