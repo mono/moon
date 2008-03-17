@@ -1040,7 +1040,7 @@ AudioPlayer::AudioPlayer ()
 		
 	result = pthread_create (&audio_thread, NULL, Loop, this);
 	if (result != 0) {
-		fprintf (stderr, "AudioPlayer::Initialize (): could not create audio thread (error code: %i).\n", result);
+		fprintf (stderr, "AudioPlayer::Initialize (): could not create audio thread (error code: %i = '%s').\n", result, strerror (result));
 		return;
 	}
 	

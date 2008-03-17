@@ -1,5 +1,10 @@
 2008-03-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: Show error message, not only error number, upon thread
+	  creation failure.
+
+2008-03-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* playlist.cpp, playlist.h: Add a way to determine if the playlist was
 	  created to play a single file, or if it was created from an asx file
 	  (IsSingleFile).
