@@ -1,0 +1,25 @@
+<Canvas
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="900" Height="70">
+	<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="50" Height="50" Fill="Red">
+	<Rectangle.Triggers>
+		<EventTrigger RoutedEvent="Rectangle.Loaded">
+			<BeginStoryboard>
+				<Storyboard x:Name="animation">
+					<DoubleAnimationUsingKeyFrames
+						Storyboard.TargetName="rect"
+						Storyboard.TargetProperty="(Canvas.Left)"
+						AutoReverse="True">
+							<SplineDoubleKeyFrame Value="840" KeyTime="0:0:20" KeySpline="0.0,0.3 0.7,1.0" />
+					</DoubleAnimationUsingKeyFrames>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Rectangle.Triggers>
+	</Rectangle>
+
+	<Rectangle x:Name="measure1" Canvas.Left="10" Canvas.Top="7" Width="880" Height="3" Fill="Black" />
+	<Rectangle x:Name="measure2" Canvas.Left="10" Canvas.Top="60" Width="880" Height="3" Fill="Black" />
+</Canvas>
+
