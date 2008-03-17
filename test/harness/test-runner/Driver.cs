@@ -146,8 +146,8 @@ namespace MoonlightTests {
 				ReportsExecuting (test);
 				TestResult result = test.Execute (compare_to_moon);
 
-				if (logging_server.IsTestResultSet (test.InputFile)) {
-					result = logging_server.GetTestResult (test.InputFile);
+				if (logging_server.IsTestResultSet (test.InputFileName)) {
+					result = logging_server.GetTestResult (test.InputFileName);
 					if (result == TestResult.Fail)
 						test.SetFailedReason ("Test LogResult set to FAIL");
 				}

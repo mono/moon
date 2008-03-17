@@ -101,7 +101,7 @@ namespace MoonlightTests {
 				Console.WriteLine ("Failed:  {0} -- {1}", t.InputFile, t.FailedReason);
 				if (run.VerboseLevel >= VerboseLevel.ShowShockerLines) {
 					Console.WriteLine ("  Log Lines:");
-					foreach (string str in run.LoggingServer.GetTestLogLines (t.InputFile)) {
+					foreach (string str in run.LoggingServer.GetTestLogLines (t.InputFileName)) {
 						Console.WriteLine ("    {0}", str);
 					}
 				}
