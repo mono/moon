@@ -1,3 +1,9 @@
+2008-03-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* playlist.cpp, playlist.h: Add a way to determine if the playlist was
+	  created to play a single file, or if it was created from an asx file
+	  (IsSingleFile).
+
 2008-03-17  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (EventObject::EventObject): reorder things

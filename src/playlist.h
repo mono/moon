@@ -117,6 +117,7 @@ private:
 	PlaylistNode *current_node;
 	MediaElement *element;
 	IMediaSource *source;
+	bool is_single_file;
 
 	void Init (MediaElement *element);
 
@@ -147,6 +148,7 @@ public:
 	void ReplaceCurrentEntry (Playlist *entry);
 
 	virtual bool IsPlaylist () { return true; }
+	bool IsSingleFile () { return is_single_file; }
 };
 
 class PlaylistParser {

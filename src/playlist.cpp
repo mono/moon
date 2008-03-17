@@ -235,6 +235,7 @@ PlaylistEntry::SetMedia (Media *media)
 Playlist::Playlist (MediaElement *element, IMediaSource *source)
 	: PlaylistEntry (element, NULL)
 {
+	is_single_file = false;
 	Init (element);
 	this->source = source;
 }
@@ -242,6 +243,7 @@ Playlist::Playlist (MediaElement *element, IMediaSource *source)
 Playlist::Playlist (MediaElement *element, Media *media)
 	: PlaylistEntry (element, NULL, media)
 {
+	is_single_file = true;
 	Init (element);
 
 	AddEntry (new PlaylistEntry (element, this, media));
@@ -774,7 +776,7 @@ PlaylistParser::Parse ()
 		}
 		
 		if (!XML_ParseBuffer (parser, bytes_read, bytes_read == 0)) {
-			fprintf (stderr, "Failed to parse asx document: %s\n", XML_ErrorString (XML_GetErrorCode (parser)));
+			fprintf (stderr, "Failed to parse asx document: %s (%i)\n", XML_ErrorString (XML_GetErrorCode (parser)), XML_GetErrorCode (parser));
 			return false;
 		}
 		
