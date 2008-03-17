@@ -1322,6 +1322,15 @@ TextFont::GetGlyphInfoByIndex (uint32_t index)
 	return GetGlyphInfo (unichar, index);
 }
 
+bool
+TextFont::HasGlyph (gunichar unichar)
+{
+	if (!face)
+		return false;
+	
+	return FcFreeTypeCharIndex (face, unichar) != 0;
+}
+
 double
 TextFont::UnderlinePosition ()
 {
@@ -1930,7 +1939,7 @@ TextFontDescription::ToString ()
 	return g_string_free (str, false);
 }
 
-
+#if 0
 TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg)
 {
 	gunichar *s, *d;
@@ -2595,3 +2604,5 @@ TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x
 		line = (TextLine *) line->next;
 	}
 }
+#endif
+

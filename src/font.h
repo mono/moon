@@ -141,6 +141,8 @@ public:
 	GlyphInfo *GetGlyphInfoByIndex (uint32_t index);
 	GlyphInfo *GetGlyphInfo (gunichar unichar, uint32_t index);
 	
+	bool HasGlyph (gunichar unichar);
+	
 	bool IsScalable ();
 	
 	double Kerning (gunichar left, gunichar right);
@@ -213,7 +215,7 @@ public:
 	char *ToString ();
 };
 
-
+#if 0
 class TextRun : public List::Node {
 public:
 	TextDecorations deco;
@@ -265,5 +267,6 @@ public:
 	void GetLayoutExtents (double *width, double *height);
 	void Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y);
 };
+#endif
 
 #endif /* __FONT_H__ */

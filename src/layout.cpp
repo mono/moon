@@ -340,7 +340,7 @@ print_break_info (gunichar *text)
 
 
 #define BreakSpace(btype) (btype == G_UNICODE_BREAK_SPACE || btype == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-#define BreakAfter(btype) (btype == G_UNICODE_BREAK_AFTER || btype == G_UNICODE_BREAK_NEXT_LINE || btype == G_UNICODE_BREAK_INSEPARABLE)
+#define BreakAfter(btype) (btype == G_UNICODE_BREAK_AFTER || btype == G_UNICODE_BREAK_NEXT_LINE)
 #define BreakBefore(btype) (btype == G_UNICODE_BREAK_BEFORE || btype == G_UNICODE_BREAK_PREFIX)
 
 void
@@ -876,19 +876,71 @@ TextLayout::LayoutWrap ()
 			inptr = word;
 			g_array_set_size (array, 0);
 			btype = g_unichar_break_type (*inptr);
-			while (*inptr && !BreakSpace (btype)) {
-				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
-					advance = glyph->metrics.horiAdvance;
-					
-					if (prev != 0)
-						advance += run->font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0)
-						advance -= glyph->metrics.horiBearingX;
-					
-					if (max_width > 0.0 && (x1 + advance) > (max_width + 1.0)) {
-						if (wx == 0.0 && inptr > word && !last_word) {
-							// break in the middle of a word
-							// FIXME: need to respect unicode breaking
+			while (*inptr && btype != G_UNICODE_BREAK_SPACE) {
+				if (!(glyph = run->font->GetGlyphInfo (*inptr)))
+					goto next;
+				
+				advance = glyph->metrics.horiAdvance;
+				
+				if (prev != 0)
+					advance += run->font->Kerning (prev, glyph->index);
+				else if (glyph->metrics.horiBearingX < 0)
+					advance -= glyph->metrics.horiBearingX;
+				
+				if (max_width > 0.0 && (x1 + advance) > (max_width + 1.0)) {
+					if (wx == 0.0 && inptr > word && !last_word) {
+						// break in the middle of a word
+						// FIXME: need to respect unicode breaking
+						actual_width = MAX (actual_width, x1);
+						segment->end = inptr - run->text;
+						segment->advance = x1 - x0;
+						segment->width = x1 - x0;
+						blank = false;
+						word = inptr;
+						goto linebreak;
+					} else if (wx > 0.0) {
+						// scan backwards for a char to break after
+						i = array->len;
+						after = false;
+						
+						while (i > 0 && !after) {
+							wc = g_array_index (array, WordChar, i - 1);
+							
+							switch (wc.btype) {
+							case G_UNICODE_BREAK_NEXT_LINE:
+							case G_UNICODE_BREAK_UNKNOWN:
+								after = true;
+								break;
+							case G_UNICODE_BREAK_BEFORE_AND_AFTER:
+							case G_UNICODE_BREAK_EXCLAMATION:
+							case G_UNICODE_BREAK_AFTER:
+								// only break after if there are chars before
+								after = (i > 1);
+								break;
+							case G_UNICODE_BREAK_BEFORE:
+								if (i > 1) {
+									// break after the previous char
+									wc = g_array_index (array, WordChar, i - 2);
+									after = true;
+								}
+								break;
+							case G_UNICODE_BREAK_WORD_JOINER:
+								// only break if there is nothing before it
+								after = (i == 1);
+								break;
+							default:
+								// don't break here
+								break;
+							}
+							
+							i--;
+						}
+						
+						if (after) {
+							// break after a previous char in the word
+							inptr = wc.c + 1;
+							x1 = wc.x1;
+							
 							actual_width = MAX (actual_width, x1);
 							segment->end = inptr - run->text;
 							segment->advance = x1 - x0;
@@ -896,70 +948,27 @@ TextLayout::LayoutWrap ()
 							blank = false;
 							word = inptr;
 							goto linebreak;
-						} else if (wx > 0.0) {
-							// scan backwards for a char to break after
-							i = array->len;
-							after = false;
-							
-							while (i > 0 && !after) {
-								wc = g_array_index (array, WordChar, i - 1);
-								
-								switch (wc.btype) {
-								case G_UNICODE_BREAK_INSEPARABLE:
-								case G_UNICODE_BREAK_NEXT_LINE:
-								case G_UNICODE_BREAK_AFTER:
-									// break after this char
-									after = true;
-									break;
-								case G_UNICODE_BREAK_BEFORE_AND_AFTER:
-									// only break after if there are chars before
-									after = (i > 1);
-									break;
-								case G_UNICODE_BREAK_BEFORE:
-								case G_UNICODE_BREAK_PREFIX:
-									if (i > 1) {
-										// break after the previous char
-										wc = g_array_index (array, WordChar, i - 2);
-										after = true;
-									}
-									break;
-								default:
-									// don't break here
-									break;
-								}
-								
-								i--;
-							}
-							
-							if (after) {
-								// break after a previous char in the word
-								inptr = wc.c + 1;
-								x1 = wc.x1;
-								
-								actual_width = MAX (actual_width, x1);
-								segment->end = inptr - run->text;
-								segment->advance = x1 - x0;
-								segment->width = x1 - x0;
-								blank = false;
-								word = inptr;
-								goto linebreak;
-							} else {
-								// break before this word
-								segment->advance = wx - x0;
-								segment->width = wx - x0;
-								goto linebreak;
-							}
+						} else {
+							// break before this word
+							segment->advance = wx - x0;
+							segment->width = wx - x0;
+							goto linebreak;
 						}
 					}
-					
-					x1 += advance;
-					
-					wc.btype = btype;
-					wc.c = inptr;
-					wc.x1 = x1;
-					
-					g_array_append_val (array, wc);
 				}
+				
+				x1 += advance;
+				
+			next:
+				
+				if (!run->font->HasGlyph (*inptr))
+					wc.btype = G_UNICODE_BREAK_UNKNOWN;
+				else
+					wc.btype = btype;
+				wc.c = inptr;
+				wc.x1 = x1;
+				
+				g_array_append_val (array, wc);
 				
 				inptr++;
 				
