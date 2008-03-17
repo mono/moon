@@ -1,0 +1,9 @@
+<Canvas
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Class="StandaloneSample.MyCanvas"
+	Width="400" Height="400">
+
+	<Rectangle Width="360" Height="360" Canvas.Left="20" Canvas.Top="20" Fill="Red" />
+</Canvas>
+
