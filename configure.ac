@@ -62,6 +62,8 @@ if test "x$ac_cv_sys_file_offset_bits" != "xno"; then
    LARGEFILE_CFLAGS="$LARGEFILE_CFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
 fi
 
+AC_SEARCH_LIBS(clock_gettime, rt)
+
 #
 # Debugging support
 #
