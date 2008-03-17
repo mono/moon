@@ -1,3 +1,9 @@
+2008-03-17  Geoff Norton  <gnorton@novell.com>
+
+	* yuv-converter.cpp: __attribute ((aligned ())) can be ignored
+	for locals.  Use posix_memalign and share the instance for the 
+	lifespan of the converter.
+	
 2008-03-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.h: Added #include "layout.h"
