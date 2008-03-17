@@ -1,3 +1,8 @@
+2008-03-17  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (EventObject::EventObject): reorder things
+	to quiet g++.
+
 2008-03-17  Geoff Norton  <gnorton@novell.com>
 
 	* yuv-converter.cpp: __attribute ((aligned ())) can be ignored

@@ -23,7 +23,7 @@
 #include "uielement.h"
 
 EventObject::EventObject ()
-  : refcount (1), events (NULL), surface (NULL)
+  : surface (NULL), refcount (1), events (NULL)
 {
 #if OBJECT_TRACKING
 	id = ++objects_created;
