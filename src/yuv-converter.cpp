@@ -351,7 +351,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 	if (have_sse2) {
 		for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 			for (j = 0; j < width >> 4; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
-				if ((int)u_plane % 16) {
+				if ((uintptr_t)u_plane % 16) {
 					COPY_COLOR_MODIFIERS("movdqa", "xmm", &rgb_uv)
 				} else {
 					CALC_COLOR_MODIFIERS("movdqa", "pslldq", "xmm", u_plane, v_plane, &rgb_uv);
@@ -370,7 +370,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 		if (have_mmx) {
 			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 				for (j = 0; j <  width >> 3; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
-					if ((int)u_plane % 8) {
+					if ((uintptr_t)u_plane % 8) {
 						COPY_COLOR_MODIFIERS("movq", "mm", &rgb_uv)
 					} else {
 						CALC_COLOR_MODIFIERS("movq", "psllq", "mm", u_plane, v_plane, &rgb_uv);

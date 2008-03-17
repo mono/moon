@@ -1,3 +1,8 @@
+2008-03-17  Geoff Norton  <gnorton@novell.com>
+
+	* yuv-converter.cpp: Ensure that our pointer alignment checks are
+	64-bit safe.
+
 2008-03-17  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: Interpolate linearly between keyspline values. This
