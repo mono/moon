@@ -127,7 +127,7 @@ DISTCLEANFILES=moonlight.exe moonlight.exe.mdb novell-moonlight.xpi
 
 dist-hook:
 	mkdir $(distdir)/moz-sdk
-	-cp $(distdir)/moz-sdk/*.h $(distdir)/moz-sdk
+	-cp $(srcdir)/moz-sdk/*.h $(distdir)/moz-sdk
 
 moonlight_CS=  $(srcdir)/moonlight.cs
 
