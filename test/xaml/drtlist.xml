@@ -17,43 +17,43 @@
    />
    <Test id="5"
 	inputFile="test-animation-beginstoryboard-empty.xaml"
-	masterFile10="../harness/masters/test-animation-beginstoryboard-emptyMaster.png"
+	masterFile10="../harness/masters/test-animation-beginstoryboard-emptyMaster.tif"
    />
    <Test id="6"
 	inputFile="test-animation-begintimes.xaml"
-	masterFile10="../harness/masters/test-animation-begintimesMaster.png"
+	masterFile10="../harness/masters/test-animation-begintimesMaster.tif"
    />
    <Test id="7"
 	inputFile="test-animation-ellipse-stroke.xaml"
-	masterFile10="../harness/masters/test-animation-ellipse-strokeMaster.png"
+	masterFile10="../harness/masters/test-animation-ellipse-strokeMaster.tif"
    />
    <Test id="8"
 	inputFile="test-animation-ellipse.xaml"
-	masterFile10="../harness/masters/test-animation-ellipseMaster.png"
+	masterFile10="../harness/masters/test-animation-ellipseMaster.tif"
    />
    <Test id="9"
 	inputFile="test-animation-line-bounds.xaml"
-	masterFile10="../harness/masters/test-animation-line-boundsMaster.png"
+	masterFile10="../harness/masters/test-animation-line-boundsMaster.tif"
    />
    <Test id="10"
 	inputFile="test-animation-line.xaml"
-	masterFile10="../harness/masters/test-animation-lineMaster.png"
+	masterFile10="../harness/masters/test-animation-lineMaster.tif"
    />
    <Test id="11"
 	inputFile="test-animation-path-smoothbezier-stroke.xaml"
-	masterFile10="../harness/masters/test-animation-path-smoothbezier-strokeMaster.png"
+	masterFile10="../harness/masters/test-animation-path-smoothbezier-strokeMaster.tif"
    />
    <Test id="12"
 	inputFile="test-animation-polygon-bounds.xaml"
-	masterFile10="../harness/masters/test-animation-polygon-boundsMaster.png"
+	masterFile10="../harness/masters/test-animation-polygon-boundsMaster.tif"
    />
    <Test id="13"
 	inputFile="test-animation-polyline-bounds.xaml"
-	masterFile10="../harness/masters/test-animation-polyline-boundsMaster.png"
+	masterFile10="../harness/masters/test-animation-polyline-boundsMaster.tif"
    />
    <Test id="14"
 	inputFile="test-animation-text.xaml"
-	masterFile10="../harness/masters/test-animation-textMaster.png"
+	masterFile10="../harness/masters/test-animation-textMaster.tif"
    />
    <Test id="15"
 	inputFile="test-brush-linear-negative.xaml"
@@ -77,11 +77,11 @@
    />
    <Test id="20"
 	inputFile="test-color-animation-using-keyframes.xaml"
-	masterFile10="../harness/masters/test-color-animation-using-keyframesMaster.png"
+	masterFile10="../harness/masters/test-color-animation-using-keyframesMaster.tif"
    />
    <Test id="21"
 	inputFile="test-color-animation.xaml"
-	masterFile10="../harness/masters/test-color-animationMaster.png"
+	masterFile10="../harness/masters/test-color-animationMaster.tif"
    />
    <Test id="22"
 	inputFile="test-colors.xaml"
@@ -97,7 +97,7 @@
    />
    <Test id="25"
 	inputFile="test-double-keyspline-animation.xaml"
-	masterFile10="../harness/masters/test-double-keyspline-animationMaster.png"
+	masterFile10="../harness/masters/test-double-keyspline-animationMaster.tif"
    />
    <Test id="26"
 	inputFile="test-geometry-collection.xaml"
@@ -517,7 +517,7 @@
    />
    <Test id="130"
 	inputFile="test-zero-scale-animation.xaml"
-	masterFile10="../harness/masters/test-zero-scale-animationMaster.png"
+	masterFile10="../harness/masters/test-zero-scale-animationMaster.tif"
    />
    <Test id="131"
 	inputFile="test-zindex.xaml"
@@ -545,15 +545,15 @@
    />
    <Test id="136"
         inputFile="test-clip-invalid-update.htm"
-	masterFile10="../harness/masters/test-clip-invalid-updateMaster.png"
+	masterFile10="../harness/masters/test-clip-invalid-updateMaster.tif"
    />
    <Test id="137"
         inputFile="test-inkpresenter-position.htm"
-	masterFile10="../harness/masters/test-inkpresenter-positionMaster.png"
+	masterFile10="../harness/masters/test-inkpresenter-positionMaster.tif"
    />
    <Test id="138"
         inputFile="test-inkpresenter-scale.htm"
-	masterFile10="../harness/masters/test-inkpresenter-scaleMaster.png"
+	masterFile10="../harness/masters/test-inkpresenter-scaleMaster.tif"
    />
    <Test id="139"
 	inputFile="test-empty-element-source.html"
@@ -561,7 +561,7 @@
    />
    <Test id="140"
 	inputFile="test-shape-line-stretch2.xaml"
-	masterFile10="../harness/masters/test-shape-line-stretch2Master.png"
+	masterFile10="../harness/masters/test-shape-line-stretch2Master.tif"
    />
    <Test id="141"
 	inputFile="test-shape-polyline-stretch2.xaml"
@@ -573,7 +573,7 @@
    />
    <Test id="143"
 	inputFile="test-transform-clip.htm"
-	masterFile10="../harness/masters/test-transform-clipMaster.png"
+	masterFile10="../harness/masters/test-transform-clipMaster.tif"
    />
    <Test id="144"
         inputFile="test-property-parsing.xaml"
@@ -581,38 +581,38 @@
    />
    <Test id="145"
         inputFile="test-canvas-toplevel.xaml"
-        masterFile10="../harness/masters/test-canvas-toplevelMaster.png"
+        masterFile10="../harness/masters/test-canvas-toplevelMaster.tif"
    />
    <Test id="146"
         inputFile="test-lineargradientbrush-absolute-moire.xaml"
-        masterFile10="../harness/masters/test-lineargradientbrush-absolute-moireMaster.png"
+        masterFile10="../harness/masters/test-lineargradientbrush-absolute-moireMaster.tif"
    />
    <Test id="147"
         inputFile="test-radialgradientbrush-absolute-moire.xaml"
-        masterFile10="../harness/masters/test-radialgradientbrush-absolute-moireMaster.png"
+        masterFile10="../harness/masters/test-radialgradientbrush-absolute-moireMaster.tif"
    />
    <Test id="148"
         inputFile="test-lineargradientbrush-moire-scaled.xaml"
-        masterFile10="../harness/masters/test-lineargradientbrush-moire-scaled.xamlMaster.png"
+        masterFile10="../harness/masters/test-lineargradientbrush-moire-scaled.xamlMaster.tif"
    />
    <Test id="149"
         inputFile="test-animation-null-keyframe.xaml"
-        masterFile10="../harness/masters/test-animation-null-keyframeMaster.png"
+        masterFile10="../harness/masters/test-animation-null-keyframeMaster.tif"
    />
    <Test id="150"
         inputFile="test-crash-non-existing-animation-target-prop.xaml"
-        masterFile10="../harness/masters/test-crash-non-existing-animation-target-propMaster.png"
+        masterFile10="../harness/masters/test-crash-non-existing-animation-target-propMaster.tif"
    />
    <Test id="151"
         inputFile="test-crash-non-existing-animation-target-prop2.xaml"
-        masterFile10="../harness/masters/test-crash-non-existing-animation-target-prop2Master.png"
+        masterFile10="../harness/masters/test-crash-non-existing-animation-target-prop2Master.tif"
    />
    <Test id="152"
         inputFile="test-crash-non-existing-animation-target-prop3.xaml"
-        masterFile10="../harness/masters/test-crash-non-existing-animation-target-prop3Master.png"
+        masterFile10="../harness/masters/test-crash-non-existing-animation-target-prop3Master.tif"
    />
 	 <Test id="153"
         inputFile="test-animation-slow-keyspline.xaml.xaml"
-        masterFile10="../harness/masters/test-animation-slow-keysplineMaster.png"
+        masterFile10="../harness/masters/test-animation-slow-keysplineMaster.tif"
    />
 </DRTList>
