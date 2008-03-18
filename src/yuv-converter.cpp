@@ -54,6 +54,12 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 									ALPHA_MASK, ALPHA_MASK,
 };
 
+#define PREFETCH(memory, offset) do {			\
+		__asm__ __volatile__ (			\
+			"prefetchnta "offset"(%0);"	\
+		: : "r" (memory));			\
+	} while (0);
+	
 #define CALC_COLOR_MODIFIERS(mov_instr, shift_instr, reg_type, u, v, coeff_storage) do {				\
 			__asm__ __volatile__ (										\
 				"pxor %%"reg_type"7, %%"reg_type"7;"							\
@@ -306,7 +312,7 @@ YUVConverter::YUVConverter (Media* media, VideoStream* stream) : IImageConverter
 	have_sse2 = false;
 #  endif
 #endif
-	if (posix_memalign ((void **)(&rgb_uv), 16, 768)) {
+	if (posix_memalign ((void **)(&rgb_uv), 16, 96)) {
 		g_error ("Could not allocate memory");
 	}
 }
@@ -353,6 +359,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 	if (have_sse2) {
 		for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 			for (j = 0; j < width >> 4; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
+				PREFETCH(y_row1, "0");
 				if ((uintptr_t)u_plane % 16) {
 					COPY_COLOR_MODIFIERS("movdqa", "xmm", rgb_uv)
 				} else {
@@ -361,6 +368,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 			
 				YUV2RGB_SSE(y_row1, dest_row1);
 			
+				PREFETCH(y_row2, "0");
 				RESTORE_COLOR_MODIFIERS("movdqa", "xmm", rgb_uv);
 
 				YUV2RGB_SSE(y_row2, dest_row2);
@@ -372,6 +380,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 		if (have_mmx) {
 			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 				for (j = 0; j <  width >> 3; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
+					PREFETCH(y_row1, "0");
 					if ((uintptr_t)u_plane % 8) {
 						COPY_COLOR_MODIFIERS("movq", "mm", rgb_uv)
 					} else {
@@ -380,6 +389,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 
 					YUV2RGB_MMX(y_row1, dest_row1);
 
+					PREFETCH(y_row2, "0");
 					RESTORE_COLOR_MODIFIERS("movq", "mm", rgb_uv);
 
 					YUV2RGB_MMX(y_row2, dest_row2);

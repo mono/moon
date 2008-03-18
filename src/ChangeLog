@@ -1,3 +1,8 @@
+2008-03-18  Geoff Norton  <gnorton@novell.com>
+
+	* yuv-converter.cpp: 768bits != 768bytes.  Implement prefetching the 
+	cache lines for the Y plane.
+	
 2008-03-18  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* plugin-ffmpeg.cpp: Remove avformat dependency (not needed anymore)
