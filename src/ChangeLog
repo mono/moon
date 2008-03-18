@@ -5,6 +5,23 @@
 
 2008-03-18  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp:
+	* animation.h: Adding a new virtual method GetValueKind to Animation
+	that returns the kind/type of values that given animation generates
+	(doubles, points, etc.).
+
+	Modyfying the HookupStorage to check if the animation type matches the
+	type that the animated property expects. If it doesn't, bail out with a
+	helpfull warning in the style of:
+
+	"Ellipse.Fill property value type is 'Brush' but animation type is
+	'Color'"
+
+	This fixes a crash in test-crash-color-anim-on-solid.xaml and all
+	crashes where we try to animate ie. a color property using doubles.
+
+2008-03-18  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: Even more smoothing for KeySpline.
 
 2008-03-18  Michael Dominic K.  <mdk@mdk.am>

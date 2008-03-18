@@ -158,7 +158,7 @@ class AnimationClock : public Clock {
 
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
-	void HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
+	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
 
 	virtual void Stop ();
 
@@ -190,6 +190,9 @@ class Animation/*Timeline*/ : public Timeline {
 
 
 	virtual void Resolve () { };
+
+	/* The kind of values this animation generates */
+	virtual Type::Kind GetValueKind () { return Type::INVALID; };
 };
 
 
@@ -219,6 +222,8 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
+
+	virtual Type::Kind GetValueKind () { return Type::DOUBLE; };
 };
 
 
@@ -248,6 +253,8 @@ class ColorAnimation : public Animation/*Timeline*/ {
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
+
+	virtual Type::Kind GetValueKind () { return Type::COLOR; };
 };
 
 
@@ -276,6 +283,8 @@ class PointAnimation : public Animation/*Timeline*/ {
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
+
+	virtual Type::Kind GetValueKind () { return Type::POINT; };
 };
 
 

@@ -111,10 +111,27 @@ AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
 {
 }
 
-void
+bool
 AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop)
 {
+	/* Before hooking up make sure that the values our animation generates
+	   (doubles, colors, points...) match the values that the property is
+	   ready to receive. If not, print an informative message. */
+	if (timeline->GetValueKind () != targetprop->value_type) {
+		Type *timeline_type = Type::Find (timeline->GetValueKind ());
+		Type *property_type = Type::Find (targetprop->value_type);
+
+		const char *timeline_type_name = (timeline_type != NULL) ? timeline_type->name : "Invalid";
+		const char *property_type_name = (property_type != NULL) ? property_type->name : "Invalid";
+		g_warning ("%s.%s property value type is '%s' but animation type is '%s'.",
+			   targetobj->GetTypeName (), targetprop->name,
+			   property_type_name, timeline_type_name);
+
+		return false;
+	}
+
 	storage = new AnimationStorage (this, timeline, targetobj, targetprop);
+	return true;
 }
 
 Value*
@@ -224,7 +241,10 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		}
 
 		((Animation*)ac->GetTimeline())->Resolve ();
-		ac->HookupStorage (real_target_o, prop);
+
+		if (! ac->HookupStorage (real_target_o, prop))
+			return;
+
 		break;
 	}
 	case Type::CLOCKGROUP: {
