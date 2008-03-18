@@ -9,6 +9,7 @@
 	(TextFont::GetGlyphInfo): Use FT_Get_Char_Index() rather than
 	FcFreeTypeCharIndex(). Doesn't fix any bugs, just avoids use of
 	wrapper API that is unnecessary.
+	(TextFont::GetGlyphInfo): Added a gross hack for *Che fonts.
 
 2008-03-18  Geoff Norton  <gnorton@novell.com>
 
