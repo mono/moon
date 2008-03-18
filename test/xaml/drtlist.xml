@@ -612,14 +612,10 @@
         masterFile10="../harness/masters/test-crash-non-existing-animation-target-prop3Master.tif"
    />
    <Test id="153"
-        inputFile="test-animation-slow-keyspline.xaml.xaml"
-        masterFile10="../harness/masters/test-animation-slow-keysplineMaster.tif"
-   />
-   <Test id="154"
-        inputFile="test-animation-slow-keyspline.xaml.xaml"
+        inputFile="test-animation-slow-keyspline.xaml"
         masterFile10="../harness/masters/test-animation-slow-keysplineMaster.png"
    />
-   <Test id="155"
+   <Test id="154"
         inputFile="test-crash-color-anim-on-solid.xaml"
         masterFile10="../harness/masters/test-crash-color-anim-on-solidMaster.png"
    />
