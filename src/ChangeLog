@@ -1,3 +1,13 @@
+2008-03-18  Geoff Norton  <gnorton@novell.com>
+
+	* yuv-converter.cpp:  Fold RESTORE_COLOR_MODIFIERS into
+	CALC_COLOR_MODIFIERS and prepare our own branches rather than trusting
+	gcc.  The aligned load/store version of CALC_COLOR_MODIFIERS was
+	clobbering (x)mm3 (green coefficient) when processing the high order
+	pels.  I've reordered the method to remove some useless load/calc
+	patterns that were there simply for readability and fixed the
+	clobbering.
+	
 2008-03-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (TextFontDescription::CreatePattern): Always return the

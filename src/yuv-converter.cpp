@@ -54,176 +54,177 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 									ALPHA_MASK, ALPHA_MASK,
 };
 
-#define PREFETCH(memory, offset) do {			\
-		__asm__ __volatile__ (			\
-			"prefetchnta "offset"(%0);"	\
-		: : "r" (memory));			\
+#define PREFETCH(memory) do {			\
+		__asm__ __volatile__ (		\
+			"prefetchnta (%0);"	\
+		: : "r" (memory));		\
 	} while (0);
 	
-#define CALC_COLOR_MODIFIERS(mov_instr, shift_instr, reg_type, u, v, coeff_storage) do {				\
-			__asm__ __volatile__ (										\
-				"pxor %%"reg_type"7, %%"reg_type"7;"							\
-															\
-				mov_instr " (%0), %%"reg_type"1;"							\
-				mov_instr " (%1), %%"reg_type"2;"							\
-															\
-				mov_instr " %%"reg_type"1, %%"reg_type"5;"						\
-				mov_instr " %%"reg_type"2, %%"reg_type"6;"						\
-															\
-				"punpcklbw %%"reg_type"7, %%"reg_type"1;"						\
-				"punpcklbw %%"reg_type"7, %%"reg_type"2;"						\
-															\
-				mov_instr " 80(%3), %%"reg_type"7;"							\
-				"psubsw %%"reg_type"7, %%"reg_type"1;"			/* U = U - 128 */		\
-				"psubsw %%"reg_type"7, %%"reg_type"2;"			/* V = V - 128 */		\
-															\
-				mov_instr " %%"reg_type"1, %%"reg_type"3;"						\
-				mov_instr " %%"reg_type"2, %%"reg_type"4;"						\
-															\
-				mov_instr " (%3), %%"reg_type"7;"							\
-				"pmullw %%"reg_type"7, %%"reg_type"2;"			/* calculate Dred */		\
-				"psraw $6, %%"reg_type"2;"				/* Dred = Dred / 64 */		\
-															\
-				mov_instr " 32(%3), %%"reg_type"7;"							\
-				"pmullw %%"reg_type"7, %%"reg_type"3;"			/* calculate Ugreen */		\
-				"psraw $6, %%"reg_type"3;"				/* Ugreen = Ugreen / 64 */	\
-				mov_instr " 16(%3), %%"reg_type"7;"							\
-				"pmullw %%"reg_type"7, %%"reg_type"4;"			/* calculate Vgreen */		\
-				"psraw $6, %%"reg_type"4;"				/* Vgreen = Vgreen / 64 */	\
-				"paddsw %%"reg_type"4, %%"reg_type"3;"			/* Dgreen = Ugreen + Vgreen */	\
-															\
-				mov_instr " 48(%3), %%"reg_type"7;"							\
-				"pmullw %%"reg_type"7, %%"reg_type"1;"			/* calculate Dblue */		\
-				"psraw $6, %%"reg_type"1;"				/* Dblue = Dblue / 64 */	\
-															\
-				mov_instr " %%"reg_type"2, (%2);"			/* backup Dred */		\
-				mov_instr " %%"reg_type"3, 16(%2);"			/* backup Dgreen */		\
-				mov_instr " %%"reg_type"1, 32(%2);"			/* backup Dblue */		\
-															\
-				"pxor %%"reg_type"7, %%"reg_type"7;"							\
-															\
-				"punpckhbw %%"reg_type"7, %%"reg_type"5;"						\
-				"punpckhbw %%"reg_type"7, %%"reg_type"6;"						\
-															\
-				mov_instr " 80(%3), %%"reg_type"7;"							\
-				"psubsw %%"reg_type"7, %%"reg_type"5;"			/* U = U - 128 */		\
-				"psubsw %%"reg_type"7, %%"reg_type"6;"			/* V = V - 128 */		\
-															\
-				mov_instr " %%"reg_type"5, %%"reg_type"3;"						\
-				mov_instr " %%"reg_type"6, %%"reg_type"4;"						\
-															\
-				mov_instr " (%3), %%"reg_type"7;"							\
-				"pmullw %%"reg_type"7, %%"reg_type"6;"			/* calculate Dred */		\
-				"psraw $6, %%"reg_type"6;"				/* Dred = Dred / 64 */		\
-															\
-				mov_instr " 32(%3), %%"reg_type"7;"							\
-				"pmullw %%"reg_type"7, %%"reg_type"3;"			/* calculate Ugreen */		\
-				"psraw $6, %%"reg_type"3;"				/* Ugreen = Ugreen / 64 */	\
-				mov_instr " 16(%3), %%"reg_type"7;"							\
-				"pmullw %%"reg_type"7, %%"reg_type"4;"			/* calculate Vgreen */		\
-				"psraw $6, %%"reg_type"4;"				/* Vgreen = Vgreen / 64 */	\
-				"paddsw %%"reg_type"4, %%"reg_type"3;"			/* Dgreen = Ugreen + Vgreen */	\
-															\
-				mov_instr " 48(%3), %%"reg_type"7;"							\
-				"pmullw %%"reg_type"7, %%"reg_type"5;"			/* calculate Dblue */		\
-				"psraw $6, %%"reg_type"5;"				/* Dblue = Dblue / 64 */	\
-															\
-				mov_instr " %%"reg_type"6, 48(%2);"			/* backup Dred */		\
-				mov_instr " %%"reg_type"3, 64(%2);"			/* backup Dgreen */		\
-				mov_instr " %%"reg_type"5, 80(%2);"			/* backup Dblue */		\
-				: : "r" (u), "r" (v), "r" (coeff_storage), "r" (&simd_table));				\
+#define CALC_COLOR_MODIFIERS(mov_instr, reg_type, alignment, u, v, coeff_storage) do {							\
+			__asm__ __volatile__ (												\
+				"movl %0, %%eax;"											\
+				"andl $"alignment", %%eax;"										\
+				"testl %%eax, %%eax;"											\
+				"je 1f;"												\
+																	\
+				mov_instr " 48(%2), %%"reg_type"2;"			/* restore Dred */				\
+				mov_instr " 64(%2), %%"reg_type"3;"			/* restore Dgreen */				\
+				mov_instr " 80(%2), %%"reg_type"1;"			/* restore Dblue */				\
+																	\
+				mov_instr " %%"reg_type"2, (%2);"			/* backup Dred */				\
+				mov_instr " %%"reg_type"3, 16(%2);"			/* backup Dgreen */				\
+				mov_instr " %%"reg_type"1, 32(%2);"			/* backup Dblue */				\
+																	\
+				"jmp 2f;"												\
+																	\
+				"1:"													\
+				"pxor %%"reg_type"7, %%"reg_type"7;"									\
+																	\
+				mov_instr " (%0), %%"reg_type"1;"									\
+				mov_instr " (%1), %%"reg_type"2;"									\
+																	\
+				mov_instr " %%"reg_type"1, %%"reg_type"5;"								\
+				mov_instr " %%"reg_type"2, %%"reg_type"6;"								\
+																	\
+				"punpckhbw %%"reg_type"7, %%"reg_type"5;"								\
+				"punpckhbw %%"reg_type"7, %%"reg_type"6;"								\
+																	\
+				"punpcklbw %%"reg_type"7, %%"reg_type"1;"								\
+				"punpcklbw %%"reg_type"7, %%"reg_type"2;"								\
+																	\
+				mov_instr " 80(%3), %%"reg_type"7;"									\
+																	\
+				"psubsw %%"reg_type"7, %%"reg_type"5;"			/* U[hi] = U[hi] - 128 */			\
+				"psubsw %%"reg_type"7, %%"reg_type"6;"			/* V[hi] = V[hi] - 128 */			\
+																	\
+				"psubsw %%"reg_type"7, %%"reg_type"1;"			/* U[lo] = U[lo] - 128 */			\
+				"psubsw %%"reg_type"7, %%"reg_type"2;"			/* V[lo] = V[lo] - 128 */			\
+																	\
+				mov_instr " %%"reg_type"5, %%"reg_type"3;"								\
+				mov_instr " %%"reg_type"6, %%"reg_type"4;"								\
+																	\
+				mov_instr " 32(%3), %%"reg_type"7;"									\
+				"pmullw %%"reg_type"7, %%"reg_type"3;"			/* calculate Ugreen[hi] */			\
+				"psraw $6, %%"reg_type"3;"				/* Ugreen[hi] = Ugreen[hi] / 64 */		\
+				mov_instr " 16(%3), %%"reg_type"7;"									\
+				"pmullw %%"reg_type"7, %%"reg_type"4;"			/* calculate Vgreen[hi] */			\
+				"psraw $6, %%"reg_type"4;"				/* Vgreen[hi] = Vgreen[hi] / 64 */		\
+				"paddsw %%"reg_type"4, %%"reg_type"3;"			/* Dgreen[hi] = Ugreen[hi] + Vgreen[hi] */	\
+																	\
+				mov_instr " %%"reg_type"3, 64(%2);"			/* backup Dgreen[hi] (clobbered) */		\
+																	\
+				mov_instr " %%"reg_type"1, %%"reg_type"3;"								\
+				mov_instr " %%"reg_type"2, %%"reg_type"4;"								\
+																	\
+				mov_instr " 32(%3), %%"reg_type"7;"									\
+				"pmullw %%"reg_type"7, %%"reg_type"3;"			/* calculate Ugreen[lo] */			\
+				"psraw $6, %%"reg_type"3;"				/* Ugreen[lo] = Ugreen[lo] / 64 */		\
+				mov_instr " 16(%3), %%"reg_type"7;"									\
+				"pmullw %%"reg_type"7, %%"reg_type"4;"			/* calculate Vgreen[lo] */			\
+				"psraw $6, %%"reg_type"4;"				/* Vgreen[lo] = Vgreen[lo] / 64 */		\
+				"paddsw %%"reg_type"4, %%"reg_type"3;"			/* Dgreen[lo] = Ugreen[lo] + Vgreen[lo] */	\
+																	\
+				mov_instr " 48(%3), %%"reg_type"7;"									\
+				"pmullw %%"reg_type"7, %%"reg_type"5;"			/* calculate Dblue[hi] */			\
+				"psraw $6, %%"reg_type"5;"				/* Dblue[hi] = Dblue[hi] / 64 */		\
+				"pmullw %%"reg_type"7, %%"reg_type"1;"			/* calculate Dblue[lo] */			\
+				"psraw $6, %%"reg_type"1;"				/* Dblue[lo] = Dblue[lo] / 64 */		\
+																	\
+				mov_instr " (%3), %%"reg_type"7;"									\
+				"pmullw %%"reg_type"7, %%"reg_type"6;"			/* calculate Dred[hi] */			\
+				"psraw $6, %%"reg_type"6;"				/* Dred[hi] = Dred[hi] / 64 */			\
+				"pmullw %%"reg_type"7, %%"reg_type"2;"			/* calculate Dred[lo] */			\
+				"psraw $6, %%"reg_type"2;"				/* Dred[lo] = Dred[lo] / 64 */			\
+																	\
+				mov_instr " %%"reg_type"6, 48(%2);"			/* backup Dred[hi] */				\
+				mov_instr " %%"reg_type"5, 80(%2);"			/* backup Dblue[hi] */				\
+																	\
+				mov_instr " %%"reg_type"2, 0(%2);"			/* backup Dred[lo] */				\
+				mov_instr " %%"reg_type"3, 16(%2);"			/* backup Dgreen[lo] */				\
+				mov_instr " %%"reg_type"1, 32(%2);"			/* backup Dblue[lo] */				\
+				"2:"													\
+				: : "r" (u), "r" (v), "r" (coeff_storage), "r" (&simd_table) : "%eax");					\
 	} while (0);
 
-#define COPY_COLOR_MODIFIERS(mov_instr, reg_type, coeff_storage) do {							\
-			__asm__ __volatile__ (										\
-				mov_instr " 48(%0), %%"reg_type"2;"			/* restore Dred */		\
-				mov_instr " 64(%0), %%"reg_type"3;"			/* restore Dgreen */		\
-				mov_instr " 80(%0), %%"reg_type"1;"			/* restore Dblue */		\
-				mov_instr " %%"reg_type"2, (%0);"			/* backup Dred */		\
-				mov_instr " %%"reg_type"3, 16(%0);"			/* backup Dgreen */		\
-				mov_instr " %%"reg_type"1, 32(%0);"			/* backup Dblue */		\
-				: : "r" (coeff_storage));								\
-	} while (0);
-
-#define RESTORE_COLOR_MODIFIERS(mov_instr, reg_type, coeff_storage) do {						\
-			__asm__ __volatile__ (										\
-				mov_instr " (%0), %%"reg_type"2;"			/* restore Dred */		\
-				mov_instr " 16(%0), %%"reg_type"3;"			/* restore Dgreen */		\
-				mov_instr " 32(%0), %%"reg_type"1;"			/* restore Dblue */		\
-				: : "r" (coeff_storage));								\
+#define RESTORE_COLOR_MODIFIERS(mov_instr, reg_type, coeff_storage) do {				\
+		__asm__ __volatile__ (									\
+			mov_instr " (%0), %%"reg_type"2;"			/* restore Dred */	\
+			mov_instr " 16(%0), %%"reg_type"3;"			/* restore Dgreen */	\
+			mov_instr " 32(%0), %%"reg_type"1;"			/* restore Dblue */	\
+			: : "r" (coeff_storage));							\
 	} while (0);
 
 #define YUV2RGB_INTEL_SIMD(mov_instr, reg_type, output_offset1, output_offset2, output_offset3, y_plane, dest) do { 	\
-			__asm__ __volatile__ ( 										\
-				mov_instr " (%0), %%"reg_type"0;"		/* Load Y plane into r0 */		\
-				mov_instr " 96(%2), %%"reg_type"7;"		/* Load 16 into r7 */			\
-				"psubusb %%"reg_type"7, %%"reg_type"0;"		/* Y = Y - 16 */			\
+		__asm__ __volatile__ ( 											\
+			mov_instr " (%0), %%"reg_type"0;"		/* Load Y plane into r0 */			\
+			mov_instr " 96(%2), %%"reg_type"7;"		/* Load 16 into r7 */				\
+			"psubusb %%"reg_type"7, %%"reg_type"0;"		/* Y = Y - 16 */				\
 															\
-				mov_instr " %%"reg_type"0, %%"reg_type"4;"	/* r4 == r0 */				\
+			mov_instr " %%"reg_type"0, %%"reg_type"4;"	/* r4 == r0 */					\
 															\
-				"psllw $8, %%"reg_type"0;"			/* r0 [00 Y0 00 Y2 ...] */		\
-				"psrlw $8, %%"reg_type"0;"			/* r0 [Y0 00 Y2 00 ...] */		\
-				"psrlw $8, %%"reg_type"4;"			/* r4 [Y1 00 Y3 00 ...] */		\
+			"psllw $8, %%"reg_type"0;"			/* r0 [00 Y0 00 Y2 ...] */			\
+			"psrlw $8, %%"reg_type"0;"			/* r0 [Y0 00 Y2 00 ...] */			\
+			"psrlw $8, %%"reg_type"4;"			/* r4 [Y1 00 Y3 00 ...] */			\
 															\
-				mov_instr " 64(%2), %%"reg_type"7;"							\
-				"pmullw %%"reg_type"7, %%"reg_type"0;"		/* calculate Y*Yc[even] */		\
-				"pmullw %%"reg_type"7, %%"reg_type"4;"		/* calculate Y*Yc[odd] */		\
-				"psraw $6, %%"reg_type"0;"			/* Yyc[even] = Yyc[even] / 64 */	\
-				"psraw $6, %%"reg_type"4;"			/* Yyc[odd] = Yyc[odd] / 64 */		\
+			mov_instr " 64(%2), %%"reg_type"7;"								\
+			"pmullw %%"reg_type"7, %%"reg_type"0;"		/* calculate Y*Yc[even] */			\
+			"pmullw %%"reg_type"7, %%"reg_type"4;"		/* calculate Y*Yc[odd] */			\
+			"psraw $6, %%"reg_type"0;"			/* Yyc[even] = Yyc[even] / 64 */		\
+			"psraw $6, %%"reg_type"4;"			/* Yyc[odd] = Yyc[odd] / 64 */			\
 															\
-				mov_instr " %%"reg_type"2, %%"reg_type"6;"						\
-				mov_instr " %%"reg_type"3, %%"reg_type"7;"						\
-				mov_instr " %%"reg_type"1, %%"reg_type"5;"						\
+			mov_instr " %%"reg_type"2, %%"reg_type"6;"							\
+			mov_instr " %%"reg_type"3, %%"reg_type"7;"							\
+			mov_instr " %%"reg_type"1, %%"reg_type"5;"							\
 															\
-				"paddsw %%"reg_type"0, %%"reg_type"2;"		/* CY[even] + DR */			\
-				"paddsw %%"reg_type"0, %%"reg_type"3;"		/* CY[even] + DG */			\
-				"paddsw %%"reg_type"0, %%"reg_type"1;"		/* CY[even] + DB */			\
+			"paddsw %%"reg_type"0, %%"reg_type"2;"		/* CY[even] + DR */				\
+			"paddsw %%"reg_type"0, %%"reg_type"3;"		/* CY[even] + DG */				\
+			"paddsw %%"reg_type"0, %%"reg_type"1;"		/* CY[even] + DB */				\
 															\
-				"paddsw %%"reg_type"4, %%"reg_type"6;"		/* CY[odd] + DR */			\
-				"paddsw %%"reg_type"4, %%"reg_type"7;"		/* CY[odd] + DG */			\
-				"paddsw %%"reg_type"4, %%"reg_type"5;"		/* CY[odd] + DB */			\
+			"paddsw %%"reg_type"4, %%"reg_type"6;"		/* CY[odd] + DR */				\
+			"paddsw %%"reg_type"4, %%"reg_type"7;"		/* CY[odd] + DG */				\
+			"paddsw %%"reg_type"4, %%"reg_type"5;"		/* CY[odd] + DB */				\
 															\
-				"packuswb %%"reg_type"2, %%"reg_type"2;"	/* Clamp RGB to [0-255] */		\
-				"packuswb %%"reg_type"3, %%"reg_type"3;"						\
-				"packuswb %%"reg_type"1, %%"reg_type"1;"						\
+			"packuswb %%"reg_type"2, %%"reg_type"2;"	/* Clamp RGB to [0-255] */			\
+			"packuswb %%"reg_type"3, %%"reg_type"3;"							\
+			"packuswb %%"reg_type"1, %%"reg_type"1;"							\
 															\
-				"packuswb %%"reg_type"6, %%"reg_type"6;"						\
-				"packuswb %%"reg_type"7, %%"reg_type"7;"						\
-				"packuswb %%"reg_type"5, %%"reg_type"5;"						\
+			"packuswb %%"reg_type"6, %%"reg_type"6;"							\
+			"packuswb %%"reg_type"7, %%"reg_type"7;"							\
+			"packuswb %%"reg_type"5, %%"reg_type"5;"							\
 															\
-				"punpcklbw %%"reg_type"6, %%"reg_type"2;"	/* r2 [R0 R1 R2 R3 ...] */		\
-				"punpcklbw %%"reg_type"7, %%"reg_type"3;"	/* r3 [G0 G1 G2 G3 ...] */		\
-				"punpcklbw %%"reg_type"5, %%"reg_type"1;"	/* r1 [B0 B1 B2 B3 ...] */		\
+			"punpcklbw %%"reg_type"6, %%"reg_type"2;"	/* r2 [R0 R1 R2 R3 ...] */			\
+			"punpcklbw %%"reg_type"7, %%"reg_type"3;"	/* r3 [G0 G1 G2 G3 ...] */			\
+			"punpcklbw %%"reg_type"5, %%"reg_type"1;"	/* r1 [B0 B1 B2 B3 ...] */			\
 															\
-				mov_instr " %%"reg_type"2, %%"reg_type"5;"	/* copy RGB */				\
-				mov_instr " %%"reg_type"3, %%"reg_type"7;"						\
-				mov_instr " %%"reg_type"1, %%"reg_type"6;"						\
+			mov_instr " %%"reg_type"2, %%"reg_type"5;"	/* copy RGB */					\
+			mov_instr " %%"reg_type"3, %%"reg_type"7;"							\
+			mov_instr " %%"reg_type"1, %%"reg_type"6;"							\
 															\
-				mov_instr " 112(%2), %%"reg_type"4;"							\
-				"punpcklbw %%"reg_type"2, %%"reg_type"1;"	/* r1 [B0 R0 B1 R1 ...] */		\
-				"punpcklbw %%"reg_type"4, %%"reg_type"3;"	/* r4 [G0 FF G1 FF ...] */		\
+			mov_instr " 112(%2), %%"reg_type"4;"								\
+			"punpcklbw %%"reg_type"2, %%"reg_type"1;"	/* r1 [B0 R0 B1 R1 ...] */			\
+			"punpcklbw %%"reg_type"4, %%"reg_type"3;"	/* r4 [G0 FF G1 FF ...] */			\
 															\
-				mov_instr " %%"reg_type"1, %%"reg_type"4;"	/* r3 [G0 FF G1 FF ...] */		\
+			mov_instr " %%"reg_type"1, %%"reg_type"4;"	/* r3 [G0 FF G1 FF ...] */			\
 															\
-				"punpcklbw %%"reg_type"3, %%"reg_type"1;"	/* r2 [B0 G0 R0 FF B1 G1 R1 FF ...] */	\
-				"punpckhbw %%"reg_type"3, %%"reg_type"4;"	/* r3 [B2 G2 R2 FF B3 G3 R3 FF ...] */	\
+			"punpcklbw %%"reg_type"3, %%"reg_type"1;"	/* r2 [B0 G0 R0 FF B1 G1 R1 FF ...] */		\
+			"punpckhbw %%"reg_type"3, %%"reg_type"4;"	/* r3 [B2 G2 R2 FF B3 G3 R3 FF ...] */		\
 															\
-				mov_instr " %%"reg_type"1, (%1);"		/* output BGRA */	 		\
-				mov_instr " %%"reg_type"4, "output_offset1"(%1);"					\
+			mov_instr " %%"reg_type"1, (%1);"		/* output BGRA */	 			\
+			mov_instr " %%"reg_type"4, "output_offset1"(%1);"						\
 															\
-				mov_instr " 112(%2), %%"reg_type"4;"							\
-				"punpckhbw %%"reg_type"5, %%"reg_type"6;"						\
-				"punpckhbw %%"reg_type"4, %%"reg_type"7;"						\
+			mov_instr " 112(%2), %%"reg_type"4;"								\
+			"punpckhbw %%"reg_type"5, %%"reg_type"6;"							\
+			"punpckhbw %%"reg_type"4, %%"reg_type"7;"							\
 															\
-				mov_instr " %%"reg_type"6, %%"reg_type"4;"						\
+			mov_instr " %%"reg_type"6, %%"reg_type"4;"							\
 															\
-				"punpcklbw %%"reg_type"7, %%"reg_type"6;"						\
-				"punpckhbw %%"reg_type"7, %%"reg_type"4;"						\
+			"punpcklbw %%"reg_type"7, %%"reg_type"6;"							\
+			"punpckhbw %%"reg_type"7, %%"reg_type"4;"							\
 															\
-				mov_instr " %%"reg_type"6, "output_offset2"(%1);"					\
-				mov_instr " %%"reg_type"4, "output_offset3"(%1);"					\
-				: : "r" (y_plane), "r" (dest), "r" (&simd_table));					\
-		} while (0);
+			mov_instr " %%"reg_type"6, "output_offset2"(%1);"						\
+			mov_instr " %%"reg_type"4, "output_offset3"(%1);"						\
+			: : "r" (y_plane), "r" (dest), "r" (&simd_table));						\
+	} while (0);
 #endif
 
 #if HAVE_SSE2
@@ -359,16 +360,12 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 	if (have_sse2) {
 		for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 			for (j = 0; j < width >> 4; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
-				PREFETCH(y_row1, "0");
-				if ((uintptr_t)u_plane % 16) {
-					COPY_COLOR_MODIFIERS("movdqa", "xmm", rgb_uv)
-				} else {
-					CALC_COLOR_MODIFIERS("movdqa", "pslldq", "xmm", u_plane, v_plane, rgb_uv);
-				}
+				PREFETCH(y_row1);
+				CALC_COLOR_MODIFIERS("movdqa", "xmm", "15", u_plane, v_plane, rgb_uv);
 			
 				YUV2RGB_SSE(y_row1, dest_row1);
 			
-				PREFETCH(y_row2, "0");
+				PREFETCH(y_row2);
 				RESTORE_COLOR_MODIFIERS("movdqa", "xmm", rgb_uv);
 
 				YUV2RGB_SSE(y_row2, dest_row2);
@@ -380,16 +377,12 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 		if (have_mmx) {
 			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 				for (j = 0; j <  width >> 3; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
-					PREFETCH(y_row1, "0");
-					if ((uintptr_t)u_plane % 8) {
-						COPY_COLOR_MODIFIERS("movq", "mm", rgb_uv)
-					} else {
-						CALC_COLOR_MODIFIERS("movq", "psllq", "mm", u_plane, v_plane, rgb_uv);
-					}
+					PREFETCH(y_row1);
+					CALC_COLOR_MODIFIERS("movq", "mm", "7", u_plane, v_plane, rgb_uv);
 
 					YUV2RGB_MMX(y_row1, dest_row1);
 
-					PREFETCH(y_row2, "0");
+					PREFETCH(y_row2);
 					RESTORE_COLOR_MODIFIERS("movq", "mm", rgb_uv);
 
 					YUV2RGB_MMX(y_row2, dest_row2);
