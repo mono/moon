@@ -613,10 +613,10 @@
    />
    <Test id="153"
         inputFile="test-animation-slow-keyspline.xaml"
-        masterFile10="../harness/masters/test-animation-slow-keysplineMaster.png"
+        masterFile10="../harness/masters/test-animation-slow-keysplineMaster.tif"
    />
    <Test id="154"
         inputFile="test-crash-color-anim-on-solid.xaml"
-        masterFile10="../harness/masters/test-crash-color-anim-on-solidMaster.png"
+        masterFile10="../harness/masters/test-crash-color-anim-on-solidMaster.tif"
    />
 </DRTList>
