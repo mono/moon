@@ -783,13 +783,14 @@ found:
 	return FT_New_Face (libft2, file->path, fface->index, &face) == 0;
 }
 
-TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name)
+TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *debug_name)
 {
 	FcPattern *matched, *fallback = NULL;
 	FT_Long position, thickness;
 	FcChar8 *filename = NULL;
 	char **families = NULL;
 	FcResult result;
+	bool full_path;
 	FT_Error err;
 	double size;
 	int id, i;
@@ -798,9 +799,22 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 	
 	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
 	FcPatternGetDouble (pattern, FC_SCALE, 0, &scale);
-	FcPatternReference (pattern);
-	matched = pattern;
 	
+	if (FcPatternGetString (pattern, FC_FILE, 0, &filename) != FcResultMatch || filename == NULL) {
+		if (!(matched = FcFontMatch (NULL, pattern, &result))) {
+			FcPatternReference (pattern);
+			matched = pattern;
+		}
+		
+		full_path = false;
+	} else {
+		FcPatternReference (pattern);
+		matched = pattern;
+		full_path = true;
+	}
+	
+	// FIXME: would be nice to simply get this from the original
+	// pattern... then we'd have fewer args to pass in.
 	if (family_name) {
 		families = g_strsplit (family_name, ",", -1);
 		for (i = 0; families[i]; i++)
@@ -841,8 +855,8 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 			d(fprintf (stderr, "failed :(\n"));
 		}
 		
-		// fromFile indicates that an absolute path was given...
-		if (fromFile) {
+		// full_path indicates that an absolute path was given...
+		if (full_path) {
 			// check if it is a zipped font collection.
 			if (err == FT_Err_Unknown_File_Format &&
 			    OpenZipArchiveFont (pattern, (const char *) filename, (const char **) families)) {
@@ -850,7 +864,7 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 				break;
 			}
 			
-			fromFile = false;
+			full_path = false;
 			
 			if (family_name) {
 				// We couldn't find a matching font in the zip archive/specified font file, so
@@ -897,6 +911,8 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 	if (families)
 		g_strfreev (families);
 	
+	FcPatternDestroy (matched);
+	
 	if (face != NULL) {
 		FT_Set_Pixel_Sizes (face, 0, (int) size);
 		
@@ -920,7 +936,8 @@ TextFont::TextFont (FcPattern *pattern, bool fromFile, const char *family_name, 
 	}
 	
 	g_hash_table_insert (font_cache, pattern, this);
-	this->pattern = matched;
+	FcPatternReference (pattern);
+	this->pattern = pattern;
 	ref_count = 1;
 }
 
@@ -953,7 +970,7 @@ TextFont::~TextFont ()
 }
 
 TextFont *
-TextFont::Load (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name)
+TextFont::Load (FcPattern *pattern, const char *family_name, const char *debug_name)
 {
 	TextFont *font;
 	
@@ -962,7 +979,7 @@ TextFont::Load (FcPattern *pattern, bool fromFile, const char *family_name, cons
 		return font;
 	}
 	
-	return new TextFont (pattern, fromFile, family_name, debug_name);
+	return new TextFont (pattern, family_name, debug_name);
 }
 
 void
@@ -1452,9 +1469,8 @@ TextFontDescription::~TextFontDescription ()
 FcPattern *
 TextFontDescription::CreatePattern ()
 {
-	FcPattern *pattern, *matched;
+	FcPattern *pattern;
 	char **families;
-	FcResult result;
 	int i;
 	
 	pattern = FcPatternCreate ();
@@ -1485,15 +1501,7 @@ TextFontDescription::CreatePattern ()
 	
 	FcDefaultSubstitute (pattern);
 	
-	if ((set & FontMaskFilename))
-		return pattern;
-	
-	if (!(matched = FcFontMatch (NULL, pattern, &result)))
-		return pattern;
-	
-	FcPatternDestroy (pattern);
-	
-	return matched;
+	return pattern;
 }
 
 TextFont *
@@ -1505,7 +1513,7 @@ TextFontDescription::GetFont ()
 	if (font == NULL) {
 		d(debug_name = ToString ());
 		pattern = CreatePattern ();
-		font = TextFont::Load (pattern, (set & FontMaskFilename), family, debug_name);
+		font = TextFont::Load (pattern, family, debug_name);
 		FcPatternDestroy (pattern);
 		d(g_free (debug_name));
 	}

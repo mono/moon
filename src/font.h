@@ -121,7 +121,7 @@ class TextFont {
 	
 	GlyphInfo *glyphs;
 	
-	TextFont (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name);
+	TextFont (FcPattern *pattern, const char *family_name, const char *debug_name);
 	
 	bool OpenZipArchiveFont (FcPattern *pattern, const char *path, const char **families);
 	
@@ -135,7 +135,7 @@ public:
 	void ref ();
 	void unref ();
 	
-	static TextFont *Load (FcPattern *pattern, bool fromFile, const char *family_name, const char *debug_name);
+	static TextFont *Load (FcPattern *pattern, const char *family_name, const char *debug_name);
 	
 	GlyphInfo *GetGlyphInfo (gunichar unichar);
 	GlyphInfo *GetGlyphInfoByIndex (uint32_t index);
