@@ -1180,13 +1180,11 @@ resolve_property_path (DependencyObject **o, const char *path)
 				return NULL;
 			}
 
-			/*
-			if (!lu->Is (t->type)) {
+			if (! res->is_attached_property && ! lu->Is (t->type)) {
 				g_warning ("Got %s but expected a type of %s!", typen, lu->GetTypeName ());
 				*o = NULL;
 				return NULL;
 			}
-			*/
 
 			g_free (propn);
 			if (typen)

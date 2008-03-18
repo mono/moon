@@ -1,3 +1,8 @@
+2008-03-18  Michael Dominic K.  <mdk@mdk.am>
+
+	* dependencyobject.cpp: Enabling back the inheritance test for property
+	resolving but only when dealing with non-attached properties. 
+
 2008-03-17  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am:
