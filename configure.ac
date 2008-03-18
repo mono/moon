@@ -244,9 +244,13 @@ fi
 # Enable/Disable linking with Pango as an alternative text rendering engine
 # (accessable via environment variable)
 #
+WITH_PANGO=no
 AC_ARG_WITH(pango-support,[ --with-pango-support=yes,no   Include Pango text rendering support],with_pango_support=yes,with_pango_support=no)
 if test x$with_pango_support != xno; then
+	WITH_PANGO=yes
    	AC_DEFINE(ENABLE_PANGO_SUPPORT, 1, [Include Pango text rendering support])
+else
+	WITH_PANGO=no
 fi
 
 
@@ -547,4 +551,6 @@ Moonlight configuration:
 	Support for mmx: $HAVE_MMX
 	Support for sse2: $HAVE_SSE2
 	Support for running the test harness: $TESTING_SUPPORTED
+	Support for pango as text engine: $WITH_PANGO
+
 EOF
