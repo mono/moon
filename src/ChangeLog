@@ -1,3 +1,8 @@
+2008-03-18  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* plugin-ffmpeg.cpp: Remove avformat dependency (not needed anymore)
+	* plugin-ffmpeg.h: Fix conditional swscale inclusion
+
 2008-03-18  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: Even more smoothing for KeySpline.

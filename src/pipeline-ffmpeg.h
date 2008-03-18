@@ -21,9 +21,10 @@
 G_BEGIN_DECLS
 #include <stdint.h>
 #include <limits.h>
-#include <avformat.h>
 #include <avcodec.h>
+#if INCLUDE_SWSCALE
 #include <swscale.h>
+#endif // INCLUDE_SWSCALE
 G_END_DECLS
 
 #include "pipeline.h"

@@ -179,20 +179,18 @@ fi
 # these come from ffmpeg
 #
 if test x$FFMPEG = xyes; then
-	AC_MSG_CHECKING(libavcodec, libavformat)
-	if pkg-config libavcodec libavformat ; then
+	AC_MSG_CHECKING(libavcodec)
+	if pkg-config libavcodec; then
 	   AC_MSG_RESULT(found)
 	else
-	   AC_MSG_ERROR([ffmpeg and its associated libraries are not installed. You need libavcodec and libavformat development kits])
+	   AC_MSG_ERROR([ffmpeg and its associated libraries are not installed. You need libavcodec development kits])
 	fi
 
 	avutil_libdir="$(pkg-config --variable=libdir libavutil)"
 	avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
-	avformat_libdir="$(pkg-config --variable=libdir libavformat)"
 
 	AC_SUBST([avutil_libdir])
 	AC_SUBST([avcodec_libdir])
-	AC_SUBST([avformat_libdir])
 fi # ffmpeg
 
 if test x$SWSCALE = xyes; then
@@ -439,7 +437,7 @@ if test x$HAVE_SSE2 = xyes; then
 fi
 
 if test x$FFMPEG = xyes; then
-FFMPEG_PKGS="libavcodec libavformat"
+FFMPEG_PKGS="libavcodec"
 else
 FFMPEG_PKGS=""
 fi
@@ -488,9 +486,9 @@ if test x$DEBUG = xyes; then
 	CXXFLAGS="$DEBUG_OPTIONS $CXXFLAGS"
 fi
 
-#CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
-#CXXFLAGS="$CXXFLAGS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
-#LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec libavformat gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
+#CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
+#CXXFLAGS="$CXXFLAGS `pkg-config --libs gtk+-2.0 libavcodec gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
+#LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 
 
 SHOCKER_CFLAGS=`pkg-config --cflags glib-2.0 gdk-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin`

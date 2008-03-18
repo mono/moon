@@ -54,6 +54,7 @@ load (void)
 	}
 	g_free (avutil_path);
 
+#if INCLUDE_SWSCALE
 	// load libswscale
 	char *swscale_path = g_build_filename (g_get_home_dir(), ".mozilla", "plugins", "moonlight", "libswscale.so", NULL);
 	void *real_swscale = dlopen (swscale_path, RTLD_LAZY | RTLD_GLOBAL);
@@ -62,6 +63,7 @@ load (void)
 		return FALSE;
 	}
 	g_free (swscale_path);
+#endif
 
 	// load libavcodec
 	char *avcodec_path = g_build_filename (g_get_home_dir(), ".mozilla", "plugins", "moonlight", "libavcodec.so", NULL);
@@ -71,15 +73,6 @@ load (void)
 		return FALSE;
 	}
 	g_free (avcodec_path);
-
-	// load libavformat
-	char *avformat_path = g_build_filename (g_get_home_dir(), ".mozilla", "plugins", "moonlight", "libavformat.so", NULL);
-	void *real_avformat = dlopen (avformat_path, RTLD_LAZY | RTLD_GLOBAL);
-	if (real_avformat == NULL){
-		fprintf (stderr, "Unable to load the libavformat %s\n", dlerror ());
-		return FALSE;
-	}
-	g_free (avformat_path);
 #endif
 
 #if INCLUDE_MONO_RUNTIME
