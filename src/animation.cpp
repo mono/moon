@@ -689,8 +689,13 @@ static void generate_table (Point p1, Point p2, Point p3, Point p4, unsigned cha
 	unsigned char last_val = 0;
 	int i;
 	for (i = 1; i < 256; i++) {
-		if (table [i] == 255)
-			table [i] = last_val;
+		if (table [i] == 255) {
+			if (table [i + 1] != 255 && table [i - 1] != 255)
+				table [i] = (table [i - 1] + table [i + 1]) / 2;
+			else
+				table [i] = last_val;
+		}
+
 		last_val = table [i];
 	}
 }

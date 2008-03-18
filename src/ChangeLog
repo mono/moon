@@ -1,5 +1,9 @@
 2008-03-18  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp: Even more smoothing for KeySpline.
+
+2008-03-18  Michael Dominic K.  <mdk@mdk.am>
+
 	* dependencyobject.cpp: Enabling back the inheritance test for property
 	resolving but only when dealing with non-attached properties. 
 
