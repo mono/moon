@@ -6,6 +6,9 @@
 	(TextFont::TextFont): Cache using the original pattern (which is
 	what we really wanted to do originally, but were caching the
 	"closest-match" pattern before which was wrong).
+	(TextFont::GetGlyphInfo): Use FT_Get_Char_Index() rather than
+	FcFreeTypeCharIndex(). Doesn't fix any bugs, just avoids use of
+	wrapper API that is unnecessary.
 
 2008-03-18  Geoff Norton  <gnorton@novell.com>
 

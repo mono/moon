@@ -1312,7 +1312,7 @@ TextFont::GetGlyphInfo (gunichar unichar)
 	if (!face)
 		return NULL;
 	
-	index = FcFreeTypeCharIndex (face, unichar);
+	index = FT_Get_Char_Index (face, unichar);
 	
 	return GetGlyphInfo (unichar, index);
 }
