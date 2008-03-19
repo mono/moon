@@ -163,15 +163,18 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
   Stroke="Black"
   StrokeThickness="2"/>
 
-
-
-<!--
-<Polyline Canvas.Left="60" 
-  Points="50,50 75,30 100,100 130,40"
-  Stroke="Red"
+<Line Canvas.Left="30" Canvas.Top="390"
+  X1="0" Y1="0" X2="200" Y2="0"
+  Stroke="LawnGreen"
   StrokeThickness="20"
-  StrokeStartLineCap="Flat"
-  StrokeEndLineCap="Square"/>
+  StrokeStartLineCap="Round"
+  StrokeEndLineCap="Round"
+  StrokeDashArray="0.1,.1" />
+<Line Canvas.Left="30" Canvas.Top="390"
+  X1="0" Y1="0" X2="200" Y2="0"
+  Stroke="Black"
+  StrokeThickness="2"/>
+
 
 </Canvas>
 
