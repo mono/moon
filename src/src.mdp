@@ -141,6 +141,10 @@
     <File name="alpha-premul-table.inc" subtype="Code" buildaction="Nothing" />
     <File name="yuv-converter.cpp" subtype="Code" buildaction="Compile" />
     <File name="yuv-converter.h" subtype="Code" buildaction="Nothing" />
+    <File name="layout.cpp" subtype="Code" buildaction="Compile" />
+    <File name="layout.h" subtype="Code" buildaction="Nothing" />
+    <File name="swscale-converter.cpp" subtype="Code" buildaction="Compile" />
+    <File name="swscale-converter.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
