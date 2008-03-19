@@ -262,7 +262,7 @@ ASFParser::ReadObject (asf_object *obj)
 	return result;
 }
 
-bool
+MediaResult
 ASFParser::ReadPacket (ASFPacket *packet, int packet_index)
 {
 	ASF_LOG ("ASFParser::ReadPacket (%p, %d).\n", packet, packet_index);
@@ -272,16 +272,17 @@ ASFParser::ReadPacket (ASFPacket *packet, int packet_index)
 		
 		if (position == 0 || (source->Position () != position && !source->Seek (position, SEEK_SET))) {
 			//printf ("ASFParser::ReadPacket (%p, %i): position is 0 or seek failed (position: %lld).\n", packet, packet_index, position); 
-			return false;
+			return MEDIA_SEEK_ERROR;
 		}
 	}
 	
 	return ASFParser::ReadPacket (packet);
 }
 
-bool
+MediaResult
 ASFParser::ReadPacket (ASFPacket *packet)
 {
+	MediaResult result;
 	asf_payload_parsing_information ppi;
 	asf_error_correction_data ecd;
 	
@@ -308,20 +309,30 @@ ASFParser::ReadPacket (ASFPacket *packet)
 	}
 #endif
 
-	if (!ecd.FillInAll (this))
-		return false;
+	int64_t next_pos = GetPacketOffset (1 + GetPacketIndex (source->Position ()));
+
+	result = ecd.FillInAll (this);
+	if (!MEDIA_SUCCEEDED (result)) {
+		source->Seek (next_pos, SEEK_SET);
+		return result;
+	}
 	
 	asf_error_correction_data_dump (&ecd);
 	
-	if (!ppi.FillInAll (this))
-		return false;
+	result = ppi.FillInAll (this);
+	if (!MEDIA_SUCCEEDED (result)) {
+		source->Seek (next_pos, SEEK_SET);
+		return result;
+	}
 	
 	asf_payload_parsing_information_dump (&ppi);
 	
 	asf_multiple_payloads *mp = new asf_multiple_payloads ();
-	if (!mp->FillInAll (this, &ecd, ppi)) {
+	result = mp->FillInAll (this, &ecd, ppi);
+	if (!MEDIA_SUCCEEDED (result)) {
 		delete mp;
-		return false;
+		source->Seek (next_pos, SEEK_SET);
+		return result;
 	}
 
 	packet->payloads = mp;
@@ -331,7 +342,10 @@ ASFParser::ReadPacket (ASFPacket *packet)
 		start_position, start_position,
 		source->Position () - start_position, source->Position () - start_position);
 	*/
-	return true;
+	/* If we are "positioned", need to seek to the start of the next packet */
+	source->Seek (next_pos, SEEK_SET);
+
+	return MEDIA_SUCCESS;
 }
 
 bool
@@ -391,7 +405,7 @@ ASFParser::ReadHeader ()
 	asf_header_dump (header);
 
 	if (!asf_header_validate (header, this)) {
-		ASF_LOG ("Header validation failed, error: '%s'\n", GetLastError ());
+		ASF_LOG ("Header validation failed, error: '%s'\n", GetLastErrorStr ());
 		return false;
 	}
 	
@@ -607,11 +621,12 @@ ASFParser::GetPacketIndexOfPts (int stream_id, uint64_t pts)
 {
 	ASFPacket *packet = NULL;
 	int result = 0;
+	MediaResult read_result;
 	
 	// Read packets until we find the packet which has a pts
 	// greater than the one we're looking for.
 	
-	while (ReadPacket (packet, result)) {
+	while (MEDIA_SUCCEEDED (read_result = ReadPacket (packet, result))) {
 		uint64_t current_pts = packet->GetPts (stream_id);
 		
 		if (current_pts > pts) {
@@ -1380,6 +1395,7 @@ ASFFrameReader::ReadMore ()
 	ASF_LOG ("ASFFrameReader::ReadMore ().\n");
 	
 	int payloads_added = 0;
+	MediaResult read_result = MEDIA_FAIL;
 	ASFPacket* packet = NULL;
 	
 	do {
@@ -1389,10 +1405,19 @@ ASFFrameReader::ReadMore ()
 			return MEDIA_NO_MORE_DATA;
 		}
 		
-		if (!parser->ReadPacket (packet, current_packet_index)) {
-			ASF_LOG ("ASFFrameReader::ReadMore (): could not read more packets.\n");
+		read_result = parser->ReadPacket (packet, current_packet_index);
+
+		if (read_result == MEDIA_INVALID_DATA) {
+			ASF_LOG ("ASFFrameReader::ReadMore (): Skipping invalid packet (index: %llu)\n", current_packet_index);
 			delete packet;
-			return MEDIA_FAIL;
+			current_packet_index++;
+			continue;
+		}
+
+		if (!MEDIA_SUCCEEDED (read_result)) {
+			ASF_LOG ("ASFFrameReader::ReadMore (): could not read more packets (error: %i)\n", (int) read_result);
+			delete packet;
+			return read_result;
 		}
 		
 		current_packet_index++;

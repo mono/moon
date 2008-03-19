@@ -200,7 +200,8 @@ test_file (const char* filename)
 	ASFFrameReader* reader = NULL;
 	ASFSource *asf_src;
 	FileSource *fs;
-	
+	MediaResult read_result;	
+
 	fs = new FileSource (NULL, filename);
 	fs->Initialize ();
 	
@@ -216,10 +217,13 @@ test_file (const char* filename)
 #if 1
 	packet = new ASFPacket ();
 	printf ("Reading packet #0...\n");
-	while (parser->ReadPacket (packet) == true) {
+	while (true) {
+		read_result = parser->ReadPacket (packet);
 		delete packet;
+		printf ("Reading packet #%i, result: %i.\n", ++counter, read_result);
+		if (read_result == MEDIA_FAIL || read_result == MEDIA_READ_ERROR)
+			break;
 		packet = new ASFPacket ();
-		printf ("Reading packet #%i...\n", ++counter);
 	}
 	delete packet;
 	

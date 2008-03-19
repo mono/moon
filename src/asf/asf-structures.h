@@ -15,6 +15,7 @@
 
 #include "asf-debug.h"
 #include "asf.h"
+#include "../pipeline.h"
 
 void asf_error_correction_data_dump (asf_error_correction_data* obj);
 void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj);
@@ -110,7 +111,7 @@ struct asf_error_correction_data {
 	asf_byte first;
 	asf_byte second;
 	
-	bool FillInAll (ASFParser* parser);
+	MediaResult FillInAll (ASFParser* parser);
 	
 	bool is_error_correction_present () { return data & 0x80; }
 	bool is_opaque_data_present () { return data & 0x10; }
@@ -154,7 +155,7 @@ struct asf_payload_parsing_information {
 	int  get_media_object_number_length_type () { return (property_flags >> 4) & 0x03; }
 	int  get_stream_number_length_type () { return (property_flags >> 6) & 0x03; }
 	
-	bool FillInAll (ASFParser* parser);
+	MediaResult FillInAll (ASFParser* parser);
 	
 	
 	// The following fields don't have a fixed offset.
@@ -201,7 +202,7 @@ struct asf_single_payload {
 	asf_byte* payload_data;
 	asf_dword presentation_time; // milliseconds
 	
-	bool FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp);
+	MediaResult FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp);
 	
 	uint8_t get_presentation_time_delta ()
 	{
@@ -242,8 +243,8 @@ struct asf_multiple_payloads {
 	int get_payload_length_type () { return (payload_flags & 0xC0) >> 6; }
 	
 	bool ResizeList (ASFParser* parser, int requested_size);
-	bool FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi);
-	bool ReadCompressedPayload (ASFParser* parser, asf_single_payload* first, int count, int start_index);
+	MediaResult FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi);
+	MediaResult ReadCompressedPayload (ASFParser* parser, asf_single_payload* first, int count, int start_index);
 	int CountCompressedPayloads (ASFParser* parser, asf_single_payload* first); // Returns 0 on failure, values > 0 on success.
 	
 	asf_multiple_payloads () { payload_flags = 0; payloads = NULL; payloads_size = 0;}

@@ -274,11 +274,14 @@ public:
 	virtual ~ASFParser ();
 	
 	bool ReadHeader ();
-	bool ReadPacket (ASFPacket *packet);
+	// Reads a packet
+	// In any case (failure or success), the position of the source
+	// is set to the next packet.
+	MediaResult ReadPacket (ASFPacket *packet);
 	
 	// Seeks to the packet index (as long as the packet index >= 0), then reads it.
 	// If the packet index is < 0, then just read at the current position
-	bool ReadPacket (ASFPacket *packet, int packet_index); 
+	MediaResult ReadPacket (ASFPacket *packet, int packet_index); 
 	
 	// Verifies that the requested size is a size that can be inside the header.
 	bool VerifyHeaderDataSize (uint32_t size);

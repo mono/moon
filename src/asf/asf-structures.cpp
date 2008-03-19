@@ -254,7 +254,7 @@ bool asf_data_validate (const asf_data* obj, ASFParser* parser)
 	return true;
 }
 
-bool
+MediaResult
 asf_error_correction_data::FillInAll (ASFParser* parser)
 {
 	ASFSource* source = parser->source;
@@ -263,21 +263,22 @@ asf_error_correction_data::FillInAll (ASFParser* parser)
 	second = 0;
 		
 	if (!source->Read (&data, 1))
-		return false;
+		return MEDIA_READ_ERROR;
 		
 	if (!is_error_correction_present ())
-		return true;
+		return MEDIA_SUCCESS;
 		
 	if (!source->Read (&first, 1))
-		return false;
+		return MEDIA_READ_ERROR;
 	
 	if (!source->Read (&second, 1))
-		return false;
+		return MEDIA_READ_ERROR;
 		
-	return true;
+	return MEDIA_SUCCESS;
 }
 
-void asf_error_correction_data_dump (asf_error_correction_data* obj)
+void 
+asf_error_correction_data_dump (asf_error_correction_data* obj)
 {
 	char* tostring = obj->tostring ();
 	ASF_DUMP ("ASF_ERROR_CORRECTION_DATA\n");
@@ -292,7 +293,7 @@ void asf_error_correction_data_dump (asf_error_correction_data* obj)
 	ASF_DUMP ("\tsecond = %X\n", (asf_dword) obj->second);
 }
 
-bool
+MediaResult
 asf_payload_parsing_information::FillInAll (ASFParser* parser)
 {
 	ASFSource* source = parser->source;
@@ -305,26 +306,26 @@ asf_payload_parsing_information::FillInAll (ASFParser* parser)
 	duration = 0;
 	
 	if (!source->Read (&length_type_flags, 1))
-		return false;
+		return MEDIA_READ_ERROR;
 	if (!source->Read (&property_flags, 1))
-		return false;
+		return MEDIA_READ_ERROR;
 		
 	if (get_packet_length_type () == 0) {
 		packet_length = source->parser->GetFileProperties ()->min_packet_size;
 	} else {
 		if (!source->ReadEncoded (get_packet_length_type (), &packet_length))
-			return false;
+			return MEDIA_READ_ERROR;
 	}
 	if (!source->ReadEncoded (get_sequence_type (), &sequence))
-		return false;
+		return MEDIA_READ_ERROR;
 	if (!source->ReadEncoded (get_padding_length_type (), &padding_length))
-		return false;
+		return MEDIA_READ_ERROR;
 	if (!source->Read (&send_time, 4))
-		return false;
+		return MEDIA_READ_ERROR;
 	if (!source->Read (&duration, 2))
-		return false;
+		return MEDIA_READ_ERROR;
 		
-	return true;
+	return MEDIA_SUCCESS;
 }
 
 void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj)
@@ -347,20 +348,20 @@ void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj)
 	ASF_DUMP ("\tduration = %u\n", (asf_dword) obj->duration);
 }
 
-bool
+MediaResult
 asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp)
 {	
 	ASFSource* source = parser->source;
 	
 	if (!source->Read (&stream_id, 1))
-		return false;
+		return MEDIA_READ_ERROR;
 	
 	is_key_frame = stream_id & 0x80;
 	stream_id = stream_id & 0x7F;
 	
 	if (!source->parser->IsValidStream (stream_id)) {
 		source->parser->AddError (g_strdup_printf ("asf_single_payload::FillInAll: Invalid stream number (%d).", (int) stream_id));
-		return false;
+		return MEDIA_INVALID_DATA;
 	}
 	
 	media_object_number = 0;
@@ -372,31 +373,31 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 	presentation_time = 0;
 	
 	if (!source->ReadEncoded (ppi.get_media_object_number_length_type (), &media_object_number))
-		return false;
+		return MEDIA_READ_ERROR;
 		
 	if (!source->ReadEncoded (ppi.get_offset_into_media_object_length_type (), &offset_into_media_object))
-		return false;
+		return MEDIA_READ_ERROR;
 		
 	if (!source->ReadEncoded (ppi.get_replicated_data_length_type (), &replicated_data_length))
-		return false;
+		return MEDIA_READ_ERROR;
 	
 	if (replicated_data_length >= 2 && replicated_data_length < 7) {
 		source->parser->AddError (g_strdup_printf ("Invalid replicated data length: %d", replicated_data_length));
-		return false;
+		return MEDIA_INVALID_DATA;
 	} 
 		
 	if (replicated_data_length > parser->file_properties->max_packet_size) {
 		parser->AddError ("Data corruption in payload.");
-		return false;
+		return MEDIA_INVALID_DATA;
 	}
 	
 	replicated_data = (asf_byte*) parser->MallocVerified (replicated_data_length);
 	if (replicated_data == NULL) {
-		return false;
+		return MEDIA_OUT_OF_MEMORY;
 	}
 	
 	if (!source->Read (replicated_data, replicated_data_length))
-		return false;
+		return MEDIA_READ_ERROR;
 
 	if (replicated_data_length == 1) {
 		presentation_time = offset_into_media_object;
@@ -406,7 +407,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 
 	if (mp != NULL) {
 		if (!source->ReadEncoded (mp->get_payload_length_type (), &payload_data_length))
-			return false;
+			return MEDIA_READ_ERROR;
 			
 		if (payload_data_length == 0) {
 			source->parser->AddError ("Warning: Invalid payload data length: can't be 0.");
@@ -433,7 +434,7 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 			
 		if (payload_length < 0) {
 			source->parser->AddError (g_strdup_printf ("Invalid payload length: %d", payload_length));
-			return false;
+			return MEDIA_INVALID_DATA;
 		} 
 		
 		payload_data_length = (asf_dword) payload_length;
@@ -442,20 +443,20 @@ asf_single_payload::FillInAll (ASFParser* parser, asf_error_correction_data* ecd
 	if (payload_data_length > 0) {
 		if (payload_data_length >= parser->file_properties->max_packet_size) {
 			parser->AddError ("Data corruption in payload.");
-			return false;
+			return MEDIA_INVALID_DATA;
 		}
 		
 		payload_data = (asf_byte*) parser->MallocVerified (payload_data_length);
 		if (payload_data == NULL) {
-			return false;
+			return MEDIA_OUT_OF_MEMORY;
 		}
 		
 		if (!source->Read (payload_data, payload_data_length))
-			return false;
+			return MEDIA_READ_ERROR;
 	}
 
 
-	return true;
+	return MEDIA_SUCCESS;
 }
 
 asf_single_payload::~asf_single_payload ()
@@ -536,7 +537,7 @@ asf_multiple_payloads::CountCompressedPayloads (ASFParser* parser, asf_single_pa
 	return counter;
 }
 
-bool
+MediaResult
 asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payload* first, int count, int start_index)
 {
 	asf_byte* data = first->payload_data;
@@ -561,34 +562,35 @@ asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payl
 		payload->payload_data_length = size;
 		payload->payload_data = (asf_byte*) parser->Malloc (size);
 		if (payload->payload_data == NULL) {
-			return false;
+			return MEDIA_OUT_OF_MEMORY;
 		}
 		memcpy (payload->payload_data, data + offset, size);
 		offset += size;
 	}
 	
-	return true;
+	return MEDIA_SUCCESS;
 }
 
-bool
+MediaResult
 asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* ecd, asf_payload_parsing_information ppi)
 {
 	ASFSource* source = parser->source;
+	MediaResult result;
 	int count;
 	
 	if (ppi.is_multiple_payloads_present ()) {		
 		if (!source->Read (&payload_flags, 1))
-			return false;
+			return MEDIA_READ_ERROR;
 		
 		count = payload_flags & 0x3F; // number of payloads is encoded in a byte, no need to check for extreme values.
 		
 		if (count <= 0) {
 			source->parser->AddError (g_strdup_printf ("Invalid number of payloads: %d", count));
-			return false;
+			return MEDIA_INVALID_DATA;
 		}
 
 		if (!ResizeList (parser, count)) {
-			return false;
+			return MEDIA_OUT_OF_MEMORY;
 		}
 		
 		ASF_LOG ("asf_multiple_payloads::FillInAll (): Reading %d payloads...\n", count); 
@@ -597,20 +599,22 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 		for (int i = 0; i < count; i++) {
 			payloads [current_index] = new asf_single_payload ();
 			
-			if (!payloads [current_index]->FillInAll (parser, ecd, ppi, this))
-				return false;
+			result = payloads [current_index]->FillInAll (parser, ecd, ppi, this);
+			if (!MEDIA_SUCCEEDED (result))
+				return result;
 			
 			if (payloads [current_index]->is_compressed ()) {
 				asf_single_payload* first = payloads [current_index];
 				int number = CountCompressedPayloads (parser, first);
 				if (number <= 0) {
-					return false;
+					return MEDIA_INVALID_DATA;
 				}
 				if (!ResizeList (parser, number + payloads_size)) {
-					return false;
+					return MEDIA_OUT_OF_MEMORY;
 				}
-				if (!ReadCompressedPayload (parser, first, number, current_index)) {
-					return false;
+				result = ReadCompressedPayload (parser, first, number, current_index);
+				if (!MEDIA_SUCCEEDED (result)) {
+					return result;
 				}
 				delete first;
 			}
@@ -622,9 +626,10 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 		}
 	} else {
 		asf_single_payload* payload = new asf_single_payload ();
-		if (!payload->FillInAll (parser, ecd, ppi, NULL)) {
+		result = payload->FillInAll (parser, ecd, ppi, NULL);
+		if (!MEDIA_SUCCEEDED (result)) {
 			delete payload;
-			return false;
+			return result;
 		}
 		
 		if (payload->is_compressed ()) {
@@ -632,15 +637,16 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 			
 			counter = CountCompressedPayloads (parser, payload);
 			if (counter <= 0) {
-				return false;
+				return MEDIA_INVALID_DATA;
 			}
 						
 			if (!ResizeList (parser, counter)) {
-				return false;
+				return MEDIA_OUT_OF_MEMORY;
 			}
 			
-			if (!ReadCompressedPayload (parser, payload, counter, 0)) {
-				return false;
+			result = ReadCompressedPayload (parser, payload, counter, 0);
+			if (!MEDIA_SUCCEEDED (result)) {
+				return result;
 			}
 			
 			delete payload;
@@ -648,14 +654,14 @@ asf_multiple_payloads::FillInAll (ASFParser* parser, asf_error_correction_data* 
 		} else {
 			payloads = (asf_single_payload**) parser->MallocVerified (sizeof (asf_single_payload*) * 2);
 			if (payloads == NULL) {
-				return false;
+				return MEDIA_OUT_OF_MEMORY;
 			}		
 			payloads [0] = payload;
 			
 			payload_flags = 1; //  1 payload
 		}
 	}
-	return true;
+	return MEDIA_SUCCESS;
 }
 
 void asf_multiple_payloads_dump (asf_multiple_payloads* obj)
