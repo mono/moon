@@ -57,6 +57,20 @@ ASFMediaSource::Eof ()
 	return source->Eof ();
 }
 
+
+bool 
+ASFMediaSource::CanSeekToPts () 
+{
+	return source->CanSeekToPts ();
+}
+
+bool 
+ASFMediaSource::SeekToPts (uint64_t pts)
+{
+	return source->SeekToPts (pts);
+}
+
+
 /*
  * ASFBufferSource
  */
@@ -844,6 +858,7 @@ ASFFrameReader::ASFFrameReader (ASFParser *p, int s, IMediaDemuxer *d)
 	index = NULL;
 	index_size = 0;
 	key_frames_only = false;
+	positioned = false;
 }
 
 ASFFrameReader::~ASFFrameReader ()
@@ -1008,12 +1023,28 @@ ASFFrameReader::SeekToStart ()
 }
 
 bool
+ASFFrameReader::SeekWithPts (uint64_t pts)
+{
+	positioned = true;
+
+	current_packet_index = 0;
+	first_pts = 0;
+	key_frames_only = true;
+	RemoveAll ();
+
+	return parser->source->SeekToPts (pts);
+}
+
+bool
 ASFFrameReader::Seek (uint64_t pts)
 {
 	ASF_LOG ("ASFFrameReader::Seek (%d, %llu).\n", stream_number, pts);
 	
 	if (!CanSeek ())
 		return false;
+
+	if (positioned || parser->source->CanSeekToPts ())
+		return SeekWithPts (pts);
 	
 	// We know 0 is at the beginning of the media, so optimize this case
 	if (pts == 0) {
@@ -1405,7 +1436,11 @@ ASFFrameReader::ReadMore ()
 			return MEDIA_NO_MORE_DATA;
 		}
 		
-		read_result = parser->ReadPacket (packet, current_packet_index);
+		if (positioned) {
+			read_result = parser->ReadPacket (packet);
+		} else {
+			read_result = parser->ReadPacket (packet, current_packet_index);
+		}
 
 		if (read_result == MEDIA_INVALID_DATA) {
 			ASF_LOG ("ASFFrameReader::ReadMore (): Skipping invalid packet (index: %llu)\n", current_packet_index);

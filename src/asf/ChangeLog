@@ -1,5 +1,12 @@
 2008-03-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp, asf.h: ASFFrameReader: If the source can seek to a pts, request
+	  the source to do so. In this case we assume that the source knows where
+	  a packet begins, and that we're always positioned at the correct packet
+	  (i.e. we won't do a normal seek to find a packet).
+
+2008-03-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf-structures.h, asf.cpp, asf.h, asf-test.cpp, asf-structures.cpp: Return
 	  MediaResult from ReadPacket and the FillInAll methods. In ReadPacket we
 	  also need to seek to the next packet if some error occured. This allows

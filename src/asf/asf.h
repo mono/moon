@@ -80,6 +80,9 @@ public:
 	virtual bool CanSeek () = 0;
 	virtual bool Eof () = 0;
 	
+	virtual bool CanSeekToPts () { return false; }
+	virtual bool SeekToPts (uint64_t pts) { return false; }
+
 	ASFParser *parser;
 };
 
@@ -93,6 +96,9 @@ protected:
 	virtual bool CanSeek ();
 	virtual bool Eof ();
 	
+	virtual bool CanSeekToPts ();
+	virtual bool SeekToPts (uint64_t pts);
+
 public:
 	ASFMediaSource (ASFParser *parser, IMediaSource *source);
 };
@@ -193,7 +199,8 @@ class ASFFrameReader {
 	// Only return key frames. Reset after we've returned a key frame.
 	bool key_frames_only;
 	int stream_number; // The stream this reader is reading for 
-	
+	bool positioned;
+
 	uint64_t current_packet_index; // The index of the next packet that will be read when ReadMore is called.
 	int32_t script_command_stream_index;
 	
@@ -220,6 +227,8 @@ class ASFFrameReader {
 	
 	void ReadScriptCommand (); // If the current frame is a script command, decodes it and calls the callback set in the parser.
 	
+	bool SeekWithPts (uint64_t pts);
+
 public:
 	ASFFrameReader (ASFParser *parser, int stream_index, IMediaDemuxer *demuxer);
 	virtual ~ASFFrameReader ();
