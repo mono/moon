@@ -1,0 +1,9 @@
+2008-03-19  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/ExternalProcess:  Add exit codes
+	* test-runner/HtmlTest.cs: Make sure we call the base Setup and
+	Teardown methods.
+	* test-runner/ImageCompare.cs: Make ignore message a little more
+	useful.
+	* test-runner/Test.cs: Add support for a single code behind file
+	so we can run 2.0 tests.

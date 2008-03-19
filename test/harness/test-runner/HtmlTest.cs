@@ -126,6 +126,8 @@ namespace MoonlightTests {
 
 		protected override void Setup ()
 		{
+			base.Setup ();
+
 			StringBuilder built = new StringBuilder ();
 			StreamReader reader = new StreamReader (File.OpenRead (InputFile));
 
@@ -190,10 +192,6 @@ namespace MoonlightTests {
 			string built_str = built.ToString ();
 			//	if (built_str != File.ReadAllText (InputFile))
 				File.WriteAllText (InputFile, built_str);
-		}
-
-		protected override void Teardown ()
-		{
 		}
 
 		private string GenerateSilverlightEmbedHtml (string xaml_source, string control_id, string control_width, string control_height, string background)

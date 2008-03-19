@@ -45,6 +45,7 @@ namespace MoonlightTests {
 
 		private string stdout;
 		private string stderr;
+		private int exit_code = -1;
 
 		private bool process_timed_out;
 
@@ -61,6 +62,10 @@ namespace MoonlightTests {
 
 		public string Stderr {
 			get { return stderr; }
+		}
+
+		public int ExitCode {
+			get { return exit_code; }
 		}
 
 		public bool ProcessTimedOut {
@@ -85,7 +90,11 @@ namespace MoonlightTests {
 			try {
 				process_running = process.Start ();
 
-				process.Exited += delegate (object sender, EventArgs e) { process_running = false; }; 
+				process.Exited += delegate (object sender, EventArgs e)
+				{
+					exit_code = process.ExitCode;
+					process_running = false;
+				}; 
 
 				stdout_thread.Start ();
 				stderr_thread.Start ();

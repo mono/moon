@@ -39,6 +39,7 @@ namespace MoonlightTests {
 		private string id;
 		private string input_file;
 		private string master_file;
+		private string base_directory;
 		private double? image_compare_tolerance;
 		private double image_diff;
 
@@ -61,6 +62,8 @@ namespace MoonlightTests {
 
 		private ExternalProcess xsp;
 		private string xsp_exec_dir;
+
+		private string codebehind;
 
 		public static Test Create (string base_directory, XmlNode node)
 		{
@@ -93,6 +96,8 @@ namespace MoonlightTests {
 			default:
 				return null;
 			}
+			
+			test.base_directory = base_directory;
 
 			if (node.Attributes ["knownFailure"] != null && Boolean.Parse (node.Attributes ["knownFailure"].Value)) {
 				test.known_failure = true;
@@ -109,12 +114,14 @@ namespace MoonlightTests {
 			if (node.Attributes ["imageCompareTolerance"] != null)
 				test.image_compare_tolerance = Double.Parse (node.Attributes ["imageCompareTolerance"].Value);
 
+			if (node.Attributes ["categories"] != null)
+				test.SetCategories (node.Attributes ["categories"].Value);
+			
 			if (node.Attributes ["xspExecDir"] != null)
 				test.xsp_exec_dir = node.Attributes ["xspExecDir"].Value;
 
-			if (node.Attributes ["categories"] != null)
-				test.SetCategories (node.Attributes ["categories"].Value);
-
+			if (node.Attributes ["codebehind"] != null)
+				test.codebehind = node.Attributes ["codebehind"].Value;
 			return test;
 		}
 
@@ -232,8 +239,6 @@ namespace MoonlightTests {
 
 			Setup ();
 
-			RunXsp ();
-
 			result = RunTest ();
 			if (result != TestResult.Pass) {
 				Teardown ();
@@ -242,8 +247,6 @@ namespace MoonlightTests {
 
 			if (Path.GetFileName (master_file) != "None")
 				result = CompareResults (compare_to_moon);
-
-			StopXsp ();
 
 			Teardown ();
 
@@ -263,10 +266,13 @@ namespace MoonlightTests {
 
 		protected virtual void Setup ()
 		{
+			CodeBehindCompileIfNeeded ();
+			RunXspIfNeeded ();
 		}
 
 		protected virtual void Teardown ()
-		{
+		{			
+			StopXspIfNeeded ();
 		}
 
 		protected virtual string GetTestPath ()
@@ -310,7 +316,29 @@ namespace MoonlightTests {
 			result_height = master.Height;
 		}
 
-		private void RunXsp ()
+		private void CodeBehindCompileIfNeeded ()
+		{
+			if (codebehind == null)
+				return;
+
+			string [] pieces = codebehind.Split (',');
+			string cs_file = Path.Combine (base_directory, pieces [0].Trim ());
+			string lib_name = null;
+
+			if (pieces.Length > 1)
+				lib_name = pieces [1].Trim ();			
+
+			string args = String.Format ("/target:library {0} {1}", lib_name != null ? String.Concat ("/out:", lib_name) : String.Empty, cs_file);
+			ExternalProcess gmcs = new ExternalProcess ("gmcs", args, -1);
+
+			gmcs.Run (true);
+			if (gmcs.ExitCode < 0) {
+				SetFailedReason (String.Format ("Unable to compile codebehind file: {0}.", gmcs.Stderr));
+				return;
+			}
+		}
+
+		private void RunXspIfNeeded ()
 		{
 			if (xsp_exec_dir == null)
 				return;
@@ -321,7 +349,7 @@ namespace MoonlightTests {
 			xsp.Run (false);
 		}
 
-		private void StopXsp ()
+		private void StopXspIfNeeded ()
 		{
 			if (xsp != null)
 				xsp.Kill ();

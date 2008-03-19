@@ -74,7 +74,7 @@ namespace MoonlightTests {
 			}
 
 			if (!File.Exists (master_path)) {
-				test.SetToIgnore (String.Format ("Can not find master file {0}", master_path));
+				test.SetToIgnore (String.Format ("Can not find master file {0}", Path.GetFullPath (master_path)));
 				return TestResult.Ignore;
 			}
 
