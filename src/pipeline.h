@@ -110,6 +110,8 @@ typedef int32_t MediaResult;
 #define MEDIA_NO_MORE_DATA ((MediaResult) 16)
 #define MEDIA_CORRUPTED_MEDIA ((MediaResult) 17)
 #define MEDIA_NO_CALLBACK ((MediaResult) 18)
+#define MEDIA_INVALID_DATA ((MediaResult) 19)
+#define MEDIA_READ_ERROR ((MediaResult) 20)
 
 #define MEDIA_SUCCEEDED(x) ((x <= 0))
 
