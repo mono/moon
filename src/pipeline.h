@@ -566,6 +566,8 @@ public:
 	virtual void SetPosition (int64_t position) { Seek (position, SEEK_SET); }
 	virtual bool Seek (int64_t offset) = 0; // Seeks to the offset from the current position
 	virtual bool Seek (int64_t offset, int mode) = 0;
+	virtual bool CanSeekToPts () { return false; }
+	virtual bool SeekToPts (uint64_t pts) { return false; }
 	virtual int32_t Read (void *buf, uint32_t n) = 0;
 	virtual bool ReadAll (void *buf, uint32_t n) = 0;
 	virtual bool Peek (void *buf, uint32_t n) = 0;

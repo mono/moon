@@ -1,5 +1,9 @@
 2008-03-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.h: Added CanSeekToPts and SeekToPts to IMediaStream.
+
+2008-03-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.h: Added two more error conditions.
 
 2008-03-19  Jeffrey Stedfast  <fejj@novell.com>
