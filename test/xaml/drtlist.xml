@@ -652,4 +652,9 @@
         masterFile10="../harness/masters/test-crash-color-anim-on-solidMaster.tif"
 	captureSpecifier="300,15"
    />
+   <Test id="155"
+        inputFile="test-crash-gracefull-prop-resolving.xaml"
+        masterFile10="../harness/masters/test-crash-gracefull-prop-resolvingMaster.tif"
+	captureSpecifier="300,15"
+   />
 </DRTList>

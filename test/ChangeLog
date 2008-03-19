@@ -1,3 +1,10 @@
+2008-03-19  Michael Dominic K.  <mdk@mdk.am>
+
+	* test/xaml/drtlist.xml:
+	* test/xaml/test-crash-gracefull-prop-resolving.xaml: Yet another
+	property-resolving test-case. This time we check against a human error
+	which we could be smart about (reported on http://sessions.visitmix.com).
+
 2008-03-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml/drtlist.xml: Add codebehind files.
