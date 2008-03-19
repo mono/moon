@@ -916,9 +916,6 @@ TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *deb
 	if (face != NULL) {
 		FT_Set_Pixel_Sizes (face, 0, (int) size);
 		
-		glyphs = g_new0 (GlyphInfo, 256);
-		glyphs[0].index = 1; /* invalidate */
-		
 		// calculate underline thickness
 		thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
 		underline_thickness = ((double) thickness) / (scale * 64);
@@ -932,21 +929,21 @@ TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *deb
 	} else {
 		underline_thickness = 1.0;
 		underline_position = 0.0;
-		glyphs = NULL;
 	}
 	
 	g_hash_table_insert (font_cache, pattern, this);
 	FcPatternReference (pattern);
 	this->pattern = pattern;
 	ref_count = 1;
+	nglyphs = 0;
 }
 
 TextFont::~TextFont ()
 {
 	int i;
 	
-	if (glyphs) {
-		for (i = 0; i < 256; i++) {
+	if (nglyphs > 0) {
+		for (i = 0; i < nglyphs; i++) {
 			if (glyphs[i].path)
 				moon_path_destroy (glyphs[i].path);
 			
@@ -958,8 +955,6 @@ TextFont::~TextFont ()
 				g_free (glyphs[i].bitmap);
 			}
 		}
-		
-		g_free (glyphs);
 	}
 	
 	if (face)
@@ -1185,20 +1180,43 @@ prepare_bitmap (GlyphInfo *glyph, FT_Bitmap *bitmap)
 	glyph->bitmap->width = width;
 }
 
+static int
+glyphsort (const void *v1, const void *v2)
+{
+	GlyphInfo *g1 = (GlyphInfo *) v1;
+	GlyphInfo *g2 = (GlyphInfo *) v2;
+	
+	return g2->requested - g1->requested;
+}
+
 GlyphInfo *
 TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 {
 	double scale = 1.0 / (64.0 * this->scale);
 	GlyphInfo *glyph;
+	int i;
 	
 	if (!face)
 		return NULL;
 	
-	glyph = &glyphs[index & 0xff];
+	for (i = 0; i < nglyphs; i++) {
+		if (glyphs[i].index == index) {
+			glyph = &glyphs[i];
+			glyph->requested++;
+			return glyph;
+		}
+	}
 	
-	if (glyph->index != index) {
-		glyph->unichar = unichar;
-		glyph->index = index;
+	if (FT_Load_Glyph (face, index, LOAD_FLAGS) != 0)
+		return NULL;
+	
+	if (FT_Render_Glyph (face->glyph, FT_RENDER_MODE_NORMAL) != 0)
+		return NULL;
+	
+	if (nglyphs == 256) {
+		// need to expire the least requested glyph (which will be the last element in the array after sorting)
+		qsort (glyphs, nglyphs, sizeof (GlyphInfo), glyphsort);
+		glyph = &glyphs[nglyphs - 1];
 		
 		if (glyph->bitmap) {
 			if (glyph->bitmap->surface) {
@@ -1208,108 +1226,59 @@ TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 			
 			g_free (glyph->bitmap->buffer);
 			glyph->bitmap->buffer = NULL;
-			
-			// Don't free the bitmap as we'll just be malloc'ing it again anyway
-			//g_free (glyph->bitmap);
-			//glyph->bitmap = NULL;
 		}
 		
-		if (glyph->path) {
+		if (glyph->path)
 			moon_path_destroy (glyph->path);
-			glyph->path = NULL;
-		}
-		
-		if (FT_Load_Glyph (face, glyph->index, LOAD_FLAGS) == 0) {
-			if (FT_Render_Glyph (face->glyph, FT_RENDER_MODE_NORMAL) != 0)
-				goto unavail;
-			
-			if (FT_IS_SCALABLE (face)) {
-				FT_Matrix matrix;
-				
-				// FIXME: can the scale ever overflow the 16.16 Fixed type?
-				matrix.xx = (FT_Fixed) (65535 / this->scale);
-				matrix.xy = 0;
-				matrix.yy = (FT_Fixed) (-65535 / this->scale);
-				matrix.yx = 0;
-				
-				glyph->path = moon_path_new (8);
-				FT_Outline_Transform (&face->glyph->outline, &matrix);
-				FT_Outline_Decompose (&face->glyph->outline, &outline_funcs, glyph->path);
-			} else {
-				if (glyph->bitmap == NULL)
-					glyph->bitmap = g_new (GlyphBitmap, 1);
-				
-				glyph->bitmap->left = face->glyph->bitmap_left;
-				glyph->bitmap->top = face->glyph->bitmap_top;
-				prepare_bitmap (glyph, &face->glyph->bitmap);
-			}
-			
-			glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX * scale;
-			glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY * scale;
-			glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance * scale;
-			//glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX * scale;
-			//glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY * scale;
-			//glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance * scale;
-			glyph->metrics.height = face->glyph->metrics.height * scale;
-			glyph->metrics.width = face->glyph->metrics.width * scale;
-			
-			// FIXME: Seems like MS Gothic, GulimChe, DotumChe, BatangChe and GungsuhChe
-			// are all fixed-width fonts, except that MS renders the ascii subset with
-			// 1/2 the horiAdvance of the East Asian glyphs. This is a really gross hack
-			// to mimic their behavior until I find a better way.
-			if (FT_IS_FIXED_WIDTH (face) && unichar > 0 &&
-			    glyph->metrics.horiAdvance >= (glyph->metrics.width * 1.8))
-				glyph->metrics.horiAdvance /= 2.0;
-		} else if (unichar == 0x20 || unichar == 0x09) {
-			glyph->metrics.horiBearingX = 0.0;
-			glyph->metrics.horiBearingY = 0.0;
-			//glyph->metrics.vertBearingX = 0.0;
-			//glyph->metrics.vertBearingY = 0.0;
-			
-			if (glyph->bitmap) {
-				glyph->bitmap->height = 0;
-				glyph->bitmap->width = 0;
-				glyph->bitmap->left = 0;
-				glyph->bitmap->top = 0;
-			}
-			
-			if (unichar == 0x20) {
-				// Space
-				glyph->metrics.horiAdvance = face->max_advance_width * scale;
-				//glyph->metrics.vertAdvance = face->max_advance_height * scale;
-				glyph->metrics.height = face->max_advance_height * scale;
-				glyph->metrics.width = face->max_advance_width * scale;
-			} else if (unichar == 0x09) {
-				// Tab
-				glyph->metrics.horiAdvance = face->max_advance_width * (scale / 8.0);
-				//glyph->metrics.vertAdvance = face->max_advance_height * scale;
-				glyph->metrics.height = face->max_advance_height * scale;
-				glyph->metrics.width = face->max_advance_width * (scale / 8.0);
-			}
-		} else {
-		unavail:
-			if (glyph->bitmap) {
-				glyph->bitmap->height = 0;
-				glyph->bitmap->width = 0;
-				glyph->bitmap->left = 0;
-				glyph->bitmap->top = 0;
-			}
-			
-			glyph->metrics.horiBearingX = 0.0;
-			glyph->metrics.horiBearingY = 0.0;
-			//glyph->metrics.vertBearingX = 0.0;
-			//glyph->metrics.vertBearingY = 0.0;
-			glyph->metrics.horiAdvance = 0.0;
-			//glyph->metrics.vertAdvance = 0.0;
-			glyph->metrics.height = 0.0;
-			glyph->metrics.width = 0.0;
-		}
+	} else {
+		glyph = &glyphs[nglyphs++];
+		glyph->bitmap = NULL;
 	}
 	
-	if (glyph->metrics.horiAdvance > 0.0)
-		return glyph;
+	glyph->unichar = unichar;
+	glyph->index = index;
+	glyph->requested = 1;
+	glyph->path = NULL;
 	
-	return NULL;
+	if (FT_IS_SCALABLE (face)) {
+		FT_Matrix matrix;
+		
+		// FIXME: can the scale ever overflow the 16.16 Fixed type?
+		matrix.xx = (FT_Fixed) (65535 / this->scale);
+		matrix.xy = 0;
+		matrix.yy = (FT_Fixed) (-65535 / this->scale);
+		matrix.yx = 0;
+		
+		glyph->path = moon_path_new (8);
+		FT_Outline_Transform (&face->glyph->outline, &matrix);
+		FT_Outline_Decompose (&face->glyph->outline, &outline_funcs, glyph->path);
+	} else {
+		if (glyph->bitmap == NULL)
+			glyph->bitmap = g_new (GlyphBitmap, 1);
+		
+		glyph->bitmap->left = face->glyph->bitmap_left;
+		glyph->bitmap->top = face->glyph->bitmap_top;
+		prepare_bitmap (glyph, &face->glyph->bitmap);
+	}
+	
+	glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX * scale;
+	glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY * scale;
+	glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance * scale;
+	//glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX * scale;
+	//glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY * scale;
+	//glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance * scale;
+	glyph->metrics.height = face->glyph->metrics.height * scale;
+	glyph->metrics.width = face->glyph->metrics.width * scale;
+	
+	// FIXME: Seems like MS Gothic, GulimChe, DotumChe, BatangChe and GungsuhChe
+	// are all fixed-width fonts, except that MS renders the ascii subset with
+	// 1/2 the horiAdvance of the East Asian glyphs. This is a really gross hack
+	// to mimic their behavior until I find a better way.
+	if (FT_IS_FIXED_WIDTH (face) && unichar > 0 &&
+	    glyph->metrics.horiAdvance >= (glyph->metrics.width * 1.8))
+		glyph->metrics.horiAdvance /= 2.0;
+	
+	return glyph;
 }
 
 GlyphInfo *

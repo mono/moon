@@ -107,6 +107,7 @@ struct GlyphInfo {
 	GlyphMetrics metrics;
 	GlyphBitmap *bitmap;
 	moon_path *path;
+	int requested;
 };
 
 class TextFont {
@@ -119,7 +120,8 @@ class TextFont {
 	double underline_position;
 	double scale;
 	
-	GlyphInfo *glyphs;
+	GlyphInfo glyphs[256];
+	int nglyphs;
 	
 	TextFont (FcPattern *pattern, const char *family_name, const char *debug_name);
 	

@@ -1,3 +1,9 @@
+2008-03-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (TextFont::GetGlyphInfo): Use a different approach to
+	caching glyphs. Try to take full advantage of the pre-allocated
+	glyphs array before clobbering previously loaded glyphs.
+
 2008-03-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/dependencyobject.cpp: Making the prop resolving a bit more
@@ -7,8 +13,8 @@
 
 2008-03-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* pipeline.cpp: We need to unlock the mutex before joining the thread. Fixes
-	  a dead-lock.
+	* pipeline.cpp: We need to unlock the mutex before joining the
+	thread. Fixes a dead-lock.
 
 2008-03-19  Geoff Norton  <gnorton@novell.com>
 
