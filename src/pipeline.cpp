@@ -841,8 +841,8 @@ Media::StopThread ()
 	ClearQueue ();
 	pthread_mutex_lock (&queue_mutex);
 	pthread_cond_signal (&queue_condition);
-	pthread_join (queue_thread, NULL);
 	pthread_mutex_unlock (&queue_mutex);
+	pthread_join (queue_thread, NULL);
 
 	LOG_PIPELINE ("Media::ClearQueue () [Done]\n");
 }
