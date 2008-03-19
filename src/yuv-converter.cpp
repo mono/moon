@@ -59,12 +59,18 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 			"prefetchnta (%0);"	\
 		: : "r" (memory));		\
 	} while (0);
+
+#if defined(__x86_64__)
+#define ALIGN_CMP_REG "rax"
+#else
+#define ALIGN_CMP_REG "eax"
+#endif
 	
-#define CALC_COLOR_MODIFIERS(mov_instr, reg_type, alignment, u, v, coeff_storage) do {							\
+#define CALC_COLOR_MODIFIERS(mov_instr, reg_type, alignment, align_reg, u, v, coeff_storage) do {					\
 			__asm__ __volatile__ (												\
-				"movl %0, %%eax;"											\
-				"andl $"alignment", %%eax;"										\
-				"testl %%eax, %%eax;"											\
+				"movl %0, %%"align_reg";"										\
+				"andl $"alignment", %%"align_reg";"									\
+				"testl %%"align_reg", %%"align_reg";"									\
 				"je 1f;"												\
 																	\
 				mov_instr " 48(%2), %%"reg_type"2;"			/* restore Dred */				\
@@ -143,7 +149,7 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 				mov_instr " %%"reg_type"3, 16(%2);"			/* backup Dgreen[lo] */				\
 				mov_instr " %%"reg_type"1, 32(%2);"			/* backup Dblue[lo] */				\
 				"2:"													\
-				: : "r" (u), "r" (v), "r" (coeff_storage), "r" (&simd_table) : "%eax");					\
+				: : "r" (u), "r" (v), "r" (coeff_storage), "r" (&simd_table) : "%"align_reg);				\
 	} while (0);
 
 #define RESTORE_COLOR_MODIFIERS(mov_instr, reg_type, coeff_storage) do {				\
@@ -361,7 +367,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 		for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 			for (j = 0; j < width >> 4; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
 				PREFETCH(y_row1);
-				CALC_COLOR_MODIFIERS("movdqa", "xmm", "15", u_plane, v_plane, rgb_uv);
+				CALC_COLOR_MODIFIERS("movdqa", "xmm", "15", ALIGN_CMP_REG, u_plane, v_plane, rgb_uv);
 			
 				YUV2RGB_SSE(y_row1, dest_row1);
 			
@@ -378,7 +384,7 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 				for (j = 0; j <  width >> 3; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
 					PREFETCH(y_row1);
-					CALC_COLOR_MODIFIERS("movq", "mm", "7", u_plane, v_plane, rgb_uv);
+					CALC_COLOR_MODIFIERS("movq", "mm", "7", ALIGN_CMP_REG, u_plane, v_plane, rgb_uv);
 
 					YUV2RGB_MMX(y_row1, dest_row1);
 

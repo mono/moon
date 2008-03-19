@@ -1,3 +1,7 @@
+2008-03-19  Geoff Norton  <gnorton@novell.com>
+	
+	* yuv-converter.cpp:  Fix the test/cmp on x86-64
+
 2008-03-18  Geoff Norton  <gnorton@novell.com>
 
 	* yuv-converter.cpp:  Fold RESTORE_COLOR_MODIFIERS into
