@@ -1181,9 +1181,18 @@ resolve_property_path (DependencyObject **o, const char *path)
 			}
 
 			if (! res->is_attached_property && ! lu->Is (t->type)) {
-				g_warning ("Got %s but expected a type of %s!", typen, lu->GetTypeName ());
-				*o = NULL;
-				return NULL;
+				// We try to be gracefull here and do something smart...
+				res = DependencyObject::GetDependencyProperty (lu->GetObjectType (), propn);
+
+				if (! res) {
+					g_warning ("Got %s but expected a type of %s!", typen, lu->GetTypeName ());
+					*o = NULL;
+					return NULL;
+				} else {
+					g_warning ("Got %s but expected a type of %s ! "
+						   "Did you mean %s.%s ? Using that.",
+						   typen, lu->GetTypeName (), lu->GetTypeName (), propn);
+				}
 			}
 
 			g_free (propn);
