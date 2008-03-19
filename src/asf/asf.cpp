@@ -1023,7 +1023,7 @@ ASFFrameReader::SeekToStart ()
 }
 
 bool
-ASFFrameReader::SeekWithPts (uint64_t pts)
+ASFFrameReader::SeekToPts (uint64_t pts)
 {
 	positioned = true;
 
@@ -1044,7 +1044,7 @@ ASFFrameReader::Seek (uint64_t pts)
 		return false;
 
 	if (positioned || parser->source->CanSeekToPts ())
-		return SeekWithPts (pts);
+		return SeekToPts (pts);
 	
 	// We know 0 is at the beginning of the media, so optimize this case
 	if (pts == 0) {

@@ -1,5 +1,9 @@
 2008-03-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp, asf.h: Rename SeekWithPts to SeekToPts to make naming consistent.
+
+2008-03-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp, asf.h: ASFFrameReader: If the source can seek to a pts, request
 	  the source to do so. In this case we assume that the source knows where
 	  a packet begins, and that we're always positioned at the correct packet

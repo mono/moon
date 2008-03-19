@@ -227,7 +227,7 @@ class ASFFrameReader {
 	
 	void ReadScriptCommand (); // If the current frame is a script command, decodes it and calls the callback set in the parser.
 	
-	bool SeekWithPts (uint64_t pts);
+	bool SeekToPts (uint64_t pts);
 
 public:
 	ASFFrameReader (ASFParser *parser, int stream_index, IMediaDemuxer *demuxer);
