@@ -1,5 +1,9 @@
 2008-03-19  Geoff Norton  <gnorton@novell.com>
 	
+	* yuv-converter.cpp:  More 64-bit fixes
+
+2008-03-19  Geoff Norton  <gnorton@novell.com>
+	
 	* yuv-converter.cpp:  Fix the test/cmp on x86-64
 
 2008-03-18  Geoff Norton  <gnorton@novell.com>

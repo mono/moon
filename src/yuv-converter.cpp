@@ -68,9 +68,9 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 	
 #define CALC_COLOR_MODIFIERS(mov_instr, reg_type, alignment, align_reg, u, v, coeff_storage) do {					\
 			__asm__ __volatile__ (												\
-				"movl %0, %%"align_reg";"										\
-				"andl $"alignment", %%"align_reg";"									\
-				"testl %%"align_reg", %%"align_reg";"									\
+				"mov %0, %%"align_reg";"										\
+				"and $"alignment", %%"align_reg";"									\
+				"test %%"align_reg", %%"align_reg";"									\
 				"je 1f;"												\
 																	\
 				mov_instr " 48(%2), %%"reg_type"2;"			/* restore Dred */				\
