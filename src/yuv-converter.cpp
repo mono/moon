@@ -210,25 +210,24 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 			"punpcklbw %%"reg_type"2, %%"reg_type"1;"	/* r1 [B0 R0 B1 R1 ...] */			\
 			"punpcklbw %%"reg_type"4, %%"reg_type"3;"	/* r4 [G0 FF G1 FF ...] */			\
 															\
-			mov_instr " %%"reg_type"1, %%"reg_type"4;"	/* r3 [G0 FF G1 FF ...] */			\
+			mov_instr " %%"reg_type"1, %%"reg_type"0;"	/* r3 [G0 FF G1 FF ...] */			\
 															\
 			"punpcklbw %%"reg_type"3, %%"reg_type"1;"	/* r2 [B0 G0 R0 FF B1 G1 R1 FF ...] */		\
-			"punpckhbw %%"reg_type"3, %%"reg_type"4;"	/* r3 [B2 G2 R2 FF B3 G3 R3 FF ...] */		\
+			"punpckhbw %%"reg_type"3, %%"reg_type"0;"	/* r3 [B2 G2 R2 FF B3 G3 R3 FF ...] */		\
 															\
 			mov_instr " %%"reg_type"1, (%1);"		/* output BGRA */	 			\
-			mov_instr " %%"reg_type"4, "output_offset1"(%1);"						\
+			mov_instr " %%"reg_type"0, "output_offset1"(%1);"						\
 															\
-			mov_instr " 112(%2), %%"reg_type"4;"								\
 			"punpckhbw %%"reg_type"5, %%"reg_type"6;"							\
 			"punpckhbw %%"reg_type"4, %%"reg_type"7;"							\
 															\
-			mov_instr " %%"reg_type"6, %%"reg_type"4;"							\
+			mov_instr " %%"reg_type"6, %%"reg_type"0;"							\
 															\
 			"punpcklbw %%"reg_type"7, %%"reg_type"6;"							\
-			"punpckhbw %%"reg_type"7, %%"reg_type"4;"							\
+			"punpckhbw %%"reg_type"7, %%"reg_type"0;"							\
 															\
 			mov_instr " %%"reg_type"6, "output_offset2"(%1);"						\
-			mov_instr " %%"reg_type"4, "output_offset3"(%1);"						\
+			mov_instr " %%"reg_type"0, "output_offset3"(%1);"						\
 			: : "r" (y_plane), "r" (dest), "r" (&simd_table));						\
 	} while (0);
 #endif

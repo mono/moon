@@ -1,4 +1,9 @@
 2008-03-19  Geoff Norton  <gnorton@novell.com>
+
+	* yuv-converter.cpp:  Use xmm0 to store a load value to avoid a
+	repeated load.
+
+2008-03-19  Geoff Norton  <gnorton@novell.com>
 	
 	* yuv-converter.cpp:  More 64-bit fixes
 
