@@ -1,11 +1,12 @@
 <DRTList>
-   <Test id="1"
+  <Test id="1"
 	inputFile="nested-canvas-empty.xaml"
 	masterFile10="../harness/masters/nested-canvas-emptyMaster.png"
    />
    <Test id="2"
 	inputFile="nested-canvas.xaml"
 	masterFile10="../harness/masters/nested-canvasMaster.png"
+	codebehind="nested-canvas.cs"
    />
    <Test id="3"
 	inputFile="points-torture.xaml"
@@ -322,6 +323,7 @@
    <Test id="81"
 	inputFile="test-seekable-storyboard.xaml"
 	masterFile10="../harness/masters/test-seekable-storyboardMaster.png"
+	codebehind="seekable-canvas.cs"
    />
    <Test id="82"
 	inputFile="test-set-inherited-property-elements.xaml"
@@ -458,6 +460,7 @@
    <Test id="115"
 	inputFile="test-string-property.xaml"
 	masterFile10="../harness/masters/test-string-propertyMaster.png"
+	codebehind="test-string-property.cs"
    />
    <Test id="116"
 	inputFile="test-text-animation.xaml"
@@ -526,6 +529,7 @@
    <Test id="132"
 	inputFile="video-player.xaml"
 	masterFile10="../harness/masters/video-playerMaster.png"
+	codebehind="video-player.cs"
    />
    <Test id="133"
 	inputFile="test-directory-in-zip.html"

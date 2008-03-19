@@ -1,3 +1,7 @@
+2008-03-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml/drtlist.xml: Add codebehind files.
+
 2008-03-19  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* xaml/test-line-caps.xaml: various tests for Line/Dash caps on
