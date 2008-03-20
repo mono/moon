@@ -72,6 +72,8 @@ Downloader::Downloader ()
 	consumer_closure = NULL;
 	context = NULL;
 	notify_size = NULL;
+	deobfuscated = false;
+	unlinkit = false;
 	filename = NULL;
 	unzipdir = NULL;
 	failed_msg = NULL;
@@ -99,7 +101,12 @@ Downloader::~Downloader ()
 {
 	Downloader::destroy_state (downloader_state);
 	
-	g_free (filename);
+	if (filename) {
+		if (unlinkit)
+			unlink (filename);
+		g_free (filename);
+	}
+	
 	g_free (failed_msg);
 	
 	// Delete temporary files.
@@ -350,6 +357,33 @@ Downloader::GetUnzippedPath ()
 	return unzipdir;
 }
 
+bool
+Downloader::IsDeobfuscated ()
+{
+	return deobfuscated;
+}
+
+void
+Downloader::SetDeobfuscated (bool val)
+{
+	deobfuscated = val;
+}
+
+void
+Downloader::SetDeobfuscatedFile (const char *path)
+{
+	if (!filename || !path)
+		return;
+	
+	if (deobfuscated)
+		unlink (filename);
+	g_free (filename);
+	
+	filename = g_strdup (path);
+	deobfuscated = true;
+	unlinkit = true;
+}
+
 void
 Downloader::Open (const char *verb, const char *uri)
 {
@@ -357,7 +391,16 @@ Downloader::Open (const char *verb, const char *uri)
 	
 	started = false;
 	g_free (failed_msg);
-	g_free (filename);
+	
+	if (filename) {
+		if (unlinkit)
+			unlink (filename);
+		g_free (filename);
+	}
+	
+	deobfuscated = false;
+	unlinkit = false;
+	
 	failed_msg = NULL;
 	filename = NULL;
 	

@@ -57,6 +57,8 @@ class Downloader : public DependencyObject {
 	char *unzipdir;
 	
 	char *failed_msg;
+	bool deobfuscated;
+	bool unlinkit;
 	bool unzipped;
 	bool started;
 	bool aborted;
@@ -102,6 +104,10 @@ class Downloader : public DependencyObject {
 	const char *GetDownloadedFile ();
 	bool DownloadedFileIsZipped ();
 	const char *GetUnzippedPath ();
+	
+	bool IsDeobfuscated ();
+	void SetDeobfuscated (bool val);
+	void SetDeobfuscatedFile (const char *filename);
 	
 	// This is called by the consumer of the downloaded data (the
 	// Image class for instance)

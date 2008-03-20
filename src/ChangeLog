@@ -1,5 +1,11 @@
 2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* downloader.cpp (Downloader::IsDeobfuscated)
+	(Downloader::SetDeobfuscated, Downloader::SetDeobfuscatedFile):
+	Some new methods for replacing the original downloaded file with
+	another tmp file that will need to be unlinked when the downloader
+	is destroyed or a new file is requested.
+
 	* utils.cpp (moon_copy_file): New convenience function.
 
 2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
