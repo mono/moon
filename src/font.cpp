@@ -1347,9 +1347,9 @@ TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 	// are all fixed-width fonts, except that MS renders the ascii subset with
 	// 1/2 the horiAdvance of the East Asian glyphs. This is a really gross hack
 	// to mimic their behavior until I find a better way.
-	if (FT_IS_FIXED_WIDTH (face) && unichar > 0 &&
-	    glyph->metrics.horiAdvance >= (glyph->metrics.width * 1.8))
-		glyph->metrics.horiAdvance /= 2.0;
+	//if (FT_IS_FIXED_WIDTH (face) && unichar > 0 &&
+	//   glyph->metrics.horiAdvance >= (glyph->metrics.width * 1.8))
+	//	glyph->metrics.horiAdvance /= 2.0;
 	
 	return glyph;
 }

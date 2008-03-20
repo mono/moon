@@ -1,5 +1,8 @@
 2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (TextFont::GetGlyphInfo): Comment out the fixed-width
+	font hack for now.
+
 	* text.cpp (deobfuscate_font): New helper function used by
 	TextBlock and Glyphs.
 	(TextBlock::DownloaderComplete): Check for obfuscated fonts.
