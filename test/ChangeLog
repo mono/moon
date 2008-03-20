@@ -1,3 +1,13 @@
+2008-03-21  Michael Dominic K.  <mdk@mdk.am>
+
+	* test/xaml/arial-pango.png:
+	* test/xaml/drtlist.xml:
+	* test/xaml/test-text-font-quality.xaml:
+	* test/xaml/times-pango.png:
+	* test/xaml/verdana-pango.png: Adding a new test against our crappy
+	small-fonts rendering quality. Compares side-by-side with Pango
+	rendering masters for Arial, Verdana and Times New Roman.
+
 2008-03-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* test/xaml/drtlist.xml:

@@ -1,0 +1,52 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="640" Height="600" BAckground="White">
+
+	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="10" Canvas.Left="10" Canvas.Top="10" />
+	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="10.5" Canvas.Left="10" Canvas.Top="30" />
+	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="11" Canvas.Left="10" Canvas.Top="50" />
+	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="11.5" Canvas.Left="10" Canvas.Top="70" />
+	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="12" Canvas.Left="10" Canvas.Top="90" />
+	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="12.5" Canvas.Left="10" Canvas.Top="110" />
+	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="13" Canvas.Left="10" Canvas.Top="130" />
+	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="13.5" Canvas.Left="10" Canvas.Top="150" />
+
+	<!-- Legend -->
+	<TextBlock FontFamily="Sans" Text="Arial Moonlight" FontSize="15" Canvas.Left="85" Canvas.Top="170" Foreground="Red" />
+	<TextBlock FontFamily="Sans" Text="Arial Pango" FontSize="15" Canvas.Left="400" Canvas.Top="170" Foreground="Red" />
+
+	<!-- Pango master -->
+	<Image Source="arial-pango.png" Canvas.Left="300" Canvas.Top="0" />
+
+	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="10" Canvas.Left="10" Canvas.Top="200" />
+	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="10.5" Canvas.Left="10" Canvas.Top="220" />
+	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="11" Canvas.Left="10" Canvas.Top="240" />
+	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="11.5" Canvas.Left="10" Canvas.Top="260" />
+	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="12" Canvas.Left="10" Canvas.Top="280" />
+	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="12.5" Canvas.Left="10" Canvas.Top="300" />
+	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="13" Canvas.Left="10" Canvas.Top="320" />
+	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="13.5" Canvas.Left="10" Canvas.Top="340" />
+
+	<!-- Legend -->
+	<TextBlock FontFamily="Sans" Text="Verdana Moonlight" FontSize="15" Canvas.Left="85" Canvas.Top="360" Foreground="Red" />
+	<TextBlock FontFamily="Sans" Text="Verdana Pango" FontSize="15" Canvas.Left="400" Canvas.Top="360" Foreground="Red" />
+
+	<!-- Pango master -->
+	<Image Source="verdana-pango.png" Canvas.Left="300" Canvas.Top="190" />
+
+	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="10" Canvas.Left="10" Canvas.Top="390" />
+	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="10.5" Canvas.Left="10" Canvas.Top="410" />
+	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="11" Canvas.Left="10" Canvas.Top="430" />
+	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="11.5" Canvas.Left="10" Canvas.Top="450" />
+	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="12" Canvas.Left="10" Canvas.Top="470" />
+	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="12.5" Canvas.Left="10" Canvas.Top="490" />
+	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="13" Canvas.Left="10" Canvas.Top="510" />
+	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="13.5" Canvas.Left="10" Canvas.Top="530" />
+
+	<!-- Legend -->
+	<TextBlock FontFamily="Sans" Text="Times Moonlight" FontSize="15" Canvas.Left="85" Canvas.Top="550" Foreground="Red" />
+	<TextBlock FontFamily="Sans" Text="Times Pango" FontSize="15" Canvas.Left="400" Canvas.Top="550" Foreground="Red" />
+
+	<!-- Pango master -->
+	<Image Source="times-pango.png" Canvas.Left="300" Canvas.Top="380" />
+
+
+</Canvas>

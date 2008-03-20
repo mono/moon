@@ -657,4 +657,8 @@
         masterFile10="../harness/masters/test-crash-gracefull-prop-resolvingMaster.tif"
 	captureSpecifier="300,15"
    />
+   <Test id="156"
+        inputFile="test-text-font-quality.xaml"
+        masterFile10="../harness/masters/test-text-font-qualityMaster.png"
+   />
 </DRTList>
