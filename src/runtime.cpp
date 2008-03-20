@@ -397,6 +397,9 @@ Surface::Attach (UIElement *element)
 		printf ("Unsupported toplevel\n");
 		return;
 	}
+
+	Canvas *canvas = (Canvas *) element;
+	canvas->ref ();
 	
 	if (toplevel) {
 		toplevel->Invalidate ();
@@ -409,11 +412,12 @@ Surface::Attach (UIElement *element)
 		time_manager->unref ();
 		toplevel->unref ();
 		time_manager = new TimeManager ();
+		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
+		time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
+		time_manager->NeedRedraw ();
+		time_manager->GetSource()->Start ();
 	} else 
-		first = TRUE;
-
-	Canvas *canvas = (Canvas *) element;
-	canvas->ref ();
+		first = true;
 
 	// make sure we have a namescope at the toplevel so that names
 	// can be registered/resolved properly.
@@ -467,8 +471,9 @@ Surface::Attach (UIElement *element)
 		Emit (ResizeEvent);
 	}
 
-	canvas->UpdateBounds ();
-	canvas->Invalidate ();
+	canvas->UpdateTotalRenderVisibility ();
+	canvas->UpdateTotalHitTestVisibility ();
+	canvas->FullInvalidate (true);
 }
 
 void
@@ -673,6 +678,7 @@ Surface::ShowFullScreenMessage ()
 	}
 	
 	full_screen_message = (Canvas*) message;
+	full_screen_message->SetSurface (this);
 	
 	DependencyObject* message_object = full_screen_message->FindName ("message");
 	DependencyObject* url_object = full_screen_message->FindName ("url");
@@ -713,8 +719,9 @@ Surface::ShowFullScreenMessage ()
 	// Center the url block
 	if (url_block != NULL) {
 		double url_width = url_block->GetActualWidth ();
-		url_block->SetValue (Canvas::LeftProperty, (box_width - url_width) / 2);	
+		url_block->SetValue (Canvas::LeftProperty, (box_width - url_width) / 2);
 	}
+
 	// Center the message block
 	if (message_block != NULL) {
 		double message_width = message_block->GetActualWidth ();
@@ -725,9 +732,10 @@ Surface::ShowFullScreenMessage ()
 	transform->SetValue (TranslateTransform::XProperty, (width - box_width) / 2);
 	transform->SetValue (TranslateTransform::YProperty, (height - box_height) / 2);
 	
-	full_screen_message->SetSurface (this);
+	full_screen_message->UpdateTotalRenderVisibility ();
+	full_screen_message->UpdateTotalHitTestVisibility ();
+	full_screen_message->FullInvalidate (true);
 	full_screen_message->OnLoaded ();
-	full_screen_message->Invalidate ();
 }
 
 void

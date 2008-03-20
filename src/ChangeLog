@@ -1,3 +1,9 @@
+2008-03-20  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::ShowFullScreenMessage): make sure we set
+	the surface first so that the changes to the properties cause
+	invalidations.
+
 2008-03-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Added new files.
