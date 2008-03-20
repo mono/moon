@@ -1,5 +1,24 @@
 2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (deobfuscate_font): New helper function used by
+	TextBlock and Glyphs.
+	(TextBlock::DownloaderComplete): Check for obfuscated fonts.
+	(Glyphs::DownloaderComplete): Same.
+
+	* font.cpp (DecodeObfuscatedFontGUID): New function to decode the
+	GUID from a string.
+	(DeobfuscateFontFileWithGUID): Deobfuscate a font file in-place.
+	(TextFont::OpenFontDirectory): Renamed from OpenZipArchiveFont()
+	since we no longer get passed zip files. Instead of extracting
+	fonts from a zip archive, we now index the fonts in the
+	directory (if they haven't already been indexed) and then try to
+	find the best matching font from the indexed fonts.
+	(IndexFontDirectory): New function to index all fonts in a
+	directory (and all subdirs).
+	(TextFont::TextFont): Changed for other API changes.
+
+2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
+
 	* downloader.cpp (Downloader::IsDeobfuscated)
 	(Downloader::SetDeobfuscated, Downloader::SetDeobfuscatedFile):
 	Some new methods for replacing the original downloaded file with

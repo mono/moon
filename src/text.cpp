@@ -1257,17 +1257,81 @@ TextBlock::downloader_complete (EventObject *sender, EventArgs *calldata, gpoint
 	((TextBlock *) closure)->DownloaderComplete ();
 }
 
+static const char *
+deobfuscate_font (Downloader *downloader, const char *path)
+{
+	char *filename, guid[16];
+	const char *str;
+	GString *name;
+	Value *value;
+	Uri *uri;
+	int fd;
+	
+	if (!(value = downloader->GetValue (Downloader::UriProperty)) || !(str = value->AsString ()))
+		return NULL;
+	
+	uri = new Uri ();
+	if (!uri->Parse (str) || !uri->path) {
+		delete uri;
+		return NULL;
+	}
+	
+	if (!(str = strrchr (uri->path, '/')))
+		str = uri->path;
+	else
+		str++;
+	
+	if (!DecodeObfuscatedFontGUID (str, guid)) {
+		delete uri;
+		return NULL;
+	}
+	
+	name = g_string_new (str);
+	g_string_append (name, ".XXXXXX");
+	delete uri;
+	
+	filename = g_build_filename (g_get_tmp_dir (), name->str, NULL);
+	g_string_free (name, true);
+	
+	if ((fd = g_mkstemp (filename)) == -1) {
+		g_free (filename);
+		return NULL;
+	}
+	
+	if (moon_copy_file (path, fd) == -1 || !DeobfuscateFontFileWithGUID (filename, guid, NULL)) {
+		unlink (filename);
+		g_free (filename);
+		return NULL;
+	}
+	
+	downloader->SetDeobfuscatedFile (filename);
+	g_free (filename);
+	
+	return downloader->GetDownloadedFile ();
+}
+
 void
 TextBlock::DownloaderComplete ()
 {
-	char *filename = downloader_get_response_file (downloader, "");
+	const char *filename, *path;
+	struct stat st;
 	
 	/* the download was aborted */
-	if (!filename)
+	if (!(path = downloader->GetUnzippedPath ()))
 		return;
 	
-	font.custom->SetFilename (filename);
-	g_free (filename);
+	if (stat (path, &st) == -1)
+		return;
+	
+	// check for obfuscated fonts
+	if (S_ISREG (st.st_mode) && !downloader->IsDeobfuscated ()) {
+		if ((filename = deobfuscate_font (downloader, path)))
+			path = filename;
+		
+		downloader->SetDeobfuscated (true);
+	}
+	
+	font.custom->SetFilename (path);
 	dirty = true;
 	
 	UpdateBounds (true);
@@ -1950,15 +2014,25 @@ Glyphs::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer 
 void
 Glyphs::DownloaderComplete ()
 {
-	char *filename = downloader_get_response_file (downloader, "");
+	const char *filename, *path;
+	struct stat st;
 	
 	/* the download was aborted */
-	if (!filename)
+	if (!(filename = downloader->GetDownloadedFile ()))
 		return;
+	
+	if (stat (filename, &st) == -1 || !S_ISREG (st.st_mode))
+		return;
+	
+	if (!downloader->IsDeobfuscated ()) {
+		if ((path = deobfuscate_font (downloader, filename)))
+			filename = path;
+		
+		downloader->SetDeobfuscated (true);
+	}
 	
 	desc->SetFilename (filename);
 	desc->SetIndex (index);
-	g_free (filename);
 	dirty = true;
 	
 	UpdateBounds (true);

@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -30,15 +31,12 @@
 
 #include FT_OUTLINE_H
 
+#define FONT_DEBUG 1
 #if FONT_DEBUG
 #define d(x) x
 #else
 #define d(x)
 #endif
-
-
-// ASCII lwsp characters
-#define isSpace(c) (((c) >= 0x09 && (c) <= 0x0D) || (c) == 0x20)
 
 
 static const FT_Matrix invert_y = {
@@ -64,49 +62,44 @@ struct FontStyleInfo {
 	int slant;
 };
 
-struct FontPackFile : public List::Node {
+struct FontFile : public List::Node {
 	GPtrArray *faces;
 	char *path;
 	
-	FontPackFile (const char *path);
-	~FontPackFile ();
+	FontFile (const char *path);
+	~FontFile ();
 };
 
-struct FontPackFileFace {
-	FontPackFile *file;
+struct FontFileFace {
 	FontStyleInfo style;
 	char *family_name;
+	FontFile *file;
 	int index;
 	
-	FontPackFileFace (FontPackFile *file, FT_Face face, int index);
+	FontFileFace (FontFile *file, FT_Face face, int index);
 	
-	~FontPackFileFace ()
+	~FontFileFace ()
 	{
 		g_free (family_name);
 	}
 };
 
-struct FontPack {
+struct FontDir {
 	List *fonts;
 	char *key;
 	char *dir;
 	
-	FontPack (const char *key)
+	FontDir (const char *key)
 	{
 		this->key = g_strdup (key);
 		fonts = new List ();
 		dir = NULL;
 	}
 	
-	~FontPack ()
+	~FontDir ()
 	{
 		delete fonts;
-		
-		if (dir != NULL) {
-			g_rmdir (dir);
-			g_free (dir);
-		}
-		
+		g_free (dir);
 		g_free (key);
 	}
 	
@@ -114,16 +107,16 @@ struct FontPack {
 };
 
 static GHashTable *font_cache = NULL;
-static GHashTable *fontpacks = NULL;
+static GHashTable *fontdirs = NULL;
 static bool initialized = false;
 static FT_Library libft2;
 static double dpi;
 
 
 static void
-fontpack_delete (FontPack *pack)
+delete_fontdir (FontDir *dir)
 {
-	delete pack;
+	delete dir;
 }
 
 void
@@ -141,7 +134,7 @@ font_init (void)
 	
 	font_cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
 	
-	fontpacks = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) fontpack_delete);
+	fontdirs = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) delete_fontdir);
 	
 	pattern = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, "Sans",
 				  FC_SIZE, FcTypeDouble, 10.0, NULL);
@@ -161,7 +154,7 @@ font_shutdown (void)
 		return;
 	
 	g_hash_table_destroy (font_cache);
-	g_hash_table_destroy (fontpacks);
+	g_hash_table_destroy (fontdirs);
 	
 	FT_Done_FreeType (libft2);
 	
@@ -367,7 +360,7 @@ style_name (FontStyleInfo *style, char *namebuf)
 }
 #endif
 
-FontPackFileFace::FontPackFileFace (FontPackFile *file, FT_Face face, int index)
+FontFileFace::FontFileFace (FontFile *file, FT_Face face, int index)
 {
 	d(fprintf (stderr, "\t\t\t* index=%d: family=\"%s\"; style=\"%s\"\n",
 		   index, face->family_name, face->style_name));
@@ -378,43 +371,41 @@ FontPackFileFace::FontPackFileFace (FontPackFile *file, FT_Face face, int index)
 	this->file = file;
 }
 
-FontPackFile::FontPackFile (const char *path)
+FontFile::FontFile (const char *path)
 {
 	this->path = g_strdup (path);
 	faces = NULL;
 }
 
-FontPackFile::~FontPackFile ()
+FontFile::~FontFile ()
 {
 	if (faces != NULL) {
-		FontPackFileFace *face;
+		FontFileFace *face;
 		
 		for (uint i = 0; i < faces->len; i++) {
-			face = (FontPackFileFace *) faces->pdata[i];
+			face = (FontFileFace *) faces->pdata[i];
 			delete face;
 		}
 		
 		g_ptr_array_free (faces, true);
 	}
-	
-	unlink (path);
 }
 
 void
-FontPack::CacheFileInfo (const char *filename, FT_Face face)
+FontDir::CacheFileInfo (const char *filename, FT_Face face)
 {
 	int i = 0, nfaces = face->num_faces;
-	FontPackFileFace *fface;
-	FontPackFile *file;
+	FontFileFace *fface;
+	FontFile *file;
 	
-	file = new FontPackFile (filename);
+	file = new FontFile (filename);
 	file->faces = g_ptr_array_new ();
 	
 	do {
 		if (i > 0 && FT_New_Face (libft2, filename, i, &face) != 0)
 			break;
 		
-		fface = new FontPackFileFace (file, face, i);
+		fface = new FontFileFace (file, face, i);
 		g_ptr_array_add (file->faces, fface);
 		
 		FT_Done_Face (face);
@@ -424,107 +415,181 @@ FontPack::CacheFileInfo (const char *filename, FT_Face face)
 	fonts->Append (file);
 }
 
-static FontPack *
-ExtractFontPack (const char *path)
+bool
+DecodeObfuscatedFontGUID (const char *in, char *key)
 {
-	FontPack *pack = NULL;
-	char filename[256];
-	unz_file_info info;
-	GString *packdir;
-	const char *name;
-	FT_Face face;
-	unzFile zip;
-	size_t n;
-	int fd;
+	const char *inptr = in;
+	int i = 16;
 	
-	if (!(zip = unzOpen (path))) {
-		// guess it's not a zip archive, afterall.
-		return NULL;
-	}
-	
-	if (unzGoToFirstFile (zip) != UNZ_OK) {
-		unzClose (zip);
-		return NULL;
-	}
-	
-	// get the zip file's base name
-	if (!(name = strrchr (path, '/')))
-		name = path;
-	else
-		name++;
-	
-	// create a tmpdir to extract the fonts to
-	packdir = g_string_new (g_get_tmp_dir ());
-	g_string_append_c (packdir, '/');
-	g_string_append (packdir, name);
-	g_string_append (packdir, ".XXXXXX");
-	
-	if (!make_tmpdir (packdir->str)) {
-		g_string_free (packdir, true);
-		unzClose (zip);
-		return NULL;
-	}
-	
-	g_string_append_c (packdir, '/');
-	n = packdir->len;
-	
-	do {
-		if (unzOpenCurrentFile (zip) != UNZ_OK)
-			break;
+	while (i > 0 && *inptr && *inptr != '.') {
+		if (*inptr == '-')
+			inptr++;
 		
-		unzGetCurrentFileInfo (zip, &info, filename, sizeof (filename),
-				       NULL, 0, NULL, 0);
+		i--;
 		
-		d(fprintf (stderr, "\t\t* extracting %s...\n", filename));
-		
-		// use the file's base name, we don't care about recreating the file heirarchy
-		if (!(name = strrchr (filename, '/')))
-			name = filename;
+		if (*inptr >= '0' && *inptr <= '9')
+			key[i] = (*inptr - '0') * 16;
+		else if (*inptr >= 'a' && *inptr <= 'f')
+			key[i] = ((*inptr - 'a') + 10) * 16;
+		else if (*inptr >= 'A' && *inptr <= 'F')
+			key[i] = ((*inptr - 'A') + 10) * 16;
 		else
-			name++;
+			return false;
 		
-		g_string_append (packdir, name);
+		inptr++;
 		
-		// we first try using the file's original name...
-		fd = open (packdir->str, O_WRONLY | O_CREAT | O_EXCL, 0600);
-		if (fd == -1 && errno == EEXIST) {
-			// there must be several files in the archive with the same name?
-			g_string_append (packdir, ".XXXXXX");
-			fd = g_mkstemp (packdir->str);
+		if (*inptr >= '0' && *inptr <= '9')
+			key[i] += (*inptr - '0');
+		else if (*inptr >= 'a' && *inptr <= 'f')
+			key[i] += ((*inptr - 'a') + 10);
+		else if (*inptr >= 'A' && *inptr <= 'F')
+			key[i] += ((*inptr - 'A') + 10);
+		else
+			return false;
+		
+		inptr++;
+	}
+	
+	if (i > 0)
+		return false;
+	
+	return true;
+}
+
+bool
+DeobfuscateFontFileWithGUID (const char *filename, const char *guid, FT_Face *pFace)
+{
+	char deobfuscated[32], buf[32];
+	FT_Face face = NULL;
+	size_t nread;
+	FILE *fp;
+	int i;
+	
+	if (!(fp = fopen (filename, "r+")))
+		return false;
+	
+	// read the first 32 bytes of the obfuscated font file
+	if ((nread = fread (buf, 1, 32, fp)) < 32)
+		goto exception;
+	
+	// XOR the guid with the first 32 bytes of the obfuscated font file
+	for (i = 0; i < 32; i++)
+		deobfuscated[i] = buf[i] ^ guid[i % 16];
+	
+	if (fseek (fp, 0, SEEK_SET) != 0)
+		goto exception;
+	
+	if ((nread = fwrite (deobfuscated, 1, 32, fp)) != 32)
+		goto exception;
+	
+	fflush (fp);
+	
+	if (FT_New_Face (libft2, filename, 0, &face) != 0)
+		goto undo;
+	
+	if (!pFace)
+		FT_Done_Face (face);
+	else
+		*pFace = face;
+	
+	fclose (fp);
+	
+	return true;
+	
+undo:
+	
+	if (fseek (fp, 0, SEEK_SET) == 0) {
+		fwrite (buf, 1, 32, fp);
+		fflush (fp);
+	}
+	
+exception:
+	
+	fclose (fp);
+	
+	return false;
+}
+
+static bool
+IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
+{
+	FontDir *fontdir = *out;
+	struct dirent *dent;
+	struct stat st;
+	FT_Face face;
+	size_t len;
+	DIR *dir;
+	
+	if (!(dir = opendir (path->str)))
+		return fontdir != NULL;
+	
+	g_string_append_c (path, G_DIR_SEPARATOR);
+	len = path->len;
+	
+	while ((dent = readdir (dir))) {
+		if (!strcmp (dent->d_name, "..") ||
+		    !strcmp (dent->d_name, "."))
+			continue;
+		
+		g_string_append (path, dent->d_name);
+		
+		if (stat (path->str, &st) == -1)
+			goto next;
+		
+		if (S_ISDIR (st.st_mode)) {
+			IndexFontSubdirectory (toplevel, path, &fontdir);
+			goto next;
 		}
 		
-		if (fd != -1) {
-			if (ExtractFile (zip, fd) && FT_New_Face (libft2, packdir->str, 0, &face) == 0) {
-				// this is a valid font file...
-				if (pack == NULL)
-					pack = new FontPack (path);
-				
-				// cache font info
-				pack->CacheFileInfo (packdir->str, face);
-			} else {
-				// failed to extract or not a font file, delete it
-				unlink (packdir->str);
-			}
+		if (FT_New_Face (libft2, path->str, 0, &face) != 0) {
+			// not a valid font file... is it maybe an obfuscated font?
+			char guid[16];
+			
+			if (!DecodeObfuscatedFontGUID (dent->d_name, guid))
+				goto next;
+			
+			if (!DeobfuscateFontFileWithGUID (path->str, guid, &face))
+				goto next;
 		}
 		
-		g_string_truncate (packdir, n);
-		unzCloseCurrentFile (zip);
-	} while (unzGoToNextFile (zip) == UNZ_OK);
+		if (fontdir == NULL)
+			fontdir = new FontDir (toplevel);
+		
+		// cache font info
+		fontdir->CacheFileInfo (path->str, face);
+		
+	next:
+		g_string_truncate (path, len);
+	}
 	
-	unzClose (zip);
+	closedir (dir);
 	
-	if (pack == NULL) {
-		g_rmdir (packdir->str);
-		g_string_free (packdir, true);
+	*out = fontdir;
+	
+	return fontdir != NULL;
+}
+
+static FontDir *
+IndexFontDirectory (const char *dirname)
+{
+	FontDir *fontdir = NULL;
+	GString *path;
+	size_t len;
+	
+	path = g_string_new (dirname);
+	len = path->len;
+	
+	if (!IndexFontSubdirectory (dirname, path, &fontdir)) {
+		g_string_free (path, true);
 		return NULL;
 	}
 	
-	g_string_truncate (packdir, n);
-	pack->dir = packdir->str;
+	g_string_truncate (path, len);
+	fontdir->dir = path->str;
 	
-	g_string_free (packdir, false);
+	g_string_free (path, false);
 	
-	return pack;
+	return fontdir;
 }
 
 
@@ -646,7 +711,7 @@ parse_font_family (const char *in)
 
 
 struct FontFaceSimilarity {
-	FontPackFileFace *face;
+	FontFileFace *face;
 	int weight;
 	int width;
 	int slant;
@@ -654,18 +719,18 @@ struct FontFaceSimilarity {
 
 
 bool
-TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path, const char **families)
+TextFont::OpenFontDirectory (FcPattern *pattern, const char *path, const char **families)
 {
 #if FONT_DEBUG
 	char stylebuf1[256], stylebuf2[256];
 #endif
 	FontFaceSimilarity similar;
-	FontPackFileFace *fface;
 	FontFamilyInfo *family;
 	FontStyleInfo style;
-	FontPackFile *file;
+	FontFileFace *fface;
 	GPtrArray *array;
-	FontPack *pack;
+	FontFile *file;
+	FontDir *dir;
 	uint i, j;
 	
 	if (FcPatternGetInteger (pattern, FC_WEIGHT, 0, &style.weight) != FcResultMatch)
@@ -677,12 +742,12 @@ TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path, const char *
 	if (FcPatternGetInteger (pattern, FC_SLANT, 0, &style.slant) != FcResultMatch)
 		return false;
 	
-	if (!(pack = (FontPack *) g_hash_table_lookup (fontpacks, path))) {
-		d(fprintf (stderr, "\t* opening zip archive...\n"));
-		if (!(pack = ExtractFontPack (path)))
+	if (!(dir = (FontDir *) g_hash_table_lookup (fontdirs, path))) {
+		d(fprintf (stderr, "\t* indexing font directory...\n"));
+		if (!(dir = IndexFontDirectory (path)))
 			return false;
 		
-		g_hash_table_insert (fontpacks, pack->key, pack);
+		g_hash_table_insert (fontdirs, dir->key, dir);
 	} else {
 		d(fprintf (stderr, "\t* reusing an extracted zip archive...\n"));
 	}
@@ -707,10 +772,10 @@ TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path, const char *
 	similar.slant = INT_MAX;
 	similar.face = NULL;
 	
-	file = (FontPackFile *) pack->fonts->First ();
+	file = (FontFile *) dir->fonts->First ();
 	while (file != NULL) {
 		for (i = 0; i < file->faces->len; i++) {
-			fface = (FontPackFileFace *) file->faces->pdata[i];
+			fface = (FontFileFace *) file->faces->pdata[i];
 			if (!fface->family_name)
 				continue;
 			
@@ -755,7 +820,7 @@ TextFont::OpenZipArchiveFont (FcPattern *pattern, const char *path, const char *
 			}
 		}
 		
-		file = (FontPackFile *) file->next;
+		file = (FontFile *) file->next;
 	}
 	
 	// we were unable to find an exact match...
@@ -785,12 +850,12 @@ found:
 
 TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *debug_name)
 {
-	FcPattern *matched, *fallback = NULL;
+	FcPattern *matched = NULL, *fallback = NULL;
 	FT_Long position, thickness;
 	FcChar8 *filename = NULL;
+	bool try_nofile = false;
 	char **families = NULL;
 	FcResult result;
-	bool full_path;
 	FT_Error err;
 	double size;
 	int id, i;
@@ -800,25 +865,38 @@ TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *deb
 	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
 	FcPatternGetDouble (pattern, FC_SCALE, 0, &scale);
 	
-	if (FcPatternGetString (pattern, FC_FILE, 0, &filename) != FcResultMatch || filename == NULL) {
-		if (!(matched = FcFontMatch (NULL, pattern, &result))) {
-			FcPatternReference (pattern);
-			matched = pattern;
-		}
-		
-		full_path = false;
-	} else {
-		FcPatternReference (pattern);
-		matched = pattern;
-		full_path = true;
-	}
-	
 	// FIXME: would be nice to simply get this from the original
 	// pattern... then we'd have fewer args to pass in.
 	if (family_name) {
 		families = g_strsplit (family_name, ",", -1);
 		for (i = 0; families[i]; i++)
 			families[i] = g_strstrip (families[i]);
+	}
+	
+	if (FcPatternGetString (pattern, FC_FILE, 0, &filename) == FcResultMatch) {
+		struct stat st;
+		int rv;
+		
+		try_nofile = true;
+		
+		if ((rv = stat ((const char *) filename, &st)) == -1 || S_ISDIR (st.st_mode)) {
+			if (rv != -1 && OpenFontDirectory (pattern, (const char *) filename, (const char **) families)) {
+				// we found the font in the directory...
+				goto loaded;
+			}
+			
+			if (family_name)
+				goto try_nofile;
+		}
+	} else {
+		// original pattern does not reference a file or directory path,
+		// need to query FontConfig to find us a match...
+		matched = FcFontMatch (NULL, pattern, &result);
+	}
+	
+	if (matched == NULL) {
+		FcPatternReference (pattern);
+		matched = pattern;
 	}
 	
 	do {
@@ -855,35 +933,28 @@ TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *deb
 			d(fprintf (stderr, "failed :(\n"));
 		}
 		
-		// full_path indicates that an absolute path was given...
-		if (full_path) {
-			// check if it is a zipped font collection.
-			if (err == FT_Err_Unknown_File_Format &&
-			    OpenZipArchiveFont (pattern, (const char *) filename, (const char **) families)) {
-				d(fprintf (stderr, "\t* success!\n"));
-				break;
-			}
-			
-			full_path = false;
-			
-			if (family_name) {
-				// We couldn't find a matching font in the zip archive/specified font file, so
-				// let's try removing the filename from the pattern and see if that gets us
-				// what we are looking for.
-				d(fprintf (stderr, "\t* falling back to specified family, '%s'...\n", family_name));
-				fallback = FcPatternDuplicate (pattern);
-				FcPatternDel (fallback, FC_FILE);
-				FcPatternDestroy (matched);
-				
-				matched = FcFontMatch (NULL, fallback, &result);
-				FcPatternDestroy (fallback);
-				fallback = NULL;
-				filename = NULL;
-				continue;
-			}
-		}
-		
 	fail:
+		
+		if (try_nofile && family_name) {
+		try_nofile:
+			// We couldn't find a matching font in the font directory, so let's try
+			// removing the filename from the pattern and see if that gets us what
+			// we are looking for.
+			d(fprintf (stderr, "\t* falling back to specified family, '%s'...\n", family_name));
+			fallback = FcPatternDuplicate (pattern);
+			FcPatternDel (fallback, FC_FILE);
+			
+			if (matched != NULL)
+				FcPatternDestroy (matched);
+			
+			matched = FcFontMatch (NULL, fallback, &result);
+			FcPatternDestroy (fallback);
+			fallback = NULL;
+			filename = NULL;
+			
+			try_nofile = false;
+			continue;
+		}
 		
 		if (fallback != NULL) {
 			face = NULL;
@@ -908,10 +979,12 @@ TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *deb
 		face = NULL;
 	} while (true);
 	
+	FcPatternDestroy (matched);
+	
+loaded:
+	
 	if (families)
 		g_strfreev (families);
-	
-	FcPatternDestroy (matched);
 	
 	if (face != NULL) {
 		FT_Set_Pixel_Sizes (face, 0, (int) size);

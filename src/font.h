@@ -86,6 +86,9 @@ enum FontMask {
 G_BEGIN_DECLS
 void font_init (void);
 void font_shutdown (void);
+
+bool DecodeObfuscatedFontGUID (const char *in, char *key);
+bool DeobfuscateFontFileWithGUID (const char *filename, const char *guid, FT_Face *pFace);
 G_END_DECLS
 
 struct GlyphBitmap;
@@ -125,7 +128,7 @@ class TextFont {
 	
 	TextFont (FcPattern *pattern, const char *family_name, const char *debug_name);
 	
-	bool OpenZipArchiveFont (FcPattern *pattern, const char *path, const char **families);
+	bool OpenFontDirectory (FcPattern *pattern, const char *path, const char **families);
 	
 	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y);
