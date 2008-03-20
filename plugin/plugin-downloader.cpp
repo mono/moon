@@ -73,16 +73,15 @@ p_downloader_mmsh_notifier (BrowserMmshResponse *response, gpointer context, cha
 static void
 p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
 {
-	char *fname;
 	StreamNotify *notify = (StreamNotify*) context;
 	Downloader *dl = (Downloader *) notify->pdata;
-
-	if (downloader_shutdown) {
+	const char *filename;
+	
+	if (downloader_shutdown)
 		return;
-	}
-
-	fname = dl->GetResponseFile (NULL);
-        dl->NotifyFinished (fname);
+	
+	filename = dl->GetDownloadedFile ();
+        dl->NotifyFinished (filename);
 
 }
 

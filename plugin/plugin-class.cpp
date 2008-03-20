@@ -1951,9 +1951,9 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 
 		DependencyObject* dep = NULL;
 
-		char *fname = down->GetResponseFile (STR_FROM_VARIANT (args [1]));
+		char *fname = down->GetDownloadedFilePart (STR_FROM_VARIANT (args[1]));
 		if (fname != NULL) {
-			XamlLoader* loader = PluginXamlLoader::FromFilename (fname, plugin, plugin->surface);
+			XamlLoader *loader = PluginXamlLoader::FromFilename (fname, plugin, plugin->surface);
 			dep = xaml_create_from_file (loader, fname, false, &element_type);
 			delete loader;
 
