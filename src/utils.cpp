@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -167,3 +168,55 @@ make_tmpdir (char *tmpdir)
 	
 	return NULL;
 }
+
+
+static int
+moon_rmdir_real (GString *path)
+{
+	struct dirent *dent;
+	struct stat st;
+	size_t len;
+	DIR *dir;
+	
+	if (!(dir = opendir (path->str)))
+		return -1;
+	
+	g_string_append_c (path, G_DIR_SEPARATOR);
+	len = path->len;
+	
+	while ((dent = readdir (dir))) {
+		if (!strcmp (dent->d_name, ".") || !strcmp (dent->d_name, ".."))
+			continue;
+		
+		g_string_truncate (path, len);
+		g_string_append (path, dent->d_name);
+		
+		if (lstat (path->str, &st) == -1)
+			continue;
+		
+		if (S_ISDIR (st.st_mode))
+			moon_rmdir_real (path);
+		else
+			unlink (path->str);
+	}
+	
+	closedir (dir);
+	
+	g_string_truncate (path, len - 1);
+	
+	return rmdir (path->str);
+}
+
+int
+moon_rmdir (const char *dir)
+{
+	GString *path;
+	int rv;
+	
+	path = g_string_new (dir);
+	rv = moon_rmdir_real (path);
+	g_string_free (path, true);
+	
+	return rv;
+}
+

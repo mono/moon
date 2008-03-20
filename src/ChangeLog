@@ -1,3 +1,24 @@
+2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (Downloader::Downloader): Initialize the unzipdir
+	and unzipped state variables. Get rid of part_hash, no longer
+	needed.
+	(Downloader::CleanupUnzipDir): New method to cleanup the files
+	extracted from any zip files we downloaded.
+	(Downloader): Call CleanupUnzipDir ().
+	(Downloader::GetDownloadedFile): New method that gets the original
+	untouched downloaded file path.
+	(Downloader::DownloadedFileIsZipped): New method to check to see
+	if the downloaded file is a zip archive.
+	(Downloader::GetDownloadedFilePart): A new method that replaces
+	the old GetResponseFile() API, behaves the same as the old API.
+	(Downloader::GetUnzippedPath): New method to get the unzip
+	directory path (and unzip the downloaded file if it hasn't already
+	been unzipped).
+	(Downloader::Open): Cleanup any extracted zip files.
+
+	* utils.cpp (moon_rmdir): New convenience function.
+
 2008-03-20  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Surface::ShowFullScreenMessage): make sure we set

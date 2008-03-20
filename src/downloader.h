@@ -4,6 +4,7 @@
  * Author:
  *   Chris Toshok (toshok@novell.com)
  *   Miguel de Icaza (miguel@novell.com).
+ *   Jeffrey Stedfast (fejj@novell.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -33,7 +34,37 @@ typedef void     (*downloader_send_func) (gpointer state);
 typedef void     (*downloader_abort_func) (gpointer state);
 
 class Downloader : public DependencyObject {
+	static downloader_create_state_func create_state;
+	static downloader_destroy_state_func destroy_state;
+	static downloader_open_func open_func;
+	static downloader_send_func send_func;
+	static downloader_abort_func abort_func;
+	
+	// Set by the consumer
+	downloader_notify_size_func notify_size;
+	downloader_write_func write;
+	gpointer consumer_closure;
+	
+	// Set by the supplier.
+	gpointer downloader_state;
+	
+	gpointer context;
+	
+	int64_t file_size;
+	int64_t total;
+	
+	char *filename;
+	char *unzipdir;
+	
+	char *failed_msg;
+	bool unzipped;
+	bool started;
+	bool aborted;
+	
+	void CleanupUnzipDir ();
+	
  protected:
+	
 	virtual ~Downloader ();
 
  public:
@@ -50,9 +81,9 @@ class Downloader : public DependencyObject {
 	static int DownloadFailedEvent;
 	
 	Downloader ();
-
+	
 	virtual Type::Kind GetObjectType () { return Type::DOWNLOADER; };	
-
+	
 	void Abort ();
 	void *GetResponseText (const char *Partname, uint64_t *size);
 	void Open (const char *verb, const char *uri);
@@ -61,19 +92,23 @@ class Downloader : public DependencyObject {
 	// the following is stuff not exposed by C#/js, but is useful
 	// when writing unmanaged code for downloader implementations
 	// or data sinks.
-
-	char *GetResponseFile (const char *PartName);
+	
 	void Write (void *buf, int32_t offset, int32_t n);
 	void NotifyFinished (const char *fname);
 	void NotifyFailed (const char *msg);
 	void NotifySize (int64_t size);
-
+	
+	char *GetDownloadedFilePart (const char *PartName);
+	const char *GetDownloadedFile ();
+	bool DownloadedFileIsZipped ();
+	const char *GetUnzippedPath ();
+	
 	// This is called by the consumer of the downloaded data (the
 	// Image class for instance)
 	void SetWriteFunc (downloader_write_func write,
 			   downloader_notify_size_func notify_size,
 			   gpointer closure);
-
+	
 	// This is called by the supplier of the downloaded data (the
 	// managed framework, the browser plugin, the demo test)
 	static void SetFunctions (downloader_create_state_func create_state,
@@ -82,45 +117,16 @@ class Downloader : public DependencyObject {
 				  downloader_send_func send,
 				  downloader_abort_func abort,
 				  bool only_if_not_set);
-
+	
 	bool Started ();
 	bool Completed ();
-
+	
 	void     SetContext (gpointer context) { this->context = context;}
 	gpointer GetContext () { return context; }
 	gpointer GetDownloaderState () { return downloader_state; }
-
- private:
-	GHashTable *part_hash;
-
-	int64_t file_size;
-	int64_t total;
-
-	char *filename;
-	char *failed_msg;
-	bool started;
-	bool aborted;
-	
-	// Set by the consumer
-	downloader_write_func       write;
-	downloader_notify_size_func notify_size;
-	gpointer consumer_closure;
-
-	// Set by the supplier.
-	gpointer downloader_state;
-
-	static downloader_create_state_func create_state;
-	static downloader_destroy_state_func destroy_state;
-	static downloader_open_func open_func;
-	static downloader_send_func send_func;
-	static downloader_abort_func abort_func;
-
-	char *ll_downloader_get_response_file (const char *PartName);
-	
-	gpointer context;
 };
 
-Downloader* downloader_new (void);
+Downloader *downloader_new (void);
 
 void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_destroy_state_func destroy_state,

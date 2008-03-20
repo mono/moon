@@ -69,37 +69,41 @@ int Downloader::DownloadFailedEvent = -1;
 Downloader::Downloader ()
 {
 	downloader_state = Downloader::create_state (this);
+	consumer_closure = NULL;
+	context = NULL;
 	notify_size = NULL;
 	filename = NULL;
+	unzipdir = NULL;
 	failed_msg = NULL;
+	unzipped = false;
 	started = false;
 	aborted = false;
 	this->write = NULL;
 	file_size = -2;
 	total = 0;
-	part_hash = NULL;
-	context = NULL;
-	consumer_closure = NULL;
 }
 
-static void 
-delete_file (gpointer key, gpointer value, gpointer user_data)
+void
+Downloader::CleanupUnzipDir ()
 {
-	unlink ((char *) value);
+	if (!unzipdir)
+		return;
+	
+	moon_rmdir (unzipdir);
+	g_free (unzipdir);
+	unzipped = false;
+	unzipdir = NULL;
 }
 
 Downloader::~Downloader ()
 {
 	Downloader::destroy_state (downloader_state);
-
+	
 	g_free (filename);
 	g_free (failed_msg);
-
+	
 	// Delete temporary files.
-	if (part_hash != NULL){
-		g_hash_table_foreach (part_hash, delete_file, NULL);
-		g_hash_table_destroy (part_hash);
-	}
+	CleanupUnzipDir ();
 }
 
 void
@@ -114,125 +118,243 @@ Downloader::Abort ()
 void *
 Downloader::GetResponseText (const char *PartName, uint64_t *size)
 {
-	FILE *f = NULL;
-	struct stat buf;
-	long n = 0;
-	void *data = NULL;
-
-	char *fname = GetResponseFile (PartName);
-	if (fname == NULL)
+	struct stat st;
+	void *data;
+	char *path;
+	FILE *fp;
+	size_t n;
+	
+	if (!(path = GetDownloadedFilePart (PartName)))
 		return NULL;
-
-	if (stat (fname, &buf) == -1)
-		goto leave_error;
+	
+	if (stat (path, &st) == -1) {
+		g_free (path);
+		return NULL;
+	}
 	
 	// 
 	// Must use g_malloc here, because the C# code will call
 	// g_free on that
 	//
-	data = g_try_malloc (buf.st_size);
-	if (data == NULL)
-		goto leave_error;
-
-	f = fopen (fname, "r");
-	if (f == NULL)
-		goto leave_error;
-
-	n = fread (data, 1, buf.st_size, f);
+	if (!(data = g_try_malloc (st.st_size))) {
+		g_free (path);
+		return NULL;
+	}
+	
+	if (!(fp = fopen (path, "r"))) {
+		g_free (path);
+		return NULL;
+	}
+	
+	g_free (path);
+	
+	n = fread (data, 1, st.st_size, fp);
 	*size = n;
 	
-	fclose (f);
+	fclose (fp);
+	
 	return data;
-
- leave_error:
-	g_free (fname);
-	if (data != NULL)
-		g_free (data);
-	if (f != NULL)
-		fclose (f);
-	return NULL;
 }
 
-char *
-Downloader::ll_downloader_get_response_file (const char *PartName)
+const char *
+Downloader::GetDownloadedFile ()
 {
-	char *base, *name, *tmpname = NULL;
+	return filename;
+}
+
+bool
+Downloader::DownloadedFileIsZipped ()
+{
 	unzFile zipfile;
-	int fd;
 	
-	if (filename == NULL)
-		return NULL;
+	if (!filename)
+		return false;
 	
-	// Null or empty, get the original file.
-	if (PartName == NULL || *PartName == 0)
-		return g_strdup (filename);
-	
-	// open the zip archive...
 	if (!(zipfile = unzOpen (filename)))
-		return NULL;
+		return false;
 	
-	// locate the file we want to extract...
-	if (unzLocateFile (zipfile, PartName, 0) != UNZ_OK) {
-		unzClose (zipfile);
-		return NULL;
-	}
-	
-	// open the requested part within the zip file
-	if (unzOpenCurrentFile (zipfile) != UNZ_OK) {
-		unzClose (zipfile);
-		return NULL;
-	}
-	
-	// create a tmp file...
-	base = g_path_get_basename (PartName); // PartName may have directory components, strip off those
-	name = g_strdup_printf ("%s.XXXXXX", base);
-	tmpname = g_build_filename (g_get_tmp_dir (), name, NULL);
-	g_free (name);
-	g_free (base);
-	
-	if ((fd = g_mkstemp (tmpname)) == -1) {
-		g_free (tmpname);
-		tmpname = NULL;
-		goto done;
-	}
-	
-	// extract the file from the zip archive... (closes the fd on success and fail)
-	if (!ExtractFile (zipfile, fd)) {
-		unlink (tmpname);
-		g_free (tmpname);
-		tmpname = NULL;
-		goto done;
-	}
-	
-done:
-	
-	unzCloseCurrentFile (zipfile);
 	unzClose (zipfile);
 	
-	return tmpname;
+	return true;
+}
+
+static char *
+create_unzipdir (const char *filename)
+{
+	const char *name;
+	char *path, *buf;
+	
+	// create an unzip directory in /tmp
+	if (!(name = strrchr (filename, '/')))
+		name = filename;
+	else
+		name++;
+	
+	buf = g_strdup_printf ("%s.XXXXXX", name);
+	path = g_build_filename (g_get_tmp_dir (), buf, NULL);
+	g_free (buf);
+	
+	if (!make_tmpdir (path)) {
+		g_free (path);
+		return NULL;
+	}
+	
+	return path;
 }
 
 char *
-Downloader::GetResponseFile (const char *PartName)
+Downloader::GetDownloadedFilePart (const char *PartName)
 {
-	if (part_hash != NULL){
-		char *fname = (char*) g_hash_table_lookup (part_hash, PartName);
-		if (fname != NULL)
-			return g_strdup (fname);
+	char *dirname, *path;
+	unzFile zipfile;
+	struct stat st;
+	int rv, fd;
+	
+	if (!filename)
+		return NULL;
+	
+	if (!PartName || !PartName[0])
+		return g_strdup (filename);
+	
+	if (!DownloadedFileIsZipped ())
+		return NULL;
+	
+	if (!unzipdir && !(unzipdir = create_unzipdir (filename)))
+		return NULL;
+	
+	path = g_build_filename (unzipdir, PartName, NULL);
+	if ((rv = stat (path, &st)) == -1 && errno == ENOENT) {
+		if (strchr (PartName, '/') != NULL) {
+			// create the directory path
+			dirname = g_path_get_dirname (path);
+			rv = g_mkdir_with_parents (dirname, 0700);
+			g_free (dirname);
+			
+			if (rv == -1 && errno != EEXIST) {
+				g_free (path);
+				return NULL;
+			}
+		}
+		
+		// open the zip archive...
+		if (!(zipfile = unzOpen (filename))) {
+			g_free (path);
+			return NULL;
+		}
+		
+		// locate the file we want to extract...
+		if (unzLocateFile (zipfile, PartName, 0) != UNZ_OK) {
+			unzClose (zipfile);
+			g_free (path);
+			return NULL;
+		}
+		
+		// open the requested part within the zip file
+		if (unzOpenCurrentFile (zipfile) != UNZ_OK) {
+			unzClose (zipfile);
+			g_free (path);
+			return NULL;
+		}
+		
+		// open the output file
+		if ((fd = open (path, O_CREAT | O_WRONLY, 0644)) == -1) {
+			unzCloseCurrentFile (zipfile);
+			unzClose (zipfile);
+			g_free (path);
+			return NULL;
+		}
+		
+		// extract the file from the zip archive... (closes the fd on success and fail)
+		if (!ExtractFile (zipfile, fd)) {
+			unzCloseCurrentFile (zipfile);
+			unzClose (zipfile);
+			g_free (path);
+			return NULL;
+		}
+		
+		unzCloseCurrentFile (zipfile);
+		unzClose (zipfile);
+	} else if (rv == -1) {
+		// irrecoverable error
+		g_free (path);
+		return NULL;
 	}
+	
+	return path;
+}
 
-	char *part = ll_downloader_get_response_file (PartName);
-	if (part != NULL && PartName != NULL && *PartName != 0){
-		if (part_hash == NULL)
-			part_hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
-		g_hash_table_insert (part_hash, g_strdup (PartName), g_strdup (part));
-	}
-	return part;
+const char *
+Downloader::GetUnzippedPath ()
+{
+	char filename[256];
+	unz_file_info info;
+	const char *name;
+	GString *path;
+	unzFile zip;
+	size_t len;
+	int fd;
+	
+	if (!this->filename)
+		return NULL;
+	
+	if (!DownloadedFileIsZipped ())
+		return this->filename;
+	
+	if (!unzipdir && !(unzipdir = create_unzipdir (this->filename)))
+		return NULL;
+	
+	if (unzipped)
+		return unzipdir;
+	
+	// open the zip archive...
+	if (!(zip = unzOpen (this->filename)))
+		return NULL;
+	
+	path = g_string_new (unzipdir);
+	g_string_append_c (path, G_DIR_SEPARATOR);
+	len = path->len;
+	
+	unzipped = true;
+	
+	// extract all the parts
+	do {
+		if (unzOpenCurrentFile (zip) != UNZ_OK)
+			break;
+		
+		unzGetCurrentFileInfo (zip, &info, filename, sizeof (filename),
+				       NULL, 0, NULL, 0);
+		
+		if ((name = strrchr (filename, '/'))) {
+			// make sure the full directory path exists, if not create it
+			g_string_append_len (path, filename, name - filename);
+			g_mkdir_with_parents (path->str, 0700);
+			g_string_append (path, name);
+		} else {
+			g_string_append (path, filename);
+		}
+		
+		if ((fd = open (path->str, O_WRONLY | O_CREAT | O_EXCL, 0600)) != -1) {
+			if (!ExtractFile (zip, fd))
+				unzipped = false;
+		} else if (errno != EEXIST) {
+			unzipped = false;
+		}
+		
+		g_string_truncate (path, len);
+		unzCloseCurrentFile (zip);
+	} while (unzGoToNextFile (zip) == UNZ_OK);
+	
+	g_string_free (path, true);
+	unzClose (zip);
+	
+	return unzipdir;
 }
 
 void
 Downloader::Open (const char *verb, const char *uri)
 {
+	CleanupUnzipDir ();
+	
 	started = false;
 	g_free (failed_msg);
 	g_free (filename);
@@ -402,7 +524,7 @@ downloader_abort (Downloader *dl)
 char *
 downloader_get_response_file (Downloader *dl, const char *PartName)
 {
-	return dl->GetResponseFile (PartName);
+	return dl->GetDownloadedFilePart (PartName);
 }
 
 

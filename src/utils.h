@@ -24,6 +24,8 @@ bool ExtractFile (unzFile zip, int fd);
 
 char *make_tmpdir (char *tmpdir);
 
+int moon_rmdir (const char *dir);
+
 G_END_DECLS
 
 #endif /* __MOON_GARRAY_EXT_H__ */
