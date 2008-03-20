@@ -1,3 +1,10 @@
+2008-03-20  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/HtmlTest.cs: Make sure that the substitutions get
+	made if there are more than one on a line.
+	- Adding pieces of the expected error stuff since it's all tangled
+	with the above code.
+
 2008-03-19  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/ExternalProcess:  Add exit codes

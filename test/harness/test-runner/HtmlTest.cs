@@ -42,6 +42,8 @@ namespace MoonlightTests {
 		private int? capture_width;
 		private int? capture_height;
 
+		private string expected_error;
+
 		public HtmlTest (string id, string input_file, string master_file, XmlNode node) : base (id, input_file, master_file)
 		{
 			if (node.Attributes ["captureSpecifier"] != null)
@@ -64,6 +66,9 @@ namespace MoonlightTests {
 
 			if (node.Attributes ["captureHeight"] != null)
 				CaptureHeight = Int32.Parse (node.Attributes ["captureHeight"].Value);
+
+			if (node.Attributes ["expectedError"] != null)
+				ExpectedError = node.Attributes ["expectedError"].Value;
 
 		}
 
@@ -117,6 +122,17 @@ namespace MoonlightTests {
 			}
 		}
 
+		private string ExpectedError {
+			get { return expected_error; }
+			set {
+				
+				switch (value) {
+					// Add sanity checking here
+				}
+				expected_error = value;
+			}
+		}
+
 		private void SetCaptureSpecifier (string specifier)
 		{
 			string [] parts = specifier.Split (",".ToCharArray ());
@@ -161,36 +177,60 @@ namespace MoonlightTests {
 				if (m.Success)
 					background = m.Groups [1].Value;
 
-				if (line.Contains ("document.write('Browser not supported');") || line.Contains ("$TEST_SILVERLIGHT_EMBED"))
+				if (line.Contains ("document.write('Browser not supported');") || line.Contains ("$TEST_SILVERLIGHT_EMBED")) {
 					built.AppendLine (GenerateSilverlightEmbedHtml (xaml_source, control_id, control_width, control_height, background));
-				else if (line.Contains ("$RUN_TEST_BODY")) {
+					continue;
+				}
+
+				if (line.Contains ("$RUN_TEST_BODY")) {
 					built.AppendLine (line.Replace ("$RUN_TEST_BODY", GenerateRunTestBody ()));
 					test_body_generated = true;
-				} else if (line.Contains ("http://jscratch/test/jtr.js"))
+					continue;
+				}
+
+				if (line.Contains ("http://jscratch/test/jtr.js")) {
 					built.AppendLine (line.Replace ("http://jscratch/test/jtr.js", "jtr.js"));
-				else if (line.Contains ("aghostDrt.js"))
+					continue;
+				}
+
+				if (line.Contains ("aghostDrt.js")) {
 					built.AppendLine (line.Replace ("aghostDrt.js", "aghostDRT.js"));
-				else if (line.Contains ("$MOONLIGHT_CONTROL_WIDTH"))
+					continue;
+				}
+
+				if (line.Contains ("$MOONLIGHT_CONTROL_WIDTH")) {
 					built.AppendLine (line.Replace ("$MOONLIGHT_CONTROL_WIDTH", ResultWidth.ToString ()));
-				else if (line.Contains ("$MOONLIGHT_CONTROL_HEIGHT"))
+					continue;
+				}
+
+				if (line.Contains ("$MOONLIGHT_CONTROL_HEIGHT")) {
 					built.AppendLine (line.Replace ("$MOONLIGHT_CONTROL_HEIGHT", ResultHeight.ToString ()));
-				else if (line.Contains ("<embed id=\"_TestPlugin\"")) {
+					continue;
+				}
+
+				if (line.Contains ("<embed id=\"_TestPlugin\"")) {
 					built.AppendLine (line);
 					shocker_embed_script_found = true;
-				} else if (line.Contains ("</body>") || line.Contains ("</BODY>")) {
+					continue;
+				}
+
+				if (line.Contains ("</body>") || line.Contains ("</BODY>")) {
 					if (!shocker_embed_script_found)
 						built.AppendLine (GenerateShockerEmbedScript (test_body_generated));
 					built.AppendLine (line);
-				} else if (line.Contains ("window.moveTo") || line.Contains ("window.resizeTo"))
 					continue;
-				else
-					built.AppendLine (line);
+				}
+
+				if (line.Contains ("window.moveTo") || line.Contains ("window.resizeTo") || line.Contains ("window.resizeBy"))
+					continue;
+
+				built.AppendLine (line);
 			}
 
 			reader.Close ();
 			
 			string built_str = built.ToString ();
-			//	if (built_str != File.ReadAllText (InputFile))
+			if (built_str != File.ReadAllText (InputFile))
 				File.WriteAllText (InputFile, built_str);
 		}
 
@@ -219,6 +259,9 @@ namespace MoonlightTests {
 			StringBuilder res = new StringBuilder ();
 
 			res.AppendLine ("var moonlight_control = document.getElementById (\"MoonlightControl\");");
+
+			if (expected_error != null)
+				res.AppendFormat ("expected_error = new {0} ();\n", expected_error);
 
 			if (capture_interval != null || max_images_to_capture != null) {
 				res.AppendFormat ("\t\tTakeMultipleSnapshotsAndShutdown (moonlight_control, {0}, {1}, {2}, {3}, {4});",
