@@ -7,6 +7,10 @@
 
 2008-03-17  Larry Ewing  <lewing@novell.com>
 
+	* plugin-class.cpp: more rough argument sanity checks.
+
+2008-03-17  Larry Ewing  <lewing@novell.com>
+
 	* plugin.cpp (PluginXamlLoader::TryLoad): add a quick check to
 	avoid a crash.  Better error handling on the way.
 

@@ -2208,6 +2208,9 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	// it wasn't a dependency property.  let's see if it's an
 	// event, and hook it up if it is valid on this object.
 	const char *event_name = map_moon_id_to_event_name (id);
+	if (!event_name)
+		return MoonlightObject::GetProperty (id, name, result);
+
 	int event_id = dob->GetType()->LookupEvent (event_name);
 	if (event_id != -1) {
 #if false
@@ -2318,7 +2321,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		return true;
 
 	case MoonId_FindName: {
-		if (!argCount)
+		if (argCount != 1 || !NPVARIANT_IS_STRING (args [0]))
 			THROW_JS_EXCEPTION ("findName");
 
 		char *name = STR_FROM_VARIANT (args [0]);
