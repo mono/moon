@@ -96,31 +96,37 @@ g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item)
 	array->pdata[ins] = item;
 }
 
+static ssize_t
+write_all (int fd, char *buf, size_t len)
+{
+	size_t nwritten = 0;
+	ssize_t n;
+	
+	do {
+		do {
+			n = write (fd, buf + nwritten, len - nwritten);
+		} while (n == -1 && errno == EINTR);
+		
+		if (n == -1)
+			return -1;
+		
+		nwritten += n;
+	} while (nwritten < len);
+	
+	return nwritten;
+}
 
 bool
 ExtractFile (unzFile zip, int fd)
 {
-	int nwritten, nread;
 	char buf[4096];
+	int nread;
 	ssize_t n;
 	
 	do {
 		n = 0;
 		if ((nread = unzReadCurrentFile (zip, buf, sizeof (buf))) > 0) {
-			nwritten = 0;
-			
-			do {
-				do {
-					n = write (fd, buf + nwritten, nread - nwritten);
-				} while (n == -1 && errno == EINTR);
-				
-				if (n == -1)
-					break;
-				
-				nwritten += n;
-			} while (nwritten < nread);
-			
-			if (n == -1)
+			if ((n = write_all (fd, buf, nread)) == -1)
 				break;
 		}
 	} while (nread > 0);
@@ -220,3 +226,43 @@ moon_rmdir (const char *dir)
 	return rv;
 }
 
+int
+moon_copy_file (const char *filename, int fd)
+{
+	char buf[4096];
+	ssize_t nread;
+	int in;
+	
+	if ((in = open (filename, O_RDONLY)) == -1)
+		return -1;
+	
+	do {
+		do {
+			nread = read (in, buf, sizeof (buf));
+		} while (nread == -1 && errno == EINTR);
+		
+		if (nread == -1)
+			goto exception;
+		
+		if (nread == 0)
+			break;
+		
+		if (write_all (fd, buf, nread) == -1)
+			goto exception;
+	} while (true);
+	
+	if (fsync (fd) == -1)
+		goto exception;
+	
+	close (in);
+	close (fd);
+	
+	return 0;
+	
+exception:
+	
+	close (in);
+	close (fd);
+	
+	return -1;
+}

@@ -26,6 +26,8 @@ char *make_tmpdir (char *tmpdir);
 
 int moon_rmdir (const char *dir);
 
+int moon_copy_file (const char *filename, int fd);
+
 G_END_DECLS
 
 #endif /* __MOON_GARRAY_EXT_H__ */

@@ -1,5 +1,9 @@
 2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* utils.cpp (moon_copy_file): New convenience function.
+
+2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
+
 	* downloader.cpp (Downloader::Downloader): Initialize the unzipdir
 	and unzipped state variables. Get rid of part_hash, no longer
 	needed.
