@@ -1,5 +1,5 @@
 <Canvas 
-	xmlns="http://schemas.microsoft.com/client/2007" Width="720" Height="400" BAckground="White"
+	xmlns="http://schemas.microsoft.com/client/2007" Width="720" Height="400" Background="White"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<TextBlock x:Name="text1" FontFamily="Arial" Text="The horror! The horror!" FontSize="10" Canvas.Left="100" Canvas.Top="100">

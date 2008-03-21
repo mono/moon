@@ -1,4 +1,4 @@
-<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="640" Height="600" BAckground="White">
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="640" Height="600" Background="White">
 
 	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="10" Canvas.Left="10" Canvas.Top="10" />
 	<TextBlock FontFamily="Arial" Text="A quick brown fox jumped over a lazy dog!" FontSize="10.5" Canvas.Left="10" Canvas.Top="30" />
