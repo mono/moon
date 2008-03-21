@@ -661,4 +661,9 @@
         inputFile="test-text-font-quality.xaml"
         masterFile10="../harness/masters/test-text-font-qualityMaster.png"
    />
+   <Test id="157"
+        inputFile="test-text-font-sizing-vs-hinting.xaml.xaml"
+        masterFile10="../harness/masters/test-text-font-sizing-vs-hintingMaster.tif"
+	captureSpecifier="300,15"
+   />
 </DRTList>

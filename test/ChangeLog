@@ -1,5 +1,14 @@
 2008-03-21  Michael Dominic K.  <mdk@mdk.am>
 
+	* test/xaml/drtlist.xml:
+	* test/xaml/test-text-font-sizing-vs-hinting.xaml: Adding a test for
+	scaling text and checking how it goes with hinting. It should not be too
+	jumpy. 
+
+	Master needed.
+
+2008-03-21  Michael Dominic K.  <mdk@mdk.am>
+
 	* test/xaml/arial-pango.png:
 	* test/xaml/drtlist.xml:
 	* test/xaml/test-text-font-quality.xaml:

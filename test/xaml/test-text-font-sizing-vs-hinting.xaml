@@ -1,0 +1,34 @@
+<Canvas 
+	xmlns="http://schemas.microsoft.com/client/2007" Width="720" Height="400" BAckground="White"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<TextBlock x:Name="text1" FontFamily="Arial" Text="The horror! The horror!" FontSize="10" Canvas.Left="100" Canvas.Top="100">
+	   <TextBlock.RenderTransform>
+	     <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
+   	   </TextBlock.RenderTransform>
+
+	<TextBlock.Triggers>
+		<EventTrigger RoutedEvent="TextBlock.Loaded">
+			<BeginStoryboard>
+				<Storyboard>
+					<DoubleAnimation Storyboard.TargetName="text1" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="5" Duration="00:00:10" />
+					<DoubleAnimation Storyboard.TargetName="text1" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="5" Duration="00:00:10" />
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</TextBlock.Triggers>
+	</TextBlock>
+
+	<TextBlock x:Name="text2" FontFamily="Arial" Text="The horror! The horror!" FontSize="10" Canvas.Left="100" Canvas.Top="200">
+	<TextBlock.Triggers>
+		<EventTrigger RoutedEvent="TextBlock.Loaded">
+			<BeginStoryboard>
+				<Storyboard>
+					<DoubleAnimation Storyboard.TargetName="text2" Storyboard.TargetProperty="FontSize" To="50" Duration="00:00:10" />
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</TextBlock.Triggers>
+	</TextBlock>
+
+</Canvas>
