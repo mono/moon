@@ -21,6 +21,8 @@ public:
 	// Wrappers around Netscape API calls
 	//
 	NPObject*     CreateObject (NPP npp, NPClass *klass);
+	NPObject*     RetainObject (NPObject* obj);
+	void          ReleaseObject (NPObject* obj);
 	NPUTF8*       UTF8FromIdentifier (NPIdentifier identifier);
 	NPIdentifier  GetStringIdentifier (const char* name);
 	NPError       GetValue (NPP instance, NPNVariable variable, void *value);

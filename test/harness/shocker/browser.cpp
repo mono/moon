@@ -107,6 +107,18 @@ Browser::CreateObject (NPP npp, NPClass *klass)
 	return CallNPN_CreateObjectProc (browser_funcs.createobject, npp, klass);
 }
 
+NPObject*
+Browser::RetainObject (NPObject* npobj)
+{
+	return CallNPN_RetainObjectProc (browser_funcs.retainobject, npobj);
+}
+
+void
+Browser::ReleaseObject (NPObject* npobj)
+{
+	return CallNPN_ReleaseObjectProc (browser_funcs.releaseobject, npobj);
+}
+
 NPUTF8 *
 Browser::UTF8FromIdentifier (NPIdentifier identifier)
 {

@@ -1,5 +1,11 @@
 2008-03-20  Jackson Harper  <jackson@ximian.com>
 
+	* shocker/browser.cpp|h: Add Release and Retain functions.
+	* shocker/plugin.cpp: Properly retain and release the scriptable
+	plugin.
+
+2008-03-20  Jackson Harper  <jackson@ximian.com>
+
 	* test-runner/HtmlTest.cs: Make sure that the substitutions get
 	made if there are more than one on a line.
 	- Adding pieces of the expected error stuff since it's all tangled

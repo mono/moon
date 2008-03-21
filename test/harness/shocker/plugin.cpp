@@ -88,6 +88,8 @@ PluginObject::PluginObject (NPP npp, int argc, char* argn[], char* argv[]) : ins
 
 PluginObject::~PluginObject()
 {
+	if (shocker_control)
+		Browser::Instance ()->ReleaseObject ((NPObject *) shocker_control);
 }
 
 void
@@ -135,6 +137,7 @@ PluginObject::GetShockerControl ()
 		}
 	}
 
+	Browser::Instance ()->RetainObject (shocker_control);
 	return shocker_control;
 }
 
