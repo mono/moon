@@ -1538,7 +1538,7 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 		gdk_event_free (s->mouse_event);
 	s->mouse_event = gdk_event_copy ((GdkEvent*)event);
 
-	bool handled = s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event);
+	bool handled = false;
 
 	if (event->is_hint) {
 #if GTK_CHECK_VERSION(2,12,0)
@@ -1550,9 +1550,12 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 		int ix, iy;
 		GdkModifierType state;
 		gdk_window_get_pointer (event->window, &ix, &iy, (GdkModifierType*)&state);
+		((GdkEventMotion *) s->mouse_event)->x = ix;
+		((GdkEventMotion *) s->mouse_event)->y = iy;
 	    }    
 	}
 
+	handled = s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event);
 	s->UpdateCursorFromInputList ();
 
 	return handled;

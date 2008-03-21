@@ -1,3 +1,13 @@
+2008-03-21  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/runtime.cpp: When calling gdk_window_get_pointer in
+	motion_notify_ to pop more hints actually use the results as they're
+	more valid than x,y in the event passed. Without doing so, we're not
+	getting the last mouse coords.
+
+	Fixes the nasty problem that MouseEnter/Leave is not called once in a
+	while.
+
 2008-03-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* brush.cpp, media.cpp, mplayer.cpp, mplayer.h: Refcount MediaPlayer. Rename
