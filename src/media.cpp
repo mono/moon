@@ -356,7 +356,8 @@ MediaElement::~MediaElement ()
 {
 	Reinitialize ();
 	
-	delete mplayer;
+	if (mplayer)
+		mplayer->unref ();
 	if (playlist)
 		playlist->unref ();
 	pthread_mutex_destroy (&open_mutex);
@@ -576,7 +577,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	
-	if (!(surface = mplayer->GetSurface ()))
+	if (!(surface = mplayer->GetCairoSurface ()))
 		return;
 	
 	if (w == 0.0 && h == 0.0) {
@@ -1786,7 +1787,7 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
 	for (int y = 0; y < h; y ++) {
 		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
 		out = data + y * (*stride);
-		if (gdk_pixbuf_get_rowstride (pixbuf) % 4 == 0) {
+		if (false && gdk_pixbuf_get_rowstride (pixbuf) % 4 == 0) {
 			for (int x = 0; x < w; x ++) {
 				guint32 color = *(guint32*)p;
 				guchar r, g, b;

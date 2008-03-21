@@ -26,10 +26,13 @@ class MediaPlayer;
 struct Audio;
 struct Video;
 
-class MediaPlayer {
+class MediaPlayer : public EventObject {
 private:
 	gint eof;
 	void StopThreads ();
+
+protected:
+	virtual ~MediaPlayer ();
 
 public:
 	Media *media;
@@ -71,14 +74,13 @@ public:
 	bool opened;
 	
 	MediaPlayer (MediaElement *element);
-	~MediaPlayer ();
 	
 	// Returns true if advanced at least one frame.
 	// A false return value does not say anything about why it didn't advance
 	// (No need to advance, eof, seeking, etc). 
 	bool AdvanceFrame (); 
 	bool LoadVideoFrame ();
-	cairo_surface_t *GetSurface ();
+	cairo_surface_t *GetCairoSurface ();
 	
 	bool Open (Media *media);
 	void Initialize ();

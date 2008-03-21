@@ -177,12 +177,16 @@ MediaPlayer::~MediaPlayer ()
 gboolean
 load_video_frame (void *user_data)
 {
+	bool result = false;
+
 	LOG_MEDIAPLAYER ("load_video_frame\n");
 
 	MediaPlayer *player = (MediaPlayer*) user_data;
-	if (player != NULL && player->load_frame)
-		return player->LoadVideoFrame ();
-		
+	if (player != NULL) {
+ 		if (player->load_frame)
+			result = player->LoadVideoFrame ();
+		player->unref ();
+	}		
 	return false;
 }
 
@@ -211,6 +215,7 @@ media_player_callback (MediaClosure *closure)
 		player->video->queue->Push (new Packet (frame));
 		if (player->load_frame) {
 			// We need to call LoadVideoFrame on the main thread
+			player->ref ();
 			TimeManager::InvokeOnMainThread (load_video_frame, player);
 		}
 		return MEDIA_SUCCESS;
@@ -619,7 +624,7 @@ MediaPlayer::LoadVideoFrame ()
 }
 
 cairo_surface_t *
-MediaPlayer::GetSurface ()
+MediaPlayer::GetCairoSurface ()
 {
 	return video->surface;
 }

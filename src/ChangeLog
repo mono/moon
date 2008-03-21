@@ -1,3 +1,9 @@
+2008-03-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* brush.cpp, media.cpp, mplayer.cpp, mplayer.h: Refcount MediaPlayer. Rename
+	  MediaPlayer::GetSurface to GetCairoSurface so that it doesn't conflict
+	  with EventObject::GetSurface.
+
 2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (TextFont::GetGlyphInfo): Comment out the fixed-width
