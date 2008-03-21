@@ -1,5 +1,10 @@
 2008-03-21  Michael Dominic K.  <mdk@mdk.am>
 
+	* test/harness/masters/test-text-font-qualityMaster.png: Adding a
+	master for test-text-font-sizing-vs-hinting.xaml.
+
+2008-03-21  Michael Dominic K.  <mdk@mdk.am>
+
 	* test/xaml/drtlist.xml:
 	* test/xaml/test-text-font-sizing-vs-hinting.xaml: Adding a test for
 	scaling text and checking how it goes with hinting. It should not be too
