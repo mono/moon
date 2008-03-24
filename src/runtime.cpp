@@ -152,18 +152,25 @@ Surface::CreateSimilarSurface ()
 
 
 Surface::Surface(int w, int h, bool windowless)
-  : downloader_context (NULL),
-    width (w), height (h), buffer (0), pixbuf (NULL),
-    using_cairo_xlib_surface(0),
-    cairo_buffer_surface (NULL), cairo_buffer(NULL),
-    cairo_xlib(NULL), cairo (NULL), transparent(false),
-    background_color(NULL),
-    widget (NULL),
-    widget_normal (NULL),
-    widget_fullscreen (NULL),
-    cursor (MouseCursorDefault),
-    mouse_event (NULL)
 {
+	downloader_context = NULL;
+	width = w;
+	height = h;
+	buffer = 0;
+	pixbuf = NULL;
+	using_cairo_xlib_surface = 0;
+	cairo_buffer_surface = NULL;
+	cairo_buffer = NULL;
+	cairo_xlib = NULL;
+	cairo = NULL;
+	transparent = false;
+	background_color = NULL;
+	widget = NULL;
+	widget_normal = NULL;
+	widget_fullscreen = NULL;
+	cursor = MouseCursorDefault;
+	mouse_event = NULL;
+
 	background_color = new Color (1, 1, 1, 0);
 
 	if (!windowless) {
