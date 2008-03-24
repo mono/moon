@@ -312,6 +312,7 @@
    <Test id="75"
 	inputFile="test-property-path.xaml"
 	masterFile10="../harness/masters/test-property-pathMaster.png"
+	expectedError="ParserError"
    />
    <Test id="76"
 	inputFile="test-rectangle-aliasing.xaml"
@@ -601,6 +602,7 @@
    <Test id="144"
         inputFile="test-property-parsing.xaml"
         masterFile10="../harness/masters/test-property-parsingMaster.png"
+	expectedError="ParserError"
    />
    <Test id="145"
         inputFile="test-canvas-toplevel.xaml"
