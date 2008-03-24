@@ -182,6 +182,11 @@ namespace MoonlightTests {
 					continue;
 				}
 
+				if (line.Contains ("$EXPECTED_ERROR_VAR")) {
+					built.AppendLine (GenerateExpectedErrorVar ());
+					continue;
+				}
+
 				if (line.Contains ("$RUN_TEST_BODY")) {
 					built.AppendLine (line.Replace ("$RUN_TEST_BODY", GenerateRunTestBody ()));
 					test_body_generated = true;
@@ -254,14 +259,16 @@ namespace MoonlightTests {
 			return res.ToString ();
 		}
 
+		private string GenerateExpectedErrorVar ()
+		{
+			return String.Format ("\tvar expected_error = \"{0}\";\n", expected_error != null ? expected_error : "null");
+		}
+
 		private string GenerateRunTestBody ()
 		{
 			StringBuilder res = new StringBuilder ();
 
 			res.AppendLine ("var moonlight_control = document.getElementById (\"MoonlightControl\");");
-
-			if (expected_error != null)
-				res.AppendFormat ("expected_error = new {0} ();\n", expected_error);
 
 			if (capture_interval != null || max_images_to_capture != null) {
 				res.AppendFormat ("\t\tTakeMultipleSnapshotsAndShutdown (moonlight_control, {0}, {1}, {2}, {3}, {4});",

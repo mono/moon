@@ -1,8 +1,11 @@
 <html>
   <head>
-    <title>Moonlight Test Template</title>
+      <title>Moonlight Test Page</title>
 
+      <script language="javascript" src="Silverlight.js"></script>
       <script language="javascript">
+
+        $EXPECTED_ERROR_VAR
 
         QueueTestReady ();
 
@@ -21,6 +24,18 @@
 		$RUN_TEST_BODY
         }
 
+	function FinishTest ()
+	{
+		var test_plugin = document.getElementById ("_TestPlugin");
+
+	        if (expected_error != null) {
+		        test_plugin.LogError ("Expected error was never signaled.");
+			test_plugin.LogResult (-1);
+		}
+
+		test_plugin.SignalShutdown ();
+	}
+
         function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
         {
 	         var test_plugin = document.getElementById ("_TestPlugin");
@@ -32,8 +47,9 @@
 		         }, initial_delay);
 			 return;
 	         }
+
                  test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
-		 test_plugin.SignalShutdown ();
+		 FinishTest ();
         }
 
         function TakeMultipleSnapshotsAndShutdown (control, max_images_to_capture, capture_interval, initial_delay, width, height)
@@ -41,13 +57,28 @@
                  var test_plugin = document.getElementById ("_TestPlugin");
 
 		 test_plugin.CaptureMultipleImages ("", "", 0, 0, width, height, max_images_to_capture, capture_interval, initial_delay);
-		 test_plugin.SignalShutdown ();
+		 FinishTest ();
 	}
 
         function ErrorHandler (sender, args)
         {
-            TestLogger.LogError ("Error raised by moonlight: " + args.ErrorMessage);
-            TestLogger.LogResult (-1)
+	        var test_plugin = document.getElementById ("_TestPlugin");
+                if (expected_error != null) {
+                        if (args.ErrorType == expected_error) {
+                               test_plugin.LogDebug ("Error matched expected error.");
+		               test_plugin.LogResult (1);
+                               test_plugin.SignalShutdown ();
+                               return;
+                        } else {
+                               test_plugin.LogError ("Error args type did not match expected type (" + typeof args + ").");
+			       test_plugin.LogResult (-1);
+                               test_plugin.SignalShutdown ();
+			       return;
+                        }
+                }
+
+		test_plugin.LogError ("Error raised by moonlight: " + args.ErrorMessage);
+                test_plugin.LogResult (-1)
         }
       </script>
   </head>
