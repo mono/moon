@@ -666,4 +666,8 @@
         masterFile10="../harness/masters/test-text-font-sizing-vs-hintingMaster.tif"
 	captureSpecifier="300,15"
    />
+   <Test id="158"
+        inputFile="test-blending-gradients.xaml"
+        masterFile10="../harness/masters/test-blending-gradientsMaster.png"
+   />
 </DRTList>

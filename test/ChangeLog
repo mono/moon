@@ -1,3 +1,11 @@
+2008-03-24  Michael Dominic K.  <mdk@mdk.am>
+
+	* test/harness/masters/test-blending-gradientsMaster.png:
+	* test/xaml/drtlist.xml:
+	* test/xaml/test-blending-gradients.xaml: Adding a new test that does
+	some alpha blending on gradients with SL master. Shows an interesting SL
+	bug (stripes). 
+
 2008-03-21  Michael Dominic K.  <mdk@mdk.am>
 
 	* test/harness/masters/test-text-font-qualityMaster.png: Adding a
