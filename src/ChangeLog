@@ -6,6 +6,8 @@
 	(TextLayout::LayoutWrap): Disable breaking after a
 	G_UNICODE_BREAK_AFTER if we can break before the word as this
 	seems to fix the last test case in LineBreakBasic1.htm
+	(TextLayout::LayoutWrap): Reverted a fix that introduced a
+	regression but didn't fix any known test cases.
 
 2008-03-21  Michael Dominic K.  <mdk@mdk.am>
 

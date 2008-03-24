@@ -961,21 +961,10 @@ TextLayout::LayoutWrap ()
 				
 			next:
 				
-				switch (btype) {
-				case G_UNICODE_BREAK_NON_BREAKING_GLUE:
-				case G_UNICODE_BREAK_ZERO_WIDTH_SPACE:
-				case G_UNICODE_BREAK_COMBINING_MARK:
-					// these chars are unlikely to have glyphs in the font but
-					// are important for line-breaking semantics.
+				if (!run->font->HasGlyph (*inptr))
+					wc.btype = G_UNICODE_BREAK_UNKNOWN;
+				else
 					wc.btype = btype;
-					break;
-				default:
-					if (!run->font->HasGlyph (*inptr))
-						wc.btype = G_UNICODE_BREAK_UNKNOWN;
-					else
-						wc.btype = btype;
-					break;
-				}
 				
 				wc.c = inptr;
 				wc.x1 = x1;
