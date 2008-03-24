@@ -237,15 +237,16 @@ int TimeManager::UpdateInputEvent = -1;
 int TimeManager::RenderEvent = -1;
 
 TimeManager::TimeManager ()
-    : current_timeout (FPS_TO_DELAY (DEFAULT_FPS)),  /* something suitably small */
-      max_fps (MAXIMUM_FPS),
-      flags (TimeManagerOp (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/)),
-      tick_calls (NULL)
 {
 	if (moonlight_flags & RUNTIME_INIT_MANUAL_TIMESOURCE)
 		source = new ManualTimeSource();
 	else
 		source = new SystemTimeSource();
+
+	current_timeout = FPS_TO_DELAY (DEFAULT_FPS);  /* something suitably small */
+	max_fps = MAXIMUM_FPS;
+	flags = (TimeManagerOp) (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/);
+	tick_calls = NULL;
 
 	start_time = source->GetNow ();
 	start_time_usec = start_time / 10;
@@ -623,21 +624,24 @@ int Clock::CurrentGlobalSpeedInvalidatedEvent = -1;
 int Clock::CompletedEvent = -1;
 
 Clock::Clock (Timeline *tl)
-  : calculated_natural_duration (false),
-    natural_duration (Duration::Automatic),
-    state (Clock::Stopped),
-    progress (0.0),
-    current_time (0), last_time (0),
-    seeking (false), seek_time (0),
-    speed (1.0),
-    time_manager (NULL),
-    parent_clock (NULL),
-    is_paused (false),
-    has_started (false),
-    timeline (tl),
-    queued_events (0),
-    forward (true)
+  : natural_duration (Duration::Automatic)
 {
+	calculated_natural_duration = false;
+	state = Clock::Stopped;
+	progress = 0.0;
+	current_time = 0;
+	last_time = 0;
+	seeking = false;
+	seek_time = 0;
+	speed = 1.0;
+	time_manager = NULL;
+	parent_clock = NULL;
+	is_paused = false;
+	has_started = false;
+	timeline = tl;
+	queued_events = 0;
+	forward = true;
+
 	was_stopped = false;
 	begin_time = -1;
 	begin_on_tick = false;
@@ -1014,11 +1018,11 @@ Clock::Stop ()
 
 
 ClockGroup::ClockGroup (TimelineGroup *timeline)
-  : Clock (timeline),
-    child_clocks (NULL),
-    timeline (timeline),
-    emitted_complete (false)
+  : Clock (timeline)
 {
+	child_clocks = NULL;
+	timeline = timeline;
+	emitted_complete = false;
 }
 
 void
