@@ -61,8 +61,8 @@ Value::Init ()
 }
 
 Value::Value()
-  : k (Type::INVALID)
 {
+	k = Type::INVALID;
 	Init ();
 }
 
