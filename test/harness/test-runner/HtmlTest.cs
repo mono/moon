@@ -261,7 +261,7 @@ namespace MoonlightTests {
 
 		private string GenerateExpectedErrorVar ()
 		{
-			return String.Format ("\tvar expected_error = \"{0}\";\n", expected_error != null ? expected_error : "null");
+			return String.Format ("\tvar expected_error = {0};\n", expected_error != null ? String.Concat ("\"", expected_error, "\"") : "null");
 		}
 
 		private string GenerateRunTestBody ()
