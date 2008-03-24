@@ -31,12 +31,12 @@
 
 AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/ *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
-  : clock (clock),
-    timeline (timeline),
-    targetobj (targetobj),
-    targetprop (targetprop)
-  
 {
+	this->clock = clock;
+	this->timeline = timeline;
+	this->targetobj = targetobj;
+	this->targetprop = targetprop;
+
 	clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
 	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 
@@ -105,10 +105,10 @@ AnimationStorage::~AnimationStorage ()
 }
 
 AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
-  : Clock (timeline),
-    timeline(timeline),
-    storage(NULL)
+  : Clock (timeline)
 {
+	this->timeline = timeline;
+	storage = NULL;
 }
 
 bool
@@ -192,8 +192,8 @@ DependencyProperty* Storyboard::TargetPropertyProperty;
 int                 Storyboard::CompletedEvent = -1;
 
 Storyboard::Storyboard ()
-  : root_clock (NULL)
 {
+	root_clock = NULL;
 }
 
 void
@@ -720,22 +720,26 @@ static void generate_table (Point p1, Point p2, Point p3, Point p4, unsigned cha
 	}
 }
 
-KeySpline::KeySpline () : controlPoint1 (Point (0.0, 0.0)), controlPoint2 (Point (1.0, 1.0))
+KeySpline::KeySpline ()
 {
+	controlPoint1 = Point (0.0, 0.0);
+	controlPoint2 = Point (1.0, 1.0);
 }
 
 KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
-	: controlPoint1 (controlPoint1),
-	  controlPoint2 (controlPoint2)
 {
+	this->controlPoint1 = controlPoint1;
+	this->controlPoint2 = controlPoint2;
+
 	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
 KeySpline::KeySpline (double x1, double y1,
 		      double x2, double y2)
-	: controlPoint1 (Point (x1, y1)),
-	  controlPoint2 (Point (x2, y2))
 {
+	this->controlPoint1 = Point (x1, y1);
+	this->controlPoint2 = Point (x2, y2);
+
 	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
