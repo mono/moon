@@ -1,5 +1,10 @@
 2008-03-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pipeline.cpp (mpeg_parse_header): Fix the MPEG layer parsing, it
+	was seemingly getting layer 1 and layer 2 backwards.
+	(mpeg_frame_length): Seems like we are never supposed to add 2
+	bytes for 16bit crc?
+
 	* layout.cpp (TextLayout::LayoutWrap): If the glyph advance is 0,
 	then don't bother applying kerning. Fixes 2 cases in
 	LineBreakClasses.htm

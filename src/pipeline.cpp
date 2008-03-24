@@ -1471,8 +1471,6 @@ mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 static bool
 mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 {
-	int layer;
-	
 	if (!is_mpeg_header (buffer))
 		return false;
 	
@@ -1492,10 +1490,20 @@ mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
 	}
 	
 	// extract the MPEG layer
-	if ((layer = (4 - ((buffer[1] >> 1) & 0x03))) == 4)
+	switch ((buffer[1] >> 1) & 0x03) {
+	case 1:
+		mpeg->layer = 3;
+		break;
+	case 2:
+		mpeg->layer = 1;
+		break;
+	case 3:
+		mpeg->layer = 2;
+		break;
+	default:
+		// invalid layer
 		return false;
-	
-	mpeg->layer = layer;
+	}
 	
 	// protection (via 16bit crc) bit
 	mpeg->prot = (buffer[1] & 0x01) ? 1 : 0;
@@ -1542,7 +1550,7 @@ mpeg_frame_length (MpegFrameHeader *mpeg, bool xing)
 	else
 		len = ((72 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded;
 	
-	if (mpeg->prot && !xing) {
+	if (false && mpeg->prot && !xing) {
 		// include 2 extra bytes for 16bit crc
 		len += 2;
 	}
