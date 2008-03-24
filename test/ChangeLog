@@ -1,3 +1,9 @@
+2008-03-24  Jackson Harper  <jackson@ximian.com>
+
+	* xaml/drtlist.xml:
+	* xaml/test-parser-multiple-canvases: Add a new test that checks
+	for setting a name multiple times.
+
 2008-03-24  Michael Dominic K.  <mdk@mdk.am>
 
 	* test/harness/masters/test-lineargradientbrush-absolute-moireMaster.png:
