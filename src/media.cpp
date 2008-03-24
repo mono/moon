@@ -1566,13 +1566,13 @@ GHashTable *Image::surface_cache = NULL;
 int Image::ImageFailedEvent = -1;
 
 Image::Image ()
-  : create_xlib_surface (true),
-    downloader (NULL),
-    part_name(NULL),
-    pattern (NULL),
-    brush (NULL),
-    surface (NULL)
 {
+	create_xlib_surface = true;
+	downloader = NULL;
+	part_name = NULL;
+	pattern = NULL;
+	brush = NULL;
+	surface = NULL;
 }
 
 Image::~Image ()
