@@ -51,8 +51,11 @@ UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 	g_warning ("GetTransformFor called on a non-container, you must implement this in your container\n");
 }
 
-UIElement::UIElement () : opacityMask(NULL), flags (UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE)
+UIElement::UIElement ()
 {
+	opacityMask = NULL;
+	flags = UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE;
+
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
 
