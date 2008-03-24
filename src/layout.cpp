@@ -410,12 +410,12 @@ TextLayout::LayoutWrapWithOverflow ()
 			btype = g_unichar_break_type (*inptr);
 			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
-					advance = glyph->metrics.horiAdvance;
-					
-					if (prev != 0)
-						advance += run->font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0)
-						advance -= glyph->metrics.horiBearingX;
+					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
+						if (prev != 0)
+							advance += run->font->Kerning (prev, glyph->index);
+						else if (glyph->metrics.horiBearingX < 0)
+							advance -= glyph->metrics.horiBearingX;
+					}
 					
 					prev = glyph->index;
 					x1 += advance;
@@ -479,12 +479,12 @@ TextLayout::LayoutWrapWithOverflow ()
 			btype = g_unichar_break_type (*inptr);
 			while (*inptr && !BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
-					advance = glyph->metrics.horiAdvance;
-					
-					if (prev != 0)
-						advance += run->font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0)
-						advance -= glyph->metrics.horiBearingX;
+					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
+						if (prev != 0)
+							advance += run->font->Kerning (prev, glyph->index);
+						else if (glyph->metrics.horiBearingX < 0)
+							advance -= glyph->metrics.horiBearingX;
+					}
 					
 					prev = glyph->index;
 					x1 += advance;
@@ -596,12 +596,12 @@ TextLayout::LayoutNoWrap ()
 			btype = g_unichar_break_type (*inptr);
 			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
-					advance = glyph->metrics.horiAdvance;
-					
-					if (prev != 0)
-						advance += run->font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0)
-						advance -= glyph->metrics.horiBearingX;
+					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
+						if (prev != 0)
+							advance += run->font->Kerning (prev, glyph->index);
+						else if (glyph->metrics.horiBearingX < 0)
+							advance -= glyph->metrics.horiBearingX;
+					}
 					
 					prev = glyph->index;
 					x1 += advance;
@@ -625,12 +625,12 @@ TextLayout::LayoutNoWrap ()
 			btype = g_unichar_break_type (*inptr);
 			while (*inptr && !BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
-					advance = glyph->metrics.horiAdvance;
-					
-					if (prev != 0)
-						advance += run->font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0)
-						advance -= glyph->metrics.horiBearingX;
+					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
+						if (prev != 0)
+							advance += run->font->Kerning (prev, glyph->index);
+						else if (glyph->metrics.horiBearingX < 0)
+							advance -= glyph->metrics.horiBearingX;
+					}
 					
 					prev = glyph->index;
 					x1 += advance;
@@ -805,12 +805,12 @@ TextLayout::LayoutWrap ()
 			btype = g_unichar_break_type (*inptr);
 			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
-					advance = glyph->metrics.horiAdvance;
-					
-					if (prev != 0)
-						advance += run->font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0)
-						advance -= glyph->metrics.horiBearingX;
+					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
+						if (prev != 0)
+							advance += run->font->Kerning (prev, glyph->index);
+						else if (glyph->metrics.horiBearingX < 0)
+							advance -= glyph->metrics.horiBearingX;
+					}
 					
 					prev = glyph->index;
 					x1 += advance;
@@ -880,12 +880,12 @@ TextLayout::LayoutWrap ()
 				if (!(glyph = run->font->GetGlyphInfo (*inptr)))
 					goto next;
 				
-				advance = glyph->metrics.horiAdvance;
-				
-				if (prev != 0)
-					advance += run->font->Kerning (prev, glyph->index);
-				else if (glyph->metrics.horiBearingX < 0)
-					advance -= glyph->metrics.horiBearingX;
+				if ((advance = glyph->metrics.horiAdvance) > 0.0) {
+					if (prev != 0)
+						advance += run->font->Kerning (prev, glyph->index);
+					else if (glyph->metrics.horiBearingX < 0)
+						advance -= glyph->metrics.horiBearingX;
+				}
 				
 				if (max_width > 0.0 && (x1 + advance) > (max_width + 1.0)) {
 					if (wx == 0.0 && inptr > word && !last_word) {
@@ -913,7 +913,7 @@ TextLayout::LayoutWrap ()
 								break;
 							case G_UNICODE_BREAK_BEFORE_AND_AFTER:
 							case G_UNICODE_BREAK_EXCLAMATION:
-							case G_UNICODE_BREAK_AFTER:
+								//case G_UNICODE_BREAK_AFTER:
 								// only break after if there are chars before
 								after = (i > 1);
 								break;
@@ -961,10 +961,22 @@ TextLayout::LayoutWrap ()
 				
 			next:
 				
-				if (!run->font->HasGlyph (*inptr))
-					wc.btype = G_UNICODE_BREAK_UNKNOWN;
-				else
+				switch (btype) {
+				case G_UNICODE_BREAK_NON_BREAKING_GLUE:
+				case G_UNICODE_BREAK_ZERO_WIDTH_SPACE:
+				case G_UNICODE_BREAK_COMBINING_MARK:
+					// these chars are unlikely to have glyphs in the font but
+					// are important for line-breaking semantics.
 					wc.btype = btype;
+					break;
+				default:
+					if (!run->font->HasGlyph (*inptr))
+						wc.btype = G_UNICODE_BREAK_UNKNOWN;
+					else
+						wc.btype = btype;
+					break;
+				}
+				
 				wc.c = inptr;
 				wc.x1 = x1;
 				

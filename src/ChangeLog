@@ -1,3 +1,12 @@
+2008-03-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::LayoutWrap): If the glyph advance is 0,
+	then don't bother applying kerning. Fixes 2 cases in
+	LineBreakClasses.htm
+	(TextLayout::LayoutWrap): Disable breaking after a
+	G_UNICODE_BREAK_AFTER if we can break before the word as this
+	seems to fix the last test case in LineBreakBasic1.htm
+
 2008-03-21  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/runtime.cpp: When calling gdk_window_get_pointer in
