@@ -1,5 +1,12 @@
 2008-03-24  Michael Dominic K.  <mdk@mdk.am>
 
+	* test/harness/masters/test-lineargradientbrush-absolute-moireMaster.png:
+	* test/harness/masters/test-lineargradientbrush-moire-scaledMaster.png:
+	* test/harness/masters/test-radialgradientbrush-absolute-moireMaster.png:
+	Adding some masters for subpixel-gradient rendering tests.
+
+2008-03-24  Michael Dominic K.  <mdk@mdk.am>
+
 	* test/harness/masters/test-blending-gradientsMaster.png:
 	* test/xaml/drtlist.xml:
 	* test/xaml/test-blending-gradients.xaml: Adding a new test that does
