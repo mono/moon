@@ -1021,7 +1021,7 @@ ClockGroup::ClockGroup (TimelineGroup *timeline)
   : Clock (timeline)
 {
 	child_clocks = NULL;
-	timeline = timeline;
+	this->timeline = timeline;
 	emitted_complete = false;
 }
 
