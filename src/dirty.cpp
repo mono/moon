@@ -91,6 +91,26 @@ Surface::RemoveDirtyElement (UIElement *element)
 */
 
 void
+Surface::PropagateDirtyFlagToChildren (UIElement *el, DirtyType flags)
+{
+	if (el->Is (Type::PANEL)) {
+		Panel *p = (Panel*)el;
+		VisualCollection *children = p->GetChildren();
+
+		Collection::Node* n = (Collection::Node *) children->list->First ();
+		while (n != NULL) {
+			AddDirtyElement ((UIElement *)n->obj, flags);
+			n = (Collection::Node *) n->next;
+		}
+	}
+	else if (el->Is (Type::CONTROL)) {
+		Control *c = (Control*)el;
+		if (c->real_object)
+			AddDirtyElement (c->real_object, flags);
+	}
+}
+
+void
 Surface::ProcessDownDirtyElements ()
 {
 	/* push down the transforms opacity, and visibility changes first */
@@ -106,21 +126,7 @@ Surface::ProcessDownDirtyElements ()
 			el->ComputeTotalRenderVisibility ();
 			el->Invalidate ();
 
-			if (el->Is (Type::PANEL)) {
-				Panel *p = (Panel*)el;
-				VisualCollection *children = p->GetChildren();
-
-				Collection::Node* n = (Collection::Node *) children->list->First ();
-				while (n != NULL) {
-					((UIElement *) n->obj)->UpdateTotalRenderVisibility ();
-					n = (Collection::Node *) n->next;
-				}
-			}
-			else if (el->Is (Type::CONTROL)) {
-				Control *c = (Control*)el;
-				if (c->real_object)
-					c->real_object->UpdateTotalRenderVisibility();
-			}
+			PropagateDirtyFlagToChildren (el, DirtyRenderVisibility);
 		}
 
 		if (el->dirty_flags & DirtyHitTestVisibility) {
@@ -128,21 +134,7 @@ Surface::ProcessDownDirtyElements ()
 			
 			el->ComputeTotalHitTestVisibility ();
 
-			if (el->Is (Type::PANEL)) {
-				Panel *p = (Panel*)el;
-				VisualCollection *children = p->GetChildren();
-
-				Collection::Node* n = (Collection::Node *) children->list->First ();
-				while (n != NULL) {
-					((UIElement *) n->obj)->UpdateTotalHitTestVisibility ();
-					n = (Collection::Node *) n->next;
-				}
-			}
-			else if (el->Is (Type::CONTROL)) {
-				Control *c = (Control*)el;
-				if (c->real_object)
-					c->real_object->UpdateTotalHitTestVisibility();
-			}
+			PropagateDirtyFlagToChildren (el, DirtyHitTestVisibility);
 		}
 		/*
 		** since we cache N's local (from N's parent to N)
@@ -169,26 +161,7 @@ Surface::ProcessDownDirtyElements ()
 			el->ComputeTransform ();
 			el->UpdateBounds ();
 
-			if (el->Is (Type::PANEL)) {
-				Panel *p = (Panel*)el;
-				VisualCollection *children = p->GetChildren();
-
-				if (children != NULL) {
-					Collection::Node* n = (Collection::Node *) children->list->First ();
-					while (n != NULL) {
-						// we don't call n->obj->UpdateTransform here
-						// because that causes the element to recompute
-						// its local transform as well, which isn't necessary.
-						AddDirtyElement ((UIElement *) n->obj, DirtyTransform);
-						n = (Collection::Node *) n->next;
-					}
-				}
-			}
-			else if (el->Is (Type::CONTROL)) {
-				Control *c = (Control*)el;
-				if (c->real_object)
-					AddDirtyElement (c->real_object, DirtyTransform);
-			}
+			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
 
 		if (!(el->dirty_flags & DownDirtyState)) {

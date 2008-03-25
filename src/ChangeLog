@@ -1,5 +1,13 @@
 2008-03-24  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h (class Surface): add
+	Surface::PropagateDirtyFlagToChildren.
+
+	* dirty.cpp (Surface::PropagateDirtyFlagToChildren): factor this
+	duplicated code out of ProcessDownDirtyElements.
+
+2008-03-24  Chris Toshok  <toshok@ximian.com>
+
 	* panel.cpp (Panel::FrontToBack): remove the tree walking
 	code (where we walked up the hierarchy looking for cases where we
 	shouldn't subtract.)  Instead, we always subtract if the local

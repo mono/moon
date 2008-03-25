@@ -169,6 +169,7 @@ class Surface : public EventObject {
 	void AddDirtyElement (UIElement *element, DirtyType dirt);
 	void RemoveDirtyElement (UIElement *element);
 	void ProcessDirtyElements ();
+	void PropagateDirtyFlagToChildren (UIElement *element, DirtyType dirt);
 	bool IsAnythingDirty ();
 
 
