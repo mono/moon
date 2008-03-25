@@ -122,6 +122,7 @@ namespace MoonlightTests {
 
 			if (node.Attributes ["codebehind"] != null)
 				test.codebehind = node.Attributes ["codebehind"].Value;
+
 			return test;
 		}
 
@@ -328,7 +329,7 @@ namespace MoonlightTests {
 			if (pieces.Length > 1)
 				lib_name = pieces [1].Trim ();			
 
-			string args = String.Format ("/target:library {0} {1}", lib_name != null ? String.Concat ("/out:", lib_name) : String.Empty, cs_file);
+			string args = String.Format ("-pkg:silver /target:library {0} {1}", lib_name != null ? String.Concat ("/out:", lib_name) : String.Empty, cs_file);
 			ExternalProcess gmcs = new ExternalProcess ("gmcs", args, -1);
 
 			gmcs.Run (true);

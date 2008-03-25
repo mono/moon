@@ -101,6 +101,8 @@ namespace MoonlightTests {
 
 				if (wait && !process.WaitForExit (timeout))
 					process_timed_out = true;
+				if (wait)
+					exit_code = process.ExitCode;
 			} catch (Exception e) {
 				Console.Error.WriteLine ("Unable to start XSP process:");
 				Console.Error.WriteLine (e);
