@@ -682,4 +682,8 @@
 	 inputFile="test-shape-line-stretch3.xaml"
 	 masterFile10="../harness/masters/test-shape-line-stretch3Master.png"
     />
+   <Test id="160"
+	 inputFile="test-stroke-low-thickness.xaml"
+	 masterFile10="../harness/masters/test-stroke-low-thicknessMaster.png"
+    />
 </DRTList>
