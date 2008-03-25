@@ -1,3 +1,8 @@
+2008-03-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: Don't access any TimeManager instance from another thread, just
+	  call the static TimeManager::InvokeOnMainThread.
+
 2008-03-25  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/shape.cpp: Shape is empty always when it's bounds are <= 0.0, even

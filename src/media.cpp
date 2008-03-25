@@ -830,7 +830,7 @@ media_element_open_callback (MediaClosure *closure)
 		element->closure = closure->Clone ();
 		pthread_mutex_unlock (&element->open_mutex);
 		// We need to call TryOpenFinished on the main thread, so 
-		element->GetTimeManager()->AddTimeout (0, MediaElement::TryOpenFinished, element);
+		TimeManager::InvokeOnMainThread (MediaElement::TryOpenFinished, element);
 	}
 	return MEDIA_SUCCESS;
 }
