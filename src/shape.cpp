@@ -339,8 +339,11 @@ Shape::Clip (cairo_t *cr)
 		if (!vw)
 			return;
 
+		cairo_save (cr);
+		cairo_transform (cr, &stretch_transform);
 		cairo_rectangle (cr, 0, 0, vw->AsDouble (), vh->AsDouble ());
 		cairo_clip (cr);
+		cairo_restore (cr);
 		cairo_new_path (cr);
 	}
 }
