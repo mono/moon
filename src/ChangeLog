@@ -1,5 +1,11 @@
 2008-03-25  Michael Dominic K.  <mdk@mdk.am>
 
+	* src/shape.cpp: Shape is empty always when it's bounds are <= 0.0, even
+	if Width/Height was specified. Fixes a bogus warning about infinity
+	transformations.
+
+2008-03-25  Michael Dominic K.  <mdk@mdk.am>
+
 	* src/shape.cpp: When setting the clipping for the shape also include
 	the transformations coming from stretching. This fixes
 	test-shape-line-stretch3 test and the missing stripees on Silverlight

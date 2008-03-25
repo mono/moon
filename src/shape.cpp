@@ -259,7 +259,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 	h = (h == 0.0) ? shape_bounds.h : h;
 	w = (w == 0.0) ? shape_bounds.w : w;
 
-	if (h <= 0.0 || w <= 0.0) {
+	if (h <= 0.0 || w <= 0.0 || shape_bounds.w <= 0.0 || shape_bounds.h <= 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return shape_bounds;
 	}
