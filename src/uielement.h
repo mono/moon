@@ -49,8 +49,6 @@ public:
 	List::Node *up_dirty_node;
 	List::Node *down_dirty_node;
 
-	//Rect dirty_rect;
-	//Rect children_dirty_rect;
 	bool force_invalidate_of_new_bounds;
 	Region *dirty_region;
 
