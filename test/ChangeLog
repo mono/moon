@@ -1,5 +1,12 @@
 2008-03-25  Michael Dominic K.  <mdk@mdk.am>
 
+	* test/harness/masters/test-shape-path-stretchMaster.png:
+	* test/xaml/drtlist.xml:
+	* test/xaml/test-shape-path-stretch.xaml: Renaming the test since it
+	actually tests path stretching.
+
+2008-03-25  Michael Dominic K.  <mdk@mdk.am>
+
 	* test/harness/masters/test-stroke-low-thicknessMaster.png:
 	* test/xaml/drtlist.xml:
 	* test/xaml/test-stroke-low-thickness.xaml: Adding a test that showcases

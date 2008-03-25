@@ -679,8 +679,8 @@
 	 expectedError="ParserError"
     />
    <Test id="159"
-	 inputFile="test-shape-line-stretch3.xaml"
-	 masterFile10="../harness/masters/test-shape-line-stretch3Master.png"
+	 inputFile="test-shape-path-stretch.xaml"
+	 masterFile10="../harness/masters/test-shape-path-stretch.png"
     />
    <Test id="160"
 	 inputFile="test-stroke-low-thickness.xaml"
