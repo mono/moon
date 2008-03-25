@@ -1762,9 +1762,8 @@ Mp3FrameReader::EstimatePtsPosition (uint64_t pts)
 	int64_t pos;
 	uint64_t n;
 	
-	if (pts == cur_pts) {		
+	if (pts == cur_pts)		
 		return stream->GetPosition ();
-	}
 	
 	// if the pts requested is some place we've been, then we can use our jump table
 	if (used > 0) {
@@ -1774,8 +1773,6 @@ Mp3FrameReader::EstimatePtsPosition (uint64_t pts)
 			
 			// search for our requested pts
 			frame = MpegFrameSearch (pts);
-			
-			g_assert (frame < used);
 			
 			return jmptab[frame - 1].offset;
 		}
@@ -1836,8 +1833,6 @@ Mp3FrameReader::Seek (uint64_t pts)
 		
 		// search for our requested pts
 		frame = MpegFrameSearch (pts);
-		
-		g_assert (frame < used);
 		
 		if (!stream->Seek (jmptab[frame].offset, SEEK_SET))
 			goto exception;
