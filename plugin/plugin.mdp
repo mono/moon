@@ -34,11 +34,11 @@
     <File name="plugin-downloader.h" subtype="Code" buildaction="Nothing" />
     <File name="browser-http.cpp" subtype="Code" buildaction="Nothing" />
     <File name="browser-http.h" subtype="Code" buildaction="Nothing" />
-    <File name="install.js" subtype="Code" buildaction="Nothing" />
     <File name="plugin-debug.cpp" subtype="Code" buildaction="Nothing" />
     <File name="plugin-debug.h" subtype="Code" buildaction="Nothing" />
     <File name="browser-mmsh.cpp" subtype="Code" buildaction="Nothing" />
     <File name="browser-mmsh.h" subtype="Code" buildaction="Nothing" />
+    <File name="install.rdf" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

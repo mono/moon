@@ -59,7 +59,7 @@ libmoonplugin_la_SOURCES = \
 	browser-mmsh.cpp
 
 if PLUGIN_INSTALL
-novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.js \
+novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.rdf \
 				.libs/libmoonloader.so \
 				.libs/libmoonplugin.so \
 				$(top_builddir)/src/.libs/libmoon.so
@@ -82,30 +82,30 @@ endif INCLUDE_MONO_RUNTIME
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS)
 	-rm -f $@
 	-rm -rf .xpinstall/
-	mkdir -p .xpinstall/moonlight/
+	mkdir -p .xpinstall/plugins/moonlight/
 if INCLUDE_FFMPEG
-	cp -L $(avutil_libdir)/libavutil.so .xpinstall/moonlight/
+	cp -L $(avutil_libdir)/libavutil.so .xpinstall/plugins/moonlight/
 if INCLUDE_SWSCALE
-	cp -L $(swscale_libdir)/libswscale.so .xpinstall/moonlight/
+	cp -L $(swscale_libdir)/libswscale.so .xpinstall/plugins/moonlight/
 endif INCLUDE_SWSCALE
-	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/moonlight/
+	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/plugins/moonlight/
 	find .xpinstall -name \*.so -exec strip '{}' ';'
 endif INCLUDE_FFMPEG
-	cp -L $(srcdir)/install.js .xpinstall/
-	cp -L .libs/libmoonloader.so .xpinstall/
-	cp -L .libs/libmoonplugin.so .xpinstall/moonlight/
-	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/moonlight/
+	cp -L $(srcdir)/install.rdf .xpinstall/
+	cp -L .libs/libmoonloader.so .xpinstall/plugins/
+	cp -L .libs/libmoonplugin.so .xpinstall/plugins/moonlight/
+	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/plugins/moonlight/
 if INCLUDE_MONO_RUNTIME
-	cp -L $(mono_libdir)/libmono.so .xpinstall/moonlight/
-	cp -L moonlight.exe .xpinstall/moonlight/
-	mkdir -p .xpinstall/moonlight/mono/2.1/
-	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/moonlight/mono/2.1/
-	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -root .xpinstall/moonlight ';'
-	find $(mono_dlldir)/mono/gac -path \*/2.1.\*.dll -exec gacutil -i '{}' -root .xpinstall/moonlight ';'
+	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/
+	cp -L moonlight.exe .xpinstall/plugins/moonlight/
+	mkdir -p .xpinstall/plugins/moonlight/mono/2.1/
+	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/plugins/moonlight/mono/2.1/
+	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -root .xpinstall/plugins/moonlight ';'
+	find $(mono_dlldir)/mono/gac -path \*/2.1.\*.dll -exec gacutil -i '{}' -root .xpinstall/plugins/moonlight ';'
 	find .xpinstall -name \*.mdb -exec rm '{}' ';'
-	mkdir -p .xpinstall/moonlight/mono/2.0/
-	cp -L $(srcdir)/moon.config .xpinstall/moonlight/mono/config
-	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/moonlight/mono/2.0/
+	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
+	cp -L $(srcdir)/moon.config .xpinstall/plugins/moonlight/mono/config
+	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/plugins/moonlight/mono/2.0/
 endif INCLUDE_MONO_RUNTIME
 	cd .xpinstall/ && zip -r9 ../$@ *
 
@@ -126,7 +126,7 @@ untest-plugin:
 	-rm -rf ~/.mozilla/plugins/libmoonloader.so
 	rm -rf ~/.mozilla/plugin/moonlight.exe
 
-EXTRA_DIST = moonlight.cs install.js.in moon.config
+EXTRA_DIST = moonlight.cs install.rdf.in moon.config
 DISTCLEANFILES=moonlight.exe moonlight.exe.mdb novell-moonlight.xpi
 
 dist-hook:

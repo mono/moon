@@ -2,6 +2,9 @@
 
 	* plugin-proxy.cpp: Load libraries relative to the location of
 	libmoonloader.so if enable-user-plugin=yes
+	* install.rdf.in: Basic install.rdf for plugin installation
+	* Makefile.am: Create directory structure for RDF install method
+	rather than XPInstall JS method
 
 2008-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
