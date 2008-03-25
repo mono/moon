@@ -1,3 +1,16 @@
+2008-03-24  Chris Toshok  <toshok@ximian.com>
+
+	* panel.cpp (Panel::FrontToBack): remove the tree walking
+	code (where we walked up the hierarchy looking for cases where we
+	shouldn't subtract.)  Instead, we always subtract if the local
+	state says we can.  Instead of forcing all leaf elements to walk
+	up to their parent panel, we assume they'll operate on local state
+	as well, and give them a copy of the region to subtract their
+	bounds from, instead of the real region.  We are sneaky.
+
+	* uielement.cpp (UIElement::FrontToBack): Operate on our local
+	state only, no walking up the tree.
+
 2008-03-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (mpeg_parse_header): Fix the MPEG layer parsing, it

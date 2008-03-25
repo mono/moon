@@ -305,6 +305,24 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 		return;
 	}
 
+	Region *region;
+	bool delete_region;
+	bool can_subtract_self;
+
+	if ((GetValue (UIElement::ClipProperty) == NULL)
+	    && (uielement_get_opacity_mask (this) == NULL)
+	    && !IS_TRANSLUCENT (uielement_get_opacity (this))) {
+
+		region = surface_region;
+		delete_region = false;
+		can_subtract_self = true;
+	}
+	else {
+		region = new Region (surface_region);
+		delete_region = true;
+		can_subtract_self = false;
+	}
+
 	RenderNode *panel_cleanup_node = new RenderNode (this, NULL, false, NULL, UIElement::CallPostRender);
 	
 	render_list->Prepend (panel_cleanup_node);
@@ -313,10 +331,10 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	for (guint i = children->z_sorted->len; i > 0; i--) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i - 1];
 
-		item->FrontToBack (surface_region, render_list);
+		item->FrontToBack (region, render_list);
 	}
 
-	Region *self_region = new Region (surface_region);
+	Region *self_region = new Region (region);
 	self_region->Intersect (bounds.RoundOut ()); // note the RoundOut
 
 	if (self_region->IsEmpty() && render_list->First() == panel_cleanup_node) {
@@ -324,6 +342,8 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 		   our children did either, remove the cleanup node */
 		render_list->Remove (render_list->First());
 		delete self_region;
+		if (delete_region)
+			delete region;
 		return;
 	}
 
@@ -332,16 +352,7 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	if (!self_region->IsEmpty()) {
 
 		bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
-				 && !IS_TRANSLUCENT (local_opacity));
-
-		UIElement *el = this;
-		while (subtract && el) {
-			subtract = subtract 
-				&& (el->GetValue (UIElement::ClipProperty) == NULL)
-				&& (uielement_get_opacity_mask (el) == NULL)
-				&& !IS_TRANSLUCENT (uielement_get_opacity (el));
-			el = el->GetVisualParent ();
-		}
+				 && can_subtract_self);
 
 		if (subtract) {
 			Value *brush_value = GetValue (Panel::BackgroundProperty);
@@ -355,8 +366,11 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 		}
 
  		if (subtract)
-			surface_region->Subtract (bounds);
+			region->Subtract (bounds);
 	}
+
+	if (delete_region)
+		delete region;
 }
 
 void

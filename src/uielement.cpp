@@ -508,17 +508,10 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 	if (!self_region->IsEmpty()) {
 		render_list->Prepend (new RenderNode (this, self_region, true, CallPreRender, CallPostRender));
 
-		bool subtract =  ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
-				 && !IS_TRANSLUCENT (local_opacity));
-
-		UIElement *el = this;
-		while (subtract && el) {
-			subtract = subtract 
-				&& (el->GetValue (UIElement::ClipProperty) == NULL)
-				&& (uielement_get_opacity_mask (el) == NULL)
-				&& !IS_TRANSLUCENT (uielement_get_opacity (el));
-			el = el->GetVisualParent ();
-		}
+		bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
+				 && !IS_TRANSLUCENT (local_opacity)
+				 && (GetValue (UIElement::ClipProperty) == NULL)
+				 && (uielement_get_opacity_mask (this) == NULL)); // XXX we can easily deal with opaque solid color brushes.
 
 		// element type specific checks
 		if (subtract) {
