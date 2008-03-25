@@ -104,10 +104,6 @@
 	inputFile="test-custom-element.xaml"
 	masterFile10="../harness/masters/test-custom-elementMaster.png"
    />
-   <Test id="24"
-	inputFile="test-custom-namespace.xaml"
-	masterFile10="../harness/masters/test-custom-namespaceMaster.png"
-   />
    <Test id="25"
 	inputFile="test-double-keyspline-animation.xaml"
 	masterFile10="../harness/masters/test-double-keyspline-animationMaster.tif"
