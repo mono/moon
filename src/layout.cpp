@@ -16,6 +16,9 @@
 #include "layout.h"
 
 
+#define d(x)
+
+
 #define BBOX_MARGIN 1.0
 #define BBOX_PADDING 2.0
 
@@ -262,6 +265,7 @@ TextLayout::GetLayoutExtents (double *width, double *height)
 }
 
 
+#if d(!)0
 static void
 print_run_text (const char *msg, gunichar *start, gunichar *end)
 {
@@ -337,6 +341,7 @@ print_break_info (gunichar *text)
 		inptr++;
 	}
 }
+#endif
 
 
 #define BreakSpace(btype) (btype == G_UNICODE_BREAK_SPACE || btype == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
@@ -793,8 +798,8 @@ TextLayout::LayoutWrap ()
 		height = MAX (height, run->font->Height ());
 		
 		segment = new TextSegment (run, 0);
-		print_run_text ("Laying out Run.Text", run->text, NULL);
-		print_break_info (run->text);
+		d(print_run_text ("Laying out Run.Text", run->text, NULL));
+		d(print_break_info (run->text));
 		inptr = run->text;
 		prev = 0;
 		x1 = x0;
@@ -1004,7 +1009,7 @@ TextLayout::LayoutWrap ()
 	g_array_free (array, true);
 }
 
-
+#if d(!)0
 static void
 print_lines (List *lines)
 {
@@ -1040,6 +1045,7 @@ print_lines (List *lines)
 		ln++;
 	}
 }
+#endif
 
 void
 TextLayout::Layout ()
@@ -1056,32 +1062,39 @@ TextLayout::Layout ()
 	
 	switch (wrapping) {
 	case TextWrappingWrapWithOverflow:
+#if d(!)0
 		if (max_width > 0.0)
 			printf ("TextLayout::LayoutWrapWithOverflow(%f)\n", max_width);
 		else
 			printf ("TextLayout::LayoutWrapWithOverflow()\n");
+#endif
 		LayoutWrapWithOverflow ();
 		break;
 	case TextWrappingNoWrap:
 	default:
+#if d(!)0
 		if (max_width > 0.0)
 			printf ("TextLayout::LayoutWrapNoWrap(%f)\n", max_width);
 		else
 			printf ("TextLayout::LayoutNoWrap()\n");
+#endif
 		LayoutNoWrap ();
 		break;
 	case TextWrappingWrap:
+#if d(!)0
 		if (max_width > 0.0)
 			printf ("TextLayout::LayoutWrap(%f)\n", max_width);
 		else
 			printf ("TextLayout::LayoutWrap()\n");
+#endif
 		LayoutWrap ();
 		break;
 	}
 	
+#if d(!)0
 	print_lines (lines);
-	
 	printf ("actualWidth = %f, actualHeight = %f\n", actual_width, actual_height);
+#endif
 	
 	bbox_height = actual_height;
 	bbox_width = actual_width;

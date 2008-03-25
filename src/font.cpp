@@ -31,7 +31,6 @@
 
 #include FT_OUTLINE_H
 
-#define FONT_DEBUG 1
 #if FONT_DEBUG
 #define d(x) x
 #else
