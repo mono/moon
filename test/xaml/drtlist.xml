@@ -678,4 +678,8 @@
 	 categories="parser"
 	 expectedError="ParserError"
     />
+   <Test id="159"
+	 inputFile="test-shape-line-stretch3.xaml"
+	 masterFile10="../harness/masters/test-shape-line-stretch3Master.png"
+    />
 </DRTList>

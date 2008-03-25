@@ -1,3 +1,11 @@
+2008-03-25  Michael Dominic K.  <mdk@mdk.am>
+
+	* test/harness/masters/test-shape-line-stretch3Master.png:
+	* test/xaml/drtlist.xml:
+	* test/xaml/test-shape-line-stretch3.xaml: Adding one more (currently
+	failing) test against line stretching. Take from the Silverlight
+	showcase. Master included.
+
 2008-03-24  Jackson Harper  <jackson@ximian.com>
 
 	* xaml/drtlist.xml:
