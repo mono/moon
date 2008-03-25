@@ -1,6 +1,7 @@
 2008-03-25  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Process install.rdf instead of install.js
+	* configure.ac: Add firefox plugin message to summary
 
 2008-03-18  Andrew Jorgensen  <ajorgensen@novell.com>
 

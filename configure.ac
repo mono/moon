@@ -550,5 +550,6 @@ Moonlight configuration:
 	Support for sse2: $HAVE_SSE2
 	Support for running the test harness: $TESTING_SUPPORTED
 	Support for pango as text engine: $WITH_PANGO
+	Support for firefox plugin installer: $user_plugin
 
 EOF
