@@ -2,7 +2,8 @@
 
 	* xaml/drtlist.xml:	
 	* xaml/test-custom-namespace.xaml: Remove this test, since it
-	requires external dependencies that we don't have.
+	requires external dependencies that we don't have and doesn't even
+	test what it is supposed to test.
 
 2008-03-25  Michael Dominic K.  <mdk@mdk.am>
 
