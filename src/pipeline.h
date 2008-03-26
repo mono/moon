@@ -435,6 +435,7 @@ class IMediaStream : public IMediaObject {
 private:
 	void *context;
 	bool enabled;
+	bool selected;
 
 protected:
 	virtual ~IMediaStream ();
@@ -457,6 +458,9 @@ public:
 	void *GetContext () { return context; }
 	void  SetContext (void *context) { this->context = context; }
 	
+	bool GetSelected () { return selected; }
+	void SetSelected (bool value);
+
 	void *extra_data;
 	int extra_data_size;
 	int codec_id;
@@ -471,7 +475,6 @@ public:
 	// 0-based index of the stream in the media
 	// set by the demuxer, until then its value must be -1
 	int index; 
-	bool selected;
 };
 
 class IMediaDemuxer : public IMediaObject {
@@ -505,6 +508,7 @@ public:
 	// Gets the longest duration from all the streams
 	virtual uint64_t GetDuration (); // 100-nanosecond units (pts)
 	virtual const char *GetName () = 0;
+	virtual void UpdateSelected (IMediaStream *stream) {};
 };
 
 class IMediaDecoder : public IMediaObject {

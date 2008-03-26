@@ -1,3 +1,8 @@
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, mplayer.cpp, pipeline.h: Made IMediaStream::selected private
+	  and add accessors.
+
 2008-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* shape.h:

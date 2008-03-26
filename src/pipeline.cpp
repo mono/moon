@@ -883,7 +883,7 @@ ASFDemuxer::EstimatePtsPosition (uint64_t pts)
 	int64_t result = -1;
 	
 	for (int i = 0; i < GetStreamCount (); i++) {
-		if (!GetStream (i)->selected)
+		if (!GetStream (i)->GetSelected ())
 			continue;
 
 		result = MAX (result, readers [i]->EstimatePtsPosition(pts));
@@ -906,7 +906,7 @@ ASFDemuxer::Seek (uint64_t pts)
 		return MEDIA_SUCCESS;
 		
 	for (int i = 0; i < GetStreamCount (); i++) {
-		if (!GetStream (i)->selected)
+		if (!GetStream (i)->GetSelected ())
 			continue;
 
 		result &= readers [i]->Seek (pts);
@@ -3010,6 +3010,14 @@ IMediaStream::~IMediaStream ()
 		decoder->unref ();
 	
 	g_free (extra_data);
+}
+
+void
+IMediaStream::SetSelected (bool value)
+{
+	selected = value;
+	if (media && media->GetDemuxer ())
+		media->GetDemuxer ()->UpdateSelected (this);
 }
 
 /*

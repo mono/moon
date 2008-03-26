@@ -294,7 +294,7 @@ MediaPlayer::Open (Media *media)
 			audio->stream_count++;			
 			if (audio->stream == NULL) {
 				audio->stream = (AudioStream *) stream;
-				audio->stream->selected = true;
+				audio->stream->SetSelected (true);
 			}
 			break;
 		case MediaTypeVideo: 
@@ -302,7 +302,7 @@ MediaPlayer::Open (Media *media)
 				break;
 
 			video->stream = (VideoStream *) stream;
-			video->stream->selected = true;
+			video->stream->SetSelected (true);
 			
 			height = video->stream->height;
 			width = video->stream->width;
@@ -333,7 +333,7 @@ MediaPlayer::Open (Media *media)
 	if (audio->stream != NULL) {
 		if (!AudioPlayer::Add (this)) {
 			// Can't play audio
-			audio->stream->selected = false;
+			audio->stream->SetSelected (true);
 			audio->stream = NULL;
 		}
 	}
