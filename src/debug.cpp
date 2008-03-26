@@ -133,6 +133,7 @@ library_of_ip (gpointer ip, gpointer* base_address)
 	char* current_library = NULL;
 	gpointer current_base_address = NULL; 
 	gpointer start, end;
+	char entire_line [2000];
 	
 	while (true) {
 		gint64 buffer_read = getline (&buffer, &buffer_length, maps);
@@ -140,26 +141,36 @@ library_of_ip (gpointer ip, gpointer* base_address)
 		if (buffer_read < 0)
 			break;
 		
+		memcpy (entire_line, buffer, buffer_length + 1);
+
 		if (buffer_read < 20)
 			continue;
 			
 		buffer [buffer_read - 1] = 0; // Strip off the newline.
 		
 		const char delimiters[] = " ";
-		char* range = strtok (buffer, delimiters);
-		char* dummy = strtok (NULL, delimiters);
-		dummy = strtok (NULL, delimiters);
-		dummy = strtok (NULL, delimiters);
-		dummy = strtok (NULL, delimiters);
-		char* lib = strtok (NULL, delimiters);
+		char *saveptr = NULL;
+		char *range = strtok_r (buffer, delimiters,  &saveptr);
+		char *a = strtok_r (NULL, delimiters, &saveptr);
+		char *b = strtok_r (NULL, delimiters, &saveptr);
+		char *c = strtok_r (NULL, delimiters, &saveptr);
+		char *d = strtok_r (NULL, delimiters, &saveptr);
+		char *lib = strtok_r (NULL, delimiters, &saveptr);
 		
 		if (lib == NULL) {
 			current_library = NULL;
 			continue;
 		}
 
-		char* start_range = strtok (range, "-");
-		char* end_range = strtok (NULL, "-");
+		if (lib [0] != '/' && lib [0] != '[') {
+			printf ("Something's wrong, lib: %s\n", lib);
+			printf ("range: %s, a: %s, b: %s, c: %s, d: %s, lib: %s, start_range: %s, end_range: %s, tail: %s, line: %s", 
+			range, a, b, c, d, lib, NULL, NULL, NULL, entire_line);
+		}
+		
+		saveptr = NULL;
+		char* start_range = strtok_r (range, "-",  &saveptr);
+		char* end_range = strtok_r (NULL, "-", &saveptr);
 		
 		char* tail;
 		start = start_range ? (gpointer) strtoull (start_range, &tail, 16) : NULL;
@@ -167,8 +178,8 @@ library_of_ip (gpointer ip, gpointer* base_address)
 		
 		if (current_library == NULL || strcmp (lib, current_library) != 0) {
 			current_library = lib;
-			current_base_address = start;
 		}
+		current_base_address = start;
 		
 		if (start <= ip && end >= ip) {
 			result = g_strdup (lib);
@@ -204,6 +215,7 @@ addr2line_offset (gpointer ip, bool use_offset)
 	gpointer base_address;
 	
 	char* binary = library_of_ip (ip, &base_address);
+	//printf ("library_of_ip (%p, %p): %s\n", ip, base_address, binary);
 	
 	if (binary == NULL)
 		return NULL;

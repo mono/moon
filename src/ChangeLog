@@ -1,5 +1,10 @@
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* debug.cpp: Correctly compute base addresses of libraries, and use a
+	  thread-safe version of strtok.
+
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* runtime.h, runtime.cpp, pipeline.cpp: Reverse the meaning of our YUV flag
 	  - it's now necessary to explicitly disable it in order to get rid of it
 	  instead of relying on a default flag to have the right value in order to
