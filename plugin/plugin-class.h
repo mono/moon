@@ -43,6 +43,8 @@ class EventListenerProxy : public List::Node {
 	const char *GetCallbackAsString ();
 
 	int GetEventId () { return event_id; }
+
+	static void proxy_listener_to_javascript (EventObject *sender, EventArgs *calldata, gpointer closure);
  private:
 	NPP instance;
 
@@ -61,7 +63,6 @@ class EventListenerProxy : public List::Node {
 	EventObject *target_object;
 
 	static void on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void proxy_listener_to_javascript (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
 
 /*** MoonlightObjectClass **************************************************************/

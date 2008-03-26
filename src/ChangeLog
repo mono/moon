@@ -1,3 +1,9 @@
+2008-03-26  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h, dependencyobject.cpp (class EventObject):
+	add RemoveMatchingHandlers variants that let you pass in a
+	predicate to test event handlers with.
+
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp, pipeline.h: ASFDemuxer: updated according to asf changes.

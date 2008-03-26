@@ -135,10 +135,12 @@ class EventObject {
 	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, int token);
+	void RemoveMatchingHandlers (const char *event_name, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure);
 
 	int AddHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, int token);
+	void RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure);
 
 	virtual Surface *GetSurface () { return surface; }
 	virtual void SetSurface (Surface *surface) { this->surface = surface; }

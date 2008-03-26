@@ -274,6 +274,42 @@ EventObject::RemoveHandler (int event_id, int token)
 	}
 }
 
+void
+EventObject::RemoveMatchingHandlers (const char *event_name, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure)
+{
+	int id = GetType()->LookupEvent (event_name);
+
+	if (id == -1) {
+		g_warning ("removing handler for event '%s', which has not been registered\n", event_name);
+		return;
+	}
+
+	RemoveMatchingHandlers (id, predicate, closure);
+}
+
+void
+EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure)
+{
+	if (GetType()->GetEventCount() <= 0) {
+		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
+		return;
+	}
+	
+	if (events == NULL)
+		return;
+
+	EventClosure *c = (EventClosure *) events[event_id].event_list->First ();
+	while (c) {
+		if (predicate (c->func, c->data, closure)) {
+			events[event_id].event_list->Unlink (c);
+			delete c;
+			break;
+		}
+		
+		c = (EventClosure *) c->next;
+	}
+}
+
 bool
 EventObject::Emit (char *event_name, EventArgs *calldata)
 {

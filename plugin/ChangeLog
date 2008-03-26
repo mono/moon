@@ -1,3 +1,14 @@
+2008-03-26  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightDependencyObjectObject::Invoke):
+	implement removeEventListener for named callbacks using the new
+	EventObject::RemoveMatchingHandlers method, and a helper
+	class (NamedProxyPredicate).
+
+	* plugin-class.h: we need to make
+	EventListenerProxy::proxy_listener_to_javascript public so
+	NamedProxyPredicate can access it.
+	
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* browser-mmsh.cpp: Updated according to API changes.

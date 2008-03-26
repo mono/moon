@@ -558,6 +558,26 @@ event_object_add_javascript_listener (EventObject *obj, PluginInstance *plugin, 
 	proxy->AddHandler (obj);
 }
 
+class NamedProxyPredicate {
+public:
+	NamedProxyPredicate (char *name) { this->name = g_strdup (name); }
+	~NamedProxyPredicate () { g_free (name); }
+
+	static bool matches (EventHandler cb_handler, gpointer cb_data, gpointer data)
+	{
+		if (cb_handler != EventListenerProxy::proxy_listener_to_javascript)
+			return false;
+		if (cb_data == NULL)
+			return false;
+		EventListenerProxy *proxy = (EventListenerProxy*)cb_data;
+		NamedProxyPredicate *pred = (NamedProxyPredicate*)data;
+
+		return !strcasecmp (proxy->GetCallbackAsString(), pred->name);
+	}
+private:
+	char *name;
+};
+
 /*** EventArgs **/
 
 static NPObject *
@@ -2388,10 +2408,14 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 			&& !NPVARIANT_IS_STRING (args [1])))
 			THROW_JS_EXCEPTION ("removeEventListener");
 		
-		if (NPVARIANT_IS_INT32 (args [1]))
+		if (NPVARIANT_IS_INT32 (args [1])) {
 			dob->RemoveHandler (STR_FROM_VARIANT (args[0]), NPVARIANT_TO_INT32 (args[1]));
-		else
-			g_warning ("removeEventListener for named callbacks is not yet implemented");
+		}
+		else if (NPVARIANT_IS_STRING (args[1])) {
+			NamedProxyPredicate predicate (STR_FROM_VARIANT (args [1]));
+
+			dob->RemoveMatchingHandlers (STR_FROM_VARIANT (args[0]), NamedProxyPredicate::matches, &predicate);
+		}
 
 		return true;
 	}
