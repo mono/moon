@@ -215,6 +215,7 @@ media_player_callback (MediaClosure *closure)
 		return MEDIA_SUCCESS;
 	case MediaTypeAudio: 
 		player->audio->queue->Push (new Packet (frame));
+		AudioPlayer::WakeUp ();
 		return MEDIA_SUCCESS;
 	default:
 		return MEDIA_SUCCESS;
@@ -1027,6 +1028,10 @@ AudioPlayer::AudioPlayer ()
 		fprintf (stderr, "AudioPlayer::Initialize (): Unable to create pipe (%s).\n", strerror (errno));
 		return;
 	}
+
+	// Make the writer pipe non-blocking.
+	fcntl (fds [1], F_SETFL, fcntl (fds [1], F_GETFL) | O_NONBLOCK);
+
 	ndfs = 1;
 	udfs = (pollfd*) g_malloc0 (sizeof (pollfd) * ndfs);
 	udfs [0].fd = fds [0];
@@ -1207,6 +1212,16 @@ AudioPlayer::PlayInternal (MediaPlayer *mplayer)
 	WakeUp ();
 }
 
+void
+AudioPlayer::WaitForData (AudioNode *node)
+{
+	LOG_AUDIO ("AudioPlayer::WaitForData (%p)\n", node);
+
+	// This method should be called with the lock held in the worker loop.
+	node->state = WaitingForData;
+	UpdatePollList (true);
+}
+
 AudioPlayer::AudioNode*
 AudioPlayer::Find (MediaPlayer *mplayer)
 {
@@ -1339,6 +1354,11 @@ AudioPlayer::Loop ()
 
 		// Play something from the node we got
 		if (current != NULL) {
+			if (current->state == WaitingForData && current->mplayer->audio->queue->LinkedList ()->First () != NULL) {
+				current->state = Playing;
+				UpdatePollList (true);
+			}
+
 			if (current->state == Playing) {
 				if (current->Play ())
 					pc = 0;
@@ -1930,8 +1950,10 @@ AudioPlayer::AudioNode::GetNextBuffer ()
 
 	packet = (Packet*) mplayer->audio->queue->Pop ();
 	
-	if (packet == NULL)
+	if (packet == NULL) {
+		instance->WaitForData (this);
 		return false;
+	}
 	
 	frame = packet->frame;
 	

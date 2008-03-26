@@ -1,5 +1,13 @@
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp, mplayer.h: Add a new state to the audio: WaitingForData, in
+	  which case we don't poll on that audio node (since the hardware will
+	  just tell us it's ready to recieve data). Fixes audio using 100% cpu
+	  after when it runs out of data (either because of network hiccup or the
+	  stream finished).
+
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp, mplayer.cpp, pipeline.h: Made IMediaStream::selected private
 	  and add accessors.
 

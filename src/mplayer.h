@@ -129,7 +129,8 @@ public:
 	enum AudioState {
 		Playing,
 		Paused,
-		Stopped
+		Stopped,
+		WaitingForData
 	};
 	struct AudioNode  {
 		MediaPlayer *mplayer;
@@ -233,7 +234,7 @@ public:
 	void PauseInternal (MediaPlayer *mplayer, bool value);
 	void StopInternal (MediaPlayer *mplayer);
 	void PlayInternal (MediaPlayer *mplayer);
-	void WakeUpInternal ();
+	void WaitForData (AudioNode *node);
 	
 public:
 	// None of the following functions are thread-safe, they must all be called from 
