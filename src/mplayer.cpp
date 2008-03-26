@@ -76,10 +76,7 @@ Packet::~Packet ()
 
 struct Audio {
 	Queue *queue;
-	
-	pthread_mutex_t init_mutex;
-	pthread_cond_t init_cond;
-	
+
 	double balance;
 	double volume;
 	bool muted;
@@ -97,9 +94,6 @@ struct Audio {
 
 Audio::Audio ()
 {
-	pthread_mutex_init (&init_mutex, NULL);
-	pthread_cond_init (&init_cond, NULL);
-	
 	queue = new Queue ();
 	
 	balance = 0.0f;

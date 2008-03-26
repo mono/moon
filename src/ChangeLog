@@ -1,5 +1,9 @@
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: Remove unused fields.
+
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* debug.cpp: Correctly compute base addresses of libraries, and use a
 	  thread-safe version of strtok.
 
