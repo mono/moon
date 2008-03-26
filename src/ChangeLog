@@ -1,3 +1,10 @@
+2008-03-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (Downloader::SendInternal): New method that is
+	basically the same as the old ::Send().
+	(Downloader::Send): Queue the SendInternal() call via
+	TimeManager's TickCall API.
+
 2008-03-26  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h, dependencyobject.cpp (class EventObject):
@@ -6,22 +13,23 @@
 
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* pipeline.cpp, pipeline.h: ASFDemuxer: updated according to asf changes.
-	  Added a MemoryStream. 
+	* pipeline.cpp, pipeline.h: ASFDemuxer: updated according to asf
+	  changes.  Added a MemoryStream.
+
 	* media.cpp: Updated according to API changes.
 
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* mplayer.cpp, mplayer.h: Add a new state to the audio: WaitingForData, in
-	  which case we don't poll on that audio node (since the hardware will
-	  just tell us it's ready to recieve data). Fixes audio using 100% cpu
-	  after when it runs out of data (either because of network hiccup or the
-	  stream finished).
+	* mplayer.cpp, mplayer.h: Add a new state to the audio:
+	  WaitingForData, in which case we don't poll on that audio
+	  node (since the hardware will just tell us it's ready to recieve
+	  data). Fixes audio using 100% cpu after when it runs out of
+	  data (either because of network hiccup or the stream finished).
 
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* pipeline.cpp, mplayer.cpp, pipeline.h: Made IMediaStream::selected private
-	  and add accessors.
+	* pipeline.cpp, mplayer.cpp, pipeline.h: Made
+	  IMediaStream::selected private and add accessors.
 
 2008-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
@@ -94,7 +102,7 @@
 
 	* src/shape.cpp: When setting the clipping for the shape also include
 	the transformations coming from stretching. This fixes
-	test-shape-line-stretch3 test and the missing stripees on Silverlight
+	test-shape-line-stretch3 test and the missing stripes on Silverlight
 	showcase.
 
 2008-03-24  Chris Toshok  <toshok@ximian.com>

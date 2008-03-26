@@ -58,6 +58,7 @@ class Downloader : public DependencyObject {
 	
 	char *failed_msg;
 	bool deobfuscated;
+	bool send_queued;
 	bool unlinkit;
 	bool unzipped;
 	bool started;
@@ -89,6 +90,7 @@ class Downloader : public DependencyObject {
 	void Abort ();
 	void *GetResponseText (const char *Partname, uint64_t *size);
 	void Open (const char *verb, const char *uri);
+	void SendInternal ();
 	void Send ();
 	
 	// the following is stuff not exposed by C#/js, but is useful

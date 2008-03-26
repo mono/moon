@@ -49,6 +49,7 @@
 
 #include "downloader.h"
 #include "zip/unzip.h"
+#include "runtime.h"
 #include "utils.h"
 #include "error.h"
 
@@ -62,9 +63,16 @@ downloader_open_func Downloader::open_func = NULL;
 downloader_send_func Downloader::send_func = NULL;
 downloader_abort_func Downloader::abort_func = NULL;
 
+DependencyProperty *Downloader::DownloadProgressProperty;
+DependencyProperty *Downloader::ResponseTextProperty;
+DependencyProperty *Downloader::StatusProperty;
+DependencyProperty *Downloader::StatusTextProperty;
+DependencyProperty *Downloader::UriProperty;
+
 int Downloader::CompletedEvent = -1;
 int Downloader::DownloadProgressChangedEvent = -1;
 int Downloader::DownloadFailedEvent = -1;
+
 
 Downloader::Downloader ()
 {
@@ -77,6 +85,7 @@ Downloader::Downloader ()
 	filename = NULL;
 	unzipdir = NULL;
 	failed_msg = NULL;
+	send_queued = false;
 	unzipped = false;
 	started = false;
 	aborted = false;
@@ -118,6 +127,7 @@ Downloader::Abort ()
 {
 	if (!aborted && !failed_msg) {
 		abort_func (downloader_state);
+		send_queued = false;
 		aborted = true;
 	}
 }
@@ -399,6 +409,7 @@ Downloader::Open (const char *verb, const char *uri)
 	}
 	
 	deobfuscated = false;
+	send_queued = false;
 	unlinkit = false;
 	
 	failed_msg = NULL;
@@ -409,8 +420,13 @@ Downloader::Open (const char *verb, const char *uri)
 }
 
 void
-Downloader::Send ()
+Downloader::SendInternal ()
 {
+	if (!send_queued)
+		return;
+	
+	send_queued = false;
+	
 	if (filename != NULL) {
 		// Consumer is re-sending a request which finished successfully.
 		NotifyFinished (filename);
@@ -427,6 +443,28 @@ Downloader::Send ()
 	aborted = false;
 	
 	send_func (downloader_state);
+}
+
+static void
+send_async (void *user_data)
+{
+	Downloader *downloader = (Downloader *) user_data;
+	
+	downloader->SendInternal ();
+	downloader->unref ();
+}
+
+void
+Downloader::Send ()
+{
+	TimeManager *tm = GetSurface ()->GetTimeManager ();
+	
+	if (send_queued)
+		return;
+	
+	tm->AddTickCall (send_async, this);
+	send_queued = true;
+	ref ();
 }
 
 //
@@ -633,63 +671,38 @@ downloader_notify_size (Downloader *dl, int64_t size)
 	dl->NotifySize (size);
 }
 
-void 
-dummy_downloader_write (void *buf, int32_t offset, int32_t n, gpointer cb_data)
-{
-	g_warning ("downloader_set_function has never been called.\n");
-}
 
-void
-dummy_downloader_notify_size (int64_t size, gpointer cb_data)
-{
-	g_warning ("downloader_set_function has never been called.\n");
-}
-
-gpointer
+static gpointer
 dummy_downloader_create_state (Downloader* dl)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 	return NULL;
 }
 
-void
+static void
 dummy_downloader_destroy_state (gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
 
-void
+static void
 dummy_downloader_open (const char *verb, const char *uri, gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
 
-void
+static void
 dummy_downloader_send (gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
 
-void
+static void
 dummy_downloader_abort (gpointer state)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
 
-char *
-dummy_downloader_get_response_text (char *fname, char *part, gpointer state)
-{
-	g_warning ("downloader_set_function has never been called.\n");
-	return NULL;
-}
-
-
-
-DependencyProperty *Downloader::DownloadProgressProperty;
-DependencyProperty *Downloader::ResponseTextProperty;
-DependencyProperty *Downloader::StatusProperty;
-DependencyProperty *Downloader::StatusTextProperty;
-DependencyProperty *Downloader::UriProperty;
 
 void
 downloader_init (void)
@@ -699,13 +712,13 @@ downloader_init (void)
 	Downloader::StatusProperty = DependencyObject::Register (Type::DOWNLOADER, "Status", new Value (0));
 	Downloader::StatusTextProperty = DependencyObject::Register (Type::DOWNLOADER, "StatusText", Type::STRING);
 	Downloader::UriProperty = DependencyObject::Register (Type::DOWNLOADER, "Uri", Type::STRING);
-
+	
 	/* lookup events */
 	Type *t = Type::Find (Type::DOWNLOADER);
 	Downloader::CompletedEvent               = t->LookupEvent ("Completed");
 	Downloader::DownloadProgressChangedEvent = t->LookupEvent ("DownloadProgressChanged");
 	Downloader::DownloadFailedEvent          = t->LookupEvent ("DownloadFailed");
-
+	
 	Downloader::SetFunctions (dummy_downloader_create_state,
 				  dummy_downloader_destroy_state,
 				  dummy_downloader_open,
