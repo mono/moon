@@ -49,6 +49,7 @@ class Shape : public FrameworkElement {
 	void SetupLineJoinMiter (cairo_t *cr);
 	virtual bool SetupLine (cairo_t* cr);
 	bool SetupDashes (cairo_t *cr, double thickness);
+	bool SetupDashes (cairo_t *cr, double thickness, double offset);
 	bool Fill (cairo_t *cr, bool do_op);
 	void Clip (cairo_t *cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op) = 0;

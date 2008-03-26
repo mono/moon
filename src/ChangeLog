@@ -1,3 +1,9 @@
+2008-03-26  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* shape.h:
+	* shape.cpp: set the dash caps for all the shapes, draw start/end caps
+	on line and polylines.
+
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Remove unused fields.

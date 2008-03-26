@@ -176,13 +176,15 @@ Shape::SetupLine (cairo_t* cr)
 bool
 Shape::SetupDashes (cairo_t *cr, double thickness)
 {
+	return Shape::SetupDashes (cr, thickness, shape_get_stroke_dash_offset (this) * thickness);
+}
+
+bool
+Shape::SetupDashes (cairo_t *cr, double thickness, double offset)
+{
 	int count = 0;
 	double *dashes = shape_get_stroke_dash_array (this, &count);
 	if (dashes && (count > 0)) {
-		// FIXME: cairo doesn't support line cap for dashes - see #345894
-
-		double offset = shape_get_stroke_dash_offset (this) * thickness;
-
 		// NOTE: special case - if we continue cairo will stops drawing!
 		if ((count == 1) && (*dashes == 0.0))
 			return false;
@@ -203,11 +205,8 @@ Shape::SetupDashes (cairo_t *cr, double thickness)
 void
 Shape::SetupLineCaps (cairo_t *cr)
 {
-	// FIXME: cairo doesn't have separate line cap for the start and end - see #345888
-	PenLineCap cap = shape_get_stroke_end_line_cap (this);
-	if (cap == PenLineCapFlat) {
-		cap = shape_get_stroke_start_line_cap (this);
-	}
+	//Setting the cap to dash_cap. the endcaps (if different) are handled elsewhere
+	PenLineCap cap = shape_get_stroke_dash_cap (this);
 	cairo_set_line_cap (cr, convert_line_cap (cap));
 }
 
@@ -803,6 +802,7 @@ Ellipse::DrawShape (cairo_t *cr, bool do_op)
 		return drawn;
 	if (!SetupLine (cr))
 		return drawn;
+	SetupLineCaps (cr);
 
 	if (!drawn)
 		Draw (cr);
@@ -951,6 +951,8 @@ Rectangle::DrawShape (cairo_t *cr, bool do_op)
 
 	if (!SetupLine (cr))
 		return drawn;
+
+	SetupLineCaps (cr);
 
 	if (!HasRadii ())
 		SetupLineJoinMiter (cr);
@@ -1295,10 +1297,23 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 	PenLineCap start = shape_get_stroke_start_line_cap (this);
 	PenLineCap end = shape_get_stroke_end_line_cap (this);
 	PenLineCap dash = shape_get_stroke_dash_cap (this);
-	if (do_op && !(start == end && start == dash))
+	if (do_op && !(start == end && start == dash)) {
 		// draw start and end line caps
-		line_draw_caps (cr, this, line_get_x1 (this), line_get_y1 (this), start, 
-			line_get_x2 (this), line_get_y2 (this), end);
+		if (start != PenLineCapFlat) 
+			line_draw_cap (cr, this, start, line_get_x1 (this), line_get_y1 (this), line_get_x2 (this), line_get_y2 (this));
+		if (end != PenLineCapFlat) {
+			//don't draw the end cap if it's in an "off" segment
+			double x1 = line_get_x1 (this);
+			double y1 = line_get_y1 (this);
+			double x2 = line_get_x2 (this);
+			double y2 = line_get_y2 (this);
+			double thickness = shape_get_stroke_thickness (this);
+			SetupDashes (cr, thickness, sqrt ((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)) + shape_get_stroke_dash_offset (this) * thickness);
+			line_draw_cap (cr, this, end, x2, y2, x1, y1);
+			SetupLine (cr);
+		}
+
+	}
 	cairo_set_line_cap (cr, convert_line_cap (dash));
 
 	Draw (cr);
@@ -1485,6 +1500,7 @@ Polygon::DrawShape (cairo_t *cr, bool do_op)
 
 	if (!SetupLine (cr))
 		return drawn;
+	SetupLineCaps (cr);
 	SetupLineJoinMiter (cr);
 
 	Draw (cr);
