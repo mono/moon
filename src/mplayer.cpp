@@ -987,20 +987,15 @@ MediaPlayer::SetVolume (double volume)
  * AudioPlayer
  */
 
-AudioPlayer *AudioPlayer::instance = NULL;
-
-AudioPlayer*
-AudioPlayer::Instance ()
+static int
+sem_get_value (sem_t *sem)
 {
-	// There is no need to lock here 
-	// since we should only be called
-	// on the main thread.
-
-	if (instance == NULL)
-		instance = new AudioPlayer ();
-
-	return instance;
+	int v;
+	sem_getvalue (sem, &v);
+	return v;
 }
+
+AudioPlayer *AudioPlayer::instance = NULL;
 
 void
 AudioPlayer::Shutdown ()
@@ -1012,19 +1007,19 @@ AudioPlayer::Shutdown ()
 bool
 AudioPlayer::Initialize ()
 {
-	return Instance () != NULL;
+	instance = new AudioPlayer ();
+	instance->StartThread ();
+	return true;
 }
 
 AudioPlayer::AudioPlayer ()
 {
-	int result;
-
 	audio_thread = NULL;
 	
 	shutdown = false;
 	initialized = false;
 
-	pthread_mutex_init (&list_mutex, NULL);
+	sem_init (&semaphore, 0, 1);
 	list = NULL;
 	list_count = 0;
 	list_size = 0;
@@ -1043,15 +1038,20 @@ AudioPlayer::AudioPlayer ()
 	udfs [0].fd = fds [0];
 	udfs [0].events = POLLIN;
 		
+	initialized = true;
+	
+	LOG_AUDIO ("AudioPlayer::Initialize (): the audio player has been initialized.");
+}
+
+void
+AudioPlayer::StartThread ()
+{
+	int result;
 	result = pthread_create (&audio_thread, NULL, Loop, this);
 	if (result != 0) {
 		fprintf (stderr, "AudioPlayer::Initialize (): could not create audio thread (error code: %i = '%s').\n", result, strerror (result));
 		return;
 	}
-	
-	initialized = true;
-	
-	LOG_AUDIO ("AudioPlayer::Initialize (): the audio player has been initialized.");
 }
 
 AudioPlayer::~AudioPlayer ()
@@ -1068,8 +1068,15 @@ AudioPlayer::~AudioPlayer ()
 	
 	shutdown = true;
 	
-	WakeUp ();
-	
+	// The Lock/Unlock sequence will ensure that the audio loop is exited, 
+	// since the loop checks the 'shutdown' value just after reaquiring it's lock
+	// (i.e. after the unlock here), and then breaks the loop.
+	Lock ();
+	Unlock ();
+
+	// Wait until the audio thread has completely finished.
+	// We can't just join the thread without the above Lock/Unlock,
+	// since the thread may be waiting in a poll for something to happen.
 	result = pthread_join (audio_thread, NULL);
 	if (result != 0) {
 		fprintf (stderr, "AudioPlayer::~AudioPlayer (): failed to join the audio thread (error code: %i).\n", result);
@@ -1091,18 +1098,17 @@ AudioPlayer::~AudioPlayer ()
 	shutdown = false;
 	initialized = false;
 
-	pthread_mutex_destroy (&list_mutex);
-	
+	sem_destroy (&semaphore);
 	LOG_AUDIO ("AudioPlayer::~AudioPlayer (): the audio player has been shut down.\n");
 }
 
 bool
 AudioPlayer::Add (MediaPlayer *mplayer)
 {
-	if (!Initialize ())
-		return false;
+	if (instance == NULL)
+		return false; // We've been shutdown (or not initialized);
 
-	return Instance ()->AddInternal (mplayer);
+	return instance->AddInternal (mplayer);
 }
 
 bool
@@ -1110,8 +1116,6 @@ AudioPlayer::AddInternal (MediaPlayer *mplayer)
 {
 	LOG_AUDIO ("AudioPlayer::Add (%p)\n", mplayer);
 	
-	if (!Initialize ())
-		return false;
 
 	AudioNode *node = new AudioNode ();
 	AudioNode **new_list = NULL;
@@ -1148,10 +1152,10 @@ AudioPlayer::AddInternal (MediaPlayer *mplayer)
 void
 AudioPlayer::Remove (MediaPlayer *mplayer)
 {
-	if (!Initialize ())
-		return;
+	if (instance == NULL)
+		return; // We've been shutdown (or not initialized);
 	
-	Instance ()->RemoveInternal (mplayer);
+	instance->RemoveInternal (mplayer);
 }
 
 void
@@ -1183,10 +1187,10 @@ AudioPlayer::RemoveInternal (MediaPlayer *mplayer)
 void
 AudioPlayer::Play (MediaPlayer *mplayer)
 {
-	if (!Initialize ())
-		return;
+	if (instance == NULL)
+		return; // We've been shutdown (or not initialized);
 
-	Instance ()->PlayInternal (mplayer);
+	instance->PlayInternal (mplayer);
 }
 
 
@@ -1195,16 +1199,17 @@ AudioPlayer::PlayInternal (MediaPlayer *mplayer)
 {
 	LOG_AUDIO ("AudioPlayer::PlayInternal (%p)\n", mplayer);
 
-	AudioNode *node = Find (mplayer);
-	
-	if (node == NULL)
-		return;
-	
-	node->state = Playing;
-	node->Unlock ();
+	AudioNode *node;
 
-	UpdatePollList (false);
+	Lock ();
+	node = Find (mplayer);
 	
+	if (node != NULL) {
+		node->state = Playing;
+		UpdatePollList (true);
+	}
+	Unlock ();
+
 	WakeUp ();
 }
 
@@ -1213,17 +1218,12 @@ AudioPlayer::Find (MediaPlayer *mplayer)
 {
 	AudioNode *result = NULL;
 	
-	Lock();
-	
 	for (uint32_t i = 0; i < list_count; i++) {
 		if (list [i]->mplayer == mplayer) {
 			result = list [i];
-			result->Lock ();
 			break;
 		}	
 	}
-	
-	Unlock ();
 	
 	return result;
 }
@@ -1268,19 +1268,9 @@ AudioPlayer::UpdatePollList (bool locked)
 	 * to only include audio nodes which are playing.
 	 */
 
-	/*
-	 * We can't just wake up the poll and then lock on a poll mutex,
-	 * since when we lock the mutex we might be in a poll again.
-	 * So we lock the list mutex, and then wake up the poll. This means that 
-	 * the audio loop will be waiting for the list mutex, instead of entering
-	 * another poll.
-	 */
-
 	if (!locked) {
 		Lock ();
 	}
-
-	WakeUp ();
 	
 	ndfs = 1;
 	for (uint32_t i = 0; i < list_count; i++) {
@@ -1324,8 +1314,21 @@ AudioPlayer::Loop ()
 	
 	LOG_AUDIO ("AudioPlayer: entering audio .\n");
 	
+
+	SimpleLock ();
+
+	// valgrind/helgrind reports a possible data race while accessing 'shutdown', however
+	// this can be ignored since 'shutdown' is only written to once (to set it to true).
+
 	while (!shutdown) {
-		Lock ();
+
+		// Unlock/relock our lock so that the rest of the audio player gets a chance
+		// to do something.
+		Unlock ();
+		SimpleLock ();
+
+		if (shutdown)
+			break;
 
 		current = NULL;
 		lc = list_count;
@@ -1335,12 +1338,8 @@ AudioPlayer::Loop ()
 				current_index = 0;
 			current = list [current_index];
 			current_index++;
-			if (current != NULL) {
-				current->Lock ();
-			}
 		}
 				
-		Unlock ();
 
 		pc++;
 
@@ -1350,7 +1349,6 @@ AudioPlayer::Loop ()
 				if (current->Play ())
 					pc = 0;
 			}
-			current->Unlock ();
 		}
 		
 		
@@ -1370,7 +1368,7 @@ AudioPlayer::Loop ()
 				
 				LOG_AUDIO_EX ("AudioPlayer::Loop (): polling... (lc: %i, pc: %i)\n", lc, pc);
 				result = poll (udfs, ndfs, 10000); // Have a timeout of 10 seconds, just in case something goes wrong.
-				LOG_AUDIO_EX ("AudioPlayer::Loop (): poll result: %i, fd: %i, fd [0].revents: %i, errno: %i, err: %s, ndfs = %i\n", result, udfs [0].fd, (int) udfs [0].revents, errno, strerror (errno), ndfs);
+				LOG_AUDIO_EX ("AudioPlayer::Loop (): poll result: %i, fd: %i, fd [0].revents: %i, errno: %i, err: %s, ndfs = %i, shutdown: %i\n", result, udfs [0].fd, (int) udfs [0].revents, errno, strerror (errno), ndfs, shutdown);
 	
 				if (result == 0) { // Timed out
 					LOG_AUDIO ("AudioPlayer::Loop (): poll timed out.\n");
@@ -1391,26 +1389,33 @@ AudioPlayer::Loop ()
 		}
 	}
 			
+	Unlock ();
 	LOG_AUDIO ("AudioPlayer: exiting audio loop.\n");
 }
 
 void
 AudioPlayer::Pause (MediaPlayer *mplayer, bool value)
 {
-	if (!Initialize ())
-		return;
+	if (instance == NULL)
+		return; // We've been shutdown (or not initialized);
 
-	Instance ()->PauseInternal (mplayer, value);
+	instance->PauseInternal (mplayer, value);
 }
 
 void
 AudioPlayer::PauseInternal (MediaPlayer *mplayer, bool value)
 {
-	AudioNode *node = Find (mplayer);
+	AudioNode *node;
 	int err = 0;
 	
-	if (node == NULL)
+	Lock ();
+	
+	node = Find (mplayer);
+	
+	if (node == NULL) {
+		Unlock ();
 		return;
+	}
 	
 	if (value != (node->state == Paused)) {
 		if (value) {
@@ -1433,22 +1438,46 @@ AudioPlayer::PauseInternal (MediaPlayer *mplayer, bool value)
 		}
 
 	}
-	node->Unlock ();
-	UpdatePollList (false);
+
+	UpdatePollList (true);
+	Unlock ();
+}
+
+void
+AudioPlayer::SimpleLock ()
+{
+	LOG_AUDIO_EX ("AudioPlayer::SimpleLock (). instance: %p, semaphore: %i\n", instance, sem_get_value (&semaphore));
+
+	while (sem_wait (&semaphore) == -1 && errno == EINTR) {};
+
+	LOG_AUDIO_EX ("AudioPlayer::SimpleLock (). AQUIRED instance: %p, semaphore: %i\n", instance, sem_get_value (&semaphore));
 }
 
 void
 AudioPlayer::Lock ()
 {
-	LOG_AUDIO_EX ("AudioPlayer::Lock ()\n");
-	pthread_mutex_lock (&Instance ()->list_mutex);
+	LOG_AUDIO_EX ("AudioPlayer::Lock (). instance: %p, semaphore: %i\n", instance, sem_get_value (&semaphore));
+
+	timespec ts;
+
+	ts.tv_sec = 0;
+	ts.tv_nsec = 10000000; // 10 milliseconds
+	
+
+	// Wait for a moment, if no success try to wake up the loop and and try again
+	// We can't just wait since the loop might be in a poll waiting for something to happen.
+	while (sem_timedwait (&semaphore, &ts) == -1 && (errno == EINTR || errno == ETIMEDOUT)) {
+		WakeUp ();
+	}
+
+	LOG_AUDIO_EX ("AudioPlayer::Lock (). AQUIRED instance: %p, semaphore: %i\n", instance, sem_get_value (&semaphore));
 }
 
 void
 AudioPlayer::Unlock ()
 {
-	LOG_AUDIO_EX ("AudioPlayer::UnLock ()\n");
-	pthread_mutex_unlock (&Instance ()->list_mutex);
+	LOG_AUDIO_EX ("AudioPlayer::UnLock (), semaphore: %i\n", sem_get_value (&semaphore));
+	sem_post (&semaphore);
 }
 
 void
@@ -1456,14 +1485,14 @@ AudioPlayer::WakeUp ()
 {
 	int result;
 		
-	if (!Initialize ())
-		return;
+	if (instance == NULL)
+		return; // We've been shutdown (or not initialized)
 
-	LOG_AUDIO ("AudioPlayer::WakeUp ()\n");
+	LOG_AUDIO ("AudioPlayer::WakeUp (). semaphore: %i\n", sem_get_value (&instance->semaphore));
 	
 	// Write until something has been written.	
 	do {
-		result = write (Instance ()->fds [1], "c", 1);
+		result = write (instance->fds [1], "c", 1);
 	} while (result == 0);
 	
 	if (result == -1)
@@ -1864,7 +1893,6 @@ AudioPlayer::AudioNode::Initialize ()
 
 AudioPlayer::AudioNode::AudioNode ()
 {
-	pthread_mutex_init (&mutex, NULL);
 	mplayer = NULL;
 	pcm = NULL;
 	sample_size = 0;
@@ -1938,9 +1966,7 @@ void
 AudioPlayer::AudioNode::Close ()
 {
 	LOG_AUDIO ("AudioNode::Close () %p\n", this);
-	
-	Lock ();
-	
+		
 	if (pcm != NULL) {
 		snd_pcm_close (pcm);
 		pcm = NULL;
@@ -1950,25 +1976,5 @@ AudioPlayer::AudioNode::Close ()
 	udfs = NULL;
 	
 	g_free (first_buffer);
-	first_buffer = NULL;	
-
-	Unlock ();
-	
-	pthread_mutex_destroy (&mutex);
+	first_buffer = NULL;
 }
- 
-void
-AudioPlayer::AudioNode::Lock ()
-{
-	LOG_AUDIO_EX ("AudioNode::Lock () %p\n", this);
-	pthread_mutex_lock (&mutex);
-}
-
-void
-AudioPlayer::AudioNode::Unlock ()
-{
-	LOG_AUDIO_EX ("AudioNode::UnLock () %p\n", this);
-	pthread_mutex_unlock (&mutex);
-}
-
-

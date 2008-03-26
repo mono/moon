@@ -132,16 +132,19 @@ Media::~Media ()
 	delete markers;
 
 	// Remove ourselves from the global list of medias
-	media_objects->Lock ();
-	node = (MediaNode *) media_objects->LinkedList ()->First ();
-	while (node != NULL) {
-		if (node->media == this) {
-			media_objects->LinkedList ()->Remove (node);
-			break;
+	// media_objects might be NULL if Media::Shutdown has been called already
+	if (media_objects) {
+		media_objects->Lock ();
+		node = (MediaNode *) media_objects->LinkedList ()->First ();
+		while (node != NULL) {
+			if (node->media == this) {
+				media_objects->LinkedList ()->Remove (node);
+				break;
+			}
+			node = (MediaNode *) node->next;
 		}
-		node = (MediaNode *) node->next;
+		media_objects->Unlock ();
 	}
-	media_objects->Unlock ();
 }
 
 void
@@ -244,6 +247,8 @@ Media::Initialize ()
 #else
 	Media::RegisterDecoder (new NullMp3DecoderInfo ());
 #endif
+
+	AudioPlayer::Initialize ();
 }
 
 void
@@ -2919,8 +2924,8 @@ MediaClosure::~MediaClosure ()
 	delete frame;
 
 	// Use delayed unref to be thread-safe.
-	base_unref (context); //base_unref_delayed (context);
-	base_unref (media); // base_unref_delayed (media);
+	base_unref_delayed (context); //base_unref_delayed (context);
+	base_unref_delayed (media); // base_unref_delayed (media);
 }
 
 MediaResult
@@ -3236,12 +3241,12 @@ MediaWork::~MediaWork ()
 {
 	switch (type) {
 	case WorkTypeOpen:
-		data.open.source->unref ();
+		base_unref_delayed (data.open.source);
 		break;
 	case WorkTypeVideo:
 	case WorkTypeAudio:
 	case WorkTypeMarker:
-		data.frame.stream->unref ();
+		base_unref_delayed (data.frame.stream);
 		break;
 	case WorkTypeSeek:
 		break; // Nothing to do

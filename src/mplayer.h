@@ -17,6 +17,7 @@
 #include <pthread.h>
 #include <poll.h>
 #include <asoundlib.h>
+#include <semaphore.h>
 
 class MediaPlayer;
 
@@ -131,9 +132,6 @@ public:
 		Stopped
 	};
 	struct AudioNode  {
-		// We can't allow the node to be manipulated while we're playing,
-		// so we lock a mutex during playback.
-		pthread_mutex_t mutex;
 		MediaPlayer *mplayer;
 		
 		snd_pcm_t *pcm;
@@ -177,8 +175,6 @@ public:
 		bool Play ();
 
 		void Close ();
-		void Lock ();
-		void Unlock ();
 	};
 	
 	// This value will be false if initialization fails (no audio devices, etc).
@@ -192,9 +188,7 @@ public:
 	uint32_t list_size;
 	uint32_t list_count;
 
-	// Every single list access must be protected 
-	// with this mutex.
-	pthread_mutex_t list_mutex;
+	sem_t semaphore;
 	
 	// A list of all the file descriptors in all the 
 	// audio nodes. We need to poll on changes in any of the 
@@ -213,6 +207,8 @@ public:
 	AudioPlayer ();
 	~AudioPlayer ();
 
+	void StartThread ();
+
 	AudioNode* Find (MediaPlayer *mplayer);
 
 	// The audio thread	
@@ -228,7 +224,8 @@ public:
 	static AudioPlayer* Instance ();
 	static bool Initialize ();
 
-	void Lock ();
+	void Lock (); // tries to wait on the semaphore, and if not successful, wakes up the audio thread and tries again.
+	void SimpleLock (); // just waits on the semaphore
 	void Unlock ();
 
 	bool AddInternal (MediaPlayer *mplayer);

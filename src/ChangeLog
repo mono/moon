@@ -1,5 +1,15 @@
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: Remove Instance (), it's redundant.
+	* mplayer.h: AudioPlayer: Remove Instance (), it's redundant. Synchronize
+	  everything in the audio player with one semaphore, it simplifies things
+	  and removes a couple of problems helgrind found.
+	* pipeline.cpp: ~Media: Add a nullcheck. Media::Initialize: Initialize the
+	  audio player as well. Use delayed unreffing in destructors which may be
+	  called on worker threads.
+
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* runtime.cpp, runtime.h: Remove the pending unref stuff from Surface.
 	* dependencyobject.cpp: Remove the surface-based delayed unloading, it's not
 	  thread-safe and making it thread-safe isn't worth it. Also use a pthread
