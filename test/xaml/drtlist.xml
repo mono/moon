@@ -690,4 +690,8 @@
 	 inputFile="test-shape-path-stretch3.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch3Master.png"
     />
+   <Test id="163"
+	 inputFile="test-shape-dashcaps.xaml"
+	 masterFile10="../harness/masters/test-shape-dashcapsMaster.png"
+    />
 </DRTList>

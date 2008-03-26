@@ -55,7 +55,7 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
 <Line Canvas.Left="30" Canvas.Top="150"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="DeepSkyBlue"
-  StrokeThickness="20"
+  StrokeThickness="15"
   StrokeStartLineCap="Round"
   StrokeEndLineCap="Round"
   StrokeDashCap="Triangle"
@@ -66,72 +66,112 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
   Stroke="Black"
   StrokeThickness="2"/>
 
-<Line Canvas.Left="30" Canvas.Top="180"
+<Line Canvas.Left="30" Canvas.Top="170"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="DeepSkyBlue"
-  StrokeThickness="20"
+  StrokeThickness="15"
   StrokeStartLineCap="Round"
   StrokeEndLineCap="Round"
   StrokeDashCap="Triangle"
   StrokeDashArray="1,3" 
   StrokeDashOffset="0.6"/>
-<Line Canvas.Left="30" Canvas.Top="180"
+<Line Canvas.Left="30" Canvas.Top="170"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="Black"
   StrokeThickness="2"/>
 
-<Line Canvas.Left="30" Canvas.Top="210"
+<Line Canvas.Left="30" Canvas.Top="190"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="DeepSkyBlue"
-  StrokeThickness="20"
+  StrokeThickness="15"
   StrokeStartLineCap="Round"
   StrokeEndLineCap="Round"
   StrokeDashCap="Triangle"
   StrokeDashArray="1,3" 
-  StrokeDashOffset="0.9"/>
-<Line Canvas.Left="30" Canvas.Top="210"
+  StrokeDashOffset=".9"/>
+<Line Canvas.Left="30" Canvas.Top="190"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="Black"
   StrokeThickness="2"/>
-
-<Line Canvas.Left="30" Canvas.Top="240"
+<Line Canvas.Left="30" Canvas.Top="210"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="DeepSkyBlue"
-  StrokeThickness="20"
+  StrokeThickness="15"
   StrokeStartLineCap="Round"
   StrokeEndLineCap="Round"
   StrokeDashCap="Triangle"
   StrokeDashArray="1,3" 
   StrokeDashOffset="1.2"/>
-<Line Canvas.Left="30" Canvas.Top="240"
+<Line Canvas.Left="30" Canvas.Top="210"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="Black"
   StrokeThickness="2"/>
-
-<Line Canvas.Left="30" Canvas.Top="270"
+<Line Canvas.Left="30" Canvas.Top="230"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="DeepSkyBlue"
-  StrokeThickness="20"
+  StrokeThickness="15"
   StrokeStartLineCap="Round"
   StrokeEndLineCap="Round"
   StrokeDashCap="Triangle"
   StrokeDashArray="1,3" 
   StrokeDashOffset="1.5"/>
-<Line Canvas.Left="30" Canvas.Top="270"
+<Line Canvas.Left="30" Canvas.Top="230"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="Black"
   StrokeThickness="2"/>
 
-<Line Canvas.Left="30" Canvas.Top="300"
+<Line Canvas.Left="30" Canvas.Top="250"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="DeepSkyBlue"
-  StrokeThickness="20"
+  StrokeThickness="15"
   StrokeStartLineCap="Round"
   StrokeEndLineCap="Round"
   StrokeDashCap="Triangle"
   StrokeDashArray="1,3" 
   StrokeDashOffset="1.8"/>
-<Line Canvas.Left="30" Canvas.Top="300"
+<Line Canvas.Left="30" Canvas.Top="250"
+  X1="0" Y1="0" X2="200" Y2="0"
+  Stroke="Black"
+  StrokeThickness="2"/>
+
+<Line Canvas.Left="30" Canvas.Top="270"
+  X1="0" Y1="0" X2="200" Y2="0"
+  Stroke="DeepSkyBlue"
+  StrokeThickness="15"
+  StrokeStartLineCap="Round"
+  StrokeEndLineCap="Round"
+  StrokeDashCap="Triangle"
+  StrokeDashArray="1,3" 
+  StrokeDashOffset="2.1"/>
+<Line Canvas.Left="30" Canvas.Top="270"
+  X1="0" Y1="0" X2="200" Y2="0"
+  Stroke="Black"
+  StrokeThickness="2"/>
+
+<Line Canvas.Left="30" Canvas.Top="290"
+  X1="0" Y1="0" X2="200" Y2="0"
+  Stroke="DeepSkyBlue"
+  StrokeThickness="15"
+  StrokeStartLineCap="Round"
+  StrokeEndLineCap="Round"
+  StrokeDashCap="Triangle"
+  StrokeDashArray="1,3" 
+  StrokeDashOffset="3"/>
+<Line Canvas.Left="30" Canvas.Top="290"
+  X1="0" Y1="0" X2="200" Y2="0"
+  Stroke="Black"
+  StrokeThickness="2"/>
+
+<Line Canvas.Left="30" Canvas.Top="310"
+  X1="0" Y1="0" X2="200" Y2="0"
+  Stroke="DeepSkyBlue"
+  StrokeThickness="15"
+  StrokeStartLineCap="Round"
+  StrokeEndLineCap="Round"
+  StrokeDashCap="Triangle"
+  StrokeDashArray="1,3" 
+  StrokeDashOffset="4"/>
+<Line Canvas.Left="30" Canvas.Top="310"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="Black"
   StrokeThickness="2"/>
@@ -139,16 +179,17 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
 <Line Canvas.Left="30" Canvas.Top="330"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="DeepSkyBlue"
-  StrokeThickness="20"
+  StrokeThickness="15"
   StrokeStartLineCap="Round"
   StrokeEndLineCap="Round"
   StrokeDashCap="Triangle"
   StrokeDashArray="1,3" 
-  StrokeDashOffset="2.1"/>
+  StrokeDashOffset="4.3"/>
 <Line Canvas.Left="30" Canvas.Top="330"
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="Black"
   StrokeThickness="2"/>
+
 
 <Line Canvas.Left="30" Canvas.Top="360"
   X1="0" Y1="0" X2="200" Y2="0"
@@ -174,7 +215,5 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
   X1="0" Y1="0" X2="200" Y2="0"
   Stroke="Black"
   StrokeThickness="2"/>
-
-
 </Canvas>
 
