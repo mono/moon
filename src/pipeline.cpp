@@ -571,7 +571,7 @@ Media::Open (IMediaSource *source)
 				if (current_conv == NULL) {
 					AddMessage (MEDIA_UNKNOWN_CONVERTER,
 						    g_strdup_printf ("Can't convert from %d to %d: No converter found.",
-								     vs->decoder->pixel_format, MoonPixelFormatRGB32));	
+								     decoder->pixel_format, MoonPixelFormatRGB32));	
 				} else {
 					LOG_PIPELINE ("Checking whether '%s' supports input '%d' and output '%d': yes.\n",
 						current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);

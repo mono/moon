@@ -1,5 +1,9 @@
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Fix a crash.
+
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp: Remove Instance (), it's redundant.
 	* mplayer.h: AudioPlayer: Remove Instance (), it's redundant. Synchronize
 	  everything in the audio player with one semaphore, it simplifies things
