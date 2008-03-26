@@ -89,8 +89,8 @@ static struct {
 	{ "render=btf",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  false },
 	{ "cache=show",	       RUNTIME_INIT_SHOW_CACHE_SIZE,       true  },
 	{ "cache=hide",        RUNTIME_INIT_SHOW_CACHE_SIZE,       false },
-	{ "converter=yuv",     RUNTIME_INIT_CONVERTER_YUV,         true  },
-	{ "converter=ffmpeg",  RUNTIME_INIT_CONVERTER_YUV,         false },
+	{ "converter=yuv",     RUNTIME_INIT_DISABLE_CONVERTER_YUV, false },
+	{ "converter=ffmpeg",  RUNTIME_INIT_DISABLE_CONVERTER_YUV, true },
 	{ "shapecache=yes",    RUNTIME_INIT_USE_SHAPE_CACHE,	   true  },
 	{ "shapecache=no",     RUNTIME_INIT_USE_SHAPE_CACHE,	   false }
 };

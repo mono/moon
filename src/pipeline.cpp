@@ -240,7 +240,7 @@ Media::Initialize ()
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 	Media::RegisterDemuxer (new ASXDemuxerInfo ());
-	if (moonlight_flags & RUNTIME_INIT_CONVERTER_YUV)
+	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_CONVERTER_YUV))
 		Media::RegisterConverter (new YUVConverterInfo ());
 #ifdef INCLUDE_FFMPEG
 	register_ffmpeg ();

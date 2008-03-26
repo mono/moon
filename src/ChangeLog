@@ -1,5 +1,12 @@
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* runtime.h, runtime.cpp, pipeline.cpp: Reverse the meaning of our YUV flag
+	  - it's now necessary to explicitly disable it in order to get rid of it
+	  instead of relying on a default flag to have the right value in order to
+	  get it. Makes video work with mopen again.
+
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp: Fix a crash.
 
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
