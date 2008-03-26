@@ -1,3 +1,11 @@
+2008-03-26  Michael Dominic K.  <mdk@mdk.am>
+
+	* harness/masters/test-shape-path-stretch2Master.png:
+	* xaml/drtlist.xml:
+	* xaml/test-shape-path-stretch2.xaml: Adding one extra test that shows
+	our stretching bug. It look like we're missing or adding extra
+	translation (the line should be at y = 10). Master included.
+
 2008-03-25  Jackson Harper  <jackson@ximian.com>
 
 	* xaml/drtlist.xml:	
