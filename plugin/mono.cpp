@@ -13,6 +13,7 @@
 #include "moonlight.h"
 #include <stdlib.h>
 #include <glib.h>
+#include <dlfcn.h>
 
 #if INCLUDE_MONO_RUNTIME
 #include "moon-mono.h"
@@ -61,7 +62,12 @@ vm_init (void)
 		return TRUE;
 
 #if PLUGIN_INSTALL
-	boot_assembly = g_build_filename (g_get_home_dir(), ".mozilla", "plugins", "moonlight", "moonlight.exe", NULL);
+        Dl_info dlinfo;
+        if (dladdr((void *) &vm_init, &dlinfo) == 0) {
+                fprintf (stderr, "Unable to find the location of libmoonplugin %s\n", dlerror ());
+                result = FALSE;
+        }
+	boot_assembly = g_build_filename (g_path_get_dirname(dlinfo.dli_fname), "moonlight.exe", NULL);
 #else
 	boot_assembly = g_build_filename (PLUGIN_DIR, "plugin", "moonlight.exe", NULL);
 #endif

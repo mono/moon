@@ -1,3 +1,8 @@
+2008-03-26  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* mono.cpp: Get correct path for moonlight.exe as well when
+	enable-user-plugin=yes
+
 2008-03-26  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (MoonlightDependencyObjectObject::Invoke):
