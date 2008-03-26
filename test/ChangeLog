@@ -1,5 +1,12 @@
 2008-03-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* harness/masters/test-shape-path-stretch3Master.png:
+	* xaml/drtlist.xml:
+	* xaml/test-shape-path-stretch3.xaml: Yet another test for shape/path
+	bounds brokeness with Stretch=Fill.
+
+2008-03-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* harness/masters/test-shape-path-stretch2Master.png:
 	* xaml/drtlist.xml:
 	* xaml/test-shape-path-stretch2.xaml: Adding one extra test that shows
