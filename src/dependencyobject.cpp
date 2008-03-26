@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include <gtk/gtk.h>
+#include <pthread.h>
 
 #include "debug.h"
 #include "namescope.h"
@@ -373,28 +374,34 @@ base_unref_delayed (EventObject *obj)
 	obj->unref_delayed ();
 }
 
-static GStaticRecMutex delayed_unref_mutex = G_STATIC_REC_MUTEX_INIT;
+static pthread_mutex_t delayed_unref_mutex = PTHREAD_MUTEX_INITIALIZER;
 static bool drain_tick_call_added = false;
 static GSList *pending_unrefs = NULL;
 
 static gboolean
 drain_unrefs_idle_call (gpointer data)
 {
-	g_static_rec_mutex_lock (&delayed_unref_mutex);
 	drain_unrefs ();
-	drain_tick_call_added = false;
-	g_static_rec_mutex_unlock (&delayed_unref_mutex);
 	return FALSE;
 }
 
 void
 drain_unrefs ()
 {
-	g_static_rec_mutex_lock (&delayed_unref_mutex);
-	g_slist_foreach (pending_unrefs, (GFunc)base_unref, NULL);
-	g_slist_free (pending_unrefs);
+	GSList *list;
+
+	// We need to unlock our mutex before unreffing the objects,
+	// since unreffing any object might cause unref_delayed to be
+	// called (on the same thread), which will then try to lock the
+	// mutex again, causing a dead-lock.
+	pthread_mutex_lock (&delayed_unref_mutex);
+	list = pending_unrefs;
 	pending_unrefs = NULL;
-	g_static_rec_mutex_unlock (&delayed_unref_mutex);
+	drain_tick_call_added = false;
+	pthread_mutex_unlock (&delayed_unref_mutex);
+
+	g_slist_foreach (list, (GFunc) base_unref, NULL);
+	g_slist_free (list);
 }
 
 void
@@ -402,22 +409,14 @@ EventObject::unref_delayed ()
 {
 	OBJECT_TRACK ("DelayedUnref", GetTypeName ());
 	
-	if (surface) {
-		surface->AddPendingUnref (this);
-	} else {
-		//TODO: Either the warning or the current code is broken,
-		// because when we remove an object from a collection, we set
-		// its surface to NULL, in which case we take this codepath.
-		//g_warning ("unable to associate delayed unref to a surface, using global pending unref list (id: %i, Type: %s)", GET_OBJ_ID (this), GetTypeName ());
-		g_static_rec_mutex_lock (&delayed_unref_mutex);
-		pending_unrefs = g_slist_prepend (pending_unrefs, this);
+	pthread_mutex_lock (&delayed_unref_mutex);
+	pending_unrefs = g_slist_prepend (pending_unrefs, this);
 
-		if (!drain_tick_call_added) {
-			g_idle_add (drain_unrefs_idle_call, NULL);
-			drain_tick_call_added = true;
-		}
-		g_static_rec_mutex_unlock (&delayed_unref_mutex);
+	if (!drain_tick_call_added) {
+		g_idle_add (drain_unrefs_idle_call, NULL);
+		drain_tick_call_added = true;
 	}
+	pthread_mutex_unlock (&delayed_unref_mutex);
 }
 
 
@@ -1015,6 +1014,7 @@ DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *defaul
 void
 DependencyObject::Shutdown ()
 {
+	drain_unrefs ();
 	g_hash_table_destroy (DependencyObject::properties);
 	DependencyObject::properties = NULL;
 }

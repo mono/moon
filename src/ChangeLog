@@ -1,3 +1,12 @@
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* runtime.cpp, runtime.h: Remove the pending unref stuff from Surface.
+	* dependencyobject.cpp: Remove the surface-based delayed unloading, it's not
+	  thread-safe and making it thread-safe isn't worth it. Also use a pthread
+	  mutex instead of a glib mutex, since helgrind reports a lot of false
+	  positives for glib mutexes. Hold the mutex for the smallest amount of
+	  time possible, making it unnecessary to use a recursive mutex.
+
 2008-03-26  Michael Dominic K.  <mdk@mdk.am>
 
 	* shape.cpp: Reverting the clip changes, it was bolox.

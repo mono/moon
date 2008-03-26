@@ -172,19 +172,7 @@ class Surface : public EventObject {
 	void PropagateDirtyFlagToChildren (UIElement *element, DirtyType dirt);
 	bool IsAnythingDirty ();
 
-
-	// pending unref support.  objects that are slated for death
-	// on a tick call so they happen on the proper thread.
-	void AddPendingUnref (EventObject *eo);
-
 private:
-	GStaticMutex delayed_unref_mutex;
-	bool drain_tick_call_added;
-	GSList *pending_unrefs;
-
-	void DrainUnrefs ();
-	static void DrainUnrefsTickCall (gpointer data);
-
 	// bad, but these two live in dirty.cpp, not runtime.cpp
 	void ProcessDownDirtyElements ();
 	void ProcessUpDirtyElements ();

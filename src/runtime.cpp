@@ -228,10 +228,6 @@ Surface::Surface(int w, int h, bool windowless)
 
 	up_dirty = new List ();
 	down_dirty = new List ();
-
-	g_static_mutex_init (&delayed_unref_mutex);
-	drain_tick_call_added = false;
-	pending_unrefs = NULL;
 }
 
 Surface::~Surface ()
@@ -301,9 +297,7 @@ Surface::~Surface ()
 	time_manager->unref ();
 	time_manager = NULL;
 
-	DrainUnrefs ();
-
-	g_static_mutex_free (&delayed_unref_mutex);
+	drain_unrefs ();
 
 	delete up_dirty;
 	delete down_dirty;
@@ -868,38 +862,6 @@ Surface::InitializeWidget (GtkWidget *widget)
 	}
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
-}
-
-void
-Surface::DrainUnrefs ()
-{
-	g_static_mutex_lock (&delayed_unref_mutex);
-	g_slist_foreach (pending_unrefs, (GFunc)base_unref, NULL);
-	g_slist_free (pending_unrefs);
-	pending_unrefs = NULL;
-	drain_tick_call_added = false;
-	g_static_mutex_unlock (&delayed_unref_mutex);
-}
-
-void
-Surface::DrainUnrefsTickCall (gpointer data)
-{
-	((Surface*)data)->DrainUnrefs();
-}
-
-void
-Surface::AddPendingUnref (EventObject *eo)
-{
-  return;
-
-	g_static_mutex_lock (&delayed_unref_mutex);
-	pending_unrefs = g_slist_prepend (pending_unrefs, eo);
-
-	if (!drain_tick_call_added) {
-		time_manager->AddTickCall (DrainUnrefsTickCall, this);
-		drain_tick_call_added = true;
-	}
-	g_static_mutex_unlock (&delayed_unref_mutex);
 }
 
 void
