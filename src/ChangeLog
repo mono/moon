@@ -1,3 +1,7 @@
+2008-03-26  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp: Reverting the clip changes, it was bolox.
+
 2008-03-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (Mp3FrameReader::EstimatePtsPosition): Get rid of
