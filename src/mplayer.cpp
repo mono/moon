@@ -333,7 +333,7 @@ MediaPlayer::Open (Media *media)
 	if (audio->stream != NULL) {
 		if (!AudioPlayer::Add (this)) {
 			// Can't play audio
-			audio->stream->SetSelected (true);
+			audio->stream->SetSelected (false);
 			audio->stream = NULL;
 		}
 	}
