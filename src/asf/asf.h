@@ -27,7 +27,9 @@ struct asf_guid;
 struct asf_object;
 
 class ASFParser;
-class ASFSource;
+class ASFFrameReader;
+class ASFReader;
+class ASFContext;
 
 #define ASF_ERROR_VAL(fail, ...) { fprintf (stderr, __VA_ARGS__); return fail; }
 #define ASF_ERROR(...) ASF_ERROR_VAL(false, __VA_ARGS__)
@@ -57,78 +59,20 @@ class ASFSource;
 #include "../clock.h"
 #include "../error.h"
 
-class ASFSource {
-protected:
-	virtual bool ReadInternal (void *buf, uint32_t n) = 0;
-	virtual bool SeekInternal (int64_t offset, int mode) = 0;
-	
-public: 
-	ASFSource (ASFParser *parser);
-	virtual ~ASFSource ();
-	
-	// Reads the number of the specified encoded length (0-3)
-	// encoded length 3 = read 4 bytes, rest equals encoded length and #bytes
-	// into the destionation.
-	bool ReadEncoded (uint32_t encoded_length, uint32_t *dest);	
-	
-	bool Read (void *buf, uint32_t n); // Reads the requested number of bytes into the destination
-	
-	bool Seek (int64_t offset); // Seeks to the offset from the current position
-	bool Seek (int64_t offset, int mode); // Seeks to the offset, with the specified mode (SEEK_CUR, SEEK_END, SEEK_SET)
-	
-	virtual int64_t Position () = 0; // Returns the position within the source (may not apply if the source is not seekable)
-	virtual bool CanSeek () = 0;
-	virtual bool Eof () = 0;
-	
-	virtual bool CanSeekToPts () { return false; }
-	virtual bool SeekToPts (uint64_t pts) { return false; }
-
+struct ASFContext {
 	ASFParser *parser;
-};
-
-class ASFMediaSource : public ASFSource {
 	IMediaSource *source;
-
-protected:
-	virtual bool ReadInternal (void *buf, uint32_t n);
-	virtual bool SeekInternal (int64_t offset, int mode);	
-	virtual int64_t Position ();
-	virtual bool CanSeek ();
-	virtual bool Eof ();
-	
-	virtual bool CanSeekToPts ();
-	virtual bool SeekToPts (uint64_t pts);
-
-public:
-	ASFMediaSource (ASFParser *parser, IMediaSource *source);
 };
-
-
-class ASFBufferSource : public ASFSource {
-
-private:
-	char *buffer;
-	int64_t size;
-	int64_t pos;
-
-protected:
-	virtual bool ReadInternal (void *buf, uint32_t n);
-	virtual bool SeekInternal (int64_t offset, int mode);
-	virtual int64_t Position ();
-	virtual bool CanSeek ();
-	virtual bool Eof ();
-	
-public:
-	ASFBufferSource (ASFParser *parser, char *buffer, int64_t size);
-};
-
 
 class ASFPacket {
+private:
 	int64_t position; // The position of this packet. -1 if not known.
 	int index; // The index of this packet. -1 if not known.
+	IMediaSource *source; // The source which is to be used for reading into this packet.
 	
 public:
 	ASFPacket ();	
+	ASFPacket (IMediaSource *source);
 	virtual ~ASFPacket ();
 	
 	asf_multiple_payloads *payloads; // The payloads in this packet
@@ -138,13 +82,70 @@ public:
 	
 	uint64_t GetPts (int stream_id /* 1 - 127 */); // Gets the pts of the first payload. 0 if no payloads.
 	asf_single_payload *GetFirstPayload (int stream_id /* 1 - 127 */); // Gets the index first payload of the specified stream.
+	
+	IMediaSource *GetSource () { return source; }
 };
+
+class ASFReader {
+private:
+	ASFFrameReader *readers [128];
+	ASFParser *parser;
+	IMediaSource *source;
+	IMediaDemuxer *demuxer;
+	bool positioned;
+	// The index of the next packet to be read.
+	uint64_t next_packet_index;
+
+	// Seeks to the specified pts directly on the source.
+	bool SeekToPts (uint64_t pts);
+
+public:
+	ASFReader (ASFParser *parser, IMediaDemuxer *demuxer);
+	~ASFReader ();
+	// Select the specified stream.
+	// No streams are selected by default.
+	void SelectStream (int32_t stream_index, bool value);
+	// Returns the frame reader for the specified stream.
+	// The stream must first have been selected using SelectStream.
+	ASFFrameReader *GetFrameReader (int32_t stream_index);
+
+	// Have we reached end of file?
+	bool Eof ();
+
+	// This method will seek to the first keyframe before the requested pts in all selected streams.
+	// Note that the streams will probably be positioned at different pts after a seek (given that
+	// for audio streams any frame is considered as a key frame, while for video there may be several
+	// seconds between every key frame).
+	bool Seek (uint64_t pts);
+
+	// Seeks to the start of the media.
+	bool SeekToStart ();
+	
+	// Resets all readers
+	void ResetAll ();
+
+	// Estimate the packet index of the specified pts.
+	// Calls EstimatePacketIndexOfPts on all readers and returns the lowest value.
+	uint64_t EstimatePacketIndexOfPts (uint64_t pts);
+
+ 	// Reads another packet and stuffs the payloads into our queue.
+	// Called by the readers when they are out of data.
+	MediaResult ReadMore ();
+
+	// Can we seek?
+	bool CanSeek () { return true; }
+	
+	uint64_t GetLastAvailablePts ();
+
+};
+
 
 struct ASFFrameReaderData {
 	asf_single_payload *payload;
 	ASFFrameReaderData *prev;
 	ASFFrameReaderData *next;
-	
+	uint64_t packet_index;
+
 	ASFFrameReaderData (asf_single_payload *load) 
 	{
 		payload = load;
@@ -191,17 +192,19 @@ struct ASFFrameReaderIndex {
  */
 
 class ASFFrameReader {
+private:
 	IMediaDemuxer *demuxer;
 	ASFParser *parser;
+	ASFReader *reader;
 	
 	// The first pts that should be returned, any frames with pts below this one will be dropped.
 	uint64_t first_pts;
+
 	// Only return key frames. Reset after we've returned a key frame.
 	bool key_frames_only;
 	int stream_number; // The stream this reader is reading for 
 	bool positioned;
 
-	uint64_t current_packet_index; // The index of the next packet that will be read when ReadMore is called.
 	int32_t script_command_stream_index;
 	
 	// The queue of payloads we've built.
@@ -226,19 +229,10 @@ class ASFFrameReader {
 	void Remove (ASFFrameReaderData *data); // Unlinks the payload from the queue and deletes it.
 	
 	void ReadScriptCommand (); // If the current frame is a script command, decodes it and calls the callback set in the parser.
-	
-	bool SeekToPts (uint64_t pts);
 
 public:
-	ASFFrameReader (ASFParser *parser, int stream_index, IMediaDemuxer *demuxer);
-	virtual ~ASFFrameReader ();
-	
-	// Can we seek?
-	bool CanSeek () { return true; }
-	
-	// Seek to the frame with the provided pts 
-	bool Seek (uint64_t pts);
-	bool SeekToStart ();
+	ASFFrameReader (ASFParser *parser, int stream_index, IMediaDemuxer *demuxer, ASFReader *reader);
+	~ASFFrameReader ();
 	
 	// Advance to the next frame
 	MediaResult Advance ();
@@ -251,9 +245,10 @@ public:
 	bool IsKeyFrame () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->is_key_frame : false; }
 	uint64_t Pts () { return pts; }
 	int StreamId () { return stream_number; }
-	bool Eof ();
 	void FindScriptCommandStream ();
 	
+	void AppendPayload (asf_single_payload *payload, uint64_t packet_index);
+
 	// Index, returns the packet index of where the frame is.
 	// returns UINT32_MAX if not found in the index.
 	uint32_t FrameSearch (uint64_t pts);
@@ -265,6 +260,9 @@ public:
 	void AddFrameIndex (uint64_t packet_index);
 	bool IsAudio ();
 	bool IsAudio (int stream);
+	void SetOnlyKeyFrames (); // Sets the key_frames_only flag to true
+	void SetFirstPts (uint64_t); // Sets the first pts which is to be returned.
+	void Reset ();
 };
 
 class ASFParser {
@@ -276,10 +274,11 @@ private:
 	asf_object *ReadObject (asf_object *guid);
 	void SetStream (int stream_id, const asf_stream_properties *stream);
 	Media *media;
+	IMediaSource *source; // The source used to read data.
 	
 public:
 	// The parser takes ownership of the source and will delete it when the parser is deleted.
-	ASFParser (ASFSource *source, Media *media);
+	ASFParser (IMediaSource *source, Media *media);
 	virtual ~ASFParser ();
 	
 	bool ReadHeader ();
@@ -292,6 +291,11 @@ public:
 	// If the packet index is < 0, then just read at the current position
 	MediaResult ReadPacket (ASFPacket *packet, int packet_index); 
 	
+	// Reads the number of the specified encoded length (0-3)
+	// encoded length 3 = read 4 bytes, rest equals encoded length and #bytes
+	// into the destionation.
+	static bool ReadEncoded (IMediaSource *source, uint32_t encoded_length, uint32_t *dest);	
+
 	// Verifies that the requested size is a size that can be inside the header.
 	bool VerifyHeaderDataSize (uint32_t size);
 	
@@ -340,9 +344,13 @@ public:
 	// The number of packets in the stream (0 if unknown).
 	uint64_t GetPacketCount ();
 	
+	uint32_t GetPacketSize ();
+
 	// The number of streams
 	int GetStreamCount ();
 	
+	IMediaSource *GetSource () { return source; }
+
 	// Field accessors
 	
 	Media *GetMedia ();
@@ -370,8 +378,6 @@ public:
 	int64_t data_offset; // location of data object
 	int64_t packet_offset; // location of the beginning of the first packet
 	int64_t packet_offset_end; // location of the end of the last packet
-	
-	ASFSource *source; // The source used to read data.
 };
 
 

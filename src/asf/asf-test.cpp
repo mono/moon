@@ -197,17 +197,15 @@ test_file (const char* filename)
 	bool result = false;
 	ASFParser* parser = NULL;
 	ASFPacket* packet = NULL;
-	ASFFrameReader* reader = NULL;
-	ASFSource *asf_src;
+	ASFReader* reader = NULL;
+	ASFFrameReader* frame_reader = NULL;
 	FileSource *fs;
 	MediaResult read_result;	
 
 	fs = new FileSource (NULL, filename);
 	fs->Initialize ();
-	
-	asf_src = new ASFMediaSource (NULL, fs);
-	parser = new ASFParser (asf_src, NULL);
-	asf_src->parser = parser;
+
+	parser = new ASFParser (fs, NULL);
 
 	if (!parser->ReadHeader ()) {
 		printf ("test_file (%s): read header failed.\n", filename);
@@ -227,11 +225,12 @@ test_file (const char* filename)
 	}
 	delete packet;
 	
+	reader = new ASFReader (parser, NULL);
 	for (int i = 1; i < 128; i++) {
 		if (!parser->IsValidStream (i))
 			continue;
-		reader = new ASFFrameReader (parser, i, NULL);
-		while (MEDIA_SUCCEEDED (reader->Advance ())) {
+		frame_reader = reader->GetFrameReader (i);
+		while (MEDIA_SUCCEEDED (frame_reader->Advance ())) {
 		}
 		delete reader;
 	}

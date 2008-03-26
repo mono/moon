@@ -386,11 +386,11 @@ Media::Initialize (const char *file_or_url)
 			if (!MEDIA_SUCCEEDED (result)) {
 				LOG_PIPELINE ("Media::Open ('%s'): live source failed, trying progressive source.\n", file_or_url);
 				source->unref ();
-				source = new ProgressiveSource (this);
+				source = new ProgressiveSource (this, true);
 				result = source->Initialize ();
 			}
 		} else if (strcmp (uri->protocol, "http") == 0 || strcmp (uri->protocol, "https") == 0) {
-			source = new ProgressiveSource (this);
+			source = new ProgressiveSource (this, false);
 			result = source->Initialize ();
 			if (!MEDIA_SUCCEEDED (result)) {
 				LOG_PIPELINE ("Media::Open ('%s'): progressive source failed, trying live source.\n", file_or_url);
@@ -859,7 +859,7 @@ Media::StopThread ()
 ASFDemuxer::ASFDemuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source)
 {
 	stream_to_asf_index = NULL;
-	readers = NULL;
+	reader = NULL;
 	parser = NULL;
 }
 
@@ -867,14 +867,19 @@ ASFDemuxer::~ASFDemuxer ()
 {
 	g_free (stream_to_asf_index);
 	
-	if (readers != NULL) {
-		for (int i = 0; i < GetStreamCount (); i++)
-			delete readers [i];
-		g_free (readers);
-	}
-	
+	if (reader)
+		delete reader;
+
 	if (parser)
 		delete parser;
+}
+uint64_t 
+ASFDemuxer::GetLastAvailablePts ()
+{
+	if (reader == NULL)
+		return 0;
+
+	return reader->GetLastAvailablePts ();
 }
 
 int64_t
@@ -886,51 +891,39 @@ ASFDemuxer::EstimatePtsPosition (uint64_t pts)
 		if (!GetStream (i)->GetSelected ())
 			continue;
 
-		result = MAX (result, readers [i]->EstimatePtsPosition(pts));
+		result = MAX (result, reader->GetFrameReader (stream_to_asf_index [i])->EstimatePtsPosition(pts));
 	}
 	
 	return result;
 }
 
+void
+ASFDemuxer::UpdateSelected (IMediaStream *stream)
+{
+	if (reader)
+		reader->SelectStream (stream_to_asf_index [stream->index], stream->GetSelected ());
+
+	IMediaDemuxer::UpdateSelected (stream);
+}
+
 MediaResult
 ASFDemuxer::Seek (uint64_t pts)
 {
-	bool result = true;
-	
 	//printf ("ASFDemuxer::Seek (%llu)\n", pts);
 	
-	if (readers == NULL)
+	if (reader == NULL)
 		return MEDIA_FAIL;
 	
-	if (GetStreamCount () <= 0)
-		return MEDIA_SUCCESS;
-		
-	for (int i = 0; i < GetStreamCount (); i++) {
-		if (!GetStream (i)->GetSelected ())
-			continue;
-
-		result &= readers [i]->Seek (pts);
-	}
-		
-	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
+	return reader->Seek (pts) ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
 MediaResult
 ASFDemuxer::SeekToStart ()
 {
-	bool result = true;
-
-	if (readers == NULL)
+	if (reader == NULL)
 		return MEDIA_FAIL;
 
-	if (GetStreamCount () <= 0)
-		return MEDIA_SUCCESS;
-
-	for (int i = 0; i < GetStreamCount (); i++) {
-		result &= readers [i]->SeekToStart ();
-	}
-
-	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
+	return reader->SeekToStart () ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
 void
@@ -1021,16 +1014,13 @@ MediaResult
 ASFDemuxer::ReadHeader ()
 {
 	MediaResult result = MEDIA_SUCCESS;
-	ASFSource *asf_source = new ASFMediaSource (NULL, source);
-	ASFParser *asf_parser = new ASFParser (asf_source, media);
+	ASFParser *asf_parser = new ASFParser (source, media);
 	int32_t *stream_to_asf_index = NULL;
 	IMediaStream **streams = NULL;
 	int current_stream = 1;
 	int stream_count = 0;
 	
 	//printf ("ASFDemuxer::ReadHeader ().\n");
-	
-	asf_source->parser = asf_parser;
 	
 	if (!asf_parser->ReadHeader ()) {
 		result = MEDIA_INVALID_MEDIA;
@@ -1165,9 +1155,7 @@ ASFDemuxer::ReadHeader ()
 	this->stream_to_asf_index = stream_to_asf_index;
 	this->parser = asf_parser;
 	
-	readers = (ASFFrameReader**) g_malloc0 (sizeof (ASFFrameReader*) * (stream_count + 1));
-	for (int i = 0; i < stream_count; i++)
-		readers [i] = new ASFFrameReader (parser, stream_to_asf_index [i], this);
+	reader = new ASFReader (parser, this);
 			
 	ReadMarkers ();
 	
@@ -1198,7 +1186,7 @@ MediaResult
 ASFDemuxer::ReadFrame (MediaFrame *frame)
 {
 	//printf ("ASFDemuxer::ReadFrame (%p).\n", frame);
-	ASFFrameReader *reader = readers [frame->stream->index];
+	ASFFrameReader *reader = this->reader->GetFrameReader (stream_to_asf_index [frame->stream->index]);
 	MediaResult result;
 	
 	result = reader->Advance ();
@@ -1248,6 +1236,12 @@ ASFDemuxerInfo::Supports (IMediaSource *source)
 {
 	uint8_t buffer[16];
 	
+#if DEBUG
+	if (!source->GetPosition () == 0) {
+		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Trying to check if a media is supported, but the media isn't at position 0 (it's at position %lld)\n", source, source->GetPosition ());
+	}
+#endif
+
 	if (!source->Peek (buffer, 16))
 		return false;
 	
@@ -2512,6 +2506,20 @@ FileSource::ReadAll (void *buf, uint32_t n)
 }
 
 bool
+FileSource::Peek (void *buf, uint32_t n, int64_t start)
+{
+	bool result;
+	int64_t current_pos;
+
+	current_pos = GetPosition ();
+	Seek (start, SEEK_SET);
+	result = Read (buf, n);
+	Seek (current_pos, SEEK_SET);
+
+	return result;
+}
+
+bool
 FileSource::Peek (void *buf, uint32_t n)
 {
 	uint32_t need, used, avail, shift;
@@ -2580,7 +2588,7 @@ FileSource::Eof ()
  * ProgressiveSource
  */
 
-ProgressiveSource::ProgressiveSource (Media *media) : FileSource (media, NULL)
+ProgressiveSource::ProgressiveSource (Media *media, bool is_live) : FileSource (media, NULL)
 {
 	pthread_mutex_init (&write_mutex, NULL);
 	pthread_cond_init (&write_cond, NULL);
@@ -2588,6 +2596,7 @@ ProgressiveSource::ProgressiveSource (Media *media) : FileSource (media, NULL)
 	wait_count = 0;
 	write_pos = 0;
 	size = -1;
+	this->is_live = is_live;
 }
 
 ProgressiveSource::~ProgressiveSource ()
@@ -2688,6 +2697,11 @@ ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 	}
 	
 	Lock ();
+
+	if (write_pos != offset) {
+		write_pos = offset;
+	}
+	
 	
 	if (n == 0) {
 		// We've got the entire file, update the size
@@ -2700,7 +2714,7 @@ ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 		goto cleanup;
 	
 	if ((nwritten = write_all (fd, (char *) buf, n)) > 0)
-		write_pos += nwritten;
+		write_pos = offset + nwritten;
 	
 	if (IsWaiting ())
 		WakeUp (false);
@@ -2784,9 +2798,19 @@ ProgressiveSource::CancelWait ()
 	Unlock ();
 }
 
+int64_t
+ProgressiveSource::GetLastAvailablePosition ()
+{
+	int64_t result;
+	result = write_pos;
+	return result;
+}
+
 bool
 ProgressiveSource::Seek (int64_t offset, int mode)
 {
+	//printf ("ProgressiveSource::Seek (%lld, %i)\n", offset, mode);
+
 	bool need_wait;
 	
 	if (fd == -1)
@@ -2821,6 +2845,8 @@ ProgressiveSource::Seek (int64_t offset, int mode)
 		// attempting to seek to an invalid position
 		return false;
 	}
+
+	//g_print ("SEEK. current read pos %lld, write pos %lld requestedpos:%lld\n", pos, write_pos, offset);
 	
 	Lock ();
 	need_wait = offset > write_pos;
@@ -2834,6 +2860,24 @@ ProgressiveSource::Seek (int64_t offset, int mode)
 	
 	return FileSource::Seek (offset, SEEK_SET);
 }
+
+bool
+ProgressiveSource::SeekToPts (uint64_t pts)
+{
+	//g_print ("Ask to seek to pts:%lld\n", pts);
+	if (pts == 0 && Seek (0, SEEK_SET))
+		return true;
+	
+	Lock ();
+	write_pos = -1;
+	Unlock ();
+	
+	if (!(WaitForPosition (1)))
+		return false;
+	
+	return true;
+}
+
 
 bool
 ProgressiveSource::ReadAll (void *buf, uint32_t n)
@@ -2884,6 +2928,22 @@ ProgressiveSource::Peek (void *buf, uint32_t n)
 	return FileSource::Peek (buf, n);
 }
 
+bool
+ProgressiveSource::Peek (void *buf, uint32_t n, int64_t start)
+{
+	bool result;
+	int64_t current_pos;
+
+	Lock ();
+	current_pos = GetPosition ();
+	Seek (start, SEEK_SET);
+	result = Read (buf, n);
+	Seek (current_pos, SEEK_SET);
+	Unlock ();
+
+	return result;
+}
+
 int64_t
 ProgressiveSource::GetWaitPosition ()
 {
@@ -2905,6 +2965,95 @@ ProgressiveSource::GetWritePosition ()
 }
 
 
+void
+ProgressiveSource::RequestPosition (int64_t *pos)
+{
+   /* TODO */
+}
+
+/*
+ *
+ */
+MemorySource::MemorySource (Media *media, void *memory, int32_t size, int64_t start)
+	: IMediaSource (media)
+{
+	this->memory = memory;
+	this->size = size;
+	this->start = start;
+	this->pos = 0;
+}
+
+MemorySource::~MemorySource ()
+{
+	g_free (memory);
+}
+
+bool 
+MemorySource::Seek (int64_t offset)
+{
+	return Seek (offset, SEEK_CUR);
+}
+
+bool 
+MemorySource::Seek (int64_t offset, int mode)
+{
+	int64_t real_offset;
+
+	switch (mode) {
+	case SEEK_SET:
+		real_offset = offset - start;
+		if (real_offset < 0 || real_offset > size)
+			return false;
+		pos = real_offset;
+		return true;
+	case SEEK_CUR:
+		if (pos + offset > size || pos + offset < 0)
+			return false;
+		pos += offset;
+		return true;
+	case SEEK_END:
+		if (size - offset > size || size - offset < 0)
+			return false;
+		pos = size - offset;
+		return true;
+	default:
+		return false;
+	}
+	return true;
+}
+
+int32_t 
+MemorySource::Read (void *buffer, uint32_t n)
+{
+	uint32_t k = MIN (n, size - pos);
+	memcpy (buffer, ((char*) memory) + pos, k);
+	pos += k;
+	return k;
+}
+
+bool 
+MemorySource::ReadAll (void *buffer, uint32_t n)
+{
+	return (uint32_t) Read (buffer, n) == n;
+}
+
+bool 
+MemorySource::Peek (void *buffer, uint32_t n)
+{
+	if (n > size - pos)
+		return false;
+	memcpy (buffer, ((char*) memory) + pos, n);
+	return n;
+}
+
+bool 
+MemorySource::Peek (void *buffer, uint32_t n, int64_t start)
+{
+	if (n > size - pos)
+		return false;
+	memcpy (buffer, ((char*) memory) + start, n);
+	return n;
+}
 
 /*
  * MediaClosure

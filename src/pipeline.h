@@ -131,7 +131,8 @@ typedef int32_t MediaResult;
 enum MediaSourceType {
 	MediaSourceTypeFile = 1,
 	MediaSourceTypeLive = 2,
-	MediaSourceTypeProgressive = 3
+	MediaSourceTypeProgressive = 3,
+	MediaSourceTypeMemory = 4
 };
 
 enum FrameEvent {
@@ -509,6 +510,7 @@ public:
 	virtual uint64_t GetDuration (); // 100-nanosecond units (pts)
 	virtual const char *GetName () = 0;
 	virtual void UpdateSelected (IMediaStream *stream) {};
+	virtual uint64_t GetLastAvailablePts () { return 0; }
 };
 
 class IMediaDecoder : public IMediaObject {
@@ -575,8 +577,14 @@ public:
 	virtual int32_t Read (void *buf, uint32_t n) = 0;
 	virtual bool ReadAll (void *buf, uint32_t n) = 0;
 	virtual bool Peek (void *buf, uint32_t n) = 0;
+	virtual bool Peek (void *buf, uint32_t n, int64_t start) = 0;
 	virtual int64_t GetSize () = 0;
 	virtual bool Eof () = 0;
+
+	// Returns the last available position (confirms if that position 
+	// can be read without blocking).
+	// If the returned value is -1, then everything is available.
+	virtual int64_t GetLastAvailablePosition () { return -1; }
 };
 
 // Implementations
@@ -606,17 +614,21 @@ public:
 	
 	virtual bool IsSeekable ();
 	virtual int64_t GetPosition ();
-	virtual bool Seek (int64_t position);
-	virtual bool Seek (int64_t position, int mode);
+	virtual bool Seek (int64_t offset);
+	virtual bool Seek (int64_t offset, int mode);
 	virtual int32_t Read (void *buf, uint32_t n);
 	virtual bool ReadAll (void *buf, uint32_t n);
 	virtual bool Peek (void *buf, uint32_t n);
+	virtual bool Peek (void *buf, uint32_t n, int64_t start);
 	virtual int64_t GetSize ();
 	virtual bool Eof ();
+
+	virtual int64_t GetLastAvailablePosition () { return -1; }
 };
 
 class ProgressiveSource : public FileSource {
 private:
+	bool is_live;
 	pthread_mutex_t write_mutex;
 	pthread_cond_t write_cond;
 	bool cancel_wait;
@@ -633,7 +645,7 @@ protected:
 	virtual ~ProgressiveSource ();
 
 public:
-	ProgressiveSource (Media *media);
+	ProgressiveSource (Media *media, bool is_live);
 	
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeProgressive; }
@@ -661,10 +673,16 @@ public:
 	virtual bool Seek (int64_t offset, int mode);
 	virtual bool ReadAll (void *buf, uint32_t size);
 	virtual bool Peek (void *buf, uint32_t size);
+	virtual bool Peek (void *buf, uint32_t n, int64_t start);
 	virtual int64_t GetSize () { return size; }
 	
 	void Write (void *buf, int64_t offset, int32_t n);
 	void NotifySize (int64_t size);
+	void RequestPosition (int64_t *pos);
+	virtual bool CanSeekToPts () { return is_live; }
+	virtual bool SeekToPts (uint64_t pts);
+
+	virtual int64_t GetLastAvailablePosition ();
 };
 
 class LiveSource : public IMediaSource {
@@ -679,13 +697,40 @@ public:
 	
 	virtual bool IsSeekable () { return false; }
 	virtual int64_t GetPosition () { return 0; }
-	virtual bool Seek (int64_t position) { return false; }
-	virtual bool Seek (int64_t position, int mode) { return false; }
+	virtual bool Seek (int64_t offset) { return false; }
+	virtual bool Seek (int64_t offset, int mode) { return false; }
 	virtual int32_t Read (void *buffer, uint32_t n) { return -1; }
 	virtual bool ReadAll (void *buffer, uint32_t n) { return false; }
 	virtual bool Peek (void *buffer, uint32_t n) { return false; }
+	virtual bool Peek (void *buf, uint32_t n, int64_t start) { return false; }
 	virtual int64_t GetSize () { return -1; }
 	virtual bool Eof () { return false; }
+};
+
+class MemorySource : public IMediaSource {
+private:
+	void *memory;
+	int32_t size;
+	int64_t start;
+	int64_t pos;
+
+public:
+	MemorySource (Media *media, void *memory, int32_t size, int64_t start);
+	virtual ~MemorySource ();
+
+	virtual MediaResult Initialize () { return MEDIA_SUCCESS; }
+	virtual MediaSourceType GetType () { return MediaSourceTypeMemory; }
+	
+	virtual bool IsSeekable () { return true; }
+	virtual int64_t GetPosition () { return pos + start; }
+	virtual bool Seek (int64_t offset);
+	virtual bool Seek (int64_t offset, int mode);
+	virtual int32_t Read (void *buffer, uint32_t n);
+	virtual bool ReadAll (void *buffer, uint32_t n);
+	virtual bool Peek (void *buffer, uint32_t n);
+	virtual bool Peek (void *buf, uint32_t n, int64_t start);
+	virtual int64_t GetSize () { return size; }
+	virtual bool Eof () { return pos >= size; }
 };
 
 class VideoStream : public IMediaStream {
@@ -757,7 +802,7 @@ public:
 class ASFDemuxer : public IMediaDemuxer {
 private:
 	int32_t *stream_to_asf_index;
-	ASFFrameReader **readers;
+	ASFReader *reader;
 	ASFParser *parser;
 	
 	void ReadMarkers ();
@@ -773,9 +818,11 @@ public:
 	virtual MediaResult Seek (uint64_t pts);
 	virtual MediaResult SeekToStart ();
 	virtual int64_t EstimatePtsPosition (uint64_t pts);
+	virtual void UpdateSelected (IMediaStream *stream);
 	
 	ASFParser *GetParser () { return parser; }
 	virtual const char *GetName () { return "ASFDemuxer"; }
+	virtual uint64_t GetLastAvailablePts ();
 };
 
 class ASFDemuxerInfo : public DemuxerInfo {

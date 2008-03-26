@@ -108,9 +108,8 @@ AsyncBrowserMmshResponse::OnStopRequest (nsIRequest *request, nsISupports *ctx, 
 static void
 asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_packet_size)
 {
-	ASFBufferSource *asf_src = new ASFBufferSource (NULL, asf_header, size);
+	MemorySource *asf_src = new MemorySource (NULL, asf_header, size, 0);
 	ASFParser *parser = new ASFParser (asf_src, NULL);
-	asf_src->parser = parser;
 	if (!parser->ReadHeader ()) {
 		g_print ("Error reading header\n");
 		*file_size = 0;
@@ -119,8 +118,6 @@ asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_
 	}
 	
         asf_file_properties *properties = parser->GetFileProperties ();
-
-	delete asf_src;
 
 	//g_print ("FILE_SIZE: %d\n", properties->file_size);
 	//g_print ("MAX: %d\n", properties->max_packet_size);

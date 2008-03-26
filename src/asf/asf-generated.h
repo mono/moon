@@ -39,10 +39,8 @@ struct asf_extended_stream_name;
 struct asf_payload_extension_system;
 struct asf_extended_stream_properties;
 
-class ASFSource;
-class ASFMediaSource;
-class ASFBufferSource;
 class ASFPacket;
+class ASFReader;
 class ASFFrameReader;
 class ASFParser;
 

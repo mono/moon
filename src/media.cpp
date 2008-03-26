@@ -1014,7 +1014,7 @@ MediaElement::SetSourceInternal (Downloader *dl, const char *PartName)
 		
 		TryOpen ();
 	} else {
-		downloaded_file = new ProgressiveSource (mplayer->media);
+		downloaded_file = new ProgressiveSource (mplayer->media, false);
 		
 		// FIXME: error check Initialize()
 		downloaded_file->Initialize ();

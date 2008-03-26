@@ -1,3 +1,14 @@
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-test.cpp, asf-generated.h: Updated.
+	* asf-structures.h, asf-structures.cpp: All FillInAll takes a context
+	  argument instead of a only a parser argument.
+	* asf.h, asf.cpp: Remove ASFSource and descendants, just use IMediaSource.
+	  Add an ASFReader, a smarter reader for more than one stream which skips
+	  unwanted streams and does a lot less seeking that the previous
+	  one-per-stream readers. It can also determine the last pts available
+	  without blocking and seeking.
+
 2008-03-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h: Rename SeekWithPts to SeekToPts to make naming consistent.

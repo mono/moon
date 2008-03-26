@@ -1,5 +1,11 @@
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp, pipeline.h: ASFDemuxer: updated according to asf changes.
+	  Added a MemoryStream. 
+	* media.cpp: Updated according to API changes.
+
+2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp, mplayer.h: Add a new state to the audio: WaitingForData, in
 	  which case we don't poll on that audio node (since the hardware will
 	  just tell us it's ready to recieve data). Fixes audio using 100% cpu
