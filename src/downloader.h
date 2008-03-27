@@ -88,7 +88,7 @@ class Downloader : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::DOWNLOADER; };	
 	
 	void Abort ();
-	void *GetResponseText (const char *Partname, uint64_t *size);
+	char *GetResponseText (const char *Partname, uint64_t *size);
 	void Open (const char *verb, const char *uri);
 	void SendInternal ();
 	void Send ();

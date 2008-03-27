@@ -132,11 +132,11 @@ Downloader::Abort ()
 	}
 }
 
-void *
+char *
 Downloader::GetResponseText (const char *PartName, uint64_t *size)
 {
 	struct stat st;
-	void *data;
+	char *data;
 	char *path;
 	FILE *fp;
 	size_t n;
@@ -153,22 +153,32 @@ Downloader::GetResponseText (const char *PartName, uint64_t *size)
 	// Must use g_malloc here, because the C# code will call
 	// g_free on that
 	//
-	if (!(data = g_try_malloc (st.st_size))) {
+	if (!(data = (char *) g_try_malloc (st.st_size + 4))) {
 		g_free (path);
 		return NULL;
 	}
 	
-	if (!(fp = fopen (path, "r"))) {
+	if (st.st_size > 0) {
+		if (!(fp = fopen (path, "r"))) {
+			g_free (path);
+			g_free (data);
+			return NULL;
+		}
+		
 		g_free (path);
-		return NULL;
+		
+		if ((n = fread (data, 1, st.st_size, fp)) < st.st_size) {
+			g_free (path);
+			g_free (data);
+			fclose (fp);
+			return NULL;
+		}
+		
+		fclose (fp);
 	}
 	
-	g_free (path);
-	
-	n = fread (data, 1, st.st_size, fp);
-	*size = n;
-	
-	fclose (fp);
+	memset (data + st.st_size, 0, 4);
+	*size = st.st_size;
 	
 	return data;
 }

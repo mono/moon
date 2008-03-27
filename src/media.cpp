@@ -600,9 +600,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	x2 = w;
 	y2 = h;
 
-	if (absolute_xform.xy == 0
-	    && absolute_xform.yx == 0) {
-
+	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 
 		cairo_user_to_device (cr, &x, &y);
@@ -1045,6 +1043,7 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 		playlist->unref ();
 		playlist = NULL;
 	}
+	
 	SetSourceInternal ((Downloader *) dl, PartName);
 }
 

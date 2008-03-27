@@ -2,6 +2,10 @@
 
 	* downloader.cpp (Downloader::Send): Handle the case where the
 	attached surface is NULL.
+	(Downloader::GetResponseText): Handle zero-length files. Also,
+	nul-terminate the returned buffer (which is now a char* rather
+	than a void*) since it is clear that the javascript expects to be
+	able to use this value as a string buffer.
 
 2008-03-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
