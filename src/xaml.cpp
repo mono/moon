@@ -1227,7 +1227,7 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 	bool first_read = true;
 	const char *inptr, *inend;
 	TextStream *stream;
-	char buffer[64];
+	char buffer[4096];
 	ssize_t nread;
 	
 	d(printf ("attemtping to load xaml file: %s\n", xaml_file));
