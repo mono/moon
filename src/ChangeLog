@@ -1,5 +1,8 @@
 2008-03-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* downloader.cpp (Downloader::GetResponseText): Use the new
+	TextStream class.
+
 	* utils.cpp (TextStream::Open): Fixed the BOM checking, had LE/BE
 	reversed.
 

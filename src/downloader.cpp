@@ -35,7 +35,9 @@
  */
 
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #include <gtk/gtk.h>
 
@@ -135,11 +137,13 @@ Downloader::Abort ()
 char *
 Downloader::GetResponseText (const char *PartName, uint64_t *size)
 {
+	TextStream *stream;
+	char buffer[4096];
+	GByteArray *buf;
 	struct stat st;
+	ssize_t nread;
 	char *data;
 	char *path;
-	FILE *fp;
-	size_t n;
 	
 	if (!(path = GetDownloadedFilePart (PartName)))
 		return NULL;
@@ -149,36 +153,32 @@ Downloader::GetResponseText (const char *PartName, uint64_t *size)
 		return NULL;
 	}
 	
-	// 
-	// Must use g_malloc here, because the C# code will call
-	// g_free on that
-	//
-	if (!(data = (char *) g_try_malloc (st.st_size + 4))) {
-		g_free (path);
-		return NULL;
-	}
-	
 	if (st.st_size > 0) {
-		if (!(fp = fopen (path, "r"))) {
+		stream = new TextStream ();
+		
+		if (!stream->Open (path, true)) {
+			delete stream;
 			g_free (path);
-			g_free (data);
 			return NULL;
 		}
 		
 		g_free (path);
 		
-		if ((n = fread (data, 1, st.st_size, fp)) < st.st_size) {
-			g_free (path);
-			g_free (data);
-			fclose (fp);
-			return NULL;
-		}
+		buf = g_byte_array_new ();
+		while ((nread = stream->Read (buffer, sizeof (buffer))) > 0)
+			g_byte_array_append (buf, (const guint8 *) buffer, nread);
 		
-		fclose (fp);
+		*size = buf->len;
+		
+		g_byte_array_append (buf, (const guint8 *) "", 1);
+		data = (char *) buf->data;
+		
+		g_byte_array_free (buf, false);
+		delete stream;
+	} else {
+		data = g_strdup ("");
+		*size = 0;
 	}
-	
-	memset (data + st.st_size, 0, 4);
-	*size = st.st_size;
 	
 	return data;
 }
