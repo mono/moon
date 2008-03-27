@@ -137,6 +137,7 @@ namespace MoonlightTests {
 					test_logs [test] = tld;
 				}
 
+				
 				tld.SetTestResult (TestResultFromInt (result));
 			}
 		}
@@ -192,7 +193,7 @@ namespace MoonlightTests {
 
 		private TestResult TestResultFromInt (int value)
 		{
-			if (value == 0)
+			if (value == 1)
 				return TestResult.Pass;
 			return TestResult.Fail;
 		}
