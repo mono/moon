@@ -1,3 +1,8 @@
+2008-03-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (Downloader::Send): Handle the case where the
+	attached surface is NULL.
+
 2008-03-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.h, mplayer.cpp: Don't create any audio threads until we're
