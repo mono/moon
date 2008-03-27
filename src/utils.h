@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * utils.h: 
  *
@@ -13,6 +14,7 @@
 #define __MOON_GARRAY_EXT_H__
 
 #include <glib.h>
+#include <sys/types.h>
 
 #include "zip/unzip.h"
 
@@ -29,5 +31,28 @@ int moon_rmdir (const char *dir);
 int moon_copy_file (const char *filename, int fd);
 
 G_END_DECLS
+
+class TextStream {
+protected:
+	char buffer[4096];
+	size_t buflen;
+	char *bufptr;
+	GIConv cd;
+	int fd;
+	
+	bool eof;
+	
+public:
+	
+	TextStream ();
+	~TextStream ();
+	
+	bool Open (const char *filename, bool force);
+	void Close ();
+	
+	bool Eof ();
+	
+	ssize_t Read (char *buf, size_t n);
+};
 
 #endif /* __MOON_GARRAY_EXT_H__ */

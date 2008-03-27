@@ -1,5 +1,13 @@
 2008-03-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp (xaml_create_from_file): Use the new TextStream class
+	instead of doing things the hard way. Might be more performant,
+	definitely won't malloc/free nearly as much. Also fixed a bug
+	where leading lwsp might be larger than our read buffer.
+
+	* utils.cpp (TextStream): New class for reading text input
+	streams, converting them to UTF-8 as they are read.
+
 	* downloader.cpp (Downloader::Send): Handle the case where the
 	attached surface is NULL.
 	(Downloader::GetResponseText): Handle zero-length files. Also,

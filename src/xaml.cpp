@@ -39,9 +39,11 @@
 #include "runtime.h"
 
 
-#define READ_BUFFER 1024
-#define BOM (gunichar2) 0xFEFF
-#define ANTIBOM (gunichar2) 0xFFFE
+#ifdef DEBUG_XAML
+#define d(x) x
+#else
+#define d(x)
+#endif
 
 
 class XamlElementInfo;
@@ -1215,25 +1217,6 @@ xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** assembl
 	g_free (buffer);
 }
 
-static void
-utf16_to_be (gunichar2 *utf)
-{
-	gunichar2 *s;
-
-	for (s = utf; *s != '\0'; s++)
-		*s = GUINT16_SWAP_LE_BE (*s);
-}
-
-static void
-utf32_to_be (gunichar *utf)
-{
-	gunichar *s;
-
-	for (s = utf; *s != '\0'; s++)
-		*s = GUINT32_SWAP_LE_BE (*s);
-}
-
-
 DependencyObject *
 xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_namescope,
 		       Type::Kind *element_type)
@@ -1241,36 +1224,22 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 	DependencyObject *res = NULL;
 	XamlParserInfo *parser_info = NULL;
 	XML_Parser p = NULL;
-	char buffer [READ_BUFFER];
-	int fd;
-	int len;	
-	bool is_utf16 = false;
-	bool is_utf32 = false;
-	bool is_le = false;
 	bool first_read = true;
-	gunichar2 bom;
-	int offset = 0;
-
-
-#ifdef DEBUG_XAML
-	printf ("attemtping to load xaml file: %s\n", xaml_file);
-#endif
+	const char *inptr, *inend;
+	TextStream *stream;
+	char buffer[64];
+	ssize_t nread;
 	
-	fd = open (xaml_file, O_RDONLY);
-
-	if (fd == -1) {
-#ifdef DEBUG_XAML
-		printf ("can not open file\n");
-#endif
+	d(printf ("attemtping to load xaml file: %s\n", xaml_file));
+	
+	stream = new TextStream ();
+	if (!stream->Open (xaml_file, false)) {
+		d(printf ("can not open file\n"));
 		goto cleanup_and_return;
 	}
-
-	p = XML_ParserCreateNS ("UTF-8", '|');
-
-	if (!p) {
-#ifdef DEBUG_XAML
-		printf ("can not create parser\n");
-#endif
+	
+	if (!(p = XML_ParserCreateNS ("UTF-8", '|'))) {
+		d(printf ("can not create parser\n"));
 		goto cleanup_and_return;
 	}
 
@@ -1294,90 +1263,32 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 	/*
 	XML_SetProcessingInstructionHandler (p, proc_handler);
 	*/
-
-	len = read (fd, &bom, sizeof (gunichar2));
-	if (len != 2) {
-		goto cleanup_and_return;
-	} else if (bom == BOM) {
-		is_utf16 = true;
-	} else if (bom == ANTIBOM) {
-		is_utf16 = true;
-		is_le = true;
-	} else if (bom == 0x0000) {
-		read (fd, &bom, sizeof (gunichar2));
-
-		if (len != 2)
-			goto cleanup_and_return;
-
-		if (bom == BOM)
-			is_utf32 = true;
-		else if (bom == ANTIBOM) {
-			is_utf32 = true;
-			is_le = true;
-		}
+	
+	while ((nread = stream->Read (buffer, sizeof (buffer))) >= 0) {
+		inptr = buffer;
 		
-	} else {
-		buffer [0] = bom & 0x00FF;
-		buffer [1] = (bom >> 8);
-		offset = 2;
-	}
-
-	while ((len = read (fd, buffer + offset, READ_BUFFER - offset)) != 0) {
-		gchar* converted = NULL;
-		gchar* utf8_buffer;
-
-		if (is_utf16) {
-			glong new_len;
-			glong used_len;
-
-			if (is_le)
-				utf16_to_be ((gunichar2 *) buffer);
-
-			converted = g_utf16_to_utf8 ((const gunichar2 *) buffer, len / sizeof (gunichar2), &used_len, &new_len, NULL);
-			utf8_buffer = converted;
-
-			offset = 0;
-			len = (int) new_len;
-		} else if (is_utf32) {
-			glong new_len;
-			glong used_len;
-
-			if (is_le)
-				utf32_to_be ((gunichar *) (buffer + offset));
-
-			converted = g_ucs4_to_utf8 ((const gunichar *) buffer, len / sizeof (gunichar), &used_len, &new_len, NULL);
-			utf8_buffer = converted;
-
-			offset = 0;
-			len = (int) new_len;
-		} else {
-			len += offset;
-			utf8_buffer = buffer;
-			offset = 0;
-		}
-
-		int ws = 0;
 		if (first_read) {
 			// Remove preceding white space
-			while (utf8_buffer [ws] && isspace (utf8_buffer [ws]))
-				ws++;
+			inend = buffer + nread;
+			
+			while (inptr < inend && isspace ((unsigned char) *inptr))
+				inptr++;
+			
+			if (inptr == inend)
+				continue;
+			
+			nread = (inend - inptr);
+			first_read = false;
 		}
-
-		if (!XML_Parse (p, utf8_buffer + ws, len - ws, len == 0)) {
+		
+		if (!XML_Parse (p, inptr, nread, nread == 0)) {
 			expat_parser_error (parser_info, XML_GetErrorCode (p));
 			goto cleanup_and_return;
 		}
-
-		if (converted)
-			g_free (converted);
-
-		first_read = false;
 	}
-
-#ifdef DEBUG_XAML
-	print_tree (parser_info->top_element, 0);
-#endif
-
+	
+	d(print_tree (parser_info->top_element, 0));
+	
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
 		if (element_type)
@@ -1390,8 +1301,9 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 		
 		res->ref ();
 	}
-
+	
  cleanup_and_return:
+	
 	if (!parser_info) {
 		printf ("error opening xaml file\n");
 		loader->error_args = new ParserErrorEventArgs ("Error opening xaml file", xaml_file, 0, 0, 1, "", "");
@@ -1399,14 +1311,15 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 		printf ("setting error args\n");
 		loader->error_args = parser_info->error_args;
 	}
-
-	if (fd != -1)
-		close (fd);
+	
+	delete stream;
+	
 	if (p)
 		XML_ParserFree (p);
+	
 	if (parser_info)
 		delete parser_info;
-
+	
 	return res;
 }
 

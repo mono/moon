@@ -266,3 +266,217 @@ exception:
 	
 	return -1;
 }
+
+
+static ssize_t
+read_internal (int fd, char *buf, size_t n)
+{
+	ssize_t nread;
+	
+	do {
+		nread = read (fd, buf, n);
+	} while (nread == -1 && errno == EINTR);
+	
+	return nread;
+}
+
+
+TextStream::TextStream ()
+{
+	cd = (GIConv) -1;
+	bufptr = buffer;
+	buflen = 0;
+	fd = -1;
+	
+	eof = true;
+}
+
+TextStream::~TextStream ()
+{
+	if (fd != -1)
+		close (fd);
+	
+	if (cd != (GIConv) -1) {
+		g_iconv_close (cd);
+		cd = (GIConv) -1;
+	}
+}
+
+#define BOM ((gunichar2) 0xFEFF)
+#define ANTIBOM ((gunichar2) 0xFFFE)
+
+enum Encoding {
+	UTF16_BE,
+	UTF16_LE,
+	UTF32_BE,
+	UTF32_LE,
+	UTF8,
+	UNKNOWN,
+};
+
+static const char *encoding_names[] = { "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF-32LE", "UTF-8" };
+
+
+bool
+TextStream::Open (const char *filename, bool force)
+{
+	Encoding encoding = UNKNOWN;
+	gunichar2 bom;
+	ssize_t nread;
+	
+	if (fd != -1)
+		Close ();
+	
+	if ((fd = open (filename, O_RDONLY)) == -1)
+		return false;
+	
+	// prefetch the first chunk of data in order to determine encoding
+	if ((nread = read_internal (fd, buffer, sizeof (buffer))) == -1) {
+		close (fd);
+		fd = -1;
+		
+		return false;
+	}
+	
+	bufptr = buffer;
+	
+	if (nread >= 2) {
+		memcpy (&bom, buffer, 2);
+		switch (bom) {
+		case ANTIBOM:
+			encoding = UTF16_LE;
+			buflen -= 2;
+			bufptr += 2;
+			break;
+		case BOM:
+			encoding = UTF16_BE;
+			buflen -= 2;
+			bufptr += 2;
+			break;
+		case 0:
+			if (nread >= 4) {
+				memcpy (&bom, buffer + 2, 2);
+				if (bom == ANTIBOM) {
+					encoding = UTF32_LE;
+					buflen -= 4;
+					bufptr += 4;
+				} else if (bom == BOM) {
+					encoding = UTF32_BE;
+					buflen -= 4;
+					bufptr += 4;
+				}
+			}
+			break;
+		default:
+			encoding = UTF8;
+			break;
+		}
+	} else {
+		// assume utf-8
+		encoding = UTF8;
+	}
+	
+	if (encoding == UNKNOWN) {
+		if (!force) {
+			close (fd);
+			fd = -1;
+			
+			return false;
+		}
+		
+		encoding = UTF8;
+	}
+	
+	buflen = nread;
+	
+	if (encoding != UTF8 && (cd = g_iconv_open ("UTF-8", encoding_names[encoding])) == (GIConv) -1) {
+		close (fd);
+		fd = -1;
+		
+		return false;
+	}
+	
+	eof = false;
+	
+	return true;
+}
+
+void
+TextStream::Close ()
+{
+	if (fd != -1) {
+		close (fd);
+		fd = -1;
+	}
+	
+	if (cd != (GIConv) -1) {
+		g_iconv_close (cd);
+		cd = (GIConv) -1;
+	}
+	
+	bufptr = buffer;
+	buflen = 0;
+	eof = true;
+}
+
+bool
+TextStream::Eof ()
+{
+	return eof && buflen == 0;
+}
+
+ssize_t
+TextStream::Read (char *buf, size_t n)
+{
+	size_t inleft = buflen;
+	char *inbuf = bufptr;
+	char *outbuf = buf;
+	size_t outleft = n;
+	ssize_t nread;
+	size_t r;
+	
+	if (fd == -1)
+		return -1;
+	
+	do {
+		if (cd != (GIConv) -1) {
+			errno = 0;
+			r = g_iconv (cd, &inbuf, &inleft, &outbuf, &outleft);
+			if (r == (size_t) -1 && errno == E2BIG) {
+				// not enough room left in outbuf
+				break;
+			}
+		} else {
+			r = MIN (inleft, outleft);
+			memcpy (outbuf, inbuf, r);
+			outleft -= r;
+			outbuf += r;
+			inleft -= r;
+			inbuf += r;
+		}
+		
+		if (outleft == 0 || eof)
+			break;
+		
+		// buffer more data
+		if (inleft > 0)
+			memmove (buffer, inbuf, inleft);
+		
+		inbuf = buffer + inleft;
+		if ((nread = read_internal (fd, inbuf, sizeof (buffer) - inleft)) <= 0) {
+			eof = true;
+			break;
+		}
+		
+		inleft += nread;
+		inbuf = buffer;
+	} while (true);
+	
+	if (eof && cd != (GIConv) -1)
+		g_iconv (cd, NULL, NULL, &outbuf, &outleft);
+	
+	buflen = inleft;
+	bufptr = inbuf;
+	
+	return (outbuf - buf);
+}
