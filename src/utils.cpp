@@ -339,17 +339,18 @@ TextStream::Open (const char *filename, bool force)
 	}
 	
 	bufptr = buffer;
+	buflen = nread;
 	
 	if (nread >= 2) {
 		memcpy (&bom, buffer, 2);
 		switch (bom) {
 		case ANTIBOM:
-			encoding = UTF16_LE;
+			encoding = UTF16_BE;
 			buflen -= 2;
 			bufptr += 2;
 			break;
 		case BOM:
-			encoding = UTF16_BE;
+			encoding = UTF16_LE;
 			buflen -= 2;
 			bufptr += 2;
 			break;
@@ -357,11 +358,11 @@ TextStream::Open (const char *filename, bool force)
 			if (nread >= 4) {
 				memcpy (&bom, buffer + 2, 2);
 				if (bom == ANTIBOM) {
-					encoding = UTF32_LE;
+					encoding = UTF32_BE;
 					buflen -= 4;
 					bufptr += 4;
 				} else if (bom == BOM) {
-					encoding = UTF32_BE;
+					encoding = UTF32_LE;
 					buflen -= 4;
 					bufptr += 4;
 				}
@@ -386,8 +387,6 @@ TextStream::Open (const char *filename, bool force)
 		
 		encoding = UTF8;
 	}
-	
-	buflen = nread;
 	
 	if (encoding != UTF8 && (cd = g_iconv_open ("UTF-8", encoding_names[encoding])) == (GIConv) -1) {
 		close (fd);

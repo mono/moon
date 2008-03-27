@@ -1285,6 +1285,9 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 			expat_parser_error (parser_info, XML_GetErrorCode (p));
 			goto cleanup_and_return;
 		}
+		
+		if (nread == 0)
+			break;
 	}
 	
 	d(print_tree (parser_info->top_element, 0));

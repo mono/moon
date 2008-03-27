@@ -1,5 +1,13 @@
 2008-03-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* utils.cpp (TextStream::Open): Fixed the BOM checking, had LE/BE
+	reversed.
+
+	* xaml.cpp (xaml_create_from_file): Oops, if we read 0 bytes, make
+	sure to exit the loop ;-)
+
+2008-03-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	* xaml.cpp (xaml_create_from_file): Use the new TextStream class
 	instead of doing things the hard way. Might be more performant,
 	definitely won't malloc/free nearly as much. Also fixed a bug
