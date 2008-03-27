@@ -144,6 +144,11 @@ namespace MoonlightTests {
 		{
 			base.Setup ();
 
+			if (!File.Exists (InputFile)) {
+				SetToIgnore (String.Format ("Unable to find input file: {0}", InputFile));
+				return;
+			}
+						
 			StringBuilder built = new StringBuilder ();
 			StreamReader reader = new StreamReader (File.OpenRead (InputFile));
 

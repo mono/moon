@@ -240,6 +240,9 @@ namespace MoonlightTests {
 
 			Setup ();
 
+			if (ignore)
+				return TestResult.Ignore;
+
 			result = RunTest ();
 			if (result != TestResult.Pass) {
 				Teardown ();
@@ -267,6 +270,11 @@ namespace MoonlightTests {
 
 		protected virtual void Setup ()
 		{
+			if (!File.Exists (InputFile)) {
+				SetToIgnore (String.Format ("Unable to find input file: {0}", InputFile));
+				return;
+			}
+
 			CodeBehindCompileIfNeeded ();
 			RunXspIfNeeded ();
 		}
