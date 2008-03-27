@@ -235,7 +235,7 @@ ASFParser::ReadPacket (ASFPacket *packet)
 	source = context.source;
 
 	ASF_LOG ("ASFParser::ReadPacket (%p): Reading packet at %lld (index: %lld) of %lld packets.\n",
-		 packet, source->Position (), GetPacketIndex (source->Position ()),
+		 packet, source->GetPosition (), GetPacketIndex (source->GetPosition ()),
 		 data->data_packet_count);
 	
 #if DEBUG
@@ -311,7 +311,7 @@ ASFParser::ReadData ()
 		return false;
 	}
 	
-	ASF_LOG ("Current position: %llx (%lld)\n", source->Position (), source->Position ());
+	ASF_LOG ("Current position: %llx (%lld)\n", source->GetPosition (), source->GetPosition ());
 	
 	data = (asf_data *) Malloc (sizeof (asf_data));
 	if (data == NULL) {
@@ -808,7 +808,7 @@ ASFReader::ReadMore ()
 		}
 
 		ASF_LOG ("ASFReader::ReadMore (): positioned: %i, current packet index: %llu, position: %lld, calculated packet index: %llu\n", 
-				positioned, current_packet_index, source->Position (), parser->GetPacketIndex (source->Position ()));
+				positioned, current_packet_index, source->GetPosition (), parser->GetPacketIndex (source->GetPosition ()));
 
 		if (read_result == MEDIA_INVALID_DATA) {
 			ASF_LOG ("ASFReader::ReadMore (): Skipping invalid packet (index: %llu)\n", current_packet_index);

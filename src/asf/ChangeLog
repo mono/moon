@@ -1,3 +1,7 @@
+2008-03-27  Fernando Herrera  <fherrera@novell.com>
+
+	* asf.cpp: Fix log functions tu use GetPositon.
+
 2008-03-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-test.cpp, asf-generated.h: Updated.
