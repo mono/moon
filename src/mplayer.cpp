@@ -1046,41 +1046,54 @@ void
 AudioPlayer::StartThread ()
 {
 	int result;
-	result = pthread_create (&audio_thread, NULL, Loop, this);
+	
+	LOG_AUDIO ("AudioPlayer::StartThread (), audio_thread: %p\n", audio_thread);
+	
+	if (audio_thread != NULL)
+		return;
+	
+	shutdown = false;
+	audio_thread = (pthread_t*) g_malloc0 (sizeof (pthread_t));
+	result = pthread_create (audio_thread, NULL, Loop, this);
 	if (result != 0) {
 		fprintf (stderr, "AudioPlayer::Initialize (): could not create audio thread (error code: %i = '%s').\n", result, strerror (result));
+		g_free (audio_thread);
+		audio_thread = NULL;
 		return;
 	}
+}
+
+void
+AudioPlayer::StopThread ()
+{
+	int result;
+
+	if (audio_thread == NULL)
+		return;
+
+	shutdown = true;
+
+	// Wake up the loop in case it's waiting in a poll.	
+	WakeUp ();
+
+	// Wait until the audio thread has completely finished.
+	result = pthread_join (*audio_thread, NULL);
+	if (result != 0) {
+		fprintf (stderr, "AudioPlayer::~AudioPlayer (): failed to join the audio thread (error code: %i).\n", result);
+	}
+	g_free (audio_thread);
+	audio_thread = NULL;
 }
 
 AudioPlayer::~AudioPlayer ()
 {
 	LOG_AUDIO ("AudioPlayer::~AudioPlayer (): the audio player is being shut down.\n");
-	
-	int result;
-	
+		
 	if (!initialized)
 		return;
 	
-	if (shutdown)
-		return;
+	StopThread ();
 	
-	shutdown = true;
-	
-	// The Lock/Unlock sequence will ensure that the audio loop is exited, 
-	// since the loop checks the 'shutdown' value just after reaquiring it's lock
-	// (i.e. after the unlock here), and then breaks the loop.
-	Lock ();
-	Unlock ();
-
-	// Wait until the audio thread has completely finished.
-	// We can't just join the thread without the above Lock/Unlock,
-	// since the thread may be waiting in a poll for something to happen.
-	result = pthread_join (audio_thread, NULL);
-	if (result != 0) {
-		fprintf (stderr, "AudioPlayer::~AudioPlayer (): failed to join the audio thread (error code: %i).\n", result);
-	}
-
 	if (list != NULL) {	
 		for (uint32_t i = 0; i < list_count; i++)
 			delete list [i];
@@ -1094,7 +1107,6 @@ AudioPlayer::~AudioPlayer ()
 	g_free (udfs);
 	udfs = NULL;
 	
-	shutdown = false;
 	initialized = false;
 
 	sem_destroy (&semaphore);
@@ -1143,6 +1155,9 @@ AudioPlayer::AddInternal (MediaPlayer *mplayer)
 	
 	UpdatePollList (true);
 
+	if (list_count == 1)
+		StartThread ();
+
 	Unlock ();
 
 	return true;
@@ -1180,6 +1195,11 @@ AudioPlayer::RemoveInternal (MediaPlayer *mplayer)
 	}
 
 	UpdatePollList (true);
+
+	// We don't stop the audio thread when we reach 0 audio nodes since
+	// this may cause a lot of threads being created if a lot of
+	// mediaelements/media are added and removed.
+
 	Unlock ();
 }
 
@@ -1375,6 +1395,13 @@ AudioPlayer::Loop ()
 			int result;
 			int buffer;
 
+			// Make our own copy of the udfs structure so that we don't have to hold
+			// the lock while polling			
+			int ndfs = this->ndfs;
+			pollfd *udfs = (pollfd*) g_malloc (sizeof (pollfd) * ndfs);
+			memcpy (udfs, this->udfs, sizeof (pollfd) * ndfs);
+			Unlock ();
+			
 			do {
 				pc = 0;
 				udfs [0].events = POLLIN;
@@ -1400,6 +1427,9 @@ AudioPlayer::Loop ()
 					}
 				}
 			} while (result == -1 && errno == EINTR); 
+
+			SimpleLock ();
+			g_free (udfs);
 		}
 	}
 			
@@ -1472,6 +1502,8 @@ AudioPlayer::Lock ()
 {
 	LOG_AUDIO_EX ("AudioPlayer::Lock (). instance: %p, semaphore: %i\n", instance, sem_get_value (&semaphore));
 
+	while (sem_wait (&semaphore) == -1 && errno == EINTR) {};
+#if 0
 	timespec ts;
 
 	ts.tv_sec = 0;
@@ -1483,6 +1515,7 @@ AudioPlayer::Lock ()
 	while (sem_timedwait (&semaphore, &ts) == -1 && (errno == EINTR || errno == ETIMEDOUT)) {
 		WakeUp ();
 	}
+#endif
 
 	LOG_AUDIO_EX ("AudioPlayer::Lock (). AQUIRED instance: %p, semaphore: %i\n", instance, sem_get_value (&semaphore));
 }

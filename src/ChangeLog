@@ -1,3 +1,8 @@
+2008-03-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.h, mplayer.cpp: Don't create any audio threads until we're
+	  requested to play audio. Don't hold the lock when polling.
+
 2008-03-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.cpp (Downloader::SendInternal): New method that is

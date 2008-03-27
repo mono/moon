@@ -209,11 +209,12 @@ public:
 	~AudioPlayer ();
 
 	void StartThread ();
+	void StopThread ();
 
 	AudioNode* Find (MediaPlayer *mplayer);
 
 	// The audio thread	
-	pthread_t audio_thread;
+	pthread_t *audio_thread;
 
 	// The audio loop which is executed 
 	// on the audio thread.
