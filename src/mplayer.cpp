@@ -1396,7 +1396,11 @@ AudioPlayer::Loop ()
 			int buffer;
 
 			// Make our own copy of the udfs structure so that we don't have to hold
-			// the lock while polling			
+			// the lock while polling. This means that any of the file descriptors
+			// we are polling against might get closed while in the poll, however
+			// according to the docs I have been able to find this will only cause
+			// wakeups with errors (invalid fd) or spurious wakeups (fd represents
+			// something else), and we handle both cases correctly anyway.
 			int ndfs = this->ndfs;
 			pollfd *udfs = (pollfd*) g_malloc (sizeof (pollfd) * ndfs);
 			memcpy (udfs, this->udfs, sizeof (pollfd) * ndfs);
