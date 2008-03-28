@@ -332,12 +332,11 @@ Storyboard::Begin ()
 #endif
 
 	if (!group) {
-		Surface *surface = FindSurface ();
-		if (surface == NULL) {
+		if (GetSurface() == NULL) {
 			g_warning ("unable to find surface to add storyboard clock to.");
 			return;
 		}
-		group = surface->GetTimeManager()->GetRootClock();
+		group = GetSurface()->GetTimeManager()->GetRootClock();
 	}
 
 	// This creates the clock tree for the hierarchy.  if a
@@ -467,24 +466,18 @@ Storyboard::GetTargetName (DependencyObject *o)
 	return v == NULL ? NULL : v->AsString();
 }
 
-static Surface*
-find_surface_recurse (DependencyObject *obj)
+void
+Storyboard::SetSurface (Surface *surface)
 {
-	if (obj == NULL)
-		return NULL;
-	else if (obj->Is(Type::UIELEMENT)) {
-		return ((UIElement*)obj)->GetSurface();
+	if (GetSurface() && surface == NULL && root_clock && root_clock->GetClockState() == Clock::Active) {
+		/* we're being detached from a surface, so pause clock */
+		Pause ();
 	}
-	else {
-		obj = obj->GetLogicalParent();
-		return find_surface_recurse (obj);
-	}
-}
-
-Surface*
-Storyboard::FindSurface ()
-{
-	return find_surface_recurse (this);
+ 	else if (!GetSurface() && surface && root_clock && root_clock->GetIsPaused()) {
+		/* we're being (re-)attached to a surface, so resume clock */
+ 		Resume ();
+ 	}
+	DependencyObject::SetSurface (surface);
 }
 
 Storyboard::~Storyboard ()

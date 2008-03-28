@@ -622,6 +622,8 @@ class Storyboard : public ParallelTimeline {
 	void Seek (TimeSpan timespan);
 	void Stop ();
 	
+	virtual void SetSurface (Surface *surface);
+
 	static DependencyProperty* TargetNameProperty;
 	static DependencyProperty* TargetPropertyProperty;
 
@@ -636,8 +638,6 @@ class Storyboard : public ParallelTimeline {
 	static int CompletedEvent;
 
  private:
-	Surface *FindSurface ();
-
 	void HookupAnimationsRecurse (Clock *clock);
 	Clock *root_clock;
 
