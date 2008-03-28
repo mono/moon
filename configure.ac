@@ -494,8 +494,8 @@ fi
 #LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 
 
-SHOCKER_CFLAGS=`pkg-config --cflags glib-2.0 gdk-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin`
-SHOCKER_LIBS=`pkg-config --libs glib-2.0 gdk-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin`
+SHOCKER_CFLAGS=`pkg-config --cflags glib-2.0 gdk-2.0 gtk+-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin`
+SHOCKER_LIBS=`pkg-config --libs glib-2.0 gdk-2.0 gtk+-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin`
 
 AGVIEWER_CFLAGS=`pkg-config --cflags glib-2.0 gtk+-2.0 xulrunner-gtkmozembed dbus-glib-1`
 AGVIEWER_LIBS=`pkg-config --libs glib-2.0 gtk+-2.0 xulrunner-gtkmozembed dbus-glib-1`

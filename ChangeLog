@@ -1,3 +1,7 @@
+2008-03-28  Jackson Harper  <jackson@ximian.com>
+
+	* configure.ac: shocker needs the gtk libs now.
+
 2008-03-25  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Process install.rdf instead of install.js
