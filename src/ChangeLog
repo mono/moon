@@ -1,3 +1,22 @@
+2008-03-28  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h,
+	dependencyobject.cpp (DependencyObject::SetSurface): new method,
+	set the surface for all our DependencyObject subclassed property
+	values.
+
+	* collection.h, collection.cpp (Collection::Add): SetSurface work.
+	(Collection::Insert): same.
+	(Collection::SetVal): same.
+	(Collection::Remove): same.
+	(Collection::RemoveAt): same.
+	(Collection::Clear): same.
+	(Collection::SetSurface): new method, iterate over all children
+	setting the surface.
+	(VisualCollection): remove surface logic here.
+	(VisualCollection::VisualAdded): same.
+	(VisualCollection::VisualRemoved): same.
+
 2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Clear all queues after a seek has completed.

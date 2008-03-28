@@ -218,6 +218,8 @@ class DependencyObject : public EventObject {
 		return v ? v->AsString () : NULL;
 	}
 	
+	virtual void SetSurface (Surface *surface);
+
 	void SetLogicalParent (DependencyObject *logical_parent);
 	DependencyObject* GetLogicalParent ();
 

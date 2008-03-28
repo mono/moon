@@ -86,6 +86,7 @@ Collection::Add (DependencyObject *data)
 	generation++;
 	list->Append (new Collection::Node (data, this));
 	data->AddPropertyChangeListener (this);
+	data->SetSurface (GetSurface());
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (data);
@@ -127,6 +128,7 @@ Collection::Insert (int index, DependencyObject *data)
 	list->Insert (new Collection::Node (data, this), index);
 
 	data->AddPropertyChangeListener (this);
+	data->SetSurface (GetSurface());
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (data);
@@ -161,7 +163,9 @@ Collection::SetVal (int index, DependencyObject *data)
 	Node *old = (Collection::Node *) list->Replace (new Collection::Node (data, this), index);
 	
 	data->AddPropertyChangeListener (this);
+	data->SetSurface (GetSurface ());
 	old->obj->RemovePropertyChangeListener (this);
+	old->obj->SetSurface (NULL);
 	
 	if (closure) {
 		NameScope *con_ns = closure->FindNameScope ();
@@ -206,6 +210,7 @@ Collection::Remove (DependencyObject *data)
 	list->Unlink (n);
 
 	data->RemovePropertyChangeListener (this);
+	data->SetSurface (NULL);
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (data);
@@ -242,6 +247,7 @@ Collection::RemoveAt (int index)
 	list->Unlink (n);
 	
 	n->obj->RemovePropertyChangeListener (this);
+	n->obj->SetSurface (NULL);
 
 	if (closure) {
 		NameScope *ns = NameScope::GetNameScope (n->obj);
@@ -275,6 +281,7 @@ Collection::Clear (bool emit_event)
 		con_ns = closure->FindNameScope ();
 	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
 		n->obj->RemovePropertyChangeListener (this);
+		n->obj->SetSurface (NULL);
 
 		NameScope *ns = NameScope::GetNameScope (n->obj);
 		if (ns && ns->GetMerged ()) {
@@ -300,6 +307,18 @@ void
 Collection::Clear ()
 {
 	Clear(true);
+}
+
+void
+Collection::SetSurface (Surface *surface)
+{
+	Collection::Node *n;
+
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
+		n->obj->SetSurface (surface);
+	}
+
+	DependencyObject::SetSurface (surface);
 }
 
 DependencyProperty *Collection::CountProperty;
@@ -466,7 +485,6 @@ VisualCollection::~VisualCollection ()
 	
 	while (n) {
 		((UIElement *) n->obj)->SetVisualParent (NULL);
-		((UIElement *) n->obj)->SetSurface (NULL);
 		
 		n = (Collection::Node *) n->next;
 	}
@@ -509,7 +527,6 @@ VisualCollection::VisualAdded (Visual *visual)
 	if (panel == NULL)
 		return;
 	
-	item->SetSurface (panel->GetSurface ());
 	item->SetVisualParent (panel);
 	item->UpdateTransform ();
 	item->UpdateTotalRenderVisibility ();
@@ -523,7 +540,6 @@ VisualCollection::VisualRemoved (Visual *visual)
 	UIElement *item = (UIElement *) visual;
 
 	item->CacheInvalidateHint ();
-	item->SetSurface (NULL);
 
 	if (item->GetVisualParent () == NULL)
 		return;

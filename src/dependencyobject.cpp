@@ -1055,6 +1055,24 @@ DependencyObject::Shutdown ()
 	DependencyObject::properties = NULL;
 }
 
+static void
+set_surface (gpointer key, gpointer value, gpointer data)
+{
+	Surface *s = (Surface*)data;
+	Value *v = (Value*)value;
+	if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
+		DependencyObject *dob = v->AsDependencyObject();
+		dob->SetSurface (s);
+	}
+}
+
+void
+DependencyObject::SetSurface (Surface *s)
+{
+	EventObject::SetSurface (s);
+	g_hash_table_foreach (current_values, set_surface, s);
+}
+
 void
 DependencyObject::SetLogicalParent (DependencyObject *logical_parent)
 {
