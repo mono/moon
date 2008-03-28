@@ -1,6 +1,5 @@
 //#define VIDEO_DEMO
 //#define XAML_DEMO
-#include <config.h>
 #include <string.h>
 #include <gtk/gtk.h>
 #include <malloc.h>

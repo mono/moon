@@ -1,7 +1,5 @@
 libmoonincludedir=$(includedir)/libmoon
 
-noinst_PROGRAMS = demo
-
 lib_LTLIBRARIES = libmoon.la
 
 INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\"
@@ -130,16 +128,5 @@ EXTRA_DIST = \
 	zip/ChangeLogUnzip \
 	$(libmooninclude_headers)
 
-demo_SOURCES = \
-	demo.cpp
-
 libmoon_la_LIBADD = $(MOON_LIBS)
-
-demo_LDADD = -lmoon $(MOON_PROG_LIBS)
-
-debug:
-	LD_LIBRARY_PATH=.libs gdb .libs/demo
-
-valgrind:
-	LD_LIBRARY_PATH=.libs valgrind .libs/demo
 
