@@ -1,5 +1,12 @@
 2008-03-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/clock/clock30.html:
+	* xaml/clock/clock30.xaml: Adding a new clock test that has
+	AutoReverse="True" set on Storyboard (not animation). It currently keeps
+	repeating forever, while it should repeat only once.
+
+2008-03-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/clock/clock26.xaml: Updating this test's description. It actually
 	passes now (the behavior is same on SL).
 
