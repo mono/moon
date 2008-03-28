@@ -164,8 +164,8 @@ library_of_ip (gpointer ip, gpointer* base_address)
 
 		if (lib [0] != '/' && lib [0] != '[') {
 			printf ("Something's wrong, lib: %s\n", lib);
-			printf ("range: %s, a: %s, b: %s, c: %s, d: %s, lib: %s, start_range: %s, end_range: %s, tail: %s, line: %s", 
-			range, a, b, c, d, lib, NULL, NULL, NULL, entire_line);
+			printf ("range: %s, a: %s, b: %s, c: %s, d: %s, lib: %s, line: %s", 
+			range, a, b, c, d, lib, entire_line);
 		}
 		
 		saveptr = NULL;
