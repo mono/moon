@@ -1,3 +1,16 @@
+2008-03-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (deobfuscate_font): Updated for CopyFileTo() rename.
+
+	* downloader.cpp (Downloader::CleanupUnzipDir): Updated for
+	RemoveDir() rename.
+	(create_unzipdir): Updated for MakeTempDir() rename.
+
+	* utils.cpp (MakeTempDir): Renamed from make_tmpdir() to try and
+	be more consistent with moonlight API naming convensions.
+	(RemoveDir): Renamed from moon_rmdir().
+	(CopyFileTo): Renamed from moon_copy_file()
+
 2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* debug.cpp: Fix warning.

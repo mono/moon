@@ -1298,7 +1298,7 @@ deobfuscate_font (Downloader *downloader, const char *path)
 		return NULL;
 	}
 	
-	if (moon_copy_file (path, fd) == -1 || !DeobfuscateFontFileWithGUID (filename, guid, NULL)) {
+	if (CopyFileTo (path, fd) == -1 || !DeobfuscateFontFileWithGUID (filename, guid, NULL)) {
 		unlink (filename);
 		g_free (filename);
 		return NULL;

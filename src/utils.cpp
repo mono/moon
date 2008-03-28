@@ -144,23 +144,28 @@ ExtractFile (unzFile zip, int fd)
 
 
 char *
-make_tmpdir (char *tmpdir)
+MakeTempDir (char *tmpdir)
 {
 	char *path, *xxx;
+	int attempts = 0;
 	size_t n;
 	
-	if ((n = strlen (tmpdir)) < 6)
+	if ((n = strlen (tmpdir)) < 6) {
+		errno = EINVAL;
 		return NULL;
+	}
 	
 	xxx = tmpdir + (n - 6);
-	if (strcmp (xxx, "XXXXXX") != 0)
+	if (strcmp (xxx, "XXXXXX") != 0) {
+		errno = EINVAL;
 		return NULL;
+	}
 	
 	do {
 		if (!(path = mktemp (tmpdir)))
 			return NULL;
 		
-		if (g_mkdir_with_parents (tmpdir, 0700) != -1)
+		if (g_mkdir (tmpdir, 0700) != -1)
 			return tmpdir;
 		
 		if (errno != EEXIST) {
@@ -170,14 +175,15 @@ make_tmpdir (char *tmpdir)
 		
 		// that path already exists, try a new one...
 		strcpy (xxx, "XXXXXX");
-	} while (1);
+		attempts++;
+	} while (attempts < 100);
 	
 	return NULL;
 }
 
 
 static int
-moon_rmdir_real (GString *path)
+rmdir_real (GString *path)
 {
 	struct dirent *dent;
 	struct stat st;
@@ -201,33 +207,33 @@ moon_rmdir_real (GString *path)
 			continue;
 		
 		if (S_ISDIR (st.st_mode))
-			moon_rmdir_real (path);
+			rmdir_real (path);
 		else
-			unlink (path->str);
+			g_unlink (path->str);
 	}
 	
 	closedir (dir);
 	
 	g_string_truncate (path, len - 1);
 	
-	return rmdir (path->str);
+	return g_rmdir (path->str);
 }
 
 int
-moon_rmdir (const char *dir)
+RemoveDir (const char *dir)
 {
 	GString *path;
 	int rv;
 	
 	path = g_string_new (dir);
-	rv = moon_rmdir_real (path);
+	rv = rmdir_real (path);
 	g_string_free (path, true);
 	
 	return rv;
 }
 
 int
-moon_copy_file (const char *filename, int fd)
+CopyFileTo (const char *filename, int fd)
 {
 	char buf[4096];
 	ssize_t nread;

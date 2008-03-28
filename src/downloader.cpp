@@ -102,7 +102,7 @@ Downloader::CleanupUnzipDir ()
 	if (!unzipdir)
 		return;
 	
-	moon_rmdir (unzipdir);
+	RemoveDir (unzipdir);
 	g_free (unzipdir);
 	unzipped = false;
 	unzipdir = NULL;
@@ -221,7 +221,7 @@ create_unzipdir (const char *filename)
 	path = g_build_filename (g_get_tmp_dir (), buf, NULL);
 	g_free (buf);
 	
-	if (!make_tmpdir (path)) {
+	if (!MakeTempDir (path)) {
 		g_free (path);
 		return NULL;
 	}

@@ -24,11 +24,11 @@ void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
 
 bool ExtractFile (unzFile zip, int fd);
 
-char *make_tmpdir (char *tmpdir);
+char *MakeTempDir (char *tmpdir);
 
-int moon_rmdir (const char *dir);
+int RemoveDir (const char *dir);
 
-int moon_copy_file (const char *filename, int fd);
+int CopyFileTo (const char *filename, int fd);
 
 G_END_DECLS
 
