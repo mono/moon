@@ -810,16 +810,17 @@ Clock::ComputeNewTime ()
 				forward = true;
 				ret_time = -ret_time;
 			}
-			else {
-				if (repeat_count > 0) {
-					repeat_count --;
-					if (repeat_count < 0)
-						repeat_count = 0;
-				}
+			
+			// Here we check the repeat count even is we're auto-reversed. 
+			// Ie. a auto-reversed storyboard has to stop here.
+			if (repeat_count > 0) {
+				repeat_count --;
+				if (repeat_count < 0)
+					repeat_count = 0;
+			}
 
-				if (repeat_count == 0) {
-					SkipToFill ();
-				}
+			if (repeat_count == 0) {
+				SkipToFill ();
 			}
 		}
 		else if (ret_time <= duration_timespan && GetClockState() != Clock::Active) {
