@@ -367,9 +367,9 @@ if pkg-config xtst; then
    XTST_CFLAGS="$(pkg-config --cflags xtst)"
    XTST_LIBS="$(pkg-config --libs xtst)"
    AC_MSG_RESULT(found)
-elif ls "$(pkg-config --variable=includedir x11)/X11/extensions/XTest.h"; then
-   XTST_CFLAGS="-I$(pkg-config --variable=includedir x11)"
-   XTST_LIBS="-L$(pkg-config --variable=libdir x11) -lXtst"
+elif ls "$(pkg-config --variable=includedir xrender)/X11/extensions/XTest.h"; then
+   XTST_CFLAGS="-I$(pkg-config --variable=includedir xrender)"
+   XTST_LIBS="-L$(pkg-config --variable=libdir xrender) -lXtst"
    AC_MSG_RESULT(found)
 else
    echo You need to install XTEST if you want to run the Moonlight tests.
