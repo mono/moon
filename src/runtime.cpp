@@ -1533,6 +1533,11 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 gboolean
 Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data)
 {
+	// Ignore the enter/leave events coming as a result of grab/press
+	// started finished
+	if (event->mode != GDK_CROSSING_NORMAL)
+		return true;
+
 	Surface *s = (Surface *) data;
 	bool handled;
 

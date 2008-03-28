@@ -1,3 +1,8 @@
+2008-03-27  Michael Dominic K.  <mdk@mdk.am>
+
+	* runtime.cpp: Ignore the enter/leave crossing events coming as a 
+	result of grab/press started/finished.
+
 2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* uielement.cpp, pipeline.h, media.cpp, brush.cpp: Update according to
@@ -29,7 +34,7 @@
 	* pipeline.h: Implement SeekToPts for mms:// sources.
 
 2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
-
+	
 	* dependencyobject.h: Detect an unrecoverable error condition with
 	  refcounting (reffing an object with refcount of 0), and abort instead of
 	  crashing randomly and insecurely later on.
@@ -67,7 +72,7 @@
 	able to use this value as a string buffer.
 
 2008-03-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
-
+	
 	* mplayer.h, mplayer.cpp: Don't create any audio threads until we're
 	  requested to play audio. Don't hold the lock when polling.
 
