@@ -38,8 +38,6 @@ protected:
 public:
 	Media *media;
 	
-	pthread_mutex_t pause_mutex;
-	pthread_cond_t pause_cond;
 	bool paused;
 	
 	bool playing;
@@ -53,7 +51,6 @@ public:
 	bool caught_up_with_seek;
 	MediaElement *element;
 	
-	GThread *audio_thread;
 	Audio *audio;
 	Video *video;
 	

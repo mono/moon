@@ -143,12 +143,9 @@ Video::~Video ()
 MediaPlayer::MediaPlayer (MediaElement *el)
 {
 	element = el;
-	pthread_mutex_init (&pause_mutex, NULL);
-	pthread_cond_init (&pause_cond, NULL);
 	pthread_mutex_init (&target_pts_lock, NULL);
 
 	media = NULL;
-	audio_thread = NULL;
 	
 	audio = new Audio ();
 	video = new Video ();
@@ -161,8 +158,6 @@ MediaPlayer::~MediaPlayer ()
 	Close ();
 	
 	pthread_mutex_destroy (&target_pts_lock);
-	pthread_mutex_destroy (&pause_mutex);
-	pthread_cond_destroy (&pause_cond);
 	
 	delete audio;
 	delete video;
@@ -713,20 +708,13 @@ MediaPlayer::PauseInternal (bool value)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::PauseInternal (%i), paused: %i\n", value, paused);	
 
-	pthread_mutex_lock (&pause_mutex);
-
 	caught_up_with_seek = true;
 
 	if (paused != value) {
 		paused = value;
 		AudioPlayer::Pause (this, paused);
-		if (!paused) {
-			// Wake up the audio loop
-			pthread_cond_signal (&pause_cond);
-		}
 	}
 
-	pthread_mutex_unlock (&pause_mutex);
 	LOG_MEDIAPLAYER ("MediaPlayer::PauseInternal (%i), paused: %i [Done]\n", value, paused);	
 }
 
@@ -782,12 +770,7 @@ MediaPlayer::StopThreads ()
 	stop = true;
 	
 	PauseInternal (false);
-		
-	if (audio_thread != NULL) {
-		g_thread_join (audio_thread);
-		audio_thread = NULL;
-	}
-	
+
 	audio->queue->Clear (true);
 	video->queue->Clear (true);
 	
