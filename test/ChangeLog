@@ -1,5 +1,14 @@
 2008-03-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/clock/README.txt: Updating the test descriptions. 
+	
+	Removing the notes about failures on Windows (I couldn't reproduce them
+	with latest SL). 
+
+	Adding information about the new tests added.
+
+2008-03-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/clock/clock31.html:
 	* xaml/clock/clock31.xaml: One more clock test with duration-base
 	RepeatBehavior and AutoReverse property specified. Fails currently.

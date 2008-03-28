@@ -10,8 +10,8 @@ clock9  - same as clock8, but with a speed ratio of 2 (so it take 5 seconds to r
 clock10 - same as clock1, but the block should turn black at the beginning (immediately)
 clock11 - same as clock10, but with the instantaneous animation having FillBehavior=Stop
 clock12 - same as clock1, but it takes 2 seconds, and the block makes the journey over and over.
-clock13 - same as clock12, but specifies the RepeatBehavior as a double.  Fails on windows (with an alert)
-clock14 - same as clock12, but specifies the RepeatBehavior as a timespan/duration.  Fails on windows (the red box stays on the right side.)
+clock13 - same as clock12, but specifies the RepeatBehavior as a double.
+clock14 - same as clock12, but specifies the RepeatBehavior as a timespan/duration.
 clock15 - tests a non-zero BeginTime on a storyboard along with a 0 BeginTime.
 clock16 - tests a storyboard with a longer duration than its consituent Animation, with a FillBehavior of Stop (animations have the default fill behavior)
 clock17 - tests 2 storyboards with keyframe animations in it (one Double with linear keyframes, one Color with discrete keyframes).
@@ -27,4 +27,6 @@ clock26 - same as clock3, but storyboard Duration < animation Duration
 clock27 - same as clock23, but storyboard Duration < animation Duration
 clock28 - same as clock6, but storyboard Duration < animation Duration
 clock29 - same as clock28, but storyboard behavior is Stop
+clock30 - same as clock6, but AutoReverse=true on storyboard
+clock31 - same as clock14, but additionally the clock has AutoReverse="True"
 
