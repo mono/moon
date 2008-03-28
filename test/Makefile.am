@@ -1,5 +1,8 @@
 
-SUBDIRS=harness
+SUBDIRS=harness parsertest
+
+DIST_SUBDIRS=harness parsertest
+
 LD_PATH = `pkg-config --variable=libdir xulrunner-gtkmozembed`
 
 

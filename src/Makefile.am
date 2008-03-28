@@ -1,6 +1,6 @@
 libmoonincludedir=$(includedir)/libmoon
 
-noinst_PROGRAMS = demo sizes parsertest
+noinst_PROGRAMS = demo sizes
 
 lib_LTLIBRARIES = libmoon.la
 
@@ -136,16 +136,12 @@ demo_SOURCES = \
 sizes_SOURCES = \
 	sizes.cpp
 
-parsertest_SOURCES = \
-	parsertest.cpp
-
 libmoon_la_LIBADD = $(MOON_LIBS)
 
 demo_LDADD = -lmoon $(MOON_PROG_LIBS)
 
 sizes_LDADD = -lmoon $(MOON_PROG_LIBS)
 
-parsertest_LDADD = -lmoon $(MOON_PROG_LIBS)
 
 debug:
 	LD_LIBRARY_PATH=.libs gdb .libs/demo

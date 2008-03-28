@@ -475,7 +475,10 @@ PLUGIN_LIBS="$(echo $PLUGIN_LIBS | sed -e s/-lglitz//g)"
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)
 
-MOON_PROG_LIBS=`pkg-config --libs $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS $SWSCALE_PKGS`
+MOON_PROG_CFLAGS="`pkg-config --cflags $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS $SWSCALE_PKGS` -I\$(top_builddir)/src/"
+AC_SUBST(MOON_PROG_CFLAGS)
+
+MOON_PROG_LIBS="`pkg-config --libs $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS $SWSCALE_PKGS` \$(top_builddir)/src/libmoon.la"
 AC_SUBST(MOON_PROG_LIBS)
 
 if test x$DEBUG = xyes; then
@@ -528,6 +531,7 @@ test/harness/Makefile
 test/harness/shocker/Makefile
 test/harness/agviewer/Makefile
 test/harness/test-runner/Makefile
+test/parsertest/Makefile
 tools/Makefile
 tools/mopen/Makefile
 tools/svg2xaml/Makefile
