@@ -1,3 +1,8 @@
+2008-03-28  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/clock26.xaml: Updating this test's description. It actually
+	passes now (the behavior is same on SL).
+
 2008-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* xaml/test-shape-dashcaps.xaml: new test.

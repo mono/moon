@@ -18,5 +18,5 @@
 		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" Fill="Red" />
 		
 	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="150" Width="600" Height="30"
-			   Text="The red block should take 2 seconds to move half-way to the right, and bounce left."/>
+			   Text="The red block should take 2 seconds to move half-way to the right and stay there."/>
 </Canvas>
