@@ -1,3 +1,7 @@
+2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: Clear all queues after a seek has completed.
+
 2008-03-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (deobfuscate_font): Updated for CopyFileTo() rename.

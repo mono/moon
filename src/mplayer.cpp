@@ -139,7 +139,7 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	MediaFrame *frame = closure->frame;
 	IMediaStream *stream = frame ? frame->stream : NULL;
 	
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (%p), state: %i, frame: %p\n", closure, player->state, closure->frame);
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (%p), state: %i, frame: %p, pts: %llu\n", closure, player->state, closure->frame, closure->frame->pts);
 
 	if (player->GetBit (MediaPlayer::Seeking)) {
 		// We don't want any frames while we're waiting for a seek.
@@ -406,7 +406,7 @@ MediaPlayer::AdvanceFrame ()
 	int skipped = 0;
 #endif
 	
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i", state);
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %llu\n", state, current_pts);
 
 	RemoveBit (LoadFramePending);
 	
@@ -472,6 +472,9 @@ MediaPlayer::AdvanceFrame ()
 		}
 		
 		if (update && current_pts >= target_pts_start) {
+			if (!GetBit (SeekSynched)) {
+				LOG_MEDIAPLAYER ("MediaPlayer::AdvanceFrame (): We have now successfully synched with the audio after the seek, current_pts: %llu\n", current_pts);
+			}
 			SetBit (SeekSynched);
 			// we are in sync (or ahead) of audio playback
 			break;
@@ -645,7 +648,7 @@ MediaPlayer::GetTargetPts ()
 void
 MediaPlayer::SetTargetPts (uint64_t pts)
 {
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::SetTargetPts (%llu = %llu ms)\n", pts, MilliSeconds_FromPts (pts));
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::SetTargetPts (%llu = %llu ms), current_pts: %llu\n", pts, MilliSeconds_FromPts (pts), current_pts);
 
 	pthread_mutex_lock (&target_pts_lock);
 	target_pts = pts;
@@ -661,6 +664,11 @@ MediaPlayer::SeekCallback (MediaClosure *closure)
 	MediaPlayer *mplayer = element->GetMediaPlayer ();
 	mplayer->RemoveBit (Seeking);
 	mplayer->current_pts = 0;
+
+	// Clear all queues.
+	mplayer->audio.queue.Clear (true);
+	mplayer->video.queue.Clear (true);
+	
 	return MEDIA_SUCCESS;
 }
 
@@ -689,7 +697,7 @@ MediaPlayer::SeekInternal (uint64_t pts)
 void
 MediaPlayer::Seek (uint64_t pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu = %llu ms), media: %p, state: %i\n", pts, MilliSeconds_FromPts (pts), media, state);
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu = %llu ms), media: %p, state: %i, current_pts: %llu\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts);
 
 	uint64_t duration = GetDuration ();
 	bool resume = IsPlaying ();
@@ -725,6 +733,8 @@ MediaPlayer::Seek (uint64_t pts)
 	} else if (IsLoadFramePending ()) {
 		EnqueueFrames (0, 1);
 	}
+
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu = %llu ms), media: %p, state: %i, current_pts: %llu [END]\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts);
 }
 
 bool
