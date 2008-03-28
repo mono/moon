@@ -532,6 +532,7 @@ test/harness/shocker/Makefile
 test/harness/agviewer/Makefile
 test/harness/test-runner/Makefile
 test/parsertest/Makefile
+test/sizes/Makefile
 tools/Makefile
 tools/mopen/Makefile
 tools/svg2xaml/Makefile
