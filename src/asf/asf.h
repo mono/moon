@@ -37,18 +37,11 @@ class ASFContext;
 #define ASF_CHECK_VAL(condition, val, ...) if (condition) { ASF_ERROR_VAL (val, __VA_ARGS__); }
 #define ASF_CHECK(condition, ...) if (condition) { ASF_ERROR (__VA_ARGS__); }
 
-#if DEBUG && log //|| true
-#define ASF_LOG(...) printf (__VA_ARGS__)
-#define ASF_LOGGING
-#else
-#define ASF_LOG(...)
-#endif
-#if DEBUG && dump //|| true
-#define ASF_DUMP(...) printf (__VA_ARGS__)
-#define ASF_DUMPING
-#else
-#define ASF_DUMP(...)
-#endif
+#define ASF_LOG(...)// printf (__VA_ARGS__)
+//#define ASF_LOGGING
+#define ASF_LOG_ERROR(...) printf (__VA_ARGS__)
+#define ASF_DUMP(...)// printf (__VA_ARGS__)
+//#define ASF_DUMPING
 
 #include "asf-generated.h"
 #include "asf-guids.h"

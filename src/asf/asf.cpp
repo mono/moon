@@ -113,17 +113,17 @@ ASFParser::ReadEncoded (IMediaSource *source, uint32_t length, uint32_t *dest)
 	case 0x00:
 		return true;
 	case 0x01: 
-		if (!source->Read (&result1, 1))
+		if (!source->ReadAll (&result1, 1))
 			return false;
 		*dest = result1;
 		return true;
 	case 0x02:
-		if (!source->Read (&result2, 2))
+		if (!source->ReadAll (&result2, 2))
 			return false;
 		*dest = result2;
 		return true;
 	case 0x03:
-		return source->Read (dest, 4);
+		return source->ReadAll (dest, 4);
 	default:
 		//TODO: parser->AddError (g_strdup_printf ("Invalid read length: %i.", length));
 		return false;
@@ -186,7 +186,7 @@ ASFParser::ReadObject (asf_object *obj)
 	memcpy (result, obj, sizeof (asf_object));
 	
 	if (obj->size > sizeof (asf_object)) {
-		if (!source->Read (((char *) result) + sizeof (asf_object), obj->size - sizeof (asf_object))) {
+		if (!source->ReadAll (((char *) result) + sizeof (asf_object), obj->size - sizeof (asf_object))) {
 			g_free (result);
 			return NULL;
 		}
@@ -319,7 +319,7 @@ ASFParser::ReadData ()
 		return false;
 	}
 	
-	if (!source->Read (data, sizeof (asf_data))) {
+	if (!source->ReadAll (data, sizeof (asf_data))) {
 		g_free (data);
 		data = NULL;
 		return false;
@@ -345,7 +345,7 @@ ASFParser::ReadHeader ()
 		return false;
 	}
 	
-	if (!source->Read (header, sizeof (asf_header))) {
+	if (!source->ReadAll (header, sizeof (asf_header))) {
 		ASF_LOG ("ASFParser::ReadHeader (): source->Read () failed.\n");
 		return false;
 	}
@@ -369,7 +369,7 @@ ASFParser::ReadHeader ()
 	for (uint32_t i = 0; i < header->object_count; i++) {
 		asf_object tmp;
 		
-		if (!source->Read (&tmp, sizeof (asf_object)))
+		if (!source->ReadAll (&tmp, sizeof (asf_object)))
 			return false;
 		
 		if (!(header_objects [i] = ReadObject (&tmp)))
@@ -1154,7 +1154,7 @@ ASFReader::GetLastAvailablePts ()
 
 	for (int current_packet_index = pi; current_packet_index >= 0; current_packet_index--) {
 		buffer = g_malloc (parser->GetPacketSize ());
-		if (!source->Peek (buffer, parser->GetPacketSize ())) {
+		if (!source->Peek (buffer, parser->GetPacketSize (), parser->GetPacketOffset (current_packet_index))) {
 			g_free (buffer);
 			continue;
 		}

@@ -262,17 +262,23 @@ asf_error_correction_data::FillInAll (ASFContext *context)
 	first = 0;
 	second = 0;
 		
-	if (!source->Read (&data, 1))
+	if (!source->ReadAll (&data, 1)) {
+		ASF_LOG_ERROR ("asf_error_correction_data::FillInAll (): Error while reading 'data'.\n");
 		return MEDIA_READ_ERROR;
+	}
 		
 	if (!is_error_correction_present ())
 		return MEDIA_SUCCESS;
 		
-	if (!source->Read (&first, 1))
+	if (!source->ReadAll (&first, 1)) {
+		ASF_LOG_ERROR ("asf_error_correction_data::FillInAll (): Error while reading 'first'.\n");
 		return MEDIA_READ_ERROR;
+	}
 	
-	if (!source->Read (&second, 1))
+	if (!source->ReadAll (&second, 1)) {
+		ASF_LOG_ERROR ("asf_error_correction_data::FillInAll (): Error while reading 'second'.\n");
 		return MEDIA_READ_ERROR;
+	}
 		
 	return MEDIA_SUCCESS;
 }
@@ -306,25 +312,44 @@ asf_payload_parsing_information::FillInAll (ASFContext *context)
 	send_time = 0;
 	duration = 0;
 	
-	if (!source->Read (&length_type_flags, 1))
+	if (!source->ReadAll (&length_type_flags, 1)) {
+		ASF_LOG_ERROR ("asf_payload_parsing_information::FillInAll (): Error while reading 'length_type_flags'.\n");
 		return MEDIA_READ_ERROR;
-	if (!source->Read (&property_flags, 1))
+	}
+
+	if (!source->ReadAll (&property_flags, 1)) {
+		ASF_LOG_ERROR ("asf_payload_parsing_information::FillInAll (): Error while reading 'property_flags'.\n");
 		return MEDIA_READ_ERROR;
+	}
 		
 	if (get_packet_length_type () == 0) {
 		packet_length = parser->GetPacketSize ();
 	} else {
-		if (!ASFParser::ReadEncoded (source, get_packet_length_type (), &packet_length))
+		if (!ASFParser::ReadEncoded (source, get_packet_length_type (), &packet_length))  {
+			ASF_LOG_ERROR ("asf_payload_parsing_information::FillInAll (): Error while reading 'packet_length'.\n");
 			return MEDIA_READ_ERROR;
+		}
 	}
-	if (!ASFParser::ReadEncoded (source, get_sequence_type (), &sequence))
+
+	if (!ASFParser::ReadEncoded (source, get_sequence_type (), &sequence)) {
+		ASF_LOG_ERROR ("asf_payload_parsing_information::FillInAll (): Error while reading 'sequence'.\n");
 		return MEDIA_READ_ERROR;
-	if (!ASFParser::ReadEncoded (source, get_padding_length_type (), &padding_length))
+	}
+
+	if (!ASFParser::ReadEncoded (source, get_padding_length_type (), &padding_length)) {
+		ASF_LOG_ERROR ("asf_payload_parsing_information::FillInAll (): Error while reading 'padding_length'.\n");
 		return MEDIA_READ_ERROR;
-	if (!source->Read (&send_time, 4))
+	}
+
+	if (!source->ReadAll (&send_time, 4)) {
+		ASF_LOG_ERROR ("asf_payload_parsing_information::FillInAll (): Error while reading 'send_time'.\n");
 		return MEDIA_READ_ERROR;
-	if (!source->Read (&duration, 2))
+	}
+
+	if (!source->ReadAll (&duration, 2)) {
+		ASF_LOG_ERROR ("asf_payload_parsing_information::FillInAll (): Error while reading 'duration'.\n");
 		return MEDIA_READ_ERROR;
+	}
 		
 	return MEDIA_SUCCESS;
 }
@@ -355,8 +380,10 @@ asf_single_payload::FillInAll (ASFContext *context, asf_error_correction_data* e
 	ASFParser *parser = context->parser;
 	IMediaSource *source = context->source;
 	
-	if (!source->Read (&stream_id, 1))
+	if (!source->ReadAll (&stream_id, 1)) {
+		ASF_LOG_ERROR ("asf_single_payload::FillInAll (): Error while reading 'stream_id'.\n");
 		return MEDIA_READ_ERROR;
+	}
 	
 	is_key_frame = stream_id & 0x80;
 	stream_id = stream_id & 0x7F;
@@ -374,14 +401,20 @@ asf_single_payload::FillInAll (ASFContext *context, asf_error_correction_data* e
 	payload_data = NULL;
 	presentation_time = 0;
 	
-	if (!ASFParser::ReadEncoded (source, ppi.get_media_object_number_length_type (), &media_object_number))
+	if (!ASFParser::ReadEncoded (source, ppi.get_media_object_number_length_type (), &media_object_number)) {
+		ASF_LOG_ERROR ("asf_single_payload::FillInAll (): Error while reading 'media_object_number'.\n");
 		return MEDIA_READ_ERROR;
+	}
 		
-	if (!ASFParser::ReadEncoded (source, ppi.get_offset_into_media_object_length_type (), &offset_into_media_object))
+	if (!ASFParser::ReadEncoded (source, ppi.get_offset_into_media_object_length_type (), &offset_into_media_object)) {
+		ASF_LOG_ERROR ("asf_single_payload::FillInAll (): Error while reading 'offset_into_media_object'.\n");
 		return MEDIA_READ_ERROR;
+	}
 		
-	if (!ASFParser::ReadEncoded (source, ppi.get_replicated_data_length_type (), &replicated_data_length))
+	if (!ASFParser::ReadEncoded (source, ppi.get_replicated_data_length_type (), &replicated_data_length)) {
+		ASF_LOG_ERROR ("asf_single_payload::FillInAll (): Error while reading 'replicated_data_length'.\n");
 		return MEDIA_READ_ERROR;
+	}
 	
 	if (replicated_data_length >= 2 && replicated_data_length < 7) {
 		parser->AddError (g_strdup_printf ("Invalid replicated data length: %d", replicated_data_length));
@@ -398,8 +431,10 @@ asf_single_payload::FillInAll (ASFContext *context, asf_error_correction_data* e
 		return MEDIA_OUT_OF_MEMORY;
 	}
 	
-	if (!source->Read (replicated_data, replicated_data_length))
+	if (!source->ReadAll (replicated_data, replicated_data_length)) {
+		ASF_LOG_ERROR ("asf_single_payload::FillInAll (): Error while reading 'replicated_data'.\n");
 		return MEDIA_READ_ERROR;
+	}
 
 	if (replicated_data_length == 1) {
 		presentation_time = offset_into_media_object;
@@ -408,8 +443,10 @@ asf_single_payload::FillInAll (ASFContext *context, asf_error_correction_data* e
 	}
 
 	if (mp != NULL) {
-		if (!ASFParser::ReadEncoded (source, mp->get_payload_length_type (), &payload_data_length))
+		if (!ASFParser::ReadEncoded (source, mp->get_payload_length_type (), &payload_data_length)) {
+			ASF_LOG_ERROR ("asf_single_payload::FillInAll (): Error while reading 'payload_data_length'.\n");
 			return MEDIA_READ_ERROR;
+		}
 			
 		if (payload_data_length == 0) {
 			parser->AddError ("Warning: Invalid payload data length: can't be 0.");
@@ -453,8 +490,10 @@ asf_single_payload::FillInAll (ASFContext *context, asf_error_correction_data* e
 			return MEDIA_OUT_OF_MEMORY;
 		}
 		
-		if (!source->Read (payload_data, payload_data_length))
+		if (!source->ReadAll (payload_data, payload_data_length)) {
+			ASF_LOG_ERROR ("asf_single_payload::FillInAll (): Error while reading 'payload_data'.\n");
 			return MEDIA_READ_ERROR;
+		}
 	}
 
 
@@ -582,8 +621,10 @@ asf_multiple_payloads::FillInAll (ASFContext *context, asf_error_correction_data
 	int count;
 	
 	if (ppi.is_multiple_payloads_present ()) {		
-		if (!source->Read (&payload_flags, 1))
+		if (!source->ReadAll (&payload_flags, 1)) {
+			ASF_LOG_ERROR ("asf_multiple_payload::FillInAll (): Error while reading 'payload_flags'.\n");
 			return MEDIA_READ_ERROR;
+		}			
 		
 		count = payload_flags & 0x3F; // number of payloads is encoded in a byte, no need to check for extreme values.
 		
