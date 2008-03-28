@@ -1,3 +1,8 @@
+2008-03-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* utils.cpp (TextStream::Read): Better handling of iconv() failure
+	cases.
+
 2008-03-28  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h,

@@ -445,11 +445,21 @@ TextStream::Read (char *buf, size_t n)
 	
 	do {
 		if (cd != (GIConv) -1) {
-			errno = 0;
-			r = g_iconv (cd, &inbuf, &inleft, &outbuf, &outleft);
-			if (r == (size_t) -1 && errno == E2BIG) {
-				// not enough room left in outbuf
-				break;
+			if (g_iconv (cd, &inbuf, &inleft, &outbuf, &outleft) == (size_t) -1) {
+				switch (errno) {
+				case E2BIG:
+					// not enough space available in the output buffer
+					goto out;
+				case EINVAL:
+					// incomplete multibyte character sequence
+					goto out;
+				case EILSEQ:
+					// illegal multibyte sequence
+					return -1;
+				default:
+					// unknown error, fail
+					return -1;
+				}
 			}
 		} else {
 			r = MIN (inleft, outleft);
@@ -479,6 +489,8 @@ TextStream::Read (char *buf, size_t n)
 	
 	if (eof && cd != (GIConv) -1)
 		g_iconv (cd, NULL, NULL, &outbuf, &outleft);
+	
+out:
 	
 	buflen = inleft;
 	bufptr = inbuf;
