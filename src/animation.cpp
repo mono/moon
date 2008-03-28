@@ -278,6 +278,20 @@ Storyboard::TeardownClockGroup ()
 	}
 }
 
+static bool
+clock_is_fully_stopped_recursive (Clock *clck)
+{
+	if (clck->GetObjectType () == Type::CLOCKGROUP) {
+		for (GList *l = ((ClockGroup *) clck)->child_clocks; l; l = l->next) {
+			if (! clock_is_fully_stopped_recursive ((Clock *) l->data))
+				return false;
+		}
+
+		return true;
+	} else
+		return (clck->GetClockState () == Clock::Stopped);
+}
+
 void
 Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
@@ -285,7 +299,7 @@ Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpoin
 
 	// Only teardown the clocks if the whole storyboard is stopped.
 	// Otherwise just keep running.
-	if (sb->root_clock->GetClockState () == Clock::Stopped)
+	if (clock_is_fully_stopped_recursive (sb->root_clock))
 		sb->TeardownClockGroup ();
 }
 

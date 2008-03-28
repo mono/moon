@@ -1,3 +1,15 @@
+2008-03-28  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Teardown the storyboard in Completed only if the root
+	clock is stopped AND all the children are stopped too. After teardown we
+	loose the ability to reset-back the values and Completed is
+	fired always, even if the clock is filling (a filling clock should reset
+	on Stop).
+	
+	This ie. fixes http://www.idcorporate.com.ar/ and other sites that use
+	the popular methodology of beginning a filling Storyboard on MouseEnter
+	and stopping it on MouseLeave.
+
 2008-03-27  Michael Dominic K.  <mdk@mdk.am>
 
 	* runtime.cpp: Ignore the enter/leave crossing events coming as a 
