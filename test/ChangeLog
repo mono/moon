@@ -1,5 +1,11 @@
 2008-03-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/clock/clock31.html:
+	* xaml/clock/clock31.xaml: One more clock test with duration-base
+	RepeatBehavior and AutoReverse property specified. Fails currently.
+
+2008-03-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/clock/clock30.html:
 	* xaml/clock/clock30.xaml: Adding a new clock test that has
 	AutoReverse="True" set on Storyboard (not animation). It currently keeps
