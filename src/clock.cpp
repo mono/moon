@@ -1407,13 +1407,16 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 		
 		if (repeat->HasCount ()) {
 			span = (TimeSpan) (span * repeat->GetCount ());
-		} else if (repeat->HasDuration ()) {
-			if (span > repeat->GetDuration ())
-				span = repeat->GetDuration ();
 		}
 
 		if (timeline->GetAutoReverse ())
 			span *= 2;
+
+		// If we have duration-base repeat behavior, 
+		// clamp/up our span to that.
+		if (repeat->HasDuration ()) {
+			span = repeat->GetDuration ();
+		}
 
 		span = (TimeSpan)(span / timeline->GetSpeedRatio());
 

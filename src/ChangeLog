@@ -1,5 +1,13 @@
 2008-03-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Fixing the clock repeat for duration-based
+	RepeatBehavior. 
+	
+	Fixes the clock14.xaml and clock31.xaml tests. All 31 clock tests are
+	passing now (same behavior as in SL).
+
+2008-03-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: In ComputeNewTime: when we're moving backward and hitting
 	the bound decrease the repeat_count no matter what (if auto-reversed or
 	not). This makes the auto-reversed storyboard work.
