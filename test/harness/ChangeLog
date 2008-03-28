@@ -1,5 +1,11 @@
 2008-03-28  Jackson Harper  <jackson@ximian.com>
 
+	* shocker/shutdown-manager.cpp|h: Don't run in a separate thread
+	anymore, just use a g_timeout for waiting.
+	* image-capture.cpp: Update shutdown_manager function names.
+
+2008-03-28  Jackson Harper  <jackson@ximian.com>
+
 	* agviewer/agviewer.cpp: Fix var naming.
 	- cleanup properly.
 	

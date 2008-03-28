@@ -36,16 +36,22 @@
 #include <stdio.h>
 #include <glib.h>
 #include <prinit.h>
+#include <gtk/gtk.h>
 #include "shutdown-manager.h"
+
+#define TIMEOUT_INTERVAL 10000
 
 static GMutex* shutdown_mutex = NULL;
 static GCond*  shutdown_cond = NULL;
-static gint    wait_for_threads = 0;
+static gint    wait_count = 0;
+
+static void execute_shutdown ();
+static gboolean attempt_clean_shutdown (gpointer data);
 
 void
 shutdown_manager_init ()
 {
-	wait_for_threads = 0;
+	wait_count = 0;
 	shutdown_mutex = g_mutex_new ();
 	shutdown_cond = g_cond_new ();
 }
@@ -53,14 +59,14 @@ shutdown_manager_init ()
 void
 shutdown_manager_shutdown ()
 {
-	wait_for_threads = 0;
+	wait_count = 0;
 
 	g_mutex_free (shutdown_mutex);
 	g_cond_free (shutdown_cond);
 }
 
 void
-shutdown_manager_wait_threads_increment ()
+shutdown_manager_wait_increment ()
 {
 	g_assert (shutdown_mutex);
 	g_assert (shutdown_cond);
@@ -68,44 +74,66 @@ shutdown_manager_wait_threads_increment ()
 	g_mutex_lock (shutdown_mutex);
 
 
-	wait_for_threads++;
+	wait_count++;
 	g_mutex_unlock (shutdown_mutex);
 }
 
 void
-shutdown_manager_wait_threads_decrement ()
+shutdown_manager_wait_decrement ()
 {
 	g_assert (shutdown_mutex);
 	g_assert (shutdown_cond);
 
 	g_mutex_lock (shutdown_mutex);
 
-	wait_for_threads--;
-	if (wait_for_threads == 0)
+	wait_count--;
+	if (wait_count == 0)
 		g_cond_signal (shutdown_cond);
 
 	g_mutex_unlock (shutdown_mutex);
 }
 
 void
-shutdown_manager_wait_for_threads ()
+shutdown_manager_wait ()
 {
 	g_assert (shutdown_mutex);
 	g_assert (shutdown_cond);
 
-	while (wait_for_threads > 0)
+	while (wait_count > 0)
 		g_cond_wait (shutdown_cond, shutdown_mutex);
 }
 
-static void *
-wait_for_shutdown (void* data)
+static void
+execute_shutdown ()
 {
-	shutdown_manager_wait_for_threads ();
+	if (gtk_main_level ()) {
+		// We are running inside the embedded agviewer, so we can use gtk to signal shutdown
+		gtk_main_quit ();
+	} else {
+		// This block never actually gets called, since firefox is also using gtk_main.
+		PR_ProcessExit (0);
+	}
+}
 
-	PR_ProcessExit (0);
+static gboolean
+attempt_clean_shutdown (gpointer data)
+{
+	g_assert (shutdown_mutex);
+	g_assert (shutdown_cond);
 
-	g_thread_exit (NULL);
-	return NULL;
+	bool ready_for_shutdown = false;
+
+	g_mutex_lock (shutdown_mutex);
+	if (wait_count <= 0)
+		ready_for_shutdown = true;
+	g_mutex_unlock (shutdown_mutex);
+
+	if (ready_for_shutdown) {
+		execute_shutdown ();
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 void
@@ -114,18 +142,12 @@ shutdown_manager_queue_shutdown ()
 	g_assert (shutdown_mutex);
 	g_assert (shutdown_cond);
 
-	if (!wait_for_threads) {
-		exit (0);
-		return;
+	if (!wait_count)
+		return execute_shutdown ();
+
+	if (!g_timeout_add (TIMEOUT_INTERVAL, attempt_clean_shutdown, NULL)) {
+		g_error ("Unable to create timeout for queued shutdown, executing immediate shutdown.");
+		execute_shutdown ();
 	}
-
-	GError *error;
-	GThread *worker;
-
-	worker = g_thread_create ((GThreadFunc) wait_for_shutdown, NULL, FALSE, &error);
-	if (!worker) {
-		g_warning ("Unable to create thread for queued shutdown thread, things aren't going to go so well for you.", error->message);
-		g_error_free (error);
-	}	
 }
 

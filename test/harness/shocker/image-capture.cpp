@@ -100,7 +100,7 @@ capture_multiple_images (void* data)
 	Magick::writeImages (image_list.begin (), image_list.end (), cmid->image_path);
 
 	capture_multiple_images_data_free (cmid);
-	shutdown_manager_wait_threads_decrement ();
+	shutdown_manager_wait_decrement ();
 	g_thread_exit (NULL);
 	
 	return NULL;
@@ -128,12 +128,12 @@ ImageCaptureProvider::CaptureMultipleImages (const char* test_path, int x, int y
 	GThread* worker;
 	GError* error;
 
-	shutdown_manager_wait_threads_increment ();
+	shutdown_manager_wait_increment ();
 	worker = g_thread_create ((GThreadFunc) capture_multiple_images, cmid, FALSE, &error);
 	if (!worker) {
 		g_warning ("Unable to create thread for CaptureMultipleImages: %s\n", error->message);
 		g_error_free (error);
-		shutdown_manager_wait_threads_decrement ();
+		shutdown_manager_wait_decrement ();
 		return;
 	}
 }
