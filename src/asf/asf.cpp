@@ -8,8 +8,6 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#define __STDC_LIMIT_MACROS
-
 #include <config.h>
 #include <stdint.h>
 

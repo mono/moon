@@ -17,6 +17,7 @@ changequote([,])dnl
 PKG_PROG_PKG_CONFIG
 
 AC_DEFINE(__STDC_CONSTANT_MACROS,[],[To make avformat work with C++])
+AC_DEFINE(__STDC_LIMIT_MACROS,[],[To get limits of specified-width integer types])
 
 dnl *************************************
 dnl *** Checks for large file support ***

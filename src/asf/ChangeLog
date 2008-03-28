@@ -1,5 +1,9 @@
 2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp: Define __STDC_LIMIT_MACROS.
+
+2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp, asf-structures.cpp: Use IMediaSource:::ReadAll instead of
 	  IMediaSource::Read.
 	* asf.h: Simplify the logging defines a bit.
