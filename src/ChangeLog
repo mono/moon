@@ -1,5 +1,11 @@
 2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.h: Detect an unrecoverable error condition with
+	  refcounting (reffing an object with refcount of 0), and abort instead of
+	  crashing randomly and insecurely later on.
+
+2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.h, mplayer.cpp: Remove more unused fields in MediaPlayer.
 
 2008-03-27  Jeffrey Stedfast  <fejj@novell.com>

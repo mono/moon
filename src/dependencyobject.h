@@ -85,6 +85,16 @@ class EventObject {
 
 	void ref ()
 	{
+		if (refcount == 0) {
+			// Here something really bad happened, this object is probably being reffed again because
+			// of some action in the destructor. There is no way to recover from this now, no matter what 
+			// we do the code that called ref now will be accessing a deleted object later on, which may or 
+			// may not crash. It might very well be an exploitable security problem. Anyways when unref is called, we 
+			// have a second delete on the same object, which *will* crash. To make things easier and safer
+			// lets just abort right away.
+			g_error ("Ref was called an object with a refcount of 0.\n");
+		}
+
 		g_atomic_int_inc (&refcount);
 		OBJECT_TRACK ("Ref", GetTypeName ());
 	}
