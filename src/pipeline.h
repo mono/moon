@@ -85,6 +85,7 @@ class LiveSource;
 class MediaClosure;
 class MediaFrame;
 class VideoStream;
+class AudioStream;
 class IImageConverter;
 class MediaMarker;
 class ProgressiveSource;

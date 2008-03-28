@@ -10,7 +10,6 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -40,139 +39,92 @@ G_END_DECLS
 #include "list.h"
 #include "media.h"
 
-#if GLIB_SIZEOF_VOID_P == 8
-#define ALIGN(addr,size) (uint8_t *) (((uint64_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
-#else
-#define ALIGN(addr,size) (uint8_t *) (((uint32_t) (((uint8_t *) (addr)) + (size) - 1)) & ~((size) - 1))
-#endif
-
-#define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
-#define AUDIO_BUFLEN (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
-
-#define LOG_MEDIAPLAYER(...)// printf (__VA_ARGS__);
 #define DEBUG_ADVANCEFRAME 0
+#define LOG_MEDIAPLAYER(...)// printf (__VA_ARGS__);
+// This one prints out spew on every frame
+#define LOG_MEDIAPLAYER_EX(...)// printf (__VA_ARGS__);
 #define LOG_AUDIO(...)// printf (__VA_ARGS__)
-// This one prints out spew on every frame/sample
+// This one prints out spew on every sample
 #define LOG_AUDIO_EX(...)// printf (__VA_ARGS__)
+
+/*
+ * Packet
+ */
 
 class Packet : public List::Node {
 public:
 	MediaFrame *frame;
 	
-	Packet (MediaFrame *frame);
-	virtual ~Packet ();
+	Packet (MediaFrame *frame)
+	{
+		this->frame = frame;
+	}
+	virtual ~Packet ()
+	{
+		delete frame;
+	}
 };
 
-Packet::Packet (MediaFrame *frame)
-{
-	this->frame = frame;
-}
-
-Packet::~Packet ()
-{
-	delete frame;
-}
-
-
-struct Audio {
-	Queue *queue;
-
-	double balance;
-	double volume;
-	bool muted;
-	
-	// input
-	int stream_count;
-	AudioStream *stream;
-	
-	// sync
-	uint64_t pts_per_frame;
-	
-	Audio ();
-	~Audio ();
-};
+/*
+ * Audio
+ */
 
 Audio::Audio ()
-{
-	queue = new Queue ();
-	
+{	
 	balance = 0.0f;
 	volume = 1.0f;
 	muted = false;
-	
 	stream_count = 0;
 	stream = NULL;
-	
 	pts_per_frame = 0;
 }
 
-Audio::~Audio ()
-{	
-	delete queue;
-}
-
-struct Video {
-	Queue *queue;
-	
-	// input
-	VideoStream *stream;
-	
-	// rendering
-	cairo_surface_t *surface;
-	uint8_t *rgb_buffer;
-	
-	Video ();
-	~Video ();
-};
+/*
+ * Video
+ */
 
 Video::Video ()
-{
-	queue = new Queue ();
-	
+{	
 	stream = NULL;
-	
 	surface = NULL;
 	rgb_buffer = NULL;
 }
 
-Video::~Video ()
-{
-	delete queue;
-}
+/*
+ * MediaPlayer
+ */
 
 MediaPlayer::MediaPlayer (MediaElement *el)
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::MediaPlayer (%p, id=%i), id=%i", el, GET_OBJ_ID (el), GET_OBJ_ID (this));
+
 	element = el;
 	pthread_mutex_init (&target_pts_lock, NULL);
 
 	media = NULL;
-	
-	audio = new Audio ();
-	video = new Video ();
 	
 	Initialize ();
 }
 
 MediaPlayer::~MediaPlayer ()
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::~MediaPlayer (), id=%i", GET_OBJ_ID (this));
 	Close ();
 	
 	pthread_mutex_destroy (&target_pts_lock);
-	
-	delete audio;
-	delete video;
 }
 
 gboolean
-load_video_frame (void *user_data)
+MediaPlayer::LoadFrameCallback (void *user_data)
 {
 	bool result = false;
 
-	LOG_MEDIAPLAYER ("load_video_frame\n");
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadFrameCallback ()\n");
 
 	MediaPlayer *player = (MediaPlayer*) user_data;
 	if (player != NULL) {
- 		if (player->load_frame)
+		// Check again if LoadFrame is still pending.
+ 		if (player->IsLoadFramePending ())
 			result = player->LoadVideoFrame ();
 		player->unref ();
 	}		
@@ -180,16 +132,16 @@ load_video_frame (void *user_data)
 }
 
 MediaResult
-media_player_callback (MediaClosure *closure)
+MediaPlayer::FrameCallback (MediaClosure *closure)
 {
 	MediaElement *element = (MediaElement *) closure->GetContext ();
 	MediaPlayer *player = element->GetMediaPlayer ();
 	MediaFrame *frame = closure->frame;
 	IMediaStream *stream = frame ? frame->stream : NULL;
 	
-	//printf ("media_player_callback (%p), seeking: %i, frame: %p\n", closure, player->seeking, closure->frame);
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (%p), state: %i, frame: %p\n", closure, player->state, closure->frame);
 
-	if (player->seeking) {
+	if (player->GetBit (MediaPlayer::Seeking)) {
 		// We don't want any frames while we're waiting for a seek.
 		return MEDIA_SUCCESS;
 	}
@@ -201,15 +153,15 @@ media_player_callback (MediaClosure *closure)
 	
 	switch (stream->GetType ()) {
 	case MediaTypeVideo:
-		player->video->queue->Push (new Packet (frame));
-		if (player->load_frame) {
+		player->video.queue.Push (new Packet (frame));
+		if (player->IsLoadFramePending ()) {
 			// We need to call LoadVideoFrame on the main thread
 			player->ref ();
-			TimeManager::InvokeOnMainThread (load_video_frame, player);
+			TimeManager::InvokeOnMainThread (LoadFrameCallback, player);
 		}
 		return MEDIA_SUCCESS;
 	case MediaTypeAudio: 
-		player->audio->queue->Push (new Packet (frame));
+		player->audio.queue.Push (new Packet (frame));
 		AudioPlayer::WakeUp ();
 		return MEDIA_SUCCESS;
 	default:
@@ -218,35 +170,34 @@ media_player_callback (MediaClosure *closure)
 }
 
 void
-media_player_enqueue_frames (MediaPlayer *mplayer, int audio_frames, int video_frames)
+MediaPlayer::EnqueueFrames (int audio_frames, int video_frames)
 {
-	MediaElement *element = mplayer->element;
 	MediaClosure *closure;
 	int states;
 
-	//printf ("media_player_enqueue_frames (%p, %i, %i)\n", mplayer, audio_frames, video_frames);
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueFrames (%i, %i)\n", audio_frames, video_frames);
 	
-	if (mplayer->HasAudio ()) {	
+	if (HasAudio ()) {	
 		for (int i = 0; i < audio_frames; i++) {
-			closure = new MediaClosure (media_player_callback);
+			closure = new MediaClosure (FrameCallback);
 			closure->SetContext (element);
 			
 			// To decode on the main thread comment out FRAME_DECODED and FRAME_COPY_DECODED_DATA.
 			states = FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA;
 			
-			mplayer->media->GetNextFrameAsync (closure, mplayer->audio->stream, states);
+			media->GetNextFrameAsync (closure, audio.stream, states);
 		}
 	}
 	
-	if (mplayer->HasVideo ()) {
+	if (HasVideo ()) {
 		for (int i = 0; i < video_frames; i++) {
-			closure = new MediaClosure (media_player_callback);
+			closure = new MediaClosure (FrameCallback);
 			closure->SetContext (element);
 			
 			// To decode on the main thread comment out FRAME_DECODED and FRAME_COPY_DECODED_DATA.
 			states = FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA;
 				
-			mplayer->media->GetNextFrameAsync (closure, mplayer->video->stream, states);
+			media->GetNextFrameAsync (closure, video.stream, states);
 		}
 	}
 }
@@ -254,6 +205,7 @@ media_player_enqueue_frames (MediaPlayer *mplayer, int audio_frames, int video_f
 bool
 MediaPlayer::Open (Media *media)
 {
+	int stride;
 	IMediaDecoder *encoding;
 	IMediaStream *stream;
 	
@@ -273,8 +225,7 @@ MediaPlayer::Open (Media *media)
 	
 	this->media = media;
 	this->media->ref ();
-	opened = true;
-	int stride;
+	SetState (Opened);
 	
 	// Find audio/video streams
 	IMediaDemuxer *demuxer = media->GetDemuxer ();
@@ -287,21 +238,21 @@ MediaPlayer::Open (Media *media)
 		
 		switch (stream->GetType ()) {
 		case MediaTypeAudio:
-			audio->stream_count++;			
-			if (audio->stream == NULL) {
-				audio->stream = (AudioStream *) stream;
-				audio->stream->SetSelected (true);
+			audio.stream_count++;			
+			if (audio.stream == NULL) {
+				audio.stream = (AudioStream *) stream;
+				audio.stream->SetSelected (true);
 			}
 			break;
 		case MediaTypeVideo: 
-			if (video->stream != NULL)
+			if (video.stream != NULL)
 				break;
 
-			video->stream = (VideoStream *) stream;
-			video->stream->SetSelected (true);
+			video.stream = (VideoStream *) stream;
+			video.stream->SetSelected (true);
 			
-			height = video->stream->height;
-			width = video->stream->width;
+			height = video.stream->height;
+			width = video.stream->width;
 
 			stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);
 			if (stride % 64) {
@@ -310,33 +261,33 @@ MediaPlayer::Open (Media *media)
 			}
 			
 			// for conversion to rgb32 format needed for rendering with 16 byte alignment
-			if (posix_memalign ((void **)(&video->rgb_buffer), 16, height * stride)) {
+			if (posix_memalign ((void **)(&video.rgb_buffer), 16, height * stride)) {
 				g_error ("Could not allocate memory");
 			}
 			
 			// rendering surface
-			video->surface = cairo_image_surface_create_for_data (
-				video->rgb_buffer, CAIRO_FORMAT_ARGB32,
+			video.surface = cairo_image_surface_create_for_data (
+				video.rgb_buffer, CAIRO_FORMAT_ARGB32,
 				width, height, stride);
 			
-			// printf ("video size: %i, %i\n", video->stream->width, video->stream->height);
+			// printf ("video size: %i, %i\n", video.stream->width, video.stream->height);
 			break;
 		default:
 			break;
 		}
 	}
 
-	if (audio->stream != NULL) {
+	if (audio.stream != NULL) {
 		if (!AudioPlayer::Add (this)) {
 			// Can't play audio
-			audio->stream->SetSelected (false);
-			audio->stream = NULL;
+			audio.stream->SetSelected (false);
+			audio.stream = NULL;
 		}
 	}
 	
 	if (HasVideo ()) {
-		load_frame = true;
-		media_player_enqueue_frames (this, 0, 1);
+		SetBit (LoadFramePending);
+		EnqueueFrames (0, 1);
 	}
 	
 	current_pts = 0;
@@ -351,15 +302,9 @@ MediaPlayer::Initialize ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Initialize ()\n");
 
-	playing = false;
-	opened = false;
-	paused = true;
-	stop = false;
-	eof = false;
-	seeking = false;
-	rendered_frame = false;
-	load_frame = false;
-	caught_up_with_seek = true;
+	state = (PlayerState) 0;
+	SetState (Stopped);
+	SetBit (SeekSynched);
 	
 	start_time = 0;
 	current_pts = 0;
@@ -376,24 +321,24 @@ MediaPlayer::Close ()
 
 	AudioPlayer::Remove (this);
 
-	Stop ();
+	Stop (false);
 	
 	// Reset state back to what it was at instantiation
 
-	if (video->rgb_buffer != NULL) {
-		free (video->rgb_buffer);
-		video->rgb_buffer = NULL;
+	if (video.rgb_buffer != NULL) {
+		free (video.rgb_buffer);
+		video.rgb_buffer = NULL;
 	}
 
-	if (video->surface != NULL) {
-		cairo_surface_destroy (video->surface);
-		video->surface = NULL;
+	if (video.surface != NULL) {
+		cairo_surface_destroy (video.surface);
+		video.surface = NULL;
 	}
-	video->stream = NULL;
+	video.stream = NULL;
 	
-	audio->stream_count = 0;
-	audio->stream = NULL;
-	audio->pts_per_frame = 0;
+	audio.stream_count = 0;
+	audio.stream = NULL;
+	audio.pts_per_frame = 0;
 	
 	if (media)
 		media->unref ();
@@ -407,21 +352,22 @@ MediaPlayer::Close ()
 // If necessary converts the data from its source format to rgb first.
 //
 
-static void
-render_frame (MediaPlayer *mplayer, MediaFrame *frame)
+void
+MediaPlayer::RenderFrame (MediaFrame *frame)
 {
 	VideoStream *stream = (VideoStream *) frame->stream;
-	Video *video = mplayer->video;
+
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p)\n", frame);
 	
 	if (!frame->IsDecoded ()) {
-		fprintf (stderr, "render_frame (): Trying to render a frame which hasn't been decoded yet.\n");
+		fprintf (stderr, "MediaPlayer::RenderFrame (): Trying to render a frame which hasn't been decoded yet.\n");
 		return;
 	}
 	
 	if (!frame->IsPlanar ()) {
 		// Just copy the data
-		memcpy (video->rgb_buffer, frame->buffer, MIN (frame->buflen, (uint32_t) (cairo_image_surface_get_stride (video->surface) * mplayer->height)));
-		mplayer->rendered_frame = true;
+		memcpy (video.rgb_buffer, frame->buffer, MIN (frame->buflen, (uint32_t) (cairo_image_surface_get_stride (video.surface) * height)));
+		SetBit (RenderedFrame);
 		return;
 	}
 	
@@ -431,19 +377,19 @@ render_frame (MediaPlayer *mplayer, MediaFrame *frame)
 		return;
 	}
 	
-	uint8_t *rgb_dest[3] = { video->rgb_buffer, NULL, NULL };
-	int rgb_stride [3] = { cairo_image_surface_get_stride (video->surface), 0, 0 };
+	uint8_t *rgb_dest [3] = { video.rgb_buffer, NULL, NULL };
+	int rgb_stride [3] = { cairo_image_surface_get_stride (video.surface), 0, 0 };
 	
 	stream->converter->Convert (frame->data_stride, frame->srcStride, frame->srcSlideY,
 				    frame->srcSlideH, rgb_dest, rgb_stride);
-	mplayer->rendered_frame = true;
+	
+	SetBit (RenderedFrame);
 }
 
 
 bool
 MediaPlayer::AdvanceFrame ()
 {
-	//printf ("MediaPlayer::AdvanceFrame ()\n");
 	Packet *pkt = NULL;
 	MediaFrame *frame = NULL;
 	IMediaStream *stream;
@@ -460,12 +406,14 @@ MediaPlayer::AdvanceFrame ()
 	int skipped = 0;
 #endif
 	
-	load_frame = false;
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i", state);
+
+	RemoveBit (LoadFramePending);
 	
-	if (paused)
+	if (IsPaused ())
 		return false;
 	
-	if (seeking)
+	if (IsSeeking ())
 		return false;
 	
 	if (GetEof ())
@@ -490,7 +438,7 @@ MediaPlayer::AdvanceFrame ()
 	target_pts_start = target_pts_delta > target_pts ? 0 : target_pts - target_pts_delta;
 	target_pts_end = target_pts + target_pts_delta;
 	
-	if (current_pts >= target_pts_end && caught_up_with_seek) {
+	if (current_pts >= target_pts_end && GetBit (SeekSynched)) {
 #if DEBUG_ADVANCEFRAME
 		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %llu, target_pts: %llu, delta: %llu, diff: %lld).\n",
 			current_pts, target_pts, target_pts_delta, current_pts - target_pts);
@@ -498,7 +446,7 @@ MediaPlayer::AdvanceFrame ()
 		return false;
 	}
 		
-	while ((pkt = (Packet *) video->queue->Pop ())) {
+	while ((pkt = (Packet *) video.queue.Pop ())) {
 		if (pkt->frame->event == FrameEventEOF) {
 			delete pkt;
 			SetEof (true);
@@ -511,7 +459,7 @@ MediaPlayer::AdvanceFrame ()
 		current_pts = frame->pts;
 		update = true;
 		
-		media_player_enqueue_frames (this, 0, 1);	
+		EnqueueFrames (0, 1);	
 		
 		if (!frame->IsDecoded ()) {
 			//printf ("MediaPlayer::AdvanceFrame (): decoding on main thread.\n");
@@ -524,14 +472,14 @@ MediaPlayer::AdvanceFrame ()
 		}
 		
 		if (update && current_pts >= target_pts_start) {
-			caught_up_with_seek = true;
+			SetBit (SeekSynched);
 			// we are in sync (or ahead) of audio playback
 			break;
 		}
 		
-		if (video->queue->IsEmpty ()) {
+		if (video.queue.IsEmpty ()) {
 			// no more packets in queue, this frame is the most recent we have available
-			media_player_enqueue_frames (this, 0, 1);
+			EnqueueFrames (0, 1);
 			break;
 		}
 		
@@ -544,7 +492,7 @@ MediaPlayer::AdvanceFrame ()
 		delete pkt;
 	}
 	
-	if (update && frame && caught_up_with_seek) {
+	if (update && frame && GetBit (SeekSynched)) {
 #if DEBUG_ADVANCEFRAME
 		int fps = 0, sps = 0;
 		uint64_t ms = 0;
@@ -561,7 +509,7 @@ MediaPlayer::AdvanceFrame ()
 		if (fps > 0)
 			printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu (target pts: %llu, current pts: %llu, caught_up_with_seek: %s, skipped frames: %i, fps: %i, sps: %i, ms: %llu)\n", frame->pts, target_pts, current_pts, caught_up_with_seek ? "true" : "false", skipped, fps, sps, ms);
 #endif
-		render_frame (this, frame);
+		RenderFrame (frame);
 		delete pkt;
 		
 		return true;
@@ -575,25 +523,23 @@ MediaPlayer::AdvanceFrame ()
 bool
 MediaPlayer::LoadVideoFrame ()
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame ()\n");
-
 	Packet *packet;
 	bool cont = false;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, load_frame: %i, queue size: %i\n", HasVideo (), load_frame, video->queue->Length ());
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, LoadFramePending: %i, queue size: %i\n", HasVideo (), state & LoadFramePending, video.queue.Length ());
 
 	if (!HasVideo ())
 		return false;
 	
-	if (!load_frame)
+	if (!IsLoadFramePending ())
 		return false;
 	
-	packet = (Packet*) video->queue->Pop ();
+	packet = (Packet*) video.queue.Pop ();
 
 	if (packet != NULL && packet->frame->event == FrameEventEOF)
 		return false;
 
-	media_player_enqueue_frames (this, 0, 1);
+	EnqueueFrames (0, 1);
 	
 	if (packet == NULL)
 		return false;
@@ -601,8 +547,8 @@ MediaPlayer::LoadVideoFrame ()
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %llu, target pts: %llu\n", packet->frame->pts, GetTargetPts ());
 
 	if (packet->frame->pts >= GetTargetPts ()) {
-		load_frame = false;
-		render_frame (this, packet->frame);
+		RemoveBit (LoadFramePending);
+		RenderFrame (packet->frame);
 		element->Invalidate ();
 	} else {
 		cont = true;
@@ -613,70 +559,40 @@ MediaPlayer::LoadVideoFrame ()
 	return cont;
 }
 
-cairo_surface_t *
-MediaPlayer::GetCairoSurface ()
-{
-	return video->surface;
-}
-
-bool
-MediaPlayer::IsPlaying ()
-{
-	return playing && !paused;
-}
-
 bool
 MediaPlayer::MediaEnded ()
 {
-	if (!GetEof ())
-		return false;
-	
-	if ((audio->queue && !audio->queue->IsEmpty ()))
-		return false;
-	
-	if ((video->queue && !video->queue->IsEmpty ()))
-		return false;
-	
-	return true;
+	return GetEof ();
 }
 
 void
 MediaPlayer::SetEof (bool value)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::SetEof (%i)\n", value);
-	eof = (gint) value; //g_atomic_int_set (&eof, (gint) value);
-}
+	LOG_MEDIAPLAYER ("MediaPlayer::SetEof (%i), state: %i\n", value, state);
 
-bool
-MediaPlayer::GetEof ()
-{
-	return g_atomic_int_get (&eof);
+	if (value) {
+		SetBit (Eof);
+	} else {
+		RemoveBit (Eof);
+	}
 }
 
 void
 MediaPlayer::Play ()
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Play (), paused: %i, opened: %i, seeking: %i, playing: %i\n", paused, opened, seeking, playing);
+	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i\n", state);
 
-	if (!paused || !opened)
+	if (IsPlaying () && !IsSeeking ())
 		return;
 	
-	if (!playing) {
-		// Start up the decoder/audio threads
-		AudioPlayer::Play (this);
-		playing = true;
-	} else {
-		// We are simply paused...
-	}
-	
-	PauseInternal (false);
-	
+	SetState (Playing);
 	start_time = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
-	seeking = false;
-	
-	media_player_enqueue_frames (this, 1, 1);
 
-	LOG_MEDIAPLAYER ("MediaPlayer::Play (), paused: %i, opened: %i, seeking: %i, playing: %i [Done]\n", paused, opened, seeking, playing);
+	AudioPlayer::Play (this);
+	
+	EnqueueFrames (1, 1);
+
+	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i [Done]\n", state);
 }
 
 gint32
@@ -684,7 +600,7 @@ MediaPlayer::GetTimeoutInterval ()
 {
 	if (HasVideo ()) {
 		// TODO: Calculate correct framerate (in the pipeline)
-		return MAX (video->stream->msec_per_frame, 1000 / 60);
+		return MAX (video.stream->msec_per_frame, 1000 / 60);
 	} else {
 		return 33;
 	}
@@ -697,48 +613,31 @@ MediaPlayer::CanPause ()
 	return true;
 }
 
-bool
-MediaPlayer::IsPaused ()
-{
-	return paused;
-}
-
-void
-MediaPlayer::PauseInternal (bool value)
-{
-	LOG_MEDIAPLAYER ("MediaPlayer::PauseInternal (%i), paused: %i\n", value, paused);	
-
-	caught_up_with_seek = true;
-
-	if (paused != value) {
-		paused = value;
-		AudioPlayer::Pause (this, paused);
-	}
-
-	LOG_MEDIAPLAYER ("MediaPlayer::PauseInternal (%i), paused: %i [Done]\n", value, paused);	
-}
-
 void
 MediaPlayer::Pause ()
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), paused: %i\n", paused);
+	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i\n", state);
 
-	if (paused || !CanPause ())
+	if (IsPaused () || !CanPause ())
 		return;
 	
-	PauseInternal (true);
+	SetState (Paused);
+	SetBit (SeekSynched);
+	AudioPlayer::Pause (this, true);
+
+	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i [Done]\n", state);	
 }
 
 uint64_t
 MediaPlayer::GetTargetPts ()
 {
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::GetTargetPts (): target_pts: %llu\n", target_pts);
+
 	uint64_t result;
 	
 	pthread_mutex_lock (&target_pts_lock);
 	result = target_pts;
 	pthread_mutex_unlock (&target_pts_lock);
-	
-	//printf ("MediaPlayer::GetTargetPts (): result: %llu\n", result);
 	
 	return result;
 }
@@ -746,52 +645,21 @@ MediaPlayer::GetTargetPts ()
 void
 MediaPlayer::SetTargetPts (uint64_t pts)
 {
-	//printf ("MediaPlayer::SetTargetPts (%llu = %llu ms)\n", pts, MilliSeconds_FromPts (pts));
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::SetTargetPts (%llu = %llu ms)\n", pts, MilliSeconds_FromPts (pts));
+
 	pthread_mutex_lock (&target_pts_lock);
 	target_pts = pts;
 	pthread_mutex_unlock (&target_pts_lock);
 }
 
-void
-MediaPlayer::IncTargetPts (uint64_t value)
-{
-	//printf ("MediaPlayer::IncTargetPts (%llu): final target_pts: %llu\n", value, value + target_pts);
-	
-	pthread_mutex_lock (&target_pts_lock);
-	target_pts += value;
-	pthread_mutex_unlock (&target_pts_lock);
-}
-
-void
-MediaPlayer::StopThreads ()
-{
-	LOG_MEDIAPLAYER ("MediaPlayer::StopThreads ()\n");
-
-	stop = true;
-	
-	PauseInternal (false);
-
-	audio->queue->Clear (true);
-	video->queue->Clear (true);
-	
-	// enter paused state
-	PauseInternal (true);
-	
-	start_time = 0;
-	
-	current_pts = 0;
-	target_pts = 0;
-	
-	stop = false;
-	eof = false;
-}
-
 MediaResult
-media_player_seek_callback (MediaClosure *closure)
+MediaPlayer::SeekCallback (MediaClosure *closure)
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::SeekCallback (%p)\n", closure);
+
 	MediaElement *element = (MediaElement *) closure->GetContext ();
 	MediaPlayer *mplayer = element->GetMediaPlayer ();
-	mplayer->seeking = false;
+	mplayer->RemoveBit (Seeking);
 	mplayer->current_pts = 0;
 	return MEDIA_SUCCESS;
 }
@@ -799,7 +667,7 @@ media_player_seek_callback (MediaClosure *closure)
 void
 MediaPlayer::SeekInternal (uint64_t pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::SeekInternal (%llu), media: %p, seeking: %i, Position (): %llu\n", pts, media, seeking, Position ());
+	LOG_MEDIAPLAYER ("MediaPlayer::SeekInternal (%llu = %llu ms), media: %p, state: %i, Position (): %llu\n", pts, MilliSeconds_FromPts (pts), media, state, GetPosition ());
 
 	if (media == NULL)
 		return;
@@ -809,26 +677,54 @@ MediaPlayer::SeekInternal (uint64_t pts)
 		return;
 	}
 
-	if (pts == Position ())
-		return;
+	SetBit (Seeking);
+	RemoveBit (SeekSynched);
 
-	seeking = true;
-	caught_up_with_seek = false;
-	MediaClosure *closure = new MediaClosure (media_player_seek_callback);
+	MediaClosure *closure = new MediaClosure (SeekCallback);
 	closure->SetContext (element);
 	media->ClearQueue ();
 	media->SeekAsync (pts, closure);
 }
 
 void
-MediaPlayer::Stop ()
+MediaPlayer::Seek (uint64_t pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Stop ()\n");
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu = %llu ms), media: %p, state: %i\n", pts, MilliSeconds_FromPts (pts), media, state);
 
-	StopThreads ();
+	uint64_t duration = GetDuration ();
+	bool resume = IsPlaying ();
 	
-	playing = false;
-	SeekInternal (0);
+	if (!CanSeek ())
+		return;
+	
+	if (pts > duration)
+		pts = duration;
+	
+	if (pts == current_pts)
+		return;
+	
+	// Clear all queues.
+	audio.queue.Clear (true);
+	video.queue.Clear (true);
+	
+	// Stop the audio
+	AudioPlayer::Stop (this);
+
+	RemoveBit (Eof);
+	if (HasVideo () && !resume)
+		SetBit (LoadFramePending);
+
+	start_time = 0;	
+	current_pts = pts;
+	target_pts = pts;
+	
+	SeekInternal (pts);
+	
+	if (resume) {
+		Play ();
+	} else if (IsLoadFramePending ()) {
+		EnqueueFrames (0, 1);
+	}
 }
 
 bool
@@ -839,126 +735,52 @@ MediaPlayer::CanSeek ()
 }
 
 void
-MediaPlayer::Seek (uint64_t pts)
+MediaPlayer::Stop (bool seek_to_start)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu), media: %p, seeking: %i\n", pts, media, seeking);
+	LOG_MEDIAPLAYER ("MediaPlayer::Stop (), state: %i\n", state);
 
-	uint64_t duration = Duration ();
-	bool resume = !paused;
-	
-	if (!CanSeek ())
-		return;
-	
-	if (pts == 0) {
-		SeekInternal (0);
-		return;
-	}
+	AudioPlayer::Stop (this);
 
-	seeking = true;
-	
-	if (pts > duration)
-		pts = duration;
-	
-	StopThreads ();
-	SeekInternal (pts);
-	
-	load_frame = !(playing && resume);
-	current_pts = pts;
-	target_pts = pts;
-	
-	if (playing) {
-		media_player_enqueue_frames (this, 4, 4);
-		 
-		// Restart the audio/io threads
-		AudioPlayer::Play (this);
+	audio.queue.Clear (true);
+	video.queue.Clear (true);
 		
-		if (resume) {
-			// Resume playback
-			start_time = element->GetTimeManager()->GetCurrentTime ();
-			
-			PauseInternal (false);
-		}
-	}
-	
-	if (load_frame)
-		media_player_enqueue_frames (this, 0, 1);
-}
+	start_time = 0;
+	current_pts = 0;
+	target_pts = 0;
+	SetState (Stopped);
+	RemoveBit (Eof);
 
-uint64_t
-MediaPlayer::Position ()
-{
-	return GetTargetPts ();
-}
-
-uint64_t
-MediaPlayer::Duration ()
-{
-	return duration;
-}
-
-void
-MediaPlayer::SetMuted (bool value)
-{
-	audio->muted = value;
-}
-
-bool
-MediaPlayer::IsMuted ()
-{
-	return audio->muted;
-}
-
-int
-MediaPlayer::GetAudioStreamCount ()
-{
-	//printf ("MediaPlayer::GetAudioStreamCount ().\n");
-	return audio->stream_count;
-}
-
-bool
-MediaPlayer::HasVideo ()
-{
-	return video->stream != NULL;
-}
-
-bool
-MediaPlayer::HasAudio ()
-{
-	return audio->stream != NULL;
-}
-
-double
-MediaPlayer::GetBalance ()
-{
-	return audio->balance;
+	// If we're closing the media player, there is no need to 
+	// seek to the beginning, it may even cause crashes if we're
+	// closing because the MediaElement is being destructed.
+	if (seek_to_start)
+		SeekInternal (0);
 }
 
 void
 MediaPlayer::SetBalance (double balance)
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::SetBalance (%f)\n", balance);
+
 	if (balance < -1.0)
 		balance = -1.0;
 	else if (balance > 1.0)
 		balance = 1.0;
 	
-	audio->balance = balance;
-}
-
-double
-MediaPlayer::GetVolume ()
-{
-	return audio->volume;
+	audio.balance = balance;
 }
 
 void
 MediaPlayer::SetVolume (double volume)
 {
+	LOG_MEDIAPLAYER ("MediaPlayer::SetVolume (%f)\n", volume);
+
 	if (volume < -1.0)
 		volume = -1.0;
 	else if (volume > 1.0)
 		volume = 1.0;
 	
-	audio->volume = volume;
+	audio.volume = volume;
 }
 
 /*
@@ -1357,7 +1179,7 @@ AudioPlayer::Loop ()
 
 		// Play something from the node we got
 		if (current != NULL) {
-			if (current->state == WaitingForData && current->mplayer->audio->queue->LinkedList ()->First () != NULL) {
+			if (current->state == WaitingForData && current->mplayer->audio.queue.LinkedList ()->First () != NULL) {
 				current->state = Playing;
 				UpdatePollList (true);
 			}
@@ -1475,6 +1297,22 @@ AudioPlayer::PauseInternal (MediaPlayer *mplayer, bool value)
 }
 
 void
+AudioPlayer::Stop (MediaPlayer *mplayer)
+{
+	if (instance == NULL)
+		return;
+
+	instance->StopInternal (mplayer);
+}
+
+void
+AudioPlayer::StopInternal (MediaPlayer *mplayer)
+{
+	// Take a minor shortcut and handle a stop just like a pause command.
+	PauseInternal (mplayer, true);
+}
+
+void
 AudioPlayer::SimpleLock ()
 {
 	LOG_AUDIO_EX ("AudioPlayer::SimpleLock (). instance: %p, semaphore: %i\n", instance, sem_get_value (&semaphore));
@@ -1552,8 +1390,8 @@ AudioPlayer::AudioNode::SetupHW ()
 	uint32_t buffer_time = 500000; // request 0.5 seconds of buffer time.
 	int err = 0;
 	int dir = 0;
-	int channels = mplayer->audio->stream->channels;
-	unsigned int rate = mplayer->audio->stream->sample_rate;
+	int channels = mplayer->audio.stream->channels;
+	unsigned int rate = mplayer->audio.stream->sample_rate;
 	unsigned int actual_rate = rate;
 
 #if AUDIO_HW_DEBUG
@@ -1724,7 +1562,7 @@ AudioPlayer::AudioNode::Play ()
 	LOG_AUDIO_EX ("AudioPlayer::AudioNode::Play ()\n");
 
 	bool result = false;	
-	Audio *audio = mplayer->audio;
+	Audio *audio = &mplayer->audio;
 	uint32_t channels = audio->stream->channels;
 	const snd_pcm_channel_area_t *areas = NULL;
 	snd_pcm_uframes_t offset = 0, frames, size;
@@ -1815,7 +1653,7 @@ AudioPlayer::AudioNode::Play ()
 				sent_samples = 0;
 				update_target_pts = true;
 			} else {
-				sent_pts = first_pts + sent_samples * 10000000 / mplayer->audio->stream->sample_rate;
+				sent_pts = first_pts + sent_samples * 10000000 / audio->stream->sample_rate;
 			}
 
 			outptr = (int16_t*) &first_buffer [first_used];
@@ -1843,7 +1681,7 @@ AudioPlayer::AudioNode::Play ()
 			uint64_t pts = sent_pts;
 			err = snd_pcm_delay (pcm, &delay);
 			if (err >= 0) {
-				pts -= delay * (uint64_t) 10000000 / mplayer->audio->stream->sample_rate;
+				pts -= delay * (uint64_t) 10000000 / audio->stream->sample_rate;
 			}
 			mplayer->SetTargetPts (pts);
 			updated_pts = pts;
@@ -1873,7 +1711,7 @@ AudioPlayer::AudioNode::Initialize ()
 		return false;
 	}
 	
-	stream = mplayer->audio->stream;
+	stream = mplayer->audio.stream;
 	
 	if (stream == NULL) {
 		// Shouldn't really happen, but handle this case anyway.
@@ -1968,7 +1806,7 @@ AudioPlayer::AudioNode::GetNextBuffer ()
 	first_size = 0;
 	first_pts = 0;
 
-	packet = (Packet*) mplayer->audio->queue->Pop ();
+	packet = (Packet*) mplayer->audio.queue.Pop ();
 	
 	if (packet == NULL) {
 		instance->WaitForData (this);
@@ -1985,7 +1823,7 @@ AudioPlayer::AudioNode::GetNextBuffer ()
 	if (!frame->IsDecoded ())
 		frame->stream->decoder->DecodeFrame (frame);
 		
-	media_player_enqueue_frames (mplayer, 1, 0);
+	mplayer->EnqueueFrames (1, 0);
 				
 	first_used = 0;
 	first_buffer = frame->buffer;

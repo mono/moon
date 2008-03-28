@@ -181,10 +181,10 @@ MediaElement::ReadMarkers ()
 	IMediaDemuxer *demuxer;
 	Media *media;
 	
-	if (mplayer == NULL || mplayer->media == NULL || mplayer->media->GetDemuxer () == NULL)
+	if (mplayer == NULL || mplayer->GetMedia () == NULL || mplayer->GetMedia ()->GetDemuxer () == NULL)
 		return;
 
-	media = mplayer->media;
+	media = mplayer->GetMedia ();
 	demuxer = media->GetDemuxer ();
 
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
@@ -296,7 +296,7 @@ MediaElement::AdvanceFrame ()
 		return false;
 	
 	advanced = mplayer->AdvanceFrame ();
-	position = mplayer->Position ();
+	position = mplayer->GetPosition ();
 	
 	if (advanced) {
 		//printf ("MediaElement::AdvanceFrame (): advanced, setting position to: %lld\n", position);
@@ -474,9 +474,9 @@ MediaElement::SetMedia (Media *media)
 	SetValue (MediaElement::CanSeekProperty, Value (mplayer->CanSeek ()));
 	SetValue (MediaElement::CanPauseProperty, Value (mplayer->CanPause ()));
 	SetValue (MediaElement::AudioStreamCountProperty, Value (mplayer->GetAudioStreamCount ()));
-	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (TimeSpan_FromPts (mplayer->Duration ()))));
-	SetValue (MediaElement::NaturalVideoHeightProperty, Value ((double) mplayer->height));
-	SetValue (MediaElement::NaturalVideoWidthProperty, Value ((double) mplayer->width));
+	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (TimeSpan_FromPts (mplayer->GetDuration ()))));
+	SetValue (MediaElement::NaturalVideoHeightProperty, Value ((double) mplayer->GetHeight ()));
+	SetValue (MediaElement::NaturalVideoWidthProperty, Value ((double) mplayer->GetWidth ()));
 	
 	mplayer->SetMuted (GetValue (MediaElement::IsMutedProperty)->AsBool ());
 	mplayer->SetVolume (GetValue (MediaElement::VolumeProperty)->AsDouble ());
@@ -544,8 +544,8 @@ MediaElement::ComputeBounds ()
 	double w = framework_element_get_width (this);
 	
 	if (w == 0.0 && h == 0.0) {
-		h = (double) mplayer->height;
-		w = (double) mplayer->width;
+		h = (double) mplayer->GetHeight ();
+		w = (double) mplayer->GetWidth ();
 	}
 	
 	Rect box = Rect (0, 0, w, h);
@@ -561,8 +561,8 @@ MediaElement::GetTransformOrigin ()
 	double w = framework_element_get_width (this);
 	
 	if (w == 0.0 && h == 0.0) {
-		h = (double) mplayer->height;
-		w = (double) mplayer->width;
+		h = (double) mplayer->GetHeight ();
+		w = (double) mplayer->GetWidth ();
 	}
 	
 	return Point (user_xform_origin.x * w, user_xform_origin.y * h);
@@ -581,8 +581,8 @@ MediaElement::Render (cairo_t *cr, Region *region)
 		return;
 	
 	if (w == 0.0 && h == 0.0) {
-		h = (double) mplayer->height;
-		w = (double) mplayer->width;
+		h = (double) mplayer->GetHeight ();
+		w = (double) mplayer->GetWidth ();
 	}
 
 	cairo_save (cr);
@@ -621,7 +621,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	h = y2 - y;
 
 	if (flags & RecalculateMatrix) {
-		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->width, mplayer->height, stretch,
+		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->GetWidth (), mplayer->GetHeight (), stretch,
 						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 		flags &= ~RecalculateMatrix;
 	}
@@ -658,7 +658,7 @@ MediaElement::UpdateProgress ()
 		//printf ("MediaElement::UpdateProgress (): Switching to 'Buffering', we're waiting for %lld\n", downloaded_file->GetWaitPosition ());
 		SetValue (MediaElement::BufferingProgressProperty, Value (0.0));
 		buffering_start = downloaded_file->GetWritePosition ();
-		buffering_pts = mplayer->Position ();
+		buffering_pts = mplayer->GetPosition ();
 		SetState (Buffering);
 		mplayer->Pause ();
 		emit = true;
@@ -1031,7 +1031,7 @@ MediaElement::SetSourceInternal (Downloader *dl, const char *PartName)
 		
 		TryOpen ();
 	} else {
-		downloaded_file = new ProgressiveSource (mplayer->media, is_live);
+		downloaded_file = new ProgressiveSource (mplayer->GetMedia (), is_live);
 		
 		// FIXME: error check Initialize()
 		downloaded_file->Initialize ();
@@ -1179,7 +1179,7 @@ MediaElement::GetValue (DependencyProperty *prop)
 		}
 		
 		if (use_mplayer) {
-			uint64_t position = mplayer->Position ();
+			uint64_t position = mplayer->GetPosition ();
 			Value v = Value (TimeSpan_FromPts (position), Type::TIMESPAN);
 			
 			flags |= UpdatingPosition;

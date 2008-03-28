@@ -1,3 +1,20 @@
+2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* uielement.cpp, pipeline.h, media.cpp, brush.cpp: Update according to
+	  MediaPlayer changes.
+	* mplayer.cpp, mplayer.h: Major cleanup in MediaPlayer: make all fields
+	  private, and add public accessors when required. Remove all boolean
+	  fields and add a single bit/state field with its corresponding enum and
+	  public accessors. Removed IncTargetPts, StopThreads and PauseInternal,
+	  no longer used. Removed unused defines. Made video and audio structures
+	  nested inside MediaPlayer instead of pointers (and queue inside
+	  video/audio), avoids pointer accesses and additional malloc/frees, since
+	  they were always created anyways. Don't seek to anywhere in Stop if
+	  we're stopping because we're closing, since it may cause crashes if
+	  we're closing because the MediaElement is being destructed (it may cause
+	  the MediaElement to be resurrected). Made public methods private
+	  whenever possible.
+
 2008-03-28  Fernando Herrera  <fherrera@novell.com>
 
 	* asf/asf.cpp: Use the pts == 0 optimization before trying to

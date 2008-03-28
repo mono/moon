@@ -24,39 +24,64 @@ class MediaPlayer;
 #include "asf/asf.h"
 #include "pipeline.h"
 
-struct Audio;
-struct Video;
+struct Audio {
+	Queue queue;
+
+	double balance;
+	double volume;
+	bool muted;
+	
+	// input
+	int stream_count;
+	AudioStream *stream;
+	
+	// sync
+	uint64_t pts_per_frame;
+	
+	Audio ();
+};
+
+struct Video {
+	Queue queue;
+	
+	// input
+	VideoStream *stream;
+	
+	// rendering
+	cairo_surface_t *surface;
+	uint8_t *rgb_buffer;
+	
+	Video ();
+};
 
 class MediaPlayer : public EventObject {
-private:
-	gint eof;
-	void StopThreads ();
-
-protected:
-	virtual ~MediaPlayer ();
-
 public:
+	enum PlayerState {
+		// These are not flags, but mutually exclusive states.
+		Stopped				= 0,
+		Paused				= 1,
+		Playing				= 2,
+		StateMask			= 3,
+
+		Seeking				= (1 << 4),
+		// If we're waiting for a frame to show immediately
+		LoadFramePending	= (1 << 5),
+		// after seeking, we don't want to show any frames until the video has synced with
+		// the audio. Since the video seeks to key frames, and there can be several seconds
+		// between key frames, after seeking we will decode video as fast as possible to 
+		// catch up with the audio.
+		SeekSynched			= (1 << 6),
+		RenderedFrame		= (1 << 7),
+		Eof					= (1 << 8),
+		Opened				= (1 << 9),
+	};
+
+private:
 	Media *media;
-	
-	bool paused;
-	
-	bool playing;
-	bool stop;
-	bool seeking;
-	bool load_frame; // If we're waiting for a frame to show immediately
-	// after seeking, we don't want to show any frames until the video has synced with
-	// the audio. Since the video seeks to key frames, and there can be several seconds
-	// between key frames, after seeking we will decode video as fast as possible to 
-	// catch up with the audio.
-	bool caught_up_with_seek;
+	PlayerState state;
+	int32_t width;
+	int32_t height;
 	MediaElement *element;
-	
-	Audio *audio;
-	Video *video;
-	
-	bool rendered_frame;
-	
-	gint32 GetTimeoutInterval ();
 
 	// sync
 	pthread_mutex_t target_pts_lock;
@@ -65,60 +90,84 @@ public:
 	uint64_t current_pts; // 100-nanosecond units (pts)
 	uint64_t target_pts; // 100-nanosecond units (pts)
 	
-	/* Public API */
+	bool LoadVideoFrame ();
+	void Initialize ();
+
+	void SeekInternal (uint64_t pts/* 100-nanosecond units (pts) */);
+	void RenderFrame (MediaFrame *frame);
+	static MediaResult SeekCallback (MediaClosure *closure);
+	static MediaResult FrameCallback (MediaClosure *closure);
 	
-	// read-only
-	int width, height;
-	bool opened;
+	static gboolean LoadFrameCallback (void *user_data);
 	
+protected:
+	virtual ~MediaPlayer ();
+
+public:
+	Audio audio;
+	Video video;
+
 	MediaPlayer (MediaElement *element);
 	
 	// Returns true if advanced at least one frame.
 	// A false return value does not say anything about why it didn't advance
 	// (No need to advance, eof, seeking, etc). 
 	bool AdvanceFrame (); 
-	bool LoadVideoFrame ();
-	cairo_surface_t *GetCairoSurface ();
 	
 	bool Open (Media *media);
-	void Initialize ();
 	void Close ();
+	void EnqueueFrames (int audio_frames, int video_frames);
 	
-	bool IsPlaying ();
-	bool MediaEnded ();
+	bool IsPlaying () { return (state & StateMask) == Playing; }
+	bool IsPaused () { return (state & StateMask) == Paused; }
+	bool IsStopped () { return (state & StateMask) == Stopped; }
+	bool IsSeeking () { return (state & Seeking) == Seeking; }
+	bool IsLoadFramePending () { return (state & LoadFramePending); }
+	bool HasRenderedFrame () { return (state & RenderedFrame); }
+	
+	void SetBit (PlayerState s) { state = (PlayerState) (s | state); }
+	void RemoveBit (PlayerState s) { state = (PlayerState) (~s & state); }
+	bool GetBit (PlayerState s) { return (state & s) == s; }
+	void SetState (PlayerState s) { state = (PlayerState) ((s & ~StateMask) | s); }
+
 	void Play ();
 	bool CanPause ();
-	bool IsPaused ();
 	void Pause ();
-	void PauseInternal (bool pause);
-	void Stop ();
+	void Stop (bool seek_to_start = true);
+	bool MediaEnded ();
 	
 	bool CanSeek ();
 	void Seek (uint64_t pts /* 100-nanosecond units (pts) */);
-	void SeekInternal (uint64_t pts/* 100-nanosecond units (pts) */);
-	uint64_t Position ();
-	uint64_t Duration ();
 	
-	void SetMuted (bool muted);
-	bool IsMuted ();
+	cairo_surface_t *GetCairoSurface () { return video.surface; }
+	gint32 GetTimeoutInterval ();
+
+	int GetAudioStreamCount () { return audio.stream_count; }
+	Media *GetMedia () { return media; }
+
+	bool HasVideo () { return video.stream != NULL; }
+	bool HasAudio () { return audio.stream != NULL; }
+
+	uint64_t GetPosition () { return GetTargetPts (); }
+	uint64_t GetDuration () { return duration; }
 	
-	int GetAudioStreamCount ();
-	int GetAudioStreamIndex ();
-	bool HasVideo ();
-	bool HasAudio ();
+	void SetMuted (bool muted) { audio.muted = muted; }
+	bool GetMuted () { return audio.muted; }
 	
-	double GetBalance ();
+	int32_t GetWidth () { return width; }
+	int32_t GetHeight () { return height; }
+
+	double GetBalance () { return audio.balance; }
 	void SetBalance (double balance);
 	
-	// Thread safe property accessors.
-	bool GetEof ();
-	void SetEof (bool value); 
+	bool GetEof () { return state & Eof; }
+	void SetEof (bool value);
 
-	double GetVolume ();
+	double GetVolume () { return audio.volume; }
 	void SetVolume (double volume);
+
 	void SetTargetPts (uint64_t pts);
 	uint64_t GetTargetPts ();
-	void IncTargetPts (uint64_t value);
 };
 
 class AudioPlayer {

@@ -520,9 +520,9 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 				MediaPlayer *mplayer = me->GetMediaPlayer ();
 				subtract = (!me->IsClosed ()
 					    && mplayer
-					    && mplayer->rendered_frame
-					    && ((mplayer->width == me->GetBounds().w
-						 && mplayer->height == me->GetBounds().h)
+					    && mplayer->HasRenderedFrame ()
+					    && ((mplayer->GetWidth () == me->GetBounds().w
+						 && mplayer->GetHeight () == me->GetBounds().h)
 						||
 						(media_base_get_stretch (me) == StretchFill
 						 || media_base_get_stretch (me) == StretchUniformToFill)));
