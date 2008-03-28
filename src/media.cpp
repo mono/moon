@@ -671,6 +671,8 @@ MediaElement::UpdateProgress ()
 		int64_t buffering_time = TimeSpan_ToPts (GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ());
 		int64_t write_pos = downloaded_file->GetWritePosition ();
 		int64_t wait_pos = media == NULL ? 0 : media->GetDemuxer ()->EstimatePtsPosition (buffering_pts + buffering_time);
+		if (buffering_start == -1)
+			buffering_start = write_pos;
 		int64_t buffer_size = wait_pos - buffering_start;
 		int64_t buffered_size = write_pos - buffering_start;
 		
@@ -687,10 +689,10 @@ MediaElement::UpdateProgress ()
 		
 		if ((progress = ((double) buffered_size) / buffer_size) > 1.0)
 			progress = 1.0;
-		/*	
+		/*
 		printf ("MediaElement::UpdateProgress (), write_pos: %lld, size: %lld, wait_pos: %lld, "
-					"buffer size: %lld, buffered_size: %lld, estimate: %s, buffering start: %lld, progress: %.2f, current: %.2f\n",
-			write_pos, size, wait_pos, buffer_size, buffered_size, estimate ? "true" : "false", buffering_start, progress, current);
+					"buffer size: %lld, buffered_size: %lld, buffering start: %lld, progress: %.2f, current: %.2f\n",
+			write_pos, size, wait_pos, buffer_size, buffered_size, buffering_start, progress, current);
 		*/
 
 		if (current > progress) {
@@ -763,11 +765,25 @@ MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
 		UpdateProgress ();
 }
 
+void
+MediaElement::DataRequestPosition (int64_t *position)
+{
+       if (downloaded_file != NULL)
+               downloaded_file->RequestPosition (position);
+}
+
 void 
 MediaElement::data_write (void *buf, int32_t offset, int32_t n, gpointer data)
 {
 	((MediaElement *) data)->DataWrite (buf, offset, n);
 }
+
+void 
+MediaElement::data_request_position (int64_t *position, gpointer data)
+{
+       ((MediaElement *) data)->DataRequestPosition (position);
+}
+
 
 void
 MediaElement::size_notify (int64_t size, gpointer data)
@@ -989,10 +1005,13 @@ MediaElement::DownloaderComplete ()
 void
 MediaElement::SetSourceInternal (Downloader *dl, const char *PartName)
 {
+	bool is_live = false;
+	if (g_str_has_prefix (dl->GetValue (Downloader::UriProperty)->AsString (), "mms")) {
 #if DEBUG
-	if (g_str_has_prefix (dl->GetValue (Downloader::UriProperty)->AsString (), "mms")) 
 		printf ("MediaElement is trying to load an mms stream, which isn't supported yet (%s)\n", dl->GetValue (Downloader::UriProperty)->AsString ());
 #endif	
+		is_live = true;
+	}
 	
 	LOG_MEDIAELEMENT ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", dl, PartName, dl->GetValue (Downloader::UriProperty)->AsString ());
 	
@@ -1012,12 +1031,14 @@ MediaElement::SetSourceInternal (Downloader *dl, const char *PartName)
 		
 		TryOpen ();
 	} else {
-		downloaded_file = new ProgressiveSource (mplayer->media, false);
+		downloaded_file = new ProgressiveSource (mplayer->media, is_live);
 		
 		// FIXME: error check Initialize()
 		downloaded_file->Initialize ();
 		
 		downloader->SetWriteFunc (data_write, size_notify, this);
+		if (is_live)
+			downloader->SetRequestPositionFunc (data_request_position);
 	}
 	
 	if (!(flags & DownloadComplete))

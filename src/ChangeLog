@@ -1,3 +1,16 @@
+2008-03-28  Fernando Herrera  <fherrera@novell.com>
+
+	* asf/asf.cpp: Use the pts == 0 optimization before trying to
+	SeekToPts.
+
+	* downloader.cpp:
+	* downloader.h: Add functions to allow request a remote postition.
+
+	* media.cpp:
+	* media.h:
+	* pipeline.cpp:
+	* pipeline.h: Implement SeekToPts for mms:// sources.
+
 2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.h: Detect an unrecoverable error condition with

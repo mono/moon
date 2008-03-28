@@ -628,15 +628,19 @@ public:
 
 class ProgressiveSource : public FileSource {
 private:
-	bool is_live;
 	pthread_mutex_t write_mutex;
 	pthread_cond_t write_cond;
 	bool cancel_wait;
 	int wait_count; // Counter of how many threads are waiting in WaitForPosition
+
+	bool is_live;
 	
 	int64_t write_pos;
 	int64_t wait_pos;
 	int64_t size;
+	int64_t first_write_pos;
+	int64_t requested_pos;
+	int64_t last_requested_pos;
 	
 	static void write (void *buf, int32_t offset, int32_t n, gpointer cb_data);
 	static void notify_size (int64_t size, gpointer cb_data);

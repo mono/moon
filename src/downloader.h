@@ -26,6 +26,7 @@ class Downloader;
 
 typedef void     (*downloader_write_func) (void *buf, int32_t offset, int32_t n, gpointer cb_data);
 typedef void     (*downloader_notify_size_func) (int64_t size, gpointer cb_data);
+typedef void     (*downloader_request_position_func) (int64_t *pos, gpointer cb_data);
 
 typedef gpointer (*downloader_create_state_func) (Downloader *dl);
 typedef void     (*downloader_destroy_state_func) (gpointer state);
@@ -43,6 +44,7 @@ class Downloader : public DependencyObject {
 	// Set by the consumer
 	downloader_notify_size_func notify_size;
 	downloader_write_func write;
+	downloader_request_position_func  request_position;
 	gpointer consumer_closure;
 	
 	// Set by the supplier.
@@ -107,6 +109,7 @@ class Downloader : public DependencyObject {
 	bool DownloadedFileIsZipped ();
 	const char *GetUnzippedPath ();
 	
+	void RequestPosition (int64_t *pos);
 	bool IsDeobfuscated ();
 	void SetDeobfuscated (bool val);
 	void SetDeobfuscatedFile (const char *filename);
@@ -126,12 +129,15 @@ class Downloader : public DependencyObject {
 				  downloader_abort_func abort,
 				  bool only_if_not_set);
 	
+	void SetRequestPositionFunc (downloader_request_position_func request_position);
+
 	bool Started ();
 	bool Completed ();
 	
 	void     SetContext (gpointer context) { this->context = context;}
 	gpointer GetContext () { return context; }
 	gpointer GetDownloaderState () { return downloader_state; }
+
 };
 
 Downloader *downloader_new (void);
@@ -159,6 +165,7 @@ void downloader_completed       (Downloader *dl, const char *filename);
 void downloader_notify_size     (Downloader *dl, int64_t size);
 void downloader_notify_finished (Downloader *dl, const char *filename);
 void downloader_notify_error    (Downloader *dl, const char *msg);
+void downloader_request_position (Downloader *dl, int64_t *pos);
 
 void downloader_init (void);
 

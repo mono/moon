@@ -513,6 +513,14 @@ Downloader::Write (void *buf, int32_t offset, int32_t n)
 		write (buf, offset, n, consumer_closure);
 }
 
+ void
+Downloader::RequestPosition (int64_t *pos)
+{
+       if (request_position)
+               request_position (pos, consumer_closure);
+}
+
+
 void
 Downloader::NotifyFinished (const char *fname)
 {
@@ -607,6 +615,14 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 	Downloader::abort_func = abort;
 }
 
+void
+Downloader::SetRequestPositionFunc (downloader_request_position_func request_position)
+{
+       this->request_position = request_position;
+}
+
+
+
 
 void
 downloader_abort (Downloader *dl)
@@ -663,6 +679,12 @@ downloader_set_functions (downloader_create_state_func create_state,
 {
 	Downloader::SetFunctions (create_state, destroy_state,
 				  open, send, abort, false);
+}
+
+void
+downloader_request_position (Downloader *dl, int64_t *pos)
+{
+       dl->RequestPosition (pos);
 }
 
 void

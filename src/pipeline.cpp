@@ -2595,7 +2595,9 @@ ProgressiveSource::ProgressiveSource (Media *media, bool is_live) : FileSource (
 	cancel_wait = false;
 	wait_count = 0;
 	write_pos = 0;
+	first_write_pos = 0;
 	size = -1;
+	requested_pos = -1;
 	this->is_live = is_live;
 }
 
@@ -2689,7 +2691,7 @@ void
 ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 {
 	ssize_t nwritten;
-	
+
 	//printf ("ProgressiveSource::Write (%p, %lld, %i)\n", buf, offset, n);
 	if (fd == -1) {
 		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
@@ -2698,29 +2700,33 @@ ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 	
 	Lock ();
 
-	if (write_pos != offset) {
-		write_pos = offset;
-	}
-	
+
 	
 	if (n == 0) {
 		// We've got the entire file, update the size
 		size = write_pos;
 		goto cleanup;
 	}
-	
+
 	// Seek to the write position
 	if (lseek (fd, offset, SEEK_SET) != offset)
 		goto cleanup;
 	
 	if ((nwritten = write_all (fd, (char *) buf, n)) > 0)
 		write_pos = offset + nwritten;
+
 	
 	if (IsWaiting ())
 		WakeUp (false);
 	
 	// Restore the current position
-	lseek (fd, pos + buflen, SEEK_SET);
+	if (write_pos != -1)
+		lseek (fd, pos + buflen, SEEK_SET);
+	else {
+		first_write_pos = offset;
+		FileSource::Seek (offset, SEEK_SET);
+		buflen = 0;
+	}
 	
 cleanup:
 	
@@ -2744,7 +2750,7 @@ ProgressiveSource::WaitForPosition (int64_t position)
 	
 	Lock ();
 	
-	if (position > wait_pos)
+	if (write_pos != -1 && position > wait_pos)
 		wait_pos = position;
 	
 	while (true) {
@@ -2846,7 +2852,12 @@ ProgressiveSource::Seek (int64_t offset, int mode)
 		return false;
 	}
 
-	//g_print ("SEEK. current read pos %lld, write pos %lld requestedpos:%lld\n", pos, write_pos, offset);
+	if (offset < first_write_pos) {
+		g_print ("ProgressiveSource::Seek trying to seek on the file to a positiong not downloaded:\n"
+			 "                   current read pos %lld, write pos %lld first_write_pos %lld, requestedpos:%lld\n",
+					     pos, write_pos, first_write_pos, offset);
+		return false;
+	}
 	
 	Lock ();
 	need_wait = offset > write_pos;
@@ -2864,17 +2875,20 @@ ProgressiveSource::Seek (int64_t offset, int mode)
 bool
 ProgressiveSource::SeekToPts (uint64_t pts)
 {
-	//g_print ("Ask to seek to pts:%lld\n", pts);
+
+	if (last_requested_pos == pts)
+		return true;
+
 	if (pts == 0 && Seek (0, SEEK_SET))
 		return true;
-	
+
 	Lock ();
+	requested_pos = pts;
 	write_pos = -1;
 	Unlock ();
-	
 	if (!(WaitForPosition (1)))
 		return false;
-	
+
 	return true;
 }
 
@@ -2964,12 +2978,17 @@ ProgressiveSource::GetWritePosition ()
 	return result;
 }
 
-
 void
 ProgressiveSource::RequestPosition (int64_t *pos)
 {
-   /* TODO */
+	if (requested_pos != -1 && requested_pos != last_requested_pos) {
+		*pos = requested_pos;
+		last_requested_pos = requested_pos;
+		requested_pos = -1;
+	}
 }
+
+
 
 /*
  *

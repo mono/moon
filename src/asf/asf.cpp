@@ -900,15 +900,16 @@ ASFReader::Seek (uint64_t pts)
 	if (!CanSeek ())
 		return false;
 
-	if (positioned || source->CanSeekToPts ())
-		return SeekToPts (pts);
-	
 	// We know 0 is at the beginning of the media, so just optimize this case slightly
 	if (pts == 0) {
 		ResetAll ();
 		next_packet_index = 0;
 		return true;
 	}
+
+	if (positioned || source->CanSeekToPts ())
+		return SeekToPts (pts);
+	
 
 	// For each stream we need to find a keyframe whose pts is below the requested one.
 	// Read a packet, and check each payload for keyframes. If we don't find one, read 
