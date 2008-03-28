@@ -33,6 +33,8 @@ public:
 		this->npp = NULL;
 		this->stream = NULL;
 
+		ignore_non_data = false;
+
 		// The Downloader will call destroy_state from it's destructor,
 		// but if we ref the Downloader, its destructor will never get called.
 		// No need to keep a ref, since this instance will never live longer
@@ -60,6 +62,8 @@ public:
 	bool mmsh;
 	NPStream *stream;
 	NPP npp;
+	bool ignore_non_data;
+	int header_size;
 };
 
 void downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);

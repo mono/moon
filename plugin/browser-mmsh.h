@@ -41,25 +41,32 @@ typedef void (* HttpHeaderHandler) (const char *name, const char *value);
 class BrowserMmshResponse : public nsIHttpHeaderVisitor {
 	nsCOMPtr<nsIChannel> channel;
 	HttpHeaderHandler handler;
+	char *uri;
 
 protected:
 	NS_DECL_NSIHTTPHEADERVISITOR
 
 public:
 	NS_DECL_ISUPPORTS
+	bool aborted;
 
 	BrowserMmshResponse (nsCOMPtr<nsIChannel> channel) : handler (NULL)
 	{
+		aborted = false;
+		this->uri = NULL;
 		this->channel = channel;
 	}
 
 	virtual ~BrowserMmshResponse ()
 	{
+		g_free (uri);
 	}
 
 	void Abort ();
 	void VisitHeaders (HttpHeaderHandler handler);
 	char *GetStatus (int *code);
+	void SetUri (const char *uri) { this->uri = g_strdup (uri); }
+	const char *GetUri () { return this->uri; }
 
 	//virtual void *Read (int *length) = 0;
 };
@@ -90,6 +97,7 @@ public:
 	NS_DECL_ISUPPORTS
 
 	AsyncBrowserMmshResponse (nsCOMPtr<nsIChannel> channel,
+				  const char *uri,
 				  AsyncMmshResponseDataAvailableHandler reader, 
 				  AsyncMmshResponseNotifierHandler notifier, 
 				  AsyncMmshResponseFinishedHandler finisher,
@@ -107,11 +115,14 @@ public:
 		this->reader = reader;
 		this->finisher = finisher;
 		this->context = context;
+		SetUri (uri);
+
 	}
 
 	void MmsMetadataParse (int, const char*);
 	virtual ~AsyncBrowserMmshResponse ()
 	{
+		g_free (tmp_buffer);
 	}
 
 };

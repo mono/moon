@@ -15,6 +15,8 @@
 
 bool downloader_shutdown = false;
 
+static NPError p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset);
+
 static gpointer
 p_downloader_create_state (Downloader *dl)
 {
@@ -47,56 +49,65 @@ p_downloader_open (const char *verb, const char *uri, gpointer state)
 static void
 p_downloader_mmsh_reader (BrowserMmshResponse *response, gpointer context, char *buffer, int offset, PRUint32 length)
 {
-	StreamNotify *notify = (StreamNotify*) context;
-	Downloader *dl = (Downloader *) notify->pdata;
+	int64_t requested_pos = -1;
+	PluginDownloader *pd = (PluginDownloader*) context;
 
 	if (downloader_shutdown) {
 		response->Abort ();
 		return;
 	}
 
-	dl->Write (buffer, offset, length);
+	if (response->aborted) {
+		return;
+	}
 
+	pd->dl->RequestPosition (&requested_pos);
+	if (requested_pos != -1) {
+		response->Abort ();
+		p_downloader_mmsh_send (pd, requested_pos);
+		return;
+	}
+
+	pd->dl->Write (buffer, offset, length);
 }
 
 static void
 p_downloader_mmsh_notifier (BrowserMmshResponse *response, gpointer context, char *name, int64_t size)
 {
-	StreamNotify *notify = (StreamNotify*) context;
-	Downloader *dl = (Downloader *) notify->pdata;
+	PluginDownloader *pd = (PluginDownloader*) context;
 
-	g_print ("Notifing a size of %lld\n", size);
-	dl->NotifySize (size);
+	pd->dl->NotifySize (size);
 }
 
 
 static void
 p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
 {
-	StreamNotify *notify = (StreamNotify*) context;
-	Downloader *dl = (Downloader *) notify->pdata;
+	PluginDownloader *pd = (PluginDownloader*) context;
 	const char *filename;
-	
 	if (downloader_shutdown)
 		return;
 	
-	filename = dl->GetDownloadedFile ();
-        dl->NotifyFinished (filename);
-
+	filename = pd->dl->GetDownloadedFile ();
+        pd->dl->NotifyFinished (filename);
 }
 
 
 static NPError
-p_downloader_mmsh_send (NPP_t *plugin, const char *uri, StreamNotify *notify)
+p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset)
 {
-	BrowserMmshRequest *mmsh_request = new BrowserMmshRequest ("GET", uri);
+	BrowserMmshRequest *mmsh_request = new BrowserMmshRequest ("GET", pd->uri);
 	mmsh_request->SetHttpHeader ("User-Agent", "NSPlayer/11.1.0.3856");
-	mmsh_request->SetHttpHeader ("Pragma", "no-cache,rate=1.000000,stream-time=0,stream-offset=0:0,max-duration=0");
+	mmsh_request->SetHttpHeader ("Pragma", "no-cache,rate=1.000000,stream-offset=0:0,max-duration=0");
 	mmsh_request->SetHttpHeader ("Pragma", "xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
 	mmsh_request->SetHttpHeader ("Pragma", "xPlayStrm=1");
-	mmsh_request->SetHttpHeader ("Pragma", "stream-switch-count=0");
-	mmsh_request->SetHttpHeader ("Pragma", "stream-switch-entry=ffff:1:0 ffff:4:0");
-	return mmsh_request->GetAsyncResponse (p_downloader_mmsh_reader, p_downloader_mmsh_notifier, p_downloader_mmsh_finished, notify);
+	if (offset != -1) {
+		char *header = g_strdup_printf ("stream-time=%lld, packet-num=4294967295", offset / 10000);
+		mmsh_request->SetHttpHeader ("Pragma", header);
+		g_free (header);
+		pd->ignore_non_data = true;
+	}
+	return mmsh_request->GetAsyncResponse (p_downloader_mmsh_reader, p_downloader_mmsh_notifier, p_downloader_mmsh_finished, pd);
 	
 }
 
@@ -124,7 +135,7 @@ p_downloader_send (gpointer state)
 		NPError err;
 		
 		if (pd->mmsh) {
-			err = p_downloader_mmsh_send (plugin, pd->uri, notify);
+			err = p_downloader_mmsh_send (pd, -1);
 		} else {
 			err = NPN_GetURLNotify (plugin, pd->uri, NULL, notify);
 		}

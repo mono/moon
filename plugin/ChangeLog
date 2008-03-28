@@ -1,3 +1,11 @@
+2008-03-28  Fernando Herrera  <fherrera@novell.com>
+
+	* browser-mmsh.cpp:
+	* browser-mmsh.h:
+	* plugin-downloader.cpp:
+	* plugin-downloader.h: Implement server seeking on the mms://
+	downloader.
+
 2008-03-26  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* mono.cpp: Get correct path for moonlight.exe as well when

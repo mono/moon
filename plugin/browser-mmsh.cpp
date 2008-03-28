@@ -11,6 +11,7 @@
  */
 
 #include "browser-mmsh.h"
+#include "plugin-downloader.h"
 #include <asf/asf.h>
 
 #define LE_16(val) (GINT16_FROM_LE (*((u_int16_t*)(val))))
@@ -136,6 +137,7 @@ void
 BrowserMmshResponse::Abort ()
 {
 	this->channel->Cancel (NS_BINDING_ABORTED);
+	this->aborted = true;
 }
 
 typedef struct {
@@ -344,6 +346,7 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 {
 	PRUint32 length;
 	char *read_buffer;
+	PluginDownloader *pd = (PluginDownloader*) this->context;
 
 	if (tmp_buffer) {
 		read_buffer = (char *) NS_Realloc (tmp_buffer, tmp_size + count);
@@ -387,15 +390,23 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 		} else if (type == MMS_HEADER) {
 				int64_t file_size;
 				asf_header_parse (mms_packet+8, packet_size - 8, &file_size, &asf_packet_size);
+				g_print ("HEader size %d\n", packet_size - 8);
+				pd->header_size = packet_size - 8;
 				if (file_size && notifier)
 					notifier (this, this->context, NULL, file_size);
-				reader (this, this->context, mms_packet+8, this->size, packet_size - 8);
-				this->size += packet_size - 8;
+				if (!pd->ignore_non_data) {
+					reader (this, this->context, mms_packet+8, 0, packet_size - 8);
+					this->size += packet_size - 8;
+				}
 		} else if (type == MMS_DATA) {
 				char *new_data = (char*)g_malloc0 (asf_packet_size);
+				int packet_index = (int)LE_64 (&read_buffer[4]);
 				memcpy (new_data, mms_packet+8, packet_size - 8);
-				reader (this, this->context, new_data, this->size, asf_packet_size);
+				g_print ("Packet id %d\n", packet_index);
+				reader (this, this->context, new_data, pd->header_size + packet_index* asf_packet_size,
+					asf_packet_size);
 				this->size += asf_packet_size;
+					
 				g_free (new_data);
 		}
 		length -= size + 4;
@@ -457,7 +468,7 @@ BrowserMmshRequest::GetAsyncResponse (AsyncMmshResponseDataAvailableHandler read
 	nsresult rs = NS_OK;
 	AsyncBrowserMmshResponse *response;
 
-	response = new AsyncBrowserMmshResponse (channel, reader, notifier, finisher, context);
+	response = new AsyncBrowserMmshResponse (channel, this->uri, reader, notifier, finisher, context);
 	rs = channel->AsyncOpen (response, (BrowserMmshResponse *) response);
 	return !NS_FAILED (rs);
 }
