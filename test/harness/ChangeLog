@@ -1,3 +1,8 @@
+2008-03-28  Jackson Harper  <jackson@ximian.com>
+
+	* agviewer/agviewer.cpp: Fix var naming.
+	- cleanup properly.
+	
 2008-03-27  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/LoggingServer.cs: Fix test result from int.  1 is a

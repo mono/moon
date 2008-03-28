@@ -45,8 +45,8 @@
 
 
 typedef struct _AgViewer {
-	GtkWindow  *topLevelWindow;
-	GtkWidget  *mozEmbed;
+	GtkWindow  *top_level_window;
+	GtkWidget  *moz_embed;
 } AgViewer;
 
 static int escaped_pressed_count = 0;
@@ -86,15 +86,19 @@ main(int argc, char **argv)
 
 	AgViewer* browser = new_gtk_browser ();
 
-	gtk_widget_set_usize (browser->mozEmbed, frame_width, frame_height);
+	gtk_widget_set_usize (browser->moz_embed, frame_width, frame_height);
 
-	gtk_widget_show_all (browser->mozEmbed);
-	gtk_widget_show_all (GTK_WIDGET (browser->topLevelWindow));
-	gtk_window_fullscreen (browser->topLevelWindow);
+	gtk_widget_show_all (browser->moz_embed);
+	gtk_widget_show_all (GTK_WIDGET (browser->top_level_window));
+	gtk_window_fullscreen (browser->top_level_window);
 
-	gtk_moz_embed_load_url (GTK_MOZ_EMBED (browser->mozEmbed), test_path);
+	gtk_moz_embed_load_url (GTK_MOZ_EMBED (browser->moz_embed), test_path);
 
 	gtk_main();
+
+	gtk_widget_destroy (GTK_WIDGET (browser->top_level_window));
+	
+	return 0;
 }
 
 static AgViewer *
@@ -103,7 +107,7 @@ new_gtk_browser ()
 	AgViewer *browser = 0;
 
 	browser = g_new0 (AgViewer, 1);
-	browser->topLevelWindow = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
+	browser->top_level_window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
 
 	static const GREVersionRange gre_version = {
 		"1.8", PR_TRUE,
@@ -119,11 +123,11 @@ new_gtk_browser ()
 
 	g_free (xpcom_dir_path);
 
-	browser->mozEmbed = gtk_moz_embed_new();
-	gtk_container_add (GTK_CONTAINER (browser->topLevelWindow),
-			browser->mozEmbed);
+	browser->moz_embed = gtk_moz_embed_new();
+	gtk_container_add (GTK_CONTAINER (browser->top_level_window),
+			browser->moz_embed);
 
-	g_signal_connect (G_OBJECT (browser->topLevelWindow), "key_press_event", G_CALLBACK (key_press_cb), browser->topLevelWindow);
+	g_signal_connect (G_OBJECT (browser->top_level_window), "key_press_event", G_CALLBACK (key_press_cb), browser->top_level_window);
 
 	return browser;
 }
