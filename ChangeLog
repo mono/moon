@@ -1,3 +1,8 @@
+2008-03-28  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Added fallback tests for when xtst.pc
+	doesn't exist on the system
+
 2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* configure.ac: Define __STDC_LIMIT_MACROS.

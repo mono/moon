@@ -364,6 +364,12 @@ fi
 
 AC_MSG_CHECKING(xtst 1.0)
 if pkg-config xtst; then
+   XTST_CFLAGS="$(pkg-config --cflags xtst)"
+   XTST_LIBS="$(pkg-config --libs xtst)"
+   AC_MSG_RESULT(found)
+elif ls "$(pkg-config --variable=includedir x11)/X11/extensions/XTest.h"; then
+   XTST_CFLAGS="-I$(pkg-config --variable=includedir x11)"
+   XTST_LIBS="-L$(pkg-config --variable=libdir x11) -lXtst"
    AC_MSG_RESULT(found)
 else
    echo You need to install XTEST if you want to run the Moonlight tests.
@@ -495,8 +501,8 @@ fi
 #LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
 
 
-SHOCKER_CFLAGS=`pkg-config --cflags glib-2.0 gdk-2.0 gtk+-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin`
-SHOCKER_LIBS=`pkg-config --libs glib-2.0 gdk-2.0 gtk+-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin`
+SHOCKER_CFLAGS="$(pkg-config --cflags glib-2.0 gdk-2.0 gtk+-2.0 ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin) $XTST_CFLAGS"
+SHOCKER_LIBS="$(pkg-config --libs glib-2.0 gdk-2.0 gtk+-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin) $XTST_LIBS"
 
 AGVIEWER_CFLAGS=`pkg-config --cflags glib-2.0 gtk+-2.0 xulrunner-gtkmozembed dbus-glib-1`
 AGVIEWER_LIBS=`pkg-config --libs glib-2.0 gtk+-2.0 xulrunner-gtkmozembed dbus-glib-1`
