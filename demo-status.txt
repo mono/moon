@@ -1,411 +1,227 @@
-the first column from here: http://blogs.msdn.com/tims/default.aspx
-
-* 2D Physics Simulation (http://www.chriscavanagh.com/Chris/Silverlight/Physics2D-1/TestPage.html
-
-	Sorta works.  animations are definitely there, but clicking on
-        the wind checkbox doesn't do anything, and firefox keeps
-        popping up the "Unresponsive script" dialog.  the checkbox
-        being unresponsive might be because the script is eating too
-        much cpu?
-
-	Note: page seems empty (possibly wrong plugin)
-
-* 3D Teapot Demo (http://www.dolittle.com/Silverlight/3D/TestPage.html)
-
-	2 things blocking this demo:
-
-	- downloading media from remote servers
-
-		video source changed to `silverlightLogoLoop.wmv'
-		cannot open uri `silverlightLogoLoop.wmv': No such file or directory
-
-	- the MediaBase.MediaEnded event needs to be raised when the
-	  above .wmv finishes playing.
-
-	Note: URL requires the older (pre release) plugin
-
-* Binary Clock (http://explosivedog.com/silverlight/binaryclock/default.html)
-
-	works!
-
-* Browser Poker (http://support.newsgator.com/nickh/browserpoker/browserpoker.html)
-
-	Starts up, but crashes when it tries to access
-	IsolatedStorage.
-
-		Unhandled Exception: System.IO.IsolatedStorage.IsolatedStorageException: No ApplicationIdentity available for AppDomain.
-		at System.IO.IsolatedStorage.IsolatedStorage.InitStore (System.IO.IsolatedStorage.IsolatedStorageScope,System.Type) [0x0002e] in /home/cvs/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorage.cs:157
-		at (wrapper remoting-invoke-with-check) System.IO.IsolatedStorage.IsolatedStorage.InitStore (System.IO.IsolatedStorage.IsolatedStorageScope,System.Type) <0x0005a>
-		at System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication () [0x0000a] in /home/cvs/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorageFile.cs:220
-		at BrowserPoker.Page.SaveData () <0x0004b>
-		at BrowserPoker.Page.chkbxSaveSettings_MouseLeftButtonUp (object,System.Windows.Input.MouseEventArgs) <0x00093>
-		at System.Windows.UIElement.InvokeMouseButtonUp (System.Windows.Input.MouseEventArgs) [0x0001c] in /home/cvs/olive/class/agclr/System.Windows/UIElement.cs:357
-		at Mono.Events.mouse_button_up_callback (intptr,intptr,intptr) [0x00014] in /home/cvs/olive/class/agclr/Mono/Events.cs:173
-		at (wrapper delegate-invoke) System.MulticastDelegate.invoke_void_intptr_intptr_intptr (intptr,intptr,intptr) <0x00050>
-		at Mono.CrossDomainProxy.call_in_target_domain () [0x0001b] in /home/cvs/olive/class/agclr/Mono/Events.cs:72
-		at System.AppDomain.DoCallBack (System.CrossAppDomainDelegate) [0x0001a] in /home/cvs/mcs/class/corlib/System/AppDomain.cs:448
-		at (wrapper remoting-invoke-with-check) System.AppDomain.DoCallBack (System.CrossAppDomainDelegate) <0x00045>
-		at Mono.CrossDomainProxy.wrapper (intptr,intptr,intptr) [0x00015] in /home/cvs/olive/class/agclr/Mono/Events.cs:64
-		at (wrapper native-to-managed) Mono.CrossDomainProxy.wrapper (intptr,intptr,intptr) <0x00030>
-		
-* Bubble Factory (http://cosmik.members.winisp.net/BubbleFactory/)
-
-	No JS errors.  I get this on the console.
-
-		Assembly not available:  ClientBin/BubbleFactory.dll
-
-		** (Gecko:28016): WARNING **: PARSER ERROR, STOPPING PARSING:  Unable to resolve x:Class type 'BubbleFactory.Game;assembly=ClientBin/BubbleFactory.dll'
-		  line: 1   char: 1
-
-* Bubble Mark (http://bubblemark.com/)
-
-	Silverlight (CLR) works!
-
-	Silverlight (Javascript) works too :)
-
-* Comic Book Viewer (http://mycomix.wintellect.com/Spotlight.aspx?Item=1041)
-
-	seems to work.  there is only 1 comic to view.  moving the
-	mouse to the top of the page results in a rating and blurb animating
-	in from the top. That panel should be on top of the comic (and tranparent),
-	not behind it.
-
-	On SL using the mouse-scroll can zoom in and out the comic picture.
-
-* Destroy All Invaders (http://www.andybeaulieu.com/silverlight/DestroyAll/Default.html)
-
-	* Works, but the chopper crashes as soon as the game start.
-
-* Digger (http://www.aisto.com/Roeder/Silverlight/Digger/Default.aspx)
-
-	works.
-
-
-* Disco Dance Floor (http://explosivedog.com/silverlight/discolights/)
-
-	Comes up, runs slow, and also seems to peg the event loop
-	processing in Firefox.
-
-	Although the disco floor is updated and continues to move and
-	rotate, the event loop seems to be dominated by it, and
-	Mozilla becomes very unresponsive. 
-
-	Note: URL requires the older (pre release) plugin
-
-* Dr. Green Thumb (http://labs.blitzagency.com/?p=50)
-
-	page comes up telling you to install WPF/e.
-
-	Note: same thing happens on SL (web page was updated to confirm this).
-
-* Dr. Popper (http://www.bluerosegames.com/brg/drpopper/)
-
-	comes up, but is unresponsive to mouse clicks.  there's an
-	"overlay" canvas over the entire UI which eats all mouse
-	events. Not sure how they're passed through on MS.
-
-* Glyph Map (http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx)
-
-	Some of the UI comes up
-
-* GOA WinForms Demo (http://community.netikatech.com/demos/)
-
-	** (Gecko:4903): WARNING **: adding handler to event 'GotFocus', which
-	   has not been registered
-	
-	
-	** (Gecko:4903): WARNING **: adding handler to event 'LostFocus',
-	   which has not been registered
-	
-	Error inside TryLoad: System.Exception: Unknown class
-	
-	Server stack trace:
-	  at NETiKA.Silverlight.WinFormHost.c (System.Object A_0,
-	  System.EventArgs A_1) [0x00000]
-	  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in
-	  /home/cvs/olive/class/agclr/System.Windows/UIElement.cs:391
-	  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata,
-	  IntPtr closure) [0x00014] in
-	  /home/cvs/olive/class/agclr/Mono/Events.cs:72
-	  at (wrapper native-to-managed) Mono.Events:loaded_callback
-	  (intptr,intptr,intptr)
-	  at <0x00000> <unknown method>
-	  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach
-	  (intptr,intptr)
-	  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x00139]
-	  in /home/cvs/moon/plugin/moonlight.cs:251
-	  at (wrapper remoting-invoke-with-check)
-	  Moonlight.DomainInstance:TryLoad (int&)
-	  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad
-	  (object,byte[]&,byte[]&,int&)
-	
-	Exception rethrown at [0]:
-	
-	  at (wrapper xdomain-invoke) Moonlight.DomainInstance:TryLoad (int&)
-	  at (wrapper remoting-invoke-with-check)
-	  Moonlight.DomainInstance:TryLoad (int&)
-	  at Moonlight.Loader.TryLoad (System.Int32& error) [0x0000f] in
-	  /home/cvs/moon/p
-	
-* Gradient Animation Demo (http://www.zillinois.com/blog/2007/05/16/YetAnotherSilverLightXAMLDemo.aspx)
-
-	works!
-
-* Grand Piano (http://silverlight.net/samples/1.0/Grand-Piano/default.html)
-
-	Work remotely.
-
-	If you try to run this locally, nothing shows up, not sure if
-	this is our problem. 
-
-* Infragistics Controls Demo (http://labs.infragistics.com/silverlight/)
-
-	Crashes firefox with:
-
-	ManagedXamlLoader::LoadObject (ClientBin/Infragistics.Silverlight.dll, ClientBin/Infragistics.Silverlight.dll, , Infragistics.Silverlight.TechEd.MainPage) failed: Exception has been thrown by the target of an invocation. (System.Reflection.TargetInvocationException).
-
-	** (Gecko:25612): WARNING **: PARSER ERROR, STOPPING PARSING:  Unable to resolve x:Class type 'Infragistics.Silverlight.TechEd.MainPage;assembly=ClientBin/Infragistics.Silverlight.dll'
-	  line: 1   char: 1
-
-
-	** (Gecko:25612): WARNING **: PARSER ERROR, STOPPING PARSING:  parsing aborted  line: 6   char: 27
-
-	PluginXamlLoader::TryLoad: Could not load xaml file: /home/jbevain/.mozilla/firefox/82jmj387.default/Cache/8DAB8540d01 (missing_assembly: (null))
-	Stacktrace:
-
-
-	Native stacktrace:
-
-			/home/jbevain/devel/mono/lib/libmono.so.0 [0xb22c2924]
-			/home/jbevain/devel/mono/lib/libmono.so.0 [0xb22df1c1]
-			/home/jbevain/devel/mono/lib/libmono.so.0 [0xb2273798]
-			[0xb7fd7440]
-			/home/jbevain/devel/mono/lib/moon/plugin/libmoonplugin.so(_ZN14PluginInstance12StreamAsFileEP9_NPStreamPKc+0x1ab) [0xb223b07b]
-			/home/jbevain/devel/mono/lib/moon/plugin/libmoonplugin.so(NPP_StreamAsFile+0x31) [0xb223c621]
-			/usr/lib/firefox/firefox-bin [0x8240368]
-			/usr/lib/firefox/firefox-bin [0x822ceec]
-			/usr/lib/firefox/firefox-bin [0x8236b34]
-			/usr/lib/firefox/firefox-bin [0x817b805]
-			/usr/lib/firefox/firefox-bin [0x812d576]
-			/usr/lib/firefox/firefox-bin [0x812d7d1]
-			/usr/lib/firefox/libxpcom_core.so [0xb7ef2644]
-			/usr/lib/firefox/libxpcom_core.so(PL_HandleEvent+0x22) [0xb7f0b435]
-			/usr/lib/firefox/libxpcom_core.so(PL_ProcessPendingEvents+0x74) [0xb7f0b6be]
-			/usr/lib/firefox/libxpcom_core.so [0xb7f0cda3]
-			/usr/lib/firefox/firefox-bin [0x8254f66]
-			/usr/lib/libglib-2.0.so.0 [0xb78f912d]
-			/usr/lib/libglib-2.0.so.0(g_main_context_dispatch+0x182) [0xb78cfad2]
-			/usr/lib/libglib-2.0.so.0 [0xb78d2a9f]
-			/usr/lib/libglib-2.0.so.0(g_main_loop_run+0x1b7) [0xb78d2e57]
-			/usr/lib/libgtk-x11-2.0.so.0(gtk_main+0xb4) [0xb7c155f4]
-			/usr/lib/firefox/firefox-bin [0x82552b2]
-			/usr/lib/firefox/firefox-bin [0x86771f2]
-			/usr/lib/firefox/firefox-bin [0x807cf2a]
-			/usr/lib/firefox/firefox-bin [0x8078e54]
-			/lib/libc.so.6(__libc_start_main+0xdc) [0xb7291f9c]
-			/usr/lib/firefox/firefox-bin [0x8078db1]
-
-
-* JavaScript/.NET Chess (http://silverlight.net/samples/1.1/chess/run/default.html)
-
-	This mostly works, with a few exceptions, these are tracked in
-	the sldemos/chess/port/issues.txt (support for Javascript
-	inside x:Code and animations are not working).
-	
-* Laugh-o-Sphere (http://sharepoint.microsoft.com/blogs/mikeg/silverlight1/PopflyMashups/bLaugh-o-Sphere.aspx)
-
-	Just shows the "Get Microsoft Silverlight" badge.  plugin version difference?
-
-* Matrix Digital Rain (http://blogs.sqlxml.org/wpfe/matrix/)
-
-	nothing shows in the browser, with this error in the JS console:
-
-		Error: wpfeControl1Host is not defined
-		Source File: http://blogs.sqlxml.org/wpfe/matrix/
-		Line: 26
-
-	This is actually broken Javascript which relies on IE exposing
-	element id's as properties of the page.
-
-	Looking at the javascript in
-	http://blogs.sqlxml.org/wpfe/matrix/ shows that this demo
-	depends on working Glyph stuff, which we lack.
-
-* Michael's Journal (http://blogs.msdn.com/Synergist/pages/journal.aspx)
-
-* Office Ribbon (http://xmldocs.net/)
-
-	This seems to work now, but the media player seems to get the
-	downloaded completed notification many times for the same
-	file. 
-
-* Photopoints Gallery (http://www.photopoints.com/main/Silverlight_Alpha/)
-
-	Fails due to missing HtmlPage.DocumentUri (we get a NRE
-	because that getter currently always return null).
-
-* Popfly (http://www.popfly.com/)
-
-	Note: requires FF 2.0 minimum (doesn't accept FF 1.5 as a "valid" browser)
-
-* Python Console (http://silverlight.net/Samples/1.1/DLR-Console/python/index.htm)
-
-		ManagedXamlLoader.load_code: 'DLRConsole.py' 'text/python'
-		ManagedXamlLoader.load_code: Ignoring request to load code.
-
-* Reflecting Graph (http://davidbetz.net/reflectinggraphdemo/)
-
-	Html controls work, and the graph loads.  is there no way to
-	interact with the graph?
-
-* Sierpinski Triangle (http://www.cjcraft.com/silverlight/SierpinskiTriangle/Default.html)
-
-	works!
-
-	note: requires an older version of the plugin.
-
-* Silverlight Airlines Demo (http://delay.members.winisp.net/SilverlightAirlinesDemo/)
-
-	works!
-
-	a few visual glitches, but things should behave as expected.
-
-* Silverlight Chess Game Replay (http://www.vertigo.com/downloads/SilverlightChess/)
-
-	Comes up, displays chess pieces, shows the intro animation.
-
-	Clicking on the "Start Game button" results in the following in the JS Console:
-
-		Error: Error setting property on scriptable plugin object!
-		Source File: http://www.vertigo.com/downloads/SilverlightChess/Scene.xaml.js
-		Line: 252
-
-	Looks like maybe more namescoping issues?
-
-* Silverlight Mind Map (http://blogs.msdn.com/synergist/pages/silverlight-map.aspx)
-
-	* Seems to work, still the nodes are using the strange Hand Written font.
-
-* Silverlight Pad (http://silverlight.net/samples/1.0/Silverlight-Pad/default.html)
-
-	* Displayed using a strange Hand Written like font.
-	* Mouse wheel doesn't zoom.
-	* Xaml and JavaScript are not displayed in the bottom tabs.
-	* Clicking on items on the left doesn't work.
-
-
-* Silverlight Rocks (http://www.junkship.org:8000/silverlightdemo/)
-
-	Shows a blue bg, prints:
-
-		ManagedXamlLoader::LoadAssembly (tarantula.dll, tarantula.dll): requesting download of 'Physics.dll' (exception: Could not load file or assembly 'Physics, Version=1.0.0.0, Culture=neutral' or one of its dependencies. The system cannot find the file specified.).
-
-		** (Gecko:25326): WARNING **: The following assembly referenced from /home/jbevain/.mozilla/firefox/82jmj387.default/Cache/2D75DF5Fd01 could not be loaded:
-			 Assembly:   Physics    (assemblyref_index=3)
-			 Version:    1.0.0.0
-			 Public Key: (none)
-		The assembly was not found in the Global Assembly Cache, a path listed in the MONO_PATH environment variable, or in the location of the executing assembly (/home/jbevain/.mozilla/firefox/82jmj387.default/Cache).
-
-* SilverNibbles (http://www.wordandspirit.co.uk/SilverNibbles/SilverNibbles.html)
-
-	fails with:
-
-		Server stack trace:
-		  at System.IO.IsolatedStorage.IsolatedStorage.InitStore (IsolatedStorageScope scope, System.Type appEvidenceType) [0x0002e] in /home/toshok/src/mono/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorage.cs:157
-		  at (wrapper remoting-invoke-with-check) System.IO.IsolatedStorage.IsolatedStorage:InitStore (System.IO.IsolatedStorage.IsolatedStorageScope,System.Type)
-		  at System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication () [0x0000a] in /home/toshok/src/mono/mcs/class/corlib/System.IO.IsolatedStorage/IsolatedStorageFile.cs:220
-		  at SilverNibbles.Page.LoadRecord () [0x00000]
-		  at SilverNibbles.Page.Page_Loaded (System.Object o, System.EventArgs e) [0x00000]
-		  at System.Windows.UIElement.InvokeLoaded () [0x0001c] in /home/toshok/src/mono/olive/class/agclr/System.Windows/UIElement.cs:405
-		  at Mono.Events.loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/toshok/src/mono/olive/class/agclr/Mono/Events.cs:79
-		  at (wrapper native-to-managed) Mono.Events:loaded_callback (intptr,intptr,intptr)
-		  at <0x00000> <unknown method>
-		  at (wrapper managed-to-native) Moonlight.Hosting:surface_attach (intptr,intptr)
-		  at Moonlight.DomainInstance.TryLoad (System.Int32& error) [0x00139] in /home/toshok/src/mono/moon/plugin/moonlight.cs:251
-		  at (wrapper remoting-invoke-with-check) Moonlight.DomainInstance:TryLoad (int&)
-		  at (wrapper xdomain-dispatch) Moonlight.DomainInstance:TryLoad (object,byte[]&,byte[]&,int&)
-
-
-* Smalltalk in Silverlight (http://vistascript.net/vistascript/test)
-
-	Implicit assembly loading seems to fail loading Smalltalk:
-		** (Gecko:2397): WARNING **: The following assembly referenced from
-		/home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache/8B67FFBEd01 could
-		not be loaded:
-		     Assembly:   Smalltalk    (assemblyref_index=2)
-		     Version:    1.0.0.0
-		     Public Key: (none)
-		The assembly was not found in the Global Assembly Cache, a path listed
-		in the MONO_PATH environment variable, or in the location of the
-		executing assembly
-		(/home/miguel/.mozilla/firefox/faxlddi4.FireBug/Cache).
-		
-	animated UI comes up, this shows up in JS console:
-
-		Warning: Element referenced by ID/NAME in the global scope. Use W3C standard document.getElementById() instead.
-		Source File: http://silverlight.net/samples/1.0/sprawl/js/createsilverlight.js
-		Line: 16
-
-* Surface Prototype (http://silverlight.schwarz-interactive.de/ex02/)
-
-	seems to load okay, but nothing ever shows.
-
-* SVG to Silverlight Converter (http://intertwingly.net/stories/2007/05/06/?icon=compass)
-
-	works?  seems to work ok, but the plugin might be too large?
-	we obscure some of the html (but so does the SVG view of the info).
-
-	Note: application hasn't been updated for SL 1.0 (i.e. it still requires the old plugin)
-
-* Telerik RadControls 3D Cube (http://www.telerik.com/demos/aspnet/silverlight/Cube/Examples/RoomDesigner/DefaultCS.aspx)
-
-	Loads up the background fine but nothing else shows up.
-
-* Windows Journal-to-Silverlight Converter (http://www.microsoft.com/downloads/details.aspx?FamilyID=4964cd5f-0dcb-4c22-9378-773100d8e89f&displaylang=en)
-
-	Windows specific conversion tool.  not a web demo.
-
-* Windows Vista Simulator (http://www.windowsvista.si/)
-
-	Application appears, but nothing happen when clicking on the FreeTime or WorkTime graphics.
-	No tooltip appear when I leave the mouse on those either.
-
-* XamlWebPad (http://xamlwebpad.peterkellner.net/Default.aspx)
-
-	works!  or appears to anyway.
-
-* XPSViewer (http://delay.members.winisp.net/SimpleSilverlightXpsViewer/)
-
-	* Visually works. Yet it triggers a NotImplementedException that the application
-	catches, but doesn't give more details about it yet.
-
-* Zero Gravity (http://www.ltbennett.com/)
-
-	When playing, I got:
-
-		Unhandled Exception: System.NullReferenceException: Object reference not set to an instance of an object
-		  at SpaceJumper.Tiles.SwitchPaddleControl.rotatePaddleAnimation (Int32 toRotate, Boolean state) [0x00000] 
-		  at SpaceJumper.View.Gameboard.animatePaddles (System.Collections.Generic.List`1 sp) [0x00000] 
-		  at SpaceJumper.View.DisplayStack.animatePaddles (System.Collections.Generic.List`1 sp) [0x00000] 
-		  at SpaceJumper.GameMain.playerAnimated (System.Object sender, System.EventArgs args) [0x00000] 
-		  at SpaceJumper.View.DisplayStack.playerAnimated (System.Object o, System.EventArgs evt) [0x00000] 
-		  at SpaceJumper.View.Gameboard.playerAnimated (System.Object o, System.EventArgs evt) [0x00000] 
-		  at SpaceJumper.Tiles.PlayerControl.returnToIdleAnimationComplete (System.Object sender, System.EventArgs evt) [0x00000] 
-		  at System.Windows.Media.Animation.Storyboard.InvokeCompleted () [0x0001c] in /home/jbevain/sources/olive/class/agclr/System.Windows.Media.Animation/Storyboard.cs:107 
-		  at System.Windows.Media.Animation.Storyboard.UnmanagedCompleted (IntPtr target, IntPtr calldata, IntPtr closure) [0x00014] in /home/jbevain/sources/olive/class/agclr/System.Windows.Media.Animation/Storyboard.cs:100 
-		  at (wrapper native-to-managed) System.Windows.Media.Animation.Storyboard:UnmanagedCompleted (intptr,intptr,intptr)
-
-* Lutz Roeder Monotone, http://www.aisto.com/Roeder/Silverlight/Monotone/Default.aspx
-
-	http://www.aisto.com/Roeder/Silverlight/
-
-	Works. At least better than Silverlight which crashes on this for me.
-
-* Silverlight Learn Videos
-
-	http://silverlight.net/learn/learnvideo.aspx?video=125
-
-	* Black background, instead of transparent, in the plugin (XAML works fine)
-	* Some LinearGradientBrush issues when
-		* using MappingMode="Absolute" and a Transform
-		* using two GradientStop at the same offset
+site:Aglux Silverlight
+url:http://www.aglux.com.my
+score:3
+ *  slow ( < 2 fps )
+ *  color gradient is wrong. Should go purple(top) to light blue(bottom)
+ *  Missing fonts?
+ *  Mouse over animation is slow
+
+
+site:Asset Allocator
+url:http://weihong.us/silverlight/asset.htm 
+score:4
+ *  Works!
+
+
+site:Bubble Mark
+url:http://bubblemark.com/wpfe.htm
+score:4
+ *  choppy with 32+ balls Bug 362022
+
+
+site:Chess Viewer 1.0
+url:http://www.vertigo.com/downloads/SilverlightChess/10RC/default.html
+score:4
+ * Works
+
+site:Clock
+url:http://silverlight.net/samples/1.0/clock/default.html
+score:4
+ * Works
+ * Canvas isn't transparent
+
+
+site:Comic Book Viewer
+url:http://mycomix.wintellect.com/Spotlight.aspx?Item=1041
+score:4
+ * Works
+
+site:E-commerce Catalog
+url:http://www.flowers-for-you.com.my/catalog2.aspx
+score:0
+ * Crashes firefox
+ * Audio works. No video
+
+site:Festive Greetings
+url:http://www.mason-zimbler.com/festivegreetings
+score:4
+ * Works!
+
+site:Float Menu
+url:http://ptstuido.512j.com/obj/Default.html
+score:-1
+ * Site URL broken
+
+site:Glyph Map
+url:http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx
+score:3
+ * Characters don't show up. Fonts not installed?
+ * Mouse over chars also don't work. Fonts not installed?
+
+site:Grand Piano
+url:http://silverlight.net/samples/1.0/Grand-Piano/default.html
+score:4
+ * Works
+
+site:Halo 3
+url:http://halo3.msn.com/videos.aspx
+score:0
+ * Not detecting Moonlight. Bug 346280
+
+site:HHH Comic Archive
+url:http://www.microsoft.com/heroeshappenhere/comicviewer/default.html
+score:4
+ * Works
+
+site:Ink Journal
+url:http://www.thedatafarm.com/silverlight/journalsample
+score:2
+ * Pen, highlighter, eraser, lasso work.
+ * Mouse icon is a crosshairs, not a dot. Bug 375213
+
+site:Ink Tattoo Studio
+url:http://silverlight.net/samples/1.0/Ink-Tattoo-Studio/default.html
+score:4
+ * Works!
+
+site:Kit 3D
+url:http://www.markdawson.org/kit3d
+score:1
+ * Spinning cubes with textue - light gray canvas appears. Bug 375216
+ * Playing cards crashes Firefox - light gray canvas. Bug 375216
+ * 3D picture grid - black canvas appears Bug 375217
+
+site:LCD Clock
+url:http://www.designwithsilverlight.com/tutorials/LCDClock/default.html
+score:3
+ * Works
+ * Outer frame is still showing
+
+site:Matrix Digital Rain
+url:http://blogs.sqlxml.org/wpfe/matrix
+score:-1
+ * Nothing shows in the browser, with this error in the JS Console: \n Error: wpfeControl1Host is not defined Source File: \n http://blogs.sqlxml.org/wpfe/matrix/ Line: 26
+ * This is actually broken javascript which relies on IE exposing element id's as properties of the page.
+
+site:Matrix Falling Characters
+url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
+score:1
+ * [Regression] Chars slow down and stop falling Bug 351567
+ * Slow and choppy, 1 -2 fps
+ * Full screen is slow too. Get 'unreponsive script' warning
+ * Full screen icon is malformed. 
+ * Info icon is missing
+
+site:Mircosoft Downloads
+url:http://www.microsoft.com/beta/downloads/Default.aspx
+score:1
+ * Background color is missing  - Bug 375218
+ * In 'Browse Downloads', the index chars repeatedly highlight/unhighlight during mouse over Bug 375220
+ * FF crashes if you hit the navigate back off the page. Bug 375219
+ * Download categories don't appear when page is loaded. Bug 375221
+
+site:Office Ribbon
+url:http://xmldocs.net
+score:2
+ * Controls are out of order. Bug 375223
+ * Drop down menus aren't clickable Bug 375223
+ * Missing check box. Bug 375223
+ * Drop down list doesn't stay open Bug 351568
+ * Text boxes aren't editable Bug 375224
+
+site:On9Games
+url:http://www.on9games.net/GameAction.aspx
+score:3
+ * Animated runners do not appear Bug 375225
+ * In 'Featured', the FAQ doesn't show the answers to the questions 375226
+ * Mouse disappears during game play
+
+site:Page Turn
+url:http://silverlight.net/samples/1.0/Page-Turn/default.html
+score:2
+ * Can't turn page
+
+site:Photo Carousel (SL 2.0)
+url:http://www.nikhilk.net/Prototypes/PhotoCarousel
+score:2
+ * Flickr page loads, entering search term does nothing. Bug 351583
+
+site:Photo Gallery Viewer
+url:http://www.designwithsilverlight.com/tutorials/photoGallery/gallery.html
+score:3
+ * Images don't return to normal size after mouse over Bug 375231
+ * clicking to enlarge/shrink images is broken Bug 375230
+
+site:Photo Gallery Wall
+url:http://designwithsilverlight.com/tutorials/photoGalleryWall/default.html
+score:-1
+ * URL broken
+ * Slide show cycles through pictures very fast
+ * Thumbnails on left should outline immediately when the mouse is over it
+ * Clicking on a thumbnail, the picture in the panel on the right doesn't changed quickly
+
+site:Picture-in-picture screen cast
+url:http://blogs.msdn.com/synergist/archive/2007/07/30/groove-and-virtual-earth.aspx
+score:2
+ * Playback controls don't pop up at bottom Bug 351580
+ * video is sluggish, tinted blue Bug 375232
+
+site:Poker
+url:http://home.people.net.au/~chriso/poker/poker.html
+score:1
+ * Audio doens't play Bug 375234
+
+site:Popfly
+url:http://www.popfly.com
+score:2
+
+site:Scrolling Video Playlist
+url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
+score:4
+ * Works!
+
+site:Silverlight Pad
+url:http://silverlight.net/samples/1.0/Silverlight-Pad/default.html
+score:2
+ * windowless bug causing xaml / js code to not appear. Bug 375235
+
+site:Silverlight Showcase
+url:http://silverlight.net/Showcase/default.aspx
+score:3
+* World map is slow Bug 375234
+
+site:Silverlight Slide Show
+url:http://www.vertigo.com/SlideShow.aspx
+score:4
+ * Works
+
+site:Simon
+url:http://www.vertigo.com/downloads/Simon/
+score:3
+ * no sound
+
+site:Sparkleball
+url:http://www.ddjsilverlight.com/sparkleball
+score:4
+ * Works
+
+site:Sprawl
+url:http://silverlight.net/samples/1.0/Sprawl/default.html
+score:1
+ * Works
+
+site:Tile Text
+url:http://silverlight.net/samples/1.0/Tile-Text/default.html
+score:3
+ * Missing text box to change text due to windowless plugin not working.
+ * Animation works well
+
+site:TI-M Silverlight
+url:http://silverlight.timovil.com
+score:2
+ * Cannot interact with window. Mouse clicks don't work.
+
+site:Web Analytics
+url:http://xmldocs.net/Analytics
+score:3
+ * no video
