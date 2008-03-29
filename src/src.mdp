@@ -33,7 +33,6 @@
     <File name="control.h" subtype="Code" buildaction="Nothing" />
     <File name="debug.cpp" subtype="Code" buildaction="Compile" />
     <File name="debug.h" subtype="Code" buildaction="Nothing" />
-    <File name="demo.cpp" subtype="Code" buildaction="Nothing" />
     <File name="dependencyobject.cpp" subtype="Code" buildaction="Compile" />
     <File name="dependencyobject.h" subtype="Code" buildaction="Nothing" />
     <File name="dirty.cpp" subtype="Code" buildaction="Compile" />
@@ -46,10 +45,7 @@
     <File name="font.h" subtype="Code" buildaction="Nothing" />
     <File name="frameworkelement.cpp" subtype="Code" buildaction="Compile" />
     <File name="frameworkelement.h" subtype="Code" buildaction="Nothing" />
-    <File name="fullscreen.cs" subtype="Code" buildaction="Nothing" />
     <File name="fullscreen.h" subtype="Code" buildaction="Nothing" />
-    <File name="fullscreen.sh" subtype="Code" buildaction="Nothing" />
-    <File name="fullscreen.xaml" subtype="Code" buildaction="Nothing" />
     <File name="genkindcs.sh" subtype="Code" buildaction="Nothing" />
     <File name="geometry.h" subtype="Code" buildaction="Nothing" />
     <File name="geometry.cpp" subtype="Code" buildaction="Compile" />
@@ -82,7 +78,6 @@
     <File name="runtime.h" subtype="Code" buildaction="Nothing" />
     <File name="shape.cpp" subtype="Code" buildaction="Compile" />
     <File name="shape.h" subtype="Code" buildaction="Nothing" />
-    <File name="sizes.cpp" subtype="Code" buildaction="Nothing" />
     <File name="stylus.cpp" subtype="Code" buildaction="Compile" />
     <File name="stylus.h" subtype="Code" buildaction="Nothing" />
     <File name="text.cpp" subtype="Code" buildaction="Compile" />
@@ -95,8 +90,6 @@
     <File name="type.cpp" subtype="Code" buildaction="Compile" />
     <File name="type.h" subtype="Code" buildaction="Nothing" />
     <File name="type.h.in" subtype="Code" buildaction="Nothing" />
-    <File name="typegen.cs" subtype="Code" buildaction="Nothing" />
-    <File name="typegen.sh" subtype="Code" buildaction="Nothing" />
     <File name="uielement.cpp" subtype="Code" buildaction="Compile" />
     <File name="uielement.h" subtype="Code" buildaction="Nothing" />
     <File name="uri.cpp" subtype="Code" buildaction="Compile" />
