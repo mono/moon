@@ -2299,7 +2299,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	// Some debug code...
 	// with this it is possible to do obj.printf ("msg") from js
 	case MoonId_Printf:
-		printf ("JS message: %s\n", STR_FROM_VARIANT (args [0]));
+		fprintf (stderr, "JS message: %s\n", STR_FROM_VARIANT (args [0]));
 		VOID_TO_NPVARIANT (*result);
 		return true;
 #endif
