@@ -1,3 +1,8 @@
+2008-03-31  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/EdgeCompare.cs: Add a key so people can tell what
+	they are looking at.
+
 2008-03-31  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* shocker/logging.cpp: include time.h (for older systems)

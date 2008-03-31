@@ -39,13 +39,15 @@ namespace MoonlightTests {
 		private static readonly double Tolerance = 0.10;
 		private static readonly int MaxMissingPoints = 150;
 
+		private static readonly int KeyHeight = 50;
+
 		public static TestResult CompareBitmaps (Test test, Bitmap result, Bitmap master)
 		{
 			Bitmap blurred_result = BlurImage (result);
 			Bitmap blurred_master = BlurImage (master);
 			Bitmap result_edges = BuildEdges (result);
 			Bitmap master_edges = BuildEdges (master);
-			Bitmap diff = new Bitmap (result.Width, result.Height);
+			Bitmap diff = new Bitmap (result.Width, result.Height + KeyHeight);
 			Graphics g = Graphics.FromImage (diff);
 			double point_count = 0;
 			double diff_score = 0;
@@ -75,6 +77,8 @@ namespace MoonlightTests {
 					}
 				}
 			}
+
+			AddDiffKey (diff);
 
 			diff.Save (String.Concat (test.InputFile, "-edge-diff.png"), ImageFormat.Png);
 
@@ -195,6 +199,23 @@ namespace MoonlightTests {
 			}
 
 			return res;
+		}
+
+		private static void AddDiffKey (Bitmap diff)
+		{
+			int y = diff.Height - KeyHeight;
+
+			Font font = new Font ("Arial", 10);
+			Brush black = new SolidBrush (Color.Black);
+			Brush red = new SolidBrush (Color.Red);
+
+			using (Graphics g = Graphics.FromImage (diff)) {
+				g.FillRectangle (black, 10, y + 7, 10, 10);
+				g.DrawString ("Edges", font, black, new Point (25, y));
+
+				g.FillRectangle (red, 10, y + 32, 10, 10);
+				g.DrawString ("Differences", font, red, new Point (25, y + 25));
+			}
 		}
 	}
 
