@@ -1,3 +1,8 @@
+2008-03-31  Fernando Herrera  <fherrera@novell.com>
+
+	* downloader.cpp: Check if aborted before cheking for requested
+	position.
+
 2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp, pipeline.h: Moved locking down to IMediaSource from
