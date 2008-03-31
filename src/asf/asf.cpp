@@ -304,7 +304,7 @@ ASFParser::ReadData ()
 		return false;
 	}
 	
-	if (!source->Seek ((int64_t) header->size, SEEK_SET)) {
+	if (source->IsSeekable () && !source->Seek ((int64_t) header->size, SEEK_SET)) {
 		AddError ("ReadData could not seek to the beginning of the data.");
 		return false;
 	}
