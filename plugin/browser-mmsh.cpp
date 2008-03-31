@@ -111,25 +111,26 @@ asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_
 {
 	MemorySource *asf_src = new MemorySource (NULL, asf_header, size, 0);
 	ASFParser *parser = new ASFParser (asf_src, NULL);
+	asf_src->SetOwner (false);
+	asf_src->unref ();
 	if (!parser->ReadHeader ()) {
 		g_print ("Error reading header\n");
 		*file_size = 0;
 		*asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
+		delete parser;
 		return;
 	}
 	
-        asf_file_properties *properties = parser->GetFileProperties ();
+	asf_file_properties *properties = parser->GetFileProperties ();
 
 	//g_print ("FILE_SIZE: %d\n", properties->file_size);
 	//g_print ("MAX: %d\n", properties->max_packet_size);
 	//g_print ("MIN: %d\n", properties->min_packet_size);
-	 
-	if (properties->max_packet_size == properties->min_packet_size)
-		*asf_packet_size = properties->max_packet_size;
-	else
-		*asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
 
+	*asf_packet_size = parser->GetPacketSize ();
 	*file_size = properties->file_size;
+
+	delete parser;
 }
 
 
@@ -390,7 +391,7 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 		} else if (type == MMS_HEADER) {
 				int64_t file_size;
 				asf_header_parse (mms_packet+8, packet_size - 8, &file_size, &asf_packet_size);
-				g_print ("HEader size %d\n", packet_size - 8);
+				g_print ("Header size %d\n", packet_size - 8);
 				pd->header_size = packet_size - 8;
 				if (file_size && notifier)
 					notifier (this, this->context, NULL, file_size);

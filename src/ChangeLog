@@ -1,3 +1,9 @@
+2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, pipeline.h: MemorySource: Add a value specifying if the
+	  MemorySource owns the memory or not (if it will be freed upon
+	  destruction or not).
+
 2008-03-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* stylus.cpp (Stroke::HitTestEndcap): Fixed a bug where the

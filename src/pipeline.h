@@ -770,6 +770,7 @@ private:
 	int32_t size;
 	int64_t start;
 	int64_t pos;
+	bool owner;
 
 protected:
 	virtual ~MemorySource ();
@@ -782,6 +783,8 @@ protected:
 
 public:
 	MemorySource (Media *media, void *memory, int32_t size, int64_t start = 0);
+
+	void SetOwner (bool value) { owner = value; }
 
 	virtual MediaResult Initialize () { return MEDIA_SUCCESS; }
 	virtual MediaSourceType GetType () { return MediaSourceTypeMemory; }

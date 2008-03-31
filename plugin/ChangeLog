@@ -1,3 +1,9 @@
+2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* browser-mmsh.cpp: asf_header_parse: Use ASFParser::GetPacketSize instead
+	  of looking in internal fields. Delete parser and unref the source when
+	  done with it.
+
 2008-03-28  Fernando Herrera  <fherrera@novell.com>
 
 	* browser-mmsh.cpp:

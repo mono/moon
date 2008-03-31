@@ -2753,11 +2753,13 @@ MemorySource::MemorySource (Media *media, void *memory, int32_t size, int64_t st
 	this->size = size;
 	this->start = start;
 	this->pos = 0;
+	this->owner = true;
 }
 
 MemorySource::~MemorySource ()
 {
-	g_free (memory);
+	if (owner)
+		g_free (memory);
 }
 
 bool
