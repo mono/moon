@@ -1,3 +1,8 @@
+2008-03-31  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/ImageCompare.cs: Report the differences in layer
+	count.
+
 2008-03-28  Jackson Harper  <jackson@ximian.com>
 
 	* shocker/shutdown-manager.cpp|h: Don't run in a separate thread
