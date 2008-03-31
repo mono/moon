@@ -21,7 +21,7 @@
 #include "moon-path.h"
 
 StylusInfo*
-stylus_info_new ()
+stylus_info_new (void)
 {
 	return new StylusInfo ();
 }
@@ -51,7 +51,7 @@ stylus_info_set_inverted (StylusInfo* stylus_info, bool inverted)
 }
 
 StylusPoint*
-stylus_point_new ()
+stylus_point_new (void)
 {
 	return new StylusPoint ();
 }
@@ -382,47 +382,42 @@ Stroke::HitTestSegment (Point p1, Point p2, double w, double h, StylusPointColle
 bool
 Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylusPoints)
 {
-	Collection::Node *n;
-	StylusPoint *sp;
-
-	for (n = (Collection::Node *) stylusPoints->list->First (); n; n = (Collection::Node *) n->next) {
-		sp = (StylusPoint*)n->obj;
-		if (n->next == NULL) {
-			Point p (stylus_point_get_x (sp),
-				 stylus_point_get_y (sp));
-
-			if (!bounds.PointInside (p))
-				continue;
-
-			if (HitTestEndcapPoint (p,
-						w, h,
-						Point (stylus_point_get_x (sp),
-						       stylus_point_get_y (sp))))
-			  return true;
-		}
-		else  {
-			n = (Collection::Node *) n->next;
-			StylusPoint *next_sp = (StylusPoint*)n->obj;
-
-			Point p (stylus_point_get_x (sp),
-				 stylus_point_get_y (sp));
-			Point next_p (stylus_point_get_x (next_sp),
-				      stylus_point_get_y (next_sp));
-
-			if (!bounds.PointInside (p)
-			    && !bounds.PointInside (next_p))
-				continue;
-
-			if (HitTestEndcapSegment (p,
-						  w, h,
-						  Point (stylus_point_get_x (sp),
-							 stylus_point_get_y (sp)),
-						  Point (stylus_point_get_x (next_sp),
-							 stylus_point_get_y (next_sp))))
+	Collection::Node *n = (Collection::Node *) stylusPoints->list->First ();
+	StylusPoint *sp = (StylusPoint *) n->obj;
+	Point cur, next;
+	
+	cur.x = stylus_point_get_x (sp);
+	cur.y = stylus_point_get_y (sp);
+	
+	if (!n->next) {
+		// singleton input point to match against
+		if (bounds.PointInside (cur)) {
+			if (HitTestEndcapPoint (p, w, h, cur))
 				return true;
+			
+			printf ("\t(%f, %f) EndcapPoint failed\n",
+				cur.x, cur.y);
+		} else {
+			printf ("\t(%f, %f) is not within bounds\n",
+				cur.x, cur.y);
 		}
 	}
-
+	
+	for (n = (Collection::Node *) n->next; n; n = (Collection::Node *) n->next) {
+		sp = (StylusPoint *) n->obj;
+		next.x = stylus_point_get_x (sp);
+		next.y = stylus_point_get_y (sp);
+		
+		if (HitTestEndcapSegment (p, w, h, cur, next))
+			return true;
+		
+		printf ("\t(%f, %f) (%f, %f) EndcapSegment failed\n",
+			cur.x, cur.y, next.x, next.y);
+		
+		cur.x = next.x;
+		cur.y = next.y;
+	}
+	
 	return false;
 }
 
@@ -450,14 +445,38 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 		height = width = 6.0;
 
 	}
-
+	
+	printf ("Stroke::HitTest()\n");
+	printf ("\tInput points:\n");
+	n = (Collection::Node *) stylusPoints->list->First ();
+	while (n != NULL) {
+		sp = (StylusPoint *) n->obj;
+		
+		printf ("\t\tPoint: (%f, %f)\n", stylus_point_get_x (sp),
+			stylus_point_get_y (sp));
+		
+		n = (Collection::Node *) n->next;
+	}
+	printf ("\tStroke points:\n");
+	n = (Collection::Node *) myStylusPoints->list->First ();
+	while (n != NULL) {
+		sp = (StylusPoint *) n->obj;
+		
+		printf ("\t\tPoint: (%f, %f)\n", stylus_point_get_x (sp),
+			stylus_point_get_y (sp));
+		
+		n = (Collection::Node *) n->next;
+	}
+	
 	/* test the beginning endcap */
 	n = (Collection::Node *) myStylusPoints->list->First ();
 	sp = (StylusPoint*)n->obj;
 	if (HitTestEndcap (Point (stylus_point_get_x (sp),
 				  stylus_point_get_y (sp)),
-			   width, height, stylusPoints))
+			   width, height, stylusPoints)) {
+		printf ("\tA point matched the beginning endcap\n");
 		return true;
+	}
 
 	/* test all the interior line segments */
 	StylusPoint *prev_point = sp;
@@ -467,8 +486,10 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 					   stylus_point_get_y (prev_point)),
 				    Point (stylus_point_get_x (sp),
 					   stylus_point_get_y (sp)),
-				    width, height, stylusPoints))
+				    width, height, stylusPoints)) {
+			printf ("\tA point matched an interior line segment\n");
 			return true;
+		}
 	}
 
 	/* the the ending endcap */
@@ -477,10 +498,14 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 		sp = (StylusPoint*)n->obj;
 		if (HitTestEndcap (Point (stylus_point_get_x (sp),
 					  stylus_point_get_y (sp)),
-				   width, height, stylusPoints))
+				   width, height, stylusPoints)) {
+			printf ("\tA point matched the ending endcap\n");
 			return true;
+		}
 	}
-
+	
+	printf ("\tso sad, no points intersected...\n");
+	
 	return false;
 }
 
@@ -537,7 +562,7 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangeType type, Depende
 }
 
 Stroke*
-stroke_new ()
+stroke_new (void)
 {
 	return new Stroke ();
 }
@@ -636,7 +661,7 @@ stroke_collection_hit_test (StrokeCollection* col, StylusPointCollection* stylus
 
 
 DrawingAttributes*
-drawing_attributes_new ()
+drawing_attributes_new (void)
 {
 	return new DrawingAttributes ();
 }
@@ -843,7 +868,7 @@ InkPresenter::ComputeBounds ()
 }
 
 InkPresenter*
-ink_presenter_new ()
+ink_presenter_new (void)
 {
 	return new InkPresenter ();
 }
