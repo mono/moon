@@ -204,7 +204,7 @@ class DependencyObject : public EventObject {
 	Value *GetValueNoDefault (DependencyProperty *property);
 	Value *GetValue (const char *name);
 
-	void ClearValue (DependencyProperty *property);
+	void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 	bool HasProperty (const char *name, bool inherits);
 
 	virtual Type::Kind GetObjectType ();
@@ -255,7 +255,10 @@ class DependencyObject : public EventObject {
 
 	void AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property = NULL);
 	void RemovePropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property = NULL);
-	
+
+	void MergeTemporaryNameScopes (Collection *c);
+	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
+	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
 
 	static DependencyProperty *NameProperty;
 

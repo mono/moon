@@ -13,30 +13,12 @@
 
 #include "namescope.h"
 
-class NameScopeNode : public List::Node {
-public:
-	NameScopeNode (NameScope *ns)
-	{
-		this->ns = ns;
-		this->ns->ref ();
-	}
-
-	virtual ~NameScopeNode ()
-	{
-		this->ns->unref ();
-	}
-	
-	NameScope *ns;
-};
-
 NameScope::NameScope ()
 {
 	names = g_hash_table_new_full (g_str_hash, g_str_equal,
 				       (GDestroyNotify)g_free,
 				       NULL);
-	merged_child_namescopes = new List ();
 	temporary = false;
-	merged = false;
 }
 
 gboolean
@@ -49,8 +31,6 @@ NameScope::remove_handler (gpointer key, gpointer value, gpointer data)
 
 NameScope::~NameScope ()
 {
-	merged_child_namescopes->Clear (true);
-	delete merged_child_namescopes;
 	g_hash_table_foreach_remove (names, remove_handler, this);
 	g_hash_table_destroy (names);
 }
@@ -83,10 +63,11 @@ void
 NameScope::UnregisterName (const char *name)
 {
 	DependencyObject *depobj = (DependencyObject*)g_hash_table_lookup (names, name);
-	if (depobj)
+	if (depobj) {
 		depobj->RemoveHandler (EventObject::DestroyedEvent, ObjectDestroyedEvent, this);
 
-	g_hash_table_remove (names, name);
+		g_hash_table_remove (names, name);
+	}
 }
 
 DependencyObject*
@@ -100,12 +81,6 @@ NameScope::FindName (const char *name)
 	DependencyObject *o = (DependencyObject*)g_hash_table_lookup (names, name);
 	if (o)
 		return o;
-
-	for (NameScopeNode *n = (NameScopeNode *) merged_child_namescopes->First (); n; n = (NameScopeNode *) n->next) {
-		o = n->ns->FindName (name);
-		if (o)
-			return o;
-	}
 
 	return NULL;
 }
@@ -124,31 +99,19 @@ NameScope::SetNameScope (DependencyObject *obj, NameScope *scope)
 }
 
 void
-NameScope::MergeTemporaryScope (NameScope *temp)
+NameScope::merge_name (gpointer key, gpointer value, gpointer user_data)
 {
-	merged_child_namescopes->Append (new NameScopeNode (temp));
-	temp->SetMerged (true);
-}
+	char *name = (char*)key;
+	DependencyObject *obj = (DependencyObject*)value;
+	NameScope *scope = (NameScope*)user_data;
 
-static bool
-NameScopeNodeFinder (List::Node *node, void *data)
-{
-	NameScopeNode *n = (NameScopeNode*)node;
-	return (n->ns == data);
+	scope->RegisterName (name, obj);
 }
 
 void
-NameScope::UnmergeTemporaryScope (NameScope *temp)
+NameScope::MergeTemporaryScope (NameScope *temp)
 {
-	merged_child_namescopes->Remove (NameScopeNodeFinder, temp);
-
-	// XXX this line is commented out to duplicate microsoft's
-	// (IMO) broken behavior when it comes to temporary namescopes
-	// on objects which are then removed from the tree.  In MS's
-	// implementation, the namescope is gone for good, and removing
-	// the element from the tree doesn't bring it back.
-
-	// temp->SetMerged (false);
+	g_hash_table_foreach (temp->names, merge_name, this);
 }
 
 DependencyProperty *NameScope::NameScopeProperty;

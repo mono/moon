@@ -487,9 +487,12 @@ Storyboard::SetSurface (Surface *surface)
 		/* we're being detached from a surface, so pause clock */
 		Pause ();
 	}
- 	else if (!GetSurface() && surface && root_clock && root_clock->GetIsPaused()) {
-		/* we're being (re-)attached to a surface, so resume clock */
- 		Resume ();
+ 	else if (!GetSurface() && surface) {
+// XXX MS doesn't seem to do this
+// 		/* we're being (re-)attached to a surface, so resume clock */
+// 		if (root_clock && root_clock->GetIsPaused()) {
+//  			Resume ();
+// 		}
  	}
 	DependencyObject::SetSurface (surface);
 }

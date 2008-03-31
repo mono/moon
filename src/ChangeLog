@@ -1,3 +1,44 @@
+2008-03-31  Chris Toshok  <toshok@ximian.com>
+
+	* namescope.h, namescope.cpp: make no semblance of having a
+	superior namescope implementation (where they get transported
+	around with the subtree they're attached to when it's
+	removed/re-added to the hierarchy.)  Instead follow MS's broken
+	implementation where temporary namescopes are completely removed
+	when merged into another one.
+
+	* collection.h, collection.cpp (Collection::MergeNames): factor
+	out some common code from Add, Insert, and SetVal. Also, deal with
+	the fact that merging namescopes now really adds all the names to
+	the parent namescope, so clear the old namescope.
+	(Collection::SetVal): don't just unregister the old toplevel name,
+	but all the names in the subtree.
+	(Collection::Remove): same.
+	(Collection::Clear): same.
+	(Collection::UnregisterAllNamesRootedAt): override DO's method,
+	recursing into all our children.
+	(Collection::RegisterAllNamesRootedAt): same.
+	(VisualCollection::VisualRemoved): clear the IS_LOADED flag so
+	UIElement::OnLoaded is called again, and <BeginStoryboard>
+	elements restart when the subtree is added to the hierarchy again.
+
+	* control.h, control.cpp (Control::UnregisterAllNamesRootedAt):
+	override and forward onto real_object.
+	(Control::RegisterAllNamesRootedAt): same.
+	
+	* dependencyobject.cpp (DependencyObject::ClearValue): add a
+	parameter to allow us to specify *not* to notify listeners of the
+	property change.  we do this with the NameScope property, which
+	noone should be listening too.  It was causing a tremendous
+	performance hit when merging a lot of namescopes (as we do in
+	inkStylusPointCount.htm)
+	(DependencyObject::UnregisterAllNamesRootedAt): used when a DO is
+	removed from the hierarchy, we need to unregister all the names
+	beneath it.
+	(DependencyObject::RegisterAllNamesRootedAt): used when a DO is
+	added to the hierarchy, if it doesn't have a temporary
+	namescope (in which case we just merge it).
+
 2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp, pipeline.h: MemorySource: Add a value specifying if the

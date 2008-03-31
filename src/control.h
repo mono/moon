@@ -29,6 +29,9 @@ class Control : public FrameworkElement {
 
 	virtual void SetSurface (Surface *s);
 
+	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
+	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
+
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual void FrontToBack (Region *surface_region, List *render_list);
 	virtual void ComputeBounds ();

@@ -31,11 +31,7 @@ class NameScope : public DependencyObject {
 	void SetTemporary (bool flag) { temporary = flag; }
 	bool GetTemporary () { return temporary; }
 
-	void SetMerged (bool flag) { merged = flag; }
-	bool GetMerged () { return merged; }
-
 	void MergeTemporaryScope (NameScope *scope);
-	void UnmergeTemporaryScope (NameScope *scope);
 
 	static NameScope* GetNameScope (DependencyObject *obj);
 	static void SetNameScope (DependencyObject *obj, NameScope *scope);
@@ -47,12 +43,11 @@ class NameScope : public DependencyObject {
 
 	static gboolean remove_handler (gpointer key, gpointer value, gpointer data);
 
+	static void merge_name (gpointer key, gpointer value, gpointer user_data);
+
 	GHashTable *names;
 
-	List *merged_child_namescopes;
-
 	bool temporary;
-	bool merged;
 };
 
 G_BEGIN_DECLS

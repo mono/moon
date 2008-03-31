@@ -81,6 +81,24 @@ Control::SetSurface (Surface *s)
 }
 
 void
+Control::UnregisterAllNamesRootedAt (NameScope *from_ns)
+{
+	FrameworkElement::UnregisterAllNamesRootedAt (from_ns);
+
+	if (real_object)
+		real_object->UnregisterAllNamesRootedAt (from_ns);
+}
+
+void
+Control::RegisterAllNamesRootedAt (NameScope *to_ns)
+{
+	FrameworkElement::RegisterAllNamesRootedAt (to_ns);
+
+	if (real_object)
+		real_object->RegisterAllNamesRootedAt (to_ns);
+}
+
+void
 Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (subobj_args->property == Canvas::TopProperty || subobj_args->property == Canvas::LeftProperty) {
