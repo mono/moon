@@ -2357,6 +2357,9 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	}
 
 	case MoonId_GetHost: {
+		if (argCount)
+			THROW_JS_EXCEPTION ("getHost");
+		
 		PluginInstance *plugin = (PluginInstance*) instance->pdata;
 
 		OBJECT_TO_NPVARIANT ((NPObject *) plugin->getRootObject (), *result);

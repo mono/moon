@@ -31,7 +31,8 @@
 
 	function Finish ()
 	{
-	       $RUN_TEST_BODY	
+	       var moonlight_control = document.getElementById ("MoonlightControl");
+		TakeSingleSnapshotAndShutdown (moonlight_control, "/home/lewing/repo/moon/test/xaml/test-inkpresenter-scale.htm.png", 500, 500);	
 	}
 
         function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
@@ -67,8 +68,8 @@
   <body>
     <div>
         <embed type="application/x-silverlight"
-             width="$MOONLIGHT_CONTROL_WIDTH"
-             height="$MOONLIGHT_CONTROL_HEIGHT"
+             width="500"
+             height="500"
              id="_MoonlightControl" Source="test-inkpresenter-scale.xaml" OnError="ErrorHandler" 
              style="position:absolute; left:0px; top:0px" >
         </embed>
