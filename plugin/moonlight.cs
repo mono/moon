@@ -73,8 +73,9 @@ namespace Moonlight {
 		// MarshalByRef object which points to the actual
 		// loader on the individual domain.
 		//
-		Mono.Xaml.XamlLoader rl;
-		
+		// Mono.Xaml.XamlLoader rl;
+		object rl;
+
 		// [DONE] 1. Load XAML file 
 		// 2. Make sure XAML file exposes a few new properites:
 		//    a. Loaded  (this is the method to call)
@@ -132,10 +133,12 @@ namespace Moonlight {
 			// instance of Mono.Xaml.ManagedXamlLoader is defined
 			// as an internal class in agclr's Mono namespace
 			//
-			rl = (Mono.Xaml.XamlLoader) Helper.CreateInstanceAndUnwrap (
+			rl = Helper.CreateInstanceAndUnwrap (
 				domain, typeof (DependencyObject).Assembly.FullName, "Mono.Xaml.ManagedXamlLoader");
 
-			rl.Setup (native_loader, plugin, surface, filename, contents);
+			rl.GetType ().GetMethod ("Setup").Invoke (rl, new object [] { native_loader, plugin, surface, filename, contents });
+
+			//rl.Setup (native_loader, plugin, surface, filename, contents);
 		}
 
 		static void UnloadDomain (IntPtr plugin, AppDomain domain)
