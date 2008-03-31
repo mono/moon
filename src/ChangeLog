@@ -71,6 +71,14 @@
 
 2008-03-28  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp, animation.h: remove Storyboard::FindSurface -
+	EventObject::GetSurface() always returns the right thing.
+	Override SetSurface to check whether we're being detached from or
+	attached to a surface, and pause or resume the clock in response.
+	This fixes some issues in storyboard_EnterLeaveSemantics.
+
+2008-03-28  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyobject.h,
 	dependencyobject.cpp (DependencyObject::SetSurface): new method,
 	set the surface for all our DependencyObject subclassed property
