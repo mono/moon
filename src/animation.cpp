@@ -281,6 +281,12 @@ Storyboard::TeardownClockGroup ()
 static bool
 clock_is_fully_stopped_recursive (Clock *clck)
 {
+	if (clck == NULL)
+		return true;
+
+	if (clck->GetClockState () != Clock::Stopped)
+		return false;
+
 	if (clck->GetObjectType () == Type::CLOCKGROUP) {
 		for (GList *l = ((ClockGroup *) clck)->child_clocks; l; l = l->next) {
 			if (! clock_is_fully_stopped_recursive ((Clock *) l->data))
@@ -288,8 +294,9 @@ clock_is_fully_stopped_recursive (Clock *clck)
 		}
 
 		return true;
-	} else
-		return (clck->GetClockState () == Clock::Stopped);
+	}
+
+	return true;
 }
 
 void

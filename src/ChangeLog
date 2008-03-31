@@ -1,3 +1,14 @@
+2008-03-31  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Slightly reworking the clock_is_fully_stopped_recursive
+	to check for NULL and report stopped == true when both ClockGroup state
+	is Stopped and all children are Stopped. 
+
+	To be honest, this never currently reports Stopped == true as we do
+	intentional state desync when storyboard reaches end -- setting the
+	ClockGroup state to Stopped but keeping the children in Active/Filling.
+	This *has* to go away.
+
 2008-03-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Updated.
