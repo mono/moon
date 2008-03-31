@@ -47,10 +47,6 @@
 	* plugin-downloader.cpp (p_downloader_mmsh_finished): Updated for
 	Downloader API changes.
 
-2008-03-20  Larry Ewing  <lewing@novell.com>
-
-	* plugin-class.cpp: add another check on argument count.
-
 2008-03-18  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* plugin-proxy.cpp: Push conditional swscale into user plugin code
