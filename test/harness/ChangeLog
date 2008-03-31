@@ -1,3 +1,7 @@
+2008-03-31  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* shocker/logging.cpp: include time.h (for older systems)
+
 2008-03-31  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/HtmlReport.cs: Tidy up the borders on mosaic images.

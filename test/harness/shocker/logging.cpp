@@ -33,6 +33,7 @@
 
 #include <glib.h>
 #include <string.h>
+#include <time.h>
 #include "logging.h"
 
 #define SHOCKER_LOGGER_SERVICE    "mono.moonlight.tests"
