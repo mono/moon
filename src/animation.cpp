@@ -278,9 +278,26 @@ Storyboard::TeardownClockGroup ()
 	}
 }
 
+// Same as teardown but don't destroy the clock/animation storage
+void
+Storyboard::DetachClockGroupFromParent ()
+{
+	if (root_clock) {
+		ClockGroup *group = root_clock->GetParent();
+		if (group)
+			group->RemoveChild (root_clock);
+	}
+}
+
 static bool
 clock_is_fully_stopped_recursive (Clock *clck)
 {
+	if (clck == NULL)
+		return true;
+
+	if (clck->GetClockState () != Clock::Stopped)
+		return false;
+
 	if (clck->GetObjectType () == Type::CLOCKGROUP) {
 		for (GList *l = ((ClockGroup *) clck)->child_clocks; l; l = l->next) {
 			if (! clock_is_fully_stopped_recursive ((Clock *) l->data))
@@ -288,8 +305,9 @@ clock_is_fully_stopped_recursive (Clock *clck)
 		}
 
 		return true;
-	} else
-		return (clck->GetClockState () == Clock::Stopped);
+	}
+
+	return true;
 }
 
 void
@@ -301,6 +319,8 @@ Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpoin
 	// Otherwise just keep running.
 	if (clock_is_fully_stopped_recursive (sb->root_clock))
 		sb->TeardownClockGroup ();
+	else
+		sb->DetachClockGroupFromParent ();
 }
 
 void
@@ -321,14 +341,8 @@ Storyboard::Begin ()
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
-	if (root_clock) {
-		if (root_clock->GetClockState() != Clock::Stopped) {
-			root_clock->RemoveHandler (root_clock->CompletedEvent, teardown_clockgroup, this);
-			root_clock->Stop();
-		}
-
+	if (root_clock)
 		TeardownClockGroup ();
-	}
 #endif
 
 	if (!group) {

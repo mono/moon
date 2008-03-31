@@ -1,3 +1,35 @@
+2008-03-31  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Don't Stop the Storyboard root_clock before begining
+	the Storyboard again, just silently tear it down.
+
+	Calling Stop resets the property values to base which is something we
+	don't want. When Begin () is called on Sb in SL, the last animated
+	values are used. 
+
+2008-03-31  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
+	* animation.h: Adding Storyboard::DetachClockGroupFromParent () that
+	works similar to Teardown but doesn't destroy the clock/animation
+	hierarchy. We need this hierarchy to ie. reset prop values to base when
+	Storyboard::Stop is called manually. 
+
+	When Storyboard is completed, call DetachClockGroupFromParent (if not
+	Teardown). Otherwise the Storyboard will ghostly change state with parent 
+	state changes.
+
+2008-03-31  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Slightly reworking the clock_is_fully_stopped_recursive
+	to check for NULL and report stopped == true when both ClockGroup state
+	is Stopped and all children are Stopped. 
+
+	To be honest, this never currently reports Stopped == true as we do
+	intentional state desync when storyboard reaches end -- setting the
+	ClockGroup state to Stopped but keeping the children in Active/Filling.
+	This *has* to go away.
+
 2008-03-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Updated.

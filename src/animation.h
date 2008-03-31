@@ -646,6 +646,7 @@ class Storyboard : public ParallelTimeline {
 	static void invoke_completed (EventObject *sender, EventArgs *calldata, gpointer data);
 
 	void TeardownClockGroup ();
+	void DetachClockGroupFromParent ();
 	static void teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpointer data);
 };
 
