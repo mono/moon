@@ -1,5 +1,17 @@
 2008-03-31  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp:
+	* animation.h: Adding Storyboard::DetachClockGroupFromParent () that
+	works similar to Teardown but doesn't destroy the clock/animation
+	hierarchy. We need this hierarchy to ie. reset prop values to base when
+	Storyboard::Stop is called manually. 
+
+	When Storyboard is completed, call DetachClockGroupFromParent (if not
+	Teardown). Otherwise the Storyboard will ghostly change state with parent 
+	state changes.
+
+2008-03-31  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: Slightly reworking the clock_is_fully_stopped_recursive
 	to check for NULL and report stopped == true when both ClockGroup state
 	is Stopped and all children are Stopped. 

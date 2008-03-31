@@ -278,6 +278,17 @@ Storyboard::TeardownClockGroup ()
 	}
 }
 
+// Same as teardown but don't destroy the clock/animation storage
+void
+Storyboard::DetachClockGroupFromParent ()
+{
+	if (root_clock) {
+		ClockGroup *group = root_clock->GetParent();
+		if (group)
+			group->RemoveChild (root_clock);
+	}
+}
+
 static bool
 clock_is_fully_stopped_recursive (Clock *clck)
 {
@@ -308,6 +319,8 @@ Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpoin
 	// Otherwise just keep running.
 	if (clock_is_fully_stopped_recursive (sb->root_clock))
 		sb->TeardownClockGroup ();
+	else
+		sb->DetachClockGroupFromParent ();
 }
 
 void
