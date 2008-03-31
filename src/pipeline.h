@@ -160,6 +160,7 @@ enum MoonWorkType {
 	// and will always be put first in the queue.
 	// No more than one seek request should be in the queue at the same time either.
 	WorkTypeSeek = 1, 
+	WorkTypeSeekToStart,
 	// All audio work is done before any video work, since glitches in the audio is worse 
 	// than glitches in the video.
 	WorkTypeAudio, 
@@ -258,9 +259,10 @@ public:
 		} open;
 	} data;
 	
-	MediaWork (MediaClosure *closure, IMediaStream *stream, uint16_t states);
-	MediaWork (MediaClosure *closure, uint64_t seek_pts);
-	MediaWork (MediaClosure *closure, IMediaSource *source);
+	MediaWork (MediaClosure *closure, IMediaStream *stream, uint16_t states); // GetNextFrame
+	MediaWork (MediaClosure *closure, uint64_t seek_pts); // Seek
+	MediaWork (MediaClosure *closure); // SeekToStart
+	MediaWork (MediaClosure *closure, IMediaSource *source); // Open
 	~MediaWork ();
 };
 
@@ -323,7 +325,8 @@ public:
 	// Seeks to the specified pts (if seekable).
 	MediaResult Seek (uint64_t pts);
 	MediaResult SeekAsync (uint64_t pts, MediaClosure *closure);
-	MediaResult SeekToStart (); // This must be safe to call on the main thread, i.e. it must not cause any reads/seeks on the source.
+	MediaResult SeekToStart ();
+	MediaResult SeekToStartAsync (MediaClosure *closure);
 	
 	//	Reads the next frame from the demuxer
 	//	Requests the decoder to decode the frame
@@ -551,15 +554,57 @@ public:
 	virtual MediaResult Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t *dest[], int dstStride []) = 0;
 };
 
-// read data, with the possibility of returning a 'wait a bit, need more data first' error value. 
-// Another way is to always do the read/demux/decode stuff on another thread, 
-// in which case we can block here
+/*
+ * IMediaSource
+ */
 class IMediaSource : public IMediaObject {
+private:
+	// If all waits are aborted.
+	bool aborted; 
+
+	// Counter of how many threads are waiting in WaitForPosition.
+	// This could probably be a bool, except that then we'd need
+	// atomic sets and gets, which isn't available in old versions
+	// of glib.
+	int wait_count;
+
+	// General locking behaviour:
+	// All protected virtual methods must be called with the mutex
+	// locked. If a derived virtual method needs to lock, it needs
+	// to be implemented as a protected virtual method xxxInternal
+	// which requires the mutex to be locked, and then a public 
+	// method in IMediaSource which does the locking. No public in 
+	// IMediaSource may be called from the xxxInternal methods.
+	pthread_mutex_t mutex;
+	pthread_cond_t condition;
+
+	// This method must be called with the lock locked.
+	void WaitForPosition (bool block, int64_t position);
+
 protected:
-	virtual ~IMediaSource () {}
+	virtual ~IMediaSource ();
+
+	void Lock ();
+	void Unlock ();
+	void Signal ();
+	
+	// To wait, call StartWaitLoop in the beginning, then in a loop call Wait, using Aborted as an exit condition of the loop, and EndWaitLoop after the loop.
+	void StartWaitLoop ();
+	// This method must be called with the lock locked.
+	void Wait ();
+	void EndWaitLoop ();
+	bool Aborted () { return aborted; }
+
+	// All these methods must/will be called with the lock locked.	
+	virtual int32_t ReadInternal (void *buf, uint32_t n) = 0;
+	virtual int32_t PeekInternal (void *buf, uint32_t n, int64_t start) = 0;
+	virtual bool SeekInternal (int64_t offset, int mode) = 0;
+	virtual int64_t GetLastAvailablePositionInternal () { return -1; }
+	virtual int64_t GetPositionInternal () = 0;
+	virtual int64_t GetSizeInternal () = 0;
 
 public:
-	IMediaSource (Media *media) : IMediaObject (media) {}
+	IMediaSource (Media *media);
 	
 	// Initializes this stream (and if it succeeds, it can be read from later on).
 	// streams based on remote content (live/progress) should contact the server
@@ -568,41 +613,85 @@ public:
 	virtual MediaResult Initialize () = 0;
 	virtual MediaSourceType GetType () = 0;
 	
-	virtual bool IsSeekable () = 0;
-	virtual int64_t GetPosition () = 0;
-	virtual void SetPosition (int64_t position) { Seek (position, SEEK_SET); }
-	virtual bool Seek (int64_t offset) = 0; // Seeks to the offset from the current position
-	virtual bool Seek (int64_t offset, int mode) = 0;
+	// Reads 'n' bytes into 'buf'. If data isn't available (as reported by
+	// GetLastAvailablePosition) it will block if 'block' is true, otherwise
+	// read the amount of data available. Returns the number of bytes read.
+	// This method will lock the mutex.
+	int32_t ReadSome (void *buf, uint32_t n, bool block = true, int64_t start = -1);
+
+	// Reads 'n' bytes into 'buf'. If data isn't available (as reported by
+	// GetLastAvailablePosition) it will block if 'block' is true.
+	// Returns false if 'n' bytes couldn't be read.
+	// This method will lock the mutex.
+	bool ReadAll (void *buf, uint32_t n, bool block = true, int64_t start = -1);
+
+	// Reads 'n' bytes into 'buf', starting at position 'start'. If 'start' is -1,
+	// then start at the current position. If data isn't available (as reported 
+	// by GetLastAvailablePosition), it will block if 'block' is true, otherwise 
+	// read the amount of data available. Returns false if 'n' bytes couldn't be
+	// read.
+	// This method will lock the mutex.
+	bool Peek (void *buf, uint32_t n, bool block = true, int64_t start = -1);
+	
+	virtual bool CanSeek () { return true; }
+
+	// Seeks to the specified 'offset', using the specified 'mode'. 
+	// This method will lock the mutex.
+	bool Seek (int64_t offset, int mode = SEEK_CUR);
+	
+	// Seeks to the specified 'pts'.
 	virtual bool CanSeekToPts () { return false; }
 	virtual bool SeekToPts (uint64_t pts) { return false; }
-	virtual int32_t Read (void *buf, uint32_t n) = 0;
-	virtual bool ReadAll (void *buf, uint32_t n) = 0;
-	virtual bool Peek (void *buf, uint32_t n) = 0;
-	virtual bool Peek (void *buf, uint32_t n, int64_t start) = 0;
-	virtual int64_t GetSize () = 0;
+
+	// Returns the current reading position
+	// This method will lock the mutex.
+	int64_t GetPosition ();
+
+	// Returns the size of the source. This method may return -1 if the
+	// size isn't known.
+	// This method will lock the mutex.
+	int64_t GetSize ();
+
 	virtual bool Eof () = 0;
 
 	// Returns the last available position (confirms if that position 
 	// can be read without blocking).
 	// If the returned value is -1, then everything is available.
-	virtual int64_t GetLastAvailablePosition () { return -1; }
+	// This method will lock the mutex.
+	int64_t GetLastAvailablePosition ();
+
+	// Aborts all current and future waits, no more waits will be done either.
+	void Abort (); 
+
+	// Are we waiting for something?
+	bool IsWaiting (); 
+
+	virtual const char *ToString () { return "IMediaSource"; }
 };
 
 // Implementations
  
 class FileSource : public IMediaSource {
+private:
+	bool PeekInBuffer (void *buf, uint32_t n);
+
 protected:
 	char *filename;
 	int64_t pos;
 	int fd;
+	bool eof;
 	
 	char buffer[4096];
 	uint32_t buflen;
 	char *bufptr;
 	
-	bool eof;
-	
 	virtual ~FileSource ();
+
+	virtual int32_t ReadInternal (void *buf, uint32_t n);
+	virtual int32_t PeekInternal (void *buf, uint32_t n, int64_t start);
+	virtual bool SeekInternal (int64_t offset, int mode);
+	virtual int64_t GetPositionInternal ();
+	virtual int64_t GetSizeInternal ();
 
 public:
 	FileSource (Media *media);
@@ -611,40 +700,26 @@ public:
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeFile; }
 	
-	const char *GetFileName () { return filename; }
-	
-	virtual bool IsSeekable ();
-	virtual int64_t GetPosition ();
-	virtual bool Seek (int64_t offset);
-	virtual bool Seek (int64_t offset, int mode);
-	virtual int32_t Read (void *buf, uint32_t n);
-	virtual bool ReadAll (void *buf, uint32_t n);
-	virtual bool Peek (void *buf, uint32_t n);
-	virtual bool Peek (void *buf, uint32_t n, int64_t start);
-	virtual int64_t GetSize ();
-	virtual bool Eof ();
+	virtual bool Eof () { return eof; }
 
-	virtual int64_t GetLastAvailablePosition () { return -1; }
+	virtual const char *ToString () { return filename; }
+
+	const char *GetFileName () { return filename; }
 };
 
 class ProgressiveSource : public FileSource {
 private:
-	pthread_mutex_t write_mutex;
-	pthread_cond_t write_cond;
-	bool cancel_wait;
-	int wait_count; // Counter of how many threads are waiting in WaitForPosition
-
 	bool is_live;
 	
 	int64_t write_pos;
 	int64_t wait_pos;
 	int64_t size;
 	int64_t first_write_pos;
-	int64_t requested_pos;
-	int64_t last_requested_pos;
+	uint64_t requested_pts;
+	uint64_t last_requested_pts;
 	
-	static void write (void *buf, int32_t offset, int32_t n, gpointer cb_data);
-	static void notify_size (int64_t size, gpointer cb_data);
+	virtual int64_t GetLastAvailablePositionInternal () { return write_pos; }
+	virtual int64_t GetSizeInternal () { return size; }
 
 protected:
 	virtual ~ProgressiveSource ();
@@ -655,31 +730,7 @@ public:
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeProgressive; }
 	
-	// The size of the currently available data
-	void SetCurrentSize (int64_t size);
-	
-	// The total size of the file (might not be available)
 	void SetTotalSize (int64_t size);
-	
-	// Blocks until the position have data
-	// Returns false if failure (one possibility being that the requested position is beyond the end of the file)
-	bool WaitForPosition (int64_t position);
-	// Wakes up WaitForPosition to check if the position has been reached, or if the wait should be cancelled
-	bool WakeUp ();
-	bool WakeUp (bool lock); // lock: set to false if the write_lock is already acquired by the caller
-	bool IsWaiting ();
-	// Cancels any pending waits
-	void CancelWait (); 
-	int64_t GetWritePosition ();
-	int64_t GetWaitPosition ();
-	void Lock ();
-	void Unlock ();
-	
-	virtual bool Seek (int64_t offset, int mode);
-	virtual bool ReadAll (void *buf, uint32_t size);
-	virtual bool Peek (void *buf, uint32_t size);
-	virtual bool Peek (void *buf, uint32_t n, int64_t start);
-	virtual int64_t GetSize () { return size; }
 	
 	void Write (void *buf, int64_t offset, int32_t n);
 	void NotifySize (int64_t size);
@@ -687,9 +738,9 @@ public:
 	virtual bool CanSeekToPts () { return is_live; }
 	virtual bool SeekToPts (uint64_t pts);
 
-	virtual int64_t GetLastAvailablePosition ();
 };
 
+/*
 class LiveSource : public IMediaSource {
 protected:
 	virtual ~LiveSource () {}
@@ -700,17 +751,18 @@ public:
 	virtual MediaResult Initialize () { return MEDIA_FAIL; }
 	virtual MediaSourceType GetType () { return MediaSourceTypeLive; }
 	
-	virtual bool IsSeekable () { return false; }
+	virtual bool CanSeek () { return false; }
 	virtual int64_t GetPosition () { return 0; }
 	virtual bool Seek (int64_t offset) { return false; }
 	virtual bool Seek (int64_t offset, int mode) { return false; }
-	virtual int32_t Read (void *buffer, uint32_t n) { return -1; }
+	virtual int32_t ReadSome (void *buffer, uint32_t n) { return -1; }
 	virtual bool ReadAll (void *buffer, uint32_t n) { return false; }
 	virtual bool Peek (void *buffer, uint32_t n) { return false; }
 	virtual bool Peek (void *buf, uint32_t n, int64_t start) { return false; }
 	virtual int64_t GetSize () { return -1; }
 	virtual bool Eof () { return false; }
 };
+*/
 
 class MemorySource : public IMediaSource {
 private:
@@ -719,23 +771,25 @@ private:
 	int64_t start;
 	int64_t pos;
 
-public:
-	MemorySource (Media *media, void *memory, int32_t size, int64_t start);
+protected:
 	virtual ~MemorySource ();
+
+	virtual int32_t ReadInternal (void *buf, uint32_t n);
+	virtual int32_t PeekInternal (void *buf, uint32_t n, int64_t start);
+	virtual bool SeekInternal (int64_t offset, int mode);
+	virtual int64_t GetPositionInternal () { return pos + start; }
+	virtual int64_t GetSizeInternal () { return size; }
+
+public:
+	MemorySource (Media *media, void *memory, int32_t size, int64_t start = 0);
 
 	virtual MediaResult Initialize () { return MEDIA_SUCCESS; }
 	virtual MediaSourceType GetType () { return MediaSourceTypeMemory; }
 	
-	virtual bool IsSeekable () { return true; }
-	virtual int64_t GetPosition () { return pos + start; }
-	virtual bool Seek (int64_t offset);
-	virtual bool Seek (int64_t offset, int mode);
-	virtual int32_t Read (void *buffer, uint32_t n);
-	virtual bool ReadAll (void *buffer, uint32_t n);
-	virtual bool Peek (void *buffer, uint32_t n);
-	virtual bool Peek (void *buf, uint32_t n, int64_t start);
-	virtual int64_t GetSize () { return size; }
+	virtual bool CanSeek () { return true; }
 	virtual bool Eof () { return pos >= size; }
+
+	virtual const char *ToString () { return "MemorySource"; }
 };
 
 class VideoStream : public IMediaStream {

@@ -648,7 +648,10 @@ MediaPlayer::GetTargetPts ()
 void
 MediaPlayer::SetTargetPts (uint64_t pts)
 {
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::SetTargetPts (%llu = %llu ms), current_pts: %llu\n", pts, MilliSeconds_FromPts (pts), current_pts);
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::SetTargetPts (%llu = %llu ms), current_pts: %llu, IsSeeking (): %i\n", pts, MilliSeconds_FromPts (pts), current_pts, IsSeeking ());
+
+	if (IsSeeking ())
+		return;
 
 	pthread_mutex_lock (&target_pts_lock);
 	target_pts = pts;
@@ -718,6 +721,7 @@ MediaPlayer::Seek (uint64_t pts)
 	// Stop the audio
 	AudioPlayer::Stop (this);
 
+	SetBit (Seeking);
 	RemoveBit (Eof);
 	if (HasVideo () && !resume)
 		SetBit (LoadFramePending);

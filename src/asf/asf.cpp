@@ -202,7 +202,13 @@ MediaResult
 ASFParser::ReadPacket (ASFPacket *packet, int packet_index)
 {
 	ASF_LOG ("ASFParser::ReadPacket (%p, %d).\n", packet, packet_index);
-	
+	IMediaSource *source;
+	if (packet->GetSource ()) {
+		source = packet->GetSource ();
+	} else {
+		source = this->source;
+	}
+
 	if (packet_index >= 0) {
 		int64_t position = GetPacketOffset (packet_index);
 		
@@ -222,7 +228,7 @@ ASFParser::ReadPacket (ASFPacket *packet)
 	asf_payload_parsing_information ppi;
 	asf_error_correction_data ecd;
 	IMediaSource *source;
-	
+	int64_t initial_position;
 	ASFContext context;
 	context.parser = this;
 	if (packet->GetSource ()) {
@@ -231,6 +237,7 @@ ASFParser::ReadPacket (ASFPacket *packet)
 		context.source = this->source;
 	}
 	source = context.source;
+ 	initial_position = source->GetPosition ();
 
 	ASF_LOG ("ASFParser::ReadPacket (%p): Reading packet at %lld (index: %lld) of %lld packets.\n",
 		 packet, source->GetPosition (), GetPacketIndex (source->GetPosition ()),
@@ -255,7 +262,7 @@ ASFParser::ReadPacket (ASFPacket *packet)
 	}
 #endif
 
-	int64_t next_pos = GetPacketOffset (1 + GetPacketIndex (source->GetPosition ()));
+	int64_t next_pos = GetPacketOffset (1 + GetPacketIndex (initial_position));
 
 	result = ecd.FillInAll (&context);
 	if (!MEDIA_SUCCEEDED (result)) {
@@ -276,6 +283,7 @@ ASFParser::ReadPacket (ASFPacket *packet)
 	asf_multiple_payloads *mp = new asf_multiple_payloads ();
 	result = mp->FillInAll (&context, &ecd, ppi);
 	if (!MEDIA_SUCCEEDED (result)) {
+		ASF_LOG_ERROR ("ASFParser::ReadPacket (): FillIn multiple payloads failed, current position: %lld, in stream %s, initial packet position: %lld, packet index: %llu\n", source->GetPosition (), source->ToString (), initial_position, GetPacketIndex (initial_position));
 		delete mp;
 		source->Seek (next_pos, SEEK_SET);
 		return result;
@@ -304,7 +312,7 @@ ASFParser::ReadData ()
 		return false;
 	}
 	
-	if (source->IsSeekable () && !source->Seek ((int64_t) header->size, SEEK_SET)) {
+	if (source->CanSeek () && !source->Seek ((int64_t) header->size, SEEK_SET)) {
 		AddError ("ReadData could not seek to the beginning of the data.");
 		return false;
 	}
@@ -931,6 +939,12 @@ ASFReader::Seek (uint64_t pts)
 		highest_pi [i] = UINT64_MAX;
 	}
 
+	// Start with the latest available packet, otherwise we may end up waiting for some position
+	// which is way ahead of the position we'll actually end up wanting
+	// (if the initial start_pi estimate is way off)
+	if (start_pi > GetLastAvailablePacketIndex ())
+		start_pi = GetLastAvailablePacketIndex ();
+
 	do {
 		// We can't read before the first packet
 		if (start_pi < tested_counter)
@@ -1115,6 +1129,30 @@ ASFReader::Seek (uint64_t pts)
 	return true;
 }
 
+uint64_t
+ASFReader::GetLastAvailablePacketIndex ()
+{
+	int64_t last_pos = source->GetLastAvailablePosition ();
+	uint64_t pi;
+
+	if (last_pos < parser->GetPacketOffset (0) + parser->GetPacketSize ()) {
+		ASF_LOG ("ASFReader::GetLastAvailablePacketIndex (): returing 0 (not a single packet available)\n");
+		return 0;
+	}
+	
+	pi = parser->GetPacketIndex (last_pos);
+
+	if (pi == 0) {
+		ASF_LOG ("ASFReader::GetLastAvailablePacketIndex (): returing 0 (only first packet available)\n");
+		return 0;
+	}
+
+	// We want the packet just before the one which contains the last available position.
+	pi--;
+
+	return pi;
+}
+
 uint64_t 
 ASFReader::GetLastAvailablePts ()
 {
@@ -1128,20 +1166,12 @@ ASFReader::GetLastAvailablePts ()
 	uint64_t pts;
 	uint64_t preroll = parser->GetFileProperties ()->preroll;
 
-	if (last_pos < parser->GetPacketOffset (0) + parser->GetPacketSize ()) {
-		ASF_LOG ("ASFReader::GetLastAvailablePts (): returing 0 (not a single packet available)\n");
-		return 0;
-	}
-
-	pi = parser->GetPacketIndex (last_pos);
+	pi = GetLastAvailablePacketIndex ();
 
 	if (pi == 0) {
-		ASF_LOG ("ASFReader::GetLastAvailablePts (): returing 0 (only first packet available)\n");
+		ASF_LOG ("ASFReader::GetLastAvailablePts (): no packets, or only first packet, available)\n");
 		return 0;
 	}
-
-	// We want the packet just before the one which contains the last available position.
-	pi--;
 	
 	if (last_pos <= parser->GetPacketOffset (pi) + parser->GetPacketSize ()) {
 		ASF_LOG ("ASFReader::GetLastAvailablePts (): returing 0 (not one packet available)\n");
@@ -1153,7 +1183,7 @@ ASFReader::GetLastAvailablePts ()
 
 	for (int current_packet_index = pi; current_packet_index >= 0; current_packet_index--) {
 		buffer = g_malloc (parser->GetPacketSize ());
-		if (!source->Peek (buffer, parser->GetPacketSize (), parser->GetPacketOffset (current_packet_index))) {
+		if (!source->Peek (buffer, parser->GetPacketSize (), false, parser->GetPacketOffset (current_packet_index))) {
 			g_free (buffer);
 			continue;
 		}
@@ -1162,7 +1192,7 @@ ASFReader::GetLastAvailablePts ()
 		ASFPacket *packet = new ASFPacket (mem_source);
 		mem_source->unref ();
 		
-		result = parser->ReadPacket (packet, current_packet_index);
+		result = parser->ReadPacket (packet);
 		if (result == MEDIA_INVALID_DATA) {
 			delete packet;
 			continue;

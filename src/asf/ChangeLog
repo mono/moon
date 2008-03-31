@@ -1,5 +1,11 @@
 2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp, asf.h: Refactored a GetLastAvailablePacketIndex out of
+	  GetLastAvailablePts. In ReadPacket use the source provided in the
+	  ASFPacket.
+
+2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp: ReadData: Check if stream is seekable before seeking.
 
 2008-03-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -188,8 +188,23 @@ private:
 	ProgressiveSource *downloaded_file;
 	Downloader *downloader;
 	char *part_name;
-	int64_t buffering_start; // The last write position in the file when we started buffering
-	uint64_t buffering_pts; // The pts we're waiting for
+
+	// Buffering can be caused by:
+	//	* When the media is opened, we automatically buffer an amount equal to BufferingTime.
+	//		- In this case the buffering progress is calculated as:
+	//		"currently available pts" / BufferingTime, which equals
+	//		("currently available pts" - "last played pts") / ("current pts" - "last played pts" + BufferingTime)
+	//	* When during playback we realize that we don't have enough data.
+	//		- In this case the buffering progress is calculated as:
+	//		("currently available pts" - "last played pts") / BufferingTime, which equals
+	//		("currently available pts" - "last played pts") / ("current pts" - "last played pts" + BufferingTime)
+	//	* When we seek, and realize that we don't have enough data.
+	//		- In this case the buffering progress is calculated as:
+	//		("currently available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
+	//	So the general formula turns out to be:
+	//		("currently available pts" - last_played_pts) / (mplayer->GetPosition () - last_played_pts + BufferingTime)
+	uint64_t last_played_pts;
+
 	Media *media;
 	
 	int advance_frame_timeout_id;

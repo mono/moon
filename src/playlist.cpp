@@ -721,7 +721,7 @@ PlaylistParser::ParseASX2 ()
 	char *mms_uri;
 	char *end;
 
-	bytes_read = source->Read (buffer, BUFFER_SIZE);
+	bytes_read = source->ReadSome (buffer, BUFFER_SIZE);
 	if (bytes_read < 0) {
 		fprintf (stderr, "Could not read asx document for parsing.\n");
 		return false;
@@ -769,7 +769,7 @@ PlaylistParser::Parse ()
 			return false;
 		}
 		
-		bytes_read = source->Read (buffer, BUFFER_SIZE);
+		bytes_read = source->ReadSome (buffer, BUFFER_SIZE);
 		if (bytes_read < 0) {
 			fprintf (stderr, "Could not read asx document for parsing.\n");
 			return false;

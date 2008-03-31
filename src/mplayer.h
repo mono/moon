@@ -128,7 +128,7 @@ public:
 	void SetBit (PlayerState s) { state = (PlayerState) (s | state); }
 	void RemoveBit (PlayerState s) { state = (PlayerState) (~s & state); }
 	bool GetBit (PlayerState s) { return (state & s) == s; }
-	void SetState (PlayerState s) { state = (PlayerState) ((s & ~StateMask) | s); }
+	void SetState (PlayerState s) { state = (PlayerState) ((state & ~StateMask) | s); }
 
 	void Play ();
 	bool CanPause ();

@@ -1,3 +1,14 @@
+2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, pipeline.h: Moved locking down to IMediaSource from
+	  ProgressiveSource.
+	* playlist.cpp: Updated according to pipeline changes.
+	* mplayer.h: Fix SetState to not overwrite current bits, only current state.
+	* media.h, media.cpp: Rework buffering progress to use the available time of
+	  media available (pts) instead of doing some funny math on file
+	  positions.
+	* mplayer.cpp: Don't allow SetTargetPts if we're waiting for a seek.
+
 2008-03-31  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: Don't Stop the Storyboard root_clock before begining

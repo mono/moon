@@ -128,6 +128,7 @@ public:
 	// Can we seek?
 	bool CanSeek () { return true; }
 	
+	uint64_t GetLastAvailablePacketIndex ();
 	uint64_t GetLastAvailablePts ();
 
 };
