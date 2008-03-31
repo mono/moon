@@ -1,5 +1,9 @@
 2008-03-31  Jackson Harper  <jackson@ximian.com>
 
+	* test-runner/HtmlReport.cs: Tidy up the borders on mosaic images.
+	
+2008-03-31  Jackson Harper  <jackson@ximian.com>
+
 	* test-runner/ImageCompare.cs: Report the differences in layer
 	count.
 
