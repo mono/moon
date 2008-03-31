@@ -346,7 +346,7 @@ MediaElement::MediaElement ()
 	playlist = NULL;
 	advance_frame_timeout_id = 0; // Couldn't find any documentation about which id would be invalid, assuming 0 is an invalid id. 
 	
-	Reinitialize ();
+	Reinitialize (false);
 	
 	mplayer = new MediaPlayer (this);
 	
@@ -356,7 +356,7 @@ MediaElement::MediaElement ()
 
 MediaElement::~MediaElement ()
 {
-	Reinitialize ();
+	Reinitialize (true);
 	
 	if (mplayer)
 		mplayer->unref ();
@@ -381,12 +381,12 @@ MediaElement::SetSurface (Surface *s)
 }
 
 void
-MediaElement::Reinitialize ()
+MediaElement::Reinitialize (bool dtor)
 {
 	Value *val;
 	
 	if (mplayer)
-		mplayer->Close ();
+		mplayer->Close (dtor);
 	
 	if (media != NULL) {
 		media->unref ();
@@ -1009,7 +1009,7 @@ MediaElement::SetSourceInternal (Downloader *dl, const char *PartName)
 	
 	LOG_MEDIAELEMENT ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", dl, PartName, dl->GetValue (Downloader::UriProperty)->AsString ());
 	
-	Reinitialize ();
+	Reinitialize (false);
 	
 	downloader = dl;
 	downloader->ref ();

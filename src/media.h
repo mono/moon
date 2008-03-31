@@ -216,7 +216,7 @@ private:
 	void BufferingComplete ();
 	void UpdateProgress ();
 	
-	void Reinitialize ();
+	void Reinitialize (bool dtor); // dtor is true if we're calling from the destructor.
 	virtual void OnLoaded ();
 	
 	// Try to open the media (i.e. read the headers).

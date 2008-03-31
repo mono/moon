@@ -109,9 +109,28 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 MediaPlayer::~MediaPlayer ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::~MediaPlayer (), id=%i", GET_OBJ_ID (this));
-	Close ();
+	Close (true);
 	
 	pthread_mutex_destroy (&target_pts_lock);
+}
+
+struct EnqueueFrameStruct {
+	MediaPlayer *mplayer;
+	int audio;
+	int video;
+};
+
+gboolean
+MediaPlayer::EnqueueFramesCallback (void *user_data)
+{
+	LOG_MEDIAPLAYER ("MediaPlayer::EnqueueFramesCallback ()\n");
+	EnqueueFrameStruct *efs = (EnqueueFrameStruct *) user_data;
+
+	efs->mplayer->EnqueueFrames (efs->audio, efs->video);
+	efs->mplayer->unref ();
+
+	delete efs;
+	return false;
 }
 
 gboolean
@@ -170,6 +189,17 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 }
 
 void
+MediaPlayer::EnqueueFramesAsync (int audio_frames, int video_frames)
+{
+	EnqueueFrameStruct *efs = new EnqueueFrameStruct ();
+	efs->mplayer = this;
+	this->ref ();
+	efs->audio = audio_frames;
+	efs->video = video_frames;
+	TimeManager::InvokeOnMainThread (EnqueueFramesCallback, efs);
+}
+
+void
 MediaPlayer::EnqueueFrames (int audio_frames, int video_frames)
 {
 	MediaClosure *closure;
@@ -177,6 +207,9 @@ MediaPlayer::EnqueueFrames (int audio_frames, int video_frames)
 
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueFrames (%i, %i)\n", audio_frames, video_frames);
 	
+	if (element == NULL)
+		return;
+
 	if (HasAudio ()) {	
 		for (int i = 0; i < audio_frames; i++) {
 			closure = new MediaClosure (FrameCallback);
@@ -211,7 +244,7 @@ MediaPlayer::Open (Media *media)
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::Open (%p), current media: %p\n", media, this->media);
 	
-	Close ();
+	Close (false);
 
 	if (media == NULL) {
 		printf ("MediaPlayer::Open (): media is NULL.\n");
@@ -315,7 +348,7 @@ MediaPlayer::Initialize ()
 }
 
 void
-MediaPlayer::Close ()
+MediaPlayer::Close (bool dtor)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Close ()\n");
 
@@ -343,6 +376,11 @@ MediaPlayer::Close ()
 	if (media)
 		media->unref ();
 	media = NULL;
+
+	if (dtor) {
+		// To avoid circular references we don't keep a ref to the media element.
+		element = NULL;
+	}
 
 	Initialize ();
 }
@@ -1837,7 +1875,7 @@ AudioPlayer::AudioNode::GetNextBuffer ()
 	if (!frame->IsDecoded ())
 		frame->stream->decoder->DecodeFrame (frame);
 		
-	mplayer->EnqueueFrames (1, 0);
+	mplayer->EnqueueFramesAsync (1, 0);
 				
 	first_used = 0;
 	first_buffer = frame->buffer;

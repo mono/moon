@@ -97,7 +97,8 @@ private:
 	void RenderFrame (MediaFrame *frame);
 	static MediaResult SeekCallback (MediaClosure *closure);
 	static MediaResult FrameCallback (MediaClosure *closure);
-	
+
+	static gboolean EnqueueFramesCallback (void *user_data);
 	static gboolean LoadFrameCallback (void *user_data);
 	
 protected:
@@ -115,8 +116,9 @@ public:
 	bool AdvanceFrame (); 
 	
 	bool Open (Media *media);
-	void Close ();
+	void Close (bool dtor);
 	void EnqueueFrames (int audio_frames, int video_frames);
+	void EnqueueFramesAsync (int audio_frames, int video_frames);
 	
 	bool IsPlaying () { return (state & StateMask) == Playing; }
 	bool IsPaused () { return (state & StateMask) == Paused; }

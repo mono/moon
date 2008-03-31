@@ -1,3 +1,12 @@
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp, media.h, mplayer.cpp, mplayer.h: Add a dtor parameter to
+	  MediaElement::Reinitialize and MediaPlayer::Close to specify if we're
+	  being called from the destructor, and if so, null out the element field
+	  of the MediaPlayer, so that we don't access a destructed media element.
+	  Add an async version of MediaPlayer::EnqueueFrames, so that the audio
+	  threads can request more data in a thread-safe manner.
+
 2008-04-01  Fernando Herrera  <fherrera@novell.com>
 
 	* asf/asf.cpp:
