@@ -341,14 +341,8 @@ Storyboard::Begin ()
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
-	if (root_clock) {
-		if (root_clock->GetClockState() != Clock::Stopped) {
-			root_clock->RemoveHandler (root_clock->CompletedEvent, teardown_clockgroup, this);
-			root_clock->Stop();
-		}
-
+	if (root_clock)
 		TeardownClockGroup ();
-	}
 #endif
 
 	if (!group) {

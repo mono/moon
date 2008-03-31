@@ -1,5 +1,14 @@
 2008-03-31  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp: Don't Stop the Storyboard root_clock before begining
+	the Storyboard again, just silently tear it down.
+
+	Calling Stop resets the property values to base which is something we
+	don't want. When Begin () is called on Sb in SL, the last animated
+	values are used. 
+
+2008-03-31  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp:
 	* animation.h: Adding Storyboard::DetachClockGroupFromParent () that
 	works similar to Teardown but doesn't destroy the clock/animation
