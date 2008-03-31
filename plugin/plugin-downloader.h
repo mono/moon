@@ -32,6 +32,7 @@ public:
 		// these are set after the stream is created, and used for destroying the stream
 		this->npp = NULL;
 		this->stream = NULL;
+		this->seekable = false;
 
 		ignore_non_data = false;
 
@@ -64,6 +65,7 @@ public:
 	NPP npp;
 	bool ignore_non_data;
 	int header_size;
+	bool seekable;
 };
 
 void downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);

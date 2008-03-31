@@ -123,7 +123,7 @@ asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_
 	
 	asf_file_properties *properties = parser->GetFileProperties ();
 
-	//g_print ("FILE_SIZE: %d\n", properties->file_size);
+	g_print ("FILE_SIZE: %d\n", properties->file_size);
 	//g_print ("MAX: %d\n", properties->max_packet_size);
 	//g_print ("MIN: %d\n", properties->min_packet_size);
 
@@ -391,9 +391,13 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 		} else if (type == MMS_HEADER) {
 				int64_t file_size;
 				asf_header_parse (mms_packet+8, packet_size - 8, &file_size, &asf_packet_size);
+				if (file_size == packet_size -8) // file is only header so it's live stream
+					pd->seekable = false;
+				else
+					pd->seekable = true;
 				g_print ("Header size %d\n", packet_size - 8);
 				pd->header_size = packet_size - 8;
-				if (file_size && notifier)
+				if (pd->seekable)
 					notifier (this, this->context, NULL, file_size);
 				if (!pd->ignore_non_data) {
 					reader (this, this->context, mms_packet+8, 0, packet_size - 8);
@@ -404,8 +408,11 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 				int packet_index = (int)LE_64 (&read_buffer[4]);
 				memcpy (new_data, mms_packet+8, packet_size - 8);
 				g_print ("Packet id %d\n", packet_index);
-				reader (this, this->context, new_data, pd->header_size + packet_index* asf_packet_size,
-					asf_packet_size);
+				if (pd->seekable)
+					reader (this, this->context, new_data, pd->header_size + packet_index* asf_packet_size,
+						asf_packet_size);
+				else
+					reader (this, this->context, new_data, this->size, asf_packet_size);
 				this->size += asf_packet_size;
 					
 				g_free (new_data);

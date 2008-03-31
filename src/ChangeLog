@@ -1,3 +1,9 @@
+2008-04-01  Fernando Herrera  <fherrera@novell.com>
+
+	* asf/asf.cpp:
+	* pipeline.h: Support for live mms streams, that have packet_count as
+	0 and return false for CanSeekToPts.
+
 2008-03-31  Chris Toshok  <toshok@ximian.com>
 
 	* namescope.h, namescope.cpp: make no semblance of having a

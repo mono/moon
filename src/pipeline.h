@@ -735,7 +735,7 @@ public:
 	void Write (void *buf, int64_t offset, int32_t n);
 	void NotifySize (int64_t size);
 	void RequestPosition (int64_t *pos);
-	virtual bool CanSeekToPts () { return is_live; }
+	virtual bool CanSeekToPts () { return is_live && size > 0; }
 	virtual bool SeekToPts (uint64_t pts);
 
 };

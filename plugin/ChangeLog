@@ -1,3 +1,8 @@
+2008-04-01  Fernando Herrera  <fherrera@novell.com>
+
+	* browser-mmsh.cpp:
+	* plugin-downloader.h: Support for live streams (not seekable).
+
 2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* browser-mmsh.cpp: asf_header_parse: Use ASFParser::GetPacketSize instead

@@ -257,8 +257,9 @@ ASFParser::ReadPacket (ASFPacket *packet)
 			break;
 		}
 	}
-	if (!ok) {
-		fprintf (stderr, "ASFParser::ReadPacket (%p): The source isn't positioned at the start of any packet. Reading errors will occur.\n", packet);
+	if (!ok && data->data_packet_count > 0) {
+		fprintf (stderr, "ASFParser::ReadPacket (%p): The source isn't positioned at the start of any packet. Reading errors will occur. (current position: %lld, first packet position: %lld, packet size: %u)\n", 
+			packet, current_pos, GetPacketOffset (0), GetPacketSize ());
 	}
 #endif
 
@@ -467,7 +468,10 @@ ASFParser::ReadHeader ()
 	
 	data_offset = header->size;
 	packet_offset = data_offset + sizeof (asf_data);
-	packet_offset_end = packet_offset + file_properties->data_packet_count * file_properties->min_packet_size;
+	if (file_properties->data_packet_count != 0)
+		packet_offset_end = packet_offset + file_properties->data_packet_count * file_properties->min_packet_size;
+	else
+		packet_offset_end = -1;
 
 	ASF_LOG ("ASFParser::ReadHeader (): Header read successfully.\n");
 	
@@ -549,7 +553,7 @@ ASFParser::IsValidStream (int stream_index)
 int64_t
 ASFParser::GetPacketOffset (uint64_t packet_index)
 {
-	if (packet_index < 0 || packet_index >= file_properties->data_packet_count) {
+	if (packet_index < 0 || (file_properties->data_packet_count > 0 && packet_index >= file_properties->data_packet_count)) {
 //		AddError (g_strdup_printf ("ASFParser::GetPacketOffset (%i): Invalid packet index (there are %llu packets).", packet_index, file_properties->data_packet_count)); 
 		return 0;
 	}
@@ -570,7 +574,7 @@ ASFParser::GetPacketIndex (int64_t offset)
 	if (offset < packet_offset)
 		return 0;
 	
-	if (offset > packet_offset_end)
+	if (packet_offset_end > 0 && offset > packet_offset_end)
 		return file_properties->data_packet_count - 1;
 	
 	return (offset - packet_offset) / file_properties->min_packet_size;
@@ -854,7 +858,12 @@ ASFReader::ReadMore ()
 bool
 ASFReader::Eof ()
 {
-	return next_packet_index >= parser->GetPacketCount ();
+	uint64_t packet_count = parser->GetPacketCount ();
+
+	if (packet_count == 0)
+		return false;
+
+	return next_packet_index >= packet_count;
 }
 
 void
@@ -1173,7 +1182,7 @@ ASFReader::GetLastAvailablePts ()
 		return 0;
 	}
 	
-	if (last_pos <= parser->GetPacketOffset (pi) + parser->GetPacketSize ()) {
+	if (last_pos < parser->GetPacketOffset (pi) + parser->GetPacketSize ()) {
 		ASF_LOG ("ASFReader::GetLastAvailablePts (): returing 0 (not one packet available)\n");
 		return 0; // This shouldn't happen, but handle the case anyway.
 	}
