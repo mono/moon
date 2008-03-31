@@ -1,3 +1,7 @@
+2008-03-31  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am, harness/Makefile.am: Add directories to dist for tests
+
 2008-03-31  Larry Ewing  <lewing@novell.com>
 
 	* xaml/drtlist.xml: convert some of the tests that were
