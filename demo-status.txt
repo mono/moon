@@ -1,9 +1,8 @@
 site:Aglux Silverlight
 url:http://www.aglux.com.my
 score:3
- *  slow ( < 2 fps )
+ *  Site is broken. Parsing error in MS Silverlight. Silverlight handles the error. Moonlight crashes. Bug 375266
  *  color gradient is wrong. Should go purple(top) to light blue(bottom)
- *  Missing fonts?
  *  Mouse over animation is slow
 
 
@@ -11,7 +10,6 @@ site:Asset Allocator
 url:http://weihong.us/silverlight/asset.htm 
 score:4
  *  Works!
-
 
 site:Bubble Mark
 url:http://bubblemark.com/wpfe.htm
@@ -39,7 +37,7 @@ score:4
 site:E-commerce Catalog
 url:http://www.flowers-for-you.com.my/catalog2.aspx
 score:0
- * Crashes firefox
+ * Crashes firefox Bug 375215
  * Audio works. No video
 
 site:Festive Greetings
@@ -54,7 +52,8 @@ score:-1
 
 site:Glyph Map
 url:http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx
-score:3
+score:1
+ * Crashes Firefox if you move off the page. Bug 375273
  * Characters don't show up. Fonts not installed?
  * Mouse over chars also don't work. Fonts not installed?
 
@@ -70,13 +69,12 @@ score:0
 
 site:HHH Comic Archive
 url:http://www.microsoft.com/heroeshappenhere/comicviewer/default.html
-score:4
- * Works
+score:0
+ * Regression - gray canvas appears Bug 375275
 
 site:Ink Journal
 url:http://www.thedatafarm.com/silverlight/journalsample
 score:2
- * Pen, highlighter, eraser, lasso work.
  * Mouse icon is a crosshairs, not a dot. Bug 375213
 
 site:Ink Tattoo Studio
@@ -106,11 +104,7 @@ score:-1
 site:Matrix Falling Characters
 url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
 score:1
- * [Regression] Chars slow down and stop falling Bug 351567
- * Slow and choppy, 1 -2 fps
- * Full screen is slow too. Get 'unreponsive script' warning
- * Full screen icon is malformed. 
- * Info icon is missing
+ * Get 'unreponsive script' warning after about 15 sec. Bug 375272
 
 site:Mircosoft Downloads
 url:http://www.microsoft.com/beta/downloads/Default.aspx
@@ -139,7 +133,9 @@ score:3
 site:Page Turn
 url:http://silverlight.net/samples/1.0/Page-Turn/default.html
 score:2
- * Can't turn page
+ * Can't turn page Bug 375228
+ * cannot annotate a page Bug 375229
+ * only right hand page appears Bug 375227
 
 site:Photo Carousel (SL 2.0)
 url:http://www.nikhilk.net/Prototypes/PhotoCarousel
@@ -174,6 +170,9 @@ score:1
 site:Popfly
 url:http://www.popfly.com
 score:2
+ * toolbox mouse events are slow, out of sync Bug 375269
+ * Edit a control has missing background and button Bug 375270
+ * preview a mashup show only black screen Bug 375271
 
 site:Scrolling Video Playlist
 url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
@@ -188,17 +187,18 @@ score:2
 site:Silverlight Showcase
 url:http://silverlight.net/Showcase/default.aspx
 score:3
-* World map is slow Bug 375234
+ * World map is slow Bug 375234
+ * video is whitewashed Bug 375259
 
 site:Silverlight Slide Show
 url:http://www.vertigo.com/SlideShow.aspx
-score:4
- * Works
+score:1
+ * Nothing appears. Just a gray canvas Bug 375260
 
 site:Simon
 url:http://www.vertigo.com/downloads/Simon/
 score:3
- * no sound
+ * Buttons get darker with each push Bug 375261
 
 site:Sparkleball
 url:http://www.ddjsilverlight.com/sparkleball
@@ -207,21 +207,21 @@ score:4
 
 site:Sprawl
 url:http://silverlight.net/samples/1.0/Sprawl/default.html
-score:1
+score:4
  * Works
 
 site:Tile Text
 url:http://silverlight.net/samples/1.0/Tile-Text/default.html
 score:3
- * Missing text box to change text due to windowless plugin not working.
+ * Missing text box to change text due to windowless plugin not working. Bug 375263
  * Animation works well
 
 site:TI-M Silverlight
 url:http://silverlight.timovil.com
 score:2
- * Cannot interact with window. Mouse clicks don't work.
+ * Cannot interact with window. Mouse events don't work. Bug 375264
 
 site:Web Analytics
 url:http://xmldocs.net/Analytics
 score:3
- * no video
+ * Video is white washed. Bug 375259
