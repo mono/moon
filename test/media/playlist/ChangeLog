@@ -1,5 +1,9 @@
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* duration-no-value-in-entry.asx: New tests and baselines.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* printf.aspx: We're supposed to run xsp in test/media, so update path
 	  accordingly.
 	* playlist.asx.js, param-with-value.asx.js, param-with-text.asx.js,
