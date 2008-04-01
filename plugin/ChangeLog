@@ -2,6 +2,9 @@
 
 	* plugin-class.cpp (moonlight_downloader_mapping): Got rid of
 	second ResponseText item.
+	(MoonlightDownloaderObject::GetProperty): nul-terminate the value
+	gotten from downloader->GetResponseText() as javascript will use
+	this string expecting that it is nul-terminated.
 
 2008-04-01  Fernando Herrera  <fherrera@novell.com>
 
