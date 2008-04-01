@@ -1,3 +1,8 @@
+2008-03-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mopen.cs: add --timeout option to close mopen after X seconds.
+	Useful for testing/fuzzing a step farther than --parseonly can do.
+
 2008-02-27  Larry Ewing  <lewing@novell.com>
 
 	* mopen.cs: add --sync option to pass --sync to gtk_init.

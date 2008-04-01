@@ -513,11 +513,14 @@ Downloader::Write (void *buf, int32_t offset, int32_t n)
 		write (buf, offset, n, consumer_closure);
 }
 
- void
+void
 Downloader::RequestPosition (int64_t *pos)
 {
-       if (request_position)
-               request_position (pos, consumer_closure);
+	if (aborted)
+		return;
+
+	if (request_position)
+		request_position (pos, consumer_closure);
 }
 
 

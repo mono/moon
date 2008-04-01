@@ -147,6 +147,8 @@ AnimationClock::Stop ()
 		storage->ResetPropertyValue ();
 		storage->DetachUpdateHandler ();
 	}
+
+	Clock::Stop ();
 }
 
 AnimationClock::~AnimationClock ()
@@ -289,35 +291,15 @@ Storyboard::DetachClockGroupFromParent ()
 	}
 }
 
-static bool
-clock_is_fully_stopped_recursive (Clock *clck)
-{
-	if (clck == NULL)
-		return true;
-
-	if (clck->GetClockState () != Clock::Stopped)
-		return false;
-
-	if (clck->GetObjectType () == Type::CLOCKGROUP) {
-		for (GList *l = ((ClockGroup *) clck)->child_clocks; l; l = l->next) {
-			if (! clock_is_fully_stopped_recursive ((Clock *) l->data))
-				return false;
-		}
-
-		return true;
-	}
-
-	return true;
-}
-
 void
 Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Storyboard *sb = (Storyboard *)closure;
 
 	// Only teardown the clocks if the whole storyboard is stopped.
-	// Otherwise just keep running.
-	if (clock_is_fully_stopped_recursive (sb->root_clock))
+	// Otherwise just remove from parent not be affected by it's 
+	// state changes
+	if (sb->root_clock->GetClockState () == Clock::Stopped)
 		sb->TeardownClockGroup ();
 	else
 		sb->DetachClockGroupFromParent ();
@@ -487,9 +469,12 @@ Storyboard::SetSurface (Surface *surface)
 		/* we're being detached from a surface, so pause clock */
 		Pause ();
 	}
- 	else if (!GetSurface() && surface && root_clock && root_clock->GetIsPaused()) {
-		/* we're being (re-)attached to a surface, so resume clock */
- 		Resume ();
+ 	else if (!GetSurface() && surface) {
+// XXX MS doesn't seem to do this
+// 		/* we're being (re-)attached to a surface, so resume clock */
+// 		if (root_clock && root_clock->GetIsPaused()) {
+//  			Resume ();
+// 		}
  	}
 	DependencyObject::SetSurface (surface);
 }

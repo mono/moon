@@ -61,6 +61,7 @@
 int Surface::ResizeEvent = -1;
 int Surface::FullScreenChangeEvent = -1;
 int Surface::ErrorEvent = -1;
+pthread_t Surface::main_thread = 0;
 
 static bool inited = false;
 static bool g_type_inited = false;
@@ -153,6 +154,8 @@ Surface::CreateSimilarSurface ()
 
 Surface::Surface(int w, int h, bool windowless)
 {
+	main_thread = pthread_self ();
+
 	downloader_context = NULL;
 	width = w;
 	height = h;

@@ -257,12 +257,13 @@ namespace MoonlightTests {
 				return result_path;
 			}
 
-			int x = 0;
-			int y = 0;
+			
 			int border_width = 2;
+			int x = border_width;
+			int y = border_width;
 			int images_per_row = Math.Max (num_images / 4, 1);			
 
-			result = new Bitmap (tiff.Width + border_width * 4, (images_per_row * (tiff.Height / 4)) + (border_width * images_per_row));
+			result = new Bitmap (tiff.Width + border_width * 5, (images_per_row * (tiff.Height / 4)) + (border_width * (images_per_row + 1)));
 			g = Graphics.FromImage (result);
 
 			g.Clear (Color.Black);
@@ -278,7 +279,7 @@ namespace MoonlightTests {
 
 					x += tiff.Width / 4 + border_width;
 					if (x >= tiff.Width) {
-						x = 0;
+						x = border_width;
 						y += tiff.Height / 4 + border_width;
 					}
 						

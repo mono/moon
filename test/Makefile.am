@@ -38,3 +38,7 @@ run: demo.exe
 
 test: demo.exe
 	mono --debug demo.exe xaml/*xaml
+
+dist-hook:
+	cp -a $(srcdir)/xaml $(distdir)/xaml
+	find $(distdir)/xaml -name .svn | xargs rm -rf

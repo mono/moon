@@ -77,6 +77,31 @@ EventObject::~EventObject()
 		FreeHandlers ();
 }
 
+void 
+EventObject::unref ()
+{
+	bool delete_me;
+
+	if (!Surface::InMainThread ()) {
+		unref_delayed ();
+		return;
+	}
+
+	delete_me = g_atomic_int_dec_and_test (&refcount);
+
+	OBJECT_TRACK ("Unref", GetTypeName ());
+
+	if (delete_me) {
+		Emit (DestroyedEvent);
+#if DEBUG
+		if (refcount != 0) {
+			g_warning ("Object %p (id: %i) of type %s has been woken up from the dead.\n", this, GET_OBJ_ID (this), GetTypeName ());
+		}
+#endif
+		delete this;
+	}
+}
+
 #if DEBUG
 int EventObject::objects_created = 0;
 int EventObject::objects_destroyed = 0;
@@ -401,15 +426,6 @@ base_unref (EventObject *obj)
 		obj->unref ();
 }
 
-void
-base_unref_delayed (EventObject *obj)
-{
-	if (!obj)
-		return;
-
-	obj->unref_delayed ();
-}
-
 static pthread_mutex_t delayed_unref_mutex = PTHREAD_MUTEX_INITIALIZER;
 static bool drain_tick_call_added = false;
 static GSList *pending_unrefs = NULL;
@@ -444,6 +460,11 @@ void
 EventObject::unref_delayed ()
 {
 	OBJECT_TRACK ("DelayedUnref", GetTypeName ());
+
+#if DEBUG
+	if (Surface::InMainThread ())
+		printf ("EventObject::unref_delayed () is being called on the main thread.\n");
+#endif
 	
 	pthread_mutex_lock (&delayed_unref_mutex);
 	pending_unrefs = g_slist_prepend (pending_unrefs, this);
@@ -632,6 +653,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 					if (col->closure)
 						g_warning ("Collection added as property of more than 1 dependency object");
 					col->closure = this;
+					MergeTemporaryNameScopes (col);
 				}
 			}
 		}
@@ -649,6 +671,75 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		if (current_value)
 			delete current_value;
 	}
+}
+
+void
+DependencyObject::MergeTemporaryNameScopes (Collection *c)
+{
+	NameScope *ns = NameScope::GetNameScope (this);
+	Collection::Node *cn;
+	for (cn = (Collection::Node *) c->list->First () ; cn != NULL; cn = (Collection::Node *) cn->next) {
+		NameScope *c_ns = NameScope::GetNameScope (cn->obj);
+		if (c_ns && c_ns->GetTemporary()) {
+			if (!ns) {
+				ns = new NameScope ();
+				ns->SetTemporary (true);
+				NameScope::SetNameScope (this, ns);
+			}
+
+			ns->MergeTemporaryScope (c_ns);
+			// remove the child's temporary namescope
+			cn->obj->ClearValue (NameScope::NameScopeProperty, false);
+		}
+	}
+}
+
+static void
+unregister_depobj_names (gpointer  key,
+			 gpointer  value,
+			 gpointer  user_data)
+{
+	NameScope *from_ns = (NameScope*)user_data;
+	Value *v = (Value*)value;
+
+	if (v != NULL && v->GetKind() >= Type::DEPENDENCY_OBJECT && v->AsDependencyObject() != NULL) {
+		DependencyObject *obj = v->AsDependencyObject ();
+		obj->UnregisterAllNamesRootedAt (from_ns);
+	}
+}
+
+static void
+register_depobj_names (gpointer  key,
+		       gpointer  value,
+		       gpointer  user_data)
+{
+	NameScope *to_ns = (NameScope*)user_data;
+	Value *v = (Value*)value;
+
+	if (v != NULL && v->GetKind() >= Type::DEPENDENCY_OBJECT && v->AsDependencyObject() != NULL) {
+		DependencyObject *obj = v->AsDependencyObject ();
+		obj->RegisterAllNamesRootedAt (to_ns);
+	}
+}
+
+void
+DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
+{
+	const char *n = GetName();
+	if (n)
+		from_ns->UnregisterName (n);
+
+	g_hash_table_foreach (current_values, unregister_depobj_names, from_ns);
+}
+
+void
+DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns)
+{
+	const char *n = GetName();
+	if (n)
+		to_ns->RegisterName (n, this);
+
+// 	g_hash_table_foreach (current_values, register_depobj_names, to_ns);
 }
 
 void
@@ -695,7 +786,7 @@ DependencyObject::GetValue (const char *name)
 }
 
 void
-DependencyObject::ClearValue (DependencyProperty *property)
+DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
 	Value *current_value = GetValueNoDefault (property);
 
@@ -711,6 +802,7 @@ DependencyObject::ClearValue (DependencyProperty *property)
 		if (dob != NULL)
 			dob->RemovePropertyChangeListener (this, property);
 
+		dob->SetSurface (NULL);
 	}
 
 	// and remove it's closure
@@ -722,15 +814,20 @@ DependencyObject::ClearValue (DependencyProperty *property)
 
 	g_hash_table_remove (current_values, property);
 
-	listeners_notified = false;
+	// we need to make this optional, as doing it for NameScope
+	// merging is killing performance (and noone should ever care
+	// about that property changing)
+	if (notify_listeners) {
+		listeners_notified = false;
 
-	PropertyChangedEventArgs args (property, current_value, NULL);
+		PropertyChangedEventArgs args (property, current_value, NULL);
 
-	OnPropertyChanged (&args);
+		OnPropertyChanged (&args);
 
-	if (!listeners_notified)
-		g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
-			   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
+		if (!listeners_notified)
+			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
+				   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
+	}
 
 	delete current_value;
 }
@@ -880,7 +977,7 @@ DependencyObject::FindName (const char *name)
 	NameScope *scope = NameScope::GetNameScope (this);
 	DependencyObject *rv = NULL;
 
-	if (scope && !scope->GetMerged())
+	if (scope)
 		rv = scope->FindName (name);
 
 	if (rv)

@@ -1,120 +1,114 @@
 site:Aglux Silverlight
 url:http://www.aglux.com.my
-score:3
- *  slow ( < 2 fps )
+rating:3
+ *  Site is broken. Parsing error in MS Silverlight. Silverlight handles the error. Moonlight crashes. Bug 375266
  *  color gradient is wrong. Should go purple(top) to light blue(bottom)
- *  Missing fonts?
  *  Mouse over animation is slow
 
 
 site:Asset Allocator
 url:http://weihong.us/silverlight/asset.htm 
-score:4
+rating:4
  *  Works!
-
 
 site:Bubble Mark
 url:http://bubblemark.com/wpfe.htm
-score:4
+rating:4
  *  choppy with 32+ balls Bug 362022
 
 
 site:Chess Viewer 1.0
 url:http://www.vertigo.com/downloads/SilverlightChess/10RC/default.html
-score:4
+rating:4
  * Works
 
 site:Clock
 url:http://silverlight.net/samples/1.0/clock/default.html
-score:4
+rating:4
  * Works
  * Canvas isn't transparent
 
 
 site:Comic Book Viewer
 url:http://mycomix.wintellect.com/Spotlight.aspx?Item=1041
-score:4
+rating:4
  * Works
 
 site:E-commerce Catalog
 url:http://www.flowers-for-you.com.my/catalog2.aspx
-score:0
- * Crashes firefox
+rating:0
+ * Crashes firefox Bug 375215
  * Audio works. No video
 
 site:Festive Greetings
 url:http://www.mason-zimbler.com/festivegreetings
-score:4
+rating:4
  * Works!
 
 site:Float Menu
 url:http://ptstuido.512j.com/obj/Default.html
-score:-1
+rating:-1
  * Site URL broken
 
 site:Glyph Map
 url:http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx
-score:3
+rating:1
+ * Crashes Firefox if you move off the page. Bug 375273
  * Characters don't show up. Fonts not installed?
  * Mouse over chars also don't work. Fonts not installed?
 
 site:Grand Piano
 url:http://silverlight.net/samples/1.0/Grand-Piano/default.html
-score:4
+rating:4
  * Works
 
 site:Halo 3
 url:http://halo3.msn.com/videos.aspx
-score:0
+rating:0
  * Not detecting Moonlight. Bug 346280
 
 site:HHH Comic Archive
 url:http://www.microsoft.com/heroeshappenhere/comicviewer/default.html
-score:4
- * Works
+rating:0
+ * Regression - gray canvas appears Bug 375275
 
 site:Ink Journal
 url:http://www.thedatafarm.com/silverlight/journalsample
-score:2
- * Pen, highlighter, eraser, lasso work.
+rating:2
  * Mouse icon is a crosshairs, not a dot. Bug 375213
 
 site:Ink Tattoo Studio
 url:http://silverlight.net/samples/1.0/Ink-Tattoo-Studio/default.html
-score:4
+rating:4
  * Works!
 
 site:Kit 3D
 url:http://www.markdawson.org/kit3d
-score:1
+rating:1
  * Spinning cubes with textue - light gray canvas appears. Bug 375216
  * Playing cards crashes Firefox - light gray canvas. Bug 375216
  * 3D picture grid - black canvas appears Bug 375217
 
 site:LCD Clock
 url:http://www.designwithsilverlight.com/tutorials/LCDClock/default.html
-score:3
+rating:3
  * Works
  * Outer frame is still showing
 
 site:Matrix Digital Rain
 url:http://blogs.sqlxml.org/wpfe/matrix
-score:-1
+rating:-1
  * Nothing shows in the browser, with this error in the JS Console: \n Error: wpfeControl1Host is not defined Source File: \n http://blogs.sqlxml.org/wpfe/matrix/ Line: 26
  * This is actually broken javascript which relies on IE exposing element id's as properties of the page.
 
 site:Matrix Falling Characters
 url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
-score:1
- * [Regression] Chars slow down and stop falling Bug 351567
- * Slow and choppy, 1 -2 fps
- * Full screen is slow too. Get 'unreponsive script' warning
- * Full screen icon is malformed. 
- * Info icon is missing
+rating:1
+ * Get 'unreponsive script' warning after about 15 sec. Bug 375272
 
 site:Mircosoft Downloads
 url:http://www.microsoft.com/beta/downloads/Default.aspx
-score:1
+rating:1
  * Background color is missing  - Bug 375218
  * In 'Browse Downloads', the index chars repeatedly highlight/unhighlight during mouse over Bug 375220
  * FF crashes if you hit the navigate back off the page. Bug 375219
@@ -122,7 +116,7 @@ score:1
 
 site:Office Ribbon
 url:http://xmldocs.net
-score:2
+rating:2
  * Controls are out of order. Bug 375223
  * Drop down menus aren't clickable Bug 375223
  * Missing check box. Bug 375223
@@ -131,30 +125,32 @@ score:2
 
 site:On9Games
 url:http://www.on9games.net/GameAction.aspx
-score:3
+rating:3
  * Animated runners do not appear Bug 375225
  * In 'Featured', the FAQ doesn't show the answers to the questions 375226
  * Mouse disappears during game play
 
 site:Page Turn
 url:http://silverlight.net/samples/1.0/Page-Turn/default.html
-score:2
- * Can't turn page
+rating:2
+ * Can't turn page Bug 375228
+ * cannot annotate a page Bug 375229
+ * only right hand page appears Bug 375227
 
 site:Photo Carousel (SL 2.0)
 url:http://www.nikhilk.net/Prototypes/PhotoCarousel
-score:2
+rating:2
  * Flickr page loads, entering search term does nothing. Bug 351583
 
 site:Photo Gallery Viewer
 url:http://www.designwithsilverlight.com/tutorials/photoGallery/gallery.html
-score:3
+rating:3
  * Images don't return to normal size after mouse over Bug 375231
  * clicking to enlarge/shrink images is broken Bug 375230
 
 site:Photo Gallery Wall
 url:http://designwithsilverlight.com/tutorials/photoGalleryWall/default.html
-score:-1
+rating:-1
  * URL broken
  * Slide show cycles through pictures very fast
  * Thumbnails on left should outline immediately when the mouse is over it
@@ -162,66 +158,70 @@ score:-1
 
 site:Picture-in-picture screen cast
 url:http://blogs.msdn.com/synergist/archive/2007/07/30/groove-and-virtual-earth.aspx
-score:2
+rating:2
  * Playback controls don't pop up at bottom Bug 351580
  * video is sluggish, tinted blue Bug 375232
 
 site:Poker
 url:http://home.people.net.au/~chriso/poker/poker.html
-score:1
+rating:1
  * Audio doens't play Bug 375234
 
 site:Popfly
 url:http://www.popfly.com
-score:2
+rating:2
+ * toolbox mouse events are slow, out of sync Bug 375269
+ * Edit a control has missing background and button Bug 375270
+ * preview a mashup show only black screen Bug 375271
 
 site:Scrolling Video Playlist
 url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
-score:4
+rating:4
  * Works!
 
 site:Silverlight Pad
 url:http://silverlight.net/samples/1.0/Silverlight-Pad/default.html
-score:2
+rating:2
  * windowless bug causing xaml / js code to not appear. Bug 375235
 
 site:Silverlight Showcase
 url:http://silverlight.net/Showcase/default.aspx
-score:3
-* World map is slow Bug 375234
+rating:3
+ * World map is slow Bug 375234
+ * video is whitewashed Bug 375259
 
 site:Silverlight Slide Show
 url:http://www.vertigo.com/SlideShow.aspx
-score:4
- * Works
+rating:1
+ * Nothing appears. Just a gray canvas Bug 375260
 
 site:Simon
 url:http://www.vertigo.com/downloads/Simon/
-score:3
- * no sound
+rating:3
+ * Buttons get darker with each push Bug 375261
 
 site:Sparkleball
 url:http://www.ddjsilverlight.com/sparkleball
-score:4
+rating:4
  * Works
 
 site:Sprawl
 url:http://silverlight.net/samples/1.0/Sprawl/default.html
-score:1
+rating:4
  * Works
 
 site:Tile Text
 url:http://silverlight.net/samples/1.0/Tile-Text/default.html
-score:3
- * Missing text box to change text due to windowless plugin not working.
+rating:3
+ * Missing text box to change text due to windowless plugin not working. Bug 375263
  * Animation works well
 
 site:TI-M Silverlight
 url:http://silverlight.timovil.com
-score:2
- * Cannot interact with window. Mouse clicks don't work.
+rating:2
+ * Cannot interact with window. Mouse events don't work. Bug 375264
 
 site:Web Analytics
 url:http://xmldocs.net/Analytics
-score:3
- * no video
+rating:3
+ * Video is white washed. Bug 375259

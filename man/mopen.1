@@ -89,6 +89,9 @@ and can not be shared with others.
 Triggers one by one all the named Storyboards in the given XAML file
 when you click on the canvas surface. 
 .TP
+.I "--parseonly", "--parse-only"
+Parse the XAML file but does not open a window. Useful for testing.
+.TP
 .I "--story N1[,N2]"
 Runs the storyboard named N1 when the mouse is clicked (this is the
 x:Name property on the XAML file).  The storyboard playback will cycle
@@ -103,6 +106,9 @@ if you keep clicking.   You can use it like this:
 Enables the alpha channel on the rendering surface.   Any areas that
 are rendered with non-opaque values will be properly composited
 against the underlying background by the system compositing manager.
+.TP
+.I "--timeout X"
+Close the mopen window after X seconds. Useful for testing.
 .SH SHARING A VIRTUAL MACHINE
 .PP
 To load multiple independent applications into a single virtual

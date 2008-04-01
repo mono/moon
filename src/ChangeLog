@@ -1,3 +1,138 @@
+2008-04-01  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Since now the clocks are synced we don't need to
+	recursively check the states in the teardown on completed.
+
+2008-04-01  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp:
+	* clock.h: Getting rid of the nasty clock desyncing (setting ClockGroup
+	manually to Stopped but not touching the state of children).
+
+	We do this by introducing a new idle_hint on ClockGroup. If idle_hint is
+	set, we don't tick the ClockGroup no matter what the state is. Idle_hint
+	is set when all children of ClockGroup have state != Active (ie. are
+	filling). This can be seen as "optimization" -- not to dumbly process
+	filling clocks which keep setting same value all the time (it creates
+	insane recursion ie. in Showcase making it unusable). Silverlight seems
+	to do something very similiar.
+
+	Before this commit a same effect was achieved by the said "desyncing" --
+	forcing the ClockGroup to Stopped. This approach however is a bit more
+	clean. 
+
+2008-04-01  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Chain to parent's Clock::Stop in AnimationClock::Stop.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: Use base_unref, base_unref_delayed doesn't exist anymore.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* value.cpp: Remove a few warnings which might give false positives now.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.h, dependencyobject.cpp: EventObject::unref: check if
+	  we're being unreffed on the main thread, if not, call unref_delayed.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* runtime.cpp, runtime.h: Added a Surface::InMainThread.
+
+2008-04-01  Fernando Herrera  <fherrera@novell.com>
+
+	* media.cpp: Remove the request position function when aborting the
+	downloader.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp, media.h, mplayer.cpp, mplayer.h: Add a dtor parameter to
+	  MediaElement::Reinitialize and MediaPlayer::Close to specify if we're
+	  being called from the destructor, and if so, null out the element field
+	  of the MediaPlayer, so that we don't access a destructed media element.
+	  Add an async version of MediaPlayer::EnqueueFrames, so that the audio
+	  threads can request more data in a thread-safe manner.
+
+2008-04-01  Fernando Herrera  <fherrera@novell.com>
+
+	* asf/asf.cpp:
+	* pipeline.h: Support for live mms streams, that have packet_count as
+	0 and return false for CanSeekToPts.
+
+2008-03-31  Chris Toshok  <toshok@ximian.com>
+
+	* namescope.h, namescope.cpp: make no semblance of having a
+	superior namescope implementation (where they get transported
+	around with the subtree they're attached to when it's
+	removed/re-added to the hierarchy.)  Instead follow MS's broken
+	implementation where temporary namescopes are completely removed
+	when merged into another one.
+
+	* collection.h, collection.cpp (Collection::MergeNames): factor
+	out some common code from Add, Insert, and SetVal. Also, deal with
+	the fact that merging namescopes now really adds all the names to
+	the parent namescope, so clear the old namescope.
+	(Collection::SetVal): don't just unregister the old toplevel name,
+	but all the names in the subtree.
+	(Collection::Remove): same.
+	(Collection::Clear): same.
+	(Collection::UnregisterAllNamesRootedAt): override DO's method,
+	recursing into all our children.
+	(Collection::RegisterAllNamesRootedAt): same.
+	(VisualCollection::VisualRemoved): clear the IS_LOADED flag so
+	UIElement::OnLoaded is called again, and <BeginStoryboard>
+	elements restart when the subtree is added to the hierarchy again.
+
+	* control.h, control.cpp (Control::UnregisterAllNamesRootedAt):
+	override and forward onto real_object.
+	(Control::RegisterAllNamesRootedAt): same.
+	
+	* dependencyobject.cpp (DependencyObject::ClearValue): add a
+	parameter to allow us to specify *not* to notify listeners of the
+	property change.  we do this with the NameScope property, which
+	noone should be listening too.  It was causing a tremendous
+	performance hit when merging a lot of namescopes (as we do in
+	inkStylusPointCount.htm)
+	(DependencyObject::UnregisterAllNamesRootedAt): used when a DO is
+	removed from the hierarchy, we need to unregister all the names
+	beneath it.
+	(DependencyObject::RegisterAllNamesRootedAt): used when a DO is
+	added to the hierarchy, if it doesn't have a temporary
+	namescope (in which case we just merge it).
+
+2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, pipeline.h: MemorySource: Add a value specifying if the
+	  MemorySource owns the memory or not (if it will be freed upon
+	  destruction or not).
+
+2008-03-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* stylus.cpp (Stroke::HitTestEndcap): Fixed a bug where the
+	for-loop would only use every other point as a starting point for
+	a segment. E.g. if you had points a, b, c, d and e - the code only
+	checked segments ab, cd, and e when it should have been checking
+	ab, bc, cd, and de.
+
+2008-03-31  Fernando Herrera  <fherrera@novell.com>
+
+	* downloader.cpp: Check if aborted before cheking for requested
+	position.
+
+2008-03-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, pipeline.h: Moved locking down to IMediaSource from
+	  ProgressiveSource.
+	* playlist.cpp: Updated according to pipeline changes.
+	* mplayer.h: Fix SetState to not overwrite current bits, only current state.
+	* media.h, media.cpp: Rework buffering progress to use the available time of
+	  media available (pts) instead of doing some funny math on file
+	  positions.
+	* mplayer.cpp: Don't allow SetTargetPts if we're waiting for a seek.
+
 2008-03-31  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: Don't Stop the Storyboard root_clock before begining
@@ -38,6 +173,14 @@
 
 	* utils.cpp (TextStream::Read): Better handling of iconv() failure
 	cases.
+
+2008-03-28  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp, animation.h: remove Storyboard::FindSurface -
+	EventObject::GetSurface() always returns the right thing.
+	Override SetSurface to check whether we're being detached from or
+	attached to a surface, and pause or resume the clock in response.
+	This fixes some issues in storyboard_EnterLeaveSemantics.
 
 2008-03-28  Chris Toshok  <toshok@ximian.com>
 

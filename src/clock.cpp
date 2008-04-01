@@ -1024,6 +1024,7 @@ ClockGroup::ClockGroup (TimelineGroup *timeline)
 	child_clocks = NULL;
 	this->timeline = timeline;
 	emitted_complete = false;
+	idle_hint = false;
 }
 
 void
@@ -1035,6 +1036,8 @@ ClockGroup::AddChild (Clock *clock)
 	clock->ref ();
 	clock->SetParent (this);
 	clock->SetTimeManager (GetTimeManager());
+
+	idle_hint = false;
 }
 
 void
@@ -1059,6 +1062,7 @@ void
 ClockGroup::Begin ()
 {
 	emitted_complete = false;
+	idle_hint = false;
 
 	Clock::Begin ();
 
@@ -1127,6 +1131,7 @@ ClockGroup::Tick ()
 		   method */
 		Clock *c = (Clock*)l->data;
 		if (c->GetClockState() != Clock::Stopped) {
+			if (c->GetObjectType () < Type::CLOCKGROUP || ! ((ClockGroup *) c)->IsIdle ())
 			child_running |= c->Tick ();
 		}
 		else if (!c->GetHasStarted() && !c->GetWasStopped() && (c->GetBeginOnTick() || c->GetBeginTime () <= current_time)) {
@@ -1145,8 +1150,7 @@ ClockGroup::Tick ()
 	if (GetClockState() == Clock::Stopped)
 		return false;
 
-	/* if we're automatic and no child clocks are still running, we need to stop.
-
+	/*
 	   XXX we should probably do this by attaching to
 	   CurrentStateInvalidated on the child clocks instead of
 	   looping over them at the end of each Tick call.
@@ -1162,14 +1166,24 @@ ClockGroup::Tick ()
 			repeat_count --;
 
 		if (repeat_count == 0) {
-			Clock::Stop ();
-		}
-		else {
+			/* 
+			   We might be stopped at this point because of SkipToFill 
+			   if our FillBehavior is Stop. However, we set the idle hint
+			   anyways in case of different behavior.
+			   
+			   Setting the idle hint is an optimization -- the ClockGroup 
+			   will not tick anymore but it'll remain in the proper state. 
+			   SL seems to do something similiar. 
+			*/
+			idle_hint = true;
+		} else
 			DoRepeat ();
-		}
 	}
 
-	return state != Clock::Stopped;
+	if (state == Clock::Stopped || idle_hint == true)
+		return false;
+	else
+		return true;
 }
 
 void

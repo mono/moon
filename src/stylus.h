@@ -37,7 +37,7 @@ class StylusInfo : public DependencyObject {
 	static DependencyProperty* IsInvertedProperty;
 };
 
-StylusInfo* stylus_info_new ();
+StylusInfo* stylus_info_new (void);
 TabletDeviceType stylus_info_get_device_type (StylusInfo* stylus_info);
 void	stylus_info_set_device_type	(StylusInfo* stylus_info, TabletDeviceType type);
 bool	stylus_info_get_inverted	(StylusInfo* stylus_info);
@@ -56,7 +56,7 @@ class StylusPoint : public DependencyObject {
 	static DependencyProperty* YProperty;
 };
 
-StylusPoint* stylus_point_new ();
+StylusPoint* stylus_point_new (void);
 double	stylus_point_get_x (StylusPoint *stylus_point);
 void	stylus_point_set_x (StylusPoint *stylus_point, double x);
 double	stylus_point_get_y (StylusPoint *stylus_point);
@@ -94,7 +94,7 @@ class DrawingAttributes : public DependencyObject {
 	static DependencyProperty* WidthProperty;
 };
 
-DrawingAttributes* drawing_attributes_new ();
+DrawingAttributes* drawing_attributes_new (void);
 Color*	drawing_attributes_get_color (DrawingAttributes* da);
 void	drawing_attributes_set_color (DrawingAttributes* da, Color *color);
 Color*	drawing_attributes_get_outline_color (DrawingAttributes* da);
@@ -137,7 +137,7 @@ class Stroke : public DependencyObject {
 	bool HitTestSegment (Point stroke_p1, Point stroke_p2, double w, double h, StylusPointCollection *stylusPoints);
 };
 
-Stroke*                stroke_new ();
+Stroke*                stroke_new (void);
 DrawingAttributes*     stroke_get_drawing_attributes (Stroke *stroke);
 void                   stroke_set_drawing_attributes (Stroke *stroke, DrawingAttributes *attributes);
 StylusPointCollection* stroke_get_stylus_points (Stroke *stroke);
@@ -180,7 +180,7 @@ class InkPresenter : public Canvas {
 	static DependencyProperty* StrokesProperty;
 };
 
-InkPresenter* ink_presenter_new ();
+InkPresenter* ink_presenter_new (void);
 StrokeCollection* ink_presenter_get_strokes (InkPresenter *ink_presenter);
 void ink_presenter_set_strokes (InkPresenter *ink_presenter, StrokeCollection* collection);
 

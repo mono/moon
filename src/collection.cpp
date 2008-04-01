@@ -69,6 +69,31 @@ Collection::EmitChanged (CollectionChangeType type, DependencyObject *obj, Prope
 	}
 }
 
+void
+Collection::MergeNames (DependencyObject *new_obj)
+{
+	if (!closure)
+		return;
+
+	NameScope *ns = NameScope::GetNameScope (new_obj);
+	/* this should always be true for Canvas subclasses */
+	if (ns) {
+		if (ns->GetTemporary ()) {
+			NameScope *con_ns = closure->FindNameScope ();
+			if (con_ns) {
+				con_ns->MergeTemporaryScope (ns);
+				// get rid of the old namescope after we merge
+				new_obj->ClearValue (NameScope::NameScopeProperty, false);
+			}
+		}
+	}
+	else {
+		NameScope *con_ns = closure->FindNameScope ();
+		if (con_ns)
+			new_obj->RegisterAllNamesRootedAt (con_ns);
+	}
+}
+
 int
 Collection::Add (DependencyObject *data)
 {
@@ -88,26 +113,10 @@ Collection::Add (DependencyObject *data)
 	data->AddPropertyChangeListener (this);
 	data->SetSurface (GetSurface());
 
-	if (closure) {
-		NameScope *ns = NameScope::GetNameScope (data);
-		/* this should always be true for Canvas subclasses */
-		if (ns) {
-			if (ns->GetTemporary ()) {
-				NameScope *con_ns = closure->FindNameScope ();
-				if (con_ns)
-					con_ns->MergeTemporaryScope (ns);
-			}
-		}
-		else {
-			const char *n = data->GetName();
-			NameScope *con_ns = closure->FindNameScope ();
-			if (con_ns && n) {
-				con_ns->RegisterName (n, data);
-			}
-		}
+	MergeNames (data);
 
+	if (closure)
 		EmitChanged (CollectionChangeTypeItemAdded, data, NULL);
-	}
 
 	return list->Length () - 1;
 }
@@ -130,16 +139,10 @@ Collection::Insert (int index, DependencyObject *data)
 	data->AddPropertyChangeListener (this);
 	data->SetSurface (GetSurface());
 
-	if (closure) {
-		NameScope *ns = NameScope::GetNameScope (data);
-		if (ns && ns->GetTemporary ()) {
-			NameScope *con_ns = closure->FindNameScope ();
-			if (con_ns)
-				con_ns->MergeTemporaryScope (ns);
-		}
+	MergeNames (data);
 
+	if (closure)
 		EmitChanged (CollectionChangeTypeItemAdded, data, NULL);
-	}
 
 	return true;
 }
@@ -166,23 +169,19 @@ Collection::SetVal (int index, DependencyObject *data)
 	data->SetSurface (GetSurface ());
 	old->obj->RemovePropertyChangeListener (this);
 	old->obj->SetSurface (NULL);
-	
-	if (closure) {
-		NameScope *con_ns = closure->FindNameScope ();
-		const char *n;
 
-		n = old->obj->GetName();
-		if (con_ns && n)
-			con_ns->UnregisterName (n);
+	NameScope *ns = old->obj->FindNameScope();
 
+	if (ns)
+		old->obj->UnregisterAllNamesRootedAt (ns);
+
+	if (closure)
 		EmitChanged (CollectionChangeTypeItemRemoved, old->obj, NULL);
 
-		n = data->GetName();
-		if (con_ns && n)
-			con_ns->RegisterName (n, data);
+	MergeNames (data);
 
+	if (closure)
 		EmitChanged (CollectionChangeTypeItemAdded, data, NULL);
-	}
 
 	DependencyObject *obj = old->obj;
 	delete old;
@@ -212,24 +211,20 @@ Collection::Remove (DependencyObject *data)
 	data->RemovePropertyChangeListener (this);
 	data->SetSurface (NULL);
 
-	if (closure) {
-		NameScope *ns = NameScope::GetNameScope (data);
-		NameScope *con_ns = closure->FindNameScope ();
+	NameScope *ns;
 
-		if (ns && ns->GetMerged ()) {
-			if (con_ns)
-				con_ns->UnmergeTemporaryScope (ns);
-		}
-
-		const char *n;
-
-		n = data->GetName();
-		if (con_ns && n)
-			con_ns->UnregisterName (n);
-
-		EmitChanged (CollectionChangeTypeItemRemoved, data, NULL);
+	// first unregister the name from whatever scope it's registered in
+	// if it's got its own, don't worry about it.
+	ns = NameScope::GetNameScope (data);
+	if (!ns) {
+		ns = data->FindNameScope ();
+		if (ns)
+			data->UnregisterAllNamesRootedAt (ns);
 	}
-	
+
+	if (closure)
+		EmitChanged (CollectionChangeTypeItemRemoved, data, NULL);
+
 	delete n;
 	return true;
 }
@@ -249,22 +244,19 @@ Collection::RemoveAt (int index)
 	n->obj->RemovePropertyChangeListener (this);
 	n->obj->SetSurface (NULL);
 
-	if (closure) {
-		NameScope *ns = NameScope::GetNameScope (n->obj);
-		NameScope *con_ns = closure->FindNameScope();
-		if (ns && ns->GetMerged ()) {
-			if (con_ns)
-				con_ns->UnmergeTemporaryScope (ns);
-		}
+	NameScope *ns;
 
-		const char *name;
-
-		name = n->obj->GetName();
-		if (con_ns && name)
-			con_ns->UnregisterName (name);
-
-		EmitChanged (CollectionChangeTypeItemRemoved, n->obj, NULL);
+	// first unregister the name from whatever scope it's registered in
+	// if it's got its own, don't worry about it.
+	ns = n->obj->FindNameScope ();
+	if (!ns) {
+		ns = n->obj->FindNameScope ();
+		if (ns)
+			n->obj->UnregisterAllNamesRootedAt (ns);
 	}
+
+	if (closure)
+		EmitChanged (CollectionChangeTypeItemRemoved, n->obj, NULL);
 	
 	delete n;
 	return true;
@@ -284,17 +276,10 @@ Collection::Clear (bool emit_event)
 		n->obj->SetSurface (NULL);
 
 		NameScope *ns = NameScope::GetNameScope (n->obj);
-		if (ns && ns->GetMerged ()) {
-			NameScope *parent_ns = n->obj->FindNameScope();
-			if (parent_ns)
-				parent_ns->UnmergeTemporaryScope (ns);
+		if (!ns) {
+			if (con_ns)
+				n->obj->UnregisterAllNamesRootedAt (con_ns);
 		}
-
-		const char *name;
-
-		name = n->obj->GetName();
-		if (con_ns && name)
-			con_ns->UnregisterName (name);
 	}
 
 	list->Clear (true);
@@ -319,6 +304,30 @@ Collection::SetSurface (Surface *surface)
 	}
 
 	DependencyObject::SetSurface (surface);
+}
+
+void
+Collection::UnregisterAllNamesRootedAt (NameScope *from_ns)
+{
+	Collection::Node *n;
+
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
+		n->obj->UnregisterAllNamesRootedAt (from_ns);
+	}
+
+	DependencyObject::UnregisterAllNamesRootedAt (from_ns);
+}
+
+void
+Collection::RegisterAllNamesRootedAt (NameScope *to_ns)
+{
+	Collection::Node *n;
+
+	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
+		n->obj->RegisterAllNamesRootedAt (to_ns);
+	}
+
+	DependencyObject::RegisterAllNamesRootedAt (to_ns);
 }
 
 DependencyProperty *Collection::CountProperty;
@@ -552,6 +561,7 @@ VisualCollection::VisualRemoved (Visual *visual)
 	// optimized region we can redraw).
 	item->GetVisualParent ()->Invalidate (item->GetSubtreeBounds());
 	item->SetVisualParent (NULL);
+	item->flags &= ~UIElement::IS_LOADED;
 }
 
 int

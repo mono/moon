@@ -31,6 +31,7 @@ void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, d
 
 
 #define LOG_MEDIAELEMENT(...)// printf (__VA_ARGS__);
+#define LOG_BUFFERINGPROGRESS(...)// printf (__VA_ARGS__);
 
 /*
  * MediaBase
@@ -303,6 +304,7 @@ MediaElement::AdvanceFrame ()
 		flags |= UpdatingPosition;
 		media_element_set_position (this, TimeSpan_FromPts (position));
 		flags &= ~UpdatingPosition;
+		last_played_pts = position;
 	}
 	
 	CheckMarkers (previous_position, position);
@@ -344,7 +346,7 @@ MediaElement::MediaElement ()
 	playlist = NULL;
 	advance_frame_timeout_id = 0; // Couldn't find any documentation about which id would be invalid, assuming 0 is an invalid id. 
 	
-	Reinitialize ();
+	Reinitialize (false);
 	
 	mplayer = new MediaPlayer (this);
 	
@@ -354,7 +356,7 @@ MediaElement::MediaElement ()
 
 MediaElement::~MediaElement ()
 {
-	Reinitialize ();
+	Reinitialize (true);
 	
 	if (mplayer)
 		mplayer->unref ();
@@ -379,12 +381,12 @@ MediaElement::SetSurface (Surface *s)
 }
 
 void
-MediaElement::Reinitialize ()
+MediaElement::Reinitialize (bool dtor)
 {
 	Value *val;
 	
 	if (mplayer)
-		mplayer->Close ();
+		mplayer->Close (dtor);
 	
 	if (media != NULL) {
 		media->unref ();
@@ -427,8 +429,7 @@ MediaElement::Reinitialize ()
 	//
 	// playlist->unref ();
 
-	buffering_start = 0;
-	buffering_pts = 0;
+	last_played_pts = 0;
 	
 	if (streamed_markers)
 		streamed_markers->unref ();
@@ -452,6 +453,7 @@ MediaElement::DownloaderAbort ()
 	if (downloader) {
 		downloader->RemoveHandler (downloader->CompletedEvent, downloader_complete, this);
 		downloader->SetWriteFunc (NULL, NULL, NULL);
+		downloader->SetRequestPositionFunc (NULL);
 		downloader_abort (downloader);
 		downloader->unref ();
 		downloader = NULL;
@@ -647,18 +649,19 @@ MediaElement::UpdateProgress ()
 {
 	double progress, current;
 	bool emit = false;
-	
-	//printf ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state));
+	uint64_t currently_available_pts, current_pts, buffer_pts;
+
+	LOG_BUFFERINGPROGRESS ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state));
 	
 	if (state & WaitingForOpen)
 		return;
 	
 	if (downloaded_file != NULL && !IsBuffering () && downloaded_file->IsWaiting ()) {
 		// We're waiting for more data, switch to the 'Buffering' state.
-		//printf ("MediaElement::UpdateProgress (): Switching to 'Buffering', we're waiting for %lld\n", downloaded_file->GetWaitPosition ());
+		LOG_BUFFERINGPROGRESS ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: %llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, last available pts: %llu\n", 
+			previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ()), media ? media->GetDemuxer ()->GetLastAvailablePts () : 0);
+
 		SetValue (MediaElement::BufferingProgressProperty, Value (0.0));
-		buffering_start = downloaded_file->GetWritePosition ();
-		buffering_pts = mplayer->GetPosition ();
 		SetState (Buffering);
 		mplayer->Pause ();
 		emit = true;
@@ -667,38 +670,34 @@ MediaElement::UpdateProgress ()
 	// CHECK: if buffering, will DownloadCompletedEvent be emitted?
 	
 	if (IsBuffering ()) {
-		int64_t size = downloaded_file->GetSize ();
-		int64_t buffering_time = TimeSpan_ToPts (GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ());
-		int64_t write_pos = downloaded_file->GetWritePosition ();
-		int64_t wait_pos = media == NULL ? 0 : media->GetDemuxer ()->EstimatePtsPosition (buffering_pts + buffering_time);
-		if (buffering_start == -1)
-			buffering_start = write_pos;
-		int64_t buffer_size = wait_pos - buffering_start;
-		int64_t buffered_size = write_pos - buffering_start;
-		
-		if (wait_pos > size && size >= 0)
-			wait_pos = size;
-		
-		if (wait_pos < write_pos) {
-			// Just wait a bit more, estimate is clearly wrong.
-			buffer_size = 1024 * 16;
-			wait_pos = write_pos + buffer_size;
+		if (media && media->GetDemuxer ()) {
+			currently_available_pts = media->GetDemuxer ()->GetLastAvailablePts ();
+		} else {
+			currently_available_pts = 0;
 		}
-		
+		current_pts = mplayer->GetPosition ();
+		buffer_pts = TimeSpan_ToPts (GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ());
+
+		// Check that we don't cause any div/0.		
+		if (current_pts - last_played_pts + buffer_pts == currently_available_pts - last_played_pts) {
+			progress = 1.0;
+		} else {
+			progress = (double) (currently_available_pts - last_played_pts) / (double) (current_pts - last_played_pts + buffer_pts);
+		}
+
 		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
 		
-		if ((progress = ((double) buffered_size) / buffer_size) > 1.0)
+		LOG_BUFFERINGPROGRESS ("MediaElement::UpdateProgress (), buf start: %llu = %llu ms, buf end: %llu = %llu ms, buf time: %llu = %llu ms, last_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
+				buffering_start, MilliSeconds_FromPts (buffering_start), buffering_end, MilliSeconds_FromPts (buffering_end), buffering_time, MilliSeconds_FromPts (buffering_time), last_available_pts, MilliSeconds_FromPts (last_available_pts), current, progress);
+
+		if (progress < 0.0)
+			progress = 0.0;
+		else if (progress > 1.0)
 			progress = 1.0;
-		/*
-		printf ("MediaElement::UpdateProgress (), write_pos: %lld, size: %lld, wait_pos: %lld, "
-					"buffer size: %lld, buffered_size: %lld, buffering start: %lld, progress: %.2f, current: %.2f\n",
-			write_pos, size, wait_pos, buffer_size, buffered_size, buffering_start, progress, current);
-		*/
 
 		if (current > progress) {
-			// Given that the calculated position we're waiting for might be an estimate
-			// the buffering progress might go down when the estimate gets better.
-			// In this case don't emit any events
+			// Somebody might have seeked further away after the first change to Buffering,
+			// in which case the progress goes down. Don't emit any events in this case.
 			emit = false;
 		}
 		
@@ -861,8 +860,7 @@ MediaElement::TryOpenFinished (void *user_data)
 	if (MEDIA_SUCCEEDED (closure->result)) {
 		printf ("MediaElement::TryOpen (): download is not complete, but media was "
 			"opened successfully and we'll now start buffering.\n");
-		element->buffering_pts = 0;
-		element->buffering_start = closure->GetMedia ()->GetSource ()->GetPosition (); // FIXME: This should be the end of the header/start of data
+		element->last_played_pts = 0;
 		element->SetState (Buffering);
 		element->MediaOpened (closure->GetMedia ());
 	} else {
@@ -1007,15 +1005,12 @@ MediaElement::SetSourceInternal (Downloader *dl, const char *PartName)
 {
 	bool is_live = false;
 	if (g_str_has_prefix (dl->GetValue (Downloader::UriProperty)->AsString (), "mms")) {
-#if DEBUG
-		printf ("MediaElement is trying to load an mms stream, which isn't supported yet (%s)\n", dl->GetValue (Downloader::UriProperty)->AsString ());
-#endif	
 		is_live = true;
 	}
 	
 	LOG_MEDIAELEMENT ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", dl, PartName, dl->GetValue (Downloader::UriProperty)->AsString ());
 	
-	Reinitialize ();
+	Reinitialize (false);
 	
 	downloader = dl;
 	downloader->ref ();
@@ -1207,12 +1202,17 @@ MediaElement::UpdatePlayerPosition (Value *value)
 		position = duration->GetTimeSpan ();
 	else if (position < 0)
 		position = 0;
+
+	if (position == mplayer->GetPosition ())
+		return position	;
 	
 	// position is a timespan, while mplayer expects time pts
-	buffering_pts = TimeSpan_ToPts (position); 
 	mplayer->Seek (TimeSpan_ToPts (position));
 	Invalidate ();
 	
+	LOG_MEDIAELEMENT ("MediaElement::UpdatePlayerPosition (%p), buffering_start: %llu = %llu ms, buffering_end: %llu = %llu ms, position: %llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms\n",
+		 value, buffering_start, MilliSeconds_FromPts (buffering_start), buffering_end, MilliSeconds_FromPts (buffering_end), position, MilliSeconds_FromPts (position), mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ()));
+
 	return position;
 }
 
@@ -1241,6 +1241,8 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 		
 		TimeSpan position = UpdatePlayerPosition (value);
 		
+		LOG_MEDIAELEMENT ("MediaElement::SetValue (Position, %llu = %llu ms)\n", position, MilliSeconds_FromPts (position));
+
 		if (IsStopped ())
 			SetState (Paused);
 		

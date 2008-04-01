@@ -119,7 +119,8 @@ namespace MoonlightTests {
 				int master_frames_count = master.GetFrameCount (master_dimension);
 
 				if (result_frames_count != master_frames_count) {
-					test.SetFailedReason (String.Format ("Result and Master do not have the same number of frames for frame dimension {0}", i));
+					test.SetFailedReason (String.Format ("Result and Master do not have the same number of frames for frame dimension {0} ({1} vs {2})",
+							i, result_frames_count, master_frames_count));
 					return TestResult.Fail;
 				}
 

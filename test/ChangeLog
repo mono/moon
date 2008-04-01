@@ -1,3 +1,13 @@
+2008-03-31  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am, harness/Makefile.am: Add directories to dist for tests
+
+2008-03-31  Larry Ewing  <lewing@novell.com>
+
+	* xaml/drtlist.xml: convert some of the tests that were
+	incorrectly turned into animations back to static tests.  Fix the
+	incorrect html templates for those tests.
+
 2008-03-28  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/clock/README.txt: Updating the test descriptions. 

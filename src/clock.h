@@ -377,6 +377,7 @@ class ClockGroup : public Clock {
 
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
+	bool IsIdle () { return idle_hint; };
 
 	virtual void SetTimeManager (TimeManager *manager);
 
@@ -399,6 +400,7 @@ class ClockGroup : public Clock {
  private:
 	TimelineGroup *timeline;
 	bool emitted_complete;
+	bool idle_hint;
 };
 
 

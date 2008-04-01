@@ -41,6 +41,7 @@
 
 using System;
 using System.Collections.Generic;
+using GLib;
 using Gtk;
 using Cairo;
 using Gtk.Moonlight;
@@ -68,6 +69,7 @@ class MonoOpen {
 	static int current_storyboard = 0;
 	static bool all_stories = false;
 	static bool sync = false;
+	static int timeout = -1;
 	
 	static void Help ()
 	{
@@ -81,7 +83,8 @@ class MonoOpen {
 				   "   --story N1[,Nx] Plays the storyboard name N1, N2, .. Nx when the clicked\n" +
 				   "   -s,--stories    Automatically prepare to play all stories on click\n" + 
 				   "   --sync          Make the gdk connection synchronous\n" +
-				   "   --transparent   Transparent toplevel\n" 
+				   "   --transparent   Transparent toplevel\n" +
+				   "   --timeout T     Time, in seconds, before closing the window\n"
 				   );
 	}
 
@@ -236,9 +239,18 @@ class MonoOpen {
 				storyboards [current_storyboard++].Begin ();
 			};
 		}
-		
+
+		if (timeout > 0)
+			GLib.Timeout.Add ((uint)(timeout * 1000), new TimeoutHandler (Quit));
+
 		Application.Run ();
 		return 0;
+	}
+
+	static bool Quit ()
+	{
+		Application.Quit ();
+		return true;
 	}
 
 	static bool ParseGeometry (string geometry, out int width, out int height)
@@ -343,6 +355,18 @@ class MonoOpen {
 				
 			case "--parseonly": case "--parse-only":
 				parse_only = true;
+				break;
+
+			case "--timeout":
+				if (i+1 == args.Length){
+					Console.Error.WriteLine ("mopen: timeout flag `{0}' takes an argument", args [i]);
+					return 1;
+				}
+				i++;
+				if (!Int32.TryParse (args [i], out timeout)) {
+					Console.Error.WriteLine ("mopen: invalid timeout value `{0}'", args [i]);
+					return 1;
+				}
 				break;
 
 			default:

@@ -560,18 +560,15 @@
    />
    <Test id="136"
         inputFile="test-clip-invalid-update.htm"
-	masterFile10="../harness/masters/test-clip-invalid-updateMaster.tif"
-	captureSpecifier="300,15"
+	masterFile10="../harness/masters/test-clip-invalid-updateMaster.png"
    />
    <Test id="137"
         inputFile="test-inkpresenter-position.htm"
-	masterFile10="../harness/masters/test-inkpresenter-positionMaster.tif"
-	captureSpecifier="300,15"
+	masterFile10="../harness/masters/test-inkpresenter-positionMaster.png"
    />
    <Test id="138"
         inputFile="test-inkpresenter-scale.htm"
-	masterFile10="../harness/masters/test-inkpresenter-scaleMaster.tif"
-	captureSpecifier="300,15"
+	masterFile10="../harness/masters/test-inkpresenter-scaleMaster.png"
    />
    <Test id="139"
 	inputFile="test-empty-element-source.html"
@@ -579,8 +576,7 @@
    />
    <Test id="140"
 	inputFile="test-shape-line-stretch2.xaml"
-	masterFile10="../harness/masters/test-shape-line-stretch2Master.tif"
-	captureSpecifier="300,15"
+	masterFile10="../harness/masters/test-shape-line-stretch2Master.png"
    />
    <Test id="141"
 	inputFile="test-shape-polyline-stretch2.xaml"
@@ -592,8 +588,7 @@
    />
    <Test id="143"
 	inputFile="test-transform-clip.htm"
-	masterFile10="../harness/masters/test-transform-clipMaster.tif"
-	captureSpecifier="300,15"
+	masterFile10="../harness/masters/test-transform-clipMaster.png"
    />
    <Test id="144"
         inputFile="test-property-parsing.xaml"
@@ -602,8 +597,7 @@
    />
    <Test id="145"
         inputFile="test-canvas-toplevel.xaml"
-        masterFile10="../harness/masters/test-canvas-toplevelMaster.tif"
-	captureSpecifier="300,15"
+        masterFile10="../harness/masters/test-canvas-toplevelMaster.png"
    />
    <Test id="146"
         inputFile="test-lineargradientbrush-absolute-moire.xaml"

@@ -3364,32 +3364,30 @@ moonlight_downloader_mapping [] = {
 	{ "getresponsetext", MoonId_GetResponseText },
 	{ "open", MoonId_Open },
 	{ "responsetext", MoonId_ResponseText },
-	{ "responsetext", MoonId_ResponseText },
 	{ "send", MoonId_Send }
 };
 
 bool
 MoonlightDownloaderObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
-	Downloader *dl = (Downloader*)GetDependencyObject ();
-
+	Downloader *downloader = (Downloader *) GetDependencyObject ();
+	uint64_t size;
+	char *buf;
+	
 	switch (id) {
-	case MoonId_ResponseText: {
-		uint64_t size;
-		char* buf = (char*)downloader_get_response_text (dl, NULL, &size);
-
-		if (buf) {
-			char *s = (char*)NPN_MemAlloc (size);
+	case MoonId_ResponseText:
+		if ((buf = downloader->GetResponseText (NULL, &size))) {
+			char *s = (char *) NPN_MemAlloc (size + 4);
+			memset (s + size, 0, 4);
 			memcpy (s, buf, size);
-			STRINGN_TO_NPVARIANT (s, size, *result);
 			g_free (buf);
-		}
-		else
+			
+			STRINGN_TO_NPVARIANT (s, size, *result);
+		} else {
 			NULL_TO_NPVARIANT (*result);
-
+		}
+		
 		return true;
-	}
-
 	default:
 		return MoonlightDependencyObjectObject::GetProperty (id, name, result);
 	}

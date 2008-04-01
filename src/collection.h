@@ -59,6 +59,11 @@ class Collection : public DependencyObject {
 
 	virtual void SetSurface (Surface *surface);
 
+	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
+	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
+
+	void MergeNames (DependencyObject *new_obj);
+
 	// non virtual version callable from the dtor.
 	void Clear (bool emit_event);
 
