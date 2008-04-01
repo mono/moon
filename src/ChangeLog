@@ -1,3 +1,16 @@
+2008-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* control.cpp (Control::InitializeFromXaml): make sure to call
+	SetSurface(NULL) on the old real_object since we're detaching it
+	from the tree.  Call SetSurface on ourselves (really, should just
+	be the real_object, right?) before calling the real_object methods
+	that would cause dirty stuff to happen.
+
+	* xaml.cpp (create_custom_element): don't call SetSurface here, it
+	will cause problems if there's a parser error (since elements
+	can/will be on the surface's dirty list after they're destroyed.)
+	(default_create_element_instance): same.
+
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* playlist.cpp, playlist.h: A lot of fixes according to the tests.

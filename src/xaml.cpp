@@ -665,8 +665,6 @@ create_custom_element (XamlParserInfo *p, XamlElementInfo *i)
 	inst->element_type = XamlElementInstance::ELEMENT;
 	inst->item = c->dependency_object;
 
-	if (p->loader)
-		inst->item->SetSurface (p->loader->GetSurface ());
 	p->AddCreatedElement (inst->item);
 
 	return inst;
@@ -2502,9 +2500,6 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 
 	if (!inst->item) {
 		inst->item = i->create_item ();
-
-		if (p->loader)
-			inst->item->SetSurface (p->loader->GetSurface ());
 
 		// in case we must store the collection into the parent
 		if (dep && dep->value_type == i->dependency_type)

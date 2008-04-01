@@ -1958,6 +1958,8 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		if (!dep)
 			THROW_JS_EXCEPTION ("createFromXaml");
 
+		dep->SetSurface (plugin->surface);
+
 		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, dep);
 		dep->unref ();
 
@@ -1986,6 +1988,8 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 
 		if (!dep)
 			THROW_JS_EXCEPTION ("createFromXamlDownloader");
+
+		dep->SetSurface (plugin->surface);
 
 		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, dep), *result);
 		dep->unref ();

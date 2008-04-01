@@ -165,19 +165,20 @@ Control::InitializeFromXaml (const char *xaml,
 
 	if (real_object){
 		real_object->SetVisualParent (NULL);
+		real_object->SetSurface (NULL);
 		base_unref (real_object);
 	}
 
 	real_object = (FrameworkElement *) element;
 	real_object->SetVisualParent (this);
 
+	if (loader)
+		SetSurface (loader->GetSurface ());
+
 	real_object->AddPropertyChangeListener (this);
 	real_object->UpdateTotalRenderVisibility ();
 	real_object->UpdateTransform ();
 	UpdateBounds ();
-
-	if (loader)
-		SetSurface (loader->GetSurface ());
 
 	return element;
 }

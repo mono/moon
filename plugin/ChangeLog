@@ -1,3 +1,10 @@
+2008-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightContentObject::Invoke): in
+	createFromXaml/createFromXamlDownloader, call dep->SetSurface()
+	after we parse to make sure the thing knows what surface it
+	belongs to.
+
 2008-04-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightContentObject::Invoke): Properly
