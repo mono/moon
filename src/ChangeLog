@@ -1,5 +1,10 @@
 2008-04-01  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp: Since now the clocks are synced we don't need to
+	recursively check the states in the teardown on completed.
+
+2008-04-01  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp:
 	* clock.h: Getting rid of the nasty clock desyncing (setting ClockGroup
 	manually to Stopped but not touching the state of children).

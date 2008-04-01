@@ -291,35 +291,15 @@ Storyboard::DetachClockGroupFromParent ()
 	}
 }
 
-static bool
-clock_is_fully_stopped_recursive (Clock *clck)
-{
-	if (clck == NULL)
-		return true;
-
-	if (clck->GetClockState () != Clock::Stopped)
-		return false;
-
-	if (clck->GetObjectType () == Type::CLOCKGROUP) {
-		for (GList *l = ((ClockGroup *) clck)->child_clocks; l; l = l->next) {
-			if (! clock_is_fully_stopped_recursive ((Clock *) l->data))
-				return false;
-		}
-
-		return true;
-	}
-
-	return true;
-}
-
 void
 Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Storyboard *sb = (Storyboard *)closure;
 
 	// Only teardown the clocks if the whole storyboard is stopped.
-	// Otherwise just keep running.
-	if (clock_is_fully_stopped_recursive (sb->root_clock))
+	// Otherwise just remove from parent not be affected by it's 
+	// state changes
+	if (sb->root_clock->GetClockState () == Clock::Stopped)
 		sb->TeardownClockGroup ();
 	else
 		sb->DetachClockGroupFromParent ();
