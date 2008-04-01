@@ -64,7 +64,7 @@ var AssortedTestSuite = Class.create ();
 AssortedTestSuite.prototype = {
 	testIsVersionSupported1_0: function () {
 		var ml = $plugin();
-		var values = [];
+		var values = new Array ();
 
 		if (!is1_0 (ml)) {
 			this.ignore ("This test is only for version 1.0");
@@ -97,6 +97,8 @@ AssortedTestSuite.prototype = {
 		for (test in values) {
 			var result = values [test];
 			var pf = "IsVersionSupported (\"" + test + "\") = ";
+			if (!((typeof result).toString () == "boolean"))
+				continue;
 			this.assertEqual (pf + result, pf + ml.IsVersionSupported (test));
 		}
 	},
@@ -142,6 +144,13 @@ AssortedTestSuite.prototype = {
 		}
 	},
 
+/*
+	testSettingObjectValue: function () {
+		var line = $plugin ().content.createFromXaml ("<Line X1='' />");
+		line.X1 = new Array ();
+		// This currently crashes moonlight.
+	},
+*/
 	testMatrixWithMoreThanSixItems: function () {
 		var mt = $plugin ().content.createFromXaml ("<MatrixTransform Matrix='1,0,0,1,0,1,1,0,0' />");
 		var matrix = mt.matrix;

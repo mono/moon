@@ -1,3 +1,8 @@
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* assorted.html: Minor fixes in testIsVersionSupported1_0, and add a
+	  commented out test which crashes Moonlight.
+
 2008-03-14  Chris Toshok  <toshok@ximian.com>
 
 	* props.html: add another case to testNonDOPropertyChaining.
