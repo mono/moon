@@ -99,26 +99,8 @@ class EventObject {
 		OBJECT_TRACK ("Ref", GetTypeName ());
 	}
 	
-	void unref ()
-	{
-		bool delete_me = g_atomic_int_dec_and_test (&refcount);
+	void unref ();
 
-		OBJECT_TRACK ("Unref", GetTypeName ());
-
-		if (delete_me) {
-			Emit (DestroyedEvent);
-			if (refcount != 0) {
-#if OBJECT_TRACKING
-				g_warning ("Object %i of type %s has been woken up from the dead.\n", id, GetTypeName ());
-#else
-				g_warning ("Object %p of type %s has been woken up from the dead.\n", this, GetTypeName ());
-#endif
-			}
-			delete this;
-		}
-	}
-
-	void unref_delayed ();
 
 	int GetRefCount () { return refcount; }
 
@@ -174,6 +156,7 @@ class EventObject {
 	gint32 refcount;
 
 	void FreeHandlers ();
+	void unref_delayed ();
 	
 	EventList *events;
 
@@ -315,7 +298,6 @@ G_BEGIN_DECLS
 
 void base_ref (EventObject *obj);
 void base_unref (EventObject *obj);
-void base_unref_delayed (EventObject *obj);
 
 void drain_unrefs ();
 

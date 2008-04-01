@@ -1,5 +1,10 @@
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.h, dependencyobject.cpp: EventObject::unref: check if
+	  we're being unreffed on the main thread, if not, call unref_delayed.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* runtime.cpp, runtime.h: Added a Surface::InMainThread.
 
 2008-04-01  Fernando Herrera  <fherrera@novell.com>

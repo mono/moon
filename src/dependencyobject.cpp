@@ -77,6 +77,31 @@ EventObject::~EventObject()
 		FreeHandlers ();
 }
 
+void 
+EventObject::unref ()
+{
+	bool delete_me;
+
+	if (!Surface::InMainThread ()) {
+		unref_delayed ();
+		return;
+	}
+
+	delete_me = g_atomic_int_dec_and_test (&refcount);
+
+	OBJECT_TRACK ("Unref", GetTypeName ());
+
+	if (delete_me) {
+		Emit (DestroyedEvent);
+#if DEBUG
+		if (refcount != 0) {
+			g_warning ("Object %p (id: %i) of type %s has been woken up from the dead.\n", this, GET_OBJ_ID (this), GetTypeName ());
+		}
+#endif
+		delete this;
+	}
+}
+
 #if DEBUG
 int EventObject::objects_created = 0;
 int EventObject::objects_destroyed = 0;
@@ -401,15 +426,6 @@ base_unref (EventObject *obj)
 		obj->unref ();
 }
 
-void
-base_unref_delayed (EventObject *obj)
-{
-	if (!obj)
-		return;
-
-	obj->unref_delayed ();
-}
-
 static pthread_mutex_t delayed_unref_mutex = PTHREAD_MUTEX_INITIALIZER;
 static bool drain_tick_call_added = false;
 static GSList *pending_unrefs = NULL;
@@ -444,6 +460,11 @@ void
 EventObject::unref_delayed ()
 {
 	OBJECT_TRACK ("DelayedUnref", GetTypeName ());
+
+#if DEBUG
+	if (Surface::InMainThread ())
+		printf ("EventObject::unref_delayed () is being called on the main thread.\n");
+#endif
 	
 	pthread_mutex_lock (&delayed_unref_mutex);
 	pending_unrefs = g_slist_prepend (pending_unrefs, this);
