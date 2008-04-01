@@ -177,7 +177,9 @@ npidentifier_to_downstr (NPIdentifier id)
 	return strname;
 }
 
+
 #define STR_FROM_VARIANT(v) ((char *) NPVARIANT_TO_STRING (v).utf8characters)
+#define STRLEN_FROM_VARIANT(v) ((size_t) NPVARIANT_TO_STRING (v).utf8length)
 
 #define DEPENDENCY_OBJECT_FROM_VARIANT(obj) (((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (obj))->GetDependencyObject ())
 
@@ -1941,18 +1943,18 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 	case MoonId_CreateFromXaml: {
 		if (!argCount)
 			THROW_JS_EXCEPTION ("createFromXaml");
-
-		char *xaml = STR_FROM_VARIANT (args [0]);
+		
 		bool create_namescope = argCount >= 2 ? NPVARIANT_TO_BOOLEAN (args[1]) : false;
+		char *xaml = STR_FROM_VARIANT (args[0]);
 		
 		if (!xaml)
 			THROW_JS_EXCEPTION ("createFromXaml");
-
+		
 		Type::Kind element_type;
 		XamlLoader *loader = PluginXamlLoader::FromStr (xaml, plugin, plugin->surface);
 		DependencyObject *dep = xaml_create_from_str (loader, xaml, create_namescope, &element_type);
 		delete loader;
-
+		
 		if (!dep)
 			THROW_JS_EXCEPTION ("createFromXaml");
 
@@ -2301,7 +2303,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	// Some debug code...
 	// with this it is possible to do obj.printf ("msg") from js
 	case MoonId_Printf:
-		fprintf (stderr, "JS message: %s\n", STR_FROM_VARIANT (args [0]));
+		fprintf (stderr, "JS message: %s\n", STR_FROM_VARIANT (args[0]));
 		VOID_TO_NPVARIANT (*result);
 		return true;
 #endif
@@ -3374,17 +3376,16 @@ MoonlightDownloaderObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 {
 	Downloader *downloader = (Downloader *) GetDependencyObject ();
 	uint64_t size;
-	char *buf;
+	char *text;
 	
 	switch (id) {
 	case MoonId_ResponseText:
-		if ((buf = downloader->GetResponseText (NULL, &size))) {
-			char *s = (char *) NPN_MemAlloc (size + 4);
-			memset (s + size, 0, 4);
-			memcpy (s, buf, size);
-			g_free (buf);
+		if ((text = downloader->GetResponseText (NULL, &size))) {
+			char *s = (char *) NPN_MemAlloc (size + 1);
+			memcpy (s, text, size + 1);
+			g_free (text);
 			
-			STRINGN_TO_NPVARIANT (s, size, *result);
+			STRINGN_TO_NPVARIANT (s, (uint32_t) size, *result);
 		} else {
 			NULL_TO_NPVARIANT (*result);
 		}
@@ -3400,69 +3401,60 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 				   const NPVariant *args, uint32_t argCount,
 				   NPVariant *result)
 {
-	Downloader *dl = (Downloader*)GetDependencyObject ();
-
+	Downloader *downloader = (Downloader *) GetDependencyObject ();
+	char *part, *verb, *uri, *text;
+	uint64_t size;
+	
 	switch (id) {
-
 	case MoonId_Abort:
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("abort");
 
-		downloader_abort (dl);
-
+		downloader->Abort ();
+		
 		VOID_TO_NPVARIANT (*result);
-
+		
 		return true;
-
-	case MoonId_Open: {
+	case MoonId_Open:
 		if (argCount > 3)
 			THROW_JS_EXCEPTION ("open");
-
-		char *verb = STR_FROM_VARIANT (args [0]);
-		char *uri = STR_FROM_VARIANT (args [1]);
-
-		downloader_open (dl, verb, uri);
-
+		
+		verb = STR_FROM_VARIANT (args[0]);
+		uri = STR_FROM_VARIANT (args[1]);
+		
+		downloader->Open (verb, uri);
+		
 		VOID_TO_NPVARIANT (*result);
-
+		
 		return true;
-	}
-
 	case MoonId_Send:
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("send");
-
-		downloader_send (dl);
-
+		
+		downloader->Send ();
+		
 		VOID_TO_NPVARIANT (*result);
-
+		
 		return true;
-
-	case MoonId_GetResponseText: {
+	case MoonId_GetResponseText:
 		if (argCount != 1)
 			THROW_JS_EXCEPTION ("getResponseText");
-
-		char *part_name = STR_FROM_VARIANT (args [0]);
-
-		uint64_t size;
-		char* buf = (char*) downloader_get_response_text (dl, part_name, &size);
-
-		if (buf) {
-			char *s = (char*)NPN_MemAlloc (size);
-			memcpy (s, buf, size);
-			STRINGN_TO_NPVARIANT (s, size, *result);
-			g_free (buf);
-		}
-		else
+		
+		part = STR_FROM_VARIANT (args[0]);
+		
+		if ((text = downloader->GetResponseText (part, &size))) {
+			char *s = (char *) NPN_MemAlloc (size + 1);
+			memcpy (s, text, size + 1);
+			g_free (text);
+			
+			STRINGN_TO_NPVARIANT (s, (uint32_t) size, *result);
+		} else {
 			NULL_TO_NPVARIANT (*result);
-
+		}
+		
 		return true;
-	}
-
 	default:
-		return MoonlightDependencyObjectObject::Invoke (id, name,
-								args, argCount,
-								result);
+		return MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);
 	}
 }
 
