@@ -1,6 +1,7 @@
 2008-04-01  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/ExternalProcess.cs: Fix error message.
+	- Don't try to get the error code if the process times out.
 
 2008-04-01  Jackson Harper  <jackson@ximian.com>
 
