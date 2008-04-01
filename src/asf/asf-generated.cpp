@@ -61,7 +61,7 @@ bool asf_object_validate_exact (const asf_object* obj, ASFParser* parser)
 		return asf_extended_stream_properties_validate ((asf_extended_stream_properties*) obj, parser);
 	default:
 		parser->AddError (g_strdup_printf ("No validation implemented for %s.", asf_guid_get_name (&obj->id)));
-		return false;
+		return true;
 	}
 }
 
