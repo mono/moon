@@ -49,9 +49,7 @@ void		xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** a
 void		xaml_loader_add_missing (XamlLoader* loader, const char* file);
 G_END_DECLS
 
-struct XamlLoaderCallbacks
-{	
-public:
+struct XamlLoaderCallbacks {
 	xaml_load_managed_object_callback *load_managed_object;
 	xaml_set_custom_attribute_callback *set_custom_attribute;
 	xaml_hookup_event_callback *hookup_event;
@@ -98,16 +96,7 @@ public:
 */
 
 
-class XamlLoader
-{
-public:
-	enum AssemblyLoadResult {
-		SUCCESS = -1,
-		MissingAssembly = 1,
-		LoadFailure = 2
-	};
-
-private:
+class XamlLoader {
 	Surface* surface;
 	char* filename;
 	char* str;
@@ -115,6 +104,12 @@ private:
 	GHashTable* missing_assemblies;
 
 public:
+	enum AssemblyLoadResult {
+		SUCCESS = -1,
+		MissingAssembly = 1,
+		LoadFailure = 2
+	};
+	
 	XamlLoader (const char* filename, const char* str, Surface* surface);
 	virtual ~XamlLoader ();
 	virtual bool LoadVM ();
@@ -136,7 +131,7 @@ public:
 	void RemoveMissing (const char* assembly);
 
 	bool vm_loaded;
-public:
+	
 	XamlLoaderCallbacks callbacks;
 	ParserErrorEventArgs *error_args;
 };
