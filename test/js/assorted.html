@@ -145,8 +145,6 @@ AssortedTestSuite.prototype = {
 	},
 
 	testSettingObjectValue: function () {
-		this.ignore ("This currently crashes moonlight.");
-		return;
 		var line = $plugin ().content.createFromXaml ("<Line X1='' />");
 		line.X1 = new Array ();
 	},

@@ -1,3 +1,8 @@
+2008-04-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* assorted.html: Crasher fixed, no need to ignore the test
+	anymore.
+
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* assorted.html: Ignore the test instead of commenting it out.
