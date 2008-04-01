@@ -98,6 +98,8 @@ EventObject::unref ()
 			g_warning ("Object %p (id: %i) of type %s has been woken up from the dead.\n", this, GET_OBJ_ID (this), GetTypeName ());
 		}
 #endif
+		SetSurface (NULL);
+
 		delete this;
 	}
 }

@@ -1,5 +1,12 @@
 2008-04-01  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp: back out the SetSurface call removal.
+
+	* dependencyobject.cpp (EventObject::unref): instead,
+	SetSurface(NULL) here before we delete the object.
+
+2008-04-01  Chris Toshok  <toshok@ximian.com>
+
 	* control.cpp (Control::InitializeFromXaml): make sure to call
 	SetSurface(NULL) on the old real_object since we're detaching it
 	from the tree.  Call SetSurface on ourselves (really, should just
