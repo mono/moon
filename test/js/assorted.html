@@ -144,13 +144,13 @@ AssortedTestSuite.prototype = {
 		}
 	},
 
-/*
 	testSettingObjectValue: function () {
+		this.ignore ("This currently crashes moonlight.");
+		return;
 		var line = $plugin ().content.createFromXaml ("<Line X1='' />");
 		line.X1 = new Array ();
-		// This currently crashes moonlight.
 	},
-*/
+
 	testMatrixWithMoreThanSixItems: function () {
 		var mt = $plugin ().content.createFromXaml ("<MatrixTransform Matrix='1,0,0,1,0,1,1,0,0' />");
 		var matrix = mt.matrix;
