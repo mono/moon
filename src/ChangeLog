@@ -1,5 +1,9 @@
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.h: Added MediaElement::GetPlaylist.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* type.cpp, type.cpp.in, type.h, type.h.in, value.cpp, value.h, value.h.in:
 	  Remove Type::NPOBJ, it's not needed.
 
