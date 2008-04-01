@@ -1,5 +1,9 @@
 2008-04-01  Jackson Harper  <jackson@ximian.com>
 
+	* test-runner/ExternalProcess.cs: Fix error message.
+
+2008-04-01  Jackson Harper  <jackson@ximian.com>
+
 	* test-runner/*: Add a new xml report system.
 
 2008-03-31  Jackson Harper  <jackson@ximian.com>
