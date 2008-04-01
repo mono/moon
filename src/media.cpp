@@ -453,6 +453,7 @@ MediaElement::DownloaderAbort ()
 	if (downloader) {
 		downloader->RemoveHandler (downloader->CompletedEvent, downloader_complete, this);
 		downloader->SetWriteFunc (NULL, NULL, NULL);
+		downloader->SetRequestPositionFunc (NULL);
 		downloader_abort (downloader);
 		downloader->unref ();
 		downloader = NULL;

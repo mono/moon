@@ -1,3 +1,8 @@
+2008-04-01  Fernando Herrera  <fherrera@novell.com>
+
+	* media.cpp: Remove the request position function when aborting the
+	downloader.
+
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp, media.h, mplayer.cpp, mplayer.h: Add a dtor parameter to
