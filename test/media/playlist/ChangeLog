@@ -1,5 +1,9 @@
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* ignore.txt: Added.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* duration-no-value-in-entry.asx: New tests and baselines.
 
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
