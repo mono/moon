@@ -172,6 +172,8 @@ class Surface : public EventObject {
 	void PropagateDirtyFlagToChildren (UIElement *element, DirtyType dirt);
 	bool IsAnythingDirty ();
 
+	static pthread_t main_thread;
+	static bool InMainThread () { return pthread_equal (main_thread, pthread_self ()); }
 private:
 	// bad, but these two live in dirty.cpp, not runtime.cpp
 	void ProcessDownDirtyElements ();
