@@ -1,3 +1,9 @@
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* apps, apps/bad-quality-mms-stream-without-audio.html,
+	  apps/bad-quality-mms-stream-without-audio.xaml, apps/index.html,
+	  apps/Silverlight.js: Added a html page listing media sites.
+
 2008-03-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* playlist/abstract-in-abstract.asx.js,

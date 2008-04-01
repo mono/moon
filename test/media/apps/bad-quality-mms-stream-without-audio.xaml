@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        x:Name="parentCanvas" 
+        Loaded="Page_Loaded" 
+        Width="640"
+        Height="550"
+        Background="White"
+        >
+  
+    <MediaElement x:Name="mPlayer" Width="640" Height="480" Source="mms://a1729.l2168647534.c21686.g.lm.akamaistream.net/D/1729/21686/v0001/reflector:20965"/>
+</Canvas>
