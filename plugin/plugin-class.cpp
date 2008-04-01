@@ -356,8 +356,10 @@ variant_to_value (const NPVariant *v, Value **result)
 		*result = new Value (Type::DEPENDENCY_OBJECT);
 		break;
 	case NPVariantType_Object:
-		*result = new Value (Type::NPOBJ, NPVARIANT_TO_OBJECT (*v));
-		NPN_RetainObject (NPVARIANT_TO_OBJECT (*v));
+		// This should never happen, we should do type checking of the
+		// arguments before this point and refuse arguments we don't understand.
+		g_warning ("Got invalid value from javascript.\n");
+		*result = new Value ();
 		break;
 	}
 }

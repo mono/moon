@@ -177,7 +177,6 @@ public:
 	Value (const char* s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
-	Value (Type::Kind k, gpointer npobj);
 
 	~Value ();
 
@@ -232,7 +231,6 @@ public:
 	RepeatBehavior*	AsRepeatBehavior ()	{ checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
 	Duration*	AsDuration ()	{ checked_get_exact (Type::DURATION, NULL, u.duration); }
 	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
-	gpointer	AsNPObj ()	{ checked_get_exact (Type::NPOBJ, NULL, u.npobj); }
 
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
@@ -392,7 +390,6 @@ public:
 		KeyTime *keytime;
 		PointArray *point_array;
 		DoubleArray *double_array;
-		gpointer npobj;
 	} u;
 
 

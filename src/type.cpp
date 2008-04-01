@@ -317,7 +317,6 @@ types_init_manually (void)
 	Type::RegisterType ("KeyTime", Type::KEYTIME, true);
 	Type::RegisterType ("double*", Type::DOUBLE_ARRAY, false);
 	Type::RegisterType ("Point*", Type::POINT_ARRAY, false);
-	Type::RegisterType ("NPObj", Type::NPOBJ, false);
 	Type::RegisterType ("EventObject", Type::EVENTOBJECT, false);
 	Type::RegisterType ("TimeSource", Type::TIMESOURCE, Type::EVENTOBJECT);
 	Type::RegisterType ("ManualTimeSource", Type::MANUALTIMESOURCE, Type::TIMESOURCE);

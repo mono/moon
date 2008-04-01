@@ -231,20 +231,6 @@ Value::Value (double *values, int count)
 	u.double_array = double_array_new (count, values);
 }
 
-Value::Value (Type::Kind k, gpointer npobj)
-{
-	Init ();
-	if (k != Type::NPOBJ) {
-		g_warning ("this constructor may only be used to construct objects with type Type::NPOBJ");
-		this->k = Type::INVALID;
-		u.npobj = NULL;
-		return;
-	}
-
-	this->k = Type::NPOBJ;
-	u.npobj = npobj;
-}
-
 void
 Value::FreeValue ()
 {
