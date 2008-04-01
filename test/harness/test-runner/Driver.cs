@@ -121,7 +121,7 @@ namespace MoonlightTests {
 			LoggingServer logging_server = new LoggingServer ();
 			logging_server.Start ();
 
-			test_run = new TestRun (verbose_level, logging_server);
+			test_run = new TestRun (Path.GetDirectoryName (drtlist), verbose_level, logging_server);
 
 			LoadTests (drtlist);
 			Screensaver.Inhibit ();
@@ -145,7 +145,7 @@ namespace MoonlightTests {
 
 				ReportsExecuting (test);
 				TestResult result = test.Execute (compare_to_moon);
-
+				
 				if (logging_server.IsTestResultSet (test.InputFileName)) {
 					result = logging_server.GetTestResult (test.InputFileName);
 					if (result == TestResult.Fail)
@@ -335,6 +335,8 @@ namespace MoonlightTests {
 
 			if (add_console_report)
 				d.AddReport (new ConsoleReport ());
+
+			d.AddReport (new XmlReport ());
 
 			return d.Run (drtlist);
 		}

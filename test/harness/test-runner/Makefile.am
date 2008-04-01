@@ -21,7 +21,8 @@ test_runner_sources = 		\
 	IReport.cs		\
 	VerboseLevel.cs		\
 	ConsoleReport.cs	\
-	HtmlReport.cs
+	HtmlReport.cs		\
+	XmlReport.cs
 
 test_runner_resources = 			\
 	/resource:$(srcdir)/html_template.html
