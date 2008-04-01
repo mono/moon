@@ -71,30 +71,30 @@ public:
 
 /*
 
-	Plugin:
-		- calls PluginXamlLoader::TryLoad to try to load some xaml.
-		-	calls xaml_create_from_*
-		- 		calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
-		-			parses the xmlns and name
-		- 			calls XamlLoader::LoadVM.
-		-				PluginXamlLoader::LoadVM will load the vm and create a ManagedXamlLoader (which will set the callbacks in XamlLoader)
-		- 			calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
-		-				calls the create_managed_object callback (if any).
-		-					will try to load the assembly, if it fails, it's requested.
-		-	if XamlLoader::CreateManagedObject failed, try to download the missing assembly (if any).
-		-	if no missing assembly, the xaml load fails.
+  Plugin:
+    - calls PluginXamlLoader::TryLoad to try to load some xaml.
+    -  calls xaml_create_from_*
+    -     calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
+    -      parses the xmlns and name
+    -       calls XamlLoader::LoadVM.
+    -        PluginXamlLoader::LoadVM will load the vm and create a ManagedXamlLoader (which will set the callbacks in XamlLoader)
+    -       calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
+    -        calls the create_managed_object callback (if any).
+    -          will try to load the assembly, if it fails, it's requested.
+    -  if XamlLoader::CreateManagedObject failed, try to download the missing assembly (if any).
+    -  if no missing assembly, the xaml load fails.
 
-	Deskop:
-		- calls System.Windows.XamlReader::Load
-		-	creates a ManagedXamlLoader and a native XamlLoader (setting the callbacks).
-		-	calls xaml_create_from_str
-		- 		calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
-		-			parses the xmlns and name
-		- 			calls XamlLoader::LoadVM (which does nothing).
-		- 			calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
-		-				calls the create_managed_object callback (if any).
-		-					will try to load the assembly, if it fails, it's requested.
-		-  	destroy the native/managed XamlLoader. Any requested assemblies are ignored, no retries are done.
+  Deskop:
+    - calls System.Windows.XamlReader::Load
+    -  creates a ManagedXamlLoader and a native XamlLoader (setting the callbacks).
+    -  calls xaml_create_from_str
+    -     calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
+    -      parses the xmlns and name
+    -       calls XamlLoader::LoadVM (which does nothing).
+    -       calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
+    -        calls the create_managed_object callback (if any).
+    -          will try to load the assembly, if it fails, it's requested.
+    -    destroy the native/managed XamlLoader. Any requested assemblies are ignored, no retries are done.
 */
 
 
