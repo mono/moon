@@ -1,6 +1,6 @@
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	
+	* value.cpp: Remove a few warnings which might give false positives now.
 
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
