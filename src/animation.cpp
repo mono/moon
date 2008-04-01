@@ -147,6 +147,8 @@ AnimationClock::Stop ()
 		storage->ResetPropertyValue ();
 		storage->DetachUpdateHandler ();
 	}
+
+	Clock::Stop ();
 }
 
 AnimationClock::~AnimationClock ()

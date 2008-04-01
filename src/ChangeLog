@@ -1,3 +1,7 @@
+2008-04-01  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Chain to parent's Clock::Stop in AnimationClock::Stop.
+
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: Use base_unref, base_unref_delayed doesn't exist anymore.
