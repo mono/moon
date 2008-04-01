@@ -3364,7 +3364,6 @@ moonlight_downloader_mapping [] = {
 	{ "getresponsetext", MoonId_GetResponseText },
 	{ "open", MoonId_Open },
 	{ "responsetext", MoonId_ResponseText },
-	{ "responsetext", MoonId_ResponseText },
 	{ "send", MoonId_Send }
 };
 

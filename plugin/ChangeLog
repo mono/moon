@@ -1,3 +1,8 @@
+2008-03-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (moonlight_downloader_mapping): Got rid of
+	second ResponseText item.
+
 2008-04-01  Fernando Herrera  <fherrera@novell.com>
 
 	* browser-mmsh.cpp:
