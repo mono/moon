@@ -2660,7 +2660,7 @@ ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 {
 	ssize_t nwritten;
 
-	//printf ("ProgressiveSource::Write (%p, %lld, %i)\n", buf, offset, n);
+	// printf ("ProgressiveSource::Write (%p, %lld, %i)\n", buf, offset, n);
 	if (fd == -1) {
 		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
 		return;
@@ -2828,9 +2828,8 @@ MediaClosure::~MediaClosure ()
 {
 	delete frame;
 
-	// Use delayed unref to be thread-safe.
-	base_unref_delayed (context); //base_unref_delayed (context);
-	base_unref_delayed (media); // base_unref_delayed (media);
+	base_unref (context);
+	base_unref (media);
 }
 
 MediaResult
@@ -3370,12 +3369,12 @@ MediaWork::~MediaWork ()
 {
 	switch (type) {
 	case WorkTypeOpen:
-		base_unref_delayed (data.open.source);
+		base_unref (data.open.source);
 		break;
 	case WorkTypeVideo:
 	case WorkTypeAudio:
 	case WorkTypeMarker:
-		base_unref_delayed (data.frame.stream);
+		base_unref (data.frame.stream);
 		break;
 	case WorkTypeSeek:
 	case WorkTypeSeekToStart:

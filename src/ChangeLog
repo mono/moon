@@ -1,5 +1,9 @@
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Use base_unref, base_unref_delayed doesn't exist anymore.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* value.cpp: Remove a few warnings which might give false positives now.
 
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
