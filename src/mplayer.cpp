@@ -297,6 +297,7 @@ MediaPlayer::Open (Media *media)
 			if (posix_memalign ((void **)(&video.rgb_buffer), 16, height * stride)) {
 				g_error ("Could not allocate memory");
 			}
+			memset (video.rgb_buffer, 0, height * stride);
 			
 			// rendering surface
 			video.surface = cairo_image_surface_create_for_data (
@@ -318,14 +319,32 @@ MediaPlayer::Open (Media *media)
 		}
 	}
 	
+	current_pts = 0;
+	target_pts = 0;
+	start_pts = 0;
+	PlaylistEntry *entry = element->GetPlaylist ()->GetCurrentPlaylistEntry ();
+	if (entry != NULL) {
+		start_pts =  TimeSpan_ToPts (entry->GetStartTime ());
+		LOG_MEDIAPLAYER ("MediaPlayer::Open (), setting start_pts to: %llu (%llu ms).\n", start_pts, MilliSeconds_FromPts (start_pts));
+		if (start_pts > 0) {
+			SeekInternal (start_pts);
+		}
+	}
+	duration = media->GetDemuxer ()->GetDuration ();
+	if (start_pts >= duration + MilliSeconds_ToPts (6000) /* This random value (6000) is as close as I could get without spending hours testing */) {
+		element->MediaFailed (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
+		return false;
+	}
+
+	if (start_pts <= duration)
+		duration -= start_pts;
+	else
+		duration = 0;
+	
 	if (HasVideo ()) {
 		SetBit (LoadFramePending);
 		EnqueueFrames (0, 1);
 	}
-	
-	current_pts = 0;
-	target_pts = 0;
-	duration = media->GetDemuxer ()->GetDuration ();
 	
 	return true;
 }
@@ -340,6 +359,7 @@ MediaPlayer::Initialize ()
 	SetBit (SeekSynched);
 	
 	start_time = 0;
+	start_pts = 0;
 	current_pts = 0;
 	target_pts = 0;
 	
@@ -478,8 +498,8 @@ MediaPlayer::AdvanceFrame ()
 	
 	if (current_pts >= target_pts_end && GetBit (SeekSynched)) {
 #if DEBUG_ADVANCEFRAME
-		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %llu, target_pts: %llu, delta: %llu, diff: %lld).\n",
-			current_pts, target_pts, target_pts_delta, current_pts - target_pts);
+		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %llu, target_pts: %llu, delta: %llu, diff: %lld (%lld ms)).\n",
+			current_pts, target_pts, target_pts_delta, current_pts - target_pts, MilliSeconds_FromPts (current_pts - target_pts));
 #endif
 		return false;
 	}
@@ -746,9 +766,12 @@ MediaPlayer::Seek (uint64_t pts)
 	if (!CanSeek ())
 		return;
 	
-	if (pts > duration)
-		pts = duration;
+	if (pts > start_pts + duration)
+		pts = start_pts + duration;
 	
+	if (pts < start_pts)
+		pts = start_pts;
+
 	if (pts == current_pts)
 		return;
 	

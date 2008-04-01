@@ -87,6 +87,8 @@ private:
 	pthread_mutex_t target_pts_lock;
 	uint64_t start_time; // 100-nanosecond units (pts)
 	uint64_t duration; // 100-nanosecond units (pts)
+	// This is the pts we start playing (0 is still the first pts in the media).
+	uint64_t start_pts; // 100-nanosecond units (pts)
 	uint64_t current_pts; // 100-nanosecond units (pts)
 	uint64_t target_pts; // 100-nanosecond units (pts)
 	

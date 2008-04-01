@@ -1,5 +1,16 @@
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* playlist.cpp, playlist.h: A lot of fixes according to the tests.
+	* mplayer.h, mplayer.cpp: Initialize the rgb buffer. Add a start_pts to
+	  specify where in the stream we start and (playlists can specify a
+	  starting point which isn't in the beginning), and set the duration from
+	  the playlist (if the playlist has it).
+	* media.cpp: MediaElement::SetMedia: Handle the case if mplayer returns
+	  false from MediaPlayer::Open. MediaElement::MediaOpened: Handle the case
+	  if the recursive playlist couldn't be replaced.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.h: Added MediaElement::GetPlaylist.
 
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
