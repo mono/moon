@@ -1,0 +1,10 @@
+<ASX version="3.0">
+  <TITLE>My Test Playlist</TITLE>
+  <ENTRY>
+    <STARTTIME value="0:0:30.0" />
+    <TITLE>Short timecode video</TITLE>
+    <AUTHOR>Novell, Inc</AUTHOR>
+    <COPYRIGHT>(c) 2008 Novell, Inc</COPYRIGHT>
+    <REF HREF="../video/timecode-long.wmv" />
+  </ENTRY>
+</ASX>

@@ -1,7 +1,6 @@
 <ASX version="3.0">
   <TITLE>My Test Playlist</TITLE>
-  <ENTRYREF HREF="nested-1.asx" clientbind="invalid"o
-/>
+  <ENTRYREF HREF="nested-1.asx" clientbind="invalid"/>
   <ENTRY>
     <TITLE>Short timecode video</TITLE>
     <AUTHOR>Novell, Inc</AUTHOR>

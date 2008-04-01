@@ -10,6 +10,13 @@ var complete_log = [];
 
 var test_plugin = null;
 
+function mergeNullandUndef (arg)
+{
+	if (!arg)
+		return "null/undefined";
+	return arg;
+}
+
 function printf (message, action) {
 	if (!Plugin.Silverlight) {
 		if (action != "create")
@@ -49,8 +56,27 @@ function logAttributes (media)
 {
 	log (" Attributes: " + media.Attributes + " Attributes.Count: " + media.Attributes.Count);
 
+	// Sort the array of attributes by the name
+	var names = [];
+
 	for (var i = 0; i < media.Attributes.Count; i++) {
 		var attribute = media.Attributes.GetItem (i);
+		names.push (attribute.Name);
+	}
+
+	names.sort ();
+
+	//	for (var i = 0; i < media.Attributes.Count; i++) {
+	for (var i = 0; i < names.length; i++) {
+		var attribute = null;
+		for (var k = 0; k < media.Attributes.Count; k++) {
+			attribute = media.Attributes.GetItem (k);
+			if (attribute.Name == names [i]) {
+				break;
+			} else {
+				attribute = null;
+			}
+		}
 		log (" #" + (i + 1).toString ( ) + ": Name = '" + attribute.Name + "', Value = '" + attribute.Value + "'");
 	}
 	log (" Source: " + media.Source);
@@ -104,9 +130,9 @@ function OnTestFinished ()
 
 	try {
 		if (failed) {
-			test_plugin.LogResult (-1);
-		} else {
 			test_plugin.LogResult (0);
+		} else {
+			test_plugin.LogResult (1);
 		}
 
 		test_plugin.SignalShutdown ();
@@ -117,7 +143,7 @@ function OnTestFinished ()
 function OnMediaOpened (e, args)
 {
 	clearTimeout (timeout);
-	log ("OnMediaOpened (" + e + " [" + e.Source + "], " + args + ")");
+	log ("OnMediaOpened (" + e + " [" + e.Source + "], " + mergeNullandUndef(args) + " [" + ErrorEventArgsToOneLineString (args) + "])");
 	logAttributes (e);
 	OnTestFinished ();
 }
@@ -125,14 +151,14 @@ function OnMediaOpened (e, args)
 function OnMediaFailed (e, args)
 {
 	clearTimeout (timeout);
-	log ("OnMediaFailed (" + e + " [" + e.Source + "], " + args + " [" + ErrorEventArgsToOneLineString (args) + "])");
+	log ("OnMediaFailed (" + e + " [" + e.Source + "], " + mergeNullandUndef(args) + " [" + ErrorEventArgsToOneLineString (args) + "])");
 	OnTestFinished ();
 }
 
 function OnPluginError (e, args)
 {
 	clearTimeout (timeout);
-	log ("OnError (" + e + ", " + args + ")");
+	log ("OnError (" + e + ", " + mergeNullandUndef(args) + " [" + ErrorEventArgsToOneLineString (args) + "])");
 	OnTestFinished ();
 }
 
@@ -215,8 +241,7 @@ function createTestPlugin () {
 	if (found) {
 		document.write (
 			"<div>"+
-				"<embed id=\"_TestPlugin\" width=\"0\" height=\"0\" type=\"application/x-jolttest\">" +
-				"</embed>" +
+				"<embed id=\"_TestPlugin\" width=\"1\" height=\"0\" type=\"application/x-jolttest\"></embed>" +
 			"</div>");
 	}
 }

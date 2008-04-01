@@ -2,8 +2,14 @@ function ErrorEventArgsToString (errorArgs)
 {
     var errorMsg = "";
     
-	if (errorArgs == null)
-		return "null";
+	if (!errorArgs)
+		return "null/undefined";
+
+	if (errorArgs.toString () == "RoutedEventArgs") {
+    	errorMsg += "Error Type:    RoutedEventArgs\n";
+	    errorMsg += "Source: " + errorArgs.Source + "\n";
+		return errorMsg;
+	}
 
     // Error information common to all errors.
     errorMsg += "Error Type:    " + errorArgs.errorType + "\n";
@@ -39,8 +45,14 @@ function ErrorEventArgsToOneLineString (errorArgs)
 {
     var errorMsg = "";
     
-	if (errorArgs == null)
-		return "null";
+	if (!errorArgs)
+		return "null/undefined";
+
+	if (errorArgs.toString () == "RoutedEventArgs") {
+    	errorMsg += "Error Type:    RoutedEventArgs, ";
+	    errorMsg += "Source: " + errorArgs.Source + "";
+		return errorMsg;
+	}
 
     // Error information common to all errors.
     errorMsg += "Error Type:    " + errorArgs.errorType;

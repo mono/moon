@@ -1,0 +1,11 @@
+<ASX version="3.0">
+  <TITLE>My Test Playlist</TITLE>
+  <ABSTRACT>First abstract in the ASX tag</ABSTRACT>
+  <ABSTRACT>Second abstract in the ASX tag</ABSTRACT>
+  <ENTRY>
+    <TITLE>Short timecode video</TITLE>
+    <AUTHOR>Novell, Inc</AUTHOR>
+    <COPYRIGHT>(c) 2008 Novell, Inc</COPYRIGHT>
+    <REF HREF="../video/timecode-short.wmv" />
+  </ENTRY>
+</ASX>
