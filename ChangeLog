@@ -1,3 +1,7 @@
+2008-04-02  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Fixed dist of examples/
+
 2008-04-02  Miguel de Icaza  <miguel@novell.com>
 
 	* Move the important stuff from examples/desklet into
