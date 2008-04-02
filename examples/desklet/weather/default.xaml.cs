@@ -21,8 +21,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-using Mono.Desklets;
-
 using Gtk;
 
 namespace Desklet.Weather
@@ -181,8 +179,7 @@ namespace Desklet.Weather
 			
 			downloader.Open (
 				"GET",
-				new Uri (String.Format ("http://weather.noaa.gov/cgi-bin/mgetmetar.pl?cccc={0}", stationID.Text)),
-				true);
+				new Uri (String.Format ("http://weather.noaa.gov/cgi-bin/mgetmetar.pl?cccc={0}", stationID.Text)));
 			downloader.Send ();
 		}
 		
@@ -527,26 +524,26 @@ namespace Desklet.Weather
 		
 		void LoadControls ()
 		{
-			run = Mono.Desklets.Desklet.FindElement (this, "run", typeof (Storyboard)) as Storyboard;
-			weatherIcon = Mono.Desklets.Desklet.FindElement (this, "WeatherIcon", typeof (System.Windows.Controls.Image))
+			run = Gtk.Moonlight.Desklet.FindElement (this, "run", typeof (Storyboard)) as Storyboard;
+			weatherIcon = Gtk.Moonlight.Desklet.FindElement (this, "WeatherIcon", typeof (System.Windows.Controls.Image))
 				as System.Windows.Controls.Image;
-			windIcon = Mono.Desklets.Desklet.FindElement (this, "WindIcon", typeof (System.Windows.Controls.Image))
+			windIcon = Gtk.Moonlight.Desklet.FindElement (this, "WindIcon", typeof (System.Windows.Controls.Image))
 				as System.Windows.Controls.Image;
-			stationID = Mono.Desklets.Desklet.FindElement (this, "StationID", typeof (TextBlock)) as TextBlock;
-			temperature = Mono.Desklets.Desklet.FindElement (this, "Temperature", typeof (TextBlock)) as TextBlock;
-			dewPoint = Mono.Desklets.Desklet.FindElement (this, "DewPoint", typeof (TextBlock)) as TextBlock;
-			dewPointLabel = Mono.Desklets.Desklet.FindElement (this, "DewPointLabel", typeof (TextBlock)) as TextBlock;
-			temperaturePanel = Mono.Desklets.Desklet.FindElement (this, "TemperaturePanel", typeof (Canvas)) as Canvas;
-			show_updating = Mono.Desklets.Desklet.FindElement (this, "show_updating", typeof (Storyboard)) as Storyboard;
-			hide_updating = Mono.Desklets.Desklet.FindElement (this, "hide_updating", typeof (Storyboard)) as Storyboard;
-			updCanvas = Mono.Desklets.Desklet.FindElement (this, "UpdatingCanvas", typeof (Canvas)) as Canvas;
-			cloudsPanel = Mono.Desklets.Desklet.FindElement (this, "CloudsVisPanel", typeof (Canvas)) as Canvas;
-			loadingMessage = Mono.Desklets.Desklet.FindElement (this, "LoadingMessage", typeof (TextBlock)) as TextBlock;
-			closeButton = Mono.Desklets.Desklet.FindElement (this, "desklet-close", typeof (Polygon)) as Polygon;
-			skyConditions = Mono.Desklets.Desklet.FindElement (this, "SkyConditions", typeof (TextBlock)) as TextBlock;
-			windPanel = Mono.Desklets.Desklet.FindElement (this, "WindPanel", typeof (Canvas)) as Canvas;
-			windConditions = Mono.Desklets.Desklet.FindElement (this, "WindConditions", typeof (TextBlock)) as TextBlock;
-			windIndicator = Mono.Desklets.Desklet.FindElement (this, "WindIndicator", typeof (Ellipse)) as Ellipse;
+			stationID = Gtk.Moonlight.Desklet.FindElement (this, "StationID", typeof (TextBlock)) as TextBlock;
+			temperature = Gtk.Moonlight.Desklet.FindElement (this, "Temperature", typeof (TextBlock)) as TextBlock;
+			dewPoint = Gtk.Moonlight.Desklet.FindElement (this, "DewPoint", typeof (TextBlock)) as TextBlock;
+			dewPointLabel = Gtk.Moonlight.Desklet.FindElement (this, "DewPointLabel", typeof (TextBlock)) as TextBlock;
+			temperaturePanel = Gtk.Moonlight.Desklet.FindElement (this, "TemperaturePanel", typeof (Canvas)) as Canvas;
+			show_updating = Gtk.Moonlight.Desklet.FindElement (this, "show_updating", typeof (Storyboard)) as Storyboard;
+			hide_updating = Gtk.Moonlight.Desklet.FindElement (this, "hide_updating", typeof (Storyboard)) as Storyboard;
+			updCanvas = Gtk.Moonlight.Desklet.FindElement (this, "UpdatingCanvas", typeof (Canvas)) as Canvas;
+			cloudsPanel = Gtk.Moonlight.Desklet.FindElement (this, "CloudsVisPanel", typeof (Canvas)) as Canvas;
+			loadingMessage = Gtk.Moonlight.Desklet.FindElement (this, "LoadingMessage", typeof (TextBlock)) as TextBlock;
+			closeButton = Gtk.Moonlight.Desklet.FindElement (this, "desklet-close", typeof (Polygon)) as Polygon;
+			skyConditions = Gtk.Moonlight.Desklet.FindElement (this, "SkyConditions", typeof (TextBlock)) as TextBlock;
+			windPanel = Gtk.Moonlight.Desklet.FindElement (this, "WindPanel", typeof (Canvas)) as Canvas;
+			windConditions = Gtk.Moonlight.Desklet.FindElement (this, "WindConditions", typeof (TextBlock)) as TextBlock;
+			windIndicator = Gtk.Moonlight.Desklet.FindElement (this, "WindIndicator", typeof (Ellipse)) as Ellipse;
 		}
 
 		void StoreConfig ()
@@ -584,9 +581,9 @@ namespace Desklet.Weather
 		public void Page_Loaded (object sender, EventArgs e)
 		{
 			LoadControls ();
-			Mono.Desklets.Desklet.SetupToolbox (this);
+			Gtk.Moonlight.Desklet.SetupToolbox (this);
 			
-			if (!Mono.Desklets.Desklet.AllElementsFound) {
+			if (!Gtk.Moonlight.Desklet.AllElementsFound) {
 				Console.WriteLine ("Elements are missing from the xaml file");
 				return;
 			}

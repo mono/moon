@@ -1,0 +1,1 @@
+SUBDIRS = calculator calendar cpumonitor weather

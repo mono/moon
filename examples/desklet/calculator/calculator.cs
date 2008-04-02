@@ -7,6 +7,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
+using Gtk.Moonlight;
+
 namespace Desklet
 {
 	public class Calculator : Canvas 
@@ -60,7 +62,7 @@ namespace Desklet
 		
 		public void PageLoaded (object o, EventArgs e) 
 		{
-			Mono.Desklets.Desklet.SetupToolbox (this);
+			Gtk.Moonlight.Desklet.SetupToolbox (this);
 			
 			button9 = FindName ("9ButtonFrame") as Shape;
 			button8 = FindName ("8ButtonFrame") as Shape;

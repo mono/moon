@@ -2,7 +2,7 @@
 <Canvas
     xmlns="http://schemas.microsoft.com/client/2007"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    x:Class="Desklet.Weather.Default;assembly=bin/weather.dll"
+    x:Class="Desklet.Weather.Default;assembly=weather.dll"
     Loaded="Page_Loaded" Width="500" Height="178" 
     LayoutUpdated="Layout_Updated">
 
@@ -24,14 +24,14 @@
       <DoubleAnimationUsingKeyFrames Storyboard.TargetName="UpdatingCanvas" 
 				     Storyboard.TargetProperty="Opacity" 
 				     Duration="0:0:0.5">
-        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="(Opacity)" />
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
         <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="0" KeySpline="0.25,0.6 0.75,1" />
       </DoubleAnimationUsingKeyFrames>
     </Storyboard>
   </Canvas.Resources>
 
   <!-- border  -->
-  <Rectangle Fill="#33000000" Stroke="#33FFFFFF" StrokeThickness="1"
+  <Rectangle Stroke="#33FFFFFF" StrokeThickness="1"
 	     Canvas.Left="4" Canvas.Top="4" Width="492" Height="170"
 	     RadiusX="10" RadiusY="10">
     <Rectangle.Fill>

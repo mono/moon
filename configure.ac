@@ -545,6 +545,12 @@ tools/mopen/Makefile
 tools/svg2xaml/Makefile
 tools/xamlg/Makefile
 tools/xaml2html/Makefile
+examples/Makefile
+examples/desklet/Makefile
+examples/desklet/calculator/Makefile
+examples/desklet/calendar/Makefile
+examples/desklet/cpumonitor/Makefile
+examples/desklet/weather/Makefile
 plugin/Makefile
 plugin/install.rdf
 plugin/test/Makefile

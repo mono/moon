@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	x:Class="Desklet.Calculator;assembly=bin/calculator.dll" Loaded="PageLoaded"
+	x:Class="Desklet.Calculator;assembly=calculator.dll" Loaded="PageLoaded"
 	Width="185" Height="220">
 	
 	<Canvas.Resources>
@@ -51,7 +51,6 @@
 
 	<Rectangle
 		x:Name="ClearFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="120"
 		Canvas.Top="15"
@@ -110,7 +109,6 @@
 
 	<Rectangle
 		x:Name="8ButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="50"
 		Canvas.Top="50"
@@ -141,7 +139,6 @@
 
 	<Rectangle
 		x:Name="9ButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="85"
 		Canvas.Top="50"
@@ -171,7 +168,6 @@
 
 	<Rectangle
 		x:Name="PlusButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="120"
 		Canvas.Top="50"
@@ -201,7 +197,6 @@
 
 	<Rectangle
 		x:Name="4ButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="15"
 		Canvas.Top="90"
@@ -231,7 +226,6 @@
 
 	<Rectangle
 		x:Name="5ButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="50"
 		Canvas.Top="90"
@@ -261,7 +255,6 @@
 
 	<Rectangle
 		x:Name="6ButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="85"
 		Canvas.Top="90"
@@ -291,7 +284,6 @@
 
 	<Rectangle
 		x:Name="MinusButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="120"
 		Canvas.Top="90"
@@ -321,7 +313,6 @@
 
 	<Rectangle
 		x:Name="1ButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="15"
 		Canvas.Top="130"
@@ -351,7 +342,6 @@
 
 	<Rectangle
 		x:Name="2ButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="50"
 		Canvas.Top="130"
@@ -381,7 +371,6 @@
 
 	<Rectangle
 		x:Name="3ButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="85"
 		Canvas.Top="130"
@@ -411,7 +400,6 @@
 
 	<Rectangle
 		x:Name="MulButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="120"
 		Canvas.Top="130"
@@ -441,7 +429,6 @@
 
 	<Rectangle
 		x:Name="0ButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="15"
 		Canvas.Top="170"
@@ -471,7 +458,6 @@
 
 	<Rectangle
 		x:Name="DotButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="50"
 		Canvas.Top="170"
@@ -501,7 +487,6 @@
 
 	<Rectangle
 		x:Name="EqualButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="85"
 		Canvas.Top="170"
@@ -531,7 +516,6 @@
 
 	<Rectangle
 		x:Name="DivButtonFrame"
-		Fill="White"
 		StrokeThickness="0"
 		Canvas.Left="120"
 		Canvas.Top="170"
