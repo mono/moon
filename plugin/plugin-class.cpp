@@ -673,7 +673,7 @@ erroreventargs_allocate (NPP instance, NPClass *klass)
 
 static const MoonNameIdMapping
 erroreventargs_mapping[] = {
-	{ "charnumber", MoonId_CharPosition },
+	{ "charposition", MoonId_CharPosition },
 	{ "errorcode", MoonId_ErrorCode },
 	{ "errormessage", MoonId_ErrorMessage },
 	{ "errortype", MoonId_ErrorType },
