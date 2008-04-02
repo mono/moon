@@ -1,3 +1,29 @@
+2008-04-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes bug #375277 and maybe other crashers.
+
+	* plugin-class.h (MoonlightScriptControlObject::.ctor): Initialize
+	settings->control and content->control to 'this'.
+	(MoonlightSettingsObject): Now has a pointer to its owning
+	MoonlightScriptControlObject so we can protect against Firefox's
+	aggressive destruction of still-referenced objects when you
+	navigate away from a Moonlight page and/or close the browser when
+	a scriptable object is still referenced. Yay Firefox!
+	(MoonlightContentObject): Same.
+
+	* plugin-class.cpp (MoonlightScriptControlObject::Dispose): Set
+	settings->control to NULL before unreffing the settings
+	NPObject. Same with content->control.
+	(MoonlightContentObject::Dispose): If we have a pointer to our
+	parent control, set control->content to NULL here.
+	(MoonlightSettingsObject::Dispose): Same as
+	MoonlightContentObject::Dispose().
+	(MoonlightEventObjectObject::SetEventObject): Removed, just to be
+	sure we never reuse these objects.
+	(EventObjectCreateWrapper): Implement the equivalent of
+	SetEventObject() here instead, since this is the only place that
+	should EVER be calling it. Also makes it a lot simpler.
+
 2008-04-02  Larry Ewing  <lewing@novell.com>
 
 	* plugin-class.cpp: charposition not charnumber.

@@ -25,10 +25,10 @@ void plugin_destroy_classes (void);
 void event_object_add_javascript_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
 G_END_DECLS
 
-typedef struct {
+struct MoonNameIdMapping {
 	const char *name;
 	int id;
-} MoonNameIdMapping;
+};
 
 /*** EventListenerProxy */
 typedef void (*EventArgsWrapper)(NPP instance, EventArgs *calldata, NPVariant *value);
@@ -51,8 +51,6 @@ class EventListenerProxy : public List::Node {
 	int dtoken;
 	int token;
 	
-	
-	
  public:
 	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
@@ -73,23 +71,22 @@ struct MoonlightObjectType : NPClass {
 
 	~MoonlightObjectType() { g_free (mapping); }
 
-	void AddMapping (const MoonNameIdMapping* mapping, int count);
+	void AddMapping (const MoonNameIdMapping *mapping, int count);
 
 	bool Enumerate (NPIdentifier **value, uint32_t *count);
 
 	int LookupName (NPIdentifier name);
 
-	MoonNameIdMapping* mapping;
+	MoonNameIdMapping *mapping;
 	int mapping_count;
 
 	NPIdentifier last_lookup;
 	int last_id;
 };
 
-extern MoonlightObjectType* MoonlightObjectClass;
+extern MoonlightObjectType *MoonlightObjectClass;
 
-struct MoonlightObject : public NPObject
-{
+struct MoonlightObject : NPObject {
 	MoonlightObject (NPP instance)
 	{
 		this->instance = instance;
@@ -97,24 +94,25 @@ struct MoonlightObject : public NPObject
 		this->disposed = false;
 		this->event_listener_proxies = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, destroy_proxy);
 	}
+	
 	virtual void Dispose ();
 	virtual ~MoonlightObject ();
-
+	
 	virtual bool HasProperty (NPIdentifier name);
 	virtual bool GetProperty (int id, NPIdentifier name, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier name, const NPVariant *value);
-
+	
 	virtual bool HasMethod (NPIdentifier unmapped);
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
-	int LookupName (NPIdentifier name) { return ((MoonlightObjectType*)_class)->LookupName (name); }
-
-	EventListenerProxy* LookupEventProxy (int event_id);
+	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name); }
+	
+	EventListenerProxy *LookupEventProxy (int event_id);
 	void SetEventProxy (int event_id, EventListenerProxy* proxy);
 	void ClearEventProxy (int event_id);
-
+	
 	static void destroy_proxy (gpointer data);
-
+	
 	NPP instance;
 	Type::Kind moonlight_type;
 	bool disposed;
@@ -126,7 +124,7 @@ struct MoonlightPointType : MoonlightObjectType {
 	MoonlightPointType ();
 };
 
-extern MoonlightPointType* MoonlightPointClass;
+extern MoonlightPointType *MoonlightPointClass;
 
 struct MoonlightPoint : MoonlightObject {
 	MoonlightPoint (NPP instance) : MoonlightObject(instance), point (Point())
@@ -145,7 +143,7 @@ struct MoonlightRectType : MoonlightObjectType {
 	MoonlightRectType ();
 };
 
-extern MoonlightRectType* MoonlightRectClass;
+extern MoonlightRectType *MoonlightRectClass;
 
 struct MoonlightRect : MoonlightObject {
 	MoonlightRect (NPP instance) : MoonlightObject(instance), rect (Rect())
@@ -165,24 +163,26 @@ struct MoonlightDurationType : MoonlightObjectType {
 	MoonlightDurationType ();
 };
 
-extern MoonlightDurationType* MoonlightDurationClass;
+extern MoonlightDurationType *MoonlightDurationClass;
 
 struct MoonlightDuration : MoonlightObject {
-	MoonlightDuration (NPP instance) : MoonlightObject (instance), parent_obj(NULL), parent_property(NULL)
+	MoonlightDuration (NPP instance) : MoonlightObject (instance)
 	{
 		moonlight_type = Type::DURATION;
+		parent_property = NULL;
+		parent_obj = NULL;
 	}
-
+	
 	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
-
+	
 	double GetValue ();
-
+	
 	virtual void Dispose ();
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-
-	DependencyObject *parent_obj;
+	
 	DependencyProperty *parent_property;
+	DependencyObject *parent_obj;
 };
 
 /*** MoonlightTimeSpanClass  **************************************************************/
@@ -190,24 +190,26 @@ struct MoonlightTimeSpanType : MoonlightObjectType {
 	MoonlightTimeSpanType ();
 };
 
-extern MoonlightTimeSpanType* MoonlightTimeSpanClass;
+extern MoonlightTimeSpanType *MoonlightTimeSpanClass;
 
 struct MoonlightTimeSpan : MoonlightObject {
-	MoonlightTimeSpan (NPP instance) : MoonlightObject (instance), parent_obj(NULL), parent_property(NULL)
+	MoonlightTimeSpan (NPP instance) : MoonlightObject (instance)
 	{
 		moonlight_type = Type::TIMESPAN;
+		parent_property = NULL;
+		parent_obj = NULL;
 	}
-
+	
 	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
-
+	
 	TimeSpan GetValue ();
-
+	
 	virtual void Dispose ();
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-
-	DependencyObject *parent_obj;
+	
 	DependencyProperty *parent_property;
+	DependencyObject *parent_obj;
 };
 
 /*** MoonlightSettingsClass ***********************************************************/
@@ -215,19 +217,24 @@ struct MoonlightTimeSpan : MoonlightObject {
 struct MoonlightSettingsType : MoonlightObjectType {
 	MoonlightSettingsType ();
 };
-extern MoonlightSettingsType* MoonlightSettingsClass;
+
+extern MoonlightSettingsType *MoonlightSettingsClass;
 
 struct MoonlightSettingsObject : MoonlightObject {
-	MoonlightSettingsObject (NPP instance)
-	  : MoonlightObject (instance)
+	MoonlightSettingsObject (NPP instance) : MoonlightObject (instance)
 	{
+		control = NULL;
 	}
-
+	
+	virtual void Dispose ();
+	
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+	
+	MoonlightScriptControlObject *control;
 };
 
 
@@ -237,24 +244,26 @@ struct MoonlightContentType : MoonlightObjectType {
 	MoonlightContentType ();
 };
 
-extern MoonlightContentType* MoonlightContentClass;
+extern MoonlightContentType *MoonlightContentClass;
 
 struct MoonlightContentObject : MoonlightObject {
-	MoonlightContentObject (NPP instance)
-	  : MoonlightObject (instance)
+	MoonlightContentObject (NPP instance) : MoonlightObject (instance)
 	{
 		registered_scriptable_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
+		control = NULL;
 	}
+	
 	virtual void Dispose ();
-
+	
 	virtual bool HasProperty (NPIdentifier unmapped);
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-
+	
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
-
+	
 	GHashTable *registered_scriptable_objects;
+	MoonlightScriptControlObject *control;
 };
 
 /*** MoonlightScriptControlClass **********************************************************/
@@ -262,49 +271,51 @@ struct MoonlightContentObject : MoonlightObject {
 struct MoonlightScriptControlType : MoonlightObjectType {
 	MoonlightScriptControlType ();
 };
-extern MoonlightScriptControlType* MoonlightScriptControlClass;
 
-struct MoonlightScriptControlObject : public MoonlightObject {
+extern MoonlightScriptControlType *MoonlightScriptControlClass;
+
+struct MoonlightScriptControlObject : MoonlightObject {
 	MoonlightScriptControlObject (NPP instance) : MoonlightObject (instance)
 	{
-		content = NPN_CreateObject (instance, MoonlightContentClass);
 		settings = NPN_CreateObject (instance, MoonlightSettingsClass);
+		((MoonlightSettingsObject *) settings)->control = this;
+		
+		content = NPN_CreateObject (instance, MoonlightContentClass);
+		((MoonlightContentObject *) content)->control = this;
 	}
-
+	
 	virtual void Dispose ();
-
+	
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-
+	
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
-
-	NPObject *content;
+	
 	NPObject *settings;
+	NPObject *content;
 };
 
 /*** MoonlightEventObjectClass ***************************************************/
 struct MoonlightEventObjectType : MoonlightObjectType {
 	MoonlightEventObjectType ();
 };
+
 extern MoonlightEventObjectType *MoonlightEventObjectClass;
 
-struct MoonlightEventObjectObject : public MoonlightObject
-{
+struct MoonlightEventObjectObject : MoonlightObject {
 	MoonlightEventObjectObject (NPP instance) : MoonlightObject (instance)
 	{
-		eo = NULL;
 		moonlight_type = Type::EVENTOBJECT;
+		eo = NULL;
 	}
-
-	void SetEventObject (EventObject *eventobject);
-
+	
 	virtual void Dispose ();
 
 	EventObject *eo;
 };
 
-extern MoonlightEventObjectObject* EventObjectCreateWrapper (NPP instance, EventObject *obj);
+extern MoonlightEventObjectObject *EventObjectCreateWrapper (NPP instance, EventObject *obj);
 
 /*** MoonlightDependencyObjectClass ***************************************************/
 struct MoonlightDependencyObjectType : MoonlightEventObjectType {
@@ -312,19 +323,13 @@ struct MoonlightDependencyObjectType : MoonlightEventObjectType {
 };
 
 
-struct MoonlightDependencyObjectObject : public MoonlightEventObjectObject
-{
+struct MoonlightDependencyObjectObject : MoonlightEventObjectObject {
 	MoonlightDependencyObjectObject (NPP instance) : MoonlightEventObjectObject (instance)
 	{
 		moonlight_type = Type::DEPENDENCY_OBJECT;
 	}
-
-	void SetDependencyObject (DependencyObject *dob)
-	{
-		SetEventObject (dob);
-	}
-
-	DependencyObject* GetDependencyObject ()
+	
+	DependencyObject *GetDependencyObject ()
 	{
 		g_assert (eo->GetObjectType () >= Type::DEPENDENCY_OBJECT);
 		return (DependencyObject*) eo;
@@ -341,7 +346,7 @@ struct MoonlightDependencyObjectObject : public MoonlightEventObjectObject
 
 };
 
-extern MoonlightDependencyObjectObject* DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj);
+extern MoonlightDependencyObjectObject *DependencyObjectCreateWrapper (NPP instance, DependencyObject *obj);
 
 /*** MoonlightEventArgsClass ******************************************************/
 struct MoonlightEventArgsType : MoonlightDependencyObjectType {
@@ -378,7 +383,7 @@ struct MoonlightMarkerReachedEventArgsType : MoonlightEventArgsType {
 	MoonlightMarkerReachedEventArgsType ();
 };
 
-extern MoonlightMarkerReachedEventArgsType* MoonlightMarkerReachedEventArgsClass;
+extern MoonlightMarkerReachedEventArgsType *MoonlightMarkerReachedEventArgsClass;
 
 struct MoonlightMarkerReachedEventArgsObject : MoonlightEventArgs {
 	MoonlightMarkerReachedEventArgsObject (NPP instance) : MoonlightEventArgs (instance)
@@ -427,7 +432,7 @@ struct MoonlightCollectionType : MoonlightDependencyObjectType {
 	MoonlightCollectionType ();
 };
 
-struct MoonlightCollectionObject : public MoonlightDependencyObjectObject {
+struct MoonlightCollectionObject : MoonlightDependencyObjectObject {
 	MoonlightCollectionObject (NPP instance) : MoonlightDependencyObjectObject (instance)
 	{
 		moonlight_type = Type::COLLECTION;
@@ -446,8 +451,7 @@ struct MoonlightStoryboardType : MoonlightDependencyObjectType {
 };
 
 struct MoonlightStoryboardObject : MoonlightDependencyObjectObject {
-	MoonlightStoryboardObject (NPP instance)
-	  : MoonlightDependencyObjectObject (instance)
+	MoonlightStoryboardObject (NPP instance) : MoonlightDependencyObjectObject (instance)
 	{
 		moonlight_type = Type::STORYBOARD;
 	}
@@ -464,8 +468,7 @@ struct MoonlightMediaElementType : MoonlightDependencyObjectType {
 
 
 struct MoonlightMediaElementObject : MoonlightDependencyObjectObject {
-	MoonlightMediaElementObject (NPP instance)
-	  : MoonlightDependencyObjectObject (instance)
+	MoonlightMediaElementObject (NPP instance) : MoonlightDependencyObjectObject (instance)
 	{
 		moonlight_type = Type::MEDIAELEMENT;
 	}
@@ -482,8 +485,7 @@ struct MoonlightImageType : MoonlightDependencyObjectType {
 
 
 struct MoonlightImageObject : MoonlightDependencyObjectObject {
-	MoonlightImageObject (NPP instance)
-	  : MoonlightDependencyObjectObject (instance)
+	MoonlightImageObject (NPP instance) : MoonlightDependencyObjectObject (instance)
 	{
 		moonlight_type = Type::IMAGE;
 	}
@@ -500,8 +502,7 @@ struct MoonlightImageBrushType : MoonlightDependencyObjectType {
 
 
 struct MoonlightImageBrushObject : MoonlightDependencyObjectObject {
-	MoonlightImageBrushObject (NPP instance)
-	  : MoonlightDependencyObjectObject (instance)
+	MoonlightImageBrushObject (NPP instance) : MoonlightDependencyObjectObject (instance)
 	{
 		moonlight_type = Type::IMAGEBRUSH;
 	}
@@ -517,7 +518,7 @@ struct MoonlightDownloaderType : MoonlightDependencyObjectType {
 };
 
 
-struct MoonlightDownloaderObject : public MoonlightDependencyObjectObject {
+struct MoonlightDownloaderObject : MoonlightDependencyObjectObject {
 	MoonlightDownloaderObject (NPP instance) : MoonlightDependencyObjectObject (instance)
 	{
 		moonlight_type = Type::DOWNLOADER;
@@ -536,8 +537,7 @@ struct MoonlightTextBlockType : MoonlightDependencyObjectType {
 
 
 struct MoonlightTextBlockObject : MoonlightDependencyObjectObject {
-	MoonlightTextBlockObject (NPP instance)
-	  : MoonlightDependencyObjectObject (instance)
+	MoonlightTextBlockObject (NPP instance) : MoonlightDependencyObjectObject (instance)
 	{
 		moonlight_type = Type::TEXTBLOCK;
 	}
@@ -554,9 +554,7 @@ struct MoonlightStylusInfoType : MoonlightDependencyObjectType {
 
 
 struct MoonlightStylusInfoObject : MoonlightDependencyObjectObject {
-
-	MoonlightStylusInfoObject (NPP instance)
-		: MoonlightDependencyObjectObject (instance)
+	MoonlightStylusInfoObject (NPP instance) : MoonlightDependencyObjectObject (instance)
 	{
 		moonlight_type = Type::STYLUSINFO;
 	}
@@ -572,9 +570,7 @@ struct MoonlightStylusPointCollectionType : MoonlightCollectionType {
 
 
 struct MoonlightStylusPointCollectionObject : MoonlightCollectionObject {
-
-	MoonlightStylusPointCollectionObject (NPP instance)
-		: MoonlightCollectionObject (instance)
+	MoonlightStylusPointCollectionObject (NPP instance) : MoonlightCollectionObject (instance)
 	{
 		moonlight_type = Type::STYLUSPOINT_COLLECTION;
 	}
@@ -660,10 +656,9 @@ struct MoonlightScriptableObjectType : MoonlightObjectType {
 	MoonlightScriptableObjectType ();
 };
 
-extern MoonlightScriptableObjectType* MoonlightScriptableObjectClass;
+extern MoonlightScriptableObjectType *MoonlightScriptableObjectClass;
 
-struct MoonlightScriptableObjectObject : public MoonlightObject
-{
+struct MoonlightScriptableObjectObject : MoonlightObject {
 	MoonlightScriptableObjectObject (NPP instance) : MoonlightObject (instance)
 	{
 		managed_scriptable = NULL;
@@ -671,6 +666,7 @@ struct MoonlightScriptableObjectObject : public MoonlightObject
 		methods = g_hash_table_new (g_direct_hash, g_direct_equal);
 		events = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
+	
 	virtual void Dispose ();
 
 	virtual bool HasProperty (NPIdentifier name);
@@ -693,76 +689,68 @@ struct MoonlightScriptableObjectObject : public MoonlightObject
 	EventHandlerDelegate removeevent;
 };
 
-extern "C" {
-	// These are meant to be called by System.Silverlight.dll
 
-	MoonlightScriptableObjectObject* moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scriptable,
-										     InvokeDelegate invoke,
-										     SetPropertyDelegate setprop,
-										     GetPropertyDelegate getprop,
-										     EventHandlerDelegate addevent,
-										     EventHandlerDelegate removeevent);
+G_BEGIN_DECLS
+// These are meant to be called by System.Silverlight.dll
 
-	void moonlight_scriptable_object_add_property (PluginInstance *plugin,
-						       MoonlightScriptableObjectObject *obj,
-						       gpointer property_handle,
-						       char *property_name,
-						       int property_type,
-						       bool can_read,
-						       bool can_write);
+MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scriptable,
+									     InvokeDelegate invoke,
+									     SetPropertyDelegate setprop,
+									     GetPropertyDelegate getprop,
+									     EventHandlerDelegate addevent,
+									     EventHandlerDelegate removeevent);
 
-	void moonlight_scriptable_object_add_event (PluginInstance *plugin,
-						    MoonlightScriptableObjectObject *obj,
-						    gpointer event_handle,
-						    char *event_name);
+void moonlight_scriptable_object_add_property (PluginInstance *plugin,
+					       MoonlightScriptableObjectObject *obj,
+					       gpointer property_handle,
+					       char *property_name,
+					       int property_type,
+					       bool can_read,
+					       bool can_write);
 
-	void moonlight_scriptable_object_add_method (PluginInstance *plugin,
-						     MoonlightScriptableObjectObject *obj,
-						     gpointer method_handle,
-						     char *method_name,
-						     int method_return_type,
-						     int *method_parameter_types,
-						     int parameter_count);
+void moonlight_scriptable_object_add_event (PluginInstance *plugin,
+					    MoonlightScriptableObjectObject *obj,
+					    gpointer event_handle,
+					    char *event_name);
 
-	void moonlight_scriptable_object_register (PluginInstance *plugin,
-						   char *name,
-						   MoonlightScriptableObjectObject *obj);
+void moonlight_scriptable_object_add_method (PluginInstance *plugin,
+					     MoonlightScriptableObjectObject *obj,
+					     gpointer method_handle,
+					     char *method_name,
+					     int method_return_type,
+					     int *method_parameter_types,
+					     int parameter_count);
 
-	void moonlight_scriptable_object_emit_event (PluginInstance *plugin,
-						     MoonlightScriptableObjectObject *obj,
-						     MoonlightScriptableObjectObject *event_args,
-						     NPObject *cb_obj);
-}
+void moonlight_scriptable_object_register (PluginInstance *plugin,
+					   char *name,
+					   MoonlightScriptableObjectObject *obj);
 
+void moonlight_scriptable_object_emit_event (PluginInstance *plugin,
+					     MoonlightScriptableObjectObject *obj,
+					     MoonlightScriptableObjectObject *event_args,
+					     NPObject *cb_obj);
 
 /*** HtmlObject ***************************************************/
 
 // int clientX, int clientY,
 
 typedef void callback_dom_event (char *name, int client_x, int client_y, int offset_x, int offset_y, gboolean alt_key,
-		gboolean ctrl_key, gboolean shift_key, int mouse_button);
+				 gboolean ctrl_key, gboolean shift_key, int mouse_button);
 
-extern "C" {
 
-	const char *html_get_element_text (PluginInstance *plugin, const char *element_id);
+const char *html_get_element_text (PluginInstance *plugin, const char *element_id);
 
-	// These are meant to be called by System.Silverlight.dll
+// These are meant to be called by System.Silverlight.dll
 
-	void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
-	void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
-	void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, uint32_t arg_count, Value *result);
-	gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb);
-	void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener);
-	void html_object_release (PluginInstance *plugin, NPObject *npobj);
-
-}
-
+void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
+void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
+void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, uint32_t arg_count, Value *result);
+gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb);
+void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener);
+void html_object_release (PluginInstance *plugin, NPObject *npobj);
 
 /*** Browser interaction utility classes ***/
-
-extern "C" {
-
-	void browser_do_alert (PluginInstance *plugin, char *msg);
-}
+void browser_do_alert (PluginInstance *plugin, char *msg);
+G_END_DECLS
 
 #endif /* PLUGIN_CLASS */
