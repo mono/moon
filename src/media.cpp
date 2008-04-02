@@ -516,7 +516,7 @@ MediaElement::MediaOpened (Media *media)
 		playlist->GetCurrentEntry ()->PopulateMediaAttributes ();
 		SetMedia (media);
 		
-		Emit (MediaElement::MediaOpenedEvent);
+		Emit (MediaOpenedEvent);
 		return true;
 	}
 }
@@ -537,7 +537,7 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 	SetValue (MediaElement::NaturalVideoWidthProperty, Value (0.0));
 	
 	SetState (MediaElement::Error);
-	Emit (MediaElement::MediaFailedEvent, args);
+	Emit (MediaFailedEvent, args);
 }
 
 void
@@ -705,7 +705,7 @@ MediaElement::UpdateProgress ()
 		// Emit the event if it's 100%, or a change of at least 0.05%
 		if (emit || progress == 1.0 || (progress - current) >= 0.0005) {
 			SetValue (MediaElement::BufferingProgressProperty, Value (progress));
-			Emit (MediaElement::BufferingProgressChangedEvent);
+			Emit (BufferingProgressChangedEvent);
 		}
 		
 		if (progress == 1.0)
@@ -718,7 +718,7 @@ MediaElement::UpdateProgress ()
 		// Emit the event if it's 100%, or a change of at least 0.05%
 		if (progress == 1.0 || (progress - current) >= 0.0005) {
 			SetValue (MediaElement::DownloadProgressProperty, Value (progress));
-			Emit (MediaBase::DownloadProgressChangedEvent);
+			Emit (DownloadProgressChangedEvent);
 		}
 	}
 }
@@ -1083,9 +1083,8 @@ MediaElement::Pause ()
 	case Playing:
 	case Stopped: // docs: pause
 		if (mplayer->CanPause ()) {
-			if (playlist && playlist->Pause ()) {
+			if (playlist && playlist->Pause ())
 				SetState (Paused);
-		}
 		}
 		break;
 	}
@@ -1205,9 +1204,9 @@ MediaElement::UpdatePlayerPosition (Value *value)
 		position = duration->GetTimeSpan ();
 	else if (position < 0)
 		position = 0;
-
-	if (position == mplayer->GetPosition ())
-		return position	;
+	
+	if (position == (TimeSpan) mplayer->GetPosition ())
+		return position;
 	
 	// position is a timespan, while mplayer expects time pts
 	mplayer->Seek (TimeSpan_ToPts (position));
@@ -1662,7 +1661,7 @@ Image::UpdateProgress ()
 	
 	/* only emit an event if the delta is >= 0.05% */
 	if (progress == 1.0 || (progress - current) > 0.0005)
-		Emit (MediaBase::DownloadProgressChangedEvent);
+		Emit (DownloadProgressChangedEvent);
 }
 
 void

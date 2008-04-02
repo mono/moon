@@ -1,3 +1,11 @@
+2008-04-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (MediaElement::UpdatePlayerPosition): Cast to same
+	integer type when comparing.
+
+	* playlist.cpp (Playlist::OnMediaEnded): Prevent a segfault in the
+	debugging printfs. Fixes bug #375273.
+
 2008-04-01  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp: back out the SetSurface call removal.
