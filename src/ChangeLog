@@ -1,3 +1,13 @@
+2008-04-02  Chris Toshok  <toshok@ximian.com>
+
+	* stylus.cpp (Stroke::HitTestEndcapSegment): fix up some math.
+	(Stroke::HitTestEndcapPoint): same.
+	(point_gte_line): new method.
+	(point_lte_line): new method.
+	(Stroke::HitTestSegmentPoint): use point_gte_line and
+	point_lte_line to determine if the point is inside the segment.
+	(global): wrap all spew in DEBUG_HITTEST.
+	
 2008-04-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp, mplayer.cpp, pipeline.h: Remove SeekToStart completely, it's
