@@ -1,3 +1,7 @@
+2008-04-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h: Remove SeekToStart completely, it's just plain broken.
+
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-generated.cpp, asf.cs: Don't fail if we don't know how to validate

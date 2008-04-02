@@ -1,3 +1,8 @@
+2008-04-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, mplayer.cpp, pipeline.h: Remove SeekToStart completely, it's
+	  just plain broken.
+
 2008-04-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaElement::UpdatePlayerPosition): Cast to same

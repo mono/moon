@@ -740,11 +740,6 @@ MediaPlayer::SeekInternal (uint64_t pts)
 
 	if (media == NULL)
 		return;
-		
-	if (pts == 0) {
-		media->SeekToStart ();
-		return;
-	}
 
 	SetBit (Seeking);
 	RemoveBit (SeekSynched);

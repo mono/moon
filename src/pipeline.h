@@ -160,7 +160,6 @@ enum MoonWorkType {
 	// and will always be put first in the queue.
 	// No more than one seek request should be in the queue at the same time either.
 	WorkTypeSeek = 1, 
-	WorkTypeSeekToStart,
 	// All audio work is done before any video work, since glitches in the audio is worse 
 	// than glitches in the video.
 	WorkTypeAudio, 
@@ -261,7 +260,6 @@ public:
 	
 	MediaWork (MediaClosure *closure, IMediaStream *stream, uint16_t states); // GetNextFrame
 	MediaWork (MediaClosure *closure, uint64_t seek_pts); // Seek
-	MediaWork (MediaClosure *closure); // SeekToStart
 	MediaWork (MediaClosure *closure, IMediaSource *source); // Open
 	~MediaWork ();
 };
@@ -325,8 +323,6 @@ public:
 	// Seeks to the specified pts (if seekable).
 	MediaResult Seek (uint64_t pts);
 	MediaResult SeekAsync (uint64_t pts, MediaClosure *closure);
-	MediaResult SeekToStart ();
-	MediaResult SeekToStartAsync (MediaClosure *closure);
 	
 	//	Reads the next frame from the demuxer
 	//	Requests the decoder to decode the frame
@@ -500,7 +496,6 @@ public:
 	// Fills the uncompressed_data field in the frame with data.
 	virtual MediaResult ReadFrame (MediaFrame *frame) = 0;
 	virtual MediaResult Seek (uint64_t pts) = 0;
-	virtual MediaResult SeekToStart () = 0;
 	int GetStreamCount () { return stream_count; }
 	// Estimate a position for the pts.
 	// This value is used when calculating the buffering progress percentage
@@ -844,7 +839,6 @@ public:
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame) { return MEDIA_FAIL; }
 	virtual MediaResult Seek (uint64_t pts) { return MEDIA_FAIL; }
-	virtual MediaResult SeekToStart () { return MEDIA_FAIL; }
 	virtual int64_t EstimatePtsPosition (uint64_t pts) { return 0; }
 
 	Playlist *GetPlaylist () { return playlist; }
@@ -878,7 +872,6 @@ public:
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (uint64_t pts);
-	virtual MediaResult SeekToStart ();
 	virtual int64_t EstimatePtsPosition (uint64_t pts);
 	virtual void UpdateSelected (IMediaStream *stream);
 	
@@ -957,7 +950,6 @@ public:
 	~Mp3FrameReader ();
 	
 	bool Seek (uint64_t pts);
-	bool SeekToStart ();
 	
 	MediaResult ReadFrame (MediaFrame *frame);
 	
@@ -978,7 +970,6 @@ public:
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
 	virtual MediaResult Seek (uint64_t pts);
-	virtual MediaResult SeekToStart ();
 	virtual int64_t EstimatePtsPosition (uint64_t pts);
 	virtual const char *GetName () { return "Mp3Demuxer"; }
 };

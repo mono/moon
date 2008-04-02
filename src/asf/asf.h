@@ -111,9 +111,6 @@ public:
 	// seconds between every key frame).
 	bool Seek (uint64_t pts);
 
-	// Seeks to the start of the media.
-	bool SeekToStart ();
-	
 	// Resets all readers
 	void ResetAll ();
 

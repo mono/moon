@@ -889,15 +889,6 @@ ASFReader::EstimatePacketIndexOfPts (uint64_t pts)
 }
 
 bool
-ASFReader::SeekToStart ()
-{
-	ASF_LOG ("ASFReader::SeekToStart ().\n");
-	
-	// Our Seek implementation already has a fast special case for pts = 0.
-	return Seek (0);
-}
-
-bool
 ASFReader::SeekToPts (uint64_t pts)
 {
 	positioned = true;
