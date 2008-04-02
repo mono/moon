@@ -189,7 +189,7 @@ target_os = linux-gnu
 target_vendor = suse
 top_builddir = ../..
 top_srcdir = ../..
-SUBDIRS = calculator calendar cpumonitor weather
+SUBDIRS = calculator calendar cpumonitor glassycalendar glassyclock glassymonitor glassyslides picasa simpleclock weather 
 all: all-recursive
 
 .SUFFIXES:

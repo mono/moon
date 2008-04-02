@@ -42,7 +42,7 @@ namespace Desklets
 		
 		public void PageLoaded (object o, EventArgs e)
 		{
-			Mono.Desklets.Desklet.SetupToolbox (this);
+			Gtk.Moonlight.Desklet.SetupToolbox (this);
 			
 			secondsHand = FindName ("secondsHand") as RotateTransform;
 			minuteHand  = FindName ("minuteHand")  as RotateTransform;

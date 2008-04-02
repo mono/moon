@@ -1,6 +1,6 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="Desklets.Clock;assembly=bin/clock.dll"
+        x:Class="Desklets.Clock;assembly=clock.dll"
 	Loaded="PageLoaded" Width="114" Height="114">
 
   <!-- close/drag elements -->
