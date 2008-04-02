@@ -163,7 +163,7 @@ class asf
 			}
 			writer.WriteLine ("\tdefault:");
 			writer.WriteLine ("\t\tparser->AddError (g_strdup_printf (\"No validation implemented for %s.\", asf_guid_get_name (&obj->id)));");
-			writer.WriteLine ("\t\treturn false;");
+			writer.WriteLine ("\t\treturn true;");
 			writer.WriteLine ("\t}");
 			writer.WriteLine ("}");
 			writer.WriteLine ("");

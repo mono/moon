@@ -212,6 +212,14 @@ namespace MoonlightTests {
 			}
 		}
 
+		public string [] Categories {
+			get {
+				if (categories == null || categories.Count == 0)
+					return new string [0];
+				return (string []) categories.ToArray (typeof (string));
+			}
+		}
+
 		public bool IsInCategoryList (ArrayList run_list)
 		{
 			if (categories == null)

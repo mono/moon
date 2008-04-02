@@ -34,6 +34,25 @@ typedef struct {
 typedef void (*EventArgsWrapper)(NPP instance, EventArgs *calldata, NPVariant *value);
 
 class EventListenerProxy : public List::Node {
+	static void on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
+	EventObject *target_object;
+	
+	NPP instance;
+	bool is_func;
+	
+	/* if @is_func == true, callback is an NPObject (the function object)
+	   if @is_func == false, callback is a char* (the function name)
+	*/
+	gpointer callback;
+	
+	char *event_name;
+	int event_id;
+	int dtoken;
+	int token;
+	
+	
+	
  public:
 	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
@@ -45,24 +64,6 @@ class EventListenerProxy : public List::Node {
 	int GetEventId () { return event_id; }
 
 	static void proxy_listener_to_javascript (EventObject *sender, EventArgs *calldata, gpointer closure);
- private:
-	NPP instance;
-
-	bool is_func;
-
-	/* if @is_func == true, callback is an NPObject (the function object)
-	   if @is_func == false, callback is a char* (the function name)
-	*/
-	gpointer callback;
-
-	char *event_name;
-
-	int token;
-	int dtoken;
-	int event_id;
-	EventObject *target_object;
-
-	static void on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
 
 /*** MoonlightObjectClass **************************************************************/

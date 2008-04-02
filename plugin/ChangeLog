@@ -1,3 +1,31 @@
+2008-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightContentObject::Invoke): back out my
+	SetSurface() stuff from here.
+
+2008-04-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp: Implemented better type-checking. Fixes the
+	crash mentioned in bug #375921.
+
+2008-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightContentObject::Invoke): in
+	createFromXaml/createFromXamlDownloader, call dep->SetSurface()
+	after we parse to make sure the thing knows what surface it
+	belongs to.
+
+2008-04-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (MoonlightContentObject::Invoke): Properly
+	nul-terminate the text value.
+	(MoonlightDownloaderObject::Invoke): Properly nul-terminate the
+	text value returned here too.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Remove Type::NPOBJ, it's not needed.
+
 2008-03-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (moonlight_downloader_mapping): Got rid of

@@ -27,7 +27,7 @@
 			return;
 		}
 
-		file = Path.Combine ("media/playlist/", file);
+		file = Path.Combine ("playlist/", file);
 
 		switch (action) {
 		case "create":

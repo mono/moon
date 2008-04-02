@@ -315,6 +315,8 @@ public:
 	MediaElementState GetState () { return state; }
 	void SetState (MediaElementState state);
 	
+	Playlist *GetPlaylist () { return playlist;  }
+
 	virtual bool EnableAntiAlias ();
 	
 	void AddStreamedMarker (TimelineMarker *marker);

@@ -33,6 +33,7 @@ namespace MoonlightTests {
 
 		private DateTime start_time;
 
+		private string base_dir;
 		private VerboseLevel verbose_level;
 		private LoggingServer logging_server;
 
@@ -42,12 +43,17 @@ namespace MoonlightTests {
 		private ArrayList failed_tests = new ArrayList ();
 		private ArrayList known_failures = new ArrayList ();
 
-		public TestRun (VerboseLevel verbose_level, LoggingServer logging_server)
+		public TestRun (string base_dir, VerboseLevel verbose_level, LoggingServer logging_server)
 		{
 			start_time = DateTime.Now;
 
+			this.base_dir = base_dir;
 			this.verbose_level = verbose_level;
 			this.logging_server = logging_server;
+		}
+
+		public string BaseDirectory {
+			get { return base_dir; }
 		}
 
 		public VerboseLevel VerboseLevel {

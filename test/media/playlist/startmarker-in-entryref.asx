@@ -1,7 +1,7 @@
 <ASX version="3.0">
   <TITLE>My Test Playlist</TITLE>
   <ENTRYREF HREF="nested-1.asx">
-    <STARMARKER name="marker name" />	
+    <STARTMARKER name="marker name" />	
 
   </ENTRYREF>
   <ENTRY>

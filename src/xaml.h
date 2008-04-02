@@ -49,9 +49,7 @@ void		xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** a
 void		xaml_loader_add_missing (XamlLoader* loader, const char* file);
 G_END_DECLS
 
-struct XamlLoaderCallbacks
-{	
-public:
+struct XamlLoaderCallbacks {
 	xaml_load_managed_object_callback *load_managed_object;
 	xaml_set_custom_attribute_callback *set_custom_attribute;
 	xaml_hookup_event_callback *hookup_event;
@@ -71,43 +69,34 @@ public:
 
 /*
 
-	Plugin:
-		- calls PluginXamlLoader::TryLoad to try to load some xaml.
-		-	calls xaml_create_from_*
-		- 		calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
-		-			parses the xmlns and name
-		- 			calls XamlLoader::LoadVM.
-		-				PluginXamlLoader::LoadVM will load the vm and create a ManagedXamlLoader (which will set the callbacks in XamlLoader)
-		- 			calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
-		-				calls the create_managed_object callback (if any).
-		-					will try to load the assembly, if it fails, it's requested.
-		-	if XamlLoader::CreateManagedObject failed, try to download the missing assembly (if any).
-		-	if no missing assembly, the xaml load fails.
+  Plugin:
+    - calls PluginXamlLoader::TryLoad to try to load some xaml.
+    -  calls xaml_create_from_*
+    -     calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
+    -      parses the xmlns and name
+    -       calls XamlLoader::LoadVM.
+    -        PluginXamlLoader::LoadVM will load the vm and create a ManagedXamlLoader (which will set the callbacks in XamlLoader)
+    -       calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
+    -        calls the create_managed_object callback (if any).
+    -          will try to load the assembly, if it fails, it's requested.
+    -  if XamlLoader::CreateManagedObject failed, try to download the missing assembly (if any).
+    -  if no missing assembly, the xaml load fails.
 
-	Deskop:
-		- calls System.Windows.XamlReader::Load
-		-	creates a ManagedXamlLoader and a native XamlLoader (setting the callbacks).
-		-	calls xaml_create_from_str
-		- 		calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
-		-			parses the xmlns and name
-		- 			calls XamlLoader::LoadVM (which does nothing).
-		- 			calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
-		-				calls the create_managed_object callback (if any).
-		-					will try to load the assembly, if it fails, it's requested.
-		-  	destroy the native/managed XamlLoader. Any requested assemblies are ignored, no retries are done.
+  Deskop:
+    - calls System.Windows.XamlReader::Load
+    -  creates a ManagedXamlLoader and a native XamlLoader (setting the callbacks).
+    -  calls xaml_create_from_str
+    -     calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
+    -      parses the xmlns and name
+    -       calls XamlLoader::LoadVM (which does nothing).
+    -       calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
+    -        calls the create_managed_object callback (if any).
+    -          will try to load the assembly, if it fails, it's requested.
+    -    destroy the native/managed XamlLoader. Any requested assemblies are ignored, no retries are done.
 */
 
 
-class XamlLoader
-{
-public:
-	enum AssemblyLoadResult {
-		SUCCESS = -1,
-		MissingAssembly = 1,
-		LoadFailure = 2
-	};
-
-private:
+class XamlLoader {
 	Surface* surface;
 	char* filename;
 	char* str;
@@ -115,6 +104,12 @@ private:
 	GHashTable* missing_assemblies;
 
 public:
+	enum AssemblyLoadResult {
+		SUCCESS = -1,
+		MissingAssembly = 1,
+		LoadFailure = 2
+	};
+	
 	XamlLoader (const char* filename, const char* str, Surface* surface);
 	virtual ~XamlLoader ();
 	virtual bool LoadVM ();
@@ -136,7 +131,7 @@ public:
 	void RemoveMissing (const char* assembly);
 
 	bool vm_loaded;
-public:
+	
 	XamlLoaderCallbacks callbacks;
 	ParserErrorEventArgs *error_args;
 };

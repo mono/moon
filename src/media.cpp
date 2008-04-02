@@ -469,7 +469,8 @@ MediaElement::SetMedia (Media *media)
 		return;	
 
 	this->media = media;
-	mplayer->Open (media);
+	if (!mplayer->Open (media))
+		return;
 	
 	ReadMarkers ();
 	
@@ -501,8 +502,8 @@ MediaElement::MediaOpened (Media *media)
 			playlist->ref ();
 			playlist->Open ();
 		} else {
-			playlist->ReplaceCurrentEntry (pl);
-			pl->Open ();
+			if (playlist->ReplaceCurrentEntry (pl))
+				pl->Open ();
 		}
 		media->unref ();
 		return false;
@@ -851,6 +852,8 @@ media_element_open_callback (MediaClosure *closure)
 gboolean
 MediaElement::TryOpenFinished (void *user_data)
 {
+	LOG_MEDIAELEMENT ("MediaElement::TryOpenFinished ()\n");
+
 	// No locking should be necessary here, since we can't have another open request pending.
 	MediaElement *element = (MediaElement*) user_data;
 	MediaClosure *closure = element->closure;

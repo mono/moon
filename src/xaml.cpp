@@ -666,7 +666,7 @@ create_custom_element (XamlParserInfo *p, XamlElementInfo *i)
 	inst->item = c->dependency_object;
 
 	if (p->loader)
-		inst->item->SetSurface (p->loader->GetSurface ());
+        	inst->item->SetSurface (p->loader->GetSurface ());
 	p->AddCreatedElement (inst->item);
 
 	return inst;
@@ -1327,18 +1327,16 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 }
 
 DependencyObject *
-xaml_create_from_str (XamlLoader* loader, const char *xaml, bool create_namescope,
+xaml_create_from_str (XamlLoader *loader, const char *xaml, bool create_namescope,
 		      Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
 	DependencyObject *res = NULL;
 	char *start = (char*)xaml;
-
+	
 	if (!p) {
-#ifdef DEBUG_XAML
-		printf ("can not create parser\n");
-#endif
+		d(printf ("can not create parser\n"));
 		goto cleanup_and_return;
 	}
 	
@@ -1384,11 +1382,9 @@ xaml_create_from_str (XamlLoader* loader, const char *xaml, bool create_namescop
 		printf ("error parsing:  %s\n\n", xaml);
 		goto cleanup_and_return;
 	}
-
-#ifdef DEBUG_XAML
-	print_tree (parser_info->top_element, 0);
-#endif
-
+	
+	d(print_tree (parser_info->top_element, 0));
+	
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
 		if (element_type)

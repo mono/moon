@@ -1,3 +1,43 @@
+2008-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp: back out the SetSurface call removal.
+
+	* dependencyobject.cpp (EventObject::unref): instead,
+	SetSurface(NULL) here before we delete the object.
+
+2008-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* control.cpp (Control::InitializeFromXaml): make sure to call
+	SetSurface(NULL) on the old real_object since we're detaching it
+	from the tree.  Call SetSurface on ourselves (really, should just
+	be the real_object, right?) before calling the real_object methods
+	that would cause dirty stuff to happen.
+
+	* xaml.cpp (create_custom_element): don't call SetSurface here, it
+	will cause problems if there's a parser error (since elements
+	can/will be on the surface's dirty list after they're destroyed.)
+	(default_create_element_instance): same.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* playlist.cpp, playlist.h: A lot of fixes according to the tests.
+	* mplayer.h, mplayer.cpp: Initialize the rgb buffer. Add a start_pts to
+	  specify where in the stream we start and (playlists can specify a
+	  starting point which isn't in the beginning), and set the duration from
+	  the playlist (if the playlist has it).
+	* media.cpp: MediaElement::SetMedia: Handle the case if mplayer returns
+	  false from MediaPlayer::Open. MediaElement::MediaOpened: Handle the case
+	  if the recursive playlist couldn't be replaced.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.h: Added MediaElement::GetPlaylist.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* type.cpp, type.cpp.in, type.h, type.h.in, value.cpp, value.h, value.h.in:
+	  Remove Type::NPOBJ, it's not needed.
+
 2008-04-01  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: Since now the clocks are synced we don't need to

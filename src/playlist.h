@@ -32,6 +32,30 @@ public:
 	PlaylistNode (PlaylistEntry *entry);
 	virtual ~PlaylistNode ();
 	PlaylistEntry *GetEntry () { return entry; }
+
+	enum Kind {
+		Unknown		= 0,
+		Root		= 1 << 0,
+		Abstract	= 1 << 1,
+		Asx			= 1 << 2,
+		Author		= 1 << 3,
+		Banner		= 1 << 4,
+		Base		= 1 << 5,
+		Copyright	= 1 << 6,
+		Duration	= 1 << 7,
+		Entry		= 1 << 8,
+		EntryRef	= 1 << 9,
+		LogUrl		= 1 << 10,
+		MoreInfo	= 1 << 11,
+		Ref			= 1 << 12,
+		StartTime	= 1 << 13,
+		Title		= 1 << 14,
+		StartMarker	= 1 << 15,
+		Repeat		= 1 << 16,
+		EndMarker	= 1 << 17,
+		Param		= 1 << 18,
+		Event		= 1 << 19,
+	};
 };
 
 class PlaylistEntry : public EventObject {
@@ -43,9 +67,13 @@ private:
 	char *abstract;
 	char *copyright;
 	char *source_name;
+	char *info_target;
+	char *info_url;
 	TimeSpan start_time;
 	TimeSpan duration;
 
+	PlaylistNode::Kind set_values;
+	
 	// Non ASX properties
 	char *full_source_name;
 	bool play_when_available;
@@ -64,29 +92,36 @@ public:
 
 	// ASX properties
 
-	const char *GetBase () { return base; }
-	void SetBase (char *base) { this->base = base; }
+	const char *GetBase ();
+	const char *GetBaseInherited ();
+	void SetBase (char *base);
 
-	const char *GetTitle () { return title; }
-	void SetTitle (char *title) { this->title = title; }
+	const char *GetTitle ();
+	void SetTitle (char *title);
 
-	const char *GetAuthor () { 	return author; }
-	void SetAuthor (char *author) { this->author = author; }
+	const char *GetAuthor ();
+	void SetAuthor (char *author);
 
-	const char *GetAbstract () { return abstract; }
-	void SetAbstract (char *abstract) { this->abstract = abstract; }
+	const char *GetAbstract ();
+	void SetAbstract (char *abstract);
 
-	const char *GetCopyright () { return copyright; }
-	void SetCopyright (char *copyright) { this->copyright = copyright; }
+	const char *GetCopyright ();
+	void SetCopyright (char *copyright);
 
-	const char *GetSourceName () { return source_name; }
-	void SetSourceName (char *source_name) { this->source_name = source_name; }
+	const char *GetSourceName ();
+	void SetSourceName (char *source_name);
 
-	TimeSpan GetStartTime () { return start_time; }
-	void SetStartTime (TimeSpan start_time) { this->start_time = start_time; }
+	TimeSpan GetStartTime ();
+	void SetStartTime (TimeSpan start_time);
 
-	TimeSpan GetDuration () { return duration; }
-	void SetDuration (TimeSpan duration) { this->duration = duration; }
+	TimeSpan GetDuration ();
+	void SetDuration (TimeSpan duration);
+
+	const char *GetInfoTarget ();
+	void SetInfoTarget (char *info_target);
+
+	const char *GetInfoURL ();
+	void SetInfoURL (char *info_url);
 
 	// non-ASX properties
 
@@ -109,6 +144,7 @@ public:
 	virtual void Stop ();
 	virtual void PopulateMediaAttributes ();
 	
+	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return this; }
 };
 
 class Playlist : public PlaylistEntry {
@@ -145,7 +181,8 @@ public:
 
 	virtual MediaElement *GetElement () { return element; }
 	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetEntry () : NULL; }
-	void ReplaceCurrentEntry (Playlist *entry);
+	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return current_node ? current_node->GetEntry ()->GetCurrentPlaylistEntry () : NULL; }
+	bool ReplaceCurrentEntry (Playlist *entry);
 
 	virtual bool IsPlaylist () { return true; }
 	bool IsSingleFile () { return is_single_file; }
@@ -158,32 +195,19 @@ private:
 	XML_Parser parser;
 	IMediaSource *source;
 	MediaElement *element;
+	bool was_playlist;
+	// For <ASX* files, this is 3 (or 0 if no version attribute was found).
+	// for [Ref* files, this is 2.
+	// The presence of a version does not guarantee that the playlist
+	// was parsed correctly.
+	int playlist_version;
 
 	char *current_text;
 
-	enum PlaylistNodeKind {
-		Unknown		= 0,
-		Root		= 1 << 0,
-		Abstract	= 1 << 1,
-		Asx			= 1 << 2,
-		Author		= 1 << 3,
-		Banner		= 1 << 4,
-		Base		= 1 << 5,
-		Copyright	= 1 << 6,
-		Duration	= 1 << 7,
-		Entry		= 1 << 8,
-		EntryRef	= 1 << 9,
-		LogUrl		= 1 << 10,
-		MoreInfo	= 1 << 11,
-		Ref			= 1 << 12,
-		StartTime	= 1 << 13,
-		Title		= 1 << 14,
-	};
-
 	struct PlaylistKind {
 		const char *str;
-		PlaylistNodeKind kind;
-		PlaylistKind (const char *str, PlaylistNodeKind kind)
+		PlaylistNode::Kind kind;
+		PlaylistKind (const char *str, PlaylistNode::Kind kind)
 		{
 			this->str = str;
 			this->kind = kind;
@@ -192,9 +216,9 @@ private:
 
 	class KindNode : public List::Node {
 	public:
-		PlaylistNodeKind kind;
+		PlaylistNode::Kind kind;
 
-		KindNode (PlaylistNodeKind kind)
+		KindNode (PlaylistNode::Kind kind)
 		{
 			this->kind = kind;
 		}
@@ -206,38 +230,43 @@ private:
 	void OnStartElement (const char *name, const char **attrs);
 	void OnEndElement (const char *name);
 	void OnText (const char *text, int len);
-	char *GetHrefAttribute (const char **attrs);
 
 	static void on_start_element (gpointer user_data, const char *name, const char **attrs);
 	static void on_end_element (gpointer user_data, const char *name);
 	static void on_text (gpointer user_data, const char *text, int len);
 
-	void OnEntry ();
 	void EndEntry ();
 	PlaylistEntry *GetCurrentEntry ();
 
 	PlaylistEntry *GetCurrentContent ();
 
-	void PushCurrentKind (PlaylistNodeKind kind);
+	void PushCurrentKind (PlaylistNode::Kind kind);
 	void PopCurrentKind ();
-	PlaylistNodeKind GetCurrentKind ();
-	PlaylistNodeKind GetParentKind ();
+	PlaylistNode::Kind GetCurrentKind ();
+	PlaylistNode::Kind GetParentKind ();
 	bool AssertParentKind (int kind);
 
-	void ParsingError (ErrorEventArgs *args = NULL);
 public:
+
 	PlaylistParser (MediaElement *element, IMediaSource *source);
 	~PlaylistParser ();
 
 	Playlist *GetPlaylist () { return playlist; }
 
 	bool Parse ();
-	bool ParseASX2();
+	bool ParseASX2 ();
+	bool ParseASX3 ();
 	bool IsASX2 (IMediaSource *source);
-	bool IsPlaylistFile (IMediaSource *source);
+	bool IsASX3 (IMediaSource *source);
 
-	static PlaylistNodeKind StringToKind (const char *str);
-	static const char *KindToString (PlaylistNodeKind kind);
+	// This value determines if the data we parsed
+	// actually was a playlist. It may be true even
+	// if the playlist wasn't parsed correctly.
+	bool WasPlaylist () { return was_playlist; }
+	void ParsingError (ErrorEventArgs *args = NULL);
+
+	static PlaylistNode::Kind StringToKind (const char *str);
+	static const char *KindToString (PlaylistNode::Kind kind);
 };
 
 #endif /* __PLAYLIST_H__ */
