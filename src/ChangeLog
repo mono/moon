@@ -1,3 +1,11 @@
+2008-04-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (Surface::SetCursor): Stylus cursor should map to
+	the pencil cursor. Also updated Hand (which should be a
+	left-pointing hand, not right-pointing) and also Eraser (we need
+	to make our own icon for this, but I suck at art so I'll pass for
+	now).
+
 2008-04-03  Michael Dominic K.  <mdk@mdk.am>
 
 	* shape.cpp:

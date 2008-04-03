@@ -324,7 +324,7 @@ Surface::SetCursor (MouseCursor new_cursor)
 			c = gdk_cursor_new (GDK_LEFT_PTR);
 			break;
 		case MouseCursorHand:
-			c = gdk_cursor_new (GDK_HAND1);
+			c = gdk_cursor_new (GDK_HAND2);
 			break;
 		case MouseCursorWait:
 			c = gdk_cursor_new (GDK_WATCH);
@@ -333,10 +333,10 @@ Surface::SetCursor (MouseCursor new_cursor)
 			c = gdk_cursor_new (GDK_XTERM);
 			break;
 		case MouseCursorStylus:
-			c = gdk_cursor_new (GDK_CROSSHAIR); // ??
+			c = gdk_cursor_new (GDK_PENCIL);
 			break;
 		case MouseCursorEraser:
-			c = gdk_cursor_new (GDK_PENCIL); // ??
+			c = gdk_cursor_new (GDK_DOT); // ??
 			break;
 		case MouseCursorNone:
 			// XXX nothing yet.  create a pixmap cursor with no pixel data
