@@ -912,7 +912,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	
 	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
-		parser_error (p, NULL, NULL, 2011, err);
+		parser_error (p, p->current_element->element_name, NULL, 2011, err);
 		goto done;
 	} else if (!prop_name) {
 		goto done;

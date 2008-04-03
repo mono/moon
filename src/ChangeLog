@@ -1,3 +1,7 @@
+2008-04-02  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add the element name for this error.
+
 2008-04-02  Chris Toshok  <toshok@ximian.com>
 
 	* stylus.cpp (Stroke::HitTestEndcapSegment): fix up some math.
