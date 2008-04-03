@@ -1,3 +1,8 @@
+2008-04-03  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp: Don't init the stretch matrix to identity on each
+	Shape::ComputeShapeBounds. We want to be able to call it freely.
+
 2008-04-02  Michael Dominic K.  <mdk@mdk.am>
 
 	* geometry.cpp: Use the cairo_path_extents to calculate the logical

@@ -236,7 +236,6 @@ Shape::Fill (cairo_t *cr, bool do_op)
 Rect
 Shape::ComputeStretchBounds (Rect shape_bounds)
 {
-	cairo_matrix_init_identity (&stretch_transform);
 	Value *vh, *vw;
 
 	if (Shape::MixedHeightWidth (&vh, &vw))
@@ -449,7 +448,9 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 void
 Shape::ComputeBounds ()
 {
+	cairo_matrix_init_identity (&stretch_transform);
 	InvalidateSurfaceCache ();
+	
 	extents = ComputeShapeBounds (false);
 	extents = ComputeStretchBounds (extents);
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
@@ -1369,7 +1370,6 @@ Rect
 Line::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
-	cairo_matrix_init_identity (&stretch_transform);
 
 	if (Shape::MixedHeightWidth (NULL, NULL))
 		return shape_bounds;
@@ -1631,7 +1631,6 @@ Rect
 Polygon::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
-	cairo_matrix_init_identity (&stretch_transform);
 
 	if (Shape::MixedHeightWidth (NULL, NULL))
 		return shape_bounds;
@@ -1888,7 +1887,6 @@ Rect
 Polyline::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
-	cairo_matrix_init_identity (&stretch_transform);
 
 	if (Shape::MixedHeightWidth (NULL, NULL))
 		return shape_bounds;
@@ -2089,7 +2087,6 @@ Rect
 Path::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
-	cairo_matrix_init_identity (&stretch_transform);
 
 	Value *vh, *vw;
 	if (Shape::MixedHeightWidth (&vh, &vw))
