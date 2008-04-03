@@ -1,5 +1,10 @@
 2008-04-02  Larry Ewing  <lewing@novell.com>
 
+	* plugin-class.cpp: check number of arguments on getHost throw the
+	appropriate exception if there are arguments.
+
+2008-04-02  Larry Ewing  <lewing@novell.com>
+
 	* plugin-class.cpp: make sure the event name is valid when adding
 	or removing, throw an exception if not.
 
