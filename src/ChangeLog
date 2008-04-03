@@ -1,3 +1,9 @@
+2008-04-02  Michael Dominic K.  <mdk@mdk.am>
+	
+	* shape.cpp: Don't automatically compute the stretch bounds when
+	computing shape bounds. Instead, compute it as a separate step in
+	Shape::ComputeBounds.
+
 2008-04-03  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::EmitMouseLeave): turns out that,

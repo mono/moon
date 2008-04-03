@@ -451,6 +451,7 @@ Shape::ComputeBounds ()
 {
 	InvalidateSurfaceCache ();
 	extents = ComputeShapeBounds ();
+	extents = ComputeStretchBounds (extents);
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
 }
@@ -1386,8 +1387,6 @@ Line::ComputeShapeBounds ()
 	origin.x = MIN (x1, x2);
 	origin.y = MIN (y1, y2);
 
-	shape_bounds = ComputeStretchBounds (shape_bounds); 
-
 	return shape_bounds;
 }
 
@@ -1697,8 +1696,6 @@ Polygon::ComputeShapeBounds ()
 		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 	}
 
-	shape_bounds = ComputeStretchBounds (shape_bounds);
-
 	return shape_bounds;
 }
 
@@ -1930,8 +1927,6 @@ Polyline::ComputeShapeBounds ()
 		shape_bounds = shape_bounds.Union (line_bounds);
 	}
 
-	shape_bounds = ComputeStretchBounds (shape_bounds);
-
 	return shape_bounds;
 }
 
@@ -2106,9 +2101,6 @@ Path::ComputeShapeBounds ()
 
 	shape_bounds = geometry->ComputeBounds (this);
 
-	// Compute the transformation we use for stretching
-	shape_bounds = ComputeStretchBounds (shape_bounds);
-	
 	origin = Point (shape_bounds.x, shape_bounds.y);
 	return shape_bounds;
 }
