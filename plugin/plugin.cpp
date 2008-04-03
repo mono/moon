@@ -1582,13 +1582,16 @@ PluginXamlLoader::TryLoad (int *error)
 	}
 
 	if (!element) {
-		if (error_args) {
+		if (error_args && error_args->error_code != -1) {
 			printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (error: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), error_args->GetTypeName ());
+			GetSurface ()->Attach (NULL);
 			GetSurface()->EmitError (error_args);
-		} else 
+			return NULL;
+		} else {
 			printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n", GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (), GetMissing ());
 		xaml_is_managed = true;
 		return GetMissing ();
+		}
 	}
 
 	Type *t = Type::Find(element_type);

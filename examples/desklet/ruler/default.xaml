@@ -1,6 +1,6 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	x:Class="Desklets.Monitor;assembly=bin/ruler.dll"
+	x:Class="Desklets.Monitor;assembly=ruler.dll"
 	Loaded="PageLoaded" Width="532" Height="102">
 
 	<!-- Timer trigger -->

@@ -12,8 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-using Mono.Desklets;
-
 namespace Desklets
 {
 	public class SlideImage {
@@ -26,7 +24,7 @@ namespace Desklets
 			image.Height = canvas.Height;
 			image.Width = canvas.Width;
 
-			image.MediaEnded += delegate {
+			downloader.Completed += delegate {
 				this.ready = true;
 				if (ImageReady != null)
 					ImageReady (this, null);
@@ -127,7 +125,7 @@ namespace Desklets
 				Console.WriteLine ("content: "+entry.Content.Src.Content);
 			}
 			
-			Desklet.Invoke(delegate { DownloadImage (0); });
+			Gtk.Moonlight.Desklet.Invoke(delegate { DownloadImage (0); });
 		}
 	}
 }

@@ -1,3 +1,46 @@
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: make it legal to attach to a NULL toplevel, hook up
+	the needed events.
+
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::expose_to_drawable): make sure we take
+	allocation.x and allocation.y into account when deciding not to
+	draw.  Should fix the disappearing gtksilver widget reported on irc.
+
+2008-04-02  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp: flush character data at the end of property elements
+	too.
+
+2008-04-02  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add the element name for this error.
+
+2008-04-02  Chris Toshok  <toshok@ximian.com>
+
+	* stylus.cpp (Stroke::HitTestEndcapSegment): fix up some math.
+	(Stroke::HitTestEndcapPoint): same.
+	(point_gte_line): new method.
+	(point_lte_line): new method.
+	(Stroke::HitTestSegmentPoint): use point_gte_line and
+	point_lte_line to determine if the point is inside the segment.
+	(global): wrap all spew in DEBUG_HITTEST.
+	
+2008-04-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, mplayer.cpp, pipeline.h: Remove SeekToStart completely, it's
+	  just plain broken.
+
+2008-04-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (MediaElement::UpdatePlayerPosition): Cast to same
+	integer type when comparing.
+
+	* playlist.cpp (Playlist::OnMediaEnded): Prevent a segfault in the
+	debugging printfs. Fixes bug #375273.
+
 2008-04-01  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp: back out the SetSurface call removal.

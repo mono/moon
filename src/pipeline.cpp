@@ -353,30 +353,6 @@ Media::SeekAsync (uint64_t pts, MediaClosure *closure)
 }
 
 MediaResult
-Media::SeekToStart ()
-{
-	LOG_PIPELINE ("Media::SeekToStart (), id: %i\n", GET_OBJ_ID (this));
-
-	if (demuxer == NULL)
-		return MEDIA_FAIL;
-
-	return demuxer->SeekToStart ();
-}
-
-MediaResult
-Media::SeekToStartAsync (MediaClosure *closure)
-{
-	LOG_PIPELINE ("Media::SeekToStartAsync (), id: %i\n", GET_OBJ_ID (this));
-
-	if (demuxer == NULL)
-		return MEDIA_FAIL;
-
-	EnqueueWork (new MediaWork (closure));
-
-	return MEDIA_SUCCESS;
-}
-
-MediaResult
 Media::Initialize (const char *file_or_url)
 {
 	LOG_PIPELINE ("Media::Initialize ('%s'), id: %i\n", file_or_url, GET_OBJ_ID (this));
@@ -732,9 +708,6 @@ Media::WorkerLoop ()
 			//printf ("Media::WorkerLoop (): Seeking, current count: %d\n", queued_requests->Length ());
 			result = Seek (node->data.seek.seek_pts);
 			break;
-		case WorkTypeSeekToStart:
-			result = SeekToStart ();
-			break;
 		case WorkTypeAudio:
 		case WorkTypeVideo:
 		case WorkTypeMarker:
@@ -800,11 +773,10 @@ Media::EnqueueWork (MediaWork *work)
 	if (queued_requests->First ()) {
 		switch (work->type) {
 		case WorkTypeSeek:
-		case WorkTypeSeekToStart:
 			// Only have one seek request in the queue, and make
 			// sure to have it first.
 			current = (MediaWork *) queued_requests->First ();
-			if (current->type == WorkTypeSeek || current->type == WorkTypeSeek)
+			if (current->type == WorkTypeSeek)
 				queued_requests->Remove (current);
 			
 			queued_requests->Prepend (work);
@@ -932,15 +904,6 @@ ASFDemuxer::Seek (uint64_t pts)
 		return MEDIA_FAIL;
 	
 	return reader->Seek (pts) ? MEDIA_SUCCESS : MEDIA_FAIL;
-}
-
-MediaResult
-ASFDemuxer::SeekToStart ()
-{
-	if (reader == NULL)
-		return MEDIA_FAIL;
-
-	return reader->SeekToStart () ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
 void
@@ -1808,13 +1771,6 @@ Mp3FrameReader::EstimatePtsPosition (uint64_t pts)
 }
 
 bool
-Mp3FrameReader::SeekToStart ()
-{
-	// The Seek implementation already is special cased for pts = 0.
-	return Seek (0);
-}
-
-bool
 Mp3FrameReader::Seek (uint64_t pts)
 {
 	int64_t offset = stream->GetPosition ();
@@ -2017,15 +1973,6 @@ Mp3Demuxer::Seek (uint64_t pts)
 	if (reader && reader->Seek (pts))
 		return MEDIA_SUCCESS;
 	
-	return MEDIA_FAIL;
-}
-
-MediaResult
-Mp3Demuxer::SeekToStart ()
-{
-	if (reader && reader->SeekToStart ())
-		return MEDIA_SUCCESS;
-
 	return MEDIA_FAIL;
 }
 
@@ -3351,12 +3298,6 @@ MediaWork::MediaWork (MediaClosure *closure, uint64_t seek_pts)
 	this->data.seek.seek_pts = seek_pts;
 }
 
-MediaWork::MediaWork (MediaClosure *closure)
-{
-	type = WorkTypeSeekToStart;
-	this->closure = closure;
-}
-
 MediaWork::MediaWork (MediaClosure *closure, IMediaSource *source)
 {
 	type = WorkTypeOpen;
@@ -3377,7 +3318,6 @@ MediaWork::~MediaWork ()
 		base_unref (data.frame.stream);
 		break;
 	case WorkTypeSeek:
-	case WorkTypeSeekToStart:
 		break; // Nothing to do
 	}
 	delete closure;

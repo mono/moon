@@ -21,7 +21,7 @@
 #include "runtime.h"
 #include "clock.h"
 
-#define LOG_PLAYLISTS(...) printf (__VA_ARGS__);
+#define LOG_PLAYLISTS(...) printf (__VA_ARGS__)
 
 /*
  * PlaylistNode
@@ -459,18 +459,21 @@ void
 Playlist::OnMediaEnded ()
 {
 	PlaylistEntry *current_entry;
-
-	LOG_PLAYLISTS ("Playlist::OnMediaEnded () current_node: %p, source: %s\n", current_node, ((PlaylistNode*) current_node)->GetEntry ()->GetSourceName () );
-
+	
+	if (current_node)
+		LOG_PLAYLISTS ("Playlist::OnMediaEnded () current_node: %p, source: %s\n", current_node, ((PlaylistNode *) current_node)->GetEntry ()->GetSourceName ());
+	else
+		LOG_PLAYLISTS ("Playlist::OnMediaEnded () current_node: %p\n", current_node);
+	
 	if (!current_node)
 		return;
-
+	
 	current_node = (PlaylistNode *) current_node->next;
-
+	
 	current_entry = GetCurrentEntry ();
 	if (current_entry)
 		current_entry->Play ();
-
+	
 	LOG_PLAYLISTS ("Playlist::OnMediaEnded () current_node: %p [Done]\n", current_node);
 }
 
@@ -478,6 +481,7 @@ void
 Playlist::on_media_ended (EventObject *sender, EventArgs *calldata, gpointer userdata)
 {
 	Playlist *playlist = (Playlist *) userdata;
+	
 	playlist->OnMediaEnded ();
 }
 

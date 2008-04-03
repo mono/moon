@@ -96,7 +96,7 @@ namespace Desklets
 		
 		public void PageLoaded (object o, EventArgs e)
 		{
-			Mono.Desklets.Desklet.SetupToolbox (this);
+			Gtk.Moonlight.Desklet.SetupToolbox (this);
 
 			closeButton = FindName ("desklet-close") as Polygon;			
 

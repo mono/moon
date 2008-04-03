@@ -1,3 +1,21 @@
+2008-04-02  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Fixed dist of examples/
+
+2008-04-02  Miguel de Icaza  <miguel@novell.com>
+
+	* Move the important stuff from examples/desklet into
+	gtksilver.dll, no point in having two assemblies, two sets of docs
+	for merely one class.
+
+	* Move the configuration stuff which is really only used by the
+	weather applet into the weather applet.
+
+	* Automake/autoconf the examples/desklets, lots of bitrot in
+	there, will continue as time allows. 
+
+	Fixed some of the bitrot
+
 2008-03-28  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Added fallback tests for when xtst.pc

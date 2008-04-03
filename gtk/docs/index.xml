@@ -13,7 +13,8 @@
   <Copyright>Copyright 2007 Novell, Inc.</Copyright>
   <Types>
     <Namespace Name="Gtk.Moonlight">
-      <Type Name="GtkSilver" Kind="Class" />
+      <Type Name="Desklet" />
+      <Type Name="GtkSilver" />
     </Namespace>
   </Types>
   <Title>gtksilver</Title>

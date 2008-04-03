@@ -1,6 +1,6 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	x:Class="Desklet.CalendarPanel;assembly=bin/calendar.dll"
+	x:Class="Desklet.CalendarPanel;assembly=calendar.dll"
 	Loaded="PageLoaded" Width="228" Height="188">
 	
 	<Canvas.Resources>

@@ -1,3 +1,59 @@
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
+	(PluginXamlLoader::TryLoad): if the parser has an unknown error
+	code try the managed loader.
+
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (PluginXamlLoader::TryLoad): if we get a parser while
+	loading set attach to a NULL toplevel.
+
+2008-04-02  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.cpp: check number of arguments on getHost throw the
+	appropriate exception if there are arguments.
+
+2008-04-02  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.cpp: make sure the event name is valid when adding
+	or removing, throw an exception if not.
+
+2008-04-02  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.cpp: start making the exceptions match the ms
+	exceptions.  Work around the id string until more is known about
+	how we should deal with it.
+
+2008-04-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes bug #375277 and maybe other crashers.
+
+	* plugin-class.h (MoonlightScriptControlObject::.ctor): Initialize
+	settings->control and content->control to 'this'.
+	(MoonlightSettingsObject): Now has a pointer to its owning
+	MoonlightScriptControlObject so we can protect against Firefox's
+	aggressive destruction of still-referenced objects when you
+	navigate away from a Moonlight page and/or close the browser when
+	a scriptable object is still referenced. Yay Firefox!
+	(MoonlightContentObject): Same.
+
+	* plugin-class.cpp (MoonlightScriptControlObject::Dispose): Set
+	settings->control to NULL before unreffing the settings
+	NPObject. Same with content->control.
+	(MoonlightContentObject::Dispose): If we have a pointer to our
+	parent control, set control->content to NULL here.
+	(MoonlightSettingsObject::Dispose): Same as
+	MoonlightContentObject::Dispose().
+	(MoonlightEventObjectObject::SetEventObject): Removed, just to be
+	sure we never reuse these objects.
+	(EventObjectCreateWrapper): Implement the equivalent of
+	SetEventObject() here instead, since this is the only place that
+	should EVER be calling it. Also makes it a lot simpler.
+
+2008-04-02  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.cpp: charposition not charnumber.
+
 2008-04-01  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (MoonlightContentObject::Invoke): back out my

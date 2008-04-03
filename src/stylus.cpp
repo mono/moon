@@ -20,6 +20,8 @@
 #include "color.h"
 #include "moon-path.h"
 
+#define DEBUG_HITTEST 0
+
 StylusInfo*
 stylus_info_new (void)
 {
@@ -152,8 +154,18 @@ Stroke::HitTestEndcapSegment (Point c,
 		p2.x, p2.y);
 #endif
 
+	// handle dx == 0
+	if (p2.x == p1.x) {
+#if DEBUG_HITTEST
+		printf ("dx == 0, returning %d\n", p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2));
+#endif
+		return p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2);
+	}
 
-	double m = (p2.x - p1.x)/p2.y - p1.y;
+	p1 = p1 - c;
+	p2 = p2 - c;
+
+	double m = (p2.y - p1.y)/(p2.x - p1.x);
 	double b_ = p1.y - m * p1.x;
 
 	double a, b;
@@ -171,6 +183,9 @@ Stroke::HitTestEndcapSegment (Point c,
 
 	double discr =  -4 * aq * cq;
 
+#if DEBUG_HITTEST
+	printf ("HitTestEndCapSegment: discr = %g\n", discr);
+#endif	
 	/* discr == 0 means 1 intersection point, discr > 0 means 2 */
 	return discr >= 0;
 }
@@ -296,20 +311,56 @@ Stroke::HitTestEndcapPoint (Point c,
 	Point dp = p - c;
 	double a, b;
 
-	if (w > h) {
-		a = w / 2;
-		b = h / 2;
-	}
-	else {
-		a = h / 2;
-		b = w / 2;
-	}
+	a = w / 2;
+	b = h / 2;
 
 	bool rv = ((dp.x * dp.x) / (a * a) + (dp.y * dp.y) / (b * b)) < 1;
 #if DEBUG_HITTEST
 	printf (" + %s\n", rv ? "TRUE" : "FALSE");
 #endif
 	return rv;
+}
+
+static bool
+point_gte_line (Point p,
+		Point p1, Point p2)
+{
+	// return true if the point is to the right of or beneath the line segment
+
+	if (p1.y == p2.y) {
+	  printf ("y's are equal, just comparing point y to line y\n");
+		return p.y > p1.y;
+	}
+	else if (p1.x == p2.x)
+		return p.x > p1.x;
+	else {
+		double m = (p2.y - p1.y) / (p2.x - p1.x);
+
+	  	if (m > 0)
+			return p.y < (p1.y + m * p.x);
+		else
+			return p.y > (p1.y + m * p.x);
+	}
+}
+
+static bool
+point_lte_line (Point p,
+		Point p1, Point p2)
+{
+	// return true if the point is to the right of or beneath the line segment
+
+	if (p1.y == p2.y)
+		return p.y < p1.y;
+	else if (p1.x == p2.x)
+		return p.x < p1.x;
+	else {
+		double m = (p2.y - p1.y) / (p2.x - p1.x);
+
+	  	if (m > 0)
+			return p.y > (p1.y + m * p.x);
+		else
+			return p.y < (p1.y + m * p.x);
+	}
 }
 
 bool
@@ -325,7 +376,13 @@ Stroke::HitTestSegmentPoint (Point stroke_p1, Point stroke_p2,
 		p.x, p.y);
 #endif
 
-	return false;
+	Point left_stroke_p1, right_stroke_p1;
+	Point left_stroke_p2, right_stroke_p2;
+
+	calc_perpendicular_intersection_points (stroke_p1, stroke_p2, stroke_p1, w, h, &left_stroke_p1, &right_stroke_p1);
+	calc_perpendicular_intersection_points (stroke_p1, stroke_p2, stroke_p2, w, h, &left_stroke_p2, &right_stroke_p2);
+
+	return point_gte_line (p, left_stroke_p1, left_stroke_p2) && point_lte_line (p, right_stroke_p1, right_stroke_p2);
 }
 			      
 
@@ -395,11 +452,15 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 			if (HitTestEndcapPoint (p, w, h, cur))
 				return true;
 			
+#if DEBUG_HITTEST
 			printf ("\t(%f, %f) EndcapPoint failed\n",
 				cur.x, cur.y);
+#endif
 		} else {
+#if DEBUG_HITTEST
 			printf ("\t(%f, %f) is not within bounds\n",
 				cur.x, cur.y);
+#endif
 		}
 	}
 	
@@ -411,8 +472,10 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 		if (HitTestEndcapSegment (p, w, h, cur, next))
 			return true;
 		
+#if DEBUG_HITTEST
 		printf ("\t(%f, %f) (%f, %f) EndcapSegment failed\n",
 			cur.x, cur.y, next.x, next.y);
+#endif
 		
 		cur.x = next.x;
 		cur.y = next.y;
@@ -427,7 +490,9 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	StylusPointCollection *myStylusPoints = stroke_get_stylus_points (this);
 
 	if (myStylusPoints->list->Length() == 0) {
+#if DEBUG_HITTEST
 		printf ("no points in the collection, returning false!\n");
+#endif
 		return false;
 	}
 
@@ -446,6 +511,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 
 	}
 	
+#if DEBUG_HITTEST
 	printf ("Stroke::HitTest()\n");
 	printf ("\tInput points:\n");
 	n = (Collection::Node *) stylusPoints->list->First ();
@@ -467,14 +533,17 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 		
 		n = (Collection::Node *) n->next;
 	}
-	
+#endif	
+
 	/* test the beginning endcap */
 	n = (Collection::Node *) myStylusPoints->list->First ();
 	sp = (StylusPoint*)n->obj;
 	if (HitTestEndcap (Point (stylus_point_get_x (sp),
 				  stylus_point_get_y (sp)),
 			   width, height, stylusPoints)) {
+#if DEBUG_HITTEST
 		printf ("\tA point matched the beginning endcap\n");
+#endif
 		return true;
 	}
 
@@ -487,7 +556,9 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 				    Point (stylus_point_get_x (sp),
 					   stylus_point_get_y (sp)),
 				    width, height, stylusPoints)) {
+#if DEBUG_HITTEST
 			printf ("\tA point matched an interior line segment\n");
+#endif
 			return true;
 		}
 	}
@@ -499,12 +570,16 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 		if (HitTestEndcap (Point (stylus_point_get_x (sp),
 					  stylus_point_get_y (sp)),
 				   width, height, stylusPoints)) {
+#if DEBUG_HITTEST
 			printf ("\tA point matched the ending endcap\n");
+#endif
 			return true;
 		}
 	}
 	
+#if DEBUG_HITTEST
 	printf ("\tso sad, no points intersected...\n");
+#endif
 	
 	return false;
 }

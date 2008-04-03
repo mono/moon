@@ -912,7 +912,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	
 	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
-		parser_error (p, NULL, NULL, 2011, err);
+		parser_error (p, p->current_element->element_name, NULL, 2011, err);
 		goto done;
 	} else if (!prop_name) {
 		goto done;
@@ -1047,6 +1047,7 @@ end_element_handler (void *data, const char *el)
 			}
 			walk = walk->next;
 		}
+		flush_char_data (info, NULL);
 		break;
 	}
 	case XamlElementInstance::X_CODE_DIRECTIVE:
@@ -2664,7 +2665,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 			if (value->item) {
 				if (item->IsPropertySet (prop->name)) {
 					parser_error (p, item->element_name, NULL, 2033,
-						g_strdup_printf ("Cannot specify the value multiple times for property: %s.", prop->name));
+						g_strdup_printf ("Cannot specify the value multiple times for property: %s.", property->element_name));
 				} else {
 					dep->SetValue (prop, Value (value->item));
 					item->MarkPropertyAsSet (prop->name);

@@ -1,0 +1,26 @@
+bin_SCRIPTS = example-weather
+deskletdir = $(libdir)/desklets/example-weather
+
+desklet_DATA = default.xaml weather.dll
+
+sources = \
+	$(srcdir)/Locations.cs 		\
+	$(srcdir)/LocationsGenerated.cs \
+	$(srcdir)/Metar.cs 		\
+	$(srcdir)/default.xaml.cs 	\
+	$(srcdir)/config.cs
+
+EXTRA_DIST = $(sources)  StationCompiler.cs data/Locations.xml.bz2
+
+example-weather: Makefile
+	echo "#!/bin/sh" > example-weather
+	echo "mopen -d $(deskletdir)" >> example-weather
+	chmod +x example-weather
+
+weather.dll: $(sources)
+	gmcs -debug -target:library -out:weather.dll -pkg:silverdesktop -r:../../../gtk/gtksilver.dll -pkg:gtk-sharp-2.0 -pkg:gconf-sharp-2.0 $(sources)
+
+LocationsGenerated.cs: $(srcdir)/StationCompiler.cs $(srcdir)/data/Locations.xml.bz2
+	gmcs $(srcdir)/StationCompiler.cs 
+	bunzip2 -c data/Locations.xml.bz2 > Locations.xml
+	mono StationCompiler.exe Locations.xml LocationsGenerated.cs

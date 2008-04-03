@@ -667,25 +667,29 @@
 	 masterFile10="None"
 	 categories="parser"
 	 expectedError="ParserError"
-    />
+   />
    <Test id="159"
 	 inputFile="test-shape-path-stretch.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch.png"
-    />
+   />
    <Test id="160"
 	 inputFile="test-stroke-low-thickness.xaml"
 	 masterFile10="../harness/masters/test-stroke-low-thicknessMaster.png"
-    />
+   />
    <Test id="161"
 	 inputFile="test-shape-path-stretch2.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch2Master.png"
-    />
+   />
    <Test id="162"
 	 inputFile="test-shape-path-stretch3.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch3Master.png"
-    />
+   />
    <Test id="163"
 	 inputFile="test-shape-dashcaps.xaml"
 	 masterFile10="../harness/masters/test-shape-dashcapsMaster.png"
-    />
+   />
+   <Test id="164"
+	 inputFile="test-shape-path-stretch4.xaml"
+	 masterFile10="../harness/masters/test-shape-path-stretch4Master.png"
+   />
 </DRTList>
