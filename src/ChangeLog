@@ -1,5 +1,10 @@
 2008-04-03  Larry Ewing  <lewing@novell.com>
 
+	* runtime.cpp: make it legal to attach to a NULL toplevel, hook up
+	the needed events.
+
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
 	* runtime.cpp (Surface::expose_to_drawable): make sure we take
 	allocation.x and allocation.y into account when deciding not to
 	draw.  Should fix the disappearing gtksilver widget reported on irc.

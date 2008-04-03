@@ -394,16 +394,6 @@ Surface::Attach (UIElement *element)
 {
 	bool first = FALSE;
 
-	if (!element)
-		return;
-
-	if (!Type::Find (element->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
-		printf ("Unsupported toplevel\n");
-		return;
-	}
-
-	Canvas *canvas = (Canvas *) element;
-	canvas->ref ();
 	
 	if (toplevel) {
 		toplevel->Invalidate ();
@@ -422,6 +412,26 @@ Surface::Attach (UIElement *element)
 		time_manager->GetSource()->Start ();
 	} else 
 		first = true;
+
+	if (!element) {
+		if (first)
+			ConnectEvents (true);
+
+		if (widget)
+			gtk_widget_queue_draw (widget);
+
+
+		toplevel = NULL;
+		return;
+	}
+
+	if (!Type::Find (element->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
+		printf ("Unsupported toplevel\n");
+		return;
+	}
+
+	Canvas *canvas = (Canvas *) element;
+	canvas->ref ();
 
 	// make sure we have a namescope at the toplevel so that names
 	// can be registered/resolved properly.
@@ -770,8 +780,7 @@ Surface::UpdateFullScreen (bool value)
 		
 		// Flip the drawing area
 		widget_normal = widget;
-		widget = widget_fullscreen;
-		
+		widget = widget_fullscreen;		
 		// Get the screen size
 		int screen_width = gdk_screen_get_width (gdk_screen_get_default ());
 		int screen_height = gdk_screen_get_height (gdk_screen_get_default ());

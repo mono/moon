@@ -1,3 +1,8 @@
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (PluginXamlLoader::TryLoad): if we get a parser while
+	loading set attach to a NULL toplevel.
+
 2008-04-02  Larry Ewing  <lewing@novell.com>
 
 	* plugin-class.cpp: check number of arguments on getHost throw the
