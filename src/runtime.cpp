@@ -978,7 +978,7 @@ Surface::unrealized_callback (GtkWidget *widget, gpointer data)
 gboolean
 Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y)
 {
-	if (event->area.x > width || event->area.y > height)
+	if (event->area.x > (off_x + width) || event->area.y > (off_y + height))
 		return TRUE;
 
 #if TIME_REDRAW
