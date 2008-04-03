@@ -1,3 +1,8 @@
+2008-04-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (EventObject::Emit): Unref the calldata
+	even in the "no such event" exception case.
+
 2008-04-03  Larry Ewing  <lewing@novell.com>
 
 	* xaml.cpp: (expat_parser_error): translate XML_ERROR_NO_ELEMENTS

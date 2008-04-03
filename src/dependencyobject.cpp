@@ -355,6 +355,8 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 {
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
+		if (calldata)
+			calldata->unref ();
 		return false;
 	}
 
