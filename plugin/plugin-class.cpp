@@ -2490,6 +2490,9 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		EventListenerProxy *proxy = new EventListenerProxy (instance, name, &args[1]);
 		
 		int token = proxy->AddHandler (dob);
+		
+		if (token == -1)
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_ADDEVENT");
 
 		g_free (name);
 
@@ -2505,7 +2508,11 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 			&& !NPVARIANT_IS_STRING (args [1])))
 			THROW_JS_EXCEPTION ("removeEventListener");
 		
-		if (NPVARIANT_IS_INT32 (args [1])) {
+		int id = dob->GetType()->LookupEvent (STR_FROM_VARIANT (args[0]));
+
+		if (id == -1) {
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_DELEVENT");
+		} else if (NPVARIANT_IS_INT32 (args [1])) {
 			dob->RemoveHandler (STR_FROM_VARIANT (args[0]), NPVARIANT_TO_INT32 (args[1]));
 		} else if (NPVARIANT_IS_STRING (args[1])) {
 			NamedProxyPredicate predicate (STR_FROM_VARIANT (args [1]));

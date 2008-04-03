@@ -1,9 +1,14 @@
 2008-04-02  Larry Ewing  <lewing@novell.com>
 
+	* plugin-class.cpp: make sure the event name is valid when adding
+	or removing, throw an exception if not.
+
+2008-04-02  Larry Ewing  <lewing@novell.com>
+
 	* plugin-class.cpp: start making the exceptions match the ms
 	exceptions.  Work around the id string until more is known about
 	how we should deal with it.
-	
+
 2008-04-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes bug #375277 and maybe other crashers.
