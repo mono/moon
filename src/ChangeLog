@@ -1,5 +1,10 @@
 2008-04-02  Michael Dominic K.  <mdk@mdk.am>
 
+	* geometry.cpp: Use the cairo_path_extents to calculate the logical
+	bounds instead of faking small stroke.
+
+2008-04-02  Michael Dominic K.  <mdk@mdk.am>
+
 	* shape.cpp:
 	* shape.h: Adding new parameter (bool logical) to all the
 	Shape::ComputeShapeBounds functions and overrides. See prev commit for

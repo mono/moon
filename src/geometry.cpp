@@ -114,7 +114,7 @@ path_get_bounds (Path *shape, cairo_path_t *path, bool logical)
 
 	double thickness;
 	if (logical)
-		thickness = 0.001;
+		thickness = 0.0;
 	else
 		thickness = shape && shape_get_stroke (shape) ? shape_get_stroke_thickness (shape) : 0;
 	
@@ -124,10 +124,14 @@ path_get_bounds (Path *shape, cairo_path_t *path, bool logical)
 	
 	double x1, y1, x2, y2;
 
-	if (thickness > 0.0)
-		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	else
-		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+	if (logical)
+		cairo_path_extents (cr, &x1, &y1, &x2, &y2);
+	else {
+		if (thickness > 0.0)
+			cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+		else
+			cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+	}
 
 	measuring_context_destroy (cr);
 
