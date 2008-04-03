@@ -1,5 +1,8 @@
 2008-04-03  Larry Ewing  <lewing@novell.com>
 
+	* xaml.cpp: make sure we set an error if the property name isn't
+	valid.
+
 	* runtime.cpp: make it legal to attach to a NULL toplevel, hook up
 	the needed events.
 

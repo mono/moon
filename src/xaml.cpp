@@ -2744,9 +2744,11 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 
 		if (p->loader)
 			p->loader->HookupEvent (item->item, name, value);
+		
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 
@@ -2848,7 +2850,7 @@ start_parse:
 
 			if (dependency_object_hookup_event (p, item, pname, attr [i + 1]))
 				parser_error (p, item->element_name, attr [i], 2012, g_strdup_printf ("Unknown attribute %s on element %s.",
-						attr [i], p->current_element->element_name));
+						attr [i], item->element_name));
 		}
 
 		if (atchname)
