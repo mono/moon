@@ -11,6 +11,6 @@ example-cpumonitor: Makefile
 	chmod +x example-cpumonitor
 
 monitor.dll: monitor.cs
-	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtksilver monitor.cs
+	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll monitor.cs
 
 

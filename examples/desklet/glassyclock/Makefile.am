@@ -11,6 +11,6 @@ example-glassyclock: Makefile
 	chmod +x example-glassyclock
 
 clock.dll: clock.cs
-	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtksilver clock.cs
+	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll clock.cs
 
 

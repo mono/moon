@@ -11,6 +11,6 @@ example-calendar: Makefile
 	chmod +x example-calendar
 
 calendar.dll: calendar.cs
-	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtksilver calendar.cs
+	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll calendar.cs
 
 

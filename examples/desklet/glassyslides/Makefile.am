@@ -11,6 +11,6 @@ example-glassyslides: Makefile
 	chmod +x example-glassyslides
 
 slideshow.dll: slideshow.cs
-	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtksilver slideshow.cs
+	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll slideshow.cs
 
 

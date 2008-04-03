@@ -11,6 +11,6 @@ example-ruler: Makefile
 	chmod +x example-ruler
 
 ruler.dll: ruler.cs
-	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtksilver ruler.cs
+	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll ruler.cs
 
 

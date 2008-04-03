@@ -11,7 +11,7 @@ example-picasa: Makefile
 	chmod +x example-picasa
 
 picasa.dll: picasa.cs Google.GData.Client.dll
-	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtksilver picasa.cs -r:Google.GData.Client.dll
+	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll picasa.cs -r:Google.GData.Client.dll
 
 Google.GData.Client.dll:
 	wget http://google-gdata.googlecode.com/files/gdata.net.1099.zip -O google.zip

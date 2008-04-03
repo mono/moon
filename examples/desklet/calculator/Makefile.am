@@ -11,6 +11,6 @@ example-calculator: Makefile
 	chmod +x example-calculator
 
 calculator.dll: calculator.cs
-	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtksilver calculator.cs
+	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll calculator.cs
 
 

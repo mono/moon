@@ -11,6 +11,6 @@ example-simpleclock: Makefile
 	chmod +x example-simpleclock
 
 clock.dll: clock.cs
-	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtksilver clock.cs
+	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll clock.cs
 
 
