@@ -2660,7 +2660,10 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	}
 
 	if (prop) {
-		if (is_instance_of (value, prop->value_type)) {
+		if (prop->IsReadOnly ()) {
+			parser_error (p, item->element_name, NULL, 2014,
+				      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->name));
+		} else if (is_instance_of (value, prop->value_type)) {
 			// an empty collection can be NULL and valid
 			if (value->item) {
 				if (item->IsPropertySet (prop->name)) {
@@ -2820,9 +2823,19 @@ start_parse:
 		}
 
 		if (prop) {
+			if (prop->IsReadOnly ()) {
+				parser_error (p, item->element_name, NULL, 2014,
+					      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->name));
+				if (atchname)
+					g_free (atchname);
+				return;
+			} 
+
 			if (item->IsPropertySet (prop->name)) {
 				parser_error (p, item->element_name, attr [i], 2033,
 						g_strdup_printf ("Cannot specify the value multiple times for property: %s.", prop->name));
+				if (atchname)
+					g_free (atchname);
 				return;
 			}
 

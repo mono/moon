@@ -1,5 +1,9 @@
 2008-04-03  Larry Ewing  <lewing@novell.com>
 
+	* xaml.cpp: Generate errors when trying to set readonly properties.
+
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
 	* xaml.cpp: make sure we set an error if the property name isn't
 	valid.
 
