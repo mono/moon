@@ -71,6 +71,7 @@ enum PluginPropertyId {
 	MoonId_Settings,
 	MoonId_Content,
 	MoonId_InitParams,
+	MoonId_Id,
 	MoonId_IsLoaded,
 	MoonId_Source,
 	MoonId_Background,
@@ -1315,13 +1316,16 @@ MoonlightObject::HasProperty (NPIdentifier name)
 bool
 MoonlightObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
-	return false;
+	THROW_JS_EXCEPTION ("AG_E_RUNTIME_GETVALUE");
+	NULL_TO_NPVARIANT (*result);
+	return true;
 }
 
 bool
 MoonlightObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
-	return false;
+	THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
+	return true;
 }
 
 bool
@@ -1552,6 +1556,7 @@ scriptable_control_mapping[] = {
 	{ "isloaded", MoonId_IsLoaded },
 	{ "createobject", MoonId_CreateObject },
 	{ "initparams", MoonId_InitParams },
+	{ "id", MoonId_Id },
 	{ "isversionsupported", MoonId_IsVersionSupported },
 	{ "settings", MoonId_Settings },
 	{ "source", MoonId_Source },
@@ -1598,6 +1603,13 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 	case MoonId_Source:
 		string_to_npvariant (plugin->getSource (), result);
 		return true;
+
+	case MoonId_Id:
+		// FIXME we need to look at how the plugin deals with 
+		// unknown params on the dom node
+		NULL_TO_NPVARIANT (*result);
+		return true;
+
 	default:
 		return MoonlightObject::GetProperty (id, name, result);
 	}
@@ -1999,8 +2011,8 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 	
 	switch (id) {
 	case MoonId_FindName: {
-		if (!argCount)
-			THROW_JS_EXCEPTION ("findName");
+		if (argCount != 1)
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_FINDNAME");
 
 		char *name = STR_FROM_VARIANT (args [0]);
 
@@ -2429,7 +2441,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_FindName: {
 		if (argCount != 1 || !NPVARIANT_IS_STRING (args [0]))
-			THROW_JS_EXCEPTION ("findName");
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_FINDNAME");
 
 		char *name = STR_FROM_VARIANT (args [0]);
 
@@ -2987,7 +2999,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_SetSource: {
 		if (argCount != 2 || !npvariant_is_downloader (args[0]) || !NPVARIANT_IS_STRING (args[1]))
-			THROW_JS_EXCEPTION ("setSource");
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_METHOD");
 		
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		const char *part = STR_FROM_VARIANT (args [1]);
@@ -3040,7 +3052,7 @@ MoonlightImageObject::Invoke (int id, NPIdentifier name,
 	switch (id) {
 	case MoonId_SetSource:
 		if (argCount != 2 || !npvariant_is_downloader (args[0]) || !NPVARIANT_IS_STRING (args[1]))
-			THROW_JS_EXCEPTION ("setSource");
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_METHOD");
 		
 		downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		part = STR_FROM_VARIANT (args [1]);
