@@ -789,6 +789,10 @@ expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 		error_code = 5055;
 		message = g_strdup ("undeclared prefix");
 		break;
+	case XML_ERROR_NO_ELEMENTS:
+		error_code = 5000;
+		message = g_strdup ("unexpected end of input");
+		break;
 	default:
 		error_code = expat_error;
 		message = g_strdup_printf ("Unhandled XML error %s", XML_ErrorString (expat_error));
