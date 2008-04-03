@@ -11,6 +11,6 @@ example-glassymonitor: Makefile
 	chmod +x example-glassymonitor
 
 monitor.dll: monitor.cs
-	gmcs -debug -target:library -pkg:silverdesktop -pkg:gtksilver monitor.cs
+	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll monitor.cs
 
 
