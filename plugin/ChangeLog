@@ -1,5 +1,10 @@
 2008-04-03  Larry Ewing  <lewing@novell.com>
 
+	(PluginXamlLoader::TryLoad): if the parser has an unknown error
+	code try the managed loader.
+
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
 	* plugin.cpp (PluginXamlLoader::TryLoad): if we get a parser while
 	loading set attach to a NULL toplevel.
 
