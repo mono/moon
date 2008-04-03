@@ -450,14 +450,14 @@ void
 Shape::ComputeBounds ()
 {
 	InvalidateSurfaceCache ();
-	extents = ComputeShapeBounds ();
+	extents = ComputeShapeBounds (false);
 	extents = ComputeStretchBounds (extents);
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
 }
 
 Rect
-Shape::ComputeShapeBounds ()
+Shape::ComputeShapeBounds (bool logical)
 {
 	if (IsEmpty ())
 		return Rect ();
@@ -901,7 +901,7 @@ Ellipse::ComputeLargestRectangle ()
 	double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
 	double x = (GetValue (FrameworkElement::WidthProperty)->AsDouble () - t) * cos (M_PI_2);
 	double y = (GetValue (FrameworkElement::HeightProperty)->AsDouble () - t) * sin (M_PI_2);
-	return ComputeShapeBounds ().GrowBy (-x, -y).RoundIn ();
+	return ComputeShapeBounds (false).GrowBy (-x, -y).RoundIn ();
 }
 
 void
@@ -1171,7 +1171,7 @@ Rectangle::ComputeLargestRectangle ()
 		x += GetValue (Rectangle::RadiusXProperty)->AsDouble ();
 		y += GetValue (Rectangle::RadiusYProperty)->AsDouble ();
 	}
-	return ComputeShapeBounds ().GrowBy (-x, -y).RoundIn ();
+	return ComputeShapeBounds (false).GrowBy (-x, -y).RoundIn ();
 }
 
 double
@@ -1366,7 +1366,7 @@ Line::BuildPath ()
 }
 
 Rect
-Line::ComputeShapeBounds ()
+Line::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
 	cairo_matrix_init_identity (&stretch_transform);
@@ -1374,8 +1374,13 @@ Line::ComputeShapeBounds ()
 	if (Shape::MixedHeightWidth (NULL, NULL))
 		return shape_bounds;
 
-	double thickness = shape_get_stroke_thickness (this);
-	if (thickness <= 0.0)
+	double thickness;
+	if (logical)
+		thickness = 0.0;
+	else
+		thickness = shape_get_stroke_thickness (this);
+
+	if (thickness <= 0.0 && ! logical)
 		return shape_bounds;
 
 	double x1 = line_get_x1 (this);
@@ -1623,7 +1628,7 @@ calc_line_bounds_with_joins (double x1, double y1, double x2, double y2, double 
 }
 
 Rect
-Polygon::ComputeShapeBounds ()
+Polygon::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
 	cairo_matrix_init_identity (&stretch_transform);
@@ -1638,7 +1643,12 @@ Polygon::ComputeShapeBounds ()
 	if (!points || (count < 2))
 		return shape_bounds;
 
-	double thickness = shape_get_stroke_thickness (this);
+	double thickness;
+	if (logical)
+		thickness = 0.0;
+	else 
+		thickness = shape_get_stroke_thickness (this);
+
 	if (thickness == 0.0)
 		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
@@ -1875,7 +1885,7 @@ Polyline::GetFillRule ()
 }
 
 Rect
-Polyline::ComputeShapeBounds ()
+Polyline::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
 	cairo_matrix_init_identity (&stretch_transform);
@@ -1890,7 +1900,12 @@ Polyline::ComputeShapeBounds ()
 	if (!points || (count < 2))
 		return shape_bounds;
 
-	double thickness = shape_get_stroke_thickness (this);
+	double thickness;
+	if (logical)
+		thickness = 0.0;
+	else
+		thickness = shape_get_stroke_thickness (this);
+
 	if (thickness == 0.0)
 		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
@@ -2071,7 +2086,7 @@ Path::GetFillRule ()
 }
 
 Rect
-Path::ComputeShapeBounds ()
+Path::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
 	cairo_matrix_init_identity (&stretch_transform);
@@ -2099,9 +2114,11 @@ Path::ComputeShapeBounds ()
 		return shape_bounds;
 	}
 
-	shape_bounds = geometry->ComputeBounds (this, false);
+	shape_bounds = geometry->ComputeBounds (this, logical);
 
-	origin = Point (shape_bounds.x, shape_bounds.y);
+	if (! logical)
+		origin = Point (shape_bounds.x, shape_bounds.y);
+
 	return shape_bounds;
 }
 
