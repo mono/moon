@@ -234,7 +234,7 @@ Shape::Fill (cairo_t *cr, bool do_op)
 }
 
 Rect
-Shape::ComputeStretchBounds (Rect shape_bounds)
+Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 {
 	Value *vh, *vw;
 
@@ -452,7 +452,10 @@ Shape::ComputeBounds ()
 	InvalidateSurfaceCache ();
 	
 	extents = ComputeShapeBounds (false);
-	extents = ComputeStretchBounds (extents);
+	Rect logical_extents = ComputeShapeBounds (true);
+
+	extents = ComputeStretchBounds (extents, logical_extents);
+
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
 }

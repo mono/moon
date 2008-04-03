@@ -1,5 +1,12 @@
 2008-04-03  Michael Dominic K.  <mdk@mdk.am>
 
+	* shape.cpp:
+	* shape.h: Calculate the logical extents when computing the shape bounds
+	and pass them to the ComputeStretchBounds. They're currently not used in
+	any way.
+
+2008-04-03  Michael Dominic K.  <mdk@mdk.am>
+
 	* shape.cpp: Don't init the stretch matrix to identity on each
 	Shape::ComputeShapeBounds. We want to be able to call it freely.
 
