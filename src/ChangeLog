@@ -1,3 +1,8 @@
+2008-04-02  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp: flush character data at the end of property elements
+	too.
+
 2008-04-02  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add the element name for this error.
