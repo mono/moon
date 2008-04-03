@@ -2099,7 +2099,7 @@ Path::ComputeShapeBounds ()
 		return shape_bounds;
 	}
 
-	shape_bounds = geometry->ComputeBounds (this);
+	shape_bounds = geometry->ComputeBounds (this, false);
 
 	origin = Point (shape_bounds.x, shape_bounds.y);
 	return shape_bounds;

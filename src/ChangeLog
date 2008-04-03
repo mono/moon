@@ -1,5 +1,19 @@
 2008-04-02  Michael Dominic K.  <mdk@mdk.am>
-	
+
+	* geometry.cpp:
+	* geometry.h:
+	* shape.cpp:
+	* uielement.cpp: Adding new parameter (bool logical) to all the
+	Geometry::ComputeBounds functions and overrides. Calculating logical
+	bounds means calculating bounds without stroke included. Ie. a line
+	(0,0) - (100, 0) has logical bounds of width=100, height=0, no matter
+	what the stroke is. 
+
+	Not used right now, will be used in just a few commits (all current
+	ComputeBounds clients call it will logical == false).
+
+2008-04-02  Michael Dominic K.  <mdk@mdk.am>
+
 	* shape.cpp: Don't automatically compute the stretch bounds when
 	computing shape bounds. Instead, compute it as a separate step in
 	Shape::ComputeBounds.

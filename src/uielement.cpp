@@ -96,7 +96,7 @@ UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 		return unclipped;
 
 	Geometry *geometry = value->AsGeometry ();
-	Rect box = geometry->ComputeBounds (NULL);
+	Rect box = geometry->ComputeBounds (NULL, false);
 
 	if (!GetRenderVisible())
 		box = Rect (0,0,0,0);
