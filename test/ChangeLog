@@ -1,3 +1,10 @@
+2008-04-02  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/drtlist.xml:
+	* xaml/test-shape-path-stretch4.xaml: Adding one more path stretching
+	test (+Master) that is currently broken. This one shows how the stroke
+	size deforms our Stretch fill calculations.
+
 2008-03-31  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am, harness/Makefile.am: Add directories to dist for tests
