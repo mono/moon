@@ -223,15 +223,17 @@ Stroke::HitTestEndcapSegment (Point c,
 	// segment (using the parametric form of the line).
 	if (discr < 0)
 		return false;
-	else if (discr == 0) {
-		double root_1 = (- bq) / (2 * aq);
-		return (root_1 > p1.x && (root_1 - p1.x) < (p2.x - p1.x));
-	}
 	else {
-		double root_1 = (- bq - sqrt(discr)) / (2 * aq);
+		double sqrt_discr = discr > 0 ? sqrt(discr) : 0;
+
+		double root_1 = ((- bq) - sqrt_discr) / (2 * aq);
 
 		if (root_1 > p1.x && (root_1 - p1.x) < (p2.x - p1.x)) {
-			double root_2 = (- bq + sqrt(discr)) / (2 * aq);
+			// root_1 is on the segment
+			if (discr == 0)
+				return true; // there is only 1 root
+
+			double root_2 = (- bq + sqrt_discr) / (2 * aq);
 			return (root_2 > p1.x && (root_2 - p1.x) < (p2.x - p1.x));
 		}
 		else
