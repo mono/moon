@@ -2163,8 +2163,10 @@ strcase_hash (gconstpointer v)
 	guint hash = 0;
 	char *p = (char *) v;
 
-	while (*p++)
-		hash = (hash << 5) - (hash + g_ascii_tolower (*p));
+	if (p) {
+		while (*p++)
+			hash = (hash << 5) - (hash + g_ascii_tolower (*p));
+	}
 
 	return hash;
 }

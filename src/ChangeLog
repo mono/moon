@@ -1,3 +1,8 @@
+2008-04-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp: Don't crash in strcase_hash if the hashtable 
+	contains NULL values.
+
 2008-04-03  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::InitializeWidget): disable the
