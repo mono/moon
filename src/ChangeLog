@@ -1,3 +1,9 @@
+2008-04-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyobject.cpp (resolve_property_path): Avoid crash on 
+	invalid syntax and leaks in other error cases. Fix #377039 (more
+	test cases coming soon).
+
 2008-04-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* animation.cpp (KeyFrameCollection::GetKeyFrameForTime): Return

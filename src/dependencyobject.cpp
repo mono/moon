@@ -1305,12 +1305,12 @@ resolve_property_path (DependencyObject **o, const char *path)
 			int estart = i + 1;
 			for (c = estart; c < len; c++) {
 				if (path [c] == '.') {
-					typen = strndup (path + estart, c - estart);
+					typen = g_strndup (path + estart, c - estart);
 					estart = c + 1;
 					continue;
 				}
 				if (path [c] == ')') {
-					propn = strndup (path + estart, c - estart);
+					propn = g_strndup (path + estart, c - estart);
 					break;
 				}
 			}
@@ -1323,17 +1323,18 @@ resolve_property_path (DependencyObject **o, const char *path)
 			} else
 				t = Type::Find (lu->GetObjectType ());
 
-			if (!t) {
+			if (!t || !propn || (strlen (propn) == 0)) {
 				g_free (propn);
-				if (typen)
-					g_free (typen);
+				g_free (typen);
 				*o = NULL;
 				return NULL;
 			}
 	
 			res = DependencyObject::GetDependencyProperty (t->type, propn);
 			if (!res) {
-				g_warning ("Can't find %s property in %s", propn, typen);
+				g_warning ("Can't find '%s' property in '%s'", propn, typen);
+				g_free (propn);
+				g_free (typen);
 				*o = NULL;
 				return NULL;
 			}
@@ -1343,22 +1344,26 @@ resolve_property_path (DependencyObject **o, const char *path)
 				res = DependencyObject::GetDependencyProperty (lu->GetObjectType (), propn);
 
 				if (! res) {
-					g_warning ("Got %s but expected a type of %s!", typen, lu->GetTypeName ());
+					g_warning ("Got '%s' but expected a type of '%s'!", typen, lu->GetTypeName ());
+					g_free (propn);
+					g_free (typen);
 					*o = NULL;
 					return NULL;
 				} else {
-					g_warning ("Got %s but expected a type of %s ! "
-						   "Did you mean %s.%s ? Using that.",
+					g_warning ("Got '%s' but expected a type of '%s' ! "
+						   "Did you mean '%s.%s' ? Using that.",
 						   typen, lu->GetTypeName (), lu->GetTypeName (), propn);
 				}
 			}
 
 			g_free (propn);
-			if (typen)
-				g_free (typen);
+			g_free (typen);
 			break;
 		}
 		case '.':
+			// do not process unless we processed a '(' earlier
+			if (!res)
+				break;
 			lu = lu->GetValue (res)->AsDependencyObject ();
 			expression_found = false;
 			prop = path + (i + 1);
