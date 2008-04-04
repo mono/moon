@@ -1,3 +1,19 @@
+2008-04-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	Intended to fix bug #373462, but something else is preventing that
+	site from working now...
+
+	* media.cpp (MediaElement::SetSourceInternal): PartName is no
+	longer a const char * argument, which means we take ownership of
+	the PartName string.
+	(MediaElement::SetSourceAsyncCallback): New method which is the
+	async callback for SetSource().
+	(MediaElement::SetSource): Reinitialize() right away.
+	(MediaElement::SetSource): Clear out any pending SetSource async
+	data, replacing it with the new downloader/part name info.
+	(MediaElement::SetSource): Allow a NULL downloader object but make
+	sure we don't crash in that case either.
+
 2008-04-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyobject.cpp (resolve_property_path): Avoid crash on 

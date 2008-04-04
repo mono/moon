@@ -334,17 +334,19 @@ media_element_advance_frame (void *user_data)
 MediaElement::MediaElement ()
 {
 	pthread_mutex_init (&open_mutex, NULL);
-
+	
+	set_source.downloader = NULL;
+	set_source.part_name = NULL;
+	advance_frame_timeout_id = 0;
 	streamed_markers = NULL;
 	downloaded_file = NULL;
 	downloader = NULL;
 	part_name = NULL;
+	playlist = NULL;
 	mplayer = NULL;
 	media = NULL;
 	closure = NULL;
 	flags = 0;
-	playlist = NULL;
-	advance_frame_timeout_id = 0; // Couldn't find any documentation about which id would be invalid, assuming 0 is an invalid id. 
 	
 	Reinitialize (false);
 	
@@ -360,8 +362,10 @@ MediaElement::~MediaElement ()
 	
 	if (mplayer)
 		mplayer->unref ();
+	
 	if (playlist)
 		playlist->unref ();
+	
 	pthread_mutex_destroy (&open_mutex);
 }
 
@@ -370,13 +374,13 @@ MediaElement::SetSurface (Surface *s)
 {
 	// if we previously had a surface and are losing it, we need
 	// to remove our timeout (if we had one)
-	if (s == NULL && GetSurface()) {
+	if (s == NULL && GetSurface ()) {
 		if (advance_frame_timeout_id != 0) {
 			GetTimeManager()->RemoveTimeout (advance_frame_timeout_id);
 			advance_frame_timeout_id = 0;
 		}
 	}
-
+	
 	UIElement::SetSurface (s);
 }
 
@@ -420,7 +424,7 @@ MediaElement::Reinitialize (bool dtor)
 	flags |= UpdatingPosition;
 	SetValue (MediaElement::PositionProperty, Value (0, Type::TIMESPAN));
 	flags &= ~UpdatingPosition;
-
+	
 	// We can't delete the playlist here,
 	// because a playlist item will call SetSource
 	// which will end up here, causing us to 
@@ -428,7 +432,7 @@ MediaElement::Reinitialize (bool dtor)
 	// which we were about to open.
 	//
 	// playlist->unref ();
-
+	
 	last_played_pts = 0;
 	
 	if (streamed_markers)
@@ -525,10 +529,10 @@ void
 MediaElement::MediaFailed (ErrorEventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::MediaFailed (%p)\n", args);	
-
+	
 	if (state == MediaElement::Error)
 		return;
-
+	
 	SetValue (MediaElement::CanSeekProperty, Value (false));
 	SetValue (MediaElement::CanPauseProperty, Value (false));
 	SetValue (MediaElement::AudioStreamCountProperty, Value (0));
@@ -1004,20 +1008,18 @@ MediaElement::DownloaderComplete ()
 }
 
 void
-MediaElement::SetSourceInternal (Downloader *dl, const char *PartName)
+MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 {
-	bool is_live = false;
-	if (g_str_has_prefix (dl->GetValue (Downloader::UriProperty)->AsString (), "mms")) {
-		is_live = true;
-	}
+	const char *uri = downloader->GetValue (Downloader::UriProperty)->AsString ();
+	bool is_live = g_str_has_prefix (uri, "mms");
 	
 	LOG_MEDIAELEMENT ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", dl, PartName, dl->GetValue (Downloader::UriProperty)->AsString ());
 	
 	Reinitialize (false);
 	
-	downloader = dl;
+	this->downloader = downloader;
+	part_name = PartName;
 	downloader->ref ();
-	part_name = g_strdup (PartName);
 	
 	SetState (Opening);
 	
@@ -1050,9 +1052,34 @@ MediaElement::SetSourceInternal (Downloader *dl, const char *PartName)
 }
 
 void
-MediaElement::SetSource (DependencyObject *dl, const char *PartName)
+MediaElement::SetSourceAsyncCallback ()
 {
-	g_return_if_fail (dl->GetObjectType () == Type::DOWNLOADER);
+	if (!set_source.downloader)
+		return;
+	
+	printf ("MediaElement::SetSourceAsyncCallback ()\n");
+	
+	SetSourceInternal (set_source.downloader, set_source.part_name);
+	set_source.downloader->unref ();
+	set_source.downloader = NULL;
+	set_source.part_name = NULL;
+}
+
+static void
+set_source_async (void *user_data)
+{
+	MediaElement *media = (MediaElement *) user_data;
+	
+	media->SetSourceAsyncCallback ();
+	media->unref ();
+}
+
+void
+MediaElement::SetSource (DependencyObject *downloader, const char *PartName)
+{
+	Surface *surface;
+	
+	g_return_if_fail (!downloader || downloader->GetObjectType () == Type::DOWNLOADER);
 	
 	// Remove our playlist.
 	// When the playlist changes media, it will call
@@ -1063,7 +1090,31 @@ MediaElement::SetSource (DependencyObject *dl, const char *PartName)
 		playlist = NULL;
 	}
 	
-	SetSourceInternal ((Downloader *) dl, PartName);
+	if (set_source.downloader) {
+		set_source.downloader->unref ();
+		g_free (set_source.part_name);
+		set_source.downloader = NULL;
+		set_source.part_name = NULL;
+	}
+	
+	Reinitialize (false);
+	
+	if (!downloader)
+		return;
+	
+	if ((surface = GetSurface ())) {
+		TimeManager *tm = surface->GetTimeManager ();
+		
+		set_source.downloader = (Downloader *) downloader;
+		set_source.part_name = g_strdup (PartName);
+		downloader->ref ();
+		
+		tm->AddTickCall (set_source_async, this);
+		ref ();
+	} else {
+		// Not attached to a surface?
+		SetSourceInternal ((Downloader *) downloader, g_strdup (PartName));
+	}
 }
 
 void

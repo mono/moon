@@ -47,7 +47,7 @@ class MediaBase : public FrameworkElement {
  protected:
 	virtual ~MediaBase () {}
 
-public:
+ public:
 	static DependencyProperty *SourceProperty;
 	static DependencyProperty *StretchProperty;
 	static DependencyProperty *DownloadProgressProperty;
@@ -70,7 +70,6 @@ double media_base_get_download_progress (MediaBase *media);
 
 
 class Image : public MediaBase {
-private:
 	bool create_xlib_surface;
 	
 	bool CreateSurface (const char *fname);
@@ -96,10 +95,10 @@ private:
 	// pattern caching
 	cairo_pattern_t *pattern;
 
-protected:
+ protected:
 	virtual ~Image ();
 
-public:
+ public:
 	Image ();
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
@@ -147,10 +146,7 @@ Image *image_new (void);
 void   image_set_source (Image *img, DependencyObject *Downloader, const char *PartName);
 
 class MediaElement : public MediaBase {
-protected:
-	virtual ~MediaElement ();
-
-public:
+ public:
 	enum MediaElementState {
 		Closed,
 		Opening,
@@ -158,56 +154,63 @@ public:
 		Playing,
 		Paused,
 		Stopped,
-		Error
+		Error,
 	};
-
-private:
 	
-	// The current state of the media element.
-	MediaElementState state;
-	
-	// this is used to know what to do after a Buffering state finishes
-	MediaElementState prev_state;
-	
-	uint32_t flags;
-	
-	MediaPlayer *mplayer;
-	Playlist *playlist;
-	
-	bool recalculate_matrix;
-	cairo_matrix_t matrix;
+ private:
+	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
+	static void data_request_position (int64_t *pos, void *closure);
+	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void size_notify (int64_t size, gpointer data);
 	
 	TimelineMarkerCollection *streamed_markers;
+	struct {
+		Downloader *downloader;
+		char *part_name;
+	} set_source;
+	int advance_frame_timeout_id;
+	bool recalculate_matrix;
+	cairo_matrix_t matrix;
+	MediaPlayer *mplayer;
+	Playlist *playlist;
+	Media *media;
 	
 	// When checking if a marker has been reached, we need to 
 	// know the last time the check was made, to see if 
 	// the marker's pts hit the region.
 	uint64_t previous_position;
 	
+	// Buffering can be caused by:
+	//   * When the media is opened, we automatically buffer an amount equal to BufferingTime.
+	//     - In this case the buffering progress is calculated as:
+	//       "currently available pts" / BufferingTime, which equals
+	//       ("currently available pts" - "last played pts") / ("current pts" - "last played pts" + BufferingTime)
+	//
+	//   * When during playback we realize that we don't have enough data.
+	//     - In this case the buffering progress is calculated as:
+	//       ("currently available pts" - "last played pts") / BufferingTime, which equals
+	//       ("currently available pts" - "last played pts") / ("current pts" - "last played pts" + BufferingTime)
+	//
+	//   * When we seek, and realize that we don't have enough data.
+	//     - In this case the buffering progress is calculated as:
+	//       ("currently available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
+	//
+	//   So the general formula turns out to be:
+	//     ("currently available pts" - last_played_pts) / (mplayer->GetPosition () - last_played_pts + BufferingTime)
+	uint64_t last_played_pts;
+	
+	// this is used to know what to do after a Buffering state finishes
+	MediaElementState prev_state;
+	
+	// The current state of the media element.
+	MediaElementState state;
+	
+	uint32_t flags;
+	
 	// downloader methods/data
 	ProgressiveSource *downloaded_file;
 	Downloader *downloader;
 	char *part_name;
-
-	// Buffering can be caused by:
-	//	* When the media is opened, we automatically buffer an amount equal to BufferingTime.
-	//		- In this case the buffering progress is calculated as:
-	//		"currently available pts" / BufferingTime, which equals
-	//		("currently available pts" - "last played pts") / ("current pts" - "last played pts" + BufferingTime)
-	//	* When during playback we realize that we don't have enough data.
-	//		- In this case the buffering progress is calculated as:
-	//		("currently available pts" - "last played pts") / BufferingTime, which equals
-	//		("currently available pts" - "last played pts") / ("current pts" - "last played pts" + BufferingTime)
-	//	* When we seek, and realize that we don't have enough data.
-	//		- In this case the buffering progress is calculated as:
-	//		("currently available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
-	//	So the general formula turns out to be:
-	//		("currently available pts" - last_played_pts) / (mplayer->GetPosition () - last_played_pts + BufferingTime)
-	uint64_t last_played_pts;
-
-	Media *media;
-	
-	int advance_frame_timeout_id;
 	
 	void DataWrite (void *data, int32_t offset, int32_t n);
 	void DataRequestPosition (int64_t *pos);
@@ -226,17 +229,16 @@ private:
 	// Fill in all information from the opened media and raise MediaOpenedEvent. Does not change any state.
 	bool MediaOpened (Media *media);
 	
-	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
-	static void data_request_position (int64_t *pos, void *closure);
-	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void size_notify (int64_t size, gpointer data);
-	
-	void ReadMarkers ();
-	void CheckMarkers (uint64_t from, uint64_t to);
 	void CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *col, bool remove);
+	void CheckMarkers (uint64_t from, uint64_t to);
+	void ReadMarkers ();
+	
 	TimeSpan UpdatePlayerPosition (Value *value);
 	
-public:
+ protected:
+	virtual ~MediaElement ();
+	
+ public:
 	// properties
 	static DependencyProperty *AttributesProperty;
 	static DependencyProperty *AudioStreamCountProperty;
@@ -266,11 +268,11 @@ public:
 	
 	MediaElement ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
-
+	
 	virtual void SetSurface (Surface *surface);
 	
 	bool AdvanceFrame ();
-
+	
 	MediaPlayer *GetMediaPlayer () { return mplayer;  }
 	
 	// overrides
@@ -283,8 +285,9 @@ public:
 	virtual void SetValue (DependencyProperty *prop, Value *value);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
+	void SetSourceAsyncCallback ();
+	void SetSourceInternal (Downloader *downloader, char *PartName);
 	void SetSource (DependencyObject *Downloader, const char *PartName);
-	void SetSourceInternal (Downloader *downloader, const char *PartName);
 	
 	void Pause ();
 	void Play ();
@@ -294,7 +297,7 @@ public:
 	void PlayInternal ();
 	//void PauseInternal ();
 	//void StopInternal ();
-
+	
 	// State methods
 	bool IsClosed () { return state == Closed; }
 	bool IsOpening () { return state == Opening; }
