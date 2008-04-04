@@ -163,7 +163,6 @@ namespace MoonlightTests {
 		public void TestComplete (string test)
 		{
 			lock (lock_object) {
-				Console.WriteLine ("\nsetting test complete:  {0}", test);
 				TestLogData tld = null;
 				if (test_logs.ContainsKey (test))
 					tld = test_logs [test] as TestLogData;
