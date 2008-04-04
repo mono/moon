@@ -212,7 +212,6 @@ class StreamNotify
 
 class PluginXamlLoader : public XamlLoader
 {
-private:
 	PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface);
 	bool InitializeLoader ();
 	PluginInstance *plugin;
