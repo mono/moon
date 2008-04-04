@@ -1014,18 +1014,16 @@ TextFont::~TextFont ()
 {
 	int i;
 	
-	if (nglyphs > 0) {
-		for (i = 0; i < nglyphs; i++) {
-			if (glyphs[i].path)
-				moon_path_destroy (glyphs[i].path);
+	for (i = 0; i < nglyphs; i++) {
+		if (glyphs[i].path)
+			moon_path_destroy (glyphs[i].path);
+		
+		if (glyphs[i].bitmap) {
+			if (glyphs[i].bitmap->surface)
+				cairo_surface_destroy (glyphs[i].bitmap->surface);
 			
-			if (glyphs[i].bitmap) {
-				if (glyphs[i].bitmap->surface)
-					cairo_surface_destroy (glyphs[i].bitmap->surface);
-				
-				g_free (glyphs[i].bitmap->buffer);
-				g_free (glyphs[i].bitmap);
-			}
+			g_free (glyphs[i].bitmap->buffer);
+			g_free (glyphs[i].bitmap);
 		}
 	}
 	

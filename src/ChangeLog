@@ -1,3 +1,11 @@
+2008-04-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* animation.cpp (KeyFrameCollection::GetKeyFrameForTime): Return
+	immediately if the array len is 0, prevents a crash accessing
+	sorted_list->pdata[0] when working backwards in the second
+	for-loop. Fixes one of the crashes I found while investigating bug
+	#362561.
+
 2008-04-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.cpp: Don't crash in strcase_hash if the hashtable 

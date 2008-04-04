@@ -895,12 +895,17 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 {
 	KeyFrame *current_keyframe = NULL;
 	KeyFrame *previous_keyframe = NULL;
-	gint i = 0;
+	int i;
 	
-	*prev_frame = NULL;
-
+	if (sorted_list->len == 0) {
+		if (prev_frame)
+			*prev_frame = NULL;
+		
+		return NULL;
+	}
+	
 	/* Crawl forward to figure out what segment to use (this assumes the list is sorted) */
-	for (; i < (int) sorted_list->len; i++) {
+	for (i = 0; i < (int) sorted_list->len; i++) {
 		KeyFrame *keyframe = (KeyFrame *) sorted_list->pdata[i];
 		TimeSpan key_end_time = keyframe->resolved_keytime;
 		
