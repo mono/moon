@@ -851,7 +851,7 @@ Surface::InitializeWidget (GtkWidget *widget)
 	
 	gtk_widget_add_events (widget, 
 			       GDK_POINTER_MOTION_MASK |
-			       GDK_POINTER_MOTION_HINT_MASK |
+// 			       GDK_POINTER_MOTION_HINT_MASK |
 			       GDK_KEY_PRESS_MASK |
 			       GDK_KEY_RELEASE_MASK |
 			       GDK_BUTTON_PRESS_MASK |
@@ -1536,7 +1536,7 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 	    }    
 	}
 
-	handled = s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event);
+	handled = s->HandleMouseEvent (emit_MouseMove, true, true, true, s->mouse_event);
 	s->UpdateCursorFromInputList ();
 
 	return handled;
