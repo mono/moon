@@ -146,6 +146,9 @@ Stroke::HitTestEndcapSegment (Point c,
 			      double w, double h,
 			      Point p1, Point p2)
 {
+  Point op1 = p1;
+  Point op2 = p2;
+
 #if DEBUG_HITTEST
 	printf ("HitTestEndcapSegment: (%g,%g / %g, %g) hits segment (%g,%g  - %g,%g)?\n",
 		c.x, c.y,
@@ -159,11 +162,35 @@ Stroke::HitTestEndcapSegment (Point c,
 #if DEBUG_HITTEST
 		printf ("dx == 0, returning %d\n", p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2));
 #endif
-		return p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2);
+ 		if (p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2)) {
+			if (p1.y < (c.y - h/2) && p2.y < (c.y - h/2))
+				return false;
+			if (p1.y > (c.y + h/2) && p2.y > (c.y + h/2))
+				return false;
+			return true;
+		}
+		return false;
 	}
 
-	p1 = p1 - c;
-	p2 = p2 - c;
+  	p1 = p1 - c;
+  	p2 = p2 - c;
+
+	// this body of code basically uses the following form of the line:
+	//
+	// y = mx + b_
+	//
+	// and the equation for an ellipse:
+	//
+	// x^2    y^2
+	// ---    ---  - 1 = 0
+	// a^2    b^2
+	//
+	// where a > b (as leave off the center point of the ellipse
+	// because we've subtracted it out above).
+	//
+	// we substitute the line equation in for y in the ellipse
+	// equation, and use the quadratic formula to find our roots
+	// (if there are any).
 
 	double m = (p2.y - p1.y)/(p2.x - p1.x);
 	double b_ = p1.y - m * p1.x;
@@ -178,16 +205,38 @@ Stroke::HitTestEndcapSegment (Point c,
 		b = w / 2;
 	}
 
-	double aq = (m*m) / (b*b) + 1 / (a*a);
-	double cq = b_ * b_ - b * b;
+	if (b == 0 || a == 0) {
+		return false;
+	}
 
-	double discr =  -4 * aq * cq;
+	double aq = (m*m) / (b*b) + 1 / (a*a);
+	double bq = (2 * m * b_) / (b * b);
+	double cq = (b_ * b_) / (b * b) - 1;
+
+	double discr =  bq * bq - 4 * aq * cq;
 
 #if DEBUG_HITTEST
 	printf ("HitTestEndCapSegment: discr = %g\n", discr);
 #endif	
-	/* discr == 0 means 1 intersection point, discr > 0 means 2 */
-	return discr >= 0;
+
+	// if we have roots we need to check if they occur on the line
+	// segment (using the parametric form of the line).
+	if (discr < 0)
+		return false;
+	else if (discr == 0) {
+		double root_1 = (- bq) / (2 * aq);
+		return (root_1 > p1.x && (root_1 - p1.x) < (p2.x - p1.x));
+	}
+	else {
+		double root_1 = (- bq - sqrt(discr)) / (2 * aq);
+
+		if (root_1 > p1.x && (root_1 - p1.x) < (p2.x - p1.x)) {
+			double root_2 = (- bq + sqrt(discr)) / (2 * aq);
+			return (root_2 > p1.x && (root_2 - p1.x) < (p2.x - p1.x));
+		}
+		else
+			return false;
+	}
 }
 
 static bool
@@ -328,7 +377,6 @@ point_gte_line (Point p,
 	// return true if the point is to the right of or beneath the line segment
 
 	if (p1.y == p2.y) {
-	  printf ("y's are equal, just comparing point y to line y\n");
 		return p.y > p1.y;
 	}
 	else if (p1.x == p2.x)
