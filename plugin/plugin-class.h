@@ -54,7 +54,8 @@ class EventListenerProxy : public List::Node {
  public:
 	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
-	~EventListenerProxy ();
+	virtual ~EventListenerProxy ();
+	
 	int AddHandler (EventObject *obj);
 	void RemoveHandler ();
 	const char *GetCallbackAsString ();
@@ -68,9 +69,9 @@ class EventListenerProxy : public List::Node {
 
 struct MoonlightObjectType : NPClass {
 	MoonlightObjectType ();
-
+	
 	~MoonlightObjectType() { g_free (mapping); }
-
+	
 	void AddMapping (const MoonNameIdMapping *mapping, int count);
 
 	bool Enumerate (NPIdentifier **value, uint32_t *count);
@@ -198,9 +199,9 @@ struct MoonlightTimeSpan : MoonlightObject {
 		parent_property = NULL;
 		parent_obj = NULL;
 	}
-
-	~MoonlightTimeSpan ();
-
+	
+	virtual ~MoonlightTimeSpan ();
+	
 	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
 	
 	TimeSpan GetValue ();
