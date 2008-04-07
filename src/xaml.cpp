@@ -870,12 +870,14 @@ start_element (void *data, const char *el, const char **attr)
 				
 
 	} else {
+		// it's actually valid (from SL point of view) to have <Ellipse.Triggers> inside a <Rectangle>
+		// however we can't add properties to something bad, like a <Recta.gle> element
 		bool property = false;
-		for (int i = 0; el [i]; i++) {
-			if (el [i] != '.')
-				continue;
-			property = true;
-			break;
+		char *dot = strchr (el, '.');
+		if (dot) {
+			gchar *prop_elem = g_strndup (el, dot - el);
+			property = (p->current_namespace->FindElement (p, prop_elem) != NULL);
+			g_free (prop_elem);
 		}
 
 		if (property) {
