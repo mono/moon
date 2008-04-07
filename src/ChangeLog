@@ -1,3 +1,15 @@
+2008-04-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes needed for Zombomatic
+
+	* downloader.cpp (Downloader::GetDownloadedFilePart): When
+	creating the full pathname for parts we are extracting, convert
+	everything to lowercase since we need to treat archived filenames
+	case-insensitively.
+	(Downloader::GetUnzippedPath): Convert filenames from the zip
+	archive to lowercase so that it is easier for us to find them
+	case-insensitively on the filesystem once they are extracted.
+
 2008-04-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Fix parsing properties by ensure they start with the 
