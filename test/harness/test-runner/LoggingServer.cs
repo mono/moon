@@ -42,6 +42,7 @@ namespace MoonlightTests {
 		void Log (string test, string level, string message);
 		void LogResult (string test, int result);
 		void RequestShutdown ();
+		void TestComplete (string test);
 	}
 
 	public class LoggingServer : ITestLogger {
@@ -51,6 +52,7 @@ namespace MoonlightTests {
 			private List<string> log_lines;
 			private bool result_set;
 			private TestResult result;
+			private bool test_complete;
 		
 			public bool IsResultSet {
 				get { return result_set; }
@@ -62,6 +64,10 @@ namespace MoonlightTests {
 						throw new Exception ("Result not set");
 					return result;
 				}
+			}
+
+			public bool IsTestComplete {
+				get { return test_complete; }
 			}
 
 			public void AddLogLine (string level, string message)
@@ -87,6 +93,11 @@ namespace MoonlightTests {
 
 				this.result = result;
 				result_set = true;
+			}
+
+			public void TestComplete ()
+			{
+				test_complete = true;
 			}
 		}
 
@@ -146,6 +157,34 @@ namespace MoonlightTests {
 		{
 			lock (lock_object) {
 				shutdown_requested = true;
+			}
+		}
+
+		public void TestComplete (string test)
+		{
+			lock (lock_object) {
+				TestLogData tld = null;
+				if (test_logs.ContainsKey (test))
+					tld = test_logs [test] as TestLogData;
+				else {
+					tld = new TestLogData ();
+					test_logs [test] = tld;
+				}
+				tld.TestComplete ();
+			}
+			       
+		}
+
+		public bool IsTestComplete (string test)
+		{
+			lock (lock_object) {
+				TestLogData tld = null;
+				if (test_logs.ContainsKey (test))
+					tld = test_logs [test] as TestLogData;
+				else
+					return false;
+
+				return tld.IsTestComplete;
 			}
 		}
 

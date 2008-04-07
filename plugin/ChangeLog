@@ -1,3 +1,21 @@
+2008-04-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.h (EventListenerProxy.dtor): Made virtual... not
+	sure if this matters or not, but might as well be consistent.
+	(MoonlightTimeSpan.dtor): Same.
+
+2008-04-04  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp, plugin-class.h: change our use of
+	NPType->invalidate.  Firefox docs say this is *only* called when
+	the browser is shutting down the plugin instance.  So, we
+	shouldn't access fields that point to other NPObjects here.  Just
+	break links.  All freeing should be done in the dtor instead,
+	which most of the various ::Dispose methods have been renamed to.
+	Also, don't call Dispose in the MoonlightObject dtor.  Lastly,
+	rename Dispose to Invalidate so we don't again mistake what it
+	does.
+
 2008-04-03  Larry Ewing  <lewing@novell.com>
 
 	(PluginXamlLoader::TryLoad): if the parser has an unknown error

@@ -152,6 +152,11 @@ namespace MoonlightTests {
 						test.SetFailedReason ("Test LogResult set to FAIL");
 				}
 
+				if (!logging_server.IsTestComplete (test.InputFileName)) {
+					result = TestResult.Fail;
+					test.SetFailedReason ("Test did not shut down cleanly.");
+				}
+
 				RecordResult (test, result, true);
 				ReportsAddResult (test, test.IsKnownFailure ? TestResult.KnownFailure : result);
 

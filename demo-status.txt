@@ -1,7 +1,7 @@
 site:Aglux Silverlight
 url:http://www.aglux.com.my
 rating:3
- *  Site is broken. Parsing error in MS Silverlight. Silverlight handles the error. Moonlight crashes. Bug 375266
+ *  Hangs firefox. Bug 375266
  *  color gradient is wrong. Should go purple(top) to light blue(bottom)
  *  Mouse over animation is slow
 
@@ -70,7 +70,8 @@ rating:0
 site:HHH Comic Archive
 url:http://www.microsoft.com/heroeshappenhere/comicviewer/default.html
 rating:0
- * Regression - gray canvas appears Bug 375275
+ * Gray canvas (background) flashes between transitions Bug 375275
+ * Seems to have something to do with Visibility=Collapsed set on Images 
 
 site:Ink Journal
 url:http://www.thedatafarm.com/silverlight/journalsample
@@ -192,8 +193,8 @@ rating:3
 
 site:Silverlight Slide Show
 url:http://www.vertigo.com/SlideShow.aspx
-rating:1
- * Nothing appears. Just a gray canvas Bug 375260
+rating:4
+ * Works!
 
 site:Simon
 url:http://www.vertigo.com/downloads/Simon/

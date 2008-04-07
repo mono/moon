@@ -52,7 +52,10 @@ typedef struct _AgViewer {
 static int escaped_pressed_count = 0;
 static AgViewer *new_gtk_browser    ();
 static gboolean key_press_cb (GtkWidget* widget, GdkEventKey* event, GtkWindow* window);
+
 static void request_test_runner_shutdown ();
+static void signal_test_complete (const char* test_name);
+
 
 int
 main(int argc, char **argv)
@@ -97,7 +100,8 @@ main(int argc, char **argv)
 	gtk_main();
 
 	gtk_widget_destroy (GTK_WIDGET (browser->top_level_window));
-	
+
+	signal_test_complete (test_path);
 	return 0;
 }
 
@@ -171,3 +175,32 @@ request_test_runner_shutdown ()
 
 	dbus_g_proxy_call_no_reply (dbus_proxy, "RequestShutdown", G_TYPE_INVALID);
 }
+
+static void
+signal_test_complete (const char *test_path)
+{
+	g_type_init ();
+
+	DBusGProxy* dbus_proxy;
+	DBusGConnection* connection;
+	GError* error = NULL;  
+
+	error = NULL;
+	connection = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
+	if (!connection) {
+		g_warning ("Failed to open connection to bus while signalling shutdown: %s\n", error->message);
+		g_error_free (error);
+	}
+
+	dbus_proxy = dbus_g_proxy_new_for_name (connection,
+			DRT_LOGGER_SERVICE,
+			DRT_LOGGER_PATH,
+			DRT_LOGGER_INTERFACE);
+
+	char* test_name = g_path_get_basename (test_path);
+	dbus_g_proxy_call_no_reply (dbus_proxy, "TestComplete", G_TYPE_STRING, test_name, G_TYPE_INVALID);
+
+	g_free (test_name);
+}
+
+

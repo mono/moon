@@ -10,7 +10,7 @@ sources = \
 	$(srcdir)/default.xaml.cs 	\
 	$(srcdir)/config.cs
 
-EXTRA_DIST = $(sources)  StationCompiler.cs data/Locations.xml.bz2
+EXTRA_DIST = $(sources) default.xaml StationCompiler.cs data/Locations.xml.bz2
 
 example-weather: Makefile
 	echo "#!/bin/sh" > example-weather

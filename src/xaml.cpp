@@ -789,6 +789,10 @@ expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 		error_code = 5055;
 		message = g_strdup ("undeclared prefix");
 		break;
+	case XML_ERROR_NO_ELEMENTS:
+		error_code = 5000;
+		message = g_strdup ("unexpected end of input");
+		break;
 	default:
 		error_code = expat_error;
 		message = g_strdup_printf ("Unhandled XML error %s", XML_ErrorString (expat_error));
@@ -2660,7 +2664,10 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	}
 
 	if (prop) {
-		if (is_instance_of (value, prop->value_type)) {
+		if (prop->IsReadOnly ()) {
+			parser_error (p, item->element_name, NULL, 2014,
+				      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->name));
+		} else if (is_instance_of (value, prop->value_type)) {
 			// an empty collection can be NULL and valid
 			if (value->item) {
 				if (item->IsPropertySet (prop->name)) {
@@ -2744,9 +2751,11 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 
 		if (p->loader)
 			p->loader->HookupEvent (item->item, name, value);
+		
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 
@@ -2818,9 +2827,19 @@ start_parse:
 		}
 
 		if (prop) {
+			if (prop->IsReadOnly ()) {
+				parser_error (p, item->element_name, NULL, 2014,
+					      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->name));
+				if (atchname)
+					g_free (atchname);
+				return;
+			} 
+
 			if (item->IsPropertySet (prop->name)) {
 				parser_error (p, item->element_name, attr [i], 2033,
 						g_strdup_printf ("Cannot specify the value multiple times for property: %s.", prop->name));
+				if (atchname)
+					g_free (atchname);
 				return;
 			}
 
@@ -2848,7 +2867,7 @@ start_parse:
 
 			if (dependency_object_hookup_event (p, item, pname, attr [i + 1]))
 				parser_error (p, item->element_name, attr [i], 2012, g_strdup_printf ("Unknown attribute %s on element %s.",
-						attr [i], p->current_element->element_name));
+						attr [i], item->element_name));
 		}
 
 		if (atchname)

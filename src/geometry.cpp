@@ -3,6 +3,7 @@
  *
  * Author:
  *	Sebastien Pouliot  <sebastien@ximian.com>
+ *      Michael Dominic K. <mdk@mdk.am>
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -106,12 +107,16 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 }
 
 static Rect
-path_get_bounds (Path *shape, cairo_path_t *path)
+path_get_bounds (Path *shape, cairo_path_t *path, bool logical)
 {
 	if (!path)
 		return Rect (0.0, 0.0, 0.0, 0.0);
 
-	double thickness = shape && shape_get_stroke (shape) ? shape_get_stroke_thickness (shape) : 0;
+	double thickness;
+	if (logical)
+		thickness = 0.0;
+	else
+		thickness = shape && shape_get_stroke (shape) ? shape_get_stroke_thickness (shape) : 0;
 	
 	cairo_t *cr = measuring_context_create ();
 	cairo_set_line_width (cr, thickness);
@@ -119,10 +124,14 @@ path_get_bounds (Path *shape, cairo_path_t *path)
 	
 	double x1, y1, x2, y2;
 
-	if (thickness > 0.0)
-		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	else
-		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+	if (logical)
+		cairo_path_extents (cr, &x1, &y1, &x2, &y2);
+	else {
+		if (thickness > 0.0)
+			cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+		else
+			cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+	}
 
 	measuring_context_destroy (cr);
 
@@ -185,14 +194,14 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 }
 
 Rect
-GeometryGroup::ComputeBounds (Path *path)
+GeometryGroup::ComputeBounds (Path *path, bool logical)
 {
 	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
 	GeometryCollection *children = geometry_group_get_children (this);
 	Collection::Node *node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		Geometry *geometry = (Geometry *) node->obj;
-		bounds = bounds.Union (geometry->ComputeBounds (path));
+		bounds = bounds.Union (geometry->ComputeBounds (path, logical));
 	}
 
 	Transform* transform = geometry_get_transform (this);
@@ -329,10 +338,15 @@ EllipseGeometry::Build (Path *shape)
 }
 
 Rect
-EllipseGeometry::ComputeBounds (Path *path)
+EllipseGeometry::ComputeBounds (Path *path, bool logical)
 {
 	// code written to minimize divisions
-	double ht = (path ? shape_get_stroke_thickness (path) : 1.0) / 2.0;
+	double ht;
+	if (logical)
+		ht = 0.0;
+	else
+		ht = (path ? shape_get_stroke_thickness (path) : 1.0) / 2.0;
+
 	double hw = ellipse_geometry_get_radius_x (this) + ht;
 	double hh = ellipse_geometry_get_radius_y (this) + ht;
 	// point is at center, so left-top corner is minus half width / half height
@@ -404,12 +418,17 @@ LineGeometry::Build (Path *shape)
 }
 
 Rect
-LineGeometry::ComputeBounds (Path *shape)
+LineGeometry::ComputeBounds (Path *shape, bool logical)
 {
 	Rect bounds;
 	Point *p1 = line_geometry_get_start_point (this);
 	Point *p2 = line_geometry_get_end_point (this);
-	double thickness = shape_get_stroke_thickness (shape);
+
+	double thickness;
+	if (logical)
+		thickness = 0.0;
+	else
+		thickness = shape_get_stroke_thickness (shape);
 
 	calc_line_bounds (p1->x, p2->x, p1->y, p2->y, thickness, &bounds);
 
@@ -466,7 +485,7 @@ PathGeometry::Build (Path *shape)
 }
 
 Rect
-PathGeometry::ComputeBounds (Path *shape)
+PathGeometry::ComputeBounds (Path *shape, bool logical)
 {
 	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
 	Value *v = GetValue (PathGeometry::FiguresProperty);
@@ -477,7 +496,7 @@ PathGeometry::ComputeBounds (Path *shape)
 	Collection::Node *node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathFigure *pf = (PathFigure *) node->obj;
-		bounds = bounds.Union (pf->ComputeBounds (shape));
+		bounds = bounds.Union (pf->ComputeBounds (shape, logical));
 	}
 	
 	Transform* transform = geometry_get_transform (this);
@@ -592,7 +611,7 @@ RectangleGeometry::Build (Path *shape)
 }
 
 Rect
-RectangleGeometry::ComputeBounds (Path *path)
+RectangleGeometry::ComputeBounds (Path *path, bool logical)
 {
 	Rect *rect = rectangle_geometry_get_rect (this);
 	Rect bounds;
@@ -600,12 +619,18 @@ RectangleGeometry::ComputeBounds (Path *path)
 	if (!rect)
 		return Rect (0.0, 0.0, 0.0, 0.0);
 
-	double thickness = shape_get_stroke_thickness (path);
+	double thickness;
+	if (logical)
+		thickness = 0.0;
+	else
+		thickness = shape_get_stroke_thickness (path);
+
 	// UIElement::SHAPE_DEGENERATE flags may be unset at this stage
 	if ((thickness > rect->w) || (thickness > rect->h))
 		thickness += 2.0;
 
-	bounds = rect->GrowBy (thickness / 2.0);
+	if (! logical)
+		bounds = rect->GrowBy (thickness / 2.0);
 
 	Transform* transform = geometry_get_transform (this);
 	if (transform) {
@@ -715,12 +740,12 @@ PathFigure::Build (Path *shape)
 }
 
 Rect
-PathFigure::ComputeBounds (Path *shape)
+PathFigure::ComputeBounds (Path *shape, bool logical)
 {
 	if (!IsBuilt ())
 		Build (shape);
 
-	return path_get_bounds (shape, &path->cairo);
+	return path_get_bounds (shape, &path->cairo, logical);
 }
 
 bool

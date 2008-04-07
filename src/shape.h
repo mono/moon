@@ -60,11 +60,12 @@ class Shape : public FrameworkElement {
 	void InvalidateSurfaceCache (void);
 	bool IsCandidateForCaching (void);
 
-	virtual Rect ComputeShapeBounds ();
+	virtual Rect ComputeShapeBounds (bool logical);
 	virtual Rect ComputeLargestRectangle ();
 	
 	cairo_matrix_t stretch_transform;
-	Rect ComputeStretchBounds (Rect shape_bounds);
+	Rect ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds);
+	Point ComputeOriginPoint (Rect shape_bounds);
 	Rect extents;
  public: 
 	static DependencyProperty* FillProperty;
@@ -212,7 +213,7 @@ class Line : public Shape {
  protected:
 	virtual ~Line () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
-	virtual Rect ComputeShapeBounds ();
+	virtual Rect ComputeShapeBounds (bool logical);
  public:
 	static DependencyProperty* X1Property;
 	static DependencyProperty* Y1Property;
@@ -248,7 +249,7 @@ class Polygon : public Shape {
  protected:
 	virtual ~Polygon () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
-	virtual Rect ComputeShapeBounds ();
+	virtual Rect ComputeShapeBounds (bool logical);
  public:
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
@@ -285,7 +286,7 @@ class Polyline : public Shape {
  protected:
 	virtual ~Polyline () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
-	virtual Rect ComputeShapeBounds ();
+	virtual Rect ComputeShapeBounds (bool logical);
  public:
 	static DependencyProperty* FillRuleProperty;
 	static DependencyProperty* PointsProperty;
@@ -322,7 +323,7 @@ class Path : public Shape {
 	virtual ~Path () {}
 	virtual bool SetupLine (cairo_t* cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
-	virtual Rect ComputeShapeBounds ();
+	virtual Rect ComputeShapeBounds (bool logical);
 
  public:
 	static DependencyProperty* DataProperty;

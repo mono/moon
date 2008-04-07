@@ -324,7 +324,7 @@ Surface::SetCursor (MouseCursor new_cursor)
 			c = gdk_cursor_new (GDK_LEFT_PTR);
 			break;
 		case MouseCursorHand:
-			c = gdk_cursor_new (GDK_HAND1);
+			c = gdk_cursor_new (GDK_HAND2);
 			break;
 		case MouseCursorWait:
 			c = gdk_cursor_new (GDK_WATCH);
@@ -333,10 +333,10 @@ Surface::SetCursor (MouseCursor new_cursor)
 			c = gdk_cursor_new (GDK_XTERM);
 			break;
 		case MouseCursorStylus:
-			c = gdk_cursor_new (GDK_CROSSHAIR); // ??
+			c = gdk_cursor_new (GDK_PENCIL);
 			break;
 		case MouseCursorEraser:
-			c = gdk_cursor_new (GDK_PENCIL); // ??
+			c = gdk_cursor_new (GDK_DOT); // ??
 			break;
 		case MouseCursorNone:
 			// XXX nothing yet.  create a pixmap cursor with no pixel data
@@ -851,7 +851,7 @@ Surface::InitializeWidget (GtkWidget *widget)
 	
 	gtk_widget_add_events (widget, 
 			       GDK_POINTER_MOTION_MASK |
-			       GDK_POINTER_MOTION_HINT_MASK |
+// 			       GDK_POINTER_MOTION_HINT_MASK |
 			       GDK_KEY_PRESS_MASK |
 			       GDK_KEY_RELEASE_MASK |
 			       GDK_BUTTON_PRESS_MASK |
@@ -1536,7 +1536,7 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 	    }    
 	}
 
-	handled = s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event);
+	handled = s->HandleMouseEvent (emit_MouseMove, true, true, true, s->mouse_event);
 	s->UpdateCursorFromInputList ();
 
 	return handled;
@@ -2163,8 +2163,10 @@ strcase_hash (gconstpointer v)
 	guint hash = 0;
 	char *p = (char *) v;
 
-	while (*p++)
-		hash = (hash << 5) - (hash + g_ascii_tolower (*p));
+	if (p) {
+		while (*p++)
+			hash = (hash << 5) - (hash + g_ascii_tolower (*p));
+	}
 
 	return hash;
 }

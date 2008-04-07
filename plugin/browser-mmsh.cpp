@@ -123,7 +123,7 @@ asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_
 	
 	asf_file_properties *properties = parser->GetFileProperties ();
 
-	g_print ("FILE_SIZE: %d\n", properties->file_size);
+	g_print ("FILE_SIZE: %lld\n", properties->file_size);
 	//g_print ("MAX: %d\n", properties->max_packet_size);
 	//g_print ("MIN: %d\n", properties->min_packet_size);
 

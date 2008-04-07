@@ -1,4 +1,144 @@
+2008-04-07  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/shape.cpp:
+	* src/shape.h: Compute the origin point as a separate step after
+	computing the shape bounds and the stretch bounds. This fixes the
+	recently broken sprawl.
+
+	I think it also fixes other things. Before, given the way code was,
+	the stretch_bounds would affect the origin *only* in the case of Path,
+	in other cases (Line, Polygon, Polyline...) they would be ignored.
+
+2008-04-04  Chris Toshok  <toshok@ximian.com>
+
+	* stylus.cpp (Stroke::HitTestEndcapSegment): fix this method.  it
+	was missing a bunch of tests (basically it was intersecting
+	infinite lines with ellipses, not segments), and some of the math
+	was wrong.
+
+2008-04-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	Intended to fix bug #373462, but something else is preventing that
+	site from working now...
+
+	* media.cpp (MediaElement::SetSourceInternal): PartName is no
+	longer a const char * argument, which means we take ownership of
+	the PartName string.
+	(MediaElement::SetSourceAsyncCallback): New method which is the
+	async callback for SetSource().
+	(MediaElement::SetSource): Reinitialize() right away.
+	(MediaElement::SetSource): Clear out any pending SetSource async
+	data, replacing it with the new downloader/part name info.
+	(MediaElement::SetSource): Allow a NULL downloader object but make
+	sure we don't crash in that case either.
+
+2008-04-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyobject.cpp (resolve_property_path): Avoid crash on 
+	invalid syntax and leaks in other error cases. Fix #377039 (more
+	test cases coming soon).
+
+2008-04-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* animation.cpp (KeyFrameCollection::GetKeyFrameForTime): Return
+	immediately if the array len is 0, prevents a crash accessing
+	sorted_list->pdata[0] when working backwards in the second
+	for-loop. Fixes one of the crashes I found while investigating bug
+	#362561.
+
+2008-04-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp: Don't crash in strcase_hash if the hashtable 
+	contains NULL values.
+
+2008-04-03  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::InitializeWidget): disable the
+	GDK_POINTER_MOTION_HINT_MASK stuff for now.  we're not passing
+	tests with it enabled.
+	(Surface::motion_notify_callback): force the emission of a motion
+	event.
+
+2008-04-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (Surface::SetCursor): Stylus cursor should map to
+	the pencil cursor. Also updated Hand (which should be a
+	left-pointing hand, not right-pointing) and also Eraser (we need
+	to make our own icon for this, but I suck at art so I'll pass for
+	now).
+
+2008-04-03  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp:
+	* shape.h: Calculate the logical extents when computing the shape bounds
+	and pass them to the ComputeStretchBounds. They're currently not used in
+	any way.
+
+2008-04-03  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp: Don't init the stretch matrix to identity on each
+	Shape::ComputeShapeBounds. We want to be able to call it freely.
+
+2008-04-02  Michael Dominic K.  <mdk@mdk.am>
+
+	* geometry.cpp: Use the cairo_path_extents to calculate the logical
+	bounds instead of faking small stroke.
+
+2008-04-02  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp:
+	* shape.h: Adding new parameter (bool logical) to all the
+	Shape::ComputeShapeBounds functions and overrides. See prev commit for
+	explanation of what is logical bounds.
+
+	Currently all clients use logical == false. Just adding this
+	functionality.
+
+2008-04-02  Michael Dominic K.  <mdk@mdk.am>
+
+	* geometry.cpp:
+	* geometry.h:
+	* shape.cpp:
+	* uielement.cpp: Adding new parameter (bool logical) to all the
+	Geometry::ComputeBounds functions and overrides. Calculating logical
+	bounds means calculating bounds without stroke included. Ie. a line
+	(0,0) - (100, 0) has logical bounds of width=100, height=0, no matter
+	what the stroke is. 
+
+	Not used right now, will be used in just a few commits (all current
+	ComputeBounds clients call it will logical == false).
+
+2008-04-02  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp: Don't automatically compute the stretch bounds when
+	computing shape bounds. Instead, compute it as a separate step in
+	Shape::ComputeBounds.
+
+2008-04-03  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (UIElement::EmitMouseLeave): turns out that,
+	contrary to msdn2, MS *is* indeed emitting this event with
+	non-null eventargs.  it's just an EventArgs object, not a
+	MouseEventArgs.
+
+2008-04-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (EventObject::Emit): Unref the calldata
+	even in the "no such event" exception case.
+
 2008-04-03  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp: (expat_parser_error): translate XML_ERROR_NO_ELEMENTS
+	into appropriate error code.
+
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp: Generate errors when trying to set readonly properties.
+
+2008-04-03  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp: make sure we set an error if the property name isn't
+	valid.
 
 	* runtime.cpp: make it legal to attach to a NULL toplevel, hook up
 	the needed events.

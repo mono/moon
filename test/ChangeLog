@@ -1,3 +1,28 @@
+2008-04-07  Michael Dominic K.  <mdk@mdk.am>
+
+	* harness/masters/test-shape-path-stretch-gradientMaster.png:
+	* xaml/drtlist.xml:
+	* xaml/test-shape-path-stretch-gradient.xaml: One more test for path
+	stretching and gradients.
+
+2008-04-07  Michael Dominic K.  <mdk@mdk.am>
+
+	* harness/masters/test-shape-line-stretch-gradientMaster.png:
+	* xaml/drtlist.xml:
+	* xaml/test-shape-line-stretch-gradient.xaml: One more test for line
+	stetching and gradients. Gradients work correctly but fails because of
+	stetching borkeness (see test-shape-line-stretch3.xaml).
+
+2008-04-07  Michael Dominic K.  <mdk@mdk.am>
+
+	* harness/masters/test-shape-line-stretch3Master.png:
+	* xaml/drtlist.xml:
+	* xaml/test-shape-line-stretch3.xaml: Adding new test for line
+	stretching. This is similiar to the test-shape-path-strech4.xaml except
+	that it uses actual Line object instead of path. Fails for exactly
+	similiar reasons -- stretching the bounds including stroke instead of
+	using the logical extents.
+
 2008-04-02  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/drtlist.xml:

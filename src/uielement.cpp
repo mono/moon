@@ -96,7 +96,7 @@ UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 		return unclipped;
 
 	Geometry *geometry = value->AsGeometry ();
-	Rect box = geometry->ComputeBounds (NULL);
+	Rect box = geometry->ComputeBounds (NULL, false);
 
 	if (!GetRenderVisible())
 		box = Rect (0,0,0,0);
@@ -442,7 +442,9 @@ UIElement::EmitMouseEnter (GdkEvent *event)
 bool
 UIElement::EmitMouseLeave ()
 {
-	return Emit (MouseLeaveEvent);
+	// LAMESPEC: msdn2 says this event is raised with null args in JS,
+	// but the JS is clearly passed an EventArgs instance.
+	return Emit (MouseLeaveEvent, new EventArgs ());
 }
 
 bool

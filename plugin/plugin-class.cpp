@@ -939,17 +939,10 @@ MoonlightDuration::SetProperty (int id, NPIdentifier name, const NPVariant *valu
 	}
 }
 
-void
-MoonlightDuration::Dispose ()
+MoonlightDuration::~MoonlightDuration ()
 {
-	MoonlightObject::Dispose ();
-	
-	if (parent_obj) {
+	if (parent_obj)
 		parent_obj->unref();
-		parent_obj = NULL;
-	}
-	
-	parent_property = NULL;
 }
 
 MoonlightDurationType::MoonlightDurationType ()
@@ -1027,17 +1020,10 @@ MoonlightTimeSpan::SetProperty (int id, NPIdentifier name, const NPVariant *valu
 	}
 }
 
-void
-MoonlightTimeSpan::Dispose ()
+MoonlightTimeSpan::~MoonlightTimeSpan ()
 {
-	MoonlightObject::Dispose ();
-	
-	if (parent_obj) {
+	if (parent_obj)
 		parent_obj->unref ();
-		parent_obj = NULL;
-	}
-	
-	parent_property = NULL;
 }
 
 MoonlightTimeSpanType::MoonlightTimeSpanType ()
@@ -1272,19 +1258,14 @@ _deallocate (NPObject *npobj)
 {
 	MoonlightObject *obj = (MoonlightObject *) npobj;
 	
-	if (!obj->disposed)
-		obj->Dispose ();
-	
 	delete obj;
 }
 
 MoonlightObject::~MoonlightObject ()
 {
-	if (!disposed) {
-		// Can't call Dispose from here, since the derived classes' vtbls have already
-		// been destroyed.
-		printf ("Undisposed object.\n");
-		// print_stack_trace ();
+	if (event_listener_proxies) {
+		g_hash_table_destroy (event_listener_proxies);
+		event_listener_proxies = NULL;
 	}
 }
 
@@ -1297,14 +1278,8 @@ MoonlightObject::destroy_proxy (gpointer data)
 }
 
 void
-MoonlightObject::Dispose ()
+MoonlightObject::Invalidate ()
 {
-	if (event_listener_proxies) {
-		g_hash_table_destroy (event_listener_proxies);
-		event_listener_proxies = NULL;
-	}
-	
-	disposed = true;
 }
 
 bool
@@ -1382,7 +1357,7 @@ _invalidate (NPObject *npobj)
 {
 	MoonlightObject *obj = (MoonlightObject *) npobj;
 	
-	obj->Dispose ();
+	obj->Invalidate ();
 }
 
 static bool
@@ -1562,22 +1537,22 @@ scriptable_control_mapping[] = {
 	{ "source", MoonId_Source },
 };
 
-void
-MoonlightScriptControlObject::Dispose ()
+MoonlightScriptControlObject::~MoonlightScriptControlObject ()
 {
-	MoonlightObject::Dispose ();
-	
- 	if (settings) {
-		((MoonlightSettingsObject *) settings)->control = NULL;
+ 	if (settings)
 		NPN_ReleaseObject (settings);
-		settings = NULL;
-	}
 	
- 	if (content) {
-		((MoonlightContentObject *) content)->control = NULL;
+ 	if (content)
 		NPN_ReleaseObject (content);
-		content = NULL;
-	}
+}
+
+void
+MoonlightScriptControlObject::Invalidate ()
+{
+	MoonlightObject::Invalidate ();
+
+	settings = NULL;
+	content = NULL;
 }
 
 bool
@@ -1754,17 +1729,6 @@ moonlight_settings_mapping [] = {
 	{ "windowless", MoonId_Windowless }
 };
 
-void
-MoonlightSettingsObject::Dispose ()
-{
-	MoonlightObject::Dispose ();
-	
-	if (control) {
-		control->settings = NULL;
-		control = NULL;
-	}
-}
-
 bool
 MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
@@ -1873,20 +1837,12 @@ moonlight_content_allocate (NPP instance, NPClass *klass)
 	return new MoonlightContentObject (instance);
 }
 
-void
-MoonlightContentObject::Dispose ()
+MoonlightContentObject::~MoonlightContentObject ()
 {
-	MoonlightObject::Dispose ();
-	
 	// FIXME: need to free registered scriptable objects
 	if (registered_scriptable_objects) {
 		g_hash_table_destroy (registered_scriptable_objects);
 		registered_scriptable_objects = NULL;
-	}
-	
-	if (control) {
-		control->content = NULL;
-		control = NULL;
 	}
 }
 
@@ -2143,12 +2099,6 @@ static NPObject *
 moonlight_dependency_object_allocate (NPP instance, NPClass *klass)
 {
 	return new MoonlightDependencyObjectObject (instance);
-}
-
-void
-MoonlightDependencyObjectObject::Dispose ()
-{
-	MoonlightEventObjectObject::Dispose ();
 }
 
 static DependencyProperty *
@@ -2559,14 +2509,10 @@ moonlight_event_object_allocate (NPP instance, NPClass *klass)
 	return new MoonlightEventObjectObject (instance);
 }
 
-void
-MoonlightEventObjectObject::Dispose ()
+MoonlightEventObjectObject::~MoonlightEventObjectObject ()
 {
-	PluginInstance *plugin;
-	
-	MoonlightObject::Dispose ();
-	
 	if (eo) {
+		PluginInstance *plugin;
 		if ((plugin = (PluginInstance *) instance->pdata))
 			plugin->RemoveWrappedObject (eo);
 		
@@ -3624,11 +3570,8 @@ moonlight_scriptable_object_allocate (NPP instance, NPClass *klass)
 	return new MoonlightScriptableObjectObject (instance);
 }
 
-void
-MoonlightScriptableObjectObject::Dispose ()
+MoonlightScriptableObjectObject::~MoonlightScriptableObjectObject ()
 {
-	MoonlightObject::Dispose ();
-
 	if (managed_scriptable) {
 		// FIXME: unref the scriptable object however we need to.
 		managed_scriptable = NULL;
