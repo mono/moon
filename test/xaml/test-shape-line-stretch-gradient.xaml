@@ -1,0 +1,13 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="100" Height="100">
+	<Rectangle Width="100" Height="100" Canvas.Left="0" Canvas.Top="0" Fill="DarkBlue" />
+	<Line StrokeThickness="1" Width="100" Height="100" X1="0" Y1="0" X2="10" Y2="10" Stretch="Fill">
+		<Line.Stroke>
+			<LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1,1">
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="White" Offset="0.0" />
+					<GradientStop Color="Red" Offset="1.0" />
+				</LinearGradientBrush.GradientStops> 
+			</LinearGradientBrush>
+		</Line.Stroke>
+	</Line>
+</Canvas>

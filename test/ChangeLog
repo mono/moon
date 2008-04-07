@@ -1,5 +1,13 @@
 2008-04-07  Michael Dominic K.  <mdk@mdk.am>
 
+	* harness/masters/test-shape-line-stretch-gradientMaster.png:
+	* xaml/drtlist.xml:
+	* xaml/test-shape-line-stretch-gradient.xaml: One more test for line
+	stetching and gradients. Gradients work correctly but fails because of
+	stetching borkeness (see test-shape-line-stretch3.xaml).
+
+2008-04-07  Michael Dominic K.  <mdk@mdk.am>
+
 	* harness/masters/test-shape-line-stretch3Master.png:
 	* xaml/drtlist.xml:
 	* xaml/test-shape-line-stretch3.xaml: Adding new test for line
