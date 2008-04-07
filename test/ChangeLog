@@ -1,5 +1,12 @@
 2008-04-07  Michael Dominic K.  <mdk@mdk.am>
 
+	* harness/masters/test-shape-path-stretch-gradientMaster.png:
+	* xaml/drtlist.xml:
+	* xaml/test-shape-path-stretch-gradient.xaml: One more test for path
+	stretching and gradients.
+
+2008-04-07  Michael Dominic K.  <mdk@mdk.am>
+
 	* harness/masters/test-shape-line-stretch-gradientMaster.png:
 	* xaml/drtlist.xml:
 	* xaml/test-shape-line-stretch-gradient.xaml: One more test for line

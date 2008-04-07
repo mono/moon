@@ -700,4 +700,8 @@
 	 inputFile="test-shape-line-stretch-gradient.xaml"
 	 masterFile10="../harness/masters/test-shape-line-stretch-gradientMaster.png"
    />
+   <Test id="167"
+	 inputFile="test-shape-path-stretch-gradient.xaml"
+	 masterFile10="../harness/masters/test-shape-path-stretch-gradientMaster.png"
+   />
 </DRTList>
