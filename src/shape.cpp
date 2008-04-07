@@ -445,6 +445,12 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 	cairo_restore (cr);
 }
 
+Point
+Shape::ComputeOriginPoint (Rect shape_bounds)
+{
+	return Point (shape_bounds.x, shape_bounds.y);
+}
+
 void
 Shape::ComputeBounds ()
 {
@@ -455,6 +461,7 @@ Shape::ComputeBounds ()
 	Rect logical_extents = ComputeShapeBounds (true);
 
 	extents = ComputeStretchBounds (extents, logical_extents);
+	origin = ComputeOriginPoint (extents);
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
@@ -1392,8 +1399,6 @@ Line::ComputeShapeBounds (bool logical)
 	double y2 = line_get_y2 (this);
 
 	calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
-	origin.x = MIN (x1, x2);
-	origin.y = MIN (y1, y2);
 
 	return shape_bounds;
 }
@@ -1654,15 +1659,13 @@ Polygon::ComputeShapeBounds (bool logical)
 	if (thickness == 0.0)
 		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
-	double x0 = origin.x = points [0].x;
-	double y0 = origin.y = points [0].y;
+	double x0 = points [0].x;
+	double y0 = points [0].y;
 	double x1, y1;
 
 	if (count == 2) {
 		x1 = points [1].x;
 		y1 = points [1].y;
-		origin.x = MIN (origin.x, points[1].x);
-		origin.y = MIN (origin.y, points[1].y);
 
 		polygon_extend_line (&x0, &x1, &y0, &y1, thickness);
 		calc_line_bounds (x0, x1, y0, y1, thickness, &shape_bounds);
@@ -1675,8 +1678,6 @@ Polygon::ComputeShapeBounds (bool logical)
 		double y2 = points [1].y;
 		double x3 = points [2].x;
 		double y3 = points [2].y;
-		origin.x = MIN (origin.x, MIN (x2, x3));
-		origin.y = MIN (origin.y, MIN (y2, y3));
 
 		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 		for (i = 3; i < count; i++) {
@@ -1686,8 +1687,6 @@ Polygon::ComputeShapeBounds (bool logical)
 			y2 = y3;
 			x3 = points [i].x;
 			y3 = points [i].y;
-			origin.x = MIN (origin.x, x3);
-			origin.y = MIN (origin.y, y3);
 			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 		}
 		// a polygon is a closed shape (unless it's a line)
@@ -1910,29 +1909,23 @@ Polyline::ComputeShapeBounds (bool logical)
 	if (thickness == 0.0)
 		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
-	double x1 = origin.x = points [0].x;
-	double y1 = origin.y = points [0].y;
+	double x1 = points [0].x;
+	double y1 = points [0].y;
 	
 	if (count == 2) {
 		// this is a "simple" line (move to + line to)
 		double x2 = points [1].x;
 		double y2 = points [1].y;
-		origin.x = MIN (origin.x, x2);
-		origin.y = MIN (origin.y, y2);
 		calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
 	} else {
 		// FIXME: we're too big for large thickness and/or steep angle
 		Rect line_bounds;
 		double x2 = points [1].x;
 		double y2 = points [1].y;
-		origin.x = MIN (origin.x, x2);
-		origin.y = MIN (origin.y, y2);
 		calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
 		for (i = 2; i < count; i++) {
 			double x3 = points [i].x;
 			double y3 = points [i].y;
-			origin.x = MIN (origin.x, x3);
-			origin.y = MIN (origin.y, y3);
 			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 			x1 = x2;
 			y1 = y2;
@@ -2115,9 +2108,6 @@ Path::ComputeShapeBounds (bool logical)
 	}
 
 	shape_bounds = geometry->ComputeBounds (this, logical);
-
-	if (! logical)
-		origin = Point (shape_bounds.x, shape_bounds.y);
 
 	return shape_bounds;
 }

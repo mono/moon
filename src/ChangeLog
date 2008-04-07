@@ -1,3 +1,14 @@
+2008-04-07  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/shape.cpp:
+	* src/shape.h: Compute the origin point as a separate step after
+	computing the shape bounds and the stretch bounds. This fixes the
+	recently broken sprawl.
+
+	I think it also fixes other things. Before, given the way code was,
+	the stretch_bounds would affect the origin *only* in the case of Path,
+	in other cases (Line, Polygon, Polyline...) they would be ignored.
+
 2008-04-04  Chris Toshok  <toshok@ximian.com>
 
 	* stylus.cpp (Stroke::HitTestEndcapSegment): fix this method.  it

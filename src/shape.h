@@ -65,6 +65,7 @@ class Shape : public FrameworkElement {
 	
 	cairo_matrix_t stretch_transform;
 	Rect ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds);
+	Point ComputeOriginPoint (Rect shape_bounds);
 	Rect extents;
  public: 
 	static DependencyProperty* FillProperty;
