@@ -25,13 +25,12 @@
 #include "geometry.h"
 #include "pipeline.h"
 
+#define d(x)
+
 // still too ugly to be exposed in the header files ;-)
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
 					 Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform, Transform *relative_transform);
 
-
-#define LOG_MEDIAELEMENT(...)// printf (__VA_ARGS__);
-#define LOG_BUFFERINGPROGRESS(...)// printf (__VA_ARGS__);
 
 /*
  * MediaBase
@@ -288,8 +287,9 @@ MediaElement::AdvanceFrame ()
 	uint64_t position; // pts
 	bool advanced;
 	
-	LOG_MEDIAELEMENT ("MediaElement::AdvanceFrame (), IsPlaying: %i, HasVideo: %i, HasAudio: %i\n", IsPlaying (), mplayer->HasVideo (), mplayer->HasAudio ());
-
+	d(printf ("MediaElement::AdvanceFrame (), IsPlaying: %i, HasVideo: %i, HasAudio: %i\n",
+		  IsPlaying (), mplayer->HasVideo (), mplayer->HasAudio ()));
+	
 	if (!IsPlaying ())
 		return false;
 	
@@ -467,8 +467,8 @@ MediaElement::DownloaderAbort ()
 void
 MediaElement::SetMedia (Media *media)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SetMedia (%p), current media: %p\n", media, this->media);
-
+        d(printf ("MediaElement::SetMedia (%p), current media: %p\n", media, this->media));
+	
 	if (this->media == media)
 		return;	
 
@@ -496,9 +496,9 @@ bool
 MediaElement::MediaOpened (Media *media)
 {
 	const char *demux_name = media->GetDemuxer ()->GetName ();
-
-	LOG_MEDIAELEMENT ("MediaElement::MediaOpened (%p), demuxer name: %s\n", media, demux_name);
-
+	
+	d(printf ("MediaElement::MediaOpened (%p), demuxer name: %s\n", media, demux_name));
+	
 	if (demux_name != NULL && strcmp (demux_name, "ASXDemuxer") == 0) {
 		Playlist *pl = ((ASXDemuxer *) media->GetDemuxer ())->GetPlaylist ();
 		if (playlist == NULL) {
@@ -528,7 +528,7 @@ MediaElement::MediaOpened (Media *media)
 void
 MediaElement::MediaFailed (ErrorEventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaFailed (%p)\n", args);	
+	d(printf ("MediaElement::MediaFailed (%p)\n", args));
 	
 	if (state == MediaElement::Error)
 		return;
@@ -656,16 +656,19 @@ MediaElement::UpdateProgress ()
 	bool emit = false;
 	uint64_t currently_available_pts, current_pts, buffer_pts;
 
-	LOG_BUFFERINGPROGRESS ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state));
+	d(printf ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state)));
 	
 	if (state & WaitingForOpen)
 		return;
 	
 	if (downloaded_file != NULL && !IsBuffering () && downloaded_file->IsWaiting ()) {
 		// We're waiting for more data, switch to the 'Buffering' state.
-		LOG_BUFFERINGPROGRESS ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: %llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, last available pts: %llu\n", 
-			previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ()), media ? media->GetDemuxer ()->GetLastAvailablePts () : 0);
-
+		d(printf ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: "
+			  "%llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, last available pts: %llu\n", 
+			  previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (),
+			  MilliSeconds_FromPts (mplayer->GetPosition ()),
+			  media ? media->GetDemuxer ()->GetLastAvailablePts () : 0));
+		
 		SetValue (MediaElement::BufferingProgressProperty, Value (0.0));
 		SetState (Buffering);
 		mplayer->Pause ();
@@ -692,9 +695,12 @@ MediaElement::UpdateProgress ()
 
 		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
 		
-		LOG_BUFFERINGPROGRESS ("MediaElement::UpdateProgress (), buf start: %llu = %llu ms, buf end: %llu = %llu ms, buf time: %llu = %llu ms, last_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
-				buffering_start, MilliSeconds_FromPts (buffering_start), buffering_end, MilliSeconds_FromPts (buffering_end), buffering_time, MilliSeconds_FromPts (buffering_time), last_available_pts, MilliSeconds_FromPts (last_available_pts), current, progress);
-
+		d(printf ("MediaElement::UpdateProgress (), buf start: %llu = %llu ms, buf end: %llu = %llu ms, "
+			  "buf time: %llu = %llu ms, last_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
+			  buffering_start, MilliSeconds_FromPts (buffering_start), buffering_end,
+			  MilliSeconds_FromPts (buffering_end), buffering_time, MilliSeconds_FromPts (buffering_time),
+			  last_available_pts, MilliSeconds_FromPts (last_available_pts), current, progress));
+		
 		if (progress < 0.0)
 			progress = 0.0;
 		else if (progress > 1.0)
@@ -736,11 +742,12 @@ MediaElement::SetState (MediaElementState state)
 		return;
 	
 	if (!(name = GetStateName (state))) {
-		printf ("MediaElement::SetState (%d) state is not valid.\n", state);
+		d(printf ("MediaElement::SetState (%d) state is not valid.\n", state));
 		return;
 	}
 	
-	LOG_MEDIAELEMENT ("MediaElement::SetState (%d): New state: %s, old state: %s\n", state, GetStateName (state), GetStateName (this->state));
+	d(printf ("MediaElement::SetState (%d): New state: %s, old state: %s\n",
+		  state, GetStateName (state), GetStateName (this->state)));
 	
 	prev_state = this->state;
 	this->state = state;
@@ -808,8 +815,8 @@ void
 MediaElement::BufferingComplete ()
 {
 	if (state != Buffering) {
-		printf ("MediaElement::BufferingComplete (): current state is invalid ('%s'), should only be 'Buffering'\n",
-			GetStateName (state));
+		d(printf ("MediaElement::BufferingComplete (): current state is invalid ('%s'), should only be 'Buffering'\n",
+			  GetStateName (state)));
 		return;
 	}
 	
@@ -830,7 +837,8 @@ MediaElement::BufferingComplete ()
 	case Buffering:
 	case Closed:
 	case Stopped: // This should not happen.
-		printf ("MediaElement::BufferingComplete (): previous state is invalid ('%s').\n", GetStateName (prev_state));
+		d(printf ("MediaElement::BufferingComplete (): previous state is invalid ('%s').\n",
+			  GetStateName (prev_state)));
 		return;
 	}
 }
@@ -856,8 +864,8 @@ media_element_open_callback (MediaClosure *closure)
 gboolean
 MediaElement::TryOpenFinished (void *user_data)
 {
-	LOG_MEDIAELEMENT ("MediaElement::TryOpenFinished ()\n");
-
+	d(printf ("MediaElement::TryOpenFinished ()\n"));
+	
 	// No locking should be necessary here, since we can't have another open request pending.
 	MediaElement *element = (MediaElement*) user_data;
 	MediaClosure *closure = element->closure;
@@ -865,8 +873,8 @@ MediaElement::TryOpenFinished (void *user_data)
 	element->flags &= ~WaitingForOpen;
 	
 	if (MEDIA_SUCCEEDED (closure->result)) {
-		printf ("MediaElement::TryOpen (): download is not complete, but media was "
-			"opened successfully and we'll now start buffering.\n");
+		d(printf ("MediaElement::TryOpen (): download is not complete, but media was "
+			  "opened successfully and we'll now start buffering.\n"));
 		element->last_played_pts = 0;
 		element->SetState (Buffering);
 		element->MediaOpened (closure->GetMedia ());
@@ -885,7 +893,7 @@ MediaElement::TryOpen ()
 	switch (state) {
 	case Closed:
 	case Error:
-		printf ("MediaElement::TryOpen (): Current state (%s) is invalid.\n", GetStateName (state)); 
+		d(printf ("MediaElement::TryOpen (): Current state (%s) is invalid.\n", GetStateName (state))); 
 		// Should not happen
 		return;
 	case Playing:
@@ -893,7 +901,7 @@ MediaElement::TryOpen ()
 	case Stopped:
 	case Buffering:
 		// I don't think this should happen either
-		printf ("MediaElement::TryOpen (): Current state (%s) was unexpected.\n", GetStateName (state));
+		d(printf ("MediaElement::TryOpen (): Current state (%s) was unexpected.\n", GetStateName (state)));
 		// Media is already open.
 		// There's nothing to do here.
 		return;
@@ -901,7 +909,7 @@ MediaElement::TryOpen ()
 		// Try to open it now
 		break;
 	default:
-		printf ("MediaElement::TryOpen (): Unknown state: %d\n", state);
+		d(printf ("MediaElement::TryOpen (): Unknown state: %d\n", state));
 		return;
 	}
 	
@@ -911,12 +919,11 @@ MediaElement::TryOpen ()
 		return;
 	}
 	
-	if (flags & WaitingForOpen) {
+	if (flags & WaitingForOpen)
 		return;
-	}
 	
-	LOG_MEDIAELEMENT ("MediaElement::TryOpen ()\n");
-
+	d(printf ("MediaElement::TryOpen ()\n"));
+	
 	if (flags & DownloadComplete) {
 		IMediaSource *current_downloaded_file = downloaded_file;
 		char *filename = downloader_get_response_file (downloader, part_name);
@@ -978,8 +985,8 @@ MediaElement::DownloaderComplete ()
 	switch (state) {
 	case Closed:
 	case Error:
-		printf ("MediaElement::DownloaderComplete (): Current state (%d) is invalid.\n", state);
 		// Should not happen
+		d(printf ("MediaElement::DownloaderComplete (): Current state (%d) is invalid.\n", state));
 		return;
 	case Playing:
 	case Paused:
@@ -1001,19 +1008,19 @@ MediaElement::DownloaderComplete ()
 		TryOpen ();
 		break;
 	default:
-		printf ("MediaElement::DownloaderComplete (): Unknown state: %d\n", state);
+		d(printf ("MediaElement::DownloaderComplete (): Unknown state: %d\n", state));
 		return;
 	}
-	
 }
 
 void
 MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 {
 	const char *uri = downloader->GetValue (Downloader::UriProperty)->AsString ();
-	bool is_live = g_str_has_prefix (uri, "mms");
+	bool is_live = g_str_has_prefix (uri, "mms:");
 	
-	LOG_MEDIAELEMENT ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", dl, PartName, dl->GetValue (Downloader::UriProperty)->AsString ());
+	d(printf ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader,
+		  PartName, dl->GetValue (Downloader::UriProperty)->AsString ()));
 	
 	Reinitialize (false);
 	
@@ -1120,8 +1127,8 @@ MediaElement::SetSource (DependencyObject *downloader, const char *PartName)
 void
 MediaElement::Pause ()
 {
-	LOG_MEDIAELEMENT ("MediaElement::Pause (): current state: %s\n", GetStateName (state));
-
+	d(printf ("MediaElement::Pause (): current state: %s\n", GetStateName (state)));
+	
 	switch (state) {
 	case Opening:// docs: No specified behaviour
 		flags &= ~PlayRequested;
@@ -1144,8 +1151,8 @@ MediaElement::Pause ()
 void
 MediaElement::Play ()
 {
-	LOG_MEDIAELEMENT ("MediaElement::Play (): current state: %s\n", GetStateName (state));
-
+	d(printf ("MediaElement::Play (): current state: %s\n", GetStateName (state)));
+	
 	switch (state) {
 	case Closed: // docs: No specified behaviour
 	case Opening:// docs: No specified behaviour
@@ -1165,28 +1172,31 @@ MediaElement::Play ()
 void
 MediaElement::PlayInternal ()
 {
-	LOG_MEDIAELEMENT ("MediaElement::PlayInternal (), state = %s, timeout_id: %i\n", GetStateName (state), advance_frame_timeout_id);
-
+	d(printf ("MediaElement::PlayInternal (), state = %s, timeout_id: %i\n",
+		  GetStateName (state), advance_frame_timeout_id));
+	
 	flags &= ~PlayRequested;
 	SetState (Playing);
 	mplayer->Play ();
-
+	
 	// Reinitialize our AdvanceFrame timeout
 	if (advance_frame_timeout_id != 0) {
 		GetTimeManager()->RemoveTimeout (advance_frame_timeout_id);
 		advance_frame_timeout_id = 0;
 	}
 	
-	advance_frame_timeout_id = GetTimeManager ()->AddTimeout (mplayer->GetTimeoutInterval (), media_element_advance_frame, this);
-
-	LOG_MEDIAELEMENT ("MediaElement::PlayInternal (), state = %s, timeout_id: %i, interval: %i [Done]\n", GetStateName (state), advance_frame_timeout_id, mplayer->GetTimeoutInterval ());
+	advance_frame_timeout_id = GetTimeManager ()->AddTimeout (mplayer->GetTimeoutInterval (),
+								  media_element_advance_frame, this);
+	
+	d(printf ("MediaElement::PlayInternal (), state = %s, timeout_id: %i, interval: %i [Done]\n",
+		  GetStateName (state), advance_frame_timeout_id, mplayer->GetTimeoutInterval ()));
 }
 
 void
 MediaElement::Stop ()
 {
-	LOG_MEDIAELEMENT ("MediaElement::Stop (): current state: %s\n", GetStateName (state));
-
+	d(printf ("MediaElement::Stop (): current state: %s\n", GetStateName (state)));
+	
 	switch (state) {
 	case Opening:// docs: No specified behaviour
 		flags &= ~PlayRequested;
@@ -1263,8 +1273,12 @@ MediaElement::UpdatePlayerPosition (Value *value)
 	mplayer->Seek (TimeSpan_ToPts (position));
 	Invalidate ();
 	
-	LOG_MEDIAELEMENT ("MediaElement::UpdatePlayerPosition (%p), buffering_start: %llu = %llu ms, buffering_end: %llu = %llu ms, position: %llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms\n",
-		 value, buffering_start, MilliSeconds_FromPts (buffering_start), buffering_end, MilliSeconds_FromPts (buffering_end), position, MilliSeconds_FromPts (position), mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ()));
+	d(printf ("MediaElement::UpdatePlayerPosition (%p), buffering_start: %llu = %llu ms, "
+		  "buffering_end: %llu = %llu ms, position: %llu = %llu ms, "
+		  "mplayer->GetPosition (): %llu = %llu ms\n", value, buffering_start,
+		  MilliSeconds_FromPts (buffering_start), buffering_end,
+		  MilliSeconds_FromPts (buffering_end), position, MilliSeconds_FromPts (position),
+		  mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ())));
 
 	return position;
 }
@@ -1294,8 +1308,8 @@ MediaElement::SetValue (DependencyProperty *prop, Value *value)
 		
 		TimeSpan position = UpdatePlayerPosition (value);
 		
-		LOG_MEDIAELEMENT ("MediaElement::SetValue (Position, %llu = %llu ms)\n", position, MilliSeconds_FromPts (position));
-
+		d(printf ("MediaElement::SetValue (Position, %llu = %llu ms)\n", position, MilliSeconds_FromPts (position)));
+		
 		if (IsStopped ())
 			SetState (Paused);
 		
