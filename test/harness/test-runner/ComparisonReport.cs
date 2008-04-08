@@ -177,6 +177,17 @@ namespace MoonlightTests {
 					continue;
 				complete_test_runs.Add (run);
 			}
+
+			TestRunData t = new TestRunData ();
+			t.StartTime = this_run.StartTime;
+			t.NumTestsExecuted = this_run.ExecutedTests.Count;
+			t.NumTestsPassed = this_run.PassedTests.Count;
+			t.NumTestsFailed = this_run.FailedTests.Count;
+			t.NumTestsIgnored = this_run.IgnoredTests.Count;
+			t.NumTestsKnownFailure = this_run.KnownFailures.Count;
+
+			complete_test_runs.Add (t);
+			
 		}
 
 		private void WriteHtml ()
@@ -381,7 +392,7 @@ namespace MoonlightTests {
 
 		private int GetXMax ()
 		{
-			return complete_test_runs.Count + 1;
+			return complete_test_runs.Count;
 		}
 
 		private double GetXScale (int x_max)

@@ -1,5 +1,10 @@
 2008-04-08  Jackson Harper  <jackson@ximian.com>
 
+	* test-runner/ComparisonReport.cs: Add the current test to the
+	list of completed tests.
+
+2008-04-08  Jackson Harper  <jackson@ximian.com>
+
 	* test-runner/*: Add the new comparison report stuff.
 
 2008-04-03  Jackson Harper  <jackson@ximian.com>
