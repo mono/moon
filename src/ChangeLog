@@ -1,5 +1,12 @@
 2008-04-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp:
+	* clock.h: SkipToFill the automatic duration clock groups except if 
+	this is the root of all roots clock (the TimeManager's clock). Due to
+	the idle_hint optimization, we don't process those clocks anyways.
+
+2008-04-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* value.h: 
 	* animation.cpp:
 	* animation.h:
