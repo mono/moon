@@ -20,12 +20,14 @@ test_runner_sources = 		\
 	EdgeCompare.cs		\
 	IReport.cs		\
 	VerboseLevel.cs		\
+	ComparisonReport.cs	\
 	ConsoleReport.cs	\
 	HtmlReport.cs		\
 	XmlReport.cs
 
-test_runner_resources = 			\
-	/resource:$(srcdir)/html_template.html
+test_runner_resources = 				\
+	/resource:$(srcdir)/html_template.html		\
+	/resource:$(srcdir)/comparison_report.html
 
 logging_server_sources =	\
 	LoggingServer.cs	\

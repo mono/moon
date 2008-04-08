@@ -342,6 +342,7 @@ namespace MoonlightTests {
 				d.AddReport (new ConsoleReport ());
 
 			d.AddReport (new XmlReport ());
+			d.AddReport (new ComparisonReport ());
 
 			return d.Run (drtlist);
 		}

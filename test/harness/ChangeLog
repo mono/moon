@@ -1,3 +1,7 @@
+2008-04-08  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/*: Add the new comparison report stuff.
+
 2008-04-03  Jackson Harper  <jackson@ximian.com>
 
 	* agviewer/agviewer.cpp: Add a new signal that is passed to the
