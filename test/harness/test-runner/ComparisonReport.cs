@@ -211,7 +211,7 @@ namespace MoonlightTests {
 			string prev_dir;
 			bool regressions_header_added = false;
 			foreach (TestCompareData tcd in compare_data) {
-				if (tcd.CurrentResult == TestResult.Fail && tcd.PreviousResult != TestResult.Fail)
+				if (tcd.CurrentResult != TestResult.Fail || tcd.PreviousResult == TestResult.Fail)
 					continue;
 				if (!regressions_header_added) {
 					html.AppendLine ("<table border=\"1\">");
