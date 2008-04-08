@@ -65,7 +65,7 @@ rating:4
 site:Halo 3
 url:http://halo3.msn.com/videos.aspx
 rating:0
- * Not detecting Moonlight. Bug 346280
+ * Not detecting Moonlight if firebug not installed. Bug 346280
 
 site:HHH Comic Archive
 url:http://www.microsoft.com/heroeshappenhere/comicviewer/default.html
@@ -76,7 +76,7 @@ rating:0
 site:Ink Journal
 url:http://www.thedatafarm.com/silverlight/journalsample
 rating:2
- * Mouse icon is a crosshairs, not a dot. Bug 375213
+ * Need an Eraser cursor. Bug 375213
 
 site:Ink Tattoo Studio
 url:http://silverlight.net/samples/1.0/Ink-Tattoo-Studio/default.html
