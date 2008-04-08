@@ -876,7 +876,7 @@ start_element (void *data, const char *el, const char **attr)
 		char *dot = strchr (el, '.');
 		if (dot) {
 			gchar *prop_elem = g_strndup (el, dot - el);
-			property = (p->current_namespace->FindElement (p, prop_elem) != NULL);
+			property = (Type::Find (prop_elem) != NULL);
 			g_free (prop_elem);
 		}
 

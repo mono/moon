@@ -1,3 +1,8 @@
+2008-04-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Fix (yesterday's fix) on parsing properties. Thanks 
+	to Jackson.
+
 2008-04-08  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp:
