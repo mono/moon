@@ -1,3 +1,14 @@
+2008-04-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp: Cleaned up some of the debugging printf's and and
+	wrapped them in d() to declutter console spewage when unneeded.
+	(xaml_create_from_str): ctype functions take int arguments, where
+	normal char values are in the range 0-255 - in order to work with
+	non-GNU, need to cast from char to unsigned char.
+
+	* error.h (class ParserErrorEventArgs): Avoid using the c++ ctor
+	initializer stuff to be consistent with other classes.
+
 2008-04-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Fix (yesterday's fix) on parsing properties. Thanks 

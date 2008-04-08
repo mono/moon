@@ -45,6 +45,12 @@
 #define d(x)
 #endif
 
+#ifdef XAML_WARNINGS
+#define w(x) x
+#else
+#define w(x)
+#endif
+
 
 class XamlElementInfo;
 class XamlElementInstance;
@@ -231,8 +237,6 @@ class XamlElementInfo {
 	set_property_func set_property;
 	set_attributes_func set_attributes;
 
-
-
 	XamlElementInfo (const char *name, XamlElementInfo *parent, Type::Kind dependency_type) :
 		name (name), parent (parent), dependency_type (dependency_type), content_property (NULL),
 		create_item (NULL), create_element (NULL), add_child (NULL), set_property (NULL), set_attributes (NULL)
@@ -260,7 +264,6 @@ class XamlElementInfo {
 };
 
 class XamlNamespace {
-
  public:
 	const char *name;
 
@@ -272,7 +275,6 @@ class XamlNamespace {
 };
 
 class DefaultNamespace : public XamlNamespace {
-
  public:
 	GHashTable *element_map;
 
@@ -292,7 +294,6 @@ class DefaultNamespace : public XamlNamespace {
 };
 
 class XNamespace : public XamlNamespace {
-
  public:
 	GHashTable *element_map;
 
@@ -344,7 +345,7 @@ class XNamespace : public XamlNamespace {
 
 			if (!dob) {
 				parser_error (p, item->element_name, attr, -1,
-						g_strdup_printf ("Unable to resolve x:Class type '%s'\n", value));
+					      g_strdup_printf ("Unable to resolve x:Class type '%s'\n", value));
 				return false;
 			}
 
@@ -464,9 +465,8 @@ XamlLoader::CreateManagedObject (const char* asm_name, const char* asm_path, con
 {
 	//printf ("XamlLoader::CreateManagedObject (%s, %s, %s, %s)\n", asm_name, asm_path, name, type_name);
 	
-	if (callbacks.load_managed_object) {
+	if (callbacks.load_managed_object)
 		return callbacks.load_managed_object (asm_name, asm_path, name, type_name);
-	}
 		
 	return NULL;
 }
@@ -492,9 +492,9 @@ XamlLoader::SetNameAttribute (void* target, const char* name)
 bool
 XamlLoader::HookupEvent (void* target, const char* name, const char* value)
 {
-	if (callbacks.hookup_event) {
+	if (callbacks.hookup_event)
 		return callbacks.hookup_event (target, name, value);
-	}
+	
 	//printf ("XamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
 	return false;
 }
@@ -591,10 +591,13 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 	this->mappings = NULL;
 	this->vm_loaded = false;
 	this->error_args = NULL;
-
+	
+#if d(!)0
 	if (!surface) {
-		printf ("XamlLoader::XamlLoader ('%s', '%s', %p): Initializing XamlLoader without a surface.\n", filename, str, surface);
+		printf ("XamlLoader::XamlLoader ('%s', '%s', %p): Initializing XamlLoader without a surface.\n",
+			filename, str, surface);
 	}
+#endif
 }
 
 XamlLoader::~XamlLoader ()
@@ -636,7 +639,7 @@ void
 xaml_loader_add_missing (XamlLoader* loader, const char* file)
 {
 	if (!loader) {
-		printf ("Trying to add missing file '%s' to a null loader.\n", file);
+		d(printf ("Trying to add missing file '%s' to a null loader.\n", file));
 		return;
 	}
 	
@@ -647,7 +650,7 @@ void
 xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
 {
 	if (!loader) {
-		printf ("Trying to set callbacks for a null object\n");
+		d(printf ("Trying to set callbacks for a null object\n"));
 		return;
 	}
 	
@@ -725,11 +728,8 @@ process_x_code_directive (XamlParserInfo *p, const char **attr)
 	}
 
 	if (p->loader) {
-		res = p->loader->LoadCode (source, type);
-
-		if (!res)
-			parser_error (p, "", "", -1,
-						  g_strdup_printf ("Unable to load '%s'\n", source));
+		if (!(res = p->loader->LoadCode (source, type)))
+			parser_error (p, "", "", -1, g_strdup_printf ("Unable to load '%s'\n", source));
 	}
 }
 
@@ -762,8 +762,8 @@ parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_cod
 
 	p->error_args = new ParserErrorEventArgs (message, p->file_name, line_number, char_position, error_code, el, attr);
 
-	g_warning ("PARSER ERROR, STOPPING PARSING:  (%d) %s  line: %d   char: %d\n", error_code, message,
-			line_number, char_position);
+	w(g_warning ("PARSER ERROR, STOPPING PARSING:  (%d) %s  line: %d   char: %d\n", error_code, message,
+		     line_number, char_position));
 
 	XML_StopParser (p->parser, FALSE);
 }
@@ -777,9 +777,9 @@ expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 
 	int error_code;
 	char *message;
-
-	printf ("expat error is:  %d\n", expat_error);
-
+	
+	d(printf ("expat error is:  %d\n", expat_error));
+	
 	switch (expat_error) {
 	case XML_ERROR_DUPLICATE_ATTRIBUTE:
 		error_code = 5031;
@@ -867,8 +867,6 @@ start_element (void *data, const char *el, const char **attr)
 			if (p->error_args)
 				return;
 		}
-				
-
 	} else {
 		// it's actually valid (from SL point of view) to have <Ellipse.Triggers> inside a <Rectangle>
 		// however we can't add properties to something bad, like a <Recta.gle> element
@@ -996,6 +994,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 	char **name = g_strsplit (el, "|",  -1);
 	XamlNamespace *next_namespace = NULL;
 	char *element = NULL;
+	char *err;
 	
 	if (g_strv_length (name) == 2) {
 		// Find the proper namespace for our next element
@@ -1018,10 +1017,11 @@ start_element_handler (void *data, const char *el, const char **attr)
 	
 	if (!p->current_namespace) {
 		if (name [1])
-			parser_error (p, name [1], NULL, -1, g_strdup_printf ("No handlers available for namespace: '%s' (%s)\n", name [0], el));
+			err = g_strdup_printf ("No handlers available for namespace: '%s' (%s)\n", name[0], el);
 		else
-			parser_error (p, el, NULL, -1, g_strdup_printf ("No namespace mapping available for element: '%s'\n", el));
+			err = g_strdup_printf ("No namespace mapping available for element: '%s'\n", el);
 		
+		parser_error (p, name [1], NULL, -1, err);
 		g_strfreev (name);
 		return;
 	}
@@ -1123,11 +1123,10 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 		return;
 
 	for (int i = 0; default_namespace_names [i]; i++) {
-
 		if (!strcmp (default_namespace_names [i], uri)) {
 			if (prefix)
 				return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,
-						g_strdup_printf  ("It is illegal to add a prefix (xmlns:%s) to the default namespace.\n", prefix));
+						     g_strdup_printf  ("It is illegal to add a prefix (xmlns:%s) to the default namespace.\n", prefix));
 
 			g_hash_table_insert (p->namespace_map, g_strdup (uri), default_namespace);
 			return;
@@ -1139,15 +1138,15 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	} else {
 		if (!p->loader) {
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,
-					g_strdup_printf ("No custom element callback installed to handle %s", uri));
+					     g_strdup_printf ("No custom element callback installed to handle %s", uri));
 		}
 
 		if (!prefix) {
-			parser_error (p, (p->current_element ? p->current_element->element_name : NULL), NULL, 2262, g_strdup ("AG_E_PARSER_NAMESPACE_NOT_SUPPORTED"));
+			parser_error (p, (p->current_element ? p->current_element->element_name : NULL), NULL, 2262,
+				      g_strdup ("AG_E_PARSER_NAMESPACE_NOT_SUPPORTED"));
 			return;
 		}
-
-
+		
 		CustomNamespace *c = new CustomNamespace (g_strdup (uri));
 		g_hash_table_insert (p->namespace_map, g_strdup (c->xmlns), c);
 	}
@@ -1314,13 +1313,10 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 	
  cleanup_and_return:
 	
-	if (!parser_info) {
-		printf ("error opening xaml file\n");
+	if (!parser_info)
 		loader->error_args = new ParserErrorEventArgs ("Error opening xaml file", xaml_file, 0, 0, 1, "", "");
-	} else if (parser_info->error_args) {
-		printf ("setting error args\n");
+	else if (parser_info->error_args)
 		loader->error_args = parser_info->error_args;
-	}
 	
 	delete stream;
 	
@@ -1382,11 +1378,12 @@ xaml_create_from_str (XamlLoader *loader, const char *xaml, bool create_namescop
 	*/
 
 	// don't freak out if the <?xml ... ?> isn't on the first line (see #328907)
-	for (; *start && isspace (*start); start++);
-
+	while (isspace ((unsigned char) *start))
+		start++;
+	
 	if (!XML_Parse (p, start, strlen (start), TRUE)) {
 		expat_parser_error (parser_info, XML_GetErrorCode (p));
-		printf ("error parsing:  %s\n\n", xaml);
+		d(printf ("error parsing:  %s\n\n", xaml));
 		goto cleanup_and_return;
 	}
 	
@@ -1408,11 +1405,9 @@ xaml_create_from_str (XamlLoader *loader, const char *xaml, bool create_namescop
 
  cleanup_and_return:
 	
-	if (parser_info->error_args) {
-		printf ("2. setting error args\n");
+	if (parser_info->error_args)
 		loader->error_args = parser_info->error_args;
-	}
-
+	
 	if (p)
 		XML_ParserFree (p);
 	if (parser_info)
@@ -1512,6 +1507,7 @@ time_span_from_str (const char *str, TimeSpan *res)
 		hours = days;
 		days = 0;
 	}
+	
 	if (*p == ':') p++;
 	minutes = parse_int (&p, end);
 	if (*p == ':') p++;
@@ -2536,7 +2532,8 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 
 		if (!owner) {
 			g_strfreev (prop_name);
-			return parser_error (p, parent->element_name, NULL, 2007, g_strdup_printf ("Unknown element: %s.", parent->element_name));
+			return parser_error (p, parent->element_name, NULL, 2007,
+					     g_strdup_printf ("Unknown element: %s.", parent->element_name));
 		}
 
 		DependencyProperty *dep = DependencyObject::GetDependencyProperty (owner->type, prop_name [1]);
@@ -2544,7 +2541,8 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		g_strfreev (prop_name);
 
 		if (!dep)
-			return parser_error (p, parent->element_name, NULL, 2007, g_strdup_printf ("Unknown element: %s.", parent->element_name));
+			return parser_error (p, parent->element_name, NULL, 2007,
+					     g_strdup_printf ("Unknown element: %s.", parent->element_name));
 
 		// Don't add the child element, if it is the entire collection
 		if (dep->value_type == child->info->dependency_type)
@@ -2654,7 +2652,8 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	if (!dep) {
 		// FIXME is this really where this check should live
 		parser_error (p, item->element_name, NULL, 2030,
-			      g_strdup_printf ("Property element %s cannot be used inside another property element.", property->element_name));
+			      g_strdup_printf ("Property element %s cannot be used inside another property element.",
+					       property->element_name));
 		return;
 	}
 
@@ -2674,7 +2673,8 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 			if (value->item) {
 				if (item->IsPropertySet (prop->name)) {
 					parser_error (p, item->element_name, NULL, 2033,
-						g_strdup_printf ("Cannot specify the value multiple times for property: %s.", property->element_name));
+						g_strdup_printf ("Cannot specify the value multiple times for property: %s.",
+								 property->element_name));
 				} else {
 					dep->SetValue (prop, Value (value->item));
 					item->MarkPropertyAsSet (prop->name);
@@ -2747,7 +2747,7 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 	if (is_valid_event_name (name)) {
 		if (!p->loader) {
 			parser_error (p, item->element_name, name, -1,
-					g_strdup_printf ("No hookup event callback handler installed '%s' event will not be hooked up\n", name));
+				      g_strdup_printf ("No hookup event callback handler installed '%s' event will not be hooked up\n", name));
 			return true;
 		}
 
@@ -2839,7 +2839,7 @@ start_parse:
 
 			if (item->IsPropertySet (prop->name)) {
 				parser_error (p, item->element_name, attr [i], 2033,
-						g_strdup_printf ("Cannot specify the value multiple times for property: %s.", prop->name));
+					      g_strdup_printf ("Cannot specify the value multiple times for property: %s.", prop->name));
 				if (atchname)
 					g_free (atchname);
 				return;
@@ -2847,13 +2847,14 @@ start_parse:
 
 			Value *v = NULL;
 			if (!value_from_str (prop->value_type, prop->name, attr [i + 1], &v)) {
-				parser_error (p, item->element_name, attr [i], 2024, g_strdup_printf ("Invalid attribute value %s for property %s.",
-						attr [i + 1], attr [i]));
+				parser_error (p, item->element_name, attr [i], 2024,
+					      g_strdup_printf ("Invalid attribute value %s for property %s.",
+							       attr [i + 1], attr [i]));
 				if (atchname)
 					g_free (atchname);
 				return;
 			}
-
+			
 			if (v) {
 				dep->SetValue (prop, v);
 				delete v;
@@ -2868,8 +2869,9 @@ start_parse:
 			}
 
 			if (dependency_object_hookup_event (p, item, pname, attr [i + 1]))
-				parser_error (p, item->element_name, attr [i], 2012, g_strdup_printf ("Unknown attribute %s on element %s.",
-						attr [i], item->element_name));
+				parser_error (p, item->element_name, attr [i], 2012,
+					      g_strdup_printf ("Unknown attribute %s on element %s.",
+							       attr [i], item->element_name));
 		}
 
 		if (atchname)
