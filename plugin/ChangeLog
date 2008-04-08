@@ -1,3 +1,8 @@
+2008-04-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (PluginXamlLoader::TryLoad): Print a little more
+	useful info on error.
+
 2008-04-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.h (EventListenerProxy.dtor): Made virtual... not
