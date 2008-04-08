@@ -290,7 +290,11 @@ class DependencyProperty {
 	bool IsNullable () { return is_nullable; }
 	bool IsReadOnly () { return is_readonly; }
 
+	void AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
+	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
+
  private:
+	GHashTable *storage_hash; // keys: objects, values: animation storage's
 	bool is_readonly;
 };
 

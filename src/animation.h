@@ -117,6 +117,7 @@ struct KeyTime {
 //
 class Animation;
 class AnimationClock;
+class AnimationStorage;
 
 // internal WPF class gleaned from stack traces
 class AnimationStorage {
@@ -127,6 +128,7 @@ class AnimationStorage {
 	
 	void ResetPropertyValue ();
 	void DetachUpdateHandler ();
+	void DetachTarget ();
 
  private:
 	void TargetObjectDestroyed ();

@@ -30,6 +30,7 @@ class Surface;
 class DependencyObject;
 class Animation;
 class AnimationClock;
+class AnimationStorage;
 class ArcSegment;
 class BeginStoryboard;
 class BezierSegment;

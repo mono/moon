@@ -22,6 +22,7 @@
 #include "clock.h"
 #include "runtime.h"
 #include "uielement.h"
+#include "animation.h"
 
 EventObject::EventObject ()
 {
@@ -1235,6 +1236,37 @@ DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value
 	this->value_type = value_type;
 	this->is_attached_property = attached;
 	this->is_readonly = readonly;
+	this->storage_hash = NULL; // Create it on first usage request
+}
+
+void
+DependencyProperty::AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
+{
+	// Create hash on first access to save some mem
+	if (! storage_hash)
+		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	AnimationStorage *attached_storage = (AnimationStorage *) g_hash_table_lookup (storage_hash, obj);
+	if (attached_storage)
+		attached_storage->DetachTarget ();
+
+	g_hash_table_insert (storage_hash, obj, storage);
+}
+
+void
+DependencyProperty::DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
+{
+	if (! storage_hash)
+		return;
+
+	if (g_hash_table_lookup (storage_hash, obj) == storage)
+		g_hash_table_remove (storage_hash, obj);
+}
+
+static void
+detach_target_func (DependencyObject *obj, AnimationStorage *storage)
+{
+	storage->DetachTarget ();
 }
 
 DependencyProperty::~DependencyProperty ()
@@ -1242,6 +1274,11 @@ DependencyProperty::~DependencyProperty ()
 	g_free (name);
 	if (default_value != NULL)
 		delete default_value;
+
+	if (storage_hash) {
+		g_hash_table_foreach (storage_hash, (GHFunc) detach_target_func, NULL);
+		g_hash_table_destroy (storage_hash);
+	}
 }
 
 DependencyProperty *dependency_property_lookup (Type::Kind type, char *name)

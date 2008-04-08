@@ -1,3 +1,30 @@
+2008-04-08  Michael Dominic K.  <mdk@mdk.am>
+
+	* value.h: 
+	* animation.cpp:
+	* animation.h:
+	* dependencyobject.cpp:
+	* dependencyobject.h: Making sure that each property is animated only by
+	a single animation at a time (the last one started). 
+	From Silverlight forums:
+
+	"Keep in mind Silverlight only supports a single animation on a
+	property at a time, so if you begin multiple animations on the same
+	property, the last one will prevail."
+
+	This prevents us from overriding Filling/HoldEnd animations by sb's
+	started before. 
+
+	The implementation is: for each prop we create a hash table (when
+	needed) which stores objects (keys) + last AnimationStorage attached
+	(values). When new AnimationStorage is attached to a prop, the last one
+	is notified to stop updating the target (we don't touch the clock
+	structure). And then there is some magic to handle destroy's etc. 
+
+	This fixes PopFly mouse enter/leave problems in the toolbox and the 
+	http://www.designwithsilverlight.com/tutorials/photoGallery/gallery.html
+	problems. Fixes #375231, #362363.
+
 2008-04-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes needed for Zombomatic
