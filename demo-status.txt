@@ -145,9 +145,8 @@ rating:2
 
 site:Photo Gallery Viewer
 url:http://www.designwithsilverlight.com/tutorials/photoGallery/gallery.html
-rating:3
- * Images don't return to normal size after mouse over Bug 375231
- * clicking to enlarge/shrink images is broken Bug 375230
+rating:4
+ * Works.
 
 site:Photo Gallery Wall
 url:http://designwithsilverlight.com/tutorials/photoGalleryWall/default.html
