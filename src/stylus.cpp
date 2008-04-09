@@ -954,6 +954,34 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 }
 
 void
+InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property->type != Type::INKPRESENTER) {
+		Canvas::OnPropertyChanged (args);
+		return;
+	}
+
+	if (args->property == InkPresenter::StrokesProperty) {
+		// be smart about invalidating only the union of the
+		// old stroke bounds and the new stroke bounds
+
+		if (args->old_value) {
+			StrokeCollection *strokes = args->old_value->AsStrokeCollection();
+			Invalidate (strokes->GetBounds().Transform (&absolute_xform));
+		}
+
+		if (args->new_value) {
+			StrokeCollection *strokes = args->new_value->AsStrokeCollection();
+			Invalidate (strokes->GetBounds().Transform (&absolute_xform));
+		}
+
+		UpdateBounds ();
+	}
+
+	NotifyListenersOfPropertyChange (args);
+}
+
+void
 InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_Args)
 {
 	switch (type) {
@@ -968,7 +996,8 @@ InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 		break;
 	}
 	case CollectionChangeTypeChanged:
-		Invalidate ();
+		Invalidate (render_bounds);
+		Invalidate (((StrokeCollection*)col)->GetBounds().Transform (&absolute_xform));
 		UpdateBounds ();
 		break;
 	}
@@ -978,6 +1007,8 @@ void
 InkPresenter::ComputeBounds ()
 {
 	Canvas::ComputeBounds ();
+
+	render_bounds = bounds;
 
 	Value* value = GetValue (InkPresenter::StrokesProperty);
 	if (!value)
@@ -990,6 +1021,14 @@ InkPresenter::ComputeBounds ()
 	Rect stroke_bounds = strokes->GetBounds ();
 	stroke_bounds = stroke_bounds.Transform (&absolute_xform);
 	bounds_with_children = bounds_with_children.Union (stroke_bounds);
+
+	render_bounds = render_bounds.Union (stroke_bounds);
+}
+
+Rect
+InkPresenter::GetRenderBounds ()
+{
+	return render_bounds;
 }
 
 InkPresenter*

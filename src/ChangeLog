@@ -1,3 +1,40 @@
+2008-04-09  Chris Toshok  <toshok@ximian.com>
+
+	[ Fixes some odd behavior in
+	  http://www.thedatafarm.com/silverink/, and also fixes bug
+	  #375229 ]
+	
+	* panel.cpp (Panel::FrontToBack): Kind of a screwy change - we
+	intersect the expose region with our RenderBounds, not our normal
+	Bounds.  This forces us to add the ink presenter to the render
+	list even when the exposed area is just going to redraw a stroke,
+	not the actual canvas rectangle.  When we go to subtract, however,
+	we still only subtract the canvas rectangle.
+
+	* stylus.cpp (InkPresenter::OnPropertyChanged): invalidate the old
+	stroke collection's bounds as well as the new stroke collection's
+	bounds.
+	(InkPresenter::OnCollectionChanged): when the collection has
+	changed, we can't just use Invalidate() since that only
+	invalidates the canvas bounds.  We need to invalidate our render
+	bounds to get rid of strokes that are outside the canvas bounds.
+	Also, make sure to also invalidate the new bounds of the stroke
+	collection (it will usually be empty, but do it anyway).
+	(InkPresenter::ComputeBounds): add logic to compute the
+	render_bounds here.
+	(InkPresenter::GetRenderBounds): new method.
+
+	* stylus.h (class InkPresenter): add GetRenderBounds, and also add
+	an OnPropertyChanged method so we can deal with the stroke
+	collection being assigned to something else.
+
+	* uielement.h (class UIElement): as much as I hate to do this, add
+	yet another type of bounds (RenderBounds).  this is only here for
+	the special case of the inkpresenter, which has the normal canvas
+	bounds (the rectangle), the subtree bounds (which unions the
+	canvas bounds with the bounds of strokes and children) and render
+	bounds (which unions canvas bounds and stroke bounds.)
+
 2008-04-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp (resolve_property_path): Alias TextElement
