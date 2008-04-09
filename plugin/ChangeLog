@@ -1,3 +1,9 @@
+2008-04-09  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp, plugin.h: make PluginInstance::SetSource behave
+	asynchronously for both #ref and normal url cases.  Fixes bug
+	376966.
+
 2008-04-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (PluginXamlLoader::TryLoad): Print a little more

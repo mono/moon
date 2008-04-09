@@ -313,6 +313,7 @@ PluginInstance::PluginInstance (NPP instance, uint16_t mode)
 	this->initParams = false;
 	this->isLoaded = false;
 	this->source = NULL;
+	this->source_idle = 0;
 	this->onLoad = NULL;
 	this->onError = NULL;
 	this->background = NULL;
@@ -366,6 +367,13 @@ PluginInstance::~PluginInstance ()
 
 	delete xaml_loader;
 	xaml_loader = NULL;
+
+	if (source)
+		g_free (source);
+
+	if (source_idle)
+		g_source_remove (source_idle);
+
 
 	//
 	// The code below was an attempt at fixing this, but we are still getting spurious errors
@@ -440,7 +448,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 		// Source url handle.
 		if (!g_ascii_strcasecmp (argn[i], "src") || !g_ascii_strcasecmp (argn[i], "source")) {
-			this->source = argv[i];
+			this->source = g_strdup (argv[i]);
 			continue;
 		}
 
@@ -724,14 +732,26 @@ PluginInstance::UpdateSource ()
 
 	char *pos = strchr (this->source, '#');
 	if (pos) {
-		if (strlen (&pos[1]) > 0);
-			this->UpdateSourceByReference (&pos[1]);
+		this->source_idle = g_idle_add (IdleUpdateSourceByReference,
+						this);
 	} else {
 		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, this->source);
 		
 		// FIXME: check for errors
 		NPN_GetURLNotify (this->instance, this->source, NULL, notify);
 	}
+}
+
+gboolean
+PluginInstance::IdleUpdateSourceByReference (gpointer data)
+{
+	PluginInstance *instance = (PluginInstance*)data;
+
+	char *pos = strchr (instance->source, '#');
+	if (strlen (pos+1) > 0)
+		instance->UpdateSourceByReference (pos+1);
+
+	return FALSE;
 }
 
 void
@@ -1352,9 +1372,15 @@ PluginInstance::setSource (const char *value)
 	if (!value)
 		return;
 
-	this->source = (char *) NPN_MemAlloc (strlen (value) + 1);
-	strcpy (this->source, value);
-	this->UpdateSource ();
+	if (source)
+		g_free (source);
+
+	if (source_idle)
+		g_source_remove (source_idle);
+	source_idle = 0;
+
+	source = g_strdup (value);
+	UpdateSource ();
 }
 
 char *
