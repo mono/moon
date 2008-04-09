@@ -1,3 +1,8 @@
+2008-04-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (resolve_property_path): Alias TextElement
+	to TextBlock to work around some buggy beta versions of Blend.
+
 2008-04-09  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* shape.cpp: Shape::ComputeStretchBounds: compute the stretch assuming

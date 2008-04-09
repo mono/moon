@@ -1342,7 +1342,14 @@ resolve_property_path (DependencyObject **o, const char *path)
 			int estart = i + 1;
 			for (c = estart; c < len; c++) {
 				if (path [c] == '.') {
-					typen = g_strndup (path + estart, c - estart);
+					// Some Beta versions of Blend had a bug where they would save the TextBlock
+					// properties as TextElement instead. Since Silverlight 1.0 works around this
+					// bug, we should too. Fixes http://silverlight.timovil.com and
+					// http://election.msn.com/podium08.aspx.
+					if ((c - estart) == 11 && !g_ascii_strncasecmp (path + estart, "TextElement", 11))
+						typen = g_strdup ("TextBlock");
+					else
+						typen = g_strndup (path + estart, c - estart);
 					estart = c + 1;
 					continue;
 				}
