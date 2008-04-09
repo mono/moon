@@ -1,5 +1,10 @@
 2008-04-09  Chris Toshok  <toshok@ximian.com>
 
+	* stylus.cpp (Stroke::HitTestEndcapSegment): don't fail if root_1
+	is invalid, as root_2 might be.
+
+2008-04-09  Chris Toshok  <toshok@ximian.com>
+
 	[ Fixes some odd behavior in
 	  http://www.thedatafarm.com/silverink/, and also fixes bug
 	  #375229 ]
