@@ -1,0 +1,10 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<MediaElement x:Name="ExampleVideo" Source="/second/tmp/CinemaParadiso_400K.wmv"
+                      Opacity="0.0" IsHitTestVisible="False" AutoPlay="true"/>
+	<TextBlock Text="Text with Video" FontSize="128">
+          <TextBlock.Foreground>
+	    <VideoBrush SourceName="ExampleVideo" Stretch="None"/>
+	  </TextBlock.Foreground>
+	</TextBlock>
+</Canvas>
