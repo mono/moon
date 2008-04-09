@@ -4,7 +4,7 @@
 	<MediaElement x:Name="ExampleVideo" Source="../media/video/timecode-short-wmv8.wmv"
                       Opacity="0.0" IsHitTestVisible="False"/>
 
-        <TextBlock Text="TextBlock" FontSize="100" FontWidth="Bold">
+        <TextBlock Text="TextBlock" FontSize="100" FontWeight="Bold">
   	  <TextBlock.Foreground>
 		<VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill"/>
 	  </TextBlock.Foreground>
