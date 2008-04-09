@@ -1,3 +1,9 @@
+2008-04-09  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* shape.cpp: Shape::ComputeStretchBounds: compute the stretch assuming
+	the logical/shape bounds diff stays the same. It's IMHO as close as we
+	can go without drawing and recalculating.
+
 2008-04-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp: Cleaned up some of the debugging printf's and and
