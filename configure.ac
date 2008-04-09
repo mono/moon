@@ -550,6 +550,7 @@ examples/desklet/Makefile
 examples/desklet/calculator/Makefile
 examples/desklet/calendar/Makefile
 examples/desklet/cpumonitor/Makefile
+examples/desklet/ruler/Makefile
 examples/desklet/glassycalendar/Makefile
 examples/desklet/glassyclock/Makefile
 examples/desklet/glassymonitor/Makefile
