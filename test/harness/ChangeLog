@@ -1,3 +1,7 @@
+2008-04-09  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* test-runner/Makefile.am: dist comparison_report.html
+
 2008-04-09  Rolf Bjarne Kvinge  <RKVinge@novell.com>
 
 	* test-runner/LoggingServer.cs: Fix the standalone logging server.
