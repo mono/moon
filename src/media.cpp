@@ -1020,7 +1020,7 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 	bool is_live = g_str_has_prefix (uri, "mms:");
 	
 	d(printf ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader,
-		  PartName, dl->GetValue (Downloader::UriProperty)->AsString ()));
+		  PartName, downloader->GetValue (Downloader::UriProperty)->AsString ()));
 	
 	Reinitialize (false);
 	
@@ -1063,8 +1063,6 @@ MediaElement::SetSourceAsyncCallback ()
 {
 	if (!set_source.downloader)
 		return;
-	
-	printf ("MediaElement::SetSourceAsyncCallback ()\n");
 	
 	SetSourceInternal (set_source.downloader, set_source.part_name);
 	set_source.downloader->unref ();
