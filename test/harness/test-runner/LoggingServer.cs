@@ -124,6 +124,9 @@ namespace MoonlightTests {
 
 		public void Log (string test, string level, string message)
 		{
+#if LOGGING_SERVER_STANDALONE
+			Console.WriteLine ("Log ({0}, {1}, {2})", test, level, message);
+#endif
 			lock (lock_object) {
 				TestLogData tld = null;
 				if (test_logs.ContainsKey (test))
@@ -139,6 +142,9 @@ namespace MoonlightTests {
 
 		public void LogResult (string test, int result)
 		{
+#if LOGGING_SERVER_STANDALONE
+			Console.WriteLine ("LogResult ({0}, {1})", test, result);
+#endif
 			lock (lock_object) {
 				TestLogData tld = null;
 				if (test_logs.ContainsKey (test))
@@ -155,6 +161,9 @@ namespace MoonlightTests {
 
 		public void RequestShutdown ()
 		{
+#if LOGGING_SERVER_STANDALONE
+			Console.WriteLine ("RequestShutdown ()");
+#endif
 			lock (lock_object) {
 				shutdown_requested = true;
 			}
@@ -275,7 +284,7 @@ namespace MoonlightTests {
 			Bus.Session.Register (bus_name, path, ls);
 
 			Console.WriteLine ("name has owner:  {0}", bus.NameHasOwner (bus_name));
-			Console.WriteLine ("getting object:  {0}", bus.GetObject <ILogger> (bus_name, path));
+			Console.WriteLine ("getting object:  {0}", bus.GetObject <ITestLogger> (bus_name, path));
 
 			while (true)
 				bus.Iterate ();		
