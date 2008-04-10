@@ -218,6 +218,8 @@ namespace Gtk.Moonlight {
 			try {
 				if (uri.StartsWith ("file://"))
 					fname = uri.Substring (7);
+				if (uri.StartsWith ("/"))
+					fname = uri;
 				else {
 					try {
 						request = WebRequest.Create (uri);
