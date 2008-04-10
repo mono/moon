@@ -427,10 +427,8 @@ npvariant_is_moonlight_object (NPVariant var)
 		return false;
 	
 	obj = NPVARIANT_TO_OBJECT (var);
-	for (i = 0; i < DEPENDENCY_OBJECT_CLASS_NAMES_LAST; i++) {
-		if (obj->_class == dependency_object_classes[i])
-			return true;
-	}
+	if (npobject_is_dependency_object (obj))
+		return true;
 	
 	for (i = 0; i < G_N_ELEMENTS (moonlight_types); i++) {
 		if (obj->_class == moonlight_types[i])
