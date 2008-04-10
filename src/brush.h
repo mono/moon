@@ -179,7 +179,7 @@ class ImageBrush : public TileBrush {
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGEBRUSH; }
 
-	void SetSource (DependencyObject *dl, const char* PartName);
+	void SetSource (Downloader *downloader, const char *PartName);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	virtual void SetSurface (Surface *surface);
@@ -191,8 +191,8 @@ ImageBrush* image_brush_new (void);
 double	image_brush_get_download_progress	(ImageBrush *brush);
 void	image_brush_set_download_progress	(ImageBrush *brush, double progress);
 char*	image_brush_get_image_source		(ImageBrush *brush);
-void	image_brush_set_image_source		(ImageBrush *brush, const char* source);
-void	image_brush_set_source			(ImageBrush *brush, DependencyObject *dl, const char *PartName);
+void	image_brush_set_image_source		(ImageBrush *brush, const char *source);
+void	image_brush_set_source			(ImageBrush *brush, Downloader *downloader, const char *PartName);
 cairo_surface_t *image_brush_create_similar     (cairo_t *, int width, int height);
 
 class VideoBrush : public TileBrush {

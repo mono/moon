@@ -76,7 +76,7 @@ class MediaBase : public FrameworkElement {
 	
 	void SetSourceAsyncCallback ();
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
-	virtual void SetSource (DependencyObject *downloader, const char *PartName);
+	virtual void SetSource (Downloader *downloader, const char *PartName);
 };
 
 MediaBase *media_base_new (void);
@@ -145,7 +145,7 @@ class Image : public MediaBase {
 	cairo_surface_t *GetCairoSurface ();
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
-	virtual void SetSource (DependencyObject *downloader, const char *PartName);
+	virtual void SetSource (Downloader *downloader, const char *PartName);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
@@ -156,7 +156,7 @@ class Image : public MediaBase {
 };
 
 Image *image_new (void);
-void   image_set_source (Image *img, DependencyObject *Downloader, const char *PartName);
+void   image_set_source (Image *img, Downloader *downloader, const char *PartName);
 
 class MediaElement : public MediaBase {
  public:
@@ -291,7 +291,7 @@ class MediaElement : public MediaBase {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
-	virtual void SetSource (DependencyObject *Downloader, const char *PartName);
+	virtual void SetSource (Downloader *downloader, const char *PartName);
 	
 	void Pause ();
 	void Play ();
@@ -335,7 +335,7 @@ MediaElement *media_element_new (void);
 void media_element_pause (MediaElement *media);
 void media_element_play (MediaElement *media);
 void media_element_stop (MediaElement *media);
-void media_element_set_source (MediaElement *media, DependencyObject *Downloader, const char *PartName);
+void media_element_set_source (MediaElement *media, Downloader *downloader, const char *PartName);
 
 gboolean media_element_advance_frame (gpointer data);
 

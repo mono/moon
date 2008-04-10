@@ -116,7 +116,9 @@ MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
 {
 	this->downloader = downloader;
 	part_name = PartName;
-	downloader->ref ();
+	
+	if (downloader)
+		downloader->ref ();
 }
 
 static void
@@ -129,7 +131,7 @@ set_source_async (void *user_data)
 }
 
 void
-MediaBase::SetSource (DependencyObject *downloader, const char *PartName)
+MediaBase::SetSource (Downloader *downloader, const char *PartName)
 {
 	Surface *surface;
 	
@@ -142,21 +144,23 @@ MediaBase::SetSource (DependencyObject *downloader, const char *PartName)
 		source.part_name = NULL;
 	}
 	
-	if (!downloader || downloader->GetObjectType () != Type::DOWNLOADER)
+	if (!downloader || downloader->GetObjectType () != Type::DOWNLOADER) {
+		SetSourceInternal (NULL, NULL);
 		return;
+	}
 	
 	if ((surface = GetSurface ())) {
 		TimeManager *tm = surface->GetTimeManager ();
 		
-		source.downloader = (Downloader *) downloader;
 		source.part_name = g_strdup (PartName);
+		source.downloader = downloader;
 		downloader->ref ();
 		
 		tm->AddTickCall (set_source_async, this);
 		ref ();
 	} else {
 		// Not attached to a surface?
-		SetSourceInternal ((Downloader *) downloader, g_strdup (PartName));
+		SetSourceInternal (downloader, g_strdup (PartName));
 	}
 }
 
@@ -1105,48 +1109,51 @@ MediaElement::DownloaderComplete ()
 void
 MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 {
-	const char *uri = downloader->GetValue (Downloader::UriProperty)->AsString ();
-	bool is_live = g_str_has_prefix (uri, "mms:");
+	const char *uri = downloader ? downloader->GetValue (Downloader::UriProperty)->AsString () : NULL;
+	bool is_live = uri ? g_str_has_prefix (uri, "mms:") : false;
 	
-	d(printf ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader,
-		  PartName, downloader->GetValue (Downloader::UriProperty)->AsString ()));
+	d(printf ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader, PartName, uri));
 	
 	Reinitialize (false);
 	
 	MediaBase::SetSourceInternal (downloader, PartName);
 	
-	SetState (Opening);
-	
-	if (downloader->Started ()) {
-		flags |= DisableBuffering;
+	if (downloader) {
+		SetState (Opening);
 		
-		if (downloader->Completed ())
-			flags |= DownloadComplete;
+		if (downloader->Started ()) {
+			flags |= DisableBuffering;
+			
+			if (downloader->Completed ())
+				flags |= DownloadComplete;
+			
+			TryOpen ();
+		} else {
+			downloaded_file = new ProgressiveSource (mplayer->GetMedia (), is_live);
+			
+			// FIXME: error check Initialize()
+			downloaded_file->Initialize ();
+			
+			downloader->SetWriteFunc (data_write, size_notify, this);
+			if (is_live)
+				downloader->SetRequestPositionFunc (data_request_position);
+		}
 		
-		TryOpen ();
+		if (!(flags & DownloadComplete))
+			downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+		
+		if (downloaded_file != NULL) {
+			// MediaElement::SetSource() is already async, so we don't need another
+			// layer of asyncronicity... it is safe to call SendNow() here.
+			downloader->SendNow ();
+		}
 	} else {
-		downloaded_file = new ProgressiveSource (mplayer->GetMedia (), is_live);
-		
-		// FIXME: error check Initialize()
-		downloaded_file->Initialize ();
-		
-		downloader->SetWriteFunc (data_write, size_notify, this);
-		if (is_live)
-			downloader->SetRequestPositionFunc (data_request_position);
+		Invalidate ();
 	}
-	
-	if (!(flags & DownloadComplete))
-		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-	
-	// This is what actually triggers the download
-	if (downloaded_file != NULL)
-		downloader->Send ();
-	
-	Invalidate ();
 }
 
 void
-MediaElement::SetSource (DependencyObject *downloader, const char *PartName)
+MediaElement::SetSource (Downloader *downloader, const char *PartName)
 {
 	// Remove our playlist.
 	// When the playlist changes media, it will call
@@ -1156,9 +1163,6 @@ MediaElement::SetSource (DependencyObject *downloader, const char *PartName)
 		playlist->unref ();
 		playlist = NULL;
 	}
-	
-	Reinitialize (false);
-	Invalidate ();
 	
 	MediaBase::SetSource (downloader, PartName);
 }
@@ -1462,9 +1466,9 @@ media_element_pause (MediaElement *media)
 }
 
 void
-media_element_set_source (MediaElement *media, DependencyObject *Downloader, const char *PartName)
+media_element_set_source (MediaElement *media, Downloader *downloader, const char *PartName)
 {
-	media->SetSource (Downloader, PartName);
+	media->SetSource (downloader, PartName);
 }
 
 MediaAttributeCollection *
@@ -1755,30 +1759,31 @@ Image::SetSourceInternal (Downloader *downloader, char *PartName)
 {
 	MediaBase::SetSourceInternal (downloader, PartName);
 	
-	downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, this);
-	downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
-	
-	if (downloader->Started () || downloader->Completed ()) {
-		if (downloader->Completed ())
-			DownloaderComplete ();
+	if (downloader) {
+		downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, this);
+		downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
 		
-		UpdateProgress ();
+		if (downloader->Started () || downloader->Completed ()) {
+			if (downloader->Completed ())
+				DownloaderComplete ();
+			
+			UpdateProgress ();
+		} else {
+			downloader->SetWriteFunc (pixbuf_write, size_notify, this);
+			
+			// Image::SetSource() is already async, so we don't need another
+			// layer of asyncronicity... it is safe to call SendNow() here.
+			downloader->SendNow ();
+		}
 	} else {
-		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
-		
-		// This is what actually triggers the download
-		downloader->Send ();
+		CleanupSurface ();
+		Invalidate ();
 	}
-	
-	Invalidate ();
 }
 
 void
-Image::SetSource (DependencyObject *downloader, const char *PartName)
+Image::SetSource (Downloader *downloader, const char *PartName)
 {
-	CleanupSurface ();
-	Invalidate ();
-	
 	MediaBase::SetSource (downloader, PartName);
 }
 
@@ -1791,40 +1796,47 @@ Image::PixbufWrite (void *buf, int32_t offset, int32_t n)
 void
 Image::DownloaderComplete ()
 {
-	char *file = downloader_get_response_file (downloader, part_name);
-	/* the download was aborted */
-	if (!file) {
+	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
+	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+	char *filename = downloader->GetDownloadedFilePart (part_name);
+	
+	CleanupSurface ();
+	
+	if (!filename) {
+		/* the download was aborted */
 		/* XXX should this emit ImageFailed? */
+		Invalidate ();
 		return;
 	}
-
-	bool ok = CreateSurface (file);
-	g_free (file);
-	if (!ok)
+	
+	if (!CreateSurface (filename)) {
+		g_free (filename);
+		Invalidate ();
 		return;
-
-	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
-	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
-
+	}
+	
+	g_free (filename);
+	
 	if (width == NULL && height == NULL) {
 		SetValue (FrameworkElement::WidthProperty, (double) surface->width);
 		SetValue (FrameworkElement::HeightProperty, (double) surface->height);
 	}
+	
 	if (width == NULL && height != NULL)
 		SetValue (FrameworkElement::WidthProperty, (double) surface->width * height->AsDouble () / (double)surface->height);
+	
 	if (width != NULL && height == NULL)
 		SetValue (FrameworkElement::HeightProperty, (double) surface->height * width->AsDouble () / (double)surface->width);
-		
+	
 	if (brush) {
-		// XXX this is wrong, we property need to set the
+		// XXX this is wrong, we probably need to set the
 		// property, or use some other mechanism, but this is
 		// gross.
 		PropertyChangedEventArgs args (ImageBrush::DownloadProgressProperty, NULL, 
 					       brush->GetValue (ImageBrush::DownloadProgressProperty));
-
+		
 		brush->OnPropertyChanged (&args);
-	}
-	else 
+	} else
 		Invalidate ();
 }
 
@@ -1837,6 +1849,8 @@ Image::DownloaderFailed (EventArgs *args)
 		err = (ErrorEventArgs *) args;
 	
 	Emit (ImageFailedEvent, new ImageErrorEventArgs (err ? err->error_message : NULL));
+	
+	Invalidate ();
 }
 
 
@@ -2197,9 +2211,9 @@ image_new (void)
 }
 
 void
-image_set_source (Image *img, DependencyObject *Downloader, const char *PartName)
+image_set_source (Image *img, Downloader *downloader, const char *PartName)
 {
-	img->SetSource (Downloader, PartName);
+	img->SetSource (downloader, PartName);
 }
 
 //

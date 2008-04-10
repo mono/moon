@@ -1,5 +1,26 @@
 2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* brush.cpp|media.cpp: All SetSource() entry points now take
+	Downloader objects rather than DependencyObject arguments - the
+	same as MSDN defines.
+
+	* media.cpp (SetSourceInternal): More cleanup /
+	simplification. Since *::SetSource() already takes steps to be
+	async, no need to use Downloader::Send() which would introduce
+	another delay in downloading. It should be plenty safe to call
+	Downloader::SendNow() in all ::SetSourceInternal()
+	implementations. Also, we now need to handle NULL downloader which
+	we get called with if the original SetSource() was passed a NULL
+	downloader.
+	(Image::SetSource): Don't cleanup the surface here, do that in
+	SetSourceInternal() so that we delay until appropriate.
+	(Image::SetSourceInternal): If there is a downloader, delay
+	CleanupSurface() even longer until the new image has been
+	downloaded.
+	(Image::DownloaderComplete): Call CleanupSurface() here.
+
+2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
 	* media.cpp: Consolidated Image and MediaElement downloader bits
 	by putting them into MediaBase.
 

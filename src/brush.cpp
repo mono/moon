@@ -776,9 +776,9 @@ image_brush_set_image_source (ImageBrush *brush, const char* source)
 }
 
 void
-image_brush_set_source (ImageBrush *brush, DependencyObject *dl, const char *PartName)
+image_brush_set_source (ImageBrush *brush, Downloader *downloader, const char *PartName)
 {
-	brush->SetSource (dl, PartName);
+	brush->SetSource (downloader, PartName);
 }
 
 void
@@ -813,9 +813,9 @@ ImageBrush::~ImageBrush ()
 }
 
 void
-ImageBrush::SetSource (DependencyObject *dl, const char* PartName)
+ImageBrush::SetSource (Downloader *downloader, const char *PartName)
 {
-	image->SetSource (dl, PartName);
+	image->SetSource (downloader, PartName);
 }
 
 void
