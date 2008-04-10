@@ -285,17 +285,20 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 			cairo_matrix_translate (&stretch_transform, w * 0.5, 0);
 			cairo_matrix_scale (&stretch_transform, sw, 1.0);
 			cairo_matrix_translate (&stretch_transform, -shape_bounds.w * 0.5, 0);
-			if ((vh && vw) || !this->Is (Type::LINE))
-				cairo_matrix_translate (&stretch_transform, -shape_bounds.x, 0);
 		}
+
+		if ((vh && vw) || !this->Is (Type::LINE))
+				cairo_matrix_translate (&stretch_transform, -shape_bounds.x, 0);
+
 		if (logical_bounds.h != 0.0) {
 			cairo_matrix_translate (&stretch_transform, 0, h * 0.5);
 			cairo_matrix_scale (&stretch_transform, 1.0, sh);
 			cairo_matrix_translate (&stretch_transform, 0, -shape_bounds.h * 0.5);
-			if ((vh && vw) || !this->Is (Type::LINE))
-				cairo_matrix_translate (&stretch_transform, 0, -shape_bounds.y);
 		}
-		
+
+		if ((vh && vw) || !this->Is (Type::LINE))
+				cairo_matrix_translate (&stretch_transform, 0, -shape_bounds.y);
+
 
 		// Double check our math
 		cairo_matrix_t test = stretch_transform;

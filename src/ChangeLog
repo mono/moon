@@ -1,3 +1,8 @@
+2008-04-10  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp: Little fix for new stretching algho by Stephane. Fixes the
+	Showcase and test-shape-path-stretch2.xaml.
+
 2008-04-09  Chris Toshok  <toshok@ximian.com>
 
 	* stylus.cpp (Stroke::HitTestEndcapSegment): don't fail if root_1
