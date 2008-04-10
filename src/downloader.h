@@ -94,6 +94,7 @@ class Downloader : public DependencyObject {
 	void Open (const char *verb, const char *uri);
 	void SendInternal ();
 	void Send ();
+	void SendNow ();
 	
 	// the following is stuff not exposed by C#/js, but is useful
 	// when writing unmanaged code for downloader implementations

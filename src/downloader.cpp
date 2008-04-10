@@ -493,6 +493,13 @@ Downloader::Send ()
 	}
 }
 
+void
+Downloader::SendNow ()
+{
+	send_queued = true;
+	SendInternal ();
+}
+
 //
 // A zero write means that we are done
 //

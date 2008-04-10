@@ -10,6 +10,17 @@
 
 2008-04-10  Michael Dominic K.  <mdk@mdk.am>
 
+	* downloader.cpp:
+	* downloader.h:
+	* media.cpp: A straight-forward fix for "gray flashes" in comic and
+	slideshow (#375275). It's circumventing a change to make downloaders
+	async for Image. Jeff, maybe you can figure more?
+
+	(The commit that broke the the slideshow was r99065, Jeff from
+	2008-03-26).
+
+2008-04-10  Michael Dominic K.  <mdk@mdk.am>
+
 	* shape.cpp: Little fix for new stretching algho by Stephane. Fixes the
 	Showcase and test-shape-path-stretch2.xaml.
 

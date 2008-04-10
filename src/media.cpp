@@ -1756,7 +1756,7 @@ Image::SetSource (DependencyObject *dl, const char *PartName)
 		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
 		
 		// This is what actually triggers the download
-		downloader->Send ();
+		downloader->SendNow ();
 	}
 }
 
