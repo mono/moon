@@ -11,13 +11,6 @@
  *
  */
 
-// XXXXXXXXXXx
-//
-// The listener proxies we create for dealing with events are
-// leaked.  we need to figure out how to deal with them (where to
-// store them so we can free them on removeListener, etc.)
-//
-
 #include <ctype.h>
 #include "plugin-class.h"
 #include "plugin.h"
