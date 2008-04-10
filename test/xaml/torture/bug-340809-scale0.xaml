@@ -1,0 +1,8 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="700" Height="500">
+        <Canvas.RenderTransform>
+                <TransformGroup>
+                        <ScaleTransform ScaleX="1" ScaleY="0.001"/>
+                </TransformGroup>
+        </Canvas.RenderTransform>
+        <Path Stroke="#FF000000" Canvas.Top="87.929" Data="M44.12,106 C43.946765,93.855989 38.653008,89.286968 26,90" />
+</Canvas>

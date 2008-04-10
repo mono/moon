@@ -1,0 +1,4 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Background="black" Width="200" Height="100">
+	<Image Clip="M-60.697,25.005 C-60.697,22.246338 -58.460662,20.01 -55.702,20.01 L35.803,20.01 C38.561662,20.01 40.798,22.246338 40.798,25.005 L40.798,42.351 C40.798,45.109662 38.561662,47.346 35.803,47.346 L-55.702,47.346 C-58.460662,47.346 -60.697,45.109662 -60.697,42.351 z" 
+		Width="137" Height="132" Canvas.Left="60.697" Canvas.Top="-20.01" Source="logo_small.jpg" Stretch="Fill"/>
+</Canvas>

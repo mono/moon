@@ -1,0 +1,7 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Line Stroke="Black" StrokeThickness="5" StrokeDashArray="5" X1="10" Y1="10" X2="10" Y2="200" />
+	<Line Stroke="Black" StrokeThickness="5" StrokeDashArray="5" StrokeDashCap="Flat" X1="20" Y1="10" X2="20" Y2="200" />
+	<Line Stroke="Black" StrokeThickness="5" StrokeDashArray="5" StrokeDashCap="Round" X1="30" Y1="10" X2="30" Y2="200" />
+	<Line Stroke="Black" StrokeThickness="5" StrokeDashArray="5" StrokeDashCap="Square" X1="40" Y1="10" X2="40" Y2="200" />
+	<Line Stroke="Black" StrokeThickness="5" StrokeDashArray="5" StrokeDashCap="Triangle" X1="50" Y1="10" X2="50" Y2="200" />
+</Canvas>

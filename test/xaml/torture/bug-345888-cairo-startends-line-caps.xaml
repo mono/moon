@@ -1,0 +1,21 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Line Stroke="Red" StrokeThickness="5" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" X1="10" Y1="10" X2="10" Y2="100" />
+	<Line Stroke="Green" StrokeThickness="5" StrokeStartLineCap="Flat" StrokeEndLineCap="Round" X1="20" Y1="10" X2="20" Y2="100" />
+	<Line Stroke="Blue" StrokeThickness="5" StrokeStartLineCap="Flat" StrokeEndLineCap="Square" X1="30" Y1="10" X2="30" Y2="100" />
+	<Line Stroke="Black" StrokeThickness="5" StrokeStartLineCap="Flat" StrokeEndLineCap="Triangle" X1="40" Y1="10" X2="40" Y2="100" />
+
+	<Line Stroke="Red" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Flat" X1="50" Y1="10" X2="50" Y2="100" />
+	<Line Stroke="Green" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" X1="60" Y1="10" X2="60" Y2="100" />
+	<Line Stroke="Blue" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Square" X1="70" Y1="10" X2="70" Y2="100" />
+	<Line Stroke="Black" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Triangle" X1="80" Y1="10" X2="80" Y2="100" />
+
+	<Line Stroke="Red" StrokeThickness="5" StrokeStartLineCap="Square" StrokeEndLineCap="Flat" X1="90" Y1="10" X2="90" Y2="100" />
+	<Line Stroke="Green" StrokeThickness="5" StrokeStartLineCap="Square" StrokeEndLineCap="Round" X1="100" Y1="10" X2="100" Y2="100" />
+	<Line Stroke="Blue" StrokeThickness="5" StrokeStartLineCap="Square" StrokeEndLineCap="Square" X1="110" Y1="10" X2="110" Y2="100" />
+	<Line Stroke="Black" StrokeThickness="5" StrokeStartLineCap="Square" StrokeEndLineCap="Triangle" X1="120" Y1="10" X2="120" Y2="100" />
+
+	<Line Stroke="Red" StrokeThickness="5" StrokeStartLineCap="Triangle" StrokeEndLineCap="Flat" X1="130" Y1="10" X2="130" Y2="100" />
+	<Line Stroke="Green" StrokeThickness="5" StrokeStartLineCap="Triangle" StrokeEndLineCap="Round" X1="140" Y1="10" X2="140" Y2="100" />
+	<Line Stroke="Blue" StrokeThickness="5" StrokeStartLineCap="Triangle" StrokeEndLineCap="Square" X1="150" Y1="10" X2="150" Y2="100" />
+	<Line Stroke="Black" StrokeThickness="5" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" X1="160" Y1="10" X2="160" Y2="100" />
+</Canvas>

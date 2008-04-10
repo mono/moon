@@ -1,0 +1,20 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Rectangle x:Name="rect-one" Fill="Red" Stroke="Black" StrokeThickness="3" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100">
+        <!-- it's valid (i.e. working in SL) to have Ellipse.Triggers to define events inside Rectangle -->
+	<Ellipse.Triggers>
+	    <TriggerCollection>
+	            <EventTrigger RoutedEvent="Rectangle.Loaded">
+	                <BeginStoryboard>
+		            <Storyboard>
+		                <DoubleAnimation
+			            Storyboard.TargetName="rect-one"
+			            Storyboard.TargetProperty="Width"
+			            From="10" To="300" Duration="0:0:30"
+			        />
+		            </Storyboard>
+		        </BeginStoryboard>
+      	            </EventTrigger>
+	    </TriggerCollection>
+	</Ellipse.Triggers>
+    </Rectangle>
+</Canvas>

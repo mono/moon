@@ -1,0 +1,6 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+    <Path Fill="Red" Data="f0m50,240l0,-100 -59,181 154,-112 -190,0 154,112 -59,-181z"/>
+    <Path Fill="Green" Data="F0m50,240l0,-100 -59,181 154,-112 -190,0 154,112 -59,-181z"/>
+    <Path Fill="Red" Data="f1m150,120l0,-100 -59,181 154,-112 -190,0 154,112 -59,-181z"/>
+    <Path Fill="Green" Data="F1m150,240l0,-100 -59,181 154,-112 -190,0 154,112 -59,-181z"/>
+</Canvas>

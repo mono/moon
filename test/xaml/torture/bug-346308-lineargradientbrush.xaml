@@ -1,0 +1,16 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+        <!-- removing Canvas.Top gets Moonlight close to the right value -->
+        <Rectangle Canvas.Top="200" Canvas.Left="10" Width="100" Height="200">
+        <Rectangle.Fill>
+                <LinearGradientBrush MappingMode="Absolute" StartPoint="40,100" EndPoint="0,150">
+                        <GradientBrush.GradientStops>
+                                <GradientStopCollection>
+                                        <GradientStop Color="#FFFF0000" Offset="0.0" />
+                                        <GradientStop Color="#FF00FF00" Offset="0.5" />
+                                        <GradientStop Color="#FF0000FF" Offset="1.0" />
+                                </GradientStopCollection>
+                        </GradientBrush.GradientStops>
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+</Canvas>

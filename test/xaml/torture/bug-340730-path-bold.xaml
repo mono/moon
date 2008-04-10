@@ -1,0 +1,4 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <Path Canvas.Top="10" Canvas.Left="10" Stroke="blue" Data="M20,20L30,50"/>
+        <Path Canvas.Top="10" Canvas.Left="10" Stroke="blue" Data="M20,50L30,80Z"/>
+</Canvas>

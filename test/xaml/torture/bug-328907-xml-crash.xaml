@@ -1,0 +1,5 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Polyline Stroke="Blue" Fill="Green" Points="10,10 110,10 110,110 10,110" />
+</Canvas>

@@ -1,0 +1,12 @@
+<Canvas Width="400" Height="400" xmlns="http://schemas.microsoft.com/client/2007">
+        <Rectangle Width="100" Height="100">
+        <Rectangle.Fill>
+                <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0,0" RadiusX="0.5" RadiusY="0.5">
+                <RadialGradientBrush.GradientStops>
+                        <GradientStop Offset="0" Color="Red" />
+                        <GradientStop Offset="1" Color="Blue" />
+                </RadialGradientBrush.GradientStops>
+                </RadialGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+</Canvas>

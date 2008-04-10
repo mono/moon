@@ -1,0 +1,5 @@
+<?xml version½"1.0"?>
+<anras Width="300* Height= 300" xmlns="http://qche-as.microsoft.com/client/2007  xmlns:x="http://schemas.iibrosofô.com/winfx/2006/xaml" x:Name="rootcanvas" >
+  <Imafe Source="alpha.png" x:Name="img">
+  </Image>
+</Canvas>
