@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head><title>ASX parser test</title></head>
+
+<body>
+<div id="PlaylistHost" style="background:#FFFFFF"></div>
+<div id="log"></div>
+    <script type="text/javascript">
+		var ended = false;
+		var opened = false;
+		var failed = false;
+		var tester = null;
+		var timerID = null;
+		var mediaElement;
+
+		function getTester ()
+		{
+			if (!tester)
+				tester = document.getElementById ("_TestPlugin");
+		}
+		function LogDebug (msg)
+		{
+			try {
+				getTester ();
+				tester.LogDebug (msg);
+			} catch (ex) {
+				alert (msg);
+			}
+		}
+	
+		function LogError (msg)
+		{
+			try {
+				getTester ();
+				tester.LogError (msg);
+			} catch (ex) {
+				alert (msg);
+			}
+		}
+
+		function LogResult (result)
+		{
+			try {
+				getTester ();
+				tester.LogResult (result);
+			} catch (ex) {
+				alert (result);
+			}
+		}		
+
+		function StartTest ()
+		{
+			if (timerID)
+				return;
+
+			mediaElement = document.getElementById ("ML").content.findName ("Media");
+			mediaElement.Play ();
+			timerID = setTimeout ("EndTest ();", 5000);
+		}
+		function EndTest ()
+		{
+			if (timerID != null)
+				clearTimeout (timerID);
+
+			if (ended && opened) {
+				LogDebug ("Test succeded");
+				LogResult (1);
+			} else {
+				LogError ("Test failed");
+				LogDebug ("opened and ended must be true, but: ");
+				LogDebug ("ended: " + ended + ", failed: " + failed + ", opened: " + opened);
+				LogResult (-1);
+			}
+			tester.SignalShutdown ();
+		}
+		function OnMediaEnded (obj, args)
+		{
+			LogDebug ("OnMediaEnded");
+			ended = true;
+			EndTest ();
+		}
+		function OnMediaOpened (obj, args)
+		{
+			if (tester == null)
+				StartTest ();
+
+			LogDebug ("OnMediaOpened");
+			opened = true;
+		}
+		function OnMediaFailed (obj, args)
+		{
+			LogDebug ("OnMediaFailed");
+			failed = true;
+			EndTest ();
+		}
+
+		function OnPluginLoaded (obj, args)
+		{	
+			StartTest ();
+		}
+		function OnPluginError (obj, args)
+		{
+			EndTest ();
+		}
+    </script>
+
+	<embed id="_TestPlugin" width="1" height="1" type="application/x-jolttest"></embed>
+	<embed type="application/x-silverlight" width="20" height="20"
+		 id="ML" Source="media-ended.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+		 style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+	</embed>
+
+</body>                
+</html>
+

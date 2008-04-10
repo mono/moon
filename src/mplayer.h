@@ -102,6 +102,7 @@ private:
 
 	static gboolean EnqueueFramesCallback (void *user_data);
 	static gboolean LoadFrameCallback (void *user_data);
+	static gboolean AudioFinishedCallback (void *user_data);
 	
 protected:
 	virtual ~MediaPlayer ();
@@ -128,6 +129,7 @@ public:
 	bool IsSeeking () { return (state & Seeking) == Seeking; }
 	bool IsLoadFramePending () { return (state & LoadFramePending); }
 	bool HasRenderedFrame () { return (state & RenderedFrame); }
+	void AudioFinished (); // Called by the audio player when audio reaches the end (this method is thread-safe).
 	
 	void SetBit (PlayerState s) { state = (PlayerState) (s | state); }
 	void RemoveBit (PlayerState s) { state = (PlayerState) (~s & state); }

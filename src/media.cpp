@@ -400,6 +400,13 @@ MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection
 	}
 }
 
+void
+MediaElement::AudioFinished ()
+{
+	SetState (Stopped);
+	Emit (MediaElement::MediaEndedEvent);
+}
+
 bool
 MediaElement::AdvanceFrame ()
 {

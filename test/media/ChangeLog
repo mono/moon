@@ -1,3 +1,7 @@
+2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio: Added test for MediaEnded event when audio-only media is used.
+
 2008-04-08  Fernando Herrera  <fherrera@novell.com>
 
 	* apps/congreso.html:

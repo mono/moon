@@ -1,3 +1,11 @@
+2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.h, mplayer.cpp: Added MediaPlayer::AudioFinished, called by the
+	  audio thread when the audio finishes.
+	* media.h, media.cpp: Added MediaElement::AudioFinished, called by the media
+	  player when the audio finishes. Enables us to raise MediaEnded for
+	  audio-only media.
+
 2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* brush.cpp|media.cpp: All SetSource() entry points now take

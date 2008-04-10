@@ -277,6 +277,7 @@ class MediaElement : public MediaBase {
 	virtual void SetSurface (Surface *surface);
 	
 	bool AdvanceFrame ();
+	void AudioFinished (); // Called by MediaPlayer when the audio reaches its end. Only called if we have no video.
 	
 	MediaPlayer *GetMediaPlayer () { return mplayer;  }
 	

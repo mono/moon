@@ -1,0 +1,5 @@
+2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* bip.mp3, media-ended.html, media-ended.xaml, Silverlight.js: Added test
+	  for MediaEnded event when audio-only media is used.
+
