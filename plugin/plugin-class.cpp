@@ -384,19 +384,9 @@ npobject_is_dependency_object (NPObject *obj)
 static bool
 npvariant_is_dependency_object (NPVariant var)
 {
-	NPObject *obj;
-	guint i;
-	
 	if (!NPVARIANT_IS_OBJECT (var))
 		return false;
-	
-	obj = NPVARIANT_TO_OBJECT (var);
-	for (i = 0; i < DEPENDENCY_OBJECT_CLASS_NAMES_LAST; i++) {
-		if (obj->_class == dependency_object_classes[i])
-			return true;
-	}
-	
-	return false;
+	return npobject_is_dependency_object (NPVARIANT_TO_OBJECT (var));
 }
 
 static bool

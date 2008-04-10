@@ -1,3 +1,8 @@
+2008-04-10  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (npvariant_is_dependency_object): no reason to
+	duplicate the logic here - call npobject_is_dependency_object.
+
 2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp: Cast DOB's to Downloaders when passing to
