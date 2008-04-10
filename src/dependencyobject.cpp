@@ -169,11 +169,12 @@ EventObject::PrintStackTrace ()
 // event handlers for c++
 class EventClosure : public List::Node {
 public:
-	EventClosure (EventHandler func, gpointer data, int token) { this->func = func; this->data = data; this->token = token; }
+	EventClosure (EventHandler func, gpointer data, int token) { this->func = func; this->data = data; this->token = token; this->pending_removal = false;}
 	
 	EventHandler func;
 	gpointer data;
 	int token;
+	bool pending_removal;
 };
 
 int EventObject::DestroyedEvent = -1;
@@ -219,6 +220,7 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 		events = new EventList [n];
 		for (i = 0; i < n; i++) {
 			events[i].current_token = 0;
+			events[i].emitting = 0;
 			events[i].event_list = new List ();
 		}
 	}
@@ -270,8 +272,11 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 	EventClosure *closure = (EventClosure *) events[event_id].event_list->First ();
 	while (closure) {
 		if (closure->func == handler && closure->data == data) {
-			events[event_id].event_list->Unlink (closure);
-			delete closure;
+			if (events [event_id].emitting > 0) {
+				closure->pending_removal = true;
+			} else {
+				events[event_id].event_list->Remove (closure);
+			}
 			break;
 		}
 		
@@ -293,8 +298,11 @@ EventObject::RemoveHandler (int event_id, int token)
 	EventClosure *closure = (EventClosure *) events[event_id].event_list->First ();
 	while (closure) {
 		if (closure->token == token) {
-			events[event_id].event_list->Unlink (closure);
-			delete closure;
+			if (events [event_id].emitting > 0) {
+				closure->pending_removal = true;
+			} else {
+				events[event_id].event_list->Remove (closure);
+			}
 			break;
 		}
 		
@@ -329,8 +337,11 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 	EventClosure *c = (EventClosure *) events[event_id].event_list->First ();
 	while (c) {
 		if (predicate (c->func, c->data, closure)) {
-			events[event_id].event_list->Unlink (c);
-			delete c;
+			if (events [event_id].emitting > 0) {
+				c->pending_removal = true;
+			} else {
+				events[event_id].event_list->Remove (c);
+			}
 			break;
 		}
 		
@@ -354,6 +365,11 @@ EventObject::Emit (char *event_name, EventArgs *calldata)
 bool
 EventObject::Emit (int event_id, EventArgs *calldata)
 {
+	EventClosure *closure;
+	EventClosure *next;
+	EventClosure **closures;
+	int length;
+
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
 		if (calldata)
@@ -367,34 +383,43 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 		return false;
 	}
 	
-	EventClosure *next, *closure = (EventClosure *) events[event_id].event_list->First ();
-	List *event_list = new List ();
 	
-	/* make a copy of the event-list to use for emitting */
-	while (closure) {
-		event_list->Append (new EventClosure (closure->func, closure->data, closure->token));
-		
+	events [event_id].emitting++;
+
+	length = events [event_id].event_list->Length ();
+	closures = (EventClosure **) g_malloc (sizeof (EventClosure*) * length);
+	
+	/* make a copy of the event list to use for emitting */
+	closure = (EventClosure *) events [event_id].event_list->First ();
+	for (int i = 0; closure != NULL; i++) {
+		closures [i] = closure;
 		closure = (EventClosure *) closure->next;
 	}
 	
 	/* emit the events using the copied list */
-	closure = (EventClosure *) event_list->First ();
-	while (closure) {
-		next = (EventClosure *) closure->next;
-		
-		if (closure->func)
+	for (int i = 0; i < length; i++) {
+		closure = closures [i];
+		if (closure && closure->func && !closure->pending_removal)
 			closure->func (this, calldata, closure->data);
-		
-		event_list->Unlink (closure);
-		delete closure;
-		
-		closure = next;
 	}
-	
-	delete event_list;
 
 	if (calldata)
 		calldata->unref ();
+
+	events [event_id].emitting--;
+
+	if (events [event_id].emitting == 0) {
+		// Remove closures which are waiting for removal
+		closure = (EventClosure *) events [event_id].event_list->First ();
+		while (closure != NULL) {
+			next = (EventClosure *) closure->next;
+			if (closure->pending_removal)
+				events [event_id].event_list->Remove (closure);
+			closure = next;
+		}
+	}
+	
+	g_free (closures);
 
 	return true;
 }

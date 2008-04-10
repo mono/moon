@@ -1,3 +1,13 @@
+2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: Guard against calling closures which have been
+	  removed during emission of previous events in the same event list: when
+	  we're emitting and a closure is removed, mark the closure as pending
+	  removal, don't call it anymore, and only remove it when we're finished
+	  emitting.
+	* dependencyobject.h: Guard against calling closures which have been removed
+	  during emission of previous events in the same event list.
+
 2008-04-10  Michael Dominic K.  <mdk@mdk.am>
 
 	* shape.cpp: Little fix for new stretching algho by Stephane. Fixes the

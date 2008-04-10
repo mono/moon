@@ -29,6 +29,7 @@ typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer cl
 
 struct EventList {
 	int current_token;
+	int emitting;
 	List *event_list;
 };
 
