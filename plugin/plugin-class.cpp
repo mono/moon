@@ -2939,7 +2939,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 				     NPVariant *result)
 {
 	MediaElement *media = (MediaElement*)GetDependencyObject ();
-
+	
 	switch (id) {
 	case MoonId_Play:
 		if (argCount != 0)
@@ -2977,8 +2977,8 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 		
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		const char *part = STR_FROM_VARIANT (args [1]);
-
-		media->SetSource (downloader, part);
+		
+		media->SetSource ((Downloader *) downloader, part);
 
 		VOID_TO_NPVARIANT (*result);
 
@@ -3031,7 +3031,7 @@ MoonlightImageObject::Invoke (int id, NPIdentifier name,
 		downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		part = STR_FROM_VARIANT (args [1]);
 		
-		img->SetSource (downloader, part);
+		img->SetSource ((Downloader *) downloader, part);
 		
 		VOID_TO_NPVARIANT (*result);
 		
@@ -3082,7 +3082,7 @@ MoonlightImageBrushObject::Invoke (int id, NPIdentifier name,
 		downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		part = STR_FROM_VARIANT (args [1]);
 		
-		img->SetSource (downloader, part);
+		img->SetSource ((Downloader *) downloader, part);
 		
 		VOID_TO_NPVARIANT (*result);
 		
