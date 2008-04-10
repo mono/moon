@@ -507,10 +507,13 @@ EventListenerProxy::~EventListenerProxy ()
 		target_object->RemoveHandler ("destroyed", dtoken);
 	}
 	
-	if (is_func)
-		NPN_ReleaseObject ((NPObject *) callback);
-	else
+	if (is_func) {
+		if (callback != NULL)
+			NPN_ReleaseObject ((NPObject *) callback);
+	}
+	else {
 		g_free (callback);
+	}
 	
 	g_free (event_name);
 }
@@ -541,6 +544,13 @@ EventListenerProxy::RemoveHandler ()
 		target_object->RemoveHandler (event_id, token);
 		event_id = -1;
 	}
+}
+
+void
+EventListenerProxy::Invalidate ()
+{
+	if (is_func)
+		callback = NULL;
 }
 
 void
@@ -1278,8 +1288,16 @@ MoonlightObject::destroy_proxy (gpointer data)
 }
 
 void
+MoonlightObject::invalidate_proxy (gpointer key, gpointer value, gpointer data)
+{
+	EventListenerProxy *proxy = (EventListenerProxy*)value;
+	proxy->Invalidate ();
+}
+
+void
 MoonlightObject::Invalidate ()
 {
+	g_hash_table_foreach (event_listener_proxies, invalidate_proxy, NULL);
 }
 
 bool

@@ -58,6 +58,7 @@ class EventListenerProxy : public List::Node {
 	
 	int AddHandler (EventObject *obj);
 	void RemoveHandler ();
+	void Invalidate ();
 	const char *GetCallbackAsString ();
 
 	int GetEventId () { return event_id; }
@@ -112,6 +113,7 @@ struct MoonlightObject : NPObject {
 	void ClearEventProxy (int event_id);
 	
 	static void destroy_proxy (gpointer data);
+	static void invalidate_proxy (gpointer key, gpointer value, gpointer data);
 	
 	NPP instance;
 	Type::Kind moonlight_type;
