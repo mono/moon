@@ -34,6 +34,7 @@
       function FinishTest ()
       {
           var test_plugin = document.getElementById ("_TestPlugin");
+	  test_plugin.LogDebug ("Rectangle was clicked, test passes.");
 	  test_plugin.LogResult (1);
           test_plugin.SignalShutdown ();
       }
