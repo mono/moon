@@ -44,7 +44,122 @@ int MediaBase::DownloadProgressChangedEvent = -1;
 
 MediaBase::MediaBase ()
 {
+	source.downloader = NULL;
+	source.part_name = NULL;
+	downloader = NULL;
+	part_name = NULL;
 }
+
+MediaBase::~MediaBase ()
+{
+	DownloaderAbort ();
+}
+
+void
+MediaBase::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MediaBase *media = (MediaBase *) closure;
+	
+	media->DownloaderComplete ();
+}
+
+void
+MediaBase::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MediaBase *media = (MediaBase *) closure;
+	
+	media->DownloaderFailed (calldata);
+}
+
+void
+MediaBase::DownloaderComplete ()
+{
+	// Nothing for MediaBase to do...
+}
+
+void
+MediaBase::DownloaderFailed (EventArgs *args)
+{
+	// Nothing for MediaBase to do...
+}
+
+void
+MediaBase::DownloaderAbort ()
+{
+	if (downloader) {
+		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
+		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
+		downloader->SetWriteFunc (NULL, NULL, NULL);
+		downloader->SetRequestPositionFunc (NULL);
+		downloader->Abort ();
+		downloader->unref ();
+		g_free (part_name);
+		downloader = NULL;
+		part_name = NULL;
+	}
+}
+
+void
+MediaBase::SetSourceAsyncCallback ()
+{
+	if (!source.downloader)
+		return;
+	
+	SetSourceInternal (source.downloader, source.part_name);
+	source.downloader->unref ();
+	source.downloader = NULL;
+	source.part_name = NULL;
+}
+
+void
+MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
+{
+	this->downloader = downloader;
+	part_name = PartName;
+	downloader->ref ();
+}
+
+static void
+set_source_async (void *user_data)
+{
+	MediaBase *media = (MediaBase *) user_data;
+	
+	media->SetSourceAsyncCallback ();
+	media->unref ();
+}
+
+void
+MediaBase::SetSource (DependencyObject *downloader, const char *PartName)
+{
+	Surface *surface;
+	
+	DownloaderAbort ();
+	
+	if (source.downloader) {
+		source.downloader->unref ();
+		g_free (source.part_name);
+		source.downloader = NULL;
+		source.part_name = NULL;
+	}
+	
+	if (!downloader || downloader->GetObjectType () != Type::DOWNLOADER)
+		return;
+	
+	if ((surface = GetSurface ())) {
+		TimeManager *tm = surface->GetTimeManager ();
+		
+		source.downloader = (Downloader *) downloader;
+		source.part_name = g_strdup (PartName);
+		downloader->ref ();
+		
+		tm->AddTickCall (set_source_async, this);
+		ref ();
+	} else {
+		// Not attached to a surface?
+		SetSourceInternal ((Downloader *) downloader, g_strdup (PartName));
+	}
+}
+
 
 MediaBase *
 media_base_new (void)
@@ -335,13 +450,9 @@ MediaElement::MediaElement ()
 {
 	pthread_mutex_init (&open_mutex, NULL);
 	
-	set_source.downloader = NULL;
-	set_source.part_name = NULL;
 	advance_frame_timeout_id = 0;
 	streamed_markers = NULL;
 	downloaded_file = NULL;
-	downloader = NULL;
-	part_name = NULL;
 	playlist = NULL;
 	mplayer = NULL;
 	media = NULL;
@@ -413,8 +524,6 @@ MediaElement::Reinitialize (bool dtor)
 	state = Closed;
 	
 	DownloaderAbort ();
-	g_free (part_name);
-	part_name = NULL;
 	
 	if (downloaded_file) {
 		downloaded_file->unref ();
@@ -449,19 +558,6 @@ MediaElement::Reinitialize (bool dtor)
 		val->AsCollection ()->Clear ();
 	
 	SetValue (PositionProperty, Value (0, Type::TIMESPAN));
-}
-
-void
-MediaElement::DownloaderAbort ()
-{
-	if (downloader) {
-		downloader->RemoveHandler (downloader->CompletedEvent, downloader_complete, this);
-		downloader->SetWriteFunc (NULL, NULL, NULL);
-		downloader->SetRequestPositionFunc (NULL);
-		downloader_abort (downloader);
-		downloader->unref ();
-		downloader = NULL;
-	}
 }
 
 void
@@ -795,7 +891,6 @@ MediaElement::data_request_position (int64_t *position, gpointer data)
        ((MediaElement *) data)->DataRequestPosition (position);
 }
 
-
 void
 MediaElement::size_notify (int64_t size, gpointer data)
 {
@@ -803,12 +898,6 @@ MediaElement::size_notify (int64_t size, gpointer data)
 	
 	if (element->downloaded_file != NULL)
 		element->downloaded_file->NotifySize (size);
-}
-
-void
-MediaElement::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	((MediaElement *) closure)->DownloaderComplete ();
 }
 
 void
@@ -1024,9 +1113,7 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 	
 	Reinitialize (false);
 	
-	this->downloader = downloader;
-	part_name = PartName;
-	downloader->ref ();
+	MediaBase::SetSourceInternal (downloader, PartName);
 	
 	SetState (Opening);
 	
@@ -1059,33 +1146,8 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 }
 
 void
-MediaElement::SetSourceAsyncCallback ()
-{
-	if (!set_source.downloader)
-		return;
-	
-	SetSourceInternal (set_source.downloader, set_source.part_name);
-	set_source.downloader->unref ();
-	set_source.downloader = NULL;
-	set_source.part_name = NULL;
-}
-
-static void
-set_source_async (void *user_data)
-{
-	MediaElement *media = (MediaElement *) user_data;
-	
-	media->SetSourceAsyncCallback ();
-	media->unref ();
-}
-
-void
 MediaElement::SetSource (DependencyObject *downloader, const char *PartName)
 {
-	Surface *surface;
-	
-	g_return_if_fail (!downloader || downloader->GetObjectType () == Type::DOWNLOADER);
-	
 	// Remove our playlist.
 	// When the playlist changes media, it will call
 	// SetSourceInternal to avoid ending up deleting itself.
@@ -1095,31 +1157,10 @@ MediaElement::SetSource (DependencyObject *downloader, const char *PartName)
 		playlist = NULL;
 	}
 	
-	if (set_source.downloader) {
-		set_source.downloader->unref ();
-		g_free (set_source.part_name);
-		set_source.downloader = NULL;
-		set_source.part_name = NULL;
-	}
-	
 	Reinitialize (false);
+	Invalidate ();
 	
-	if (!downloader)
-		return;
-	
-	if ((surface = GetSurface ())) {
-		TimeManager *tm = surface->GetTimeManager ();
-		
-		set_source.downloader = (Downloader *) downloader;
-		set_source.part_name = g_strdup (PartName);
-		downloader->ref ();
-		
-		tm->AddTickCall (set_source_async, this);
-		ref ();
-	} else {
-		// Not attached to a surface?
-		SetSourceInternal ((Downloader *) downloader, g_strdup (PartName));
-	}
+	MediaBase::SetSource (downloader, PartName);
 }
 
 void
@@ -1655,8 +1696,6 @@ int Image::ImageFailedEvent = -1;
 Image::Image ()
 {
 	create_xlib_surface = true;
-	downloader = NULL;
-	part_name = NULL;
 	pattern = NULL;
 	brush = NULL;
 	surface = NULL;
@@ -1664,24 +1703,8 @@ Image::Image ()
 
 Image::~Image ()
 {
-	DownloaderAbort ();
 	CleanupSurface ();
-	g_free (part_name);
 }
-
-void
-Image::DownloaderAbort ()
-{
-	if (downloader){
-		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
-		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
-		downloader->SetWriteFunc (NULL, NULL, NULL);
-		downloader_abort (downloader);
-		downloader->unref ();
-		downloader = NULL;
-	}
-}
-
 
 void
 Image::CleanupPattern ()
@@ -1728,25 +1751,13 @@ Image::UpdateProgress ()
 }
 
 void
-Image::SetSource (DependencyObject *dl, const char *PartName)
+Image::SetSourceInternal (Downloader *downloader, char *PartName)
 {
-	g_return_if_fail (dl->GetObjectType() == Type::DOWNLOADER);
-
-	dl->ref ();
-
-	if (downloader)
-		DownloaderAbort ();
-
-	part_name = g_strdup (PartName);
-
-	CleanupSurface ();
-	Invalidate (); 
-
-	downloader = (Downloader*) dl;
-
+	MediaBase::SetSourceInternal (downloader, PartName);
+	
 	downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, this);
 	downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
-
+	
 	if (downloader->Started () || downloader->Completed ()) {
 		if (downloader->Completed ())
 			DownloaderComplete ();
@@ -1756,8 +1767,19 @@ Image::SetSource (DependencyObject *dl, const char *PartName)
 		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
 		
 		// This is what actually triggers the download
-		downloader->SendNow ();
+		downloader->Send ();
 	}
+	
+	Invalidate ();
+}
+
+void
+Image::SetSource (DependencyObject *downloader, const char *PartName)
+{
+	CleanupSurface ();
+	Invalidate ();
+	
+	MediaBase::SetSource (downloader, PartName);
 }
 
 void
@@ -1807,9 +1829,14 @@ Image::DownloaderComplete ()
 }
 
 void
-Image::DownloaderFailed (ErrorEventArgs *args)
+Image::DownloaderFailed (EventArgs *args)
 {
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (args ? args->error_message : NULL));
+	ErrorEventArgs *err = NULL;
+	
+	if (args && args->GetObjectType () == Type::ERROREVENTARGS)
+		err = (ErrorEventArgs *) args;
+	
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (err ? err->error_message : NULL));
 }
 
 
@@ -2038,25 +2065,6 @@ Image::size_notify (int64_t size, gpointer data)
 	// if size == -1, we do not know the size of the file, can happen
 	// if the server does not return a Content-Length header
 	//printf ("The image size is %lld\n", size);
-}
-
-void
-Image::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	Image *image = (Image*)closure;
-	image->DownloaderComplete ();
-}
-
-void
-Image::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	Image *image = (Image *) closure;
-	ErrorEventArgs *err = NULL;
-
-	if (calldata && strcmp (calldata->GetTypeName (), "ErrorEventArgs") == 0)
-		err = (ErrorEventArgs *) calldata;
-
-	image->DownloaderFailed (err);
 }
 
 void

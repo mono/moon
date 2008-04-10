@@ -45,8 +45,23 @@ void media_attribute_set_value (MediaAttribute *attribute, const char *value);
 
 class MediaBase : public FrameworkElement {
  protected:
-	virtual ~MediaBase () {}
-
+	struct {
+		Downloader *downloader;
+		char *part_name;
+	} source;
+	
+	Downloader *downloader;
+	char *part_name;
+	
+	virtual ~MediaBase ();
+	
+	virtual void DownloaderFailed (EventArgs *args);
+	virtual void DownloaderComplete ();
+	void DownloaderAbort ();
+	
+	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
  public:
 	static DependencyProperty *SourceProperty;
 	static DependencyProperty *StretchProperty;
@@ -56,6 +71,12 @@ class MediaBase : public FrameworkElement {
 	
 	MediaBase ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
+	
+	
+	
+	void SetSourceAsyncCallback ();
+	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
+	virtual void SetSource (DependencyObject *downloader, const char *PartName);
 };
 
 MediaBase *media_base_new (void);
@@ -75,51 +96,27 @@ class Image : public MediaBase {
 	bool CreateSurface (const char *fname);
 	void CleanupSurface ();
 	void CleanupPattern ();
-	void DownloaderAbort ();
 	
 	// downloader callbacks
 	void PixbufWrite (void *buf, int32_t offset, int32_t n);
-	void DownloaderComplete ();
-	void DownloaderFailed (ErrorEventArgs *args);
+	virtual void DownloaderFailed (EventArgs *args);
+	virtual void DownloaderComplete ();
 	void UpdateProgress ();
 	
 	static void pixbuf_write (void *buf, int32_t offset, int32_t n, gpointer data);
-	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
-	
-	Downloader *downloader;
-	
-	char *part_name;
 	
 	// pattern caching
 	cairo_pattern_t *pattern;
 
  protected:
 	virtual ~Image ();
-
+	
  public:
-	Image ();
+	static GHashTable *surface_cache;
 	
-	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
+	static int ImageFailedEvent;
 	
-	virtual void Render (cairo_t *cr, Region *region);
-	virtual void ComputeBounds ();
-	virtual Point GetTransformOrigin ();
-	
-	cairo_surface_t *GetCairoSurface ();
-	
-	void SetSource (DependencyObject *Downloader, const char *PartName);
-	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	
-	int GetHeight () { return surface ? surface->height : 0; };
-	int GetWidth  () { return surface ? surface->width : 0; };
-
-	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	
-	ImageBrush *brush;
-
 	struct CachedSurface {
 		int ref_cnt;
 		
@@ -134,12 +131,28 @@ class Image : public MediaBase {
 		int height;
 	};
 	
-
 	CachedSurface *surface;
+	ImageBrush *brush;
 	
-	static GHashTable *surface_cache;
+	Image ();
 	
-	static int ImageFailedEvent;
+	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
+	
+	virtual void Render (cairo_t *cr, Region *region);
+	virtual void ComputeBounds ();
+	virtual Point GetTransformOrigin ();
+	
+	cairo_surface_t *GetCairoSurface ();
+	
+	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
+	virtual void SetSource (DependencyObject *downloader, const char *PartName);
+	
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	
+	int GetHeight () { return surface ? surface->height : 0; };
+	int GetWidth  () { return surface ? surface->width : 0; };
+
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
 };
 
 Image *image_new (void);
@@ -160,14 +173,9 @@ class MediaElement : public MediaBase {
  private:
 	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
 	static void data_request_position (int64_t *pos, void *closure);
-	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
 	TimelineMarkerCollection *streamed_markers;
-	struct {
-		Downloader *downloader;
-		char *part_name;
-	} set_source;
 	int advance_frame_timeout_id;
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
@@ -209,13 +217,10 @@ class MediaElement : public MediaBase {
 	
 	// downloader methods/data
 	ProgressiveSource *downloaded_file;
-	Downloader *downloader;
-	char *part_name;
 	
 	void DataWrite (void *data, int32_t offset, int32_t n);
 	void DataRequestPosition (int64_t *pos);
-	void DownloaderAbort ();
-	void DownloaderComplete ();
+	virtual void DownloaderComplete ();
 	void BufferingComplete ();
 	void UpdateProgress ();
 	
@@ -285,9 +290,8 @@ class MediaElement : public MediaBase {
 	virtual void SetValue (DependencyProperty *prop, Value *value);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
-	void SetSourceAsyncCallback ();
-	void SetSourceInternal (Downloader *downloader, char *PartName);
-	void SetSource (DependencyObject *Downloader, const char *PartName);
+	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
+	virtual void SetSource (DependencyObject *Downloader, const char *PartName);
 	
 	void Pause ();
 	void Play ();

@@ -1,3 +1,8 @@
+2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp: Consolidated Image and MediaElement downloader bits
+	by putting them into MediaBase.
+
 2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp: Guard against calling closures which have been
