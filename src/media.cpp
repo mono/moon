@@ -121,13 +121,15 @@ MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
 		downloader->ref ();
 }
 
-static void
+static gboolean
 set_source_async (void *user_data)
 {
 	MediaBase *media = (MediaBase *) user_data;
 	
 	media->SetSourceAsyncCallback ();
 	media->unref ();
+
+	return false;
 }
 
 void
@@ -144,24 +146,17 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 		source.part_name = NULL;
 	}
 	
-	if (!downloader || downloader->GetObjectType () != Type::DOWNLOADER) {
+	if (!downloader) {
 		SetSourceInternal (NULL, NULL);
 		return;
 	}
+		
+	source.part_name = g_strdup (PartName);
+	source.downloader = downloader;
+	downloader->ref ();
 	
-	if ((surface = GetSurface ())) {
-		TimeManager *tm = surface->GetTimeManager ();
-		
-		source.part_name = g_strdup (PartName);
-		source.downloader = downloader;
-		downloader->ref ();
-		
-		tm->AddTickCall (set_source_async, this);
-		ref ();
-	} else {
-		// Not attached to a surface?
-		SetSourceInternal (downloader, g_strdup (PartName));
-	}
+	ref ();
+	TimeManager::InvokeOnMainThread (set_source_async, this);
 }
 
 

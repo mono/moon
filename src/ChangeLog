@@ -1,3 +1,9 @@
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: MediaBase::SetSource: no need to get a Surface/TimeManager
+	  instance to do an asynchronous call, just call
+	  TimeManager::InvokeOnMainThread.
+
 2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.h, mplayer.cpp: Added MediaPlayer::AudioFinished, called by the
