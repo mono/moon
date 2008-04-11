@@ -708,4 +708,8 @@
 	 inputFile="input-test.html"
 	 masterFile="None"
    />
+   <Test id="169"
+	 inputFile="test-setsource-with-downloader.html"
+	 masterFile10="None"
+   />
 </DRTList>

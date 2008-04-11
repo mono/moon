@@ -1,6 +1,15 @@
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/test-downloader-aborted-in-setsource.html,
+	  xaml/test-downloader-aborted-in-setsource.xaml,
+	  xaml/test-setsource-with-downloader.html,
+	  xaml/test-setsource-with-downloader.xaml: Renamed to something more
+	  meaningful.
+	* xaml/drtlist.xml: Added test-setsource-with-downloader.
+
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/test-downloader-aborted-in-setsource.html,
 	  xaml/test-downloader-aborted-in-setsource.xaml: Minor fixes.
 
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
