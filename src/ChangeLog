@@ -1,3 +1,8 @@
+2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp: Make the dot and eraser cursors const to avoid
+	compiler warnings.
+
 2008-04-11  Michael Dominic K.  <mdk@mdk.am>
 
 	* enums.c: Removing bolox comment and behavior. Always return -1 on
@@ -30,17 +35,18 @@
 
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* media.cpp: MediaBase::SetSource: no need to get a Surface/TimeManager
-	  instance to do an asynchronous call, just call
-	  TimeManager::InvokeOnMainThread.
+	* media.cpp: MediaBase::SetSource: no need to get a
+	  Surface/TimeManager instance to do an asynchronous call, just
+	  call TimeManager::InvokeOnMainThread.
 
 2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* mplayer.h, mplayer.cpp: Added MediaPlayer::AudioFinished, called by the
-	  audio thread when the audio finishes.
-	* media.h, media.cpp: Added MediaElement::AudioFinished, called by the media
-	  player when the audio finishes. Enables us to raise MediaEnded for
-	  audio-only media.
+	* mplayer.h, mplayer.cpp: Added MediaPlayer::AudioFinished, called
+	  by the audio thread when the audio finishes.
+
+	* media.h, media.cpp: Added MediaElement::AudioFinished, called by
+	  the media player when the audio finishes. Enables us to raise
+	  MediaEnded for audio-only media.
 
 2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
 
@@ -70,13 +76,15 @@
 
 2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* dependencyobject.cpp: Guard against calling closures which have been
-	  removed during emission of previous events in the same event list: when
-	  we're emitting and a closure is removed, mark the closure as pending
-	  removal, don't call it anymore, and only remove it when we're finished
-	  emitting.
-	* dependencyobject.h: Guard against calling closures which have been removed
-	  during emission of previous events in the same event list.
+	* dependencyobject.cpp: Guard against calling closures which have
+	  been removed during emission of previous events in the same
+	  event list: when we're emitting and a closure is removed, mark
+	  the closure as pending removal, don't call it anymore, and only
+	  remove it when we're finished emitting.
+
+	* dependencyobject.h: Guard against calling closures which have
+	  been removed during emission of previous events in the same
+	  event list.
 
 2008-04-10  Michael Dominic K.  <mdk@mdk.am>
 
