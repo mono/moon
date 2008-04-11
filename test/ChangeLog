@@ -1,5 +1,9 @@
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* xaml/test-directory-in-zip.html: Fix test to work on SL as well.
+
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* xaml/test-downloader-aborted-in-setsource.html,
 	  xaml/test-downloader-aborted-in-setsource.xaml,
 	  xaml/test-setsource-with-downloader.html,
