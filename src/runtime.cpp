@@ -306,6 +306,57 @@ Surface::~Surface ()
 	delete down_dirty;
 }
 
+/* XPM */
+static char * dot[] = {
+	"18 18 4 1",
+	"       c None",
+	".      c #808080",
+	"+      c #303030",
+	"@      c #000000",
+	".+.               ",
+	"@@@               ",
+	".@.               ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  "};
+
+/* XPM */
+static char * eraser[] = {
+	"16 16 5 1",
+	"       c None",
+	".      c #585858",
+	"+      c #303030",
+	"@      c #DCDCDC",
+	"#      c #FFFFFF",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"      .+.       ",
+	"     +@#@+      ",
+	"    .@###@.     ",
+	"    +#####+     ",
+	"    .@###@.     ",
+	"     +@#@+      ",
+	"      .+.       ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                "};
+
 void
 Surface::SetCursor (MouseCursor new_cursor)
 {
@@ -316,6 +367,8 @@ Surface::SetCursor (MouseCursor new_cursor)
 			return;
 
 		GdkCursor *c = NULL;
+		GdkPixmap *empty = gdk_bitmap_create_from_data (NULL, "0x00", 1, 1);
+		GdkColor empty_color = {0, 0, 0, 0};
 		switch (cursor) {
 		case MouseCursorDefault:
 			c = NULL;
@@ -333,13 +386,14 @@ Surface::SetCursor (MouseCursor new_cursor)
 			c = gdk_cursor_new (GDK_XTERM);
 			break;
 		case MouseCursorStylus:
-			c = gdk_cursor_new (GDK_PENCIL);
+			c = gdk_cursor_new_from_pixbuf (gdk_display_get_default () ,gdk_pixbuf_new_from_xpm_data ((const char**) dot) , 0, 0);
 			break;
 		case MouseCursorEraser:
-			c = gdk_cursor_new (GDK_DOT); // ??
+			c = gdk_cursor_new_from_pixbuf (gdk_display_get_default () ,gdk_pixbuf_new_from_xpm_data ((const char**) eraser) , 0, 0);
 			break;
 		case MouseCursorNone:
-			// XXX nothing yet.  create a pixmap cursor with no pixel data
+			//from gdk-cursor doc :"To make the cursor invisible, use gdk_cursor_new_from_pixmap() to create a cursor with no pixels in it."
+			c = gdk_cursor_new_from_pixmap (empty, empty, &empty_color, &empty_color, 0, 0);
 			break;
 		}
 
