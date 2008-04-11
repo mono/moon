@@ -121,22 +121,20 @@ MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
 		downloader->ref ();
 }
 
-static gboolean
+static bool
 set_source_async (void *user_data)
 {
 	MediaBase *media = (MediaBase *) user_data;
 	
 	media->SetSourceAsyncCallback ();
 	media->unref ();
-
+	
 	return false;
 }
 
 void
 MediaBase::SetSource (Downloader *downloader, const char *PartName)
 {
-	Surface *surface;
-	
 	DownloaderAbort ();
 	
 	if (source.downloader) {

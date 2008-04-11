@@ -1,3 +1,12 @@
+2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (Downloader::Send): Use
+	TimeManager::InvokeOnMainThread() here like Rolf did in
+	MediaBase. Simplifies things by not needing a surface.
+
+	* text.cpp (TextBlock::SetFontSource): Now takes a Downloader
+	object as opposed to a DependencyObject.
+
 2008-04-11  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: in Clock, make sure we CalcProgress on the last tick before

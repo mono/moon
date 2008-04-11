@@ -497,24 +497,24 @@ TextBlock::~TextBlock ()
 }
 
 void
-TextBlock::SetFontSource (DependencyObject *dl)
+TextBlock::SetFontSource (Downloader *downloader)
 {
 	if (RENDER_USING_PANGO) {
 		fprintf (stderr, "TextBlock::SetFontSource() not supported using the Pango text layout/rendering engine.\n");
 		return;
 	}
 	
-	if (downloader == (Downloader *) dl)
+	if (this->downloader == downloader)
 		return;
 	
-	if (downloader) {
-		downloader_abort (downloader);
-		downloader->unref ();
-		downloader = NULL;
+	if (this->downloader) {
+		this->downloader->Abort ();
+		this->downloader->unref ();
+		this->downloader = NULL;
 	}
 	
-	if (dl) {
-		downloader = (Downloader *) dl;
+	if (downloader) {
+		this->downloader = downloader;
 		downloader->ref ();
 		
 		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
@@ -1497,9 +1497,9 @@ text_block_set_text_wrapping (TextBlock *textblock, TextWrapping value)
 }
 
 void
-text_block_set_font_source (TextBlock *textblock, DependencyObject *Downloader)
+text_block_set_font_source (TextBlock *textblock, Downloader *downloader)
 {
-	textblock->SetFontSource (Downloader);
+	textblock->SetFontSource (downloader);
 }
 
 
