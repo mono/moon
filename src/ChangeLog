@@ -1,3 +1,7 @@
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: Surround event emission with ref/unref of ourselves.
+
 2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* playlist.cpp: Disable debugging spew unless DEBUG_PLAYLISTS is
