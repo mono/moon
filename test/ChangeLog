@@ -1,3 +1,10 @@
+2008-04-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/README.txt:
+	* xaml/clock/clock32.xaml: Adding a test-case that showcases the
+	jagyness/align problem in our storyboards/clocks. Esentially we never
+	"Tick" at the edge value on stop.
+
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/test-directory-in-zip.html: Fix test to work on SL as well.
