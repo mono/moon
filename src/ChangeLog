@@ -1,5 +1,13 @@
 2008-04-11  Michael Dominic K.  <mdk@mdk.am>
 
+	* enums.c: Removing bolox comment and behavior. Always return -1 on
+	fail.
+
+	* xaml.cpp: Push a g_warning when we're hitting bad enums on bad props.
+	Should make it a little bit easier to spot problems.
+
+2008-04-11  Michael Dominic K.  <mdk@mdk.am>
+
 	* dependencyobject.cpp: When calling RegisterAllNamesRootedAt be
 	actually recursive (I'm not sure why this was commented out? Toshok?). 
 	Fixes the sprawl end-game animation, #378748.

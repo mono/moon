@@ -2322,8 +2322,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 
 		if (isalpha (str [0]) && prop_name) {
 			i = enums_str_to_int (prop_name, str);
-			if (i == -1)
+			if (i == -1) {
+				g_warning ("'%s' enum is not valid on '%s' property", str, prop_name);
 				return false;
+			}
 		} else {
 			errno = 0;
 			long l = strtol (str, &endptr, 10);

@@ -251,10 +251,7 @@ str_from_enum (const enum_map_t *emu, int e)
 
 //
 // Converts a string representing an enum (ie. "FillEnd") to int.
-// Returns -1 if no property found and 0 if no enum found
-//
-// XXX: This divsion (-1 vs 0) needs to be removed but currently
-// something depends on it I'm afraid.
+// Returns -1 if no property or enum found.
 //
 int 
 enums_str_to_int (const char *prop_name, const char *str)
