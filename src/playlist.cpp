@@ -21,7 +21,19 @@
 #include "runtime.h"
 #include "clock.h"
 
-#define LOG_PLAYLISTS(...) printf (__VA_ARGS__)
+
+//#define DEBUG_PLAYLISTS
+
+#ifdef DEBUG_PLAYLISTS
+#define d(x) x
+#else
+#define d(x)
+#endif
+
+// warnings
+#define w(x)
+
+
 
 /*
  * PlaylistNode
@@ -48,7 +60,7 @@ PlaylistNode::~PlaylistNode ()
 
 PlaylistEntry::PlaylistEntry (MediaElement *element, Playlist *parent, Media *media)
 {
-	LOG_PLAYLISTS ("PlaylistEntry::PlaylistEntry (%p, %p, %p)\n", element, parent, media);
+	d(printf ("PlaylistEntry::PlaylistEntry (%p, %p, %p)\n", element, parent, media));
 
 	this->parent = parent;
 	this->element = element;
@@ -73,8 +85,8 @@ PlaylistEntry::PlaylistEntry (MediaElement *element, Playlist *parent, Media *me
 
 PlaylistEntry::~PlaylistEntry ()
 {
-	LOG_PLAYLISTS ("PlaylistEntry::~PlaylistEntry ()\n");
-
+	d(printf ("PlaylistEntry::~PlaylistEntry ()\n"));
+	
 	g_free (source_name);
 	g_free (full_source_name);
 
@@ -259,7 +271,7 @@ add_attribute (MediaAttributeCollection *attributes, const char *name, const cha
 void
 PlaylistEntry::PopulateMediaAttributes ()
 {
-	LOG_PLAYLISTS ("PlaylistEntry::PopulateMediaAttributes ()\n");
+	d(printf ("PlaylistEntry::PopulateMediaAttributes ()\n"));
 
 	const char *abstract = NULL;
 	const char *author = NULL;
@@ -327,7 +339,7 @@ PlaylistEntry::GetFullSourceName ()
 void
 PlaylistEntry::Open ()
 {
-	LOG_PLAYLISTS ("PlaylistEntry::Open (), media = %p, FullSourceName = %s\n", media, GetFullSourceName ());
+	d(printf ("PlaylistEntry::Open (), media = %p, FullSourceName = %s\n", media, GetFullSourceName ()));
 
 	if (media != NULL)
 		return;
@@ -341,7 +353,7 @@ PlaylistEntry::Open ()
 bool
 PlaylistEntry::Play ()
 {
-	LOG_PLAYLISTS ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name);
+	d(printf ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name));
 
 	if (media == NULL) {
 		play_when_available = true;
@@ -360,7 +372,7 @@ PlaylistEntry::Play ()
 bool
 PlaylistEntry::Pause ()
 {
-	LOG_PLAYLISTS ("PlaylistEntry::Pause ()\n");
+	d(printf ("PlaylistEntry::Pause ()\n"));
 	
 	play_when_available = false;
 	element->GetMediaPlayer ()->Pause ();
@@ -370,7 +382,7 @@ PlaylistEntry::Pause ()
 void
 PlaylistEntry::Stop ()
 {
-	LOG_PLAYLISTS ("PlaylistEntry::Stop ()\n");
+	d(printf ("PlaylistEntry::Stop ()\n"));
 
 	play_when_available = false;
 	element->GetMediaPlayer ()->Stop ();
@@ -385,7 +397,7 @@ PlaylistEntry::GetMedia ()
 void 	
 PlaylistEntry::SetMedia (Media *media)
 {
-	LOG_PLAYLISTS ("PlaylistEntry::SetMedia (%p), previous media: %p\n", media, this->media);
+	d(printf ("PlaylistEntry::SetMedia (%p), previous media: %p\n", media, this->media));
 
 	if (this->media)
 		this->media->unref ();
@@ -421,8 +433,8 @@ Playlist::Playlist (MediaElement *element, Media *media)
 
 Playlist::~Playlist ()
 {
-	LOG_PLAYLISTS ("Playlist::~Playlist ()\n");
-
+	d(printf ("Playlist::~Playlist ()\n"));
+	
 	delete entries;
 	element->RemoveHandler (element->MediaEndedEvent, on_media_ended, this);
 }
@@ -430,7 +442,7 @@ Playlist::~Playlist ()
 void
 Playlist::Init (MediaElement *element)
 {	
-	LOG_PLAYLISTS ("Playlist::Init (%p)\n", element);
+	d(printf ("Playlist::Init (%p)\n", element));
 
 	this->element = element;
 	entries = new List ();
@@ -444,7 +456,7 @@ Playlist::Open ()
 {
 	PlaylistEntry *current_entry;
 
-	LOG_PLAYLISTS ("Playlist::Open ()\n");
+	d(printf ("Playlist::Open ()\n"));
 	
 	current_node = (PlaylistNode *) entries->First ();
 
@@ -452,7 +464,7 @@ Playlist::Open ()
 	if (current_entry)
 		current_entry->Open ();
 
-	LOG_PLAYLISTS ("Playlist::Open (): current node: %p, current entry: %p\n", current_entry, GetCurrentEntry ());
+	d(printf ("Playlist::Open (): current node: %p, current entry: %p\n", current_entry, GetCurrentEntry ()));
 }
 
 void
@@ -461,9 +473,9 @@ Playlist::OnMediaEnded ()
 	PlaylistEntry *current_entry;
 	
 	if (current_node)
-		LOG_PLAYLISTS ("Playlist::OnMediaEnded () current_node: %p, source: %s\n", current_node, ((PlaylistNode *) current_node)->GetEntry ()->GetSourceName ());
+		d(printf ("Playlist::OnMediaEnded () current_node: %p, source: %s\n", current_node, ((PlaylistNode *) current_node)->GetEntry ()->GetSourceName ()));
 	else
-		LOG_PLAYLISTS ("Playlist::OnMediaEnded () current_node: %p\n", current_node);
+		d(printf ("Playlist::OnMediaEnded () current_node: %p\n", current_node));
 	
 	if (!current_node)
 		return;
@@ -474,7 +486,7 @@ Playlist::OnMediaEnded ()
 	if (current_entry)
 		current_entry->Play ();
 	
-	LOG_PLAYLISTS ("Playlist::OnMediaEnded () current_node: %p [Done]\n", current_node);
+	d(printf ("Playlist::OnMediaEnded () current_node: %p [Done]\n", current_node));
 }
 
 void
@@ -493,7 +505,7 @@ Playlist::Play ()
 
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	LOG_PLAYLISTS ("Playlist::Play (), current entry: %p\n", current_entry);
+	d(printf ("Playlist::Play (), current entry: %p\n", current_entry));
 
 	if (current_entry)
 		return current_entry->Play ();
@@ -506,7 +518,7 @@ Playlist::Pause ()
 {
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	LOG_PLAYLISTS ("Playlist::Pause ()\n");
+	d(printf ("Playlist::Pause ()\n"));
 
 	if (!current_entry)
 		return false;
@@ -519,7 +531,7 @@ Playlist::Stop ()
 {
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	LOG_PLAYLISTS ("Playlist::Stop ()\n");
+	d(printf ("Playlist::Stop ()\n"));
 
 	current_node = (PlaylistNode *) entries->First ();
 
@@ -534,7 +546,7 @@ Playlist::PopulateMediaAttributes ()
 {
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	LOG_PLAYLISTS ("Playlist::PopulateMediaAttributes ()\n");
+	d(printf ("Playlist::PopulateMediaAttributes ()\n"));
 
 	if (!current_entry)
 		return;
@@ -545,7 +557,7 @@ Playlist::PopulateMediaAttributes ()
 void
 Playlist::AddEntry (PlaylistEntry *entry)
 {
-	LOG_PLAYLISTS ("Playlist::AddEntry (%p)\n", entry);
+	d(printf ("Playlist::AddEntry (%p)\n", entry));
 
 	entries->Append (new PlaylistNode (entry));
 	entry->unref ();
@@ -556,7 +568,7 @@ Playlist::ReplaceCurrentEntry (Playlist *pl)
 {
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	LOG_PLAYLISTS ("Playlist::ReplaceCurrentEntry (%p)\n", pl);
+	d(printf ("Playlist::ReplaceCurrentEntry (%p)\n", pl));
 
 	int counter = 0;
 	PlaylistEntry *e = current_entry;
@@ -586,7 +598,7 @@ Playlist::ReplaceCurrentEntry (Playlist *pl)
 void
 Playlist::MergeWith (PlaylistEntry *entry)
 {
-	LOG_PLAYLISTS ("Playlist::MergeWith (%p)\n", entry);
+	d(printf ("Playlist::MergeWith (%p)\n", entry));
 
 	SetBase (g_strdup (entry->GetBase ()));
 	SetTitle (g_strdup (entry->GetTitle ()));
@@ -784,7 +796,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 {
 	PlaylistNode::Kind kind = StringToKind (name);
 
-	LOG_PLAYLISTS ("PlaylistParser::OnStartElement (%s, %p), kind = %i\n", name, attrs, kind);
+	d(printf ("PlaylistParser::OnStartElement (%s, %p), kind = %d\n", name, attrs, kind));
 
 	g_free (current_text);
 	current_text = NULL;
@@ -853,7 +865,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 			if (str_match (attrs [i], "VALUE")) {
 				if (time_value_from_str (this, attrs [i+1], &ts)) {
 					if (GetCurrentEntry () != NULL && GetParentKind () != PlaylistNode::Ref) {
-						LOG_PLAYLISTS ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts));
+						d(printf ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts)));
 						GetCurrentEntry ()->SetDuration (ts);
 					}
 				}
@@ -932,7 +944,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 			if (str_match (attrs [i], "VALUE")) {
 				if (time_value_from_str (this, attrs [i+1], &ts)) {
 					if (GetCurrentEntry () != NULL && GetParentKind () != PlaylistNode::Ref) {
-						LOG_PLAYLISTS ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts));
+						d(printf ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts)));
 						GetCurrentEntry ()->SetStartTime (ts);
 					}
 				}
@@ -970,7 +982,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 	case PlaylistNode::Root:
 	case PlaylistNode::Unknown:
 	default:
-		LOG_PLAYLISTS ("PlaylistParser::OnStartElement ('%s', %p): Unknown kind: %i\n", name, attrs, kind);
+		d(printf ("PlaylistParser::OnStartElement ('%s', %p): Unknown kind: %d\n", name, attrs, kind));
 		ParsingError (new ErrorEventArgs (MediaError, 3004, "Invalid ASX element"));
 		break;
 	}
@@ -982,7 +994,7 @@ PlaylistParser::OnEndElement (const char *name)
 	PlaylistNode::Kind kind = GetCurrentKind ();
 	TimeSpan ts; 
 
-	LOG_PLAYLISTS ("PlaylistParser::OnEndElement (%s), GetCurrentKind (): %i, GetCurrentKind () to string: %s\n", name, kind, KindToString (kind));
+	d(printf ("PlaylistParser::OnEndElement (%s), GetCurrentKind (): %d, GetCurrentKind () to string: %s\n", name, kind, KindToString (kind)));
 
 	switch (kind) {
 	case PlaylistNode::Abstract:
@@ -1062,7 +1074,7 @@ PlaylistParser::OnEndElement (const char *name)
 		}
 		break;
 	default:
-		printf ("PlaylistParser::OnEndElement ('%s'): Unknown kind %i.\n", name, kind);
+		d(printf ("PlaylistParser::OnEndElement ('%s'): Unknown kind %d.\n", name, kind));
 		ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
 		break;
 	}
@@ -1093,7 +1105,7 @@ PlaylistParser::OnText (const char *text, int len)
 		if (p [i] == 10 || p [i] == 13)
 			p [i] = ' ';
 
-	LOG_PLAYLISTS ("PlaylistParser::OnText (%s, %i)\n", p, len);
+	d(printf ("PlaylistParser::OnText (%s, %d)\n", p, len));
 	g_free (p);
 #endif
 
@@ -1145,9 +1157,10 @@ PlaylistParser::ParseASX2 ()
 
 	bytes_read = source->ReadSome (buffer, BUFFER_SIZE);
 	if (bytes_read < 0) {
-		fprintf (stderr, "Could not read asx document for parsing.\n");
+		w(fprintf (stderr, "Could not read asx document for parsing.\n"));
 		return false;
 	}
+	
 	if (!g_str_has_prefix (buffer, "[Reference]\r\nRef1=http://") ||
 	    !strstr (buffer, "?MSWMExt=.asf")) {
 		return false;
@@ -1171,7 +1184,7 @@ PlaylistParser::ParseASX2 ()
 bool
 PlaylistParser::Parse ()
 {
-	LOG_PLAYLISTS ("PlaylistParser::Parse ()\n");
+	d(printf ("PlaylistParser::Parse ()\n"));
 
 	if (!this->IsASX3 (source) && this->IsASX2 (source)) {
 		/* Parse as a asx2 mms file */
@@ -1180,6 +1193,7 @@ PlaylistParser::Parse ()
 		return this->ParseASX3 ();
 	}
 }
+
 bool
 PlaylistParser::ParseASX3 ()
 {
@@ -1239,13 +1253,13 @@ void
 PlaylistParser::PushCurrentKind (PlaylistNode::Kind kind)
 {
 	kind_stack->Append (new KindNode (kind));
-	LOG_PLAYLISTS ("PlaylistParser::Push (%i)\n", kind);
+	d(printf ("PlaylistParser::Push (%d)\n", kind));
 }
 
 void
 PlaylistParser::PopCurrentKind ()
 {
-	LOG_PLAYLISTS ("PlaylistParser::PopCurrentKind (), current: %i\n", ((KindNode *)kind_stack->Last ())->kind);
+	d(printf ("PlaylistParser::PopCurrentKind (), current: %d\n", ((KindNode *)kind_stack->Last ())->kind));
 	kind_stack->Remove (kind_stack->Last ());
 }
 
@@ -1266,7 +1280,7 @@ PlaylistParser::GetParentKind ()
 bool
 PlaylistParser::AssertParentKind (int kind)
 {
-	LOG_PLAYLISTS ("PlaylistParser::AssertParentKind (%i), GetParentKind: %i, result: %i\n", kind, GetParentKind (), GetParentKind () & kind);
+	d(printf ("PlaylistParser::AssertParentKind (%d), GetParentKind: %d, result: %d\n", kind, GetParentKind (), GetParentKind () & kind));
 
 	if (GetParentKind () & kind)
 		return true;
@@ -1279,7 +1293,7 @@ PlaylistParser::AssertParentKind (int kind)
 void
 PlaylistParser::ParsingError (ErrorEventArgs *args)
 {
-	LOG_PLAYLISTS ("PlaylistParser::ParsingError (%p)\n", args);
+	d(printf ("PlaylistParser::ParsingError (%p)\n", args));
 	
 	XML_StopParser (parser, false);
 	element->MediaFailed (args);
@@ -1322,7 +1336,7 @@ PlaylistParser::StringToKind (const char *str)
 		}
 	}
 
-	LOG_PLAYLISTS ("PlaylistParser::StringToKind ('%s') = %i\n", str, kind);
+	d(printf ("PlaylistParser::StringToKind ('%s') = %d\n", str, kind));
 
 	return kind;
 }
@@ -1339,7 +1353,7 @@ PlaylistParser::KindToString (PlaylistNode::Kind kind)
 		}
 	}
 
-	LOG_PLAYLISTS ("PlaylistParser::KindToString (%i) = '%s'\n", kind, result);
+	d(printf ("PlaylistParser::KindToString (%d) = '%s'\n", kind, result));
 
 	return result;
 }
