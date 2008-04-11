@@ -106,6 +106,10 @@ shutdown_manager_wait ()
 static void
 execute_shutdown ()
 {
+	char *dont_die = getenv ("MOONLIGHT_SHOCKER_DONT_DIE");
+	if (dont_die != NULL && dont_die [0] != 0)
+		return;
+
 	if (gtk_main_level ()) {
 		// We are running inside the embedded agviewer, so we can use gtk to signal shutdown
 		gtk_main_quit ();
@@ -118,6 +122,10 @@ execute_shutdown ()
 static gboolean
 attempt_clean_shutdown (gpointer data)
 {
+	char *dont_die = getenv ("MOONLIGHT_SHOCKER_DONT_DIE");
+	if (dont_die != NULL && dont_die [0] != 0)
+		return FALSE;
+
 	g_assert (shutdown_mutex);
 	g_assert (shutdown_cond);
 
