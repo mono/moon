@@ -5,15 +5,16 @@ DIST_SUBDIRS=harness parsertest sizes
 
 MOZ_PATH = `pwd`/$(top_builddir)/test/harness/shocker/.libs:`pwd`/$(top_builddir)/plugin/.libs
 LD_PATH = $(top_builddir)/plugin/.libs:$(top_builddir)/src/.libs:`pkg-config --variable=libdir xulrunner-gtkmozembed`
+MOON_PLUGIN_DIR = `pwd`/$(top_builddir)/plugin/.libs
 
 install-test-plugin:
 	$(MAKE) $(AM_MAKEFLAGS) -C harness/shocker install-test-plugin
 
 run-tests: all
-	GNOME_DISABLE_CRASH_DIALOG=1 MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(top_builddir)/test/xaml/drtlist.xml -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -html-report
+	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(top_builddir)/test/xaml/drtlist.xml -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -html-report
 
 run-ms-tests: all
-	GNOME_DISABLE_CRASH_DIALOG=1 MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(MS_DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v  -html-report -run-known-failures
+	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(MS_DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v  -html-report -run-known-failures
 
 
 

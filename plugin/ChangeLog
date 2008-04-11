@@ -1,3 +1,9 @@
+2008-04-11  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* plugin-proxy.cpp: Allow the user to override the location of
+	libmoonplugin by setting MOON_PLUGIN_DIR so that the test harness
+	can run without installing first.
+
 2008-04-11  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp (PluginXamlLoader::TryLoad): Allow controls to be

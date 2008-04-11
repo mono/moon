@@ -1,3 +1,7 @@
+2008-04-11  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Use MOON_PLUGIN_DIR to override the path to libmoonplugin
+
 2008-04-11  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/clock/README.txt:
