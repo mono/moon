@@ -121,7 +121,7 @@ MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
 		downloader->ref ();
 }
 
-static bool
+static gboolean
 set_source_async (void *user_data)
 {
 	MediaBase *media = (MediaBase *) user_data;

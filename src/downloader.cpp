@@ -463,7 +463,7 @@ Downloader::SendInternal ()
 	send_func (downloader_state);
 }
 
-static bool
+static gboolean
 send_async (void *user_data)
 {
 	Downloader *downloader = (Downloader *) user_data;
