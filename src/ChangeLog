@@ -1,5 +1,10 @@
 2008-04-10  Larry Ewing  <lewing@novell.com>
 
+	* xaml.cpp (start_element): throw an error if there is an xml
+	attribute on a dependency property.
+
+2008-04-10  Larry Ewing  <lewing@novell.com>
+
 	* enums.c (enum_from_str): return -1 on an invalid enum string so
 	that we can catch it as a ParserError fixes
 	Parser_Invalid_Enum.xaml.

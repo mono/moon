@@ -885,6 +885,13 @@ start_element (void *data, const char *el, const char **attr)
 				inst->info = p->current_element->info;
 			else
 				inst->info = NULL;
+
+			if (attr [0] != NULL) {
+				// It appears there is a bug in the error string but it matches the MS runtime
+				parser_error (p, el, NULL, 2018, g_strdup_printf ("The element %s does not support attributes.", attr [0]));
+				return;
+			}
+
 			inst->element_name = g_strdup (el);
 			inst->element_type = XamlElementInstance::PROPERTY;
 		} else {
