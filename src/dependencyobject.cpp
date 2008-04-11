@@ -769,7 +769,7 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns)
 	if (n)
 		to_ns->RegisterName (n, this);
 
-// 	g_hash_table_foreach (current_values, register_depobj_names, to_ns);
+ 	g_hash_table_foreach (current_values, register_depobj_names, to_ns);
 }
 
 void

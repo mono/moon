@@ -1,3 +1,9 @@
+2008-04-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* dependencyobject.cpp: When calling RegisterAllNamesRootedAt be
+	actually recursive (I'm not sure why this was commented out? Toshok?). 
+	Fixes the sprawl end-game animation, #378748.
+
 2008-04-11  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* runtime.cpp: create the stylus and eraser cursors from xpm. Fixes 
