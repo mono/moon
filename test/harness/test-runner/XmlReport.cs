@@ -36,9 +36,10 @@ namespace MoonlightTests {
 
 	public class XmlReport : IReport {
 
+		public static readonly string TestRunDirectoryName = "test-run-data";
+		public static readonly string TestRunFileName = "run.xml";
+
 		private static readonly int MaxImageWidth = 400;
-		private static readonly string TestRunDirectoryName = "test-run-data";
-		private static readonly string TestRunFileName = "run.xml";
 
 		private TestRun run;
 		private XmlDocument document;

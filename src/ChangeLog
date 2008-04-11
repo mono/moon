@@ -1,3 +1,200 @@
+2008-04-10  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp (start_element): throw an error if there is an xml
+	attribute on a dependency property.
+
+2008-04-10  Larry Ewing  <lewing@novell.com>
+
+	* enums.c (enum_from_str): return -1 on an invalid enum string so
+	that we can catch it as a ParserError fixes
+	Parser_Invalid_Enum.xaml.
+
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: MediaBase::SetSource: no need to get a Surface/TimeManager
+	  instance to do an asynchronous call, just call
+	  TimeManager::InvokeOnMainThread.
+
+2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.h, mplayer.cpp: Added MediaPlayer::AudioFinished, called by the
+	  audio thread when the audio finishes.
+	* media.h, media.cpp: Added MediaElement::AudioFinished, called by the media
+	  player when the audio finishes. Enables us to raise MediaEnded for
+	  audio-only media.
+
+2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* brush.cpp|media.cpp: All SetSource() entry points now take
+	Downloader objects rather than DependencyObject arguments - the
+	same as MSDN defines.
+
+	* media.cpp (SetSourceInternal): More cleanup /
+	simplification. Since *::SetSource() already takes steps to be
+	async, no need to use Downloader::Send() which would introduce
+	another delay in downloading. It should be plenty safe to call
+	Downloader::SendNow() in all ::SetSourceInternal()
+	implementations. Also, we now need to handle NULL downloader which
+	we get called with if the original SetSource() was passed a NULL
+	downloader.
+	(Image::SetSource): Don't cleanup the surface here, do that in
+	SetSourceInternal() so that we delay until appropriate.
+	(Image::SetSourceInternal): If there is a downloader, delay
+	CleanupSurface() even longer until the new image has been
+	downloaded.
+	(Image::DownloaderComplete): Call CleanupSurface() here.
+
+2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp: Consolidated Image and MediaElement downloader bits
+	by putting them into MediaBase.
+
+2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: Guard against calling closures which have been
+	  removed during emission of previous events in the same event list: when
+	  we're emitting and a closure is removed, mark the closure as pending
+	  removal, don't call it anymore, and only remove it when we're finished
+	  emitting.
+	* dependencyobject.h: Guard against calling closures which have been removed
+	  during emission of previous events in the same event list.
+
+2008-04-10  Michael Dominic K.  <mdk@mdk.am>
+
+	* downloader.cpp:
+	* downloader.h:
+	* media.cpp: A straight-forward fix for "gray flashes" in comic and
+	slideshow (#375275). It's circumventing a change to make downloaders
+	async for Image. Jeff, maybe you can figure more?
+
+	(The commit that broke the the slideshow was r99065, Jeff from
+	2008-03-26).
+
+2008-04-10  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp: Little fix for new stretching algho by Stephane. Fixes the
+	Showcase and test-shape-path-stretch2.xaml.
+
+2008-04-09  Chris Toshok  <toshok@ximian.com>
+
+	* stylus.cpp (Stroke::HitTestEndcapSegment): don't fail if root_1
+	is invalid, as root_2 might be.
+
+2008-04-09  Chris Toshok  <toshok@ximian.com>
+
+	[ Fixes some odd behavior in
+	  http://www.thedatafarm.com/silverink/, and also fixes bug
+	  #375229 ]
+	
+	* panel.cpp (Panel::FrontToBack): Kind of a screwy change - we
+	intersect the expose region with our RenderBounds, not our normal
+	Bounds.  This forces us to add the ink presenter to the render
+	list even when the exposed area is just going to redraw a stroke,
+	not the actual canvas rectangle.  When we go to subtract, however,
+	we still only subtract the canvas rectangle.
+
+	* stylus.cpp (InkPresenter::OnPropertyChanged): invalidate the old
+	stroke collection's bounds as well as the new stroke collection's
+	bounds.
+	(InkPresenter::OnCollectionChanged): when the collection has
+	changed, we can't just use Invalidate() since that only
+	invalidates the canvas bounds.  We need to invalidate our render
+	bounds to get rid of strokes that are outside the canvas bounds.
+	Also, make sure to also invalidate the new bounds of the stroke
+	collection (it will usually be empty, but do it anyway).
+	(InkPresenter::ComputeBounds): add logic to compute the
+	render_bounds here.
+	(InkPresenter::GetRenderBounds): new method.
+
+	* stylus.h (class InkPresenter): add GetRenderBounds, and also add
+	an OnPropertyChanged method so we can deal with the stroke
+	collection being assigned to something else.
+
+	* uielement.h (class UIElement): as much as I hate to do this, add
+	yet another type of bounds (RenderBounds).  this is only here for
+	the special case of the inkpresenter, which has the normal canvas
+	bounds (the rectangle), the subtree bounds (which unions the
+	canvas bounds with the bounds of strokes and children) and render
+	bounds (which unions canvas bounds and stroke bounds.)
+
+2008-04-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (resolve_property_path): Alias TextElement
+	to TextBlock to work around some buggy beta versions of Blend.
+
+2008-04-09  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* shape.cpp: Shape::ComputeStretchBounds: compute the stretch assuming
+	the logical/shape bounds diff stays the same. It's IMHO as close as we
+	can go without drawing and recalculating.
+
+2008-04-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp: Cleaned up some of the debugging printf's and and
+	wrapped them in d() to declutter console spewage when unneeded.
+	(xaml_create_from_str): ctype functions take int arguments, where
+	normal char values are in the range 0-255 - in order to work with
+	non-GNU, need to cast from char to unsigned char.
+
+	* error.h (class ParserErrorEventArgs): Avoid using the c++ ctor
+	initializer stuff to be consistent with other classes.
+
+2008-04-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Fix (yesterday's fix) on parsing properties. Thanks 
+	to Jackson.
+
+2008-04-08  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp:
+	* clock.h: SkipToFill the automatic duration clock groups except if 
+	this is the root of all roots clock (the TimeManager's clock). Due to
+	the idle_hint optimization, we don't process those clocks anyways.
+
+2008-04-08  Michael Dominic K.  <mdk@mdk.am>
+
+	* value.h: 
+	* animation.cpp:
+	* animation.h:
+	* dependencyobject.cpp:
+	* dependencyobject.h: Making sure that each property is animated only by
+	a single animation at a time (the last one started). 
+	From Silverlight forums:
+
+	"Keep in mind Silverlight only supports a single animation on a
+	property at a time, so if you begin multiple animations on the same
+	property, the last one will prevail."
+
+	This prevents us from overriding Filling/HoldEnd animations by sb's
+	started before. 
+
+	The implementation is: for each prop we create a hash table (when
+	needed) which stores objects (keys) + last AnimationStorage attached
+	(values). When new AnimationStorage is attached to a prop, the last one
+	is notified to stop updating the target (we don't touch the clock
+	structure). And then there is some magic to handle destroy's etc. 
+
+	This fixes PopFly mouse enter/leave problems in the toolbox and the 
+	http://www.designwithsilverlight.com/tutorials/photoGallery/gallery.html
+	problems. Fixes #375231, #362363.
+
+2008-04-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes needed for Zombomatic
+
+	* downloader.cpp (Downloader::GetDownloadedFilePart): When
+	creating the full pathname for parts we are extracting, convert
+	everything to lowercase since we need to treat archived filenames
+	case-insensitively.
+	(Downloader::GetUnzippedPath): Convert filenames from the zip
+	archive to lowercase so that it is easier for us to find them
+	case-insensitively on the filesystem once they are extracted.
+
+2008-04-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Fix parsing properties by ensure they start with the 
+	element name (and not something else). Fix crasher.
+
 2008-04-07  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/shape.cpp:

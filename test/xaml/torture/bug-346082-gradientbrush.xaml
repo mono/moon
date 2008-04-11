@@ -1,0 +1,171 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+        <!-- OK - nothing is drawn -->
+        <Rectangle Canvas.Left="60" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="1,1" MappingMode="RelativeToBoundingBox">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- OK - red green blue in a diagonal from left top to bottom right -->
+        <Rectangle Canvas.Left="60" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- OK - all blue -->
+        <Rectangle Canvas.Left="120" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="0,0" MappingMode="RelativeToBoundingBox">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- OK - all blue -->
+        <Rectangle Canvas.Left="180" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="0,0">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+
+        <!-- OK - all blue -->
+        <Rectangle Canvas.Top="60" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="1,1" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- OK - all blue -->
+        <Rectangle Canvas.Top="60" Canvas.Left="60" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="0.5,0.5" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- OK - all blue -->
+        <Rectangle Canvas.Top="60" Canvas.Left="120" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Pad" StartPoint="0,0" EndPoint="0.5,0.5" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- OK - all blue -->
+        <Rectangle Canvas.Top="60" Canvas.Left="180" Width="50" Height="50" Fill="Blue" />
+
+        <!-- BAD - should be grey but Moonlight shows blue -->
+        <Rectangle Canvas.Top="120" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="0,0" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- BAD - should be grey but Moonlight shows a purple-like pattern -->
+        <Rectangle Canvas.Top="120" Canvas.Left="60" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="0.5,0.5" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- BAD - should be grey but Moonlight shows a tight rgb pattern -->
+        <Rectangle Canvas.Top="120" Canvas.Left="120" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1.0,1.0" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- OK - a red green blue pattern in a diagonal from left top to bottom right -->
+        <Rectangle Canvas.Top="120" Canvas.Left="180" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="2.0,2.0" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+
+        <!-- BAD - should be grey but Moonlight shows blue -->
+        <Rectangle Canvas.Top="180" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,0" EndPoint="0,0" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- BAD - should be grey but Moonlight shows blue -->
+        <Rectangle Canvas.Top="180" Canvas.Left="60" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,0" EndPoint="0.5,0.5" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- BAD - should be grey but Moonlight shows a blueisgh pattern -->
+        <Rectangle Canvas.Top="180" Canvas.Left="120" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,0" EndPoint="1.0,1.0" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- BAD - similar but Moonlight has too much blue in the pattern -->
+        <Rectangle Canvas.Top="180" Canvas.Left="180" Width="50" Height="50">
+        <Rectangle.Fill>
+                <LinearGradientBrush SpreadMethod="Repeat" StartPoint="0,0" EndPoint="2.0,2.0" MappingMode="Absolute">
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Green" Offset="0.5" />
+                        <GradientStop Color="Blue" Offset="1.0" />
+                </LinearGradientBrush>
+        </Rectangle.Fill>
+        </Rectangle>
+</Canvas>

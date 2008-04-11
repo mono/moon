@@ -150,7 +150,7 @@ Stroke::HitTestEndcapSegment (Point c,
   Point op2 = p2;
 
 #if DEBUG_HITTEST
-	printf ("HitTestEndcapSegment: (%g,%g / %g, %g) hits segment (%g,%g  - %g,%g)?\n",
+	fprintf (stderr, "HitTestEndcapSegment: (%g,%g / %g, %g) hits segment (%g,%g  - %g,%g)?\n",
 		c.x, c.y,
 		w, h,
 		p1.x, p1.y,
@@ -160,7 +160,7 @@ Stroke::HitTestEndcapSegment (Point c,
 	// handle dx == 0
 	if (p2.x == p1.x) {
 #if DEBUG_HITTEST
-		printf ("dx == 0, returning %d\n", p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2));
+		fprintf (stderr, "dx == 0, returning %d\n", p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2));
 #endif
  		if (p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2)) {
 			if (p1.y < (c.y - h/2) && p2.y < (c.y - h/2))
@@ -216,7 +216,7 @@ Stroke::HitTestEndcapSegment (Point c,
 	double discr =  bq * bq - 4 * aq * cq;
 
 #if DEBUG_HITTEST
-	printf ("HitTestEndCapSegment: discr = %g\n", discr);
+	fprintf (stderr, "HitTestEndCapSegment: discr = %g\n", discr);
 #endif	
 
 	// if we have roots we need to check if they occur on the line
@@ -227,17 +227,11 @@ Stroke::HitTestEndcapSegment (Point c,
 		double sqrt_discr = discr > 0 ? sqrt(discr) : 0;
 
 		double root_1 = ((- bq) - sqrt_discr) / (2 * aq);
+		if (root_1 > p1.x && (root_1 - p1.x) < (p2.x - p1.x))
+			return true;
 
-		if (root_1 > p1.x && (root_1 - p1.x) < (p2.x - p1.x)) {
-			// root_1 is on the segment
-			if (discr == 0)
-				return true; // there is only 1 root
-
-			double root_2 = (- bq + sqrt_discr) / (2 * aq);
-			return (root_2 > p1.x && (root_2 - p1.x) < (p2.x - p1.x));
-		}
-		else
-			return false;
+		double root_2 = (- bq + sqrt_discr) / (2 * aq);
+		return (root_2 > p1.x && (root_2 - p1.x) < (p2.x - p1.x));
 	}
 }
 
@@ -326,7 +320,7 @@ Stroke::HitTestSegmentSegment (Point stroke_p1, Point stroke_p2,
 			       Point p1, Point p2)
 {
 #if DEBUG_HITTEST
-	printf ("HitTestSegmentSegment: (%g,%g - %g,%g / %g, %g) hits segment (%g,%g - %g,%g) ?\n",
+	fprintf (stderr, "HitTestSegmentSegment: (%g,%g - %g,%g / %g, %g) hits segment (%g,%g - %g,%g) ?\n",
 		stroke_p1.x, stroke_p1.y,
 		stroke_p2.x, stroke_p2.y,
 		w, h,
@@ -353,7 +347,7 @@ Stroke::HitTestEndcapPoint (Point c,
 			    Point p)
 {
 #if DEBUG_HITTEST
-	printf ("HitTestEndcapPoint: (%g,%g / %g, %g) hits point %g,%g ?\n",
+	fprintf (stderr, "HitTestEndcapPoint: (%g,%g / %g, %g) hits point %g,%g ?\n",
 		c.x, c.y,
 		w, h,
 		p.x, p.y);
@@ -367,7 +361,7 @@ Stroke::HitTestEndcapPoint (Point c,
 
 	bool rv = ((dp.x * dp.x) / (a * a) + (dp.y * dp.y) / (b * b)) < 1;
 #if DEBUG_HITTEST
-	printf (" + %s\n", rv ? "TRUE" : "FALSE");
+	fprintf (stderr, " + %s\n", rv ? "TRUE" : "FALSE");
 #endif
 	return rv;
 }
@@ -419,7 +413,7 @@ Stroke::HitTestSegmentPoint (Point stroke_p1, Point stroke_p2,
 			     Point p)
 {
 #if DEBUG_HITTEST
-	printf ("HitTestSegment: (%g,%g - %g,%g / %g, %g) hits point (%g,%g) ?\n",
+	fprintf (stderr, "HitTestSegment: (%g,%g - %g,%g / %g, %g) hits point (%g,%g) ?\n",
 		stroke_p1.x, stroke_p1.y,
 		stroke_p2.x, stroke_p2.y,
 		w, h,
@@ -503,12 +497,12 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 				return true;
 			
 #if DEBUG_HITTEST
-			printf ("\t(%f, %f) EndcapPoint failed\n",
+			fprintf (stderr, "\t(%f, %f) EndcapPoint failed\n",
 				cur.x, cur.y);
 #endif
 		} else {
 #if DEBUG_HITTEST
-			printf ("\t(%f, %f) is not within bounds\n",
+			fprintf (stderr, "\t(%f, %f) is not within bounds\n",
 				cur.x, cur.y);
 #endif
 		}
@@ -523,7 +517,7 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 			return true;
 		
 #if DEBUG_HITTEST
-		printf ("\t(%f, %f) (%f, %f) EndcapSegment failed\n",
+		fprintf (stderr, "\t(%f, %f) (%f, %f) EndcapSegment failed\n",
 			cur.x, cur.y, next.x, next.y);
 #endif
 		
@@ -541,7 +535,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 
 	if (myStylusPoints->list->Length() == 0) {
 #if DEBUG_HITTEST
-		printf ("no points in the collection, returning false!\n");
+		fprintf (stderr, "no points in the collection, returning false!\n");
 #endif
 		return false;
 	}
@@ -562,23 +556,23 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	}
 	
 #if DEBUG_HITTEST
-	printf ("Stroke::HitTest()\n");
-	printf ("\tInput points:\n");
+	fprintf (stderr, "Stroke::HitTest()\n");
+	fprintf (stderr, "\tInput points:\n");
 	n = (Collection::Node *) stylusPoints->list->First ();
 	while (n != NULL) {
 		sp = (StylusPoint *) n->obj;
 		
-		printf ("\t\tPoint: (%f, %f)\n", stylus_point_get_x (sp),
+		fprintf (stderr, "\t\tPoint: (%f, %f)\n", stylus_point_get_x (sp),
 			stylus_point_get_y (sp));
 		
 		n = (Collection::Node *) n->next;
 	}
-	printf ("\tStroke points:\n");
+	fprintf (stderr, "\tStroke points:\n");
 	n = (Collection::Node *) myStylusPoints->list->First ();
 	while (n != NULL) {
 		sp = (StylusPoint *) n->obj;
 		
-		printf ("\t\tPoint: (%f, %f)\n", stylus_point_get_x (sp),
+		fprintf (stderr, "\t\tPoint: (%f, %f)\n", stylus_point_get_x (sp),
 			stylus_point_get_y (sp));
 		
 		n = (Collection::Node *) n->next;
@@ -592,7 +586,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 				  stylus_point_get_y (sp)),
 			   width, height, stylusPoints)) {
 #if DEBUG_HITTEST
-		printf ("\tA point matched the beginning endcap\n");
+		fprintf (stderr, "\tA point matched the beginning endcap\n");
 #endif
 		return true;
 	}
@@ -607,7 +601,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 					   stylus_point_get_y (sp)),
 				    width, height, stylusPoints)) {
 #if DEBUG_HITTEST
-			printf ("\tA point matched an interior line segment\n");
+			fprintf (stderr, "\tA point matched an interior line segment\n");
 #endif
 			return true;
 		}
@@ -621,14 +615,14 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 					  stylus_point_get_y (sp)),
 				   width, height, stylusPoints)) {
 #if DEBUG_HITTEST
-			printf ("\tA point matched the ending endcap\n");
+			fprintf (stderr, "\tA point matched the ending endcap\n");
 #endif
 			return true;
 		}
 	}
 	
 #if DEBUG_HITTEST
-	printf ("\tso sad, no points intersected...\n");
+	fprintf (stderr, "\tso sad, no points intersected...\n");
 #endif
 	
 	return false;
@@ -954,6 +948,34 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 }
 
 void
+InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property->type != Type::INKPRESENTER) {
+		Canvas::OnPropertyChanged (args);
+		return;
+	}
+
+	if (args->property == InkPresenter::StrokesProperty) {
+		// be smart about invalidating only the union of the
+		// old stroke bounds and the new stroke bounds
+
+		if (args->old_value) {
+			StrokeCollection *strokes = args->old_value->AsStrokeCollection();
+			Invalidate (strokes->GetBounds().Transform (&absolute_xform));
+		}
+
+		if (args->new_value) {
+			StrokeCollection *strokes = args->new_value->AsStrokeCollection();
+			Invalidate (strokes->GetBounds().Transform (&absolute_xform));
+		}
+
+		UpdateBounds ();
+	}
+
+	NotifyListenersOfPropertyChange (args);
+}
+
+void
 InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_Args)
 {
 	switch (type) {
@@ -968,7 +990,8 @@ InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 		break;
 	}
 	case CollectionChangeTypeChanged:
-		Invalidate ();
+		Invalidate (render_bounds);
+		Invalidate (((StrokeCollection*)col)->GetBounds().Transform (&absolute_xform));
 		UpdateBounds ();
 		break;
 	}
@@ -978,6 +1001,8 @@ void
 InkPresenter::ComputeBounds ()
 {
 	Canvas::ComputeBounds ();
+
+	render_bounds = bounds;
 
 	Value* value = GetValue (InkPresenter::StrokesProperty);
 	if (!value)
@@ -990,6 +1015,14 @@ InkPresenter::ComputeBounds ()
 	Rect stroke_bounds = strokes->GetBounds ();
 	stroke_bounds = stroke_bounds.Transform (&absolute_xform);
 	bounds_with_children = bounds_with_children.Union (stroke_bounds);
+
+	render_bounds = render_bounds.Union (stroke_bounds);
+}
+
+Rect
+InkPresenter::GetRenderBounds ()
+{
+	return render_bounds;
 }
 
 InkPresenter*

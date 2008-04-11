@@ -121,6 +121,10 @@ public class GtkSilver : EventBox {
 		Raw = NativeMethods.surface_get_widget (surface);
 	}
 
+	public GtkSilver () : this (100, 100)
+	{
+	}
+	
 	/// <summary>
 	///    The transparent state for the widget.   Used to drive the compositing of unpainted regions against the background.
 	/// </summary>

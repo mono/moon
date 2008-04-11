@@ -1,3 +1,8 @@
+2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: ASFReader: don't ref the demuxer, it causes a circular
+	  dependency.
+
 2008-04-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h: Remove SeekToStart completely, it's just plain broken.

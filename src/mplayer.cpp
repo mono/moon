@@ -188,6 +188,38 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	}
 }
 
+gboolean
+MediaPlayer::AudioFinishedCallback (void *user_data)
+{
+	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinishedCallback ()\n");
+
+	MediaPlayer *mplayer = (MediaPlayer *) user_data;
+	mplayer->AudioFinished ();
+	mplayer->unref ();
+
+	return false;
+}
+
+void
+MediaPlayer::AudioFinished ()
+{
+	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinished ()\n");
+
+	if (!Surface::InMainThread ()) {
+		this->ref ();
+		TimeManager::InvokeOnMainThread (AudioFinishedCallback, this);
+		return;
+	}
+
+	if (HasVideo ())
+		return;
+
+	if (element) {
+		Stop ();
+		element->AudioFinished ();
+	}
+}
+
 void
 MediaPlayer::EnqueueFramesAsync (int audio_frames, int video_frames)
 {
@@ -914,7 +946,7 @@ AudioPlayer::AudioPlayer ()
 		
 	initialized = true;
 	
-	LOG_AUDIO ("AudioPlayer::Initialize (): the audio player has been initialized.");
+	LOG_AUDIO ("AudioPlayer::Initialize (): the audio player has been initialized.\n");
 }
 
 void
@@ -1886,6 +1918,7 @@ AudioPlayer::AudioNode::GetNextBuffer ()
 	frame = packet->frame;
 	
 	if (frame->event == FrameEventEOF) {
+		mplayer->AudioFinished ();
 		mplayer->SetEof (true);
 		return false;
 	}

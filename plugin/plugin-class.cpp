@@ -11,13 +11,6 @@
  *
  */
 
-// XXXXXXXXXXx
-//
-// The listener proxies we create for dealing with events are
-// leaked.  we need to figure out how to deal with them (where to
-// store them so we can free them on removeListener, etc.)
-//
-
 #include <ctype.h>
 #include "plugin-class.h"
 #include "plugin.h"
@@ -391,19 +384,9 @@ npobject_is_dependency_object (NPObject *obj)
 static bool
 npvariant_is_dependency_object (NPVariant var)
 {
-	NPObject *obj;
-	guint i;
-	
 	if (!NPVARIANT_IS_OBJECT (var))
 		return false;
-	
-	obj = NPVARIANT_TO_OBJECT (var);
-	for (i = 0; i < DEPENDENCY_OBJECT_CLASS_NAMES_LAST; i++) {
-		if (obj->_class == dependency_object_classes[i])
-			return true;
-	}
-	
-	return false;
+	return npobject_is_dependency_object (NPVARIANT_TO_OBJECT (var));
 }
 
 static bool
@@ -444,10 +427,8 @@ npvariant_is_moonlight_object (NPVariant var)
 		return false;
 	
 	obj = NPVARIANT_TO_OBJECT (var);
-	for (i = 0; i < DEPENDENCY_OBJECT_CLASS_NAMES_LAST; i++) {
-		if (obj->_class == dependency_object_classes[i])
-			return true;
-	}
+	if (npobject_is_dependency_object (obj))
+		return true;
 	
 	for (i = 0; i < G_N_ELEMENTS (moonlight_types); i++) {
 		if (obj->_class == moonlight_types[i])
@@ -507,10 +488,13 @@ EventListenerProxy::~EventListenerProxy ()
 		target_object->RemoveHandler ("destroyed", dtoken);
 	}
 	
-	if (is_func)
-		NPN_ReleaseObject ((NPObject *) callback);
-	else
+	if (is_func) {
+		if (callback != NULL)
+			NPN_ReleaseObject ((NPObject *) callback);
+	}
+	else {
 		g_free (callback);
+	}
 	
 	g_free (event_name);
 }
@@ -541,6 +525,13 @@ EventListenerProxy::RemoveHandler ()
 		target_object->RemoveHandler (event_id, token);
 		event_id = -1;
 	}
+}
+
+void
+EventListenerProxy::Invalidate ()
+{
+	if (is_func)
+		callback = NULL;
 }
 
 void
@@ -1278,8 +1269,16 @@ MoonlightObject::destroy_proxy (gpointer data)
 }
 
 void
+MoonlightObject::invalidate_proxy (gpointer key, gpointer value, gpointer data)
+{
+	EventListenerProxy *proxy = (EventListenerProxy*)value;
+	proxy->Invalidate ();
+}
+
+void
 MoonlightObject::Invalidate ()
 {
+	g_hash_table_foreach (event_listener_proxies, invalidate_proxy, NULL);
 }
 
 bool
@@ -2921,7 +2920,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 				     NPVariant *result)
 {
 	MediaElement *media = (MediaElement*)GetDependencyObject ();
-
+	
 	switch (id) {
 	case MoonId_Play:
 		if (argCount != 0)
@@ -2959,8 +2958,8 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 		
 		DependencyObject *downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		const char *part = STR_FROM_VARIANT (args [1]);
-
-		media->SetSource (downloader, part);
+		
+		media->SetSource ((Downloader *) downloader, part);
 
 		VOID_TO_NPVARIANT (*result);
 
@@ -3013,7 +3012,7 @@ MoonlightImageObject::Invoke (int id, NPIdentifier name,
 		downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		part = STR_FROM_VARIANT (args [1]);
 		
-		img->SetSource (downloader, part);
+		img->SetSource ((Downloader *) downloader, part);
 		
 		VOID_TO_NPVARIANT (*result);
 		
@@ -3064,7 +3063,7 @@ MoonlightImageBrushObject::Invoke (int id, NPIdentifier name,
 		downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		part = STR_FROM_VARIANT (args [1]);
 		
-		img->SetSource (downloader, part);
+		img->SetSource ((Downloader *) downloader, part);
 		
 		VOID_TO_NPVARIANT (*result);
 		

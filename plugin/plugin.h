@@ -37,6 +37,7 @@ class PluginInstance
 	char *initParams;
 	bool isLoaded;
 	char *source;
+	guint source_idle;
 	char *onLoad;
 	char *background;
 	char *onError;
@@ -66,6 +67,8 @@ class PluginInstance
 	void UpdateSourceByReference (const char *value);
 	void TryLoad ();
 	void SetPageURL ();
+
+	static gboolean IdleUpdateSourceByReference (gpointer data);
 
 	static void RenderSurface (Surface *surface, void *user_data);
 	static void InvalidateSurface (Surface *surface, Rect rect, void *user_data);

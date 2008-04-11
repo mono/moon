@@ -2432,12 +2432,14 @@ FileSource::ReadInternal (void *buf, uint32_t n)
 		}
 		
 		if (r == -1 && nread == 0) {
-			LOG_PIPELINE_ERROR ("FileSource<%i>::ReadInternal (%p, %i): Some error occured during reading, r: %i, nread: %i, errno: %i = %s.\n", GET_OBJ_ID (this), buf, n, r, nread, errno, strerror (errno));
+			LOG_PIPELINE_ERROR ("FileSource<%d>::ReadInternal ('%s', %p, %u): Some error occured during reading, r: %d, nread: %d, errno: %d = %s.\n",
+					    GET_OBJ_ID (this), filename, buf, n, r, nread, errno, strerror (errno));
 			return -1;
 		}
 		
 		if (r == 0) {
-			LOG_PIPELINE_ERROR ("FileSource<%i>::ReadInternal (%p, %i): Could not read all the data, eof reached. Current position: %lld\n", GET_OBJ_ID (this), buf, n, GetPositionInternal ());
+			LOG_PIPELINE_ERROR ("FileSource<%d>::ReadInternal ('%s', %p, %u): Could not read all the data, eof reached. Current position: %lld\n",
+					    GET_OBJ_ID (this), filename, buf, n, GetPositionInternal ());
 			eof = true;
 			break;
 		}
@@ -3102,12 +3104,13 @@ IMediaSource::ReadAll (void *buf, uint32_t n, bool block, int64_t start)
 {
 	int32_t read;
 
-	LOG_PIPELINE ("IMediaSource<%i>::ReadAll (%p, %u, %i, %lld).\n", GET_OBJ_ID (this), buf, n, block, start);
+	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld).\n", GET_OBJ_ID (this), buf, n, block ? "true" : "false", start);
 
 	read = ReadSome (buf, n, block, start);
 
-	LOG_PIPELINE_ERROR_CONDITIONAL ((int64_t) read != (int64_t) n, "IMediaSource<%i>::ReadAll (%p, %u, %i, %lld): Could only read %i bytes.\n", GET_OBJ_ID (this), buf, n, block, start, read);
-	LOG_PIPELINE ("IMediaSource<%i>::ReadAll (%p, %u, %i, %lld), read: %i [Done].\n", GET_OBJ_ID (this), buf, n, block, start, read);
+	LOG_PIPELINE_ERROR_CONDITIONAL ((int64_t) read != (int64_t) n, "IMediaSource<%d>::ReadAll (%p, %u, %s, %lld): Could only read %i bytes.\n",
+					GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
+	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld), read: %d [Done].\n", GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
 
 	return (int64_t) read == (int64_t) n;
 }

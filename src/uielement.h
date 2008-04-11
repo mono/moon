@@ -188,6 +188,13 @@ public:
 	virtual Rect GetSubtreeBounds () { return bounds; }
 
 	//
+	// GetRenderBounds:
+	// returns the bounding box to be rendered, which
+	// unfortunately isn't necessarily the same as either our
+	// bounds or subtree bounds (in the case of inkpresenter)
+	virtual Rect GetRenderBounds () { return bounds; }
+
+	//
 	// GetTransformFor
 	//   Obtains the affine transform for the given child, this is
 	//   implemented by containers

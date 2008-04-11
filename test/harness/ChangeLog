@@ -1,3 +1,25 @@
+2008-04-09  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* test-runner/Makefile.am: dist comparison_report.html
+
+2008-04-09  Rolf Bjarne Kvinge  <RKVinge@novell.com>
+
+	* test-runner/LoggingServer.cs: Fix the standalone logging server.
+
+2008-04-08  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/ComparisonReport.cs: Fix compare that i changed for
+	debug.
+
+2008-04-08  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/ComparisonReport.cs: Add the current test to the
+	list of completed tests.
+
+2008-04-08  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/*: Add the new comparison report stuff.
+
 2008-04-03  Jackson Harper  <jackson@ximian.com>
 
 	* agviewer/agviewer.cpp: Add a new signal that is passed to the

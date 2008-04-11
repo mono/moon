@@ -264,16 +264,14 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 
 	Stretch stretch = shape_get_stretch (this);
 	if (stretch != StretchNone) {
-		double sh = h / shape_bounds.h;
-		double sw = w / shape_bounds.w;
-		bool center = false;
+		double sw = (logical_bounds.w != 0.0) ? (w - (shape_bounds.w - logical_bounds.w)) / logical_bounds.w : 1.0;
+		double sh = (logical_bounds.h != 0.0) ? (h - (shape_bounds.h - logical_bounds.h)) / logical_bounds.h : 1.0;
 
 		switch (stretch) {
 		case StretchFill:
 			break;
 		case StretchUniform:
 			sw = sh = (sw < sh) ? sw : sh;
-			center = true;
 			break;
 		case StretchUniformToFill:
 			sw = sh = (sw > sh) ? sw : sh;
@@ -282,15 +280,25 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 			/* not reached */
 		break;
 		}
-		
-		if (center)
-			cairo_matrix_translate (&stretch_transform, w * 0.5, h * 0.5);
-		cairo_matrix_scale (&stretch_transform, sw, sh);
-		if (center)
-			cairo_matrix_translate (&stretch_transform, -shape_bounds.w * 0.5, -shape_bounds.h * 0.5);
-		
+
+		if (logical_bounds.w != 0.0) {
+			cairo_matrix_translate (&stretch_transform, w * 0.5, 0);
+			cairo_matrix_scale (&stretch_transform, sw, 1.0);
+			cairo_matrix_translate (&stretch_transform, -shape_bounds.w * 0.5, 0);
+		}
+
 		if ((vh && vw) || !this->Is (Type::LINE))
-			cairo_matrix_translate (&stretch_transform, -shape_bounds.x, -shape_bounds.y);
+			cairo_matrix_translate (&stretch_transform, -shape_bounds.x, 0);
+
+		if (logical_bounds.h != 0.0) {
+			cairo_matrix_translate (&stretch_transform, 0, h * 0.5);
+			cairo_matrix_scale (&stretch_transform, 1.0, sh);
+			cairo_matrix_translate (&stretch_transform, 0, -shape_bounds.h * 0.5);
+		}
+
+		if ((vh && vw) || !this->Is (Type::LINE))
+			cairo_matrix_translate (&stretch_transform, 0, -shape_bounds.y);
+
 
 		// Double check our math
 		cairo_matrix_t test = stretch_transform;

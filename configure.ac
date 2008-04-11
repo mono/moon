@@ -502,7 +502,7 @@ fi
 
 
 SHOCKER_CFLAGS="$(pkg-config --cflags glib-2.0 gdk-2.0 gtk+-2.0 ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin) $XTST_CFLAGS"
-SHOCKER_LIBS="$(pkg-config --libs glib-2.0 gdk-2.0 gtk+-2.0 xtst ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin) $XTST_LIBS"
+SHOCKER_LIBS="$(pkg-config --libs glib-2.0 gdk-2.0 gtk+-2.0 ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin) $XTST_LIBS"
 
 AGVIEWER_CFLAGS=`pkg-config --cflags glib-2.0 gtk+-2.0 xulrunner-gtkmozembed dbus-glib-1`
 AGVIEWER_LIBS=`pkg-config --libs glib-2.0 gtk+-2.0 xulrunner-gtkmozembed dbus-glib-1`
@@ -550,6 +550,7 @@ examples/desklet/Makefile
 examples/desklet/calculator/Makefile
 examples/desklet/calendar/Makefile
 examples/desklet/cpumonitor/Makefile
+examples/desklet/ruler/Makefile
 examples/desklet/glassycalendar/Makefile
 examples/desklet/glassyclock/Makefile
 examples/desklet/glassymonitor/Makefile

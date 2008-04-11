@@ -174,10 +174,16 @@ class InkPresenter : public Canvas {
 
 	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual void ComputeBounds ();
 
+	virtual Rect GetRenderBounds ();
+
 	static DependencyProperty* StrokesProperty;
+
+ private:
+	Rect render_bounds;
 };
 
 InkPresenter* ink_presenter_new (void);

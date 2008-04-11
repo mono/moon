@@ -1,0 +1,78 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+   <Rectangle Canvas.Left="0" Canvas.Top="0" Stroke="Black" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <Rectangle Stroke="Black" Canvas.Left="100" Canvas.Top="0" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+            <LinearGradientBrush.RelativeTransform>
+               <RotateTransform CenterX="0.5" CenterY="0.5" Angle="0" />
+            </LinearGradientBrush.RelativeTransform>            
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <Rectangle Stroke="Black" Canvas.Left="200" Canvas.Top="0" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+            <LinearGradientBrush.RelativeTransform>
+               <RotateTransform CenterX="0.5" CenterY="0.5" Angle="360" />
+            </LinearGradientBrush.RelativeTransform>            
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+
+   <Rectangle Canvas.Left="0" Canvas.Top="50" Stroke="Black" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+            <LinearGradientBrush.RelativeTransform>
+               <RotateTransform CenterX="0.5" CenterY="0.5" Angle="90" />
+            </LinearGradientBrush.RelativeTransform>            
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <Rectangle Stroke="Black" Canvas.Left="100" Canvas.Top="50" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+            <LinearGradientBrush.RelativeTransform>
+               <RotateTransform CenterX="0.5" CenterY="0.5" Angle="180" />
+            </LinearGradientBrush.RelativeTransform>            
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+   <Rectangle Stroke="Black" Canvas.Left="200" Canvas.Top="50" Width="100" Height="50" >
+      <Rectangle.Fill>
+         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+               <GradientStop Color="Red" Offset="0" />
+               <GradientStop Color="Blue" Offset="1" />
+            </LinearGradientBrush.GradientStops>   
+            <LinearGradientBrush.RelativeTransform>
+               <RotateTransform CenterX="0.5" CenterY="0.5" Angle="270" />
+            </LinearGradientBrush.RelativeTransform>            
+         </LinearGradientBrush>
+      </Rectangle.Fill>
+   </Rectangle>
+</Canvas>

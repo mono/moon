@@ -372,7 +372,7 @@ class ClockGroup : public Clock {
 	virtual ~ClockGroup ();
 
  public:
-	ClockGroup (TimelineGroup *timeline);
+	ClockGroup (TimelineGroup *timeline, bool never_fill = false);
 	virtual Type::Kind GetObjectType () { return Type::CLOCKGROUP; };
 
 	void AddChild (Clock *clock);
@@ -401,6 +401,7 @@ class ClockGroup : public Clock {
 	TimelineGroup *timeline;
 	bool emitted_complete;
 	bool idle_hint;
+	bool never_fill;
 };
 
 

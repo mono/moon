@@ -742,8 +742,6 @@ ASFReader::ASFReader (ASFParser *parser, IMediaDemuxer *demuxer)
 	this->parser = parser;
 	this->demuxer = demuxer;
 	this->source = parser->GetSource ();
-	if (this->demuxer)
-		this->demuxer->ref ();
 	next_packet_index = 0;
 	memset (readers, 0, sizeof (ASFFrameReader*) * 128);
 	positioned = false;
@@ -751,9 +749,6 @@ ASFReader::ASFReader (ASFParser *parser, IMediaDemuxer *demuxer)
 
 ASFReader::~ASFReader ()
 {
-	if (demuxer)
-		demuxer->unref ();
-
 	for (int i = 0; i < 128; i++)
 		delete readers [i];
 }

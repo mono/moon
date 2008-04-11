@@ -234,7 +234,7 @@ enum_from_str (const enum_map_t *emu, const char *str)
 			return emu [i].value;
 	}
 
-	return 0;
+	return -1;
 }
 
 static const char*

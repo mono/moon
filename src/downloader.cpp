@@ -232,7 +232,7 @@ create_unzipdir (const char *filename)
 char *
 Downloader::GetDownloadedFilePart (const char *PartName)
 {
-	char *dirname, *path;
+	char *dirname, *path, *part;
 	unzFile zipfile;
 	struct stat st;
 	int rv, fd;
@@ -249,71 +249,73 @@ Downloader::GetDownloadedFilePart (const char *PartName)
 	if (!unzipdir && !(unzipdir = create_unzipdir (filename)))
 		return NULL;
 	
-	path = g_build_filename (unzipdir, PartName, NULL);
+	part = g_ascii_strdown (PartName, -1);
+	path = g_build_filename (unzipdir, part, NULL);
 	if ((rv = stat (path, &st)) == -1 && errno == ENOENT) {
-		if (strchr (PartName, '/') != NULL) {
+		if (strchr (part, '/') != NULL) {
 			// create the directory path
 			dirname = g_path_get_dirname (path);
 			rv = g_mkdir_with_parents (dirname, 0700);
 			g_free (dirname);
 			
-			if (rv == -1 && errno != EEXIST) {
-				g_free (path);
-				return NULL;
-			}
+			if (rv == -1 && errno != EEXIST)
+				goto exception1;
 		}
 		
 		// open the zip archive...
-		if (!(zipfile = unzOpen (filename))) {
-			g_free (path);
-			return NULL;
-		}
+		if (!(zipfile = unzOpen (filename)))
+			goto exception1;
 		
-		// locate the file we want to extract...
-		if (unzLocateFile (zipfile, PartName, 0) != UNZ_OK) {
-			unzClose (zipfile);
-			g_free (path);
-			return NULL;
-		}
+		// locate the file we want to extract... (2 = case-insensitive)
+		if (unzLocateFile (zipfile, PartName, 2) != UNZ_OK)
+			goto exception2;
 		
 		// open the requested part within the zip file
-		if (unzOpenCurrentFile (zipfile) != UNZ_OK) {
-			unzClose (zipfile);
-			g_free (path);
-			return NULL;
-		}
+		if (unzOpenCurrentFile (zipfile) != UNZ_OK)
+			goto exception2;
 		
 		// open the output file
-		if ((fd = open (path, O_CREAT | O_WRONLY, 0644)) == -1) {
-			unzCloseCurrentFile (zipfile);
-			unzClose (zipfile);
-			g_free (path);
-			return NULL;
-		}
+		if ((fd = open (path, O_CREAT | O_WRONLY, 0644)) == -1)
+			goto exception3;
 		
 		// extract the file from the zip archive... (closes the fd on success and fail)
-		if (!ExtractFile (zipfile, fd)) {
-			unzCloseCurrentFile (zipfile);
-			unzClose (zipfile);
-			g_free (path);
-			return NULL;
-		}
+		if (!ExtractFile (zipfile, fd))
+			goto exception3;
 		
 		unzCloseCurrentFile (zipfile);
 		unzClose (zipfile);
 	} else if (rv == -1) {
 		// irrecoverable error
-		g_free (path);
-		return NULL;
+		goto exception0;
 	}
 	
+	g_free (part);
+	
 	return path;
+	
+exception3:
+	
+	unzCloseCurrentFile (zipfile);
+	
+exception2:
+	
+	unzClose (zipfile);
+	
+exception1:
+	
+	g_free (part);
+	
+exception0:
+	
+	g_free (path);
+	
+	return NULL;
 }
 
 const char *
 Downloader::GetUnzippedPath ()
 {
-	char filename[256];
+	char filename[256], *p;
 	unz_file_info info;
 	const char *name;
 	GString *path;
@@ -350,6 +352,12 @@ Downloader::GetUnzippedPath ()
 		
 		unzGetCurrentFileInfo (zip, &info, filename, sizeof (filename),
 				       NULL, 0, NULL, 0);
+		
+		// convert filename to lowercase
+		for (p = filename; *p; p++) {
+			if (*p >= 'A' && *p <= 'Z')
+				*p += 0x20;
+		}
 		
 		if ((name = strrchr (filename, '/'))) {
 			// make sure the full directory path exists, if not create it
@@ -483,6 +491,13 @@ Downloader::Send ()
 		send_queued = true;
 		SendInternal ();
 	}
+}
+
+void
+Downloader::SendNow ()
+{
+	send_queued = true;
+	SendInternal ();
 }
 
 //

@@ -106,7 +106,7 @@ namespace Desklets
 
 		public void PageLoaded (object o, EventArgs e)
 		{
-			Mono.Desklets.Desklet.SetupToolbox (this);
+			Gtk.Moonlight.Desklet.SetupToolbox(this);
 			
 			storyboard = FindName ("storyboard") as Storyboard;
 			

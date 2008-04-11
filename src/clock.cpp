@@ -259,7 +259,7 @@ TimeManager::TimeManager ()
 
 	timeline = new ParallelTimeline();
 	timeline->SetDuration (Duration::Automatic);
-	root_clock = new ClockGroup (timeline);
+	root_clock = new ClockGroup (timeline, true);
 	char *name = g_strdup_printf ("Surface clock group for time manager (%p)", this);
 	root_clock->SetValue(DependencyObject::NameProperty, name);
 	g_free (name);
@@ -1017,14 +1017,14 @@ Clock::Stop ()
 	was_stopped = true;
 }
 
-
-ClockGroup::ClockGroup (TimelineGroup *timeline)
+ClockGroup::ClockGroup (TimelineGroup *timeline, bool never_f)
   : Clock (timeline)
 {
 	child_clocks = NULL;
 	this->timeline = timeline;
 	emitted_complete = false;
 	idle_hint = false;
+	never_fill = never_f;
 }
 
 void
@@ -1167,15 +1167,14 @@ ClockGroup::Tick ()
 
 		if (repeat_count == 0) {
 			/* 
-			   We might be stopped at this point because of SkipToFill 
-			   if our FillBehavior is Stop. However, we set the idle hint
-			   anyways in case of different behavior.
-			   
 			   Setting the idle hint is an optimization -- the ClockGroup 
 			   will not tick anymore but it'll remain in the proper state. 
-			   SL seems to do something similiar. 
+			   SL seems to do something similiar. We never fill ie. the
+			   main (time manager) clock group.
 			*/
 			idle_hint = true;
+			if (! never_fill)
+				SkipToFill ();
 		} else
 			DoRepeat ();
 	}

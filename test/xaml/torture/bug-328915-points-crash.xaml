@@ -1,0 +1,29 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+	<!-- points can be empty, but it can't be only spaces, tabs or a single number -->
+	<Polyline Stroke="Blue" Fill="Green" Points="" />
+
+	<!-- points can start with spaces -->
+	<Polyline Stroke="Blue" Fill="Green" Points="   10,10" />
+
+	<!-- points can start with tabs -->
+	<Polyline Stroke="Blue" Fill="Green" Points="	110,10" />
+
+	<!-- points can't start with comma
+	<Polyline Stroke="Blue" Fill="Green" Points=",110,10" />
+	-->
+
+	<!-- points can have extra comma and a comma can separate points -->
+        <Polyline Stroke="Blue" Fill="Green" Points=" 10,110, 110,110, 	110,210,10,210," />
+
+	<!-- points can have new lines to separate points and extra spaces at the end -->
+        <Polyline Stroke="Blue" Fill="Lime" Points=" 10,210, 110,210	110,310
+10,310    " />
+
+	<!-- points can be separated using the minus sign but the separator isn't skipped in this case -->
+        <Polyline Stroke="Blue" Fill="Gray" Points=" 10,210, 110,210-10,150" />
+
+	<!-- points coordinates can be separated spaces or minus or tab or newline -->
+        <Polyline Stroke="Blue" Fill="Brown" Points=" 10-10, 110	210 10 150,10
+-10" />
+</Canvas>

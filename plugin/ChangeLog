@@ -1,3 +1,30 @@
+2008-04-10  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (npvariant_is_dependency_object): no reason to
+	duplicate the logic here - call npobject_is_dependency_object.
+
+2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp: Cast DOB's to Downloaders when passing to
+	SetSource().
+
+2008-04-10  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp, plugin-class.h: use the same "Invalidate
+	NULL's things out, while the dtor checks for NULL before calling
+	NPN_ReleaseObject" pattern with event listener proxies.
+
+2008-04-09  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp, plugin.h: make PluginInstance::SetSource behave
+	asynchronously for both #ref and normal url cases.  Fixes bug
+	376966.
+
+2008-04-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (PluginXamlLoader::TryLoad): Print a little more
+	useful info on error.
+
 2008-04-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.h (EventListenerProxy.dtor): Made virtual... not

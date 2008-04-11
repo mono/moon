@@ -1,0 +1,61 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+      <script language="javascript" src="xaml/Silverlight.js"></script>
+
+      <script language="javascript">
+
+      function get_popup_canvas ()
+      {
+             var graph = document.getElementById ("graph");
+             var popup = graph.content.root.findName ("popup");
+             if (popup === null) {
+                     popup = graph.content.createFromXaml  ('<Canvas Name="popup" Width="175" Height="50"><Rectangle Stroke="Black" Canvas.Left="1" StrokeThickness="1" Width="174" Height="50" /><TextBlock Name="run_block" /><TextBlock Name="info_block" Canvas.Top="20" /></Canvas>');
+		     graph.content.root.Children.add (popup);
+             }
+
+	     return popup;
+      }
+
+      function EllipseMouseEnter (sender, args)
+      {
+              var popup = get_popup_canvas ();
+              var info = sender.tag.split (",");
+
+	      // sender.width *= 2;
+	      // sender.height *= 2;
+	      popup ["Background"] = sender.fill;
+	      popup ["Canvas.Left"] = sender ["Canvas.Left"] + 25;
+	      popup ["Canvas.Top"] = sender ["Canvas.Top"] - popup.height / 2;
+	      popup.findName ("run_block").text = info [0];
+	      popup.findName ("info_block").text = info [1] + ":" + info [2];
+	      popup.visibility = 0;
+      }
+
+      function EllipseMouseLeave (sender, args)
+      {
+              var popup = get_popup_canvas ();
+	      // sender.width /= 2;
+	      // sender.height /= 2;
+	      popup.visibility = 1;
+      }
+      </script>
+
+      <script type="text/xaml" id="graph_xaml">
+      $GRAPH_XAML
+      </script>
+
+  </head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight" Width="700" Height="520" id="graph" Source="#graph_xaml">
+        </embed>
+    </div>
+    <div>
+    $COMPARE_HTML
+    </div>
+  </body>
+</html>
+

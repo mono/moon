@@ -37,6 +37,7 @@ public:
 		error_code = code;
 		error_message = g_strdup (msg);
 	}
+	
 	virtual Type::Kind GetObjectType () { return Type::ERROREVENTARGS; };
 
 	int error_code;
@@ -50,7 +51,7 @@ protected:
 
 public:
 	ImageErrorEventArgs (const char *msg)
-	  : ErrorEventArgs (ImageError, 0, msg)
+		: ErrorEventArgs (ImageError, 0, msg)
 	{
 	}
 	virtual Type::Kind GetObjectType () { return Type::IMAGEERROREVENTARGS; };
@@ -67,22 +68,20 @@ protected:
 
 
 public:
-	ParserErrorEventArgs (const char *msg,
-			      const char *file,
-			      int line, int column,
-			      int error_code, 
-			      const char *element,
-			      const char *attribute)
-	  : ErrorEventArgs (ParserError, error_code, msg),
-	  char_position (column),
-	  line_number (line),
-	  xaml_file (g_strdup(file)),
-	  xml_element (g_strdup (element)),
-	  xml_attribute (g_strdup (attribute))
-	  {
-	  }
+	ParserErrorEventArgs (const char *msg, const char *file,
+			      int line, int column, int error_code, 
+			      const char *element, const char *attribute)
+		: ErrorEventArgs (ParserError, error_code, msg)
+	{
+		xml_attribute = g_strdup (attribute);
+		xml_element = g_strdup (element);
+		xaml_file = g_strdup (file);
+		char_position = column;
+		line_number = line;
+	}
+	
 	virtual Type::Kind GetObjectType () { return Type::PARSERERROREVENTARGS; };
-
+	
 	int char_position;
 	int line_number;
 	char *xaml_file;
@@ -98,7 +97,9 @@ public:
 	MediaErrorEventArgs (MediaResult result, const char *msg)
 		: ErrorEventArgs (MediaError, (int) result, msg)
 	{
+		
 	}
+	
 	virtual Type::Kind GetObjectType () { return Type::MEDIAERROREVENTARGS; };
 
 	MediaResult GetMediaResult () { return (MediaResult) error_code; }

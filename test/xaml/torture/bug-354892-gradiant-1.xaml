@@ -1,0 +1,176 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="400" Height="400">
+	<TextBlock Canvas.Left="0" Canvas.Top="0" Text="Solid" />
+	<Rectangle Canvas.Left="0" Canvas.Top="20" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<SolidColorBrush Color="Red" />
+	</Rectangle.Fill>
+	</Rectangle>
+	<TextBlock Canvas.Left="100" Canvas.Top="0" Text="Linear" />
+	<Rectangle Canvas.Left="100" Canvas.Top="20" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Color="Yellow" Offset="0" />
+				<GradientStop Color="Green" Offset="0.5" />
+				<GradientStop Color="Blue" Offset="1" />
+			</LinearGradientBrush.GradientStops>   
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<TextBlock Canvas.Left="200" Canvas.Top="0" Text="Gradient" />
+	<Rectangle Canvas.Left="200" Canvas.Top="20" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Color="White" Offset="0" />
+				<GradientStop Color="Black" Offset="1" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<TextBlock Canvas.Left="300" Canvas.Top="0" Text="Image" />
+	<Rectangle Canvas.Left="300" Canvas.Top="20" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<ImageBrush ImageSource="mono.png" Stretch="None" />
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<TextBlock Canvas.Left="0" Canvas.Top="80" Text="Rectangle.RenderTransform" />
+	<Rectangle Canvas.Left="0" Canvas.Top="100" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<SolidColorBrush Color="Red" />
+	</Rectangle.Fill>
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,20,4" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Left="100" Canvas.Top="100" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Color="Yellow" Offset="0" />
+				<GradientStop Color="Green" Offset="0.5" />
+				<GradientStop Color="Blue" Offset="1" />
+			</LinearGradientBrush.GradientStops>   
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,20,4" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Left="200" Canvas.Top="100" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Color="White" Offset="0" />
+				<GradientStop Color="Black" Offset="1" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,20,4" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+	<Rectangle Canvas.Left="300" Canvas.Top="100" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<ImageBrush ImageSource="mono.png" Stretch="None" />
+	</Rectangle.Fill>
+	<Rectangle.RenderTransform>
+		<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,20,4" />
+	</Rectangle.RenderTransform>
+	</Rectangle>
+
+	<TextBlock Canvas.Left="0" Canvas.Top="160" Text="Brush.Transform" />
+	<Rectangle Canvas.Left="0" Canvas.Top="180" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<SolidColorBrush Color="Red">
+			<SolidColorBrush.Transform>
+				<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,20,4" />
+			</SolidColorBrush.Transform>
+		</SolidColorBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="100" Canvas.Top="180" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Color="Yellow" Offset="0" />
+				<GradientStop Color="Green" Offset="0.5" />
+				<GradientStop Color="Blue" Offset="1" />
+			</LinearGradientBrush.GradientStops>   
+			<LinearGradientBrush.Transform>
+				<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,20,4" />
+			</LinearGradientBrush.Transform>
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="200" Canvas.Top="180" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Color="White" Offset="0" />
+				<GradientStop Color="Black" Offset="1" />
+			</RadialGradientBrush.GradientStops>
+			<RadialGradientBrush.Transform>
+				<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,20,4" />
+			</RadialGradientBrush.Transform>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="300" Canvas.Top="180" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<ImageBrush ImageSource="mono.png" Stretch="None">
+		<ImageBrush.Transform>
+			<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,20,4" />
+		</ImageBrush.Transform>
+		</ImageBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+
+	<TextBlock Canvas.Left="0" Canvas.Top="240" Text="Brush.RelativeTransform" />
+	<Rectangle Canvas.Left="0" Canvas.Top="260" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<SolidColorBrush Color="Red">
+			<SolidColorBrush.RelativeTransform>
+				<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,0.5,0.5" />
+			</SolidColorBrush.RelativeTransform>
+		</SolidColorBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="100" Canvas.Top="260" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+			<LinearGradientBrush.GradientStops>
+				<GradientStop Color="Yellow" Offset="0" />
+				<GradientStop Color="Green" Offset="0.5" />
+				<GradientStop Color="Blue" Offset="1" />
+			</LinearGradientBrush.GradientStops>   
+			<LinearGradientBrush.RelativeTransform>
+				<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,0.5,0.5" />
+			</LinearGradientBrush.RelativeTransform>
+		</LinearGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="200" Canvas.Top="260" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+			<RadialGradientBrush.GradientStops>
+				<GradientStop Color="White" Offset="0" />
+				<GradientStop Color="Black" Offset="1" />
+			</RadialGradientBrush.GradientStops>
+			<RadialGradientBrush.RelativeTransform>
+				<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,0.5,0.5" />
+			</RadialGradientBrush.RelativeTransform>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+	<Rectangle Canvas.Left="300" Canvas.Top="260" Stroke="Black" Width="100" Height="50" >
+	<Rectangle.Fill>
+		<ImageBrush ImageSource="mono.png" Stretch="None">
+		<ImageBrush.RelativeTransform>
+			<MatrixTransform Matrix="0.5,0.25,-0.25,0.5,0.5,0.5" />
+		</ImageBrush.RelativeTransform>
+		</ImageBrush>
+	</Rectangle.Fill>
+	</Rectangle>
+</Canvas>
