@@ -284,7 +284,7 @@ namespace MoonlightTests {
 			} else {
 				// what happens if initial delay is specified but not width/height ??? 	
 				res.AppendFormat ("\t\tTakeSingleSnapshotAndShutdown (moonlight_control, \"{0}\", {1}, {2}{3});",
-						String.Concat (Path.GetFullPath (InputFile), ".png"),
+						String.Concat (Path.GetFileName (InputFile), ".png"),
 						(capture_width != null ? capture_width : ResultWidth),
 						(capture_height != null ? capture_height : ResultHeight),
 						(initial_delay != null ? String.Concat (", ", initial_delay) : String.Empty));

@@ -1,5 +1,13 @@
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/HtmlTest.cs: Use relative path for the snapshots. Makes it
+	  possible to use the generated html file for creating baselines on SL.
+	* test-runner/html_template.html: Some fixes to be compatible with IE/MS'
+	  test plugin: pass document.name to SignalShutdown and create the
+	  testplugin using a object tag on IE.
+
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* shocker/shutdown-manager.cpp: Add a MOONLIGHT_SHOCKER_DONT_DIE flag which,
 	  if is set to anything, will prevent the plugin from shutting down the
 	  browser.

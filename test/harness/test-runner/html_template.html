@@ -7,6 +7,7 @@
 
         $EXPECTED_ERROR_VAR
 
+		createTestPlugin ();
         QueueTestReady ();
 
         function QueueTestReady ()
@@ -33,7 +34,7 @@
 			test_plugin.LogResult (-1);
 		}
 
-		test_plugin.SignalShutdown ();
+		test_plugin.SignalShutdown (document.name);
 	}
 
         function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
@@ -43,7 +44,7 @@
                          window.setTimeout (function () {
 			         var test_plugin = document.getElementById ("_TestPlugin");
 			         test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
-				 test_plugin.SignalShutdown ();
+				 test_plugin.SignalShutdown (document.name);
 		         }, initial_delay);
 			 return;
 	         }
@@ -67,12 +68,12 @@
                         if (args.ErrorType == expected_error) {
                                test_plugin.LogDebug ("Error matched expected error.");
 		               test_plugin.LogResult (1);
-                               test_plugin.SignalShutdown ();
+                               test_plugin.SignalShutdown (document.name);
                                return;
                         } else {
                                test_plugin.LogError ("Error args type did not match expected type (" + typeof args + ").");
 			       test_plugin.LogResult (-1);
-                               test_plugin.SignalShutdown ();
+                               test_plugin.SignalShutdown (document.name);
 			       return;
                         }
                 }
@@ -80,6 +81,34 @@
 		test_plugin.LogError ("Error raised by moonlight: " + args.ErrorMessage);
                 test_plugin.LogResult (-1)
         }
+
+		function createTestPlugin ()
+		{
+			if (document.body == null) {
+				window.setTimeout("createTestPlugin ();", 10);
+				return;
+			}
+
+			// Create plugin html.
+			var pluginHtml = "";
+
+			if (navigator.appVersion.indexOf('MSIE') != -1) {
+				pluginHtml = 
+				    '<object id="_TestPlugin" width="0" height="0" ' +
+				        'classid = "CLSID:596F7B43-899C-42F4-BF3C-B62BA99E73FF">' +
+				    '<\/object>';
+			} else {
+				pluginHtml = 
+				    '<embed id="_TestPlugin" width="0" height="0" ' +
+				        'type="application\/x-jolttest">' +
+				    '<\/embed>';
+			}
+
+			// Insert plugin html into document.
+			var obj = document.createElement ("DIV");
+			obj.innerHTML = pluginHtml;
+			document.body.appendChild (obj);    
+		}
       </script>
   </head>
 
@@ -92,10 +121,12 @@
              style="position:absolute; left:0px; top:0px" >
         </embed>
     </div>
+<!--
     <div>
         <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
         </embed>
     </div>
+-->
   </body>
 </html>
 
