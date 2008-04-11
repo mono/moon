@@ -1628,12 +1628,14 @@ PluginXamlLoader::TryLoad (int *error)
 	if (!t) {
 		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is an unregistered type\n");
 		element->unref ();
+		GetSurface ()->Attach (NULL);
 		return NULL;
 	}
 
-	if (!t->IsSubclassOf(Type::CANVAS)) {
+	if (!t->IsSubclassOf(Type::CANVAS) && !t->IsSubclassOf(Type::CONTROL)) {
 		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is a %s\n", element->GetTypeName ());
 		element->unref ();
+		GetSurface ()->Attach (NULL);
 		return NULL;
 	}
 

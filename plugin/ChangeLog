@@ -1,3 +1,11 @@
+2008-04-11  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (PluginXamlLoader::TryLoad): Allow controls to be
+	toplevel elments, drop all surface contents on errors.
+
+	Allows Kit 3d to start rendering something in the texture map
+	case.
+
 2008-04-11  Michael Dominic K.  <mdk@mdk.am>
 
 	* plugin-class.cpp: Small debug hint also here when enums invalid.
