@@ -146,7 +146,7 @@ class PluginInstance
 	void setSource (const char *value);
 
 	char *getBackground ();
-	void setBackground (const char *value);
+	bool setBackground (const char *value);
 	bool getEnableFramerateCounter ();
 	bool getEnableRedrawRegions ();
 	void setEnableRedrawRegions (bool value);

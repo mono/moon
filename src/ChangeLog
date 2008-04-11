@@ -1,7 +1,17 @@
+2008-04-11  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp (value_from_str): make sure we propogate the error if
+	color_from_string returns NULL.
+
+	* color.cpp (color_from_str): return NULL on invalid color values
+	rather than simply returning black.
+
+	Add an error condition to color_from_string so that we pass the
+	color tests in ParserErrors test.
+	
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp: Surround event emission with ref/unref of ourselves.
-
 2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* playlist.cpp: Disable debugging spew unless DEBUG_PLAYLISTS is

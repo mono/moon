@@ -1,3 +1,17 @@
+2008-04-11  Larry Ewing  <lewing@novell.com>
+
+	* plugin.h (class PluginInstance): make setBackground return a
+	boolean success value.
+
+	* plugin-class.cpp (MoonlightSettingsObject::SetProperty): check
+	the return value of setBackground and throw an exception if it
+	fails.
+
+	* plugin.cpp (PluginInstance::CreateWindow): handle NULL return
+	values from color_from_string.
+
+	Handle the new case where color_from_string might return null.
+
 2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightTextBlockObject::Invoke):

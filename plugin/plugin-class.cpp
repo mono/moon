@@ -1777,7 +1777,9 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 	switch (id) {
 
 	case MoonId_Background:
-		plugin->setBackground (STR_FROM_VARIANT (*value));
+		if (!plugin->setBackground (STR_FROM_VARIANT (*value)))
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
+		
 		return true;
 
 	// Cant be set after initialization so return true

@@ -690,6 +690,12 @@ PluginInstance::CreateWindow ()
 
 	if (background) {
 		Color *c = color_from_str (background);
+
+		if (c == NULL)
+			g_warning ("error setting background color");
+		
+		c = new Color (0x00FFFFFF);
+
 		surface->SetBackgroundColor (c);
 		delete c;
 	}
@@ -1388,7 +1394,7 @@ PluginInstance::getBackground ()
 	return background;
 }
 
-void
+bool
 PluginInstance::setBackground (const char *value)
 {
 	if (background)
@@ -1396,9 +1402,14 @@ PluginInstance::setBackground (const char *value)
 	background = g_strdup (value);
 	if (surface) {
 		Color *c = color_from_str (background);
+
+		if (c == NULL)
+			return false;
+			
 		surface->SetBackgroundColor (c);
 		delete c;
 	}
+	return true;
 }
 
 bool
