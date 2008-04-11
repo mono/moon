@@ -4,92 +4,127 @@
 <head>
   <title>Test file</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-      <script src="jtr.js"></script>
+      <script src="../js/js/testplugin.js"></script>
+      <script src="../js/js/utils.js"></script>
 </head>
 <body>
-
-<div id="Moonlight">
-
-</div>
 
 <script type="text/javascript">
 	var mediaElement = null;
 	var host = null;
 	var dlA = null;
+	var pluginLoaded = false;
 
-	// 0: not checked, 1: checked, but failed, 2: checked and succeeded
+	// 0: not checked, 1: checking, 2: checked, but failed, 3: checked and succeeded
 	var progress_checked = 0;
 	var completed_checked = 0;
-
-	ontestready = OnTestReady;
-
-	function change_dl ()
-	{
-		TestLogger.LogDebug ("Changing to dlB");
-		mediaElement.SetSource (dlB, "");
-		setTimeout ("EndTest ();", 5000);
-		TestLogger.LogDebug ("Changed, source: " + mediaElement.Source);
-	}
 
 	function EndTest ()
 	{
 		TestLogger.LogDebug ("EndTest");
-		if (progress_checked == 2 && completed_checked == 2)
-			TestLogger.LogResult (1);
-		else
+		if (progress_checked != 3) {
+			TestLogger.LogError ("DownloadProgressChangedEvent didn't succeed: " + progress_checked);
 			TestLogger.LogResult (-1);
-		document.getElementById ("_TestPlugin").SignalShutdown (document.name);
+		}
+
+		if (completed_checked != 3) {
+			TestLogger.LogError ("CompletedEvent didn't succeed: " + completed_checked);
+			TestLogger.LogResult (-1);
+		}
+
+		if (progress_checked == 3 && completed_checked == 3)
+			TestLogger.LogResult (1);
+
+		TestHost.SignalShutdown (document.name);
 	}
 
-	function OnTestReady ()
+	function StartTest ()
 	{
-		try {
-			TestLogger.LogDebug ("OnTestReady");
-			host = document.getElementById ("JoltActiveX");
-			mediaElement = host.content.findName ("media");
+		TestLogger.LogDebug ("StartTest");
 
-			dlA = host.createObject ("Downloader");
-			dlB = host.createObject ("Downloader");
+		if (progress_checked == 0)
+			progress_checked = 1;
+		else if (completed_checked == 0)
+			completed_checked = 1;
+		else
+			EndTest ();
 
-			dlA.addEventListener("Completed", "CompletedEvent");
-			dlA.addEventListener("DownloadProgressChanged", "DownloadProgressChangedEvent");
-			dlA.addEventListener("DownloadFailed", "DownloadFailedEvent");
-			dlA.Open ("GET", "../timecode.mpeg"); // The biggest file I could find in svn
-			dlA.Send ();
-		} catch (ex) {
-			alert (ex + "");
+		dlA = host.createObject ("Downloader");
+
+		dlA.addEventListener("Completed", "CompletedEvent");
+		dlA.addEventListener("DownloadProgressChanged", "DownloadProgressChangedEvent");
+		dlA.addEventListener("DownloadFailed", "DownloadFailedEvent");
+		dlA.Open ("GET", "../timecode.mpeg"); // The biggest file I could find in svn
+		dlA.Send ();
+	}
+
+	function OnTestPluginReady ()
+	{
+		TestLogger.LogDebug ("OnTestPluginReady");
+		if (!pluginLoaded) {
+			setTimeout ("OnTestPluginReady ();", 100);
+			TestLogger.LogDebug ("OnTestPluginReady: Waiting for plugin to become ready.");
+			return;
 		}
+
+		host = document.getElementById ("JoltActiveX");
+		mediaElement = host.content.findName ("media");
+
+		if (!mediaElement) {
+			TestLogger.LogDebug ("Could not find the media element");
+			EndTest ();
+		} else {
+			StartTest ();
+		}		
 	}
 
 	function DownloadProgressChangedEvent (sender, args)
 	{
 		TestLogger.LogDebug ("DownloadProgressChangedEvent: " + sender.Uri + ", " + sender.DownloadProgress);
 
-		if (progress_checked != 0 || completed_checked != 0)
+		if (progress_checked != 1)
+			return; // We've already done this test.
+
+		TestLogger.LogDebug ("DownloadProgressChangedEvent: trying to set the source to a partially downloaded downloader.");
+
+		if (sender.DownloadProgress == 1) {
+			TestLogger.LogDebug ("DownloadProgressChangedEvent: skipping test since the downloader has already finished downloading.");
 			return;
+		}
 
 		try {
 			mediaElement.SetSource (dlA, "");
-			progress_checked = sender.DownloadProgress == 1 ? 2 : 1;
+			progress_checked = 2;
 			TestLogger.LogError ("DownloadProgressChangedEvent: We shouldn't be able to set the source to a partially downloaded downloader.");
 		} catch (ex) {
-			progress_checked = sender.DownloadProgress == 1 ? 1 : 2;
+			progress_checked = 3;
+			TestLogger.LogError ("DownloadProgressChangedEvent: Tried to set the source before the download completed, and failed (as we should): " + ex);
 		}
+
+		// Do the next test (calling setsource when downloader has completed).		
+		dlA.Abort ();
+		StartTest ();
 	}
+
 	function CompletedEvent (sender, args)
 	{
 		TestLogger.LogDebug ("CompletedEvent: " + sender.Uri);
+		TestLogger.LogDebug ("CompletedEvent: trying to call setsource with a completely downloaded downloader.");
 
-		if (completed_checked != 0)
+		if (completed_checked != 1) {
+			EndTest ();
 			return;
+		}
 
 		try {
 			mediaElement.SetSource (dlA, "");
-			completed_checked = 2;
+			completed_checked = 3;
+			TestLogger.LogDebug ("CompletedEvent: successfully called setsource with a completely downloaded downloader.");
 		} catch (ex) {
-			completed_checked = 1;
-			TestLogger.LogError ("CompletedEvent: Setting the source failed.");
+			completed_checked = 2;
+			TestLogger.LogError ("CompletedEvent: Setting the source failed: " + ex);
 		}
+
 		EndTest ();
 	}
 
@@ -101,7 +136,7 @@
 
 	function OnPluginError (sender, args)
 	{
-		TestLogger.LogError (errorString);
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
 		TestLogger.LogResult (-1)
 		EndTest ();
 	}
@@ -109,57 +144,22 @@
 	function OnPluginLoaded (o, e)
 	{
 		TestLogger.LogDebug ("OnPluginLoaded");
-		setTimeout ("OnTestReady ();", 100);
+		pluginLoaded = true;
 	}
-
-function ErrorEventArgsToOneLineString (errorArgs)
-{
-    var errorMsg = "";
-
-        if (errorArgs == null)
-                return "null";
-
-    // Error information common to all errors.
-    errorMsg += "Error Type:    " + errorArgs.errorType;
-    errorMsg += ", " + "Error Message: " + errorArgs.errorMessage;
-    errorMsg += ", " + "Error Code:    " + errorArgs.errorCode;
-
-    // Determine the type of error and add specific error information.
-    switch (errorArgs.errorType)  {
-    case "RuntimeError":
-        // Display properties specific to RuntimeErrorEventArgs.
-        if (errorArgs.lineNumber != 0)
-        {
-            errorMsg += ", " + "Line: " + errorArgs.lineNumber;
-            errorMsg += ", " + "Position: " +  errorArgs.charPosition;
-        }
-        errorMsg += ", " + "MethodName: " + errorArgs.methodName;
-        break;
-    case "ParserError":
-        // Display properties specific to ParserErrorEventArgs.
-        errorMsg += ", " + "Xaml File:      " + errorArgs.xamlFile;
-        errorMsg += ", " + "Xml Element:    " + errorArgs.xmlElement;
-        errorMsg += ", " + "Xml Attribute:  " + errorArgs.xmlAttribute;
-        errorMsg += ", " + "Line:           " + errorArgs.lineNumber;
-        errorMsg += ", " + "Position:       " + errorArgs.charPosition;
-        break;
-    default:
-        break;
-    }
-        return errorMsg;
-}
-
 </script>
 
 <div>
-<embed type="application/x-silverlight" width="800" height="580"
+<embed type="application/x-silverlight" width="800" height="600"
      id="JoltActiveX" Source="test-downloader-aborted-in-setsource.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
 
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
 </embed>
+-->
 
 </body>
 

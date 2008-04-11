@@ -1,6 +1,11 @@
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/test-downloader-aborted-in-setsource.html,
+	  xaml/test-downloader-aborted-in-setsource.xaml: Minor fixes.
+
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/test-downloader-aborted-in-setsource.html,
 	  xaml/test-downloader-aborted-in-setsource.xaml: Added.
 
 2008-04-10  Andrew Jorgensen  <ajorgensen@novell.com>
