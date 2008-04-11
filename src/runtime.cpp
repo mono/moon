@@ -334,7 +334,7 @@ static const char *dot[] = {
 };
 
 /* XPM */
-static char * eraser [] = {
+static const char *eraser[] = {
 	"20 20 49 1",
 	"       c None",
 	".      c #000000",
@@ -404,7 +404,8 @@ static char * eraser [] = {
 	"   de-,,,,,,,,,fg   ",
 	"   bh%%,,;}}}>>ij   ",
 	"    ............    ",
-	"                    "};
+	"                    "
+};
 
 void
 Surface::SetCursor (MouseCursor new_cursor)
