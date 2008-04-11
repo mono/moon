@@ -1,5 +1,12 @@
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/XamlTest.cs: Use a relative path for the path to the xaml file
+	  in the html file.
+	* test-runner/html_template.html: Make sure we call Connect on the test
+	  plugin before using it.
+
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/LoggingServer.cs: Create a StandaloneServer class that does
 	  all the standalone logging.
 

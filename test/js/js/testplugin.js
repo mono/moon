@@ -47,6 +47,7 @@ function loadTestPlugin ()
 	if (!TestHost) {
 		window.setTimeout ("loadTestPlugin ();", 10);
     } else {
+		TestHost.Connect ();
 		TestLogger = TestHost;
 		TestPluginReady = true;
 		try {
@@ -66,6 +67,29 @@ function loadTestPlugin ()
 		} catch (ex) {
 		}
 	}
+}
+
+function FinishTest ()
+{
+	TestHost.SignalShutdown (document.name);
+}
+
+function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
+{
+	if (initial_delay) {
+		window.setTimeout (function () {
+				TakeSingleSnapshotAndShutdown (control, file_name, width, height, 0);
+			}, initial_delay);
+		return;
+	}
+	TestHost.CaptureSingleImage ("", file_name, 0, 0, width, height);
+	FinishTest ();
+}
+
+function TakeMultipleSnapshotsAndShutdown (control, max_images_to_capture, capture_interval, initial_delay, width, height)
+{
+	TestHost.CaptureMultipleImages ("", "", 0, 0, width, height, max_images_to_capture, capture_interval, initial_delay);
+	FinishTest ();
 }
 
 TestLogger = new function()

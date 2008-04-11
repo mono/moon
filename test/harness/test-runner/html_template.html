@@ -107,7 +107,19 @@
 			// Insert plugin html into document.
 			var obj = document.createElement ("DIV");
 			obj.innerHTML = pluginHtml;
-			document.body.appendChild (obj);    
+			document.body.appendChild (obj);
+		
+			setTimeout ("connectPlugin ();", 50);
+		}
+
+		function connectPlugin ()
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+			if (test_plugin) {
+				test_plugin.Connect ();
+			} else {
+				setTimeout ("connectPlugin ();", 50);
+			}
 		}
       </script>
   </head>

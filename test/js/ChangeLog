@@ -1,5 +1,10 @@
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* js/testplugin.js: Connect to the testplugin before using it. Added
+	  FinishTest and Take*Snapshot* methods.
+
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* js/utils.js: Added more utility methods.
 	* js/testplugin.js: Added, helper methods which allows us to use the same
 	  test html page on IE/SL and FF/ML.
