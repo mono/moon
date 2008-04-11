@@ -1,3 +1,7 @@
+2008-04-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin-class.cpp: Small debug hint also here when enums invalid.
+
 2008-04-10  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (npvariant_is_dependency_object): no reason to

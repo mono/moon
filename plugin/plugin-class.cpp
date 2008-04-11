@@ -2264,8 +2264,10 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 			const char *s = enums_int_to_str (p->name, value->AsInt32 ());
 			if (s)
 				string_to_npvariant (s, result);
-			else
+			else {
+				g_warning ("Value %d on prop '%s' can't be converted to a valid enum", value->AsInt32 (), p->name);
 				value_to_variant (this, value, result, dob, p);
+			}
 		} else
 			value_to_variant (this, value, result, dob, p);
 
