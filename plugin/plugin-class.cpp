@@ -386,6 +386,7 @@ npvariant_is_dependency_object (NPVariant var)
 {
 	if (!NPVARIANT_IS_OBJECT (var))
 		return false;
+	
 	return npobject_is_dependency_object (NPVARIANT_TO_OBJECT (var));
 }
 
@@ -3113,7 +3114,7 @@ MoonlightTextBlockObject::Invoke (int id, NPIdentifier name,
 		if (NPVARIANT_IS_OBJECT (args[0]))
 			downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		
-		tb->SetFontSource (downloader);
+		tb->SetFontSource ((Downloader *) downloader);
 		
 		VOID_TO_NPVARIANT (*result);
 		

@@ -118,12 +118,11 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 	GdkEventButton *event_button;
 
 	switch (event->type) {
-
 		case GDK_BUTTON_PRESS:
 			event_button = (GdkEventButton *) event;
-			if (event_button->button == 3) {
+			if (event_button->button == 3)
 				plugin_show_menu (plugin);
-			}
+			
 			handled = 1;
 			break;
 

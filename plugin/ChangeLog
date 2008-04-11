@@ -1,3 +1,8 @@
+2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (MoonlightTextBlockObject::Invoke):
+	SetFontSource() now takes a Downloader argument rather than a DOB.
+
 2008-04-11  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* plugin-proxy.cpp: Allow the user to override the location of
