@@ -128,15 +128,13 @@ set_source_async (void *user_data)
 	
 	media->SetSourceAsyncCallback ();
 	media->unref ();
-
+	
 	return false;
 }
 
 void
 MediaBase::SetSource (Downloader *downloader, const char *PartName)
 {
-	Surface *surface;
-	
 	DownloaderAbort ();
 	
 	if (source.downloader) {
@@ -1806,7 +1804,7 @@ Image::DownloaderComplete ()
 	
 	if (!filename) {
 		/* the download was aborted */
-		/* XXX should this emit ImageFailed? */
+		/* FIXME: should this emit ImageFailed? */
 		Invalidate ();
 		return;
 	}
@@ -1831,7 +1829,7 @@ Image::DownloaderComplete ()
 		SetValue (FrameworkElement::HeightProperty, (double) surface->height * width->AsDouble () / (double)surface->width);
 	
 	if (brush) {
-		// XXX this is wrong, we probably need to set the
+		// FIXME: this is wrong, we probably need to set the
 		// property, or use some other mechanism, but this is
 		// gross.
 		PropertyChangedEventArgs args (ImageBrush::DownloadProgressProperty, NULL, 

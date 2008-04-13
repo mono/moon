@@ -2322,8 +2322,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 
 		if (isalpha (str [0]) && prop_name) {
 			i = enums_str_to_int (prop_name, str);
-			if (i == -1)
+			if (i == -1) {
+				g_warning ("'%s' enum is not valid on '%s' property", str, prop_name);
 				return false;
+			}
 		} else {
 			errno = 0;
 			long l = strtol (str, &endptr, 10);
@@ -2343,6 +2345,8 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	}
 	case Type::COLOR: {
 		Color *c = color_from_str (str);
+		if (c == NULL)
+			return false;
 		*v = new Value (*c);
 		delete c;
 		break;
@@ -2388,6 +2392,8 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		// Only solid color brushes can be specified using attribute syntax
 		SolidColorBrush *scb = solid_color_brush_new ();
 		Color *c = color_from_str (str);
+		if (c == NULL)
+			return false;
 		solid_color_brush_set_color (scb, c); // copies c
 		delete c;
 		*v = new Value (scb);

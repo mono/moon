@@ -71,7 +71,7 @@ namespace MoonlightTests {
 			string line;
 			while ((line = reader.ReadLine ()) != null) {
 				if (line.Contains ("$SOURCE"))
-					res.AppendLine (line.Replace ("$SOURCE", Path.GetFullPath (input_file)));
+					res.AppendLine (line.Replace ("$SOURCE", Path.GetFileName (input_file)));
 				else
 					res.AppendLine (line);
 			}

@@ -386,6 +386,7 @@ npvariant_is_dependency_object (NPVariant var)
 {
 	if (!NPVARIANT_IS_OBJECT (var))
 		return false;
+	
 	return npobject_is_dependency_object (NPVARIANT_TO_OBJECT (var));
 }
 
@@ -1776,7 +1777,9 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 	switch (id) {
 
 	case MoonId_Background:
-		plugin->setBackground (STR_FROM_VARIANT (*value));
+		if (!plugin->setBackground (STR_FROM_VARIANT (*value)))
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
+		
 		return true;
 
 	// Cant be set after initialization so return true
@@ -2264,8 +2267,10 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 			const char *s = enums_int_to_str (p->name, value->AsInt32 ());
 			if (s)
 				string_to_npvariant (s, result);
-			else
+			else {
+				g_warning ("Value %d on prop '%s' can't be converted to a valid enum", value->AsInt32 (), p->name);
 				value_to_variant (this, value, result, dob, p);
+			}
 		} else
 			value_to_variant (this, value, result, dob, p);
 
@@ -3111,7 +3116,7 @@ MoonlightTextBlockObject::Invoke (int id, NPIdentifier name,
 		if (NPVARIANT_IS_OBJECT (args[0]))
 			downloader = ((MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]))->GetDependencyObject ();
 		
-		tb->SetFontSource (downloader);
+		tb->SetFontSource ((Downloader *) downloader);
 		
 		VOID_TO_NPVARIANT (*result);
 		

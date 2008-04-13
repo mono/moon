@@ -124,9 +124,6 @@ namespace MoonlightTests {
 
 		public void Log (string test, string level, string message)
 		{
-#if LOGGING_SERVER_STANDALONE
-			Console.WriteLine ("Log ({0}, {1}, {2})", test, level, message);
-#endif
 			lock (lock_object) {
 				TestLogData tld = null;
 				if (test_logs.ContainsKey (test))
@@ -142,9 +139,6 @@ namespace MoonlightTests {
 
 		public void LogResult (string test, int result)
 		{
-#if LOGGING_SERVER_STANDALONE
-			Console.WriteLine ("LogResult ({0}, {1})", test, result);
-#endif
 			lock (lock_object) {
 				TestLogData tld = null;
 				if (test_logs.ContainsKey (test))
@@ -161,9 +155,6 @@ namespace MoonlightTests {
 
 		public void RequestShutdown ()
 		{
-#if LOGGING_SERVER_STANDALONE
-			Console.WriteLine ("RequestShutdown ()");
-#endif
 			lock (lock_object) {
 				shutdown_requested = true;
 			}
@@ -266,6 +257,43 @@ namespace MoonlightTests {
 
 	
 #if LOGGING_SERVER_STANDALONE
+	public class StandaloneServer : ITestLogger {
+		public void Log (string test, string level, string message)
+		{
+			if (level == "Error") {
+				Console.ForegroundColor = ConsoleColor.Red;
+			} else if (level == "Warning") {
+				Console.ForegroundColor = ConsoleColor.Yellow;
+			}
+			Console.WriteLine ("{0}: {1}, {2}", test, level, message);
+			Console.ResetColor ();
+		}
+
+		public void LogResult (string test, int result)
+		{
+			if (result == -1) {
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine ("{0}: Test result set to Failed", test);
+			} else if (result == 1) {
+				Console.ForegroundColor = ConsoleColor.White;
+				Console.WriteLine ("{0}: Test result set to Passed", test);
+			} else {
+				Console.WriteLine ("{0}: Test result set to {1}", test, result);
+			}
+			Console.ResetColor ();
+		}
+
+		public void RequestShutdown ()
+		{
+			Console.WriteLine ("RequestShutdown ()");
+		}
+		public void TestComplete (string test)
+		{
+			Console.WriteLine ("{0}: TestComplete");
+		}
+	}
+
+	
 		public static void Main ()
 		{
 			Bus bus = Bus.Session;
@@ -279,7 +307,7 @@ namespace MoonlightTests {
 			}
 
 
-			LoggingServer ls = new LoggingServer ();
+			StandaloneServer ls = new StandaloneServer ();
 			Console.WriteLine ("UNIQUE NAME:  {0}", bus.UniqueName);
 			Bus.Session.Register (bus_name, path, ls);
 

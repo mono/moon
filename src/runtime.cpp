@@ -306,6 +306,107 @@ Surface::~Surface ()
 	delete down_dirty;
 }
 
+/* XPM */
+static const char *dot[] = {
+	"18 18 4 1",
+	"       c None",
+	".      c #808080",
+	"+      c #303030",
+	"@      c #000000",
+	".+.               ",
+	"@@@               ",
+	".@.               ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  ",
+	"                  "
+};
+
+/* XPM */
+static const char *eraser[] = {
+	"20 20 49 1",
+	"       c None",
+	".      c #000000",
+	"+      c #858585",
+	"@      c #E8E8E8",
+	"#      c #E9E9E9",
+	"$      c #E7E7E7",
+	"%      c #E2E2E2",
+	"&      c #D6D6D6",
+	"*      c #7D7D7D",
+	"=      c #565656",
+	"-      c #E1E1E1",
+	";      c #E0E0E0",
+	">      c #DEDEDE",
+	",      c #DFDFDF",
+	"'      c #474747",
+	")      c #6C6C6C",
+	"!      c #B0B0B0",
+	"~      c #E3E3E3",
+	"{      c #4E4E4E",
+	"]      c #636363",
+	"^      c #E6E6E6",
+	"/      c #505050",
+	"(      c #4A4A4A",
+	"_      c #C7C7C7",
+	":      c #272727",
+	"<      c #797979",
+	"[      c #E5E5E5",
+	"}      c #DDDDDD",
+	"|      c #9C9C9C",
+	"1      c #232323",
+	"2      c #E4E4E4",
+	"3      c #656565",
+	"4      c #313131",
+	"5      c #EAEAEA",
+	"6      c #ECECEC",
+	"7      c #EEEEEE",
+	"8      c #EFEFEF",
+	"9      c #F0F0F0",
+	"0      c #999999",
+	"a      c #5D5D5D",
+	"b      c #343434",
+	"c      c #757575",
+	"d      c #383838",
+	"e      c #CECECE",
+	"f      c #A9A9A9",
+	"g      c #6F6F6F",
+	"h      c #B3B3B3",
+	"i      c #787878",
+	"j      c #3F3F3F",
+	"                    ",
+	"                    ",
+	"                    ",
+	"                    ",
+	"                    ",
+	"                    ",
+	"       ...........  ",
+	"      .+@#@@@$$%&*. ",
+	"      =-;%>>>>>>>,' ",
+	"     )!~>>>>>>>>>>{ ",
+	"     ]^>>>>>>>>>,,/ ",
+	"    (_;>>>>>>>>,>&: ",
+	"    <[,}>>>>>>>-,|  ",
+	"   1[-;>>>>>>>$2,3  ",
+	"   45678999998550a  ",
+	"   b~,,,,,,,,,;$c   ",
+	"   de-,,,,,,,,,fg   ",
+	"   bh%%,,;}}}>>ij   ",
+	"    ............    ",
+	"                    "
+};
+
 void
 Surface::SetCursor (MouseCursor new_cursor)
 {
@@ -316,6 +417,8 @@ Surface::SetCursor (MouseCursor new_cursor)
 			return;
 
 		GdkCursor *c = NULL;
+		GdkPixmap *empty = gdk_bitmap_create_from_data (NULL, "0x00", 1, 1);
+		GdkColor empty_color = {0, 0, 0, 0};
 		switch (cursor) {
 		case MouseCursorDefault:
 			c = NULL;
@@ -333,13 +436,14 @@ Surface::SetCursor (MouseCursor new_cursor)
 			c = gdk_cursor_new (GDK_XTERM);
 			break;
 		case MouseCursorStylus:
-			c = gdk_cursor_new (GDK_PENCIL);
+			c = gdk_cursor_new_from_pixbuf (gdk_display_get_default (), gdk_pixbuf_new_from_xpm_data ((const char**) dot), 0, 0);
 			break;
 		case MouseCursorEraser:
-			c = gdk_cursor_new (GDK_DOT); // ??
+			c = gdk_cursor_new_from_pixbuf (gdk_display_get_default (), gdk_pixbuf_new_from_xpm_data ((const char**) eraser), 0, 0);
 			break;
 		case MouseCursorNone:
-			// XXX nothing yet.  create a pixmap cursor with no pixel data
+			//from gdk-cursor doc :"To make the cursor invisible, use gdk_cursor_new_from_pixmap() to create a cursor with no pixels in it."
+			c = gdk_cursor_new_from_pixmap (empty, empty, &empty_color, &empty_color, 0, 0);
 			break;
 		}
 

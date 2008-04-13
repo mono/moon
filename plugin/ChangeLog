@@ -1,3 +1,40 @@
+2008-04-11  Larry Ewing  <lewing@novell.com>
+
+	* plugin.h (class PluginInstance): make setBackground return a
+	boolean success value.
+
+	* plugin-class.cpp (MoonlightSettingsObject::SetProperty): check
+	the return value of setBackground and throw an exception if it
+	fails.
+
+	* plugin.cpp (PluginInstance::CreateWindow): handle NULL return
+	values from color_from_string.
+
+	Handle the new case where color_from_string might return null.
+
+2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (MoonlightTextBlockObject::Invoke):
+	SetFontSource() now takes a Downloader argument rather than a DOB.
+
+2008-04-11  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* plugin-proxy.cpp: Allow the user to override the location of
+	libmoonplugin by setting MOON_PLUGIN_DIR so that the test harness
+	can run without installing first.
+
+2008-04-11  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (PluginXamlLoader::TryLoad): Allow controls to be
+	toplevel elments, drop all surface contents on errors.
+
+	Allows Kit 3d to start rendering something in the texture map
+	case.
+
+2008-04-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin-class.cpp: Small debug hint also here when enums invalid.
+
 2008-04-10  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (npvariant_is_dependency_object): no reason to

@@ -3,6 +3,7 @@
  *
  * Author:
  *   Everaldo Canuto (everaldo@novell.com)
+ *   Andrew Jorgensen (ajorgensen@novell.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -107,7 +108,14 @@ load (void)
 
 	g_free (plugin_dir);
 #else
-	plugin_path = g_strdup (PLUGIN_DIR "/plugin/libmoonplugin.so");
+	// allow the user to override the plugin directory
+	// by setting MOON_PLUGIN_DIR
+	const gchar *moon_plugin_dir = g_getenv("MOON_PLUGIN_DIR");
+	if (moon_plugin_dir == NULL) {
+		plugin_path = g_build_filename (PLUGIN_DIR, "plugin", "libmoonplugin.so", NULL);
+	} else {
+		plugin_path = g_build_filename (moon_plugin_dir, "libmoonplugin.so", NULL);
+	}
 #endif
 
 	void *real_plugin = dlopen (plugin_path, RTLD_LAZY);

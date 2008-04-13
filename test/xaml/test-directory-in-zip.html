@@ -4,7 +4,8 @@
 <head>
   <title>Test file</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-      <script src="jtr.js"></script>
+  <script src="../js/js/utils.js"></script>
+  <script src="../js/js/testplugin.js"></script>
 </head>
 <body>
 
@@ -13,50 +14,69 @@
 </div>
 
 <script type="text/javascript">
-        ontestready = OnTestReady;
+	var host = null;
+	var failed = false;
+	var dl = null;
 
-        function OnTestReady ()
-        {
-                var moonlight_control = document.getElementById ("JoltActiveX");
-		TestHost.TakeSingleSnapshotAndShutdown (moonlight_control, "test-directory-in-zip.html.png", 300, 300);
-        }
-
-        function ErrorHandler (sender, args)
-        {
-            TestLogger.LogError (errorString);
-            TestLogger.LogResult (-1)
-        }
-
-	function onLoaded (o, e)
+	function EndTest ()
 	{
-		var pl = document.getElementById ("JoltActiveX");
-		var host = o.getHost ();
-		var img = host.content.findName ("img");
-		var dl = host.createObject ("Downloader");
+		if (failed) {
+			TestLogger.LogResult (-1);
+			TestHost.SignalShutdown (document.name);
+		} else {
+			TakeSingleSnapshotAndShutdown (host, "test-directory-in-zip.html.png", 300, 300);
+		}
+	}
 
-		dl.Open ("GET", "test-directory-in-zip.zip");
-		// This doesn't work in SL on my machine and I have no idea as to why.
-		// (it shows error dialog #2207 signaling SetSource as the error).
+	function OnPluginTestReady ()
+	{
+	}
+
+	function OnPluginError (sender, args)
+	{
+		failed = true;
+		TestLogger.LogError (errorString);
+		EndTest ();
+	}
+
+	function DownloaderCompleted (sender, args)
+	{
+		var img = host.content.findName ("img");
 		img.SetSource (dl, "dir/mono.png");
+		setTimeout ("EndTest ();", 500);
+	}
+
+	function DownloaderFailed (sender, args) 
+	{
+		failed = true;
+		TestLogger.LogError ("DownloaderFailed: " + ErrorEventArgsToOneLineString (args));
+		EndTest ();
+	}
+	
+	function OnPluginLoaded (o, e)
+	{
+		host = document.getElementById ("JoltActiveX");
+		dl = host.createObject ("Downloader");
+
+		dl.addEventListener ("Completed", "DownloaderCompleted");
+		dl.addEventListener ("DownloadFailed", "DownloaderFailed");
+		dl.Open ("GET", "test-directory-in-zip.zip");
+		dl.Send ();
 	}
 
 </script>
 
 <div>
 <embed type="application/x-silverlight" width="800" height="580"
-     id="JoltActiveX" Source="test-directory-in-zip.xaml" OnError="ErrorHandler" OnLoad="onLoaded"
+     id="JoltActiveX" Source="test-directory-in-zip.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
-
+<!--
 <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
 >
 </embed>
-
+-->
 </body>
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
->
-</embed>
 
-</body>
 </html>

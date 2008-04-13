@@ -177,7 +177,7 @@ public:
 	TextBlock ();
 	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; };
 	
-	void SetFontSource (DependencyObject *downloader);
+	void SetFontSource (Downloader *downloader);
 	
 	double GetActualWidth ()
 	{
@@ -246,7 +246,7 @@ void text_block_set_text_decorations (TextBlock *textblock, TextDecorations valu
 TextWrapping text_block_get_text_wrapping (TextBlock *textblock);
 void text_block_set_text_wrapping (TextBlock *textblock, TextWrapping value);
 
-void text_block_set_font_source (TextBlock *textblock, DependencyObject *Downloader);
+void text_block_set_font_source (TextBlock *textblock, Downloader *downloader);
 
 
 class Glyphs : public FrameworkElement {

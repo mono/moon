@@ -1,3 +1,60 @@
+2008-04-11  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp (value_from_str): make sure we propogate the error if
+	color_from_string returns NULL.
+
+	* color.cpp (color_from_str): return NULL on invalid color values
+	rather than simply returning black.
+
+	Add an error condition to color_from_string so that we pass the
+	color tests in ParserErrors test.
+	
+2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: Surround event emission with ref/unref of ourselves.
+2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* playlist.cpp: Disable debugging spew unless DEBUG_PLAYLISTS is
+	defined.
+
+	* downloader.cpp (Downloader::Send): Use
+	TimeManager::InvokeOnMainThread() here like Rolf did in
+	MediaBase. Simplifies things by not needing a surface.
+
+	* text.cpp (TextBlock::SetFontSource): Now takes a Downloader
+	object as opposed to a DependencyObject.
+
+2008-04-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: in Clock, make sure we CalcProgress on the last tick before
+	we go Filling/Stopped. Without this we never "finish off" our animations
+	and depending on the framerate we get "jags". Fixes the clock32.xaml
+	test.
+
+2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp: Make the dot and eraser cursors const to avoid
+	compiler warnings.
+
+2008-04-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* enums.c: Removing bolox comment and behavior. Always return -1 on
+	fail.
+
+	* xaml.cpp: Push a g_warning when we're hitting bad enums on bad props.
+	Should make it a little bit easier to spot problems.
+
+2008-04-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* dependencyobject.cpp: When calling RegisterAllNamesRootedAt be
+	actually recursive (I'm not sure why this was commented out? Toshok?). 
+	Fixes the sprawl end-game animation, #378748.
+
+2008-04-11  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* runtime.cpp: create the stylus and eraser cursors from xpm. Fixes 
+	bnc #375213. Implemented the MouseCursorNone too.
+
 2008-04-10  Larry Ewing  <lewing@novell.com>
 
 	* xaml.cpp (start_element): throw an error if there is an xml
@@ -11,17 +68,18 @@
 
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* media.cpp: MediaBase::SetSource: no need to get a Surface/TimeManager
-	  instance to do an asynchronous call, just call
-	  TimeManager::InvokeOnMainThread.
+	* media.cpp: MediaBase::SetSource: no need to get a
+	  Surface/TimeManager instance to do an asynchronous call, just
+	  call TimeManager::InvokeOnMainThread.
 
 2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* mplayer.h, mplayer.cpp: Added MediaPlayer::AudioFinished, called by the
-	  audio thread when the audio finishes.
-	* media.h, media.cpp: Added MediaElement::AudioFinished, called by the media
-	  player when the audio finishes. Enables us to raise MediaEnded for
-	  audio-only media.
+	* mplayer.h, mplayer.cpp: Added MediaPlayer::AudioFinished, called
+	  by the audio thread when the audio finishes.
+
+	* media.h, media.cpp: Added MediaElement::AudioFinished, called by
+	  the media player when the audio finishes. Enables us to raise
+	  MediaEnded for audio-only media.
 
 2008-04-10  Jeffrey Stedfast  <fejj@novell.com>
 
@@ -51,13 +109,15 @@
 
 2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* dependencyobject.cpp: Guard against calling closures which have been
-	  removed during emission of previous events in the same event list: when
-	  we're emitting and a closure is removed, mark the closure as pending
-	  removal, don't call it anymore, and only remove it when we're finished
-	  emitting.
-	* dependencyobject.h: Guard against calling closures which have been removed
-	  during emission of previous events in the same event list.
+	* dependencyobject.cpp: Guard against calling closures which have
+	  been removed during emission of previous events in the same
+	  event list: when we're emitting and a closure is removed, mark
+	  the closure as pending removal, don't call it anymore, and only
+	  remove it when we're finished emitting.
+
+	* dependencyobject.h: Guard against calling closures which have
+	  been removed during emission of previous events in the same
+	  event list.
 
 2008-04-10  Michael Dominic K.  <mdk@mdk.am>
 

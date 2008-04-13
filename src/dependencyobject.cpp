@@ -383,7 +383,9 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 		return false;
 	}
 	
-	
+	// We need to ref ourselves during event emission, since we may end up 
+	// deleting the object calling us/holding a ref to us.
+	//ref ();
 	events [event_id].emitting++;
 
 	length = events [event_id].event_list->Length ();
@@ -420,6 +422,7 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 	}
 	
 	g_free (closures);
+	//unref ();
 
 	return true;
 }
@@ -769,7 +772,7 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns)
 	if (n)
 		to_ns->RegisterName (n, this);
 
-// 	g_hash_table_foreach (current_values, register_depobj_names, to_ns);
+ 	g_hash_table_foreach (current_values, register_depobj_names, to_ns);
 }
 
 void

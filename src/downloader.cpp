@@ -463,34 +463,27 @@ Downloader::SendInternal ()
 	send_func (downloader_state);
 }
 
-static void
+static gboolean
 send_async (void *user_data)
 {
 	Downloader *downloader = (Downloader *) user_data;
 	
 	downloader->SendInternal ();
 	downloader->unref ();
+	
+	return false;
 }
 
 void
 Downloader::Send ()
 {
-	Surface *surface;
-	
 	if (send_queued)
 		return;
 	
-	if ((surface = GetSurface ())) {
-		TimeManager *tm = surface->GetTimeManager ();
-		
-		tm->AddTickCall (send_async, this);
-		send_queued = true;
-		ref ();
-	} else {
-		// Not attached to a surface?
-		send_queued = true;
-		SendInternal ();
-	}
+	send_queued = true;
+	ref ();
+	
+	TimeManager::InvokeOnMainThread (send_async, this);
 }
 
 void

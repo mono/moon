@@ -685,11 +685,17 @@ bool
 Clock::Tick ()
 {
 	last_time = current_time;
+
+	// Save the old state as ComputeNewTime () changes state
+	// and the ClampTime/CalcProgress decision depends on our state NOW
+
+	int old_state = GetClockState ();
 	SetCurrentTime (Clock::ComputeNewTime());
 
-	if (GetClockState() == Clock::Active)
+	if (old_state == Clock::Active) {
 		ClampTime ();
-	CalcProgress ();
+		CalcProgress ();
+	}
 
 	return state != Clock::Stopped;
 }
@@ -715,7 +721,7 @@ Clock::CalcProgress ()
 			progress = 1.0;
 		else if (current_time >= duration_timespan)
 			progress = 1.0;
-		else if (state == Clock::Active)
+		else if (GetClockState () != Clock::Stopped)
 			progress = (double)current_time / duration_timespan;
 	}
 }

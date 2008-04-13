@@ -118,12 +118,11 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 	GdkEventButton *event_button;
 
 	switch (event->type) {
-
 		case GDK_BUTTON_PRESS:
 			event_button = (GdkEventButton *) event;
-			if (event_button->button == 3) {
+			if (event_button->button == 3)
 				plugin_show_menu (plugin);
-			}
+			
 			handled = 1;
 			break;
 
@@ -691,6 +690,12 @@ PluginInstance::CreateWindow ()
 
 	if (background) {
 		Color *c = color_from_str (background);
+
+		if (c == NULL)
+			g_warning ("error setting background color");
+		
+		c = new Color (0x00FFFFFF);
+
 		surface->SetBackgroundColor (c);
 		delete c;
 	}
@@ -1389,7 +1394,7 @@ PluginInstance::getBackground ()
 	return background;
 }
 
-void
+bool
 PluginInstance::setBackground (const char *value)
 {
 	if (background)
@@ -1397,9 +1402,14 @@ PluginInstance::setBackground (const char *value)
 	background = g_strdup (value);
 	if (surface) {
 		Color *c = color_from_str (background);
+
+		if (c == NULL)
+			return false;
+			
 		surface->SetBackgroundColor (c);
 		delete c;
 	}
+	return true;
 }
 
 bool
@@ -1628,12 +1638,14 @@ PluginXamlLoader::TryLoad (int *error)
 	if (!t) {
 		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is an unregistered type\n");
 		element->unref ();
+		GetSurface ()->Attach (NULL);
 		return NULL;
 	}
 
-	if (!t->IsSubclassOf(Type::CANVAS)) {
+	if (!t->IsSubclassOf(Type::CANVAS) && !t->IsSubclassOf(Type::CONTROL)) {
 		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is a %s\n", element->GetTypeName ());
 		element->unref ();
+		GetSurface ()->Attach (NULL);
 		return NULL;
 	}
 

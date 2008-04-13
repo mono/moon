@@ -2,6 +2,9 @@ function ErrorEventArgsToString (errorArgs)
 {
     var errorMsg = "";
     
+	if (errorArgs == null)
+		return "null";
+
     // Error information common to all errors.
     errorMsg += "Error Type:    " + errorArgs.errorType + "\n";
     errorMsg += "Error Message: " + errorArgs.errorMessage + "\n";
@@ -36,6 +39,9 @@ function ErrorEventArgsToOneLineString (errorArgs)
 {
     var errorMsg = "";
     
+	if (errorArgs == null)
+		return "null";
+
     // Error information common to all errors.
     errorMsg += "Error Type:    " + errorArgs.errorType;
     errorMsg += ", " + "Error Message: " + errorArgs.errorMessage;
@@ -65,3 +71,31 @@ function ErrorEventArgsToOneLineString (errorArgs)
     }
 	return errorMsg;	
 }
+
+var Host = {
+	Windows: navigator.userAgent.indexOf ('Windows') > -1,
+	//Linux: navigator.userAgent.indexOf ('Linux') > -1,
+	X11: navigator.userAgent.indexOf ('X11') > -1,
+	Mac: navigator.userAgent.indexOf ('Macintosh') > -1
+};
+
+var Plugin = {
+	Silverlight: Host.Windows || Host.Mac,
+	Moonlight: Host.X11
+};
+
+function is1_0 (plugin)
+{
+	return plugin.IsVersionSupported ("1.0") && !plugin.IsVersionSupported ("1.1");
+}
+
+function is1_1 (plugin)
+{
+	return plugin.IsVersionSupported ("1.1") && !plugin.IsVersionSupported ("1.2");
+}
+
+function is2_0 (plugin)
+{
+	return plugin.IsVersionSupported ("2.0") && !plugin.IsVersionSupported ("2.1");
+}
+

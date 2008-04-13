@@ -200,7 +200,7 @@ read_next_double (char **str)
 /**
  * see: http://msdn2.microsoft.com/en-us/library/system.windows.media.solidcolorbrush.aspx
  *
- * If no color is found, Color.Transparent is returned.
+ * If no color is found, NULL is returned.
  */
 Color*
 color_from_str (const char *name)
@@ -280,5 +280,5 @@ color_from_str (const char *name)
 		}
 	}
 
-	return new Color (0x00FFFFFF);
+	return NULL;
 }
