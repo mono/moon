@@ -1,0 +1,4 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="100" Height="100">
+	<Rectangle Width="100" Height="100" Canvas.Left="0" Canvas.Top="0" Fill="DarkBlue" />
+	<Line Stroke="Red" StrokeThickness="10" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Width="100" Height="100" X1="0" Y1="0" X2="10" Y2="10" Stretch="Fill"/>
+</Canvas>

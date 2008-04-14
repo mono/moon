@@ -712,4 +712,8 @@
 	 inputFile="test-setsource-with-downloader.html"
 	 masterFile10="None"
    />
+   <Test id="170"
+	 inputFile="test-shape-line-stretch4.xaml"
+	 masterFile10="../harness/masters/test-shape-line-stretch4Master.png"
+   />
 </DRTList>
