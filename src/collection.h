@@ -118,10 +118,6 @@ class VisualCollection : public Collection {
 
 	void ResortByZIndex ();
 	GPtrArray *z_sorted;
-
- private:
-	void VisualAdded (Visual *visual);
-	void VisualRemoved (Visual *visual);
 };
 
 class TriggerCollection : public Collection {

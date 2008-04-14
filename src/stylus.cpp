@@ -667,6 +667,8 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangeType type, Depende
 	old_bounds = bounds;
 
 	switch (type) {
+	case CollectionChangeTypeChanging:
+		break;
 	case CollectionChangeTypeItemAdded:
 		AddStylusPointToBounds ((StylusPoint*)obj);
 		break;
@@ -979,6 +981,8 @@ void
 InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_Args)
 {
 	switch (type) {
+	case CollectionChangeTypeChanging:
+		break;
 	case CollectionChangeTypeItemAdded:
 	case CollectionChangeTypeItemRemoved:
 	case CollectionChangeTypeItemChanged: {

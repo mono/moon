@@ -269,6 +269,10 @@ Collection::Clear (bool emit_event)
 	NameScope *con_ns = NULL;
 	generation++;
 
+
+	if (emit_event)
+		EmitChanged (CollectionChangeTypeChanging, NULL, NULL);
+
 	if (closure)
 		con_ns = closure->FindNameScope ();
 	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {
@@ -526,44 +530,6 @@ VisualCollection::ResortByZIndex ()
 	g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
 }
 
-
-void
-VisualCollection::VisualAdded (Visual *visual)
-{
-	Panel *panel = (Panel *) closure;
-	UIElement *item = (UIElement *) visual;
-
-	if (panel == NULL)
-		return;
-	
-	item->SetVisualParent (panel);
-	item->UpdateTransform ();
-	item->UpdateTotalRenderVisibility ();
-	item->UpdateTotalHitTestVisibility ();
-	item->Invalidate ();
-}
-
-void
-VisualCollection::VisualRemoved (Visual *visual)
-{
-	UIElement *item = (UIElement *) visual;
-
-	item->CacheInvalidateHint ();
-
-	if (item->GetVisualParent () == NULL)
-		return;
-
-	// we can't just call item->Invalidate() here, since dirty.cpp
-	// relies on the child->parent link being present.  Instead we
-	// directly call item->parent->Invalidate with the entire
-	// bounds of the child (which is likely suboptimal,
-	// considering panels without backgrounds might have a more
-	// optimized region we can redraw).
-	item->GetVisualParent ()->Invalidate (item->GetSubtreeBounds());
-	item->SetVisualParent (NULL);
-	item->flags &= ~UIElement::IS_LOADED;
-}
-
 int
 VisualCollection::Add (DependencyObject *data)
 {
@@ -573,8 +539,6 @@ VisualCollection::Add (DependencyObject *data)
 
 	if (n != -1) {
 		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
-
-		VisualAdded (item);
 
 		if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
 			/* emit loaded events on the new item if the tree
@@ -594,8 +558,6 @@ VisualCollection::SetVal (int index, DependencyObject *data)
 	UIElement *old = (UIElement *) Collection::SetVal (index, item);
 	
 	if (old) {
-		VisualRemoved (old);
-
 		g_ptr_array_remove (z_sorted, old);
 	
 		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
@@ -605,8 +567,6 @@ VisualCollection::SetVal (int index, DependencyObject *data)
 			   we're adding it to has already been "loaded" */
 			item->OnLoaded ();
 		}
-
-		VisualAdded (item);
 	}
 
 	return old;
@@ -629,8 +589,6 @@ VisualCollection::Insert (int index, DependencyObject *data)
 		item->OnLoaded ();
 	}
 	
-	VisualAdded (item);
-	
 	return true;
 }
 
@@ -641,8 +599,6 @@ VisualCollection::Remove (DependencyObject *data)
 		return false;
 
 	UIElement *item = (UIElement *) data;
-
-	VisualRemoved (item);
 
 	if (Collection::Remove (item)) {
 		g_ptr_array_remove (z_sorted, item);
@@ -661,8 +617,6 @@ VisualCollection::RemoveAt (int index)
 	
 	UIElement *item = (UIElement *) n->obj;
 
-	VisualRemoved (item);
-
 	if (Collection::RemoveAt (index)) {
 		g_ptr_array_remove (z_sorted, item);
 		return true;
@@ -674,12 +628,8 @@ VisualCollection::RemoveAt (int index)
 void
 VisualCollection::Clear ()
 {
-	Collection::Node *n;
-	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) 
-		VisualRemoved ((UIElement*)n->obj);
-	
-	g_ptr_array_set_size (z_sorted, 0);
 	Collection::Clear ();
+	g_ptr_array_set_size (z_sorted, 0);
 }
 
 

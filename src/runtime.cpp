@@ -500,9 +500,6 @@ Surface::Attach (UIElement *element)
 
 	
 	if (toplevel) {
-		toplevel->Invalidate ();
-		down_dirty->Clear (true);
-		up_dirty->Clear (true);
 		toplevel->SetSurface (NULL);
 		time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);

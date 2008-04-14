@@ -488,7 +488,46 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 	if (args->property == Panel::BackgroundProperty)
 		Invalidate ();
 
+	if (args->property == Panel::ChildrenProperty) {
+		Collection::Node *n;
+		if (args->old_value) {
+			for (n = (Collection::Node *) args->old_value->AsCollection()->list->First (); n; n = (Collection::Node *) n->next) 
+				ChildRemoved ((Visual*)n->obj);
+		}
+
+		if (args->new_value) {
+			for (n = (Collection::Node *) args->new_value->AsCollection()->list->First (); n; n = (Collection::Node *) n->next) 
+				ChildAdded ((Visual*)n->obj);
+		}
+
+		UpdateBounds();
+	}
+
 	NotifyListenersOfPropertyChange (args);
+}
+
+void
+Panel::ChildAdded (Visual *child)
+{
+	UIElement *item = (UIElement *) child;
+
+	item->SetVisualParent (this);
+	item->UpdateTransform ();
+	item->UpdateTotalRenderVisibility ();
+	item->UpdateTotalHitTestVisibility ();
+	item->Invalidate ();
+}
+
+void
+Panel::ChildRemoved (Visual *child)
+{
+	UIElement *item = (UIElement *) child;
+
+	Invalidate (item->GetSubtreeBounds());
+
+	item->CacheInvalidateHint ();
+	item->SetVisualParent (NULL);
+	item->flags &= ~UIElement::IS_LOADED;
 }
 
 void
@@ -505,28 +544,42 @@ Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 void
 Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
-	switch (type) {
-	case CollectionChangeTypeItemAdded:
-		// we could do some optimization here
-	case CollectionChangeTypeChanged:
-	case CollectionChangeTypeItemRemoved:
-		UpdateBounds (true);
-		break;
-	case CollectionChangeTypeItemChanged:
-		// if a child changes its ZIndex property we need to resort our Children
-		if (element_args->property == UIElement::ZIndexProperty) {
-			// FIXME: it would probably be faster to remove the
-			// changed item and then re-add it using
-			// g_ptr_array_insert_sorted() because
-			// g_ptr_array_sort() uses QuickSort which has poor
-			// performance on nearly-sorted input.
-			GetChildren()->ResortByZIndex ();
-			((UIElement*)obj)->Invalidate();
+	if (col == GetValue (Panel::ChildrenProperty)->AsCollection()) {
+		switch (type) {
+		case CollectionChangeTypeItemAdded:
+			ChildAdded ((Visual*)obj);
+			UpdateBounds (true);
+			break;
+		case CollectionChangeTypeItemRemoved:
+			ChildRemoved ((Visual*)obj);
+			UpdateBounds (true);
+			break;
+		case CollectionChangeTypeChanged:
+			Collection::Node *n;
+			for (n = (Collection::Node *) col->list->First (); n; n = (Collection::Node *) n->next) 
+				ChildAdded ((Visual*)n->obj);
+			break;
+		case CollectionChangeTypeChanging: {
+			Collection::Node *n;
+			for (n = (Collection::Node *) col->list->First (); n; n = (Collection::Node *) n->next) 
+				ChildRemoved ((Visual*)n->obj);
+			break;
 		}
-		break;
+		case CollectionChangeTypeItemChanged:
+			// if a child changes its ZIndex property we need to resort our Children
+			if (element_args->property == UIElement::ZIndexProperty) {
+				// FIXME: it would probably be faster to remove the
+				// changed item and then re-add it using
+				// g_ptr_array_insert_sorted() because
+				// g_ptr_array_sort() uses QuickSort which has poor
+				// performance on nearly-sorted input.
+				GetChildren()->ResortByZIndex ();
+				((UIElement*)obj)->Invalidate();
+			}
+			break;
+		}
 	}
 }
-
 
 void
 Panel::OnLoaded ()

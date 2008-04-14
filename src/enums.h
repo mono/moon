@@ -62,6 +62,7 @@ enum CollectionChangeType {
 	CollectionChangeTypeItemRemoved,
 	CollectionChangeTypeItemChanged,
 
+	CollectionChangeTypeChanging,
 	CollectionChangeTypeChanged
 };
 

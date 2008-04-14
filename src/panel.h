@@ -20,6 +20,9 @@ class Panel : public FrameworkElement {
 	//
 	UIElement *mouse_over;
 
+	void ChildAdded (Visual *child);
+	void ChildRemoved (Visual *child);
+
  protected:
 	virtual ~Panel ();
 	bool UseBackToFront ();
