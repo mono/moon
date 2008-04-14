@@ -676,17 +676,17 @@ PluginInstance::CreateWindow ()
 	
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
 	
-	Color *c = NULL;
 	if (background) {
-		if (!(c = color_from_str (background)))
+		Color *c = color_from_str (background);
+		
+		if (c == NULL) {
 			g_warning ("error setting background color");
+			c = new Color (0x00FFFFFF);
+		}
+		
+		surface->SetBackgroundColor (c);
+		delete c;
 	}
-	
-	if (c == NULL)
-		c = new Color (0x00FFFFFF);
-	
-	surface->SetBackgroundColor (c);
-	delete c;
 	
 	if (!windowless) {
 		//  GtkPlug container and surface inside
