@@ -1,3 +1,8 @@
+2008-04-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (Image::CreateSurface): Robustification of image
+	loading.
+
 2008-04-14  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp:

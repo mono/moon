@@ -1992,45 +1992,54 @@ Image::CreateSurface (const char *fname)
 
 	if (!surface_cache)
 		surface_cache = g_hash_table_new (g_str_hash, g_str_equal);
-
-	surface = (CachedSurface*)g_hash_table_lookup (surface_cache, fname);
-	if (surface) {
-		surface->ref_cnt ++;
-	}
-	else {
-		GError *error = NULL;
-
+	
+	if (!(surface = (CachedSurface*)g_hash_table_lookup (surface_cache, fname))) {
 		GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
-		FILE *f = NULL;
-		long n = 0;
-		guchar *buffer = NULL;
-
-		buffer = (guchar*)g_try_malloc (1024);
-		f = fopen (fname, "r");
-		while ((n = fread (buffer, 1, 1024, f)))
-			gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buffer, n, &error);
-
-		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), &error);
-		fclose (f);
-		g_free (buffer);
-
-		GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (GDK_PIXBUF_LOADER (loader));
-
-		if (!pixbuf){
-			char *msg;
-
-			if (error && error->message)
-				msg = g_strdup_printf ("Failed to load image %s: %s", fname, error->message);
-			else
-				msg = g_strdup_printf ("Failed to load image %s", fname);
-		  
+		GdkPixbuf *pixbuf = NULL;
+		GError *err = NULL;
+		guchar buf[4096];
+		ssize_t n;
+		char *msg;
+		int fd;
+		
+		if ((fd = open (fname, O_RDONLY)) == -1) {
+			msg = g_strdup_printf ("Failed to load image %s: %s", fname, g_strerror (errno));
 			Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
-
 			return false;
 		}
-
+		
+		do {
+			do {
+				n = read (fd, buf, sizeof (buf));
+			} while (n == -1 && errno == EINTR);
+			
+			if (n == -1)
+				break;
+			
+			gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &err);
+		} while (n > 0 && !err);
+		
+		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), err ? NULL : &err);
+		close (fd);
+		
+		if (!(pixbuf = gdk_pixbuf_loader_get_pixbuf (GDK_PIXBUF_LOADER (loader)))) {
+			if (err && err->message)
+				msg = g_strdup_printf ("Failed to load image %s: %s", fname, err->message);
+			else
+				msg = g_strdup_printf ("Failed to load image %s", fname);
+			
+			Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
+			
+			if (err)
+				g_error_free (err);
+			
+			return false;
+		} else if (err) {
+			g_error_free (err);
+		}
+		
 		surface = g_new0 (CachedSurface, 1);
-
+		
 		surface->ref_cnt = 1;
 		surface->fname = g_strdup (fname);
 		surface->height = gdk_pixbuf_get_height (pixbuf);
@@ -2067,6 +2076,8 @@ Image::CreateSurface (const char *fname)
 		surface->has_alpha = has_alpha;
 #endif
 		g_hash_table_insert (surface_cache, surface->fname, surface);
+	} else {
+		surface->ref_cnt++;
 	}
 
 	return true;
