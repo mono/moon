@@ -296,43 +296,43 @@ PluginInstance::Properties ()
 
 PluginInstance::PluginInstance (NPP instance, uint16_t mode)
 {
-	this->mode = mode;
 	this->instance = instance;
-	this->window = NULL;
+	this->mode = mode;
+	window = NULL;
+	
+	properties_fps_label = NULL;
+	properties_cache_label = NULL;
 
-	this->properties_fps_label = NULL;
-	this->properties_cache_label = NULL;
+	rootobject = NULL;
 
-	this->rootobject = NULL;
-
-	this->container = NULL;
-	this->surface = NULL;
+	container = NULL;
+	surface = NULL;
 
 	// Property fields
-	this->initParams = false;
-	this->isLoaded = false;
-	this->source = NULL;
-	this->source_idle = 0;
-	this->onLoad = NULL;
-	this->onError = NULL;
-	this->background = NULL;
+	initParams = false;
+	isLoaded = false;
+	source = NULL;
+	source_idle = 0;
+	onLoad = NULL;
+	onError = NULL;
+	background = NULL;
 
-	this->windowless = false;
+	windowless = false;
 	
 	// MSDN says the default is 24: http://msdn2.microsoft.com/en-us/library/bb979688.aspx
 	// blog says the default is 60: http://blogs.msdn.com/seema/archive/2007/10/07/perf-debugging-tips-enableredrawregions-a-performance-bug-in-videobrush.aspx
 	// testing seems to confirm that the default is 60.
-	this->maxFrameRate = 60;
+	maxFrameRate = 60;
 
-	this->vm_missing_file = NULL;
-	this->xaml_loader = NULL;
-	this->plugin_unload = NULL;
+	vm_missing_file = NULL;
+	xaml_loader = NULL;
+	plugin_unload = NULL;
 
-	this->timers = NULL;
+	timers = NULL;
 
-	this->wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
+	wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 
-	plugin_instances = g_slist_append (plugin_instances, this->instance);
+	plugin_instances = g_slist_append (plugin_instances, instance);
 
 	/* back pointer to us */
 	instance->pdata = this;
@@ -356,19 +356,17 @@ PluginInstance::~PluginInstance ()
 	g_hash_table_destroy (wrapped_objects);
 
 	// Remove us from the list.
-	plugin_instances = g_slist_remove (plugin_instances, this->instance);
+	plugin_instances = g_slist_remove (plugin_instances, instance);
 
 	if (rootobject)
 		NPN_ReleaseObject ((NPObject*)rootobject);
 
-	if (background)
-		g_free (background);
+	g_free (background);
 
 	delete xaml_loader;
 	xaml_loader = NULL;
 
-	if (source)
-		g_free (source);
+	g_free (source);
 
 	if (source_idle)
 		g_source_remove (source_idle);
@@ -382,7 +380,7 @@ PluginInstance::~PluginInstance ()
 	if (surface != NULL){
 		//gdk_error_trap_push ();
 		surface->unref ();
-		//gdk_display_sync (this->display);
+		//gdk_display_sync (display);
 		//gdk_error_trap_pop ();
 	}
 
@@ -429,40 +427,40 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 		// initParams.
 		if (!g_ascii_strcasecmp (argn[i], "initParams")) {
-			this->initParams = argv[i];
+			initParams = argv[i];
 			continue;
 		}
 
 		// onLoad.
 		if (!g_ascii_strcasecmp (argn[i], "onLoad")) {
-			this->onLoad = argv[i];
+			onLoad = argv[i];
 			continue;
 		}
 
 		// onError.
 		if (!g_ascii_strcasecmp (argn[i], "onError")) {
-			this->onError = argv[i];
+			onError = argv[i];
 			continue;
 		}
 
 		// Source url handle.
 		if (!g_ascii_strcasecmp (argn[i], "src") || !g_ascii_strcasecmp (argn[i], "source")) {
-			this->source = g_strdup (argv[i]);
+			source = g_strdup (argv[i]);
 			continue;
 		}
 
 		if (!g_ascii_strcasecmp (argn[i], "background")) {
-			this->background = g_strdup (argv[i]);
+			background = g_strdup (argv[i]);
 			continue;
 		}
 		
 		if (!g_ascii_strcasecmp (argn [i], "windowless")) {
-			this->windowless = !g_ascii_strcasecmp (argv [i], "true");
+			windowless = !g_ascii_strcasecmp (argv [i], "true");
 			continue;
 		}
 		
 		if (!g_ascii_strcasecmp (argn [i], "maxFramerate")) {
-			this->maxFrameRate = atoi (argv [i]);
+			maxFrameRate = atoi (argv [i]);
 			continue;
 		}
 	}
@@ -481,23 +479,19 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 	if (netscape_major >= 1 || netscape_minor >= 18) {
 		if (windowless)
-			NPN_GetValue(this->instance,
-				     NPNVSupportsWindowless,
-				     &supportsWindowless);
+			NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
 	}
 
 	if (windowless) {
 		if (supportsWindowless) {
-			NPN_SetValue(this->instance, NPPVpluginWindowBool, (void*)FALSE);
-			NPN_SetValue(this->instance, NPPVpluginTransparentBool, (void*)TRUE);
+			NPN_SetValue (instance, NPPVpluginWindowBool, (void *) FALSE);
+			NPN_SetValue (instance, NPPVpluginTransparentBool, (void *) TRUE);
 			printf ("windowless mode\n");
-		}
-		else {
+		} else {
 			printf ("browser doesn't support windowless mode.\n");
 			windowless = FALSE;
 		}
 	}
-	
 }
 
 void
@@ -532,7 +526,7 @@ PluginInstance::SetValue (NPNVariable variable, void *value)
 }
 
 NPError
-PluginInstance::SetWindow (NPWindow* window)
+PluginInstance::SetWindow (NPWindow *window)
 {
  	if (window == this->window)
  		return NPERR_NO_ERROR;
@@ -540,15 +534,15 @@ PluginInstance::SetWindow (NPWindow* window)
 	this->window = window;
 
 	if (!windowless) {
-		NPN_GetValue(this->instance, NPNVSupportsXEmbedBool, &this->xembed_supported);
-		if (!this->xembed_supported) {
+		NPN_GetValue (instance, NPNVSupportsXEmbedBool, &xembed_supported);
+		if (!xembed_supported) {
 			DEBUGMSG ("*** XEmbed not supported");
 			return NPERR_GENERIC_ERROR;
 		}
 	}
 
-	this->CreateWindow ();
-
+	CreateWindow ();
+	
 	return NPERR_NO_ERROR;
 }
 
@@ -556,17 +550,15 @@ void
 PluginInstance::SetPageURL ()
 {
 	// From: http://developer.mozilla.org/en/docs/Getting_the_page_URL_in_NPAPI_plugin
-
-	NPObject *window;
 	NPIdentifier str_location = NPN_GetStringIdentifier ("location");
 	NPIdentifier str_href = NPN_GetStringIdentifier ("href");
 	NPVariant location_property;
 	NPVariant location_object;
-
-	if (NPERR_NO_ERROR != NPN_GetValue (instance, NPNVWindowNPObject, &window)) {
+	NPObject *window;
+	
+	if (NPERR_NO_ERROR != NPN_GetValue (instance, NPNVWindowNPObject, &window))
 		return;
-	}
-
+	
 	// Get the location property from the window object (which is another object).
 	if (NPN_GetProperty (instance, window, str_location, &location_property)) {
 		// Get the location property from the location object.
@@ -614,10 +606,9 @@ PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *use
 	
 	NPN_Status (plugin->instance, msg);
 
-	if (plugin->properties_fps_label) {
+	if (plugin->properties_fps_label)
 		gtk_label_set_text (GTK_LABEL (plugin->properties_fps_label), msg);
-	}
-
+	
 	g_free (msg);
 }
 
@@ -634,10 +625,9 @@ PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 
 	NPN_Status (plugin->instance, msg);
 
-	if (plugin->properties_cache_label) {
+	if (plugin->properties_cache_label)
 		gtk_label_set_text (GTK_LABEL (plugin->properties_cache_label), msg);
-	}
-
+	
 	g_free (msg);
 }
 
@@ -645,7 +635,7 @@ void
 PluginInstance::CreateWindow ()
 {
 	//DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
-
+	
 	surface = new Surface (window->width, window->height, windowless);
 
 	if (windowless) {
@@ -654,26 +644,24 @@ PluginInstance::CreateWindow ()
 		surface->SetTrans (true);
 	}
 
-	if (this->onError != NULL) {
-		char *retval = PL_strdup (this->onError);
+	if (onError != NULL) {
+		char *retval = PL_strdup (onError);
 		NPVariant npvalue;
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onError");
-		NPN_SetProperty (this->instance, 
-				 this->getRootObject ()->content, 
+		NPN_SetProperty (instance, getRootObject ()->content, 
 				 identifier, &npvalue);
 	}
 
 	/*
-	if (this->onLoad != NULL) {
-		char *retval = PL_strdup (this->onLoad);
+	if (onLoad != NULL) {
+		char *retval = PL_strdup (onLoad);
 		NPVariant npvalue;
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onLoad");
-		NPN_SetProperty (this->instance, 
-				 this->getRootObject ()->content, 
+		NPN_SetProperty (instance, getRootObject ()->content, 
 				 identifier, &npvalue);
 	}
 	*/
@@ -687,19 +675,19 @@ PluginInstance::CreateWindow ()
 	UpdateSource ();
 	
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
-
+	
+	Color *c = NULL;
 	if (background) {
-		Color *c = color_from_str (background);
-
-		if (c == NULL)
+		if (!(c = color_from_str (background)))
 			g_warning ("error setting background color");
-		
-		c = new Color (0x00FFFFFF);
-
-		surface->SetBackgroundColor (c);
-		delete c;
 	}
-
+	
+	if (c == NULL)
+		c = new Color (0x00FFFFFF);
+	
+	surface->SetBackgroundColor (c);
+	delete c;
+	
 	if (!windowless) {
 		//  GtkPlug container and surface inside
 		container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
@@ -732,18 +720,17 @@ PluginInstance::CreateWindow ()
 void
 PluginInstance::UpdateSource ()
 {
-	if (!this->source)
+	if (!source)
 		return;
 
-	char *pos = strchr (this->source, '#');
+	char *pos = strchr (source, '#');
 	if (pos) {
-		this->source_idle = g_idle_add (IdleUpdateSourceByReference,
-						this);
+		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
 	} else {
-		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, this->source);
+		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, source);
 		
 		// FIXME: check for errors
-		NPN_GetURLNotify (this->instance, this->source, NULL, notify);
+		NPN_GetURLNotify (instance, source, NULL, notify);
 	}
 }
 
@@ -771,7 +758,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	if (xaml_loader)
 		delete xaml_loader;
 
-	xaml_loader = PluginXamlLoader::FromStr (xaml, this, this->surface);
+	xaml_loader = PluginXamlLoader::FromStr (xaml, this, surface);
 	TryLoad ();
 
 	g_free ((gpointer) xaml);
@@ -884,9 +871,9 @@ PluginInstance::TryLoad ()
 	//
 	// missing file was NULL, if error is set, display some message
 	//
-	if (!this->isLoaded && surface->GetToplevel ()) {
-		this->isLoaded = true;
-		if (this->onLoad)
+	if (!isLoaded && surface->GetToplevel ()) {
+		isLoaded = true;
+		if (onLoad)
 			JsRunOnload ();
 	}
 }
@@ -1074,7 +1061,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	  //		DEBUGMSG ("LoadFromXaml: %s", fname);
 	  	if (xaml_loader)
 	  		delete xaml_loader;
-		xaml_loader = PluginXamlLoader::FromFilename (fname, this, this->surface);
+		xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
 		TryLoad ();
 	}
 
@@ -1397,18 +1384,23 @@ PluginInstance::getBackground ()
 bool
 PluginInstance::setBackground (const char *value)
 {
-	if (background)
-		g_free (background);
+	g_free (background);
 	background = g_strdup (value);
+	
+	printf ("new background color is %s\n", background);
+	
 	if (surface) {
 		Color *c = color_from_str (background);
-
-		if (c == NULL)
+		
+		if (c == NULL) {
+			printf ("failed to parse color name\n");
 			return false;
-			
+		}
+		
 		surface->SetBackgroundColor (c);
 		delete c;
 	}
+	
 	return true;
 }
 
@@ -1439,19 +1431,19 @@ PluginInstance::getEnableHtmlAccess ()
 bool
 PluginInstance::getWindowless ()
 {
-	return this->windowless;
+	return windowless;
 }
 
 int
 PluginInstance::getMaxFrameRate ()
 {
-	return this->maxFrameRate;
+	return maxFrameRate;
 }
 
 void
 PluginInstance::setMaxFrameRate (int value)
 {
-	this->maxFrameRate = value;
+	maxFrameRate = value;
 	
 	surface->GetTimeManager()->SetMaximumRefreshRate (MAX (value, 64));
 }
@@ -1712,9 +1704,8 @@ PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, Plugi
 PluginXamlLoader::~PluginXamlLoader ()
 {
 #if INCLUDE_MONO_RUNTIME
-	if (managed_loader) {
+	if (managed_loader)
 		vm_loader_destroy (managed_loader);
-	}
 #endif
 }
 
