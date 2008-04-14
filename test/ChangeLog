@@ -1,3 +1,8 @@
+2008-04-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* make-xephyr: Added, script to run tests in xephyr.
+	* Makefile.am: Added run-drtlist to run an arbitrary drtlist.
+
 2008-04-11  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Use MOON_PLUGIN_DIR to override the path to libmoonplugin

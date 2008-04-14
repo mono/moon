@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+Xephyr :2  -dpi 96 -noreset -ac &
+
+DISPLAY=:2 make "$@"
+
+pkill Xephyr
+
+
