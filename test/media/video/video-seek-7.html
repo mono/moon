@@ -4,68 +4,103 @@
 <head>
   <title>Test file</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-      <script src="jtr.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+      <script src="../../js/js/utils.js"></script>
 </head>
 <body>
 
-<script type="text/javascript">
-	var tested = false;
-	var result = false;
-	var msg = "";
-	var ready = false;
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		   <MediaElement x:Name="TestVideo" Width="108" Height="160" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed"/> 
+	</Canvas>
+</script>
 
-        ontestready = OnTestReady;
+<script type="text/javascript">
+	var seeked = false;
+	var result = false;
+	var ready = false;
+	var mediaElement = null;
+	var plugin = null;
+	var delayed = false;
+	var done = false;
 
 	function logResult ()
 	{
-		if (ready && tested) {
-			if (result == 0) {
-		                var moonlight_control = document.getElementById ("JoltActiveX");
-				TestLogger.LogResult (result);
-				TestHost.TakeSingleSnapshotAndShutdown (moonlight_control, "video-seek-7.html.png", 300, 300);
-			} else {
-				TestLogger.LogError (msg);
-				TestLogger.LogResult (result);
-				TestHost.SignalShutdown ();
-			}
+		if (!(ready && seeked)) {
+			setTimeout ("logResult ();", 250);
+			return;
 		}
+
+		if (!delayed) {
+			setTimeout ("logResult ()", 500);
+			delayed = true;
+		}
+
+		if (done)
+			return;
+
+		done = true;
+		TestLogger.LogDebug ("logResult: taking snapshot.");
+		TakeSingleSnapshotAndShutdown (TestHost, "video-seek-7.html.png", 300, 300);
+		TestLogger.LogDebug ("logResult: ending test.");
 	}
-	
-        function OnTestReady ()
-        {
+
+	function OnTestPluginReady ()
+	{
 		ready = true;
 		logResult ();
-        }
-
-
-        function ErrorHandler (sender, args)
-        {
-            TestLogger.LogError (args.toString ());
-            TestLogger.LogResult (-1);
-        }
-
-	function onLoaded (o, e)
-	{
 	}
 
-	function onMediaOpened (me, e)
+	function OnPluginError (sender, args)
 	{
-		me.Pause ();
-		me.Position = "00:00:07.00";
-		tested = true;
-		result = 0;
-		logResult ();
+		TestLogger.LogDebug ("OnPluginError");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1);
+		TestHost.SignalShutdown (document.name);
+	}
+
+	function OnPluginLoaded (o, e)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		plugin = document.getElementById ("JoltActiveX");
+		mediaElement = plugin.content.findName ("TestVideo");
+		mediaElement.AutoPlay = false;
+		mediaElement.Source = "timecode-long.wmv";
+	}
+
+	function DoTest ()
+	{
+		mediaElement.Position = "00:00:07.000";
+		setTimeout ("seeked = true; logResult ();", 2500);
+	}
+
+	function OnMediaOpened (me, e)
+	{
+		TestLogger.LogDebug ("OnMediaOpened");
+		setTimeout ("DoTest ();", 250);
+	}
+
+	function OnMediaFailed (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaFailed");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		TestHost.SignalShutdown (document.name);
 	}
 </script>
 
 <div>
-<embed type="application/x-silverlight" width="300" height="300"
-     id="JoltActiveX" Source="video-auto.xaml" OnError="ErrorHandler" OnLoad="onLoaded"
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
-
-</body>
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
 </body>
 </html>
 

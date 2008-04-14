@@ -1,10 +1,5 @@
 <DRTList>
-   <Test id="1"
-	inputFile="video-seek.html"
-	masterFile10="masters/video-seek.html.png"
-   />
-   <Test id="2"
-	inputFile="video-seek-7.html"
-	masterFile10="masters/video-seek-7.html.png"
-   />
+    <Test id="1" inputFile="video-seek-7.html" masterFile10="masters/video-seek-7.html.master.png" timeout="30000" categories="video,media"  />
+    <Test id="2" inputFile="video-seek.html" masterFile10="None" timeout="60000" categories="video,media"  />
+    <Test id="3" inputFile="all.html" masterFile10="None" timeout="200000" categories="video,media"  />
 </DRTList>

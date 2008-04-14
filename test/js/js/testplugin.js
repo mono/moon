@@ -129,7 +129,7 @@ TestLogger = new function()
     this.LogResult = function (result)
     { 
         if (TestHost == null) {
-			pendingMessages.push (msg); pendingTypes.push ("Result");
+			pendingMessages.push (result); pendingTypes.push ("Result");
 		} else {
 		 	TestHost.LogResult (result);
 		}
@@ -137,7 +137,7 @@ TestLogger = new function()
     this.TryLogResult = function (result)
     {
         if (TestHost == null) {
-			pendingMessages.push (msg); pendingTypes.push ("TryResult");
+			pendingMessages.push (result); pendingTypes.push ("TryResult");
 		} else {
 		 	TestHost.TryLogResult (result);
 		}

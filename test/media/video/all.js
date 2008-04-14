@@ -1,167 +1,90 @@
 
-var tests = [];
-var results = [];
-
-var xaml = 
-"<Canvas  xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Width=\"120\" Height=\"80\">" +
-"	<MediaElement MarkerReached=\"onMarkerReached\" " +
-"		MediaEnded=\"onMediaEnded\" " +
-"		MediaOpened=\"onMediaOpened\" " +
-"		MediaFailed=\"onMediaFailed\" " + 
-"		x:Name=\"TestVideo\" Source=\"%TEST%.wmv\" Opacity=\"0.0\" IsHitTestVisible=\"False\"/> " +
-"	<Rectangle Width=\"1280\" Height=\"720\"  >" +
-"		<Rectangle.Fill>" +
-"			<VideoBrush SourceName=\"TestVideo\" Stretch=\"None\"/>" +
-"		</Rectangle.Fill>" +
-"	</Rectangle>" +
-"</Canvas>";
-// Width=\"120\" Height=\"80\"
-var current_test;
-var currently_expected;
-var current_result = null;
-var marker_counter = 0;
-var log_counter = 0;
-var accumulative_result = true;
-var current_finished = false;
-
-function log_result (msg) {
-	var result = "";
-	
-	if (currently_expected != null && currently_expected.length > 0) {
-		if (currently_expected [log_counter] == msg) {
-			result = " OK";
-		} else {
-			result = " FAILED (expected: '" + currently_expected [log_counter] + "')";
-			current_result = false;
-		}
-	}
-
-	msg = msg + result;
-
-	if (current_result == false) {
-		msg = "<div style='color:#FF0000;'>" + msg + "</div>";
-	} else {
-		msg = "<div style='color:#00BB00;'>" + msg + "</div>";
-	}
-
-	log_msg (msg)
-	log_counter++;
-}
-
-function log_msg (msg) {
-	document.getElementById("testlog").innerHTML += msg;// + "<br>";
-}
-
-function onBrokenPluginError (sender, args) {
-	log_result ("BrokenPlugin");
-	current_result = false;
-}
-
-function onPluginLoad (sender, args) {
-	log_result ("PluginLoad");
-	runTests ();
-}
- style='foreground-color: red'
-function onMarkerReached (sender, markerEventArgs) {
-	marker_counter++;
-	log_result (marker_counter.toString () + " MarkerReached: ms = " + Math.round(markerEventArgs.marker.time.seconds*1000).toString () + ", type = " + markerEventArgs.marker.type + ", text = " + markerEventArgs.marker.text);
-}
-
-function onMediaOpened (sender, args) {
-	log_result ("MediaOpened");
-}
-
-function onMediaEnded (sender, args) {
-	log_result ("MediaEnded");
-	currently_expected = null;
-	if (current_result == null) {
-		current_result = true;
-	}
-	current_finished = true;
-}
-
-function onMediaFailed (sender, args) {
-	log_result ("MediaFailed");
-	if (current_result == null) {
-		current_result = true;
-	}
-	current_finished = true;
-}
-
-function runTest (test_name) {
-	var media;
-	var SL = document.getElementById ("MoonlightControl");
-	var content = SL.content;
-	var container = content.findName ("Container");
-
-	current_finished = false;
-	marker_counter = 0;
-	log_counter = 0;
-	current_result = null;
-	current_test = test_name;
-	currently_expected = results [test_name];
-	
-	log_msg ("<br>Running " + test_name);
-
-	var test_xaml = xaml;
-
-	test_xaml = test_xaml.replace ("%TEST%", test_name);
-
-	media = content.createFromXaml (test_xaml);
-	while (container.Children.Count > 0)
-		container.Children.RemoveAt (0);
-	container.Children.Add (media);
-	
-	
-}
-
-function checkTests () {
-
-	if (!current_finished) {
-		setTimeout ("checkTests ()", 1000);
-		return;
-	}
-
-	accumulative_result &= current_result;
-
-	var next = -1;
-	for (i = 0; i < tests.length - 1; i++) {
-		//log_result ("Checking " + tests [i] + " against " + current_test);
-		if (tests [i] == current_test) {
-			next = i+1;
-			break;
-		}
-	}
-
-	if (next > -1) {
-		runTest (tests [next]);
-		setTimeout ("checkTests ()", 1000);
-	} else {
-		log_msg ("");
-		msg = "Running tests: DONE, result = ";
-	 	msg += ((accumulative_result != 0));// ? "OK" : "FAIL")); 
-		if (accumulative_result) {
-			msg = "<div style='color:#00BB00;'>" + msg + "</div>";
-		} else { 
-			msg = "<div style='color:#FF0000;'>" + msg + "</div>";
-		}
-		log_msg (msg);
-		document.getElementById("Moonlight").removeChild (document.getElementById ("MoonlightHost"));
-	}
-}
-
-function runTests () {
-	log_msg ("Running " + tests.length + " tests...");
-
-	if (tests.length > 0) {
-		runTest (tests [0]);
-		setTimeout ("checkTests ()", 1000);
-	} else {
-		log_msg ("No tests to run.");
-	}
-
-}
+tests.push ("embedded-script-commands");
+results ["embedded-script-commands"] = [
+"MediaOpened", 
+"1 MarkerReached: ms = 933, type = caption, text = sub 1", 
+"2 MarkerReached: ms = 1467, type = caption, text = sub 2", 
+"3 MarkerReached: ms = 2133, type = text, text = some text here", 
+"4 MarkerReached: ms = 2933, type = caption, text = sub 3", 
+"5 MarkerReached: ms = 3533, type = caption, text = <center>sub 4</center>", 
+"6 MarkerReached: ms = 4333, type = caption, text = <b>sub 5</b>", 
+"MediaEnded"
+]
 
 
+tests.push ("timecode-mini-caption-all");
+results ["timecode-mini-caption-all"] = [
+"MediaOpened",
+"1 MarkerReached: ms = 0, type = caption, text = 00:00",
+"2 MarkerReached: ms = 50, type = caption, text = 00:01",
+"3 MarkerReached: ms = 79, type = caption, text = 00:02",
+"4 MarkerReached: ms = 117, type = caption, text = 00:03",
+"5 MarkerReached: ms = 149, type = caption, text = 00:04",
+"6 MarkerReached: ms = 187, type = caption, text = 00:05",
+"7 MarkerReached: ms = 228, type = caption, text = 00:06",
+"8 MarkerReached: ms = 254, type = caption, text = 00:07",
+"9 MarkerReached: ms = 276, type = caption, text = 00:08",
+"10 MarkerReached: ms = 324, type = caption, text = 00:09",
+"11 MarkerReached: ms = 337, type = caption, text = 00:10",
+"12 MarkerReached: ms = 384, type = caption, text = 00:11",
+"13 MarkerReached: ms = 403, type = caption, text = 00:12",
+"14 MarkerReached: ms = 445, type = caption, text = 00:13",
+"15 MarkerReached: ms = 489, type = caption, text = 00:14",
+"16 MarkerReached: ms = 521, type = caption, text = 00:15",
+"17 MarkerReached: ms = 546, type = caption, text = 00:16",
+"18 MarkerReached: ms = 588, type = caption, text = 00:17",
+"19 MarkerReached: ms = 620, type = caption, text = 00:18",
+"20 MarkerReached: ms = 658, type = caption, text = 00:19",
+"21 MarkerReached: ms = 686, type = caption, text = 00:20",
+"22 MarkerReached: ms = 721, type = caption, text = 00:21",
+"23 MarkerReached: ms = 759, type = caption, text = 00:22",
+"24 MarkerReached: ms = 798, type = caption, text = 00:23",
+"25 MarkerReached: ms = 826, type = caption, text = 00:24",
+"26 MarkerReached: ms = 855, type = caption, text = 00:25",
+"27 MarkerReached: ms = 883, type = caption, text = 00:26",
+"28 MarkerReached: ms = 918, type = caption, text = 00:27",
+"29 MarkerReached: ms = 960, type = caption, text = 00:28",
+"30 MarkerReached: ms = 995, type = caption, text = 00:29",
+"31 MarkerReached: ms = 1020, type = caption, text = 01:00",
+"32 MarkerReached: ms = 1052, type = caption, text = 01:01",
+"MediaEnded"
+];
+
+tests.push ("timecode-short-caption-1");
+results ["timecode-short-caption-1"] = [
+"MediaOpened",
+"1 MarkerReached: ms = 1004, type = caption, text = one sec",
+"MediaEnded"
+];
+
+tests.push ("timecode-short-mpeg4");
+results ["timecode-short-mpeg4"] = ["MediaFailed"];
+
+tests.push ("timecode-short-vc1-adv");
+results ["timecode-short-vc1-adv"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode-short-vc1-main");
+results ["timecode-short-vc1-main"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode-short-vc1-simple");
+results ["timecode-short-vc1-simple"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode-short");
+results ["timecode-short"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode-short-wmv7");
+results ["timecode-short-wmv7"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode-short-wmv8");
+results ["timecode-short-wmv8"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode-short-wmv9src");
+results ["timecode-short-wmv9src"] = ["MediaFailed"];
+
+tests.push ("timecode-short-wmv9");
+results ["timecode-short-wmv9"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode");
+results ["timecode"] = ["MediaFailed"];
 
 

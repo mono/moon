@@ -1,3 +1,11 @@
+2008-04-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* video-seek-7.html, video-seek.html, all.html: Fixed to work with the test
+	  harness.
+	* video-auto.xaml, video.xaml, all.xaml: Removed, using inline xaml.
+	* drtlist.xml: Updated.
+	* all.js: Minor fix.
+
 2008-03-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	

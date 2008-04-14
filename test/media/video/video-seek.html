@@ -2,78 +2,170 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>Test file</title>
+  <title>Video seek test</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <script src="jtr.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+      <script src="../../js/js/utils.js"></script>
 </head>
 <body>
 
-<script type="text/javascript">
-	var tested = false;
-	var result = false;
-	var msg = "";
-	var ready = false;
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		   <MediaElement x:Name="TestVideo" Width="1280" Height="720" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed"/> 
+	</Canvas>
+</script>
 
-        ontestready = OnTestReady;
+<script type="text/javascript">
+	var done = false;
+	var seeked = false;
+	var result = true;
+	var ready = false;
+	var mediaElement = null;
+	var plugin = null;
+	var seeks_done = 0;
+	var seek_interval = 4.567;
+	var max_pos = 30.000;
+	var current_pos_string = "";
+	var current_pos = -seek_interval;
+
+	function doubleDigit (number)
+	{
+		if (number < 10)
+			return "0" + number;
+		else
+			return number + "";
+	}
+
+	function tripleDigit (number)
+	{
+		if (number < 10)
+			return "00" + number;
+		else if (number < 100)
+			return "0" + number;
+		else
+			return "" + number;
+	}
 
 	function logResult ()
 	{
-		if (ready && tested) {
-			if (result == 0) {
-		                var moonlight_control = document.getElementById ("JoltActiveX");
-				TestLogger.LogResult (result);
-				TestHost.TakeSingleSnapshotAndShutdown (moonlight_control, "video-seek.html.png", 100, 100);
+		TestLogger.LogDebug ("logResult");
+		if (!(seeked && ready)) {
+			setTimeout ("logResult ();", 250);
+			return;
+		}
+
+		TestHost.CaptureSingleImage (".", "video-seek.html." + doubleDigit (seeks_done) + "-" + current_pos_string.replace (/:/g, "_") + ".png", 0, 0, 1200, 800);
+
+		if (done) {
+			if (result) {
+				TestLogger.LogResult (1);
 			} else {
-				TestLogger.LogError (msg);
-				TestLogger.LogResult (result);
-				TestHost.SignalShutdown ();
+				TestLogger.LogResult (-1);
 			}
+			TestHost.SignalShutdown (document.name);
+			TestLogger.LogDebug ("logResult: DONE");
+		} else {
+			setTimeout ("doSeek ();", 5);
 		}
 	}
 	
-        function OnTestReady ()
-        {
-		ready = true;
-		logResult ();
-        }
-
-        function ErrorHandler (sender, args)
-        {
-            TestLogger.LogError (args.toString ());
-            TestLogger.LogResult (-1);
-        }
-
-	function onLoaded (o, e)
+	function doSeek ()
 	{
-		var ml = document.getElementById ("JoltActiveX");
-		var me = ml.content.findName ("TestVideo");
-		me.Position = "00:00:07.000";
+		var diff;
 
-		if (me.Position.Seconds == 7) {
-			result = 0;
-		} else {
-			result = -1;
-			msg = "Expected 7 seconds, got " + me.Position.Seconds + " seconds.";
+		TestLogger.LogDebug ("doSeek, seeks_done: " + seeks_done + ", seek_interval: " + seek_interval);
+
+		if (done) {
+			logResult ();
+			result;
 		}
-		tested = true;
-		logResult ();
+
+		current_pos += seek_interval;
+
+		if (current_pos > max_pos) {
+			done = true;
+			current_pos = max_pos;
+		}
+
+		current_pos_string = "00:00:" + doubleDigit (Math.floor (current_pos)) + "." + tripleDigit (Math.floor((current_pos - Math.floor(current_pos)) * 1000)) + "";
+
+		TestLogger.LogDebug ("Seeking to: '" + current_pos_string + "'");
+		try {
+			mediaElement.Position = current_pos_string;
+		} catch (ex) {
+			TestLogger.LogDebug ("Couldn't set position to: '" + current_pos_string + "': " + ex);
+		}
+
+		diff = Math.abs (mediaElement.Position.Seconds - current_pos);
+
+		if (diff < 0.000001) {
+			result &= true;
+			TestLogger.LogDebug ("Set position to " + current_pos + " and successfully got back " + mediaElement.Position.Seconds + " (diff: " + diff + ")");
+		} else {
+			result = false;
+			TestLogger.LogError ("Expected " + current_pos + " seconds, got " + mediaElement.Position.Seconds + " seconds (diff: " + diff + ")");
+		}
+		seeked = true;
+
+		seeks_done++;
+		setTimeout ("logResult ();", 100);
 	}
 
-	function onStateChanged (o, e)
+	function OnTestPluginReady ()
 	{
+		TestLogger.LogDebug ("OnTestPluginReady");
+		ready = true;
 	}
 
+	function OnPluginError (sender, args)
+	{
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1);
+		TestHost.SignalShutdown (document.name);
+	}
+
+	function OnPluginLoaded (o, e)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		plugin = document.getElementById ("JoltActiveX");
+		mediaElement = plugin.content.findName ("TestVideo");
+		mediaElement.addEventListener ("MediaOpened", "onMediaOpened");
+		mediaElement.AutoPlay = false;
+		mediaElement.Source = "timecode-long.wmv";
+		TestLogger.LogDebug ("OnPluginLoaded: Done");
+	}
+
+	function OnMediaOpened (me, e)
+	{
+		TestLogger.LogDebug ("OnMediaOpened");
+		mediaElement.Pause ();
+		doSeek ();
+	}
+
+	function OnMediaFailed (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaFailed");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		TestHost.SignalShutdown (document.name);
+	}
 </script>
 
 <div>
 <embed type="application/x-silverlight" width="1280" height="720"
-     id="JoltActiveX" Source="video.xaml" OnError="ErrorHandler" OnLoad="onLoaded"
+     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
 
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
 </body>
-</body>
+
 </html>
 
 
