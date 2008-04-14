@@ -37,6 +37,7 @@
  *      Carl Worth <cworth@cworth.org>
  */
 
+#define _BSD_SOURCE /* for strdup() */
 #include "cairoint.h"
 
 #include "cairo-ft-private.h"
@@ -2330,7 +2331,7 @@ _cairo_ft_font_face_create (cairo_ft_unscaled_font_t *unscaled,
     font_face = malloc (sizeof (cairo_ft_font_face_t));
     if (!font_face) {
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return NULL;
+	return (cairo_font_face_t *)&_cairo_font_face_nil;
     }
 
     font_face->unscaled = unscaled;
@@ -2508,10 +2509,7 @@ cairo_ft_font_face_create_for_pattern (FcPattern *pattern)
     font_face = _cairo_ft_font_face_create (unscaled, &ft_options);
     _cairo_unscaled_font_destroy (&unscaled->base);
 
-    if (font_face)
-	return font_face;
-    else
-	return (cairo_font_face_t *)&_cairo_font_face_nil;
+    return font_face;
 }
 
 /**
@@ -2561,10 +2559,7 @@ cairo_ft_font_face_create_for_ft_face (FT_Face         face,
     font_face = _cairo_ft_font_face_create (unscaled, &ft_options);
     _cairo_unscaled_font_destroy (&unscaled->base);
 
-    if (font_face)
-	return font_face;
-    else
-	return (cairo_font_face_t *)&_cairo_font_face_nil;
+    return font_face;
 }
 
 /**

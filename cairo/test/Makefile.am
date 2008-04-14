@@ -3,9 +3,12 @@ SUBDIRS=pdiff .
 # Here are all the tests that are run unconditionally
 TESTS =							\
 a1-image-sample$(EXEEXT)				\
+a1-mask$(EXEEXT)					\
 a1-traps-sample$(EXEEXT)				\
 a8-mask$(EXEEXT)					\
+big-line$(EXEEXT)					\
 big-trap$(EXEEXT)					\
+bilevel-image$(EXEEXT)					\
 caps-joins$(EXEEXT)					\
 caps-joins-alpha$(EXEEXT)				\
 caps-sub-paths$(EXEEXT)					\
@@ -48,7 +51,9 @@ fill-and-stroke-alpha-add$(EXEEXT)			\
 fill-degenerate-sort-order$(EXEEXT)			\
 fill-missed-stop$(EXEEXT)				\
 fill-rule$(EXEEXT)					\
+filter-bilinear-extents$(EXEEXT)			\
 filter-nearest-offset$(EXEEXT)				\
+finer-grained-fallbacks$(EXEEXT)			\
 font-face-get-type$(EXEEXT)				\
 font-matrix-translation$(EXEEXT)			\
 font-options$(EXEEXT)					\
@@ -64,6 +69,7 @@ infinite-join$(EXEEXT)					\
 in-fill-empty-trapezoid$(EXEEXT)			\
 in-fill-trapezoid$(EXEEXT)				\
 invalid-matrix$(EXEEXT)					\
+large-source$(EXEEXT)					\
 leaky-dash$(EXEEXT)					\
 leaky-polygon$(EXEEXT)					\
 line-width$(EXEEXT)					\
@@ -71,6 +77,7 @@ line-width-scale$(EXEEXT)				\
 line-width-zero$(EXEEXT)				\
 linear-gradient$(EXEEXT)				\
 linear-gradient-reflect$(EXEEXT)			\
+long-dashed-lines$(EXEEXT)				\
 long-lines$(EXEEXT)					\
 mask$(EXEEXT)						\
 mask-alpha$(EXEEXT)					\
@@ -94,17 +101,21 @@ paint-with-alpha$(EXEEXT)				\
 pattern-get-type$(EXEEXT)				\
 pattern-getters$(EXEEXT)				\
 pixman-rotate$(EXEEXT)					\
+png$(EXEEXT)						\
 push-group$(EXEEXT)					\
 radial-gradient$(EXEEXT)				\
 random-intersections$(EXEEXT)				\
 rectangle-rounding-error$(EXEEXT)			\
 rectilinear-miter-limit$(EXEEXT)			\
 rectilinear-stroke$(EXEEXT)				\
+reflected-stroke$(EXEEXT)				\
 rel-path$(EXEEXT)					\
 rgb24-ignore-alpha$(EXEEXT)				\
 rotate-image-surface-paint$(EXEEXT)			\
 scale-down-source-surface-paint$(EXEEXT)		\
 scale-source-surface-paint$(EXEEXT)			\
+stroke-ctm-caps$(EXEEXT)				\
+stroke-image$(EXEEXT)				        \
 select-font-face$(EXEEXT)				\
 select-font-no-show-text$(EXEEXT)			\
 self-copy$(EXEEXT)					\
@@ -112,6 +123,13 @@ self-intersecting$(EXEEXT)				\
 set-source$(EXEEXT)					\
 show-text-current-point$(EXEEXT)			\
 skew-extreme$(EXEEXT)					\
+smask$(EXEEXT)						\
+smask-fill$(EXEEXT)					\
+smask-image-mask$(EXEEXT)				\
+smask-mask$(EXEEXT)					\
+smask-paint$(EXEEXT)					\
+smask-stroke$(EXEEXT)					\
+smask-text$(EXEEXT)					\
 solid-pattern-cache-stress$(EXEEXT)			\
 source-clip$(EXEEXT)					\
 source-clip-scale$(EXEEXT)				\
@@ -127,6 +145,7 @@ text-antialias-subpixel$(EXEEXT)			\
 text-cache-crash$(EXEEXT)				\
 text-pattern$(EXEEXT)					\
 text-rotate$(EXEEXT)					\
+text-transform$(EXEEXT)					\
 text-zero-len$(EXEEXT)					\
 transforms$(EXEEXT)					\
 translate-show-surface$(EXEEXT)				\
@@ -190,6 +209,8 @@ endif
 if CAIRO_HAS_FT_FONT
 TESTS += bitmap-font$(EXEEXT)
 TESTS += ft-font-create-for-ft-face$(EXEEXT)
+TESTS += ft-show-glyphs-positioning$(EXEEXT)
+TESTS += ft-show-glyphs-table$(EXEEXT)
 TESTS += ft-text-vertical-layout-type1$(EXEEXT)
 TESTS += ft-text-vertical-layout-type3$(EXEEXT)
 TESTS += ft-text-antialias-none$(EXEEXT)
@@ -240,8 +261,16 @@ endif
 # All tests which have a reference image go here.
 REFERENCE_IMAGES = \
 	a1-image-sample-ref.png		\
+	a1-mask-ref.png	\
 	a1-traps-sample-ref.png		\
 	a8-mask-ref.png	\
+	big-line-ref.png		\
+	big-line-rgb24-ref.png		\
+	big-line-ps-ref.png		\
+	big-line-ps-rgb24-ref.png	\
+	big-line-quartz-ref.png		\
+	big-line-quartz-rgb24-ref.png	\
+	bilevel-image-ref.png		\
 	bitmap-font-pdf-argb32-ref.png	\
 	bitmap-font-ref.png	\
 	bitmap-font-rgb24-ref.png	\
@@ -249,6 +278,7 @@ REFERENCE_IMAGES = \
 	caps-joins-alpha-ref.png	\
 	caps-joins-alpha-svg-ref.png	\
 	caps-joins-ref.png	\
+	caps-joins-ps-ref.png	\
 	caps-sub-paths-ref.png	\
 	clip-all-ref.png	\
 	clip-empty-ref.png	\
@@ -266,8 +296,12 @@ REFERENCE_IMAGES = \
 	clip-nesting-rgb24-ref.png	\
 	clip-operator-ref.png	\
 	clip-operator-pdf-argb32-ref.png \
+	clip-operator-pdf-rgb24-ref.png \
 	clip-operator-ps-argb32-ref.png	\
+	clip-operator-ps-rgb24-ref.png	\
 	clip-operator-rgb24-ref.png	\
+	clip-operator-quartz-ref.png	\
+	clip-operator-quartz-rgb24-ref.png	\
 	clip-push-group-ps-argb32-ref.png	\
 	clip-push-group-ps-rgb24-ref.png	\
 	clip-push-group-quartz-ref.png	\
@@ -279,11 +313,11 @@ REFERENCE_IMAGES = \
 	clip-twice-ref.png	\
 	clip-twice-rgb24-ref.png	\
 	close-path-ref.png	\
+	close-path-ps-ref.png	\
 	composite-integer-translate-over-ref.png	\
 	composite-integer-translate-over-repeat-ref.png	\
 	composite-integer-translate-source-ref.png	\
-	copy-path-ps-argb32-ref.png	\
-	copy-path-ps-rgb24-ref.png	\
+	copy-path-ps-ref.png	\
 	copy-path-ref.png	\
 	create-from-png-ref.png	\
 	create-from-png-stream-ref.png	\
@@ -293,23 +327,29 @@ REFERENCE_IMAGES = \
 	dash-caps-joins-ref.png	\
 	dash-curve-ref.png	\
 	dash-curve-ps-ref.png \
+	dash-curve-quartz-ref.png \
 	dash-no-dash-ref.png	\
 	dash-offset-negative-ref.png	\
 	dash-scale-ps-argb32-ref.png	\
 	dash-scale-ps-rgb24-ref.png	\
+	dash-scale-quartz-ref.png	\
 	dash-scale-ref.png	\
 	dash-state-ps-ref.png	\
 	dash-state-ref.png	\
+	dash-state-quartz-ref.png	\
 	dash-zero-length-ps-ref.png	\
 	dash-zero-length-ps-rgb24-ref.png	\
 	dash-zero-length-ref.png	\
 	dash-zero-length-rgb24-ref.png	\
 	degenerate-pen-ref.png		\
-	degenerate-pen-ps-argb32-ref.png	\
+	degenerate-pen-ps-ref.png	\
+	degenerate-pen-quartz-ref.png	\
 	degenerate-path-ps-argb32-ref.png	\
 	degenerate-path-ps-rgb24-ref.png	\
 	degenerate-path-ref.png	\
 	degenerate-path-rgb24-ref.png	\
+	degenerate-path-quartz-ref.png	\
+	degenerate-path-quartz-rgb24-ref.png	\
 	device-offset-positive-ref.png	\
 	device-offset-positive-rgb24-ref.png	\
 	device-offset-ref.png	\
@@ -345,16 +385,30 @@ REFERENCE_IMAGES = \
 	fill-rule-ref.png	\
 	fill-rule-rgb24-ref.png	\
 	fill-rule-ps-rgb24-ref.png \
+	filter-bilinear-extents-ref.png \
 	filter-nearest-offset-ref.png	\
+	finer-grained-fallbacks-ref.png			\
+	finer-grained-fallbacks-rgb24-ref.png		\
+	finer-grained-fallbacks-ps-argb32-ref.png	\
+	finer-grained-fallbacks-ps-rgb24-ref.png	\
 	font-matrix-translation-ps-argb32-ref.png	\
 	font-matrix-translation-ps-rgb24-ref.png	\
 	font-matrix-translation-ref.png	\
 	font-matrix-translation-svg-ref.png	\
+	font-matrix-translation-quartz-ref.png \
 	ft-text-antialias-none-ps-argb32-ref.png	\
 	ft-text-antialias-none-ref.png	\
+	ft-show-glyphs-positioning-ref.png		\
+	ft-show-glyphs-positioning-pdf-ref.png		\
+	ft-show-glyphs-positioning-ps-ref.png		\
+	ft-show-glyphs-positioning-svg-ref.png		\
+	ft-show-glyphs-table-ref.png			\
+	ft-show-glyphs-table-ps-ref.png			\
+	ft-text-vertical-layout-type1-pdf-ref.png	\
 	ft-text-vertical-layout-type1-ps-ref.png	\
 	ft-text-vertical-layout-type1-ref.png	\
 	ft-text-vertical-layout-type1-svg-ref.png	\
+	ft-text-vertical-layout-type3-pdf-ref.png	\
 	ft-text-vertical-layout-type3-ps-ref.png	\
 	ft-text-vertical-layout-type3-ref.png	\
 	ft-text-vertical-layout-type3-svg-ref.png	\
@@ -362,6 +416,7 @@ REFERENCE_IMAGES = \
 	glitz-surface-source-ref.png \
 	glyph-cache-pressure-ref.png	\
 	glyph-cache-pressure-ps-ref.png	\
+	glyph-cache-pressure-quartz-ref.png	\
 	gradient-alpha-pdf-argb32-ref.png	\
 	gradient-alpha-pdf-rgb24-ref.png	\
 	gradient-alpha-ps-argb32-ref.png	\
@@ -372,30 +427,45 @@ REFERENCE_IMAGES = \
 	gradient-zero-stops-rgb24-ref.png	\
 	image-surface-source-ref.png \
 	infinite-join-ref.png	\
+	infinite-join-ps-ref.png	\
+	large-source-ref.png	\
 	leaky-dash-ps-argb32-ref.png	\
 	leaky-dash-ps-rgb24-ref.png	\
+	leaky-dash-quartz-ref.png	\
 	leaky-dash-ref.png	\
 	leaky-polygon-ref.png	\
+	leaky-polygon-ps-ref.png	\
 	linear-gradient-reflect-ref.png	\
 	linear-gradient-reflect-pdf-argb32-ref.png	\
 	linear-gradient-reflect-pdf-rgb24-ref.png	\
 	linear-gradient-reflect-ps-ref.png	\
+	linear-gradient-reflect-quartz-ref.png	\
 	linear-gradient-pdf-ref.png	\
 	linear-gradient-ps-ref.png	\
+	linear-gradient-quartz-ref.png	\
 	linear-gradient-ref.png	\
 	linear-gradient-svg-ref.png	\
 	line-width-ref.png	\
 	line-width-scale-ps-ref.png	\
+	line-width-scale-quartz-ref.png	\
 	line-width-scale-ref.png	\
+	long-dashed-lines-ref.png	\
+	long-dashed-lines-ps-ref.png	\
+	long-dashed-lines-quartz-ref.png	\
 	long-lines-ref.png	\
 	mask-alpha-ref.png	\
 	mask-alpha-svg-argb32-ref.png	\
 	mask-alpha-rgb24-ref.png	\
+	mask-alpha-quartz-argb32-ref.png \
 	mask-ctm-ref.png	\
 	mask-ctm-rgb24-ref.png	\
 	mask-ctm-svg-argb32-ref.png	\
 	mask-ref.png	\
 	mask-rgb24-ref.png	\
+	mask-pdf-argb32-ref.png	\
+	mask-pdf-rgb24-ref.png	\
+	mask-quartz-ref.png	\
+	mask-quartz-rgb24-ref.png	\
 	mask-surface-ctm-ref.png	\
 	mask-surface-ctm-rgb24-ref.png	\
 	mask-surface-ctm-svg-argb32-ref.png	\
@@ -407,6 +477,8 @@ REFERENCE_IMAGES = \
 	meta-surface-pattern-pdf-rgb24-ref.png	\
 	meta-surface-pattern-ps-argb32-ref.png	\
 	meta-surface-pattern-ps-rgb24-ref.png	\
+	meta-surface-pattern-quartz-ref.png	\
+	meta-surface-pattern-quartz-rgb24-ref.png	\
 	meta-surface-pattern-svg-argb32-ref.png	\
 	meta-surface-pattern-svg-rgb24-ref.png	\
 	miter-precision-ref.png \
@@ -426,20 +498,30 @@ REFERENCE_IMAGES = \
 	operator-clear-pdf-argb32-ref.png	\
 	operator-clear-pdf-rgb24-ref.png	\
 	operator-clear-ps-argb32-ref.png	\
+	operator-source-pdf-argb32-ref.png	\
+	operator-source-pdf-rgb24-ref.png	\
 	operator-source-ps-argb32-ref.png	\
 	operator-source-ps-rgb24-ref.png	\
 	operator-source-ref.png	\
 	operator-source-rgb24-ref.png	\
+	operator-source-quartz-ref.png \
+	operator-source-quartz-rgb24-ref.png \
 	over-above-source-ps-argb32-ref.png       \
+	over-above-source-quartz-ref.png	  \
+	over-above-source-quartz-rgb24-ref.png	  \
 	over-above-source-ref.png                 \
 	over-above-source-rgb24-ref.png           \
 	over-around-source-ps-argb32-ref.png       \
+	over-around-source-quartz-ref.png	   \
+	over-around-source-quartz-rgb24-ref.png	   \
 	over-around-source-ref.png                 \
 	over-around-source-rgb24-ref.png           \
 	over-below-source-ps-argb32-ref.png       \
 	over-below-source-ref.png                 \
 	over-below-source-rgb24-ref.png           \
-	over-between-source-ps-argb32-ref.png       \
+	over-between-source-ps-argb32-ref.png     \
+	over-between-source-quartz-ref.png        \
+	over-between-source-quartz-rgb24-ref.png  \
 	over-between-source-ref.png                 \
 	over-between-source-rgb24-ref.png           \
 	paint-ref.png	\
@@ -463,13 +545,19 @@ REFERENCE_IMAGES = \
 	push-group-svg-argb32-ref.png	\
 	radial-gradient-ref.png	\
 	radial-gradient-pdf-ref.png \
+	radial-gradient-quartz-ref.png \
 	radial-gradient-svg-ref.png	\
 	random-intersections-ref.png	\
 	random-intersections-ps-ref.png \
+	random-intersections-quartz-ref.png \
 	rgb24-ignore-alpha-ref.png \
 	rectangle-rounding-error-ref.png	\
 	rectilinear-miter-limit-ref.png		\
+	rectilinear-miter-limit-ps-ref.png	\
 	rectilinear-stroke-ref.png	\
+	reflected-stroke-ref.png	\
+	reflected-stroke-ps-ref.png	\
+	reflected-stroke-quartz-ref.png	\
 	rel-path-quartz-ref.png	\
 	rel-path-quartz-rgb24-ref.png	\
 	rel-path-ps-rgb24-ref.png	\
@@ -478,6 +566,7 @@ REFERENCE_IMAGES = \
 	rotate-image-surface-paint-pdf-rgb24-ref.png \
 	rotate-image-surface-paint-ps-ref.png \
 	rotate-image-surface-paint-pdf-argb32-ref.png	\
+	rotate-image-surface-paint-quartz-ref.png	\
 	rotate-image-surface-paint-ref.png	\
 	rotate-image-surface-paint-svg-ref.png	\
 	scale-down-source-surface-paint-ref.png	\
@@ -487,9 +576,13 @@ REFERENCE_IMAGES = \
 	scale-source-surface-paint-svg-argb32-ref.png	\
 	scale-source-surface-paint-svg-rgb24-ref.png	\
 	scale-source-surface-paint-pdf-rgb24-ref.png \
+	stroke-ctm-caps-ref.png \
+	stroke-ctm-caps-quartz-ref.png \
 	select-font-face-ref.png	\
 	select-font-face-ps-ref.png \
+	select-font-face-quartz-ref.png \
 	self-copy-ref.png	\
+	self-copy-ps-ref.png	\
 	self-intersecting-ref.png	\
 	self-intersecting-rgb24-ref.png	\
 	set-source-ref.png	\
@@ -498,7 +591,34 @@ REFERENCE_IMAGES = \
 	show-glyphs-many-ref.png	\
 	show-text-current-point-ref.png	\
 	show-text-current-point-ps-ref.png \
+	show-text-current-point-quartz-ref.png \
 	skew-extreme-ref.png \
+	skew-extreme-ps-ref.png \
+	smask-ref.png			\
+	smask-pdf-ref.png		\
+	smask-ps-ref.png		\
+	smask-svg-ref.png		\
+	smask-fill-ref.png		\
+	smask-fill-pdf-ref.png		\
+	smask-fill-svg-ref.png		\
+	smask-image-mask-ref.png	\
+	smask-image-mask-pdf-ref.png	\
+	smask-mask-ref.png		\
+	smask-mask-pdf-ref.png		\
+	smask-mask-svg-ref.png		\
+	smask-paint-ref.png		\
+	smask-paint-pdf-ref.png		\
+	smask-paint-svg-ref.png		\
+	smask-stroke-ref.png		\
+	smask-stroke-pdf-ref.png	\
+	smask-text-ref.png		\
+	smask-text-pdf-ref.png		\
+	smask-text-ps-ref.png		\
+	smask-text-svg-ref.png		\
+	stroke-image-ref.png \
+	stroke-image-pdf-ref.png \
+	stroke-image-ps-ref.png \
+	stroke-image-quartz-ref.png \
 	source-clip-ref.png	\
 	source-clip-scale-quartz-ref.png	\
 	source-clip-scale-ps-argb32-ref.png	\
@@ -508,6 +628,7 @@ REFERENCE_IMAGES = \
 	source-clip-scale-pdf-ref.png \
 	source-surface-scale-paint-ref.png	\
 	source-surface-scale-paint-rgb24-ref.png	\
+	stroke-ctm-caps-ps-ref.png \
 	surface-pattern-big-scale-down-ref.png	\
 	surface-pattern-pdf-argb32-ref.png	\
 	surface-pattern-ps-argb32-ref.png	\
@@ -515,14 +636,18 @@ REFERENCE_IMAGES = \
 	surface-pattern-scale-down-pdf-argb32-ref.png	\
 	surface-pattern-scale-down-ps-argb32-ref.png	\
 	surface-pattern-scale-down-ref.png	\
+	surface-pattern-scale-down-quartz-ref.png	\
 	surface-pattern-scale-up-pdf-argb32-ref.png	\
 	surface-pattern-scale-up-ps-argb32-ref.png	\
 	surface-pattern-scale-up-ref.png	\
 	surface-pattern-svg-ref.png	\
 	svg-surface-source-ref.png \
 	text-antialias-gray-ref.png	\
+	text-antialias-gray-quartz-ref.png	\
 	text-antialias-none-ref.png	\
+	text-antialias-none-quartz-ref.png	\
 	text-antialias-subpixel-ref.png	\
+	text-antialias-subpixel-quartz-ref.png	\
 	text-glyph-range-ref.png	\
 	text-glyph-range-rgb24-ref.png	\
 	text-pattern-ps-argb32-ref.png	\
@@ -533,10 +658,17 @@ REFERENCE_IMAGES = \
 	text-pattern-svg-rgb24-ref.png	\
 	text-pattern-pdf-argb32-ref.png \
 	text-pattern-pdf-rgb24-ref.png \
+	text-pattern-quartz-ref.png \
+	text-pattern-quartz-rgb24-ref.png \
 	text-rotate-ref.png	\
+	text-rotate-ps-ref.png	\
 	text-rotate-svg-ref.png	\
-	text-zero-len-ref.png	\
+	text-rotate-quartz-ref.png \
+	text-transform-ref.png		\
+	text-transform-pdf-ref.png	\
+	text-transform-ps-ref.png	\
 	transforms-ref.png	\
+	transforms-ps-ref.png	\
 	translate-show-surface-ref.png	\
 	trap-clip-quartz-ref.png	\
 	trap-clip-quartz-rgb24-ref.png	\
@@ -547,8 +679,11 @@ REFERENCE_IMAGES = \
 	trap-clip-pdf-argb32-ref.png \
 	trap-clip-pdf-rgb24-ref.png \
 	unantialiased-shapes-ref.png	\
+	unantialiased-shapes-quartz-ref.png \
 	unbounded-operator-ref.png	\
 	unbounded-operator-rgb24-ref.png	\
+	unbounded-operator-quartz-ref.png	\
+	unbounded-operator-quartz-rgb24-ref.png	\
 	xlib-surface-source-ref.png \
 	zero-alpha-ref.png
 
@@ -570,9 +705,12 @@ $(REFERENCE_IMAGES)
 # everything from this list by fixing the bugs. (We don't necessarily
 # have to be that strict for "snapshots" though.)
 XFAIL_TESTS =					\
+big-line$(EXEEXT)				\
 big-trap$(EXEEXT)				\
 extend-pad$(EXEEXT)				\
 filter-nearest-offset$(EXEEXT)			\
+filter-bilinear-extents$(EXEEXT)		\
+large-source$(EXEEXT)				\
 long-lines$(EXEEXT)				\
 self-intersecting$(EXEEXT)			\
 surface-pattern$(EXEEXT)			\
@@ -586,13 +724,16 @@ fallback-resolution		\
 font-options			\
 multi-page			\
 pdf-features			\
+png				\
 ps-features			\
 svg-clip			\
 svg-surface			\
 user-data
 
 # A hook that summarises the failures
-check: AM_MAKEFLAGS+=-k
+# We need to both force make to keep going after failures and to disable the
+# jobserver (parallel builds).
+check: AM_MAKEFLAGS+=-k -j1
 check-local:
 	@FAILED_TESTS=""; \
 	for t in $(TESTS:$(EXEEXT)=.log); do \
@@ -608,20 +749,28 @@ check-local:
 		grep -e '\<FAIL\>' $$t.log | sed -e 's/.*TARGET: \([^ ]*\).*/\1/' | sort | uniq | tr '\n' ' '; \
 		echo; \
 		for s in `grep -e '\<FAIL\>' $$t.log | sed -e 's/.*TARGET: \([^ ]*\).*/\1/' | sort | uniq`; do \
-		    eval ss=`echo $$s | tr '-' '_'`; \
-		    eval $$ss=$$[$$ss + 1]; \
+		    ss=`echo $$s | tr '-' '_'`; \
+		    tt=`echo $$t | tr '-' '_'`; \
+		    eval $$ss=\""$${!ss} $$tt"\"; \
 		    echo $$surfaces | grep $$ss >/dev/null || surfaces="$$surfaces $$ss"; \
 		done; \
 	    done; \
 	    echo -n "Failures per surface - "; \
 	    first=""; \
 	    for s in $$surfaces; do \
-	        eval ss=`echo $$s | tr '_' '-'`; \
+	        ss=`echo $$s | tr '_' '-'`; \
 		test -n "$$first" && echo -n ", "; \
-	        echo -n "$$ss: $$[$$s + 0]"; \
+		cnt=`echo $${!s} | wc -w`; \
+	        echo -n "$$ss: $$cnt"; \
 		first="false"; \
 	    done; \
 	    echo "."; \
+	    for s in $$surfaces; do \
+	        ss=`echo $$s | tr '_' '-'`; \
+		cnt=`echo $${!s} | wc -w`; \
+	        echo -n "	$$ss [$$cnt]: "; \
+		echo $${!s} | tr '_' '-'; \
+	    done; \
 	fi
 
 check_PROGRAMS =
@@ -704,6 +853,7 @@ CLEANFILES =					\
 	valgrind-log				\
 	index.html				\
 	ref.hash				\
+	png-test.png				\
 	$(EXTRA_LTLIBRARIES)			\
 	$(EXTRA_PROGRAMS)
 

@@ -38,6 +38,7 @@
  *      Owen Taylor <otaylor@redhat.com>
  */
 
+#define _BSD_SOURCE /* for strdup() */
 #include "cairoint.h"
 
 /* Forward declare so we can use it as an arbitrary backend for
@@ -432,6 +433,7 @@ _cairo_toy_font_face_create (const char          *family,
     return &font_face->base;
 
  UNWIND_FONT_FACE_INIT:
+    _cairo_toy_font_face_fini (font_face);
  UNWIND_FONT_FACE_MALLOC:
     free (font_face);
  UNWIND_HASH_TABLE_LOCK:

@@ -42,6 +42,10 @@
 #include "buffer-diff.h"
 #include "xmalloc.h"
 
+/* Don't allow any differences greater than this value, even if pdiff
+ * claims that the images are identical */
+#define PERCEPTUAL_DIFF_THRESHOLD 25
+
 static void
 xunlink (const char *pathname)
 {
@@ -152,13 +156,19 @@ compare_surfaces (cairo_surface_t	*surface_a,
     /* Then, if there are any different pixels, we give the pdiff code
      * a crack at the images. If it decides that there are no visually
      * discernible differences in any pixels, then we accept this
-     * result as good enough. */
-    discernible_pixels_changed = pdiff_compare (surface_a, surface_b,
-						gamma, luminance, field_of_view);
-    if (discernible_pixels_changed == 0) {
-	result->pixels_changed = 0;
-	cairo_test_log ("But perceptual diff finds no visually discernible difference.\n"
-			"Accepting result.\n");
+     * result as good enough.
+     * 
+     * Only let pdiff have a crack at the comparison if the max difference
+     * is lower than a threshold, otherwise some problems could be masked.
+     */
+    if (result->max_diff < PERCEPTUAL_DIFF_THRESHOLD) {
+        discernible_pixels_changed = pdiff_compare (surface_a, surface_b,
+                                                    gamma, luminance, field_of_view);
+        if (discernible_pixels_changed == 0) {
+            result->pixels_changed = 0;
+            cairo_test_log ("But perceptual diff finds no visually discernible difference.\n"
+                            "Accepting result.\n");
+        }
     }
 }
 

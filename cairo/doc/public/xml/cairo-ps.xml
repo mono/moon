@@ -484,4 +484,6 @@ cairo_ps_surface_dsc_comment (surface, "%%IncludeFeature: *PageSize A5");
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

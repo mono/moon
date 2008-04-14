@@ -145,7 +145,7 @@ font face</para>
     CAIRO_FONT_TYPE_TOY,
     CAIRO_FONT_TYPE_FT,
     CAIRO_FONT_TYPE_WIN32,
-    CAIRO_FONT_TYPE_ATSUI
+    CAIRO_FONT_TYPE_QUARTZ
 } cairo_font_type_t;
 </programlisting>
 <para>
@@ -200,8 +200,8 @@ New entries may be added in future versions.</para>
 </simpara></listitem>
 </varlistentry>
 <varlistentry>
-<term><anchor id="CAIRO-FONT-TYPE-ATSUI:CAPS" role="constant"/><literal>CAIRO_FONT_TYPE_ATSUI</literal></term>
-<listitem><simpara> The font is of type ATSUI
+<term><anchor id="CAIRO-FONT-TYPE-QUARTZ:CAPS" role="constant"/><literal>CAIRO_FONT_TYPE_QUARTZ</literal></term>
+<listitem><simpara> The font is of type Quartz (Since: 1.6)
 </simpara></listitem>
 </varlistentry>
 </variablelist><para role="since">Since  1.2
@@ -306,4 +306,6 @@ attached to
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

@@ -69,6 +69,7 @@ SOFTWARE.
 #ifndef PIXMAN_H__
 #define PIXMAN_H__
 
+#include <pixman-version.h>
 #include "pixman-embed.h"
 
 /*
@@ -273,6 +274,12 @@ typedef enum
     PIXMAN_REGION_IN,
     PIXMAN_REGION_PART
 } pixman_region_overlap_t;
+
+PIXMAN_EXPORT
+int			pixman_version (void);
+
+PIXMAN_EXPORT
+const char*		pixman_version_string (void);
 
 /* This function exists only to make it possible to preserve the X ABI - it should
  * go away at first opportunity.
@@ -496,6 +503,13 @@ typedef enum {
     PIXMAN_yuy2 =	PIXMAN_FORMAT(16,PIXMAN_TYPE_YUY2,0,0,0,0),
     PIXMAN_yv12 =	PIXMAN_FORMAT(12,PIXMAN_TYPE_YV12,0,0,0,0),
 } pixman_format_code_t;
+
+/* Querying supported format values. */
+PIXMAN_EXPORT
+pixman_bool_t	pixman_format_supported_destination (pixman_format_code_t format);
+
+PIXMAN_EXPORT
+pixman_bool_t	pixman_format_supported_source (pixman_format_code_t format);
 
 /* Constructors */
 PIXMAN_EXPORT

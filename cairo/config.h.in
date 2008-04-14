@@ -163,6 +163,19 @@
    first (like Motorola and SPARC, unlike Intel and VAX). */
 #undef WORDS_BIGENDIAN
 
+
+/* Deal with multiple architecture compiles on Mac OS X */
+#ifdef __APPLE_CC__
+#ifdef __BIG_ENDIAN__
+#define WORDS_BIGENDIAN 1
+#define FLOAT_WORDS_BIGENDIAN 1
+#else
+#undef WORDS_BIGENDIAN
+#undef FLOAT_WORDS_BIGENDIAN
+#endif
+#endif
+
+
 /* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING
 

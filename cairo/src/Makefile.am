@@ -152,6 +152,7 @@ xlib_sources =  cairo-xlib-surface.c \
 		cairo-xlib-surface-private.h \
 		cairo-xlib-display.c \
 		cairo-xlib-screen.c \
+		cairo-xlib-visual.c \
 		cairo-xlib-private.h \
 		cairo-xlib-xrender-private.h
 cairo_all_sources += $(xlib_headers) $(xlib_sources)
@@ -178,12 +179,22 @@ backend_pkgconfigs += cairo-xcb.pc
 endif
 
 quartz_headers = cairo-quartz.h
-quartz_sources = cairo-quartz-surface.c cairo-quartz-private.h
+quartz_sources = cairo-quartz-surface.c cairo-quartz-image-surface.c cairo-quartz-private.h
 cairo_all_sources += $(quartz_headers) $(quartz_sources)
 if CAIRO_HAS_QUARTZ_SURFACE
 cairo_headers += $(quartz_headers)
 cairo_sources += $(quartz_sources)
 backend_pkgconfigs += cairo-quartz.pc
+endif
+if CAIRO_HAS_QUARTZ_IMAGE_SURFACE
+cairo_headers += cairo-quartz-image.h
+backend_pkgconfigs += cairo-quartz-image.pc
+endif
+
+quartz_font_sources = cairo-quartz-font.c
+cairo_all_sources += $(quartz_font_sources)
+if CAIRO_HAS_QUARTZ_FONT
+cairo_sources += $(quartz_font_sources)
 endif
 
 os_win32_sources = cairo-win32.c
@@ -224,7 +235,6 @@ beos_sources = cairo-beos-surface.cpp
 cairo_all_sources += $(beos_headers) $(beos_sources)
 if CAIRO_HAS_BEOS_SURFACE
 cairo_headers += $(beos_headers)
-cairo_sources += $(beos_sources)
 backend_pkgconfigs += cairo-beos.pc
 
 #noinst_LTLIBRARIES = libcairo_beos.la
@@ -258,15 +268,6 @@ if CAIRO_HAS_FT_FONT
 cairo_headers += $(ft_headers)
 cairo_sources += $(ft_sources)
 backend_pkgconfigs += cairo-ft.pc
-endif
-
-atsui_headers = cairo-atsui.h
-atsui_sources = cairo-atsui-font.c
-cairo_all_sources += $(atsui_headers) $(atsui_sources)
-if CAIRO_HAS_ATSUI_FONT
-cairo_headers += $(atsui_headers)
-cairo_sources += $(atsui_sources)
-backend_pkgconfigs += cairo-atsui.pc
 endif
 
 # These names match automake style variable definition conventions so

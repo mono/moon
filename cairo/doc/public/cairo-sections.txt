@@ -24,6 +24,14 @@ cairo_win32_scaled_font_get_device_to_logical
 </SECTION>
 
 <SECTION>
+<FILE>cairo-quartz-fonts</FILE>
+<TITLE>Quartz Fonts</TITLE>
+CAIRO_HAS_QUARTZ_FONT
+cairo_quartz_font_face_create_for_cgfont
+cairo_quartz_font_face_create_for_atsu_font_id
+</SECTION>
+
+<SECTION>
 <FILE>cairo-image</FILE>
 <TITLE>Image Surfaces</TITLE>
 cairo_format_t
@@ -86,6 +94,23 @@ cairo_win32_surface_create_with_ddb
 cairo_win32_printing_surface_create
 cairo_win32_surface_get_dc
 cairo_win32_surface_get_image
+</SECTION>
+
+<SECTION>
+<FILE>cairo-quartz</FILE>
+<TITLE>Quartz Surfaces</TITLE>
+CAIRO_HAS_QUARTZ_SURFACE
+cairo_quartz_surface_create
+cairo_quartz_surface_create_for_cg_context
+cairo_quartz_surface_get_cg_context
+</SECTION>
+
+<SECTION>
+<FILE>cairo-quartz-image</FILE>
+<TITLE>Quartz Image Surfaces</TITLE>
+CAIRO_HAS_QUARTZ_IMAGE_SURFACE
+cairo_quartz_image_surface_create
+cairo_quartz_image_surface_get_image
 </SECTION>
 
 <SECTION>

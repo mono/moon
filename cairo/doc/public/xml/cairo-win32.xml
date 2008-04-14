@@ -79,9 +79,10 @@ This macro can be used to conditionally compile backend-specific code.
 <para>
 Creates a cairo surface that targets the given DC.  The DC will be
 queried for its initial clip extents, and this will be used as the
-size of the cairo surface.  Also, if the DC is a raster DC, it will
-be queried for its pixel format and the cairo surface format will
-be set appropriately.</para>
+size of the cairo surface.  The resulting surface will always be of
+format <link linkend="CAIRO-FORMAT-RGB24:CAPS"><literal>CAIRO_FORMAT_RGB24</literal></link>; should you need another surface format,
+you will need to create one through
+<link linkend="cairo-win32-surface-create-with-dib"><function>cairo_win32_surface_create_with_dib()</function></link>.</para>
 <para>
 
 </para><variablelist role="params">
@@ -220,4 +221,6 @@ or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if the win32 surface
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

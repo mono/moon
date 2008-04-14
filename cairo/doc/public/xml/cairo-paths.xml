@@ -196,7 +196,7 @@ with <link linkend="cairo-move-to"><function>cairo_move_to()</function></link>, 
 <link linkend="cairo-close-path"><function>cairo_close_path()</function></link>.
 </para>
 <para>
-Here is sample code for iterating through a <link linkend="cairo-path-t--"><type>cairo_path_t:</type></link>
+Here is sample code for iterating through a <link linkend="cairo-path-t--"><type>""</type></link>
 </para>
 <para>
 <informalexample><programlisting>
@@ -1008,4 +1008,6 @@ considered as contributing to the extents. However, a lone
 
 
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

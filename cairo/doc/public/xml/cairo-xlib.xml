@@ -79,8 +79,7 @@ if it is available.
 <indexterm><primary>CAIRO_HAS_XLIB_SURFACE</primary></indexterm><programlisting>#define CAIRO_HAS_XLIB_SURFACE 1
 </programlisting>
 <para>
-Defined if the XLib surface backend is available.
-This macro can be used to conditionally compile backend-specific code.
+
 </para></refsect2>
 <refsect2>
 <title><anchor id="cairo-xlib-surface-create" role="function"/>cairo_xlib_surface_create ()</title>
@@ -343,4 +342,6 @@ Get the number of bits used to represent each pixel value.</para>
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

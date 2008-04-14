@@ -182,6 +182,7 @@ cairo_<emphasis>backend</emphasis>_surface_create().
 @CAIRO_SURFACE_TYPE_SVG: 
 @CAIRO_SURFACE_TYPE_OS2: 
 @CAIRO_SURFACE_TYPE_WIN32_PRINTING: 
+@CAIRO_SURFACE_TYPE_QUARTZ_IMAGE: 
 
 <!-- ##### FUNCTION cairo_surface_get_type ##### -->
 <para>

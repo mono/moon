@@ -68,7 +68,7 @@ cairo_get_font_face().
 @CAIRO_FONT_TYPE_TOY: 
 @CAIRO_FONT_TYPE_FT: 
 @CAIRO_FONT_TYPE_WIN32: 
-@CAIRO_FONT_TYPE_ATSUI: 
+@CAIRO_FONT_TYPE_QUARTZ: 
 
 <!-- ##### FUNCTION cairo_font_face_get_type ##### -->
 <para>

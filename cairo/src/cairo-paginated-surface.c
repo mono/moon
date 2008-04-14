@@ -258,8 +258,8 @@ _paint_fallback_image (cairo_paginated_surface_t *surface,
     width = box->p2.x - x;
     height = box->p2.y - y;
     image = _cairo_paginated_surface_create_image_surface (surface,
-							   width  * x_scale,
-							   height * y_scale);
+							   ceil (width  * x_scale),
+							   ceil (height * y_scale));
     _cairo_surface_set_device_scale (image, x_scale, y_scale);
     /* set_device_offset just sets the x0/y0 components of the matrix;
      * so we have to do the scaling manually. */
@@ -334,6 +334,7 @@ _paint_page (cairo_paginated_surface_t *surface)
 	case CAIRO_SURFACE_TYPE_XCB:
 	case CAIRO_SURFACE_TYPE_GLITZ:
 	case CAIRO_SURFACE_TYPE_QUARTZ:
+	case CAIRO_SURFACE_TYPE_QUARTZ_IMAGE:
 	case CAIRO_SURFACE_TYPE_WIN32:
 	case CAIRO_SURFACE_TYPE_BEOS:
 	case CAIRO_SURFACE_TYPE_DIRECTFB:

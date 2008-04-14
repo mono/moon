@@ -516,7 +516,11 @@ a new source pattern is set.
 <para>
 The color components are floating point numbers in the range 0 to
 1. If the values passed in are outside that range, they will be
-clamped.</para>
+clamped.
+</para>
+<para>
+The default source pattern is opaque black, (that is, it is
+equivalent to cairo_set_source_rgb (cr, 0.0, 0.0, 0.0)).</para>
 <para>
 
 </para><variablelist role="params">
@@ -548,7 +552,11 @@ a new source pattern is set.
 <para>
 The color and alpha components are floating point numbers in the
 range 0 to 1. If the values passed in are outside that range, they
-will be clamped.</para>
+will be clamped.
+</para>
+<para>
+The default source pattern is opaque black, (that is, it is
+equivalent to cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0)).</para>
 <para>
 
 </para><variablelist role="params">
@@ -584,9 +592,9 @@ that further modifications of the current transformation matrix
 will not affect the source pattern. See <link linkend="cairo-pattern-set-matrix"><function>cairo_pattern_set_matrix()</function></link>.
 </para>
 <para>
-XXX: I'd also like to direct the reader's attention to some
-(not-yet-written) section on cairo's imaging model. How would I do
-that if such a section existed? (cworth).</para>
+The default source pattern is a solid pattern that is opaque black,
+(that is, it is equivalent to cairo_set_source_rgb (cr, 0.0, 0.0,
+0.0)).</para>
 <para>
 
 </para><variablelist role="params">
@@ -843,6 +851,9 @@ or have a tricky intersection such as intersecting tangent to the path.
 is just a description of the rule that is applied.)
 </para>
 <para>
+The default fill rule is <link linkend="CAIRO-FILL-RULE-WINDING:CAPS"><literal>CAIRO_FILL_RULE_WINDING</literal></link>.
+</para>
+<para>
 New entries may be added in future versions.</para>
 <para>
 
@@ -874,7 +885,10 @@ Set the current fill rule within the cairo context. The fill rule
 is used to determine which regions are inside or outside a complex
 (potentially self-intersecting) path. The current fill rule affects
 both <link linkend="cairo-fill"><function>cairo_fill()</function></link> and <link linkend="cairo-clip"><function>cairo_clip()</function></link>. See <link linkend="cairo-fill-rule-t"><type>cairo_fill_rule_t</type></link> for details
-on the semantics of each available fill rule.</para>
+on the semantics of each available fill rule.
+</para>
+<para>
+The default fill rule is <link linkend="CAIRO-FILL-RULE-WINDING:CAPS"><literal>CAIRO_FILL_RULE_WINDING</literal></link>.</para>
 <para>
 
 </para><variablelist role="params">
@@ -908,7 +922,10 @@ Gets the current fill rule, as set by <link linkend="cairo-set-fill-rule"><funct
 } cairo_line_cap_t;
 </programlisting>
 <para>
-Specifies how to render the endpoint of a line when stroking.</para>
+Specifies how to render the endpoints of the path when stroking.
+</para>
+<para>
+The default line cap style is <link linkend="CAIRO-LINE-CAP-BUTT:CAPS"><literal>CAIRO_LINE_CAP_BUTT</literal></link>.</para>
 <para>
 
 </para><variablelist role="enum">
@@ -941,7 +958,10 @@ styles are drawn.
 As with the other stroke parameters, the current line cap style is
 examined by <link linkend="cairo-stroke"><function>cairo_stroke()</function></link>, <link linkend="cairo-stroke-extents"><function>cairo_stroke_extents()</function></link>, and
 <link linkend="cairo-stroke-to-path"><function>cairo_stroke_to_path()</function></link>, but does not have any effect during path
-construction.</para>
+construction.
+</para>
+<para>
+The default line cap style is <link linkend="CAIRO-LINE-CAP-BUTT:CAPS"><literal>CAIRO_LINE_CAP_BUTT</literal></link>.</para>
 <para>
 
 </para><variablelist role="params">
@@ -975,7 +995,10 @@ Gets the current line cap style, as set by <link linkend="cairo-set-line-cap"><f
 } cairo_line_join_t;
 </programlisting>
 <para>
-Specifies how to render the junction of two lines when stroking.</para>
+Specifies how to render the junction of two lines when stroking.
+</para>
+<para>
+The default line join style is <link linkend="CAIRO-LINE-JOIN-MITER:CAPS"><literal>CAIRO_LINE_JOIN_MITER</literal></link>.</para>
 <para>
 
 </para><variablelist role="enum">
@@ -1011,7 +1034,10 @@ styles are drawn.
 As with the other stroke parameters, the current line join style is
 examined by <link linkend="cairo-stroke"><function>cairo_stroke()</function></link>, <link linkend="cairo-stroke-extents"><function>cairo_stroke_extents()</function></link>, and
 <link linkend="cairo-stroke-to-path"><function>cairo_stroke_to_path()</function></link>, but does not have any effect during path
-construction.</para>
+construction.
+</para>
+<para>
+The default line join style is <link linkend="CAIRO-LINE-JOIN-MITER:CAPS"><literal>CAIRO_LINE_JOIN_MITER</literal></link>.</para>
 <para>
 
 </para><variablelist role="params">
@@ -1019,7 +1045,7 @@ construction.</para>
 <listitem><simpara> a cairo context
 </simpara></listitem></varlistentry>
 <varlistentry><term><parameter>line_join</parameter>&nbsp;:</term>
-<listitem><simpara> a line joint style
+<listitem><simpara> a line join style
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
@@ -1110,7 +1136,18 @@ converted to a bevel.
 As with the other stroke parameters, the current line miter limit is
 examined by <link linkend="cairo-stroke"><function>cairo_stroke()</function></link>, <link linkend="cairo-stroke-extents"><function>cairo_stroke_extents()</function></link>, and
 <link linkend="cairo-stroke-to-path"><function>cairo_stroke_to_path()</function></link>, but does not have any effect during path
-construction.</para>
+construction.
+</para>
+<para>
+The default miter limit value is 10.0, which will convert joins
+with interior angles less than 11 degrees to bevels instead of
+miters. For reference, a miter limit of 2.0 makes the miter cutoff
+at 60 degrees, and a miter limit of 1.414 makes the cutoff at 90
+degrees.
+</para>
+<para>
+A miter limit for a desired angle can be computed as: miter limit =
+1/sin(angle/2)</para>
 <para>
 
 </para><variablelist role="params">
@@ -1160,6 +1197,9 @@ Gets the current miter limit, as set by <link linkend="cairo-set-miter-limit"><f
 <para>
 <link linkend="cairo-operator-t"><type>cairo_operator_t</type></link> is used to set the compositing operator for all cairo
 drawing operations.
+</para>
+<para>
+The default operator is <link linkend="CAIRO-OPERATOR-OVER:CAPS"><literal>CAIRO_OPERATOR_OVER</literal></link>.
 </para>
 <para>
 The operators marked as <firstterm>unbounded</firstterm> modify their
@@ -1268,9 +1308,7 @@ operations. See <link linkend="cairo-operator-t"><type>cairo_operator_t</type></
 each available compositing operator.
 </para>
 <para>
-XXX: I'd also like to direct the reader's attention to some
-(not-yet-written) section on cairo's imaging model. How would I do
-that if such a section existed? (cworth).</para>
+The default operator is <link linkend="CAIRO-OPERATOR-OVER:CAPS"><literal>CAIRO_OPERATOR_OVER</literal></link>.</para>
 <para>
 
 </para><variablelist role="params">
@@ -1599,8 +1637,14 @@ dimensions and clipping are not taken into account.
 </para>
 <para>
 Contrast with <link linkend="cairo-path-extents"><function>cairo_path_extents()</function></link>, which is similar, but returns
-non-zero extents for some paths no inked area, (such as a simple
-line segment).
+non-zero extents for some paths with no inked area, (such as a
+simple line segment).
+</para>
+<para>
+Note that <link linkend="cairo-fill-extents"><function>cairo_fill_extents()</function></link> must necessarily do more work to
+compute the precise inked areas in light of the fill rule, so
+<link linkend="cairo-path-extents"><function>cairo_path_extents()</function></link> may be more desirable for sake of performance
+if the non-inked path extents are desired.
 </para>
 <para>
 See <link linkend="cairo-fill"><function>cairo_fill()</function></link>, <link linkend="cairo-set-fill-rule"><function>cairo_set_fill_rule()</function></link> and <link linkend="cairo-fill-preserve"><function>cairo_fill_preserve()</function></link>.</para>
@@ -1809,9 +1853,15 @@ taken into account.
 </para>
 <para>
 Note that if the line width is set to exactly zero, then
-cairo_stroke_extents will return an empty rectangle. Contrast with
+<link linkend="cairo-stroke-extents"><function>cairo_stroke_extents()</function></link> will return an empty rectangle. Contrast with
 <link linkend="cairo-path-extents"><function>cairo_path_extents()</function></link> which can be used to compute the non-empty
 bounds as the line width approaches zero.
+</para>
+<para>
+Note that <link linkend="cairo-stroke-extents"><function>cairo_stroke_extents()</function></link> must necessarily do more work to
+compute the precise inked areas in light of the stroke parameters,
+so <link linkend="cairo-path-extents"><function>cairo_path_extents()</function></link> may be more desirable for sake of
+performance if non-inked path extents are desired.
 </para>
 <para>
 See <link linkend="cairo-stroke"><function>cairo_stroke()</function></link>, <link linkend="cairo-set-line-width"><function>cairo_set_line_width()</function></link>, <link linkend="cairo-set-line-join"><function>cairo_set_line_join()</function></link>,
@@ -1990,4 +2040,6 @@ attached to
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

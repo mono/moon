@@ -24,6 +24,7 @@
     <xi:include href="xml/cairo-font-options.xml"/>
     <xi:include href="xml/cairo-ft.xml"/>
     <xi:include href="xml/cairo-win32-fonts.xml"/>
+    <xi:include href="xml/cairo-quartz-fonts.xml"/>
   </chapter>
   <chapter id="Surfaces">
     <title>Surfaces</title>
@@ -36,7 +37,7 @@
     <xi:include href="xml/cairo-win32.xml"/>
     <!--xi:include href="xml/cairo-beos.xml"/-->
     <xi:include href="xml/cairo-svg.xml"/>
-    <!--xi:include href="xml/cairo-quartz.xml"-->
+    <xi:include href="xml/cairo-quartz.xml" />
     <!--xi:include href="xml/cairo-xcb.xml"/-->
     <xi:include href="xml/cairo-xlib.xml"/>
   </chapter>

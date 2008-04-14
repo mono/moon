@@ -59,8 +59,7 @@ systems, but can be used on other platforms too.
 <indexterm><primary>CAIRO_HAS_FT_FONT</primary></indexterm><programlisting>#define CAIRO_HAS_FT_FONT 1
 </programlisting>
 <para>
-Defined if the FreeType font backend is available.
-This macro can be used to conditionally compile backend-specific code.
+
 </para></refsect2>
 <refsect2>
 <title><anchor id="cairo-ft-font-face-create-for-ft-face" role="function"/>cairo_ft_font_face_create_for_ft_face ()</title>
@@ -218,4 +217,6 @@ Releases a face obtained with <link linkend="cairo-ft-scaled-font-lock-face"><fu
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

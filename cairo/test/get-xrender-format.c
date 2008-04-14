@@ -106,8 +106,11 @@ main (void)
 	return CAIRO_TEST_FAILURE;
     }
 
+    cairo_surface_destroy (surface);
 
     XCloseDisplay (dpy);
+
+    cairo_debug_reset_static_data ();
 
     cairo_test_fini ();
 

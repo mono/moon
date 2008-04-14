@@ -701,8 +701,14 @@ pattern.</para>
 } cairo_extend_t;
 </programlisting>
 <para>
-<link linkend="cairo-extend-t"><type>cairo_extend_t</type></link> is used to describe how the area outside
-of a pattern will be drawn.
+<link linkend="cairo-extend-t"><type>cairo_extend_t</type></link> is used to describe how pattern color/alpha will be
+determined for areas "outside" the pattern's natural area, (for
+example, outside the surface bounds or outside the gradient
+geometry).
+</para>
+<para>
+The default extend mode is <link linkend="CAIRO-EXTEND-NONE:CAPS"><literal>CAIRO_EXTEND_NONE</literal></link> for surface patterns
+and <link linkend="CAIRO-EXTEND-PAD:CAPS"><literal>CAIRO_EXTEND_PAD</literal></link> for gradient patterns.
 </para>
 <para>
 New entries may be added in future versions.</para>
@@ -723,14 +729,14 @@ New entries may be added in future versions.</para>
 <varlistentry>
 <term><anchor id="CAIRO-EXTEND-REFLECT:CAPS" role="constant"/><literal>CAIRO_EXTEND_REFLECT</literal></term>
 <listitem><simpara> the pattern is tiled by reflecting
-  at the edges (not implemented for surface patterns currently)
+  at the edges (Implemented for surface patterns since 1.6)
 </simpara></listitem>
 </varlistentry>
 <varlistentry>
 <term><anchor id="CAIRO-EXTEND-PAD:CAPS" role="constant"/><literal>CAIRO_EXTEND_PAD</literal></term>
 <listitem><simpara> pixels outside of the pattern copy
-  the closest pixel from the source (Since 1.2; not implemented
-  for surface patterns currently)
+  the closest pixel from the source (Since 1.2; but only
+  implemented for surface patterns since 1.6)
 </simpara></listitem>
 </varlistentry>
 </variablelist></refsect2>
@@ -741,7 +747,11 @@ New entries may be added in future versions.</para>
 <para>
 Sets the mode to be used for drawing outside the area of a pattern.
 See <link linkend="cairo-extend-t"><type>cairo_extend_t</type></link> for details on the semantics of each extend
-strategy.</para>
+strategy.
+</para>
+<para>
+The default extend mode is <link linkend="CAIRO-EXTEND-NONE:CAPS"><literal>CAIRO_EXTEND_NONE</literal></link> for surface patterns
+and <link linkend="CAIRO-EXTEND-PAD:CAPS"><literal>CAIRO_EXTEND_PAD</literal></link> for gradient patterns.</para>
 <para>
 
 </para><variablelist role="params">
@@ -1096,4 +1106,6 @@ attached to
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

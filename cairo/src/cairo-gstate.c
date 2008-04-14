@@ -206,9 +206,6 @@ _cairo_gstate_fini (cairo_gstate_t *gstate)
 static void
 _cairo_gstate_destroy (cairo_gstate_t *gstate)
 {
-    if (gstate == NULL)
-	return;
-
     _cairo_gstate_fini (gstate);
     free (gstate);
 }
@@ -225,8 +222,8 @@ _cairo_gstate_destroy (cairo_gstate_t *gstate)
  * Return value: a new #cairo_gstate_t or %NULL if there is insufficient
  * memory.
  **/
-static cairo_gstate_t*
-_cairo_gstate_clone (cairo_gstate_t *other)
+static cairo_status_t
+_cairo_gstate_clone (cairo_gstate_t *other, cairo_gstate_t **out)
 {
     cairo_status_t status;
     cairo_gstate_t *gstate;
@@ -234,18 +231,17 @@ _cairo_gstate_clone (cairo_gstate_t *other)
     assert (other != NULL);
 
     gstate = malloc (sizeof (cairo_gstate_t));
-    if (gstate == NULL) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return NULL;
-    }
+    if (gstate == NULL)
+	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
     status = _cairo_gstate_init_copy (gstate, other);
     if (status) {
 	free (gstate);
-	return NULL;
+	return status;
     }
 
-    return gstate;
+    *out = gstate;
+    return CAIRO_STATUS_SUCCESS;
 }
 
 /**
@@ -259,11 +255,12 @@ _cairo_gstate_clone (cairo_gstate_t *other)
 cairo_status_t
 _cairo_gstate_save (cairo_gstate_t **gstate)
 {
-    cairo_gstate_t *top;
+    cairo_gstate_t *top = NULL;
+    cairo_status_t status;
 
-    top = _cairo_gstate_clone (*gstate);
-    if (top == NULL)
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    status = _cairo_gstate_clone (*gstate, &top);
+    if (status)
+	return status;
 
     top->next = *gstate;
     *gstate = top;
@@ -291,27 +288,6 @@ _cairo_gstate_restore (cairo_gstate_t **gstate)
     _cairo_gstate_destroy (top);
 
     return CAIRO_STATUS_SUCCESS;
-}
-
-static cairo_status_t
-_cairo_gstate_recursive_apply_clip_path (cairo_gstate_t *gstate,
-					 cairo_clip_path_t *cpath)
-{
-    cairo_status_t status;
-
-    if (cpath == NULL)
-	return CAIRO_STATUS_SUCCESS;
-
-    status = _cairo_gstate_recursive_apply_clip_path (gstate, cpath->prev);
-    if (status)
-	return status;
-
-    return _cairo_clip_clip (&gstate->clip,
-			     &cpath->path,
-			     cpath->fill_rule,
-			     cpath->tolerance,
-			     cpath->antialias,
-			     gstate->target);
 }
 
 /**
@@ -448,9 +424,6 @@ _cairo_gstate_set_source (cairo_gstate_t  *gstate,
 cairo_pattern_t *
 _cairo_gstate_get_source (cairo_gstate_t *gstate)
 {
-    if (gstate == NULL)
-	return NULL;
-
     return gstate->source;
 }
 
@@ -818,15 +791,21 @@ _cairo_gstate_stroke_to_path (cairo_gstate_t *gstate)
 }
 */
 
-void
+cairo_status_t
 _cairo_gstate_path_extents (cairo_gstate_t     *gstate,
 			    cairo_path_fixed_t *path,
 			    double *x1, double *y1,
 			    double *x2, double *y2)
 {
-    _cairo_path_fixed_bounds (path, x1, y1, x2, y2, gstate->tolerance);
-    
+    cairo_status_t status;
+
+    status = _cairo_path_fixed_bounds (path, x1, y1, x2, y2, gstate->tolerance);
+    if (status)
+	return status;
+
     _cairo_gstate_backend_to_user_rectangle (gstate, x1, y1, x2, y2, NULL);
+
+    return CAIRO_STATUS_SUCCESS;
 }
 
 static cairo_status_t

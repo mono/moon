@@ -167,21 +167,21 @@ The major component of the version of cairo available at compile-time.
 </para></refsect2>
 <refsect2>
 <title><anchor id="CAIRO-VERSION-MINOR:CAPS" role="macro"/>CAIRO_VERSION_MINOR</title>
-<indexterm><primary>CAIRO_VERSION_MINOR</primary></indexterm><programlisting>#define CAIRO_VERSION_MINOR 5
+<indexterm><primary>CAIRO_VERSION_MINOR</primary></indexterm><programlisting>#define CAIRO_VERSION_MINOR 6
 </programlisting>
 <para>
 The minor component of the version of cairo available at compile-time.
 </para></refsect2>
 <refsect2>
 <title><anchor id="CAIRO-VERSION-MICRO:CAPS" role="macro"/>CAIRO_VERSION_MICRO</title>
-<indexterm><primary>CAIRO_VERSION_MICRO</primary></indexterm><programlisting>#define CAIRO_VERSION_MICRO 11
+<indexterm><primary>CAIRO_VERSION_MICRO</primary></indexterm><programlisting>#define CAIRO_VERSION_MICRO 4
 </programlisting>
 <para>
 The micro component of the version of cairo available at compile-time.
 </para></refsect2>
 <refsect2>
 <title><anchor id="CAIRO-VERSION-STRING:CAPS" role="macro"/>CAIRO_VERSION_STRING</title>
-<indexterm><primary>CAIRO_VERSION_STRING</primary></indexterm><programlisting>#define CAIRO_VERSION_STRING "1.5.11"
+<indexterm><primary>CAIRO_VERSION_STRING</primary></indexterm><programlisting>#define CAIRO_VERSION_STRING "1.6.4"
 </programlisting>
 <para>
 A human-readable string literal containing the version of cairo available
@@ -256,4 +256,6 @@ See also <link linkend="cairo-version"><function>cairo_version()</function></lin
 
 
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

@@ -40,8 +40,6 @@
 
 #include "cairo-test.h"
 
-#define WIDTH  60
-#define HEIGHT 60
 #define NUM_TEXT 20
 #define TEXT_SIZE 12
 
@@ -50,7 +48,7 @@ static cairo_test_draw_function_t draw;
 cairo_test_t test = {
     "text-zero-len",
     "Tests show_text and text_path with a zero-sized string",
-    WIDTH, HEIGHT,
+    0, 0,
     draw
 };
 

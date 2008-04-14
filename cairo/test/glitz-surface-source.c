@@ -28,8 +28,6 @@
 #include <cairo-xlib.h>
 #include <cairo-xlib-xrender.h>
 
-#include <assert.h>
-
 #define NAME "glitz"
 #include "surface-source.c"
 
@@ -174,18 +172,25 @@ static cairo_surface_t *
 create_source_surface (int size)
 {
     struct closure *closure;
-    glitz_surface_t  * glitz_surface;
+    glitz_surface_t  *glitz_surface;
     cairo_surface_t *surface;
 
     closure = xcalloc (1, sizeof (struct closure));
 
     closure->dpy = XOpenDisplay (getenv("CAIRO_TEST_GLITZ_DISPLAY"));
-    assert (closure->dpy);
+    if (closure->dpy == NULL) {
+	free (closure);
+	return NULL;
+    }
 
     glitz_surface = _glitz_glx_create_surface (GLITZ_STANDARD_ARGB32,
 					       size, size,
 					       closure);
-    assert (glitz_surface != NULL);
+    if (glitz_surface == NULL) {
+	XCloseDisplay (closure->dpy);
+	free (closure);
+	return NULL;
+    }
 
     surface = cairo_glitz_surface_create (glitz_surface);
 

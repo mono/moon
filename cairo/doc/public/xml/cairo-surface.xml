@@ -456,7 +456,11 @@ backends.
 Note: The fallback resolution only takes effect at the time of
 completing a page (with <link linkend="cairo-show-page"><function>cairo_show_page()</function></link> or <link linkend="cairo-copy-page"><function>cairo_copy_page()</function></link>) so
 there is currently no way to have more than one fallback resolution
-in effect on a single page.</para>
+in effect on a single page.
+</para>
+<para>
+The default fallback resoultion is 300 pixels per inch in both
+dimensions.</para>
 <para>
 
 </para><variablelist role="params">
@@ -486,7 +490,8 @@ in effect on a single page.</para>
     CAIRO_SURFACE_TYPE_DIRECTFB,
     CAIRO_SURFACE_TYPE_SVG,
     CAIRO_SURFACE_TYPE_OS2,
-    CAIRO_SURFACE_TYPE_WIN32_PRINTING
+    CAIRO_SURFACE_TYPE_WIN32_PRINTING,
+    CAIRO_SURFACE_TYPE_QUARTZ_IMAGE
 } cairo_surface_type_t;
 </programlisting>
 <para>
@@ -581,6 +586,11 @@ New entries may be added in future versions.</para>
 <varlistentry>
 <term><anchor id="CAIRO-SURFACE-TYPE-WIN32-PRINTING:CAPS" role="constant"/><literal>CAIRO_SURFACE_TYPE_WIN32_PRINTING</literal></term>
 <listitem><simpara> The surface is a win32 printing surface
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="CAIRO-SURFACE-TYPE-QUARTZ-IMAGE:CAPS" role="constant"/><literal>CAIRO_SURFACE_TYPE_QUARTZ_IMAGE</literal></term>
+<listitem><simpara> The surface is of type quartz_image
 </simpara></listitem>
 </varlistentry>
 </variablelist><para role="since">Since  1.2
@@ -716,4 +726,6 @@ pages.  Use <link linkend="cairo-surface-copy-page"><function>cairo_surface_copy
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

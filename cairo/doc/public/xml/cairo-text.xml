@@ -202,13 +202,43 @@ Specifies variants of a font face based on their weight.</para>
                                                          <link linkend="cairo-font-slant-t">cairo_font_slant_t</link> slant,
                                                          <link linkend="cairo-font-weight-t">cairo_font_weight_t</link> weight);</programlisting>
 <para>
+Note: The <link linkend="cairo-select-font-face"><function>cairo_select_font_face()</function></link> function call is part of what
+the cairo designers call the "toy" text API. It is convenient for
+short demos and simple programs, but it is not expected to be
+adequate for serious text-using applications.
+</para>
+<para>
 Selects a family and style of font from a simplified description as
-a family name, slant and weight. This function is meant to be used
-only for applications with simple font needs: Cairo doesn't provide
-for operations such as listing all available fonts on the system,
-and it is expected that most applications will need to use a more
-comprehensive font handling and text layout library in addition to
-cairo.</para>
+a family name, slant and weight. Cairo provides no operation to
+list available family names on the system (this is a "toy",
+remember"), but the standard CSS2 generic family names, ("serif",
+"sans-serif", "cursive", "fantasy", "monospace"), are likely to
+work as expected.
+</para>
+<para>
+For "real" font selection, see the font-backend-specific
+font_face_create functions for the font backend you are using. (For
+example, if you are using the freetype-based cairo-ft font backend,
+see <link linkend="cairo-ft-font-face-create-for-ft-face"><function>cairo_ft_font_face_create_for_ft_face()</function></link> or
+<link linkend="cairo-ft-font-face-create-for-pattern"><function>cairo_ft_font_face_create_for_pattern()</function></link>.) The resulting font face
+could then be used with <link linkend="cairo-scaled-font-create"><function>cairo_scaled_font_create()</function></link> and
+<link linkend="cairo-set-scaled-font"><function>cairo_set_scaled_font()</function></link>.
+</para>
+<para>
+Similarly, when using the "real" font support, you can call
+directly into the underlying font system, (such as fontconfig or
+freetype), for operations such as listing available fonts, etc.
+</para>
+<para>
+It is expected that most applications will need to use a more
+comprehensive font handling and text layout library, (for example,
+pango), in conjunction with cairo.
+</para>
+<para>
+If text is drawn without a call to <link linkend="cairo-select-font-face"><function>cairo_select_font_face()</function></link>, (nor
+<link linkend="cairo-set-font-face"><function>cairo_set_font_face()</function></link> nor <link linkend="cairo-set-scaled-font"><function>cairo_set_scaled_font()</function></link>), the default
+family is "sans", slant is <link linkend="CAIRO-FONT-SLANT-NORMAL:CAPS"><literal>CAIRO_FONT_SLANT_NORMAL</literal></link>, and weight is
+<link linkend="CAIRO-FONT-WEIGHT-NORMAL:CAPS"><literal>CAIRO_FONT_WEIGHT_NORMAL</literal></link>.</para>
 <para>
 
 </para><variablelist role="params">
@@ -234,7 +264,12 @@ Sets the current font matrix to a scale by a factor of <parameter>size</paramete
 any font matrix previously set with <link linkend="cairo-set-font-size"><function>cairo_set_font_size()</function></link> or
 <link linkend="cairo-set-font-matrix"><function>cairo_set_font_matrix()</function></link>. This results in a font size of <parameter>size</parameter> user space
 units. (More precisely, this matrix will result in the font's
-em-square being a <parameter>size</parameter> by <parameter>size</parameter> square in user space.)</para>
+em-square being a <parameter>size</parameter> by <parameter>size</parameter> square in user space.)
+</para>
+<para>
+If text is drawn without a call to <link linkend="cairo-set-font-size"><function>cairo_set_font_size()</function></link>, (nor
+<link linkend="cairo-set-font-matrix"><function>cairo_set_font_matrix()</function></link> nor <link linkend="cairo-set-scaled-font"><function>cairo_set_scaled_font()</function></link>), the default
+font size is 10.0.</para>
 <para>
 
 </para><variablelist role="params">
@@ -575,4 +610,6 @@ will be stored
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

@@ -5,6 +5,7 @@ if CAIRO_HAS_PNG_FUNCTIONS
 #SUBDIRS += boilerplate test perf
 endif
 
+
 .PHONY: doc test retest recheck check-valgrind
 # We have some generated header files, so we really need to build the
 # library before we can build the docs
@@ -235,6 +236,7 @@ release-publish-message: releases/$(sha1_file)
 release-publish: release-upload release-publish-message
 
 doc-publish: doc
+	rm -rf ./$(MANUAL_DATED)
 	cp -a doc/public/html $(MANUAL_DATED)
 	tar czf $(MANUAL_TAR_FILE) $(MANUAL_DATED)
 	scp $(MANUAL_TAR_FILE) $(RELEASE_UPLOAD_HOST):$(MANUAL_UPLOAD_DIR)

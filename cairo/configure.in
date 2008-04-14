@@ -6,8 +6,8 @@ dnl			  even => stable series
 dnl For the micro number: odd => in-progress development (from git)
 dnl			  even => tar-file snapshot or release
 m4_define(cairo_version_major, 1)
-m4_define(cairo_version_minor, 5)
-m4_define(cairo_version_micro, 11)
+m4_define(cairo_version_minor, 6)
+m4_define(cairo_version_micro, 4)
 
 AC_INIT([cairo],
       cairo_version_major.cairo_version_minor.cairo_version_micro,
@@ -26,16 +26,16 @@ dnl ===========================================================================
 # libtool shared library version
 
 # Increment if the interface has additions, changes, removals.
-LT_CURRENT=17
+LT_CURRENT=19
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
-LT_REVISION=0
+LT_REVISION=5
 
 # Increment if any interfaces have been added; set to 0
 # if any interfaces have been removed. removal has
 # precedence over adding, so set to 0 if both happened.
-LT_AGE=15
+LT_AGE=17
 
 dnl ===========================================================================
 
@@ -65,8 +65,27 @@ AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL dnl required version (1.4) DON'T REMOVE!
 AC_STDC_HEADERS
 AC_C_INLINE
+
+case $host_os in
+	darwin*)
+AH_VERBATIM([X_BYTE_ORDER],[
+/* Deal with multiple architecture compiles on Mac OS X */
+#ifdef __APPLE_CC__
+#ifdef __BIG_ENDIAN__
+#define WORDS_BIGENDIAN 1
+#define FLOAT_WORDS_BIGENDIAN 1
+#else
+#undef WORDS_BIGENDIAN
+#undef FLOAT_WORDS_BIGENDIAN
+#endif
+#endif
+])
+	;;
+	*) 
 AC_C_BIGENDIAN
 AX_C_FLOAT_WORDS_BIGENDIAN
+	;;
+esac
 
 dnl ===========================================================================
 dnl === Local macros
@@ -280,7 +299,7 @@ CAIRO_LIBS=$CAIRO_NONPKGCONFIG_LIBS
 
 dnl ===========================================================================
 
-#PIXMAN_VERSION="0.9.6"
+#PIXMAN_VERSION="0.10.0"
 #PIXMAN_REQUIRES="pixman-1 >= $PIXMAN_VERSION"
 #PKG_CHECK_MODULES(pixman, $PIXMAN_REQUIRES, ,
 #	[AC_MSG_ERROR([pixman >= $PIXMAN_VERSION is required
@@ -339,10 +358,24 @@ CAIRO_BACKEND_ENABLE(xcb, XCB, xcb, XCB_SURFACE, no, [
 
 dnl ===========================================================================
 
-CAIRO_BACKEND_ENABLE(quartz, Quartz, quartz, QUARTZ_SURFACE, no, [
+CAIRO_BACKEND_ENABLE(quartz, Quartz, quartz, QUARTZ_SURFACE, auto, [
   dnl There is no pkgconfig for quartz; lets do a header check
-  AC_CHECK_HEADER(Carbon/Carbon.h, , [use_quartz="no (Carbon headers not found)"])
-  quartz_LIBS="-Xlinker -framework -Xlinker Carbon"
+  AC_CHECK_HEADER(ApplicationServices/ApplicationServices.h, , [use_quartz="no (ApplicationServices framework not found)"])
+  if test "x$use_quartz" != "xyes" ; then
+    dnl check for CoreGraphics as a separate framework
+    AC_CHECK_HEADER(CoreGraphics/CoreGraphics.h, , [use_quartz="no (CoreGraphics framework not found)"])
+    quartz_LIBS="-Xlinker -framework -Xlinker CoreGraphics"
+  else
+    quartz_LIBS="-Xlinker -framework -Xlinker ApplicationServices"
+  fi
+])
+
+CAIRO_BACKEND_ENABLE(quartz_font, Quartz font, quartz-font, QUARTZ_FONT, auto, [
+  use_quartz_font=$use_quartz
+])
+
+CAIRO_BACKEND_ENABLE(quartz_image, Quartz Image, quartz-image, QUARTZ_IMAGE_SURFACE, no, [
+  use_quartz_image=$use_quartz
 ])
 
 dnl ===========================================================================
@@ -627,7 +660,7 @@ CAIRO_BACKEND_ENABLE(pdf, PDF, pdf, PDF_SURFACE, yes, [
     pdf_NONPKGCONFIG_LIBS=-lz
 ])
 
-POPPLER_VERSION_REQUIRED=0.4.1
+POPPLER_VERSION_REQUIRED=0.8.0
 test_pdf=no
 if test "x$use_pdf" = "xyes"; then
   poppler_DEPENDENCY="poppler-glib >= $POPPLER_VERSION_REQUIRED"
@@ -676,17 +709,6 @@ fi
 AM_CONDITIONAL(CAIRO_CAN_TEST_SVG_SURFACE, test "x$test_svg" = "xyes")
 AC_SUBST(LIBRSVG_CFLAGS)
 AC_SUBST(LIBRSVG_LIBS)
-
-dnl ===========================================================================
-
-dnl This check should default to 'auto' once we have code to actually
-dnl check for the atsui font backend.
-
-CAIRO_BACKEND_ENABLE(atsui, ATSUI font, atsui, ATSUI_FONT, no, [
-  dnl There is no pkgconfig for atsui; lets do a header check
-  AC_CHECK_HEADER(Carbon/Carbon.h, , [use_atsui="no (Carbon headers not found)"])
-  atsui_LIBS="-Xlinker -framework -Xlinker Carbon"
-])
 
 dnl ===========================================================================
 dnl dump backend checking results
@@ -883,23 +905,24 @@ if test "x$use_gcov" = "xyes"; then
         fi
       done
     ])
-  else
-    ltp_msg="To enable code coverage reporting you must have one of the following LTP versions installed: $ltp_version_list"
-    AC_MSG_ERROR([$ltp_msg])
   fi
 
   case $cairo_cv_ltp_version in
     ""|invalid[)]
-      ltp_msg="You must have one of the following versions of LTP: $ltp_version_list (found: $ltp_version)."
-      AC_MSG_ERROR([$ltp_msg])
-      LTP="exit 0;"
       ;;
     *)
       cairo_has_lcov=yes
+      ;;
   esac
 
+  if test "x$cairo_has_lcov" != "xyes"; then
+    AC_MSG_ERROR([[To enable code coverage reporting you must have one of the following LTP versions installed: $ltp_version_list.
+Please install the Linux Test Project [http://ltp.sourceforge.net/], and try again.]])
+   fi
+
   if test -z "$LTP_GENHTML"; then
-    AC_MSG_ERROR([Could not find genhtml from the LTP package])
+    AC_MSG_ERROR([[Could not find genhtml from the LTP package.
+Please install the Linux Test Project [http://ltp.sourceforge.net/], and try again.]])
   fi
 
   AC_DEFINE(HAVE_GCOV, 1, [Whether you have gcov])
@@ -1055,6 +1078,7 @@ echo "  image:         yes (always builtin)"
 echo "  Xlib:          $use_xlib"
 echo "  Xlib Xrender:  $use_xlib_xrender"
 echo "  Quartz:        $use_quartz"
+echo "  Quartz-image:  $use_quartz_image"
 echo "  XCB:           $use_xcb"
 echo "  Win32:         $use_win32"
 echo "  OS2:           $use_os2"
@@ -1068,7 +1092,7 @@ echo ""
 echo "the following font backends:"
 echo "  FreeType:      $use_ft"
 echo "  Win32:         $use_win32_font"
-echo "  ATSUI:         $use_atsui"
+echo "  Quartz:        $use_quartz_font"
 echo ""
 echo "the following features:"
 echo "  PNG functions: $use_png"
@@ -1087,9 +1111,9 @@ echo "using CFLAGS:"
 echo $CAIRO_CFLAGS
 echo ""
 
-if test x"$use_ft"         != "xyes" && \
-   test x"$use_win32_font" != "xyes" && \
-   test x"$use_atsui"      != "xyes" ; then
+if test x"$use_ft"          != "xyes" && \
+   test x"$use_win32_font"  != "xyes" && \
+   test x"$use_quartz_font" != "xyes" ; then
 
    AC_MSG_ERROR([Cairo requires at least one font backend.
 		  Please install freetype and fontconfig, then try again:
@@ -1112,12 +1136,8 @@ if test x"$use_xcb" = "xyes" ; then
    echo "$WARNING_MESSAGE" | sed 's/@BACKEND@/XCB/'
 fi
 
-if test x"$use_quartz" = "xyes" ; then
-   echo "$WARNING_MESSAGE" | sed 's/@BACKEND@/Quartz/'
-fi
-
-if test x"$use_atsui" = "xyes" ; then
-   echo "$WARNING_MESSAGE" | sed 's/@BACKEND@/ATSUI/'
+if test x"$use_quartz_image" = "xyes" ; then
+   echo "$WARNING_MESSAGE" | sed 's/@BACKEND@/Quartz Image/'
 fi
 
 if test x"$use_os2" = "xyes" ; then

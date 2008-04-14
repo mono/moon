@@ -220,6 +220,7 @@ Poppler renders patterned text as black
 https://bugs.freedesktop.org/show_bug.cgi?id=14577
 --------------------------------------------------
 text-pattern
+text-transform
 
 Poppler should paint images with CAIRO_EXTEND_PAD
 https://bugs.freedesktop.org/show_bug.cgi?id=14578

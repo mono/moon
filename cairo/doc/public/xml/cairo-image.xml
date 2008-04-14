@@ -146,7 +146,8 @@ surface = cairo_image_surface_create_for_data (data, format,
 <listitem><simpara> The desired width of an image surface to be created.
 </simpara></listitem></varlistentry>
 <varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the appropriate stride to use given the desired
-format and width.
+format and width, or -1 if either the format is invalid or the width
+too large.
 
 </simpara></listitem></varlistentry>
 </variablelist><para role="since">Since  1.6
@@ -340,4 +341,6 @@ beginning of the next row.
 </para>
 </refsect1>
 
+
+<refsect1><refsect2 /><refsect2 /></refsect1>
 </refentry>

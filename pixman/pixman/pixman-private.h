@@ -27,6 +27,7 @@
 #  define BITMAP_BIT_ORDER LSBFirst
 #endif
 
+#undef DEBUG
 #define DEBUG 0
 
 #if defined (__GNUC__)
@@ -39,16 +40,25 @@
 
 #ifndef INT16_MIN
 # define INT16_MIN              (-32767-1)
+#endif
+
+#ifndef INT16_MAX
 # define INT16_MAX              (32767)
 #endif
 
 #ifndef INT32_MIN
 # define INT32_MIN              (-2147483647-1)
+#endif
+
+#ifndef INT32_MAX
 # define INT32_MAX              (2147483647)
 #endif
 
 #ifndef UINT32_MIN
 # define UINT32_MIN             (0)
+#endif
+
+#ifndef UINT32_MAX
 # define UINT32_MAX             (4294967295U)
 #endif
 
@@ -136,6 +146,12 @@ typedef struct point point_t;
 typedef FASTCALL void (*CombineMaskU) (uint32_t *src, const uint32_t *mask, int width);
 typedef FASTCALL void (*CombineFuncU) (uint32_t *dest, const uint32_t *src, int width);
 typedef FASTCALL void (*CombineFuncC) (uint32_t *dest, uint32_t *src, uint32_t *mask, int width);
+typedef FASTCALL void (*fetchProc)(bits_image_t *pict, int x, int y, int width,
+                                   uint32_t *buffer);
+typedef FASTCALL uint32_t (*fetchPixelProc)(bits_image_t *pict, int offset, int line);
+typedef FASTCALL void (*storeProc)(pixman_image_t *, uint32_t *bits,
+                                   const uint32_t *values, int x, int width,
+                                   const pixman_indexed_t *);
 
 typedef struct _FbComposeData {
     uint8_t	 op;
@@ -164,6 +180,32 @@ void pixman_composite_rect_general_accessors (const FbComposeData *data,
 					      uint32_t *scanline_buffer);
 void pixman_composite_rect_general (const FbComposeData *data,
 				    uint32_t *scanline_buffer);
+
+fetchProc pixman_fetchProcForPicture (bits_image_t *);
+fetchPixelProc pixman_fetchPixelProcForPicture (bits_image_t *);
+storeProc pixman_storeProcForPicture (bits_image_t *);
+fetchProc pixman_fetchProcForPicture_accessors (bits_image_t *);
+fetchPixelProc pixman_fetchPixelProcForPicture_accessors (bits_image_t *);
+storeProc pixman_storeProcForPicture_accessors (bits_image_t *);
+
+void pixmanFetchSourcePict(source_image_t *, int x, int y, int width,
+                           uint32_t *buffer, uint32_t *mask, uint32_t maskBits);
+
+void fbFetchTransformed(bits_image_t *, int x, int y, int width,
+                        uint32_t *buffer, uint32_t *mask, uint32_t maskBits);
+void fbStoreExternalAlpha(bits_image_t *, int x, int y, int width,
+                          uint32_t *buffer);
+void fbFetchExternalAlpha(bits_image_t *, int x, int y, int width,
+                          uint32_t *buffer, uint32_t *mask, uint32_t maskBits);
+
+void fbFetchTransformed_accessors(bits_image_t *, int x, int y, int width,
+                                  uint32_t *buffer, uint32_t *mask,
+                                  uint32_t maskBits);
+void fbStoreExternalAlpha_accessors(bits_image_t *, int x, int y, int width,
+                                    uint32_t *buffer);
+void fbFetchExternalAlpha_accessors(bits_image_t *, int x, int y, int width,
+                                    uint32_t *buffer, uint32_t *mask,
+                                    uint32_t maskBits);
 
 /* end */
 
@@ -288,6 +330,11 @@ union pixman_image
     radial_gradient_t		radial;
     solid_fill_t		solid;
 };
+
+
+extern CombineFuncU pixman_fbCombineFuncU[];
+extern CombineFuncC pixman_fbCombineFuncC[];
+FASTCALL void pixman_fbCombineMaskU (uint32_t *src, const uint32_t *mask, int width);
 
 #define LOG2_BITMAP_PAD 5
 #define FB_STIP_SHIFT	LOG2_BITMAP_PAD
@@ -590,6 +637,8 @@ union pixman_image
 #define DIV(a,b) ((((a) < 0) == ((b) < 0)) ? (a) / (b) :		\
 		  ((a) - (b) + 1 - (((b) < 0) << 1)) / (b))
 
+#define CLIP(a,b,c) ((a) < (b) ? (b) : ((a) > (c) ? (c) : (a)))
+
 #if 0
 /* FIXME: the MOD macro above is equivalent, but faster I think */
 #define mod(a,b) ((b) == 1 ? 0 : (a) >= 0 ? (a) % (b) : (b) - (-a) % (b))
@@ -659,10 +708,6 @@ union pixman_image
 	}								\
     } while (0)
 
-/* FIXME */
-#define fbPrepareAccess(x)
-#define fbFinishAccess(x)
-
 #else
 
 #define READ(img, ptr)		(*(ptr))
@@ -671,8 +716,7 @@ union pixman_image
     memcpy(dst, src, size)
 #define MEMSET_WRAPPED(img, dst, val, size)					\
     memset(dst, val, size)
-#define fbPrepareAccess(x)
-#define fbFinishAccess(x)
+
 #endif
 
 #define fbComposeGetSolid(img, res, fmt)				\

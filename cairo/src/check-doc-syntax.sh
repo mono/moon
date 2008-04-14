@@ -18,16 +18,25 @@ if test "x$SGML_DOCS" = x; then
     FILES=`find "$srcdir" -name '*.h' -or -name '*.c' -or -name '*.cpp'`
 fi
 
-enum_regexp='\([^%@]\|^\)\<\(FALSE\|TRUE\|NULL\|CAIRO_[0-9A-Z_]*[^(0-9A-Z_]\)'
-if test "x$SGML_DOCS" = x; then
-	enum_regexp='^[/ ][*] .*'$enum_regexp
-fi
-if grep "$enum_regexp" $FILES | grep -v '#####'; then
-	status=1
-	echo Error: some macros in the docs are not prefixed by percent sign.
-	echo Fix this by searching for the following regexp in the above files:
-	echo "	'$enum_regexp'"
-fi
+# Note: This test reports false positives on non-gtk-doc comments and
+# non-public enum values, (such as CAIRO_FIXED_FRAC_BITS in the comment
+# for _cairo_output_stream_init). I'm opposed to uglifying those comments
+# with % just to shut this warning up. So instead, I'm turning this check
+# off. (cworth 2008-03-02)
+#
+# Meanwhile, I'd love to see a system that would just link things like
+# enums up without any decoration.
+#
+#enum_regexp='\([^%@]\|^\)\<\(FALSE\|TRUE\|NULL\|CAIRO_[0-9A-Z_]*[^(0-9A-Z_]\)'
+#if test "x$SGML_DOCS" = x; then
+#	enum_regexp='^[/ ][*] .*'$enum_regexp
+#fi
+#if grep "$enum_regexp" $FILES | grep -v '#####'; then
+#	status=1
+#	echo Error: some macros in the docs are not prefixed by percent sign.
+#	echo Fix this by searching for the following regexp in the above files:
+#	echo "	'$enum_regexp'"
+#fi
 
 type_regexp='\( .*[^#]\| \|^\)\<cairo[0-9a-z_]*_t\>\($\|[^:]$\|[^:].\)'
 if test "x$SGML_DOCS" = x; then

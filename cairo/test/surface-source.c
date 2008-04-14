@@ -89,5 +89,13 @@ draw (cairo_t *cr, int width, int height)
 int
 main (void)
 {
+    cairo_surface_t *surface;
+
+    surface = create_source_surface (SIZE);
+    if (surface == NULL) /* can't create the source so skip the test */
+	return CAIRO_TEST_SUCCESS;
+
+    cairo_surface_destroy (surface);
+
     return cairo_test (&test);
 }
