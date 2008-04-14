@@ -227,5 +227,4 @@ AC_SUBST(DEP_LIBS)
 AC_OUTPUT([pixman-1.pc
            Makefile
 	   pixman/Makefile
-	   pixman/pixman-version.h
-	   test/Makefile])
+	   pixman/pixman-version.h])

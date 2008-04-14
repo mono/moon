@@ -1,5 +1,9 @@
 2008-04-14  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* pixman/configure.ac: Don't generate test/Makefile
+
+2008-04-14  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* cairo, pixman: Update to cairo-1.6.4 and pixman-0.10.0
 
 2008-04-08  Andrew Jorgensen  <ajorgensen@novell.com>
