@@ -1,5 +1,9 @@
 2008-04-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* index.aspx: Include *.html files as well.
+
+2008-04-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* make-xephyr: Added, script to run tests in xephyr.
 	* Makefile.am: Added run-drtlist to run an arbitrary drtlist.
 
