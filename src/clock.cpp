@@ -798,7 +798,7 @@ Clock::ComputeNewTime ()
 					SkipToFill ();
 				}
 				else {
-					DoRepeat ();
+					DoRepeat (ret_time);
 					ret_time = current_time;
 				}
 			}
@@ -854,10 +854,10 @@ Clock::ComputeNewTime ()
 }
 
 void
-Clock::DoRepeat ()
+Clock::DoRepeat (TimeSpan time)
 {
 	if (natural_duration.HasTimeSpan ()) {
-		SetCurrentTime (current_time - natural_duration.GetTimeSpan());
+		SetCurrentTime (time % natural_duration.GetTimeSpan());
 		last_time = current_time;
 	}
 }
@@ -1182,7 +1182,7 @@ ClockGroup::Tick ()
 			if (! never_fill)
 				SkipToFill ();
 		} else
-			DoRepeat ();
+			DoRepeat (current_time);
 	}
 
 	if (state == Clock::Stopped || idle_hint == true)
@@ -1192,9 +1192,9 @@ ClockGroup::Tick ()
 }
 
 void
-ClockGroup::DoRepeat ()
+ClockGroup::DoRepeat (TimeSpan time)
 {
-	Clock::DoRepeat ();
+	Clock::DoRepeat (time);
 	
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *c = (Clock*)l->data;

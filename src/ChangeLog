@@ -1,3 +1,11 @@
+2008-04-14  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp:
+	* clock.h: When calculating the new time in DoRepeat use modulo on new
+	value. Otherwise we're 'losing' a little bit of time on every repeat and
+	end time doesn't match with parent. This fixes a few more "jags" on
+	animations ie. clock13.xaml.
+
 2008-04-11  Larry Ewing  <lewing@novell.com>
 
 	* xaml.cpp (value_from_str): make sure we propogate the error if

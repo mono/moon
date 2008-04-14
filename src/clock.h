@@ -313,7 +313,7 @@ class Clock : public DependencyObject {
 	TimeSpan ComputeNewTime ();
 	void ClampTime ();
 	void CalcProgress ();
-	virtual void DoRepeat ();
+	virtual void DoRepeat (TimeSpan time);
 
 	void SetClockState (ClockState state) { this->state = state; QueueEvent (CURRENT_STATE_INVALIDATED); }
 	void SetCurrentTime (TimeSpan ts) { this->current_time = ts; QueueEvent (CURRENT_TIME_INVALIDATED); }
@@ -395,7 +395,7 @@ class ClockGroup : public Clock {
 	GList *child_clocks;
 
  protected:
-	virtual void DoRepeat ();
+	virtual void DoRepeat (TimeSpan time);
 
  private:
 	TimelineGroup *timeline;
