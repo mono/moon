@@ -177,9 +177,9 @@ class DependencyObject : public EventObject {
 	DependencyObject ();
 
 	DependencyProperty *GetDependencyProperty (const char *name);
-
-	virtual void SetValue (DependencyProperty *property, Value *value);
-	virtual void SetValue (DependencyProperty *property, Value value);
+	
+	void SetValue (DependencyProperty *property, Value *value);
+	void SetValue (DependencyProperty *property, Value value);
 	void SetValue (const char *name, Value *value);
 	void SetValue (const char *name, Value value);
 

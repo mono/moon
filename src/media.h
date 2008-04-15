@@ -287,8 +287,6 @@ class MediaElement : public MediaBase {
 	virtual Point GetTransformOrigin ();
 	
 	virtual Value *GetValue (DependencyProperty *prop);
-	virtual void SetValue (DependencyProperty *prop, Value value);
-	virtual void SetValue (DependencyProperty *prop, Value *value);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);

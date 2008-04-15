@@ -1292,12 +1292,6 @@ MediaElement::GetValue (DependencyProperty *prop)
 	return MediaBase::GetValue (prop);
 }
 
-void
-MediaElement::SetValue (DependencyProperty *prop, Value value)
-{
-	MediaBase::SetValue (prop, value);
-}
-
 TimeSpan
 MediaElement::UpdatePlayerPosition (Value *value)
 {
@@ -1324,46 +1318,6 @@ MediaElement::UpdatePlayerPosition (Value *value)
 		  mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ())));
 
 	return position;
-}
-
-void
-MediaElement::SetValue (DependencyProperty *prop, Value *value)
-{
-	Value v;
-	
-	if (prop == MediaElement::PositionProperty && !(flags & UpdatingPosition)) {
-		// Some outside source is updating the Position
-		// property which means we need to Seek
-		
-		switch (state) {
-		case Opening:
-		case Closed:
-		case Error:
-			MediaBase::SetValue (prop, value);
-			return;
-		case Buffering:
-		case Playing: // Play
-			break;
-		case Paused:
-		case Stopped: // Paused
-			break;
-		}
-		
-		TimeSpan position = UpdatePlayerPosition (value);
-		
-		d(printf ("MediaElement::SetValue (Position, %llu = %llu ms)\n", position, MilliSeconds_FromPts (position)));
-		
-		if (IsStopped ())
-			SetState (Paused);
-		
-		if (position != value->AsTimeSpan ()) {
-			v = Value (position, Type::TIMESPAN);
-			MediaBase::SetValue (prop, &v);
-			return;
-		}
-	}
-	
-	MediaBase::SetValue (prop, value);
 }
 
 void
@@ -1402,13 +1356,13 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		// no state to change
 		//printf ("AutoPlay set to %s\n", media_element_get_auto_play (this) ? "true" : "false");
 	} else if (args->property == MediaElement::BalanceProperty) {
-		mplayer->SetBalance (media_element_get_balance (this));
+		mplayer->SetBalance (args->new_value->AsDouble ());
 	} else if (args->property == MediaElement::BufferingProgressProperty) {
 		Emit (BufferingProgressChangedEvent);
 	} else if (args->property == MediaElement::CurrentStateProperty) {
 		Emit (CurrentStateChangedEvent);
 	} else if (args->property == MediaElement::IsMutedProperty) {
-		mplayer->SetMuted (media_element_get_is_muted (this));
+		mplayer->SetMuted (args->new_value->AsBool ());
 	} else if (args->property == MediaElement::MarkersProperty) {
 		// FIXME: keep refs to these?
 	} else if (args->property == MediaElement::NaturalVideoHeightProperty) {
@@ -1418,10 +1372,38 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		// read-only property
 		flags |= RecalculateMatrix;
 	} else if (args->property == MediaElement::PositionProperty) {
-		if (IsPlaying() && mplayer->HasVideo ())
+		if (!(flags & UpdatingPosition)) {
+			// Some outside source is updating the Position
+			// property which means we need to Seek
+			TimeSpan position;
+			
+			switch (state) {
+			case Opening:
+			case Closed:
+			case Error:
+			default:
+				break;
+			case Buffering:
+			case Playing:
+			case Paused:
+			case Stopped:
+				position = UpdatePlayerPosition (args->new_value);
+				if (state == Stopped)
+					SetState (Paused);
+				
+				if (position != args->new_value->AsTimeSpan ()) {
+					Value v = Value (position, Type::TIMESPAN);
+					SetValue (args->property, &v);
+					return;
+				}
+				
+				break;
+			}
+		} else if (IsPlaying() && mplayer->HasVideo ()) {
 			Invalidate ();
+		}
 	} else if (args->property == MediaElement::VolumeProperty) {
-		mplayer->SetVolume (media_element_get_volume (this));
+		mplayer->SetVolume (args->new_value->AsDouble ());
 	}
 	
 	if (args->property->type == Type::MEDIAELEMENT) {
