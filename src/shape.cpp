@@ -1287,18 +1287,6 @@ line_draw_cap (cairo_t *cr, Shape* shape, PenLineCap cap, double x1, double y1, 
 	shape->Stroke (cr, true);
 }
 
-// Draw the start and end line caps, if not flat. This doesn't draw the line itself
-// note: function shared with single-segment Polyline
-static void
-line_draw_caps (cairo_t *cr, Shape* shape, double x1, double y1, PenLineCap start, double x2, double y2, PenLineCap end)
-{
-	if (start != PenLineCapFlat) 
-		line_draw_cap (cr, shape, start, x1, y1, x2, y2);
-	if (end != PenLineCapFlat)
-		line_draw_cap (cr, shape, end, x2, y2, x1, y1);
-}
-
-
 // The Line shape can be drawn while ignoring properties:
 // * Shape::StrokeLineJoin
 // * Shape::StrokeMiterLimit
