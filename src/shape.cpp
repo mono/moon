@@ -157,9 +157,10 @@ Shape::Draw (cairo_t *cr)
 // * Fill
 
 bool
-Shape::SetupLine (cairo_t* cr)
+Shape::SetupLine (cairo_t *cr)
 {
-	double thickness = shape_get_stroke_thickness (this);
+	double thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+	
 	// check if something will be drawn or return 
 	// note: override this method if cairo is used to compute bounds
 	if (thickness == 0)
@@ -176,7 +177,7 @@ Shape::SetupLine (cairo_t* cr)
 bool
 Shape::SetupDashes (cairo_t *cr, double thickness)
 {
-	return Shape::SetupDashes (cr, thickness, shape_get_stroke_dash_offset (this) * thickness);
+	return Shape::SetupDashes (cr, thickness, GetValue (Shape::StrokeDashOffsetProperty)->AsDouble () * thickness);
 }
 
 bool
@@ -205,16 +206,20 @@ Shape::SetupDashes (cairo_t *cr, double thickness, double offset)
 void
 Shape::SetupLineCaps (cairo_t *cr)
 {
-	//Setting the cap to dash_cap. the endcaps (if different) are handled elsewhere
-	PenLineCap cap = shape_get_stroke_dash_cap (this);
+	// Setting the cap to dash_cap. the endcaps (if different) are handled elsewhere
+	PenLineCap cap = (PenLineCap) GetValue (Shape::StrokeDashCapProperty)->AsInt32 ();
+	
 	cairo_set_line_cap (cr, convert_line_cap (cap));
 }
 
 void
 Shape::SetupLineJoinMiter (cairo_t *cr)
 {
-	cairo_set_line_join (cr, convert_line_join (shape_get_stroke_line_join (this)));
-	cairo_set_miter_limit (cr, shape_get_stroke_miter_limit (this));
+	PenLineJoin join = (PenLineJoin) GetValue (Shape::StrokeLineJoinProperty)->AsInt32 ();
+	double limit = GetValue (Shape::StrokeMiterLimitProperty)->AsDouble ();
+	
+	cairo_set_line_join (cr, convert_line_join (join));
+	cairo_set_miter_limit (cr, limit);
 }
 
 // returns true if the path is set on the cairo, false if not
@@ -262,7 +267,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		return shape_bounds;
 	}
 
-	Stretch stretch = shape_get_stretch (this);
+	Stretch stretch = (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
 	if (stretch != StretchNone) {
 		double sw = (logical_bounds.w != 0.0) ? (w - (shape_bounds.w - logical_bounds.w)) / logical_bounds.w : 1.0;
 		double sh = (logical_bounds.h != 0.0) ? (h - (shape_bounds.h - logical_bounds.h)) / logical_bounds.h : 1.0;
@@ -337,10 +342,13 @@ void
 Shape::Clip (cairo_t *cr)
 {
 	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
-	if (ClipOnHeightAndWidth () || (!IsDegenerate () && (shape_get_stretch (this) == StretchUniformToFill))) {
+	Stretch stretch = (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
+	
+	if (ClipOnHeightAndWidth () || (!IsDegenerate () && (stretch == StretchUniformToFill))) {
 		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 		if (!vh)
 			return;
+		
 		Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
 		if (!vw)
 			return;
@@ -480,16 +488,15 @@ Shape::ComputeShapeBounds (bool logical)
 {
 	if (IsEmpty ())
 		return Rect ();
-
-	double w = framework_element_get_width (this);
-	double h = framework_element_get_height (this);
-
+	
+	double h = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+	double w = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+	
 	if ((w <= 0.0) || (h <= 0.0))
 		return Rect ();
 	
-
-	//double t = shape_get_stroke_thickness (this) * .5;
-
+	//double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble () * 0.5;
+	
 	return Rect (0, 0, w, h);
 }
 
@@ -616,9 +623,9 @@ Point
 Shape::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
-
-	return Point (framework_element_get_width (this) * user_xform_origin.x, 
-		      framework_element_get_height (this) * user_xform_origin.y);
+	
+	return Point (GetValue (FrameworkElement::WidthProperty)->AsDouble () * user_xform_origin.x, 
+		      GetValue (FrameworkElement::HeightProperty)->AsDouble () * user_xform_origin.y);
 }
 
 void
@@ -834,15 +841,16 @@ void
 Ellipse::BuildPath ()
 {
 	Value *height, *width;
+	
 	if (Shape::MixedHeightWidth (&height, &width))
 		return;
 
-	Stretch stretch = shape_get_stretch (this);
+	Stretch stretch = (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
+	double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
 	double x = 0.0;
 	double y = 0.0;
 	double w = 0.0;
 	double h = 0.0;
-	double t = shape_get_stroke_thickness (this);
 	double t2;
 
 	// if both width and height are missing then the width and height are equal (on screen) to the thickness
@@ -996,9 +1004,9 @@ Rectangle::BuildPath ()
 	if (Shape::MixedHeightWidth (&height, &width))
 		return;
 
-	Stretch stretch = shape_get_stretch (this);
-	double t = IsStroked () ? shape_get_stroke_thickness (this) : 0.0;
-
+	Stretch stretch = (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
+	double t = IsStroked () ? GetValue (Shape::StrokeThicknessProperty)->AsDouble () : 0.0;
+	
 	// nothing is drawn (nor filled) if no StrokeThickness="0"
 	// unless both Width and Height are specified or when no streching is required
 	if ((t == 0.0) && (!width || !height || (stretch == StretchNone))) {
@@ -1153,7 +1161,7 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Rectangle::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	switch (shape_get_stretch (this)) {
+	switch (GetValue (Shape::StretchProperty)->AsInt32 ()) {
 	case StretchUniform:
 		*width = *height = (extents.w < extents.h) ? extents.w : extents.h;
 		break;
@@ -1302,29 +1310,34 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 		return false;
 
 	// here we hack around #345888 where Cairo doesn't support different start and end linecaps
-	PenLineCap start = shape_get_stroke_start_line_cap (this);
-	PenLineCap end = shape_get_stroke_end_line_cap (this);
-	PenLineCap dash = shape_get_stroke_dash_cap (this);
+	PenLineCap start = (PenLineCap) GetValue (Shape::StrokeStartLineCapProperty)->AsInt32 ();
+	PenLineCap end = (PenLineCap) GetValue (Shape::StrokeEndLineCapProperty)->AsInt32 ();
+	PenLineCap dash = (PenLineCap) GetValue (Shape::StrokeDashCapProperty)->AsInt32 ();
 	bool dashed = false;
 	int count = 0;
 	double *dashes = shape_get_stroke_dash_array (this, &count);
+	
 	if (dashes && (count > 0))
 		dashed = true;
 
 	//if (do_op && !(start == end && start == dash)) {
 	if (do_op && (start != end || (dashed && !(start == end && start == dash)))) {
+		double x1 = GetValue (Line::X1Property)->AsDouble ();
+		double y1 = GetValue (Line::Y1Property)->AsDouble ();
+		double x2 = GetValue (Line::X2Property)->AsDouble ();
+		double y2 = GetValue (Line::Y2Property)->AsDouble ();
+		
 		printf ("Special Case\n");
 		// draw start and end line caps
 		if (start != PenLineCapFlat) 
-			line_draw_cap (cr, this, start, line_get_x1 (this), line_get_y1 (this), line_get_x2 (this), line_get_y2 (this));
+			line_draw_cap (cr, this, start, x1, y1, x2, y2);
+		
 		if (end != PenLineCapFlat) {
 			//don't draw the end cap if it's in an "off" segment
-			double x1 = line_get_x1 (this);
-			double y1 = line_get_y1 (this);
-			double x2 = line_get_x2 (this);
-			double y2 = line_get_y2 (this);
-			double thickness = shape_get_stroke_thickness (this);
-			SetupDashes (cr, thickness, sqrt ((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)) + shape_get_stroke_dash_offset (this) * thickness);
+			double thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+			double offset = GetValue (Shape::StrokeDashOffsetProperty)->AsDouble ();
+			
+			SetupDashes (cr, thickness, sqrt ((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)) + offset * thickness);
 			line_draw_cap (cr, this, end, x2, y2, x1, y1);
 			SetupLine (cr);
 		}
@@ -1335,7 +1348,7 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 
 	Draw (cr);
 	Stroke (cr, do_op);
-	return true; 
+	return true;
 }
 
 void
@@ -1376,9 +1389,14 @@ Line::BuildPath ()
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
 	path = moon_path_renew (path, MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH);
-
-	moon_move_to (path, line_get_x1 (this), line_get_y1 (this));
-	moon_line_to (path, line_get_x2 (this), line_get_y2 (this));
+	
+	double x1 = GetValue (Line::X1Property)->AsDouble ();
+	double y1 = GetValue (Line::Y1Property)->AsDouble ();
+	double x2 = GetValue (Line::X2Property)->AsDouble ();
+	double y2 = GetValue (Line::Y2Property)->AsDouble ();
+	
+	moon_move_to (path, x1, y1);
+	moon_line_to (path, x2, y2);
 }
 
 Rect
@@ -1390,19 +1408,19 @@ Line::ComputeShapeBounds (bool logical)
 		return shape_bounds;
 
 	double thickness;
-	if (logical)
-		thickness = 0.0;
+	if (!logical)
+		thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
 	else
-		thickness = shape_get_stroke_thickness (this);
-
-	if (thickness <= 0.0 && ! logical)
+		thickness = 0.0;
+	
+	if (thickness <= 0.0 && !logical)
 		return shape_bounds;
-
-	double x1 = line_get_x1 (this);
-	double y1 = line_get_y1 (this);
-	double x2 = line_get_x2 (this);
-	double y2 = line_get_y2 (this);
-
+	
+	double x1 = GetValue (Line::X1Property)->AsDouble ();
+	double y1 = GetValue (Line::Y1Property)->AsDouble ();
+	double x2 = GetValue (Line::X2Property)->AsDouble ();
+	double y2 = GetValue (Line::Y2Property)->AsDouble ();
+	
 	calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
 
 	return shape_bounds;
@@ -1501,7 +1519,7 @@ DependencyProperty* Polygon::PointsProperty;
 FillRule
 Polygon::GetFillRule ()
 {
-	return polygon_get_fill_rule (this);
+	return (FillRule) GetValue (Polygon::FillRuleProperty)->AsInt32 ();
 }
 
 // The Polygon shape can be drawn while ignoring properties:
@@ -1654,13 +1672,13 @@ Polygon::ComputeShapeBounds (bool logical)
 	// the first point is a move to, resulting in an empty shape
 	if (!points || (count < 2))
 		return shape_bounds;
-
+	
 	double thickness;
-	if (logical)
+	if (!logical)
+		thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+	else
 		thickness = 0.0;
-	else 
-		thickness = shape_get_stroke_thickness (this);
-
+	
 	if (thickness == 0.0)
 		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
@@ -1737,12 +1755,13 @@ Polygon::BuildPath ()
 
 	// special case, both the starting and ending points are 5 * thickness than the actual points
 	if (count == 2) {
+		double thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
 		double x1 = points [0].x;
 		double y1 = points [0].y;
 		double x2 = points [1].x;
 		double y2 = points [1].y;
-
-		polygon_extend_line (&x1, &x2, &y1, &y2, shape_get_stroke_thickness (this));
+		
+		polygon_extend_line (&x1, &x2, &y1, &y2, thickness);
 
 		moon_move_to (path, x1, y1);
 		moon_line_to (path, x2, y2);
@@ -1851,9 +1870,10 @@ Polyline::DrawShape (cairo_t *cr, bool do_op)
 	SetupLineJoinMiter (cr);
 
 	// here we hack around #345888 where Cairo doesn't support different start and end linecaps
-	PenLineCap start = shape_get_stroke_start_line_cap (this);
-	PenLineCap end = shape_get_stroke_end_line_cap (this);
-	PenLineCap dash = shape_get_stroke_dash_cap (this);
+	PenLineCap start = (PenLineCap) GetValue (Shape::StrokeStartLineCapProperty)->AsInt32 ();
+	PenLineCap end = (PenLineCap) GetValue (Shape::StrokeEndLineCapProperty)->AsInt32 ();
+	PenLineCap dash = (PenLineCap) GetValue (Shape::StrokeDashCapProperty)->AsInt32 ();
+	
 	if (do_op && ! (start == end && start == dash)){
 		// the previous fill, if needed, has preserved the path
 		if (drawn)
@@ -1887,7 +1907,7 @@ Polyline::DrawShape (cairo_t *cr, bool do_op)
 FillRule
 Polyline::GetFillRule ()
 {
-	return polyline_get_fill_rule (this);
+	return (FillRule) GetValue (Polyline::FillRuleProperty)->AsInt32 ();
 }
 
 Rect
@@ -1906,11 +1926,11 @@ Polyline::ComputeShapeBounds (bool logical)
 		return shape_bounds;
 
 	double thickness;
-	if (logical)
-		thickness = 0.0;
+	if (!logical)
+		thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
 	else
-		thickness = shape_get_stroke_thickness (this);
-
+		thickness = 0.0;
+	
 	if (thickness == 0.0)
 		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
@@ -2048,7 +2068,7 @@ Path::SetupLine (cairo_t* cr)
 	// we cannot use the thickness==0 optimization (like Shape::SetupLine provides)
 	// since we'll be using cairo to compute the path's bounds later
 	// see bug #352188 for an example of what this breaks
-	double thickness = IsDegenerate () ? 1.0 : shape_get_stroke_thickness (this);
+	double thickness = IsDegenerate () ? 1.0 : GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
 	cairo_set_line_width (cr, thickness);
 	return SetupDashes (cr, thickness);
 }
@@ -2080,8 +2100,15 @@ Path::DrawShape (cairo_t *cr, bool do_op)
 FillRule
 Path::GetFillRule ()
 {
-	Geometry* geometry = path_get_data (this);
-	return geometry ? geometry_get_fill_rule (geometry) : Shape::GetFillRule ();
+	Geometry *geometry;
+	Value *value;
+	
+	if (!(value = GetValue (Path::DataProperty)))
+		return Shape::GetFillRule ();
+	
+	geometry = value->AsGeometry ();
+	
+	return (FillRule) geometry->GetValue (Geometry::FillRuleProperty)->AsInt32 ();
 }
 
 Rect
@@ -2092,13 +2119,17 @@ Path::ComputeShapeBounds (bool logical)
 	Value *vh, *vw;
 	if (Shape::MixedHeightWidth (&vh, &vw))
 		return shape_bounds;
-
-	Geometry* geometry = path_get_data (this);
-	if (!geometry) {
+	
+	Geometry *geometry;
+	Value *value;
+	
+	if (!(value = GetValue (Path::DataProperty))) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return shape_bounds;
 	}
-
+	
+	geometry = value->AsGeometry ();
+	
 	double w = vw ? vw->AsDouble () : 0.0;
 	double h = vh ? vh->AsDouble () : 0.0;
 	
@@ -2121,11 +2152,15 @@ void
 Path::Draw (cairo_t *cr)
 {
 	cairo_new_path (cr);
-
-	Geometry* geometry = path_get_data (this);
-	if (!geometry)
+	
+	Geometry *geometry;
+	Value *value;
+	
+	if (!(value = GetValue (Path::DataProperty)))
 		return;
-
+	
+	geometry = value->AsGeometry ();
+	
 	cairo_save (cr);
 	cairo_transform (cr, &stretch_transform);
 	geometry->Draw (this, cr);
