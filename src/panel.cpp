@@ -20,12 +20,15 @@
 #include "runtime.h"
 #include "dirty.h"
 
+
 VisualCollection *
 Panel::GetChildren ()
 {
-	Value* children = GetValue (Panel::ChildrenProperty);
+	Value *children = GetValue (Panel::ChildrenProperty);
+	
 	if (children)
 		return children->AsVisualCollection ();
+	
 	return NULL;
 }
 
@@ -188,11 +191,10 @@ Panel::Render (cairo_t *cr, Region *region)
 
 	Value *value = GetValue (Panel::BackgroundProperty);
 	if (value) {
-		double fwidth = framework_element_get_width (this);
-		double fheight = framework_element_get_height (this);
-
-		if (fwidth > 0 && fheight > 0){
-
+		double fheight = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+		double fwidth = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+		
+		if (fwidth > 0 && fheight > 0) {
 			Brush *background = value->AsBrush ();
 			background->SetupBrush (cr, this);
 
@@ -308,11 +310,11 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	Region *region;
 	bool delete_region;
 	bool can_subtract_self;
-
+	Value *value;
+	
 	if ((GetValue (UIElement::ClipProperty) == NULL)
-	    && (uielement_get_opacity_mask (this) == NULL)
-	    && !IS_TRANSLUCENT (uielement_get_opacity (this))) {
-
+	    && (!(value = GetValue (UIElement::OpacityMaskProperty)) || value->AsBrush () == NULL)
+	    && !IS_TRANSLUCENT (GetValue (UIElement::OpacityProperty)->AsDouble ())) {
 		region = surface_region;
 		delete_region = false;
 		can_subtract_self = true;
@@ -350,7 +352,6 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(), UIElement::CallPreRender, NULL));
 
 	if (!self_region->IsEmpty()) {
-
 		bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
 				 && can_subtract_self);
 
@@ -399,11 +400,13 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 	if (FrameworkElement::InsideObject (cr, x, y)) {
 		/* we're inside, check if we're actually painting any background,
 		   or, we're just transparent due to no painting. */
-		if (panel_get_background (this) != NULL)
+		Value *value = GetValue (Panel::BackgroundProperty);
+		
+		if (value && value->AsBrush ())
 			return true;
 	}
-
-	UIElement* mouseover = FindMouseOver (cr, x, y);
+	
+	UIElement *mouseover = FindMouseOver (cr, x, y);
 
 	return mouseover != NULL;
 }
@@ -452,7 +455,7 @@ Panel::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 	   cut & pastes from the bodies of both Panel::InsideObject and
 	   Panel::FindMouseOver */
 
-	UIElement* mouseover = FindMouseOver (cr, x, y);
+	UIElement *mouseover = FindMouseOver (cr, x, y);
 
 	if (mouseover) {
 		uielement_list->Prepend (new UIElementNode (this));
@@ -467,7 +470,9 @@ Panel::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 		if (FrameworkElement::InsideObject (cr, x, y)) {
 			/* we're inside, check if we're actually painting any background,
 			   or, we're just transparent due to no painting. */
-			if (panel_get_background (this) != NULL)
+			Value *value = GetValue (Panel::BackgroundProperty);
+			
+			if (value && value->AsBrush ())
 				uielement_list->Prepend (new UIElementNode (this));
 		}
 	}
