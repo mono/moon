@@ -1,5 +1,12 @@
 moondir = $(prefix)/lib/moon
 
+AAACFLAGS = -O0 -g
+CXXFLAGS = -O0 -g
+bin_PROGRAMS = mopen1
+mopen1_SOURCES = mopen1.cpp
+INCLUDES = $(MOON_CFLAGS) -Wall  -I../../src
+LIBS = $(PLUGIN_LIBS) $(MOON_LIBS) -lmoon
+
 moon_DATA = mopen.exe mopen.exe.mdb mopen.exe.config
 
 bin_SCRIPTS = mopen

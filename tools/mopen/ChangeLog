@@ -1,3 +1,8 @@
+2008-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mopen1.cpp, Makefile.am: Added a native version of mopen which
+	(for the moment) can only open 1.0 xaml files.
+
 2008-03-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mopen.cs: add --timeout option to close mopen after X seconds.
