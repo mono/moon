@@ -2426,6 +2426,9 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	}
 
 	case MoonId_GetParent: {
+		if (argCount != 0 || !dob->GetType ()->IsSubclassOf (Type::UIELEMENT))
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_GETPARENT");
+		
 		DependencyObject *parent = dob->GetLogicalParent ();
 		if (parent)
 			OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, parent), *result);

@@ -1,5 +1,14 @@
 2008-04-15  Larry Ewing  <lewing@novell.com>
 
+	* plugin-class.cpp (MoonlightDependencyObjectObject::Invoke):
+	based on RuntimeErrors and
+	http://msdn2.microsoft.com/en-us/library/bb979718.aspx getParent
+	only applies to uielement subclasses.
+
+	Fixes test that was failing in RuntimeErrors.htm.
+
+2008-04-15  Larry Ewing  <lewing@novell.com>
+
 	* plugin-class.cpp: throw an exception for invalid string values.
 
 2008-04-14  Jeffrey Stedfast  <fejj@novell.com>
