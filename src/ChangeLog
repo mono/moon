@@ -1,3 +1,8 @@
+2008-04-15  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: The time needs to be clamped always. Fixes #378390 (cannot
+	configure the box in Popfly). Whoah, that was a nasty one.
+
 2008-04-14  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::Attach): don't clear the up/down dirty
