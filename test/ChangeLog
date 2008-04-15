@@ -1,3 +1,11 @@
+2008-04-15  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/README.txt:
+	* xaml/clock/clock33.html:
+	* xaml/clock/clock33.xaml: Adding new test with autoreversed storyboard
+	with a SpeedRation > 1.0. Currently broken, stops in the middle of the
+	return cycle.
+
 2008-04-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* index.aspx: Include *.html files as well.
