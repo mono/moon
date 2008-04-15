@@ -1437,6 +1437,9 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 			progress = 1.0;
 		else
 			progress = (double)(current_time - key_start_time) / key_duration;
+
+		progress = MIN (progress, 1.0);
+		progress = MAX (progress, 0.0);
 	}
 
 	/* get the current value out of that segment */
@@ -1547,6 +1550,9 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 			progress = 1.0;
 		else
 			progress = (double)(current_time - key_start_time) / key_duration;
+
+		progress = MIN (progress, 1.0);
+		progress = MAX (progress, 0.0);
 	}
 
 	/* get the current value out of that segment */
@@ -1657,6 +1663,9 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 			progress = 1.0;
 		else
 			progress = (double)(current_time - key_start_time) / key_duration;
+
+		progress = MIN (progress, 1.0);
+		progress = MAX (progress, 0.0);
 	}
 
 	/* get the current value out of that segment */
