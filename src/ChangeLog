@@ -1,5 +1,10 @@
 2008-04-15  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Reverting the change that was supposed to fix popfly. It's
+	actually totally bad. I knew I was too fast with this one.
+
+2008-04-15  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: The time needs to be clamped always. Fixes #378390 (cannot
 	configure the box in Popfly). Whoah, that was a nasty one.
 
