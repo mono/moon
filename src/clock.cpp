@@ -692,7 +692,7 @@ Clock::Tick ()
 	int old_state = GetClockState ();
 	SetCurrentTime (Clock::ComputeNewTime());
 
-	if (old_state == Clock::Active) {
+	if (old_state == Clock::Active || GetClockState () == Clock::Active) {
 		ClampTime ();
 		CalcProgress ();
 	}
