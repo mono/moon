@@ -801,14 +801,14 @@ Surface::ShowFullScreenMessage ()
 	TextBlock* url_block = (url_object != NULL && url_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) url_object : NULL;
 	
 	Value* tmp = full_screen_message->GetValue (UIElement::RenderTransformProperty);
-	Transform* transform = tmp != NULL ? tmp->AsTransform () : NULL;// full_screen_message->uielement_get_render_transform (full_screen_message);
+	Transform* transform = tmp != NULL ? tmp->AsTransform () : NULL;
 	
-	double box_width = framework_element_get_width (full_screen_message);
-	double box_height = framework_element_get_height (full_screen_message);
+	double box_height = full_screen_message->GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+	double box_width = full_screen_message->GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 	
 	// Set the url in the box
 	if (url_block != NULL)  {
-		char* url = NULL;
+		char *url = NULL;
 		if (g_str_has_prefix (source_location, "http://")) {
 			char* path = strchr (source_location + 7, '/');
 			if (path != NULL && path > source_location + 7) {
@@ -821,7 +821,8 @@ Surface::ShowFullScreenMessage ()
 		} else {
 			url = g_strdup (source_location);
 		}
-		text_block_set_text (url_block, url ? url : (char*) "file://");
+		
+		url_block->SetValue (TextBlock::TextProperty, url ? url : (char *) "file://");
 		g_free (url);
 	}
 	
@@ -2019,7 +2020,6 @@ Surface::SetTrans (bool trans)
 void
 Surface::SetBackgroundColor (Color *color)
 {
-	//printf("YO");
 	background_color = new Color (*color);
 	if (widget)
 		gtk_widget_queue_draw (widget);
