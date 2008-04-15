@@ -2211,7 +2211,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 		
 		g_assert (strval != NULL);
 		
-		xaml_set_property_from_str (dob, p, strval);
+		return xaml_set_property_from_str (dob, p, strval);
 	}
 
 	return true;
@@ -2310,8 +2310,13 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 	DependencyProperty *p = _get_dependency_property (dob, strname);
 	NPN_MemFree (strname);
 
-	if (p)
-		return _set_dependency_property_value (dob, p, value);
+	if (p) {
+		if (_set_dependency_property_value (dob, p, value)) {
+			return true;
+		} else {
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
+		}
+	}
 
 	// turns out that on Silverlight you can't set regular events as properties.
 #if false
@@ -3521,7 +3526,10 @@ MoonlightControlObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 	if (!p)
 		return false;
 
-	return _set_dependency_property_value (dob, p, value);
+	if (_set_dependency_property_value (dob, p, value))
+		return true;
+	else
+		THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
 }
 
 bool
