@@ -1,5 +1,11 @@
 2008-04-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: MediaBase::SetSourceAsyncCallback: don't do anything if we
+	  don't have a surface anymore. We're probably executing after the surface
+	  has been destroyed.
+
+2008-04-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Updated to include typegen/*.
 	* type.cpp, type.cpp.in, type.h, type.h.in: Added type_get_name, and fix
 	  Behaviour/Behavior inconsistency.

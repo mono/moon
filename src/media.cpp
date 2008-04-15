@@ -104,6 +104,9 @@ MediaBase::SetSourceAsyncCallback ()
 {
 	if (!source.downloader)
 		return;
+
+	if (GetSurface () == NULL)
+		return;
 	
 	SetSourceInternal (source.downloader, source.part_name);
 	source.downloader->unref ();
