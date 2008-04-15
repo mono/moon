@@ -226,6 +226,7 @@ DependencyObject *type_create_instance (Type *type);
 DependencyObject *type_create_instance_from_kind (Type::Kind kind);
 
 void types_init (void);
+const char *type_get_name (Type::Kind type);
 
 G_END_DECLS
 

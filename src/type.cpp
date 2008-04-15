@@ -295,6 +295,14 @@ type_create_instance_from_kind (Type::Kind kind)
         return t->CreateInstance ();
 }
 
+const char *
+type_get_name (Type::Kind type)
+{
+	Type *t = Type::Find (type);
+	if (t == NULL)
+		return NULL;
+	return t->name;
+}
 
 static void 
 types_init_manually (void)
@@ -310,7 +318,7 @@ types_init_manually (void)
 	Type::RegisterType ("Color", Type::COLOR, true);
 	Type::RegisterType ("Point", Type::POINT, true);
 	Type::RegisterType ("Rect", Type::RECT, true);
-	Type::RegisterType ("RepeatBehaviour", Type::REPEATBEHAVIOR, true);
+	Type::RegisterType ("RepeatBehavior", Type::REPEATBEHAVIOR, true);
 	Type::RegisterType ("Duration", Type::DURATION, true);
 	Type::RegisterType ("int64", Type::INT64, true);
 	Type::RegisterType ("TimeSpan", Type::TIMESPAN, true);

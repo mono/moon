@@ -138,6 +138,8 @@
     <File name="layout.h" subtype="Code" buildaction="Nothing" />
     <File name="swscale-converter.cpp" subtype="Code" buildaction="Compile" />
     <File name="swscale-converter.h" subtype="Code" buildaction="Nothing" />
+    <File name="typegen/typegen.cs" subtype="Code" buildaction="Nothing" />
+    <File name="typegen/typegen.sh" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

@@ -1,3 +1,9 @@
+2008-04-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp: Updated to include typegen/*.
+	* type.cpp, type.cpp.in, type.h, type.h.in: Added type_get_name, and fix
+	  Behaviour/Behavior inconsistency.
+
 2008-04-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaElement::OnPropertyChanged): Moved the
