@@ -46,21 +46,22 @@ FrameworkElement::ComputeBounds ()
 	double x1, x2, y1, y2;
 	
 	x1 = y1 = 0.0;
-	x2 = framework_element_get_width (this);
-	y2 = framework_element_get_height (this);
-
+	x2 = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+	y2 = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+	
 	if (x2 != 0.0 && y2 != 0.0)
 		bounds = IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2), false).Transform (&absolute_xform);
-
 }
 
 bool
 FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 {
+	double height = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+	double width = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 	double nx = x, ny = y;
 
 	uielement_transform_point (this, &nx, &ny);
-	if (nx < 0 || ny < 0 || nx > framework_element_get_width (this) || ny > framework_element_get_height (this))
+	if (nx < 0 || ny < 0 || nx > width || ny > height)
 		return false;
 
 	return UIElement::InsideObject (cr, x, y);
@@ -69,8 +70,8 @@ FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 void
 FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	*width = framework_element_get_width (this);
-	*height = framework_element_get_height (this);;
+	*width = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+	*height = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
 }
 
 FrameworkElement *
@@ -103,8 +104,8 @@ framework_element_set_width (FrameworkElement *framework_element, double width)
 	framework_element->SetValue (FrameworkElement::WidthProperty, Value (width));
 }
 
-DependencyProperty* FrameworkElement::HeightProperty;
-DependencyProperty* FrameworkElement::WidthProperty;
+DependencyProperty *FrameworkElement::HeightProperty;
+DependencyProperty *FrameworkElement::WidthProperty;
 
 void
 framework_element_init (void)
@@ -112,4 +113,3 @@ framework_element_init (void)
 	FrameworkElement::HeightProperty = DependencyObject::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
 	FrameworkElement::WidthProperty = DependencyObject::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
 }
-

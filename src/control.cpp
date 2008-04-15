@@ -52,8 +52,8 @@ Control::ComputeBounds ()
 	double x1, x2, y1, y2;
 	
 	x1 = y1 = 0.0;
-	x2 = framework_element_get_width (this);
-	y2 = framework_element_get_height (this);
+	x2 = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+	y2 = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
 
 	if (x2 != 0.0 && y2 != 0.0) {
 
@@ -68,7 +68,6 @@ Control::ComputeBounds ()
 	
 	bounds = IntersectBoundsWithClipPath (bounds, false).Transform (&absolute_xform);
 	bounds_with_children = IntersectBoundsWithClipPath (bounds_with_children.Union (bounds), false);
-							    
 }
 
 void
@@ -101,10 +100,9 @@ Control::RegisterAllNamesRootedAt (NameScope *to_ns)
 void
 Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (subobj_args->property == Canvas::TopProperty || subobj_args->property == Canvas::LeftProperty) {
+	if (subobj_args->property == Canvas::TopProperty || subobj_args->property == Canvas::LeftProperty)
 		real_object->UpdateTransform ();
-	}
-
+	
 	UIElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
@@ -151,7 +149,7 @@ Control::OnLoaded ()
 Control::~Control ()
 {
 	if (real_object)
-		base_unref (real_object);
+		real_object->unref ();
 }
 
 UIElement*
@@ -166,7 +164,7 @@ Control::InitializeFromXaml (const char *xaml,
 	if (real_object){
 		real_object->SetVisualParent (NULL);
 		real_object->SetSurface (NULL);
-		base_unref (real_object);
+		real_object->unref ();
 	}
 
 	real_object = (FrameworkElement *) element;
