@@ -647,8 +647,8 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 void
 MediaElement::ComputeBounds ()
 {
-	double h = framework_element_get_height (this);
-	double w = framework_element_get_width (this);
+	double h = GetValue (HeightProperty)->AsDouble ();
+	double w = GetValue (WidthProperty)->AsDouble ();
 	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->GetHeight ();
@@ -664,8 +664,8 @@ Point
 MediaElement::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
-	double h = framework_element_get_height (this);
-	double w = framework_element_get_width (this);
+	double h = GetValue (HeightProperty)->AsDouble ();
+	double w = GetValue (WidthProperty)->AsDouble ();
 	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->GetHeight ();
@@ -678,9 +678,9 @@ MediaElement::GetTransformOrigin ()
 void
 MediaElement::Render (cairo_t *cr, Region *region)
 {
-	Stretch stretch = media_base_get_stretch (this);
-	double h = framework_element_get_height (this);
-	double w = framework_element_get_width (this);
+	Stretch stretch = (Stretch) GetValue (StretchProperty)->AsInt32 ();
+	double h = GetValue (HeightProperty)->AsDouble ();
+	double w = GetValue (WidthProperty)->AsDouble ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	
@@ -915,7 +915,7 @@ MediaElement::BufferingComplete ()
 	
 	switch (prev_state) {
 	case Opening: // Start playback
-		if ((flags & PlayRequested) || media_element_get_auto_play (this))
+		if ((flags & PlayRequested) || GetValue (AutoPlayProperty)->AsBool ())
 			Play ();
 		else
 			Pause ();
@@ -1033,7 +1033,7 @@ MediaElement::TryOpen ()
 			if (MediaOpened (media)) {
 				SetState (Buffering);
 				
-				if ((flags & PlayRequested) || media_element_get_auto_play (this))
+				if ((flags & PlayRequested) || GetValue (AutoPlayProperty)->AsBool ())
 					Play ();
 				else
 					Pause ();
@@ -1090,7 +1090,7 @@ MediaElement::DownloaderComplete ()
 	case Buffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
-		if ((flags & PlayRequested) || prev_state == Playing || media_element_get_auto_play (this))
+		if ((flags & PlayRequested) || prev_state == Playing || GetValue (AutoPlayProperty)->AsBool ())
 			Play ();
 		else
 			Pause ();
@@ -1295,7 +1295,7 @@ MediaElement::GetValue (DependencyProperty *prop)
 TimeSpan
 MediaElement::UpdatePlayerPosition (Value *value)
 {
-	Duration *duration = media_element_get_natural_duration (this);
+	Duration *duration = GetValue (NaturalDurationProperty)->AsDuration ();
 	TimeSpan position = value->AsTimeSpan ();
 	
 	if (duration->HasTimeSpan () && position > duration->GetTimeSpan ())
@@ -1354,7 +1354,6 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		// FIXME: set the audio stream index
 	} else if (args->property == MediaElement::AutoPlayProperty) {
 		// no state to change
-		//printf ("AutoPlay set to %s\n", media_element_get_auto_play (this) ? "true" : "false");
 	} else if (args->property == MediaElement::BalanceProperty) {
 		mplayer->SetBalance (args->new_value->AsDouble ());
 	} else if (args->property == MediaElement::BufferingProgressProperty) {
@@ -2117,13 +2116,13 @@ Image::Render (cairo_t *cr, Region *region)
 
 	cairo_save (cr);
 
-	Stretch stretch = media_base_get_stretch (this);
-	double w = framework_element_get_width (this);
-	double h = framework_element_get_height (this);
-
+	Stretch stretch = (Stretch) GetValue (StretchProperty)->AsInt32 ();
+	double w = GetValue (WidthProperty)->AsDouble ();
+	double h = GetValue (HeightProperty)->AsDouble ();
+	
 	if (!pattern)
 		pattern = cairo_pattern_create_for_surface (surface->cairo);
-
+	
 	cairo_matrix_t matrix;
 	image_brush_compute_pattern_matrix (&matrix, w, h, surface->width, surface->height, stretch, 
 		AlignmentXCenter, AlignmentYCenter, NULL, NULL);
@@ -2143,8 +2142,8 @@ void
 Image::ComputeBounds ()
 {
 	Rect box = Rect (0,0,
-			 framework_element_get_width (this),
-			 framework_element_get_height (this));
+			 GetValue (WidthProperty)->AsDouble (),
+			 GetValue (HeightProperty)->AsDouble ());
 								   
 	bounds = IntersectBoundsWithClipPath (box, false).Transform (&absolute_xform);
 						     
@@ -2155,8 +2154,8 @@ Image::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 
-	return Point (framework_element_get_width (this) * user_xform_origin.x, 
-		      framework_element_get_height (this) * user_xform_origin.y);
+	return Point (GetValue (WidthProperty)->AsDouble () * user_xform_origin.x, 
+		      GetValue (HeightProperty)->AsDouble () * user_xform_origin.y);
 }
 
 cairo_surface_t *
