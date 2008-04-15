@@ -733,7 +733,7 @@ Clock::ComputeNewTime ()
 	TimeSpan ret_time = current_time;
 
 	/* serious voodoo here... */
-	if ((timeline->GetSpeedRatio() > 1 && our_delta > 0)
+	if ((timeline->GetSpeedRatio() > 1 && (our_delta > 0 || our_delta < 0))
 	    || (timeline->GetSpeedRatio() < 1)) {
 
 		our_delta = (TimeSpan)(our_delta * timeline->GetSpeedRatio());

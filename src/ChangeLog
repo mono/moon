@@ -1,5 +1,12 @@
 2008-04-15  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Clock::ComputeNewTime - make sure to take the speed ratio 
+	into account also when moving back in time. 
+
+	Fixes the clock34.xaml test.
+
+2008-04-15  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: Make sure to clamp the progress to 0.0 - 1.0 when we're
 	calculating it ourselves (instead of using the CalcProgress). Otherwise
 	we're bypassing the clamping and extending animations/values beyond
