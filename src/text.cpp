@@ -621,11 +621,11 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 	List *runs;
 	char *text;
 	
-	wrapping = text_block_get_text_wrapping (this);
+	wrapping = (TextWrapping) GetValue (TextBlock::TextWrappingProperty)->AsInt32 ();
 	layout->SetWrapping (wrapping);
 	
-	height = framework_element_get_height (this);
-	width = framework_element_get_width (this);
+	height = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+	width = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 	
 	if (width > 0.0f)
 		layout->SetMaxWidth (width);
@@ -634,10 +634,10 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 	
 	runs = new List ();
 	
-	decorations = text_block_get_text_decorations (this);
+	decorations = (TextDecorations) GetValue (TextBlock::TextDecorationsProperty)->AsInt32 ();
 	font_mask = font->GetFields ();
 	
-	Inlines *inlines = text_block_get_inlines (this);
+	Inlines *inlines = GetValue (TextBlock::InlinesProperty)->AsInlines ();
 	
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
@@ -661,14 +661,19 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 			inherited_mask = (FontMask) (font_mask & ~run_mask);
 			
 			// Inherit the TextDecorations from the parent TextBlock if unset
-			value = item->GetValue (Inline::TextDecorationsProperty);
-			deco = value ? (TextDecorations) value->AsInt32 () : decorations;
+			if ((value = item->GetValue (Inline::TextDecorationsProperty)))
+				deco = (TextDecorations) value->AsInt32 ();
+			else
+				deco = decorations;
 			
  			switch (item->GetObjectType ()) {
 			case Type::RUN:
 				run = (Run *) item;
 				
-				text = run_get_text (run);
+				if ((value = run->GetValue (Run::TextProperty)))
+					text = value->AsString ();
+				else
+					text = NULL;
 				
 				if (text && text[0]) {
 					const char *inptr, *inend;
@@ -713,8 +718,8 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 	layout->GetActualExtents (&actual_width, &actual_height);
 	layout->GetLayoutExtents (&bbox_width, &bbox_height);
 	
-	text_block_set_actual_height (this, actual_height);
-	text_block_set_actual_width (this, actual_width);
+	SetValue (TextBlock::ActualHeightProperty, Value (actual_height));
+	SetValue (TextBlock::ActualWidthProperty, Value (actual_width));
 	
 	dirty = false;
 }
@@ -731,6 +736,7 @@ TextBlock::LayoutPango (cairo_t *cr)
 	PangoAttrList *attrs;
 	PangoLayout *layout;
 	size_t start, end;
+	Inlines *inlines;
 	GString *block;
 	double width;
 	char *text;
@@ -740,11 +746,11 @@ TextBlock::LayoutPango (cairo_t *cr)
 		this->layout.pango = pango_cairo_create_layout (cr);
 	layout = this->layout.pango;
 	
-	switch (text_block_get_text_wrapping (this)) {
+	switch (GetValue (TextBlock::TextWrappingProperty)->AsInt32 ()) {
 	case TextWrappingWrap:
 		pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
 		
-		width = framework_element_get_width (this);
+		width = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 		
 		if (width > 0.0)
 			pango_layout_set_width (layout, (int) width * PANGO_SCALE);
@@ -754,7 +760,7 @@ TextBlock::LayoutPango (cairo_t *cr)
 	case TextWrappingWrapWithOverflow:
 		pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
 		
-		width = framework_element_get_width (this);
+		width = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 		
 		if (width > 0.0)
 			pango_layout_set_width (layout, (int) width * PANGO_SCALE);
@@ -769,12 +775,10 @@ TextBlock::LayoutPango (cairo_t *cr)
 	block = g_string_new ("");
 	attrs = pango_attr_list_new ();
 	
+	decorations = (TextDecorations) GetValue (TextBlock::TextDecorationsProperty)->AsInt32 ();
 	font_mask = pango_font_description_get_set_fields (font);
-	decorations = text_block_get_text_decorations (this);
 	
-	Inlines *inlines = text_block_get_inlines (this);
-	
-	if (inlines != NULL) {
+	if ((inlines = GetValue (TextBlock::InlinesProperty)->AsInlines ())) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
 		PangoFontMask run_mask, inherited_mask;
 		PangoFontDescription *ifont;
@@ -790,7 +794,10 @@ TextBlock::LayoutPango (cairo_t *cr)
 			case Type::RUN:
 				run = (Run *) item;
 				
-				text = run_get_text (run);
+				if ((value = run->GetValue (Run::TextProperty)))
+					text = value->AsString ();
+				else
+					text = NULL;
 				
 				if (text == NULL || *text == '\0') {
 					// optimization
@@ -835,8 +842,11 @@ TextBlock::LayoutPango (cairo_t *cr)
 				pango_font_description_unset_fields (ifont, inherited_mask);
 			
 			// Inherit the TextDecorations from the parent TextBlock if unset
-			value = item->GetValue (Inline::TextDecorationsProperty);
-			deco = value ? (TextDecorations) value->AsInt32 () : decorations;
+			if ((value = item->GetValue (Inline::TextDecorationsProperty)))
+				deco = (TextDecorations) value->AsInt32 ();
+			else
+				deco = decorations;
+			
 			if (deco == TextDecorationsUnderline) {
 				if (uline_attr == NULL) {
 					uline_attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
@@ -874,8 +884,8 @@ TextBlock::LayoutPango (cairo_t *cr)
 	pango_layout_get_pixel_size (layout, &w, &h);
 	pango_attr_list_unref (attrs);
 	
-	text_block_set_actual_height (this, (double) h);
-	text_block_set_actual_width (this, (double) w);
+	SetValue (TextBlock::ActualHeightProperty, Value ((double) h));
+	SetValue (TextBlock::ActualWidthProperty, Value ((double) w));
 	bbox_height = actual_height;
 	bbox_width = actual_width;
 	dirty = false;
@@ -914,7 +924,7 @@ TextBlock::Paint (cairo_t *cr)
 char *
 TextBlock::GetText ()
 {
-	Inlines *inlines = text_block_get_inlines (this);
+	Inlines *inlines = GetValue (TextBlock::InlinesProperty)->AsInlines ();
 	GString *block;
 	char *text;
 	
@@ -923,6 +933,7 @@ TextBlock::GetText ()
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
 		Inline *item;
+		Value *value;
 		Run *run;
 		
 		while (node != NULL) {
@@ -932,7 +943,10 @@ TextBlock::GetText ()
 			case Type::RUN:
 				run = (Run *) item;
 				
-				text = run_get_text (run);
+				if ((value = run->GetValue (Run::TextProperty)))
+					text = value->AsString ();
+				else
+					text = NULL;
 				
 				if (text && text[0])
 					g_string_append (block, text);
@@ -960,6 +974,7 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 	Collection::Node *node1, *node2;
 	const char *text1, *text2;
 	Inline *run1, *run2;
+	Value *value;
 	
 	node1 = (Collection::Node *) curInlines->list->First ();
 	node2 = (Collection::Node *) newInlines->list->First ();
@@ -972,8 +987,15 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 			return false;
 		
 		if (run1->GetObjectType () == Type::RUN) {
-			text1 = run_get_text ((Run *) run1);
-			text2 = run_get_text ((Run *) run2);
+			if ((value = run1->GetValue (Run::TextProperty)))
+				text1 = value->AsString ();
+			else
+				text1 = NULL;
+			
+			if ((value = run2->GetValue (Run::TextProperty)))
+				text2 = value->AsString ();
+			else
+				text2 = NULL;
 			
 			if (text1 && text2 && strcmp (text1, text2) != 0)
 				return false;
@@ -1012,7 +1034,7 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 bool
 TextBlock::SetText (const char *text)
 {
-	Inlines *curInlines = text_block_get_inlines (this);
+	Inlines *curInlines = GetValue (TextBlock::InlinesProperty)->AsInlines ();
 	Inlines *inlines = NULL;
 	char *inptr, *buf, *d;
 	const char *txt;
@@ -1041,7 +1063,7 @@ TextBlock::SetText (const char *text)
 				*inptr = '\0';
 				run = new Run ();
 				run->autogen = true;
-				run_set_text ((Run *) run, txt);
+				run->SetValue (Run::TextProperty, Value (txt));
 				inlines->Add (run);
 				run->unref ();
 			}
@@ -1064,7 +1086,7 @@ TextBlock::SetText (const char *text)
 		}
 		
 		setvalue = false;
-		text_block_set_inlines (this, inlines);
+		SetValue (TextBlock::InlinesProperty, Value (inlines));
 		setvalue = true;
 		
 		inlines->unref ();
@@ -2409,6 +2431,7 @@ glyphs_set_unicode_string (Glyphs *glyphs, char *value)
 {
 	glyphs->SetValue (Glyphs::UnicodeStringProperty, Value (value));
 }
+
 
 void
 text_destroy (void)
