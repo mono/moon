@@ -1,6 +1,14 @@
 2008-04-15  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/clock/README.txt:
+	* xaml/clock/clock34.html:
+	* xaml/clock/clock34.xaml: Adding a new test which is a test-case
+	for the storyboard/animation combination found in Popfly which was
+	causing bug #378390 (can't configure popfly elements).
+
+2008-04-15  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/README.txt:
 	* xaml/clock/clock33.html:
 	* xaml/clock/clock33.xaml: Adding new test with autoreversed storyboard
 	with a SpeedRation > 1.0. Currently broken, stops in the middle of the

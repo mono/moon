@@ -31,4 +31,5 @@ clock30 - same as clock6, but AutoReverse=true on storyboard
 clock31 - same as clock14, but additionally the clock has AutoReverse="True"
 clock32 - same as clock7, but very very fast. Showcases the jaggyness/align problem on end
 clock33 - autoreversed storyboard with speed ratio > 1.0.
+clock34 - storyboard containing keyframes + normal animation extending that. Take from Popfly.
 
