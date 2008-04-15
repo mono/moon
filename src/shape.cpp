@@ -1305,7 +1305,15 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 	PenLineCap start = shape_get_stroke_start_line_cap (this);
 	PenLineCap end = shape_get_stroke_end_line_cap (this);
 	PenLineCap dash = shape_get_stroke_dash_cap (this);
-	if (do_op && !(start == end && start == dash)) {
+	bool dashed = false;
+	int count = 0;
+	double *dashes = shape_get_stroke_dash_array (this, &count);
+	if (dashes && (count > 0))
+		dashed = true;
+
+	//if (do_op && !(start == end && start == dash)) {
+	if (do_op && (start != end || (dashed && !(start == end && start == dash)))) {
+		printf ("Special Case\n");
 		// draw start and end line caps
 		if (start != PenLineCapFlat) 
 			line_draw_cap (cr, this, start, line_get_x1 (this), line_get_y1 (this), line_get_x2 (this), line_get_y2 (this));
@@ -1321,8 +1329,9 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 			SetupLine (cr);
 		}
 
-	}
-	cairo_set_line_cap (cr, convert_line_cap (dash));
+		cairo_set_line_cap (cr, convert_line_cap (dash));
+	} else 
+		cairo_set_line_cap (cr, convert_line_cap (start));
 
 	Draw (cr);
 	Stroke (cr, do_op);
