@@ -72,34 +72,6 @@ Configuration Options
 
 		Use this flag to disable all use of ffmpeg.
 
-Runtime Options
-===============
-
-	There is a couple of runtime-parameters that affect Moonlight behavior
-	and turn on/off certain features. Those options are specified through
-	the MOONLIGHT_OVERRIDES env variable. The more interesting ones are:
-
-	* shapecache=yes/no - use some extra memory for caching shapes.
-	Increases memory usage but helps with performance (off by default). The
-	shape cache size is 6MB max.
-
-	* render=ftb/btf - use front-to-back or back-to-front rendering (ftb is
-	the default).
-
-	* cache=show/hide - show the (shape) cache usage statistics. In plugin
-	mode they're available through the right-click popup menu (hide by
-	default). 
-
-	* converter=yuv/ffmpeg - use native mmx/sse2 conversion code or ffmpeg to
-	do the yuv -> rgb colorspace conversion (by default we use the native
-	yuv code).
-
-	Ie. to lunch Firefox with shape caching and ffmpeg converters use:
-
-		$> MOONLIGHT_OVERRIDES="shapecache=yes,converter=ffmpeg" firefox
-
-	For the complete list of options check src/runtime.cpp.
-
 Moonlight: Silverlight 2.0 API support
 ======================================
 
@@ -112,15 +84,6 @@ Moonlight: Silverlight 2.0 API support
 
 		  Use the --with-moonlight=yes option to configure
 
-		* Install the "olive" module from SVN, and use the
-		  --with-moonlight=yes option to configure.
-			
 	The current public API reflects the API as it was published in
 	Mix 07.  The 1.1 API.
 
-	Currently the 2.0 API is availble by checking out the module
-	`oil' from the Novell private repository (this is private
-	until the Mix 2008 conference). 
-
-	See the README in `oil' for details on how to build the
-	olive-oil based system.
