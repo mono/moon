@@ -1,3 +1,7 @@
+2008-04-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (free_value): value argument may be NULL.
+
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp: DependencyObject: Emit DestroyedEvent before

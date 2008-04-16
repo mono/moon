@@ -460,7 +460,7 @@ static gboolean
 drain_unrefs_idle_call (gpointer data)
 {
 	drain_unrefs ();
-	return FALSE;
+	return false;
 }
 
 void
@@ -806,9 +806,10 @@ void
 DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 {
 	const char *n = GetName();
+	
 	if (n)
 		from_ns->UnregisterName (n);
-
+	
 	g_hash_table_foreach (current_values, unregister_depobj_names, from_ns);
 }
 
@@ -816,6 +817,7 @@ void
 DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns)
 {
 	const char *n = GetName();
+	
 	if (n)
 		to_ns->RegisterName (n, this);
 
@@ -935,26 +937,29 @@ DependencyObject::SetValue (const char *name, Value *value)
 static gboolean
 free_value (gpointer key, gpointer value, gpointer data)
 {
-	Value *v = (Value*)value;
-
+	Value *v = (Value *) value;
+	
+	if (!value)
+		return true;
+	
 	// detach from the existing value
 	if (v->Is (Type::DEPENDENCY_OBJECT)){
 		DependencyObject *dob = v->AsDependencyObject();
-
+		
 		if (dob != NULL)
 			dob->RemovePropertyChangeListener ((DependencyObject*)data, NULL);
-
 	}
-
+	
 	// and remove it's closure
 	if (Type::Find(v->GetKind())->IsSubclassOf (Type::COLLECTION)) {
 		Collection *col = v->AsCollection ();
 		if (col)
 			col->closure = NULL;
 	}
-
-	delete (Value*)value;
-	return TRUE;
+	
+	delete (Value *) value;
+	
+	return true;
 }
 
 DependencyObject::DependencyObject ()
