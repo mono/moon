@@ -23,16 +23,21 @@ gtksilver.dll gtksilver.xml: $(gtksilver_dll_CS)
 	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -pkg:silverdesktop
 
 gtksilver.tree gtksilver.zip: gtksilver.xml gtksilver.dll $(srcdir)/docs/index.xml
-	s=`cd $(srcdir); pwd`; d=`pwd`; if test x$$s != x$$d; then cp -a $(srcdir)/docs .; fi
-	monodocer -importslashdoc:gtksilver.xml -path:docs -assembly:gtksilver.dll
-	mdassembler --ecma $(srcdir)/docs/ --out gtksilver
+	monodocer -importslashdoc:gtksilver.xml -path:$(builddir)/docs -assembly:gtksilver.dll
+	mdassembler --ecma $(builddir)/docs/ --out gtksilver
 
 install-data-local:
 	gacutil -gacdir $(DESTDIR)$(prefix) -i gtksilver.dll
 
+NAMESPACES=Gtk.Moonlight
 dist-hook:
-	mkdir $(distdir)/docs
-	-cp $(srcdir)/docs/*.xml $(distdir)/docs
+	mkdir -p $(distdir)/docs
+	cp $(srcdir)/docs/*.xml $(distdir)/docs/.
+	for i in $(NAMESPACES); do                                      \
+		mkdir -p $(distdir)/docs/$$i;                           \
+		cp $(srcdir)/docs/$$i/*.xml $(distdir)/docs/$$i;        \
+	done
 
+ 
 push:
 	scp -v gtksilver.tree gtksilver.zip gtksilver.source root@www.go-mono.com:/usr/lib/monodoc/sources/
