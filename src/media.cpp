@@ -671,74 +671,77 @@ MediaElement::GetTransformOrigin ()
 void
 MediaElement::Render (cairo_t *cr, Region *region)
 {
-	Stretch stretch = (Stretch) GetValue (StretchProperty)->AsInt32 ();
-	double h = GetValue (HeightProperty)->AsDouble ();
-	double w = GetValue (WidthProperty)->AsDouble ();
+	Stretch stretch = (Stretch) GetValue (MediaBase::StretchProperty)->AsInt32 ();
+	double h = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+	double w = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	
 	if (!(surface = mplayer->GetCairoSurface ()))
 		return;
 	
+	if (downloader == NULL)
+		return;
+	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->GetHeight ();
 		w = (double) mplayer->GetWidth ();
 	}
-
+	
 	cairo_save (cr);
 	
 	cairo_set_matrix (cr, &absolute_xform);
-
+	
 	// if we're opaque, we can likely do this and hopefully get a
 	// speed up since the server won't have to blend.
 	//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 	cairo_new_path (cr);
-
+	
 	double x, y, x2, y2;
-
+	
 	x = y = 0;
 	x2 = w;
 	y2 = h;
-
+	
 	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-
+		
 		cairo_user_to_device (cr, &x, &y);
 		cairo_user_to_device (cr, &x2, &y2);
-
+		
 		// effectively RoundIn.  not sure if this is what we want..
 		x = floor (x);
 		y = floor (y);
-
+		
 		x2 = ceil (x2);
 		y2 = ceil (y2);
-
+		
 		cairo_device_to_user (cr, &x, &y);
 		cairo_device_to_user (cr, &x2, &y2);
 	}
-
+	
 	w = x2 - x;
 	h = y2 - y;
-
+	
 	if (flags & RecalculateMatrix) {
 		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->GetWidth (), mplayer->GetHeight (), stretch,
 						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 		flags &= ~RecalculateMatrix;
 	}
-
+	
 	pattern = cairo_pattern_create_for_surface (surface);	
 	
 	cairo_pattern_set_matrix (pattern, &matrix);
-
+	
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 	
 	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
-
+	
 	cairo_rectangle (cr, x, y, w, h);
-
+	
 	cairo_fill (cr);
-
+	
 	cairo_restore (cr);
 }
 
@@ -1338,8 +1341,8 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 			SetSource (dl, "");
 			dl->unref ();
 		} else {
-			//printf ("trying to set media source to empty\n");
 			DownloaderAbort ();
+			Invalidate ();
 		}
 		
 		flags |= RecalculateMatrix;

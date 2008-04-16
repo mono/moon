@@ -1,3 +1,11 @@
+2008-04-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for OMPackagingSource.htm
+
+	* media.cpp (MediaElement::OnPropertyChanged): If the new source
+	is empty, Invalidate().
+	(MediaElement::Render): Render nothing if our downloader is NULL.
+
 2008-04-16  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp: don't adjust the origin unless we are adjusting that
@@ -17,8 +25,8 @@
 
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
-	* typegen/typegen.sh: Updated to work correctly independently of the current
-	  directory when executed.
+	* typegen/typegen.sh: Updated to work correctly independently of
+	the current directory when executed.
 
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
@@ -190,6 +198,7 @@
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp: Surround event emission with ref/unref of ourselves.
+
 2008-04-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* playlist.cpp: Disable debugging spew unless DEBUG_PLAYLISTS is
