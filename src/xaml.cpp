@@ -2267,6 +2267,11 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	char *endptr;
 	*v = NULL;
 
+	if (!strcmp ("{x:Null}", str)) {
+		*v = NULL;
+		return true;
+	}
+
 	switch (type) {
 	case Type::BOOL: {
 		bool b;
@@ -2709,10 +2714,6 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	g_strfreev (prop_name);
 }
 
-///
-/// set attributes funcs
-///
-
 bool
 xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value)
 {
@@ -2871,18 +2872,23 @@ start_parse:
 					g_free (atchname);
 				return;
 			}
-			
+
 			if (v) {
 				GError *seterror = NULL;
 				if (!dep->SetValue (prop, v, &seterror)) {
 					parser_error (p, item->element_name, attr [i], seterror->code, seterror->message);
 					g_error_free (seterror);
-					delete v;
-					return;
-				}
+				} else
+					item->MarkPropertyAsSet (prop->name);
 
 				delete v;
-				item->MarkPropertyAsSet (prop->name);
+				
+			} else {
+				if (prop->IsNullable ())
+					dep->SetValue (prop, NULL);
+				else {
+					parser_error (p, item->element_name, attr [i], 2017, g_strdup_printf ("Null is not a legal value for attribute %s.", attr [i]));
+				}
 			}
 		} else {
 			// This might be a property of a managed object

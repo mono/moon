@@ -1,5 +1,11 @@
 2008-04-16  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: {x:Null} evaluates to NULL, if we encounter this value
+	we need to check if the property is Nullable and raise an error if
+	it isn't.
+
+2008-04-16  Jackson Harper  <jackson@ximian.com>
+
 	* dependencyobject.h|cpp: SetValue now validates values and
 	returns false with a GError when invalid values are used.
 	Subclasses can (and should) override IsValidValue to do their own
