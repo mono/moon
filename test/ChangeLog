@@ -1,3 +1,7 @@
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* supp/audio.supp, supp/firefox.supp: A few minor fixes.
+
 2008-04-16  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/clock/clock17.xaml: Changing measures for this test as they're a

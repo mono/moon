@@ -15,6 +15,13 @@
    fun:_snd_pcm_plug_open
    obj:/usr/lib/libasound.so.2.0.0
 }
+{
+   pcm ioctl
+   Memcheck:Param
+   ioctl(arg)
+   fun:ioctl
+   obj:/usr/lib/libasound.so.2.0.0
+ }
 
 {
    pcm snd_pcm_prepare

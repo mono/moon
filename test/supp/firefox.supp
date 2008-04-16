@@ -3,7 +3,7 @@
    Memcheck:Param
    writev(vector[...])
    fun:do_writev
-   obj:*libORBit*
+   obj:/usr/lib/libORBit-2.so.0.1.0
 }
 
 {
@@ -20,3 +20,4 @@
    obj:/usr/lib/libnspr4.so
    fun:PR_Write
 }
+
