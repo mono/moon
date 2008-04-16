@@ -627,12 +627,18 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 
 	if (value != NULL){
 		if (!value->Is (property->value_type)) {
-			g_set_error (error, VALIDATION_ERROR_QUARK, 1001, "DependencyObject::SetValue, value cannot be assigned to the property %s::%s (property has type '%s', value has type '%s')\n", GetTypeName (), property->name, Type::Find (property->value_type)->name, Type::Find (value->GetKind ())->name);
+			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
+				     "DependencyObject::SetValue, value cannot be assigned to the "
+				     "property %s::%s (property has type '%s', value has type '%s')",
+				     GetTypeName (), property->name, Type::Find (property->value_type)->name,
+				     Type::Find (value->GetKind ())->name);
 			return false;
 		}
 	} else {
 		if (!(Type::IsSubclassOf (property->value_type, Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
-			g_set_error (error, VALIDATION_ERROR_QUARK, 1001, "Can not set a non-nullable scalar type to NULL (property: %s)", property->name);
+			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
+				     "Can not set a non-nullable scalar type to NULL (property: %s)",
+				     property->name);
 			return false;
 		}
 	}
@@ -642,8 +648,9 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 		if (scope && value && !scope->GetTemporary ()) {
 			DependencyObject *o = scope->FindName (value->AsString ());
 			if (o && o != this) {
-				g_set_error (error, VALIDATION_ERROR_QUARK, 2028, "The name already exists in the tree: %s.", value->AsString (),
-						scope->FindName (value->AsString ()), this);
+				g_set_error (error, VALIDATION_ERROR_QUARK, 2028,
+					     "The name already exists in the tree: %s.",
+					     value->AsString ());
 				return false;
 			}
 		}
@@ -1228,9 +1235,10 @@ DependencyObject::Shutdown ()
 static void
 set_surface (gpointer key, gpointer value, gpointer data)
 {
-	Surface *s = (Surface*)data;
-	Value *v = (Value*)value;
-	if (v->Is (Type::DEPENDENCY_OBJECT)) {
+	Surface *s = (Surface *) data;
+	Value *v = (Value *) value;
+	
+	if (v && v->Is (Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject();
 		dob->SetSurface (s);
 	}

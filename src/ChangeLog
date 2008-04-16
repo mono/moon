@@ -6,6 +6,9 @@
 
 2008-04-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* dependencyobject.cpp (set_surface): value argument can be NULL.
+	(DependencyObject::IsValueValid): Fixed compile warnings.
+
 	* downloader.cpp: Properly set/reset Status and StatusText
 	properties.
 	(Downloader::Open): Properly reinitialize all state.
