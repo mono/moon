@@ -1,0 +1,119 @@
+2008-02-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserInformation.cs: Fix pinvoke to avoid crashes in monotone
+	* HtmlPage.cs: Remove bandaid (added 2 weeks ago).
+
+2007-10-22  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptableAttribute.cs: sealed.
+
+	* HtmlElementCollection.cs: sealed.
+
+2007-10-16  Jb Evain  <jbevain@novell.com>
+
+	* BrowserRuntimeSettings.cs: use the new function
+	plugin_instance_get_browser_runtime_settings to get
+	the runtime settings.
+
+2007-08-08  Jackson Harper  <jackson@ximian.com>
+
+	* HtmlPage.cs: implement CurrentBookmark NavigateToBookmark and
+	submit the pages 'default' form.
+
+2007-08-07  Jb Evain  <jbevain@novell.com>
+
+	* BrowserRuntimeSettings.cs: NonSerialized on fields
+	are not necessary.
+
+2007-08-03  Jackson Harper  <jackson@ximian.com>
+
+	* HtmlElementCollection.cs: Add enumerators.
+	* HtmlObject.cs: Remove the 'on' part of event names.  Mozilla
+	wants the actual event name, not the method. 
+
+2007-08-03  Jackson Harper  <jackson@ximian.com>
+
+	* HtmlDocument.cs: Add element accessor.
+
+2007-08-03  Jackson Harper  <jackson@ximian.com>
+
+	* HtmlObject.cs: Implement event attaching.  Track the events in a
+	dictionary so that we don't lose refs to the callback delegates,
+	also this will be used for detaching events.
+	* HtmlEventArgs.cs: set values
+
+2007-07-27  Jackson Harper  <jackson@ximian.com>
+
+	* Html*.cs: Implement property getting/setting and method
+	invoking.  Put MonoTODOs on the missing bits.
+	- Some of this could be moved into ScriptableObject eventually,
+	but I am leaving separate to avoid conflicts with the work going
+	on there.
+
+2007-07-25  Miguel de Icaza  <miguel@novell.com>
+
+	* HttpUtility.cs: Bring an implementation of the methods needed
+	from System.Web.dll
+
+2007-07-23  Miguel de Icaza  <miguel@novell.com>
+
+	* HtmlTimer.cs: Use the plugin functions, pass the plugin handle 
+
+2007-07-20  Miguel de Icaza  <miguel@novell.com>
+
+	* HtmlTimer.cs: Implement.
+
+2007-07-16  Chris Toshok  <toshok@ximian.com>
+
+	* HtmlObject.cs: track WebApplication's Instance -> PluginHandle
+	switch.
+
+	* HtmlPage.cs: same.
+
+2007-07-10  Chris Toshok  <toshok@ximian.com>
+
+	* HtmlTimer.cs: add the Tick event, the OnTick method, and remove
+	the NIE from the properties.  the "Digger" silverlight demo uses
+	this class, and this change keeps it from at least bringing down
+	the browser.
+
+2007-06-14  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* BrowserInformation.cs BrowserRuntimeSettings.cs HtmlDocument.cs
+	  HtmlElement.cs HtmlElementCollection.cs HtmlObject.cs HtmlPage.cs
+	  ScriptableObject.cs :
+	  more impl. based on assumed PInvokes.
+
+2007-06-08  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* HtmlElementCollection.cs :
+	  added internal .ctor() and pointer field, not in real use yet.
+
+2007-06-06  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* HtmlElementCollection.cs HtmlDocument.cs : header.
+	* HtmlEventArgs.cs : header. fixed inheritance.
+	* ScriptableObject.cs : added unmanaged pointer field.
+	  added internal InvokeMethod() (practically a stub).
+	* HtmlElement.cs : some members can use GetProperty<T>() and
+	  InvokeMethod() above.
+	* HtmlObject.cs : uncomment some. Added internal .ctor(IntPtr).
+
+2007-06-06  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* HtmlPage.cs : uncomment Document.
+	* ScriptableAttribute.cs : more attribute targets.
+
+2007-06-02  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* BrowserRuntimeSettings.cs HtmlDocument.cs HtmlElement.cs
+	  HtmlElementCollection.cs HtmlEventArgs.cs HtmlTimer.cs
+	  HttpUtility.cs ScriptableAttribute.cs :
+	  stubs (not going to implement by myself)
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserInformation.cs: New.
+	* HtmlObject.cs: New. Incomplete.
+	* HtmlPage.cs: New. Incomplete.
+	* ScriptableObject.cs: New. Incomplete.

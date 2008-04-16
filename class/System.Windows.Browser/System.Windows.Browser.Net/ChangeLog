@@ -1,0 +1,90 @@
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs, BrowserHttpWebResponse.cs:
+	update to SL 2.0b1 API.
+	Merged from the Moonlight 2 branch.
+
+2008-01-29  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs: build a full url from the page
+	url if the uri passed to the request is not absolute.
+
+2007-11-09  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebAsyncResult.cs
+	* BrowserHttpWebResponse.cs
+	* BrowserHttpWebRequest.cs:
+		Do not allow methods that are called from the unmanaged
+		site of the BrowserHttpRequest to bubble up exceptions.
+2007-11-09  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs: throw if an async request
+	cannot be started.
+
+2007-11-08  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs
+	* BrowserHttpWebResponse.cs: implement response properties.
+
+2007-11-08  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs: throw on invalid requests.
+
+2007-11-08  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebAsyncResult.cs
+	* BrowserHttpWebRequest.cs: implement async requests.
+
+2007-11-07  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebAsyncResult.cs: implement this cutie.
+
+2007-11-07  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebAsyncResult.cs: Create a stub to be used
+	to invoke responses asynchronously.
+
+2007-11-07  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebResponse.cs: implement status.
+
+2007-10-23  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs: implement Abort
+	and GetRequestStream.
+
+2007-10-17  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs, BrowserHttpWebResponse: work
+	on getting them use the new unamanaged BrowserHttp* stuff.
+
+2007-10-17  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs: start working on GetResponse().
+
+2007-10-17  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebResponse.cs: stubbed out.
+
+2007-10-17  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs: implement AddRange.
+
+2007-10-17  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs: implement some more properties.
+
+2007-10-16  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebRequest.cs: Start implementing HTTP header related
+	properties.
+
+2007-06-05  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* SoapHttpClientProtocol.cs : CancelAsync() was missing.
+
+2007-06-02  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* BrowserHttpWebRequest.cs SoapHttpClientProtocol.cs :
+	  stubs (not going to implement by myself)
+

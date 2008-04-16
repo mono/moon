@@ -1,0 +1,29 @@
+2007-11-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* OpenFileDialog.cs: Changed Dispose to public. Don't reset files
+	on Cancel. Added default "Open" title (when none is provided). Added
+	filter validations that SL has.
+
+2007-08-09  Miguel de Icaza  <miguel@novell.com>
+
+	* OpenFileDialog.cs: Do some bit of porting to use only what is
+	available in the 2.1 profile.
+
+2007-07-25  Miguel de Icaza  <miguel@novell.com>
+
+	* OpenFileDialog.cs: Implement support for returning more than one
+	file in one pass.
+
+2007-07-24  Miguel de Icaza  <miguel@novell.com>
+
+	* OpenFileDialog.cs: Implement.
+
+2007-06-06  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* FileDialogFileInfo.cs,
+	  OpenFileDialog.cs : some imaginary implementation using DllImports
+	  where those unmanaged functions do not exist.
+
+2007-06-02  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* DialogResult.cs FileDialogFileInfo.cs OpenFileDialog.cs : stubs.

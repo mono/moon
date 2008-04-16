@@ -1,0 +1,37 @@
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* Makefile, System.Windows.Browser.dll.sources:
+	System.Silverlight is renamed System.Windows.Browser.
+	Merged from the Moonlight 2 branch.
+
+2007-08-17  Jb Evain  <jbevain@novell.com>
+
+	* Assembly/AssemblyInfos.cs: re-enable patch from Miguel.
+	For non-plugin usage, use mono public key to sign the assembly.
+
+2007-07-23  Miguel de Icaza  <miguel@novell.com>
+
+	* 
+
+2007-07-17  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile (LIB_MCS_FLAGS): we need -unsafe due to pointer
+	arithmetic in ScriptableObjectGenerator.cs
+
+2007-07-16  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile (LIB_MCS_FLAGS): add agmono.dll
+
+2007-06-05  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* System.Silverlight_test.dll.sources : now we have some tests.
+
+2007-06-02  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* System.Silverlight.dll.sources :
+	  all remaining stubs are belong to me.
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile: New.
+	* System.Silverlight.dll.sources: New.

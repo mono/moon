@@ -1,0 +1,39 @@
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* JavaScriptSerializer.cs: use a List<> instead of an ArrayList.
+	Merged from the Moonlight 2 branch.
+
+2007-08-20  Jb Evain  <jbevain@novell.com>
+
+	* JavaScriptSerializer.cs: use Helper methods to avoid calling
+	internal methods of mscorlib.
+
+2007-08-08  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* JavaScriptSerializer.cs : use Convert.ChangeType() which exists
+	  in 2.1 profile.
+
+2007-06-06  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* JavaScriptSerializer.cs :
+	  Implemented ConvertToType().
+	  Support JavaScriptConverters in deserialization phase.
+
+2007-06-05  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* JavaScriptSerializer.cs : when JavaScriptTypeResolver is passed,
+	  it tries to serialize objects using "__type" item.
+
+2007-06-05  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* SimpleTypeResolver.cs : almost hacky implementation.
+	  JavaScriptSerializer.cs :
+	  implemented Serialize() and DeserializeObject().
+
+2007-06-02  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* JavaScriptConverter.cs JavaScriptSerializer.cs
+	  JavaScriptTypeResolver.cs ScriptIgnoreAttribute.cs
+	  SimpleTypeResolver.cs :
+	  stubs (not going to implement by myself)
+	* NOTES : note.
