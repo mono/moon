@@ -2770,7 +2770,7 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 		return false;
 	}
 
-	return true;
+	return false;
 }
 
 

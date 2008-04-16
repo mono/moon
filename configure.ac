@@ -530,6 +530,10 @@ AC_OUTPUT([
 moon.pc
 Makefile
 src/Makefile
+class/Makefile
+class/Mono.Moonlight/Makefile
+class/System.Windows/Makefile
+class/System.Windows.Browser/Makefile
 gtk/Makefile
 man/Makefile
 gtk/gtksilver.pc
