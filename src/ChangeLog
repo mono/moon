@@ -1,3 +1,9 @@
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* collection.cpp: Collection::EmitChanged: don't create a
+	  ChangeEventArgs if we don't need one, and unref it when we're
+	  finished with it.
+
 2008-04-16  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:

@@ -58,13 +58,16 @@ Collection::~Collection ()
 void
 Collection::EmitChanged (CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
-	Collection::ChangeEventArgs *args = new Collection::ChangeEventArgs ();
-	args->type = type;
-	args->obj = obj;
-	args->prop = element_args ? element_args->property : NULL;
-
+	Collection::ChangeEventArgs *args;
+	
 	if (closure) {
+		args = new Collection::ChangeEventArgs ();
+		args->type = type;
+		args->obj = obj;
+		args->prop = element_args ? element_args->property : NULL;
+
 		closure->OnCollectionChanged (this, type, obj, element_args);
+		args->unref ();
 	}
 }
 
