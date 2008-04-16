@@ -46,6 +46,11 @@
 
 2008-04-15  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: ret_time is 0 when reaching repeat_count == 0. Fixes the
+	clock35.xaml test.
+
+2008-04-15  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: Clock::ComputeNewTime - make sure to take the speed ratio 
 	into account also when moving back in time. 
 

@@ -828,6 +828,7 @@ Clock::ComputeNewTime ()
 			}
 
 			if (repeat_count == 0) {
+				ret_time = 0;
 				SkipToFill ();
 			}
 		}
