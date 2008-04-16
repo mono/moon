@@ -88,19 +88,15 @@ EventObject::unref ()
 		return;
 	}
 
+	if (refcount == 1)
+		Emit (DestroyedEvent);
+
 	delete_me = g_atomic_int_dec_and_test (&refcount);
 
 	OBJECT_TRACK ("Unref", GetTypeName ());
 
 	if (delete_me) {
-		Emit (DestroyedEvent);
-#if DEBUG
-		if (refcount != 0) {
-			g_warning ("Object %p (id: %i) of type %s has been woken up from the dead.\n", this, GET_OBJ_ID (this), GetTypeName ());
-		}
-#endif
 		SetSurface (NULL);
-
 		delete this;
 	}
 }
@@ -382,7 +378,7 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 	
 	// We need to ref ourselves during event emission, since we may end up 
 	// deleting the object calling us/holding a ref to us.
-	//ref ();
+	ref ();
 	events [event_id].emitting++;
 
 	length = events [event_id].event_list->Length ();
@@ -419,7 +415,7 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 	}
 	
 	g_free (closures);
-	//unref ();
+	unref ();
 
 	return true;
 }
