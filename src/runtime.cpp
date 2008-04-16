@@ -101,7 +101,7 @@ static struct {
 static void
 fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
 {
-//	printf ("Rendered %d frames in %.3fs = %.3f FPS\n", nframes, nsecs, nframes / nsecs);
+	printf ("Rendered %d frames in %.3fs = %.3f FPS\n", nframes, nsecs, nframes / nsecs);
 }
 
 static void
