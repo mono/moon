@@ -292,7 +292,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		break;
 		}
 
-		if (center)
+//		if (center)
 			cairo_matrix_translate (&stretch_transform, 
 						adj_x ? w * 0.5 : 0, 
 						adj_y ? h * 0.5 : 0);
@@ -301,7 +301,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 				    adj_x ? sw : 1.0, 
 				    adj_y ? sh : 1.0);
 		
-		if (center) 
+//		if (center) 
 			cairo_matrix_translate (&stretch_transform, 
 						adj_x ? -shape_bounds.w * 0.5 : 0, 
 						adj_y ? -shape_bounds.h * 0.5 : 0);

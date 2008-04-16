@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Width="120" Height="120">
 	
-	<Rectangle Width="120" Height="120" Canvas.Left="0" Canvas.Top="0" Fill="DarkBlue" />
+	<!--<Rectangle Width="120" Height="120" Canvas.Left="0" Canvas.Top="0" Fill="DarkBlue" />-->
 
-	<Path x:Name="Line_384" Canvas.Left="0" Canvas.Top="50" Stretch="Fill" Data="F1 M 0,50L 120,50" StrokeThickness="1" StrokeLineJoin="Round" Stroke="White" />
+	<Path x:Name="Line_384" Canvas.Left="0" Canvas.Top="50" Data="F1 M 0,50L 120,50" StrokeThickness="1" StrokeLineJoin="Round" Stroke="Black" />
    
 </Canvas>

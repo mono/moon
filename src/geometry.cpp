@@ -135,6 +135,7 @@ path_get_bounds (Path *shape, cairo_path_t *path, bool logical)
 
 	measuring_context_destroy (cr);
 
+printf ("path_get_bounds %f %f %f %f\n", MIN(x1,x2), MIN(y1,y2),fabs(x2-x1),fabs(y2-y1));
 	return Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
 }
 
