@@ -9,10 +9,10 @@ noinst_DATA = $(assemblies)
 CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:Mono.Moonlight -d:AGCLR -unsafe
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
-SMCS = MONO_PATH="../lib/2.1:$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
+SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(prefix)/lib /root $(prefix)/lib
 
-mono_moonlight_sources =						\
+system_windows_sources =						\
 	Internal.cs							\
 	Assembly/AssemblyInfo.cs					\
 	../Consts.cs							\
@@ -175,7 +175,7 @@ mono_moonlight_sources =						\
 	System.Windows.Shapes/Rectangle.cs				\
 	System.Windows.Shapes/Shape.cs
 
-EXTRA_DIST = $(mono_moonlight_sources) 	\
+EXTRA_DIST = $(system_windows_sources) 	\
 	script/checks.cs 			\
 	script/README				\
 	script/ChangeLog			\
@@ -191,12 +191,12 @@ EXTRA_DIST = $(mono_moonlight_sources) 	\
 	System.Windows.Media/ChangeLog		\
 	System.Windows.Shapes/ChangeLog
 
-$(assemblysl): $(mono_moonlight_sources) Makefile
-	$(SMCS) -target:library -out:$@ $(mono_moonlight_sources) -d:NET_2_1
+$(assemblysl): $(system_windows_sources) Makefile
+	$(SMCS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblydesktop): $(mono_moonlight_sources) Makefile
-	$(GMCS) -target:library -out:$@ $(mono_moonlight_sources)
+$(assemblydesktop): $(system_windows_sources) Makefile
+	$(GMCS) -target:library -out:$@ $(system_windows_sources)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 clean-local:
