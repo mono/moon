@@ -631,6 +631,8 @@ RectangleGeometry::ComputeBounds (Path *path, bool logical)
 
 	if (! logical)
 		bounds = rect->GrowBy (thickness / 2.0);
+	else
+		bounds = *rect;
 
 	Transform* transform = geometry_get_transform (this);
 	if (transform) {
