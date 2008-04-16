@@ -1,3 +1,10 @@
+2008-04-16  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (Shape::ComputeStretchBounds): fix the centering logic
+	that got accidentally lost when fixing other bits.
+
+	Fixes regression in StretchAndShapes.xaml.
+
 2008-04-16  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: {x:Null} evaluates to NULL, if we encounter this value
