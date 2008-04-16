@@ -1,0 +1,8 @@
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* checks.cs: Add a few more type cases.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* checks.cs: Add a namespace.
+

@@ -1,0 +1,57 @@
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Polyline.cs, Path.cs, Ellipse.cs, Shape.cs, Rectangle.cs, Line.cs,
+	  Polygon.cs: Don't ref ourself if we're created using a *_new function,
+	  the creation itself already gives us a ref.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Polyline.cs, Polygon.cs: Fix property type.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Shape.cs: Constructor fixes, part 3.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Polyline.cs, Path.cs, Ellipse.cs, Shape.cs, Rectangle.cs, Line.cs,
+	  Polygon.cs: First part of fixing internal constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Polyline.cs: Use native constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Polyline.cs, Path.cs, Ellipse.cs, Line.cs, Polygon.cs: Implement
+	  GetKind.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Polyline.cs, Path.cs, Polygon.cs: Fix property lookup, the parameters
+	  were mixed up.
+
+2007-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Polyline.cs, Path.cs, Polygon.cs: Move from
+	  DependencyProperty.Register to DependencyProperty.Lookup.
+
+2007-06-10  Miguel de Icaza  <miguel@novell.com>
+
+	* Line.cs: Register properties properly
+
+2007-06-08  Miguel de Icaza  <miguel@novell.com>
+
+	* Rectangle.cs: First binding.
+
+	* Shape.cs: Fix some names.
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Ellipse.cs: New.
+	* Line.cs: New.
+	* Path.cs: New.
+	* Polygon.cs: New.
+	* Polyline.cs: New.
+	* Rectangle.cs: New.
+	* Shape.cs: New.

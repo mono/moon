@@ -1,0 +1,171 @@
+2008-02-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBlock.cs (SetFontSource): It would appear that you can
+	actually set null as a downloader (equivalent to unsetting it)
+	according to the MS test suite.
+
+2007-11-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MediaElement.cs (InvokeMediaOpened): Always pass null as the
+	eventArgs parameter as defined by the msdn docs.
+	(InvokeMediaEnded): Same.
+	(InvokeMediaFailed): Same.
+
+2007-11-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MediaElement.cs: Fixed all of the remove events to not /add/ the
+	event ;-)
+	(InvokeMarkerReached): Pass a TimelineMarkerEventArgs arg to the
+	handler rather than null.
+
+2007-10-04  Zoltan Varga  <vargaz@gmail.com>
+
+	* Control.cs (InitialzeFromXaml): Load dependencies synchronously.
+
+2007-10-02  Zoltan Varga  <vargaz@gmail.com>
+
+	* Control.cs: Add some error checking.
+
+2007-09-30  Jb Evain  <jbevain@novell.com>
+
+	* MediaElement.cs: add setter for the AudioStreamCount DP.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Canvas.cs, Panel.cs, TextBlock.cs, Image.cs, InkPresenter.cs,
+	  MediaElement.cs, MediaBase.cs: Don't ref ourself if we're created using
+	  a *_new function, the creation itself already gives us a ref.
+	* Control.cs: Don't ref ourself if we're created using a *_new function, the
+	  creation itself already gives us a ref. InitializeFromXaml: use the new
+	  control_initialize_from_xaml_callbacks and specify a XamlLoader.
+
+2007-09-14  Miguel de Icaza  <miguel@novell.com>
+
+	* MediaBase.cs: Fixes the Uri crash from TopBanana.
+
+2007-09-10  Chris Toshok  <toshok@ximian.com>
+
+	* Image.cs: hookup ImageFailed, which a bunch of XXX's due to the
+	missing marshalling of the ErrorEventArgs (which MediaElement also
+	shares.)
+
+2007-08-20  Jb Evain  <jbevain@novell.com>
+
+	* MediaElement.cs: use methods in [agmono]Mono.Helper to avoid calling
+	internal methods of mscorlib.
+
+2007-08-03  Chris Toshok  <toshok@ximian.com>
+
+	* MediaElement.cs: switch NaturalDuration back to Duration.
+
+2007-08-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MediaElement.cs: Add the new properties from the July 2007
+	release and fixed NaturalDuration to be of type TimeSpan.
+
+2007-07-31  Chris Toshok  <toshok@ximian.com>
+
+	* MediaBase.cs: remove the events.
+
+	* MediaElement.cs: and add them here.  also, hook them up to their
+	unmanaged counterparts.
+
+2007-07-09  Chris Toshok  <toshok@ximian.com>
+
+	* Control.cs: don't pass the parser callbacks to
+	control_initialize_from_xaml.
+
+2007-07-07  Miguel de Icaza  <miguel@novell.com>
+
+	* Image.cs (SetSource): simplify this routine by delegating all
+	the work to unmanaged code.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* InkPresenter.cs, MediaElement.cs: Added.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Panel.cs: Make this class abstract.
+
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* Control.cs: pass the XamlReader callbacks to
+	control_initialize_from_xaml.
+
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* MediaBase.cs: the property is named Source, not Uri.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TextBlock.cs: Fix FontWeight signature.
+
+2007-06-18  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* TextBlock.cs : actually it was not in the build and needed couple
+	  of fixes.
+
+2007-06-17  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* TextBlock.cs : actually PInvokes are already in moon.
+
+2007-06-17  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* TextBlock.cs : oops, extra field.
+
+2007-06-17  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* TextBlock.cs : new.
+
+2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Control.cs: Use the Kind return from create to do the lookup.
+
+2007-06-16  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Image.cs: Try to get completed notification.
+	* MediaBase.cs: End-helper for Image.
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Image.cs: New.
+	* MediaBase.cs: New.
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Control.cs: New.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Canvas.cs, Panel.cs: Second pass on constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Panel.cs: Fix constructor, don't construct anything if we're not the
+	  class to construct.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Panel.cs: Use native constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Canvas.cs, Panel.cs: Implement GetKind.
+
+2007-06-07  Miguel de Icaza  <miguel@novell.com>
+
+	* Canvas.cs, Panel.cs: Rework to use the dependency properties
+	registered in the unmanaged side, remove dead code.
+
+2007-06-04  Miguel de Icaza  <miguel@novell.com>
+
+	* Canvas.cs: Add native IntPtr field that points to the native
+	canvas object.
+
+	Should this be part of DependencyObject?  
+
+	Need to decide.
+
+	* Panel.cs: Add the early binding to the collection.
+

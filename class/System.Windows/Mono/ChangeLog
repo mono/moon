@@ -1,0 +1,457 @@
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* ManagedXamlLoader.cs: update list ok known assemblies
+	with the 2.0 assemblies. Also use Dictionary<,> instead
+	of Hashtable for the assembly cache.
+	Merged from the Moonlight 2 branch.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedXamlLoader.cs: Two more base_unref_delayed -> base_unref cases.
+
+2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedXamlLoader.cs: Move LoadDepsSynch to XamlLoader in agmono.
+
+2008-03-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedXamlLoader.cs: Implement xaml loading with more than one surface
+	  per appdomain. Moved surface and plugin fields to XamlLoader.
+	  Implemented a method to create a dependency object from a string.
+
+2008-02-11  Miguel de Icaza  <miguel@novell.com>
+
+	* ManagedXamlLoader.cs: 
+
+2008-02-04  Miguel de Icaza  <miguel@novell.com>
+
+	Fixes for Phalanger.NET on Silverlight:
+	
+	http://tomasp.net/files/copter/default.html
+	
+	* ManagedXamlLoader.cs (assembly_to_source): Add new hashtable to
+	track the mapping of loaded assemblies to the location on the file
+	system.
+
+	(AssemblyToSource): New helper method that is used to track all
+	assemblies loaded and their mapping to the cache in the
+	filesystem. 
+
+	(Setup): Setup an Assembly resolver event for the appdomain.
+
+	(AssemblyResolve): Used to resolve assemblies that are loaded
+	implicitly from a Silverlight application.   If user code calls
+	Assembly.Load ("file.dll") it expects the file.dll to be loaded
+	from the same directory from which the originating assembly
+	called. 
+
+	If that is ClientBin/Dingus.dll calling Load ("Blah.dll") we need
+	to request ClientBin/Blah.dll.
+
+	We walk the stack to find the calling assembly and we map that to
+	the actual directory where the data was loaded from.
+
+	(LoadAssembly): Refactored to allow the synchronous parameter to
+	be used (independently of the global property). 
+
+	Everywhere: when an assembly is successfully loaded, we add it to
+	the AssemblyToSource mapping. 
+
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: no longer marshal the UnmanagedMouseEventArgs -
+	MouseEventArgs now takes an IntPtr in its ctor which corresponds
+	to the calldata passed in on the mouse events.
+
+2007-12-18  Miguel de Icaza  <miguel@novell.com>
+
+	* ManagedXamlLoader.cs: Support assembly dependency downloading
+	correctly.   This still does not support the Sync case, waiting
+	for a sample test case to fix that case (it would be a lot cleaner
+	to plug now). 
+
+	Fixes starting up http://fluxtools.net/emailphotos/
+
+2007-12-17  Miguel de Icaza  <miguel@novell.com>
+
+	* ManagedXamlLoader.cs: Reorganization, no relevant changes: move
+	all the callback code to a region, prefix it.
+
+2007-11-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Events.cs (loaded_callback): call BrowserHost.InvokeResize().
+	Patch by Stephen. Fixes bug #325031.
+
+2007-11-20  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Helper now gives us back an unmanaged
+	value if we tried to set a property that was an agclr type.
+	Create the wrapper for this type and set the property using the
+	new object.
+
+2007-10-10  Chris Toshok  <toshok@ximian.com>
+
+	* ManagedXamlLoader.cs (LoadObject): we need to ref again in this
+	case, as the caller of this method assumes it owns a ref to this
+	object.  So, bump it up one for the managed ref.
+
+2007-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedXamlLoader.cs: Move the static surface and plugin fields to
+	  XamlLoader.
+
+2007-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedXamlLoader.cs: Store the plugin and surface pointers as static
+	  values. Use those values when creating a native loader instead of
+	  IntPtr.Zero.
+
+2007-10-04  Zoltan Varga  <vargaz@gmail.com>
+
+	* ManagedXamlLoader.cs (LoadDepsSynch): New property to control the synchronous
+	downloading of dependencies.
+	(LoadDependency): New helper method.
+	(LoadAssembly): Call LoadDependency if needed.
+
+2007-10-02  Zoltan Varga  <vargaz@gmail.com>
+
+	* ManagedXamlLoader.cs (LoadObject): Log exceptions thrown from CreateInstance.
+
+2007-09-30  Zoltan Varga  <vargaz@gmail.com>
+
+	* ManagedXamlLoader.cs (LoadAssembly): Avoid loading non-downloaded assemblies from 
+	the local file system in the plugin case.
+
+	* Events.cs: Remove a FIXME.
+
+	* ManagedXamlLoader.cs (LoadCode): Report DLR errors through the plugin.
+
+	* DLRHost.cs: Remove some FIXMEs.
+
+2007-09-28  Zoltan Varga  <vargaz@gmail.com>
+
+	* Events.cs: Implement exception handling by forwarding exceptions to the plugin
+	instance.
+
+	* DLRHost.cs: New class hosting the MS DLR inside Silverlight. Requires a 
+	DLR which compiles cleanly under Silverlight, so it is not enabled yet.
+
+	* ManagedXamlLoader: Add hooks for creating the DLR, loading script files,
+	setting globals and hooking up events. Not enabled yet.
+
+2007-09-26  Zoltan Varga  <vargaz@gmail.com>
+
+	* Events.cs: Implement setting of KeyBoardEventArgs.{shift, ctrl}.
+
+2007-09-22  Zoltan Varga  <vargaz@gmail.com>
+
+	* ManagedXamlLoader.cs (load_file): Load the source using Moonlight.LoadResource.
+	
+	* ManagedXamlLoader.cs: Call Moonlight.LoadFile so the desktop code in mopen.cs
+	can take control of assembly loading.
+
+	* ManagedXamlLoader.cs: Add a new load_code callback.
+
+2007-09-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedXamlLoader.cs: Make mappings static. Makes DrPopper work again.
+
+2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedXamlLoader.cs: Added, unify code from moonlight.cs and
+	  XamlReader.cs into one class (code was basically duplicated).
+
+2007-08-23  Jackson Harper  <jackson@ximian.com>
+
+	* Events.cs: Resize is now a proper event.
+
+2007-08-20  Jb Evain  <jbevain@novell.com>
+
+	* Events.cs: use methods in [agmono]Mono.Helper to avoid calling
+	internal methods of mscorlib.
+
+2007-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: fill in the key_up_callback/key_down_callback to call
+	UIElement.InvokeKey{Up,Down}, and marshal the unmanaged keyboard
+	event args.
+
+2007-07-09  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: commit the CrossDomainProxy code for handling events
+	that need to be proxied to a different app domain (as in the
+	browser).
+
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: phase 2: use GCHandles as the closures we pass to
+	dependency_object_add/remove_event_handler.  this allows us to
+	remove the hash lookup methods (ElementFromPtr, ObjectFromPtr) and
+	just use GCHandle.Target.
+
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: use UnmanagedEventHandlers for all the delegates
+	here, and mark the UIElement delegates internal so it can get at
+	them.  Probably all the UIElement event stuff should move to
+	UIElement.cs.  Some little fixes (we don't need to check for null
+	in any of the delegates since ElementFromPtr will throw an
+	exception if null would have been returned) and add marshalling
+	from the unmanaged MouseEventArgs struct to the Managed one (since
+	the Managed one lacks a StructLayout attribute.)
+
+2007-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Events.cs: Updated here too.
+
+	* NativeMethods.cs: Updated dependency_object_get_kind() ->
+	dependency_object_get_object_type() and added a binding for
+	dependency_object_get_value_no_default().
+
+2007-06-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Value.cs: The data in an unmanaged array is laid out directly after
+	  the refcount, there's no pointer to anywhere.
+
+2007-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: i know miguel is going to hate this, but defining the
+	managed versions of the unmanaged structures, as well as mirroring
+	the unmanaged Value structure (to a certain degree) *really*
+	cleans things up.
+
+2007-06-21  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: 64 bit work with grendel.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs, NativeMethods.cs: Update.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs, NativeMethods.cs: Updated.
+
+2007-06-21  Jackson Harper  <jackson@ximian.com>
+
+	* Events.cs: If the wrapper object isn't available to handle a
+	mouse message, try to create it.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs, NativeMethods.cs: Updated.
+
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add the callbacks to
+	control_initialize_from_xaml's signature.
+
+2007-06-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeMethods.cs: Bind to dependency_object_get_kind() (this
+	should perhaps be renamed to dependency_object_get_object_type?)
+
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
+	* NativeMethods.cs: Tie into events.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs, NativeMethods.cs: More updates.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Update.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: More native methods.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Update.
+	* NativeMethods.cs: Added dependency_property_is_nullable.
+
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: add two methods to deal with the EventObject stuff in
+	C++ (AddHandler, and RemoveHandler).
+
+	* NativeMethods.cs: two pinvokes needed for the above Add/Remove
+	methods.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Updated.
+	* NativeMethods.cs: Still more native methods.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: More native functions.
+
+2007-06-17  Miguel de Icaza  <miguel@novell.com>
+
+	* NativeMethods.cs (dependency_object_get_name): Oops, string
+	return values are freed by the runtime.   
+
+2007-06-18  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* NativeMethods.cs : glyphs_new().
+
+2007-06-17  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* NativeMethods.cs : actually PInvokes are already in moon.
+
+2007-06-17  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* NativeMethods.cs : textblock_new() and textblock_set_source().
+	  They do not exist yet.
+
+2007-06-16  Jackson Harper  <jackson@ximian.com>
+
+	* NativeMethods.cs: Updated to match new xaml_create_from_*
+	function signatures.
+
+2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* NativeMethods.cs: Add "out Kind" parameter to control_initialize_
+	from_xaml
+
+2007-06-15  Jackson Harper  <jackson@ximian.com>
+
+	* NativeMethods.cs: Add the callback for creating custom element
+	types.
+	
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* NativeMethods.cs: Add image_new and media_base_new
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* NativeMethods.cs: Add collection_remove and fix API signature for
+	collection_add
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Kind.cs: Add Control.
+	* NativeMethods.cs: Add control_new.
+
+2007-06-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Remove managed downloader.
+
+2007-06-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Add downloader methods.
+
+2007-06-15  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* Kind.cs: Added Runs/LineBreaks
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: More native constructor fixes.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Update.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: And even more native methods.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: More native constructors.
+
+2007-06-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Kind.cs: Updated (added TextBlock and Glyphs)
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: More native constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Updated.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Update.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Add a constructor.
+
+2007-06-13  Miguel de Icaza  <miguel@novell.com>
+
+	* Events.cs: Add a couple of new events. 
+
+2007-06-12  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* Kind.cs: Updated (removed Video)
+
+2007-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Kind.cs: Updated (RADIALGRADIENTBRUSH)
+
+2007-06-12  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* Kind.cs: Updated (added MediaBase and MediaElement)
+
+2007-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Kind.cs: Updated (MATRIX)
+
+2007-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Updated.
+
+2007-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Update.
+
+2007-06-08  Miguel de Icaza  <miguel@novell.com>
+
+	* NativeMethods.cs (collection_add): new.
+
+	* Kind.cs: Update values here.
+
+2007-06-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Update.
+
+2007-06-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Kind.cs: Add DOUBLE_ARRAY and POINT_ARRAY.
+
+2007-06-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Updated.
+
+2007-06-08  Miguel de Icaza  <miguel@novell.com>
+
+	*  Kind.cs: Split the values here.
+
+2007-06-07  Miguel de Icaza  <miguel@novell.com>
+
+	* Hosting.cs: New file, helper tool.
+
+	* Value.cs: new file, the managed reprensetation of the unmanaged
+	Value. 
+
+	* NativeMethods.cs: xaml_create_from_str.
+
+	* NativeMethods.cs: add new dependency_property_lookup,
+	dependency_object_get_value, dependency_object_set_value,
+	canvas_new.
+
+	update rectangle_new
+
+2007-06-04  Miguel de Icaza  <miguel@novell.com>
+
+	* NativeMethods.cs: Added the beginning of the bindings to `moon'.
+
+	
+

@@ -1,0 +1,32 @@
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* MouseEventArgs.cs: Two more base_unref_delayed -> base_unref cases.
+
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* MouseEventArgs.cs: wrap the IntPtr passed in to the ctor.  make
+	use of all the new mouse_event_args_* native methods.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* StylusPoint.cs, StylusInfo.cs, StylusPointCollection.cs: Don't ref ourself
+	  if we're created using a *_new function, the creation itself already
+	  gives us a ref.
+
+2007-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* KeyboardEventArgs.cs: make ctor arg ordering a little more sane.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TabletDeviceType.cs: Fix namespace.
+	* StylusPoint.cs, StylusInfo.cs, TimelineMarkerEventArgs.cs,
+	  TimelineMarkerEventHandler.cs, StylusPointCollection.cs: Added.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TabletDeviceType.cs: Added.
+
+2007-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MouseEventArgs.cs: Accept null in GetPosition (fix NRE in samples)

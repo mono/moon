@@ -1,0 +1,18 @@
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* StrokeCollection.cs: implement GetBounds.
+
+	* Stroke.cs: implement GetBounds.
+
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* StrokeCollection.cs: add HitTest and GetBounds.
+
+	* Stroke.cs: add HitTest and GetBounds.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DrawingAttributes.cs, StrokeCollection.cs, Stroke.cs: Don't ref ourself if
+	  we're created using a *_new function, the creation itself already gives
+	  us a ref.
+

@@ -1,0 +1,154 @@
+2007-09-30  Jb Evain  <jbevain@novell.com>
+
+	* RepeatBehavior.cs: some corcompare work.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* PointKeyFrame.cs, SplineColorKeyFrame.cs, ColorAnimation.cs, Animation.cs,
+	  ParallelTimeline.cs, TimelineGroup.cs, DiscreteColorKeyFrame.cs,
+	  SplinePointKeyFrame.cs, LinearDoubleKeyFrame.cs, BeginStoryBoard.cs,
+	  DiscretePointKeyFrame.cs, KeyFrame.cs, PointAnimationUsingKeyFrames.cs,
+	  Timeline.cs, SplineDoubleKeyFrame.cs, DoubleKeyFrameCollection.cs,
+	  ColorKeyFrameCollection.cs, DiscreteDoubleKeyFrame.cs,
+	  TimelineMarkerCollection.cs, DoubleAnimationUsingKeyFrames.cs,
+	  Storyboard.cs, PointKeyFrameCollection.cs, PointAnimation.cs,
+	  ColorAnimationUsingKeyFrames.cs, LinearColorKeyFrame.cs,
+	  DoubleKeyFrame.cs, ColorKeyFrame.cs, KeySpline.cs, TimelineMarker.cs,
+	  LinearPointKeyFrame.cs, DoubleAnimation.cs: Don't ref ourself if we're
+	  created using a *_new function, the creation itself already gives us a
+	  ref.
+
+2007-08-20  Jb Evain  <jbevain@novell.com>
+
+	* Storyboard.cs: use methods in [agmono]Mono.Helper to avoid calling
+	internal methods of mscorlib.
+
+2007-08-09  Chris Toshok  <toshok@ximian.com>
+
+	* RepeatBehavior.cs: implement RepeatBehavior.Forever, and rename
+	DOUBLE to COUNT.
+
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* ColorAnimationUsingKeyFrames.cs: update to use
+	ColorKeyFrameCollection
+
+	* DoubleAnimationUsingKeyFrames.cs: update to use
+	DoubleKeyFrameCollection
+
+	* PointAnimationUsingKeyFrames.cs: update to use
+	PointKeyFrameCollection
+
+	* ColorKeyFrameCollection.cs, DoubleKeyFrameCollection.cs,
+	PointKeyFrameCollection: new.
+
+	* KeyFrameCollection.cs: nuke.
+
+2007-07-29  Chris Toshok  <toshok@ximian.com>
+
+	* TimelineGroup.cs: in the 1.1 update, TimelineGroup.Children has
+	been (thankfully) changed to TimelineCollection.  make the
+	necessary (and thankfully, tiny) change.
+
+2007-07-10  Chris Toshok  <toshok@ximian.com>
+
+	* TimelineGroup.cs: use MS's broken, broken Children property -
+	not a TimelineCollection, but a single Timeline.  This will more
+	than likely be fixed in the next revision of Silverlight, but for
+	now it's needed to run the airlines demo unmodified.
+
+2007-07-09  Chris Toshok  <toshok@ximian.com>
+
+	* Storyboard.cs: analogous change to Event.cs for
+	CrossDomainProxy.
+
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* Storyboard.cs: track change to Events.Add/RemoveHandler args.
+	they're much cleaner now.  Also, don't register completed_delegate
+	twice.
+
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* Storyboard.cs: make a similar change as I made to UIElement.cs.
+	use the EventHandlerList, and register/unregister our interest in
+	events with the unmanaged code.
+
+2007-06-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* RepeatBehavior.cs, KeyTime.cs: Make fields internal so the DO
+	  marshaller can get them.
+
+2007-06-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* SplineColorKeyFrame.cs, DiscreteColorKeyFrame.cs,
+	  SplinePointKeyFrame.cs, LinearDoubleKeyFrame.cs,
+	  DiscretePointKeyFrame.cs, DiscreteDoubleKeyFrame.cs,
+	  LinearColorKeyFrame.cs, LinearPointKeyFrame.cs: Implemented.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TimelineMarkerCollection.cs, ColorAnimationUsingKeyFrames.cs,
+	  PointAnimationUsingKeyFrames.cs, TimelineMarker.cs: Added.
+	* KeySpline.cs: Add GetKind.
+	* SplineDoubleKeyFrame.cs: Fix constructor.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* PointKeyFrame.cs, DoubleKeyFrame.cs, ColorKeyFrame.cs: Added.
+	* KeyFrameCollection.cs: Fix constructor.
+	* KeyFrame.cs: Fix constructor and property lookup.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* KeyFrameCollection.cs, KeyFrame.cs, KeyTime.cs: Added.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ColorAnimation.cs,  PointAnimation.cs, DoubleAnimation.cs: Fix cast.
+	* KeyTimeType.cs: Added.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Timeline.cs: Implement missing
+	  property.
+
+2007-06-18  Chris Toshok  <toshok@ximian.com>
+
+	* Storyboard.cs: hook up the Completed unmanaged Storyboard event,
+	and reflect it here.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ColorAnimation.cs, PointAnimation.cs, DoubleAnimation.cs: Fix
+	  property lookup for nullable properties.
+	* Timline.cs: Deleted, dead file.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* PointAnimation.cs: Fix property types.
+
+2007-06-15  Alan McGovern <amcgovern@novell.com> 
+
+	* ColorAnimation.cs: Fixed typos in the declaration
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TimelineGroup.cs: Make Children a TimelineCollection.
+	* PointAnimation.cs: Fix native constructor name.
+
+2007-06-14  Alan McGovern <amcgovern@novell.com> 
+
+	* ColorAnimation.cs, DoubleAnimation.cs, PointAnimation.cs, Storyboard.cs:
+		fixed the native method constructor call.
+
+2007-06-14  Alan McGovern <amcgovern@novell.com> 
+
+	* ColorAnimation.cs, DoubleAnimation.cs, PointAnimation.cs, Storyboard.cs:
+		fixed casing issues with properties.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ParallelTimeline.cs, TimelineGroup.cs, Timeline.cs: Constructor
+	  fixes, part 3.
+

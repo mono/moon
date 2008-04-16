@@ -1,0 +1,283 @@
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* Makefile, System.Windows.dll.sources: agclr is
+	renamed System.Windows.
+	Merged from the Moonlight 2 branch.
+
+2007-11-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Interop/BrowserHost.cs (add_Resize): Removed old
+	hack.
+
+2007-11-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Interop/BrowserHost.cs (add_Resize): Invoke the
+	Resize handler being added if the toplevel canvas has already been
+	loaded.
+
+2007-11-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Interop/BrowserHost.cs: Implemented Resize event.
+
+2007-10-04  Zoltan Varga  <vargaz@gmail.com>
+
+	* System.IO/SimpleUnmanagedMemoryStream.cs: Fix a warning.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Internal.cs: Don't ref ourself if we're created using a *_new
+	  function, the creation itself already gives us a ref.
+
+2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Added ManagedXamlLoader.cs
+
+2007-08-17  Jb Evain  <jbevain@novell.com>
+
+	* Assembly/AssemblyInfos.cs: re-enable patch from Miguel.
+	For non-plugin usage, use mono public key to sign the assembly.
+
+2007-08-11  Jb Evain  <jbevain@novell.com>
+
+	* Mono/EventHanderList.cs: copied from System.dll, as it doesn't
+		exists in 2.1.
+	  agclr.dll.sources: add Mono/EventHandlerList
+	  System.Windows/DependencyObject.cs: use the new EventHandlerList.
+
+2007-08-04  Chris Toshok  <toshok@ximian.com>
+
+	* agclr.dll.sources: add System.Windows.Media/VisualBrush.cpp
+
+2007-08-01  Miguel de Icaza  <miguel@novell.com>
+
+	* Makefile (thisdir): Do not link with System.Xml, not needed.
+	In preparation to use smcs
+
+	* Internal.cs: Fix visibility.
+
+2007-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* agclr.dll.sources: Add StyleSimulations to the build.
+
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* agclr.dll.sources: add the 3 KeyFrameCollection classes, and
+	remove KeyFrameCollection.
+
+2007-07-29  Chris Toshok  <toshok@ximian.com>
+
+	* agclr.dll.sources: rename ResourceCollection.cs to
+	ResourceDictionary.cs.
+
+2007-07-20  Miguel de Icaza  <miguel@novell.com>
+
+	* Internal.cs (RemoveAt): implement.
+
+2007-07-03  Miguel de Icaza  <miguel@novell.com>
+
+	* Internal.cs: Propagate errors from mutated collections on
+	iterators. 
+
+2007-06-29  Rodrigo Kumpera  <rkumpera@novell.com>
+
+	*DependencyObject.cs: Added MediaElement to CreateObject switch.
+
+2007-06-28  Miguel de Icaza  <miguel@novell.com>
+
+	* Move Kind.cs, Value.cs and NativeMethods to the agmono assembly
+	as well as some events from Events.cs that are now public and part
+	of the NativeMethods APIS.
+
+	This is only the initial move, we will later move some more stuff
+	that we need.
+
+2007-06-26  Miguel de Icaza  <miguel@novell.com>
+
+	* Internal.cs: Implement most of the public interface for
+	MS.Internal.Collection. 
+
+2007-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Internal.cs: Updated to use dependency_object_get_object_type()
+	(which is the new name for dependency_object_get_kind).
+
+2007-06-25  Miguel de Icaza  <miguel@novell.com>
+
+	* Internal.cs: Make this beast implement ICollection, still a few
+	more insterfaces more to go (ICollection<T>, IList, IList<T>)
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Updated.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Everywhere: Remove protected from GetKind.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Updated.
+	* System.Windows.Ink: Added.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Update.
+
+2007-06-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Internal.cs (Current): We can't reuse the Collection-type Kind
+	as the kind of object we're looking for since if it fails to find
+	a pre-cached managed object for that IntPtr, it will try to
+	instantiate a new one. Instead, we need the /actual/ object type,
+	so request that from the NativeMethods.
+
+2007-06-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Updated.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Updated.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Update.
+
+2007-06-19  Miguel de Icaza  <miguel@novell.com>
+
+	* Internal.cs: Implement collection iterators, the object version
+	for now.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Updated.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* scripts: Added.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* System.Windows/PropertyMetadata.cs: Deleted, not present in SL.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Update.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Internal.cs: Fix construction.
+
+2007-06-18  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* agclr.dll.sources: added TextBlock.cs, System.Windows.Documents
+	  public types and related (missing) System.Windows enums.
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* agclr.dll.sources: Add System.Windows.Controls.Image and MediaBase
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Internal.cs: Add Remove to Collection<T>
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* agclr.dll.sources: Add System.Windows.Controls.Control
+
+2007-06-14  Alan McGovern <amcgovern@novell.com> 
+
+	* DependencyObject.cs: Added NameProperty
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agclr.dll.sources: Add TimelineCollection.
+
+2007-06-14  Alan McGovern <amcgovern@novell.com> 
+
+	* Fixed typos in files from previous commit
+	* Animation.cs: Implemented
+
+2007-06-14  Alan McGovern <amcgovern@novell.com> 
+
+	* Implemented   ColorAnimation,
+			DoubleAnimation, 
+			PointAnimation,
+			BeginStoryBoard,
+			EventTrigger
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Internal.cs: Constructor fixes, part 3.
+
+2007-06-13  Miguel de Icaza  <miguel@novell.com>
+
+	* Support for Storyboard class, still need the C API from Chris to
+	test this.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Internal.cs: Second pass at constructor fixing.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Test/Test.usertasks: Implement GetKind.
+
+2007-06-09  Miguel de Icaza  <miguel@novell.com>
+
+	* Everywhere: bind to our existing C++ methods.
+
+2007-06-08  Miguel de Icaza  <miguel@novell.com>
+
+	* Internal.cs: Derive from DependencyObject, add Add method. 
+
+2007-06-07  Miguel de Icaza  <miguel@novell.com>
+
+	* Drop the use of the native XAML parser
+
+	* Add Value.cs
+
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* agclr.dll.sources: Added System.Windows.Media.Alignment[X|Y] enums,
+	MediaAttribute[Collection] and QuadraticBezierSegment classes.
+
+2007-06-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* agclr.dll.sources: Added System.Windows.Media.EllipseGeometry,
+	GeometryCollection, GeometryGroup, LineGeometry, PathFigure,
+	PathFigureCollection, PathGeometry and PathSegmentCollection
+
+2007-06-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* agclr.dll.sources: Added System.Windows.Media.*Brush and related 
+	classes (to compile).
+
+2007-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* agclr.dll.sources: Added System.Windows.Media.Matrix and [Matrix|
+	Rotate|Scale|Skew|Translate]Transform
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* agclr.dll.sources: Added System.Windows.Downloader and MonoTODO
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* agclr.dll.sources: Added System.Windows.Rect and System.Windows.
+	Media.RectangleGeometry
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* agclr.dll.sources: Added System.Windows.Media.PenLineCap, 
+	PenLineJoin and Stretch
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* agclr.dll.sources: Added System.Windows.Shapes.Line, Path, Polygon
+	and Polyline (namespace should be complete)
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* agclr.dll.sources: Added System.Windows.Shapes.Ellipse, Rectangle
+	and Shape.

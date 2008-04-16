@@ -1,0 +1,221 @@
+2008-03-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Color.cs: Fix compiler warnings.
+
+2008-03-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Visual.cs: Fix another breakage.
+
+2008-03-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Visual.cs: Guard against accessing SurfaceInDomain when multiple surfaces
+	  per domain is allowed.
+
+2007-10-12  Jb Evain  <jbevain@novell.com>
+
+	* ImageBrush.cs (ImageBrush.SetSource): implement.
+
+2007-10-11  Jb Evain  <jbevain@novell.com>
+
+	* MediaAttributeCollection.cs: implement GetItemByName.
+
+2007-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Visual.cs: Set the surface of the visual upon creation.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* RadialGradientBrush.cs, PolyLineSegment.cs, GradientStopCollection.cs,
+	  VisualCollection.cs, TimelineCollection.cs, Brush.cs,
+	  TransformCollection.cs, TranslateTransform.cs, RotateTransform.cs,
+	  Geometry.cs, PathSegmentCollection.cs, LinearGradientBrush.cs,
+	  PathFigure.cs, MatrixTransform.cs, GradientBrush.cs, TileBrush.cs,
+	  QuadraticBezierSegment.cs, BezierSegment.cs, GradientStop.cs, Visual.cs,
+	  LineGeometry.cs, GeometryGroup.cs, EllipseGeometry.cs, LineSegment.cs,
+	  Transform.cs, SolidColorBrush.cs, PathSegment.cs,
+	  MediaAttributeCollection.cs, RectangleGeometry.cs, ScaleTransform.cs,
+	  ImageBrush.cs, ArcSegment.cs, TransformGroup.cs, MediaAttribute.cs,
+	  SkewTransform.cs, PolyQuadraticBezierSegment.cs, PolyBezierSegment.cs,
+	  GeometryCollection.cs, VisualBrush.cs, PathGeometry.cs, VideoBrush.cs,
+	  PathFigureCollection.cs: Don't ref ourself if we're created using a
+	  *_new function, the creation itself already gives us a ref.
+
+2007-08-04  Chris Toshok  <toshok@ximian.com>
+
+	* VisualBrush.cs: new class.  yay for embrace/extend.
+
+2007-08-01  Chris Toshok  <toshok@ximian.com>
+
+	* Geometry.cs: Geometry.Transform is a Transform, not a
+	TransformGroup.
+
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* PathFigure.cs: IsFilled is gone in RC1.
+	
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* Brush.cs: RC1 breaking change - TransformGroup -> Transform.
+
+2007-07-12  Chris Toshok  <toshok@ximian.com>
+
+	* Visual.cs: implement the mouse capturing calls.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Brush.cs, Transform.cs: Make this class abstract.
+
+2007-06-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TransformGroup.cs: Implement ChildrenProperty.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ImageBrush.cs: Marshal Uri as string.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TimelineCollection.cs, TransformCollection.cs: Implement.
+	* TileBrush.cs: Fix property types.
+	* PolyQuadraticBezierSegment.cs: Fix native constructor name.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* RadialGradientBrush.cs, PolyLineSegment.cs,
+	  GradientStopCollection.cs, TranslateTransform.cs, Geometry.cs,
+	  PathSegmentCollection.cs, LinearGradientBrush.cs, PathFigure.cs,
+	  MatrixTransform.cs, QuadraticBezierSegment.cs, LineGeometry.cs,
+	  Visual.cs, GradientStop.cs, BezierSegment.cs, EllipseGeometry.cs,
+	  LineSegment.cs, SolidColorBrush.cs, PathSegment.cs,
+	  MediaAttributeCollection.cs, RectangleGeometry.cs,
+	  ScaleTransform.cs, ImageBrush.cs, ArcSegment.cs, TransformGroup.cs,
+	  MediaAttribute.cs, SkewTransform.cs, PolyQuadraticBezierSegment.cs,
+	  PolyBezierSegment.cs, PathGeometry.cs, VideoBrush.cs,
+	  PathFigureCollection.cs: Constructor fixes, part 3.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* RadialGradientBrush.cs, PolyLineSegment.cs,
+	  GradientStopCollection.cs, VisualCollection.cs, Brush.cs,
+	  TranslateTransform.cs, RotateTransform.cs, Geometry.cs,
+	  PathSegmentCollection.cs, LinearGradientBrush.cs, PathFigure.cs,
+	  MatrixTransform.cs, GradientBrush.cs, TileBrush.cs,
+	  QuadraticBezierSegment.cs, BezierSegment.cs, GradientStop.cs,
+	  Visual.cs, LineGeometry.cs, GeometryGroup.cs, EllipseGeometry.cs,
+	  LineSegment.cs, Transform.cs, SolidColorBrush.cs, PathSegment.cs,
+	  MediaAttributeCollection.cs, RectangleGeometry.cs,
+	  ScaleTransform.cs, ImageBrush.cs, ArcSegment.cs, TransformGroup.cs,
+	  MediaAttribute.cs, SkewTransform.cs, PolyQuadraticBezierSegment.cs,
+	  PolyBezierSegment.cs, GeometryCollection.cs, PathGeometry.cs,
+	  VideoBrush.cs, PathFigureCollection.cs: Second pass on
+	  constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Brush.cs, GradientBrush.cs, Transform.cs: Fix constructor, don't
+	  construct anything if we're not the class to construct.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* GradientStopCollection.cs, VisualCollection.cs, Brush.cs,
+	  PathSegmentCollection.cs, LinearGradientBrush.cs,
+	  QuadraticBezierSegment.cs, TileBrush.cs, GradientBrush.cs,
+	  GradientStop.cs, Transform.cs, MediaAttributeCollection.cs,
+	  ImageBrush.cs, MediaAttribute.cs, SkewTransform.cs,
+	  GeometryCollection.cs, VideoBrush.cs, PathFigureCollection.cs: Use
+	  native constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Visual.cs: Implement GetKind.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* GradientStopCollection.cs, VisualCollection.cs,
+	  PathSegmentCollection.cs, PathSegment.cs,
+	  MediaAttributeCollection.cs, MediaAttribute.cs,
+	  PathFigureCollection.cs: Implement GetKind.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* RadialGradientBrush.cs: Construct this object properly.
+	* TileBrush.cs, RectangleGeometry.cs, MediaAttribute.cs,
+	  SkewTransform.cs: Fix property lookup, the parameters were mixed
+	  up.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* RadialGradientBrush.cs: Fix DependencyProperty.Lookup calls, I got
+	  the parameters mixed up.
+	* ColorInterpolationMode.cs, GradientBrush.cs,
+	  ColorInterpretationMode.cs: Fix typo (rename
+	  ColorInterpretationMode to ColorInterpolationMode).
+
+2007-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* RadialGradientBrush.cs, TileBrush.cs, RectangleGeometry.cs,
+	  MediaAttribute.cs, SkewTransform.cs: Move from
+	  DependencyProperty.Register to DependencyProperty.Lookup.
+
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Color.cs: Complete, needs testing (and maybe change to use 4 float
+	values instead of a single uint).
+	* Colors.cs: Complete.
+
+2007-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* AlignmentX.cs: New enum.
+	* AlignmentY.cs: New enum.
+	* MediaAttributeCollection.cs: New.
+	* MediaAttribute.cs: New.
+	* QuadraticBezierSegment.cs: New.
+	* TimelineCollection.cs: New (not yet included in build)
+
+2007-06-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* EllipseGeometry.cs: New.
+	* GeometryCollection.cs: New.
+	* GeometryGroup.cs: New.
+	* LineGeometry.cs: New.
+	* PathFigureCollection.cs: New.
+	* PathFigure.cs: New.
+	* PathGeometry.cs: New.
+	* PathSegmentCollection.cs: New.
+
+2007-06-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrushMappingMode.cs: New.
+	* Color.cs: New (incomplete)
+	* ColorInterpretationMode.cs: New.
+	* Colors.cs: New (incomplete)
+	* GradientBrush.cs: New.
+	* GradientSpreadMethod.cs: New.
+	* GradientStopCollection.cs: New.
+	* GradientStop.cs: New.
+	* ImageBrush.cs: New.
+	* LinearGradientBrush.cs: New.
+	* RadialGradientBrush.cs: New.
+	* SolidColorBrush.cs: New.
+	* TileBrush.cs: New.
+	* VideoBrush.cs: New.
+
+2007-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Matrix.cs: New.
+	* MatrixTransform.cs: New.
+	* RotateTransform.cs: New.
+	* ScaleTransform.cs: New.
+	* SkewTransform.cs: New.
+	* Transform.cs: Inherits from DependencyObject
+	* TranslateTransform.cs: New.
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* RectangleGeometry.cs: New.
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* PenLineCap.cs: New. enum required to complete S.W.Shapes
+	* PenLineJoin.cs: New. enum required to complete S.W.Shapes
+	* Stretch.cs: New. enum required to complete S.W.Shapes

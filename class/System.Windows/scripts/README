@@ -1,0 +1,23 @@
+make check-static:
+- Does a static check in all classes derived from DependencyObject (fails if these checks fail):
+	* Must override GetKind.
+	* Must have a public empty constructor.
+	* Must have an internal constructor that takes 1 IntPtr argument.
+- It will also list the size of all constructors that doesn't have a normal size, look out for (warnings, can be ignored):
+	* Constructors smaller than the normal size.
+	* Constructors with size similar to the normal size, but not exactly the same.
+  These constructors likely do not implement the required constructor pattern:
+	public ctor () : base (NativeMethods.class_name_new ())
+	internal ctor (IntPtr raw) : base (raw)
+  Normal size: 23 bytes for empty constructors, and 8 bytes for the IntPtr constructor.
+
+make check-dynamic:
+- Creates a test program that for each class derived from DependencyObject:
+	* Creates it
+	* For each property, stores a value (if writable), gets the (stored if writable) value (if readable), and compares them (if both readable and writable).
+	* For nullable properties, tries to store both a null value as well as a nullable<type> value.
+- Currently there's some output that can be ignored:
+	* The downloader has not been initialized, so there'll be a few of these:
+		** (tester.exe:2038): WARNING **: downloader_set_function has never been called.
+	* The instantiated classes does not always make sense in unmanaged land, so we're getting these as well:
+		** (tester.exe:2038): WARNING **: UIElement:getbounds has been called. The derived class <type> should have overridden it.

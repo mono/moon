@@ -1,0 +1,578 @@
+2008-04-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Comparing a Kind value to another to determine type
+	  hierarchy isn't supported anymore
+
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* DependencyObject.cs: use a Dictionary<,> instead of
+	an Hashtable for the DO cache.
+	Merged from the Moonlight 2 branch.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: base_unref_delayed doesn't exist anymore, just use
+	  base_unref.
+
+2008-03-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Inform agmono about our own assembly.
+
+2008-03-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* XamlReader.cs: If multiple surfaces per appdomain is allowed, throw an
+	  exception (since we don't know which surface to attach the xaml to).
+
+2008-02-21  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Downloader.cs: In GetResponseText make sure we free the native 
+	pointer is something goes wrong when reading/decoding the stream.
+
+2008-01-17  Chris Toshok  <toshok@ximian.com>
+
+	* Rect.cs: fix the Union/Intersect methods -- they were updating
+	x/y and then accessing them implicitly through Right/Bottom.
+	Also, in the intersect case, if the rectangle ends up being empty,
+	clear it out so that Rect.Equals (Rect.Empty) returns true.  this
+	gets DestroyAllInvaders working (woop!)
+
+2007-12-19  Stephane Delcroix  <sdelcroix@novell.com>
+
+	 * DependencyObject.cs: adding LINEARGRADIENTBRUSH and 
+	 TRANSFORMGROUP too, reauired by some component-one demos.
+
+2007-12-19  Stephane Delcroix  <sdelcroix@novell.com>
+
+	 * DependencyObject.cs: add a case for RADIALGRADIENTBRUSH in 
+	 CreateObject method. Fix http://www.vectorlight.net/default.aspx?page=22
+
+2007-11-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* UIElement.cs: Pass null instead of EventArgs.Empty for some of
+	the event handlers (they are defined to always take null args by
+	the msdn docs).
+
+2007-11-19  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyObject.cs: Move the value-to-object code into a
+	separate function, so I can use it in the managed xaml parser.
+
+2007-10-10  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs: remove the old ClearPendingDestroys code,
+	and just call base_unref_delayed from Free.
+
+	* XamlReader.cs: just to be consistent, all unmanaged unrefs call
+	base_unref_delayed.
+
+2007-10-06  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs (GetAsValue): we can't use
+	Type.GetElementType() on enums.  there might be a way to do this
+	check (to see if the enum is int-sized), but I couldn't figure it
+	out - IsAssignableFrom doesn't work.  Remove the check for now,
+	since we break with it enabled.
+
+2007-10-02  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyObject.cs: If we are trying to use a string to set a
+	property, use the special xaml parsing functions here.  This will
+	try to massage the string into the correct type.
+
+2007-09-30  Jb Evain  <jbevain@novell.com>
+
+	* ParserErrorEvent[Args|Handler].cs,
+	* RuntimeErrorEvent[Args|Handler].cs: added
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ResourceDictionary.cs, TriggerActionCollection.cs, TriggerCollection.cs,
+	  UIElement.cs, Downloader.cs, Inlines.cs, EventTrigger.cs,
+	  FrameworkElement.cs: Don't ref ourself if we're created using a *_new
+	  function, the creation itself already gives us a ref.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* XamlReader.cs: Load: unref the created object once we have a managed
+	  DependencyObject version.
+
+2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* XamlReader.cs: Use the new ManagedXamlLoader.
+	* DependencyObject.cs: Remove cwl.
+
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* XamlReader.cs: Update according to recent Xaml API changes.
+
+2007-08-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.cs: Make the error message somewhat more explicit.
+
+2007-08-20  Jb Evain  <jbevain@novell.com>
+
+	* XamlReadre.cs, Downloader.cs, DependencyObject.cs: use methods
+	in [agmono]Mono.Helper to avoid calling internal methods of mscorlib.
+
+2007-08-17  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs: change some NotImplementedExceptions to
+	just Exceptions.
+
+	* Visibility.cs: remove Visibility.Hidden.  it's gone in the
+	refresh.
+
+2007-08-11  Miguel de Icaza  <miguel@novell.com>
+
+	* XamlReader.cs: Do some sharing of code, by using the agmono stuff.
+
+2007-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: add InvokeKeyUp and InvokeKeyDown.
+
+2007-08-09  Chris Toshok  <toshok@ximian.com>
+
+	* Duration.cs: implement the NotImplemented methods.
+
+2007-08-06  Jackson Harper  <jackson@ximian.com>
+
+	* XamlReader.cs: Default createnamescope is false to match
+	createFromXaml default
+	(http://msdn2.microsoft.com/en-us/library/bb412361.aspx).
+
+2007-08-03  Miguel de Icaza  <miguel@novell.com>
+
+	* Downloader.cs: We need a bit more logic here than just creating
+	strings, we need to use something that knows about bytemarks.
+
+	Introduce a simplified version of System.IO/UnmanagedMemoryStream
+
+2007-08-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FontWeights.cs: Updated for the July 2007 Refresh release.
+
+2007-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* StyleSimulations.cs: Added values.
+
+2007-07-31  Chris Toshok  <toshok@ximian.com>
+
+	* StyleSimulations.cs: new enum.
+
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: add the Tag property.
+
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs: add support for the new KeyFrameCollection
+	classes.
+
+2007-07-29  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs: track RESOURCE_COLLECTION ->
+	RESOURCE_DICTIONARY change.
+
+	* UIElement.cs: same.
+
+	* ResourceDictionary.cs: move ResourceCollection.cs here, and
+	rename it.
+
+2007-07-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Rect.cs: Fix constructor as reported by Robert Jordan.
+
+2007-07-12  Chris Toshok  <toshok@ximian.com>
+
+	* Downloader.cs: move to using UnmanagedEventHandlers to proxy
+	events.
+
+2007-07-11  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: use the MS event names for the strings we pass to
+	events.AddHandler.  tracks the uielement.cpp change.
+
+2007-07-09  Miguel de Icaza  <miguel@novell.com>
+
+	* XamlReader.cs: Add try/catch events to the code to prevent it
+	from throwing exceptions that are returned to the native libmoon. 
+
+2007-07-09  Chris Toshok  <toshok@ximian.com>
+
+	* XamlReader.cs: set the parser callbacks in our static ctor.
+
+2007-07-09  Miguel de Icaza  <miguel@novell.com>
+
+	* XamlReader.cs: Do not use the Lookup version that only finds
+	existing objects, use the Lookup version that creates the managed
+	instance if required (by passing the Kind type to it).
+
+	Add better error reporting.
+
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* XamlReader.cs (set_attribute): unfortunately we can't use
+	TypeDescriptor.GetProperty here, since it can't be used with
+	write-only properties (which Dr. Popper uses).  c&p the
+	PropertyDescriptor.Converter code here and rename it
+	GetConverterFor(), and use System.Reflection for setting the
+	property value.  Ah well.
+
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: track change to Events.Add/RemoveHandler args.
+	they're much cleaner now.
+
+	* DependencyObject.cs: add a GCHandle field which we lazily
+	allocate (and free in our dtor) that we can pass to events.
+
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: be consistent about our treatment of all events
+	(be they mouse/key events or others, like Loaded).  Also, use the
+	winforms/asp.net optimization of bloating the event add/remove
+	code in exchange for lessening memory usage per object by using
+	EventHandlerList.  Having code for add/remove also lets us
+	register (and unregister) with the unmanaged events when we need
+	to, further reducing unmanaged -> managed transitions.
+
+2007-07-03  Miguel de Icaza  <miguel@novell.com>
+
+	* Downloader.cs: UPdate to the new API.
+
+	* ErrorEventArgs.cs: New internal constructor.
+
+2007-07-02  Miguel de Icaza  <miguel@novell.com>
+
+	* FrameworkElement.cs (Parent): implement this using a native
+	method call. 
+
+2007-06-27  Miguel de Icaza  <miguel@novell.com>
+
+	* DependencyObject.cs (SetValue): use the native value_free_value
+	to release the value as some fields in the structure are actually
+	refcounted. 
+	
+	(GetAsValue): When wrapping a dependency object, take a ref here.
+
+2007-06-27  Jackson Harper  <jackson@ximian.com>
+
+	* XamlReader.cs: Don't need to use invoke (this was there because
+	the code was a copy and paste from the plugin).
+
+2007-06-26  Miguel de Icaza  <miguel@novell.com>
+
+	* DependencyObject.cs: Add checks to ensure that we are only
+	called from the proper thread.
+
+2007-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* UIElement.cs: Added ZIndex property
+
+2007-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs (SetValue<T>): call FreeValue after
+	dependency_object_set_value.
+	(FreeValue): free's the memory we allocated in GetAsValue since
+	the unmanaged SetValue method will have copied it (by virtue of
+	Value's copy ctor).
+
+2007-06-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Changed implementation of GetAsValue to match
+	  toshok's implementation of GetValue.
+
+2007-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs (GetValue): make this *gobs* cleaner by just
+	using the fields in the value structure as opposed to using byte
+	pointers and constant offsets.
+
+2007-06-21  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs: 64 bit work with grendel.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Implement KeyTime marshalling.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Rect.cs: Add missing members.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Fix TimeSpan marshalling.
+
+2007-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Implement creation of more classes.
+
+2007-06-20  Chris Toshok  <toshok@ximian.com>
+
+	* XamlReader.cs: make the callbacks internal so we can use the
+	from FrameworkElement.InitializeFromXaml.
+
+2007-06-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* DependencyObject.cs: Add VISUAL to the "NotImplemented" abstract
+	types in the switch.
+
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyObject.cs: Add ResourceCollection.
+
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
+	* XamlReader.cs: Tie into events.
+
+2007-06-20  Jackson Harper  <jackson@ximian.com>
+
+	* UIElement.cs: Invoke the loaded event.
+
+2007-06-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.cs: Add better exception message.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.cs: Fix warning.
+
+2007-06-19  Miguel de Icaza  <miguel@novell.com>
+
+	* Rect.cs: Add more stuff to rect.
+
+2007-06-19  Jackson Harper  <jackson@ximian.com>
+
+	* ResourceCollection.cs: These have a DependencyObject child type.
+
+2007-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.cs: Update to changed unmanaged nullable behavior.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.cs: Store the declaring type and add a few
+	  informational properties.
+	* DependencyObject.cs: Fix debug message.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Duration.cs: Add an internal constructor and properties used by the
+	  marshaller.
+	* DependencyObject.cs: Fix Duration marshalling, the naive approach of
+	  using Marshal.PtrToStructure/StructureToPtr doesn't work because
+	  the managed structure layout isn't fixed. Also implement TimeSpan
+	  marshalling.
+
+2007-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Downloader.cs: Don't request events if we don't have a native object.
+	* Inlines.cs: Construction implemented.
+	* FontWeights.cs: Added.
+	* DependencyObject.cs: GetValue/SetValue: throw an exception if the
+	  object's native handle isn't set.
+
+2007-06-18  Atsushi Enomoto <atsushi@ximian.com>
+
+	* TextDecorations.cs
+	  FontStretches.cs
+	  TextWrapping.cs
+	  Inlines.cs
+	  FontStyles.cs : new.
+
+2007-06-17  Jackson Harper  <jackson@ximian.com>
+
+	* XamlReader.cs: Another moonlight sync, so we can create x:Class elements.
+
+2007-06-16  Jackson Harper  <jackson@ximian.com>
+
+	* XamlReader.cs: Update to set custom attributes (basically a sync
+	with moonlight.cs, I should look into ways of eliminating the code
+	duplication here).
+
+2007-06-16  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Downloader.cs: Handle unset DownloadFailed event.
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyObject.cs: Add support to create new Image type.
+
+2007-06-15  Jackson Harper  <jackson@ximian.com>
+
+	* XamlReader.cs: Add the callback for creating custom element
+	types.
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Downloader.cs: Fix DownloadFailed type to ErrorEventHandler (not 
+	EventHandler).
+
+2007-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyObject.cs: Fix signature (FindName not FindObject)
+
+2007-06-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedDownloader.cs, Downloader.cs: Remove managed downloader.
+
+2007-06-15  Alan McGovern <amcgovern@novell.com> 
+
+	* DependenctObject.cs: Creating instances of GradientStopCollection instead of null
+
+2007-06-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ManagedDownloader.cs: Added.
+	* Downloader.cs: Initialize the native downloader.
+	* DependencyObject.cs: Implement more marshalling.
+
+2007-06-15  Miguel de Icaza  <miguel@novell.com>
+
+	* Downloader.cs: Bind this to the native methods.
+
+	* UIElement.cs: 
+
+	* DependencyObject.cs (CreateObject): Take a ref when an unmanaged
+	object is surfaced to the managed world.
+
+	(ClearPendingDestroys): Routine that disposes the finalized
+	objects that need to be unrefed
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TriggerActionCollection.cs, EventTrigger.cs: Fix native constructor
+	  name.
+	* DependencyObject.cs: Construct TriggerActionCollection properly,
+	  implement enum marshalling (treat them like Int32) and fix string
+	  marshalling.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Creation of TimeLineCollection implemented.
+
+2007-06-14  Alan McGovern <amcgovern@novell.com> 
+
+	* EventTrigger.cs: fixed casing issues with properties.
+
+2007-06-14  Miguel de Icaza  <miguel@novell.com>
+
+	* DependencyObject.cs: Add more mappings.
+
+2007-06-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TriggerCollection.cs, UIElement.cs, Downloader.cs,
+	  ResourceCollection.cs, DependencyObject.cs, FrameworkElement.cs:
+	  Constructor fixes, part 3.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Downloader.cs, DependencyObject.cs: Second pass on constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* UIElement.cs, FrameworkElement.cs: Second pass on constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* UIElement.cs, DependencyObject.cs, FrameworkElement.cs: First part of
+	  fixing internal constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TriggerCollection.cs, Downloader.cs, ResourceCollection.cs: Use
+	  native constructors.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TriggerCollection.cs, UIElement.cs, Downloader.cs,
+	  ResourceCollection.cs, FrameworkElement.cs: Implement GetKind.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Downloader.cs: Fix property lookup, the parameters were mixed up.
+
+2007-06-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Finished implementation of get/setvalue
+	  marshalling.
+
+2007-06-13  Miguel de Icaza  <miguel@novell.com>
+
+	* DependencyObject.cs (FindObject): implement.
+
+	(native): turn into a property, so we can
+	track all the mappings.  For example creating managed objects
+	otherwise that are never marshalled would have never been
+	registered. 
+
+2007-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Downloader.cs: Implement Uri property - since Uri is not an object
+	  inherited from DependencyObject, in unmanaged land it's stored as a
+	  string.
+
+2007-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.cs: Delete Register.
+	* Downloader.cs: Move from DependencyProperty.Register to
+	  DependencyProperty.Lookup.
+
+2007-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Added back Inlines.
+
+2007-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Remove Kind.INLINES, it's not implemented in
+	  unmanaged code.
+
+2007-06-10  Miguel de Icaza  <miguel@novell.com>
+
+	* DependencyObject.cs: Add support for marshalling arrays of
+	doubles. 
+
+2007-06-09  Miguel de Icaza  <miguel@novell.com>
+
+	* DependencyObject.cs (SetValue): Also consider class hierarchy,
+	so a SolidBrush can be assigned to a Brush.
+
+2007-06-08  Miguel de Icaza  <miguel@novell.com>
+
+	* DependencyObject.cs (GetAsValue): Helper.
+	(SetAsValue): first useful implemementation.
+
+2007-06-07  Miguel de Icaza  <miguel@novell.com>
+
+	* DependencyObject.cs: handle bools.
+
+	* XamlReader.cs: Some bits, need to get the unmanaged Value.Kind
+	so I can create the proper managed object upon returning from
+	Load. 
+
+	* DependencyObject.cs (SetValue<T>): Implement this, now we only
+	need to test this ;-)
+
+	* DependecyObject.cs: Partial implementation for GetValue. 
+
+	Drop tons of dead code.
+
+	* DependencyProperty.cs: Rework to use the native dependency
+	objects instead of implementing a managed one.
+
+	Both DependencyObject and DependencyProperty are now wrappers to
+	the unmanaged version for now.    We will need to extend this
+	later to support the managed components when we are ready. 
+
+	* FrameworkElement.cs: Update to new DependencyProperty
+	framework. 
+
+2007-06-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* ErrorEventArgs.cs: New.
+	* ErrorEventHandler.cs: New.
+	* ErrorType.cs: New.
+
+2007-06-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Downloader.cs: New. (incomplete)
+	* Rect.cs: New. Structure (imcomplete)

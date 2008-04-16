@@ -1,0 +1,11 @@
+2008-04-15  Jb Evain  <jbevain@novell.com>
+
+	* AssemblyInfo.cs: on non 2.1 profile, use the profile
+	version as an assembly version, to differenciate better
+	desktop from plugin assemblies.
+
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* AssemblyInfo.cs: change name to System.Windows.
+	Merged from the Moonlight 2 branch.
+
