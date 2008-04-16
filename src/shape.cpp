@@ -304,7 +304,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		if (center) 
 			cairo_matrix_translate (&stretch_transform, 
 						adj_x ? -shape_bounds.w * 0.5 : 0, 
-						adj_y ? -shape_bounds.y * 0.5 : 0);
+						adj_y ? -shape_bounds.h * 0.5 : 0);
 
 		if ((vh && vw) || !this->Is (Type::LINE))
 			cairo_matrix_translate (&stretch_transform, -shape_bounds.x, -shape_bounds.y);
