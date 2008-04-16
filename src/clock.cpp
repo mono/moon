@@ -850,7 +850,11 @@ void
 Clock::DoRepeat (TimeSpan time)
 {
 	if (natural_duration.HasTimeSpan ()) {
-		SetCurrentTime (time % natural_duration.GetTimeSpan());
+		if (natural_duration.GetTimeSpan () != 0)
+			SetCurrentTime (time % natural_duration.GetTimeSpan());
+		else
+			SetCurrentTime (0);
+
 		last_time = current_time;
 	}
 }

@@ -6,6 +6,10 @@
 
 2008-04-16  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Add protection against division by 0.
+
+2008-04-16  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp:
 	* animation.h: Don't detach the ClockGroup from parent on the Completed
 	event. This is now finally no longer needed. While keeping the
