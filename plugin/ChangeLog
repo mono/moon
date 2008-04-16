@@ -1,3 +1,8 @@
+2008-04-16  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::StreamAsFile): use "else if" here,
+	otherwise the notifydata might be gone.
+
 2008-04-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightDependencyObjectObject::GetProperty):

@@ -1064,14 +1064,12 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
 		TryLoad ();
 	}
-
-	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
+	else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
 		
 		dl->NotifyFinished (fname);
 	}
-
-	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
+	else if (IS_NOTIFY_REQUEST (stream->notifyData)) {
 		bool reload = true;
 		// printf ("PluginInstance::StreamAsFile: vm_missing_file: '%s', url: '%s', fname: '%s'.\n", vm_missing_file, stream->url, fname);
 
