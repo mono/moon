@@ -1,7 +1,7 @@
 SUBDIRS = test samples
 CLEANFILES =
 
-SMCS = MONO_PATH="../class/lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../class/lib/2.1/smcs.exe $(CSCFLAGS)
+SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe $(CSCFLAGS)
 
 pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
@@ -138,7 +138,7 @@ dist-hook:
 moonlight_CS=  $(srcdir)/moonlight.cs
 
 if INCLUDE_MONO_RUNTIME
-moonlight.exe: $(moonlight_CS) ../class/lib/2.1/Mono.Moonlight.dll ../class/lib/2.1/System.Windows.dll
-	$(SMCS) -debug -out:moonlight.exe $(moonlight_CS) -r:../class/lib/2.1/Mono.Moonlight.dll -r:../class/lib/2.1/System.Windows.dll
+moonlight.exe: $(moonlight_CS) $(top_builddir)/class/lib/2.1/Mono.Moonlight.dll $(top_builddir)/class/lib/2.1/System.Windows.dll
+	$(SMCS) -debug -out:moonlight.exe $(moonlight_CS) -r:$(top_builddir)/class/lib/2.1/Mono.Moonlight.dll -r:$(top_builddir)/class/lib/2.1/System.Windows.dll
 CLEANFILES += moonlight.exe moonlight.exe.mdb
 endif
