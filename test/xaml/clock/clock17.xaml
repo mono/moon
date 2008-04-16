@@ -23,8 +23,8 @@
 		</EventTrigger>
 	</Canvas.Triggers>
 
-		<Rectangle x:Name="measure1" Canvas.Left="10" Canvas.Top="7" Width="600" Height="3" Fill="Black" />
-		<Rectangle x:Name="measure2" Canvas.Left="10" Canvas.Top="110" Width="600" Height="3" Fill="Black" />
+		<Rectangle x:Name="measure1" Canvas.Left="10" Canvas.Top="7" Width="590" Height="3" Fill="Black" />
+		<Rectangle x:Name="measure2" Canvas.Left="10" Canvas.Top="110" Width="590" Height="3" Fill="Black" />
 		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100">
 			<Rectangle.Fill>
 				<SolidColorBrush x:Name="rectFill" Color="Red" />

@@ -1,3 +1,8 @@
+2008-04-16  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/clock17.xaml: Changing measures for this test as they're a
+	bit confusing.
+
 2008-04-15  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/clock/README.txt:
