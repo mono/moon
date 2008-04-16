@@ -164,6 +164,7 @@
    <Test id="39"
 	inputFile="test-path-ellipse-stretch.xaml"
 	masterFile10="../harness/masters/test-path-ellipse-stretchMaster.png"
+        categories="stretch"
    />
    <Test id="40"
 	inputFile="test-path-ellipse-stroke-2.xaml"
@@ -204,6 +205,7 @@
    <Test id="49"
 	inputFile="test-path-group-stretch.xaml"
 	masterFile10="../harness/masters/test-path-group-stretchMaster.png"
+        categories="stretch"
    />
    <Test id="50"
 	inputFile="test-path-group-stroke.xaml"
@@ -224,6 +226,7 @@
    <Test id="54"
 	inputFile="test-path-line-stretch.xaml"
 	masterFile10="../harness/masters/test-path-line-stretchMaster.png"
+        categories="stretch"
    />
    <Test id="55"
 	inputFile="test-path-line-stroke.xaml"
@@ -244,6 +247,7 @@
    <Test id="59"
 	inputFile="test-path-rectangle-stretch.xaml"
 	masterFile10="../harness/masters/test-path-rectangle-stretchMaster.png"
+        categories="stretch"
    />
    <Test id="60"
 	inputFile="test-path-rectangle-stroke.xaml"
@@ -346,6 +350,7 @@
    <Test id="84"
 	inputFile="test-shape-ellipse-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-stretchMaster.png"
+        categories="stretch"
    />
    <Test id="85"
 	inputFile="test-shape-ellipse-stroke-2.xaml"
@@ -366,6 +371,7 @@
    <Test id="89"
 	inputFile="test-shape-line-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-line-stretchMaster.png"
+        categories="stretch"
    />
    <Test id="90"
 	inputFile="test-shape-line-stroke-bounds.xaml"
@@ -398,6 +404,7 @@
    <Test id="97"
 	inputFile="test-shape-polygon-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-polygon-stretchMaster.png"
+        categories="stretch"
    />
    <Test id="98"
 	inputFile="test-shape-polygon-stroke.xaml"
@@ -422,6 +429,7 @@
    <Test id="103"
 	inputFile="test-shape-polyline-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-polyline-stretchMaster.png"
+        categories="stretch"
    />
    <Test id="104"
 	inputFile="test-shape-polyline-stroke.xaml"
@@ -446,6 +454,7 @@
    <Test id="109"
 	inputFile="test-shape-rectangle-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-rectangle-stretchMaster.png"
+        categories="stretch"
    />
    <Test id="110"
 	inputFile="test-shape-rectangle-stroke.xaml"
