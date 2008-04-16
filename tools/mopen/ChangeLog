@@ -1,3 +1,7 @@
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am: Remove warnings.
+
 2008-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mopen1.cpp, Makefile.am: Added a native version of mopen which
