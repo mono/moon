@@ -537,6 +537,7 @@ class/System.Windows.Browser/Makefile
 gtk/Makefile
 man/Makefile
 gtk/gtksilver.pc
+data/Makefile
 test/Makefile
 test/harness/Makefile
 test/harness/shocker/Makefile
