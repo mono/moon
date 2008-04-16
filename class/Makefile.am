@@ -1,4 +1,4 @@
-SUBDIRS = . Mono.Moonlight
+SUBDIRS = . Mono.Moonlight System.Windows
 
 noinst_SCRIPTS = lib/stamp lib/2.1/smcs.exe
 
