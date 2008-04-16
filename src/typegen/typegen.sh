@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/sh -e
 
-gmcs typegen.cs -r:System.dll,System.Xml.dll -debug:full
+pushd .
 
-BASEDIR=`dirname $0`
-cd "$BASEDIR/../"
+SRC=`dirname $0`/..
+cd $SRC
+
+gmcs typegen/typegen.cs -r:System.dll,System.Xml.dll -debug:full -out:typegen/typegen.exe
 mono --debug typegen/typegen.exe
+rm -f typegen/typegen.exe*
 
-cd "$BASEDIR"
-rm -f typegen.exe
-rm -f typegen.exe.mdb
+popd

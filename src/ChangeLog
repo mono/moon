@@ -1,5 +1,10 @@
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* typegen/typegen.sh: Updated to work correctly independently of the current
+	  directory when executed.
+
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* animation.cpp, animation.h, brush.cpp, brush.h, clock.cpp, clock.h,
 	  collection.cpp, collection.h, dependencyobject.h, downloader.cpp,
 	  downloader.h, Makefile.am, media.cpp, media.h, runtime.cpp, runtime.h,
