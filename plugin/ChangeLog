@@ -1,3 +1,10 @@
+2008-04-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (MoonlightDependencyObjectObject::GetProperty):
+	Just because enums_int_to_str() returns NULL does not mean that
+	the value was invalid, it could also mean that the property is
+	simply an Int32 type.
+
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp, plugin-class.h: Comparing a Kind value to another to
