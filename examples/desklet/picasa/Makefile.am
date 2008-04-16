@@ -10,8 +10,8 @@ example-picasa: Makefile
 	echo "mopen -d $(deskletdir)" >> example-picasa
 	chmod +x example-picasa
 
-picasa.dll: picasa.cs Google.GData.Client.dll
-	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll picasa.cs -r:Google.GData.Client.dll
+picasa.dll: picasa.cs Google.GData.Client.dll $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
+	gmcs -debug -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll picasa.cs -r:Google.GData.Client.dll
 
 Google.GData.Client.dll:
 	wget http://google-gdata.googlecode.com/files/gdata.net.1099.zip -O google.zip

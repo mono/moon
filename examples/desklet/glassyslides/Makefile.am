@@ -10,7 +10,7 @@ example-glassyslides: Makefile
 	echo "mopen -d $(deskletdir)" >> example-glassyslides
 	chmod +x example-glassyslides
 
-slideshow.dll: slideshow.cs
-	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll slideshow.cs
+slideshow.dll: slideshow.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
+	gmcs -debug -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll slideshow.cs
 
 

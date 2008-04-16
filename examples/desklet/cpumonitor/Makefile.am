@@ -10,7 +10,7 @@ example-cpumonitor: Makefile
 	echo "mopen -d $(deskletdir)" >> example-cpumonitor
 	chmod +x example-cpumonitor
 
-monitor.dll: monitor.cs
-	gmcs -debug -target:library -pkg:silverdesktop -r:../../../gtk/gtksilver.dll monitor.cs
+monitor.dll: monitor.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
+	gmcs -debug -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll monitor.cs
 
 
