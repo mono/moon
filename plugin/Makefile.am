@@ -118,7 +118,7 @@ clean-local:
 endif PLUGIN_INSTALL
 
 # custom install rule
-test-plugin: libmoonloader.la libmoonplugin.la moonlight.exe
+test-plugin: libmoonloader.la libmoonplugin.la
 	mkdir -p ~/.mozilla/plugins
 	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so ~/.mozilla/plugins/moonlight.exe ~/.mozilla/plugins/libmoonloader.so
 	cp .libs/libmoonloader.so ~/.mozilla/plugins
