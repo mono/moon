@@ -1631,6 +1631,7 @@ PluginXamlLoader::TryLoad (int *error)
 		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is an unregistered type\n");
 		element->unref ();
 		GetSurface ()->Attach (NULL);
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
 		return NULL;
 	}
 
@@ -1638,6 +1639,7 @@ PluginXamlLoader::TryLoad (int *error)
 		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is a %s\n", element->GetTypeName ());
 		element->unref ();
 		GetSurface ()->Attach (NULL);
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
 		return NULL;
 	}
 
