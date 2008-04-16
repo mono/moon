@@ -1,3 +1,8 @@
+2008-04-16  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp: tweak the origin tweak again.  This should pass
+	test-shape-path-stretch[34].xaml.
+
 2008-04-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for OMPackagingSource.htm
@@ -5,11 +10,6 @@
 	* media.cpp (MediaElement::OnPropertyChanged): If the new source
 	is empty, Invalidate().
 	(MediaElement::Render): Render nothing if our downloader is NULL.
-
-2008-04-16  Larry Ewing  <lewing@novell.com>
-
-	* shape.cpp: tweak the origin tweak again.  This should pass
-	test-shape-path-stretch[34].xaml.
 
 2008-04-16  Larry Ewing  <lewing@novell.com>
 
