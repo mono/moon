@@ -1,4 +1,0 @@
-Name: agmono, internal routines from Silverlight.
-Description: Internal routines to control Silvelright.
-Version: @VERSION@
-Libs: -r:@silverdir@/Mono.Moonlight.dll
