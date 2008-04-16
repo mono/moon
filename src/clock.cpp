@@ -113,8 +113,6 @@ get_now (void)
 }
 
 
-int TimeSource::TickEvent = -1;
-
 TimeSource::TimeSource ()
 {
 }
@@ -232,9 +230,6 @@ typedef struct {
 	void (*func)(gpointer);
 	gpointer data;
 } TickCall;
-
-int TimeManager::UpdateInputEvent = -1;
-int TimeManager::RenderEvent = -1;
 
 TimeManager::TimeManager ()
 {
@@ -619,11 +614,6 @@ time_manager_list_clocks (TimeManager *manager)
 {
 	manager->ListClocks();
 }
-
-int Clock::CurrentTimeInvalidatedEvent = -1;
-int Clock::CurrentStateInvalidatedEvent = -1;
-int Clock::CurrentGlobalSpeedInvalidatedEvent = -1;
-int Clock::CompletedEvent = -1;
 
 Clock::Clock (Timeline *tl)
   : natural_duration (Duration::Automatic)
@@ -1497,19 +1487,4 @@ clock_init (void)
 	TimelineMarker::TextProperty = DependencyObject::Register (Type::TIMELINEMARKER, "Text", Type::STRING);
 	TimelineMarker::TimeProperty = DependencyObject::Register (Type::TIMELINEMARKER, "Time", Type::TIMESPAN);
 	TimelineMarker::TypeProperty = DependencyObject::Register (Type::TIMELINEMARKER, "Type", Type::STRING);
-
-	/* lookup events */
-
-	Type *t = Type::Find (Type::TIMEMANAGER);
-	TimeManager::UpdateInputEvent = t->LookupEvent ("update-input");
-	TimeManager::RenderEvent = t->LookupEvent ("render");
-
-	t = Type::Find (Type::CLOCK);
-	Clock::CurrentTimeInvalidatedEvent = t->LookupEvent ("CurrentTimeInvalidated");
-	Clock::CurrentStateInvalidatedEvent = t->LookupEvent ("CurrentStateInvalidated");
-	Clock::CurrentGlobalSpeedInvalidatedEvent = t->LookupEvent ("CurrentGlobalSpeedInvalidated");
-	Clock::CompletedEvent = t->LookupEvent ("Completed");
-
-	t = Type::Find (Type::TIMESOURCE);
-	TimeSource::TickEvent = t->LookupEvent ("Tick");
 }

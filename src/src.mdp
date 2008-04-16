@@ -86,7 +86,6 @@
     <File name="transform.h" subtype="Code" buildaction="Nothing" />
     <File name="trigger.cpp" subtype="Code" buildaction="Compile" />
     <File name="trigger.h" subtype="Code" buildaction="Nothing" />
-    <File name="type.cpp.in" subtype="Code" buildaction="Nothing" />
     <File name="type.cpp" subtype="Code" buildaction="Compile" />
     <File name="type.h" subtype="Code" buildaction="Nothing" />
     <File name="type.h.in" subtype="Code" buildaction="Nothing" />
@@ -140,6 +139,7 @@
     <File name="swscale-converter.h" subtype="Code" buildaction="Nothing" />
     <File name="typegen/typegen.cs" subtype="Code" buildaction="Nothing" />
     <File name="typegen/typegen.sh" subtype="Code" buildaction="Nothing" />
+    <File name="type-generated.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

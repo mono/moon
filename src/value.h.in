@@ -1,3 +1,15 @@
+/*
+ * value.h: Generated code for the type system.
+ *
+ * Author:
+ *   Rolf Bjarne Kvinge (RKvinge@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+
 #ifndef MOON_VALUE_H
 #define MOON_VALUE_H
 
@@ -6,8 +18,9 @@
 
 #include "type.h"
 
-/* ugly file containing the catchall value type we use.
-*/
+/* 
+ * ugly file containing the catchall value type we use.
+ */
 
 struct Color;
 struct DoubleArray;
@@ -22,6 +35,7 @@ struct Value;
 class Type;
 class DependencyProperty;
 class Surface;
+class AnimationStorage;
 
 /*DO_FWD_DECLS*/
 
@@ -40,7 +54,7 @@ public:
 	Value (gint64 i, Type::Kind as); // Use for TimeSpan and int64 values.
 	Value (gint32 i);
 	Value (Color c);
-	Value (DependencyObject *obj);
+	Value (EventObject *obj);
 	Value (Point pt);
 	Value (Rect rect);
 	Value (RepeatBehavior repeat);
@@ -85,7 +99,7 @@ public:
 
 		return true;
 	}
-
+	bool		Is (Type::Kind type) { return Type::IsSubclassOf (k, type); }
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
@@ -129,7 +143,7 @@ public:
 		gint64 i64;
 		gint32 i32;
 		char *s;
-		DependencyObject *dependency_object;
+		EventObject *dependency_object;
 		Color *color;
 		Point *point;
 		Rect *rect;

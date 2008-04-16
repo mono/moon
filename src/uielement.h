@@ -339,17 +339,17 @@ public:
 	static DependencyProperty* ZIndexProperty;
 
 	// Events you can AddHandler to
-	static int LoadedEvent;
-	static int MouseMoveEvent;
-	static int MouseLeftButtonDownEvent;
-	static int MouseLeftButtonUpEvent;
-	static int KeyDownEvent;
-	static int KeyUpEvent;
-	static int MouseEnterEvent;
-	static int MouseLeaveEvent;
-	static int InvalidatedEvent;
-	static int GotFocusEvent;
-	static int LostFocusEvent;
+	const static int LoadedEvent;
+	const static int MouseMoveEvent;
+	const static int MouseLeftButtonDownEvent;
+	const static int MouseLeftButtonUpEvent;
+	const static int KeyDownEvent;
+	const static int KeyUpEvent;
+	const static int MouseEnterEvent;
+	const static int MouseLeaveEvent;
+	const static int InvalidatedEvent;
+	const static int GotFocusEvent;
+	const static int LostFocusEvent;
 };
 
 G_BEGIN_DECLS

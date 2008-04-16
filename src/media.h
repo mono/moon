@@ -67,7 +67,7 @@ class MediaBase : public FrameworkElement {
 	static DependencyProperty *StretchProperty;
 	static DependencyProperty *DownloadProgressProperty;
 	
-	static int DownloadProgressChangedEvent;
+	const static int DownloadProgressChangedEvent;
 	
 	MediaBase ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
@@ -115,7 +115,7 @@ class Image : public MediaBase {
  public:
 	static GHashTable *surface_cache;
 	
-	static int ImageFailedEvent;
+	const static int ImageFailedEvent;
 	
 	struct CachedSurface {
 		int ref_cnt;
@@ -264,12 +264,12 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *VolumeProperty;
 	
 	// events
-	static int BufferingProgressChangedEvent;
-	static int CurrentStateChangedEvent;
-	static int MarkerReachedEvent;
-	static int MediaEndedEvent;
-	static int MediaFailedEvent;
-	static int MediaOpenedEvent;
+	const static int BufferingProgressChangedEvent;
+	const static int CurrentStateChangedEvent;
+	const static int MarkerReachedEvent;
+	const static int MediaEndedEvent;
+	const static int MediaFailedEvent;
+	const static int MediaOpenedEvent;
 	
 	MediaElement ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };

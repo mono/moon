@@ -71,11 +71,6 @@ DependencyProperty *Downloader::StatusProperty;
 DependencyProperty *Downloader::StatusTextProperty;
 DependencyProperty *Downloader::UriProperty;
 
-int Downloader::CompletedEvent = -1;
-int Downloader::DownloadProgressChangedEvent = -1;
-int Downloader::DownloadFailedEvent = -1;
-
-
 Downloader::Downloader ()
 {
 	downloader_state = Downloader::create_state (this);
@@ -763,13 +758,7 @@ downloader_init (void)
 	Downloader::StatusProperty = DependencyObject::Register (Type::DOWNLOADER, "Status", new Value (0));
 	Downloader::StatusTextProperty = DependencyObject::Register (Type::DOWNLOADER, "StatusText", Type::STRING);
 	Downloader::UriProperty = DependencyObject::Register (Type::DOWNLOADER, "Uri", Type::STRING);
-	
-	/* lookup events */
-	Type *t = Type::Find (Type::DOWNLOADER);
-	Downloader::CompletedEvent               = t->LookupEvent ("Completed");
-	Downloader::DownloadProgressChangedEvent = t->LookupEvent ("DownloadProgressChanged");
-	Downloader::DownloadFailedEvent          = t->LookupEvent ("DownloadFailed");
-	
+		
 	Downloader::SetFunctions (dummy_downloader_create_state,
 				  dummy_downloader_destroy_state,
 				  dummy_downloader_open,

@@ -177,9 +177,6 @@ public:
 	bool pending_removal;
 };
 
-int EventObject::DestroyedEvent = -1;
-
-
 void
 EventObject::FreeHandlers ()
 {
@@ -554,7 +551,7 @@ unregister_depobj_values (gpointer  key,
 	//DependencyProperty *prop = (DependencyProperty*)key;
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->GetKind() >= Type::DEPENDENCY_OBJECT && v->AsDependencyObject() != NULL) {
+	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		//printf ("unregistering from property %s\n", prop->name);
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->RemovePropertyChangeListener (this_obj);
@@ -633,12 +630,12 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 	}
 
 	if (value != NULL){
-		if (!Type::Find (value->GetKind ())->IsSubclassOf (property->value_type)) {
+		if (!value->Is (property->value_type)) {
 			g_set_error (error, VALIDATION_ERROR_QUARK, 1001, "DependencyObject::SetValue, value cannot be assigned to the property %s::%s (property has type '%s', value has type '%s')\n", GetTypeName (), property->name, Type::Find (property->value_type)->name, Type::Find (value->GetKind ())->name);
 			return false;
 		}
 	} else {
-		if (!(property->value_type >= Type::DEPENDENCY_OBJECT) && !property->IsNullable ()) {
+		if (!(Type::IsSubclassOf (property->value_type, Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
 			g_set_error (error, VALIDATION_ERROR_QUARK, 1001, "Can not set a non-nullable scalar type to NULL (property: %s)", property->name);
 			return false;
 		}
@@ -674,12 +671,12 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property);
 
-	if (current_value != NULL && current_value->GetKind () >= Type::DEPENDENCY_OBJECT) {
+	if (current_value != NULL && current_value->Is (Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
 		if (current_as_dep)
 			current_as_dep->SetLogicalParent (NULL);
 	}
-	if (value != NULL && value->GetKind () >= Type::DEPENDENCY_OBJECT) {
+	if (value != NULL && value->Is (Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *new_as_dep = value->AsDependencyObject ();
 		
 		new_as_dep->SetLogicalParent (this);
@@ -691,7 +688,7 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 
 		if (current_value) {
 			// unregister from the existing value
-			if (current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
+			if (current_value->Is (Type::DEPENDENCY_OBJECT)){
 				DependencyObject *dob = current_value->AsDependencyObject();
 
 				if (dob != NULL) {
@@ -715,7 +712,7 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 
 		if (new_value) {
 			// listen for property changes on the new object
-			if (new_value->GetKind () >= Type::DEPENDENCY_OBJECT){
+			if (new_value->Is (Type::DEPENDENCY_OBJECT)){
 				DependencyObject *dob = new_value->AsDependencyObject();
 				
 				if (dob != NULL) {
@@ -744,7 +741,7 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 
 		if (!listeners_notified)
 			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
-				   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
+				   Type::Find(property->type)->GetName (), property->name, GetTypeName ());
 
 		if (current_value)
 			delete current_value;
@@ -782,7 +779,7 @@ unregister_depobj_names (gpointer  key,
 	NameScope *from_ns = (NameScope*)user_data;
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->GetKind() >= Type::DEPENDENCY_OBJECT && v->AsDependencyObject() != NULL) {
+	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->UnregisterAllNamesRootedAt (from_ns);
 	}
@@ -796,7 +793,7 @@ register_depobj_names (gpointer  key,
 	NameScope *to_ns = (NameScope*)user_data;
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->GetKind() >= Type::DEPENDENCY_OBJECT && v->AsDependencyObject() != NULL) {
+	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->RegisterAllNamesRootedAt (to_ns);
 	}
@@ -858,7 +855,7 @@ DependencyObject::GetValue (const char *name)
 	property = GetDependencyProperty (name);
 
 	if (property == NULL) {
-		g_warning ("This object (of type '%s') doesn't have a property called '%s'\n", GetType ()->name, name);
+		g_warning ("This object (of type '%s') doesn't have a property called '%s'\n", GetType ()->GetName (), name);
 		return NULL;
 	}
 
@@ -876,7 +873,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	}
 
 	// detach from the existing value
-	if (current_value->GetKind () >= Type::DEPENDENCY_OBJECT){
+	if (current_value->Is (Type::DEPENDENCY_OBJECT)){
 		DependencyObject *dob = current_value->AsDependencyObject();
 
 		if (dob != NULL)
@@ -906,7 +903,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 
 		if (!listeners_notified)
 			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
-				   Type::Find(property->type)->name, property->name, Type::Find(GetObjectType())->name);
+				   Type::Find(property->type)->GetName (), property->name, GetTypeName ());
 	}
 
 	delete current_value;
@@ -925,7 +922,7 @@ DependencyObject::SetValue (const char *name, Value *value)
 	property = GetDependencyProperty (name);
 
 	if (property == NULL) {
-		g_warning ("This object (of type '%s') doesn't have a property called '%s'\n", GetType ()->name, name);
+		g_warning ("This object (of type '%s') doesn't have a property called '%s'\n", GetTypeName (), name);
 		return;
 	}
 
@@ -938,7 +935,7 @@ free_value (gpointer key, gpointer value, gpointer data)
 	Value *v = (Value*)value;
 
 	// detach from the existing value
-	if (v->GetKind () >= Type::DEPENDENCY_OBJECT){
+	if (v->Is (Type::DEPENDENCY_OBJECT)){
 		DependencyObject *dob = v->AsDependencyObject();
 
 		if (dob != NULL)
@@ -1039,10 +1036,10 @@ DependencyObject::GetDependencyProperty (Type::Kind type, const char *name, bool
 	if (current_type == NULL)
 		return NULL;
 	
-	if (current_type->parent == Type::INVALID)
+	if (current_type->GetParent () == Type::INVALID)
 		return NULL;
 
-	return GetDependencyProperty (current_type->parent, name);
+	return GetDependencyProperty (current_type->GetParent (), name);
 }
 
 bool
@@ -1237,7 +1234,7 @@ set_surface (gpointer key, gpointer value, gpointer data)
 {
 	Surface *s = (Surface*)data;
 	Value *v = (Value*)value;
-	if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
+	if (v->Is (Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject();
 		dob->SetSurface (s);
 	}
@@ -1449,7 +1446,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 				return NULL;
 			}
 	
-			res = DependencyObject::GetDependencyProperty (t->type, propn);
+			res = DependencyObject::GetDependencyProperty (t->GetKind (), propn);
 			if (!res) {
 				g_warning ("Can't find '%s' property in '%s'", propn, typen);
 				g_free (propn);
@@ -1458,7 +1455,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 				return NULL;
 			}
 
-			if (! res->is_attached_property && ! lu->Is (t->type)) {
+			if (! res->is_attached_property && ! lu->Is (t->GetKind ())) {
 				// We try to be gracefull here and do something smart...
 				res = DependencyObject::GetDependencyProperty (lu->GetObjectType (), propn);
 
@@ -1545,8 +1542,5 @@ DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 dependencyobject_init(void)
 {
-	Type *t = Type::Find(Type::EVENTOBJECT);
-	EventObject::DestroyedEvent = t->LookupEvent ("Destroyed");
-
 	DependencyObject::NameProperty = DependencyObject::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
 }

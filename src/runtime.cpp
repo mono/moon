@@ -58,9 +58,6 @@
 #define TIME_CLIP 0
 #define TIME_REDRAW 1
 
-int Surface::ResizeEvent = -1;
-int Surface::FullScreenChangeEvent = -1;
-int Surface::ErrorEvent = -1;
 pthread_t Surface::main_thread = 0;
 
 static bool inited = false;
@@ -2147,12 +2144,6 @@ runtime_init (guint32 flags)
 	media_init ();
 	panel_init ();
 	stylus_init ();
-
-	/* lookup surface events */
-	Type *t = Type::Find (Type::SURFACE);
-	Surface::ResizeEvent = t->LookupEvent ("Resize");
-	Surface::FullScreenChangeEvent = t->LookupEvent ("FullScreenChange");
-	Surface::ErrorEvent = t->LookupEvent ("Error");
 }
 
 //
@@ -2245,7 +2236,6 @@ runtime_shutdown (void)
 	}
 #endif
 
-	Type::Shutdown ();
 	inited = false;
 	
 

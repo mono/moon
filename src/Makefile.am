@@ -109,6 +109,7 @@ libmoon_la_SOURCES = 	\
 	transform.cpp	\
 	trigger.cpp	\
 	type.cpp	\
+	type-generated.cpp	\
 	uielement.cpp	\
 	uri.cpp		\
 	utils.cpp	\

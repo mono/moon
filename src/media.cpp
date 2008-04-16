@@ -40,8 +40,6 @@ DependencyProperty *MediaBase::SourceProperty;
 DependencyProperty *MediaBase::StretchProperty;
 DependencyProperty *MediaBase::DownloadProgressProperty;
 
-int MediaBase::DownloadProgressChangedEvent = -1;
-
 MediaBase::MediaBase ()
 {
 	source.downloader = NULL;
@@ -226,14 +224,6 @@ DependencyProperty *MediaElement::NaturalVideoHeightProperty;
 DependencyProperty *MediaElement::NaturalVideoWidthProperty;
 DependencyProperty *MediaElement::PositionProperty;
 DependencyProperty *MediaElement::VolumeProperty;
-
-int MediaElement::BufferingProgressChangedEvent = -1;
-int MediaElement::CurrentStateChangedEvent = -1;
-int MediaElement::MarkerReachedEvent = -1;
-int MediaElement::MediaEndedEvent = -1;
-int MediaElement::MediaFailedEvent = -1;
-int MediaElement::MediaOpenedEvent = -1;
-
 
 enum MediaElementFlags {
 	Loaded            = (1 << 0),  // set once OnLoaded has been called
@@ -1679,8 +1669,6 @@ media_element_set_volume (MediaElement *media, double value)
 //
 GHashTable *Image::surface_cache = NULL;
 
-int Image::ImageFailedEvent = -1;
-
 Image::Image ()
 {
 	create_xlib_surface = true;
@@ -2265,21 +2253,6 @@ media_init (void)
 	MediaElement::NaturalVideoWidthProperty = DependencyObject::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::DOUBLE, false, true);
 	MediaElement::PositionProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::VolumeProperty = DependencyObject::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
-
-	/* lookup events */
-	Type *t = Type::Find (Type::MEDIABASE);
-	MediaBase::DownloadProgressChangedEvent = t->LookupEvent ("DownloadProgressChanged");
-	
-	t = Type::Find (Type::MEDIAELEMENT);
-	MediaElement::BufferingProgressChangedEvent = t->LookupEvent ("BufferingProgressChanged");
-	MediaElement::CurrentStateChangedEvent = t->LookupEvent ("CurrentStateChanged");
-	MediaElement::MarkerReachedEvent = t->LookupEvent ("MarkerReached");
-	MediaElement::MediaEndedEvent = t->LookupEvent ("MediaEnded");
-	MediaElement::MediaFailedEvent = t->LookupEvent ("MediaFailed");
-	MediaElement::MediaOpenedEvent = t->LookupEvent ("MediaOpened");
-
-	t = Type::Find (Type::IMAGE);
-	Image::ImageFailedEvent = t->LookupEvent ("ImageFailed");
-	
+ 	
 	Media::Initialize ();
 }

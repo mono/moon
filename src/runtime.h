@@ -111,9 +111,9 @@ class Surface : public EventObject {
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
 
-	static int ResizeEvent;
-	static int FullScreenChangeEvent;
-	static int ErrorEvent;
+	const static int ResizeEvent;
+	const static int FullScreenChangeEvent;
+	const static int ErrorEvent;
 
 	bool GetFullScreen () { return full_screen; }
 	void SetFullScreen (bool value);

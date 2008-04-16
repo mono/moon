@@ -25,18 +25,6 @@
 
 //#define DEBUG_INVALIDATE 0
 
-int UIElement::LoadedEvent = -1;
-int UIElement::MouseMoveEvent = -1;
-int UIElement::MouseLeftButtonDownEvent = -1;
-int UIElement::MouseLeftButtonUpEvent = -1;
-int UIElement::KeyDownEvent = -1;
-int UIElement::KeyUpEvent = -1;
-int UIElement::MouseEnterEvent = -1;
-int UIElement::MouseLeaveEvent = -1;
-int UIElement::InvalidatedEvent = -1;
-int UIElement::GotFocusEvent = -1;
-int UIElement::LostFocusEvent = -1;
-
 void
 UIElement::UpdateBounds (bool force_redraw)
 {
@@ -724,20 +712,6 @@ uielement_init (void)
 	UIElement::TriggersProperty = DependencyObject::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
 	UIElement::VisibilityProperty = DependencyObject::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
 	UIElement::ZIndexProperty = DependencyObject::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;
-
-	/* lookup events */
-	Type* t = Type::Find (Type::UIELEMENT);
-	UIElement::LoadedEvent = t->LookupEvent ("Loaded");
-	UIElement::MouseMoveEvent = t->LookupEvent ("MouseMove");
-	UIElement::MouseLeftButtonDownEvent = t->LookupEvent ("MouseLeftButtonDown");
-	UIElement::MouseLeftButtonUpEvent = t->LookupEvent ("MouseLeftButtonUp");
-	UIElement::KeyDownEvent = t->LookupEvent ("KeyDown");
-	UIElement::KeyUpEvent = t->LookupEvent ("KeyUp");
-	UIElement::MouseEnterEvent = t->LookupEvent ("MouseEnter");
-	UIElement::MouseLeaveEvent = t->LookupEvent ("MouseLeave");
-	UIElement::InvalidatedEvent = t->LookupEvent("Invalidated");
-	UIElement::GotFocusEvent = t->LookupEvent("GotFocus");
-	UIElement::LostFocusEvent = t->LookupEvent("LostFocus");
 }
 
 UIElement *

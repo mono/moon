@@ -103,7 +103,7 @@ Value::Value (const Value& v)
 		*u.keytime = KeyTime (*v.u.keytime);
 		break;
 	default:
-		if (k >= Type::DEPENDENCY_OBJECT && u.dependency_object)
+		if (Is (Type::EVENTOBJECT) && u.dependency_object)
 			u.dependency_object->ref ();
 		break;
 	}
@@ -151,14 +151,14 @@ Value::Value (Color c)
 	*u.color = Color (c);
 }
 
-Value::Value (DependencyObject *obj)
+Value::Value (EventObject *obj)
 {
 	Init ();
 	if (obj == NULL) {
-		k = Type::DEPENDENCY_OBJECT;
+		k = Type::EVENTOBJECT;
 	}
 	else {
-		if (obj->GetObjectType () < Type::DEPENDENCY_OBJECT) {
+		if (!Type::IsSubclassOf (obj->GetObjectType (), Type::EVENTOBJECT)) {
 			g_warning ("creating invalid dependency object Value");
 			k = Type::INVALID;
 			u.dependency_object = NULL;
@@ -265,7 +265,7 @@ Value::FreeValue ()
 		g_free (u.keytime);
 		break;
 	default:
-		if (GetKind () >= Type::DEPENDENCY_OBJECT && u.dependency_object)
+		if (Is (Type::EVENTOBJECT) && u.dependency_object)
 			u.dependency_object->unref ();
 	}
 }
@@ -335,8 +335,8 @@ Value::ToString ()
 		g_string_append_printf (str, "{keytime/TODO}");
 		break;
 	default:
-		if (k >= Type::DEPENDENCY_OBJECT && u.dependency_object)
-			g_string_append_printf (str, "[%s]", u.dependency_object->GetName ());
+		if (Is (Type::EVENTOBJECT) && u.dependency_object)
+			g_string_append_printf (str, "[%s <%s>]", u.dependency_object->GetTypeName (), Is (Type::DEPENDENCY_OBJECT) ? AsDependencyObject ()->GetName () : "no name");
 		else
 			g_string_append_printf (str, "UnknownType");
 		break;

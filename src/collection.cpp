@@ -62,7 +62,6 @@ Collection::EmitChanged (CollectionChangeType type, DependencyObject *obj, Prope
 	args->type = type;
 	args->obj = obj;
 	args->prop = element_args ? element_args->property : NULL;
-	Emit (ChangedEvent, args);
 
 	if (closure) {
 		closure->OnCollectionChanged (this, type, obj, element_args);
@@ -99,7 +98,7 @@ Collection::Add (DependencyObject *data)
 {
 	if (!Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType())) {
 		g_warning ("Cannot add children of type `%s' to a collection of type `%s'.  Its children must be subclasses of `%s'.",
-			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
+			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->GetName ());
 		return -1;
 	}
 
@@ -126,7 +125,7 @@ Collection::Insert (int index, DependencyObject *data)
 {
 	if (!Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType())) {
 		g_warning ("Cannot add children of type `%s' to a collection of type `%s'.  Its children must be subclasses of `%s'.",
-			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
+			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->GetName ());
 		return false;
 	}
 
@@ -158,7 +157,7 @@ Collection::SetVal (int index, DependencyObject *data)
 {
 	if (!Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType())) {
 		g_warning ("Cannot add children of type `%s' to a collection of type `%s'.  Its children must be subclasses of `%s'.",
-			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->name);
+			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->GetName ());
 		return NULL;
 	}
 
@@ -336,17 +335,10 @@ Collection::RegisterAllNamesRootedAt (NameScope *to_ns)
 
 DependencyProperty *Collection::CountProperty;
 
-int Collection::ChangedEvent = -1;
-
 void
 collection_init (void)
 {
 	Collection::CountProperty = DependencyObject::Register (Type::COLLECTION, "Count", Type::INT32);
-
-	Type *t = Type::Find (Type::COLLECTION);
-	Collection::ChangedEvent = t->LookupEvent ("__moonlight_CollectionChanged");
-	// make this event inaccessible to javascript.
-	t->HideEvent ("__moonlight_CollectionChanged");
 }
 
 bool

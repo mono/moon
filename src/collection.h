@@ -78,9 +78,6 @@ class Collection : public DependencyObject {
 	void EmitChanged (CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 
 	static DependencyProperty *CountProperty;
-
-	// Events you can AddHandler to
-	static int ChangedEvent;
 };
 
 bool CollectionNodeFinder (List::Node *n, void *data);

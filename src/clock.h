@@ -192,7 +192,7 @@ class TimeSource : public EventObject {
 
 	virtual TimeSpan GetNow ();
 
-	static int TickEvent;
+	const static int TickEvent;
 
 	virtual Type::Kind GetObjectType () { return Type::TIMESOURCE; };
 };
@@ -304,10 +304,10 @@ class Clock : public DependencyObject {
 	virtual void SetTimeManager (TimeManager *manager) { time_manager = manager; }
 
 	// Events you can AddHandler to
-	static int CurrentTimeInvalidatedEvent;
-	static int CurrentStateInvalidatedEvent;
-	static int CurrentGlobalSpeedInvalidatedEvent;
-	static int CompletedEvent;
+	const static int CurrentTimeInvalidatedEvent;
+	const static int CurrentStateInvalidatedEvent;
+	const static int CurrentGlobalSpeedInvalidatedEvent;
+	const static int CompletedEvent;
 
  protected:
 	TimeSpan ComputeNewTime ();
@@ -430,8 +430,8 @@ class TimeManager : public EventObject {
 	void SetMaximumRefreshRate (int hz);
 
 	// Events you can AddHandler to
-	static int UpdateInputEvent;
-	static int RenderEvent;
+	const static int UpdateInputEvent;
+	const static int RenderEvent;
 
 	virtual Type::Kind GetObjectType () { return Type::TIMEMANAGER; };
 

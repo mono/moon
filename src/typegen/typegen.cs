@@ -1,3 +1,14 @@
+/*
+ * typegen.cs: Code generator for the type system
+ *
+ * Author:
+ *   Rolf Bjarne Kvinge (RKvinge@novell.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
 
 using System;
 using System.Text;
@@ -7,191 +18,499 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-class gen {
+class TypeInfo {
+	public string Name; // The name as it appears in code (char*, Point[], etc)
+	private string _KindName; // The name as it appears in the Kind enum (STRING, POINT_ARRAY, etc)
+	public string Base; // The parent type
+	public string Code; // The code in this class
+	public string C_Constructor; // The C constructor
+	public bool IsStruct; // class or struct
+	public string Header; // The .h file where the class was defined
+	public int Line;
+	public string ContentProperty;
+	public List<string> Events = new List<string> ();
+	public int TotalEventCount;
+	public Types types;
+	public bool Include; // Force inclusion of this type into the type system (for manual types, char, point[], etc)
+	public bool IsValueType;
+	public bool ImplementsGetObjectType;
+	
+	public bool IsNested {
+		get {
+			return Name.Contains ("::");
+		}
+	}
+	
+	public int GetEventId (string Event)
+	{
+		if (Events != null && Events.Contains (Event)) {
+			return Events.IndexOf (Event) + GetBaseEventCount ();
+		} else {
+			return types [Base].GetEventId (Event);
+		}
+	}
+	
+	public string KindName {
+		get {
+			if (_KindName != null)
+				return _KindName;
+			if (Name == null || Name == string.Empty)
+				return "INVALID";
+			return Generator.getU (Name);
+		} 
+		set {
+			_KindName = value;
+		}
+	}
+			
+	public int GetBaseEventCount ()
+	{
+		if (Base == null || Base == string.Empty || !types.ContainsKey (Base))
+			return 0;
+		else
+			return types [Base].GetTotalEventCount ();
+	}
+	
+	public int GetTotalEventCount ()
+	{
+		return Events.Count + GetBaseEventCount ();
+	}
+	
+	public void Generate ()
+	{
+		// C constructor
+		for (int i = 0; i < Name.Length; i++) {
+			if (char.ToUpper (Name [i]) == Name [i] && C_Constructor != null)
+				C_Constructor += "_" + char.ToLower (Name [i]);
+			else
+				C_Constructor += char.ToLower (Name [i]);
+		}
+		C_Constructor += "_new";
+		
+		if (!types.contents.Contains (" " + C_Constructor))
+			C_Constructor = null;
+		
+		// Content property
+		if (Code != null) {
+			Match m = Regex.Match (Code, ".*@ContentProperty\\s*=\\s*\"(.*)\"");
+			if (m.Success) {
+				ContentProperty = m.Groups [1].Value;
+			}
+		}
+		
+		// Events 
+		foreach (string l in Code.Split ('\n')) {
+			string line = l;
+			line = line.Trim ();
+			if ((line.StartsWith ("static int ") || line.StartsWith ("const static int")) && line.EndsWith ("Event;")) {
+				line = line.Replace ("static int", "");
+				line = line.Replace ("const", "");
+				line = line.Replace ("Event;", "");
+				line = line.Replace (" ", "");
+				Events.Add (line);
+				//Console.WriteLine ("Found event {0} for type {1}", line, Name);
+			}
+		}
+		Events.Sort ();
+		
+		// ImplementsGetObjectType
+		ImplementsGetObjectType = Code.Contains ("GetObjectType");
+	}
+		
+	public bool Is (string name)
+	{
+		if (Name == name)
+			return true;
+		if (Name == string.Empty || Name == null || Base == string.Empty)
+			return false;
+		if (types.ContainsKey (Base))
+			return types [Base].Is (name);
+		else
+			return false;
+	}
+	
+	public bool IsEventObject ()
+	{
+		return Is ("EventObject");
+	}
+	
+	public TypeInfo ()
+	{
+	}
+	
+	public TypeInfo (string Name, string KindName, string Base, bool Include)
+	{
+		this.Name = Name;
+		this.KindName = KindName;
+		this.Base = Base;
+		this.Include = Include;
+	}
+	
+}
+
+class Types : Dictionary <string, TypeInfo> {
+	public string contents;
+
+	TypeInfo [] sorted;
+	
+	public Types () : base (StringComparer.InvariantCulture)
+	{
+		
+	}
+	
+	public IEnumerable <TypeInfo> SortedList {
+		get {
+			if (sorted == null) {
+				int i = 0;
+				sorted = new TypeInfo [Count];
+				foreach (TypeInfo type in this.Values)
+					sorted [i++] = type;
+				Array.Sort (sorted, delegate (TypeInfo x, TypeInfo y) {
+					return string.Compare (x.KindName, y.KindName);
+				});
+			}
+			return sorted;
+		}
+	}
+	
+	public void Add (TypeInfo tp)
+	{
+		if (!ContainsKey (tp.Name)) {
+			base.Add (tp.Name, tp);
+		} else {
+			//We already found this type while parsing the headers, so just set the necessary info.
+			this [tp.Name].Include = tp.Include;
+			this [tp.Name].KindName = tp.KindName;
+		}
+		sorted = null;
+	}
+	
+	public StringBuilder GetKindsForEnum ()
+	{
+		StringBuilder text = new StringBuilder ();
+		foreach (TypeInfo type in SortedList) {
+			if (!type.ImplementsGetObjectType && !type.Include)
+				continue;
+			
+			text.AppendLine ("\t\t" + type.KindName + ",");
+		}
+		return text;
+	}
+	
+}
+
+class Generator {
+#region Helper methods
 	static void Main ()
 	{
-		ArrayList classes = new ArrayList ();
-		Hashtable bases = new Hashtable ();
-		Hashtable cctors = new Hashtable ();
-		Hashtable contprops = new Hashtable ();
+		Types types = new Types ();
 
-		GetClasses (classes, bases, cctors, contprops);
+		GetTypes (types);
 
-		GenerateTypeCpp (classes, bases, cctors, contprops);
-		GenerateValueH (classes, bases);	
-		GenerateValueCpp (classes, bases);
-		GenerateTypeH (classes, bases);
-		GenerateKindCs (classes, bases);
-
-		CheckGetObjectType (classes, bases);
+		GenerateTypeStaticCpp (types);
+		
+		GenerateValueH (types);	
+		GenerateTypeH (types);
+		GenerateKindCs (types);
+	}
+	
+	static string RemoveComments (string v)
+	{
+		int a, b;
+		a = v.IndexOf ("/*");
+		while (a >= 0) {
+			b = v.IndexOf ("*/", a + 2);
+			if (v.IndexOf ("/* @Content", a) != a)
+				v = v.Remove (a, b - a + 2);
+			else
+				a = b;
+			a = v.IndexOf ("/*", a + 2);
+		}
+		return v;
 	}
 
-	static void CheckGetObjectType (ArrayList classes, Hashtable bases)
+	public static string getU (string v)
 	{
-		string [] files = Directory.GetFiles (Environment.CurrentDirectory, "*.h");
+		if (v.Contains ("::"))
+			v = v.Substring (v.IndexOf ("::") + 2);
+
+		v = v.ToUpper ();
+		v = v.Replace ("DEPENDENCYOBJECT", "DEPENDENCY_OBJECT");
+		if (v.Length > "COLLECTION".Length)
+			v = v.Replace ("COLLECTION", "_COLLECTION");
+		if (v.Length > "DICTIONARY".Length)
+			v = v.Replace ("DICTIONARY", "_DICTIONARY");
+		return v;
+	}
+	
+	static void GetTypes (Types types)
+	{
+		Stack<int> current_type_brackets = new Stack<int> ();
+		Stack<TypeInfo> current_types = new Stack<TypeInfo> ();
 		StringBuilder all = new StringBuilder ();
 		string contents;
+		bool ifdefed_out = false;
+		int current_brackets = 0;
+		string file = "";
+		int linenumber = 0;
+		TypeInfo current_type = null;
 
-		foreach (string file in files) {
-			all.AppendLine (File.ReadAllText (file));
+		foreach (string f in Directory.GetFiles (Environment.CurrentDirectory, "*.h")) {
+			all.AppendLine ("#file " + f);
+			all.AppendLine (File.ReadAllText (f));
 		}
-		all.AppendLine ("class : ;");
-		contents = all.ToString ();
+		
+		types.contents = all.ToString ();
+		
+		contents = types.contents;
 		contents = RemoveComments (contents);
-
-		foreach (string c in classes) {
-			int a, b;
-			int start = 0;
-			int next;
-	
-			if (c == "DependencyObject")
-				continue;
-
-			do {
-				start = contents.IndexOf (Environment.NewLine + "class " + c + " ", start);
-				next = contents.IndexOf (Environment.NewLine + "class ", start + 10);
 				
-				if (start == -1) {
-					Console.WriteLine ("Could not find the class " + c);
-					break;
-				}
-
-				a = contents.IndexOf (":", start);
-				b = contents.IndexOf (";", start);
-				if (a > b)
-					start++;
-			} while (start >= 0 && a > b);
-
-			if (start == -1)
+		string [] lines = contents.Split (new char [] {'\n', '\r'});
+		
+		for (int i = 0; i < lines.Length; i++) {
+			string l = lines [i];
+			bool is_class;
+			linenumber++;
+			if (l.StartsWith ("#if 0") || l.StartsWith ("#if false")) {
+				ifdefed_out = true;
 				continue;
+			} else if (ifdefed_out && l.StartsWith ("#endif")) {
+				ifdefed_out = false;
+				continue;
+			} else if (ifdefed_out) {
+				continue;
+			} else if (l.StartsWith ("#file ")) {
+				file = l.Substring (6);
+				ifdefed_out = false;
+				linenumber = 0;
+				continue;
+			}
+			
+			current_type = null;
+			if (current_types.Count != 0)
+				current_type = current_types.Peek ();
+			if (current_type != null) {
+				for (int k = 0; k < l.Length; k++) {
+					if (l [k] == '{')
+						current_brackets++;
+					else if (l [k] == '}')
+						current_brackets--;
+				}
+				current_type.Code += l + "\n";
+				if (current_brackets <= 0) {
+					current_types.Pop ();
+					current_brackets = current_type_brackets.Pop ();
+				}
+			}
+			
+			l = l.Trim ();
+			
+			if (l.EndsWith (";"))
+				continue;
+			
+			if (!l.StartsWith ("class ") && !l.StartsWith ("struct "))
+				continue;
+			
 
-			if (contents.IndexOf ("Type::Kind GetObjectType", start, next - start) == -1) {
-				Console.WriteLine ("Warning: The class '{0}' does not seem to have an implementation of GetObjectType.", c);
-				//Console.WriteLine (">Code Checked:");
-				//Console.WriteLine (contents.Substring (start, next - start));	
-			} else if (contents.IndexOf ("Type::" + getU (c), start, next - start) == -1) {
-				Console.WriteLine ("Warning: The method '{0}::GetObjectType' does not seem to return the correct type (didn't find 'Type::{1}' anywhere within the headers).", c, getU (c));
+			is_class = l.StartsWith ("class ");
+			
+			l = l.Replace ("{", "");
+			l = l.Replace ("class ", "");
+			l = l.Replace ("struct ", "");
+			l = l.Replace (";", "");
+			l = l.Replace ("public", "");
+			l = l.Replace ("\t", "");
+			l = l.Replace (" ", "");
+
+			string c, p;
+			if (l.Contains (":")) {
+				c = l.Substring (0, l.IndexOf (":")).Trim ();
+				p = l.Substring (l.IndexOf (":") + 1).Trim ();
 			} else {
-				//Console.WriteLine ("OK: " + c);
+				c = l;
+				p = "";
 			}
-		}
-	}
-
-	static void GetClasses (ArrayList classes, Hashtable bases, Hashtable cctors, Hashtable contprops)
-	{
-		string [] files = Directory.GetFiles (Environment.CurrentDirectory, "*.h");
-		ArrayList tmp = new ArrayList ();
-		string next_content_property = null;
-
-		foreach (string file in files) {
-			string [] lines = File.ReadAllLines (file);
-			foreach (string line in lines) {
-				string l = line;
-
-				// This could probably be replaced by a regexp
-				if (!l.Trim ().StartsWith ("class ")) {
-
-
-					Match m = Regex.Match (l, "@ContentProperty\\s*=\\s*\"(.*)\"");
-					if (m.Success) {
-						next_content_property = m.Groups [1].Value;
-					}
-
-
-                                        if (Regex.IsMatch (l, "_new\\s*\\(\\s*(void)?\\s*\\);")) {
-                                                MapClassNameToCCtor (l.Trim (), cctors);
-                                        }
-					continue;
-				}
-
-				if (!l.Contains (":"))
-					continue;
-
-				while (l.Contains ("/*"))
-					l = l.Replace (l.Substring (l.IndexOf ("/*"), l.IndexOf ("*/") - l.IndexOf ("/*") + 2), "");
-
-				l = l.Replace ("{", "");
-				l = l.Replace ("class ", "");
-				l = l.Replace (":", "");
-				l = l.Replace (";", "");
-				l = l.Replace ("public", "");
-				while (l.Contains ("  "))
-					l = l.Replace ("  ", "");
-
-				string c, p;
-				if (l.Contains (" ")) {
-					c = l.Substring (0, l.IndexOf (" "));
-					p = l.Substring (l.IndexOf (" ") + 1);
-				} else {
-					c = l;
-					p = "";
-				}
-				if (tmp.Contains (c)) {
-					//Console.WriteLine ("Already added " + c);
-				} else {
-					tmp.Add (c.Trim ());
-					if (next_content_property != null) {
-						contprops [c.Trim ()] = next_content_property;
-					}
-				}
-				if (p != null && p != string.Empty)  {
-					if (bases.ContainsKey (c.Trim())) {
-						Console.WriteLine ("Adding {0} -> {1} more than once to `bases' collection",
-								   c.Trim (), p.Trim ());
-					}
-					else {
-						bases.Add (c.Trim (), p.Trim ());
-					}
-				}
-
-				next_content_property = null;
-			}
-		}
-		tmp.Sort ();
-		foreach (string c in tmp) {
-			if (!bases.ContainsKey (c))
+			
+			if (c.Trim () == string.Empty) {
+				//Console.WriteLine ("Found struct/class with no name: {0} at {1}:{2}", lines [i], file, linenumber);
 				continue;
-
-			// Check that the class inherits from DO
-			string pp = c;	
-			while (pp != "DependencyObject") {
-				if (!bases.ContainsKey (pp))
+			}
+			
+			if (current_types.Count != 0)
+				c = current_types.Peek ().Name + "::" + c;
+			
+			//Console.WriteLine ("/********* {0} " + c + " : public " +p + " *********/", is_class ? "class" : "struct");
+			if (types.ContainsKey (c)) {
+				TypeInfo ti = types [c];
+				Console.WriteLine ("There is already a type named " + c + ", found in " + ti.Header + "(" + ti.Line.ToString () + "), this one in " + file + "(" + linenumber.ToString () + ")");
+				continue;
+			}
+			
+			TypeInfo t = new TypeInfo ();
+			t.types = types;
+			t.Name = c;
+			t.Base = p;
+			t.Header = System.IO.Path.GetFileName (file);
+			t.Line = linenumber;
+			t.IsStruct = !is_class;
+			t.Code = lines [i] + "\n";
+			for (int k = i - 1; k >= 0; k--) {
+				// Look backwards for content properties, include them in the code
+				if (lines [k].StartsWith ("/*"))
+					t.Code = lines [k] + "\n" + t.Code;
+				else
 					break;
-				pp = (string) bases [pp];
 			}
-			if (pp != "DependencyObject")
+			types.Add (t);
+			current_type = t;
+			current_brackets = 1;
+			current_types.Push (t);
+			current_type_brackets.Push (current_brackets);
+		}
+		
+		foreach (TypeInfo t in types.Values)
+			t.Generate ();
+		
+		// Add all the manual types
+		types.Add (new TypeInfo ("bool", "BOOL", null, true));
+		types.Add (new TypeInfo ("double", "DOUBLE", null, true));
+		types.Add (new TypeInfo ("uint64_t", "UINT64", null, true));
+		types.Add (new TypeInfo ("int64_t", "INT64", null, true));
+		types.Add (new TypeInfo ("uint32_t", "UINT32", null, true));
+		types.Add (new TypeInfo ("int32_t", "INT32", null, true));
+		types.Add (new TypeInfo ("char*", "STRING", null, true));
+		types.Add (new TypeInfo ("Color", "COLOR", null, true));
+		types.Add (new TypeInfo ("Point", "POINT", null, true));
+		types.Add (new TypeInfo ("Rect", "RECT", null, true));
+		types.Add (new TypeInfo ("RepeatBehavior", "REPEATBEHAVIOR", null, true));
+		types.Add (new TypeInfo ("Duration", "DURATION", null, true));
+		types.Add (new TypeInfo ("TimeSpan", "TIMESPAN", null, true));
+		types.Add (new TypeInfo ("KeyTime", "KEYTIME", null, true));
+		types.Add (new TypeInfo ("double*", "DOUBLE_ARRAY", null, true));
+		types.Add (new TypeInfo ("Point*", "POINT_ARRAY", null, true));
+		types.Add (new TypeInfo ("NPObj", "NPOBJ", null, true));
+	}
+	
+	static void WriteAllText (string filename, string contents)
+	{
+		if (File.ReadAllText (filename) != contents) {
+			File.WriteAllText (filename, contents);
+			Console.WriteLine ("Wrote {0}.", filename);
+		} else {
+			Console.WriteLine ("Skipped writing {0}, no changes.", filename);
+		}
+	}
+#endregion
+		
+	static void GenerateTypeStaticCpp (Types types)
+	{
+		List<string> headers = new List<string> ();
+		
+		StringBuilder text = new StringBuilder ();
+		text.AppendLine ("/*");
+		text.AppendLine (" * Automatically generated, do not edit this file directly");
+		text.AppendLine (" * To regenerate execute typegen.sh");
+		text.AppendLine (" */");
+		text.AppendLine ("#include <stdlib.h>");
+		
+		// Loop through all the classes and check which headers
+		// are needed for the c constructors
+		text.AppendLine ("");
+		foreach (TypeInfo t in types.SortedList) {
+			if (t.C_Constructor == string.Empty || t.C_Constructor == null)
 				continue;
 
-			classes.Add (c);
+			if (!headers.Contains (t.Header)) {
+				headers.Add (t.Header);
+				text.AppendLine ("#include \"" + t.Header + "\"");
+			}
 		}
-		// DO has to be the first class in the list, the rest are sorted alphabetically
-		classes.Remove ("DependencyObject");
-		classes.Insert (0, "DependencyObject"); 
-	}
+		
+		// Set the event ids for all the events
+		text.AppendLine ("");
+		foreach (TypeInfo t in types.SortedList) {
+			if (t.Events == null || t.Events.Count == 0)
+				continue;
+			
+			foreach (string e in t.Events) {
+				text.AppendLine (string.Format ("const int {0}::{1}Event = {2};", t.Name, e, t.GetEventId (e)));
+			}
+		}
 
-	static void GenerateTypeH (ArrayList classes, Hashtable bases)
+		// Create the arrays of event names for the classes which have events
+		text.AppendLine ("");
+		foreach (TypeInfo t in types.SortedList) {
+			if (t.Events == null || t.Events.Count == 0)
+				continue;
+			
+			string events = "NULL";
+			if (t.Events != null && t.Events.Count != 0){
+				for (int k = t.Events.Count - 1; k >= 0; k--) {
+					events = "\"" + t.Events [k] + "\", " + events;
+				}
+			}
+			text.AppendLine (string.Format ("const char *{0}_Events [] = {{ {1} }};", 
+			                                t.Name, 
+			                                events));
+		}
+
+		// Create the array of type data
+		text.AppendLine ("");
+		text.AppendLine ("Type type_infos [] = {");
+		text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL },");
+		foreach (TypeInfo type in types.SortedList) {
+			TypeInfo parent = null;
+			string events = "NULL";
+			
+			if (!type.ImplementsGetObjectType && !type.Include)
+				continue;
+			
+			if (type.Base != null && types.ContainsKey (type.Base))
+				parent = types [type.Base];
+			
+			if (type.Events != null && type.Events.Count != 0)
+				events = type.Name + "_Events";
+			
+			text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9} }}, ",
+			                                "Type::" + type.KindName, 
+			                                "Type::" + (parent != null ? parent.KindName : "INVALID"),
+			                                type.IsValueType ? "true" : "false",
+			                                "\"" + type.Name + "\"", 
+			                                "\"" + type.KindName + "\"", 
+			                                type.Events.Count,
+			                                type.GetTotalEventCount (),
+			                                events,
+			                                type.C_Constructor != null ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL", 
+			                                type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
+			                                )
+			                 );
+			                 
+		}
+		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL }");
+		text.AppendLine ("};");
+				
+		WriteAllText ("type-generated.cpp", text.ToString ());
+	}
+	
+	static void GenerateTypeH (Types types)
 	{
 		const string file = "type.h";
 		StringBuilder text;
 		string contents = File.ReadAllText (file + ".in");
 		
-		text = new StringBuilder ();
-		foreach (string c in classes) {
-			text.AppendLine ("\t\t" + getU (c) + ",");
-		}
-		contents = contents.Replace ("/*DO_KINDS*/", text.ToString ());
+		contents = contents.Replace ("/*DO_KINDS*/", types.GetKindsForEnum ().ToString ());
 
 		text = new StringBuilder ();
 		text.AppendLine ("/*");
 		text.AppendLine (" * Automatically generated from type.h.in, do not edit this file directly");
 		text.AppendLine (" * To regenerate execute typegen.sh");
-		text.AppendLine ("*/");
+		text.AppendLine (" */");
 		contents = text.ToString () + contents;
 
-		File.WriteAllText (file, contents);
+		WriteAllText (file, contents);
 	}
 
-	static void GenerateKindCs (ArrayList classes, Hashtable hash)
+	static void GenerateKindCs (Types types)
 	{
 		const string file = "type.h";
 		StringBuilder text = new StringBuilder ();
@@ -200,16 +519,44 @@ class gen {
 		int b = contents.IndexOf ("// END_MANAGED_MAPPING");
 		string values = contents.Substring (a, b - a);		
 
-		text.AppendLine ("/* this file was autogenerated from moon/src/value.h.  do not edit this file \n */");
+		text.AppendLine ("/* \n\tthis file was autogenerated from moon/src/value.h.  do not edit this file \n */");
 		text.AppendLine ("namespace Mono {");
 		text.AppendLine ("\tpublic enum Kind {");
 		text.AppendLine (values);
 		text.AppendLine ("\t}");
+/*
+		text.AppendLine (@"
+	public class NativeSupport {
+		private static int [] native_to_managed;
+		private static int [] managed_to_native;
+		
+		static NativeSupport ()
+		{
+			managed_to_native = new int [(int) Kind.LASTTYPE];
+			native_to_managed = new int [NativeMethods.type_get_kind (""LASTTYPE"")];
+		
+			for (int i = 0; i < managed_to_native.Length; i++) {
+				managed_to_native [i] = NativeMethods.type_get_kind (((Kind) i).ToString ());
+			}
+	
+			for (int i = 0; i < native_to_managed.Length; i++) {
+				Kind kind;
+				try {
+					kind = (Kind) System.Enum.Parse (typeof (Kind), NativeMethods.type_get_name ((Kind) i));
+				} catch {
+					kind = Kind.INVALID;
+				}
+				managed_to_native [i] = (int) kind;
+			}
+		}
+	}
+");
+		                 
+*/
 		text.AppendLine ("}");
-
 		File.WriteAllText ("Kind.cs", text.ToString ());
 
-		string realfile = "../../olive/class/agmono/Mono/Kind.cs";
+		string realfile = "../class/Mono.Moonlight/Mono/Kind.cs";
 		realfile = realfile.Replace ('/', Path.DirectorySeparatorChar);
 		realfile = Path.GetFullPath (realfile);
 		if (File.Exists (realfile)) {
@@ -222,32 +569,37 @@ class gen {
 				Console.WriteLine ("The file '{0}' has been updated, don't forget to commit the changes.", realfile);
 			}			
 		} else {
-			Console.WriteLine ("You need to update the file 'Kind.cs' in the 'olive/class/agmono/Mono/' directory with the Kind.cs file generated here");
+			Console.WriteLine ("You need to update the file 'Kind.cs' in the 'moon/class/Mono.Moonlight/Mono/' directory with the Kind.cs file generated here");
 		}
 	}
 	
-	static void GenerateValueH (ArrayList classes, Hashtable hash)
+	static void GenerateValueH (Types types)
 	{
 		const string file = "value.h";
 		StringBuilder text;
 		string contents = File.ReadAllText (file + ".in");
 
 		text = new StringBuilder ();
-		foreach (string c in classes) {
-			text.AppendLine ("class " + c + ";");
+		foreach (TypeInfo type in types.SortedList) {
+			if (!type.ImplementsGetObjectType || type.IsNested)
+				continue;
+			
+			if (type.IsStruct) {
+				text.AppendLine ("struct " + type.Name + ";");				
+			} else {
+				text.AppendLine ("class " + type.Name + ";");				
+			}
 		}
 		contents = contents.Replace ("/*DO_FWD_DECLS*/", text.ToString ());
 		
-		text = new StringBuilder ();
-		foreach (string c in classes) {
-			text.AppendLine ("\t\t" + getU (c) + ",");
-		}
-		contents = contents.Replace ("/*DO_KINDS*/", text.ToString ());
-		
+		contents = contents.Replace ("/*DO_KINDS*/", types.GetKindsForEnum ().ToString ());
 
 		text = new StringBuilder ();
-		foreach (string c in classes) {
-			text.AppendLine (string.Format ("	{1,-30} As{0} () {{ checked_get_subclass (Type::{2}, {0}) }}", c, c + "*", getU (c)));
+		foreach (TypeInfo type in types.SortedList) {
+			if (!type.ImplementsGetObjectType || type.IsNested)
+				continue;
+			
+			text.AppendLine (string.Format ("	{1,-30} As{0} () {{ checked_get_subclass (Type::{2}, {0}) }}", type.Name, type.Name + "*", type.KindName));
 		}
 		contents = contents.Replace ("/*DO_AS*/", text.ToString ());
 		
@@ -255,106 +607,9 @@ class gen {
 		text.AppendLine ("/*");
 		text.AppendLine (" * Automatically generated from value.h.in, do not edit this file directly");
 		text.AppendLine (" * To regenerate execute typegen.sh");
-		text.AppendLine ("*/");
+		text.AppendLine (" */");
 		contents = text.ToString () + contents;
 
-		File.WriteAllText (file, contents);
+		WriteAllText (file, contents);
 	}
-
-	static void GenerateValueCpp (ArrayList classes, Hashtable hash)
-	{
-		return; // Nothing to do here anymore.
-		
-//		const string file = "value.cpp";
-//		StringBuilder text;
-//		string contents = File.ReadAllText (file + ".in");
-//
-//		text = new StringBuilder ();
-//		
-//		text.AppendLine ("/*");
-//		text.AppendLine (" * Automatically generated from value.cpp.in, do not edit this file directly");
-//		text.AppendLine (" * To regenerate execute typegen.sh");
-//		text.AppendLine ("*/");
-//		
-//		text.AppendLine (contents);
-//		
-//		File.WriteAllText (file, text.ToString ());
-	}
-
-	static void GenerateTypeCpp (ArrayList classes, Hashtable hash, Hashtable cctors, Hashtable contprops)
-	{
-		StringBuilder text = new StringBuilder ();
-		text.AppendLine ("/*");
-		text.AppendLine (" * Automatically generated from type.cpp.in, do not edit this file directly");
-		text.AppendLine (" * To regenerate execute typegen.sh");
-		text.AppendLine ("*/");
-		text.AppendLine ("");
-		text.AppendLine (File.ReadAllText ("type.cpp.in"));
-		text.AppendLine ("void\ntypes_init (void)");
-		text.AppendLine ("{");
-		text.AppendLine ("\tif (types_initialized)");
-		text.AppendLine ("\t\treturn;");
-		text.AppendLine ("\ttypes_initialized = true;\n");
-		text.AppendLine ("");
-		foreach (string c in classes) {
-			string p = null;
-			if (hash.ContainsKey (c))
-				p = (string) hash [c];
-
-			if (p != null && p != string.Empty) {
-                                string cctor = cctors [c] as string;
-				string ctprp = contprops [c] as string;
-				text.AppendLine (String.Format ("\tType::RegisterType (\"{0}\", Type::{1}, Type::{2}, {3}, {4});", c, getU(c), getU (p),
-                                                cctor != null ? String.Concat ("(create_inst_func *) ", cctor) : "NULL",
-						ctprp != null ? String.Concat ("\"", ctprp, "\"") : "NULL"));
-			}
-		}
-		text.AppendLine ("\ttypes_init_manually ();");
-		text.AppendLine ("\ttypes_init_register_events ();");
-		text.AppendLine ("}");
-		File.WriteAllText ("type.cpp", text.ToString ());
-	}
-
-	static string RemoveComments (string v)
-	{
-		int a, b;
-		a = v.IndexOf ("/*");
-		while (a >= 0) {
-			b = v.IndexOf ("*/", a + 2);
-			v = v.Remove (a, b - a + 2);
-			a = v.IndexOf ("/*", a + 2);
-		}
-		return v;
-	}
-
-	static string getU (string v)
-	{
-		v = v.ToUpper ();
-		v = v.Replace ("DEPENDENCYOBJECT", "DEPENDENCY_OBJECT");
-		if (v.Length > "COLLECTION".Length)
-			v = v.Replace ("COLLECTION", "_COLLECTION");
-		if (v.Length > "DICTIONARY".Length)
-			v = v.Replace ("DICTIONARY", "_DICTIONARY");
-		return v;
-	}
-
-	static void MapClassNameToCCtor (string line, Hashtable cctors)
-	{
-		string cn;
-		StringBuilder cctor = new StringBuilder ();
-		int i = line.IndexOf ("*");
-	
-		if (Char.IsWhiteSpace (line [--i]))
-                        --i;
-
-		cn = line.Substring (0, i + 1);
-
-		while (line [++i] == '*' || Char.IsWhiteSpace (line [i])) { }
-
-		while (!Char.IsWhiteSpace (line [i]) && line [i] != '(')
-                        cctor.Append (line [i++]);
-
-		cctors [cn] = cctor.ToString ();
-	}
-
 }

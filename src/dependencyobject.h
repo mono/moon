@@ -120,9 +120,9 @@ class EventObject {
 		return Type::Find (GetObjectType ());
 	}
 	
-	char *GetTypeName ()
+	const char *GetTypeName ()
 	{
-		return Type::Find (GetObjectType ())->name;
+		return Type::Find (GetObjectType ())->GetName ();
 	}
 
 	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
@@ -140,7 +140,7 @@ class EventObject {
 
 	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
 
-	static int DestroyedEvent;
+	const static int DestroyedEvent;
 
  protected:
 	virtual ~EventObject ();

@@ -172,8 +172,8 @@ class ImageBrush : public TileBrush {
 	static DependencyProperty *DownloadProgressProperty;
 	static DependencyProperty *ImageSourceProperty;
 
-	static int DownloadProgressChangedEvent;
-	static int ImageFailedEvent;
+	const static int DownloadProgressChangedEvent;
+	const static int ImageFailedEvent;
 
 	ImageBrush ();
 	

@@ -326,7 +326,7 @@ struct MoonlightDependencyObjectObject : MoonlightEventObjectObject {
 	
 	DependencyObject *GetDependencyObject ()
 	{
-		g_assert (eo->GetObjectType () >= Type::DEPENDENCY_OBJECT);
+		g_assert (eo->Is (Type::DEPENDENCY_OBJECT));
 		return (DependencyObject*) eo;
 	}
 

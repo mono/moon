@@ -137,8 +137,8 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 		Type *timeline_type = Type::Find (timeline->GetValueKind ());
 		Type *property_type = Type::Find (targetprop->value_type);
 
-		const char *timeline_type_name = (timeline_type != NULL) ? timeline_type->name : "Invalid";
-		const char *property_type_name = (property_type != NULL) ? property_type->name : "Invalid";
+		const char *timeline_type_name = (timeline_type != NULL) ? timeline_type->GetName () : "Invalid";
+		const char *property_type_name = (property_type != NULL) ? property_type->GetName () : "Invalid";
 		g_warning ("%s.%s property value type is '%s' but animation type is '%s'.",
 			   targetobj->GetTypeName (), targetprop->name,
 			   property_type_name, timeline_type_name);
@@ -207,7 +207,6 @@ Animation/*Timeline*/::GetNaturalDurationCore (Clock* clock)
 
 DependencyProperty* Storyboard::TargetNameProperty;
 DependencyProperty* Storyboard::TargetPropertyProperty;
-int                 Storyboard::CompletedEvent = -1;
 
 Storyboard::Storyboard ()
 {
@@ -1746,9 +1745,6 @@ animation_init (void)
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);
 	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::DOUBLEKEYFRAME_COLLECTION);
 	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::POINTKEYFRAME_COLLECTION);
-
-	/* lookup events */
-	Storyboard::CompletedEvent = Type::Find(Type::STORYBOARD)->LookupEvent ("Completed");
 }
 
 void

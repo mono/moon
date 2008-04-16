@@ -1,3 +1,9 @@
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp, plugin-class.h: Comparing a Kind value to another to
+	  determine type hierarchy isn't supported anymore, use Value::Is or
+	  Type::IsSubclassOf, which are doing the right thing.
+
 2008-04-15  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp (PluginXamlLoader::TryLoad): emit an error if the

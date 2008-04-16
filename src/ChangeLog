@@ -1,3 +1,20 @@
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* animation.cpp, animation.h, brush.cpp, brush.h, clock.cpp, clock.h,
+	  collection.cpp, collection.h, dependencyobject.h, downloader.cpp,
+	  downloader.h, Makefile.am, media.cpp, media.h, runtime.cpp, runtime.h,
+	  type.cpp, type.h, type.h.in, typegen/typegen.cs, type-generated.cpp,
+	  uielement.cpp, uielement.h: Initialize our type system statically.
+	* dependencyobject.cpp: Initialize our type system statically. Comparing a
+	  Kind value to another to determine type hierarchy isn't supported
+	  anymore, use Value::Is or Type::IsSubclassOf, which are doing the right
+	  thing.
+	* src.mdp: Updated.
+	* type.cpp.in: Removed, no longer required.
+	* value.cpp, value.h, value.h.in: Comparing a Kind value to another to
+	  determine type hierarchy isn't supported anymore, use Value::Is or
+	  Type::IsSubclassOf, which are doing the right thing.
+
 2008-04-16  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Shape::ComputeStretchBounds): fix typo.

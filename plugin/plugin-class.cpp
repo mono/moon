@@ -304,7 +304,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 	}
 	default:
 		/* more builtins.. */
-		if (v->GetKind () >= Type::DEPENDENCY_OBJECT) {
+		if (v->Is (Type::DEPENDENCY_OBJECT)) {
 			MoonlightEventObjectObject *depobj =
 				EventObjectCreateWrapper (((MoonlightObject *) npobj)->instance, v->AsDependencyObject ());
 			OBJECT_TO_NPVARIANT (depobj, *result);
@@ -2134,7 +2134,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 	if (npvariant_is_moonlight_object (*value)) {
 		MoonlightObject *obj = (MoonlightObject *) NPVARIANT_TO_OBJECT (*value);
 		
-		if (obj->moonlight_type >= Type::DEPENDENCY_OBJECT && obj->moonlight_type != Type::INVALID) {
+		if (Type::IsSubclassOf (obj->moonlight_type, Type::DEPENDENCY_OBJECT) && obj->moonlight_type != Type::INVALID) {
 			MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (*value);
 			dob->SetValue (p, Value(depobj->GetDependencyObject ()));
 			
@@ -2189,7 +2189,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 		} else if (NPVARIANT_IS_STRING (*value)) {
 			strval = STR_FROM_VARIANT (*value);
 		} else if (NPVARIANT_IS_NULL (*value)) {
-			if (p->value_type >= Type::DEPENDENCY_OBJECT) {
+			if (Type::IsSubclassOf (p->value_type, Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *val = NULL;
 				
 				dob->SetValue (p, Value (val));

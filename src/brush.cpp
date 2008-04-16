@@ -741,9 +741,6 @@ tile_brush_set_stretch (TileBrush *brush, Stretch stretch)
 DependencyProperty* ImageBrush::DownloadProgressProperty;
 DependencyProperty* ImageBrush::ImageSourceProperty;
 
-int ImageBrush::DownloadProgressChangedEvent = -1;
-int ImageBrush::ImageFailedEvent = -1;
-
 ImageBrush *
 image_brush_new (void)
 {
@@ -1027,7 +1024,7 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 			printf ("could not find element `%s'\n", name);
 		} else {
 			printf ("obj %p is not of type MediaElement (it is %s)\n", obj,
-				Type::Find (obj->GetObjectType ())->name);
+				obj->GetTypeName ());
 		}
 	}
 	
@@ -1273,8 +1270,4 @@ brush_init (void)
 	/* VisualBrush */
 	VisualBrush::VisualProperty = DependencyObject::Register (Type::VISUALBRUSH, "Visual", new Value (Type::VISUAL));
 
-	/* lookup events */
-	Type *t = Type::Find (Type::IMAGEBRUSH);
-	ImageBrush::DownloadProgressChangedEvent = t->LookupEvent ("DownloadProgressChanged");
-	ImageBrush::ImageFailedEvent = t->LookupEvent ("ImageFailed");
 }
