@@ -197,32 +197,32 @@ static void
 initialize_enums (void)
 {
 	enum_map = g_hash_table_new (g_str_hash, g_str_equal);
-
-	g_hash_table_insert (enum_map, (char *) "AlignmentX", GINT_TO_POINTER (alignment_x_map));
-	g_hash_table_insert (enum_map, (char *) "AlignmentY", GINT_TO_POINTER (&alignment_y_map));
-	g_hash_table_insert (enum_map, (char *) "MappingMode", GINT_TO_POINTER (brush_mapping_mode_map));
-	g_hash_table_insert (enum_map, (char *) "ColorInterpolationMode", GINT_TO_POINTER (color_interpolation_mode_map));
-	g_hash_table_insert (enum_map, (char *) "Cursor", GINT_TO_POINTER (cursors_map));
-	g_hash_table_insert (enum_map, (char *) "ErrorType", GINT_TO_POINTER (error_type_map));
-	g_hash_table_insert (enum_map, (char *) "FillBehavior", GINT_TO_POINTER (fill_behavior_map));
-	g_hash_table_insert (enum_map, (char *) "FillRule", GINT_TO_POINTER (fill_rule_map));
-	g_hash_table_insert (enum_map, (char *) "FontStretch", GINT_TO_POINTER (font_stretches_map));
-	g_hash_table_insert (enum_map, (char *) "FontStyle", GINT_TO_POINTER (font_styles_map));
-	g_hash_table_insert (enum_map, (char *) "FontWeight", GINT_TO_POINTER (font_weights_map));
-	g_hash_table_insert (enum_map, (char *) "SpreadMethod", GINT_TO_POINTER (gradient_spread_method_map));
-
-	g_hash_table_insert (enum_map, (char *) "StrokeDashCap", GINT_TO_POINTER (pen_line_cap_map));
-	g_hash_table_insert (enum_map, (char *) "StrokeStartLineCap", GINT_TO_POINTER (pen_line_cap_map));
-	g_hash_table_insert (enum_map, (char *) "StrokeEndLineCap", GINT_TO_POINTER (pen_line_cap_map));
 	
-	g_hash_table_insert (enum_map, (char *) "StrokeLineJoin", GINT_TO_POINTER (pen_line_join_map));
-	g_hash_table_insert (enum_map, (char *) "Stretch", GINT_TO_POINTER (stretch_map));
-	g_hash_table_insert (enum_map, (char *) "StyleSimulations", GINT_TO_POINTER (style_simulations_map));
-	g_hash_table_insert (enum_map, (char *) "SweepDirection", GINT_TO_POINTER (sweep_direction_map));
-	g_hash_table_insert (enum_map, (char *) "DeviceType", GINT_TO_POINTER (tablet_device_type_map));
-	g_hash_table_insert (enum_map, (char *) "TextDecorations", GINT_TO_POINTER (text_decorations_map));
-	g_hash_table_insert (enum_map, (char *) "TextWrapping", GINT_TO_POINTER (text_wrapping_map));
-	g_hash_table_insert (enum_map, (char *) "Visibility", GINT_TO_POINTER (visibility_map));
+	g_hash_table_insert (enum_map, (char *) "AlignmentX", alignment_x_map);
+	g_hash_table_insert (enum_map, (char *) "AlignmentY", alignment_y_map);
+	g_hash_table_insert (enum_map, (char *) "MappingMode", brush_mapping_mode_map);
+	g_hash_table_insert (enum_map, (char *) "ColorInterpolationMode", color_interpolation_mode_map);
+	g_hash_table_insert (enum_map, (char *) "Cursor", cursors_map);
+	g_hash_table_insert (enum_map, (char *) "ErrorType", error_type_map);
+	g_hash_table_insert (enum_map, (char *) "FillBehavior", fill_behavior_map);
+	g_hash_table_insert (enum_map, (char *) "FillRule", fill_rule_map);
+	g_hash_table_insert (enum_map, (char *) "FontStretch", font_stretches_map);
+	g_hash_table_insert (enum_map, (char *) "FontStyle", font_styles_map);
+	g_hash_table_insert (enum_map, (char *) "FontWeight", font_weights_map);
+	g_hash_table_insert (enum_map, (char *) "SpreadMethod", gradient_spread_method_map);
+	
+	g_hash_table_insert (enum_map, (char *) "StrokeDashCap", pen_line_cap_map);
+	g_hash_table_insert (enum_map, (char *) "StrokeStartLineCap", pen_line_cap_map);
+	g_hash_table_insert (enum_map, (char *) "StrokeEndLineCap", pen_line_cap_map);
+	
+	g_hash_table_insert (enum_map, (char *) "StrokeLineJoin", pen_line_join_map);
+	g_hash_table_insert (enum_map, (char *) "Stretch", stretch_map);
+	g_hash_table_insert (enum_map, (char *) "StyleSimulations", style_simulations_map);
+	g_hash_table_insert (enum_map, (char *) "SweepDirection", sweep_direction_map);
+	g_hash_table_insert (enum_map, (char *) "DeviceType", tablet_device_type_map);
+	g_hash_table_insert (enum_map, (char *) "TextDecorations", text_decorations_map);
+	g_hash_table_insert (enum_map, (char *) "TextWrapping", text_wrapping_map);
+	g_hash_table_insert (enum_map, (char *) "Visibility", visibility_map);
 }
 
 static int
