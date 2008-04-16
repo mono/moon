@@ -1,0 +1,32 @@
+<Project name="Mono.Moonlight" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="Mono.Moonlight" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="Mono.Moonlight" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="." subtype="Directory" buildaction="Compile" />
+    <File name="Assembly/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Assembly/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="Mono/Helper.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Kind.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Moonlight.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/NativeMethods.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Value.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/XamlLoaderCallbacks.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.IO/SimpleUnmanagedMemoryStream.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Interop/PluginHost.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </References>
+</Project>

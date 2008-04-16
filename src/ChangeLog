@@ -1,5 +1,9 @@
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* src.mdp: Updated.
+
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* typegen/typegen.sh: Updated to work correctly independently of the current
 	  directory when executed.
 

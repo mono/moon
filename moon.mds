@@ -3,15 +3,24 @@
     <Configuration name="Default" ctype="CombineConfiguration">
       <Entry build="True" name="src" configuration="Debug" />
       <Entry build="True" name="plugin" configuration="Debug" />
+      <Entry build="True" name="Mono.Moonlight" configuration="Debug" />
+      <Entry build="True" name="System.Windows" configuration="Debug" />
+      <Entry build="True" name="System.Windows.Browser" configuration="Debug" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">
     <Execute type="None" entry="moon" />
     <Execute type="None" entry="src" />
     <Execute type="None" entry="plugin" />
+    <Execute type="None" entry="Mono.Moonlight" />
+    <Execute type="None" entry="System.Windows" />
+    <Execute type="None" entry="System.Windows.Browser" />
   </StartMode>
   <Entries>
     <Entry filename="src/src.mdp" />
     <Entry filename="plugin/plugin.mdp" />
+    <Entry filename="class/Mono.Moonlight/Mono.Moonlight.mdp" />
+    <Entry filename="class/System.Windows/System.Windows.mdp" />
+    <Entry filename="class/System.Windows.Browser/System.Windows.Browser.mdp" />
   </Entries>
 </Combine>

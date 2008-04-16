@@ -1,0 +1,190 @@
+<Project name="System.Windows" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="System.Windows" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="System.Windows" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="Assembly/MonoTODOAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Assembly/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/DLRHost.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/EventHandlerList.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Events.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Hosting.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/ManagedXamlLoader.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.ObjectModel/ObservableCollection_T.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.Specialized/INotifyCollectionChanged.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.Specialized/NotifyCollectionChangedAction.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DependencyObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DependencyProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Downloader.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Duration.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ErrorEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ErrorType.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/EventTrigger.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontStretches.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontStyles.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontWeights.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FrameworkElement.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Inlines.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ParserErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ParserErrorEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Point.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Rect.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ResourceDictionary.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/RuntimeErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/RuntimeErrorEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Size.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/StyleSimulations.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TextDecorations.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TextWrapping.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TriggerActionCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TriggerCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/UIElement.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Visibility.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/XamlReader.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/Canvas.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/Control.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/Image.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/MediaBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/InkPresenter.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/MediaElement.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/Panel.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/TextBlock.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Data/Binding.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Data/BindingMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Documents/Glyphs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Documents/Inline.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Documents/LineBreak.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Documents/Run.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Ink/DrawingAttributes.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Ink/StrokeCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Ink/Stroke.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/Cursors.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/KeyboardEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/KeyboardEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/MouseEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/MouseEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/StylusInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/StylusPoint.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/StylusPointCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/TabletDeviceType.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/TimelineMarkerEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/TimelineMarkerEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Interop/BrowserHost.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Markup/XamlParseException.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/AlignmentX.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/AlignmentY.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/ArcSegment.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/BezierSegment.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/Brush.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/BrushMappingMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/Color.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/ColorInterpolationMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/Colors.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/EllipseGeometry.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/FillRule.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/Geometry.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/GeometryCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/GeometryGroup.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/GradientBrush.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/GradientSpreadMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/GradientStop.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/GradientStopCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/ImageBrush.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/LinearGradientBrush.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/LineGeometry.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/LineSegment.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/Matrix.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/MatrixTransform.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/MediaAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/MediaAttributeCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PathFigure.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PathFigureCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PathGeometry.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PathSegment.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PathSegmentCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PenLineCap.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PenLineJoin.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PolyBezierSegment.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PolyLineSegment.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PolyQuadraticBezierSegment.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/QuadraticBezierSegment.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/RadialGradientBrush.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/RectangleGeometry.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/RotateTransform.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/ScaleTransform.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/SkewTransform.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/SolidColorBrush.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/Stretch.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/SweepDirection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/TileBrush.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/TimelineCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/Transform.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/TransformCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/TransformGroup.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/TranslateTransform.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/VideoBrush.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/Visual.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/VisualBrush.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/VisualCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/Animation.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/BeginStoryBoard.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ColorAnimation.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ColorAnimationUsingKeyFrames.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ColorKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ColorKeyFrameCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/DiscreteColorKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/DiscreteDoubleKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/DiscretePointKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/DoubleAnimation.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/DoubleAnimationUsingKeyFrames.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/DoubleKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/DoubleKeyFrameCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/FillBehavior.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/KeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/KeySpline.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/KeyTime.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/KeyTimeType.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/LinearColorKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/LinearDoubleKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/LinearPointKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ParallelTimeline.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/PointAnimation.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/PointAnimationUsingKeyFrames.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/PointKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/PointKeyFrameCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/RepeatBehavior.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/SplineColorKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/SplineDoubleKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/SplinePointKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/Storyboard.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/Timeline.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/TimelineGroup.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/TimelineMarker.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/TimelineMarkerCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Shapes/Ellipse.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Shapes/Line.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Shapes/Path.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Shapes/Polygon.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Shapes/Polyline.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Shapes/Shape.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Shapes/Rectangle.cs" subtype="Code" buildaction="Compile" />
+    <File name="Internal.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </References>
+</Project>

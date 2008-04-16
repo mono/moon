@@ -1,3 +1,7 @@
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* moon.mds: Updated.
+
 2008-04-14  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* pixman/configure.ac: Don't generate test/Makefile

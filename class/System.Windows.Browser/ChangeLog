@@ -1,3 +1,7 @@
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* System.Windows.Browser.mdp: Added.
+
 2008-04-13  Jb Evain  <jbevain@novell.com>
 
 	* Makefile, System.Windows.Browser.dll.sources:
