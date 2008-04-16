@@ -36,7 +36,7 @@ NAMESPACES=Gtk.Moonlight
 dist-hook:
 	mkdir -p $(distdir)/docs
 	cp $(srcdir)/docs/*.xml $(distdir)/docs/.
-	for i in $(NAMESPACES); do                                      \
+#	for i in $(NAMESPACES); do                                      \
 		mkdir -p $(distdir)/docs/$$i;                           \
 		cp $(srcdir)/docs/$$i/*.xml $(distdir)/docs/$$i;        \
 	done
