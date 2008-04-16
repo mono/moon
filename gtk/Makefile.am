@@ -21,9 +21,10 @@ gtksilver_SNK = $(srcdir)/gtksilver.snk
 
 monodoc_DATA = gtksilver.zip gtksilver.tree gtksilver.source
 
-gtksilver.dll gtksilver.xml: $(gtksilver_dll_CS) ../class/lib/3.0/Mono.Moonlight.dll ../class/lib/3.0/System.Windows.dll
-	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -r:../class/lib/3.0/Mono.Moonlight.dll -r:../class/lib/3.0/System.Windows.dll
+gtksilver.dll gtksilver.xml: $(gtksilver_dll_CS)
+	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
 
+MONODOCER = MONO_PATH="../class/lib/3.0:$$MONO_PATH" monodocer
 gtksilver.tree gtksilver.zip: gtksilver.xml gtksilver.dll $(srcdir)/docs/index.xml
 	$(MONODOCER) -importslashdoc:gtksilver.xml -path:$(builddir)/docs -assembly:gtksilver.dll
 	mdassembler --ecma $(builddir)/docs/ --out gtksilver
