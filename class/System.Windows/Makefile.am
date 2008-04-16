@@ -176,12 +176,11 @@ system_windows_sources =						\
 	System.Windows.Shapes/Shape.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
-	script/checks.cs 			\
-	script/README				\
-	script/ChangeLog			\
+	scripts/checks.cs 			\
+	scripts/README				\
+	scripts/ChangeLog			\
 	Assembly/ChangeLog			\
 	Mono/ChangeLog				\
-	scripts/ChangeLog			\
 	System.Windows/ChangeLog		\
 	System.Windows.Controls/ChangeLog	\
 	System.Windows.Documents/ChangeLog	\
