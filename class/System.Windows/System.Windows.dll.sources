@@ -1,6 +1,6 @@
 Internal.cs
 Assembly/AssemblyInfo.cs
-../../build/common/Consts.cs
+../Consts.cs
 Mono/EventHandlerList.cs
 Mono/Events.cs
 Mono/Hosting.cs
