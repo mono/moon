@@ -1,0 +1,10 @@
+../../build/common/Consts.cs
+Assembly/AssemblyInfo.cs
+Mono/Kind.cs
+Mono/NativeMethods.cs
+Mono/Value.cs
+Mono/Moonlight.cs
+Mono/Helper.cs
+Mono/XamlLoaderCallbacks.cs
+System.IO/SimpleUnmanagedMemoryStream.cs
+System.Windows.Interop/PluginHost.cs

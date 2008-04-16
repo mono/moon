@@ -1,0 +1,21 @@
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* Makefile: agmono is renamed Mono.Moonlight.
+	Merged from the Moonlight 2 branch.
+
+2007-10-12  Jb Evain  <jbevain@novell.com>
+
+	* Mono/NativeMethods.cs: add image_brush_set_source.
+
+2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agmono.dll.sources: Added XamlLoaderCallbacks.
+
+2007-08-17  Jb Evain  <jbevain@novell.com>
+
+	* Assembly/AssemblyInfos.cs: re-enable patch from Miguel.
+	For non-plugin usage, use mono public key to sign the assembly.
+
+2007-08-07  Jb Evain  <jbevain@novell.com>
+
+	* Makefile: agmono doesn't require System.Xml.

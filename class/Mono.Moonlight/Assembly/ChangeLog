@@ -1,0 +1,5 @@
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* AssemblyInfo.cs: agmono is renamed to Mono.Moonlight.
+	Merged from the Moonlight 2 branch.
+

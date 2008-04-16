@@ -1,0 +1,271 @@
+2008-04-13  Jb Evain  <jbevain@novell.com>
+
+	* XamlLoaderCallbacks.cs: internalize the XamlLoader,
+	as it inherits for MarshalByRefObject, which is itself
+	internalized in the corlib, and requires Mono.Moonlight
+	to be friend of mscorlib, but that doesn't allow us to
+	expose XamlLoader.
+	Merged from the Moonlight 2 branch.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Removed Kind::NPOBJ, it's not needed.
+
+2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Remove base_unref_delayed from native methods.
+
+2008-03-14  Larry Ewing  <lewing@novell.com>
+
+	* Kind.cs: updates for EventArgs now that they are DependencyObjects.
+
+2008-03-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Helper.cs: Added GetNativeObject.
+	* XamlLoaderCallbacks.cs: Moved LoadDepsSynch here. Added InitializeFromXaml
+	  to enable xaml initialization on a specific surface.
+
+2008-03-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Helper.cs: Fixed GetAgclr to actually work.
+	* XamlLoaderCallbacks.cs: Use Helper.GetAgclr instead of loading the
+	  assembly manually.
+
+2008-03-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Helper.cs: Added GetAgclr and LookupDependencyObject.
+	* XamlLoaderCallbacks.cs: Moved surface and plugin fields from
+	  ManagedXamlLoader to XamlLoader. Introduced an
+	  AllowMultipleSurfacesPerDomain field. Added an abstract method to create
+	  a dependency object from a string (to be overridden by ManagedXamlLoader
+	  in agclr).
+
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add stroke_get_bounds and
+	stroke_collection_get_bounds.
+
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add stroke_hit_test and
+	stroke_collection_hit_test.
+
+2008-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add mouse_event_args_* native methods.
+
+2007-12-17  Jb Evain  <jbevain@novell.com>
+
+	* Kind.cs: update after the last changes (Matrix is now a DO).
+
+2007-11-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeMethods.cs: Removed uielement_is_loaded() and
+	surface_get_toplevel() bindings.
+
+2007-11-20  Jackson Harper  <jackson@ximian.com>
+
+	* NativeMethods.cs: Add value_from_str_with_typename.  This allows
+	you to parse a value string without having it's Kind.
+	- Also added type_create_instance_from_kind.  Pretty self
+	explanatory function.
+	* XamlLoaderCallbacks.cs: Make SetAttribute return true if it
+	actually does set the attribute.
+	* Helper.cs: When we encounter an agclr.dll type while trying to
+	parse an attribute, give agclr (who is calling us) back the
+	unmanaged value so that it can create the managed wrapper and call
+	the new function SetAttributeFromValue.
+
+2007-11-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeMethods.cs: Bind to surface_get_toplevel() and fix the
+	bindings for a few of the other surface_get_*() functions that
+	return void, not IntPtr. Also bind to uielement_get_isloaded().
+
+2007-11-09  Jb Evain  <jbevain@novell.com>
+
+	* NativeMethods.cs: correct browser_http_request_get_async_response.
+
+2007-11-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeMethods.cs: Added binding to
+	plugin_instance_get_surface().
+
+2007-11-07  Jb Evain  <jbevain@novell.com>
+
+	* Helper.cs: add a ThreadMemoryBarrier helper.
+
+2007-11-07  Jb Evain  <jbevain@novell.com>
+
+	* NativeMethods.cs: add browser_http_response_get_status.
+
+2007-10-24  Jb Evain  <jbevain@novell.com>
+
+	* NativeMethods.cs: Add browser_http_response_visit_headers and
+	browser_http_request_get_async_response.
+
+2007-10-23  Chris Toshok  <toshok@ximian.com>
+
+	* Kind.cs: fix up the BASE and TIMESOURCE stuff.
+
+	* NativeMethods.cs: add parameter to runtime_init.
+
+2007-10-23  Jb Evain  <jbevain@novell.com>
+
+	* NativeMethods: add browser_http_request_abort and
+	browser_http_request_set_body.
+
+2007-10-22  Jb Evain  <jbevain@novell.com>
+
+	* NativeMethods.cs: add functions related to BrowserHttpRequest
+	and BrowserHttpResponse.
+
+2007-10-11  Jb Evain  <jbevain@novell.com>
+
+	* NativeMethods.cs: add media_attribute_collection_get_item_by_name.
+
+2007-10-10  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add base_unref_delayed.
+
+2007-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: More native methods.
+
+2007-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* XamlLoaderCallbacks.cs: Moved the static surface and plugin fields here
+	  from ManagedXamlLoader.
+
+2007-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Add a few more native methods.
+
+2007-10-04  Zoltan Varga  <vargaz@gmail.com>
+
+	* NativeMethods.cs: Add plugin_instance_load_url.
+
+2007-10-02  Jackson Harper  <jackson@ximian.com>
+
+	* NativeMethods.cs: Add function to set a property from a xaml
+	string.
+
+2007-09-30  Zoltan Varga  <vargaz@gmail.com>
+
+	* Moonlight.cs (LoadFile): Avoid calling Helper.LoadFile () our caller will do that.
+
+2007-09-28  Zoltan Varga  <vargaz@gmail.com>
+
+	* Moonlight.cs (LoadFile): Revert this for now.
+	
+	* Moonlight.cs (LoadFile): Avoid loading files in the plugin case.
+
+	* Helper.cs: Fix the build.
+
+	* NativeMethods.cs: Add plugin_instance_report_exception.
+
+	* XamlLoaderCallbacks.cs: Change return type of LoadCodeCallback. Add
+	SetNameAttributeCallback.
+
+2007-09-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Added control_initialize_from_xaml_callbacks.
+
+2007-09-22  Zoltan Varga  <vargaz@gmail.com>
+
+	* Moonlight.cs (LoadResource): New resolver method.
+	
+	* Moonlight.cs: Call Helper.LoadFile.
+
+	* XamlLoaderCallbacks.cs: Add new load_code callback.
+
+2007-09-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Helper.cs: Added UnloadDomain.
+	* XamlLoaderCallbacks.cs: Added, contains delegates and structures used by
+	  ManagedXamlLoader.
+	* NativeMethods.cs: More native methods.
+
+2007-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Update according to recent Xaml API changes.
+
+2007-08-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Updated.
+
+2007-08-23  Jackson Harper  <jackson@ximian.com>
+
+	* NativeMethods.cs: add/remove handler methods have been renamed.
+
+2007-08-20  Jb Evain  <jbevain@novell.com>
+
+	* Helper.cs: Add helper methods used in agclr.
+
+2007-08-20  Jb Evain  <jbevain@novell.com>
+
+	* Helper.cs: Add helper methods used in System.SilverLight.
+
+2007-08-11  Miguel de Icaza  <miguel@novell.com>
+
+	* Helper.cs: Add two helper methods that access the mscorlib
+	internal methods to manage AppDomains.   This is necessary because
+	we do not want to become friends with moonlight.exe (it is not
+	installed in the GAC or anything like that).   So instead we
+	become friends with agmono.
+
+	Move some code here that was duplicated in
+	XamlReader.cs and in moonlight.cs.    We are doing this to friend
+	agmono.dll to our 2.1 System assembly.   
+
+	This is needed because agmono has access to a few internals that
+	are not exposed by the 2.1 API.
+
+2007-08-04  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add visual_brush_new.
+
+	* Kind.cs: add VISUALBRUSH.
+
+2007-07-30  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add {color, double,
+	point}_key_frame_collection_new.
+
+	* Kind.cs: resync.
+
+2007-07-29  Chris Toshok  <toshok@ximian.com>
+
+	* Kind.cs: RESOURCE_COLLECTION -> RESOURCE_DICTIONARY.
+
+2007-07-20  Miguel de Icaza  <miguel@novell.com>
+
+	* NativeMethods.cs (collection_remove_at): Add new method. 
+
+2007-07-12  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add dllimports for uielement_capture_mouse and
+	uielement_release_mouse_capture.
+
+2007-07-09  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: remove the parser callbacks from the xaml_*
+	apis, and add the xaml_set_parser_callbacks entrypoint.
+
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: change
+	dependency_object_add/remove_event_handler to take a GCHandle.
+
+2007-07-08  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: remove CallbackMouseEvent and KeyboardEvent.
+	add the extra parameters to UnmanagedEventHandler to match that of
+	the unmanaged code.  Remove most of the arguments to
+	surface_register_events (everything but the actual events on the
+	surface itself).
+
+2007-07-02  Miguel de Icaza  <miguel@novell.com>
+
+	* NativeMethods.cs: Add a new call
+
