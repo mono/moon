@@ -11,6 +11,8 @@ CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(prefix)/lib /root $(prefix)/lib
+monoloc = @mono_libdir@/mono/3.0
+nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(monoloc)/nunit.util.dll 
 
 system_windows_browser_sources =					\
 	../System.Windows/Assembly/MonoTODOAttribute.cs			\
@@ -45,7 +47,13 @@ system_windows_browser_sources =					\
 	System.Windows/ScriptableObjectGenerator.cs			\
 	System.Windows/WebApplication.cs
 
+test_sources = \
+	Test/System.Windows.Browser.Serialization/JavaScriptSerializerTest.cs		\
+	Test/System.Windows.Browser.Serialization/SimpleTypeResolverTest.cs		\
+	Test/System.Windows/WebApplicationTest.cs
+
 EXTRA_DIST = $(system_windows_browser_sources) 				\
+	$(test_sources)							\
 	Assembly/ChangeLog						\
 	System.Windows.Browser/ChangeLog				\
 	System.Windows.Browser.Net/ChangeLog				\
@@ -64,8 +72,8 @@ $(assemblydesktop): $(system_windows_browser_sources) Makefile
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 clean-local:
-	-rm -rf $(assemblies) check-static check-dynamic
-	-rm -rf *.exe *.mdb tester.cs
+	-rm -rf $(assemblies) 
+	-rm -rf *.dll *.mdb tester.cs
 
 install-data-local:
 	$(GACUTIL) /i $(assemblydesktop) /f /package 3.0
@@ -74,3 +82,6 @@ install-data-local:
 uninstall-local:
 	$(GACUTIL) /u $(assembly)
 
+check: $(assemblydesktop) Makefile
+	$(GMCS) -out:test.dll -target:library -r:$(assemblydesktop) $(nunit) $(test_sources)
+	MONO_PATH="../lib/3.0:$$MONO_PATH" mono --debug $(monoloc)/nunit-console.exe /exclude:NotWorking,ValueAdd,CAS,InetAccess /output:TestResult-net_3_0.log /xml:TestResult-net_3_0.xml test.dll 
