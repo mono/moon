@@ -1,5 +1,5 @@
 if INCLUDE_MONO_RUNTIME
-MONO_SUBDIRS = man examples class gtk tools data
+MONO_SUBDIRS = class gtk tools examples man data
 endif
 
 if INCLUDE_TESTING
