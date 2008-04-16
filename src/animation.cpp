@@ -295,17 +295,6 @@ Storyboard::TeardownClockGroup ()
 	}
 }
 
-// Same as teardown but don't destroy the clock/animation storage
-void
-Storyboard::DetachClockGroupFromParent ()
-{
-	if (root_clock) {
-		ClockGroup *group = root_clock->GetParent();
-		if (group)
-			group->RemoveChild (root_clock);
-	}
-}
-
 void
 Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
@@ -316,8 +305,6 @@ Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpoin
 	// state changes
 	if (sb->root_clock->GetClockState () == Clock::Stopped)
 		sb->TeardownClockGroup ();
-	else
-		sb->DetachClockGroupFromParent ();
 }
 
 void

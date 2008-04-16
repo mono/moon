@@ -1,3 +1,12 @@
+2008-04-16  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
+	* animation.h: Don't detach the ClockGroup from parent on the Completed
+	event. This is now finally no longer needed. While keeping the
+	clockgroup means little perf difference it makes the whole thing much
+	more simple to read (there is just one place that explains why Filling
+	groups are no longer processed after Completed).
+
 2008-04-16  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp: tweak the origin tweak again.  This should pass
