@@ -34,8 +34,8 @@ svg2xaml-gui: svg2xaml-gui.in
 
 do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' 
 
-svg2xaml-gui.exe: $(svg2xaml_gui_exe_CS) ../../gtk/gtksilver.dll
-	gmcs -debug -out:svg2xaml-gui.exe $(svg2xaml_gui_exe_CS) -pkg:gtk-sharp-2.0 -pkg:@RSVG_SHARP@ -pkg:silverdesktop -r:../../gtk/gtksilver.dll -r:Mono.Posix -r:System -r:System.Xml -resource:svg2xaml.xslt
+svg2xaml-gui.exe: $(svg2xaml_gui_exe_CS) ../../class/lib/3.0/System.Windows.dll ../../gtk/gtksilver.dll
+	gmcs -debug -out:svg2xaml-gui.exe $(svg2xaml_gui_exe_CS) -pkg:gtk-sharp-2.0 -pkg:@RSVG_SHARP@ -r:../../class/lib/3.0/System.Windows.dll -r:../../gtk/gtksilver.dll -r:Mono.Posix -r:System -r:System.Xml -resource:svg2xaml.xslt
 
 run:
 	mono --debug svg2xaml.exe

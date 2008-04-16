@@ -10,6 +10,8 @@ EXTRA_DIST= $(gtksilver_dll_CS) gtksilver.snk gtksilver.source
 CLEANFILES=gtksilver.dll gtksilver.dll.mdb gtksilver.tree gtksilver.zip 
 DISTCLEANFILES=$(CLEANFILES)
 
+MONODOCER= MONO_PATH="../class/lib/3.0:$$MONO_PATH" monodocer
+
 gtksilver_dll_CS = $(srcdir)/gtk.cs \
 		   $(srcdir)/desklets.cs \
                    $(srcdir)/ManagedDownloader.cs \
@@ -19,11 +21,11 @@ gtksilver_SNK = $(srcdir)/gtksilver.snk
 
 monodoc_DATA = gtksilver.zip gtksilver.tree gtksilver.source
 
-gtksilver.dll gtksilver.xml: $(gtksilver_dll_CS)
-	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -pkg:silverdesktop
+gtksilver.dll gtksilver.xml: $(gtksilver_dll_CS) ../class/lib/3.0/Mono.Moonlight.dll ../class/lib/3.0/System.Windows.dll
+	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -r:../class/lib/3.0/Mono.Moonlight.dll -r:../class/lib/3.0/System.Windows.dll
 
 gtksilver.tree gtksilver.zip: gtksilver.xml gtksilver.dll $(srcdir)/docs/index.xml
-	monodocer -importslashdoc:gtksilver.xml -path:$(builddir)/docs -assembly:gtksilver.dll
+	$(MONODOCER) -importslashdoc:gtksilver.xml -path:$(builddir)/docs -assembly:gtksilver.dll
 	mdassembler --ecma $(builddir)/docs/ --out gtksilver
 
 install-data-local:
