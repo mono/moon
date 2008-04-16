@@ -262,13 +262,6 @@ else
    AC_MSG_ERROR([You are missing Mono.  I was looking for the mono.pc file])
 fi
 
-AC_MSG_CHECKING(Olive's Silverlight)
-if pkg-config silver silverdesktop; then
-   AC_MSG_RESULT(found)
-else
-   AC_MSG_ERROR([You are missing Mono project Olive module with Silverlight support. I was looking for the silver.pc and silverdesktop.pc files])
-fi
-
 AC_MSG_CHECKING(gtk-sharp-2.0)
 if pkg-config gtk-sharp-2.0; then
    AC_MSG_RESULT(found)
