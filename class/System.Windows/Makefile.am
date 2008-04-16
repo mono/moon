@@ -190,11 +190,11 @@ EXTRA_DIST = $(system_windows_sources) 	\
 	System.Windows.Media/ChangeLog		\
 	System.Windows.Shapes/ChangeLog
 
-$(assemblysl): $(system_windows_sources) Makefile
+$(assemblysl): $(system_windows_sources) Makefile $(top_builddir)/class/lib/2.1/Mono.Moonlight.dll
 	$(SMCS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblydesktop): $(system_windows_sources) Makefile
+$(assemblydesktop): $(system_windows_sources) Makefile $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
 	$(GMCS) -target:library -out:$@ $(system_windows_sources)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
