@@ -557,6 +557,7 @@
    <Test id="135"
 	inputFile="test-path-stretch-fill-extents.xaml"
 	masterFile10="../harness/masters/test-path-stretch-fill-extentsMaster.png"
+         categories="stretch"
    />
    <Test id="136"
         inputFile="test-clip-invalid-update.htm"
@@ -577,14 +578,17 @@
    <Test id="140"
 	inputFile="test-shape-line-stretch2.xaml"
 	masterFile10="../harness/masters/test-shape-line-stretch2Master.png"
+         categories="stretch"
    />
    <Test id="141"
 	inputFile="test-shape-polyline-stretch2.xaml"
 	masterFile10="../harness/masters/test-shape-polyline-stretch2Master.png"
+         categories="stretch"
    />
    <Test id="142"
 	inputFile="test-shape-polygon-stretch2.xaml"
 	masterFile10="../harness/masters/test-shape-polygon-stretch2Master.png"
+         categories="stretch"
    />
    <Test id="143"
 	inputFile="test-transform-clip.htm"
@@ -671,6 +675,7 @@
    <Test id="159"
 	 inputFile="test-shape-path-stretch.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch.png"
+         categories="stretch"
    />
    <Test id="160"
 	 inputFile="test-stroke-low-thickness.xaml"
@@ -679,10 +684,12 @@
    <Test id="161"
 	 inputFile="test-shape-path-stretch2.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch2Master.png"
+         categories="stretch"
    />
    <Test id="162"
 	 inputFile="test-shape-path-stretch3.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch3Master.png"
+         categories="stretch"
    />
    <Test id="163"
 	 inputFile="test-shape-dashcaps.xaml"
@@ -691,18 +698,22 @@
    <Test id="164"
 	 inputFile="test-shape-path-stretch4.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch4Master.png"
+         categories="stretch"
    />
    <Test id="165"
 	 inputFile="test-shape-line-stretch3.xaml"
 	 masterFile10="../harness/masters/test-shape-line-stretch3Master.png"
+         categories="stretch"
    />
    <Test id="166"
 	 inputFile="test-shape-line-stretch-gradient.xaml"
 	 masterFile10="../harness/masters/test-shape-line-stretch-gradientMaster.png"
+         categories="stretch"
    />
    <Test id="167"
 	 inputFile="test-shape-path-stretch-gradient.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch-gradientMaster.png"
+         categories="stretch"
    />
    <Test id="168"
 	 inputFile="input-test.html"
@@ -715,5 +726,6 @@
    <Test id="170"
 	 inputFile="test-shape-line-stretch4.xaml"
 	 masterFile10="../harness/masters/test-shape-line-stretch4Master.png"
+         categories="stretch"
    />
 </DRTList>
