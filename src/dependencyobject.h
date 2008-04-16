@@ -177,7 +177,16 @@ class DependencyObject : public EventObject {
 	DependencyObject ();
 
 	DependencyProperty *GetDependencyProperty (const char *name);
-	
+
+
+	//
+	// Returns true if a value is valid.  If the value is invalid return false.
+	// If error is non NULL and the value is not valid, error will be given an error code and error message that should be
+	// propogated to OnError
+	//
+	virtual bool IsValueValid (DependencyProperty *property, Value *value, GError **error);
+
+	bool SetValue (DependencyProperty *property, Value *value, GError **error);
 	void SetValue (DependencyProperty *property, Value *value);
 	void SetValue (DependencyProperty *property, Value value);
 	void SetValue (const char *name, Value *value);

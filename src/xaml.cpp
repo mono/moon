@@ -2689,7 +2689,11 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 						g_strdup_printf ("Cannot specify the value multiple times for property: %s.",
 								 property->element_name));
 				} else {
-					dep->SetValue (prop, Value (value->item));
+					GError *seterror = NULL;
+					if (!dep->SetValue (prop, new Value (value->item), &seterror)) {
+						parser_error (p, item->element_name, NULL, seterror->code, seterror->message);
+						g_error_free (seterror);
+					}
 					item->MarkPropertyAsSet (prop->name);
 				}
 			}
@@ -2869,7 +2873,14 @@ start_parse:
 			}
 			
 			if (v) {
-				dep->SetValue (prop, v);
+				GError *seterror = NULL;
+				if (!dep->SetValue (prop, v, &seterror)) {
+					parser_error (p, item->element_name, attr [i], seterror->code, seterror->message);
+					g_error_free (seterror);
+					delete v;
+					return;
+				}
+
 				delete v;
 				item->MarkPropertyAsSet (prop->name);
 			}

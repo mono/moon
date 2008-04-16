@@ -1,3 +1,11 @@
+2008-04-16  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyobject.h|cpp: SetValue now validates values and
+	returns false with a GError when invalid values are used.
+	Subclasses can (and should) override IsValidValue to do their own
+	value validation.
+	* xaml.cpp: Use new SetValue that returns errors.
+	
 2008-04-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: MediaBase::SetSourceAsyncCallback: don't do anything if we

@@ -562,6 +562,20 @@ unregister_depobj_values (gpointer  key,
 	}
 }
 
+#define VALIDATION_ERROR_QUARK validation_error_quark ()
+
+static GQuark
+validation_error_quark ()
+{
+	static GQuark quark = 0;
+
+	if (quark == 0)
+		quark = g_quark_from_static_string ("VALIDATION_ERROR_QUARK");
+	return quark;
+}
+
+
+
 void
 DependencyObject::RemoveAllListeners ()
 {
@@ -610,21 +624,52 @@ DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproper
 	NotifyListenersOfPropertyChange (&args);
 }
 
-void
-DependencyObject::SetValue (DependencyProperty *property, Value *value)
+bool
+DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GError** error)
 {
-	g_return_if_fail (property != NULL);
+	if (property == NULL) {
+		g_set_error (error, VALIDATION_ERROR_QUARK, 1001, "NULL property passed to IsValueValid");
+		return false;
+	}
 
 	if (value != NULL){
 		if (!Type::Find (value->GetKind ())->IsSubclassOf (property->value_type)) {
-			g_warning ("DependencyObject::SetValue, value cannot be assigned to the property %s::%s (property has type '%s', value has type '%s')\n", GetTypeName (), property->name, Type::Find (property->value_type)->name, Type::Find (value->GetKind ())->name);
-			return;
+			g_set_error (error, VALIDATION_ERROR_QUARK, 1001, "DependencyObject::SetValue, value cannot be assigned to the property %s::%s (property has type '%s', value has type '%s')\n", GetTypeName (), property->name, Type::Find (property->value_type)->name, Type::Find (value->GetKind ())->name);
+			return false;
 		}
 	} else {
 		if (!(property->value_type >= Type::DEPENDENCY_OBJECT) && !property->IsNullable ()) {
-			g_warning ("Can not set a non-nullable scalar type to NULL (property: %s)", property->name);
-			return;
+			g_set_error (error, VALIDATION_ERROR_QUARK, 1001, "Can not set a non-nullable scalar type to NULL (property: %s)", property->name);
+			return false;
 		}
+	}
+
+	if (DependencyObject::NameProperty == property) {
+		NameScope *scope = FindNameScope ();
+		if (scope && value && !scope->GetTemporary ()) {
+			DependencyObject *o = scope->FindName (value->AsString ());
+			if (o && o != this) {
+				g_set_error (error, VALIDATION_ERROR_QUARK, 2028, "The name already exists in the tree: %s.", value->AsString (),
+						scope->FindName (value->AsString ()), this);
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+void
+DependencyObject::SetValue (DependencyProperty *property, Value *value)
+{
+	SetValue (property, value, NULL);
+}
+
+bool
+DependencyObject::SetValue (DependencyProperty* property, Value* value, GError** error)
+{
+	if (!IsValueValid (property, value, error)) {
+		return false;
 	}
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property);
@@ -704,6 +749,8 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 		if (current_value)
 			delete current_value;
 	}
+
+	return true;
 }
 
 void
