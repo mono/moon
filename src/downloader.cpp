@@ -77,18 +77,20 @@ Downloader::Downloader ()
 	consumer_closure = NULL;
 	context = NULL;
 	notify_size = NULL;
+	this->write = NULL;
+	
 	deobfuscated = false;
-	unlinkit = false;
-	filename = NULL;
-	unzipdir = NULL;
-	failed_msg = NULL;
 	send_queued = false;
+	unlinkit = false;
 	unzipped = false;
 	started = false;
 	aborted = false;
-	this->write = NULL;
 	file_size = -2;
 	total = 0;
+	
+	failed_msg = NULL;
+	filename = NULL;
+	unzipdir = NULL;
 }
 
 void
@@ -412,9 +414,6 @@ Downloader::Open (const char *verb, const char *uri)
 {
 	CleanupUnzipDir ();
 	
-	started = false;
-	g_free (failed_msg);
-	
 	if (filename) {
 		if (unlinkit)
 			unlink (filename);
@@ -424,7 +423,13 @@ Downloader::Open (const char *verb, const char *uri)
 	deobfuscated = false;
 	send_queued = false;
 	unlinkit = false;
+	unzipped = false;
+	started = false;
+	aborted = false;
+	file_size = -2;
+	total = 0;
 	
+	g_free (failed_msg);
 	failed_msg = NULL;
 	filename = NULL;
 	
@@ -475,6 +480,8 @@ Downloader::Send ()
 	if (send_queued)
 		return;
 	
+	SetValue (Downloader::StatusTextProperty, Value (""));
+	SetValue (Downloader::StatusProperty, Value (0));
 	send_queued = true;
 	ref ();
 	
@@ -484,6 +491,8 @@ Downloader::Send ()
 void
 Downloader::SendNow ()
 {
+	SetValue (Downloader::StatusTextProperty, Value (""));
+	SetValue (Downloader::StatusProperty, Value (0));
 	send_queued = true;
 	SendInternal ();
 }
@@ -495,7 +504,7 @@ void
 Downloader::Write (void *buf, int32_t offset, int32_t n)
 {
 	double progress;
-
+	
 	if (aborted)
 		return;
 	
@@ -503,11 +512,11 @@ Downloader::Write (void *buf, int32_t offset, int32_t n)
 	if (n > 0)
 		total += n;
 	
-	if (file_size >= 0)
-		progress = total / (double) file_size;
-	else 
-		progress = 0;
-	
+	if (file_size >= 0) {
+		if ((progress = total / (double) file_size) > 1.0)
+			progress = 1.0;
+	} else 
+		progress = 0.0;
 	
 	SetValue (Downloader::DownloadProgressProperty, Value (progress));
 	Emit (DownloadProgressChangedEvent);
@@ -532,14 +541,15 @@ Downloader::NotifyFinished (const char *fname)
 {
 	if (aborted)
 		return;
-		
+	
 	filename = g_strdup (fname);
 	
 	SetValue (Downloader::DownloadProgressProperty, Value (1.0));
 	Emit (DownloadProgressChangedEvent);
 	
-	// HACK, we should provide the status code
+	// HACK, we should provide the actual status code
 	SetValue (Downloader::StatusProperty, Value (200));
+	SetValue (Downloader::StatusTextProperty, Value ("OK"));
 	Emit (CompletedEvent, NULL);
 }
 
@@ -756,7 +766,7 @@ downloader_init (void)
 	Downloader::DownloadProgressProperty = DependencyObject::Register (Type::DOWNLOADER, "DownloadProgress", new Value (0.0));
 	Downloader::ResponseTextProperty = DependencyObject::Register (Type::DOWNLOADER, "ResponseText", Type::STRING);
 	Downloader::StatusProperty = DependencyObject::Register (Type::DOWNLOADER, "Status", new Value (0));
-	Downloader::StatusTextProperty = DependencyObject::Register (Type::DOWNLOADER, "StatusText", Type::STRING);
+	Downloader::StatusTextProperty = DependencyObject::Register (Type::DOWNLOADER, "StatusText", new Value (""));
 	Downloader::UriProperty = DependencyObject::Register (Type::DOWNLOADER, "Uri", Type::STRING);
 		
 	Downloader::SetFunctions (dummy_downloader_create_state,

@@ -1,5 +1,11 @@
 2008-04-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* downloader.cpp: Properly set/reset Status and StatusText
+	properties.
+	(Downloader::Open): Properly reinitialize all state.
+	(Downloader::Write): Clamp progress to 1.0 (altho it should never
+	go above, especially not that I've fixed resetting 'total' state).
+
 	* enums.c (initialize_enums): Don't cast arrays using
 	GINT_TO_POINTER(), doesn't make any sense.
 
