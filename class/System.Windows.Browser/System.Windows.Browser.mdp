@@ -44,8 +44,12 @@
     <File name="System.Windows.Controls/FileDialogFileInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/OpenFileDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Hosting/Callback.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Consts.cs" subtype="Code" buildaction="Compile" />
+    <File name="../System.Windows/Assembly/MonoTODOAttribute.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />
+    <ProjectReference type="Project" localcopy="True" refto="System.Windows" />
   </References>
 </Project>

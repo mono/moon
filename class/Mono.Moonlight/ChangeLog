@@ -1,5 +1,9 @@
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Mono.Moonlight.mdp: Updated to (mostly) compile.
+
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Mono.Moonlight.mdp: Added.
 
 2008-04-13  Jb Evain  <jbevain@novell.com>
