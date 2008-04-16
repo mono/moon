@@ -472,10 +472,7 @@ Playlist::OnMediaEnded ()
 {
 	PlaylistEntry *current_entry;
 	
-	if (current_node)
-		d(printf ("Playlist::OnMediaEnded () current_node: %p, source: %s\n", current_node, ((PlaylistNode *) current_node)->GetEntry ()->GetSourceName ()));
-	else
-		d(printf ("Playlist::OnMediaEnded () current_node: %p\n", current_node));
+	d (printf ("Playlist::OnMediaEnded () current_node: %p\n", current_node));
 	
 	if (!current_node)
 		return;

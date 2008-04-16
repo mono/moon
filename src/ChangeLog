@@ -1,5 +1,9 @@
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* playlist.cpp: Simplify printf.
+
+2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Updated to (mostly) compile.
 
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
