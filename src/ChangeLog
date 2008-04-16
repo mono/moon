@@ -8,6 +8,11 @@
 
 2008-04-16  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp: tweak the origin tweak again.  This should pass
+	test-shape-path-stretch[34].xaml.
+
+2008-04-16  Larry Ewing  <lewing@novell.com>
+
 	* shape.cpp: don't adjust the origin unless we are adjusting that
 	axis.
 
