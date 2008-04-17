@@ -1,5 +1,10 @@
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* masters/test-yuv-converterMaster.png: Added yuv converter test,
+	  currently fails with our own yuv converter, succeeds with ffmpeg's.
+
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* masters/test-canvas-no-sizeMaster.png: Added (currently failing) test
 	  with a MediaElement within a Canvas which doesn't have width/height
 	  set.

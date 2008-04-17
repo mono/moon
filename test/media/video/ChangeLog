@@ -1,3 +1,11 @@
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-yuv-converter.html: Added yuv converter test, currently fails
+	  with our own yuv converter, succeeds with ffmpeg's.
+	* test-reset-media-element-source.html: Added test for behaviour when
+	  resetting a MediaElement's source to the same url.
+	* drtlist.xml: Updated.
+
 2008-04-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* video-seek-7.html, video-seek.html, all.html: Fixed to work with the test

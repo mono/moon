@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/testplugin.js"></script>
+      <script src="../../js/js/utils.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		   <MediaElement x:Name="TestVideo" Width="1280" Height="720" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed"/> 
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var done = false;
+	var seeked = false;
+	var result = true;
+	var ready = false;
+	var mediaElement = null;
+	var plugin = null;
+	
+	var media_opened_count = 0;
+	var end_test_timeout = "";
+	var failed = false;
+	
+	function QueueEndTest ()
+	{
+		if (end_test_timeout != "") {
+			removeTimeout (end_test_timeout);
+		}
+		setTimeout ("EndTest ();", 20000);
+	}
+	
+	function StartTest ()
+	{
+		TestLogger.LogDebug ("StartTest. position: " + mediaElement.Position.Seconds);
+
+		mediaElement.Source = "timecode-long.wmv";
+		setTimeout ("RestartTest ();", 5000);
+		QueueEndTest ();
+	}
+
+	function RestartTest ()
+	{
+		TestLogger.LogDebug ("RestartTest. position: " + mediaElement.Position.Seconds);
+
+		if (mediaElement.Position.Seconds == 0) {
+			TestLogger.LogError ("Expected position to be greater than 0.");
+			failed = true;
+		}
+		mediaElement.AutoPlay = false;
+		mediaElement.Pause ();
+		mediaElement.Source = "timecode-long.wmv";
+		QueueEndTest ();
+	}
+
+	function EndTest ()
+	{
+		TestLogger.LogDebug ("EndTest. position: " + mediaElement.Position.Seconds);
+		
+		if (mediaElement.Position.Seconds != 0) {
+			TestLogger.LogError ("Expected position to be 0, but it was: " + mediaElement.Position.Seconds);
+			failed = true;
+		}
+
+		if (media_opened_count < 2) {
+			TestLogger.LogError ("Expected MediaOpened to be raised at least twice, but it was raised " + media_opened_count + " times.");
+			failed = true;
+		}
+
+		TestLogger.LogResult (failed ? -1 : 1);
+
+		TestHost.SignalShutdown (document.name);
+	}
+
+	function OnPluginLoaded (o, e)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		plugin = document.getElementById ("JoltActiveX");
+		mediaElement = plugin.content.findName ("TestVideo");
+		mediaElement.addEventListener ("MediaOpened", "OnMediaOpened");
+		mediaElement.addEventListener ("MediaFailed", "OnMediaFailed");
+		TestLogger.LogDebug ("OnPluginLoaded: Done");
+		setTimeout ("StartTest ();", 500);
+		QueueEndTest ();
+	}
+
+	function OnMediaOpened (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaOpened: " + mediaElement.Source);
+		media_opened_count++;
+	}
+
+	function OnMediaFailed (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaFailed");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		TestHost.SignalShutdown (document.name);
+	}
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+</body>
+
+</html>
+
+
+
+
