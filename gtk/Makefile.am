@@ -10,8 +10,6 @@ EXTRA_DIST= $(gtksilver_dll_CS) gtksilver.snk gtksilver.source
 CLEANFILES=gtksilver.dll gtksilver.dll.mdb gtksilver.tree gtksilver.zip 
 DISTCLEANFILES=$(CLEANFILES)
 
-MONODOCER= MONO_PATH="../class/lib/3.0:$$MONO_PATH" monodocer
-
 gtksilver_dll_CS = $(srcdir)/gtk.cs \
 		   $(srcdir)/desklets.cs \
                    $(srcdir)/ManagedDownloader.cs \
@@ -31,6 +29,9 @@ gtksilver.tree gtksilver.zip: gtksilver.xml gtksilver.dll $(srcdir)/docs/index.x
 
 install-data-local:
 	gacutil -gacdir $(DESTDIR)$(prefix) -i gtksilver.dll
+
+uninstall-local:
+	gacutil -gacdir $(DESTDIR)$(prefix) -u gtksilver
 
 NAMESPACES=Gtk.Moonlight
 dist-hook:
