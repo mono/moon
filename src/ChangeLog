@@ -1,5 +1,11 @@
 2008-04-16  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp (Shape::ComputeStretchBounds): an incomplete fix to
+	try to resolve the regression in stretch that had crept in.  Still
+	working on a more complete patch.
+
+2008-04-16  Larry Ewing  <lewing@novell.com>
+
 	* geometry.cpp (RectangleGeometry::ComputeBounds): rectangles have
 	a logical size.
 

@@ -272,8 +272,13 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		bool adj_x = logical_bounds.w != 0.0;
 		bool adj_y = logical_bounds.h != 0.0;
 
-		double sw = adj_x ? (w - (shape_bounds.w - logical_bounds.w)) / logical_bounds.w : 1.0;
-		double sh = adj_x ? (h - (shape_bounds.h - logical_bounds.h)) / logical_bounds.h : 1.0;
+		//double sw = adj_x ? (w - (shape_bounds.w - logical_bounds.w)) / logical_bounds.w : 1.0;
+		//double sh = adj_x ? (h - (shape_bounds.h - logical_bounds.h)) / logical_bounds.h : 1.0;
+		double sh = h / shape_bounds.h;
+		double sw = w / shape_bounds.w;
+
+		//bool adj_x = true;
+		//bool adj_y = true;
 
 		bool center = false;
 
@@ -306,8 +311,8 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 						adj_x ? -shape_bounds.w * 0.5 : 0, 
 						adj_y ? -shape_bounds.h * 0.5 : 0);
 
-		if ((vh && vw) && !this->Is (Type::LINE))
-			cairo_matrix_translate (&stretch_transform, -shape_bounds.x, -shape_bounds.y);
+		if ((vh && vw) || !this->Is (Type::LINE))
+			cairo_matrix_translate (&stretch_transform, adj_x ? -shape_bounds.x : 0, adj_y ? -shape_bounds.y : 0);
 
 		// Double check our math
 		cairo_matrix_t test = stretch_transform;
