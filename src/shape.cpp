@@ -30,6 +30,8 @@
 // SL-Cairo convertion and helper routines
 //
 
+#define EXACT_BOUNDS 1
+
 static cairo_line_join_t
 convert_line_join (PenLineJoin pen_line_join)
 {
@@ -243,12 +245,17 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 {
 	Value *vh, *vw;
 
+	/*
+	 * NOTE: this code is extremely fragile don't make a change here without
+	 * checking the results of the test harness on with MOON_DRT_CATEGORIES=stretch
+	 */
+
 	if (Shape::MixedHeightWidth (&vh, &vw))
 		return shape_bounds;
 
 	double w = vw ? vw->AsDouble () : 0.0;
 	double h = vh ? vh->AsDouble () : 0.0;
-	
+
 	if ((h < 0.0) || (w < 0.0)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return shape_bounds;
@@ -271,9 +278,11 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 	if (stretch != StretchNone) {
 		bool adj_x = logical_bounds.w != 0.0;
 		bool adj_y = logical_bounds.h != 0.0;
-
-		//double sw = adj_x ? (w - (shape_bounds.w - logical_bounds.w)) / logical_bounds.w : 1.0;
-		//double sh = adj_x ? (h - (shape_bounds.h - logical_bounds.h)) / logical_bounds.h : 1.0;
+             
+		//double diff_x = shape_bounds.w - logical_bounds.w;
+		//double diff_y = shape_bounds.h - logical_bounds.h;
+		//double sw = adj_x ? (w - diff_x) / logical_bounds.w : 1.0;
+		//double sh = adj_y ? (h - diff_y) / logical_bounds.h : 1.0;
 		double sh = h / shape_bounds.h;
 		double sw = w / shape_bounds.w;
 
@@ -311,8 +320,13 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 						adj_x ? -shape_bounds.w * 0.5 : 0, 
 						adj_y ? -shape_bounds.h * 0.5 : 0);
 
-		if ((vh && vw) || !this->Is (Type::LINE))
-			cairo_matrix_translate (&stretch_transform, adj_x ? -shape_bounds.x : 0, adj_y ? -shape_bounds.y : 0);
+		//double x = shape_bounds.x - (shape_bounds.x - logical_bounds.x);
+		//double y = shapes_bounds.y - (shape_bounds.y - logical_bounds.y);
+		double x = vh || adj_x ? shape_bounds.x : 0;
+		double y = vw || adj_y ? shape_bounds.y : 0;
+
+		if (!this->Is (Type::LINE) || (vh && vw))
+			cairo_matrix_translate (&stretch_transform, -x, -y);
 
 		// Double check our math
 		cairo_matrix_t test = stretch_transform;
@@ -324,8 +338,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 	shape_bounds = shape_bounds.Transform (&stretch_transform);
 
 	if (vh && vw) {
-		shape_bounds.w = MIN (shape_bounds.w, vw->AsDouble () - shape_bounds.x);
-		shape_bounds.h = MIN (shape_bounds.h, vh->AsDouble () - shape_bounds.y);
+		shape_bounds = shape_bounds.Intersection (Rect (0, 0, vw->AsDouble (), vh->AsDouble ()));
 	}
 
 	return shape_bounds;
@@ -362,7 +375,11 @@ Shape::Clip (cairo_t *cr)
 		if (!vw)
 			return;
 
+#if EXACT_CLIP
 		cairo_rectangle (cr, 0, 0, vw->AsDouble (), vh->AsDouble ());
+#else
+		cairo_rectangle (cr, 0, 0, vw->AsDouble () > 1 ? vw->AsDouble () : 1, vh->AsDouble () > 1 ? vh->AsDouble() : 1);
+#endif
 		cairo_clip (cr);
 		cairo_new_path (cr);
 	}
