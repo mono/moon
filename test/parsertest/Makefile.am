@@ -5,5 +5,5 @@ parsertest_SOURCES = \
 
 parsertest_LDADD = $(MOON_PROG_LIBS)
 
-parsertest_CPPFLAGS = $(MOON_PROG_CFLAGS)
+parsertest_CPPFLAGS = $(MOON_PROG_CFLAGS) -I$(top_srcdir)/src
 

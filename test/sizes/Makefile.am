@@ -5,5 +5,5 @@ sizes_SOURCES = \
 
 sizes_LDADD = $(MOON_PROG_LIBS)
 
-sizes_CPPFLAGS = $(MOON_PROG_CFLAGS)
+sizes_CPPFLAGS = $(MOON_PROG_CFLAGS) -I$(top_srcdir)/src/
 
