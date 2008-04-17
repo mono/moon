@@ -33,8 +33,8 @@ Type::LookupEvent (const char *event_name)
 				return i + (parent_type == NULL ? 0 : parent_type->total_event_count);
 		}
 	}
-
-	if (parent_type == NULL) {
+	
+	if (parent == Type::INVALID || parent_type == NULL) {
 		printf ("Event lookup of event '%s' in type '%s' failed.\n", event_name, name);
 		return -1;
 	}
