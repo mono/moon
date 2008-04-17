@@ -1317,6 +1317,7 @@ DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value
 	this->name = g_strdup (name);
 	this->default_value = default_value;
 	this->value_type = value_type;
+	this->is_nullable = false;
 	this->is_attached_property = attached;
 	this->is_readonly = readonly;
 	this->storage_hash = NULL; // Create it on first usage request
