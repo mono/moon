@@ -43,6 +43,7 @@ static const char *moonlight_authors[] = {
 	"Sebastien Pouliot <sebastien@ximian.com>",
 	"Jb Evain <jbevain@novell.com>",
 	"Geoff Norton <gnorton@novell.com>",
+	"Michael Dominic K. <mdk@mdk.am>",
 	NULL
 };
 
