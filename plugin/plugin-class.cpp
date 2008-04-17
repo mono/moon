@@ -37,7 +37,7 @@
 #define d(x) x
 #else
 #define d(x)
-#endf
+#endif
 
 #define DEBUG_SCRIPTABLE 0
 #define DEBUG_JAVASCRIPT 1
