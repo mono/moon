@@ -7,14 +7,14 @@ pkgconfig_DATA = agmono.pc silverdesktop.pc silver.pc
 
 EXTRA_DIST=agmono.pc.in silverdesktop.pc.in silver.pc.in
 
-silver.pc: silver.pc.in Makefile
-	sed -e "s,@silverdir@,$(silverdir),g" -e "s,\@VERSION\@,$(VERSION),g" < silver.pc.in > $@.tmp
+silver.pc: $(srcdir)/silver.pc.in Makefile
+	sed -e "s,@silverdir@,$(silverdir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/silver.pc.in > $@.tmp
 	mv $@.tmp $@
 
-silverdesktop.pc: silverdesktop.pc.in Makefile
-	sed -e "s,@olivedir@,$(olivedir),g" -e "s,\@VERSION\@,$(VERSION),g" < silverdesktop.pc.in > $@.tmp
+silverdesktop.pc: $(srcdir)/silverdesktop.pc.in Makefile
+	sed -e "s,@olivedir@,$(olivedir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/silverdesktop.pc.in > $@.tmp
 	mv $@.tmp $@
 
-agmono.pc: agmono.pc.in Makefile
-	sed -e "s,@olivedir@,$(olivedir),g" -e "s,\@VERSION\@,$(VERSION),g" < agmono.pc.in > $@.tmp
+agmono.pc: $(srcdir)/agmono.pc.in Makefile
+	sed -e "s,@olivedir@,$(olivedir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/agmono.pc.in > $@.tmp
 	mv $@.tmp $@
