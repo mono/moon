@@ -1044,11 +1044,11 @@ MediaElement::TryOpen ()
 			}
 		} else {
 			MediaFailed ();
-			source->unref ();
-			source = NULL;
 			media->unref ();
 			media = NULL;
 		}
+		source->unref ();
+		source = NULL;
 		
 		// If we have a downloaded file ourselves, delete it, we no longer need it.
 		if (current_downloaded_file) {

@@ -1,5 +1,10 @@
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: MediaElement::TryOpen: always unref the FileSource we
+	  create when we're done with it.
+
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.cpp, dependencyobject.h: EventObject: we need to
 	  remember how many events the current type has, since in our
 	  destructor we can't get that information anymore. Add a new
