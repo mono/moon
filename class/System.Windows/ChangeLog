@@ -1,3 +1,7 @@
+2008-04-17  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Use DESTDIR when installing
+
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am: Minor make check fix. Renamed 'make check' to 'make

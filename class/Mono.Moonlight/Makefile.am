@@ -10,7 +10,7 @@ CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -d:
 
 GMCS = gmcs $(CSCFLAGS)
 SMCS = MONO_PATH="../lib/2_1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
-GACUTIL = gacutil /gacdir $(prefix)/lib /root $(prefix)/lib
+GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 mono_moonlight_sources =				\
 	$(srcdir)/../Consts.cs				\
