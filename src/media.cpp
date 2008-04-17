@@ -26,6 +26,7 @@
 #include "pipeline.h"
 
 #define d(x)
+#define e(x)
 
 // still too ugly to be exposed in the header files ;-)
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
@@ -495,6 +496,8 @@ MediaElement::SetSurface (Surface *s)
 void
 MediaElement::Reinitialize (bool dtor)
 {
+	d (printf ("MediaElement::Reinitialize (%i)\n", dtor));
+	
 	Value *val;
 	
 	if (mplayer)
@@ -620,6 +623,16 @@ MediaElement::MediaOpened (Media *media)
 		SetMedia (media);
 		
 		Emit (MediaOpenedEvent);
+		
+		if (flags & DownloadComplete){
+			if ((flags & PlayRequested) || GetValue (AutoPlayProperty)->AsBool ())
+				Play ();
+			else
+				Pause ();
+			
+			Invalidate ();
+		}
+				
 		return true;
 	}
 }
@@ -758,7 +771,7 @@ MediaElement::UpdateProgress ()
 	bool emit = false;
 	uint64_t currently_available_pts, current_pts, buffer_pts;
 
-	d(printf ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state)));
+	e(printf ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state)));
 	
 	if (state & WaitingForOpen)
 		return;
@@ -797,7 +810,7 @@ MediaElement::UpdateProgress ()
 
 		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
 		
-		d(printf ("MediaElement::UpdateProgress (), buf start: %llu = %llu ms, buf end: %llu = %llu ms, "
+		e(printf ("MediaElement::UpdateProgress (), buf start: %llu = %llu ms, buf end: %llu = %llu ms, "
 			  "buf time: %llu = %llu ms, last_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
 			  buffering_start, MilliSeconds_FromPts (buffering_start), buffering_end,
 			  MilliSeconds_FromPts (buffering_end), buffering_time, MilliSeconds_FromPts (buffering_time),
@@ -860,7 +873,7 @@ MediaElement::SetState (MediaElementState state)
 void 
 MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
 {
-	//printf ("MediaElement::DataWrite (%p, %d, %d)\n", buf, offset, n);
+	//printf ("MediaElement::DataWrite (%p, %d, %d), size: %llu\n", buf, offset, n, downloaded_file ? downloaded_file->GetSize () : 0);
 	
 	if (downloaded_file != NULL) {
 		downloaded_file->Write (buf, (int64_t) offset, n);
@@ -967,6 +980,9 @@ MediaElement::TryOpenFinished (void *user_data)
 	element->closure = NULL;
 	element->flags &= ~WaitingForOpen;
 	
+	if (!closure)
+		return false;
+	
 	if (MEDIA_SUCCEEDED (closure->result)) {
 		d(printf ("MediaElement::TryOpen (): download is not complete, but media was "
 			  "opened successfully and we'll now start buffering.\n"));
@@ -1017,7 +1033,7 @@ MediaElement::TryOpen ()
 	if (flags & WaitingForOpen)
 		return;
 	
-	d(printf ("MediaElement::TryOpen ()\n"));
+	d(printf ("MediaElement::TryOpen (), flags: %i\n", flags));
 	
 	if (flags & DownloadComplete) {
 		IMediaSource *current_downloaded_file = downloaded_file;
@@ -1032,16 +1048,7 @@ MediaElement::TryOpen ()
 		g_free (filename);
 		
 		if (MEDIA_SUCCEEDED (source->Initialize ()) && MEDIA_SUCCEEDED (media->Open (source))) {
-			if (MediaOpened (media)) {
-				SetState (Buffering);
-				
-				if ((flags & PlayRequested) || GetValue (AutoPlayProperty)->AsBool ())
-					Play ();
-				else
-					Pause ();
-				
-				Invalidate ();
-			}
+			MediaOpened (media);
 		} else {
 			MediaFailed ();
 			media->unref ();
@@ -1073,6 +1080,8 @@ MediaElement::TryOpen ()
 void
 MediaElement::DownloaderComplete ()
 {
+	d (printf ("MediaElement::DownloaderComplete ()\n"));
+	
 	flags |= DownloadComplete;
 	
 	UpdateProgress ();

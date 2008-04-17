@@ -1,3 +1,11 @@
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: MediaElement: Move the Play/Pause/AutoPlay logic to
+	  MediaOpened, so that it also happens when TryLoadFinished opens the
+	  media. Fixes media not starting to play when the media was
+	  downloaded between the moment we tried to open it and it was
+	  successfully opened.
+
 2008-04-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* color.cpp (color_from_str): Handle uint32 color values that are
