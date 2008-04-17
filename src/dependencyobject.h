@@ -30,7 +30,17 @@ typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer cl
 struct EventList {
 	int current_token;
 	int emitting;
+	int event_count;
 	List *event_list;
+};
+
+class EventLists {
+public:
+	int size;
+	EventList *lists;
+	
+	EventLists (int n);
+	~EventLists ();
 };
 
 // 
@@ -156,10 +166,9 @@ class EventObject {
 
 	gint32 refcount;
 
-	void FreeHandlers ();
 	void unref_delayed ();
 	
-	EventList *events;
+	EventLists *events;
 
 };
 

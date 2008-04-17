@@ -24,6 +24,29 @@
 #include "uielement.h"
 #include "animation.h"
 
+EventLists::EventLists (int n)
+{
+	size = n;
+	lists = new EventList [size];
+	for (int i = 0; i < size; i++) {
+		lists [i].current_token = 0;
+		lists [i].emitting = 0;
+		lists [i].event_list = new List ();
+	}
+}
+
+EventLists::~EventLists ()
+{
+	for (int i = 0; i < size; i++) {
+		delete lists [i].event_list;
+	}
+	delete [] lists;
+}
+
+/*
+ *
+ */
+
 EventObject::EventObject ()
 {
 	surface = NULL;
@@ -75,7 +98,7 @@ EventObject::~EventObject()
 	objects_destroyed++;
 #endif
 
-		FreeHandlers ();
+	delete events;
 }
 
 void 
@@ -173,19 +196,6 @@ public:
 	bool pending_removal;
 };
 
-void
-EventObject::FreeHandlers ()
-{
-	if (events) {
-		int i, n = GetType ()->GetEventCount ();
-		
-		for (i = 0; i < n; i++)
-			delete events[i].event_list;
-		
-		delete [] events;
-	}
-}
-
 int
 EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data)
 {
@@ -207,20 +217,12 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 		return -1;
 	}
 	
-	if (events == NULL) {
-		int i, n = GetType ()->GetEventCount ();
-		
-		events = new EventList [n];
-		for (i = 0; i < n; i++) {
-			events[i].current_token = 0;
-			events[i].emitting = 0;
-			events[i].event_list = new List ();
-		}
-	}
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
 	
-	int token = events[event_id].current_token++;
+	int token = events->lists [event_id].current_token++;
 	
-	events[event_id].event_list->Append (new EventClosure (handler, data, token));
+	events->lists [event_id].event_list->Append (new EventClosure (handler, data, token));
 	
 	return token;
 }
@@ -262,13 +264,13 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 	if (events == NULL)
 		return;
 	
-	EventClosure *closure = (EventClosure *) events[event_id].event_list->First ();
+	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->func == handler && closure->data == data) {
-			if (events [event_id].emitting > 0) {
+			if (events->lists [event_id].emitting > 0) {
 				closure->pending_removal = true;
 			} else {
-				events[event_id].event_list->Remove (closure);
+				events->lists [event_id].event_list->Remove (closure);
 			}
 			break;
 		}
@@ -288,13 +290,13 @@ EventObject::RemoveHandler (int event_id, int token)
 	if (events == NULL)
 		return;
 	
-	EventClosure *closure = (EventClosure *) events[event_id].event_list->First ();
+	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->token == token) {
-			if (events [event_id].emitting > 0) {
+			if (events->lists [event_id].emitting > 0) {
 				closure->pending_removal = true;
 			} else {
-				events[event_id].event_list->Remove (closure);
+				events->lists [event_id].event_list->Remove (closure);
 			}
 			break;
 		}
@@ -327,13 +329,13 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 	if (events == NULL)
 		return;
 
-	EventClosure *c = (EventClosure *) events[event_id].event_list->First ();
+	EventClosure *c = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (c) {
 		if (predicate (c->func, c->data, closure)) {
-			if (events [event_id].emitting > 0) {
+			if (events->lists [event_id].emitting > 0) {
 				c->pending_removal = true;
 			} else {
-				events[event_id].event_list->Remove (c);
+				events->lists [event_id].event_list->Remove (c);
 			}
 			break;
 		}
@@ -370,7 +372,7 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 		return false;
 	}
 
-	if (events == NULL || events[event_id].event_list->IsEmpty ()) {
+	if (events == NULL || events->lists [event_id].event_list->IsEmpty ()) {
 		if (calldata)
 			calldata->unref ();
 		return false;
@@ -379,13 +381,13 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 	// We need to ref ourselves during event emission, since we may end up 
 	// deleting the object calling us/holding a ref to us.
 	ref ();
-	events [event_id].emitting++;
+	events->lists [event_id].emitting++;
 
-	length = events [event_id].event_list->Length ();
+	length = events->lists [event_id].event_list->Length ();
 	closures = (EventClosure **) g_malloc (sizeof (EventClosure*) * length);
 	
 	/* make a copy of the event list to use for emitting */
-	closure = (EventClosure *) events [event_id].event_list->First ();
+	closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	for (int i = 0; closure != NULL; i++) {
 		closures [i] = closure;
 		closure = (EventClosure *) closure->next;
@@ -401,15 +403,15 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 	if (calldata)
 		calldata->unref ();
 
-	events [event_id].emitting--;
+	events->lists [event_id].emitting--;
 
-	if (events [event_id].emitting == 0) {
+	if (events->lists [event_id].emitting == 0) {
 		// Remove closures which are waiting for removal
-		closure = (EventClosure *) events [event_id].event_list->First ();
+		closure = (EventClosure *) events->lists [event_id].event_list->First ();
 		while (closure != NULL) {
 			next = (EventClosure *) closure->next;
 			if (closure->pending_removal)
-				events [event_id].event_list->Remove (closure);
+				events->lists [event_id].event_list->Remove (closure);
 			closure = next;
 		}
 	}

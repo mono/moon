@@ -1,5 +1,12 @@
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.cpp, dependencyobject.h: EventObject: we need to
+	  remember how many events the current type has, since in our
+	  destructor we can't get that information anymore. Add a new
+	  EventLists class which does the book-keeping.
+
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: MediaElement::Reinitialize: don't call SetValue if we're
 	  in the destructor. MediaElement::SetMedia: call ComputeBounds at
 	  the end. Fixes xaml/test-canvas-no-size.html
