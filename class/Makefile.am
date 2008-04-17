@@ -2,7 +2,7 @@ SUBDIRS = . Mono.Moonlight System.Windows System.Windows.Browser
 
 noinst_SCRIPTS = lib/stamp lib/2.1/smcs.exe
 
-EXTRA_DIST = mono.pub winfx3.pub  msfinal.pub mono.snk
+EXTRA_DIST = mono.pub winfx3.pub msfinal.pub mono.snk
 
 lib/2.1/smcs.exe lib/stamp:
 	-mkdir -p lib/3.0

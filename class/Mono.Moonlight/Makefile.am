@@ -12,26 +12,26 @@ GMCS = gmcs $(CSCFLAGS)
 SMCS = MONO_PATH="../lib/2_1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(prefix)/lib /root $(prefix)/lib
 
-mono_moonlight_sources =			\
-	../Consts.cs				\
-	Assembly/AssemblyInfo.cs		\
-	Mono/Kind.cs				\
-	Mono/NativeMethods.cs			\
-	Mono/Value.cs				\
-	Mono/Moonlight.cs			\
-	Mono/Helper.cs				\
-	Mono/XamlLoaderCallbacks.cs		\
-	System.IO/SimpleUnmanagedMemoryStream.cs\
-	System.Windows.Interop/PluginHost.cs	
+mono_moonlight_sources =				\
+	$(srcdir)/../Consts.cs				\
+	$(srcdir)/Assembly/AssemblyInfo.cs		\
+	$(srcdir)/Mono/Kind.cs				\
+	$(srcdir)/Mono/NativeMethods.cs			\
+	$(srcdir)/Mono/Value.cs				\
+	$(srcdir)/Mono/Moonlight.cs			\
+	$(srcdir)/Mono/Helper.cs				\
+	$(srcdir)/Mono/XamlLoaderCallbacks.cs		\
+	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs\
+	$(srcdir)/System.Windows.Interop/PluginHost.cs	
 
 EXTRA_DIST = $(mono_moonlight_sources)
 
 $(assemblysl): $(mono_moonlight_sources) Makefile
-	$(SMCS) -target:library -out:$@ $(mono_moonlight_sources) -d:NET_2_1
+	$(SMCS) -target:library -out:$@ $(mono_moonlight_sources) -d:NET_2_1 -keyfile:$(srcdir)/../winfx3.pub
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(mono_moonlight_sources) Makefile
-	$(GMCS) -target:library -out:$@ $(mono_moonlight_sources)
+	$(GMCS) -target:library -out:$@ $(mono_moonlight_sources) -keyfile:$(srcdir)/../mono.pub
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 clean-local:

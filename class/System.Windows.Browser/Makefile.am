@@ -15,37 +15,37 @@ monoloc = @mono_libdir@/mono/3.0
 nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(monoloc)/nunit.util.dll 
 
 system_windows_browser_sources =					\
-	../System.Windows/Assembly/MonoTODOAttribute.cs			\
-	../Consts.cs							\
-	Assembly/AssemblyInfo.cs					\
-	System.Windows.Browser.Net/BrowserHttpWebRequest.cs		\
-	System.Windows.Browser.Net/BrowserHttpWebResponse.cs		\
-	System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs		\
-	System.Windows.Browser.Net/SoapHttpClientProtocol.cs		\
-	System.Windows.Browser.Serialization/JavaScriptConverter.cs	\
-	System.Windows.Browser.Serialization/JavaScriptSerializer.cs	\
-	System.Windows.Browser.Serialization/JavaScriptTypeResolver.cs	\
-	System.Windows.Browser.Serialization/ScriptIgnoreAttribute.cs	\
-	System.Windows.Browser.Serialization/SimpleTypeResolver.cs	\
-	System.Windows.Browser/BrowserInformation.cs			\
-	System.Windows.Browser/BrowserRuntimeSettings.cs		\
-	System.Windows.Browser/HtmlDocument.cs				\
-	System.Windows.Browser/HtmlElement.cs				\
-	System.Windows.Browser/HtmlElementCollection.cs			\
-	System.Windows.Browser/HtmlEventArgs.cs				\
-	System.Windows.Browser/HtmlObject.cs				\
-	System.Windows.Browser/HtmlPage.cs				\
-	System.Windows.Browser/HtmlTimer.cs				\
-	System.Windows.Browser/HttpUtility.cs				\
-	System.Windows.Browser/ScriptableAttribute.cs			\
-	System.Windows.Browser/ScriptableObject.cs			\
-	System.Windows.Controls/DialogResult.cs				\
-	System.Windows.Controls/FileDialogFileInfo.cs			\
-	System.Windows.Controls/OpenFileDialog.cs			\
-	System.Windows.Hosting/Callback.cs				\
-	System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
-	System.Windows/ScriptableObjectGenerator.cs			\
-	System.Windows/WebApplication.cs
+	$(srcdir)/../System.Windows/Assembly/MonoTODOAttribute.cs			\
+	$(srcdir)/../Consts.cs							\
+	$(srcdir)/Assembly/AssemblyInfo.cs					\
+	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequest.cs		\
+	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebResponse.cs		\
+	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs		\
+	$(srcdir)/System.Windows.Browser.Net/SoapHttpClientProtocol.cs		\
+	$(srcdir)/System.Windows.Browser.Serialization/JavaScriptConverter.cs	\
+	$(srcdir)/System.Windows.Browser.Serialization/JavaScriptSerializer.cs	\
+	$(srcdir)/System.Windows.Browser.Serialization/JavaScriptTypeResolver.cs	\
+	$(srcdir)/System.Windows.Browser.Serialization/ScriptIgnoreAttribute.cs	\
+	$(srcdir)/System.Windows.Browser.Serialization/SimpleTypeResolver.cs	\
+	$(srcdir)/System.Windows.Browser/BrowserInformation.cs			\
+	$(srcdir)/System.Windows.Browser/BrowserRuntimeSettings.cs		\
+	$(srcdir)/System.Windows.Browser/HtmlDocument.cs				\
+	$(srcdir)/System.Windows.Browser/HtmlElement.cs				\
+	$(srcdir)/System.Windows.Browser/HtmlElementCollection.cs			\
+	$(srcdir)/System.Windows.Browser/HtmlEventArgs.cs				\
+	$(srcdir)/System.Windows.Browser/HtmlObject.cs				\
+	$(srcdir)/System.Windows.Browser/HtmlPage.cs				\
+	$(srcdir)/System.Windows.Browser/HtmlTimer.cs				\
+	$(srcdir)/System.Windows.Browser/HttpUtility.cs				\
+	$(srcdir)/System.Windows.Browser/ScriptableAttribute.cs			\
+	$(srcdir)/System.Windows.Browser/ScriptableObject.cs			\
+	$(srcdir)/System.Windows.Controls/DialogResult.cs				\
+	$(srcdir)/System.Windows.Controls/FileDialogFileInfo.cs			\
+	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
+	$(srcdir)/System.Windows.Hosting/Callback.cs				\
+	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
+	$(srcdir)/System.Windows/ScriptableObjectGenerator.cs			\
+	$(srcdir)/System.Windows/WebApplication.cs
 
 test_sources = \
 	Test/System.Windows.Browser.Serialization/JavaScriptSerializerTest.cs		\
@@ -64,11 +64,11 @@ EXTRA_DIST = $(system_windows_browser_sources) 				\
 	ChangeLog
 
 $(assemblysl): $(system_windows_browser_sources) Makefile
-	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:System.Net
+	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:System.Net -keyfile:$(srcdir)/../msfinal.pub
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile
-	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources)
+	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -keyfile:$(srcdir)/../mono.pub
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 clean-local:

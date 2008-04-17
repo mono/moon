@@ -60,9 +60,3 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible (false)]
 
 [assembly: AssemblyDelaySign (true)]
-#if NET_2_1
-[assembly: AssemblyKeyFile ("../msfinal.pub")]
-#else
-// For our desktop use, use the mono.pub key.
-[assembly: AssemblyKeyFile ("../mono.pub")]
-#endif
