@@ -10,10 +10,11 @@ EXTRA_DIST = \
 
 CLEANFILES = xamlg xamlg.exe
 
-xamlg_exe_CS = xamlg.cs
+xamlg_exe_CS = 		\
+	$(srcdir)/xamlg.cs
 
 xamlg.exe: $(xamlg_exe_CS) 
-	gmcs -debug xamlg.cs -r:System -r:System.Xml
+	gmcs -debug -out:$@ $(xamlg_exe_CS) -r:System -r:System.Xml
 
 xamlg: xamlg.in
 	$(do_subst) < $(srcdir)/xamlg.in > xamlg
