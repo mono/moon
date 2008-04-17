@@ -1,5 +1,14 @@
-2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-04-17  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp: It turns out that KeyFrames doesn't have default Value
+	of NULL but rather 0/Black/etc.  
+
+	This fixes the the test-animation-null-defaults-*.xaml tests and the bug
+	in PopFly where clicking the block list collapser wouldn't do anything
+	(it collapses now properly like the tutorial right pane). 
+
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+	
 	* src.mdp: Updated.
 
 2008-04-16  Larry Ewing  <lewing@novell.com>

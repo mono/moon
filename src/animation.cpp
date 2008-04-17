@@ -972,6 +972,7 @@ DependencyProperty* DoubleKeyFrame::ValueProperty;
 
 DoubleKeyFrame::DoubleKeyFrame ()
 {
+	SetValue (0.0);
 }
 
 DoubleKeyFrame*
@@ -984,6 +985,8 @@ DependencyProperty* ColorKeyFrame::ValueProperty;
 
 ColorKeyFrame::ColorKeyFrame ()
 {
+	static Color c = Color (0, 0, 0, 1);
+	SetValue (c);
 }
 
 ColorKeyFrame*
@@ -996,6 +999,8 @@ DependencyProperty* PointKeyFrame::ValueProperty;
 
 PointKeyFrame::PointKeyFrame ()
 {
+	static Point p = Point (0, 0);
+	SetValue (p);
 }
 
 PointKeyFrame*
