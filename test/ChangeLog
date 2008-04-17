@@ -1,3 +1,9 @@
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/drtlist.xml, xaml/test-canvas-no-size.html: Added (currently
+	  failing) test with a MediaElement within a Canvas which doesn't
+	  have width/height set.
+
 2008-04-17  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/drtlist.xml:

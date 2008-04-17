@@ -1,3 +1,9 @@
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* masters/test-canvas-no-sizeMaster.png: Added (currently failing) test
+	  with a MediaElement within a Canvas which doesn't have width/height
+	  set.
+
 2008-04-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/XamlTest.cs: Use a relative path for the path to the xaml file

@@ -752,4 +752,8 @@
          masterFile10="../harness/masters/test-animation-null-defaults-colorMaster.tif"
     	 captureSpecifier="300,15"
    />
+   <Test id="174"
+         inputFile="test-canvas-no-size.html"
+         masterFile10="../harness/masters/test-canvas-no-sizeMaster.png"
+   />
 </DRTList>
