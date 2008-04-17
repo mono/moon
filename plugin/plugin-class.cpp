@@ -33,6 +33,12 @@
 #include <nsIDOMEventTarget.h>
 #include <nsIDOMEventListener.h>
 
+#ifdef DEBUG
+#define d(x) x
+#else
+#define d(x)
+#endf
+
 #define DEBUG_SCRIPTABLE 0
 #define DEBUG_JAVASCRIPT 1
 
@@ -450,8 +456,6 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 	if (!strncmp (cb_name, "javascript:", strlen ("javascript:")))
 		cb_name += strlen ("javascript:");
 	this->callback = g_strdup (cb_name);
-
-// 	printf ("returning event listener proxy from %s - > %s\n", event_name, cb_name);
 }
 
 const char *
@@ -510,8 +514,8 @@ EventListenerProxy::AddHandler (EventObject *obj)
 	event_id = obj->GetType()->LookupEvent (event_name);
 
 	if (event_id == -1) {
-		printf ("object of type `%s' does not provide an event named `%s'\n",
-			obj->GetTypeName(), event_name);
+		d(printf ("object of type `%s' does not provide an event named `%s'\n",
+			  obj->GetTypeName(), event_name));
 		return -1;
 	}
 
@@ -555,7 +559,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		// Firefox can invalidate our NPObjects after the plugin itself
 		// has been destroyed. During this invalidation our NPObjects call 
 		// into the moonlight runtime, which then emits events.
-		printf ("Moonlight: The plugin has been deleted, but we're still emitting events?\n");
+		d(printf ("Moonlight: The plugin has been deleted, but we're still emitting events?\n"));
 		return;
 	}
 
@@ -1495,24 +1499,17 @@ MoonlightObjectType::AddMapping (const MoonNameIdMapping *mapping, int count)
 int
 MoonlightObjectType::LookupName (NPIdentifier name)
 {
-	if (last_lookup == name) {
-//  		printf ("%p:  fast %p => %d\n", this, name, last_id);
+	if (last_lookup == name)
 		return last_id;
-	}
-
-//  	printf ("%p: slow %p\n", this, name);
-
-
+	
 	int id = map_name_to_id (name, mapping, mapping_count);
-
+	
 	if (id) {
 		/* only cache hits */
 		last_lookup = name;
 		last_id = id;
 	}
-
-// 	printf (" => %d\n", id);
-
+	
 	return id;
 }
 
@@ -1685,10 +1682,9 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 				break;
 			}
 		}
-
-#if DEBUG
-		printf ("version requested = '%s' (%s)\n", STR_FROM_VARIANT (args [0]), supported ? "yes" : "no");
-#endif
+		
+		d(printf ("version requested = '%s' (%s)\n", STR_FROM_VARIANT (args [0]), supported ? "yes" : "no"));
+		
 		BOOLEAN_TO_NPVARIANT (supported, *result);
 
 		g_strfreev (versions);
@@ -2128,42 +2124,47 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 	return p;
 }
 
+static const char *variant_types[] = {
+	"void", "null", "bool", "int32", "double", "string", "object"
+};
+
 static bool
-_set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, const NPVariant *value)
+_set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop, const NPVariant *value)
 {
 	if (npvariant_is_moonlight_object (*value)) {
 		MoonlightObject *obj = (MoonlightObject *) NPVARIANT_TO_OBJECT (*value);
+		MoonlightDuration *duration;
+		MoonlightTimeSpan *ts;
+		MoonlightPoint *point;
+		MoonlightRect *rect;
 		
 		if (Type::IsSubclassOf (obj->moonlight_type, Type::DEPENDENCY_OBJECT) && obj->moonlight_type != Type::INVALID) {
 			MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (*value);
-			dob->SetValue (p, Value(depobj->GetDependencyObject ()));
+			dob->SetValue (prop, Value (depobj->GetDependencyObject ()));
 			
 			return true;
 		}
-
+		
 		switch (obj->moonlight_type) {
-		case Type::TIMESPAN: {
-			MoonlightTimeSpan *ts = (MoonlightTimeSpan*) obj;
-			dob->SetValue (p, Value(ts->GetValue(), Type::TIMESPAN));
+		case Type::TIMESPAN:
+			ts = (MoonlightTimeSpan *) obj;
+			dob->SetValue (prop, Value (ts->GetValue (), Type::TIMESPAN));
 			break;
-		}
-		case Type::DURATION: {
-			MoonlightDuration *duration = (MoonlightDuration*) obj;
-			dob->SetValue (p, Value(duration->GetValue()));
+		case Type::DURATION:
+			duration = (MoonlightDuration *) obj;
+			dob->SetValue (prop, Value (duration->GetValue ()));
 			break;
-		}
-		case Type::RECT: {
-			MoonlightRect *rect = (MoonlightRect*) obj;
-			dob->SetValue (p, Value(rect->rect));
+		case Type::RECT:
+			rect = (MoonlightRect *) obj;
+			dob->SetValue (prop, Value (rect->rect));
 			break;
-		}
-		case Type::POINT: {
-			MoonlightPoint *point = (MoonlightPoint*) obj;
-			dob->SetValue (p, Value(point->point));
+		case Type::POINT:
+			point = (MoonlightPoint *) obj;
+			dob->SetValue (prop, Value (point->point));
 			break;
-		}
 		default:
-			//printf ("unhandled object type %i - %s in do.set_property\n", obj->moonlight_type, Type::Find (obj->moonlight_type)->name);
+			d(printf ("unhandled object type %d - %s in do.set_property\n",
+				  obj->moonlight_type, Type::Find (obj->moonlight_type)->name));
 			DEBUG_WARN_NOTIMPLEMENTED ("unhandled object type in do.set_property");
 			return true;
 		}
@@ -2189,31 +2190,33 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *p, co
 		} else if (NPVARIANT_IS_STRING (*value)) {
 			strval = STR_FROM_VARIANT (*value);
 		} else if (NPVARIANT_IS_NULL (*value)) {
-			if (Type::IsSubclassOf (p->value_type, Type::DEPENDENCY_OBJECT)) {
+			if (Type::IsSubclassOf (prop->value_type, Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *val = NULL;
 				
-				dob->SetValue (p, Value (val));
-			} else if (p->value_type == Type::STRING) {
+				dob->SetValue (prop, Value (val));
+			} else if (prop->value_type == Type::STRING) {
 				char *val = NULL;
 				
-				dob->SetValue (p, Value (val));
+				dob->SetValue (prop, Value (val));
 			} else 
-				dob->SetValue (p, NULL);
+				dob->SetValue (prop, NULL);
 			
 			return true;
 		} else if (NPVARIANT_IS_VOID (*value)) {
-			DEBUGWARN ("unhandled variant type VOID in do.set_property for (%s::%s)", dob->GetTypeName (), p->name);
+			d(printf ("unhandled variant type VOID in do.set_property for (%s::%s)",
+				  dob->GetTypeName (), prop->name));
 			return true;
 		} else {
-			DEBUGWARN ("unhandled variant type in do.set_property for (%s::%s)", dob->GetTypeName (), p->name);
+			d(printf ("unhandled variant type in do.set_property for (%s::%s)",
+				  dob->GetTypeName (), prop->name));
 			return true;
 		}
 		
 		g_assert (strval != NULL);
 		
-		return xaml_set_property_from_str (dob, p, strval);
+		return xaml_set_property_from_str (dob, prop, strval);
 	}
-
+	
 	return true;
 }
 
@@ -2242,47 +2245,48 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 {
 	// don't need to downcase here since dependency property lookup is already case insensitive
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	DependencyObject *dob = GetDependencyObject ();
+	DependencyProperty *prop;
+	const char *event_name;
+	int event_id;
+	Value *value;
+	
 	if (!strname)
 		return false;
-
-	DependencyObject *dob = GetDependencyObject ();
-
-	DependencyProperty *p = _get_dependency_property (dob, strname);
+	
+	prop = _get_dependency_property (dob, strname);
 	NPN_MemFree (strname);
-
-	if (p) {
-		Value *value = dob->GetValue (p);
-		if (!value) {
+	
+	if (prop) {
+		if (!(value = dob->GetValue (prop))) {
 			// strings aren't null, they seem to just be empty strings
-			if (p->value_type == Type::STRING) {
+			if (prop->value_type == Type::STRING) {
 				string_to_npvariant ("", result);
 				return true;
 			}
-
+			
 			NULL_TO_NPVARIANT (*result);
 			return true;
 		}
-
+		
 		if (value->GetKind () == Type::INT32) {
-			const char *s = enums_int_to_str (p->name, value->AsInt32 ());
+			const char *s = enums_int_to_str (prop->name, value->AsInt32 ());
 			if (s)
 				string_to_npvariant (s, result);
 			else
-				value_to_variant (this, value, result, dob, p);
+				value_to_variant (this, value, result, dob, prop);
 		} else
-			value_to_variant (this, value, result, dob, p);
-
+			value_to_variant (this, value, result, dob, prop);
+		
 		return true;
 	}
-
+	
 	// it wasn't a dependency property.  let's see if it's an
 	// event, and hook it up if it is valid on this object.
-	const char *event_name = map_moon_id_to_event_name (id);
-	if (!event_name)
+	if (!(event_name = map_moon_id_to_event_name (id)))
 		return MoonlightObject::GetProperty (id, name, result);
-
-	int event_id = dob->GetType()->LookupEvent (event_name);
-	if (event_id != -1) {
+	
+	if ((event_id = dob->GetType()->LookupEvent (event_name)) == -1) {
 #if false
 		EventListenerProxy *proxy = LookupEventProxy (event_id);
 		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
@@ -2294,39 +2298,43 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		return true;
 #endif
 	}
-
+	
 	return MoonlightObject::GetProperty (id, name, result);
 }
 
 bool
 MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
-	DependencyObject *dob = GetDependencyObject ();
-
 	// don't need to downcase here since dependency property lookup is already case insensitive
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	DependencyProperty *p = _get_dependency_property (dob, strname);
+	DependencyObject *dob = GetDependencyObject ();
+	DependencyProperty *prop;
+	const char *event_name;
+	int event_id;
+	
+	if (!strname)
+		return false;
+	
+	prop = _get_dependency_property (dob, strname);
 	NPN_MemFree (strname);
-
-	if (p) {
-		if (_set_dependency_property_value (dob, p, value)) {
+	
+	if (prop) {
+		if (_set_dependency_property_value (dob, prop, value)) {
 			return true;
 		} else {
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
 		}
 	}
-
+	
 	// turns out that on Silverlight you can't set regular events as properties.
 #if false
 	// it wasn't a dependency property.  let's see if it's an
 	// event
-	const char *event_name = map_moon_id_to_event_name (id);
-	if (event_name != NULL) {
-		int event_id = dob->GetType()->LookupEvent(event_name);
-		if (event_id != -1) {
+	if ((event_name = map_moon_id_to_event_name (id))) {
+		if ((event_id = dob->GetType ()->LookupEvent (event_name)) != -1) {
 			// If we have a handler, remove it.
 			ClearEventProxy (event_id);
-
+			
 			if (!NPVARIANT_IS_NULL (*value)) {
 				EventListenerProxy *proxy = new EventListenerProxy (instance,
 										    event_name,
@@ -2334,11 +2342,12 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 				proxy->AddHandler (dob);
 				SetEventProxy (event_id, proxy);
 			}
-
+			
 			return true;
 		}
 	}
 #endif
+	
 	return MoonlightObject::SetProperty (id, name, value);
 }
 
