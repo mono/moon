@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-Xephyr :2  -dpi 96 -noreset -ac &
+Xephyr :2  -dpi 96 -noreset -ac -screen 1200x960 &
 
 DISPLAY=:2 make "$@"
 

@@ -158,6 +158,7 @@
     <File name="typegen/typegen.cs" subtype="Code" buildaction="Nothing" />
     <File name="typegen/typegen.sh" subtype="Code" buildaction="Nothing" />
     <File name="type-generated.cpp" subtype="Code" buildaction="Compile" />
+    <File name="enums.c" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

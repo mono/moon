@@ -1,3 +1,7 @@
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Added.
+
 2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* bip.mp3, media-ended.html, media-ended.xaml, Silverlight.js: Added test

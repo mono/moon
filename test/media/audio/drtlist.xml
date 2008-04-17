@@ -1,0 +1,3 @@
+<DRTList>
+    <Test id="1" inputFile="media-ended.html" masterFile10="None" timeout="10000" categories="audio,media"  />
+</DRTList>
