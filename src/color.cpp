@@ -202,22 +202,24 @@ read_next_double (char **str)
  *
  * If no color is found, NULL is returned.
  */
-Color*
+Color *
 color_from_str (const char *name)
 {
+	size_t len;
+	char *end;
+	
 	if (!name)
 		return new Color (0x00FFFFFF);
-
-	int len = strlen (name);
-	if (len == 0)
+	
+	if ((len = strlen (name)) == 0)
 		return new Color (0x00000000);
-
+	
 	if (name [0] == '#') {
 		char a [3] = "FF";
 		char r [3] = "FF";
 		char g [3] = "FF";
 		char b [3] = "FF";
-
+		
 		// Relaxed parsing with some it's-the-web-and-it's-broken
 		// "error tolerance"
 		int real_len = len - 1;
@@ -273,12 +275,17 @@ color_from_str (const char *name)
 
 		return new Color (r, g, b, a);
 	}
-
-	for (int i = 0; named_colors [i].name; i++) {
-		if (!g_strcasecmp (named_colors [i].name, name)) {
-			return new Color (named_colors [i].color);
-		}
+	
+	if (name[0] >= '0' && name[0] <= '9') {
+		uint32_t color = strtoul (name, NULL, 10);
+		
+		return new Color (color);
 	}
-
+	
+	for (int i = 0; named_colors [i].name; i++) {
+		if (!g_strcasecmp (named_colors [i].name, name))
+			return new Color (named_colors [i].color);
+	}
+	
 	return NULL;
 }
