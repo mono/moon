@@ -258,13 +258,21 @@ if test $MONO_RUNTIME = "yes"; then
 AC_MSG_CHECKING(Mono)
 if pkg-config mono; then
    AC_MSG_RESULT(found)
-   if pkg-config --modversion smcs > /dev/null; then
+
+   AC_MSG_CHECKING(smcs compiler)
+   if pkg-config --modversion smcs >& /dev/null; then
       AC_MSG_RESULT(found)
+      SMCS_ASM=`pkg-config --variable=Libraries smcs`
    else
-      AC_MSG_ERROR([You are missing smcs])
+      tp=$prefix/lib/mono/2.1/smcs.exe;
+      if test -f $tp; then
+         SMCS_ASM=$tp
+      else
+         AC_MSG_ERROR([You are missing smcs])
+      fi
    fi
 
-   SMCS_ASM=`pkg-config --variable=Libraries smcs`
+   AC_MSG_RESULT([found in $tp])
    AC_SUBST(SMCS_ASM)
 else
    AC_MSG_ERROR([You are missing Mono.  I was looking for the mono.pc file])
