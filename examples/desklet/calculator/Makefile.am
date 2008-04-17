@@ -10,7 +10,7 @@ example-calculator: Makefile
 	echo "mopen -d $(deskletdir)" >> example-calculator
 	chmod +x example-calculator
 
-calculator.dll: calculator.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
-	gmcs -debug -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll calculator.cs
+calculator.dll: $(srcdir)/calculator.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
+	gmcs -debug -target:library -out:$@ -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll $(srcdir)/calculator.cs
 
 
