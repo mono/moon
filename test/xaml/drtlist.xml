@@ -747,4 +747,9 @@
          masterFile10="../harness/masters/test-animation-null-defaults-doubleMaster.tif"
     	 captureSpecifier="300,15"
    />
+   <Test id="173"
+         inputFile="test-animation-null-defaults-color.xaml"
+         masterFile10="../harness/masters/test-animation-null-defaults-colorMaster.tif"
+    	 captureSpecifier="300,15"
+   />
 </DRTList>

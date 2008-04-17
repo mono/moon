@@ -1,6 +1,12 @@
 2008-04-17  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/drtlist.xml:
+	* xaml/test-animation-null-defaults-color.xaml: Adding a test against
+	default value for SplineColorKeyFrame.
+
+2008-04-17  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/drtlist.xml:
 	* xaml/test-animation-null-defaults-double.xaml: Adding a test against
 	default value for SplineDoubleKeyFrame.
 
