@@ -26,8 +26,8 @@ gtksilver.dll gtksilver.xml: $(gtksilver_dll_CS) $(top_builddir)/class/lib/3.0/M
 
 MONODOCER = MONO_PATH="../class/lib/3.0:$$MONO_PATH" monodocer
 gtksilver.tree gtksilver.zip: gtksilver.xml gtksilver.dll $(srcdir)/docs/index.xml
-	$(MONODOCER) -importslashdoc:gtksilver.xml -path:$(builddir)/docs -assembly:gtksilver.dll
-	mdassembler --ecma $(builddir)/docs/ --out gtksilver
+	$(MONODOCER) -importslashdoc:gtksilver.xml -path:$(top_builddir)/gtk/docs -assembly:gtksilver.dll
+	mdassembler --ecma $(top_builddir)/gtk/docs/ --out gtksilver
 
 install-data-local:
 	gacutil -gacdir $(DESTDIR)$(prefix) -i gtksilver.dll

@@ -1,5 +1,10 @@
 2008-04-16  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* Makefile.am: $(builddir) isn't available on older systems, use
+	$(top_builddir)
+
+2008-04-16  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* Makefile.am: Doc directories don't exist during dist
 
 2008-04-10  Fernando Herrera  <fherrera@novell.com>
