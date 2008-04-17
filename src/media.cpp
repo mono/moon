@@ -516,7 +516,8 @@ MediaElement::Reinitialize (bool dtor)
 	}
 	
 	flags = (flags & (Loaded | PlayRequested)) | RecalculateMatrix;
-	SetValue (MediaElement::CurrentStateProperty, Value ("Closed"));
+	if (!dtor)
+		SetValue (MediaElement::CurrentStateProperty, Value ("Closed"));
 	prev_state = Closed;
 	state = Closed;
 	
@@ -527,9 +528,11 @@ MediaElement::Reinitialize (bool dtor)
 		downloaded_file = NULL;
 	}
 	
-	flags |= UpdatingPosition;
-	SetValue (MediaElement::PositionProperty, Value (0, Type::TIMESPAN));
-	flags &= ~UpdatingPosition;
+	if (!dtor) {
+		flags |= UpdatingPosition;
+		SetValue (MediaElement::PositionProperty, Value (0, Type::TIMESPAN));
+		flags &= ~UpdatingPosition;
+	}
 	
 	// We can't delete the playlist here,
 	// because a playlist item will call SetSource
@@ -554,7 +557,8 @@ MediaElement::Reinitialize (bool dtor)
 	if (val != NULL && val->AsCollection () != NULL)
 		val->AsCollection ()->Clear ();
 	
-	SetValue (PositionProperty, Value (0, Type::TIMESPAN));
+	if (!dtor)
+		SetValue (PositionProperty, Value (0, Type::TIMESPAN));
 }
 
 void
@@ -583,6 +587,8 @@ MediaElement::SetMedia (Media *media)
 	mplayer->SetBalance (GetValue (MediaElement::BalanceProperty)->AsDouble ());
 	
 	UpdatePlayerPosition (GetValue (MediaElement::PositionProperty));
+	
+	ComputeBounds ();
 }
 	
 bool

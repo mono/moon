@@ -1,3 +1,9 @@
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: MediaElement::Reinitialize: don't call SetValue if we're
+	  in the destructor. MediaElement::SetMedia: call ComputeBounds at
+	  the end. Fixes xaml/test-canvas-no-size.html
+
 2008-04-17  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: It turns out that KeyFrames doesn't have default Value
