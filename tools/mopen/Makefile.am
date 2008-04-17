@@ -4,7 +4,7 @@ bin_PROGRAMS = mopen1
 mopen1_SOURCES = $(srcdir)/mopen1.cpp
 INCLUDES = $(MOON_CFLAGS) -Wall  -I$(top_srcdir)/src
 LIBS = $(PLUGIN_LIBS) $(MOON_LIBS) -lmoon
-LDFLAGS = -L$(top_builddir)/src/.libs
+AM_LDFLAGS = -L$(top_builddir)/src/.libs
 
 moon_DATA = mopen.exe mopen.exe.mdb mopen.exe.config
 

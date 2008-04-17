@@ -1,3 +1,7 @@
+2008-04-17  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Use AM_LDFLAGS, not LDFLAGS which is a user variable
+
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am: Remove warnings.
