@@ -25,6 +25,7 @@
 	var plugin = null;
 	
 	var media_opened_count = 0;
+	var restarted = false;
 	var end_test_timeout = "";
 	var failed = false;
 	
@@ -33,7 +34,7 @@
 		if (end_test_timeout != "") {
 			removeTimeout (end_test_timeout);
 		}
-		setTimeout ("EndTest ();", 20000);
+		setTimeout ("EndTest ();", 5000);
 	}
 	
 	function StartTest ()
@@ -41,8 +42,7 @@
 		TestLogger.LogDebug ("StartTest. position: " + mediaElement.Position.Seconds);
 
 		mediaElement.Source = "timecode-long.wmv";
-		setTimeout ("RestartTest ();", 5000);
-		QueueEndTest ();
+		setTimeout ("RestartTest ();", 2000);
 	}
 
 	function RestartTest ()
@@ -57,6 +57,7 @@
 		mediaElement.Pause ();
 		mediaElement.Source = "timecode-long.wmv";
 		QueueEndTest ();
+		restarted = true;
 	}
 
 	function EndTest ()
@@ -70,6 +71,11 @@
 
 		if (media_opened_count < 2) {
 			TestLogger.LogError ("Expected MediaOpened to be raised at least twice, but it was raised " + media_opened_count + " times.");
+			failed = true;
+		}
+
+		if (!restarted) {
+			TestLogger.LogError ("Test was never restarted.");
 			failed = true;
 		}
 
@@ -87,7 +93,7 @@
 		mediaElement.addEventListener ("MediaFailed", "OnMediaFailed");
 		TestLogger.LogDebug ("OnPluginLoaded: Done");
 		setTimeout ("StartTest ();", 500);
-		QueueEndTest ();
+		setTimeout ("EndTest ();", 10000);
 	}
 
 	function OnMediaOpened (obj, args)

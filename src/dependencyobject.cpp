@@ -675,6 +675,7 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 	}
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property);
+	bool equal = false;
 
 	if (current_value != NULL && current_value->Is (Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
@@ -687,10 +688,13 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 		new_as_dep->SetLogicalParent (this);
 	}
 
-	if ((current_value == NULL && value != NULL) ||
-	    (current_value != NULL && value == NULL) ||
-	    (current_value != NULL && value != NULL && *current_value != *value)) {
+	if (current_value != NULL && value != NULL) {
+		equal = !property->always_change && (*current_value == *value);
+	} else {
+		equal = (current_value == NULL) && (value == NULL);
+	}
 
+	if (!equal) {
 		if (current_value) {
 			// unregister from the existing value
 			if (current_value->Is (Type::DEPENDENCY_OBJECT)){
@@ -1207,11 +1211,11 @@ DependencyObject::RegisterNullable (Type::Kind type, const char *name, Type::Kin
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly)
+DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
 {
 	GHashTable *table;
 
-	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype, attached, readonly);
+	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype, attached, readonly, always_change);
 	
 	/* first add the property to the global 2 level property hash */
 	if (properties == NULL)
@@ -1311,7 +1315,7 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly)
+DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly, bool always_change)
 {
 	this->type = type;
 	this->name = g_strdup (name);
@@ -1321,6 +1325,7 @@ DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value
 	this->is_attached_property = attached;
 	this->is_readonly = readonly;
 	this->storage_hash = NULL; // Create it on first usage request
+	this->always_change = always_change;
 }
 
 void

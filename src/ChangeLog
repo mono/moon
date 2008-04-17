@@ -1,5 +1,14 @@
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.cpp, dependencyobject.h: Add an always_change flag
+	  for DependencyProperty, if a property has this flag, it will always
+	  be changed, even if the new value is the same as the old value.
+	  DependencyObject::SetValue: honor the new always_change flag.
+	* media.cpp: Set the always_change flag to true for
+	  MediaBase::SourceProperty.
+
+2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: MediaElement: Move the Play/Pause/AutoPlay logic to
 	  MediaOpened, so that it also happens when TryLoadFinished opens the
 	  media. Fixes media not starting to play when the media was

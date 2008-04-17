@@ -2249,7 +2249,7 @@ media_init (void)
 	MediaAttribute::ValueProperty = DependencyObject::Register (Type::MEDIAATTRIBUTE, "Value", Type::STRING);
 	
 	/* MediaBase */
-	MediaBase::SourceProperty = DependencyObject::Register (Type::MEDIABASE, "Source", Type::STRING);
+	MediaBase::SourceProperty = DependencyObject::RegisterFull (Type::MEDIABASE, "Source", NULL, Type::STRING, false, false, true);
 	MediaBase::StretchProperty = DependencyObject::Register (Type::MEDIABASE, "Stretch", new Value (StretchUniform));
 	MediaBase::DownloadProgressProperty = DependencyObject::Register (Type::MEDIABASE, "DownloadProgress", new Value (0.0));
 	

@@ -268,7 +268,7 @@ class DependencyObject : public EventObject {
 	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
 	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
-	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly);
+	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
 
@@ -297,7 +297,7 @@ class DependencyProperty {
  public:
 	DependencyProperty () {};
 	~DependencyProperty ();
-	DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly);
+	DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly, bool always_change);
 
 	char *name;
 	Value *default_value;
@@ -305,6 +305,7 @@ class DependencyProperty {
 	bool is_attached_property;
 	Type::Kind value_type;
 	bool is_nullable;
+	bool always_change; // determines if SetValue will do something if the current and new values are equal.
 
 	bool IsNullable () { return is_nullable; }
 	bool IsReadOnly () { return is_readonly; }
