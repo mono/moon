@@ -48,9 +48,9 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows/WebApplication.cs
 
 test_sources = \
-	Test/System.Windows.Browser.Serialization/JavaScriptSerializerTest.cs		\
-	Test/System.Windows.Browser.Serialization/SimpleTypeResolverTest.cs		\
-	Test/System.Windows/WebApplicationTest.cs
+	$(srcdir)/Test/System.Windows.Browser.Serialization/JavaScriptSerializerTest.cs		\
+	$(srcdir)/Test/System.Windows.Browser.Serialization/SimpleTypeResolverTest.cs		\
+	$(srcdir)/Test/System.Windows/WebApplicationTest.cs
 
 EXTRA_DIST = $(system_windows_browser_sources) 				\
 	$(test_sources)							\
