@@ -625,6 +625,7 @@ MediaElement::MediaOpened (Media *media)
 		Emit (MediaOpenedEvent);
 		
 		if (flags & DownloadComplete){
+			SetState (Buffering);
 			if ((flags & PlayRequested) || GetValue (AutoPlayProperty)->AsBool ())
 				Play ();
 			else
@@ -1321,11 +1322,8 @@ MediaElement::UpdatePlayerPosition (Value *value)
 	mplayer->Seek (TimeSpan_ToPts (position));
 	Invalidate ();
 	
-	d(printf ("MediaElement::UpdatePlayerPosition (%p), buffering_start: %llu = %llu ms, "
-		  "buffering_end: %llu = %llu ms, position: %llu = %llu ms, "
-		  "mplayer->GetPosition (): %llu = %llu ms\n", value, buffering_start,
-		  MilliSeconds_FromPts (buffering_start), buffering_end,
-		  MilliSeconds_FromPts (buffering_end), position, MilliSeconds_FromPts (position),
+	d(printf ("MediaElement::UpdatePlayerPosition (%p), position: %llu = %llu ms, "
+		  "mplayer->GetPosition (): %llu = %llu ms\n", value, position, MilliSeconds_FromPts (position),
 		  mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ())));
 
 	return position;
