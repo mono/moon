@@ -1,6 +1,9 @@
 if INCLUDE_MONO_RUNTIME
-MONO_SUBDIRS = class gtk tools examples man data
-endif
+MONO_SUBDIRS = class
+if !PLUGIN_INSTALL
+MONO_SUBDIRS += gtk tools examples man data
+endif !PLUGIN_INSTALL
+endif INCLUDE_MONO_RUNTIME
 
 if INCLUDE_TESTING
 TEST_SUBDIR=test

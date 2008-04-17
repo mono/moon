@@ -1,3 +1,9 @@
+2008-04-17  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Only build what we actually need when building
+	the plugin installer.  This avoids extra build time and a link
+	problem due to the new native mopen.
+
 2008-04-16  Jb Evain  <jbevain@novell.com>
 
 	* configure.ac, class/Makefile.am: use the new smcs.pc to
