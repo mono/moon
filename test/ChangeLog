@@ -6,6 +6,13 @@
 
 2008-04-17  Michael Dominic K.  <mdk@mdk.am>
 
+	* harness/masters/test-geometry-collection-stretchMaster.png:
+	* xaml/drtlist.xml:
+	* xaml/test-geometry-collection-stretch.xaml: Adding master, adding
+	Canvas width/height to the test.
+
+2008-04-17  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/drtlist.xml:
 	* xaml/test-animation-null-defaults-color.xaml: Adding a test against
 	default value for SplineColorKeyFrame.

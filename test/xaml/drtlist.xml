@@ -739,7 +739,7 @@
    />
    <Test id="171"
          inputFile="test-geometry-collection-stretch.xaml"
-         masterFile10="test-geometry-collection-stretchMaster.png"
+         masterFile10="../harness/test-geometry-collection-stretchMaster.png"
          categories="stretch"
    />
    <Test id="172"
