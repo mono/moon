@@ -1,0 +1,24 @@
+<Canvas
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="100" Height="200">
+	<Rectangle Fill="Black" Width="50" Height="150" Canvas.Left="25" Canvas.Top="25">
+	<Rectangle.RenderTransform>
+		<TransformGroup>
+			<ScaleTransform x:Name="transform" ScaleX="1" ScaleY="1" CenterX="0" CenterY="0"/>
+		</TransformGroup>
+	</Rectangle.RenderTransform>
+	<Rectangle.Triggers>
+		<EventTrigger RoutedEvent="Rectangle.Loaded">
+			<BeginStoryboard>
+				<Storyboard Duration="0:0:2">
+					<DoubleAnimationUsingKeyFrames Storyboard.TargetName="transform" Storyboard.TargetProperty="ScaleY">
+						<SplineDoubleKeyFrame KeyTime="0:0:2"/>
+					</DoubleAnimationUsingKeyFrames>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Rectangle.Triggers>
+	</Rectangle>
+</Canvas>
+

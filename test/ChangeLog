@@ -1,3 +1,9 @@
+2008-04-17  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/drtlist.xml:
+	* xaml/test-animation-null-defaults-double.xaml: Adding a test against
+	default value for SplineDoubleKeyFrame.
+
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* make-xephyr: Set screen size, default size is too small for some
