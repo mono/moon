@@ -35,7 +35,7 @@ class t
 	static int DoChecks (List <Type> types)
 	{
 		int result = 0;
-		int normal_ctor_size = 23;
+		int normal_ctor_size = 12;
 		int normal_ctor_intptr_size = 8;
 
 		foreach (Type tp in types) {
@@ -49,9 +49,11 @@ class t
 
 			ConstructorInfo ci = tp.GetConstructor (Type.EmptyTypes);
 
-			if (ci == null) {	
-				Console.WriteLine ("Error: 2a. The class '{0}' does not have an empty constructor.", tp.FullName);
-				result = 1;
+			if (ci == null) {
+				if (tp.FullName.IndexOf ("Internal") < 0) {
+					Console.WriteLine ("Error: 2a. The class '{0}' does not have an empty constructor.", tp.FullName);
+					result = 1;
+				}
 			} else if (!ci.IsPublic) {
 				Console.WriteLine ("Error: 2b. The class' '{0}' empty constructor is not public.", tp.FullName);
 				result = 1;				
@@ -180,6 +182,9 @@ using System.Windows.Ink;
 				}
 				
 				if (var == string.Empty)
+					continue;
+				
+				if (field.Name == "Item")
 					continue;
 				
 				if (!field.CanWrite && !field.CanRead) {

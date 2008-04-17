@@ -209,7 +209,7 @@ install-data-local:
 uninstall-local:
 	$(GACUTIL) /u $(assembly)
 
-check: check-static check-dynamic
+check-code: check-static check-dynamic
 
 check-static:
 	gmcs $(srcdir)/scripts/checks.cs -r:../lib/3.0/System.Windows.dll -out:check-static.exe
@@ -219,6 +219,6 @@ check-static:
 check-dynamic:
 	gmcs $(srcdir)/scripts/checks.cs -r:../lib/3.0/System.Windows.dll -out:check-static.exe
 	MONO_PATH=../lib/3.0:$$MONO_PATH mono --debug check-static.exe
-	mono --debug checks.exe generate-test-code > tester.cs
+	mono --debug check-static.exe generate-test-code > tester.cs
 	gmcs tester.cs -r:../lib/3.0/System.Windows.dll -debug:full -nowarn:219
 	MONO_PATH=../lib/3.0:$$MONO_PATH mono --debug tester.exe
