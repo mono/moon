@@ -1,0 +1,84 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+    <Path Stroke="Blue" Width="50" Height="20" Stretch="Fill">
+        <Path.Data>
+		<GeometryGroup>
+			<GeometryGroup.Children>
+			    <GeometryCollection>
+				<LineGeometry StartPoint="10,10" EndPoint="10,100"/>
+				<LineGeometry StartPoint="10,100" EndPoint="100,100"/>
+				<LineGeometry StartPoint="100,100" EndPoint="100,10"/>
+				<LineGeometry StartPoint="100,10" EndPoint="10,10"/>
+		    	    </GeometryCollection>
+			</GeometryGroup.Children>
+		</GeometryGroup>
+        </Path.Data>
+    </Path>
+    <Path Stroke="LightBlue" Width="50" Height="20" Stretch="Fill" Canvas.Left="100">
+        <Path.Data>
+		<GeometryGroup>
+			<GeometryGroup.Children>
+			    <GeometryCollection>
+				<LineGeometry StartPoint="10,10" EndPoint="10,100"/>
+				<LineGeometry StartPoint="10,100" EndPoint="100,100"/>
+				<LineGeometry StartPoint="100,100" EndPoint="100,10"/>
+				<LineGeometry StartPoint="100,10" EndPoint="10,10"/>
+				<LineGeometry StartPoint="100,100" EndPoint="10,10"/>
+		    	    </GeometryCollection>
+			</GeometryGroup.Children>
+		</GeometryGroup>
+        </Path.Data>
+    </Path>
+    
+    <Path Stroke="Black" Width="80" Height="160" Canvas.Top="30" Canvas.Left="40" Stretch="UniformToFill">
+        <Path.Data>
+		<GeometryGroup>
+		    <GeometryCollection>
+			<LineGeometry StartPoint="20,20" EndPoint="20,200"/>
+			<LineGeometry StartPoint="20,200" EndPoint="200,200"/>
+			<LineGeometry StartPoint="200,200" EndPoint="200,20"/>
+			<LineGeometry StartPoint="200,20" EndPoint="20,20"/>
+		    </GeometryCollection>
+		</GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path Stroke="DarkGray" Width="80" Height="160" Canvas.Top="30" Canvas.Left="80" Stretch="UniformToFill">
+        <Path.Data>
+		<GeometryGroup>
+		    <GeometryCollection>
+			<LineGeometry StartPoint="20,20" EndPoint="20,200"/>
+			<LineGeometry StartPoint="20,200" EndPoint="200,200"/>
+			<LineGeometry StartPoint="200,200" EndPoint="200,20"/>
+			<LineGeometry StartPoint="200,20" EndPoint="20,20"/>
+                        <LineGeometry StartPoint="20,20" EndPoint="200,200"/>
+		    </GeometryCollection>
+		</GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path Stroke="Red" Width="35" Height="99" Canvas.Top="50" Canvas.Left="80" Stretch="Uniform">
+        <Path.Data>
+		<GeometryGroup>
+	    		<LineGeometry StartPoint="30,30" EndPoint="30,250"/>
+			<LineGeometry StartPoint="30,250" EndPoint="250,250"/>
+			<LineGeometry StartPoint="250,250" EndPoint="250,30"/>
+			<LineGeometry StartPoint="250,30" EndPoint="30,30"/>
+                        <LineGeometry StartPoint="30,30" EndPoint="250,250"/>
+		</GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path Stroke="Pink" Width="35" Height="99" Canvas.Top="50" Canvas.Left="160" Stretch="Uniform">
+        <Path.Data>
+		<GeometryGroup>
+	    		<LineGeometry StartPoint="30,30" EndPoint="30,250"/>
+			<LineGeometry StartPoint="30,250" EndPoint="250,250"/>
+			<LineGeometry StartPoint="250,250" EndPoint="250,30"/>
+			<LineGeometry StartPoint="250,30" EndPoint="30,30"/>
+		</GeometryGroup>
+        </Path.Data>
+    </Path>
+    
+</Canvas>
+
