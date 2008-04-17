@@ -90,6 +90,7 @@ namespace MonoTests.System.Windows
 		}
 
 		[Test]
+		[Category ("NotWorking")]
 		public void RegisterScriptableObject ()
 		{
 			app.RegisterScriptableObject ("hoge", new Scriptable1 ());
