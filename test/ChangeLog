@@ -1,3 +1,16 @@
+2008-04-18  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/README.txt:
+	* xaml/clock/clock36.html:
+	* xaml/clock/clock36.xaml: A clock test for FillBehavior=HoldEnd with
+	scaling with SplineDoubleKeyFrame. It seems the animation is not
+	"finished off" (last value applied is not the last value specified). In
+	other words -- jags again.
+
+	This seems to be the problem with PopFly -- when block-list/tutorial is
+	collapsed, it leaves a small trailing line (not scaled to 0.0 but
+	0.0000xxx-something).
+
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/drtlist.xml, xaml/test-canvas-no-size.html: Added (currently

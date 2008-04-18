@@ -33,4 +33,5 @@ clock32 - same as clock7, but very very fast. Showcases the jaggyness/align prob
 clock33 - autoreversed storyboard with speed ratio > 1.0.
 clock34 - storyboard containing keyframes + normal animation extending that. Take from Popfly.
 clock35 - same as 33 but very fast (jaggy problems)
+clock36 - scaling with FillBehavior = HoldEnd using SplineDoubleKeyFrame
 
