@@ -83,7 +83,7 @@
         var controlParent = document.getElementById ("SilverlightControlHost" + name);
         RemoveDomElement (controlParent, "SilverlightControl" + name);
 
-  	controlParent.innerHTML = "plugin was destroyed during callback.";
+  	controlParent.innerHTML = "plugin was destroyed during " + name + " callback.";
     }
 
     function SecondCallback (name)
