@@ -1,0 +1,204 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Destroy In Handlers Test</title>
+  
+  <script src="Silverlight.js"></script>
+
+  <script type="text/xaml" id="LoadedXaml">
+    <Canvas xmlns="http://schemas.microsoft.com/client/2007"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Name="root" Width="500" Height="50" Background="Orange" Loaded="DestroyPluginFromLoaded">
+    </Canvas>
+  </script>
+
+  <script type="text/xaml" id="MouseEnterXaml">
+    <Canvas xmlns="http://schemas.microsoft.com/client/2007"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Name="root" Width="500" Height="50" Background="Orange" MouseEnter="DestroyPluginFromMouseEnter">
+      <TextBlock x:Name="Log" Canvas.Top="10" Canvas.Left="10" TextWrapping="NoWrap" Width="400">
+        <Run Text="2: Move the mouse over this element"/><LineBreak/>
+      </TextBlock>
+    </Canvas>
+  </script>
+
+  <script type="text/xaml" id="MouseLeaveXaml">
+    <Canvas xmlns="http://schemas.microsoft.com/client/2007"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Name="root" Width="500" Height="50" Background="Orange" MouseLeave="DestroyPluginFromMouseLeave">
+      <TextBlock x:Name="Log" Canvas.Top="10" Canvas.Left="10" TextWrapping="NoWrap" Width="400">
+        <Run Text="3: Move the mouse into this element and then leave"/><LineBreak/>
+      </TextBlock>
+    </Canvas>
+  </script>
+
+  <script type="text/xaml" id="MouseLeftButtonDownXaml">
+    <Canvas xmlns="http://schemas.microsoft.com/client/2007"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Name="root" Width="500" Height="50" Background="Orange" MouseLeftButtonDown="DestroyPluginFromMouseLeftButtonDown">
+      <TextBlock x:Name="Log" Canvas.Top="10" Canvas.Left="10" TextWrapping="NoWrap" Width="400">
+        <Run Text="4: Press the mouse button here"/><LineBreak/>
+      </TextBlock>
+    </Canvas>
+  </script>
+
+  <script type="text/xaml" id="MouseLeftButtonUpXaml">
+    <Canvas xmlns="http://schemas.microsoft.com/client/2007"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Name="root" Width="500" Height="50" Background="Orange" MouseLeftButtonUp="DestroyPluginFromMouseLeftButtonUp">
+      <TextBlock x:Name="Log" Canvas.Top="10" Canvas.Left="10" TextWrapping="NoWrap" Width="400">
+        <Run Text="5: Press and release the mouse button here"/><LineBreak/>
+      </TextBlock>
+    </Canvas>
+  </script>
+
+  <script type="text/xaml" id="LostFocusXaml">
+    <Canvas xmlns="http://schemas.microsoft.com/client/2007"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Name="root" Width="500" Height="50" Background="Orange" LostFocus="DestroyPluginFromLostFocus">
+      <TextBlock x:Name="Log" Canvas.Top="10" Canvas.Left="10" TextWrapping="NoWrap" Width="400">
+        <Run Text="6: Press the mouse button here"/><LineBreak/>
+      </TextBlock>
+    </Canvas>
+  </script>
+
+  <script type="text/xaml" id="GotFocusXaml">
+    <Canvas xmlns="http://schemas.microsoft.com/client/2007"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Name="root" Width="500" Height="50" Background="Orange" GotFocus="DestroyPluginFromGotFocus">
+      <TextBlock x:Name="Log" Canvas.Top="10" Canvas.Left="10" TextWrapping="NoWrap" Width="400">
+        <Run Text="7: Press the mouse button here"/><LineBreak/>
+      </TextBlock>
+    </Canvas>
+  </script>
+
+  <script type="text/javascript">
+    function RemoveDomElement (controlParent, childname)
+    {
+        var control = document.getElementById (childname);
+        controlParent.removeChild (control);
+    }
+
+    function RemoveSilverlightControl (name)
+    {
+        var controlParent = document.getElementById ("SilverlightControlHost" + name);
+        RemoveDomElement (controlParent, "SilverlightControl" + name);
+
+  	controlParent.innerHTML = "plugin was destroyed during callback.";
+    }
+
+    function SecondCallback (name)
+    {
+        var controlParent = document.getElementById ("SilverlightControlHost" + name);
+  	controlParent.innerHTML += "  second callback was reached.";
+    }
+    
+    function DestroyPluginFromLoaded (sender, eventArgs)
+    {
+        RemoveSilverlightControl ("Loaded");
+    }
+
+    function DestroyPluginFromMouseEnter (sender, eventArgs)
+    {
+        RemoveSilverlightControl ("MouseEnter");
+    }
+
+    function SecondMouseEnter (sender, eventArgs)
+    {
+        SecondCallback ("MouseEnter");
+    }
+
+    function DestroyPluginFromMouseLeave (sender, eventArgs)
+    {
+        RemoveSilverlightControl ("MouseLeave");
+    }
+
+    function SecondMouseLeave (sender, eventArgs)
+    {
+        SecondCallback ("MouseLeave");
+    }
+
+    function DestroyPluginFromMouseLeftButtonDown (sender, eventArgs)
+    {
+        RemoveSilverlightControl ("MouseLeftButtonDown");
+    }
+
+    function SecondMouseLeftButtonDown (sender, eventArgs)
+    {
+        SecondCallback ("MouseLeftButtonDown");
+    }
+
+    function DestroyPluginFromMouseLeftButtonUp (sender, eventArgs)
+    {
+        RemoveSilverlightControl ("MouseLeftButtonUp");
+    }
+
+    function SecondMouseLeftButtonUp (sender, eventArgs)
+    {
+        SecondCallback ("MouseLeftButtonUp");
+    }
+
+    function DestroyPluginFromGotFocus (sender, eventArgs)
+    {
+        RemoveSilverlightControl ("GotFocus");
+    }
+
+    function SecondGotFocus (sender, eventArgs)
+    {
+        SecondCallback ("GotFocus");
+    }
+
+    function DestroyPluginFromLostFocus (sender, eventArgs)
+    {
+        RemoveSilverlightControl ("LostFocus");
+    }
+
+    function SecondLostFocus (sender, eventArgs)
+    {
+        SecondCallback ("LostFocus");
+    }
+
+    function OnLoaded (sender, eventArgs)
+    {
+	var id = sender.id;
+        var eventName = id.substring ("SilverlightControl".length);
+        sender.addEventListener (eventName, "Second" + eventName);
+    }
+
+    function CreateSilverlightControl(name)
+    {
+        Silverlight.createObjectEx({
+            source: ("#" + name + "Xaml"),
+            parentElement: document.getElementById ("SilverlightControlHost" + name),
+            id: "SilverlightControl" + name,
+            properties: {
+                width: "100%",
+                height: "100%",
+                version: "1.0",
+                background: "#E0E0E0FF"
+            },
+            events: {
+                  onLoad: OnLoaded,
+//                onError: OnError
+            }
+        });
+    }
+</script>
+</head>
+<body>
+
+  <div id="SilverlightControlHostLoaded" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+  <div id="SilverlightControlHostMouseEnter" style="position:absolute; top:150px; left:50px; width:500px; height:50px;"></div>
+  <div id="SilverlightControlHostMouseLeave" style="position:absolute; top:250px; left:50px; width:500px; height:50px;"></div>
+  <div id="SilverlightControlHostMouseLeftButtonDown" style="position:absolute; top:350px; left:50px; width:500px; height:50px;"></div>
+  <div id="SilverlightControlHostMouseLeftButtonUp" style="position:absolute; top:450px; left:50px; width:500px; height:50px;"></div>
+  <div id="SilverlightControlHostLostFocus" style="position:absolute; top:550px; left:50px; width:500px; height:50px;"></div>
+  <div id="SilverlightControlHostGotFocus" style="position:absolute; top:650px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+    var names = ["Loaded", "MouseEnter", "MouseLeave", "MouseLeftButtonDown", "MouseLeftButtonUp", "LostFocus", "GotFocus"];
+    for (var name in names) {
+        CreateSilverlightControl (names[name]);
+    }
+  </script>
+</body>
+</html>
