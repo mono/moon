@@ -119,8 +119,13 @@ Surface::ProcessDownDirtyElements ()
 
 		if (el->dirty_flags & DirtyRenderVisibility) {
 			el->dirty_flags &= ~DirtyRenderVisibility;
-			
+
 			el->UpdateBounds ();
+			// Since we are not included in our parents subtree when we
+			// are collapsed we need to notify our parent that things may
+			// have changed
+			if (el->GetVisualParent ())
+				el->GetVisualParent ()->UpdateBounds ();
 
 			el->Invalidate ();
 			el->ComputeTotalRenderVisibility ();
@@ -189,7 +194,7 @@ Surface::ProcessUpDirtyElements ()
 // 		printf ("el->parent = %p\n", el->parent);
 
 		if (el->dirty_flags & DirtyBounds) {
-//   		  printf (" + bounds\n");
+//			printf (" + bounds\n");
 			el->dirty_flags &= ~DirtyBounds;
 
 			Rect obounds = el->GetBounds ();

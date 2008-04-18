@@ -1,3 +1,11 @@
+2008-04-18  Larry Ewing  <lewing@novell.com>
+
+	* dirty.cpp (Surface::ProcessDownDirtyElements): When visibility
+	changes invalidate our parents bounds to notify them that their
+	subtree may have changed.
+
+	Fixes the status boxes on MouseInput.htm
+	
 2008-04-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (Surface::ConnectEvents): Connect to focus-in-event
