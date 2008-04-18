@@ -360,7 +360,13 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 
 	int width = dstStride[0] >> 2;
 	int height = srcSlideH;
+	int pad = 0;
 	
+	if (width != srcStride[0]) {
+		pad = (srcStride[0] - width);
+		if (pad % 16)
+			g_error ("This video has extra padding that isn't SIMD aligned.  Please file a bug report with the location of the video");
+	}
 #if HAVE_SSE2
 	if (have_sse2) {
 		for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
@@ -375,6 +381,8 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 
 				YUV2RGB_SSE(y_row2, dest_row2);
 			}
+			y_row1 += pad;
+			y_row2 += pad;
 		}
 	} else {
 #endif
@@ -392,6 +400,8 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 
 					YUV2RGB_MMX(y_row2, dest_row2);
 				}
+				y_row1 += pad;
+				y_row2 += pad;
 			}
 			__asm__ __volatile__ ("emms");
 		} else {
@@ -404,6 +414,8 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 					YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);
 					YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));
 				}
+				y_row1 += pad;
+				y_row2 += pad;
 			}
 #if HAVE_MMX
 		}

@@ -1,3 +1,9 @@
+2008-04-18  Geoff Norton  <gnorton@novell.com>
+
+	* yuv-converter.cpp:  It seems that ffmpeg will occasionally
+	over-pad the YUV buffers with a SIMD aligned amount (see
+	timecode-*.wmv)
+	
 2008-04-18  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: Make sure we always return targetValue when
