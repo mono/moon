@@ -1,0 +1,15 @@
+/Makefile.in
+/demo
+/sizes
+/.libs
+/.deps
+/Makefile
+/.settings
+/.cproject
+/.project
+/parsertest
+/*.pidb
+/*.d
+/*.pc
+/.prec
+/bin

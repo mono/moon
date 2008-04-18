@@ -1,0 +1,11 @@
+/*.pc
+/cairo-features.h
+/cairo-no-features.h
+/Makefile
+/Makefile.in
+/.deps
+/.libs
+/libcairo.la
+/*.la
+/*.lo
+/*.o

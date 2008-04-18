@@ -1,0 +1,6 @@
+/.libs
+/.deps
+/Makefile.in
+/Makefile
+/agviewer
+/*.o

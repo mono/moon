@@ -1,0 +1,15 @@
+/Makefile.in
+/install.rdf
+/*.exe
+/*.exe.mdb
+/Makefile
+/.libs
+/.deps
+/.project
+/.cproject
+/.xpinstall
+/*.xpi
+/bin
+/.prec
+/*.lo
+/*.la

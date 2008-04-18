@@ -1,0 +1,10 @@
+/Makefile
+/Makefile.in
+/*.dll
+/*.mdb
+/*.pc
+/gtksilver.xml
+/gtksilver.tree
+/gtksilver.zip
+/mopen.exe
+/mopen

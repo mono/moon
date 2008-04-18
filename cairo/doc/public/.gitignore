@@ -1,0 +1,14 @@
+/html
+/cairo.interfaces
+/cairo-decl.txt
+/cairo.args
+/cairo-decl-list.txt
+/cairo.signals
+/cairo.prerequisites
+/cairo-undocumented.txt
+/cairo.hierarchy
+/cairo-unused.txt
+/*.stamp
+/Makefile.in
+/Makefile
+/version.xml

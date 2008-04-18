@@ -1,0 +1,6 @@
+/bin
+/example-simpleclock
+/Makefile
+/Makefile.in
+/*.dll
+/*.mdb

@@ -1,0 +1,14 @@
+/compile
+/config.log
+/config.h
+/Makefile
+/config.status
+/stamp-h1
+/libtool
+/autom4te.cache
+/configure
+/Makefile.in
+/config.guess
+/config.sub
+/ltmain.sh
+/aclocal.m4

@@ -1,0 +1,8 @@
+/.libs
+/.deps
+/Makefile
+/Makefile.in
+/pixman-version.h
+/*.la
+/*.lo
+/*.o

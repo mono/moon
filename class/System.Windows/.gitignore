@@ -1,0 +1,7 @@
+/*.exe
+/Makefile
+/Makefile.in
+/*.mdb
+/*.user*
+/*.pidb
+/bin	
