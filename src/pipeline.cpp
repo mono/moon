@@ -231,21 +231,21 @@ void
 Media::Initialize ()
 {
 	LOG_PIPELINE ("Media::Initialize ()\n");
-
+	
 	media_objects = new Queue ();	
-
+	
 	// register stuff
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 	Media::RegisterDemuxer (new ASXDemuxerInfo ());
-	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_CONVERTER_YUV))
+	if (!(moonlight_flags & RUNTIME_INIT_FFMPEG_YUV_CONVERTER))
 		Media::RegisterConverter (new YUVConverterInfo ());
 #ifdef INCLUDE_FFMPEG
 	register_ffmpeg ();
 #else
 	Media::RegisterDecoder (new NullMp3DecoderInfo ());
 #endif
-
+	
 	AudioPlayer::Initialize ();
 }
 
