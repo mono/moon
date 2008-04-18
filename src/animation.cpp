@@ -1155,6 +1155,8 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 
 	if (!to)
 		return new Value (baseValue->AsDouble());
+	else if (keyFrameProgress >= 1.0)
+		return new Value (*to);
 
 	double start, end;
 
@@ -1188,6 +1190,8 @@ SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 
 	if (!to)
 		return new Value (*baseValue->AsColor());
+	else if (keyFrameProgress >= 1.0)
+		return new Value (*to);
 
 	Color start, end;
 
@@ -1221,6 +1225,8 @@ SplinePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 
 	if (!to)
 		return new Value (*baseValue->AsPoint());
+	else if (keyFrameProgress >= 1.0)
+		return new Value (*to);
 
 	Point start, end;
 
