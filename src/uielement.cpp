@@ -436,6 +436,18 @@ UIElement::EmitMouseLeave ()
 }
 
 bool
+UIElement::EmitGotFocus ()
+{
+	return Emit (GotFocusEvent, new EventArgs ());
+}
+
+bool
+UIElement::EmitLostFocus ()
+{
+	return Emit (LostFocusEvent, new EventArgs ());
+}
+
+bool
 UIElement::CaptureMouse ()
 {
 	Surface *s = GetSurface ();

@@ -154,16 +154,18 @@ class Surface : public EventObject {
 	gboolean expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y);
 
 	// widget callbacks
-	static gboolean expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data);
-	static gboolean motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer data);
-	static gboolean crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer data);
-	static gboolean key_press_callback (GtkWidget *widget, GdkEventKey *key, gpointer data);
-	static gboolean key_release_callback (GtkWidget *widget, GdkEventKey *key, gpointer data);
-	static gboolean button_release_callback (GtkWidget *widget, GdkEventButton *button, gpointer data);
-	static gboolean button_press_callback (GtkWidget *widget, GdkEventButton *button, gpointer data);
-	static gboolean realized_callback (GtkWidget *widget, gpointer data);
-	static gboolean unrealized_callback (GtkWidget *widget, gpointer data);
-
+	static gboolean expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer user_data);
+	static gboolean motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer user_data);
+	static gboolean crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer user_data);
+	static gboolean key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
+	static gboolean key_release_callback (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
+	static gboolean button_release_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+	static gboolean button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+	static gboolean focus_in_callback (GtkWidget *widget, GdkEventFocus *event, gpointer user_data);
+	static gboolean focus_out_callback (GtkWidget *widget, GdkEventFocus *event, gpointer user_data);
+	static gboolean realized_callback (GtkWidget *widget, gpointer user_data);
+	static gboolean unrealized_callback (GtkWidget *widget, gpointer user_data);
+	
 
 	// bad, but these live in dirty.cpp, not runtime.cpp
 	void AddDirtyElement (UIElement *element, DirtyType dirt);

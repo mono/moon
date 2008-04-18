@@ -283,12 +283,23 @@ public:
 	bool EmitMouseEnter (GdkEvent *event);
 	
 	//
-	// Leave:
-	//   Invoke when the mouse leaves this given object
+	// EmitMouseLeave:
+	//   Invoked when the mouse leaves this given object
 	//
 	bool EmitMouseLeave ();
+	
+	//
+	// EmitGotFocus:
+	//   Invoked when the mouse focuses the given object
+	//
+	bool EmitGotFocus ();
 
-
+	//
+	// EmitLostFocus:
+	//   Invoked when the given object loses mouse focus
+	//
+	bool EmitLostFocus ();
+	
 	//
 	// CaptureMouse:
 	//

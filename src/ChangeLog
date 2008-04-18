@@ -1,3 +1,17 @@
+2008-04-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (Surface::ConnectEvents): Connect to focus-in-event
+	and focus-out-event.
+	(Surface::focus_in_callback): If we have a toplevel canvas, emit a
+	GotFocus event on it.
+	(Surface::focus_out_callback): If we have a toplevel canvas, emit
+	a LostFocus event on it.
+	(Surface::Attach): If our widget has focus, emit GotFocus event on
+	our canvas right after we emit the Loaded event.
+
+	* uielement.cpp (UIElement::EmitGotFocus): New method.
+	(UIElement::EmitLostFocus): New method.
+
 2008-04-18  Geoff Norton  <gnorton@novell.com>
 
 	* yuv-converter.cpp:  It seems that ffmpeg will occasionally

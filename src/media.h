@@ -108,7 +108,7 @@ class Image : public MediaBase {
 	
 	// pattern caching
 	cairo_pattern_t *pattern;
-
+	
  protected:
 	virtual ~Image ();
 	
@@ -151,7 +151,7 @@ class Image : public MediaBase {
 	
 	int GetHeight () { return surface ? surface->height : 0; };
 	int GetWidth  () { return surface ? surface->width : 0; };
-
+	
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 };
 
