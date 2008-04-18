@@ -3172,6 +3172,12 @@ xaml_init (void)
 	rdoe (dem, "StylusPointCollection", col, Type::STYLUSPOINT_COLLECTION, (create_item_func) stylus_point_collection_new);
 
 	//
+	// Mouse Events
+	//
+
+	rdoe (dem, "MouseEventArgs", NULL, Type::MOUSEEVENTARGS, (create_item_func) mouse_event_args_new);
+
+	//
 	// Code
 	//
 	// FIXME: Make this v1.1 only

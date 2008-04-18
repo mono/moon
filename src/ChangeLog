@@ -1,5 +1,9 @@
 2008-04-17  Larry Ewing  <lewing@novell.com>
 
+	* xaml.cpp (xaml_init): register MouseEventArgs as a dependency object.
+
+2008-04-17  Larry Ewing  <lewing@novell.com>
+
 	* src/eventargs.cpp:
 	* src/eventargs.h: 
 	* src/type-generated.cpp:
