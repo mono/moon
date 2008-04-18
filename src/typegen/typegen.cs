@@ -559,16 +559,16 @@ class Generator {
 		string realfile = "../class/Mono.Moonlight/Mono/Kind.cs";
 		realfile = realfile.Replace ('/', Path.DirectorySeparatorChar);
 		realfile = Path.GetFullPath (realfile);
-		if (File.Exists (realfile)) {
+		try {
 			File.Copy ("Kind.cs", realfile, true);
 			File.Delete ("Kind.cs");
 
 			string svn;
 			svn =  Path.Combine (Path.GetDirectoryName (realfile), ".svn/text-base/Kind.cs.svn-base".Replace ('/', Path.DirectorySeparatorChar));
-			if (string.CompareOrdinal (File.ReadAllText (realfile), File.ReadAllText (svn)) != 0) {
+			if (!File.Exists (svn) || string.CompareOrdinal (File.ReadAllText (realfile), File.ReadAllText (svn)) != 0) {
 				Console.WriteLine ("The file '{0}' has been updated, don't forget to commit the changes.", realfile);
-			}			
-		} else {
+			}
+		} catch {
 			Console.WriteLine ("You need to update the file 'Kind.cs' in the 'moon/class/Mono.Moonlight/Mono/' directory with the Kind.cs file generated here");
 		}
 	}
