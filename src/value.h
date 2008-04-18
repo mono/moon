@@ -18,6 +18,7 @@
 #define MOON_VALUE_H
 
 #include <string.h>
+#include <stdint.h>
 #include <cairo.h>
 
 #include "type.h"
@@ -184,8 +185,8 @@ public:
 	Value (Type::Kind k);
 	Value (bool z);
 	Value (double d);
-	Value (gint64 i, Type::Kind as); // Use for TimeSpan and int64 values.
-	Value (gint32 i);
+	Value (int64_t i, Type::Kind as); // Use for TimeSpan and int64 values.
+	Value (int32_t i);
 	Value (Color c);
 	Value (EventObject *obj);
 	Value (Point pt);
@@ -193,7 +194,7 @@ public:
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
-	Value (const char* s);
+	Value (const char *s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
 
@@ -232,14 +233,15 @@ public:
 
 		return true;
 	}
+	
 	bool		Is (Type::Kind type) { return Type::IsSubclassOf (k, type); }
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
-	guint64		AsUint64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
-	gint64		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
+	uint64_t	AsUint64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
+	int64_t		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
 	TimeSpan	AsTimeSpan ()	{ checked_get_exact (Type::TIMESPAN, 0, (TimeSpan)u.i64); }
-	gint32		AsInt32 ()	{ checked_get_exact (Type::INT32, 0, u.i32); }
+	int32_t		AsInt32 ()	{ checked_get_exact (Type::INT32, 0, u.i32); }
 	Color*		AsColor ()	{ checked_get_exact (Type::COLOR, NULL, u.color); }
 	Point*		AsPoint ()	{ checked_get_exact (Type::POINT, NULL, u.point); }
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
@@ -253,9 +255,9 @@ public:
 
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
-	guint64*	AsNullableUint64 ()	{ checked_get_exact (Type::UINT64, NULL, &u.ui64); }
-	gint64*		AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
-	gint32*		AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
+	uint64_t*	AsNullableUint64 ()	{ checked_get_exact (Type::UINT64, NULL, &u.ui64); }
+	int64_t*	AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
+	int32_t*	AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
 
 	Animation*                     AsAnimation () { checked_get_subclass (Type::ANIMATION, Animation) }
 	AnimationClock*                AsAnimationClock () { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
@@ -397,13 +399,13 @@ public:
   private:
 	Type::Kind k;
 
-	gint32 padding;
+	int32_t padding;
 
 	union {
 		double d;
-		guint64 ui64;
-		gint64 i64;
-		gint32 i32;
+		uint64_t ui64;
+		int64_t i64;
+		int32_t i32;
 		char *s;
 		EventObject *dependency_object;
 		Color *color;
@@ -424,12 +426,12 @@ public:
 	// favor, and don't expose this ctor. :)
 	Value (void* v) { }
 	// You don't want to be using this ctor either.
-	// Use the Value (gint64, Type::Kind) ctor
-	// (Both for TimeSpan and gint64)
-	// This one is bad because it get used by either gint64
+	// Use the Value (int64_t, Type::Kind) ctor
+	// (Both for TimeSpan and int64_t)
+	// This one is bad because it get used by either int64_t
 	// and TimeSpan, and the constructor doesn't know which 
 	// of the two types it is.
-	Value (gint64 i) {};
+	Value (int64_t i) {};
 };
 
 G_BEGIN_DECLS
