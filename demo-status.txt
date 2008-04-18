@@ -169,10 +169,9 @@ rating:1
 
 site:Popfly
 url:http://www.popfly.com
-rating:2
+rating:3
  * toolbox mouse events are slow, out of sync Bug 375269
  * Edit a control has missing background and button Bug 375270
- * preview a mashup show only black screen Bug 375271
 
 site:Scrolling Video Playlist
 url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
