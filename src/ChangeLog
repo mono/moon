@@ -1,5 +1,12 @@
 2008-04-17  Larry Ewing  <lewing@novell.com>
 
+	* src/eventargs.cpp:
+	* src/eventargs.h: 
+	* src/type-generated.cpp:
+	* src/value.h: add a default ctor for MouseEventArgs.
+
+2008-04-17  Larry Ewing  <lewing@novell.com>
+
 	* typegen/typegen.cs: don't require an svn repo for proper
 	functioning, try to make the error messages functional still.
 

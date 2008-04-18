@@ -19,6 +19,11 @@ MouseEventArgs::MouseEventArgs (GdkEvent *event)
 	this->event = gdk_event_copy (event);
 }
 
+MouseEventArgs::MouseEventArgs ()
+{
+	this->event = gdk_event_new (GDK_MOTION_NOTIFY);
+}
+
 MouseEventArgs::~MouseEventArgs ()
 {
 	gdk_event_free (event);
@@ -120,6 +125,12 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 	point->unref ();
 
 	return points;
+}
+
+MouseEventArgs*
+mouse_event_args_new (void)
+{
+	return new MouseEventArgs ();
 }
 
 int

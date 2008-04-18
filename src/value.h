@@ -193,7 +193,7 @@ public:
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
-	Value (const char *s);
+	Value (const char* s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
 

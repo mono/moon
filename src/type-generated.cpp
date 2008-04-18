@@ -8,6 +8,7 @@
 #include "stylus.h"
 #include "geometry.h"
 #include "brush.h"
+#include "eventargs.h"
 #include "clock.h"
 #include "transform.h"
 #include "xaml.h"
@@ -139,7 +140,7 @@ Type type_infos [] = {
 	{ Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 13, MediaBase_Events, NULL, NULL }, 
 	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 19, MediaElement_Events, NULL, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL }, 
-	{ Type::MOUSEEVENTARGS, Type::EVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, NULL, NULL }, 
+	{ Type::MOUSEEVENTARGS, Type::EVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::INVALID, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL }, 
 	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 12, NULL, NULL, "Children" }, 

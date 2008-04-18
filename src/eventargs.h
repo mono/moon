@@ -57,6 +57,7 @@ protected:
 	virtual ~MouseEventArgs ();
 
 public:
+	MouseEventArgs ();
 	MouseEventArgs (GdkEvent *event);
 	virtual Type::Kind GetObjectType () { return Type::MOUSEEVENTARGS; };
 
@@ -85,6 +86,7 @@ public:
 
 G_BEGIN_DECLS
 
+MouseEventArgs*        mouse_event_args_new               (void);
 int                    mouse_event_args_get_state         (MouseEventArgs *args);
 void                   mouse_event_args_get_position      (MouseEventArgs *args, UIElement *relative_to, double *x, double *y);
 StylusInfo*            mouse_event_args_get_stylus_info   (MouseEventArgs *args);
