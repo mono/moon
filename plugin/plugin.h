@@ -19,6 +19,7 @@
 class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
+class Xap;
 
 typedef void plugin_unload_callback (PluginInstance *plugin);
 
@@ -43,6 +44,7 @@ class PluginInstance
 	char *onError;
 
 	bool windowless;
+	bool silverlight2;
 	int maxFrameRate;
 
 	GtkWidget *properties_fps_label;
@@ -93,13 +95,13 @@ class PluginInstance
 	List *GetSources ();
 #endif
 
-	PluginInstance (NPP instance, uint16_t mode);
+	PluginInstance (NPP instance, uint16_t mode, bool silverlight_2);
 	~PluginInstance ();
 	
 	void SetUnloadCallback (plugin_unload_callback *puc);
 	void Initialize (int argc, char *const argn[], char *const argv[]);
 	void Finalize ();
-
+	
 	// Mozilla plugin related methods
 	NPError GetValue (NPPVariable variable, void *result);
 	NPError SetValue (NPNVariable variable, void *value);
@@ -164,6 +166,8 @@ class PluginInstance
 	void getBrowserInformation (char **name, char **version,
 				    char **platform, char **userAgent,
 				    bool *cookieEnabled);
+	bool IsSilverlight2 ();
+
 	GSList *timers;
 };
 
@@ -220,7 +224,9 @@ class PluginXamlLoader : public XamlLoader
 	PluginInstance *plugin;
 	bool initialized;
 	bool xaml_is_managed;
-	
+
+	Xap *xap;
+
 #if INCLUDE_MONO_RUNTIME
 	gpointer managed_loader;
 #endif

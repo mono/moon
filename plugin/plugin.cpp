@@ -18,6 +18,8 @@
 #include "moon-mono.h"
 #include "downloader.h"
 #include "plugin-downloader.h"
+#include "xap.h"
+
 #define Visual _XxVisual
 #define Region _XxRegion
 #include "gdk/gdkx.h"
@@ -295,10 +297,11 @@ PluginInstance::Properties ()
 	gtk_widget_show_all (dialog);
 }
 
-PluginInstance::PluginInstance (NPP instance, uint16_t mode)
+PluginInstance::PluginInstance (NPP instance, uint16_t mode, bool silverlight_2)
 {
 	this->instance = instance;
 	this->mode = mode;
+	this->silverlight2 = silverlight_2;
 	window = NULL;
 	
 	properties_fps_label = NULL;
@@ -1600,7 +1603,16 @@ PluginXamlLoader::TryLoad (int *error)
 	printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ());
 
 	if (GetFilename ()) {
-		element = xaml_create_from_file (this, GetFilename (), true, &element_type);
+		if (plugin->IsSilverlight2 ()){
+			Xap *xap = xap_create_from_file (this, GetFilename ());
+			if (xap == NULL){
+				*error = 1;
+				return NULL;
+			}
+			element = NULL;
+		} else {
+			element = xaml_create_from_file (this, GetFilename (), true, &element_type);
+		}
 	} else if (GetString ()) {
 		element = xaml_create_from_str (this, GetString (), true, &element_type);
 	} else {
@@ -1697,6 +1709,8 @@ PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, Plugi
 	this->initialized = FALSE;
 	this->xaml_is_managed = FALSE;
 	this->error_args = NULL;
+	this->xap = NULL;
+
 #if INCLUDE_MONO_RUNTIME
 	this->managed_loader = NULL;
 #endif
@@ -1704,6 +1718,11 @@ PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, Plugi
 
 PluginXamlLoader::~PluginXamlLoader ()
 {
+	if (xap){
+		delete xap;
+		xap = NULL;
+	}
+
 #if INCLUDE_MONO_RUNTIME
 	if (managed_loader)
 		vm_loader_destroy (managed_loader);

@@ -22,7 +22,9 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char 
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
-	PluginInstance *plugin = new PluginInstance (instance, mode);
+	bool sl2 = strcmp (pluginType, MIME_SILVERLIGHT_2) == 0;
+
+	PluginInstance *plugin = new PluginInstance (instance, mode, sl2);
 	if (plugin == NULL)
 		return NPERR_OUT_OF_MEMORY_ERROR;
 

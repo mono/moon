@@ -1,3 +1,16 @@
+2008-04-20  Miguel de Icaza  <miguel@roxanne.site>
+
+	* plugin.h: Add methods to flag Silverlight2, add field Xap that
+	if not-NULL contains a pointer to the XAP file downloaded.
+
+	* plugin-instance.c: If we are dealing with a Silverlight 2
+	application, use Xap to unpack it.   Does not load the result yet. 
+ 
+	* moonlight.h: Add support for SL2 mime type, clear up VERSION
+
+	* plugin-glue.cpp: Tell PluginInstance whether this is an SL1 or
+	SL2 activation.
+
 2008-04-16  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::StreamAsFile): use "else if" here,
