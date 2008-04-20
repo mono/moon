@@ -48,7 +48,7 @@
 #include "dirty.h"
 #include "fullscreen.h"
 #include "utils.h"
-
+#include "deployment.h"
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
@@ -2175,6 +2175,9 @@ runtime_init (guint32 flags)
 	media_init ();
 	panel_init ();
 	stylus_init ();
+
+	assembly_part_init ();
+	deployment_init ();
 }
 
 //

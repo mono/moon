@@ -202,30 +202,6 @@ Downloader::DownloadedFileIsZipped ()
 	return true;
 }
 
-static char *
-create_unzipdir (const char *filename)
-{
-	const char *name;
-	char *path, *buf;
-	
-	// create an unzip directory in /tmp
-	if (!(name = strrchr (filename, '/')))
-		name = filename;
-	else
-		name++;
-	
-	buf = g_strdup_printf ("%s.XXXXXX", name);
-	path = g_build_filename (g_get_tmp_dir (), buf, NULL);
-	g_free (buf);
-	
-	if (!MakeTempDir (path)) {
-		g_free (path);
-		return NULL;
-	}
-	
-	return path;
-}
-
 char *
 Downloader::GetDownloadedFilePart (const char *PartName)
 {
@@ -243,7 +219,7 @@ Downloader::GetDownloadedFilePart (const char *PartName)
 	if (!DownloadedFileIsZipped ())
 		return NULL;
 	
-	if (!unzipdir && !(unzipdir = create_unzipdir (filename)))
+	if (!unzipdir && !(unzipdir = CreateTempDir (filename)))
 		return NULL;
 	
 	part = g_ascii_strdown (PartName, -1);
@@ -326,7 +302,7 @@ Downloader::GetUnzippedPath ()
 	if (!DownloadedFileIsZipped ())
 		return this->filename;
 	
-	if (!unzipdir && !(unzipdir = create_unzipdir (this->filename)))
+	if (!unzipdir && !(unzipdir = CreateTempDir (this->filename)))
 		return NULL;
 	
 	if (unzipped)

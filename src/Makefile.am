@@ -20,6 +20,7 @@ libmooninclude_headers = \
 	control.h	\
 	debug.h		\
 	dependencyobject.h \
+	deployment.h	\
 	downloader.h	\
 	enums.h		\
 	eventargs.h	\
@@ -57,6 +58,7 @@ libmooninclude_headers = \
 	value.h		\
 	visual.h	\
 	xaml.h		\
+	xap.h		\
 	yuv-converter.h	\
 	libmoon.h
 
@@ -78,6 +80,7 @@ libmoon_la_SOURCES = 	\
 	control.cpp	\
 	debug.cpp	\
 	dependencyobject.cpp	\
+	deployment.cpp	\
 	dirty.h	\
 	dirty.cpp	\
 	downloader.cpp	\
@@ -116,6 +119,7 @@ libmoon_la_SOURCES = 	\
 	value.cpp	\
 	visual.cpp	\
 	xaml.cpp	\
+	xap.cpp		\
 	yuv-converter.cpp	\
 	zip/ioapi.c	\
 	zip/ioapi.h	\

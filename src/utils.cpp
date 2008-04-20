@@ -219,6 +219,35 @@ rmdir_real (GString *path)
 	return g_rmdir (path->str);
 }
 
+//
+// Creates a temporary directory, based on the @filename template
+//
+// Returns: a g-allocated string name that points to the created
+// directory, or NULL on failure
+//
+char *
+CreateTempDir (const char *filename)
+{
+	const char *name;
+	char *path, *buf;
+	
+	if (!(name = strrchr (filename, '/')))
+		name = filename;
+	else
+		name++;
+	
+	buf = g_strdup_printf ("%s.XXXXXX", name);
+	path = g_build_filename (g_get_tmp_dir (), buf, NULL);
+	g_free (buf);
+	
+	if (!MakeTempDir (path)) {
+		g_free (path);
+		return NULL;
+	}
+	
+	return path;
+}
+
 int
 RemoveDir (const char *dir)
 {

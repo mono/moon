@@ -24,7 +24,7 @@ void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
 
 bool ExtractFile (unzFile zip, int fd);
 
-char *MakeTempDir (char *tmpdir);
+char *CreateTempDir (const char *filename);
 
 int RemoveDir (const char *dir);
 

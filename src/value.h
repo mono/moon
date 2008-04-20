@@ -45,6 +45,8 @@ class AnimationStorage;
 class Animation;
 class AnimationClock;
 class ArcSegment;
+class AssemblyPart;
+class AssemblyPartCollection;
 class BeginStoryboard;
 class BezierSegment;
 class Brush;
@@ -58,6 +60,7 @@ class ColorKeyFrame;
 class ColorKeyFrameCollection;
 class Control;
 class DependencyObject;
+class Deployment;
 class DiscreteColorKeyFrame;
 class DiscreteDoubleKeyFrame;
 class DiscretePointKeyFrame;
@@ -148,6 +151,8 @@ class StrokeCollection;
 class StylusInfo;
 class StylusPoint;
 class StylusPointCollection;
+class SupportedCulture;
+class SupportedCulturesCollection;
 class Surface;
 class SystemTimeSource;
 class TextBlock;
@@ -262,6 +267,8 @@ public:
 	Animation*                     AsAnimation () { checked_get_subclass (Type::ANIMATION, Animation) }
 	AnimationClock*                AsAnimationClock () { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
 	ArcSegment*                    AsArcSegment () { checked_get_subclass (Type::ARCSEGMENT, ArcSegment) }
+	AssemblyPart*                  AsAssemblyPart () { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
+	AssemblyPartCollection*        AsAssemblyPartCollection () { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
 	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
 	BezierSegment*                 AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
 	Brush*                         AsBrush () { checked_get_subclass (Type::BRUSH, Brush) }
@@ -275,6 +282,7 @@ public:
 	ColorKeyFrameCollection*       AsColorKeyFrameCollection () { checked_get_subclass (Type::COLORKEYFRAME_COLLECTION, ColorKeyFrameCollection) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	DependencyObject*              AsDependencyObject () { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }
+	Deployment*                    AsDeployment () { checked_get_subclass (Type::DEPLOYMENT, Deployment) }
 	DiscreteColorKeyFrame*         AsDiscreteColorKeyFrame () { checked_get_subclass (Type::DISCRETECOLORKEYFRAME, DiscreteColorKeyFrame) }
 	DiscreteDoubleKeyFrame*        AsDiscreteDoubleKeyFrame () { checked_get_subclass (Type::DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame) }
 	DiscretePointKeyFrame*         AsDiscretePointKeyFrame () { checked_get_subclass (Type::DISCRETEPOINTKEYFRAME, DiscretePointKeyFrame) }
@@ -365,6 +373,8 @@ public:
 	StylusInfo*                    AsStylusInfo () { checked_get_subclass (Type::STYLUSINFO, StylusInfo) }
 	StylusPoint*                   AsStylusPoint () { checked_get_subclass (Type::STYLUSPOINT, StylusPoint) }
 	StylusPointCollection*         AsStylusPointCollection () { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }
+	SupportedCulture*              AsSupportedCulture () { checked_get_subclass (Type::SUPPORTEDCULTURE, SupportedCulture) }
+	SupportedCulturesCollection*   AsSupportedCulturesCollection () { checked_get_subclass (Type::SUPPORTEDCULTURES_COLLECTION, SupportedCulturesCollection) }
 	Surface*                       AsSurface () { checked_get_subclass (Type::SURFACE, Surface) }
 	SystemTimeSource*              AsSystemTimeSource () { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
 	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
