@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include "deployment.h"
 
+DependencyProperty *AssemblyPart::Source;
+
 void 
 assembly_part_init (void)
 {
@@ -31,6 +33,13 @@ supported_cultures_collection_new (void)
 {
 	return new SupportedCulturesCollection ();
 }
+
+DependencyProperty *Deployment::AllowInboundCallsFromXDomain;
+DependencyProperty *Deployment::EntryPointAssembly;
+DependencyProperty *Deployment::EntryPointType;
+DependencyProperty *Deployment::NeutralResourcesLanguage;
+DependencyProperty *Deployment::Parts;
+DependencyProperty *Deployment::SupportedCultures;
 
 void 
 deployment_init (void)
