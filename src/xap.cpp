@@ -19,6 +19,7 @@
 #include "xaml.h"
 #include "error.h"
 #include "utils.h"
+#include "type.h"
 #include "zip/unzip.h"
 #include "xap.h"
 
@@ -115,9 +116,8 @@ xap_create_from_file (XamlLoader *loader, const char *filename)
 	element = xaml_create_from_file (loader, manifest, false, &element_type);
 	g_free (manifest);
 
-	if (element_type != Kind::DEPLOYMENT)
+	if (element_type != Type::DEPLOYMENT)
 		return NULL;
-
 
 	// TODO: Create a DependencyObject from the root node.
 
