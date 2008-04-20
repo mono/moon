@@ -679,10 +679,10 @@ namespace Mono {
 		
 #region EventObject
 		[DllImport("moon")]
-		public extern static void event_object_add_event_handler (IntPtr handle, string eventName, UnmanagedEventHandler handler, GCHandle closure);
+		public extern static void event_object_add_event_handler (IntPtr handle, string eventName, UnmanagedEventHandler handler, IntPtr closure);
 
 		[DllImport("moon")]
-		public extern static void event_object_remove_event_handler (IntPtr handle, string eventName, UnmanagedEventHandler handler, GCHandle closure);
+		public extern static void event_object_remove_event_handler (IntPtr handle, string eventName, UnmanagedEventHandler handler, IntPtr closure);
 #endregion
 
 #region MouseEventArgs
