@@ -222,17 +222,17 @@ namespace Mono {
 		internal static void InitSurface (IntPtr surface)
 		{
 			// We don't really need a closure for this event
-			NativeMethods.event_object_add_event_handler (surface, "Resize", surface_resized, new GCHandle ());
+			NativeMethods.event_object_add_event_handler (surface, "Resize", surface_resized, (IntPtr) new GCHandle ());
 		}
 
 		internal static void AddHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
 		{
-			NativeMethods.event_object_add_event_handler (obj.native, eventName, handler, obj.GCHandle);
+			NativeMethods.event_object_add_event_handler (obj.native, eventName, handler, (IntPtr) obj.GCHandle);
 		}
 
 		internal static void RemoveHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
 		{
-			NativeMethods.event_object_remove_event_handler (obj.native, eventName, handler, obj.GCHandle);
+			NativeMethods.event_object_remove_event_handler (obj.native, eventName, handler, (IntPtr) obj.GCHandle);
 		}
 
 		internal static bool IsPlugin () {
