@@ -13,3 +13,5 @@
 /*.pc
 /.prec
 /bin
+/*.lo
+/*.la
