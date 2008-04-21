@@ -157,11 +157,10 @@
         SecondCallback ("LostFocus");
     }
 
-    function OnLoaded (sender, eventArgs)
+    function OnLoaded(control, userContext, rootElement)
     {
-	var id = sender.id;
         var eventName = id.substring ("SilverlightControl".length);
-        sender.addEventListener (eventName, "Second" + eventName);
+        rootElement.addEventListener (eventName, "Second" + eventName);
     }
 
     function CreateSilverlightControl(name)
@@ -177,7 +176,7 @@
                 background: "#E0E0E0FF"
             },
             events: {
-                  onLoad: OnLoaded,
+                  onLoad: OnLoaded
 //                onError: OnError
             }
         });
@@ -196,8 +195,8 @@
 
   <script type="text/javascript">
     var names = ["Loaded", "MouseEnter", "MouseLeave", "MouseLeftButtonDown", "MouseLeftButtonUp", "LostFocus", "GotFocus"];
-    for (var name in names) {
-        CreateSilverlightControl (names[name]);
+    for (var i = 0; i < names.length; i ++) {
+        CreateSilverlightControl (names[i]);
     }
   </script>
 </body>
