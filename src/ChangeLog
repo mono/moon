@@ -14,6 +14,11 @@
 	CreateTempDir instead of MakeTempDir that takes care of creating
 	the directory with a unique signature.
 
+2008-04-21  Geoff Norton  <gnorton@novell.com>
+
+	* yuv-converter.cpp: Emit a warning on unaliged memory and fall back
+	to the C implementation.
+	
 2008-04-18  Larry Ewing  <lewing@novell.com>
 
 	* dirty.cpp (Surface::ProcessDownDirtyElements): When visibility

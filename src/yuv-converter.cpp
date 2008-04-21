@@ -361,14 +361,17 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 	int width = dstStride[0] >> 2;
 	int height = srcSlideH;
 	int pad = 0;
+	bool aligned = true;
 	
 	if (width != srcStride[0]) {
 		pad = (srcStride[0] - width);
-		if (pad % 16)
-			g_error ("This video has extra padding that isn't SIMD aligned.  Please file a bug report with the location of the video");
+		if (pad % 16) {
+			g_warning ("This video has padding that prevents us from doing aligned SIMD operations on it.");
+			aligned = false;
+		}
 	}
 #if HAVE_SSE2
-	if (have_sse2) {
+	if (have_sse2 && aligned) {
 		for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 			for (j = 0; j < width >> 4; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
 				PREFETCH(y_row1);
@@ -383,11 +386,13 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 			}
 			y_row1 += pad;
 			y_row2 += pad;
+			u_plane += pad >> 1;
+			v_plane += pad >> 1;
 		}
 	} else {
 #endif
 #if HAVE_MMX
-		if (have_mmx) {
+		if (have_mmx && aligned) {
 			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
 				for (j = 0; j <  width >> 3; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
 					PREFETCH(y_row1);
@@ -402,6 +407,8 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 				}
 				y_row1 += pad;
 				y_row2 += pad;
+				u_plane += pad >> 1;
+				v_plane += pad >> 1;
 			}
 			__asm__ __volatile__ ("emms");
 		} else {
@@ -416,6 +423,8 @@ YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSl
 				}
 				y_row1 += pad;
 				y_row2 += pad;
+				u_plane += pad >> 1;
+				v_plane += pad >> 1;
 			}
 #if HAVE_MMX
 		}
