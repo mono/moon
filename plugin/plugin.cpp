@@ -26,6 +26,12 @@
 #undef Visual
 #undef Region
 
+#ifdef DEBUG
+#define d(x) x
+#else
+#define d(x)
+#endif
+
 extern guint32 moonlight_flags;
 
 /* gleaned from svn log of the moon module, as well as olive/class/{agclr,agmono,System.Silverlight} */
@@ -144,7 +150,7 @@ void
 plugin_set_unload_callback (PluginInstance *plugin, plugin_unload_callback *puc)
 {
 	if (!plugin) {
-		printf ("Trying to set plugin unload callback on a null plugin.\n");
+		d(printf ("Trying to set plugin unload callback on a null plugin.\n"));
 		return;
 	}
 
@@ -299,19 +305,19 @@ PluginInstance::Properties ()
 
 PluginInstance::PluginInstance (NPP instance, uint16_t mode, bool silverlight_2)
 {
+	silverlight2 = silverlight_2;
 	this->instance = instance;
 	this->mode = mode;
-	this->silverlight2 = silverlight_2;
 	window = NULL;
 	
 	properties_fps_label = NULL;
 	properties_cache_label = NULL;
-
+	
 	rootobject = NULL;
-
+	
 	container = NULL;
 	surface = NULL;
-
+	
 	// Property fields
 	initParams = false;
 	isLoaded = false;
@@ -320,24 +326,24 @@ PluginInstance::PluginInstance (NPP instance, uint16_t mode, bool silverlight_2)
 	onLoad = NULL;
 	onError = NULL;
 	background = NULL;
-
+	
 	windowless = false;
 	
 	// MSDN says the default is 24: http://msdn2.microsoft.com/en-us/library/bb979688.aspx
 	// blog says the default is 60: http://blogs.msdn.com/seema/archive/2007/10/07/perf-debugging-tips-enableredrawregions-a-performance-bug-in-videobrush.aspx
 	// testing seems to confirm that the default is 60.
 	maxFrameRate = 60;
-
+	
 	vm_missing_file = NULL;
 	xaml_loader = NULL;
 	plugin_unload = NULL;
-
+	
 	timers = NULL;
-
+	
 	wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
-
+	
 	plugin_instances = g_slist_append (plugin_instances, instance);
-
+	
 	/* back pointer to us */
 	instance->pdata = this;
 	
@@ -368,20 +374,18 @@ PluginInstance::~PluginInstance ()
 	g_free (background);
 
 	delete xaml_loader;
-	xaml_loader = NULL;
-
+	
 	g_free (source);
 
 	if (source_idle)
 		g_source_remove (source_idle);
-
-
+	
 	//
 	// The code below was an attempt at fixing this, but we are still getting spurious errors
 	// we might have another source of problems
 	//
 	//fprintf (stderr, "Destroying the surface: %p, plugin: %p\n", surface, this);
-	if (surface != NULL){
+	if (surface != NULL) {
 		//gdk_error_trap_push ();
 		surface->unref ();
 		//gdk_display_sync (display);
@@ -393,7 +397,6 @@ PluginInstance::~PluginInstance ()
 		
 #if DEBUG
 	delete moon_sources;
-	moon_sources = NULL;
 #endif
 }
 
@@ -478,8 +481,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	NPN_Version(&plugin_major, &plugin_minor,
 		    &netscape_major, &netscape_minor);
 
-	printf(" Browser NPAPI version = %d.%d\n",
-	       netscape_major, netscape_minor);
+	d(printf ("Browser NPAPI version = %d.%d\n", netscape_major, netscape_minor));
 
 	if (netscape_major >= 1 || netscape_minor >= 18) {
 		if (windowless)
@@ -490,9 +492,9 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		if (supportsWindowless) {
 			NPN_SetValue (instance, NPPVpluginWindowBool, (void *) FALSE);
 			NPN_SetValue (instance, NPPVpluginTransparentBool, (void *) TRUE);
-			printf ("windowless mode\n");
+			d(printf ("windowless mode\n"));
 		} else {
-			printf ("browser doesn't support windowless mode.\n");
+			d(printf ("browser doesn't support windowless mode.\n"));
 			windowless = FALSE;
 		}
 	}
@@ -509,17 +511,17 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 	NPError err = NPERR_NO_ERROR;
 
 	switch (variable) {
-		case NPPVpluginNeedsXEmbed:
-			*((PRBool *)result) = !windowless;
-			break;
-
-		case NPPVpluginScriptableNPObject:
-			*((NPObject**) result) = getRootObject ();
-			break;
-		default:
-			err = NPERR_INVALID_PARAM;
+	case NPPVpluginNeedsXEmbed:
+		*((PRBool *)result) = !windowless;
+		break;
+	case NPPVpluginScriptableNPObject:
+		*((NPObject**) result) = getRootObject ();
+		break;
+	default:
+		err = NPERR_INVALID_PARAM;
+		break;
 	}
-
+	
 	return err;
 }
 
@@ -540,7 +542,7 @@ PluginInstance::SetWindow (NPWindow *window)
 	if (!windowless) {
 		NPN_GetValue (instance, NPNVSupportsXEmbedBool, &xembed_supported);
 		if (!xembed_supported) {
-			DEBUGMSG ("*** XEmbed not supported");
+			d(printf ("*** XEmbed not supported"));
 			return NPERR_GENERIC_ERROR;
 		}
 	}
@@ -638,8 +640,6 @@ PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 void
 PluginInstance::CreateWindow ()
 {
-	//DEBUGMSG ("*** creating window2 (%d,%d,%d,%d)", window->x, window->y, window->width, window->height);
-	
 	surface = new Surface (window->width, window->height, windowless);
 
 	if (windowless) {
@@ -684,7 +684,7 @@ PluginInstance::CreateWindow ()
 		Color *c = color_from_str (background);
 		
 		if (c == NULL) {
-			g_warning ("error setting background color");
+			d(printf ("error setting background color"));
 			c = new Color (0x00FFFFFF);
 		}
 		
@@ -755,8 +755,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 {
 	const char *xaml;
 
-	xaml = html_get_element_text (this, value);
-	if (!xaml)
+	if (!(xaml = html_get_element_text (this, value)))
 		return;
 
 	if (xaml_loader)
@@ -777,7 +776,7 @@ PluginInstance::JsRunOnload ()
 	const char *expression = onLoad;
 	
 	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVWindowNPObject, &object)) {
-		DEBUGMSG ("*** Failed to get window object");
+		d(printf ("*** Failed to get window object"));
 		return false;
 	}
 
@@ -787,31 +786,29 @@ PluginInstance::JsRunOnload ()
 	NPVariant args[1];
 
 	DependencyObject *toplevel = surface->GetToplevel ();
-	DEBUGMSG ("In JsRunOnload, toplevel = %p", toplevel);
-
+	d(printf ("In JsRunOnload, toplevel = %p", toplevel));
+	
 	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, toplevel);
 	OBJECT_TO_NPVARIANT ((NPObject*)depobj, args[0]);
 
 	if (NPN_Invoke (instance, object, NPID (expression), args, 1, &result)) {
-		DEBUGMSG ("NPN_Invoke succeeded");
+		d(printf ("NPN_Invoke succeeded"));
 		NPN_ReleaseVariantValue (&result);
-
+		
 		retval = true;
 	} else {
-		DEBUGMSG ("NPN_Invoke failed");
+		d(printf ("NPN_Invoke failed"));
 	}
 	
 	NPN_ReleaseVariantValue (&args [0]);
 	NPN_ReleaseObject (object);
-
+	
 	return retval;
 }
 
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
-  	//DEBUGMSG ("NewStream (%s) %s\n", this->source, stream->url);
-	
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		*stype = NP_ASFILEONLY;
 		return NPERR_NO_ERROR;
@@ -861,8 +858,6 @@ PluginInstance::TryLoad ()
 
 	if (vm_missing_file == NULL)
 		vm_missing_file = g_strdup (xaml_loader->TryLoad (&error));
-
-	//printf ("PluginInstance::TryLoad, vm_missing_file: %s, error: %i\n", vm_missing_file, error);
 	
 	if (vm_missing_file != NULL) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
@@ -930,7 +925,7 @@ PluginInstance::ReportException (char *msg, char *details, char **stack_trace, i
 
 	// Get a reference to our element
 	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
-		DEBUGMSG ("*** Failed to get plugin element object");
+		d(printf ("*** Failed to get plugin element object"));
 		return;
 	}
 
@@ -991,7 +986,7 @@ PluginInstance::LoadUrl (char *url, int32_t *length)
 
 	// Get a reference to our element
 	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
-		DEBUGMSG ("*** Failed to get plugin element object");
+		d(printf ("*** Failed to get plugin element object"));
 		return NULL;
 	}
 
@@ -1029,7 +1024,7 @@ PluginInstance::LoadUrl (char *url, int32_t *length)
 				arr_len ++;
 			}
 
-			arr = (char*)g_malloc (arr_len);
+			arr = (char *) g_malloc (arr_len);
 
 			in = s;
 			i = 0;
@@ -1043,8 +1038,10 @@ PluginInstance::LoadUrl (char *url, int32_t *length)
 			load_res = arr;
 			*length = arr_len;
 		}
+		
 		NPN_ReleaseVariantValue (&result);
 	}
+	
 	NPN_ReleaseObject (object);
 	g_free (script);
 	g_free (url_escaped);
@@ -1055,40 +1052,31 @@ PluginInstance::LoadUrl (char *url, int32_t *length)
 void
 PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 {
-  //	DEBUGMSG ("StreamAsFile: %s", fname);
-
 #if DEBUG
 	AddSource (stream->url, fname);
 #endif
-
+	
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
-	  //		DEBUGMSG ("LoadFromXaml: %s", fname);
 	  	if (xaml_loader)
 	  		delete xaml_loader;
 		xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
 		TryLoad ();
-	}
-	else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
+	} else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
 		
 		dl->NotifyFinished (fname);
-	}
-	else if (IS_NOTIFY_REQUEST (stream->notifyData)) {
+	} else if (IS_NOTIFY_REQUEST (stream->notifyData)) {
 		bool reload = true;
-		// printf ("PluginInstance::StreamAsFile: vm_missing_file: '%s', url: '%s', fname: '%s'.\n", vm_missing_file, stream->url, fname);
 
 		if (!vm_missing_file)
 			reload = false;
 
-		if (reload && xaml_loader->GetMapping (vm_missing_file) != NULL) {
-			// printf ("PluginInstance::StreamAsFile: the file '%s' has already been downloaded, won't try to reload xaml. Mapped to: '%s' (new url: '%s').", vm_missing_file, xaml_loader->GetMapping (vm_missing_file), stream->url);
+		if (reload && xaml_loader->GetMapping (vm_missing_file) != NULL)
 			reload = false;
-		}
-		if (reload && xaml_loader->GetMapping (stream->url) != NULL) {
-			// printf ("PluginInstance::StreamAsFile: the url '%s' has already been downloaded, won't try to reload xaml. Mapped to: '%s' (new url: '%s').", vm_missing_file, xaml_loader->GetMapping (stream->url), stream->url);
+		
+		if (reload && xaml_loader->GetMapping (stream->url) != NULL)
 			reload = false;
-		}
-
+		
 		if (vm_missing_file)
 			xaml_loader->RemoveMissing (vm_missing_file);
 
@@ -1101,8 +1089,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 
 			xaml_loader->InsertMapping (missing, fname);
 			xaml_loader->InsertMapping (stream->url, fname);
-			// printf ("PluginInstance::StreamAsFile: retry xaml loading, downloaded: %s to %s\n", missing, stream->url);
-
+			
 			// retry to load
 			TryLoad ();
 		}
@@ -1115,8 +1102,6 @@ int32_t
 PluginInstance::WriteReady (NPStream *stream)
 {
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
-	
-	//DEBUGMSG ("WriteReady (%d)", stream->end);
 	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
 		Downloader *dl = (Downloader *) notify->pdata;
@@ -1136,8 +1121,6 @@ PluginInstance::Write (NPStream *stream, int32_t offset, int32_t len, void *buff
 {
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 	
-	//DEBUGMSG ("Write size: %d offset: %d len: %d", stream->end, offset, len);
-	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
 		Downloader *dl = (Downloader *) notify->pdata;
 		
@@ -1153,11 +1136,11 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	StreamNotify *notify = STREAM_NOTIFY (notifyData);
 	
 	//if (reason == NPRES_DONE) {
-	//	DEBUGMSG ("URL %s downloaded successfully.", url);
+	//	d(printf ("URL %s downloaded successfully.", url));
 	//} else {
-	//	DEBUGMSG ("Download of URL %s failed: %i (%s)", url, reason,
+	//	d(printf ("Download of URL %s failed: %i (%s)", url, reason,
 	//		  reason == NPRES_USER_BREAK ? "user break" :
-	//		  (reason == NPRES_NETWORK_ERR ? "network error" : "other error"));
+	//		  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
 	//}
 	
 	if (reason != NPRES_DONE) {
@@ -1219,20 +1202,19 @@ PluginInstance::EventHandle (void *event)
 				handled = surface->expose_to_drawable (drawable, visual, &expose, window->x, window->y);
 
 				gdk_region_destroy (expose.region);
+			} else {
+				d(printf ("no gdk visual\n"));
 			}
-			else {
-				printf ("no gdk visual\n");
-			}
+			
 			g_object_unref (drawable);
-		}
-		else {
-			printf ("no gdk drawable\n");
+		} else {
+			d(printf ("no gdk drawable\n"));
 		}
 		break;
 	}
 	case MotionNotify: {
 		GdkEventMotion motion;
-
+		
 		motion.type = GDK_MOTION_NOTIFY;
 		motion.window = NULL;
 		motion.send_event = xev->xmotion.send_event;
@@ -1333,7 +1315,7 @@ PluginInstance::EventHandle (void *event)
 		break;
 	}
 	default:
-		printf ("Unhandled Xlib event %d\n", xev->type);
+		d(printf ("Unhandled Xlib event %d\n", xev->type));
 		break;
 	}
 
@@ -1389,15 +1371,11 @@ PluginInstance::setBackground (const char *value)
 	g_free (background);
 	background = g_strdup (value);
 	
-	printf ("new background color is %s\n", background);
-	
 	if (surface) {
 		Color *c = color_from_str (background);
 		
-		if (c == NULL) {
-			printf ("failed to parse color name\n");
+		if (c == NULL)
 			return false;
-		}
 		
 		surface->SetBackgroundColor (c);
 		delete c;
@@ -1467,7 +1445,9 @@ PluginInstance::getBrowserInformation (char **name, char **version,
 				       char **platform, char **userAgent,
 				       bool *cookieEnabled)
 {
-	*userAgent = (char*)NPN_UserAgent (instance);
+	// FIXME: implement me
+	
+	*userAgent = (char *) NPN_UserAgent (instance);
 	DEBUG_WARN_NOTIMPLEMENTED ("pluginInstance.getBrowserInformation");
 
 	*name = (char *) "Foo!";
@@ -1552,7 +1532,7 @@ plugin_instance_get_browser_information (PluginInstance *instance,
 
 void
 plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_access,
-											  bool *httpnet_access, bool *script_access)
+					      bool *httpnet_access, bool *script_access)
 {
 	*debug = *html_access = *httpnet_access = *script_access = false;
 }
@@ -1597,15 +1577,15 @@ PluginXamlLoader::TryLoad (int *error)
 {
 	DependencyObject *element;
 	Type::Kind element_type;
-
+	Xap *xap;
+	
 	*error = 0;
-
-	printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ());
-
+	
+	d(printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ()));
+	
 	if (GetFilename ()) {
-		if (plugin->IsSilverlight2 ()){
-			Xap *xap = xap_create_from_file (this, GetFilename ());
-			if (xap == NULL){
+		if (plugin->IsSilverlight2 ()) {
+			if (!(xap = xap_create_from_file (this, GetFilename ()))) {
 				*error = 1;
 				return NULL;
 			}
@@ -1619,27 +1599,27 @@ PluginXamlLoader::TryLoad (int *error)
 		*error = 1;
 		return NULL;
 	}
-
+	
 	if (!element) {
 		if (error_args && error_args->error_code != -1) {
-			printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (error: %s attr=%s)\n",
-				GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
-				error_args->xml_element, error_args->xml_attribute);
+			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (error: %s attr=%s)\n",
+				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
+				  error_args->xml_element, error_args->xml_attribute));
 			GetSurface ()->Attach (NULL);
 			GetSurface ()->EmitError (error_args);
 			return NULL;
 		} else {
-			printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n",
-				GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
-				GetMissing ());
+			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n",
+				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
+				  GetMissing ()));
 			xaml_is_managed = true;
 			return GetMissing ();
 		}
 	}
-
+	
 	Type *t = Type::Find(element_type);
 	if (!t) {
-		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is an unregistered type\n");
+		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass Canvas, it is an unregistered type\n"));
 		element->unref ();
 		GetSurface ()->Attach (NULL);
 		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
@@ -1647,15 +1627,16 @@ PluginXamlLoader::TryLoad (int *error)
 	}
 
 	if (!t->IsSubclassOf(Type::CANVAS) && !t->IsSubclassOf(Type::CONTROL)) {
-		printf ("PluginXamlLoader::TryLoad: Return value is not a subclass of Canvas, it is a %s\n", element->GetTypeName ());
+		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass of Canvas, it is a %s\n",
+			  element->GetTypeName ()));
 		element->unref ();
 		GetSurface ()->Attach (NULL);
 		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
 		return NULL;
 	}
-
-	printf ("PluginXamlLoader::TryLoad () succeeded.\n");
-
+	
+	d(printf ("PluginXamlLoader::TryLoad () succeeded.\n"));
+	
 	GetSurface ()->Attach ((Canvas*) element);
 
 	// xaml_create_from_* passed us a ref which we don't need to
@@ -1703,26 +1684,25 @@ PluginXamlLoader::InitializeLoader ()
 	return initialized;
 }
 
-PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface) : XamlLoader (filename, str, surface)
+PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface)
+	: XamlLoader (filename, str, surface)
 {
 	this->plugin = plugin;
-	this->initialized = FALSE;
-	this->xaml_is_managed = FALSE;
-	this->error_args = NULL;
-	this->xap = NULL;
+	xaml_is_managed = false;
+	initialized = false;
+	error_args = NULL;
+	xap = NULL;
 
 #if INCLUDE_MONO_RUNTIME
-	this->managed_loader = NULL;
+	managed_loader = NULL;
 #endif
 }
 
 PluginXamlLoader::~PluginXamlLoader ()
 {
-	if (xap){
+	if (xap)
 		delete xap;
-		xap = NULL;
-	}
-
+	
 #if INCLUDE_MONO_RUNTIME
 	if (managed_loader)
 		vm_loader_destroy (managed_loader);
