@@ -1,3 +1,9 @@
+2008-04-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp, dependencyobject.h: Added another SetValue
+	  overload, to enable calling all SetValues with stack objects.
+	* xaml.cpp: Fix a Value leak.
+
 2008-04-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes a double-destroy bug in FullScreen.htm

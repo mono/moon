@@ -668,6 +668,12 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 }
 
 bool
+DependencyObject::SetValue (DependencyProperty* property, Value value, GError** error)
+{
+	return SetValue (property, &value, error);
+}
+
+bool
 DependencyObject::SetValue (DependencyProperty* property, Value* value, GError** error)
 {
 	if (!IsValueValid (property, value, error)) {

@@ -196,6 +196,7 @@ class DependencyObject : public EventObject {
 	virtual bool IsValueValid (DependencyProperty *property, Value *value, GError **error);
 
 	bool SetValue (DependencyProperty *property, Value *value, GError **error);
+	bool SetValue (DependencyProperty *property, Value value, GError **error);
 	void SetValue (DependencyProperty *property, Value *value);
 	void SetValue (DependencyProperty *property, Value value);
 	void SetValue (const char *name, Value *value);

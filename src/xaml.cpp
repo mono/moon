@@ -2695,7 +2695,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 								 property->element_name));
 				} else {
 					GError *seterror = NULL;
-					if (!dep->SetValue (prop, new Value (value->item), &seterror)) {
+					if (!dep->SetValue (prop, Value (value->item), &seterror)) {
 						parser_error (p, item->element_name, NULL, seterror->code, seterror->message);
 						g_error_free (seterror);
 					}
