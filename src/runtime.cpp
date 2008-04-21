@@ -156,7 +156,7 @@ Surface::Surface(int w, int h, bool windowless)
 	downloader_context = NULL;
 	width = w;
 	height = h;
-	buffer = 0;
+	buffer = NULL;
 	pixbuf = NULL;
 	using_cairo_xlib_surface = 0;
 	cairo_buffer_surface = NULL;
@@ -165,29 +165,34 @@ Surface::Surface(int w, int h, bool windowless)
 	cairo = NULL;
 	transparent = false;
 	background_color = NULL;
-	widget = NULL;
-	widget_normal = NULL;
-	widget_fullscreen = NULL;
 	cursor = MouseCursorDefault;
 	mouse_event = NULL;
-
+	
+	memset (&normal_ids, 0, sizeof (SignalIds));
+	memset (&fullscreen_ids, 0, sizeof (SignalIds));
+	
 	background_color = new Color (1, 1, 1, 0);
-
+	
 	if (!windowless) {
-		widget = gtk_event_box_new ();
+		widget_normal = widget = gtk_event_box_new ();
 		gtk_widget_set_size_request (widget, width, height);
-		InitializeWidget (widget);
+		InitializeWidget (widget, &normal_ids);
+		widget_fullscreen = NULL;
+	} else {
+		widget_fullscreen = NULL;
+		widget_normal = NULL;
+		widget = NULL;
 	}
 	
 	buffer = NULL;
-
+	
 	normal_width = width;
 	normal_height = height;
-
+	
 	toplevel = NULL;
 	input_list = new List ();
 	captured = false;
-
+	
 	Realloc ();
 	
 	full_screen = false;
@@ -248,17 +253,13 @@ Surface::~Surface ()
 	//
 	time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
-
+	
 	if (toplevel) {
 		toplevel->SetSurface (NULL);
 		toplevel->unref ();
-		toplevel = NULL;
 	}
-
-	if (buffer) {
-		free (buffer);
-		buffer = NULL;
-	}
+	
+	g_free (buffer);
 	
 #if DEBUG
 	if (debug_selected_element) {
@@ -267,38 +268,25 @@ Surface::~Surface ()
 	}
 #endif
 	
-	if (full_screen_message) {
+	if (full_screen_message)
 		HideFullScreenMessage ();
-	}
-
+	
 	delete input_list;
-	input_list = NULL;
-
-	if (source_location) {
-		g_free (source_location);
-		source_location = NULL;
-	}
+	
+	g_free (source_location);
 	
 	cairo_destroy (cairo_buffer);
-	cairo_buffer = NULL;
-
 	cairo_surface_destroy (cairo_buffer_surface);
-	cairo_buffer_surface = NULL;
-
-	DestroyWidget (widget_fullscreen);
-	widget_fullscreen = NULL;
 	
-	DestroyWidget (widget);
-	widget = NULL;
+	DestroyWidget (widget_fullscreen, &fullscreen_ids);
+	DestroyWidget (widget_normal, &normal_ids);
 	
 	delete background_color;
-	background_color = NULL;
-
+	
 	time_manager->unref ();
-	time_manager = NULL;
-
+	
 	drain_unrefs ();
-
+	
 	delete up_dirty;
 	delete down_dirty;
 }
@@ -451,9 +439,18 @@ Surface::SetCursor (MouseCursor new_cursor)
 void
 Surface::ConnectEvents (bool realization_signals)
 {
+	SignalIds *ids;
+	
 	if (!widget)
 		return;
-
+	
+	if (widget == widget_fullscreen)
+		ids = &fullscreen_ids;
+	else if (widget == widget_normal)
+		ids = &normal_ids;
+	else
+		ids = NULL;
+	
 	gtk_signal_connect (GTK_OBJECT (widget), "expose-event",
 			    G_CALLBACK (Surface::expose_event_callback), this);
 	
@@ -485,12 +482,17 @@ Surface::ConnectEvents (bool realization_signals)
 			    G_CALLBACK (focus_out_callback), this);
 	
 	if (realization_signals) {
+		gulong id;
+		
 		gtk_signal_connect (GTK_OBJECT (widget), "realize",
 				    G_CALLBACK (realized_callback), this);
-
-		gtk_signal_connect (GTK_OBJECT (widget), "unrealize",
-				    G_CALLBACK (unrealized_callback), this);
-
+		
+		id = gtk_signal_connect (GTK_OBJECT (widget), "unrealize",
+					 G_CALLBACK (unrealized_callback), this);
+		
+		if (ids)
+			ids->unrealize = id;
+		
 		if (GTK_WIDGET_REALIZED (widget))
 			realized_callback (widget, this);
 	}
@@ -737,17 +739,16 @@ Surface::Realloc ()
 		free (buffer);
 
 	int size = width * height * 4;
-	buffer = (unsigned char *) malloc (size);
-
+	buffer = (unsigned char *) g_malloc (size);
+	
 	cairo_buffer_surface = cairo_image_surface_create_for_data (
 		buffer, CAIRO_FORMAT_ARGB32, width, height, width * 4);
-
+	
 	cairo_buffer = cairo_create (cairo_buffer_surface);
-
+	
 	if (cairo_xlib == NULL) {
 		cairo = cairo_buffer;
-	}
-	else {
+	} else {
 		CreateSimilarSurface ();
 		cairo = cairo_xlib;
 	}
@@ -885,7 +886,6 @@ Surface::UpdateFullScreen (bool value)
 		widget_fullscreen = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 		
 		// Flip the drawing area
-		widget_normal = widget;
 		widget = widget_fullscreen;		
 		// Get the screen size
 		int screen_width = gdk_screen_get_width (gdk_screen_get_default ());
@@ -900,7 +900,7 @@ Surface::UpdateFullScreen (bool value)
 		gtk_widget_set_size_request (widget, width, height);
 		gtk_window_fullscreen (GTK_WINDOW (widget));
 		
-		InitializeWidget (widget);
+		InitializeWidget (widget, &fullscreen_ids);
 		
 		ShowFullScreenMessage ();
 		
@@ -910,11 +910,11 @@ Surface::UpdateFullScreen (bool value)
 		
 		// Flip back.
 		widget = widget_normal;
-
+		
 		// Destroy the fullscreen widget.
 		GtkWidget *fs = widget_fullscreen;
 		widget_fullscreen = NULL;
-		DestroyWidget (fs);
+		DestroyWidget (fs, &fullscreen_ids);
 		
 		width = normal_width;
 		height = normal_height;
@@ -929,14 +929,26 @@ Surface::UpdateFullScreen (bool value)
 }
 
 void 
-Surface::DestroyWidget (GtkWidget *widget)
+Surface::DestroyWidget (GtkWidget *widget, SignalIds *ids)
 {
-	if (widget)
-		gtk_widget_destroy (widget);
+	if (!widget)
+		return;
+	
+	if (ids->unrealize) {
+		g_signal_handler_disconnect (widget, ids->unrealize);
+		ids->unrealize = 0;
+	}
+	
+	if (ids->destroy) {
+		g_signal_handler_disconnect (widget, ids->destroy);
+		ids->destroy = 0;
+	}
+	
+	gtk_widget_destroy (widget);
 }
 
 void
-Surface::InitializeWidget (GtkWidget *widget)
+Surface::InitializeWidget (GtkWidget *widget, SignalIds *ids)
 {
 	// don't let gtk clear the window we'll do all the drawing.
 	//gtk_widget_set_app_paintable (widget, true);
@@ -949,29 +961,26 @@ Surface::InitializeWidget (GtkWidget *widget)
 	if (GTK_IS_EVENT_BOX (widget))
 		gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
 	
-	g_signal_connect (G_OBJECT (widget), "size-allocate",
-			  G_CALLBACK (widget_size_allocate), this);
-	g_signal_connect (G_OBJECT (widget), "destroy",
-			  G_CALLBACK (widget_destroyed), this);
+	g_signal_connect (widget, "size-allocate", G_CALLBACK (widget_size_allocate), this);
+	ids->destroy = g_signal_connect (widget, "destroy", G_CALLBACK (widget_destroyed), this);
 	
 	gtk_widget_add_events (widget, 
 			       GDK_POINTER_MOTION_MASK |
-// 			       GDK_POINTER_MOTION_HINT_MASK |
+			       //GDK_POINTER_MOTION_HINT_MASK |
 			       GDK_KEY_PRESS_MASK |
 			       GDK_KEY_RELEASE_MASK |
 			       GDK_BUTTON_PRESS_MASK |
 			       GDK_BUTTON_RELEASE_MASK |
 			       GDK_FOCUS_CHANGE_MASK);
-
+	
 	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
-
+	
 	gtk_widget_show (widget);
-
+	
 	// The window has to be realized for this call to work
 	gtk_widget_set_extension_events (widget, GDK_EXTENSION_EVENTS_CURSOR);
 	/* we need to explicitly enable the devices */
 	for (GList *l = gdk_devices_list(); l; l = l->next) {
-
 #if THIS_NOLONGER_BREAKS_LARRYS_MOUSE
 		GdkDevice *device = GDK_DEVICE(l->data);
 		//if (!device->has_cursor)

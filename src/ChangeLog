@@ -1,3 +1,20 @@
+2008-04-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes a double-destroy bug in FullScreen.htm
+
+	* runtime.cpp (Surface::Surface): Initialize normal_widget - never
+	let it be NULL unless we are in windowless mode.
+	(Surface::.dtor): Don't call DestroyWidget on 'widget', call it on
+	'widget_normal' instead, this way we can't accidently destroy the
+	fullscreen widget twice (e.g. if we are in fullscreen mode).
+	(Surface::ConnectEvents): Record the unrealize signal id so that
+	we can later disconnect from it.
+	(Surface::DestroyWidget): Now takes a SignalIds argument so that
+	we can disconnect from unrealize/destroy signals which may fire in
+	response to destroying the widget.
+	(Surface::InitializeWidget): Now takes a SignalIds argument so
+	that we can save the destroy signal id.
+
 2008-04-21  Geoff Norton  <gnorton@novell.com>
 
 	* runtime.cpp: Guard against freeing a list in a sub-event
@@ -23,7 +40,7 @@
 
 	* yuv-converter.cpp: Emit a warning on unaliged memory and fall back
 	to the C implementation.
-	
+
 2008-04-18  Larry Ewing  <lewing@novell.com>
 
 	* dirty.cpp (Surface::ProcessDownDirtyElements): When visibility
@@ -31,7 +48,7 @@
 	subtree may have changed.
 
 	Fixes the status boxes on MouseInput.htm
-	
+
 2008-04-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (Surface::ConnectEvents): Connect to focus-in-event

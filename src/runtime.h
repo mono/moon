@@ -74,6 +74,143 @@ typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *us
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
+	struct SignalIds {
+		gulong unrealize;
+		gulong destroy;
+	};
+	
+	// bad, but these two live in dirty.cpp, not runtime.cpp
+	void ProcessDownDirtyElements ();
+	void ProcessUpDirtyElements ();
+	
+	List *down_dirty;
+	List *up_dirty;
+	
+	gpointer downloader_context;
+	
+	int normal_width, normal_height;
+	// the actual size of the drawing area, 
+	// screen size in fullscreen mode,
+	// otherwise normal size.
+	int width, height;
+	
+	// The data lives here
+	unsigned char *buffer;
+	
+	// The above buffer, as a pixbuf, for the software mode
+	GdkPixbuf *pixbuf;
+	
+	bool using_cairo_xlib_surface;
+	
+	cairo_surface_t *cairo_buffer_surface;
+	cairo_t         *cairo_buffer;
+	cairo_t         *cairo_xlib;
+	
+	//
+	// This is what code uses, and its equal to either:
+	//    cairo_buffer: when the widget has not been realized
+	//    cairo_xlib:   when the widget has been realized
+	//
+	cairo_t *cairo;		
+	
+	// The pixmap used for the backing storage for xlib_surface
+	GdkPixmap *pixmap;
+	
+	bool transparent;
+	
+	Color *background_color;
+	
+	// The current widget we are drawing to. If in windowless
+	// mode, widget will be NULL - otherwise it will either point
+	// to widget_normal or widget_fullscreen depending on whether
+	// or not we are in fullscreen mode.
+	GtkWidget *widget;
+	
+	// This is the normal widget
+	GtkWidget *widget_normal;
+	SignalIds normal_ids;
+	
+	// We set widget to this whenever we are in fullscreen mode.
+	GtkWidget *widget_fullscreen;
+	SignalIds fullscreen_ids;
+	
+	// This currently can only be a canvas.
+	UIElement *toplevel;
+	
+	// the list of elements (from most deeply nested to the
+	// toplevel) we've most recently sent a mouse event to.
+	List *input_list;
+	
+	// is the mouse captured?  if it is, it'll be by the first element in input_list.
+	bool captured;
+	UIElement *pendingCapture;
+	bool pendingReleaseCapture;
+	
+	// are we currently emitting a mouse event?
+	bool emittingMouseEvent;
+	
+	// the currently shown cursor
+	MouseCursor cursor;
+	
+	// Fullscreen support
+	bool full_screen;
+	Canvas *full_screen_message;
+	char *source_location;
+	// Should be set to true only while executing MouseLeftButtonDown, 
+	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
+	bool can_full_screen; 
+	
+	void UpdateFullScreen (bool value);
+	
+	TimeManager *time_manager;
+	
+	int frames;
+	
+	GdkEvent *mouse_event;
+	
+	MoonlightInvalidateFunc invalidate;
+	void *invalidate_data;
+	
+	MoonlightRenderFunc render;
+	void *render_data;
+	
+	// Variables for reporting FPS
+	MoonlightFPSReportFunc fps_report;
+	int64_t fps_start;
+	int fps_nframes;
+	void *fps_data;
+	
+	// Variables for reporting cache size
+	MoonlightCacheReportFunc cache_report;
+	int64_t cache_size_in_bytes;
+	int cache_size_ticker;
+	void *cache_data;
+	int cache_size_multiplier;
+	
+	void ConnectEvents (bool realization_signals);
+	void Realloc ();
+	void InitializeWidget (GtkWidget *widget, SignalIds *ids);
+	void DestroyWidget (GtkWidget *widget, SignalIds *ids);
+	void ShowFullScreenMessage ();
+	void HideFullScreenMessage ();
+	
+	void CreateSimilarSurface ();
+	
+	static Key gdk_keyval_to_key (guint keyval);
+	
+	static void render_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void widget_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
+	static void widget_destroyed (GtkWidget *w, gpointer data);
+	
+	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
+	bool EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *event, int end_idx);
+	void UpdateCursorFromInputList ();
+	bool HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit,
+			       GdkEvent *event);
+	void PerformCapture (UIElement *capture);
+	void PerformReleaseCapture ();
+	
  protected:
 	virtual ~Surface();
 
@@ -176,135 +313,6 @@ class Surface : public EventObject {
 
 	static pthread_t main_thread;
 	static bool InMainThread () { return pthread_equal (main_thread, pthread_self ()); }
-private:
-	// bad, but these two live in dirty.cpp, not runtime.cpp
-	void ProcessDownDirtyElements ();
-	void ProcessUpDirtyElements ();
-
-	List *down_dirty;
-	List *up_dirty;
-
-	gpointer downloader_context;
-	
-	int normal_width, normal_height;
-	// the actual size of the drawing area, 
-	// screen size in fullscreen mode,
-	// otherwise normal size.
-	int width, height;
-
-	// The data lives here
-	unsigned char *buffer;
-
-	// The above buffer, as a pixbuf, for the software mode
-	GdkPixbuf *pixbuf;
-	
-	bool using_cairo_xlib_surface;
-	
-	cairo_surface_t *cairo_buffer_surface;
-	cairo_t         *cairo_buffer;
-	cairo_t         *cairo_xlib;
-	
-	//
-	// This is what code uses, and its equal to either:
-	//    cairo_buffer: when the widget has not been realized
-	//    cairo_xlib:   when the widget has been realized
-	//
-	cairo_t *cairo;		
-
-	// The pixmap used for the backing storage for xlib_surface
-	GdkPixmap *pixmap;
-
-	bool transparent;
-
-	Color *background_color;
-
-	// The widget where we draw.  NULL if we're windowless
-	GtkWidget *widget;
-
-	// Here we keep a reference to the normal drawing area when
-	// we are in fullscreen mode.
-	GtkWidget *widget_normal;
-
-	// We set widget to this whenever we are in fullscreen mode.
-	GtkWidget *widget_fullscreen;
-
-	// This currently can only be a canvas.
-	UIElement *toplevel;
-
-	// the list of elements (from most deeply nested to the
-	// toplevel) we've most recently sent a mouse event to.
-	List *input_list;
-
-	// is the mouse captured?  if it is, it'll be by the first element in input_list.
-	bool captured;
-	UIElement *pendingCapture;
-	bool pendingReleaseCapture;
-
-	// are we currently emitting a mouse event?
-	bool emittingMouseEvent;
-
-	// the currently shown cursor
-	MouseCursor cursor;
-
-	// Fullscreen support
-	bool full_screen;
-	Canvas *full_screen_message;
-	char *source_location;
-	// Should be set to true only while executing MouseLeftButtonDown, 
-	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
-	bool can_full_screen; 
-
-	void UpdateFullScreen (bool value);
-
-	TimeManager *time_manager;
-
-	int frames;
-
-	GdkEvent *mouse_event;
-
-	MoonlightInvalidateFunc invalidate;
-	void *invalidate_data;
-
-	MoonlightRenderFunc render;
-	void *render_data;
-
-	// Variables for reporting FPS
-	MoonlightFPSReportFunc fps_report;
-	int64_t fps_start;
-	int fps_nframes;
-	void *fps_data;
-
-	// Variables for reporting cache size
-	MoonlightCacheReportFunc cache_report;
-	int64_t cache_size_in_bytes;
-	int cache_size_ticker;
-	void *cache_data;
-	int cache_size_multiplier;
-	
-	void ConnectEvents (bool realization_signals);
-	void Realloc ();
-	void InitializeWidget (GtkWidget *widget);
-	void DestroyWidget (GtkWidget *widget);
-	void ShowFullScreenMessage ();
-	void HideFullScreenMessage ();
-
-	void CreateSimilarSurface ();
-
-	static Key gdk_keyval_to_key (guint keyval);
-
-	static void render_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void widget_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
-	static void widget_destroyed (GtkWidget *w, gpointer data);
-
-	void FindFirstCommonElement (List *l1, int *index1,
-				     List *l2, int *index2);
-	bool EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *event, int end_idx);
-	void UpdateCursorFromInputList ();
-	bool HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit,
-			       GdkEvent *event);
-	void PerformCapture (UIElement *capture);
-	void PerformReleaseCapture ();
 };
 
 /* for hit testing */
