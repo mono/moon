@@ -198,8 +198,8 @@ namespace MoonlightTests {
 					continue;
 				}
 
-				if (line.Contains ("http://jscratch/test/jtr.js")) {
-					built.AppendLine (line.Replace ("http://jscratch/test/jtr.js", "jtr.js"));
+				if (line.Contains ("http://localhost/test/jtr.js")) {
+					built.AppendLine (line.Replace ("http://localhost/test/jtr.js", "jtr.js"));
 					continue;
 				}
 

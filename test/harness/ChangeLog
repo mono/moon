@@ -1,3 +1,9 @@
+2008-04-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* test-runner/HtmlTest.cs: Updated to change
+	http://localhost/test/jtr.js to jtr.js. Updated to reflect changes
+	made to the test input files.
+
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* masters/test-yuv-converterMaster.png: Added yuv converter test,
