@@ -34,13 +34,21 @@
 #include <nsIDOMEventListener.h>
 
 #ifdef DEBUG
+#define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)" G_STRLOC, x)
 #define d(x) x
 #else
+#define DEBUG_WARN_NOTIMPLEMENTED(x)
 #define d(x)
 #endif
 
-#define DEBUG_SCRIPTABLE 0
+// debug scriptable object
+#define ds(x)
+
+// debug javascript
 #define DEBUG_JAVASCRIPT 1
+
+// warnings
+#define w(x) x
 
 #define IS_METHOD(id)         (((id) & 0x8000) != 0)
 #define IS_PROPERTY(id)       (((id) & 0x4000) != 0)
@@ -327,10 +335,10 @@ variant_to_value (const NPVariant *v, Value **result)
 		*result = new Value (NPVARIANT_TO_BOOLEAN (*v));
 		break;
 	case NPVariantType_Int32:
-		*result = new Value ((gint32)NPVARIANT_TO_INT32(*v));
+		*result = new Value ((int32_t) NPVARIANT_TO_INT32 (*v));
 		break;
 	case NPVariantType_Double:
-		*result = new Value (NPVARIANT_TO_DOUBLE(*v));
+		*result = new Value (NPVARIANT_TO_DOUBLE (*v));
 		break;
 	case NPVariantType_String:
 		*result = new Value (STR_FROM_VARIANT (*v));
@@ -346,7 +354,7 @@ variant_to_value (const NPVariant *v, Value **result)
 	case NPVariantType_Object:
 		// This should never happen, we should do type checking of the
 		// arguments before this point and refuse arguments we don't understand.
-		g_warning ("Got invalid value from javascript.\n");
+		d(printf ("Got invalid value from javascript.\n"));
 		*result = new Value ();
 		break;
 	}
@@ -690,41 +698,33 @@ MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *resu
 		case ImageError:       string_to_npvariant ("ImageError", result); break;
 		}
 		return true;
-
 	case MoonId_ErrorMessage:
 		string_to_npvariant (args->error_message, result);
 		return true;
-
 	case MoonId_LineNumber:
 		if (args->error_type == ParserError) {
 			INT32_TO_NPVARIANT (((ParserErrorEventArgs*)args)->line_number, *result);
-		}
-		else {
+		} else {
 			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.lineNumber");
 			INT32_TO_NPVARIANT (0, *result);
 		}
 		return true;
-
 	case MoonId_CharPosition:
 		if (args->error_type == ParserError) {
 			INT32_TO_NPVARIANT (((ParserErrorEventArgs*)args)->char_position, *result);
-		}
-		else {
+		} else {
 			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.charPosition");
 			INT32_TO_NPVARIANT (0, *result);
 		}
 		return true;
-
 	case MoonId_MethodName:
 		DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.methodName");
 		INT32_TO_NPVARIANT (0, *result);
 		return true;
-
 	case MoonId_XamlFile:
 		if (args->error_type == ParserError) {
 			string_to_npvariant (((ParserErrorEventArgs*)args)->xaml_file, result);
-		}
-		else {
+		} else {
 			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.xamlFile");
 			NULL_TO_NPVARIANT (*result);
 		}
@@ -2124,10 +2124,6 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 	return p;
 }
 
-static const char *variant_types[] = {
-	"void", "null", "bool", "int32", "double", "string", "object"
-};
-
 static bool
 _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop, const NPVariant *value)
 {
@@ -2165,7 +2161,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 		default:
 			d(printf ("unhandled object type %d - %s in do.set_property\n",
 				  obj->moonlight_type, Type::Find (obj->moonlight_type)->name));
-			DEBUG_WARN_NOTIMPLEMENTED ("unhandled object type in do.set_property");
+			w(printf ("unhandled object type in do.set_property"));
 			return true;
 		}
 	} else {
@@ -2309,8 +2305,6 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 	DependencyObject *dob = GetDependencyObject ();
 	DependencyProperty *prop;
-	const char *event_name;
-	int event_id;
 	
 	if (!strname)
 		return false;
@@ -2327,10 +2321,14 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 	}
 	
 	// turns out that on Silverlight you can't set regular events as properties.
-#if false
+#if 0
 	// it wasn't a dependency property.  let's see if it's an
 	// event
+	const char *event_name;
+	
 	if ((event_name = map_moon_id_to_event_name (id))) {
+		int event_id;
+		
 		if ((event_id = dob->GetType ()->LookupEvent (event_name)) != -1) {
 			// If we have a handler, remove it.
 			ClearEventProxy (event_id);
@@ -2367,7 +2365,6 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 		return true;
 #endif
-
 	case MoonId_Equals: {
 		if (argCount != 1 || !NPVARIANT_IS_OBJECT (args[0]))
 			THROW_JS_EXCEPTION ("equals");
@@ -3616,9 +3613,9 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	if (!prop)
 		return MoonlightObject::GetProperty (id, name, result);
 
-#if DEBUG_SCRIPTABLE
+#if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	DEBUGMSG ("***************** getting scriptable object property %s", strname);
+	printf ("getting scriptable object property %s", strname);
 	NPN_MemFree (strname);
 #endif
 
@@ -3634,35 +3631,33 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 bool
 MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
+	ScriptableProperty *prop;
+	ScriptableEvent *event;
+	Value *v;
+	
 	// first we try the property hash
-	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (properties, name);
-	if (prop) {
-#if DEBUG_SCRIPTABLE
+	if ((prop = (ScriptableProperty *) g_hash_table_lookup (properties, name))) {
+#if ds(!)0
 		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-		DEBUGMSG ("***************** setting scriptable object property %s", strname);
+		printf ("setting scriptable object property %s", strname);
 		NPN_MemFree (strname);
 #endif
-
-		Value *v;
-
+		
 		variant_to_value (value, &v);
-
 		setprop (managed_scriptable, prop->property_handle, v);
-
 		delete v;
-
+		
 		return true;
 	}
 	
 	// if that fails, look for the event of that name
-	ScriptableEvent *event = (ScriptableEvent*)g_hash_table_lookup (events, name);
-	if (event) {
-#if DEBUG_SCRIPTABLE
+	if ((event = (ScriptableEvent *) g_hash_table_lookup (events, name))) {
+#if ds(!)0
 		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-		DEBUGMSG ("***************** adding scriptable object event %s", strname);
+		printf ("adding scriptable object event %s", strname);
 		NPN_MemFree (strname);
 #endif
-
+		
 		if (NPVARIANT_IS_OBJECT (*value)) {
 			NPObject *cb_obj = NPVARIANT_TO_OBJECT (*value);
 
@@ -3672,6 +3667,7 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 		} else {
 			DEBUG_WARN_NOTIMPLEMENTED ("scriptableobject.register_event (non-object)");
 		}
+		
 		return true;
 	}
 
@@ -3690,29 +3686,28 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 					 NPVariant *result)
 {
 	ScriptableMethod *method = (ScriptableMethod*)g_hash_table_lookup (methods, name);
+	Value rv, **vargs = NULL;
+	uint32_t i;
+	
 	if (!method)
 		return MoonlightObject::Invoke (id, name, args, argCount, result);
 
-#if DEBUG_SCRIPTABLE
+#if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	DEBUGMSG ("***************** invoking scriptable object method %s", strname);
+	printf ("invoking scriptable object method %s", strname);
 	NPN_MemFree (strname);
 #endif
-
-	Value rv;
-
-	Value** vargs = NULL;
-
+	
 	if (argCount > 0) {
 		vargs = new Value*[argCount];
-		for (uint32_t i = 0; i < argCount; i++)
+		for (i = 0; i < argCount; i++)
 			variant_to_value (&args[i], &vargs[i]);
 	}
 	
 	invoke (managed_scriptable, method->method_handle, vargs, argCount, &rv);
 	
 	if (argCount > 0) {
-		for (uint32_t i = 0; i < argCount; i++)
+		for (i = 0; i < argCount; i++)
 			delete vargs[i];
 		
 		delete [] vargs;
@@ -3754,10 +3749,9 @@ moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scr
 	obj->getprop = getprop_func;
 	obj->addevent = addevent_func;
 	obj->removeevent = removeevent_func;
-
-#if DEBUG_SCRIPTABLE
-	DEBUGMSG ("creating scriptable object wrapper => %p", obj);
-#endif
+	
+	ds(printf ("creating scriptable object wrapper => %p", obj));
+	
 	return obj;
 }
 
@@ -3770,16 +3764,14 @@ moonlight_scriptable_object_add_property (PluginInstance *plugin,
 					  bool can_read,
 					  bool can_write)
 {
-#if DEBUG_SCRIPTABLE
-	DEBUGMSG ("adding property named %s to scriptable object %p", property_name, obj);
-#endif
-
+	ds(printf ("adding property named %s to scriptable object %p", property_name, obj));
+	
 	ScriptableProperty *prop = new ScriptableProperty ();
 	prop->property_handle = property_handle;
 	prop->property_type = property_type;
 	prop->can_read = can_read;
 	prop->can_write = can_write;
-
+	
 	g_hash_table_insert (obj->properties, NPID(property_name), prop);
 }
 
@@ -3789,10 +3781,8 @@ moonlight_scriptable_object_add_event (PluginInstance *plugin,
 				       gpointer event_handle,
 				       char *event_name)
 {
-#if DEBUG_SCRIPTABLE
-	DEBUGMSG ("adding event named %s to scriptable object %p", event_name, obj);
-#endif
-
+	ds(printf ("adding event named %s to scriptable object %p", event_name, obj));
+	
 	ScriptableEvent *event = new ScriptableEvent ();
 	event->event_handle = event_handle;
 
@@ -3809,10 +3799,8 @@ moonlight_scriptable_object_add_method (PluginInstance *plugin,
 					int parameter_count)
 
 {
-#if DEBUG_SCRIPTABLE
-	DEBUGMSG ("adding method named %s (return type = %d) to scriptable object %p", method_name, method_return_type, obj);
-#endif
-
+	ds(printf ("adding method named %s (return type = %d) to scriptable object %p", method_name, method_return_type, obj));
+	
 	ScriptableMethod *method = new ScriptableMethod ();
 	method->method_handle = method_handle;
 	method->method_return_type = method_return_type;
@@ -3828,17 +3816,13 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 				      char *name,
 				      MoonlightScriptableObjectObject *obj)
 {
-#if DEBUG_SCRIPTABLE
-	DEBUGMSG ("registering scriptable object '%s' => %p", name, obj);
-#endif
-
+	ds(printf ("registering scriptable object '%s' => %p", name, obj));
+	
 	MoonlightContentObject *content = (MoonlightContentObject *) plugin->getRootObject ()->content;
 	
 	g_hash_table_insert (content->registered_scriptable_objects, NPID (name), obj);
 	
-#if DEBUG_SCRIPTABLE
-	DEBUGMSG (" => done");
-#endif
+	ds(printf (" => done"));
 }
 
 void
@@ -4005,14 +3989,14 @@ get_dom_document (NPP npp)
 	nsCOMPtr<nsIDOMWindow> dom_window;
 	NPN_GetValue (npp, NPNVDOMWindow, NS_STATIC_CAST(nsIDOMWindow **, getter_AddRefs(dom_window)));
 	if (!dom_window) {
-		DEBUGMSG ("No DOM window available\n");
+		d(printf ("No DOM window available\n"));
 		return NULL;
 	}
 
 	nsCOMPtr<nsIDOMDocument> dom_document;
 	dom_window->GetDocument (getter_AddRefs (dom_document));
 	if (dom_document == nsnull) {
-		DEBUGMSG ("No DOM document available\n");
+		d(printf ("No DOM document available\n"));
 		return NULL;
 	}
 
@@ -4107,26 +4091,26 @@ html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, c
 				nsCOMPtr<nsIDOMElement> element;
 				dom_document->GetElementById (ns_id, getter_AddRefs (element));
 				if (element == nsnull) {
-					DEBUGMSG ("Unable to find temp_id element\n");
+					d(printf ("Unable to find temp_id element\n"));
 					return NULL;
 				}
-
+				
 				item = element;
-
+				
 				// reset to it's original empty value
 				NPN_SetProperty (npp, npobj, id_identifier, &npresult);
 			}
 		}
 	}
-
+	
 	nsCOMPtr<nsIDOMEventTarget> target = do_QueryInterface (item);
-
+	
 	DomEventWrapper *wrapper = new DomEventWrapper ();
 	wrapper->callback = cb;
 	wrapper->target = target;
-
+	
 	rv = target->AddEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
-
+	
 	return wrapper;
 }
 

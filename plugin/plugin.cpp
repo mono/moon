@@ -32,6 +32,8 @@
 #define d(x)
 #endif
 
+#define w(x) x
+
 extern guint32 moonlight_flags;
 
 /* gleaned from svn log of the moon module, as well as olive/class/{agclr,agmono,System.Silverlight} */
@@ -1448,8 +1450,8 @@ PluginInstance::getBrowserInformation (char **name, char **version,
 	// FIXME: implement me
 	
 	*userAgent = (char *) NPN_UserAgent (instance);
-	DEBUG_WARN_NOTIMPLEMENTED ("pluginInstance.getBrowserInformation");
-
+	w(printf ("pluginInstance.getBrowserInformation"));
+	
 	*name = (char *) "Foo!";
 	*version = (char *) "Foo!";
 	*platform = (char *) "Foo!";

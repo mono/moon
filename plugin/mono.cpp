@@ -26,10 +26,16 @@ G_BEGIN_DECLS
 #include <mono/metadata/mono-config.h>
 G_END_DECLS
 
+#ifdef DEBUG
+#define d(x) x
+#else
+#define d(x)
+#endif
+
 static MonoDomain   *moon_domain;
 static MonoAssembly *moon_boot_assembly;
 static char *boot_assembly;
-static bool moon_vm_loaded = FALSE;
+static bool moon_vm_loaded = false;
 
 // Methods
 static MonoMethod   *moon_load_xaml;
@@ -40,7 +46,7 @@ vm_get_method_from_name (const char *name)
 	MonoMethod *method;
 	MonoMethodDesc *desc;
 
-	desc = mono_method_desc_new (name, TRUE);
+	desc = mono_method_desc_new (name, true);
 	method = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
 	mono_method_desc_free (desc);
 
@@ -53,52 +59,57 @@ vm_is_loaded (void)
 	return moon_vm_loaded;
 }
 
-gboolean
+bool
 vm_init (void)
 {
-	gboolean result = FALSE;
-
+	bool result = false;
+	
 	if (moon_vm_loaded)
-		return TRUE;
-
+		return true;
+	
 #if PLUGIN_INSTALL
-        Dl_info dlinfo;
-        if (dladdr((void *) &vm_init, &dlinfo) == 0) {
-                fprintf (stderr, "Unable to find the location of libmoonplugin %s\n", dlerror ());
-                result = FALSE;
-        }
-	boot_assembly = g_build_filename (g_path_get_dirname(dlinfo.dli_fname), "moonlight.exe", NULL);
+	Dl_info dlinfo;
+	char *dirname;
+	
+	if (dladdr ((void *) &vm_init, &dlinfo) == 0) {
+		fprintf (stderr, "Unable to find the location of libmoonplugin %s\n", dlerror ());
+		return false;
+	}
+	
+	dirname = g_path_get_dirname (dlinfo.dli_fname);
+	boot_assembly = g_build_filename (dirname, "moonlight.exe", NULL);
+	g_free (dirname);
 #else
 	boot_assembly = g_build_filename (PLUGIN_DIR, "plugin", "moonlight.exe", NULL);
 #endif
-	printf ("The file is %s\n", boot_assembly);
-
+	
+	d(printf ("The file is %s\n", boot_assembly));
+	
 	mono_config_parse (NULL);
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
 	moon_domain = mono_jit_init_version (boot_assembly, "moonlight");
 	moon_boot_assembly = mono_domain_assembly_open (moon_domain, boot_assembly);
-	if (moon_boot_assembly){
+	
+	if (moon_boot_assembly) {
 		char *argv [2];
-
+		
 		argv [0] = boot_assembly;
 		argv [1] = NULL;
-
+		
 		mono_jit_exec (moon_domain, moon_boot_assembly, 1, argv);
-
+		
 		moon_load_xaml = vm_get_method_from_name ("Moonlight.Loader:CreateXamlLoader");
-
-		if (moon_load_xaml != NULL) {
-			result = TRUE;
-		}
+		
+		if (moon_load_xaml != NULL)
+			result = true;
 	}
-	DEBUGMSG ("Mono Runtime: %s", result ? "OK" : "Failed");
-
-	moon_vm_loaded = TRUE;
-
-#if DEBUG
-	enable_vm_stack_trace ();
-#endif
-
+	
+	d(printf ("Mono Runtime: %s", result ? "OK" : "Failed"));
+	
+	moon_vm_loaded = true;
+	
+	d(enable_vm_stack_trace ());
+	
 	return result;
 }
 
@@ -133,7 +144,7 @@ vm_xaml_loader_new (XamlLoader* native_loader, gpointer plugin, gpointer surface
 	params [3] = file ? mono_string_new (moon_domain, file) : NULL;
 	params [4] = str ? mono_string_new (moon_domain, str) : NULL;
 	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, NULL);
-	return GUINT_TO_POINTER (mono_gchandle_new (loader, FALSE));
+	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
 }
 
 void

@@ -66,7 +66,7 @@
 #endif
 
 extern "C" {
-  char* LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void);
+  char *LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void);
   NPError LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value);
 #ifdef XP_UNIX
   NPError OSCALL LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs *plugin_funcs);
@@ -80,18 +80,10 @@ extern "C" {
 #define LOADER_RENAMED_NAME(x) #x
 #endif
 
-#ifdef DEBUG
 #ifdef G_LOG_DOMAIN
 #undef G_LOG_DOMAIN
 #endif
+
 #define G_LOG_DOMAIN "Moonlight"
-#define DEBUGMSG(x...) g_message (x)
-#define DEBUGWARN(x...) g_warning (x)
-#define DEBUG_WARN_NOTIMPLEMENTED(msg) g_warning ("functionality not yet implemented (%s):" G_STRLOC, msg)
-#else
-#define DEBUGMSG(x...)
-#define DEBUGWARN(x...)
-#define DEBUG_WARN_NOTIMPLEMENTED(msg)
-#endif
 
 #endif /* PLUGIN_CONFIG */
