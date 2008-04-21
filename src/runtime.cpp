@@ -1706,8 +1706,10 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 
 		// clear out the input list so we emit the right
 		// events when the pointer reenters the control.
-		delete s->input_list;
-		s->input_list = new List();
+		if (!s->emittingMouseEvent) {
+			delete s->input_list;
+			s->input_list = new List();
+		}
 	}
 
 	return handled;
