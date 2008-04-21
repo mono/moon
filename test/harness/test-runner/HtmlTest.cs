@@ -203,6 +203,11 @@ namespace MoonlightTests {
 					continue;
 				}
 
+				if (line.Contains ("http://localhost/test/jtr.js")) {
+					built.AppendLine (line.Replace ("http://localhost/test/jtr.js", "jtr.js"));
+					continue;
+				}
+
 				if (line.Contains ("aghostDrt.js")) {
 					built.AppendLine (line.Replace ("aghostDrt.js", "aghostDRT.js"));
 					continue;
