@@ -154,20 +154,21 @@ NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 	NPError err = NPERR_NO_ERROR;
 
 	switch (variable) {
-		case NPPVpluginNameString:
-			*((char **)result) = (char *) PLUGIN_NAME;
-			break;
-		case NPPVpluginDescriptionString:
-			*((char **)result) = (char *) PLUGIN_DESCRIPTION;
-			break;
-		default:
-			if (instance == NULL)
-				return NPERR_INVALID_INSTANCE_ERROR;
-
-			PluginInstance *plugin = (PluginInstance *) instance->pdata;
-			err = plugin->GetValue (variable, result);
+	case NPPVpluginNameString:
+		*((char **)result) = (char *) PLUGIN_NAME;
+		break;
+	case NPPVpluginDescriptionString:
+		*((char **)result) = (char *) PLUGIN_DESCRIPTION;
+		break;
+	default:
+		if (instance == NULL)
+			return NPERR_INVALID_INSTANCE_ERROR;
+		
+		PluginInstance *plugin = (PluginInstance *) instance->pdata;
+		err = plugin->GetValue (variable, result);
+		break;
 	}
-
+	
 	return err;
 }
 

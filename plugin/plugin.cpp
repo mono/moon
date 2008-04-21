@@ -374,9 +374,7 @@ PluginInstance::~PluginInstance ()
 		NPN_ReleaseObject ((NPObject*)rootobject);
 
 	g_free (background);
-
 	delete xaml_loader;
-	
 	g_free (source);
 
 	if (source_idle)
@@ -396,7 +394,7 @@ PluginInstance::~PluginInstance ()
 
 	if (plugin_unload)
 		plugin_unload (this);
-		
+	
 #if DEBUG
 	delete moon_sources;
 #endif
