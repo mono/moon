@@ -166,7 +166,7 @@ class PluginInstance
 	void getBrowserInformation (char **name, char **version,
 				    char **platform, char **userAgent,
 				    bool *cookieEnabled);
-	bool IsSilverlight2 ();
+	bool IsSilverlight2 () { return silverlight2; } 
 
 	GSList *timers;
 };
