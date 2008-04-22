@@ -16,8 +16,6 @@ class Playlist;
 class MediaSource;
 class SingleMedia;
 
-#include <expat.h>
-
 #include "downloader.h"
 #include "media.h"
 #include "pipeline.h"
@@ -188,11 +186,13 @@ public:
 	bool IsSingleFile () { return is_single_file; }
 };
 
+class ParserInternal;
+
 class PlaylistParser {
 private:
 	Playlist *playlist;
 	PlaylistEntry *current_entry;
-	XML_Parser parser;
+	ParserInternal *internal;
 	IMediaSource *source;
 	MediaElement *element;
 	bool was_playlist;

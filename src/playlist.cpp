@@ -33,8 +33,21 @@
 // warnings
 #define w(x)
 
+class ParserInternal {
+public:
+	XML_Parser parser;
+	ParserInternal () 
+	{
+		parser = XML_ParserCreate (NULL);
+	}
 
-
+	~ParserInternal ()
+	{
+		XML_ParserFree (parser);
+		parser = NULL;
+	}
+};
+	
 /*
  * PlaylistNode
  */
@@ -625,20 +638,20 @@ PlaylistParser::PlaylistParser (MediaElement *element, IMediaSource *source)
 
 	was_playlist = false;
 
-	parser = XML_ParserCreate (NULL);
+	internal = new ParserInternal ();
 	kind_stack = new List ();
 	PushCurrentKind (PlaylistNode::Root);
 
-	XML_SetUserData (parser, this);
-	XML_SetElementHandler (parser, on_start_element, on_end_element);
-	XML_SetCharacterDataHandler (parser, on_text);
+	XML_SetUserData (internal->parser, this);
+	XML_SetElementHandler (internal->parser, on_start_element, on_end_element);
+	XML_SetCharacterDataHandler (internal->parser, on_text);
 }
 
 PlaylistParser::~PlaylistParser ()
 {
 	kind_stack->Clear (true);
 	delete kind_stack;
-	XML_ParserFree (parser);
+	delete internal;
 	if (playlist)
 		playlist->unref ();
 }
@@ -1201,7 +1214,7 @@ PlaylistParser::ParseASX3 ()
 #define BUFFER_SIZE 1024
 
 	for (;;) {
-		buffer = XML_GetBuffer(parser, BUFFER_SIZE);
+		buffer = XML_GetBuffer(internal->parser, BUFFER_SIZE);
 		if (buffer == NULL) {
 			fprintf (stderr, "Could not allocate memory for asx document parsing.\n");
 			return false;
@@ -1213,8 +1226,8 @@ PlaylistParser::ParseASX3 ()
 			return false;
 		}
 		
-		if (!XML_ParseBuffer (parser, bytes_read, bytes_read == 0)) {
-			ParsingError (new ErrorEventArgs (MediaError, 3000, XML_ErrorString (XML_GetErrorCode (parser))));
+		if (!XML_ParseBuffer (internal->parser, bytes_read, bytes_read == 0)) {
+			ParsingError (new ErrorEventArgs (MediaError, 3000, XML_ErrorString (XML_GetErrorCode (internal->parser))));
 			return false;
 		}
 		
@@ -1292,7 +1305,7 @@ PlaylistParser::ParsingError (ErrorEventArgs *args)
 {
 	d(printf ("PlaylistParser::ParsingError (%p)\n", args));
 	
-	XML_StopParser (parser, false);
+	XML_StopParser (internal->parser, false);
 	element->MediaFailed (args);
 }
 
