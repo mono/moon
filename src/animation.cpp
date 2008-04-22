@@ -1729,7 +1729,7 @@ animation_init (void)
 	BeginStoryboard::StoryboardProperty = DependencyObject::Register (Type::BEGINSTORYBOARD, "Storyboard",	Type::STORYBOARD);
 
 	/* KeyFrame properties */
- 	KeyFrame::KeyTimeProperty = DependencyObject::Register (Type::KEYFRAME, "KeyTime", new Value(KeyTime::Uniform));
+ 	KeyFrame::KeyTimeProperty = DependencyObject::Register (Type::KEYFRAME, "KeyTime", Type::KEYTIME);
  	DoubleKeyFrame::ValueProperty = DependencyObject::RegisterNullable (Type::DOUBLEKEYFRAME, "Value", Type::DOUBLE);
  	PointKeyFrame::ValueProperty = DependencyObject::RegisterNullable (Type::POINTKEYFRAME, "Value", Type::POINT);
  	ColorKeyFrame::ValueProperty = DependencyObject::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);

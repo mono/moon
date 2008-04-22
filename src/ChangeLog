@@ -1,3 +1,10 @@
+2008-04-22  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Don't initialize the KeyTime for KeyFrame to a default
+	value, make it be NULL by default. This currently causes a segfault in
+	the just-added test-animation-invalid-keyframe-keytime.xaml which is
+	fine.
+
 2008-04-22  Fernando Herrera  <fherrera@novell.com>
 
 	* pipeline.h:
