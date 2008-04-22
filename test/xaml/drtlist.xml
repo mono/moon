@@ -756,4 +756,9 @@
          inputFile="test-canvas-no-size.html"
          masterFile10="../harness/masters/test-canvas-no-sizeMaster.png"
    />
+   <Test id="175"
+	 inputFile="test-shape-line-stretch5.xaml"
+	 masterFile10="../harness/masters/test-shape-line-stretch5Master.png"
+         categories="stretch"
+   />
 </DRTList>

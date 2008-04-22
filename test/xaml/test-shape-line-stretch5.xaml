@@ -1,0 +1,6 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" Width="300" Height="200">
+	<Rectangle Width="300" Height="100" Canvas.Left="0" Canvas.Top="0" Fill="DarkBlue" />
+	<Line Stroke="Red" StrokeThickness="10" Width="100" Height="200" Canvas.Left="0" X1="0" Y1="0" X2="10" Y2="10" Stretch="Fill"/>
+	<Line Stroke="Red" StrokeThickness="10" Width="100" Height="200" Canvas.Left="100" X1="0" Y1="0" X2="10" Y2="10" Stretch="Uniform"/>
+	<Line Stroke="Red" StrokeThickness="10" Width="100" Height="200" Canvas.Left="200" X1="0" Y1="0" X2="10" Y2="10" Stretch="UniformToFill"/>
+</Canvas>
