@@ -37,18 +37,12 @@ rating:4
 site:E-commerce Catalog
 url:http://www.flowers-for-you.com.my/catalog2.aspx
 rating:0
- * Crashes firefox Bug 375215
  * Audio works. No video
 
 site:Festive Greetings
 url:http://www.mason-zimbler.com/festivegreetings
 rating:4
  * Works!
-
-site:Float Menu
-url:http://ptstuido.512j.com/obj/Default.html
-rating:-1
- * Site URL broken
 
 site:Glyph Map
 url:http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx
@@ -64,13 +58,13 @@ rating:4
 
 site:Halo 3
 url:http://halo3.msn.com/videos.aspx
-rating:0
- * Not detecting Moonlight if firebug not installed. Bug 346280
+rating:4
+ * Works
 
 site:HHH Comic Archive
 url:http://www.microsoft.com/heroeshappenhere/comicviewer/default.html
-rating:0
- * Gray canvas (background) flashes between transitions Bug 375275
+rating:4
+ * Works
  * Seems to have something to do with Visibility=Collapsed set on Images 
 
 site:Ink Journal
@@ -98,7 +92,7 @@ rating:3
 
 site:Matrix Digital Rain
 url:http://blogs.sqlxml.org/wpfe/matrix
-rating:-1
+rating:0
  * Nothing shows in the browser, with this error in the JS Console: \n Error: wpfeControl1Host is not defined Source File: \n http://blogs.sqlxml.org/wpfe/matrix/ Line: 26
  * This is actually broken javascript which relies on IE exposing element id's as properties of the page.
 
@@ -133,10 +127,8 @@ rating:3
 
 site:Page Turn
 url:http://silverlight.net/samples/1.0/Page-Turn/default.html
-rating:2
- * Can't turn page Bug 375228
- * cannot annotate a page Bug 375229
- * only right hand page appears Bug 375227
+rating:3
+ * First page has a bunch of lines on it.
 
 site:Photo Carousel (SL 2.0)
 url:http://www.nikhilk.net/Prototypes/PhotoCarousel
@@ -158,14 +150,13 @@ rating:-1
 
 site:Picture-in-picture screen cast
 url:http://blogs.msdn.com/synergist/archive/2007/07/30/groove-and-virtual-earth.aspx
-rating:2
- * Playback controls don't pop up at bottom Bug 351580
- * video is sluggish, tinted blue Bug 375232
+rating:4
+ * Works!
 
 site:Poker
 url:http://home.people.net.au/~chriso/poker/poker.html
-rating:1
- * Audio doens't play Bug 375234
+rating:3
+ * Audio doesn't play Bug 375234
 
 site:Popfly
 url:http://www.popfly.com
@@ -196,8 +187,8 @@ rating:4
 
 site:Simon
 url:http://www.vertigo.com/downloads/Simon/
-rating:3
- * Buttons get darker with each push Bug 375261
+rating:4
+ * Works!
 
 site:Sparkleball
 url:http://www.ddjsilverlight.com/sparkleball
