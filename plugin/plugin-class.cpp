@@ -34,7 +34,7 @@
 #include <nsIDOMEventListener.h>
 
 #ifdef DEBUG
-#define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)" G_STRLOC, x)
+#define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
 #define d(x) x
 #else
 #define DEBUG_WARN_NOTIMPLEMENTED(x)
@@ -2161,7 +2161,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 		default:
 			d(printf ("unhandled object type %d - %s in do.set_property\n",
 				  obj->moonlight_type, Type::Find (obj->moonlight_type)->name));
-			w(printf ("unhandled object type in do.set_property"));
+			w(printf ("unhandled object type in do.set_property\n"));
 			return true;
 		}
 	} else {
@@ -2199,11 +2199,11 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			
 			return true;
 		} else if (NPVARIANT_IS_VOID (*value)) {
-			d(printf ("unhandled variant type VOID in do.set_property for (%s::%s)",
+			d(printf ("unhandled variant type VOID in do.set_property for (%s::%s)\n",
 				  dob->GetTypeName (), prop->name));
 			return true;
 		} else {
-			d(printf ("unhandled variant type in do.set_property for (%s::%s)",
+			d(printf ("unhandled variant type in do.set_property for (%s::%s)\n",
 				  dob->GetTypeName (), prop->name));
 			return true;
 		}
@@ -3616,7 +3616,7 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 
 #if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	printf ("getting scriptable object property %s", strname);
+	printf ("getting scriptable object property %s\n", strname);
 	NPN_MemFree (strname);
 #endif
 
@@ -3640,7 +3640,7 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	if ((prop = (ScriptableProperty *) g_hash_table_lookup (properties, name))) {
 #if ds(!)0
 		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-		printf ("setting scriptable object property %s", strname);
+		printf ("setting scriptable object property %s\n", strname);
 		NPN_MemFree (strname);
 #endif
 		
@@ -3655,7 +3655,7 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	if ((event = (ScriptableEvent *) g_hash_table_lookup (events, name))) {
 #if ds(!)0
 		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-		printf ("adding scriptable object event %s", strname);
+		printf ("adding scriptable object event %s\n", strname);
 		NPN_MemFree (strname);
 #endif
 		
@@ -3695,7 +3695,7 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 
 #if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	printf ("invoking scriptable object method %s", strname);
+	printf ("invoking scriptable object method %s\n", strname);
 	NPN_MemFree (strname);
 #endif
 	
@@ -3751,7 +3751,7 @@ moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scr
 	obj->addevent = addevent_func;
 	obj->removeevent = removeevent_func;
 	
-	ds(printf ("creating scriptable object wrapper => %p", obj));
+	ds(printf ("creating scriptable object wrapper => %p\n", obj));
 	
 	return obj;
 }
@@ -3765,7 +3765,7 @@ moonlight_scriptable_object_add_property (PluginInstance *plugin,
 					  bool can_read,
 					  bool can_write)
 {
-	ds(printf ("adding property named %s to scriptable object %p", property_name, obj));
+	ds(printf ("adding property named %s to scriptable object %p\n", property_name, obj));
 	
 	ScriptableProperty *prop = new ScriptableProperty ();
 	prop->property_handle = property_handle;
@@ -3782,7 +3782,7 @@ moonlight_scriptable_object_add_event (PluginInstance *plugin,
 				       gpointer event_handle,
 				       char *event_name)
 {
-	ds(printf ("adding event named %s to scriptable object %p", event_name, obj));
+	ds(printf ("adding event named %s to scriptable object %p\n", event_name, obj));
 	
 	ScriptableEvent *event = new ScriptableEvent ();
 	event->event_handle = event_handle;
@@ -3800,7 +3800,7 @@ moonlight_scriptable_object_add_method (PluginInstance *plugin,
 					int parameter_count)
 
 {
-	ds(printf ("adding method named %s (return type = %d) to scriptable object %p", method_name, method_return_type, obj));
+	ds(printf ("adding method named %s (return type = %d) to scriptable object %p\n", method_name, method_return_type, obj));
 	
 	ScriptableMethod *method = new ScriptableMethod ();
 	method->method_handle = method_handle;
@@ -3817,13 +3817,13 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 				      char *name,
 				      MoonlightScriptableObjectObject *obj)
 {
-	ds(printf ("registering scriptable object '%s' => %p", name, obj));
+	ds(printf ("registering scriptable object '%s' => %p\n", name, obj));
 	
 	MoonlightContentObject *content = (MoonlightContentObject *) plugin->getRootObject ()->content;
 	
 	g_hash_table_insert (content->registered_scriptable_objects, NPID (name), obj);
 	
-	ds(printf (" => done"));
+	ds(printf (" => done\n"));
 }
 
 void
