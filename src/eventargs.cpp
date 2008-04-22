@@ -107,14 +107,13 @@ StylusPointCollection*
 MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 {
 	StylusPointCollection *points = new StylusPointCollection ();
-
-	double x, y;
 	double pressure;
-
+	double x, y;
+	
 	GetPosition (ink_presenter, &x, &y);
-	if (!gdk_event_get_axis (event, GDK_AXIS_PRESSURE, &pressure))
+	if (!((GdkEventMotion *) event)->device || !gdk_event_get_axis (event, GDK_AXIS_PRESSURE, &pressure))
 		pressure = 0.0;
-
+	
 	StylusPoint *point = new StylusPoint ();
 	point->SetValue (StylusPoint::XProperty, Value(x));
 	point->SetValue (StylusPoint::YProperty, Value(y));
