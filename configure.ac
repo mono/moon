@@ -334,19 +334,32 @@ if test -z $mozilla_nss; then
    AC_MSG_ERROR([You need to install the Mozilla NSS development package.])
 fi
 
-AC_MSG_CHECKING(Mozilla XPCOM pkg-config module name)
-mozilla_xpcom_pcs="xpcom mozilla-xpcom firefox-xpcom xulrunner-xpcom"
-for pc in $mozilla_xpcom_pcs; do
+AC_MSG_CHECKING(Mozilla libxul-unstable)
+if pkg-config libxul-unstable; then
+   AC_MSG_RESULT(found)
+   HAVE_LIBXUL_UNSTABLE=yes
+   mozilla_xpcom="libxul-unstable"
+else
+   HAVE_LIBXUL_UNSTABLE=no
+   AC_MSG_CHECKING(Mozilla XPCOM pkg-config module name)
+   mozilla_xpcom_pcs="xpcom mozilla-xpcom firefox-xpcom xulrunner-xpcom"
+   for pc in $mozilla_xpcom_pcs; do
 	if $PKG_CONFIG --exists $pc; then
 		AC_MSG_RESULT($pc)
 		mozilla_xpcom=$pc
 		break;
 	fi
-done
+   done
+fi
 
 if test -z $mozilla_xpcom; then
-   AC_MSG_ERROR([You need to install the Mozilla XPCOM development package.])
+   AC_MSG_ERROR([You need to install the Mozilla XPCOM development packages.]) 
 fi
+
+if test $HAVE_LIBXUL_UNSTABLE = yes; then
+   AC_DEFINE(HAVE_LIBXUL_UNSTABLE, 1, [libxul support])
+fi
+
 
 AC_MSG_CHECKING(Mozilla PLUGIN pkg-config module name)
 mozilla_plugin_pcs="plugin mozilla-plugin firefox-plugin xulrunner-plugin"

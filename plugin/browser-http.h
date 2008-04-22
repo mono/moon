@@ -33,8 +33,13 @@
 #include <nsIUploadChannel.h>
 
 // unfrozen apis
+#if HAVE_LIBXUL_UNSTABLE
+#include <nsNetError.h>
+#include <nsIStorageStream.h>
+#else
 #include <necko/nsNetError.h>
 #include <xpcom/nsIStorageStream.h>
+#endif
 
 typedef void (* HttpHeaderHandler) (const char *name, const char *value);
 

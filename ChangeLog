@@ -1,3 +1,10 @@
+2008-04-22  Larry Ewing  <lewing@novell.com>
+
+	* configure.ac: new checks for firefox3/libxul1.9. Define
+	HAVE_LIBXUL_UNSTABLE in the ff3 case.
+
+	Get the build working under firefox3 and opensuse 11.
+	
 2008-04-17  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Only build what we actually need when building

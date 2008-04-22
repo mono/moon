@@ -17,8 +17,12 @@
 #include <string.h>
 #include <config.h>
 
-#define XP_UNIX
+#if HAVE_LIBXUL_UNSTABLE
 #define MOZ_X11
+#else
+#define MOZ_X11
+#define XP_UNIX
+#endif
 
 #define Region _XxRegion
 #define Visual _XxVisual

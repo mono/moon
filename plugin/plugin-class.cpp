@@ -3998,7 +3998,7 @@ static nsCOMPtr<nsIDOMDocument>
 get_dom_document (NPP npp)
 {
 	nsCOMPtr<nsIDOMWindow> dom_window;
-	NPN_GetValue (npp, NPNVDOMWindow, NS_STATIC_CAST(nsIDOMWindow **, getter_AddRefs(dom_window)));
+	NPN_GetValue (npp, NPNVDOMWindow, (nsIDOMWindow **)(getter_AddRefs(dom_window)));
 	if (!dom_window) {
 		d(printf ("No DOM window available\n"));
 		return NULL;
@@ -4081,7 +4081,7 @@ html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, c
 		NPN_GetValue (npp, NPNVWindowNPObject, &window);
 
 		if (npobj == window) {
-			NPN_GetValue (npp, NPNVDOMWindow, NS_STATIC_CAST (nsISupports **, getter_AddRefs (item)));
+			NPN_GetValue (npp, NPNVDOMWindow, (nsISupports **)(getter_AddRefs (item)));
 		} else {
 			NPVariant docresult;
 			NPN_GetProperty (npp, window, document_identifier, &docresult);

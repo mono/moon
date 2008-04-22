@@ -21,7 +21,6 @@ EXTRA_DIST=moon.pc.in
 test-plugin:
 	$(MAKE) $(AM_MAKEFLAGS) -C plugin test-plugin
 
-
 run-tests:
 	$(MAKE) $(AM_MAKEFLAGS) -C test run-tests
 
