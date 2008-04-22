@@ -761,4 +761,8 @@
 	 masterFile10="../harness/masters/test-shape-line-stretch5Master.png"
          categories="stretch"
    />
+   <Test id="176"
+         inputFile="test-animation-invalid-keyframe-keytime.xaml"
+         masterFile10="../harness/masters/test-animation-invalid-keyframe-keytimeMaster.png"
+   />
 </DRTList>
