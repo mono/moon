@@ -1,3 +1,10 @@
+2008-04-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* shape.cpp (Shape::DoDraw): Cast extents to int for
+	AddToCacheSizeCounter().
+	(Shape::IsCandidateForCaching): Same for
+	VerifyWithCacheSizeCounter().
+
 2008-04-22  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: Safely allow now the KeyTime property to be nullable.

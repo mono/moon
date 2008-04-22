@@ -407,7 +407,7 @@ Shape::IsCandidateForCaching (void)
 	// This is not 100% correct check -- the actual surface size might be
 	// a tiny little bit larger. It's not a problem though if we go few
 	// bytes above the cache limit.
-	if (! GetSurface ()->VerifyWithCacheSizeCounter (bounds.w, bounds.h))
+	if (!GetSurface ()->VerifyWithCacheSizeCounter ((int) bounds.w, (int) bounds.h))
 		return FALSE;
 
 	// one last line of defense, lets not cache things 
@@ -440,19 +440,19 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		// extents.w, extents.h,
 		// cache_extents.w, cache_extents.h);
 		
-		cached_surface = image_brush_create_similar (cr, (int)cache_extents.w, (int)cache_extents.h);
+		cached_surface = image_brush_create_similar (cr, (int) cache_extents.w, (int) cache_extents.h);
 		cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
 		cached_cr = cairo_create (cached_surface);
 		
 		cairo_set_matrix (cached_cr, &absolute_xform);
 		Clip (cached_cr);
-	
+		
 		ret = DrawShape (cached_cr, do_op);
 		
 		cairo_destroy (cached_cr);
 		
 		// Increase our cache size
-		cached_size = GetSurface ()->AddToCacheSizeCounter (cache_extents.w, cache_extents.h);
+		cached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.w, (int) cache_extents.h);
 	}
 	
 	if (do_op && cached_surface) {
