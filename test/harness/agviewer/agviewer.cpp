@@ -91,9 +91,9 @@ main(int argc, char **argv)
 
 	gtk_widget_set_usize (browser->moz_embed, frame_width, frame_height);
 
+	gtk_window_fullscreen (browser->top_level_window);
 	gtk_widget_show_all (browser->moz_embed);
 	gtk_widget_show_all (GTK_WIDGET (browser->top_level_window));
-	gtk_window_fullscreen (browser->top_level_window);
 
 	gtk_moz_embed_load_url (GTK_MOZ_EMBED (browser->moz_embed), test_path);
 
