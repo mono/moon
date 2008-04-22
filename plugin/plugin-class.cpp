@@ -2838,7 +2838,8 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("begin");
 
-		sb->Begin ();
+		if (! sb->Begin ())
+			THROW_JS_EXCEPTION ("begin");
 
 		VOID_TO_NPVARIANT (*result);
 

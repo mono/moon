@@ -1,3 +1,8 @@
+2008-04-22  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin-class.cpp: Throw js exception if Storyboard failed to start
+	properly.
+
 2008-04-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mono.cpp (vm_init): Don't leak memory in the plugin case. Also
