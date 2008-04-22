@@ -597,6 +597,7 @@ Moonlight configuration:
 
 	Support for 1.0: yes
 	Support for 2.0: $MONO_RUNTIME
+	Support for firefox3: $HAVE_LIBXUL_UNSTABLE
 	Support for ffmpeg: $FFMPEG
 	Support for swscale: $SWSCALE
 	Support for mmx: $HAVE_MMX
