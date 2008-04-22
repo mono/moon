@@ -1,3 +1,9 @@
+2008-04-22  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml2html.cs: Make the html page background color light-gray so that
+	it's a little bit different than canvas background. Makes it easier to
+	ie. generate masters manually and debug things.
+
 2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml2html.cs: Add support to process multiple files and, 

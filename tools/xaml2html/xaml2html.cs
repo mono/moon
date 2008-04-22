@@ -21,7 +21,7 @@ class XamlToHtml {
 						"<title>@TITLE@</title>\n" +
 						"<meta>@META@</meta>\n" +
 						"</head>\n" +
-						"<body>\n" +
+						"<body bgcolor=\"#eeeeee\">\n" +
 						"<object type=\"application/x-silverlight\" data=\"data:,\" id=\"slControl\" width=\"640\" height=\"480\">\n" +
 						"<param name=\"background\" value=\"#FFFFFF\"/>\n" + 
 						"<param name=\"source\" value=\"#xamlContent\"/>\n" +
