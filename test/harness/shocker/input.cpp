@@ -89,8 +89,23 @@ InputProvider::MoveMouse (int x, int y)
 	g_assert (xtest_available);
 	g_assert (display);
 
+#if INTERMEDIATE_MOTION
+	int current_x;
+	int current_y;
+
+	GetCursorPos (current_x, current_y);
+
+	while (current_x != x || current_y != y) {
+		XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, 
+				      current_x -= (current_x != x ? (current_x > x ? 1 : -1) : 0),
+				      current_y -= (current_y != y ? (current_y > y ? 1 : -1) : 0),
+				      CurrentTime);
+		XFlush (display);
+	}
+#else
 	XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, x, y, CurrentTime);
 	XFlush (display);
+#endif 
 }
 
 void

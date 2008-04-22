@@ -1,3 +1,12 @@
+2008-04-22  Larry Ewing  <lewing@novell.com>
+
+	* shocker/image-capture.cpp (acquire_screenshot): add a probably
+	pointless argument to capture in the hope of speeding it up a
+	little.
+
+	* shocker/input.cpp: add a disabled alternate version of MoveMouse
+	that lets MouseInput pass.
+
 2008-04-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* test-runner/HtmlTest.cs: Updated to change

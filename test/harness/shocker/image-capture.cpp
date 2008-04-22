@@ -152,8 +152,8 @@ acquire_screenshot (Window window, int x, int y, int width, int height)
 	// ~2 seconds to take a screenshot
 	// image.defineValue ("x", "screen", "true");
 
-	image.read (id);
 	image.depth (8);
+	image.read (crop, id);
 	image.matte (true);
 	image.crop (crop);
 
