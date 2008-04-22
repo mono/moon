@@ -542,7 +542,7 @@ PluginInstance::SetWindow (NPWindow *window)
 	if (!windowless) {
 		NPN_GetValue (instance, NPNVSupportsXEmbedBool, &xembed_supported);
 		if (!xembed_supported) {
-			d(printf ("*** XEmbed not supported"));
+			d(printf ("*** XEmbed not supported\n"));
 			return NPERR_GENERIC_ERROR;
 		}
 	}
@@ -684,7 +684,7 @@ PluginInstance::CreateWindow ()
 		Color *c = color_from_str (background);
 		
 		if (c == NULL) {
-			d(printf ("error setting background color"));
+			d(printf ("error setting background color\n"));
 			c = new Color (0x00FFFFFF);
 		}
 		
@@ -776,7 +776,7 @@ PluginInstance::JsRunOnload ()
 	const char *expression = onLoad;
 	
 	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVWindowNPObject, &object)) {
-		d(printf ("*** Failed to get window object"));
+		d(printf ("*** Failed to get window object\n"));
 		return false;
 	}
 
@@ -786,18 +786,18 @@ PluginInstance::JsRunOnload ()
 	NPVariant args[1];
 
 	DependencyObject *toplevel = surface->GetToplevel ();
-	d(printf ("In JsRunOnload, toplevel = %p", toplevel));
+	d(printf ("In JsRunOnload, toplevel = %p\n", toplevel));
 	
 	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, toplevel);
 	OBJECT_TO_NPVARIANT ((NPObject*)depobj, args[0]);
 
 	if (NPN_Invoke (instance, object, NPID (expression), args, 1, &result)) {
-		d(printf ("NPN_Invoke succeeded"));
+		d(printf ("NPN_Invoke succeeded\n"));
 		NPN_ReleaseVariantValue (&result);
 		
 		retval = true;
 	} else {
-		d(printf ("NPN_Invoke failed"));
+		d(printf ("NPN_Invoke failed\n"));
 	}
 	
 	NPN_ReleaseVariantValue (&args [0]);
@@ -925,7 +925,7 @@ PluginInstance::ReportException (char *msg, char *details, char **stack_trace, i
 
 	// Get a reference to our element
 	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
-		d(printf ("*** Failed to get plugin element object"));
+		d(printf ("Failed to get plugin element object\n"));
 		return;
 	}
 
@@ -986,7 +986,7 @@ PluginInstance::LoadUrl (char *url, int32_t *length)
 
 	// Get a reference to our element
 	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
-		d(printf ("*** Failed to get plugin element object"));
+		d(printf ("Failed to get plugin element object\n"));
 		return NULL;
 	}
 
@@ -1136,9 +1136,9 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	StreamNotify *notify = STREAM_NOTIFY (notifyData);
 	
 	//if (reason == NPRES_DONE) {
-	//	d(printf ("URL %s downloaded successfully.", url));
+	//	d(printf ("URL %s downloaded successfully.\n", url));
 	//} else {
-	//	d(printf ("Download of URL %s failed: %i (%s)", url, reason,
+	//	d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
 	//		  reason == NPRES_USER_BREAK ? "user break" :
 	//		  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
 	//}
