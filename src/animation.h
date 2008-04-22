@@ -562,6 +562,8 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
+
+	virtual bool Validate ();
 };
 
 
@@ -585,6 +587,8 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
+
+	virtual bool Validate ();
 };
 
 /* @ContentProperty="KeyFrames" */
@@ -607,6 +611,8 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
+
+	virtual bool Validate ();
 };
 
 /* @ContentProperty="Children" */

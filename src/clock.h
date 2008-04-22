@@ -530,6 +530,7 @@ class Timeline : public DependencyObject {
 	FillBehavior GetFillBehavior ();
 
 	virtual Clock* AllocateClock () { return new Clock (this); }
+	virtual bool Validate () { return true; }
 };
 
 
@@ -559,6 +560,7 @@ class TimelineGroup : public Timeline {
 	static DependencyProperty* ChildrenProperty;
 
 	virtual Clock *AllocateClock () { return new ClockGroup (this); }
+	virtual bool Validate ();
 
 	ClockGroup *CreateClock ();
 

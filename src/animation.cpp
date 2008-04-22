@@ -329,6 +329,9 @@ Storyboard::Begin ()
 		TeardownClockGroup ();
 #endif
 
+	if (Validate () == false)
+		return;
+
 	if (!group) {
 		if (GetSurface() == NULL) {
 			g_warning ("unable to find surface to add storyboard clock to.");
@@ -1362,7 +1365,21 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
 	}
 }
 
+// Generic validator of KeyFrameCollection's. Collection vallidates 
+// if all keyframes have valid time.
+static bool
+generic_keyframe_validator (KeyFrameCollection *col)
+{
+	List::Node *cur;
 
+	for (cur = col->list->First (); cur; cur = cur->next) {
+		KeyFrame *keyframe = (KeyFrame *) ((Collection::Node *) cur)->obj;
+		if (keyframe->GetKeyTime () == NULL)
+			return false;
+	}
+
+	return true;
+}
 
 DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
@@ -1468,6 +1485,12 @@ DoubleAnimationUsingKeyFrames::Resolve ()
 					    GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ());
 }
 
+bool
+DoubleAnimationUsingKeyFrames::Validate ()
+{
+	KeyFrameCollection *col = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	return generic_keyframe_validator (col);
+}
 
 DoubleAnimationUsingKeyFrames *
 double_animation_using_key_frames_new (void)
@@ -1578,6 +1601,13 @@ ColorAnimationUsingKeyFrames::Resolve ()
 					    GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ());
 }
 
+bool
+ColorAnimationUsingKeyFrames::Validate ()
+{
+	KeyFrameCollection *col = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	return generic_keyframe_validator (col);
+}
+
 ColorAnimationUsingKeyFrames *
 color_animation_using_key_frames_new (void)
 {
@@ -1686,6 +1716,13 @@ PointAnimationUsingKeyFrames::Resolve ()
 {
 	KeyFrameAnimation_ResolveKeyFrames (this,
 					    GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ());
+}
+
+bool
+PointAnimationUsingKeyFrames::Validate ()
+{
+	KeyFrameCollection *col = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
+	return generic_keyframe_validator (col);
 }
 
 PointAnimationUsingKeyFrames *

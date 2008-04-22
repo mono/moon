@@ -1376,6 +1376,22 @@ TimelineGroup::CreateClock ()
 	return group;
 }
 
+// Validate this TimelineGroup by validating all of it's children
+bool
+TimelineGroup::Validate ()
+{
+	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection();
+	Collection::Node *node = (Collection::Node *) collection->list->First ();
+
+	for ( ; node != NULL; node = (Collection::Node *) node->next) {
+		Timeline *timeline = (Timeline *) node->obj;
+		if (! timeline->Validate ())
+			return false;
+	}
+
+	return true;
+}
+
 void
 TimelineGroup::AddChild (Timeline *child)
 {

@@ -1,5 +1,18 @@
 2008-04-22  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp:
+	* animation.h:
+	* clock.cpp:
+	* clock.h: Adding a 'bool Validate ()' virtual to Timeline which is used
+	to validate the Timeline before starting it. Timelines are always valid
+	by default except for KeyFrame-based animations where we perform a
+	check on the keyframes. 
+
+	Storyboard doesn't start if any of it's timelines are not valid. This
+	fixes the test-animation-invalid-keyframe-keytime.xaml test.
+
+2008-04-22  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: Don't initialize the KeyTime for KeyFrame to a default
 	value, make it be NULL by default. This currently causes a segfault in
 	the just-added test-animation-invalid-keyframe-keytime.xaml which is
