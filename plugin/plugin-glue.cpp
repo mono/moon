@@ -16,20 +16,24 @@
 #include "moon-mono.h"
 #include "plugin-downloader.h"
 
+static int plugins_alive = 0;
+
+static void plugin_surface_destroyed (EventObject *sender, EventArgs *args, gpointer closure);
+
 NPError
 NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved)
 {
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
-	bool sl2 = strcmp (pluginType, MIME_SILVERLIGHT_2) == 0;
-
-	PluginInstance *plugin = new PluginInstance (instance, mode, sl2);
+	PluginInstance *plugin = new PluginInstance (pluginType, instance, mode);
 	if (plugin == NULL)
 		return NPERR_OUT_OF_MEMORY_ERROR;
 
 	plugin->Initialize (argc, argn, argv);
 	instance->pdata = plugin;
+
+	plugins_alive ++;
 
 	return NPERR_NO_ERROR;
 }
@@ -41,6 +45,8 @@ NPP_Destroy (NPP instance, NPSavedData **save)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
+	if (plugin->surface)
+		plugin->surface->AddHandler (EventObject::DestroyedEvent, plugin_surface_destroyed, NULL);
 	plugin->Finalize ();
 
 	instance->pdata = NULL;
@@ -190,6 +196,7 @@ NPP_GetMIMEDescription (void)
 
 static bool gtk_initialized = false;
 static bool runtime_initialized = false;
+static bool runtime_shutdown_pending = false;
 
 NPError
 NPP_Initialize (void)
@@ -211,15 +218,34 @@ NPP_Initialize (void)
 	return NPERR_NO_ERROR;
 }
 
-void
-NPP_Shutdown (void)
+static gboolean
+shutdown_moonlight (gpointer data)
 {
 	downloader_destroy ();
 	plugin_destroy_classes ();
-	// runtime_shutdown is broken at moment so let us just shutdown TimeManager,
-	// when fixed please uncomment above line and remove time manger shutdown.
 	runtime_shutdown ();
-	//TimeManager::Instance()->Shutdown ();
 	runtime_initialized = false;
 	//MoonlightObject::Summarize ();
+	runtime_shutdown_pending = false;
+
+	return FALSE;
 }
+
+static void
+plugin_surface_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	plugins_alive --;
+	if (plugins_alive == 0 && runtime_shutdown_pending) {
+		g_idle_add (shutdown_moonlight, NULL);
+	}
+}
+
+void
+NPP_Shutdown (void)
+{
+	if (plugins_alive)
+		runtime_shutdown_pending = true;
+	else
+		shutdown_moonlight (NULL);
+}
+

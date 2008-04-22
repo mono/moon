@@ -305,11 +305,11 @@ PluginInstance::Properties ()
 	gtk_widget_show_all (dialog);
 }
 
-PluginInstance::PluginInstance (NPP instance, uint16_t mode, bool silverlight_2)
+PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mode)
 {
-	silverlight2 = silverlight_2;
 	this->instance = instance;
 	this->mode = mode;
+	this->silverlight2 = strcmp (pluginType, MIME_SILVERLIGHT_2) == 0;
 	window = NULL;
 	
 	properties_fps_label = NULL;
@@ -344,6 +344,8 @@ PluginInstance::PluginInstance (NPP instance, uint16_t mode, bool silverlight_2)
 	
 	wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	
+	cleanup_pointers = NULL;
+
 	plugin_instances = g_slist_append (plugin_instances, instance);
 	
 	/* back pointer to us */
@@ -370,11 +372,18 @@ PluginInstance::~PluginInstance ()
 	// Remove us from the list.
 	plugin_instances = g_slist_remove (plugin_instances, instance);
 
+	for (GSList *l = cleanup_pointers; l; l = l->next) {
+		gpointer* p = (gpointer*)l->data;
+		*p = NULL;
+	}
+	g_slist_free (cleanup_pointers);
+
 	if (rootobject)
 		NPN_ReleaseObject ((NPObject*)rootobject);
 
 	g_free (background);
 	delete xaml_loader;
+
 	g_free (source);
 
 	if (source_idle)
@@ -387,7 +396,8 @@ PluginInstance::~PluginInstance ()
 	//fprintf (stderr, "Destroying the surface: %p, plugin: %p\n", surface, this);
 	if (surface != NULL) {
 		//gdk_error_trap_push ();
-		surface->unref ();
+		surface->Zombify();
+		surface->unref_delayed();
 		//gdk_display_sync (display);
 		//gdk_error_trap_pop ();
 	}
@@ -429,46 +439,33 @@ void
 PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 {
 	for (int i = 0; i < argc; i++) {
-		if (argn[i] == NULL)
+		if (argn[i] == NULL) {
+			//g_warning ("PluginInstance::Initialize, arg %d == NULL", i);
 			continue;
-
-		// initParams.
-		if (!g_ascii_strcasecmp (argn[i], "initParams")) {
+		}
+		else if (!g_ascii_strcasecmp (argn[i], "initParams")) {
 			initParams = argv[i];
-			continue;
 		}
-
-		// onLoad.
-		if (!g_ascii_strcasecmp (argn[i], "onLoad")) {
+		else if (!g_ascii_strcasecmp (argn[i], "onLoad")) {
 			onLoad = argv[i];
-			continue;
 		}
-
-		// onError.
-		if (!g_ascii_strcasecmp (argn[i], "onError")) {
+		else if (!g_ascii_strcasecmp (argn[i], "onError")) {
 			onError = argv[i];
-			continue;
 		}
-
-		// Source url handle.
-		if (!g_ascii_strcasecmp (argn[i], "src") || !g_ascii_strcasecmp (argn[i], "source")) {
+		else if (!g_ascii_strcasecmp (argn[i], "src") || !g_ascii_strcasecmp (argn[i], "source")) {
 			source = g_strdup (argv[i]);
-			continue;
 		}
-
-		if (!g_ascii_strcasecmp (argn[i], "background")) {
+		else if (!g_ascii_strcasecmp (argn[i], "background")) {
 			background = g_strdup (argv[i]);
-			continue;
 		}
-		
-		if (!g_ascii_strcasecmp (argn [i], "windowless")) {
+		else if (!g_ascii_strcasecmp (argn [i], "windowless")) {
 			windowless = !g_ascii_strcasecmp (argv [i], "true");
-			continue;
 		}
-		
-		if (!g_ascii_strcasecmp (argn [i], "maxFramerate")) {
+		else if (!g_ascii_strcasecmp (argn [i], "maxFramerate")) {
 			maxFrameRate = atoi (argv [i]);
-			continue;
+		}
+		else {
+			//g_warning ("unhandled attribute %s='%s' in PluginInstance::Initialize", argn[i], argv[i]);
 		}
 	}
 
@@ -855,9 +852,18 @@ PluginInstance::TryLoad ()
 	//
 	// Only try to load if there's no missing files.
 	//
+	Surface *our_surface = surface;
+	AddCleanupPointer (&our_surface);
+
+	const char *missing = xaml_loader->TryLoad (&error);
+
+	if (!our_surface)
+		return;
+
+	RemoveCleanupPointer (&our_surface);
 
 	if (vm_missing_file == NULL)
-		vm_missing_file = g_strdup (xaml_loader->TryLoad (&error));
+		vm_missing_file = g_strdup (missing);
 	
 	if (vm_missing_file != NULL) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
@@ -1340,6 +1346,18 @@ PluginInstance::LookupWrappedObject (EventObject *obj)
 	return (NPObject*)g_hash_table_lookup (wrapped_objects, obj);
 }
 
+void
+PluginInstance::AddCleanupPointer (gpointer p)
+{
+	cleanup_pointers = g_slist_prepend (cleanup_pointers, p);
+}
+
+void
+PluginInstance::RemoveCleanupPointer (gpointer p)
+{
+	cleanup_pointers = g_slist_remove (cleanup_pointers, p);
+}
+
 /*** Getters and Setters ******************************************************/
 
 void
@@ -1448,7 +1466,7 @@ PluginInstance::getBrowserInformation (char **name, char **version,
 	// FIXME: implement me
 	
 	*userAgent = (char *) NPN_UserAgent (instance);
-	w(printf ("pluginInstance.getBrowserInformation"));
+	w(printf ("pluginInstance.getBrowserInformation\n"));
 	
 	*name = (char *) "Foo!";
 	*version = (char *) "Foo!";

@@ -571,6 +571,8 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		return;
 	}
 
+	PluginInstance *plugin = (PluginInstance*) proxy->instance->pdata;
+
 	if (js_sender->GetObjectType () == Type::SURFACE) {
 		// This is somewhat hackish, but is required for
 		// the FullScreenChanged event (js expects the
@@ -582,6 +584,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	MoonlightEventObjectObject *depobj = NULL; 
 	if (js_sender) {
 		depobj = EventObjectCreateWrapper (proxy->instance, js_sender);
+		plugin->AddCleanupPointer (&depobj);
 		OBJECT_TO_NPVARIANT (depobj, args[0]);
 	} else {
 		NULL_TO_NPVARIANT (args[0]);
@@ -591,6 +594,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	MoonlightEventObjectObject *depargs = NULL; 
 	if (calldata) {
 		depargs = EventObjectCreateWrapper (proxy->instance, calldata);
+		plugin->AddCleanupPointer (&depargs);
 		OBJECT_TO_NPVARIANT (depargs, args[1]);
 	} else {
 		NULL_TO_NPVARIANT (args[1]);
@@ -609,9 +613,15 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 				NPN_ReleaseVariantValue (&result);
 		}
 	}
-	
-	NPN_ReleaseObject (depobj);
-	NPN_ReleaseObject (depargs);
+
+	if (depobj) {
+		plugin->RemoveCleanupPointer (&depobj);
+		NPN_ReleaseObject (depobj);
+	}
+	if (depargs) {
+		plugin->RemoveCleanupPointer (&depargs);
+		NPN_ReleaseObject (depargs);
+	}
 }
 
 

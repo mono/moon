@@ -34,6 +34,8 @@ class PluginInstance
 
 	GHashTable *wrapped_objects; // wrapped object cache
 
+	GSList *cleanup_pointers;
+
 	// Property fields
 	char *initParams;
 	bool isLoaded;
@@ -95,7 +97,7 @@ class PluginInstance
 	List *GetSources ();
 #endif
 
-	PluginInstance (NPP instance, uint16_t mode, bool silverlight_2);
+	PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mode);
 	~PluginInstance ();
 	
 	void SetUnloadCallback (plugin_unload_callback *puc);
@@ -121,6 +123,9 @@ class PluginInstance
 	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
 	void      RemoveWrappedObject (EventObject *obj);
 	NPObject *LookupWrappedObject (EventObject *obj);
+
+	void      AddCleanupPointer    (gpointer p);
+	void      RemoveCleanupPointer (gpointer p);
 
 	void Properties ();
 

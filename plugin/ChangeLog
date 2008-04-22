@@ -1,3 +1,37 @@
+2008-04-22  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.h, plugin.cpp: Add the notion of "cleanup pointers".
+	It's a horrible name for the following hack.  You register a local
+	variable pointer with the plugin before making a call during which
+	you might be destroyed.  If the plugin instance is destroyed, all
+	cleanup pointers are nulled..  When the all returns, you can't
+	rely on "this" being valid, but you can rely on your local stack
+	frame, so you look at the registered pointer.  if it's null,
+	you're dead.
+	
+	* plugin.cpp (PluginInstance::PluginInstance): pass the pluginType
+	instead of the boolean flag.  C apis should be thin wrappers
+	around c++ methods.
+	(PluginInstance::~PluginInstance): zombify the surface and then
+	unref_delayed it, to allow everything to unwind before actually
+	freeing that memory.
+	(PluginInstance::Initialize): use "else" and remove all those damn
+	"continue"s.
+	(PluginInstance::TryLoad): use the cleanup pointer hack to check
+	if we're still alive after the xaml_loader->TryLoad method.
+	
+	* plugin-class.cpp (EventListenerProxy::proxy_listener_to_javascript):
+	use cleanup pointers to make sure we don't try to free plugin
+	objects that have been destroyed by virtue of the plugin going
+	away while we were in JS.
+
+	* plugin-glue.cpp: since we're only destroying surfaces from the
+	idle loop, we need to delay the shutting down of the moonlight
+	engine until all surfaces have been destroyed.  Also, take care
+	not to do it from the DestroyEvent handler, as that is invoked
+	*before* the object is destroyed (and destruction requires the
+	engine to be initialized).
+
 2008-04-22  Michael Dominic K.  <mdk@mdk.am>
 
 	* plugin-class.cpp: Throw js exception if Storyboard failed to start
