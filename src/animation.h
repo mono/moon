@@ -624,7 +624,7 @@ class Storyboard : public ParallelTimeline {
 	Storyboard ();
 	virtual Type::Kind GetObjectType () { return Type::STORYBOARD; };
 
-	void Begin ();
+	bool Begin ();
 	void Pause ();
 	void Resume ();
 	void Seek (TimeSpan timespan);

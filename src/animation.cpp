@@ -307,7 +307,7 @@ Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpoin
 		sb->TeardownClockGroup ();
 }
 
-void
+bool
 Storyboard::Begin ()
 {
 	ClockGroup *group = NULL;
@@ -319,7 +319,7 @@ Storyboard::Begin ()
 		if (root_clock->GetParent()->GetClockState() != Clock::Active) {
 			root_clock->GetParent()->Begin();
 		}
-		return;
+		return false;
 	}
 #else
 	/* destroy the clock hierarchy and recreate it to restart.
@@ -330,12 +330,12 @@ Storyboard::Begin ()
 #endif
 
 	if (Validate () == false)
-		return;
+		return false;
 
 	if (!group) {
 		if (GetSurface() == NULL) {
 			g_warning ("unable to find surface to add storyboard clock to.");
-			return;
+			return false;
 		}
 		group = GetSurface()->GetTimeManager()->GetRootClock();
 	}
@@ -370,6 +370,8 @@ Storyboard::Begin ()
 	if (group->GetClockState() != Clock::Active) {
 		group->Begin ();
 	}
+
+	return true;
 }
 
 void

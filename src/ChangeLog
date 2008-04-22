@@ -1,6 +1,12 @@
 2008-04-22  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
+	* animation.h: Making the Storyboard::Begin return bool (true if
+	storyboard started correctly, false otherwise).
+
+2008-04-22  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
 	* animation.h:
 	* clock.cpp:
 	* clock.h: Adding a 'bool Validate ()' virtual to Timeline which is used
