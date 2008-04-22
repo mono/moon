@@ -1,5 +1,10 @@
 2008-04-22  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml2html.cs: Try to be smart and find the master canvas Width/Height
+	and use it as the ML object/plugin width/height.
+
+2008-04-22  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml2html.cs: Make the html page background color light-gray so that
 	it's a little bit different than canvas background. Makes it easier to
 	ie. generate masters manually and debug things.

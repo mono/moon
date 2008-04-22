@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 
 class XamlToHtml {
 
@@ -22,7 +23,7 @@ class XamlToHtml {
 						"<meta>@META@</meta>\n" +
 						"</head>\n" +
 						"<body bgcolor=\"#eeeeee\">\n" +
-						"<object type=\"application/x-silverlight\" data=\"data:,\" id=\"slControl\" width=\"640\" height=\"480\">\n" +
+						"<object type=\"application/x-silverlight\" data=\"data:,\" id=\"slControl\" width=\"@WIDTH@\" height=\"@HEIGHT@\">\n" +
 						"<param name=\"background\" value=\"#FFFFFF\"/>\n" + 
 						"<param name=\"source\" value=\"#xamlContent\"/>\n" +
 						"</object>\n" + 
@@ -40,6 +41,21 @@ class XamlToHtml {
 		Console.WriteLine ("Usage is: xaml2html [--v] [--chain] [file.xaml ...]\n");
 	}
 
+	static string FindMasterCanvasAttribute (string xml, string attribute, string def)
+	{
+		try {
+			XmlDocument document = new XmlDocument ();
+			document.LoadXml (xml);
+
+			XmlNode node = document.GetElementsByTagName ("Canvas") [0];
+			return node.Attributes [attribute].InnerText;
+                } catch {
+		}
+
+		// Failed, return default
+		return def;
+	}
+
 	static bool ProcessFile (string file, string next)
 	{
 		try {
@@ -47,9 +63,14 @@ class XamlToHtml {
 			string xaml_content = File.ReadAllText (file);
 			string html_content = html_template;
 
+			string canvas_width = FindMasterCanvasAttribute (xaml_content, "Width", "640");
+			string canvas_height = FindMasterCanvasAttribute (xaml_content, "Height", "480");
+
 			// Substitute
 			html_content = html_content.Replace ("@XAML@", xaml_content);
 			html_content = html_content.Replace ("@TITLE@", xaml_basename);
+			html_content = html_content.Replace ("@WIDTH@", canvas_width);
+			html_content = html_content.Replace ("@HEIGHT@", canvas_height);
 
 			if (next != null) {
 				next = Path.GetFileNameWithoutExtension (next) + ".html";
