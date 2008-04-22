@@ -104,7 +104,7 @@ vm_init (void)
 			result = true;
 	}
 	
-	d(printf ("Mono Runtime: %s", result ? "OK" : "Failed"));
+	d(printf ("Mono Runtime: %s\n", result ? "OK" : "Failed"));
 	
 	moon_vm_loaded = true;
 	
