@@ -78,6 +78,9 @@ class Surface : public EventObject {
 		gulong unrealize;
 		gulong destroy;
 	};
+
+	// are we headed for death?
+	bool zombie;
 	
 	// bad, but these two live in dirty.cpp, not runtime.cpp
 	void ProcessDownDirtyElements ();
@@ -278,6 +281,11 @@ class Surface : public EventObject {
 	bool VerifyWithCacheSizeCounter (int w, int h);
 	int64_t AddToCacheSizeCounter (int w, int h);
 	void RemoveFromCacheSizeCounter (int64_t size);
+
+	// called from the plugin if the surface is headed for death.
+	// stops event emission (since the plugin counterparts to xaml
+	// objects will be destroyed)
+	void Zombify () { zombie = true; }
 
 #if FRONT_TO_BACK_STATS
 	int uielements_rendered_front_to_back;

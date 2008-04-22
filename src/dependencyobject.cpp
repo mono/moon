@@ -489,11 +489,6 @@ EventObject::unref_delayed ()
 {
 	OBJECT_TRACK ("DelayedUnref", GetTypeName ());
 
-#if DEBUG
-	if (Surface::InMainThread ())
-		printf ("EventObject::unref_delayed () is being called on the main thread.\n");
-#endif
-	
 	pthread_mutex_lock (&delayed_unref_mutex);
 	pending_unrefs = g_slist_prepend (pending_unrefs, this);
 

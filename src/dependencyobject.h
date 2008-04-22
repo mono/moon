@@ -152,6 +152,8 @@ class EventObject {
 
 	const static int DestroyedEvent;
 
+	void unref_delayed ();
+
  protected:
 	virtual ~EventObject ();
 
@@ -166,8 +168,6 @@ class EventObject {
 
 	gint32 refcount;
 
-	void unref_delayed ();
-	
 	EventLists *events;
 
 };

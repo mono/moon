@@ -153,6 +153,7 @@ Surface::Surface(int w, int h, bool windowless)
 {
 	main_thread = pthread_self ();
 
+	zombie = false;
 	downloader_context = NULL;
 	width = w;
 	height = h;
@@ -593,9 +594,9 @@ Surface::Attach (UIElement *element)
 		Emit (ResizeEvent);
 	}
 
-	canvas->UpdateTotalRenderVisibility ();
-	canvas->UpdateTotalHitTestVisibility ();
-	canvas->FullInvalidate (true);
+	toplevel->UpdateTotalRenderVisibility ();
+	toplevel->UpdateTotalHitTestVisibility ();
+	toplevel->FullInvalidate (true);
 }
 
 void
@@ -1398,6 +1399,10 @@ Surface::EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *
 		bool h = emitter (node->uielement, event);
 		if (h)
 			handled = true;
+		if (zombie) {
+			emittingMouseEvent = false;
+			return handled;
+		}
 	}
 	emittingMouseEvent = false;
 
@@ -1463,6 +1468,9 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 	// handled, then we return to the event that tripped the
 	// timeout, we crash.
 	if (emittingMouseEvent)
+		return false;
+
+	if (zombie)
 		return false;
 
 	if (toplevel == NULL || event == NULL)
@@ -1991,16 +1999,12 @@ Surface::widget_destroyed (GtkWidget *widget, gpointer user_data)
 {
 	Surface *s = (Surface *) user_data;
 
-	if (s->widget_normal != NULL && s->widget_normal != widget) {
-		// The fullscreen area have been destroyed.
-		// If we are destroying it, widget_fullscreen is NULL.
-		// If we're not, we have to call UpdateFullScreen to raise events,
-		// change sizes, etc.
-		if (s->widget_fullscreen != NULL) {
-			s->UpdateFullScreen (false);
-		}
-	} else {
-		s->widget = NULL;
+	if (s->widget_fullscreen == widget) {
+		s->UpdateFullScreen (false);
+		s->widget_fullscreen = NULL;
+	}
+	else if (s->widget_normal == widget) {
+		s->widget_normal = NULL;
 	}
 }
 

@@ -1,3 +1,17 @@
+2008-04-22  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: add Zombify() which sets the zombie
+	flag.  basically this allows us to unwind gracefully from an event
+	that has caused the surface to be destroyed.  when the flag is
+	set, we basically stop emitting UI events that we're in the
+	process of emitting.
+	(Surface::widget_destroyed) simplify this, and zero out the
+	widgets here so we don't destroy them again in ~Surface().
+	
+	* dependencyobject.h, dependencyobject.cpp: make unref_delayed
+	public again, and don't warn about calling it on the main thread.
+	we need it in the plugin.
+
 2008-04-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* shape.cpp (Shape::DoDraw): Cast extents to int for
