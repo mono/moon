@@ -1,5 +1,10 @@
 2008-04-22  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp: Safely allow now the KeyTime property to be nullable.
+	Fixes the Animation_NegativeTst.htm test.
+
+2008-04-22  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp:
 	* animation.h: Making the Storyboard::Begin return bool (true if
 	storyboard started correctly, false otherwise).
