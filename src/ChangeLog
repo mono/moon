@@ -1,3 +1,10 @@
+2008-04-22  Fernando Herrera  <fherrera@novell.com>
+
+	* pipeline.h:
+	* pipeline.cpp: set the new read position after Seeking to pts.
+	Added ProgressiveSource::SeekInternal that refuses to Seek to a
+	non-filled position.
+
 2008-04-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp, dependencyobject.h: Added another SetValue

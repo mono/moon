@@ -715,6 +715,7 @@ private:
 	
 	virtual int64_t GetLastAvailablePositionInternal () { return write_pos; }
 	virtual int64_t GetSizeInternal () { return size; }
+	virtual bool SeekInternal (int64_t offset, int mode);
 
 protected:
 	virtual ~ProgressiveSource ();

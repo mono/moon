@@ -2608,6 +2608,7 @@ void
 ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 {
 	ssize_t nwritten;
+	bool new_pos = false;
 
 	// printf ("ProgressiveSource::Write (%p, %lld, %i)\n", buf, offset, n);
 	if (fd == -1) {
@@ -2623,6 +2624,9 @@ ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 		goto cleanup;
 	}
 
+	 if (write_pos == -1)
+		new_pos = true;
+
 	// Seek to the write position
 	if (lseek (fd, offset, SEEK_SET) != offset)
 		goto cleanup;
@@ -2631,13 +2635,14 @@ ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
 		write_pos = offset + nwritten;
 
 	
-	// Restore the current position
-	if (write_pos != -1) {
-		lseek (fd, pos + buflen, SEEK_SET);
-	} else {
+	if (new_pos) {
+		// Set pos to the new write position
 		first_write_pos = offset;
-		FileSource::Seek (offset, SEEK_SET);
-		buflen = 0;
+		pos = offset;
+		lseek (fd, offset, SEEK_SET);
+	} else {
+		// Restore the current position
+		lseek (fd, pos + buflen, SEEK_SET);
 	}
 	
 cleanup:
@@ -2645,6 +2650,16 @@ cleanup:
 		Signal ();
 	
 	Unlock ();
+}
+
+bool
+ProgressiveSource::SeekInternal (int64_t offset, int mode)
+{
+	if (offset < first_write_pos) {
+		LOG_PIPELINE_ERROR ("Trying to seek to a position never filled: %llu and first write pos is: %llu\n", offset, first_write_pos);
+		return false;
+	}
+	return FileSource::SeekInternal (offset, mode);
 }
 
 void
@@ -2668,6 +2683,7 @@ ProgressiveSource::SeekToPts (uint64_t pts)
 	Lock ();
 	requested_pts = pts;
 	write_pos = -1;
+	buflen = 0;
 
 	StartWaitLoop ();
 	while (!Aborted () && requested_pts != UINT64_MAX)
@@ -3087,8 +3103,8 @@ IMediaSource::ReadSome (void *buf, uint32_t n, bool block, int64_t start)
 	
 	if (start == -1)
 		start = GetPositionInternal ();
-	else if (start != GetPositionInternal ())
-		SeekInternal (start, SEEK_SET);
+	else if (start != GetPositionInternal () && !SeekInternal (start, SEEK_SET))
+		return false;
 
 	WaitForPosition (block, start + n);
 
