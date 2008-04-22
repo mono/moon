@@ -806,7 +806,11 @@ KeyFrame::KeyFrame ()
 KeyTime*
 KeyFrame::GetKeyTime()
 {
-	return GetValue (KeyFrame::KeyTimeProperty)->AsKeyTime();
+	Value *v = GetValue (KeyFrame::KeyTimeProperty);
+	if (v == NULL)
+		return NULL;
+	else
+		return v->AsKeyTime();
 }
 
 void
