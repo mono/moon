@@ -765,4 +765,8 @@
          inputFile="test-animation-invalid-keyframe-keytime.xaml"
          masterFile10="../harness/masters/test-animation-invalid-keyframe-keytimeMaster.png"
    />
+   <Test id="177"
+         inputFile="test-type-with-case-mismatch.html"
+         masterFile10="None"
+   />
 </DRTList>

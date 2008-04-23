@@ -58,8 +58,8 @@ function loadTestPlugin ()
 				case "Debug": TestLogger.LogDebug ("<delayed>: " + pendingMessages [i]); break;
 				case "Error": TestLogger.LogError ("<delayed>: " + pendingMessages [i]); break;
 				case "Warning": TestLogger.LogWarning ("<delayed>: " + pendingMessages [i]); break;
-				case "Result": TestLogger.LogResult ("<delayed>: " + pendingMessages [i]); break;
-				case "TryResult": TestLogger.TryLogResult ("<delayed>: " + pendingMessages [i]); break;
+				case "Result": TestLogger.LogResult (pendingMessages [i]); break;
+				case "TryResult": TestLogger.TryLogResult (pendingMessages [i]); break;
 				case "Message": TestLogger.LogMessage ("<delayed>: " + pendingMessages [i]); break;
 				}
 			}
@@ -142,6 +142,16 @@ TestLogger = new function()
 		 	TestHost.TryLogResult (result);
 		}
     }
+}
+
+function SignalShutdown ()
+{
+	if (!TestHost) {
+		setTimeout ("SignalShutdown ();", 100);
+		return;
+	}
+
+	TestHost.SignalShutdown (document.name);
 }
 
 window.setTimeout("createTestPlugin ();", 10);

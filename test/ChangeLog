@@ -1,3 +1,9 @@
+2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/drtlist.xml: Added test-type-with-case-mismatch.html.
+	* xaml/test-type-with-case-mismatch.html: Added test case for #375230
+	  and #375231.
+
 2008-04-22  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/drtlist.xml:

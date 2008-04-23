@@ -1,3 +1,9 @@
+2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* js/testplugin.js: Added a SignalShutdown method which works even if
+	  the plugin hasn't been loaded yet. Don't prepend '<delayed>' when
+	  calling [Try]LogResult.
+
 2008-04-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* js/testplugin.js: Fix typos.
