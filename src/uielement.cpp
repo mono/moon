@@ -698,7 +698,7 @@ UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 UIElement::SetOpacityMask (Brush *mask)
 {
-	SetValue (UIElement::OpacityMaskProperty, Value (brush));
+	SetValue (UIElement::OpacityMaskProperty, Value (mask));
 }
 
 Brush *
