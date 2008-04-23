@@ -1,3 +1,8 @@
+2008-04-23  Geoff Norton  <gnorton@novell.com>
+
+	* configure.ac: Initial build system cleanup and support for 
+	linking against system cairo.
+	
 2008-04-22  Larry Ewing  <lewing@novell.com>
 
 	* configure.ac: check for new mozembed versions.

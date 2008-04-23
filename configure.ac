@@ -71,7 +71,7 @@ AC_SEARCH_LIBS(clock_gettime, rt)
 #
 
 DEBUG=yes
-AC_ARG_WITH(debug, [ --with-debug=yes,no.   If you want to enable debug support (default=yes)],[
+AC_ARG_WITH(debug, [  --with-debug=yes,no.   If you want to enable debug support (default=yes)],[
 	if test x$with_debug = xyes; then
 		DEBUG=yes
 	fi
@@ -88,7 +88,7 @@ fi
 #
 
 FFMPEG=yes
-AC_ARG_WITH(ffmpeg,[ --with-ffmpeg=yes,no   If you want to enable support for ffmpeg ],[
+AC_ARG_WITH(ffmpeg,[  --with-ffmpeg=yes,no   If you want to enable support for ffmpeg ],[
 	if test x$with_ffmpeg = xyes; then
 		FFMPEG=yes
 	fi
@@ -103,7 +103,7 @@ fi
 AM_CONDITIONAL(INCLUDE_FFMPEG, test x$FFMPEG = xyes)
 
 SWSCALE=no
-AC_ARG_WITH(swscale,[ --with-swscale=yes,no   If you want to enable support for swscale ],[
+AC_ARG_WITH(swscale,[  --with-swscale=yes,no   If you want to enable support for swscale ],[
 	if test x$with_swscale = xyes; then
 		SWSCALE=yes
 	fi
@@ -118,20 +118,11 @@ fi
 AM_CONDITIONAL(INCLUDE_SWSCALE, test x$SWSCALE = xyes)
 
 #
-# Check for cairo "extensions"
-#
-
-# hackish but I couldn't get AC_EGREP_HEADER to work with our embedded cairo :(
-if cat cairo/src/cairo.h | grep CAIRO_LINE_CAP_TRIANGLE >/dev/null 2>&1; then
-	AC_DEFINE(HAVE_CAIRO_LINE_CAP_TRIANGLE,,Define if cairo has CAIRO_LINE_CAP_TRIANGLE as a cairo_line_cap_t enum member)
-fi
-
-#
 # Check for mono
 #
 
 MONO_RUNTIME=yes
-AC_ARG_WITH(mono-runtime,[ --with-mono-runtime=yes,no   If you want to enable support for Silverlight 2.0],[
+AC_ARG_WITH(mono-runtime,[  --with-mono-runtime=yes,no   If you want to enable support for Silverlight 2.0],[
 	if test x$with_mono_runtime = xyes; then
 	      MONO_RUNTIME=yes
 	fi
@@ -155,10 +146,25 @@ esac],[user_plugin=no])
 if test $user_plugin = yes; then
 AC_DEFINE([PLUGIN_INSTALL], [1], [Load libraries from ~/.mozilla/plugins and build a Mozilla XPInstall file])
 fi
-AM_CONDITIONAL([PLUGIN_INSTALL], [test $user_plugin = yes])
+AM_CONDITIONAL(PLUGIN_INSTALL, [test $user_plugin = yes])
 
-ac_configure_args="$ac_configure_args --with-pic=yes --disable-pdf --disable-svg --disable-ps --disable-png"
-AC_CONFIG_SUBDIRS([pixman cairo])
+AC_ARG_WITH(cairo,[  --with-cairo=embedded,system   Enable linking against system cairo ],[],[with_cairo=embedded])
+
+if test x$with_cairo = xembedded; then
+  ac_configure_args="$ac_configure_args --with-pic=yes --disable-pdf --disable-svg --disable-ps --disable-png"
+  AC_CONFIG_SUBDIRS([pixman cairo])
+
+  # hackish but I couldn't get AC_EGREP_HEADER to work with our embedded cairo :(
+  if cat cairo/src/cairo.h | grep CAIRO_LINE_CAP_TRIANGLE >/dev/null 2>&1; then
+  	AC_DEFINE(HAVE_CAIRO_LINE_CAP_TRIANGLE,,Define if cairo has CAIRO_LINE_CAP_TRIANGLE as a cairo_line_cap_t enum member)
+  fi
+  CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
+  CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
+else
+  PKG_CHECK_MODULES(CAIRO, cairo >= 1.6)
+  CAIRO_LIBS="`pkg-config --libs cairo `"
+  CAIRO_CFLAGS="`pkg-config --cflags cairo `"
+fi
 
 AC_MSG_CHECKING(Gtk+ 2.0)
 if pkg-config gtk+-2.0; then
@@ -245,14 +251,14 @@ fi
 # (accessable via environment variable)
 #
 WITH_PANGO=no
-AC_ARG_WITH(pango-support,[ --with-pango-support=yes,no   Include Pango text rendering support],with_pango_support=yes,with_pango_support=no)
+AC_ARG_WITH(pango-support,[  --with-pango-support=yes,no   Include Pango text rendering support],with_pango_support=yes,with_pango_support=no)
 if test x$with_pango_support != xno; then
 	WITH_PANGO=yes
    	AC_DEFINE(ENABLE_PANGO_SUPPORT, 1, [Include Pango text rendering support])
 else
 	WITH_PANGO=no
 fi
-
+AM_CONDITIONAL(INCLUDE_PANGO, test $WITH_PANGO = yes)
 
 if test $MONO_RUNTIME = "yes"; then
 AC_MSG_CHECKING(Mono)
@@ -492,8 +498,6 @@ else
 SWSCALE_PKGS=""
 fi
 
-CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
-CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
 
 MOON_PKGS="gtk+-2.0 pango gthread-2.0 alsa freetype2 fontconfig $RANDR_PKG"
 MOON_CFLAGS="$LARGEFILE_CFLAGS $CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS $FFMPEG_PKGS $SWSCALE_PKGS)"
@@ -619,5 +623,6 @@ Moonlight configuration:
 	Support for running the test harness: $TESTING_SUPPORTED
 	Support for pango as text engine: $WITH_PANGO
 	Support for firefox plugin installer: $user_plugin
+	Using cairo: $with_cairo
 
 EOF
