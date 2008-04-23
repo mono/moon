@@ -491,15 +491,13 @@ void
 TextBlock::Layout (cairo_t *cr)
 {
 	TextDecorations decorations;
-	double height, width;
+	double height = GetHeight ();
+	double width = GetWidth ();
 	uint8_t font_mask;
 	const char *text;
 	List *runs;
 	
 	layout->SetWrapping (GetTextWrapping ());
-	
-	height = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
-	width = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 	
 	if (width > 0.0f)
 		layout->SetMaxWidth (width);

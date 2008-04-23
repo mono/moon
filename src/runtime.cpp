@@ -572,8 +572,8 @@ Surface::Attach (UIElement *element)
 
 	if (normal_height == 0){
 		Value *v = toplevel->GetValue (FrameworkElement::HeightProperty);
-
-		if (v){
+		
+		if (v) {
 			normal_height = (int) v->AsDouble ();
 			if (normal_height < 0)
 				normal_height = 0;
@@ -807,8 +807,8 @@ Surface::ShowFullScreenMessage ()
 	Value* tmp = full_screen_message->GetValue (UIElement::RenderTransformProperty);
 	Transform* transform = tmp != NULL ? tmp->AsTransform () : NULL;
 	
-	double box_height = full_screen_message->GetValue (FrameworkElement::HeightProperty)->AsDouble ();
-	double box_width = full_screen_message->GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+	double box_height = full_screen_message->GetHeight ();
+	double box_width = full_screen_message->GetWidth ();
 	
 	// Set the url in the box
 	if (url_block != NULL)  {

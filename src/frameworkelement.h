@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * frameworkelement.h
  *
@@ -18,8 +19,8 @@ class FrameworkElement : public UIElement {
 	virtual ~FrameworkElement () {}
 
  public:
-	static DependencyProperty* HeightProperty;
-	static DependencyProperty* WidthProperty;
+	static DependencyProperty *HeightProperty;
+	static DependencyProperty *WidthProperty;
 
 	FrameworkElement ();
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }
@@ -31,6 +32,15 @@ class FrameworkElement : public UIElement {
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	
+	//
+	// Property Accessors
+	//
+	void SetHeight (double height);
+	double GetHeight ();
+	
+	void SetWidth (double width);
+	double GetWidth ();
 };
 
 G_BEGIN_DECLS

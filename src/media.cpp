@@ -690,8 +690,8 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 void
 MediaElement::ComputeBounds ()
 {
-	double h = GetValue (HeightProperty)->AsDouble ();
-	double w = GetValue (WidthProperty)->AsDouble ();
+	double h = GetHeight ();
+	double w = GetWidth ();
 	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->GetHeight ();
@@ -707,8 +707,8 @@ Point
 MediaElement::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
-	double h = GetValue (HeightProperty)->AsDouble ();
-	double w = GetValue (WidthProperty)->AsDouble ();
+	double h = GetHeight ();
+	double w = GetWidth ();
 	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->GetHeight ();
@@ -722,8 +722,8 @@ void
 MediaElement::Render (cairo_t *cr, Region *region)
 {
 	Stretch stretch = (Stretch) GetValue (MediaBase::StretchProperty)->AsInt32 ();
-	double h = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
-	double w = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+	double h = GetHeight ();
+	double w = GetWidth ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	
@@ -1855,15 +1855,15 @@ Image::DownloaderComplete ()
 	g_free (filename);
 	
 	if (width == NULL && height == NULL) {
-		SetValue (FrameworkElement::WidthProperty, (double) surface->width);
-		SetValue (FrameworkElement::HeightProperty, (double) surface->height);
+		SetHeight ((double) surface->height);
+		SetWidth ((double) surface->width);
 	}
 	
 	if (width == NULL && height != NULL)
-		SetValue (FrameworkElement::WidthProperty, (double) surface->width * height->AsDouble () / (double)surface->height);
+		SetWidth ((double) surface->width * height->AsDouble () / (double) surface->height);
 	
 	if (width != NULL && height == NULL)
-		SetValue (FrameworkElement::HeightProperty, (double) surface->height * width->AsDouble () / (double)surface->width);
+		SetHeight ((double) surface->height * width->AsDouble () / (double) surface->width);
 	
 	if (brush) {
 		// FIXME: this is wrong, we probably need to set the
@@ -2173,8 +2173,8 @@ Image::Render (cairo_t *cr, Region *region)
 	cairo_save (cr);
 
 	Stretch stretch = (Stretch) GetValue (StretchProperty)->AsInt32 ();
-	double w = GetValue (WidthProperty)->AsDouble ();
-	double h = GetValue (HeightProperty)->AsDouble ();
+	double h = GetHeight ();
+	double w = GetWidth ();
 	
 	if (!pattern)
 		pattern = cairo_pattern_create_for_surface (surface->cairo);
@@ -2197,10 +2197,8 @@ Image::Render (cairo_t *cr, Region *region)
 void
 Image::ComputeBounds ()
 {
-	Rect box = Rect (0,0,
-			 GetValue (WidthProperty)->AsDouble (),
-			 GetValue (HeightProperty)->AsDouble ());
-								   
+	Rect box = Rect (0,0, GetWidth (), GetHeight ());
+	
 	bounds = IntersectBoundsWithClipPath (box, false).Transform (&absolute_xform);
 						     
 }
@@ -2210,8 +2208,8 @@ Image::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 
-	return Point (GetValue (WidthProperty)->AsDouble () * user_xform_origin.x, 
-		      GetValue (HeightProperty)->AsDouble () * user_xform_origin.y);
+	return Point (GetWidth () * user_xform_origin.x, 
+		      GetHeight () * user_xform_origin.y);
 }
 
 cairo_surface_t *

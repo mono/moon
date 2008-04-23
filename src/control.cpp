@@ -52,9 +52,9 @@ Control::ComputeBounds ()
 	double x1, x2, y1, y2;
 	
 	x1 = y1 = 0.0;
-	x2 = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
-	y2 = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
-
+	x2 = GetWidth ();
+	y2 = GetHeight ();
+	
 	if (x2 != 0.0 && y2 != 0.0) {
 
 		Rect fw_rect = Rect (x1,y1,x2,y2);

@@ -96,8 +96,8 @@ Point
 Canvas::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
-	return Point (GetValue (FrameworkElement::WidthProperty)->AsDouble () * user_xform_origin.x, 
-		      GetValue (FrameworkElement::HeightProperty)->AsDouble () * user_xform_origin.y);
+	return Point (GetWidth () * user_xform_origin.x, 
+		      GetHeight () * user_xform_origin.y);
 }
 
 Canvas *

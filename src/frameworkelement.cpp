@@ -14,6 +14,10 @@
 
 #include "frameworkelement.h"
 
+
+DependencyProperty *FrameworkElement::HeightProperty;
+DependencyProperty *FrameworkElement::WidthProperty;
+
 FrameworkElement::FrameworkElement ()
 {
 }
@@ -46,8 +50,8 @@ FrameworkElement::ComputeBounds ()
 	double x1, x2, y1, y2;
 	
 	x1 = y1 = 0.0;
-	x2 = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
-	y2 = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+	y2 = GetHeight ();
+	x2 = GetWidth ();
 	
 	if (x2 != 0.0 && y2 != 0.0)
 		bounds = IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2), false).Transform (&absolute_xform);
@@ -56,22 +60,46 @@ FrameworkElement::ComputeBounds ()
 bool
 FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 {
-	double height = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
-	double width = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+	double height = GetHeight ();
+	double width = GetWidth ();
 	double nx = x, ny = y;
-
+	
 	uielement_transform_point (this, &nx, &ny);
 	if (nx < 0 || ny < 0 || nx > width || ny > height)
 		return false;
-
+	
 	return UIElement::InsideObject (cr, x, y);
 }
 
 void
 FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	*width = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
-	*height = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+	*height = GetHeight ();
+	*width = GetWidth ();
+}
+
+void
+FrameworkElement::SetHeight (double height)
+{
+	SetValue (FrameworkElement::HeightProperty, Value (height));
+}
+
+double
+FrameworkElement::GetHeight ()
+{
+	return GetValue (FrameworkElement::HeightProperty)->AsDouble ();
+}
+
+void
+FrameworkElement::SetWidth (double width)
+{
+	SetValue (FrameworkElement::WidthProperty, Value (width));
+}
+
+double
+FrameworkElement::GetWidth ()
+{
+	return GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 }
 
 FrameworkElement *
@@ -80,32 +108,30 @@ framework_element_new (void)
 	return new FrameworkElement ();
 }
 
-double
-framework_element_get_height (FrameworkElement *framework_element)
-{
-	return framework_element->GetValue (FrameworkElement::HeightProperty)->AsDouble();
-}
-
 void
-framework_element_set_height (FrameworkElement *framework_element, double height)
+framework_element_set_height (FrameworkElement *element, double height)
 {
-	framework_element->SetValue (FrameworkElement::HeightProperty, Value (height));
+	element->SetHeight (height);
 }
 
 double
-framework_element_get_width (FrameworkElement *framework_element)
+framework_element_get_height (FrameworkElement *element)
 {
-	return framework_element->GetValue (FrameworkElement::WidthProperty)->AsDouble();
+	return element->GetHeight ();
 }
 
 void
-framework_element_set_width (FrameworkElement *framework_element, double width)
+framework_element_set_width (FrameworkElement *element, double width)
 {
-	framework_element->SetValue (FrameworkElement::WidthProperty, Value (width));
+	element->SetWidth (width);
 }
 
-DependencyProperty *FrameworkElement::HeightProperty;
-DependencyProperty *FrameworkElement::WidthProperty;
+double
+framework_element_get_width (FrameworkElement *element)
+{
+	return element->GetWidth ();
+}
+
 
 void
 framework_element_init (void)
