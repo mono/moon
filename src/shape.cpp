@@ -511,8 +511,8 @@ Shape::ComputeShapeBounds (bool logical)
 	if (IsEmpty ())
 		return Rect ();
 	
-	double h = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
-	double w = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+	double h = GetHeight ();
+	double w = GetWidth ();
 	
 	if ((w <= 0.0) || (h <= 0.0))
 		return Rect ();
@@ -646,8 +646,8 @@ Shape::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
 	
-	return Point (GetValue (FrameworkElement::WidthProperty)->AsDouble () * user_xform_origin.x, 
-		      GetValue (FrameworkElement::HeightProperty)->AsDouble () * user_xform_origin.y);
+	return Point (GetWidth () * user_xform_origin.x, 
+		      GetHeight () * user_xform_origin.y);
 }
 
 void
@@ -948,8 +948,8 @@ Rect
 Ellipse::ComputeLargestRectangle ()
 {
 	double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
-	double x = (GetValue (FrameworkElement::WidthProperty)->AsDouble () - t) * cos (M_PI_2);
-	double y = (GetValue (FrameworkElement::HeightProperty)->AsDouble () - t) * sin (M_PI_2);
+	double x = (GetWidth () - t) * cos (M_PI_2);
+	double y = (GetHeight () - t) * sin (M_PI_2);
 	return ComputeShapeBounds (false).GrowBy (-x, -y).RoundIn ();
 }
 
