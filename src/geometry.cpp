@@ -201,7 +201,7 @@ GeometryGroup::ComputeBounds (Path *path, bool logical)
 	Collection::Node *node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		Geometry *geometry = (Geometry *) node->obj;
-		bounds = bounds.Union (geometry->ComputeBounds (path, logical));
+		bounds = bounds.Union (geometry->ComputeBounds (path, logical), logical);
 	}
 
 	Transform* transform = geometry_get_transform (this);

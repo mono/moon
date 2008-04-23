@@ -279,20 +279,16 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		bool adj_x = logical_bounds.w != 0.0;
 		bool adj_y = logical_bounds.h != 0.0;
              
-		//double diff_x = shape_bounds.w - logical_bounds.w;
-		//double diff_y = shape_bounds.h - logical_bounds.h;
-		//double sw = adj_x ? (w - diff_x) / logical_bounds.w : 1.0;
-		//double sh = adj_y ? (h - diff_y) / logical_bounds.h : 1.0;
-		double sh = h / shape_bounds.h;
-		double sw = w / shape_bounds.w;
-
-		//bool adj_x = true;
-		//bool adj_y = true;
+		double diff_x = shape_bounds.w - logical_bounds.w;
+		double diff_y = shape_bounds.h - logical_bounds.h;
+		double sw = adj_x ? (w - diff_x) / logical_bounds.w : 1.0;
+		double sh = adj_y ? (h - diff_y) / logical_bounds.h : 1.0;
 
 		bool center = false;
 
 		switch (stretch) {
 		case StretchFill:
+			center = true;
 			break;
 		case StretchUniform:
 			sw = sh = (sw < sh) ? sw : sh;
@@ -306,24 +302,24 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		break;
 		}
 
+		double x = vh || adj_x ? shape_bounds.x : 0;
+		double y = vw || adj_y ? shape_bounds.y : 0;
 		if (center)
 			cairo_matrix_translate (&stretch_transform, 
 						adj_x ? w * 0.5 : 0, 
 						adj_y ? h * 0.5 : 0);
+		else //UniformToFill
+			cairo_matrix_translate (&stretch_transform, 
+						adj_x ? (logical_bounds.w * sw + diff_x) * .5 : 0,
+						adj_y ? (logical_bounds.h * sh + diff_y) * .5: 0);
 		
 		cairo_matrix_scale (&stretch_transform, 
 				    adj_x ? sw : 1.0, 
 				    adj_y ? sh : 1.0);
 		
-		if (center) 
-			cairo_matrix_translate (&stretch_transform, 
-						adj_x ? -shape_bounds.w * 0.5 : 0, 
-						adj_y ? -shape_bounds.h * 0.5 : 0);
-
-		//double x = shape_bounds.x - (shape_bounds.x - logical_bounds.x);
-		//double y = shapes_bounds.y - (shape_bounds.y - logical_bounds.y);
-		double x = vh || adj_x ? shape_bounds.x : 0;
-		double y = vw || adj_y ? shape_bounds.y : 0;
+		cairo_matrix_translate (&stretch_transform, 
+					adj_x ? -shape_bounds.w * 0.5 : 0, 
+					adj_y ? -shape_bounds.h * 0.5 : 0);
 
 		if (!this->Is (Type::LINE) || (vh && vw))
 			cairo_matrix_translate (&stretch_transform, -x, -y);

@@ -1,3 +1,10 @@
+2008-04-22  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* rect.h: overrides for Union and IsEmpty to take a logical bool,
+	allowing logical bounds computation.
+	* geometry.cpp: use the overrided Union () in Computebounds
+	* shape.cpp: This is the stretches' Holy Grail !
+
 2008-04-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* eventargs.cpp (MouseEventArgs::GetStylusPoints): Make sure

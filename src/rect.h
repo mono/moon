@@ -57,9 +57,17 @@ struct Rect {
 
 	bool IsEmpty ()
 	{
-		return ((w <= 0.0) || (h <= 0.0));
+		return IsEmpty (false);
 	}
 
+	bool IsEmpty (bool logical)
+	{
+		if (logical)
+			return ((w <= 0.0) && (h <= 0.0));
+		else
+			return ((w <= 0.0) || (h <= 0.0));
+	}
+			
 	Rect Intersection (const Rect& rect)
 	{
 		Rect result = Rect ();
@@ -72,10 +80,24 @@ struct Rect {
 
 	Rect Union (const Rect& rect)
 	{
-		if (IsEmpty ())
+		return Union (rect, false);
+	}
+
+
+	// Note about the logical bool: there's now an override for both Rect::Union and
+	// Rect::IsEmpty that takes a bool. That bool allows union of rectangle with one
+	// empty extend. This is needed to compute logical bounds for example.
+	Rect Union (const Rect& rect, bool logical)
+	{
+		if (IsEmpty (logical))
 			return Rect (rect);
-		if ((rect.w <= 0.0) || (rect.h <= 0.0))
-			return Rect (*this);
+		if (logical) {
+			if ((rect.w <= 0.0) && (rect.h <= 0.0))
+				return Rect (*this);
+		} else {
+			if ((rect.w <= 0.0) || (rect.h <= 0.0))
+				return Rect (*this);	
+		}
 		Rect result = Rect ();
 		result.x = x < rect.x ? x : rect.x;
 		result.y = y < rect.y ? y : rect.y;
