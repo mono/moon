@@ -39,12 +39,8 @@ static SolidColorBrush *default_foreground_brush = NULL;
 static Brush *
 default_foreground (void)
 {
-	if (!default_foreground_brush) {
-		default_foreground_brush = new SolidColorBrush ();
-		Color *color = color_from_str ("black");
-		solid_color_brush_set_color (default_foreground_brush, color);
-		delete color;
-	}
+	if (!default_foreground_brush)
+		default_foreground_brush = new SolidColorBrush ("black");
 	
 	return (Brush *) default_foreground_brush;
 }
@@ -118,10 +114,7 @@ Inline::GetDefaultValue (DependencyProperty *prop)
 	// not yet attached to a textblock
 	
 	if (prop == Inline::ForegroundProperty) {
-		SolidColorBrush *brush = new SolidColorBrush ();
-		Color *color = color_from_str ("black");
-		solid_color_brush_set_color (brush, color);
-		delete color;
+		SolidColorBrush *brush = new SolidColorBrush ("black");
 		
 		SetValue (prop, Value (brush));
 		brush->unref ();
@@ -355,12 +348,10 @@ TextBlock::TextBlock ()
 	font->SetStyle (TEXTBLOCK_FONT_STYLE);
 	font->SetSize (TEXTBLOCK_FONT_SIZE);
 	
-	Brush *brush = new SolidColorBrush ();
-	Color *color = color_from_str ("black");
-	solid_color_brush_set_color ((SolidColorBrush *) brush, color);
+	Brush *brush = new SolidColorBrush ("black");
+	
 	SetValue (TextBlock::ForegroundProperty, Value (brush));
 	SetValue (TextBlock::InlinesProperty, Value::CreateUnref (new Inlines ()));
-	delete color;
 	brush->unref();
 }
 

@@ -1,3 +1,14 @@
+2008-04-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp: Use the new SolidColorBrush ctor.
+
+	* brush.cpp: Added property accessors to all brush classes so that
+	it isn't encessary to use long-winded c-function names to get
+	property values. Also made all c-wrappers call the c++ property
+	accessor methods.
+	(SolidColorBrush::SolidColorBrush): New .ctor to make life
+	simpler.
+
 2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: AudioPlayer: prevent calling SetTargetPts on the
