@@ -1797,9 +1797,14 @@ AudioPlayer::AudioNode::Play ()
 		if (update_target_pts || (sent_pts - updated_pts) > 10000) {
 			snd_pcm_sframes_t delay;
 			uint64_t pts = sent_pts;
+			uint64_t delay_pts;
 			err = snd_pcm_delay (pcm, &delay);
 			if (err >= 0) {
-				pts -= delay * (uint64_t) 10000000 / audio->stream->sample_rate;
+				delay_pts = delay * (uint64_t) 10000000 / audio->stream->sample_rate;
+				if (delay_pts > pts)
+					pts = 0;
+				else
+					pts -= delay_pts;
 			}
 			mplayer->SetTargetPts (pts);
 			updated_pts = pts;
