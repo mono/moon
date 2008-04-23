@@ -74,6 +74,8 @@ public:
 		RenderedFrame		= (1 << 7),
 		Eof					= (1 << 8),
 		Opened				= (1 << 9),
+		CanSeek				= (1 << 10),
+		CanPause			= (1 << 11),
 	};
 
 private:
@@ -133,16 +135,19 @@ public:
 	
 	void SetBit (PlayerState s) { state = (PlayerState) (s | state); }
 	void RemoveBit (PlayerState s) { state = (PlayerState) (~s & state); }
+	void SetBitTo (PlayerState s, bool value) { if (value) SetBit (s); else RemoveBit (s); }
 	bool GetBit (PlayerState s) { return (state & s) == s; }
 	void SetState (PlayerState s) { state = (PlayerState) ((state & ~StateMask) | s); }
 
 	void Play ();
-	bool CanPause ();
+	bool GetCanPause ();
+	void SetCanPause (bool value);
 	void Pause ();
 	void Stop (bool seek_to_start = true);
 	bool MediaEnded ();
 	
-	bool CanSeek ();
+	void SetCanSeek (bool value);
+	bool GetCanSeek ();
 	void Seek (uint64_t pts /* 100-nanosecond units (pts) */);
 	
 	cairo_surface_t *GetCairoSurface () { return video.surface; }

@@ -1,3 +1,31 @@
+2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, pipeline.h: MediaClosure: add SetContextUnsafe which
+	  don't take a ref to the context, and add a context_refcounted field
+	  to keep track of refcounting. This is required for long-living
+	  closures which would otherwise cause circular references. Add and
+	  implemetn a ASFMarkerDecoderInfo class, and implement notification
+	  of found markers back to listeners.
+	* src.mdp: Updated.
+	* downloader.cpp, downloader.h: Downloader: Add a streaming_features
+	  field, so that the plugin can return information about mms streams.
+	* http-streaming.cpp, http-streaming.h: Added
+	  parse_http_streaming_features.
+	* mplayer.h: Add property accessors for CanSeek and CanPause, and
+	  implement them. Select any marker streams.
+	* media.h, media.cpp: MediaElement: store the marker closure in the
+	  instance, so that we can delete it upon destruction. Read the
+	  streaming features from the downloader in order to set
+	  CanSeek/CanPause properly. TryOpen: if we don't have a filename,
+	  but we do have a downloaded file, use the downloaded file as the
+	  source (might happen if streaming stops before TryOpen is called).
+	* mplayer.cpp: Add property accessors for CanSeek and CanPause, and
+	  implement them. Select any marker streams. Don't check if we can
+	  pause in Pause (), since MediaElement implements Buffering calling
+	  Pause on us. MediaElement is already checking if media can be
+	  paused or not.
+	* Makefile.am: Added http-streaming.h|cpp.
+
 2008-04-22  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* rect.h: overrides for Union and IsEmpty to take a logical bool,

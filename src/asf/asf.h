@@ -88,6 +88,7 @@ private:
 	bool positioned;
 	// The index of the next packet to be read.
 	uint64_t next_packet_index;
+	int last_reader; // The index of the last reader which was given a payload
 
 	// Seeks to the specified pts directly on the source.
 	bool SeekToPts (uint64_t pts);
@@ -163,15 +164,7 @@ struct ASFFrameReaderIndex {
  *				Payload(s)
  *					Chunks of Media objects
  *	
- *	The problem is that one chunk of "Media object data" can span several payloads (and packets),
- *	and the pieces may come unordered, like this:
- *	
- *	- first 25% of media object #1 for stream #1
- *	- first 25% of media object #1 for stream #2
- *	- first 25% of media object #1 for stream #3
- *	- middle 50% of media object #1 for stream #2
- *	- last 75% of media object #1 for stream #1
- *	=> we have now all the data for the first media object of stream #1
+ *	The problem is that one chunk of "Media object data" can span several payloads (and packets).
  *	
  *	This class implements a reader that allows the consumer to just call Advance() and then get the all data
  *	for each "Media object" (here called "Frame", since it's shorter, and in general it corresponds
@@ -187,6 +180,7 @@ private:
 	IMediaDemuxer *demuxer;
 	ASFParser *parser;
 	ASFReader *reader;
+	MarkerStream *marker_stream;
 	
 	// The first pts that should be returned, any frames with pts below this one will be dropped.
 	uint64_t first_pts;
@@ -195,8 +189,7 @@ private:
 	bool key_frames_only;
 	int stream_number; // The stream this reader is reading for 
 	bool positioned;
-
-	int32_t script_command_stream_index;
+	bool last_payload; // If the last payload in this reader is the last payload in the entire file.
 	
 	// The queue of payloads we've built.
 	ASFFrameReaderData *first;
@@ -218,9 +211,7 @@ private:
 	MediaResult ReadMore (); // Reads another packet and stuffs the payloads into our queue 
 	void RemoveAll (); // Deletes the entire queue of payloads (and deletes every element)
 	void Remove (ASFFrameReaderData *data); // Unlinks the payload from the queue and deletes it.
-	
-	void ReadScriptCommand (); // If the current frame is a script command, decodes it and calls the callback set in the parser.
-
+		
 public:
 	ASFFrameReader (ASFParser *parser, int stream_index, IMediaDemuxer *demuxer, ASFReader *reader);
 	~ASFFrameReader ();
@@ -236,7 +227,6 @@ public:
 	bool IsKeyFrame () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->is_key_frame : false; }
 	uint64_t Pts () { return pts; }
 	int StreamId () { return stream_number; }
-	void FindScriptCommandStream ();
 	
 	void AppendPayload (asf_single_payload *payload, uint64_t packet_index);
 
@@ -254,6 +244,10 @@ public:
 	void SetOnlyKeyFrames (); // Sets the key_frames_only flag to true
 	void SetFirstPts (uint64_t); // Sets the first pts which is to be returned.
 	void Reset ();
+	
+	void SetMarkerStream (MarkerStream *stream);
+	MarkerStream *GetMarkerStream () { return marker_stream; }
+	void SetLastPayload (bool value) { last_payload = value; }
 };
 
 class ASFParser {

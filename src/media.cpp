@@ -296,10 +296,12 @@ MediaElement::ReadMarkers ()
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		if (demuxer->GetStream (i)->GetType () == MediaTypeMarker) {
 			MarkerStream *stream = (MarkerStream *) demuxer->GetStream (i);
-			MediaClosure *closure = new MediaClosure (marker_callback);
-			closure->SetContext (this);
-			closure->SetMedia (media);
-			stream->SetCallback (closure);
+			if (marker_closure == NULL) {
+				marker_closure = new MediaClosure (marker_callback);
+				marker_closure->SetContextUnsafe (this);
+				marker_closure->SetMedia (media);
+			}
+			stream->SetCallback (marker_closure);
 			break;
 		}
 	}
@@ -400,7 +402,7 @@ MediaElement::AdvanceFrame ()
 	uint64_t position; // pts
 	bool advanced;
 	
-	d(printf ("MediaElement::AdvanceFrame (), IsPlaying: %i, HasVideo: %i, HasAudio: %i\n",
+	e(printf ("MediaElement::AdvanceFrame (), IsPlaying: %i, HasVideo: %i, HasAudio: %i\n",
 		  IsPlaying (), mplayer->HasVideo (), mplayer->HasAudio ()));
 	
 	if (!IsPlaying ())
@@ -450,6 +452,7 @@ MediaElement::MediaElement ()
 	
 	advance_frame_timeout_id = 0;
 	streamed_markers = NULL;
+	marker_closure = NULL;
 	downloaded_file = NULL;
 	playlist = NULL;
 	mplayer = NULL;
@@ -499,9 +502,28 @@ MediaElement::Reinitialize (bool dtor)
 	d (printf ("MediaElement::Reinitialize (%i)\n", dtor));
 	
 	Value *val;
+	IMediaDemuxer *demuxer = NULL;
 	
 	if (mplayer)
 		mplayer->Close (dtor);
+
+	if (media != NULL) {
+		demuxer = media->GetDemuxer ();
+	
+		if (demuxer != NULL) {								
+			for (int i = 0; i < demuxer->GetStreamCount (); i++) {
+				if (demuxer->GetStream (i)->GetType () != MediaTypeMarker)
+					continue;
+					
+				((MarkerStream *) demuxer->GetStream (i))->SetCallback (NULL);
+				break;
+			}
+		}
+	}
+	if (marker_closure) {
+		delete marker_closure;
+		marker_closure = NULL;
+	}
 	
 	if (media != NULL) {
 		media->unref ();
@@ -567,7 +589,7 @@ MediaElement::Reinitialize (bool dtor)
 void
 MediaElement::SetMedia (Media *media)
 {
-        d(printf ("MediaElement::SetMedia (%p), current media: %p\n", media, this->media));
+	d(printf ("MediaElement::SetMedia (%p), current media: %p\n", media, this->media));
 	
 	if (this->media == media)
 		return;	
@@ -578,8 +600,6 @@ MediaElement::SetMedia (Media *media)
 	
 	ReadMarkers ();
 	
-	SetValue (MediaElement::CanSeekProperty, Value (mplayer->CanSeek ()));
-	SetValue (MediaElement::CanPauseProperty, Value (mplayer->CanPause ()));
 	SetValue (MediaElement::AudioStreamCountProperty, Value (mplayer->GetAudioStreamCount ()));
 	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (TimeSpan_FromPts (mplayer->GetDuration ()))));
 	SetValue (MediaElement::NaturalVideoHeightProperty, Value ((double) mplayer->GetHeight ()));
@@ -588,6 +608,16 @@ MediaElement::SetMedia (Media *media)
 	mplayer->SetMuted (GetValue (MediaElement::IsMutedProperty)->AsBool ());
 	mplayer->SetVolume (GetValue (MediaElement::VolumeProperty)->AsDouble ());
 	mplayer->SetBalance (GetValue (MediaElement::BalanceProperty)->AsDouble ());
+	
+	if (downloader != NULL && downloader->GetHttpStreamingFeatures () != 0) {
+		bool broadcast = downloader->GetHttpStreamingFeatures () & HttpStreamingBroadcast;
+		bool seekable = downloader->GetHttpStreamingFeatures () & HttpStreamingSeekable;
+		printf ("MediaElement::SetMedia () setting features %i to broadcast (%i) and seekable (%i)\n", downloader->GetHttpStreamingFeatures (), broadcast, seekable);
+		SetValue (MediaElement::CanPauseProperty, Value (!broadcast));
+		SetValue (MediaElement::CanSeekProperty, Value (seekable));
+	}
+	mplayer->SetCanPause (GetValue (MediaElement::CanPauseProperty)->AsBool ());
+	mplayer->SetCanSeek (GetValue (MediaElement::CanSeekProperty)->AsBool ());
 	
 	UpdatePlayerPosition (GetValue (MediaElement::PositionProperty));
 	
@@ -777,7 +807,7 @@ MediaElement::UpdateProgress ()
 	if (state & WaitingForOpen)
 		return;
 	
-	if (downloaded_file != NULL && !IsBuffering () && downloaded_file->IsWaiting ()) {
+	if (downloaded_file != NULL && IsPlaying () && downloaded_file->IsWaiting ()) {
 		// We're waiting for more data, switch to the 'Buffering' state.
 		d(printf ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: "
 			  "%llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, last available pts: %llu\n", 
@@ -811,11 +841,13 @@ MediaElement::UpdateProgress ()
 
 		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
 		
-		e(printf ("MediaElement::UpdateProgress (), buf start: %llu = %llu ms, buf end: %llu = %llu ms, "
-			  "buf time: %llu = %llu ms, last_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
-			  buffering_start, MilliSeconds_FromPts (buffering_start), buffering_end,
-			  MilliSeconds_FromPts (buffering_end), buffering_time, MilliSeconds_FromPts (buffering_time),
-			  last_available_pts, MilliSeconds_FromPts (last_available_pts), current, progress));
+		e(printf ("MediaElement::UpdateProgress (), buffer_pts: %llu = %llu ms, last_played_pts: %llu = %llu ms, "
+		"current_pts: %llu = %llu ms, "
+		"last_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
+				buffer_pts, MilliSeconds_FromPts (buffer_pts),
+				last_played_pts, MilliSeconds_FromPts (last_played_pts),
+				current_pts, MilliSeconds_FromPts (current_pts),
+				currently_available_pts, MilliSeconds_FromPts (currently_available_pts), current, progress));
 		
 		if (progress < 0.0)
 			progress = 0.0;
@@ -1002,6 +1034,8 @@ MediaElement::TryOpenFinished (void *user_data)
 void
 MediaElement::TryOpen ()
 {
+	MediaResult result; 
+	
 	switch (state) {
 	case Closed:
 	case Error:
@@ -1044,17 +1078,29 @@ MediaElement::TryOpen ()
 		
 		if (current_downloaded_file)
 			current_downloaded_file->ref ();
-
-		source = new FileSource (media, filename);
-		g_free (filename);
 		
-		if (MEDIA_SUCCEEDED (source->Initialize ()) && MEDIA_SUCCEEDED (media->Open (source))) {
-			MediaOpened (media);
+		if (filename == NULL && current_downloaded_file != NULL) {
+			source = current_downloaded_file;
+			source->ref ();
 		} else {
+			source = new FileSource (media, filename);
+			g_free (filename);
+		}
+	
+		if (!MEDIA_SUCCEEDED (result = source->Initialize ())) {
+			printf ("MediaFailed (source could not be initialized): %i\n", result);
 			MediaFailed ();
 			media->unref ();
 			media = NULL;
+		} else if (!MEDIA_SUCCEEDED (result = media->Open (source))) {
+			printf ("MediaFailed: %i\n", result);
+			MediaFailed ();
+			media->unref ();
+			media = NULL;
+		} else {
+			MediaOpened (media);
 		}
+		
 		source->unref ();
 		source = NULL;
 		
@@ -1081,7 +1127,7 @@ MediaElement::TryOpen ()
 void
 MediaElement::DownloaderComplete ()
 {
-	d (printf ("MediaElement::DownloaderComplete ()\n"));
+	d (printf ("MediaElement::DownloaderComplete (), downloader: %i\n", GET_OBJ_ID (downloader)));
 	
 	flags |= DownloadComplete;
 	
@@ -1127,6 +1173,9 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 	d(printf ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader, PartName, uri));
 	
 	Reinitialize (false);
+	
+	SetValue (MediaElement::CanSeekProperty, Value (!is_live));
+	SetValue (MediaElement::CanPauseProperty, Value (!is_live));
 	
 	MediaBase::SetSourceInternal (downloader, PartName);
 	
@@ -1195,7 +1244,7 @@ MediaElement::Pause ()
 	case Buffering:
 	case Playing:
 	case Stopped: // docs: pause
-		if (mplayer->CanPause ()) {
+		if (mplayer->GetCanPause ()) {
 			if (playlist && playlist->Pause ())
 				SetState (Paused);
 		}

@@ -745,6 +745,7 @@ ASFReader::ASFReader (ASFParser *parser, IMediaDemuxer *demuxer)
 	next_packet_index = 0;
 	memset (readers, 0, sizeof (ASFFrameReader*) * 128);
 	positioned = false;
+	last_reader = 0;
 }
 
 ASFReader::~ASFReader ()
@@ -830,13 +831,21 @@ ASFReader::ReadMore ()
 		asf_single_payload** payloads = packet->payloads->steal_payloads ();
 		ASFFrameReader *reader;
 		int i = -1;
+		int stream_id;
+
 		while (payloads [++i] != NULL) {
-			reader = GetFrameReader (payloads [i]->stream_id);
+			stream_id = payloads [i]->stream_id;
+			reader = GetFrameReader (stream_id);
 			if (reader == NULL) {
 				ASF_LOG ("ASFReader::ReadMore (): skipped, stream: %i, added pts: %llu\n", payloads [i]->stream_id, payloads [i]->get_presentation_time ());
 				delete payloads [i];
 				continue;
 			}
+			
+			if (stream_id != last_reader && last_reader != 0)
+				GetFrameReader (last_reader)->SetLastPayload (false);
+			last_reader = stream_id;
+				
 			reader->AppendPayload (payloads [i], positioned ? 0 : current_packet_index);
 			payloads_added++;
 		}
@@ -1173,8 +1182,15 @@ ASFReader::GetLastAvailablePts ()
 		return 0; // This shouldn't happen, but handle the case anyway.
 	}
 
-	for (int i = 0; i < 128; i++)
-		ptses [i] = (readers [i] == NULL) ? UINT64_MAX : 0;
+	for (int i = 0; i < 128; i++) {
+		if (readers [i] == NULL) {
+			ptses [i] = UINT64_MAX;
+		} else if (readers [i]->GetMarkerStream () != NULL) {
+			ptses [i] = UINT64_MAX;
+		} else {
+			ptses [i] = 0;
+		}
+	}
 
 	for (int current_packet_index = pi; current_packet_index >= 0; current_packet_index--) {
 		buffer = g_malloc (parser->GetPacketSize ());
@@ -1262,13 +1278,13 @@ ASFFrameReader::ASFFrameReader (ASFParser *p, int s, IMediaDemuxer *d, ASFReader
 	
 	first_pts = 0;
 	
-	script_command_stream_index = 0;
-	FindScriptCommandStream ();
+	marker_stream = NULL;		
 	
 	index = NULL;
 	index_size = 0;
 	key_frames_only = false;
 	positioned = false;
+	last_payload = false;
 }
 
 ASFFrameReader::~ASFFrameReader ()
@@ -1283,6 +1299,19 @@ ASFFrameReader::~ASFFrameReader ()
 	}
 	
 	g_free (index);
+	
+	if (marker_stream)
+		marker_stream->unref ();
+}
+
+void
+ASFFrameReader::SetMarkerStream (MarkerStream *stream)
+{
+	if (marker_stream)
+		marker_stream->unref ();
+	marker_stream = stream;
+	if (marker_stream)
+		marker_stream->ref ();
 }
 
 void
@@ -1383,22 +1412,6 @@ ASFFrameReader::FrameSearch (uint64_t pts)
 	return -1;
 }
 
-void
-ASFFrameReader::FindScriptCommandStream ()
-{
-	if (script_command_stream_index > 0)
-		return;
-	
-	for (int i = 1; i <= 127; i++) {
-		const asf_stream_properties* stream = parser->GetStream (i);
-		//printf ("Checking guid of stream %i (%p): %s against %s\n", i, stream, stream == NULL ? "-" : asf_guid_tostring (&stream->stream_type), stream == NULL ? "-" : asf_guid_tostring (&asf_guids_media_command));
-		if (stream != NULL && asf_guid_compare (&stream->stream_type, &asf_guids_media_command)) {
-			script_command_stream_index = i;
-			break;
-		}
-	}
-}
-
 bool
 ASFFrameReader::ResizeList (int size)
 {
@@ -1441,7 +1454,6 @@ ASFFrameReader::SetFirstPts (uint64_t pts)
 MediaResult
 ASFFrameReader::Advance ()
 {
-start:
 	MediaResult result = MEDIA_SUCCESS;
 	MediaResult read_result;
 	int payload_count = 0;
@@ -1481,6 +1493,14 @@ start:
 		
 		// Make sure we have any payloads in our queue of payloads
 		while (current == NULL) {
+			
+			// The last payload found in the file wasn't ours,
+			// and we have at least one payload.
+			if (!last_payload && payload_count > 0) {
+				goto end_frame;
+				break;
+			}
+			
 			// We went past the end of the payloads, read another packet to get more data.
 			current = last; // go back to the last element.
 			
@@ -1498,7 +1518,7 @@ start:
 				goto end_frame;
 			} else {
 				if (current == NULL) {
-					// There was no elements before reading more, our next element is the first one
+					// There were no elements before reading more, our next element is the first one
 					current = first;
 				} else {
 					current = current->next;
@@ -1567,23 +1587,16 @@ start:
 	
 end_frame:
 /*
-	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, pts = %.5llu, stream# = %i, media_object_number = %.3u, script_command_stream_index = %u (advanced).", 
-		size, IsKeyFrame () ? "true " : "false", Pts (), StreamNumber (), media_object_number, script_command_stream_index);
+	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, pts = %.5llu, stream# = %i, media_object_number = %.3u (advanced).", 
+		size, IsKeyFrame () ? "true " : "false", Pts (), StreamNumber (), media_object_number);
 
 	dump_int_data (payloads [0]->payload_data, payloads [0]->payload_data_length, 4);
 	printf ("\n");
 */
 /*
-	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, Pts = %.5llu, pts = %.5u, stream# = %i, media_object_number = %.3u, script_command_stream_index = %u (advanced).\n", 
-		size, IsKeyFrame () ? "true " : "false", Pts (), payloads [0]->presentation_time, StreamId (), media_object_number, script_command_stream_index);
+	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, Pts = %.5llu, pts = %.5u, stream# = %i, media_object_number = %.3u (advanced).\n", 
+		size, IsKeyFrame () ? "true " : "false", Pts (), payloads [0]->presentation_time, StreamId (), media_object_number);
 */
-	// Check if the current frame is a script command, in which case we must call the callback set in 
-	// the parser (and read another frame).
-	if (StreamId () == script_command_stream_index && script_command_stream_index > 0) {
-		printf ("reading script command\n");
-		ReadScriptCommand ();
-		goto start;
-	}
 	
 	AddFrameIndex (first_packet_index);
 
@@ -1664,74 +1677,11 @@ ASFFrameReader::EstimatePacketIndexOfPts (uint64_t pts)
 }
 
 void
-ASFFrameReader::ReadScriptCommand ()
-{
-	uint64_t pts;
-	char *text;
-	char *type;
-	gunichar2 *data;
-	gunichar2 *uni_type = NULL;
-	gunichar2 *uni_text = NULL;
-	int text_length = 0;
-	int type_length = 0;
-	ASF_LOG ("ASFFrameReader::ReadScriptCommand (), size = %llu.\n", size);
-
-	if (parser->embedded_script_command == NULL) {
-		ASF_LOG ("ASFFrameReader::ReadScriptCommand (): no callback set.\n");
-		return;
-	}
-
-	data = (gunichar2*) g_malloc (Size ());
-	
-	if (!Write (data)) {
-		ASF_LOG ("ASFFrameReader::ReadScriptCommand (): couldn't read the data.\n");
-		return;
-	}
-	
-	uni_type = data;
-	pts = Pts ();
-	
-	// the data is two arrays of WCHARs (type and text), null terminated.
-	// loop through the data, counting characters and null characters
-	// there should be at least two null characters.
-	int null_count = 0;
-	
-	for (uint32_t i = 0; i < (size / sizeof (gunichar2)); i++) {
-		if (uni_text == NULL) {
-			type_length++;
-		} else {
-			text_length++;
-		}
-		if (*(data + i) == 0) {
-			null_count++;
-			if (uni_text == NULL) {
-				uni_text = data + i + 1;
-			} else {
-				break; // Found at least two nulls
-			}
-		}
-	}
-	
-	if (null_count >= 2) {
-		text = wchar_to_utf8 (uni_text, text_length);
-		type = wchar_to_utf8 (uni_type, type_length);
-		
-		ASF_LOG ("ASFFrameReader::ReadScriptCommand (): sending script command to %p, type: '%s', text: '%s', pts: '%llu'.\n", parser->embedded_script_command, type, text, pts);
-		parser->embedded_script_command (parser->embedded_script_command_state, type, text, pts);
-		
-		g_free (text);
-		g_free (type);
-	} else {
-		ASF_LOG ("ASFFrameReader::ReadScriptCommand (): didn't find 2 null characters in the data.\n");
-	}
-	
-	g_free (data);
-
-}
-
-void
 ASFFrameReader::AppendPayload (asf_single_payload *payload, uint64_t packet_index)
 {
+	MarkerStream *tmp;
+	bool advanced;
+	
 	ASFFrameReaderData* node = new ASFFrameReaderData (payload);
 	node->packet_index = packet_index;
 	if (first == NULL) {
@@ -1742,7 +1692,28 @@ ASFFrameReader::AppendPayload (asf_single_payload *payload, uint64_t packet_inde
 		last->next = node;
 		last = node;
 	}
+	last_payload = true;
+	
+	if (marker_stream != NULL) {
+		tmp = marker_stream; // Crude way of avoiding a stack overflow.
+		marker_stream = NULL;
+		advanced = MEDIA_SUCCEEDED (Advance ());
+		marker_stream = tmp;
 
+		if (advanced) {
+			void *buffer = g_malloc (Size ());
+			if (Write (buffer)) {
+				MediaFrame *frame = new MediaFrame (marker_stream);
+				frame->pts = Pts ();
+				frame->buflen = Size ();
+				frame->buffer = (uint8_t *) buffer;
+				marker_stream->MarkerFound (frame);
+				frame->buffer = NULL;
+				delete frame;
+			}
+			g_free (buffer);
+		}
+	}
 #if 0
 	int counter = 0;
 	node = first;

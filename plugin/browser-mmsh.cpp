@@ -12,6 +12,7 @@
 
 #include "browser-mmsh.h"
 #include "plugin-downloader.h"
+#include "http-streaming.h"
 #include <asf/asf.h>
 
 #define LE_16(val) (GINT16_FROM_LE (*((u_int16_t*)(val))))
@@ -21,6 +22,8 @@
 #define MMS_HEADER   0x48
 #define MMS_METADATA 0x4D
 #define ASF_DEFAULT_PACKET_SIZE 2888
+
+#define LOG_MMS(...) //printf (__VA_ARGS__);
 
 // BrowserMmshResponse
 
@@ -96,12 +99,14 @@ NS_IMPL_ISUPPORTS1 (AsyncBrowserMmshResponse, nsIStreamListener)
 NS_IMETHODIMP
 AsyncBrowserMmshResponse::OnStartRequest (nsIRequest *request, nsISupports *context)
 {
+	LOG_MMS ("AsyncBrowserMmshResponse::OnStartRequest ()\n");
 	return NS_OK;
 }
 
 NS_IMETHODIMP
 AsyncBrowserMmshResponse::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
+	LOG_MMS ("AsyncBrowserMmshResponse::OnStopRequest ()\n");
 	this->finisher (this, this->context);
 	return NS_OK;
 }
@@ -149,7 +154,9 @@ typedef struct {
 static void
 parse_features (AsyncBrowserMmshResponse *abmr, const char *val)
 {
-	g_print ("features: %s\n", val);
+	LOG_MMS ("parse_features (%p, '%s')\n", abmr, val);
+	
+	abmr->GetContext ()->dl->SetHttpStreamingFeatures (parse_http_streaming_features (val));
 }
 
 static MetadataParseTable pragma_table [] = {
@@ -257,6 +264,8 @@ void
 AsyncBrowserMmshResponse::MmsMetadataParse (int packet_size, const char *data)
 {
 	const char *end = data + packet_size;
+
+	LOG_MMS ("AsyncBrowserMmshResponse::MmsMetadataParse (). \n* Metadata: *\n%s\n* End Metadata *\n", data);
 
 	while (data < end && *data != 0){
 		int j = 0;
@@ -471,7 +480,7 @@ BrowserMmshRequest::CreateChannel ()
 bool
 BrowserMmshRequest::GetAsyncResponse (AsyncMmshResponseDataAvailableHandler reader,
 				      AsyncMmshResponseNotifierHandler notifier,
-				      AsyncMmshResponseFinishedHandler finisher, gpointer context)
+				      AsyncMmshResponseFinishedHandler finisher, PluginDownloader *context)
 {
 	nsresult rs = NS_OK;
 	AsyncBrowserMmshResponse *response;

@@ -1,3 +1,9 @@
+2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* browser-mmsh.cpp: Parse http streaming metadata/features.
+	* browser-mmsh.h: AsyncBrowserMmshResponse: Type the context as a
+	  PluginDownloader instead of a generic gpointer.
+
 2008-04-22  Larry Ewing  <lewing@novell.com>
 
 	* moonlight.h: use HAVE_LIBXUL_UNSTABLE to determine which symbols

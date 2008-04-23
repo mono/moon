@@ -21,6 +21,7 @@ G_BEGIN_DECLS
 #include <cairo.h>
 
 #include "dependencyobject.h"
+#include "http-streaming.h"
 
 class Downloader;
 
@@ -51,6 +52,7 @@ class Downloader : public DependencyObject {
 	gpointer downloader_state;
 	
 	gpointer context;
+	HttpStreamingFeatures streaming_features;
 	
 	int64_t file_size;
 	int64_t total;
@@ -138,7 +140,8 @@ class Downloader : public DependencyObject {
 	void     SetContext (gpointer context) { this->context = context;}
 	gpointer GetContext () { return context; }
 	gpointer GetDownloaderState () { return downloader_state; }
-
+	void     SetHttpStreamingFeatures (HttpStreamingFeatures features) { streaming_features = features; }
+	HttpStreamingFeatures GetHttpStreamingFeatures () { return streaming_features; }
 };
 
 Downloader *downloader_new (void);

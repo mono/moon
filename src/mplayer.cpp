@@ -96,7 +96,7 @@ Video::Video ()
 
 MediaPlayer::MediaPlayer (MediaElement *el)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::MediaPlayer (%p, id=%i), id=%i", el, GET_OBJ_ID (el), GET_OBJ_ID (this));
+	LOG_MEDIAPLAYER ("MediaPlayer::MediaPlayer (%p, id=%i), id=%i\n", el, GET_OBJ_ID (el), GET_OBJ_ID (this));
 
 	element = el;
 	pthread_mutex_init (&target_pts_lock, NULL);
@@ -108,7 +108,7 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 
 MediaPlayer::~MediaPlayer ()
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::~MediaPlayer (), id=%i", GET_OBJ_ID (this));
+	LOG_MEDIAPLAYER ("MediaPlayer::~MediaPlayer (), id=%i\n", GET_OBJ_ID (this));
 	Close (true);
 	
 	pthread_mutex_destroy (&target_pts_lock);
@@ -123,7 +123,7 @@ struct EnqueueFrameStruct {
 gboolean
 MediaPlayer::EnqueueFramesCallback (void *user_data)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::EnqueueFramesCallback ()\n");
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueFramesCallback ()\n");
 	EnqueueFrameStruct *efs = (EnqueueFrameStruct *) user_data;
 
 	efs->mplayer->EnqueueFrames (efs->audio, efs->video);
@@ -338,6 +338,9 @@ MediaPlayer::Open (Media *media)
 			
 			// printf ("video size: %i, %i\n", video.stream->width, video.stream->height);
 			break;
+		case MediaTypeMarker:
+			LOG_MEDIAPLAYER ("MediaPlayer::Open (): Found a marker stream, selecting it.\n");
+			stream->SetSelected (true);
 		default:
 			break;
 		}
@@ -389,6 +392,8 @@ MediaPlayer::Initialize ()
 	state = (PlayerState) 0;
 	SetState (Stopped);
 	SetBit (SeekSynched);
+	SetBit (CanSeek);
+	SetBit (CanPause);
 	
 	start_time = 0;
 	start_pts = 0;
@@ -700,10 +705,16 @@ MediaPlayer::GetTimeoutInterval ()
 }
 
 bool
-MediaPlayer::CanPause ()
+MediaPlayer::GetCanPause ()
 {
 	// FIXME: should return false if it is streaming media
-	return true;
+	return GetBit (CanPause);
+}
+
+void
+MediaPlayer::SetCanPause (bool value)
+{
+	SetBitTo (CanPause, value);
 }
 
 void
@@ -711,7 +722,7 @@ MediaPlayer::Pause ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i\n", state);
 
-	if (IsPaused () || !CanPause ())
+	if (IsPaused ())
 		return;
 	
 	SetState (Paused);
@@ -790,7 +801,7 @@ MediaPlayer::Seek (uint64_t pts)
 	uint64_t duration = GetDuration ();
 	bool resume = IsPlaying ();
 	
-	if (!CanSeek ())
+	if (!GetCanSeek ())
 		return;
 	
 	if (pts > start_pts + duration)
@@ -830,10 +841,15 @@ MediaPlayer::Seek (uint64_t pts)
 }
 
 bool
-MediaPlayer::CanSeek ()
+MediaPlayer::GetCanSeek ()
 {
-	// FIXME: should return false if it is streaming media
-	return true;
+	return GetBit (CanSeek);
+}
+
+void
+MediaPlayer::SetCanSeek (bool value)
+{
+	SetBitTo (CanSeek, value);
 }
 
 void

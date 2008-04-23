@@ -76,6 +76,7 @@ Downloader::Downloader ()
 	downloader_state = Downloader::create_state (this);
 	consumer_closure = NULL;
 	context = NULL;
+	streaming_features = HttpStreamingFeaturesNone;
 	notify_size = NULL;
 	this->write = NULL;
 	

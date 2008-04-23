@@ -86,6 +86,7 @@ class MediaClosure;
 class MediaFrame;
 class VideoStream;
 class AudioStream;
+class MarkerStream;
 class IImageConverter;
 class MediaMarker;
 class ProgressiveSource;
@@ -128,6 +129,7 @@ typedef int32_t MediaResult;
 // (otherwise the pipeline will always access the latest decoded frame, which almost never
 // is the frame you want to show).
 #define FRAME_COPY_DECODED_DATA (1 << 5) 
+#define FRAME_MARKER (1 << 6)
 
 enum MediaSourceType {
 	MediaSourceTypeFile = 1,
@@ -183,6 +185,7 @@ private:
 	Media *media; // Set when this is the callback in Media::GetNextFrameAsync
 	EventObject *context; // The property of whoever creates the closure.
 	MediaCallback *callback; // The callback to call
+	bool context_refcounted; // If we hold a ref to context.
 
 public:
 	MediaClosure (MediaCallback *callback);
@@ -203,6 +206,7 @@ public:
 	void SetMedia (Media *media);
 	Media *GetMedia ();
 
+	void SetContextUnsafe (EventObject *context); // Sets the context, but doesn't add a ref.
 	void SetContext (EventObject *context);
 	EventObject *GetContext ();
 
@@ -376,6 +380,7 @@ public:
 	bool IsPlanar () { return (state & FRAME_PLANAR) == FRAME_PLANAR; }
 	bool IsCopyDecodedData () { return (state & FRAME_COPY_DECODED_DATA) == FRAME_COPY_DECODED_DATA; }
 	bool IsKeyFrame () { return (state & FRAME_KEYFRAME) == FRAME_KEYFRAME; }
+	bool IsMarker () { return (state & FRAME_MARKER) == FRAME_MARKER; }
 	
 	IMediaStream *stream;
 	void *decoder_specific_data; // data specific to the decoder
@@ -387,6 +392,7 @@ public:
 	
 	// The demuxer sets these to the encoded data which the
 	// decoder then uses and replaces with the decoded data.
+	// For markers this is a MarkerStream *
 	uint8_t *buffer;
 	uint32_t buflen;
 	
@@ -900,7 +906,19 @@ public:
 	
 	virtual MoonMediaType GetType () { return MediaTypeMarker; }
 	
+	// The marker stream will never delete the closure
 	void SetCallback (MediaClosure *closure);
+	// Since the markers are taking the wrong way through the pipeline 
+	// (it's the pipeline who is pushing the markers up to the consumer, 
+	// not the consumer reading new markers), this works in the following way:
+	// The demuxer reaches a marker somehow, creates a MediaFrame with the marker data and calls MarkerFound on the MarkerStream.
+	// The MarkerStream calls the decoder to decode the frame.
+	// The decoder must create an instance of MediaMarker and store it in the frame's buffer.
+	// The MarkerStream then calls the closure with the MediaMarker.
+	// Cleanup:
+	// 	- The stream (in MarkerFound) frees the MediaMarker.
+	//  - The demuxer frees the MediaFrame, and the original frame buffer (before decoding).
+	void MarkerFound (MediaFrame *frame);
 };
 
 class ASFMarkerDecoder : public IMediaDecoder {
@@ -910,9 +928,21 @@ protected:
 public:
 	ASFMarkerDecoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream) {}
 	
-	virtual MediaResult DecodeFrame (MediaFrame *frame) { return MEDIA_SUCCESS; }
-	virtual MediaResult Open () {return MEDIA_SUCCESS; }
+	virtual MediaResult DecodeFrame (MediaFrame *frame);
+	virtual MediaResult Open () { return MEDIA_SUCCESS; }
+	virtual const char *GetName () { return "ASFMarkerDecoder"; }
 }; 
+
+class ASFMarkerDecoderInfo : public DecoderInfo {
+public:
+	virtual bool Supports (const char *codec) { return !strcmp (codec, "asf-marker"); };
+	
+	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream)
+	{
+		return new ASFMarkerDecoder (media, stream);
+	}	
+	virtual const char *GetName () { return "ASFMarkerDecoder"; }
+};
 
 /*
  * Mp3 related implementations

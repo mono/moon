@@ -1,3 +1,10 @@
+2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h: Implement notification to the pipeline of found
+	  markers. Be a bit more lax about when a frame is complete: if we
+	  get a payload for another stream, then treat the frame as
+	  completed.
+
 2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: ASFReader: don't ref the demuxer, it causes a circular

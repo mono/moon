@@ -176,6 +176,7 @@ class MediaElement : public MediaBase {
 	static void size_notify (int64_t size, gpointer data);
 	
 	TimelineMarkerCollection *streamed_markers;
+	MediaClosure *marker_closure;
 	int advance_frame_timeout_id;
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;

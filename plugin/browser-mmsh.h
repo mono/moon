@@ -12,6 +12,7 @@
 
 #include "moonlight.h"
 #include "runtime.h"
+#include "plugin-downloader.h"
 
 #include <nsCOMPtr.h>
 #include <nsXPCOM.h>
@@ -86,7 +87,7 @@ class AsyncBrowserMmshResponse : public BrowserMmshResponse, public nsIStreamLis
 	AsyncMmshResponseFinishedHandler finisher;
 	AsyncMmshResponseNotifierHandler notifier;
 	AsyncMmshResponseDataAvailableHandler reader;
-	gpointer context;
+	PluginDownloader *context;
 	char *tmp_buffer;
 	uint32_t tmp_size;
 	uint32_t size;
@@ -106,7 +107,7 @@ public:
 				  AsyncMmshResponseDataAvailableHandler reader, 
 				  AsyncMmshResponseNotifierHandler notifier, 
 				  AsyncMmshResponseFinishedHandler finisher,
-				  gpointer context)
+				  PluginDownloader *context)
 		: BrowserMmshResponse (channel)
 	{
 		this->tmp_buffer = NULL;
@@ -129,7 +130,7 @@ public:
 	{
 		g_free (tmp_buffer);
 	}
-
+	PluginDownloader *GetContext () { return context; }
 };
 
 class BrowserMmshRequest {
@@ -157,7 +158,7 @@ public:
 
 	bool GetAsyncResponse (AsyncMmshResponseDataAvailableHandler reader, 
 			       AsyncMmshResponseNotifierHandler notifier,
-			       AsyncMmshResponseFinishedHandler finisher, gpointer context);
+			       AsyncMmshResponseFinishedHandler finisher, PluginDownloader *context);
 	void SetHttpHeader (const char *name, const char *value);
 	void SetBody (const char *body, int size);
 };

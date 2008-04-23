@@ -234,12 +234,17 @@ Media::Initialize ()
 	
 	media_objects = new Queue ();	
 	
-	// register stuff
+	// demuxers
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 	Media::RegisterDemuxer (new ASXDemuxerInfo ());
+
+	// converters
 	if (!(moonlight_flags & RUNTIME_INIT_FFMPEG_YUV_CONVERTER))
 		Media::RegisterConverter (new YUVConverterInfo ());
+
+	// decoders
+	Media::RegisterDecoder (new ASFMarkerDecoderInfo ());
 #ifdef INCLUDE_FFMPEG
 	register_ffmpeg ();
 #else
@@ -921,6 +926,19 @@ ASFDemuxer::ReadMarkers ()
 				currently the demuxer will call the streamed_marker_callback when it encounters any of these.    
 	*/
 	
+	// Hookup to the marker (ASF_COMMAND_MEDIA) stream
+	MarkerStream *marker_stream;
+	ASFFrameReader *reader;
+	for (int i = 0; i < GetStreamCount (); i++) {
+		if (GetStream (i)->GetType () == MediaTypeMarker) {
+			marker_stream = (MarkerStream *) GetStream (i);
+			this->reader->SelectStream (stream_to_asf_index [marker_stream->index], true);
+			reader = this->reader->GetFrameReader (stream_to_asf_index [marker_stream->index]);
+			reader->SetMarkerStream (marker_stream);
+			printf ("ASFDemuxer::ReadMarkers (): Hooked up marker stream.\n");
+		}
+	}
+		
 	// Read the markers (if any)
 	List *markers = media->GetMarkers ();
 	const char *type;
@@ -1206,6 +1224,74 @@ ASFDemuxer::ReadFrame (MediaFrame *frame)
 	
 	return MEDIA_SUCCESS;
 }
+
+/*
+ * ASFMarkerDecoder
+ */
+
+MediaResult 
+ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
+{
+	LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame ()\n");
+	
+	MediaResult result;
+	char *text;
+	char *type;
+	gunichar2 *data;
+	gunichar2 *uni_type = NULL;
+	gunichar2 *uni_text = NULL;
+	int text_length = 0;
+	int type_length = 0;
+	uint32_t size = 0;
+	
+	if (frame->buflen % 2 != 0 || frame->buflen == 0 || frame->buffer == NULL)
+		return MEDIA_CORRUPTED_MEDIA;
+
+	data = (gunichar2 *) frame->buffer;
+	uni_type = data;
+	size = frame->buflen;
+	
+	// the data is two arrays of WCHARs (type and text), null terminated.
+	// loop through the data, counting characters and null characters
+	// there should be at least two null characters.
+	int null_count = 0;
+	
+	for (uint32_t i = 0; i < (size / sizeof (gunichar2)); i++) {
+		if (uni_text == NULL) {
+			type_length++;
+		} else {
+			text_length++;
+		}
+		if (*(data + i) == 0) {
+			null_count++;
+			if (uni_text == NULL) {
+				uni_text = data + i + 1;
+			} else {
+				break; // Found at least two nulls
+			}
+		}
+	}
+	
+	if (null_count >= 2) {
+		text = wchar_to_utf8 (uni_text, text_length);
+		type = wchar_to_utf8 (uni_type, type_length);
+		
+		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): sending script command to %p, type: '%s', text: '%s', pts: '%llu'.\n", parser->embedded_script_command, type, text, pts);
+
+		frame->buffer = (uint8_t *) new MediaMarker (type, text, frame->pts);
+		frame->buflen = sizeof (MediaMarker);
+		
+		g_free (text);
+		g_free (type);
+		result = MEDIA_SUCCESS;
+	} else {
+		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): didn't find 2 null characters in the data.\n");
+		result = MEDIA_CORRUPTED_MEDIA;
+	}
+		
+	return result;
+}
+
 
 /*
  * ASFDemuxerInfo
@@ -2787,13 +2873,15 @@ MediaClosure::MediaClosure (MediaCallback *cb)
 	media = NULL;
 	context = NULL;
 	result = 0;
+	context_refcounted = true;
 }
 
 MediaClosure::~MediaClosure ()
 {
 	delete frame;
 
-	base_unref (context);
+	if (context_refcounted)
+		base_unref (context);
 	base_unref (media);
 }
 
@@ -2823,13 +2911,24 @@ MediaClosure::GetMedia ()
 }
 
 void
+MediaClosure::SetContextUnsafe (EventObject *context)
+{
+	if (this->context && context_refcounted)
+		this->context->unref ();
+		
+	this->context = context;
+	context_refcounted = false;
+}
+
+void
 MediaClosure::SetContext (EventObject *context)
 {
-	if (this->context)
+	if (this->context && context_refcounted)
 		this->context->unref ();
 	this->context = context;
 	if (this->context)
 		this->context->ref ();
+	context_refcounted = true;
 }
 
 EventObject *
@@ -3276,15 +3375,44 @@ MarkerStream::MarkerStream (Media *media) : IMediaStream (media)
 
 MarkerStream::~MarkerStream ()
 {
-	delete closure;
+	closure = NULL;
+}
+
+void
+MarkerStream::MarkerFound (MediaFrame *frame)
+{
+	MediaResult result;
+	
+	if (decoder == NULL) {
+		LOG_PIPELINE ("MarkerStream::MarkerFound (): Got marker, but there's no decoder for the marker.\n");
+		return;
+	}
+	
+	result = decoder->DecodeFrame (frame);
+	
+	if (!MEDIA_SUCCEEDED (result)) {
+		LOG_PIPELINE ("MarkerStream::MarkerFound (): Error while decoding marker: %i\n", result);
+		return;
+	}
+	
+	if (closure == NULL) {
+		LOG_PIPELINE ("MarkerStream::MarkerFound (): Got decoded marker, but nobody is waiting ofr it.\n");
+		return;
+	}
+	
+	closure->marker = (MediaMarker *) frame->buffer;
+	closure->Call ();
+	
+	delete closure->marker;
+	closure->marker = NULL;
+	
+	frame->buffer = NULL;
+	frame->buflen = 0;
 }
 
 void
 MarkerStream::SetCallback (MediaClosure *closure)
 {
-	if (this->closure)
-		delete this->closure;
-	
 	this->closure = closure;
 }
 
