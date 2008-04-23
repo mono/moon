@@ -189,7 +189,7 @@ UIElement::ComputeTotalRenderVisibility ()
 	bool visible = (flags & UIElement::RENDER_VISIBLE) != 0;
 	bool parent_visible = true;
 
-	total_opacity = GetValue (OpacityProperty)->AsDouble();
+	total_opacity = GetOpacity ();
 
 	if ((visible || !IS_INVISIBLE (total_opacity)) && GetVisualParent ()) {
 		GetVisualParent ()->ComputeTotalRenderVisibility ();
@@ -498,7 +498,7 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 void
 UIElement::FrontToBack (Region *surface_region, List *render_list)
 {
-	double local_opacity = GetValue (OpacityProperty)->AsDouble();
+	double local_opacity = GetOpacity ();
 
 	if (!GetRenderVisible ()
 	    || IS_INVISIBLE (total_opacity)) {
@@ -584,7 +584,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 void
 UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
 {
-	double local_opacity = GetValue (OpacityProperty)->AsDouble();
+	double local_opacity = GetOpacity ();
 
 	cairo_save (cr);
 
@@ -612,7 +612,7 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
 void
 UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {
-	double local_opacity = GetValue (OpacityProperty)->AsDouble();
+	double local_opacity = GetOpacity ();
 
 	if (opacityMask != NULL) {
 		cairo_pattern_t *mask;
