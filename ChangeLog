@@ -1,5 +1,9 @@
 2008-04-22  Larry Ewing  <lewing@novell.com>
 
+	* configure.ac: check for new mozembed versions.
+
+2008-04-22  Larry Ewing  <lewing@novell.com>
+
 	* configure.ac: new checks for firefox3/libxul1.9. Define
 	HAVE_LIBXUL_UNSTABLE in the ff3 case.
 

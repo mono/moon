@@ -26,14 +26,18 @@
  */
 
 
+#include "config.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <dbus/dbus-glib.h>
 
-#include "gtkembedmoz/gtkmozembed.h"
-
+#if HAVE_GECK0_1_9
+#include <gtkmozembed.h>
+#else
+#include "gtkmozemed/gtkmozembed.h"
+#endif
 
 #include "nsXPCOMGlue.h"
 
@@ -123,8 +127,12 @@ new_gtk_browser ()
 
 	nsresult rv = GRE_GetGREPathWithProperties (&gre_version, 1, nsnull, 0,	xpcom_lib_path, sizeof (xpcom_lib_path));
 	xpcom_dir_path = g_path_get_dirname (xpcom_lib_path);
-	gtk_moz_embed_set_comp_path (xpcom_dir_path);
 
+#if HAVE_GECKO_1_9
+	gtk_moz_embed_set_path (xpcom_dir_path);
+#else
+	gtk_moz_embed_set_comp_path (xpcom_dir_path);
+#endif
 	g_free (xpcom_dir_path);
 
 	browser->moz_embed = gtk_moz_embed_new();

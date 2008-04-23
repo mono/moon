@@ -1,5 +1,8 @@
 2008-04-22  Larry Ewing  <lewing@novell.com>
 
+	* agviewer/agviewer.cpp (new_gtk_browser): changes to work against
+	newer gtkmozembed versions.
+
 	* shocker/image-capture.cpp (acquire_screenshot): add a probably
 	pointless argument to capture in the hope of speeding it up a
 	little.
