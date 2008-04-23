@@ -684,15 +684,15 @@ DoubleAnimation* double_animation_new (void);
 ColorAnimation*  color_animation_new (void);
 PointAnimation*  point_animation_new (void);
 
-KeyFrame* key_frame_new ();
+KeyFrame* key_frame_new (void);
 
 ColorKeyFrameCollection *color_key_frame_collection_new (void);
 DoubleKeyFrameCollection *double_key_frame_collection_new (void);
 PointKeyFrameCollection *point_key_frame_collection_new (void);
 
-DoubleKeyFrame* double_key_frame_new ();
-ColorKeyFrame*  color_key_frame_new ();
-PointKeyFrame*  point_key_frame_new ();
+DoubleKeyFrame* double_key_frame_new (void);
+ColorKeyFrame*  color_key_frame_new (void);
+PointKeyFrame*  point_key_frame_new (void);
 
 DiscreteDoubleKeyFrame* discrete_double_key_frame_new (void);
 DiscreteColorKeyFrame*  discrete_color_key_frame_new (void);

@@ -828,7 +828,7 @@ Value *
 KeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	g_warning ("KeyFrame::InterpolateValue has been called. The derived class %s should have overridden it.",
-		   dependency_object_get_name (this));
+		   GetName ());
 	return NULL;
 }
 
@@ -869,28 +869,36 @@ KeyFrameCollection::~KeyFrameCollection ()
 int
 KeyFrameCollection::Add (DependencyObject *data)
 {
-	int n = Collection::Add (data);
-	if (n != -1)
-		resolved = false;
+	int n;
+	
+	if ((n = Collection::Add (data)) == -1)
+		return -1;
+	
+	resolved = false;
+	
 	return n;
 }
 
 bool
 KeyFrameCollection::Insert (int index, DependencyObject *data)
 {
-	bool b = Collection::Insert (index, data);
-	if (b)
-		resolved = false;
-	return b;
+	if (!Collection::Insert (index, data))
+		return false;
+	
+	resolved = false;
+	
+	return true;
 }
 
 bool
 KeyFrameCollection::Remove (DependencyObject *data)
 {
-	bool b = Collection::Remove (data);
-	if (b)
-		resolved = false;
-	return b;
+	if (!Collection::Remove (data))
+		return false;
+	
+	resolved = false;
+	
+	return true;
 }
 
 void
@@ -959,20 +967,20 @@ KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyOb
 	Collection::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-ColorKeyFrameCollection*
-color_key_frame_collection_new ()
+ColorKeyFrameCollection *
+color_key_frame_collection_new (void)
 {
 	return new ColorKeyFrameCollection ();
 }
 
-DoubleKeyFrameCollection*
-double_key_frame_collection_new ()
+DoubleKeyFrameCollection *
+double_key_frame_collection_new (void)
 {
 	return new DoubleKeyFrameCollection ();
 }
 
-PointKeyFrameCollection*
-point_key_frame_collection_new ()
+PointKeyFrameCollection *
+point_key_frame_collection_new (void)
 {
 	return new PointKeyFrameCollection ();
 }
@@ -984,8 +992,8 @@ DoubleKeyFrame::DoubleKeyFrame ()
 	SetValue (0.0);
 }
 
-DoubleKeyFrame*
-double_key_frame_new ()
+DoubleKeyFrame *
+double_key_frame_new (void)
 {
 	return new DoubleKeyFrame ();
 }
@@ -998,8 +1006,8 @@ ColorKeyFrame::ColorKeyFrame ()
 	SetValue (c);
 }
 
-ColorKeyFrame*
-color_key_frame_new ()
+ColorKeyFrame *
+color_key_frame_new (void)
 {
 	return new ColorKeyFrame ();
 }
@@ -1012,8 +1020,8 @@ PointKeyFrame::PointKeyFrame ()
 	SetValue (p);
 }
 
-PointKeyFrame*
-point_key_frame_new ()
+PointKeyFrame *
+point_key_frame_new (void)
 {
 	return new PointKeyFrame ();
 }

@@ -1,5 +1,8 @@
 2008-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* animation.h: Make sure all c-API _new() functions take void as
+	argument.
+
 	* uielement.cpp: Added some property accessors.
 
 	* text.cpp: Use the new SolidColorBrush ctor.
