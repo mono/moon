@@ -1,3 +1,9 @@
+2008-04-23  Geoff Norton  <gnorton@novell.com>
+
+	* swscale-converter.cpp, pipeline-ffmpeg.cpp, Makefile.am: Only
+	include swscale and ffmpeg cpp files in the build if their configure
+	flags are set.
+	
 2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* type.cpp: When looking for types use case-insensitive type
