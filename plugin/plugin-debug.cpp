@@ -189,7 +189,13 @@ static void save_callback (GtkWidget *widget, gpointer data)
 {
 	PluginInstance *plugin = (PluginInstance*) data;
 	
-	PluginInstance::moon_source *src = (PluginInstance::moon_source*) plugin->GetSources ()->First ();
+	List *sources = plugin->GetSources ();
+	if (!sources) {
+		printf (" files do not exists anymore (changed url?)\n");
+		return;
+	}
+
+	PluginInstance::moon_source *src = (PluginInstance::moon_source*) sources->First ();
 	const gchar *dir = "/tmp/moon-dump";
 	mkdir (dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	for (; src != NULL; src = (PluginInstance::moon_source*) src->next) {
