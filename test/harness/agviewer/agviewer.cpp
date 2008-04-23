@@ -33,7 +33,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <dbus/dbus-glib.h>
 
-#if HAVE_GECK0_1_9
+#if HAVE_GECKO_1_9
 #include <gtkmozembed.h>
 #else
 #include "gtkmozemed/gtkmozembed.h"
