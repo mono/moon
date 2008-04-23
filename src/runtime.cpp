@@ -69,8 +69,6 @@ static struct {
 	guint32 flag;
 	bool set;
 } overrides[] = {
-	{ "text=pango",        RUNTIME_INIT_PANGO_TEXT_LAYOUT,     true  },
-	{ "text=silverlight",  RUNTIME_INIT_PANGO_TEXT_LAYOUT,     false },
 	{ "codecs=microsoft",  RUNTIME_INIT_MICROSOFT_CODECS,      true  },
 	{ "codecs=ffmpeg",     RUNTIME_INIT_MICROSOFT_CODECS,      false },
 	{ "timesource=manual", RUNTIME_INIT_MANUAL_TIMESOURCE,     true  },

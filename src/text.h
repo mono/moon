@@ -14,13 +14,11 @@
 G_BEGIN_DECLS
 
 #include <cairo.h>
-#include <pango/pango.h>
 
 #include "downloader.h"
 #include "moon-path.h"
 #include "layout.h"
 #include "brush.h"
-#include "mango.h"
 #include "font.h"
 
 
@@ -40,10 +38,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *ForegroundProperty;
 	static DependencyProperty *TextDecorationsProperty;
 	
-	union {
-		PangoFontDescription *pango;
-		TextFontDescription *custom;
-	} font;
+	TextFontDescription *font;
 
 	Brush *foreground;
 	bool autogen;
@@ -109,15 +104,8 @@ void run_set_text (Run *run, const char *value);
 
 /* @ContentProperty="Inlines" */
 class TextBlock : public FrameworkElement {
-	union {
-		PangoFontDescription *pango;
-		TextFontDescription *custom;
-	} font;
-	union {
-		PangoLayout *pango;
-		TextLayout *custom;
-	} layout;
-	MangoRenderer *renderer;
+	TextFontDescription *font;
+	TextLayout *layout;
 	Downloader *downloader;
 	
 	double actual_height;
@@ -148,7 +136,6 @@ class TextBlock : public FrameworkElement {
 		return bbox_height;
 	}
 	
-	void LayoutPango (cairo_t *cr);
 	void LayoutSilverlight (cairo_t *cr);
 	
 	void DownloaderComplete ();

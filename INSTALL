@@ -50,14 +50,6 @@ Configuration Options
 		PKG_CONFIG_PATH must include your build of ffmpeg when you
 		configure moonlight.
 
-	--with-pango-support
-
-		By default Moonlight uses FreeType as its rendering engine
-		and does not try to render left-to-right languages or do 
-		any advanced glyph rendering.
-
-		Enable pango support to get these features.   
-
 	--with-mono-runtime=yes,no
 
 		By default Moonlight will build the 2.0 profile of Silverlight

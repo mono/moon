@@ -46,11 +46,6 @@ Runtime Options
 
 	Other options include:
 
-	* text=pango/silverlight
-
-		Controls whether to use the Pango rendering engine for
-		text, or Silvelright.   The default is Silverlight.
-
 	* codecs=microsoft/ffmpeg
 
 		Controls which sets of codecs to use, the Microsoft

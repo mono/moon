@@ -32,7 +32,6 @@ libmooninclude_headers = \
 	http-streaming.h	\
 	layout.h	\
 	list.h		\
-	mango.h		\
 	media.h		\
 	moon-path.h	\
 	mplayer.h	\

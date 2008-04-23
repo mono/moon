@@ -1,5 +1,13 @@
 2008-04-23  Geoff Norton  <gnorton@novell.com>
 
+	* configure.ac: More pango removal.
+	
+2008-04-23  Geoff Norton  <gnorton@novell.com>
+
+	* configure.ac: Remove Pango support.
+	
+2008-04-23  Geoff Norton  <gnorton@novell.com>
+
 	* configure.ac: Initial build system cleanup and support for 
 	linking against system cairo.
 	

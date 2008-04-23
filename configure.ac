@@ -246,6 +246,7 @@ else
 fi
 
 
+<<<<<<< HEAD:configure.ac
 #
 # Enable/Disable linking with Pango as an alternative text rendering engine
 # (accessable via environment variable)
@@ -260,6 +261,8 @@ else
 fi
 AM_CONDITIONAL(INCLUDE_PANGO, test $WITH_PANGO = yes)
 
+=======
+>>>>>>> local:configure.ac
 if test $MONO_RUNTIME = "yes"; then
 AC_MSG_CHECKING(Mono)
 if pkg-config mono; then
@@ -499,7 +502,7 @@ SWSCALE_PKGS=""
 fi
 
 
-MOON_PKGS="gtk+-2.0 pango gthread-2.0 alsa freetype2 fontconfig $RANDR_PKG"
+MOON_PKGS="gtk+-2.0 gthread-2.0 alsa freetype2 fontconfig $RANDR_PKG"
 MOON_CFLAGS="$LARGEFILE_CFLAGS $CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS $FFMPEG_PKGS $SWSCALE_PKGS)"
 MOON_LIBS="$CAIRO_LIBS $(pkg-config --libs $MOON_PKGS)"
 
@@ -621,7 +624,6 @@ Moonlight configuration:
 	Support for mmx: $HAVE_MMX
 	Support for sse2: $HAVE_SSE2
 	Support for running the test harness: $TESTING_SUPPORTED
-	Support for pango as text engine: $WITH_PANGO
 	Support for firefox plugin installer: $user_plugin
 	Using cairo: $with_cairo
 
