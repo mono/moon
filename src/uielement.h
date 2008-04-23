@@ -41,7 +41,7 @@ class UIElement : public Visual {
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
 	void RenderClipPath (cairo_t *cr);
 
-public:
+ public:
 	UIElement ();
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; };
 
@@ -335,20 +335,27 @@ public:
 		Value *vu = GetValue (UIElement::RenderTransformOriginProperty);
 		return *vu->AsPoint ();
 	}
-
-	static DependencyProperty* RenderTransformProperty;
-	static DependencyProperty* OpacityProperty;
-	static DependencyProperty* ClipProperty;
-	static DependencyProperty* OpacityMaskProperty;
-	static DependencyProperty* RenderTransformOriginProperty;
-	static DependencyProperty* CursorProperty;
-	static DependencyProperty* IsHitTestVisibleProperty;
-	static DependencyProperty* VisibilityProperty;
-	static DependencyProperty* ResourcesProperty;
-	static DependencyProperty* TagProperty;
-	static DependencyProperty* TriggersProperty;
-	static DependencyProperty* ZIndexProperty;
-
+	
+	static DependencyProperty *ClipProperty;
+	static DependencyProperty *CursorProperty;
+	static DependencyProperty *IsHitTestVisibleProperty;
+	static DependencyProperty *OpacityMaskProperty;
+	static DependencyProperty *OpacityProperty;
+	static DependencyProperty *RenderTransformOriginProperty;
+	static DependencyProperty *RenderTransformProperty;
+	static DependencyProperty *ResourcesProperty;
+	static DependencyProperty *TagProperty;
+	static DependencyProperty *TriggersProperty;
+	static DependencyProperty *VisibilityProperty;
+	static DependencyProperty *ZIndexProperty;
+	
+	// property accessors
+	void SetOpacityMask (Brush *mask);
+	Brush *GetOpacityMask ();
+	
+	void SetOpacity (double opacity);
+	double GetOpacity ();
+	
 	// Events you can AddHandler to
 	const static int LoadedEvent;
 	const static int MouseMoveEvent;

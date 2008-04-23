@@ -513,7 +513,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
 				 && !IS_TRANSLUCENT (local_opacity)
 				 && (GetValue (UIElement::ClipProperty) == NULL)
-				 && (uielement_get_opacity_mask (this) == NULL)); // XXX we can easily deal with opaque solid color brushes.
+				 && (GetOpacityMask () == NULL)); // XXX we can easily deal with opaque solid color brushes.
 
 		// element type specific checks
 		if (subtract) {
@@ -692,22 +692,48 @@ UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
 	g_warning ("UIElement:GetSizeForBrush has been called. The derived class %s should have overridden it.",
 		   GetTypeName ());
-	*height = 
-	  *width = 0.0;
+	*height = *width = 0.0;
 }
 
-DependencyProperty* UIElement::ClipProperty;
-DependencyProperty* UIElement::CursorProperty;
-DependencyProperty* UIElement::IsHitTestVisibleProperty;
-DependencyProperty* UIElement::OpacityMaskProperty;
-DependencyProperty* UIElement::OpacityProperty;
-DependencyProperty* UIElement::RenderTransformOriginProperty;
-DependencyProperty* UIElement::RenderTransformProperty;
-DependencyProperty* UIElement::ResourcesProperty;
-DependencyProperty* UIElement::TagProperty;
-DependencyProperty* UIElement::TriggersProperty;
-DependencyProperty* UIElement::VisibilityProperty;
-DependencyProperty* UIElement::ZIndexProperty;
+void
+UIElement::SetOpacityMask (Brush *mask)
+{
+	SetValue (UIElement::OpacityMaskProperty, Value (brush));
+}
+
+Brush *
+UIElement::GetOpacityMask ()
+{
+	Value *value = GetValue (UIElement::OpacityMaskProperty);
+	
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+UIElement::SetOpacity (double opacity)
+{
+	SetValue (UIElement::OpacityProperty, Value (opacity));
+}
+
+double
+UIElement::GetOpacity ()
+{
+	return GetValue (UIElement::OpacityProperty)->AsDouble ();
+}
+
+
+DependencyProperty *UIElement::ClipProperty;
+DependencyProperty *UIElement::CursorProperty;
+DependencyProperty *UIElement::IsHitTestVisibleProperty;
+DependencyProperty *UIElement::OpacityMaskProperty;
+DependencyProperty *UIElement::OpacityProperty;
+DependencyProperty *UIElement::RenderTransformOriginProperty;
+DependencyProperty *UIElement::RenderTransformProperty;
+DependencyProperty *UIElement::ResourcesProperty;
+DependencyProperty *UIElement::TagProperty;
+DependencyProperty *UIElement::TriggersProperty;
+DependencyProperty *UIElement::VisibilityProperty;
+DependencyProperty *UIElement::ZIndexProperty;
 
 void
 uielement_init (void)
@@ -780,24 +806,28 @@ uielement_set_render_transform (UIElement *item, Transform *transform)
 	item->SetValue (UIElement::RenderTransformProperty, Value(transform));
 }
 
-double
-uielement_get_opacity (UIElement *item)
-{
-	return item->GetValue (UIElement::OpacityProperty)->AsDouble();
-}
-
 void
-uielement_set_opacity (UIElement *item, double opacity)
+uielement_set_opacity_mask (UIElement *item, Brush *mask)
 {
-	item->SetValue (UIElement::OpacityProperty, Value (opacity));
+	item->SetOpacityMask (mask);
 }
 
 Brush *
 uielement_get_opacity_mask (UIElement *item)
 {
-	Value *value = item->GetValue (UIElement::OpacityMaskProperty);
-	
-	return value ? (Brush *) value->AsBrush () : NULL;
+	return item->GetOpacityMask ();
+}
+
+void
+uielement_set_opacity (UIElement *item, double opacity)
+{
+	item->SetOpacity (opacity);
+}
+
+double
+uielement_get_opacity (UIElement *item)
+{
+	return item->GetOpacity ();
 }
 
 //

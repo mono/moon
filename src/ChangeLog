@@ -1,5 +1,7 @@
 2008-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* uielement.cpp: Added some property accessors.
+
 	* text.cpp: Use the new SolidColorBrush ctor.
 
 	* brush.cpp: Added property accessors to all brush classes so that
