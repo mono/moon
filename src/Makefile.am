@@ -93,7 +93,6 @@ libmoon_la_SOURCES = 	\
 	media.cpp	\
 	moon-path.c	\
 	enums.c		\
-	mango.cpp	\
 	mplayer.cpp	\
 	namescope.cpp	\
 	openfile.cpp	\
