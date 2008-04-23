@@ -36,7 +36,7 @@
 #if HAVE_GECKO_1_9
 #include <gtkmozembed.h>
 #else
-#include "gtkmozemed/gtkmozembed.h"
+#include "gtkembedmoz/gtkmozembed.h"
 #endif
 
 #include "nsXPCOMGlue.h"

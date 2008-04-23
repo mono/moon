@@ -1,5 +1,9 @@
 2008-04-22  Larry Ewing  <lewing@novell.com>
 
+	* agviewer/agviewer.cpp: fix typo in include.
+
+2008-04-22  Larry Ewing  <lewing@novell.com>
+
 	* agviewer/agviewer.cpp (new_gtk_browser): changes to work against
 	newer gtkmozembed versions.
 
