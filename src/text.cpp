@@ -187,12 +187,12 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	}
 }
 
-char *
+const char *
 inline_get_font_family (Inline *inline_)
 {
 	Value *value = inline_->GetValue (Inline::FontFamilyProperty);
 	
-	return value ? (char *) value->AsString () : NULL;
+	return value ? value->AsString () : NULL;
 }
 
 void
@@ -204,7 +204,7 @@ inline_set_font_family (Inline *inline_, const char *value)
 double
 inline_get_font_size (Inline *inline_)
 {
-	return (double) inline_->GetValue (Inline::FontSizeProperty)->AsDouble ();
+	return inline_->GetValue (Inline::FontSizeProperty)->AsDouble ();
 }
 
 void
@@ -254,7 +254,7 @@ inline_get_foreground (Inline *inline_)
 {
 	Value *value = inline_->GetValue (Inline::ForegroundProperty);
 	
-	return value ? (Brush *) value->AsBrush () : NULL;
+	return value ? value->AsBrush () : NULL;
 }
 
 void
@@ -289,24 +289,37 @@ line_break_new (void)
 
 DependencyProperty *Run::TextProperty;
 
+void
+Run::SetText (const char *text)
+{
+	SetValue (Run::TextProperty, Value (text));
+}
+
+const char *
+Run::GetText ()
+{
+	Value *value = GetValue (Run::TextProperty);
+	
+	return value ? value->AsString () : NULL;
+}
+
+
 Run *
 run_new (void)
 {
 	return new Run ();
 }
 
-char *
+const char *
 run_get_text (Run *run)
 {
-	Value *value = run->GetValue (Run::TextProperty);
-	
-	return value ? (char *) value->AsString () : NULL;
+	return run->GetText ();
 }
 
 void
-run_set_text (Run *run, const char *value)
+run_set_text (Run *run, const char *text)
 {
-	run->SetValue (Run::TextProperty, Value (value));
+	run->SetText (text);
 }
 
 
@@ -475,19 +488,15 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 }
 
 void
-TextBlock::LayoutSilverlight (cairo_t *cr)
+TextBlock::Layout (cairo_t *cr)
 {
-	TextFontDescription *font = this->font;
-	TextLayout *layout = this->layout;
 	TextDecorations decorations;
-	TextWrapping wrapping;
 	double height, width;
 	uint8_t font_mask;
+	const char *text;
 	List *runs;
-	char *text;
 	
-	wrapping = (TextWrapping) GetValue (TextBlock::TextWrappingProperty)->AsInt32 ();
-	layout->SetWrapping (wrapping);
+	layout->SetWrapping (GetTextWrapping ());
 	
 	height = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
 	width = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
@@ -499,10 +508,10 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 	
 	runs = new List ();
 	
-	decorations = (TextDecorations) GetValue (TextBlock::TextDecorationsProperty)->AsInt32 ();
+	decorations = GetTextDecorations ();
 	font_mask = font->GetFields ();
 	
-	Inlines *inlines = GetValue (TextBlock::InlinesProperty)->AsInlines ();
+	Inlines *inlines = GetInlines ();
 	
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
@@ -535,10 +544,7 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 			case Type::RUN:
 				run = (Run *) item;
 				
-				if ((value = run->GetValue (Run::TextProperty)))
-					text = value->AsString ();
-				else
-					text = NULL;
+				text = run->GetText ();
 				
 				if (text && text[0]) {
 					const char *inptr, *inend;
@@ -583,59 +589,43 @@ TextBlock::LayoutSilverlight (cairo_t *cr)
 	layout->GetActualExtents (&actual_width, &actual_height);
 	layout->GetLayoutExtents (&bbox_width, &bbox_height);
 	
-	SetValue (TextBlock::ActualHeightProperty, Value (actual_height));
-	SetValue (TextBlock::ActualWidthProperty, Value (actual_width));
+	SetActualHeight (actual_height);
+	SetActualWidth (actual_width);
 	
 	dirty = false;
-}
-
-void
-TextBlock::Layout (cairo_t *cr)
-{
-	LayoutSilverlight (cr);
 }
 
 void
 TextBlock::Paint (cairo_t *cr)
 {
 	Brush *fg;
-	Value *v;
-
-	v = GetValue (TextBlock::ForegroundProperty);
-	fg = v ? v->AsBrush() : NULL;
-
-	if (!fg)
+	
+	if (!(fg = GetForeground ()))
 		fg = default_foreground ();
 	
 	layout->Render (cr, this, fg, 0.0, 0.0);
 }
 
 char *
-TextBlock::GetText ()
+TextBlock::GetTextInternal ()
 {
-	Inlines *inlines = GetValue (TextBlock::InlinesProperty)->AsInlines ();
+	Inlines *inlines = GetInlines ();
 	GString *block;
-	char *text;
+	char *str;
 	
 	block = g_string_new ("");
 	
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
+		const char *text;
 		Inline *item;
-		Value *value;
-		Run *run;
 		
 		while (node != NULL) {
 			item = (Inline *) node->obj;
 			
 			switch (item->GetObjectType ()) {
 			case Type::RUN:
-				run = (Run *) item;
-				
-				if ((value = run->GetValue (Run::TextProperty)))
-					text = value->AsString ();
-				else
-					text = NULL;
+				text = ((Run *) item)->GetText ();
 				
 				if (text && text[0])
 					g_string_append (block, text);
@@ -651,10 +641,10 @@ TextBlock::GetText ()
 		}
 	}
 	
-	text = block->str;
+	str = block->str;
 	g_string_free (block, false);
 	
-	return text;
+	return str;
 }
 
 static bool
@@ -663,7 +653,6 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 	Collection::Node *node1, *node2;
 	const char *text1, *text2;
 	Inline *run1, *run2;
-	Value *value;
 	
 	node1 = (Collection::Node *) curInlines->list->First ();
 	node2 = (Collection::Node *) newInlines->list->First ();
@@ -676,15 +665,8 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 			return false;
 		
 		if (run1->GetObjectType () == Type::RUN) {
-			if ((value = run1->GetValue (Run::TextProperty)))
-				text1 = value->AsString ();
-			else
-				text1 = NULL;
-			
-			if ((value = run2->GetValue (Run::TextProperty)))
-				text2 = value->AsString ();
-			else
-				text2 = NULL;
+			text1 = run1->GetText ();
+			text2 = run2->GetText ();
 			
 			if (text1 && text2 && strcmp (text1, text2) != 0)
 				return false;
@@ -716,9 +698,9 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 }
 
 bool
-TextBlock::SetText (const char *text)
+TextBlock::SetTextInternal (const char *text)
 {
-	Inlines *curInlines = GetValue (TextBlock::InlinesProperty)->AsInlines ();
+	Inlines *curInlines = GetInlines ();
 	Inlines *inlines = NULL;
 	char *inptr, *buf, *d;
 	const char *txt;
@@ -824,7 +806,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 			// result of a change to the TextBlock.Text property
 			char *text = args->new_value ? args->new_value->AsString () : NULL;
 			
-			if (!SetText (text)) {
+			if (!SetTextInternal (text)) {
 				// no change so nothing to invalidate
 				invalidate = false;
 			} else {
@@ -837,7 +819,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
-			char *text = GetText ();
+			char *text = GetTextInternal ();
 			
 			setvalue = false;
 			SetValue (TextBlock::TextProperty, Value (text));
@@ -907,7 +889,7 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, Depe
 	}
 	
 	if (update_text) {
-		char *text = GetText ();
+		char *text = GetTextInternal ();
 		
 		setvalue = false;
 		SetValue (TextBlock::TextProperty, Value (text));
@@ -1029,6 +1011,146 @@ TextBlock::DownloaderComplete ()
 	Invalidate ();
 }
 
+void
+TextBlock::SetActualHeight (double height)
+{
+	SetValue (TextBlock::ActualHeightProperty, Value (height));
+}
+
+void
+TextBlock::SetActualWidth (double width)
+{
+	SetValue (TextBlock::ActualWidthProperty, Value (width));
+}
+
+void
+TextBlock::SetFontFamily (const char *family)
+{
+	SetValue (TextBlock::FontFamilyProperty, Value (family));
+}
+
+const char *
+TextBlock::GetFontFamily ()
+{
+	return font->GetFamily ();
+}
+
+void
+TextBlock::SetFontSize (double size)
+{
+	SetValue (TextBlock::FontSizeProperty, Value (size));
+}
+
+double
+TextBlock::GetFontSize ()
+{
+	return font->GetSize ();
+}
+
+void
+TextBlock::SetFontStretch (FontStretches stretch)
+{
+	SetValue (TextBlock::FontStretchProperty, Value (stretch));
+}
+
+FontStretches
+TextBlock::GetFontStretch ()
+{
+	return font->GetStretch ();
+}
+
+void
+TextBlock::SetFontStyle (FontStyles style)
+{
+	SetValue (TextBlock::FontStyleProperty, Value (style));
+}
+
+FontStyles
+TextBlock::GetFontStyle ()
+{
+	return font->GetStyle ();
+}
+
+void
+TextBlock::SetFontWeight (FontWeights weight)
+{
+	SetValue (TextBlock::FontWeightProperty, Value (weight));
+}
+
+FontWeights
+TextBlock::GetFontWeight ()
+{
+	return font->GetWeight ();
+}
+
+void
+TextBlock::SetForeground (Brush *foreground)
+{
+	SetValue (TextBlock::ForegroundProperty, Value (foreground));
+}
+
+Brush *
+TextBlock::GetForeground ()
+{
+	Value *value = GetValue (TextBlock::ForegroundProperty);
+	
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+TextBlock::SetInlines (Inlines *inlines)
+{
+	SetValue (TextBlock::InlinesProperty, Value (inlines));
+}
+
+Inlines *
+TextBlock::GetInlines ()
+{
+	Value *value = GetValue (TextBlock::InlinesProperty);
+	
+	return value ? value->AsInlines () : NULL;
+}
+
+void
+TextBlock::SetText (const char *text)
+{
+	SetValue (TextBlock::TextProperty, Value (text));
+}
+
+const char *
+TextBlock::GetText ()
+{
+	Value *value = GetValue (TextBlock::TextProperty);
+
+	return value ? value->AsString () : NULL;
+}
+
+void
+TextBlock::SetTextDecorations (TextDecorations decorations)
+{
+	SetValue (TextBlock::TextDecorationsProperty, Value (decorations));
+}
+
+TextDecorations
+TextBlock::GetTextDecorations ()
+{
+	return (TextDecorations) GetValue (TextBlock::TextDecorationsProperty)->AsInt32 ();
+}
+
+void
+TextBlock::SetTextWrapping (TextWrapping wrapping)
+{
+	SetValue (TextBlock::TextWrappingProperty, Value (wrapping));
+}
+
+TextWrapping
+TextBlock::GetTextWrapping ()
+{
+	return (TextWrapping) GetValue (TextBlock::TextWrappingProperty)->AsInt32 ();
+}
+
+
+
 TextBlock *
 text_block_new (void)
 {
@@ -1038,153 +1160,133 @@ text_block_new (void)
 double
 text_block_get_actual_height (TextBlock *textblock)
 {
-	return (double) textblock->GetValue (TextBlock::ActualHeightProperty)->AsDouble ();
-}
-
-void
-text_block_set_actual_height (TextBlock *textblock, double value)
-{
-	textblock->SetValue (TextBlock::ActualHeightProperty, Value (value));
+	return textblock->GetActualHeight ();
 }
 
 double
 text_block_get_actual_width (TextBlock *textblock)
 {
-	return (double) textblock->GetValue (TextBlock::ActualWidthProperty)->AsDouble ();
+	return textblock->GetActualWidth ();
 }
 
-void
-text_block_set_actual_width (TextBlock *textblock, double value)
-{
-	textblock->SetValue (TextBlock::ActualWidthProperty, Value (value));
-}
-
-char *
+const char *
 text_block_get_font_family (TextBlock *textblock)
 {
-	Value *value = textblock->GetValue (TextBlock::FontFamilyProperty);
-	
-	return value ? (char *) value->AsString () : NULL;
+	return textblock->GetFontFamily ();
 }
 
 void
-text_block_set_font_family (TextBlock *textblock, char *value)
+text_block_set_font_family (TextBlock *textblock, const char *family)
 {
-	textblock->SetValue (TextBlock::FontFamilyProperty, Value (value));
+	textblock->SetFontFamily (family);
 }
 
 double
 text_block_get_font_size (TextBlock *textblock)
 {
-	return (double) textblock->GetValue (TextBlock::FontSizeProperty)->AsDouble ();
+	return textblock->GetFontSize ();
 }
 
 void
-text_block_set_font_size (TextBlock *textblock, double value)
+text_block_set_font_size (TextBlock *textblock, double size)
 {
-	textblock->SetValue (TextBlock::FontSizeProperty, Value (value));
+	textblock->SetFontSize (size);
 }
 
 FontStretches
 text_block_get_font_stretch (TextBlock *textblock)
 {
-	return (FontStretches) textblock->GetValue (TextBlock::FontStretchProperty)->AsInt32 ();
+	return textblock->GetFontStretch ();
 }
 
 void
-text_block_set_font_stretch (TextBlock *textblock, FontStretches value)
+text_block_set_font_stretch (TextBlock *textblock, FontStretches stretch)
 {
-	textblock->SetValue (TextBlock::FontStretchProperty, Value (value));
+	textblock->SetFontStretch (stretch);
 }
 
 FontStyles
 text_block_get_font_style (TextBlock *textblock)
 {
-	return (FontStyles) textblock->GetValue (TextBlock::FontStyleProperty)->AsInt32 ();
+	return textblock->GetFontStyle ();
 }
 
 void
-text_block_set_font_style (TextBlock *textblock, FontStyles value)
+text_block_set_font_style (TextBlock *textblock, FontStyles style)
 {
-	textblock->SetValue (TextBlock::FontStyleProperty, Value (value));
+	textblock->SetFontStyle (style);
 }
 
 FontWeights
 text_block_get_font_weight (TextBlock *textblock)
 {
-	return (FontWeights) textblock->GetValue (TextBlock::FontWeightProperty)->AsInt32 ();
+	return textblock->GetFontWeight ();
 }
 
 void
-text_block_set_font_weight (TextBlock *textblock, FontWeights value)
+text_block_set_font_weight (TextBlock *textblock, FontWeights weight)
 {
-	textblock->SetValue (TextBlock::FontWeightProperty, Value (value));
+	textblock->SetFontWeight (weight);
 }
 
 Brush *
 text_block_get_foreground (TextBlock *textblock)
 {
-	Value *value = textblock->GetValue (TextBlock::ForegroundProperty);
-	
-	return value ? (Brush *) value->AsBrush () : NULL;
+	return textblock->GetForeground ();
 }
 
 void
-text_block_set_foreground (TextBlock *textblock, Brush *value)
+text_block_set_foreground (TextBlock *textblock, Brush *foreground)
 {
-	textblock->SetValue (TextBlock::ForegroundProperty, Value (value));
+	textblock->SetForeground (foreground);
 }
 
 Inlines *
 text_block_get_inlines (TextBlock *textblock)
 {
-	Value *value = textblock->GetValue (TextBlock::InlinesProperty);
-	
-	return value ? (Inlines *) value->AsInlines () : NULL;
+	return textblock->GetInlines ();
 }
 
 void
-text_block_set_inlines (TextBlock *textblock, Inlines *value)
+text_block_set_inlines (TextBlock *textblock, Inlines *inlines)
 {
-	textblock->SetValue (TextBlock::InlinesProperty, Value (value));
+	textblock->SetInlines (inlines);
 }
 
-char *
+const char *
 text_block_get_text (TextBlock *textblock)
 {
-	Value *value = textblock->GetValue (TextBlock::TextProperty);
-
-	return value ? (char *) value->AsString () : NULL;
+	return textblock->GetText ();
 }
 
 void
-text_block_set_text (TextBlock *textblock, const char *value)
+text_block_set_text (TextBlock *textblock, const char *text)
 {
-	textblock->SetValue (TextBlock::TextProperty, Value (value));
+	textblock->SetText (text);
 }
 
 TextDecorations
 text_block_get_text_decorations (TextBlock *textblock)
 {
-	return (TextDecorations) textblock->GetValue (TextBlock::TextDecorationsProperty)->AsInt32 ();
+	return textblock->GetTextDecorations ();
 }
 
 void
-text_block_set_text_decorations (TextBlock *textblock, TextDecorations value)
+text_block_set_text_decorations (TextBlock *textblock, TextDecorations decorations)
 {
-	textblock->SetValue (TextBlock::TextDecorationsProperty, Value (value));
+	textblock->SetTextDecorations (decorations);
 }
 
 TextWrapping
 text_block_get_text_wrapping (TextBlock *textblock)
 {
-	return (TextWrapping) textblock->GetValue (TextBlock::TextWrappingProperty)->AsInt32 ();
+	return textblock->GetTextWrapping ();
 }
 
 void
-text_block_set_text_wrapping (TextBlock *textblock, TextWrapping value)
+text_block_set_text_wrapping (TextBlock *textblock, TextWrapping wrapping)
 {
-	textblock->SetValue (TextBlock::TextWrappingProperty, Value (value));
+	textblock->SetTextWrapping (wrapping);
 }
 
 void
@@ -1743,7 +1845,7 @@ print_parse_error (const char *in, const char *where, const char *reason)
 }
 
 void
-Glyphs::SetIndices (const char *in)
+Glyphs::SetIndicesInternal (const char *in)
 {
 	register const char *inptr = in;
 	GlyphAttr *glyph;
@@ -1966,7 +2068,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 		dirty = true;
 	} else if (args->property == Glyphs::IndicesProperty) {
 		char *str = args->new_value ? args->new_value->AsString() : NULL;
-		SetIndices (str);
+		SetIndicesInternal (str);
 		dirty = true;
 	} else if (args->property == Glyphs::FontRenderingEmSizeProperty) {
 		double size = args->new_value->AsDouble();
@@ -1993,6 +2095,112 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
+
+void
+Glyphs::SetFill (Brush *fill)
+{
+	SetValue (Glyphs::FillProperty, Value (fill));
+}
+
+Brush *
+Glyphs::GetFill ()
+{
+	Value *value = GetValue (Glyphs::FillProperty);
+	
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+Glyphs::SetFontRenderingEmSize (double size)
+{
+	SetValue (Glyphs::FontRenderingEmSizeProperty, Value (size));
+}
+
+double
+Glyphs::GetFontRenderingEmSize ()
+{
+	return GetValue (Glyphs::FontRenderingEmSizeProperty)->AsDouble ();
+}
+
+void
+Glyphs::SetFontUri (const char *uri)
+{
+	SetValue (Glyphs::FontUriProperty, Value (uri));
+}
+
+const char *
+Glyphs::GetFontUri ()
+{
+	Value *value = GetValue (Glyphs::FontUriProperty);
+	
+	return value ? value->AsString () : NULL;
+}
+
+void
+Glyphs::SetIndices (const char *indices)
+{
+	SetValue (Glyphs::IndicesProperty, Value (indices));
+}
+
+const char *
+Glyphs::GetIndices ()
+{
+	Value *value = GetValue (Glyphs::IndicesProperty);
+	
+	return value ? value->AsString () : NULL;
+}
+
+void
+Glyphs::SetOriginX (double origin)
+{
+	SetValue (Glyphs::OriginXProperty, Value (origin));
+}
+
+double
+Glyphs::GetOriginX ()
+{
+	return GetValue (Glyphs::OriginXProperty)->AsDouble ();
+}
+
+void
+Glyphs::SetOriginY (double origin)
+{
+	SetValue (Glyphs::OriginYProperty, Value (origin));
+}
+
+double
+Glyphs::GetOriginY ()
+{
+	return GetValue (Glyphs::OriginYProperty)->AsDouble ();
+}
+
+void
+Glyphs::SetStyleSimulations (StyleSimulations style)
+{
+	SetValue (Glyphs::StyleSimulationsProperty, Value (style));
+}
+
+StyleSimulations
+Glyphs::GetStyleSimulations ()
+{
+	return (StyleSimulations) GetValue (Glyphs::StyleSimulationsProperty)->AsInt32 ();
+}
+
+void
+Glyphs::SetUnicodeString (const char *unicode)
+{
+	SetValue (Glyphs::UnicodeStringProperty, Value (unicode));
+}
+
+const char *
+Glyphs::GetUnicodeString ()
+{
+	Value *value = GetValue (Glyphs::UnicodeStringProperty);
+	
+	return value ? value->AsString () : NULL;
+}
+
+
 Glyphs *
 glyphs_new (void)
 {
@@ -2002,103 +2210,97 @@ glyphs_new (void)
 Brush *
 glyphs_get_fill (Glyphs *glyphs)
 {
-	return (Brush *) glyphs->GetValue (Glyphs::FillProperty)->AsBrush ();
+	return glyphs->GetFill ();
 }
 
 void
-glyphs_set_fill (Glyphs *glyphs, Brush *value)
+glyphs_set_fill (Glyphs *glyphs, Brush *fill)
 {
-	glyphs->SetValue (Glyphs::FillProperty, Value (value));
+	glyphs->SetFill (fill);
 }
 
 double
 glyphs_get_font_rendering_em_size (Glyphs *glyphs)
 {
-	return (double) glyphs->GetValue (Glyphs::FontRenderingEmSizeProperty)->AsDouble ();
+	return glyphs->GetFontRenderingEmSize ();
 }
 
 void
-glyphs_set_font_rendering_em_size (Glyphs *glyphs, double value)
+glyphs_set_font_rendering_em_size (Glyphs *glyphs, double size)
 {
-	glyphs->SetValue (Glyphs::FontRenderingEmSizeProperty, Value (value));
+	glyphs->SetFontRenderingEmSize (size);
 }
 
-char *
+const char *
 glyphs_get_font_uri (Glyphs *glyphs)
 {
-	Value *value = glyphs->GetValue (Glyphs::FontUriProperty);
-	
-	return value ? (char *) value->AsString () : NULL;
+	return glyphs->GetFontUri ();
 }
 
 void
-glyphs_set_font_uri (Glyphs *glyphs, char *value)
+glyphs_set_font_uri (Glyphs *glyphs, const char *uri)
 {
-	glyphs->SetValue (Glyphs::FontUriProperty, Value (value));
+	glyphs->SetFontUri (uri);
 }
 
-char *
+const char *
 glyphs_get_indices (Glyphs *glyphs)
 {
-	Value *value = glyphs->GetValue (Glyphs::IndicesProperty);
-	
-	return value ? (char *) value->AsString () : NULL;
+	return glyphs->GetIndices ();
 }
 
 void
-glyphs_set_indices (Glyphs *glyphs, char *value)
+glyphs_set_indices (Glyphs *glyphs, const char *indices)
 {
-	glyphs->SetValue (Glyphs::IndicesProperty, Value (value));
+	glyphs->SetIndices (indices);
 }
 
 double
 glyphs_get_origin_x (Glyphs *glyphs)
 {
-	return (double) glyphs->GetValue (Glyphs::OriginXProperty)->AsDouble ();
+	return glyphs->GetOriginX ();
 }
 
 void
-glyphs_set_origin_x (Glyphs *glyphs, double value)
+glyphs_set_origin_x (Glyphs *glyphs, double origin)
 {
-	glyphs->SetValue (Glyphs::OriginXProperty, Value (value));
+	glyphs->SetOriginX (origin);
 }
 
 double
 glyphs_get_origin_y (Glyphs *glyphs)
 {
-	return (double) glyphs->GetValue (Glyphs::OriginYProperty)->AsDouble ();
+	return glyphs->GetOriginY ();
 }
 
 void
-glyphs_set_origin_y (Glyphs *glyphs, double value)
+glyphs_set_origin_y (Glyphs *glyphs, double origin)
 {
-	glyphs->SetValue (Glyphs::OriginYProperty, Value (value));
+	glyphs->SetOriginY (origin);
 }
 
 StyleSimulations
 glyphs_get_style_simulations (Glyphs *glyphs)
 {
-	return (StyleSimulations) glyphs->GetValue (Glyphs::StyleSimulationsProperty)->AsInt32 ();
+	return glyphs->GetStyleSimulations ();
 }
 
 void
-glyphs_set_style_simulations (Glyphs *glyphs, StyleSimulations value)
+glyphs_set_style_simulations (Glyphs *glyphs, StyleSimulations style)
 {
-	glyphs->SetValue (Glyphs::StyleSimulationsProperty, Value (value));
+	glyphs->SetStyleSimulations (style);
 }
 
-char *
+const char *
 glyphs_get_unicode_string (Glyphs *glyphs)
 {
-	Value *value = glyphs->GetValue (Glyphs::UnicodeStringProperty);
-	
-	return value ? (char *) value->AsString () : NULL;
+	return glyphs->GetUnicodeString ();
 }
 
 void
-glyphs_set_unicode_string (Glyphs *glyphs, char *value)
+glyphs_set_unicode_string (Glyphs *glyphs, const char *unicode)
 {
-	glyphs->SetValue (Glyphs::UnicodeStringProperty, Value (value));
+	glyphs->SetUnicodeString (unicode);
 }
 
 

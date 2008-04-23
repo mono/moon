@@ -1,5 +1,12 @@
 2008-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp: Added property accessors to all brush classes so that
+	it isn't encessary to use long-winded c-function names to get
+	property values. Also made all c-wrappers call the c++ property
+	accessor methods.
+	(TextBlock::LayoutSilverlight): Removed, logic moved into
+	::Layout().
+
 	* animation.h: Make sure all c-API _new() functions take void as
 	argument.
 

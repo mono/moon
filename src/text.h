@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * text.h: 
  *
@@ -39,7 +40,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *TextDecorationsProperty;
 	
 	TextFontDescription *font;
-
+	
 	Brush *foreground;
 	bool autogen;
 	
@@ -50,7 +51,7 @@ class Inline : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 };
 
-char *inline_get_font_family (Inline *inline_);
+const char *inline_get_font_family (Inline *inline_);
 void inline_set_font_family (Inline *inline_, const char *value);
 
 double inline_get_font_size (Inline *inline_);
@@ -73,10 +74,10 @@ void inline_set_text_decorations (Inline *inline_, TextDecorations value);
 
 
 class LineBreak : public Inline {
-protected:
+ protected:
 	virtual ~LineBreak () {}
 
-public:
+ public:
 	LineBreak () { }
 	virtual Type::Kind GetObjectType () { return Type::LINEBREAK; };
 };
@@ -86,19 +87,23 @@ LineBreak *line_break_new (void);
 
 /* @ContentProperty="Text" */
 class Run : public Inline {
-protected:
+ protected:
 	virtual ~Run () {}
 
-public:
+ public:
 	static DependencyProperty *TextProperty;
 	
 	Run () { }
 	virtual Type::Kind GetObjectType () { return Type::RUN; };
+	
+	// property accessors
+	void SetText (const char *text);
+	const char *GetText ();
 };
 
 Run *run_new (void);
 
-char *run_get_text (Run *run);
+const char *run_get_text (Run *run);
 void run_set_text (Run *run, const char *value);
 
 
@@ -115,12 +120,15 @@ class TextBlock : public FrameworkElement {
 	bool setvalue;
 	bool dirty;
 	
+	void SetActualHeight (double height);
+	void SetActualWidth (double width);
+	
 	void CalcActualWidthHeight (cairo_t *cr);
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
 	
-	char *GetText ();
-	bool SetText (const char *text);
+	char *GetTextInternal ();
+	bool SetTextInternal (const char *text);
 	
 	double GetBoundingWidth ()
 	{
@@ -144,10 +152,10 @@ class TextBlock : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
-protected:
-	virtual ~TextBlock();
+ protected:
+	virtual ~TextBlock ();
 
-public:
+ public:
 	static DependencyProperty *ActualHeightProperty;
 	static DependencyProperty *ActualWidthProperty;
 	static DependencyProperty *FontFamilyProperty;
@@ -166,6 +174,23 @@ public:
 	
 	void SetFontSource (Downloader *downloader);
 	
+	//
+	// Overrides
+	//
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual void ComputeBounds ();
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
+	virtual Point GetTransformOrigin ();
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	
+	virtual Value *GetValue (DependencyProperty *property);
+	
+	//
+	// Property Accessors
+	//
 	double GetActualWidth ()
 	{
 		if (dirty)
@@ -180,58 +205,71 @@ public:
 		return actual_height;
 	}
 	
-	//
-	// Overrides
-	//
-	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void ComputeBounds ();
-	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	virtual Point GetTransformOrigin ();
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	void SetFontFamily (const char *family);
+	const char *GetFontFamily ();
 	
-	virtual Value *GetValue (DependencyProperty *property);
+	void SetFontSize (double size);
+	double GetFontSize ();
+	
+	void SetFontStretch (FontStretches stretch);
+	FontStretches GetFontStretch ();
+	
+	void SetFontStyle (FontStyles style);
+	FontStyles GetFontStyle ();
+	
+	void SetFontWeight (FontWeights weight);
+	FontWeights GetFontWeight ();
+	
+	void SetForeground (Brush *fg);
+	Brush *GetForeground ();
+	
+	void SetInlines (Inlines *inlines);
+	Inlines *GetInlines ();
+	
+	void SetText (const char *text);
+	const char *GetText ();
+	
+	void SetTextDecorations (TextDecorations decorations);
+	TextDecorations GetTextDecorations ();
+	
+	void SetTextWrapping (TextWrapping wrapping);
+	TextWrapping GetTextWrapping ();
 };
 
 TextBlock *text_block_new (void);
 
 double text_block_get_actual_height (TextBlock *textblock);
-void text_block_set_actual_height (TextBlock *textblock, double value);
-
 double text_block_get_actual_width (TextBlock *textblock);
-void text_block_set_actual_width (TextBlock *textblock, double value);
 
-char *text_block_get_font_family (TextBlock *textblock);
-void text_block_set_font_family (TextBlock *textblock, char *value);
+const char *text_block_get_font_family (TextBlock *textblock);
+void text_block_set_font_family (TextBlock *textblock, const char *family);
 
 double text_block_get_font_size (TextBlock *textblock);
-void text_block_set_font_size (TextBlock *textblock, double value);
+void text_block_set_font_size (TextBlock *textblock, double size);
 
 FontStretches text_block_get_font_stretch (TextBlock *textblock);
-void text_block_set_font_stretch (TextBlock *textblock, FontStretches value);
+void text_block_set_font_stretch (TextBlock *textblock, FontStretches stretch);
 
 FontStyles text_block_get_font_style (TextBlock *textblock);
-void text_block_set_font_style (TextBlock *textblock, FontStyles value);
+void text_block_set_font_style (TextBlock *textblock, FontStyles style);
 
 FontWeights text_block_get_font_weight (TextBlock *textblock);
-void text_block_set_font_weight (TextBlock *textblock, FontWeights value);
+void text_block_set_font_weight (TextBlock *textblock, FontWeights weight);
 
 Brush *text_block_get_foreground (TextBlock *textblock);
-void text_block_set_foreground (TextBlock *textblock, Brush *value);
+void text_block_set_foreground (TextBlock *textblock, Brush *foreground);
 
 Inlines *text_block_get_inlines (TextBlock *textblock);
-void text_block_set_inlines (TextBlock *textblock, Inlines *value);
+void text_block_set_inlines (TextBlock *textblock, Inlines *inlines);
 
-char *text_block_get_text (TextBlock *textblock);
-void text_block_set_text (TextBlock *textblock, const char *value);
+const char *text_block_get_text (TextBlock *textblock);
+void text_block_set_text (TextBlock *textblock, const char *text);
 
 TextDecorations text_block_get_text_decorations (TextBlock *textblock);
-void text_block_set_text_decorations (TextBlock *textblock, TextDecorations value);
+void text_block_set_text_decorations (TextBlock *textblock, TextDecorations decorations);
 
 TextWrapping text_block_get_text_wrapping (TextBlock *textblock);
-void text_block_set_text_wrapping (TextBlock *textblock, TextWrapping value);
+void text_block_set_text_wrapping (TextBlock *textblock, TextWrapping wrapping);
 
 void text_block_set_font_source (TextBlock *textblock, Downloader *downloader);
 
@@ -256,7 +294,7 @@ class Glyphs : public FrameworkElement {
 	bool dirty;
 	
 	void Layout ();
-	void SetIndices (const char *in);
+	void SetIndicesInternal (const char *in);
 	
 	void DownloaderComplete ();
 	
@@ -264,10 +302,10 @@ class Glyphs : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void size_notify (int64_t size, gpointer data);
 	
-protected:
+ protected:
 	virtual ~Glyphs ();
 
-public:
+ public:
 	static DependencyProperty *FillProperty;
 	static DependencyProperty *FontRenderingEmSizeProperty;
 	static DependencyProperty *FontUriProperty;
@@ -288,33 +326,60 @@ public:
 	virtual Point GetOriginPoint ();
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	
+	//
+	// Property Accessors
+	//
+	void SetFill (Brush *fill);
+	Brush *GetFill ();
+	
+	void SetFontRenderingEmSize (double size);
+	double GetFontRenderingEmSize ();
+	
+	void SetFontUri (const char *uri);
+	const char *GetFontUri ();
+	
+	void SetIndices (const char *indices);
+	const char *GetIndices ();
+	
+	void SetOriginX (double origin);
+	double GetOriginX ();
+	
+	void SetOriginY (double origin);
+	double GetOriginY ();
+	
+	void SetStyleSimulations (StyleSimulations style);
+	StyleSimulations GetStyleSimulations ();
+	
+	void SetUnicodeString (const char *unicode);
+	const char *GetUnicodeString ();
 };
 
 Glyphs *glyphs_new (void);
 
 Brush *glyphs_get_fill (Glyphs *glyphs);
-void glyphs_set_fill (Glyphs *glyphs, Brush *value);
+void glyphs_set_fill (Glyphs *glyphs, Brush *fill);
 
 double glyphs_get_font_rendering_em_size (Glyphs *glyphs);
-void glyphs_set_font_rendering_em_size (Glyphs *glyphs, double value);
+void glyphs_set_font_rendering_em_size (Glyphs *glyphs, double size);
 
-char *glyphs_get_font_uri (Glyphs *glyphs);
-void glyphs_set_font_uri (Glyphs *glyphs, char *value);
+const char *glyphs_get_font_uri (Glyphs *glyphs);
+void glyphs_set_font_uri (Glyphs *glyphs, const char *uri);
 
-char *glyphs_get_indices (Glyphs *glyphs);
-void glyphs_set_indices (Glyphs *glyphs, char *value);
+const char *glyphs_get_indices (Glyphs *glyphs);
+void glyphs_set_indices (Glyphs *glyphs, const char *indices);
 
 double glyphs_get_origin_x (Glyphs *glyphs);
-void glyphs_set_origin_x (Glyphs *glyphs, double value);
+void glyphs_set_origin_x (Glyphs *glyphs, double origin);
 
 double glyphs_get_origin_y (Glyphs *glyphs);
-void glyphs_set_origin_y (Glyphs *glyphs, double value);
+void glyphs_set_origin_y (Glyphs *glyphs, double origin);
 
 StyleSimulations glyphs_get_style_simulations (Glyphs *glyphs);
-void glyphs_set_style_simulations (Glyphs *glyphs, StyleSimulations value);
+void glyphs_set_style_simulations (Glyphs *glyphs, StyleSimulations style);
 
-char *glyphs_get_unicode_string (Glyphs *glyphs);
-void glyphs_set_unicode_string (Glyphs *glyphs, char *value);
+const char *glyphs_get_unicode_string (Glyphs *glyphs);
+void glyphs_set_unicode_string (Glyphs *glyphs, const char *unicode);
 
 G_END_DECLS
 
