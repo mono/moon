@@ -1,5 +1,10 @@
 2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* type.cpp: When looking for types use case-insensitive type
+	  comparison. Fixes #375230 and #375231.
+
+2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp, pipeline.h: MediaClosure: add SetContextUnsafe which
 	  don't take a ref to the context, and add a context_refcounted field
 	  to keep track of refcounting. This is required for long-living

@@ -85,10 +85,10 @@ Type::Find (const char *name)
 	// so an optimization here would be to do a binary search.
 
 	for (int i = 1; i < Type::LASTTYPE; i++) {
-		if (strcmp (type_infos [i].name, name) == 0)
+		if (strcase_equal (type_infos [i].name, name))
 			return &type_infos [i];
 		
-		if (strcmp (type_infos [i].kindname, name) == 0)
+		if (strcase_equal (type_infos [i].kindname, name))
 			return &type_infos [i];
 	}
 
