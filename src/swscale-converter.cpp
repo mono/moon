@@ -12,8 +12,6 @@
 
 #include <config.h>
 
-#ifdef INCLUDE_SWSCALE
-
 #include <glib.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -102,6 +100,3 @@ FfmpegConverterInfo::Create (Media* media, VideoStream* stream)
 {
 	return new FfmpegConverter (media, stream);
 }
-
-#endif // INCLUDE_SWSCALE
-

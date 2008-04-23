@@ -40,7 +40,6 @@ libmooninclude_headers = \
 	openfile.h	\
 	panel.h		\
 	pipeline.h	\
-	pipeline-ffmpeg.h \
 	playlist.h	\
 	point.h		\
 	rect.h		\
@@ -92,16 +91,15 @@ libmoon_la_SOURCES = 	\
 	http-streaming.cpp	\
 	layout.cpp	\
 	list.cpp	\
-	mango.cpp	\
 	media.cpp	\
 	moon-path.c	\
 	enums.c		\
+	mango.cpp	\
 	mplayer.cpp	\
 	namescope.cpp	\
 	openfile.cpp	\
 	panel.cpp	\
-	pipeline.cpp \
-	pipeline-ffmpeg.cpp	\
+	pipeline.cpp	\
 	point.cpp	\
 	playlist.cpp	\
 	rect.cpp	\
@@ -109,7 +107,6 @@ libmoon_la_SOURCES = 	\
 	runtime.cpp	\
 	shape.cpp	\
 	stylus.cpp	\
-	swscale-converter.cpp	\
 	text.cpp	\
 	transform.cpp	\
 	trigger.cpp	\
@@ -134,6 +131,13 @@ EXTRA_DIST = \
 	zip/README \
 	zip/ChangeLogUnzip \
 	$(libmooninclude_headers)
+
+if INCLUDE_SWSCALE
+libmoon_la_SOURCES += swscale-converter.cpp
+endif
+if INCLUDE_FFMPEG
+libmoon_la_SOURCES += pipeline-ffmpeg.cpp
+endif
 
 libmoon_la_LIBADD = $(MOON_LIBS)
 

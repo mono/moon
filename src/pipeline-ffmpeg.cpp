@@ -16,8 +16,6 @@
 
 #include <config.h>
 
-#ifdef INCLUDE_FFMPEG
-
 #include <glib.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -364,6 +362,3 @@ FfmpegDecoderInfo::Create (Media* media, IMediaStream* stream)
 {
 	return new FfmpegDecoder (media, stream);
 }
-
-#endif // INCLUDE_FFMPEG
-
