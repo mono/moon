@@ -1,6 +1,0 @@
-<Namespace Name="Gtk.Moonlight">
-  <Docs>
-    <summary>Classes to consume Moonlight from Gtk# applications</summary>
-    <remarks></remarks>
-  </Docs>
-</Namespace>
