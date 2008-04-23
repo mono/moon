@@ -26,7 +26,6 @@
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "list.h"
-#include "mango.h"
 #include "media.h"
 #include "mplayer.h"
 #include "namescope.h"

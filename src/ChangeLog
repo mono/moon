@@ -1,4 +1,8 @@
-2008-04-34  Geoff Norton  <gnorton@novell.com>
+2008-04-23  Geoff Norton  <gnorton@novell.com>
+
+	* libmoon.h: Drop mango.h
+	
+2008-04-23  Geoff Norton  <gnorton@novell.com>
 
 	* runtime.cpp: Remove pango support.
 	
