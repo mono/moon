@@ -665,8 +665,8 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 			return false;
 		
 		if (run1->GetObjectType () == Type::RUN) {
-			text1 = run1->GetText ();
-			text2 = run2->GetText ();
+			text1 = ((Run *) run1)->GetText ();
+			text2 = ((Run *) run2)->GetText ();
 			
 			if (text1 && text2 && strcmp (text1, text2) != 0)
 				return false;
