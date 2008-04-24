@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Mouse enter/leave visibility test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+	sender.findName ("one").Visibility = "Collapsed";
+	console.log ("Mouse enter!");
+}
+
+function OnMouseLeave (sender, eventArgs)
+{
+	console.log ("Mouse leave!");
+}
+
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="300" height="400">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Rectangle x:Name="one" Fill="Blue" Canvas.Top="100" Canvas.Left="100" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave" Width="100" Height="25">
+	<Rectangle.RenderTransform>
+		<TransformGroup>
+			<ScaleTransform ScaleX="1" ScaleY="1"/>
+		</TransformGroup>
+	</Rectangle.RenderTransform>
+	</Rectangle>
+	</Canvas>
+</script>
+
+</body>
+</html>

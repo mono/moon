@@ -1,5 +1,11 @@
 2008-04-24  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/mouse-enter-leave-visibility.html: Adding html test for
+	changing the element visibility in the mouse-enter handler. The mouse
+	leave should not be called. 
+
+2008-04-24  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/drtlist.xml:
 	* xaml/test-shape-path-stretch-animated.xaml: Adding a test-case with
 	animated shape path stretch.
