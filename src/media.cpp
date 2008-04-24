@@ -1106,7 +1106,7 @@ MediaElement::TryOpen ()
 	
 	if (flags & DownloadComplete) {
 		IMediaSource *current_downloaded_file = downloaded_file;
-		char *filename = downloader_get_response_file (downloader, part_name);
+		char *filename = downloader->GetDownloadedFilePart (part_name);
 		Media *media = new Media (this);
 		IMediaSource *source;
 		
