@@ -1,5 +1,12 @@
 2008-04-24  Michael Dominic K.  <mdk@mdk.am>
 
+	* runtime.cpp: After emitting the events make sure to update our
+	input_list since it can be changed -- as a result of somebody ie.
+	changing element's visibility in the enter/leave callback. Fixes the
+	#375220 (Microsoft downloads index chars).
+
+2008-04-24  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: Do a slightly more precise generation of key-spline
 	tables. Improves smoothness ie. in test-animation-slow-keyspline.xaml.
 

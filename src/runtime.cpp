@@ -1507,8 +1507,6 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 
 		toplevel->HitTest (ctx, x, y, new_input_list);
 		
-		if (destroy_ctx)
-			measuring_context_destroy (ctx);
 
 		// for 2 lists:
 		//   l1:  [a1, a2, a3, a4, ... ]
@@ -1542,15 +1540,37 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 		if (emit_leave)
 			handled = EmitEventOnList (emit_MouseLeave, input_list, event, surface_index);
 
-		delete input_list;
-		input_list = new_input_list;
-
 		if (emit_enter)
-			handled = EmitEventOnList (emit_MouseEnter, input_list, event, new_index) || handled;
+			handled = EmitEventOnList (emit_MouseEnter, new_input_list, event, new_index) || handled;
 
 		if ((surface_index == 0 && new_index == 0) || force_emit) {
-			handled = EmitEventOnList (emitter, input_list, event, -1) || handled;
+			handled = EmitEventOnList (emitter, new_input_list, event, -1) || handled;
 		}
+
+		// We need to update the input_list once again here -- since the
+		// visibility of the elements might have changed in the leave/enter/event
+		// callback.
+
+		UIElementNode *node;
+		for (node = (UIElementNode*)new_input_list->First(); node; node = (UIElementNode*)node->next) {
+			node->uielement->ComputeTotalRenderVisibility ();
+			node->uielement->ComputeTotalHitTestVisibility ();
+		}
+
+		toplevel->UpdateTotalRenderVisibility ();
+		toplevel->UpdateTotalHitTestVisibility ();
+		toplevel->ComputeTotalHitTestVisibility ();
+		toplevel->ComputeTotalRenderVisibility ();
+
+		delete new_input_list;
+		new_input_list = new List ();
+		toplevel->HitTest (ctx, x, y, new_input_list);
+
+		if (destroy_ctx)
+			measuring_context_destroy (ctx);
+
+		delete input_list;
+		input_list = new_input_list;
 	}
 
 	// Perform any captures/releases that are pending after the
