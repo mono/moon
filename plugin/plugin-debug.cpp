@@ -137,7 +137,15 @@ populate_tree_from_surface (PluginInstance *plugin, GtkTreeStore *store, GtkTree
 		return;
 
 	GtkTreeIter iter;
-	PluginInstance::moon_source *src = (PluginInstance::moon_source*) plugin->GetSources ()->First ();
+	List *sources;
+	PluginInstance::moon_source *src;
+	
+	sources = plugin->GetSources ();
+	
+	if (sources == NULL)
+		return;
+	
+	src = (PluginInstance::moon_source*) sources->First ();
 	for (; src != NULL; src = (PluginInstance::moon_source*) src->next) {
 		gtk_tree_store_append (store, &iter, parent);
 

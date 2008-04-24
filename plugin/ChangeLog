@@ -1,3 +1,7 @@
+2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-debug.cpp: Don't crash if we don't have any sources.
+
 2008-04-24  Fernando Herrera  <fherrera@novell.com>
 
 	* Makefile.am: Fix "make -jN" build.
