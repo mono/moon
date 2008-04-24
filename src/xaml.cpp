@@ -690,9 +690,8 @@ custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementIns
 	// if it's not handled, we definitely need to at least check if the
 	// object is a panel subclass, and if so add it as we would a normal
 	// child.
-	if (parent->item->Is (Type::PANEL) && child->item->Is (Type::UIELEMENT)) {
-		panel_child_add ((Panel *) parent->item, (UIElement *) child->item);
-	}
+	if (parent->item->Is (Type::PANEL) && child->item->Is (Type::UIELEMENT))
+		((Panel *) parent->item)->AddChild ((UIElement *) child->item);
 }
 
 void
@@ -1412,8 +1411,12 @@ xaml_create_from_str (XamlLoader *loader, const char *xaml, bool create_namescop
 
  cleanup_and_return:
 	
-	if (parser_info->error_args)
+	if (parser_info->error_args) {
 		loader->error_args = parser_info->error_args;
+		printf ("Could not parse element %s, attribute %s\n",
+			loader->error_args->xml_element,
+			loader->error_args->xml_attribute);
+	}
 	
 	if (p)
 		XML_ParserFree (p);
@@ -2266,12 +2269,12 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 {
 	char *endptr;
 	*v = NULL;
-
+	
 	if (!strcmp ("{x:Null}", str)) {
 		*v = NULL;
 		return true;
 	}
-
+	
 	switch (type) {
 	case Type::BOOL: {
 		bool b;
@@ -2642,7 +2645,7 @@ void
 panel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
 	if (parent->element_type != XamlElementInstance::PROPERTY)
-		panel_child_add ((Panel *) parent->item, (UIElement *) child->item);
+		((Panel *) parent->item)->AddChild ((UIElement *) child->item);
 
 	dependency_object_add_child (p, parent, child);
 }
@@ -2718,14 +2721,16 @@ bool
 xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value)
 {
 	Value *v = NULL;
+	
 	if (!value_from_str (prop->value_type, prop->name, value, &v))
 		return false;
-
+	
 	// it's possible for (a valid) value to be NULL (and we must keep the default value)
 	if (v) {
 		obj->SetValue (prop, v);
 		delete v;
 	}
+	
 	return true;
 }
 
