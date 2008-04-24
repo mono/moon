@@ -1,3 +1,7 @@
+2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* clock.cpp, clock.h: Added property accessors to TimelineMarker.
+
 2008-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* panel.cpp: Add property accessors and added c-bindings.

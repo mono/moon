@@ -596,6 +596,10 @@ class TimelineMarker : public DependencyObject {
 	static DependencyProperty* TextProperty;
 	static DependencyProperty* TimeProperty;
 	static DependencyProperty* TypeProperty;
+	
+	TimeSpan GetTime ();
+	const char *GetText ();
+	const char *GetType ();
 };
 
 TimelineMarker *timeline_marker_new (void);

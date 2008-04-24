@@ -1483,6 +1483,27 @@ DependencyProperty* TimelineMarker::TextProperty;
 DependencyProperty* TimelineMarker::TimeProperty;
 DependencyProperty* TimelineMarker::TypeProperty;
 
+TimeSpan
+TimelineMarker::GetTime ()
+{
+	Value *value = GetValue (TimeProperty);
+	return value ? value->AsTimeSpan () : 0;
+}
+
+const char *
+TimelineMarker::GetText ()
+{
+	Value *value = GetValue (TextProperty);
+	return value ? value->AsString () : NULL;
+}
+
+const char *
+TimelineMarker::GetType ()
+{
+	Value *value = GetValue (TypeProperty);
+	return value ? value->AsString () : NULL;
+}
+
 TimelineMarker *
 timeline_marker_new (void)
 {
