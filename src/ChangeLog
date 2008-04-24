@@ -1,5 +1,12 @@
 2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp, pipeline.cpp, pipeline.h: Addded
+	  ProgressiveSource::NotifyFinished to notify that the download has
+	  finished. This is required for streaming downloads which download 0
+	  bytes, otherwise the pipeline will hang waiting for data.
+
+2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* collection.cpp, collection.h: TimelineMarkerCollection needs to be
 	  sorted at all times, added a virtual Collection::AddToList method
 	  which appends the item to the list (and overriden by

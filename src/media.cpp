@@ -1131,6 +1131,9 @@ MediaElement::DownloaderComplete ()
 	
 	flags |= DownloadComplete;
 	
+	if (downloaded_file != NULL)
+		downloaded_file->NotifyFinished ();
+	
 	UpdateProgress ();
 	
 	switch (state) {

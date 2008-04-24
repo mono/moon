@@ -2756,6 +2756,15 @@ ProgressiveSource::NotifySize (int64_t size)
 	Unlock ();
 }
 
+void
+ProgressiveSource::NotifyFinished ()
+{
+	Lock ();
+	this->size = write_pos;
+	Unlock ();
+	Signal ();
+}
+
 bool
 ProgressiveSource::SeekToPts (uint64_t pts)
 {
