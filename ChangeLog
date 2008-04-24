@@ -1,3 +1,8 @@
+2008-04-24  Geoff Norton  <gnorton@novell.com>
+
+	* configure.ac: Autoconf treats [] as null.  Set a fake variable
+	to not abort execution if xrandr isn't present.
+
 2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* configure.ac: Add another directory to search for MS' drtlist.

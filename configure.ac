@@ -116,7 +116,7 @@ dnl
 dnl xrandr checks
 dnl
 PKG_CHECK_MODULES(XRANDR,xrandr,
-		  [AC_DEFINE([USE_RANDR],[1],[Include support for the XRANDR extension for querying a monitor's refresh rate])],[])
+		  [AC_DEFINE([USE_RANDR],[1],[Include support for the XRANDR extension for querying a monitor's refresh rate])],[xrandr_present=no])
 
 dnl
 dnl sound checks
