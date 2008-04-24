@@ -191,7 +191,7 @@ Panel::Render (cairo_t *cr, Region *region)
 	
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	if ((Background = GetBackground ())) {
+	if ((background = GetBackground ())) {
 		double fheight = GetHeight ();
 		double fwidth = GetWidth ();
 		
