@@ -1,3 +1,7 @@
+2008-04-24  Fernando Herrera  <fherrera@novell.com>
+
+	* Makefile.am: Fix "make -jN" build.
+
 2008-04-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-debug.cpp: Don't crash if try to save stuff after changing

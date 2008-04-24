@@ -1,3 +1,7 @@
+2008-04-24  Fernando Herrera  <fherrera@novell.com>
+
+	* Makefile.am: Fix "make -jN" build.
+
 2008-04-21  Geoff Norton  <gnorton@novell.com>
 
 	* index.xml: Updated for the new monodoc format.

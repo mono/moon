@@ -1,3 +1,7 @@
+2008-04-24  Fernando Herrera  <fherrera@novell.com>
+
+	* Makefile.am: Fix "make -jN" build.
+
 2008-04-17  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Use AM_LDFLAGS, not LDFLAGS which is a user variable
