@@ -524,29 +524,28 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		// element type specific checks
 		if (subtract) {
 			if (Is (Type::MEDIAELEMENT)) {
-				MediaElement *me = (MediaElement*)this;
-				MediaPlayer *mplayer = me->GetMediaPlayer ();
-				subtract = (!me->IsClosed ()
-					    && mplayer
+				MediaElement *media = (MediaElement *) this;
+				MediaPlayer *mplayer = media->GetMediaPlayer ();
+				Stretch stretch = media->GetStretch ();
+				
+				subtract = (!media->IsClosed () && mplayer
 					    && mplayer->HasRenderedFrame ()
-					    && ((mplayer->GetWidth () == me->GetBounds().w
-						 && mplayer->GetHeight () == me->GetBounds().h)
-						||
-						(media_base_get_stretch (me) == StretchFill
-						 || media_base_get_stretch (me) == StretchUniformToFill)));
-
+					    && ((mplayer->GetVideoWidth () == media->GetBounds ().w
+						 && mplayer->GetVideoHeight () == media->GetBounds ().h)
+						|| (stretch == StretchFill || stretch == StretchUniformToFill)));
+				
 				//Rect r = me->GetBounds();
 				//printf ("r.bounds = %g %g %g %g\n", r.x, r.y, r.w, r.h);
 			}
 			else if (Is (Type::IMAGE)) {
-				Image *image = (Image*)this;
+				Image *image = (Image *) this;
+				Stretch stretch = image->GetStretch ();
+				
 				subtract = (image->surface
 					    && !image->surface->has_alpha
-					    && ((image->GetWidth() == image->GetBounds().w
-						 && image->GetHeight() == image->GetBounds().h)
-						||
-						(media_base_get_stretch (image) == StretchFill
-						 || media_base_get_stretch (image) == StretchUniformToFill)));
+					    && ((image->GetImageWidth () == image->GetBounds ().w
+						 && image->GetImageHeight () == image->GetBounds ().h)
+						|| (stretch == StretchFill || stretch == StretchUniformToFill)));
 			}
 			else if (Is (Type::RECTANGLE)) {
 				// if we're going to subtract anything we'll
@@ -554,7 +553,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 				// it doesn't happen later.
 				subtract = false;
 
-				Rectangle *rectangle = (Rectangle*)this;
+				Rectangle *rectangle = (Rectangle *) this;
 				Brush *fill = shape_get_fill (rectangle);
 
 				if (fill != NULL && fill->IsOpaque()) {

@@ -26,7 +26,7 @@ class MediaPlayer;
 
 struct Audio {
 	Queue queue;
-
+	
 	double balance;
 	double volume;
 	bool muted;
@@ -55,14 +55,14 @@ struct Video {
 };
 
 class MediaPlayer : public EventObject {
-public:
+ public:
 	enum PlayerState {
 		// These are not flags, but mutually exclusive states.
 		Stopped				= 0,
 		Paused				= 1,
 		Playing				= 2,
 		StateMask			= 3,
-
+		
 		Seeking				= (1 << 4),
 		// If we're waiting for a frame to show immediately
 		LoadFramePending	= (1 << 5),
@@ -77,14 +77,14 @@ public:
 		CanSeek				= (1 << 10),
 		CanPause			= (1 << 11),
 	};
-
-private:
+	
+ private:
+	MediaElement *element;
 	Media *media;
 	PlayerState state;
-	int32_t width;
 	int32_t height;
-	MediaElement *element;
-
+	int32_t width;
+	
 	// sync
 	pthread_mutex_t target_pts_lock;
 	uint64_t start_time; // 100-nanosecond units (pts)
@@ -96,23 +96,23 @@ private:
 	
 	bool LoadVideoFrame ();
 	void Initialize ();
-
+	
 	void SeekInternal (uint64_t pts/* 100-nanosecond units (pts) */);
 	void RenderFrame (MediaFrame *frame);
 	static MediaResult SeekCallback (MediaClosure *closure);
 	static MediaResult FrameCallback (MediaClosure *closure);
-
+	
 	static gboolean EnqueueFramesCallback (void *user_data);
 	static gboolean LoadFrameCallback (void *user_data);
 	static gboolean AudioFinishedCallback (void *user_data);
 	
-protected:
+ protected:
 	virtual ~MediaPlayer ();
-
-public:
+	
+ public:
 	Audio audio;
 	Video video;
-
+	
 	MediaPlayer (MediaElement *element);
 	
 	// Returns true if advanced at least one frame.
@@ -138,7 +138,7 @@ public:
 	void SetBitTo (PlayerState s, bool value) { if (value) SetBit (s); else RemoveBit (s); }
 	bool GetBit (PlayerState s) { return (state & s) == s; }
 	void SetState (PlayerState s) { state = (PlayerState) ((state & ~StateMask) | s); }
-
+	
 	void Play ();
 	bool GetCanPause ();
 	void SetCanPause (bool value);
@@ -151,44 +151,45 @@ public:
 	void Seek (uint64_t pts /* 100-nanosecond units (pts) */);
 	
 	cairo_surface_t *GetCairoSurface () { return video.surface; }
-	gint32 GetTimeoutInterval ();
-
+	int32_t GetTimeoutInterval ();
+	
 	int GetAudioStreamCount () { return audio.stream_count; }
 	Media *GetMedia () { return media; }
-
+	
 	bool HasVideo () { return video.stream != NULL; }
 	bool HasAudio () { return audio.stream != NULL; }
-
+	
 	uint64_t GetPosition () { return GetTargetPts (); }
 	uint64_t GetDuration () { return duration; }
 	
 	void SetMuted (bool muted) { audio.muted = muted; }
 	bool GetMuted () { return audio.muted; }
 	
-	int32_t GetWidth () { return width; }
-	int32_t GetHeight () { return height; }
-
+	int32_t GetVideoHeight () { return height; }
+	int32_t GetVideoWidth () { return width; }
+	
 	double GetBalance () { return audio.balance; }
 	void SetBalance (double balance);
 	
 	bool GetEof () { return state & Eof; }
 	void SetEof (bool value);
-
+	
 	double GetVolume () { return audio.volume; }
 	void SetVolume (double volume);
-
+	
 	void SetTargetPts (uint64_t pts);
 	uint64_t GetTargetPts ();
 };
 
 class AudioPlayer {
-public:
+ public:
 	enum AudioState {
 		Playing,
 		Paused,
 		Stopped,
 		WaitingForData
 	};
+	
 	struct AudioNode  {
 		MediaPlayer *mplayer;
 		
@@ -199,22 +200,22 @@ public:
 		pollfd *udfs;
 		int ndfs;
 		snd_pcm_uframes_t buffer_size;
-
+		
 		AudioState state;		
 		bool started;
-
+		
 		uint8_t *first_buffer;
 		uint32_t first_used;
 		uint32_t first_size;
 		uint64_t first_pts;
-
+		
 		uint64_t updated_pts;
 		uint64_t sent_pts;
 		uint64_t sent_samples;
 		
 		AudioNode ();
 		~AudioNode ();
-
+		
 		bool GetNextBuffer ();
 		bool Initialize ();
 		bool SetupHW ();
@@ -231,21 +232,21 @@ public:
 		// be locked during playback.
 		// Returns false if nothing has been played
 		bool Play ();
-
+		
 		void Close ();
 	};
 	
 	// This value will be false if initialization fails (no audio devices, etc).
 	bool initialized;
-
+	
 	// The Loop will exit once this value is true
 	bool shutdown;
-
+	
 	// A list of all the audio nodes.
 	AudioNode **list;
 	uint32_t list_size;
 	uint32_t list_count;
-
+	
 	sem_t semaphore;
 	
 	// A list of all the file descriptors in all the 
@@ -255,38 +256,38 @@ public:
 	pollfd *udfs;
 	int ndfs;
 	void UpdatePollList (bool locked);
-
+	
 	// We also need to be able to wake up from the poll
 	// whenever we want to, so we create a pipe which we
 	// poll on. This is always the first file descriptor
 	// in udfs.
 	int fds [2];
-
+	
 	AudioPlayer ();
 	~AudioPlayer ();
-
+	
 	void StartThread ();
 	void StopThread ();
-
-	AudioNode* Find (MediaPlayer *mplayer);
-
+	
+	AudioNode *Find (MediaPlayer *mplayer);
+	
 	// The audio thread	
 	pthread_t *audio_thread;
-
+	
 	// The audio loop which is executed 
 	// on the audio thread.
-	static void* Loop (void *data);
+	static void *Loop (void *data);
 	void Loop ();
-
+	
 	// our AudioPlayer instance
-	static AudioPlayer* instance;
-	static AudioPlayer* Instance ();
+	static AudioPlayer *instance;
+	static AudioPlayer *Instance ();
 	static bool Initialize ();
-
+	
 	void Lock (); // tries to wait on the semaphore, and if not successful, wakes up the audio thread and tries again.
 	void SimpleLock (); // just waits on the semaphore
 	void Unlock ();
-
+	
 	bool AddInternal (MediaPlayer *mplayer);
 	void RemoveInternal (MediaPlayer *mplayer);
 	void PauseInternal (MediaPlayer *mplayer, bool value);
@@ -294,7 +295,7 @@ public:
 	void PlayInternal (MediaPlayer *mplayer);
 	void WaitForData (AudioNode *node);
 	
-public:
+ public:
 	// None of the following functions are thread-safe, they must all be called from 
 	// the main thread.
 	static bool Add (MediaPlayer *mplayer);

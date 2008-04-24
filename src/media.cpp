@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * media.cpp: 
  *
@@ -30,7 +31,8 @@
 
 // still too ugly to be exposed in the header files ;-)
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
-					 Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform, Transform *relative_transform);
+					 Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform,
+					 Transform *relative_transform);
 
 
 /*
@@ -159,6 +161,30 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 	TimeManager::InvokeOnMainThread (set_source_async, this);
 }
 
+void
+MediaBase::SetDownloadProgress (double progress)
+{
+	SetValue (MediaBase::DownloadProgressProperty, Value (progress));
+}
+
+double
+MediaBase::GetDownloadProgress ()
+{
+	return GetValue (MediaBase::DownloadProgressProperty)->AsDouble ();
+}
+
+void
+MediaBase::SetStretch (Stretch stretch)
+{
+	SetValue (MediaBase::StretchProperty, Value (stretch));
+}
+
+Stretch
+MediaBase::GetStretch ()
+{
+	return (Stretch) GetValue (MediaBase::StretchProperty)->AsInt32 ();
+}
+
 
 MediaBase *
 media_base_new (void)
@@ -166,7 +192,7 @@ media_base_new (void)
 	return new MediaBase ();
 }
 
-char *
+const char *
 media_base_get_source (MediaBase *media)
 {
 	Value *value = media->GetValue (MediaBase::SourceProperty);
@@ -175,33 +201,27 @@ media_base_get_source (MediaBase *media)
 }
 
 void
-media_base_set_source (MediaBase *media, const char *value)
+media_base_set_source (MediaBase *media, const char *source)
 {
-	media->SetValue (MediaBase::SourceProperty, Value (value));
+	media->SetValue (MediaBase::SourceProperty, Value (source));
 }
 
 Stretch
 media_base_get_stretch (MediaBase *media)
 {
-	return (Stretch) media->GetValue (MediaBase::StretchProperty)->AsInt32 ();
+	return media->GetStretch ();
 }
 
 void
-media_base_set_stretch (MediaBase *media, Stretch value)
+media_base_set_stretch (MediaBase *media, Stretch stretch)
 {
-	media->SetValue (MediaBase::StretchProperty, Value (value));
-}
-
-void
-media_base_set_download_progress (MediaBase *media, double progress)
-{
-	media->SetValue (MediaBase::DownloadProgressProperty, Value (progress));
+	media->SetStretch (stretch);
 }
 
 double
 media_base_get_download_progress (MediaBase *media)
 {
-	return media->GetValue (MediaBase::DownloadProgressProperty)->AsDouble ();
+	return media->GetDownloadProgress ();
 }
 
 /*
@@ -289,24 +309,26 @@ MediaElement::ReadMarkers ()
 	
 	if (mplayer == NULL || mplayer->GetMedia () == NULL || mplayer->GetMedia ()->GetDemuxer () == NULL)
 		return;
-
+	
 	media = mplayer->GetMedia ();
 	demuxer = media->GetDemuxer ();
-
+	
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		if (demuxer->GetStream (i)->GetType () == MediaTypeMarker) {
 			MarkerStream *stream = (MarkerStream *) demuxer->GetStream (i);
+			
 			if (marker_closure == NULL) {
 				marker_closure = new MediaClosure (marker_callback);
 				marker_closure->SetContextUnsafe (this);
 				marker_closure->SetMedia (media);
 			}
+			
 			stream->SetCallback (marker_closure);
 			break;
 		}
 	}
 	
-	TimelineMarkerCollection *col = NULL;
+	TimelineMarkerCollection *markers = NULL;
 	MediaMarker::Node *current = (MediaMarker::Node *) media->GetMarkers ()->First ();
 	
 	if (current == NULL) {
@@ -314,14 +336,15 @@ MediaElement::ReadMarkers ()
 		return;
 	}
 	
-	col = new TimelineMarkerCollection ();
+	markers = new TimelineMarkerCollection ();
 	while (current != NULL) {
-		MediaMarker *marker = current->marker;
 		TimelineMarker *new_marker = new TimelineMarker ();
+		MediaMarker *marker = current->marker;
+		
 		new_marker->SetValue (TimelineMarker::TextProperty, marker->Text ());
 		new_marker->SetValue (TimelineMarker::TypeProperty, marker->Type ());
 		new_marker->SetValue (TimelineMarker::TimeProperty, Value (TimeSpan_FromPts (marker->Pts ()), Type::TIMESPAN));
-		col->Add (new_marker);
+		markers->Add (new_marker);
 		new_marker->unref ();
 		
 		current = (MediaMarker::Node *) current->next;
@@ -329,40 +352,40 @@ MediaElement::ReadMarkers ()
 	
 	// Docs says we overwrite whatever's been loaded already.
 	//printf ("MediaElement::ReadMarkers (): setting %d markers.\n", collection_count (col));
-	SetValue (MarkersProperty, col);
-	col->unref ();
+	SetMarkers (markers);
+	markers->unref ();
 }
 
 void
 MediaElement::CheckMarkers (uint64_t from, uint64_t to)
 {
+	TimelineMarkerCollection *markers;
+	
 	if (from == to)
 		return;
 	
-	Value *val = GetValue (MediaElement::MarkersProperty);
-	
-	if (val == NULL)
+	if (!(markers = GetMarkers ()))
 		return;
-		
-	CheckMarkers (from, to, val->AsTimelineMarkerCollection (), false);
+	
+	CheckMarkers (from, to, markers, false);
 	CheckMarkers (from, to, streamed_markers, true);	
 }
 
 void
-MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *col, bool remove)
+MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *markers, bool remove)
 {
 	Collection::Node *node, *next;
 	TimelineMarker *marker;
 	Value *val = NULL;
 	uint64_t pts;
 	
-	if (col == NULL)
+	if (markers == NULL)
 		return;
 	
 	// We might want to use a more intelligent algorithm here, 
 	// this code only loops through all markers on every frame.
 	
-	node = (Collection::Node *) col->list->First ();
+	node = (Collection::Node *) markers->list->First ();
 	while (node != NULL) {
 		if (!(marker = (TimelineMarker *) node->obj))
 			return;
@@ -374,15 +397,14 @@ MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection
 		
 		//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
 		
-		if (pts >= from && pts <= to) {
+		if (pts >= from && pts <= to)
 			Emit (MarkerReachedEvent, new MarkerReachedEventArgs (marker));
-		}
 		
 		next = (Collection::Node *) node->next;
 		
 		if (remove && pts <= to) {
 			// Also delete markers we've passed by already
-			col->list->Remove (node);
+			markers->list->Remove (node);
 		}
 		
 		node = next;
@@ -417,7 +439,7 @@ MediaElement::AdvanceFrame ()
 	if (advanced) {
 		//printf ("MediaElement::AdvanceFrame (): advanced, setting position to: %lld\n", position);
 		flags |= UpdatingPosition;
-		media_element_set_position (this, TimeSpan_FromPts (position));
+		SetPosition (TimeSpan_FromPts (position));
 		flags &= ~UpdatingPosition;
 		last_played_pts = position;
 	}
@@ -499,14 +521,15 @@ MediaElement::SetSurface (Surface *s)
 void
 MediaElement::Reinitialize (bool dtor)
 {
-	d (printf ("MediaElement::Reinitialize (%i)\n", dtor));
-	
-	Value *val;
+	TimelineMarkerCollection *markers;
+	MediaAttributeCollection *attrs;
 	IMediaDemuxer *demuxer = NULL;
+	
+	d(printf ("MediaElement::Reinitialize (%i)\n", dtor));
 	
 	if (mplayer)
 		mplayer->Close (dtor);
-
+	
 	if (media != NULL) {
 		demuxer = media->GetDemuxer ();
 	
@@ -520,6 +543,7 @@ MediaElement::Reinitialize (bool dtor)
 			}
 		}
 	}
+	
 	if (marker_closure) {
 		delete marker_closure;
 		marker_closure = NULL;
@@ -542,7 +566,8 @@ MediaElement::Reinitialize (bool dtor)
 	
 	flags = (flags & (Loaded | PlayRequested)) | RecalculateMatrix;
 	if (!dtor)
-		SetValue (MediaElement::CurrentStateProperty, Value ("Closed"));
+		SetCurrentState ("Closed");
+	
 	prev_state = Closed;
 	state = Closed;
 	
@@ -555,7 +580,7 @@ MediaElement::Reinitialize (bool dtor)
 	
 	if (!dtor) {
 		flags |= UpdatingPosition;
-		SetValue (MediaElement::PositionProperty, Value (0, Type::TIMESPAN));
+		SetPosition (0);
 		flags &= ~UpdatingPosition;
 	}
 	
@@ -569,21 +594,21 @@ MediaElement::Reinitialize (bool dtor)
 	
 	last_played_pts = 0;
 	
-	if (streamed_markers)
+	if (streamed_markers) {
 		streamed_markers->unref ();
-	streamed_markers = NULL;
+		streamed_markers = NULL;
+	}
+	
 	previous_position = 0;
 	
-	val = GetValue (MediaElement::MarkersProperty);
-	if (val != NULL && val->AsCollection () != NULL)
-		val->AsCollection ()->Clear ();
+	if ((markers = GetMarkers ()))
+		markers->Clear ();
 	
-	val = GetValue (MediaElement::AttributesProperty);
-	if (val != NULL && val->AsCollection () != NULL)
-		val->AsCollection ()->Clear ();
+	if ((attrs = GetAttributes ()))
+		attrs->Clear ();
 	
 	if (!dtor)
-		SetValue (PositionProperty, Value (0, Type::TIMESPAN));
+		SetPosition (0);
 }
 
 void
@@ -593,37 +618,41 @@ MediaElement::SetMedia (Media *media)
 	
 	if (this->media == media)
 		return;	
-
+	
 	this->media = media;
 	if (!mplayer->Open (media))
 		return;
 	
 	ReadMarkers ();
 	
-	SetValue (MediaElement::AudioStreamCountProperty, Value (mplayer->GetAudioStreamCount ()));
-	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (TimeSpan_FromPts (mplayer->GetDuration ()))));
-	SetValue (MediaElement::NaturalVideoHeightProperty, Value ((double) mplayer->GetHeight ()));
-	SetValue (MediaElement::NaturalVideoWidthProperty, Value ((double) mplayer->GetWidth ()));
+	SetNaturalDuration (TimeSpan_FromPts (mplayer->GetDuration ()));
+	SetNaturalVideoHeight ((double) mplayer->GetVideoHeight ());
+	SetNaturalVideoWidth ((double) mplayer->GetVideoWidth ());
+	SetAudioStreamCount (mplayer->GetAudioStreamCount ());
 	
-	mplayer->SetMuted (GetValue (MediaElement::IsMutedProperty)->AsBool ());
-	mplayer->SetVolume (GetValue (MediaElement::VolumeProperty)->AsDouble ());
-	mplayer->SetBalance (GetValue (MediaElement::BalanceProperty)->AsDouble ());
+	mplayer->SetMuted (GetIsMuted ());
+	mplayer->SetVolume (GetVolume ());
+	mplayer->SetBalance (GetBalance ());
 	
 	if (downloader != NULL && downloader->GetHttpStreamingFeatures () != 0) {
 		bool broadcast = downloader->GetHttpStreamingFeatures () & HttpStreamingBroadcast;
 		bool seekable = downloader->GetHttpStreamingFeatures () & HttpStreamingSeekable;
-		printf ("MediaElement::SetMedia () setting features %i to broadcast (%i) and seekable (%i)\n", downloader->GetHttpStreamingFeatures (), broadcast, seekable);
-		SetValue (MediaElement::CanPauseProperty, Value (!broadcast));
-		SetValue (MediaElement::CanSeekProperty, Value (seekable));
+		
+		d(printf ("MediaElement::SetMedia () setting features %d to broadcast (%d) and seekable (%d)\n",
+			  downloader->GetHttpStreamingFeatures (), broadcast, seekable));
+		
+		SetCanPause (!broadcast);
+		SetCanSeek (seekable);
 	}
-	mplayer->SetCanPause (GetValue (MediaElement::CanPauseProperty)->AsBool ());
-	mplayer->SetCanSeek (GetValue (MediaElement::CanSeekProperty)->AsBool ());
+	
+	mplayer->SetCanPause (GetCanPause ());
+	mplayer->SetCanSeek (GetCanSeek ());
 	
 	UpdatePlayerPosition (GetValue (MediaElement::PositionProperty));
 	
 	ComputeBounds ();
 }
-	
+
 bool
 MediaElement::MediaOpened (Media *media)
 {
@@ -676,12 +705,12 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 	if (state == MediaElement::Error)
 		return;
 	
-	SetValue (MediaElement::CanSeekProperty, Value (false));
-	SetValue (MediaElement::CanPauseProperty, Value (false));
-	SetValue (MediaElement::AudioStreamCountProperty, Value (0));
-	SetValue (MediaElement::NaturalDurationProperty, Value (Duration::FromSeconds (0)));
-	SetValue (MediaElement::NaturalVideoHeightProperty, Value (0.0));
-	SetValue (MediaElement::NaturalVideoWidthProperty, Value (0.0));
+	SetAudioStreamCount (0);
+	SetNaturalVideoHeight (0);
+	SetNaturalVideoWidth (0);
+	SetNaturalDuration (0);
+	SetCanPause (false);
+	SetCanSeek (false);
 	
 	SetState (MediaElement::Error);
 	Emit (MediaFailedEvent, args);
@@ -694,8 +723,8 @@ MediaElement::ComputeBounds ()
 	double w = GetWidth ();
 	
 	if (w == 0.0 && h == 0.0) {
-		h = (double) mplayer->GetHeight ();
-		w = (double) mplayer->GetWidth ();
+		h = (double) mplayer->GetVideoHeight ();
+		w = (double) mplayer->GetVideoWidth ();
 	}
 	
 	Rect box = Rect (0, 0, w, h);
@@ -711,8 +740,8 @@ MediaElement::GetTransformOrigin ()
 	double w = GetWidth ();
 	
 	if (w == 0.0 && h == 0.0) {
-		h = (double) mplayer->GetHeight ();
-		w = (double) mplayer->GetWidth ();
+		h = (double) mplayer->GetVideoHeight ();
+		w = (double) mplayer->GetVideoWidth ();
 	}
 	
 	return Point (user_xform_origin.x * w, user_xform_origin.y * h);
@@ -721,7 +750,7 @@ MediaElement::GetTransformOrigin ()
 void
 MediaElement::Render (cairo_t *cr, Region *region)
 {
-	Stretch stretch = (Stretch) GetValue (MediaBase::StretchProperty)->AsInt32 ();
+	Stretch stretch = GetStretch ();
 	double h = GetHeight ();
 	double w = GetWidth ();
 	cairo_surface_t *surface;
@@ -734,8 +763,8 @@ MediaElement::Render (cairo_t *cr, Region *region)
 		return;
 	
 	if (w == 0.0 && h == 0.0) {
-		h = (double) mplayer->GetHeight ();
-		w = (double) mplayer->GetWidth ();
+		h = (double) mplayer->GetVideoHeight ();
+		w = (double) mplayer->GetVideoWidth ();
 	}
 	
 	cairo_save (cr);
@@ -774,8 +803,8 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	h = y2 - y;
 	
 	if (flags & RecalculateMatrix) {
-		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->GetWidth (), mplayer->GetHeight (), stretch,
-						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->GetVideoWidth (), mplayer->GetVideoHeight (),
+						    stretch, AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 		flags &= ~RecalculateMatrix;
 	}
 	
@@ -798,10 +827,10 @@ MediaElement::Render (cairo_t *cr, Region *region)
 void
 MediaElement::UpdateProgress ()
 {
+	uint64_t currently_available_pts, current_pts, buffer_pts;
 	double progress, current;
 	bool emit = false;
-	uint64_t currently_available_pts, current_pts, buffer_pts;
-
+	
 	e(printf ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state)));
 	
 	if (state & WaitingForOpen)
@@ -815,7 +844,7 @@ MediaElement::UpdateProgress ()
 			  MilliSeconds_FromPts (mplayer->GetPosition ()),
 			  media ? media->GetDemuxer ()->GetLastAvailablePts () : 0));
 		
-		SetValue (MediaElement::BufferingProgressProperty, Value (0.0));
+		SetBufferingProgress (0.0);
 		SetState (Buffering);
 		mplayer->Pause ();
 		emit = true;
@@ -829,17 +858,18 @@ MediaElement::UpdateProgress ()
 		} else {
 			currently_available_pts = 0;
 		}
+		
 		current_pts = mplayer->GetPosition ();
-		buffer_pts = TimeSpan_ToPts (GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ());
-
-		// Check that we don't cause any div/0.		
+		buffer_pts = TimeSpan_ToPts (GetBufferingTime ());
+		
+		// Check that we don't cause any div/0.
 		if (current_pts - last_played_pts + buffer_pts == currently_available_pts - last_played_pts) {
 			progress = 1.0;
 		} else {
 			progress = (double) (currently_available_pts - last_played_pts) / (double) (current_pts - last_played_pts + buffer_pts);
 		}
-
-		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
+		
+		current = GetBufferingProgress ();
 		
 		e(printf ("MediaElement::UpdateProgress (), buffer_pts: %llu = %llu ms, last_played_pts: %llu = %llu ms, "
 		"current_pts: %llu = %llu ms, "
@@ -853,7 +883,7 @@ MediaElement::UpdateProgress ()
 			progress = 0.0;
 		else if (progress > 1.0)
 			progress = 1.0;
-
+		
 		if (current > progress) {
 			// Somebody might have seeked further away after the first change to Buffering,
 			// in which case the progress goes down. Don't emit any events in this case.
@@ -862,7 +892,7 @@ MediaElement::UpdateProgress ()
 		
 		// Emit the event if it's 100%, or a change of at least 0.05%
 		if (emit || progress == 1.0 || (progress - current) >= 0.0005) {
-			SetValue (MediaElement::BufferingProgressProperty, Value (progress));
+			SetBufferingProgress (progress);
 			Emit (BufferingProgressChangedEvent);
 		}
 		
@@ -871,11 +901,11 @@ MediaElement::UpdateProgress ()
 	} else { 
 		// FIXME: Do we emit DownloadProgressChangedEvent if we're playing the media?
 		progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
-		current = GetValue (MediaElement::DownloadProgressProperty)->AsDouble ();
+		current = GetDownloadProgress ();
 		
 		// Emit the event if it's 100%, or a change of at least 0.05%
 		if (progress == 1.0 || (progress - current) >= 0.0005) {
-			SetValue (MediaElement::DownloadProgressProperty, Value (progress));
+			SetDownloadProgress (progress);
 			Emit (DownloadProgressChangedEvent);
 		}
 	}
@@ -900,7 +930,7 @@ MediaElement::SetState (MediaElementState state)
 	prev_state = this->state;
 	this->state = state;
 	
-	SetValue (MediaElement::CurrentStateProperty, Value (name));
+	SetCurrentState (name);
 }
 
 void 
@@ -963,7 +993,7 @@ MediaElement::BufferingComplete ()
 	
 	switch (prev_state) {
 	case Opening: // Start playback
-		if ((flags & PlayRequested) || GetValue (AutoPlayProperty)->AsBool ())
+		if ((flags & PlayRequested) || GetAutoPlay ())
 			Play ();
 		else
 			Pause ();
@@ -987,7 +1017,8 @@ MediaElement::BufferingComplete ()
 MediaResult
 media_element_open_callback (MediaClosure *closure)
 {
-	MediaElement *element = (MediaElement*) closure->GetContext ();
+	MediaElement *element = (MediaElement *) closure->GetContext ();
+	
 	if (element != NULL) {
 		// the closure will be deleted when we return from this function,
 		// so make a copy of the data.
@@ -999,6 +1030,7 @@ media_element_open_callback (MediaClosure *closure)
 		// We need to call TryOpenFinished on the main thread, so 
 		TimeManager::InvokeOnMainThread (MediaElement::TryOpenFinished, element);
 	}
+	
 	return MEDIA_SUCCESS;
 }
 
@@ -1008,7 +1040,7 @@ MediaElement::TryOpenFinished (void *user_data)
 	d(printf ("MediaElement::TryOpenFinished ()\n"));
 	
 	// No locking should be necessary here, since we can't have another open request pending.
-	MediaElement *element = (MediaElement*) user_data;
+	MediaElement *element = (MediaElement *) user_data;
 	MediaClosure *closure = element->closure;
 	element->closure = NULL;
 	element->flags &= ~WaitingForOpen;
@@ -1027,7 +1059,9 @@ MediaElement::TryOpenFinished (void *user_data)
 		// Seek back to the beginning of the file
 		element->downloaded_file->Seek (0, SEEK_SET);
 	}
+	
 	delete closure;
+	
 	return false;
 }
 
@@ -1086,7 +1120,7 @@ MediaElement::TryOpen ()
 			source = new FileSource (media, filename);
 			g_free (filename);
 		}
-	
+		
 		if (!MEDIA_SUCCEEDED (result = source->Initialize ())) {
 			printf ("MediaFailed (source could not be initialized): %i\n", result);
 			MediaFailed ();
@@ -1133,7 +1167,7 @@ MediaElement::DownloaderFailed (EventArgs *args)
 void
 MediaElement::DownloaderComplete ()
 {
-	d (printf ("MediaElement::DownloaderComplete (), downloader: %i\n", GET_OBJ_ID (downloader)));
+	d(printf ("MediaElement::DownloaderComplete (), downloader: %i\n", GET_OBJ_ID (downloader)));
 	
 	flags |= DownloadComplete;
 	
@@ -1157,7 +1191,7 @@ MediaElement::DownloaderComplete ()
 	case Buffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
-		if ((flags & PlayRequested) || prev_state == Playing || GetValue (AutoPlayProperty)->AsBool ())
+		if ((flags & PlayRequested) || prev_state == Playing || GetAutoPlay ())
 			Play ();
 		else
 			Pause ();
@@ -1183,8 +1217,8 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 	
 	Reinitialize (false);
 	
-	SetValue (MediaElement::CanSeekProperty, Value (!is_live));
-	SetValue (MediaElement::CanPauseProperty, Value (!is_live));
+	SetCanPause (!is_live);
+	SetCanSeek (!is_live);
 	
 	MediaBase::SetSourceInternal (downloader, PartName);
 	
@@ -1213,6 +1247,7 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 			downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 			downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
 		}
+		
 		if (downloaded_file != NULL) {
 			// MediaElement::SetSource() is already async, so we don't need another
 			// layer of asyncronicity... it is safe to call SendNow() here.
@@ -1366,7 +1401,7 @@ MediaElement::GetValue (DependencyProperty *prop)
 TimeSpan
 MediaElement::UpdatePlayerPosition (Value *value)
 {
-	Duration *duration = GetValue (NaturalDurationProperty)->AsDuration ();
+	Duration *duration = GetNaturalDuration ();
 	TimeSpan position = value->AsTimeSpan ();
 	
 	if (duration->HasTimeSpan () && position > duration->GetTimeSpan ())
@@ -1384,7 +1419,7 @@ MediaElement::UpdatePlayerPosition (Value *value)
 	d(printf ("MediaElement::UpdatePlayerPosition (%p), position: %llu = %llu ms, "
 		  "mplayer->GetPosition (): %llu = %llu ms\n", value, position, MilliSeconds_FromPts (position),
 		  mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ())));
-
+	
 	return position;
 }
 
@@ -1490,6 +1525,226 @@ MediaElement::EnableAntiAlias (void)
 
 }
 
+void
+MediaElement::SetAttributes (MediaAttributeCollection *attrs)
+{
+	SetValue (MediaElement::AttributesProperty, Value (attrs));
+}
+
+MediaAttributeCollection *
+MediaElement::GetAttributes ()
+{
+	Value *value = GetValue (MediaElement::AttributesProperty);
+	
+	return value ? value->AsMediaAttributeCollection () : NULL;
+}
+
+void
+MediaElement::SetAudioStreamCount (int count)
+{
+	SetValue (MediaElement::AudioStreamCountProperty, Value (count));
+}
+
+int
+MediaElement::GetAudioStreamCount ()
+{
+	return GetValue (MediaElement::AudioStreamCountProperty)->AsInt32 ();
+}
+
+void
+MediaElement::SetAudioStreamIndex (int index)
+{
+	if (index >= 0)
+		SetValue (MediaElement::AudioStreamIndexProperty, Value (index));
+	else
+		SetValue (MediaElement::AudioStreamIndexProperty, NULL);
+}
+
+int
+MediaElement::GetAudioStreamIndex ()
+{
+	Value *value = GetValue (MediaElement::AudioStreamIndexProperty);
+	int index = -1;
+	
+	if (value && value->AsNullableInt32 ())
+		index = *value->AsNullableInt32 ();
+	
+	return index;
+}
+
+void
+MediaElement::SetAutoPlay (bool set)
+{
+	SetValue (MediaElement::AutoPlayProperty, Value (set));
+}
+
+bool
+MediaElement::GetAutoPlay ()
+{
+	return GetValue (MediaElement::AutoPlayProperty)->AsBool ();
+}
+
+void
+MediaElement::SetBalance (double balance)
+{
+	SetValue (MediaElement::BalanceProperty, Value (balance));
+}
+
+double
+MediaElement::GetBalance ()
+{
+	return GetValue (MediaElement::BalanceProperty)->AsDouble ();
+}
+
+void
+MediaElement::SetBufferingProgress (double progress)
+{
+	SetValue (MediaElement::BufferingProgressProperty, Value (progress));
+}
+
+double
+MediaElement::GetBufferingProgress ()
+{
+	return GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
+}
+
+void
+MediaElement::SetBufferingTime (TimeSpan time)
+{
+	SetValue (MediaElement::BufferingTimeProperty, Value (time, Type::TIMESPAN));
+}
+
+TimeSpan
+MediaElement::GetBufferingTime ()
+{
+	return (TimeSpan) GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ();
+}
+
+void
+MediaElement::SetCanPause (bool set)
+{
+	SetValue (MediaElement::CanPauseProperty, Value (set));
+}
+
+bool
+MediaElement::GetCanPause ()
+{
+	return GetValue (MediaElement::CanPauseProperty)->AsBool ();
+}
+
+void
+MediaElement::SetCanSeek (bool set)
+{
+	SetValue (MediaElement::CanSeekProperty, Value (set));
+}
+
+bool
+MediaElement::GetCanSeek ()
+{
+	return GetValue (MediaElement::CanSeekProperty)->AsBool ();
+}
+
+void
+MediaElement::SetCurrentState (const char *state)
+{
+	SetValue (MediaElement::CurrentStateProperty, Value (state));
+}
+
+const char *
+MediaElement::GetCurrentState ()
+{
+	Value *value = GetValue (MediaElement::CurrentStateProperty);
+	
+	return value ? value->AsString () : NULL;
+}
+
+void
+MediaElement::SetIsMuted (bool set)
+{
+	SetValue (MediaElement::IsMutedProperty, Value (set));
+}
+
+bool
+MediaElement::GetIsMuted ()
+{
+	return GetValue (MediaElement::IsMutedProperty)->AsBool ();
+}
+
+void
+MediaElement::SetMarkers (TimelineMarkerCollection *markers)
+{
+	SetValue (MediaElement::MarkersProperty, Value (markers));
+}
+
+TimelineMarkerCollection *
+MediaElement::GetMarkers ()
+{
+	Value *value = GetValue (MediaElement::MarkersProperty);
+	
+	return value ? value->AsTimelineMarkerCollection () : NULL;
+}
+
+void
+MediaElement::SetNaturalDuration (TimeSpan duration)
+{
+	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (duration)));
+}
+
+Duration *
+MediaElement::GetNaturalDuration ()
+{
+	return GetValue (MediaElement::NaturalDurationProperty)->AsDuration ();
+}
+
+void
+MediaElement::SetNaturalVideoHeight (double height)
+{
+	SetValue (MediaElement::NaturalVideoHeightProperty, Value (height));
+}
+
+double
+MediaElement::GetNaturalVideoHeight ()
+{
+	return GetValue (MediaElement::NaturalVideoHeightProperty)->AsDouble ();
+}
+
+void
+MediaElement::SetNaturalVideoWidth (double width)
+{
+	SetValue (MediaElement::NaturalVideoWidthProperty, Value (width));
+}
+
+double
+MediaElement::GetNaturalVideoWidth ()
+{
+	return GetValue (MediaElement::NaturalVideoWidthProperty)->AsDouble ();
+}
+
+void
+MediaElement::SetPosition (TimeSpan position)
+{
+	SetValue (MediaElement::PositionProperty, Value (position, Type::TIMESPAN));
+}
+
+TimeSpan
+MediaElement::GetPosition ()
+{
+	return (TimeSpan) GetValue (MediaElement::PositionProperty)->AsTimeSpan ();
+}
+
+void
+MediaElement::SetVolume (double volume)
+{
+	SetValue (MediaElement::VolumeProperty, Value (volume));
+}
+
+double
+MediaElement::GetVolume ()
+{
+	return GetValue (MediaElement::VolumeProperty)->AsDouble ();
+}
+
+
 MediaElement *
 media_element_new (void)
 {
@@ -1523,220 +1778,163 @@ media_element_set_source (MediaElement *media, Downloader *downloader, const cha
 MediaAttributeCollection *
 media_element_get_attributes (MediaElement *media)
 {
-	Value *value = media->GetValue (MediaElement::AttributesProperty);
-	
-	return value ? (MediaAttributeCollection *) value->AsMediaAttributeCollection () : NULL;
+	return media->GetAttributes ();
 }
 
 void
-media_element_set_attributes (MediaElement *media, MediaAttributeCollection *value)
+media_element_set_attributes (MediaElement *media, MediaAttributeCollection *attrs)
 {
-	media->SetValue (MediaElement::AttributesProperty, Value (value));
+	media->SetAttributes (attrs);
 }
 
 int
 media_element_get_audio_stream_count (MediaElement *media)
 {
-	return (int) media->GetValue (MediaElement::AudioStreamCountProperty)->AsInt32 ();
-}
-
-void
-media_element_set_audio_stream_count (MediaElement *media, int value)
-{
-	media->SetValue (MediaElement::AudioStreamCountProperty, Value (value));
+	return media->GetAudioStreamCount ();
 }
 
 int
 media_element_get_audio_stream_index (MediaElement *media)
 {
-	Value *value = media->GetValue (MediaElement::AudioStreamIndexProperty);
-	int index = -1;
-	
-	if (value && value->AsNullableInt32 ())
-		index = *value->AsNullableInt32 ();
-	
-	return index;
+	return media->GetAudioStreamIndex ();
 }
 
 void
-media_element_set_audio_stream_index (MediaElement *media, int value)
+media_element_set_audio_stream_index (MediaElement *media, int index)
 {
-	if (value >= 0)
-		media->SetValue (MediaElement::AudioStreamIndexProperty, Value (value));
-	else
-		media->SetValue (MediaElement::AudioStreamIndexProperty, NULL);
+	media->SetAudioStreamIndex (index);
 }
 
 bool
 media_element_get_auto_play (MediaElement *media)
 {
-	return (bool) media->GetValue (MediaElement::AutoPlayProperty)->AsBool ();
+	return media->GetAutoPlay ();
 }
 
 void
-media_element_set_auto_play (MediaElement *media, bool value)
+media_element_set_auto_play (MediaElement *media, bool set)
 {
-	media->SetValue (MediaElement::AutoPlayProperty, Value (value));
+	media->SetAutoPlay (set);
 }
 
 double
 media_element_get_balance (MediaElement *media)
 {
-	return (double) media->GetValue (MediaElement::BalanceProperty)->AsDouble ();
+	return media->GetBalance ();
 }
 
 void
-media_element_set_balance (MediaElement *media, double value)
+media_element_set_balance (MediaElement *media, double balance)
 {
-	media->SetValue (MediaElement::BalanceProperty, Value (value));
+	media->SetBalance (balance);
 }
 
 double
 media_element_get_buffering_progress (MediaElement *media)
 {
-	return (double) media->GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
-}
-
-void
-media_element_set_buffering_progress (MediaElement *media, double value)
-{
-	media->SetValue (MediaElement::BufferingProgressProperty, Value (value));
+	return media->GetBufferingProgress ();
 }
 
 TimeSpan
 media_element_get_buffering_time (MediaElement *media)
 {
-	return (TimeSpan) media->GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ();
+	return media->GetBufferingTime ();
 }
 
 void
-media_element_set_buffering_time (MediaElement *media, TimeSpan value)
+media_element_set_buffering_time (MediaElement *media, TimeSpan time)
 {
-	media->SetValue (MediaElement::BufferingTimeProperty, Value (value, Type::TIMESPAN));
+	media->SetBufferingTime (time);
 }
 
 bool
 media_element_get_can_pause (MediaElement *media)
 {
-	return (bool) media->GetValue (MediaElement::CanPauseProperty)->AsBool ();
-}
-
-void
-media_element_set_can_pause (MediaElement *media, bool value)
-{
-	media->SetValue (MediaElement::CanPauseProperty, Value (value));
+	return media->GetCanPause ();
 }
 
 bool
 media_element_get_can_seek (MediaElement *media)
 {
-	return (bool) media->GetValue (MediaElement::CanSeekProperty)->AsBool ();
+	return media->GetCanSeek ();
 }
 
-void
-media_element_set_can_seek (MediaElement *media, bool value)
-{
-	media->SetValue (MediaElement::CanSeekProperty, Value (value));
-}
-
-char *
+const char *
 media_element_get_current_state (MediaElement *media)
 {
-	Value *value = media->GetValue (MediaElement::CurrentStateProperty);
-	
-	return value ? (char *) value->AsString () : NULL;
+	return media->GetCurrentState ();
 }
 
 void
-media_element_set_current_state (MediaElement *media, const char *value)
+media_element_set_current_state (MediaElement *media, const char *state)
 {
-	media->SetValue (MediaElement::CurrentStateProperty, Value (value));
+	media->SetCurrentState (state);
 }
 
 bool
 media_element_get_is_muted (MediaElement *media)
 {
-	return (bool) media->GetValue (MediaElement::IsMutedProperty)->AsBool ();
+	return media->GetIsMuted ();
 }
 
 void
-media_element_set_is_muted (MediaElement *media, bool value)
+media_element_set_is_muted (MediaElement *media, bool set)
 {
-	media->SetValue (MediaElement::IsMutedProperty, Value (value));
+	media->SetIsMuted (set);
 }
 
 TimelineMarkerCollection *
 media_element_get_markers (MediaElement *media)
 {
-	Value *value = media->GetValue (MediaElement::MarkersProperty);
-	
-	return value ? (TimelineMarkerCollection *) value->AsTimelineMarkerCollection () : NULL;
+	return media->GetMarkers ();
 }
 
 void
-media_element_set_markers (MediaElement *media, TimelineMarkerCollection *value)
+media_element_set_markers (MediaElement *media, TimelineMarkerCollection *markers)
 {
-	media->SetValue (MediaElement::MarkersProperty, Value (value));
+	media->SetMarkers (markers);
 }
 
 Duration *
 media_element_get_natural_duration (MediaElement *media)
 {
-	return media->GetValue (MediaElement::NaturalDurationProperty)->AsDuration ();
-}
-
-void
-media_element_set_natural_duration (MediaElement *media, Duration value)
-{
-	media->SetValue (MediaElement::NaturalDurationProperty, Value (value));
+	return media->GetNaturalDuration ();
 }
 
 double
 media_element_get_natural_video_height (MediaElement *media)
 {
-	return (double) media->GetValue (MediaElement::NaturalVideoHeightProperty)->AsDouble ();
-}
-
-void
-media_element_set_natural_video_height (MediaElement *media, double value)
-{
-	media->SetValue (MediaElement::NaturalVideoHeightProperty, Value (value));
+	return media->GetNaturalVideoHeight ();
 }
 
 double
 media_element_get_natural_video_width (MediaElement *media)
 {
-	return (double) media->GetValue (MediaElement::NaturalVideoWidthProperty)->AsDouble ();
-}
-
-void
-media_element_set_natural_video_width (MediaElement *media, double value)
-{
-	media->SetValue (MediaElement::NaturalVideoWidthProperty, Value (value));
+	return media->GetNaturalVideoWidth ();
 }
 
 TimeSpan
 media_element_get_position (MediaElement *media)
 {
-	return (TimeSpan) media->GetValue (MediaElement::PositionProperty)->AsTimeSpan ();
+	return media->GetPosition ();
 }
 
 void
-media_element_set_position (MediaElement *media, TimeSpan value)
+media_element_set_position (MediaElement *media, TimeSpan position)
 {
-	media->SetValue (MediaElement::PositionProperty, Value (value, Type::TIMESPAN));
+	media->SetPosition (position);
 }
 
 double
 media_element_get_volume (MediaElement *media)
 {
-	return (double) media->GetValue (MediaElement::VolumeProperty)->AsDouble ();
+	return media->GetVolume ();
 }
 
 void
-media_element_set_volume (MediaElement *media, double value)
+media_element_set_volume (MediaElement *media, double volume)
 {
-	media->SetValue (MediaElement::VolumeProperty, Value (value));
+	media->SetVolume (volume);
 }
 
 //
@@ -2150,10 +2348,10 @@ Image::Render (cairo_t *cr, Region *region)
 {
 	if (!surface)
 		return;
-
+	
 	if (create_xlib_surface && !surface->xlib_surface_created) {
 		surface->xlib_surface_created = true;
-
+		
 		cairo_surface_t *xlib_surface = image_brush_create_similar (cr, surface->width, surface->height);
 		cairo_t *cr = cairo_create (xlib_surface);
 
@@ -2182,7 +2380,7 @@ Image::Render (cairo_t *cr, Region *region)
 
 	cairo_save (cr);
 
-	Stretch stretch = (Stretch) GetValue (StretchProperty)->AsInt32 ();
+	Stretch stretch = GetStretch ();
 	double h = GetHeight ();
 	double w = GetWidth ();
 	
@@ -2190,9 +2388,10 @@ Image::Render (cairo_t *cr, Region *region)
 		pattern = cairo_pattern_create_for_surface (surface->cairo);
 	
 	cairo_matrix_t matrix;
+	
 	image_brush_compute_pattern_matrix (&matrix, w, h, surface->width, surface->height, stretch, 
-		AlignmentXCenter, AlignmentYCenter, NULL, NULL);
-
+					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+	
 	cairo_pattern_set_matrix (pattern, &matrix);
 	cairo_set_source (cr, pattern);
 
@@ -2210,14 +2409,13 @@ Image::ComputeBounds ()
 	Rect box = Rect (0,0, GetWidth (), GetHeight ());
 	
 	bounds = IntersectBoundsWithClipPath (box, false).Transform (&absolute_xform);
-						     
 }
 
 Point
 Image::GetTransformOrigin ()
 {
 	Point user_xform_origin = GetRenderTransformOrigin ();
-
+	
 	return Point (GetWidth () * user_xform_origin.x, 
 		      GetHeight () * user_xform_origin.y);
 }
@@ -2234,10 +2432,10 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 	if (args->property == MediaBase::SourceProperty) {
 		DownloaderAbort ();
 		
-		char *source = args->new_value ? args->new_value->AsString() : NULL;
+		const char *source = args->new_value ? args->new_value->AsString() : NULL;
 		
 		Downloader *dl = Surface::CreateDownloader (this);
-		downloader_open (dl, "GET", source);
+		dl->Open ("GET", source);
 		SetSource (dl, "");
 		dl->unref ();
 	}
@@ -2296,6 +2494,8 @@ media_attribute_set_value (MediaAttribute *attribute, const char *value)
 {
 	attribute->SetValue (MediaAttribute::ValueProperty, Value (value));
 }
+
+
 
 void
 media_init (void)

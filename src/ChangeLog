@@ -1,3 +1,10 @@
+2008-04-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp: Added property accessors so that it isn't
+	necessary to use long-winded c-function names to get property
+	values. Also made all c-wrappers call the c++ property accessor
+	methods.
+
 2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: When a video-only media reaches its end, set target_pts
@@ -93,13 +100,13 @@
 
 2008-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
-	* frameworkelement.cpp: Added property accessors to all brush
-	classes so that it isn't encessary to use long-winded c-function
-	names to get property values. Also made all c-wrappers call the
-	c++ property accessor methods.
+	* frameworkelement.cpp: Added property accessors so that it isn't
+	necessary to use long-winded c-function names to get property
+	values. Also made all c-wrappers call the c++ property accessor
+	methods.
 
-	* text.cpp: Added property accessors to all brush classes so that
-	it isn't encessary to use long-winded c-function names to get
+	* text.cpp: Added property accessors to all text classes so that
+	it isn't necessary to use long-winded c-function names to get
 	property values. Also made all c-wrappers call the c++ property
 	accessor methods.
 	(TextBlock::LayoutSilverlight): Removed, logic moved into

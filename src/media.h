@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * media.h:
  *
@@ -39,6 +40,7 @@ class MediaAttribute : public DependencyObject {
 };
 
 MediaAttribute *media_attribute_new (void);
+
 const char *media_attribute_get_value (MediaAttribute *attribute);
 void media_attribute_set_value (MediaAttribute *attribute, const char *value);
 
@@ -62,6 +64,8 @@ class MediaBase : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
+	void SetDownloadProgress (double progress);
+	
  public:
 	static DependencyProperty *SourceProperty;
 	static DependencyProperty *StretchProperty;
@@ -72,21 +76,27 @@ class MediaBase : public FrameworkElement {
 	MediaBase ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
 	
-	
-	
 	void SetSourceAsyncCallback ();
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
+	
+	//
+	// Property Accessors
+	//
+	double GetDownloadProgress ();
+	
+	void SetStretch (Stretch stretch);
+	Stretch GetStretch ();
 };
 
 MediaBase *media_base_new (void);
-char *media_base_get_source (MediaBase *media);
+
+const char *media_base_get_source (MediaBase *media);
 void media_base_set_source (MediaBase *media, const char *value);
 
 Stretch media_base_get_stretch (MediaBase *media);
-void    media_base_set_stretch (MediaBase *media, Stretch value);
+void    media_base_set_stretch (MediaBase *media, Stretch stretch);
 
-void   media_base_set_download_progress (MediaBase *media, double progress);
 double media_base_get_download_progress (MediaBase *media);
 
 
@@ -149,14 +159,16 @@ class Image : public MediaBase {
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
-	int GetHeight () { return surface ? surface->height : 0; };
-	int GetWidth  () { return surface ? surface->width : 0; };
+	int GetImageHeight () { return surface ? surface->height : 0; };
+	int GetImageWidth  () { return surface ? surface->width : 0; };
 	
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 };
 
 Image *image_new (void);
+
 void   image_set_source (Image *img, Downloader *downloader, const char *PartName);
+
 
 class MediaElement : public MediaBase {
  public:
@@ -242,6 +254,20 @@ class MediaElement : public MediaBase {
 	
 	TimeSpan UpdatePlayerPosition (Value *value);
 	
+	//
+	// Private Property Accessors
+	//
+	void SetAudioStreamCount (int count);
+	
+	void SetBufferingProgress (double progress);
+	
+	void SetCanPause (bool set);
+	void SetCanSeek (bool set);
+	
+	void SetNaturalDuration (TimeSpan duration);
+	void SetNaturalVideoHeight (double height);
+	void SetNaturalVideoWidth (double width);
+	
  protected:
 	virtual ~MediaElement ();
 	
@@ -324,11 +350,55 @@ class MediaElement : public MediaBase {
 	void SetState (MediaElementState state);
 	
 	Playlist *GetPlaylist () { return playlist;  }
-
+	
 	virtual bool EnableAntiAlias ();
 	
 	void AddStreamedMarker (TimelineMarker *marker);
 	void SetMedia (Media *media);
+	
+	//
+	// Public Property Accessors
+	//
+	void SetAttributes (MediaAttributeCollection *attrs);
+	MediaAttributeCollection *GetAttributes ();
+	
+	int GetAudioStreamCount ();
+	
+	void SetAudioStreamIndex (int index);
+	int GetAudioStreamIndex ();
+	
+	void SetAutoPlay (bool set);
+	bool GetAutoPlay ();
+	
+	void SetBalance (double balance);
+	double GetBalance ();
+	
+	double GetBufferingProgress ();
+	
+	void SetBufferingTime (TimeSpan time);
+	TimeSpan GetBufferingTime ();
+	
+	bool GetCanPause ();
+	bool GetCanSeek ();
+	
+	void SetCurrentState (const char *state);
+	const char *GetCurrentState ();
+	
+	void SetIsMuted (bool set);
+	bool GetIsMuted ();
+	
+	void SetMarkers (TimelineMarkerCollection *markers);
+	TimelineMarkerCollection *GetMarkers ();
+	
+	Duration *GetNaturalDuration ();
+	double GetNaturalVideoHeight ();
+	double GetNaturalVideoWidth ();
+	
+	void SetPosition (TimeSpan position);
+	TimeSpan GetPosition ();
+	
+	void SetVolume (double volume);
+	double GetVolume ();
 };
 
 MediaElement *media_element_new (void);
@@ -344,7 +414,6 @@ MediaAttributeCollection *media_element_get_attributes (MediaElement *media);
 void media_element_set_attributes (MediaElement *media, MediaAttributeCollection *value);
 
 int media_element_get_audio_stream_count (MediaElement *media);
-void media_element_set_audio_stream_count (MediaElement *media, int value);
 
 int media_element_get_audio_stream_index (MediaElement *media);
 void media_element_set_audio_stream_index (MediaElement *media, int value);
@@ -356,18 +425,14 @@ double media_element_get_balance (MediaElement *media);
 void media_element_set_balance (MediaElement *media, double value);
 
 double media_element_get_buffering_progress (MediaElement *media);
-void media_element_set_buffering_progress (MediaElement *media, double value);
 
 TimeSpan media_element_get_buffering_time (MediaElement *media);
 void media_element_set_buffering_time (MediaElement *media, TimeSpan value);
 
 bool media_element_get_can_pause (MediaElement *media);
-void media_element_set_can_pause (MediaElement *media, bool value);
-
 bool media_element_get_can_seek (MediaElement *media);
-void media_element_set_can_seek (MediaElement *media, bool value);
 
-char *media_element_get_current_state (MediaElement *media);
+const char *media_element_get_current_state (MediaElement *media);
 void media_element_set_current_state (MediaElement *media, const char *value);
 
 bool media_element_get_is_muted (MediaElement *media);
@@ -377,13 +442,8 @@ TimelineMarkerCollection *media_element_get_markers (MediaElement *media);
 void media_element_set_markers (MediaElement *media, TimelineMarkerCollection *value);
 
 Duration *media_element_get_natural_duration (MediaElement *media);
-void media_element_set_natural_duration (MediaElement *media, Duration value);
-
 double media_element_get_natural_video_height (MediaElement *media);
-void media_element_set_natural_video_height (MediaElement *media, double value);
-
 double media_element_get_natural_video_width (MediaElement *media);
-void media_element_set_natural_video_width (MediaElement *media, double value);
 
 TimeSpan media_element_get_position (MediaElement *media);
 void media_element_set_position (MediaElement *media, TimeSpan value);
