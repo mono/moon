@@ -1,5 +1,7 @@
 2008-04-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* downloader.cpp: Same.
+
 	* media.cpp: Added property accessors so that it isn't
 	necessary to use long-winded c-function names to get property
 	values. Also made all c-wrappers call the c++ property accessor

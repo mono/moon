@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * downloader.h: Downloader class.
  *
@@ -71,9 +72,11 @@ class Downloader : public DependencyObject {
 	void CleanupUnzipDir ();
 	
  protected:
-	
 	virtual ~Downloader ();
-
+	
+	void SetStatusText (const char *text);
+	void SetStatus (int status);
+	
  public:
 	// Properties
 	static DependencyProperty *DownloadProgressProperty;
@@ -133,7 +136,7 @@ class Downloader : public DependencyObject {
 				  bool only_if_not_set);
 	
 	void SetRequestPositionFunc (downloader_request_position_func request_position);
-
+	
 	bool Started ();
 	bool Completed ();
 	
@@ -142,6 +145,18 @@ class Downloader : public DependencyObject {
 	gpointer GetDownloaderState () { return downloader_state; }
 	void     SetHttpStreamingFeatures (HttpStreamingFeatures features) { streaming_features = features; }
 	HttpStreamingFeatures GetHttpStreamingFeatures () { return streaming_features; }
+	
+	//
+	// Property Accessors
+	//
+	void SetDownloadProgress (double progress);
+	double GetDownloadProgress ();
+	
+	const char *GetStatusText ();
+	int GetStatus ();
+	
+	void SetUri (const char *uri);
+	const char *GetUri ();
 };
 
 Downloader *downloader_new (void);

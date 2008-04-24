@@ -938,7 +938,7 @@ deobfuscate_font (Downloader *downloader, const char *path)
 	Uri *uri;
 	int fd;
 	
-	if (!(value = downloader->GetValue (Downloader::UriProperty)) || !(str = value->AsString ()))
+	if (!(str = downloader->GetUri ()))
 		return NULL;
 	
 	uri = new Uri ();

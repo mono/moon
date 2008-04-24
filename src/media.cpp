@@ -900,7 +900,7 @@ MediaElement::UpdateProgress ()
 			BufferingComplete ();
 	} else { 
 		// FIXME: Do we emit DownloadProgressChangedEvent if we're playing the media?
-		progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
+		progress = downloader->GetDownloadProgress ();
 		current = GetDownloadProgress ();
 		
 		// Emit the event if it's 100%, or a change of at least 0.05%
@@ -948,7 +948,7 @@ MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
 	
 	// Delay the propogating progress 1.0 until
 	// the downloader has notified us it is done.
-	double progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
+	double progress = downloader->GetDownloadProgress ();
 	
 	if (progress < 1.0)
 		UpdateProgress ();
@@ -1210,7 +1210,7 @@ MediaElement::DownloaderComplete ()
 void
 MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 {
-	const char *uri = downloader ? downloader->GetValue (Downloader::UriProperty)->AsString () : NULL;
+	const char *uri = downloader ? downloader->GetUri () : NULL;
 	bool is_live = uri ? g_str_has_prefix (uri, "mms:") : false;
 	
 	d(printf ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader, PartName, uri));
@@ -1989,10 +1989,10 @@ Image::CleanupSurface ()
 void
 Image::UpdateProgress ()
 {
-	double progress = downloader->GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
-	double current = GetValue (Image::DownloadProgressProperty)->AsDouble ();
+	double progress = downloader->GetDownloadProgress ();
+	double current = GetDownloadProgress ();
 	
-	SetValue (Image::DownloadProgressProperty, Value (progress));
+	SetDownloadProgress (progress);
 	
 	/* only emit an event if the delta is >= 0.05% */
 	if (progress == 1.0 || (progress - current) > 0.0005)

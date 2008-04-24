@@ -410,7 +410,8 @@ Downloader::Open (const char *verb, const char *uri)
 	failed_msg = NULL;
 	filename = NULL;
 	
-	SetValue (Downloader::UriProperty, Value (uri));
+	SetUri (uri);
+	
 	open_func (verb, uri, downloader_state);
 }
 
@@ -457,9 +458,9 @@ Downloader::Send ()
 	if (send_queued)
 		return;
 	
-	SetValue (Downloader::StatusTextProperty, Value (""));
-	SetValue (Downloader::StatusProperty, Value (0));
 	send_queued = true;
+	SetStatusText ("");
+	SetStatus (0);
 	ref ();
 	
 	TimeManager::InvokeOnMainThread (send_async, this);
@@ -468,9 +469,10 @@ Downloader::Send ()
 void
 Downloader::SendNow ()
 {
-	SetValue (Downloader::StatusTextProperty, Value (""));
-	SetValue (Downloader::StatusProperty, Value (0));
 	send_queued = true;
+	SetStatusText ("");
+	SetStatus (0);
+	
 	SendInternal ();
 }
 
@@ -495,7 +497,8 @@ Downloader::Write (void *buf, int32_t offset, int32_t n)
 	} else 
 		progress = 0.0;
 	
-	SetValue (Downloader::DownloadProgressProperty, Value (progress));
+	SetDownloadProgress (progress);
+	
 	Emit (DownloadProgressChangedEvent);
 	
 	if (write)
@@ -507,7 +510,7 @@ Downloader::RequestPosition (int64_t *pos)
 {
 	if (aborted)
 		return;
-
+	
 	if (request_position)
 		request_position (pos, consumer_closure);
 }
@@ -521,12 +524,14 @@ Downloader::NotifyFinished (const char *fname)
 	
 	filename = g_strdup (fname);
 	
-	SetValue (Downloader::DownloadProgressProperty, Value (1.0));
+	SetDownloadProgress (1.0);
+	
 	Emit (DownloadProgressChangedEvent);
 	
-	// HACK, we should provide the actual status code
-	SetValue (Downloader::StatusProperty, Value (200));
-	SetValue (Downloader::StatusTextProperty, Value ("OK"));
+	// HACK, we should provide the actual status text and code
+	SetStatusText ("OK");
+	SetStatus (200);
+	
 	Emit (CompletedEvent, NULL);
 }
 
@@ -537,7 +542,7 @@ Downloader::NotifyFailed (const char *msg)
 	if (failed_msg)
 		return;
 	
-	// dl->SetValue (Downloader::StatusProperty, Value (400))
+	// SetStatus (400);
 	// For some reason the status is 0, not updated on errors?
 	
 	Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError, 1, msg));
@@ -558,7 +563,7 @@ Downloader::NotifySize (int64_t size)
 	if (notify_size)
 		notify_size (size, consumer_closure);
 	
-	SetValue (Downloader::DownloadProgressProperty, Value (0.0));
+	SetDownloadProgress (0.0);
 	
 	Emit (DownloadProgressChangedEvent);
 }
@@ -614,8 +619,100 @@ Downloader::SetRequestPositionFunc (downloader_request_position_func request_pos
        this->request_position = request_position;
 }
 
+void
+Downloader::SetDownloadProgress (double progress)
+{
+	SetValue (Downloader::DownloadProgressProperty, Value (progress));
+}
+
+double
+Downloader::GetDownloadProgress ()
+{
+	return GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
+}
+
+void
+Downloader::SetStatusText (const char *text)
+{
+	SetValue (Downloader::StatusTextProperty, Value (text));
+}
+
+const char *
+Downloader::GetStatusText ()
+{
+	Value *value = GetValue (Downloader::StatusTextProperty);
+	
+	return value ? value->AsString () : NULL;
+}
+
+void
+Downloader::SetStatus (int status)
+{
+	SetValue (Downloader::StatusProperty, Value (status));
+}
+
+int
+Downloader::GetStatus ()
+{
+	return GetValue (Downloader::StatusProperty)->AsInt32 ();
+}
+
+void
+Downloader::SetUri (const char *uri)
+{
+	SetValue (Downloader::UriProperty, Value (uri));
+}
+
+const char *
+Downloader::GetUri ()
+{
+	Value *value = GetValue (Downloader::UriProperty);
+	
+	return value ? value->AsString () : NULL;
+}
 
 
+Downloader *
+downloader_new (void)
+{
+	return new Downloader ();
+}
+
+double
+downloader_get_download_progress (Downloader *dl)
+{
+	return dl->GetDownloadProgress ();
+}
+
+const char *
+downloader_get_response_text (Downloader *dl)
+{
+	return dl->GetResponseText ();
+}
+
+const char *
+downloader_get_status_text (Downloader *dl)
+{
+	return dl->GetStatusText ();
+}
+
+const char *
+downloader_get_status (Downloader *dl)
+{
+	return dl->GetStatus ();
+}
+
+void
+downloader_set_uri (Downloader *dl, const char *uri)
+{
+	dl->SetUri (uri);
+}
+
+const char *
+downloader_get_uri (Downloader *dl)
+{
+	return dl->GetUri ();
+}
 
 void
 downloader_abort (Downloader *dl)
@@ -630,13 +727,13 @@ downloader_abort (Downloader *dl)
 //   A newly allocated string containing the filename.
 //
 char *
-downloader_get_response_file (Downloader *dl, const char *PartName)
+downloader_get_downloaded_file_part (Downloader *dl, const char *PartName)
 {
 	return dl->GetDownloadedFilePart (PartName);
 }
 
 
-void *
+char *
 downloader_get_response_text (Downloader *dl, const char *PartName, uint64_t *size)
 {
 	return dl->GetResponseText (PartName, size);
@@ -657,12 +754,6 @@ downloader_send (Downloader *dl)
 	dl->Send ();
 }
 
-Downloader *
-downloader_new (void)
-{
-	return new Downloader ();
-}
-
 void
 downloader_set_functions (downloader_create_state_func create_state,
 			  downloader_destroy_state_func destroy_state,
@@ -677,7 +768,7 @@ downloader_set_functions (downloader_create_state_func create_state,
 void
 downloader_request_position (Downloader *dl, int64_t *pos)
 {
-       dl->RequestPosition (pos);
+	dl->RequestPosition (pos);
 }
 
 void
