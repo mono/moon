@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * canvas.h: canvas definitions.
  *
@@ -23,10 +24,10 @@
 class Canvas : public Panel {
  protected:
 	virtual ~Canvas () {}
-
+	
  public:
 	Canvas ();
-
+	
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
 	Point GetTransformOrigin ();
@@ -37,12 +38,11 @@ class Canvas : public Panel {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
-	static DependencyProperty* TopProperty;
-	static DependencyProperty* LeftProperty;
+	static DependencyProperty *TopProperty;
+	static DependencyProperty *LeftProperty;
 };
 
 G_BEGIN_DECLS
-
 Canvas *canvas_new (void);
 
 void    canvas_init (void);

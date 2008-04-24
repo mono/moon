@@ -212,8 +212,7 @@ void
 ManualTimeSource::SetCurrentTime (TimeSpan current_time)
 {
 	this->current_time = current_time;
-	g_main_context_iteration (g_main_context_default(),
-				  FALSE);
+	g_main_context_iteration (g_main_context_default (), false);
 	Emit (TimeSource::TickEvent);
 	Emit (TimeSource::TickEvent);
 	Emit (TimeSource::TickEvent);
@@ -1212,7 +1211,7 @@ void
 ClockGroup::RaiseAccumulatedEvents ()
 {
 	/* raise our events */
-	this->Clock::RaiseAccumulatedEvents ();
+	Clock::RaiseAccumulatedEvents ();
 	
 	/* now cause our children to raise theirs */
 	clock_list_foreach (child_clocks, CallRaiseAccumulatedEvents);
@@ -1241,12 +1240,12 @@ ClockGroup::~ClockGroup ()
 
 /* timeline */
 
-DependencyProperty* Timeline::AutoReverseProperty;
-DependencyProperty* Timeline::BeginTimeProperty;
-DependencyProperty* Timeline::DurationProperty;
-DependencyProperty* Timeline::FillBehaviorProperty;
-DependencyProperty* Timeline::RepeatBehaviorProperty;
-DependencyProperty* Timeline::SpeedRatioProperty;
+DependencyProperty *Timeline::AutoReverseProperty;
+DependencyProperty *Timeline::BeginTimeProperty;
+DependencyProperty *Timeline::DurationProperty;
+DependencyProperty *Timeline::FillBehaviorProperty;
+DependencyProperty *Timeline::RepeatBehaviorProperty;
+DependencyProperty *Timeline::SpeedRatioProperty;
 
 Timeline::Timeline ()
 {
@@ -1348,11 +1347,11 @@ Timeline::GetBeginTime ()
 
 /* timeline group */
 
-DependencyProperty* TimelineGroup::ChildrenProperty;
+DependencyProperty *TimelineGroup::ChildrenProperty;
 
 TimelineGroup::TimelineGroup ()
 {
-	this->SetValue (TimelineGroup::ChildrenProperty, Value::CreateUnref (new TimelineCollection ()));
+	SetValue (TimelineGroup::ChildrenProperty, Value::CreateUnref (new TimelineCollection ()));
 }
 
 TimelineGroup::~TimelineGroup ()
@@ -1405,7 +1404,7 @@ TimelineGroup::RemoveChild (Timeline *child)
 }
 
 TimelineGroup *
-timeline_group_new ()
+timeline_group_new (void)
 {
 	return new TimelineGroup ();
 }
@@ -1479,28 +1478,49 @@ timeline_collection_new (void)
 	TimelineMarker
 */
 
-DependencyProperty* TimelineMarker::TextProperty;
-DependencyProperty* TimelineMarker::TimeProperty;
-DependencyProperty* TimelineMarker::TypeProperty;
+DependencyProperty *TimelineMarker::TextProperty;
+DependencyProperty *TimelineMarker::TimeProperty;
+DependencyProperty *TimelineMarker::TypeProperty;
+
+void
+TimelineMarker::SetTime (TimeSpan time)
+{
+	SetValue (TimelineMarker::TimeProperty, Value (time, Type::TIMESPAN));
+}
 
 TimeSpan
 TimelineMarker::GetTime ()
 {
-	Value *value = GetValue (TimeProperty);
+	Value *value = GetValue (TimelineMarker::TimeProperty);
+	
 	return value ? value->AsTimeSpan () : 0;
+}
+
+void
+TimelineMarker::SetText (const char *text)
+{
+	SetValue (TimelineMarker::TextProperty, Value (text));
 }
 
 const char *
 TimelineMarker::GetText ()
 {
-	Value *value = GetValue (TextProperty);
+	Value *value = GetValue (TimelineMarker::TextProperty);
+	
 	return value ? value->AsString () : NULL;
+}
+
+void
+TimelineMarker::SetType (const char *type)
+{
+	SetValue (TimelineMarker::TypeProperty, Value (type));
 }
 
 const char *
 TimelineMarker::GetType ()
 {
-	Value *value = GetValue (TypeProperty);
+	Value *value = GetValue (TimelineMarker::TypeProperty);
+	
 	return value ? value->AsString () : NULL;
 }
 
@@ -1509,6 +1529,43 @@ timeline_marker_new (void)
 {
 	return new TimelineMarker ();
 }
+
+void
+timeline_marker_set_text (TimelineMarker *marker, const char *text)
+{
+	marker->SetText (text);
+}
+
+const char *
+timeline_marker_get_text (TimelineMarker *marker)
+{
+	return marker->GetText ();
+}
+
+void
+timeline_marker_set_type (TimelineMarker *marker, const char *type)
+{
+	marker->SetType (type);
+}
+
+const char *
+timeline_marker_get_type (TimelineMarker *marker)
+{
+	return marker->GetType ();
+}
+
+void
+timeline_marker_set_time (TimelineMarker *marker, TimeSpan time)
+{
+	marker->SetTime (time);
+}
+
+TimeSpan
+timeline_marker_get_time (TimelineMarker *marker)
+{
+	return marker->GetTime ();
+}
+
 
 void
 clock_init (void)

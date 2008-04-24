@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * clock.h: Clock management
  *
@@ -44,15 +45,13 @@ typedef uint64_t TimePts;
 #define MilliSeconds_FromPts(s) ((s) / 10000)
 
 // misc types
-typedef gint32 FillBehavior;
-enum {
+enum FillBehavior {
 	FillBehaviorHoldEnd,
 	FillBehaviorStop
 };
 
 
 struct Duration {
- public:
 	enum DurationKind {
 		TIMESPAN,
 		AUTOMATIC,
@@ -107,16 +106,12 @@ struct Duration {
 
  private:
 	DurationKind k;
-	gint32 padding;
+	int32_t padding;
 	TimeSpan timespan;
 };
 
 
-
-
-
 struct RepeatBehavior {
-  public:
 	enum RepeatKind {
 		COUNT,
 		DURATION,
@@ -172,9 +167,9 @@ struct RepeatBehavior {
 
 	bool IsForever () { return k == FOREVER; }
 
-  private:
+ private:
 	RepeatKind k;
-	gint32 padding;
+	int32_t padding;
 	double count;
 	TimeSpan duration;
 };
@@ -491,9 +486,6 @@ void time_manager_add_tick_call (TimeManager *manager, void (*func)(gpointer), g
 void time_manager_list_clocks   (TimeManager *manager);
 
 
-
-
-
 class Timeline : public DependencyObject {
  protected:
 	virtual ~Timeline () {}
@@ -502,33 +494,33 @@ class Timeline : public DependencyObject {
 	Timeline ();
 	virtual Type::Kind GetObjectType () { return Type::TIMELINE; };
 
-	static DependencyProperty* AutoReverseProperty;
-	static DependencyProperty* BeginTimeProperty;
-	static DependencyProperty* DurationProperty;
-	static DependencyProperty* FillBehaviorProperty;
-	static DependencyProperty* RepeatBehaviorProperty;
-	static DependencyProperty* SpeedRatioProperty;
-
-	void SetRepeatBehavior (RepeatBehavior behavior);
-	RepeatBehavior *GetRepeatBehavior ();
-
+	static DependencyProperty *AutoReverseProperty;
+	static DependencyProperty *BeginTimeProperty;
+	static DependencyProperty *DurationProperty;
+	static DependencyProperty *FillBehaviorProperty;
+	static DependencyProperty *RepeatBehaviorProperty;
+	static DependencyProperty *SpeedRatioProperty;
+	
 	void SetAutoReverse (bool autoreverse);
 	bool GetAutoReverse ();
-
-	void SetDuration (Duration duration);
-	Duration* GetDuration ();
-
+	
 	TimeSpan GetBeginTime ();
 	bool HasBeginTime ();
-
+	
+	void SetDuration (Duration duration);
+	Duration *GetDuration ();
+	
+	FillBehavior GetFillBehavior ();
+	
+	void SetRepeatBehavior (RepeatBehavior behavior);
+	RepeatBehavior *GetRepeatBehavior ();
+	
 	void SetSpeedRatio (double ratio);
 	double GetSpeedRatio ();
 	
 	Duration GetNaturalDuration (Clock *clock);
 	virtual Duration GetNaturalDurationCore (Clock *clock);
-
-	FillBehavior GetFillBehavior ();
-
+	
 	virtual Clock* AllocateClock () { return new Clock (this); }
 	virtual bool Validate () { return true; }
 };
@@ -557,7 +549,7 @@ class TimelineGroup : public Timeline {
 	
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEGROUP; };
 
-	static DependencyProperty* ChildrenProperty;
+	static DependencyProperty *ChildrenProperty;
 
 	virtual Clock *AllocateClock () { return new ClockGroup (this); }
 	virtual bool Validate ();
@@ -583,26 +575,45 @@ class ParallelTimeline : public TimelineGroup {
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 };
 
-ParallelTimeline * parallel_timeline_new ();
+ParallelTimeline *parallel_timeline_new (void);
+
+
 
 class TimelineMarker : public DependencyObject {
  protected:
 	virtual ~TimelineMarker () {}
 
  public:
+	static DependencyProperty *TextProperty;
+	static DependencyProperty *TimeProperty;
+	static DependencyProperty *TypeProperty;
+	
 	TimelineMarker () {}
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER; };
-
-	static DependencyProperty* TextProperty;
-	static DependencyProperty* TimeProperty;
-	static DependencyProperty* TypeProperty;
 	
-	TimeSpan GetTime ();
+	//
+	// Property Accessors
+	//
+	void SetText (const char *text);
 	const char *GetText ();
+	
+	void SetTime (TimeSpan time);
+	TimeSpan GetTime ();
+	
+	void SetType (const char *type);
 	const char *GetType ();
 };
 
 TimelineMarker *timeline_marker_new (void);
+
+void timeline_marker_set_text (TimelineMarker *marker, const char *text);
+const char *timeline_marker_get_text (TimelineMarker *marker);
+
+void timeline_marker_set_type (TimelineMarker *marker, const char *type);
+const char *timeline_marker_get_type (TimelineMarker *marker);
+
+void timeline_marker_set_time (TimelineMarker *marker, TimeSpan time);
+TimeSpan timeline_marker_get_time (TimelineMarker *marker);
 
 
 /* useful for timing things */

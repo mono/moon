@@ -1,5 +1,8 @@
 2008-04-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* clock.cpp: Added property accessor methods for TimelineMarker
+	and added c-bindings.
+
 	* downloader.cpp: Same.
 
 	* media.cpp: Added property accessors so that it isn't

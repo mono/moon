@@ -276,19 +276,20 @@ static MediaResult
 marker_callback (MediaClosure *closure)
 {
 	MediaElement *element = (MediaElement *) closure->GetContext ();
-	MediaMarker *marker = closure->marker;
+	MediaMarker *mmarker = closure->marker;
 	
-	if (marker == NULL)
+	if (mmarker == NULL)
 		return MEDIA_FAIL;
 	
-	uint64_t pts = marker->Pts ();
+	uint64_t pts = mmarker->Pts ();
 	
-	TimelineMarker *tl_marker = new TimelineMarker ();
-	tl_marker->SetValue (TimelineMarker::TextProperty, marker->Text ());
-	tl_marker->SetValue (TimelineMarker::TypeProperty, marker->Type ());
-	tl_marker->SetValue (TimelineMarker::TimeProperty, Value (pts, Type::TIMESPAN));
-	element->AddStreamedMarker (tl_marker);
-	tl_marker->unref ();
+	TimelineMarker *marker = new TimelineMarker ();
+	marker->SetText (mmarker->Text ());
+	marker->SetType (mmarker->Type ());
+	marker->SetTime (pts);
+	
+	element->AddStreamedMarker (marker);
+	marker->unref ();
 	
 	return MEDIA_SUCCESS;
 }
@@ -341,9 +342,9 @@ MediaElement::ReadMarkers ()
 		TimelineMarker *new_marker = new TimelineMarker ();
 		MediaMarker *marker = current->marker;
 		
-		new_marker->SetValue (TimelineMarker::TextProperty, marker->Text ());
-		new_marker->SetValue (TimelineMarker::TypeProperty, marker->Type ());
-		new_marker->SetValue (TimelineMarker::TimeProperty, Value (TimeSpan_FromPts (marker->Pts ()), Type::TIMESPAN));
+		new_marker->SetText (marker->Text ());
+		new_marker->SetType (marker->Type ());
+		new_marker->SetTime (TimeSpan_FromPts (marker->Pts ()));
 		markers->Add (new_marker);
 		new_marker->unref ();
 		
