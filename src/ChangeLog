@@ -1,3 +1,7 @@
+2008-04-23  Geoff Norton  <gnorton@novell.com>
+
+	* Makefile.am: Fix make dist when building with ffmpeg.
+
 2008-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* frameworkelement.cpp: Added property accessors to all brush

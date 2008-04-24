@@ -46,7 +46,6 @@ libmooninclude_headers = \
 	runtime.h	\
 	shape.h		\
 	stylus.h	\
-	swscale-converter.h	\
 	text.h		\
 	transform.h	\
 	trigger.h	\
@@ -132,9 +131,11 @@ EXTRA_DIST = \
 
 if INCLUDE_SWSCALE
 libmoon_la_SOURCES += swscale-converter.cpp
+libmooninclue_headers += swscale-converter.h
 endif
 if INCLUDE_FFMPEG
 libmoon_la_SOURCES += pipeline-ffmpeg.cpp
+libmooninclue_headers += pipeline-ffmpeg.h
 endif
 
 libmoon_la_LIBADD = $(MOON_LIBS)
