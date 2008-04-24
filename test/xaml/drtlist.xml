@@ -777,4 +777,9 @@
          inputFile="test-shape-path-overdraw.xaml"
          masterFile10="../harness/masters/test-shape-path-overdrawMaster.png"
    />
+   <Test id="178"
+	 inputFile="test-shape-path-stretch-animated.xaml"
+	 masterFile10="../harness/masters/test-shape-path-stretch-animatedMaster.png"
+         categories="stretch"
+   />
 </DRTList>

@@ -1,5 +1,11 @@
 2008-04-24  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/drtlist.xml:
+	* xaml/test-shape-path-stretch-animated.xaml: Adding a test-case with
+	animated shape path stretch.
+
+2008-04-24  Michael Dominic K.  <mdk@mdk.am>
+
 	* harness/masters/test-shape-path-overdrawMaster.png:
 	* xaml/drtlist.xml:
 	* xaml/test-shape-path-overrdraw.xaml: Adding a test for the path
