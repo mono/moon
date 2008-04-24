@@ -183,8 +183,8 @@ UIElement::UpdateTotalHitTestVisibility ()
 		GetSurface ()->AddDirtyElement (this, DirtyHitTestVisibility);
 }
 
-void
-UIElement::ComputeTotalRenderVisibility ()
+bool
+UIElement::GetActualRenderVisibility ()
 {
 	bool visible = (flags & UIElement::RENDER_VISIBLE) != 0;
 	bool parent_visible = true;
@@ -199,7 +199,13 @@ UIElement::ComputeTotalRenderVisibility ()
 
 	visible = visible && parent_visible;
 
-	if (visible)
+	return visible;
+}
+
+void
+UIElement::ComputeTotalRenderVisibility ()
+{
+	if (GetActualRenderVisibility ())
 		flags |= UIElement::TOTAL_RENDER_VISIBLE;
 	else
 		flags &= ~UIElement::TOTAL_RENDER_VISIBLE;

@@ -1,5 +1,16 @@
 2008-04-24  Michael Dominic K.  <mdk@mdk.am>
 
+	* runtime.cpp:
+	* uielement.cpp:
+	* uielement.h: Ooops, so my prev fix was correct but *totally* dumb from
+	the perf/sanity point of view. Here goes a better refactor.
+
+	Adding UIElement::GetActualRenderVisibility which returns the visibility
+	(like UIElement::ComputeTotalRenderVisibility) without setting the
+	flags.
+
+2008-04-24  Michael Dominic K.  <mdk@mdk.am>
+
 	* runtime.cpp: After emitting the events make sure to update our
 	input_list since it can be changed -- as a result of somebody ie.
 	changing element's visibility in the enter/leave callback. Fixes the

@@ -100,6 +100,7 @@ class UIElement : public Visual {
 
 	virtual void UpdateTotalHitTestVisibility ();
 	void ComputeTotalHitTestVisibility ();
+	bool GetActualRenderVisibility ();
 
 	virtual void SetSurface (Surface *s);
 
