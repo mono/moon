@@ -4,4 +4,5 @@
     <Test id="3" inputFile="all.html" masterFile10="None" timeout="200000" categories="video,media"  />
     <Test id="4" inputFile="test-yuv-converter.html" masterFile10="../../harness/masters/test-yuv-converterMaster.png" timeout="20000" categories="video,media,yuv"  />
     <Test id="5" inputFile="test-reset-media-element-source.html" masterFile10="None" timeout="20000" categories="video,media"  />
+    <Test id="5" inputFile="test-inexistent-media.html" masterFile10="None" timeout="20000" categories="video,media"  />
 </DRTList>

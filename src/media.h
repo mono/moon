@@ -222,6 +222,7 @@ class MediaElement : public MediaBase {
 	void DataWrite (void *data, int32_t offset, int32_t n);
 	void DataRequestPosition (int64_t *pos);
 	virtual void DownloaderComplete ();
+	virtual void DownloaderFailed (EventArgs *args);
 	void BufferingComplete ();
 	void UpdateProgress ();
 	

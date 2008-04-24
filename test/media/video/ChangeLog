@@ -1,3 +1,8 @@
+2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-inexistent-media.html, drtlist.xml: Added
+	  test-inexistent-media.html.
+
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-reset-media-element-source.html: Adjust timeouts and add another

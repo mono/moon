@@ -1125,6 +1125,12 @@ MediaElement::TryOpen ()
 }
 
 void
+MediaElement::DownloaderFailed (EventArgs *args)
+{
+	MediaFailed (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
+}
+
+void
 MediaElement::DownloaderComplete ()
 {
 	d (printf ("MediaElement::DownloaderComplete (), downloader: %i\n", GET_OBJ_ID (downloader)));
@@ -1203,9 +1209,10 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 				downloader->SetRequestPositionFunc (data_request_position);
 		}
 		
-		if (!(flags & DownloadComplete))
+		if (!(flags & DownloadComplete)) {
 			downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-		
+			downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
+		}
 		if (downloaded_file != NULL) {
 			// MediaElement::SetSource() is already async, so we don't need another
 			// layer of asyncronicity... it is safe to call SendNow() here.
