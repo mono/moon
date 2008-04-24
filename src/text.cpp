@@ -491,7 +491,6 @@ void
 TextBlock::Layout (cairo_t *cr)
 {
 	TextDecorations decorations;
-	double height = GetHeight ();
 	double width = GetWidth ();
 	uint8_t font_mask;
 	const char *text;
@@ -934,7 +933,6 @@ deobfuscate_font (Downloader *downloader, const char *path)
 	char *filename, guid[16];
 	const char *str;
 	GString *name;
-	Value *value;
 	Uri *uri;
 	int fd;
 	

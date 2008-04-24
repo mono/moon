@@ -685,18 +685,12 @@ downloader_get_download_progress (Downloader *dl)
 }
 
 const char *
-downloader_get_response_text (Downloader *dl)
-{
-	return dl->GetResponseText ();
-}
-
-const char *
 downloader_get_status_text (Downloader *dl)
 {
 	return dl->GetStatusText ();
 }
 
-const char *
+int
 downloader_get_status (Downloader *dl)
 {
 	return dl->GetStatus ();
@@ -727,7 +721,7 @@ downloader_abort (Downloader *dl)
 //   A newly allocated string containing the filename.
 //
 char *
-downloader_get_downloaded_file_part (Downloader *dl, const char *PartName)
+downloader_get_downloaded_file (Downloader *dl, const char *PartName)
 {
 	return dl->GetDownloadedFilePart (PartName);
 }

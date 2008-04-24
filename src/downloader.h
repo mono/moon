@@ -159,18 +159,21 @@ class Downloader : public DependencyObject {
 	const char *GetUri ();
 };
 
+
 Downloader *downloader_new (void);
 
-void downloader_set_functions (downloader_create_state_func create_state,
-			       downloader_destroy_state_func destroy_state,
-			       downloader_open_func open,
-			       downloader_send_func send,
-			       downloader_abort_func abort);
+double downloader_get_download_progress (Downloader *dl);
+
+const char *downloader_get_status_text (Downloader *dl);
+int downloader_get_status (Downloader *dl);
+
+void downloader_set_uri (Downloader *dl, const char *uri);
+const char *downloader_get_uri (Downloader *dl);
 
 Surface *downloader_get_surface    (Downloader *dl);
 
 void  downloader_abort             (Downloader *dl);
-void *downloader_get_response_text (Downloader *dl, const char *PartName, uint64_t *size);
+char *downloader_get_response_text (Downloader *dl, const char *PartName, uint64_t *size);
 char *downloader_get_response_file (Downloader *dl, const char *PartName);
 void  downloader_open              (Downloader *dl, const char *verb, const char *uri);
 void  downloader_send              (Downloader *dl);
@@ -185,6 +188,13 @@ void downloader_notify_size     (Downloader *dl, int64_t size);
 void downloader_notify_finished (Downloader *dl, const char *filename);
 void downloader_notify_error    (Downloader *dl, const char *msg);
 void downloader_request_position (Downloader *dl, int64_t *pos);
+
+
+void downloader_set_functions (downloader_create_state_func create_state,
+			       downloader_destroy_state_func destroy_state,
+			       downloader_open_func open,
+			       downloader_send_func send,
+			       downloader_abort_func abort);
 
 void downloader_init (void);
 
