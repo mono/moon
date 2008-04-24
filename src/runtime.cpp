@@ -1458,7 +1458,7 @@ copy_input_list_with_visibility_check (List *input_list)
 	UIElementNode *node;
 
 	for (node = (UIElementNode*) input_list->First(); node; node = (UIElementNode*)node->next) {
-		if (node->uielement->GetActualRenderVisibility ()) 
+		if (node->uielement->GetActualTotalRenderVisibility ()) 
 			list->Append (new UIElementNode (node->uielement));
 	}
 
@@ -1569,8 +1569,9 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 			UIElementNode *node;
 
 			for (node = (UIElementNode*)new_input_list->First(); node; node = (UIElementNode*)node->next) {
-				if (! node->uielement->GetActualRenderVisibility ()) {
-					// We need to copy the list with some elements removed
+				if (! node->uielement->GetActualTotalRenderVisibility ()) {
+					// Ooops, looks like something changed.
+					// We need to copy the list with some elements removed.
 					List *list = copy_input_list_with_visibility_check (new_input_list);
 					delete new_input_list;
 					new_input_list = list;

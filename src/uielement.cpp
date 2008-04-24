@@ -184,7 +184,7 @@ UIElement::UpdateTotalHitTestVisibility ()
 }
 
 bool
-UIElement::GetActualRenderVisibility ()
+UIElement::GetActualTotalRenderVisibility ()
 {
 	bool visible = (flags & UIElement::RENDER_VISIBLE) != 0;
 	bool parent_visible = true;
@@ -205,7 +205,7 @@ UIElement::GetActualRenderVisibility ()
 void
 UIElement::ComputeTotalRenderVisibility ()
 {
-	if (GetActualRenderVisibility ())
+	if (GetActualTotalRenderVisibility ())
 		flags |= UIElement::TOTAL_RENDER_VISIBLE;
 	else
 		flags &= ~UIElement::TOTAL_RENDER_VISIBLE;

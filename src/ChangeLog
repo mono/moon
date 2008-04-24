@@ -1,5 +1,12 @@
 2008-04-24  Michael Dominic K.  <mdk@mdk.am>
 
+	* runtime.cpp:
+	* uielement.cpp:
+	* uielement.h: Renaming UIElement::GetActualRenderVisibility to
+	UIElement::GetActualTotalRenderVisibility for better name matching.
+
+2008-04-24  Michael Dominic K.  <mdk@mdk.am>
+
 	* runtime.cpp: Another perf fix for the fix -- make it a corner case
 	when the new_input_list needs to be copied. In most cases we can just
 	reuse it. 
