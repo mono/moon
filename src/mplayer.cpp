@@ -543,6 +543,10 @@ MediaPlayer::AdvanceFrame ()
 		
 	while ((pkt = (Packet *) video.queue.Pop ())) {
 		if (pkt->frame->event == FrameEventEOF) {
+			if (!HasAudio ()) {
+				// Set the target pts to the last pts we showed, since target_pts is what's reported as our current position.
+				this->target_pts = current_pts;
+			}
 			delete pkt;
 			SetEof (true);
 			return false;
@@ -605,7 +609,7 @@ MediaPlayer::AdvanceFrame ()
 			last_second_pts = target_pts;
 		}
 		if (fps > 0)
-			printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu (target pts: %llu, current pts: %llu, caught_up_with_seek: %s, skipped frames: %i, fps: %i, sps: %i, ms: %llu)\n", frame->pts, target_pts, current_pts, caught_up_with_seek ? "true" : "false", skipped, fps, sps, ms);
+			printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu (target pts: %llu, current pts: %llu, skipped frames: %i, fps: %i, sps: %i, ms: %llu)\n", frame->pts, target_pts, current_pts, skipped, fps, sps, ms);
 #endif
 		RenderFrame (frame);
 		delete pkt;

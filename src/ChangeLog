@@ -1,3 +1,15 @@
+2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: When a video-only media reaches its end, set target_pts
+	  to the last rendered pts, since that's what is reported as our
+	  current position.
+
+2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: When a video-only media reaches its end, set target_pts
+	  to the last rendered pts, since that's what is reported as our
+	  current position.
+
 2008-04-24  Michael Dominic K.  <mdk@mdk.am>
 
 	* runtime.cpp:
