@@ -1,3 +1,8 @@
+2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: Add a null-check necessary when there are no extension
+	  header objects in the asf header.
+
 2008-04-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h: Implement notification to the pipeline of found

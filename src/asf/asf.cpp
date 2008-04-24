@@ -426,7 +426,7 @@ ASFParser::ReadHeader ()
 	// Check if there are stream properties in any extended stream properties object.
 	if (header_extension != NULL) {
 		asf_object **objects = header_extension->get_objects ();
-		for (int i = 0; objects [i] != NULL; i++) {
+		for (int i = 0; objects != NULL && objects [i] != NULL; i++) {
 			if (asf_guid_compare (&asf_guids_extended_stream_properties, &objects [i]->id)) {
 				asf_extended_stream_properties *aesp = (asf_extended_stream_properties *) objects [i];
 				const asf_stream_properties *stream = aesp->get_stream_properties ();
@@ -1594,8 +1594,10 @@ end_frame:
 	printf ("\n");
 */
 /*
-	printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, Pts = %.5llu, pts = %.5u, stream# = %i, media_object_number = %.3u (advanced).\n", 
-		size, IsKeyFrame () ? "true " : "false", Pts (), payloads [0]->presentation_time, StreamId (), media_object_number);
+	if (MEDIA_SUCCEEDED (result)) {
+		printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, Pts = %.5llu, pts = %.5u, stream# = %i, media_object_number = %.3u (advanced).\n", 
+			size, IsKeyFrame () ? "true " : "false", Pts (), payloads [0]->presentation_time, StreamId (), media_object_number);
+	}
 */
 	
 	AddFrameIndex (first_packet_index);
