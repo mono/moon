@@ -1451,6 +1451,20 @@ Surface::FindFirstCommonElement (List *l1, int *index1,
 	}
 }
 
+static List*
+copy_input_list_with_visibility_check (List *input_list)
+{
+	List *list = new List ();
+	UIElementNode *node;
+
+	for (node = (UIElementNode*) input_list->First(); node; node = (UIElementNode*)node->next) {
+		if (node->uielement->GetActualRenderVisibility ()) 
+			list->Append (new UIElementNode (node->uielement));
+	}
+
+	return list;
+}
+
 bool
 Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event)
 {
@@ -1552,16 +1566,17 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 		// (ie. element visibility was changed in the mouse enter).
 
 		if (handled) {
-			List *list = new List ();
-
 			UIElementNode *node;
-			for (node = (UIElementNode*)new_input_list->First(); node; node = (UIElementNode*)node->next) {
-				if (node->uielement->GetActualRenderVisibility ())
-					list->Append (new UIElementNode (node->uielement));
-			}
 
-			delete new_input_list;
-			new_input_list = list;
+			for (node = (UIElementNode*)new_input_list->First(); node; node = (UIElementNode*)node->next) {
+				if (! node->uielement->GetActualRenderVisibility ()) {
+					// We need to copy the list with some elements removed
+					List *list = copy_input_list_with_visibility_check (new_input_list);
+					delete new_input_list;
+					new_input_list = list;
+					break;
+				}
+			}
 		}
 
 		if (destroy_ctx)

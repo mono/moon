@@ -1,5 +1,11 @@
 2008-04-24  Michael Dominic K.  <mdk@mdk.am>
 
+	* runtime.cpp: Another perf fix for the fix -- make it a corner case
+	when the new_input_list needs to be copied. In most cases we can just
+	reuse it. 
+
+2008-04-24  Michael Dominic K.  <mdk@mdk.am>
+
 	* runtime.cpp:
 	* uielement.cpp:
 	* uielement.h: Ooops, so my prev fix was correct but *totally* dumb from
