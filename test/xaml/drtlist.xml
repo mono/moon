@@ -773,4 +773,8 @@
          inputFile="test-timelinemarkercollection-order.html"
          masterFile10="None"
    />
+   <Test id="179"
+         inputFile="test-shape-path-overdraw.xaml"
+         masterFile10="../harness/masters/test-shape-path-overdrawMaster.png"
+   />
 </DRTList>

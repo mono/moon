@@ -1,3 +1,11 @@
+2008-04-24  Michael Dominic K.  <mdk@mdk.am>
+
+	* harness/masters/test-shape-path-overdrawMaster.png:
+	* xaml/drtlist.xml:
+	* xaml/test-shape-path-overrdraw.xaml: Adding a test for the path
+	'anti-aliasing overdraw'. This is the factored-out problem of the
+	'CGeometryBuilder_AddSegments.htm' test.
+
 2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/test-timelinemarkercollection-order.html: Added.

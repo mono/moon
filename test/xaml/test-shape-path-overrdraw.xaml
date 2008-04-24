@@ -1,0 +1,10 @@
+<Canvas
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="200" Height="200">
+
+	<!-- Here the same path (two curves) is repeated over each other 
+	     several times causing the 'anti-aliasing-overdraw' -->
+	<Path Canvas.Left="0" Canvas.Top="0" Data="F1 M 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100C 80,180 120,210 180,100C 120,0 50,75 20,100" StrokeThickness="2" StrokeLineJoin="Round" Stroke="Black" />
+   
+</Canvas>
