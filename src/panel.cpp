@@ -21,21 +21,45 @@
 #include "dirty.h"
 
 
-VisualCollection *
-Panel::GetChildren ()
+DependencyProperty *Panel::BackgroundProperty;
+DependencyProperty *Panel::ChildrenProperty;
+
+Panel::Panel ()
 {
-	Value *children = GetValue (Panel::ChildrenProperty);
+	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new VisualCollection ()));
+	mouse_over = NULL;
+}
+
+Panel::~Panel ()
+{
+}
+
+Brush *
+Panel::GetBackground ()
+{
+	Value *value = GetValue (Panel::BackgroundProperty);
 	
-	if (children)
-		return children->AsVisualCollection ();
-	
-	return NULL;
+	return value ? value->AsBrush () : NULL;
 }
 
 void
-Panel::SetChildren (VisualCollection *col)
+Panel::SetBackground (Brush *background)
 {
-	SetValue (Panel::ChildrenProperty, col);
+	SetValue (Panel::BackgroundProperty, Value (background));
+}
+
+VisualCollection *
+Panel::GetChildren ()
+{
+	Value *value = GetValue (Panel::ChildrenProperty);
+	
+	return value ? value->AsVisualCollection () : NULL;
+}
+
+void
+Panel::SetChildren (VisualCollection *children)
+{
+	SetValue (Panel::ChildrenProperty, children);
 }
 
 void
@@ -55,34 +79,10 @@ Panel::SetSurface (Surface *s)
 	}
 }
 
-void 
-panel_child_add (Panel *panel, UIElement *child)
+void
+Panel::AddChild (UIElement *item)
 {
-	panel->GetChildren()->Add (child);
-}
-
-Brush *
-panel_get_background (Panel *panel)
-{
-	Value *value = panel->GetValue (Panel::BackgroundProperty);
-	
-	return value ? (Brush *) value->AsBrush () : NULL;
-}
-
-Panel *
-panel_new (void)
-{
-	return new Panel ();
-}
-
-Panel::Panel ()
-{
-	this->SetValue (Panel::ChildrenProperty, Value::CreateUnref (new VisualCollection ()));
-	mouse_over = NULL;
-}
-
-Panel::~Panel ()
-{
+	GetChildren ()->Add (item);
 }
 
 #define DEBUG_BOUNDS 0
@@ -187,17 +187,17 @@ Panel::UseBackToFront ()
 void
 Panel::Render (cairo_t *cr, Region *region)
 {
+	Brush *background;
+	
 	cairo_set_matrix (cr, &absolute_xform);
-
-	Value *value = GetValue (Panel::BackgroundProperty);
-	if (value) {
-		double fheight = GetValue (FrameworkElement::HeightProperty)->AsDouble ();
-		double fwidth = GetValue (FrameworkElement::WidthProperty)->AsDouble ();
+	
+	if ((Background = GetBackground ())) {
+		double fheight = GetHeight ();
+		double fwidth = GetWidth ();
 		
 		if (fwidth > 0 && fheight > 0) {
-			Brush *background = value->AsBrush ();
 			background->SetupBrush (cr, this);
-
+			
 			// FIXME - UIElement::Opacity may play a role here
 			cairo_new_path (cr);
 			cairo_rectangle (cr, 0, 0, fwidth, fheight);
@@ -356,14 +356,12 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 				 && can_subtract_self);
 
 		if (subtract) {
-			Value *brush_value = GetValue (Panel::BackgroundProperty);
-			if (brush_value && brush_value->AsBrush()) {
-				subtract = brush_value->AsBrush()->IsOpaque ();
-			}
-			else {
-				// no background brush defined
+			Brush *background = GetBackground ();
+			
+			if (background)
+				subtract = background->IsOpaque ();
+			else
 				subtract = false;
-			}
 		}
 
  		if (subtract)
@@ -400,9 +398,7 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 	if (FrameworkElement::InsideObject (cr, x, y)) {
 		/* we're inside, check if we're actually painting any background,
 		   or, we're just transparent due to no painting. */
-		Value *value = GetValue (Panel::BackgroundProperty);
-		
-		if (value && value->AsBrush ())
+		if (GetBackground ())
 			return true;
 	}
 	
@@ -470,9 +466,7 @@ Panel::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 		if (FrameworkElement::InsideObject (cr, x, y)) {
 			/* we're inside, check if we're actually painting any background,
 			   or, we're just transparent due to no painting. */
-			Value *value = GetValue (Panel::BackgroundProperty);
-			
-			if (value && value->AsBrush ())
+			if (GetBackground ())
 				uielement_list->Prepend (new UIElementNode (this));
 		}
 	}
@@ -603,8 +597,36 @@ Panel::OnLoaded ()
 }
 
 
-DependencyProperty* Panel::ChildrenProperty;
-DependencyProperty* Panel::BackgroundProperty;
+
+Panel *
+panel_new (void)
+{
+	return new Panel ();
+}
+
+void
+panel_set_background (Panel *panel, Brush *background)
+{
+	panel->SetBackground (background);
+}
+
+Brush *
+panel_get_background (Panel *panel)
+{
+	return panel->GetBackground ();
+}
+
+void
+panel_set_children (Panel *panel, VisualCollection *children)
+{
+	panel->SetChildren (children);
+}
+
+VisualCollection *
+panel_get_children (Panel *panel)
+{
+	return panel->GetChildren ();
+}
 
 void 
 panel_init (void)

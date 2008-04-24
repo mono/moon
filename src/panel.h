@@ -28,12 +28,14 @@ class Panel : public FrameworkElement {
 	bool UseBackToFront ();
 
  public:
+	static DependencyProperty *BackgroundProperty;
+	static DependencyProperty *ChildrenProperty;
+	
+	Rect bounds_with_children;
+	
 	Panel ();
 	virtual Type::Kind GetObjectType () { return Type::PANEL; }
-
-	VisualCollection *GetChildren ();
-	void SetChildren (VisualCollection *col);
-
+	
 	virtual void SetSurface (Surface *s);
 
 	virtual void ComputeBounds ();
@@ -45,17 +47,14 @@ class Panel : public FrameworkElement {
 
 	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
 
-	virtual UIElement* FindMouseOver (cairo_t *cr, double x, double y);
+	virtual UIElement *FindMouseOver (cairo_t *cr, double x, double y);
 
 	virtual void HitTest (cairo_t *cr, double x, double y, List *uielement_list);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
 	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
-
-	static DependencyProperty* ChildrenProperty;
-	static DependencyProperty* BackgroundProperty;
-
+	
 	virtual void UpdateTotalRenderVisibility ();
 	virtual void UpdateTotalHitTestVisibility ();
 
@@ -66,15 +65,28 @@ class Panel : public FrameworkElement {
 	virtual void CacheInvalidateHint ();
 
 	virtual void OnLoaded ();
-
-	Rect bounds_with_children;
+	
+	void AddChild (UIElement *item);
+	
+	//
+	// Property Accessors
+	//
+	void SetBackground (Brush *background);
+	Brush *GetBackground ();
+	
+	void SetChildren (VisualCollection *children);
+	VisualCollection *GetChildren ();
 };
 
 G_BEGIN_DECLS
 
-void  panel_child_add      (Panel *panel, UIElement *item);
 Panel *panel_new (void);
+
+void panel_set_background (Panel *panel, Brush *background);
 Brush *panel_get_background (Panel *panel);
+
+void panel_set_children (Panel *panel, VisualCollection *children);
+VisualCollection *panel_get_children (Panel *panel);
 
 void panel_init (void);
 
