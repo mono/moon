@@ -124,12 +124,10 @@ libmoon_la_SOURCES = 	\
 	zip/crypt.h
 
 if INCLUDE_SWSCALE
-libmoon_la_SOURCES += swscale-converter.cpp
-libmooninclue_headers += swscale-converter.h
+libmoon_la_SOURCES += swscale-converter.cpp swscale-converter.h
 endif
 if INCLUDE_FFMPEG
-libmoon_la_SOURCES += pipeline-ffmpeg.cpp
-libmooninclue_headers += pipeline-ffmpeg.h
+libmoon_la_SOURCES += pipeline-ffmpeg.cpp pipeline-ffmpeg.h
 endif
 
 EXTRA_DIST = \
