@@ -769,4 +769,8 @@
          inputFile="test-type-with-case-mismatch.html"
          masterFile10="None"
    />
+   <Test id="178"
+         inputFile="test-timelinemarkercollection-order.html"
+         masterFile10="None"
+   />
 </DRTList>

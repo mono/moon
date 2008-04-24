@@ -99,6 +99,8 @@ Collection::MergeNames (DependencyObject *new_obj)
 int
 Collection::Add (DependencyObject *data)
 {
+	int result;
+	
 	if (!Type::Find(data->GetObjectType())->IsSubclassOf(GetElementType())) {
 		g_warning ("Cannot add children of type `%s' to a collection of type `%s'.  Its children must be subclasses of `%s'.",
 			   data->GetTypeName(), GetTypeName(), Type::Find (GetElementType())->GetName ());
@@ -111,7 +113,11 @@ Collection::Add (DependencyObject *data)
 	}
 
 	generation++;
-	list->Append (new Collection::Node (data, this));
+	result = AddToList (new Collection::Node (data, this));
+	
+	if (result == -1)
+		return result;
+		
 	data->AddPropertyChangeListener (this);
 	data->SetSurface (GetSurface());
 
@@ -120,6 +126,13 @@ Collection::Add (DependencyObject *data)
 	if (closure)
 		EmitChanged (CollectionChangeTypeItemAdded, data, NULL);
 
+	return result;
+}
+
+int
+Collection::AddToList (Collection::Node *node)
+{
+	list->Append (node);
 	return list->Length () - 1;
 }
 
@@ -705,6 +718,40 @@ TriggerCollection::RemoveAt (int index)
 	}
 
 	return b;
+}
+
+/*
+ * TimelineMarkerCollection
+ */ 
+bool
+TimelineMarkerCollection::Insert (int index, DependencyObject *data)
+{
+	return Add (data) != -1;
+}
+
+int
+TimelineMarkerCollection::AddToList (Collection::Node *node)
+{
+	TimelineMarker *added_marker = (TimelineMarker *) node->obj;
+	TimelineMarker *current_marker;
+	Collection::Node *current;
+	int counter = 0;
+		
+	current = (Collection::Node *) list->First ();
+	while (current != NULL) {
+		current_marker = (TimelineMarker *) current->obj;
+		
+		if (current_marker->GetTime () >= added_marker->GetTime ()) {
+			list->InsertBefore (node, current);
+			return counter;
+		}
+		
+		current = (Collection::Node *) current->next;
+		counter++;
+	}
+	
+	list->Append (node);
+	return counter;
 }
 
 static bool

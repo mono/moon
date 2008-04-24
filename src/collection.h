@@ -22,9 +22,6 @@
 // chance to reflect the changes
 //
 class Collection : public DependencyObject {
- protected:
-	virtual ~Collection ();
-
  public:
 	class ChangeEventArgs : public EventArgs {
 	public:
@@ -78,6 +75,10 @@ class Collection : public DependencyObject {
 	void EmitChanged (CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 
 	static DependencyProperty *CountProperty;
+	
+ protected:
+	virtual int AddToList (Collection::Node *node);
+	virtual ~Collection ();
 };
 
 bool CollectionNodeFinder (List::Node *n, void *data);
@@ -154,14 +155,23 @@ class ResourceDictionary : public Collection {
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 };
 
+/*
+ * This collection is always sorted by the time value of the markers.
+ * We override AddToList to add the node where it's supposed to be, keeping the
+ * collection sorted at all times.
+ * We also override Insert to ignore the index and behave just like Add.
+ */
 class TimelineMarkerCollection : public Collection {
  protected:
 	virtual ~TimelineMarkerCollection () {}
+	virtual int AddToList (Collection::Node *node);
 
  public:
 	TimelineMarkerCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
+	
+	virtual bool Insert (int index, DependencyObject *data);
 };
 
 class MediaAttributeCollection : public Collection {

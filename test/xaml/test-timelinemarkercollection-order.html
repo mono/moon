@@ -1,0 +1,504 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Source="../media/video/timecode-mini-caption-all.wmv" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="Silverlight.js"></script>
+		<script language="javascript" src="../js/js/testplugin.js"></script>
+		<script language="javascript" src="../js/js/utils.js"></script>
+		<script language="javascript">
+
+		var plugin = null;
+		var current_message = 0;
+		var failed = false;
+		var baseline = navigator.userAgent.indexOf ("MSIE") != -1;
+		var messages = [
+        "Dumping collection with 32 markers: Initial collection",
+        " #1 Type: 'caption' Text: '00:00' Time: 0",
+        " #2 Type: 'caption' Text: '00:01' Time: 0.05",
+        " #3 Type: 'caption' Text: '00:02' Time: 0.079",
+        " #4 Type: 'caption' Text: '00:03' Time: 0.117",
+        " #5 Type: 'caption' Text: '00:04' Time: 0.149",
+        " #6 Type: 'caption' Text: '00:05' Time: 0.187",
+        " #7 Type: 'caption' Text: '00:06' Time: 0.228",
+        " #8 Type: 'caption' Text: '00:07' Time: 0.254",
+        " #9 Type: 'caption' Text: '00:08' Time: 0.276",
+        " #10 Type: 'caption' Text: '00:09' Time: 0.324",
+        " #11 Type: 'caption' Text: '00:10' Time: 0.337",
+        " #12 Type: 'caption' Text: '00:11' Time: 0.384",
+        " #13 Type: 'caption' Text: '00:12' Time: 0.403",
+        " #14 Type: 'caption' Text: '00:13' Time: 0.445",
+        " #15 Type: 'caption' Text: '00:14' Time: 0.489",
+        " #16 Type: 'caption' Text: '00:15' Time: 0.521",
+        " #17 Type: 'caption' Text: '00:16' Time: 0.546",
+        " #18 Type: 'caption' Text: '00:17' Time: 0.588",
+        " #19 Type: 'caption' Text: '00:18' Time: 0.62",
+        " #20 Type: 'caption' Text: '00:19' Time: 0.658",
+        " #21 Type: 'caption' Text: '00:20' Time: 0.686",
+        " #22 Type: 'caption' Text: '00:21' Time: 0.721",
+        " #23 Type: 'caption' Text: '00:22' Time: 0.759",
+        " #24 Type: 'caption' Text: '00:23' Time: 0.798",
+        " #25 Type: 'caption' Text: '00:24' Time: 0.826",
+        " #26 Type: 'caption' Text: '00:25' Time: 0.855",
+        " #27 Type: 'caption' Text: '00:26' Time: 0.883",
+        " #28 Type: 'caption' Text: '00:27' Time: 0.918",
+        " #29 Type: 'caption' Text: '00:28' Time: 0.96",
+        " #30 Type: 'caption' Text: '00:29' Time: 0.995",
+        " #31 Type: 'caption' Text: '01:00' Time: 1.02",
+        " #32 Type: 'caption' Text: '01:01' Time: 1.052",
+        "Dumped collection with 32 markers.",
+        "Dumping collection with 33 markers: After adding marker 1",
+        " #1 Type: 'caption' Text: '00:00' Time: 0",
+        " #2 Type: 'caption' Text: '00:01' Time: 0.05",
+        " #3 Type: 'caption' Text: '00:02' Time: 0.079",
+        " #4 Type: 'caption' Text: '00:03' Time: 0.117",
+        " #5 Type: 'caption' Text: '00:04' Time: 0.149",
+        " #6 Type: 'caption' Text: '00:05' Time: 0.187",
+        " #7 Type: 'caption' Text: '00:06' Time: 0.228",
+        " #8 Type: 'caption' Text: '00:07' Time: 0.254",
+        " #9 Type: 'caption' Text: '00:08' Time: 0.276",
+        " #10 Type: 'caption' Text: '00:09' Time: 0.324",
+        " #11 Type: 'caption' Text: '00:10' Time: 0.337",
+        " #12 Type: 'caption' Text: '00:11' Time: 0.384",
+        " #13 Type: 'caption' Text: '00:12' Time: 0.403",
+        " #14 Type: 'caption' Text: '00:13' Time: 0.445",
+        " #15 Type: 'added marker 1' Text: 'added at 0.456s' Time: 0.456",
+        " #16 Type: 'caption' Text: '00:14' Time: 0.489",
+        " #17 Type: 'caption' Text: '00:15' Time: 0.521",
+        " #18 Type: 'caption' Text: '00:16' Time: 0.546",
+        " #19 Type: 'caption' Text: '00:17' Time: 0.588",
+        " #20 Type: 'caption' Text: '00:18' Time: 0.62",
+        " #21 Type: 'caption' Text: '00:19' Time: 0.658",
+        " #22 Type: 'caption' Text: '00:20' Time: 0.686",
+        " #23 Type: 'caption' Text: '00:21' Time: 0.721",
+        " #24 Type: 'caption' Text: '00:22' Time: 0.759",
+        " #25 Type: 'caption' Text: '00:23' Time: 0.798",
+        " #26 Type: 'caption' Text: '00:24' Time: 0.826",
+        " #27 Type: 'caption' Text: '00:25' Time: 0.855",
+        " #28 Type: 'caption' Text: '00:26' Time: 0.883",
+        " #29 Type: 'caption' Text: '00:27' Time: 0.918",
+        " #30 Type: 'caption' Text: '00:28' Time: 0.96",
+        " #31 Type: 'caption' Text: '00:29' Time: 0.995",
+        " #32 Type: 'caption' Text: '01:00' Time: 1.02",
+        " #33 Type: 'caption' Text: '01:01' Time: 1.052",
+        "Dumped collection with 33 markers.",
+        "Dumping collection with 34 markers: After adding marker 2",
+        " #1 Type: 'caption' Text: '00:00' Time: 0",
+        " #2 Type: 'caption' Text: '00:01' Time: 0.05",
+        " #3 Type: 'caption' Text: '00:02' Time: 0.079",
+        " #4 Type: 'caption' Text: '00:03' Time: 0.117",
+        " #5 Type: 'caption' Text: '00:04' Time: 0.149",
+        " #6 Type: 'caption' Text: '00:05' Time: 0.187",
+        " #7 Type: 'caption' Text: '00:06' Time: 0.228",
+        " #8 Type: 'caption' Text: '00:07' Time: 0.254",
+        " #9 Type: 'caption' Text: '00:08' Time: 0.276",
+        " #10 Type: 'caption' Text: '00:09' Time: 0.324",
+        " #11 Type: 'caption' Text: '00:10' Time: 0.337",
+        " #12 Type: 'caption' Text: '00:11' Time: 0.384",
+        " #13 Type: 'caption' Text: '00:12' Time: 0.403",
+        " #14 Type: 'caption' Text: '00:13' Time: 0.445",
+        " #15 Type: 'added marker 1' Text: 'added at 0.456s' Time: 0.456",
+        " #16 Type: 'caption' Text: '00:14' Time: 0.489",
+        " #17 Type: 'caption' Text: '00:15' Time: 0.521",
+        " #18 Type: 'caption' Text: '00:16' Time: 0.546",
+        " #19 Type: 'caption' Text: '00:17' Time: 0.588",
+        " #20 Type: 'caption' Text: '00:18' Time: 0.62",
+        " #21 Type: 'caption' Text: '00:19' Time: 0.658",
+        " #22 Type: 'caption' Text: '00:20' Time: 0.686",
+        " #23 Type: 'added marker 2' Text: 'added at 0.700s' Time: 0.7",
+        " #24 Type: 'caption' Text: '00:21' Time: 0.721",
+        " #25 Type: 'caption' Text: '00:22' Time: 0.759",
+        " #26 Type: 'caption' Text: '00:23' Time: 0.798",
+        " #27 Type: 'caption' Text: '00:24' Time: 0.826",
+        " #28 Type: 'caption' Text: '00:25' Time: 0.855",
+        " #29 Type: 'caption' Text: '00:26' Time: 0.883",
+        " #30 Type: 'caption' Text: '00:27' Time: 0.918",
+        " #31 Type: 'caption' Text: '00:28' Time: 0.96",
+        " #32 Type: 'caption' Text: '00:29' Time: 0.995",
+        " #33 Type: 'caption' Text: '01:00' Time: 1.02",
+        " #34 Type: 'caption' Text: '01:01' Time: 1.052",
+        "Dumped collection with 34 markers.",
+        "Dumping collection with 35 markers: After adding marker 3",
+        " #1 Type: 'added marker 3' Text: 'added at 0s' Time: 0",
+        " #2 Type: 'caption' Text: '00:00' Time: 0",
+        " #3 Type: 'caption' Text: '00:01' Time: 0.05",
+        " #4 Type: 'caption' Text: '00:02' Time: 0.079",
+        " #5 Type: 'caption' Text: '00:03' Time: 0.117",
+        " #6 Type: 'caption' Text: '00:04' Time: 0.149",
+        " #7 Type: 'caption' Text: '00:05' Time: 0.187",
+        " #8 Type: 'caption' Text: '00:06' Time: 0.228",
+        " #9 Type: 'caption' Text: '00:07' Time: 0.254",
+        " #10 Type: 'caption' Text: '00:08' Time: 0.276",
+        " #11 Type: 'caption' Text: '00:09' Time: 0.324",
+        " #12 Type: 'caption' Text: '00:10' Time: 0.337",
+        " #13 Type: 'caption' Text: '00:11' Time: 0.384",
+        " #14 Type: 'caption' Text: '00:12' Time: 0.403",
+        " #15 Type: 'caption' Text: '00:13' Time: 0.445",
+        " #16 Type: 'added marker 1' Text: 'added at 0.456s' Time: 0.456",
+        " #17 Type: 'caption' Text: '00:14' Time: 0.489",
+        " #18 Type: 'caption' Text: '00:15' Time: 0.521",
+        " #19 Type: 'caption' Text: '00:16' Time: 0.546",
+        " #20 Type: 'caption' Text: '00:17' Time: 0.588",
+        " #21 Type: 'caption' Text: '00:18' Time: 0.62",
+        " #22 Type: 'caption' Text: '00:19' Time: 0.658",
+        " #23 Type: 'caption' Text: '00:20' Time: 0.686",
+        " #24 Type: 'added marker 2' Text: 'added at 0.700s' Time: 0.7",
+        " #25 Type: 'caption' Text: '00:21' Time: 0.721",
+        " #26 Type: 'caption' Text: '00:22' Time: 0.759",
+        " #27 Type: 'caption' Text: '00:23' Time: 0.798",
+        " #28 Type: 'caption' Text: '00:24' Time: 0.826",
+        " #29 Type: 'caption' Text: '00:25' Time: 0.855",
+        " #30 Type: 'caption' Text: '00:26' Time: 0.883",
+        " #31 Type: 'caption' Text: '00:27' Time: 0.918",
+        " #32 Type: 'caption' Text: '00:28' Time: 0.96",
+        " #33 Type: 'caption' Text: '00:29' Time: 0.995",
+        " #34 Type: 'caption' Text: '01:00' Time: 1.02",
+        " #35 Type: 'caption' Text: '01:01' Time: 1.052",
+        "Dumped collection with 35 markers.",
+        "Dumping collection with 36 markers: After inserting marker 1",
+        " #1 Type: 'added marker 3' Text: 'added at 0s' Time: 0",
+        " #2 Type: 'caption' Text: '00:00' Time: 0",
+        " #3 Type: 'caption' Text: '00:01' Time: 0.05",
+        " #4 Type: 'caption' Text: '00:02' Time: 0.079",
+        " #5 Type: 'caption' Text: '00:03' Time: 0.117",
+        " #6 Type: 'inserted marker 1' Text: 'inserted at index 7 with time 0.123s' Time: 0.123",
+        " #7 Type: 'caption' Text: '00:04' Time: 0.149",
+        " #8 Type: 'caption' Text: '00:05' Time: 0.187",
+        " #9 Type: 'caption' Text: '00:06' Time: 0.228",
+        " #10 Type: 'caption' Text: '00:07' Time: 0.254",
+        " #11 Type: 'caption' Text: '00:08' Time: 0.276",
+        " #12 Type: 'caption' Text: '00:09' Time: 0.324",
+        " #13 Type: 'caption' Text: '00:10' Time: 0.337",
+        " #14 Type: 'caption' Text: '00:11' Time: 0.384",
+        " #15 Type: 'caption' Text: '00:12' Time: 0.403",
+        " #16 Type: 'caption' Text: '00:13' Time: 0.445",
+        " #17 Type: 'added marker 1' Text: 'added at 0.456s' Time: 0.456",
+        " #18 Type: 'caption' Text: '00:14' Time: 0.489",
+        " #19 Type: 'caption' Text: '00:15' Time: 0.521",
+        " #20 Type: 'caption' Text: '00:16' Time: 0.546",
+        " #21 Type: 'caption' Text: '00:17' Time: 0.588",
+        " #22 Type: 'caption' Text: '00:18' Time: 0.62",
+        " #23 Type: 'caption' Text: '00:19' Time: 0.658",
+        " #24 Type: 'caption' Text: '00:20' Time: 0.686",
+        " #25 Type: 'added marker 2' Text: 'added at 0.700s' Time: 0.7",
+        " #26 Type: 'caption' Text: '00:21' Time: 0.721",
+        " #27 Type: 'caption' Text: '00:22' Time: 0.759",
+        " #28 Type: 'caption' Text: '00:23' Time: 0.798",
+        " #29 Type: 'caption' Text: '00:24' Time: 0.826",
+        " #30 Type: 'caption' Text: '00:25' Time: 0.855",
+        " #31 Type: 'caption' Text: '00:26' Time: 0.883",
+        " #32 Type: 'caption' Text: '00:27' Time: 0.918",
+        " #33 Type: 'caption' Text: '00:28' Time: 0.96",
+        " #34 Type: 'caption' Text: '00:29' Time: 0.995",
+        " #35 Type: 'caption' Text: '01:00' Time: 1.02",
+        " #36 Type: 'caption' Text: '01:01' Time: 1.052",
+        "Dumped collection with 36 markers.",
+        "Dumping collection with 37 markers: After inserting marker 2",
+        " #1 Type: 'added marker 3' Text: 'added at 0s' Time: 0",
+        " #2 Type: 'caption' Text: '00:00' Time: 0",
+        " #3 Type: 'caption' Text: '00:01' Time: 0.05",
+        " #4 Type: 'caption' Text: '00:02' Time: 0.079",
+        " #5 Type: 'caption' Text: '00:03' Time: 0.117",
+        " #6 Type: 'inserted marker 1' Text: 'inserted at index 7 with time 0.123s' Time: 0.123",
+        " #7 Type: 'caption' Text: '00:04' Time: 0.149",
+        " #8 Type: 'caption' Text: '00:05' Time: 0.187",
+        " #9 Type: 'caption' Text: '00:06' Time: 0.228",
+        " #10 Type: 'caption' Text: '00:07' Time: 0.254",
+        " #11 Type: 'caption' Text: '00:08' Time: 0.276",
+        " #12 Type: 'caption' Text: '00:09' Time: 0.324",
+        " #13 Type: 'caption' Text: '00:10' Time: 0.337",
+        " #14 Type: 'caption' Text: '00:11' Time: 0.384",
+        " #15 Type: 'caption' Text: '00:12' Time: 0.403",
+        " #16 Type: 'caption' Text: '00:13' Time: 0.445",
+        " #17 Type: 'added marker 1' Text: 'added at 0.456s' Time: 0.456",
+        " #18 Type: 'caption' Text: '00:14' Time: 0.489",
+        " #19 Type: 'caption' Text: '00:15' Time: 0.521",
+        " #20 Type: 'caption' Text: '00:16' Time: 0.546",
+        " #21 Type: 'caption' Text: '00:17' Time: 0.588",
+        " #22 Type: 'caption' Text: '00:18' Time: 0.62",
+        " #23 Type: 'caption' Text: '00:19' Time: 0.658",
+        " #24 Type: 'caption' Text: '00:20' Time: 0.686",
+        " #25 Type: 'added marker 2' Text: 'added at 0.700s' Time: 0.7",
+        " #26 Type: 'caption' Text: '00:21' Time: 0.721",
+        " #27 Type: 'inserted marker 2' Text: 'inserted at index 0 with time 0.723s' Time: 0.723",
+        " #28 Type: 'caption' Text: '00:22' Time: 0.759",
+        " #29 Type: 'caption' Text: '00:23' Time: 0.798",
+        " #30 Type: 'caption' Text: '00:24' Time: 0.826",
+        " #31 Type: 'caption' Text: '00:25' Time: 0.855",
+        " #32 Type: 'caption' Text: '00:26' Time: 0.883",
+        " #33 Type: 'caption' Text: '00:27' Time: 0.918",
+        " #34 Type: 'caption' Text: '00:28' Time: 0.96",
+        " #35 Type: 'caption' Text: '00:29' Time: 0.995",
+        " #36 Type: 'caption' Text: '01:00' Time: 1.02",
+        " #37 Type: 'caption' Text: '01:01' Time: 1.052",
+        "Dumped collection with 37 markers.",
+        "Dumping collection with 38 markers: After inserting marker 3",
+        " #1 Type: 'added marker 3' Text: 'added at 0s' Time: 0",
+        " #2 Type: 'caption' Text: '00:00' Time: 0",
+        " #3 Type: 'inserted marker 3' Text: 'inserted at index 0 with time 0.001' Time: 0.001",
+        " #4 Type: 'caption' Text: '00:01' Time: 0.05",
+        " #5 Type: 'caption' Text: '00:02' Time: 0.079",
+        " #6 Type: 'caption' Text: '00:03' Time: 0.117",
+        " #7 Type: 'inserted marker 1' Text: 'inserted at index 7 with time 0.123s' Time: 0.123",
+        " #8 Type: 'caption' Text: '00:04' Time: 0.149",
+        " #9 Type: 'caption' Text: '00:05' Time: 0.187",
+        " #10 Type: 'caption' Text: '00:06' Time: 0.228",
+        " #11 Type: 'caption' Text: '00:07' Time: 0.254",
+        " #12 Type: 'caption' Text: '00:08' Time: 0.276",
+        " #13 Type: 'caption' Text: '00:09' Time: 0.324",
+        " #14 Type: 'caption' Text: '00:10' Time: 0.337",
+        " #15 Type: 'caption' Text: '00:11' Time: 0.384",
+        " #16 Type: 'caption' Text: '00:12' Time: 0.403",
+        " #17 Type: 'caption' Text: '00:13' Time: 0.445",
+        " #18 Type: 'added marker 1' Text: 'added at 0.456s' Time: 0.456",
+        " #19 Type: 'caption' Text: '00:14' Time: 0.489",
+        " #20 Type: 'caption' Text: '00:15' Time: 0.521",
+        " #21 Type: 'caption' Text: '00:16' Time: 0.546",
+        " #22 Type: 'caption' Text: '00:17' Time: 0.588",
+        " #23 Type: 'caption' Text: '00:18' Time: 0.62",
+        " #24 Type: 'caption' Text: '00:19' Time: 0.658",
+        " #25 Type: 'caption' Text: '00:20' Time: 0.686",
+        " #26 Type: 'added marker 2' Text: 'added at 0.700s' Time: 0.7",
+        " #27 Type: 'caption' Text: '00:21' Time: 0.721",
+        " #28 Type: 'inserted marker 2' Text: 'inserted at index 0 with time 0.723s' Time: 0.723",
+        " #29 Type: 'caption' Text: '00:22' Time: 0.759",
+        " #30 Type: 'caption' Text: '00:23' Time: 0.798",
+        " #31 Type: 'caption' Text: '00:24' Time: 0.826",
+        " #32 Type: 'caption' Text: '00:25' Time: 0.855",
+        " #33 Type: 'caption' Text: '00:26' Time: 0.883",
+        " #34 Type: 'caption' Text: '00:27' Time: 0.918",
+        " #35 Type: 'caption' Text: '00:28' Time: 0.96",
+        " #36 Type: 'caption' Text: '00:29' Time: 0.995",
+        " #37 Type: 'caption' Text: '01:00' Time: 1.02",
+        " #38 Type: 'caption' Text: '01:01' Time: 1.052",
+        "Dumped collection with 38 markers.",
+        "Dumping collection with 37 markers: After removing marker #7",
+        " #1 Type: 'added marker 3' Text: 'added at 0s' Time: 0",
+        " #2 Type: 'caption' Text: '00:00' Time: 0",
+        " #3 Type: 'inserted marker 3' Text: 'inserted at index 0 with time 0.001' Time: 0.001",
+        " #4 Type: 'caption' Text: '00:01' Time: 0.05",
+        " #5 Type: 'caption' Text: '00:02' Time: 0.079",
+        " #6 Type: 'caption' Text: '00:03' Time: 0.117",
+        " #7 Type: 'inserted marker 1' Text: 'inserted at index 7 with time 0.123s' Time: 0.123",
+        " #8 Type: 'caption' Text: '00:05' Time: 0.187",
+        " #9 Type: 'caption' Text: '00:06' Time: 0.228",
+        " #10 Type: 'caption' Text: '00:07' Time: 0.254",
+        " #11 Type: 'caption' Text: '00:08' Time: 0.276",
+        " #12 Type: 'caption' Text: '00:09' Time: 0.324",
+        " #13 Type: 'caption' Text: '00:10' Time: 0.337",
+        " #14 Type: 'caption' Text: '00:11' Time: 0.384",
+        " #15 Type: 'caption' Text: '00:12' Time: 0.403",
+        " #16 Type: 'caption' Text: '00:13' Time: 0.445",
+        " #17 Type: 'added marker 1' Text: 'added at 0.456s' Time: 0.456",
+        " #18 Type: 'caption' Text: '00:14' Time: 0.489",
+        " #19 Type: 'caption' Text: '00:15' Time: 0.521",
+        " #20 Type: 'caption' Text: '00:16' Time: 0.546",
+        " #21 Type: 'caption' Text: '00:17' Time: 0.588",
+        " #22 Type: 'caption' Text: '00:18' Time: 0.62",
+        " #23 Type: 'caption' Text: '00:19' Time: 0.658",
+        " #24 Type: 'caption' Text: '00:20' Time: 0.686",
+        " #25 Type: 'added marker 2' Text: 'added at 0.700s' Time: 0.7",
+        " #26 Type: 'caption' Text: '00:21' Time: 0.721",
+        " #27 Type: 'inserted marker 2' Text: 'inserted at index 0 with time 0.723s' Time: 0.723",
+        " #28 Type: 'caption' Text: '00:22' Time: 0.759",
+        " #29 Type: 'caption' Text: '00:23' Time: 0.798",
+        " #30 Type: 'caption' Text: '00:24' Time: 0.826",
+        " #31 Type: 'caption' Text: '00:25' Time: 0.855",
+        " #32 Type: 'caption' Text: '00:26' Time: 0.883",
+        " #33 Type: 'caption' Text: '00:27' Time: 0.918",
+        " #34 Type: 'caption' Text: '00:28' Time: 0.96",
+        " #35 Type: 'caption' Text: '00:29' Time: 0.995",
+        " #36 Type: 'caption' Text: '01:00' Time: 1.02",
+        " #37 Type: 'caption' Text: '01:01' Time: 1.052",
+        "Dumped collection with 37 markers.",
+        "Dumping collection with 36 markers: After removing marker at #14",
+        " #1 Type: 'added marker 3' Text: 'added at 0s' Time: 0",
+        " #2 Type: 'caption' Text: '00:00' Time: 0",
+        " #3 Type: 'inserted marker 3' Text: 'inserted at index 0 with time 0.001' Time: 0.001",
+        " #4 Type: 'caption' Text: '00:01' Time: 0.05",
+        " #5 Type: 'caption' Text: '00:02' Time: 0.079",
+        " #6 Type: 'caption' Text: '00:03' Time: 0.117",
+        " #7 Type: 'inserted marker 1' Text: 'inserted at index 7 with time 0.123s' Time: 0.123",
+        " #8 Type: 'caption' Text: '00:05' Time: 0.187",
+        " #9 Type: 'caption' Text: '00:06' Time: 0.228",
+        " #10 Type: 'caption' Text: '00:07' Time: 0.254",
+        " #11 Type: 'caption' Text: '00:08' Time: 0.276",
+        " #12 Type: 'caption' Text: '00:09' Time: 0.324",
+        " #13 Type: 'caption' Text: '00:10' Time: 0.337",
+        " #14 Type: 'caption' Text: '00:11' Time: 0.384",
+        " #15 Type: 'caption' Text: '00:13' Time: 0.445",
+        " #16 Type: 'added marker 1' Text: 'added at 0.456s' Time: 0.456",
+        " #17 Type: 'caption' Text: '00:14' Time: 0.489",
+        " #18 Type: 'caption' Text: '00:15' Time: 0.521",
+        " #19 Type: 'caption' Text: '00:16' Time: 0.546",
+        " #20 Type: 'caption' Text: '00:17' Time: 0.588",
+        " #21 Type: 'caption' Text: '00:18' Time: 0.62",
+        " #22 Type: 'caption' Text: '00:19' Time: 0.658",
+        " #23 Type: 'caption' Text: '00:20' Time: 0.686",
+        " #24 Type: 'added marker 2' Text: 'added at 0.700s' Time: 0.7",
+        " #25 Type: 'caption' Text: '00:21' Time: 0.721",
+        " #26 Type: 'inserted marker 2' Text: 'inserted at index 0 with time 0.723s' Time: 0.723",
+        " #27 Type: 'caption' Text: '00:22' Time: 0.759",
+        " #28 Type: 'caption' Text: '00:23' Time: 0.798",
+        " #29 Type: 'caption' Text: '00:24' Time: 0.826",
+        " #30 Type: 'caption' Text: '00:25' Time: 0.855",
+        " #31 Type: 'caption' Text: '00:26' Time: 0.883",
+        " #32 Type: 'caption' Text: '00:27' Time: 0.918",
+        " #33 Type: 'caption' Text: '00:28' Time: 0.96",
+        " #34 Type: 'caption' Text: '00:29' Time: 0.995",
+        " #35 Type: 'caption' Text: '01:00' Time: 1.02",
+        " #36 Type: 'caption' Text: '01:01' Time: 1.052",
+        "Dumped collection with 36 markers.",
+        "Dumping collection with 0 markers: After clearing the collection",
+        "Dumped collection with 0 markers.",
+        "Dumping collection with 0 markers: Final collection",
+        "Dumped collection with 0 markers.",
+		""];
+
+		function Verify (msg)
+		{
+			try {
+				if (baseline) {
+					TestLogger.LogDebug ('\t"' + msg + '",');
+				} else if (msg != messages [current_message]) {
+					if (!failed) {
+						failed = true;
+						TestLogger.LogResult (-1);
+					}
+					TestLogger.LogError ("Expected '" + messages [current_message] + "', but got '" + msg + "'");
+				} else {
+					TestLogger.LogDebug ("Verified: " + msg);
+				}
+			} catch (ex) {
+				failed = true;
+				TestLogger.LogResult (-1);
+				TestLogger.LogError ("Verify: exception occured: " + ex);
+			}
+
+			current_message++;
+		}
+	
+		function DumpCollection (col, msg)
+		{
+			Verify ("Dumping collection with " + col.Count + " markers: " + msg);
+			for (var i = 0; i < col.Count; i++) {
+				Verify (" #" + (i + 1) + " " + MarkerToString (col.GetItem (i)));
+			}
+			Verify ("Dumped collection with " + col.Count + " markers.");
+		}
+
+		function MarkerToString (marker)
+		{
+			return "Type: '" + marker.Type + "' Text: '" + marker.Text + "' Time: " + Math.round (marker.Time.Seconds * 1000) / 1000;
+		}
+
+		function CreateMarker (type, text, time)
+		{			
+		    var xaml = '<TimelineMarker Text="' + text + '" Time="' + time + '" Type="' + type + '" />';
+		    var marker = plugin.content.createFromXaml(xaml);
+			//TestLogger.LogDebug ("created marker: " + MarkerToString (marker));
+			return marker;
+		}
+
+		function AddTest (col)
+		{
+			col.Add (CreateMarker ("added marker 1", "added at 0.456s", "00:00:00.456"));
+			DumpCollection (col, "After adding marker 1");
+			col.Add (CreateMarker ("added marker 2", "added at 0.700s", "00:00:00.700"));
+			DumpCollection (col, "After adding marker 2");
+			col.Add (CreateMarker ("added marker 3", "added at 0s", "00:00:00.000"));
+			DumpCollection (col, "After adding marker 3");
+		}
+
+		function InsertTest (col)
+		{
+			col.Insert (7, CreateMarker ("inserted marker 1", "inserted at index 7 with time 0.123s", "00:00:00.123"));
+			DumpCollection (col, "After inserting marker 1");
+			col.Insert (0, CreateMarker ("inserted marker 2", "inserted at index 0 with time 0.723s", "00:00:00.723"));
+			DumpCollection (col, "After inserting marker 2");
+			col.Insert (0, CreateMarker ("inserted marker 3", "inserted at index 0 with time 0.001", "00:00:00.001"));
+			DumpCollection (col, "After inserting marker 3");
+		}
+
+		function RemoveTest (col)
+		{
+			col.Remove (col.GetItem (7));
+			DumpCollection (col, "After removing marker #7");
+		}
+
+		function RemoveAtTest (col)
+		{
+			col.RemoveAt (14);
+			DumpCollection (col, "After removing marker at #14");
+		}
+
+		function ClearTest (col)
+		{
+			col.Clear ();
+			DumpCollection (col, "After clearing the collection");
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened");
+			DumpCollection (sender.Markers, "Initial collection");
+	
+			AddTest (sender.Markers);
+			InsertTest (sender.Markers);
+			RemoveTest (sender.Markers);
+			RemoveAtTest (sender.Markers);
+			ClearTest (sender.Markers);
+
+			DumpCollection (sender.Markers, "Final collection");
+			SignalShutdown ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("Media failed to load: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			plugin = document.getElementById ("_MoonlightControl");
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+
