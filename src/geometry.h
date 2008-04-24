@@ -54,6 +54,7 @@ class Geometry : public DependencyObject {
 
 	virtual void Draw (Path *path, cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path, bool logical) { return Rect (0.0, 0.0, 0.0, 0.0); };
+	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix) { return ComputeBounds (path, logical); };
 
 //	virtual Point GetOriginPoint (Path *path);
 
@@ -100,7 +101,8 @@ class GeometryGroup : public Geometry {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 
 	virtual void Draw (Path *path, cairo_t *cr);
-	virtual Rect ComputeBounds (Path *path, bool logical);
+	Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical); }
+	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
 };
 GeometryGroup		*geometry_group_new		();
 GeometryCollection	*geometry_group_get_children	(GeometryGroup *geometry_group);
@@ -187,7 +189,8 @@ class PathGeometry : public Geometry {
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
-	virtual Rect ComputeBounds (Path *path, bool logical);
+	Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
+	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
 
 	// this is an element-by-element decision
 	virtual bool IsFilled () { return true; }
@@ -263,7 +266,7 @@ class PathFigure : public DependencyObject {
 	virtual bool IsBuilt () { return path && path->cairo.num_data != 0; }
 	virtual cairo_path_t* GetCairoPath () { return (path) ? &path->cairo : NULL; }
 
-	Rect ComputeBounds (Path *shape, bool logical);
+	Rect ComputeBounds (Path *shape, bool logical, cairo_matrix_t *matrix);
 };
 PathFigure* path_figure_new ();
 bool	path_figure_get_is_closed	(PathFigure *path_figure);

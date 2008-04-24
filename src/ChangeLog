@@ -1,3 +1,12 @@
+2008-04-24  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* geometry.h:
+	* geometry.cpp:
+	* shape.cpp:
+	* shape.h: override some Compute[Shape]Bounds method to pass a matrix
+	argument. Allows measuration of transformed Pathes and a 2nd pass to 
+	refines the guesses we're doing for Stretches.
+
 2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Updated.

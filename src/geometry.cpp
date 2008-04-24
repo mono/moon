@@ -107,7 +107,7 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 }
 
 static Rect
-path_get_bounds (Path *shape, cairo_path_t *path, bool logical)
+path_get_bounds (Path *shape, cairo_path_t *path, bool logical, cairo_matrix_t *matrix)
 {
 	if (!path)
 		return Rect (0.0, 0.0, 0.0, 0.0);
@@ -120,7 +120,12 @@ path_get_bounds (Path *shape, cairo_path_t *path, bool logical)
 	
 	cairo_t *cr = measuring_context_create ();
 	cairo_set_line_width (cr, thickness);
+	if (matrix) 
+		cairo_set_matrix (cr, matrix);
+
 	cairo_append_path (cr, path);
+	if (matrix) 
+		cairo_identity_matrix (cr);
 	
 	double x1, y1, x2, y2;
 
@@ -194,14 +199,14 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 }
 
 Rect
-GeometryGroup::ComputeBounds (Path *path, bool logical)
+GeometryGroup::ComputeBounds (Path *path, bool logical, cairo_matrix_t * matrix)
 {
 	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
 	GeometryCollection *children = geometry_group_get_children (this);
 	Collection::Node *node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		Geometry *geometry = (Geometry *) node->obj;
-		bounds = bounds.Union (geometry->ComputeBounds (path, logical), logical);
+		bounds = bounds.Union (geometry->ComputeBounds (path, logical, matrix), logical);
 	}
 
 	Transform* transform = geometry_get_transform (this);
@@ -485,7 +490,7 @@ PathGeometry::Build (Path *shape)
 }
 
 Rect
-PathGeometry::ComputeBounds (Path *shape, bool logical)
+PathGeometry::ComputeBounds (Path *shape, bool logical, cairo_matrix_t * matrix)
 {
 	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
 	Value *v = GetValue (PathGeometry::FiguresProperty);
@@ -496,7 +501,7 @@ PathGeometry::ComputeBounds (Path *shape, bool logical)
 	Collection::Node *node = (Collection::Node *) children->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathFigure *pf = (PathFigure *) node->obj;
-		bounds = bounds.Union (pf->ComputeBounds (shape, logical));
+		bounds = bounds.Union (pf->ComputeBounds (shape, logical, matrix));
 	}
 	
 	Transform* transform = geometry_get_transform (this);
@@ -742,12 +747,12 @@ PathFigure::Build (Path *shape)
 }
 
 Rect
-PathFigure::ComputeBounds (Path *shape, bool logical)
+PathFigure::ComputeBounds (Path *shape, bool logical, cairo_matrix_t * matrix)
 {
 	if (!IsBuilt ())
 		Build (shape);
 
-	return path_get_bounds (shape, &path->cairo, logical);
+	return path_get_bounds (shape, &path->cairo, logical, matrix);
 }
 
 bool

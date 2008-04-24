@@ -61,6 +61,7 @@ class Shape : public FrameworkElement {
 	bool IsCandidateForCaching (void);
 
 	virtual Rect ComputeShapeBounds (bool logical);
+	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t * matrix) { return ComputeShapeBounds (logical); }
 	virtual Rect ComputeLargestRectangle ();
 	
 	cairo_matrix_t stretch_transform;
@@ -323,7 +324,8 @@ class Path : public Shape {
 	virtual ~Path () {}
 	virtual bool SetupLine (cairo_t* cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
-	virtual Rect ComputeShapeBounds (bool logical);
+	Rect ComputeShapeBounds (bool logical) { return ComputeShapeBounds (logical, NULL); }
+	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t *matrix);
 
  public:
 	static DependencyProperty* DataProperty;

@@ -302,6 +302,28 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		break;
 		}
 
+		// FIXME: this is (or could be) fucking slow
+		// hereafter we're doing a second pass to refine the sw and sh we guessed
+		// the first time. This usually gives pixel-recise stretches for Paths
+		cairo_matrix_t temp;
+		cairo_matrix_init_scale (&temp, adj_x ? sw : 1.0, adj_y ? sh : 1.0);
+		Rect extents = ComputeShapeBounds (false, &temp);
+		if (extents.w != shape_bounds.w && extents.h != shape_bounds.h) {
+			sw *= adj_x ? (w - extents.w + logical_bounds.w * sw) / (logical_bounds.w * sw): 1.0;
+			sh *= adj_y ? (h - extents.h + logical_bounds.h * sh) / (logical_bounds.h * sh): 1.0;
+		}
+
+		switch (stretch) {
+		case StretchUniform:
+			sw = sh = (sw < sh) ? sw : sh;
+			break;
+		case StretchUniformToFill:
+			sw = sh = (sw > sh) ? sw : sh;
+			break;
+		}
+
+		// end of the 2nd pass code
+
 		double x = vh || adj_x ? shape_bounds.x : 0;
 		double y = vw || adj_y ? shape_bounds.y : 0;
 		if (center)
@@ -2134,7 +2156,7 @@ Path::GetFillRule ()
 }
 
 Rect
-Path::ComputeShapeBounds (bool logical)
+Path::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 {
 	Rect shape_bounds = Rect ();
 
@@ -2165,7 +2187,7 @@ Path::ComputeShapeBounds (bool logical)
 		return shape_bounds;
 	}
 
-	shape_bounds = geometry->ComputeBounds (this, logical);
+	shape_bounds = geometry->ComputeBounds (this, logical, matrix);
 
 	return shape_bounds;
 }
