@@ -123,12 +123,6 @@ libmoon_la_SOURCES = 	\
 	zip/unzip.h	\
 	zip/crypt.h
 
-EXTRA_DIST = \
-	alpha-premul-table.inc \
-	zip/README \
-	zip/ChangeLogUnzip \
-	$(libmooninclude_headers)
-
 if INCLUDE_SWSCALE
 libmoon_la_SOURCES += swscale-converter.cpp
 libmooninclue_headers += swscale-converter.h
@@ -137,6 +131,12 @@ if INCLUDE_FFMPEG
 libmoon_la_SOURCES += pipeline-ffmpeg.cpp
 libmooninclue_headers += pipeline-ffmpeg.h
 endif
+
+EXTRA_DIST = \
+	alpha-premul-table.inc \
+	zip/README \
+	zip/ChangeLogUnzip \
+	$(libmooninclude_headers)
 
 libmoon_la_LIBADD = $(MOON_LIBS)
 
