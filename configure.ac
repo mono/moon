@@ -169,6 +169,9 @@ MS_DRTLIST=none
 if test -f $PWD/../moonlight-ms/tests/port/drop1030/built/drtlist.xml; then
    MS_DRTLIST=$PWD/../moonlight-ms/tests/port/drop1030/built/drtlist.xml
    AC_SUBST(MS_DRTLIST)
+elif test -f $PWD/../../extras/moonlight-ms/tests/port/drop1030/built/drtlist.xml; then
+   MS_DRTLIST=$PWD/../../extras/moonlight-ms/tests/port/drop1030/built/drtlist.xml
+   AC_SUBST(MS_DRTLIST)
 fi
 
 dnl

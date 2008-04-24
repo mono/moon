@@ -1,3 +1,7 @@
+2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* configure.ac: Add another directory to search for MS' drtlist.
+
 2008-04-24  Fernando Herrera  <fherrera@novell.com>
 
 	* class/Makefile.am: Fix "make -jN" build.
