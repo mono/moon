@@ -1,30 +1,238 @@
-AC_INIT([moon], [0.5])
+AC_INIT([moon],[0.5])
 AC_CONFIG_SRCDIR(README)
 AC_CANONICAL_SYSTEM
 
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE([tar-ustar])
 AM_MAINTAINER_MODE
+
 AC_PROG_CXX
 AC_HEADER_STDC
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
-
-# from berkman the genius
-changequote(,)dnl
-LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"--silent\" }')"
-changequote([,])dnl
 
 PKG_PROG_PKG_CONFIG
 
 AC_DEFINE(__STDC_CONSTANT_MACROS,[],[To make avformat work with C++])
 AC_DEFINE(__STDC_LIMIT_MACROS,[],[To get limits of specified-width integer types])
 
+AC_SEARCH_LIBS(clock_gettime,rt)
+
+dnl from berkman the genius
+changequote(,)dnl
+LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"--silent\" }')"
+changequote([,])dnl
+
+dnl
+dnl Pipeline checks
+dnl
+AC_ARG_WITH(ffmpeg,[  --with-ffmpeg=yes,no   If you want to enable support for ffmpeg],[],[with_ffmpeg=yes])
+AC_ARG_WITH(swscale,[  --with-swscale=no,yes   If you want to enable support for swscale],[],[with_swscale=no])
+AM_CONDITIONAL(INCLUDE_FFMPEG,test x$with_ffmpeg = xyes)
+AM_CONDITIONAL(INCLUDE_SWSCALE,test x$with_swscale = xyes)
+
+if test x$with_ffmpeg = xyes; then
+  AC_DEFINE([INCLUDE_FFMPEG],[1],[Include support for ffmpeg])
+  PKG_CHECK_MODULES(FFMPEG,[libavutil libavcodec])
+  if test x$with_swscale = xyes; then
+    AC_DEFINE([INCLUDE_SWSCALE],[1],[Include support for swscale])
+    PKG_CHECK_MODULES(SWSCALE,libswscale)
+  fi
+fi
+
+dnl
+dnl Mozilla checks
+dnl
+AC_ARG_WITH(ff3,[  --with-ff3=no,yes  If you want to build against firefox 3 on a machine with both ff2 and ff3 installed],[],[with_ff3=no])
+mozilla_nspr="nspr-missing"
+mozilla_nspr_pcs="nspr mozilla-nspr firefox-nspr xulrunner-nspr seamonkey-nspr"
+for pc in $mozilla_nspr_pcs; do
+  PKG_CHECK_EXISTS($pc,[mozilla_nspr=$pc])
+done
+mozilla_nss="nss-missing"
+mozilla_nss_pcs="nss mozilla-nss firefox-nss xulrunner-nss seamonkey-nss"
+for pc in $mozilla_nss_pcs; do
+  PKG_CHECK_EXISTS($pc,[mozilla_nss=$pc])
+done
+mozilla_xpcom="libxul-missing"
+mozilla_xpcom_pcs="libxul-unstable xpcom mozilla-xpcom firefox-xpcom xulrunner-xpcom"
+for pc in $mozilla_xpcom_pcs; do
+  PKG_CHECK_EXISTS($pc,[mozilla_xpcom=$pc])
+done
+mozilla_plugin="plugin-missing"
+mozilla_plugin_pcs="plugin mozilla-plugin firefox-plugin xulrunner-plugin"
+for pc in $mozilla_plugin_pcs; do
+  PKG_CHECK_EXISTS($pc,[mozilla_plugin=$pc])
+done
+
+if test x$mozilla_xpcom = "xlibxul-unstable"; then
+  with_ff3=yes
+fi
+if test x$with_ff3 = xyes; then
+  mozilla_xpcom="libxul-unstable mozilla-js"
+  AC_DEFINE([HAVE_LIBXUL_UNSTABLE],[1],[libxul-unstable support])
+fi
+PKG_CHECK_MODULES(MOZILLA,[$mozilla_xpcom $mozilla_nss $mozilla_nspr $mozilla_plugin])
+
+dnl
+dnl Mono (Silverlight 2.0) checks
+dnl
+AC_ARG_WITH(mono,[  --with-mono=yes,no   If you want to enable support for Silverlight 2.0],[],[with_mono=yes])
+if test x$with_mono = xyes; then
+  PKG_CHECK_MODULES(MONO,mono)
+  PKG_CHECK_MODULES(SMCS,smcs,
+		    [SMCS_ASM=`pkg-config --variable=Libraries smcs`
+		     AC_SUBST(SMCS_ASM)])
+  AC_DEFINE([INCLUDE_MONO_RUNTIME],[1],[Include the mono runtime in the build (and enable Silverlight 2.0 plugin usage)])
+  mono_libdir="$(pkg-config --variable=libdir mono)"
+  AC_SUBST([mono_libdir])
+fi
+AM_CONDITIONAL(INCLUDE_MONO_RUNTIME,test x$with_mono = xyes)
+
+dnl
+dnl Cairo checks
+dnl
+AC_ARG_WITH(cairo,[  --with-cairo=embedded,system   Enable linking against system cairo ],[],[with_cairo=embedded])
+if test x$with_cairo = xembedded; then
+  ac_configure_args="$ac_configure_args --with-pic=yes --disable-pdf --disable-svg --disable-ps --disable-png"
+  AC_CONFIG_SUBDIRS([pixman cairo])
+
+  # hackish but I couldn't get AC_EGREP_HEADER to work with our embedded cairo :(
+  if cat cairo/src/cairo.h | grep CAIRO_LINE_CAP_TRIANGLE >/dev/null 2>&1; then
+  	AC_DEFINE(HAVE_CAIRO_LINE_CAP_TRIANGLE,,Define if cairo has CAIRO_LINE_CAP_TRIANGLE as a cairo_line_cap_t enum member)
+  fi
+  CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
+  CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
+else
+  PKG_CHECK_MODULES(CAIRO,cairo >= 1.6)
+fi
+
+dnl
+dnl Gtk+ checks
+dnl
+PKG_CHECK_MODULES(GTK,gtk+-2.0)
+
+dnl
+dnl xrandr checks
+dnl
+PKG_CHECK_MODULES(XRANDR,xrandr,
+		  [AC_DEFINE([USE_RANDR],[1],[Include support for the XRANDR extension for querying a monitor's refresh rate])],[])
+
+dnl
+dnl sound checks
+dnl
+PKG_CHECK_MODULES(ALSA,alsa)
+
+dnl
+dnl font checks
+dnl
+PKG_CHECK_MODULES(FREETYPE2,freetype2)
+PKG_CHECK_MODULES(FONTCONFIG,fontconfig)
+
+dnl
+dnl gtk#/rsvg# checks
+dnl
+PKG_CHECK_MODULES(GTKSHARP,gtk-sharp-2.0)
+rsvg_sharp="rsvg-sharp-missing"
+rsvg_sharp_pcs="rsvg-sharp-2.0 rsvg2-sharp-2.0"
+for pc in $rsvg_sharp_pcs; do
+  PKG_CHECK_EXISTS($pc,[rsvg_sharp=$pc])
+done
+PKG_CHECK_MODULES(RSVGSHARP,$rsvg_sharp,[
+		  RSVG_SHARP=$rsvg_sharp
+		  AC_SUBST(RSVG_SHARP)])
+
+dnl
+dnl testing checks
+dnl
+with_testing=yes
+if test x$with_ff3 = xyes; then
+  PKG_CHECK_MODULES(XULRUNNER,[mozilla-gtkmozembed mozilla-js],,
+		  [with_testing=no])
+  AC_DEFINE([HAVE_GECKO_1_9],[1],[Gecko 1.9 support])
+else
+  PKG_CHECK_MODULES(XULRUNNER,xulrunner-gtkmozembed,,
+		  [with_testing=no])
+fi
+PKG_CHECK_MODULES(XTST,xtst,,
+		  [with_testing=no])
+PKG_CHECK_MODULES(IMAGEMAGICK,ImageMagick++,,
+		  [with_testing=no])
+PKG_CHECK_MODULES(DBUS_GLIB,dbus-glib-1,,
+		  [with_testing=no])
+PKG_CHECK_MODULES(NDESK_DBUS,ndesk-dbus-1.0,,
+		  [with_testing=no])
+AM_CONDITIONAL(INCLUDE_TESTING,test x$with_testing = xyes)
+
+MS_DRTLIST=none
+# Look to see if the MS tests are installed
+if test -f $PWD/../moonlight-ms/tests/port/drop1030/built/drtlist.xml; then
+   MS_DRTLIST=$PWD/../moonlight-ms/tests/port/drop1030/built/drtlist.xml
+   AC_SUBST(MS_DRTLIST)
+fi
+
+dnl
+dnl mmx/sse2 compiler checks
+dnl
+AC_COMPILE_IFELSE([
+int main () {
+        int i = 0;
+        int j = -1;
+        __asm__ __volatile__ (
+                "movd (%0), %%mm1;"
+                "movd %%mm1, (%1);"
+                : : "r" (&i), "r" (&j));
+        return j;
+}],AC_DEFINE(HAVE_MMX,1,[MMX support]))
+
+AC_COMPILE_IFELSE([
+#include <stdio.h>
+#include <string.h>
+int main () {
+	char buffer[[128]];
+	int j = 1;
+
+	memset(buffer, 0x0, 128);
+        __asm__ __volatile__ (
+                "movdqu (%0), %%xmm1;"
+                "movd %%xmm1, (%1);"
+                : : "r" (buffer), "r" (&j));
+        return (int)j;
+}],AC_DEFINE(HAVE_SSE2,1,[SSE2 support]))
+
+dnl
+dnl debug checks
+dnl
+AC_ARG_WITH(debug,[  --with-debug=yes,no.   If you want to enable debug support (default=yes)],[],[with_debug=yes])
+if test x$with_debug = xyes; then
+  DEBUG_OPTIONS="-fno-inline -g -fno-inline-functions"
+  CFLAGS=`echo $CFLAGS | sed 's/-O2//'`
+  CFLAGS="$DEBUG_OPTIONS $CFLAGS"
+  CXXFLAGS=`echo $CXXFLAGS | sed 's/-O2//'`
+  CXXFLAGS="$DEBUG_OPTIONS $CXXFLAGS"
+  AC_DEFINE([DEBUG],[1],[Include debugging support])
+fi
+
+dnl
+dnl plugin checks
+dnl
+AC_ARG_ENABLE(user-plugin,[  --enable-user-plugin    Build the plugin installer],
+			  [user_plugin=yes
+			   AC_DEFINE([PLUGIN_INSTALL],[1],[Load libraries from ~/.mozilla/plugins and build a Mozilla XPInstall file])
+			   avutil_libdir="$(pkg-config --variable=libdir libavutil)"
+			   avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
+			   swscale_libdir="$(pkg-config --variable=libdir libswscale)"
+			   AC_SUBST([avutil_libdir])
+			   AC_SUBST([avcodec_libdir])
+			   AC_SUBST([swscale_libdir])],
+			  [user_plugin=no])
+AM_CONDITIONAL([PLUGIN_INSTALL],[test x$user_plugin = xyes])
+
 dnl *************************************
 dnl *** Checks for large file support ***
 dnl *************************************
 AC_SYS_LARGEFILE
-AC_CACHE_CHECK([for _LARGEFILE64_SOURCE value needed for large files], largefile64_source,
+AC_CACHE_CHECK([for _LARGEFILE64_SOURCE value needed for large files],largefile64_source,
 [
    AC_TRY_COMPILE([
       #include <sys/types.h>
@@ -53,7 +261,7 @@ AC_CACHE_CHECK([for _LARGEFILE64_SOURCE value needed for large files], largefile
 if test "x$largefile64_source" = "xyes"; then
    LARGEFILE_CFLAGS="-D_LARGEFILE64_SOURCE=1"
 elif test "x$largefile64_source" = "xundefined"; then
-   AC_DEFINE(O_LARGEFILE, 0, [Define to 0 if your system does not have the O_LARGEFILE flag])
+   AC_DEFINE(O_LARGEFILE,0,[Define to 0 if your system does not have the O_LARGEFILE flag])
 fi
 
 if test -n "$ac_cv_sys_large_files" -a "x$ac_cv_sys_large_files" != "xno"; then
@@ -64,494 +272,33 @@ if test "x$ac_cv_sys_file_offset_bits" != "xno"; then
    LARGEFILE_CFLAGS="$LARGEFILE_CFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
 fi
 
-AC_SEARCH_LIBS(clock_gettime, rt)
-
-#
-# Debugging support
-#
-
-DEBUG=yes
-AC_ARG_WITH(debug, [  --with-debug=yes,no.   If you want to enable debug support (default=yes)],[
-	if test x$with_debug = xyes; then
-		DEBUG=yes
-	fi
-	if test x$with_debug = xno; then
-		DEBUG=no
-	fi
-])
-if test x$DEBUG = xyes; then
-AC_DEFINE([DEBUG], [1], [Include debugging support])
-fi
-
-#
-# Check for ffmpeg
-#
-
-FFMPEG=yes
-AC_ARG_WITH(ffmpeg,[  --with-ffmpeg=yes,no   If you want to enable support for ffmpeg ],[
-	if test x$with_ffmpeg = xyes; then
-		FFMPEG=yes
-	fi
-	if test x$with_ffmpeg = xno; then
-		FFMPEG=no
-	fi
-])
-
-if test x$FFMPEG = xyes; then
-AC_DEFINE([INCLUDE_FFMPEG], [1], [Include support for ffmpeg])
-fi
-AM_CONDITIONAL(INCLUDE_FFMPEG, test x$FFMPEG = xyes)
-
-SWSCALE=no
-AC_ARG_WITH(swscale,[  --with-swscale=yes,no   If you want to enable support for swscale ],[
-	if test x$with_swscale = xyes; then
-		SWSCALE=yes
-	fi
-	if test x$with_swscale = xno; then
-		SWSCALE=no
-	fi
-])
-
-if test x$SWSCALE = xyes; then
-AC_DEFINE([INCLUDE_SWSCALE], [1], [Include support for swscale])
-fi
-AM_CONDITIONAL(INCLUDE_SWSCALE, test x$SWSCALE = xyes)
-
-#
-# Check for mono
-#
-
-MONO_RUNTIME=yes
-AC_ARG_WITH(mono-runtime,[  --with-mono-runtime=yes,no   If you want to enable support for Silverlight 2.0],[
-	if test x$with_mono_runtime = xyes; then
-	      MONO_RUNTIME=yes
-	fi
-	if test x$with_mono_runtime = xno; then
-	      MONO_RUNTIME=no
-	fi
-])
-
-if test $MONO_RUNTIME = yes; then
-AC_DEFINE([INCLUDE_MONO_RUNTIME], [1], [Include the mono runtime in the build (and enable Silverlight 2.0 plugin usage)])
-fi
-AM_CONDITIONAL(INCLUDE_MONO_RUNTIME, test $MONO_RUNTIME = yes)
-
-AC_ARG_ENABLE(user-plugin, [AS_HELP_STRING([--enable-user-plugin], [Build the plugin as installable in ~/.mozilla/plugins])],
-[case "${enable_user_plugin}" in
-	yes) user_plugin=yes ;;
-	no) user_plugin=no ;;
-	*) AC_MSG_ERROR([bad value ${enable_user_plugin} for --enable-user-plugin]) ;;
-esac],[user_plugin=no])
-
-if test $user_plugin = yes; then
-AC_DEFINE([PLUGIN_INSTALL], [1], [Load libraries from ~/.mozilla/plugins and build a Mozilla XPInstall file])
-fi
-AM_CONDITIONAL(PLUGIN_INSTALL, [test $user_plugin = yes])
-
-AC_ARG_WITH(cairo,[  --with-cairo=embedded,system   Enable linking against system cairo ],[],[with_cairo=embedded])
-
-if test x$with_cairo = xembedded; then
-  ac_configure_args="$ac_configure_args --with-pic=yes --disable-pdf --disable-svg --disable-ps --disable-png"
-  AC_CONFIG_SUBDIRS([pixman cairo])
-
-  # hackish but I couldn't get AC_EGREP_HEADER to work with our embedded cairo :(
-  if cat cairo/src/cairo.h | grep CAIRO_LINE_CAP_TRIANGLE >/dev/null 2>&1; then
-  	AC_DEFINE(HAVE_CAIRO_LINE_CAP_TRIANGLE,,Define if cairo has CAIRO_LINE_CAP_TRIANGLE as a cairo_line_cap_t enum member)
-  fi
-  CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
-  CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
-else
-  PKG_CHECK_MODULES(CAIRO, cairo >= 1.6)
-  CAIRO_LIBS="`pkg-config --libs cairo `"
-  CAIRO_CFLAGS="`pkg-config --cflags cairo `"
-fi
-
-AC_MSG_CHECKING(Gtk+ 2.0)
-if pkg-config gtk+-2.0; then
-   AC_MSG_RESULT(found)
-else
-   AC_MSG_ERROR([Gtk+ 2.0 development kit is missing])
-fi
-
-AC_MSG_CHECKING(XRANDR extension)
-if pkg-config xrandr; then
-  AC_MSG_RESULT(found)
-  AC_DEFINE([USE_XRANDR], [1], [Include support for the XRANDR extension for querying a monitor's refresh rate)])
-  RANDR_PKG="xrandr"
-else
-  AC_MSG_RESULT(not found, using default max fps of 30)
-  RANDR_PKG=""
-fi
-
-#
-# these come from ffmpeg
-#
-if test x$FFMPEG = xyes; then
-	AC_MSG_CHECKING(libavcodec)
-	if pkg-config libavcodec; then
-	   AC_MSG_RESULT(found)
-	else
-	   AC_MSG_ERROR([ffmpeg and its associated libraries are not installed. You need libavcodec development kits])
-	fi
-
-	avutil_libdir="$(pkg-config --variable=libdir libavutil)"
-	avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
-
-	AC_SUBST([avutil_libdir])
-	AC_SUBST([avcodec_libdir])
-fi # ffmpeg
-
-if test x$SWSCALE = xyes; then
-	AC_MSG_CHECKING(libswscale)
-	if pkg-config libswscale ; then
-	   AC_MSG_RESULT(found)
-	else
-	   AC_MSG_ERROR([You need the libswscale development kit to enable swscale support])
-	fi
-	
-	swscale_libdir="$(pkg-config --variable=libdir libswscale)"
-	AC_SUBST([swscale_libdir])
-fi
-
-mono_libdir="$(pkg-config --variable=libdir mono)"
-mono_dlldir="$(pkg-config --variable=prefix mono)/lib"
-mono_sysconfdir="$(pkg-config --variable=sysconfdir mono)"
-
-AC_SUBST([mono_libdir])
-AC_SUBST([mono_dlldir])
-AC_SUBST([mono_sysconfdir])
-
-AC_MSG_CHECKING(alsa)
-if pkg-config alsa ; then
-   AC_MSG_RESULT(found)
-else
-   AC_MSG_ERROR([alsa development kit is missing])
-fi
-
-#
-# FontConfig and FreeType2 are used directly by the text rendering code (instead of going thru pango)
-#
-AC_MSG_CHECKING(freetype2)
-if pkg-config freetype2; then
-   AC_MSG_RESULT(found)
-else
-   AC_MSG_ERROR([freetype2 development kit is missing])
-fi
-
-AC_MSG_CHECKING(fontconfig)
-if pkg-config fontconfig; then
-   AC_MSG_RESULT(found)
-else
-   AC_MSG_ERROR([fontconfig development kit is missing.])
-fi
-
-
-if test $MONO_RUNTIME = "yes"; then
-AC_MSG_CHECKING(Mono)
-if pkg-config mono; then
-   AC_MSG_RESULT(found)
-
-   AC_MSG_CHECKING(smcs compiler)
-   if pkg-config --modversion smcs >& /dev/null; then
-      AC_MSG_RESULT(found)
-      SMCS_ASM=`pkg-config --variable=Libraries smcs`
-   else
-      tp=$prefix/lib/mono/2.1/smcs.exe;
-      if test -f $tp; then
-         SMCS_ASM=$tp
-      else
-         AC_MSG_ERROR([You are missing smcs])
-      fi
-   fi
-
-   AC_MSG_RESULT([found in $tp])
-   AC_SUBST(SMCS_ASM)
-else
-   AC_MSG_ERROR([You are missing Mono.  I was looking for the mono.pc file])
-fi
-
-AC_MSG_CHECKING(gtk-sharp-2.0)
-if pkg-config gtk-sharp-2.0; then
-   AC_MSG_RESULT(found)
-else
-   AC_MSG_ERROR([gtk-sharp bindings is missing])
-fi
-
-AC_MSG_CHECKING(rsvg-sharp-2.0)
-if pkg-config rsvg-sharp-2.0; then
-   AC_MSG_RESULT(found)
-   RSVG_SHARP="rsvg-sharp-2.0"
-else
-   AC_MSG_RESULT(not found)
-   AC_MSG_CHECKING(rsvg2-sharp-2.0)
-   if pkg-config rsvg2-sharp-2.0; then
-      AC_MSG_RESULT(found)
-      RSVG_SHARP="rsvg2-sharp-2.0"
-   else
-      AC_MSG_ERROR([rsvg-sharp bindings is missing])
-   fi
-fi
-
-AC_SUBST(RSVG_SHARP)
-
-MONO_PKGS="mono"
-
-fi # MONO_RUNTIME
-
-AC_MSG_CHECKING(Mozilla NSPR pkg-config module name)
-mozilla_nspr_pcs="nspr mozilla-nspr firefox-nspr xulrunner-nspr seamonkey-nspr"
-for pc in $mozilla_nspr_pcs; do
-	if $PKG_CONFIG --exists $pc; then
-		AC_MSG_RESULT($pc)
-		mozilla_nspr=$pc
-		break;
-	fi
-done
-
-if test -z $mozilla_nspr; then
-   AC_MSG_ERROR([You need to install the Mozilla NSPR development package.])
-fi
-
-AC_MSG_CHECKING(Mozilla NSS pkg-config module name)
-mozilla_nss_pcs="nss mozilla-nss firefox-nss xulrunner-nss seamonkey-nss"
-for pc in $mozilla_nss_pcs; do
-	if $PKG_CONFIG --exists $pc; then
-		AC_MSG_RESULT($pc)
-		mozilla_nss=$pc
-		break;
-	fi
-done
-
-if test -z $mozilla_nss; then
-   AC_MSG_ERROR([You need to install the Mozilla NSS development package.])
-fi
-
-AC_MSG_CHECKING(Mozilla libxul-unstable)
-if pkg-config libxul-unstable; then
-   AC_MSG_RESULT(found)
-   HAVE_LIBXUL_UNSTABLE=yes
-   mozilla_xpcom="libxul-unstable"
-else
-   HAVE_LIBXUL_UNSTABLE=no
-   AC_MSG_CHECKING(Mozilla XPCOM pkg-config module name)
-   mozilla_xpcom_pcs="xpcom mozilla-xpcom firefox-xpcom xulrunner-xpcom"
-   for pc in $mozilla_xpcom_pcs; do
-	if $PKG_CONFIG --exists $pc; then
-		AC_MSG_RESULT($pc)
-		mozilla_xpcom=$pc
-		break;
-	fi
-   done
-fi
-
-if test -z $mozilla_xpcom; then
-   AC_MSG_ERROR([You need to install the Mozilla XPCOM development packages.]) 
-fi
-
-if test $HAVE_LIBXUL_UNSTABLE = yes; then
-   AC_DEFINE(HAVE_LIBXUL_UNSTABLE, 1, [libxul support])
-fi
-
-
-AC_MSG_CHECKING(Mozilla PLUGIN pkg-config module name)
-mozilla_plugin_pcs="plugin mozilla-plugin firefox-plugin xulrunner-plugin"
-for pc in $mozilla_plugin_pcs; do
-	if $PKG_CONFIG --exists $pc; then
-		AC_MSG_RESULT($pc)
-		mozilla_plugin=$pc
-		break;
-	fi
-done
-
-if test -z $mozilla_plugin; then
-   AC_MSG_ERROR([You need to install the Mozilla PLUGIN development package.])
-fi
-
-# Testing support
-TESTING_SUPPORTED=yes
-AC_MSG_CHECKING(mozilla-gtkmozembed)
-if pkg-config mozilla-gtkmozembed; then
-   AC_MSG_RESULT(found)
-   mozilla_embed="mozilla-gtkmozembed mozilla-js"
-   HAVE_GECKO_1_9=yes
-else
-   AC_MSG_RESULT(missing)
-   HAVE_GECKO_1_9=no
-   AC_MSG_CHECKING(xulrunner-gtkmozembed)
-   if pkg-config xulrunner-gtkmozembed; then
-      AC_MSG_RESULT(found)
-      mozilla_embed="xulrunner-gtkmozembed"
-   else             
-      echo You need to install the Mozilla gtkmozembed development package if you want to run the Moonlight tests.
-      TESTING_SUPPORTED=no
-   fi
-fi
-
-if test $HAVE_GECKO_1_9 = yes; then
-   AC_DEFINE(HAVE_GECKO_1_9, 1, [Gecko 1.9])
-fi
-
-AC_MSG_CHECKING(xtst 1.0)
-if pkg-config xtst; then
-   XTST_CFLAGS="$(pkg-config --cflags xtst)"
-   XTST_LIBS="$(pkg-config --libs xtst)"
-   AC_MSG_RESULT(found)
-elif ls "$(pkg-config --variable=includedir xrender)/X11/extensions/XTest.h"; then
-   XTST_CFLAGS="-I$(pkg-config --variable=includedir xrender)"
-   XTST_LIBS="-L$(pkg-config --variable=libdir xrender) -lXtst"
-   AC_MSG_RESULT(found)
-else
-   echo You need to install XTEST if you want to run the Moonlight tests.
-   TESTING_SUPPORTED=no
-fi
-
-AC_MSG_CHECKING(ImageMagick++ 6.3.5)
-if pkg-config ImageMagick++; then
-   AC_MSG_RESULT(found)
-else
-   echo You need to install ImageMagick++ if you want to run the Moonlight tests.
-   TESTING_SUPPORTED=no
-fi
-
-AC_MSG_CHECKING(dbus-glib-1 0.74)
-if pkg-config dbus-glib-1; then
-   AC_MSG_RESULT(found)
-else
-   echo You need to install dbus-glib-1 if you want to run the Moonlight tests.
-   TESTING_SUPPORTED=no
-fi
-
-AC_MSG_CHECKING(ndesk-dbus-1.0 0.6.0)
-if pkg-config ndesk-dbus-1.0; then
-   AC_MSG_RESULT(found)
-else
-   echo You need to install ndesk-dbus if you want to run the Moonlight tests.
-   TESTING_SUPPORTED=no
-fi
-AM_CONDITIONAL(INCLUDE_TESTING, test $TESTING_SUPPORTED = yes)
-
-XPIDL=`pkg-config --variable=libdir $mozilla_xpcom`/xpidl
-XPFLAGS=-I`pkg-config --variable=includedir $mozilla_xpcom`
-
-AC_SUBST(XPIDL)
-AC_SUBST(XPFLAGS)
-
-HAVE_MMX=no
-AC_COMPILE_IFELSE([
-int main () {
-        int i = 0;
-        int j = -1;
-        __asm__ __volatile__ (
-                "movd (%0), %%mm1;"
-                "movd %%mm1, (%1);"
-                : : "r" (&i), "r" (&j));
-        return j;
-}], HAVE_MMX=yes)
-
-if test x$HAVE_MMX = xyes; then
-	AC_DEFINE(HAVE_MMX, 1, [MMX support])
-fi
-
-HAVE_SSE2=no
-AC_COMPILE_IFELSE([
-#include <stdio.h>
-#include <string.h>
-int main () {
-	char buffer[[128]];
-	int j = 1;
-
-	memset(buffer, 0x0, 128);
-        __asm__ __volatile__ (
-                "movdqu (%0), %%xmm1;"
-                "movd %%xmm1, (%1);"
-                : : "r" (buffer), "r" (&j));
-        return (int)j;
-}], HAVE_SSE2=yes)
-
-if test x$HAVE_SSE2 = xyes; then
-	AC_DEFINE(HAVE_SSE2, 1, [SSE2 support])
-fi
-
-if test x$FFMPEG = xyes; then
-FFMPEG_PKGS="libavcodec"
-else
-FFMPEG_PKGS=""
-fi
-
-if test x$SWSCALE = xyes; then
-SWSCALE_PKGS="libswscale"
-else
-SWSCALE_PKGS=""
-fi
-
-
-MOON_PKGS="gtk+-2.0 gthread-2.0 alsa freetype2 fontconfig $RANDR_PKG"
-MOON_CFLAGS="$LARGEFILE_CFLAGS $CAIRO_CFLAGS $(pkg-config --cflags $MOON_PKGS $FFMPEG_PKGS $SWSCALE_PKGS)"
-MOON_LIBS="$CAIRO_LIBS $(pkg-config --libs $MOON_PKGS)"
-
-if test $user_plugin != yes; then
-MOON_LIBS="$MOON_LIBS $(pkg-config --libs $FFMPEG_PKGS $SWSCALE_PKGS)"
-fi
-
-# Remove glitz from the link flags (should fix Bug 338506)
-MOON_LIBS="$(echo $MOON_LIBS | sed -e s/-lglitz//g)"
-
-AC_SUBST(MOON_CFLAGS)
-AC_SUBST(MOON_LIBS)
-
-PLUGIN_CFLAGS=`pkg-config --cflags gtk+-2.0 $mozilla_nspr $mozilla_xpcom $mozilla_plugin $MOON_PKGS $MONO_PKGS`
-PLUGIN_LIBS=`pkg-config --libs gtk+-2.0 $MOON_PKGS $MONO_PKGS`
-PLUGIN_CFLAGS="$PLUGIN_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
-
-# Remove glitz from the link flags (should fix Bug 338506)
-PLUGIN_LIBS="$(echo $PLUGIN_LIBS | sed -e s/-lglitz//g)"
-
-AC_SUBST(PLUGIN_CFLAGS)
-AC_SUBST(PLUGIN_LIBS)
-
-MOON_PROG_CFLAGS="`pkg-config --cflags $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS $SWSCALE_PKGS` -I\$(top_builddir)/src/"
-AC_SUBST(MOON_PROG_CFLAGS)
-
-MOON_PROG_LIBS="`pkg-config --libs $MOON_PKGS $MONO_PKGS $FFMPEG_PKGS $SWSCALE_PKGS` \$(top_builddir)/src/libmoon.la"
-AC_SUBST(MOON_PROG_LIBS)
-
-if test x$DEBUG = xyes; then
-	DEBUG_OPTIONS="-fno-inline -g -fno-inline-functions"
-	CFLAGS=`echo $CFLAGS | sed 's/-O2//'`
-	CFLAGS="$DEBUG_OPTIONS $CFLAGS"
-	CXXFLAGS=`echo $CXXFLAGS | sed 's/-O2//'`
-	CXXFLAGS="$DEBUG_OPTIONS $CXXFLAGS"
-fi
-
-#CFLAGS="$CFLAGS `pkg-config --cflags gtk+-2.0 libavcodec gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
-#CXXFLAGS="$CXXFLAGS `pkg-config --libs gtk+-2.0 libavcodec gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
-#LIBS="$LIBS `pkg-config --libs gtk+-2.0 libavcodec gthread-2.0 libswscale alsa $mozilla_nspr $mozilla_nss`"
-
-
-SHOCKER_CFLAGS="$(pkg-config --cflags glib-2.0 gdk-2.0 gtk+-2.0 ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin) $XTST_CFLAGS"
-SHOCKER_LIBS="$(pkg-config --libs glib-2.0 gdk-2.0 gtk+-2.0 ImageMagick++ dbus-glib-1 $mozilla_nspr $mozilla_xpcom $mozilla_plugin) $XTST_LIBS"
-
-AGVIEWER_CFLAGS=`pkg-config --cflags glib-2.0 gtk+-2.0 $mozilla_embed dbus-glib-1`
-AGVIEWER_LIBS=`pkg-config --libs glib-2.0 gtk+-2.0 $mozilla_embed dbus-glib-1`
-
-AC_SUBST(SHOCKER_CFLAGS)
-AC_SUBST(SHOCKER_LIBS)
-
+AGVIEWER_CFLAGS="$GTK_CFLAGS $DBUS_GLIB_CFLAGS $XULRUNNER_CFLAGS"
+AGVIEWER_LIBS="$GTK_LIBS $DBUS_GLIB_LIBS $XULRUNNER_LIBS"
 AC_SUBST(AGVIEWER_CFLAGS)
 AC_SUBST(AGVIEWER_LIBS)
 
+MOON_CFLAGS="$CAIRO_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $MONO_CFLAGS"
+MOON_LIBS="$CAIRO_LIBS $GTK_LIBS $ALSA_LIBS $FFMPEG_LIBS $SWSCALE_LIBS $MONO_LIBS"
+AC_SUBST(MOON_CFLAGS)
+AC_SUBST(MOON_LIBS)
 
-MS_DRTLIST=none
-# Look to see if the MS tests are installed
-if test -f $PWD/../moonlight-ms/tests/port/drop1030/built/drtlist.xml; then
-   MS_DRTLIST=$PWD/../moonlight-ms/tests/port/drop1030/built/drtlist.xml
-   AC_SUBST(MS_DRTLIST)
-fi
+MOON_PROG_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS -I\$(top_builddir)/src/"
+MOON_PROG_LIBS="$GTK_LIBS $ALSA_LIBS \$(top_builddir)/src/libmoon.la"
+AC_SUBST(MOON_PROG_CFLAGS)
+AC_SUBST(MOON_PROG_LIBS)
 
+PLUGIN_CFLAGS="$MOON_CFLAGS $MOZILLA_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
+PLUGIN_LIBS="$MOON_LIBS $MOZILLA_LIBS"
+AC_SUBST(PLUGIN_CFLAGS)
+AC_SUBST(PLUGIN_LIBS)
+
+SHOCKER_CFLAGS="$GTK_CFLAGS $DBUS_GLIB_CFLAGS $MOZILLA_CFLAGS $IMAGEMAGICK_CFLAGS"
+SHOCKER_LIBS="$GTK_LIBS $DBUS_GLIB_LIBS $MOZILLA_LIBS $IMAGEMAGICK_LIBS"
+AC_SUBST(SHOCKER_CFLAGS)
+AC_SUBST(SHOCKER_LIBS)
 
 AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
-#AC_SUBST(LIBS)
 
 AC_OUTPUT([
 moon.pc
@@ -600,14 +347,12 @@ cat <<EOF
 Moonlight configuration:
 
 	Support for 1.0: yes
-	Support for 2.0: $MONO_RUNTIME
-	Support for firefox3: $HAVE_LIBXUL_UNSTABLE
-	Support for ffmpeg: $FFMPEG
-	Support for swscale: $SWSCALE
-	Support for mmx: $HAVE_MMX
-	Support for sse2: $HAVE_SSE2
-	Support for running the test harness: $TESTING_SUPPORTED
-	Support for firefox plugin installer: $user_plugin
+	Support for 2.0: $with_mono
+	Support for ffmpeg: $with_ffmpeg
+	Support for swscale: $with_swscale
+	Support for running the test harness: $with_testing
+        Support for firefox plugin installer: $user_plugin
+        Support for firefox3: $with_ff3
 	Using cairo: $with_cairo
 
 EOF

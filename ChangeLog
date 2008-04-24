@@ -4,6 +4,11 @@
 
 2008-04-23  Geoff Norton  <gnorton@novell.com>
 
+	* configure.ac: Rewrite our configure.ac to be legible and 
+	maintainable.
+	
+2008-04-23  Geoff Norton  <gnorton@novell.com>
+
 	* configure.ac: More pango removal.
 	
 2008-04-23  Geoff Norton  <gnorton@novell.com>
