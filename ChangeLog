@@ -1,5 +1,9 @@
 2008-04-24  Geoff Norton  <gnorton@novell.com>
 
+	* configure.ac: Reinstate a few needed uglies for the plugin builder
+
+2008-04-24  Geoff Norton  <gnorton@novell.com>
+
 	* configure.ac: Autoconf treats [] as null.  Set a fake variable
 	to not abort execution if xrandr isn't present.
 

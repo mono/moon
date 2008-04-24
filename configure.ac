@@ -85,7 +85,11 @@ if test x$with_mono = xyes; then
 		     AC_SUBST(SMCS_ASM)])
   AC_DEFINE([INCLUDE_MONO_RUNTIME],[1],[Include the mono runtime in the build (and enable Silverlight 2.0 plugin usage)])
   mono_libdir="$(pkg-config --variable=libdir mono)"
+  mono_dlldir="$(pkg-config --variable=prefix mono)/lib" 
+  mono_sysconfdir="$(pkg-config --variable=sysconfdir mono)"
   AC_SUBST([mono_libdir])
+  AC_SUBST([mono_dlldir])
+  AC_SUBST([mono_sysconfdir])
 fi
 AM_CONDITIONAL(INCLUDE_MONO_RUNTIME,test x$with_mono = xyes)
 
