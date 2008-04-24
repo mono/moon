@@ -1,3 +1,8 @@
+2008-04-24  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Do a slightly more precise generation of key-spline
+	tables. Improves smoothness ie. in test-animation-slow-keyspline.xaml.
+
 2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp, media.h: MediaElement: add a handler for DownloaderFailed

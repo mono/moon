@@ -700,7 +700,7 @@ static void generate_table (Point p1, Point p2, Point p3, Point p4, unsigned cha
 	memset (table, 255, 257);
 	double t;
 
-	for (t = 0.0; t <= 1.0; t += 1.0 / 257.0) {
+	for (t = 0.0; t <= 1.0; t += 1.0 / 512.0) {
 		double y = p1.y * (1.0 - t) * (1.0 - t) * (1.0 - t) +
 			   p2.y * 3.0 * t * (1.0 - t) * (1.0 - t) +
 			   p3.y * 3.0 * t * t * (1.0 - t) +
