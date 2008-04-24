@@ -201,7 +201,7 @@ SolidColorBrush::SolidColorBrush (const char *color)
 void
 SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement)
 {
-	double opacity = GetValue (Brush::OpacityProperty)->AsDouble ();
+	double opacity = GetOpacity ();
 	Color *color = GetColor ();
 	
 	cairo_set_source_rgba (cr, color->r, color->g, color->b, opacity * color->a);
@@ -940,7 +940,8 @@ TileBrush::SetStretch (Stretch stretch)
 	SetValue (TileBrush::StretchProperty, Value (stretch));
 }
 
-Stretch TileBrush::GetStretch ()
+Stretch
+TileBrush::GetStretch ()
 {
 	return (Stretch) GetValue (TileBrush::StretchProperty)->AsInt32 ();
 }
@@ -1000,8 +1001,10 @@ void
 ImageBrush::image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	ImageBrush *brush = (ImageBrush*)closure;
-	double progress = brush->image->GetValue (Image::DownloadProgressProperty)->AsDouble();
-	brush->SetValue (ImageBrush::DownloadProgressProperty, Value (progress));
+	double progress = brush->image->GetDownloadProgress ();
+	
+	brush->SetDownloadProgress (progress);
+	
 	brush->Emit (ImageBrush::DownloadProgressChangedEvent);
 }
 
@@ -1423,7 +1426,7 @@ DependencyProperty *VisualBrush::VisualProperty;
 void
 VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
-	UIElement *ui = (UIElement*)GetValue (VisualBrush::VisualProperty)->AsVisual ();
+	UIElement *ui = (UIElement *) GetVisual ();
 	if (!ui) {
 		// not yet available, draw gray-ish shadow where the brush should be applied
 		cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.5);
