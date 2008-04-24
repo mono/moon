@@ -1,5 +1,9 @@
 2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* src.mdp: Updated.
+
+2008-04-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp, pipeline.cpp, pipeline.h: Addded
 	  ProgressiveSource::NotifyFinished to notify that the download has
 	  finished. This is required for streaming downloads which download 0

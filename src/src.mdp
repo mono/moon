@@ -71,8 +71,6 @@
     <File name="list.cpp" subtype="Code" buildaction="Compile" />
     <File name="list.h" subtype="Code" buildaction="Nothing" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="mango.cpp" subtype="Code" buildaction="Compile" />
-    <File name="mango.h" subtype="Code" buildaction="Nothing" />
     <File name="media.cpp" subtype="Code" buildaction="Compile" />
     <File name="media.h" subtype="Code" buildaction="Nothing" />
     <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />
