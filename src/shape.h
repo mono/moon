@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * shape.h: This match the classes inside System.Windows.Shapes
  *
@@ -68,22 +69,25 @@ class Shape : public FrameworkElement {
 	Rect ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds);
 	Point ComputeOriginPoint (Rect shape_bounds);
 	Rect extents;
+	
+	double *GetStrokeDashArray (int *n);
+	
  public: 
-	static DependencyProperty* FillProperty;
-	static DependencyProperty* StretchProperty;
-	static DependencyProperty* StrokeProperty;
-	static DependencyProperty* StrokeDashArrayProperty;
-	static DependencyProperty* StrokeDashCapProperty;
-	static DependencyProperty* StrokeDashOffsetProperty;
-	static DependencyProperty* StrokeEndLineCapProperty;
-	static DependencyProperty* StrokeLineJoinProperty;
-	static DependencyProperty* StrokeMiterLimitProperty;
-	static DependencyProperty* StrokeStartLineCapProperty;
-	static DependencyProperty* StrokeThicknessProperty;
-
+	static DependencyProperty *FillProperty;
+	static DependencyProperty *StretchProperty;
+	static DependencyProperty *StrokeProperty;
+	static DependencyProperty *StrokeDashArrayProperty;
+	static DependencyProperty *StrokeDashCapProperty;
+	static DependencyProperty *StrokeDashOffsetProperty;
+	static DependencyProperty *StrokeEndLineCapProperty;
+	static DependencyProperty *StrokeLineJoinProperty;
+	static DependencyProperty *StrokeMiterLimitProperty;
+	static DependencyProperty *StrokeStartLineCapProperty;
+	static DependencyProperty *StrokeThicknessProperty;
+	
 	Shape ();
 	virtual Type::Kind GetObjectType () { return Type::SHAPE; };
-
+	
 	//
 	// Overrides from UIElement.
 	//
@@ -93,17 +97,16 @@ class Shape : public FrameworkElement {
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint () { return origin; }
-
+	
 	Rect ComputeLargestRectangleBounds ();
 	
 	//
 	// new virtual methods for shapes
 	//
-	
 	virtual bool IsStroked () { return stroke; }
 	virtual bool CanFill () { return false; }
 	virtual FillRule GetFillRule () { return FillRuleNonzero; }
-
+	
 	//
 	// Draw: draws the Shape in the cairo context (affine transforms are set before this
 	// is called). 
@@ -129,28 +132,74 @@ class Shape : public FrameworkElement {
 	bool HasRadii () { return (flags & UIElement::SHAPE_RADII); };
 	void SetShapeFlags (UIElementFlags sf) { flags &= ~UIElement::SHAPE_MASK; flags |= sf; };
 	void AddShapeFlags (UIElementFlags sf) { flags |= sf; };
+	
+	//
+	// Property Accessors
+	//
+	void SetFill (Brush *fill);
+	Brush *GetFill ();
+	
+	void SetStroke (Brush *stroke);
+	Brush *GetStroke ();
+	
+	void SetStretch (Stretch stretch);
+	Stretch GetStretch ();
+	
+	void SetStrokeDashArray (double *dashes, int n);
+	
+	void SetStrokeDashCap (PenLineCap cap);
+	PenLineCap GetStrokeDashCap ();
+	
+	void SetStrokeDashOffset (double offset);
+	double GetStrokeDashOffset ();
+	
+	void SetStrokeEndLineCap (PenLineCap cap);
+	PenLineCap GetStrokeEndLineCap ();
+	
+	void SetStrokeLineJoin (PenLineJoin join);
+	PenLineJoin GetStrokeLineJoin ();
+	
+	void SetStrokeMiterLimit (double limit);
+	double GetStrokeMiterLimit ();
+	
+	void SetStrokeStartLineCap (PenLineCap cap);
+	PenLineCap GetStrokeStartLineCap ();
+	
+	void SetStrokeThickness (double thickness);
+	double GetStrokeThickness ();
 };
+
 
 Brush	       *shape_get_fill			(Shape *shape);
 void		shape_set_fill			(Shape *shape, Brush *value);
+
 Brush	       *shape_get_stroke		(Shape *shape);
 void		shape_set_stroke		(Shape *shape, Brush *value);
+
 Stretch		shape_get_stretch		(Shape *shape);
 void		shape_set_stretch		(Shape *shape, Stretch value);
+
 PenLineCap	shape_get_stroke_dash_cap	(Shape *shape);
 void		shape_set_stroke_dash_cap	(Shape *shape, PenLineCap value);
+
 PenLineCap	shape_get_stroke_start_line_cap	(Shape *shape);
 void		shape_set_stroke_start_line_cap	(Shape *shape, PenLineCap value);
+
 PenLineCap	shape_get_stroke_end_line_cap	(Shape *shape);
 void		shape_set_stroke_end_line_cap	(Shape *shape, PenLineCap value);
+
 double		shape_get_stroke_dash_offset	(Shape *shape);
 void		shape_set_stroke_dash_offset	(Shape *shape, double value);
+
 double		shape_get_stroke_miter_limit	(Shape *shape);
 void		shape_set_stroke_miter_limit	(Shape *shape, double value);
+
 double		shape_get_stroke_thickness	(Shape *shape);
 void		shape_set_stroke_thickness	(Shape *shape, double value);
+
 PenLineJoin	shape_get_stroke_line_join	(Shape *shape);
 void		shape_set_stroke_line_join	(Shape *shape, PenLineJoin value);
+
 double	       *shape_get_stroke_dash_array	(Shape *shape, int *count);
 void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
 

@@ -92,17 +92,17 @@ convert_fill_rule (FillRule fill_rule)
 // Shape
 //
 
-DependencyProperty* Shape::FillProperty;
-DependencyProperty* Shape::StretchProperty;
-DependencyProperty* Shape::StrokeProperty;
-DependencyProperty* Shape::StrokeDashArrayProperty;
-DependencyProperty* Shape::StrokeDashCapProperty;
-DependencyProperty* Shape::StrokeDashOffsetProperty;
-DependencyProperty* Shape::StrokeEndLineCapProperty;
-DependencyProperty* Shape::StrokeLineJoinProperty;
-DependencyProperty* Shape::StrokeMiterLimitProperty;
-DependencyProperty* Shape::StrokeStartLineCapProperty;
-DependencyProperty* Shape::StrokeThicknessProperty;
+DependencyProperty *Shape::FillProperty;
+DependencyProperty *Shape::StretchProperty;
+DependencyProperty *Shape::StrokeProperty;
+DependencyProperty *Shape::StrokeDashArrayProperty;
+DependencyProperty *Shape::StrokeDashCapProperty;
+DependencyProperty *Shape::StrokeDashOffsetProperty;
+DependencyProperty *Shape::StrokeEndLineCapProperty;
+DependencyProperty *Shape::StrokeLineJoinProperty;
+DependencyProperty *Shape::StrokeMiterLimitProperty;
+DependencyProperty *Shape::StrokeStartLineCapProperty;
+DependencyProperty *Shape::StrokeThicknessProperty;
 
 Shape::Shape ()
 {
@@ -161,7 +161,7 @@ Shape::Draw (cairo_t *cr)
 bool
 Shape::SetupLine (cairo_t *cr)
 {
-	double thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+	double thickness = GetStrokeThickness ();
 	
 	// check if something will be drawn or return 
 	// note: override this method if cairo is used to compute bounds
@@ -179,14 +179,14 @@ Shape::SetupLine (cairo_t *cr)
 bool
 Shape::SetupDashes (cairo_t *cr, double thickness)
 {
-	return Shape::SetupDashes (cr, thickness, GetValue (Shape::StrokeDashOffsetProperty)->AsDouble () * thickness);
+	return Shape::SetupDashes (cr, thickness, GetStrokeDashOffset () * thickness);
 }
 
 bool
 Shape::SetupDashes (cairo_t *cr, double thickness, double offset)
 {
 	int count = 0;
-	double *dashes = shape_get_stroke_dash_array (this, &count);
+	double *dashes = GetStrokeDashArray (&count);
 	if (dashes && (count > 0)) {
 		// NOTE: special case - if we continue cairo will stops drawing!
 		if ((count == 1) && (*dashes == 0.0))
@@ -209,7 +209,7 @@ void
 Shape::SetupLineCaps (cairo_t *cr)
 {
 	// Setting the cap to dash_cap. the endcaps (if different) are handled elsewhere
-	PenLineCap cap = (PenLineCap) GetValue (Shape::StrokeDashCapProperty)->AsInt32 ();
+	PenLineCap cap = GetStrokeDashCap ();
 	
 	cairo_set_line_cap (cr, convert_line_cap (cap));
 }
@@ -217,8 +217,8 @@ Shape::SetupLineCaps (cairo_t *cr)
 void
 Shape::SetupLineJoinMiter (cairo_t *cr)
 {
-	PenLineJoin join = (PenLineJoin) GetValue (Shape::StrokeLineJoinProperty)->AsInt32 ();
-	double limit = GetValue (Shape::StrokeMiterLimitProperty)->AsDouble ();
+	PenLineJoin join = GetStrokeLineJoin ();
+	double limit = GetStrokeMiterLimit ();
 	
 	cairo_set_line_join (cr, convert_line_join (join));
 	cairo_set_miter_limit (cr, limit);
@@ -274,7 +274,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		return shape_bounds;
 	}
 
-	Stretch stretch = (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
+	Stretch stretch = GetStretch ();
 	if (stretch != StretchNone) {
 		bool adj_x = logical_bounds.w != 0.0;
 		bool adj_y = logical_bounds.h != 0.0;
@@ -320,6 +320,9 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		case StretchUniformToFill:
 			sw = sh = (sw > sh) ? sw : sh;
 			break;
+		default:
+			/* not reached */
+			break;
 		}
 
 		// end of the 2nd pass code
@@ -343,22 +346,21 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 					adj_x ? -shape_bounds.w * 0.5 : 0, 
 					adj_y ? -shape_bounds.h * 0.5 : 0);
 
-		if (!this->Is (Type::LINE) || (vh && vw))
+		if (!Is (Type::LINE) || (vh && vw))
 			cairo_matrix_translate (&stretch_transform, -x, -y);
-
+		
 		// Double check our math
 		cairo_matrix_t test = stretch_transform;
 		if (cairo_matrix_invert (&test)) {
 			g_warning ("Unable to compute stretch transform %f %f %f %f \n", sw, sh, shape_bounds.x, shape_bounds.y);
 		}		
 	}
-
+	
 	shape_bounds = shape_bounds.Transform (&stretch_transform);
-
-	if (vh && vw) {
+	
+	if (vh && vw)
 		shape_bounds = shape_bounds.Intersection (Rect (0, 0, vw->AsDouble (), vh->AsDouble ()));
-	}
-
+	
 	return shape_bounds;
 }
 
@@ -382,7 +384,7 @@ void
 Shape::Clip (cairo_t *cr)
 {
 	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
-	Stretch stretch = (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
+	Stretch stretch = GetStretch ();
 	
 	if (ClipOnHeightAndWidth () || (!IsDegenerate () && (stretch == StretchUniformToFill))) {
 		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
@@ -573,9 +575,9 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 {
 	cairo_save (cr);
 	
-	Value* clip_geometry = GetValue (UIElement::ClipProperty);
+	Value *clip_geometry = GetValue (UIElement::ClipProperty);
 	if (clip_geometry) {
-		Geometry* clip = clip_geometry->AsGeometry ();
+		Geometry *clip = clip_geometry->AsGeometry ();
 		if (clip) {
 			clip->Draw (NULL, cr);
 			cairo_clip (cr);
@@ -700,129 +702,50 @@ Shape::InvalidateSurfaceCache (void)
 	}
 }
 
-Brush *
-shape_get_fill (Shape *shape)
+void
+Shape::SetFill (Brush *fill)
 {
-	Value *value = shape->GetValue (Shape::FillProperty);
-	return (value ? value->AsBrush() : NULL);
-}
-
-void 
-shape_set_fill (Shape *shape, Brush *value)
-{
-	shape->SetValue (Shape::FillProperty, Value (value));
+	SetValue (Shape::FillProperty, Value (fill));
 }
 
 Brush *
-shape_get_stroke (Shape *shape)
+Shape::GetFill ()
 {
-	Value *value = shape->GetValue (Shape::StrokeProperty);
-	return (value ? value->AsBrush() : NULL);
+	Value *value = GetValue (Shape::FillProperty);
+	
+	return value ? value->AsBrush () : NULL;
 }
 
-void 
-shape_set_stroke (Shape *shape, Brush *value)
+void
+Shape::SetStroke (Brush *stroke)
 {
-	shape->SetValue (Shape::StrokeProperty, Value (value));
+	SetValue (Shape::StrokeProperty, Value (stroke));
+}
+
+Brush *
+Shape::GetStroke ()
+{
+	Value *value = GetValue (Shape::StrokeProperty);
+	
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+Shape::SetStretch (Stretch stretch)
+{
+	SetValue (Shape::StretchProperty, Value (stretch));
 }
 
 Stretch
-shape_get_stretch (Shape *shape)
+Shape::GetStretch ()
 {
-	return (Stretch) shape->GetValue (Shape::StretchProperty)->AsInt32();
+	return (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
 }
 
 void
-shape_set_stretch (Shape *shape, Stretch value)
+Shape::SetStrokeDashArray (double *dashes, int n)
 {
-	shape->SetValue (Shape::StretchProperty, Value (value));
-}
-
-PenLineCap
-shape_get_stroke_dash_cap (Shape *shape)
-{
-	return (PenLineCap) shape->GetValue (Shape::StrokeDashCapProperty)->AsInt32();
-}
-
-void
-shape_set_stroke_dash_cap (Shape *shape, PenLineCap value)
-{
-	shape->SetValue (Shape::StrokeDashCapProperty, Value (value));
-}
-
-PenLineCap
-shape_get_stroke_start_line_cap (Shape *shape)
-{
-	return (PenLineCap) shape->GetValue (Shape::StrokeStartLineCapProperty)->AsInt32();
-}
-
-void
-shape_set_stroke_start_line_cap (Shape *shape, PenLineCap value)
-{
-	shape->SetValue (Shape::StrokeStartLineCapProperty, Value (value));
-}
-
-PenLineCap
-shape_get_stroke_end_line_cap (Shape *shape)
-{
-	return (PenLineCap) shape->GetValue (Shape::StrokeEndLineCapProperty)->AsInt32();
-}
-
-void
-shape_set_stroke_end_line_cap (Shape *shape, PenLineCap value)
-{
-	shape->SetValue (Shape::StrokeEndLineCapProperty, Value (value));
-}
-
-double
-shape_get_stroke_dash_offset (Shape *shape)
-{
-	return shape->GetValue (Shape::StrokeDashOffsetProperty)->AsDouble();
-}
-
-void
-shape_set_stroke_dash_offset (Shape *shape, double value)
-{
-	shape->SetValue (Shape::StrokeDashOffsetProperty, Value (value));
-}
-
-double
-shape_get_stroke_miter_limit (Shape *shape)
-{
-	return shape->GetValue (Shape::StrokeMiterLimitProperty)->AsDouble();
-}
-
-void
-shape_set_stroke_miter_limit (Shape *shape, double value)
-{
-	shape->SetValue (Shape::StrokeMiterLimitProperty, Value (value));
-}
-
-double
-shape_get_stroke_thickness (Shape *shape)
-{
-	if (!shape)
-		return 0.0;
-
-	return shape->GetValue (Shape::StrokeThicknessProperty)->AsDouble();
-}
-
-void
-shape_set_stroke_thickness (Shape *shape, double value)
-{
-	shape->SetValue (Shape::StrokeThicknessProperty, Value (value));
-}
-
-PenLineJoin
-shape_get_stroke_line_join (Shape *shape)
-{
-	return (PenLineJoin) shape->GetValue (Shape::StrokeLineJoinProperty)->AsInt32();
-}
-
-void
-shape_set_stroke_line_join (Shape *shape, PenLineJoin value)
-{
-	shape->SetValue (Shape::StrokeLineJoinProperty, Value (value));
+	SetValue (Shape::StrokeDashArrayProperty, Value (dashes, n));
 }
 
 /*
@@ -830,25 +753,234 @@ shape_set_stroke_line_join (Shape *shape, PenLineJoin value)
  * Silverlight Shape.StrokeDashArray only has a setter (no getter), so it's 
  * use is only internal.
  */
-double*
-shape_get_stroke_dash_array (Shape *shape, int *count)
+double *
+Shape::GetStrokeDashArray (int *n)
 {
-	Value *value = shape->GetValue (Shape::StrokeDashArrayProperty);
+	Value *value = GetValue (Shape::StrokeDashArrayProperty);
+	
 	if (!value) {
-		*count = 0;
+		*n = 0;
 		return NULL;
 	}
-
-	DoubleArray *da = value->AsDoubleArray();
-	*count = da->basic.count;
-	return da->values;
+	
+	DoubleArray *array = value->AsDoubleArray ();
+	*n = array->basic.count;
+	
+	return array->values;
 }
 
 void
-shape_set_stroke_dash_array (Shape *shape, double* dashes, int count)
+Shape::SetStrokeDashCap (PenLineCap cap)
 {
-	shape->SetValue (Shape::StrokeDashArrayProperty, Value (dashes, count));
+	SetValue (Shape::StrokeDashCapProperty, Value (cap));
 }
+
+PenLineCap
+Shape::GetStrokeDashCap ()
+{
+	return (PenLineCap) GetValue (Shape::StrokeDashCapProperty)->AsInt32 ();
+}
+
+void
+Shape::SetStrokeDashOffset (double offset)
+{
+	SetValue (Shape::StrokeDashOffsetProperty, Value (offset));
+}
+
+double
+Shape::GetStrokeDashOffset ()
+{
+	return GetValue (Shape::StrokeDashOffsetProperty)->AsDouble ();
+}
+
+void
+Shape::SetStrokeEndLineCap (PenLineCap cap)
+{
+	SetValue (Shape::StrokeEndLineCapProperty, Value (cap));
+}
+
+PenLineCap
+Shape::GetStrokeEndLineCap ()
+{
+	return (PenLineCap) GetValue (Shape::StrokeEndLineCapProperty)->AsInt32 ();
+}
+
+void
+Shape::SetStrokeLineJoin (PenLineJoin join)
+{
+	SetValue (Shape::StrokeLineJoinProperty, Value (join));
+}
+
+PenLineJoin
+Shape::GetStrokeLineJoin ()
+{
+	return (PenLineJoin) GetValue (Shape::StrokeLineJoinProperty)->AsInt32 ();
+}
+
+void
+Shape::SetStrokeMiterLimit (double limit)
+{
+	SetValue (Shape::StrokeMiterLimitProperty, Value (limit));
+}
+
+double
+Shape::GetStrokeMiterLimit ()
+{
+	return GetValue (Shape::StrokeMiterLimitProperty)->AsDouble ();
+}
+
+void
+Shape::SetStrokeStartLineCap (PenLineCap cap)
+{
+	SetValue (Shape::StrokeStartLineCapProperty, Value (cap));
+}
+
+PenLineCap
+Shape::GetStrokeStartLineCap ()
+{
+	return (PenLineCap) GetValue (Shape::StrokeStartLineCapProperty)->AsInt32 ();
+}
+
+void
+Shape::SetStrokeThickness (double thickness)
+{
+	SetValue (Shape::StrokeThicknessProperty, Value (thickness));
+}
+
+double
+Shape::GetStrokeThickness ()
+{
+	return GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+}
+
+
+Brush *
+shape_get_fill (Shape *shape)
+{
+	return shape->GetFill ();
+}
+
+void 
+shape_set_fill (Shape *shape, Brush *fill)
+{
+	shape->SetFill (fill);
+}
+
+Brush *
+shape_get_stroke (Shape *shape)
+{
+	return shape->GetStroke ();
+}
+
+void 
+shape_set_stroke (Shape *shape, Brush *stroke)
+{
+	shape->SetStroke (stroke);
+}
+
+Stretch
+shape_get_stretch (Shape *shape)
+{
+	return shape->GetStretch ();
+}
+
+void
+shape_set_stretch (Shape *shape, Stretch stretch)
+{
+	shape->SetStretch (stretch);
+}
+
+void
+shape_set_stroke_dash_array (Shape *shape, double *dashes, int n)
+{
+	shape->SetStrokeDashArray (dashes, n);
+}
+
+PenLineCap
+shape_get_stroke_dash_cap (Shape *shape)
+{
+	return shape->GetStrokeDashCap ();
+}
+
+void
+shape_set_stroke_dash_cap (Shape *shape, PenLineCap cap)
+{
+	shape->SetStrokeDashCap (cap);
+}
+
+double
+shape_get_stroke_dash_offset (Shape *shape)
+{
+	return shape->GetValue (Shape::StrokeDashOffsetProperty)->AsDouble ();
+}
+
+void
+shape_set_stroke_dash_offset (Shape *shape, double offset)
+{
+	shape->SetStrokeDashOffset (offset);
+}
+
+PenLineCap
+shape_get_stroke_end_line_cap (Shape *shape)
+{
+	return shape->GetStrokeEndLineCap ();
+}
+
+void
+shape_set_stroke_end_line_cap (Shape *shape, PenLineCap cap)
+{
+	shape->SetStrokeEndLineCap (cap);
+}
+
+PenLineJoin
+shape_get_stroke_line_join (Shape *shape)
+{
+	return shape->GetStrokeLineJoin ();
+}
+
+void
+shape_set_stroke_line_join (Shape *shape, PenLineJoin join)
+{
+	shape->SetStrokeLineJoin (join);
+}
+
+double
+shape_get_stroke_miter_limit (Shape *shape)
+{
+	return shape->GetStrokeMiterLimit ();
+}
+
+void
+shape_set_stroke_miter_limit (Shape *shape, double limit)
+{
+	shape->SetStrokeMiterLimit (limit);
+}
+
+PenLineCap
+shape_get_stroke_start_line_cap (Shape *shape)
+{
+	return shape->GetStrokeStartLineCap ();
+}
+
+void
+shape_set_stroke_start_line_cap (Shape *shape, PenLineCap cap)
+{
+	shape->SetStrokeStartLineCap (cap);
+}
+
+double
+shape_get_stroke_thickness (Shape *shape)
+{
+	return shape->GetStrokeThickness ();
+}
+
+void
+shape_set_stroke_thickness (Shape *shape, double thickness)
+{
+	shape->SetStrokeThickness (thickness);
+}
+
+
 
 //
 // Ellipse
@@ -856,7 +988,7 @@ shape_set_stroke_dash_array (Shape *shape, double* dashes, int count)
 
 Ellipse::Ellipse ()
 {
-	SetValue (Shape::StretchProperty, Value (StretchFill));
+	SetStretch (StretchFill);
 }
 
 // The Ellipse shape can be drawn while ignoring properties:
@@ -889,8 +1021,8 @@ Ellipse::BuildPath ()
 	if (Shape::MixedHeightWidth (&height, &width))
 		return;
 
-	Stretch stretch = (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
-	double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+	Stretch stretch = GetStretch ();
+	double t = GetStrokeThickness ();
 	double x = 0.0;
 	double y = 0.0;
 	double w = 0.0;
@@ -969,7 +1101,7 @@ shape:
 Rect
 Ellipse::ComputeLargestRectangle ()
 {
-	double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+	double t = GetStrokeThickness ();
 	double x = (GetWidth () - t) * cos (M_PI_2);
 	double y = (GetHeight () - t) * sin (M_PI_2);
 	return ComputeShapeBounds (false).GrowBy (-x, -y).RoundIn ();
@@ -1005,7 +1137,7 @@ DependencyProperty* Rectangle::RadiusYProperty;
 
 Rectangle::Rectangle ()
 {
-	SetValue (Shape::StretchProperty, Value (StretchFill));
+	SetStretch (StretchFill);
 }
 
 // The Rectangle shape can be drawn while ignoring properties:
@@ -1048,8 +1180,8 @@ Rectangle::BuildPath ()
 	if (Shape::MixedHeightWidth (&height, &width))
 		return;
 
-	Stretch stretch = (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
-	double t = IsStroked () ? GetValue (Shape::StrokeThicknessProperty)->AsDouble () : 0.0;
+	Stretch stretch = GetStretch ();
+	double t = IsStroked () ? GetStrokeThickness () : 0.0;
 	
 	// nothing is drawn (nor filled) if no StrokeThickness="0"
 	// unless both Width and Height are specified or when no streching is required
@@ -1205,7 +1337,7 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Rectangle::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	switch (GetValue (Shape::StretchProperty)->AsInt32 ()) {
+	switch (GetStretch ()) {
 	case StretchUniform:
 		*width = *height = (extents.w < extents.h) ? extents.w : extents.h;
 		break;
@@ -1236,7 +1368,7 @@ Rectangle::GetRadius (double *rx, double *ry)
 Rect
 Rectangle::ComputeLargestRectangle ()
 {
-	double x = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+	double x = GetStrokeThickness ();
 	double y = x;
 	if (HasRadii ()) {
 		x += GetValue (Rectangle::RadiusXProperty)->AsDouble ();
@@ -1354,12 +1486,12 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 		return false;
 
 	// here we hack around #345888 where Cairo doesn't support different start and end linecaps
-	PenLineCap start = (PenLineCap) GetValue (Shape::StrokeStartLineCapProperty)->AsInt32 ();
-	PenLineCap end = (PenLineCap) GetValue (Shape::StrokeEndLineCapProperty)->AsInt32 ();
-	PenLineCap dash = (PenLineCap) GetValue (Shape::StrokeDashCapProperty)->AsInt32 ();
+	PenLineCap start = GetStrokeStartLineCap ();
+	PenLineCap end = GetStrokeEndLineCap ();
+	PenLineCap dash = GetStrokeDashCap ();
 	bool dashed = false;
 	int count = 0;
-	double *dashes = shape_get_stroke_dash_array (this, &count);
+	double *dashes = GetStrokeDashArray (&count);
 	
 	if (dashes && (count > 0))
 		dashed = true;
@@ -1378,8 +1510,8 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 		
 		if (end != PenLineCapFlat) {
 			//don't draw the end cap if it's in an "off" segment
-			double thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
-			double offset = GetValue (Shape::StrokeDashOffsetProperty)->AsDouble ();
+			double thickness = GetStrokeThickness ();
+			double offset = GetStrokeDashOffset ();
 			
 			SetupDashes (cr, thickness, sqrt ((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)) + offset * thickness);
 			line_draw_cap (cr, this, end, x2, y2, x1, y1);
@@ -1453,7 +1585,7 @@ Line::ComputeShapeBounds (bool logical)
 
 	double thickness;
 	if (!logical)
-		thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+		thickness = GetStrokeThickness ();
 	else
 		thickness = 0.0;
 	
@@ -1719,7 +1851,7 @@ Polygon::ComputeShapeBounds (bool logical)
 	
 	double thickness;
 	if (!logical)
-		thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+		thickness = GetStrokeThickness ();
 	else
 		thickness = 0.0;
 	
@@ -1799,7 +1931,7 @@ Polygon::BuildPath ()
 
 	// special case, both the starting and ending points are 5 * thickness than the actual points
 	if (count == 2) {
-		double thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+		double thickness = GetStrokeThickness ();
 		double x1 = points [0].x;
 		double y1 = points [0].y;
 		double x2 = points [1].x;
@@ -1914,9 +2046,9 @@ Polyline::DrawShape (cairo_t *cr, bool do_op)
 	SetupLineJoinMiter (cr);
 
 	// here we hack around #345888 where Cairo doesn't support different start and end linecaps
-	PenLineCap start = (PenLineCap) GetValue (Shape::StrokeStartLineCapProperty)->AsInt32 ();
-	PenLineCap end = (PenLineCap) GetValue (Shape::StrokeEndLineCapProperty)->AsInt32 ();
-	PenLineCap dash = (PenLineCap) GetValue (Shape::StrokeDashCapProperty)->AsInt32 ();
+	PenLineCap start = GetStrokeStartLineCap ();
+	PenLineCap end = GetStrokeEndLineCap ();
+	PenLineCap dash = GetStrokeDashCap ();
 	
 	if (do_op && ! (start == end && start == dash)){
 		// the previous fill, if needed, has preserved the path
@@ -1971,7 +2103,7 @@ Polyline::ComputeShapeBounds (bool logical)
 
 	double thickness;
 	if (!logical)
-		thickness = GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+		thickness = GetStrokeThickness ();
 	else
 		thickness = 0.0;
 	
@@ -2112,7 +2244,7 @@ Path::SetupLine (cairo_t* cr)
 	// we cannot use the thickness==0 optimization (like Shape::SetupLine provides)
 	// since we'll be using cairo to compute the path's bounds later
 	// see bug #352188 for an example of what this breaks
-	double thickness = IsDegenerate () ? 1.0 : GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
+	double thickness = IsDegenerate () ? 1.0 : GetStrokeThickness ();
 	cairo_set_line_width (cr, thickness);
 	return SetupDashes (cr, thickness);
 }
@@ -2152,7 +2284,7 @@ Path::GetFillRule ()
 	
 	geometry = value->AsGeometry ();
 	
-	return (FillRule) geometry->GetValue (Geometry::FillRuleProperty)->AsInt32 ();
+	return geometry->GetFillRule ();
 }
 
 Rect

@@ -1,3 +1,7 @@
+2008-04-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* shape.cpp (Shape): Added property accessors.
+
 2008-04-25  Chris Toshok  <toshok@ximian.com>
 
 	* type-generated.cpp: add the Surface Loaded event.

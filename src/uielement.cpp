@@ -560,7 +560,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 				subtract = false;
 
 				Rectangle *rectangle = (Rectangle *) this;
-				Brush *fill = shape_get_fill (rectangle);
+				Brush *fill = rectangle->GetFill ();
 
 				if (fill != NULL && fill->IsOpaque()) {
 					/* make it a little easier - only consider the rectangle inside the corner radii.

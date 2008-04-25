@@ -96,7 +96,7 @@ path_get_bounds (Path *shape, cairo_path_t *path, bool logical, cairo_matrix_t *
 	if (logical)
 		thickness = 0.0;
 	else
-		thickness = shape && shape_get_stroke (shape) ? shape_get_stroke_thickness (shape) : 0;
+		thickness = shape && shape->GetStroke () ? shape->GetStrokeThickness () : 0;
 	
 	cairo_t *cr = measuring_context_create ();
 	cairo_set_line_width (cr, thickness);
@@ -363,7 +363,7 @@ EllipseGeometry::ComputeBounds (Path *path, bool logical)
 	if (logical)
 		ht = 0.0;
 	else
-		ht = (path ? shape_get_stroke_thickness (path) : 1.0) / 2.0;
+		ht = (path ? path->GetStrokeThickness () : 1.0) / 2.0;
 
 	double hw = GetRadiusX () + ht;
 	double hh = GetRadiusY () + ht;
@@ -495,10 +495,10 @@ LineGeometry::ComputeBounds (Path *shape, bool logical)
 	double thickness;
 	Rect bounds;
 	
-	if (logical)
-		thickness = 0.0;
+	if (shape && !logical)
+		thickness = shape->GetStrokeThickness ();
 	else
-		thickness = shape_get_stroke_thickness (shape);
+		thickness = 0.0;
 	
 	calc_line_bounds (p1 ? p1->x : 0.0, p2 ? p2->x : 0.0, p1 ? p1->y : 0.0, p2 ? p2->y : 0.0, thickness, &bounds);
 	
@@ -693,7 +693,7 @@ RectangleGeometry::Build (Path *shape)
 	double half_thick = 0.0;
 	// shape is optional (e.g. not available for clipping)
 	if (shape) {
-		double thick = shape_get_stroke_thickness (shape);
+		double thick = shape->GetStrokeThickness ();
 		if ((thick > rect->w) || (thick > rect->h)) {
 			half_thick = thick / 2.0;
 			rect->x -= half_thick;
@@ -727,11 +727,11 @@ RectangleGeometry::ComputeBounds (Path *path, bool logical)
 		return Rect (0.0, 0.0, 0.0, 0.0);
 	
 	double thickness;
-	if (logical)
-		thickness = 0.0;
+	if (path && !logical)
+		thickness = path->GetStrokeThickness ();
 	else
-		thickness = shape_get_stroke_thickness (path);
-
+		thickness = 0.0;
+	
 	// UIElement::SHAPE_DEGENERATE flags may be unset at this stage
 	if ((thickness > rect->w) || (thickness > rect->h))
 		thickness += 2.0;
