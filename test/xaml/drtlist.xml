@@ -782,4 +782,8 @@
 	 masterFile10="../harness/masters/test-shape-path-stretch-animatedMaster.png"
          categories="stretch"
    />
+   <Test id="179"
+	 inputFile="test-inkpresenter-image"
+	 masterFile10="../harness/masters/test-inkpresenter-imageMaster.png"
+   />
 </DRTList>
