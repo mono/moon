@@ -122,6 +122,9 @@ PluginObject::GetValue (NPPVariable variable, void *value)
 NPError
 PluginObject::SetWindow (NPWindow* window)
 {
+	if (!window)
+		return NPERR_NO_ERROR;
+
 	return NPERR_NO_ERROR;
 }
 
@@ -185,7 +188,7 @@ Plugin_Destroy (NPP instance, NPSavedData** save)
 
 static NPError
 Plugin_SetWindow (NPP instance, NPWindow* window)
-{    
+{
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
 

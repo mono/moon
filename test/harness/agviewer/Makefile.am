@@ -8,6 +8,9 @@ agviewer_SOURCES = 	\
 
 agviewer_LDADD = $(AGVIEWER_LIBS)
 
+AgserverObject.h:
+	dbus-binding-tool --mode=glib-server --prefix=agserver AgserverObject.xml --output=AgserverObject.h
+
 debug: all
 	LD_LIBRARY_PATH=.libs gdb .libs/agviewer
 

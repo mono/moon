@@ -7,11 +7,17 @@ CLEANFILES = test-runner.exe test-runner.exe.mdb logging-server.exe ndesk-option
 
 test_runner_sources = 		\
 	Agviewer.cs		\
+	DbusServices.cs		\
+	IDbusService.cs		\
 	Driver.cs		\
 	ExternalProcess.cs	\
 	Test.cs			\
+	TestBeginEventHandler.cs	\
+	TestCompleteEventHandler.cs	\
+	TestCompleteReason.cs		\
 	TestResult.cs		\
 	TestRun.cs		\
+	TestRunner.cs		\
 	HtmlTest.cs		\
 	XamlTest.cs		\
 	LoggingServer.cs	\

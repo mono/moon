@@ -27,6 +27,7 @@ public:
 	NPIdentifier  GetStringIdentifier (const char* name);
 	NPError       GetValue (NPP instance, NPNVariable variable, void *value);
 	bool          GetProperty (NPP npp, NPObject* obj, NPIdentifier propertyName, NPVariant *result);
+	bool          SetProperty (NPP npp, NPObject* obj, NPIdentifier propertyName, NPVariant *value);
 	bool          Invoke (NPP npp, NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 
 private:

@@ -3,7 +3,7 @@
 
 
 #ifndef __IMAGE_CAPTURE_H___
-#define __IMAGE_CATPURE_H__
+#define __IMAGE_CAPTURE_H__
 
 
 #include "glib.h"
@@ -11,6 +11,9 @@
 #define Visual _XVisual
 #include <X11/X.h>
 #include <X11/Xlib.h>
+
+#include "gdk/gdk.h"
+#include "gdk/gdkx.h"
 #undef Visual
 
 

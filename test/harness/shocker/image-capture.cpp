@@ -31,7 +31,7 @@
 #include <Magick++.h>
 #include <list>
 
-#include "image-capture.h"
+#include "shocker.h"
 #include "shutdown-manager.h"
 
 
@@ -55,10 +55,18 @@ ImageCaptureProvider::CaptureSingleImage (const char* image_dir, const char* fil
 #ifdef SHOCKER_DEBUG
 	printf ("CaptureSingleImage (%s, %s, %d, %d, %d, %d)\n", image_dir, file_name, x, y, width, height);
 #endif
-	Magick::Image screenshot = acquire_screenshot (xroot_window, x, y, width, height);
 	char* image_path = g_build_filename (image_dir, file_name, NULL);
 
+	Magick::Image screenshot = acquire_screenshot (xroot_window, x, y, width, height);
 	screenshot.write (image_path);
+
+	/*
+	GdkWindow* root = gdk_window_foreign_new (GDK_ROOT_WINDOW ());
+	GdkPixbuf* buf = gdk_pixbuf_get_from_drawable (NULL, root, NULL, x, y, 0, 0, width, height);
+	GError* error = NULL;
+
+	gdk_pixbuf_save (buf, image_path, "png", &error, "tEXt::CREATOR", "moonlight-test-harness", NULL);
+	*/
 
 	g_free (image_path);
 }
@@ -142,8 +150,6 @@ ImageCaptureProvider::CaptureMultipleImages (const char* test_path, int x, int y
 static Magick::Image
 acquire_screenshot (Window window, int x, int y, int width, int height)
 {
-	printf ("TAKING SCREENSHOT\n");
-
 	Magick::Image image;
 	Magick::Geometry crop = Magick::Geometry (width, height, MAX (0, x), MAX (0, y));
 	char* id = g_strdup_printf ("x:%d", (int) window);

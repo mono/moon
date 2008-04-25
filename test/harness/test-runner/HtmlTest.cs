@@ -140,7 +140,7 @@ namespace MoonlightTests {
 			MaxImagesToCapture = Int32.Parse (parts [1]);
 		}
 
-		protected override void Setup ()
+		public override void Setup ()
 		{
 			base.Setup ();
 

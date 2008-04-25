@@ -49,6 +49,8 @@ namespace MoonlightTests {
 
 		private bool process_timed_out;
 
+		public AutoResetEvent ExitedEvent = new AutoResetEvent (false);
+
 		public ExternalProcess (string process_path, string arguments, int timeout)
 		{
 			this.process_path = process_path;
@@ -72,6 +74,10 @@ namespace MoonlightTests {
 			get { return process_timed_out; }
 		}
 
+		public bool IsRunning {
+			get { return process_running; }
+		}
+
 		public void Run (bool wait)
 		{
 			process = new Process ();
@@ -86,14 +92,18 @@ namespace MoonlightTests {
 
 			stdout_thread = new Thread (delegate () { stdout = process.StandardOutput.ReadToEnd (); });
 			stderr_thread = new Thread (delegate () { stderr = process.StandardError.ReadToEnd (); });
+			stdout_thread.IsBackground = true;
+			stderr_thread.IsBackground = true;
 
 			try {
+				process.EnableRaisingEvents = true;
 				process_running = process.Start ();
 
 				process.Exited += delegate (object sender, EventArgs e)
 				{
 					exit_code = process.ExitCode;
 					process_running = false;
+					ExitedEvent.Set ();
 				}; 
 
 				stdout_thread.Start ();
@@ -121,6 +131,12 @@ namespace MoonlightTests {
 
 			stdout_thread.Abort ();
 			stderr_thread.Abort ();
+		}
+
+		public void ResetIO ()
+		{
+			stdout = null;
+			stderr = null;
 		}
 	}
 }

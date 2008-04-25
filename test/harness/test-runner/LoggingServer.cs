@@ -41,11 +41,9 @@ namespace MoonlightTests {
 	public interface ITestLogger {
 		void Log (string test, string level, string message);
 		void LogResult (string test, int result);
-		void RequestShutdown ();
-		void TestComplete (string test);
 	}
 
-	public class LoggingServer : ITestLogger {
+	public class LoggingServer : ITestLogger, IDbusService {
 
 		private class TestLogData {
 
@@ -95,9 +93,11 @@ namespace MoonlightTests {
 				result_set = true;
 			}
 
-			public void TestComplete ()
+			public void TestComplete (bool successful)
 			{
 				test_complete = true;
+				if (!successful)
+					SetTestResult (TestResult.Fail);
 			}
 		}
 
@@ -107,19 +107,16 @@ namespace MoonlightTests {
 		private Dictionary<string, TestLogData> test_logs = new Dictionary<string, TestLogData> ();
 		private bool shutdown_requested;
 
+		private static AutoResetEvent test_complete_event = new AutoResetEvent (false);
+		private static AutoResetEvent next_test_ready_event = new AutoResetEvent (false);
+
 		public LoggingServer ()
 		{
 		}
 
-		public void Start ()
+		ObjectPath IDbusService.GetObjectPath ()
 		{
-			dbus_thread = new Thread (new ThreadStart (DbusThreadWorker));
-			dbus_thread.Start ();
-		}
-
-		public void Stop ()
-		{
-			dbus_thread.Abort ();
+			return new ObjectPath ("/mono/moonlight/tests/logger");
 		}
 
 		public void Log (string test, string level, string message)
@@ -153,14 +150,7 @@ namespace MoonlightTests {
 			}
 		}
 
-		public void RequestShutdown ()
-		{
-			lock (lock_object) {
-				shutdown_requested = true;
-			}
-		}
-
-		public void TestComplete (string test)
+		public void TestComplete (string test, bool successful)
 		{
 			lock (lock_object) {
 				TestLogData tld = null;
@@ -170,9 +160,11 @@ namespace MoonlightTests {
 					tld = new TestLogData ();
 					test_logs [test] = tld;
 				}
-				tld.TestComplete ();
+				tld.TestComplete (successful);
+
+				Console.WriteLine ("test complete:  {0}", test);
+				test_complete_event.Set ();
 			}
-			       
 		}
 
 		public bool IsTestComplete (string test)
@@ -187,6 +179,25 @@ namespace MoonlightTests {
 				return tld.IsTestComplete;
 			}
 		}
+
+		/*
+		internal bool WaitForTestToComplete (string test, ExternalProcess process, int timeout)
+		{
+			while (!IsTestComplete (test)) {
+				WaitHandle [] handles = new WaitHandle [2];
+				handles [0] = process.ExitedEvent;
+				handles [1] = test_complete_event;
+
+				if (WaitHandle.WaitAny (handles, timeout, false) == WaitHandle.WaitTimeout) {
+					Console.WriteLine ("test did not complete correctly.  We timed out waiting for it to complete ({0}ms).", timeout);
+					return false;
+				}
+				Console.WriteLine ("got reset event");
+			}
+
+			return true;
+		}
+		*/
 
 		public bool IsTestResultSet (string test)
 		{
@@ -237,61 +248,42 @@ namespace MoonlightTests {
 			return TestResult.Fail;
 		}
 
-		private void DbusThreadWorker ()
-		{
-			Bus bus = Bus.Session;
-
-			string bus_name = "mono.moonlight.tests";
-			ObjectPath path = new ObjectPath ("/mono/moonlight/tests/logger");
-
-			if (!(bus.RequestName (bus_name) == RequestNameReply.PrimaryOwner)) {
-				Console.Error.WriteLine ("Unable to request dbus bus name, results will not be logged correctly.");
-				return;
-			}
-
-			Bus.Session.Register (bus_name, path, this);
-
-			while (true)
-				bus.Iterate ();	
-		}
-
-	
 #if LOGGING_SERVER_STANDALONE
-	public class StandaloneServer : ITestLogger {
-		public void Log (string test, string level, string message)
-		{
-			if (level == "Error") {
-				Console.ForegroundColor = ConsoleColor.Red;
-			} else if (level == "Warning") {
-				Console.ForegroundColor = ConsoleColor.Yellow;
+		public class StandaloneServer : ITestLogger {
+			public void Log (string test, string level, string message)
+			{
+				if (level == "Error") {
+					Console.ForegroundColor = ConsoleColor.Red;
+				} else if (level == "Warning") {
+					Console.ForegroundColor = ConsoleColor.Yellow;
+				}
+				Console.WriteLine ("{0}: {1}, {2}", test, level, message);
+				Console.ResetColor ();
 			}
-			Console.WriteLine ("{0}: {1}, {2}", test, level, message);
-			Console.ResetColor ();
-		}
 
-		public void LogResult (string test, int result)
-		{
-			if (result == -1) {
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine ("{0}: Test result set to Failed", test);
-			} else if (result == 1) {
-				Console.ForegroundColor = ConsoleColor.White;
-				Console.WriteLine ("{0}: Test result set to Passed", test);
-			} else {
-				Console.WriteLine ("{0}: Test result set to {1}", test, result);
+			public void LogResult (string test, int result)
+			{
+				if (result == -1) {
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine ("{0}: Test result set to Failed", test);
+				} else if (result == 1) {
+					Console.ForegroundColor = ConsoleColor.White;
+					Console.WriteLine ("{0}: Test result set to Passed", test);
+				} else {
+					Console.WriteLine ("{0}: Test result set to {1}", test, result);
+				}
+				Console.ResetColor ();
 			}
-			Console.ResetColor ();
-		}
 
-		public void RequestShutdown ()
-		{
-			Console.WriteLine ("RequestShutdown ()");
+			public void RequestShutdown ()
+			{
+				Console.WriteLine ("RequestShutdown ()");
+			}
+			public void TestComplete (string test, bool successful)
+			{
+				Console.WriteLine ("{0}: TestComplete");
+			}
 		}
-		public void TestComplete (string test)
-		{
-			Console.WriteLine ("{0}: TestComplete");
-		}
-	}
 
 	
 		public static void Main ()

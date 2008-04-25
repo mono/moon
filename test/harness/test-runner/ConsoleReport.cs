@@ -105,6 +105,7 @@ namespace MoonlightTests {
 						Console.WriteLine ("    {0}", str);
 					}
 				}
+				/*
 				if (run.VerboseLevel >= VerboseLevel.ShowStderr) {
 					Console.WriteLine ("  Stderr:");
 					foreach (string str in t.Stderr.Split (Environment.NewLine [0])) {
@@ -117,6 +118,7 @@ namespace MoonlightTests {
 						Console.WriteLine ("    {0}", str);
 					}
 				}
+				*/
 			}
 
 			Console.WriteLine ("\n");

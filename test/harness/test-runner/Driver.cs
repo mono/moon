@@ -37,14 +37,13 @@ namespace MoonlightTests {
 	public class Driver {
 
 		private TestRun test_run;
-		private ArrayList tests = new ArrayList ();
+		private List<Test> tests = new List<Test> ();
+		private List<IReport> reports = new List<IReport> ();
 	
 		private ArrayList categories;
 		private ArrayList fixtures;
 
 		private VerboseLevel verbose_level = VerboseLevel.None;
-
-		private ArrayList reports;
 
 		private bool compare_to_moon = false;
 		private bool run_known_failures = false;
@@ -110,10 +109,19 @@ namespace MoonlightTests {
 					continue;
 				}
 
+				if (t.Ignore)
+					continue;
+
+				if (categories != null && !t.IsInCategoryList (categories))
+					continue;
+
+				if (fixtures != null && !TestIsInFixtureList (t))
+					continue;
+
 				tests.Add (t);
 			}
 		}
-
+/*
 		public int Run (string drtlist)
 		{
 			int return_code = 0;
@@ -121,12 +129,14 @@ namespace MoonlightTests {
 			LoggingServer logging_server = new LoggingServer ();
 			logging_server.Start ();
 
+			Agviewer.SetLoggingServer (logging_server);
+
 			test_run = new TestRun (Path.GetDirectoryName (drtlist), verbose_level, logging_server);
 
 			LoadTests (drtlist);
 			Screensaver.Inhibit ();
 
-			ReportsBeginRun (test_run);
+			
 
 			foreach (Test test in tests) {
 				
@@ -145,7 +155,7 @@ namespace MoonlightTests {
 
 				ReportsExecuting (test);
 				TestResult result = test.Execute (compare_to_moon);
-				
+
 				if (logging_server.IsTestResultSet (test.InputFileName)) {
 					result = logging_server.GetTestResult (test.InputFileName);
 					if (result == TestResult.Fail)
@@ -169,11 +179,30 @@ namespace MoonlightTests {
 			ReportsEndRun ();
 			return return_code;
 		}
+*/
+
+		public int Run (string drtlist)
+		{
+			LoadTests (drtlist);
+			Screensaver.Inhibit ();
+
+			LoggingServer logging_server = new LoggingServer ();
+			TestRunner runner = new TestRunner (tests, Path.GetFullPath (Path.GetDirectoryName (drtlist)));
+
+			DbusServices.Register (logging_server);
+			DbusServices.Register (runner);
+
+			DbusServices.Start ();
+
+			TestRun run = new TestRun (Path.GetDirectoryName (drtlist), verbose_level, tests, reports, logging_server, runner);
+			int res = run.Run ();
+
+			DbusServices.Stop ();
+			return res;
+		}
 
 		public void AddReport (IReport report)
 		{
-			if (reports == null)
-				reports = new ArrayList ();
 			reports.Add (report);
 		}
 
@@ -270,7 +299,7 @@ namespace MoonlightTests {
 					continue;
 				}
 
-				t.Execute (false);
+//				t.Execute (false);
 
 				if (!File.Exists (t.ResultFile)) {
 					Console.Error.WriteLine ("Unable to generate Master file for: {0}.", t.InputFile);

@@ -37,7 +37,18 @@
 #include <glib.h>
 #include <prinit.h>
 #include <gtk/gtk.h>
+
+#ifdef DBUS_ENABLED
+#include <dbus/dbus-glib.h>
+#endif
+
 #include "shutdown-manager.h"
+
+
+#define DRT_AGSERVER_SERVICE    "mono.moonlight.agserver"
+#define DRT_AGSERVER_PATH       "/mono/moonlight/agserver"
+#define DRT_AGSERVER_INTERFACE  "mono.moonlight.agserver.IAgserver"
+
 
 #define TIMEOUT_INTERVAL 10000
 
@@ -45,7 +56,7 @@ static GMutex* shutdown_mutex = NULL;
 static GCond*  shutdown_cond = NULL;
 static gint    wait_count = 0;
 
-static void execute_shutdown ();
+static void execute_shutdown (ShockerScriptableControlObject *shocker);
 static gboolean attempt_clean_shutdown (gpointer data);
 
 void
@@ -104,15 +115,41 @@ shutdown_manager_wait ()
 }
 
 static void
-execute_shutdown ()
+execute_shutdown (ShockerScriptableControlObject *shocker)
 {
 	char *dont_die = getenv ("MOONLIGHT_SHOCKER_DONT_DIE");
 	if (dont_die != NULL && dont_die [0] != 0)
 		return;
 
+	g_type_init ();
+
+	DBusGConnection* connection;
+	GError* error = NULL;  
+
+	error = NULL;
+	connection = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
+	if (!connection) {
+		g_warning ("Failed to open connection to bus: %s\n", error->message);
+		g_error_free (error);
+	}
+
+	DBusGProxy* dbus_proxy = dbus_g_proxy_new_for_name (connection,
+			DRT_AGSERVER_SERVICE,
+			DRT_AGSERVER_PATH,
+			DRT_AGSERVER_INTERFACE);
+	
+
+	dbus_g_proxy_call_no_reply (dbus_proxy, "SignalShutdown", G_TYPE_INVALID, G_TYPE_INVALID);
+
+//	if (!dbus_g_proxy_call (dbus_proxy, "SignalShutdown", &error, G_TYPE_INVALID, G_TYPE_INVALID)) {
+//		g_warning ("unable to make signal shutdown call:  %s\n", error->message);
+//	}
+
+
+
 	if (gtk_main_level ()) {
 		// We are running inside the embedded agviewer, so we can use gtk to signal shutdown
-		gtk_main_quit ();
+//		gtk_main_quit ();
 	} else {
 		// This block never actually gets called, since firefox is also using gtk_main.
 		PR_ProcessExit (0);
@@ -122,6 +159,7 @@ execute_shutdown ()
 static gboolean
 attempt_clean_shutdown (gpointer data)
 {
+	ShockerScriptableControlObject *shocker = (ShockerScriptableControlObject *) data;
 	char *dont_die = getenv ("MOONLIGHT_SHOCKER_DONT_DIE");
 	if (dont_die != NULL && dont_die [0] != 0)
 		return FALSE;
@@ -137,7 +175,7 @@ attempt_clean_shutdown (gpointer data)
 	g_mutex_unlock (shutdown_mutex);
 
 	if (ready_for_shutdown) {
-		execute_shutdown ();
+		execute_shutdown (shocker);
 		return FALSE;
 	}
 
@@ -145,17 +183,17 @@ attempt_clean_shutdown (gpointer data)
 }
 
 void
-shutdown_manager_queue_shutdown ()
+shutdown_manager_queue_shutdown (ShockerScriptableControlObject* shocker)
 {
 	g_assert (shutdown_mutex);
 	g_assert (shutdown_cond);
 
 	if (!wait_count)
-		return execute_shutdown ();
+		return execute_shutdown (shocker);
 
-	if (!g_timeout_add (TIMEOUT_INTERVAL, attempt_clean_shutdown, NULL)) {
+	if (!g_timeout_add (TIMEOUT_INTERVAL, attempt_clean_shutdown, shocker)) {
 		g_error ("Unable to create timeout for queued shutdown, executing immediate shutdown.");
-		execute_shutdown ();
+		execute_shutdown (shocker);
 	}
 }
 

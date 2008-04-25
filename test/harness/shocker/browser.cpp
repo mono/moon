@@ -145,6 +145,12 @@ Browser::GetProperty (NPP npp, NPObject* obj, NPIdentifier propertyName, NPVaria
 }
 
 bool
+Browser::SetProperty (NPP npp, NPObject* obj, NPIdentifier propertyName, NPVariant *value)
+{
+	return CallNPN_SetPropertyProc (browser_funcs.setproperty, npp, obj, propertyName, value);
+}
+
+bool
 Browser::Invoke (NPP npp, NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result)
 {
 	return CallNPN_InvokeProc (browser_funcs.invoke, npp, obj, method_name, args, arg_count, result);

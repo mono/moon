@@ -45,6 +45,10 @@
 #include "shutdown-manager.h"
 
 
+
+
+
+
 #define MOONLIGHT_PLUGIN_ID	"joltControl"
 
 #define NPVARIANT_IS_NUMBER(v)(NPVARIANT_IS_INT32 (v) || NPVARIANT_IS_DOUBLE (v))
@@ -433,7 +437,7 @@ ShockerScriptableControlObject::Connect ()
 void
 ShockerScriptableControlObject::SignalShutdown ()
 {
-	shutdown_manager_queue_shutdown ();
+	shutdown_manager_queue_shutdown (this);
 }
 
 char *
@@ -459,3 +463,17 @@ ShockerScriptableControlObject::GetTestPath ()
 	return test_path;
 }
 
+void
+ShockerScriptableControlObject::SetJsStatus (const char* str)
+{
+	NPVariant window;
+	NPVariant status;
+	NPIdentifier identifier = Browser::Instance ()->GetStringIdentifier ("status");
+
+	char* val = PL_strdup (str);
+	STRINGZ_TO_NPVARIANT (val, status);
+
+	printf ("setting js status to:  %s\n", val);
+	Browser::Instance ()->GetValue (instance, NPNVWindowNPObject, &window);
+	Browser::Instance ()->SetProperty (instance, NPVARIANT_TO_OBJECT (window), identifier, &status);
+}

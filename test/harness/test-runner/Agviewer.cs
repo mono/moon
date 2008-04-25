@@ -34,8 +34,16 @@ namespace MoonlightTests {
 
 	public static class Agviewer {
 
+		private static LoggingServer logging_server;
 		private static string process_path = "agviewer";
 
+		private static ExternalProcess agviewer_process = null;
+
+		public static void SetLoggingServer (LoggingServer server)
+		{
+			logging_server = server;
+		}
+		
 		public static void SetProcessPath (string path)
 		{
 			process_path = path;
@@ -46,18 +54,31 @@ namespace MoonlightTests {
 
 		public static TestResult RunTest (Test test, int timeout, out string stdout, out string stderr)
 		{
-			string args = String.Format ("-working-dir {0} {1}", Path.GetFullPath (Path.GetDirectoryName (test.InputFile)), Path.GetFullPath (test.InputFile));
-			ExternalProcess ep = new ExternalProcess (GetProcessPath (), args, timeout);
+			if (agviewer_process == null || !agviewer_process.IsRunning) {
 
-			ep.Run (true);
+				if (agviewer_process != null) {
+					agviewer_process.Kill ();
+				}
+				
+				string args = String.Format ("-working-dir {0} {1}", Path.GetFullPath (Path.GetDirectoryName (test.InputFile)),
+						Path.GetFullPath (test.InputFile));
 
-			stdout = ep.Stdout;
-			stderr = ep.Stderr;
+				agviewer_process = new ExternalProcess (GetProcessPath (), args, timeout);
+				agviewer_process.Run (false);
+			} else {
+				Console.WriteLine ("agviewer process not shutdown:  {0}.", agviewer_process.IsRunning);
+//				logging_server.RunNextTest (Path.GetFullPath (test.InputFile));
+			}
 
-			if (ep.ProcessTimedOut) {
+			stdout = String.Empty; // ep.Stdout;
+			stderr = String.Empty; // ep.Stder;	
+
+			/*
+			if (!logging_server.WaitForTestToComplete (test.InputFileName, agviewer_process, timeout)) {
 				test.SetFailedReason ("Test timed out.");
 				return TestResult.Fail;
 			}
+			*/
 
 			return TestResult.Pass;
 		}

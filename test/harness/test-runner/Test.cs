@@ -147,6 +147,14 @@ namespace MoonlightTests {
 			get { return Path.GetFileName (input_file); }
 		}
 
+		public int Timeout {
+			get { return timeout; }
+		}
+
+		public bool Ignore {
+			get { return ignore; }
+		}
+
 		public bool IsKnownFailure {
 			get { return known_failure; }
 		}
@@ -233,36 +241,11 @@ namespace MoonlightTests {
 			return false;
 		}
 
-		public TestResult Execute (bool compare_to_moon)
+		public TestResult ComputeImageCompareResult ()
 		{
-			TestResult result;
-
-			if (ignore) {
-				// Create an error report?
-				return TestResult.Ignore;
-			}
-
-			string test_result_file = FindTestResult ();
-			if (test_result_file != null)
-				File.Delete (test_result_file);
-
-			Setup ();
-
-			if (ignore)
-				return TestResult.Ignore;
-
-			result = RunTest ();
-			if (result != TestResult.Pass) {
-				Teardown ();
-				return result;
-			}
-
 			if (Path.GetFileName (master_file) != "None")
-				result = CompareResults (compare_to_moon);
-
-			Teardown ();
-
-			return result;
+				return CompareResults ();
+			return TestResult.Pass;
 		}
 
 		public void SetToIgnore (string reason)
@@ -276,18 +259,23 @@ namespace MoonlightTests {
 			failed_reason = reason;
 		}
 
-		protected virtual void Setup ()
+		public virtual void Setup ()
 		{
 			if (!File.Exists (InputFile)) {
 				SetToIgnore (String.Format ("Unable to find input file: {0}", InputFile));
 				return;
 			}
 
+			// Delete the old results file, so if the test crashes we don't compare to the old results accidently
+			string test_result_file = FindTestResult ();
+			if (test_result_file != null)
+				File.Delete (test_result_file);
+
 			CodeBehindCompileIfNeeded ();
 			RunXspIfNeeded ();
 		}
 
-		protected virtual void Teardown ()
+		public virtual void Teardown ()
 		{			
 			StopXspIfNeeded ();
 		}
@@ -302,11 +290,11 @@ namespace MoonlightTests {
 			return Agviewer.RunTest (this, timeout, out stdout, out stderr);
 		}
 
-		private TestResult CompareResults (bool compare_to_moon)
+		private TestResult CompareResults ()
 		{
 			string result_file = FindTestResult ();
 
-			return ImageCompare.Compare (this, result_file, compare_to_moon ? FindMoonMaster () : MasterFile);
+			return ImageCompare.Compare (this, result_file, MasterFile);
 		}
 
 		private string FindTestResult ()

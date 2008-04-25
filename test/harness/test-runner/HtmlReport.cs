@@ -169,8 +169,8 @@ namespace MoonlightTests {
 		{
 			StringBuilder row = new StringBuilder ();
 
-			row.AppendLine (String.Format ("<tr><td bgcolor=\"{0}\" colspan=\"2\">{1}{2}{3}{4} difference:  {5}</td></tr>",
-					bgcolor, Path.GetFileName (test.InputFile), remark,
+			row.AppendLine (String.Format ("<tr><td bgcolor=\"{0}\" colspan=\"2\">{1} ({2}){3}{4}{5} difference:  {6}</td></tr>",
+					bgcolor, Path.GetFileName (test.InputFile), test.Id, remark,
 					(test.IsKnownFailure ? String.Concat (" - ", test.KnownFailureReason) : String.Empty),
 					(test.FailedReason != null ? String.Concat (" - ", test.FailedReason) : String.Empty),
 					test.ImageDifference));

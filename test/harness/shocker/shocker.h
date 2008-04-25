@@ -2,11 +2,9 @@
 #ifndef __SHOCKER_H__
 #define __SHOCKER_H__
 
-#include "input.h"
-#include "image-capture.h"
 #include "logging.h"
-#include "netscape.h"
-
+#include "image-capture.h"
+#include "input.h"
 
 struct ShockerScriptableControlType : NPClass {
 
@@ -35,7 +33,7 @@ struct ShockerScriptableControlObject : public NPObject
 	// Wrappers around some JS functions
 	//
 	char*         GetTestPath ();
-
+	void          SetJsStatus (const char* status);
 private:
 	NPP instance;
 	char* test_path;
@@ -43,6 +41,8 @@ private:
 	InputProvider* input_provider;
 	ImageCaptureProvider* image_capture;
 	LogProvider* log_provider;
+
+
 };
 
 
