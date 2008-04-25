@@ -15,15 +15,20 @@ G_BEGIN_DECLS
 #include "dependencyobject.h"
 #include "collection.h"
 
-class AssemblyPart : public DependencyObject {
- public:
-	static DependencyProperty *Source;
 
+class AssemblyPart : public DependencyObject {
+ protected:
+	virtual ~AssemblyPart () {}
+	
+ public:
+	static DependencyProperty *SourceProperty;
+	
 	AssemblyPart () {} 
-	virtual Type::Kind GetObjectType () { return Type::ASSEMBLYPART; } 
+	virtual Type::Kind GetObjectType () { return Type::ASSEMBLYPART; }
 };
 
-void assembly_part_init (void);
+AssemblyPart *assembly_part_new (void);
+
 
 class AssemblyPartCollection : public Collection {
  protected:
@@ -37,11 +42,16 @@ class AssemblyPartCollection : public Collection {
 
 AssemblyPartCollection *assembly_part_collection_new (void);
 
+
 class SupportedCulture : public DependencyObject {
+ protected:
+	virtual ~SupportedCulture () {}
+	
  public:
 	SupportedCulture () {}
 	virtual Type::Kind GetObjectType () { return Type::SUPPORTEDCULTURE; }
 };
+
 
 class SupportedCulturesCollection : public Collection {
  protected:
@@ -55,25 +65,29 @@ class SupportedCulturesCollection : public Collection {
 
 SupportedCulturesCollection *supported_cultures_collection_new (void);
 
-class Deployment : public DependencyObject {
 
+class Deployment : public DependencyObject {
+ protected:
+	virtual ~Deployment () {}
+	
  public:
 	// DependencyProperties
-
-	static DependencyProperty *AllowInboundCallsFromXDomain;
-	static DependencyProperty *EntryPointAssembly;
-	static DependencyProperty *EntryPointType;
-	static DependencyProperty *NeutralResourcesLanguage;
-	static DependencyProperty *Parts;
-	static DependencyProperty *SupportedCultures;
+	static DependencyProperty *AllowInboundCallsFromXDomainProperty;
+	static DependencyProperty *EntryPointAssemblyProperty;
+	static DependencyProperty *EntryPointTypeProperty;
+	static DependencyProperty *NeutralResourcesLanguageProperty;
+	static DependencyProperty *PartsProperty;
+	static DependencyProperty *SupportedCulturesProperty;
 
 
 	Deployment () {} 
 	virtual Type::Kind GetObjectType () { return Type::DEPLOYMENT; } 
 };
 
-void        deployment_init (void);
 Deployment *deployment_new (void);
+
+
+void deployment_init (void);
 
 G_END_DECLS
 

@@ -81,19 +81,20 @@ class EventObject {
 #endif
 
 #if OBJECT_TRACKING
-	void weak_ref (EventObject* base);
-	void weak_unref (EventObject* base);
-
-	static GHashTable* objects_alive;
+	void weak_ref (EventObject *base);
+	void weak_unref (EventObject *base);
+	
+	static GHashTable *objects_alive;
+	
+	GHashTable *weak_refs;
 	int id;
-	GHashTable* weak_refs;
 
-	char* GetStackTrace (const char* prefix);
-	char* GetStackTrace () { return GetStackTrace (""); }
+	char *GetStackTrace (const char *prefix);
+	char *GetStackTrace () { return GetStackTrace (""); }
 	void PrintStackTrace ();
-	void Track (const char* done, const char* typname);
+	void Track (const char *done, const char *typname);
 #endif
-
+	
 	void ref ()
 	{
 		if (refcount == 0) {
@@ -112,9 +113,8 @@ class EventObject {
 	
 	void unref ();
 
-
 	int GetRefCount () { return refcount; }
-
+	
 	//
 	// Is:
 	//    Similar to C#'s is: it checks if this object is of this kind or 
@@ -124,7 +124,7 @@ class EventObject {
 	{
 		return GetType ()->IsSubclassOf (k);
 	}
-
+	
 	Type *GetType ()
 	{
 		return Type::Find (GetObjectType ());
@@ -134,7 +134,7 @@ class EventObject {
 	{
 		return Type::Find (GetObjectType ())->GetName ();
 	}
-
+	
 	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, int token);
@@ -147,16 +147,16 @@ class EventObject {
 
 	virtual Surface *GetSurface () { return surface; }
 	virtual void SetSurface (Surface *surface) { this->surface = surface; }
-
+	
 	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
-
+	
 	const static int DestroyedEvent;
-
+	
 	void unref_delayed ();
-
+	
  protected:
 	virtual ~EventObject ();
-
+	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
 	bool Emit (char *event_name, EventArgs *calldata = NULL);
@@ -165,11 +165,8 @@ class EventObject {
  private:
 
 	Surface *surface;
-
-	gint32 refcount;
-
+	int32_t refcount;
 	EventLists *events;
-
 };
 
 
@@ -187,14 +184,13 @@ class DependencyObject : public EventObject {
 
 	DependencyProperty *GetDependencyProperty (const char *name);
 
-
 	//
 	// Returns true if a value is valid.  If the value is invalid return false.
 	// If error is non NULL and the value is not valid, error will be given an error code and error message that should be
 	// propogated to OnError
 	//
 	virtual bool IsValueValid (DependencyProperty *property, Value *value, GError **error);
-
+	
 	bool SetValue (DependencyProperty *property, Value *value, GError **error);
 	bool SetValue (DependencyProperty *property, Value value, GError **error);
 	void SetValue (DependencyProperty *property, Value *value);
@@ -345,11 +341,10 @@ DependencyProperty *resolve_property_path (DependencyObject **o, const char *pat
 
 void dependencyobject_init (void);
 
-Surface* event_object_get_surface (EventObject *o);
+Surface *event_object_get_surface (EventObject *o);
 void event_object_add_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure);
 void event_object_remove_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure);
 
 G_END_DECLS
 
 #endif /* __MONO_DEPOBJECT_H__ */
-

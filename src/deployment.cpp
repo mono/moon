@@ -5,21 +5,22 @@
  *
  * See the LICENSE file included with the distribution for details.
  */
+
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include <unistd.h>
-#include <string.h>
-#include <malloc.h>
+#endif
+
 #include <glib.h>
-#include <stdlib.h>
-#include <stdint.h>
+
 #include "deployment.h"
 
-DependencyProperty *AssemblyPart::Source;
 
-void 
-assembly_part_init (void)
+DependencyProperty *AssemblyPart::SourceProperty;
+
+AssemblyPart *
+assembly_part_new (void)
 {
-	AssemblyPart::Source = DependencyObject::Register (Type::ASSEMBLYPART, "Source", Type::STRING);
+	return new AssemblyPart ();
 }
 
 AssemblyPartCollection *
@@ -34,26 +35,30 @@ supported_cultures_collection_new (void)
 	return new SupportedCulturesCollection ();
 }
 
-DependencyProperty *Deployment::AllowInboundCallsFromXDomain;
-DependencyProperty *Deployment::EntryPointAssembly;
-DependencyProperty *Deployment::EntryPointType;
-DependencyProperty *Deployment::NeutralResourcesLanguage;
-DependencyProperty *Deployment::Parts;
-DependencyProperty *Deployment::SupportedCultures;
-
-void 
-deployment_init (void)
-{
-	Deployment::AllowInboundCallsFromXDomain = DependencyObject::Register (Type::DEPLOYMENT, "AllowInboundCallsFromXDomain", new Value (false));
-	Deployment::EntryPointAssembly = DependencyObject::Register (Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
-	Deployment::EntryPointType = DependencyObject::Register (Type::DEPLOYMENT, "EntryPointType", Type::STRING);
-	Deployment::NeutralResourcesLanguage = DependencyObject::Register (Type::DEPLOYMENT, "NeutralResourcesLanguage", Type::STRING);
-	Deployment::Parts = DependencyObject::Register (Type::DEPLOYMENT, "Parts", Type::ASSEMBLYPART_COLLECTION);
-	Deployment::SupportedCultures = DependencyObject::Register (Type::DEPLOYMENT, "SupportedCultures", Type::SUPPORTEDCULTURES_COLLECTION);
-}
+DependencyProperty *Deployment::AllowInboundCallsFromXDomainProperty;
+DependencyProperty *Deployment::EntryPointAssemblyProperty;
+DependencyProperty *Deployment::EntryPointTypeProperty;
+DependencyProperty *Deployment::NeutralResourcesLanguageProperty;
+DependencyProperty *Deployment::PartsProperty;
+DependencyProperty *Deployment::SupportedCulturesProperty;
 
 Deployment *
 deployment_new (void)
 {
 	return new Deployment ();
+}
+
+
+
+void
+deployment_init (void)
+{
+	AssemblyPart::SourceProperty = DependencyObject::Register (Type::ASSEMBLYPART, "Source", Type::STRING);
+	
+	Deployment::AllowInboundCallsFromXDomainProperty = DependencyObject::Register (Type::DEPLOYMENT, "AllowInboundCallsFromXDomain", new Value (false));
+	Deployment::EntryPointAssemblyProperty = DependencyObject::Register (Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
+	Deployment::EntryPointTypeProperty = DependencyObject::Register (Type::DEPLOYMENT, "EntryPointType", Type::STRING);
+	Deployment::NeutralResourcesLanguageProperty = DependencyObject::Register (Type::DEPLOYMENT, "NeutralResourcesLanguage", Type::STRING);
+	Deployment::PartsProperty = DependencyObject::Register (Type::DEPLOYMENT, "Parts", Type::ASSEMBLYPART_COLLECTION);
+	Deployment::SupportedCulturesProperty = DependencyObject::Register (Type::DEPLOYMENT, "SupportedCultures", Type::SUPPORTEDCULTURES_COLLECTION);
 }

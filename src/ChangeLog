@@ -5,6 +5,14 @@
 
 2008-04-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp (runtime_init): No longer need to call
+	assembly_part_init().
+
+	* deployment.cpp (assembly_part_init): Moved into
+	deployment_init().
+
+	* deployment.h: Added missing virtual dtors.
+
 	* collection.cpp (Collection::GetCount): Added.
 
 2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -2224,8 +2224,7 @@ runtime_init (guint32 flags)
 	media_init ();
 	panel_init ();
 	stylus_init ();
-
-	assembly_part_init ();
+	
 	deployment_init ();
 }
 
