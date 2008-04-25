@@ -1,3 +1,9 @@
+2008-04-25  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/setting-keyframe-to-null.html: A test for setting a
+	KeyFrame value to null from js. Interestingly, SL throws an exception,
+	we allow it to happen.
+
 2008-04-24  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/mouse-enter-leave-visibility.html: Adding html test for
