@@ -1,3 +1,9 @@
+2008-04-25  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* stylus.cpp: InkPresenter::OnCollectionChanged: call the parent 
+	method, so the Canvas.Top, Canvas.Left properties are read. Fixes
+	inkJournal.
+
 2008-04-25  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline-ffmpeg.cpp, pipeline-ffmpeg.h:  Support using ffmpeg's

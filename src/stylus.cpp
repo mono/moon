@@ -980,6 +980,7 @@ InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_Args)
 {
+	Panel::OnCollectionChanged (col, type, obj, element_Args);
 	switch (type) {
 	case CollectionChangeTypeChanging:
 		break;
