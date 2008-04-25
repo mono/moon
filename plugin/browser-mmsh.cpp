@@ -23,7 +23,7 @@
 #define MMS_METADATA 0x4D
 #define ASF_DEFAULT_PACKET_SIZE 2888
 
-#define LOG_MMS(...) //printf (__VA_ARGS__);
+#define LOG_MMS(...)// printf (__VA_ARGS__);
 
 // BrowserMmshResponse
 
@@ -119,7 +119,7 @@ asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_
 	asf_src->SetOwner (false);
 	asf_src->unref ();
 	if (!parser->ReadHeader ()) {
-		g_print ("Error reading header\n");
+		LOG_MMS ("asf_header_parse: Error reading header\n");
 		*file_size = 0;
 		*asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
 		delete parser;
@@ -128,9 +128,7 @@ asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_
 	
 	asf_file_properties *properties = parser->GetFileProperties ();
 
-	g_print ("FILE_SIZE: %lld\n", properties->file_size);
-	//g_print ("MAX: %d\n", properties->max_packet_size);
-	//g_print ("MIN: %d\n", properties->min_packet_size);
+	LOG_MMS ("mms file size: %lld\n", properties->file_size);
 
 	*asf_packet_size = parser->GetPacketSize ();
 	*file_size = properties->file_size;
@@ -299,12 +297,12 @@ AsyncBrowserMmshResponse::MmsMetadataParse (int packet_size, const char *data)
 			// get value, and ignore it.
 			data = get_string (data, end, &str);
 
-			printf ("KEY: %s=%s\n", res, data);
+			LOG_MMS ("KEY: %s=%s\n", res, data);
 			g_free (str);
 			g_free (res);
 		}
 	}
-	g_print ("\n");
+	LOG_MMS ("\n");
 
 	if (data < end) {
 		int cdl_index;
@@ -331,7 +329,7 @@ AsyncBrowserMmshResponse::MmsMetadataParse (int packet_size, const char *data)
 				p = get_number (p, &type);
 				p = get_sized_item (p, &strval);
 
-				printf ("%s = %s\n", item, strval);
+				LOG_MMS ("%s = %s\n", item, strval);
 				if (strcmp (item, "WMS_CONTENT_DESCRIPTION_PLAYLIST_ENTRY_DURATION") == 0)
 					notify_size = atoll (strval);
 				else if (strcmp (item, "WMS_CONTENT_DESCRIPTION_PLAYLIST_ENTRY_URL") == 0)
@@ -404,7 +402,7 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 					pd->seekable = false;
 				else
 					pd->seekable = true;
-				g_print ("Header size %d\n", packet_size - 8);
+				LOG_MMS ("Header size %d\n", packet_size - 8);
 				pd->header_size = packet_size - 8;
 				if (pd->seekable)
 					notifier (this, this->context, NULL, file_size);
@@ -416,7 +414,7 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 				char *new_data = (char*)g_malloc0 (asf_packet_size);
 				int packet_index = (int)LE_64 (&read_buffer[4]);
 				memcpy (new_data, mms_packet+8, packet_size - 8);
-				g_print ("Packet id %d\n", packet_index);
+				LOG_MMS ("mms packet id (%d)\n", packet_index);
 				if (pd->seekable)
 					reader (this, this->context, new_data, pd->header_size + packet_index* asf_packet_size,
 						asf_packet_size);

@@ -96,6 +96,7 @@ p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
 static NPError
 p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset)
 {
+	bool res;
 	BrowserMmshRequest *mmsh_request = new BrowserMmshRequest ("GET", pd->uri);
 	mmsh_request->SetHttpHeader ("User-Agent", "NSPlayer/11.1.0.3856");
 	mmsh_request->SetHttpHeader ("Pragma", "no-cache,rate=1.000000,stream-offset=0:0,max-duration=0");
@@ -107,7 +108,12 @@ p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset)
 		g_free (header);
 		pd->ignore_non_data = true;
 	}
-	return mmsh_request->GetAsyncResponse (p_downloader_mmsh_reader, p_downloader_mmsh_notifier, p_downloader_mmsh_finished, pd);
+	res = mmsh_request->GetAsyncResponse (p_downloader_mmsh_reader, p_downloader_mmsh_notifier, p_downloader_mmsh_finished, pd);
+
+	if (!res)
+		return NPERR_GENERIC_ERROR;
+
+	return NPERR_NO_ERROR;
 	
 }
 
