@@ -4,7 +4,7 @@
 
 		<script type="text/xaml" id="xaml">
 			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
-			<MediaElement Source="Robotica_1080_no_audio.wmv" MediaOpened="OnMediaOpened" 
+			<MediaElement Source="timecode-long.wmv" MediaOpened="OnMediaOpened" 
 				MediaFailed="OnMediaFailed" CurrentStateChanged="OnCurrentStateChanged" BufferingProgressChanged="OnBufferingProgressChanged"/>
 			</Canvas>
 		</script>
@@ -45,6 +45,7 @@
 				TestLogger.LogError ("Expected state to be 'Closed' after changing source, but state is '" + sender.CurrentState + "'");
 				failed = true;
 			}
+			
 			TestLogger.LogResult (failed ? -1 : 1);
 			SignalShutdown ();
 		}

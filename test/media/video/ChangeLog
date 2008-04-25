@@ -1,5 +1,9 @@
 2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-state-after-setsource.html: Fix filename.
+
+2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* drtlist.xml, test-invalid-video-codec.html,
 	  test-state-after-setsource.html: Added test-state-after-setsource
 	  and test-invalid-video-codec.
