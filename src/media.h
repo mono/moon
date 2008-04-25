@@ -236,6 +236,7 @@ class MediaElement : public MediaBase {
 	virtual void DownloaderComplete ();
 	virtual void DownloaderFailed (EventArgs *args);
 	void BufferingComplete ();
+	double GetBufferedSize ();
 	void UpdateProgress ();
 	
 	void Reinitialize (bool dtor); // dtor is true if we're calling from the destructor.
@@ -297,6 +298,7 @@ class MediaElement : public MediaBase {
 	const static int MarkerReachedEvent;
 	const static int MediaEndedEvent;
 	const static int MediaFailedEvent;
+	// MediaOpened is raised when media is ready to play (we've already started playing, or, if AutoPlay is false, paused).
 	const static int MediaOpenedEvent;
 	
 	MediaElement ();

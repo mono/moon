@@ -362,8 +362,10 @@ MediaElement::CheckMarkers (uint64_t from, uint64_t to)
 {
 	TimelineMarkerCollection *markers;
 	
-	if (from == to)
+	if (from == to) {
+		//printf ("MediaElement::CheckMarkers (%llu, %llu). from == to\n", from, to);
 		return;
+	}
 	
 	if (!(markers = GetMarkers ()))
 		return;
@@ -379,6 +381,9 @@ MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection
 	TimelineMarker *marker;
 	Value *val = NULL;
 	uint64_t pts;
+	bool emit;
+	
+	//printf ("MediaElement::CheckMarkers (%llu, %llu, %p, %i). count: %i\n", from, to, col, remove, col ? col->list->Length () : -1);
 	
 	if (markers == NULL)
 		return;
@@ -398,12 +403,30 @@ MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection
 		
 		//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
 		
-		if (pts >= from && pts <= to)
-			Emit (MarkerReachedEvent, new MarkerReachedEventArgs (marker));
+		emit = false;
+		if (remove) {
+			// Streamed markers. Emit these even if we passed them with up to 0.1 s.
+			if (from <= MilliSeconds_ToPts (100)) {
+				emit = pts >= 0 && pts <= to;
+			} else {
+				emit = pts >= (from - MilliSeconds_ToPts (100)) && pts <= to;
+			}
+			
+			//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n", from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
+		} else {
+			// Normal markers.
+			emit = pts >= from && pts <= to;
+			//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n", from, to, pts, marker->GetText (), marker->GetType ());
+		}
 		
+		if (emit) {
+			//printf ("MediaElement::CheckMarkers (%llu, %llu): Emitting: Text = %s, Type = %s, Time = %llu = %llu ms\n", from, to, marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ()));
+			Emit (MarkerReachedEvent, new MarkerReachedEventArgs (marker));
+		}
+
 		next = (Collection::Node *) node->next;
 		
-		if (remove && pts <= to) {
+		if (remove && (pts <= to || emit)) {
 			// Also delete markers we've passed by already
 			markers->list->Remove (node);
 		}
@@ -438,7 +461,7 @@ MediaElement::AdvanceFrame ()
 	position = mplayer->GetPosition ();
 	
 	if (advanced) {
-		//printf ("MediaElement::AdvanceFrame (): advanced, setting position to: %lld\n", position);
+		d (printf ("MediaElement::AdvanceFrame (): advanced, setting position to: %llu = %llu ms\n", position, MilliSeconds_FromPts (position)));
 		flags |= UpdatingPosition;
 		SetPosition (TimeSpan_FromPts (position));
 		flags &= ~UpdatingPosition;
@@ -452,7 +475,7 @@ MediaElement::AdvanceFrame ()
 	// might raise two events).
 	previous_position = position + 1;
 	
-	if (!advanced && mplayer->GetEof ()) {
+	if (!advanced && mplayer->GetEof ()) {	
 		mplayer->Stop ();
 		SetState (Stopped);
 		Emit (MediaEndedEvent);
@@ -682,8 +705,6 @@ MediaElement::MediaOpened (Media *media)
 		playlist->GetCurrentEntry ()->PopulateMediaAttributes ();
 		SetMedia (media);
 		
-		Emit (MediaOpenedEvent);
-		
 		if (flags & DownloadComplete){
 			SetState (Buffering);
 			if ((flags & PlayRequested) || GetValue (AutoPlayProperty)->AsBool ())
@@ -692,6 +713,7 @@ MediaElement::MediaOpened (Media *media)
 				Pause ();
 			
 			Invalidate ();
+			Emit (MediaOpenedEvent);
 		}
 				
 		return true;
@@ -825,10 +847,49 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	cairo_restore (cr);
 }
 
+double
+MediaElement::GetBufferedSize ()
+{
+	double progress;
+	uint64_t current_pts;
+	uint64_t buffer_pts;
+	IMediaDemuxer *demuxer;
+	uint64_t currently_available_pts;
+	
+	current_pts = mplayer->GetPosition ();
+	buffer_pts = TimeSpan_ToPts (GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ());
+	demuxer = media ? media->GetDemuxer () : NULL;
+	currently_available_pts = demuxer ? demuxer->GetLastAvailablePts () : 0;
+		
+	// Check that we don't cause any div/0.		
+	if (current_pts - last_played_pts + buffer_pts == currently_available_pts - last_played_pts) {
+		progress = 1.0;
+	} else {
+		progress = (double) (currently_available_pts - last_played_pts) / (double) (current_pts - last_played_pts + buffer_pts);
+	}
+
+	e(printf ("MediaElement::GetBufferedSize (), "
+			"buffer_pts: %llu = %llu ms, "
+			"last_played_pts: %llu = %llu ms, "
+			"current_pts: %llu = %llu ms, "
+			"last_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
+			buffer_pts, MilliSeconds_FromPts (buffer_pts),
+			last_played_pts, MilliSeconds_FromPts (last_played_pts),
+			current_pts, MilliSeconds_FromPts (current_pts),
+			currently_available_pts, MilliSeconds_FromPts (currently_available_pts), 
+			GetValue (MediaElement::BufferingProgressProperty)->AsDouble (), progress));
+			
+	if (progress < 0.0)
+		progress = 0.0;
+	else if (progress > 1.0)
+		progress = 1.0;
+		
+	return progress;
+}
+
 void
 MediaElement::UpdateProgress ()
 {
-	uint64_t currently_available_pts, current_pts, buffer_pts;
 	double progress, current;
 	bool emit = false;
 	
@@ -854,36 +915,8 @@ MediaElement::UpdateProgress ()
 	// CHECK: if buffering, will DownloadCompletedEvent be emitted?
 	
 	if (IsBuffering ()) {
-		if (media && media->GetDemuxer ()) {
-			currently_available_pts = media->GetDemuxer ()->GetLastAvailablePts ();
-		} else {
-			currently_available_pts = 0;
-		}
-		
-		current_pts = mplayer->GetPosition ();
-		buffer_pts = TimeSpan_ToPts (GetBufferingTime ());
-		
-		// Check that we don't cause any div/0.
-		if (current_pts - last_played_pts + buffer_pts == currently_available_pts - last_played_pts) {
-			progress = 1.0;
-		} else {
-			progress = (double) (currently_available_pts - last_played_pts) / (double) (current_pts - last_played_pts + buffer_pts);
-		}
-		
-		current = GetBufferingProgress ();
-		
-		e(printf ("MediaElement::UpdateProgress (), buffer_pts: %llu = %llu ms, last_played_pts: %llu = %llu ms, "
-		"current_pts: %llu = %llu ms, "
-		"last_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
-				buffer_pts, MilliSeconds_FromPts (buffer_pts),
-				last_played_pts, MilliSeconds_FromPts (last_played_pts),
-				current_pts, MilliSeconds_FromPts (current_pts),
-				currently_available_pts, MilliSeconds_FromPts (currently_available_pts), current, progress));
-		
-		if (progress < 0.0)
-			progress = 0.0;
-		else if (progress > 1.0)
-			progress = 1.0;
+		progress = GetBufferedSize ();
+		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
 		
 		if (current > progress) {
 			// Somebody might have seeked further away after the first change to Buffering,
@@ -998,6 +1031,7 @@ MediaElement::BufferingComplete ()
 			Play ();
 		else
 			Pause ();
+		Emit (MediaOpenedEvent);
 		return;
 	case Playing: // Restart playback
 		Play ();
@@ -1056,9 +1090,10 @@ MediaElement::TryOpenFinished (void *user_data)
 		element->SetState (Buffering);
 		element->MediaOpened (closure->GetMedia ());
 	} else {
-		element->flags |=  BufferingFailed;
+		element->flags |= BufferingFailed;
 		// Seek back to the beginning of the file
 		element->downloaded_file->Seek (0, SEEK_SET);
+		element->MediaFailed (new ErrorEventArgs (MediaError, 3001, "AG_E_INVALID_FILE_FORMAT"));
 	}
 	
 	delete closure;
@@ -1070,6 +1105,8 @@ void
 MediaElement::TryOpen ()
 {
 	MediaResult result; 
+	
+	d(printf ("MediaElement::TryOpen (), state: %s, flags: %i, Loaded: %i, WaitingForOpen: %i, DownloadComplete: %i\n", GetStateName (state), flags, flags & Loaded, flags & WaitingForOpen, flags & DownloadComplete));
 	
 	switch (state) {
 	case Closed:
@@ -1103,8 +1140,6 @@ MediaElement::TryOpen ()
 	if (flags & WaitingForOpen)
 		return;
 	
-	d(printf ("MediaElement::TryOpen (), flags: %i\n", flags));
-	
 	if (flags & DownloadComplete) {
 		IMediaSource *current_downloaded_file = downloaded_file;
 		char *filename = downloader->GetDownloadedFilePart (part_name);
@@ -1128,8 +1163,7 @@ MediaElement::TryOpen ()
 			media->unref ();
 			media = NULL;
 		} else if (!MEDIA_SUCCEEDED (result = media->Open (source))) {
-			printf ("MediaFailed: %i\n", result);
-			MediaFailed ();
+			MediaFailed (new ErrorEventArgs (MediaError, 3001, "AG_E_INVALID_FILE_FORMAT"));
 			media->unref ();
 			media = NULL;
 		} else {
@@ -1168,6 +1202,8 @@ MediaElement::DownloaderFailed (EventArgs *args)
 void
 MediaElement::DownloaderComplete ()
 {
+	bool emit_opened;
+	
 	d(printf ("MediaElement::DownloaderComplete (), downloader: %i\n", GET_OBJ_ID (downloader)));
 	
 	flags |= DownloadComplete;
@@ -1192,10 +1228,13 @@ MediaElement::DownloaderComplete ()
 	case Buffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
+		emit_opened = prev_state == Opening;
 		if ((flags & PlayRequested) || prev_state == Playing || GetAutoPlay ())
 			Play ();
 		else
 			Pause ();
+		if (emit_opened)
+			Emit (MediaOpenedEvent);
 		break;
 	case Opening:
 		// The media couldn't be buffered for some reason
@@ -1270,6 +1309,8 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 		playlist->unref ();
 		playlist = NULL;
 	}
+	
+	Reinitialize (false);
 	
 	MediaBase::SetSource (downloader, PartName);
 }

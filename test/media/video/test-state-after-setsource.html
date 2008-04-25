@@ -1,0 +1,94 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Source="Robotica_1080_no_audio.wmv" MediaOpened="OnMediaOpened" 
+				MediaFailed="OnMediaFailed" CurrentStateChanged="OnCurrentStateChanged" BufferingProgressChanged="OnBufferingProgressChanged"/>
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="Silverlight.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript">
+
+		var failed = false;
+
+		function timeOut ()
+		{
+			TestLogger.LogError ("Nothing happened, didn't get neither MediaOpened nor MediaFailed events.");
+			TestLogger.LogResult (-1);
+			//SignalShutdown ();
+		}
+
+		function OnBufferingProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnBufferingProgressChanged: current state: " + sender.CurrentState + ", BufferingProgress: " + sender.BufferingProgress);
+		}
+
+		function OnCurrentStateChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnCurrentStateChanged: current state: " + sender.CurrentState);
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
+			if (sender.CurrentState != "Playing") {
+				TestLogger.LogError ("Expected state to be 'Playing' in MediaOpened, but state is '" + sender.CurrentState + "'");
+				failed = true;
+			}
+			sender.Source = "timecode-short-wmv9.wmv";
+			if (sender.CurrentState != "Closed") {
+				TestLogger.LogError ("Expected state to be 'Closed' after changing source, but state is '" + sender.CurrentState + "'");
+				failed = true;
+			}
+			TestLogger.LogResult (failed ? -1 : 1);
+			SignalShutdown ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			setTimeout ("timeOut ();", 2000);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+
