@@ -81,7 +81,7 @@ novell_moonlight_xpi_CONTENTS += moonlight.exe \
 				$(srcdir)/moon.config
 endif INCLUDE_MONO_RUNTIME
 
-novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS)
+novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	-rm -f $@
 	-rm -rf .xpinstall/
 	mkdir -p .xpinstall/plugins/moonlight/
@@ -103,7 +103,7 @@ if INCLUDE_MONO_RUNTIME
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.1/
 	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/plugins/moonlight/mono/2.1/
 	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -root .xpinstall/plugins/moonlight ';'
-	find $(mono_dlldir)/mono/gac -path \*/2.1.\*.dll -exec gacutil -i '{}' -root .xpinstall/plugins/moonlight ';'
+	find $(top_builddir)/class/lib/2.1 -name \*.dll -exec gacutil -i '{}' -root .xpinstall/plugins/moonlight ';'
 	find .xpinstall -name \*.mdb -exec rm '{}' ';'
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
 	cp -L $(srcdir)/moon.config .xpinstall/plugins/moonlight/mono/config
