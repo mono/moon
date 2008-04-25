@@ -23,6 +23,7 @@
 //	Jackson Harper (jackson@ximian.com)
 //
 
+// #define SWALLOW_STREAMS
 
 using System;
 using System.IO;
@@ -87,6 +88,8 @@ namespace MoonlightTests {
 
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.UseShellExecute = false;
+
+#if SWALLOW_STREAMS
 			process.StartInfo.RedirectStandardOutput = true;
 			process.StartInfo.RedirectStandardError = true;
 
@@ -94,7 +97,7 @@ namespace MoonlightTests {
 			stderr_thread = new Thread (delegate () { stderr = process.StandardError.ReadToEnd (); });
 			stdout_thread.IsBackground = true;
 			stderr_thread.IsBackground = true;
-
+#endif
 			try {
 				process.EnableRaisingEvents = true;
 				process_running = process.Start ();
@@ -106,8 +109,10 @@ namespace MoonlightTests {
 					ExitedEvent.Set ();
 				}; 
 
+#if SWALLOW_STREAMS
 				stdout_thread.Start ();
 				stderr_thread.Start ();
+#endif
 
 				if (wait && !process.WaitForExit (timeout))
 					process_timed_out = true;
@@ -129,8 +134,10 @@ namespace MoonlightTests {
 			if (process_running && !process.HasExited)
 				process.Kill ();
 
+#if SWALLOW_STREAMS
 			stdout_thread.Abort ();
 			stderr_thread.Abort ();
+#endif
 		}
 
 		public void ResetIO ()

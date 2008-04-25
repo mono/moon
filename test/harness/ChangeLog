@@ -1,3 +1,17 @@
+2008-04-25  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/ExternalProcess.cs: For now don't capture
+	stdout/stderr, should make debugging a little easier.
+
+2008-04-24  Jackson Harper  <jackson@ximian.com>
+
+	- A single agviewer process is now used, when it completes a test,
+	it get's the next test from the test-runner.  If the agviewer
+	process crashes the test runner will start a new one.
+	- Instead of shutting down after each test we send a message to
+	the agviewer via dbus, which cleans up and sends the testcompleted
+	message up to the runner.
+	
 2008-04-22  Larry Ewing  <lewing@novell.com>
 
 	* agviewer/agviewer.cpp: fix typo in include.
