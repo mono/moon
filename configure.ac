@@ -34,6 +34,10 @@ AM_CONDITIONAL(INCLUDE_SWSCALE,test x$with_swscale = xyes)
 if test x$with_ffmpeg = xyes; then
   AC_DEFINE([INCLUDE_FFMPEG],[1],[Include support for ffmpeg])
   PKG_CHECK_MODULES(FFMPEG,[libavutil libavcodec])
+  save_CFLAGS=$CFLAGS
+  CFLAGS="$FFMPEG_CFLAGS $CFLAGS"
+  AC_CHECK_HEADERS([libavcodec/avcodec.h])
+  CFLAGS=$save_CFLAGS
   if test x$with_swscale = xyes; then
     AC_DEFINE([INCLUDE_SWSCALE],[1],[Include support for swscale])
     PKG_CHECK_MODULES(SWSCALE,libswscale)
