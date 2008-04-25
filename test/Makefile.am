@@ -12,20 +12,26 @@ endif
 
 MOON_PLUGIN_DIR = `pwd`/$(top_builddir)/plugin/.libs
 
-install-test-plugin:
+if INCLUDE_TESTING
+TESTING = true
+else
+TESTING = echo ERROR: Test harness is diabled by configuration; false
+endif
+
+check-testing:
+	$(TESTING)
+
+install-test-plugin: check-testing
 	$(MAKE) $(AM_MAKEFLAGS) -C harness/shocker install-test-plugin
 
-run-drtlist: all
+run-drtlist: all check-testing
 	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono --debug harness/test-runner/test-runner.exe -drtlist $(DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -html-report
 		
-run-tests: all
+run-tests: all check-testing
 	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(top_builddir)/test/xaml/drtlist.xml -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -html-report
 
-run-ms-tests: all
+run-ms-tests: all check-testing
 	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(MS_DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v  -html-report -run-known-failures
-
-
-
 
 gtksilver.dll: ../gtk/gtksilver.dll
 	cp ../gtk/gtksilver.dll .

@@ -1,3 +1,8 @@
+2008-04-25  Larry Ewing  <lewing@novell.com>
+
+	* Makefile.am: quick hack to disable test targets if the test
+	harness is disabled.
+
 2008-04-25  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/mouse-enter-leave-hit-test-visibility.html: Adding a
