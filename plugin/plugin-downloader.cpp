@@ -13,6 +13,8 @@
 #include "plugin-downloader.h"
 #include "browser-mmsh.h"
 
+#define d(x)
+
 bool downloader_shutdown = false;
 
 static NPError p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset);
@@ -20,19 +22,24 @@ static NPError p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset);
 static gpointer
 p_downloader_create_state (Downloader *dl)
 {
-  //	DEBUGMSG ("downloader_create_state");
+	d (printf ("p_downloader_create_state (%p)\n", dl));
+
 	return new PluginDownloader (dl);
 }
 
 static void
 p_downloader_destroy_state (gpointer data)
 {
+	d (printf ("p_downloader_destroy_state (%p)\n", data));
+	
 	delete (PluginDownloader *) data;
 }
 
 static void
 p_downloader_open (const char *verb, const char *uri, gpointer state)
 {
+	d (printf ("p_downloader_open (%s, %s, %p)\n", verb, uri, state));
+	
 	PluginDownloader *pd = (PluginDownloader *) state;
 
 	g_free (pd->verb);
@@ -49,6 +56,8 @@ p_downloader_open (const char *verb, const char *uri, gpointer state)
 static void
 p_downloader_mmsh_reader (BrowserMmshResponse *response, gpointer context, char *buffer, int offset, PRUint32 length)
 {
+	d (printf ("p_downloader_mmsh_reader (%p, %p, %s, %i, %u)\n", response, context, buffer, offset, length));
+	
 	int64_t requested_pos = -1;
 	PluginDownloader *pd = (PluginDownloader*) context;
 
@@ -74,6 +83,8 @@ p_downloader_mmsh_reader (BrowserMmshResponse *response, gpointer context, char 
 static void
 p_downloader_mmsh_notifier (BrowserMmshResponse *response, gpointer context, char *name, int64_t size)
 {
+	d (printf ("p_downloader_mmsh_notifier (%p, %p, %s, %lld)\n", response, context, name, size));
+	
 	PluginDownloader *pd = (PluginDownloader*) context;
 
 	pd->dl->NotifySize (size);
@@ -83,6 +94,8 @@ p_downloader_mmsh_notifier (BrowserMmshResponse *response, gpointer context, cha
 static void
 p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
 {
+	d (printf ("p_downloader_mmsh_finished (%p, %p)\n", response, context));
+	
 	PluginDownloader *pd = (PluginDownloader*) context;
 	const char *filename;
 	if (downloader_shutdown)
@@ -96,6 +109,8 @@ p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
 static NPError
 p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset)
 {
+	d (printf ("p_downloader_mmsh_send (%p, %lld)\n", pd, offset));
+	
 	bool res;
 	BrowserMmshRequest *mmsh_request = new BrowserMmshRequest ("GET", pd->uri);
 	mmsh_request->SetHttpHeader ("User-Agent", "NSPlayer/11.1.0.3856");
@@ -121,6 +136,8 @@ p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset)
 static void
 p_downloader_send (gpointer state)
 {
+	d (printf ("p_downloader_send (%p)\n", state));
+	
 	PluginDownloader *pd = (PluginDownloader *) state;
 	NPP_t *plugin = NULL;
 	
@@ -184,6 +201,8 @@ p_downloader_send (gpointer state)
 static void
 p_downloader_abort (gpointer state)
 {
+	d (printf ("p_downloader_abort (%p)\n", state));
+	
 	PluginDownloader *pd = (PluginDownloader *) state;
 	
 	if (downloader_shutdown)
@@ -198,6 +217,8 @@ p_downloader_abort (gpointer state)
 void
 downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream)
 {
+	d (printf ("p_downloader_set_stream_data (%p, %p, %p)\n", downloader, npp, stream));
+	
 	PluginDownloader *pd = (PluginDownloader *) downloader->GetDownloaderState ();
 	pd->npp = npp;
 	pd->stream = stream;
