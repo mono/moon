@@ -193,39 +193,43 @@ static void clicked_callback (GtkWidget *widget, gpointer data)
 	}
 }
 
+static const gchar *dir = "/tmp/moon-dump";
+
+static gboolean
+foreach_func (GtkTreeModel *model, GtkTreePath *tree_path, GtkTreeIter *iter, gpointer user_data)
+{
+	char *uri = NULL;
+	char* filename = NULL;
+	gtk_tree_model_get (model, iter, 0, &uri, 1, &filename, -1);
+
+	gchar *name = g_path_get_basename (filename);
+	gchar *path = g_build_filename (dir, name, NULL);
+	gchar *contents;
+	gsize length;
+	GError *err1 = NULL, *err2 = NULL;
+		
+	printf ("Copying uri '%s' with local filename '%s' to '%s'...\n", uri, filename, path);
+		
+	if (!g_file_get_contents (filename, &contents, &length, &err1)) {
+		printf (" Failed: Could not read file: %s\n", err1->message);
+	} else if (!g_file_set_contents (path, contents, length, &err2)) {
+		printf (" Failed: Could not write file: %s\n", err2->message);
+	} else {
+		printf (" Success\n");
+	}
+		
+	g_free (name);
+	g_free (path);
+
+	return false;
+}
+
 static void save_callback (GtkWidget *widget, gpointer data)
 {
-	PluginInstance *plugin = (PluginInstance*) data;
-	
-	List *sources = plugin->GetSources ();
-	if (!sources) {
-		printf (" files do not exists anymore (changed url?)\n");
-		return;
-	}
-
-	PluginInstance::moon_source *src = (PluginInstance::moon_source*) sources->First ();
-	const gchar *dir = "/tmp/moon-dump";
 	mkdir (dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	for (; src != NULL; src = (PluginInstance::moon_source*) src->next) {
-		gchar *name = g_path_get_basename (src->uri);
-		gchar *path = g_build_filename (dir, name, NULL);
-		gchar *contents;
-		gsize length;
-		GError *err1 = NULL, *err2 = NULL;
-		
-		printf ("Copying uri '%s' with local filename '%s' to '%s'...\n", src->uri, src->filename, path);
-		
-		if (!g_file_get_contents (src->filename, &contents, &length, &err1)) {
-			printf (" Failed: Could not read file: %s\n", err1->message);
-		} else if (!g_file_set_contents (path, contents, length, &err2)) {
-			printf (" Failed: Could not write file: %s\n", err2->message);
-		} else {
-			printf (" Success\n");
-		}
-		
-		g_free (name);
-		g_free (path);
-	}
+
+	GtkTreeStore *store = (GtkTreeStore*) data;
+	gtk_tree_model_foreach (GTK_TREE_MODEL (store), foreach_func, NULL);
 }
 
 void
@@ -286,7 +290,7 @@ plugin_sources (PluginInstance *plugin)
 	gtk_box_pack_start (vbox, button, FALSE, FALSE, 0);
 	
 	button = gtk_button_new_with_label ("Save (to /tmp/moon-dump/)");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (save_callback), plugin);
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (save_callback), tree_store);
 	gtk_box_pack_start (vbox, button, FALSE, FALSE, 0);
 	
 	gtk_container_add (GTK_CONTAINER (tree_win), GTK_WIDGET (vbox));
