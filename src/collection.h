@@ -38,11 +38,12 @@ class Collection : public DependencyObject {
 		Node (DependencyObject *dob, DependencyObject *parent);
 		virtual ~Node ();
 	};
-
-	int generation;
 	
-	List *list;
 	DependencyObject *closure;
+	int generation;
+	List *list;
+	
+	static DependencyProperty *CountProperty;
 	
 	Collection ();
 	virtual Type::Kind GetObjectType () { return Type::COLLECTION; };	
@@ -73,8 +74,8 @@ class Collection : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
 	void EmitChanged (CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
-
-	static DependencyProperty *CountProperty;
+	
+	int GetCount ();
 	
  protected:
 	virtual int AddToList (Collection::Node *node);
@@ -91,11 +92,11 @@ class CollectionIterator {
 		current = c->list->First ();
 		generation = c->generation;
 	}
-
-	bool first;
-	int generation;
+	
 	Collection *collection;
 	List::Node *current;
+	int generation;
+	bool first;
 };
 
 class VisualCollection : public Collection {
@@ -203,7 +204,7 @@ bool collection_remove (Collection *collection, DependencyObject *data);
 bool collection_remove_at (Collection *collection, int index);
 bool collection_insert (Collection *collection, int index, DependencyObject *data);
 void collection_clear  (Collection *collection);
-int  collection_count  (Collection *collection);
+int  collection_get_count  (Collection *collection);
 
 DependencyObject   *collection_get_value_at (Collection *collection, int index);
 void                collection_set_value_at (Collection *collection, int index, DependencyObject *obj);

@@ -351,6 +351,12 @@ Collection::RegisterAllNamesRootedAt (NameScope *to_ns)
 
 DependencyProperty *Collection::CountProperty;
 
+int
+Collection::GetCount ()
+{
+	return list->Length ();
+}
+
 void
 collection_init (void)
 {
@@ -364,9 +370,9 @@ collection_add (Collection *collection, DependencyObject *data)
 }
 
 int
-collection_count (Collection *collection)
+collection_get_count (Collection *collection)
 {
-	return collection->list->Length ();
+	return collection->GetCount ();
 }
 
 DependencyObject *
