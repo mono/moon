@@ -36,6 +36,7 @@ test_runner_resources = 				\
 	/resource:$(srcdir)/comparison_report.html
 
 logging_server_sources =	\
+	IDbusService.cs		\
 	LoggingServer.cs	\
 	TestResult.cs
 
