@@ -1,5 +1,8 @@
 2008-04-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp (geometry_from_str): Use the new gemoetry property
+	accessor methods.
+
 	* geometry.cpp: Added property accessor methods
 
 2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -1785,7 +1785,7 @@ Geometry *
 geometry_from_str (const char *str)
 {
 	char *inptr = (char *) str;
-	//int s; // FOr starting expression markers
+	//int s; // For starting expression markers
 	Point cp = Point (0, 0);
 	Point cp1, cp2, cp3;
 	char *end;
@@ -1796,7 +1796,7 @@ geometry_from_str (const char *str)
 	
 	PathGeometry *pg = new PathGeometry ();
 	PathFigureCollection *pfc = new PathFigureCollection ();
-	pg->SetValue (PathGeometry::FiguresProperty, pfc);
+	pg->SetFigures (pfc);
 	pfc->unref ();
 
 	while (*inptr) {
@@ -1815,20 +1815,21 @@ geometry_from_str (const char *str)
 		case 'f':
 		case 'F':
 			if (*inptr == '0')
-				geometry_set_fill_rule (pg, FillRuleEvenOdd);
+				pg->SetFillRule (FillRuleEvenOdd);
 			else if (*inptr == '1')
-				geometry_set_fill_rule (pg, FillRuleNonzero);
+				pg->SetFillRule (FillRuleNonzero);
+			
 			// FIXME: else it's a bad value and nothing should be rendered
 			inptr = g_utf8_next_char (inptr);
 			break;
-
 		case 'm':
 			relative = true;
 		case 'M':
 			if (!get_point (&cp1, &inptr))
 				break;
 			
-			if (relative) make_relative (&cp, &cp1);
+			if (relative)
+				make_relative (&cp, &cp1);
 
 			if (pf) {
 				pfc->Add (pf);
@@ -1837,10 +1838,10 @@ geometry_from_str (const char *str)
 
 			pf = new PathFigure ();
 			psc = new PathSegmentCollection ();
-			pf->SetValue (PathFigure::SegmentsProperty, psc);
+			pf->SetSegments (psc);
 			psc->unref ();
 
-			pf->SetValue (PathFigure::StartPointProperty, Value (cp1));
+			pf->SetStartPoint (&cp1);
 
 			prev = NULL;
 
@@ -1852,10 +1853,11 @@ geometry_from_str (const char *str)
 				if (!get_point (&cp1, &inptr))
 					break;
 				
-				if (relative) make_relative (&cp, &cp1);
+				if (relative)
+					make_relative (&cp, &cp1);
 				
-				LineSegment* ls = new LineSegment ();
-				ls->SetValue (LineSegment::PointProperty, Value (cp1));
+				LineSegment *ls = new LineSegment ();
+				ls->SetPoint (&cp1);
 
 				psc->Add (ls);
 				ls->unref ();
@@ -1877,10 +1879,11 @@ geometry_from_str (const char *str)
 				if (!get_point (&cp1, &inptr))
 					break;
 				
-				if (relative) make_relative (&cp, &cp1);
+				if (relative)
+					make_relative (&cp, &cp1);
 
-				LineSegment* ls = new LineSegment ();
-				ls->SetValue (LineSegment::PointProperty, Value (cp1));
+				LineSegment *ls = new LineSegment ();
+				ls->SetPoint (&cp1);
 
 				psc->Add (ls);
 				ls->unref ();
@@ -1911,8 +1914,8 @@ geometry_from_str (const char *str)
 				x += cp.x;
 			cp = Point (x, cp.y);
 
-			LineSegment* ls = new LineSegment ();
-			ls->SetValue (LineSegment::PointProperty, Value (cp));
+			LineSegment *ls = new LineSegment ();
+			ls->SetPoint (&cp);
 
 			psc->Add (ls);
 			ls->unref ();
@@ -1938,8 +1941,8 @@ geometry_from_str (const char *str)
 				y += cp.y;
 			cp = Point (cp.x, y);
 
-			LineSegment* ls = new LineSegment ();
-			ls->SetValue (LineSegment::PointProperty, Value (cp));
+			LineSegment *ls = new LineSegment ();
+			ls->SetPoint (&cp);
 
 			psc->Add (ls);
 			ls->unref ();
@@ -1958,21 +1961,24 @@ geometry_from_str (const char *str)
 			if (!get_point (&cp1, &inptr))
 				break;
 			
-			if (relative) make_relative (&cp, &cp1);
+			if (relative)
+				make_relative (&cp, &cp1);
 			
 			advance (&inptr);
 			
 			if (!get_point (&cp2, &inptr))
 				break;
 			
-			if (relative) make_relative (&cp, &cp2);
+			if (relative)
+				make_relative (&cp, &cp2);
 			
 			advance (&inptr);
 			
 			if (!get_point (&cp3, &inptr))
 				break;
 			
-			if (relative) make_relative (&cp, &cp3);
+			if (relative)
+				make_relative (&cp, &cp3);
 			
 			advance (&inptr);
 			
@@ -1987,7 +1993,7 @@ geometry_from_str (const char *str)
 				Point last;
 				Point *pts = get_point_array (inptr, pl, &count, relative, &cp, &last);
 				PolyBezierSegment *pbs = new PolyBezierSegment ();
-				pbs->SetValue (PolyBezierSegment::PointsProperty, Value (pts, count));
+				pbs->SetPoints (pts, count);
 
 				psc->Add (pbs);
 				pbs->unref ();
@@ -1999,10 +2005,10 @@ geometry_from_str (const char *str)
 				g_slist_free (pl);
 			} else {
 				BezierSegment *bs = new BezierSegment ();
-				bs->SetValue (BezierSegment::Point1Property, Value (cp1));
-				bs->SetValue (BezierSegment::Point2Property, Value (cp2));
-				bs->SetValue (BezierSegment::Point3Property, Value (cp3));
-
+				bs->SetPoint1 (&cp1);
+				bs->SetPoint2 (&cp2);
+				bs->SetPoint3 (&cp3);
+				
 				psc->Add (bs);
 				bs->unref ();
 				prev = bs;
@@ -2024,26 +2030,28 @@ geometry_from_str (const char *str)
 				if (!get_point (&cp2, &inptr))
 					break;
 				
-				if (relative) make_relative (&cp, &cp2);
+				if (relative)
+					make_relative (&cp, &cp2);
 
 				advance (&inptr);
 				
 				if (!get_point (&cp3, &inptr))
 					break;
 				
-				if (relative) make_relative (&cp, &cp3);
+				if (relative)
+					make_relative (&cp, &cp3);
 
 				if (prev && prev->GetObjectType () == Type::BEZIERSEGMENT) {
-					Point *p = prev->GetValue (BezierSegment::Point2Property)->AsPoint ();
+					Point *p = ((BezierSegment *) prev)->GetPoint2 ();
 					cp1.x = 2 * cp.x - p->x;
 					cp1.y = 2 * cp.y - p->y;
 				} else
 					cp1 = cp;
 
 				BezierSegment *bs = new BezierSegment ();
-				bs->SetValue (BezierSegment::Point1Property, Value (cp1));
-				bs->SetValue (BezierSegment::Point2Property, Value (cp2));
-				bs->SetValue (BezierSegment::Point3Property, Value (cp3));
+				bs->SetPoint1 (&cp1);
+				bs->SetPoint2 (&cp2);
+				bs->SetPoint3 (&cp3);
 
 				psc->Add (bs);
 				bs->unref ();
@@ -2066,14 +2074,16 @@ geometry_from_str (const char *str)
 			if (!get_point (&cp1, &inptr))
 				break;
 			
-			if (relative) make_relative (&cp, &cp1);
+			if (relative)
+				make_relative (&cp, &cp1);
 
 			advance (&inptr);
 			
 			if (!get_point (&cp2, &inptr))
 				break;
 			
-			if (relative) make_relative (&cp, &cp2);
+			if (relative)
+				make_relative (&cp, &cp2);
 			
 			advance (&inptr);
 			if (more_points_available (&inptr)) {
@@ -2086,7 +2096,7 @@ geometry_from_str (const char *str)
 				Point last;
 				Point *pts = get_point_array (inptr, pl, &count, relative, &cp, &last);
 				PolyQuadraticBezierSegment *pqbs = new PolyQuadraticBezierSegment ();
-				pqbs->SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (pts, count));
+				pqbs->SetPoints (pts, count);
 
 				psc->Add (pqbs);
 				pqbs->unref ();
@@ -2098,8 +2108,8 @@ geometry_from_str (const char *str)
 				g_slist_free (pl);
 			} else {
 				QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
-				qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
-				qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
+				qbs->SetPoint1 (&cp1);
+				qbs->SetPoint2 (&cp2);
 
 				psc->Add (qbs);
 				qbs->unref ();
@@ -2121,19 +2131,20 @@ geometry_from_str (const char *str)
 				if (!get_point (&cp2, &inptr))
 					break;
 				
-				if (relative) make_relative (&cp, &cp2);
+				if (relative)
+					make_relative (&cp, &cp2);
 
 				if (prev && prev->GetObjectType () == Type::QUADRATICBEZIERSEGMENT) {
-					Point *p = prev->GetValue (QuadraticBezierSegment::Point1Property)->AsPoint ();
+					Point *p = ((QuadraticBezierSegment *) prev)->GetPoint1 ();
 					cp1.x = 2 * cp.x - p->x;
 					cp1.y = 2 * cp.y - p->y;
 				} else
 					cp1 = cp;
 
 				QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
-				qbs->SetValue (QuadraticBezierSegment::Point1Property, Value (cp1));
-				qbs->SetValue (QuadraticBezierSegment::Point2Property, Value (cp2));
-
+				qbs->SetPoint1 (&cp1);
+				qbs->SetPoint2 (&cp2);
+				
 				psc->Add (qbs);
 				qbs->unref ();
 				prev = qbs;
@@ -2183,14 +2194,15 @@ geometry_from_str (const char *str)
 				if (!get_point (&cp2, &inptr))
 					break;
 				
-				if (relative) make_relative (&cp, &cp2);
+				if (relative)
+					make_relative (&cp, &cp2);
 
 				ArcSegment *arc = new ArcSegment ();
-				arc->SetValue (ArcSegment::SizeProperty, cp1);
-				arc->SetValue (ArcSegment::RotationAngleProperty, angle);
-				arc->SetValue (ArcSegment::IsLargeArcProperty, (bool) is_large);
-				arc->SetValue (ArcSegment::SweepDirectionProperty, sweep);
-				arc->SetValue (ArcSegment::PointProperty, cp2);
+				arc->SetIsLargeArc ((bool) is_large);
+				arc->SetSweepDirection ((SweepDirection) sweep);
+				arc->SetRotationAngle (angle);
+				arc->SetSize (&cp1);
+				arc->SetPoint (&cp2);
 
 				psc->Add (arc);
 				arc->unref ();
@@ -2208,20 +2220,20 @@ geometry_from_str (const char *str)
 			if (!psc)
 				return pg;
 
-			Point *p = path_figure_get_start_point (pf);
+			Point *p = pf->GetStartPoint ();
 
 			if (!p)
 				p = new Point (0, 0);
 
-			LineSegment* ls = new LineSegment ();
-			ls->SetValue (LineSegment::PointProperty, Value (*p));
-
+			LineSegment *ls = new LineSegment ();
+			ls->SetPoint (p);
+			
 			psc->Add (ls);
 			ls->unref ();
 
 			prev = NULL;
-			path_figure_set_is_closed (pf, true);
-
+			pf->SetIsClosed (true);
+			
 			cp.x = p->x;
 			cp.y = p->y;
 			
@@ -2232,11 +2244,10 @@ geometry_from_str (const char *str)
 
 			pf = new PathFigure ();
 			psc = new PathSegmentCollection ();
-			pf->SetValue (PathFigure::SegmentsProperty, psc);
+			pf->SetStartPoint (p);
+			pf->SetSegments (psc);
 			psc->unref ();
-
-			path_figure_set_start_point (pf, p);
-
+			
 			break;
 		}
 		default:
