@@ -34,7 +34,8 @@ const int MediaElement::MediaOpenedEvent = 18;
 const int Storyboard::CompletedEvent = 1;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
-const int Surface::ResizeEvent = 3;
+const int Surface::LoadEvent = 3;
+const int Surface::ResizeEvent = 4;
 const int TimeManager::RenderEvent = 1;
 const int TimeManager::UpdateInputEvent = 2;
 const int TimeSource::TickEvent = 1;
@@ -58,7 +59,7 @@ const char *ImageBrush_Events [] = { "DownloadProgressChanged", "ImageFailed", N
 const char *MediaBase_Events [] = { "DownloadProgressChanged", NULL };
 const char *MediaElement_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", NULL };
 const char *Storyboard_Events [] = { "Completed", NULL };
-const char *Surface_Events [] = { "Error", "FullScreenChange", "Resize", NULL };
+const char *Surface_Events [] = { "Error", "FullScreenChange", "Load", "Resize", NULL };
 const char *TimeManager_Events [] = { "Render", "UpdateInput", NULL };
 const char *TimeSource_Events [] = { "Tick", NULL };
 const char *UIElement_Events [] = { "GotFocus", "Invalidated", "KeyDown", "KeyUp", "Loaded", "LostFocus", "MouseEnter", "MouseLeave", "MouseLeftButtonDown", "MouseLeftButtonUp", "MouseMove", NULL };
@@ -110,8 +111,8 @@ Type type_infos [] = {
 	{ Type::GEOMETRY_COLLECTION, Type::COLLECTION, false, "GeometryCollection", "GEOMETRY_COLLECTION", 0, 1, NULL, (create_inst_func *) geometry_collection_new, NULL }, 
 	{ Type::GEOMETRYGROUP, Type::GEOMETRY, false, "GeometryGroup", "GEOMETRYGROUP", 0, 1, NULL, NULL, "Children" }, 
 	{ Type::GLYPHS, Type::FRAMEWORKELEMENT, false, "Glyphs", "GLYPHS", 0, 12, NULL, NULL, NULL }, 
-	{ Type::GRADIENTBRUSH, Type::BRUSH, false, "GradientBrush", "GRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) gradient_brush_new, "GradientStops" }, 
-	{ Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT, false, "GradientStop", "GRADIENTSTOP", 0, 1, NULL, (create_inst_func *) gradient_stop_new, NULL }, 
+	{ Type::GRADIENTBRUSH, Type::BRUSH, false, "GradientBrush", "GRADIENTBRUSH", 0, 1, NULL, NULL, "GradientStops" }, 
+	{ Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT, false, "GradientStop", "GRADIENTSTOP", 0, 1, NULL, NULL, NULL }, 
 	{ Type::GRADIENTSTOP_COLLECTION, Type::COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, NULL, NULL }, 
 	{ Type::IMAGE, Type::MEDIABASE, false, "Image", "IMAGE", 1, 14, Image_Events, NULL, NULL }, 
 	{ Type::IMAGEBRUSH, Type::TILEBRUSH, false, "ImageBrush", "IMAGEBRUSH", 2, 3, ImageBrush_Events, (create_inst_func *) image_brush_new, NULL }, 
@@ -191,7 +192,7 @@ Type type_infos [] = {
 	{ Type::STYLUSPOINT_COLLECTION, Type::COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, NULL, NULL }, 
 	{ Type::SUPPORTEDCULTURE, Type::DEPENDENCY_OBJECT, false, "SupportedCulture", "SUPPORTEDCULTURE", 0, 1, NULL, NULL, NULL }, 
 	{ Type::SUPPORTEDCULTURES_COLLECTION, Type::COLLECTION, false, "SupportedCulturesCollection", "SUPPORTEDCULTURES_COLLECTION", 0, 1, NULL, NULL, NULL }, 
-	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 3, 4, Surface_Events, NULL, NULL }, 
+	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, NULL, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL }, 
 	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 12, NULL, NULL, "Inlines" }, 
 	{ Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, NULL, NULL }, 

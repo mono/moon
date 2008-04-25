@@ -136,7 +136,7 @@ class Surface : public EventObject {
 	// We set widget to this whenever we are in fullscreen mode.
 	GtkWidget *widget_fullscreen;
 	SignalIds fullscreen_ids;
-	
+
 	// This currently can only be a canvas.
 	UIElement *toplevel;
 	
@@ -237,6 +237,8 @@ class Surface : public EventObject {
 	int GetHeight () { return height; }
 
 	void EmitError (ErrorEventArgs *args);
+	void EmitLoad ();
+
 	void SetTrans (bool trans);
 	bool GetTrans () { return transparent; }
 
@@ -251,9 +253,12 @@ class Surface : public EventObject {
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
 
+	bool IsLoaded () { return toplevel != NULL; }
+
 	const static int ResizeEvent;
 	const static int FullScreenChangeEvent;
 	const static int ErrorEvent;
+	const static int LoadEvent;
 
 	bool GetFullScreen () { return full_screen; }
 	void SetFullScreen (bool value);

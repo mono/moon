@@ -1,3 +1,17 @@
+2008-04-25  Chris Toshok  <toshok@ximian.com>
+
+	* type-generated.cpp: add the Surface Loaded event.
+
+	* runtime.cpp (Surface::widget_destroyed): null out s->widget if
+	it matches too.  no more dangling pointers.
+
+	* runtime.h, runtime.cpp: give the Surface class a Load
+	event (used to run the JS OnLoad event in the plugin) and an
+	IsLoaded accessor.
+
+	* xaml.cpp (dependency_object_hookup_event): raise a parser error
+	if an event is specified with a javascript: prefix.
+	
 2008-04-25  Larry Ewing  <lewing@novell.com>
 
 	* stylus.cpp (InkPresenter::OnCollectionChanged): wrap the stroke

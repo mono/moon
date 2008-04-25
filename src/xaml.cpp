@@ -2779,6 +2779,13 @@ bool
 dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, const char *name, const char *value)
 {
 	if (is_valid_event_name (name)) {
+		if (!strncmp (value, "javascript:", strlen ("javascript:"))) {
+			parser_error (p, item->element_name, name, 2024,
+				      g_strdup_printf ("Invalid attribute value %s for property %s.",
+						       value, name));
+			return true;
+		}
+
 		if (!p->loader) {
 			parser_error (p, item->element_name, name, -1,
 				      g_strdup_printf ("No hookup event callback handler installed '%s' event will not be hooked up\n", name));

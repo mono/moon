@@ -549,7 +549,9 @@ Surface::Attach (UIElement *element)
 	// First time we connect the surface, start responding to events
 	if (first)
 		ConnectEvents (true);
-	
+
+	EmitLoad ();
+
 	canvas->OnLoaded ();
 	
 	if (widget && GTK_WIDGET_HAS_FOCUS (widget))
@@ -729,6 +731,12 @@ void
 Surface::EmitError (ErrorEventArgs *args)
 {
 	Emit (ErrorEvent, args);
+}
+
+void
+Surface::EmitLoad ()
+{
+	Emit (LoadEvent);
 }
 
 void
@@ -2040,6 +2048,9 @@ Surface::widget_destroyed (GtkWidget *widget, gpointer user_data)
 	else if (s->widget_normal == widget) {
 		s->widget_normal = NULL;
 	}
+
+	if (s->widget == widget)
+		s->widget = NULL;
 }
 
 
