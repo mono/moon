@@ -249,7 +249,7 @@ mark_test_as_complete_and_start_next_test (bool successful)
 			G_TYPE_STRING, &test_path,
 			G_TYPE_INT, &timeout,
 			G_TYPE_INVALID)) {
-		printf ("error while making dbus call:   %s\n", error->message);
+		printf ("error while making MarkTestAsCompleteAndGetNextTest dbus call:   %s\n", error->message);
 	}
 	g_free (test_name);
 
@@ -402,7 +402,7 @@ wait_for_next_test (char **test_path, int *timeout)
 			G_TYPE_STRING, test_path,
 			G_TYPE_INT, timeout,
 			G_TYPE_INVALID)) {
-		printf ("error while making dbus call:   %s\n", error->message);
+		printf ("error while making GetNextTest dbus call:   %s\n", error->message);
 	}
 
 	return available;
