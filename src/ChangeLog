@@ -1,3 +1,7 @@
+2008-04-25  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* runtime.cpp: move the hotspot for the eraser, Fixes bnc 375213.
+
 2008-04-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* clock.cpp: Added property accessor methods for TimelineMarker
