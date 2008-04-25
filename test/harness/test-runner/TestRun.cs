@@ -42,11 +42,11 @@ namespace MoonlightTests {
 		private List<Test> tests;
 		private List<IReport> reports;
 
-		private ArrayList executed_tests = new ArrayList ();
-		private ArrayList passed_tests = new ArrayList ();
-		private ArrayList ignored_tests = new ArrayList ();
-		private ArrayList failed_tests = new ArrayList ();
-		private ArrayList known_failures = new ArrayList ();
+		private List<Test> executed_tests = new List<Test> ();
+		private List<Test> passed_tests = new List<Test> ();
+		private List<Test> ignored_tests = new List<Test> ();
+		private List<Test> failed_tests = new List<Test> ();
+		private List<Test> known_failures = new List<Test> ();
 
 		public TestRun (string base_dir, VerboseLevel verbose_level, List<Test> tests, List<IReport> reports, LoggingServer logging_server, TestRunner runner)
 		{
@@ -78,23 +78,23 @@ namespace MoonlightTests {
 			get { return start_time; }
 		}
 
-		public IList ExecutedTests {
+		public List<Test> ExecutedTests {
 			get { return executed_tests; }
 		}
 
-		public IList PassedTests {
+		public List<Test> PassedTests {
 			get { return passed_tests; }
 		}
 
-		public IList IgnoredTests {
+		public List<Test> IgnoredTests {
 			get { return ignored_tests; }
 		}
 
-		public IList FailedTests {
+		public List<Test> FailedTests {
 			get { return failed_tests; }
 		}
 
-		public IList KnownFailures {
+		public List<Test> KnownFailures {
 			get { return known_failures; }
 		}
 

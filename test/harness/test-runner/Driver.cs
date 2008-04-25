@@ -38,6 +38,7 @@ namespace MoonlightTests {
 
 		private TestRun test_run;
 		private List<Test> tests = new List<Test> ();
+		private List<Test> ignored_tests = new List<Test> ();
 		private List<IReport> reports = new List<IReport> ();
 	
 		private ArrayList categories;
@@ -109,14 +110,16 @@ namespace MoonlightTests {
 					continue;
 				}
 
-				if (t.Ignore)
-					continue;
-
 				if (categories != null && !t.IsInCategoryList (categories))
 					continue;
 
 				if (fixtures != null && !TestIsInFixtureList (t))
 					continue;
+
+				if (t.Ignore) {
+					ignored_tests.Add (t);
+					continue;
+				}
 
 				tests.Add (t);
 			}
@@ -195,6 +198,8 @@ namespace MoonlightTests {
 			DbusServices.Start ();
 
 			TestRun run = new TestRun (Path.GetDirectoryName (drtlist), verbose_level, tests, reports, logging_server, runner);
+			run.IgnoredTests.AddRange (ignored_tests);
+
 			int res = run.Run ();
 
 			DbusServices.Stop ();
