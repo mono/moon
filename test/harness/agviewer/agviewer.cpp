@@ -189,7 +189,8 @@ main(int argc, char **argv)
 	if (!test_path)
 		move_to_next_test ();
 
-	gtk_main ();
+	if (test_path && strlen (test_path))
+		gtk_main ();
 
 	gtk_widget_destroy (GTK_WIDGET (browser->top_level_window));
 
@@ -213,8 +214,10 @@ move_to_next_test ()
 	int timeout = 0;
 	if (wait_for_next_test (&test_path, &timeout))
 		run_test (test_path, timeout);
-	else
-		gtk_main_quit ();
+	else {
+		if (gtk_main_level ())
+			gtk_main_quit ();
+	}
 }
 
 static void

@@ -1,3 +1,8 @@
+2008-04-25  Jackson Harper  <jackson@ximian.com>
+
+	* agviewer/agviewer.cpp: Don't start or stop the main loop if
+	there are no tests to run.
+
 2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/HtmlTest.cs, test-runner/html_template.html: Spaces->tabs
