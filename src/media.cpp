@@ -734,6 +734,7 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 	SetNaturalDuration (0);
 	SetCanPause (false);
 	SetCanSeek (false);
+	SetDownloadProgress (0);
 	
 	SetState (MediaElement::Error);
 	Emit (MediaFailedEvent, args);

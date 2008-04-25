@@ -1,5 +1,9 @@
 2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: Set DownloadProgress to 0 when media fails to load.
+
+2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: MediaElement::CheckMarkers: if the marker is from a live
 	  stream, emit it even if we missed it by up to 0.1 s. Refactored
 	  parts of UpdateProgress into GetBufferedSize. Emit MediaOpened only
