@@ -158,6 +158,8 @@ else
   PKG_CHECK_MODULES(XULRUNNER,xulrunner-gtkmozembed,,
 		  [with_testing=no])
 fi
+AM_CONDITIONAL(HAVE_GECKO_1_9,test x$with_ff3 = xyes)
+
 PKG_CHECK_MODULES(XTST,xtst,,
 		  [with_testing=no])
 PKG_CHECK_MODULES(IMAGEMAGICK,ImageMagick++,,
