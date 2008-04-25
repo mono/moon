@@ -211,8 +211,8 @@ UIElement::ComputeTotalRenderVisibility ()
 		flags &= ~UIElement::TOTAL_RENDER_VISIBLE;
 }
 
-void
-UIElement::ComputeTotalHitTestVisibility ()
+bool
+UIElement::GetActualTotalHitTestVisibility ()
 {
 	bool visible = (flags & UIElement::HIT_TEST_VISIBLE) != 0;
 
@@ -221,7 +221,13 @@ UIElement::ComputeTotalHitTestVisibility ()
 		visible = visible && GetVisualParent ()->GetHitTestVisible ();
 	}
 
-	if (visible)
+	return visible;
+}
+
+void
+UIElement::ComputeTotalHitTestVisibility ()
+{
+	if (GetActualTotalHitTestVisibility ())
 		flags |= UIElement::TOTAL_HIT_TEST_VISIBLE;
 	else
 		flags &= ~UIElement::TOTAL_HIT_TEST_VISIBLE;

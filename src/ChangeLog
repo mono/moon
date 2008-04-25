@@ -1,3 +1,11 @@
+2008-04-25  Michael Dominic K.  <mdk@mdk.am>
+
+	* runtime.cpp:
+	* uielement.cpp:
+	* uielement.h: Also include the IsHitTestVisible status when checking
+	our input_list after handling the mouse event. This fixes the
+	mouse-enter-leave-hit-test-visibility.html test.
+
 2008-04-25  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* runtime.cpp: move the hotspot for the eraser, Fixes bnc 375213.
