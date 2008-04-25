@@ -23,7 +23,6 @@
 G_BEGIN_DECLS
 #include <stdint.h>
 #include <limits.h>
-#include <avcodec.h>
 G_END_DECLS
 
 #if INCLUDE_SWSCALE

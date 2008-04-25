@@ -21,7 +21,11 @@
 G_BEGIN_DECLS
 #include <stdint.h>
 #include <limits.h>
+#if HAVE_LIBAVCODEC_AVCODEC_H
+#include <libavcodec/avcodec.h>
+#else
 #include <avcodec.h>
+#endif
 #if INCLUDE_SWSCALE
 #include <swscale.h>
 #endif // INCLUDE_SWSCALE
