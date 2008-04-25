@@ -1,3 +1,7 @@
+2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* configure.ac: Add XTST flags to SHOCKER variables.
+
 2008-04-24  Geoff Norton  <gnorton@novell.com>
 
 	* configure.ac: Reinstate a few needed uglies for the plugin builder
