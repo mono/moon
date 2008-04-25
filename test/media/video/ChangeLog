@@ -1,5 +1,12 @@
 2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* drtlist.xml, test-downloadprogress-on-small-files.html,
+	  test-download-and-buffering-progress-on-big-files.html: Added
+	  test-downloadprogress-on-small-files and
+	  test-download-and-buffering-progress-on-big-files.
+
+2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-state-after-setsource.html: Fix filename.
 
 2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 

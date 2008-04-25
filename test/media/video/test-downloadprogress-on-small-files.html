@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/testplugin.js"></script>
+      <script src="../../js/js/utils.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		   <MediaElement x:Name="TestVideo" Width="1280" Height="720" 
+			MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" DownloadProgressChanged="OnDownloadProgressChanged" MediaEnded="OnMediaEnded"
+			Source="timecode-mini-caption-all.wmv"/> 
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var done = false;
+	var seeked = false;
+	var result = true;
+	var ready = false;
+	var mediaElement = null;
+	var plugin = null;
+	
+	var failed = false;
+	var download_progressed_count = 0;
+	
+	function EndTest ()
+	{
+		TestLogger.LogDebug ("EndTest");
+
+		if (download_progressed_count == 0) {
+			TestLogger.LogError ("We didn't get any DownloadProgressChanged events.");
+			failed = true;
+		}
+		TestLogger.LogResult (failed ? -1 : 1);
+		TestHost.SignalShutdown (document.name);
+	}
+
+	function OnPluginLoaded (o, e)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		plugin = document.getElementById ("JoltActiveX");
+		mediaElement = plugin.content.findName ("TestVideo");
+		setTimeout ("EndTest ();", 10000);
+	}
+
+	function OnMediaOpened (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaOpened");
+	}
+
+	function OnMediaEnded (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaEnded");
+		EndTest ();
+	}
+
+	function OnMediaFailed (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaFailed");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		TestHost.SignalShutdown (document.name);
+	}
+
+	function OnDownloadProgressChanged (obj, args)
+	{
+		TestLogger.LogDebug ("OnDownloadProgressChanged: " + obj.DownloadProgress);
+		download_progressed_count++;
+	}
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+</body>
+
+</html>
+
+
+
+

@@ -933,8 +933,9 @@ MediaElement::UpdateProgress ()
 		
 		if (progress == 1.0)
 			BufferingComplete ();
-	} else { 
-		// FIXME: Do we emit DownloadProgressChangedEvent if we're playing the media?
+	}
+	
+	if (downloader) {
 		progress = downloader->GetDownloadProgress ();
 		current = GetDownloadProgress ();
 		

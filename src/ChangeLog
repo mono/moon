@@ -1,3 +1,8 @@
+2008-04-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: Always emit DownloadProgressEvents, even if we're
+	  buffering.
+
 2008-04-25  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* stylus.cpp: InkPresenter::OnCollectionChanged: call the parent 
