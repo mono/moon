@@ -13,7 +13,7 @@ rating:4
 
 site:Bubble Mark
 url:http://bubblemark.com/wpfe.htm
-rating:4
+rating:3
  *  choppy with 32+ balls Bug 362022
 
 
@@ -26,7 +26,7 @@ site:Clock
 url:http://silverlight.net/samples/1.0/clock/default.html
 rating:4
  * Works
- * Canvas isn't transparent
+ * Canvas isn't transparent - windowless == true
 
 
 site:Comic Book Viewer
@@ -88,7 +88,7 @@ site:LCD Clock
 url:http://www.designwithsilverlight.com/tutorials/LCDClock/default.html
 rating:3
  * Works
- * Outer frame is still showing
+ * Outer frame is still showing - windowless
 
 site:Matrix Digital Rain
 url:http://blogs.sqlxml.org/wpfe/matrix
@@ -99,7 +99,7 @@ rating:0
 site:Matrix Falling Characters
 url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
 rating:1
- * Get 'unreponsive script' warning after about 15 sec. Bug 375272
+ * Fullscreen is super slow. Bug 350174
 
 site:Mircosoft Downloads
 url:http://www.microsoft.com/beta/downloads/Default.aspx
