@@ -1,86 +1,86 @@
 <html>
-  <head>
-      <title>Moonlight Test Page</title>
+	<head>
+	<title>Moonlight Test Page</title>
 
-      <script language="javascript" src="Silverlight.js"></script>
-      <script language="javascript">
+	<script language="javascript" src="Silverlight.js"></script>
+	<script language="javascript">
 
-        $EXPECTED_ERROR_VAR
+$EXPECTED_ERROR_VAR
 
 		createTestPlugin ();
-        QueueTestReady ();
+		QueueTestReady ();
 
-        function QueueTestReady ()
-        {
-                if (document.body == null) {
-                        window.setTimeout ("QueueTestReady ()", 100);
-                        return;
-                }
+		function QueueTestReady ()
+		{
+			if (document.body == null) {
+				window.setTimeout ("QueueTestReady ()", 100);
+				return;
+			}
 
-                window.setTimeout ("RunTest ()", 250);
-        }
-
-        function RunTest ()
-        {
-		$RUN_TEST_BODY
-        }
-
-	function FinishTest ()
-	{
-		var test_plugin = document.getElementById ("_TestPlugin");
-
-	        if (expected_error != null) {
-		        test_plugin.LogError ("Expected error was never signaled.");
-			test_plugin.LogResult (-1);
+			window.setTimeout ("RunTest ()", 250);
 		}
 
-		test_plugin.SignalShutdown (document.name);
-	}
+		function RunTest ()
+		{
+$RUN_TEST_BODY
+		}
 
-        function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
-        {
-	         var test_plugin = document.getElementById ("_TestPlugin");
-                 if (initial_delay) {
-                         window.setTimeout (function () {
-			         var test_plugin = document.getElementById ("_TestPlugin");
-			         test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
-				 test_plugin.SignalShutdown (document.name);
-		         }, initial_delay);
-			 return;
-	         }
+		function FinishTest ()
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
 
-                 test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
-		 FinishTest ();
-        }
+			if (expected_error != null) {
+				test_plugin.LogError ("Expected error was never signaled.");
+				test_plugin.LogResult (-1);
+			}
 
-        function TakeMultipleSnapshotsAndShutdown (control, max_images_to_capture, capture_interval, initial_delay, width, height)
-	{
-                 var test_plugin = document.getElementById ("_TestPlugin");
+			test_plugin.SignalShutdown (document.name);
+		}
 
-		 test_plugin.CaptureMultipleImages ("", "", 0, 0, width, height, max_images_to_capture, capture_interval, initial_delay);
-		 FinishTest ();
-	}
+		function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+			if (initial_delay) {
+				window.setTimeout (function () {
+					var test_plugin = document.getElementById ("_TestPlugin");
+					test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
+					test_plugin.SignalShutdown (document.name);
+					}, initial_delay);
+				return;
+			}
 
-        function ErrorHandler (sender, args)
-        {
-	        var test_plugin = document.getElementById ("_TestPlugin");
-                if (expected_error != null) {
-                        if (args.ErrorType == expected_error) {
-                               test_plugin.LogDebug ("Error matched expected error.");
-		               test_plugin.LogResult (1);
-                               test_plugin.SignalShutdown (document.name);
-                               return;
-                        } else {
-                               test_plugin.LogError ("Error args type did not match expected type (" + typeof args + ").");
-			       test_plugin.LogResult (-1);
-                               test_plugin.SignalShutdown (document.name);
-			       return;
-                        }
-                }
+			test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
+			FinishTest ();
+		}
 
-		test_plugin.LogError ("Error raised by moonlight: " + args.ErrorMessage);
-                test_plugin.LogResult (-1)
-        }
+		function TakeMultipleSnapshotsAndShutdown (control, max_images_to_capture, capture_interval, initial_delay, width, height)
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+
+			test_plugin.CaptureMultipleImages ("", "", 0, 0, width, height, max_images_to_capture, capture_interval, initial_delay);
+			FinishTest ();
+		}
+
+		function ErrorHandler (sender, args)
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+			if (expected_error != null) {
+				if (args.ErrorType == expected_error) {
+					test_plugin.LogDebug ("Error matched expected error.");
+					test_plugin.LogResult (1);
+					test_plugin.SignalShutdown (document.name);
+					return;
+				} else {
+					test_plugin.LogError ("Error args type did not match expected type (" + typeof args + ").");
+					test_plugin.LogResult (-1);
+					test_plugin.SignalShutdown (document.name);
+					return;
+				}
+			}
+	
+			test_plugin.LogError ("Error raised by moonlight: " + args.ErrorMessage);
+			test_plugin.LogResult (-1)
+		}
 
 		function createTestPlugin ()
 		{
@@ -94,14 +94,14 @@
 
 			if (navigator.appVersion.indexOf('MSIE') != -1) {
 				pluginHtml = 
-				    '<object id="_TestPlugin" width="0" height="0" ' +
-				        'classid = "CLSID:596F7B43-899C-42F4-BF3C-B62BA99E73FF">' +
-				    '<\/object>';
+					'<object id="_TestPlugin" width="0" height="0" ' +
+						'classid = "CLSID:596F7B43-899C-42F4-BF3C-B62BA99E73FF">' +
+					'<\/object>';
 			} else {
 				pluginHtml = 
-				    '<embed id="_TestPlugin" width="0" height="0" ' +
-				        'type="application\/x-jolttest">' +
-				    '<\/embed>';
+					'<embed id="_TestPlugin" width="0" height="0" ' +
+						'type="application\/x-jolttest">' +
+					'<\/embed>';
 			}
 
 			// Insert plugin html into document.
@@ -121,25 +121,25 @@
 				setTimeout ("connectPlugin ();", 50);
 			}
 		}
-      </script>
-  </head>
+	</script>
+	</head>
 
-  <body>
-    <div>
-        <embed type="application/x-silverlight"
-             width="$MOONLIGHT_CONTROL_WIDTH"
-             height="$MOONLIGHT_CONTROL_HEIGHT"
-             id="_MoonlightControl" Source="$SOURCE" OnError="ErrorHandler"
-             style="position:absolute; left:0px; top:0px" >
-        </embed>
-    </div>
+	<body>
+		<div>
+			<embed type="application/x-silverlight"
+				width="$MOONLIGHT_CONTROL_WIDTH"
+				height="$MOONLIGHT_CONTROL_HEIGHT"
+				id="_MoonlightControl" Source="$SOURCE" OnError="ErrorHandler"
+				style="position:absolute; left:0px; top:0px" >
+			</embed>
+		</div>
 <!--
-    <div>
-        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
-        </embed>
-    </div>
+		<div>
+			<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+			</embed>
+		</div>
 -->
-  </body>
+	</body>
 </html>
 
 

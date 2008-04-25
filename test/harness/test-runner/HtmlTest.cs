@@ -271,24 +271,24 @@ namespace MoonlightTests {
 
 		private string GenerateExpectedErrorVar ()
 		{
-			return String.Format ("\tvar expected_error = {0};\n", expected_error != null ? String.Concat ("\"", expected_error, "\"") : "null");
+			return String.Format ("\t\tvar expected_error = {0};\n", expected_error != null ? String.Concat ("\"", expected_error, "\"") : "null");
 		}
 
 		private string GenerateRunTestBody ()
 		{
 			StringBuilder res = new StringBuilder ();
 
-			res.AppendLine ("var moonlight_control = document.getElementById (\"MoonlightControl\");");
+			res.AppendLine ("\t\t\tvar moonlight_control = document.getElementById (\"MoonlightControl\");");
 
 			if (capture_interval != null || max_images_to_capture != null) {
-				res.AppendFormat ("\t\tTakeMultipleSnapshotsAndShutdown (moonlight_control, {0}, {1}, {2}, {3}, {4});",
+				res.AppendFormat ("\t\t\tTakeMultipleSnapshotsAndShutdown (moonlight_control, {0}, {1}, {2}, {3}, {4});",
 						max_images_to_capture, capture_interval,
 						(initial_delay != null ? initial_delay : 0), 
 						(capture_width != null ? capture_width : ResultWidth),
 						(capture_height != null ? capture_height : ResultHeight));
 			} else {
 				// what happens if initial delay is specified but not width/height ??? 	
-				res.AppendFormat ("\t\tTakeSingleSnapshotAndShutdown (moonlight_control, \"{0}\", {1}, {2}{3});",
+				res.AppendFormat ("\t\t\tTakeSingleSnapshotAndShutdown (moonlight_control, \"{0}\", {1}, {2}{3});",
 						String.Concat (Path.GetFileName (InputFile), ".png"),
 						(capture_width != null ? capture_width : ResultWidth),
 						(capture_height != null ? capture_height : ResultHeight),
