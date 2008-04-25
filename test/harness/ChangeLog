@@ -1,5 +1,10 @@
 2008-04-25  Jackson Harper  <jackson@ximian.com>
 
+	* agviewer/agviewer.cpp: Don't use escape for quitting a test
+	anymore.  Use CTRL-C, also add CTRL-N to move to the next test.
+
+2008-04-25  Jackson Harper  <jackson@ximian.com>
+
 	* test-runner/Driver.cs: Make sure ignored tests get added to the
 	report.  We need to add them separately now, because the list of
 	tests passed to the runner are only tests that will be run.

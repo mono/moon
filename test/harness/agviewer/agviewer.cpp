@@ -142,7 +142,7 @@ register_agserver_object ()
 
 
 
-static int escaped_pressed_count = 0;
+static int close_key_pressed_count = 0;
 static AgViewer *new_gtk_browser ();
 static gboolean key_press_cb (GtkWidget* widget, GdkEventKey* event, GtkWindow* window);
 
@@ -301,13 +301,21 @@ new_gtk_browser ()
 static gboolean
 key_press_cb (GtkWidget* widget, GdkEventKey* event, GtkWindow* window)
 {
+	if ((event->state & GDK_CONTROL_MASK) == 0)
+		return FALSE;
+
 	switch (event->keyval) {
-	case GDK_Escape:
-		if (escaped_pressed_count == 0)
+	case GDK_c:
+	case GDK_C:
+		if (close_key_pressed_count == 0)
 			request_test_runner_shutdown ();
-		else if (escaped_pressed_count > 0)
+		else if (close_key_pressed_count > 0)
 			exit (1);
-		escaped_pressed_count++;
+		close_key_pressed_count++;
+		return TRUE;
+	case GDK_n:
+	case GDK_N:
+		mark_test_as_complete_and_start_next_test (false);
 		return TRUE;
 	}
 
