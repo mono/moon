@@ -15,7 +15,7 @@ MOON_PLUGIN_DIR = `pwd`/$(top_builddir)/plugin/.libs
 if INCLUDE_TESTING
 TESTING = true
 else
-TESTING = echo ERROR: Test harness is diabled by configuration; false
+TESTING = echo ERROR: Test harness is disabled by configuration; false
 endif
 
 check-testing:
