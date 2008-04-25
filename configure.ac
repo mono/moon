@@ -160,13 +160,13 @@ else
 fi
 AM_CONDITIONAL(HAVE_GECKO_1_9,test x$with_ff3 = xyes)
 
-PKG_CHECK_MODULES(XTST,xtst,,
+PKG_CHECK_MODULES(XTST,xtst >= 1.0,,
 		  [with_testing=no])
-PKG_CHECK_MODULES(IMAGEMAGICK,ImageMagick++,,
+PKG_CHECK_MODULES(IMAGEMAGICK,ImageMagick++ >= 6.3.5,,
 		  [with_testing=no])
-PKG_CHECK_MODULES(DBUS_GLIB,dbus-glib-1,,
+PKG_CHECK_MODULES(DBUS_GLIB,dbus-glib-1 >= 0.74,,
 		  [with_testing=no])
-PKG_CHECK_MODULES(NDESK_DBUS,ndesk-dbus-1.0,,
+PKG_CHECK_MODULES(NDESK_DBUS,ndesk-dbus-1.0 >= 0.6.0,,
 		  [with_testing=no])
 AM_CONDITIONAL(INCLUDE_TESTING,test x$with_testing = xyes)
 
