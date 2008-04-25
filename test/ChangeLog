@@ -1,5 +1,12 @@
 2008-04-25  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/mouse-enter-leave-hit-test-visibility.html: Adding a
+	test for IsHitTestVisible being changed in the MouseEnter callback. The
+	MouseLeave should not be fired for this element and "mouse leave" shold
+	not be printed on the Firebug console.
+
+2008-04-25  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/setting-keyframe-to-null.html: A test for setting a
 	KeyFrame value to null from js. Interestingly, SL throws an exception,
 	we allow it to happen.
