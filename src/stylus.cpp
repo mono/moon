@@ -980,25 +980,28 @@ InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 InkPresenter::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_Args)
 {
-	Panel::OnCollectionChanged (col, type, obj, element_Args);
-	switch (type) {
-	case CollectionChangeTypeChanging:
-		break;
-	case CollectionChangeTypeItemAdded:
-	case CollectionChangeTypeItemRemoved:
-	case CollectionChangeTypeItemChanged: {
-		Stroke *stroke = (Stroke*)obj;
-		Invalidate (stroke->GetBounds().Transform (&absolute_xform));
-		if (type != CollectionChangeTypeItemAdded)
-			Invalidate (stroke->GetOldBounds().Transform (&absolute_xform));
-		UpdateBounds ();
-		break;
-	}
-	case CollectionChangeTypeChanged:
-		Invalidate (render_bounds);
-		Invalidate (((StrokeCollection*)col)->GetBounds().Transform (&absolute_xform));
-		UpdateBounds ();
-		break;
+	if (col == GetValue (InkPresenter::StrokesProperty)->AsCollection()) {
+		switch (type) {
+		case CollectionChangeTypeChanging:
+			break;
+		case CollectionChangeTypeItemAdded:
+		case CollectionChangeTypeItemRemoved:
+		case CollectionChangeTypeItemChanged: {
+			Stroke *stroke = (Stroke*)obj;
+			Invalidate (stroke->GetBounds().Transform (&absolute_xform));
+			if (type != CollectionChangeTypeItemAdded)
+				Invalidate (stroke->GetOldBounds().Transform (&absolute_xform));
+			UpdateBounds ();
+			break;
+		}
+		case CollectionChangeTypeChanged:
+			Invalidate (render_bounds);
+			Invalidate (((StrokeCollection*)col)->GetBounds().Transform (&absolute_xform));
+			UpdateBounds ();
+			break;
+		}
+	} else {
+		Canvas::OnCollectionChanged (col, type, obj, element_Args);
 	}
 }
 

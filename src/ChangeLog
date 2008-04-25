@@ -1,3 +1,8 @@
+2008-04-25  Larry Ewing  <lewing@novell.com>
+
+	* stylus.cpp (InkPresenter::OnCollectionChanged): wrap the stroke
+	changed logic inside a type check.
+
 2008-04-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp (geometry_from_str): Use the new gemoetry property
@@ -59,6 +64,7 @@
 
 	* runtime.cpp: move the hotspot for the eraser, Fixes bnc 375213.
 
+>>>>>>> .r101838
 2008-04-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* clock.cpp: Added property accessor methods for TimelineMarker
