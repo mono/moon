@@ -322,11 +322,11 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	
 	// Property fields
 	initParams = false;
-	isLoaded = false;
 	source = NULL;
 	source_idle = 0;
 	onLoad = NULL;
 	onError = NULL;
+	onResize = NULL;
 	background = NULL;
 	
 	windowless = false;
@@ -452,6 +452,9 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		else if (!g_ascii_strcasecmp (argn[i], "onError")) {
 			onError = argv[i];
 		}
+		else if (!g_ascii_strcasecmp (argn[i], "onResize")) {
+			onResize = argv[i];
+		}
 		else if (!g_ascii_strcasecmp (argn[i], "src") || !g_ascii_strcasecmp (argn[i], "source")) {
 			source = g_strdup (argv[i]);
 		}
@@ -465,7 +468,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			maxFrameRate = atoi (argv [i]);
 		}
 		else {
-			//g_warning ("unhandled attribute %s='%s' in PluginInstance::Initialize", argn[i], argv[i]);
+		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
 		}
 	}
 
@@ -651,21 +654,29 @@ PluginInstance::CreateWindow ()
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onError");
-		NPN_SetProperty (instance, getRootObject ()->content, 
+		NPN_SetProperty (instance, getRootObject (), 
 				 identifier, &npvalue);
 	}
 
-	/*
+	if (onResize != NULL) {
+		char *retval = PL_strdup (onResize);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onResize");
+		NPN_SetProperty (instance, getRootObject ()->content,
+				 identifier, &npvalue);
+	}
+
 	if (onLoad != NULL) {
 		char *retval = PL_strdup (onLoad);
 		NPVariant npvalue;
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onLoad");
-		NPN_SetProperty (instance, getRootObject ()->content, 
+		NPN_SetProperty (instance, getRootObject (), 
 				 identifier, &npvalue);
 	}
-	*/
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
@@ -764,45 +775,6 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	g_free ((gpointer) xaml);
 }
 
-bool
-PluginInstance::JsRunOnload ()
-{
-	bool retval = false;
-	NPObject *object = NULL;
-	NPVariant result;
-	const char *expression = onLoad;
-	
-	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVWindowNPObject, &object)) {
-		d(printf ("*** Failed to get window object\n"));
-		return false;
-	}
-
-	if (!strncmp (expression, "javascript:", strlen ("javascript:")))
-		expression += strlen ("javascript:");
-
-	NPVariant args[1];
-
-	DependencyObject *toplevel = surface->GetToplevel ();
-	d(printf ("In JsRunOnload, toplevel = %p\n", toplevel));
-	
-	MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, toplevel);
-	OBJECT_TO_NPVARIANT ((NPObject*)depobj, args[0]);
-
-	if (NPN_Invoke (instance, object, NPID (expression), args, 1, &result)) {
-		d(printf ("NPN_Invoke succeeded\n"));
-		NPN_ReleaseVariantValue (&result);
-		
-		retval = true;
-	} else {
-		d(printf ("NPN_Invoke failed\n"));
-	}
-	
-	NPN_ReleaseVariantValue (&args [0]);
-	NPN_ReleaseObject (object);
-	
-	return retval;
-}
-
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
@@ -871,15 +843,6 @@ PluginInstance::TryLoad ()
 		// FIXME: check for errors
 		NPN_GetURLNotify (instance, vm_missing_file, NULL, notify);
 		return;
-	}
-
-	//
-	// missing file was NULL, if error is set, display some message
-	//
-	if (!isLoaded && surface->GetToplevel ()) {
-		isLoaded = true;
-		if (onLoad)
-			JsRunOnload ();
 	}
 }
 

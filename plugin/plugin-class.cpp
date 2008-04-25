@@ -120,6 +120,7 @@ enum PluginPropertyId {
 	MoonId_OnResize,
 	MoonId_OnFullScreenChange,
 	MoonId_OnError,
+	MoonId_OnLoad,
 
 	// method names
 	MoonId_GetPosition = 0x8000,
@@ -250,6 +251,7 @@ map_moon_id_to_event_name (int moon_id)
 	case MoonId_OnResize: name = "Resize"; break;
 	case MoonId_OnFullScreenChange: name = "FullScreenChange"; break;
 	case MoonId_OnError: name = "Error"; break;
+	case MoonId_OnLoad: name = "Load"; break;
 	}
 
 	return name;
@@ -1444,6 +1446,7 @@ object_mapping[] = {
 MoonlightObjectType::MoonlightObjectType ()
 {
 	allocate       = _allocate;
+	construct      = NULL;
 	deallocate     = _deallocate;
 	invalidate     = _invalidate;
 	hasMethod      = _has_method;
@@ -1540,17 +1543,23 @@ scriptable_control_mapping[] = {
 	{ "initparams", MoonId_InitParams },
 	{ "id", MoonId_Id },
 	{ "isversionsupported", MoonId_IsVersionSupported },
+	{ "onerror", MoonId_OnError },
+	{ "onload", MoonId_OnLoad },
 	{ "settings", MoonId_Settings },
 	{ "source", MoonId_Source },
 };
 
 MoonlightScriptControlObject::~MoonlightScriptControlObject ()
 {
- 	if (settings)
+	if (settings) {
 		NPN_ReleaseObject (settings);
+		settings = NULL;
+	}
 	
- 	if (content)
+ 	if (content) {
 		NPN_ReleaseObject (content);
+		content = NULL;
+	}
 }
 
 void
@@ -1580,8 +1589,16 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 		string_to_npvariant (plugin->getInitParams (), result);
 		return true;
 	case MoonId_IsLoaded:
-		BOOLEAN_TO_NPVARIANT (plugin->getIsLoaded (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->surface->IsLoaded(), *result);
 		return true;
+	case MoonId_OnError:
+	case MoonId_OnLoad: {
+		const char *event_name = map_moon_id_to_event_name (id);
+		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
+		EventListenerProxy *proxy = LookupEventProxy (event_id);
+		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
+		return true;
+	}
 	case MoonId_Source:
 		string_to_npvariant (plugin->getSource (), result);
 		return true;
@@ -1606,6 +1623,26 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 	case MoonId_Source:
 		plugin->setSource (STR_FROM_VARIANT (*value));
 		return true;
+	case MoonId_OnError:
+	case MoonId_OnLoad: {
+		const char *event_name = map_moon_id_to_event_name (id);
+		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
+
+		if (event_id != -1) {
+			// If we have a handler, remove it.
+			ClearEventProxy (event_id);
+
+			if (!NPVARIANT_IS_NULL (*value)) {
+				EventListenerProxy *proxy = new EventListenerProxy (instance,
+										    event_name,
+										    value);
+				proxy->AddHandler (plugin->surface);
+				SetEventProxy (event_id, proxy);
+			}
+
+			return true;
+		}
+	}
 	default:
 		return MoonlightObject::SetProperty (id, name, value);
 	}
@@ -1863,7 +1900,6 @@ moonlight_content_mapping[] = {
 	{ "createobject", MoonId_CreateObject },
 	{ "findname", MoonId_FindName },
 	{ "fullscreen", MoonId_FullScreen },
-	{ "onerror", MoonId_OnError },
 	{ "onfullscreenchange", MoonId_OnFullScreenChange },
 	{ "onresize", MoonId_OnResize },
 	{ "root", MoonId_Root },
@@ -1895,8 +1931,7 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		BOOLEAN_TO_NPVARIANT (plugin->surface->GetFullScreen (), *result);
 		return true;
 	case MoonId_OnResize:
-	case MoonId_OnFullScreenChange:
-	case MoonId_OnError: {
+	case MoonId_OnFullScreenChange: {
 		const char *event_name = map_moon_id_to_event_name (id);
 		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
 		EventListenerProxy *proxy = LookupEventProxy (event_id);
@@ -1942,8 +1977,7 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 		plugin->surface->SetFullScreen (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
 	case MoonId_OnFullScreenChange:
-	case MoonId_OnResize:
-	case MoonId_OnError: {
+	case MoonId_OnResize: {
 		const char *event_name = map_moon_id_to_event_name (id);
 		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
 

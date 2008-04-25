@@ -69,7 +69,7 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 void
 plugin_debug (PluginInstance *plugin)
 {
-	if (!plugin->getIsLoaded() || !plugin->surface) {
+	if (!plugin->surface) {
 		GtkWidget *d = gtk_message_dialog_new (NULL,
 						       GTK_DIALOG_NO_SEPARATOR,
 						       GTK_MESSAGE_ERROR,

@@ -1,3 +1,27 @@
+2008-04-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (enum PluginPropertyId): add MoonId_OnLoad.
+	(map_moon_id_to_event_name): handle MoonId_OnLoad.
+	(MoonlightObjectType::MoonlightObjectType): zero out construct,
+	just in case.
+	(scriptable_control_mapping): move onerror here, and add onload.
+	(MoonlightScriptControlObject): null out both settings and content
+	here.
+	(MoonlightScriptControlObject::GetProperty): fix IsLoaded to check
+	the surface, and add support for OnError/OnLoad here.
+	(MoonlightScriptControlObject::SetProperty): add support for
+	OnError/OnLoad here.
+	(moonlight_content_mapping): remove onerror.
+	(MoonlightContentObject::GetProperty): remove support for OnError.
+	(MoonlightContentObject::SetProperty): same.
+
+	* plugin.cpp (PluginInstance::CreateWindow): initialize the
+	onResize/onLoad events in the same way as onError.
+	(PluginInstance::Initialize): parse the onResize arg.
+	(PluginInstance::JsRunOnload): nuke.  rejoice.
+	(PluginInstance::TryLoad): remove the call to JsRunOnload.  The
+	surface's LoadEvent is responsible for this now.
+
 2008-04-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-debug.cpp: Better fix against my previous crash fix (as 

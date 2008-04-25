@@ -38,12 +38,12 @@ class PluginInstance
 
 	// Property fields
 	char *initParams;
-	bool isLoaded;
 	char *source;
 	guint source_idle;
 	char *onLoad;
 	char *background;
 	char *onError;
+	char *onResize;
 
 	bool windowless;
 	bool silverlight2;
@@ -116,7 +116,6 @@ class PluginInstance
 	void UrlNotify (const char *url, NPReason reason, void *notifyData);
 	void Print (NPPrint *platformPrint);
 	int16 EventHandle (void *event);
-	bool JsRunOnload ();
 	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
 	void *LoadUrl (char *url, int32_t *length);
 
@@ -148,7 +147,6 @@ class PluginInstance
 
 	// Property getters and setters
 	char *getInitParams () { return this->initParams; }
-	bool getIsLoaded () { return this->isLoaded; };
 	char *getSource () { return this->source; }
 	void setSource (const char *value);
 
