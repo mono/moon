@@ -1128,12 +1128,13 @@ ellipse_new (void)
 	return new Ellipse ();
 }
 
+
 //
 // Rectangle
 //
 
-DependencyProperty* Rectangle::RadiusXProperty;
-DependencyProperty* Rectangle::RadiusYProperty;
+DependencyProperty *Rectangle::RadiusXProperty;
+DependencyProperty *Rectangle::RadiusYProperty;
 
 Rectangle::Rectangle ()
 {
@@ -1371,34 +1372,59 @@ Rectangle::ComputeLargestRectangle ()
 	double x = GetStrokeThickness ();
 	double y = x;
 	if (HasRadii ()) {
-		x += GetValue (Rectangle::RadiusXProperty)->AsDouble ();
-		y += GetValue (Rectangle::RadiusYProperty)->AsDouble ();
+		x += GetRadiusX ();
+		y += GetRadiusY ();
 	}
 	return ComputeShapeBounds (false).GrowBy (-x, -y).RoundIn ();
 }
 
-double
-rectangle_get_radius_x (Rectangle *rectangle)
+void
+Rectangle::SetRadiusX (double radius)
 {
-	return rectangle->GetValue (Rectangle::RadiusXProperty)->AsDouble ();
+	SetValue (Rectangle::RadiusXProperty, Value (radius));
+}
+
+double
+Rectangle::GetRadiusX ()
+{
+	return GetValue (Rectangle::RadiusXProperty)->AsDouble ();
 }
 
 void
-rectangle_set_radius_x (Rectangle *rectangle, double value)
+Rectangle::SetRadiusY (double radius)
 {
-	rectangle->SetValue (Rectangle::RadiusXProperty, Value (value));
+	SetValue (Rectangle::RadiusYProperty, Value (radius));
+}
+
+double
+Rectangle::GetRadiusY ()
+{
+	return GetValue (Rectangle::RadiusYProperty)->AsDouble ();
+}
+
+
+double
+rectangle_get_radius_x (Rectangle *rectangle)
+{
+	return rectangle->GetRadiusX ();
+}
+
+void
+rectangle_set_radius_x (Rectangle *rectangle, double radius)
+{
+	rectangle->SetRadiusX (radius);
 }
 
 double
 rectangle_get_radius_y (Rectangle *rectangle)
 {
-	return rectangle->GetValue (Rectangle::RadiusYProperty)->AsDouble();
+	return rectangle->GetRadiusY ();
 }
 
 void
-rectangle_set_radius_y (Rectangle *rectangle, double value)
+rectangle_set_radius_y (Rectangle *rectangle, double radius)
 {
-	rectangle->SetValue (Rectangle::RadiusYProperty, Value (value));
+	rectangle->SetRadiusY (radius);
 }
 
 Rectangle *
@@ -1419,10 +1445,10 @@ rectangle_new (void)
 //	- Shape::StrokeThickness
 //
 
-DependencyProperty* Line::X1Property;
-DependencyProperty* Line::Y1Property;
-DependencyProperty* Line::X2Property;
-DependencyProperty* Line::Y2Property;
+DependencyProperty *Line::X1Property;
+DependencyProperty *Line::Y1Property;
+DependencyProperty *Line::X2Property;
+DependencyProperty *Line::Y2Property;
 
 #define LINECAP_SMALL_OFFSET	0.1
 
@@ -1498,10 +1524,10 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 
 	//if (do_op && !(start == end && start == dash)) {
 	if (do_op && (start != end || (dashed && !(start == end && start == dash)))) {
-		double x1 = GetValue (Line::X1Property)->AsDouble ();
-		double y1 = GetValue (Line::Y1Property)->AsDouble ();
-		double x2 = GetValue (Line::X2Property)->AsDouble ();
-		double y2 = GetValue (Line::Y2Property)->AsDouble ();
+		double x1 = GetX1 ();
+		double y1 = GetY1 ();
+		double x2 = GetX2 ();
+		double y2 = GetY2 ();
 		
 		printf ("Special Case\n");
 		// draw start and end line caps
@@ -1566,10 +1592,10 @@ Line::BuildPath ()
 
 	path = moon_path_renew (path, MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH);
 	
-	double x1 = GetValue (Line::X1Property)->AsDouble ();
-	double y1 = GetValue (Line::Y1Property)->AsDouble ();
-	double x2 = GetValue (Line::X2Property)->AsDouble ();
-	double y2 = GetValue (Line::Y2Property)->AsDouble ();
+	double x1 = GetX1 ();
+	double y1 = GetY1 ();
+	double x2 = GetX2 ();
+	double y2 = GetY2 ();
 	
 	moon_move_to (path, x1, y1);
 	moon_line_to (path, x2, y2);
@@ -1592,10 +1618,10 @@ Line::ComputeShapeBounds (bool logical)
 	if (thickness <= 0.0 && !logical)
 		return shape_bounds;
 	
-	double x1 = GetValue (Line::X1Property)->AsDouble ();
-	double y1 = GetValue (Line::Y1Property)->AsDouble ();
-	double x2 = GetValue (Line::X2Property)->AsDouble ();
-	double y2 = GetValue (Line::Y2Property)->AsDouble ();
+	double x1 = GetX1 ();
+	double y1 = GetY1 ();
+	double x2 = GetX2 ();
+	double y2 = GetY2 ();
 	
 	calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
 
@@ -1621,59 +1647,110 @@ Line::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
-double
-line_get_x1 (Line *line)
-{
-	return line->GetValue (Line::X1Property)->AsDouble();
-}
-
 void
-line_set_x1 (Line *line, double value)
+Line::SetX1 (double x1)
 {
-	line->SetValue (Line::X1Property, Value (value));
+	SetValue (Line::X1Property, Value (x1));
 }
 
 double
-line_get_y1 (Line *line)
+Line::GetX1 ()
 {
-	return line->GetValue (Line::Y1Property)->AsDouble();
+	return GetValue (Line::X1Property)->AsDouble ();
 }
 
 void
-line_set_y1 (Line *line, double value)
+Line::SetY1 (double y1)
 {
-	line->SetValue (Line::Y1Property, Value (value));
+	SetValue (Line::Y1Property, Value (y1));
 }
 
 double
-line_get_x2 (Line *line)
+Line::GetY1 ()
 {
-	return line->GetValue (Line::X2Property)->AsDouble();
+	return GetValue (Line::Y1Property)->AsDouble ();
 }
 
 void
-line_set_x2 (Line *line, double value)
+Line::SetX2 (double x2)
 {
-	line->SetValue (Line::X2Property, Value (value));
+	SetValue (Line::X2Property, Value (x2));
 }
 
 double
-line_get_y2 (Line *line)
+Line::GetX2 ()
 {
-	return line->GetValue (Line::Y2Property)->AsDouble();
+	return GetValue (Line::X2Property)->AsDouble ();
 }
 
 void
-line_set_y2 (Line *line, double value)
+Line::SetY2 (double y2)
 {
-	line->SetValue (Line::Y2Property, Value (value));
+	SetValue (Line::Y2Property, Value (y2));
 }
+
+double
+Line::GetY2 ()
+{
+	return GetValue (Line::Y2Property)->AsDouble ();
+}
+
 
 Line *
 line_new (void)
 {
 	return new Line ();
 }
+
+double
+line_get_x1 (Line *line)
+{
+	return line->GetX1 ();
+}
+
+void
+line_set_x1 (Line *line, double x1)
+{
+	line->SetX1 (x1);
+}
+
+double
+line_get_y1 (Line *line)
+{
+	return line->GetY1 ();
+}
+
+void
+line_set_y1 (Line *line, double y1)
+{
+	line->SetY1 (y1);
+}
+
+double
+line_get_x2 (Line *line)
+{
+	return line->GetX2 ();
+}
+
+void
+line_set_x2 (Line *line, double x2)
+{
+	line->SetX2 (x2);
+}
+
+double
+line_get_y2 (Line *line)
+{
+	return line->GetY2 ();
+}
+
+void
+line_set_y2 (Line *line, double y2)
+{
+	line->SetY2 (y2);
+}
+
+
 
 //
 // Polygon

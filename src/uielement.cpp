@@ -547,8 +547,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 				Image *image = (Image *) this;
 				Stretch stretch = image->GetStretch ();
 				
-				subtract = (image->surface
-					    && !image->surface->has_alpha
+				subtract = (image->surface && !image->surface->has_alpha
 					    && ((image->GetImageWidth () == image->GetBounds ().w
 						 && image->GetImageHeight () == image->GetBounds ().h)
 						|| (stretch == StretchFill || stretch == StretchUniformToFill)));
@@ -561,23 +560,21 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 				Rectangle *rectangle = (Rectangle *) this;
 				Brush *fill = rectangle->GetFill ();
-
+				
 				if (fill != NULL && fill->IsOpaque()) {
 					/* make it a little easier - only consider the rectangle inside the corner radii.
 					   we're also a little more conservative than we need to be, regarding stroke
 					   thickness. */
-					double xr = (rectangle->GetValue(Rectangle::RadiusXProperty)->AsDouble() +
-						     rectangle->GetValue(Rectangle::StrokeThicknessProperty)->AsDouble()/2);
-					double yr = (rectangle->GetValue(Rectangle::RadiusYProperty)->AsDouble() +
-						     rectangle->GetValue(Rectangle::StrokeThicknessProperty)->AsDouble()/2);
-
+					double xr = (rectangle->GetRadiusX () + rectangle->GetStrokeThickness () / 2);
+					double yr = (rectangle->GetRadiusY () + rectangle->GetStrokeThickness () / 2);
+					
 					Rect r = bounds.GrowBy (-xr, -yr).RoundOut();
 
 					Region *inner_rect_region = new Region (self_region);
 					inner_rect_region->Intersect (r);
-					if (!inner_rect_region->IsEmpty()) {
+					if (!inner_rect_region->IsEmpty())
 						surface_region->Subtract (inner_rect_region);
-					}
+					
 					delete inner_rect_region;
 				}
 			}

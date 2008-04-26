@@ -12,6 +12,7 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
 #ifndef __SHAPE_H__
 #define __SHAPE_H__
 
@@ -171,37 +172,36 @@ class Shape : public FrameworkElement {
 
 
 Brush	       *shape_get_fill			(Shape *shape);
-void		shape_set_fill			(Shape *shape, Brush *value);
+void		shape_set_fill			(Shape *shape, Brush *fill);
 
 Brush	       *shape_get_stroke		(Shape *shape);
-void		shape_set_stroke		(Shape *shape, Brush *value);
+void		shape_set_stroke		(Shape *shape, Brush *stroke);
 
 Stretch		shape_get_stretch		(Shape *shape);
-void		shape_set_stretch		(Shape *shape, Stretch value);
+void		shape_set_stretch		(Shape *shape, Stretch stretch);
 
 PenLineCap	shape_get_stroke_dash_cap	(Shape *shape);
-void		shape_set_stroke_dash_cap	(Shape *shape, PenLineCap value);
+void		shape_set_stroke_dash_cap	(Shape *shape, PenLineCap cap);
 
 PenLineCap	shape_get_stroke_start_line_cap	(Shape *shape);
-void		shape_set_stroke_start_line_cap	(Shape *shape, PenLineCap value);
+void		shape_set_stroke_start_line_cap	(Shape *shape, PenLineCap cap);
 
 PenLineCap	shape_get_stroke_end_line_cap	(Shape *shape);
-void		shape_set_stroke_end_line_cap	(Shape *shape, PenLineCap value);
+void		shape_set_stroke_end_line_cap	(Shape *shape, PenLineCap cap);
 
 double		shape_get_stroke_dash_offset	(Shape *shape);
-void		shape_set_stroke_dash_offset	(Shape *shape, double value);
+void		shape_set_stroke_dash_offset	(Shape *shape, double offset);
 
 double		shape_get_stroke_miter_limit	(Shape *shape);
-void		shape_set_stroke_miter_limit	(Shape *shape, double value);
+void		shape_set_stroke_miter_limit	(Shape *shape, double limit);
 
 double		shape_get_stroke_thickness	(Shape *shape);
-void		shape_set_stroke_thickness	(Shape *shape, double value);
+void		shape_set_stroke_thickness	(Shape *shape, double thickness);
 
 PenLineJoin	shape_get_stroke_line_join	(Shape *shape);
-void		shape_set_stroke_line_join	(Shape *shape, PenLineJoin value);
+void		shape_set_stroke_line_join	(Shape *shape, PenLineJoin join);
 
-double	       *shape_get_stroke_dash_array	(Shape *shape, int *count);
-void		shape_set_stroke_dash_array	(Shape *shape, double* dashes, int count);
+void		shape_set_stroke_dash_array	(Shape *shape, double *dashes, int n);
 
 
 //
@@ -212,6 +212,7 @@ class Ellipse : public Shape {
 	virtual ~Ellipse () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeLargestRectangle ();
+	
  public:
 	Ellipse ();
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
@@ -233,27 +234,38 @@ class Rectangle : public Shape {
 	virtual ~Rectangle () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
  public:
-	static DependencyProperty* RadiusXProperty;
-	static DependencyProperty* RadiusYProperty;
-
+	static DependencyProperty *RadiusXProperty;
+	static DependencyProperty *RadiusYProperty;
+	
 	Rectangle ();
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; };
-
+	
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
-
+	
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-
+	
 	bool GetRadius (double *rx, double *ry);
 	virtual Rect ComputeLargestRectangle ();
+	
+	//
+	// Property Accessors
+	//
+	void SetRadiusX (double radius);
+	double GetRadiusX ();
+	
+	void SetRadiusY (double radius);
+	double GetRadiusY ();
 };
 
 Rectangle *rectangle_new          (void);
+
 double     rectangle_get_radius_x (Rectangle *rectangle);
-void       rectangle_set_radius_x (Rectangle *rectangle, double value);
+void       rectangle_set_radius_x (Rectangle *rectangle, double radius);
+
 double     rectangle_get_radius_y (Rectangle *rectangle);
-void       rectangle_set_radius_y (Rectangle *rectangle, double value);
+void       rectangle_set_radius_y (Rectangle *rectangle, double radius);
 
 
 //
@@ -264,32 +276,48 @@ class Line : public Shape {
 	virtual ~Line () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds (bool logical);
+	
  public:
-	static DependencyProperty* X1Property;
-	static DependencyProperty* Y1Property;
-	static DependencyProperty* X2Property;
-	static DependencyProperty* Y2Property;
-
+	static DependencyProperty *X1Property;
+	static DependencyProperty *Y1Property;
+	static DependencyProperty *X2Property;
+	static DependencyProperty *Y2Property;
+	
 	virtual Type::Kind GetObjectType () { return Type::LINE; };
 	
 	virtual void BuildPath ();
 	virtual bool ClipOnHeightAndWidth () { return true; }
-
+	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-
+	
 	// Line has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
+	
+	//
+	// Property Accessors
+	//
+	void SetX1 (double x1);
+	double GetX1 ();
+	
+	void SetY1 (double y1);
+	double GetY1 ();
+	
+	void SetX2 (double x2);
+	double GetX2 ();
+	
+	void SetY2 (double y2);
+	double GetY2 ();
 };
 
 Line *line_new  (void);
 double line_get_x1 (Line *line);
-void line_set_x1 (Line *line, double value);
+void line_set_x1 (Line *line, double x1);
 double line_get_y1 (Line *line);
-void line_set_y1 (Line *line, double value);
+void line_set_y1 (Line *line, double y1);
 double line_get_x2 (Line *line);
-void line_set_x2 (Line *line, double value);
+void line_set_x2 (Line *line, double x2);
 double line_get_y2 (Line *line);
-void line_set_y2 (Line *line, double value);
+void line_set_y2 (Line *line, double y2);
 
 
 //
