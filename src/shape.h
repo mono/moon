@@ -328,9 +328,12 @@ class Polygon : public Shape {
 	virtual ~Polygon () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds (bool logical);
+	
+	Point *GetPoints (int *n);
+	
  public:
-	static DependencyProperty* FillRuleProperty;
-	static DependencyProperty* PointsProperty;
+	static DependencyProperty *FillRuleProperty;
+	static DependencyProperty *PointsProperty;
 
 	Polygon () { };
 	virtual Type::Kind GetObjectType () { return Type::POLYGON; };
@@ -339,22 +342,29 @@ class Polygon : public Shape {
 	// virtual Point GetTransformOrigin ();
 
 	virtual void BuildPath ();
-
-	virtual FillRule GetFillRule ();
-
+	
 	virtual bool CanFill () { return true; }
-
+	
 	virtual bool ClipOnHeightAndWidth () { return true; }
-
+	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	
+	//
+	// Property Accessors
+	//
+	void SetFillRule (FillRule rule);
+	virtual FillRule GetFillRule ();
+	
+	void SetPoints (Point *points, int n);
 };
 
 Polygon	       *polygon_new (void);
+
 FillRule	polygon_get_fill_rule	(Polygon *polygon);
-void		polygon_set_fill_rule	(Polygon *polygon, FillRule value);
-Point	       *polygon_get_points	(Polygon *polygon, int *count);
-void		polygon_set_points	(Polygon *polygon, Point* points, int count);
+void		polygon_set_fill_rule	(Polygon *polygon, FillRule rule);
+
+void		polygon_set_points	(Polygon *polygon, Point *points, int n);
 
 
 //
@@ -365,32 +375,42 @@ class Polyline : public Shape {
 	virtual ~Polyline () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds (bool logical);
+	
+	Point *GetPoints (int *n);
+	
  public:
-	static DependencyProperty* FillRuleProperty;
-	static DependencyProperty* PointsProperty;
-
+	static DependencyProperty *FillRuleProperty;
+	static DependencyProperty *PointsProperty;
+	
 	Polyline () { };
 	virtual Type::Kind GetObjectType () { return Type::POLYLINE; };
-
+	
 	// Polyline has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
-
+	
 	virtual void BuildPath ();
-
+	
 	virtual bool CanFill () { return true; }
 	virtual bool ClipOnHeightAndWidth () { return true; }
-
-	virtual FillRule GetFillRule ();
-
+	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	
+	//
+	// Property Accessors
+	//
+	void SetFillRule (FillRule rule);
+	virtual FillRule GetFillRule ();
+	
+	void SetPoints (Point *points, int n);
 };
 
 Polyline       *polyline_new		(void);
+
 FillRule	polyline_get_fill_rule	(Polyline *polyline);
 void		polyline_set_fill_rule	(Polyline *polyline, FillRule value);
-Point	       *polyline_get_points	(Polyline *polyline, int *count);
-void		polyline_set_points	(Polyline *polyline, Point* points, int count);
+
+void		polyline_set_points	(Polyline *polyline, Point *points, int n);
 
 
 //
@@ -399,35 +419,42 @@ void		polyline_set_points	(Polyline *polyline, Point* points, int count);
 class Path : public Shape {
  protected:
 	virtual ~Path () {}
-	virtual bool SetupLine (cairo_t* cr);
+	virtual bool SetupLine (cairo_t *cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	Rect ComputeShapeBounds (bool logical) { return ComputeShapeBounds (logical, NULL); }
 	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t *matrix);
 
  public:
-	static DependencyProperty* DataProperty;
-
+	static DependencyProperty *DataProperty;
+	
 	Path () {};
-
 	virtual Type::Kind GetObjectType () { return Type::PATH; };
-
+	
 	// Path has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
-
+	
 	virtual void Draw (cairo_t *cr);
-
+	
 	virtual bool ClipOnHeightAndWidth () { return true; }
-
+	
 	virtual bool CanFill () { return true; }
 	virtual FillRule GetFillRule ();
-
+	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	
+	//
+	// Property Accessors
+	//
+	void SetData (Geometry *data);
+	Geometry *GetData ();
 };
 
 Path *path_new (void);
-Geometry* path_get_data (Path *path);
+
+Geometry *path_get_data (Path *path);
 void path_set_data (Path *path, Geometry *value);
+
 
 void shape_init (void);
 

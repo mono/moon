@@ -12,20 +12,23 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include <string.h>
+#endif
+
 #include <gtk/gtk.h>
-#include <malloc.h>
-#include <glib.h>
-#include <stdlib.h>
 #include <cairo.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
 #include <math.h>
 
 #include "runtime.h"
 #include "shape.h"
 #include "array.h"
 
-#include <sys/time.h>
 //
 // SL-Cairo convertion and helper routines
 //
@@ -1766,14 +1769,9 @@ line_set_y2 (Line *line, double y2)
 //	- Shape::StrokeThickness
 //
 
-DependencyProperty* Polygon::FillRuleProperty;
-DependencyProperty* Polygon::PointsProperty;
+DependencyProperty *Polygon::FillRuleProperty;
+DependencyProperty *Polygon::PointsProperty;
 
-FillRule
-Polygon::GetFillRule ()
-{
-	return (FillRule) GetValue (Polygon::FillRuleProperty)->AsInt32 ();
-}
 
 // The Polygon shape can be drawn while ignoring properties:
 // * Shape::StrokeStartLineCap
@@ -1915,13 +1913,13 @@ Rect
 Polygon::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
-
+	
 	if (Shape::MixedHeightWidth (NULL, NULL))
 		return shape_bounds;
 
 	int i, count = 0;
-	Point *points = polygon_get_points (this, &count);
-
+	Point *points = GetPoints (&count);
+	
 	// the first point is a move to, resulting in an empty shape
 	if (!points || (count < 2))
 		return shape_bounds;
@@ -1993,8 +1991,8 @@ Polygon::BuildPath ()
 		return;
 
 	int i, count = 0;
-	Point *points = polygon_get_points (this, &count);
-
+	Point *points = GetPoints (&count);
+	
 	// the first point is a move to, resulting in an empty shape
 	if (!points || (count < 2)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
@@ -2050,16 +2048,22 @@ Polygon::OnCollectionChanged (Collection *col, CollectionChangeType type, Depend
 	Invalidate ();
 }
 
-FillRule
-polygon_get_fill_rule (Polygon *polygon)
+void
+Polygon::SetFillRule (FillRule rule)
 {
-	return (FillRule) polygon->GetValue (Polygon::FillRuleProperty)->AsInt32();
+	SetValue (Polygon::FillRuleProperty, Value (rule));
+}
+
+FillRule
+Polygon::GetFillRule ()
+{
+	return (FillRule) GetValue (Polygon::FillRuleProperty)->AsInt32 ();
 }
 
 void
-polygon_set_fill_rule (Polygon *polygon, FillRule value)
+Polygon::SetPoints (Point *points, int n)
 {
-	polygon->SetValue (Polygon::FillRuleProperty, Value (value));
+	SetValue (Polygon::PointsProperty, Value (points, n));
 }
 
 /*
@@ -2068,30 +2072,47 @@ polygon_set_fill_rule (Polygon *polygon, FillRule value)
  * only internal.
  */
 Point *
-polygon_get_points (Polygon *polygon, int *count)
+Polygon::GetPoints (int *n)
 {
-	Value *value = polygon->GetValue (Polygon::PointsProperty);
+	Value *value = GetValue (Polygon::PointsProperty);
+	
 	if (!value) {
-		*count = 0;
+		*n = 0;
 		return NULL;
 	}
-
-	PointArray *pa = value->AsPointArray();
-	*count = pa->basic.count;
-	return pa->points;
+	
+	PointArray *array = value->AsPointArray();
+	*n = array->basic.count;
+	
+	return array->points;
 }
 
-void
-polygon_set_points (Polygon *polygon, Point* points, int count)
-{
-	polygon->SetValue (Polygon::PointsProperty, Value (points, count));
-}
 
 Polygon *
 polygon_new (void)
 {
 	return new Polygon ();
 }
+
+FillRule
+polygon_get_fill_rule (Polygon *polygon)
+{
+	return polygon->GetFillRule ();
+}
+
+void
+polygon_set_fill_rule (Polygon *polygon, FillRule rule)
+{
+	polygon->SetFillRule (rule);
+}
+
+void
+polygon_set_points (Polygon *polygon, Point *points, int n)
+{
+	polygon->SetPoints (points, n);
+}
+
+
 
 //
 // Polyline
@@ -2106,8 +2127,8 @@ polygon_new (void)
 //	- Shape::StretchProperty
 //	- Shape::StrokeThickness
 
-DependencyProperty* Polyline::FillRuleProperty;
-DependencyProperty* Polyline::PointsProperty;
+DependencyProperty *Polyline::FillRuleProperty;
+DependencyProperty *Polyline::PointsProperty;
 
 // The Polyline shape can be drawn while ignoring NO properties
 bool
@@ -2157,12 +2178,6 @@ Polyline::DrawShape (cairo_t *cr, bool do_op)
 	return true;
 }
 
-FillRule
-Polyline::GetFillRule ()
-{
-	return (FillRule) GetValue (Polyline::FillRuleProperty)->AsInt32 ();
-}
-
 Rect
 Polyline::ComputeShapeBounds (bool logical)
 {
@@ -2172,8 +2187,8 @@ Polyline::ComputeShapeBounds (bool logical)
 		return shape_bounds;
 
 	int i, count = 0;
-	Point *points = polyline_get_points (this, &count);
-
+	Point *points = GetPoints (&count);
+	
 	// the first point is a move to, resulting in an empty shape
 	if (!points || (count < 2))
 		return shape_bounds;
@@ -2224,8 +2239,8 @@ Polyline::BuildPath ()
 		return;
 
 	int i, count = 0;
-	Point *points = polyline_get_points (this, &count);
-
+	Point *points = GetPoints (&count);
+	
 	// the first point is a move to, resulting in an empty shape
 	if (!points || (count < 2)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
@@ -2266,16 +2281,22 @@ Polyline::OnCollectionChanged (Collection *col, CollectionChangeType type, Depen
 	Invalidate ();
 }
 
-FillRule
-polyline_get_fill_rule (Polyline *polyline)
+void
+Polyline::SetFillRule (FillRule rule)
 {
-	return (FillRule) polyline->GetValue (Polyline::FillRuleProperty)->AsInt32();
+	SetValue (Polyline::FillRuleProperty, Value (rule));
+}
+
+FillRule
+Polyline::GetFillRule ()
+{
+	return (FillRule) GetValue (Polyline::FillRuleProperty)->AsInt32 ();
 }
 
 void
-polyline_set_fill_rule (Polyline *polyline, FillRule value)
+Polyline::SetPoints (Point *points, int n)
 {
-	polyline->SetValue (Polyline::FillRuleProperty, Value (value));
+	SetValue (Polyline::PointsProperty, Value (points, n));
 }
 
 /*
@@ -2284,24 +2305,21 @@ polyline_set_fill_rule (Polyline *polyline, FillRule value)
  * only internal.
  */
 Point *
-polyline_get_points (Polyline *polyline, int *count)
+Polyline::GetPoints (int *n)
 {
-	Value *value = polyline->GetValue (Polyline::PointsProperty);
+	Value *value = GetValue (Polyline::PointsProperty);
+	
 	if (!value) {
-		*count = 0;
+		*n = 0;
 		return NULL;
 	}
-
-	PointArray *pa = value->AsPointArray();
-	*count = pa->basic.count;
-	return pa->points;
+	
+	PointArray *array = value->AsPointArray();
+	*n = array->basic.count;
+	
+	return array->points;
 }
 
-void
-polyline_set_points (Polyline *polyline, Point* points, int count)
-{
-	polyline->SetValue (Polyline::PointsProperty, Value (points, count));
-}
 
 Polyline *
 polyline_new (void)
@@ -2309,11 +2327,30 @@ polyline_new (void)
 	return new Polyline ();
 }
 
+FillRule
+polyline_get_fill_rule (Polyline *polyline)
+{
+	return polyline->GetFillRule ();
+}
+
+void
+polyline_set_fill_rule (Polyline *polyline, FillRule rule)
+{
+	polyline->SetFillRule (rule);
+}
+
+void
+polyline_set_points (Polyline *polyline, Point *points, int n)
+{
+	polyline->SetPoints (points, n);
+}
+
+
 //
 // Path
 //
 
-DependencyProperty* Path::DataProperty;
+DependencyProperty *Path::DataProperty;
 
 bool
 Path::SetupLine (cairo_t* cr)
@@ -2354,12 +2391,9 @@ FillRule
 Path::GetFillRule ()
 {
 	Geometry *geometry;
-	Value *value;
 	
-	if (!(value = GetValue (Path::DataProperty)))
+	if (!(geometry = GetData ()))
 		return Shape::GetFillRule ();
-	
-	geometry = value->AsGeometry ();
 	
 	return geometry->GetFillRule ();
 }
@@ -2368,20 +2402,17 @@ Rect
 Path::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 {
 	Rect shape_bounds = Rect ();
-
+	
 	Value *vh, *vw;
 	if (Shape::MixedHeightWidth (&vh, &vw))
 		return shape_bounds;
 	
 	Geometry *geometry;
-	Value *value;
 	
-	if (!(value = GetValue (Path::DataProperty))) {
+	if (!(geometry = GetData ())) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return shape_bounds;
 	}
-	
-	geometry = value->AsGeometry ();
 	
 	double w = vw ? vw->AsDouble () : 0.0;
 	double h = vh ? vh->AsDouble () : 0.0;
@@ -2407,17 +2438,14 @@ Path::Draw (cairo_t *cr)
 	cairo_new_path (cr);
 	
 	Geometry *geometry;
-	Value *value;
 	
-	if (!(value = GetValue (Path::DataProperty)))
+	if (!(geometry = GetData ()))
 		return;
-	
-	geometry = value->AsGeometry ();
 	
 	cairo_save (cr);
 	cairo_transform (cr, &stretch_transform);
 	geometry->Draw (this, cr);
-
+	
 	cairo_restore (cr);
 }
 
@@ -2455,23 +2483,37 @@ Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pro
  * 	http://cgm.cs.mcgill.ca/~athens/cs507/Projects/2003/DanielSud/complete.html
  */
 
-Geometry *
-path_get_data (Path *path)
+void
+Path::SetData (Geometry *data)
 {
-	Value *value = path->GetValue (Path::DataProperty);
-	return (value ? value->AsGeometry() : NULL);
+	SetValue (Path::DataProperty, Value (data));
 }
 
-void
-path_set_data (Path *path, Geometry *value)
+Geometry *
+Path::GetData ()
 {
-	path->SetValue (Path::DataProperty, Value (value));
+	Value *value = GetValue (Path::DataProperty);
+	
+	return value ? value->AsGeometry () : NULL;
 }
+
 
 Path *
 path_new (void)
 {
 	return new Path ();
+}
+
+Geometry *
+path_get_data (Path *path)
+{
+	return path->GetData ();
+}
+
+void
+path_set_data (Path *path, Geometry *data)
+{
+	path->SetData (data);
 }
 
 
