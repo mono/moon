@@ -939,7 +939,8 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	if ((content->value_type) == Type::STRING && p->cdata_content) {
 		p->current_element->item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 	} else if (p->current_element->item && is_instance_of (p->current_element, Type::TEXTBLOCK)) {
-		Inlines *inlines = text_block_get_inlines ((TextBlock *) p->current_element->item);
+		TextBlock *textblock = (TextBlock *) p->current_element->item;
+		Inlines *inlines = textblock->GetInlines ();
 		Collection::Node *last = inlines ? (Collection::Node *) inlines->list->Last () : NULL;
 		DependencyObject *obj = last ? last->obj : NULL;
 		
@@ -968,11 +969,11 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		}
 		
 		Run *run = new Run ();
-		run_set_text (run, p->cdata->str);
+		run->SetText (p->cdata->str);
 		
 		if (!inlines) {
 			inlines = new Inlines ();
-			text_block_set_inlines ((TextBlock *) p->current_element->item, inlines);
+			textblock->SetInlines (inlines);
 			inlines->unref ();
 		}
 		
@@ -2409,12 +2410,15 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	case Type::BRUSH:
 	case Type::SOLIDCOLORBRUSH: {
 		// Only solid color brushes can be specified using attribute syntax
-		SolidColorBrush *scb = solid_color_brush_new ();
+		SolidColorBrush *scb = new SolidColorBrush ();
 		Color *c = color_from_str (str);
+		
 		if (c == NULL)
 			return false;
-		solid_color_brush_set_color (scb, c); // copies c
+		
+		scb->SetColor (c);
 		delete c;
+		
 		*v = new Value (scb);
 		scb->unref ();
 		break;
