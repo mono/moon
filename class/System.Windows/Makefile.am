@@ -52,6 +52,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineMarker.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineMarkerCollection.cs	\
+	$(srcdir)/System.Windows/Application.cs					\
+	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/Downloader.cs					\
 	$(srcdir)/System.Windows/Duration.cs					\
 	$(srcdir)/System.Windows/ErrorEventArgs.cs				\
@@ -71,6 +73,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/RuntimeErrorEventArgs.cs			\
 	$(srcdir)/System.Windows/RuntimeErrorEventHandler.cs			\
 	$(srcdir)/System.Windows/Size.cs					\
+	$(srcdir)/System.Windows/StartupEventArgs.cs				\
+	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/StyleSimulations.cs				\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
@@ -167,6 +171,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/Storyboard.cs			\
 	$(srcdir)/System.Windows.Media.Animation/Timeline.cs			\
 	$(srcdir)/System.Windows.Media.Animation/TimelineGroup.cs		\
+	$(srcdir)/System.Windows.Resources/StreamResourceInfo.cs		\
 	$(srcdir)/System.Windows.Shapes/Ellipse.cs				\
 	$(srcdir)/System.Windows.Shapes/Line.cs					\
 	$(srcdir)/System.Windows.Shapes/Path.cs					\
