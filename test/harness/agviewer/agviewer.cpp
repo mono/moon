@@ -164,25 +164,34 @@ main(int argc, char **argv)
 	gtk_init (&argc, &argv);
 
 	int i;
-	for (i = 0; i < argc - 1; i++) {
-		if (!g_strcasecmp ("-framewidth", argv [i]))
+	for (i = 1; i < argc && argv[i][0] == '-'; i++) {
+		if (!g_strcasecmp ("-framewidth", argv [i]) && i < argc) {
 			frame_width = strtol (argv [++i], NULL, 10);
-		if (!g_strcasecmp ("-frameheight", argv [i]))
+			continue;
+		}
+		
+		if (!g_strcasecmp ("-frameheight", argv [i]) && i < argc) {
 			frame_height = strtol (argv [++i], NULL, 10);
-		if (!g_strcasecmp ("-working-dir", argv [i])) {
+			continue;
+		}
+		
+		if (!g_strcasecmp ("-working-dir", argv [i]) && i < argc) {
 			working_dir_set = true;
 			printf ("setting the working directory\n");
 			if (chdir (argv [++i]) != 0) {
 				g_warning ("Unable to set working directory.\n");
 				exit (-1);
 			}
+			
+			continue;
 		}
+		
 		if (!g_strcasecmp ("-server", argv [i])) {
 			i++;
 			continue;
 		}
 	}
-
+	
 	if (i < argc) {
 		test_path = g_strdup (argv [argc - 1]);
 		if (!working_dir_set) {
@@ -192,9 +201,8 @@ main(int argc, char **argv)
 				exit (-1);
 			}
 		}
-			
 	}
-
+	
 	browser = new_gtk_browser ();
 
 	gtk_widget_set_usize (browser->moz_embed, frame_width, frame_height);
@@ -203,16 +211,14 @@ main(int argc, char **argv)
 	gtk_widget_show_all (GTK_WIDGET (browser->top_level_window));
 
 	register_agserver_object ();
-
-	if (!test_path || !strlen (test_path))
-		move_to_next_test ();
-	else
+	
+	if (test_path && test_path[0]) {
 		run_test (test_path, DEFAULT_TIMEOUT);
-
-
-	if (test_path && strlen (test_path))
 		gtk_main ();
-
+	} else {
+		move_to_next_test ();
+	}
+	
 	gtk_widget_destroy (GTK_WIDGET (browser->top_level_window));
 
 	return 0;

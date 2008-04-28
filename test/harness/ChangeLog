@@ -1,3 +1,7 @@
+2008-04-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* agviewer/agviewer.cpp (main): Gotta loop thru all the args.
+
 2008-04-28  Jackson Harper  <jackson@ximian.com>
 
 	* agviewer/agviewer.cpp: Fix running in standalone mode.
