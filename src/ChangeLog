@@ -1,3 +1,7 @@
+2008-04-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* geometry.h: Include glib.h before using glib macros.
+
 2008-04-28  Michael Dominic K.  <mdk@mdk.am>
 
 	* brush.cpp: Make sure to use proper width for image stretching params.

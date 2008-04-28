@@ -13,6 +13,8 @@
 #ifndef __GEOMETRY_H__
 #define __GEOMETRY_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 #include <stdint.h>
