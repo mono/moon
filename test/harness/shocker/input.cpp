@@ -53,7 +53,7 @@
 
 
 
-InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_available (false)
+InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_available (false), down_keys (NULL)
 {
 	display = XOpenDisplay (NULL);
 
@@ -81,6 +81,10 @@ InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_avai
 
 InputProvider::~InputProvider ()
 {
+	while (down_keys)
+		SendKeyInput (GPOINTER_TO_UINT (down_keys->data), false);
+
+	g_slist_free (down_keys);
 }
 
 void
@@ -126,8 +130,6 @@ InputProvider::MoveMouseLogarithmic (int x, int y)
 
 		XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, current_x, current_y, CurrentTime);
 		XFlush (display);
-
-		printf ("moving to:  %d, %d   (%d, %d)\n", current_x, current_y, x, y);
 
 		usleep (MOVE_MOUSE_LOGARITHMIC_INTERVAL);
 	}
@@ -208,6 +210,12 @@ InputProvider::SendKeyInput (uint32 keysym, bool key_down)
 
 	XTestFakeKeyEvent (display, keycode, key_down, CurrentTime);
 	XFlush (display);
+
+	if (key_down) {
+		if (!g_slist_find (down_keys, GUINT_TO_POINTER (keysym)))
+			down_keys = g_slist_append (down_keys, GUINT_TO_POINTER (keysym));
+	} else
+		down_keys = g_slist_remove (down_keys, GUINT_TO_POINTER (keysym));
 }
 
 void
@@ -223,9 +231,6 @@ InputProvider::GetCursorPos (int &x, int &y)
 	XQueryPointer (display, root_window, &root_return, &child_return, &x, &y, &x_win, &y_win, &mask);
 }
 
-//
-// C&P from jtr.js
-//
 enum VirtualKeys {
     VK_LBUTTON       = 0x01,
     VK_RBUTTON       = 0x02,
@@ -235,7 +240,6 @@ enum VirtualKeys {
     VK_XBUTTON2      = 0x06,
     VK_BACK          = 0x08,
     VK_TAB           = 0x09,
-    /* 0x0A and 0x0B : reserved */
     VK_CLEAR         = 0x0C,
     VK_RETURN        = 0x0D,
     VK_SHIFT         = 0x10,
@@ -310,7 +314,6 @@ enum VirtualKeys {
     VK_LWIN          = 0x5B,
     VK_RWIN          = 0x5C,
     VK_APPS          = 0x5D,
-    /* VK_POWER      = 0x5E *** reserved */
     VK_SLEEP         = 0x5F,
     VK_NUMPAD0       = 0x60,
     VK_NUMPAD1       = 0x61,
@@ -360,13 +363,13 @@ enum VirtualKeys {
     VK_RCONTROL      = 0xA3,
     VK_LMENU         = 0xA4,
     VK_RMENU         = 0xA5,
-    VK_OEM_1         = 0xBA,   // ';:' for US
-    VK_OEM_PLUS      = 0xBB,   // '+' any country
-    VK_OEM_COMMA     = 0xBC,   // ',' any country
-    VK_OEM_MINUS     = 0xBD,   // '-' any country
-    VK_OEM_PERIOD    = 0xBE,   // '.' any country
-    VK_OEM_2         = 0xBF,   // '/?' for US
-    VK_OEM_3         = 0xC0   // '`~' for US
+    VK_OEM_1         = 0xBA,
+    VK_OEM_PLUS      = 0xBB,
+    VK_OEM_COMMA     = 0xBC,
+    VK_OEM_MINUS     = 0xBD,
+    VK_OEM_PERIOD    = 0xBE,
+    VK_OEM_2         = 0xBF,
+    VK_OEM_3         = 0xC0
 };
 
 

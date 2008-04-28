@@ -25,9 +25,9 @@ struct ShockerScriptableControlObject : public NPObject
 	void Connect ();
 	void SignalShutdown ();
 
-	InputProvider* GetInputProvider () { return input_provider; }
-	ImageCaptureProvider* GetImageCaptureProvider () { return image_capture; }
-	LogProvider* GetLogProvider () { return log_provider; }
+	InputProvider* GetInputProvider ();
+	ImageCaptureProvider* GetImageCaptureProvider ();
+	LogProvider* GetLogProvider ();
 
         //
 	// Wrappers around some JS functions

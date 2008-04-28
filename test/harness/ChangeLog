@@ -1,3 +1,11 @@
+2008-04-28  Jackson Harper  <jackson@ximian.com>
+
+	* shocker/input.cpp: When we are shutdown make sure down keys are
+	sent an up, otherwise the keyboard ends in a weird state.
+	* shocker/shocker.cpp|h: Cleanup the providers when shutdown is
+	signalled, not the image capture provider though, since that might
+	still be working.
+	
 2008-04-25  Jackson Harper  <jackson@ximian.com>
 
 	* agviewer/agviewer.cpp: Don't use escape for quitting a test

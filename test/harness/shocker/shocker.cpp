@@ -427,8 +427,36 @@ ShockerScriptableControlObject::ShockerScriptableControlObject (NPP instance) : 
 ShockerScriptableControlObject::~ShockerScriptableControlObject ()
 {
 	g_free (test_path);
+
+	delete input_provider;
+	delete image_capture;
+	delete log_provider;
 }
-		
+
+InputProvider *
+ShockerScriptableControlObject::GetInputProvider ()
+{
+	if (!input_provider)
+		input_provider = new InputProvider ();
+	return input_provider;
+}
+
+ImageCaptureProvider *
+ShockerScriptableControlObject::GetImageCaptureProvider ()
+{
+	if (!image_capture)
+		image_capture = new ImageCaptureProvider ();
+	return image_capture;
+}
+
+LogProvider *
+ShockerScriptableControlObject::GetLogProvider ()
+{
+	if (!log_provider)
+		log_provider = new LogProvider (GetTestPath ());
+	return log_provider;
+}
+
 void
 ShockerScriptableControlObject::Connect ()
 {
@@ -437,6 +465,9 @@ ShockerScriptableControlObject::Connect ()
 void
 ShockerScriptableControlObject::SignalShutdown ()
 {
+	delete input_provider; input_provider = NULL;
+	delete log_provider; log_provider = NULL;
+
 	shutdown_manager_queue_shutdown (this);
 }
 

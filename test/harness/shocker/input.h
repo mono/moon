@@ -35,6 +35,8 @@ private:
 	Window root_window;
 	bool xtest_available;
 
+	GSList* down_keys;
+
 	void GetCursorPos (int &x, int &y);
 	int MapToKeysym (int key);
 };
