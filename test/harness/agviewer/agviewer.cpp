@@ -164,17 +164,22 @@ main(int argc, char **argv)
 	gtk_init (&argc, &argv);
 
 	int i;
-	for (i = 0; i < argc - 2; i++) {
+	for (i = 0; i < argc - 1; i++) {
 		if (!g_strcasecmp ("-framewidth", argv [i]))
 			frame_width = strtol (argv [++i], NULL, 10);
 		if (!g_strcasecmp ("-frameheight", argv [i]))
 			frame_height = strtol (argv [++i], NULL, 10);
 		if (!g_strcasecmp ("-working-dir", argv [i])) {
 			working_dir_set = true;
+			printf ("setting the working directory\n");
 			if (chdir (argv [++i]) != 0) {
 				g_warning ("Unable to set working directory.\n");
 				exit (-1);
 			}
+		}
+		if (!g_strcasecmp ("-server", argv [i])) {
+			i++;
+			continue;
 		}
 	}
 
