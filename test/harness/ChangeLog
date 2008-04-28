@@ -1,5 +1,9 @@
 2008-04-28  Jackson Harper  <jackson@ximian.com>
 
+	* agviewer/agviewer.cpp: Fix running in standalone mode.
+
+2008-04-28  Jackson Harper  <jackson@ximian.com>
+
 	* shocker/input.cpp: When we are shutdown make sure down keys are
 	sent an up, otherwise the keyboard ends in a weird state.
 	* shocker/shocker.cpp|h: Cleanup the providers when shutdown is
