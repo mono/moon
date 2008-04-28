@@ -1,5 +1,11 @@
 2008-04-28  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::Attach): emit the canvas's Loaded event
+	before we emit our own Load event (and trigger the plugin's onLoad
+	handler).
+
+2008-04-28  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (Surface::Attach): always emit Resize on Attach.
 	fixes ControlState.htm.
 
