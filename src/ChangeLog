@@ -11,6 +11,12 @@
 
 2008-04-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml.cpp: Silently skip the attributes that are empty instead of
+	throwing an error. Fixes the test-parser-empty-property.xaml and
+	#383904.
+
+2008-04-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* brush.cpp: Make sure to use proper width for image stretching params.
 	Fixes the image-brush-stretch-set.html and bug #383938.
 

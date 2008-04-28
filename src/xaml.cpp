@@ -2816,6 +2816,10 @@ start_parse:
 		if (i == skip_attribute)
 			continue;
 
+		// Skip empty attrs
+		if (attr [i + 1] == NULL || strlen (attr [i + 1]) == 0)
+			continue;
+
 		// Setting attributes like x:Class can change item->item, so we
 		// need to make sure we have an up to date pointer
 		DependencyObject *dep = (DependencyObject *) item->item;
