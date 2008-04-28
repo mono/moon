@@ -55,6 +55,7 @@ using System.Collections;
 using Mono;
 using System.Reflection;
 using System.Xml;
+using Application = Gtk.Application;
 
 class MonoOpen {
 	static Window window;

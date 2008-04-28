@@ -10,6 +10,7 @@ using System.Windows.Shapes;
 using System.Windows.Input;
 using System.IO;
 using System.Windows.Media.Animation;
+using Application = Gtk.Application;
 
 namespace svg2xaml
 {
