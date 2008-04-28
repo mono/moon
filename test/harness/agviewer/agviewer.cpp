@@ -78,7 +78,7 @@ static char* test_path = "";
 static guint timeout_id = 0;
 
 static void run_test (char* test_path, int timeout);
-static void move_to_next_test ();
+static bool move_to_next_test ();
 static void request_test_runner_shutdown ();
 static void signal_test_complete (const char* test_name, bool successful);
 static bool wait_for_next_test (int* timeout);
@@ -177,7 +177,6 @@ main(int argc, char **argv)
 		
 		if (!g_strcasecmp ("-working-dir", argv [i]) && i < argc) {
 			working_dir_set = true;
-			printf ("setting the working directory\n");
 			if (chdir (argv [++i]) != 0) {
 				g_warning ("Unable to set working directory.\n");
 				exit (-1);
@@ -186,10 +185,8 @@ main(int argc, char **argv)
 			continue;
 		}
 		
-		if (!g_strcasecmp ("-server", argv [i])) {
-			i++;
+		if (!g_strcasecmp ("-server", argv [i]))
 			continue;
-		}
 	}
 	
 	if (i < argc) {
@@ -211,7 +208,7 @@ main(int argc, char **argv)
 			g_free (dir);
 		}
 	}
-	
+
 	browser = new_gtk_browser ();
 
 	gtk_widget_set_usize (browser->moz_embed, frame_width, frame_height);
@@ -225,7 +222,8 @@ main(int argc, char **argv)
 		run_test (test_path, DEFAULT_TIMEOUT);
 		gtk_main ();
 	} else {
-		move_to_next_test ();
+		if (move_to_next_test ())
+			gtk_main ();
 	}
 	
 	gtk_widget_destroy (GTK_WIDGET (browser->top_level_window));
@@ -244,16 +242,18 @@ run_test (char* test_path, int timeout)
 }
 
 
-static void
+static bool
 move_to_next_test ()
 {
 	int timeout = 0;
-	if (wait_for_next_test (&timeout))
+	if (wait_for_next_test (&timeout)) {
 		run_test (test_path, timeout);
-	else {
+		return true;
+	} else {
 		if (gtk_main_level ())
 			gtk_main_quit ();
 	}
+	return false;
 }
 
 static void
