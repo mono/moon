@@ -1,3 +1,8 @@
+2008-04-28  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::Attach): always emit Resize on Attach.
+	fixes ControlState.htm.
+
 2008-04-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* typegen/typegen.cs: Minor fix to support C constructors immediately

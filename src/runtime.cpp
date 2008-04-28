@@ -588,11 +588,10 @@ Surface::Attach (UIElement *element)
 		width = normal_width;
 	}
 
-	if (change_size) {
+	if (change_size)
 		Realloc ();
 		
-		Emit (ResizeEvent);
-	}
+	Emit (ResizeEvent);
 
 	toplevel->UpdateTotalRenderVisibility ();
 	toplevel->UpdateTotalHitTestVisibility ();
