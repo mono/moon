@@ -73,6 +73,8 @@ namespace MoonlightTests {
 		{
 			this.tests = tests;
 			this.working_dir = working_dir;
+
+			tests_enumerator = tests.GetEnumerator ();
 		}
 
 		ObjectPath IDbusService.GetObjectPath ()
@@ -90,7 +92,6 @@ namespace MoonlightTests {
 		{
 			lock (tests_enumerator) {
 				if (!tests_enumerator.MoveNext ()) {
-					Console.WriteLine ("run complete");
 					run_complete = true;
 					test_path = String.Empty;
 					timeout = -1;
@@ -103,6 +104,7 @@ namespace MoonlightTests {
 
 				test_path = Path.GetFullPath (current_test.InputFile);
 				timeout = current_test.Timeout;
+
 				available = true;
 			}
 		}
@@ -124,8 +126,6 @@ namespace MoonlightTests {
 
 		public void Start ()
 		{
-			tests_enumerator = tests.GetEnumerator ();
-
 			 do {
 				 EnsureAgviewerProcess ();
 
@@ -166,7 +166,7 @@ namespace MoonlightTests {
 			}
 
 			if (agviewer_process == null) {
-				agviewer_process = new ExternalProcess (GetProcessPath (), String.Format ("-working-dir {0} -server", Path.GetFullPath (working_dir)), -1);
+				agviewer_process = new ExternalProcess (GetProcessPath (), String.Format ("-working-dir {0}", Path.GetFullPath (working_dir)), -1);
 				agviewer_process.Run (false);
 			}
 		}

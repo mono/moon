@@ -206,6 +206,26 @@ namespace MoonlightTests {
 			return res;
 		}
 
+		public int RunServer (string drtlist)
+		{
+			LoadTests (drtlist);
+			Screensaver.Inhibit ();
+
+			LoggingServer logging_server = new LoggingServer ();
+			TestRunner runner = new TestRunner (tests, Path.GetFullPath (Path.GetDirectoryName (drtlist)));
+
+			DbusServices.Register (logging_server);
+			DbusServices.Register (runner);
+
+			DbusServices.Start ();
+
+			Console.WriteLine ("Test runner server has been started, press enter to stop the server.");
+			Console.ReadLine ();
+
+			DbusServices.Stop ();
+			return 0;
+		}
+
 		public void AddReport (IReport report)
 		{
 			reports.Add (report);
@@ -369,6 +389,8 @@ namespace MoonlightTests {
 					delegate (string v) { d.GenerateMasterFiles (drtlist); });
 			p.Add ("run-image-sanity-checks", "Run internal sanity checks on the image compare function.",
 					delegate (string v) { d.RunImageSanityChecks (drtlist); });
+			p.Add ("runner-server", "Run a standalone server so agviewer can be invoked outside of the runner for debugginer.",
+					delegate (string v) { d.RunServer (drtlist); });
 
 			p.Parse (args);
 

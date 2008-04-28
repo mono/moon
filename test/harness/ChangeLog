@@ -1,3 +1,14 @@
+2008-04-28  Jackson Harper  <jackson@ximian.com>
+
+	* agviewer/agviewer.cpp: Allow non absolute paths to be used for
+	user supplied test paths.
+
+	* test-runner/TestRunner.cs:
+	* test-runner/Driver.cs: Add a new mode that allows the test
+	runner to run as a separate service which a user can connect to
+	with their own agviewer process.  This makes debugging agviewer
+	much easier.
+
 2008-04-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* agviewer/agviewer.cpp (main): Gotta loop thru all the args.

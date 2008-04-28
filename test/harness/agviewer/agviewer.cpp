@@ -195,11 +195,20 @@ main(int argc, char **argv)
 	if (i < argc) {
 		test_path = g_strdup (argv [argc - 1]);
 		if (!working_dir_set) {
+			if (!g_path_is_absolute (test_path)) {
+				char* wd = get_current_dir_name ();
+				char* op = test_path;
+
+				test_path = g_build_filename (wd, test_path);
+				g_free (op);
+			}
+
 			char* dir = g_path_get_dirname (test_path);
 			if (chdir (dir) != 0) {
-				g_warning ("Unable to set working directory to test directory.\n");
+				g_warning ("Unable to set working directory.\n");
 				exit (-1);
 			}
+			g_free (dir);
 		}
 	}
 	
