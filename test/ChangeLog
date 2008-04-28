@@ -1,3 +1,10 @@
+2008-04-28  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/image-brush-stretch-set.html:
+	* xaml/assorted/one.png:
+	* xaml/assorted/two.png: Adding a test for Stretch setting being reset
+	on ImageSource set. This is a problem from bug #383938 (Poker).
+
 2008-04-25  Larry Ewing  <lewing@novell.com>
 
 	* Makefile.am: quick hack to disable test targets if the test

@@ -1,0 +1,36 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Mouse enter/leave visibility test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+	sender.findName ("brush").ImageSource = "two.png";
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="120" height="220">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Rectangle Canvas.Top="10" Canvas.Left="10" Width="100" Height="200" Stroke="#000000" />
+	<Rectangle x:Name="rect" Canvas.Top="10" Canvas.Left="10" MouseEnter="OnMouseEnter" Width="100" Height="200" >
+ 		<Rectangle.Fill>
+      			<ImageBrush ImageSource="one.png" Name="brush" Stretch="Fill" />
+    		</Rectangle.Fill>
+  	</Rectangle>
+
+</Canvas>
+</script>
+
+</body>
+</html>
