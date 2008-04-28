@@ -63,6 +63,8 @@
 #define DRT_AGSERVER_INTERFACE  "mono.moonlight.agserver.IAgserver"
 
 
+#define DEFAULT_TIMEOUT 20000
+
 
 typedef struct _AgViewer {
 	GtkWindow  *top_level_window;
@@ -72,13 +74,14 @@ typedef struct _AgViewer {
 
 
 static AgViewer* browser = NULL;
-static char* test_path = NULL;
+static char* test_path = "";
 static guint timeout_id = 0;
 
+static void run_test (char* test_path, int timeout);
 static void move_to_next_test ();
 static void request_test_runner_shutdown ();
 static void signal_test_complete (const char* test_name, bool successful);
-static bool wait_for_next_test (char** test_path, int* timeout);
+static bool wait_for_next_test (int* timeout);
 static void mark_test_as_complete_and_start_next_test (bool successful);
 static void log_message (const char* test_name, const char* message);
 
@@ -156,6 +159,7 @@ main(int argc, char **argv)
 {
 	int frame_width = 800;
 	int frame_height = 800;
+	bool working_dir_set = false;
 
 	gtk_init (&argc, &argv);
 
@@ -166,7 +170,7 @@ main(int argc, char **argv)
 		if (!g_strcasecmp ("-frameheight", argv [i]))
 			frame_height = strtol (argv [++i], NULL, 10);
 		if (!g_strcasecmp ("-working-dir", argv [i])) {
-			
+			working_dir_set = true;
 			if (chdir (argv [++i]) != 0) {
 				g_warning ("Unable to set working directory.\n");
 				exit (-1);
@@ -174,8 +178,17 @@ main(int argc, char **argv)
 		}
 	}
 
-	if (i < argc - 1)
-		test_path = argv [argc - 1];
+	if (i < argc) {
+		test_path = g_strdup (argv [argc - 1]);
+		if (!working_dir_set) {
+			char* dir = g_path_get_dirname (test_path);
+			if (chdir (dir) != 0) {
+				g_warning ("Unable to set working directory to test directory.\n");
+				exit (-1);
+			}
+		}
+			
+	}
 
 	browser = new_gtk_browser ();
 
@@ -186,8 +199,11 @@ main(int argc, char **argv)
 
 	register_agserver_object ();
 
-	if (!test_path)
+	if (!test_path || !strlen (test_path))
 		move_to_next_test ();
+	else
+		run_test (test_path, DEFAULT_TIMEOUT);
+
 
 	if (test_path && strlen (test_path))
 		gtk_main ();
@@ -212,7 +228,7 @@ static void
 move_to_next_test ()
 {
 	int timeout = 0;
-	if (wait_for_next_test (&test_path, &timeout))
+	if (wait_for_next_test (&timeout))
 		run_test (test_path, timeout);
 	else {
 		if (gtk_main_level ())
@@ -253,6 +269,9 @@ mark_test_as_complete_and_start_next_test (bool successful)
 			G_TYPE_INT, &timeout,
 			G_TYPE_INVALID)) {
 		printf ("error while making MarkTestAsCompleteAndGetNextTest dbus call:   %s\n", error->message);
+		printf ("if you are running standalone tests without a dbus test runner you can ignore this error message\n");
+
+		available = false;
 	}
 	g_free (test_name);
 
@@ -301,6 +320,7 @@ new_gtk_browser ()
 static gboolean
 key_press_cb (GtkWidget* widget, GdkEventKey* event, GtkWindow* window)
 {
+	printf ("agviewer keypress:  0x%x\n", event->keyval);
 	if ((event->state & GDK_CONTROL_MASK) == 0)
 		return FALSE;
 
@@ -385,7 +405,7 @@ signal_test_complete (const char *test_path, bool successful)
 
 
 static bool
-wait_for_next_test (char **test_path, int *timeout)
+wait_for_next_test (int *timeout)
 {
 	g_type_init ();
 
@@ -410,7 +430,7 @@ wait_for_next_test (char **test_path, int *timeout)
 	if (!dbus_g_proxy_call_with_timeout (dbus_proxy, "GetNextTest", 25000, &error,
 			G_TYPE_INVALID,
 			G_TYPE_BOOLEAN, &available,
-			G_TYPE_STRING, test_path,
+			G_TYPE_STRING, &test_path,
 			G_TYPE_INT, timeout,
 			G_TYPE_INVALID)) {
 		printf ("error while making GetNextTest dbus call:   %s\n", error->message);
