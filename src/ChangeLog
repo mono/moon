@@ -1,5 +1,12 @@
 2008-04-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* typegen/typegen.cs: Minor fix to support C constructors immediately
+	  prepended with *.
+	* type-generated.cpp: Regenerated (includes a lot more C constructors
+	  now).
+
+2008-04-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* geometry.h: Include glib.h before using glib macros.
 
 2008-04-28  Michael Dominic K.  <mdk@mdk.am>
