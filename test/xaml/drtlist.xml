@@ -786,4 +786,8 @@
 	 inputFile="test-inkpresenter-image"
 	 masterFile10="../harness/masters/test-inkpresenter-imageMaster.png"
    />
+   <Test id="180"
+	 inputFile="test-parser-empty-property.xaml"
+	 masterFile10="../harness/masters/test-parser-empty-propertyMaster.png"
+   />
 </DRTList>

@@ -1,5 +1,12 @@
 2008-04-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* harness/masters/test-parser-empty-propertyMaster.png:
+	* xaml/drtlist.xml:
+	* xaml/test-parser-empty-property.xaml: A test for parser when parsing
+	something like: <Rectangle Width="">. This is a problem for #383904.
+
+2008-04-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/image-brush-stretch-set.html:
 	* xaml/assorted/one.png:
 	* xaml/assorted/two.png: Adding a test for Stretch setting being reset
