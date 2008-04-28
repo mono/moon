@@ -48,11 +48,11 @@
 #define PLUGIN_NAME         "Silverlight Plug-In"
 #define PLUGIN_VERSION      VERSION
 #define PLUGIN_OURNAME      "Novell Moonlight"
-#define PLUGIN_DESCRIPTION  "Novell Moonlight " VERSION " is Mono's Free/Open Source implementation of SilverLight"
+#define PLUGIN_DESCRIPTION  "Novell <a href=\"http://www.mono-project.com/Moonlight\">Moonlight</a> " VERSION " is Mono's Free/Open Source implementation of Silverlight."
 #if INCLUDE_MONO_RUNTIME
-#    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":xaml:Novell MoonLight;" MIME_SILVERLIGHT_2 ":xaml:Novell Moonlight"
+#    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":xaml:Novell Moonlight;" MIME_SILVERLIGHT_2 ":xaml:Novell Moonlight"
 #else
-#    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":xaml:Novell MoonLight" 
+#    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":xaml:Novell Moonlight" 
 #endif
 
 #define MAX_STREAM_SIZE 65536
