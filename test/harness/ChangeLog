@@ -1,5 +1,10 @@
 2008-04-28  Jackson Harper  <jackson@ximian.com>
 
+	* test-runner/EdgeCompare.cs: We don't need this blurred images
+	anymore.
+
+2008-04-28  Jackson Harper  <jackson@ximian.com>
+
 	* agviewer/agviewer.cpp: Clean up test_path strings.
 
 2008-04-28  Jackson Harper  <jackson@ximian.com>

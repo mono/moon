@@ -43,8 +43,6 @@ namespace MoonlightTests {
 
 		public static TestResult CompareBitmaps (Test test, Bitmap result, Bitmap master)
 		{
-			Bitmap blurred_result = BlurImage (result);
-			Bitmap blurred_master = BlurImage (master);
 			Bitmap result_edges = BuildEdges (result);
 			Bitmap master_edges = BuildEdges (master);
 			Bitmap diff = new Bitmap (result.Width, result.Height + KeyHeight);
