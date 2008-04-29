@@ -196,7 +196,7 @@ main(int argc, char **argv)
 				char* wd = get_current_dir_name ();
 				char* op = test_path;
 
-				test_path = g_build_filename (wd, test_path);
+				test_path = g_build_filename (wd, test_path, NULL);
 				g_free (op);
 			}
 
