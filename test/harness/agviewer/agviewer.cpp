@@ -74,7 +74,7 @@ typedef struct _AgViewer {
 
 
 static AgViewer* browser = NULL;
-static char* test_path = "";
+static char* test_path = NULL;
 static guint timeout_id = 0;
 
 static void run_test (char* test_path, int timeout);
@@ -227,6 +227,7 @@ main(int argc, char **argv)
 	}
 	
 	gtk_widget_destroy (GTK_WIDGET (browser->top_level_window));
+	g_free (test_path);
 
 	return 0;
 }
@@ -279,6 +280,9 @@ mark_test_as_complete_and_start_next_test (bool successful)
 	int timeout;
 	bool available;
 	char* test_name = g_path_get_basename (test_path);
+
+	g_free (test_path);
+	test_path = NULL;
 
 	if (!dbus_g_proxy_call_with_timeout (dbus_proxy, "MarkTestAsCompleteAndGetNextTest", 25000, &error,
 			G_TYPE_STRING, test_name,
@@ -445,6 +449,11 @@ wait_for_next_test (int *timeout)
 			DRT_SERVICE,
 			DRT_RUNNER_PATH,
 			DRT_RUNNER_INTERFACE);
+
+	if (test_path) {
+		g_free (test_path);
+		test_path = NULL;
+	}
 
 	bool available;
 	if (!dbus_g_proxy_call_with_timeout (dbus_proxy, "GetNextTest", 25000, &error,

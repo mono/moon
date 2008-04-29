@@ -1,5 +1,9 @@
 2008-04-28  Jackson Harper  <jackson@ximian.com>
 
+	* agviewer/agviewer.cpp: Clean up test_path strings.
+
+2008-04-28  Jackson Harper  <jackson@ximian.com>
+
 	* agviewer/agviewer.cpp: Still need to run a main loop when a test
 	isn't supplied.
 
