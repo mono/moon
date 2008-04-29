@@ -1,7 +1,24 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * plugin-debug.cpp: 
+ *
+ * Author: 
+ *
+ * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ */
+
+#include <gtk/gtkmessagedialog.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
 #include "plugin-debug.h"
-#include <sys/stat.h>
-#include <gtk/gtkmessagedialog.h>
+
 
 #ifdef DEBUG
 
@@ -198,29 +215,34 @@ static const gchar *dir = "/tmp/moon-dump";
 static gboolean
 foreach_func (GtkTreeModel *model, GtkTreePath *tree_path, GtkTreeIter *iter, gpointer user_data)
 {
-	char *uri = NULL;
-	char* filename = NULL;
-	gtk_tree_model_get (model, iter, 0, &uri, 1, &filename, -1);
-
-	gchar *name = g_path_get_basename (filename);
-	gchar *path = g_build_filename (dir, name, NULL);
-	gchar *contents;
-	gsize length;
-	GError *err1 = NULL, *err2 = NULL;
-		
-	printf ("Copying uri '%s' with local filename '%s' to '%s'...\n", uri, filename, path);
-		
-	if (!g_file_get_contents (filename, &contents, &length, &err1)) {
-		printf (" Failed: Could not read file: %s\n", err1->message);
-	} else if (!g_file_set_contents (path, contents, length, &err2)) {
-		printf (" Failed: Could not write file: %s\n", err2->message);
+	char *filename, *url, *name, *path;
+	Uri *uri;
+	int fd;
+	
+	gtk_tree_model_get (model, iter, 0, &url, 1, &filename, -1);
+	
+	uri = new Uri ();
+	if (uri->Parse (url))
+		name = g_path_get_basename (uri->path);
+	else
+		name = g_path_get_basename (filename);
+	
+	path = g_build_filename (dir, name, NULL);
+	
+	delete uri;
+	
+	printf ("Copying uri '%s' with local filename '%s' to '%s'...\n", url, filename, path);
+	
+	if ((fd = open (path, O_CREAT | O_WRONLY | O_EXCL, 0644)) != -1) {
+		if (CopyFileTo (filename, fd) == -1)
+			printf (" Failed: Could not copy file `%s' to `%s': %s\n", filename, path, g_strerror (errno));
 	} else {
-		printf (" Success\n");
+		printf (" Failed: Could not create file `%s': %s\n", path, g_strerror (errno));
 	}
-		
+	
 	g_free (name);
 	g_free (path);
-
+	
 	return false;
 }
 

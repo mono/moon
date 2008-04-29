@@ -1,3 +1,8 @@
+2008-04-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-debug.cpp (foreach_func): Save the files with their
+	original filenames using the URI's path.
+
 2008-04-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moonlight.h: Fix [Moon|Silver]'L'ight capitalization. Add 
