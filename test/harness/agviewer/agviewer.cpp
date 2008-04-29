@@ -310,7 +310,7 @@ static AgViewer *
 new_gtk_browser ()
 {
 	AgViewer *browser = 0;
-
+	
 	browser = g_new0 (AgViewer, 1);
 	browser->top_level_window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
 
@@ -322,7 +322,7 @@ new_gtk_browser ()
 	char xpcom_lib_path [PATH_MAX];
 	char* xpcom_dir_path;
 
-	nsresult rv = GRE_GetGREPathWithProperties (&gre_version, 1, nsnull, 0,	xpcom_lib_path, sizeof (xpcom_lib_path));
+	GRE_GetGREPathWithProperties (&gre_version, 1, nsnull, 0, xpcom_lib_path, sizeof (xpcom_lib_path));
 	xpcom_dir_path = g_path_get_dirname (xpcom_lib_path);
 
 #if HAVE_GECKO_1_9
