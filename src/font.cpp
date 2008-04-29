@@ -31,7 +31,7 @@
 
 #include FT_OUTLINE_H
 
-#if FONT_DEBUG
+#ifdef FONT_DEBUG
 #define d(x) x
 #else
 #define d(x)
@@ -318,7 +318,7 @@ style_info_parse (const char *style, FontStyleInfo *info)
 	info->slant = style_slant_parse (style);
 }
 
-#if FONT_DEBUG
+#ifdef FONT_DEBUG
 static const char *
 style_name (FontStyleInfo *style, char *namebuf)
 {
@@ -720,7 +720,7 @@ struct FontFaceSimilarity {
 bool
 TextFont::OpenFontDirectory (FcPattern *pattern, const char *path, const char **families)
 {
-#if FONT_DEBUG
+#ifdef FONT_DEBUG
 	char stylebuf1[256], stylebuf2[256];
 #endif
 	FontFaceSimilarity similar;
