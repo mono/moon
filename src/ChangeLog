@@ -1,3 +1,10 @@
+2008-04-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: Mp3FrameReader/Demuxer: Calculate frame duration
+	  correctly, and calculate file duration as MS seems to be doing it.
+	  SkipFrame: when seeking don't take into account the size of the
+	  mpeg header, since we only peaked it. 
+
 2008-04-29  Michael Dominic K.  <mdk@mdk.am>
 
 	* shape.cpp: Clipping is not taken into account with cairo_in_*

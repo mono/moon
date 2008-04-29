@@ -1,3 +1,11 @@
+2008-04-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Added test-mp3-media-properties and test-media-ended.
+	* media-ended.html, media-ended.xaml, test-media-ended.html,
+	  test-media-ended.xaml: Renamed to test-*.
+	* miguel.mp3, test-mp3-media-properties.html, test-seek-mp3.html:
+	  Added.
+
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml: Added.

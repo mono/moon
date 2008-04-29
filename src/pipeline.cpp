@@ -1627,7 +1627,18 @@ mpeg_frame_length (MpegFrameHeader *mpeg, bool xing)
 
 #define mpeg_frame_size(mpeg) (((mpeg)->bit_rate * (mpeg)->channels * mpeg_block_size (mpeg)) / (mpeg)->sample_rate)
 
-#define mpeg_frame_duration(mpeg) (48000000 / (mpeg)->sample_rate) * 8
+static uint64_t
+mpeg_frame_duration (MpegFrameHeader *mpeg)
+{
+	uint64_t result;
+	
+	if (mpeg->version == 1) // Layer III
+		result = 1152ULL * TIMESPANTICKS_IN_SECOND / mpeg->sample_rate;
+	else // Layer I or II
+		result = 384ULL * TIMESPANTICKS_IN_SECOND / mpeg->sample_rate;
+			
+	return result;
+}
 
 #if 0
 static void
@@ -1934,7 +1945,7 @@ bool
 Mp3FrameReader::SkipFrame ()
 {
 	MpegFrameHeader mpeg;
-	uint32_t duration;
+	uint64_t duration;
 	uint8_t buffer[4];
 	int64_t offset;
 	uint32_t len;
@@ -1961,7 +1972,7 @@ Mp3FrameReader::SkipFrame ()
 	
 	len = mpeg_frame_length (&mpeg, xing);
 	
-	if (!stream->Seek ((int64_t) (len - 4), SEEK_CUR))
+	if (!stream->Seek ((int64_t) len, SEEK_CUR))
 		return false;
 	
 	cur_pts += duration;
@@ -1973,7 +1984,7 @@ MediaResult
 Mp3FrameReader::ReadFrame (MediaFrame *frame)
 {
 	MpegFrameHeader mpeg;
-	uint32_t duration;
+	uint64_t duration;
 	uint8_t buffer[4];
 	int64_t offset;
 	uint32_t len;
@@ -2234,7 +2245,7 @@ Mp3Demuxer::ReadHeader ()
 	audio->codec_id = CODEC_MP3;
 	audio->codec = "mp3";
 	
-	audio->duration = duration * nframes;
+	audio->duration = duration * (nframes > 0 ? nframes - 1 : nframes);
 	audio->bit_rate = mpeg.bit_rate;
 	audio->channels = mpeg.channels;
 	audio->sample_rate = mpeg.sample_rate;
