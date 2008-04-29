@@ -1,3 +1,10 @@
+2008-04-29  Michael Dominic K.  <mdk@mdk.am>
+
+	* shape.cpp: Clipping is not taken into account with cairo_in_*
+	functions therefore do the hit-test in two steps -- first check if
+	within clipping bounds and then check if within shape bounds. Fixes
+	#383894 and test-shape-cursor-clipping.xaml test. 
+
 2008-04-28  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::Attach): emit the canvas's Loaded event

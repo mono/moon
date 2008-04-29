@@ -577,26 +577,40 @@ bool
 Shape::InsideObject (cairo_t *cr, double x, double y)
 {
 	cairo_save (cr);
+
+	bool ret = true;
+
+	uielement_transform_point (this, &x ,&y);
 	
+	// cairo_in_* functions which we're using to check if point inside
+	// the path don't take the clipping into account. Therefore, we need 
+	// to do this in two steps: first check if the point is within 
+	// the clipping bounds and later check if within the path itself.
+
 	Value *clip_geometry = GetValue (UIElement::ClipProperty);
 	if (clip_geometry) {
 		Geometry *clip = clip_geometry->AsGeometry ();
 		if (clip) {
 			clip->Draw (NULL, cr);
-			cairo_clip (cr);
+			ret &= cairo_in_fill (cr, x, y);
+			cairo_new_path (cr);
 		}
+	}
+
+	if (ret == false) {
+		cairo_restore (cr);
+		return false;
 	}
 
 	// don't do the operation but do consider filling
 	DoDraw (cr, false);
-	uielement_transform_point (this, &x ,&y);
 
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)
-	bool ret = ((stroke && cairo_in_stroke (cr, x, y)) || (fill && CanFill () && cairo_in_fill (cr, x, y)));
+	ret &= ((stroke && cairo_in_stroke (cr, x, y)) || (fill && CanFill () && cairo_in_fill (cr, x, y)));
 
 	cairo_new_path (cr);
 	cairo_restore (cr);
-
+		
 	return ret;
 }
 
