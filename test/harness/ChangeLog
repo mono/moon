@@ -1,3 +1,10 @@
+2008-04-29  Jackson Harper  <jackson@ximian.com>
+
+	* shocker/image-capture.cpp: Use gdk for capturing single
+	screenshots, this is done in the main thread, so it's safe, a
+	little better performing, and frees us of image magicks memory
+	management.
+	
 2008-04-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* agviewer/agviewer.cpp (new_gtk_browser): Remove unused variable.

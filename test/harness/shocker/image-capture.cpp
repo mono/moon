@@ -57,16 +57,11 @@ ImageCaptureProvider::CaptureSingleImage (const char* image_dir, const char* fil
 #endif
 	char* image_path = g_build_filename (image_dir, file_name, NULL);
 
-	Magick::Image screenshot = acquire_screenshot (xroot_window, x, y, width, height);
-	screenshot.write (image_path);
-
-	/*
 	GdkWindow* root = gdk_window_foreign_new (GDK_ROOT_WINDOW ());
 	GdkPixbuf* buf = gdk_pixbuf_get_from_drawable (NULL, root, NULL, x, y, 0, 0, width, height);
 	GError* error = NULL;
 
 	gdk_pixbuf_save (buf, image_path, "png", &error, "tEXt::CREATOR", "moonlight-test-harness", NULL);
-	*/
 
 	g_free (image_path);
 }
