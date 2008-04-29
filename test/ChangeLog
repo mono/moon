@@ -1,3 +1,11 @@
+2008-04-29  Michael Dominic K.  <mdk@mdk.am>
+
+	* harness/masters/test-shape-cursor-clippingMaster.png:
+	* xaml/drtlist.xml:
+	* xaml/test-shape-cursor-clipping.xaml: Adding a test for shape +
+	clipping path + cursor (hit test). This is taken from Sebastien's
+	test-case for #383894.
+
 2008-04-28  Michael Dominic K.  <mdk@mdk.am>
 
 	* harness/masters/test-parser-empty-propertyMaster.png:

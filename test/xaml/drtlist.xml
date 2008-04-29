@@ -790,4 +790,8 @@
 	 inputFile="test-parser-empty-property.xaml"
 	 masterFile10="../harness/masters/test-parser-empty-propertyMaster.png"
    />
+   <Test id="181"
+	 inputFile="test-shape-cursor-clipping.xaml"
+	 masterFile10="../harness/masters/test-shape-cursor-clippingMaster.png"
+   />
 </DRTList>
