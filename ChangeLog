@@ -1,3 +1,11 @@
+2008-04-30  Michael Dominic K.  <mdk@mdk.am>
+
+	* configure.ac:
+	* moon.pc.in: Don't put the MOON_CFLAGS and MOON_LIBS in the pc file
+	as it contains some local garbage. Instead, put stripped-down
+	MOON_EXTRA_CFLAGS and MOON_EXTRA_LIBS. Make it possible to actually
+	compile against moon.pc.
+
 2008-04-25  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Hack to remove glitz from the link flags
