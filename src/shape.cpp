@@ -1570,17 +1570,17 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 }
 
 void
-calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds)
+calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, PenLineCap start_cap, PenLineCap end_cap, Rect* bounds)
 {
 	if (x1 == x2) {
 		bounds->x = x1 - thickness / 2.0;
-		bounds->y = MIN (y1, y2);
+		bounds->y = MIN (y1, y2) - (y1 < y2 && start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) - (y1 >= y2 && end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
 		bounds->w = thickness;
-		bounds->h = fabs (y2 - y1);
+		bounds->h = fabs (y2 - y1) + (start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) + (end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
 	} else 	if (y1 == y2) {
-		bounds->x = MIN (x1, x2);
+		bounds->x = MIN (x1, x2) - (x1 < x2 && start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) - (x1 >= x2 && end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
 		bounds->y = y1 - thickness / 2.0;
-		bounds->w = fabs (x2 - x1);
+		bounds->w = fabs (x2 - x1) + (start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) + (end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
 		bounds->h = thickness;
 	} else {
 		double m = fabs ((y1 - y2) / (x1 - x2));
@@ -1591,11 +1591,91 @@ calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, 
 		double dx = (m > 1.0) ? thickness : thickness * m;
 		double dy = (m < 1.0) ? thickness : thickness / m;
 #endif
-		bounds->x = MIN (x1, x2) - dx / 2.0;
-		bounds->y = MIN (y1, y2) - dy / 2.0;
-		bounds->w = fabs (x2 - x1) + dx;
-		bounds->h = fabs (y2 - y1) + dy;
+		if (x1 < x2)
+			switch (start_cap) {
+			case PenLineCapSquare:
+				bounds->x = MIN (x1, x2) - (dx + dy) / 2.0;
+				break;
+			case PenLineCapTriangle: //FIXME, reverting to Round for now
+			case PenLineCapRound:
+				bounds->x = MIN (x1, x2) - thickness / 2.0;
+				break;
+			default: //PenLineCapFlat
+				bounds->x = MIN (x1, x2) - dx / 2.0;
+			}	
+		else 
+			switch (end_cap) {
+			case PenLineCapSquare:
+				bounds->x = MIN (x1, x2) - (dx + dy) / 2.0;
+				break;
+			case PenLineCapTriangle: //FIXME, reverting to Round for now
+			case PenLineCapRound:
+				bounds->x = MIN (x1, x2) - thickness / 2.0;
+				break;
+			default: //PenLineCapFlat
+				bounds->x = MIN (x1, x2) - dx / 2.0;
+			}		
+		if (y1 < y2)
+			switch (start_cap) {
+			case PenLineCapSquare:
+				bounds->y = MIN (y1, y2) - (dx + dy) / 2.0;
+				break;
+			case PenLineCapTriangle: //FIXME, reverting to Round for now
+			case PenLineCapRound:
+				bounds->y = MIN (y1, y2) - thickness / 2.0;
+				break;
+			default: //PenLineCapFlat
+				bounds->y = MIN (y1, y2) - dy / 2.0;
+			}	
+		else
+			switch (end_cap) {
+			case PenLineCapSquare:
+				bounds->y = MIN (y1, y2) - (dx + dy) / 2.0;
+				break;
+			case PenLineCapTriangle: //FIXME, reverting to Round for now
+			case PenLineCapRound:
+				bounds->y = MIN (y1, y2) - thickness / 2.0;
+				break;
+			default: //PenLineCapFlat
+				bounds->y = MIN (y1, y2) - dy / 2.0;
+			}	
+		bounds->w = fabs (x2 - x1);
+		bounds->h = fabs (y2 - y1);
+		switch (start_cap) {
+		case PenLineCapSquare:
+			bounds->w += (dx + dy) / 2.0;
+			bounds->h += (dx + dy) / 2.0;
+			break;
+		case PenLineCapTriangle: //FIXME, reverting to Round for now
+		case PenLineCapRound:
+			bounds->w += thickness / 2.0;
+			bounds->h += thickness / 2.0;
+			break;
+		default: //PenLineCapFlat
+			bounds->w += dx/2.0;
+			bounds->h += dy/2.0;
+		}
+		switch (end_cap) {
+		case PenLineCapSquare:
+			bounds->w += (dx + dy) / 2.0;
+			bounds->h += (dx + dy) / 2.0;
+			break;
+		case PenLineCapTriangle: //FIXME, reverting to Round for now
+		case PenLineCapRound:
+			bounds->w += thickness / 2.0;
+			bounds->h += thickness / 2.0;
+			break;
+		default: //PenLineCapFlat
+			bounds->w += dx/2.0;
+			bounds->h += dy/2.0;	
+		}
 	}
+}
+
+void
+calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds)
+{
+	calc_line_bounds (x1, x2, y1, y2, thickness, PenLineCapFlat, PenLineCapFlat, bounds);
 }
 
 void
@@ -1630,6 +1710,13 @@ Line::ComputeShapeBounds (bool logical)
 		thickness = GetStrokeThickness ();
 	else
 		thickness = 0.0;
+
+	PenLineCap start_cap, end_cap;
+	if (!logical) {
+		start_cap = GetStrokeStartLineCap ();
+		end_cap = GetStrokeEndLineCap ();
+	} else 
+		start_cap = end_cap = PenLineCapFlat;
 	
 	if (thickness <= 0.0 && !logical)
 		return shape_bounds;
@@ -1639,7 +1726,7 @@ Line::ComputeShapeBounds (bool logical)
 	double x2 = GetX2 ();
 	double y2 = GetY2 ();
 	
-	calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
+	calc_line_bounds (x1, x2, y1, y2, thickness, start_cap, end_cap, &shape_bounds);
 
 	return shape_bounds;
 }
