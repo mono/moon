@@ -40,7 +40,8 @@ namespace MoonlightTests {
 		private List<Test> tests = new List<Test> ();
 		private List<Test> ignored_tests = new List<Test> ();
 		private List<IReport> reports = new List<IReport> ();
-	
+
+		private string fixture_start;
 		private ArrayList categories;
 		private ArrayList fixtures;
 
@@ -62,6 +63,11 @@ namespace MoonlightTests {
 		public bool RunKnownFailures {
 			get { return run_known_failures; }
 			set { run_known_failures = value; }
+		}
+
+		public void SetFixtureStart (string fixture_start)
+		{
+			this.fixture_start = fixture_start;
 		}
 
 		public void SetCategories (string cat_str)
@@ -100,6 +106,7 @@ namespace MoonlightTests {
 			doc.Load (drtlist);
 			XmlNodeList tests_xml = doc.SelectNodes ("/DRTList/Test");
 
+			bool past_fixture_start = (fixture_start == null);
 			string base_directory = Path.GetDirectoryName (drtlist);
 
 			foreach (XmlNode test in tests_xml) {
@@ -108,6 +115,13 @@ namespace MoonlightTests {
 				if (t == null) {
 					Console.Error.WriteLine ("Unable to load test:  {0}", test);
 					continue;
+				}
+
+				if (!past_fixture_start) {
+					if (t.Id == fixture_start)
+						past_fixture_start = true;
+					else
+						continue;
 				}
 
 				if (categories != null && !t.IsInCategoryList (categories))
@@ -408,6 +422,7 @@ namespace MoonlightTests {
 			string fixture = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURE");
 			string fixtures = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURES");
 			string categories = Environment.GetEnvironmentVariable ("MOON_DRT_CATEGORIES");
+			string fixture_start = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURE_START");
 
 			if ((fixture != null && fixture != String.Empty) && (fixtures != null && fixtures != String.Empty))
 				Console.Error.WriteLine ("Warning, both MOON_DRT_FIXTURE and MOON_DRT_FIXTURES are set, these will be combined.");
@@ -418,6 +433,8 @@ namespace MoonlightTests {
 				d.SetFixtures (fixtures);
 			if (categories != null && categories != String.Empty)
 				d.SetCategories (categories);
+			if (fixture_start != null && fixture_start != String.Empty)
+				d.SetFixtureStart (fixture_start);
 		}
 	}
 }

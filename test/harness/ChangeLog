@@ -1,5 +1,11 @@
 2008-04-30  Jackson Harper  <jackson@ximian.com>
 
+	* test-runner/Driver.cs: Sometimes you want to start a run midway
+	through.  I added MOON_DRT_FIXTURE_START so you can specify which
+	test the run should start on.
+
+2008-04-30  Jackson Harper  <jackson@ximian.com>
+
 	* test-runner/ConsoleReport.cs: Now that processing is async we
 	can't report test and result separately.
 
