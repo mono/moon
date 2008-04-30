@@ -1,5 +1,11 @@
 2008-04-30  Michael Dominic K.  <mdk@mdk.am>
 
+	* panel.cpp:
+	* panel.h: Adding the panel_add_child helper method used by the ancient
+	demo. It actually makes sense.
+
+2008-04-30  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile.am:
 	* collection.h:
 	* text.cpp:

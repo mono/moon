@@ -88,6 +88,8 @@ Brush *panel_get_background (Panel *panel);
 void panel_set_children (Panel *panel, VisualCollection *children);
 VisualCollection *panel_get_children (Panel *panel);
 
+void panel_child_add (Panel *panel, UIElement *element);
+
 void panel_init (void);
 
 G_END_DECLS

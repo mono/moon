@@ -626,6 +626,12 @@ panel_get_children (Panel *panel)
 	return panel->GetChildren ();
 }
 
+void
+panel_child_add (Panel *panel, UIElement *element)
+{
+	panel->GetChildren ()->Add (element);
+}
+
 void 
 panel_init (void)
 {
