@@ -1,3 +1,7 @@
+2008-04-30  Fernando Herrera  <fherrera@novell.com>
+
+	* plugin-debug.cpp: Added utils.h and uri.h.
+
 2008-04-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* moonlight.h: Don't need to include glib.h and gtk.h, gtk.h will

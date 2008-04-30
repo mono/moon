@@ -17,6 +17,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include "uri.h"
+#include "utils.h"
 #include "plugin-debug.h"
 
 #include "utils.h"
