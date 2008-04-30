@@ -1546,7 +1546,6 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 		double x2 = GetX2 ();
 		double y2 = GetY2 ();
 		
-		printf ("Special Case\n");
 		// draw start and end line caps
 		if (start != PenLineCapFlat) 
 			line_draw_cap (cr, this, start, x1, y1, x2, y2);
