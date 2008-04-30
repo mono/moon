@@ -37,6 +37,7 @@
 #include "namescope.h"
 #include "stylus.h"
 #include "runtime.h"
+#include "utils.h"
 
 
 #ifdef DEBUG_XAML

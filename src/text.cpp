@@ -22,6 +22,7 @@
 #include "color.h"
 #include "text.h"
 #include "uri.h"
+#include "utils.h"
 
 
 #define d(x) x

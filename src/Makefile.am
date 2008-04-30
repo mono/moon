@@ -53,7 +53,6 @@ libmoon_include_HEADERS = \
 	type.h		\
 	uielement.h	\
 	uri.h		\
-	utils.h		\
 	value.h		\
 	visual.h	\
 	xaml.h		\

@@ -1,3 +1,11 @@
+2008-04-30  Michael Dominic K.  <mdk@mdk.am>
+
+	* Makefile.am:
+	* collection.h:
+	* text.cpp:
+	* xaml.cpp: Include the utils.h locally in .cpp file and remove it from
+	the install. This way we don't need to bundle the zip includes.
+
 2008-04-30  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* shape.cpp: calc_line_bounds: compute the start|end caps in the
