@@ -9,4 +9,5 @@
     <Test id="8" inputFile="test-invalid-video-codec.html" masterFile10="None" timeout="5000" categories="video,media"  />
     <Test id="9" inputFile="test-downloadprogress-on-small-files.html" masterFile10="None" timeout="5000" categories="video,media"  />
     <Test id="10" inputFile="test-download-and-buffering-progress-on-big-files.html" masterFile10="None" timeout="30000" categories="video,media"  />
+    <Test id="11" inputFile="test-mms-failure.html" masterFile10="None" timeout="5000" categories="video,media,streaming"  />
 </DRTList>

@@ -1,3 +1,7 @@
+2008-04-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-mms-failure.html, drtlist.xml: Added test-mms-failure.
+
 2008-04-30  Fernando Herrera  <fherrera@novell.com>
 
 	* Makefile: Fix dirs.
