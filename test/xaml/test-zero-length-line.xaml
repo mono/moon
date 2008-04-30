@@ -1,0 +1,24 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <!-- a "dot" (same X and Y) is invisible unless line caps are used -->
+        <Line Stroke="Black" StrokeThickness="5" X1="10" Y1="10" X2="10" Y2="10" />
+
+        <!-- and are still invisible for Flat -->
+        <Line Stroke="Black" StrokeThickness="5" StrokeStartLineCap="Flat" X1="20" Y1="10" X2="20" Y2="10" />
+        <Line Stroke="Black" StrokeThickness="5" StrokeEndLineCap="Flat" X1="30" Y1="10" X2="30" Y2="10" />
+        <Line Stroke="Black" StrokeThickness="5" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" X1="40" Y1="10" X2="40" Y2="10" />
+
+        <Line Stroke="Red" StrokeThickness="5" X1="10" Y1="20" X2="10" Y2="20" />
+        <Line Stroke="Red" StrokeThickness="5" StrokeStartLineCap="Round" X1="20" Y1="20" X2="20" Y2="20" />
+        <Line Stroke="Red" StrokeThickness="5" StrokeEndLineCap="Round" X1="30" Y1="20" X2="30" Y2="20" />
+        <Line Stroke="Red" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" X1="40" Y1="20" X2="40" Y2="20" />
+
+        <Line Stroke="Green" StrokeThickness="5" X1="10" Y1="30" X2="10" Y2="30" />
+        <Line Stroke="Green" StrokeThickness="5" StrokeStartLineCap="Square" X1="20" Y1="30" X2="20" Y2="30" />
+        <Line Stroke="Green" StrokeThickness="5" StrokeEndLineCap="Square" X1="30" Y1="30" X2="30" Y2="30" />
+        <Line Stroke="Green" StrokeThickness="5" StrokeStartLineCap="Square" StrokeEndLineCap="Square" X1="40" Y1="30" X2="40" Y2="30" />
+
+        <Line Stroke="Blue" StrokeThickness="5" X1="10" Y1="40" X2="10" Y2="40" />
+        <Line Stroke="Blue" StrokeThickness="5" StrokeStartLineCap="Triangle" X1="20" Y1="40" X2="20" Y2="40" />
+        <Line Stroke="Blue" StrokeThickness="5" StrokeEndLineCap="Triangle" X1="30" Y1="40" X2="30" Y2="40" />
+        <Line Stroke="Blue" StrokeThickness="5" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" X1="40" Y1="40" X2="40" Y2="40" />
+</Canvas>

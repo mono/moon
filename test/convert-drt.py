@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import xml.dom.minidom
+import getopt
+import sys
 
 ##########################
 # Important: This script is to be run from trunk/moon/test
@@ -11,6 +13,7 @@ class drtTest:
 		self.id = id
 		self.feature = 'unknown'
 		self.owner = 'moonlight'
+		
 	def _tif_or_png(self):
 		filename = self.master10.split('/')[-1] # mytest.xaml
 		
@@ -71,7 +74,7 @@ def main():
 		if ((testnode.localName is not None) and (testnode.localName != "")):
 			#print'\t<Test id="%s">' % (testnode.getAttribute("id"))
 			
-			if os.path.exists(
+			#if os.path.exists():
 
 			test = drtTest(testnode.getAttribute("id"))
 			test.input = testnode.getAttribute("inputFile")

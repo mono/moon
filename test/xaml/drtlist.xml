@@ -799,4 +799,8 @@
 	 masterFile10="../harness/masters/test-shape-line-capsMaster.png"
 	 categories="stretch"
    />
+   <Test id="183"
+	 inputFile="test-zero-length-line.xaml"
+	 masterFile10="../harness/masters/test-zero-length-lineMaster.png"
+   />
 </DRTList>
