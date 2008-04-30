@@ -25,6 +25,7 @@
 
 
 using System;
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -39,6 +40,12 @@ namespace MoonlightTests {
 		private LoggingServer logging_server;
 		private TestRunner runner;
 
+		private Thread worker_thread;
+		private AutoResetEvent tests_pending_event = new AutoResetEvent (false);
+		private ManualResetEvent tests_finished_event = new ManualResetEvent (false);
+
+		private Queue<Test> process_tests_queue = new Queue<Test> ();
+		
 		private List<Test> tests;
 		private List<IReport> reports;
 
@@ -104,7 +111,15 @@ namespace MoonlightTests {
 			runner.TestCompleteEvent += new TestCompleteEventHandler (TestComplete);
 
 			reports.ForEach (delegate (IReport report) { report.BeginRun (this); });
+
+			worker_thread = new Thread (ProcessTestsWorker);
+			worker_thread.IsBackground = true;
+			worker_thread.Start ();
+
 			runner.Start ();
+
+			tests_finished_event.WaitOne ();
+
 			reports.ForEach (delegate (IReport report) { report.EndRun (); });
 
 			return 0;
@@ -119,9 +134,47 @@ namespace MoonlightTests {
 
 		private void TestComplete (Test test, TestCompleteReason reason)
 		{
+			QueueTestForProcessing (test);
+		}
+
+		private void QueueTestForProcessing (Test test)
+		{
+			lock (process_tests_queue) {
+				process_tests_queue.Enqueue (test);
+			}
+
+			tests_pending_event.Set ();
+		}
+
+		private void ProcessTestsWorker ()
+		{
+			while (true) {
+				tests_pending_event.WaitOne ();
+
+				while (true) {
+
+					Test test = null;
+					lock (process_tests_queue) {
+						if (process_tests_queue.Count == 0)
+							break;
+						test = process_tests_queue.Dequeue ();
+					}
+
+					tests_finished_event.Reset ();
+
+					ProcessTest (test);
+				}
+
+				// Notify the main thread that we are out of tests
+				tests_finished_event.Set ();
+			}
+		}
+
+		private void ProcessTest (Test test)
+		{
 			TestResult result = TestResult.Pass;
 
-			if (reason == TestCompleteReason.Finished) {
+			if (test.CompleteReason == TestCompleteReason.Finished) {
 
 				if (logging_server.IsTestResultSet (test.InputFileName)) {
 					result = logging_server.GetTestResult (test.InputFileName);
@@ -132,7 +185,7 @@ namespace MoonlightTests {
 				if (result == TestResult.Pass)
 					result = test.ComputeImageCompareResult ();
 			} else {
-				test.SetFailedReason (String.Format ("Test did not complete properly ({0})", reason));
+				test.SetFailedReason (String.Format ("Test did not complete properly ({0})", test.CompleteReason));
 				result = TestResult.Fail;
 			}
 

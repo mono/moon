@@ -53,6 +53,8 @@ namespace MoonlightTests {
 		private string ignore_reason;
 		private string failed_reason;
 
+		private TestCompleteReason complete_reason;
+
 		private bool known_failure;
 		private string known_failure_reason;
 
@@ -153,6 +155,11 @@ namespace MoonlightTests {
 
 		public bool Ignore {
 			get { return ignore; }
+		}
+
+		public TestCompleteReason CompleteReason {
+			get { return complete_reason; }
+			set { complete_reason = value; }
 		}
 
 		public bool IsKnownFailure {

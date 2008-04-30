@@ -86,6 +86,9 @@ namespace MoonlightTests {
 			if (res == TestResult.Pass)
 				res = EdgeCompare.CompareBitmaps (test, result, master);
 
+			result.Dispose ();
+			master.Dispose ();
+				
 			return res;
 		}
 

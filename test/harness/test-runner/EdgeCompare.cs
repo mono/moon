@@ -91,6 +91,10 @@ namespace MoonlightTests {
 				return TestResult.Fail;
 			}
 
+			result_edges.Dispose ();
+			master_edges.Dispose ();
+			diff.Dispose ();
+
 			return TestResult.Pass;
 		}
 

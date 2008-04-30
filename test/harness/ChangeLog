@@ -1,5 +1,20 @@
 2008-04-29  Jackson Harper  <jackson@ximian.com>
 
+	* test-runner/EdgeCompare.cs:
+	* test-runner/ImageCompare.cs: Dispose bitmaps.
+
+	* test-runner/Test.cs: Add the completed reason as a property.
+	* test-runner/TestRunner.cs: Set the completed reason property
+	when tests are completed.
+	* test-runner/TestRun.cs: Test processing is now done in a
+	separate thread, this allows the tests to run while image compares
+	are done in the background.  When a test that does animation or
+	input or something else that takes a lot of time the processing
+	thread can catch up, so there isn't much lag at the end of a test
+	run and tests load much faster.
+
+2008-04-29  Jackson Harper  <jackson@ximian.com>
+
 	* shocker/image-capture.cpp: Use gdk for capturing single
 	screenshots, this is done in the main thread, so it's safe, a
 	little better performing, and frees us of image magicks memory

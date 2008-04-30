@@ -154,6 +154,7 @@ namespace MoonlightTests {
 
 		private void OnTestComplete (Test test, TestCompleteReason reason)
 		{
+			test.CompleteReason = reason;
 			if (TestCompleteEvent != null)
 				TestCompleteEvent (test, reason);
 		}
