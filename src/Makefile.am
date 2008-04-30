@@ -21,6 +21,7 @@ libmoon_include_HEADERS = \
 	debug.h		\
 	dependencyobject.h \
 	deployment.h	\
+	dirty.h		\
 	downloader.h	\
 	enums.h		\
 	eventargs.h	\
