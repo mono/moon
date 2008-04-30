@@ -492,7 +492,6 @@ main (int argc, char *argv [])
 	gtk_widget_show_all (w);
 	gtk_main ();
 	
-	t->unref ();
 	runtime_shutdown ();
 	
 	return 0;
