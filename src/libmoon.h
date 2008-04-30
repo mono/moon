@@ -42,7 +42,5 @@
 #include "value.h"
 #include "visual.h"
 #include "xaml.h"
-#include "utils.h"
-#include "uri.h"
 
 #endif /* __LIBMOON_H__ */
