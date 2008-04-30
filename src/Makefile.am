@@ -1,10 +1,10 @@
-libmoonincludedir=$(includedir)/libmoon
+libmoon_includedir=$(includedir)/libmoon
 
 lib_LTLIBRARIES = libmoon.la
 
 INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\"
 
-libmooninclude_headers = \
+libmoon_include_HEADERS = \
 	animation.h	\
 	array.h		\
 	asf/asf.h		\
