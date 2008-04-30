@@ -19,6 +19,9 @@
 
 #include "plugin-debug.h"
 
+#include "utils.h"
+#include "uri.h"
+
 
 #ifdef DEBUG
 
