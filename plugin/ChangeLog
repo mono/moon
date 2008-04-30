@@ -1,3 +1,8 @@
+2008-04-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* moonlight.h: Don't need to include glib.h and gtk.h, gtk.h will
+	give us glib.h.
+
 2008-04-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-debug.cpp (foreach_func): Save the files with their
