@@ -48,6 +48,9 @@ namespace Gtk.Moonlight {
 		[DllImport ("moon")]
 		internal extern static void downloader_notify_finished (IntPtr downloader, string filename);
 		
+		[DllImport ("moon")]
+		internal extern static string downloader_get_downloaded_file (IntPtr downloader);
+		
 		public delegate void TickCall (IntPtr data);
 
 		[DllImport ("moon")]
@@ -131,6 +134,7 @@ namespace Gtk.Moonlight {
 				throw new Exception ("This Downloader has not been configured yet, call Open");
 
 			string path;
+			int offset;
 			
 			try {
 				using (WebResponse r = request.GetResponse ()){
@@ -143,9 +147,10 @@ namespace Gtk.Moonlight {
 					}, IntPtr.Zero);
 					auto_reset.WaitOne ();
 
-					using (Stream rstream = r.GetResponseStream (), output = GetTempFile (out path)){
+					using (Stream rstream = r.GetResponseStream ()){
 						buffer = new byte [32*1024];
 						count = 0;
+						offset = 0;
 						
 						while (downloading){
 							count = rstream.Read (buffer, 0, buffer.Length);
@@ -153,16 +158,16 @@ namespace Gtk.Moonlight {
 								buffer = null;
 								break;
 							}
-							output.Write (buffer, 0, count);
 
 							time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 								if (!downloading)
 									return;
 								tick_call = null;
-								downloader_write (downloader, buffer, 0, count);
+								downloader_write (downloader, buffer, offset, count);
 								auto_reset.Set ();
 							}, IntPtr.Zero);
 							auto_reset.WaitOne ();
+							offset += count;
 						}
 					}
 					// We are done
@@ -170,6 +175,7 @@ namespace Gtk.Moonlight {
 						if (!downloading)
 							return;
 						tick_call = null;
+						path = downloader_get_downloaded_file (downloader);
 						downloader_notify_finished (downloader, path);
 					}, IntPtr.Zero);
 				}

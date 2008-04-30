@@ -1,3 +1,8 @@
+2008-04-30  Fernando Herrera  <fherrera@novell.com>
+
+	* ManagedDownloader.cs: Don't use our own temporal file, just write to
+	the downloader, so we can use a ProgressiveSource for http streams.
+
 2008-04-24  Fernando Herrera  <fherrera@novell.com>
 
 	* Makefile.am: Fix "make -jN" build.
