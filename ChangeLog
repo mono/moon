@@ -1,3 +1,7 @@
+2008-04-30  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: dbus-glib-1 0.60 should be new enough
+
 2008-04-30  Michael Dominic K.  <mdk@mdk.am>
 
 	* configure.ac:
