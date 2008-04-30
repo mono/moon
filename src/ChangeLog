@@ -1,3 +1,9 @@
+2008-04-30  Fernando Herrera  <fherrera@novell.com>
+
+	* downloader.cpp:
+	* downloader.h: export downloader_get_downloaded_file without the
+	partName.
+
 2008-04-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: Mp3FrameReader/Demuxer: Calculate frame duration

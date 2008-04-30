@@ -721,9 +721,9 @@ downloader_abort (Downloader *dl)
 //   A newly allocated string containing the filename.
 //
 char *
-downloader_get_downloaded_file (Downloader *dl, const char *PartName)
+downloader_get_downloaded_file (Downloader *dl)
 {
-	return dl->GetDownloadedFilePart (PartName);
+	return g_strdup (dl->GetDownloadedFile ());
 }
 
 

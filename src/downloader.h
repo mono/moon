@@ -172,11 +172,13 @@ const char *downloader_get_uri (Downloader *dl);
 
 Surface *downloader_get_surface    (Downloader *dl);
 
-void  downloader_abort             (Downloader *dl);
-char *downloader_get_response_text (Downloader *dl, const char *PartName, uint64_t *size);
-char *downloader_get_response_file (Downloader *dl, const char *PartName);
-void  downloader_open              (Downloader *dl, const char *verb, const char *uri);
-void  downloader_send              (Downloader *dl);
+
+void  downloader_abort               (Downloader *dl);
+char *downloader_get_downloaded_file (Downloader *dl);
+char *downloader_get_response_text   (Downloader *dl, const char *PartName, uint64_t *size);
+char *downloader_get_response_file   (Downloader *dl, const char *PartName);
+void  downloader_open                (Downloader *dl, const char *verb, const char *uri);
+void  downloader_send                (Downloader *dl);
 
 //
 // Used to push data to the consumer
