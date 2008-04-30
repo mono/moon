@@ -21,6 +21,9 @@
 #define MMS_DATA     0x44
 #define MMS_HEADER   0x48
 #define MMS_METADATA 0x4D
+#define MMS_STREAM_C 0x43
+#define MMS_END	     0x45
+#define MMS_PAIR_P   0x50
 #define ASF_DEFAULT_PACKET_SIZE 2888
 
 #define LOG_MMS(...)// printf (__VA_ARGS__);
@@ -347,7 +350,16 @@ AsyncBrowserMmshResponse::MmsMetadataParse (int packet_size, const char *data)
 	}
 }
 
+static bool
+is_valid_mms_type (uint8_t type)
+{
+	if (type != MMS_DATA && type != MMS_HEADER &&
+	    type != MMS_METADATA && type != MMS_STREAM_C &&
+	    type != MMS_END && type != MMS_PAIR_P)
+		return false;
 
+	return true;
+}
 
 NS_IMETHODIMP
 AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *context, nsIInputStream *input, PRUint32 offset, PRUint32 count)
@@ -381,6 +393,16 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 		}
 		
 		type = (uint8_t) read_buffer[1];
+		/* Check that this is a valid mms stream */
+		if (!is_valid_mms_type (type)) {
+			LOG_MMS ("Invalid mms packet type: 0x%x\n", type);
+			g_free (read_buffer);
+			g_free (tmp_buffer);
+			pd->dl->NotifyFailed ("mms not supported");
+			this->Abort();
+			return NPERR_GENERIC_ERROR;
+		}
+	
 		size = LE_16 (&read_buffer[2]);
 
 		if (length < size + 4) { // Incomplete Data packet

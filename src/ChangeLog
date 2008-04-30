@@ -1,3 +1,8 @@
+2008-04-30  Fernando Herrera  <fherrera@novell.com>
+
+	* media.cpp: at MediaElement::DownloaderFailed if the uri was a mms://
+	stream, fallback to http:// uri
+
 2008-04-30  Michael Dominic K.  <mdk@mdk.am>
 
 	* panel.cpp:

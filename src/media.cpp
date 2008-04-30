@@ -1198,6 +1198,17 @@ MediaElement::TryOpen ()
 void
 MediaElement::DownloaderFailed (EventArgs *args)
 {
+	const char *uri = downloader ? downloader->GetUri () : NULL;
+        if (uri && g_str_has_prefix (uri, "mms://")) {
+		char *new_uri = g_strdup_printf ("http://%s", uri + 6);
+		Downloader *dl = Surface::CreateDownloader (this);
+                downloader_open (dl, "GET", new_uri);
+                SetSource (dl, "");
+                dl->unref ();
+		g_free (new_uri);
+		return;
+	}
+
 	MediaFailed (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
 }
 

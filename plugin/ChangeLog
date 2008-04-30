@@ -1,5 +1,10 @@
 2008-04-30  Fernando Herrera  <fherrera@novell.com>
 
+	* browser-mmsh.cpp: Abort and NotifyFailed on invalid mms streams,
+	probably they are plain http file downloads.
+
+2008-04-30  Fernando Herrera  <fherrera@novell.com>
+
 	* plugin-debug.cpp: Added utils.h and uri.h.
 
 2008-04-30  Jeffrey Stedfast  <fejj@novell.com>
