@@ -42,8 +42,7 @@ namespace MoonlightTests {
 
 		public void Executing (Test test)
 		{
-			if (run.VerboseLevel != VerboseLevel.None)
-				Console.Write ("{0}:  ", test.InputFile);
+			
 		}
 
 		public void EndRun ()
@@ -59,6 +58,9 @@ namespace MoonlightTests {
 
 		public void AddResult (Test test, TestResult result)
 		{
+			if (run.VerboseLevel != VerboseLevel.None)
+				Console.Write ("{0}:  ", test.InputFile);
+
 			switch (result) {
 			case TestResult.Pass:
 				Console.Write (run.VerboseLevel != VerboseLevel.None ? "P" : ".");

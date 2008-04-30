@@ -1,3 +1,8 @@
+2008-04-30  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/ConsoleReport.cs: Now that processing is async we
+	can't report test and result separately.
+
 2008-04-29  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/EdgeCompare.cs:
