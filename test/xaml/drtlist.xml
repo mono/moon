@@ -794,4 +794,9 @@
 	 inputFile="test-shape-cursor-clipping.xaml"
 	 masterFile10="../harness/masters/test-shape-cursor-clippingMaster.png"
    />
+   <Test id="182"
+	 inputFile="test-shape-line-caps-stretch.xaml"
+	 masterFile10="../harness/masters/test-shape-line-capsMaster.png"
+	 categories="stretch"
+   />
 </DRTList>

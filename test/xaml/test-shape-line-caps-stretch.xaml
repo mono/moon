@@ -1,0 +1,39 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Width="220" Height="210">
+	<Rectangle Canvas.Left="10" Width="200" Height="210" Fill="LightSteelBlue" Stretch="Fill" />
+	<Line StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" 
+		Stroke="Black" Stretch="Fill" 
+		Width="200" Height="50" 
+		Canvas.Top="15" Canvas.Left="10" 
+		StrokeThickness="20" 
+		X1="20" Y1="20" X2="60" Y2="30" />
+	<Line StrokeStartLineCap="Square" StrokeEndLineCap="Square" 
+		Stroke="Blue" Stretch="Fill" 
+		Width="200" Height="50" 
+		Canvas.Top="40" Canvas.Left="10" 
+		StrokeThickness="20" 
+		X1="20" Y1="20" X2="60" Y2="30" />
+	<Line StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+		Stroke="Green" Stretch="Fill" 
+		Width="200" Height="50" 
+		Canvas.Top="65" Canvas.Left="10" 
+		StrokeThickness="20" 
+		X1="20" Y1="20" X2="60" Y2="30" />
+	<Line StrokeStartLineCap="Square" StrokeEndLineCap="Round" 
+		Stroke="Red" Stretch="Fill" 
+		Width="200" Height="50" 
+		Canvas.Top="90" Canvas.Left="10" 
+		StrokeThickness="20" 
+		X1="20" Y1="20" X2="60" Y2="30" />
+	<Line StrokeStartLineCap="Flat" StrokeEndLineCap="Square" 
+		Stroke="Tomato" Stretch="Fill" 
+		Width="200" Height="50" 
+		Canvas.Top="115" Canvas.Left="10" 
+		StrokeThickness="20" 
+		X1="20" Y1="20" X2="60" Y2="30" />
+	<Line StrokeStartLineCap="Triangle" StrokeEndLineCap="Square" 
+		Stroke="Purple" Stretch="Fill" 
+		Width="200" Height="50" 
+		Canvas.Top="140" Canvas.Left="10" 
+		StrokeThickness="20" 
+		X1="20" Y1="20" X2="60" Y2="30" />
+</Canvas>
