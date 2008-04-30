@@ -586,17 +586,15 @@ Panel::OnLoaded ()
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
 
+	FrameworkElement::OnLoaded ();
+
 	cn = (Collection::Node *) children->list->First ();
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
 		UIElement *item = (UIElement *) cn->obj;
 
 		item->OnLoaded ();
 	}
-
-	FrameworkElement::OnLoaded ();
 }
-
-
 
 Panel *
 panel_new (void)

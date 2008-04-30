@@ -1,3 +1,8 @@
+2008-04-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* panel.cpp: Emit Loaded on Canvas before it's child.
+	[Fix part #361906 - i.e. back to original issue]
+
 2008-04-30  Fernando Herrera  <fherrera@novell.com>
 
 	* downloader.cpp:
