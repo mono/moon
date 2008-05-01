@@ -1,3 +1,9 @@
+2008-05-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml/test-cached-text-paths.xaml: added new test case provided
+	by Sebastien to test cached text paths - see bug #375279 for more
+	info
+
 2008-04-30  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/mouse-enter-leave-transparent-brush.html: A new test for
