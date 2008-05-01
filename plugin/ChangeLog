@@ -1,3 +1,16 @@
+2008-05-01  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h, plugin-class.cpp: make EventListenerProxy's
+	one-shottable (if they're one-shot, they remove themselves
+	automatically after being invoked.)  Use this with the plugin
+	onLoad proxy.  The script control object adds it to the surface's
+	toplevel object's LoadedEvent.
+
+	* plugin.h, plugin.cpp: when we create the surface, add a handler
+	for AttachingEvent so we can notify our
+	MoonlightScriptControlObject that it should add the onLoad handler
+	to the toplevel element's LoadedEvent.
+
 2008-04-30  Fernando Herrera  <fherrera@novell.com>
 
 	* browser-mmsh.cpp: Abort and NotifyFailed on invalid mms streams,

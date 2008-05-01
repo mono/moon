@@ -51,6 +51,8 @@ class EventListenerProxy : public List::Node {
 	int dtoken;
 	int token;
 	
+	bool one_shot;
+
  public:
 	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
@@ -62,6 +64,8 @@ class EventListenerProxy : public List::Node {
 	const char *GetCallbackAsString ();
 
 	int GetEventId () { return event_id; }
+
+	void SetOneShot () { one_shot = true; }
 
 	static void proxy_listener_to_javascript (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
@@ -286,7 +290,9 @@ struct MoonlightScriptControlObject : MoonlightObject {
 	
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
-	
+
+	void HookupOnLoad ();
+
 	NPObject *settings;
 	NPObject *content;
 };

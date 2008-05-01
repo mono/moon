@@ -1,3 +1,10 @@
+2008-05-01  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: remove the LoadEvent and instead add an
+	AttachingEvent, which is emitted after the toplevel control is set
+	on the surface, but before UIElement::LoadedEvent is emitted on
+	it.  Used by the plugin for hooking up the plugin onLoad handler.
+
 2008-05-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (RenderLine): Instead of grabbing the cairo_path_t
