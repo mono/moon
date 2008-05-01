@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * font.cpp: 
  *
@@ -1484,6 +1485,54 @@ TextFont::Path (cairo_t *cr, gunichar unichar, double x, double y)
 		return;
 	
 	Path (cr, glyph, x, y);
+}
+
+static void
+moon_append_path_with_origin (moon_path *mpath, cairo_path_t *path, double x, double y)
+{
+	cairo_path_data_t *data;
+	
+	moon_move_to (mpath, x, y);
+	
+	for (int i = 0; i < path->num_data; i += path->data[i].header.length) {
+		data = &path->data[i];
+		
+		switch (data->header.type) {
+		case CAIRO_PATH_MOVE_TO:
+			moon_move_to (mpath, data[1].point.x + x, data[1].point.y + y);
+			break;
+		case CAIRO_PATH_LINE_TO:
+			moon_line_to (mpath, data[1].point.x + x, data[1].point.y + y);
+			break;
+		case CAIRO_PATH_CURVE_TO:
+			moon_curve_to (mpath, data[1].point.x + x, data[1].point.y + y,
+				       data[2].point.x + x, data[2].point.y + y,
+				       data[3].point.x + x, data[3].point.y + y);
+			break;
+		case CAIRO_PATH_CLOSE_PATH:
+			break;
+		}
+	}
+}
+
+void
+TextFont::AppendPath (moon_path *path, GlyphInfo *glyph, double x, double y)
+{
+	if (!glyph->path || !(&glyph->path->cairo)->data)
+		return;
+	
+	moon_append_path_with_origin (path, &glyph->path->cairo, x, y);
+}
+
+void
+TextFont::AppendPath (moon_path *path, gunichar unichar, double x, double y)
+{
+	GlyphInfo *glyph;
+	
+	if (!(glyph = GetGlyphInfo (unichar)))
+		return;
+	
+	AppendPath (path, glyph, x, y);
 }
 
 

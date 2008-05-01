@@ -1,3 +1,15 @@
+2008-05-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (RenderLine): Instead of grabbing the cairo_path_t
+	from the cairo_t after pathing out all of the glyphs for a segment
+	of text, keep our own moon_path for caching. Apparently the path
+	gotten from cairo_copy_path() has whatever transforms are on the
+	context pre-applied which is the cause for the breakage in bug
+	#375279.
+
+	* font.cpp (TextFont::AppendPath): New method to append a glyph's
+	path to a moon_path for caching purposes.
+
 2008-04-30  Fernando Herrera  <fherrera@novell.com>
 
 	* media.cpp: at MediaElement::DownloaderFailed if the uri was a mms://

@@ -21,6 +21,7 @@
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>
 
+#include "moon-path.h"
 #include "uielement.h"
 #include "brush.h"
 #include "list.h"
@@ -163,6 +164,9 @@ public:
 	
 	void Render (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void Render (cairo_t *cr, gunichar unichar, double x, double y);
+	
+	void AppendPath (moon_path *path, GlyphInfo *glyph, double x, double y);
+	void AppendPath (moon_path *path, gunichar unichar, double x, double y);
 };
 
 

@@ -69,7 +69,7 @@ TextRun::~TextRun ()
 
 class TextSegment : public List::Node {
 public:
-	cairo_path_t *path;
+	moon_path *path;
 	double advance;
 	double width;
 	TextRun *run;
@@ -93,7 +93,7 @@ TextSegment::TextSegment (TextRun *run, int start)
 TextSegment::~TextSegment ()
 {
 	if (path)
-		cairo_path_destroy (path);
+		moon_path_destroy (path);
 }
 
 
@@ -1109,9 +1109,11 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 	const gunichar *text;
 	uint32_t prev = 0;
 	GlyphInfo *glyph;
+	moon_path *path;
 	double x1, y1;
 	double x0, y0;
 	Brush *fg;
+	int size;
 	int i;
 	
 	// set y0 to the line's baseline (descend is a negative value)
@@ -1141,8 +1143,20 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 		fg->SetupBrush (cr, element, segment->advance, font->Height ());
 		
 		if (!segment->path) {
-			if (font->IsScalable () && segment->start < segment->end)
+			if (font->IsScalable () && segment->start < segment->end) {
+				// count how many path data items we'll need to allocate
+				for (size = 0, i = segment->start; i < segment->end; i++) {
+					if (!(glyph = font->GetGlyphInfo (text[i])))
+						continue;
+					
+					size += glyph->path->cairo.num_data + 1;
+				}
+				
+				path = moon_path_new (size);
 				cairo_new_path (cr);
+			} else {
+				path = NULL;
+			}
 			
 			for (i = segment->start, prev = 0; i < segment->end; i++) {
 				if (!(glyph = font->GetGlyphInfo (text[i])))
@@ -1155,23 +1169,28 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 				
 				prev = glyph->index;
 				
-				if (!font->IsScalable ())
-					font->Render (cr, glyph, x1, y1);
-				else
+				if (font->IsScalable ()) {
+					if (path)
+						font->AppendPath (path, glyph, x1, y1);
+					
 					font->Path (cr, glyph, x1, y1);
+				} else {
+					font->Render (cr, glyph, x1, y1);
+				}
 				
 				x1 += glyph->metrics.horiAdvance;
 			}
 			
 			if (font->IsScalable () && segment->start < segment->end) {
+				moon_close_path (path);
 				cairo_close_path (cr);
-				segment->path = cairo_copy_path (cr);
+				segment->path = path;
 				cairo_fill (cr);
 			}
 		} else {
 			// it is an error to append a path with no data
-			if (segment->path->data)
-				cairo_append_path (cr, segment->path);
+			if (segment->path->cairo.data)
+				cairo_append_path (cr, &segment->path->cairo);
 			
 			cairo_fill (cr);
 		}
