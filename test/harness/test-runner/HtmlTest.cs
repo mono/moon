@@ -34,11 +34,10 @@ using System.Text.RegularExpressions;
 namespace MoonlightTests {
 
 	public class HtmlTest : Test {
-
 		private bool clear_cache;
 		private int? capture_interval;
 		private int? max_images_to_capture;
-		private int? initial_delay;
+		private int initial_delay = 500;
 		private int? capture_width;
 		private int? capture_height;
 
@@ -95,7 +94,7 @@ namespace MoonlightTests {
 			}
 		}
 
-		private int? InitialDelay {
+		private int InitialDelay {
 			get { return initial_delay; }
 			set {
 				if (value < 0)
@@ -282,17 +281,16 @@ namespace MoonlightTests {
 
 			if (capture_interval != null || max_images_to_capture != null) {
 				res.AppendFormat ("\t\t\tTakeMultipleSnapshotsAndShutdown (moonlight_control, {0}, {1}, {2}, {3}, {4});",
-						max_images_to_capture, capture_interval,
-						(initial_delay != null ? initial_delay : 0), 
-						(capture_width != null ? capture_width : ResultWidth),
-						(capture_height != null ? capture_height : ResultHeight));
+						  max_images_to_capture, capture_interval, InitialDelay,
+						  (capture_width != null ? capture_width : ResultWidth),
+						  (capture_height != null ? capture_height : ResultHeight));
 			} else {
 				// what happens if initial delay is specified but not width/height ??? 	
-				res.AppendFormat ("\t\t\tTakeSingleSnapshotAndShutdown (moonlight_control, \"{0}\", {1}, {2}{3});",
-						String.Concat (Path.GetFileName (InputFile), ".png"),
-						(capture_width != null ? capture_width : ResultWidth),
-						(capture_height != null ? capture_height : ResultHeight),
-						(initial_delay != null ? String.Concat (", ", initial_delay) : String.Empty));
+				res.AppendFormat ("\t\t\tTakeSingleSnapshotAndShutdown (moonlight_control, \"{0}\", {1}, {2}, {3});",
+						  String.Concat (Path.GetFileName (InputFile), ".png"),
+						  (capture_width != null ? capture_width : ResultWidth),
+						  (capture_height != null ? capture_height : ResultHeight),
+						  InitialDelay);
 			}
 
 			return res.ToString ();
@@ -309,7 +307,7 @@ namespace MoonlightTests {
 			if (max_images_to_capture > 0 && !test_body_generated) {
 				res.AppendFormat ("captureinterval=\"{0}\"\n", capture_interval != null ? capture_interval : 300);
 				res.AppendFormat ("maximagestocapture=\"{0}\"\n", max_images_to_capture != null ? max_images_to_capture : 15);
-				res.AppendFormat ("initialdelay=\"{0}\"\n", initial_delay != null ? initial_delay : 300);
+				res.AppendFormat ("initialdelay=\"{0}\"\n", InitialDelay);
 				res.AppendFormat ("capturewidth=\"{0}\"\n", capture_width != null ? capture_width : ResultWidth);
 				res.AppendFormat ("captureheight=\"{0}\"", capture_height != null ? capture_height : ResultHeight);
 			}

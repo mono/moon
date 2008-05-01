@@ -1,3 +1,9 @@
+2008-05-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* test-runner/HtmlTest.cs: We always want an initial
+	delay. Default to 500. Otherwise the screenshot happens before the
+	result is rendered (happens for a bunch of the current tests).
+
 2008-04-30  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/Driver.cs: Sometimes you want to start a run midway
