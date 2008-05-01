@@ -198,6 +198,10 @@ Surface::Surface(int w, int h, bool windowless)
 	can_full_screen = false;
 
 	time_manager = new TimeManager ();
+	if (windowless) {
+		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
+		time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
+	}
 	time_manager->Start ();
 
 	full_screen_message = NULL;
@@ -521,9 +525,7 @@ Surface::Attach (UIElement *element)
 		if (first)
 			ConnectEvents (true);
 
-		if (widget)
-			gtk_widget_queue_draw (widget);
-
+		Invalidate (Rect (0, 0, width, height));
 
 		toplevel = NULL;
 		return;
@@ -598,16 +600,17 @@ Surface::Attach (UIElement *element)
 	toplevel->FullInvalidate (true);
 }
 
+
 void
 Surface::Invalidate (Rect r)
 {
-	if (invalidate)
-		invalidate (this, r, invalidate_data);
-	else if (widget)
+	if (widget)
 		gtk_widget_queue_draw_area (widget,
 					    (int) (widget->allocation.x + r.x), 
 					    (int) (widget->allocation.y + r.y), 
 					    (int) r.w, (int)r.h);
+	else if (invalidate)
+		invalidate (this, r, invalidate_data);
 }
 
 
@@ -1004,10 +1007,10 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
 		s->fps_start = get_now ();
 	
-	if (s->render)
-		s->render (s, s->render_data);
-	else if (s->widget)
+	if (s->widget)
 		gdk_window_process_updates (GTK_WIDGET (s->widget)->window, false);
+	else if (s->render)
+		s->render (s, s->render_data);
 	
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_report) {
 		s->fps_nframes++;
@@ -1074,7 +1077,6 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
 	}
 #endif
 #endif
-	
 	s->time_manager->AddHandler (TimeManager::RenderEvent, render_cb, s);
 	s->time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, s);
 
@@ -1138,9 +1140,14 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 	Region *region = new Region (event->region);
 
 	region->Offset (-off_x, -off_y);
+	if (widget)
 	cairo_surface_set_device_offset (cairo_get_target (ctx),
 					 off_x - event->area.x, 
 					 off_y - event->area.y);
+	else
+	cairo_surface_set_device_offset (cairo_get_target (ctx),
+					 off_x, 
+					 off_y);
 
 	region->Draw (ctx);
 	cairo_clip (ctx);
@@ -2094,16 +2101,16 @@ void
 Surface::SetTrans (bool trans)
 {
 	transparent = trans;
-	if (widget)
-		gtk_widget_queue_draw (widget);
+
+	Invalidate (Rect (0, 0, width, height));
 }
 
 void
 Surface::SetBackgroundColor (Color *color)
 {
 	background_color = new Color (*color);
-	if (widget)
-		gtk_widget_queue_draw (widget);
+
+	Invalidate (Rect (0, 0, width, height));
 }
 
 void 

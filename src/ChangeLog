@@ -1,3 +1,17 @@
+2008-05-01  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: Fix a bunch of rendering bugs in windowless mode.
+	Previously there were no time manager handlers listening to events
+	in windowless mode so we were missing expose events.  Make all
+	invalidations go throw Invalidate so that they get picked up in
+	windowless.  Take into account that exposes go to a full size
+	window in windowless mode so we don't need to subtract the device
+	offsets.
+
+	Fixes most of the issues with
+	http://silverlight.r2musings.com/weatherwidget/default.aspx and
+	fixes the harness failure on ZIndex.htm.
+	
 2008-05-01  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp: remove the LoadEvent and instead add an
