@@ -8,6 +8,8 @@
 	RenderTransformOrigin, Microsoft's implementation for Glyphs
 	doesn't seem to take into account the width/height of the bounding
 	box.
+	(Glyphs::Layout): Use OriginX,OriginY as the bounding box origin
+	rather than MIN (OriginX, 0), Min (OriginY, 0)
 
 2008-05-02  Sebastien Pouliot  <sebastien@ximian.com>
 

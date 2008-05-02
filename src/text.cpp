@@ -1421,26 +1421,15 @@ Glyphs::Layout ()
 	
 	scale = desc->GetSize () * 20.0 / 2048.0;
 	
-	if (origin_x < 0.0) {
-		left = origin_x;
-		right = 0.0;
-	} else {
-		right = origin_x;
-		left = 0.0;
-	}
-	
+	right = origin_x;
+	left = origin_x;
 	x = origin_x;
 	
 	// OriginY is the baseline if specified; set 'y' to the topline
 	if (origin_y_specified) {
 		y = origin_y - font->Ascender ();
-		if (y < 0.0) {
-			bottom = 0.0;
-			top = y;
-		} else {
-			bottom = y + font->Height ();
-			top = 0.0;
-		}
+		bottom = y + font->Height ();
+		top = y;
 	} else {
 		bottom = font->Height ();
 		top = 0.0;
