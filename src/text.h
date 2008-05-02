@@ -289,6 +289,8 @@ class Glyphs : public FrameworkElement {
 	double origin_y;
 	double height;
 	double width;
+	double left;
+	double top;
 	
 	bool invalid;
 	bool dirty;

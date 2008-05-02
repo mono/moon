@@ -1351,6 +1351,8 @@ Glyphs::Glyphs ()
 	
 	height = 0.0;
 	width = 0.0;
+	left = 0.0;
+	top = 0.0;
 	
 	invalid = false;
 	dirty = false;
@@ -1378,8 +1380,8 @@ void
 Glyphs::Layout ()
 {
 	uint32_t code_units, glyph_count, i;
-	bool first_char = true;
-	double x, y, w, h, v;
+	bool plot = false, first_char = true;
+	double right, bottom, x, y, v;
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
 	TextFont *font;
@@ -1392,6 +1394,8 @@ Glyphs::Layout ()
 	
 	height = 0.0;
 	width = 0.0;
+	left = 0.0;
+	top = 0.0;
 	
 	if (path) {
 		moon_path_destroy (path);
@@ -1417,14 +1421,31 @@ Glyphs::Layout ()
 	
 	scale = desc->GetSize () * 20.0 / 2048.0;
 	
-	x = origin_x;
-	if (!origin_y_specified)
-		y = font->Height ();
-	else
-		y = origin_y;
+	if (origin_x < 0.0) {
+		left = origin_x;
+		right = 0.0;
+	} else {
+		right = origin_x;
+		left = 0.0;
+	}
 	
-	h = y - font->Descender ();
-	w = x;
+	x = origin_x;
+	
+	// OriginY is the baseline if specified; set 'y' to the topline
+	if (origin_y_specified) {
+		y = origin_y - font->Ascender ();
+		if (y < 0.0) {
+			bottom = 0.0;
+			top = y;
+		} else {
+			bottom = y + font->Height ();
+			top = 0.0;
+		}
+	} else {
+		bottom = font->Height ();
+		top = 0.0;
+		y = 0.0;
+	}
 	
 	attr = (GlyphAttr *) attrs->First ();
 	
@@ -1447,6 +1468,7 @@ Glyphs::Layout ()
 				cluster = true;
 			
 			// render the glyph cluster
+			plot = true;
 			i = 0;
 			do {
 				if (attr && (attr->set & Index)) {
@@ -1461,12 +1483,15 @@ Glyphs::Layout ()
 				}
 				
 				if (attr && (attr->set & vOffset)) {
-					v = y - (attr->voffset * scale);
-					h = MAX (v, h);
+					v = (attr->voffset * scale);
+					bottom = MAX (bottom, y + v + font->Height ());
+					top = MIN (top, y + v);
 				}
 				
 				if (attr && (attr->set & uOffset)) {
 					v = x + (attr->uoffset * scale);
+					right = MAX (right, x);
+					left = MIN (left, x);
 				} else {
 					if (first_char) {
 						if (glyph->metrics.horiBearingX < 0)
@@ -1479,7 +1504,7 @@ Glyphs::Layout ()
 				}
 				
 				v += glyph->metrics.horiAdvance;
-				w = MAX (v, w);
+				right = MAX (right, v);
 				
 				if (attr && (attr->set & Advance))
 					x += attr->advance * scale;
@@ -1531,13 +1556,18 @@ Glyphs::Layout ()
 		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 			goto next;
 		
+		plot = true;
+		
 		if ((attr->set & vOffset)) {
-			v = y - (attr->voffset * scale);
-			h = MAX (v, h);
+			v = (attr->voffset * scale);
+			bottom = MAX (bottom, y + v + font->Height ());
+			top = MIN (top, y + v);
 		}
 		
 		if ((attr->set & uOffset)) {
 			v = x + (attr->uoffset * scale);
+			right = MAX (right, x);
+			left = MIN (left, x);
 		} else {
 			if (first_char) {
 				if (glyph->metrics.horiBearingX < 0)
@@ -1550,7 +1580,7 @@ Glyphs::Layout ()
 		}
 		
 		v += glyph->metrics.horiAdvance;
-		w = MAX (v, w);
+		right = MAX (right, v);
 		
 		if ((attr->set & Advance))
 			x += attr->advance * scale;
@@ -1563,8 +1593,10 @@ Glyphs::Layout ()
 		n++;
 	}
 	
-	height = h > 0.0 ? h : 0.0;
-	width = w;
+	if (plot) {
+		height = bottom - top;
+		width = right - left;
+	}
 	
 done:
 	
@@ -1585,8 +1617,13 @@ Point
 Glyphs::GetOriginPoint () 
 {
 	if (origin_y_specified) {
-		double d = desc->GetFont ()->Descender ();
-		double h = desc->GetFont ()->Height ();
+		TextFont *font = desc->GetFont ();
+		
+		double d = font->Descender ();
+		double h = font->Height ();
+		
+		font->unref ();
+		
 		return Point (origin_x, origin_y - d - h);
 	} else {
 		return Point (origin_x, 0);
@@ -1634,6 +1671,8 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	scale = desc->GetSize () * 20.0 / 2048.0;
 	
 	x0 = origin_x;
+	
+	// OriginY is the baseline if specified
 	if (!origin_y_specified)
 		y0 = font->Height () + font->Descender ();
 	else
@@ -1767,7 +1806,7 @@ Glyphs::ComputeBounds ()
 	if (dirty)
 		Layout ();
 	
-	bounds = IntersectBoundsWithClipPath (Rect (0, 0, width, height), false).Transform (&absolute_xform);
+	bounds = IntersectBoundsWithClipPath (Rect (left, top, width, height), false).Transform (&absolute_xform);
 }
 
 bool
@@ -1792,9 +1831,8 @@ Glyphs::InsideObject (cairo_t *cr, double x, double y)
 Point
 Glyphs::GetTransformOrigin ()
 {
-	Point user_xform_origin = GetRenderTransformOrigin ();
-	
-	return Point (user_xform_origin.x * width, user_xform_origin.y * height);
+	// Glyphs seems to always use 0,0 no matter what is specified in the RenderTransformOrigin nor the OriginX/Y points
+	return Point (0.0, 0.0);
 }
 
 void
