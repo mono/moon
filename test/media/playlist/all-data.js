@@ -236,7 +236,8 @@ function createTestPlugin () {
 			}
 		}
 		if (found)
-			break;	}
+			break;
+	}
 
 	if (found) {
 		document.write (

@@ -67,6 +67,7 @@ private:
 	char *source_name;
 	char *info_target;
 	char *info_url;
+	bool client_skip;
 	TimeSpan start_time;
 	TimeSpan duration;
 
@@ -120,6 +121,9 @@ public:
 
 	const char *GetInfoURL ();
 	void SetInfoURL (char *info_url);
+
+	bool GetClientSkip ();
+	void SetClientSkip (bool value);
 
 	// non-ASX properties
 

@@ -1,3 +1,8 @@
+2008-05-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* playlist.h, playlist.cpp: Implemented ClientSkip.
+	* media.cpp: Handle playlists entry with ClientSkip set correctly.
+
 2008-05-02  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:

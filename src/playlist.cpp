@@ -92,6 +92,7 @@ PlaylistEntry::PlaylistEntry (MediaElement *element, Playlist *parent, Media *me
 	copyright = NULL;
 	info_target = NULL;
 	info_url = NULL;
+	client_skip = true;
 	set_values = (PlaylistNode::Kind) 0;
 }
 
@@ -265,6 +266,18 @@ void
 PlaylistEntry::SetInfoURL (char *info_url)
 {
 	this->info_url = info_url;
+}
+
+bool
+PlaylistEntry::GetClientSkip ()
+{
+	return client_skip;
+}
+
+void
+PlaylistEntry::SetClientSkip (bool value)
+{
+	client_skip = value;
 }
 
 static void
@@ -887,11 +900,14 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 		break;
 	}
 	case PlaylistNode::Entry: {
+		bool client_skip = true;
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "CLIENTSKIP")) {
 				// TODO: What do we do with this value?
 				if (str_match (attrs [i+1], "YES")) {
+					client_skip = true;
 				} else if (str_match (attrs [i+1], "NO")) {
+					client_skip = false;
 				} else {
 					ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
 					break;
@@ -905,6 +921,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 			}
 		}
 		PlaylistEntry *entry = new PlaylistEntry (element, playlist);
+		entry->SetClientSkip (client_skip);
 		playlist->AddEntry (entry);
 		current_entry = entry;
 		break;

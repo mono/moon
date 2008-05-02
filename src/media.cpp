@@ -669,6 +669,12 @@ MediaElement::SetMedia (Media *media)
 		SetCanSeek (seekable);
 	}
 	
+	if (playlist != NULL && playlist->GetCurrentPlaylistEntry () != NULL) {
+		if (!playlist->GetCurrentPlaylistEntry ()->GetClientSkip ()) {
+			SetCanSeek (false);
+		}
+	}
+	
 	mplayer->SetCanPause (GetCanPause ());
 	mplayer->SetCanSeek (GetCanSeek ());
 	

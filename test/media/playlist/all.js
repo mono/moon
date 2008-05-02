@@ -77,6 +77,7 @@ files = [
 "entry-with-clientskip-invalid.asx",
 "entry-with-clientskip-no.asx",
 "entry-with-clientskip-yes.asx",
+"entry-with-multiple-clientskip.asx",
 "entry-with-skipifref-invalid.asx",
 "entry-with-skipifref-no.asx",
 "entry-with-skipifref-yes.asx",

@@ -1,3 +1,10 @@
+2008-05-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* all.js: Updated.
+	* all-data.js: Fixed line-ending mess.
+	* entry-with-multiple-clientskip.asx,
+	  entry-with-multiple-clientskip.asx.js: Added.
+
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* ignore.txt: Added.
