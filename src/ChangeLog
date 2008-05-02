@@ -1,5 +1,13 @@
 2008-05-01  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp (UIElement::OnPropertyChanged): go ahead and
+	invalidate here as changes in the upstream opacity could make us
+	unable to invalidate later.
+
+	Fixes invalidation of last hex in a sprawl run.
+
+2008-05-01  Larry Ewing  <lewing@novell.com>
+
 	* runtime.cpp: Fix a bunch of rendering bugs in windowless mode.
 	Previously there were no time manager handlers listening to events
 	in windowless mode so we were missing expose events.  Make all

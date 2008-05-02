@@ -120,6 +120,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	  
 	if (args->property == UIElement::OpacityProperty) {
 		UpdateTotalRenderVisibility ();
+		Invalidate ();
 	}
 	else if (args->property == UIElement::VisibilityProperty) {
 		// note: invalid enum values are only validated in 1.1 (managed code),
@@ -191,7 +192,7 @@ UIElement::GetActualTotalRenderVisibility ()
 
 	total_opacity = GetOpacity ();
 
-	if ((visible || !IS_INVISIBLE (total_opacity)) && GetVisualParent ()) {
+	if (GetVisualParent ()) {
 		GetVisualParent ()->ComputeTotalRenderVisibility ();
 		parent_visible = visible && GetVisualParent ()->GetRenderVisible ();
 		total_opacity *= GetVisualParent ()->total_opacity;
