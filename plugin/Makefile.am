@@ -91,7 +91,6 @@ if INCLUDE_SWSCALE
 	cp -L $(swscale_libdir)/libswscale.so .xpinstall/plugins/moonlight/
 endif INCLUDE_SWSCALE
 	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/plugins/moonlight/
-	find .xpinstall -name \*.so -exec strip '{}' ';'
 endif INCLUDE_FFMPEG
 	cp -L $(srcdir)/install.rdf .xpinstall/
 	cp -L .libs/libmoonloader.so .xpinstall/plugins/
@@ -109,6 +108,7 @@ if INCLUDE_MONO_RUNTIME
 	cp -L $(srcdir)/moon.config .xpinstall/plugins/moonlight/mono/config
 	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/plugins/moonlight/mono/2.0/
 endif INCLUDE_MONO_RUNTIME
+	find .xpinstall -name \*.so -exec strip '{}' ';'
 	cd .xpinstall/ && zip -r9 ../$@ *
 
 CLEANFILES += novell-moonlight.xpi

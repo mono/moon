@@ -1,3 +1,8 @@
+2008-05-02  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: strip all .sos in XPI (not just ffmpeg)
+	If we need un un-stripped XPI we'll build one.
+
 2008-05-02  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp: reinterpret_cast doesn't work on 64-bit as it
