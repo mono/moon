@@ -1,3 +1,7 @@
+2008-05-02  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* agviewer/Makefile.am: Missing some headers from dist
+
 2008-05-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* test-runner/HtmlTest.cs: We always want an initial

@@ -1,10 +1,11 @@
-
 bin_PROGRAMS = agviewer
 
 INCLUDES = $(AGVIEWER_CFLAGS) -Wall
 
 agviewer_SOURCES = 	\
-	agviewer.cpp
+	agviewer.cpp	\
+	agserver.h	\
+	AgserverObject.h
 
 agviewer_LDADD = $(AGVIEWER_LIBS)
 
