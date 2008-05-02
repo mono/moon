@@ -693,46 +693,6 @@ point_animation_new (void)
 	return new PointAnimation ();
 }
 
-/* Fills in the given table with "lookup values" (y for x) for our spline.
- * This is used later on in the GetSplineProgress */
-static void generate_table (Point p1, Point p2, Point p3, Point p4, unsigned char table [257])
-{
-	memset (table, 255, 257);
-	double t;
-
-	for (t = 0.0; t <= 1.0; t += 1.0 / 512.0) {
-		double y = p1.y * (1.0 - t) * (1.0 - t) * (1.0 - t) +
-			   p2.y * 3.0 * t * (1.0 - t) * (1.0 - t) +
-			   p3.y * 3.0 * t * t * (1.0 - t) +
-			   p4.y * t * t * t;
-
-		double x = p1.x * (1.0 - t) * (1.0 - t) * (1.0 - t) +
-			   p2.x * 3.0 * t * (1.0 - t) * (1.0 - t) +
-			   p3.x * 3.0 * t * t * (1.0 - t) +
-			   p4.x * t * t * t;
-
-		// Just to be on the safe side...
-		x = MIN (x, 1.0); x = MAX (x, 0.0);
-		y = MIN (y, 1.0); y = MAX (y, 0.0);
-
-		table [(int) (x * 256.0)] = MIN ((int) (y * 255.0), table [(int) (x * 256.0)]);
-	}
-
-	// Fill in the values that we "missed"
-	unsigned char last_val = 0;
-	int i;
-	for (i = 1; i < 256; i++) {
-		if (table [i] == 255) {
-			if (table [i + 1] != 255 && table [i - 1] != 255)
-				table [i] = (table [i - 1] + table [i + 1]) / 2;
-			else
-				table [i] = last_val;
-		}
-
-		last_val = table [i];
-	}
-}
-
 KeySpline::KeySpline ()
 {
 	controlPoint1 = Point (0.0, 0.0);
@@ -743,8 +703,6 @@ KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
 {
 	this->controlPoint1 = controlPoint1;
 	this->controlPoint2 = controlPoint2;
-
-	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
 KeySpline::KeySpline (double x1, double y1,
@@ -752,8 +710,6 @@ KeySpline::KeySpline (double x1, double y1,
 {
 	this->controlPoint1 = Point (x1, y1);
 	this->controlPoint2 = Point (x2, y2);
-
-	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
 Point
@@ -765,7 +721,6 @@ void
 KeySpline::SetControlPoint1 (Point controlPoint1)
 {
 	this->controlPoint1 = controlPoint1;
-	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
 Point
@@ -777,7 +732,6 @@ void
 KeySpline::SetControlPoint2 (Point controlPoint2)
 {
 	this->controlPoint2 = controlPoint2;
-	generate_table (Point (0,0), controlPoint1, controlPoint2, Point (1, 1), value_table);
 }
 
 KeySpline *
@@ -786,20 +740,43 @@ key_spline_new (void)
 	return new KeySpline ();
 }
 
+static double
+get_bezier_x_for_t (Point p2, Point p3, double t)
+{
+	return 0.0 * (1.0 - t) * (1.0 - t) * (1.0 - t) +
+	       p2.x * 3.0 * t * (1.0 - t) * (1.0 - t) +
+	       p3.x * 3.0 * t * t * (1.0 - t) +
+	       1.0 * t * t * t;
+}
+
+static double
+get_bezier_y_for_t (Point p2, Point p3, double t)
+{
+	return 0.0 * (1.0 - t) * (1.0 - t) * (1.0 - t) +
+	       p2.y * 3.0 * t * (1.0 - t) * (1.0 - t) +
+	       p3.y * 3.0 * t * t * (1.0 - t) +
+	       1.0 * t * t * t;
+}
+
 double
 KeySpline::GetSplineProgress (double linearProgress)
 {
-	linearProgress = MIN (linearProgress, 1.0);
-	linearProgress = MAX (linearProgress, 0.0);
+	if (linearProgress >= 1.0)
+		return 1.0;
 
-	double base;
-	double v;
-	double frac = modf ((linearProgress * 256.0), &base);
+	if (linearProgress <= 0.0)
+		return 0.0;
 
-	v = ((value_table [(int) base] / 255.0) * (1.0 - frac)) + 
-	    ((value_table [MIN (((int) base) + 1, 256)] / 255.0) * frac);
+	double approx_1, approx_2;
+	double factor_1, factor_2;
 
-	return v;
+	approx_1 = get_bezier_x_for_t (controlPoint1, controlPoint2, linearProgress);
+	factor_1 = (approx_1 != 0) ? linearProgress / approx_1 : 1.0;
+
+	approx_2 = get_bezier_x_for_t (controlPoint1, controlPoint2, linearProgress * factor_1);
+	factor_2 = (approx_2 != 0) ? linearProgress / approx_2 : 1.0;
+
+	return get_bezier_y_for_t (controlPoint1, controlPoint2, linearProgress * factor_2);
 }
 
 DependencyProperty* KeyFrame::KeyTimeProperty;

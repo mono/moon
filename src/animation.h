@@ -40,8 +40,6 @@ class KeySpline : public DependencyObject {
 	Point GetControlPoint2 ();
 	void SetControlPoint2 (Point controlPoint2);
 
-	unsigned char value_table [257];
-
  private:
 	Point controlPoint1;
 	Point controlPoint2;
