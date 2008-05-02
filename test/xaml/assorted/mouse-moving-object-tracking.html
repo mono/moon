@@ -1,0 +1,52 @@
+<head>
+<title>Storyboard stop test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+	sender.findName ("animation1").Begin ();
+}
+function OnMouseLeave (sender, eventArgs)
+{
+	sender.findName ("animation2").Begin ();
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="300" height="400">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Rectangle x:Name="one" Fill="Blue" Canvas.Top="100" Canvas.Left="100" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave" Width="25" Height="25" />
+
+	<Canvas.Resources>
+			<Storyboard x:Name="animation1">
+					<DoubleAnimationUsingKeyFrames
+						Storyboard.TargetName="one"
+						Storyboard.TargetProperty="(Canvas.Left)" BeginTime="0:0:1">
+							<SplineDoubleKeyFrame Value="200.0" KeyTime="0:0:1" KeySpline="0.0,0.3 0.7,1.0" />
+					</DoubleAnimationUsingKeyFrames>
+			</Storyboard>
+			<Storyboard x:Name="animation2">
+					<DoubleAnimationUsingKeyFrames
+						Storyboard.TargetName="one"
+						Storyboard.TargetProperty="(UIElement.Opacity)">
+							<SplineDoubleKeyFrame Value="0.0" KeyTime="0:0:1" KeySpline="0.0,0.3 0.7,1.0" />
+					</DoubleAnimationUsingKeyFrames>
+			</Storyboard>
+	</Canvas.Resources>
+	</Canvas>
+</script>
+
+</body>
+</html>
+
+

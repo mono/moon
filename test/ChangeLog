@@ -1,3 +1,9 @@
+2008-05-02  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/mouse-moving-object-tracking.html: Adding a test for
+	tracking MouseEnter/Leave events on objects that are moving (as opposed
+	to mouse itself moving).
+
 2008-05-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml/test-cached-text-paths.xaml: added new test case provided
