@@ -1810,7 +1810,7 @@ Glyphs::InsideObject (cairo_t *cr, double x, double y)
 
 	uielement_transform_point (this, &nx, &ny);
 	
-	if (nx >= 0.0 && ny >= 0.0 && nx < width && ny < height)
+	if (nx >= left && ny >= top && nx < left + width && ny < top + height)
 		ret = true;
 	
 	cairo_restore (cr);

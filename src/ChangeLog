@@ -1,3 +1,8 @@
+2008-05-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* text.cpp|h: Adjust Glyphs::InsideObject with bounds changes.
+	[Complete the fix for #383870]
+
 2008-05-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Glyphs::Layout): Take negative vOffset attr's for
