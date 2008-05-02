@@ -17,5 +17,5 @@
       </BeginStoryboard>
     </EventTrigger>
   </Canvas.Triggers>
-  <TextBlock Canvas.Left="60" Canvas.Top="100" FontFamily="Arial" FontSize="18" FontWeight="Bold" Text="Moonlight in 21 Days" />
+  <Glyphs Canvas.Left="60" Canvas.Top="100" FontUri="arialbd.ttf" FontRenderingEmSize="18" Fill="Black" UnicodeString="Moonlight in 21 Days" />
 </Canvas>
