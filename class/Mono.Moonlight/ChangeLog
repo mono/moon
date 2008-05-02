@@ -1,3 +1,8 @@
+2008-05-02  Manuel Ceron  <ceronman@unicauca.edu.co>
+
+	* NativeMethods.cs: reamed referece to collection_count to 
+	collection_get_count
+
 2008-04-17  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Use DESTDIR when installing

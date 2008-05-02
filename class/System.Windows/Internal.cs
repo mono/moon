@@ -102,7 +102,7 @@ namespace MS.Internal {
 		//
 		public int Count {
 			get {
-				return NativeMethods.collection_count (native);
+				return NativeMethods.collection_get_count (native);
 			}
 		}
 
