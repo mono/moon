@@ -1,3 +1,10 @@
+2008-05-01  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (plugin_event_callback): fix windowless button
+	presses so that only button 3 is swallowed by the menu logic.
+
+	Fixes zooming on
+	http://www.designwithsilverlight.com/tutorials/photoGallery/gallery.html	
 2008-05-02  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: strip all .sos in XPI (not just ffmpeg)
