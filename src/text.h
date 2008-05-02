@@ -278,7 +278,7 @@ class Glyphs : public FrameworkElement {
 	TextFontDescription *desc;
 	Downloader *downloader;
 	
-	cairo_path_t *path;
+	moon_path *path;
 	gunichar *text;
 	List *attrs;
 	Brush *fill;

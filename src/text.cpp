@@ -1359,7 +1359,7 @@ Glyphs::Glyphs ()
 Glyphs::~Glyphs ()
 {
 	if (path)
-		cairo_path_destroy (path);
+		moon_path_destroy (path);
 	
 	if (downloader) {
 		downloader_abort (downloader);
@@ -1394,7 +1394,7 @@ Glyphs::Layout ()
 	width = 0.0;
 	
 	if (path) {
-		cairo_path_destroy (path);
+		moon_path_destroy (path);
 		path = NULL;
 	}
 	
@@ -1620,8 +1620,8 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	fill->SetupBrush (cr, this);
 	
 	if (path) {
-		if (path->data) {
-			cairo_append_path (cr, path);
+		if (path->cairo.num_data) {
+			cairo_append_path (cr, &path->cairo);
 			cairo_fill (cr);
 		}
 		
@@ -1641,8 +1641,10 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	
 	attr = (GlyphAttr *) attrs->First ();
 	
-	if (font->IsScalable ())
+	if (font->IsScalable ()) {
+		path = moon_path_new (16);
 		cairo_new_path (cr);
+	}
 	
 	if (text && text[0]) {
 		gunichar *c = text;
@@ -1684,10 +1686,12 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 					x1 = x0;
 				}
 				
-				if (!font->IsScalable ())
-					font->Render (cr, glyph, x1, y1);
-				else
+				if (font->IsScalable ()) {
+					font->AppendPath (path, glyph, x1, y1);
 					font->Path (cr, glyph, x1, y1);
+				} else {
+					font->Render (cr, glyph, x1, y1);
+				}
 				
 				if (attr && (attr->set & Advance))
 					x0 += attr->advance * scale;
@@ -1727,10 +1731,12 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 			x1 = x0;
 		}
 		
-		if (!font->IsScalable ())
-			font->Render (cr, glyph, x1, y1);
-		else
+		if (font->IsScalable ()) {
+			font->AppendPath (path, glyph, x1, y1);
 			font->Path (cr, glyph, x1, y1);
+		} else {
+			font->Render (cr, glyph, x1, y1);
+		}
 		
 		if ((attr->set & Advance))
 			x0 += attr->advance * scale;
@@ -1743,17 +1749,15 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	}
 	
 	if (font->IsScalable ()) {
+		moon_close_path (path);
 		cairo_close_path (cr);
 		
-		if ((path = cairo_copy_path (cr)) && path->data) {
+		if (path->cairo.num_data)
 			cairo_fill (cr);
-		} else if (path) {
-			cairo_path_destroy (path);
-			path = NULL;
-		}
 	}
 	
 	font->unref ();
+	
 	cairo_restore (cr);
 }
 

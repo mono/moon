@@ -1,3 +1,9 @@
+2008-05-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (Glyphs::Render): Cache the glyph string in a moon-path
+	rather than copying it from the cairo context for the same reason
+	we did this for TextBlock segment path caching.
+
 2008-05-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* playlist.h, playlist.cpp: Implemented ClientSkip.
