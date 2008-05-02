@@ -1,0 +1,7 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+  <Glyphs Canvas.Top="10" Canvas.Left="10" FontUri="arial.ttf" FontRenderingEmSize="18" Fill="Black" UnicodeString="This is a Glyphs element using 24 point Arial font and a Black brush"/>
+
+  <Glyphs Canvas.Top="30" Canvas.Left="10" FontUri="arial.ttf" FontRenderingEmSize="18" UnicodeString="This string should be hidden (no Fill)"/>
+
+  <Glyphs Canvas.Top="50" Canvas.Left="10" FontUri="arial.ttf" FontRenderingEmSize="18" Fill="Blue" UnicodeString="This is the third Glyphs element, the middle one should be hidden"/>
+</Canvas>
