@@ -47,7 +47,7 @@
 			</BeginStoryboard>
 		</EventTrigger>
 	</Canvas.Triggers>
-	<Glyphs x:Name="textBlock" Height="18.537" Canvas.Left="242" Canvas.Top="178" FontUri="arial.ttf" FontRenderingEmSize="14.666" Fill="Black"
+	<Glyphs x:Name="textBlock" Canvas.Left="242" Canvas.Top="178" OriginX="-20" OriginY="-20" FontUri="arial.ttf" FontRenderingEmSize="14.666" Fill="Black"
                 UnicodeString="Moonlight in 21 Days" Indices=";;;;;;;;;;,,,100;,,,100;;,,,-100;,,,-100;" RenderTransformOrigin="0.5,0.5">
 		<Glyphs.RenderTransform>
 			<TransformGroup>
