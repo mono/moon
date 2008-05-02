@@ -14,7 +14,7 @@
 	<TextBlock FontFamily="Sans" Text="Arial Pango" FontSize="15" Canvas.Left="405" Canvas.Top="170" Foreground="Red" />
 
 	<!-- Pango master -->
-	<Image Source="arial-pango.png" Canvas.Left="305" Canvas.Top="0" />
+	<Image Source="arial-pango.png" Canvas.Left="300" Canvas.Top="0" />
 
 	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="10" Canvas.Left="10" Canvas.Top="200" />
 	<TextBlock FontFamily="Verdana" Text="A quick brown fox jumped over a lazy dog!" FontSize="10.5" Canvas.Left="10" Canvas.Top="220" />
@@ -30,7 +30,7 @@
 	<TextBlock FontFamily="Sans" Text="Verdana Pango" FontSize="15" Canvas.Left="405" Canvas.Top="360" Foreground="Red" />
 
 	<!-- Pango master -->
-	<Image Source="verdana-pango.png" Canvas.Left="305" Canvas.Top="190" />
+	<Image Source="verdana-pango.png" Canvas.Left="300" Canvas.Top="190" />
 
 	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="10" Canvas.Left="10" Canvas.Top="390" />
 	<TextBlock FontFamily="Times New Roman" Text="A quick brown fox jumped over a lazy dog!" FontSize="10.5" Canvas.Left="10" Canvas.Top="410" />
@@ -46,7 +46,7 @@
 	<TextBlock FontFamily="Sans" Text="Times Pango" FontSize="15" Canvas.Left="405" Canvas.Top="550" Foreground="Red" />
 
 	<!-- Pango master -->
-	<Image Source="times-pango.png" Canvas.Left="305" Canvas.Top="380" />
+	<Image Source="times-pango.png" Canvas.Left="300" Canvas.Top="380" />
 
 
 </Canvas>
