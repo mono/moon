@@ -1,3 +1,8 @@
+2008-05-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* text.cpp|h: Add Glyphs::InsideObject so Mouse events will work.
+	[Partial fix for #383870, bounds are not always correct]
+
 2008-05-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Glyphs::Render): Cache the glyph string in a moon-path

@@ -322,6 +322,7 @@ class Glyphs : public FrameworkElement {
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void ComputeBounds ();
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint ();
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);

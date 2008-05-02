@@ -1770,6 +1770,25 @@ Glyphs::ComputeBounds ()
 	bounds = IntersectBoundsWithClipPath (Rect (0, 0, width, height), false).Transform (&absolute_xform);
 }
 
+bool
+Glyphs::InsideObject (cairo_t *cr, double x, double y)
+{
+	bool ret = false;
+	
+	cairo_save (cr);
+	
+	double nx = x;
+	double ny = y;
+
+	uielement_transform_point (this, &nx, &ny);
+	
+	if (nx >= 0.0 && ny >= 0.0 && nx < width && ny < height)
+		ret = true;
+	
+	cairo_restore (cr);
+	return ret;
+}
+
 Point
 Glyphs::GetTransformOrigin ()
 {
