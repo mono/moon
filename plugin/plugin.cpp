@@ -713,7 +713,7 @@ PluginInstance::CreateWindow ()
 	
 	if (!windowless) {
 		//  GtkPlug container and surface inside
-		container = gtk_plug_new (reinterpret_cast <GdkNativeWindow> (window->window));
+		container = gtk_plug_new (GPOINTER_TO_UINT (window->window));
 
 		// Connect signals to container
 		GTK_WIDGET_SET_FLAGS (GTK_WIDGET (container), GTK_CAN_FOCUS);

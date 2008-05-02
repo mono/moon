@@ -1,3 +1,8 @@
+2008-05-02  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: reinterpret_cast doesn't work on 64-bit as it
+	looses precision.
+
 2008-05-01  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h, plugin-class.cpp: make EventListenerProxy's
