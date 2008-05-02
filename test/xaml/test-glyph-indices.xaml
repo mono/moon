@@ -1,0 +1,122 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+
+  <!-- "Hello, World!" done entirely with Indices -->
+  <!--<Glyphs
+    OriginX="10"
+    OriginY="30"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="Black"
+    UnicodeString="Something else"
+  />-->
+
+  <!-- "Hello, World!!" done entirely with Indices -->
+  <Glyphs
+    OriginX="10"
+    OriginY="30"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="Red"
+    Indices="43;72;79;79;82;15;3;58;82;85;79;71;4;4;"
+  />
+
+  <!-- Replace UnicodeString's "Hello, World!!" with "Something else" using Indices -->
+  <Glyphs
+    OriginX="150"
+    OriginY="30"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="Orange"
+    UnicodeString="Hello, World!!"
+    Indices="54;82;80;72;87;75;76;81;74;3;72;79;86;72;"
+  />
+
+  <!-- Change the Advance of the W -->
+  <Glyphs
+    OriginX="10"
+    OriginY="60"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="Green"
+    UnicodeString="Hello, World!!"
+    Indices=";;;;;;;,150;"
+  />
+
+  <!-- Change the uOffset of the W -->
+  <Glyphs
+    OriginX="10"
+    OriginY="90"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="Blue"
+    UnicodeString="Hello, World!!"
+    Indices=";;;;;;;,,-20,;"
+  />
+
+  <!-- Change the vOffset of the W -->
+  <Glyphs
+    OriginX="10"
+    OriginY="120"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="Purple"
+    UnicodeString="Hello, World!!"
+    Indices=";;;;;;;,,,80;"
+  />
+
+  <!-- Change the Advance and uOffset of the W -->
+  <Glyphs
+    OriginX="10"
+    OriginY="150"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="MistyRose"
+    UnicodeString="Hello, World!!"
+    Indices=";;;;;;;,150,80;"
+  />
+
+  <!-- Replace "F-I" with the fi ligature -->
+  <Glyphs
+    OriginX="150"
+    OriginY="60"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="DarkBlue"
+    UnicodeString="This is an F-I ligature"
+    Indices=";;;;;;;;;;;(3:1)191"
+  />
+
+  <!-- Replace one string with another string of equal length -->
+  <Glyphs
+    OriginX="150"
+    OriginY="90"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="Magenta"
+    UnicodeString="fubar, there!"
+    Indices="(5:5)43;72;79;79;82;"
+  />
+
+  <!-- Replace a shorter string with a longer string -->
+  <Glyphs
+    OriginX="150"
+    OriginY="120"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="Cyan"
+    UnicodeString="blah, there!"
+    Indices="(4:5)43;72;79;79;82;"
+  />
+
+  <!-- Replace a longer string with a shorter string -->
+  <Glyphs
+    OriginX="150"
+    OriginY="150"
+    FontUri="arial.ttf"
+    FontRenderingEmSize="18"
+    Fill="CornflowerBlue"
+    UnicodeString="superfly, there!"
+    Indices="(8:5)43;72;79;79;82;"
+  />
+
+</Canvas>
