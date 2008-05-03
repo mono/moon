@@ -1,0 +1,146 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Test Onload</title>
+  
+  <script src="Silverlight.js"></script>
+
+  <script type="text/xaml" id="LoadedXaml">
+    <Canvas xmlns="http://schemas.microsoft.com/client/2007"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Name="root" Width="500" Height="50" Background="Orange" Loaded="DoStuff" MouseLeftButtonDown="DoClickStuff">
+      <Canvas Loaded="DoNestedCanvasStuff">
+	<TextBlock x:Name="Log" Canvas.Top="10" Canvas.Left="10" TextWrapping="NoWrap" Width="400" Loaded="DoTextStuff">
+          <Run Text="click here after the alerts go away"/><LineBreak/>
+	</TextBlock>
+      </Canvas>
+    </Canvas>
+  </script>
+
+  <script type="text/javascript">
+    function ReAddSilverlightControl (name)
+    {
+        var controlParent = document.getElementById ("SilverlightControlHost" + name);
+
+        var control = document.getElementById ("SilverlightControl" + name);
+	control.OnLoad = NewOnLoad;
+
+        setTimeout(function() { alert ("hi"); control.Source = "#SecondMouseEnterXaml"; }, 500);
+
+//        controlParent.removeChild (control);
+//        controlParent.appendChild (control);
+    }
+
+    var root = null;
+
+    function DoStuff (sender, eventArgs)
+    {
+    console.log ("DoStuff");
+       sender.addEventListener ("Loaded", DoStuff4);
+    }
+
+    function DoNestedCanvasStuff (sender, eventArgs)
+    {
+    console.log ("DoNestedCanvasStuff");
+    }
+
+    function DoNestedCanvasStuff2 (sender, eventArgs)
+    {
+    console.log ("DoNestedCanvasStuff2");
+    }
+
+    function DoTextStuff (sender, eventArgs)
+    {
+    console.log ("DoTextStuff");
+    }
+
+    function DoStuff2 (sender, eventArgs)
+    {
+    console.log ("DoStuff2");
+    }
+
+    function DoStuff3 (sender, eventArgs)
+    {
+    console.log ("DoStuff3");
+    }
+
+    function DoStuff4 (sender, eventArgs)
+    {
+    console.log ("DoStuff4");
+    }
+
+    function DoStuff5 (sender, eventArgs)
+    {
+    console.log ("DoStuff5");
+        sender.addEventListener ("Loaded", DoNestedCanvasStuff2);
+        sender.getParent().addEventListener ("Loaded", DoStuff);
+
+        var newchild = sender.getHost().content.createFromXaml ('<Image Loaded="DoImageStuff2"/>');
+        sender.children.add (newchild);
+    }
+
+    function DoImageStuff (sender, eventArgs)
+    {
+    console.log ("DoImageStuff");
+    }
+
+    function DoImageStuff2 (sender, eventArgs)
+    {
+    console.log ("DoImageStuff2");
+    }
+
+    function DoClickStuff (sender, eventArgs)
+    {
+    console.log ("DoClickStuff");
+       root.addEventListener ("Loaded", DoStuff2);
+    }
+
+    function OnLoaded(control, userContext, rootElement)
+    {
+    console.log ("OnLoaded");
+        rootElement.removeEventListener ("Loaded", 0);
+        rootElement.addEventListener ("Loaded", DoStuff);
+        rootElement.addEventListener ("Loaded", DoStuff3);
+        newchild = control.content.createFromXaml ('<Canvas><Image Loaded="DoImageStuff" /></Canvas>');
+        newchild.addEventListener ("Loaded", DoStuff5);
+
+        rootElement.children.add (newchild);
+    }
+
+    function CreateSilverlightControl(name)
+    {
+        this.parentId = "SilverlightControlHost" + name;
+        Silverlight.createObjectEx({
+            source: ("#" + name + "Xaml"),
+            parentElement: document.getElementById (this.parentId),
+            id: "SilverlightControl" + name,
+            properties: {
+                width: "100%",
+                height: "100%",
+                isWindowless: "true",
+                version: "1.0",
+                background: "#E0E0E0FF"
+            },
+            events: {
+                  onLoad: OnLoaded
+//                onError: OnError
+            }
+        });
+/*
+        document.body.onload = function() {
+                var silverlightControl = document.getElementById(this.parentId);
+                if (silverlightControl)
+                        silverlightControl.focus();
+        }
+*/
+    }
+</script>
+</head>
+<body>
+
+  <div id="SilverlightControlHostLoaded" style="position:absolute; top:150px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+    CreateSilverlightControl ("Loaded");
+  </script>
+</body>
+</html>
