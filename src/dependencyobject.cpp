@@ -188,12 +188,20 @@ EventObject::PrintStackTrace ()
 // event handlers for c++
 class EventClosure : public List::Node {
 public:
-	EventClosure (EventHandler func, gpointer data, int token) { this->func = func; this->data = data; this->token = token; this->pending_removal = false;}
+	EventClosure (EventHandler func, gpointer data, int token) {
+		this->func = func;
+		this->data = data;
+		this->token = token;
+
+		pending_removal = false;
+		emit_count = 0;
+	}
 	
 	EventHandler func;
 	gpointer data;
 	int token;
 	bool pending_removal;
+	int emit_count;
 };
 
 int
@@ -226,6 +234,7 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 	
 	return token;
 }
+
 
 void
 EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpointer data)
@@ -345,7 +354,7 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 }
 
 bool
-EventObject::Emit (char *event_name, EventArgs *calldata)
+EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted)
 {
 	int id = GetType()->LookupEvent (event_name);
 
@@ -354,11 +363,11 @@ EventObject::Emit (char *event_name, EventArgs *calldata)
 		return false;
 	}
 
-	return Emit (id, calldata);
+	return Emit (id, calldata, only_unemitted);
 }
 
 bool
-EventObject::Emit (int event_id, EventArgs *calldata)
+EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 {
 	EventClosure *closure;
 	EventClosure *next;
@@ -396,8 +405,11 @@ EventObject::Emit (int event_id, EventArgs *calldata)
 	/* emit the events using the copied list */
 	for (int i = 0; i < length; i++) {
 		closure = closures [i];
-		if (closure && closure->func && !closure->pending_removal)
+		if (closure && closure->func && !closure->pending_removal
+		    && (!only_unemitted || closure->emit_count == 0)) {
 			closure->func (this, calldata, closure->data);
+			closure->emit_count ++;
+		}
 	}
 
 	if (calldata)

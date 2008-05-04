@@ -1,3 +1,10 @@
+2008-05-04  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.h, plugin.cpp, plugin-class.cpp, plugin-class.h: revert
+	most of r102288 to move back to the separate Loaded/Load events.
+	Leave the OneShot behavior for EventListenerProxy's, though, as
+	that still is useful.
+
 2008-05-01  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp (plugin_event_callback): fix windowless button

@@ -258,7 +258,7 @@ class Surface : public EventObject {
 	const static int ResizeEvent;
 	const static int FullScreenChangeEvent;
 	const static int ErrorEvent;
-	const static int AttachingEvent;
+	const static int LoadEvent;
 
 	bool GetFullScreen () { return full_screen; }
 	void SetFullScreen (bool value);

@@ -159,8 +159,8 @@ class EventObject {
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
-	bool Emit (char *event_name, EventArgs *calldata = NULL);
-	bool Emit (int event_id, EventArgs *calldata = NULL);
+	bool Emit (char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false);
+	bool Emit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false);
 
  private:
 

@@ -1,3 +1,38 @@
+2008-05-04  Chris Toshok  <toshok@ximian.com>
+
+	[ fixes #361906, while simultaneously keeping halo3,
+	ControlLife.htm, and ControlState.htm happy ]
+	
+	* runtime.h, runtime.cpp, type-generated.cpp: move back to the
+	LoadEvent instead of the broken Attaching event, reverting
+	r102288.
+
+	* panel.h, panel.cpp: add a "emitting_loaded" guard around the
+	body of OnLoaded so we don't end up re-entering this method.
+	Also, revert r102196 as the ordering of parent-to-child was
+	correct originally, there were just other ordering constraints we
+	weren't handling.
+
+	* control.h, control.cpp: same.
+
+	* dependencyobject.h, dependencyobject.cpp: add a count field to
+	EventClosure so we can support the "only_unemitted" arg in
+	EventObject::Emit.  The idea is that the Loaded event seems to
+	only be emitted on those events that haven't yet been emitted.
+	This may also be implemented just by making Loaded event handlers
+	one-shot (removing themselves after they fire), but this is easy
+	enough and works.  The only event with this odd behavior (that I
+	know of) is Loaded.
+
+	* uielement.cpp (UIElement::OnLoaded): set the IS_LOADED
+	flag (which may actually be useless now, given the Emit change)
+	but don't emit Loaded only when the flag is unset.
+
+	* collection.cpp: remove the last bit of closure access from
+	VisualCollection.  The OnLoaded call now happens in
+	Panel::OnCollectionChanged, in 1 spot as opposed to 3 different
+	spots in VisualCollection.
+
 2008-05-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* text.cpp|h: Adjust Glyphs::InsideObject with bounds changes.

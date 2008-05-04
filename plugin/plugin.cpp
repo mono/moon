@@ -638,15 +638,6 @@ PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 }
 
 void
-PluginInstance::HookupLoadHandler (EventObject *sender, EventArgs *args, gpointer user_data)
-{
-	PluginInstance *plugin = (PluginInstance*)user_data;
-	MoonlightScriptControlObject *root = plugin->getRootObject();
-
-	root->HookupOnLoad ();
-}
-
-void
 PluginInstance::CreateWindow ()
 {
 	surface = new Surface (window->width, window->height, windowless);
@@ -686,8 +677,6 @@ PluginInstance::CreateWindow ()
 		NPN_SetProperty (instance, getRootObject (), 
 				 identifier, &npvalue);
 	}
-
-	surface->AddHandler (Surface::AttachingEvent, HookupLoadHandler, this);
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);

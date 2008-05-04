@@ -23,6 +23,8 @@ class Panel : public FrameworkElement {
 	void ChildAdded (Visual *child);
 	void ChildRemoved (Visual *child);
 
+	bool emitting_loaded;
+
  protected:
 	virtual ~Panel ();
 	bool UseBackToFront ();

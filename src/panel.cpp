@@ -28,6 +28,7 @@ Panel::Panel ()
 {
 	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new VisualCollection ()));
 	mouse_over = NULL;
+	emitting_loaded = false;
 }
 
 Panel::~Panel ()
@@ -548,6 +549,10 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, Dependen
 		case CollectionChangeTypeItemAdded:
 			ChildAdded ((Visual*)obj);
 			UpdateBounds (true);
+			if (flags & UIElement::IS_LOADED) {
+				if (GetSurface() && GetSurface()->GetToplevel())
+					GetSurface()->GetToplevel()->OnLoaded ();
+			}
 			break;
 		case CollectionChangeTypeItemRemoved:
 			ChildRemoved ((Visual*)obj);
@@ -583,10 +588,15 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, Dependen
 void
 Panel::OnLoaded ()
 {
+ 	if (emitting_loaded)
+ 		return;
+
+ 	emitting_loaded = true;
+
+	flags |= UIElement::IS_LOADED;
+
 	VisualCollection *children = GetChildren ();
 	Collection::Node *cn;
-
-	FrameworkElement::OnLoaded ();
 
 	cn = (Collection::Node *) children->list->First ();
 	for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
@@ -594,6 +604,10 @@ Panel::OnLoaded ()
 
 		item->OnLoaded ();
 	}
+
+	FrameworkElement::OnLoaded ();
+
+ 	emitting_loaded = false;
 }
 
 Panel *

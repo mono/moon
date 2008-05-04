@@ -251,7 +251,7 @@ map_moon_id_to_event_name (int moon_id)
 	case MoonId_OnResize: name = "Resize"; break;
 	case MoonId_OnFullScreenChange: name = "FullScreenChange"; break;
 	case MoonId_OnError: name = "Error"; break;
-	case MoonId_OnLoad: name = "Loaded"; break;
+	case MoonId_OnLoad: name = "Load"; break;
 	}
 
 	return name;
@@ -483,7 +483,6 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 	this->event_name = g_strdup (event_name);
 	this->event_id = -1;
 	this->target_object = NULL;
-
 	this->one_shot = false;
 
 	if (NPVARIANT_IS_OBJECT (*cb)) {
@@ -515,7 +514,7 @@ EventListenerProxy::~EventListenerProxy ()
 	
 	g_free (event_name);
 }
-
+	
 int
 EventListenerProxy::AddHandler (EventObject *obj)
 {
@@ -626,7 +625,6 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		plugin->RemoveCleanupPointer (&depargs);
 		NPN_ReleaseObject (depargs);
 	}
-
 	if (proxy->one_shot)
 		proxy->RemoveHandler();
 }
@@ -1598,13 +1596,8 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 		return true;
 	case MoonId_OnError:
 	case MoonId_OnLoad: {
-		int event_id;
-		if (id == MoonId_OnLoad)
-			event_id = UIElement::LoadedEvent;
-		else {
-			const char *event_name = map_moon_id_to_event_name (id);
-			event_id = plugin->surface->GetType()->LookupEvent (event_name);
-		}
+		const char *event_name = map_moon_id_to_event_name (id);
+		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
 		EventListenerProxy *proxy = LookupEventProxy (event_id);
 		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
 		return true;
@@ -1635,14 +1628,8 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 		return true;
 	case MoonId_OnError:
 	case MoonId_OnLoad: {
-		int event_id;
 		const char *event_name = map_moon_id_to_event_name (id);
-		if (id == MoonId_OnLoad) {
-			event_id = UIElement::LoadedEvent;
-		}
-		else {
-			event_id = plugin->surface->GetType()->LookupEvent (event_name);
-		}
+		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
 
 		if (event_id != -1) {
 			// If we have a handler, remove it.
@@ -1652,19 +1639,13 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 				EventListenerProxy *proxy = new EventListenerProxy (instance,
 										    event_name,
 										    value);
-
-				if (id == MoonId_OnLoad) {
-					// the only proxy is added in HookupOnLoad
-
-					// also, we only emit that
-					// event once, when the plugin
-					// is initialized, so don't
-					// leave it in the event list.
+				proxy->AddHandler (plugin->surface);
+				// we only emit that event once, when
+				// the plugin is initialized, so don't
+				// leave it in the event list
+				// afterward.
+				if (id == MoonId_OnLoad)
 					proxy->SetOneShot ();
-				}
-				else {
-					proxy->AddHandler (plugin->surface);
-				}
 				SetEventProxy (event_id, proxy);
 			}
 
@@ -1770,16 +1751,6 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 	default:
 		return MoonlightObject::Invoke (id, name, args, argCount, result);
 	}
-}
-
-void
-MoonlightScriptControlObject::HookupOnLoad ()
-{
-	PluginInstance *plugin = (PluginInstance*) instance->pdata;
-	int event_id = UIElement::LoadedEvent;
-	EventListenerProxy *proxy = LookupEventProxy (event_id);
-	if (proxy)
-		proxy->AddHandler (plugin->surface->GetToplevel());
 }
 
 MoonlightScriptControlType::MoonlightScriptControlType ()

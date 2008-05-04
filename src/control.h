@@ -17,13 +17,16 @@
 // Control Class
 //
 class Control : public FrameworkElement {
+ private:
+	bool emitting_loaded;
+
  protected:
 	virtual ~Control ();
 
  public:
 	FrameworkElement *real_object;
 
-	Control () : real_object (NULL) { };
+	Control ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
 

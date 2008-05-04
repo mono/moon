@@ -79,8 +79,6 @@ class PluginInstance
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
 	static void ReportCache (Surface *surface, long bytes, void *user_data);
 	static void properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin);
-
-	static void HookupLoadHandler (EventObject *sender, EventArgs *args, gpointer user_data);
 	
  public:
  

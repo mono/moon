@@ -552,9 +552,9 @@ Surface::Attach (UIElement *element)
 	if (first)
 		ConnectEvents (true);
 
-	Emit (Surface::AttachingEvent);
-
 	canvas->OnLoaded ();
+
+	Emit (Surface::LoadEvent);
 	
 	if (widget && GTK_WIDGET_HAS_FOCUS (widget))
 		canvas->EmitGotFocus ();

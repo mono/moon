@@ -330,10 +330,9 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 void
 UIElement::OnLoaded ()
 {
-	if (!(flags & UIElement::IS_LOADED)) {
-		flags |= UIElement::IS_LOADED;
-		Emit (LoadedEvent);
-	}
+	flags |= UIElement::IS_LOADED;
+
+	Emit (LoadedEvent, NULL, true);
 }
 
 //

@@ -290,9 +290,7 @@ struct MoonlightScriptControlObject : MoonlightObject {
 	
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
-
-	void HookupOnLoad ();
-
+	
 	NPObject *settings;
 	NPObject *content;
 };

@@ -23,6 +23,12 @@
 #include "control.h"
 #include "canvas.h"
 
+Control::Control ()
+{
+	real_object = NULL;
+	emitting_loaded = false;
+}
+
 void 
 Control::Render (cairo_t *cr, Region *region)
 {
@@ -140,10 +146,19 @@ Control::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 void
 Control::OnLoaded ()
 {
+	if (emitting_loaded)
+		return;
+
+	emitting_loaded = true;
+
+	flags |= UIElement::IS_LOADED;
+
 	if (real_object)
 		real_object->OnLoaded ();
 
 	FrameworkElement::OnLoaded ();
+
+	emitting_loaded = false;
 }
 
 Control::~Control ()

@@ -551,15 +551,8 @@ VisualCollection::Add (DependencyObject *data)
 	
 	int n = Collection::Add (item);
 
-	if (n != -1) {
+	if (n != -1)
 		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
-
-		if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
-			/* emit loaded events on the new item if the tree
-			   we're adding it to has already been "loaded" */
-			item->OnLoaded ();
-		}
-	}
 	
 	return n;
 }
@@ -573,14 +566,7 @@ VisualCollection::SetVal (int index, DependencyObject *data)
 	
 	if (old) {
 		g_ptr_array_remove (z_sorted, old);
-	
 		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
-	
-		if (closure && ((UIElement*)closure)->flags & UIElement::IS_LOADED) {
-			/* emit loaded events on the new item if the tree
-			   we're adding it to has already been "loaded" */
-			item->OnLoaded ();
-		}
 	}
 
 	return old;
@@ -596,12 +582,6 @@ VisualCollection::Insert (int index, DependencyObject *data)
 	
 	g_ptr_array_set_size (z_sorted, z_sorted->len + 1);
 	ResortByZIndex ();
-	
-	if (closure && ((UIElement *)closure)->flags & UIElement::IS_LOADED) {
-		/* emit loaded events on the new item if the tree
-		   we're adding it to has already been "loaded" */
-		item->OnLoaded ();
-	}
 	
 	return true;
 }
