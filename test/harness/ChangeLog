@@ -1,3 +1,8 @@
+2008-05-05  Jackson Harper  <jackson@ximian.com>
+
+	* agviewer/agviewer.cpp: Use _call instead of the timeout call so
+	we can work on older versions of dbus-glib.
+
 2008-05-02  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* agviewer/Makefile.am: Missing some headers from dist

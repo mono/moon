@@ -284,7 +284,7 @@ mark_test_as_complete_and_start_next_test (bool successful)
 	g_free (test_path);
 	test_path = NULL;
 
-	if (!dbus_g_proxy_call_with_timeout (dbus_proxy, "MarkTestAsCompleteAndGetNextTest", 25000, &error,
+	if (!dbus_g_proxy_call (dbus_proxy, "MarkTestAsCompleteAndGetNextTest", &error,
 			G_TYPE_STRING, test_name,
 			G_TYPE_BOOLEAN, successful,
 			G_TYPE_INVALID,
