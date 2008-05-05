@@ -28,11 +28,10 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
 using Mono;
-using MS.Internal;
 
 namespace System.Windows.Input
 {
-	public sealed class StylusPointCollection : Collection <StylusPoint>
+	public sealed class StylusPointCollection : PresentationFrameworkCollection <StylusPoint>
 	{
 		public StylusPointCollection() : base (NativeMethods.stylus_point_collection_new ())
 		{

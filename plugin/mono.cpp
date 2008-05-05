@@ -26,11 +26,7 @@ G_BEGIN_DECLS
 #include <mono/metadata/mono-config.h>
 G_END_DECLS
 
-#ifdef DEBUG
 #define d(x) x
-#else
-#define d(x)
-#endif
 
 static MonoDomain   *moon_domain;
 static MonoAssembly *moon_boot_assembly;
@@ -39,6 +35,8 @@ static bool moon_vm_loaded = false;
 
 // Methods
 static MonoMethod   *moon_load_xaml;
+static MonoMethod   *moon_load_xap;
+static MonoMethod   *moon_destroy_application;
 
 static MonoMethod *
 vm_get_method_from_name (const char *name)
@@ -50,8 +48,12 @@ vm_get_method_from_name (const char *name)
 	method = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
 	mono_method_desc_free (desc);
 
+	if (method == NULL)
+		printf ("Warning: could not find method %s in the assembly", name);
+	
 	return method;
 }
+
 
 bool
 vm_is_loaded (void)
@@ -98,13 +100,15 @@ vm_init (void)
 		
 		mono_jit_exec (moon_domain, moon_boot_assembly, 1, argv);
 		
-		moon_load_xaml = vm_get_method_from_name ("Moonlight.Loader:CreateXamlLoader");
-		
-		if (moon_load_xaml != NULL)
+		moon_load_xaml  = vm_get_method_from_name ("Moonlight.ApplicationLauncher:CreateXamlLoader");
+		moon_load_xap   = vm_get_method_from_name ("Moonlight.ApplicationLauncher:CreateApplication");
+		moon_destroy_application = vm_get_method_from_name ("Moonlight.ApplicationLauncher:DestroyApplication");
+
+		if (moon_load_xaml != NULL && moon_load_xap != NULL && moon_destroy_application != NULL)
 			result = true;
 	}
-	
-	d(printf ("Mono Runtime: %s\n", result ? "OK" : "Failed"));
+
+	printf ("Mono Runtime: %s\n", result ? "OK" : "Failed");
 	
 	moon_vm_loaded = true;
 	
@@ -153,5 +157,29 @@ vm_loader_destroy (gpointer loader_object)
 	guint32 loader = GPOINTER_TO_UINT (loader_object);
 	if (loader)
 		mono_gchandle_free (loader);
+}
+
+bool
+vm_application_create (gpointer plugin, gpointer surface, const char *file)
+{
+	if (moon_load_xap == NULL)
+		return NULL;
+
+	void *params [3];
+	params [0] = &plugin;
+	params [1] = &surface;
+	params [2] = mono_string_new (moon_domain, file);
+	MonoObject *ret = mono_runtime_invoke (moon_load_xap, NULL, params, NULL);
+	
+	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));
+}
+
+void
+vm_application_destroy (gpointer plugin)
+{
+	void *params [1];
+	params [0] = &plugin;
+
+	mono_runtime_invoke (moon_destroy_application, NULL, params, NULL);
 }
 #endif

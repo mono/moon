@@ -9,7 +9,7 @@ noinst_DATA = $(assemblies)
 CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -d:AGCLR -unsafe
 
 GMCS = gmcs $(CSCFLAGS)
-SMCS = MONO_PATH="../lib/2_1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
+SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 mono_moonlight_sources =				\
@@ -19,8 +19,9 @@ mono_moonlight_sources =				\
 	$(srcdir)/Mono/NativeMethods.cs			\
 	$(srcdir)/Mono/Value.cs				\
 	$(srcdir)/Mono/Moonlight.cs			\
-	$(srcdir)/Mono/Helper.cs				\
+	$(srcdir)/Mono/Helper.cs			\
 	$(srcdir)/Mono/XamlLoaderCallbacks.cs		\
+	$(srcdir)/Mono/XapHack.cs			\
 	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs\
 	$(srcdir)/System.Windows.Interop/PluginHost.cs	
 

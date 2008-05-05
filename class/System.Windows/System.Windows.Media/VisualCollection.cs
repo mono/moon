@@ -26,11 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using MS.Internal;
+using System.Windows;
 using Mono;
 
 namespace System.Windows.Media {
-	public sealed class VisualCollection : Collection<Visual> {
+	public sealed class VisualCollection : PresentationFrameworkCollection<Visual> {
 		
 		internal VisualCollection (IntPtr native) : base (native)
 		{

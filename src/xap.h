@@ -10,6 +10,7 @@
 #ifndef __MOON_XAP_H__
 #define __MOON_XAP_H__
 
+G_BEGIN_DECLS
 class Xap {
 	char *xap_dir;
 	XamlLoader *loader;
@@ -22,5 +23,9 @@ class Xap {
 	DependencyObject *getRoot () { return root; } 
 };
 
+char *xap_unpack (const char *fname);
+
 Xap *xap_create_from_file (XamlLoader *loader, const char *filename);
+G_END_DECLS
+
 #endif /* __MOON_XAP_H__ */

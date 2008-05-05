@@ -13,13 +13,13 @@ SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=te
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 system_windows_sources =							\
-	$(srcdir)/Internal.cs							\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
 	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
+	$(srcdir)/Mono/Report.cs						\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
@@ -54,6 +54,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/TimelineMarkerCollection.cs	\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
+	$(srcdir)/System.Windows/AssemblyPart.cs				\
+	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
+	$(srcdir)/System.Windows/Deployment.cs					\
+	$(srcdir)/System.Windows/DependencyObject.cs				\
+	$(srcdir)/System.Windows/DependencyProperty.cs				\
 	$(srcdir)/System.Windows/Downloader.cs					\
 	$(srcdir)/System.Windows/Duration.cs					\
 	$(srcdir)/System.Windows/ErrorEventArgs.cs				\
@@ -68,6 +73,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ParserErrorEventArgs.cs			\
 	$(srcdir)/System.Windows/ParserErrorEventHandler.cs			\
 	$(srcdir)/System.Windows/Point.cs					\
+	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
 	$(srcdir)/System.Windows/Rect.cs					\
 	$(srcdir)/System.Windows/RuntimeErrorEventArgs.cs			\
@@ -76,6 +82,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/StartupEventArgs.cs				\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/StyleSimulations.cs				\
+	$(srcdir)/System.Windows/SupportedCulture.cs				\
+	$(srcdir)/System.Windows/SupportedCultureCollection.cs			\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\
@@ -83,6 +91,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/UIElement.cs					\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/XamlReader.cs					\
+	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
 	$(srcdir)/System.Windows.Controls/Canvas.cs				\
 	$(srcdir)/System.Windows.Controls/Control.cs				\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
@@ -93,8 +102,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
 	$(srcdir)/System.Windows.Documents/Run.cs				\
-	$(srcdir)/System.Windows/DependencyObject.cs				\
-	$(srcdir)/System.Windows/DependencyProperty.cs				\
 	$(srcdir)/System.Windows.Input/Cursors.cs				\
 	$(srcdir)/System.Windows.Input/KeyboardEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/KeyboardEventHandler.cs			\

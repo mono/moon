@@ -26,12 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using MS.Internal;
+using System.Windows;
 using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class PathSegmentCollection : Collection<PathSegment> {
+	public sealed class PathSegmentCollection : PresentationFrameworkCollection<PathSegment> {
 		public PathSegmentCollection () : base (NativeMethods.path_segment_collection_new ())
 		{
 		}

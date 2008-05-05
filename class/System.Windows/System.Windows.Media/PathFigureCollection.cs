@@ -26,12 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using MS.Internal;
+using System.Windows;
 using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class PathFigureCollection : Collection<PathFigure> {
+	public sealed class PathFigureCollection : PresentationFrameworkCollection<PathFigure> {
 		public PathFigureCollection () : base (NativeMethods.path_figure_collection_new ())
 		{
 		}

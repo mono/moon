@@ -1,3 +1,19 @@
+2008-05-04  Miguel de Icaza  <miguel@novell.com>
+
+	* Update all classes to not derive from MS.Internal.Collection,
+	instead the new PresentationFrameworkCollection.
+
+	* Mono/Report.cs: New error reporting framework, we should use
+	this to consolidate error reporting. 
+
+	* Application.cs: Add meat to the actual implementation, we now
+	startup, still a handful of methods must be implemented. 
+
+	* System.Windows/XapHackProxyImpl.cs: Continuation of the horrid
+	cross appdomain hack.
+
+	* Add a few more managed mirrors for the unmanaged classes. 
+
 2008-05-02  Manuel Ceron  <ceronman@unicauca.edu.co>
 
 	* Internal.cs: Collections.Count now returns 

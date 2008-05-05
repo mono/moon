@@ -233,12 +233,30 @@ namespace Mono.Xaml
 			return top;
 		}
 
+		//
+		// Creates a native object from the given filename
+		// 
+		public IntPtr CreateFromFile (string path, bool createNamescope, out Kind kind)
+		{
+			if (path == null)
+				throw new ArgumentNullException ("path");
+
+			IntPtr top;
+			
+			CreateNativeLoader (null, path);
+			top = NativeMethods.xaml_create_from_file (NativeLoader, path, createNamescope, out kind);
+			FreeNativeLoader ();
+			
+			return top;
+		}
+
 		// 
 		// Creates a managed dependency object from the xaml.
 		// Must always return a DependencyObject (since we don't reference agclr, we can't 
 		// declare the return type as DependencyObject)
 		// 
 		public abstract object CreateDependencyObjectFromString (string xaml, bool createNamescope);
+		public abstract object CreateDependencyObjectFromFile (string path, bool createNamescope);
 		
 		public object InitializeFromXaml (string xaml, IntPtr native)
 		{

@@ -69,6 +69,9 @@ namespace Mono {
 		public extern static bool type_create_instance_from_kind (Kind type);
 
 		[DllImport("moon")]
+		public extern static bool type_is_dependency_object (Kind type);
+		
+		[DllImport("moon")]
 		public extern static IntPtr dependency_property_lookup (Kind type, string name);
 
 		[DllImport("moon")]
@@ -536,7 +539,21 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static IntPtr trigger_action_collection_new ();
 
+		[DllImport ("moon")]
+		public extern static IntPtr deployment_new ();
 
+		[DllImport ("moon")]
+		public extern static IntPtr supported_culture_collection_new ();
+		
+		[DllImport ("moon")]
+		public extern static IntPtr supported_culture_new ();
+
+		[DllImport ("moon")]
+		public extern static IntPtr assembly_part_new ();
+
+		[DllImport ("moon")]
+		public extern static IntPtr assembly_part_collection_new ();
+		
 #endregion
 
 #region Storyboard
@@ -747,6 +764,11 @@ namespace Mono {
 
 		[DllImport("moonplugin")]
 		public extern static void browser_http_response_destroy (IntPtr handle);
+#endregion
+
+#region xap
+		[DllImport("moon")]
+		public extern static string xap_unpack (string xapfile);
 #endregion
 	}
 }

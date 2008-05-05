@@ -25,13 +25,12 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
-using MS.Internal;
+using System.Windows;
 using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class GradientStopCollection : Collection<GradientStop> {
+	public sealed class GradientStopCollection : PresentationFrameworkCollection<GradientStop> {
 		public GradientStopCollection () : base (NativeMethods.gradient_stop_collection_new ())
 		{
 		}

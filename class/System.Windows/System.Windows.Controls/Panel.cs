@@ -27,7 +27,6 @@
 //
 using System.Windows.Media;
 using System.Windows;
-using MS.Internal;
 using Mono;
 
 namespace System.Windows.Controls {

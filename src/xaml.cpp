@@ -38,7 +38,7 @@
 #include "stylus.h"
 #include "runtime.h"
 #include "utils.h"
-
+#include "deployment.h"
 
 #ifdef DEBUG_XAML
 #define d(x) x
@@ -62,8 +62,8 @@ class XNamespace;
 
 
 static DefaultNamespace *default_namespace = NULL;
+static DefaultNamespace *deploy_namespace = NULL;
 static XNamespace *x_namespace = NULL;
-
 
 static const char* default_namespace_names [] = {
 	"http://schemas.microsoft.com/winfx/2006/xaml/presentation",
@@ -1141,8 +1141,10 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 		}
 	}
 		
-	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml", uri)) {
+	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml", uri)){
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
+	} else if (!strcmp ("http://schemas.microsoft.com/client/2007/deployment", uri)){
+		g_hash_table_insert (p->namespace_map, g_strdup (uri), deploy_namespace);
 	} else {
 		if (!p->loader) {
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,
@@ -2982,6 +2984,7 @@ void
 xaml_init (void)
 {
 	GHashTable *dem = g_hash_table_new (g_str_hash, g_str_equal); // default element map
+	GHashTable *deploy = g_hash_table_new (g_str_hash, g_str_equal); // deployment element map
 	GHashTable *x_dem = g_hash_table_new (g_str_hash, g_str_equal); // x element map
 
 	XamlElementInfo *col = register_ghost_element ("Collection", NULL, Type::COLLECTION);
@@ -3214,9 +3217,21 @@ xaml_init (void)
 	//
 	// FIXME: Make this v1.1 only
 	register_x_code_element (x_dem);
+
+	//
+	// Deployment namespace
+	//
+
+	rdoe (deploy, "Deployment", NULL, Type::DEPLOYMENT, (create_item_func) deployment_new);
+	rdoe (deploy, "AssemblyPart", NULL, Type::ASSEMBLYPART, (create_item_func) assembly_part_new);
+	rdoe (deploy, "AssemblyPartCollection", col, Type::ASSEMBLYPART_COLLECTION, (create_item_func) assembly_part_collection_new);
+
+	// Is this correct, since there is no SupportedCulture item
+	rdoe (deploy, "SupportedCultureCollection", col, Type::SUPPORTEDCULTURE_COLLECTION, (create_item_func) supported_culture_collection_new);
 	
 #undef rdoe
 	
 	default_namespace = new DefaultNamespace (dem);
+	deploy_namespace = new DefaultNamespace (deploy);
 	x_namespace = new XNamespace (x_dem);
 }

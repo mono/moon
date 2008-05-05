@@ -53,17 +53,17 @@ class SupportedCulture : public DependencyObject {
 };
 
 
-class SupportedCulturesCollection : public Collection {
+class SupportedCultureCollection : public Collection {
  protected:
-	virtual ~SupportedCulturesCollection () {}
+	virtual ~SupportedCultureCollection () {}
 
  public:
-	SupportedCulturesCollection () {}
-	virtual Type::Kind GetObjectType ()  { return Type::SUPPORTEDCULTURES_COLLECTION; }
+	SupportedCultureCollection () {}
+	virtual Type::Kind GetObjectType ()  { return Type::SUPPORTEDCULTURE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::SUPPORTEDCULTURE; }
 };
 
-SupportedCulturesCollection *supported_cultures_collection_new (void);
+SupportedCultureCollection *supported_culture_collection_new (void);
 
 
 class Deployment : public DependencyObject {
@@ -78,6 +78,7 @@ class Deployment : public DependencyObject {
 	static DependencyProperty *NeutralResourcesLanguageProperty;
 	static DependencyProperty *PartsProperty;
 	static DependencyProperty *SupportedCulturesProperty;
+	static DependencyProperty *RuntimeVersion;
 
 
 	Deployment () {} 

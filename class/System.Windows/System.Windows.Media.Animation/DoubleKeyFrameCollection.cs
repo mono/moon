@@ -25,10 +25,11 @@
 
 
 using Mono;
+using System.Windows;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class DoubleKeyFrameCollection : MS.Internal.Collection<DoubleKeyFrame> {
+	public sealed class DoubleKeyFrameCollection : PresentationFrameworkCollection<DoubleKeyFrame> {
 		public DoubleKeyFrameCollection () : base (NativeMethods.double_key_frame_collection_new ())
 		{
 		}

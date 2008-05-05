@@ -26,12 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using MS.Internal;
 using Mono;
+using System.Windows;
 
 namespace System.Windows.Media {
 
-	public sealed class GeometryCollection : Collection<Geometry> {
+	public sealed class GeometryCollection : PresentationFrameworkCollection<Geometry> {
 		internal GeometryCollection (IntPtr native) : base (native)
 		{
 		}

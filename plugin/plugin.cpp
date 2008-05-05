@@ -338,6 +338,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	
 	vm_missing_file = NULL;
 	xaml_loader = NULL;
+	xap_loaded = false;
 	plugin_unload = NULL;
 	
 	timers = NULL;
@@ -383,6 +384,9 @@ PluginInstance::~PluginInstance ()
 
 	g_free (background);
 	delete xaml_loader;
+
+	// Destroy the XAP application
+	DestroyApplication ();
 
 	g_free (source);
 
@@ -770,7 +774,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 		delete xaml_loader;
 
 	xaml_loader = PluginXamlLoader::FromStr (xaml, this, surface);
-	TryLoad ();
+	LoadXAML ();
 
 	g_free ((gpointer) xaml);
 }
@@ -817,7 +821,7 @@ PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 // request to fetch the data.
 //
 void
-PluginInstance::TryLoad ()
+PluginInstance::LoadXAML ()
 {
 	int error = 0;
 
@@ -845,6 +849,43 @@ PluginInstance::TryLoad ()
 		return;
 	}
 }
+
+#if INCLUDE_MONO_RUNTIME
+//
+// Loads a XAP file
+//
+void
+PluginInstance::LoadXAP (const char *fname)
+{
+	if (!vm_is_loaded ())
+		vm_init ();
+
+	printf ("LOADXAP: %s\n", fname);
+	bool res = vm_application_create (this, surface, fname);
+	xap_loaded = true;
+	printf ("LoadXAP: %d\n", res);
+}
+
+void
+PluginInstance::DestroyApplication ()
+{
+	if (xap_loaded)
+		vm_application_destroy (this);
+	xap_loaded = false;
+}
+#else
+
+void
+PluginInstance::DestroyApplication ()
+{
+}
+
+void
+PluginInstance::LoadXAP (const char *fname)
+{
+	// never called when Mono is not linked in.
+}
+#endif
 
 /*
  * Prepares a string to be passed to Javascript, escapes the " and '
@@ -1026,10 +1067,16 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 #endif
 	
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
-	  	if (xaml_loader)
-	  		delete xaml_loader;
-		xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
-		TryLoad ();
+		if (xaml_loader != NULL)
+			delete xaml_loader;
+	
+		if (IsSilverlight2 ()) 
+			LoadXAP (fname);
+		else {
+			xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
+	
+			LoadXAML ();
+		}
 	} else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
 		
@@ -1060,7 +1107,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 			xaml_loader->InsertMapping (stream->url, fname);
 			
 			// retry to load
-			TryLoad ();
+			LoadXAML ();
 		}
 
 		g_free (missing);
@@ -1534,20 +1581,57 @@ plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length)
 	XamlLoader
 */
 
-
+#if INCLUDE_MONO_RUNTIME
 bool
 PluginXamlLoader::LoadVM ()
 {
-#if INCLUDE_MONO_RUNTIME
 	if (!vm_is_loaded ())
 		vm_init ();
 
 	if (vm_is_loaded ())
 		return InitializeLoader ();
-#endif
 
 	return FALSE;
 }
+
+bool
+PluginXamlLoader::InitializeLoader ()
+{
+	if (initialized)
+		return TRUE;
+
+	if (!vm_is_loaded ())
+		return FALSE;
+
+	if (managed_loader)
+		return TRUE;
+
+	if (GetFilename ()) {
+		managed_loader = vm_xaml_file_loader_new (this, plugin, GetSurface (), GetFilename ());
+	} else if (GetString ()) {
+		managed_loader = vm_xaml_str_loader_new (this, plugin, GetSurface (), GetString ());
+	} else {
+		return FALSE;
+	}
+
+	initialized = managed_loader != NULL;
+
+	return initialized;
+}
+#else
+bool
+PluginXamlLoader::LoadVM ()
+{
+	return FALSE;
+}
+
+bool
+PluginXamlLoader::InitializeLoader ()
+{
+	initialized = TRUE;
+	return TRUE;
+}
+#endif
 
 //
 // On error it sets the @error ref to 1
@@ -1558,22 +1642,13 @@ PluginXamlLoader::TryLoad (int *error)
 {
 	DependencyObject *element;
 	Type::Kind element_type;
-	Xap *xap;
 	
 	*error = 0;
 	
 	d(printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ()));
 	
 	if (GetFilename ()) {
-		if (plugin->IsSilverlight2 ()) {
-			if (!(xap = xap_create_from_file (this, GetFilename ()))) {
-				*error = 1;
-				return NULL;
-			}
-			element = NULL;
-		} else {
-			element = xaml_create_from_file (this, GetFilename (), true, &element_type);
-		}
+		element = xaml_create_from_file (this, GetFilename (), true, &element_type);
 	} else if (GetString ()) {
 		element = xaml_create_from_str (this, GetString (), true, &element_type);
 	} else {
@@ -1634,35 +1709,6 @@ PluginXamlLoader::HookupEvent (void *target, const char *name, const char *value
 		event_object_add_javascript_listener ((EventObject*) target, plugin, name, value);
 
 	return true;
-}
-
-bool
-PluginXamlLoader::InitializeLoader ()
-{
-	if (initialized)
-		return TRUE;
-
-#if INCLUDE_MONO_RUNTIME
-	if (!vm_is_loaded ())
-		return FALSE;
-
-	if (managed_loader)
-		return TRUE;
-
-	if (GetFilename ()) {
-		managed_loader = vm_xaml_file_loader_new (this, plugin, GetSurface (), GetFilename ());
-	} else if (GetString ()) {
-		managed_loader = vm_xaml_str_loader_new (this, plugin, GetSurface (), GetString ());
-	} else {
-		return FALSE;
-	}
-
-	initialized = managed_loader != NULL;
-#else
-	initialized = TRUE;
-#endif
-
-	return initialized;
 }
 
 PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface)

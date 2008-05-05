@@ -141,7 +141,9 @@ namespace Mono {
 
 		public static AppDomain CreateDomain (IntPtr key)
 		{
-			return AppDomain.CreateDomain ("moonlight-" + key);
+			AppDomain a = AppDomain.CreateDomain ("moonlight-" + key);
+
+			return a;
 		}
 
 		public static void UnloadDomain (AppDomain domain)

@@ -132,6 +132,38 @@ namespace Mono.Xaml
 			
 			return result;
 		}
+
+		// 
+		// Creates a managed dependency object from the xaml in the file
+		// Must always return a DependencyObject (the abstract declaration in agmono
+		// cannot be declared with a return value of type DependencyObject since agmono
+		// can't reference agclr, it would cause a circular dependency).
+		// 
+		public override object CreateDependencyObjectFromFile (string file, bool createNamescope)
+		{
+			if (file == null)
+				throw new ArgumentNullException ("file");
+
+			IntPtr top;
+			DependencyObject result;
+			Kind kind;
+			
+			DependencyObject.Ping ();
+			
+			top = CreateFromFile (file, createNamescope, out kind);
+			
+			if (top == IntPtr.Zero)
+				return null;
+
+			result = DependencyObject.Lookup (kind, top);
+			
+			if (result != null) {
+				// Delete our reference, result already has one.
+				NativeMethods.base_unref (top);
+			}
+			
+			return result;
+		}
 		
 		//
 		// Our assembly resolver, invoked by Assembly.Load if it fails

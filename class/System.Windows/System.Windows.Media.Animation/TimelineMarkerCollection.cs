@@ -28,11 +28,10 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
 using Mono;
-using MS.Internal;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class TimelineMarkerCollection : Collection <TimelineMarker>
+	public sealed class TimelineMarkerCollection : PresentationFrameworkCollection <TimelineMarker>
 	{
 		public TimelineMarkerCollection() : base (NativeMethods.timeline_marker_collection_new ())
 		{

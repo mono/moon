@@ -16,6 +16,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#if INCLUDE_MONO_RUNTIME
+
 #include "xaml.h"
 #include "error.h"
 #include "utils.h"
@@ -23,7 +25,7 @@
 #include "zip/unzip.h"
 #include "xap.h"
 
-static char *
+char *
 xap_unpack (const char *fname)
 {
 	char *xap_dir;
@@ -68,9 +70,9 @@ xap_unpack (const char *fname)
 		if (unzOpenCurrentFile (zipfile) != UNZ_OK)
 			goto exception1;
 
-		int exc = ExtractFile (zipfile, fd);
+		bool exc = ExtractFile (zipfile, fd);
 		unzCloseCurrentFile (zipfile);
-		if (exc != UNZ_OK)
+		if (exc == false)
 			goto exception1;
 
 	} while (unzGoToNextFile (zipfile) == UNZ_OK);
@@ -124,3 +126,5 @@ xap_create_from_file (XamlLoader *loader, const char *filename)
 	Xap *xap = new Xap (loader, xap_dir, element);
 	return xap;
 }
+
+#endif /* MONO_STACK_ENABLED */

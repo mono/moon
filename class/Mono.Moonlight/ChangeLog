@@ -1,3 +1,19 @@
+2008-05-04  Miguel de Icaza  <miguel@novell.com>
+
+	* Mono/XapHack.cs: Another hack for creating MarshalByRefObjects.
+
+	We should probably eliminate the need for this, and just have a
+	dedicated mechanism that can pass an array of strings on a
+	cross-domain call (the only interaction we ever need to make,
+	which we are not even doing now).
+
+	* Mono/NativeMethods.cs: Add more native methods. 
+
+2008-04-29  Miguel de Icaza  <miguel@novell.com>
+
+	* System.Windows.Interop/PluginHost.cs: Add methods to track the
+	surface as well.
+
 2008-05-02  Manuel Ceron  <ceronman@unicauca.edu.co>
 
 	* NativeMethods.cs: reamed referece to collection_count to 

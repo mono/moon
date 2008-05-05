@@ -28,7 +28,6 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
 using Mono;
-using MS.Internal;
 
 namespace System.Windows.Media.Animation
 {

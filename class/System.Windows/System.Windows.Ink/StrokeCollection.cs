@@ -28,11 +28,10 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
 using Mono;
-using MS.Internal;
 
 namespace System.Windows.Ink
 {
-	public sealed class StrokeCollection : Collection <Stroke>
+	public sealed class StrokeCollection : PresentationFrameworkCollection <Stroke>
 	{
 		public StrokeCollection() : base (NativeMethods.stroke_collection_new ())
 		{

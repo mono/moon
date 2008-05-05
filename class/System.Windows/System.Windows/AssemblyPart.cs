@@ -1,7 +1,10 @@
-// Author:
-//   Chris Toshok  (toshok@ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// AssemblyPart.cs
+//
+// Author:
+//   Miguel de Icaza (miguel@novell.com)
+//
+// Copyright 2008 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -22,24 +25,48 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
-using Mono;
+using System;
+using System.IO;
 using System.Windows;
+using System.Reflection;
+using Mono;
 
-namespace System.Windows.Media.Animation
-{
-	public sealed class ColorKeyFrameCollection : PresentationFrameworkCollection<ColorKeyFrame> {
-		public ColorKeyFrameCollection () : base (NativeMethods.color_key_frame_collection_new ())
+namespace System.Windows {
+
+	public sealed class AssemblyPart : DependencyObject {
+
+		static AssemblyPart ()
+		{
+			SourceProperty = DependencyProperty.Lookup (Kind.ASSEMBLYPART, "Source", typeof (string));
+		}
+
+		public AssemblyPart () : base (NativeMethods.assembly_part_new ())
 		{
 		}
 
-		internal ColorKeyFrameCollection (IntPtr raw) : base (raw)
+		internal AssemblyPart (IntPtr raw) : base (raw)
 		{
 		}
 
-		internal override Kind GetKind ()
-		{
-			return Kind.COLORKEYFRAME_COLLECTION;
+		public string Source {
+			get {
+				return (string) GetValue (SourceProperty);
+			}
+
+			set {
+				SetValue (SourceProperty, value);
+			}
 		}
+
+		public Assembly Load (Stream assemblyStream)
+		{
+			//
+			// Eventually, we will be using temporary files for now to simplify debugging
+			// so this method does nothing, and Application does all the work
+			//
+			return null;
+		}
+		
+		public static readonly DependencyProperty SourceProperty;
 	}
 }

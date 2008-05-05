@@ -29,7 +29,7 @@ using Mono;
 namespace System.Windows 
 {
 	public sealed class TriggerActionCollection :
-				MS.Internal.Collection<System.Windows.Media.Animation.BeginStoryboard>  
+				PresentationFrameworkCollection<System.Windows.Media.Animation.BeginStoryboard>  
 	{
 		public TriggerActionCollection(): base (Mono.NativeMethods.trigger_action_collection_new ())
 		{

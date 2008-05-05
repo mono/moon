@@ -26,12 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using MS.Internal;
+using System.Windows;
 using Mono;
 
 namespace System.Windows.Media {
 
-	public abstract class MediaAttributeCollection : Collection<MediaAttribute> {
+	public abstract class MediaAttributeCollection : PresentationFrameworkCollection<MediaAttribute> {
 
 		public MediaAttributeCollection () : base (NativeMethods.media_attribute_collection_new ())
 		{

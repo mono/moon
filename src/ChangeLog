@@ -1,3 +1,21 @@
+2008-05-04  Miguel de Icaza  <miguel@novell.com>
+
+	* xap.cpp: Expose xap_unpack, include when Mono runtime is
+	included. 
+
+	* deployment.cpp: Small fixups.
+
+	* xaml.cpp (deploy_namespace): New namespace used to parse
+	AppManifest.xaml files that start with a <Deployment> tag on the
+	http://schemas.microsoft.com/client/2007/deployment namespace. 
+	
+	(xaml_init): Register the deployment classes.
+
+	* type.cpp (type_is_dependency_object): Add new helper method
+	to determine if a Kind is a DEPENDENCYOBJECT, the list is no
+	longer separated in value-types and DependencyObjects, so its not
+	possible to do a fast lookup from managed code. 
+
 2008-05-04  Chris Toshok  <toshok@ximian.com>
 
 	[ fixes #361906, while simultaneously keeping halo3,

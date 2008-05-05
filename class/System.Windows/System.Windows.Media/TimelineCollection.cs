@@ -26,13 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using MS.Internal;
+using System.Windows;
 using System.Windows.Media.Animation;
 using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class TimelineCollection : Collection<Timeline> {
+	public sealed class TimelineCollection : PresentationFrameworkCollection<Timeline> {
 		public TimelineCollection () : base (NativeMethods.timeline_collection_new ())
 		{
 		}

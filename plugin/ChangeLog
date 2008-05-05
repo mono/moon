@@ -1,3 +1,22 @@
+2008-05-04  Miguel de Icaza  <miguel@novell.com>
+
+	* moonlight.cs: Add support for XAP file loading. 
+
+	* mono.cpp: New methods to create applications based on XAP files,
+	and shut them down.
+
+	* plugin.cpp (PluginInstance::StreamAsFile): If Silverlight2 the
+	request was for a XAP file, load a XAP file.    This could break
+	if people embed a Silverlight2 plugin, but pass a XAML file, must
+	test this. 
+
+	* plugin.cpp: Some refactoring to keep the Mono-depending features
+	together, without having ifdefs inside of functions.
+
+	XAP maintenance: Keep track of whether a XAP application has been
+	loaded, destroy XAP applications on shutdown.
+	
+
 2008-05-04  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.h, plugin.cpp, plugin-class.cpp, plugin-class.h: revert

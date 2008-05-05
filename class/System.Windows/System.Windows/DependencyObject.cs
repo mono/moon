@@ -109,8 +109,8 @@ namespace System.Windows {
 
 			DependencyObject dop = (DependencyObject) CreateObject (k, ptr);
 			if (dop == null){
-				Console.WriteLine ("agclr: Returning a null object, did not know how to construct {0}", k);
-				Console.WriteLine (Helper.GetStackTrace ());
+				Report.Warning ("System.Windows: Returning a null object, did not know how to construct {0}", k);
+				Report.Warning (Helper.GetStackTrace ());
 			}
 
 			return dop;
@@ -137,11 +137,14 @@ namespace System.Windows {
 			NativeMethods.base_ref (raw);
 			switch (k){
 			case Kind.ARCSEGMENT: return new ArcSegment (raw);
+			case Kind.ASSEMBLYPART: return new AssemblyPart (raw);
+			case Kind.ASSEMBLYPART_COLLECTION: return new AssemblyPartCollection (raw);
 			case Kind.BEGINSTORYBOARD: return new BeginStoryboard (raw);
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw);
 			case Kind.CANVAS: return new Canvas (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
+			case Kind.DEPLOYMENT: return new Deployment (raw);
 			case Kind.DISCRETECOLORKEYFRAME: return new DiscreteColorKeyFrame (raw);
 			case Kind.DISCRETEDOUBLEKEYFRAME: return new DiscreteDoubleKeyFrame (raw);
 			case Kind.DISCRETEPOINTKEYFRAME: return new DiscretePointKeyFrame (raw);
@@ -200,6 +203,8 @@ namespace System.Windows {
 			case Kind.STYLUSINFO: return new StylusInfo (raw);
 			case Kind.STYLUSPOINT_COLLECTION: return new StylusPointCollection (raw);
 			case Kind.STYLUSPOINT: return new StylusPoint (raw);
+			case Kind.SUPPORTEDCULTURE: return new SupportedCulture (raw); 
+			case Kind.SUPPORTEDCULTURE_COLLECTION: return new SupportedCultureCollection (raw);
 			case Kind.TEXTBLOCK: return new TextBlock (raw);
 			case Kind.TIMELINE_COLLECTION: return new TimelineCollection (raw);
 			case Kind.TIMELINEMARKER_COLLECTION: return new TimelineMarkerCollection (raw);
@@ -209,7 +214,7 @@ namespace System.Windows {
 			case Kind.TRIGGERACTION_COLLECTION: return new TriggerActionCollection (raw);
 			case Kind.TRIGGER_COLLECTION: return new TriggerCollection (raw);
 			case Kind.VISUAL_COLLECTION: return new VisualCollection (raw);
-
+				
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:
 			case Kind.CLOCK: 
@@ -274,6 +279,8 @@ namespace System.Windows {
 			return ValueToObject (val);
 		}
 
+		static bool slow_codepath_error_shown = false;
+		
 		internal static object ValueToObject (IntPtr value)
 		{
 						
@@ -367,12 +374,16 @@ namespace System.Windows {
 
 					return new RepeatBehavior (repeat->kind, repeat->count, new TimeSpan (repeat->timespan));
 				}
-
 				}
 
-				//
-				// If it is a dependency object
-				if (val->k > Kind.DEPENDENCY_OBJECT){
+				if (!slow_codepath_error_shown){
+					Report.Warning ("WARNING: DependencyObject type testing now using a very slow code path");
+					slow_codepath_error_shown = true;
+				}
+
+				if (NativeMethods.type_is_dependency_object (val->k)){
+					// Old fast test: if (val->k > Kind.DEPENDENCY_OBJECT){
+
  					if (val->u.p == IntPtr.Zero)
  						return null;
 					

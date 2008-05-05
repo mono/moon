@@ -26,12 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Windows;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace System.Collections.ObjectModel {
 
-	public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged
+	public class ObservableCollection<T> : PresentationFrameworkCollection<T>, INotifyCollectionChanged
 		//  Temporary, need to add back: INotifyPropertyChanged
 	{
 		public ObservableCollection ()

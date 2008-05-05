@@ -21,6 +21,9 @@ gpointer vm_xaml_loader_new (XamlLoader* loader, gpointer plugin, gpointer surfa
 gpointer vm_xaml_file_loader_new (XamlLoader* loader, gpointer plugin, gpointer surface, const char *file);
 gpointer vm_xaml_str_loader_new (XamlLoader* loader, gpointer plugin, gpointer surface, const char *str);
 
+bool     vm_application_create (gpointer plugin, gpointer surface, const char *file);
+void     vm_application_destroy (gpointer handle);
+
 void vm_loader_destroy  (gpointer loader_object);
 
 G_END_DECLS

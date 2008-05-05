@@ -153,7 +153,7 @@ public:
 		STYLUSPOINT,
 		STYLUSPOINT_COLLECTION,
 		SUPPORTEDCULTURE,
-		SUPPORTEDCULTURES_COLLECTION,
+		SUPPORTEDCULTURE_COLLECTION,
 		SURFACE,
 		SYSTEMTIMESOURCE,
 		TEXTBLOCK,
@@ -228,6 +228,7 @@ DependencyObject *type_create_instance_from_kind (Type::Kind kind);
 
 void types_init (void);
 const char *type_get_name (Type::Kind type);
+bool type_is_dependency_object (Type::Kind type);
 
 G_END_DECLS
 

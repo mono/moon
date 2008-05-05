@@ -142,6 +142,15 @@ type_get_value_type (Type::Kind type)
 	return t->IsValueType ();
 }
 
+bool
+type_is_dependency_object (Type::Kind type)
+{
+	Type *t = Type::Find (type);
+	if (t == NULL)
+		return false;
+	return t->IsSubclassOf (Type::DEPENDENCY_OBJECT);
+}
+
 DependencyObject *
 type_create_instance (Type *type)
 {

@@ -26,12 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Windows;
 using System.Windows.Documents;
 using Mono;
 
 namespace System.Windows {
 
-	public sealed class Inlines : MS.Internal.Collection<Inline>
+	public sealed class Inlines : PresentationFrameworkCollection<Inline>
 	{
 		public Inlines () : base (NativeMethods.inlines_new ())
 		{

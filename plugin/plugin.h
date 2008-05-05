@@ -56,6 +56,7 @@ class PluginInstance
 	// The XAML loader, contains a handle to a MonoObject *
 	//
 	PluginXamlLoader *xaml_loader;
+	bool xap_loaded;
 	
 	//
 	// A (managed) callback to call when the plugin is unloaded.
@@ -69,9 +70,11 @@ class PluginInstance
 	void CreateWindow ();
 	void UpdateSource ();
 	void UpdateSourceByReference (const char *value);
-	void TryLoad ();
+	void LoadXAML ();
+	void LoadXAP  (const char *fname);
 	void SetPageURL ();
-
+	void DestroyApplication ();
+	
 	static gboolean IdleUpdateSourceByReference (gpointer data);
 
 	static void RenderSurface (Surface *surface, void *user_data);

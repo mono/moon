@@ -1,7 +1,10 @@
-// Author:
-//   Chris Toshok  (toshok@ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// AssemblyPartCollection.cs
+//
+// Author:
+//   Miguel de Icaza (miguel@novell.com)
+//
+// Copyright 2008 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -22,24 +25,26 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
-using Mono;
+using System;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Input;
+using Mono;
 
-namespace System.Windows.Media.Animation
-{
-	public sealed class ColorKeyFrameCollection : PresentationFrameworkCollection<ColorKeyFrame> {
-		public ColorKeyFrameCollection () : base (NativeMethods.color_key_frame_collection_new ())
+namespace System.Windows {
+
+	public sealed class AssemblyPartCollection : PresentationFrameworkCollection<AssemblyPart> {
+		public AssemblyPartCollection () : base (NativeMethods.assembly_part_collection_new ())
 		{
 		}
-
-		internal ColorKeyFrameCollection (IntPtr raw) : base (raw)
+		
+		internal AssemblyPartCollection (IntPtr raw) : base (raw)
 		{
 		}
-
+		
 		internal override Kind GetKind ()
 		{
-			return Kind.COLORKEYFRAME_COLLECTION;
+			return Kind.ASSEMBLYPART_COLLECTION;
 		}
 	}
 }

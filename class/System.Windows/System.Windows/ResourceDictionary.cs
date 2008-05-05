@@ -33,7 +33,7 @@ using Mono;
 
 namespace System.Windows {
 
-	public sealed class ResourceDictionary : MS.Internal.Collection<DependencyObject> {
+	public sealed class ResourceDictionary : PresentationFrameworkCollection<DependencyObject> {
 		public ResourceDictionary ()  : base (NativeMethods.resource_dictionary_new ())
 		{
 		}

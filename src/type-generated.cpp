@@ -205,7 +205,7 @@ Type type_infos [] = {
 	{ Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, false, "StylusPoint", "STYLUSPOINT", 0, 1, NULL, (create_inst_func *) stylus_point_new, NULL }, 
 	{ Type::STYLUSPOINT_COLLECTION, Type::COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL }, 
 	{ Type::SUPPORTEDCULTURE, Type::DEPENDENCY_OBJECT, false, "SupportedCulture", "SUPPORTEDCULTURE", 0, 1, NULL, NULL, NULL }, 
-	{ Type::SUPPORTEDCULTURES_COLLECTION, Type::COLLECTION, false, "SupportedCulturesCollection", "SUPPORTEDCULTURES_COLLECTION", 0, 1, NULL, (create_inst_func *) supported_cultures_collection_new, NULL }, 
+	{ Type::SUPPORTEDCULTURE_COLLECTION, Type::COLLECTION, false, "SupportedCultureCollection", "SUPPORTEDCULTURE_COLLECTION", 0, 1, NULL, (create_inst_func *) supported_culture_collection_new, NULL }, 
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, (create_inst_func *) surface_new, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL }, 
 	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 12, NULL, (create_inst_func *) text_block_new, "Inlines" }, 
