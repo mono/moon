@@ -1,5 +1,12 @@
 2008-05-05  Jackson Harper  <jackson@ximian.com>
 
+	* test-runner/TestRun.cs:
+	* test-runner/TestRunner.cs: Move the test setup into the test
+	runner so that tests will still be setup when running in a
+	separate server process.
+
+2008-05-05  Jackson Harper  <jackson@ximian.com>
+
 	* agviewer/agviewer.cpp: Use _call instead of the timeout call so
 	we can work on older versions of dbus-glib.
 

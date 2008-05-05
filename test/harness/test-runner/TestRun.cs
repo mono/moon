@@ -127,8 +127,6 @@ namespace MoonlightTests {
 
 		private void TestBegin (Test test)
 		{
-			test.Setup ();
-
 			reports.ForEach (delegate (IReport report) { report.Executing (test); });
 		}
 

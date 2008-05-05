@@ -148,6 +148,8 @@ namespace MoonlightTests {
 
 		private void OnBeginTest (Test test)
 		{
+			test.Setup ();
+
 			if (TestBeginEvent != null)
 				TestBeginEvent (test);
 		}
