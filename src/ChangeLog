@@ -1,3 +1,8 @@
+2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp, media.h: Add an EmitMediaOpened method and emit
+	  MediaOpened somewhat more aggressively, but only once.
+
 2008-05-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Glyphs::GetSizeForBrush): Use this->width and

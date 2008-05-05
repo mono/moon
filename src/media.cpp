@@ -255,7 +255,8 @@ enum MediaElementFlags {
 	DownloadComplete  = (1 << 5),  // set if the download is complete
 	UpdatingPosition  = (1 << 6),  // set if we are updating the PositionProperty as opposed to someone else
 	RecalculateMatrix = (1 << 7),  // set if the patern matrix needs to be recomputed
-	WaitingForOpen    = (1 << 8)   // set if we've called OpenAsync on a media and we're waiting for the result	
+	WaitingForOpen    = (1 << 8),  // set if we've called OpenAsync on a media and we're waiting for the result	
+	MediaOpenedEmitted= (1 << 9),  // set if MediaOpened has been emitted.
 };
 
 
@@ -719,11 +720,22 @@ MediaElement::MediaOpened (Media *media)
 				Pause ();
 			
 			Invalidate ();
-			Emit (MediaOpenedEvent);
+			EmitMediaOpened ();
 		}
 				
 		return true;
 	}
+}
+
+void
+MediaElement::EmitMediaOpened ()
+{
+	if (flags & MediaOpenedEmitted)
+		return;
+		
+	Emit (MediaOpenedEvent);
+
+	flags |= MediaOpenedEmitted;
 }
 
 void
@@ -932,8 +944,9 @@ MediaElement::UpdateProgress ()
 		}
 		
 		// Emit the event if it's 100%, or a change of at least 0.05%
-		if (emit || progress == 1.0 || (progress - current) >= 0.0005) {
+		if (emit || (progress == 1.0 && current != 1.0) || (progress - current) >= 0.0005) {
 			SetBufferingProgress (progress);
+			printf ("Emitting buffering progress: %.3f\n", progress);
 			Emit (BufferingProgressChangedEvent);
 		}
 		
@@ -1039,7 +1052,7 @@ MediaElement::BufferingComplete ()
 			Play ();
 		else
 			Pause ();
-		Emit (MediaOpenedEvent);
+		EmitMediaOpened ();
 		return;
 	case Playing: // Restart playback
 		Play ();
@@ -1221,9 +1234,7 @@ MediaElement::DownloaderFailed (EventArgs *args)
 void
 MediaElement::DownloaderComplete ()
 {
-	bool emit_opened;
-	
-	d(printf ("MediaElement::DownloaderComplete (), downloader: %i\n", GET_OBJ_ID (downloader)));
+	d(printf ("MediaElement::DownloaderComplete (), downloader: %i, state: %s, previous state: %s\n", GET_OBJ_ID (downloader), GetStateName (state), GetStateName (prev_state)));
 	
 	flags |= DownloadComplete;
 	
@@ -1247,13 +1258,11 @@ MediaElement::DownloaderComplete ()
 	case Buffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
-		emit_opened = prev_state == Opening;
 		if ((flags & PlayRequested) || prev_state == Playing || GetAutoPlay ())
 			Play ();
 		else
 			Pause ();
-		if (emit_opened)
-			Emit (MediaOpenedEvent);
+		EmitMediaOpened ();
 		break;
 	case Opening:
 		// The media couldn't be buffered for some reason
@@ -1375,6 +1384,7 @@ MediaElement::Play ()
 	case Paused:
 	case Stopped: // docs: start playing
 		playlist->Play ();
+		EmitMediaOpened ();
 		break;
 	}
 }
