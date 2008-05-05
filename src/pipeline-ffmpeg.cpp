@@ -155,6 +155,7 @@ FfmpegDecoder::Open ()
 		context->sample_rate = as->sample_rate;
 		context->channels = as->channels;
 		context->bit_rate = as->bit_rate;
+		context->block_align = as->block_align;
 		audio_buffer = (uint8_t*) av_mallocz (AUDIO_BUFFER_SIZE);
 	} else {
 		result = MEDIA_FAIL;

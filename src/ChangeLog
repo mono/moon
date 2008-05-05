@@ -1,3 +1,8 @@
+2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline-ffmpeg.cpp: Give more information to ffmpeg, otherwise
+	  ffmpeg won't decode any wma audio.
+
 2008-05-05  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* shape.cpp: draw the line caps with the stretch_transform matrix.
