@@ -1,5 +1,10 @@
 2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-events-with-playlist.asx, test-events-with-playlist.html,
+	  drtlist.xml: Added test-events-with-playlist.
+
+2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* drtlist.xml: Add two knownFailures and tweak timeouts.
 
 2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 

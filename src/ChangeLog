@@ -1,5 +1,14 @@
 2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp, media.h, playlist.cpp, playlist.h: MediaElement: when
+	  playing playlists, we only emit MediaEnded if we're playing the
+	  last entry in the playlist. Call Playlist::OnEntryEnded manually
+	  instead of letting the playlist rely on the MediaEnded event, since
+	  the MediaEnded event isn't raised for all entries. Playlist: Added
+	  IsCurrentEntryLastEntry.
+
+2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: MediaElement::UpdateProgress: Don't call BufferingComplete
 	  until the pipeline got all the data it was waiting for.
 

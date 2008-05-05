@@ -14,4 +14,5 @@
     <Test id="13" inputFile="test-misc.html" masterFile10="None" timeout="5000" categories="video,media" knownFailure="True" failureReason="Missing readonly property validation"  />
     <Test id="14" inputFile="test-http-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming"  knownFailure="True" failureReason="Http->mms fallback isn't implemented yet" />
     <Test id="15" inputFile="test-bufferingprogress.html" masterFile10="None" timeout="120000" categories="video,media"  />
+    <Test id="16" inputFile="test-events-with-playlist.html" masterFile10="None" timeout="30000" categories="video,media,playlist"  />
 </DRTList>

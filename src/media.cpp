@@ -479,7 +479,7 @@ MediaElement::AdvanceFrame ()
 	if (!advanced && mplayer->GetEof ()) {	
 		mplayer->Stop ();
 		SetState (Stopped);
-		Emit (MediaEndedEvent);
+		EmitMediaEnded ();
 	}
 	
 	return !IsStopped ();
@@ -739,6 +739,16 @@ MediaElement::EmitMediaOpened ()
 }
 
 void
+MediaElement::EmitMediaEnded ()
+{
+	if (playlist == NULL || playlist->IsCurrentEntryLastEntry ())
+		Emit (MediaEndedEvent);
+		
+	if (playlist)
+		playlist->OnEntryEnded ();
+}
+
+void
 MediaElement::MediaFailed (ErrorEventArgs *args)
 {
 	d(printf ("MediaElement::MediaFailed (%p)\n", args));
@@ -926,6 +936,7 @@ MediaElement::UpdateProgress ()
 			  media ? media->GetDemuxer ()->GetLastAvailablePts () : 0));
 		
 		SetBufferingProgress (0.0);
+		Emit (BufferingProgressChangedEvent);
 		SetState (Buffering);
 		mplayer->Pause ();
 		emit = true;

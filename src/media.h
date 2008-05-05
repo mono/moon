@@ -249,6 +249,7 @@ class MediaElement : public MediaBase {
 	// Fill in all information from the opened media and raise MediaOpenedEvent. Does not change any state.
 	bool MediaOpened (Media *media);
 	void EmitMediaOpened ();
+	void EmitMediaEnded ();
 	
 	void CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *col, bool remove);
 	void CheckMarkers (uint64_t from, uint64_t to);

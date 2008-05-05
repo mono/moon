@@ -462,7 +462,6 @@ Playlist::~Playlist ()
 	d(printf ("Playlist::~Playlist ()\n"));
 	
 	delete entries;
-	element->RemoveHandler (element->MediaEndedEvent, on_media_ended, this);
 }
 
 void
@@ -474,7 +473,28 @@ Playlist::Init (MediaElement *element)
 	entries = new List ();
 	current_node = NULL;
 	source = NULL;
-	element->AddHandler(element->MediaEndedEvent, on_media_ended, this);
+}
+
+bool
+Playlist::IsCurrentEntryLastEntry ()
+{
+	PlaylistEntry *entry;
+	Playlist *pl;
+	
+	if (entries->Last () == NULL)
+		return false;
+		
+	if (current_node != entries->Last ())
+		return false;
+		
+	entry = GetCurrentEntry ();
+	
+	if (!entry->IsPlaylist ())
+		return true;
+		
+	pl = (Playlist *) entry;
+	
+	return pl->IsCurrentEntryLastEntry ();
 }
 
 void
@@ -494,11 +514,11 @@ Playlist::Open ()
 }
 
 void
-Playlist::OnMediaEnded ()
+Playlist::OnEntryEnded ()
 {
 	PlaylistEntry *current_entry;
 	
-	d (printf ("Playlist::OnMediaEnded () current_node: %p\n", current_node));
+	d (printf ("Playlist::OnEntryEnded () current_node: %p\n", current_node));
 	
 	if (!current_node)
 		return;
@@ -509,15 +529,7 @@ Playlist::OnMediaEnded ()
 	if (current_entry)
 		current_entry->Play ();
 	
-	d(printf ("Playlist::OnMediaEnded () current_node: %p [Done]\n", current_node));
-}
-
-void
-Playlist::on_media_ended (EventObject *sender, EventArgs *calldata, gpointer userdata)
-{
-	Playlist *playlist = (Playlist *) userdata;
-	
-	playlist->OnMediaEnded ();
+	d(printf ("Playlist::OnEntryEnded () current_node: %p [Done]\n", current_node));
 }
 
 bool

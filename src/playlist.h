@@ -160,7 +160,6 @@ private:
 	void Init (MediaElement *element);
 
 	bool HasMediaSource ();
-	void OnMediaEnded ();
 	void OnMediaDownloaded ();
 
 	static void on_media_ended (EventObject *sender, EventArgs *calldata, gpointer userdata);
@@ -188,6 +187,8 @@ public:
 
 	virtual bool IsPlaylist () { return true; }
 	bool IsSingleFile () { return is_single_file; }
+	bool IsCurrentEntryLastEntry ();
+	void OnEntryEnded ();
 };
 
 class ParserInternal;
