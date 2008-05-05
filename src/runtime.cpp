@@ -604,6 +604,10 @@ Surface::Attach (UIElement *element)
 void
 Surface::Invalidate (Rect r)
 {
+	// Mozilla gets seriously confused about invalidations 
+	// outside the windowless bounds.
+	r = r.Intersection (Rect (0, 0, width, height)).RoundOut ();
+
 	if (widget)
 		gtk_widget_queue_draw_area (widget,
 					    (int) (widget->allocation.x + r.x), 
@@ -611,6 +615,7 @@ Surface::Invalidate (Rect r)
 					    (int) r.w, (int)r.h);
 	else if (invalidate)
 		invalidate (this, r, invalidate_data);
+
 }
 
 

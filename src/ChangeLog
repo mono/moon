@@ -1,3 +1,11 @@
+2008-05-04  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: restrict invalidations to the active windowless
+	bounds.
+
+	Fixes massive drawing issues on http://my.liveatedu.com/ where
+	were creating invalidations with a negative coords.
+
 2008-05-04  Miguel de Icaza  <miguel@novell.com>
 
 	* xap.cpp: Expose xap_unpack, include when Mono runtime is
