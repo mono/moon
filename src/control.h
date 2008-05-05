@@ -58,6 +58,21 @@ class Control : public FrameworkElement {
 	Rect bounds_with_children;
 };
 
+//
+// UserControl
+//
+class UserControl : public Control {
+protected:
+	virtual ~UserControl ();
+
+public:
+	UserControl ();
+
+	virtual Type::Kind GetObjectType () { return Type::USERCONTROL; }
+
+	static DependencyProperty *ContentProperty;
+};
+
 G_BEGIN_DECLS
 
 Control *control_new (void);
@@ -65,6 +80,11 @@ UIElement* control_initialize_from_xaml (Control *control, const char *xaml,
 					 Type::Kind *element_type);
 UIElement* control_initialize_from_xaml_callbacks (Control *control, const char *xaml, 
 					Type::Kind *element_type, XamlLoader* loader);
+
+UserControl *user_control_new (void);
+
+void user_control_init (void);
+
 G_END_DECLS
 
 #endif /* __MOON_CONTROL_H__ */

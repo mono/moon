@@ -87,14 +87,12 @@ namespace Moonlight {
 		/// </summary>
 		public static bool CreateApplication (IntPtr plugin, IntPtr surface, string xapFile)
 		{
-			Console.WriteLine ("Inside CreateApplicatioN");
 			try {
 				AppDomain d = GetDomain (plugin);
 				
 				object rl = Helper.CreateInstanceAndUnwrap (d, typeof (DependencyObject).Assembly.FullName, "System.Windows.XapHackProxyImpl");
 				bool v = (bool) rl.GetType ().GetMethod ("Setup").Invoke (rl, new object [] { plugin, surface, xapFile });
 
-				Console.WriteLine ("CreateApplication (...): {0}", v);
 				return v;
 			} catch (Exception e){
 				Console.WriteLine (e);

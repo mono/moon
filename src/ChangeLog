@@ -1,3 +1,10 @@
+2008-05-05  Miguel de Icaza  <miguel@novell.com>
+
+	* src/control.cpp: Add a skeleton UserControl, to get a bit
+	further on the loading of a Silverlight 2 application. 
+
+	See the TODO, there are still many limitations.
+
 2008-05-04  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp: restrict invalidations to the active windowless

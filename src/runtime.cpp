@@ -532,7 +532,7 @@ Surface::Attach (UIElement *element)
 	}
 
 	if (!Type::Find (element->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
-		printf ("Unsupported toplevel\n");
+		printf ("Surface::Attach Unsupported toplevel %s\n", Type::Find (element->GetObjectType ())->GetName ());
 		return;
 	}
 
@@ -2240,8 +2240,12 @@ runtime_init (guint32 flags)
 	media_init ();
 	panel_init ();
 	stylus_init ();
-	
+
+	//
+	// 2.0 classes
+	//
 	deployment_init ();
+	user_control_init ();
 }
 
 //

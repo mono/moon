@@ -215,3 +215,27 @@ control_new (void)
 {
 	return new Control ();
 }
+
+UserControl *
+user_control_new (void)
+{
+	return new UserControl ();
+}
+
+UserControl::UserControl ()
+{
+}
+
+UserControl::~UserControl ()
+{
+}
+
+DependencyProperty *UserControl::ContentProperty;
+
+void 
+user_control_init ()
+{
+	UserControl::ContentProperty = DependencyObject::Register (Type::USERCONTROL, "Content", Type::UIELEMENT);
+}
+
+

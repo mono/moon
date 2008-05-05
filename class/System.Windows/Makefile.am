@@ -98,6 +98,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/MediaBase.cs				\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
+	$(srcdir)/System.Windows.Controls/UserControl.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
@@ -109,6 +110,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/MouseEventHandler.cs			\
 	$(srcdir)/System.Windows.Interop/BrowserHost.cs				\
 	$(srcdir)/System.Windows.Markup/XamlParseException.cs			\
+	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\
 	$(srcdir)/System.Windows.Media/ArcSegment.cs				\

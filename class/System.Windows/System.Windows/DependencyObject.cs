@@ -377,7 +377,7 @@ namespace System.Windows {
 				}
 
 				if (!slow_codepath_error_shown){
-					Report.Warning ("WARNING: DependencyObject type testing now using a very slow code path");
+					Report.Warning ("DependencyObject type testing now using a very slow code path");
 					slow_codepath_error_shown = true;
 				}
 

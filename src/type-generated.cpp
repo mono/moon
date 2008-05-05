@@ -228,6 +228,7 @@ Type type_infos [] = {
 	{ Type::UIELEMENT, Type::VISUAL, false, "UIElement", "UIELEMENT", 11, 12, UIElement_Events, NULL, NULL }, 
 	{ Type::UINT32, Type::INVALID, false, "uint32_t", "UINT32", 0, 0, NULL, NULL, NULL }, 
 	{ Type::UINT64, Type::INVALID, false, "uint64_t", "UINT64", 0, 0, NULL, NULL, NULL }, 
+	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 12, NULL, (create_inst_func *) user_control_new, NULL }, 
 	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL }, 
 	{ Type::VISUAL, Type::DEPENDENCY_OBJECT, false, "Visual", "VISUAL", 0, 1, NULL, NULL, NULL }, 
 	{ Type::VISUAL_COLLECTION, Type::COLLECTION, false, "VisualCollection", "VISUAL_COLLECTION", 0, 1, NULL, (create_inst_func *) visual_collection_new, NULL }, 

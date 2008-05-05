@@ -172,6 +172,7 @@ class TriggerCollection;
 class TriggerAction;
 class TriggerActionCollection;
 class UIElement;
+class UserControl;
 class VideoBrush;
 class Visual;
 class VisualCollection;
@@ -394,6 +395,7 @@ public:
 	TriggerAction*                 AsTriggerAction () { checked_get_subclass (Type::TRIGGERACTION, TriggerAction) }
 	TriggerActionCollection*       AsTriggerActionCollection () { checked_get_subclass (Type::TRIGGERACTION_COLLECTION, TriggerActionCollection) }
 	UIElement*                     AsUIElement () { checked_get_subclass (Type::UIELEMENT, UIElement) }
+	UserControl*                   AsUserControl () { checked_get_subclass (Type::USERCONTROL, UserControl) }
 	VideoBrush*                    AsVideoBrush () { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
 	Visual*                        AsVisual () { checked_get_subclass (Type::VISUAL, Visual) }
 	VisualCollection*              AsVisualCollection () { checked_get_subclass (Type::VISUAL_COLLECTION, VisualCollection) }

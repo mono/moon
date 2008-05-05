@@ -18,7 +18,28 @@ Feel free to add items to this TODO list
 	Need information on the relative Uris that
 	Application.GetResourceStream accepts and their meaning.
 
-* Cleanup:
+Silverlight 2 Support
+=====================
+
+	To get Silverlight 2 support to work, we need a few bits:
+
+	Application.LoadComponent:
+
+		This requires changes to the XAML parser to allow the
+		XAML parser to use an object that has been already
+		created as its toplevel, and populate it with data
+		from parsing a XAML file.
+
+	Surface::Attach:
+
+	      Currently it only allows the passed object to be a
+	      Canvas, with SL2 the passed object can be a UserControl.
+
+	      Maybe we could wrap the object in a Canvas to keep
+	      things simple?
+
+Cleanup
+========
 
 	We are currently using `PluginHost.Handle' to track the handle
 	to the plugin, and in a couple of places we also use the

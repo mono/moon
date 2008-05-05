@@ -70,7 +70,7 @@ namespace System.Windows {
 				Exit (this, EventArgs.Empty);
 			
 			try {
-				Console.WriteLine ("TODO: Need to delete the {0} directory", xap_dir);
+				Report.Warning ("TODO: Need to delete the {0} directory", xap_dir);
 				//Directory.RecursiveDelete (xap_dir);
 				xap_dir = null;
 			} catch {
@@ -216,7 +216,13 @@ namespace System.Windows {
 		//
 		public static void LoadComponent (object component, Uri xamlUri)
 		{
-			throw new NotImplementedException ("LoadComponent");
+			Console.WriteLine ("LoadComponent: {0} of type {1} for {2}", component, component.GetType (), xamlUri);
+			Report.Warning ("LoadComponent does nothing currently");
+			
+			//
+			// This stinking piece of junk API, 
+			//
+			
 		}
 
 		public static StreamResourceInfo GetResourceStream (Uri resourceUri)

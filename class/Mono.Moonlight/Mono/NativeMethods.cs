@@ -163,6 +163,9 @@ namespace Mono {
 		public extern static IntPtr control_new ();
 
 		[DllImport("moon")]
+		public extern static IntPtr user_control_new ();
+
+		[DllImport("moon")]
 		public extern static IntPtr image_new ();
 
 		[DllImport("moon")]
