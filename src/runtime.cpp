@@ -167,15 +167,12 @@ Surface::Surface(int w, int h, bool windowless)
 	cursor = MouseCursorDefault;
 	mouse_event = NULL;
 	
-	memset (&normal_ids, 0, sizeof (SignalIds));
-	memset (&fullscreen_ids, 0, sizeof (SignalIds));
-	
 	background_color = new Color (1, 1, 1, 0);
 	
 	if (!windowless) {
 		widget_normal = widget = gtk_event_box_new ();
 		gtk_widget_set_size_request (widget, width, height);
-		InitializeWidget (widget, &normal_ids);
+		InitializeWidget (widget);
 		widget_fullscreen = NULL;
 	} else {
 		widget_fullscreen = NULL;
@@ -281,8 +278,17 @@ Surface::~Surface ()
 	cairo_destroy (cairo_buffer);
 	cairo_surface_destroy (cairo_buffer_surface);
 	
-	DestroyWidget (widget_fullscreen, &fullscreen_ids);
-	DestroyWidget (widget_normal, &normal_ids);
+	if (widget_fullscreen) {
+		g_signal_handlers_disconnect_matched (widget_fullscreen, G_SIGNAL_MATCH_DATA,
+						      0, 0, NULL, NULL, this);
+		gtk_widget_destroy (widget_fullscreen);
+	}
+	
+	if (widget_normal) {
+		g_signal_handlers_disconnect_matched (widget_normal, G_SIGNAL_MATCH_DATA,
+						      0, 0, NULL, NULL, this);
+		gtk_widget_destroy (widget_normal);
+	}
 	
 	delete background_color;
 	
@@ -449,59 +455,23 @@ Surface::SetCursor (MouseCursor new_cursor)
 void
 Surface::ConnectEvents (bool realization_signals)
 {
-	SignalIds *ids;
-	
 	if (!widget)
 		return;
 	
-	if (widget == widget_fullscreen)
-		ids = &fullscreen_ids;
-	else if (widget == widget_normal)
-		ids = &normal_ids;
-	else
-		ids = NULL;
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "expose-event",
-			    G_CALLBACK (Surface::expose_event_callback), this);
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "motion-notify-event",
-			    G_CALLBACK (motion_notify_callback), this);
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "enter-notify-event",
-			    G_CALLBACK (crossing_notify_callback), this);
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "leave-notify-event",
-			    G_CALLBACK (crossing_notify_callback), this);
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "key-press-event",
-			    G_CALLBACK (key_press_callback), this);
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "key-release-event",
-			    G_CALLBACK (key_release_callback), this);
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "button-press-event",
-			    G_CALLBACK (button_press_callback), this);
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "button-release-event",
-			    G_CALLBACK (button_release_callback), this);
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "focus-in-event",
-			    G_CALLBACK (focus_in_callback), this);
-	
-	gtk_signal_connect (GTK_OBJECT (widget), "focus-out-event",
-			    G_CALLBACK (focus_out_callback), this);
+	g_signal_connect (widget, "expose-event", G_CALLBACK (expose_event_callback), this);
+	g_signal_connect (widget, "motion-notify-event", G_CALLBACK (motion_notify_callback), this);
+	g_signal_connect (widget, "enter-notify-event", G_CALLBACK (crossing_notify_callback), this);
+	g_signal_connect (widget, "leave-notify-event", G_CALLBACK (crossing_notify_callback), this);
+	g_signal_connect (widget, "key-press-event", G_CALLBACK (key_press_callback), this);
+	g_signal_connect (widget, "key-release-event", G_CALLBACK (key_release_callback), this);
+	g_signal_connect (widget, "button-press-event", G_CALLBACK (button_press_callback), this);
+	g_signal_connect (widget, "button-release-event", G_CALLBACK (button_release_callback), this);
+	g_signal_connect (widget, "focus-in-event", G_CALLBACK (focus_in_callback), this);
+	g_signal_connect (widget, "focus-out-event", G_CALLBACK (focus_out_callback), this);
 	
 	if (realization_signals) {
-		gulong id;
-		
-		gtk_signal_connect (GTK_OBJECT (widget), "realize",
-				    G_CALLBACK (realized_callback), this);
-		
-		id = gtk_signal_connect (GTK_OBJECT (widget), "unrealize",
-					 G_CALLBACK (unrealized_callback), this);
-		
-		if (ids)
-			ids->unrealize = id;
+		g_signal_connect (widget, "realize", G_CALLBACK (realized_callback), this);
+		g_signal_connect (widget, "unrealize", G_CALLBACK (unrealized_callback), this);
 		
 		if (GTK_WIDGET_REALIZED (widget))
 			realized_callback (widget, this);
@@ -915,7 +885,7 @@ Surface::UpdateFullScreen (bool value)
 		gtk_widget_set_size_request (widget, width, height);
 		gtk_window_fullscreen (GTK_WINDOW (widget));
 		
-		InitializeWidget (widget, &fullscreen_ids);
+		InitializeWidget (widget);
 		
 		ShowFullScreenMessage ();
 		
@@ -929,7 +899,12 @@ Surface::UpdateFullScreen (bool value)
 		// Destroy the fullscreen widget.
 		GtkWidget *fs = widget_fullscreen;
 		widget_fullscreen = NULL;
-		DestroyWidget (fs, &fullscreen_ids);
+		
+		if (fs != NULL) {
+			g_signal_handlers_disconnect_matched (fs, G_SIGNAL_MATCH_DATA,
+							      0, 0, NULL, NULL, this);
+			gtk_widget_destroy (fs);
+		}
 		
 		width = normal_width;
 		height = normal_height;
@@ -943,27 +918,8 @@ Surface::UpdateFullScreen (bool value)
 	time_manager->GetSource()->Start();
 }
 
-void 
-Surface::DestroyWidget (GtkWidget *widget, SignalIds *ids)
-{
-	if (!widget)
-		return;
-	
-	if (ids->unrealize) {
-		g_signal_handler_disconnect (widget, ids->unrealize);
-		ids->unrealize = 0;
-	}
-	
-	if (ids->destroy) {
-		g_signal_handler_disconnect (widget, ids->destroy);
-		ids->destroy = 0;
-	}
-	
-	gtk_widget_destroy (widget);
-}
-
 void
-Surface::InitializeWidget (GtkWidget *widget, SignalIds *ids)
+Surface::InitializeWidget (GtkWidget *widget)
 {
 	// don't let gtk clear the window we'll do all the drawing.
 	//gtk_widget_set_app_paintable (widget, true);
@@ -977,7 +933,7 @@ Surface::InitializeWidget (GtkWidget *widget, SignalIds *ids)
 		gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
 	
 	g_signal_connect (widget, "size-allocate", G_CALLBACK (widget_size_allocate), this);
-	ids->destroy = g_signal_connect (widget, "destroy", G_CALLBACK (widget_destroyed), this);
+	g_signal_connect (widget, "destroy", G_CALLBACK (widget_destroyed), this);
 	
 	gtk_widget_add_events (widget, 
 			       GDK_POINTER_MOTION_MASK |

@@ -1,5 +1,9 @@
 2008-05-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp (Surface): We no longer keep track of signal ids, we
+	simply remove all signals on the widgets with 'this' as the user
+	data.
+
 	* clock.cpp (TimeManager::Stop): Added. New method to stop the
 	time manager.
 

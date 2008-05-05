@@ -74,11 +74,6 @@ typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *us
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
-	struct SignalIds {
-		gulong unrealize;
-		gulong destroy;
-	};
-
 	// are we headed for death?
 	bool zombie;
 	
@@ -131,12 +126,10 @@ class Surface : public EventObject {
 	
 	// This is the normal widget
 	GtkWidget *widget_normal;
-	SignalIds normal_ids;
 	
 	// We set widget to this whenever we are in fullscreen mode.
 	GtkWidget *widget_fullscreen;
-	SignalIds fullscreen_ids;
-
+	
 	// This currently can only be a canvas.
 	UIElement *toplevel;
 	
@@ -192,8 +185,7 @@ class Surface : public EventObject {
 	
 	void ConnectEvents (bool realization_signals);
 	void Realloc ();
-	void InitializeWidget (GtkWidget *widget, SignalIds *ids);
-	void DestroyWidget (GtkWidget *widget, SignalIds *ids);
+	void InitializeWidget (GtkWidget *widget);
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
 	
