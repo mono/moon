@@ -946,7 +946,6 @@ MediaElement::UpdateProgress ()
 		// Emit the event if it's 100%, or a change of at least 0.05%
 		if (emit || (progress == 1.0 && current != 1.0) || (progress - current) >= 0.0005) {
 			SetBufferingProgress (progress);
-			printf ("Emitting buffering progress: %.3f\n", progress);
 			Emit (BufferingProgressChangedEvent);
 		}
 		
