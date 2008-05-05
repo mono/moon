@@ -150,7 +150,7 @@
 	* animation.cpp:
 	* animation.h: For the KeySpline: getting rid of the ugly lookup-table
 	with x -> y values and instead using a two-way curve approximation
-	methodology for calculating the Spline progress. This is 100% accurate
+	methodology for calculating the Spline progress. This is not 100% accurate
 	(same as original bezier) for fine-grained values but removes all the
 	precision problems and greatly improves the quality for long KeySpline
 	animations (no more jags). 
