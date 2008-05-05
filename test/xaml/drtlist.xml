@@ -803,4 +803,8 @@
 	 inputFile="test-zero-length-line.xaml"
 	 masterFile10="../harness/masters/test-zero-length-lineMaster.png"
    />
+   <Test id="184"
+	 inputFile="test-radialgradientbrush2.xaml"
+	 masterFile10="../harness/masters/test-radialgradientbrush2Master.png"
+   />
 </DRTList>
