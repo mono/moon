@@ -284,8 +284,6 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
              
 		double diff_x = shape_bounds.w - logical_bounds.w;
 		double diff_y = shape_bounds.h - logical_bounds.h;
-		double offset_x = logical_bounds.x - shape_bounds.x;
-		double offset_y = logical_bounds.y - shape_bounds.y;
 		double sw = adj_x ? (w - diff_x) / logical_bounds.w : 1.0;
 		double sh = adj_y ? (h - diff_y) / logical_bounds.h : 1.0;
 
@@ -307,26 +305,15 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		break;
 		}
 
-		double x = vh || adj_x ? shape_bounds.x : 0;
-		double y = vw || adj_y ? shape_bounds.y : 0;
-
-
 		// FIXME: this is (or could be) fucking slow
 		// hereafter we're doing a second pass to refine the sw and sh we guessed
 		// the first time. This usually gives pixel-recise stretches for Paths
 		cairo_matrix_t temp;
 		cairo_matrix_init_scale (&temp, adj_x ? sw : 1.0, adj_y ? sh : 1.0);
 		Rect extents = ComputeShapeBounds (false, &temp);
-		Rect log_extents = ComputeShapeBounds (true, &temp);
 		if (extents.w != shape_bounds.w && extents.h != shape_bounds.h) {
 			sw *= adj_x ? (w - extents.w + logical_bounds.w * sw) / (logical_bounds.w * sw): 1.0;
 			sh *= adj_y ? (h - extents.h + logical_bounds.h * sh) / (logical_bounds.h * sh): 1.0;
-			offset_x = log_extents.x - extents.x;
-			offset_y = log_extents.y - extents.y;
-			diff_x = extents.w - log_extents.w;
-			diff_y = extents.h - log_extents.h;
-			x = vh || adj_x ? extents.x : 0;
-			y = vw || adj_y ? extents.y : 0;
 		}
 
 		switch (stretch) {
@@ -343,26 +330,24 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 
 		// end of the 2nd pass code
 
+		double x = vh || adj_x ? shape_bounds.x : 0;
+		double y = vw || adj_y ? shape_bounds.y : 0;
 		if (center)
 			cairo_matrix_translate (&stretch_transform, 
-						adj_x ? - diff_x * .5 + offset_x + w * 0.5 : 0, 
-						adj_y ? - diff_y * .5 + offset_y + h * 0.5 : 0);
+						adj_x ? w * 0.5 : 0, 
+						adj_y ? h * 0.5 : 0);
 		else //UniformToFill
 			cairo_matrix_translate (&stretch_transform, 
 						adj_x ? (logical_bounds.w * sw + diff_x) * .5 : 0,
 						adj_y ? (logical_bounds.h * sh + diff_y) * .5: 0);
-
+		
 		cairo_matrix_scale (&stretch_transform, 
 				    adj_x ? sw : 1.0, 
 				    adj_y ? sh : 1.0);
 		
 		cairo_matrix_translate (&stretch_transform, 
-					adj_x ? -logical_bounds.w * 0.5 : 0, 
-					adj_y ? -logical_bounds.h * 0.5 : 0);
-
-		cairo_matrix_translate (&stretch_transform, 
-					adj_x ? - offset_x : 0, 
-					adj_y ? - offset_y : 0);
+					adj_x ? -shape_bounds.w * 0.5 : 0, 
+					adj_y ? -shape_bounds.h * 0.5 : 0);
 
 		if (!Is (Type::LINE) || (vh && vw))
 			cairo_matrix_translate (&stretch_transform, -x, -y);
@@ -1486,20 +1471,16 @@ DependencyProperty *Line::Y2Property;
 
 //Draw the start cap. Shared with Polyline
 static void
-line_draw_cap (cairo_t *cr, Shape* shape, PenLineCap cap, double x1, double y1, double x2, double y2, cairo_matrix_t *stretch_transform)
+line_draw_cap (cairo_t *cr, Shape* shape, PenLineCap cap, double x1, double y1, double x2, double y2)
 {
 	double sx1, sy1;
 	if (cap == PenLineCapFlat)
 		return;
 
 	if (cap == PenLineCapRound) {
-		cairo_transform (cr, stretch_transform);
 		cairo_set_line_cap (cr, convert_line_cap (cap));
 		cairo_move_to (cr, x1, y1);
 		cairo_line_to (cr, x1, y1);
-		cairo_matrix_t invert = *stretch_transform;
-		cairo_matrix_invert (&invert);
-		cairo_transform (cr, &invert);
 		shape->Stroke (cr, true);
 		return;
 	}
@@ -1527,13 +1508,9 @@ line_draw_cap (cairo_t *cr, Shape* shape, PenLineCap cap, double x1, double y1, 
 		}
 		sy1 = m * sx1 + y1 - (m * x1);
 	}
-	cairo_transform (cr, stretch_transform);
 	cairo_set_line_cap (cr, convert_line_cap (cap));
 	cairo_move_to (cr, x1, y1);
 	cairo_line_to (cr, sx1, sy1);
-	cairo_matrix_t invert = *stretch_transform;
-	cairo_matrix_invert (&invert);
-	cairo_transform (cr, &invert);
 	shape->Stroke (cr, true);
 }
 
@@ -1571,7 +1548,7 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 		
 		// draw start and end line caps
 		if (start != PenLineCapFlat) 
-			line_draw_cap (cr, this, start, x1, y1, x2, y2, &stretch_transform);
+			line_draw_cap (cr, this, start, x1, y1, x2, y2);
 		
 		if (end != PenLineCapFlat) {
 			//don't draw the end cap if it's in an "off" segment
@@ -1579,7 +1556,7 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 			double offset = GetStrokeDashOffset ();
 			
 			SetupDashes (cr, thickness, sqrt ((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)) + offset * thickness);
-			line_draw_cap (cr, this, end, x2, y2, x1, y1, &stretch_transform);
+			line_draw_cap (cr, this, end, x2, y2, x1, y1);
 			SetupLine (cr);
 		}
 
@@ -2052,7 +2029,7 @@ Polygon::ComputeShapeBounds (bool logical)
 		thickness = GetStrokeThickness ();
 	else
 		thickness = 0.0;
-
+	
 	if (thickness == 0.0)
 		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
 
@@ -2286,11 +2263,11 @@ Polyline::DrawShape (cairo_t *cr, bool do_op)
 		if (length >= MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH) {
 			// draw line #1 with start cap
 			if (start != PenLineCapFlat) {
-				line_draw_cap (cr, this, start, data[1].point.x, data[1].point.y, data[3].point.x, data[3].point.y, &stretch_transform);
+				line_draw_cap (cr, this, start, data[1].point.x, data[1].point.y, data[3].point.x, data[3].point.y);
 			}
 			// draw last line with end cap
 			if (end != PenLineCapFlat) {
-				line_draw_cap (cr, this, end, data[length-1].point.x, data[length-1].point.y, data[length-3].point.x, data[length-3].point.y, &stretch_transform);
+				line_draw_cap (cr, this, end, data[length-1].point.x, data[length-1].point.y, data[length-3].point.x, data[length-3].point.y);
 			}
 		}
 	}
