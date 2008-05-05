@@ -931,8 +931,6 @@ MediaElement::UpdateProgress ()
 		emit = true;
 	}
 	
-	// CHECK: if buffering, will DownloadCompletedEvent be emitted?
-	
 	if (IsBuffering ()) {
 		progress = GetBufferedSize ();
 		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
@@ -946,10 +944,13 @@ MediaElement::UpdateProgress ()
 		// Emit the event if it's 100%, or a change of at least 0.05%
 		if (emit || (progress == 1.0 && current != 1.0) || (progress - current) >= 0.0005) {
 			SetBufferingProgress (progress);
+			//printf ("Emitting BufferingProgressChanged: progress: %.3f, current: %.3f\n", progress, current);
 			Emit (BufferingProgressChangedEvent);
 		}
 		
-		if (progress == 1.0)
+		// Don't call BufferingComplete until the pipeline isn't waiting for anything anymore,
+		// since otherwise we'll jump back to the Buffering state on the next call to UpdateProgress.
+		if (progress == 1.0 && (downloaded_file == NULL || !downloaded_file->IsWaiting ()))
 			BufferingComplete ();
 	}
 	
