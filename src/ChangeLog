@@ -1,3 +1,8 @@
+2008-05-05  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* shape.cpp: draw the line caps with the stretch_transform matrix.
+	Finetune the stretch computation again.
+
 2008-05-05  Miguel de Icaza  <miguel@novell.com>
 
 	* src/control.cpp: Add a skeleton UserControl, to get a bit
