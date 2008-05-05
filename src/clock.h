@@ -407,6 +407,7 @@ class TimeManager : public EventObject {
 	TimeManager ();
 
 	void Start ();
+	void Stop ();
 
 	TimeSource *GetSource() { return source; }
 	ClockGroup *GetRootClock() { return root_clock; }
@@ -435,6 +436,7 @@ class TimeManager : public EventObject {
 	// The callback might end up getting called after the surface/plugin has
 	// been deleted.
 	static void InvokeOnMainThread (GSourceFunc func, gpointer data);
+	
  protected:
 	~TimeManager ();
 

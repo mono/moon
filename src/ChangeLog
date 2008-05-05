@@ -1,3 +1,11 @@
+2008-05-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* clock.cpp (TimeManager::Stop): Added. New method to stop the
+	time manager.
+
+	* runtime.cpp (Surface::Zombify): Stop the time manager, prevents
+	emission of timeout events.
+
 2008-05-05  Michael Dominic K.  <mdk@mdk.am>
 
 	* src/shape.cpp: Reverting sde's stretch thing for now, breaks a lot of

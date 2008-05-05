@@ -294,6 +294,13 @@ Surface::~Surface ()
 	delete down_dirty;
 }
 
+void
+Surface::Zombify ()
+{
+	time_manager->Stop ();
+	zombie = true;
+}
+
 /* XPM */
 static const char *dot[] = {
 	"18 18 4 1",

@@ -290,8 +290,8 @@ class Surface : public EventObject {
 	// called from the plugin if the surface is headed for death.
 	// stops event emission (since the plugin counterparts to xaml
 	// objects will be destroyed)
-	void Zombify () { zombie = true; }
-
+	void Zombify ();
+	
 #if FRONT_TO_BACK_STATS
 	int uielements_rendered_front_to_back;
 	int uielements_rendered_back_to_front;

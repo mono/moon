@@ -298,6 +298,12 @@ TimeManager::Start()
 }
 
 void
+TimeManager::Stop ()
+{
+	source->Stop ();
+}
+
+void
 TimeManager::source_tick_callback (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((TimeManager *) closure)->SourceTick ();
