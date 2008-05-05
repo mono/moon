@@ -18,13 +18,13 @@
 		Canvas.Top="65" Canvas.Left="10" 
 		StrokeThickness="20" 
 		X1="20" Y1="20" X2="60" Y2="30" />
-	<Line StrokeStartLineCap="Square" StrokeEndLineCap="Flat" 
+	<Line StrokeStartLineCap="Round" StrokeEndLineCap="Flat" 
 		Stroke="Red" Stretch="Fill" 
 		Width="200" Height="50" 
 		Canvas.Top="90" Canvas.Left="10" 
 		StrokeThickness="20" 
 		X1="20" Y1="20" X2="60" Y2="30" />
-	<Line StrokeStartLineCap="Flat" StrokeEndLineCap="Square" 
+	<Line StrokeStartLineCap="Flat" StrokeEndLineCap="Round" 
 		Stroke="Tomato" Stretch="Fill" 
 		Width="200" Height="50" 
 		Canvas.Top="115" Canvas.Left="10" 
@@ -48,7 +48,7 @@
 		Canvas.Top="230" Canvas.Left="10" 
 		StrokeThickness="20" 
 		X1="60" Y1="20" X2="20" Y2="20" />
-	<Line StrokeStartLineCap="Flat" StrokeEndLineCap="Square" 
+	<Line StrokeStartLineCap="Flat" StrokeEndLineCap="Round" 
 		Stroke="Silver" Stretch="Fill" 
 		Width="200" Height="50" 
 		Canvas.Top="260" Canvas.Left="10" 
