@@ -407,7 +407,8 @@ class TimeManager : public EventObject {
 	TimeManager ();
 
 	void Start ();
-	void Stop ();
+	
+	void Shutdown ();
 
 	TimeSource *GetSource() { return source; }
 	ClockGroup *GetRootClock() { return root_clock; }

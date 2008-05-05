@@ -303,7 +303,7 @@ Surface::~Surface ()
 void
 Surface::Zombify ()
 {
-	time_manager->Stop ();
+	time_manager->Shutdown ();
 	zombie = true;
 }
 

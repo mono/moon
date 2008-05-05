@@ -1,5 +1,9 @@
 2008-05-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* clock.cpp (TimeManager::Shutdown): Renamed from
+	TimeManager::Stop() and also updated to remove all registered
+	timeouts.
+
 	* runtime.cpp (Surface): We no longer keep track of signal ids, we
 	simply remove all signals on the widgets with 'this' as the user
 	data.

@@ -298,8 +298,9 @@ TimeManager::Start()
 }
 
 void
-TimeManager::Stop ()
+TimeManager::Shutdown ()
 {
+	RemoveAllRegisteredTimeouts ();
 	source->Stop ();
 }
 
