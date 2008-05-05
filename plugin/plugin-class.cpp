@@ -461,7 +461,7 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 	this->event_name = g_strdup (event_name);
 	this->event_id = -1;
 	this->target_object = NULL;
-
+	this->one_shot = false;
 	this->is_func = false;
 	if (!strncmp (cb_name, "javascript:", strlen ("javascript:")))
 		cb_name += strlen ("javascript:");

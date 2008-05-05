@@ -1,3 +1,7 @@
+2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Add a missing initialization.
+
 2008-05-04  Miguel de Icaza  <miguel@novell.com>
 
 	* moonlight.cs: Add support for XAP file loading. 
