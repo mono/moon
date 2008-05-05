@@ -456,7 +456,7 @@ wait_for_next_test (int *timeout)
 	}
 
 	bool available;
-	if (!dbus_g_proxy_call_with_timeout (dbus_proxy, "GetNextTest", 25000, &error,
+	if (!dbus_g_proxy_call (dbus_proxy, "GetNextTest", &error,
 			G_TYPE_INVALID,
 			G_TYPE_BOOLEAN, &available,
 			G_TYPE_STRING, &test_path,
