@@ -72,6 +72,23 @@ function ErrorEventArgsToOneLineString (errorArgs)
 	return errorMsg;	
 }
 
+function ExceptionToString (ex)
+{
+	try {
+		// In IE ex is an object, and the text is in ex.description
+		// In FF ex is the string message itself
+		if (!ex)
+			return null;
+		if (typeof(ex) == "string")
+			return ex;
+		if (typeof(ex) == "object" && ex.description)
+			return ex.description;
+		return ex;
+	} catch (ex) {
+		return ErrorEventArgsToOneLineString (ex);
+	}
+}
+
 var Host = {
 	Windows: navigator.userAgent.indexOf ('Windows') > -1,
 	//Linux: navigator.userAgent.indexOf ('Linux') > -1,

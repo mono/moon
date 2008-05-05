@@ -1,3 +1,10 @@
+2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Added test-bufferingprogress, test-http-failure and
+	  test-misc.
+	* test-bufferingprogress.html, test-http-failure.html, test-misc.html:
+	  Added.
+
 2008-05-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-playlist-with-clientskip.asx,

@@ -1521,7 +1521,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == MediaElement::BalanceProperty) {
 		mplayer->SetBalance (args->new_value->AsDouble ());
 	} else if (args->property == MediaElement::BufferingProgressProperty) {
-		Emit (BufferingProgressChangedEvent);
+		// read-only property
 	} else if (args->property == MediaElement::CurrentStateProperty) {
 		Emit (CurrentStateChangedEvent);
 	} else if (args->property == MediaElement::IsMutedProperty) {
