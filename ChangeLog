@@ -1,3 +1,8 @@
+2008-05-06  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Change min and max ff version in rdf depending on
+	usage of --with-ff3
+
 2008-04-30  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: dbus-glib-1 0.60 should be new enough

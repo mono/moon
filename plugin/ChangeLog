@@ -1,3 +1,7 @@
+2008-05-06  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* install.rdf.in: Use values from configure for min and max versions
+
 2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-glue.cpp: shutdown_moonlight: we have to check again if there

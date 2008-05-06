@@ -75,8 +75,17 @@ fi
 if test x$with_ff3 = xyes; then
   mozilla_xpcom="libxul-unstable mozilla-js"
   AC_DEFINE([HAVE_LIBXUL_UNSTABLE],[1],[libxul-unstable support])
+  dnl When support for a unified plugin comes along the minversion
+  dnl should be 1.5 and the maxversion should be 3.0.*.
+  MINVERSION="2.9.*"
+  MAXVERSION="3.0.*"
+else
+  MINVERSION="1.5"
+  MAXVERSION="2.0.0.*"
 fi
 PKG_CHECK_MODULES(MOZILLA,[$mozilla_xpcom $mozilla_nss $mozilla_nspr $mozilla_plugin])
+AC_SUBST([MINVERSION])
+AC_SUBST([MAXVERSION])
 
 dnl
 dnl Mono (Silverlight 2.0) checks
