@@ -1,3 +1,11 @@
+2008-05-05  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: update the (almost unused) frame count where it can
+	get hit in windowless.  Clear existing paths before rendering the
+	expose box.
+
+	Minor cleanups to help with debugging the expose regions.
+
 2008-05-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* clock.cpp (TimeManager::Shutdown): Renamed from

@@ -1072,6 +1072,8 @@ Surface::unrealized_callback (GtkWidget *widget, gpointer data)
 gboolean
 Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y)
 {
+	frames++;
+
 	if (event->area.x > (off_x + width) || event->area.y > (off_y + height))
 		return true;
 
@@ -1169,6 +1171,7 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 	Paint (ctx, region);
 
 	if (RENDER_EXPOSE) {
+		cairo_new_path (ctx);
 		region->Draw (ctx);
 		cairo_set_line_width (ctx, 2.0);
 		cairo_set_source_rgb (ctx, (double)(frames % 2), (double)((frames + 1) % 2), (double)((frames / 3) % 2));
@@ -1204,8 +1207,6 @@ gboolean
 Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
 	Surface *s = (Surface *) data;
-
-	s->frames++;
 
 	if (widget == NULL)
 		return true;
