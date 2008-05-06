@@ -8,7 +8,10 @@ EXTRA_DIST = \
 	xamlg.in \
 	$(xamlg_exe_CS)
 
-CLEANFILES = xamlg xamlg.exe
+CLEANFILES = 		\
+	xamlg 		\
+	xamlg.exe	\
+	xamlg.exe.mdb
 
 xamlg_exe_CS = 		\
 	$(srcdir)/xamlg.cs

@@ -8,7 +8,10 @@ EXTRA_DIST = \
 	xaml2html.in \
 	$(xaml2html_exe_CS)
 
-CLEANFILES = xaml2html xaml2html.exe
+CLEANFILES = 		\
+	xaml2html 	\
+	xaml2html.exe	\
+	xaml2html.exe.mdb
 
 xaml2html_exe_CS = 	\
 	$(srcdir)/xaml2html.cs

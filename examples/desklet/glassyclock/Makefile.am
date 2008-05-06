@@ -13,4 +13,7 @@ example-glassyclock: Makefile
 clock.dll: clock.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
 	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll $(srcdir)/clock.cs
 
-
+CLEANFILES =			\
+	example-glassyclock	\
+	clock.dll		\
+	clock.dll.mdb

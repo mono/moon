@@ -796,7 +796,7 @@
    />
    <Test id="182"
 	 inputFile="test-shape-line-caps-stretch.xaml"
-	 masterFile10="../harness/masters/test-shape-line-capsMaster.png"
+	 masterFile10="../harness/masters/test-shape-line-caps-stretchMaster.png"
 	 categories="stretch"
    />
    <Test id="183"

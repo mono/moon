@@ -7,7 +7,17 @@ pkgconfig_DATA = gtksilver.pc
 
 EXTRA_DIST= $(gtksilver_dll_CS) gtksilver.snk gtksilver.source 
 
-CLEANFILES=gtksilver.dll gtksilver.dll.mdb gtksilver.tree gtksilver.zip 
+CLEANFILES =				\
+	gtksilver.dll 			\
+	gtksilver.dll.mdb 		\
+	gtksilver.tree 			\
+	gtksilver.zip 			\
+	gtksilver.xml			\
+	docs/index.xml			\
+	docs/Gtk.Moonlight/Desklet.xml	\
+	docs/Gtk.Moonlight/GtkSilver.xml\
+	docs/Gtk.Moonlight.xml
+
 DISTCLEANFILES=$(CLEANFILES)
 
 gtksilver_dll_CS = $(srcdir)/gtk.cs \

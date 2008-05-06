@@ -24,3 +24,8 @@ LocationsGenerated.cs: $(srcdir)/StationCompiler.cs $(srcdir)/data/Locations.xml
 	gmcs $(srcdir)/StationCompiler.cs 
 	bunzip2 -c data/Locations.xml.bz2 > Locations.xml
 	mono StationCompiler.exe Locations.xml LocationsGenerated.cs
+
+CLEANFILES =			\
+	example-weather		\
+	weather.dll		\
+	weather.dll.mdb

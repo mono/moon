@@ -13,4 +13,9 @@ example-glassycalendar: Makefile
 calendar.dll: calendar.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
 	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll $(srcdir)/calendar.cs
 
+CLEANFILES =			\
+	example-glassycalendar	\
+	calendar.dll		\
+	calendar.dll.mdb
+
 

@@ -14,7 +14,13 @@ EXTRA_DIST = \
 	$(svg2xaml_gui_exe_CS) \
 	svg2xaml.xslt
 
-CLEANFILES = svg2xaml svg2xaml.exe
+CLEANFILES =			\
+	svg2xaml 		\
+	svg2xaml.exe		\
+	svg2xaml.exe.mdb	\
+	svg2xaml-gui		\
+	svg2xaml-gui.exe	\
+	svg2xaml-gui.exe.mdb
 
 svg2xaml.exe: $(svg2xaml_exe_CS) 
 	gmcs -out:$@ -debug $(svg2xaml_exe_CS) -r:System -r:System.Xml -resource:$(srcdir)/svg2xaml.xslt

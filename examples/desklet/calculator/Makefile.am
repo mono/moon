@@ -13,4 +13,7 @@ example-calculator: Makefile
 calculator.dll: $(srcdir)/calculator.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
 	gmcs -debug -target:library -out:$@ -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll $(srcdir)/calculator.cs
 
-
+CLEANFILES =			\
+	example-calculator	\
+	calculator.dll		\
+	calculator.dll.mdb

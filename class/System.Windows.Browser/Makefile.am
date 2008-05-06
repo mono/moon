@@ -63,6 +63,10 @@ EXTRA_DIST = $(system_windows_browser_sources) 				\
 	System.Windows.Hosting/ChangeLog				\
 	ChangeLog
 
+CLEANFILES =			\
+	TestResult-net_3_0.log	\
+	TestResult-net_3_0.xml
+
 $(assemblysl): $(system_windows_browser_sources) Makefile
 	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:System.Net -keyfile:$(srcdir)/../msfinal.pub
 	sn -q -R $@ $(srcdir)/../mono.snk

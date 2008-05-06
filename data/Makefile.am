@@ -18,3 +18,8 @@ silverdesktop.pc: $(srcdir)/silverdesktop.pc.in Makefile
 agmono.pc: $(srcdir)/agmono.pc.in Makefile
 	sed -e "s,@olivedir@,$(olivedir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/agmono.pc.in > $@.tmp
 	mv $@.tmp $@
+
+CLEANFILES =			\
+	silver.pc		\
+	silverdesktop.pc	\
+	agmono.pc

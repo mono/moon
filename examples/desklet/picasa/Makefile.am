@@ -19,4 +19,9 @@ Google.GData.Client.dll: Makefile google.zip
 picasa.dll: $(srcdir)/picasa.cs $(top_builddir)/examples/desklet/picasa/Google.GData.Client.dll $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
 	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll $(srcdir)/picasa.cs -r:Google.GData.Client.dll
 
-
+CLEANFILES =			\
+	example-picasa		\
+	google.zip		\
+	Google.GData.Client.dll	\
+	picasa.dll		\
+	picasa.dll.mdb
