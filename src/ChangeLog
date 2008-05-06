@@ -1,3 +1,21 @@
+2008-05-06  Michael Dominic K.  <mdk@mdk.am>
+
+	* dependencyobject.cpp:
+	* dependencyobject.h: DependencyProperty::AttachAnimationStorage now
+	returns the previously attached AnimationStorage.
+
+	* animation.cpp:
+	* animation.h: When attaching new animation storage try to inherit the
+	resetValue from the previously attached storage. Reset value is the
+	value that we reset to when storyboard is stopped (originally it always
+	used to be the base value of the current AnimationStorage). 
+
+	This replicates the bahavior of SL where starting a new (second)
+	storyboard on a property renders the prev storyboard useless
+	(non updating the prop) but keeps it's "starting value" for storyboard
+	reset. In other words we can say that starting a new storyboard on a
+	prop makes this new storyboard a "continuation" of the prev storyboard.
+
 2008-05-05  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Surface::render_cb): only call ForceRender if we

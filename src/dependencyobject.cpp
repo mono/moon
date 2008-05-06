@@ -1341,7 +1341,7 @@ DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value
 	this->always_change = always_change;
 }
 
-void
+AnimationStorage*
 DependencyProperty::AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
 {
 	// Create hash on first access to save some mem
@@ -1353,6 +1353,7 @@ DependencyProperty::AttachAnimationStorage (DependencyObject *obj, AnimationStor
 		attached_storage->DetachTarget ();
 
 	g_hash_table_insert (storage_hash, obj, storage);
+	return attached_storage;
 }
 
 void

@@ -40,9 +40,16 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 	clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
 	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 
-	targetprop->AttachAnimationStorage (targetobj, this);
+	AnimationStorage *prev_storage = targetprop->AttachAnimationStorage (targetobj, this);
 
 	baseValue = new Value(*targetobj->GetValue (targetprop));
+
+	if (prev_storage) {
+		Value *v = prev_storage->GetResetValue ();
+		stopValue = new Value (*v);
+	} else {
+		stopValue = NULL;
+	}
 }
 
 void
@@ -86,7 +93,10 @@ AnimationStorage::ResetPropertyValue ()
 	if (targetobj == NULL)
 		return;
 
-	targetobj->SetValue (targetprop, *baseValue);
+	if (stopValue)
+		targetobj->SetValue (targetprop, *stopValue);
+	else
+		targetobj->SetValue (targetprop, *baseValue);
 }
 
 void
@@ -107,10 +117,22 @@ AnimationStorage::DetachUpdateHandler ()
 	}
 }
 
+Value*
+AnimationStorage::GetResetValue ()
+{
+	if (stopValue)
+		return stopValue;
+	else
+		return baseValue;
+}
+
 AnimationStorage::~AnimationStorage ()
 {
 	if (baseValue)
 		delete baseValue;
+
+	if (stopValue)
+		delete stopValue;
 
 	DetachUpdateHandler ();
 	

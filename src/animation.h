@@ -127,6 +127,7 @@ class AnimationStorage {
 	void ResetPropertyValue ();
 	void DetachUpdateHandler ();
 	void DetachTarget ();
+	Value* GetResetValue ();
 
  private:
 	void TargetObjectDestroyed ();
@@ -140,6 +141,7 @@ class AnimationStorage {
 	DependencyObject *targetobj;
 	DependencyProperty *targetprop;
 	Value *baseValue;
+	Value *stopValue;
 };
 
 
