@@ -1,3 +1,21 @@
+2008-05-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* animation.cpp (animation_shutdown): Renamed from
+	animation_destroy().
+
+	* text.cpp (text_shutdown): Renamed from text_destroy().
+
+	* clock.cpp: Don't include gtk.h for just gtk_timeout_add(),
+	include glib.h and use g_timeout_add() instead.
+	(SystemTimeSource::SystemTimeSource): Init the timeout_id to 0,
+	not -1 (the timeout ids are uint, not int).
+	(SystemTimeSource::SetTimerFrequency): Updated.
+	(SystemTimeSource::Start): Updated.
+	(SystemTimeSource::Stop): Updated.
+
+	* list.cpp (List::Remove): Don't need to search for the node, we
+	already have a pointer to it.
+
 2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: Handle the rtsp protocol too.

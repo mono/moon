@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * clock.cpp: Clock management
  *
@@ -11,12 +12,15 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include <string.h>
-#include <gtk/gtk.h>
-#include <malloc.h>
+#endif
+
 #include <glib.h>
+
 #include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
 #include <time.h>
 
 #include "clock.h"
@@ -24,10 +28,6 @@
 #include "uielement.h"
 #include "dirty.h"
 #include "runtime.h"
-
-//#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-//#endif
 
 #define CLOCK_DEBUG 0
 #define TIME_TICK 0
@@ -144,7 +144,7 @@ TimeSource::GetNow ()
 
 SystemTimeSource::SystemTimeSource ()
 {
-	gtk_timeout = -1;
+	timeout_id = 0;
 }
 
 SystemTimeSource::~SystemTimeSource ()
@@ -156,9 +156,9 @@ void
 SystemTimeSource::SetTimerFrequency (int timeout)
 {
 	bool running = false;
-	if (gtk_timeout != -1)
+	if (timeout_id != 0)
 		running = true;
-
+	
 	if (running)
 		Stop ();
 
@@ -171,18 +171,18 @@ SystemTimeSource::SetTimerFrequency (int timeout)
 void
 SystemTimeSource::Start ()
 {
-	if (gtk_timeout != -1)
+	if (timeout_id != 0)
 		return;
-
-	gtk_timeout = g_timeout_add_full (G_PRIORITY_HIGH, frequency, SystemTimeSource::tick_timeout, this, NULL);
+	
+	timeout_id = g_timeout_add_full (G_PRIORITY_HIGH, frequency, SystemTimeSource::tick_timeout, this, NULL);
 }
 
 void
 SystemTimeSource::Stop ()
 {
-	if (gtk_timeout != -1){
-		g_source_remove (gtk_timeout);
-		gtk_timeout = -1;
+	if (timeout_id != 0) {
+		g_source_remove (timeout_id);
+		timeout_id = 0;
 	}
 }
 
@@ -469,7 +469,7 @@ TimeManager::SourceTick ()
 guint
 TimeManager::AddTimeout (guint ms_interval, GSourceFunc func, gpointer tick_data)
 {
-	guint rv = gtk_timeout_add (ms_interval, func, tick_data);
+	guint rv = g_timeout_add (ms_interval, func, tick_data);
 	registered_timeouts = g_list_prepend (registered_timeouts, GUINT_TO_POINTER (rv));
 	return rv;
 }
@@ -546,11 +546,11 @@ time_manager_add_tick_call (TimeManager *manager, void (*func)(gpointer), gpoint
 }
 
 void
-TimeManager::InvokeOnMainThread (GSourceFunc func, gpointer data)
+TimeManager::InvokeOnMainThread (GSourceFunc func, gpointer user_data)
 {
 	// The callback might end up getting called after the surface/plugin has
 	// been deleted.
-	gtk_timeout_add (0, func, data);
+	g_timeout_add (0, func, user_data);
 }
 
 static void

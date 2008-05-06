@@ -24,7 +24,7 @@ G_BEGIN_DECLS
 
 
 void text_init (void);
-void text_destroy (void);
+void text_shutdown (void);
 
 class Inline : public DependencyObject {
  protected:

@@ -208,7 +208,7 @@ class SystemTimeSource : public TimeSource {
 	virtual Type::Kind GetObjectType () { return Type::SYSTEMTIMESOURCE; };
 
  private:
-	int gtk_timeout;
+	guint timeout_id;
 	int frequency;
 	static gboolean tick_timeout (gpointer data);
 };
@@ -359,9 +359,6 @@ class Clock : public DependencyObject {
 };
 
 
-
-
-
 class ClockGroup : public Clock {
  protected:
 	virtual ~ClockGroup ();
@@ -433,10 +430,10 @@ class TimeManager : public EventObject {
 	virtual Type::Kind GetObjectType () { return Type::TIMEMANAGER; };
 
 	void ListClocks ();
-
+	
 	// The callback might end up getting called after the surface/plugin has
 	// been deleted.
-	static void InvokeOnMainThread (GSourceFunc func, gpointer data);
+	static void InvokeOnMainThread (GSourceFunc func, gpointer user_data);
 	
  protected:
 	~TimeManager ();
@@ -445,7 +442,7 @@ class TimeManager : public EventObject {
 
 	TimelineGroup *timeline;
 	ClockGroup *root_clock;
-
+	
 	void SourceTick ();
 
 	void RemoveAllRegisteredTimeouts ();

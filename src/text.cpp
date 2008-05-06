@@ -2352,7 +2352,7 @@ glyphs_set_unicode_string (Glyphs *glyphs, const char *unicode)
 
 
 void
-text_destroy (void)
+text_shutdown (void)
 {
 	if (default_foreground_brush) {
 		default_foreground_brush->unref ();

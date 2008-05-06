@@ -2268,9 +2268,9 @@ runtime_shutdown (void)
 	drain_unrefs ();
 	
 	Media::Shutdown ();
-
-	animation_destroy ();
-	text_destroy ();
+	
+	animation_shutdown ();
+	text_shutdown ();
 	font_shutdown ();
 	
 	DependencyObject::Shutdown ();

@@ -1807,8 +1807,9 @@ animation_init (void)
 }
 
 void
-animation_destroy ()
+animation_shutdown (void)
 {
+	// no-op
 }
 
 /* The nullable setters/getters for the various animation types */
