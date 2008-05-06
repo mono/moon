@@ -21,6 +21,7 @@ class SingleMedia;
 #include "pipeline.h"
 #include "error.h"
 #include "dependencyobject.h"
+#include "uri.h"
 
 class PlaylistNode : public List::Node {
 private:
@@ -59,12 +60,12 @@ public:
 class PlaylistEntry : public EventObject {
 private:
 	// ASX Properties 
-	char *base;
+	Uri *base;
 	char *title;
 	char *author;
 	char *abstract;
 	char *copyright;
-	char *source_name;
+	Uri *source_name;
 	char *info_target;
 	char *info_url;
 	bool client_skip;
@@ -91,9 +92,9 @@ public:
 
 	// ASX properties
 
-	const char *GetBase ();
-	const char *GetBaseInherited ();
-	void SetBase (char *base);
+	Uri *GetBase ();
+	Uri *GetBaseInherited ();
+	void SetBase (Uri *base);
 
 	const char *GetTitle ();
 	void SetTitle (char *title);
@@ -107,8 +108,8 @@ public:
 	const char *GetCopyright ();
 	void SetCopyright (char *copyright);
 
-	const char *GetSourceName ();
-	void SetSourceName (char *source_name);
+	Uri *GetSourceName ();
+	void SetSourceName (Uri *source_name);
 
 	TimeSpan GetStartTime ();
 	void SetStartTime (TimeSpan start_time);

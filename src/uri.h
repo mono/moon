@@ -34,10 +34,11 @@ public:
 	Uri ();
 	~Uri ();
 	
-	bool Parse (const char *uri);
+	bool Parse (const char *uri, bool allow_trailing_sep = false);
 	
 	char *ToString (UriToStringFlags flags);
 	char *ToString () { return ToString ((UriToStringFlags) 0); }
+	Uri *Clone ();
 };
 
 #endif /* __URI_H__ */

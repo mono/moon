@@ -49,16 +49,42 @@ Uri::~Uri ()
 	g_free (fragment);
 }
 
+static void
+clone_params (GQuark quark, gpointer data, gpointer user_data)
+{
+	gchar *str = (gchar *) data;
+	GData **params = (GData **) user_data;
+	g_datalist_id_set_data_full (params, quark, g_strdup (str), g_free);
+}
+
+Uri *
+Uri::Clone ()
+{
+	Uri *uri = new Uri ();
+	uri->protocol = g_strdup (protocol);
+	uri->user = g_strdup (user);
+	uri->auth = g_strdup (auth);
+	uri->passwd = g_strdup (passwd);
+	uri->host = g_strdup (host);
+	uri->path = g_strdup (path);
+	if (params)
+		g_datalist_foreach (&params, clone_params, &uri->params);
+	uri->query = g_strdup (query);
+	uri->fragment = g_strdup (fragment);
+	uri->port = port;
+	return uri;
+}
+
 /* canonicalise a path */
 static char *
-canon_path (char *path, bool allow_root)
+canon_path (char *path, bool allow_root, bool allow_trailing_sep)
 {
 	register char *d, *inptr;
 	
 	d = inptr = path;
 	
 	while (*inptr) {
-		if (inptr[0] == '/' && (inptr[1] == '/' || inptr[1] == '\0'))
+		if (inptr[0] == '/' && (inptr[1] == '/' || (inptr[1] == '\0' && !allow_trailing_sep)))
 			inptr++;
 		else
 			*d++ = *inptr++;
@@ -101,7 +127,7 @@ url_decode (char *in, const char *url)
 }
 
 bool
-Uri::Parse (const char *uri)
+Uri::Parse (const char *uri, bool allow_trailing_sep)
 {
 	char *name, *value, *protocol, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
 	register const char *start, *inptr;
@@ -250,7 +276,7 @@ Uri::Parse (const char *uri)
 			value = g_strndup (start, n);
 			url_decode (value, uri);
 			
-			if (!(path = canon_path (value, !host)))
+			if (!(path = canon_path (value, !host, allow_trailing_sep)))
 				g_free (value);
 		}
 		

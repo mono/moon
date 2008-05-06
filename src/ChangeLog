@@ -1,3 +1,13 @@
+2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: Handle the rtsp protocol too.
+	* playlist.cpp, playlist.h: Store base and source_name as Uris.
+	  Implement GetFullSourceName better, and do some uri validation.
+	* uri.h, uri.cpp: Added a allow_trailing_sep flag to Uri::Parse,
+	  disables canonicalization of trailing directory separators since
+	  asx playlists may treat urls differently depending on the presence
+	  or absence of any trailing directory separators. Added Clone ().
+
 2008-05-06  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:

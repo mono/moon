@@ -101,13 +101,13 @@ PlaylistEntry::~PlaylistEntry ()
 {
 	d(printf ("PlaylistEntry::~PlaylistEntry ()\n"));
 	
-	g_free (source_name);
+	delete source_name;
 	g_free (full_source_name);
 
 	if (media)
 		media->unref ();
 
-	g_free (base);
+	delete base;
 	g_free (title);
 	g_free (author);
 	g_free (abstract);
@@ -116,13 +116,13 @@ PlaylistEntry::~PlaylistEntry ()
 	g_free (info_url);
 }
 
-const char *
+Uri *
 PlaylistEntry::GetBase ()
 {
 	return base;
 }
 
-const char *
+Uri *
 PlaylistEntry::GetBaseInherited ()
 {
 	if (base != NULL)
@@ -133,13 +133,15 @@ PlaylistEntry::GetBaseInherited ()
 }
 
 void 
-PlaylistEntry::SetBase (char *base)
+PlaylistEntry::SetBase (Uri *base)
 {
 	// TODO: Haven't been able to make BASE work with SL,
 	// which means that I haven't been able to confirm any behaviour.
 	if (!(set_values & PlaylistNode::Base)) {
 		this->base = base;
 		set_values = (PlaylistNode::Kind) (set_values | PlaylistNode::Base);
+	} else {
+		delete base;
 	}
 }
 
@@ -202,15 +204,17 @@ PlaylistEntry::SetCopyright (char *copyright)
 	}
 }
 
-const char *
+Uri *
 PlaylistEntry::GetSourceName ()
 {
 	return source_name;
 }
 
 void 
-PlaylistEntry::SetSourceName (char *source_name)
+PlaylistEntry::SetSourceName (Uri *source_name)
 {
+	if (this->source_name)
+		delete this->source_name;
 	this->source_name = source_name;
 }
 
@@ -346,18 +350,85 @@ PlaylistEntry::PopulateMediaAttributes ()
 const char *
 PlaylistEntry::GetFullSourceName ()
 {
+	/*
+	 * Now here we have some interesting semantics:
+	 * - BASE has to be a complete url, with protocol and domain
+	 * - BASE only matters up to the latest / (if no /, the entire BASE is used)
+	 *
+	 * Examples (numbered according to the test-playlist-with-base test in test/media/video)
+	 *  
+	 *  01 localhost/dir/ 			+ * 			= error
+	 *  02 /dir/ 					+ * 			= error
+	 *  03 dir						+ * 			= error
+	 *  04 http://localhost/dir/	+ somefile		= http://localhost/dir/somefile
+	 *  05 http://localhost/dir		+ somefile		= http://localhost/somefile
+	 *  06 http://localhost			+ somefile		= http://localhost/somefile
+	 *  07 http://localhost/dir/	+ /somefile		= http://localhost/somefile
+	 *  08 http://localhost/dir/	+ dir2/somefile	= http://localhost/dir/dir2/somefile
+	 *  09 rtsp://localhost/		+ somefile		= http://localhost/somefile
+	 *  10 mms://localhost/dir/		+ somefile		= mms://localhost/dir/somefile
+	 *  11 http://localhost/?huh	+ somefile		= http://localhost/somefile
+	 *  12 http://localhost/#huh	+ somefile		= http://localhost/somefile
+	 *  13 httP://localhost/		+ somefile		= http://localhost/somefile
+	 * 
+	 */
+	 
+	// TODO: url validation, however it should probably happen inside MediaElement when we set the source
+	 
 	if (full_source_name == NULL) {
-		const char *base = GetBaseInherited ();
-		GString *uri = g_string_sized_new (strlen (source_name) + 25);
-
-		if (base != NULL && *base != 0) {
-			g_string_append (uri, base);
-			if (!g_str_has_suffix (uri->str, "/"))
-				g_string_append (uri, "/");
+		Uri *base = GetBaseInherited ();
+		Uri *current = GetSourceName ();
+		Uri *result = NULL;
+		const char *pathsep;
+		char *base_path;
+		
+		//printf ("PlaylistEntry::GetFullSourceName (), base: %s, current: %s\n", base ? base->ToString () : "NULL", current ? current->ToString () : "NULL");
+		
+		if (current->host != NULL) {
+			//printf (" current host (%s) is something, protocol: %s\n", current->host, current->protocol);
+			result = current;
+		} else if (base != NULL) {
+			result = new Uri ();
+			result->protocol = g_strdup (base->protocol);
+			result->user = g_strdup (base->user);
+			result->passwd = g_strdup (base->passwd);
+			result->host = g_strdup (base->host);
+			result->port = base->port;
+			// we ignore the params, query and fragment values.
+			if (current->path != NULL && current->path [0] == '/') {
+				//printf (" current path is relative to root dir on host\n");
+				result->path = g_strdup (current->path);
+			} else if (base->path == NULL) {
+				//printf (" base path is root dir on host\n");
+				result->path = g_strdup (current->path);
+			} else {
+				pathsep = strrchr (base->path, '/');
+				if (pathsep != NULL) {
+					if ((size_t) (pathsep - base->path + 1) == strlen (base->path)) {
+						//printf (" last character of base path (%s) is /\n", base->path);
+						result->path = g_strjoin (NULL, base->path, current->path, NULL);
+					} else {
+						//printf (" base path (%s) does not end with /, only copy path up to the last /\n", base->path);
+						base_path = g_strndup (base->path, pathsep - base->path + 1);
+						result->path = g_strjoin (NULL, base_path, current->path, NULL);
+						g_free (base_path);
+					}
+				} else {
+					//printf (" base path (%s) does not contain a /\n", base->path);
+					result->path = g_strjoin (NULL, base->path, "/", current->path, NULL);
+				}
+			}
+		} else {
+			//printf (" there's no base\n");
+			result = current;
 		}
-		g_string_append (uri, source_name);
-		full_source_name = g_strdup (uri->str);
-		g_string_free (uri, true);
+		
+		full_source_name = result->ToString ();
+		
+		//printf (" result: %s\n", full_source_name);
+		
+		if (result != base && result != current)
+			delete result;
 	}
 	return full_source_name;
 }
@@ -635,13 +706,13 @@ Playlist::MergeWith (PlaylistEntry *entry)
 {
 	d(printf ("Playlist::MergeWith (%p)\n", entry));
 
-	SetBase (g_strdup (entry->GetBase ()));
+	SetBase (entry->GetBase () ? entry->GetBase ()->Clone () : NULL);
 	SetTitle (g_strdup (entry->GetTitle ()));
 	SetAuthor (g_strdup (entry->GetAuthor ()));
 	SetAbstract (g_strdup (entry->GetAbstract ()));
 	SetCopyright (g_strdup (entry->GetCopyright ()));
 
-	SetSourceName (g_strdup (entry->GetSourceName ()));
+	SetSourceName (entry->GetSourceName () ? entry->GetSourceName ()->Clone () : NULL);
 	SetStartTime (entry->GetStartTime ());
 	SetDuration (entry->GetDuration ());
 	
@@ -830,6 +901,8 @@ void
 PlaylistParser::OnStartElement (const char *name, const char **attrs)
 {
 	PlaylistNode::Kind kind = StringToKind (name);
+	Uri *uri;
+	bool failed;
 
 	d(printf ("PlaylistParser::OnStartElement (%s, %p), kind = %d\n", name, attrs, kind));
 
@@ -882,8 +955,29 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "HREF")) {
 				// TODO: What do we do with this value?
-				if (GetCurrentContent () != NULL)
-					GetCurrentContent ()->SetBase (g_strdup (attrs [i+1]));
+				if (GetCurrentContent () != NULL) {
+					failed = false;
+					uri = new Uri ();
+					if (!uri->Parse (attrs [i+1], true)) {
+						failed = true;
+					} else if (uri->protocol == NULL) {
+						failed = true;
+					} else if (!strcase_equal (uri->protocol, "http") && 
+								!strcase_equal (uri->protocol, "https") && 
+								!strcase_equal (uri->protocol, "mms") &&
+								!strcase_equal (uri->protocol, "rtsp") && 
+								!strcase_equal (uri->protocol, "rstpt")) {
+						failed = true;
+					}
+					
+					if (!failed) {
+						GetCurrentContent ()->SetBase (uri);
+					} else {
+						delete uri;
+						ParsingError (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
+					}
+					uri = NULL;
+				}
 			} else {
 				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
 				break;
@@ -953,8 +1047,19 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 			}
 		}
 
+		if (href) {
+			uri = new Uri ();
+			if (!uri->Parse (href)) {
+				delete uri;
+				uri = NULL;
+				ParsingError (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
+			}
+		}
+
 		PlaylistEntry *entry = new PlaylistEntry (element, playlist);
-		entry->SetSourceName (href);
+		if (uri)
+			entry->SetSourceName (uri);
+		uri = NULL;
 		playlist->AddEntry (entry);
 		current_entry = entry;
 		break;
@@ -998,8 +1103,16 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 	case PlaylistNode::Ref: {
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "HREF")) {
-				if (GetCurrentEntry () != NULL && GetCurrentEntry ()->GetSourceName () == NULL)
-					GetCurrentEntry ()->SetSourceName (g_strdup (attrs [i+1]));
+				if (GetCurrentEntry () != NULL && GetCurrentEntry ()->GetSourceName () == NULL) {
+					uri = new Uri ();
+					if (uri->Parse (attrs [i+1])) {
+						GetCurrentEntry ()->SetSourceName (uri);
+					} else {
+						delete uri;
+						ParsingError (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
+					}
+					uri = NULL;
+				}
 			} else {
 				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
 				break;
@@ -1191,7 +1304,8 @@ PlaylistParser::ParseASX2 ()
 	char buffer[BUFFER_SIZE];
 	char *mms_uri;
 	char *end;
-
+	Uri *uri;
+	
 	playlist_version = 2;
 
 	bytes_read = source->ReadSome (buffer, BUFFER_SIZE);
@@ -1213,9 +1327,14 @@ PlaylistParser::ParseASX2 ()
 	playlist = new Playlist (element, source);
 
 	PlaylistEntry *entry = new PlaylistEntry (element, playlist);
-	entry->SetSourceName (mms_uri);
-        playlist->AddEntry (entry);
-        current_entry = entry;
+	uri = new Uri ();
+	if (uri->Parse (mms_uri)) {
+		entry->SetSourceName (uri);
+	} else {
+		delete uri;
+	}
+	playlist->AddEntry (entry);
+	current_entry = entry;
 
 	return true;
 }
