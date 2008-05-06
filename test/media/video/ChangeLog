@@ -1,5 +1,16 @@
 2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-playlist-with-base.html, test-playlist-with-base-01.asx,
+	  test-playlist-with-base-02.asx, test-playlist-with-base-03.asx,
+	  test-playlist-with-base-04.asx, test-playlist-with-base-05.asx,
+	  test-playlist-with-base-06.asx, test-playlist-with-base-07.asx,
+	  test-playlist-with-base-08.asx, test-playlist-with-base-09.asx,
+	  test-playlist-with-base-10.asx, test-playlist-with-base-11.asx,
+	  test-playlist-with-base-12.asx, test-playlist-with-base-13.asx,
+	  drtlist.xml: Added test-playlist-with-base.
+
+2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* timecode-long-with-audio.wmv: Added.
 
 2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -1,0 +1,169 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement x:Name="media" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="Silverlight.js"></script>
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		var timeout = null;
+		var mediaElement = null;
+		var plugin = null;
+		var host = null;
+		var failed = 0;
+		var asx_files = 13;
+		var base_name = "test-playlist-with-base-";
+		var counter = 0;
+		var current_result = "";
+		var results = [
+			"", 
+			"MediaFailed: Error Type:    MediaError, Error Message: AG_E_UNKNOWN_ERROR, Error Code:    1001", 
+			"MediaFailed: Error Type:    MediaError, Error Message: AG_E_UNKNOWN_ERROR, Error Code:    1001", 
+			"MediaFailed: Error Type:    MediaError, Error Message: AG_E_UNKNOWN_ERROR, Error Code:    1001", 
+			"MediaOpened",
+			"MediaOpened",
+			"MediaOpened",
+			"MediaOpened",
+			"MediaOpened",
+			"MediaOpened",
+			"MediaOpened",
+			"MediaOpened",
+			"MediaOpened",
+			"MediaOpened",
+			"" 
+			];
+
+		function doubleDigit (number)
+		{
+			if (number < 10)
+				return "0" + number;
+			return number;
+		}
+
+		function EndTest ()
+		{
+			if (results [counter] != current_result) {
+				TestLogger.LogError ("Expected '" + results [counter] + "' and got '" + current_result + "'");
+				failed++;
+			} else {
+				TestLogger.LogDebug ("Got expected result (" + current_result + ")");
+			}
+			
+			if (asx_files <= counter) {
+				if (failed > 0)
+					TestLogger.LogError (failed + " tests failed.");
+				TestLogger.LogResult (failed > 0 ? -1 : 1);
+				SignalShutdown ();
+				return;
+			}
+
+			createSL ();
+		}
+		
+		function timeOut ()
+		{
+			TestLogger.LogError ("Test timed out.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.Source);
+			current_result = "MediaOpened";
+			EndTest ();
+			//sender.Play ();
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+			EndTest ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			current_result = "MediaFailed: " + ErrorEventArgsToOneLineString (args);
+			EndTest ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+
+			counter++;
+			current_result = "";
+			mediaElement = sender.findName ("media");
+			TestLogger.LogDebug ("Setting source to: " + base_name + doubleDigit (counter) + ".asx");
+			mediaElement.Source = base_name + doubleDigit (counter) + ".asx";
+			SetTimer ();
+		}
+
+		function SetTimer ()
+		{
+			if (timeout) 
+				clearTimeout (timeout);
+			timeout = setTimeout ("timeOut ();", 20000);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function createSL ()
+		{
+/*
+ * SL contains a bug where after a MediaElement has emitted MediaFailed, nothing can make it load another media.
+ * Given that we test for MediaFailed (expecting it to happen sometimes), we have to recreate the entire plugin.
+ */
+			var xaml = 
+'        <embed type="application/x-silverlight"' +
+'             width="200"' +
+'             height="200"' +
+'             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"' +
+'             style="position:absolute; left:0px; top:0px"' +
+'             background="green" >' +
+'        </embed>';
+			var ML = document.getElementById ("ML");
+			var MLControl = document.getElementById ("MLControl");
+			if (MLControl)
+				ML.removeChild (MLControl);
+			ML.innerHTML = xaml;
+		}
+		
+		</script>
+	</head>
+
+  <body  onload="createSL ();">
+    <div id="ML">
+<!--
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="MLControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+-->
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+
