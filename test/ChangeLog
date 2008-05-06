@@ -1,3 +1,8 @@
+2008-05-06  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/storyboard-stopping.html: Storyboard stopping behavior
+	test.
+
 2008-05-02  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/mouse-moving-object-tracking.html: Adding a test for
