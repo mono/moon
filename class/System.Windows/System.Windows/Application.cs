@@ -70,8 +70,7 @@ namespace System.Windows {
 				Exit (this, EventArgs.Empty);
 			
 			try {
-				Report.Warning ("TODO: Need to delete the {0} directory", xap_dir);
-				//Directory.RecursiveDelete (xap_dir);
+				Helper.DeleteDirectory (xap_dir);
 				xap_dir = null;
 			} catch {
 			}

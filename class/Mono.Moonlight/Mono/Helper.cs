@@ -37,6 +37,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.IO;
 
 namespace Mono {
 
@@ -227,6 +228,11 @@ namespace Mono {
 			Type depobj = agclr.GetType ("System.Windows.DependencyObject");
 			FieldInfo field = depobj.GetField ("_native", BindingFlags.Instance | BindingFlags.NonPublic);
 			return (IntPtr) field.GetValue (dependency_object);
+		}
+
+		public static void DeleteDirectory (string path)
+		{
+			Directory.Delete (path, true);
 		}
 	}
 }
