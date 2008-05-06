@@ -93,7 +93,8 @@ var Host = {
 	Windows: navigator.userAgent.indexOf ('Windows') > -1,
 	//Linux: navigator.userAgent.indexOf ('Linux') > -1,
 	X11: navigator.userAgent.indexOf ('X11') > -1,
-	Mac: navigator.userAgent.indexOf ('Macintosh') > -1
+	Mac: navigator.userAgent.indexOf ('Macintosh') > -1,
+	Firefox: navigator.userAgent.indexOf ('Firefox') > -1
 };
 
 var Plugin = {

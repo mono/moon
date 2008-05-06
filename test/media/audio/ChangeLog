@@ -1,3 +1,7 @@
+2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* miguel.wma: Added wma version of this file.
+
 2008-04-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml: Added test-mp3-media-properties and test-media-ended.

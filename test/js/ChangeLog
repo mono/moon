@@ -1,3 +1,9 @@
+2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* js/testplugin.js: Added a mock test plugin which allows tests to
+	  execute with ff on windows.
+	* js/utils.js: Added Host.Firefox flag.
+
 2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* js/utils.js: Added a new method: ExceptionToString.

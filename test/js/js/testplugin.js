@@ -4,6 +4,8 @@ var TestPluginReady = false;
 var pendingTypes = new Array ();
 var pendingMessages = new Array ();
 
+// This file requires moon/test/js/js/utils.js
+
 function createTestPlugin ()
 {
     if(document.body == null) {
@@ -38,15 +40,32 @@ function createTestPlugin ()
     window.setTimeout("loadTestPlugin ();", 10);
 }
 
+function createMockTestPlugin ()
+{
+	TestHost = new function ()
+	{
+		this.Connect = function () {};
+		this.LogDebug = function (msg) { console.log ("DEBUG: " + msg); }
+		this.LogError = function (msg) { console.log ("ERROR: " + msg); }
+		this.LogWarning = function (msg) { console.log ("WARNING: " + msg); }
+		this.LogResult = function (result) { console.log ("LOGRESULT: " + result); }
+		this.TryLogResult = function (result) { console.log ("TRYLOGRESULT: " + result); }
+		this.LogMessage = function (msg) { console.log ("MESSAGE: " + msg); }
+		this.SignalShutdown = function  () { console.log ("TestHost.SignalShutdown (), please press the big X"); }
+		this.CaptureSingleImage = function (a, b, c, d, e, f) { console.log ("Smile!"); }
+		this.CaptureMultipleImages = function (a, b, c, d, e, f, g, h, i) { console.log ("Laugh!"); }
+	};
+}
+
 function loadTestPlugin ()
 {
 	if (TestHost)
 		return;
-
+	
 	TestHost = document.getElementById ("_TestPlugin");
 	if (!TestHost) {
 		window.setTimeout ("loadTestPlugin ();", 10);
-    } else {
+	} else {
 		TestHost.Connect ();
 		TestLogger = TestHost;
 		TestPluginReady = true;
@@ -154,4 +173,15 @@ function SignalShutdown ()
 	TestHost.SignalShutdown (document.name);
 }
 
-window.setTimeout("createTestPlugin ();", 10);
+function createSafePlugin ()
+{
+	if (Host.Firefox && Host.Windows)
+		createMockTestPlugin ();
+	else
+		createTestPlugin ();
+}
+
+
+window.setTimeout("createSafePlugin ();", 10);
+
+
