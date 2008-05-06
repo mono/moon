@@ -201,7 +201,7 @@ ASFParser::ReadObject (asf_object *obj)
 MediaResult
 ASFParser::ReadPacket (ASFPacket *packet, int packet_index)
 {
-	ASF_LOG ("ASFParser::ReadPacket (%p, %d).\n", packet, packet_index);
+	ASF_LOG ("ASFParser::ReadPacket (%s, %d) at %llu.\n", packet ? "non-null" : "null", packet_index, GetPacketOffset (packet_index));
 	IMediaSource *source;
 	if (packet->GetSource ()) {
 		source = packet->GetSource ();
@@ -239,8 +239,8 @@ ASFParser::ReadPacket (ASFPacket *packet)
 	source = context.source;
  	initial_position = source->GetPosition ();
 
-	ASF_LOG ("ASFParser::ReadPacket (%p): Reading packet at %lld (index: %lld) of %lld packets.\n",
-		 packet, source->GetPosition (), GetPacketIndex (source->GetPosition ()),
+	ASF_LOG ("ASFParser::ReadPacket (%s): Reading packet at %lld (index: %lld) of %lld packets.\n",
+		 packet ? "non-null" : "null", source->GetPosition (), GetPacketIndex (source->GetPosition ()),
 		 data->data_packet_count);
 	
 #if DEBUG
@@ -845,7 +845,7 @@ ASFReader::ReadMore ()
 			if (stream_id != last_reader && last_reader != 0)
 				GetFrameReader (last_reader)->SetLastPayload (false);
 			last_reader = stream_id;
-				
+			ASF_LOG ("ASFReader::ReadMore (): delived payload for stream %i with pts %llu\n", payloads [i]->stream_id, payloads [i]->get_presentation_time () - 5000);
 			reader->AppendPayload (payloads [i], positioned ? 0 : current_packet_index);
 			payloads_added++;
 		}
@@ -1595,8 +1595,8 @@ end_frame:
 */
 /*
 	if (MEDIA_SUCCEEDED (result)) {
-		printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, Pts = %.5llu, pts = %.5u, stream# = %i, media_object_number = %.3u (advanced).\n", 
-			size, IsKeyFrame () ? "true " : "false", Pts (), payloads [0]->presentation_time, StreamId (), media_object_number);
+		printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, Pts = %.5llu = %llu ms, pts = %.5u, stream# = %i (%s), media_object_number = %.3u (advanced).\n", 
+			size, IsKeyFrame () ? "true " : "false", Pts (), MilliSeconds_FromPts (Pts ()), payloads [0]->presentation_time, StreamId (), IsAudio () ? "audio" : (marker_stream != NULL ? "marker" : "video"), media_object_number);
 	}
 */
 	

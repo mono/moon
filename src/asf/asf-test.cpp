@@ -203,7 +203,10 @@ test_file (const char* filename)
 	MediaResult read_result;	
 
 	fs = new FileSource (NULL, filename);
-	fs->Initialize ();
+	if (!MEDIA_SUCCEEDED (read_result = fs->Initialize ())) {
+		printf ("test_file (%s): could not open file (%i)\n", filename, read_result);
+		return false;
+	}
 
 	parser = new ASFParser (fs, NULL);
 
@@ -219,20 +222,22 @@ test_file (const char* filename)
 		read_result = parser->ReadPacket (packet);
 		delete packet;
 		printf ("Reading packet #%i, result: %i.\n", ++counter, read_result);
-		if (read_result == MEDIA_FAIL || read_result == MEDIA_READ_ERROR)
+		if (!MEDIA_SUCCEEDED (read_result)) 
 			break;
 		packet = new ASFPacket ();
 	}
-	delete packet;
-	
+#endif
+#if 1
+	printf ("Reading payloads...\n");
 	reader = new ASFReader (parser, NULL);
 	for (int i = 1; i < 128; i++) {
 		if (!parser->IsValidStream (i))
 			continue;
+		printf ("Reading payloads in stream #%i...\n", i);
+		reader->SelectStream (i, true);
 		frame_reader = reader->GetFrameReader (i);
 		while (MEDIA_SUCCEEDED (frame_reader->Advance ())) {
 		}
-		delete reader;
 	}
 #endif
 	

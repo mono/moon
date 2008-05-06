@@ -518,9 +518,9 @@ asf_single_payload_dump (asf_single_payload* obj)
 	ASF_DUMP ("\tmedia_object_number = %u\n", (asf_dword) obj->media_object_number);
 	ASF_DUMP ("\toffset_into_media_object = %u\n", (asf_dword) obj->offset_into_media_object);
 	ASF_DUMP ("\treplicated_data_length = %u\n", (asf_dword) obj->replicated_data_length);
-	ASF_DUMP ("\treplicated_data = %p\n", obj->replicated_data);
+	ASF_DUMP ("\treplicated_data = %s\n", obj->replicated_data ? "non-null" : "null");
 	ASF_DUMP ("\tpayload_data_length = %u\n", (asf_dword) obj->payload_data_length);
-	ASF_DUMP ("\tpayload_data = %p\n", obj->payload_data);
+	ASF_DUMP ("\tpayload_data = %s\n", obj->payload_data ? "non-null" : "null");
 	ASF_DUMP ("\tget_presentation_time = %lld\n", obj->get_presentation_time ());
 }
 
