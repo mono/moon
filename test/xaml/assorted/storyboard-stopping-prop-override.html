@@ -1,0 +1,48 @@
+<head>
+<title>Storyboard stop test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseDownOne (sender, eventArgs)
+{
+	sender.findName ("animation").Begin ();
+}
+function OnMouseDownTwo (sender, eventArgs)
+{
+	sender.findName ("target").Opacity = 0.0;
+	sender.findName ("animation").Stop ();
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="800" height="600">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Rectangle x:Name="target" Fill="Blue" Canvas.Top="100" Canvas.Left="100" Width="25" Height="25" />
+	<Rectangle x:Name="button1" Fill="Gray" Canvas.Top="200" Canvas.Left="100" MouseLeftButtonDown="OnMouseDownOne" Width="50" Height="25" />
+	<Rectangle x:Name="button2" Fill="Gray" Canvas.Top="200" Canvas.Left="200" MouseLeftButtonDown="OnMouseDownTwo" Width="50" Height="25" />
+
+	<Canvas.Resources>
+			<Storyboard x:Name="animation">
+					<DoubleAnimationUsingKeyFrames
+						Storyboard.TargetName="target"
+						Storyboard.TargetProperty="(UIElement.Opacity)" BeginTime="0:0:0">
+							<SplineDoubleKeyFrame Value="0.0" KeyTime="0:0:1" KeySpline="0.0,0.3 0.7,1.0" />
+					</DoubleAnimationUsingKeyFrames>
+			</Storyboard>
+	</Canvas.Resources>
+	</Canvas>
+</script>
+
+</body>
+</html>
+
+

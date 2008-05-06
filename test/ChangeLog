@@ -1,5 +1,10 @@
 2008-05-06  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/storyboard-stopping-prop-override.html: A new test for
+	storyboard stopping + overriding the prop manually.
+
+2008-05-06  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/storyboard-stopping-two.html: Another test for stopping
 	two storyboards applied to one property. It seems that SL does some kind
 	of baseValue chaining -- the more recent storyboard (for same prop)
