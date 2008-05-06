@@ -1,5 +1,13 @@
 2008-05-06  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp:
+	* animation.h: When attaching new animation storage and previous storage
+	exist, flag it as non-resetable (meaning that the storage will never
+	reset animated property to base/stop value). This fixes the
+	storyboard-stopping-two.html test.
+
+2008-05-06  Michael Dominic K.  <mdk@mdk.am>
+
 	* dependencyobject.cpp:
 	* dependencyobject.h: DependencyProperty::AttachAnimationStorage now
 	returns the previously attached AnimationStorage.

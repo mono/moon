@@ -127,6 +127,7 @@ class AnimationStorage {
 	void ResetPropertyValue ();
 	void DetachUpdateHandler ();
 	void DetachTarget ();
+	void FlagAsNonResetable ();
 	Value* GetResetValue ();
 
  private:
@@ -142,6 +143,7 @@ class AnimationStorage {
 	DependencyProperty *targetprop;
 	Value *baseValue;
 	Value *stopValue;
+	bool nonResetableFlag;
 };
 
 

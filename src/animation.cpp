@@ -32,6 +32,7 @@
 AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/ *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
 {
+	this->nonResetableFlag = false;
 	this->clock = clock;
 	this->timeline = timeline;
 	this->targetobj = targetobj;
@@ -47,6 +48,7 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 	if (prev_storage) {
 		Value *v = prev_storage->GetResetValue ();
 		stopValue = new Value (*v);
+		prev_storage->FlagAsNonResetable ();
 	} else {
 		stopValue = NULL;
 	}
@@ -64,6 +66,12 @@ AnimationStorage::TargetObjectDestroyed ()
 	targetprop->DetachAnimationStorage (targetobj, this);
 	targetobj = NULL;
 	DetachUpdateHandler ();
+}
+
+void
+AnimationStorage::FlagAsNonResetable ()
+{
+	nonResetableFlag = true;
 }
 
 void
@@ -90,6 +98,9 @@ AnimationStorage::UpdatePropertyValue ()
 void
 AnimationStorage::ResetPropertyValue ()
 {
+	if (nonResetableFlag)
+		return;
+
 	if (targetobj == NULL)
 		return;
 
