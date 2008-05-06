@@ -967,9 +967,13 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Surface *s = (Surface *) closure;
 	int64_t now;
+	bool dirty = false;
 
 	GDK_THREADS_ENTER ();
-	s->ProcessDirtyElements ();
+	if (s->IsAnythingDirty ()) {
+		s->ProcessDirtyElements ();
+		dirty = true;
+	}
 	GDK_THREADS_LEAVE ();
 
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
@@ -977,7 +981,7 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 	
 	if (s->widget)
 		gdk_window_process_updates (GTK_WIDGET (s->widget)->window, false);
-	else if (s->render)
+	else if (dirty && s->render)
 		s->render (s, s->render_data);
 	
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_report) {

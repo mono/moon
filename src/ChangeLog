@@ -1,5 +1,10 @@
 2008-05-05  Larry Ewing  <lewing@novell.com>
 
+	* runtime.cpp (Surface::render_cb): only call ForceRender if we
+	dirtied something.
+
+2008-05-05  Larry Ewing  <lewing@novell.com>
+
 	* runtime.cpp: update the (almost unused) frame count where it can
 	get hit in windowless.  Clear existing paths before rendering the
 	expose box.
