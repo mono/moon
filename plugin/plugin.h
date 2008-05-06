@@ -131,8 +131,6 @@ class PluginInstance
 
 	void Properties ();
 
-	NPP getNPP () { return instance; }
-
 	static Downloader *CreateDownloader (PluginInstance *instance)
 	{
 		if (instance) {

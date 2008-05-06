@@ -1,3 +1,8 @@
+2008-05-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.h (PluginInstance::getNPP): Removed, this just duplicated
+	the getInstance() method.
+
 2008-05-06  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* install.rdf.in: Use values from configure for min and max versions

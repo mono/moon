@@ -633,7 +633,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 void
 event_object_add_javascript_listener (EventObject *obj, PluginInstance *plugin, const char *event_name, const char *cb_name)
 {
-	EventListenerProxy *proxy = new EventListenerProxy (plugin->getNPP(), event_name, cb_name);
+	EventListenerProxy *proxy = new EventListenerProxy (plugin->getInstance (), event_name, cb_name);
 	proxy->AddHandler (obj);
 }
 
@@ -3891,7 +3891,7 @@ moonlight_scriptable_object_emit_event (PluginInstance *plugin,
 	OBJECT_TO_NPVARIANT (sobj, args[0]);
 	OBJECT_TO_NPVARIANT (event_args, args[1]);
 
-	if (NPN_InvokeDefault (plugin->getNPP(), cb_obj, args, 2, &result))
+	if (NPN_InvokeDefault (plugin->getInstance (), cb_obj, args, 2, &result))
 		NPN_ReleaseVariantValue (&result);
 }
 
