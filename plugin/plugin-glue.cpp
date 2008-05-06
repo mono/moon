@@ -221,6 +221,9 @@ NPP_Initialize (void)
 static gboolean
 shutdown_moonlight (gpointer data)
 {
+	if (plugins_alive)
+		return FALSE;
+		
 	downloader_destroy ();
 	plugin_destroy_classes ();
 	runtime_shutdown ();

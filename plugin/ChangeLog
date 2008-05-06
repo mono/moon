@@ -1,3 +1,10 @@
+2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-glue.cpp: shutdown_moonlight: we have to check again if there
+	  are plugins alive, this method is called async, and it's possible
+	  that another plugin has been initialized between adding the timeout
+	  and getting here.
+
 2008-05-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp: Add a missing initialization.
