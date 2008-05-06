@@ -247,7 +247,11 @@ AC_ARG_ENABLE(user-plugin,[  --enable-user-plugin    Build the plugin installer]
 			   AC_SUBST([avutil_libdir])
 			   AC_SUBST([avcodec_libdir])
 			   AC_SUBST([swscale_libdir])],
-			  [user_plugin=no])
+			  [user_plugin=no
+			   dnl We only want to link against these if we are NOT building
+			   dnl the user plugin installer
+			   MOON_LIBS="$FFMPEG_LIBS $SWSCALE_LIBS $MONO_LIBS"
+			  ])
 AM_CONDITIONAL([PLUGIN_INSTALL],[test x$user_plugin = xyes])
 
 dnl *************************************
@@ -300,7 +304,8 @@ AC_SUBST(AGVIEWER_CFLAGS)
 AC_SUBST(AGVIEWER_LIBS)
 
 MOON_CFLAGS="$CAIRO_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $MONO_CFLAGS"
-MOON_LIBS="$CAIRO_LIBS $GTK_LIBS $ALSA_LIBS $FFMPEG_LIBS $SWSCALE_LIBS $MONO_LIBS"
+dnl MOON_LIBS is partially defined above for the user-plugin build
+MOON_LIBS="$MOON_LIBS $CAIRO_LIBS $GTK_LIBS $ALSA_LIBS"
 
 # Remove glitz from the link flags (fixes Bug 338506)
 MOON_LIBS="$(echo $MOON_LIBS | sed -e s/-lglitz//g)"

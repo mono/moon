@@ -1,5 +1,9 @@
 2008-05-06  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* configure.ac: Don't link against libraries included in the XPI
+
+2008-05-06  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* configure.ac: Change min and max ff version in rdf depending on
 	usage of --with-ff3
 
