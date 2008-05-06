@@ -1,5 +1,13 @@
 2008-05-06  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/storyboard-stopping-two.html: Another test for stopping
+	two storyboards applied to one property. It seems that SL does some kind
+	of baseValue chaining -- the more recent storyboard (for same prop)
+	somehow getting the baseValue from the previous one. This seems to be
+	the reson for the HHH comic bug (#383879).
+
+2008-05-06  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/storyboard-stopping.html: Storyboard stopping behavior
 	test.
 

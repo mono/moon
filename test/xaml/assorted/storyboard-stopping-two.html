@@ -1,0 +1,66 @@
+<head>
+<title>Storyboard stop test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseDownOneStart (sender, eventArgs)
+{
+	sender.findName ("animation1").Begin ();
+}
+function OnMouseDownOneStop (sender, eventArgs)
+{
+	sender.findName ("animation1").Stop ();
+}
+function OnMouseDownTwoStart (sender, eventArgs)
+{
+	sender.findName ("animation2").Begin ();
+}
+function OnMouseDownTwoStop (sender, eventArgs)
+{
+	sender.findName ("animation2").Stop ();
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="800" height="600">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Rectangle Fill="LightGray" Canvas.Top="100" Canvas.Left="100" Width="425" Height="25" />
+	<Rectangle x:Name="target" Fill="Blue" Canvas.Top="100" Canvas.Left="100" Width="25" Height="25" />
+
+	<Rectangle x:Name="button1" Fill="Green" Canvas.Top="200" Canvas.Left="100" MouseLeftButtonDown="OnMouseDownOneStart" Width="50" Height="25" />
+	<Rectangle x:Name="button2" Fill="Red" Canvas.Top="200" Canvas.Left="200" MouseLeftButtonDown="OnMouseDownOneStop" Width="50" Height="25" />
+	<Rectangle x:Name="button3" Fill="Green" Canvas.Top="250" Canvas.Left="100" MouseLeftButtonDown="OnMouseDownTwoStart" Width="50" Height="25" />
+	<Rectangle x:Name="button4" Fill="Red" Canvas.Top="250" Canvas.Left="200" MouseLeftButtonDown="OnMouseDownTwoStop" Width="50" Height="25" />
+
+	<Canvas.Resources>
+			<Storyboard x:Name="animation1">
+					<DoubleAnimationUsingKeyFrames
+						Storyboard.TargetName="target"
+						Storyboard.TargetProperty="(Canvas.Left)" BeginTime="0:0:0">
+							<SplineDoubleKeyFrame Value="500.0" KeyTime="0:0:5" KeySpline="0.0,0.3 0.7,1.0" />
+					</DoubleAnimationUsingKeyFrames>
+			</Storyboard>
+			<Storyboard x:Name="animation2">
+					<DoubleAnimationUsingKeyFrames
+						Storyboard.TargetName="target"
+						Storyboard.TargetProperty="(Canvas.Left)" BeginTime="0:0:0">
+							<SplineDoubleKeyFrame Value="250.0" KeyTime="0:0:5" KeySpline="0.0,0.3 0.7,1.0" />
+					</DoubleAnimationUsingKeyFrames>
+			</Storyboard>
+	</Canvas.Resources>
+	</Canvas>
+</script>
+
+</body>
+</html>
+
+
