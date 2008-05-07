@@ -1,5 +1,7 @@
 2008-05-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp: Removed old layout code.
+
 	* clock.cpp (TimeManager::Stop): Added for convenience.
 	(SystemTimeSource::SystemTimeSource): Init frequency to -1 so we
 	can make sure it is init'd properly via SetTimerFrequency() before

@@ -134,7 +134,7 @@ class TextFont {
 	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	
-public:
+ public:
 	
 	~TextFont ();
 	
@@ -187,7 +187,7 @@ class TextFontDescription {
 	
 	FcPattern *CreatePattern ();
 	
-public:
+ public:
 	TextFontDescription ();
 	TextFontDescription (const char *str);
 	~TextFontDescription ();
@@ -223,59 +223,5 @@ public:
 	
 	char *ToString ();
 };
-
-#if 0
-class TextRun : public List::Node {
-public:
-	TextDecorations deco;
-	gunichar *text;
-	TextFont *font;
-	Brush **fg;
-	
-	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg);
-	TextRun (TextFontDescription *font);
-	~TextRun ();
-};
-
-
-class TextLayout {
-	// User-set data;
-	TextWrapping wrapping;
-	double max_height;
-	double max_width;
-	List *runs;
-	
-	// Internal representation
-	List *lines;
-	
-	// cached info
-	double bbox_height;
-	double bbox_width;
-	double height;
-	double width;
-	
-public:
-	
-	TextLayout ();
-	~TextLayout ();
-	
-	double GetMaxWidth ();
-	void SetMaxWidth (double width);
-	
-	double GetMaxHeight ();
-	void SetMaxHeight (double height);
-	
-	TextWrapping GetWrapping ();
-	void SetWrapping (TextWrapping wrapping);
-	
-	List *GetTextRuns ();
-	void SetTextRuns (List *runs);
-	
-	void Layout ();
-	void GetActualExtents (double *width, double *height);
-	void GetLayoutExtents (double *width, double *height);
-	void Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y);
-};
-#endif
 
 #endif /* __FONT_H__ */
