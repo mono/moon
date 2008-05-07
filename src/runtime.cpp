@@ -705,7 +705,8 @@ Surface::Paint (cairo_t *ctx, Region *region)
 void
 Surface::Resize (int width, int height)
 {
-	gtk_widget_set_size_request (widget, width, height);
+	if (widget)
+		gtk_widget_set_size_request (widget, width, height);
 	
 	if (!full_screen)
 		Emit (ResizeEvent);

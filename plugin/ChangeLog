@@ -1,3 +1,12 @@
+2008-05-07  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (PluginInstance::SetWindow): if SetWindow is called
+	with the same window this is due to a resize, propogate that
+	resize to the surface code.
+
+	Fixes the plugin side of windowless resizing.  See
+	http://my.liveatedu.com/ for test case.
+
 2008-05-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moonlight.h: Could not find (nor google) the real meaning for SCR,

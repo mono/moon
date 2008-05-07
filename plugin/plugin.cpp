@@ -538,8 +538,10 @@ PluginInstance::SetValue (NPNVariable variable, void *value)
 NPError
 PluginInstance::SetWindow (NPWindow *window)
 {
- 	if (window == this->window)
+ 	if (window == this->window) {
+		surface->Resize (window->width, window->height);
  		return NPERR_NO_ERROR;
+	}
 
 	this->window = window;
 

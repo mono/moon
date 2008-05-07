@@ -16,6 +16,13 @@
 	* list.cpp (List::Remove): Don't need to search for the node, we
 	already have a pointer to it.
 
+2008-05-07  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::Resize): handle a resize in windowless mode
+	gracefully.
+
+	Fixes part of windowless resizing.
+	
 2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: Handle the rtsp protocol too.
