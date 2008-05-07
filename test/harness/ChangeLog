@@ -1,3 +1,9 @@
+2008-05-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* agviewer/agviewer.cpp (mark_test_as_complete_and_start_next_test):
+	Init available to true, otherwise we may not run the next test
+	thinking it is unavailable when that is not in fact the case.
+
 2008-05-05  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/TestRun.cs:
