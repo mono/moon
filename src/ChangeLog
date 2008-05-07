@@ -1,3 +1,8 @@
+2008-05-07  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::Zombify): call Attach (NULL) to notify the
+	objects that the surface is undead.
+
 2008-05-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* animation.cpp (animation_shutdown): Renamed from
