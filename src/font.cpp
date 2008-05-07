@@ -1350,18 +1350,6 @@ TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 	glyph->metrics.height = DOUBLE_FROM_26_6 (metrics->height) * scale;
 	glyph->metrics.width = DOUBLE_FROM_26_6 (metrics->width) * scale;
 	
-#if 0
-	// FIXME: Seems like MS Gothic, GulimChe, DotumChe, BatangChe and GungsuhChe
-	// are all fixed-width fonts, except that MS renders the ascii subset with
-	// 1/2 the horiAdvance of the East Asian glyphs. This is a really gross hack
-	// to mimic their behavior until I find a better way.
-	// Note: Pango seems to handle these fonts ok, but I can't figure out how...
-	if (FT_IS_FIXED_WIDTH (face) && unichar > 0 && face->num_glyphs > 4096) {
-		if ((face->glyph->metrics.width * 1.86) < (double) face->glyph->metrics.horiAdvance)
-			glyph->metrics.horiAdvance /= 2.0;
-	}
-#endif
-	
 	return glyph;
 }
 
