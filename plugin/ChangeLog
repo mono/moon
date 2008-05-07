@@ -1,3 +1,10 @@
+2008-05-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moonlight.h: Could not find (nor google) the real meaning for SCR,
+	I suspect "script", nor does it affect any apps I've seen but having 
+	xaml in it's place is probably not a good idea.
+	[Fix bug #384373]
+
 2008-05-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.h (PluginInstance::getNPP): Removed, this just duplicated
