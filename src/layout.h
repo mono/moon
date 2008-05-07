@@ -20,7 +20,7 @@
 
 
 class TextRun : public List::Node {
-public:
+ public:
 	TextDecorations deco;
 	gunichar *text;
 	TextFont *font;
@@ -52,7 +52,7 @@ class TextLayout {
 	void LayoutNoWrap ();
 	void LayoutWrap ();
 	
-public:
+ public:
 	
 	TextLayout ();
 	~TextLayout ();

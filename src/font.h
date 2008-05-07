@@ -98,9 +98,6 @@ struct GlyphMetrics {
 	double horiBearingX;
 	double horiBearingY;
 	double horiAdvance;
-	//double vertBearingX;
-	//double vertBearingY;
-	//double vertAdvance;
 	double height;
 	double width;
 };

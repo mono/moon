@@ -39,12 +39,18 @@
 #endif
 
 
+#define DOUBLE_TO_26_6(d) ((FT_F26Dot6)((d) * 64.0))
+#define DOUBLE_FROM_26_6(t) ((double)(t) / 64.0)
+#define DOUBLE_TO_16_16(d) ((FT_Fixed)((d) * 65536.0))
+#define DOUBLE_FROM_16_16(t) ((double)(t) / 65536.0)
+
+
 static const FT_Matrix invert_y = {
         65535, 0,
         0, -65535,
 };
 
-#define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL)
+#define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_TARGET_NORMAL)
 
 
 struct GlyphBitmap {
@@ -1263,7 +1269,8 @@ glyphsort (const void *v1, const void *v2)
 GlyphInfo *
 TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 {
-	double scale = 1.0 / (64.0 * this->scale);
+	double scale = 1.0 / this->scale;
+	FT_Glyph_Metrics *metrics;
 	GlyphInfo *glyph;
 	int i;
 	
@@ -1332,14 +1339,16 @@ TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 		prepare_bitmap (glyph, &face->glyph->bitmap);
 	}
 	
-	glyph->metrics.horiBearingX = face->glyph->metrics.horiBearingX * scale;
-	glyph->metrics.horiBearingY = face->glyph->metrics.horiBearingY * scale;
-	glyph->metrics.horiAdvance = face->glyph->metrics.horiAdvance * scale;
-	//glyph->metrics.vertBearingX = face->glyph->metrics.vertBearingX * scale;
-	//glyph->metrics.vertBearingY = face->glyph->metrics.vertBearingY * scale;
-	//glyph->metrics.vertAdvance = face->glyph->metrics.vertAdvance * scale;
-	glyph->metrics.height = face->glyph->metrics.height * scale;
-	glyph->metrics.width = face->glyph->metrics.width * scale;
+	metrics = &face->glyph->metrics;
+	
+	glyph->metrics.horiBearingX = DOUBLE_FROM_26_6 (metrics->horiBearingX) * scale;
+	glyph->metrics.horiBearingY = DOUBLE_FROM_26_6 (metrics->horiBearingY) * scale;
+	if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
+		glyph->metrics.horiAdvance = DOUBLE_FROM_16_16 (face->glyph->linearHoriAdvance) * scale;
+	else
+		glyph->metrics.horiAdvance = DOUBLE_FROM_26_6 (metrics->horiAdvance) * scale;
+	glyph->metrics.height = DOUBLE_FROM_26_6 (metrics->height) * scale;
+	glyph->metrics.width = DOUBLE_FROM_26_6 (metrics->width) * scale;
 	
 #if 0
 	// FIXME: Seems like MS Gothic, GulimChe, DotumChe, BatangChe and GungsuhChe

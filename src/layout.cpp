@@ -68,7 +68,7 @@ TextRun::~TextRun ()
 
 
 class TextSegment : public List::Node {
-public:
+ public:
 	moon_path *path;
 	double advance;
 	double width;
@@ -100,7 +100,7 @@ TextSegment::~TextSegment ()
 
 
 class TextLine : public List::Node {
-public:
+ public:
 	List *segments;
 	double descend;
 	double height;
