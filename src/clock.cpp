@@ -145,6 +145,7 @@ TimeSource::GetNow ()
 SystemTimeSource::SystemTimeSource ()
 {
 	timeout_id = 0;
+	frequency = -1;
 }
 
 SystemTimeSource::~SystemTimeSource ()
@@ -155,9 +156,7 @@ SystemTimeSource::~SystemTimeSource ()
 void
 SystemTimeSource::SetTimerFrequency (int timeout)
 {
-	bool running = false;
-	if (timeout_id != 0)
-		running = true;
+	bool running = timeout_id != 0;
 	
 	if (running)
 		Stop ();
@@ -173,6 +172,9 @@ SystemTimeSource::Start ()
 {
 	if (timeout_id != 0)
 		return;
+	
+	if (frequency == -1)
+		g_warning ("SystemTimeSource::frequency uninitialized in ::Start()");
 	
 	timeout_id = g_timeout_add_full (G_PRIORITY_HIGH, frequency, SystemTimeSource::tick_timeout, this, NULL);
 }
@@ -295,6 +297,12 @@ TimeManager::Start()
 	source->SetTimerFrequency (current_timeout);
 	source->Start ();
 	source_tick_pending = true;
+}
+
+void
+TimeManager::Stop ()
+{
+	source->Stop ();
 }
 
 void

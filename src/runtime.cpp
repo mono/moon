@@ -488,14 +488,14 @@ Surface::Attach (UIElement *element)
 		toplevel->SetSurface (NULL);
 		time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
-		time_manager->GetSource()->Stop ();
+		time_manager->Stop ();
 		time_manager->unref ();
 		toplevel->unref ();
 		time_manager = new TimeManager ();
 		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		time_manager->NeedRedraw ();
-		time_manager->GetSource()->Start ();
+		time_manager->Start ();
 	} else 
 		first = true;
 
@@ -531,6 +531,9 @@ Surface::Attach (UIElement *element)
 		ConnectEvents (true);
 
 	canvas->OnLoaded ();
+	
+	if (zombie)
+		return;
 
 	Emit (Surface::LoadEvent);
 	

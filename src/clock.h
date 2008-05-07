@@ -184,7 +184,7 @@ class TimeSource : public EventObject {
 	virtual void Start ();
 	virtual void Stop ();
 	virtual void SetTimerFrequency (int timeout);
-
+	
 	virtual TimeSpan GetNow ();
 
 	const static int TickEvent;
@@ -202,9 +202,9 @@ class SystemTimeSource : public TimeSource {
 	virtual void Start ();
 	virtual void Stop ();
 	virtual void SetTimerFrequency (int timeout);
-
+	
 	virtual TimeSpan GetNow ();
-
+	
 	virtual Type::Kind GetObjectType () { return Type::SYSTEMTIMESOURCE; };
 
  private:
@@ -404,6 +404,7 @@ class TimeManager : public EventObject {
 	TimeManager ();
 
 	void Start ();
+	void Stop ();
 	
 	void Shutdown ();
 

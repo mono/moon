@@ -1,3 +1,16 @@
+2008-05-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* clock.cpp (TimeManager::Stop): Added for convenience.
+	(SystemTimeSource::SystemTimeSource): Init frequency to -1 so we
+	can make sure it is init'd properly via SetTimerFrequency() before
+	Start()ing.
+
+	* runtime.cpp (Surface::Attach): Call our time_manager's Start(),
+	not it's source's Start(). We need things like frequency to be
+	setup and other values to be initialized properly.
+	(Surface::Attach): After calling canvas->OnLoaded(), check that we
+	are not zombied - if we are, return.
+
 2008-05-07  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Surface::Zombify): call Attach (NULL) to notify the
