@@ -1,3 +1,7 @@
+2008-05-07  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Don't use mono_libdir from configure
+
 2008-05-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: For 2.1 delay-sign the assembly using silverlight.pub.

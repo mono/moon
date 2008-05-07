@@ -60,6 +60,10 @@ libmoonplugin_la_SOURCES = \
 	browser-mmsh.h		\
 	browser-mmsh.cpp
 
+mono_libdir = `pkg-config --variable=libdir mono`
+mono_dlldir = `pkg-config --variable=prefix mono`/lib
+mono_sysconfdir = `pkg-config --variable=sysconfdir mono`
+
 if PLUGIN_INSTALL
 novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.rdf \
 				.libs/libmoonloader.so \

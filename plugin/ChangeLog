@@ -1,3 +1,7 @@
+2008-05-07  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Move mono_*dir stuff into Makefile
+
 2008-05-07  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp (PluginInstance::SetWindow): if SetWindow is called

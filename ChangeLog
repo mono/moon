@@ -1,5 +1,9 @@
 2008-05-07  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* configure.ac: Don't set mono_*dir variables at configure time
+
+2008-05-07  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* configure.ac: Don't link against MOZILLA_LIBS because they will
 	already be loaded in the browser
 
