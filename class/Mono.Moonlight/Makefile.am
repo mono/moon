@@ -28,12 +28,10 @@ mono_moonlight_sources =				\
 EXTRA_DIST = $(mono_moonlight_sources)
 
 $(assemblysl): $(mono_moonlight_sources) Makefile
-	$(SMCS) -target:library -out:$@ $(mono_moonlight_sources) -d:NET_2_1 -keyfile:$(srcdir)/../winfx3.pub
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(SMCS) -target:library -out:$@ $(mono_moonlight_sources) -d:NET_2_1 -keyfile:$(srcdir)/../mono.snk
 
 $(assemblydesktop): $(mono_moonlight_sources) Makefile
-	$(GMCS) -target:library -out:$@ $(mono_moonlight_sources) -keyfile:$(srcdir)/../mono.pub
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(GMCS) -target:library -out:$@ $(mono_moonlight_sources) -keyfile:$(srcdir)/../mono.snk
 
 clean-local:
 	-rm -rf $(assemblies)

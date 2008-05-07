@@ -1,3 +1,8 @@
+2008-05-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* AssemblyInfo.cs: Remove AssemblyDelaySign(true) since it's
+	not always needed and can be controlled from the Makefile.
+
 2008-04-15  Jb Evain  <jbevain@novell.com>
 
 	* AssemblyInfo.cs: on non 2.1 profile, use the profile

@@ -205,12 +205,11 @@ EXTRA_DIST = $(system_windows_sources) 	\
 	System.Windows.Shapes/ChangeLog
 
 $(assemblysl): $(system_windows_sources) Makefile $(top_builddir)/class/lib/2.1/Mono.Moonlight.dll
-	$(SMCS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../msfinal.pub
+	$(SMCS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub -delaysign+
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	$(GMCS) -target:library -out:$@ $(system_windows_sources) -keyfile:$(srcdir)/../mono.pub
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(GMCS) -target:library -out:$@ $(system_windows_sources) -keyfile:$(srcdir)/../mono.snk
 
 clean-local:
 	-rm -rf $(assemblies) check-static check-dynamic

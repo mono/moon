@@ -58,5 +58,3 @@ using System.Runtime.InteropServices;
 [assembly: NeutralResourcesLanguage ("en-US")]
 
 [assembly: ComVisible (false)]
-
-[assembly: AssemblyDelaySign (true)]

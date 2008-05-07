@@ -68,12 +68,11 @@ CLEANFILES =			\
 	TestResult-net_3_0.xml
 
 $(assemblysl): $(system_windows_browser_sources) Makefile
-	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:System.Net -keyfile:$(srcdir)/../msfinal.pub
+	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile
-	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -keyfile:$(srcdir)/../mono.pub
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -keyfile:$(srcdir)/../mono.snk
 
 clean-local:
 	-rm -rf $(assemblies) 

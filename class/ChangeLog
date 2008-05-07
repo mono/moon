@@ -1,3 +1,7 @@
+2008-05-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add silverlight.pub to dist.
+
 2008-05-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* silverlight.pub: Public key for Silverlight 2.0 assemblies.

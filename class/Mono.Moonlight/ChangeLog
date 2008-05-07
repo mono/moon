@@ -1,3 +1,7 @@
+2008-05-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Sign the assembly, without delay, using Mono's key.
+
 2008-05-04  Miguel de Icaza  <miguel@novell.com>
 
 	* Mono/XapHack.cs: Another hack for creating MarshalByRefObjects.
