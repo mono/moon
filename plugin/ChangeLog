@@ -1,3 +1,10 @@
+2008-05-07  Geoff Norton  <gnorton@novell.com>
+	
+	* plugin.cpp, plugin.h: Add NPN_strdup
+	* plugin-class.cpp: Use NPN_strdup
+	* plugin-entry.cpp: Dont abort if XEmbed/Gtkv2 aren't found as
+	some browsers wont lets us NPN_GetValue on a NULL instance.
+
 2008-05-07  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Move mono_*dir stuff into Makefile
