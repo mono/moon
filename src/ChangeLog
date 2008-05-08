@@ -1,3 +1,11 @@
+2008-05-08  Miguel de Icaza  <miguel@novell.com>
+
+	* xaml.cpp (xaml_hydrate_from_str): New method to hydrate an
+	existing DependencyObject with the contents of a XAML string.  
+
+        Needed for Silverlight 2.0 support, for the new model:
+        create object then do LoadComponent on it.
+
 2008-05-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: RepeatBehavior does not use the (documented) 0:0:0

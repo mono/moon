@@ -38,6 +38,7 @@
 #include "stylus.h"
 #include "runtime.h"
 #include "utils.h"
+#include "control.h"
 #include "deployment.h"
 
 #ifdef DEBUG_XAML
@@ -82,10 +83,12 @@ typedef void  (*set_attributes_func) (XamlParserInfo *p, XamlElementInstance *it
 void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
-XamlElementInstance *create_custom_element (XamlParserInfo *p, XamlElementInfo *i);
+static XamlElementInstance *create_custom_element  (XamlParserInfo *p, XamlElementInfo *i);
+static XamlElementInstance *wrap_dependency_object (XamlParserInfo *p, XamlElementInfo *i, DependencyObject *depobject);
+
 void  custom_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
-void  custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
-void  custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
+void  custom_add_child      (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
+void  custom_set_property   (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 
 XamlElementInstance *create_x_code_directive_element (XamlParserInfo *p, XamlElementInfo *i);
 void process_x_code_directive (XamlParserInfo *p, const char **attr);
@@ -195,6 +198,11 @@ class XamlParserInfo {
 	XamlLoader* loader;
 	GList* created_elements;
 
+	//
+	// If set, this is used to hydrate an existing object, not to create a new toplevel one
+	//
+	DependencyObject *expecting;
+	
 	void AddCreatedElement (DependencyObject* element)
 	{
 		created_elements = g_list_prepend (created_elements, element);
@@ -205,7 +213,7 @@ class XamlParserInfo {
 		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL),
 		cdata_content (false), cdata (NULL), implicit_default_namespace (false), error_args (NULL),
-		loader (NULL), created_elements (NULL)
+		loader (NULL), created_elements (NULL), expecting(NULL)
 	{
 		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	}
@@ -831,7 +839,19 @@ start_element (void *data, const char *el, const char **attr)
 		return;
 
 	if (elem) {
-		inst = elem->create_element (p, elem);
+		if (p->expecting){
+			Type::Kind expecting_type =  p->expecting->GetObjectType ();
+			
+			if (elem->dependency_type != expecting_type){
+				parser_error (p, el, NULL, -1,
+					      g_strdup_printf ("Invalid top-level element found %s, expecting %s", el,
+							       Type::Find (expecting_type)->GetName ()));
+				return;
+			}
+			inst = wrap_dependency_object (p, elem, p->expecting);
+			p->expecting = NULL;
+		} else
+			inst = elem->create_element (p, elem);
 
 		if (!inst)
 			return;
@@ -1343,6 +1363,16 @@ DependencyObject *
 xaml_create_from_str (XamlLoader *loader, const char *xaml, bool create_namescope,
 		      Type::Kind *element_type)
 {
+	return xaml_hydrate_from_str (loader, xaml, NULL, create_namescope, element_type);
+}
+
+/**
+ * Hydrates an existing DependencyObject (@object) with the contents from the @xaml
+ * data
+ */
+DependencyObject *
+xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type)
+{
 	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
 	DependencyObject *res = NULL;
@@ -1372,6 +1402,8 @@ xaml_create_from_str (XamlLoader *loader, const char *xaml, bool create_namescop
 	parser_info->namescope->SetTemporary (!create_namescope);
 
 	parser_info->loader = loader;
+
+	parser_info->expecting = object;
 	
 	// from_str gets the default namespaces implictly added
 	add_default_namespaces (parser_info);
@@ -1406,7 +1438,8 @@ xaml_create_from_str (XamlLoader *loader, const char *xaml, bool create_namescop
 
 		if (parser_info->error_args) {
 			res = NULL;
-			*element_type = Type::INVALID;
+			if (element_type)
+				*element_type = Type::INVALID;
 			goto cleanup_and_return;
 		}
 		
@@ -2555,6 +2588,27 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 	return inst;
 }
 
+static XamlElementInstance *
+wrap_dependency_object (XamlParserInfo *p, XamlElementInfo *i, DependencyObject *depobject)
+{
+	XamlElementInstance *inst = new XamlElementInstance (i);
+
+	inst->element_name = i->name;
+	inst->element_type = XamlElementInstance::ELEMENT;
+
+	DependencyProperty *dep = NULL;
+	XamlElementInstance *walk = p->current_element;
+
+	inst->item = depobject;
+	
+	if (p->loader)
+		inst->item->SetSurface (p->loader->GetSurface ());
+
+		p->AddCreatedElement (inst->item);
+
+	return inst;
+}
+
 ///
 /// Add Child funcs
 ///
@@ -3210,6 +3264,12 @@ xaml_init (void)
 	rdoe (dem, "MouseEventArgs", NULL, Type::MOUSEEVENTARGS, (create_item_func) mouse_event_args_new);
 
 	//
+	// User controls
+	//
+
+	rdoe (dem, "UserControl", NULL, Type::USERCONTROL, (create_item_func) user_control_new);
+	
+	//
 	// Code
 	//
 	// FIXME: Make this v1.1 only
@@ -3225,7 +3285,8 @@ xaml_init (void)
 
 	// Is this correct, since there is no SupportedCulture item
 	rdoe (deploy, "SupportedCultureCollection", col, Type::SUPPORTEDCULTURE_COLLECTION, (create_item_func) supported_culture_collection_new);
-	
+
+
 #undef rdoe
 	
 	default_namespace = new DefaultNamespace (dem);

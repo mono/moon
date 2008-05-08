@@ -32,6 +32,8 @@ G_BEGIN_DECLS
 
 DependencyObject  *xaml_create_from_file (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
 DependencyObject  *xaml_create_from_str  (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
+DependencyObject  *xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
+
 bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
 
 bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v);
