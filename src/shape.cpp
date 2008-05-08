@@ -247,14 +247,16 @@ Rect
 Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 {
 	Value *vh, *vw;
+	needs_clip = true;
 
 	/*
 	 * NOTE: this code is extremely fragile don't make a change here without
 	 * checking the results of the test harness on with MOON_DRT_CATEGORIES=stretch
 	 */
 
-	if (Shape::MixedHeightWidth (&vh, &vw))
+	if (Shape::MixedHeightWidth (&vh, &vw)) {
 		return shape_bounds;
+	}
 
 	double w = vw ? vw->AsDouble () : 0.0;
 	double h = vh ? vh->AsDouble () : 0.0;
@@ -324,7 +326,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 			sw = sh = (sw > sh) ? sw : sh;
 			break;
 		default:
-			/* not reached */
+		        // not reached
 			break;
 		}
 
@@ -361,8 +363,16 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 	
 	shape_bounds = shape_bounds.Transform (&stretch_transform);
 	
-	if (vh && vw)
-		shape_bounds = shape_bounds.Intersection (Rect (0, 0, vw->AsDouble (), vh->AsDouble ()));
+	if (vh && vw) {
+		if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
+			needs_clip == !IsDegenerate () && (stretch == StretchUniformToFill) && (vh != vw);
+		} else {
+			Rect reduced_bounds = shape_bounds.Intersection (Rect (0, 0, vw->AsDouble (), vh->AsDouble ()));
+			needs_clip = reduced_bounds != shape_bounds;
+			needs_clip = needs_clip && stretch != StretchFill;
+			needs_clip = needs_clip && stretch != StretchUniform;
+		}
+	}
 	
 	return shape_bounds;
 }
@@ -389,7 +399,7 @@ Shape::Clip (cairo_t *cr)
 	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
 	Stretch stretch = GetStretch ();
 	
-	if (ClipOnHeightAndWidth () || (!IsDegenerate () && (stretch == StretchUniformToFill))) {
+	if (needs_clip) {
 		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 		if (!vh)
 			return;

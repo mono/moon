@@ -44,6 +44,7 @@ class Shape : public FrameworkElement {
 	Point origin;
 	cairo_surface_t *cached_surface;
 	int64_t cached_size;
+	bool needs_clip;
 
 	void DoDraw (cairo_t *cr, bool do_op);
 
@@ -117,7 +118,6 @@ class Shape : public FrameworkElement {
 	//
 	virtual void Draw (cairo_t *cr);
 	virtual void BuildPath () {};
-	virtual bool ClipOnHeightAndWidth () { return false; }
 	void Stroke (cairo_t *cr, bool do_op);
 	bool NeedsClipping ();
 	bool MixedHeightWidth (Value **width, Value **height);
@@ -286,7 +286,6 @@ class Line : public Shape {
 	virtual Type::Kind GetObjectType () { return Type::LINE; };
 	
 	virtual void BuildPath ();
-	virtual bool ClipOnHeightAndWidth () { return true; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
@@ -345,8 +344,6 @@ class Polygon : public Shape {
 	
 	virtual bool CanFill () { return true; }
 	
-	virtual bool ClipOnHeightAndWidth () { return true; }
-	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 	
@@ -391,7 +388,6 @@ class Polyline : public Shape {
 	virtual void BuildPath ();
 	
 	virtual bool CanFill () { return true; }
-	virtual bool ClipOnHeightAndWidth () { return true; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
@@ -434,8 +430,6 @@ class Path : public Shape {
 	// virtual Point GetTransformOrigin ();
 	
 	virtual void Draw (cairo_t *cr);
-	
-	virtual bool ClipOnHeightAndWidth () { return true; }
 	
 	virtual bool CanFill () { return true; }
 	virtual FillRule GetFillRule ();

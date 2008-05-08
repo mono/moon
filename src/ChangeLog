@@ -1,5 +1,17 @@
 2008-05-08  Larry Ewing  <lewing@novell.com>
 
+	* shape.h: remove ClipOnWidthAndHeight method, replace with
+	needs_clip variable.
+	
+	* shape.cpp (Shape::ComputeStretchBounds): set needs_clip based on
+	the actual size of the object before and after the stretch and the
+	stretch flags.  
+
+	Speeds up Sprawl and a lot of other applications that use stretch
+	extensively.
+
+2008-05-08  Larry Ewing  <lewing@novell.com>
+
 	* runtime.cpp (Surface::expose_to_drawable): fill the background
 	instead of painting and don't create the clip until the rendering
 
