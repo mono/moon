@@ -1,3 +1,8 @@
+2008-05-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: RepeatBehavior does not use the (documented) 0:0:0
+	notation.
+
 2008-05-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp: Removed old layout code.
