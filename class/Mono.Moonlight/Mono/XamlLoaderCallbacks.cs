@@ -234,6 +234,18 @@ namespace Mono.Xaml
 		}
 
 		//
+		// Hydrates the object dob from the given xaml
+		//
+		public void Hydrate (IntPtr dependency_object, string xaml)
+		{
+			Kind k;
+			
+			CreateNativeLoader (null, xaml);
+			NativeMethods.xaml_hydrate_from_str (NativeLoader, xaml, dependency_object, true, out k);
+			FreeNativeLoader ();
+		}
+		
+		//
 		// Creates a native object from the given filename
 		// 
 		public IntPtr CreateFromFile (string path, bool createNamescope, out Kind kind)

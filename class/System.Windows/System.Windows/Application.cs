@@ -29,15 +29,20 @@ using Mono;
 using Mono.Xaml;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Resources;
 using System.Windows.Interop;
+using System.Collections;
+using System.Collections.Generic;
+using System.Resources;
 
 namespace System.Windows {
 
 	public class Application {
 		static Application current;
-
+		static Assembly [] assemblies;
+		
 		//
 		// Controls access to the s_ static fields, which are used
 		// by the Application constructor to initialize these fields
@@ -148,12 +153,15 @@ namespace System.Windows {
 			// Load the assemblies from the XAP file, and find the startup assembly
 			//
 			Assembly startup = null;
-			
+			assemblies = new Assembly [deployment.Parts.Count];
+			int i = 0;
+				
 			foreach (var part in deployment.Parts){
 				try {
 					Assembly a = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
 					if (part == entry_point_assembly)
 						startup = a;
+					assemblies [i++] = a;
 				} catch {
 					Report.Error ("Error while loading the {0} assembly", part.Source);
 					return null;
@@ -216,22 +224,74 @@ namespace System.Windows {
 		public static void LoadComponent (object component, Uri xamlUri)
 		{
 			Console.WriteLine ("LoadComponent: {0} of type {1} for {2}", component, component.GetType (), xamlUri);
-			Report.Warning ("LoadComponent does nothing currently");
+
+			// For now, do nothing, we cant cope with Applications 
+			if (component is Application)
+				return;
+
+			DependencyObject cdo = component as DependencyObject;
 			
-			//
-			// This stinking piece of junk API, 
-			//
-			
+			if (cdo == null)
+				throw new ArgumentException ("Not a DependencyObject or Application", "component");
+
+			StreamResourceInfo sr = GetResourceStream (xamlUri);
+
+			// Does not seem to throw.
+			if (sr == null)
+				return;
+
+			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
+			ManagedXamlLoader loader = new ManagedXamlLoader ();
+			loader.Hydrate (cdo.native, xaml);
 		}
 
+		//
+		// From casual documentation inspection:
+		//
+		//   "pathname"                     resource file embedded in application package
+		//   "AssemblyName;component/pathname"   embedded in AssemblyName, the file pathname
+		//
+		// 
 		public static StreamResourceInfo GetResourceStream (Uri resourceUri)
 		{
-			//
-			// Needs to support:
-			//   "pathname"                     resource file embedded in application package
-			//   "AssemblyName;component/pathname"   embedded in AssemblyName, the file pathname
+			string loc = resourceUri.ToString ();
+			int p = loc.IndexOf (';');
 
-			throw new NotImplementedException ("GetResourceStream-1");
+			if (p == -1)
+				return StreamResourceInfo.FromFile (Path.Combine (Current.xap_dir, loc));
+
+			string aname = loc.Substring (0, p);
+
+			// For now, strip this, I have no idea what this means.
+			if (aname [0] == '/')
+				aname = aname.Substring (1);
+
+			Assembly assembly = assemblies.FirstOrDefault (a => a.GetName ().Name == aname);
+
+			if (assembly == null){
+				Report.Info ("Could not find the named assembly in the resourceUri");
+				return null;
+			}
+
+			string rest = loc.Substring (p+1);
+			if (!rest.StartsWith ("component/")){
+				Report.Info ("Second component does not inclue component/");
+				return null;
+			}
+			rest = rest.Substring (10);
+
+			Console.WriteLine ("Before RM, rest={0}", rest);
+			Console.WriteLine ("Requesting assembly: " + aname + ".g");
+			ResourceManager rm = new ResourceManager (aname + ".g", assembly);
+			rm.IgnoreCase = true;
+			Stream s = rm.GetStream (rest);
+			
+			if (s == null){
+				Report.Info ("Could not find resource: {0}", rest);
+				return null;
+			}
+			
+			return new StreamResourceInfo (s, "");
 		}
 
 		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPakResourceStreamInfo, Uri resourceUri)

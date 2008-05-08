@@ -196,13 +196,14 @@ namespace Mono.Xaml
 			}
 
 			if (caller == null){
-				Console.WriteLine ("AssemblyResolver: failed to find caller assembly to mscorlib");
+				Console.WriteLine ("ManagedXamlLoader.AssemblyResolver: failed to find caller assembly to mscorlib");
 				return null;
 			}
 
 			// We always do sync loads from here
 			string path = null;
 			foreach (KeyValuePair<Assembly,string> pair in assembly_to_source){
+				Console.WriteLine ("ManagedXamlLoader::AssemblyResolver: {0} {1}", pair.Key, pair.Value);
 				if (pair.Key != caller)
 					continue;
 				
@@ -219,7 +220,7 @@ namespace Mono.Xaml
 				}
 			}
 			if (path == null){
-				Console.WriteLine ("AssemblyResolver: Never found the calling assembly and its path");
+				Console.WriteLine ("ManagedXamlLoader::AssemblyResolver: Never found the calling assembly and its path");
 				return null;
 			}
 
@@ -398,15 +399,15 @@ namespace Mono.Xaml
 
 		private bool LoadCode (string source, string type)
 		{
-			Console.WriteLine ("ManagedXamlLoader.load_code: '" + source + "' '" + type + "'");
+			Console.WriteLine ("ManagedXamlLoader::LoadCode: '" + source + "' '" + type + "'");
 
 			if (source == null) {
-				Console.WriteLine ("ManagedXamlLoader.load_code: ERROR: Source can't be null.");
+				Console.WriteLine ("ManagedXamlLoader::LoadCode: ERROR: Source can't be null.");
 				return false;
 			}
 
 			if (type == null) {
-				Console.WriteLine ("ManagedXamlLoader.load_code: ERROR: Type can't be null.");
+				Console.WriteLine ("ManagedXamlLoader::LoadCode: ERROR: Type can't be null.");
 				return false;
 			}
 
@@ -421,7 +422,7 @@ namespace Mono.Xaml
 				dlr_host.LoadSource (s, type, mappings);
 				SetGlobalsAndEvents ();
 #else
-				Console.WriteLine ("ManagedXamlLoader.load_code: Ignoring request to load code.");
+				Console.WriteLine ("ManagedXamlLoader::LoadCode: Ignoring request to load code.");
 #endif
 				return true;
 			}
@@ -451,7 +452,7 @@ namespace Mono.Xaml
 				}
 				SetGlobalsAndEvents ();
 #else
-				Console.WriteLine ("ManagedXamlLoader.load_code: Ignoring request to load code.");
+				Console.WriteLine ("ManagedXamlLoader::LoadCode: Ignoring request to load code.");
 #endif
 				return true;
 			} else {
@@ -755,7 +756,7 @@ namespace Mono.Xaml
 
 				return a;
 			} catch (Exception ex){
-				Console.WriteLine ("DependencyLoader.LoadDependency, error loading file {0}: {1}", file, ex.Message);
+				Console.WriteLine ("DependencyLoader::LoadDependency, error loading file {0}: {1}", file, ex.Message);
 				throw;
 			}
 		}

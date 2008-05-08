@@ -39,5 +39,10 @@ namespace Mono {
 		{
 			Console.WriteLine ("warning: " + String.Format (fmt, args));
 		}
+
+		public static void Info (string fmt, params object [] args)
+		{
+			Console.WriteLine ("info: " + String.Format (fmt, args));
+		}
 	}
 }

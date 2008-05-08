@@ -1,3 +1,14 @@
+2008-05-08  Miguel de Icaza  <miguel@novell.com>
+
+	* Application.cs: Add support to load data from the Resources
+	embedded into the assembly.    
+
+	Instead of sticking XAML files as toplevel resources, they stuck
+	the XAML files inside a resource that must be accessed with a
+	ResourceReader for no discernible reason.
+
+	Use some LINQ, just because Marek said so. 
+
 2008-04-25  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* DependencyObject.cs: add InkPresenter in the switch.

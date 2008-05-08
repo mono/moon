@@ -32,7 +32,12 @@ namespace System.Windows.Resources {
 	public class StreamResourceInfo {
 		Stream stream;
 		string content_type;
-		
+
+		internal static StreamResourceInfo FromFile (string path)
+		{
+			return new StreamResourceInfo (File.OpenRead (path), "");
+		}
+			
 		public StreamResourceInfo (Stream stream, string contentType)
 		{
 			this.stream = stream;
