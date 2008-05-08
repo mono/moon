@@ -22,6 +22,7 @@ class PluginInstance;
 class Xap;
 
 typedef void plugin_unload_callback (PluginInstance *plugin);
+char *NPN_strdup (char *val);
 
 class PluginInstance
 {

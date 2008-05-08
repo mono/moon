@@ -344,7 +344,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 				    (void *) &supportsXEmbed);
 
 	if (err != NPERR_NO_ERROR || supportsXEmbed != PR_TRUE)
-		return NPERR_INCOMPATIBLE_VERSION_ERROR;
+		g_warning ("It appears your browser may not support XEmbed");
 
 	// GTK+ ?
 	err = CallNPN_GetValueProc (mozilla_funcs->getvalue, NULL,
@@ -352,7 +352,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 				    (void *) &toolkit);
 
 	if (err != NPERR_NO_ERROR || toolkit != NPNVGtk2)
-		return NPERR_INCOMPATIBLE_VERSION_ERROR;
+		g_warning ("It appears your browser may not support Gtk2");
 
 	MozillaFuncs.size                    = mozilla_funcs->size;
 	MozillaFuncs.version                 = mozilla_funcs->version;

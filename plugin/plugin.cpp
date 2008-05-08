@@ -144,6 +144,19 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 	return handled;
 }
 
+char *
+NPN_strdup (char *tocopy)
+{
+	char *ptr = (char *)NPN_MemAlloc (strlen (tocopy)+1);
+	if (ptr != NULL) {
+		// WebKit should calloc so we dont have to do this
+		memset (ptr, 0, strlen(tocopy)+1);
+		strcpy (ptr, tocopy);
+	}
+
+	return ptr;
+}
+
 /*** PluginInstance:: *********************************************************/
 
 GSList *plugin_instances = NULL;
@@ -433,6 +446,7 @@ PluginInstance::GetSources ()
 }
 #endif
 
+
 void
 PluginInstance::SetUnloadCallback (plugin_unload_callback* puc)
 {
@@ -655,7 +669,7 @@ PluginInstance::CreateWindow ()
 	}
 
 	if (onError != NULL) {
-		char *retval = PL_strdup (onError);
+		char *retval = NPN_strdup (onError);
 		NPVariant npvalue;
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);
@@ -665,7 +679,7 @@ PluginInstance::CreateWindow ()
 	}
 
 	if (onResize != NULL) {
-		char *retval = PL_strdup (onResize);
+		char *retval = NPN_strdup (onResize);
 		NPVariant npvalue;
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);
@@ -675,7 +689,7 @@ PluginInstance::CreateWindow ()
 	}
 
 	if (onLoad != NULL) {
-		char *retval = PL_strdup (onLoad);
+		char *retval = NPN_strdup (onLoad);
 		NPVariant npvalue;
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);

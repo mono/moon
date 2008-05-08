@@ -264,9 +264,9 @@ string_to_npvariant (const char *value, NPVariant *result)
 	char *retval;
 
 	if (value)
-		retval = PL_strdup (value);
+		retval = NPN_strdup ((char *)value);
 	else
-		retval = PL_strdup ("");
+		retval = NPN_strdup ("");
 
 	STRINGZ_TO_NPVARIANT (retval, *result);
 }
