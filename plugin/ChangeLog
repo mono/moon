@@ -1,3 +1,22 @@
+2008-05-08  Chris Toshok  <toshok@ximian.com>
+
+	* ff2/ff2-bridge.cpp: in order to keep from needing to load
+	libmoonplugin.so with RTLD_GLOBAL (which breaks other plugins), we
+	need to pass the NPNetscapeFuncs vtable to the bridge, and provide
+	implementations of all the NPN_ methods here.  That was making
+	this file a bit busy, so break out the dom and http stuff to
+	separate files.
+
+	* ff2/ff2-dom.cpp: move the dom stuff here.
+
+	* ff2/ff2-http.cpp: move the browserhttp stuff herre.
+	
+	* ff2/Makefile.am (EXTRA_DIST): make sure we dist
+	firefox-browserhttp.inc
+
+	* ff3/ff3-http.cpp, ff3/ff3-dom.cpp, ff3/ff3-bridge.cpp: same
+	changes to the ff3 bridge.
+
 2008-05-07  Geoff Norton  <gnorton@novell.com>
 	
 	* plugin.cpp, plugin.h: Add NPN_strdup

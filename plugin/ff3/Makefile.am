@@ -12,6 +12,8 @@ INCLUDES = \
 pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES=libmoonplugin-ff3bridge.la
 
-libmoonplugin_ff3bridge_la_SOURCES=ff3-bridge.cpp
+libmoonplugin_ff3bridge_la_SOURCES=	ff3-bridge.cpp \
+					ff3-dom.cpp \
+					ff3-http.cpp
 
 libmoonplugin_ff3bridge_la_LIBADD=$(FF3_LIBS)

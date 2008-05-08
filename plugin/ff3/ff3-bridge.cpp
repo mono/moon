@@ -6,237 +6,332 @@
 
 #include "ff3-bridge.h"
 
-#include <nsCOMPtr.h>
-#include <nsIDOMElement.h>
-#include <nsIDOMRange.h>
-#include <nsIDOMDocumentRange.h>
-#include <nsIDOMDocument.h>
-#include <nsIDOMWindow.h>
-#include <nsStringAPI.h>
+static NPNetscapeFuncs MozillaFuncs;
 
-// Events
-#include <nsIDOMEvent.h>
-#include <nsIDOMMouseEvent.h>
-#include <nsIDOMEventTarget.h>
-#include <nsIDOMEventListener.h>
-
-
-#ifdef DEBUG
-#define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
-#define d(x) x
-#else
-#define DEBUG_WARN_NOTIMPLEMENTED(x)
-#define d(x)
-#endif
-
-#define STR_FROM_VARIANT(v) ((char *) NPVARIANT_TO_STRING (v).utf8characters)
-
-BrowserBridge* CreateBrowserBridge ()
+void
+NPN_Version (int *plugin_major, int *plugin_minor, int *netscape_major, int *netscape_minor)
 {
-	return new FF3BrowserBridge ();
+	*plugin_major = NP_VERSION_MAJOR;
+	*plugin_minor = NP_VERSION_MINOR;
+	*netscape_major = MozillaFuncs.version >> 8;
+	*netscape_minor = MozillaFuncs.version & 0xFF;
 }
 
-#define GECKO_SYM(x) CONCAT(FF3,x)
-#include "../ff2/firefox-browserhttp.inc"
-
-class FF3DomEventWrapper : public nsIDOMEventListener {
-
-	NS_DECL_ISUPPORTS
-	NS_DECL_NSIDOMEVENTLISTENER
-
- public:
-
-	FF3DomEventWrapper () {
-		callback = NULL;
-
-		NS_INIT_ISUPPORTS ();
-	}
-
-	callback_dom_event *callback;
-	nsCOMPtr<nsIDOMEventTarget> target;
-};
-
-NS_IMPL_ISUPPORTS1(FF3DomEventWrapper, nsIDOMEventListener)
-
-NS_IMETHODIMP
-FF3DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
+NPError
+NPN_GetValue (NPP instance, NPNVariable variable, void *r_value)
 {
-	int client_x, client_y, offset_x, offset_y, mouse_button;
-	gboolean alt_key, ctrl_key, shift_key;
-	nsString str_event;
-	
-	aDOMEvent->GetType (str_event);
-
-	client_x = client_y = offset_x = offset_y = mouse_button = 0;
-	alt_key = ctrl_key = shift_key = FALSE;
-
-	nsCOMPtr<nsIDOMMouseEvent> mouse_event = do_QueryInterface (aDOMEvent);
-	if (mouse_event != nsnull) {
-		int screen_x, screen_y;
-
-		mouse_event->GetScreenX (&screen_x);
-		mouse_event->GetScreenY (&screen_y);
-
-		mouse_event->GetClientX (&client_x);
-		mouse_event->GetClientY (&client_y);
-
-		offset_x = screen_x - client_x;
-		offset_y = screen_y - client_y;
-
-		mouse_event->GetAltKey (&alt_key);
-		mouse_event->GetCtrlKey (&ctrl_key);
-		mouse_event->GetShiftKey (&shift_key);
-
-		PRUint16 umouse_button;
-		mouse_event->GetButton (&umouse_button);
-		mouse_button = umouse_button;
-	}
-
-	callback (strdup (NS_ConvertUTF16toUTF8 (str_event).get ()), client_x, client_y, offset_x, offset_y,
-			alt_key, ctrl_key, shift_key, mouse_button);
-
-	return NS_OK;
+	return CallNPN_GetValueProc (MozillaFuncs.getvalue, instance, variable, r_value);
 }
 
-static nsCOMPtr<nsIDOMDocument>
-ff3_get_dom_document (NPP npp)
+NPError
+NPN_SetValue (NPP instance, NPPVariable variable, void *value)
 {
-	nsCOMPtr<nsIDOMWindow> dom_window;
-	NPN_GetValue (npp, NPNVDOMWindow, static_cast<nsIDOMWindow **>(getter_AddRefs(dom_window)));
-	if (!dom_window) {
-		d (printf ("No DOM window available\n"));
-		return NULL;
-	}
-
-	nsCOMPtr<nsIDOMDocument> dom_document;
-	dom_window->GetDocument (getter_AddRefs (dom_document));
-	if (dom_document == nsnull) {
-		d(printf ("No DOM document available\n"));
-		return NULL;
-	}
-
-	return dom_document;
+	return CallNPN_SetValueProc (MozillaFuncs.setvalue, instance, variable, value);
 }
 
-const char*
-FF3BrowserBridge::HtmlElementGetText (NPP npp, const char *element_id)
+NPError
+NPN_GetURL (NPP instance, const char *url, const char *window)
 {
-	nsresult rv = NS_OK;
-
-	nsCOMPtr<nsIDOMDocument> document;
-	document = ff3_get_dom_document (npp);
-	if (!document)
-		return NULL;
-
-	nsString ns_id = NS_ConvertUTF8toUTF16 (element_id, strlen (element_id));
-	nsCOMPtr<nsIDOMElement> element;
-	rv = document->GetElementById (ns_id, getter_AddRefs (element));
-	if (NS_FAILED (rv) || element == NULL)
-		return NULL;
-
-	nsCOMPtr<nsIDOMDocument> owner;
-	element->GetOwnerDocument (getter_AddRefs (owner));
-	
-	nsCOMPtr<nsIDOMDocumentRange> doc_range = do_QueryInterface (owner);
-	if (!doc_range)
-		return NULL;
-
-	nsCOMPtr<nsIDOMRange> range;
-	doc_range->CreateRange (getter_AddRefs (range));
-	if (!range)
-		return NULL;
-
-	range->SelectNodeContents (element);
-
-	nsString text;
-	range->ToString (text);
-	return g_strdup (NS_ConvertUTF16toUTF8 (text).get ());
+	return CallNPN_GetURLProc (MozillaFuncs.geturl, instance, url, window);
 }
 
-gpointer
-FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *name, callback_dom_event cb)
+NPError
+NPN_GetURLNotify (NPP instance, const char *url,
+		  const char *window, void *notifyData)
 {
-	nsresult rv;
-	NPVariant npresult;
-	NPIdentifier id_identifier = NPN_GetStringIdentifier ("id");
-	nsCOMPtr<nsISupports> item;
+	return CallNPN_GetURLNotifyProc (MozillaFuncs.geturlnotify, instance,
+					 url, window, notifyData);
+}
 
-	NPN_GetProperty (npp, npobj, id_identifier, &npresult);
+NPError
+NPN_PostURL (NPP instance, const char *url, const char *window,
+	     uint32_t len, const char *buf, NPBool file)
+{
+	return CallNPN_PostURLProc (MozillaFuncs.posturl, instance, url, window, len, buf, file);
+}
 
-	if (NPVARIANT_IS_STRING (npresult) && strlen (STR_FROM_VARIANT (npresult)) > 0) {
-		NPString np_id = NPVARIANT_TO_STRING (npresult);
+NPError
+NPN_PostURLNotify (NPP instance, const char *url, const char *window,
+		   uint32 len, const char *buf, NPBool file, void *notifyData)
+{
+	return CallNPN_PostURLNotifyProc (MozillaFuncs.posturlnotify, instance, url,
+					  window, len, buf, file, notifyData);
+}
 
-		nsString ns_id = NS_ConvertUTF8toUTF16 (np_id.utf8characters, strlen (np_id.utf8characters));
-		nsCOMPtr<nsIDOMDocument> dom_document = ff3_get_dom_document (npp);
+NPError
+NPN_RequestRead (NPStream *stream, NPByteRange *rangeList)
+{
+	return CallNPN_RequestReadProc (MozillaFuncs.requestread, stream, rangeList);
+}
 
-		nsCOMPtr<nsIDOMElement> element;
-		rv = dom_document->GetElementById (ns_id, getter_AddRefs (element));
-		if (NS_FAILED (rv) || element == nsnull) {
-			return NULL;
-		}
+NPError
+NPN_NewStream (NPP instance, NPMIMEType type, const char *window, NPStream **stream_ptr)
+{
+	return CallNPN_NewStreamProc (MozillaFuncs.newstream, instance,
+				      type, window, stream_ptr);
+}
 
-		item = element;
-	} else {
-		NPObject *window = NULL;
-		NPIdentifier document_identifier = NPN_GetStringIdentifier ("document");
+int32_t
+NPN_Write (NPP instance, NPStream *stream, int32_t len, void *buffer)
+{
+	return CallNPN_WriteProc (MozillaFuncs.write, instance, stream, len, buffer);
+}
 
-		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+NPError
+NPN_DestroyStream (NPP instance, NPStream *stream, NPError reason)
+{
+	return CallNPN_DestroyStreamProc (MozillaFuncs.destroystream, instance, stream, reason);
+}
 
-		if (npobj == window) {
-			NPN_GetValue (npp, NPNVDOMWindow, static_cast<nsISupports **>(getter_AddRefs (item)));
-		} else {
-			NPVariant docresult;
-			NPN_GetProperty (npp, window, document_identifier, &docresult);
+void NPN_Status (NPP instance, const char *message)
+{
+	if (strstr (NPN_UserAgent (instance), "Firefox"))
+		CallNPN_StatusProc (MozillaFuncs.status, instance, message);
+}
 
-			if (npobj == NPVARIANT_TO_OBJECT (docresult)) {
-				item = ff3_get_dom_document (npp);
-			} else {
-				const char *temp_id = "__moonlight_temp_id";
-				NPVariant npvalue;
+const char *
+NPN_UserAgent (NPP instance)
+{
+	return CallNPN_UserAgentProc (MozillaFuncs.uagent, instance);
+}
 
-				string_to_npvariant (temp_id, &npvalue);
-				NPN_SetProperty (npp, npobj, id_identifier, &npvalue);
-				NPN_ReleaseVariantValue (&npvalue);
-
-				nsString ns_id = NS_ConvertUTF8toUTF16 (temp_id, strlen (temp_id));
-				nsCOMPtr<nsIDOMDocument> dom_document = ff3_get_dom_document (npp);
-
-				nsCOMPtr<nsIDOMElement> element;
-				dom_document->GetElementById (ns_id, getter_AddRefs (element));
-				if (element == nsnull) {
-					d(printf ("Unable to find temp_id element\n"));
-					return NULL;
-				}
-
-				item = element;
-
-				// reset to it's original empty value
-				NPN_SetProperty (npp, npobj, id_identifier, &npresult);
-			}
-		}
-	}
-
-	nsCOMPtr<nsIDOMEventTarget> target = do_QueryInterface (item);
-
-	FF3DomEventWrapper *wrapper = new FF3DomEventWrapper ();
-	wrapper->callback = cb;
-	wrapper->target = target;
-
-	rv = target->AddEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
-
-	return wrapper;
+void *
+NPN_MemAlloc (uint32 size)
+{
+	return CallNPN_MemAllocProc (MozillaFuncs.memalloc, size);
 }
 
 void
-FF3BrowserBridge::HtmlObjectDetachEvent (NPP instance, const char *name, gpointer listener_ptr)
+NPN_MemFree (void *ptr)
 {
-	FF3DomEventWrapper *wrapper = (FF3DomEventWrapper *) listener_ptr;
-
-	wrapper->target->RemoveEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
+	CallNPN_MemFreeProc (MozillaFuncs.memfree, ptr);
 }
 
-BrowserHttpRequest*
-FF3BrowserBridge::CreateBrowserHttpRequest (const char *method, const char *uri)
+uint32
+NPN_MemFlush (uint32 size)
 {
-	return new FF3BrowserHttpRequest (method, uri);
+	return CallNPN_MemFlushProc (MozillaFuncs.memflush, size);
+}
+
+void
+NPN_ReloadPlugins (NPBool reloadPages)
+{
+	CallNPN_ReloadPluginsProc (MozillaFuncs.reloadplugins, reloadPages);
+}
+
+void
+NPN_InvalidateRect (NPP instance, NPRect *invalidRect)
+{
+	CallNPN_InvalidateRectProc (MozillaFuncs.invalidaterect, instance, invalidRect);
+}
+
+void
+NPN_InvalidateRegion (NPP instance, NPRegion invalidRegion)
+{
+	CallNPN_InvalidateRegionProc (MozillaFuncs.invalidateregion, instance, invalidRegion);
+}
+
+void
+NPN_ForceRedraw (NPP instance)
+{
+	CallNPN_ForceRedrawProc (MozillaFuncs.forceredraw, instance);
+}
+
+/*** Runtime support **********************************************************/
+
+NPIdentifier
+NPN_GetStringIdentifier (const NPUTF8 *name)
+{
+	return CallNPN_GetStringIdentifierProc (MozillaFuncs.getstringidentifier, name);
+}
+
+void
+NPN_GetStringIdentifiers (const NPUTF8 **names, int32_t nameCount, NPIdentifier *identifiers)
+{
+	CallNPN_GetStringIdentifiersProc (MozillaFuncs.getstringidentifiers,
+					  names, nameCount, identifiers);
+}
+
+NPIdentifier
+NPN_GetIntIdentifier (int32_t intid)
+{
+	return CallNPN_GetIntIdentifierProc (MozillaFuncs.getintidentifier, intid);
+}
+
+bool
+NPN_IdentifierIsString (NPIdentifier identifier)
+{
+	return CallNPN_IdentifierIsStringProc (MozillaFuncs.identifierisstring, identifier);
+}
+
+NPUTF8 *
+NPN_UTF8FromIdentifier (NPIdentifier identifier)
+{
+	return CallNPN_UTF8FromIdentifierProc (MozillaFuncs.utf8fromidentifier, identifier);
+}
+
+int32_t
+NPN_IntFromIdentifier (NPIdentifier identifier)
+{
+	return CallNPN_IntFromIdentifierProc (MozillaFuncs.intfromidentifier, identifier);
+}
+
+NPObject *
+NPN_CreateObject (NPP npp, NPClass *aClass)
+{
+	return CallNPN_CreateObjectProc (MozillaFuncs.createobject, npp, aClass);
+}
+
+NPObject *
+NPN_RetainObject (NPObject *obj)
+{
+	return CallNPN_RetainObjectProc (MozillaFuncs.retainobject, obj);
+}
+
+void
+NPN_ReleaseObject (NPObject *obj)
+{
+	return CallNPN_ReleaseObjectProc (MozillaFuncs.releaseobject, obj);
+}
+
+bool
+NPN_Invoke (NPP npp, NPObject *obj, NPIdentifier methodName,
+	    const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	return CallNPN_InvokeProc (MozillaFuncs.invoke, npp, obj, methodName, args, argCount, result);
+}
+
+bool
+NPN_InvokeDefault (NPP npp, NPObject *obj, const NPVariant *args,
+		   uint32_t argCount, NPVariant *result)
+{
+	return CallNPN_InvokeDefaultProc (MozillaFuncs.invokeDefault, npp, obj, args, argCount, result);
+}
+
+bool
+NPN_Evaluate (NPP npp, NPObject *obj, NPString *script, NPVariant *result)
+{
+	return CallNPN_EvaluateProc (MozillaFuncs.evaluate, npp, obj, script, result);
+}
+
+bool
+NPN_GetProperty (NPP npp, NPObject *obj, NPIdentifier propertyName, NPVariant *result)
+{
+	return CallNPN_GetPropertyProc (MozillaFuncs.getproperty, npp, obj, propertyName, result);
+}
+
+bool
+NPN_SetProperty (NPP npp, NPObject *obj, NPIdentifier propertyName, const NPVariant *value)
+{
+	return CallNPN_SetPropertyProc (MozillaFuncs.setproperty, npp, obj, propertyName, value);
+}
+
+bool
+NPN_RemoveProperty (NPP npp, NPObject *obj, NPIdentifier propertyName)
+{
+	return CallNPN_RemovePropertyProc (MozillaFuncs.removeproperty, npp, obj, propertyName);
+}
+
+bool
+NPN_HasProperty (NPP npp, NPObject *obj, NPIdentifier propertyName)
+{
+	return CallNPN_HasPropertyProc (MozillaFuncs.hasproperty, npp, obj, propertyName);
+}
+
+bool
+NPN_Enumerate (NPP npp, NPObject *obj, NPIdentifier **values,
+	       uint32_t *count)
+{
+	return CallNPN_EnumerateProc (MozillaFuncs.enumerate, npp, obj, values, count);
+}
+
+bool
+NPN_HasMethod (NPP npp, NPObject *obj, NPIdentifier methodName)
+{
+	return CallNPN_HasMethodProc (MozillaFuncs.hasmethod, npp, obj, methodName);
+}
+
+void
+NPN_ReleaseVariantValue (NPVariant *variant)
+{
+	CallNPN_ReleaseVariantValueProc (MozillaFuncs.releasevariantvalue, variant);
+}
+
+void NPN_SetException (NPObject *obj, const NPUTF8 *message)
+{
+	CallNPN_SetExceptionProc (MozillaFuncs.setexception, obj, message);
+}
+
+/*** Popup support ************************************************************/
+
+void
+NPN_PushPopupsEnabledState (NPP instance, NPBool enabled)
+{
+	CallNPN_PushPopupsEnabledStateProc (MozillaFuncs.pushpopupsenabledstate, instance, enabled);
+}
+
+void
+NPN_PopPopupsEnabledState (NPP instance)
+{
+	CallNPN_PopPopupsEnabledStateProc (MozillaFuncs.poppopupsenabledstate, instance);
+}
+
+BrowserBridge* CreateBrowserBridge (NPNetscapeFuncs* mozilla_funcs)
+{
+	MozillaFuncs.size                    = mozilla_funcs->size;
+	MozillaFuncs.version                 = mozilla_funcs->version;
+	MozillaFuncs.geturlnotify            = mozilla_funcs->geturlnotify;
+	MozillaFuncs.geturl                  = mozilla_funcs->geturl;
+	MozillaFuncs.posturlnotify           = mozilla_funcs->posturlnotify;
+	MozillaFuncs.posturl                 = mozilla_funcs->posturl;
+	MozillaFuncs.requestread             = mozilla_funcs->requestread;
+	MozillaFuncs.newstream               = mozilla_funcs->newstream;
+	MozillaFuncs.write                   = mozilla_funcs->write;
+	MozillaFuncs.destroystream           = mozilla_funcs->destroystream;
+	MozillaFuncs.status                  = mozilla_funcs->status;
+	MozillaFuncs.uagent                  = mozilla_funcs->uagent;
+	MozillaFuncs.memalloc                = mozilla_funcs->memalloc;
+	MozillaFuncs.memfree                 = mozilla_funcs->memfree;
+	MozillaFuncs.memflush                = mozilla_funcs->memflush;
+	MozillaFuncs.reloadplugins           = mozilla_funcs->reloadplugins;
+	MozillaFuncs.getJavaEnv              = mozilla_funcs->getJavaEnv;
+	MozillaFuncs.getJavaPeer             = mozilla_funcs->getJavaPeer;
+	MozillaFuncs.getvalue                = mozilla_funcs->getvalue;
+	MozillaFuncs.setvalue                = mozilla_funcs->setvalue;
+	MozillaFuncs.invalidaterect          = mozilla_funcs->invalidaterect;
+	MozillaFuncs.invalidateregion        = mozilla_funcs->invalidateregion;
+	MozillaFuncs.forceredraw             = mozilla_funcs->forceredraw;
+
+	if (mozilla_funcs->version >= NPVERS_HAS_NPRUNTIME_SCRIPTING) {
+		MozillaFuncs.getstringidentifier    = mozilla_funcs->getstringidentifier;
+		MozillaFuncs.getstringidentifiers   = mozilla_funcs->getstringidentifiers;
+		MozillaFuncs.getintidentifier       = mozilla_funcs->getintidentifier;
+		MozillaFuncs.identifierisstring     = mozilla_funcs->identifierisstring;
+		MozillaFuncs.utf8fromidentifier     = mozilla_funcs->utf8fromidentifier;
+		MozillaFuncs.intfromidentifier      = mozilla_funcs->intfromidentifier;
+		MozillaFuncs.createobject           = mozilla_funcs->createobject;
+		MozillaFuncs.retainobject           = mozilla_funcs->retainobject;
+		MozillaFuncs.releaseobject          = mozilla_funcs->releaseobject;
+		MozillaFuncs.invoke                 = mozilla_funcs->invoke;
+		MozillaFuncs.invokeDefault          = mozilla_funcs->invokeDefault;
+		MozillaFuncs.evaluate               = mozilla_funcs->evaluate;
+		MozillaFuncs.getproperty            = mozilla_funcs->getproperty;
+		MozillaFuncs.setproperty            = mozilla_funcs->setproperty;
+		MozillaFuncs.removeproperty         = mozilla_funcs->removeproperty;
+		MozillaFuncs.hasproperty            = mozilla_funcs->hasproperty;
+		MozillaFuncs.hasmethod              = mozilla_funcs->hasmethod;
+		MozillaFuncs.releasevariantvalue    = mozilla_funcs->releasevariantvalue;
+		MozillaFuncs.setexception           = mozilla_funcs->setexception;
+	}
+
+	if (mozilla_funcs->version >= NPVERS_HAS_NPOBJECT_ENUM) {
+		MozillaFuncs.enumerate = mozilla_funcs->enumerate;
+	}
+
+	if (mozilla_funcs->version >= NPVERS_HAS_POPUPS_ENABLED_STATE) {
+		MozillaFuncs.pushpopupsenabledstate = mozilla_funcs->pushpopupsenabledstate;
+		MozillaFuncs.poppopupsenabledstate  = mozilla_funcs->poppopupsenabledstate;
+	}
+
+	return new FF3BrowserBridge ();
 }
