@@ -1655,8 +1655,9 @@ gboolean
 Surface::button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data)
 {
 	Surface *s = (Surface *) user_data;
-	
-	gtk_widget_grab_focus (widget);
+
+	if (widget)
+		gtk_widget_grab_focus (widget);
 	
 	if (event->button != 1)
 		return false;
