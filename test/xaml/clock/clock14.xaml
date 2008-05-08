@@ -18,8 +18,8 @@
 		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" Fill="Red" />
 		
 	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="150" Width="600" Height="30">
-		<Run Text="The red block should take 2 seconds to move to the right, then return"/>
+		<Run Text="The red block should take 2 seconds to move to the right and stop"/>
 		<LineBreak/>
-		<Run Text="to the left side and repeat the trip 4 times."/>
+		<Run Text="RepeatBehavior='00:00:08' syntax is documented but not supported by Silverlight."/>
 	</TextBlock>
 </Canvas>
