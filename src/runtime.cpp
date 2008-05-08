@@ -1129,7 +1129,6 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 					 off_y);
 
 	region->Draw (ctx);
-	cairo_clip (ctx);
 	//
 	// These are temporary while we change this to paint at the offset position
 	// instead of using the old approach of modifying the topmost Canvas (a no-no),
@@ -1149,14 +1148,13 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 	// The second part is for coping with the future: when we support being 
 	// windowless
 	//
-
-
+	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 
 	if (transparent) {
 		if (widget) {
 			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
-			region->Draw (ctx);
-			cairo_paint (ctx);
+			cairo_fill_preserve (ctx);
+			cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 		}
 
 		cairo_set_source_rgba (ctx,
@@ -1172,12 +1170,12 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 				      background_color->b);
 	}
 
-	cairo_paint (ctx);
-
+	cairo_fill_preserve (ctx);
+	cairo_clip (ctx);
 
 	cairo_save (ctx);
-	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 	Paint (ctx, region);
+	cairo_restore (ctx);
 
 	if (RENDER_EXPOSE) {
 		cairo_new_path (ctx);

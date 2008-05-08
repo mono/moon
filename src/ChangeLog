@@ -1,3 +1,8 @@
+2008-05-08  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::expose_to_drawable): fill the background
+	instead of painting and don't create the clip until the rendering
+
 2008-05-08  Miguel de Icaza  <miguel@novell.com>
 
 	* xaml.cpp (xaml_hydrate_from_str): New method to hydrate an
