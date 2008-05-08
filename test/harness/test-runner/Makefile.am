@@ -53,7 +53,7 @@ exocortex_sources = 				\
 
 EXTRA_DIST = html_template.html comparison_report.html $(test_runner_sources) $(exocortex_sources) $(srcdir)/NDesk.Options.dll
 
-all: test-runner.exe
+all: test-runner.exe logging-server.exe
 
 test-runner.exe: $(test_runner_sources) $(exocortex_sources)
 	$(MCS) $(MCSFLAGS) $(test_runner_resources) /out:$@ $^ 
