@@ -294,6 +294,8 @@ MediaPlayer::Open (Media *media)
 	
 	// Find audio/video streams
 	IMediaDemuxer *demuxer = media->GetDemuxer ();
+	VideoStream *vstream;
+	AudioStream *astream;
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		stream = demuxer->GetStream (i);
 		encoding = stream->GetDecoder (); //stream->codec;
@@ -303,17 +305,22 @@ MediaPlayer::Open (Media *media)
 		
 		switch (stream->GetType ()) {
 		case MediaTypeAudio:
+			astream = (AudioStream *) stream;
 			audio.stream_count++;			
-			if (audio.stream == NULL) {
-				audio.stream = (AudioStream *) stream;
-				audio.stream->SetSelected (true);
-			}
-			break;
-		case MediaTypeVideo: 
-			if (video.stream != NULL)
+
+			if (audio.stream != NULL && astream->GetBitRate () < audio.stream->GetBitRate ())
 				break;
 
-			video.stream = (VideoStream *) stream;
+			audio.stream = astream;
+			audio.stream->SetSelected (true);
+			break;
+		case MediaTypeVideo: 
+			vstream = (VideoStream *) stream;
+
+			if (video.stream != NULL && vstream->GetBitRate () < video.stream->GetBitRate ())
+				break;
+
+			video.stream = vstream;
 			video.stream->SetSelected (true);
 			
 			height = video.stream->height;

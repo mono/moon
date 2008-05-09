@@ -1094,9 +1094,11 @@ ASFDemuxer::ReadHeader ()
 			
 			const asf_video_stream_data* video_data = stream_properties->get_video_data ();
 			const BITMAPINFOHEADER* bmp;
+			const asf_extended_stream_properties* aesp;
 
 			if (video_data != NULL) {
 				bmp = video_data->get_bitmap_info_header ();
+				aesp = asf_parser->GetExtendedStream (current_stream);
 				if (bmp != NULL) {
 					video->width = bmp->image_width;
 					video->height = bmp->image_height;
@@ -1110,6 +1112,11 @@ ASFDemuxer::ReadHeader ()
 						video->extra_data = NULL;
 					}
 				}
+				if (aesp != NULL) {
+					video->bit_rate = aesp->data_bitrate;
+				} else {
+					video->bit_rate = video->width*video->height;
+				} 
 			}
 		} else if (stream_properties->is_command ()) {
 			MarkerStream* marker = new MarkerStream (GetMedia ());

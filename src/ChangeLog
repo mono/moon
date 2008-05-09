@@ -1,3 +1,9 @@
+2008-05-09  Geoff Norton <gnorton@novell.com>
+
+	* mplayer.cpp, pipeline.cpp, pipeline.h:  When iterating streams
+	ensure that we select the stream with the highest available bit
+	rate, opposed to the first stream that we come across.
+
 2008-05-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp (DependencyObject::FindName): Don't need

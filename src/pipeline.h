@@ -468,6 +468,8 @@ public:
 	bool GetSelected () { return selected; }
 	void SetSelected (bool value);
 
+	uint32_t GetBitrate ();
+
 	void *extra_data;
 	int extra_data_size;
 	int codec_id;
@@ -809,10 +811,12 @@ public:
 	uint64_t initial_pts;
 	uint32_t height;
 	uint32_t width;
+	uint32_t bit_rate;
 	
 	VideoStream (Media *media);
 	
 	virtual MoonMediaType GetType () { return MediaTypeVideo; } 
+	uint32_t GetBitRate () { return (uint32_t) bit_rate; }
 };
  
 class AudioStream : public IMediaStream {
@@ -829,6 +833,7 @@ public:
 	AudioStream (Media *media) : IMediaStream (media) {}
 	
 	virtual MoonMediaType GetType () { return MediaTypeAudio; }
+	uint32_t GetBitRate () { return (uint32_t) bit_rate; }
 };
 
 /*
