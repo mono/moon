@@ -11,6 +11,7 @@
  */
 
 #include "plugin-downloader.h"
+#include "mmsh-state.h"
 #include "browser-bridge.h"
 
 #define d(x)
@@ -101,6 +102,14 @@ p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
 	if (downloader_shutdown)
 		return;
 	
+	if (pd->state != NULL) {
+		MmshState *state = (MmshState *) pd->state;
+		if (state->IsDescribing ()) {
+			state->SetDescribing (false);
+			return;
+		}
+	}
+
 	filename = pd->dl->GetDownloadedFile ();
         pd->dl->NotifyFinished (filename);
 }
@@ -109,6 +118,8 @@ p_downloader_mmsh_finished (BrowserMmshResponse *response, gpointer context)
 static NPError
 p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset)
 {
+	bool res;
+
 	d (printf ("p_downloader_mmsh_send (%p, %lld)\n", pd, offset));
 
 	PluginInstance *instance = NULL;
@@ -130,17 +141,48 @@ p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset)
 	if (instance->GetBridge() == NULL)
 		return NPERR_GENERIC_ERROR;
 
-	bool res;
 	BrowserMmshRequest *mmsh_request = instance->GetBridge()->CreateBrowserMmshRequest ("GET", pd->uri);
 	mmsh_request->SetHttpHeader ("User-Agent", "NSPlayer/11.1.0.3856");
-	mmsh_request->SetHttpHeader ("Pragma", "no-cache,rate=1.000000,stream-offset=0:0,max-duration=0");
+	mmsh_request->SetHttpHeader ("Pragma", "no-cache");
 	mmsh_request->SetHttpHeader ("Pragma", "xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
-	mmsh_request->SetHttpHeader ("Pragma", "xPlayStrm=1");
-	if (offset != -1) {
-		char *header = g_strdup_printf ("stream-time=%lld, packet-num=4294967295", offset / 10000);
-		mmsh_request->SetHttpHeader ("Pragma", header);
-		g_free (header);
-		pd->ignore_non_data = true;
+
+	if (pd->state == NULL) {
+		/* If state is NULL we havn't queried the server for capabilities yet
+		 * we currently do a packet-pair-experiment in our describe request 
+		 * which lets us estimate bandwidth and select the best available stream
+		 * based on network bandwidth conditions
+		 */
+		MmshState *state = new MmshState (pd);
+
+		state->SetDescribing (true);
+		pd->state = state;
+
+		mmsh_request->SetHttpHeader ("Supported", "com.microsoft.wm.srvppair");
+		mmsh_request->SetHttpHeader ("Supported", "com.microsoft.wm.sswitch");
+		mmsh_request->SetHttpHeader ("Supported", "com.microsoft.wm.predstrm");
+		mmsh_request->SetHttpHeader ("Supported", "com.microsoft.wm.startupprofile");
+		mmsh_request->SetHttpHeader ("Pragma", "packet-pair-experiment=1");
+	} else {
+		/* If state is set we've completed the packet-pair-experiment inside
+		 * browser-mmsh.cpp.  We'll conditionally select streams here if they're
+		 * available based on those results
+		 */
+		MmshState *state = (MmshState *) pd->state;
+
+		mmsh_request->SetHttpHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0");
+		mmsh_request->SetHttpHeader ("Pragma", "xPlayStrm=1");
+		if (offset != -1) {
+			char *header = g_strdup_printf ("stream-time=%lld, packet-num=4294967295", offset / 10000);
+			mmsh_request->SetHttpHeader ("Pragma", header);
+			g_free (header);
+			pd->ignore_non_data = true;
+		}
+		
+		/* stream-switch-count && stream-switch-entry need to be on their own pragma lines
+		 * we (ab)use SetBody for this*/
+		char *stream_headers = g_strdup_printf ("Pragma: stream-switch-count=2\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0\r\n\r\n", state->GetVideoStream (), state->GetAudioStream ());
+		mmsh_request->SetBody (stream_headers, strlen (stream_headers));
+		g_free (stream_headers);
 	}
 	res = mmsh_request->GetAsyncResponse (p_downloader_mmsh_reader, p_downloader_mmsh_notifier, p_downloader_mmsh_finished, pd);
 

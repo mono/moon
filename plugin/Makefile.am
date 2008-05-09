@@ -61,6 +61,8 @@ libmoonplugin_la_SOURCES = \
 	plugin-class.cpp 	\
 	plugin-class.h		\
 	plugin-debug.cpp	\
+	mmsh-state.h		\
+	mmsh-state.cpp		\
 	plugin-debug.h
 
 mono_libdir = `pkg-config --variable=libdir mono`

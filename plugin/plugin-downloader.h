@@ -28,6 +28,7 @@ public:
 		this->uri = NULL;
 
 		this->mmsh = false;
+		this->state = NULL;
 
 		// these are set after the stream is created, and used for destroying the stream
 		this->npp = NULL;
@@ -66,6 +67,7 @@ public:
 	bool ignore_non_data;
 	int header_size;
 	bool seekable;
+	gpointer state;
 };
 
 void downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);

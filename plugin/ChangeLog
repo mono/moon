@@ -1,5 +1,13 @@
 2008-05-09  Geoff Norton  <gnorton@novell.com>
 
+	* Makefile.am: Add mmsh-state.* to the build.
+	* plugin-downloader.*: When connecting to a mms server we cannot
+	immediately start streaming.  We must first query its capabilities
+	with a Describe request, then select the appropriate streams we 
+	wish to have available.
+
+2008-05-09  Geoff Norton  <gnorton@novell.com>
+
 	* mmsh-state.cpp, mmsh-state.h: New class to keep stream state
 	for selecting which streams to fetch from a mms:// server.
 
