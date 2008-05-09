@@ -18,4 +18,4 @@ libmoonplugin_ff2bridge_la_SOURCES=	ff2-bridge.cpp \
 
 libmoonplugin_ff2bridge_la_LIBADD=$(FF2_LIBS) ../libmoonplugin.la ../../src/libmoon.la
 
-EXTRA_DIST = firefox-browserhttp.inc
+EXTRA_DIST = firefox-browserhttp.inc firefox-browsermmsh.inc
