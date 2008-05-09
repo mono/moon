@@ -74,15 +74,11 @@ DependencyObject*
 NameScope::FindName (const char *name)
 {
 	if (name == NULL) {
-		g_warning ("NULL passed to FindName");
+		g_warning ("NameScope::FindName (null)");
 		return NULL;
 	}
 
-	DependencyObject *o = (DependencyObject*)g_hash_table_lookup (names, name);
-	if (o)
-		return o;
-
-	return NULL;
+	return (DependencyObject *) g_hash_table_lookup (names, name);
 }
 
 NameScope*

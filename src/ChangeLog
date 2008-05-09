@@ -1,3 +1,10 @@
+2008-05-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (DependencyObject::FindName): Don't need
+	nested if/elses.
+
+	* namescope.cpp (NameScope::FindName): Simplify.
+
 2008-05-08  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp: silence some warnings.

@@ -1075,29 +1075,26 @@ DependencyObject::HasProperty (const char *name, bool inherits)
 	return GetDependencyProperty (GetObjectType (), name, inherits) != NULL;
 }
 
-DependencyObject*
+DependencyObject *
 DependencyObject::FindName (const char *name)
 {
 	NameScope *scope = NameScope::GetNameScope (this);
 	DependencyObject *rv = NULL;
-
-	if (scope)
-		rv = scope->FindName (name);
-
-	if (rv)
+	
+	if (scope && (rv = scope->FindName (name)))
 		return rv;
-	else if (logical_parent)
+	
+	if (logical_parent)
 		return logical_parent->FindName (name);
-	else {
-		Surface *surface = GetSurface ();
-		if (surface) {
-			UIElement *toplevel = surface->GetToplevel ();
-			if (toplevel && toplevel != this)
-				return toplevel->FindName (name);
-		}
-
-		return NULL;
+	
+	Surface *surface = GetSurface ();
+	if (surface) {
+		UIElement *toplevel = surface->GetToplevel ();
+		if (toplevel && toplevel != this)
+			return toplevel->FindName (name);
 	}
+	
+	return NULL;
 }
 
 NameScope*
