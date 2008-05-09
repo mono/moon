@@ -1,5 +1,10 @@
 2008-05-09  Chris Toshok  <toshok@ximian.com>
 
+	* configure.ac: error out if --enable-user-plugin is specified
+	without both ff2 and ff3 being enabled.
+
+2008-05-09  Chris Toshok  <toshok@ximian.com>
+
 	* configure.ac: fix the check for ff3, and remove the AC_MSG_ERROR
 	i was using to debug ff2.
 	
