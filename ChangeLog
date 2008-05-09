@@ -1,3 +1,8 @@
+2008-05-09  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: fix the check for ff3, and remove the AC_MSG_ERROR
+	i was using to debug ff2.
+	
 2008-05-08  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: make ff2 and ff3 non-mutually exclusive.  if

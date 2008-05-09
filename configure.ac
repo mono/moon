@@ -66,11 +66,9 @@ if test x$with_ff3 = xyes; then
 
   PKG_CHECK_EXISTS($FF3_MODULES,[with_ff3=yes],[with_ff3=no])
 
-  if test x$with_ff3; then
+  if test x$with_ff3 = xyes; then
     AC_DEFINE([HAVE_GECKO_1_9],[1],[Gecko 1.9 support])
     PKG_CHECK_MODULES(FF3, [$FF3_MODULES])
-  else
-    with_ff3=no
   fi
 fi
 AM_CONDITIONAL(HAVE_GECKO_1_9,test x$with_ff3 = xyes)
@@ -90,7 +88,6 @@ if test x$with_ff2 = xyes; then
 
   if test $mozilla_xpcom = "libxul-missing" -o $mozilla_plugin = "plugin-missing"; then
     with_ff2=no
-    AC_MSG_ERROR([$mozilla_xpcom="libxul-missing" -o $mozilla_plugin = "plugin-missing"])
   else
     PKG_CHECK_MODULES(FF2,[$mozilla_xpcom $mozilla_nss $mozilla_nspr $mozilla_plugin])
   fi
