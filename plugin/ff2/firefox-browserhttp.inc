@@ -26,8 +26,6 @@
 #include <xpcom/nsIStorageStream.h>
 #endif
 
-#define CONCAT(x,y) x##y
-
 class GECKO_SYM(BrowserHttpResponse) : public BrowserHttpResponse, public nsIHttpHeaderVisitor {
 private:
 	nsCOMPtr<nsIChannel> channel;
@@ -325,10 +323,10 @@ bool
 GECKO_SYM(BrowserHttpRequest)::GetAsyncResponse (AsyncResponseAvailableHandler handler, gpointer context)
 {
 	nsresult rs = NS_OK;
-	BrowserHttpResponse *response;
+	GECKO_SYM(AsyncBrowserHttpResponse) *response;
 
 	response = new GECKO_SYM(AsyncBrowserHttpResponse) (channel, handler, context);
-	rs = channel->AsyncOpen ((nsIStreamListener*)response, (nsISupports*)response);
+	rs = channel->AsyncOpen (response, (GECKO_SYM(BrowserHttpResponse)*)response);
 	return !NS_FAILED (rs);
 }
 

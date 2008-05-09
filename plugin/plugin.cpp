@@ -14,7 +14,7 @@
 #include "plugin.h"
 #include "plugin-class.h"
 #include "plugin-debug.h"
-#include "plstr.h"
+#include "browser-bridge.h"
 #include "moon-mono.h"
 #include "downloader.h"
 #include "plugin-downloader.h"
@@ -25,6 +25,8 @@
 #include "gdk/gdkx.h"
 #undef Visual
 #undef Region
+
+#include <dlfcn.h>
 
 #ifdef DEBUG
 #define d(x) x
@@ -145,7 +147,7 @@ plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 }
 
 char *
-NPN_strdup (char *tocopy)
+NPN_strdup (const char *tocopy)
 {
 	char *ptr = (char *)NPN_MemAlloc (strlen (tocopy)+1);
 	if (ptr != NULL) {
@@ -344,6 +346,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	
 	windowless = false;
 	
+	bridge = NULL;
+
 	// MSDN says the default is 24: http://msdn2.microsoft.com/en-us/library/bb979688.aspx
 	// blog says the default is 60: http://blogs.msdn.com/seema/archive/2007/10/07/perf-debugging-tips-enableredrawregions-a-performance-bug-in-videobrush.aspx
 	// testing seems to confirm that the default is 60.
@@ -418,6 +422,10 @@ PluginInstance::~PluginInstance ()
 		//gdk_display_sync (display);
 		//gdk_error_trap_pop ();
 	}
+
+	if (bridge)
+		delete bridge;
+	bridge = NULL;
 
 	if (plugin_unload)
 		plugin_unload (this);
@@ -516,6 +524,58 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			windowless = FALSE;
 		}
 	}
+
+        // grovel around in the useragent and try to figure out which
+        // browser bridge we should use.
+        const char *useragent = NPN_UserAgent (instance);
+        printf ("useragent = %s\n", useragent);
+
+	if (strstr (useragent, "AppleWebKit")) {
+		// webkit based
+		TryLoadBridge ("webkit");
+	}
+        else if (strstr (useragent, "Gecko")) {
+		// gecko based, let's look for 'rv:1.8' vs 'rv:1.9'
+		if (strstr (useragent, "rv:1.8")) {
+			TryLoadBridge ("ff2");
+		}
+		else if (strstr (useragent, "rv:1.9")) {
+			TryLoadBridge ("ff3");
+		}
+        }
+
+        if (!bridge)
+		g_warning ("probing for browser type failed");
+}
+
+typedef BrowserBridge* (*create_bridge_func)();
+
+void
+PluginInstance::TryLoadBridge (const char *prefix)
+{
+	Dl_info dlinfo;
+	if (dladdr((void *) &plugin_show_menu, &dlinfo) == 0) {
+		fprintf (stderr, "Unable to find the location of libmoonplugin.so: %s\n", dlerror ());
+		return;
+	}
+
+	char *bridge_name = g_strdup_printf ("libmoonplugin-%sbridge.so", prefix);
+	char *bridge_path;
+
+	bridge_path = g_build_filename (g_path_get_dirname(dlinfo.dli_fname), bridge_name, NULL);
+
+	void* bridge_handle = dlopen (bridge_path, RTLD_LAZY);
+
+	g_free (bridge_name);
+	g_free (bridge_path);
+
+	if (bridge_handle == NULL) {
+		g_warning ("failed to load browser bridge: %s", dlerror());
+		return;
+	}
+
+	create_bridge_func bridge_ctor = (create_bridge_func)dlsym (bridge_handle, "CreateBrowserBridge");
+	bridge = bridge_ctor ();
 }
 
 void
@@ -530,7 +590,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 
 	switch (variable) {
 	case NPPVpluginNeedsXEmbed:
-		*((PRBool *)result) = !windowless;
+		*((NPBool *)result) = !windowless;
 		break;
 	case NPPVpluginScriptableNPObject:
 		*((NPObject**) result) = getRootObject ();
@@ -1475,13 +1535,13 @@ PluginInstance::setMaxFrameRate (int value)
 	surface->GetTimeManager()->SetMaximumRefreshRate (MAX (value, 64));
 }
 
-int32
+int32_t
 PluginInstance::getActualHeight ()
 {
 	return surface->GetActualHeight ();
 }
 
-int32
+int32_t
 PluginInstance::getActualWidth ()
 {
 	return surface->GetActualWidth ();
@@ -1525,13 +1585,13 @@ plugin_instance_get_surface (PluginInstance *instance)
 	return instance->surface;
 }
 
-int32
+int32_t
 plugin_instance_get_actual_width (PluginInstance *instance)
 {
 	return instance->getActualWidth ();
 }
 
-int32
+int32_t
 plugin_instance_get_actual_height (PluginInstance *instance)
 {
 	return instance->getActualHeight ();

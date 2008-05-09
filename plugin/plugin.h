@@ -19,10 +19,11 @@
 class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
+class BrowserBridge;
 class Xap;
 
 typedef void plugin_unload_callback (PluginInstance *plugin);
-char *NPN_strdup (char *val);
+char *NPN_strdup (const char *val);
 
 class PluginInstance
 {
@@ -50,6 +51,8 @@ class PluginInstance
 	bool silverlight2;
 	int maxFrameRate;
 
+	BrowserBridge *bridge;
+
 	GtkWidget *properties_fps_label;
 	GtkWidget *properties_cache_label;
 
@@ -75,6 +78,8 @@ class PluginInstance
 	void LoadXAP  (const char *fname);
 	void SetPageURL ();
 	void DestroyApplication ();
+
+	void TryLoadBridge (const char *prefix);
 	
 	static gboolean IdleUpdateSourceByReference (gpointer data);
 
@@ -161,6 +166,8 @@ class PluginInstance
 	bool getWindowless ();
 	void setMaxFrameRate (int value);
 	int  getMaxFrameRate ();
+
+	BrowserBridge *GetBridge () { return bridge; }
 
 	MoonlightScriptControlObject *getRootObject ();
 	NPP getInstance ();

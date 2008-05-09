@@ -1,18 +1,31 @@
-/*
- * browser-http.cpp: Moonlight plugin routines for mms over http requests/responses.
- *
- * Author:
- *   Fernando Herrera (fherrera@novell.com)
- *
- * Copyright 2008 Novell, Inc. (http://www.novell.com)
- *
- * See the LICENSE file included with the distribution for details.
- *
- */
+#include <nsCOMPtr.h>
+#include <nsXPCOM.h>
+#include <nsIURI.h>
+#include <nsIServiceManager.h>
+#include <nsIComponentManager.h>
+#include <nsIIOService.h>
+#include <nsStringAPI.h>
+#include <nsIInputStream.h>
+#include <nsIOutputStream.h>
+#include <nsIStreamListener.h>
+#include <nsEmbedString.h>
+#include <nsIChannel.h>
+#include <nsIRequest.h>
+#include <nsIRequestObserver.h>
+#include <nsIHttpChannel.h>
+#include <nsIHttpHeaderVisitor.h>
+#include <nsEmbedString.h>
+#include <nsIUploadChannel.h>
 
-#include "browser-mmsh.h"
-#include "plugin-downloader.h"
-#include "http-streaming.h"
+// unfrozen apis
+#if WITH_LIBXUL_UNSTABLE
+#include <nsNetError.h>
+#include <nsIStorageStream.h>
+#else
+#include <necko/nsNetError.h>
+#include <xpcom/nsIStorageStream.h>
+#endif
+
 #include <asf/asf.h>
 
 #define LE_16(val) (GINT16_FROM_LE (*((u_int16_t*)(val))))
@@ -28,12 +41,101 @@
 
 #define LOG_MMS(...)// printf (__VA_ARGS__);
 
-// BrowserMmshResponse
 
-NS_IMPL_ISUPPORTS1 (BrowserMmshResponse, nsIHttpHeaderVisitor)
+class GECKO_SYM(BrowserMmshResponse) : public virtual BrowserMmshResponse, public nsIHttpHeaderVisitor {
+	nsCOMPtr<nsIChannel> channel;
+	HttpHeaderHandler handler;
+
+protected:
+	NS_DECL_NSIHTTPHEADERVISITOR
+
+public:
+	NS_DECL_ISUPPORTS
+
+	GECKO_SYM(BrowserMmshResponse) (nsCOMPtr<nsIChannel> channel)
+	{
+		handler = NULL;
+		this->channel = channel;
+	}
+
+	virtual ~GECKO_SYM(BrowserMmshResponse) () { }
+
+	virtual void Abort ();
+	virtual void VisitHeaders (HttpHeaderHandler handler);
+	virtual char *GetStatus (int *code);
+
+	//virtual void *Read (int *length) = 0;
+};
+
+class GECKO_SYM(AsyncBrowserMmshResponse) : public AsyncBrowserMmshResponse, public GECKO_SYM(BrowserMmshResponse), public nsIStreamListener {
+protected:
+	NS_DECL_NSIREQUESTOBSERVER
+	NS_DECL_NSISTREAMLISTENER
+
+public:
+	NS_DECL_ISUPPORTS
+
+	GECKO_SYM(AsyncBrowserMmshResponse) (nsCOMPtr<nsIChannel> channel,
+					     const char *uri,
+					     AsyncMmshResponseDataAvailableHandler reader, 
+					     AsyncMmshResponseNotifierHandler notifier, 
+					     AsyncMmshResponseFinishedHandler finisher,
+					     PluginDownloader *context)
+	  : AsyncBrowserMmshResponse (uri, reader, notifier, finisher, context),
+	    GECKO_SYM(BrowserMmshResponse) (channel)
+	{
+		this->tmp_buffer = NULL;
+		this->tmp_size = 0;
+		this->asf_packet_size = 0;
+		this->size = 0;
+		this->notify_size = 0;
+		this->notify_name = NULL;
+		
+		this->notifier = notifier;
+		this->reader = reader;
+		this->finisher = finisher;
+		this->context = context;
+		SetUri (uri);
+
+	}
+
+	virtual ~GECKO_SYM(AsyncBrowserMmshResponse) ()
+	{
+		g_free (tmp_buffer);
+	}
+
+
+	void MmsMetadataParse (int, const char*);
+	void AsfHeaderParse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_packet_size);
+};
+
+class GECKO_SYM(BrowserMmshRequest) : public BrowserMmshRequest {
+	nsCOMPtr<nsIChannel> channel;
+
+	void CreateChannel ();
+public:
+
+	GECKO_SYM(BrowserMmshRequest) (const char *method, const char *uri)
+	  : BrowserMmshRequest (method, uri)
+	{
+		CreateChannel ();
+	}
+
+	virtual ~GECKO_SYM(BrowserMmshRequest) ()
+	{
+	}
+
+	virtual bool GetAsyncResponse (AsyncMmshResponseDataAvailableHandler reader, 
+				       AsyncMmshResponseNotifierHandler notifier,
+				       AsyncMmshResponseFinishedHandler finisher, PluginDownloader *context);
+	virtual void SetHttpHeader (const char *name, const char *value);
+	virtual void SetBody (const char *body, int size);
+};
+
+NS_IMPL_ISUPPORTS1 (GECKO_SYM(BrowserMmshResponse), nsIHttpHeaderVisitor)
 
 NS_IMETHODIMP
-BrowserMmshResponse::VisitHeader (const nsACString &header, const nsACString &value)
+GECKO_SYM(BrowserMmshResponse)::VisitHeader (const nsACString &header, const nsACString &value)
 {
         if (handler == NULL)
                 return NS_OK;
@@ -52,11 +154,11 @@ BrowserMmshResponse::VisitHeader (const nsACString &header, const nsACString &va
         // g_free ((gpointer) name);
         // g_free ((gpointer) val);
 
-    return NS_OK;
+	return NS_OK;
 }
 
 void
-BrowserMmshResponse::VisitHeaders (HttpHeaderHandler handler)
+GECKO_SYM(BrowserMmshResponse)::VisitHeaders (HttpHeaderHandler handler)
 {
         nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
         if (!httpchannel)
@@ -71,7 +173,7 @@ BrowserMmshResponse::VisitHeaders (HttpHeaderHandler handler)
 
 
 char *
-BrowserMmshResponse::GetStatus (int *code)
+GECKO_SYM(BrowserMmshResponse)::GetStatus (int *code)
 {
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 	if (!httpchannel) {
@@ -97,32 +199,53 @@ BrowserMmshResponse::GetStatus (int *code)
 
 // AsyncBrowserHttpResponse
 
-NS_IMPL_ISUPPORTS1 (AsyncBrowserMmshResponse, nsIStreamListener)
+NS_IMPL_ISUPPORTS1 (GECKO_SYM(AsyncBrowserMmshResponse), nsIStreamListener)
 
 NS_IMETHODIMP
-AsyncBrowserMmshResponse::OnStartRequest (nsIRequest *request, nsISupports *context)
+GECKO_SYM(AsyncBrowserMmshResponse)::OnStartRequest (nsIRequest *request, nsISupports *context)
 {
 	LOG_MMS ("AsyncBrowserMmshResponse::OnStartRequest ()\n");
 	return NS_OK;
 }
 
 NS_IMETHODIMP
-AsyncBrowserMmshResponse::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
+GECKO_SYM(AsyncBrowserMmshResponse)::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
 	LOG_MMS ("AsyncBrowserMmshResponse::OnStopRequest ()\n");
 	this->finisher (this, this->context);
 	return NS_OK;
 }
 
-static void
-asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_packet_size)
+void
+GECKO_SYM(BrowserMmshResponse)::Abort ()
+{
+	this->channel->Cancel (NS_BINDING_ABORTED);
+	this->aborted = true;
+}
+
+
+static bool
+is_valid_mms_type (uint8_t type)
+{
+	if (type != MMS_DATA && type != MMS_HEADER &&
+	    type != MMS_METADATA && type != MMS_STREAM_C &&
+	    type != MMS_END && type != MMS_PAIR_P)
+		return false;
+
+	return true;
+}
+
+//// BrowserMmsh*
+
+void
+GECKO_SYM(AsyncBrowserMmshResponse)::AsfHeaderParse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_packet_size)
 {
 	MemorySource *asf_src = new MemorySource (NULL, asf_header, size, 0);
 	ASFParser *parser = new ASFParser (asf_src, NULL);
 	asf_src->SetOwner (false);
 	asf_src->unref ();
 	if (!parser->ReadHeader ()) {
-		LOG_MMS ("asf_header_parse: Error reading header\n");
+		LOG_MMS ("AsyncBrowserMmshResponse::AsfHeaderParse: Error reading header\n");
 		*file_size = 0;
 		*asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
 		delete parser;
@@ -137,14 +260,6 @@ asf_header_parse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_
 	*file_size = properties->file_size;
 
 	delete parser;
-}
-
-
-void
-BrowserMmshResponse::Abort ()
-{
-	this->channel->Cancel (NS_BINDING_ABORTED);
-	this->aborted = true;
 }
 
 typedef struct {
@@ -262,7 +377,7 @@ get_string (const char *data, const char *end, char **res)
 }
 
 void
-AsyncBrowserMmshResponse::MmsMetadataParse (int packet_size, const char *data)
+GECKO_SYM(AsyncBrowserMmshResponse)::MmsMetadataParse (int packet_size, const char *data)
 {
 	const char *end = data + packet_size;
 
@@ -350,19 +465,8 @@ AsyncBrowserMmshResponse::MmsMetadataParse (int packet_size, const char *data)
 	}
 }
 
-static bool
-is_valid_mms_type (uint8_t type)
-{
-	if (type != MMS_DATA && type != MMS_HEADER &&
-	    type != MMS_METADATA && type != MMS_STREAM_C &&
-	    type != MMS_END && type != MMS_PAIR_P)
-		return false;
-
-	return true;
-}
-
 NS_IMETHODIMP
-AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *context, nsIInputStream *input, PRUint32 offset, PRUint32 count)
+GECKO_SYM(AsyncBrowserMmshResponse)::OnDataAvailable (nsIRequest *request, nsISupports *context, nsIInputStream *input, PRUint32 offset, PRUint32 count)
 {
 	PRUint32 length;
 	char *read_buffer;
@@ -419,7 +523,7 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 			MmsMetadataParse (packet_size, mms_packet+8);
 		} else if (type == MMS_HEADER) {
 				int64_t file_size;
-				asf_header_parse (mms_packet+8, packet_size - 8, &file_size, &asf_packet_size);
+				AsfHeaderParse (mms_packet+8, packet_size - 8, &file_size, &asf_packet_size);
 				if (file_size == packet_size -8) // file is only header so it's live stream
 					pd->seekable = false;
 				else
@@ -458,7 +562,7 @@ AsyncBrowserMmshResponse::OnDataAvailable (nsIRequest *request, nsISupports *con
 // BrowserMmshRequest
 
 void
-BrowserMmshRequest::CreateChannel ()
+GECKO_SYM(BrowserMmshRequest)::CreateChannel ()
 {
 	nsresult rv = NS_OK;
 	nsCOMPtr<nsIServiceManager> mgr;
@@ -498,20 +602,20 @@ BrowserMmshRequest::CreateChannel ()
 
 
 bool
-BrowserMmshRequest::GetAsyncResponse (AsyncMmshResponseDataAvailableHandler reader,
-				      AsyncMmshResponseNotifierHandler notifier,
-				      AsyncMmshResponseFinishedHandler finisher, PluginDownloader *context)
+GECKO_SYM(BrowserMmshRequest)::GetAsyncResponse (AsyncMmshResponseDataAvailableHandler reader,
+						 AsyncMmshResponseNotifierHandler notifier,
+						 AsyncMmshResponseFinishedHandler finisher, PluginDownloader *context)
 {
 	nsresult rs = NS_OK;
-	AsyncBrowserMmshResponse *response;
+	GECKO_SYM(AsyncBrowserMmshResponse) *response;
 
-	response = new AsyncBrowserMmshResponse (channel, this->uri, reader, notifier, finisher, context);
-	rs = channel->AsyncOpen (response, (BrowserMmshResponse *) response);
+	response = new GECKO_SYM(AsyncBrowserMmshResponse) (channel, this->uri, reader, notifier, finisher, context);
+	rs = channel->AsyncOpen (response, (GECKO_SYM(BrowserMmshResponse) *) response);
 	return !NS_FAILED (rs);
 }
 
 void
-BrowserMmshRequest::SetHttpHeader (const char *name, const char *value)
+GECKO_SYM(BrowserMmshRequest)::SetHttpHeader (const char *name, const char *value)
 {
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 	if (!httpchannel)
@@ -525,7 +629,7 @@ BrowserMmshRequest::SetHttpHeader (const char *name, const char *value)
 }
 
 void
-BrowserMmshRequest::SetBody (const char *body, int size)
+GECKO_SYM(BrowserMmshRequest)::SetBody (const char *body, int size)
 {
 	nsCOMPtr<nsIUploadChannel> upload = do_QueryInterface (channel);
 	if (!upload)
@@ -542,8 +646,8 @@ BrowserMmshRequest::SetBody (const char *body, int size)
 	PRUint32 written;
 	output->Write (body, size, &written);
 
-    nsCOMPtr<nsIInputStream> input;
-    rv = storage->NewInputStream (0, getter_AddRefs (input));
+	nsCOMPtr<nsIInputStream> input;
+	rv = storage->NewInputStream (0, getter_AddRefs (input));
 
 	upload->SetUploadStream (input, type, -1);
 }

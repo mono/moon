@@ -12,6 +12,7 @@ class FF2BrowserBridge : public BrowserBridge {
 	virtual void     HtmlObjectDetachEvent (NPP npp, const char *name, gpointer listener_ptr);
 
 	virtual BrowserHttpRequest* CreateBrowserHttpRequest (const char *method, const char *uri);
+	virtual BrowserMmshRequest* CreateBrowserMmshRequest (const char *method, const char *uri);
 };
 
 #endif // FF2_BRIDGE

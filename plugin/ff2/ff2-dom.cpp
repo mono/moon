@@ -30,6 +30,32 @@
 
 #define STR_FROM_VARIANT(v) ((char *) NPVARIANT_TO_STRING (v).utf8characters)
 
+char *
+NPN_strdup (const char *tocopy)
+{
+	char *ptr = (char *)NPN_MemAlloc (strlen (tocopy)+1);
+	if (ptr != NULL) {
+		// WebKit should calloc so we dont have to do this
+		memset (ptr, 0, strlen(tocopy)+1);
+		strcpy (ptr, tocopy);
+	}
+
+	return ptr;
+}
+
+static void
+string_to_npvariant (const char *value, NPVariant *result)
+{
+	char *retval;
+
+	if (value)
+		retval = NPN_strdup ((char *)value);
+	else
+		retval = NPN_strdup ("");
+
+	STRINGZ_TO_NPVARIANT (retval, *result);
+}
+
 // HtmlObject support
 
 class FF2DomEventWrapper : public nsIDOMEventListener {
@@ -94,7 +120,6 @@ FF2DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 static nsCOMPtr<nsIDOMDocument>
 ff2_get_dom_document (NPP npp)
 {
-  printf ("ff2_get_dom_document\n");
 	nsCOMPtr<nsIDOMWindow> dom_window;
 	NPN_GetValue (npp, NPNVDOMWindow, NS_STATIC_CAST(nsIDOMWindow **, getter_AddRefs(dom_window)));
 	if (!dom_window) {
@@ -109,7 +134,6 @@ ff2_get_dom_document (NPP npp)
 		return NULL;
 	}
 
-	printf ("<ff2_get_dom_document\n");
 	return dom_document;
 }
 

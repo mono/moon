@@ -13,10 +13,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "moonlight.h"
+
 #include "npapi.h"
 #include "npupp.h"
-
-#include "moonlight.h"
 
 // Global function table
 static NPNetscapeFuncs MozillaFuncs;
@@ -60,14 +60,14 @@ NPN_GetURLNotify (NPP instance, const char *url,
 
 NPError
 NPN_PostURL (NPP instance, const char *url, const char *window,
-	     uint32_t len, const char *buf, NPBool file)
+	     uint32 len, const char *buf, NPBool file)
 {
 	return CallNPN_PostURLProc (MozillaFuncs.posturl, instance, url, window, len, buf, file);
 }
 
 NPError
 NPN_PostURLNotify (NPP instance, const char *url, const char *window,
-		   uint32_t len, const char *buf, NPBool file, void *notifyData)
+		   uint32 len, const char *buf, NPBool file, void *notifyData)
 {
 	return CallNPN_PostURLNotifyProc (MozillaFuncs.posturlnotify, instance, url,
 					  window, len, buf, file, notifyData);
@@ -111,7 +111,7 @@ NPN_UserAgent (NPP instance)
 }
 
 void *
-NPN_MemAlloc (uint32_t size)
+NPN_MemAlloc (uint32 size)
 {
 	return CallNPN_MemAllocProc (MozillaFuncs.memalloc, size);
 }
@@ -122,8 +122,8 @@ NPN_MemFree (void *ptr)
 	CallNPN_MemFreeProc (MozillaFuncs.memfree, ptr);
 }
 
-uint32_t
-NPN_MemFlush (uint32_t size)
+uint32
+NPN_MemFlush (uint32 size)
 {
 	return CallNPN_MemFlushProc (MozillaFuncs.memflush, size);
 }
@@ -306,11 +306,7 @@ LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value
 }
 
 NPError OSCALL
-#ifdef XP_UNIX
 LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs *plugin_funcs)
-#else
-LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
-#endif
 {
 	if (mozilla_funcs == NULL || plugin_funcs == NULL)
 		return NPERR_INVALID_FUNCTABLE_ERROR;
@@ -335,7 +331,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 		return NPERR_INCOMPATIBLE_VERSION_ERROR;
 
 	NPError err = NPERR_NO_ERROR;
-	NPBool supportsXEmbed = PR_FALSE;
+	NPBool supportsXEmbed = FALSE;
 	NPNToolkitType toolkit = (NPNToolkitType) 0;
 
 	// XEmbed ?
@@ -343,7 +339,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 				    NPNVSupportsXEmbedBool,
 				    (void *) &supportsXEmbed);
 
-	if (err != NPERR_NO_ERROR || supportsXEmbed != PR_TRUE)
+	if (err != NPERR_NO_ERROR || supportsXEmbed != TRUE)
 		g_warning ("It appears your browser may not support XEmbed");
 
 	// GTK+ ?
@@ -409,7 +405,6 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 		MozillaFuncs.poppopupsenabledstate  = mozilla_funcs->poppopupsenabledstate;
 	}
 
-#ifdef XP_UNIX
 	if (plugin_funcs->size < sizeof (NPPluginFuncs))
 		return NPERR_INVALID_FUNCTABLE_ERROR;
 
@@ -433,9 +428,8 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs)
 		plugin_funcs->getvalue    = NewNPP_GetValueProc (NPP_GetValue);
 		plugin_funcs->setvalue    = NewNPP_SetValueProc (NPP_SetValue);
 	}
-#endif // XP_UNIX
 
-  return NPP_Initialize ();
+	return NPP_Initialize ();
 }
 
 NPError OSCALL

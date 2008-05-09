@@ -99,7 +99,7 @@ NPP_StreamAsFile (NPP instance, NPStream *stream, const char *fname)
 	plugin->StreamAsFile (stream, fname);
 }
 
-int32_t
+int32
 NPP_WriteReady (NPP instance, NPStream *stream)
 {
 	if (instance == NULL)
@@ -110,8 +110,8 @@ NPP_WriteReady (NPP instance, NPStream *stream)
 	return plugin->WriteReady (stream);
 }
 
-int32_t
-NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, void *buffer)
+int32
+NPP_Write (NPP instance, NPStream *stream, int32 offset, int32 len, void *buffer)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;

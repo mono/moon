@@ -1,3 +1,51 @@
+2008-05-08  Chris Toshok  <toshok@ximian.com>
+
+	* install.rdf.in: track MINVERSION/MAXVERSION ->
+	MIN_FIREFOX_VERSION/MAX_FIREFOX_VERSION change.
+
+	* plugin.cpp (NPN_strdup): make the arg const char* to quiet gcc.
+	(PluginInstance::PluginInstance): initialize bridge to NULL.
+	(PluginInstance): delete the bridge.
+	(PluginInstance::Initialize): try loading a browser specific
+	bridge using the useragent string (gross, fragile, i know...)
+	(PluginInstance::TryLoadBridge): new method, dlopen the bridge.
+
+	* browser-http.h, browser-http.cpp: nuke.  the C implementation
+	lives in browser-bridge.cpp, and browser-bridge.h defines
+	the (purely abstract) base classes that the bridge implementations
+	subclass from for browser-specific functionality.
+
+	* plugin-proxy.cpp: clean up more XP_UNIX stuff - it's always
+	defined (in moonlight.h) so we don't need ifdefs for it.  Also, it
+	needs to be defined *before* including npapi/npupp so that
+	structures we need are defined.
+
+	* plugin-class.cpp: remove all HtmlObject implementation code from
+	here.  it lives in the browser bridge now.  Also, remove all
+	internal mozilla #includes.
+
+	* moonlight.h (XP_UNIX): always define it if it isn't already
+	there.
+
+	* browser-bridge.h: add NPNetscapeFuncs* arg to
+	CreateBrowserBridge.
+
+	* plugin-entry.cpp (NPN_PostURLNotify): correct arg type.
+	(NPN_MemAlloc): same.
+	(NPN_MemFlush): same.
+	(NPN_PostURL): same.
+	(NP_Initialize): remove the stupid #if XP_UNIX stuff from here.
+	we're only building on unix, so let's simplify things.  Also,
+	don't use PR_TRUE/PR_FALSE.  NPBool uses TRUE/FALSE.
+
+	* plugin-glue.cpp (NPP_WriteReady): change type to int32 instead
+	of int32_t so that it matches the prototype.
+	(NPP_Write): same.
+
+	* moz-sdk/npapi.h, moz-sdk/npupp.h: unfuck our npapi headers so
+	they can be used for either ff2 and ff3 (and without pulling in
+	nspr).
+
 2008-05-08  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp (PluginInstance::SetWindow): don't crash if we

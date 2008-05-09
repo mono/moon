@@ -1,4 +1,11 @@
-SUBDIRS = test samples
+SUBDIRS = . test samples
+if HAVE_GECKO_1_8
+SUBDIRS += ff2
+endif
+if HAVE_GECKO_1_9
+SUBDIRS += ff3
+endif
+
 CLEANFILES =
 
 SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe $(CSCFLAGS)
@@ -24,7 +31,7 @@ INCLUDES = \
 	-Wall
 
 libmoonloader_la_LDFLAGS = \
-	-avoid-version -module
+	-avoid-version
 
 libmoonloader_la_LIBADD = $(PLUGIN_LIBS)
 
@@ -32,8 +39,7 @@ libmoonloader_la_SOURCES = \
 	plugin-proxy.cpp
 
 libmoonplugin_la_LDFLAGS = \
-	-avoid-version \
-	-module
+	-avoid-version
 
 if !PLUGIN_INSTALL
 MAYBE_LIBMOON = $(top_builddir)/src/libmoon.la
@@ -42,6 +48,7 @@ endif
 libmoonplugin_la_LIBADD = $(MAYBE_LIBMOON) $(PLUGIN_LIBS)
 
 libmoonplugin_la_SOURCES = \
+	browser-bridge.h	\
 	moonlight.h		\
 	mono.cpp		\
 	moon-mono.h		\
@@ -54,11 +61,7 @@ libmoonplugin_la_SOURCES = \
 	plugin-class.cpp 	\
 	plugin-class.h		\
 	plugin-debug.cpp	\
-	plugin-debug.h		\
-	browser-http.h		\
-	browser-http.cpp	\
-	browser-mmsh.h		\
-	browser-mmsh.cpp
+	plugin-debug.h
 
 mono_libdir = `pkg-config --variable=libdir mono`
 mono_dlldir = `pkg-config --variable=prefix mono`/lib

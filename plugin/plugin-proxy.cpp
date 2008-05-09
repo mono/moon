@@ -14,20 +14,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <dlfcn.h>
-#include "npapi.h"
-#include "npupp.h"
 
 #include "moonlight.h"
+
+#include "npapi.h"
+#include "npupp.h"
 
 #if INCLUDE_MONO_RUNTIME
 #include <mono/metadata/assembly.h>
 #endif
 
-#ifdef XP_UNIX
 typedef NPError (*np_initialize_func) (void *a, void *b);
-#else
-typedef NPError (*np_initialize_func) (void *a);
-#endif
 typedef NPError (*np_shutdown_func) ();
 typedef NPError (*np_getvalue_func) (void *, NPPVariable var, void *avalue);
 typedef char *  (*np_getmime_func)  ();
@@ -180,11 +177,7 @@ NP_GetValue (void *future, NPPVariable variable, void *value)
 }
 
 NPError OSCALL
-#ifdef XP_UNIX
 NP_Initialize (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs *plugin_funcs)
-#else
-NP_Initialize (NPNetscapeFuncs *mozilla_funcs)
-#endif
 {
 	if (initialize == NULL)
 		load ();

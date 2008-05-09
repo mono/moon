@@ -47,7 +47,8 @@ fi
 dnl
 dnl Mozilla checks
 dnl
-AC_ARG_WITH(ff3,[  --with-ff3=no,yes  If you want to build against firefox 3 on a machine with both ff2 and ff3 installed],[],[with_ff3=no])
+with_mozilla=no
+
 mozilla_nspr="nspr-missing"
 mozilla_nspr_pcs="nspr mozilla-nspr firefox-nspr xulrunner-nspr seamonkey-nspr"
 for pc in $mozilla_nspr_pcs; do
@@ -58,34 +59,62 @@ mozilla_nss_pcs="nss mozilla-nss firefox-nss xulrunner-nss seamonkey-nss"
 for pc in $mozilla_nss_pcs; do
   PKG_CHECK_EXISTS($pc,[mozilla_nss=$pc])
 done
-mozilla_xpcom="libxul-missing"
-mozilla_xpcom_pcs="libxul-unstable xpcom mozilla-xpcom firefox-xpcom xulrunner-xpcom"
-for pc in $mozilla_xpcom_pcs; do
-  PKG_CHECK_EXISTS($pc,[mozilla_xpcom=$pc])
-done
-mozilla_plugin="plugin-missing"
-mozilla_plugin_pcs="plugin mozilla-plugin firefox-plugin xulrunner-plugin"
-for pc in $mozilla_plugin_pcs; do
-  PKG_CHECK_EXISTS($pc,[mozilla_plugin=$pc])
-done
 
-if test x$mozilla_xpcom = "xlibxul-unstable"; then
-  with_ff3=yes
-fi
+AC_ARG_WITH(ff3,[  --with-ff3=no,yes  If you want to enable the xulrunner 1.9 (Firefox 3) bridge],[],[with_ff3=yes])
 if test x$with_ff3 = xyes; then
-  mozilla_xpcom="libxul-unstable mozilla-js"
-  AC_DEFINE([HAVE_LIBXUL_UNSTABLE],[1],[libxul-unstable support])
-  dnl When support for a unified plugin comes along the minversion
-  dnl should be 1.5 and the maxversion should be 3.0.*.
-  MINVERSION="2.9.*"
-  MAXVERSION="3.0.*"
-else
-  MINVERSION="1.5"
-  MAXVERSION="2.0.0.*"
+  FF3_MODULES="libxul-unstable mozilla-plugin mozilla-js $mozilla_nss $mozilla_nspr"
+
+  PKG_CHECK_EXISTS($FF3_MODULES,[with_ff3=yes],[with_ff3=no])
+
+  if test x$with_ff3; then
+    AC_DEFINE([HAVE_GECKO_1_9],[1],[Gecko 1.9 support])
+    PKG_CHECK_MODULES(FF3, [$FF3_MODULES])
+  else
+    with_ff3=no
+  fi
 fi
-PKG_CHECK_MODULES(MOZILLA,[$mozilla_xpcom $mozilla_nss $mozilla_nspr $mozilla_plugin])
-AC_SUBST([MINVERSION])
-AC_SUBST([MAXVERSION])
+AM_CONDITIONAL(HAVE_GECKO_1_9,test x$with_ff3 = xyes)
+
+AC_ARG_WITH(ff2,[  --with-ff2=no,yes  If you want to enable the xulrunner 1.8.1 (Firefox 2)],[],[with_ff2=yes])
+if test x$with_ff2 = xyes; then
+  mozilla_xpcom="libxul-missing"
+  mozilla_xpcom_pcs="xpcom mozilla-xpcom firefox-xpcom xulrunner-xpcom"
+  for pc in $mozilla_xpcom_pcs; do
+    PKG_CHECK_EXISTS($pc,[mozilla_xpcom=$pc])
+  done
+  mozilla_plugin="plugin-missing"
+  mozilla_plugin_pcs="plugin firefox-plugin xulrunner-plugin"
+  for pc in $mozilla_plugin_pcs; do
+    PKG_CHECK_EXISTS($pc,[mozilla_plugin=$pc])
+  done
+
+  if test $mozilla_xpcom = "libxul-missing" -o $mozilla_plugin = "plugin-missing"; then
+    with_ff2=no
+    AC_MSG_ERROR([$mozilla_xpcom="libxul-missing" -o $mozilla_plugin = "plugin-missing"])
+  else
+    PKG_CHECK_MODULES(FF2,[$mozilla_xpcom $mozilla_nss $mozilla_nspr $mozilla_plugin])
+  fi
+fi
+AM_CONDITIONAL(HAVE_GECKO_1_8,test x$with_ff2 = xyes)
+
+if test x$with_ff2 = xyes; then
+  with_mozilla=yes
+  MIN_FIREFOX_VERSION="1.5"
+  if test x$with_ff3 = xyes; then
+    MAX_FIREFOX_VERSION="3.0.*"
+  else
+    MAX_FIREFOX_VERSION="2.0.0.*"
+  fi
+else
+  if test x$with_ff3 = xyes; then
+    with_mozilla=yes
+    MIN_FIREFOX_VERSION="2.9.*"
+    MAX_FIREFOX_VERSION="3.0.*"
+  fi
+fi
+AC_SUBST([MIN_FIREFOX_VERSION])
+AC_SUBST([MAX_FIREFOX_VERSION])
+AM_CONDITIONAL(HAVE_MOZILLA, test x$with_mozilla = xyes)
 
 dnl
 dnl Mono (Silverlight 2.0) checks
@@ -158,14 +187,12 @@ dnl testing checks
 dnl
 with_testing=yes
 if test x$with_ff3 = xyes; then
-  PKG_CHECK_MODULES(XULRUNNER,[mozilla-gtkmozembed mozilla-js],,
+  PKG_CHECK_MODULES(XULRUNNER,[mozilla-gtkmozembed mozilla-js $mozilla_nss],,
 		  [with_testing=no])
-  AC_DEFINE([HAVE_GECKO_1_9],[1],[Gecko 1.9 support])
-else
-  PKG_CHECK_MODULES(XULRUNNER,xulrunner-gtkmozembed,,
+elif test x$with_ff2 = xyes; then
+  PKG_CHECK_MODULES(XULRUNNER,xulrunner-gtkmozembed $mozilla_nss,,
 		  [with_testing=no])
 fi
-AM_CONDITIONAL(HAVE_GECKO_1_9,test x$with_ff3 = xyes)
 
 PKG_CHECK_MODULES(XTST,xtst >= 1.0,,
 		  [with_testing=no])
@@ -317,9 +344,7 @@ MOON_PROG_LIBS="$GTK_LIBS $ALSA_LIBS \$(top_builddir)/src/libmoon.la"
 AC_SUBST(MOON_PROG_CFLAGS)
 AC_SUBST(MOON_PROG_LIBS)
 
-PLUGIN_CFLAGS="$MOON_CFLAGS $MOZILLA_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
-dnl We don't link against MOZILLA_LIBS because those will already be loaded by
-dnl the browser
+PLUGIN_CFLAGS="$MOON_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
 PLUGIN_LIBS="$MOON_LIBS"
 
 # Remove glitz from the link flags (fixes Bug 338506)
@@ -328,9 +353,12 @@ PLUGIN_LIBS="$(echo $PLUGIN_LIBS | sed -e s/-lglitz//g)"
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)
 
+if test x$with_ff3 = xyes; then
+   MOZILLA_CFLAGS=$FF3_CFLAGS
+else
+   MOZILLA_CFLAGS=$FF2_CFLAGS
+fi
 SHOCKER_CFLAGS="$GTK_CFLAGS $DBUS_GLIB_CFLAGS $MOZILLA_CFLAGS $IMAGEMAGICK_CFLAGS $XTST_CFLAGS"
-dnl We don't link against MOZILLA_LIBS because those will already be loaded by
-dnl the browser
 SHOCKER_LIBS="$GTK_LIBS $DBUS_GLIB_LIBS $IMAGEMAGICK_LIBS $XTST_LIBS"
 AC_SUBST(SHOCKER_CFLAGS)
 AC_SUBST(SHOCKER_LIBS)
@@ -377,6 +405,8 @@ examples/desklet/simpleclock/Makefile
 examples/desklet/weather/Makefile
 plugin/Makefile
 plugin/install.rdf
+plugin/ff2/Makefile
+plugin/ff3/Makefile
 plugin/test/Makefile
 plugin/samples/Makefile
 ])
@@ -389,8 +419,19 @@ Moonlight configuration:
 	Support for ffmpeg: $with_ffmpeg
 	Support for swscale: $with_swscale
 	Support for running the test harness: $with_testing
-        Support for firefox plugin installer: $user_plugin
-        Support for firefox3: $with_ff3
 	Using cairo: $with_cairo
+	Support for Firefox: $with_mozilla
+EOF
+
+if test x$with_mozilla = xyes; then
+cat <<EOF
+          Support for plugin installer: $user_plugin
+          Support for Gecko 1.8 (Firefox 2): $with_ff2
+          Support for Gecko 1.9 (Firefox 3): $with_ff3
 
 EOF
+else
+cat <<EOF
+
+EOF
+fi

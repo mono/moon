@@ -7,8 +7,8 @@
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>@MINVERSION@</em:minVersion>
-        <em:maxVersion>@MAXVERSION@</em:maxVersion>
+        <em:minVersion>@MIN_FIREFOX_VERSION@</em:minVersion>
+        <em:maxVersion>@MAX_FIREFOX_VERSION@</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>

@@ -33,6 +33,7 @@ using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Windows.Interop;
 
 using Mono;
 
@@ -157,7 +158,9 @@ namespace System.Windows.Browser.Net
 
 			Uri request_uri = uri.IsAbsoluteUri ? uri : GetAbsoluteUri (uri);
 
-			native = NativeMethods.browser_http_request_new (method, request_uri.AbsoluteUri);
+			native = NativeMethods.browser_http_request_new (PluginHost.Handle, method, request_uri.AbsoluteUri);
+			if (native == IntPtr.Zero)
+				throw new NotSupportedException ("Failed to create unmanaged BrowserHttpRequest object.  unsupported browser.");
 
 			foreach (string header in headers.Headers)
 				NativeMethods.browser_http_request_set_header (native, header, headers [header]);

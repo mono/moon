@@ -17,10 +17,8 @@
 #include <string.h>
 #include <config.h>
 
-#if HAVE_LIBXUL_UNSTABLE
 #define MOZ_X11
-#else
-#define MOZ_X11
+#ifndef XP_UNIX
 #define XP_UNIX
 #endif
 

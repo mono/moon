@@ -1,3 +1,8 @@
+2008-05-08  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: browser_http_request_new needs the plugin
+	handle.
+
 2008-05-08  Miguel de Icaza  <miguel@novell.com>
 
 	* XamlLoaderCallbacks.cs: Add new Hydrate method, used to populate

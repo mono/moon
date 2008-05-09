@@ -11,7 +11,7 @@
  */
 
 #include "plugin-downloader.h"
-#include "browser-mmsh.h"
+#include "browser-bridge.h"
 
 #define d(x)
 
@@ -54,7 +54,7 @@ p_downloader_open (const char *verb, const char *uri, gpointer state)
 }
 
 static void
-p_downloader_mmsh_reader (BrowserMmshResponse *response, gpointer context, char *buffer, int offset, PRUint32 length)
+p_downloader_mmsh_reader (BrowserMmshResponse *response, gpointer context, char *buffer, int offset, uint32_t length)
 {
 	d (printf ("p_downloader_mmsh_reader (%p, %p, %s, %i, %u)\n", response, context, buffer, offset, length));
 	
@@ -110,9 +110,28 @@ static NPError
 p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset)
 {
 	d (printf ("p_downloader_mmsh_send (%p, %lld)\n", pd, offset));
+
+	PluginInstance *instance = NULL;
 	
+	//fprintf (stderr, "PluginDownloaderSend: Starting downloader again for (%s %s)\n", pd->verb, pd->uri);
+	
+	if (pd && pd->dl && pd->dl->GetContext ()) {
+		// Get the context from the downloader.
+		instance = (PluginInstance *) pd->dl->GetContext ();
+	} else if (plugin_instances && plugin_instances->data) {
+		// TODO: Review if we really should allowing download with the first plugin.
+		NPP_t *plugin = (NPP_t *) plugin_instances->data;
+		if (plugin == NULL || plugin->pdata == NULL)
+			return NPERR_GENERIC_ERROR;
+		instance = (PluginInstance*)plugin->pdata;
+		//printf ("DOWNLOADING WITH FIRST PLUGIN (%p), (Downloader->id: %i): %s\n", plugin, pd->dl->id, pd->uri);
+	}
+
+	if (instance->GetBridge() == NULL)
+		return NPERR_GENERIC_ERROR;
+
 	bool res;
-	BrowserMmshRequest *mmsh_request = new BrowserMmshRequest ("GET", pd->uri);
+	BrowserMmshRequest *mmsh_request = instance->GetBridge()->CreateBrowserMmshRequest ("GET", pd->uri);
 	mmsh_request->SetHttpHeader ("User-Agent", "NSPlayer/11.1.0.3856");
 	mmsh_request->SetHttpHeader ("Pragma", "no-cache,rate=1.000000,stream-offset=0:0,max-duration=0");
 	mmsh_request->SetHttpHeader ("Pragma", "xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
@@ -131,7 +150,6 @@ p_downloader_mmsh_send (PluginDownloader *pd, int64_t offset)
 	return NPERR_NO_ERROR;
 	
 }
-
 
 static void
 p_downloader_send (gpointer state)

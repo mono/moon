@@ -1,3 +1,8 @@
+2008-05-08  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: make ff2 and ff3 non-mutually exclusive.  if
+	either is present we build the correct bridge.
+
 2008-05-07  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Don't set mono_*dir variables at configure time
