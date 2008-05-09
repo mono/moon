@@ -1,3 +1,8 @@
+2008-05-09  Geoff Norton  <gnorton@novell.com>
+
+	* mmsh-state.cpp, mmsh-state.h: New class to keep stream state
+	for selecting which streams to fetch from a mms:// server.
+
 2008-05-09  Chris Toshok  <toshok@ximian.com>
 
 	* ff3/Makefile.am (libmoonplugin_ff3bridge_la_LIBADD): add
