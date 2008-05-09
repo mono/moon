@@ -984,11 +984,13 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
 		s->fps_start = get_now ();
 	
-	if (s->widget)
-		gdk_window_process_updates (GTK_WIDGET (s->widget)->window, false);
-	else if (dirty && s->render)
-		s->render (s, s->render_data);
-	
+	if (dirty) {
+		if (s->widget)
+			gdk_window_process_updates (GTK_WIDGET (s->widget)->window, false);
+		else if (s->render)
+			s->render (s, s->render_data);
+	}
+
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_report) {
 		s->fps_nframes++;
 		

@@ -266,7 +266,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 		return shape_bounds;
 	}
 
-	if (vh && (h <= 0.0) || vw && (w <= 0.0)) { 
+	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return shape_bounds;
 	}
@@ -397,8 +397,6 @@ void
 Shape::Clip (cairo_t *cr)
 {
 	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
-	Stretch stretch = GetStretch ();
-	
 	if (needs_clip) {
 		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 		if (!vh)
@@ -2532,7 +2530,7 @@ Path::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 		return shape_bounds;
 	}
 
-	if (vh && (h <= 0.0) || vw && (w <= 0.0)) { 
+	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return shape_bounds;
 	}
