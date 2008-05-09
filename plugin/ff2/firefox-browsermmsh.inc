@@ -3,6 +3,7 @@
 #include <nsIURI.h>
 #include <nsIServiceManager.h>
 #include <nsIComponentManager.h>
+#include <nsComponentManagerUtils.h>
 #include <nsIIOService.h>
 #include <nsStringAPI.h>
 #include <nsIInputStream.h>
@@ -27,19 +28,21 @@
 #endif
 
 #include <asf/asf.h>
+#include "mmsh-state.h"
 
 #define LE_16(val) (GINT16_FROM_LE (*((u_int16_t*)(val))))
+#define LE_32(val) (GINT32_FROM_LE (*((u_int32_t*)(val))))
 #define LE_64(val) (GINT64_FROM_LE (*((u_int64_t*)(val))))
 
-#define MMS_DATA     0x44
-#define MMS_HEADER   0x48
-#define MMS_METADATA 0x4D
-#define MMS_STREAM_C 0x43
-#define MMS_END	     0x45
-#define MMS_PAIR_P   0x50
+#define MMS_DATA	0x44
+#define MMS_HEADER	0x48
+#define MMS_METADATA	0x4D
+#define MMS_STREAM_C	0x43
+#define MMS_END		0x45
+#define MMS_PAIR_P	0x50
 #define ASF_DEFAULT_PACKET_SIZE 2888
 
-#define LOG_MMS(...)// printf (__VA_ARGS__);
+#define LOG_MMS(...) //printf (__VA_ARGS__);
 
 
 class GECKO_SYM(BrowserMmshResponse) : public virtual BrowserMmshResponse, public nsIHttpHeaderVisitor {
@@ -106,7 +109,7 @@ public:
 
 
 	void MmsMetadataParse (int, const char*);
-	void AsfHeaderParse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_packet_size);
+	void AsfHeaderParse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_packet_size, MmshState *state);
 };
 
 class GECKO_SYM(BrowserMmshRequest) : public BrowserMmshRequest {
@@ -137,22 +140,22 @@ NS_IMPL_ISUPPORTS1 (GECKO_SYM(BrowserMmshResponse), nsIHttpHeaderVisitor)
 NS_IMETHODIMP
 GECKO_SYM(BrowserMmshResponse)::VisitHeader (const nsACString &header, const nsACString &value)
 {
-        if (handler == NULL)
-                return NS_OK;
+	if (handler == NULL)
+		return NS_OK;
 
-        const char *name, *val;
-        PRUint32 nl, vl;
+	const char *name, *val;
+	PRUint32 nl, vl;
 
-        nl = NS_CStringGetData (header, &name);
-        vl = NS_CStringGetData (value, &val);
+	nl = NS_CStringGetData (header, &name);
+	vl = NS_CStringGetData (value, &val);
 
-        name = g_strndup (name, nl);
-        val = g_strndup (val, vl);
+	name = g_strndup (name, nl);
+	val = g_strndup (val, vl);
 
-        handler (name, val);
+	handler (name, val);
 
-        // g_free ((gpointer) name);
-        // g_free ((gpointer) val);
+	// g_free ((gpointer) name);
+	// g_free ((gpointer) val);
 
 	return NS_OK;
 }
@@ -160,15 +163,15 @@ GECKO_SYM(BrowserMmshResponse)::VisitHeader (const nsACString &header, const nsA
 void
 GECKO_SYM(BrowserMmshResponse)::VisitHeaders (HttpHeaderHandler handler)
 {
-        nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
-        if (!httpchannel)
-                return;
+	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
+	if (!httpchannel)
+		return;
 
-        this->handler = handler;
+	this->handler = handler;
 
-        httpchannel->VisitResponseHeaders (this);
+	httpchannel->VisitResponseHeaders (this);
 
-        this->handler = NULL;
+	this->handler = NULL;
 }
 
 
@@ -238,10 +241,11 @@ is_valid_mms_type (uint8_t type)
 //// BrowserMmsh*
 
 void
-GECKO_SYM(AsyncBrowserMmshResponse)::AsfHeaderParse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_packet_size)
+GECKO_SYM(AsyncBrowserMmshResponse)::AsfHeaderParse (char *asf_header, int size, int64_t *file_size, uint16_t *asf_packet_size, MmshState *state)
 {
 	MemorySource *asf_src = new MemorySource (NULL, asf_header, size, 0);
 	ASFParser *parser = new ASFParser (asf_src, NULL);
+
 	asf_src->SetOwner (false);
 	asf_src->unref ();
 	if (!parser->ReadHeader ()) {
@@ -254,6 +258,53 @@ GECKO_SYM(AsyncBrowserMmshResponse)::AsfHeaderParse (char *asf_header, int size,
 	
 	asf_file_properties *properties = parser->GetFileProperties ();
 
+	if (state->IsDescribing ()) {
+		uint8_t stream_count, current_stream;
+
+		// Count the number of streams
+		stream_count = 0;
+		for (int i = 1; i <= 127; i++) {
+			if (parser->IsValidStream (i))
+				stream_count++;
+		}
+	
+		for (int i = 0; i < stream_count; i++) {
+			while (current_stream <= 127 && !parser->IsValidStream (current_stream))
+				current_stream++;
+
+			const asf_stream_properties *stream_properties = parser->GetStream (current_stream);
+			const asf_extended_stream_properties *extended_stream_properties = parser->GetExtendedStream (current_stream);
+
+			if (stream_properties == NULL) {
+				g_warning ("The file claims there were more streams than we could locate");
+				continue;
+			}
+
+			if (stream_properties->is_audio ()) {
+				const WAVEFORMATEX* wave = stream_properties->get_audio_data ();
+
+				state->AddAudioStream (current_stream, wave->bytes_per_second * 8);
+			}
+			if (stream_properties->is_video ()) {
+				int bit_rate = 0;
+				const asf_video_stream_data* video_data = stream_properties->get_video_data ();
+				const BITMAPINFOHEADER* bmp;
+
+				if (extended_stream_properties != NULL) {
+					bit_rate = extended_stream_properties->data_bitrate;
+				} else if (video_data != NULL) {
+					bmp = video_data->get_bitmap_info_header ();
+					if (bmp != NULL) {
+						bit_rate = bmp->image_width*bmp->image_height;
+					}
+				}
+				state->AddVideoStream (current_stream, bit_rate);
+			}
+			current_stream++;
+		}
+	}
+
+	// FIXME: Log the stream information here
 	LOG_MMS ("mms file size: %lld\n", properties->file_size);
 
 	*asf_packet_size = parser->GetPacketSize ();
@@ -485,9 +536,10 @@ GECKO_SYM(AsyncBrowserMmshResponse)::OnDataAvailable (nsIRequest *request, nsISu
 
 	while (length > 0) {
 		uint8_t type;
-	        uint32_t size;
+		uint32_t size;
 		char *mms_packet;
 		uint16_t packet_size;
+		MmshState *state;
 
 		if (length < 3) { // Incomplete packet
 			tmp_buffer = (char*) NS_Alloc (length);
@@ -495,7 +547,7 @@ GECKO_SYM(AsyncBrowserMmshResponse)::OnDataAvailable (nsIRequest *request, nsISu
 			tmp_size = length;
 			return NS_OK;
 		}
-		
+
 		type = (uint8_t) read_buffer[1];
 		/* Check that this is a valid mms stream */
 		if (!is_valid_mms_type (type)) {
@@ -516,43 +568,107 @@ GECKO_SYM(AsyncBrowserMmshResponse)::OnDataAvailable (nsIRequest *request, nsISu
 			return NS_OK;
 		}
 
+		state = (MmshState *) pd->state;
 		mms_packet = read_buffer + 4;
 		packet_size = LE_16 (&mms_packet[6]);
 
 		if (type == MMS_METADATA) {
 			MmsMetadataParse (packet_size, mms_packet+8);
 		} else if (type == MMS_HEADER) {
-				int64_t file_size;
-				AsfHeaderParse (mms_packet+8, packet_size - 8, &file_size, &asf_packet_size);
-				if (file_size == packet_size -8) // file is only header so it's live stream
-					pd->seekable = false;
-				else
-					pd->seekable = true;
-				LOG_MMS ("Header size %d\n", packet_size - 8);
-				pd->header_size = packet_size - 8;
-				if (pd->seekable)
-					notifier (this, this->context, NULL, file_size);
-				if (!pd->ignore_non_data) {
-					reader (this, this->context, mms_packet+8, 0, packet_size - 8);
-					this->size += packet_size - 8;
+			int64_t file_size;
+
+			AsfHeaderParse (mms_packet+8, packet_size - 8, &file_size, &asf_packet_size, state);
+
+			if (state->IsDescribing ()) {
+				state->RestartRequest ();
+				this->Abort();
+				return NPERR_GENERIC_ERROR;
+			}
+
+			if (file_size == packet_size -8) // file is only header so it's live stream
+				pd->seekable = false;
+			else
+				pd->seekable = true;
+			LOG_MMS ("Header size %d\n", packet_size - 8);
+			pd->header_size = packet_size - 8;
+			if (pd->seekable)
+				notifier (this, this->context, NULL, file_size);
+			if (!pd->ignore_non_data) {
+				reader (this, this->context, mms_packet+8, 0, packet_size - 8);
+				this->size += packet_size - 8;
+			}
+		} else if (type == MMS_PAIR_P) {
+			/* Refer to section 2.2.1.4.14 & 2.2.3.7 for a detailed description
+			 * of the packet-pair-experiemnt.
+			 *
+			 * $P packets have some special (read: fucked) sized handling rules
+			 * the size variable cannot be trusted, as its modified depending 
+			 * which $P packet this is that we've seen.
+			 *
+			 * $P1:
+			 * 	size -= reason
+			 * $P2:
+			 *	size is sane
+			 * $P3:
+			 *	size += reason
+			 *
+			 * WARNING: It appears as some mms:// servers out there throw random
+			 * memory at you making this difficult to wireshark as you may see
+			 * additional $P headers with insane size values.
+			 */
+			uint32_t reason = 0;
+
+			reason = LE_32(&mms_packet[0]);
+
+			if (state->GetPPacketCount () == 0) {
+				size -= reason;
+			}
+
+			/* Ensure that our size is representative of what we really need to have
+			 * buffered for the third $P packet, since size isn't actually what these
+			 * special packets contain.  sigh
+			 */
+			if (state->GetPPacketCount () == 2 && length < size + reason + 4) {
+				size += reason;
+			}
+
+			/* Size does not account for the mandatory reason field
+			 * and only (sort of) describes the payload
+			 */
+			size += 4;
+			
+			if (length < size + 4) {
+				tmp_buffer = (char*) NS_Alloc (length);
+				memcpy (tmp_buffer, read_buffer, length);
+				tmp_size = length;
+				return NS_OK;
+			} else {
+				state->LogPPacket (size);
+
+				/*
+				 * If this is the third $P packet, size must be increased by the amount
+				 * in reason
+				 */
+				if (state->GetPPacketCount () == 3) {
+					size += reason;
 				}
+			}
 		} else if (type == MMS_DATA) {
-				char *new_data = (char*)g_malloc0 (asf_packet_size);
-				int packet_index = (int)LE_64 (&read_buffer[4]);
-				memcpy (new_data, mms_packet+8, packet_size - 8);
-				LOG_MMS ("mms packet id (%d)\n", packet_index);
-				if (pd->seekable)
-					reader (this, this->context, new_data, pd->header_size + packet_index* asf_packet_size,
-						asf_packet_size);
-				else
-					reader (this, this->context, new_data, this->size, asf_packet_size);
-				this->size += asf_packet_size;
-					
-				g_free (new_data);
+			char *new_data = (char*)g_malloc0 (asf_packet_size);
+			int packet_index = (int)LE_64 (&read_buffer[4]);
+			memcpy (new_data, mms_packet+8, packet_size - 8);
+			LOG_MMS ("mms packet id (%d)\n", packet_index);
+			if (pd->seekable)
+				reader (this, this->context, new_data, pd->header_size + packet_index* asf_packet_size,
+					asf_packet_size);
+			else
+				reader (this, this->context, new_data, this->size, asf_packet_size);
+			this->size += asf_packet_size;
+				
+			g_free (new_data);
 		}
 		length -= size + 4;
 		read_buffer = read_buffer + size + 4;
-
 	}
 
 	// FIXME: Free the buffer
@@ -584,7 +700,6 @@ GECKO_SYM(BrowserMmshRequest)::CreateChannel ()
 	nsEmbedCString url;
 	url = this->uri;
 
-	printf ("BrowserHttpRequest: %s\n", uri);
 
 	nsCOMPtr<nsIURI> uri;
 	rv = ioservice->NewURI (url, nsnull, nsnull, getter_AddRefs (uri));
@@ -631,23 +746,34 @@ GECKO_SYM(BrowserMmshRequest)::SetHttpHeader (const char *name, const char *valu
 void
 GECKO_SYM(BrowserMmshRequest)::SetBody (const char *body, int size)
 {
+	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
+	if (!httpchannel)
+		return;
+
 	nsCOMPtr<nsIUploadChannel> upload = do_QueryInterface (channel);
 	if (!upload)
 		return;
 
 	nsEmbedCString type;
+	nsresult rv;
 
-	nsCOMPtr<nsIStorageStream> storage;
-	nsresult rv = NS_NewStorageStream (2048, PR_UINT32_MAX, getter_AddRefs (storage));
+	nsCOMPtr<nsIStorageStream> storage = do_CreateInstance ("@mozilla.org/storagestream;1", &rv);
+	storage->Init (2048, PR_UINT32_MAX, nsnull);
 
 	nsCOMPtr<nsIOutputStream> output;
 	storage->GetOutputStream (0, getter_AddRefs (output));
 
 	PRUint32 written;
 	output->Write (body, size, &written);
+	output->Close ();
 
 	nsCOMPtr<nsIInputStream> input;
 	rv = storage->NewInputStream (0, getter_AddRefs (input));
 
+	nsCString method;
+	httpchannel->GetRequestMethod (method);
+	
 	upload->SetUploadStream (input, type, -1);
+	
+	httpchannel->SetRequestMethod (method);
 }

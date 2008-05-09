@@ -1,0 +1,8 @@
+2008-05-09  Geoff Norton  <gnorton@novell.com>
+
+	* firefox-browsermmsh.inc:  Support a proper Describe capability
+	request from the MMS server before blindly streaming all streams.
+	Store the stream information (bitrate) in the MmshState object.
+	Fix the SetBody request to use a ff2 && ff3 compatible construction
+	of the outputstream, and to close the stream after constructing it.
+	Implment parsing of MMS_PAIR_P packets.
