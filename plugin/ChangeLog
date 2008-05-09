@@ -1,3 +1,8 @@
+2008-05-08  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (PluginInstance::SetWindow): don't crash if we
+	weren't able to create a surface.
+
 2008-05-08  Chris Toshok  <toshok@ximian.com>
 
 	* ff2/ff2-bridge.cpp: in order to keep from needing to load
