@@ -80,6 +80,7 @@ ASFParser::Initialize ()
 	embedded_script_command = NULL;
 	embedded_script_command_state = NULL;
 	memset (stream_properties, 0, sizeof (asf_stream_properties *) * 127);
+	memset (extended_stream_properties, 0, sizeof (asf_extended_stream_properties *) * 127);
 }
 
 ASFParser::~ASFParser ()
@@ -429,6 +430,7 @@ ASFParser::ReadHeader ()
 		for (int i = 0; objects != NULL && objects [i] != NULL; i++) {
 			if (asf_guid_compare (&asf_guids_extended_stream_properties, &objects [i]->id)) {
 				asf_extended_stream_properties *aesp = (asf_extended_stream_properties *) objects [i];
+				SetExtendedStream (aesp->stream_id, aesp);
 				const asf_stream_properties *stream = aesp->get_stream_properties ();
 				if (stream != NULL) {
 					if (stream->get_stream_id () != aesp->stream_id) {
@@ -533,6 +535,15 @@ ASFParser::GetStream (int stream_index)
 	return stream_properties [stream_index - 1];
 }
 
+const asf_extended_stream_properties* 
+ASFParser::GetExtendedStream (int stream_index)
+{
+	if (stream_index < 1 || stream_index > 127)
+		return NULL;
+	
+	return extended_stream_properties [stream_index - 1];
+}
+
 void
 ASFParser::SetStream (int stream_index, const asf_stream_properties *stream)
 {
@@ -542,6 +553,17 @@ ASFParser::SetStream (int stream_index, const asf_stream_properties *stream)
 	}
 	
 	stream_properties [stream_index - 1] = stream;
+}
+
+void
+ASFParser::SetExtendedStream (int stream_index, const asf_extended_stream_properties *stream)
+{
+	if (stream_index < 1 || stream_index > 127) {
+		printf ("ASFParser::SetExtendedStream (%i, %p): Invalid stream index.\n", stream_index, stream);
+		return;
+	}
+	
+	extended_stream_properties [stream_index - 1] = stream;
 }
 
 bool

@@ -1,3 +1,8 @@
+2008-05-09  Geoff Norton  <gnorton@novell.com>
+
+	* asf.cpp, asf.h:  Expose the extended stream properties in the 
+	asf api.
+
 2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-structures.cpp, asf.cpp: Improve prints a bit.
