@@ -266,17 +266,7 @@ namespace System.Windows {
 			if (aname [0] == '/')
 				aname = aname.Substring (1);
 
-			//
-			// Remove LINQ usage, as I cant figure out why the assembly name changes break it
-			//
-			// Assembly assembly = assemblies.FirstOrDefault (a => a.GetName ().Name == aname);
-			//
-			Assembly assembly = null;
-			foreach (Assembly a in assemblies)
-				if (a.GetName ().Name == aname){
-					assembly = a;
-					break;
-				}
+			Assembly assembly = assemblies.FirstOrDefault (a => a.GetName ().Name == aname);
 
 			if (assembly == null){
 				Report.Info ("Could not find the named assembly in the resourceUri");
