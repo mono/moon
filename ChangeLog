@@ -1,3 +1,7 @@
+2008-05-12  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* ffmpeg.patch: Updated ffmpeg patch to r10885
+
 2008-05-09  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: error out if --enable-user-plugin is specified
