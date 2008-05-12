@@ -533,7 +533,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 {
 	StylusPointCollection *myStylusPoints = stroke_get_stylus_points (this);
 
-	if (myStylusPoints->list->Length() == 0) {
+	if (myStylusPoints->list->IsEmpty ()) {
 #if DEBUG_HITTEST
 		fprintf (stderr, "no points in the collection, returning false!\n");
 #endif
@@ -753,7 +753,7 @@ StrokeCollection::HitTest (StylusPointCollection *stylusPoints)
 
 	StrokeCollection *result = new StrokeCollection ();
 
-	if (stylusPoints->list->Length () == 0)
+	if (stylusPoints->list->IsEmpty ())
 		return result;
 
 	for (n = (Collection::Node *) list->First (); n; n = (Collection::Node *) n->next) {

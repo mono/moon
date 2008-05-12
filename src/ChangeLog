@@ -1,3 +1,9 @@
+2008-05-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* stylus.cpp (StrokeCollection::HitTest): Use List::IsEmpty()
+	instead of comparing List::Length() to 0.
+	(Stroke::HitTest): Same.
+
 2008-05-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: Set the MediaOpenedEmitted flag before emitting the event,
