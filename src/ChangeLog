@@ -1,6 +1,11 @@
 2008-05-12  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
+	* dependencyobject.cpp: Fix a crash due to bad destroy recursion.
+
+2008-05-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
 	* animation.h:
 	* dependencyobject.cpp:
 	* dependencyobject.h: Float the AnimationStorage only when it's the

@@ -1387,6 +1387,7 @@ DependencyProperty::~DependencyProperty ()
 	if (storage_hash) {
 		g_hash_table_foreach (storage_hash, (GHFunc) detach_target_func, NULL);
 		g_hash_table_destroy (storage_hash);
+		storage_hash = NULL;
 	}
 }
 

@@ -149,8 +149,10 @@ AnimationStorage::DetachUpdateHandler ()
 void
 AnimationStorage::Float ()
 {
+	DetachUpdateHandler ();
+	DetachTarget ();
+
 	clock = NULL;
-	targetobj = NULL;
 	timeline = NULL;
 	targetprop = NULL;
 }
