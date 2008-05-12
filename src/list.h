@@ -30,6 +30,7 @@ public:
 	typedef bool (* NodeAction) (Node *node, void *data);
 
 protected:
+	int length;
 	Node *head;
 	Node *tail;
 	

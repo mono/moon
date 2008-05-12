@@ -26,6 +26,7 @@ List::Node::Node ()
 
 List::List ()
 {
+	length = 0;
 	head = 0;
 	tail = 0;
 }
@@ -61,16 +62,7 @@ List::IsEmpty ()
 int
 List::Length ()
 {
-	List::Node *node;
-	int n = 0;
-	
-	node = head;
-	while (node) {
-		node = node->next;
-		n++;
-	}
-	
-	return n;
+	return length;
 }
 
 
@@ -88,6 +80,7 @@ List::Clear (bool freeNodes)
 		}
 	}
 	
+	length = 0;
 	head = 0;
 	tail = 0;
 }
@@ -106,6 +99,8 @@ List::Append (List::Node *node)
 	
 	tail = node;
 	
+	length++;
+	
 	return node;
 }
 
@@ -122,6 +117,8 @@ List::Prepend (List::Node *node)
 		tail = node;
 	
 	head = node;
+	
+	length++;
 	
 	return node;
 }
@@ -163,6 +160,8 @@ List::Insert (List::Node *node, int index)
 		node->prev = 0;
 	}
 	
+	length++;
+	
 	return node;
 }
 
@@ -172,12 +171,14 @@ List::InsertBefore (List::Node *node, List::Node *before)
 	node->next = before;
 	node->prev = before->prev;
 	
-	if (before->prev != NULL) {
+	if (before->prev != NULL)
 		before->prev->next = node;
-	} else {
+	else
 		head = node;
-	}
+	
 	before->prev = node;
+	
+	length++;
 	
 	return node;
 }
@@ -273,6 +274,8 @@ List::Unlink (List::Node *node)
 	
 	node->prev = 0;
 	node->next = 0;
+	
+	length--;
 }
 
 

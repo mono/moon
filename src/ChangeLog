@@ -1,5 +1,14 @@
 2008-05-12  Jeffrey Stedfast  <fejj@novell.com>
 
+	* list.cpp (List::List): Init length to 0.
+	(List::Clear): Reset length to 0.
+	(List::Append): length++
+	(List::Prepend): length++
+	(List::Insert): length++
+	(List::InsertBefore): length++
+	(List::Unlink): length--
+	(List::Length): Fixed to be O(0) instead of O(n)
+
 	* stylus.cpp (StrokeCollection::HitTest): Use List::IsEmpty()
 	instead of comparing List::Length() to 0.
 	(Stroke::HitTest): Same.
