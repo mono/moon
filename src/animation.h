@@ -130,6 +130,7 @@ class AnimationStorage {
 	void FlagAsNonResetable ();
 	void Float ();
 	bool IsFloating () { return floating; };
+	bool IsCurrentStorage ();
 	Value* GetResetValue ();
 
  private:

@@ -1,6 +1,14 @@
 2008-05-12  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
+	* animation.h:
+	* dependencyobject.cpp:
+	* dependencyobject.h: Float the AnimationStorage only when it's the
+	current storage.
+
+2008-05-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
 	* animation.h: Introduce floating state for animation storage that has
 	it's clock destroyed but it hasn't been stopped before. We need to keep the
 	animation storage (reffed from the DependencyProperty hash) around to be

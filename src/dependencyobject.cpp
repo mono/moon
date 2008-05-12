@@ -1339,6 +1339,15 @@ DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value
 }
 
 AnimationStorage*
+DependencyProperty::GetAnimationStorageFor (DependencyObject *obj)
+{
+	if (! storage_hash)
+		return NULL;
+
+	return (AnimationStorage *) g_hash_table_lookup (storage_hash, obj);
+}
+
+AnimationStorage*
 DependencyProperty::AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
 {
 	// Create hash on first access to save some mem

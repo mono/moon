@@ -80,6 +80,18 @@ AnimationStorage::FlagAsNonResetable ()
 	nonResetableFlag = true;
 }
 
+bool
+AnimationStorage::IsCurrentStorage ()
+{
+	if (targetobj == NULL || targetprop == NULL)
+		return false;
+
+	if (targetprop->GetAnimationStorageFor (targetobj) == this)
+		return true;
+
+	return false;
+}
+
 void
 AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer closure)
 {
@@ -218,10 +230,14 @@ AnimationClock::Stop ()
 AnimationClock::~AnimationClock ()
 {
 	if (storage) {
-		if (state != Clock::Stopped)
-			storage->Float ();
-		else
+		if (state == Clock::Stopped)
 			delete storage;
+		else {
+			if (storage->IsCurrentStorage ())
+				storage->Float ();
+			else
+				delete storage;
+		}
 	}
 }
 

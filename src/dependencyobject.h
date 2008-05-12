@@ -309,6 +309,7 @@ class DependencyProperty {
 
 	AnimationStorage* AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
 	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
+	AnimationStorage* GetAnimationStorageFor (DependencyObject *obj);
 
  private:
 	GHashTable *storage_hash; // keys: objects, values: animation storage's
