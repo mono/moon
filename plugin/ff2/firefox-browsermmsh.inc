@@ -102,10 +102,7 @@ public:
 
 	}
 
-	virtual ~GECKO_SYM(AsyncBrowserMmshResponse) ()
-	{
-		g_free (tmp_buffer);
-	}
+	virtual ~GECKO_SYM(AsyncBrowserMmshResponse) () { }
 
 
 	void MmsMetadataParse (int, const char*);
@@ -553,7 +550,6 @@ GECKO_SYM(AsyncBrowserMmshResponse)::OnDataAvailable (nsIRequest *request, nsISu
 		if (!is_valid_mms_type (type)) {
 			LOG_MMS ("Invalid mms packet type: 0x%x\n", type);
 			g_free (read_buffer);
-			g_free (tmp_buffer);
 			pd->dl->NotifyFailed ("mms not supported");
 			this->Abort();
 			return NPERR_GENERIC_ERROR;
