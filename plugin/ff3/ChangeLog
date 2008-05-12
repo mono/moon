@@ -1,0 +1,3 @@
+2008-05-12  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Dist ff3-bridge.h as well

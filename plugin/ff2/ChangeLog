@@ -1,3 +1,7 @@
+2008-05-12  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Dist ff2-bridge.h as well
+
 2008-05-09  Geoff Norton  <gnorton@novell.com>
 
 	* firefox-browsermmsh.inc:  Support a proper Describe capability
