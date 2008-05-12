@@ -1,5 +1,5 @@
 <Project name="plugin" fileversion="2.0" language="C" ctype="CProject">
-  <Configurations active="Debug">
+  <Configurations>
     <Configuration name="Debug" ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="plugin" />
       <Build debugmode="True" target="Bin" />
@@ -32,13 +32,23 @@
     <File name="TODO" subtype="Code" buildaction="Nothing" />
     <File name="plugin-downloader.cpp" subtype="Code" buildaction="Nothing" />
     <File name="plugin-downloader.h" subtype="Code" buildaction="Nothing" />
-    <File name="browser-http.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="browser-http.h" subtype="Code" buildaction="Nothing" />
     <File name="plugin-debug.cpp" subtype="Code" buildaction="Nothing" />
     <File name="plugin-debug.h" subtype="Code" buildaction="Nothing" />
-    <File name="browser-mmsh.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="browser-mmsh.h" subtype="Code" buildaction="Nothing" />
     <File name="install.rdf" subtype="Code" buildaction="Nothing" />
+    <File name="ff2/ff2-bridge.h" subtype="Code" buildaction="Nothing" />
+    <File name="ff2/ff2-bridge.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="ff2/ff2-dom.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="ff2/ff2-http.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="ff2/ff2-mmsh.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="ff2/firefox-browserhttp.inc" subtype="Code" buildaction="Nothing" />
+    <File name="ff2/firefox-browsermmsh.inc" subtype="Code" buildaction="Nothing" />
+    <File name="ff2/Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="ff3/ff3-bridge.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="ff3/ff3-dom.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="ff3/ff3-bridge.h" subtype="Code" buildaction="Nothing" />
+    <File name="ff3/ff3-mmsh.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="ff3/ff3-http.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="ff3/Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

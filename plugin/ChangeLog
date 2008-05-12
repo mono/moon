@@ -1,3 +1,7 @@
+2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.mdp: Updated.
+
 2008-05-12  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Moved the plugin installer code to a subdir (install)
