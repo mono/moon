@@ -1,5 +1,11 @@
 2008-05-12  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* configure.ac: Add ffmpeg and swscale to MOON_PROG_CFLAGS
+	and MOON_PROG_LIBS so that the test harness can build when building
+	the plugin installer
+
+2008-05-12  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* ffmpeg.patch: Updated ffmpeg patch to r10885
 
 2008-05-09  Chris Toshok  <toshok@ximian.com>
