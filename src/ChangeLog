@@ -1,3 +1,12 @@
+2008-05-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
+	* animation.h: Introduce floating state for animation storage that has
+	it's clock destroyed but it hasn't been stopped before. We need to keep the
+	animation storage (reffed from the DependencyProperty hash) around to be
+	able to get proper value for the next (continous) Storyboard on same
+	property. Fixes #383879 and #375275.
+
 2008-05-09  Geoff Norton <gnorton@novell.com>
 
 	* mplayer.cpp, pipeline.cpp, pipeline.h:  When iterating streams
@@ -37,8 +46,8 @@
 	* xaml.cpp (xaml_hydrate_from_str): New method to hydrate an
 	existing DependencyObject with the contents of a XAML string.  
 
-        Needed for Silverlight 2.0 support, for the new model:
-        create object then do LoadComponent on it.
+	Needed for Silverlight 2.0 support, for the new model:
+	create object then do LoadComponent on it.
 
 2008-05-08  Sebastien Pouliot  <sebastien@ximian.com>
 

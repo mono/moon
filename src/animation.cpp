@@ -33,6 +33,7 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
 {
 	this->nonResetableFlag = false;
+	this->floating = false;
 	this->clock = clock;
 	this->timeline = timeline;
 	this->targetobj = targetobj;
@@ -49,6 +50,8 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 		Value *v = prev_storage->GetResetValue ();
 		stopValue = new Value (*v);
 		prev_storage->FlagAsNonResetable ();
+		if (prev_storage->IsFloating ())
+			delete prev_storage;
 	} else {
 		stopValue = NULL;
 	}
@@ -63,6 +66,9 @@ AnimationStorage::target_object_destroyed (EventObject *, EventArgs *, gpointer 
 void
 AnimationStorage::TargetObjectDestroyed ()
 {
+	if (floating)
+		return;
+
 	targetprop->DetachAnimationStorage (targetobj, this);
 	targetobj = NULL;
 	DetachUpdateHandler ();
@@ -126,6 +132,15 @@ AnimationStorage::DetachUpdateHandler ()
 	if (clock != NULL) {
 		clock->RemoveHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
 	}
+}
+
+void
+AnimationStorage::Float ()
+{
+	clock = NULL;
+	targetobj = NULL;
+	timeline = NULL;
+	targetprop = NULL;
 }
 
 Value*
@@ -202,8 +217,12 @@ AnimationClock::Stop ()
 
 AnimationClock::~AnimationClock ()
 {
-	if (storage)
-		delete storage;
+	if (storage) {
+		if (state != Clock::Stopped)
+			storage->Float ();
+		else
+			delete storage;
+	}
 }
 
 Clock*

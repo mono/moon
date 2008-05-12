@@ -128,6 +128,8 @@ class AnimationStorage {
 	void DetachUpdateHandler ();
 	void DetachTarget ();
 	void FlagAsNonResetable ();
+	void Float ();
+	bool IsFloating () { return floating; };
 	Value* GetResetValue ();
 
  private:
@@ -144,10 +146,8 @@ class AnimationStorage {
 	Value *baseValue;
 	Value *stopValue;
 	bool nonResetableFlag;
+	bool floating;
 };
-
-
-
 
 
 class Animation/*Timeline*/;
