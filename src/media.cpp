@@ -732,10 +732,11 @@ MediaElement::EmitMediaOpened ()
 {
 	if (flags & MediaOpenedEmitted)
 		return;
-		
-	Emit (MediaOpenedEvent);
 
 	flags |= MediaOpenedEmitted;
+	
+	Emit (MediaOpenedEvent);
+
 }
 
 void

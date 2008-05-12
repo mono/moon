@@ -1,3 +1,9 @@
+2008-05-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: Set the MediaOpenedEmitted flag before emitting the event,
+	  prevents us from emitting the event again as a consequence of what
+	  any of the event handlers do.
+
 2008-05-12  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
