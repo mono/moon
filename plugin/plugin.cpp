@@ -530,6 +530,10 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
         const char *useragent = NPN_UserAgent (instance);
         printf ("useragent = %s\n", useragent);
 
+	if (strstr (useragent, "Opera")) {
+		// opera based
+		TryLoadBridge ("opera");
+	}
 	if (strstr (useragent, "AppleWebKit")) {
 		// webkit based
 		TryLoadBridge ("webkit");

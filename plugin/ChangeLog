@@ -1,3 +1,9 @@
+2008-05-13  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::Initialize): add an opera case (just
+	like the webkit case) which references a (for now) nonexistant
+	bridge.
+
 2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp: TryLoad: Before parsing any xaml, we need to clear the
