@@ -87,8 +87,8 @@ dist-hook:
 # gross hack needed because of the way the bridges are located
 all-local:
 	@mkdir -p .libs
-	test -f .libs/libmoonplugin-ff2bridge.so || (cd .libs && ln -s ../ff2/.libs/libmoonplugin-ff2bridge.so)
-	test -f .libs/libmoonplugin-ff3bridge.so || (cd .libs && ln -s ../ff3/.libs/libmoonplugin-ff3bridge.so)
+	test -L .libs/libmoonplugin-ff2bridge.so || (cd .libs && ln -s ../ff2/.libs/libmoonplugin-ff2bridge.so)
+	test -L .libs/libmoonplugin-ff3bridge.so || (cd .libs && ln -s ../ff3/.libs/libmoonplugin-ff3bridge.so)
 
 moonlight_CS=  $(srcdir)/moonlight.cs
 
