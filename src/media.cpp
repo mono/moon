@@ -103,16 +103,23 @@ MediaBase::DownloaderAbort ()
 void
 MediaBase::SetSourceAsyncCallback ()
 {
+	Downloader *downloader;
+	char *part_name;
+	
 	if (!source.downloader)
 		return;
-
+	
 	if (GetSurface () == NULL)
 		return;
 	
-	SetSourceInternal (source.downloader, source.part_name);
-	source.downloader->unref ();
+	downloader = source.downloader;
+	part_name = source.part_name;
 	source.downloader = NULL;
 	source.part_name = NULL;
+	
+	SetSourceInternal (downloader, part_name);
+	
+	downloader->unref ();
 }
 
 void
@@ -150,7 +157,7 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 		SetSourceInternal (NULL, NULL);
 		return;
 	}
-		
+	
 	source.part_name = g_strdup (PartName);
 	source.downloader = downloader;
 	downloader->ref ();
@@ -244,16 +251,16 @@ DependencyProperty *MediaElement::PositionProperty;
 DependencyProperty *MediaElement::VolumeProperty;
 
 enum MediaElementFlags {
-	Loaded            = (1 << 0),  // set once OnLoaded has been called
-	TryOpenOnLoaded   = (1 << 1),  // set if OnLoaded should call TryOpen
-	PlayRequested     = (1 << 2),  // set if Play() has been requested prior to being ready
-	BufferingFailed   = (1 << 3),  // set if TryOpen failed to buffer the media.
-	DisableBuffering  = (1 << 4),  // set if we cannot give useful buffering progress
-	DownloadComplete  = (1 << 5),  // set if the download is complete
-	UpdatingPosition  = (1 << 6),  // set if we are updating the PositionProperty as opposed to someone else
-	RecalculateMatrix = (1 << 7),  // set if the patern matrix needs to be recomputed
-	WaitingForOpen    = (1 << 8),  // set if we've called OpenAsync on a media and we're waiting for the result	
-	MediaOpenedEmitted= (1 << 9),  // set if MediaOpened has been emitted.
+	Loaded              = (1 << 0),  // set once OnLoaded has been called
+	TryOpenOnLoaded     = (1 << 1),  // set if OnLoaded should call TryOpen
+	PlayRequested       = (1 << 2),  // set if Play() has been requested prior to being ready
+	BufferingFailed     = (1 << 3),  // set if TryOpen failed to buffer the media.
+	DisableBuffering    = (1 << 4),  // set if we cannot give useful buffering progress
+	DownloadComplete    = (1 << 5),  // set if the download is complete
+	UpdatingPosition    = (1 << 6),  // set if we are updating the PositionProperty as opposed to someone else
+	RecalculateMatrix   = (1 << 7),  // set if the patern matrix needs to be recomputed
+	WaitingForOpen      = (1 << 8),  // set if we've called OpenAsync on a media and we're waiting for the result	
+	MediaOpenedEmitted  = (1 << 9),  // set if MediaOpened has been emitted.
 };
 
 
@@ -1229,16 +1236,19 @@ void
 MediaElement::DownloaderFailed (EventArgs *args)
 {
 	const char *uri = downloader ? downloader->GetUri () : NULL;
-        if (uri && (g_str_has_prefix (uri, "mms://") || g_str_has_prefix (uri, "rtsp://"))) {
-		char *new_uri = g_strdup_printf ("http://%s", uri + 6);
-		Downloader *dl = Surface::CreateDownloader (this);
-                downloader_open (dl, "GET", new_uri);
-                SetSource (dl, "");
-                dl->unref ();
+	Downloader *dl;
+	char *new_uri;
+	
+	if (uri && (g_str_has_prefix (uri, "mms://") || g_str_has_prefix (uri, "rtsp://"))) {
+		new_uri = g_strdup_printf ("http://%s", uri + 6);
+		dl = Surface::CreateDownloader (this);
+		dl->Open ("GET", new_uri);
+		SetSource (dl, "");
 		g_free (new_uri);
+		dl->unref ();
 		return;
 	}
-
+	
 	MediaFailed (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
 }
 

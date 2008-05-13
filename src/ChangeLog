@@ -1,3 +1,10 @@
+2008-05-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (MediaBase::SetSourceAsyncCallback): Prevent memory
+	corruption of the source.* variables by creating local references
+	to them and setting source.* to NULL before calling
+	SetSourceInternal().
+
 2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* clock.cpp, clock.h: Remove InvokeOnMainThread.
