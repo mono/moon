@@ -1,5 +1,9 @@
 2008-05-13  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* Makefile.am: tools must build after other mono stuff
+
+2008-05-13  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* configure.ac, Makefile.am: Fixes so that we can build on a system that
 	actually has no mono on it.
 

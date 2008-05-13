@@ -9,8 +9,8 @@ if INCLUDE_TESTING
 TEST_SUBDIR=test
 endif
 
-DIST_SUBDIRS = $(subdirs) src tools class gtk examples man data plugin test
-SUBDIRS = $(subdirs) src tools $(MONO_SUBDIRS) plugin $(TEST_SUBDIR)
+DIST_SUBDIRS = $(subdirs) src class gtk examples man data tools plugin test
+SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) tools plugin $(TEST_SUBDIR)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc
