@@ -1235,18 +1235,24 @@ MediaElement::TryOpen ()
 void
 MediaElement::DownloaderFailed (EventArgs *args)
 {
+	const char *protocols[] = { "mms://", "rtsp://", "rtspt://" };	
 	const char *uri = downloader ? downloader->GetUri () : NULL;
 	Downloader *dl;
 	char *new_uri;
+	size_t n;
+	guint i;
 	
-	if (uri && (g_str_has_prefix (uri, "mms://") || g_str_has_prefix (uri, "rtsp://"))) {
-		new_uri = g_strdup_printf ("http://%s", strstr (uri, "://") + 3);
-		dl = Surface::CreateDownloader (this);
-		dl->Open ("GET", new_uri);
-		SetSource (dl, "");
-		g_free (new_uri);
-		dl->unref ();
-		return;
+	for (i = 0; uri && i < G_N_ELEMENTS (protocols); i++) {
+		n = strlen (protocols[i]);
+		if (!strncmp (uri, protocols[i], n)) {
+			new_uri = g_strdup_printf ("http://%s", uri + n);
+			dl = Surface::CreateDownloader (this);
+			dl->Open ("GET", new_uri);
+			SetSource (dl, "");
+			g_free (new_uri);
+			dl->unref ();
+			return;
+		}
 	}
 	
 	MediaFailed (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
