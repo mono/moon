@@ -114,26 +114,25 @@ MediaPlayer::~MediaPlayer ()
 	pthread_mutex_destroy (&target_pts_lock);
 }
 
-struct EnqueueFrameStruct {
-	MediaPlayer *mplayer;
-	int audio;
-	int video;
-};
-
-gboolean
-MediaPlayer::EnqueueFramesCallback (void *user_data)
+void
+MediaPlayer::EnqueueVideoFrameCallback (void *user_data)
 {
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueFramesCallback ()\n");
-	EnqueueFrameStruct *efs = (EnqueueFrameStruct *) user_data;
-
-	efs->mplayer->EnqueueFrames (efs->audio, efs->video);
-	efs->mplayer->unref ();
-
-	delete efs;
-	return false;
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueVideoFrameCallback ()\n");
+	MediaPlayer *mplayer = (MediaPlayer *) user_data;
+	mplayer->EnqueueFrames (0, 1);
+	mplayer->unref ();
 }
 
-gboolean
+void
+MediaPlayer::EnqueueAudioFrameCallback (void *user_data)
+{
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueAudioFrameCallback ()\n");
+	MediaPlayer *mplayer = (MediaPlayer *) user_data;
+	mplayer->EnqueueFrames (1, 0);
+	mplayer->unref ();
+}
+
+void
 MediaPlayer::LoadFrameCallback (void *user_data)
 {
 	bool result = false;
@@ -147,7 +146,6 @@ MediaPlayer::LoadFrameCallback (void *user_data)
 			result = player->LoadVideoFrame ();
 		player->unref ();
 	}		
-	return false;
 }
 
 MediaResult
@@ -175,8 +173,7 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 		player->video.queue.Push (new Packet (frame));
 		if (player->IsLoadFramePending ()) {
 			// We need to call LoadVideoFrame on the main thread
-			player->ref ();
-			TimeManager::InvokeOnMainThread (LoadFrameCallback, player);
+			player->AddTickCall (LoadFrameCallback);
 		}
 		return MEDIA_SUCCESS;
 	case MediaTypeAudio: 
@@ -188,7 +185,7 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	}
 }
 
-gboolean
+void
 MediaPlayer::AudioFinishedCallback (void *user_data)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinishedCallback ()\n");
@@ -196,8 +193,6 @@ MediaPlayer::AudioFinishedCallback (void *user_data)
 	MediaPlayer *mplayer = (MediaPlayer *) user_data;
 	mplayer->AudioFinished ();
 	mplayer->unref ();
-
-	return false;
 }
 
 void
@@ -206,8 +201,7 @@ MediaPlayer::AudioFinished ()
 	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinished ()\n");
 
 	if (!Surface::InMainThread ()) {
-		this->ref ();
-		TimeManager::InvokeOnMainThread (AudioFinishedCallback, this);
+		AddTickCall (AudioFinishedCallback);
 		return;
 	}
 
@@ -223,12 +217,11 @@ MediaPlayer::AudioFinished ()
 void
 MediaPlayer::EnqueueFramesAsync (int audio_frames, int video_frames)
 {
-	EnqueueFrameStruct *efs = new EnqueueFrameStruct ();
-	efs->mplayer = this;
-	this->ref ();
-	efs->audio = audio_frames;
-	efs->video = video_frames;
-	TimeManager::InvokeOnMainThread (EnqueueFramesCallback, efs);
+	for (int i = 0; i < audio_frames; i++)
+		AddTickCall (EnqueueAudioFrameCallback);
+	
+	for (int i = 0; i < video_frames; i++)
+		AddTickCall (EnqueueVideoFrameCallback);
 }
 
 void

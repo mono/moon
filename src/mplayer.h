@@ -102,9 +102,10 @@ class MediaPlayer : public EventObject {
 	static MediaResult SeekCallback (MediaClosure *closure);
 	static MediaResult FrameCallback (MediaClosure *closure);
 	
-	static gboolean EnqueueFramesCallback (void *user_data);
-	static gboolean LoadFrameCallback (void *user_data);
-	static gboolean AudioFinishedCallback (void *user_data);
+	static void EnqueueVideoFrameCallback (void *user_data);
+	static void EnqueueAudioFrameCallback (void *user_data);
+	static void LoadFrameCallback (void *user_data);
+	static void AudioFinishedCallback (void *user_data);
 	
  protected:
 	virtual ~MediaPlayer ();

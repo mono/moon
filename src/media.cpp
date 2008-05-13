@@ -125,15 +125,13 @@ MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
 		downloader->ref ();
 }
 
-static gboolean
+static void
 set_source_async (void *user_data)
 {
 	MediaBase *media = (MediaBase *) user_data;
 	
 	media->SetSourceAsyncCallback ();
 	media->unref ();
-	
-	return false;
 }
 
 void
@@ -157,8 +155,7 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 	source.downloader = downloader;
 	downloader->ref ();
 	
-	ref ();
-	TimeManager::InvokeOnMainThread (set_source_async, this);
+	AddTickCall (set_source_async);
 }
 
 void
@@ -541,6 +538,7 @@ MediaElement::SetSurface (Surface *s)
 	}
 	
 	UIElement::SetSurface (s);
+	mplayer->SetSurface (s);
 }
 
 void
@@ -1096,13 +1094,13 @@ media_element_open_callback (MediaClosure *closure)
 		element->closure = closure->Clone ();
 		pthread_mutex_unlock (&element->open_mutex);
 		// We need to call TryOpenFinished on the main thread, so 
-		TimeManager::InvokeOnMainThread (MediaElement::TryOpenFinished, element);
+		element->AddTickCall (MediaElement::TryOpenFinished);
 	}
 	
 	return MEDIA_SUCCESS;
 }
 
-gboolean
+void
 MediaElement::TryOpenFinished (void *user_data)
 {
 	d(printf ("MediaElement::TryOpenFinished ()\n"));
@@ -1113,8 +1111,10 @@ MediaElement::TryOpenFinished (void *user_data)
 	element->closure = NULL;
 	element->flags &= ~WaitingForOpen;
 	
-	if (!closure)
-		return false;
+	if (!closure) {
+		element->unref ();
+		return;
+	}
 	
 	if (MEDIA_SUCCEEDED (closure->result)) {
 		d(printf ("MediaElement::TryOpen (): download is not complete, but media was "
@@ -1130,8 +1130,7 @@ MediaElement::TryOpenFinished (void *user_data)
 	}
 	
 	delete closure;
-	
-	return false;
+	element->unref ();
 }
 
 void

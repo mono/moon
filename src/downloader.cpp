@@ -441,15 +441,13 @@ Downloader::SendInternal ()
 	send_func (downloader_state);
 }
 
-static gboolean
+static void
 send_async (void *user_data)
 {
 	Downloader *downloader = (Downloader *) user_data;
 	
 	downloader->SendInternal ();
 	downloader->unref ();
-	
-	return false;
 }
 
 void
@@ -461,9 +459,8 @@ Downloader::Send ()
 	send_queued = true;
 	SetStatusText ("");
 	SetStatus (0);
-	ref ();
 	
-	TimeManager::InvokeOnMainThread (send_async, this);
+	AddTickCall (send_async);
 }
 
 void

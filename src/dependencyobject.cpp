@@ -101,6 +101,65 @@ EventObject::~EventObject()
 	delete events;
 }
 
+static pthread_rwlock_t surface_lock = PTHREAD_RWLOCK_INITIALIZER;
+
+void
+EventObject::SetSurface (Surface *surface)
+{
+	int result;
+	
+	if ((result = pthread_rwlock_wrlock (&surface_lock)) != 0) {
+		printf ("EventObject::SetSurface (%p): Couldn't aquire write lock: %i (%s). Things may not work as expected.\n", surface, result, strerror (result));
+		return;
+	}
+	
+	this->surface = surface;
+	
+	pthread_rwlock_unlock (&surface_lock);
+}
+
+void
+EventObject::AddTickCall (void (*func)(gpointer))
+{
+	int result;
+	Surface *surface;
+	TimeManager *timemanager;
+	
+	/*
+	 * This code assumes that the surface won't be destructed without setting the surface field on every EventObject
+	 * to NULL first. In other words: if we have a read lock here, the surface won't get destroyed, given that setting
+	 * the surface field to NULL will block until we release the read lock.
+	 */
+	
+	if ((result = pthread_rwlock_rdlock (&surface_lock)) != 0) {
+		printf ("EventObject::AddTickCall (): Couldn't aquire read lock: %i (%s), tick call will not be added.\n", result, strerror (result));
+		return;
+	}
+	
+	surface = GetSurface ();
+	
+	if (!surface) {
+#if DEBUG
+		printf ("EventObject::AddTickCall (): Could not add tick call, no surface\n");
+#endif
+		return;
+	}
+	
+	timemanager = surface->GetTimeManager ();
+	
+	if (!timemanager) {
+#if DEBUG
+		printf ("EventObject::AddTickCAll (): Could not add tick call, no time manager\n");
+#endif
+		return;
+	}
+
+	ref ();
+	timemanager->AddTickCall (func, this);
+	
+	pthread_rwlock_unlock (&surface_lock);
+}
+
 void 
 EventObject::unref ()
 {
@@ -430,6 +489,11 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 	
 	g_free (closures);
 	unref ();
+
+#if DEBUG
+	if (refcount == 0)
+		printf ("EventObject::Emit (): Warning: object %i was destroyed during event emission.\n", GET_OBJ_ID (this));
+#endif
 
 	return true;
 }

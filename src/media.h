@@ -343,7 +343,7 @@ class MediaElement : public MediaBase {
 	
 	pthread_mutex_t open_mutex; // Used when accessing closure.
 	MediaClosure *closure;
-	static gboolean TryOpenFinished (void *user_data);
+	static void TryOpenFinished (void *user_data);
 	
 	// Reset all information to defaults, set state to 'Error' and raise MediaFailedEvent
 	void MediaFailed (ErrorEventArgs *args = NULL);

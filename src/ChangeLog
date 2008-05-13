@@ -1,3 +1,14 @@
+2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* clock.cpp, clock.h: Remove InvokeOnMainThread.
+	* dependencyobject.cpp, dependencyobject.h: EventObject: added
+	  (Un)LockSurface. Used when using a surface pointer from another
+	  thread.
+	* downloader.cpp: Send: use a TimeManager to add the timeout.
+	* media.cpp, media.h, mplayer.h, mplayer.cpp: Don't use
+	  TimeManager::InvokeOnMainThread anymore, add the timeouts using a
+	  TimeManager instance.
+
 2008-05-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* list.cpp (List::List): Init length to 0.

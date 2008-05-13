@@ -146,7 +146,11 @@ class EventObject {
 	void RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure);
 
 	virtual Surface *GetSurface () { return surface; }
-	virtual void SetSurface (Surface *surface) { this->surface = surface; }
+	virtual void SetSurface (Surface *surface);
+
+	// This method is safe to call from other than the main thread.
+	// This object is reffed before adding the tick call, the callback must unref.
+	void AddTickCall (void (*func)(gpointer));
 	
 	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
 	

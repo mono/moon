@@ -553,14 +553,6 @@ time_manager_add_tick_call (TimeManager *manager, void (*func)(gpointer), gpoint
 	manager->AddTickCall (func, tick_data);
 }
 
-void
-TimeManager::InvokeOnMainThread (GSourceFunc func, gpointer user_data)
-{
-	// The callback might end up getting called after the surface/plugin has
-	// been deleted.
-	g_timeout_add (0, func, user_data);
-}
-
 static void
 spaces (int n)
 {

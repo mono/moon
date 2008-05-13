@@ -432,10 +432,6 @@ class TimeManager : public EventObject {
 
 	void ListClocks ();
 	
-	// The callback might end up getting called after the surface/plugin has
-	// been deleted.
-	static void InvokeOnMainThread (GSourceFunc func, gpointer user_data);
-	
  protected:
 	~TimeManager ();
 
