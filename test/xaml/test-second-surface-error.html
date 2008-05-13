@@ -1,0 +1,104 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xamlOK">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue" Height="20" Width="20">
+			</Canvas>
+		</script>
+
+		<script type="text/xaml" id="xamlError">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Red" Height="10" Width="10">
+				<Wrong />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../js/js/utils.js"></script>
+		<script language="javascript" src="../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		var timeout = null;
+		var loaded = 0;
+		var host = null;
+
+		function timeOut ()
+		{
+			TestLogger.LogError ("Test timed out.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		function ChangeSource ()
+		{
+			try {
+				TestLogger.LogDebug ("Changing source from '" + host.source + "' to '#xamlError'");
+				host.source = "#xamlError";
+			} catch (e) {
+				TestLogger.LogDebug ("Exception: " + ExceptionToString (e));
+			}
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad: " + sender.getHost ().source + " " + host);
+			loaded++;
+			if (loaded == 1) {
+				host = document.getElementById ("MLControl");//sender.getHost ();
+				setTimeout ("ChangeSource ();", 250);
+			} else {
+				TestLogger.LogError ("The last source should not load.");
+				TestLogger.LogResult (-1);
+				SignalShutdown ();
+			}
+			SetTimer ();
+		}
+
+		function SetTimer ()
+		{
+			if (timeout) 
+				clearTimeout (timeout);
+			timeout = setTimeout ("timeOut ();", 10000);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogDebug ("Plugin error: " + args.ErrorMessage);
+			if (loaded != 1) {
+				TestLogger.LogResult ("Only the last source should fail");
+				TestLogger.LogResult (-1);
+				SignalShutdown ();
+			} else {
+				setTimeout ("Smile ();", 250);
+			}
+		}
+
+		function Smile ()
+		{
+			TestHost.CaptureSingleImage ("", "test-second-surface-error.html.png", 0, 0, 50, 50);
+			SignalShutdown ();
+		}
+
+		</script>
+	</head>
+
+  <body>
+    <div id="ML">
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="MLControl" Source="#xamlOK" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+

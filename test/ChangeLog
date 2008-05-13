@@ -1,3 +1,8 @@
+2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/drtlist.xml, xaml/test-second-surface-error.html: Added
+	  test-second-surface-error.html.
+
 2008-05-06  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/storyboard-stopping-prop-override.html: A new test for

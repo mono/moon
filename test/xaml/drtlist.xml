@@ -806,5 +806,9 @@
    <Test id="184"
 	 inputFile="test-radialgradientbrush2.xaml"
 	 masterFile10="../harness/masters/test-radialgradientbrush2Master.png"
+	 />
+   <Test id="185"
+	 inputFile="test-second-surface-error.html"
+	 masterFile10="../harness/masters/test-second-surface-errorMaster.png"
    />
 </DRTList>
