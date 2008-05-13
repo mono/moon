@@ -1,3 +1,8 @@
+2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* runtime.cpp: Don't call Attach (NULL) in Surface::Zombify, it causes
+	  crashes when javascript removes the plugin in an eventhandler.
+
 2008-05-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaElement::DownloaderFailed): Make this more
