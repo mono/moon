@@ -1,3 +1,7 @@
+2008-05-13  Michael Dominic K.  <mdk@mdk.am>
+	
+	* xaml/clock/clock32.xaml: Fixing the clock32.xaml test.
+
 2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/drtlist.xml, xaml/test-second-surface-error.html: Added

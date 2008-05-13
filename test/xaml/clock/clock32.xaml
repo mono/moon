@@ -6,7 +6,6 @@
 		<EventTrigger RoutedEvent="Canvas.Loaded">
 			<BeginStoryboard>
 				<Storyboard AutoReverse="true">
-					<DoubleAnimation x:Name="right" Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="0" Duration="00:00:1"/>
 					<DoubleAnimation x:Name="right" Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" BeginTime="00:00:1" Duration="00:00:0.2"/>
 					<DoubleAnimation x:Name="down" Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Top)" By="100" BeginTime="00:00:1.2" Duration="00:00:0.2"/>
 				</Storyboard>
