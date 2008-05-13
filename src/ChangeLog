@@ -1,3 +1,7 @@
+2008-05-13  Fernando Herrera  <fherrera@novell.com>
+
+	* media.cpp: Fix mms:// and rtsp:// fallback uri rewrite.
+
 2008-05-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaBase::SetSourceAsyncCallback): Prevent memory

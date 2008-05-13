@@ -1240,7 +1240,7 @@ MediaElement::DownloaderFailed (EventArgs *args)
 	char *new_uri;
 	
 	if (uri && (g_str_has_prefix (uri, "mms://") || g_str_has_prefix (uri, "rtsp://"))) {
-		new_uri = g_strdup_printf ("http://%s", uri + 6);
+		new_uri = g_strdup_printf ("http://%s", strstr (uri, "://") + 3);
 		dl = Surface::CreateDownloader (this);
 		dl->Open ("GET", new_uri);
 		SetSource (dl, "");
