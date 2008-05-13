@@ -1,5 +1,11 @@
 2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin.cpp: TryLoad: Before parsing any xaml, we need to clear the
+	  current surface, otherwise the xaml we'll be parsing might add tick
+	  callbacks to the timemanager of the previous surface.
+
+2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin.mdp: Updated.
 
 2008-05-12  Andrew Jorgensen  <ajorgensen@novell.com>

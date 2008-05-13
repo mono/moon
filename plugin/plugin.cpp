@@ -1726,6 +1726,8 @@ PluginXamlLoader::TryLoad (int *error)
 	
 	d(printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ()));
 	
+	GetSurface ()->Attach (NULL);
+	
 	if (GetFilename ()) {
 		element = xaml_create_from_file (this, GetFilename (), true, &element_type);
 	} else if (GetString ()) {
@@ -1740,7 +1742,6 @@ PluginXamlLoader::TryLoad (int *error)
 			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (error: %s attr=%s)\n",
 				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
 				  error_args->xml_element, error_args->xml_attribute));
-			GetSurface ()->Attach (NULL);
 			GetSurface ()->EmitError (error_args);
 			return NULL;
 		} else {
@@ -1756,7 +1757,6 @@ PluginXamlLoader::TryLoad (int *error)
 	if (!t) {
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass Canvas, it is an unregistered type\n"));
 		element->unref ();
-		GetSurface ()->Attach (NULL);
 		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
 		return NULL;
 	}
@@ -1765,7 +1765,6 @@ PluginXamlLoader::TryLoad (int *error)
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass of Canvas, it is a %s\n",
 			  element->GetTypeName ()));
 		element->unref ();
-		GetSurface ()->Attach (NULL);
 		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
 		return NULL;
 	}
