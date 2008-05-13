@@ -9,8 +9,8 @@
 
 	* clock.cpp, clock.h: Remove InvokeOnMainThread.
 	* dependencyobject.cpp, dependencyobject.h: EventObject: added
-	  (Un)LockSurface. Used when using a surface pointer from another
-	  thread.
+	  AddTickCall. Requred when adding ticks from other than the 
+	  main thread.
 	* downloader.cpp: Send: use a TimeManager to add the timeout.
 	* media.cpp, media.h, mplayer.h, mplayer.cpp: Don't use
 	  TimeManager::InvokeOnMainThread anymore, add the timeouts using a
