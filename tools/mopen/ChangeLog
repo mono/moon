@@ -1,3 +1,8 @@
+2008-05-13  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Correct flags for mopen1 and only build mopen.exe if
+	--with-mono
+
 2008-04-24  Fernando Herrera  <fherrera@novell.com>
 
 	* Makefile.am: Fix "make -jN" build.

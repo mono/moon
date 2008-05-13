@@ -1,5 +1,10 @@
 2008-05-13  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* configure.ac, Makefile.am: Fixes so that we can build on a system that
+	actually has no mono on it.
+
+2008-05-13  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* configure.ac: Bump version so that we can make a source release
 
 2008-05-12  Andrew Jorgensen  <ajorgensen@novell.com>

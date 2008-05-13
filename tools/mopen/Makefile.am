@@ -2,13 +2,14 @@ moondir = $(prefix)/lib/moon
 
 bin_PROGRAMS = mopen1
 mopen1_SOURCES = $(srcdir)/mopen1.cpp
-INCLUDES = $(MOON_CFLAGS) -Wall  -I$(top_srcdir)/src
-LIBS = $(PLUGIN_LIBS) $(MOON_LIBS) -lmoon
-AM_LDFLAGS = -L$(top_builddir)/src/.libs
+INCLUDES = $(MOON_PROG_CFLAGS) -Wall
+LIBS = $(MOON_PROG_LIBS)
 
+if INCLUDE_MONO_RUNTIME
 moon_DATA = mopen.exe mopen.exe.mdb mopen.exe.config
 
 bin_SCRIPTS = mopen
+endif
 
 EXTRA_DIST = \
 	mopen.in \

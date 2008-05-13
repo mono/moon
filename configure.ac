@@ -1,4 +1,4 @@
-AC_INIT([moon],[0.7])
+AC_INIT([moon],[0.6])
 AC_CONFIG_SRCDIR(README)
 AC_CANONICAL_SYSTEM
 
@@ -122,6 +122,15 @@ if test x$with_mono = xyes; then
   PKG_CHECK_MODULES(SMCS,smcs,
 		    [SMCS_ASM=`pkg-config --variable=Libraries smcs`
 		     AC_SUBST(SMCS_ASM)])
+  PKG_CHECK_MODULES(GTKSHARP,gtk-sharp-2.0)
+  rsvg_sharp="rsvg-sharp-missing"
+  rsvg_sharp_pcs="rsvg-sharp-2.0 rsvg2-sharp-2.0"
+  for pc in $rsvg_sharp_pcs; do
+    PKG_CHECK_EXISTS($pc,[rsvg_sharp=$pc])
+  done
+  PKG_CHECK_MODULES(RSVGSHARP,$rsvg_sharp,[
+  		    RSVG_SHARP=$rsvg_sharp
+		    AC_SUBST(RSVG_SHARP)])
   AC_DEFINE([INCLUDE_MONO_RUNTIME],[1],[Include the mono runtime in the build (and enable Silverlight 2.0 plugin usage)])
 fi
 AM_CONDITIONAL(INCLUDE_MONO_RUNTIME,test x$with_mono = xyes)
@@ -147,7 +156,7 @@ fi
 dnl
 dnl Gtk+ checks
 dnl
-PKG_CHECK_MODULES(GTK,gtk+-2.0)
+PKG_CHECK_MODULES(GTK,gtk+-2.0 gthread-2.0)
 
 dnl
 dnl xrandr checks
@@ -165,19 +174,6 @@ dnl font checks
 dnl
 PKG_CHECK_MODULES(FREETYPE2,freetype2)
 PKG_CHECK_MODULES(FONTCONFIG,fontconfig)
-
-dnl
-dnl gtk#/rsvg# checks
-dnl
-PKG_CHECK_MODULES(GTKSHARP,gtk-sharp-2.0)
-rsvg_sharp="rsvg-sharp-missing"
-rsvg_sharp_pcs="rsvg-sharp-2.0 rsvg2-sharp-2.0"
-for pc in $rsvg_sharp_pcs; do
-  PKG_CHECK_EXISTS($pc,[rsvg_sharp=$pc])
-done
-PKG_CHECK_MODULES(RSVGSHARP,$rsvg_sharp,[
-		  RSVG_SHARP=$rsvg_sharp
-		  AC_SUBST(RSVG_SHARP)])
 
 dnl
 dnl testing checks
