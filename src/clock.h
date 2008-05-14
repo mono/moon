@@ -289,6 +289,7 @@ class Clock : public DependencyObject {
 
 	void BeginOnTick (bool begin = true) { this->begin_on_tick = begin; }
 	bool GetBeginOnTick () { return begin_on_tick; }
+	void SoftStop ();
 
 	virtual void ComputeBeginTime ();
 

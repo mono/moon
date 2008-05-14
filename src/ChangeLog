@@ -1,3 +1,9 @@
+2008-05-14  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp:
+	* clock.h: Fixing a case for Clock when the clock has RepeatBehavior but
+	it doesn't start from 00:00:00. Fixes #388745 (clock22.xaml test).
+
 2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* runtime.cpp: Don't call Attach (NULL) in Surface::Zombify, it causes

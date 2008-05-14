@@ -968,6 +968,14 @@ Clock::Pause ()
 }
 
 void
+Clock::SoftStop ()
+{
+	SetClockState (Clock::Stopped);
+	has_started = false;
+	was_stopped = false;
+}
+
+void
 Clock::Remove ()
 {
 }
@@ -1198,19 +1206,15 @@ void
 ClockGroup::DoRepeat (TimeSpan time)
 {
 	Clock::DoRepeat (time);
+
+	SoftStop ();
+	BeginOnTick (true);
+
 	
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *c = (Clock*)l->data;
-
-		// restart all non-active clocks
-		if (c->GetClockState() != Clock::Active) {
-			// XXX this is wrong.  begin
-			// time's are only figured into
-			// the initial starting.  not
-			// repeated iterations.
-			c->ComputeBeginTime ();
-			c->Begin ();
-		}
+		c->ComputeBeginTime ();
+		c->SoftStop ();
 	}
 }
 
