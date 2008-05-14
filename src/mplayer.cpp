@@ -156,7 +156,7 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	MediaFrame *frame = closure->frame;
 	IMediaStream *stream = frame ? frame->stream : NULL;
 	
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (%p), state: %i, frame: %p, pts: %llu\n", closure, player->state, closure->frame, closure->frame->pts);
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (%p), state: %i, frame: %p, pts: %llu = %llu\n", closure, player->state, closure->frame, closure->frame->pts, MilliSeconds_FromPts (closure->frame->pts));
 
 	if (player->GetBit (MediaPlayer::Seeking)) {
 		// We don't want any frames while we're waiting for a seek.
@@ -168,6 +168,15 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	
 	closure->frame = NULL;
 	
+	if (element->IsLive ()) {
+		if (player->first_live_pts == UINT64_MAX) {
+			player->first_live_pts = frame->pts;
+		} else if (player->first_live_pts > frame->pts) {
+			//printf ("MediaPlayer::FrameCallback (): Found a frame with lower pts (%llu) than a previous frame (%llu).\n", frame->pts, player->first_live_pts);
+			player->first_live_pts = frame->pts;
+		}
+	}
+
 	switch (stream->GetType ()) {
 	case MediaTypeVideo:
 		player->video.queue.Push (new Packet (frame));
@@ -374,7 +383,7 @@ MediaPlayer::Open (Media *media)
 
 	if (entry != NULL && entry->HasDuration ()) {
 		asx_duration = TimeSpan_ToPts (entry->GetDuration ());
-		if (asx_duration < duration) {
+		if (asx_duration < duration || element->IsLive ()) {
 			duration = asx_duration;
 			SetBit (FixedDuration);
 		}
@@ -408,6 +417,7 @@ MediaPlayer::Initialize ()
 	start_pts = 0;
 	current_pts = 0;
 	target_pts = 0;
+	first_live_pts = UINT64_MAX;
 	
 	height = 0;
 	width = 0;
@@ -567,11 +577,23 @@ MediaPlayer::AdvanceFrame ()
 		current_pts = frame->pts;
 		update = true;
 		
-		if (GetBit (FixedDuration) && current_pts > duration) {
-			printf ("MediaPlayer::AdvanceFrame (): Reached end of duration.\n");
-			SetEof (true);
-			update = false;
-			break;
+		//printf ("MediaPlayer::AdvanceFrame (): current_pts: %llu = %llu ms, duration: %llu = %llu ms\n",
+		//		current_pts, MilliSeconds_FromPts (current_pts),
+		//		duration, MilliSeconds_FromPts (duration));
+		
+		if (GetBit (FixedDuration)) {
+			if (element->IsLive ()) {
+				if (current_pts - first_live_pts > duration)
+					SetEof (true);
+			} else {
+				if (current_pts > duration)
+					SetEof (true);
+			}
+			if (GetEof ()) {
+				//printf ("MediaPlayer::AdvanceFrame (): Reached end of duration.\n");
+				update = false;
+				break;
+			}
 		}
 		
 		EnqueueFrames (0, 1);	

@@ -341,6 +341,8 @@ class MediaElement : public MediaBase {
 	bool IsPaused () { return state == Paused; }
 	bool IsStopped () { return state == Stopped; }
 	
+	bool IsLive ();
+	
 	pthread_mutex_t open_mutex; // Used when accessing closure.
 	MediaClosure *closure;
 	static void TryOpenFinished (void *user_data);

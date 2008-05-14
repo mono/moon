@@ -261,6 +261,7 @@ enum MediaElementFlags {
 	RecalculateMatrix   = (1 << 7),  // set if the patern matrix needs to be recomputed
 	WaitingForOpen      = (1 << 8),  // set if we've called OpenAsync on a media and we're waiting for the result	
 	MediaOpenedEmitted  = (1 << 9),  // set if MediaOpened has been emitted.
+	Broadcast           = (1 << 10), // set if we have a live stream as source
 };
 
 
@@ -641,21 +642,45 @@ MediaElement::Reinitialize (bool dtor)
 		SetPosition (0);
 }
 
+bool
+MediaElement::IsLive ()
+{
+	return flags & Broadcast;
+}
+
 void
 MediaElement::SetMedia (Media *media)
 {
+	bool broadcast = false, seekable = true;
+	
 	d(printf ("MediaElement::SetMedia (%p), current media: %p\n", media, this->media));
 	
 	if (this->media == media)
 		return;	
 	
 	this->media = media;
+	
+	if (downloader != NULL && downloader->GetHttpStreamingFeatures () != 0) {
+		broadcast = downloader->GetHttpStreamingFeatures () & HttpStreamingBroadcast;
+		seekable = downloader->GetHttpStreamingFeatures () & HttpStreamingSeekable;
+		
+		d(printf ("MediaElement::SetMedia () setting features %d to broadcast (%d) and seekable (%d)\n",
+			  downloader->GetHttpStreamingFeatures (), broadcast, seekable));
+		
+		SetCanPause (!broadcast);
+		SetCanSeek (seekable);
+		
+		if (broadcast)
+			flags |= Broadcast;
+		
+	}
+	
 	if (!mplayer->Open (media))
 		return;
 	
 	ReadMarkers ();
 	
-	SetNaturalDuration (TimeSpan_FromPts (mplayer->GetDuration ()));
+	SetNaturalDuration (broadcast ? 0 : TimeSpan_FromPts (mplayer->GetDuration ()));
 	SetNaturalVideoHeight ((double) mplayer->GetVideoHeight ());
 	SetNaturalVideoWidth ((double) mplayer->GetVideoWidth ());
 	SetAudioStreamCount (mplayer->GetAudioStreamCount ());
@@ -664,16 +689,6 @@ MediaElement::SetMedia (Media *media)
 	mplayer->SetVolume (GetVolume ());
 	mplayer->SetBalance (GetBalance ());
 	
-	if (downloader != NULL && downloader->GetHttpStreamingFeatures () != 0) {
-		bool broadcast = downloader->GetHttpStreamingFeatures () & HttpStreamingBroadcast;
-		bool seekable = downloader->GetHttpStreamingFeatures () & HttpStreamingSeekable;
-		
-		d(printf ("MediaElement::SetMedia () setting features %d to broadcast (%d) and seekable (%d)\n",
-			  downloader->GetHttpStreamingFeatures (), broadcast, seekable));
-		
-		SetCanPause (!broadcast);
-		SetCanSeek (seekable);
-	}
 	
 	if (playlist != NULL && playlist->GetCurrentPlaylistEntry () != NULL) {
 		if (!playlist->GetCurrentPlaylistEntry ()->GetClientSkip ()) {

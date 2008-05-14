@@ -1,5 +1,13 @@
 2008-05-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp, media.h: Added MediaElement::IsLive, and move
+	  initialization of this field to before our MediaPlayer is opened.
+	* mplayer.cpp, mplayer.h: For live sources the first frame might not
+	  come with pts = 0, so store that pts so that later we can correctly
+	  calculate how much we've actually played.
+
+2008-05-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp, mplayer.h: Add support for Duration tags in ASX files.
 	* playlist.h, playlist.cpp: Added a PlaylistEntry::HasDuration method,
 	  and skip entries with zero duration.
