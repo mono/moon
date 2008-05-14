@@ -160,6 +160,9 @@ NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 	NPError err = NPERR_NO_ERROR;
 
 	switch (variable) {
+	case NPPVpluginNeedsXEmbed:
+		*((NPBool *)result) = true;
+		break;
 	case NPPVpluginNameString:
 		*((char **)result) = (char *) PLUGIN_NAME;
 		break;
@@ -202,10 +205,15 @@ NPError
 NPP_Initialize (void)
 {
 	// We dont need to initialize mono vm and gtk more than one time.
+	if (!g_thread_supported ()) {
+		g_thread_init (NULL);
+	} 
+
 	if (!gtk_initialized) {
 		gtk_initialized = true;
 		gtk_init (0, 0);
 	}
+
 	downloader_initialize ();
 
 	if (!runtime_initialized) {

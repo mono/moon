@@ -624,15 +624,17 @@ PluginInstance::SetWindow (NPWindow *window)
 		return NPERR_NO_ERROR;
 	}
 
-	this->window = window;
-
 	if (!windowless) {
 		NPN_GetValue (instance, NPNVSupportsXEmbedBool, &xembed_supported);
 		if (!xembed_supported) {
 			d(printf ("*** XEmbed not supported\n"));
-			return NPERR_GENERIC_ERROR;
+			// This is a hack to deal with opera 9.5b2 and
+			// should be investigated more
+			//return NPERR_INCOMPATIBLE_VERSION_ERROR;
 		}
 	}
+
+	this->window = window;
 
 	CreateWindow ();
 	
@@ -1278,12 +1280,15 @@ PluginInstance::EventHandle (void *event)
 
 	switch (xev->type) {
 	case GraphicsExpose: {
+
 		GdkDrawable *drawable = gdk_pixmap_foreign_new ((GdkNativeWindow)xev->xgraphicsexpose.drawable);
-		if (!drawable)
-		  drawable = gdk_window_foreign_new ((GdkNativeWindow)xev->xgraphicsexpose.drawable);
+		if (!drawable) {
+			drawable = gdk_window_foreign_new ((GdkNativeWindow)xev->xgraphicsexpose.drawable);
+		}
 
 		if (drawable) {
-			GdkVisual *visual = gdkx_visual_get (((NPSetWindowCallbackStruct*)window->ws_info)->visual->visualid);
+			NPSetWindowCallbackStruct *ws_info = (NPSetWindowCallbackStruct*)window->ws_info;
+			GdkVisual *visual = gdkx_visual_get (ws_info->visual->visualid);
 
 			if (visual) {
 				GdkEventExpose expose;

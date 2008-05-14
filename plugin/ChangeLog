@@ -1,3 +1,14 @@
+2008-05-13  Larry Ewing  <lewing@novell.com>
+
+	* plugin-glue.cpp (NPP_Initialize): opera needs to have threads
+	initialized even in the gtk2 case.
+
+	* plugin.cpp (PluginInstance::SetWindow): disable this check since
+	it currently fails on opera 9.5b2.
+
+	These changes get the plugin loading in opera 9.5b2 we need to
+	discuss some of this with them more.
+	
 2008-05-13  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::Initialize): add an opera case (just
