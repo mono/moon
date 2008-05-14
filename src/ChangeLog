@@ -1,3 +1,8 @@
+2008-05-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: EventObject::AddTickCall: make sure we release
+	  the read lock if don't have a surface or timemanager.
+
 2008-05-14  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: No need to SoftStop the ClockGroup itself (unlike the

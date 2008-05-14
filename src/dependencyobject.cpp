@@ -142,7 +142,7 @@ EventObject::AddTickCall (void (*func)(gpointer))
 #if DEBUG
 		printf ("EventObject::AddTickCall (): Could not add tick call, no surface\n");
 #endif
-		return;
+		goto cleanup;
 	}
 	
 	timemanager = surface->GetTimeManager ();
@@ -151,12 +151,13 @@ EventObject::AddTickCall (void (*func)(gpointer))
 #if DEBUG
 		printf ("EventObject::AddTickCAll (): Could not add tick call, no time manager\n");
 #endif
-		return;
+		goto cleanup;
 	}
 
 	ref ();
 	timemanager->AddTickCall (func, this);
 	
+cleanup:
 	pthread_rwlock_unlock (&surface_lock);
 }
 
