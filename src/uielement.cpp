@@ -659,6 +659,7 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES) {
 		cairo_save (cr);
+		cairo_new_path (cr);
 		//RenderClipPath (cr);
 		cairo_identity_matrix (cr);
 		cairo_set_source_rgba (cr, 1.0, 0.5, 0.2, 1.0);
