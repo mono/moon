@@ -102,6 +102,9 @@ double media_base_get_download_progress (MediaBase *media);
 
 class Image : public MediaBase {
 	bool create_xlib_surface;
+	bool use_img_height;
+	bool use_img_width;
+	bool updating;
 	
 	bool CreateSurface (const char *fname);
 	void CleanupSurface ();

@@ -2058,6 +2058,10 @@ GHashTable *Image::surface_cache = NULL;
 Image::Image ()
 {
 	create_xlib_surface = true;
+	use_img_height = true;
+	use_img_width = true;
+	updating = false;
+	
 	pattern = NULL;
 	brush = NULL;
 	surface = NULL;
@@ -2175,16 +2179,23 @@ Image::DownloaderComplete ()
 	
 	g_free (filename);
 	
-	if (width == NULL && height == NULL) {
-		SetHeight ((double) surface->height);
-		SetWidth ((double) surface->width);
+	updating = true;
+	
+	if (use_img_width) {
+		if (!use_img_height)
+			SetWidth ((double) surface->width * height->AsDouble () / (double) surface->height);
+		else
+			SetWidth ((double) surface->width);
 	}
 	
-	if (width == NULL && height != NULL)
-		SetWidth ((double) surface->width * height->AsDouble () / (double) surface->height);
+	if (use_img_height) {
+		if (!use_img_width)
+			SetHeight ((double) surface->height * width->AsDouble () / (double) surface->width);
+		else
+			SetHeight ((double) surface->height);
+	}
 	
-	if (width != NULL && height == NULL)
-		SetHeight ((double) surface->height * width->AsDouble () / (double) surface->width);
+	updating = false;
 	
 	if (brush) {
 		// FIXME: this is wrong, we probably need to set the
@@ -2551,6 +2562,12 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 		dl->Open ("GET", source);
 		SetSource (dl, "");
 		dl->unref ();
+	} else if (args->property == FrameworkElement::HeightProperty) {
+		if (!updating)
+			use_img_height = args->new_value == NULL;
+	} else if (args->property == FrameworkElement::WidthProperty) {
+		if (!updating)
+			use_img_width = args->new_value == NULL;
 	}
 
 	if (args->property->type != Type::IMAGE) {

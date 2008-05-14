@@ -1,3 +1,16 @@
+2008-05-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for tests/xaml/test-directory-in-zip.html
+
+	* media.cpp (Image::Image): Initialize some new state variables to
+	keep track of whether or not the FrameworkElement::Width and
+	Height values are ever manually set.
+	(Image::DownloaderComplete): Properly set the Width/Height
+	property values based on whether a particular Width/Height have
+	been requested. Use the image's native width/height if not.
+	(Image::OnPropertyChanged): Listen for changes to Width/Height
+	properties.
+
 2008-05-14  Larry Ewing  <lewing@novell.com>
 
 	* src/uielement.cpp (UIElement::PostRender): clear any existing
