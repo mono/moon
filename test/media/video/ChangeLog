@@ -1,5 +1,9 @@
 2008-05-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* drtlist.xml: test-http-failure isn't failing anymore.
+
+2008-05-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* drtlist.xml: Added test-playlist-with-zero-duration and
 	  test-playlist-with-duration.
 	* test-download-and-buffering-progress-on-big-files.html: Modified to
