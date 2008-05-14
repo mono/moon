@@ -1,5 +1,11 @@
 2008-05-14  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: No need to SoftStop the ClockGroup itself (unlike the
+	children) on DoRepeat (). Fixes a small regression in clock21.xaml
+	introduced with last commit.
+
+2008-05-14  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp:
 	* clock.h: Fixing a case for Clock when the clock has RepeatBehavior but
 	it doesn't start from 00:00:00. Fixes #388745 (clock22.xaml test).
