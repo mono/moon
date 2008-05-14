@@ -1,3 +1,8 @@
+2008-05-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moonlight.h: Start plugin description with Silverlight plugin 
+	version. The new detection script for sharethelove requires this.
+
 2008-05-13  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp, plugin-class.cpp: copy all npvariant strings so that

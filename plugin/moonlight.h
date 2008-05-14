@@ -44,10 +44,12 @@
 #define PLUGIN_NAME         "Silverlight Plug-In"
 #define PLUGIN_VERSION      VERSION
 #define PLUGIN_OURNAME      "Novell Moonlight"
-#define PLUGIN_DESCRIPTION  "Novell <a href=\"http://www.mono-project.com/Moonlight\">Moonlight</a> " VERSION " is Mono's Free/Open Source implementation of Silverlight."
+#define PLUGIN_SUFFIX       "Novell <a href=\"http://www.mono-project.com/Moonlight\">Moonlight</a> " VERSION " is Mono's Free/Open Source implementation of Silverlight."
 #if INCLUDE_MONO_RUNTIME
+#    define PLUGIN_DESCRIPTION  "2.0.30226.2 (compatible). " PLUGIN_SUFFIX
 #    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":scr:Novell Moonlight;" MIME_SILVERLIGHT_2 "::Novell Moonlight"
 #else
+#    define PLUGIN_DESCRIPTION  "1.0.30401.0 (compatible). " PLUGIN_SUFFIX
 #    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":scr:Novell Moonlight" 
 #endif
 
