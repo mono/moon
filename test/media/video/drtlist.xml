@@ -8,12 +8,14 @@
     <Test id="7" inputFile="test-state-after-setsource.html" masterFile10="None" timeout="5000" categories="video,media"  />
     <Test id="8" inputFile="test-invalid-video-codec.html" masterFile10="None" timeout="5000" categories="video,media"  />
     <Test id="9" inputFile="test-downloadprogress-on-small-files.html" masterFile10="None" timeout="5000" categories="video,media"  />
-    <Test id="10" inputFile="test-download-and-buffering-progress-on-big-files.html" masterFile10="None" timeout="30000" categories="video,media"  />
+    <Test id="10" inputFile="test-download-and-buffering-progress-on-big-files.html" masterFile10="None" timeout="60000" categories="video,media"  />
     <Test id="11" inputFile="test-mms-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming" xspExecDir="../../" />
     <Test id="12" inputFile="test-playlist-with-clientskip.html" masterFile10="None" timeout="5000" categories="media,playlist"  />
     <Test id="13" inputFile="test-misc.html" masterFile10="None" timeout="5000" categories="video,media" knownFailure="True" failureReason="Missing readonly property validation"  />
     <Test id="14" inputFile="test-http-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming"  knownFailure="True" failureReason="Http->mms fallback isn't implemented yet" />
     <Test id="15" inputFile="test-bufferingprogress.html" masterFile10="None" timeout="120000" categories="video,media"  />
     <Test id="16" inputFile="test-events-with-playlist.html" masterFile10="None" timeout="30000" categories="video,media,playlist"  />
-    <Test id="17" inputFile="test-playlist-with-base.html" masterFile10="None" timeout="30000" categories="video,media,playlist"  xspExecDir="../../"  />
+    <Test id="17" inputFile="test-playlist-with-base.html" masterFile10="None" timeout="20000" categories="video,media,playlist"  xspExecDir="../../"  />
+    <Test id="18" inputFile="test-playlist-with-zero-duration.html" masterFile10="None" timeout="5000" categories="video,media,playlist" />
+    <Test id="19" inputFile="test-playlist-with-duration.html" masterFile10="None" timeout="30000" categories="video,media,playlist" />
 </DRTList>

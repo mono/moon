@@ -1,3 +1,14 @@
+2008-05-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Added test-playlist-with-zero-duration and
+	  test-playlist-with-duration.
+	* test-download-and-buffering-progress-on-big-files.html: Modified to
+	  don't fail if we get events after shutdown was requested.
+	* test-playlist-with-duration.asx,
+	  test-playlist-with-zero-duration.asx,
+	  test-playlist-with-zero-duration.html,
+	  test-playlist-with-duration.html: Added.
+
 2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Silverlight.js: Demystified.

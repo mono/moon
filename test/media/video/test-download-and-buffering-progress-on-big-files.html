@@ -26,6 +26,7 @@
 	var mediaElement = null;
 	var plugin = null;
 	
+	var shutdown = false;
 	var failed = false;
 	var download_progressed_count = 0;
 	var buffering_progressed_count = 0;
@@ -49,6 +50,7 @@
 			}
 		}
 		TestLogger.LogResult (failed ? -1 : 1);
+		shutdown = true;
 		TestHost.SignalShutdown (document.name);
 	}
 
@@ -75,6 +77,8 @@
 
 	function OnMediaFailed (obj, args)
 	{
+		if (shutdown)
+			return;
 		TestLogger.LogDebug ("OnMediaFailed");
 		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
 		TestLogger.LogResult (-1)

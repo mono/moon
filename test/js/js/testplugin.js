@@ -3,6 +3,7 @@ var TestHost = null;
 var TestPluginReady = false;
 var pendingTypes = new Array ();
 var pendingMessages = new Array ();
+var ShutdownRequested = false;
 
 // This file requires moon/test/js/js/utils.js
 
@@ -170,6 +171,7 @@ function SignalShutdown ()
 		return;
 	}
 
+	ShutdownRequested = true;
 	TestHost.SignalShutdown (document.name);
 }
 

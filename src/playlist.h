@@ -116,6 +116,7 @@ public:
 
 	TimeSpan GetDuration ();
 	void SetDuration (TimeSpan duration);
+	bool HasDuration () { return (set_values & PlaylistNode::Duration); }
 
 	const char *GetInfoTarget ();
 	void SetInfoTarget (char *info_target);

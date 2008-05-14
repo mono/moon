@@ -1,3 +1,8 @@
+2008-05-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* js/testplugin.js: Add a variable to detect when shutdown has been
+	  requested.
+
 2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* js/testplugin.js: Added a mock test plugin which allows tests to

@@ -1,0 +1,111 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Source="test-playlist-with-zero-duration.asx" x:Name="media" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" AutoPlay="False" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		var timeout = null;
+		var failed = 0;
+		var host = null;
+		
+		function timeOut ()
+		{
+			TestLogger.LogError ("Test timed out.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.Source);
+			TestLogger.LogError ("Media with zero duration is considered non-existent, so no MediaOpened event should be raised");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+			TestLogger.LogError ("Media with zero duration is considered non-existent, so no MediaEnded event should be raised");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			if (ShutdownRequested)
+				return;
+
+			TestLogger.LogDebug ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			host = sender;
+			SetTimer ();
+			setTimeout ("check ();", 1000);
+		}
+
+		function check ()
+		{
+			TestLogger.LogDebug ("check");
+			var failed = false;
+			var mediaElement = host.findName ("media");
+			if (mediaElement.NaturalVideoWidth != 0 || mediaElement.NaturalVideoHeight != 0) {
+				TestLogger.LogError ("NaturalVideoWidth and NaturalVideoHeight must be zero: zero-length media shouldn't be loaded");
+				TestLogger.LogResult (-1);
+			} else {
+				TestLogger.LogResult (1);
+			}
+			SignalShutdown ();
+		}
+
+		function SetTimer ()
+		{
+			if (timeout) 
+				clearTimeout (timeout);
+			timeout = setTimeout ("timeOut ();", 3000);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		</script>
+	</head>
+
+  <body>
+    <div id="ML">
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="MLControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+

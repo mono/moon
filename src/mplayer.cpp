@@ -266,6 +266,7 @@ MediaPlayer::Open (Media *media)
 	int stride;
 	IMediaDecoder *encoding;
 	IMediaStream *stream;
+	uint64_t asx_duration;
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::Open (%p), current media: %p\n", media, this->media);
 	
@@ -369,6 +370,14 @@ MediaPlayer::Open (Media *media)
 	if (start_pts >= duration + MilliSeconds_ToPts (6000) /* This random value (6000) is as close as I could get without spending hours testing */) {
 		element->MediaFailed (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
 		return false;
+	}
+
+	if (entry != NULL && entry->HasDuration ()) {
+		asx_duration = TimeSpan_ToPts (entry->GetDuration ());
+		if (asx_duration < duration) {
+			duration = asx_duration;
+			SetBit (FixedDuration);
+		}
 	}
 
 	if (start_pts <= duration)
@@ -557,6 +566,13 @@ MediaPlayer::AdvanceFrame ()
 		stream = frame->stream;
 		current_pts = frame->pts;
 		update = true;
+		
+		if (GetBit (FixedDuration) && current_pts > duration) {
+			printf ("MediaPlayer::AdvanceFrame (): Reached end of duration.\n");
+			SetEof (true);
+			update = false;
+			break;
+		}
 		
 		EnqueueFrames (0, 1);	
 		

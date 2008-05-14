@@ -578,6 +578,13 @@ Playlist::Open ()
 	current_node = (PlaylistNode *) entries->First ();
 
 	current_entry = GetCurrentEntry ();	
+	
+	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
+		d(printf ("Playlist::Open (), current entry has zero duration, skipping it.\n"));
+		OnEntryEnded ();
+		current_entry = GetCurrentEntry ();
+	}
+	
 	if (current_entry)
 		current_entry->Open ();
 
@@ -612,6 +619,12 @@ Playlist::Play ()
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
 	d(printf ("Playlist::Play (), current entry: %p\n", current_entry));
+
+	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
+		d(printf ("Playlist::Play (), current entry has zero duration, skipping it.\n"));
+		OnEntryEnded ();
+		current_entry = GetCurrentEntry ();
+	}
 
 	if (current_entry)
 		return current_entry->Play ();

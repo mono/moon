@@ -76,6 +76,9 @@ class MediaPlayer : public EventObject {
 		Opened				= (1 << 9),
 		CanSeek				= (1 << 10),
 		CanPause			= (1 << 11),
+		// If we should stop playing when we reach the duration
+		// Used to support the Duration tag in asx files.
+		FixedDuration		= (1 << 12), 
 	};
 	
  private:

@@ -1,5 +1,11 @@
 2008-05-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp, mplayer.h: Add support for Duration tags in ASX files.
+	* playlist.h, playlist.cpp: Added a PlaylistEntry::HasDuration method,
+	  and skip entries with zero duration.
+
+2008-05-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.cpp: EventObject::AddTickCall: make sure we release
 	  the read lock if don't have a surface or timemanager.
 
