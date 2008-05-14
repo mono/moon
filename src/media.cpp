@@ -729,12 +729,13 @@ MediaElement::MediaOpened (Media *media)
 		} else {
 			playlist = new Playlist (this, media);
 		}
+		
 		playlist->GetCurrentEntry ()->PopulateMediaAttributes ();
 		SetMedia (media);
 		
-		if (flags & DownloadComplete){
+		if (flags & DownloadComplete) {
 			SetState (Buffering);
-			if ((flags & PlayRequested) || GetValue (AutoPlayProperty)->AsBool ())
+			if ((flags & PlayRequested) || GetAutoPlay ())
 				Play ();
 			else
 				Pause ();
@@ -742,7 +743,7 @@ MediaElement::MediaOpened (Media *media)
 			Invalidate ();
 			EmitMediaOpened ();
 		}
-				
+		
 		return true;
 	}
 }
@@ -1212,7 +1213,6 @@ MediaElement::TryOpen ()
 		}
 		
 		if (!MEDIA_SUCCEEDED (result = source->Initialize ())) {
-			printf ("MediaFailed (source could not be initialized): %i\n", result);
 			MediaFailed ();
 			media->unref ();
 			media = NULL;
@@ -1276,7 +1276,7 @@ MediaElement::DownloaderFailed (EventArgs *args)
 void
 MediaElement::DownloaderComplete ()
 {
-	d(printf ("MediaElement::DownloaderComplete (), downloader: %i, state: %s, previous state: %s\n", GET_OBJ_ID (downloader), GetStateName (state), GetStateName (prev_state)));
+	d(printf ("MediaElement::DownloaderComplete (), downloader: %d, state: %s, previous state: %s\n", GET_OBJ_ID (downloader), GetStateName (state), GetStateName (prev_state)));
 	
 	flags |= DownloadComplete;
 	

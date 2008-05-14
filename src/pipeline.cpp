@@ -3230,8 +3230,8 @@ IMediaSource::ReadSome (void *buf, uint32_t n, bool block, int64_t start)
 	if (start == -1)
 		start = GetPositionInternal ();
 	else if (start != GetPositionInternal () && !SeekInternal (start, SEEK_SET))
-		return false;
-
+		return -1;
+	
 	WaitForPosition (block, start + n);
 
 	result = ReadInternal (buf, n);

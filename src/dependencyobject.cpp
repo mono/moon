@@ -493,7 +493,7 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 
 #if DEBUG
 	if (refcount == 0)
-		printf ("EventObject::Emit (): Warning: object %i was destroyed during event emission.\n", GET_OBJ_ID (this));
+		printf ("EventObject::Emit (): Warning: object %d was destroyed during event emission.\n", GET_OBJ_ID (this));
 #endif
 
 	return true;
