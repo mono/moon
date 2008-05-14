@@ -1,3 +1,8 @@
+2008-05-14  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Don't build anything but what needs to be built when
+	building the plugin installer
+
 2008-05-13  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: tools must build after other mono stuff

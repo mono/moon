@@ -1,15 +1,20 @@
 if INCLUDE_MONO_RUNTIME
 MONO_SUBDIRS = class
+endif
+
 if !PLUGIN_INSTALL
+if INCLUDE_MONO_RUNTIME
 MONO_SUBDIRS += gtk examples man data
-endif !PLUGIN_INSTALL
 endif INCLUDE_MONO_RUNTIME
 
 if INCLUDE_TESTING
-TEST_SUBDIR=test
-endif
+TEST_SUBDIR = test
+endif INCLUDE_TESTING
 
-SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) tools plugin $(TEST_SUBDIR)
+TOOLS_SUBDIR = tools
+endif !PLUGIN_INSTALL
+
+SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) $(TOOLS_SUBDIR) plugin $(TEST_SUBDIR)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc
