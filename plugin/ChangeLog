@@ -1,5 +1,11 @@
 2008-05-13  Larry Ewing  <lewing@novell.com>
 
+	* plugin.cpp, plugin-class.cpp: copy all npvariant strings so that
+	we can null terminate them.  WebKit and Opera don't null terminate
+	strings it seems.
+
+2008-05-13  Larry Ewing  <lewing@novell.com>
+
 	* plugin-glue.cpp (NPP_Initialize): opera needs to have threads
 	initialized even in the gtk2 case.
 

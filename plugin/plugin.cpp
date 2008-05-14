@@ -658,7 +658,9 @@ PluginInstance::SetPageURL ()
 	if (NPN_GetProperty (instance, window, str_location, &location_property)) {
 		// Get the location property from the location object.
 		if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {
-			surface->SetSourceLocation (NPVARIANT_TO_STRING (location_object).utf8characters);
+			char *source = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
+			surface->SetSourceLocation (source);
+			g_free (source);
 			NPN_ReleaseVariantValue (&location_object);
 		}
 		NPN_ReleaseVariantValue (&location_property);
