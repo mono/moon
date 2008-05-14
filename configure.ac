@@ -118,20 +118,35 @@ dnl Mono (Silverlight 2.0) checks
 dnl
 AC_ARG_WITH(mono,[  --with-mono=yes,no   If you want to enable support for Silverlight 2.0],[],[with_mono=yes])
 if test x$with_mono = xyes; then
-  PKG_CHECK_MODULES(MONO,mono)
-  PKG_CHECK_MODULES(SMCS,smcs,
-		    [SMCS_ASM=`pkg-config --variable=Libraries smcs`
-		     AC_SUBST(SMCS_ASM)])
-  PKG_CHECK_MODULES(GTKSHARP,gtk-sharp-2.0)
-  rsvg_sharp="rsvg-sharp-missing"
-  rsvg_sharp_pcs="rsvg-sharp-2.0 rsvg2-sharp-2.0"
-  for pc in $rsvg_sharp_pcs; do
-    PKG_CHECK_EXISTS($pc,[rsvg_sharp=$pc])
-  done
-  PKG_CHECK_MODULES(RSVGSHARP,$rsvg_sharp,[
-  		    RSVG_SHARP=$rsvg_sharp
-		    AC_SUBST(RSVG_SHARP)])
-  AC_DEFINE([INCLUDE_MONO_RUNTIME],[1],[Include the mono runtime in the build (and enable Silverlight 2.0 plugin usage)])
+  if pkg-config mono; then
+    PKG_CHECK_MODULES(MONO,mono)
+    if pkg-config --variable=Libraries smcs; then
+        PKG_CHECK_MODULES(SMCS,smcs,
+      		    [SMCS_ASM=`pkg-config --variable=Libraries smcs`
+     		     AC_SUBST(SMCS_ASM)])
+        rsvg_sharp_pcs="rsvg-sharp-2.0 rsvg2-sharp-2.0"
+        for pc in $rsvg_sharp_pcs; do
+            PKG_CHECK_EXISTS($pc,[rsvg_sharp=$pc])
+        done
+        if pkg-config gtk-sharp-2.0 $rsvg_sharp; then
+            PKG_CHECK_MODULES(GTKSHARP,gtk-sharp-2.0)
+            PKG_CHECK_MODULES(RSVGSHARP,$rsvg_sharp,[
+            		    RSVG_SHARP=$rsvg_sharp
+          		    AC_SUBST(RSVG_SHARP)])
+            AC_DEFINE([INCLUDE_MONO_RUNTIME],[1],[Include the mono runtime in the build (and enable Silverlight 2.0 plugin usage)])
+        else
+	    with_mono=no
+	    mreason="(reason: gtk-sharp-2.0 or rsvg-sharp-2.0 is missing)"
+	fi
+    else
+        with_mono=no
+	mreason="(reason: Mono newer than 1.9 not installed)"
+    fi
+  else
+    mreason="(reason: Mono newer than 1.9 not installed)"
+  fi
+else
+    mreason="(reason: disabled at configure time)"
 fi
 AM_CONDITIONAL(INCLUDE_MONO_RUNTIME,test x$with_mono = xyes)
 
@@ -415,7 +430,7 @@ cat <<EOF
 Moonlight configuration:
 
 	Support for 1.0: yes
-	Support for 2.0: $with_mono
+	Support for 2.0: $with_mono $mreason
 	Support for ffmpeg: $with_ffmpeg
 	Support for swscale: $with_swscale
 	Support for running the test harness: $with_testing
