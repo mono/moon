@@ -9,7 +9,6 @@ if INCLUDE_TESTING
 TEST_SUBDIR=test
 endif
 
-DIST_SUBDIRS = $(subdirs) src class gtk examples man data tools plugin test
 SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) tools plugin $(TEST_SUBDIR)
 
 pkgconfigdir = $(libdir)/pkgconfig

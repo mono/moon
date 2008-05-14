@@ -1,4 +1,3 @@
-DIST_SUBDIRS = test samples ff2 ff3 install
 SUBDIRS = . test samples
 if HAVE_GECKO_1_8
 SUBDIRS += ff2
