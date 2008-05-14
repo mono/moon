@@ -7,7 +7,7 @@
 		<EventTrigger RoutedEvent="Canvas.Loaded">
 			<BeginStoryboard>
 				<Storyboard RepeatBehavior="Forever">
-					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:2" BeginTime="00:00:02"/>
+					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" By="500" Duration="00:00:4" BeginTime="00:00:02"/>
 				</Storyboard>
 			</BeginStoryboard>
 		</EventTrigger>
@@ -20,7 +20,7 @@
 	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="150" Width="600" Height="30">
 		<Run Text="The red block show stay at the left for 2 seconds, then move to the right."/>
 		<LineBreak/>
-		<Run Text="It should take 2 seconds to move to the right, then wait 2 seconds (at right)"/>
+		<Run Text="It should take 4 seconds to move to the right, then wait 2 seconds (at right)"/>
 		<LineBreak/>
 		<Run Text="and return to the left side to repeat the last step.  forever."/>
 	</TextBlock>

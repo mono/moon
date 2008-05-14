@@ -1,3 +1,8 @@
+2008-05-14  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/clock22.xaml: Changing values/timing for this test to make
+	the problem a little bit more obvious (that's bug #388745).
+
 2008-05-13  Michael Dominic K.  <mdk@mdk.am>
 	
 	* xaml/clock/clock32.xaml: Fixing the clock32.xaml test.
