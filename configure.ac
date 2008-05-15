@@ -289,18 +289,28 @@ if test x$user_plugin = xyes; then
   fi
 fi
 
-case "$target" in
-  "i686-pc-linux-gnu" | "i586-pc-linux-gnu" | "i686-suse-linux-gnu" )
-  TARGET_PLATFORM="Linux-x86-gcc3"
-  ;;
-  "x86_64-pc-linux-gnu" )
-  TARGET_PLATFORM="Linux-x86_64-gcc3"
+case "$target_os" in
+  "linux-gnu" )
+  TARGET_PLATFORM="Linux"
   ;;
   * )
-  AC_MSG_ERROR([Target platform $target unknown.
-Please add the appropriate target platform string to configure.ac.
-See targetPlatform at http://developer.mozilla.org/en/docs/Install_Manifests])
+  AC_MSG_ERROR([Target os $target_os is unknown.
+Please add the appropriate string to configure.ac.
+See http://developer.mozilla.org/en/docs/OS_TARGET])
   ;;
+esac
+
+case "$target_cpu" in
+  "i586" | "i686" )
+  TARGET_PLATFORM="$TARGET_PLATFORM"_x86-gcc3
+  ;;
+  "x86_64" )
+  TARGET_PLATFORM="$TARGET_PLATFORM"_x86_64-gcc3
+  ;;
+  * )
+  AC_MSG_ERROR([Target cpu $target_cpu is unknown.
+Please add the appropriate string to configure.ac.
+See http://developer.mozilla.org/en/docs/XPCOM_ABI])
 esac
 AC_SUBST(TARGET_PLATFORM)
 

@@ -4,6 +4,10 @@
 
 2008-05-15  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* configure.ac: ignore target_vendor part
+
+2008-05-15  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* configure.ac: Determine mozilla os-abi string for targetPlatform
 
 2008-05-14  Andrew Jorgensen  <ajorgensen@novell.com>
