@@ -49,6 +49,8 @@
     <File name="ff3/ff3-mmsh.cpp" subtype="Code" buildaction="Nothing" />
     <File name="ff3/ff3-http.cpp" subtype="Code" buildaction="Nothing" />
     <File name="ff3/Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="mmsh-state.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="mmsh-state.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

@@ -1,3 +1,7 @@
+2008-05-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.mdp: Updated.
+
 2008-05-15  Larry Ewing  <lewing@novell.com>
 
 	* plugin-class.cpp, plugin.cpp, plugin.h: capture id parameter and
