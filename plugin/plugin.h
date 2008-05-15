@@ -46,6 +46,7 @@ class PluginInstance
 	char *background;
 	char *onError;
 	char *onResize;
+	char *id;
 
 	bool windowless;
 	bool silverlight2;
@@ -155,6 +156,8 @@ class PluginInstance
 	// Property getters and setters
 	char *getInitParams () { return this->initParams; }
 	char *getSource () { return this->source; }
+	char *getId () { return this->id; }
+
 	void setSource (const char *value);
 
 	char *getBackground ();

@@ -343,7 +343,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	onError = NULL;
 	onResize = NULL;
 	background = NULL;
-	
+	id = NULL;
+
 	windowless = false;
 	
 	bridge = NULL;
@@ -400,6 +401,7 @@ PluginInstance::~PluginInstance ()
 		NPN_ReleaseObject ((NPObject*)rootobject);
 
 	g_free (background);
+	g_free (id);
 	delete xaml_loader;
 
 	// Destroy the XAP application
@@ -492,6 +494,9 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "maxFramerate")) {
 			maxFrameRate = atoi (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "id")) {
+			id = g_strdup (argv [i]);
 		}
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);

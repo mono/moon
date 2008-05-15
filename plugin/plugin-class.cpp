@@ -1592,12 +1592,16 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 		string_to_npvariant (plugin->getSource (), result);
 		return true;
 
-	case MoonId_Id:
-		// FIXME we need to look at how the plugin deals with 
-		// unknown params on the dom node
-		NULL_TO_NPVARIANT (*result);
-		return true;
+	case MoonId_Id: {
+		char *id = plugin->getId ();
+		if (id)
+			string_to_npvariant (id, result);
+		else 
+			NULL_TO_NPVARIANT (*result);
 
+		return true;
+	}
+	
 	default:
 		return MoonlightObject::GetProperty (id, name, result);
 	}
