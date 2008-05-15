@@ -338,6 +338,11 @@ This is not likely the final version of this code.
 
 	To install the plugin open the plugin/novell-moonlight.xpi with	your
 	mozilla-based browser and follow the prompts.
+
+* Some undocumented Silverlight features and their Moonlight implementation details 
+  are listed on:
+
+	http://www.mono-project.com/MoonlightQuirks
 	
 ----------------------------------------------------------------------------------
 Issues
