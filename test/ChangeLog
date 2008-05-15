@@ -1,3 +1,9 @@
+2008-05-15  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/clock37.html:
+	* xaml/clock/clock37.xaml: Adding a new test that shows an interesting
+	case of animation jags (not proper animation finishing).
+
 2008-05-14  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/clock/clock22.xaml: Changing values/timing for this test to make
