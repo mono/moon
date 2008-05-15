@@ -1417,12 +1417,13 @@ PluginInstance::EventHandle (void *event)
 		Surface::crossing_notify_callback (NULL, &crossing, surface);
 		break;
 	}
-	case FocusIn:
+	case FocusIn: {
+		Surface::focus_in_callback (NULL, NULL, surface);
+		break;
+	}
+
 	case FocusOut: {
-		// don't think there's anything to do for these.
-		// maybe we shouldn't respond to keypresses at all
-		// unless we're focused?  will mozilla even send them
-		// to us?
+		Surface::focus_out_callback (NULL, NULL, surface);
 		break;
 	}
 	default:

@@ -4,6 +4,9 @@
 
 2008-05-15  Larry Ewing  <lewing@novell.com>
 
+	* plugin.cpp (PluginInstance::EventHandle): send focus in/out to
+	the surface.
+
 	* plugin-class.cpp, plugin.cpp, plugin.h: capture id parameter and
 	return it in js.
 
