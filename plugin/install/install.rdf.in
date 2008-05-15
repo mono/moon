@@ -4,6 +4,7 @@
     <em:name>Novell Moonlight</em:name>
     <em:version>@VERSION@</em:version>
     <em:description>The open source implementation of Microsoft Silverlight</em:description>
+    <em:targetPlatform>@TARGET_PLATFORM@</em:targetPlatform>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>

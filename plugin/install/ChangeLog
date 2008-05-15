@@ -1,0 +1,4 @@
+2008-05-15  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* install.rdf.in: Use targetPlatform to restrict installation to
+	the supported platform.  Fixes bnc#390873

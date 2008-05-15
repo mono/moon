@@ -289,6 +289,21 @@ if test x$user_plugin = xyes; then
   fi
 fi
 
+case "$target" in
+  "i686-pc-linux-gnu" | "i586-pc-linux-gnu" )
+  TARGET_PLATFORM="Linux-x86-gcc3"
+  ;;
+  "x86_64-pc-linux-gnu" )
+  TARGET_PLATFORM="Linux-x86_64-gcc3"
+  ;;
+  * )
+  AC_MSG_ERROR([Target platform $target unknown.
+Please add the appropriate target platform string to configure.ac.
+See targetPlatform at http://developer.mozilla.org/en/docs/Install_Manifests])
+  ;;
+esac
+AC_SUBST(TARGET_PLATFORM)
+
 dnl *************************************
 dnl *** Checks for large file support ***
 dnl *************************************

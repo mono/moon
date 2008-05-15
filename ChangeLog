@@ -1,3 +1,7 @@
+2008-05-15  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Determine mozilla os-abi string for targetPlatform
+
 2008-05-14  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Don't build anything but what needs to be built when
