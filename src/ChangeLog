@@ -1,9 +1,19 @@
+2008-05-15  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::button_press_callback): stop firefox from
+	stealing our focus in the widget case by always returning true on
+	button press events.  There may be a better way to handle this by
+	only returning true if the press lands on and element but this at
+	least improves the situation.
+
+	Fixes FullScreenKey.htm.
+
 2008-05-15  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: Also apply the idle_hint when the ClockGroup itself goes to
 	Filling state, this makes the idle optimization cover all the cases. Big
 	perf boost expected.
-
+	
 2008-05-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for tests/xaml/test-directory-in-zip.html

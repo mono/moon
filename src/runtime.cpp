@@ -1673,7 +1673,7 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *event, gpoint
 	s->UpdateCursorFromInputList ();
 	s->SetCanFullScreen (false);
 	
-	return handled;
+	return widget ? true : handled;
 }
 
 gboolean
