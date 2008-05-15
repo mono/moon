@@ -117,7 +117,7 @@ class GeometryGroup : public Geometry {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
 	
 	virtual void Draw (Path *path, cairo_t *cr);
-	Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical); }
+	//Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical); }
 	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
 	
 	//
