@@ -1015,12 +1015,14 @@ Clock::SkipToFill ()
 	printf ("filling clock %p after this tick\n", this);
 #endif
 	switch (timeline->GetFillBehavior()) {
-	case FillBehaviorHoldEnd:
-		SetClockState (Clock::Filling);
-		break;
-	case FillBehaviorStop:
-		Stop ();
-		break;
+
+		case FillBehaviorHoldEnd:
+			SetClockState (Clock::Filling);
+			break;
+
+		case FillBehaviorStop:
+			Stop ();
+			break;
 	}
 }
 
@@ -1149,7 +1151,7 @@ ClockGroup::Tick ()
 		Clock *c = (Clock*)l->data;
 		if (c->GetClockState() != Clock::Stopped) {
 			if (c->GetObjectType () < Type::CLOCKGROUP || ! ((ClockGroup *) c)->IsIdle ())
-			child_running |= c->Tick ();
+				child_running |= c->Tick ();
 		}
 		else if (!c->GetHasStarted() && !c->GetWasStopped() && (c->GetBeginOnTick() || c->GetBeginTime () <= current_time)) {
 			if (c->GetBeginOnTick()) {
