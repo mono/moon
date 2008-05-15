@@ -290,7 +290,7 @@ if test x$user_plugin = xyes; then
 fi
 
 case "$target" in
-  "i686-pc-linux-gnu" | "i586-pc-linux-gnu" )
+  "i686-pc-linux-gnu" | "i586-pc-linux-gnu" | "i686-suse-linux-gnu" )
   TARGET_PLATFORM="Linux-x86-gcc3"
   ;;
   "x86_64-pc-linux-gnu" )
