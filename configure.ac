@@ -290,7 +290,7 @@ if test x$user_plugin = xyes; then
 fi
 
 case "$target_os" in
-  "linux-gnu" )
+  *linux* )
   TARGET_PLATFORM="Linux"
   ;;
   * )
@@ -301,10 +301,10 @@ See http://developer.mozilla.org/en/docs/OS_TARGET])
 esac
 
 case "$target_cpu" in
-  "i586" | "i686" )
+  i*86 )
   TARGET_PLATFORM="$TARGET_PLATFORM"_x86-gcc3
   ;;
-  "x86_64" )
+  x86_64 )
   TARGET_PLATFORM="$TARGET_PLATFORM"_x86_64-gcc3
   ;;
   * )

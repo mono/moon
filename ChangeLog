@@ -1,3 +1,7 @@
+2008-05-15  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Make target tests more generic
+
 2008-05-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* configure.ac: Added target as requested by error message.
