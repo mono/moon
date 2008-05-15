@@ -1,3 +1,7 @@
+2008-05-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/ConsoleReport.cs: Add colors to the console output.
+
 2008-05-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* masters/test-second-surface-errorMaster.png: Added

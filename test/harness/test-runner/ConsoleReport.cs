@@ -58,26 +58,34 @@ namespace MoonlightTests {
 
 		public void AddResult (Test test, TestResult result)
 		{
-			if (run.VerboseLevel != VerboseLevel.None)
-				Console.Write ("{0}:  ", test.InputFile);
+			string state = string.Empty;
 
 			switch (result) {
 			case TestResult.Pass:
-				Console.Write (run.VerboseLevel != VerboseLevel.None ? "P" : ".");
+				Console.ForegroundColor = ConsoleColor.Green;
+				state = run.VerboseLevel != VerboseLevel.None ? "P" : ".";
 				break;
 			case TestResult.Ignore:
-				Console.Write ("I");
+				Console.ForegroundColor = ConsoleColor.White;
+				state = "I";
 				break;
 			case TestResult.Fail:
-				Console.Write ("F");
+				Console.ForegroundColor = ConsoleColor.Red;
+				state = "F";
 				break;
 			case TestResult.KnownFailure:
-				Console.Write ("K");
+				Console.ForegroundColor = ConsoleColor.Blue;
+				state = "K";
 				break;
 			}
 
 			if (run.VerboseLevel != VerboseLevel.None)
+				Console.Write ("{0}:  ", test.InputFile);
+			Console.Write (state);
+			if (run.VerboseLevel != VerboseLevel.None)
 				Console.WriteLine ();
+			Console.ResetColor ();
+			
 		}
 
 		private void ReportIgnoredTests ()
