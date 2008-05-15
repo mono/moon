@@ -1,3 +1,9 @@
+2008-05-15  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: Also apply the idle_hint when the ClockGroup itself goes to
+	Filling state, this makes the idle optimization cover all the cases. Big
+	perf boost expected.
+
 2008-05-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for tests/xaml/test-directory-in-zip.html

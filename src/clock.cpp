@@ -1110,6 +1110,8 @@ ClockGroup::ComputeBeginTime ()
 void
 ClockGroup::SkipToFill ()
 {
+	idle_hint = true;
+
 	if (child_clocks == NULL)
 		Stop ();
 	else
