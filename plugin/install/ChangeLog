@@ -1,4 +1,10 @@
 2008-05-15  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* install.rdf.in, chrome.manifest, icon.png, Makefile.am: Add our spiffy
+	logo to the firefox extension.  (Needs to be replace by a nicer one some
+	day but it's not bad).
+
+2008-05-15  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* install.rdf.in: Use targetPlatform to restrict installation to
 	the supported platform.  Fixes bnc#390873

@@ -7,6 +7,8 @@ mono_dlldir = `pkg-config --variable=prefix mono`/lib
 mono_sysconfdir = `pkg-config --variable=sysconfdir mono`
 
 novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.rdf \
+				$(srcdir)/icon.png \
+				$(srcdir)/chrome.manifest \
 				../.libs/libmoonloader.so \
 				../.libs/libmoonplugin.so \
 				$(top_builddir)/src/.libs/libmoon.so
@@ -39,6 +41,9 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	-rm -rf .xpinstall/
 	mkdir -p .xpinstall/plugins/moonlight/
 	cp -L $(srcdir)/install.rdf .xpinstall/
+	cp -L $(srcdir)/chrome.manifest .xpinstall/
+	mkdir -p .xpinstall/skin/
+	cp -L $(srcdir)/icon.png .xpinstall/skin/
 	cp -L ../.libs/libmoonloader.so .xpinstall/plugins/
 	cp -L ../.libs/libmoonplugin.so .xpinstall/plugins/moonlight/
 	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/plugins/moonlight/

@@ -4,6 +4,7 @@
     <em:name>Novell Moonlight</em:name>
     <em:version>@VERSION@</em:version>
     <em:description>The open source implementation of Microsoft Silverlight</em:description>
+    <em:iconURL>chrome://moonlight/skin/icon.png</em:iconURL>
     <em:targetPlatform>@TARGET_PLATFORM@</em:targetPlatform>
     <em:targetApplication>
       <Description>
