@@ -1,3 +1,9 @@
+2008-05-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* playlist.cpp: If we're stopping a playlist, reopen the first entry.
+	* media.h: MediaElement: Make EmitMediaOpened and Reinitialize public
+	  so that Playlist can call them.
+
 2008-05-15  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Surface::button_press_callback): stop firefox from

@@ -438,8 +438,10 @@ PlaylistEntry::Open ()
 {
 	d(printf ("PlaylistEntry::Open (), media = %p, FullSourceName = %s\n", media, GetFullSourceName ()));
 
-	if (media != NULL)
+	if (media != NULL) {
+		element->SetMedia (media);
 		return;
+	}
 
 	Downloader *dl = element->GetSurface ()->CreateDownloader ();
 	dl->Open ("GET", GetFullSourceName ());
@@ -581,7 +583,7 @@ Playlist::Open ()
 	
 	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
 		d(printf ("Playlist::Open (), current entry has zero duration, skipping it.\n"));
-		OnEntryEnded ();
+		current_node = (PlaylistNode *) current_node->next;
 		current_entry = GetCurrentEntry ();
 	}
 	
@@ -652,12 +654,18 @@ Playlist::Stop ()
 
 	d(printf ("Playlist::Stop ()\n"));
 
-	current_node = (PlaylistNode *) entries->First ();
-
 	if (!current_entry)
 		return;
 
 	current_entry->Stop ();
+	
+	current_node = NULL;
+
+	if (GetParent () == NULL && !is_single_file) {
+		element->Reinitialize (false);
+		Open ();
+		element->EmitMediaOpened ();
+	}
 }
 
 void

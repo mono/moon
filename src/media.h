@@ -242,7 +242,6 @@ class MediaElement : public MediaBase {
 	double GetBufferedSize ();
 	void UpdateProgress ();
 	
-	void Reinitialize (bool dtor); // dtor is true if we're calling from the destructor.
 	virtual void OnLoaded ();
 	
 	// Try to open the media (i.e. read the headers).
@@ -251,7 +250,6 @@ class MediaElement : public MediaBase {
 	// Checks if the media was actually a playlist, in which case false is returned.
 	// Fill in all information from the opened media and raise MediaOpenedEvent. Does not change any state.
 	bool MediaOpened (Media *media);
-	void EmitMediaOpened ();
 	void EmitMediaEnded ();
 	
 	void CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *col, bool remove);
@@ -345,6 +343,8 @@ class MediaElement : public MediaBase {
 	bool IsStopped () { return state == Stopped; }
 	
 	bool IsLive ();
+	void EmitMediaOpened ();
+	void Reinitialize (bool dtor); // dtor is true if we're calling from the destructor.
 	
 	pthread_mutex_t open_mutex; // Used when accessing closure.
 	MediaClosure *closure;
