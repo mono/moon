@@ -1,3 +1,10 @@
+2008-05-16  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp: draw ellipses with no width/height specified as the
+	ms tests indicate.
+
+	Fixes StretchAndShapes.xaml.
+
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: Abort the downloader when we emit MediaFailed, and always

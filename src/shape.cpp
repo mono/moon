@@ -1016,6 +1016,35 @@ Ellipse::Ellipse ()
 	SetStretch (StretchFill);
 }
 
+Rect
+Ellipse::ComputeShapeBounds (bool logical)
+{
+	if (IsEmpty ())
+		return Rect ();
+	
+
+
+	Value *height, *width;
+	
+	if (Shape::MixedHeightWidth (&height, &width))
+		return Rect ();
+
+	if (!height && !width && !logical) {
+		double t = GetStrokeThickness ();
+		return Rect (0, 0, t, t);
+	}
+
+	double h = GetHeight ();
+	double w = GetWidth ();
+	
+	if ((w < 0.0) || (h <= 0.0))
+		return Rect ();
+	
+	//double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble () * 0.5;
+	
+	return Rect (0, 0, w, h);
+}
+
 // The Ellipse shape can be drawn while ignoring properties:
 // * Shape::StrokeStartLineCap
 // * Shape::StrokeEndLineCap
