@@ -363,8 +363,12 @@ namespace MoonlightTests {
 
 		private void StopXspIfNeeded ()
 		{
-			if (xsp != null)
-				xsp.Kill ();
+			try {
+				if (xsp != null)
+					xsp.Kill ();
+			} catch (Exception ex) {
+				Console.WriteLine ("Exception while trying to stop XSP: " + ex.Message + " (" + ex.GetType ().FullName + ")");
+			}
 		}
 
 		private void SetCategories (string cat_str)

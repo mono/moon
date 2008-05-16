@@ -1,5 +1,10 @@
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/Test.cs: StopXspIfNeeded: Don't take down the entire
+	  process if we can't kill XSP.
+
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* harness.mdp: Added.
 
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
