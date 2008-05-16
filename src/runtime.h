@@ -74,6 +74,13 @@ typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *us
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
+
+	class DownloaderNode : public List::Node {
+	public:
+		Downloader *downloader;
+		DownloaderNode (Downloader *dl) { downloader = dl; }		
+	};
+
 	// are we headed for death?
 	bool zombie;
 	
@@ -85,6 +92,9 @@ class Surface : public EventObject {
 	List *up_dirty;
 	
 	gpointer downloader_context;
+	List *downloaders;
+	void DetachDownloaders ();
+	static void OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure);
 	
 	int normal_width, normal_height;
 	// the actual size of the drawing area, 

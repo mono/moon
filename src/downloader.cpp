@@ -419,6 +419,12 @@ Downloader::Open (const char *verb, const char *uri)
 void
 Downloader::SendInternal ()
 {
+	if (!GetSurface ()) {
+		// The plugin is already checking for surface before calling Send, so
+		// if we get here, it's either managed code doing something wrong or ourselves.
+		g_warning ("Downloader::SendInternal (): No surface!\n", GET_OBJ_ID (this));
+	}
+
 	if (!send_queued)
 		return;
 	
@@ -454,6 +460,12 @@ send_async (void *user_data)
 void
 Downloader::Send ()
 {
+	if (!GetSurface ()) {
+		// The plugin is already checking for surface before calling Send, so
+		// if we get here, it's either managed code doing something wrong or ourselves.
+		g_warning ("Downloader::SendInternal (): No surface!\n", GET_OBJ_ID (this));
+	}
+
 	if (send_queued)
 		return;
 	
@@ -483,6 +495,9 @@ Downloader::Write (void *buf, int32_t offset, int32_t n)
 	double progress;
 	
 	if (aborted)
+		return;
+		
+	if (!GetSurface ())
 		return;
 	
 	// Update progress
@@ -520,6 +535,9 @@ Downloader::NotifyFinished (const char *fname)
 	if (aborted)
 		return;
 	
+	if (!GetSurface ())
+		return;
+	
 	filename = g_strdup (fname);
 	
 	SetDownloadProgress (1.0);
@@ -540,6 +558,9 @@ Downloader::NotifyFailed (const char *msg)
 	if (failed_msg)
 		return;
 	
+	if (!GetSurface ())
+		return;
+	
 	// SetStatus (400);
 	// For some reason the status is 0, not updated on errors?
 	
@@ -556,6 +577,9 @@ Downloader::NotifySize (int64_t size)
 	file_size = size;
 	
 	if (aborted)
+		return;
+	
+	if (!GetSurface ())
 		return;
 	
 	if (notify_size)

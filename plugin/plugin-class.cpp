@@ -3519,6 +3519,9 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("send");
 		
+		if (downloader->GetSurface () == NULL)
+			THROW_JS_EXCEPTION ("send");
+		
 		downloader->Send ();
 		
 		VOID_TO_NPVARIANT (*result);

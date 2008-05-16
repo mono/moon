@@ -153,6 +153,7 @@ Surface::Surface(int w, int h, bool windowless)
 
 	zombie = false;
 	downloader_context = NULL;
+	downloaders = NULL;
 	width = w;
 	height = h;
 	buffer = NULL;
@@ -253,7 +254,7 @@ Surface::~Surface ()
 	//
 	time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
-	
+		
 	if (toplevel) {
 		toplevel->SetSurface (NULL);
 		toplevel->unref ();
@@ -298,6 +299,9 @@ Surface::~Surface ()
 	
 	delete up_dirty;
 	delete down_dirty;
+	
+	DetachDownloaders ();
+	delete downloaders;
 }
 
 void
@@ -482,7 +486,19 @@ void
 Surface::Attach (UIElement *element)
 {
 	bool first = false;
-	
+
+#if DEBUG
+	// Attach must be called with NULL to clear out the old canvas 
+	// before attaching another canvas, otherwise the new canvas 
+	// might get loaded with data from the old canvas (when parsing
+	// xaml ticks will get added to the timemanager of the surface,
+	// if the old canvas isn't gone when the new canvas is parsed,
+	// the ticks will be added to the old timemanager).
+	if (toplevel != NULL && element != NULL)
+		g_warning ("Surface::Attach (NULL) should be called to clear out the old canvas before adding a new canvas.");
+#endif
+
+				
 	if (toplevel) {
 		toplevel->SetSurface (NULL);
 		time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
@@ -499,6 +515,8 @@ Surface::Attach (UIElement *element)
 		first = true;
 
 	if (!element) {
+		DetachDownloaders ();
+	
 		if (first)
 			ConnectEvents (true);
 
@@ -1875,6 +1893,45 @@ Surface::SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data)
 	cache_data = user_data;
 }
 
+void
+Surface::DetachDownloaders ()
+{
+	DownloaderNode *node;
+	if (downloaders == NULL)
+		return;
+		
+	node = (DownloaderNode *) downloaders->First ();
+	while (node != NULL) {
+		node->downloader->RemoveHandler (Downloader::DestroyedEvent, OnDownloaderDestroyed, this);
+		node->downloader->SetSurface (NULL);
+		node = (DownloaderNode *) node->next;
+	}
+	downloaders->Clear (true);
+}
+
+void
+Surface::OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	DownloaderNode *node;
+	Surface *surface = (Surface *) closure;
+	List *downloaders = surface->downloaders;
+	
+	if (downloaders == NULL) {
+		printf ("Surface::OnDownloaderDestroyed (): The list of downloaders is empty.\n");
+		return;
+	}
+	
+	node = (DownloaderNode *) downloaders->First ();
+	while (node != NULL) {
+		if (node->downloader == sender) {
+			downloaders->Remove (node);
+			return;
+		}
+		node = (DownloaderNode *) node->next;
+	}
+	
+	printf ("Surface::OnDownloaderDestroyed (): Couldn't find the downloader %p in the list of downloaders\n", sender);
+}
 
 Downloader*
 Surface::CreateDownloader (void) 
@@ -1882,6 +1939,11 @@ Surface::CreateDownloader (void)
 	Downloader *downloader = new Downloader ();
 	downloader->SetSurface (this);
 	downloader->SetContext (downloader_context);
+	downloader->AddHandler (Downloader::DestroyedEvent, OnDownloaderDestroyed, this);
+	if (downloaders == NULL)
+		downloaders = new List ();
+	downloaders->Append (new DownloaderNode (downloader));
+	
 	return downloader;
 }
 

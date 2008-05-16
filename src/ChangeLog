@@ -1,3 +1,13 @@
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* downloader.cpp: Don't emit any events if we don't have a surface. Add
+	  warnings to Send(Internal) when we have no surface (the plugin is
+	  already checking for it, so if the warning is printed we're doing
+	  something else wrong).
+	* runtime.h, runtime.cpp: Surface: keep a list of the downloaders we
+	  create, and when the toplevel canvas changes or the surface is
+	  destroyed clear the downloader's surface pointer.
+
 2008-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.cpp (Downloader::Abort): Set download progress to 0.

@@ -1,5 +1,10 @@
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin-class.cpp: Throw an exception if the downloader doesn't have a
+	  surface when we call Downloader::Send.
+
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mmsh-state.h: Surround file with ifdefs, and forward declare
 	  MmshState.
 	* plugin-downloader.h: Include mmsh-state.h and properly declare
