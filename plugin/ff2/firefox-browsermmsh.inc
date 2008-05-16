@@ -260,6 +260,7 @@ GECKO_SYM(AsyncBrowserMmshResponse)::AsfHeaderParse (char *asf_header, int size,
 
 		// Count the number of streams
 		stream_count = 0;
+		current_stream = 0;
 		for (int i = 1; i <= 127; i++) {
 			if (parser->IsValidStream (i))
 				stream_count++;

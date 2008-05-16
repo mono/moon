@@ -1,3 +1,7 @@
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* firefox-browsermmsh.inc: Initialize a variable to 0.
+
 2008-05-12  Fernando Herrera  <fherrera@novell.com>
 
 	* firefox-browsermmsh.inc: Don't g_free tmp_buffer at
