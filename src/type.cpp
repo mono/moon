@@ -21,6 +21,38 @@
  * Type implementation
  */
 
+const char *
+Type::LookupEventName (int id)
+{
+	Type *parent_type = Type::Find (parent);
+	int parent_event_count = (parent_type == NULL ? 0 : parent_type->total_event_count);
+	int current_id;
+	const char *result;
+	
+	if (id < 0)
+		return "";
+		
+	if (events != NULL) {
+		for (int i = 0; events [i] != NULL; i++) {
+			current_id = i + parent_event_count;
+			if (current_id == id)
+				return events [i];
+		}
+	}
+	
+	if (parent == Type::INVALID || parent_type == NULL) {
+		printf ("Event lookup of event id %i in type '%s' failed.\n", id, name);
+		return NULL;
+	}
+	
+	result = parent_type->LookupEventName (id);
+
+	if (result == NULL)
+		printf ("Event lookup of event %i in (more exactly) type '%s' failed.\n", id, name);
+
+	return result;
+}
+
 int
 Type::LookupEvent (const char *event_name)
 {

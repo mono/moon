@@ -36,6 +36,7 @@ public:
 	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
 
 	int LookupEvent (const char *event_name);
+	const char *LookupEventName (int id);
 	DependencyObject *CreateInstance ();
 	const char *GetContentPropertyName ();
 
