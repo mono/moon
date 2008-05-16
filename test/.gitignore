@@ -3,3 +3,5 @@
 /*.mdb
 /Makefile.in
 /Makefile
+/test-run-data
+/html_report

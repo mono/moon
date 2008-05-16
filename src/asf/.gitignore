@@ -6,3 +6,5 @@
 /bin
 /obj
 /out
+/*.o
+/asf

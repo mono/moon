@@ -2,3 +2,5 @@
 /test-runner.exe.mdb
 /Makefile.in
 /Makefile
+/logging-server.exe
+/logging-server.exe.mdb
