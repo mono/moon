@@ -1,5 +1,10 @@
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* downloader.cpp: Don't emit nor set DownloadProgress(ChangedEvent) in
+	  NotifySize, mozilla calls NotifySize for every write.
+
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* type.cpp, type.h, type.h.in: Added Type::LookupEventName.
 
 2008-05-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -559,10 +559,6 @@ Downloader::NotifySize (int64_t size)
 	
 	if (notify_size)
 		notify_size (size, consumer_closure);
-	
-	SetDownloadProgress (0.0);
-	
-	Emit (DownloadProgressChangedEvent);
 }
 
 bool

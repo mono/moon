@@ -810,5 +810,13 @@
    <Test id="185"
 	 inputFile="test-second-surface-error.html"
 	 masterFile10="../harness/masters/test-second-surface-errorMaster.png"
+	 />
+   <Test id="186"
+	 inputFile="test-dead-downloaders.html"
+	 masterFile10="None"
+	 />
+   <Test id="187"
+	 inputFile="test-downloaderprogress.html"
+	 masterFile10="None"
    />
 </DRTList>

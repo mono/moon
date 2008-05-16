@@ -1,3 +1,10 @@
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/test-downloaderprogress.html, xaml/test-dead-downloaders.html:
+	  Added.
+	* xaml/drtlist.xml: Added test-dead-downloaders and
+	  test-downloaderprogress.
+
 2008-05-15  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/clock/clock37.html:
