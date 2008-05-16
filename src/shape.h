@@ -212,6 +212,7 @@ class Ellipse : public Shape {
 	virtual ~Ellipse () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeLargestRectangle ();
+	virtual Rect ComputeShapeBounds (bool logical);
 	
  public:
 	Ellipse ();
