@@ -1,3 +1,7 @@
+2008-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (Downloader::Abort): Set download progress to 0.
+
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* downloader.cpp: Don't emit nor set DownloadProgress(ChangedEvent) in

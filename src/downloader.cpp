@@ -127,6 +127,7 @@ Downloader::Abort ()
 {
 	if (!aborted && !failed_msg) {
 		abort_func (downloader_state);
+		SetDownloadProgress (0.0);
 		send_queued = false;
 		aborted = true;
 	}
