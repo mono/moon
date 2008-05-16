@@ -93,7 +93,7 @@
 		function OnPluginLoad (sender, args)
 		{
 			TestLogger.LogDebug ("OnPluginLoad");
-
+			assertForMediaServer ();
 			SetTimer (30000);
 		}
 

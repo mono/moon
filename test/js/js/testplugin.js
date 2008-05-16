@@ -5,7 +5,42 @@ var pendingTypes = new Array ();
 var pendingMessages = new Array ();
 var ShutdownRequested = false;
 
+var media_server_timeout;
+
 // This file requires moon/test/js/js/utils.js
+
+function assertForMediaServer ()
+{
+	// Got this from: http://www.faqts.com/knowledge_base/view.phtml/aid/1799/fid/124
+	try {
+		var img = new Image ();
+		img.onload = mediaServerFound;
+		img.onerror = mediaServerError;
+		img.src = "http://moonlightmedia:81/img.bmp";
+		media_server_timeout = setTimeout ("TestLogger.LogError ('Checking for media server existence timed out'); mediaServerError ();", 10000);
+	} catch (ex) {
+		TestLogger.LogError ("checkForMediaServer (): exception: " + ex);
+		mediaServerError ();
+	}
+}
+
+function mediaServerFound ()
+{
+	clearTimeout (media_server_timeout);
+	TestLogger.LogDebug ("mediaServerFound (): Found the media server.");
+}
+
+function mediaServerError ()
+{
+	TestLogger.LogError ("Couldn't find the media server.");
+	TestLogger.LogResult (-1);
+	SignalShutdown ();
+}
+
+function checkForMediaServerResult ()
+{
+	TestLogger.LogDebug ("checkForMediaServerResult (), readyState: " + media_server_request.readyState);
+}
 
 function createTestPlugin ()
 {

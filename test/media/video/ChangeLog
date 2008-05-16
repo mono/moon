@@ -1,3 +1,7 @@
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-playlist-live-with-duration.html: Assert for media server.
+
 2008-05-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-playlist-live-with-duration.html, test-mediaopened.asx,
