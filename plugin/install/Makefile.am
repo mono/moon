@@ -78,5 +78,5 @@ endif INCLUDE_MONO_RUNTIME
 clean-local:
 	-rm -rf .xpinstall
 
-EXTRA_DIST = install.rdf.in
+EXTRA_DIST = install.rdf.in icon.png chrome.manifest
 DISTCLEANFILES = novell-moonlight.xpi
