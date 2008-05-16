@@ -1,5 +1,9 @@
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* src.mdp: Updated.
+
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* downloader.cpp: Don't emit any events if we don't have a surface. Add
 	  warnings to Send(Internal) when we have no surface (the plugin is
 	  already checking for it, so if the warning is printed we're doing

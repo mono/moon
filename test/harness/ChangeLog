@@ -1,5 +1,9 @@
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* harness.mdp: Added.
+
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/Driver.cs, test-runner/TestRunner.cs: Added -valgrind
 	  option to run agviewer with valgrind.
 

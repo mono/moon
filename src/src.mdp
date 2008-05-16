@@ -1,27 +1,10 @@
 <Project name="src" fileversion="2.0" language="CPP" ctype="CProject">
-  <Configurations active="Debug">
+  <Configurations>
     <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="src" />
       <Build debugmode="True" target="SharedLibrary" />
       <Execution runwithwarnings="True" consolepause="True" />
-      <Includes>
-        <Include>../cairo/src</Include>
-        <Include>/usr/include/glib-2.0</Include>
-        <Include>/usr/include/gtk-2.0</Include>
-        <Include>/usr/include/alsa</Include>
-        <Include>..</Include>
-        <Include>/usr/include/cairo</Include>
-        <Include>/usr/include</Include>
-        <Include>/usr/local/include</Include>
-        <Include>/usr/lib/gtk-2.0/include</Include>
-        <Include>/usr/include/atk-1.0</Include>
-        <Include>/usr/lib/glib-2.0/include</Include>
-        <Include>/usr/include/libpng12</Include>
-        <Include>/usr/include/pango-1.0</Include>
-        <Include>/usr/include/freetype2</Include>
-        <Include>../..</Include>
-        <Include>/usr/local/include/ffmpeg</Include>
-      </Includes>
+      <Includes Include="../cairo/src" Include="/usr/include/glib-2.0" Include="/usr/include/gtk-2.0" Include="/usr/include/alsa" Include=".." Include="/usr/include/cairo" Include="/usr/include" Include="/usr/local/include" Include="/usr/lib/gtk-2.0/include" Include="/usr/include/atk-1.0" Include="/usr/lib/glib-2.0/include" Include="/usr/include/libpng12" Include="/usr/include/pango-1.0" Include="/usr/include/freetype2" Include="../.." Include="/usr/local/include/ffmpeg" />
       <CodeGeneration WarningLevel="All" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="-x none" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP" ctype="CCompilationParameters" />
     </Configuration>
     <Configuration name="Release" ctype="CProjectConfiguration">
