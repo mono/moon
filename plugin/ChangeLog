@@ -1,3 +1,10 @@
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mmsh-state.h: Surround file with ifdefs, and forward declare
+	  MmshState.
+	* plugin-downloader.h: Include mmsh-state.h and properly declare
+	  PluginDownloader::state as MmshState.
+
 2008-05-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.mdp: Updated.

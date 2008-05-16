@@ -13,11 +13,14 @@
 #ifndef __PLUGIN_DOWNLOADER_H__
 #define __PLUGIN_DOWNLOADER_H__
 
+class PluginDownloader;
+
 #include "moonlight.h"
 #include "runtime.h"
 #include "downloader.h"
 #include "plugin.h"
 #include "plugin-class.h"
+#include "mmsh-state.h"
 
 class PluginDownloader {
 public:
@@ -67,7 +70,7 @@ public:
 	bool ignore_non_data;
 	int header_size;
 	bool seekable;
-	gpointer state;
+	MmshState *state;
 };
 
 void downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);

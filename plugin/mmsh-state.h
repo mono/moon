@@ -11,6 +11,11 @@
  *
  */
 
+#ifndef __MMSH_STATE_H
+#define __MMSH_STATE_H
+
+class MmshState;
+
 #include "moonlight.h"
 #include "plugin-downloader.h"
 
@@ -50,3 +55,5 @@ public:
 	uint32_t GetPPacketCount () { return p_packet_count; }
 	void LogPPacket (uint32_t size);
 };
+
+#endif
