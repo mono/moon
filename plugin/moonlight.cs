@@ -211,7 +211,7 @@ namespace Moonlight {
 		
 		static void Main ()
 		{
-			Console.WriteLine ("Running Moonlight.cs {0}", count++);
+			Console.WriteLine ("Running Moonlight.cs, boot instance: {0}", count++);
 			Console.WriteLine ("  mscorlib: {0}", typeof (object).Module.FullyQualifiedName);
 			Console.WriteLine ("  agclr: {0}", typeof (DependencyObject).Module.FullyQualifiedName);
 			Console.WriteLine ("  agmono: {0}", typeof (Helper).Module.FullyQualifiedName);

@@ -952,10 +952,8 @@ PluginInstance::LoadXAP (const char *fname)
 	if (!vm_is_loaded ())
 		vm_init ();
 
-	printf ("LOADXAP: %s\n", fname);
 	bool res = vm_application_create (this, surface, fname);
 	xap_loaded = true;
-	printf ("LoadXAP: %d\n", res);
 }
 
 void
