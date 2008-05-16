@@ -25,17 +25,18 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System.Collections;
+using System.Collections.Generic;
+
 namespace System.Collections.Specialized {
 
 	public sealed class NotifyCollectionChangedEventArgs : EventArgs {
 		public NotifyCollectionChangedAction Action { get; private set; }
-		ArrayList new_items, old_items;
+		List<object> new_items, old_items;
 		
 		NotifyCollectionChangedEventArgs ()
 		{
-			new_items = new ArrayList (1);
-			old_items = new ArrayList (1);
+			new_items = new List<object> (1);
+			old_items = new List<object> (1);
 		}
 		
 		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action) : this ()

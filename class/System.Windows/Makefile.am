@@ -14,12 +14,18 @@ GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 system_windows_sources =							\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
+	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
 	$(srcdir)/Mono/Report.cs						\
+	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
+	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
+	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedAction.cs \
+	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
+	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs \
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\

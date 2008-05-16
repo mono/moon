@@ -32,7 +32,8 @@ using System.ComponentModel;
 
 namespace System.Collections.ObjectModel {
 
-	public class ObservableCollection<T> : PresentationFrameworkCollection<T>, INotifyCollectionChanged
+	public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged
+		where T : DependencyObject
 		//  Temporary, need to add back: INotifyPropertyChanged
 	{
 		public ObservableCollection ()

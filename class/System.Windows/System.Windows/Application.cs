@@ -223,7 +223,7 @@ namespace System.Windows {
 		//
 		public static void LoadComponent (object component, Uri xamlUri)
 		{
-			Console.WriteLine ("LoadComponent: {0} of type {1} for {2}", component, component.GetType (), xamlUri);
+			//Console.WriteLine ("LoadComponent: {0} of type {1} for {2}", component, component.GetType (), xamlUri);
 
 			// For now, do nothing, we cant cope with Applications 
 			if (component is Application)
@@ -280,8 +280,8 @@ namespace System.Windows {
 			}
 			rest = rest.Substring (10);
 
-			Console.WriteLine ("Before RM, rest={0}", rest);
-			Console.WriteLine ("Requesting assembly: " + aname + ".g");
+			//Console.WriteLine ("Before RM, rest={0}", rest);
+			//Console.WriteLine ("Requesting assembly: " + aname + ".g");
 			ResourceManager rm = new ResourceManager (aname + ".g", assembly);
 			rm.IgnoreCase = true;
 			Stream s = rm.GetStream (rest);
