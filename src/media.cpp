@@ -751,6 +751,8 @@ MediaElement::MediaOpened (Media *media)
 void
 MediaElement::EmitMediaOpened ()
 {
+	d (printf ("MediaElement::EmitMediaOpened (): already emitted: %s\n", flags & MediaOpenedEmitted ? "true" : "false"));
+	
 	if (flags & MediaOpenedEmitted)
 		return;
 
@@ -787,6 +789,9 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 	SetDownloadProgress (0);
 	
 	SetState (MediaElement::Error);
+	
+	DownloaderAbort ();
+	
 	Emit (MediaFailedEvent, args);
 }
 
@@ -1279,6 +1284,9 @@ MediaElement::DownloaderComplete ()
 	d(printf ("MediaElement::DownloaderComplete (), downloader: %d, state: %s, previous state: %s\n", GET_OBJ_ID (downloader), GetStateName (state), GetStateName (prev_state)));
 	
 	flags |= DownloadComplete;
+	
+	SetDownloadProgress (1.0);
+	Emit (DownloadProgressChangedEvent);
 	
 	if (downloaded_file != NULL)
 		downloaded_file->NotifyFinished ();

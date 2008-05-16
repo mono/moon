@@ -1,5 +1,12 @@
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: Abort the downloader when we emit MediaFailed, and always
+	  emit a DownloadProgressChangedEvent with 1.0 when we're finished
+	  downloading (we won't get any writes if the file has already been
+	  downloaded and mozilla just gives us the filename).
+
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Updated.
 
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
