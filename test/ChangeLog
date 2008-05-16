@@ -1,5 +1,9 @@
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Makefile.am: Added a run-valgrind target.
+
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* xaml/test-downloaderprogress.html, xaml/test-dead-downloaders.html:
 	  Added.
 	* xaml/drtlist.xml: Added test-dead-downloaders and

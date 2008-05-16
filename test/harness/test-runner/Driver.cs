@@ -49,7 +49,13 @@ namespace MoonlightTests {
 
 		private bool compare_to_moon = false;
 		private bool run_known_failures = false;
+		private bool use_valgrind = false;
 
+		public bool UseValgrind {
+			get { return use_valgrind; }
+			set { use_valgrind = value; }
+		}
+		
 		public VerboseLevel VerboseLevel {
 			get { return verbose_level; }
 			set { verbose_level = value; }
@@ -204,7 +210,7 @@ namespace MoonlightTests {
 			Screensaver.Inhibit ();
 
 			LoggingServer logging_server = new LoggingServer ();
-			TestRunner runner = new TestRunner (tests, Path.GetFullPath (Path.GetDirectoryName (drtlist)));
+			TestRunner runner = new TestRunner (tests, Path.GetFullPath (Path.GetDirectoryName (drtlist)), this);
 
 			DbusServices.Register (logging_server);
 			DbusServices.Register (runner);
@@ -226,7 +232,7 @@ namespace MoonlightTests {
 			Screensaver.Inhibit ();
 
 			LoggingServer logging_server = new LoggingServer ();
-			TestRunner runner = new TestRunner (tests, Path.GetFullPath (Path.GetDirectoryName (drtlist)));
+			TestRunner runner = new TestRunner (tests, Path.GetFullPath (Path.GetDirectoryName (drtlist)), this);
 
 			DbusServices.Register (logging_server);
 			DbusServices.Register (runner);
@@ -405,7 +411,9 @@ namespace MoonlightTests {
 					delegate (string v) { d.RunImageSanityChecks (drtlist); });
 			p.Add ("runner-server", "Run a standalone server so agviewer can be invoked outside of the runner for debugginer.",
 					delegate (string v) { d.RunServer (drtlist); });
-
+			p.Add ("valgrind", "Run agviewer with valgrind. Valgrind will be executed with --tool=memcheck, unless MOONLIGHT_VALGRIND_OPTIONS is set, in which case it will be executed with that value.",
+					delegate (string v) { d.UseValgrind = true; });
+			
 			p.Parse (args);
 
 			if (add_console_report)

@@ -58,7 +58,7 @@ namespace MoonlightTests {
 	}
 
 	public class TestRunner : ITestRunner, IDbusService {
-
+		private Driver driver;
 		private IList tests;
 		private bool run_complete;
 		private IEnumerator tests_enumerator;
@@ -69,8 +69,9 @@ namespace MoonlightTests {
 
 		private Test current_test;
 
-		public TestRunner (IList tests, string working_dir)
+		public TestRunner (IList tests, string working_dir, Driver driver)
 		{
+			this.driver = driver;
 			this.tests = tests;
 			this.working_dir = working_dir;
 
@@ -169,7 +170,20 @@ namespace MoonlightTests {
 			}
 
 			if (agviewer_process == null) {
-				agviewer_process = new ExternalProcess (GetProcessPath (), String.Format ("-working-dir {0}", Path.GetFullPath (working_dir)), -1);
+				string args = String.Format ("-working-dir {0}", Path.GetFullPath (working_dir));
+				string valgrind_args;
+				
+				if (driver != null && driver.UseValgrind) {
+					valgrind_args = "{0} {1} {2}";
+					valgrind_args = string.Format ("{0} {1} {2}", 
+					                               System.Environment.GetEnvironmentVariable ("MOONLIGHT_VALGRIND_OPTIONS"), 
+					                               GetProcessPath (), args);
+					
+					agviewer_process = new ExternalProcess ("valgrind", valgrind_args, -1);
+				} else {
+					agviewer_process = new ExternalProcess (GetProcessPath (), args, -1);
+				}
+
 				agviewer_process.Run (false);
 			}
 		}

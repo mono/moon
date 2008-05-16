@@ -1,3 +1,8 @@
+2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/Driver.cs, test-runner/TestRunner.cs: Added -valgrind
+	  option to run agviewer with valgrind.
+
 2008-05-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/ConsoleReport.cs: Add colors to the console output.
