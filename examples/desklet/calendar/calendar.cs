@@ -100,11 +100,11 @@ namespace Desklet
 		static readonly Brush CURRENT_DAY = new SolidColorBrush (Colors.Yellow);
 		static readonly Brush CURRENT_MONTH = new SolidColorBrush (Colors.White);
 		//Dark grey
-		static readonly Brush OTHERS = new SolidColorBrush (Color.FromRgb (44, 44, 44));
+		static readonly Brush OTHERS = new SolidColorBrush (Color.FromArgb (255, 44, 44, 44));
 
 		static readonly Brush BUTTON_UP_BRUSH = new SolidColorBrush (Colors.White);
 		//Grey
-		static readonly Brush BUTTON_DOWN_BRUSH = new SolidColorBrush (Color.FromRgb (150, 150, 150));
+		static readonly Brush BUTTON_DOWN_BRUSH = new SolidColorBrush (Color.FromArgb (255, 150, 150, 150));
 
 		static readonly Brush CALENDAR_BRUSH = new SolidColorBrush (Colors.Red);
 		static readonly Brush CALENDAR_FILL_BRUSH = new SolidColorBrush (Color.FromArgb (40, 255, 0, 0));

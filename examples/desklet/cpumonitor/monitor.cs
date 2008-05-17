@@ -88,11 +88,11 @@ namespace Desklet
 			if (num <= 50) {
 				//interpolate (0,50) between green (0,255,0) and yellow (255,255,0)
 				double red = num / (50d / 255);
-				color = Color.FromRgb ((byte)red, 255, 0);
+				color = Color.FromArgb (255, (byte)red, 255, 0);
 			} else {
 				//interpolate (50,100) between yellow (255,255,0) and red (255,0,0)
 				double green = (100d - num) / (50d / 255);
-				color = Color.FromRgb (255, (byte)green, 0);
+				color = Color.FromArgb (255, 255, (byte)green, 0);
 			}
 
 			colorAnim.From = current;

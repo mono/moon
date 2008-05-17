@@ -26,7 +26,7 @@ namespace Desklets
 		Storyboard storyboard;
 
 		static readonly Brush LinesColor = new SolidColorBrush (Colors.Black);
-		static readonly Brush ActiveColor = new SolidColorBrush (Color.FromRgb (30, 30, 30));
+		static readonly Brush ActiveColor = new SolidColorBrush (Color.FromArgb (255, 30, 30, 30));
 		static readonly Brush SelectedColor = new SolidColorBrush (Colors.Red);
 		
 		public void MouseDown (object sender, MouseEventArgs e)
