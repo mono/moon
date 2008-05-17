@@ -1,3 +1,7 @@
+2008-05-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* supp/helgrind.supp: Added.
+
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am: Added a run-valgrind target.

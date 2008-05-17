@@ -321,6 +321,8 @@ TimeManager::source_tick_callback (EventObject *sender, EventArgs *calldata, gpo
 bool
 TimeManager::InvokeTickCall ()
 {
+	// Helgrind reports an issue here (reading from 'tick_calls' without locking)
+	// This should be safe, given that tick_calls only goes from NULL -> something
 	if (tick_calls) {
 		g_mutex_lock (tick_call_mutex);
 

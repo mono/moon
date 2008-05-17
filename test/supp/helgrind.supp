@@ -1,0 +1,248 @@
+{
+   libxul
+   Helgrind:Race
+   obj:/usr/lib/xulrunner-1.8.1.12/libxul.so
+}
+
+{
+   libxul array clear
+   Helgrind:Race
+   fun:_ZN11nsVoidArray5ClearEv
+}
+
+{
+   PR_EnterMonitor
+   Helgrind:Race
+   fun:PR_EnterMonitor
+}
+
+{
+   PR_Read
+   Helgrind:Race
+   fun:PR_Read
+   obj:/usr/lib/xulrunner-1.8.1.12/libxul.so
+}
+
+{
+   libnspr4
+   Helgrind:Race
+   obj:/usr/lib/libnspr4.so
+}
+
+{
+   PR_StackPush
+   Helgrind:Race
+   fun:PR_StackPush
+   obj:/usr/lib/libnspr4.so
+}
+
+{
+   PR_Read/pthread
+   Helgrind:Race
+   obj:/lib/libpthread-2.6.1.so
+   fun:PR_Read
+}
+
+{
+   dl_lookup_symbol_x
+   Helgrind:Race
+   fun:_dl_lookup_symbol_x
+}
+
+{
+   recv/libnspr4
+   Helgrind:Race
+   fun:recv
+   obj:/usr/lib/libnspr4.so
+}
+
+{
+   <insert a suppression name here>
+   Helgrind:Race
+   fun:sighandler_setxid
+   obj:/lib/libpthread-2.6.1.so
+   obj:*
+}
+
+{
+   setlocale
+   Helgrind:Race
+   fun:setlocale
+   obj:/usr/lib/libasound.so.2.0.0
+}
+
+{
+   glib
+   Helgrind:Race
+   obj:/usr/lib/libglib-2.0.so.0.1400.1
+   fun:g_main_context_dispatch
+   obj:/usr/lib/libglib-2.0.so.0.1400.1
+   fun:g_main_loop_run
+   fun:gtk_main
+   fun:main
+}
+
+{
+   g_datalist_id_set_data_full
+   Helgrind:Race
+   fun:g_datalist_id_set_data_full
+   fun:g_object_thaw_notify
+   fun:gtk_widget_unparent
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   fun:g_cclosure_marshal_VOID__OBJECT
+   obj:/usr/lib/libgobject-2.0.so.0.1400.1
+   fun:g_closure_invoke
+   obj:/usr/lib/libgobject-2.0.so.0.1400.1
+   fun:g_signal_emit_valist
+   fun:g_signal_emit
+   fun:gtk_container_remove
+   fun:gtk_widget_reparent
+}
+
+{
+   fflush/exit
+   Helgrind:Race
+   fun:fflush
+   obj:/usr/lib/libstdc++.so.6.0.9
+   fun:_ZNSo5flushEv
+   fun:_ZNSt8ios_base4InitD1Ev
+   obj:/usr/lib/libfam.so.0.0.0
+   fun:exit
+}
+
+{
+   libOrbit
+   Helgrind:LockOrder
+   fun:pthread_mutex_lock
+   obj:/usr/lib/libORBit-2.so.0.1.0
+}
+{
+   libOrbit 2
+   Helgrind:LockOrder
+   fun:pthread_mutex_lock
+   fun:ORBit_RootObject_release
+}
+
+{
+   av_free_static
+   Helgrind:Race
+   fun:av_free_static
+}
+
+{
+   av_freep
+   Helgrind:Race
+   fun:av_freep
+}
+
+{
+   pthread_create
+   Helgrind:Race
+   fun:memset
+   fun:pthread_create@@GLIBC_2.1
+   fun:pthread_create@*
+}
+
+
+{
+   glib
+   Helgrind:Race
+   fun:memset
+   fun:g_type_create_instance
+   obj:/usr/lib/libgobject-2.0.so.0.1400.1
+   fun:g_object_newv
+   fun:g_object_new_valist
+   fun:g_object_new
+   fun:gtk_window_group_new
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   fun:g_cclosure_marshal_VOID__VOID
+   obj:/usr/lib/libgobject-2.0.so.0.1400.1
+}
+
+{
+   gtk
+   Helgrind:Race
+   fun:g_slice_alloc
+   obj:/usr/lib/libgobject-2.0.so.0.1400.1
+   obj:/usr/lib/libgobject-2.0.so.0.1400.1
+   fun:g_signal_handlers_disconnect_matched
+   obj:/usr/lib/gtk-2.0/2.10.0/immodules/im-xim.so
+   fun:g_cclosure_marshal_VOID__VOID
+   fun:g_closure_invoke
+   obj:/usr/lib/libgobject-2.0.so.0.1400.1
+   fun:g_signal_emit_valist
+   fun:g_signal_emit
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+}
+
+
+{
+   glib 2
+   Helgrind:Race
+   fun:memset
+   fun:g_type_create_instance
+   obj:/usr/lib/libgobject-2.0.so.0.1400.1
+   fun:g_object_newv
+   fun:g_object_new_valist
+   fun:g_object_new
+   fun:gtk_window_group_new
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   obj:/usr/lib/libgtk-x11-2.0.so.0.1200.0
+   fun:g_cclosure_marshal_VOID__VOID
+   obj:/usr/lib/libgobject-2.0.so.0.1400.1
+}
+
+
+{
+   EventObject::EventObject (): race while accessing objects_alive from different threads.
+   Helgrind:Race
+   fun:pthread_setspecific
+   fun:g_private_set_posix_impl
+   fun:g_slice_alloc
+   obj:/usr/lib/libglib-2.0.so.0.1400.1
+   fun:g_hash_table_insert
+   fun:_ZN11EventObjectC2Ev
+   fun:_ZN12IMediaObjectC2EP5Media
+   fun:_ZN13IMediaDemuxerC2EP5MediaP12IMediaSource
+   fun:_ZN10ASFDemuxerC1EP5MediaP12IMediaSource
+   fun:_ZN14ASFDemuxerInfo6CreateEP5MediaP12IMediaSource
+   fun:_ZN5Media4OpenEP12IMediaSource
+   fun:_ZN5Media10WorkerLoopEv
+}
+
+{
+   TimeManager::InvokeTickCAll (): reading from variable ('tick_calls') without locking.
+   Helgrind:Race
+   fun:_ZN11TimeManager14InvokeTickCallEv
+   fun:_ZN11TimeManager10SourceTickEv
+   fun:_ZN11TimeManager20source_tick_callbackEP11EventObjectP9EventArgsPv
+   fun:_ZN11EventObject4EmitEiP9EventArgsb
+   fun:_ZN16SystemTimeSource12tick_timeoutEPv
+   obj:/usr/lib/libglib-2.0.so.0.1400.1
+   fun:g_main_context_dispatch
+   obj:/usr/lib/libglib-2.0.so.0.1400.1
+   fun:g_main_loop_run
+   fun:gtk_main
+   fun:main
+}
+
+{
+   EventObject::EventObject: incrementing object counter without locking
+   Helgrind:Race
+   fun:_ZN11EventObjectC2Ev
+   fun:_ZN16DependencyObjectC2Ev
+   fun:_ZN9EventArgsC2Ev
+   fun:_ZN10Collection15ChangeEventArgsC1Ev
+   fun:_ZN10Collection11EmitChangedE20CollectionChangeTypeP16DependencyObjectP24PropertyChangedEventArgs
+   fun:_ZN10Collection20OnSubPropertyChangedEP18DependencyPropertyP16DependencyObjectP24PropertyChangedEventArgs
+   fun:_ZN16DependencyObject31NotifyListenersOfPropertyChangeEP24PropertyChangedEventArgs
+   fun:_ZN12MediaElement17OnPropertyChangedEP24PropertyChangedEventArgs
+   fun:_ZN16DependencyObject8SetValueEP18DependencyPropertyP5ValuePP7_GError
+   fun:_ZN16DependencyObject8SetValueEP18DependencyPropertyP5Value
+   fun:_ZN16DependencyObject8SetValueEP18DependencyProperty5Value
+   fun:_ZN12MediaElement15SetCurrentStateEPKc
+}
