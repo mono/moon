@@ -343,7 +343,7 @@ namespace System.Windows {
 					UnmanagedColor *color = (UnmanagedColor*)val->u.p;
 					if (color == null)
 						return new Color ();
-					return Color.FromScRgb ((float)color->a, (float)color->r, (float)color->g, (float)color->b);
+					return Color.FromArgb ((byte)(255 * color->a), (byte)(255 * color->r), (byte)(255 * color->g), (byte)(255 * color->b));
 				}
 					
 				case Kind.MATRIX: {
@@ -481,10 +481,10 @@ namespace System.Windows {
 					value.k = Kind.COLOR;
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedColor));
 					UnmanagedColor* color = (UnmanagedColor*) value.u.p;
-					color->r = c.ScR;
-					color->g = c.ScG;
-					color->b = c.ScB;
-					color->a = c.ScA;
+					color->r = c.R / 255.0f;
+					color->g = c.G / 255.0f;
+					color->b = c.B / 255.0f;
+					color->a = c.A / 255.0f;
 				} else if (v is Matrix) {
 					Matrix mat = (Matrix) v;
 					value.k = Kind.MATRIX;
@@ -537,7 +537,7 @@ namespace System.Windows {
 		//
 		// External users go through SetValue that can do conversions.
 		//
-		public virtual void SetValue<T> (DependencyProperty property, T obj)
+		public virtual void SetValue (DependencyProperty property, object obj)
 		{
 			if (property == null)
 				throw new ArgumentNullException ("property");

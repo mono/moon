@@ -40,28 +40,12 @@ namespace System.Windows {
 			h = height;
 		}
 
-		public Rect(Point location, Size size)
-		{
-			this.x = location.X;
-			this.y = location.Y;
-			this.w = size.Width;
-			this.h = size.Height;
-		}
-		
 		public Rect(Point point1, Point point2)
 		{
 			this.x = Math.Min (point1.X, point2.X);
 			this.y = Math.Min (point1.Y, point2.Y);
 			this.w = Math.Abs (point2.X - point1.X);
 			this.h = Math.Abs (point2.Y - point1.Y);
-		}
-		
-		public Rect(Size size)
-		{
-			this.x = 0;
-			this.y = 0;
-			this.w = size.Width;
-			this.h = size.Height;
 		}
 		
 		public override string ToString ()
@@ -106,16 +90,6 @@ namespace System.Windows {
 			return true;
 		}
 		
-		public bool Contains(double x, double y)
-		{
-			return Contains (new Point (x, y));
-		}
-		
-		public bool Contains(Rect rect)
-		{
-			return Contains (rect.TopLeft) && Contains (rect.BottomRight);
-		}
-		
 		public static Rect Empty { 
 			get { return new Rect (0, 0, 0, 0); } 
 		}
@@ -123,26 +97,6 @@ namespace System.Windows {
 		public bool IsEmpty { 
 			get {
 				return w <= 0 || h <= 0;
-			}
-		}
-		
-		public Point Location { 
-			get {
-				return new Point (x, y);
-			}
-			set {
-				x = value.X;
-				y = value.Y;
-			}
-		}
-		
-		public Size Size { 
-			get { 
-				return new Size (w, h);
-			}
-			set {
-				w = value.Width;
-				h = value.Height;
 			}
 		}
 		
@@ -162,28 +116,6 @@ namespace System.Windows {
 			get { return y + h; }
 		}
 		
-		public Point TopLeft { 
-			get { return new Point (Top, Left); }
-		}
-		
-		public Point TopRight { 
-			get { return new Point (Top, Right); }
-		}
-		
-		public Point BottomLeft { 
-			get { return new Point (Bottom, Left); }
-		}
-		
-		public Point BottomRight { 
-			get { return new Point (Bottom, Right); }
-		}
-		
-		public bool IntersectsWith(Rect rect)
-		{
-			return !((Left >= rect.Right) || (Right <= rect.Left) ||
-			    (Top >= rect.Bottom) || (Bottom <= rect.Top));
-		}
-		
 		public void Intersect(Rect rect)
 		{
 			double new_x = Math.Max (x, rect.x);
@@ -200,28 +132,7 @@ namespace System.Windows {
 				x = y = w = h = 0;
 			}
 		}
-		
-		public static Rect Intersect(Rect rect1, Rect rect2)
-		{
-			Rect result = rect1;
-			result.Intersect (rect2);
-			return result;
-		}
-		
-		public static Rect Union(Rect rect1, Rect rect2)
-		{
-			Rect result = rect1;
-			result.Union (rect2);
-			return result;
-		}
-		
-		public static Rect Union(Rect rect, Point point)
-		{
-			Rect result = rect;
-			result.Union (point);
-			return result;
-		}
-		
+
 		public void Union(Rect rect)
 		{
 			double new_x = Math.Min (x, rect.x);
@@ -240,52 +151,6 @@ namespace System.Windows {
 			Union (new Rect (point, point));
 		}
 		
-		public void Offset(double offsetX, double offsetY)
-		{
-			x += offsetX;
-			y += offsetY;
-		}
-		
-		public static Rect Offset(Rect rect, double offsetX, double offsetY)
-		{
-			Rect result = rect;
-			result.Offset (offsetX, offsetY);
-			return result;
-		}
-		
-		public void Inflate(Size size)
-		{
-			Inflate (size.Width, size.Height);
-		}
-		
-		public void Inflate(double width, double height)
-		{
-			x -= width;
-			y -= height;
-			w += width;
-			h += height;	
-		}
-		
-		public static Rect Inflate(Rect rect, Size size)
-		{
-			return Inflate (rect, size.Width, size.Height);
-		}
-		
-		public static Rect Inflate(Rect rect, double width, double height)
-		{
-			Rect result = rect;
-			result.Inflate (width, height);
-			return result;
-		}
-		
-		public void Scale(double scaleX, double scaleY)
-		{
-			x *= scaleX;
-			y *= scaleY;
-			w *= scaleX;
-			h *= scaleY;
-		}
-		
 		public static bool operator ==(Rect rect1, Rect rect2)
 		{
 			return rect1.x == rect2.x && rect1.y == rect2.y && rect1.w == rect2.w && rect1.h == rect2.h;
@@ -294,11 +159,6 @@ namespace System.Windows {
 		public static bool operator !=(Rect rect1, Rect rect2)
 		{
 			return !(rect1 == rect2);
-		}
-		
-		public static bool Equals(Rect rect1, Rect rect2)
-		{
-			return rect1 == rect2;
 		}
 		
 		public override bool Equals(object o)

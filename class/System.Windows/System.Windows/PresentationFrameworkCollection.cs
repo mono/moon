@@ -160,7 +160,7 @@ namespace System.Windows {
 			return new InvalidOperationException ("The underlying collection has mutated");
 		}
 		
-		public class CollectionIterator : System.Collections.IEnumerator {
+		internal class CollectionIterator : System.Collections.IEnumerator {
 			IntPtr native_iter;
 			
 			public CollectionIterator(IntPtr native_iter)
@@ -211,7 +211,7 @@ namespace System.Windows {
 			}
 		}
 		
-		public class GenericCollectionIterator : IEnumerator<T> {
+		internal class GenericCollectionIterator : IEnumerator<T> {
 			IntPtr native_iter;
 			
 			public GenericCollectionIterator(IntPtr native_iter)

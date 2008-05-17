@@ -36,11 +36,6 @@ namespace System.Windows {
 			this.y = y;
 		}
 
-		public static bool Equals (Point point1, Point point2)
-		{
-			return point1.x == point2.x && point1.y == point2.y;
-		}
-		
 		public override bool Equals (object o)
 		{
 			if (!(o is Point))
@@ -59,12 +54,6 @@ namespace System.Windows {
 			return ((int) x) ^ ((int) y);
 		}
 			
-		public void Offset (double offsetX, double offsetY)
-		{
-			x += offsetX;
-			y += offsetY;
-		}
-		
 		public override string ToString ()
 		{
 			return String.Format ("{0},{1}", x, y);
@@ -80,12 +69,6 @@ namespace System.Windows {
 			return point1.x != point2.x || point1.y != point2.y;
 		}
 		
-		public static explicit operator Size (Point point)
-		{
-			return new Size (point.x, point.y);
-		}
-		
-
 		public double X {
 			get { return x; } 
 			set { x = value; } 

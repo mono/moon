@@ -51,17 +51,6 @@ namespace System.Windows.Media {
 			return new Color ((uint)(a << 24 | r << 16 | g << 8 | b));
 		}
 
-		public static Color FromRgb (byte r, byte g, byte b)
-		{
-			return new Color (0xFF000000 | (uint) (r << 16 | g << 8 | b));
-		}
-
-		public static Color FromScRgb (float a, float r, float g, float b)
-		{
-			return FromArgb ((byte)(255 * a), (byte)(255 * r), (byte)(255 * g), (byte)(255 * b));
-		}
-
-
 		public byte A {
 			get { return (byte)(argb >> 24); }
 			set { argb = ((uint)(value << 24) | (argb & 0x00FFFFFF)); }
@@ -82,32 +71,6 @@ namespace System.Windows.Media {
 			set { argb = (uint)(value | (argb & 0xFFFFFF00)); }
 		}
 
-		public float ScA {
-			get { return (A / 255.0f); }
-			set { A = (byte)(255 * value); }
-		}
-
-		public float ScR {
-			get { return (R / 255.0f); }
-			set { R = (byte)(255 * value); }
-		}
-
-		public float ScG {
-			get { return (G / 255.0f); }
-			set { G = (byte)(255 * value); }
-		}
-
-		public float ScB {
-			get { return (B / 255.0f); }
-			set { B = (byte)(255 * value); }
-		}
-
-
-		public void Clamp ()
-		{
-			// not applicable as long as we keep the color defined as a uint
-		}
-
 		public override int GetHashCode ()
 		{
 			return (int) argb;
@@ -123,11 +86,6 @@ namespace System.Windows.Media {
 			return (argb == color.argb);
 		}
 
-		public static bool Equals (Color color1, Color color2)
-		{
-			return (color1.argb == color2.argb);
-		}
-
 		public override string ToString ()
 		{
 			return String.Format ("#{0,8:X}", argb);
@@ -138,23 +96,10 @@ namespace System.Windows.Media {
 			return (color1 + color2);
 		}
 
-		public static bool AreClose (Color color1, Color color2)
-		{
-			// argb needs to be identical for colors to be close
-			// but close colors could happen if we kept the colors as 4 float components
-			return (color1.argb == color2.argb);
-		}
-
 		public static Color Multiply (Color color, float coefficient)
 		{
 			return color * coefficient;
 		}
-
-		public static Color Subtract (Color color1, Color color2)
-		{
-			return color1 - color2;
-		}
-
 
 		public static Color operator + (Color color1, Color color2)
 		{
@@ -164,14 +109,10 @@ namespace System.Windows.Media {
 
 		public static Color operator * (Color color, float coefficient)
 		{
-			return Color.FromScRgb (color.ScA * coefficient, color.ScR * coefficient, color.ScG * coefficient,
-				color.ScB * coefficient);
-		}
-
-		public static Color operator - (Color color1, Color color2)
-		{
-			return Color.FromArgb ((byte)(color1.A - color2.A), (byte)(color1.R - color2.R), 
-				(byte)(color1.G - color2.G), (byte)(color1.B - color2.B));
+			return Color.FromArgb ((byte)(color.A * coefficient),
+					       (byte)(color.R * coefficient),
+					       (byte)(color.G * coefficient),
+					       (byte)(color.B * coefficient));
 		}
 
 		public static bool operator == (Color color1, Color color2)

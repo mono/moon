@@ -38,12 +38,6 @@ namespace System.Windows {
 			h = height;
 		}
 		
-		
-		public static bool Equals (Size size1, Size size2)
-		{
-			return size1.w == size2.w && size1.h == size2.h;
-		}
-		
 		public override bool Equals (object o)
 		{
 			if (!(o is Size))
@@ -70,11 +64,6 @@ namespace System.Windows {
 		public static bool operator != (Size size1, Size size2)
 		{
 			return size1.w != size2.w || size1.h != size2.h;
-		}
-		
-		public static explicit operator Point (Size size)
-		{
-			return new Point (size.w, size.h);
 		}
 		
 		public double Height {
