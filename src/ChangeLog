@@ -1,5 +1,9 @@
 2008-05-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* downloader.cpp: Fix warnings.
+
+2008-05-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* clock.cpp: Added comment.
 
 2008-05-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
