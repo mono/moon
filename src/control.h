@@ -52,6 +52,7 @@ class Control : public FrameworkElement {
 
 	virtual void OnLoaded ();
 
+	void SetContent (UIElement *element, Surface *surface);
 	UIElement* InitializeFromXaml (const char *xaml,
 				       Type::Kind *element_type, XamlLoader* loader);
 
@@ -71,6 +72,13 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::USERCONTROL; }
 
 	static DependencyProperty *ContentProperty;
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	
+	virtual DependencyProperty *GetContentProperty ()
+	{
+		return ContentProperty;
+	}
 };
 
 G_BEGIN_DECLS

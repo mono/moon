@@ -167,15 +167,9 @@ Control::~Control ()
 		real_object->unref ();
 }
 
-UIElement*
-Control::InitializeFromXaml (const char *xaml,
-			     Type::Kind *element_type, XamlLoader *loader)
+void
+Control::SetContent (UIElement *element, Surface *surface)
 {
-	// No callback, figure out how this will work in the plugin to satisfy deps
-	UIElement *element = (UIElement*)xaml_create_from_str (loader, xaml, false, element_type);
-	if (element == NULL)
-		return NULL;
-
 	if (real_object){
 		real_object->SetVisualParent (NULL);
 		real_object->SetSurface (NULL);
@@ -185,14 +179,35 @@ Control::InitializeFromXaml (const char *xaml,
 	real_object = (FrameworkElement *) element;
 	real_object->SetVisualParent (this);
 
-	if (loader)
-		SetSurface (loader->GetSurface ());
-
+	//
+	// It is not clear that we even need to do this, as attaching
+	// will do this internally, but am keeping this to not break
+	// things.   Also the @surface parameter could go away if we
+	// determine its not needed
+	//
+	if (surface != NULL)
+		SetSurface (surface);
+	
 	real_object->AddPropertyChangeListener (this);
 	real_object->UpdateTotalRenderVisibility ();
 	real_object->UpdateTransform ();
 	UpdateBounds ();
 
+}
+
+UIElement*
+Control::InitializeFromXaml (const char *xaml,
+			     Type::Kind *element_type, XamlLoader *loader)
+{
+	// No callback, figure out how this will work in the plugin to satisfy deps
+	UIElement *element = (UIElement*)xaml_create_from_str (loader, xaml, false, element_type);
+	if (element == NULL)
+		return NULL;
+
+	Surface *surface = loader ? loader->GetSurface () : NULL;
+
+	SetContent (element, surface);
+	
 	return element;
 }
 
@@ -220,6 +235,21 @@ UserControl *
 user_control_new (void)
 {
 	return new UserControl ();
+}
+
+void
+UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property->type != Type::USERCONTROL) {
+		Control::OnPropertyChanged (args);
+		return;
+	}
+	
+	if (args->property == UserControl::ContentProperty){
+		SetContent (args->new_value->AsUIElement (), GetSurface ());
+		UpdateBounds ();
+	}
+	NotifyListenersOfPropertyChange (args);
 }
 
 UserControl::UserControl ()

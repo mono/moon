@@ -526,12 +526,13 @@ Surface::Attach (UIElement *element)
 		return;
 	}
 
-	if (!Type::Find (element->GetObjectType())->IsSubclassOf (Type::CANVAS)) {
+	if (!element->Is (Type::UIELEMENT)) {
 		printf ("Surface::Attach Unsupported toplevel %s\n", Type::Find (element->GetObjectType ())->GetName ());
 		return;
 	}
 
-	Canvas *canvas = (Canvas *) element;
+	UIElement *canvas = element;
+	//Canvas *canvas = (Canvas *) element;
 	canvas->ref ();
 
 	// make sure we have a namescope at the toplevel so that names

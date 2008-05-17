@@ -202,6 +202,7 @@ class XamlParserInfo {
 	// If set, this is used to hydrate an existing object, not to create a new toplevel one
 	//
 	DependencyObject *expecting;
+	bool hydrating;
 	
 	void AddCreatedElement (DependencyObject* element)
 	{
@@ -213,7 +214,7 @@ class XamlParserInfo {
 		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL),
 		cdata_content (false), cdata (NULL), implicit_default_namespace (false), error_args (NULL),
-		loader (NULL), created_elements (NULL), expecting(NULL)
+		loader (NULL), created_elements (NULL), expecting(NULL), hydrating(false)
 	{
 		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	}
@@ -342,6 +343,15 @@ class XNamespace : public XamlNamespace {
 		}
 
 		if (!strcmp ("Class", attr)) {
+
+			// While hydrating, we do not need to create the toplevel class, its created already
+			if (p->hydrating)
+				return TRUE;
+
+			//
+			// FIXME: On Silverlight 2.0 only the toplevel node should contain an x:Class
+			// must validate that.
+			//
 			DependencyObject *old = item->item;
 
 			item->item = NULL;
@@ -882,10 +892,24 @@ start_element (void *data, const char *el, const char **attr)
 		if (!inst->item)
 			return;
 
-		if (p->current_element && p->current_element->info) {
-			p->current_element->info->add_child (p, p->current_element, inst);
-			if (p->error_args)
-				return;
+		if (p->current_element){
+			if (p->current_element->item){
+				DependencyProperty *content_property = p->current_element->item->GetContentProperty ();
+			
+				if (content_property != NULL){
+					//
+					// FIXME: this needs to cope with collections as well
+					// FIXME: this needs to cope with conversions as specified (if the type is not string or object
+					//
+					p->current_element->item->SetValue (content_property, inst->item);
+				}
+			}
+
+			if (p->current_element->info) {
+				p->current_element->info->add_child (p, p->current_element, inst);
+				if (p->error_args)
+					return;
+			}
 		}
 	} else {
 		// it's actually valid (from SL point of view) to have <Ellipse.Triggers> inside a <Rectangle>
@@ -1404,6 +1428,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 	parser_info->loader = loader;
 
 	parser_info->expecting = object;
+	parser_info->hydrating = true;
 	
 	// from_str gets the default namespaces implictly added
 	add_default_namespaces (parser_info);
