@@ -2368,6 +2368,8 @@ runtime_shutdown (void)
 
 		g_ptr_array_free (last_n, true);
 	}
+	g_hash_table_destroy (EventObject::objects_alive);
+	EventObject::objects_alive = NULL;
 #elif DEBUG
 	if (EventObject::objects_created != EventObject::objects_destroyed) {
 		printf ("Runtime destroyed, with %i leaked EventObjects.\n", EventObject::objects_created - EventObject::objects_destroyed);
