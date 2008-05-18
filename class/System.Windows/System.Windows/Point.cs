@@ -41,7 +41,7 @@ namespace System.Windows {
 			if (!(o is Point))
 				return false;
 
-			return Equals (this, (Point) o);
+			return Equals ((Point) o);
 		}
 		
 		public bool Equals (Point value)
