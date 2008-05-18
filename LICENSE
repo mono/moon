@@ -1,4 +1,6 @@
-This code is licensed under the terms of the GNU LGPL 2 license only (no "later versions").
+
+This code is licensed under the terms of the GNU LGPL 2 license only
+(no "later versions").
 
 In addition to the GNU LGPL, this code is available for relicensing
 for non-LGPL use, contact Novell for details (mono@novell.com).  
@@ -15,3 +17,10 @@ phone platform that prevents end users from upgrading Moonlight).
 This code might contain code that optionally links to LGPL and
 GPL code, in those cases, if the library is built with those 
 bits the code is covered under those licenses.
+
+* Chiron Source Code (tools/chiron)
+
+	The Chiron Source code comes from the Silverlight Dynamic
+	Language SDK and is licensed under the terms of the Microsoft
+	Public License (MS-PL).
+

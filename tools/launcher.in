@@ -1,5 +1,4 @@
 #!/bin/sh
-
 EXEC="exec "
 
 if test x$1 = x--debug; then
@@ -17,4 +16,5 @@ if test x$1 = x--valgrind; then
   EXEC="valgrind $VALGRIND_OPTIONS"   
 fi
 
-$EXEC mono $DEBUG $MONO_OPTIONS @moondir@/mopen.exe $@
+
+$EXEC mono $DEBUG $MONO_OPTIONS @moondir@/@TOOL@ $@

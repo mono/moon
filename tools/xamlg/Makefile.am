@@ -19,11 +19,11 @@ xamlg_exe_CS = 		\
 xamlg.exe: $(xamlg_exe_CS) 
 	gmcs -debug -out:$@ $(xamlg_exe_CS) -r:System -r:System.Xml
 
-xamlg: xamlg.in
-	$(do_subst) < $(srcdir)/xamlg.in > xamlg
+xamlg: $(srcdir)/../launcher.in
+	$(do_subst) < $(srcdir)/../launcher.in > xamlg
 	chmod +x xamlg
 
-do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' 
+do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],xamlg,g'
 
 run:
 	mono --debug xamlg.exe

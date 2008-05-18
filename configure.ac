@@ -429,6 +429,7 @@ tools/mopen/Makefile
 tools/svg2xaml/Makefile
 tools/xamlg/Makefile
 tools/xaml2html/Makefile
+tools/respack/Makefile
 examples/Makefile
 examples/desklet/Makefile
 examples/desklet/calculator/Makefile

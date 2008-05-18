@@ -1,3 +1,8 @@
+2008-05-18  Miguel de Icaza  <miguel@novell.com>
+
+	* Add new tool to package xaml files into the .g.resources
+	expected by Silverlight 2
+
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* moon.mds: Updated.
