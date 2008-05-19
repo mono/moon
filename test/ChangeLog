@@ -1,3 +1,9 @@
+2008-05-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml/test-create-resources.html: New test, verifies that we
+	create a wrapper element when properties are the top element
+	passed to createFromXaml.
+
 2008-05-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/seek-test-overbounds-and-return.html:

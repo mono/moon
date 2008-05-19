@@ -1,0 +1,103 @@
+<html>
+	<head>
+	<title>Moonlight Test Page</title>
+
+        <script type="text/xaml" id="xaml">       
+                <?xml version="1.0"?>
+                        <Canvas
+                                xmlns="http://schemas.microsoft.com/client/2007"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
+                        </Canvas>
+        </script>
+
+	<script language="javascript" src="Silverlight.js"></script>
+	<script language="javascript">
+
+		createTestPlugin ();
+		QueueTestReady ();
+
+		function QueueTestReady ()
+		{
+			if (document.body == null) {
+				window.setTimeout ("QueueTestReady ()", 100);
+				return;
+			}
+
+			window.setTimeout ("RunTest ()", 250);
+		}
+
+		function RunTest ()
+		{
+                        var control = document.getElementById ("_MoonlightControl");
+			var test_plugin = document.getElementById ("_TestPlugin");
+
+                        var dic = control.content.createFromXaml ("<Canvas.Resources></Canvas.Resources>");
+                        if (dic.toString () != "ResourceDictionary") {
+                                  test_plugin.LogError ("Return value was of incorrect type " + dic);
+				  test_plugin.LogResult (-1);
+				  return;
+		        }
+
+			test_plugin.LogResult (1);
+
+			FinishTest ();
+		}
+
+		function FinishTest ()
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+			test_plugin.SignalShutdown (document.name);
+		}
+
+		function createTestPlugin ()
+		{
+			if (document.body == null) {
+				window.setTimeout("createTestPlugin ();", 10);
+				return;
+			}
+
+			// Create plugin html.
+			var pluginHtml = "";
+
+			if (navigator.appVersion.indexOf('MSIE') != -1) {
+				pluginHtml = 
+					'<object id="_TestPlugin" width="0" height="0" ' +
+						'classid = "CLSID:596F7B43-899C-42F4-BF3C-B62BA99E73FF">' +
+					'<\/object>';
+			} else {
+				pluginHtml = 
+					'<embed id="_TestPlugin" width="0" height="0" ' +
+						'type="application\/x-jolttest">' +
+					'<\/embed>';
+			}
+
+			// Insert plugin html into document.
+			var obj = document.createElement ("DIV");
+			obj.innerHTML = pluginHtml;
+			document.body.appendChild (obj);
+		
+			setTimeout ("connectPlugin ();", 50);
+		}
+
+		function connectPlugin ()
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+			if (test_plugin) {
+				test_plugin.Connect ();
+			} else {
+				setTimeout ("connectPlugin ();", 50);
+			}
+		}
+	</script>
+	</head>
+
+	<body>
+                <embed type="application/x-silverlight"
+			width="10"
+			height="10"
+			id="_MoonlightControl" Source="#xaml" OnError="ErrorHandler"
+			style="position:absolute; left:0px; top:0px" >
+		</embed>
+	</body>
+</html>
+
