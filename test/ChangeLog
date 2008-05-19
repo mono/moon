@@ -1,5 +1,10 @@
 2008-05-19  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/seek-test-multiple.html: Adding another seeking test
+	with multiple seek operations performed one after another.
+
+2008-05-19  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/seek-test-1.html: Adding a simple seek test.
 
 2008-05-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
