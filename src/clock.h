@@ -295,6 +295,7 @@ class Clock : public DependencyObject {
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
+	virtual void ExtraRepeatHandler () {};
 	virtual bool Tick ();
 	void SetParent (ClockGroup *parent) { parent_clock = parent; }
 	virtual void SetTimeManager (TimeManager *manager) { time_manager = manager; }

@@ -1217,6 +1217,7 @@ ClockGroup::DoRepeat (TimeSpan time)
 	
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *c = (Clock*)l->data;
+		c->ExtraRepeatHandler ();
 		c->ComputeBeginTime ();
 		c->SoftStop ();
 	}
