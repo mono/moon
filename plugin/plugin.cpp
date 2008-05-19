@@ -670,6 +670,8 @@ PluginInstance::SetPageURL ()
 		}
 		NPN_ReleaseVariantValue (&location_property);
 	}
+
+	NPN_ReleaseObject (window);
 }
 
 void

@@ -1,5 +1,10 @@
 2008-05-19  Larry Ewing  <lewing@novell.com>
 
+	* plugin.cpp (PluginInstance::SetPageURL): drop the reference we
+	were holding to NPNVWindowNPObject.
+
+2008-05-19  Larry Ewing  <lewing@novell.com>
+
 	* plugin.cpp (PluginInstance::EventHandle): discard any events
 	that happen before SetWindow has been called.
 
