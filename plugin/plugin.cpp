@@ -1283,6 +1283,14 @@ PluginInstance::EventHandle (void *event)
 	XEvent *xev = (XEvent*)event;
 	int16_t handled = 0;
 
+
+	// It seems we sometimes get events before setwindow is called
+	// we will ignore them for now.
+	if (!surface) {
+		g_warning ("EventHandle called before SetWindow, discarding event.");
+		return handled;
+	}
+
 	switch (xev->type) {
 	case GraphicsExpose: {
 
