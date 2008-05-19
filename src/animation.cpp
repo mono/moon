@@ -92,10 +92,29 @@ AnimationStorage::IsCurrentStorage ()
 	return false;
 }
 
+Value*
+AnimationStorage::GetStopValue ()
+{
+	if (stopValue)
+		return stopValue;
+
+	return baseValue;
+}
+
 void
 AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer closure)
 {
 	((AnimationStorage*)closure)->UpdatePropertyValue ();
+}
+
+void
+AnimationStorage::UpdatePropertyValueWith (Value *v)
+{
+	if (targetobj == NULL)
+		return;
+
+	if (v != NULL)
+		targetobj->SetValue (targetprop, *v);
 }
 
 void

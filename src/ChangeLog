@@ -1,5 +1,12 @@
 2008-05-19  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp:
+	* animation.h: Adding two helper methods to AnimationStorage:
+	GetStopValue (get's current base or (if set) stop value) and
+	UpdatePropertyWithValue to manually force prop to a given state.
+
+2008-05-19  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp:
 	* clock.h: Addin a virtual ExtraRepeatHandler to Clock class fired on
 	repeat. By default does nothing.

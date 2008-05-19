@@ -132,6 +132,8 @@ class AnimationStorage {
 	bool IsFloating () { return floating; };
 	bool IsCurrentStorage ();
 	Value* GetResetValue ();
+	void UpdatePropertyValueWith (Value *v);
+	Value* GetStopValue (void);
 
  private:
 	void TargetObjectDestroyed ();
