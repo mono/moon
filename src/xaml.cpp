@@ -945,11 +945,13 @@ start_element (void *data, const char *el, const char **attr)
 
 			if (!p->top_element) {
 				Type* property_type = get_type_for_property_name (inst->element_name);
-				XamlElementInstance *wrap = wrap_type (p, property_type);
-				NameScope::SetNameScope (wrap->item, p->namescope);
-				p->top_element = wrap;
-				p->current_element = wrap;
-				return;
+				if (property_type->IsSubclassOf (Type::COLLECTION)) {
+					XamlElementInstance *wrap = wrap_type (p, property_type);
+					NameScope::SetNameScope (wrap->item, p->namescope);
+					p->top_element = wrap;
+					p->current_element = wrap;
+					return;
+				}
 			}
 		} else {
 			parser_error (p, el, NULL, 2007, g_strdup_printf ("Unknown element: %s.", el));

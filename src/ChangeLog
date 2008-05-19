@@ -1,5 +1,10 @@
 2008-05-19  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Only do the type wrapping if we are dealing with
+	collection types, otherwise we just ignore the property decl.
+
+2008-05-19  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: When we wrap a property we need to ignore the property
 	element so that the children get added to the wrapped object
 	properly.
