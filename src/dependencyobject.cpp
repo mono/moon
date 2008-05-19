@@ -837,24 +837,41 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 	return true;
 }
 
+static NameScope *
+create_temp_namescope (DependencyObject *o)
+{
+	NameScope *ns = new NameScope ();
+	ns->SetTemporary (true);
+	NameScope::SetNameScope (o, ns);
+
+	return ns;
+}
+
+static void
+merge_namescope (NameScope *parent_ns, NameScope *child_ns, DependencyObject *owner)
+{
+	if (!parent_ns)
+		parent_ns = create_temp_namescope (owner);
+	parent_ns->MergeTemporaryScope (child_ns);
+
+	// remove the child's temporary namescope
+	child_ns->ClearValue (NameScope::NameScopeProperty, false);
+}
+
 void
 DependencyObject::MergeTemporaryNameScopes (Collection *c)
 {
 	NameScope *ns = NameScope::GetNameScope (this);
+	NameScope *col_ns = NameScope::GetNameScope (c);
 	Collection::Node *cn;
+	
+	if (col_ns)
+		merge_namescope (ns, col_ns, this);
+
 	for (cn = (Collection::Node *) c->list->First () ; cn != NULL; cn = (Collection::Node *) cn->next) {
 		NameScope *c_ns = NameScope::GetNameScope (cn->obj);
-		if (c_ns && c_ns->GetTemporary()) {
-			if (!ns) {
-				ns = new NameScope ();
-				ns->SetTemporary (true);
-				NameScope::SetNameScope (this, ns);
-			}
-
-			ns->MergeTemporaryScope (c_ns);
-			// remove the child's temporary namescope
-			cn->obj->ClearValue (NameScope::NameScopeProperty, false);
-		}
+		if (c_ns && c_ns->GetTemporary())
+			merge_namescope (ns, c_ns, this);
 	}
 }
 

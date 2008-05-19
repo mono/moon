@@ -949,6 +949,7 @@ start_element (void *data, const char *el, const char **attr)
 				NameScope::SetNameScope (wrap->item, p->namescope);
 				p->top_element = wrap;
 				p->current_element = wrap;
+				return;
 			}
 		} else {
 			parser_error (p, el, NULL, 2007, g_strdup_printf ("Unknown element: %s.", el));
@@ -1466,7 +1467,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 		goto cleanup_and_return;
 	}
 	
-	d(print_tree (parser_info->top_element, 0));
+	print_tree (parser_info->top_element, 0);
 	
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
