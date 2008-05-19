@@ -162,6 +162,7 @@ class AnimationClock : public Clock {
  public:
 	AnimationClock (Animation/*Timeline*/ *timeline);
 	virtual Type::Kind GetObjectType () { return Type::ANIMATIONCLOCK; };
+	virtual void ExtraRepeatHandler ();
 
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 

@@ -231,6 +231,18 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 	return true;
 }
 
+void
+AnimationClock::ExtraRepeatHandler ()
+{
+	if (storage) {
+		Value *v = timeline->GetTargetValue (storage->GetStopValue ());
+		if (v) {
+			storage->UpdatePropertyValueWith (v);
+			delete v;
+		}
+	}
+}
+
 Value*
 AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue)
 {

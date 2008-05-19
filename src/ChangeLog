@@ -1,6 +1,13 @@
 2008-05-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
+	* animation.h: Adding an implementation for ExtraRepeatHandler to
+	AnimationClock that fetches target value and sets it on
+	AnimationStorage. Fixes clock37.xaml test.
+
+2008-05-19  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
 	* animation.h: Adding helper methods to get target value out of the
 	given AnimationTimeline. We're still missing implementations for
 	keyframe-based anims. Coming soon.
