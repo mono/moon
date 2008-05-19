@@ -1,5 +1,11 @@
 2008-05-19  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/seek-test-overbounds-and-return.html:
+	* xaml/assorted/seek-test-overbounds.html: Two more seeking tests --
+	overbounds and return plus normal overbounds.
+
+2008-05-19  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/seek-test-multiple.html: Adding another seeking test
 	with multiple seek operations performed one after another.
 
