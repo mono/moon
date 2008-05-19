@@ -1467,7 +1467,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 		goto cleanup_and_return;
 	}
 	
-	print_tree (parser_info->top_element, 0);
+	d(print_tree (parser_info->top_element, 0));
 	
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
