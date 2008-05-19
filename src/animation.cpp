@@ -232,7 +232,7 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 }
 
 void
-AnimationClock::ExtraRepeatHandler ()
+AnimationClock::ExtraRepeatAction ()
 {
 	if (storage) {
 		Value *v = timeline->GetTargetValue (storage->GetStopValue ());

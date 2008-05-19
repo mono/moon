@@ -1,6 +1,14 @@
 2008-05-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
+	* animation.h:
+	* clock.cpp:
+	* clock.h: Changing ExtraRepeatHandler to ExtraRepeatAction to avoid
+	confusion.
+
+2008-05-19  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
 	* animation.h: Adding an implementation for ExtraRepeatHandler to
 	AnimationClock that fetches target value and sets it on
 	AnimationStorage. Fixes clock37.xaml test.
