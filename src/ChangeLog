@@ -1,6 +1,13 @@
 2008-05-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
+	* animation.h: Adding helper methods to get target value out of the
+	given AnimationTimeline. We're still missing implementations for
+	keyframe-based anims. Coming soon.
+
+2008-05-19  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
 	* animation.h: Adding two helper methods to AnimationStorage:
 	GetStopValue (get's current base or (if set) stop value) and
 	UpdatePropertyWithValue to manually force prop to a given state.

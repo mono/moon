@@ -276,6 +276,12 @@ Animation/*Timeline*/::AllocateClock()
 }
 
 Value*
+Animation/*Timeline*/::GetTargetValue (Value* defaultOriginValue)
+{
+	return NULL;
+}
+
+Value*
 Animation/*Timeline*/::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue,
 					AnimationClock* animationClock)
 {
@@ -627,6 +633,22 @@ DoubleAnimation::DoubleAnimation ()
 }
 
 Value*
+DoubleAnimation::GetTargetValue (Value *defaultOriginValue)
+{
+	double *by = GetBy ();
+	double *from = GetFrom ();
+	double *to = GetTo ();
+	double start = from ? *from : defaultOriginValue->AsDouble();
+
+	if (to)
+		return new Value (*to);
+	else if (by) 
+		return new Value (start + *by);
+	else
+		return new Value (start);
+}
+
+Value*
 DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				  AnimationClock* animationClock)
 {
@@ -669,6 +691,22 @@ DependencyProperty* ColorAnimation::ToProperty;
 
 ColorAnimation::ColorAnimation ()
 {
+}
+
+Value*
+ColorAnimation::GetTargetValue (Value *defaultOriginValue)
+{
+	Color *by = GetBy ();
+	Color *from = GetFrom ();
+	Color *to = GetTo ();
+	Color start = from ? *from : *defaultOriginValue->AsColor();
+
+	if (to)
+		return new Value (*to);
+	else if (by) 
+		return new Value (start + *by);
+	else
+		return new Value (start);
 }
 
 Value*
@@ -749,6 +787,22 @@ color_animation_get_to (ColorAnimation *da)
 DependencyProperty* PointAnimation::ByProperty;
 DependencyProperty* PointAnimation::FromProperty;
 DependencyProperty* PointAnimation::ToProperty;
+
+Value*
+PointAnimation::GetTargetValue (Value *defaultOriginValue)
+{
+	Point *by = GetBy ();
+	Point *from = GetFrom ();
+	Point *to = GetTo ();
+	Point start = from ? *from : *defaultOriginValue->AsPoint();
+
+	if (to)
+		return new Value (*to);
+	else if (by) 
+		return new Value (start + *by);
+	else
+		return new Value (start);
+}
 
 Value*
 PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,

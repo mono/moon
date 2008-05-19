@@ -192,6 +192,7 @@ class Animation/*Timeline*/ : public Timeline {
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
+	virtual Value *GetTargetValue (Value *defaultOriginValue);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 
@@ -201,7 +202,6 @@ class Animation/*Timeline*/ : public Timeline {
 	/* The kind of values this animation generates */
 	virtual Type::Kind GetValueKind () { return Type::INVALID; };
 };
-
 
 class DoubleAnimation : public Animation/*Timeline*/ {
  protected:
@@ -227,6 +227,7 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	void    SetTo (double* pv);
 	void    SetTo (double v);
 
+	virtual Value *GetTargetValue (Value *defaultOriginValue);
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
@@ -258,6 +259,7 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	void   SetTo (Color* pv);
 	void   SetTo (Color v);
 
+	virtual Value *GetTargetValue (Value *defaultOriginValue);
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
@@ -288,6 +290,7 @@ class PointAnimation : public Animation/*Timeline*/ {
 	void   SetTo (Point* pv);
 	void   SetTo (Point v);
 
+	virtual Value *GetTargetValue (Value *defaultOriginValue);
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
