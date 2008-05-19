@@ -5,7 +5,6 @@ bin_SCRIPTS = xaml2html
 moon_DATA = xaml2html.exe
 
 EXTRA_DIST = \
-	xaml2html.in \
 	$(xaml2html_exe_CS)
 
 CLEANFILES = 		\

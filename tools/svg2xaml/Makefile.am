@@ -8,8 +8,6 @@ svg2xaml_exe_CS = 		\
 	$(srcdir)/svg2xaml.cs
 
 EXTRA_DIST = \
-	svg2xaml.in \
-	svg2xaml-gui.in \
 	$(svg2xaml_exe_CS) \
 	$(svg2xaml_gui_exe_CS) \
 	svg2xaml.xslt

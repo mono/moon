@@ -12,7 +12,6 @@ bin_SCRIPTS = mopen
 endif
 
 EXTRA_DIST = \
-	mopen.in \
 	mopen.exe.config \
 	$(mopen_exe_CS)
 

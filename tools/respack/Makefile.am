@@ -5,7 +5,6 @@ bin_SCRIPTS = respack
 moon_DATA = respack.exe
 
 EXTRA_DIST = \
-	respack.in \
 	respack.cs
 
 CLEANFILES = 		\
