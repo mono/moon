@@ -85,6 +85,10 @@ void parser_error (XamlParserInfo *p, const char *el, const char *attr, int erro
 
 static XamlElementInstance *create_custom_element  (XamlParserInfo *p, XamlElementInfo *i);
 static XamlElementInstance *wrap_dependency_object (XamlParserInfo *p, XamlElementInfo *i, DependencyObject *depobject);
+static XamlElementInstance *wrap_type (XamlParserInfo *p, Type *t);
+
+static Type *get_type_for_property_name (const char* prop_name);
+
 
 void  custom_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void  custom_add_child      (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
@@ -938,6 +942,14 @@ start_element (void *data, const char *el, const char **attr)
 
 			inst->element_name = g_strdup (el);
 			inst->element_type = XamlElementInstance::PROPERTY;
+
+			if (!p->top_element) {
+				Type* property_type = get_type_for_property_name (inst->element_name);
+				XamlElementInstance *wrap = wrap_type (p, property_type);
+				NameScope::SetNameScope (wrap->item, p->namescope);
+				p->top_element = wrap;
+				p->current_element = wrap;
+			}
 		} else {
 			parser_error (p, el, NULL, 2007, g_strdup_printf ("Unknown element: %s.", el));
 			return;
@@ -2634,6 +2646,23 @@ wrap_dependency_object (XamlParserInfo *p, XamlElementInfo *i, DependencyObject 
 	return inst;
 }
 
+static XamlElementInstance *
+wrap_type (XamlParserInfo *p, Type *t)
+{
+	XamlElementInfo *info = p->current_namespace->FindElement (p, t->name);
+	XamlElementInstance *inst = new XamlElementInstance (info);
+
+	inst->element_name = info->name;
+	inst->element_type = XamlElementInstance::ELEMENT;
+	inst->item = t->CreateInstance ();
+	
+	if (p->loader)
+		inst->item->SetSurface (p->loader->GetSurface ());
+	p->AddCreatedElement (inst->item);
+
+	return inst;
+}
+
 ///
 /// Add Child funcs
 ///
@@ -3018,6 +3047,43 @@ start_parse:
 			g_free (atchname);
 	}
 }
+
+
+static Type*
+get_type_for_property_name (const char* prop)
+{
+	Type *t  = NULL;
+	DependencyObject *o = NULL;
+	DependencyProperty *p = NULL;
+
+	char **prop_name = g_strsplit (prop, ".", -1);
+	if (!prop_name [0] || !prop_name [1])
+		return NULL;
+
+	t = Type::Find (prop_name [0]);
+	if (!t) {
+
+		g_strfreev (prop_name);
+		return NULL;
+	}
+
+	o = t->CreateInstance ();
+	if (!o) {
+
+		g_strfreev (prop_name);
+		return NULL;
+	}
+
+	p = o->GetDependencyProperty (prop_name [1]);
+	if (!p) {
+
+		g_strfreev (prop_name);
+		return NULL;
+	}
+
+	return Type::Find (p->value_type);
+}
+
 
 // We still use a name for ghost elements to make debugging easier
 XamlElementInfo *

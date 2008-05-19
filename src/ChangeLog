@@ -1,3 +1,10 @@
+2008-05-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: When createFromXaml ('<some property>...</property>')
+	is called, we need to create and return an object that represents
+	that property.  ie createFromXaml ('<Canvas.Triggers>...); should
+	return a ResourceDictionary object.
+
 2008-05-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* downloader.cpp: Fix warnings.
