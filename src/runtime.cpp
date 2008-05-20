@@ -1725,7 +1725,7 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 	handled = s->HandleMouseEvent (emit_MouseMove, true, true, true, s->mouse_event);
 	s->UpdateCursorFromInputList ();
 
-	return handled;
+	return widget ? TRUE : handled;
 }
 
 gboolean

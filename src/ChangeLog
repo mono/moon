@@ -1,3 +1,11 @@
+2008-05-20  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::motion_notify_callback): always return
+	true in the windowed motion handler otherwise we something steals
+	mouse events from us.
+
+	Fixes most of MouseInput.htm
+
 2008-05-20  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: Fixing a problem where timeline with BeginTime set do not
