@@ -996,6 +996,15 @@ Clock::Resume ()
 void
 Clock::Seek (TimeSpan timespan)
 {
+	// Start the clock if seeking into it's timespan
+	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || GetBeginTime () <= seek_time)) {
+		if (GetBeginOnTick()) {
+			BeginOnTick (false);
+			ComputeBeginTime ();
+		}
+		Begin ();
+	}
+
 	seeking = true;
 
 	/* calculate our resulting time based on our
