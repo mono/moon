@@ -1,5 +1,10 @@
 2008-05-20  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/seek-test-begin-time.html: Another test for seeking on
+	storyboard which have BeginTime. This is completely broken on us.
+
+2008-05-20  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/seek-test-on-pause.html: Adding a test for seeking on
 	Pause. SL has an interesting behavior where entering the rect many times
 	(triggering the seek many times) causses an increasing offsett.
