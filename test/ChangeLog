@@ -1,5 +1,10 @@
 2008-05-20  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/seek-test-no-begin.html: Test for seeking without
+	begining.
+
+2008-05-20  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/clock/clock38.html:
 	* xaml/clock/clock38.xaml: Adding test similiar to clock37.xaml but for
 	keyframe-based animations.
