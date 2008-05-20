@@ -95,6 +95,11 @@ capture_multiple_images (void* data)
 	std::list<Magick::Image> image_list;
 	for (int i = 0; i < cmid->count; i++) {
 		Magick::Image image = acquire_screenshot (cmid->xroot_window, cmid->x, cmid->y, cmid->width, cmid->height);
+
+		// Maybe it's because it's late, maybe it's because dinner was so spicy, maybe it's because I've lost my grasp
+		// on reality.  I'm not sure why, but writing the images to disc before adding to the list makes everything work
+		// properly here.
+		image.write ("multilayered-image.png");
 		image_list.push_front (image);
 
 		usleep (cmid->interval * 1000);
