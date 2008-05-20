@@ -116,11 +116,10 @@ void
 InputProvider::MoveMouseLogarithmic (int x, int y)
 {
 	g_assert (xtest_available);
+	g_assert (display);
 
 	int current_x;
 	int current_y;
-
-	Display* display = XOpenDisplay (NULL);
 
 	GetCursorPos (current_x, current_y);
 	
@@ -133,8 +132,6 @@ InputProvider::MoveMouseLogarithmic (int x, int y)
 
 		usleep (MOVE_MOUSE_LOGARITHMIC_INTERVAL);
 	}
-
-	XCloseDisplay (display);
 }
 
 bool

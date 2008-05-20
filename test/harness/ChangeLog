@@ -1,3 +1,8 @@
+2008-05-20  Jackson Harper  <jackson@ximian.com>
+
+	* shocker/input.cpp: We don't need to open our own display anymore
+	since this method is called in the main thread.
+
 2008-05-19  Jackson Harper  <jackson@ximian.com>
 
 	* shocker/image-capture.cpp: Workaround for TIFFs not being saved
