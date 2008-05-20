@@ -1,3 +1,7 @@
+2008-05-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Fix mopen script to use mopen.exe
+
 2008-05-13  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Correct flags for mopen1 and only build mopen.exe if
