@@ -1,3 +1,9 @@
+2008-05-20  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/clock38.html:
+	* xaml/clock/clock38.xaml: Adding test similiar to clock37.xaml but for
+	keyframe-based animations.
+
 2008-05-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml/test-create-resources.html: New test, verifies that we

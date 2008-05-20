@@ -1,0 +1,30 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="640" Height="300">
+
+	<Canvas.Triggers>
+		<EventTrigger RoutedEvent="Canvas.Loaded">
+			<BeginStoryboard>
+				<Storyboard RepeatBehavior="Forever">
+					<DoubleAnimationUsingKeyFrames Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)">
+						<LinearDoubleKeyFrame Value="10" KeyTime="00:00:2" />
+						<LinearDoubleKeyFrame Value="500" KeyTime="00:00:2.25" />
+						<LinearDoubleKeyFrame Value="500" KeyTime="00:00:4.25" />
+					</DoubleAnimationUsingKeyFrames>					
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Canvas.Triggers>
+
+		<Rectangle x:Name="measure1" Canvas.Left="10" Canvas.Top="7" Width="590" Height="3" Fill="Black" />
+		<Rectangle x:Name="measure2" Canvas.Left="10" Canvas.Top="110" Width="590" Height="3" Fill="Black" />
+		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100" Fill="Red" />
+
+	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="150" Width="600" Height="30">
+		<Run Text="The red block show stay at the left for 2 seconds, then move to the right."/>
+		<LineBreak/>
+		<Run Text="It should then wait 2 seconds (at right)"/>
+		<LineBreak/>
+		<Run Text="and return to the left side to repeat the last step.  forever."/>
+	</TextBlock>
+</Canvas>
