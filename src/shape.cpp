@@ -293,9 +293,11 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 
 		switch (stretch) {
 		case StretchFill:
+			needs_clip = false;
 			center = true;
 			break;
 		case StretchUniform:
+			needs_clip = false;
 			sw = sh = (sw < sh) ? sw : sh;
 			center = true;
 			break;
@@ -1142,7 +1144,11 @@ Ellipse::BuildPath ()
 
 shape:
 	if (IsDegenerate ()) {
-		double radius = t / 2;
+		/*
+		 * XXX this appears to be the closest we can easily get to
+		 * the windows logic
+		 */
+		double radius = MIN (w, h) / 2;
 		path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
 		moon_rounded_rectangle (path, x, y, w, h, radius, radius);
 	} else {

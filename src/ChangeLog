@@ -1,3 +1,12 @@
+2008-05-21  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (Ellipse::BuildPath): try to shape our degenerate
+	ellipses a little better.
+	(Shape::ComputeStretchBounds): modify the needs_clip logic a
+	little to catch the degenerate ellipse cases we were running into.
+
+	Fixes test-shape-ellipse-stroke*.xaml.
+
 2008-05-21  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: Include the offsett coming from the BeginTime in the
