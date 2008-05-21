@@ -1,3 +1,8 @@
+2008-05-21  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/seek-test-wrapping-set.html: A composite test with many
+	various seek combinations including wrapping repeat-forever tests.
+
 2008-05-20  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/seek-test-begin-time.html: Another test for seeking on
