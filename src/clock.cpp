@@ -1005,6 +1005,7 @@ Clock::Seek (TimeSpan timespan)
 			ComputeBeginTime ();
 		}
 		Begin ();
+		seek_time = seek_time - GetBeginTime ();
 	}
 
 	seeking = true;
