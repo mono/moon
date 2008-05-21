@@ -894,7 +894,7 @@ void
 Clock::Begin ()
 {
 	seeking = false;
-	has_started = true;
+	has_started = false;
 	was_stopped = false;
 	is_paused = false;
 	forward = true;

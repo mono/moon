@@ -1,3 +1,23 @@
+2008-05-21  Chris Toshok  <toshok@ximian.com>
+
+	* collection.cpp (Collection::Add): remove the check for AddToList
+	returning -1.  It never will.  Also, call SetSurface() on the new
+	child *before* we create the Collection::Node for it, so we can
+	tell (in SetSurface) if it's being added individually to the
+	surface, or as part of a subtree.  This is required to fix
+	storyboard_EnterLeaveSemantics.
+
+	* animation.cpp (Storyboard::SetSurface): resume the clock when
+	we're reattached to the surface, but *only* if we're being added
+	as part of a subtree (that is, we already have a logical parent
+	when we hit this method.)
+
+	* clock.cpp (Clock::Begin): revert the previous
+	change (has_started needs to be initialized to false).  Required
+	to fix storyboard_EnterLeaveSemantics.htm.  We'll need to figure
+	out another way to fix the site (or a better way that fixes one
+	without breaking the other.)
+
 2008-05-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Glyphs::Layout): Use PixelsPerEM() instead of

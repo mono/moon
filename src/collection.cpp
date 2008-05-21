@@ -112,14 +112,15 @@ Collection::Add (DependencyObject *data)
 		return -1;
 	}
 
+	// do this *before* creating the Collection::Node, since that
+	// sets the logical parent on data, and we need to
+	// differentiate the two cases in Storyboard::SetSurface.
+	data->SetSurface (GetSurface());
+
 	generation++;
 	result = AddToList (new Collection::Node (data, this));
 	
-	if (result == -1)
-		return result;
-		
 	data->AddPropertyChangeListener (this);
-	data->SetSurface (GetSurface());
 
 	MergeNames (data);
 

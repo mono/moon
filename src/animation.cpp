@@ -579,11 +579,10 @@ Storyboard::SetSurface (Surface *surface)
 		Pause ();
 	}
  	else if (!GetSurface() && surface) {
-// XXX MS doesn't seem to do this
-// 		/* we're being (re-)attached to a surface, so resume clock */
-// 		if (root_clock && root_clock->GetIsPaused()) {
-//  			Resume ();
-// 		}
+		/* we're being (re-)attached to a surface, so resume clock */
+		if (root_clock && root_clock->GetIsPaused() && GetLogicalParent()) {
+			Resume ();
+		}
  	}
 	DependencyObject::SetSurface (surface);
 }
