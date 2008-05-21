@@ -38,7 +38,7 @@
 			try {
 			    canvas.SetValue ("Canvas.Width", 0.0);
 			} catch (e) {
-			    if (e.toString () != "Error calling method on NPObject! [plugin exception: AG_E_RUNTIME_SETVALUE].") {
+			    if (e.toString () != "Error calling method on NPObject![plugin exception: AG_E_RUNTIME_SETVALUE].") {
 			        test_plugin.LogError ("Wrong string value for setvalue exception. (" + e.toString () + ").");
 				test_plugin.LogResult (-1);
 				return;
