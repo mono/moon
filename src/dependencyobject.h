@@ -249,6 +249,10 @@ class DependencyObject : public EventObject {
 	//
 	// OnCollectionChanged:
 	//
+	// This method is invoked when a change has happened in the @col
+	// collection, the kind of change is described in @type (change start,
+	// change end, adding, removing, or altering an existing item).
+	//
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args) { }
 
 	// These two methods are a little confusing.  @child_property
