@@ -1133,9 +1133,6 @@ void
 ClockGroup::Seek (TimeSpan timespan)
 {
 	Clock::Seek (timespan);
-
-	for (GList *l = child_clocks; l; l = l->next)
-		((Clock*)l->data)->Seek (seek_time);
 }
 
 void
