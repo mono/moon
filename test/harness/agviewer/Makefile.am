@@ -1,6 +1,6 @@
 bin_PROGRAMS = agviewer
 
-INCLUDES = $(AGVIEWER_CFLAGS) -Wall
+INCLUDES = $(AGVIEWER_CFLAGS) -Wall  -DG_LOG_DOMAIN=\"Agviewer\"
 
 agviewer_SOURCES = 	\
 	agviewer.cpp	\

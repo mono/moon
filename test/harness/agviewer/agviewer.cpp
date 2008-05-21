@@ -226,7 +226,6 @@ main(int argc, char **argv)
 			gtk_main ();
 	}
 	
-	gtk_widget_destroy (GTK_WIDGET (browser->top_level_window));
 	g_free (test_path);
 
 	return 0;
