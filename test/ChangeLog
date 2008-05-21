@@ -1,3 +1,8 @@
+2008-05-21  Jackson Harper  <jackson@ximian.com>
+
+	* xaml/test-illegal-prop-set.html: Try calling canvas.SetValue
+	("Canvas.Width", 0.0) which should throw an exception.
+
 2008-05-21  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/seek-test-wrapping-set.html: A composite test with many

@@ -1,0 +1,171 @@
+<html>
+	<head>
+	<title>Moonlight Test Page</title>
+
+	<script type="text/xaml" id="xaml">       
+                <?xml version="1.0"?>
+                        <Canvas
+                                xmlns="http://schemas.microsoft.com/client/2007"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
+                        </Canvas>
+        </script>
+
+	<script language="javascript" src="Silverlight.js"></script>
+	<script language="javascript">
+
+                var expected_error = null;
+
+		createTestPlugin ();
+		QueueTestReady ();
+
+		function QueueTestReady ()
+		{
+			if (document.body == null) {
+				window.setTimeout ("QueueTestReady ()", 100);
+				return;
+			}
+
+			window.setTimeout ("RunTest ()", 250);
+		}
+
+		function RunTest ()
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+                        var control = document.getElementById ("_MoonlightControl");
+			var canvas = control.content.root;
+
+			var exception_caught = false;
+			try {
+			    canvas.SetValue ("Canvas.Width", 0.0);
+			} catch (e) {
+			    if (e.toString () != "Error calling method on NPObject! [plugin exception: AG_E_RUNTIME_SETVALUE].") {
+			        test_plugin.LogError ("Wrong string value for setvalue exception. (" + e.toString () + ").");
+				test_plugin.LogResult (-1);
+				return;
+			    }
+                            exception_caught = true;
+			}
+
+			if (!exception_caught) {
+			    test_plugin.LogError ("No exception was thrown when setting Canvas.Width.");
+			    test_plugin.LogResult (-1);
+			    return;
+			}
+
+			test_plugin.LogResult (1);
+
+			FinishTest ();
+		}
+
+		function FinishTest ()
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+
+			if (expected_error != null) {
+				test_plugin.LogError ("Expected error was never signaled.");
+				test_plugin.LogResult (-1);
+			}
+
+			test_plugin.SignalShutdown (document.name);
+		}
+
+		function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+			if (initial_delay) {
+				window.setTimeout (function () {
+					var test_plugin = document.getElementById ("_TestPlugin");
+					test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
+					test_plugin.SignalShutdown (document.name);
+					}, initial_delay);
+				return;
+			}
+
+			test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
+			FinishTest ();
+		}
+
+		function TakeMultipleSnapshotsAndShutdown (control, max_images_to_capture, capture_interval, initial_delay, width, height)
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+
+			test_plugin.CaptureMultipleImages ("", "", 0, 0, width, height, max_images_to_capture, capture_interval, initial_delay);
+			FinishTest ();
+		}
+
+		function ErrorHandler (sender, args)
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+			if (expected_error != null) {
+				if (args.ErrorType == expected_error) {
+					test_plugin.LogDebug ("Error matched expected error.");
+					test_plugin.LogResult (1);
+					test_plugin.SignalShutdown (document.name);
+					return;
+				} else {
+					test_plugin.LogError ("Error args type did not match expected type (" + typeof args + ").");
+					test_plugin.LogResult (-1);
+					test_plugin.SignalShutdown (document.name);
+					return;
+				}
+			}
+	
+			test_plugin.LogError ("Error raised by moonlight: " + args.ErrorMessage);
+			test_plugin.LogResult (-1)
+		}
+
+		function createTestPlugin ()
+		{
+			if (document.body == null) {
+				window.setTimeout("createTestPlugin ();", 10);
+				return;
+			}
+
+			// Create plugin html.
+			var pluginHtml = "";
+
+			if (navigator.appVersion.indexOf('MSIE') != -1) {
+				pluginHtml = 
+					'<object id="_TestPlugin" width="0" height="0" ' +
+						'classid = "CLSID:596F7B43-899C-42F4-BF3C-B62BA99E73FF">' +
+					'<\/object>';
+			} else {
+				pluginHtml = 
+					'<embed id="_TestPlugin" width="0" height="0" ' +
+						'type="application\/x-jolttest">' +
+					'<\/embed>';
+			}
+
+			// Insert plugin html into document.
+			var obj = document.createElement ("DIV");
+			obj.innerHTML = pluginHtml;
+			document.body.appendChild (obj);
+		
+			setTimeout ("connectPlugin ();", 50);
+		}
+
+		function connectPlugin ()
+		{
+			var test_plugin = document.getElementById ("_TestPlugin");
+			if (test_plugin) {
+				test_plugin.Connect ();
+			} else {
+				setTimeout ("connectPlugin ();", 50);
+			}
+		}
+	</script>
+	</head>
+
+	<body>
+		<div>
+			<embed type="application/x-silverlight"
+				width="640"
+				height="480"
+				id="_MoonlightControl" Source="#xaml" OnError="ErrorHandler"
+				style="position:absolute; left:0px; top:0px" >
+			</embed>
+		</div>
+	</body>
+</html>
+
+
