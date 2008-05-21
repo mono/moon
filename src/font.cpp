@@ -1467,10 +1467,9 @@ TextFont::Path (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 	if (!glyph->path || !(&glyph->path->cairo)->data)
 		return;
 	
-	cairo_save (cr);
 	cairo_translate (cr, x, y);
 	cairo_append_path (cr, &glyph->path->cairo);
-	cairo_restore (cr);
+	cairo_translate (cr, -x, -y);
 }
 
 void
