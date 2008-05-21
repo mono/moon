@@ -30,7 +30,7 @@ class Canvas : public Panel {
 	
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
-	Point GetTransformOrigin ();
+	virtual Point GetTransformOrigin ();
 
 	virtual void ComputeBounds ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
