@@ -1079,6 +1079,17 @@ TextFont::IsScalable ()
 }
 
 double
+TextFont::PixelsPerEM ()
+{
+	if (!face)
+		return 0.0;
+	
+	// Note: don't remember where I got the 20 from...
+	
+	return (20.0 / face->units_per_EM);
+}
+
+double
 TextFont::Kerning (gunichar left, gunichar right)
 {
 	FT_Vector kerning;

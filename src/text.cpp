@@ -1419,7 +1419,7 @@ Glyphs::Layout ()
 	
 	font = desc->GetFont ();
 	
-	scale = desc->GetSize () * 20.0 / 2048.0;
+	scale = desc->GetSize () * font->PixelsPerEM ();
 	
 	right = origin_x;
 	left = origin_x;
@@ -1657,7 +1657,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	
 	font = desc->GetFont ();
 	
-	scale = desc->GetSize () * 20.0 / 2048.0;
+	scale = desc->GetSize () * font->PixelsPerEM ();
 	
 	x0 = origin_x;
 	

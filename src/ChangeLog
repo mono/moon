@@ -1,5 +1,11 @@
 2008-05-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (Glyphs::Layout): Use PixelsPerEM() instead of
+	hard-coding the EM units ourselves.
+	(Glyphs::Render): Same.
+
+	* font.cpp (TextFont::PixelsPerEM): New convenience function.
+
 	* clock.cpp (Clock::Begin): Init has_started to true. Fixes
 	http://www.tek.co.jp/Legend
 
