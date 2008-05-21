@@ -1,5 +1,9 @@
 2008-05-21  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Actually do set the seek_time before using it.
+
+2008-05-21  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: When seeking ClockGroup, don't seek children as weel
 	(results in cumulative behavior).
 
