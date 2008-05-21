@@ -122,28 +122,17 @@ plugin_show_menu (PluginInstance *plugin)
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 }
 
-gboolean
-plugin_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
+static gboolean
+plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data)
 {
-	gboolean handled = 0;
-
 	PluginInstance *plugin = (PluginInstance *) user_data;
-	GdkEventButton *event_button;
 
-	switch (event->type) {
-		case GDK_BUTTON_PRESS:
-			event_button = (GdkEventButton *) event;
-			if (event_button->button == 3) {
-				plugin_show_menu (plugin);
-				handled = 1;
-			}
-			break;
-
-		default:
-			break;
+	if (event->button == 3) {
+		plugin_show_menu (plugin);
+		return TRUE;
 	}
 
-	return handled;
+	return FALSE;
 }
 
 char *
@@ -819,7 +808,7 @@ PluginInstance::CreateWindow ()
 				       GDK_FOCUS_CHANGE_MASK
 				       );
 
-		g_signal_connect (G_OBJECT(container), "event", G_CALLBACK (plugin_event_callback), this);
+		g_signal_connect (G_OBJECT(container), "button-press-event", G_CALLBACK (plugin_button_press_callback), this);
 
 		gtk_container_add (GTK_CONTAINER (container), surface->GetWidget());
 		//display = gdk_drawable_get_display (surface->GetWidget()->window);
@@ -1285,6 +1274,7 @@ PluginInstance::EventHandle (void *event)
 	XEvent *xev = (XEvent*)event;
 	int16_t handled = 0;
 
+	printf ("xev->type == %d\n", xev->type);
 
 	// It seems we sometimes get events before setwindow is called
 	// we will ignore them for now.
@@ -1365,7 +1355,8 @@ PluginInstance::EventHandle (void *event)
 		button.button = xev->xbutton.button;
 		button.axes = NULL;
 
-		handled = plugin_event_callback (NULL, (GdkEvent*)&button, this);
+		if (xev->type == ButtonPress)
+			handled = plugin_button_press_callback (NULL, &button, this);
 		if (!handled) {
 			if (xev->type == ButtonPress)
 				handled = Surface::button_press_callback (NULL, &button, surface);

@@ -1,3 +1,13 @@
+2008-05-21  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (plugin_button_press_callback): rename
+	plugin_event_callback to this, and remove all the non-button event
+	code.
+	(PluginInstance::CreateWindow): connect to just
+	"button-press-event", not the more generic "event".  track
+	renaming.
+	(PluginInstance::EventHandle): track renaming.
+
 2008-05-19  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp (PluginInstance::SetPageURL): drop the reference we
