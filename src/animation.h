@@ -660,10 +660,9 @@ class Storyboard : public ParallelTimeline {
 
 	gboolean Tick ();
 	static gboolean storyboard_tick (gpointer data);
-	static void invoke_completed (EventObject *sender, EventArgs *calldata, gpointer data);
+	static void storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer data);
 
 	void TeardownClockGroup ();
-	static void teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpointer data);
 };
 
 /* @ContentProperty="Storyboard" */

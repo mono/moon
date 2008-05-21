@@ -384,13 +384,6 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 }
 
 void
-Storyboard::invoke_completed (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	Storyboard *sb = (Storyboard *) closure;
-	sb->Emit (sb->CompletedEvent);
-}
-
-void
 Storyboard::TeardownClockGroup ()
 {
 	if (root_clock) {
@@ -403,22 +396,24 @@ Storyboard::TeardownClockGroup ()
 }
 
 void
-Storyboard::teardown_clockgroup (EventObject *sender, EventArgs *calldata, gpointer closure)
+Storyboard::storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	Storyboard *sb = (Storyboard *)closure;
-
+	Storyboard *sb = (Storyboard *) closure;
+	
 	// Only teardown the clocks if the whole storyboard is stopped.
 	// Otherwise just remove from parent not be affected by it's 
 	// state changes
 	if (sb->root_clock->GetClockState () == Clock::Stopped)
 		sb->TeardownClockGroup ();
+	
+	sb->Emit (sb->CompletedEvent);
 }
 
 bool
 Storyboard::Begin ()
 {
 	ClockGroup *group = NULL;
-
+	
 #if false
 	if (root_clock && root_clock->GetClockState() == Clock::Stopped) {
 		group->ComputeBeginTime ();
@@ -454,8 +449,7 @@ Storyboard::Begin ()
 	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
 	root_clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
-	root_clock->AddHandler (root_clock->CompletedEvent, teardown_clockgroup, this);
-	root_clock->AddHandler (root_clock->CompletedEvent, invoke_completed, this);
+	root_clock->AddHandler (root_clock->CompletedEvent, storyboard_completed, this);
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
@@ -506,8 +500,9 @@ void
 Storyboard::Stop ()
 {
 	if (root_clock) {
-		root_clock->RemoveHandler (root_clock->CompletedEvent, invoke_completed, this);
+		root_clock->RemoveHandler (root_clock->CompletedEvent, storyboard_completed, this);
 		root_clock->Stop ();
+		TeardownClockGroup ();
 	}
 }
 

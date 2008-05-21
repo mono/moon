@@ -1,3 +1,16 @@
+2008-05-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* clock.cpp (Clock::Begin): Init has_started to true. Fixes
+	http://www.tek.co.jp/Legend
+
+	* animation.cpp (Storyboard::storyboard_completed): Merged
+	teardown_clockgroup() and invoke_completed() into a single
+	callback. Also makes it so that we don't have to remove 2
+	CompletedEvent handlers (which we were not doing properly afaict
+	in Storyboard::Stop).
+	(Storyboard::Stop): After unregistering the CompletedEvent handler
+	and stopping the root_clock, tear down the clock group.
+
 2008-05-21  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Ellipse::BuildPath): try to shape our degenerate
