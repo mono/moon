@@ -1,3 +1,10 @@
+2008-05-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp, dependencyobject.h: EventObject: instead of
+	  surrounding event emission with ref/unref, set a flag specifying
+	  that we're doing event emission, and catch unrefs which would cause
+	  object destruction replacing them with a delayed unref.
+
 2008-05-21  Chris Toshok  <toshok@ximian.com>
 
 	* collection.cpp (Collection::Add): remove the check for AddToList

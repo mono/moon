@@ -27,6 +27,7 @@
 EventLists::EventLists (int n)
 {
 	size = n;
+	emitting = 0;
 	lists = new EventList [size];
 	for (int i = 0; i < size; i++) {
 		lists [i].current_token = 0;
@@ -57,6 +58,7 @@ EventObject::EventObject ()
 	id = ++objects_created;
 	if (objects_alive == NULL)
 		objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
+	// Helgrind correctly reports a race here. Given this is for debugging, ignore it.
 	g_hash_table_insert (objects_alive, this, GINT_TO_POINTER (1));
 	weak_refs = NULL;
 
@@ -167,6 +169,11 @@ EventObject::unref ()
 	bool delete_me;
 
 	if (!Surface::InMainThread ()) {
+		unref_delayed ();
+		return;
+	}
+
+	if (refcount == 1 && events != NULL && events->emitting) {
 		unref_delayed ();
 		return;
 	}
@@ -426,6 +433,8 @@ EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted)
 	return Emit (id, calldata, only_unemitted);
 }
 
+//#define DEBUG_EVENTS
+
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 {
@@ -433,6 +442,12 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 	EventClosure *next;
 	EventClosure **closures;
 	int length;
+
+#ifdef DEBUG_EVENTS
+	const char *event_name = GetType ()->LookupEventName (event_id);
+	if (GetObjectType () == Type::MEDIAELEMENT)
+	printf ("%s::Emit (%s (%i), %p, %i). Listeners: %i\n", GetTypeName (), event_name, event_id, calldata, only_unemitted, events == NULL ? 0 : events->lists [event_id].event_list->Length ());
+#endif
 
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
@@ -447,9 +462,7 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 		return false;
 	}
 	
-	// We need to ref ourselves during event emission, since we may end up 
-	// deleting the object calling us/holding a ref to us.
-	ref ();
+	events->emitting++;
 	events->lists [event_id].emitting++;
 
 	length = events->lists [event_id].event_list->Length ();
@@ -476,6 +489,7 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 		calldata->unref ();
 
 	events->lists [event_id].emitting--;
+	events->emitting--;
 
 	if (events->lists [event_id].emitting == 0) {
 		// Remove closures which are waiting for removal
@@ -487,14 +501,9 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 			closure = next;
 		}
 	}
-	
-	g_free (closures);
-	unref ();
 
-#if DEBUG
-	if (refcount == 0)
-		printf ("EventObject::Emit (): Warning: object %d was destroyed during event emission.\n", GET_OBJ_ID (this));
-#endif
+	g_free (closures);
+
 
 	return true;
 }

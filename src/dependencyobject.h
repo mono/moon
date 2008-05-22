@@ -37,6 +37,7 @@ struct EventList {
 class EventLists {
 public:
 	int size;
+	int emitting;
 	EventList *lists;
 	
 	EventLists (int n);
