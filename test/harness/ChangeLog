@@ -1,3 +1,7 @@
+2008-05-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/TestRunner.cs: Remove unneeded line.
+
 2008-05-20  Jackson Harper  <jackson@ximian.com>
 
 	* shocker/input.cpp: We don't need to open our own display anymore

@@ -174,7 +174,6 @@ namespace MoonlightTests {
 				string valgrind_args;
 				
 				if (driver != null && driver.UseValgrind) {
-					valgrind_args = "{0} {1} {2}";
 					valgrind_args = string.Format ("{0} {1} {2}", 
 					                               System.Environment.GetEnvironmentVariable ("MOONLIGHT_VALGRIND_OPTIONS"), 
 					                               GetProcessPath (), args);
