@@ -1,3 +1,7 @@
+2008-05-22  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyobject.cpp: Only merge temp namescopes.
+
 2008-05-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp, dependencyobject.h: EventObject: instead of

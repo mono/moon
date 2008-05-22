@@ -874,7 +874,7 @@ DependencyObject::MergeTemporaryNameScopes (Collection *c)
 	NameScope *col_ns = NameScope::GetNameScope (c);
 	Collection::Node *cn;
 	
-	if (col_ns)
+	if (col_ns && col_ns->GetTemporary ())
 		merge_namescope (ns, col_ns, this);
 
 	for (cn = (Collection::Node *) c->list->First () ; cn != NULL; cn = (Collection::Node *) cn->next) {
