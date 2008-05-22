@@ -1,0 +1,19 @@
+2008-05-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* index.html: main access page to all enum tests.
+	https://bugzilla.novell.com/show_bug.cgi?id=340799
+	* alignmentx-imagebrush.html: Test AlignmentX on ImageBrush
+	* alignmentx-videobrush.html: Test AlignmentX on VideoBrush
+	* alignmenty-imagebrush.html: Test AlignmentY on ImageBrush
+	* alignmenty-videobrush.html: Test AlignmentY on VideoBrush
+	* brushmappingmode-lineargradientbrush.html: Test 
+	BrushMappingMode on LinearGradientBrush
+	* brushmappingmode-radialgradientbrush.html: Test
+	BrushMappingMode on RadialGradientBrush
+	* gradientspreadmethod-lineargradientbrush.html: Test
+	GradientSpreadMethod on LinearGradientBrush
+	* gradientspreadmethod-radialgradientbrush.html: Test
+	GradientSpreadMethod on RadialGradientBrush
+	* stretch-imagebrush.html: Test Stretch on ImageBrush
+	* stretch-videobrush.html: Test Stretch on VideoBrush
+	* Silverlight.js: MS javascript file to create plugin

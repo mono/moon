@@ -1,0 +1,105 @@
+<html>
+  <head>
+      <title>Stretch (VideoBrush) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<MediaElement x:Name="ExampleVideo" Source="../../media/video/timecode-short-wmv8.wmv" Opacity="0.0" IsHitTestVisible="False"/>
+
+		<Rectangle Canvas.Left="20" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush SourceName="ExampleVideo" Stretch="None" />
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="120" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush SourceName="ExampleVideo" Stretch="Fill" />
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="220" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush SourceName="ExampleVideo" Stretch="Uniform" />
+		</Rectangle.Fill>
+ 		</Rectangle>
+		<Rectangle Canvas.Left="320" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush SourceName="ExampleVideo" Stretch="UniformToFill" />
+		</Rectangle.Fill>
+ 		</Rectangle>
+
+		<Rectangle Canvas.Left="20" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush x:Name="testcase1" SourceName="ExampleVideo" />
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="120" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush x:Name="testcase2" SourceName="ExampleVideo" />
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="220" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush x:Name="testcase3" SourceName="ExampleVideo" />
+		</Rectangle.Fill>
+ 		</Rectangle>
+		<Rectangle Canvas.Left="320" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush x:Name="testcase4" SourceName="ExampleVideo" />
+		</Rectangle.Fill>
+ 		</Rectangle>
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to *an empty image* (no value is FILL)
+	sender.findName ("testcase1").Stretch = -1;
+	sender.findName ("testcase2").Stretch = 911;
+
+	sender.findName ("testcase3").Stretch = "nOnE";
+	sender.findName ("testcase4").Stretch = "uNIFORMtOfILL";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: Stretch
+/*
+	sender.findName ("testcase3").Stretch = "";
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0 should be the center of <b>0:0</b> (None)
+<br>1,0 should be <b>+00:00:02:00</b> when video ends
+<br>2,0 should be <b>+00:00:02:00</b> with white bands on top/bottom when video ends
+<br>3,0 should be the center part of <b>0:00:02:0</b> when video ends
+<p>0,1 should be <b>empty</b> (no video image, not even the rectangle border)
+<br>1,1 should be <b>empty</b> (no video image, not even the rectangle border)
+<br>2,1 should be the center of <b>0:0</b> (like 0,0)
+<br>3,1 should be the center part of <b>0:00:02:0</b> when video ends (like 3,0)
+  </div>
+  </body>
+</html>

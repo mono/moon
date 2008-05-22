@@ -1,0 +1,139 @@
+<html>
+  <head>
+      <title>GradientSpreadMethod (LinearGradientBrush) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+		<Rectangle Canvas.Left="20" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+			<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="Yellow" Offset="0" />
+					<GradientStop Color="Green" Offset="0.5" />
+					<GradientStop Color="Blue" Offset="1" />
+				</LinearGradientBrush.GradientStops>   
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="120" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+		<Rectangle.Fill>
+			<LinearGradientBrush StartPoint="50,50" EndPoint="100,100" SpreadMethod="Pad">
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="Yellow" Offset="0" />
+					<GradientStop Color="Green" Offset="0.5" />
+					<GradientStop Color="Blue" Offset="1" />
+				</LinearGradientBrush.GradientStops>   
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="220" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+		<Rectangle.Fill>
+			<LinearGradientBrush StartPoint="0,0" EndPoint="1,1" SpreadMethod="Reflect">
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="Yellow" Offset="0" />
+					<GradientStop Color="Green" Offset="0.5" />
+					<GradientStop Color="Blue" Offset="1" />
+				</LinearGradientBrush.GradientStops>   
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+ 		</Rectangle>
+		<Rectangle Canvas.Left="320" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+		<Rectangle.Fill>
+			<LinearGradientBrush StartPoint="0,0" EndPoint="1,1" GradientSpreadMethod="Repeat">
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="Yellow" Offset="0" />
+					<GradientStop Color="Green" Offset="0.5" />
+					<GradientStop Color="Blue" Offset="1" />
+				</LinearGradientBrush.GradientStops>   
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+ 		</Rectangle>
+
+		<Rectangle Canvas.Left="20" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+			<LinearGradientBrush x:Name="testcase1" StartPoint="50,50" EndPoint="100,100">
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="Yellow" Offset="0" />
+					<GradientStop Color="Green" Offset="0.5" />
+					<GradientStop Color="Blue" Offset="1" />
+				</LinearGradientBrush.GradientStops>   
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="120" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<LinearGradientBrush x:Name="testcase2" StartPoint="50,50" EndPoint="100,100">
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="Yellow" Offset="0" />
+					<GradientStop Color="Green" Offset="0.5" />
+					<GradientStop Color="Blue" Offset="1" />
+				</LinearGradientBrush.GradientStops>   
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="220" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+			<LinearGradientBrush x:Name="testcase3" StartPoint="0,0" EndPoint="1,1">
+				<LinearGradientBrush.GradientStops>
+					<GradientStop Color="Yellow" Offset="0" />
+					<GradientStop Color="Green" Offset="0.5" />
+					<GradientStop Color="Blue" Offset="1" />
+				</LinearGradientBrush.GradientStops>   
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+ 		</Rectangle>
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to RIGHT (no value is CENTER)
+	sender.findName ("testcase1").MappingMode = -1;
+	sender.findName ("testcase2").MappingMode = 911;
+
+	sender.findName ("testcase3").MappingMode = "rElAtIvEtObOuNdInGbOx";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: MappingMode
+/*
+	sender.findName ("testcase3").MappingMode = "-1";
+	sender.findName ("testcase3").MappingMode = sender.findName ("testcase2");
+	sender.findName ("testcase3").MappingMode = null;
+	sender.findName ("testcase3").MappingMode = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0 should be a gradient from yellow, green to blue (default)
+<br>1,0 should be <b>half</b> yellow, then a gradient to green and blue (Absolute)
+<br>2,0 should be a gradient from yellow, green to blue (RelativeToBoundingBox)
+<p>0,1 should be <b>half</b> yellow, then a gradient to green and blue
+<br>1,1 should be <b>half</b> yellow, then a gradient to green and blue
+<br>2,1 should be a gradient from yellow, green to blue
+  </div>
+  </body>
+</html>

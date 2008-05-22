@@ -1,0 +1,95 @@
+<html>
+  <head>
+      <title>AlignmentY (VideoBrush) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<MediaElement x:Name="ExampleVideo" Source="../../media/video/timecode-short-wmv8.wmv" Opacity="0.0" IsHitTestVisible="False" />
+
+		<Rectangle Canvas.Left="20" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush SourceName="ExampleVideo" Stretch="None" AlignmentY="Top" />
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="120" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush SourceName="ExampleVideo" Stretch="None" AlignmentY="Center" />
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="220" Canvas.Top="20" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush SourceName="ExampleVideo" Stretch="None" AlignmentY="Bottom" />
+		</Rectangle.Fill>
+ 		</Rectangle>
+
+		<Rectangle Canvas.Left="20" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush x:Name="testcase1" SourceName="ExampleVideo" Stretch="None" />
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="120" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush x:Name="testcase2" SourceName="ExampleVideo" Stretch="None" />
+		</Rectangle.Fill>
+ 		</Rectangle> 
+		<Rectangle Canvas.Left="220" Canvas.Top="120" Stroke="Black" Width="100" Height="100" >
+ 		<Rectangle.Fill>
+ 			<VideoBrush x:Name="testcase3" SourceName="ExampleVideo" Stretch="None" />
+		</Rectangle.Fill>
+ 		</Rectangle>
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to BOTTOM (no value is CENTER)
+	sender.findName ("testcase1").AlignmentY = -1;
+	sender.findName ("testcase2").AlignmentY = 911;
+
+	sender.findName ("testcase3").AlignmentY = "tOp";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: AlignmentY
+/*
+	sender.findName ("testcase3").AlignmentY = "-1";
+	sender.findName ("testcase3").AlignmentY = sender.findName ("testcase2");
+	sender.findName ("testcase3").AlignmentY = null;
+	sender.findName ("testcase3").AlignmentY = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0 should be completely <b>black</b>
+<br>1,0 should be the center of <b>0:0</b>
+<br>2,0 should be completely <b>black</b>
+<p>0,1 should be completely <b>black</b>
+<br>1,1 should be completely <b>black</b>
+<br>2,1 should be completely <b>black</b>
+  </div>
+  </body>
+</html>
