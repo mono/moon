@@ -117,6 +117,8 @@ class Stroke : public DependencyObject {
 	bool HitTest (StylusPointCollection *stylusPoints);
 
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
 	static DependencyProperty* DrawingAttributesProperty;
 	static DependencyProperty* StylusPointsProperty;

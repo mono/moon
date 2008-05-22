@@ -466,10 +466,6 @@ Stroke::HitTestSegment (Point p1, Point p2, double w, double h, StylusPointColle
 			Point next_p (stylus_point_get_x (next_sp),
 				      stylus_point_get_y (next_sp));
 
-			if (!bounds.PointInside (p)
-			    && !bounds.PointInside (next_p))
-				continue;
-
 			if (HitTestSegmentSegment (p1, p2,
 						   w, h,
 						   p, next_p))
@@ -547,8 +543,14 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	double height, width;
 
 	if (da) {
-		height = drawing_attributes_get_height (da) + 4.0;
-		width = drawing_attributes_get_width (da) + 4.0;
+		height = drawing_attributes_get_height (da);
+		width = drawing_attributes_get_width (da);
+
+		Color *col = drawing_attributes_get_outline_color (da);
+		if (col->a != 0x00) {
+			height += 4.0;
+			width += 4.0;
+		}
 	}
 	else {
 		height = width = 6.0;
@@ -635,8 +637,14 @@ Stroke::AddStylusPointToBounds (StylusPoint *stylus_point)
 	double height, width;
 
 	if (da) {
-		height = drawing_attributes_get_height (da) + 4.0;
-		width = drawing_attributes_get_width (da) + 4.0;
+		height = drawing_attributes_get_height (da);
+		width = drawing_attributes_get_width (da);
+
+		Color *col = drawing_attributes_get_outline_color (da);
+		if (col->a != 0x00) {
+			height += 4.0;
+			width += 4.0;
+		}
 	}
 	else {
 		height = width = 6.0;
@@ -680,6 +688,34 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangeType type, Depende
 	}
 
 	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty);
+}
+
+void
+Stroke::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property->type != Type::STROKE) {
+		DependencyObject::OnPropertyChanged (args);
+	}
+
+	if (args->property == Stroke::DrawingAttributesProperty) {
+		ComputeBounds ();
+	}
+
+	NotifyListenersOfPropertyChange (args);
+}
+
+void
+Stroke::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	if (prop == Stroke::DrawingAttributesProperty) {
+		if (subobj_args->property == DrawingAttributes::WidthProperty ||
+		    subobj_args->property == DrawingAttributes::HeightProperty ||
+		    subobj_args->property == DrawingAttributes::OutlineColorProperty) {
+			ComputeBounds ();
+		}
+	}
+
+	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 Stroke*
