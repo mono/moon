@@ -1,3 +1,9 @@
+2008-05-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* brush.cpp: Fix defaults when wrong values are being used for
+	enumerations from Javascript.
+	[Fix part of #340799]
+
 2008-05-22  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyobject.cpp: Only merge temp namescopes.

@@ -6,7 +6,7 @@
  *   Sebastien Pouliot (spouliot@novell.com)
  *   Stephane Delcroix (sdelcroix@novell.com)
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007, 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -40,11 +40,12 @@ convert_gradient_spread_method (GradientSpreadMethod method)
 		return CAIRO_EXTEND_PAD;
 	case GradientSpreadMethodReflect:
 		return CAIRO_EXTEND_REFLECT;
+	// unknown (e.g. bad) values are considered to be Repeat by Silverlight
+	// even if the default, i.e. *no* value) is Pad
 	case GradientSpreadMethodRepeat:
+	default:
 		return CAIRO_EXTEND_REPEAT;
 	}
-	g_warning ("Invalid GradientSpreadMethod value");
-	return CAIRO_EXTEND_NONE;
 }
 
 //
@@ -536,14 +537,16 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	Point p = uielement->GetOriginPoint ();
 	
 	switch (GetMappingMode ()) {
+	// unknown (e.g. bad) values are considered to be Absolute to Silverlight
+	// even if the default, i.e. *no* value) is RelativeToBoundingBox
 	case BrushMappingModeAbsolute:
+	default:
 		y0 = start ? start->y : 0.0;
 		x0 = start ? start->x : 0.0;
 		y1 = end ? end->y : height;
 		x1 = end ? end->x : width;
 		break;
 	case BrushMappingModeRelativeToBoundingBox:
-	default:
 		y0 = start ? (start->y * height) : 0.0;
 		x0 = start ? (start->x * width) : 0.0;
 		y1 = end ? (end->y * height) : height;
@@ -675,7 +678,10 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 
 	cairo_matrix_t matrix;
 	switch (GetMappingMode ()) {
+	// unknown (e.g. bad) values are considered to be Absolute to Silverlight
+	// even if the default, i.e. *no* value) is RelativeToBoundingBox
 	case BrushMappingModeAbsolute:
+	default:
 		cairo_matrix_init_translate (&matrix, cx, cy);
 		cairo_matrix_scale (&matrix, rx, ry);
 		cairo_matrix_translate (&matrix, -cx/rx, -cy/ry);
@@ -1121,7 +1127,9 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 		case AlignmentXCenter:
 			dx = (sw - (scale * width)) / 2;
 			break;
+		// Silverlight+Javascript default to AlignmentXRight for (some) invalid values (others results in an alert)
 		case AlignmentXRight:
+		default:
 			dx = (sw - (scale * width));
 			break;
 		}
@@ -1133,7 +1141,9 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 		case AlignmentYCenter:
 			dy = (sh - (scale * height)) / 2;
 			break;
+		// Silverlight+Javascript default to AlignmentXBottom for (some) invalid values (others results in an alert)
 		case AlignmentYBottom:
+		default:
 			dy = (sh - (scale * height));
 			break;
 		}
@@ -1164,18 +1174,33 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 	}
 }
 
+static bool
+is_stretch_valid (Stretch stretch)
+{
+	switch (stretch) {
+	case StretchNone:
+	case StretchFill:
+	case StretchUniform:
+	case StretchUniformToFill:
+		return true;
+	default:
+		return false;
+	}
+}
+
 void
 ImageBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
 	cairo_surface_t *surface = image->GetCairoSurface ();
-	if (!surface) {
-		// not yet available, draw nothing
+
+	Stretch stretch = GetStretch ();
+
+	if (!surface || !is_stretch_valid (stretch)) {
+		// not yet available, draw nothing (!surface) or a bad enum value for stretch
 		// XXX Removing this _source_set at all?
 		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
 		return;
 	}
-	
-	Stretch stretch = GetStretch ();
 	
 	AlignmentX ax = GetAlignmentX ();
 	AlignmentY ay = GetAlignmentY ();
@@ -1281,12 +1306,19 @@ VideoBrush::~VideoBrush ()
 void
 VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
+	Stretch stretch = GetStretch ();
+	if (!is_stretch_valid (stretch)) {
+		// bad enum value for stretch, nothing should be drawn
+		// XXX Removing this _source_set at all?
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+		return;
+	}
+
 	MediaPlayer *mplayer = media ? media->GetMediaPlayer () : NULL;
 	Transform *transform = GetTransform ();
 	Transform *relative_transform = GetRelativeTransform ();
 	AlignmentX ax = GetAlignmentX ();
 	AlignmentY ay = GetAlignmentY ();
-	Stretch stretch = GetStretch ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	cairo_matrix_t matrix;
