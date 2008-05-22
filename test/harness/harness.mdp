@@ -62,5 +62,7 @@
     <File name="agviewer/AgserverObject.xml" subtype="Code" buildaction="Nothing" />
     <File name="agviewer/agviewer.cpp" subtype="Code" buildaction="Nothing" />
     <File name="agviewer/Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="test-runner/HtmlTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/Screensaver.cs" subtype="Code" buildaction="Compile" />
   </Contents>
 </Project>

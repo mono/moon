@@ -1,5 +1,9 @@
 2008-05-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* harness.mdp: Updated.
+
+2008-05-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/TestRunner.cs: Remove unneeded line.
 
 2008-05-20  Jackson Harper  <jackson@ximian.com>
