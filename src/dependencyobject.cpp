@@ -827,8 +827,15 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 					MergeTemporaryNameScopes (col);
 				}
 			}
-		}
 
+			if (new_value->Is (Type::DEPENDENCY_OBJECT)) {
+				DependencyObject *d_o = new_value->AsDependencyObject ();
+				if (d_o)
+					MergeTemporaryNameScope (d_o);
+			}
+
+		}
+		
 		listeners_notified = false;
 
 		PropertyChangedEventArgs args (property, current_value, new_value ? new_value : GetDefaultValue (property));
@@ -865,6 +872,15 @@ merge_namescope (NameScope *parent_ns, NameScope *child_ns, DependencyObject *ow
 
 	// remove the child's temporary namescope
 	child_ns->ClearValue (NameScope::NameScopeProperty, false);
+}
+
+void
+DependencyObject::MergeTemporaryNameScope (DependencyObject *d_o)
+{
+	NameScope *ns = NameScope::GetNameScope (this);
+	NameScope *do_ns = NameScope::GetNameScope (d_o);
+	if (do_ns && do_ns->GetTemporary ())
+		merge_namescope (ns, do_ns, this);
 }
 
 void
