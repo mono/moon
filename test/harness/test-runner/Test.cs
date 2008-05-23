@@ -47,6 +47,7 @@ namespace MoonlightTests {
 		private int result_height = 500;
 
 		private bool ignore;
+		private bool remote;
 
 		private string stdout;
 		private string stderr;
@@ -73,11 +74,20 @@ namespace MoonlightTests {
 			string id = null;
 			string input_file = null;
 			string master_file = null;
-
+			string extension = null;
+			bool remote = false;
+			
 			if (node.Attributes ["id"] != null)
 				id = node.Attributes ["id"].Value;
-			if (node.Attributes ["inputFile"] != null)
-				input_file = Path.Combine (base_directory, node.Attributes ["inputFile"].Value);
+			
+			if (node.Attributes ["remote"] != null && bool.Parse (node.Attributes ["remote"].Value))
+				remote = true;
+			
+			if (node.Attributes ["inputFile"] != null) {
+				input_file = node.Attributes ["inputFile"].Value;
+				if (!remote)
+					input_file = Path.Combine (base_directory, input_file);
+			}
 
 			if (node.Attributes ["masterFile"] != null)
 				master_file = Path.Combine (base_directory, node.Attributes ["masterFile"].Value);
@@ -87,7 +97,12 @@ namespace MoonlightTests {
 			if (id == null || input_file == null || master_file == null)
 				return null;
 
-			switch (Path.GetExtension (input_file)) {
+			if (remote) // Treat all remote files as html files
+				extension = ".html";
+			else
+				extension = Path.GetExtension (input_file);
+			
+			switch (extension) {
 			case ".xaml":
 				test = XamlTest.Create (id, input_file, master_file, node);
 				break;
@@ -100,7 +115,8 @@ namespace MoonlightTests {
 			}
 			
 			test.base_directory = base_directory;
-
+			test.remote = remote;
+			
 			if (node.Attributes ["knownFailure"] != null && Boolean.Parse (node.Attributes ["knownFailure"].Value)) {
 				test.known_failure = true;
 				if (node.Attributes ["failureReason"] != null)
@@ -124,7 +140,7 @@ namespace MoonlightTests {
 
 			if (node.Attributes ["codebehind"] != null)
 				test.codebehind = node.Attributes ["codebehind"].Value;
-
+			
 			return test;
 		}
 
@@ -157,6 +173,10 @@ namespace MoonlightTests {
 			get { return ignore; }
 		}
 
+		public bool Remote {
+			get { return remote;  }
+		}
+		
 		public TestCompleteReason CompleteReason {
 			get { return complete_reason; }
 			set { complete_reason = value; }
@@ -268,7 +288,7 @@ namespace MoonlightTests {
 
 		public virtual void Setup ()
 		{
-			if (!File.Exists (InputFile)) {
+			if (!Remote && !File.Exists (InputFile)) {
 				SetToIgnore (String.Format ("Unable to find input file: {0}", InputFile));
 				return;
 			}
@@ -306,7 +326,13 @@ namespace MoonlightTests {
 
 		private string FindTestResult ()
 		{
-			string ext = Path.GetExtension (MasterFile);
+			string ext;
+			
+			if (Remote)
+				return null;
+			
+			ext = Path.GetExtension (MasterFile);
+			
 			if (ext == String.Empty)
 				ext = ".png";
 
@@ -355,7 +381,7 @@ namespace MoonlightTests {
 			if (xsp_exec_dir == null)
 				return;
 
-			string args = String.Format ("--root {0}", Path.Combine (Path.GetDirectoryName (input_file), xsp_exec_dir));
+			string args = String.Format ("--root {0} --nonstop", Path.Combine (Path.GetDirectoryName (input_file), xsp_exec_dir));
 
 			xsp = new ExternalProcess ("xsp", args, -1);
 			xsp.Run (false);

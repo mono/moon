@@ -1,5 +1,18 @@
 2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/LoggingServer.cs, test-runner/ExternalProcess.cs,
+	  test-runner/Driver.cs, test-runner/TestRun.cs,
+	  test-runner/TestRunner.cs: Add support for running agviewer with
+	  gdb, printing test output from the plugin to stdout as we go (so
+	  that it comes in sync with the rest of the debug output), and make
+	  SWALLOW_STREAMS configurable with an env-var.
+	* test-runner/Test.cs, test-runner/HtmlTest.cs: Add support for remote
+	  tests.
+	* test-runner/ConsoleReport.cs: Don't print colors when we're running
+	  gdb, it confuses gdb badly.
+
+2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/ConsoleReport.cs: Print the id of the tests in addition
 	  to the name.
 

@@ -50,10 +50,19 @@ namespace MoonlightTests {
 		private bool compare_to_moon = false;
 		private bool run_known_failures = false;
 		private bool use_valgrind = false;
-
+		private bool use_gdb = false;
+		
+		public static bool SwallowStreams = true;
+		public static bool LogToStdout = false;
+		
 		public bool UseValgrind {
 			get { return use_valgrind; }
 			set { use_valgrind = value; }
+		}
+		
+		public bool UseGdb {
+			get { return use_gdb; }
+			set { use_gdb = value; }
 		}
 		
 		public VerboseLevel VerboseLevel {
@@ -413,6 +422,8 @@ namespace MoonlightTests {
 					delegate (string v) { d.RunServer (drtlist); });
 			p.Add ("valgrind", "Run agviewer with valgrind. Valgrind will be executed with --tool=memcheck, unless MOONLIGHT_VALGRIND_OPTIONS is set, in which case it will be executed with that value.",
 					delegate (string v) { d.UseValgrind = true; });
+			p.Add ("gdb", "Run agviewer with gdb.",
+					delegate (string v) { d.UseGdb = true; });
 			
 			p.Parse (args);
 
@@ -431,7 +442,12 @@ namespace MoonlightTests {
 			string fixtures = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURES");
 			string categories = Environment.GetEnvironmentVariable ("MOON_DRT_CATEGORIES");
 			string fixture_start = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURE_START");
-
+			string swallow = Environment.GetEnvironmentVariable ("MOON_DRT_SWALLOW_STREAMS");
+			string stdout = Environment.GetEnvironmentVariable ("MOON_DRT_LOG_TO_STDOUT");
+			
+			SwallowStreams = swallow != null && swallow != string.Empty;
+			LogToStdout = stdout != null && stdout != string.Empty;
+			
 			if ((fixture != null && fixture != String.Empty) && (fixtures != null && fixtures != String.Empty))
 				Console.Error.WriteLine ("Warning, both MOON_DRT_FIXTURE and MOON_DRT_FIXTURES are set, these will be combined.");
 

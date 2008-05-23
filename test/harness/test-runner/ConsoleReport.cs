@@ -59,32 +59,42 @@ namespace MoonlightTests {
 		public void AddResult (Test test, TestResult result)
 		{
 			string state = string.Empty;
-
+			ConsoleColor color;
+			
 			switch (result) {
 			case TestResult.Pass:
-				Console.ForegroundColor = ConsoleColor.Green;
+				color = ConsoleColor.Green;
 				state = run.VerboseLevel != VerboseLevel.None ? "P" : ".";
 				break;
 			case TestResult.Ignore:
-				Console.ForegroundColor = ConsoleColor.White;
+				color = ConsoleColor.White;
 				state = "I";
 				break;
 			case TestResult.Fail:
-				Console.ForegroundColor = ConsoleColor.Red;
+				color = ConsoleColor.Red;
 				state = "F";
 				break;
 			case TestResult.KnownFailure:
-				Console.ForegroundColor = ConsoleColor.Blue;
+				color = ConsoleColor.Blue;
 				state = "K";
+				break;
+			default:
+				color = ConsoleColor.Green;
+				state = "?";
 				break;
 			}
 
+			if (!run.Runner.Driver.UseGdb)
+				Console.ForegroundColor = color;
+			
 			if (run.VerboseLevel != VerboseLevel.None)
 				Console.Write ("{0} ({1}):  ", test.InputFile, test.Id);
 			Console.Write (state);
 			if (run.VerboseLevel != VerboseLevel.None)
 				Console.WriteLine ();
-			Console.ResetColor ();
+			
+			if (!run.Runner.Driver.UseGdb)
+				Console.ResetColor ();
 			
 		}
 

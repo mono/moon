@@ -102,8 +102,10 @@ namespace MoonlightTests {
 
 				current_test = (Test) tests_enumerator.Current;
 				OnBeginTest (current_test);
-
-				test_path = Path.GetFullPath (current_test.InputFile);
+				
+				test_path = current_test.InputFile;
+				if (!current_test.Remote)
+					test_path = Path.GetFullPath (test_path);
 				timeout = current_test.Timeout;
 
 				available = true;
@@ -137,7 +139,8 @@ namespace MoonlightTests {
 					agviewer_process.Kill ();
 					if (run_complete)
 						break;
-					OnTestComplete (current_test, TestCompleteReason.Crashed);
+					if (current_test != null)
+						OnTestComplete (current_test, TestCompleteReason.Crashed);
 				}
 			 } while (!run_complete);
 		}
@@ -172,6 +175,7 @@ namespace MoonlightTests {
 			if (agviewer_process == null) {
 				string args = String.Format ("-working-dir {0}", Path.GetFullPath (working_dir));
 				string valgrind_args;
+				string gdb_args;
 				
 				if (driver != null && driver.UseValgrind) {
 					valgrind_args = string.Format ("{0} {1} {2}", 
@@ -179,6 +183,11 @@ namespace MoonlightTests {
 					                               GetProcessPath (), args);
 					
 					agviewer_process = new ExternalProcess ("valgrind", valgrind_args, -1);
+				} else if (driver != null && driver.UseGdb) {
+					gdb_args = string.Format ("--batch --eval-command=run --args {0} {1}", 
+					                               GetProcessPath (), args);
+					
+					agviewer_process = new ExternalProcess ("gdb", gdb_args, -1);
 				} else {
 					agviewer_process = new ExternalProcess (GetProcessPath (), args, -1);
 				}
@@ -211,6 +220,12 @@ namespace MoonlightTests {
 			return null;
 		}
 
+		public Driver Driver {
+			get {
+				return driver;
+			}
+		}
+		
 		public TestCompleteEventHandler TestCompleteEvent;
 		public TestBeginEventHandler TestBeginEvent;
 	}

@@ -143,6 +143,9 @@ namespace MoonlightTests {
 		{
 			base.Setup ();
 
+			if (Remote)
+				return;
+			
 			if (!File.Exists (InputFile)) {
 				SetToIgnore (String.Format ("Unable to find input file: {0}", InputFile));
 				return;

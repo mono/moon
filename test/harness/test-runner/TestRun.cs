@@ -105,6 +105,12 @@ namespace MoonlightTests {
 			get { return known_failures; }
 		}
 
+		public TestRunner Runner {
+			get {
+				return runner;
+			}
+		}
+		
 		public int Run ()
 		{
 			runner.TestBeginEvent += new TestBeginEventHandler (TestBegin);

@@ -23,8 +23,6 @@
 //	Jackson Harper (jackson@ximian.com)
 //
 
-// #define SWALLOW_STREAMS
-
 using System;
 using System.IO;
 using System.Threading;
@@ -89,15 +87,15 @@ namespace MoonlightTests {
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.UseShellExecute = false;
 
-#if SWALLOW_STREAMS
-			process.StartInfo.RedirectStandardOutput = true;
-			process.StartInfo.RedirectStandardError = true;
-
-			stdout_thread = new Thread (delegate () { stdout = process.StandardOutput.ReadToEnd (); });
-			stderr_thread = new Thread (delegate () { stderr = process.StandardError.ReadToEnd (); });
-			stdout_thread.IsBackground = true;
-			stderr_thread.IsBackground = true;
-#endif
+			if (Driver.SwallowStreams) {
+				process.StartInfo.RedirectStandardOutput = true;
+				process.StartInfo.RedirectStandardError = true;
+	
+				stdout_thread = new Thread (delegate () { stdout = process.StandardOutput.ReadToEnd (); });
+				stderr_thread = new Thread (delegate () { stderr = process.StandardError.ReadToEnd (); });
+				stdout_thread.IsBackground = true;
+				stderr_thread.IsBackground = true;
+			}
 			try {
 				process.EnableRaisingEvents = true;
 				process_running = process.Start ();
@@ -109,10 +107,10 @@ namespace MoonlightTests {
 					ExitedEvent.Set ();
 				}; 
 
-#if SWALLOW_STREAMS
-				stdout_thread.Start ();
-				stderr_thread.Start ();
-#endif
+				if (Driver.SwallowStreams) {
+					stdout_thread.Start ();
+					stderr_thread.Start ();
+				}
 
 				if (wait && !process.WaitForExit (timeout))
 					process_timed_out = true;
@@ -134,10 +132,10 @@ namespace MoonlightTests {
 			if (process_running && !process.HasExited)
 				process.Kill ();
 
-#if SWALLOW_STREAMS
-			stdout_thread.Abort ();
-			stderr_thread.Abort ();
-#endif
+			if (Driver.SwallowStreams) {
+				stdout_thread.Abort ();
+				stderr_thread.Abort ();
+			}
 		}
 
 		public void ResetIO ()

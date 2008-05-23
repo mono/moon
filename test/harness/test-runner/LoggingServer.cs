@@ -43,7 +43,9 @@ namespace MoonlightTests {
 		void LogResult (string test, int result);
 	}
 
+#if !LOGGING_SERVER_STANDALONE
 	public class LoggingServer : ITestLogger, IDbusService {
+		StandaloneServer standalone = new StandaloneServer ();
 
 		private class TestLogData {
 
@@ -121,6 +123,9 @@ namespace MoonlightTests {
 
 		public void Log (string test, string level, string message)
 		{
+			if (MoonlightTests.Driver.LogToStdout)
+				standalone.Log (test, level, message);
+
 			lock (lock_object) {
 				TestLogData tld = null;
 				if (test_logs.ContainsKey (test))
@@ -136,6 +141,9 @@ namespace MoonlightTests {
 
 		public void LogResult (string test, int result)
 		{
+			if (Driver.LogToStdout)
+				standalone.LogResult (test, result);
+
 			lock (lock_object) {
 				TestLogData tld = null;
 				if (test_logs.ContainsKey (test))
@@ -152,6 +160,9 @@ namespace MoonlightTests {
 
 		public void TestComplete (string test, bool successful)
 		{
+			if (Driver.LogToStdout)
+				standalone.TestComplete (test, successful);
+
 			lock (lock_object) {
 				TestLogData tld = null;
 				if (test_logs.ContainsKey (test))
@@ -247,8 +258,9 @@ namespace MoonlightTests {
 				return TestResult.Pass;
 			return TestResult.Fail;
 		}
+	}
+#endif
 
-#if LOGGING_SERVER_STANDALONE
 		public class StandaloneServer : ITestLogger {
 			public void Log (string test, string level, string message)
 			{
@@ -283,9 +295,9 @@ namespace MoonlightTests {
 			{
 				Console.WriteLine ("{0}: TestComplete");
 			}
-		}
 
 	
+#if LOGGING_SERVER_STANDALONE
 		public static void Main ()
 		{
 			Bus bus = Bus.Session;
