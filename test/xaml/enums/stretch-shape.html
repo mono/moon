@@ -1,0 +1,75 @@
+<html>
+  <head>
+      <title>Stretch (Shape) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<Rectangle StrokeThickness="4" Stroke="Red"     Fill="Black" Canvas.Left="20"  Canvas.Top="20" Width="48" Height="98" />
+		<Rectangle StrokeThickness="4" Stroke="Green"   Fill="Black" Canvas.Left="70"  Canvas.Top="20" Width="48" Height="98" Stretch="None" />
+		<Rectangle StrokeThickness="4" Stroke="Blue"    Fill="Black" Canvas.Left="120" Canvas.Top="20" Width="48" Height="98" Stretch="Fill" />
+		<Rectangle StrokeThickness="4" Stroke="Yellow"  Fill="Black" Canvas.Left="170" Canvas.Top="20" Width="48" Height="98" Stretch="Uniform" />
+		<Rectangle StrokeThickness="4" Stroke="Magenta" Fill="Black" Canvas.Left="220" Canvas.Top="20" Width="48" Height="98" Stretch="UniformToFill" />
+
+		<Rectangle x:Name="testcase1" StrokeThickness="4" Stroke="Red"     Fill="Black" Canvas.Left="20"  Canvas.Top="120" Width="48" Height="98" />
+		<Rectangle x:Name="testcase2" StrokeThickness="4" Stroke="Green"   Fill="Black" Canvas.Left="70"  Canvas.Top="120" Width="48" Height="98" Stretch="None" />
+		<Rectangle x:Name="testcase3" StrokeThickness="4" Stroke="Blue"    Fill="Black" Canvas.Left="120" Canvas.Top="120" Width="48" Height="98" Stretch="Fill" />
+		<Rectangle x:Name="testcase4" StrokeThickness="4" Stroke="Yellow"  Fill="Black" Canvas.Left="170" Canvas.Top="120" Width="48" Height="98" Stretch="Uniform" />
+		<Rectangle x:Name="testcase5" StrokeThickness="4" Stroke="Magenta" Fill="Black" Canvas.Left="220" Canvas.Top="120" Width="48" Height="98" Stretch="UniformToFill" />
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to *an empty image* (no value is FILL)
+	sender.findName ("testcase1").Stretch = -1;
+	sender.findName ("testcase2").Stretch = 911;
+	sender.findName ("testcase3").Stretch = "nOnE";
+	sender.findName ("testcase4").Stretch = "uNIFORMtOfILL";
+	sender.findName ("testcase5").Stretch = "fILL";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: Stretch
+/*
+	sender.findName ("testcase3").Stretch = "";
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0 should be a red rectangle with a black background
+<br>1,0 should be a very small green rectangle (top left)
+<br>2,0 should be a blue rectangle with a black background
+<br>3,0 should be a yellow square (half the size of the rectangle)
+<br>4,0 should be a magenta half-square (missing right half)
+<p>0,1 should be identical to 0,0
+<br>1,1 should be a green rectangle identical, in shape, to 3,0
+<br>2,1 should be a very small blue rectangle (top left)
+<br>4,0 should be a yellow half-square (missing right half)
+<br>3,1 should be a magenta rectangle identical, in shape, to 3,0
+  </div>
+  </body>
+</html>

@@ -1,0 +1,72 @@
+<html>
+  <head>
+      <title>FillRule (Polygon) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" RenderTransform="1,0,0,1,0,0" />
+		<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" RenderTransform="1,0,0,1,100,0" FillRule="EvenOdd" />
+		<Polygon Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" RenderTransform="1,0,0,1,200,0" FillRule="Nonzero" />
+
+		<Polygon x:Name="testcase1" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" RenderTransform="1,0,0,1,0,100" />
+		<Polygon x:Name="testcase2" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" RenderTransform="1,0,0,1,100,100" />
+		<Polygon x:Name="testcase3" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" RenderTransform="1,0,0,1,200,100" />
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to EvenOdd (no value is EvenOdd)
+	sender.findName ("testcase1").FillRule = -1;
+	sender.findName ("testcase2").FillRule = 911;
+
+	sender.findName ("testcase3").FillRule = "nONzERO";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: FillRule
+/*
+	sender.findName ("testcase3").FillRule = "-1";
+	sender.findName ("testcase3").FillRule = sender.findName ("testcase2");
+	sender.findName ("testcase3").FillRule = null;
+	sender.findName ("testcase3").FillRule = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0 star center should be <b>white</b>
+<br>1,0 star center should be <b>white</b>
+<br>2,0 star center should be <b>black</b>
+<p>0,1 should be identical to 0,1*
+<br>1,1 should be identical to 1,1*
+<br>2,1 should be identical to 2,1*
+<p>* Note: this test fails (when the script part is used) on Silverlight. It does not paint anything and, if force (move a window
+on top) often draws a black box over the second line. Browser (both FF and IE) start consuming large amount of memory . 
+Stepping with Firebug does show the 6 original images but does not show any update to the poly[gons|lines].
+  </div>
+  </body>
+</html>

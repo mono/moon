@@ -1,0 +1,81 @@
+<html>
+  <head>
+      <title>PenLineCap (Shape) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,0,0" />
+		<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,100,0" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" StrokeDashCap="Flat" />
+		<Polyline Fill="#000000" Stroke="#0000FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,200,0" StrokeStartLineCap="Square" StrokeEndLineCap="Square" StrokeDashCap="Square" />
+		<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,200,0" />
+		<Polyline Fill="#000000" Stroke="#0000FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,300,0" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" />
+		<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,300,0" />
+		<Polyline Fill="#000000" Stroke="#0000FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,400,0" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" StrokeDashCap="Triangle" />
+		<Polyline Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,400,0" />
+
+		<Polyline x:Name="testcase1" Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,0,100" />
+		<Polyline x:Name="testcase2" Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,100,100" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" StrokeDashCap="Flat" />
+		<Polyline x:Name="testcase3" Fill="#000000" Stroke="#0000FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,200,100" StrokeStartLineCap="Square" StrokeEndLineCap="Square" StrokeDashCap="Square" />
+		<Polyline                     Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,200,100" />
+		<Polyline x:Name="testcase4" Fill="#000000" Stroke="#0000FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,300,100" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" />
+		<Polyline                     Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,300,100" />
+		<Polyline x:Name="testcase5" Fill="#000000" Stroke="#0000FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,400,100" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" StrokeDashCap="Triangle" />
+		<Polyline                     Fill="#000000" Stroke="#FF00FF" StrokeThickness="8" Points="20,80 40,20 60,80 80,20" RenderTransform="1,0,0,1,400,100" />
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to *an empty image* (no value is FILL)
+	sender.findName ("testcase1").StrokeStartLineCap = -1;
+	sender.findName ("testcase2").StrokeEndLineCap = 911;
+	sender.findName ("testcase3").StrokeDashCap = 3.14;
+	sender.findName ("testcase4").StrokeStartLineCap = "tRiAnGlE";
+	sender.findName ("testcase5").StrokeEndLineCap = "rOuNd";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: Stretch
+/*
+	sender.findName ("testcase3").Stretch = "";
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0 should look like a N in magenta
+<br>1,0 should be identical to 0,0
+<br>2,0 should be look like a N in magenta with blue flat blocks at each end
+<br>3,0 should be look like a N in magenta with blue round blocks at each end
+<br>4,0 should be look like a N in magenta with blue triangle blocks at each end
+<p>0,1 should look like a N in magenta but, unlike 0,0, it should <b>start</b> very thin
+<br>1,1 should look like a N in magenta but, unlike 0,0, it should <b>end</b> very thin
+<br>2,1 should be identical to 2,0
+<br>3,1 should be look like a N in magenta with blue triangle at the start and blue round at the end
+<br>4,1 should be identical to 3,1
+  </div>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+<html>
+  <head>
+      <title>FillRule (Geometry) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Canvas.Top="0" Canvas.Left="0"   Data="   M 20,80 L 50,20 L 80,80 L 20,40 L 80,40 Z" />
+		<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Canvas.Top="0" Canvas.Left="100" Data="F0 M 20,80 L 50,20 L 80,80 L 20,40 L 80,40 Z" />
+		<Path Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Canvas.Top="0" Canvas.Left="200" Data="F1 M 20,80 L 50,20 L 80,80 L 20,40 L 80,40 Z" />
+
+		<Path x:Name="testcase1" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Canvas.Top="100" Canvas.Left="0"   Data="M 20,80 L 50,20 L 80,80 L 20,40 L 80,40 Z" />
+		<Path x:Name="testcase2" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Canvas.Top="100" Canvas.Left="100" Data="M 20,80 L 50,20 L 80,80 L 20,40 L 80,40 Z" />
+		<Path x:Name="testcase3" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Canvas.Top="100" Canvas.Left="200" Data="M 20,80 L 50,20 L 80,80 L 20,40 L 80,40 Z" />
+
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to EvenOdd (no value is EvenOdd)
+	sender.findName ("testcase1").Data.FillRule = -1;
+	sender.findName ("testcase2").Data.FillRule = 911;
+
+	sender.findName ("testcase3").Data.FillRule = "nONzERO";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: FillRule
+/*
+	sender.findName ("testcase3").Data.FillRule = "-1";
+	sender.findName ("testcase3").Data.FillRule = sender.findName ("testcase2");
+	sender.findName ("testcase3").Data.FillRule = null;
+	sender.findName ("testcase3").Data.FillRule = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0 star center should be <b>white</b>
+<br>1,0 star center should be <b>white</b>
+<br>2,0 star center should be <b>black</b>
+<p>0,1 should be identical to 0,1*
+<br>1,1 should be identical to 1,1*
+<br>2,1 should be identical to 2,1*
+<p>* Note: this test fails (when the script part is used) on Silverlight. It does not paint anything and, if force (move a window
+on top) often draws a black box over the second line. Browser (both FF and IE) start consuming large amount of memory . 
+Stepping with Firebug does show the 6 original images but does not show any update to the poly[gons|lines].
+  </div>
+  </body>
+</html>

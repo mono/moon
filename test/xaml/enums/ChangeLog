@@ -1,3 +1,15 @@
+2008-05-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* index.html: Add new test cases.
+	* fillrule-geometry.html,
+	* fillrule-polygon.html,
+	* fillrule-polyline.html: Test FillRule on Geometry, Polygon and
+	Polyline. Tests shows problem on *Silverlight* so results are 
+	unsure.
+	* penlinecap-shape.html: Test PenLineCap on Shape (Polyline)
+	* penlinejoin-shape.html: Test PenLineJoin on Shape (Polyline)
+	* stretch-shape.html: Test Stretch on Shape (Rectangle)
+
 2008-05-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* index.html: main access page to all enum tests.
