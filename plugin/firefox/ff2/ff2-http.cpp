@@ -11,7 +11,7 @@
 #include "../browser-http.inc"
 
 BrowserRequest*
-FF2BrowserBridge::CreateBrowserHttpRequest (const char *method, const char *uri)
+FF2BrowserBridge::CreateBrowserRequest (const char *method, const char *uri)
 {
-	return new FF2BrowserHttpRequest (method, uri);
+	return new FF2BrowserRequest (method, uri);
 }

@@ -1,3 +1,7 @@
+2008-05-23  Geoff Norton  <gnorton@novell.com>
+
+	* ff2-http.cpp: Update the declaration to the newly named BrowserRequest class
+
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* firefox-browsermmsh.inc: Initialize a variable to 0.
