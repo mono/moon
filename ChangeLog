@@ -1,3 +1,7 @@
+2008-05-23  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac: Fallback to not using ffmpeg if it's not found
+
 2008-05-19  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: MOON_PROG_CFLAGS should use top_srcdir, not top_builddir

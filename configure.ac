@@ -28,21 +28,27 @@ dnl Pipeline checks
 dnl
 AC_ARG_WITH(ffmpeg,[  --with-ffmpeg=yes,no   If you want to enable support for ffmpeg],[],[with_ffmpeg=yes])
 AC_ARG_WITH(swscale,[  --with-swscale=no,yes   If you want to enable support for swscale],[],[with_swscale=no])
-AM_CONDITIONAL(INCLUDE_FFMPEG,test x$with_ffmpeg = xyes)
-AM_CONDITIONAL(INCLUDE_SWSCALE,test x$with_swscale = xyes)
 
 if test x$with_ffmpeg = xyes; then
   AC_DEFINE([INCLUDE_FFMPEG],[1],[Include support for ffmpeg])
-  PKG_CHECK_MODULES(FFMPEG,[libavutil libavcodec])
-  save_CFLAGS=$CFLAGS
-  CFLAGS="$FFMPEG_CFLAGS $CFLAGS"
-  AC_CHECK_HEADERS([libavcodec/avcodec.h])
-  CFLAGS=$save_CFLAGS
-  if test x$with_swscale = xyes; then
-    AC_DEFINE([INCLUDE_SWSCALE],[1],[Include support for swscale])
-    PKG_CHECK_MODULES(SWSCALE,libswscale)
+  if pkg-config --exists libavutil libavcodec; then
+    PKG_CHECK_MODULES(FFMPEG,[libavutil libavcodec])
+    save_CFLAGS=$CFLAGS
+    CFLAGS="$FFMPEG_CFLAGS $CFLAGS"
+    AC_CHECK_HEADERS([libavcodec/avcodec.h])
+    CFLAGS=$save_CFLAGS
+    if test x$with_swscale = xyes; then
+      AC_DEFINE([INCLUDE_SWSCALE],[1],[Include support for swscale])
+      PKG_CHECK_MODULES(SWSCALE,libswscale)
+    fi
+  else
+    with_ffmpeg=no
+    with_swscale=no
+    ffmpeg_warning="(WARNING: AUDIO AND VIDEO WON'T WORK)"
   fi
 fi
+AM_CONDITIONAL(INCLUDE_FFMPEG,test x$with_ffmpeg = xyes)
+AM_CONDITIONAL(INCLUDE_SWSCALE,test x$with_swscale = xyes)
 
 dnl
 dnl Mozilla checks
@@ -458,7 +464,7 @@ Moonlight configuration:
 
 	Support for 1.0: yes
 	Support for 2.0: $with_mono $mreason
-	Support for ffmpeg: $with_ffmpeg
+	Support for ffmpeg: $with_ffmpeg $ffmpeg_warning
 	Support for swscale: $with_swscale
 	Support for running the test harness: $with_testing
 	Using cairo: $with_cairo
