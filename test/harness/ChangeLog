@@ -1,3 +1,8 @@
+2008-05-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agviewer/agviewer.cpp: Install a signal handler to print stack traces
+	  when we crash.
+
 2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* harness.mdp: Updated to give better tooltips.
