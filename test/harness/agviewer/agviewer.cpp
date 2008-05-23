@@ -546,7 +546,7 @@ agviewer_handle_native_sigsegv (int signal)
 			 "Got a %s while executing native code.                        \n"
 			 " We'll first ask gdb for a stack trace, then try our own     \n"
 			 " stack walking method (usually not as good as gdb, but it    \n"
-			 " can managed and native stack traces together)               \n"
+			 " can do managed and native stack traces together)            \n"
 			 "=============================================================\n"
 			 "\n", signal_str);
 	
