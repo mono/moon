@@ -1,3 +1,7 @@
+2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am: And another target, run-gdb this time.
+
 2008-05-21  Jackson Harper  <jackson@ximian.com>
 
 	* xaml/test-illegal-prop-set.html: Try calling canvas.SetValue
