@@ -35,22 +35,29 @@
     <File name="plugin-debug.cpp" subtype="Code" buildaction="Nothing" />
     <File name="plugin-debug.h" subtype="Code" buildaction="Nothing" />
     <File name="install.rdf" subtype="Code" buildaction="Nothing" />
-    <File name="ff2/ff2-bridge.h" subtype="Code" buildaction="Nothing" />
-    <File name="ff2/ff2-bridge.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="ff2/ff2-dom.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="ff2/ff2-http.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="ff2/ff2-mmsh.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="ff2/firefox-browserhttp.inc" subtype="Code" buildaction="Nothing" />
-    <File name="ff2/firefox-browsermmsh.inc" subtype="Code" buildaction="Nothing" />
-    <File name="ff2/Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="ff3/ff3-bridge.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="ff3/ff3-dom.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="ff3/ff3-bridge.h" subtype="Code" buildaction="Nothing" />
-    <File name="ff3/ff3-mmsh.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="ff3/ff3-http.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="ff3/Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="mmsh-state.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="mmsh-state.h" subtype="Code" buildaction="Nothing" />
+    <File name="mms-downloader.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="mms-downloader.h" subtype="Code" buildaction="Nothing" />
+    <File name="http-downloader.h" subtype="Code" buildaction="Nothing" />
+    <File name="http-downloader.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="browser-bridge.h" subtype="Code" buildaction="Nothing" />
+    <File name="npstream-downloader.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="npstream-downloader.h" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff3/ff3-bridge.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff3/ff3-bridge.h" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff3/ff3-dom.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff3/ff3-http.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff3/Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff3/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff2/ff2-bridge.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff2/ff2-bridge.h" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff2/ff2-dom.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff2/ff2-http.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff2/Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/browser-http.inc" subtype="Code" buildaction="Nothing" />
+    <File name="ff3" subtype="Directory" buildaction="Compile" />
+    <File name="ff2" subtype="Directory" buildaction="Compile" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

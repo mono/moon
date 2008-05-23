@@ -1,3 +1,7 @@
+2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.mdp: Updated.
+
 2008-05-23  Geoff Norton  <gnorton@novell.com>
 
 	* browser-bridge.h: Get/SetUri is no longer needed on the BrowserResponse

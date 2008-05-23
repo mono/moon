@@ -1,3 +1,7 @@
+2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp: Updated.
+
 2008-05-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* text.cpp: (Glyphs::InsideObject) Avoid expensive, and unneeded,
