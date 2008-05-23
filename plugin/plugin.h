@@ -41,6 +41,7 @@ class PluginInstance
 	// Property fields
 	char *initParams;
 	char *source;
+	char *source_location;
 	guint source_idle;
 	char *onLoad;
 	char *background;
@@ -156,6 +157,7 @@ class PluginInstance
 	// Property getters and setters
 	char *getInitParams () { return this->initParams; }
 	char *getSource () { return this->source; }
+	char *getSourceLocation () { return this->source_location; }
 	char *getId () { return this->id; }
 
 	void setSource (const char *value);

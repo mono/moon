@@ -1,3 +1,16 @@
+2008-05-23  Geoff Norton  <gnorton@novell.com>
+
+	* browser-bridge.cpp: Refactor to move all the stream processing logic outside
+	the bridge into the plugin in a generic way.
+	* plugin.cpp: Cache the source_location.  Needed for http-downlodaer to resolve
+	relative uri's.
+	* mmsh-state.*: Merged into mms-downlodaer.cpp
+	* mms-downloader.cpp: Rewritten to not leak all memory when streaming from a mms
+	server, plus a lot of readability fixes.
+	* npstream-downloader.cpp: Hide NPStream related specifics here instead of in
+	* plugin-downloader.cpp: Direct requests to the BrowserDownloader implementation
+	for this request.
+
 2008-05-21  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (plugin_button_press_callback): rename

@@ -20,60 +20,80 @@ class PluginDownloader;
 #include "downloader.h"
 #include "plugin.h"
 #include "plugin-class.h"
-#include "mmsh-state.h"
+
+class BrowserResponse;
+
+G_BEGIN_DECLS
+
+uint32_t browser_downloader_started (BrowserResponse *response, gpointer state);
+uint32_t browser_downloader_available (BrowserResponse *response, gpointer state, char *buffer, uint32_t length);
+uint32_t browser_downloader_finished (BrowserResponse *response, gpointer state);
+
+G_END_DECLS
+
+class BrowserDownloader {
+ protected:
+	PluginDownloader *pd;
+	BrowserResponse *response;
+
+ public:
+	BrowserDownloader (PluginDownloader *pd)
+	{
+		this->pd = pd;
+		this->response = NULL;
+	}
+
+	~BrowserDownloader ()
+	{
+		this->pd = NULL;
+	}
+
+	virtual void Abort () = 0;
+	virtual uint32_t Read (char *buffer, uint32_t length) = 0;
+	virtual void Send () = 0;
+	virtual void Started () = 0;
+	virtual void Finished () = 0;
+
+	PluginInstance *GetPlugin ();
+	void SetResponse (BrowserResponse *response) { this->response = response; }
+};
 
 class PluginDownloader {
-public:
+ private:
+	BrowserDownloader *bdl;
+
+ protected:
+	char *uri;
+	char *verb;
+
+ public:
 	PluginDownloader (Downloader *dl)
 	{
 		this->dl = dl;
-		this->verb = NULL;
 		this->uri = NULL;
-
-		this->mmsh = false;
-		this->state = NULL;
-
-		// these are set after the stream is created, and used for destroying the stream
-		this->npp = NULL;
-		this->stream = NULL;
-		this->seekable = false;
-
-		ignore_non_data = false;
-
-		// The Downloader will call destroy_state from it's destructor,
-		// but if we ref the Downloader, its destructor will never get called.
-		// No need to keep a ref, since this instance will never live longer
-		// than its Downloader.
-		// base_ref (dl);
+		this->verb = NULL;
 	}
 
 	~PluginDownloader ()
 	{
 		g_free (verb);
-		verb = NULL;
 		g_free (uri);
-		uri = NULL;
-		// base_unref (dl);
 		dl = NULL;
 	}
-	void StreamDestroyed ()
-	{
-		stream = NULL;
-	}
-	
+
+	void Open (const char *verb, const char *uri);
+
+	void Abort () { bdl->Abort(); }
+	void Send () { bdl->Send(); }
+	char *GetUri () { return uri; }
+	PluginInstance *GetPlugin ();
+
 	Downloader *dl;
-	char *uri;
-	char *verb;
-	bool mmsh;
-	NPStream *stream;
-	NPP npp;
-	bool ignore_non_data;
-	int header_size;
-	bool seekable;
-	MmshState *state;
+
+	BrowserDownloader *getBrowserDownloader () { return this->bdl; }
 };
 
-void downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);
+void npstream_downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);
 void downloader_initialize (void);
 void downloader_destroy (void);
 

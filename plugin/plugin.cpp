@@ -18,6 +18,7 @@
 #include "moon-mono.h"
 #include "downloader.h"
 #include "plugin-downloader.h"
+#include "npstream-downloader.h"
 #include "xap.h"
 
 #define Visual _XxVisual
@@ -573,6 +574,11 @@ PluginInstance::TryLoadBridge (const char *prefix)
 	}
 
 	create_bridge_func bridge_ctor = (create_bridge_func)dlsym (bridge_handle, "CreateBrowserBridge");
+	if (bridge_ctor == NULL) {
+		g_warning ("failed to locate CreateBrowserBridge symbol: %s", dlerror());
+		return;
+	}
+
 	bridge = bridge_ctor ();
 }
 
@@ -652,9 +658,8 @@ PluginInstance::SetPageURL ()
 	if (NPN_GetProperty (instance, window, str_location, &location_property)) {
 		// Get the location property from the location object.
 		if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {
-			char *source = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
-			surface->SetSourceLocation (source);
-			g_free (source);
+			this->source_location = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
+			surface->SetSourceLocation (this->source_location);
 			NPN_ReleaseVariantValue (&location_object);
 		}
 		NPN_ReleaseVariantValue (&location_property);
@@ -873,7 +878,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, u
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
 		StreamNotify *notify = (StreamNotify *) stream->notifyData;
 		
-		downloader_set_stream_data ((Downloader *) notify->pdata, instance, stream);
+		npstream_downloader_set_stream_data ((Downloader *) notify->pdata, instance, stream);
 		*stype = NP_ASFILE;
 		
 		return NPERR_NO_ERROR;
@@ -893,8 +898,12 @@ NPError
 PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 {
 	PluginDownloader *pd = (PluginDownloader*) stream->pdata;
-	if (pd != NULL)
-		pd->StreamDestroyed ();
+	if (pd != NULL) {
+		NPStreamDownloader *npsd = (NPStreamDownloader *) pd->getBrowserDownloader ();
+		if (npsd != NULL) 
+			npsd->StreamDestroyed ();
+	}
+
 	return NPERR_NO_ERROR;
 }
 
@@ -1273,8 +1282,6 @@ PluginInstance::EventHandle (void *event)
 {
 	XEvent *xev = (XEvent*)event;
 	int16_t handled = 0;
-
-	printf ("xev->type == %d\n", xev->type);
 
 	// It seems we sometimes get events before setwindow is called
 	// we will ignore them for now.

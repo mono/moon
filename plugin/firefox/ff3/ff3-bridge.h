@@ -11,8 +11,7 @@ class FF3BrowserBridge : public BrowserBridge {
 	virtual gpointer HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *name, callback_dom_event cb);
 	virtual void     HtmlObjectDetachEvent (NPP npp, const char *name, gpointer listener_ptr);
 
-	virtual BrowserHttpRequest* CreateBrowserHttpRequest (const char *method, const char *uri);
-	virtual BrowserMmshRequest* CreateBrowserMmshRequest (const char *method, const char *uri);
+	virtual BrowserRequest* CreateBrowserRequest (const char *method, const char *uri);
 };
 
 #endif // FF3_BRIDGE

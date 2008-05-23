@@ -6,4 +6,4 @@ if HAVE_GECKO_1_9
 SUBDIRS += ff3
 endif
 
-EXTRA_DIST = firefox-browserhttp.inc firefox-browsermmsh.inc
+EXTRA_DIST = browser-http.inc
