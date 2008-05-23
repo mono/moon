@@ -793,7 +793,7 @@
          categories="stretch"
    />
    <Test id="179"
-	 inputFile="test-inkpresenter-image"
+	 inputFile="test-inkpresenter-image.xaml"
 	 masterFile10="../harness/masters/test-inkpresenter-imageMaster.png"
    />
    <Test id="180"

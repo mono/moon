@@ -1,3 +1,8 @@
+2008-05-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: One test has regressed, mark it as known failure for
+	  now.
+
 2008-05-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-playlist-live-with-duration.html: Assert for media server.
