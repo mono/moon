@@ -1,5 +1,9 @@
 2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* harness.mdp: Updated to give better tooltips.
+
+2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/LoggingServer.cs, test-runner/ExternalProcess.cs,
 	  test-runner/Driver.cs, test-runner/TestRun.cs,
 	  test-runner/TestRunner.cs: Add support for running agviewer with
