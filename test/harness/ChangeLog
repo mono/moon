@@ -1,5 +1,9 @@
 2008-05-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/Driver.cs: Added support for remote and nested drtlists.
+
+2008-05-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/Test.cs: Don't load dimensions until we need them. Cuts
 	  the time spent running 1 test to a third (from 15 seconds to 5
 	  seconds on my machine).

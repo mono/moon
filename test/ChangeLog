@@ -1,5 +1,9 @@
 2008-05-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* drtlist.xml: Added.
+
+2008-05-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* xaml/drtlist.xml: Added missing extension.
 
 2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -115,11 +115,40 @@ namespace MoonlightTests {
 			return fixtures.Contains (test.Id);
 		}
 
+		private static string GetRemoteDrtlist (string drtlist)
+		{
+			string filename = null;
+			try {
+				filename = Path.GetTempFileName ();
+				File.Delete (filename);
+
+				filename = filename + "-moonlight-remote-drtlist.xml";
+		
+				Console.WriteLine ("Downloading drtlist.xml from: {0}", drtlist);
+				
+				using (System.Net.WebClient client = new System.Net.WebClient())
+					client.DownloadFile (drtlist, filename);
+			} catch (Exception ex) {
+				Console.WriteLine ("Loading remote drtlist '{0}' failed: {1}", drtlist, ex.Message);
+				throw;
+			}
+			return filename;
+		}
+				
+		public static string GetDrtlistLocation (string drtlist)
+		{
+			if (drtlist.StartsWith ("http"))
+				drtlist = GetRemoteDrtlist (drtlist);
+			
+			return drtlist;
+		}
+		
 		public void LoadTests (string drtlist)
 		{
 			XmlDocument doc = new XmlDocument ();
 			doc.Load (drtlist);
 			XmlNodeList tests_xml = doc.SelectNodes ("/DRTList/Test");
+			XmlNodeList nested_lists = doc.SelectNodes ("/DRTList/NestedTests");
 
 			bool past_fixture_start = (fixture_start == null);
 			string base_directory = Path.GetDirectoryName (drtlist);
@@ -151,6 +180,20 @@ namespace MoonlightTests {
 				}
 
 				tests.Add (t);
+			}
+			
+			foreach (XmlNode node in nested_lists) {
+				string inputFile = null;
+				
+				if (node.Attributes ["inputFile"] != null)
+					inputFile = node.Attributes ["inputFile"].Value;
+				
+				if (inputFile == null)
+					continue;
+				
+				inputFile = GetDrtlistLocation (inputFile);
+				
+				LoadTests (inputFile);
 			}
 		}
 /*
@@ -215,11 +258,18 @@ namespace MoonlightTests {
 
 		public int Run (string drtlist)
 		{
+			string drtdir = Path.GetDirectoryName (drtlist);
+			
+			if (drtdir == string.Empty || drtdir == null)
+				drtdir = Path.GetFullPath (".");
+			else
+				drtdir = Path.GetFullPath (drtdir);
+			
 			LoadTests (drtlist);
 			Screensaver.Inhibit ();
 
 			LoggingServer logging_server = new LoggingServer ();
-			TestRunner runner = new TestRunner (tests, Path.GetFullPath (Path.GetDirectoryName (drtlist)), this);
+			TestRunner runner = new TestRunner (tests, drtdir, this);
 
 			DbusServices.Register (logging_server);
 			DbusServices.Register (runner);
@@ -401,7 +451,7 @@ namespace MoonlightTests {
 			p.Add ("categories=", "Only run the tests in the specified categories (comma separated list).",
 					delegate (string v) { d.SetCategories (v); });
 			p.Add ("drtlist=", "Specify the drtlist to be used for the test run.",
-					delegate (string v) { drtlist = v; });
+					delegate (string v) { drtlist = GetDrtlistLocation (v); });
 			p.Add ("agviewer=", "Specify the path to the agviewer binary (if this is not specified a temp agviewer will be created).",
 					delegate (string v) { Agviewer.SetProcessPath (v); });
 			p.Add ("no-console-report", "Do not report any of the test progress or results on the console.",
