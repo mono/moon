@@ -25,19 +25,18 @@ class BrowserResponse {
 	BrowserResponseDataAvailableHandler available;
 	BrowserResponseFinishedHandler finished;
 	gpointer context;
-        char *uri;
 
 	bool aborted;
 
  public:
 	BrowserResponse ()
 	{
-		uri = NULL;
 		aborted = false;
 	}
 
 	BrowserResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context)
 	{
+		this->aborted = false;
 		this->started = started;
 		this->available = available;
 		this->finished = finished;
@@ -46,14 +45,10 @@ class BrowserResponse {
 
 	virtual ~BrowserResponse ()
 	{
-		g_free (uri);
 	}
 
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () { return this->aborted; }
-
-        virtual void SetUri (const char *uri) { this->uri = g_strdup (uri); }
-        virtual const char *GetUri () { return this->uri; }
 };
 
 class BrowserRequest {

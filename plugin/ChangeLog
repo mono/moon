@@ -1,5 +1,10 @@
 2008-05-23  Geoff Norton  <gnorton@novell.com>
 
+	* browser-bridge.h: Get/SetUri is no longer needed on the BrowserResponse
+	class
+
+2008-05-23  Geoff Norton  <gnorton@novell.com>
+
 	* *-downlodaer.cpp: Add the files to SVN
 
 2008-05-23  Geoff Norton  <gnorton@novell.com>
