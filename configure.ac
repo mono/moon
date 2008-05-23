@@ -313,6 +313,9 @@ case "$target_cpu" in
   x86_64 )
   TARGET_PLATFORM="$TARGET_PLATFORM"_x86_64-gcc3
   ;;
+  powerpc )
+  TARGET_PLATFORM="$TARGET_PLATFORM"_ppc-gcc3
+  ;;
   * )
   AC_MSG_ERROR([Target cpu $target_cpu is unknown.
 Please add the appropriate string to configure.ac.
