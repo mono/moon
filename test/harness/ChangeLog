@@ -1,3 +1,8 @@
+2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/ConsoleReport.cs: Print the id of the tests in addition
+	  to the name.
+
 2008-05-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* harness.mdp: Updated.

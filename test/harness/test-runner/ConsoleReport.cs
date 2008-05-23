@@ -80,7 +80,7 @@ namespace MoonlightTests {
 			}
 
 			if (run.VerboseLevel != VerboseLevel.None)
-				Console.Write ("{0}:  ", test.InputFile);
+				Console.Write ("{0} ({1}):  ", test.InputFile, test.Id);
 			Console.Write (state);
 			if (run.VerboseLevel != VerboseLevel.None)
 				Console.WriteLine ();
@@ -108,7 +108,7 @@ namespace MoonlightTests {
 
 			Console.WriteLine ("========================= Failed Tests ==========================");
 			foreach (Test t in run.FailedTests) {
-				Console.WriteLine ("Failed:  {0} -- {1}", t.InputFile, t.FailedReason);
+				Console.WriteLine ("Failed:  {0} ({2}) -- {1}", t.InputFile, t.FailedReason, t.Id);
 				if (run.VerboseLevel >= VerboseLevel.ShowShockerLines) {
 					Console.WriteLine ("  Log Lines:");
 					foreach (string str in run.LoggingServer.GetTestLogLines (t.InputFileName)) {
