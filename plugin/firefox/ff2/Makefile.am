@@ -17,6 +17,4 @@ libmoonplugin_ff2bridge_la_SOURCES=	ff2-bridge.cpp \
 					ff2-http.cpp \
 					ff2-mmsh.cpp
 
-libmoonplugin_ff2bridge_la_LIBADD=$(FF2_LIBS) ../libmoonplugin.la ../../src/libmoon.la
-
-EXTRA_DIST = firefox-browserhttp.inc firefox-browsermmsh.inc
+libmoonplugin_ff2bridge_la_LIBADD=$(FF2_LIBS) ../../libmoonplugin.la ../../../src/libmoon.la

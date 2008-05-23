@@ -1,10 +1,4 @@
-SUBDIRS = . test samples
-if HAVE_GECKO_1_8
-SUBDIRS += ff2
-endif
-if HAVE_GECKO_1_9
-SUBDIRS += ff3
-endif
+SUBDIRS = . test samples firefox
 
 if PLUGIN_INSTALL
 SUBDIRS += install

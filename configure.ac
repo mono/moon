@@ -444,8 +444,9 @@ examples/desklet/picasa/Makefile
 examples/desklet/simpleclock/Makefile
 examples/desklet/weather/Makefile
 plugin/Makefile
-plugin/ff2/Makefile
-plugin/ff3/Makefile
+plugin/firefox/Makefile
+plugin/firefox/ff2/Makefile
+plugin/firefox/ff3/Makefile
 plugin/install/Makefile
 plugin/install/install.rdf
 plugin/test/Makefile

@@ -8,7 +8,7 @@
 
 #define CONCAT(x,y) x##y
 #define GECKO_SYM(x) CONCAT(FF3,x)
-#include "../ff2/firefox-browsermmsh.inc"
+#include "../browser-mmsh.inc"
 
 BrowserMmshRequest*
 FF3BrowserBridge::CreateBrowserMmshRequest (const char *method, const char *uri)

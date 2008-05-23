@@ -8,7 +8,7 @@
 
 #define CONCAT(x,y) x##y
 #define GECKO_SYM(x) CONCAT(FF3,x)
-#include "../ff2/firefox-browserhttp.inc"
+#include "../browser-http.inc"
 
 BrowserHttpRequest*
 FF3BrowserBridge::CreateBrowserHttpRequest (const char *method, const char *uri)
