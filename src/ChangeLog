@@ -1,3 +1,11 @@
+2008-05-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (TextFont::PixelsPerEM): Removed, the logic was broken.
+
+	* text.cpp (Glyphs::Layout): Reverted previous commit and go back
+	to the magic math.
+	(Glyphs::Render): Same.
+
 2008-05-22  Chris Toshok  <toshok@ximian.com>
 
 	* stylus.h, stylus.cpp (Stroke::HitTest): correct our width/height

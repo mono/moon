@@ -1419,7 +1419,8 @@ Glyphs::Layout ()
 	
 	font = desc->GetFont ();
 	
-	scale = desc->GetSize () * font->PixelsPerEM ();
+	// scale Advance, uOffset and vOffset units to pixels
+	scale = desc->GetSize () * 20.0 / 2048.0;
 	
 	right = origin_x;
 	left = origin_x;
@@ -1657,7 +1658,8 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	
 	font = desc->GetFont ();
 	
-	scale = desc->GetSize () * font->PixelsPerEM ();
+	// scale Advance, uOffset and vOffset units to pixels
+	scale = desc->GetSize () * 20.0 / 2048.0;
 	
 	x0 = origin_x;
 	

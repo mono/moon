@@ -148,8 +148,6 @@ class TextFont {
 	
 	bool IsScalable ();
 	
-	double PixelsPerEM ();
-	
 	double Kerning (gunichar left, gunichar right);
 	double Descender ();
         double Ascender ();
