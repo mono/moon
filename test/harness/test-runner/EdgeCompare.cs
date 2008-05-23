@@ -46,12 +46,13 @@ namespace MoonlightTests {
 			Bitmap result_edges = BuildEdges (result);
 			Bitmap master_edges = BuildEdges (master);
 			Bitmap diff = new Bitmap (result.Width, result.Height + KeyHeight);
-			Graphics g = Graphics.FromImage (diff);
 			double point_count = 0;
 			double diff_score = 0;
 			int missing_points = 0;
 			
-			g.DrawImage (master_edges, 0, 0);
+			using (Graphics g = Graphics.FromImage (diff)) {
+				g.DrawImage (master_edges, 0, 0);
+			}
 
 			for (int x = 0; x < result.Width; x++) {
 
