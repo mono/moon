@@ -47,6 +47,8 @@ class GECKO_SYM(BrowserResponse) : public BrowserResponse, public nsIStreamListe
 	virtual ~GECKO_SYM(BrowserResponse) ()
 	{
 	}
+
+	void Abort ();
 };
 
 class GECKO_SYM(BrowserRequest) : public BrowserRequest {
@@ -70,6 +72,8 @@ class GECKO_SYM(BrowserRequest) : public BrowserRequest {
 	bool GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
 	void SetBody (const char *body, int size);
+	
+	void Abort ();
 };
 
 // BrowserResponse
