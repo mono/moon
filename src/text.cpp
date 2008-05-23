@@ -1803,20 +1803,12 @@ Glyphs::ComputeBounds ()
 bool
 Glyphs::InsideObject (cairo_t *cr, double x, double y)
 {
-	bool ret = false;
-	
-	cairo_save (cr);
-	
 	double nx = x;
 	double ny = y;
 
 	uielement_transform_point (this, &nx, &ny);
 	
-	if (nx >= left && ny >= top && nx < left + width && ny < top + height)
-		ret = true;
-	
-	cairo_restore (cr);
-	return ret;
+	return (nx >= left && ny >= top && nx < left + width && ny < top + height);
 }
 
 Point

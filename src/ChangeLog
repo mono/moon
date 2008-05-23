@@ -1,3 +1,8 @@
+2008-05-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* text.cpp: (Glyphs::InsideObject) Avoid expensive, and unneeded,
+	cairo_save/cairo_restore since we don't use the context.
+
 2008-05-23  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* dependencyobject.[h|cpp]: merge namescopes on SetValue.
