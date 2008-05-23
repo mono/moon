@@ -3,6 +3,7 @@
 #include <nsIURI.h>
 #include <nsIServiceManager.h>
 #include <nsIComponentManager.h>
+#include <nsComponentManagerUtils.h>
 #include <nsIIOService.h>
 #include <nsStringAPI.h>
 #include <nsIInputStream.h>
@@ -26,244 +27,91 @@
 #include <xpcom/nsIStorageStream.h>
 #endif
 
-class GECKO_SYM(BrowserHttpResponse) : public BrowserHttpResponse, public nsIHttpHeaderVisitor {
-private:
+class GECKO_SYM(BrowserResponse) : public BrowserResponse, public nsIStreamListener {
+ private:
 	nsCOMPtr<nsIChannel> channel;
-	HttpHeaderHandler handler;
 
-protected:
-	NS_DECL_NSIHTTPHEADERVISITOR
-public:
-	NS_DECL_ISUPPORTS
-
-	GECKO_SYM(BrowserHttpResponse) (nsCOMPtr<nsIChannel> channel)
-	{
-		this->channel = channel;
-		this->handler = NULL;
-	}
-
-	virtual ~GECKO_SYM(BrowserHttpResponse) ()
-	{
-	}
-
-	virtual void VisitHeaders (HttpHeaderHandler handler);
-	virtual char *GetStatus (int *code);
-};
-
-class GECKO_SYM(SyncBrowserHttpResponse) : public GECKO_SYM(BrowserHttpResponse) {
-private:
-	nsCOMPtr<nsIInputStream> response_stream;
-public:
-	GECKO_SYM(SyncBrowserHttpResponse) (nsCOMPtr<nsIChannel> channel, nsCOMPtr<nsIInputStream> response) : GECKO_SYM(BrowserHttpResponse) (channel)
-	{
-		this->response_stream = response;
-	}
-
-	virtual ~GECKO_SYM(SyncBrowserHttpResponse) ()
-	{
-		if (response_stream)
-			response_stream->Close ();
-	}
-
-	virtual void *Read (int *length);
-};
-
-class GECKO_SYM(AsyncBrowserHttpResponse) : public GECKO_SYM(BrowserHttpResponse), public nsIStreamListener {
-private:
-	AsyncResponseAvailableHandler handler;
-	gpointer context;
-	char *buffer;
-	int size;
-protected:
+ protected:
 	NS_DECL_NSIREQUESTOBSERVER
 	NS_DECL_NSISTREAMLISTENER
-public:
+
+ public:
 	NS_DECL_ISUPPORTS
 
-	GECKO_SYM(AsyncBrowserHttpResponse) (nsCOMPtr<nsIChannel> channel, AsyncResponseAvailableHandler handler, gpointer context)
-		: GECKO_SYM(BrowserHttpResponse) (channel)
+	GECKO_SYM(BrowserResponse) (nsCOMPtr<nsIChannel> channel, BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context)
+		: BrowserResponse (started, available, finished, context)
 	{
-		buffer = NULL;
-		size = 0;
-		this->handler = handler;
-		this->context = context;
+		this->channel = channel;
 	}
 
-	virtual ~GECKO_SYM(AsyncBrowserHttpResponse) ()
+	virtual ~GECKO_SYM(BrowserResponse) ()
 	{
 	}
-
-	virtual void *Read (int *size);
 };
 
-class GECKO_SYM(BrowserHttpRequest) : public BrowserHttpRequest {
-private:
+class GECKO_SYM(BrowserRequest) : public BrowserRequest {
+ private:
 	nsCOMPtr<nsIChannel> channel;
 
 	void CreateChannel ();
-public:
 
-	GECKO_SYM(BrowserHttpRequest) (const char *method, const char *uri)
-	    : BrowserHttpRequest (method, uri)
+ public:
+	GECKO_SYM(BrowserRequest) (const char *method, const char *uri)
+	    : BrowserRequest (method, uri)
 	{
 		CreateChannel ();
 	}
 
-	~GECKO_SYM(BrowserHttpRequest) ()
+	~GECKO_SYM(BrowserRequest) ()
 	{
 	}
 
-	void Abort ();
-	BrowserHttpResponse *GetResponse ();
-	bool GetAsyncResponse (AsyncResponseAvailableHandler handler, gpointer context);
+	BrowserResponse *GetResponse ();
+	bool GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
 	void SetBody (const char *body, int size);
 };
 
-// BrowserHttpResponse
+// BrowserResponse
 
-NS_IMPL_ISUPPORTS1 (GECKO_SYM(BrowserHttpResponse), nsIHttpHeaderVisitor)
-
-NS_IMETHODIMP
-GECKO_SYM(BrowserHttpResponse)::VisitHeader (const nsACString &header, const nsACString &value)
-{
-	if (handler == NULL)
-		return NS_OK;
-
-	const char *name, *val;
-	PRUint32 nl, vl;
-
-	nl = NS_CStringGetData (header, &name);
-	vl = NS_CStringGetData (value, &val);
-
-	name = g_strndup (name, nl);
-	val = g_strndup (val, vl);
-
-	handler (name, val);
-
-	// g_free ((gpointer) name);
-	// g_free ((gpointer) val);
-
-	return NS_OK;
-}
+NS_IMPL_ISUPPORTS1 (GECKO_SYM(BrowserResponse), nsIStreamListener)
 
 void
-GECKO_SYM(BrowserHttpResponse)::VisitHeaders (HttpHeaderHandler handler)
+GECKO_SYM(BrowserResponse)::Abort ()
 {
-	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
-	if (!httpchannel)
-		return;
-
-	this->handler = handler;
-
-	httpchannel->VisitResponseHeaders (this);
-
-	this->handler = NULL;
-}
-
-char *
-GECKO_SYM(BrowserHttpResponse)::GetStatus (int *code)
-{
-	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
-	if (!httpchannel) {
-		*code = 0;
-		return NULL;
-	}
-
-	nsEmbedCString status_desc;
-	PRUint32 status;
-	const char *desc;
-	int dl;
-
-	httpchannel->GetResponseStatusText (status_desc);
-
-	dl = NS_CStringGetData (status_desc, &desc);
-
-	httpchannel->GetResponseStatus (&status);
-
-	*code = status;
-	return g_strndup (desc, dl);
-}
-
-// SyncBrowserHttpResponse
-
-void *
-GECKO_SYM(SyncBrowserHttpResponse)::Read (int *size)
-{
-	PRUint32 read = 0;
-	char *data = NULL;
-
-	while (true) {
-		PRUint32 available, len;
-		response_stream->Available (&available);
-
-		if (data == NULL) {
-			data = (char *) NS_Alloc (available);
-		} else if (available == 0) {
-			break;
-		} else {
-			data = (char *)NS_Realloc (data, read + available);
-		}
-
-		response_stream->Read (data + read, available, &len);
-
-		if (len == 0)
-			break;
-
-		read += len;
-	}
-
-	*size = read;
-
-	return data;
-}
-
-// AsyncBrowserHttpResponse
-
-NS_IMPL_ISUPPORTS1 (GECKO_SYM(AsyncBrowserHttpResponse), nsIStreamListener)
-
-NS_IMETHODIMP
-GECKO_SYM(AsyncBrowserHttpResponse)::OnStartRequest (nsIRequest *request, nsISupports *context)
-{
-	return NS_OK;
+	this->channel->Cancel (NS_BINDING_ABORTED);
 }
 
 NS_IMETHODIMP
-GECKO_SYM(AsyncBrowserHttpResponse)::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
+GECKO_SYM(BrowserResponse)::OnStartRequest (nsIRequest *request, nsISupports *context)
 {
-	handler (this, this->context);
-	return NS_OK;
+	return started (this, this->context);
 }
 
 NS_IMETHODIMP
-GECKO_SYM(AsyncBrowserHttpResponse)::OnDataAvailable (nsIRequest *request, nsISupports *context, nsIInputStream *input, PRUint32 offset, PRUint32 count)
+GECKO_SYM(BrowserResponse)::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
-	if (buffer == NULL) {
-		buffer = (char *) NS_Alloc (count);
-	} else {
-		buffer = (char *) NS_Realloc (buffer, size + count);
-	}
-
-	PRUint32 length;
-
-	input->Read (buffer + size, count, &length);
-
-	size += length;
-
-	return NS_OK;
+	return finished (this, this->context);
 }
 
-void *
-GECKO_SYM(AsyncBrowserHttpResponse)::Read (int *size)
+NS_IMETHODIMP
+GECKO_SYM(BrowserResponse)::OnDataAvailable (nsIRequest *request, nsISupports *context, nsIInputStream *input, PRUint32 offset, PRUint32 count)
 {
-	*size = this->size;
-	return this->buffer;
+	PRUint32 length = 0;
+	nsresult res;
+
+	char *buffer = (char *) NS_Alloc (count);
+	input->Read (buffer, count, &length);
+	res = available (this, this->context, buffer, length);
+	NS_Free (buffer);
+
+	return res;
 }
 
-// BrowserHttpRequest
+// BrowserRequest
 
 void
-GECKO_SYM(BrowserHttpRequest)::CreateChannel ()
+GECKO_SYM(BrowserRequest)::CreateChannel ()
 {
 	nsresult rv = NS_OK;
 	nsCOMPtr<nsIServiceManager> mgr;
@@ -285,7 +133,7 @@ GECKO_SYM(BrowserHttpRequest)::CreateChannel ()
 	nsEmbedCString url;
 	url = this->uri;
 
-	printf ("BrowserHttpRequest: %s\n", uri);
+	printf ("BrowserRequest: %s\n", uri);
 
 	nsCOMPtr<nsIURI> uri;
 	rv = ioservice->NewURI (url, nsnull, nsnull, getter_AddRefs (uri));
@@ -302,36 +150,24 @@ GECKO_SYM(BrowserHttpRequest)::CreateChannel ()
 }
 
 void
-GECKO_SYM(BrowserHttpRequest)::Abort ()
+GECKO_SYM(BrowserRequest)::Abort ()
 {
 	channel->Cancel (NS_BINDING_ABORTED);
 }
 
-BrowserHttpResponse *
-GECKO_SYM(BrowserHttpRequest)::GetResponse ()
-{
-	nsresult rs = NS_OK;
-	nsCOMPtr<nsIInputStream> input;
-	rs = channel->Open (getter_AddRefs (input));
-	if (NS_FAILED (rs))
-		return NULL;
-
-	return new GECKO_SYM(SyncBrowserHttpResponse) (channel, input);
-}
-
 bool
-GECKO_SYM(BrowserHttpRequest)::GetAsyncResponse (AsyncResponseAvailableHandler handler, gpointer context)
+GECKO_SYM(BrowserRequest)::GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context)
 {
 	nsresult rs = NS_OK;
-	GECKO_SYM(AsyncBrowserHttpResponse) *response;
+	GECKO_SYM(BrowserResponse) *response;
 
-	response = new GECKO_SYM(AsyncBrowserHttpResponse) (channel, handler, context);
-	rs = channel->AsyncOpen (response, (GECKO_SYM(BrowserHttpResponse)*)response);
+	response = new GECKO_SYM(BrowserResponse) (channel, started, available, finished, context);
+	rs = channel->AsyncOpen (response, (GECKO_SYM(BrowserResponse)*)response);
 	return !NS_FAILED (rs);
 }
 
 void
-GECKO_SYM(BrowserHttpRequest)::SetHttpHeader (const char *name, const char *value)
+GECKO_SYM(BrowserRequest)::SetHttpHeader (const char *name, const char *value)
 {
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 	if (!httpchannel)
@@ -345,25 +181,36 @@ GECKO_SYM(BrowserHttpRequest)::SetHttpHeader (const char *name, const char *valu
 }
 
 void
-GECKO_SYM(BrowserHttpRequest)::SetBody (const char *body, int size)
+GECKO_SYM(BrowserRequest)::SetBody (const char *body, int size)
 {
+	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
+	if (!httpchannel)
+		return;
+
 	nsCOMPtr<nsIUploadChannel> upload = do_QueryInterface (channel);
 	if (!upload)
 		return;
 
 	nsEmbedCString type;
+	nsresult rv;
 
-	nsCOMPtr<nsIStorageStream> storage;
-	nsresult rv = NS_NewStorageStream (2048, PR_UINT32_MAX, getter_AddRefs (storage));
+	nsCOMPtr<nsIStorageStream> storage = do_CreateInstance ("@mozilla.org/storagestream;1", &rv);
+	storage->Init (2048, PR_UINT32_MAX, nsnull);
 
 	nsCOMPtr<nsIOutputStream> output;
 	storage->GetOutputStream (0, getter_AddRefs (output));
 
 	PRUint32 written;
 	output->Write (body, size, &written);
+	output->Close ();
 
 	nsCOMPtr<nsIInputStream> input;
 	rv = storage->NewInputStream (0, getter_AddRefs (input));
 
+	nsCString method;
+	httpchannel->GetRequestMethod (method);
+	
 	upload->SetUploadStream (input, type, -1);
+	
+	httpchannel->SetRequestMethod (method);
 }

@@ -1,0 +1,4 @@
+2008-05-23  Geoff Norton  <gnorton@novell.com>
+
+	* browser-mmsh.inc: Drop from the build
+	* browser-http.inc: Include the new generic browser-http.inc in the build
