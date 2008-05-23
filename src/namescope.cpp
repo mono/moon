@@ -77,7 +77,6 @@ NameScope::FindName (const char *name)
 		g_warning ("NameScope::FindName (null)");
 		return NULL;
 	}
-
 	return (DependencyObject *) g_hash_table_lookup (names, name);
 }
 
@@ -107,7 +106,8 @@ NameScope::merge_name (gpointer key, gpointer value, gpointer user_data)
 void
 NameScope::MergeTemporaryScope (NameScope *temp)
 {
-	g_hash_table_foreach (temp->names, merge_name, this);
+	if (temp)
+		g_hash_table_foreach (temp->names, merge_name, this);
 }
 
 DependencyProperty *NameScope::NameScopeProperty;
