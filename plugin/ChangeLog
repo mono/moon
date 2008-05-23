@@ -1,5 +1,9 @@
 2008-05-23  Geoff Norton  <gnorton@novell.com>
 
+	* *-downlodaer.cpp: Add the files to SVN
+
+2008-05-23  Geoff Norton  <gnorton@novell.com>
+
 	* browser-bridge.cpp: Refactor to move all the stream processing logic outside
 	the bridge into the plugin in a generic way.
 	* plugin.cpp: Cache the source_location.  Needed for http-downlodaer to resolve
