@@ -13,7 +13,6 @@ CLEANFILES =				\
 	gtksilver.tree 			\
 	gtksilver.zip 			\
 	gtksilver.xml			\
-	docs/index.xml			\
 	docs/Gtk.Moonlight/Desklet.xml	\
 	docs/Gtk.Moonlight/GtkSilver.xml\
 	docs/Gtk.Moonlight.xml

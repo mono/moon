@@ -1,3 +1,7 @@
+2008-05-23  Geoff Norton  <gnorton@novell.com>
+
+	* Makefile.am: Dont remove index.xml when cleaning
+
 2008-04-30  Fernando Herrera  <fherrera@novell.com>
 
 	* ManagedDownloader.cs: Don't use our own temporal file, just write to
