@@ -43,6 +43,7 @@ namespace MoonlightTests {
 		private double? image_compare_tolerance;
 		private double image_diff;
 
+		private bool size_loaded = false;
 		private int result_width = 500;
 		private int result_height = 500;
 
@@ -111,6 +112,7 @@ namespace MoonlightTests {
 				test = new HtmlTest (id, input_file, master_file, node);
 				break;
 			default:
+				Console.Error.WriteLine ("The test {0} is invalid, the test has to have a htm(l) or xaml extension.", input_file);
 				return null;
 			}
 			
@@ -149,8 +151,6 @@ namespace MoonlightTests {
 			this.id = id;
 			this.input_file = input_file;
 			this.master_file = master_file;
-
-			GetDimensionsFromMaster ();
 		}
 
 		public string Id {
@@ -224,11 +224,17 @@ namespace MoonlightTests {
 		}
 
 		public int ResultWidth {
-			get { return result_width; }
+			get { 
+				GetDimensionsFromMaster (); 
+				return result_width;
+			}
 		}
 
 		public int ResultHeight {
-			get { return result_height; }
+			get {
+				GetDimensionsFromMaster (); 
+				return result_height;
+			}
 		}
 
 		public string Stderr {
@@ -349,9 +355,14 @@ namespace MoonlightTests {
 			if (!File.Exists (master_file))
 				return;
 
+			if (size_loaded)
+				return;
+			
 			Image master = Image.FromFile (master_file);
 			result_width = master.Width;
 			result_height = master.Height;
+			
+			size_loaded = true;
 		}
 
 		private void CodeBehindCompileIfNeeded ()
