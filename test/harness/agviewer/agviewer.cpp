@@ -79,6 +79,7 @@ typedef struct _AgViewer {
 
 static AgViewer* browser = NULL;
 static char* test_path = NULL;
+static const char* working_dir = NULL;
 static guint timeout_id = 0;
 
 static void run_test (char* test_path, int timeout);
@@ -88,7 +89,7 @@ static void signal_test_complete (const char* test_name, bool successful);
 static bool wait_for_next_test (int* timeout);
 static void mark_test_as_complete_and_start_next_test (bool successful);
 static void log_message (const char* test_name, const char* message);
-
+static void set_current_dir (const char* test_path);
 static void agviewer_handle_native_sigsegv (int signal);
 static void agviewer_add_signal_handler ();
 
@@ -158,14 +159,39 @@ static gboolean key_press_cb (GtkWidget* widget, GdkEventKey* event, GtkWindow* 
 static gboolean test_timeout (gpointer data);
 
 
-
+static void
+set_current_dir (const char* test_path)
+{
+	char *dir = NULL;
+	
+	if (g_str_has_prefix (test_path, "http")) {
+		if (chdir (working_dir) != 0)
+			g_warning ("Unable to set working directory to: %s\n", working_dir);
+	} else {
+		if (!g_path_is_absolute (test_path)) {
+			char* wd = get_current_dir_name ();
+			char* abs_path = g_build_filename (wd, test_path, NULL);
+			
+			dir = g_path_get_dirname (test_path);
+			
+			free (wd);
+			g_free (abs_path);
+		} else {
+			dir = g_path_get_dirname (test_path);
+		}
+		
+		if (chdir (dir) != 0)
+			g_warning ("Unable to set working directory to: %s\n", dir);
+			
+		g_free (dir);
+	}
+}
 
 int
 main(int argc, char **argv)
 {
 	int frame_width = 800;
 	int frame_height = 800;
-	bool working_dir_set = false;
 
 	agviewer_add_signal_handler ();
 	
@@ -184,12 +210,7 @@ main(int argc, char **argv)
 		}
 		
 		if (!g_strcasecmp ("-working-dir", argv [i]) && i < argc) {
-			working_dir_set = true;
-			if (chdir (argv [++i]) != 0) {
-				g_warning ("Unable to set working directory to :%s\n", argv [i]);
-				exit (-1);
-			}
-			
+			working_dir = argv [++i];
 			continue;
 		}
 		
@@ -197,25 +218,8 @@ main(int argc, char **argv)
 			continue;
 	}
 	
-	if (i < argc) {
+	if (i < argc)
 		test_path = g_strdup (argv [argc - 1]);
-		if (!working_dir_set) {
-			if (!g_path_is_absolute (test_path)) {
-				char* wd = get_current_dir_name ();
-				char* op = test_path;
-
-				test_path = g_build_filename (wd, test_path, NULL);
-				g_free (op);
-			}
-
-			char* dir = g_path_get_dirname (test_path);
-			if (chdir (dir) != 0) {
-				g_warning ("Unable to set working directory.\n");
-				exit (-1);
-			}
-			g_free (dir);
-		}
-	}
 
 	browser = new_gtk_browser ();
 
@@ -245,7 +249,9 @@ run_test (char* test_path, int timeout)
 	if (timeout_id)
 		g_source_remove (timeout_id);
 	timeout_id = g_timeout_add (timeout, test_timeout, test_path);
-
+	
+	set_current_dir (test_path);
+	
 	gtk_moz_embed_load_url (GTK_MOZ_EMBED (browser->moz_embed), test_path);
 }
 

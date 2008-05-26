@@ -1,3 +1,10 @@
+2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agviewer/agviewer.cpp: Set the current directory to the directory
+	  where each test resides, and only use the -working-dir argument for
+	  remote tests. This is necessary since tests may reside in any
+	  directory now that we support nested drtlists.
+
 2008-05-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* harness.mdp: Updated.
