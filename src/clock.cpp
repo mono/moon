@@ -1274,11 +1274,15 @@ bool
 Timeline::Validate ()
 {
 	RepeatBehavior *repeat = GetRepeatBehavior ();
+	Duration *duration = GetDuration ();
 
 	if (repeat->HasDuration () && repeat->GetDuration () == 0)
 		return false;
-	else
-		return true;
+
+	if (duration->HasTimeSpan () && duration->GetTimeSpan () == 0)
+		return false;
+
+	return true;
 }
 
 void

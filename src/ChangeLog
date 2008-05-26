@@ -1,5 +1,10 @@
 2008-05-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Don't validate timelines that have specified duration of
+	00:00:00. Fixes the test-animation-zero-duration test.xaml.
+
+2008-05-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp:
 	* clock.h: When Validating the Timeline also make sure that the
 	RepeatBehavior is correct, otherwise don't start the anim. Fixes the
