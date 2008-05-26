@@ -8,13 +8,10 @@
        <BeginStoryboard>
         <Storyboard x:Name="sb_1" 
           BeginTime="0:0:2"
-          AutoReverse="true"
           RepeatBehavior="0:0:0">
           <DoubleAnimation x:Name="anim_1" 
             Storyboard.TargetName="rect1"
             Storyboard.TargetProperty="(Canvas.Left)"
-            AutoReverse="true"
-            FillBehavior="Stop"
             To="200" 
           />
         </Storyboard>
