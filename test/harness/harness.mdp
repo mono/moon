@@ -64,6 +64,14 @@
     <File name="agviewer/Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="test-runner/HtmlTest.cs" subtype="Code" buildaction="Compile" />
     <File name="test-runner/Screensaver.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/ExocortexDSP/src/Complex.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/ExocortexDSP/src/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/ExocortexDSP/src/ComplexArray.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/ExocortexDSP/src/ComplexF.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/ExocortexDSP/src/ComplexMath.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/ExocortexDSP/src/ComplexStats.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/ExocortexDSP/src/Fourier.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/ExocortexDSP/src/FourierDirection.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
