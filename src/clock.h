@@ -521,7 +521,7 @@ class Timeline : public DependencyObject {
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 	
 	virtual Clock* AllocateClock () { return new Clock (this); }
-	virtual bool Validate () { return true; }
+	virtual bool Validate ();
 };
 
 

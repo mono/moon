@@ -1,5 +1,13 @@
 2008-05-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp:
+	* clock.h: When Validating the Timeline also make sure that the
+	RepeatBehavior is correct, otherwise don't start the anim. Fixes the
+	test-animation-zero-repeat-behavior test and brings us closer with
+	AnimationMatrix2 test.
+
+2008-05-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: When Validating TimelineGroup don't forget to call parent's
 	base validation method.
 

@@ -1270,6 +1270,17 @@ Timeline::Timeline ()
 {
 }
 
+bool
+Timeline::Validate ()
+{
+	RepeatBehavior *repeat = GetRepeatBehavior ();
+
+	if (repeat->HasDuration () && repeat->GetDuration () == 0)
+		return false;
+	else
+		return true;
+}
+
 void
 Timeline::SetRepeatBehavior (RepeatBehavior behavior)
 {
