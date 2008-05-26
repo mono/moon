@@ -1407,7 +1407,10 @@ TimelineGroup::Validate ()
 			return false;
 	}
 
-	return true;
+	if (Timeline::Validate ())
+		return true;
+	else
+		return false;
 }
 
 void
