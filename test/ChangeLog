@@ -1,5 +1,10 @@
 2008-05-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/clock/clock31.xaml: Updating description now with the fixed
+	RepeatBehavior.
+
+2008-05-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/test-animation-zero-duration.xaml: Adding a test for
 	zero-duration storyboard. Broken now, or rather -- acts differently than
 	SL.
