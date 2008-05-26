@@ -1,5 +1,11 @@
 2008-05-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/test-animation-repeat-behavior.xaml: Adding a very simple test
+	case that shows that Silverlight does understand the
+	RepeatBehavior="XX:XX:XX" syntax.
+
+2008-05-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/test-animation-zero-repeat-behavior.xaml: Adding a test with
 	RepeatBehavior="00:00:00". This animations should not start at all.
 
