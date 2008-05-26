@@ -78,6 +78,10 @@ namespace MoonlightTests {
 				color = ConsoleColor.Blue;
 				state = "K";
 				break;
+			case TestResult.UnexpectedPass:
+				color = ConsoleColor.Cyan;
+				state = "U";
+				break;
 			default:
 				color = ConsoleColor.Green;
 				state = "?";

@@ -194,7 +194,7 @@ namespace MoonlightTests {
 			}
 
 			if (test.IsKnownFailure)
-				result = TestResult.KnownFailure;
+				result = (result == TestResult.Pass) ? TestResult.UnexpectedPass : TestResult.KnownFailure;
 
 			RecordResult (test, result);
 			reports.ForEach (delegate (IReport report) { report.AddResult (test, result); });
@@ -206,6 +206,7 @@ namespace MoonlightTests {
 		{
 			switch (result) {
 			case TestResult.Pass:
+			case TestResult.UnexpectedPass:
 				PassedTests.Add (test);
 				break;
 			case TestResult.Ignore:

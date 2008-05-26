@@ -1,5 +1,11 @@
 2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/Driver.cs, test-runner/HtmlReport.cs,
+	  test-runner/ConsoleReport.cs, test-runner/TestResult.cs,
+	  test-runner/TestRun.cs: Added TestResult.UnexpectedPass.
+
+2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/Driver.cs: I lack the knowledge to do this at
 	  configure/build time, so lets do it during execution.
 

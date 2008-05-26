@@ -33,6 +33,7 @@ namespace MoonlightTests {
 		Pass,
 		Fail,
 		KnownFailure,
+		UnexpectedPass,
 		Ignore
 	}
 }

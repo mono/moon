@@ -353,6 +353,7 @@ namespace MoonlightTests {
 		{
 			switch (result) {
 			case TestResult.Pass:
+			case TestResult.UnexpectedPass_
 				test_run.PassedTests.Add (test);
 				break;
 			case TestResult.Ignore:

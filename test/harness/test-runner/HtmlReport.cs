@@ -103,6 +103,7 @@ namespace MoonlightTests {
 				len = GenerateTableRow (knfl_pt, "orange", " - Known Failure", test);
 				break;
 			case TestResult.Pass:
+			case TestResult.UnexpectedPass:
 				len = GenerateTableRow (pass_pt, "green", " - PASS", test);
 				break;
 			case TestResult.Ignore:
@@ -117,6 +118,7 @@ namespace MoonlightTests {
 			case TestResult.KnownFailure:
 				knfl_pt += len;
 				goto case TestResult.Pass;
+			case TestResult.UnexpectedPass:
 			case TestResult.Pass:
 				pass_pt += len;
 				goto case TestResult.Ignore;
