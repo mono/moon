@@ -1,5 +1,12 @@
 2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/XmlReport.cs, test-runner/Test.cs,
+	  test-runner/ImageCompare.cs, test-runner/HtmlReport.cs,
+	  test-runner/EdgeCompare.cs: Dispose of Graphics/Image/Bitmaps when
+	  we're done with them.
+
+2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* agviewer/agviewer.cpp: Set the current directory to the directory
 	  where each test resides, and only use the -working-dir argument for
 	  remote tests. This is necessary since tests may reside in any

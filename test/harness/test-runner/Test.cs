@@ -358,9 +358,10 @@ namespace MoonlightTests {
 			if (size_loaded)
 				return;
 			
-			Image master = Image.FromFile (master_file);
-			result_width = master.Width;
-			result_height = master.Height;
+			using (Image master = Image.FromFile (master_file)) {
+				result_width = master.Width;
+				result_height = master.Height;
+			}
 			
 			size_loaded = true;
 		}

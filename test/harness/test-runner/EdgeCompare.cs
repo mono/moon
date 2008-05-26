@@ -43,58 +43,58 @@ namespace MoonlightTests {
 
 		public static TestResult CompareBitmaps (Test test, Bitmap result, Bitmap master)
 		{
-			Bitmap result_edges = BuildEdges (result);
-			Bitmap master_edges = BuildEdges (master);
-			Bitmap diff = new Bitmap (result.Width, result.Height + KeyHeight);
-			double point_count = 0;
-			double diff_score = 0;
-			int missing_points = 0;
-			
-			using (Graphics g = Graphics.FromImage (diff)) {
-				g.DrawImage (master_edges, 0, 0);
-			}
-
-			for (int x = 0; x < result.Width; x++) {
-
-				// Cut off the top/bottom because the blur doesn't work correctly on these rows
-				for (int y = 5; y < result.Height - 5; y++) {
-					Color rc = result_edges.GetPixel (x, y);
-					Color mc = master_edges.GetPixel (x, y);
-
-					if (mc.ToArgb () == Color.Black.ToArgb ())
-						point_count++;							
-
-					if (rc.ToArgb () != mc.ToArgb ()) {
-						int severity = PixelDiffSeverity (x, y, result_edges, master_edges);
-
-						diff_score += severity;
-						if (severity == 20)
-							missing_points++;
-
-						int red = Math.Min (255, (int) (severity / 10.0 * 255) + 100);
-						diff.SetPixel (x, y, Color.FromArgb (red, 255, 0, 0));
+			using (Bitmap result_edges = BuildEdges (result)) {
+				using (Bitmap master_edges = BuildEdges (master)) {
+					using (Bitmap diff = new Bitmap (result.Width, result.Height + KeyHeight)) {
+						double point_count = 0;
+						double diff_score = 0;
+						int missing_points = 0;
+						
+						using (Graphics g = Graphics.FromImage (diff)) {
+							g.DrawImage (master_edges, 0, 0);
+						}
+						
+						for (int x = 0; x < result.Width; x++) {
+							
+							// Cut off the top/bottom because the blur doesn't work correctly on these rows
+							for (int y = 5; y < result.Height - 5; y++) {
+								Color rc = result_edges.GetPixel (x, y);
+								Color mc = master_edges.GetPixel (x, y);
+								
+								if (mc.ToArgb () == Color.Black.ToArgb ())
+									point_count++;							
+								
+								if (rc.ToArgb () != mc.ToArgb ()) {
+									int severity = PixelDiffSeverity (x, y, result_edges, master_edges);
+									
+									diff_score += severity;
+									if (severity == 20)
+										missing_points++;
+									
+									int red = Math.Min (255, (int) (severity / 10.0 * 255) + 100);
+									diff.SetPixel (x, y, Color.FromArgb (red, 255, 0, 0));
+								}
+							}
+						}
+						
+						AddDiffKey (diff);
+						
+						diff.Save (String.Concat (test.InputFile, "-edge-diff.png"), ImageFormat.Png);
+						
+						if (diff_score / (point_count * 10) > Tolerance) {
+							test.SetFailedReason (String.Format ("Edge difference was too great ({0})",
+									diff_score / (point_count * 10)));
+							return TestResult.Fail;
+						}
+	
+						if (missing_points > MaxMissingPoints) {
+							test.SetFailedReason (String.Format ("Too many missing points in edge compare ({0}).", missing_points));
+							return TestResult.Fail;
+						}
+						
 					}
 				}
 			}
-
-			AddDiffKey (diff);
-
-			diff.Save (String.Concat (test.InputFile, "-edge-diff.png"), ImageFormat.Png);
-
-			if (diff_score / (point_count * 10) > Tolerance) {
-				test.SetFailedReason (String.Format ("Edge difference was too great ({0})",
-						diff_score / (point_count * 10)));
-				return TestResult.Fail;
-			}
-
-			if (missing_points > MaxMissingPoints) {
-				test.SetFailedReason (String.Format ("Too many missing points in edge compare ({0}).", missing_points));
-				return TestResult.Fail;
-			}
-
-			result_edges.Dispose ();
-			master_edges.Dispose ();
-			diff.Dispose ();
 
 			return TestResult.Pass;
 		}
@@ -102,27 +102,27 @@ namespace MoonlightTests {
 		private static Bitmap BuildEdges (Bitmap source)
 		{
 			Bitmap res = new Bitmap (source.Width, source.Height);
-			Graphics g = Graphics.FromImage (res);
-
-			g.Clear (Color.White);
-
-			for (int x = 0; x < source.Width - 1; x++) {
-				for (int y = 0; y < source.Height - 1; y++) {
-					Color c = source.GetPixel (x, y);
-					Color nx = source.GetPixel (x + 1, y);
-					Color ny = source.GetPixel (x, y + 1);
-
-					if ((Math.Sqrt ((c.R - nx.R) * (c.R - nx.R) + (c.G - nx.G) * (c.G - nx.G) + (c.B - nx.B) * (c.B - nx.B)) >= MinDiff) ||
-					    (Math.Sqrt ((c.R - ny.R) * (c.R - ny.R) + (c.G - ny.G) * (c.G - ny.G) + (c.B - ny.B) * (c.B - ny.B)) >= MinDiff)) {
-
-						res.SetPixel (x, y, Color.Black);
+			
+			using (Graphics g = Graphics.FromImage (res)) {
+				g.Clear (Color.White);
+	
+				for (int x = 0; x < source.Width - 1; x++) {
+					for (int y = 0; y < source.Height - 1; y++) {
+						Color c = source.GetPixel (x, y);
+						Color nx = source.GetPixel (x + 1, y);
+						Color ny = source.GetPixel (x, y + 1);
+	
+						if ((Math.Sqrt ((c.R - nx.R) * (c.R - nx.R) + (c.G - nx.G) * (c.G - nx.G) + (c.B - nx.B) * (c.B - nx.B)) >= MinDiff) ||
+						    (Math.Sqrt ((c.R - ny.R) * (c.R - ny.R) + (c.G - ny.G) * (c.G - ny.G) + (c.B - ny.B) * (c.B - ny.B)) >= MinDiff)) {
+	
+							res.SetPixel (x, y, Color.Black);
+						}
 					}
 				}
 			}
-
 			return res;
 		}
-
+/*
 		private static Bitmap BlurImage (Bitmap source)
 		{
 			Bitmap temp = new Bitmap (source.Width, source.Height);
@@ -180,10 +180,10 @@ namespace MoonlightTests {
 					res.SetPixel (i, j, Color.FromArgb (Math.Min (255, sumr), Math.Min (255, sumg), Math.Min (255, sumb)));
 				}
 			}
-
+			temp.Dispose ();
 			return res;
 		}
-
+*/
 		private static int PixelDiffSeverity (int x, int y, Bitmap result_edges, Bitmap master_edges)
 		{
 			Bitmap check = (master_edges.GetPixel (x, y).ToArgb () == Color.Black.ToArgb () ? result_edges : master_edges);
@@ -219,6 +219,9 @@ namespace MoonlightTests {
 				g.FillRectangle (red, 10, y + 32, 10, 10);
 				g.DrawString ("Differences", font, red, new Point (25, y + 25));
 			}
+			black.Dispose ();
+			red.Dispose ();
+			font.Dispose ();
 		}
 	}
 

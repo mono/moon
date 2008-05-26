@@ -68,6 +68,8 @@ namespace MoonlightTests {
 
 		private static TestResult ComparePngs (Test test, string result_path, string master_path)
 		{
+			TestResult res;
+			
 			if (!File.Exists (result_path)) {
 				test.SetFailedReason (String.Format ("Can not find results file {0}", result_path));
 				return TestResult.Fail;
@@ -78,17 +80,17 @@ namespace MoonlightTests {
 				return TestResult.Ignore;
 			}
 
-			Bitmap result = (Bitmap) Image.FromFile (result_path);
-			Bitmap master = (Bitmap) Image.FromFile (master_path);
-
-			TestResult res = CompareBitmaps (test, result, master);
-
-			if (res == TestResult.Pass)
-				res = EdgeCompare.CompareBitmaps (test, result, master);
-
-			result.Dispose ();
-			master.Dispose ();
-				
+			using (Bitmap result = (Bitmap) Image.FromFile (result_path)) {
+				using (Bitmap master = (Bitmap) Image.FromFile (master_path)) {
+		
+					res = CompareBitmaps (test, result, master);
+		
+					if (res == TestResult.Pass)
+						res = EdgeCompare.CompareBitmaps (test, result, master);
+		
+				}
+			}
+			
 			return res;
 		}
 
@@ -104,48 +106,50 @@ namespace MoonlightTests {
 				return TestResult.Ignore;
 			}
 
-			Bitmap result = (Bitmap) Image.FromFile (result_path);
-			Bitmap master = (Bitmap) Image.FromFile (master_path);
-			Guid [] result_frames = result.FrameDimensionsList;
-			Guid [] master_frames = master.FrameDimensionsList;
+			using (Bitmap result = (Bitmap) Image.FromFile (result_path)) {
+				using (Bitmap master = (Bitmap) Image.FromFile (master_path)) {
+					Guid [] result_frames = result.FrameDimensionsList;
+					Guid [] master_frames = master.FrameDimensionsList;
 
-			if (result_frames.Length != master_frames.Length) {
-				test.SetFailedReason (String.Format ("Result and Master do not have the same number of layers: result: {0}, master: {1}",
-						result_frames.Length, master_frames.Length));
-				return TestResult.Fail;
-			}
-
-			for (int i = 0; i < result_frames.Length; i++) {
-				FrameDimension result_dimension = new FrameDimension (result_frames [0]);
-				FrameDimension master_dimension = new FrameDimension (master_frames [0]);
-				int result_frames_count = result.GetFrameCount (result_dimension);
-				int master_frames_count = master.GetFrameCount (master_dimension);
-
-				if (result_frames_count != master_frames_count) {
-					test.SetFailedReason (String.Format ("Result and Master do not have the same number of frames for frame dimension {0} ({1} vs {2})",
-							i, result_frames_count, master_frames_count));
-					return TestResult.Fail;
-				}
-
-				for (int f = 0; f < result_frames_count; f++) {
-					result.SelectActiveFrame (result_dimension, f);
-					master.SelectActiveFrame (master_dimension, f);
-
-					TestResult res = CompareBitmaps (test, result, master);
-					if (res != TestResult.Pass) {
-						test.SetFailedReason (String.Format ("Layer {0} -- {1}", f, test.FailedReason));
-						return res;
+					if (result_frames.Length != master_frames.Length) {
+						test.SetFailedReason (String.Format ("Result and Master do not have the same number of layers: result: {0}, master: {1}",
+									result_frames.Length, master_frames.Length));
+						return TestResult.Fail;
 					}
 
-					res = EdgeCompare.CompareBitmaps (test, result, master);
+					for (int i = 0; i < result_frames.Length; i++) {
+						FrameDimension result_dimension = new FrameDimension (result_frames [0]);
+						FrameDimension master_dimension = new FrameDimension (master_frames [0]);
+						int result_frames_count = result.GetFrameCount (result_dimension);
+						int master_frames_count = master.GetFrameCount (master_dimension);
+						
+						if (result_frames_count != master_frames_count) {
+							test.SetFailedReason (String.Format ("Result and Master do not have the same number of frames for frame dimension {0} ({1} vs {2})",
+										i, result_frames_count, master_frames_count));
+							return TestResult.Fail;
+						}
 
-					if (res != TestResult.Pass) {
-						test.SetFailedReason (String.Format ("Layer {0} -- {1}", f, test.FailedReason));
-						return res;
+						for (int f = 0; f < result_frames_count; f++) {
+							result.SelectActiveFrame (result_dimension, f);
+							master.SelectActiveFrame (master_dimension, f);
+							
+							TestResult res = CompareBitmaps (test, result, master);
+							if (res != TestResult.Pass) {
+								test.SetFailedReason (String.Format ("Layer {0} -- {1}", f, test.FailedReason));
+								return res;
+							}
+							
+							res = EdgeCompare.CompareBitmaps (test, result, master);
+							
+							if (res != TestResult.Pass) {
+								test.SetFailedReason (String.Format ("Layer {0} -- {1}", f, test.FailedReason));
+								return res;
+							}
+						}
 					}
 				}
 			}
-
+			
 			return TestResult.Pass;
 		}
 
@@ -189,8 +193,6 @@ namespace MoonlightTests {
 		{
 			Size correct_size = new Size ((int) Math.Pow (2, Math.Ceiling (Math.Log (bitmap.Width, 2))),
 					(int) Math.Pow (2, Math.Ceiling (Math.Log (bitmap.Height, 2))));
-			float scale = 1F / (float) System.Math.Sqrt (correct_size.Width * correct_size.Height);
-			ComplexF [] data = new ComplexF [correct_size.Width * correct_size.Height * 4];
 
 			if (bitmap.Size != correct_size)
 				bitmap = new Bitmap (bitmap, correct_size);
@@ -200,8 +202,10 @@ namespace MoonlightTests {
 
 		private static unsafe ComplexF[] GetImageFFTArray (Bitmap bitmap)
 		{
-			bitmap = MakeSquared (bitmap);
-
+			Bitmap squared = MakeSquared (bitmap);
+			bool dispose = (object) squared != (object) bitmap;
+			bitmap = squared;
+			
 			float scale = 1F / (float) Math.Sqrt (bitmap.Width * bitmap.Height);
 			ComplexF [] data = new ComplexF [bitmap.Width * bitmap.Height];
 			Rectangle rect = new Rectangle (0, 0, bitmap.Width, bitmap.Height);
@@ -218,7 +222,10 @@ namespace MoonlightTests {
 			
 			for (int i = 0; i < data.Length; i++)
 				data [i] *= scale;
-
+			
+			if (dispose)
+				bitmap.Dispose ();
+			
 			return data;
 		}
 	}
