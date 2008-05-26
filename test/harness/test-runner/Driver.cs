@@ -191,6 +191,13 @@ namespace MoonlightTests {
 				if (inputFile == null)
 					continue;
 				
+				if (inputFile == "MS_DRTLIST") {
+					inputFile = Environment.GetEnvironmentVariable ("MS_DRTLIST");
+					Console.WriteLine ("Big hack to find MS' drtlist: '{0}'", inputFile);
+					if (inputFile == null || inputFile == string.Empty)
+						continue;
+				}
+				
 				inputFile = GetDrtlistLocation (inputFile);
 				
 				LoadTests (inputFile);

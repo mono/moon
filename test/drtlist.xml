@@ -1,6 +1,8 @@
 <DRTList>
-	<NestedTests inputFile="xaml/drtlist.xml" />
+	<NestedTests inputFile="MS_DRTLIST" />
 	<NestedTests inputFile="media/audio/drtlist.xml" />
 	<NestedTests inputFile="media/video/drtlist.xml" />
 	<NestedTests inputFile="http://moonlightmedia:81/drtlist.xml" />
+	<NestedTests inputFile="xaml/drtlist.xml" />
+	<NestedTests inputFile="media/playlist/drtlist.xml" />
 </DRTList>

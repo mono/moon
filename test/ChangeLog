@@ -1,3 +1,9 @@
+2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am: Export MS_DRTLIST, necessary for the big hack in
+	  Driver.cs.
+	* drtlist.xml: Updated.
+
 2008-05-26  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/clock/clock31.xaml: Updating description now with the fixed

@@ -16,6 +16,8 @@ else
 TESTING = echo ERROR: Test harness is disabled by configuration; false
 endif
 
+export MS_DRTLIST
+
 check-testing:
 	$(TESTING)
 

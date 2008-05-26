@@ -1,5 +1,10 @@
 2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/Driver.cs: I lack the knowledge to do this at
+	  configure/build time, so lets do it during execution.
+
+2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/XmlReport.cs, test-runner/Test.cs,
 	  test-runner/ImageCompare.cs, test-runner/HtmlReport.cs,
 	  test-runner/EdgeCompare.cs: Dispose of Graphics/Image/Bitmaps when
