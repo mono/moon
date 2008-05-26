@@ -1,5 +1,11 @@
 2008-05-26  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/test-animation-zero-duration.xaml: Adding a test for
+	zero-duration storyboard. Broken now, or rather -- acts differently than
+	SL.
+
+2008-05-26  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/test-animation-repeat-behavior.xaml: Adding a very simple test
 	case that shows that Silverlight does understand the
 	RepeatBehavior="XX:XX:XX" syntax.
