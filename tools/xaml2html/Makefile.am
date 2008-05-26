@@ -22,7 +22,7 @@ xaml2html: $(srcdir)/../launcher.in
 	$(do_subst) < $(srcdir)/../launcher.in > xaml2html
 	chmod +x xaml2html
 
-do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],xaml2html,g'
+do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],xaml2html.exe,g'
 
 run:
 	mono --debug xaml2html.exe
