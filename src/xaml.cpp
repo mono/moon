@@ -1623,30 +1623,33 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 		return true;
 	}
 
-	// Silverlight behaviour
-	// 'x' or 'X' or any integral number, which always means '1x'
-	//	e.g. 'x', 'X', '12222'
-	// or a floating-point number followed by a(ny number of) chars but ends with a 'x' or 'X'
-	//	e.g. '1x' '3.1415926535xABCDEFGx' '1.1e1x'
-	// NOTE: this is documented as 'x' only but Silverlight accepts 'x' or 'X'
-	// Invalid examples are 'a' '1.5.a' '123.4' and will cancel the parsing (nothing gets displayed)
+	// check for "<float>x".
 
-	// FIXME: current implementation is more forgiving than SL for invalid cases
-	int n = strlen (str);
-	if ((n < 1) || g_ascii_toupper (str [n-1]) != 'X') {
-		// empty string, 'x' or 'X' are valid for '1x'
-		*res = RepeatBehavior (1.0);
-		return true;
+	// XXX more validation work is needed here.. but how do we
+	// report an error?
+	char *x = strchr (str, 'x');
+	if (x) {
+		if (*(x + 1) != '\0') {
+			return false;
+		}
+		else {
+			char *endptr;
+			errno = 0;
+			double d = g_ascii_strtod (str, &endptr);
+
+			if (errno || endptr == str)
+				return false;
+
+			*res = RepeatBehavior (d);
+			return true;
+		}
 	}
 
-	char *endptr;
-	errno = 0;
-	double d = g_ascii_strtod (str, &endptr);
-
-	if (errno || endptr == str)
+	TimeSpan t;
+	if (!time_span_from_str (str, &t))
 		return false;
 
-	*res = RepeatBehavior (d);
+	*res = RepeatBehavior (t);
 	return true;
 }
 

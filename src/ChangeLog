@@ -1,3 +1,9 @@
+2008-05-26  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml.cpp: Reverting spouliot's commit from 2008-05-08. It looks like
+	SL supports the RepeatBehavior="XX:XX:XX" just fine. This fixes the
+	test-aniamtion-repeat-behavior.xaml test.
+
 2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Updated.
