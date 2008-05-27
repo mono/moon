@@ -27,9 +27,6 @@ Moonlight: Core Support
 	To install the plugin open the plugin/novell-moonlight.xpi with	your
 	mozilla-based browser and follow the prompts.
 
-	Currently this only works properly when moonlight is built without
-	mono runtime (Silverlight 2.0) support (--without-mono-runtime).
-
 Configuration Options
 =====================
 
@@ -41,14 +38,15 @@ Configuration Options
 		from the user's plugin directory (~/.mozilla/plugins/)
 
 		If you use this option, the makefiles will also build
-		a Mozilla XPI file that can be used to install the plugin
-		without restarting the browser.
+		a Mozilla XPI file that can be used to install the plugin.
 
 		For this to actually work you'll need to build a local version
 		of ffmpeg with a few changes, mostly to the way it links.
 		A patch is included (ffmpeg.patch) with the neccessary changes.
 		PKG_CONFIG_PATH must include your build of ffmpeg when you
 		configure moonlight.
+
+		We build ffmpeg with ./configure --disable-static --enable-shared --disable-ffmpeg --disable-ffserver --disable-ffplay --disable-zlib --disable-network --disable-vhook --disable-debug --disable-muxers --disable-encoders --disable-demuxers --disable-bsfs --disable-protocols
 
 	--with-mono-runtime=yes,no
 

@@ -1,3 +1,7 @@
+2008-05-27  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: firefox bridges got moved
+
 2008-05-16  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Dist the files from the previous checkin

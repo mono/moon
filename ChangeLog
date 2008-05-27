@@ -1,5 +1,11 @@
 2008-05-23  Andrew Jorgensen  <ajorgensen@novell.com>
 
+	* configure.ac: The plugin installer can be built with support for
+	either firefox or both
+	* INSTALL: The installer works fine without mono support
+
+2008-05-23  Andrew Jorgensen  <ajorgensen@novell.com>
+
 	* configure.ac: Fallback to not using ffmpeg if it's not found
 
 2008-05-19  Andrew Jorgensen  <ajorgensen@novell.com>

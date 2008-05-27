@@ -290,8 +290,8 @@ AC_ARG_ENABLE(user-plugin,[  --enable-user-plugin    Build the plugin installer]
 AM_CONDITIONAL([PLUGIN_INSTALL],[test x$user_plugin = xyes])
 
 if test x$user_plugin = xyes; then
-  if test x$with_ff3 = xno -o x$with_ff2 = xno; then
-    AC_MSG_ERROR([Building the plugin installer requires both Firefox2 and Firefox3 support.])
+  if test x$with_ff3 = xno -a x$with_ff2 = xno; then
+    AC_MSG_ERROR([Building the plugin installer requires Firefox2 or Firefox3 support.])
   fi
 fi
 

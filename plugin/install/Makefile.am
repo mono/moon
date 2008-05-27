@@ -14,11 +14,11 @@ novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.rdf \
 				$(top_builddir)/src/.libs/libmoon.so
 
 if HAVE_GECKO_1_8
-novell_moonlight_xpi_CONTENTS += ../ff2/.libs/libmoonplugin-ff2bridge.so
+novell_moonlight_xpi_CONTENTS += ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so
 endif HAVE_GECKO_1_8
 
 if HAVE_GECKO_1_9
-novell_moonlight_xpi_CONTENTS += ../ff3/.libs/libmoonplugin-ff3bridge.so
+novell_moonlight_xpi_CONTENTS += ../firefox/ff3/.libs/libmoonplugin-ff3bridge.so
 endif HAVE_GECKO_1_9
 
 if INCLUDE_FFMPEG
@@ -48,10 +48,10 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	cp -L ../.libs/libmoonplugin.so .xpinstall/plugins/moonlight/
 	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/plugins/moonlight/
 if HAVE_GECKO_1_8
-	cp -L ../ff2/.libs/libmoonplugin-ff2bridge.so .xpinstall/plugins/moonlight/
+	cp -L ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so .xpinstall/plugins/moonlight/
 endif HAVE_GECKO_1_8
 if HAVE_GECKO_1_9
-	cp -L ../ff3/.libs/libmoonplugin-ff3bridge.so .xpinstall/plugins/moonlight/
+	cp -L ../firefox/ff3/.libs/libmoonplugin-ff3bridge.so .xpinstall/plugins/moonlight/
 endif HAVE_GECKO_1_9
 if INCLUDE_FFMPEG
 	cp -L $(avutil_libdir)/libavutil.so .xpinstall/plugins/moonlight/
