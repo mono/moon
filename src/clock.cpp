@@ -796,6 +796,7 @@ Clock::ComputeNewTime ()
 
 				if (repeat_count == 0) {
 					SkipToFill ();
+					Completed ();
 				}
 				else {
 					DoRepeat (ret_time);
@@ -828,6 +829,7 @@ Clock::ComputeNewTime ()
 			if (repeat_count == 0) {
 				ret_time = 0;
 				SkipToFill ();
+				Completed ();
 			}
 		}
 		else if (ret_time <= duration_timespan && GetClockState() != Clock::Active) {
@@ -870,6 +872,8 @@ Clock::DoRepeat (TimeSpan time)
 void
 Clock::RaiseAccumulatedEvents ()
 {
+	const char *name = GetName ();
+	
 	if ((queued_events & CURRENT_TIME_INVALIDATED) != 0) {
 		Emit (CurrentTimeInvalidatedEvent);
 	}
@@ -1049,7 +1053,7 @@ ClockGroup::ClockGroup (TimelineGroup *timeline, bool never_f)
 {
 	child_clocks = NULL;
 	this->timeline = timeline;
-	emitted_complete = false;
+	emit_completed = false;
 	idle_hint = false;
 	never_fill = never_f;
 }
@@ -1088,9 +1092,9 @@ ClockGroup::RemoveChild (Clock *clock)
 void
 ClockGroup::Begin ()
 {
-	emitted_complete = false;
+	emit_completed = false;
 	idle_hint = false;
-
+	
 	Clock::Begin ();
 
 	for (GList *l = child_clocks; l; l = l->next) {
@@ -1235,9 +1239,9 @@ ClockGroup::RaiseAccumulatedEvents ()
 	/* now cause our children to raise theirs */
 	clock_list_foreach (child_clocks, CallRaiseAccumulatedEvents);
 	
-	if (GetHasStarted() && (state == Clock::Stopped || state == Clock::Filling) && !emitted_complete) {
+	if (emit_completed && (state == Clock::Stopped || state == Clock::Filling)) {
+		emit_completed = false;
 		Emit (CompletedEvent);
-		emitted_complete = true;
 	}
 }
 

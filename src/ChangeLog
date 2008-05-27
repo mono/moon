@@ -1,3 +1,20 @@
+2008-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes the Legend (Space Invaders) demo without breaking
+	storyboard_EnterLeaveSemantics.htm.
+
+	* clock.cpp|h (Clock::Completed): New virtual method which gets
+	called when a clock completes.
+	(Clock::ComputeNewTime): If a clock completes (has no more
+	repeats, etc) then call ::Complete().
+	(ClockGroup::ClockGroup): Changed the name of emitted_complete to
+	emit_completed which has also changed the meaning a bit.
+	(ClockGroup::Begin): Updated.
+	(ClockGroup::RaiseAccumulatedEvents): If emit_completed is true,
+	then emit the Completed event and reset emit_completed back to
+	false so we don't re-emit.
+	(ClockGroup::Completed): Set emit_completed to true.
+
 2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: MediaElement: Fix refcounting for our 'media' field. In

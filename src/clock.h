@@ -315,7 +315,9 @@ class Clock : public DependencyObject {
 	void SetClockState (ClockState state) { this->state = state; QueueEvent (CURRENT_STATE_INVALIDATED); }
 	void SetCurrentTime (TimeSpan ts) { this->current_time = ts; QueueEvent (CURRENT_TIME_INVALIDATED); }
 	void SetSpeed (double speed) { this->speed = speed; QueueEvent (CURRENT_GLOBAL_SPEED_INVALIDATED); }
-
+	
+	virtual void Completed () { }
+	
 	// events to queue up
 	enum {
 		CURRENT_GLOBAL_SPEED_INVALIDATED = 0x01,
@@ -350,7 +352,7 @@ class Clock : public DependencyObject {
 
 	TimeManager *time_manager;
 	ClockGroup *parent_clock;
-
+	
 	bool is_paused;
 	bool has_started;
 	bool was_stopped;
@@ -390,10 +392,11 @@ class ClockGroup : public Clock {
 
  protected:
 	virtual void DoRepeat (TimeSpan time);
-
+	virtual void Completed () { emit_completed = true; }
+	
  private:
 	TimelineGroup *timeline;
-	bool emitted_complete;
+	bool emit_completed;
 	bool idle_hint;
 	bool never_fill;
 };
