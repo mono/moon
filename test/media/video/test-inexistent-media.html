@@ -8,16 +8,18 @@
 			</Canvas>
 		</script>
 
-		<script language="javascript" src="Silverlight.js"></script>
 		<script language="javascript" src="../../js/js/testplugin.js"></script>
 		<script language="javascript" src="../../js/js/utils.js"></script>
 		<script language="javascript">
+
+		var timedout = false;
 
 		function timeOut ()
 		{
 			TestLogger.LogError ("Nothing happened, didn't get neither MediaOpened nor MediaFailed events.");
 			TestLogger.LogResult (-1);
-			//SignalShutdown ();
+			SignalShutdown ();
+			timedout = true;
 		}
 
 		function OnMediaOpened (sender, args)
@@ -30,6 +32,9 @@
 		function OnMediaFailed (sender, args)
 		{
 			var succeeded = true;
+
+			if (timedout)
+				return;
 
 			TestLogger.LogDebug ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
 			try {
