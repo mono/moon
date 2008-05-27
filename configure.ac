@@ -30,8 +30,8 @@ AC_ARG_WITH(ffmpeg,[  --with-ffmpeg=yes,no   If you want to enable support for f
 AC_ARG_WITH(swscale,[  --with-swscale=no,yes   If you want to enable support for swscale],[],[with_swscale=no])
 
 if test x$with_ffmpeg = xyes; then
-  AC_DEFINE([INCLUDE_FFMPEG],[1],[Include support for ffmpeg])
   if pkg-config --exists libavutil libavcodec; then
+    AC_DEFINE([INCLUDE_FFMPEG],[1],[Include support for ffmpeg])
     PKG_CHECK_MODULES(FFMPEG,[libavutil libavcodec])
     save_CFLAGS=$CFLAGS
     CFLAGS="$FFMPEG_CFLAGS $CFLAGS"
