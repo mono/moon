@@ -1645,6 +1645,11 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 		}
 	}
 
+	/* XXX RepeatBehavior='XX:XX:XX' syntax is NOT correctly supported by
+	   Silverlight 1.0 (most likely a bug). It works fine in Silverlight 2.0 
+	   though. We currently stick to the 2.0 behavior, not replicating the bug
+	   from 1.0. 
+	*/
 	TimeSpan t;
 	if (!time_span_from_str (str, &t))
 		return false;
