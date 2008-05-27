@@ -1,5 +1,11 @@
 2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mms-downloader.h, mms-downloader.cpp: Move ctor/dtor into cpp file,
+	  add some logging and null out response in Finished, otherwise we
+	  might crash if Abort is called later on.
+
+2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* http-downloader.cpp: Return something from HttpDownloader::Read.
 
 2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 

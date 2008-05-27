@@ -80,35 +80,10 @@ class MmsDownloader : public BrowserDownloader {
 	bool ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
 	bool ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
 	bool ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
+	
  public:
-	MmsDownloader (PluginDownloader *pdl) : BrowserDownloader (pdl)
-	{
-		this->buffer = NULL;
-		this->response = NULL;
-
-		this->asf_packet_size = 0;
-		this->header_size = 0;
-		this->requested_position = -1;
-		this->size = 0;
-
-		this->p_packet_count = 0;
-
-		this->described = false;
-		this->seekable = false;
-		
-		this->best_audio_stream = 0;
-		this->best_video_stream = 0;
-		this->best_audio_stream_rate = 0;
-		this->best_video_stream_rate = 0;
-
-		memset (audio_streams, 0xff, 128*4);
-		memset (video_streams, 0xff, 128*4);
-	}
-
-	~MmsDownloader ()
-	{
-		g_free (buffer);
-	}
+	MmsDownloader (PluginDownloader *pdl);
+	~MmsDownloader ();
 
 	void Abort ();
 	void Send ();

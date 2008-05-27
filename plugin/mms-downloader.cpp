@@ -14,6 +14,8 @@
 #include "browser-bridge.h"
 #include "mms-downloader.h"
 
+#define LOG_MMS(...)// printf (__VA_ARGS__);
+
 static inline bool
 is_valid_mms_header (MmsHeader *header)
 {
@@ -23,9 +25,43 @@ is_valid_mms_header (MmsHeader *header)
 	return true;
 }
 
+MmsDownloader::MmsDownloader (PluginDownloader *pdl) : BrowserDownloader (pdl)
+{
+	LOG_MMS ("MmsDownloader::MmsDownloader ()\n");
+	
+	this->buffer = NULL;
+	this->response = NULL;
+
+	this->asf_packet_size = 0;
+	this->header_size = 0;
+	this->requested_position = -1;
+	this->size = 0;
+
+	this->p_packet_count = 0;
+
+	this->described = false;
+	this->seekable = false;
+	
+	this->best_audio_stream = 0;
+	this->best_video_stream = 0;
+	this->best_audio_stream_rate = 0;
+	this->best_video_stream_rate = 0;
+
+	memset (audio_streams, 0xff, 128 * 4);
+	memset (video_streams, 0xff, 128 * 4);
+}
+
+MmsDownloader::~MmsDownloader ()
+{
+	LOG_MMS ("MmsDownloader::~MmsDownloader ()\n");
+	g_free (buffer);
+}
+
 void
 MmsDownloader::Abort ()
 {
+	LOG_MMS ("MmsDownloader::Abort ()\n");
+
 	if (response != NULL)
 		response->Abort ();
 }
@@ -33,6 +69,8 @@ MmsDownloader::Abort ()
 uint32_t
 MmsDownloader::Read (char *buffer, uint32_t length)
 {
+	LOG_MMS ("MmsDownloader::Read ()\n");
+	
 	MmsHeader *header;
 	MmsPacket *packet;
 	char *payload;
@@ -102,6 +140,8 @@ process_packet:
 bool
 MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
 {
+	LOG_MMS ("MmsDownloader::ProcessPacket ()\n");
+	
 	*offset = (header->length + sizeof (MmsHeader));
  
 	if (header->id == MMS_HEADER)
@@ -121,6 +161,8 @@ MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payloa
 bool
 MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
 {
+	LOG_MMS ("MmsDownloader::ProcessHeaderPacket ()\n");
+	
 	MemorySource *asf_src = new MemorySource (NULL, payload, header->length-sizeof (MmsDataPacket), 0);
 	ASFParser *parser = new ASFParser (asf_src, NULL);
 
@@ -215,6 +257,8 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 bool
 MmsDownloader::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
 {
+	LOG_MMS ("MmsDownloader::ProcessMetadataPacket ()\n");
+	
 	// CHECKME: It appears we used to parse the metadata for absolutely no reason
 	// We skip the entire packet and header
 	return true;
@@ -223,6 +267,8 @@ MmsDownloader::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char
 bool
 MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
 {
+	LOG_MMS ("MmsDownloader::ProcessPairPacket ()\n");
+	
 	// NOTE: If this is the 3rd $P packet, we need to increase the size reported in the header by
 	// the value in the reason field.  This is a break from the normal behaviour of MMS packets
 	// so we need to guard against this occurnace here and ensure we actually have enough data
@@ -255,6 +301,8 @@ MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *pa
 bool
 MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
 {
+	LOG_MMS ("MmsDownloader::ProcessDataPacket ()\n");
+	
 	pd->dl->Write (payload, (this->seekable ? (this->header_size + packet->packet.data.id*this->asf_packet_size) : header->length), this->asf_packet_size);
 
 	return true;
@@ -263,6 +311,8 @@ MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *pa
 void
 MmsDownloader::Send ()
 {
+	LOG_MMS ("MmsDownloader::Send ()\n");
+	
 	PluginInstance *instance = GetPlugin ();
 
 	if (instance == NULL || instance->GetBridge () == NULL)
@@ -297,9 +347,13 @@ MmsDownloader::Send ()
 void
 MmsDownloader::Started ()
 {
+	LOG_MMS ("MmsDownloader::Started ()\n");
 }
 
 void
 MmsDownloader::Finished ()
 {
+	LOG_MMS ("MmsDownloader::Finished ()\n");
+
+	response = NULL;
 }
