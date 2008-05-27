@@ -1,3 +1,9 @@
+2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: MediaElement: Fix refcounting for our 'media' field. In
+	  DownloaderComplete only emit DownloadProgressChangedEvent if we
+	  have a surface.
+
 2008-05-27  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml.cpp: Adding a comment/explanation about the RepeatBehavior and

@@ -658,7 +658,11 @@ MediaElement::SetMedia (Media *media)
 	if (this->media == media)
 		return;	
 	
+	if (this->media)
+		this->media->unref ();
 	this->media = media;
+	if (this->media)
+		this->media->ref ();
 	
 	if (downloader != NULL && downloader->GetHttpStreamingFeatures () != 0) {
 		broadcast = downloader->GetHttpStreamingFeatures () & HttpStreamingBroadcast;
@@ -721,7 +725,6 @@ MediaElement::MediaOpened (Media *media)
 			if (playlist->ReplaceCurrentEntry (pl))
 				pl->Open ();
 		}
-		media->unref ();
 		return false;
 	} else {
 		if (playlist != NULL) {	
@@ -1219,16 +1222,15 @@ MediaElement::TryOpen ()
 		
 		if (!MEDIA_SUCCEEDED (result = source->Initialize ())) {
 			MediaFailed ();
-			media->unref ();
-			media = NULL;
 		} else if (!MEDIA_SUCCEEDED (result = media->Open (source))) {
 			MediaFailed (new ErrorEventArgs (MediaError, 3001, "AG_E_INVALID_FILE_FORMAT"));
-			media->unref ();
-			media = NULL;
 		} else {
 			MediaOpened (media);
 		}
 		
+		media->unref ();
+		media = NULL;
+	
 		source->unref ();
 		source = NULL;
 		
@@ -1285,8 +1287,10 @@ MediaElement::DownloaderComplete ()
 	
 	flags |= DownloadComplete;
 	
-	SetDownloadProgress (1.0);
-	Emit (DownloadProgressChangedEvent);
+	if (GetSurface ()) {
+		SetDownloadProgress (1.0);
+		Emit (DownloadProgressChangedEvent);
+	}
 	
 	if (downloaded_file != NULL)
 		downloaded_file->NotifyFinished ();
