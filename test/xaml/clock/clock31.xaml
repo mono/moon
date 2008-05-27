@@ -1,7 +1,7 @@
 <Canvas x:Name="parentCanvas"
         xmlns="http://schemas.microsoft.com/client/2007" 
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-	Width="640" Height="200">
+	Width="640" Height="250">
 
 	<Canvas.Triggers>
 		<EventTrigger RoutedEvent="Canvas.Loaded">
@@ -20,6 +20,8 @@
 	<TextBlock x:Name="description" Canvas.Left="20" Canvas.Top="150" Width="600" Height="30">
 		<Run Text="The red block should take 2 seconds to move to the right, then return to the left side."/>
 		<LineBreak/>
-		<Run Text="It should repeat this trip two times."/>
+		<Run Text="It should repeat this trip two times. RepeatBehavior='00:00:08' is not correctly"/>
+		<LineBreak/>
+		<Run Text="supported by Silverlight 1.0 but works in Silverlight 2.0."/>
 	</TextBlock>
 </Canvas>
