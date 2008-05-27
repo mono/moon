@@ -26,6 +26,7 @@ HttpDownloader::Read (char *buffer, uint32_t length)
 {
 	pd->dl->Write (buffer, this->offset, length);
 	this->offset += length;
+	return DOWNLOADER_OK;
 }
 
 void

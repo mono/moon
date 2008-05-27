@@ -1,3 +1,7 @@
+2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* http-downloader.cpp: Return something from HttpDownloader::Read.
+
 2008-05-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.mdp: Updated.
