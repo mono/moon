@@ -170,7 +170,9 @@ font_shutdown (void)
 static int
 fc_weight (FontWeights weight)
 {
-	if (weight < (FontWeightsThin + FontWeightsLight) / 2)
+	if ((weight < 0) && (weight > FONT_LOWER_BOLD_LIMIT))
+		return FC_WEIGHT_BLACK;
+	else if (weight < (FontWeightsThin + FontWeightsLight) / 2)
 		return FC_WEIGHT_ULTRALIGHT;
 	else if (weight < (FontWeightsLight + FontWeightsNormal) / 2)
 		return FC_WEIGHT_LIGHT;
@@ -184,8 +186,10 @@ fc_weight (FontWeights weight)
 		return FC_WEIGHT_BOLD;
 	else if (weight < (FontWeightsExtraBold + FontWeightsBlack) / 2)
 		return FC_WEIGHT_ULTRABOLD;
-	else
+	else if (weight < FONT_UPPER_BOLD_LIMIT)
 		return FC_WEIGHT_BLACK;
+	else
+		return FC_WEIGHT_NORMAL;
 }
 
 static int
@@ -194,12 +198,13 @@ fc_style (FontStyles style)
 	switch (style) {
 	case FontStylesNormal:
 		return FC_SLANT_ROMAN;
+	// technically Olbique does not exists in SL 1.0 or 2.0 (it's in WPF) but the parser allows it
 	case FontStylesOblique:
 		return FC_SLANT_OBLIQUE;
 	case FontStylesItalic:
-		return FC_SLANT_ITALIC;
+	// Silverlight defaults bad values to Italic
 	default:
-		return FC_SLANT_ROMAN;
+		return FC_SLANT_ITALIC;
 	}
 }
 

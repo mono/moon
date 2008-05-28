@@ -1356,6 +1356,7 @@ Glyphs::Glyphs ()
 	
 	invalid = false;
 	dirty = false;
+	simulation_none	= true;
 }
 
 Glyphs::~Glyphs ()
@@ -1400,6 +1401,12 @@ Glyphs::Layout ()
 	if (path) {
 		moon_path_destroy (path);
 		path = NULL;
+	}
+
+	// Silverlight only renders for None (other, invalid, values do not render anything)
+	if (!simulation_none) {
+		invalid = true;
+		return;
 	}
 	
 	if (!desc->GetFilename () || desc->GetSize () == 0.0) {
@@ -2123,8 +2130,11 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 		origin_y_specified = true;
 		dirty = true;
 	} else if (args->property == Glyphs::StyleSimulationsProperty) {
-		// Silverlight 1.0 does not implement this property
-		invalidate = false;
+		// Silverlight 1.0 does not implement this property but, if present, 
+		// requires it to be 0 (or else nothing is displayed)
+		bool none = (args->new_value->AsInt32 () == StyleSimulationsNone);
+		dirty = (none != simulation_none);
+		simulation_none = none;
 	}
 	
 	if (invalidate)

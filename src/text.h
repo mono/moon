@@ -284,7 +284,6 @@ class Glyphs : public FrameworkElement {
 	Brush *fill;
 	int index;
 	
-	bool origin_y_specified;
 	double origin_x;
 	double origin_y;
 	double height;
@@ -292,8 +291,10 @@ class Glyphs : public FrameworkElement {
 	double left;
 	double top;
 	
-	bool invalid;
-	bool dirty;
+	int invalid:1;
+	int dirty:1;
+	int origin_y_specified:1;
+	int simulation_none:1;
 	
 	void Layout ();
 	void SetIndicesInternal (const char *in);

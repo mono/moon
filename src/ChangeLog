@@ -1,3 +1,16 @@
+2008-05-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* enums.c: Fix None value in style_simulations_map and remove
+	unneeded one (they exists only in WPF but SL parser does not like
+	them).
+	* font.cpp|h: Fix FontStyle and FontWeigth properties when the 
+	supplied value are invalid. Add new constants specific to SL.
+	* text.h: Add simulation_none. Share an integer between all bool
+	flags.
+	* text.cpp: Invalid values for StyleSimulation does not render
+	the Glyphs.
+	* runtime.cpp: Invalid MouseCursor values hides the cursor.
+
 2008-05-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes the Legend (Space Invaders) demo without breaking

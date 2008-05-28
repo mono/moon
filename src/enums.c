@@ -124,11 +124,8 @@ static enum_map_t font_weights_map [] = {
 };
 
 static enum_map_t style_simulations_map [] = {
-	{ "BoldItalicSimulation", 0 },
-	{ "BoldSimulation",       1 },
-	{ "ItalicSimulation",     2 },
-	{ "None",                 3 },
-	{ NULL,                   0 },
+	{ "None", 0 },
+	{ NULL,   0 },
 };
 
 static enum_map_t gradient_spread_method_map [] = {

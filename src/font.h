@@ -58,6 +58,10 @@ enum FontWeights {
 	FontWeightsExtraBlack = 950,
 };
 
+// Silverlight accept negative values ]0,-495[ as bold and everything over 1023 as normal
+#define FONT_LOWER_BOLD_LIMIT	-475
+#define FONT_UPPER_BOLD_LIMIT	1024
+
 enum StyleSimulations {
 	StyleSimulationsNone
 };
