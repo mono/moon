@@ -14,7 +14,7 @@ rating:4
 site:Bubble Mark
 url:http://bubblemark.com/wpfe.htm
 rating:3
- *  choppy with 32+ balls Bug 362022
+ *  choppy with 16+ balls Bug 362022
 
 
 site:Chess Viewer 1.0
@@ -34,9 +34,17 @@ url:http://mycomix.wintellect.com/Spotlight.aspx?Item=1041
 rating:4
  * Works
 
+site:CoolWall
+url:http://mycooluncool.com
+rating:3
+ * Kind of works.
+ * Cpu is pegged a lot.
+ * Cannot grab slider Bug 391677
+
 site:E-commerce Catalog
 url:http://www.flowers-for-you.com.my/catalog2.aspx
 rating:0
+ * [regression] Crashes Firefox 2 Bug 394943
  * Audio works. No video
 
 site:Festive Greetings
@@ -46,10 +54,8 @@ rating:4
 
 site:Glyph Map
 url:http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx
-rating:1
- * Crashes Firefox if you move off the page. Bug 375273
- * Characters don't show up. Fonts not installed?
- * Mouse over chars also don't work. Fonts not installed?
+rating:3
+ * Glyphs load slowly Bug 395160
 
 site:Grand Piano
 url:http://silverlight.net/samples/1.0/Grand-Piano/default.html
@@ -70,7 +76,7 @@ rating:4
 site:Ink Journal
 url:http://www.thedatafarm.com/silverlight/journalsample
 rating:2
- * Need an Eraser cursor. Bug 375213
+ * Eraser erases too many lines Bug 394945
 
 site:Ink Tattoo Studio
 url:http://silverlight.net/samples/1.0/Ink-Tattoo-Studio/default.html
@@ -80,14 +86,13 @@ rating:4
 site:Kit 3D
 url:http://www.markdawson.org/kit3d
 rating:1
- * Spinning cubes with textue - light gray canvas appears. Bug 375216
- * Playing cards crashes Firefox - light gray canvas. Bug 375216
+ * Playing cards change faces Bug 394946
  * 3D picture grid - black canvas appears Bug 375217
 
 site:LCD Clock
 url:http://www.designwithsilverlight.com/tutorials/LCDClock/default.html
 rating:3
- * Works
+ * Hours, seconds are out of place Bug 394947
  * Outer frame is still showing - windowless
 
 site:Matrix Digital Rain
@@ -98,8 +103,18 @@ rating:0
 
 site:Matrix Falling Characters
 url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
-rating:1
+rating:2
  * Fullscreen is super slow. Bug 350174
+
+site:Matrix Multiplication
+url:http://minbashian.com/matrixanim.html
+rating:4
+ * works
+
+site:Minesweeper
+url:http://www.softencrypt.com/mines/
+rating:4
+ * works
 
 site:Mircosoft Downloads
 url:http://www.microsoft.com/beta/downloads/Default.aspx
@@ -121,14 +136,15 @@ rating:2
 site:On9Games
 url:http://www.on9games.net/GameAction.aspx
 rating:3
- * Animated runners do not appear Bug 375225
- * In 'Featured', the FAQ doesn't show the answers to the questions 375226
+ * [windowless] Animated runners do not appear Bug 375225
+ * [windowless] In 'Featured', the FAQ doesn't show the answers to the questions Bug 375226
  * Mouse disappears during game play
 
 site:Page Turn
 url:http://silverlight.net/samples/1.0/Page-Turn/default.html
 rating:3
- * First page has a bunch of lines on it.
+ * right page is black while page is turning Bug 385682
+ * turning page is slow Bug 383907
 
 site:Photo Carousel (SL 2.0)
 url:http://www.nikhilk.net/Prototypes/PhotoCarousel
@@ -146,12 +162,13 @@ rating:-1
  * URL broken
  * Slide show cycles through pictures very fast
  * Thumbnails on left should outline immediately when the mouse is over it
- * Clicking on a thumbnail, the picture in the panel on the right doesn't changed quickly
+ * Clicking on a thumbnail, the picture in the panel on the right doesn't changed quickly Bug 375283
 
 site:Picture-in-picture screen cast
 url:http://blogs.msdn.com/synergist/archive/2007/07/30/groove-and-virtual-earth.aspx
-rating:4
- * Works!
+rating:3
+ * Works with local copy!
+ * Original page never shows playback controls Bug 351580
 
 site:Poker
 url:http://home.people.net.au/~chriso/poker/poker.html
@@ -190,6 +207,11 @@ url:http://www.vertigo.com/downloads/Simon/
 rating:4
  * Works!
 
+site:Space Invaders
+url:http://www.tek.co.jp/Legend/
+rating:0
+ * Not detecting Moonlight
+
 site:Sparkleball
 url:http://www.ddjsilverlight.com/sparkleball
 rating:4
@@ -210,6 +232,17 @@ site:TI-M Silverlight
 url:http://silverlight.timovil.com
 rating:2
  * Cannot interact with window. Mouse events don't work. Bug 375264
+
+site:Video Page Turn
+url:http://mapul.com/Tutorials.html
+rating:1
+ * No video player displayed Bug 391684
+
+site:Video Slide puzzle
+url:http://miguelmoreno.net/sandbox/Silverlight_0/
+rating:0
+ * Cannot slide pieces Bug 389460
+ * No video playing Bug 391696
 
 site:Web Analytics
 url:http://xmldocs.net/Analytics
