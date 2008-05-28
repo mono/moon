@@ -1,0 +1,99 @@
+<html>
+  <head>
+      <title>MouseCursor (UIElement) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<Rectangle Fill="#000000" Stroke="Red"    StrokeThickness="4" Canvas.Top="0" Canvas.Left="0"   Width="50" Height="100" />
+		<Rectangle Fill="#000000" Stroke="Orange" StrokeThickness="4" Canvas.Top="0" Canvas.Left="50"  Width="50" Height="100" Cursor="Default" />
+		<Rectangle Fill="#000000" Stroke="Yellow" StrokeThickness="4" Canvas.Top="0" Canvas.Left="100" Width="50" Height="100" Cursor="Arrow" />
+		<Rectangle Fill="#000000" Stroke="Green"  StrokeThickness="4" Canvas.Top="0" Canvas.Left="150" Width="50" Height="100" Cursor="Hand" />
+		<Rectangle Fill="#000000" Stroke="Blue"   StrokeThickness="4" Canvas.Top="0" Canvas.Left="200" Width="50" Height="100" Cursor="Wait" />
+		<Rectangle Fill="#000000" Stroke="Indigo" StrokeThickness="4" Canvas.Top="0" Canvas.Left="250" Width="50" Height="100" Cursor="IBeam" />
+		<Rectangle Fill="#000000" Stroke="Violet" StrokeThickness="4" Canvas.Top="0" Canvas.Left="300" Width="50" Height="100" Cursor="Stylus" />
+		<Rectangle Fill="#000000" Stroke="White"  StrokeThickness="4" Canvas.Top="0" Canvas.Left="350" Width="50" Height="100" Cursor="Eraser" />
+		<Rectangle Fill="#000000" Stroke="Black"  StrokeThickness="4" Canvas.Top="0" Canvas.Left="400" Width="50" Height="100" Cursor="None" />
+
+		<Rectangle x:Name="testcase1" Fill="#000000" Stroke="Red"    StrokeThickness="4" Canvas.Top="110" Canvas.Left="0"   Width="50" Height="100" />
+		<Rectangle x:Name="testcase2" Fill="#000000" Stroke="Orange" StrokeThickness="4" Canvas.Top="110" Canvas.Left="50"  Width="50" Height="100" Cursor="Default" />
+		<Rectangle x:Name="testcase3" Fill="#000000" Stroke="Yellow" StrokeThickness="4" Canvas.Top="110" Canvas.Left="100" Width="50" Height="100" Cursor="Arrow" />
+		<Rectangle x:Name="testcase4" Fill="#000000" Stroke="Green"  StrokeThickness="4" Canvas.Top="110" Canvas.Left="150" Width="50" Height="100" Cursor="Hand" />
+		<Rectangle x:Name="testcase5" Fill="#000000" Stroke="Blue"   StrokeThickness="4" Canvas.Top="110" Canvas.Left="200" Width="50" Height="100" Cursor="Wait" />
+		<Rectangle x:Name="testcase6" Fill="#000000" Stroke="Indigo" StrokeThickness="4" Canvas.Top="110" Canvas.Left="250" Width="50" Height="100" Cursor="IBeam" />
+		<Rectangle x:Name="testcase7" Fill="#000000" Stroke="Violet" StrokeThickness="4" Canvas.Top="110" Canvas.Left="300" Width="50" Height="100" Cursor="Stylus" />
+		<Rectangle x:Name="testcase8" Fill="#000000" Stroke="White"  StrokeThickness="4" Canvas.Top="110" Canvas.Left="350" Width="50" Height="100" Cursor="Eraser" />
+		<Rectangle x:Name="testcase9" Fill="#000000" Stroke="Black"  StrokeThickness="4" Canvas.Top="110" Canvas.Left="400" Width="50" Height="100" Cursor="None" />
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to None (no value is Default)
+	sender.findName ("testcase1").Cursor = -1;
+	sender.findName ("testcase2").Cursor = 911;
+
+	sender.findName ("testcase3").Cursor = "aRrOw";
+
+	sender.findName ("testcase4").Cursor = 2;
+	sender.findName ("testcase5").Cursor = 3;
+	sender.findName ("testcase6").Cursor = 4;
+	sender.findName ("testcase7").Cursor = 5;
+	sender.findName ("testcase8").Cursor = 6;
+	sender.findName ("testcase9").Cursor = 7;
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: Cursor
+/*
+	sender.findName ("testcase3").Cursor = sender.findName ("testcase2");
+	sender.findName ("testcase3").Cursor = null;
+	sender.findName ("testcase3").Cursor = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0 (red rectangle) mouse cursor is an <b>arrow</b>
+<br>1,0 (orange rectangle) mouse cursor is an <b>arrow</b>
+<br>2,0 (yellow rectangle) mouse cursor is an <b>arrow</b>
+<br>3,0 (green rectangle) mouse cursor is an <b>hand</b>
+<br>4,0 (blue rectangle) mouse cursor is an <b>waiting</b> sign
+<br>5,0 (indigo rectangle) mouse cursor is an <b>I beam</b>
+<br>6,0 (violet rectangle) mouse cursor is an <b>stylus dot</b>
+<br>7,0 (white rectangle) mouse cursor is an <b>eraser</b>
+<br>8,0 (black rectangle) mouse cursor is <b>invisible</b>
+<p>0,1 (red rectangle) mouse cursor is an <b>invisible</b>
+<br>1,1 (orange rectangle) mouse cursor is an <b>invisible</b>
+<br>2,1 (yellow rectangle) mouse cursor is an <b>arrow</b>
+<br>3,1 (green rectangle) mouse cursor is an <b>hand</b>
+<br>4,1 (blue rectangle) mouse cursor is an <b>waiting</b> sign
+<br>5,1 (indigo rectangle) mouse cursor is an <b>I beam</b>
+<br>6,1 (violet rectangle) mouse cursor is a <b>stylus dot</b>
+<br>7,1 (white rectangle) mouse cursor is an <b>eraser</b>
+<br>8,1 (black rectangle) mouse cursor is <b>invisible</b>
+  </div>
+  </body>
+</html>

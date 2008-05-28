@@ -1,0 +1,90 @@
+<html>
+  <head>
+      <title>FontStyle (Inline) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+		<TextBlock Canvas.Top="0" Canvas.Left="0">
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24">No value </Run>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStyle="Normal">Normal </Run>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStyle="Oblique">Oblique </Run>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStyle="Italic">Italic</Run>
+			<LineBreak FontStyle="Oblique"/>
+			<Run x:Name="testcase1" Foreground="Black" FontFamily="Arial" FontSize="24">testcase1 </Run>
+			<Run x:Name="testcase2" Foreground="Black" FontFamily="Arial" FontSize="24">testcase2 </Run>
+			<Run x:Name="testcase3" Foreground="Black" FontFamily="Arial" FontSize="24">testcase3 </Run>
+			<Run x:Name="testcase4" Foreground="Black" FontFamily="Arial" FontSize="24">testcase4 </Run>
+			<LineBreak FontStyle="Italic"/>
+			<Run x:Name="testcase5" Foreground="Black" FontFamily="Arial" FontSize="24">testcase5 </Run>
+			<Run x:Name="testcase6" Foreground="Black" FontFamily="Arial" FontSize="24">testcase6 </Run>
+			<Run x:Name="testcase7" Foreground="Black" FontFamily="Arial" FontSize="24">testcase7 </Run>
+			<Run x:Name="testcase8" Foreground="Black" FontFamily="Arial" FontSize="24">testcase8 </Run>
+			<LineBreak FontStyle="Normal"/>
+		</TextBlock>
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	sender.findName ("testcase1").FontStyle = 0;
+	sender.findName ("testcase2").FontStyle = 1;
+	sender.findName ("testcase3").FontStyle = 2;
+	sender.findName ("testcase4").FontStyle = 3;
+
+	// invalid values defaults to None (no value is Default)
+	sender.findName ("testcase5").FontStyle = -1;
+	sender.findName ("testcase6").FontStyle = 911;
+
+	sender.findName ("testcase7").FontStyle = "oBlIqUe";
+	sender.findName ("testcase8").FontStyle = "iTaLiC";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: FontStyle
+/*
+	sender.findName ("testcase8").FontStyle = "gaga";
+	sender.findName ("testcase3").FontStyle = sender.findName ("testcase2");
+	sender.findName ("testcase3").FontStyle = null;
+	sender.findName ("testcase3").FontStyle = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0 "No value" text is <b>normal</b>
+<br>1,0 "Normal" text is <b>normal</b>
+<br>2,0 "Oblique" text is <b>italic</b>
+<br>2,0 "Italic" text is <b>italic</b>
+<p>0,1 "testcase1" text is <b>normal</b>
+<br>1,1 "testcase2" text is <b>italic</b>
+<br>2,1 "testcase3" text is <b>italic</b>
+<br>3,1 "testcase4" text is <b>italic</b>
+<p>0,2 "testcase5" text is <b>italic</b>
+<br>1,2 "testcase6" text is <b>italic</b>
+<br>2,2 "testcase7" text is <b>italic</b>
+<br>3,2 "testcase8" text is <b>italic</b>
+  </div>
+  </body>
+</html>

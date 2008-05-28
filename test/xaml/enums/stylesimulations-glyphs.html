@@ -1,0 +1,68 @@
+<html>
+  <head>
+      <title>StyleSimulations (Glyphs) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<Glyphs Canvas.Top="20" Fill="#FF000000" FontUri="../arial.ttf" FontRenderingEmSize="18" OriginX="0" OriginY="0" UnicodeString="Hello, World!" />
+		<Glyphs Canvas.Top="40" Fill="#FF000000" FontUri="../arial.ttf" FontRenderingEmSize="18" OriginX="0" OriginY="0" UnicodeString="Hello, World!" StyleSimulations="None"/>
+		<!-- unlike other enums the parser does not recognize BoldItalicSimulation, BoldSimulation and ItalicSimulation -->
+
+		<Glyphs x:Name="testcase1" Canvas.Top="100" Fill="#FF000000" FontUri="../arial.ttf" FontRenderingEmSize="18" OriginX="0" OriginY="0" UnicodeString="Test Case 1" />
+		<Glyphs x:Name="testcase2" Canvas.Top="120" Fill="#FF000000" FontUri="../arial.ttf" FontRenderingEmSize="18" OriginX="0" OriginY="0" UnicodeString="Test Case 2" />
+		<Glyphs x:Name="testcase3" Canvas.Top="140" Fill="#FF000000" FontUri="../arial.ttf" FontRenderingEmSize="18" OriginX="0" OriginY="0" UnicodeString="Test Case 3" />
+		<Glyphs x:Name="testcase4" Canvas.Top="160" Fill="#FF000000" FontUri="../arial.ttf" FontRenderingEmSize="18" OriginX="0" OriginY="0" UnicodeString="Test Case 4" />
+		<Glyphs x:Name="testcase5" Canvas.Top="180" Fill="#FF000000" FontUri="../arial.ttf" FontRenderingEmSize="18" OriginX="0" OriginY="0" UnicodeString="Test Case 5" />
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to RIGHT (no value is CENTER)
+	sender.findName ("testcase1").StyleSimulations = -1;
+	sender.findName ("testcase2").StyleSimulations = 0;
+	sender.findName ("testcase3").StyleSimulations = 1;
+	sender.findName ("testcase4").StyleSimulations = 911;
+	sender.findName ("testcase5").StyleSimulations = "nOnE";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: StyleSimulations
+/*
+	sender.findName ("testcase3").StyleSimulations = "-1";
+	sender.findName ("testcase3").StyleSimulations = sender.findName ("testcase2");
+	sender.findName ("testcase3").StyleSimulations = null;
+	sender.findName ("testcase3").StyleSimulations = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>Upper section should show <b>Hello, World!</b> two times (two lines).
+<p>Lower section should show <b>Test Case 2</b> and <b>Test Case 5</b>.
+  </div>
+  </body>
+</html>

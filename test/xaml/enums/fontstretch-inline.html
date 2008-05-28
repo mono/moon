@@ -1,0 +1,75 @@
+<html>
+  <head>
+      <title>FontStretch (Inline) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+		<TextBlock>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24">No value provided</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="UltraCondensed">UltraCondensed</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="ExtraCondensed">ExtraCondensed</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="Condensed">Condensed</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="SemiCondensed">SemiCondensed</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="Normal">Normal</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="Medium">Medium</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="SemiExpanded">SemiExpanded</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="Expanded">Expanded</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="ExtraExpanded">ExtraExpanded</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontStretch="UltraExpanded">UltraExpanded</Run>
+		</TextBlock>
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	sender.findName ("testcase1").FontStretch = -1;
+	sender.findName ("testcase2").FontStretch = 911;
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: FontStretch
+/*
+	sender.findName ("testcase3").Cursor = sender.findName ("testcase2");
+	sender.findName ("testcase3").Cursor = null;
+	sender.findName ("testcase3").Cursor = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>Looks like unsupported by Silverlight
+  </div>
+  </body>
+</html>

@@ -1,0 +1,110 @@
+<html>
+  <head>
+      <title>FontWeight (Inline) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+		<TextBlock>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24">No value</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Thin">Thin</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="ExtraLight">ExtraLight</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Light">Light</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Normal">Normal</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Medium">Medium</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="SemiBold">SemiBold</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Bold">Bold</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="ExtraBold">ExtraBold</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Black">Black</Run>
+			<LineBreak/>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="ExtraBlack">ExtraBlack</Run>
+		</TextBlock>
+		<TextBlock Canvas.Left="200">
+			<Run x:Name="testcase1" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 1</Run>
+			<LineBreak/>
+			<Run x:Name="testcase2" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 2</Run>
+			<LineBreak/>
+			<Run x:Name="testcase3" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 3</Run>
+			<LineBreak/>
+			<Run x:Name="testcase4" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 4</Run>
+			<LineBreak/>
+			<Run x:Name="testcase5" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 5</Run>
+			<LineBreak/>
+			<Run x:Name="testcase6" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 6</Run>
+			<LineBreak/>
+			<Run x:Name="testcase7" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 7</Run>
+			<LineBreak/>
+			<Run x:Name="testcase8" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 8</Run>
+			<LineBreak/>
+			<Run x:Name="testcase9" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 9</Run>
+			<LineBreak/>
+			<Run x:Name="testcase10" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 10</Run>
+			<LineBreak/>
+			<Run x:Name="testcase11" Foreground="Black" FontFamily="Arial" FontSize="24">Test case 11</Run>
+		</TextBlock>
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to None (no value is Default)
+	sender.findName ("testcase1").FontWeight = 1024;
+	sender.findName ("testcase2").FontWeight = 0;
+	sender.findName ("testcase3").FontWeight = "eXtrAlIgHt";
+	sender.findName ("testcase4").FontWeight = -475;
+	sender.findName ("testcase5").FontWeight = 32768;
+	sender.findName ("testcase6").FontWeight = 549;
+
+	sender.findName ("testcase7").FontWeight = 550;
+	sender.findName ("testcase8").FontWeight = -1;
+	sender.findName ("testcase9").FontWeight = 1023;
+	sender.findName ("testcase10").FontWeight = -474;
+	sender.findName ("testcase11").FontWeight = "eXtRaBlaCk";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: FontWeight
+/*
+	sender.findName ("testcase3").Cursor = sender.findName ("testcase2");
+	sender.findName ("testcase3").Cursor = null;
+	sender.findName ("testcase3").Cursor = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>First column: "No value" to "Medium" are normal, "SemiBold" to "ExtraBlack" are <b>bold</b>
+<p>Second column: "Test case 1-6" are normal, "Test case 7-11" are <b>bold</b>
+  </div>
+  </body>
+</html>

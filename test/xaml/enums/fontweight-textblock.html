@@ -1,0 +1,87 @@
+<html>
+  <head>
+      <title>FontWeight (TextBlock) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+		<TextBlock Canvas.Top="0"   Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" Text="No value" />
+		<TextBlock Canvas.Top="20"  Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Thin" Text="Thin" />
+		<TextBlock Canvas.Top="40"  Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="ExtraLight" Text="ExtraLight" />
+		<TextBlock Canvas.Top="60"  Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Light" Text="Light" />
+		<TextBlock Canvas.Top="80"  Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Normal" Text="Normal" />
+		<TextBlock Canvas.Top="100" Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Medium" Text="Medium" />
+		<TextBlock Canvas.Top="120" Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="SemiBold" Text="SemiBold" />
+		<TextBlock Canvas.Top="140" Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Bold" Text="Bold" />
+		<TextBlock Canvas.Top="160" Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="ExtraBold" Text="ExtraBold" />
+		<TextBlock Canvas.Top="180" Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="Black" Text="Black" />
+		<TextBlock Canvas.Top="200" Canvas.Left="0" Foreground="Black" FontFamily="Arial" FontSize="24" FontWeight="ExtraBlack" Text="ExtraBlack" />
+
+		<TextBlock x:Name="testcase1"  Canvas.Top="0"   Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 1" />
+		<TextBlock x:Name="testcase2"  Canvas.Top="20"  Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 2" />
+		<TextBlock x:Name="testcase3"  Canvas.Top="40"  Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 3" />
+		<TextBlock x:Name="testcase4"  Canvas.Top="60"  Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 4" />
+		<TextBlock x:Name="testcase5"  Canvas.Top="80"  Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 5" />
+		<TextBlock x:Name="testcase6"  Canvas.Top="100" Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 6" />
+		<TextBlock x:Name="testcase7"  Canvas.Top="120" Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 7" />
+		<TextBlock x:Name="testcase8"  Canvas.Top="140" Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 8" />
+		<TextBlock x:Name="testcase9"  Canvas.Top="160" Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 9" />
+		<TextBlock x:Name="testcase10" Canvas.Top="180" Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 10" />
+		<TextBlock x:Name="testcase11" Canvas.Top="200" Canvas.Left="200" Foreground="Black" FontFamily="Arial" FontSize="24" Text="Test case 11" />
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to None (no value is Default)
+	sender.findName ("testcase1").FontWeight = 1024;
+	sender.findName ("testcase2").FontWeight = 0;
+	sender.findName ("testcase3").FontWeight = "eXtrAlIgHt";
+	sender.findName ("testcase4").FontWeight = -475;
+	sender.findName ("testcase5").FontWeight = 32768;
+	sender.findName ("testcase6").FontWeight = 549;
+
+	sender.findName ("testcase7").FontWeight = 550;
+	sender.findName ("testcase8").FontWeight = -1;
+	sender.findName ("testcase9").FontWeight = 1023;
+	sender.findName ("testcase10").FontWeight = -474;
+	sender.findName ("testcase11").FontWeight = "eXtRaBlaCk";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: FontWeight
+/*
+	sender.findName ("testcase3").Cursor = sender.findName ("testcase2");
+	sender.findName ("testcase3").Cursor = null;
+	sender.findName ("testcase3").Cursor = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>First column: "No value" to "Medium" are normal, "SemiBold" to "ExtraBlack" are <b>bold</b>
+<p>Second column: "Test case 1-6" are normal, "Test case 7-11" are <b>bold</b>
+  </div>
+  </body>
+</html>
