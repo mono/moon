@@ -81,6 +81,7 @@ static AgViewer* browser = NULL;
 static char* test_path = NULL;
 static const char* working_dir = NULL;
 static guint timeout_id = 0;
+static time_t hung_time = 0;
 
 static void run_test (char* test_path, int timeout);
 static bool move_to_next_test ();
@@ -93,6 +94,22 @@ static void set_current_dir (const char* test_path);
 static void agviewer_handle_native_sigsegv (int signal);
 static void agviewer_add_signal_handler ();
 
+static gpointer
+hang_detector (gpointer data)
+{
+	time_t now;
+	
+	while (true) {
+		now = time (NULL);
+		if (hung_time > 0 && hung_time < now) {
+			fprintf (stderr, "Agviewer seems to be hung, aborting process.\n");
+			abort ();
+		}
+		//printf ("hang_detector: We're %li seconds from hanging\n", hung_time - now);
+		// Check once a second.
+		g_usleep (G_USEC_PER_SEC);
+	}
+}
 
 static void
 agserver_class_init (AgserverClass* agserver_class)
@@ -197,6 +214,10 @@ main(int argc, char **argv)
 	
 	gtk_init (&argc, &argv);
 
+	if (!g_thread_supported ())
+		g_thread_init (NULL);
+	g_thread_create (hang_detector, NULL, FALSE, NULL);
+	
 	int i;
 	for (i = 1; i < argc && argv[i][0] == '-'; i++) {
 		if (!g_strcasecmp ("-framewidth", argv [i]) && i < argc) {
@@ -249,6 +270,10 @@ run_test (char* test_path, int timeout)
 	if (timeout_id)
 		g_source_remove (timeout_id);
 	timeout_id = g_timeout_add (timeout, test_timeout, test_path);
+	
+	// Give 60 seconds after timeout, if nothing happened,
+	// we're hung and abort the process.
+	hung_time = time (NULL) + timeout / 1000 + 60;
 	
 	set_current_dir (test_path);
 	
