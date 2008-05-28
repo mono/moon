@@ -36,6 +36,8 @@
 #endif
 
 #define w(x) x
+// Debug NPStreams
+#define nps(x)// x
 
 extern guint32 moonlight_flags;
 
@@ -870,6 +872,8 @@ PluginInstance::UpdateSourceByReference (const char *value)
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
+	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
+
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		*stype = NP_ASFILEONLY;
 		return NPERR_NO_ERROR;
@@ -897,6 +901,8 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, u
 NPError
 PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 {
+	nps (printf ("PluginInstance::DestroyStream (%p, %i)\n", stream, reason));
+	
 	PluginDownloader *pd = (PluginDownloader*) stream->pdata;
 	if (pd != NULL) {
 		NPStreamDownloader *npsd = (NPStreamDownloader *) pd->getBrowserDownloader ();
@@ -1152,6 +1158,8 @@ PluginInstance::LoadUrl (char *url, int32_t *length)
 void
 PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 {
+	nps (printf ("PluginInstance::StreamAsFile (%p, %s)\n", stream, fname));
+	
 #if DEBUG
 	AddSource (stream->url, fname);
 #endif
@@ -1207,6 +1215,8 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 int32_t
 PluginInstance::WriteReady (NPStream *stream)
 {
+	nps (printf ("PluginInstance::WriteReady (%p)\n", stream));
+	
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
@@ -1225,6 +1235,8 @@ PluginInstance::WriteReady (NPStream *stream)
 int32_t
 PluginInstance::Write (NPStream *stream, int32_t offset, int32_t len, void *buffer)
 {
+	nps (printf ("PluginInstance::Write (%p, %i, %i, %p)\n", stream, offset, len, buffer));
+	
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
@@ -1239,6 +1251,8 @@ PluginInstance::Write (NPStream *stream, int32_t offset, int32_t len, void *buff
 void
 PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 {
+	nps (printf ("PluginInstance::UrlNotify (%s, %i, %p)\n", url, reason, notifyData));
+	
 	StreamNotify *notify = STREAM_NOTIFY (notifyData);
 	
 	//if (reason == NPRES_DONE) {

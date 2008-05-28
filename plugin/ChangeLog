@@ -1,5 +1,9 @@
 2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin.cpp: Add some debugging foo.
+
+2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* npstream-downloader.cpp: If NPN_GetURLNotify fails, notify the
 	  downloader.
 
