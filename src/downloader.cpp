@@ -463,7 +463,7 @@ Downloader::Send ()
 	if (!GetSurface ()) {
 		// The plugin is already checking for surface before calling Send, so
 		// if we get here, it's either managed code doing something wrong or ourselves.
-		g_warning ("Downloader::SendInternal (): No surface!\n");
+		g_warning ("Downloader::Send (): No surface!\n");
 	}
 
 	if (send_queued)

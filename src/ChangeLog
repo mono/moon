@@ -1,3 +1,7 @@
+2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* downloader.cpp: Fix typo.
+
 2008-05-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* enums.c: Fix None value in style_simulations_map and remove
