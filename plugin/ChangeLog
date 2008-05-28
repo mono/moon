@@ -1,5 +1,12 @@
 2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mms-downloader.cpp, mms-downloader.h: For the broadcast case keep a
+	  count of the number of packets received, and write new packets at
+	  the end of the previous packet. Don't print warnings for MMS_END
+	  and MMS_STREAM_C packets.
+
+2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin-downloader.cpp: Return something from
 	  PluginDownloader::GetPlugin.
 

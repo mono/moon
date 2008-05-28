@@ -36,6 +36,7 @@ MmsDownloader::MmsDownloader (PluginDownloader *pdl) : BrowserDownloader (pdl)
 	this->header_size = 0;
 	this->requested_position = -1;
 	this->size = 0;
+	this->packets_received = 0;
 
 	this->p_packet_count = 0;
 
@@ -144,16 +145,22 @@ MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payloa
 	
 	*offset = (header->length + sizeof (MmsHeader));
  
-	if (header->id == MMS_HEADER)
+ 	switch (header->id) {
+	case MMS_HEADER:
 		return ProcessHeaderPacket (header, packet, payload, offset);
-	if (header->id == MMS_METADATA)
+	case MMS_METADATA:
 		return ProcessMetadataPacket (header, packet, payload, offset);
-	if (header->id == MMS_PAIR_P)
+	case MMS_PAIR_P:
 		return ProcessPairPacket (header, packet, payload, offset);
-	if (header->id == MMS_DATA)
+	case MMS_DATA:
 		return ProcessDataPacket (header, packet, payload, offset);
-
-	g_warning ("MmsDownloader::ProcessPacket received a unknown packet type in an impossible manner.");
+	case MMS_END:
+		return true; // TODO: Do we need to do something here?
+	case MMS_STREAM_C:
+		return true; // TODO: Do we need to do something here?
+	}
+	
+	g_warning ("MmsDownloader::ProcessPacket received a unknown packet type %i in an impossible manner.", (int) header->id);
 
 	return false;
 }
@@ -177,18 +184,13 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 	asf_file_properties *properties = parser->GetFileProperties ();
 
 	if (!this->described) {
-		uint8_t stream_count, current_stream;
+		uint8_t current_stream;
 
-		// Count the number of streams
-		stream_count = 0;
-		for (int i = 1; i <= 127; i++) {
-			if (parser->IsValidStream (i))
-				stream_count++;
-		}
-
-		for (int i = 0; i < stream_count; i++) {
-			while (current_stream <= 127 && !parser->IsValidStream (current_stream))
-				current_stream++;
+		for (int i = 1; i < 127; i++) {
+			if (!parser->IsValidStream (i))
+				continue;
+				
+			current_stream = i;
 
 			const asf_stream_properties *stream_properties = parser->GetStream (current_stream);
 			const asf_extended_stream_properties *extended_stream_properties = parser->GetExtendedStream (current_stream);
@@ -303,8 +305,18 @@ MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *pa
 {
 	LOG_MMS ("MmsDownloader::ProcessDataPacket ()\n");
 	
-	pd->dl->Write (payload, (this->seekable ? (this->header_size + packet->packet.data.id*this->asf_packet_size) : header->length), this->asf_packet_size);
-
+	int32_t off = this->header_size;
+	int32_t size = this->asf_packet_size;
+		
+	if (this->seekable) {
+		off += packet->packet.data.id * size;
+	} else {
+		off += packets_received * size;
+	}
+	
+	pd->dl->Write (payload, off, size);
+	packets_received++;
+	
 	return true;
 }
 

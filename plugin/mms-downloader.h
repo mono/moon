@@ -58,6 +58,7 @@ class MmsDownloader : public BrowserDownloader {
 	uint32_t asf_packet_size;
 	uint32_t header_size;
 	uint32_t size;
+	uint32_t packets_received;
 
 	int32_t audio_streams[128];
 	int32_t video_streams[128];
