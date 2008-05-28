@@ -79,6 +79,7 @@ Downloader::Downloader ()
 	streaming_features = HttpStreamingFeaturesNone;
 	notify_size = NULL;
 	this->write = NULL;
+	request_position = NULL;
 	
 	deobfuscated = false;
 	send_queued = false;
