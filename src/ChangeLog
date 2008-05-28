@@ -1,5 +1,10 @@
 2008-05-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Reverting the change that invalidates the timelines which
+	have 00:00:00 duration. It is actually supported by SL. 
+
+2008-05-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: In Clock::ComputeNewTime all those checks are useless.
 	Multiply always instead of recursing down into properties.
 

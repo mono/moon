@@ -1280,9 +1280,6 @@ Timeline::Validate ()
 		repeat = new RepeatBehavior (1.0);
 	}
 
-	if (duration->HasTimeSpan () && duration->GetTimeSpan () == 0)
-		return false;
-
 	return true;
 }
 
