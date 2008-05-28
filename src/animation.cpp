@@ -651,7 +651,7 @@ DoubleAnimation::GetTargetValue (Value *defaultOriginValue)
 	else if (by) 
 		return new Value (start + *by);
 	else
-		return new Value (start);
+		return new Value (defaultOriginValue->AsDouble ());
 }
 
 Value*
@@ -674,7 +674,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 		end = start + *by;
 	}
 	else {
-		end = start;
+		end = defaultOriginValue->AsDouble();
 	}
 
 	double progress = animationClock->GetCurrentProgress ();
@@ -712,7 +712,7 @@ ColorAnimation::GetTargetValue (Value *defaultOriginValue)
 	else if (by) 
 		return new Value (start + *by);
 	else
-		return new Value (start);
+		return new Value (*defaultOriginValue->AsColor ());
 }
 
 Value*
@@ -733,7 +733,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 		end = start + *by;
 	}
 	else {
-		end = start;
+		end = *defaultOriginValue->AsColor ();
 	}
 
 	double progress = animationClock->GetCurrentProgress ();
@@ -807,7 +807,7 @@ PointAnimation::GetTargetValue (Value *defaultOriginValue)
 	else if (by) 
 		return new Value (start + *by);
 	else
-		return new Value (start);
+		return new Value (*defaultOriginValue->AsPoint ());
 }
 
 Value*
@@ -828,7 +828,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 		end = start + *by;
 	}
 	else {
-		end = start;
+		end = *defaultOriginValue->AsPoint ();
 	}
 
 	double progress = animationClock->GetCurrentProgress ();

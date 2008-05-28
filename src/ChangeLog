@@ -1,5 +1,12 @@
 2008-05-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp: If "To" and "By" are not specified use the
+	defaultOriginValue always instead of "start" (which might be "From").
+	Fixes the test-animation-only-from.xaml and the green block in
+	AnimationMatrix2.
+
+2008-05-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: When Validating the timeline, if RepeatBehavior is
 	incorrect make it 1.0 instead of marking the timeline as invalid.
 
