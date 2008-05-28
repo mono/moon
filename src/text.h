@@ -307,7 +307,7 @@ class Glyphs : public FrameworkElement {
 	
  protected:
 	virtual ~Glyphs ();
-
+	
  public:
 	static DependencyProperty *FillProperty;
 	static DependencyProperty *FontRenderingEmSizeProperty;

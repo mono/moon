@@ -867,8 +867,6 @@ Clock::DoRepeat (TimeSpan time)
 void
 Clock::RaiseAccumulatedEvents ()
 {
-	const char *name = GetName ();
-	
 	if ((queued_events & CURRENT_TIME_INVALIDATED) != 0) {
 		Emit (CurrentTimeInvalidatedEvent);
 	}
@@ -1273,8 +1271,7 @@ bool
 Timeline::Validate ()
 {
 	RepeatBehavior *repeat = GetRepeatBehavior ();
-	Duration *duration = GetDuration ();
-
+	
 	if (repeat->HasDuration () && repeat->GetDuration () == 0) {
 		delete repeat;
 		repeat = new RepeatBehavior (1.0);
