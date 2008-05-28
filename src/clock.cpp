@@ -732,12 +732,7 @@ Clock::ComputeNewTime ()
 	TimeSpan our_delta = (TimeSpan)((GetParentTime() - GetLastParentTime()) * speed);
 	TimeSpan ret_time = current_time;
 
-	/* serious voodoo here... */
-	if ((timeline->GetSpeedRatio() > 1 && (our_delta > 0 || our_delta < 0))
-	    || (timeline->GetSpeedRatio() < 1)) {
-
-		our_delta = (TimeSpan)(our_delta * timeline->GetSpeedRatio());
-	}
+	our_delta = (TimeSpan)(our_delta * timeline->GetSpeedRatio());
 
 	if (! forward)
 		our_delta = - our_delta;

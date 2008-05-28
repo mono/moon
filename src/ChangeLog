@@ -1,5 +1,10 @@
 2008-05-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: In Clock::ComputeNewTime all those checks are useless.
+	Multiply always instead of recursing down into properties.
+
+2008-05-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: If "To" and "By" are not specified use the
 	defaultOriginValue always instead of "start" (which might be "From").
 	Fixes the test-animation-only-from.xaml and the green block in
