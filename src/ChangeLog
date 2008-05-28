@@ -1,5 +1,10 @@
-2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-05-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: When Validating the timeline, if RepeatBehavior is
+	incorrect make it 1.0 instead of marking the timeline as invalid.
+
+2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+	
 	* downloader.cpp: Fix typo.
 
 2008-05-28  Sebastien Pouliot  <sebastien@ximian.com>
