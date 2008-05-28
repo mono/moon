@@ -1,3 +1,8 @@
+2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-http-failure.html: Use a source which doesn't have to be
+	  restarted every time we want to play it.
+
 2008-05-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-mms-failure.html, test-inexistent-media.html: No need for
