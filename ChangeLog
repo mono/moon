@@ -1,3 +1,7 @@
+2008-05-28  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* ffmpeg.patch: plugin installer ffmpeg patch was missing some tweaks
+
 2008-05-28  Michael Dominic K.  <mdk@mdk.am>
 
 	* test/xaml/test-animation-only-from.xaml: Adding a test for animation

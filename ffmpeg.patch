@@ -1,15 +1,17 @@
 Index: configure
 ===================================================================
---- configure	(.../vendor/ffmpeg/current)	(revision 750)
-+++ configure	(.../moon-ffmpeg)	(revision 750)
-@@ -2042,22 +2042,22 @@
+--- configure	(.../vendor/ffmpeg/current)	(revision 775)
++++ configure	(.../moon-ffmpeg)	(revision 775)
+@@ -2036,7 +2036,7 @@
+ Version: $version
+ Requires: $requires
+ Conflicts:
+-Libs: \${libdir}/${LIBPREF}${shortname}${LIBSUF} $libs
++Libs: \${libdir}/${LIBPREF}${shortname}${SLIBSUF} $libs
+ Cflags: -I\${includedir}
+ EOF
  }
- 
- pkgconfig_generate libavutil "FFmpeg utility library" "$lavu_version" -lavutil "" ffmpeg
--pkgconfig_generate_uninstalled libavutil "FFmpeg utility library" "$lavu_version"
-+pkgconfig_generate_uninstalled libavutil "FFmpeg utility library" "$lavu_version" -lavutil
- 
- pkgconfig_generate libavcodec "FFmpeg codec library" "$lavc_version" "-lavcodec $extralibs" "$pkg_requires libavutil = $lavu_version" ffmpeg
+@@ -2048,16 +2048,16 @@
  pkgconfig_generate_uninstalled libavcodec "FFmpeg codec library" "$lavc_version" "$extralibs" "$pkg_requires libavutil = $lavu_version"
  
  pkgconfig_generate libavformat "FFmpeg container format library" "$lavf_version" "-lavformat $extralibs" "$pkg_requires libavcodec = $lavc_version" ffmpeg
@@ -31,8 +33,8 @@ Index: configure
    pkgconfig_generate_uninstalled libswscale "FFmpeg image rescaling library" "$sws_version" "" "$pkg_requires libavcodec = $lavc_version"
 Index: libswscale/Makefile
 ===================================================================
---- libswscale/Makefile	(.../vendor/ffmpeg/current)	(revision 750)
-+++ libswscale/Makefile	(.../moon-ffmpeg)	(revision 750)
+--- libswscale/Makefile	(.../vendor/ffmpeg/current)	(revision 775)
++++ libswscale/Makefile	(.../moon-ffmpeg)	(revision 775)
 @@ -5,7 +5,7 @@
  LIBVERSION=$(SWSVERSION)
  LIBMAJOR=$(SWSMAJOR)
@@ -44,8 +46,8 @@ Index: libswscale/Makefile
  
 Index: libavcodec/Makefile
 ===================================================================
---- libavcodec/Makefile	(.../vendor/ffmpeg/current)	(revision 750)
-+++ libavcodec/Makefile	(.../moon-ffmpeg)	(revision 750)
+--- libavcodec/Makefile	(.../vendor/ffmpeg/current)	(revision 775)
++++ libavcodec/Makefile	(.../moon-ffmpeg)	(revision 775)
 @@ -443,7 +443,7 @@
                                            bfin/idct_bfin.o   \
                                            bfin/vp3_idct_bfin.o   \
@@ -58,7 +60,7 @@ Index: libavcodec/Makefile
 Index: ChangeLog-moon
 ===================================================================
 --- ChangeLog-moon	(.../vendor/ffmpeg/current)	(revision 0)
-+++ ChangeLog-moon	(.../moon-ffmpeg)	(revision 750)
++++ ChangeLog-moon	(.../moon-ffmpeg)	(revision 775)
 @@ -0,0 +1,13 @@
 +2007-10-26  Andrew Jorgensen  <ajorgensen@novell.com>
 +
@@ -75,8 +77,8 @@ Index: ChangeLog-moon
 +	* */Makefile: Rename libraries from libav* to libmoon-av*
 Index: libavformat/Makefile
 ===================================================================
---- libavformat/Makefile	(.../vendor/ffmpeg/current)	(revision 750)
-+++ libavformat/Makefile	(.../moon-ffmpeg)	(revision 750)
+--- libavformat/Makefile	(.../vendor/ffmpeg/current)	(revision 775)
++++ libavformat/Makefile	(.../moon-ffmpeg)	(revision 775)
 @@ -162,8 +162,8 @@
  
  OBJS-$(CONFIG_VHOOK)                     += framehook.o
