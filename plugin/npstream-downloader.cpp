@@ -84,6 +84,8 @@ NPStreamDownloader::Send ()
 				msg = "unknown error";
 				break;
 			}
+			
+			pd->dl->NotifyFailed (msg);
 		}
 	}
 }
