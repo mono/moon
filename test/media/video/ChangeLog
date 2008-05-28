@@ -1,5 +1,9 @@
 2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-playlist-live-with-duration.html: No need for Silverlight.js.
+
+2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-http-failure.html: Use a source which doesn't have to be
 	  restarted every time we want to play it.
 
