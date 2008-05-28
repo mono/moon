@@ -144,8 +144,6 @@ class TextBlock : public FrameworkElement {
 		return bbox_height;
 	}
 	
-	void LayoutSilverlight (cairo_t *cr);
-	
 	void DownloaderComplete ();
 	
 	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
