@@ -1,0 +1,26 @@
+<Canvas x:Name="root" 
+  xmlns="http://schemas.microsoft.com/client/2007"  
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="270" Height="70">
+
+  <Rectangle x:Name="rect" Canvas.Top="10" Canvas.Left="10" Width="50" Height="50" Fill="royalblue">
+    <Rectangle.Triggers>
+      <EventTrigger  RoutedEvent="Rectangle.Loaded" >
+       <BeginStoryboard>
+        <Storyboard 
+          BeginTime="0:0:1"
+          FillBehavior="HoldEnd">
+          <DoubleAnimation  
+            Storyboard.TargetName="rect"
+            Storyboard.TargetProperty="(Canvas.Left)"                                                                                                                     
+            Duration="0:0:2"
+            FillBehavior="Stop"
+	    SpeedRatio="2"
+            From="100" To="210" 
+          />
+        </Storyboard>
+       </BeginStoryboard>
+     </EventTrigger>
+    </Rectangle.Triggers>
+  </Rectangle>
+</Canvas>
+

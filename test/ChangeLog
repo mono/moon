@@ -1,5 +1,13 @@
 2008-05-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/test-animation-hold-stop-speed.xaml: Adding a test where outer
+	storyboard has HoldEnd, inner animation has Stop + SpeedRation. In this
+	case the block doesn't bounce back (FillBehavior=Stop) as expected. It
+	seems to be caused by the speed property. If it's not there it works as
+	expected.
+
+2008-05-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* test/xaml/test-animation-only-from.xaml: Adding a test for animation
 	that only has "From" value but not "To" value. We currently break with
 	it.
