@@ -160,6 +160,8 @@ PluginDownloader::GetPlugin ()
 			return NULL;
 		instance = (PluginInstance*)plugin->pdata;
 	}
+        
+	return instance;
 }
 
 // BrowserDownloader
