@@ -131,6 +131,9 @@ PluginDownloader::Open (const char *verb, const char *uri)
 	if (strncmp (uri, "mms://", 6) == 0) {
 		this->uri = g_strdup_printf ("http://%s", uri+6);
 		this->bdl = new MmsDownloader (this);
+	} else if (strncmp (uri, "rtsp://", 7) == 0) {
+		this->uri = g_strdup_printf ("http://%s", uri+7);
+		this->bdl = new MmsDownloader (this);
 	} else {
 #if HTTP_DOWNLOADER
 		if (strstr (uri, "://"))

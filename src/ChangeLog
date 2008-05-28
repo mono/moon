@@ -1,5 +1,9 @@
 2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* http-streaming.cpp: Handle quoted feature strings.
+
+2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* downloader.cpp: Null out request_position in the ctor.
 
 2008-05-28  Michael Dominic K.  <mdk@mdk.am>

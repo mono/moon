@@ -1,5 +1,12 @@
 2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mms-downloader.cpp: Call Downloader::NotifyFailed when we encounter
+	  an invalid mms source. Parse metadata packets, and set
+	  HttpStreamingFeatures correctly on the downloader.
+	* plugin-downloader.cpp: Handle rtsp urls.
+
+2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin.cpp: Add some debugging foo.
 
 2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 

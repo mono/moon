@@ -30,8 +30,11 @@ parse_http_streaming_features (const char *val)
 	if (val == NULL)
 		return result;
 	
+	if (val [0] == '"')
+		val++;
+	
 	while (!end) {
-		end = (val [length] == 0);
+		end = (val [length] == 0 || val [length] == '"');
 		if (end || val [length] == ',') {
 			
 			//printf ("Checking feature: '%.*s'\n", length, val + start);

@@ -105,6 +105,7 @@ process_packet:
 
 	if (!is_valid_mms_header (header)) {
 		this->Abort ();
+		pd->dl->NotifyFailed ("invalid mms source");
 		return DOWNLOADER_ERR;
 	}
 
@@ -259,10 +260,57 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 bool
 MmsDownloader::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
 {
-	LOG_MMS ("MmsDownloader::ProcessMetadataPacket ()\n");
+	LOG_MMS ("MmsDownloader::ProcessMetadataPacket (%p, %p, %s, %p)\n", header, packet, payload, offset);
 	
-	// CHECKME: It appears we used to parse the metadata for absolutely no reason
-	// We skip the entire packet and header
+	//playlist-gen-id and broadcast-id isn't used anywhere right now,
+	//but I'm keeping the code since we'll probably need it
+	//uint32_t playlist_gen_id = 0;
+	//uint32_t broadcast_id = 0;
+	HttpStreamingFeatures features = HttpStreamingFeaturesNone;
+	
+	char *start = payload;
+	char *key = NULL, *value = NULL;
+	char *state = NULL;
+	
+	// format: key=value,key=value\0
+	// example:
+	// playlist-gen-id=1,broadcast-id=2,features=broadcast,seekable\0
+	
+	// Make sure payload is null-terminated
+	for (int i = 0; i < packet->packet.data.size; i++) {
+		if (payload [i] == 0)
+			break;
+		if (i == packet->packet.data.size)
+			payload [i] = NULL;
+	}
+	
+	do {
+		key = strtok_r (start, "=", &state);
+		start = NULL;
+		value = strtok_r (NULL, ",", &state);
+		
+		if (key == NULL || value == NULL)
+			break;
+			
+		if (key [0] == ' ')
+			key++;
+			
+		LOG_MMS ("MmsDownloader::ProcessMetadataPacket (): %s=%s\n", key, value);
+		
+		if (!strcmp (key, "playlist-gen-id")) {
+			//playlist_gen_id = strtoul (value, NULL, 10);
+		} else if (!strcmp (key, "broadcast-id")) {
+			//broadcast_id = strtoul (value, NULL, 10);
+		} else if (!strcmp (key, "features")) {
+			features = parse_http_streaming_features (value);
+			pd->dl->SetHttpStreamingFeatures (features);
+		} else {
+			printf ("MmsDownloader::ProcessMetadataPacket (): Unexpected metadata: %s=%s\n", key, value);
+		}
+	} while (true);
+	
+	LOG_MMS ("MmsDownloader::ProcessMetadataPacket (): features: %i\n", features);
+	
 	return true;
 }
 
