@@ -1,5 +1,11 @@
 2008-05-28  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/clock/clock40.html:
+	* xaml/clock/clock40.xaml: Adding a new clock40 that does something
+	similiar to test-animation-hold-stop-speed.xaml. Broken currently.
+
+2008-05-28  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/test-animation-hold-stop-speed.xaml: Adding a test where outer
 	storyboard has HoldEnd, inner animation has Stop + SpeedRation. In this
 	case the block doesn't bounce back (FillBehavior=Stop) as expected. It
