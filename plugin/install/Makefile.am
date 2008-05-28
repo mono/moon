@@ -25,10 +25,6 @@ if INCLUDE_FFMPEG
 novell_moonlight_xpi_CONTENTS += $(avutil_libdir)/libavutil.so \
 				$(avcodec_libdir)/libavcodec.so
 
-if INCLUDE_SWSCALE
-novell_moonlight_xpi_CONTENTS += $(swscale_libdir)/libswscale.so
-endif INCLUDE_SWSCALE
-
 endif INCLUDE_FFMPEG
 
 if INCLUDE_MONO_RUNTIME
@@ -56,9 +52,6 @@ endif HAVE_GECKO_1_9
 if INCLUDE_FFMPEG
 	cp -L $(avutil_libdir)/libavutil.so .xpinstall/plugins/moonlight/
 	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/plugins/moonlight/
-if INCLUDE_SWSCALE
-	cp -L $(swscale_libdir)/libswscale.so .xpinstall/plugins/moonlight/
-endif INCLUDE_SWSCALE
 endif INCLUDE_FFMPEG
 if INCLUDE_MONO_RUNTIME
 	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/

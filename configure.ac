@@ -27,7 +27,6 @@ dnl
 dnl Pipeline checks
 dnl
 AC_ARG_WITH(ffmpeg,[  --with-ffmpeg=yes,no   If you want to enable support for ffmpeg],[],[with_ffmpeg=yes])
-AC_ARG_WITH(swscale,[  --with-swscale=no,yes   If you want to enable support for swscale],[],[with_swscale=no])
 
 if test x$with_ffmpeg = xyes; then
   if pkg-config --exists libavutil libavcodec; then
@@ -37,18 +36,12 @@ if test x$with_ffmpeg = xyes; then
     CFLAGS="$FFMPEG_CFLAGS $CFLAGS"
     AC_CHECK_HEADERS([libavcodec/avcodec.h])
     CFLAGS=$save_CFLAGS
-    if test x$with_swscale = xyes; then
-      AC_DEFINE([INCLUDE_SWSCALE],[1],[Include support for swscale])
-      PKG_CHECK_MODULES(SWSCALE,libswscale)
-    fi
   else
     with_ffmpeg=no
-    with_swscale=no
     ffmpeg_warning="(WARNING: AUDIO AND VIDEO WON'T WORK)"
   fi
 fi
 AM_CONDITIONAL(INCLUDE_FFMPEG,test x$with_ffmpeg = xyes)
-AM_CONDITIONAL(INCLUDE_SWSCALE,test x$with_swscale = xyes)
 
 dnl
 dnl Mozilla checks
@@ -278,10 +271,8 @@ AC_ARG_ENABLE(user-plugin,[  --enable-user-plugin    Build the plugin installer]
 			   AC_DEFINE([PLUGIN_INSTALL],[1],[Load libraries from ~/.mozilla/plugins and build a Mozilla XPInstall file])
 			   avutil_libdir="$(pkg-config --variable=libdir libavutil)"
 			   avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
-			   swscale_libdir="$(pkg-config --variable=libdir libswscale)"
 			   AC_SUBST([avutil_libdir])
-			   AC_SUBST([avcodec_libdir])
-			   AC_SUBST([swscale_libdir])],
+			   AC_SUBST([avcodec_libdir])],
 			  [user_plugin=no
 			   dnl We only want to link against these if we are NOT building
 			   dnl the user plugin installer
@@ -468,7 +459,6 @@ Moonlight configuration:
 	Support for 1.0: yes
 	Support for 2.0: $with_mono $mreason
 	Support for ffmpeg: $with_ffmpeg $ffmpeg_warning
-	Support for swscale: $with_swscale
 	Support for running the test harness: $with_testing
 	Using cairo: $with_cairo
 	Support for Firefox: $with_mozilla

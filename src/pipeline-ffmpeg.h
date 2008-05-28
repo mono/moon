@@ -26,9 +26,6 @@ G_BEGIN_DECLS
 #else
 #include <avcodec.h>
 #endif
-#if INCLUDE_SWSCALE
-#include <swscale.h>
-#endif // INCLUDE_SWSCALE
 G_END_DECLS
 
 #include "pipeline.h"

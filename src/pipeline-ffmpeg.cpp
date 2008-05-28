@@ -25,10 +25,6 @@ G_BEGIN_DECLS
 #include <limits.h>
 G_END_DECLS
 
-#if INCLUDE_SWSCALE
-#include <swscale-converter.h>
-#endif
-
 #include "pipeline-ffmpeg.h"
 #include "pipeline.h"
 #include "debug.h"
@@ -55,9 +51,6 @@ register_ffmpeg ()
 {
 	initialize_ffmpeg ();
 		
-#if INCLUDE_SWSCALE
-	Media::RegisterConverter (new FfmpegConverterInfo ());
-#endif
 	Media::RegisterDecoder (new FfmpegDecoderInfo ());
 	//Media::RegisterDemuxer (new FfmpegDemuxerInfo ());
 }
