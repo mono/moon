@@ -1,5 +1,9 @@
 2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* drtlist.xml: Add another (randomly) known failure.
+
+2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* all.html, test-bufferingprogress.html,
 	  test-download-and-buffering-progress-on-big-files.html,
 	  test-downloadprogress-on-small-files.html,
