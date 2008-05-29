@@ -1,3 +1,8 @@
+2008-05-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* layout.h|cpp: Handle invalid values for TextDecorations and
+	TextWrapping like Silverlight does.
+
 2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* runtime.cpp: When setting the background color delete any previoys

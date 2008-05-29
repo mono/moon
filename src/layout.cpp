@@ -401,7 +401,7 @@ TextLayout::LayoutWrapWithOverflow ()
 		}
 		
 		if (!underlined)
-			underlined = run->deco == TextDecorationsUnderline;
+			underlined = IsUnderline (run->deco);
 		descend = MIN (descend, run->font->Descender ());
 		height = MAX (height, run->font->Height ());
 		
@@ -432,7 +432,7 @@ TextLayout::LayoutWrapWithOverflow ()
 			}
 			
 			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
-			if (run->deco == TextDecorationsUnderline) {
+			if (IsUnderline (run->deco)) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
 			}
@@ -469,7 +469,7 @@ TextLayout::LayoutWrapWithOverflow ()
 				line = new TextLine ();
 				blank = true;
 				
-				underlined = run->deco == TextDecorationsUnderline;
+				underlined = IsUnderline (run->deco);
 				descend = run->font->Descender ();
 				height = run->font->Height ();
 				
@@ -587,7 +587,7 @@ TextLayout::LayoutNoWrap ()
 		}
 		
 		if (!underlined)
-			underlined = run->deco == TextDecorationsUnderline;
+			underlined = IsUnderline (run->deco);
 		descend = MIN (descend, run->font->Descender ());
 		height = MAX (height, run->font->Height ());
 		
@@ -618,7 +618,7 @@ TextLayout::LayoutNoWrap ()
 			}
 			
 			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
-			if (run->deco == TextDecorationsUnderline) {
+			if (IsUnderline (run->deco)) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
 			}
@@ -654,7 +654,7 @@ TextLayout::LayoutNoWrap ()
 			if (max_width > 0.0 && x1 >= max_width) {
 				// cut the remainder of the run unless it is underlined
 				// (in which case we need to underline trailing lwsp).
-				if (run->deco != TextDecorationsUnderline) {
+				if (IsUnderline (run->deco)) {
 					clipped = true;
 					break;
 				}
@@ -793,7 +793,7 @@ TextLayout::LayoutWrap ()
 		}
 		
 		if (!underlined)
-			underlined = run->deco == TextDecorationsUnderline;
+			underlined = IsUnderline (run->deco);
 		descend = MIN (descend, run->font->Descender ());
 		height = MAX (height, run->font->Height ());
 		
@@ -827,7 +827,7 @@ TextLayout::LayoutWrap ()
 			}
 			
 			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
-			if (run->deco == TextDecorationsUnderline || include_lwsp) {
+			if (IsUnderline (run->deco) || include_lwsp) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
 			}
@@ -867,7 +867,7 @@ TextLayout::LayoutWrap ()
 				line = new TextLine ();
 				blank = true;
 				
-				underlined = run->deco == TextDecorationsUnderline;
+				underlined = IsUnderline (run->deco);
 				descend = run->font->Descender ();
 				height = run->font->Height ();
 				
@@ -1071,7 +1071,6 @@ TextLayout::Layout ()
 		LayoutWrapWithOverflow ();
 		break;
 	case TextWrappingNoWrap:
-	default:
 #if d(!)0
 		if (max_width > 0.0)
 			printf ("TextLayout::LayoutWrapNoWrap(%f)\n", max_width);
@@ -1081,6 +1080,8 @@ TextLayout::Layout ()
 		LayoutNoWrap ();
 		break;
 	case TextWrappingWrap:
+	// Silverlight default is to wrap for invalid values
+	default:
 #if d(!)0
 		if (max_width > 0.0)
 			printf ("TextLayout::LayoutWrap(%f)\n", max_width);
@@ -1195,7 +1196,7 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 			cairo_fill (cr);
 		}
 		
-		if (deco == TextDecorationsUnderline && segment->width > 0.0) {
+		if ((deco & TextDecorationsUnderline) && segment->width > 0.0) {
 			cairo_antialias_t aa = cairo_get_antialias (cr);
 			double thickness = font->UnderlineThickness ();
 			double pos = y1 + font->UnderlinePosition ();

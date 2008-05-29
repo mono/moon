@@ -51,6 +51,8 @@ class TextLayout {
 	void LayoutWrapWithOverflow ();
 	void LayoutNoWrap ();
 	void LayoutWrap ();
+
+	bool IsUnderline (TextDecorations deco) { return (deco & TextDecorationsUnderline); }
 	
  public:
 	
