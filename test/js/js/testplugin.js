@@ -44,36 +44,36 @@ function checkForMediaServerResult ()
 
 function createTestPlugin ()
 {
-    if(document.body == null) {
-        window.setTimeout("createTestPlugin ();", 10);
+	if (document.body == null) {
+		window.setTimeout("createTestPlugin ();", 10);
 		return;
-    }
+	}
 
 	if (TestHost)
 		return;
 
-    // Create plugin html.
-    var pluginHtml = "";
-
-    if((navigator.appVersion.indexOf('MSIE') != -1)) {
-        pluginHtml = 
-            '<object id="_TestPlugin" width="0" height="0" ' +
-                'classid = "CLSID:596F7B43-899C-42F4-BF3C-B62BA99E73FF">' +
-            '<\/object>';
-    } else {
-        pluginHtml = 
-            '<embed id="_TestPlugin" width="0" height="0" ' +
-                'type="application\/x-jolttest">' +
-            '<\/embed>';
-    }
-
-    // Insert plugin html into document.
-    var obj = document.createElement("DIV");
-    obj.innerHTML = pluginHtml;
-    document.body.appendChild(obj);    
-    
-    // Wait until the inserted html has been loaded before accessing the plugin.
-    window.setTimeout("loadTestPlugin ();", 10);
+	// Create plugin html.
+	var pluginHtml = "";
+	
+	if ((navigator.appVersion.indexOf ('MSIE') != -1)) {
+	pluginHtml = 
+		'<object id="_TestPlugin" width="0" height="0" ' +
+		'classid = "CLSID:596F7B43-899C-42F4-BF3C-B62BA99E73FF">' +
+		'<\/object>';
+	} else {
+	pluginHtml = 
+		'<embed id="_TestPlugin" width="0" height="0" ' +
+		'type="application\/x-jolttest">' +
+		'<\/embed>';
+	}
+	
+	// Insert plugin html into document.
+	var obj = document.createElement ("DIV");
+	obj.innerHTML = pluginHtml;
+	document.body.appendChild (obj);
+	
+	// Wait until the inserted html has been loaded before accessing the plugin.
+	window.setTimeout ("loadTestPlugin ();", 10);
 }
 
 function createMockTestPlugin ()
