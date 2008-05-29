@@ -1,3 +1,8 @@
+2008-05-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* font.h: Fix enum values for TextWrapping
+	* layout.cpp: Fix regression (in earlier commit) for wrapping.
+
 2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* debug.cpp: Fix an invalid read issue found with valgrind.

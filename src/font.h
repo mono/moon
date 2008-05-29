@@ -72,9 +72,9 @@ enum TextDecorations {
 };
 
 enum TextWrapping {
-	TextWrappingWrap,
+	TextWrappingWrapWithOverflow,
 	TextWrappingNoWrap,
-	TextWrappingWrapWithOverflow
+	TextWrappingWrap
 };
 
 

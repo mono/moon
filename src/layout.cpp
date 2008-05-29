@@ -654,7 +654,7 @@ TextLayout::LayoutNoWrap ()
 			if (max_width > 0.0 && x1 >= max_width) {
 				// cut the remainder of the run unless it is underlined
 				// (in which case we need to underline trailing lwsp).
-				if (IsUnderline (run->deco)) {
+				if (!IsUnderline (run->deco)) {
 					clipped = true;
 					break;
 				}
