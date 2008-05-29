@@ -1,3 +1,9 @@
+2008-05-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (Image::OnPropertyChanged): Just like MediaElement, if
+	you set an Image's Source property to an empty string (or null),
+	it stops rendering the image.
+
 2008-05-29  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* stylus.cpp: fix intersect_line_2d to fix the inkJournal thing.

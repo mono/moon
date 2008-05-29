@@ -1565,11 +1565,11 @@ void
 MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == MediaBase::SourceProperty) {
-		char *uri = args->new_value ? args->new_value->AsString() : NULL;
+		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
 		
 		if (uri && *uri) {
 			Downloader *dl = Surface::CreateDownloader (this);
-			downloader_open (dl, "GET", uri);
+			dl->Open ("GET", uri);
 			SetSource (dl, "");
 			dl->unref ();
 		} else {
@@ -2566,14 +2566,18 @@ void
 Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == MediaBase::SourceProperty) {
-		DownloaderAbort ();
+		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
 		
-		const char *source = args->new_value ? args->new_value->AsString() : NULL;
-		
-		Downloader *dl = Surface::CreateDownloader (this);
-		dl->Open ("GET", source);
-		SetSource (dl, "");
-		dl->unref ();
+		if (uri && *uri) {
+			Downloader *dl = Surface::CreateDownloader (this);
+			dl->Open ("GET", uri);
+			SetSource (dl, "");
+			dl->unref ();
+		} else {
+			DownloaderAbort ();
+			CleanupSurface ();
+			Invalidate ();
+		}
 	} else if (args->property == FrameworkElement::HeightProperty) {
 		if (!updating)
 			use_img_height = args->new_value == NULL;
