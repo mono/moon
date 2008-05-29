@@ -1,3 +1,13 @@
+2008-05-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* index.html: Add new test cases.
+	* sweepdirection-arcsegment.html: Test SweepDirection on 
+	ArcSegment
+	* textdecorations-inline.html,
+	* textdecorations-textblock.html: Test TextDecorations on
+	Inline and TextBlock.
+	* textwrapping-textblock.html: Test TextWrapping on TextBlock
+
 2008-05-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* index.html: Add new test cases.

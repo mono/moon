@@ -1,0 +1,96 @@
+<html>
+  <head>
+      <title>TextDecorations (TextBlock) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<TextBlock Canvas.Top="0" Canvas.Left="0"   Foreground="Black" FontFamily="Arial" FontSize="24" Text="No value" />
+		<TextBlock Canvas.Top="0" Canvas.Left="150" Foreground="Black" FontFamily="Arial" FontSize="24" TextDecorations="None" Text="None" />
+		<TextBlock Canvas.Top="0" Canvas.Left="300" Foreground="Black" FontFamily="Arial" FontSize="24" TextDecorations="Underline" Text="Underline" />
+
+		<TextBlock x:Name="testcase1" Canvas.Top="50" Canvas.Left="0"   Foreground="Black" FontFamily="Arial" FontSize="24" Text="testcase1 " />
+		<TextBlock x:Name="testcase2" Canvas.Top="50" Canvas.Left="150" Foreground="Black" FontFamily="Arial" FontSize="24" Text=" testcase2 " />
+		<TextBlock x:Name="testcase3" Canvas.Top="50" Canvas.Left="300" Foreground="Black" FontFamily="Arial" FontSize="24" Text=" testcase3" />
+
+		<TextBlock x:Name="testcase4" Canvas.Top="100" Canvas.Left="0"   Foreground="Black" FontFamily="Arial" FontSize="24" Text="testcase4 " />
+		<TextBlock x:Name="testcase5" Canvas.Top="100" Canvas.Left="150" Foreground="Black" FontFamily="Arial" FontSize="24" Text=" testcase5 " />
+		<TextBlock x:Name="testcase6" Canvas.Top="100" Canvas.Left="300" Foreground="Black" FontFamily="Arial" FontSize="24" Text=" testcase6" />
+
+		<TextBlock x:Name="testcase7"  Canvas.Top="150" Canvas.Left="0"   Foreground="Black" FontFamily="Arial" FontSize="24" Text="-5" />
+		<TextBlock x:Name="testcase8"  Canvas.Top="150" Canvas.Left="30"  Foreground="Black" FontFamily="Arial" FontSize="24" Text="-4" />
+		<TextBlock x:Name="testcase9"  Canvas.Top="150" Canvas.Left="60"  Foreground="Black" FontFamily="Arial" FontSize="24" Text="-3" />
+		<TextBlock x:Name="testcase10" Canvas.Top="150" Canvas.Left="90"  Foreground="Black" FontFamily="Arial" FontSize="24" Text="-2" />
+		<TextBlock x:Name="testcase11" Canvas.Top="150" Canvas.Left="120" Foreground="Black" FontFamily="Arial" FontSize="24" Text="-1" />
+		<TextBlock x:Name="testcase12" Canvas.Top="150" Canvas.Left="150" Foreground="Black" FontFamily="Arial" FontSize="24" Text="0" />
+		<TextBlock x:Name="testcase13" Canvas.Top="150" Canvas.Left="180" Foreground="Black" FontFamily="Arial" FontSize="24" Text="1" />
+		<TextBlock x:Name="testcase14" Canvas.Top="150" Canvas.Left="210" Foreground="Black" FontFamily="Arial" FontSize="24" Text="2" />
+		<TextBlock x:Name="testcase15" Canvas.Top="150" Canvas.Left="240" Foreground="Black" FontFamily="Arial" FontSize="24" Text="3" />
+		<TextBlock x:Name="testcase16" Canvas.Top="150" Canvas.Left="270" Foreground="Black" FontFamily="Arial" FontSize="24" Text="4" />
+		<TextBlock x:Name="testcase17" Canvas.Top="150" Canvas.Left="300" Foreground="Black" FontFamily="Arial" FontSize="24" Text="5" />
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	sender.findName ("testcase1").TextDecorations = -1001;
+	sender.findName ("testcase2").TextDecorations = 0;
+	sender.findName ("testcase3").TextDecorations = 1;
+	sender.findName ("testcase4").TextDecorations = 1000;
+
+	sender.findName ("testcase5").TextDecorations = "nOnE";
+	sender.findName ("testcase6").TextDecorations = "uNdErLiNe";
+
+	sender.findName ("testcase7").TextDecorations = -5;
+	sender.findName ("testcase8").TextDecorations = -4;
+	sender.findName ("testcase9").TextDecorations = -3;
+	sender.findName ("testcase10").TextDecorations = -2;
+	sender.findName ("testcase11").TextDecorations = -1;
+	sender.findName ("testcase12").TextDecorations = 0;
+	sender.findName ("testcase13").TextDecorations = 1;
+	sender.findName ("testcase14").TextDecorations = 2;
+	sender.findName ("testcase15").TextDecorations = 3;
+	sender.findName ("testcase16").TextDecorations = 4;
+	sender.findName ("testcase17").TextDecorations = 5;
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: TextDecorations
+/*
+	sender.findName ("testcase3").TextDecorations = sender.findName ("testcase2");
+	sender.findName ("testcase3").TextDecorations = null;
+	sender.findName ("testcase3").TextDecorations = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>Line 1: Only underline is underlined.
+<p>Line 2: testcase1 and testcase3 are underlined
+<p>Line 3: Only testcase6 is underlined.
+<p>Line 4: Odd numbers are underlined, Even numbers are not.
+  </div>
+  </body>
+</html>

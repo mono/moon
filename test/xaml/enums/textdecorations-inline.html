@@ -1,0 +1,97 @@
+<html>
+  <head>
+      <title>TextDecorations (Inline) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+		<TextBlock Canvas.Top="0" Canvas.Left="0">
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24">No value </Run>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" TextDecorations="None"> None </Run>
+			<Run Foreground="Black" FontFamily="Arial" FontSize="24" TextDecorations="Underline"> Underline</Run>
+			<LineBreak TextDecorations="None"/>
+			<Run x:Name="testcase1" Foreground="Black" FontFamily="Arial" FontSize="24">testcase1 </Run>
+			<Run x:Name="testcase2" Foreground="Black" FontFamily="Arial" FontSize="24"> testcase2 </Run>
+			<Run x:Name="testcase3" Foreground="Black" FontFamily="Arial" FontSize="24"> testcase3</Run>
+			<LineBreak TextDecorations="Underline"/>
+			<Run x:Name="testcase4" Foreground="Black" FontFamily="Arial" FontSize="24">testcase4 </Run>
+			<Run x:Name="testcase5" Foreground="Black" FontFamily="Arial" FontSize="24"> testcase5 </Run>
+			<Run x:Name="testcase6" Foreground="Black" FontFamily="Arial" FontSize="24"> testcase6</Run>
+			<LineBreak TextDecorations="None"/>
+			<Run x:Name="testcase7" Foreground="Black" FontFamily="Arial" FontSize="24">-5 </Run>
+			<Run x:Name="testcase8" Foreground="Black" FontFamily="Arial" FontSize="24"> -4 </Run>
+			<Run x:Name="testcase9" Foreground="Black" FontFamily="Arial" FontSize="24"> -3 </Run>
+			<Run x:Name="testcase10" Foreground="Black" FontFamily="Arial" FontSize="24"> -2 </Run>
+			<Run x:Name="testcase11" Foreground="Black" FontFamily="Arial" FontSize="24"> -1 </Run>
+			<Run x:Name="testcase12" Foreground="Black" FontFamily="Arial" FontSize="24"> 0 </Run>
+			<Run x:Name="testcase13" Foreground="Black" FontFamily="Arial" FontSize="24"> 1 </Run>
+			<Run x:Name="testcase14" Foreground="Black" FontFamily="Arial" FontSize="24"> 2 </Run>
+			<Run x:Name="testcase15" Foreground="Black" FontFamily="Arial" FontSize="24"> 3 </Run>
+			<Run x:Name="testcase16" Foreground="Black" FontFamily="Arial" FontSize="24"> 4 </Run>
+			<Run x:Name="testcase17" Foreground="Black" FontFamily="Arial" FontSize="24"> 5 </Run>
+		</TextBlock>
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	sender.findName ("testcase1").TextDecorations = -1001;
+	sender.findName ("testcase2").TextDecorations = 0;
+	sender.findName ("testcase3").TextDecorations = 1;
+	sender.findName ("testcase4").TextDecorations = 1000;
+
+	sender.findName ("testcase5").TextDecorations = "nOnE";
+	sender.findName ("testcase6").TextDecorations = "uNdErLiNe";
+
+	sender.findName ("testcase7").TextDecorations = -5;
+	sender.findName ("testcase8").TextDecorations = -4;
+	sender.findName ("testcase9").TextDecorations = -3;
+	sender.findName ("testcase10").TextDecorations = -2;
+	sender.findName ("testcase11").TextDecorations = -1;
+	sender.findName ("testcase12").TextDecorations = 0;
+	sender.findName ("testcase13").TextDecorations = 1;
+	sender.findName ("testcase14").TextDecorations = 2;
+	sender.findName ("testcase15").TextDecorations = 3;
+	sender.findName ("testcase16").TextDecorations = 4;
+	sender.findName ("testcase17").TextDecorations = 5;
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: TextDecorations
+/*
+	sender.findName ("testcase3").TextDecorations = sender.findName ("testcase2");
+	sender.findName ("testcase3").TextDecorations = null;
+	sender.findName ("testcase3").TextDecorations = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>Line 1: Only underline is underlined.
+<p>Line 2: testcase1 and testcase3 are underlined
+<p>Line 3: Only testcase6 is underlined.
+<p>Line 4: Odd numbers are underlined, Even numbers are not.
+  </div>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<html>
+  <head>
+      <title>SweepDirection (ArcSegment) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+		<Path Stroke="Black" StrokeThickness="2">
+		<Path.Data>
+			<PathGeometry>
+			<PathGeometry.Figures>
+				<PathFigureCollection>
+					<PathFigure StartPoint="10,30">
+					<PathFigure.Segments>
+						<PathSegmentCollection>
+							<ArcSegment IsLargeArc="False" Point="50,30" RotationAngle="45" Size="10,10" />
+							<ArcSegment IsLargeArc="False" Point="100,30" RotationAngle="45" Size="10,10" SweepDirection="Clockwise" />
+							<ArcSegment IsLargeArc="False" Point="150,30" RotationAngle="45" Size="10,10" SweepDirection="CounterClockwise" />
+							<ArcSegment IsLargeArc="False" Point="200,30" RotationAngle="45" Size="10,10" SweepDirection="Clockwise" />
+						</PathSegmentCollection>
+					</PathFigure.Segments>
+					</PathFigure>
+				</PathFigureCollection>
+			</PathGeometry.Figures>
+			</PathGeometry>
+		</Path.Data>
+		</Path>
+		<!-- abbreviated syntax : A (arc) -->
+		<Path Stroke="Red" StrokeThickness="1" Data="M 200,30 A 10,10 45 0 0 250,30" />
+		<Path Stroke="Green" StrokeThickness="1" Data="M 250,30 A 10,10 45 0 1 300,30" />
+		<Path Stroke="Blue" StrokeThickness="1" Data="M 300,30 A 10,10 45 1 1 350,30" />
+
+		<Path Stroke="Black" StrokeThickness="2">
+		<Path.Data>
+			<PathGeometry>
+			<PathGeometry.Figures>
+				<PathFigureCollection>
+					<PathFigure StartPoint="10,130">
+					<PathFigure.Segments>
+						<PathSegmentCollection>
+							<ArcSegment x:Name="testcase1" IsLargeArc="False" Point="50,130" RotationAngle="45" Size="10,10" />
+							<ArcSegment x:Name="testcase2" IsLargeArc="False" Point="100,130" RotationAngle="45" Size="10,10" />
+							<ArcSegment x:Name="testcase3" IsLargeArc="False" Point="150,130" RotationAngle="45" Size="10,10" />
+							<ArcSegment x:Name="testcase4" IsLargeArc="False" Point="200,130" RotationAngle="45" Size="10,10" />
+						</PathSegmentCollection>
+					</PathFigure.Segments>
+					</PathFigure>
+				</PathFigureCollection>
+			</PathGeometry.Figures>
+			</PathGeometry>
+		</Path.Data>
+		</Path>
+		<!-- abbreviated syntax 
+			* can't be changed using JavaScript
+			* Silverlight shows an Alert
+			* Silverlight error message, ErrorCode: 2024, ErrorType:ParserError, Message: Invalid attribute value XXX for property Data.
+			* where XXX is the text in Data
+		<Path x:Name="testcase5" Stroke="Red" StrokeThickness="1" Data="M 200,130 A 10,10 45 0 2 250,130" />
+		-->
+ 	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	// invalid values defaults to RIGHT (no value is CENTER)
+	sender.findName ("testcase1").SweepDirection = -1;
+	sender.findName ("testcase2").SweepDirection = 0;
+	sender.findName ("testcase3").SweepDirection = 1;
+	sender.findName ("testcase4").SweepDirection = 2;
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: SweepDirection
+/*
+	sender.findName ("testcase3").StyleSimulations = "-1";
+	sender.findName ("testcase3").StyleSimulations = sender.findName ("testcase2");
+	sender.findName ("testcase3").StyleSimulations = null;
+	sender.findName ("testcase3").StyleSimulations = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>Upper section should be: half-circle down, up, down, up (all black), down (red), up (green) and up (blue)
+<p>Lower section should be: half-circle up, down, up and up (all black)
+  </div>
+  </body>
+</html>

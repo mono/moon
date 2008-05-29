@@ -1,0 +1,136 @@
+<html>
+  <head>
+      <title>TextWrapping (TextBlock) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+		<Rectangle Canvas.Top="0" Canvas.Left="0"   Width="90" Height="50" Stroke="Red" />
+		<TextBlock Canvas.Top="0" Canvas.Left="0"   Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24">
+		ABRA CADA BRA
+		</TextBlock>
+
+		<Rectangle Canvas.Top="0" Canvas.Left="200" Width="90" Height="50" Stroke="Red" />
+		<TextBlock Canvas.Top="0" Canvas.Left="200" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24" TextWrapping="NoWrap">
+		ABRA CADA BRA
+		</TextBlock>
+
+		<Rectangle Canvas.Top="0" Canvas.Left="400" Width="90" Height="50" Stroke="Red" />
+		<TextBlock Canvas.Top="0" Canvas.Left="400" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24" TextWrapping="Wrap">
+		ABRA CADA BRA
+		</TextBlock>
+
+		<Rectangle Canvas.Top="0" Canvas.Left="500" Width="90" Height="50" Stroke="Red" />
+<!-- 
+	WrapWithOverflow not documented in 1.0 (it was in 1.1) but the parser allows it without error
+	Other non valid values would show an alert
+ -->
+		<TextBlock Canvas.Top="0" Canvas.Left="500" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24" TextWrapping="WrapWithOverflow">
+		ABRA CADA BRA
+		</TextBlock>
+ 	
+
+		<Rectangle Canvas.Top="100" Canvas.Left="0"   Width="90" Height="50" Stroke="Red" />
+		<TextBlock x:Name="testcase1" Canvas.Top="100" Canvas.Left="0" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24">
+		ABRA CADA BRA
+		</TextBlock>
+
+		<Rectangle Canvas.Top="100" Canvas.Left="200" Width="90" Height="50" Stroke="Red" />
+		<TextBlock x:Name="testcase2" Canvas.Top="100" Canvas.Left="200" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24">
+		ABRA CADA BRA
+		</TextBlock>
+
+		<Rectangle Canvas.Top="100" Canvas.Left="400" Width="90" Height="50" Stroke="Red" />
+		<TextBlock x:Name="testcase3" Canvas.Top="100" Canvas.Left="400" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24">
+		ABRA CADA BRA
+		</TextBlock>
+
+		<Rectangle Canvas.Top="100" Canvas.Left="500" Width="90" Height="50" Stroke="Red" />
+		<TextBlock x:Name="testcase4" Canvas.Top="100" Canvas.Left="500" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24">
+		ABRA CADA BRA
+		</TextBlock>
+
+
+		<Rectangle Canvas.Top="200" Canvas.Left="0"   Width="90" Height="50" Stroke="Red" />
+		<TextBlock x:Name="testcase5" Canvas.Top="200" Canvas.Left="0" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24">
+		ABRA CADA BRA
+		</TextBlock>
+
+		<Rectangle Canvas.Top="200" Canvas.Left="200" Width="90" Height="50" Stroke="Red" />
+		<TextBlock x:Name="testcase6" Canvas.Top="200" Canvas.Left="200" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24">
+		ABRA CADA BRA
+		</TextBlock>
+
+		<Rectangle Canvas.Top="200" Canvas.Left="400" Width="90" Height="50" Stroke="Red" />
+		<TextBlock x:Name="testcase7" Canvas.Top="200" Canvas.Left="400" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24">
+		ABRA CADA BRA
+		</TextBlock>
+
+		<Rectangle Canvas.Top="200" Canvas.Left="500" Width="90" Height="50" Stroke="Red" />
+		<TextBlock x:Name="testcase8" Canvas.Top="200" Canvas.Left="500" Width="90" Height="50" Foreground="Black" FontFamily="Arial" FontSize="24">
+		ABRA CADA BRA
+		</TextBlock>
+	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	sender.findName ("testcase1").TextWrapping = 0;
+	sender.findName ("testcase2").TextWrapping = 1;
+	sender.findName ("testcase3").TextWrapping = -1;
+	sender.findName ("testcase4").TextWrapping = 1000;
+
+	sender.findName ("testcase5").TextWrapping = "nOwRaP";
+	sender.findName ("testcase6").TextWrapping = "wRaP";
+	sender.findName ("testcase7").TextWrapping = "wRaPwItHoVerFlOw";
+	sender.findName ("testcase8").TextWrapping = -1000;
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: TextWrapping
+/*
+	sender.findName ("testcase5").TextWrapping = "nOnE";
+	sender.findName ("testcase3").TextDecorations = sender.findName ("testcase2");
+	sender.findName ("testcase3").TextDecorations = null;
+	sender.findName ("testcase3").TextDecorations = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0: "ABRA C" inside rectangle, "ADA" outside, no "BRA" shown
+<br>1,0: "ABRA C" inside rectangle, "ADA" outside, no "BRA" shown
+<br>2,0: "ABRA" on first line, "CADA" on second line (botn inside rectangle), "BRA" on third line (outside rectangle)
+<br>3,0: "ABRA" on first line, "CADA" on second line (botn inside rectangle), "BRA" on third line (outside rectangle)
+<p>0,1: "ABRA" on first line, "CADA" on second line (botn inside rectangle), "BRA" on third line (outside rectangle)
+<br>1,1: "ABRA C" inside rectangle, "ADA" outside, no "BRA" shown
+<br>2,1: "ABRA" on first line, "CADA" on second line (botn inside rectangle), "BRA" on third line (outside rectangle)
+<br>3,1: "ABRA" on first line, "CADA" on second line (botn inside rectangle), "BRA" on third line (outside rectangle)
+<p>0,2: "ABRA C" inside rectangle, "ADA" outside, no "BRA" shown
+<br>1,2: "ABRA" on first line, "CADA" on second line (botn inside rectangle), "BRA" on third line (outside rectangle)
+<br>2,2: "ABRA" on first line, "CADA" on second line (botn inside rectangle), "BRA" on third line (outside rectangle)
+<br>3,2: "ABRA" on first line, "CADA" on second line (botn inside rectangle), "BRA" on third line (outside rectangle)
+  </div>
+  </body>
+</html>
