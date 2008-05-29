@@ -1,3 +1,19 @@
+2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* all.html, test-bufferingprogress.html,
+	  test-download-and-buffering-progress-on-big-files.html,
+	  test-downloadprogress-on-small-files.html,
+	  test-events-with-playlist.html, test-http-failure.html,
+	  test-inexistent-media.html, test-invalid-video-codec.html,
+	  test-mms-failure.html, test-misc.html,
+	  test-playlist-live-with-duration.html,
+	  test-playlist-with-base.html, test-playlist-with-duration.html,
+	  test-reset-media-element-source.html,
+	  test-playlist-with-clientskip.html, test-yuv-converter.html,
+	  test-state-after-setsource.html, video-seek.html,
+	  video-seek-7.html: Include utils.js before testplugin.js, and
+	  remove Silverlight.js includes.
+
 2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-playlist-live-with-duration.html: No need for Silverlight.js.

@@ -4,8 +4,8 @@
 <head>
   <title>Video seek test</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-      <script src="../../js/js/testplugin.js"></script>
       <script src="../../js/js/utils.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
 </head>
 <body>
 
@@ -49,13 +49,13 @@
 
 	function logResult ()
 	{
-		TestLogger.LogDebug ("logResult");
+		TestLogger.LogDebug ("logResult, seeked: " + seeked + ", ready: " + ready + ", current_pos: " + current_pos + ", max_pox: " + max_pos);
 		if (!(seeked && ready)) {
 			setTimeout ("logResult ();", 250);
 			return;
 		}
 
-		TestHost.CaptureSingleImage (".", "video-seek.html." + doubleDigit (seeks_done) + "-" + current_pos_string.replace (/:/g, "_") + ".png", 0, 0, 1200, 800);
+		//TestHost.CaptureSingleImage (".", "video-seek.html." + doubleDigit (seeks_done) + "-" + current_pos_string.replace (/:/g, "_") + ".png", 0, 0, 1200, 800);
 
 		if (done) {
 			if (result) {

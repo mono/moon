@@ -4,7 +4,7 @@
 
 		<script type="text/xaml" id="xaml">
 			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
-				<MediaElement Source="test-playlist-live-with-duration.asx" x:Name="media" 
+				<MediaElement x:Name="media" 
 					MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" 
 					BufferingProgressChanged="OnBufferingProgressChanged" DownloadProgressChanged="OnDownloadProgressChanged"
 					CurrentStateChanged="OnCurrentStateChanged" />
@@ -14,7 +14,9 @@
 		<script language="javascript" src="../../js/js/utils.js"></script>
 		<script language="javascript" src="../../js/js/testplugin.js"></script>
 		<script language="javascript">
-
+		
+		var mediaElement = null;
+		var plugin = null;
 		var timeout = null;
 		var failed = 0;
 		var start_time = 0;
@@ -22,6 +24,7 @@
 
 		function EndTest ()
 		{
+			TestLogger.LogDebug ("EndTest");
 			if (end_time == 0) {
 				TestLogger.LogError ("MediaEnded wasn't raised");
 				failed++;
@@ -94,6 +97,9 @@
 			TestLogger.LogDebug ("OnPluginLoad");
 			assertForMediaServer ();
 			SetTimer (30000);
+			plugin = document.getElementById ("MLControl");
+			mediaElement = plugin.content.findName ("media");
+			mediaElement.Source = "test-playlist-live-with-duration.asx";
 		}
 
 		function SetTimer (ms)
