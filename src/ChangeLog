@@ -1,3 +1,7 @@
+2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp: Updated.
+
 2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* http-streaming.cpp: Handle quoted feature strings.

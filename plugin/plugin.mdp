@@ -56,8 +56,6 @@
     <File name="firefox/Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="firefox/ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="firefox/browser-http.inc" subtype="Code" buildaction="Nothing" />
-    <File name="ff3" subtype="Directory" buildaction="Compile" />
-    <File name="ff2" subtype="Directory" buildaction="Compile" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>
