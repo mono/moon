@@ -1,5 +1,10 @@
 2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* runtime.cpp: When setting the background color delete any previoys
+	  background color.
+
+2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* uielement.cpp: Fix minor leak.
 
 2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -2151,6 +2151,9 @@ Surface::SetTrans (bool trans)
 void
 Surface::SetBackgroundColor (Color *color)
 {
+	if (background_color)
+		delete background_color;
+		
 	background_color = new Color (*color);
 
 	Invalidate (Rect (0, 0, width, height));
