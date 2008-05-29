@@ -401,7 +401,7 @@ TextLayout::LayoutWrapWithOverflow ()
 		}
 		
 		if (!underlined)
-			underlined = IsUnderline (run->deco);
+			underlined = run->IsUnderlined ();
 		descend = MIN (descend, run->font->Descender ());
 		height = MAX (height, run->font->Height ());
 		
@@ -432,7 +432,7 @@ TextLayout::LayoutWrapWithOverflow ()
 			}
 			
 			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
-			if (IsUnderline (run->deco)) {
+			if (run->IsUnderlined ()) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
 			}
@@ -469,7 +469,7 @@ TextLayout::LayoutWrapWithOverflow ()
 				line = new TextLine ();
 				blank = true;
 				
-				underlined = IsUnderline (run->deco);
+				underlined = run->IsUnderlined ();
 				descend = run->font->Descender ();
 				height = run->font->Height ();
 				
@@ -587,7 +587,7 @@ TextLayout::LayoutNoWrap ()
 		}
 		
 		if (!underlined)
-			underlined = IsUnderline (run->deco);
+			underlined = run->IsUnderlined ();
 		descend = MIN (descend, run->font->Descender ());
 		height = MAX (height, run->font->Height ());
 		
@@ -618,7 +618,7 @@ TextLayout::LayoutNoWrap ()
 			}
 			
 			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
-			if (IsUnderline (run->deco)) {
+			if (run->IsUnderlined ()) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
 			}
@@ -654,7 +654,7 @@ TextLayout::LayoutNoWrap ()
 			if (max_width > 0.0 && x1 >= max_width) {
 				// cut the remainder of the run unless it is underlined
 				// (in which case we need to underline trailing lwsp).
-				if (!IsUnderline (run->deco)) {
+				if (!run->IsUnderlined ()) {
 					clipped = true;
 					break;
 				}
@@ -793,7 +793,7 @@ TextLayout::LayoutWrap ()
 		}
 		
 		if (!underlined)
-			underlined = IsUnderline (run->deco);
+			underlined = run->IsUnderlined ();
 		descend = MIN (descend, run->font->Descender ());
 		height = MAX (height, run->font->Height ());
 		
@@ -827,7 +827,7 @@ TextLayout::LayoutWrap ()
 			}
 			
 			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
-			if (IsUnderline (run->deco) || include_lwsp) {
+			if (run->IsUnderlined () || include_lwsp) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
 			}
@@ -867,7 +867,7 @@ TextLayout::LayoutWrap ()
 				line = new TextLine ();
 				blank = true;
 				
-				underlined = IsUnderline (run->deco);
+				underlined = run->IsUnderlined ();
 				descend = run->font->Descender ();
 				height = run->font->Height ();
 				

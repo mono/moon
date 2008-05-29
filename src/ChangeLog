@@ -1,3 +1,13 @@
+2008-05-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp|h (TextRun::IsUnderlined): Replacement for
+	TextLayout::IsUnderline().
+	(TextLayout::IsUnderline): Removed.
+
+	* font.h (enum TextDecorations): Add a comment explaining that
+	this is meant to be used as bit flags and not a normal
+	enumeration.
+
 2008-05-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* font.h: Revert TextWrapping change as it regress DRT tests

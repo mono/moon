@@ -29,6 +29,8 @@ class TextRun : public List::Node {
 	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg);
 	TextRun (TextFontDescription *font);
 	~TextRun ();
+	
+	bool IsUnderlined () { return (deco & TextDecorationsUnderline); }
 };
 
 
@@ -51,8 +53,6 @@ class TextLayout {
 	void LayoutWrapWithOverflow ();
 	void LayoutNoWrap ();
 	void LayoutWrap ();
-
-	bool IsUnderline (TextDecorations deco) { return (deco & TextDecorationsUnderline); }
 	
  public:
 	

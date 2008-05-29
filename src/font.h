@@ -66,9 +66,11 @@ enum StyleSimulations {
 	StyleSimulationsNone
 };
 
+// TextDecorations would appear to be a collection of bit flags rather
+// than a normal enumeration of values
 enum TextDecorations {
-	TextDecorationsNone,
-	TextDecorationsUnderline
+	TextDecorationsNone      = 0,
+	TextDecorationsUnderline = (1 << 0)
 };
 
 enum TextWrapping {
@@ -79,12 +81,12 @@ enum TextWrapping {
 
 
 enum FontMask {
-	FontMaskFamily   = 1 << 0,
-	FontMaskStyle    = 1 << 1,
-	FontMaskWeight   = 1 << 2,
-	FontMaskStretch  = 1 << 3,
-	FontMaskSize     = 1 << 4,
-	FontMaskFilename = 1 << 5,
+	FontMaskFamily   = (1 << 0),
+	FontMaskStyle    = (1 << 1),
+	FontMaskWeight   = (1 << 2),
+	FontMaskStretch  = (1 << 3),
+	FontMaskSize     = (1 << 4),
+	FontMaskFilename = (1 << 5),
 };
 
 
