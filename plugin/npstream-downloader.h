@@ -33,7 +33,7 @@ class NPStreamDownloader : public BrowserDownloader {
 		this->offset = 0;
 	}
 
-	~NPStreamDownloader ()
+	virtual ~NPStreamDownloader ()
 	{
 		g_free (buffer);
 	}

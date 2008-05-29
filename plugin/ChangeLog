@@ -1,5 +1,15 @@
 2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mms-downloader.cpp: MmsDownloader::Read: only delete the ASFParser
+	  after we've finished with the data it contains.
+	  MmsDownloader::ProcessMetadataPacket: fix parsing quoted strings.
+	* mms-downloader.h, npstream-downloader.h: Make dtor virtual.
+	* plugin-downloader.cpp, plugin-downloader.h: Move ctors and dtors into
+	  cpp file, and delete the BrowserDownloader in PluginDownloader's
+	  dtor.
+
+2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin.mdp: Updated.
 
 2008-05-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 

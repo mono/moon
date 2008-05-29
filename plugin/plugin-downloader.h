@@ -37,16 +37,8 @@ class BrowserDownloader {
 	BrowserResponse *response;
 
  public:
-	BrowserDownloader (PluginDownloader *pd)
-	{
-		this->pd = pd;
-		this->response = NULL;
-	}
-
-	~BrowserDownloader ()
-	{
-		this->pd = NULL;
-	}
+	BrowserDownloader (PluginDownloader *pd);
+	virtual ~BrowserDownloader ();
 
 	virtual void Abort () = 0;
 	virtual uint32_t Read (char *buffer, uint32_t length) = 0;
@@ -67,19 +59,8 @@ class PluginDownloader {
 	char *verb;
 
  public:
-	PluginDownloader (Downloader *dl)
-	{
-		this->dl = dl;
-		this->uri = NULL;
-		this->verb = NULL;
-	}
-
-	~PluginDownloader ()
-	{
-		g_free (verb);
-		g_free (uri);
-		dl = NULL;
-	}
+	PluginDownloader (Downloader *dl);
+	virtual ~PluginDownloader ();
 
 	void Open (const char *verb, const char *uri);
 

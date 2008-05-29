@@ -84,7 +84,7 @@ class MmsDownloader : public BrowserDownloader {
 	
  public:
 	MmsDownloader (PluginDownloader *pdl);
-	~MmsDownloader ();
+	virtual ~MmsDownloader ();
 
 	void Abort ();
 	void Send ();

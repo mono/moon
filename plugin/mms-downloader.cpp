@@ -27,7 +27,7 @@ is_valid_mms_header (MmsHeader *header)
 
 MmsDownloader::MmsDownloader (PluginDownloader *pdl) : BrowserDownloader (pdl)
 {
-	LOG_MMS ("MmsDownloader::MmsDownloader ()\n");
+	LOG_MMS ("MmsDownloader::MmsDownloader (): this: %p\n", this);
 	
 	this->buffer = NULL;
 	this->response = NULL;
@@ -70,7 +70,7 @@ MmsDownloader::Abort ()
 uint32_t
 MmsDownloader::Read (char *buffer, uint32_t length)
 {
-	LOG_MMS ("MmsDownloader::Read ()\n");
+	LOG_MMS ("MmsDownloader::Read (%p, %u). size: %u\n", buffer, length, this->size);
 	
 	MmsHeader *header;
 	MmsPacket *packet;
@@ -241,8 +241,6 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 	this->asf_packet_size = parser->GetPacketSize ();
 	this->header_size = header->length - sizeof (MmsDataPacket);
 
-	delete parser;
-
 	if (properties->file_size == this->header_size) {
 		this->seekable = false;
 	} else {
@@ -253,6 +251,8 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 	// FIXME: Dont poll the requested position, notify over
 	if (requested_position == -1);
 		pd->dl->Write (payload, 0, this->header_size);
+
+	delete parser;
 
 	return true;
 }
@@ -274,26 +274,34 @@ MmsDownloader::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char
 	
 	// format: key=value,key=value\0
 	// example:
-	// playlist-gen-id=1,broadcast-id=2,features=broadcast,seekable\0
+	// playlist-gen-id=1,broadcast-id=2,features="broadcast,seekable"\0
 	
 	// Make sure payload is null-terminated
 	for (int i = 0; i < packet->packet.data.size; i++) {
 		if (payload [i] == 0)
 			break;
-		if (i == packet->packet.data.size)
+		if (i == packet->packet.data.size - 1)
 			payload [i] = NULL;
 	}
 	
 	do {
 		key = strtok_r (start, "=", &state);
 		start = NULL;
-		value = strtok_r (NULL, ",", &state);
 		
-		if (key == NULL || value == NULL)
+		if (key == NULL)
 			break;
 			
 		if (key [0] == ' ')
 			key++;
+		
+		if (!strcmp (key, "features")) {
+			value = strtok_r (NULL, "\"", &state);
+		} else {
+			value = strtok_r (NULL, ",", &state);
+		}
+		
+		if (value == NULL)
+			break;
 			
 		LOG_MMS ("MmsDownloader::ProcessMetadataPacket (): %s=%s\n", key, value);
 		

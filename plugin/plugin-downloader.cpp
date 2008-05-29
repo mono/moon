@@ -23,6 +23,7 @@ bool downloader_shutdown = false;
 uint32_t
 browser_downloader_started (BrowserResponse *response, gpointer state)
 {
+	d(printf ("browser_downloader_started (%p, %p).\n", response, state));
 	BrowserDownloader *downloader = (BrowserDownloader *)state;
 
 	if (downloader != NULL) {
@@ -36,6 +37,7 @@ browser_downloader_started (BrowserResponse *response, gpointer state)
 uint32_t
 browser_downloader_available (BrowserResponse *response, gpointer state, char *buffer, uint32_t length)
 {
+	d(printf ("browser_downloader_available (%p, %p, %p, %u).\n", response, state, buffer, length));
 	BrowserDownloader *downloader = (BrowserDownloader *)state;
 
 	if (downloader != NULL) {
@@ -48,6 +50,7 @@ browser_downloader_available (BrowserResponse *response, gpointer state, char *b
 uint32_t
 browser_downloader_finished (BrowserResponse *response, gpointer state)
 {
+	d(printf ("browser_downloader_finished (%p, %p).\n", response, state));
 	BrowserDownloader *downloader = (BrowserDownloader *)state;
 
 	if (downloader != NULL) {
@@ -124,9 +127,32 @@ downloader_destroy (void)
 	downloader_shutdown = true;
 }
 
+PluginDownloader::PluginDownloader (Downloader *dl)
+{
+	d (printf ("PluginDownloader::PluginDownloader (), dl: %p\n", dl));
+	this->dl = dl;
+	this->uri = NULL;
+	this->verb = NULL;
+	this->bdl = NULL;
+}
+
+PluginDownloader::~PluginDownloader ()
+{
+	d (printf ("PluginDownloader::~PluginDownloader (), dl: %p, bdl: %p\n", dl, bdl));
+	g_free (verb);
+	g_free (uri);
+	dl = NULL;
+	delete bdl;
+	bdl = NULL;
+}
+
 void
 PluginDownloader::Open (const char *verb, const char *uri)
 {
+	delete this->bdl;
+	g_free (this->uri);
+	g_free (this->verb);
+	
 	this->verb = g_strdup (verb);
 	if (strncmp (uri, "mms://", 6) == 0) {
 		this->uri = g_strdup_printf ("http://%s", uri+6);
@@ -168,6 +194,18 @@ PluginDownloader::GetPlugin ()
 }
 
 // BrowserDownloader
+
+BrowserDownloader::BrowserDownloader (PluginDownloader *pd)
+{
+	this->pd = pd;
+	this->response = NULL;
+}
+
+BrowserDownloader::~BrowserDownloader ()
+{
+	this->pd = NULL;
+	this->response = NULL;
+}
 
 PluginInstance *
 BrowserDownloader::GetPlugin ()
