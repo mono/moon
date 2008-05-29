@@ -586,6 +586,8 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 		if (subtract)
 			surface_region->Subtract (bounds);
+	} else {
+		delete self_region;
 	}
 }
 
