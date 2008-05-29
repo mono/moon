@@ -16,6 +16,7 @@
 //
 // Control Class
 //
+/* @ContentProperty="Content" */
 class Control : public FrameworkElement {
  private:
 	bool emitting_loaded;
@@ -74,11 +75,6 @@ public:
 	static DependencyProperty *ContentProperty;
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	
-	virtual DependencyProperty *GetContentProperty ()
-	{
-		return ContentProperty;
-	}
 };
 
 G_BEGIN_DECLS

@@ -152,6 +152,9 @@ Type::GetContentPropertyName ()
 {
 	Type *parent_type;
 
+	if (type == INVALID)
+		return NULL;
+
 	if (content_property)
 		return content_property;
 

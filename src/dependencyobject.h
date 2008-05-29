@@ -222,18 +222,6 @@ class DependencyObject : public EventObject {
 		return v ? v->AsString () : NULL;
 	}
 
-	//
-	// Returns the ContentPropertyAttribute::Content value for this DependencyObject
-	// if not NULL, this indicates the property that must be set on the object
-	// when parsing a XAML element.   This is equivalent to the C# [ContentProperty]
-	// attribute applied to managed classes
-	//
-	virtual DependencyProperty *GetContentProperty ()
-	{
-		// no content property by default.
-		return NULL;
-	}
-	
 	virtual void SetSurface (Surface *surface);
 
 	void SetLogicalParent (DependencyObject *logical_parent);

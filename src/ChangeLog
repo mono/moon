@@ -1,3 +1,16 @@
+2008-05-29  Jackson Harper  <jackson@ximian.com>
+
+	* type.cpp: INVALID types don't have content properties.
+	* dependencyobject.h: Content properties are stored on the Type so
+	we don't need to store them here.
+	* xaml.cpp: Get content properties from the Type system instead of
+	the parser's internal type map.
+	- We don't need to do any special handling in the start_element
+	handler for content properties anymore.
+	* control.cpp|h: We don't need to expose the content property
+	anymore.
+	- Mark the content property for controls.
+	
 2008-05-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* font.h: Fix enum values for TextWrapping

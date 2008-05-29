@@ -243,7 +243,6 @@ class XamlElementInfo {
 	const char *name;
 	XamlElementInfo *parent;
 	Type::Kind dependency_type;
-	const char *content_property;
 
 	create_item_func create_item;
 	create_element_instance_func create_element;
@@ -252,7 +251,7 @@ class XamlElementInfo {
 	set_attributes_func set_attributes;
 
 	XamlElementInfo (const char *name, XamlElementInfo *parent, Type::Kind dependency_type) :
-		name (name), parent (parent), dependency_type (dependency_type), content_property (NULL),
+		name (name), parent (parent), dependency_type (dependency_type), 
 		create_item (NULL), create_element (NULL), add_child (NULL), set_property (NULL), set_attributes (NULL)
 	{
 
@@ -260,16 +259,7 @@ class XamlElementInfo {
 
         const char * GetContentProperty ()
 	{
-		XamlElementInfo *walk = this;
-
-		while (walk) {
-			if (walk->content_property)
-				return walk->content_property;
-
-			walk = walk->parent;
-		}
-
-		return NULL;
+		return Type::Find (dependency_type)->GetContentPropertyName ();
 	}
 	
  protected:
@@ -897,18 +887,6 @@ start_element (void *data, const char *el, const char **attr)
 			return;
 
 		if (p->current_element){
-			if (p->current_element->item){
-				DependencyProperty *content_property = p->current_element->item->GetContentProperty ();
-			
-				if (content_property != NULL){
-					//
-					// FIXME: this needs to cope with collections as well
-					// FIXME: this needs to cope with conversions as specified (if the type is not string or object
-					//
-					p->current_element->item->SetValue (content_property, inst->item);
-				}
-			}
-
 			if (p->current_element->info) {
 				p->current_element->info->add_child (p, p->current_element, inst);
 				if (p->error_args)
@@ -978,7 +956,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		return;
 	
 	if (p->current_element->info)
-		prop_name = p->current_element->info->content_property;
+		prop_name = p->current_element->info->GetContentProperty ();
 	
 	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
@@ -3109,7 +3087,6 @@ register_dependency_object_element (GHashTable *table, const char *name, XamlEle
 {
 	XamlElementInfo *res = new XamlElementInfo (name, parent, dt);
 
-	res->content_property = NULL;
 	res->create_item = create_item;
 	res->create_element = default_create_element_instance;
 	res->add_child = dependency_object_add_child;
@@ -3175,17 +3152,14 @@ xaml_init (void)
 	rdoe (dem, "RectangleGeometry", geo, Type::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
 
 	XamlElementInfo *gg = rdoe (dem, "GeometryGroup", geo, Type::GEOMETRYGROUP, (create_item_func) geometry_group_new);
-	gg->content_property = "Children";
 
 
 	/*XamlElementInfo *gc = */ rdoe (dem, "GeometryCollection", col, Type::GEOMETRY_COLLECTION, (create_item_func) geometry_collection_new);
 	XamlElementInfo *pg = rdoe (dem, "PathGeometry", geo, Type::PATHGEOMETRY, (create_item_func) path_geometry_new);
-	pg->content_property = "Figures";
 
 	/*XamlElementInfo *pfc = */ rdoe (dem, "PathFigureCollection", col, Type::PATHFIGURE_COLLECTION, (create_item_func) path_figure_collection_new);
 
 	XamlElementInfo *pf = rdoe (dem, "PathFigure", geo, Type::PATHFIGURE, (create_item_func) path_figure_new);
-	pf->content_property = "Segments";
 
 	/*XamlElementInfo *psc = */ rdoe (dem, "PathSegmentCollection", col, Type::PATHSEGMENT_COLLECTION, (create_item_func) path_segment_collection_new);
 
@@ -3220,13 +3194,10 @@ xaml_init (void)
 	XamlElementInfo *pa = rdoe (dem, "PointAnimation", anim, Type::POINTANIMATION, (create_item_func) point_animation_new);
 
 	XamlElementInfo *daukf = rdoe (dem, "DoubleAnimationUsingKeyFrames", da, Type::DOUBLEANIMATIONUSINGKEYFRAMES, (create_item_func) double_animation_using_key_frames_new);
-	daukf->content_property = "KeyFrames";
 
 	XamlElementInfo *caukf = rdoe (dem, "ColorAnimationUsingKeyFrames", ca, Type::COLORANIMATIONUSINGKEYFRAMES, (create_item_func) color_animation_using_key_frames_new);
-	caukf->content_property = "KeyFrames";
 
 	XamlElementInfo *paukf = rdoe (dem, "PointAnimationUsingKeyFrames", pa, Type::POINTANIMATIONUSINGKEYFRAMES, (create_item_func) point_animation_using_key_frames_new);
-	paukf->content_property = "KeyFrames";
 
 	XamlElementInfo *kfcol = rdoe (dem, "KeyFrameCollection", col, Type::KEYFRAME_COLLECTION, NULL);
 
@@ -3260,7 +3231,6 @@ xaml_init (void)
 	XamlElementInfo *prltl = register_ghost_element ("ParallelTimeline", tlg, Type::PARALLELTIMELINE);
 
 	XamlElementInfo *sb = rdoe (dem, "Storyboard", prltl, Type::STORYBOARD, (create_item_func) storyboard_new);
-	sb->content_property = "Children";
 
 	rdoe (dem, "TimelineMarkerCollection", col, Type::TIMELINEMARKER_COLLECTION, (create_item_func) timeline_marker_collection_new);
 	rdoe (dem, "TimelineMarker", NULL, Type::TIMELINEMARKER, (create_item_func) timeline_marker_new);
@@ -3271,10 +3241,8 @@ xaml_init (void)
 	XamlElementInfo *trg = register_ghost_element ("Trigger", NULL, Type::TRIGGERACTION);
 	XamlElementInfo *bsb = rdoe (dem, "BeginStoryboard", trg, Type::BEGINSTORYBOARD,
 			(create_item_func) begin_storyboard_new);
-	bsb->content_property = "Storyboard";
 
 	XamlElementInfo *evt = rdoe (dem, "EventTrigger", NULL, Type::EVENTTRIGGER, (create_item_func) event_trigger_new);
-	evt->content_property = "Actions";
 
 	rdoe (dem, "TriggerCollection", col, Type::TRIGGER_COLLECTION, (create_item_func) trigger_collection_new);
 	rdoe (dem, "TriggerActionCollection", col, Type::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
@@ -3294,7 +3262,6 @@ xaml_init (void)
 	rdoe (dem, "TranslateTransform", tf, Type::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
 	rdoe (dem, "MatrixTransform", tf, Type::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
 	XamlElementInfo *tg = rdoe (dem, "TransformGroup", tf, Type::TRANSFORMGROUP, (create_item_func) transform_group_new);
-	tg->content_property = "Children";
 	
 	rdoe (dem, "TransformCollection", col, Type::TRANSFORM_COLLECTION, (create_item_func) transform_collection_new);
 
@@ -3307,7 +3274,6 @@ xaml_init (void)
 	rdoe (dem, "SolidColorBrush", brush, Type::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
 
 	XamlElementInfo *gb = register_ghost_element ("GradientBrush", brush, Type::GRADIENTBRUSH);
-	gb->content_property = "GradientStops";
 
 	rdoe (dem, "LinearGradientBrush", gb, Type::LINEARGRADIENTBRUSH, (create_item_func) linear_gradient_brush_new);
 	rdoe (dem, "RadialGradientBrush", gb, Type::RADIALGRADIENTBRUSH, (create_item_func) radial_gradient_brush_new);
@@ -3338,12 +3304,10 @@ xaml_init (void)
 	
 	XamlElementInfo *in = register_ghost_element ("Inline", NULL, Type::INLINE);
 	XamlElementInfo *txtblk = rdoe (dem, "TextBlock", fw, Type::TEXTBLOCK, (create_item_func) text_block_new);
-	txtblk->content_property = "Inlines";
 
 	rdoe (dem, "Inlines", col, Type::INLINES, (create_item_func) inlines_new);
 
 	XamlElementInfo *run = rdoe (dem, "Run", in, Type::RUN, (create_item_func) run_new);
-	run->content_property = "Text";
 	rdoe (dem, "LineBreak", in, Type::LINEBREAK, (create_item_func) line_break_new);
 	rdoe (dem, "Glyphs", fw, Type::GLYPHS, (create_item_func) glyphs_new);
 
