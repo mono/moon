@@ -1,3 +1,9 @@
+2008-05-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* font.h: Revert TextWrapping change as it regress DRT tests
+	(it's possible that the value were right, but did not match
+	the managed value used by Silverlight 1.1).
+
 2008-05-29  Jackson Harper  <jackson@ximian.com>
 
 	* type.cpp: INVALID types don't have content properties.
