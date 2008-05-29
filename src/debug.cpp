@@ -141,7 +141,8 @@ library_of_ip (gpointer ip, gpointer* base_address)
 		if (buffer_read < 0)
 			break;
 		
-		memcpy (entire_line, buffer, buffer_length + 1);
+		memcpy (entire_line, buffer, buffer_read);
+		entire_line [buffer_read + 1] = 0;
 
 		if (buffer_read < 20)
 			continue;
@@ -218,6 +219,9 @@ addr2line_offset (gpointer ip, bool use_offset)
 	//printf ("library_of_ip (%p, %p): %s\n", ip, base_address, binary);
 	
 	if (binary == NULL)
+		return NULL;
+		
+	if (binary [0] == '[')
 		return NULL;
 
 	for (addr2line = addr2line_pipes; addr2line; addr2line = addr2line->next) {

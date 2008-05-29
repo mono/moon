@@ -1,3 +1,7 @@
+2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* debug.cpp: Fix an invalid read issue found with valgrind.
+
 2008-05-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* layout.h|cpp: Handle invalid values for TextDecorations and
