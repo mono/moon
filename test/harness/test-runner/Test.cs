@@ -397,6 +397,9 @@ namespace MoonlightTests {
 
 			xsp = new ExternalProcess ("xsp", args, -1);
 			xsp.Run (false);
+			// Wait a second to let xsp startup before continuing
+			// otherwise the test might make requests before xsp is ready
+			System.Threading.Thread.Sleep (1000);			
 		}
 
 		private void StopXspIfNeeded ()
