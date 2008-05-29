@@ -142,14 +142,14 @@ PluginDownloader::~PluginDownloader ()
 	g_free (verb);
 	g_free (uri);
 	dl = NULL;
-	delete bdl;
+	//delete bdl;
 	bdl = NULL;
 }
 
 void
 PluginDownloader::Open (const char *verb, const char *uri)
 {
-	delete this->bdl;
+	//delete this->bdl;
 	g_free (this->uri);
 	g_free (this->verb);
 	

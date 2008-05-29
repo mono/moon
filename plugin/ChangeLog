@@ -1,5 +1,10 @@
 2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin-downloader.cpp: Don't delete BrowserDownloaders, it causes
+	  crashes for the moment.
+
+2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mms-downloader.cpp: MmsDownloader::Read: only delete the ASFParser
 	  after we've finished with the data it contains.
 	  MmsDownloader::ProcessMetadataPacket: fix parsing quoted strings.
