@@ -248,12 +248,10 @@ intersect_line_2d (Point p1, Point p2, Point p3, Point p4)
 
 	double ua = (p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x);
 	ua /= denom;
-	if (ua >= 0 && ua <= 1)
-		return true;
 
 	double ub = (p2.x - p1.x) * (p1.y - p3.y) - (p2.y - p1.y) * (p1.x - p3.x);
 	ub /= denom;
-	if (ub >= 0 && ub <= 1)
+	if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1)
 		return true;
 
 	return false;

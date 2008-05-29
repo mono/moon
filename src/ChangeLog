@@ -1,3 +1,7 @@
+2008-05-29  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* stylus.cpp: fix intersect_line_2d to fix the inkJournal thing.
+
 2008-05-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp|h (TextRun::IsUnderlined): Replacement for
