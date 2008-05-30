@@ -34,4 +34,7 @@ clock33 - autoreversed storyboard with speed ratio > 1.0.
 clock34 - storyboard containing keyframes + normal animation extending that. Take from Popfly.
 clock35 - same as 33 but very fast (jaggy problems)
 clock36 - scaling with FillBehavior = HoldEnd using SplineDoubleKeyFrame
+clock37 - Animation starting at 00:00:01 and repeating forever 
+clock38 - Same as 37 but with animation keyframes
+clock40 - HoldEnd storyboard with Stop animation inside with SpeedBahavior (precision issues)
 
