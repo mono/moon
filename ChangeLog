@@ -8,12 +8,6 @@
 
 	* ffmpeg.patch: plugin installer ffmpeg patch was missing some tweaks
 
-2008-05-28  Michael Dominic K.  <mdk@mdk.am>
-
-	* test/xaml/test-animation-only-from.xaml: Adding a test for animation
-	that only has "From" value but not "To" value. We currently break with
-	it.
-
 2008-05-23  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: The plugin installer can be built with support for
