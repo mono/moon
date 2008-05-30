@@ -1,5 +1,11 @@
 2008-05-30  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Don't validate animations that have Duration of "00:00:00"
+	and RepeatBehavior="Stop". That is what SL does. Fixes the clock41.xaml
+	test.
+
+2008-05-30  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml.cpp: Adding a compatibility option
 	(--with-compatibility-bugs=yes) that introduces a Silverlight 1.0
 	RepeatBehavior bug.
