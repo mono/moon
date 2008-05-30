@@ -41,6 +41,27 @@ class FrameworkElement : public UIElement {
 	
 	void SetWidth (double width);
 	double GetWidth ();
+
+
+       //
+       // 2.0 methods
+       //
+
+       virtual Size MeasureOverride (Size availableSize)
+       {
+               return Size (0, 0);
+       }
+
+       // overrides uielement::MeasureCore
+       virtual Size MeasureCore (Size availableSize)
+       {
+               //
+               // We proxy from UIElement.MeasureCore to FrameworkElement.MeasureOverride
+               //
+               // WPF docs do not shed much light into why there is a difference
+               //
+               return MeasureOverride (availableSize);
+       }
 };
 
 G_BEGIN_DECLS

@@ -564,7 +564,7 @@ namespace System.Windows {
 			NativeMethods.value_free_value (ref v);
 		}
 
-		public DependencyObject FindName (string name)
+		internal DependencyObject DepObjectFindName (string name)
 		{
 			Kind k;
 			IntPtr o = NativeMethods.dependency_object_find_name (native, name, out k);

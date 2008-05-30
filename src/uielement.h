@@ -18,6 +18,7 @@
 #include "rect.h"
 #include "region.h"
 #include "list.h"
+#include "size.h"
 
 #define QUANTUM_ALPHA 1
 
@@ -337,6 +338,21 @@ class UIElement : public Visual {
 		Value *vu = GetValue (UIElement::RenderTransformOriginProperty);
 		return *vu->AsPoint ();
 	}
+
+	//
+	// 2.0 methods
+	//
+	Size desired_size;
+	
+	void Measure (Size availableSize)
+	{
+		desired_size = MeasureCore (availableSize);
+	}
+
+	virtual Size MeasureCore (Size availableSize)
+	{
+		return Size (0, 0);
+	}
 	
 	static DependencyProperty *ClipProperty;
 	static DependencyProperty *CursorProperty;
@@ -391,6 +407,8 @@ void       uielement_set_opacity          (UIElement *item, double opacity);
 Brush     *uielement_get_opacity_mask     (UIElement *item);
 void       uielement_transform_point      (UIElement *item, double *x, double *y);
 UIElement *uielement_get_parent           (UIElement *item);
+
+Size       uielement_get_desired_size     (UIElement *item);
 
 bool       uielement_capture_mouse         (UIElement *item);
 void       uielement_release_mouse_capture (UIElement *item);

@@ -192,6 +192,12 @@ namespace System.Windows {
 			}
 		}
 
+		public Size DesiredSize {
+			get {
+				return System.Windows.NativeMethods2.uielement_get_desired_size (native);
+			}
+		}
+			
 		static object GotFocusEvent = new object ();
 		static object LostFocusEvent = new object ();
 		static object LoadedEvent = new object ();

@@ -1,7 +1,7 @@
 //
-// FrameworkElement.cs
+// RowDefinition.cs
 //
-// Author:
+// Authors:
 //   Miguel de Icaza (miguel@novell.com)
 //
 // Copyright 2008 Novell, Inc.
@@ -25,28 +25,45 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+using System.Windows;
 using Mono;
 
-namespace System.Windows {
-	public abstract class FrameworkElement : UIElement {
-		
-		static FrameworkElement ()
+namespace System.Windows.Controls {
+
+	public class RowDefinition : DependencyObject {
+		public static readonly DependencyProperty HeightProperty;
+		public static readonly DependencyProperty MaxHeightProperty;
+		public static readonly DependencyProperty MinHeightProperty;
+
+		static RowDefinition ()
 		{
-			WidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Width", typeof (double));
-			HeightProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Height", typeof (double));
+			HeightProperty = DependencyProperty.Lookup (Kind.GRID, "HeightProperty", typeof (GridLength));
+			MaxHeightProperty = DependencyProperty.Lookup (Kind.GRID, "MaxHeight", typeof (double));
+			MinHeightProperty = DependencyProperty.Lookup (Kind.GRID, "MinHeight", typeof (double));
 		}
-		
-		public FrameworkElement () : base (NativeMethods.framework_element_new ())
+
+		public RowDefinition () : base (NativeMethods.row_definition_new ())
 		{
 		}
-		
-		internal FrameworkElement (IntPtr raw) : base (raw)
+
+		internal RowDefinition (IntPtr raw) : base (raw)
 		{
 		}
-			
-		public double Height {
+
+		internal override Kind GetKind ()
+		{
+			return Kind.ROWDEFINITION;
+		}
+
+		public double ActualHeight {
 			get {
-				return (double) GetValue (HeightProperty);
+				return NativeMethods.row_definition_get_actual_height (native);
+			}
+		}
+
+		public GridLength Height {
+			get {
+				return (GridLength) GetValue (HeightProperty);
 			}
 
 			set {
@@ -54,38 +71,26 @@ namespace System.Windows {
 			}
 		}
 
-		public object Parent {
+		public double MaxHeight {
 			get {
-				IntPtr parent_handle = NativeMethods.uielement_get_parent (native);
-				if (parent_handle == IntPtr.Zero)
-					return null;
+				return (double) GetValue (MaxHeightProperty);
+			}
 
-				Kind k = NativeMethods.dependency_object_get_object_type (parent_handle);
-				return DependencyObject.Lookup (k, parent_handle);
+			set {
+				SetValue (MaxHeightProperty, value);
 			}
 		}
 
-		public double Width {
+		public double MinHeight {
 			get {
-				return (double) GetValue (WidthProperty);
-		}
+				return (double) GetValue (MinHeightProperty);
+			}
 
-		set {
-				SetValue (WidthProperty, value);
+			set {
+				SetValue (MinHeightProperty, value);
 			}
 		}
-
-		public static readonly DependencyProperty WidthProperty;
-		public static readonly DependencyProperty HeightProperty;
 		
-		internal override Kind GetKind ()
-		{
-			return Kind.FRAMEWORKELEMENT;
-		}
 
-		public object FindName (string name)
-		{
-			return DepObjectFindName (name);
-		}
 	}
 }

@@ -153,12 +153,31 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static void uielement_release_mouse_capture (IntPtr item);
+
 #endregion
 
 
 #region Panel
 		[DllImport("moon")]
 		public extern static IntPtr panel_new ();
+#endregion
+
+#region Grid
+		[DllImport("moon")]
+		public extern static IntPtr grid_new ();
+		[DllImport("moon")]
+		public extern static IntPtr column_definition_new ();
+		[DllImport("moon")]
+		public extern static IntPtr row_definition_new ();
+		[DllImport("moon")]
+		public extern static IntPtr column_definition_collection_new ();
+		[DllImport("moon")]
+		public extern static IntPtr row_definition_collection_new ();
+
+		[DllImport("moon")]
+		public extern static double row_definition_get_actual_height (IntPtr handle);
+		[DllImport("moon")]
+		public extern static double column_definition_get_actual_width (IntPtr handle);
 #endregion
 
 #region Controls
@@ -709,8 +728,9 @@ namespace Mono {
 #endregion
 
 #region MouseEventArgs
-		[DllImport("moon")]
-		public extern static int mouse_event_args_get_state (IntPtr handle);
+		// No longer exposed
+		//[DllImport("moon")]
+		//public extern static int mouse_event_args_get_state (IntPtr handle);
 
 		[DllImport("moon")]
 		public extern static void mouse_event_args_get_position (IntPtr handle, IntPtr uielement_handle, out double x, out double y);

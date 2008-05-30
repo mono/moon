@@ -1,5 +1,5 @@
 //
-// FrameworkElement.cs
+// GridLength.cs
 //
 // Author:
 //   Miguel de Icaza (miguel@novell.com)
@@ -25,67 +25,73 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using Mono;
+using System;
+using System.Runtime.InteropServices;
 
 namespace System.Windows {
-	public abstract class FrameworkElement : UIElement {
+
+	[StructLayout (LayoutKind.Sequential)]
+	public struct GridLength {
+		double val;
+		GridUnitType type;
 		
-		static FrameworkElement ()
-		{
-			WidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Width", typeof (double));
-			HeightProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Height", typeof (double));
-		}
+		static GridLength auto;
 		
-		public FrameworkElement () : base (NativeMethods.framework_element_new ())
+		static GridLength ()
 		{
+			auto = new GridLength (0, GridUnitType.Auto);
 		}
-		
-		internal FrameworkElement (IntPtr raw) : base (raw)
+
+		public GridLength (double pixels)
 		{
+			val = pixels;
+			type = GridUnitType.Pixel;
 		}
-			
-		public double Height {
+
+		public GridLength (double value, GridUnitType type)
+		{
+			val = value;
+			this.type = type;
+		}
+
+		public double Value {
 			get {
-				return (double) GetValue (HeightProperty);
+				return val;
 			}
 
 			set {
-				SetValue (HeightProperty, value);
+				val = value;
 			}
 		}
 
-		public object Parent {
+		public GridUnitType GridUnitType {
 			get {
-				IntPtr parent_handle = NativeMethods.uielement_get_parent (native);
-				if (parent_handle == IntPtr.Zero)
-					return null;
-
-				Kind k = NativeMethods.dependency_object_get_object_type (parent_handle);
-				return DependencyObject.Lookup (k, parent_handle);
+				return type;
 			}
 		}
-
-		public double Width {
-			get {
-				return (double) GetValue (WidthProperty);
-		}
-
-		set {
-				SetValue (WidthProperty, value);
-			}
-		}
-
-		public static readonly DependencyProperty WidthProperty;
-		public static readonly DependencyProperty HeightProperty;
 		
-		internal override Kind GetKind ()
-		{
-			return Kind.FRAMEWORKELEMENT;
+		public bool IsStar {
+			get {
+				return GridUnitType == GridUnitType.Star;
+			}
 		}
 
-		public object FindName (string name)
-		{
-			return DepObjectFindName (name);
+		public bool IsAuto {
+			get {
+				return GridUnitType == GridUnitType.Auto;
+			}
+		}
+
+		public bool IsAbsolute {
+			get {
+				return GridUnitType == GridUnitType.Pixel;
+			}
+		}
+
+		public static GridLength Auto {
+			get {
+				return auto;
+			}
 		}
 	}
 }

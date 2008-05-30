@@ -1,3 +1,8 @@
+2008-05-30  Miguel de Icaza  <miguel@novell.com>
+
+	* Add stubs to get enough to get a sample Button on a page to
+	load.    Does not work yet.
+
 2008-05-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: For 2.1 delay-sign the assembly using silverlight.pub.

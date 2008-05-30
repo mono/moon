@@ -20,6 +20,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
+	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
@@ -62,9 +63,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
+	$(srcdir)/System.Windows/DataTemplate.cs				\
 	$(srcdir)/System.Windows/Deployment.cs					\
 	$(srcdir)/System.Windows/DependencyObject.cs				\
 	$(srcdir)/System.Windows/DependencyProperty.cs				\
+	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
 	$(srcdir)/System.Windows/Downloader.cs					\
 	$(srcdir)/System.Windows/Duration.cs					\
 	$(srcdir)/System.Windows/ErrorEventArgs.cs				\
@@ -75,6 +78,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/FontStyles.cs					\
 	$(srcdir)/System.Windows/FontWeights.cs					\
 	$(srcdir)/System.Windows/FrameworkElement.cs				\
+	$(srcdir)/System.Windows/FrameworkTemplate.cs				\
+	$(srcdir)/System.Windows/GridLength.cs					\
+	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/Inlines.cs					\
 	$(srcdir)/System.Windows/ParserErrorEventArgs.cs			\
 	$(srcdir)/System.Windows/ParserErrorEventHandler.cs			\
@@ -82,6 +88,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
 	$(srcdir)/System.Windows/Rect.cs					\
+	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
+	$(srcdir)/System.Windows/RoutedEventHandler.cs				\
 	$(srcdir)/System.Windows/RuntimeErrorEventArgs.cs			\
 	$(srcdir)/System.Windows/RuntimeErrorEventHandler.cs			\
 	$(srcdir)/System.Windows/Size.cs					\
@@ -99,7 +107,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/XamlReader.cs					\
 	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
 	$(srcdir)/System.Windows.Controls/Canvas.cs				\
+	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
+	$(srcdir)/System.Windows.Controls/ColumnDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Controls/Control.cs				\
+	$(srcdir)/System.Windows.Controls/Grid.cs				\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
 	$(srcdir)/System.Windows.Controls/MediaBase.cs				\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
@@ -108,14 +119,20 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
+	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
+	$(srcdir)/System.Windows.Controls/RowDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Documents/Run.cs				\
 	$(srcdir)/System.Windows.Input/Cursors.cs				\
 	$(srcdir)/System.Windows.Input/KeyboardEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/KeyboardEventHandler.cs			\
+	$(srcdir)/System.Windows.Input/Key.cs					\
+	$(srcdir)/System.Windows.Input/KeyEventArgs.cs				\
+	$(srcdir)/System.Windows.Input/MouseButtonEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/MouseEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/MouseEventHandler.cs			\
 	$(srcdir)/System.Windows.Interop/BrowserHost.cs				\
 	$(srcdir)/System.Windows.Markup/XamlParseException.cs			\
+	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\

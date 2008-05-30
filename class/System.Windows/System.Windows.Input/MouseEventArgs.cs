@@ -25,19 +25,21 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using Mono;
 namespace System.Windows.Input {
 	
-	public sealed class MouseEventArgs : EventArgs {
-		int state;
-		
+	public class MouseEventArgs : RoutedEventArgs {
 		IntPtr native;
 
 		internal MouseEventArgs (IntPtr raw)
 		{
 			native = raw;
 			NativeMethods.base_ref (native);
-			state = NativeMethods.mouse_event_args_get_state (native);
+		}
+
+		public MouseEventArgs ()
+		{
 		}
 		
 		~MouseEventArgs ()
@@ -76,23 +78,9 @@ namespace System.Windows.Input {
 			return (StylusPointCollection)DependencyObject.Lookup (Kind.STYLUSPOINT_COLLECTION, col);
 		}
 		
-		public bool Ctrl {
-			get { return (state & 4) != 0; }
-			set {
-				if (value)
-					state |= 4;
-				else
-					state &= ~4;
-			}
-		}
-		public bool Shift {
-			get { return (state & 1) != 0; } 
-			set {
-				if (value)
-					state |= 1;
-				else
-					state &= ~1;
-			}
+		public bool Handled {
+			get;
+			set;
 		}
 	}
 }

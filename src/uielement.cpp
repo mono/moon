@@ -52,6 +52,8 @@ UIElement::UIElement ()
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
 
+	desired_size = Size (0, 0);
+	
 	// XXX bad bad bad.  no virtual method calls in ctors
 	this->SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
 	this->SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
@@ -857,6 +859,12 @@ UIElement *
 uielement_get_parent (UIElement *item)
 {
 	return item->GetVisualParent ();
+}
+
+Size
+uielement_get_desired_size (UIElement *item)
+{
+	return item->desired_size; 
 }
 
 bool

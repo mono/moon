@@ -138,7 +138,7 @@ namespace System.Windows {
 				return null;
 			}
 
-			DependencyObject entry_point_assembly = deployment.FindName (deployment.EntryPointAssembly);
+			DependencyObject entry_point_assembly = deployment.DepObjectFindName (deployment.EntryPointAssembly);
 			if (entry_point_assembly == null){
 				Report.Error ("AppManifest.xaml: Could not find the referenced entry point assembly");
 				return null;

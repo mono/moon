@@ -149,7 +149,8 @@ namespace Mono.Xaml
 			Kind kind;
 			
 			DependencyObject.Ping ();
-			
+
+			Console.WriteLine ("File: {0}", file);
 			top = CreateFromFile (file, createNamescope, out kind);
 			
 			if (top == IntPtr.Zero)

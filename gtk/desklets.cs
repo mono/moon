@@ -123,7 +123,7 @@ namespace Gtk.Moonlight {
 		///   so that they trigger a close action and a drag action on the
 		///   desklet.
 		/// </remarks>
-		public static void SetupToolbox (UIElement root)
+		public static void SetupToolbox (FrameworkElement root)
 		{
 			UIElement close = root.FindName ("desklet-close") as UIElement;
 			if (close != null){
@@ -154,7 +154,7 @@ namespace Gtk.Moonlight {
 		///   Find an element with the specified name, from the indicated root UI element and, optionally,
 		///   check whether it is a descendant of the specified type.
 		/// </summary>
-		/// <param name="root">The UIElement which may contain the named element</param>
+		/// <param name="root">The FrameworkElement which may contain the named element</param>
 		/// <param name="name">Name of the element to look for</param>
 		/// <param name="type">If not null, specifies the type the element must be descendant from, in order
 		/// for the lookup to succeed</param>
@@ -166,9 +166,9 @@ namespace Gtk.Moonlight {
 		///   The element looked for or null, if not found or if its type doesn't match the one specified in the type
 		///   parameter.
 		/// </returns>
-		public static object FindElement (UIElement root, string name, Type type)
+		public static object FindElement (FrameworkElement root, string name, Type type)
 		{
-			DependencyObject ret = root.FindName (name);
+			DependencyObject ret = root.FindName (name) as DependencyObject;
 			if (ret == null)
 				_allElementsFound = false;
 			if (type != null && !type.IsInstanceOfType (ret))
