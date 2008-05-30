@@ -1,5 +1,12 @@
-2008-05-29  Jeffrey Stedfast  <fejj@novell.com>
+2008-05-30  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: The initial ticking difference needs to be multiplied by
+	the SpeedRatio as well. This fixes few timing desyncs. Fixes
+	clock40.xaml, test-animation-hold-stop-speed.xaml and the RoyalBlue
+	block from the AnimationMatrix2.
+
+2008-05-29  Jeffrey Stedfast  <fejj@novell.com>
+	
 	* media.cpp (Image::OnPropertyChanged): Just like MediaElement, if
 	you set an Image's Source property to an empty string (or null),
 	it stops rendering the image.

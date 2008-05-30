@@ -897,7 +897,7 @@ Clock::Begin ()
 	forward = true;
 
 	/* we're starting.  initialize our current_time field */
-	SetCurrentTime (GetParentTime() - GetBeginTime ());
+	SetCurrentTime ((GetParentTime() - GetBeginTime ()) * timeline->GetSpeedRatio ());
 	last_time = current_time;
 
 	if (natural_duration.HasTimeSpan ()) {
