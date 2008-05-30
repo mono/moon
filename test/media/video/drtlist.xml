@@ -1,7 +1,7 @@
 <DRTList>
-    <Test id="1" inputFile="video-seek-7.html" masterFile10="masters/video-seek-7.html.master.png" timeout="30000" categories="video,media"  />
-    <Test id="2" inputFile="video-seek.html" masterFile10="None" timeout="60000" categories="video,media"  />
-    <Test id="3" inputFile="all.html" masterFile10="None" timeout="90000" categories="video,media"  />
+    <Test id="1" inputFile="test-video-seek-7.html" masterFile10="masters/video-seek-7.html.master.png" timeout="30000" categories="video,media"  />
+    <Test id="2" inputFile="test-video-seek.html" masterFile10="None" timeout="60000" categories="video,media"  />
+    <Test id="3" inputFile="test-all.html" masterFile10="None" timeout="90000" categories="video,media"  />
     <Test id="4" inputFile="test-yuv-converter.html" masterFile10="../../harness/masters/test-yuv-converterMaster.png" timeout="20000" categories="video,media,yuv"  />
     <Test id="5" inputFile="test-reset-media-element-source.html" masterFile10="None" timeout="20000" categories="video,media"  />
     <Test id="6" inputFile="test-inexistent-media.html" masterFile10="None" timeout="20000" categories="video,media"  />

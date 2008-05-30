@@ -1,3 +1,10 @@
+2008-05-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* video-seek.html, test-video-seek-7.html, test-video-seek.html,
+	  test-mediaopened.html, test-all.js, test-all.html, all.js,
+	  drtlist.xml, all.html, video-seek-7.html: Renamed tests to be have
+	  more consistent names.
+
 2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml: Add another (randomly) known failure.
