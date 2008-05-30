@@ -729,10 +729,10 @@ Clock::CalcProgress ()
 TimeSpan
 Clock::ComputeNewTime ()
 {
-	TimeSpan our_delta = (TimeSpan)((GetParentTime() - GetLastParentTime()) * speed);
+	TimeSpan our_delta = ceil ((TimeSpan)((GetParentTime() - GetLastParentTime()) * speed));
 	TimeSpan ret_time = current_time;
 
-	our_delta = (TimeSpan)(our_delta * timeline->GetSpeedRatio());
+	our_delta = (TimeSpan) ceil ((our_delta * timeline->GetSpeedRatio()));
 
 	if (! forward)
 		our_delta = - our_delta;
