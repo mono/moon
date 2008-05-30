@@ -37,4 +37,5 @@ clock36 - scaling with FillBehavior = HoldEnd using SplineDoubleKeyFrame
 clock37 - Animation starting at 00:00:01 and repeating forever 
 clock38 - Same as 37 but with animation keyframes
 clock40 - HoldEnd storyboard with Stop animation inside with SpeedBahavior (precision issues)
+clock41 - An animation with Duration="00:00:00" and FillBehavior="Stop"
 

@@ -1,3 +1,10 @@
+2008-05-30  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/clock/clock41.html:
+	* xaml/clock/clock41.xaml: Adding a new test. Anims with
+	Duration="00:00:00" and FillBehavior="Stop" are not started at all in
+	SL.
+
 2008-05-28  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/clock/clock40.html:
