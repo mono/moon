@@ -32,11 +32,19 @@ This last case is important since SL applications with 'syntax' errors could beh
 	<ul>
 		<li>Not supported by Moonlight, see <a href="https://bugzilla.novell.com/show_bug.cgi?id=345931">bug #345931</a>
 	</ul>
-<!--
-<li><a href="devicetype.html">DeviceType</a></li>
-<li><a href="errortype.html">ErrorType</a></li>
-<li><a href="fillbehavior.html">FillBehavior</a></li>
--->
+	<li>DeviceType</li>
+	<ul>
+		<li>DeviceType is only used in StylusInfo.DeviceType and is <b>read-only</b>.</li>
+	</ul>
+	<li>ErrorType</li>
+	<ul>
+		<li>ErrorType is used in ErrorEventArgs.ErrorType, ParserErrorEventArgs.ErrorType and 
+		RuntimeErrorEventArgs.ErrorType and is always <b>read-only</b>.</li>
+	</ul>
+	<li>FillBehavior</li>
+	<ul>
+		<li><a href="fillbehavior-timeline.html">FillBehavior (Timeline)</a></li>
+	</ul>
 	<li>FillRule</li>
 	<ul>
 		<li><a href="fillrule-geometry.html">FillRule (Geometry)</a></li>
@@ -62,10 +70,15 @@ This last case is important since SL applications with 'syntax' errors could beh
 		<li><a href="gradientspreadmethod-lineargradientbrush.html">GradientSpreadMethod (LinearGradientBrush)</a></li>
 		<li><a href="gradientspreadmethod-radialgradientbrush.html">GradientSpreadMethod (RadialGradientBrush)</a></li>
 	</ul>
-<!--
-<li><a href="key.html">Key</a></li>
-<li><a href="mediastate.html">MediaState</a></li>
--->
+	<li>Key</li>
+	<ul>
+		<li>Key is used in KeyboardEventArgs.Key and KeyboardEventArgs.PlatformKeyCode and, while it's read-write, 
+		it's not used as in input in Silverlight (so invalid values does not matter).</li>
+	</ul>
+	<li>MediaState</li>
+	<ul>
+		<li>MediaState is only used in MediaElement.CurrentState and is <b>read-only</b>.</li>
+	</ul>
 	<li>MouseCursor</li>
 	<ul>
 		<li><a href="mousecursor-uielement.html">MouseCursor (UIElement)</a></li>
@@ -103,9 +116,16 @@ This last case is important since SL applications with 'syntax' errors could beh
 	<ul>
 		<li><a href="textwrapping-textblock.html">TextWrapping (TextBlock)</a></li>
 	</ul>
-<!--
-<li><a href="visibility.html">Visibility</a></li>
--->
+	<li>Visibility</li>
+	<ul>
+		<!-- Shape covers: Ellipse, Line, Path, Polygon, Polyline, Rectangle -->
+		<li><a href="visibility-shape.html">Visibility (Shape)</a></li>
+		<li><a href="visibility-textblock.html">Visibility (TextBlock)</a></li>
+		<!-- 
+			also used in Canvas, Glyphs, Image, InkPresenter and MediaElement but should be 
+			identical to previous since the Visibility property is located in UIElement
+		-->
+	</ul>
 </ul>
 </p>
 

@@ -1,0 +1,135 @@
+<html>
+  <head>
+      <title>FillBehavior (Timeline) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<Rectangle x:Name="rect1" Canvas.Top="10" Canvas.Left="10" Width="50" Height="50" Fill="red">
+		<Rectangle.Triggers>
+			<EventTrigger RoutedEvent="Rectangle.Loaded" >
+				<BeginStoryboard>
+					<Storyboard BeginTime="0:0:1">
+						<DoubleAnimation Storyboard.TargetName="rect1" Storyboard.TargetProperty="(Canvas.Left)" Duration="0:0:2" SpeedRatio="2" From="100" To="210" />
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Rectangle.Triggers>
+		</Rectangle>
+
+		<Rectangle x:Name="rect2" Canvas.Top="70" Canvas.Left="10" Width="50" Height="50" Fill="green">
+		<Rectangle.Triggers>
+			<EventTrigger RoutedEvent="Rectangle.Loaded" >
+				<BeginStoryboard>
+					<Storyboard BeginTime="0:0:1" FillBehavior="Stop">
+						<DoubleAnimation Storyboard.TargetName="rect2" Storyboard.TargetProperty="(Canvas.Left)" Duration="0:0:2" FillBehavior="Stop" SpeedRatio="2" From="100" To="210" />
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Rectangle.Triggers>
+		</Rectangle>
+
+		<Rectangle x:Name="rect3" Canvas.Top="130" Canvas.Left="10" Width="50" Height="50" Fill="blue">
+		<Rectangle.Triggers>
+			<EventTrigger RoutedEvent="Rectangle.Loaded" >
+				<BeginStoryboard>
+					<Storyboard BeginTime="0:0:1" FillBehavior="HoldEnd">
+						<DoubleAnimation Storyboard.TargetName="rect3" Storyboard.TargetProperty="(Canvas.Left)" Duration="0:0:2" FillBehavior="HoldEnd" SpeedRatio="2" From="100" To="210" />
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Rectangle.Triggers>
+		</Rectangle>
+
+
+		<Rectangle x:Name="testcase1" Canvas.Top="10" Canvas.Left="400" Width="50" Height="50" Fill="red">
+		<Rectangle.Triggers>
+			<EventTrigger RoutedEvent="Rectangle.Loaded" >
+				<BeginStoryboard>
+					<Storyboard BeginTime="0:0:1" x:Name="testcase1sb">
+						<DoubleAnimation x:Name="testcase1da" Storyboard.TargetName="testcase1" Storyboard.TargetProperty="(Canvas.Left)" Duration="0:0:2" SpeedRatio="2" From="400" To="210" />
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Rectangle.Triggers>
+		</Rectangle>
+
+		<Rectangle x:Name="testcase2" Canvas.Top="70" Canvas.Left="400" Width="50" Height="50" Fill="green">
+		<Rectangle.Triggers>
+			<EventTrigger RoutedEvent="Rectangle.Loaded" >
+				<BeginStoryboard>
+					<Storyboard BeginTime="0:0:1" x:Name="testcase2sb">
+						<DoubleAnimation x:Name="testcase2da" Storyboard.TargetName="testcase2" Storyboard.TargetProperty="(Canvas.Left)" Duration="0:0:2" SpeedRatio="2" From="400" To="210" />
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Rectangle.Triggers>
+		</Rectangle>
+
+		<Rectangle x:Name="testcase3" Canvas.Top="130" Canvas.Left="400" Width="50" Height="50" Fill="blue">
+		<Rectangle.Triggers>
+			<EventTrigger RoutedEvent="Rectangle.Loaded" >
+				<BeginStoryboard>
+					<Storyboard BeginTime="0:0:1" x:Name="testcase3sb">
+						<DoubleAnimation x:Name="testcase3da" Storyboard.TargetName="testcase3" Storyboard.TargetProperty="(Canvas.Left)" Duration="0:0:2" SpeedRatio="2" From="400" To="210" />
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Rectangle.Triggers>
+		</Rectangle>
+	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	sender.findName ("testcase1sb").FillBehavior = 0;
+	sender.findName ("testcase1da").FillBehavior = 1;
+	sender.findName ("testcase1sb").FillBehavior = -1;
+	sender.findName ("testcase1da").FillBehavior = 1000;
+	sender.findName ("testcase1sb").FillBehavior = "sToP";
+	sender.findName ("testcase1da").FillBehavior = "hOlDeNd";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: FillBehavior
+/*
+	sender.findName ("testcase5").FillBehavior = "nOnE";
+	sender.findName ("testcase3").FillBehavior = sender.findName ("testcase2");
+	sender.findName ("testcase3").FillBehavior = null;
+	sender.findName ("testcase3").FillBehavior = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>The animation should start with two columns, left and right, both with red, green and blue blocks merging into a center column.
+<p>At the end you should see:
+<br><b>Left</b> column: a <b>green</b> block (second line)
+<br><b>Center</b> column: all three blocks: <b>red</b>, <b>green</b> and <b>blue</b>
+<br><b>Right</b> column: a <b>red</b> block (first line)
+<p>All blocks on the center column should be aligned and identical in size.
+  </div>
+  </body>
+</html>

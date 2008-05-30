@@ -1,3 +1,11 @@
+2008-05-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* index.html: Add new test cases.
+	* fillbehavior-timeline.html: Test FillBehavior on Storyboard 
+	and DoubleAnimation
+	* visibility-shape.html: Test Visibility on all shapes.
+	* visibility-textblock.html: Test Visibility on TextBlock.
+
 2008-05-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* index.html: Add new test cases.

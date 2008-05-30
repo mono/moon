@@ -1,0 +1,99 @@
+<html>
+  <head>
+      <title>Visibility (Shape) Test Page</title>
+
+      <script language="javascript" src="Silverlight.js"></script>
+
+      <script type="text/xaml" id="xaml">
+	<Canvas x:Name="canvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="100" Height="100" Loaded="onLoaded">
+
+		<!-- Shape covers: Ellipse, Line, Path, Polygon, Polyline, Rectangle -->
+
+		<Ellipse Canvas.Top="0" Canvas.Left="0" Width="90" Height="90" Stroke="Red" StrokeThickness="4" Fill="Blue" />
+		<Line X1="100" Y1="0" X2="190" Y2="90" Stroke="Red" StrokeThickness="4" Visibility="Visible" />
+		<Path Canvas.Top="0" Canvas.Left="200" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Data="M 20,80 L 50,20 L 80,80 L 20,40 L 80,40 Z" />
+		<Polygon Canvas.Top="0" Canvas.Left="300" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" Visibility="Visible" />
+		<Polyline Canvas.Top="0" Canvas.Left="400" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" />
+		<Rectangle Canvas.Top="0" Canvas.Left="500" Width="90" Height="90" Stroke="Red" StrokeThickness="4" Fill="Blue" Visibility="Visible" />
+
+		<Ellipse Canvas.Top="100" Canvas.Left="0" Width="90" Height="90" Stroke="Red" StrokeThickness="4" Fill="Blue" Visibility="Visible" />
+		<Line X1="100" Y1="100" X2="190" Y2="190" Stroke="Red" StrokeThickness="4" Visibility="Collapsed" />
+		<Path Canvas.Top="100" Canvas.Left="200" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Data="M 20,80 L 50,20 L 80,80 L 20,40 L 80,40 Z" Visibility="Visible" />
+		<Polygon Canvas.Top="100" Canvas.Left="300" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" Visibility="Collapsed" />
+		<Polyline Canvas.Top="100" Canvas.Left="400" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" Visibility="Visible" />
+		<Rectangle Canvas.Top="100" Canvas.Left="500" Width="90" Height="90" Stroke="Red" StrokeThickness="4" Fill="Blue" Visibility="Collapsed" />
+
+		<Ellipse x:Name="testcase1" Canvas.Top="200" Canvas.Left="0" Width="90" Height="90" Stroke="Red" StrokeThickness="4" Fill="Blue" />
+		<Line x:Name="testcase2" X1="100" Y1="200" X2="190" Y2="290" Stroke="Red" StrokeThickness="4" />
+		<Path x:Name="testcase3" Canvas.Top="200" Canvas.Left="200" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Data="M 20,80 L 50,20 L 80,80 L 20,40 L 80,40 Z" />
+		<Polygon x:Name="testcase4" Canvas.Top="200" Canvas.Left="300" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" />
+		<Polyline x:Name="testcase5" Canvas.Top="200" Canvas.Left="400" Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Points="20,80 50,20 80,80 20,40 80,40" />
+		<Rectangle x:Name="testcase6" Canvas.Top="200" Canvas.Left="500" Width="90" Height="90" Stroke="Red" StrokeThickness="4" Fill="Blue" />
+	</Canvas>
+      </script>
+
+      <script language="javascript">
+function onLoaded (sender, args)
+{
+	sender.findName ("testcase1").Visibility = 0;
+	sender.findName ("testcase2").Visibility = 1;
+	sender.findName ("testcase3").Visibility = -1;
+	sender.findName ("testcase4").Visibility = 1000;
+	sender.findName ("testcase5").Visibility = "vIsIbLe";
+	sender.findName ("testcase6").Visibility = "cOlLaPsEd";
+
+	// Silverlight shows an Alert
+	// Silverlight error message, ErrorCode: 2203, ErrorType:RuntimeError, Message: AG_E_RUNTIME_SETVALUE, MethodName: Visibility
+/*
+	sender.findName ("testcase5").Visibility = "nOnE";
+	sender.findName ("testcase3").Visibility = sender.findName ("testcase2");
+	sender.findName ("testcase3").Visibility = null;
+	sender.findName ("testcase3").Visibility = true;
+*/
+}
+      </script>
+  </head>
+
+  <body>
+  <div id="SilverlightPluginHost" style="position:absolute; top:50px; left:50px; width:500px; height:50px;"></div>
+
+  <script type="text/javascript">
+	var pe = document.getElementById("SilverlightPluginHost");
+	Silverlight.createObject("#xaml", pe, "AgControl1", {
+			width:'600px',
+			height:'300px',
+			inplaceInstallPrompt:false,
+			background:'#FFFFFF',
+			isWindowless:'false',
+			framerate:'24',
+			version:'1.0'
+		}, {
+			onError:null,
+			onLoad:null
+		},
+		null);
+  </script>
+  <div style="position:absolute; top:400px; left:50px">
+<p>0,0: Blue <b>ellipse</b> with red border
+<br>1,0: Red diagonal <b>line</b>
+<br>2,0: <b>Path</b>-based star star
+<br>3,0: <b>Polygon</b>-based star (identical to 2,0)
+<br>4,0: <b>Polyline</b>-based star, missing the last line
+<br>5,0: Blue <b>rectangle</b> with red border
+
+<p>0,1: Blue <b>ellipse</b> with red border
+<br>1,1: Empty
+<br>2,1: <b>Path</b>-based star star
+<br>3,1: Empty
+<br>4,1: <b>Polyline</b>-based star, missing the last line
+<br>5,1: Empty
+
+<p>0,2: Blue <b>ellipse</b> with red border
+<br>1,2: Empty
+<br>2,2: Empty
+<br>3,2: Empty
+<br>4,2: <b>Polyline</b>-based star, missing the last line
+<br>5,2: Empty
+  </div>
+  </body>
+</html>
