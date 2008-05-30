@@ -389,6 +389,7 @@ class Generator {
 		types.Add (new TypeInfo ("double*", "DOUBLE_ARRAY", null, true));
 		types.Add (new TypeInfo ("Point*", "POINT_ARRAY", null, true));
 		types.Add (new TypeInfo ("NPObj", "NPOBJ", null, true));
+		types.Add (new TypeInfo ("GridLength", "GRIDLENGTH", null, true));
 	}
 	
 	static void WriteAllText (string filename, string contents)

@@ -11,6 +11,7 @@
 #include "brush.h"
 #include "canvas.h"
 #include "collection.h"
+#include "grid.h"
 #include "control.h"
 #include "array.h"
 #include "downloader.h"
@@ -99,7 +100,9 @@ Type type_infos [] = {
 	{ Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION, false, "ColorAnimationUsingKeyFrames", "COLORANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) color_animation_using_key_frames_new, NULL }, 
 	{ Type::COLORKEYFRAME, Type::KEYFRAME, false, "ColorKeyFrame", "COLORKEYFRAME", 0, 1, NULL, (create_inst_func *) color_key_frame_new, NULL }, 
 	{ Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ColorKeyFrameCollection", "COLORKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) color_key_frame_collection_new, NULL }, 
-	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 12, NULL, (create_inst_func *) control_new, NULL }, 
+	{ Type::COLUMNDEFINITION, Type::DEPENDENCY_OBJECT, false, "ColumnDefinition", "COLUMNDEFINITION", 0, 1, NULL, (create_inst_func *) column_definition_new, NULL }, 
+	{ Type::COLUMNDEFINITION_COLLECTION, Type::COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL }, 
+	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 12, NULL, (create_inst_func *) control_new, "Content" }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, NULL, NULL }, 
 	{ Type::DEPLOYMENT, Type::DEPENDENCY_OBJECT, false, "Deployment", "DEPLOYMENT", 0, 1, NULL, (create_inst_func *) deployment_new, NULL }, 
 	{ Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME, false, "DiscreteColorKeyFrame", "DISCRETECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_color_key_frame_new, NULL }, 
@@ -128,6 +131,8 @@ Type type_infos [] = {
 	{ Type::GRADIENTBRUSH, Type::BRUSH, false, "GradientBrush", "GRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) gradient_brush_new, "GradientStops" }, 
 	{ Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT, false, "GradientStop", "GRADIENTSTOP", 0, 1, NULL, (create_inst_func *) gradient_stop_new, NULL }, 
 	{ Type::GRADIENTSTOP_COLLECTION, Type::COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, (create_inst_func *) gradient_stop_collection_new, NULL }, 
+	{ Type::GRID, Type::PANEL, false, "Grid", "GRID", 0, 12, NULL, (create_inst_func *) grid_new, NULL }, 
+	{ Type::GRIDLENGTH, Type::INVALID, false, "GridLength", "GRIDLENGTH", 0, 0, NULL, NULL, NULL }, 
 	{ Type::IMAGE, Type::MEDIABASE, false, "Image", "IMAGE", 1, 14, Image_Events, (create_inst_func *) image_new, NULL }, 
 	{ Type::IMAGEBRUSH, Type::TILEBRUSH, false, "ImageBrush", "IMAGEBRUSH", 2, 3, ImageBrush_Events, (create_inst_func *) image_brush_new, NULL }, 
 	{ Type::IMAGEERROREVENTARGS, Type::ERROREVENTARGS, false, "ImageErrorEventArgs", "IMAGEERROREVENTARGS", 0, 1, NULL, NULL, NULL }, 
@@ -189,6 +194,8 @@ Type type_infos [] = {
 	{ Type::REPEATBEHAVIOR, Type::INVALID, false, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL }, 
 	{ Type::RESOURCE_DICTIONARY, Type::COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL }, 
 	{ Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL }, 
+	{ Type::ROWDEFINITION, Type::DEPENDENCY_OBJECT, false, "RowDefinition", "ROWDEFINITION", 0, 1, NULL, (create_inst_func *) row_definition_new, NULL }, 
+	{ Type::ROWDEFINITION_COLLECTION, Type::COLLECTION, false, "RowDefinitionCollection", "ROWDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) row_definition_collection_new, NULL }, 
 	{ Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text" }, 
 	{ Type::SCALETRANSFORM, Type::TRANSFORM, false, "ScaleTransform", "SCALETRANSFORM", 0, 1, NULL, (create_inst_func *) scale_transform_new, NULL }, 
 	{ Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 12, NULL, NULL, NULL }, 

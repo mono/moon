@@ -30,6 +30,7 @@ libmoon_include_HEADERS = \
 	frameworkelement.h \
 	fullscreen.h	\
 	geometry.h	\
+	grid.h		\
 	http-streaming.h	\
 	layout.h	\
 	list.h		\
@@ -46,6 +47,7 @@ libmoon_include_HEADERS = \
 	region.h	\
 	runtime.h	\
 	shape.h		\
+	size.h		\
 	stylus.h	\
 	text.h		\
 	transform.h	\
@@ -87,6 +89,7 @@ libmoon_la_SOURCES = 	\
 	font.cpp	\
 	frameworkelement.cpp	\
 	geometry.cpp	\
+	grid.cpp	\
 	http-streaming.cpp	\
 	layout.cpp	\
 	list.cpp	\
