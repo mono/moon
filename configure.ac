@@ -264,6 +264,16 @@ if test x$with_debug = xyes; then
 fi
 
 dnl
+dnl compatibility checks
+dnl
+AC_ARG_WITH(compatibility-bugs,[  --with-compatibility-bugs=yes,no.   If you want to build including Silverlight 1.0-compatible bugs (default=no)],[],[with_compatibility_bugs=no])
+if test x$with_compatibility_bugs = xyes; then
+  CFLAGS="$CXXFLAGS -DCOMPATIBILITY_BUGS=1"
+  CXXFLAGS="$CXXFLAGS -DCOMPATIBILITY_BUGS=1"
+  AC_DEFINE([COMPATIBILITY_BUGS],[1],[Include compatibility bugs support])
+fi
+
+dnl
 dnl plugin checks
 dnl
 AC_ARG_ENABLE(user-plugin,[  --enable-user-plugin    Build the plugin installer],
@@ -462,6 +472,7 @@ Moonlight configuration:
 	Support for running the test harness: $with_testing
 	Using cairo: $with_cairo
 	Support for Firefox: $with_mozilla
+	With Silverlight 1.0 bugs: $with_compatibility_bugs
 EOF
 
 if test x$with_mozilla = xyes; then

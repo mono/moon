@@ -1,3 +1,9 @@
+2008-05-30  Michael Dominic K.  <mdk@mdk.am>
+
+	* configure.ac: Adding --with-compatibility-bugs switch (defaults to no)
+	that allows to build ML with *ugh* compatibility bugs (same bugs that SL
+	1.0 has). This will be needed for AnimaionMatrix2.
+
 2008-05-28  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* ffmpeg.patch: plugin installer ffmpeg patch was missing some tweaks
