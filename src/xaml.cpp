@@ -1632,7 +1632,12 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 	if (!time_span_from_str (str, &t))
 		return false;
 
+#ifndef COMPATIBILITY_BUGS
 	*res = RepeatBehavior (t);
+#else
+	*res = RepeatBehavior (1.0);
+#endif
+
 	return true;
 }
 

@@ -1,5 +1,11 @@
 2008-05-30  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml.cpp: Adding a compatibility option
+	(--with-compatibility-bugs=yes) that introduces a Silverlight 1.0
+	RepeatBehavior bug.
+
+2008-05-30  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: Ceil the delta and ret_time. This is a very poor-man's
 	protection against the desync's coming from integers (TimeSpan) being
 	multiplied by floating values (SpeedRatio). Better to be non-precise
