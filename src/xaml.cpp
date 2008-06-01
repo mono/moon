@@ -39,7 +39,10 @@
 #include "runtime.h"
 #include "utils.h"
 #include "control.h"
+
+// 2.0
 #include "deployment.h"
+#include "grid.h"
 
 #ifdef DEBUG_XAML
 #define d(x) x
@@ -1420,6 +1423,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 
 	parser_info->loader = loader;
 
+	object->ref ();
 	parser_info->expecting = object;
 	parser_info->hydrating = true;
 	
@@ -1440,7 +1444,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 	// don't freak out if the <?xml ... ?> isn't on the first line (see #328907)
 	while (isspace ((unsigned char) *start))
 		start++;
-	
+
 	if (!XML_Parse (p, start, strlen (start), TRUE)) {
 		expat_parser_error (parser_info, XML_GetErrorCode (p));
 		d(printf ("error parsing:  %s\n\n", xaml));
@@ -1461,16 +1465,16 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 			goto cleanup_and_return;
 		}
 		
-		res->ref ();
 	}
 
  cleanup_and_return:
 	
 	if (parser_info->error_args) {
 		loader->error_args = parser_info->error_args;
-		printf ("Could not parse element %s, attribute %s\n",
+		printf ("Could not parse element %s, attribute %s, error: %s\n",
 			loader->error_args->xml_element,
-			loader->error_args->xml_attribute);
+			loader->error_args->xml_attribute,
+			loader->error_args->error_message);
 	}
 	
 	if (p)
@@ -3339,6 +3343,17 @@ xaml_init (void)
 	//
 
 	rdoe (dem, "UserControl", NULL, Type::USERCONTROL, (create_item_func) user_control_new);
+
+	//
+	// Grid
+	//
+	rdoe (dem, "Grid", NULL, Type::GRID, (create_item_func) grid_new);
+	XamlElementInfo *aaa = rdoe (dem, "ColumnDefinitions", col, Type::COLUMNDEFINITION_COLLECTION, (create_item_func) column_definition_collection_new);
+	rdoe (dem, "RowDefinitions", col, Type::ROWDEFINITION_COLLECTION, (create_item_func) row_definition_collection_new);
+
+	rdoe (dem, "ColumnDefinition", NULL, Type::COLUMNDEFINITION, (create_item_func) column_definition_new);
+	rdoe (dem, "RowDefinition", NULL, Type::ROWDEFINITION, (create_item_func) row_definition_new);
+	
 	
 	//
 	// Code

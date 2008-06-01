@@ -234,7 +234,9 @@ control_new (void)
 UserControl *
 user_control_new (void)
 {
-	return new UserControl ();
+	UserControl *x = new UserControl ();
+	printf ("UserControl is 0x%x\n", x);
+	return x;
 }
 
 void

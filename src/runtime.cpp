@@ -48,6 +48,9 @@
 #include "dirty.h"
 #include "fullscreen.h"
 #include "utils.h"
+
+// 2.0
+#include "grid.h"
 #include "deployment.h"
 
 //#define DEBUG_INVALIDATE 1
@@ -2287,6 +2290,7 @@ runtime_init (guint32 flags)
 	//
 	deployment_init ();
 	user_control_init ();
+	grid_init ();
 }
 
 //
