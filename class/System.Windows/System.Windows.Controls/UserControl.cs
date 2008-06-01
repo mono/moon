@@ -41,6 +41,7 @@ namespace System.Windows.Controls {
 		
 		public UserControl () : base (NativeMethods.user_control_new ())
 		{
+			Console.WriteLine ("*** Created a {0} (UserControlx) with {1}", this.GetType (), native);
 		}
 
 		internal UserControl (IntPtr raw) : base (raw)

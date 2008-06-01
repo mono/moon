@@ -242,6 +242,8 @@ namespace System.Windows {
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			ManagedXamlLoader loader = new ManagedXamlLoader ();
+
+			// This can throw a System.Exception if the XAML file is invalid.
 			loader.Hydrate (cdo.native, xaml);
 		}
 

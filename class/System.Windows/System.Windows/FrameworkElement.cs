@@ -38,6 +38,7 @@ namespace System.Windows {
 		
 		public FrameworkElement () : base (NativeMethods.framework_element_new ())
 		{
+			Console.WriteLine ("*** Created a {0} (frameworkelement) with {1}", this.GetType (), native);
 		}
 		
 		internal FrameworkElement (IntPtr raw) : base (raw)
