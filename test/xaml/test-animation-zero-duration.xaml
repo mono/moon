@@ -1,6 +1,6 @@
 <Canvas x:Name="root" 
   xmlns="http://schemas.microsoft.com/client/2007"  
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="260" Height="70">
 
   <Rectangle x:Name="rect4" Canvas.Top="10" Canvas.Left="10" Width="50" Height="50" Fill="#041001">
     <Rectangle.Triggers>
