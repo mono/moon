@@ -1,4 +1,9 @@
 2008-06-02  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: If we have duration-based RepeatBehavior set the
+	repeat_count to 1 in bug-mode (--with-compatibility-bugs).
+
+2008-06-02  Michael Dominic K.  <mdk@mdk.am>
 	
 	* xaml.cpp: SL seems to correctly parse 0:0:0 TimeSpans in "bug-mode"
 	even.
