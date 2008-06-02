@@ -266,7 +266,7 @@ fi
 dnl
 dnl compatibility checks
 dnl
-AC_ARG_WITH(compatibility-bugs,[  --with-compatibility-bugs=yes,no.   If you want to build including Silverlight 1.0-compatible bugs (default=no)],[],[with_compatibility_bugs=no])
+AC_ARG_WITH(compatibility-bugs,[  --with-compatibility-bugs=yes,no.   If you want to build including Silverlight 1.0-compatible bugs (default=yes)],[],[with_compatibility_bugs=yes])
 if test x$with_compatibility_bugs = xyes; then
   CFLAGS="$CXXFLAGS -DCOMPATIBILITY_BUGS=1"
   CXXFLAGS="$CXXFLAGS -DCOMPATIBILITY_BUGS=1"

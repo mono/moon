@@ -1,3 +1,7 @@
+2008-06-02  Michael Dominic K.  <mdk@mdk.am>
+
+	* configure.ac: By default build with Silverlight bugs.
+
 2008-05-30  Michael Dominic K.  <mdk@mdk.am>
 
 	* configure.ac: Adding --with-compatibility-bugs switch (defaults to no)
