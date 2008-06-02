@@ -828,5 +828,13 @@
    <Test id="187"
 	 inputFile="test-downloaderprogress.html"
 	 masterFile10="None"
-   />
+	 />
+   <Test id="188"
+	 inputFile="test-animation-zero-repeat-behavior.xaml"
+	 masterFile10="../harness/masters/test-animation-zero-repeat-behaviorMaster.png"
+	 />
+   <Test id="189"
+	 inputFile="test-animation-zero-duration.xaml"
+	 masterFile10="../harness/masters/test-animation-zero-durationMaster.png"
+	 />
 </DRTList>
