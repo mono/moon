@@ -1129,8 +1129,8 @@ font_move_to (FT_Vector *to, void *user_data)
 	moon_path *path = (moon_path *) user_data;
 	double x, y;
 	
-	x = to->x / 64.0;
-	y = to->y / 64.0;
+	x = DOUBLE_FROM_26_6 (to->x);
+	y = DOUBLE_FROM_26_6 (to->y);
 	
 	moon_move_to (path, x, y);
 	
@@ -1143,8 +1143,8 @@ font_line_to (FT_Vector *to, void *user_data)
 	moon_path *path = (moon_path *) user_data;
 	double x, y;
 	
-	x = to->x / 64.0;
-	y = to->y / 64.0;
+	x = DOUBLE_FROM_26_6 (to->x);
+	y = DOUBLE_FROM_26_6 (to->y);
 	
 	moon_line_to (path, x, y);
 	
@@ -1163,11 +1163,11 @@ font_conic_to (FT_Vector *control, FT_Vector *to, void *user_data)
 	
 	moon_get_current_point (path, &x0, &y0);
 	
-	x = control->x / 64.0;
-	y = control->y / 64.0;
+	x = DOUBLE_FROM_26_6 (control->x);
+	y = DOUBLE_FROM_26_6 (control->y);
 	
-	x3 = to->x / 64.0;
-	y3 = to->y / 64.0;
+	x3 = DOUBLE_FROM_26_6 (to->x);
+	y3 = DOUBLE_FROM_26_6 (to->y);
 	
 	x1 = x0 + 2.0/3.0 * (x - x0);
 	y1 = y0 + 2.0/3.0 * (y - y0);
@@ -1188,14 +1188,14 @@ font_cubic_to (FT_Vector *control1, FT_Vector *control2, FT_Vector *to, void *us
 	double x1, y1;
 	double x2, y2;
 	
-	x0 = control1->x / 64.0;
-	y0 = control1->y / 64.0;
+	x0 = DOUBLE_FROM_26_6 (control1->x);
+	y0 = DOUBLE_FROM_26_6 (control1->y);
 	
-	x1 = control2->x / 64.0;
-	y1 = control2->y / 64.0;
+	x1 = DOUBLE_FROM_26_6 (control2->x);
+	y1 = DOUBLE_FROM_26_6 (control2->y);
 	
-	x2 = to->x / 64.0;
-	y2 = to->y / 64.0;
+	x2 = DOUBLE_FROM_26_6 (to->x);
+	y2 = DOUBLE_FROM_26_6 (to->y);
 	
 	moon_curve_to (path, x0, y0, x1, y1, x2, y2);
 	

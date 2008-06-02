@@ -1,3 +1,8 @@
+2008-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* font.cpp: Use the existing DOUBLE_FROM_26_6 instead of dividing
+	by 64.0	since this makes it clear why we're doing it.
+
 2008-05-30  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: Don't validate animations that have Duration of "00:00:00"
