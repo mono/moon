@@ -208,7 +208,7 @@ class XamlParserInfo {
 	//
 	// If set, this is used to hydrate an existing object, not to create a new toplevel one
 	//
-	DependencyObject *expecting;
+	DependencyObject *hydrate_expecting;
 	bool hydrating;
 	
 	void AddCreatedElement (DependencyObject* element)
@@ -221,7 +221,7 @@ class XamlParserInfo {
 		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL),
 		cdata_content (false), cdata (NULL), implicit_default_namespace (false), error_args (NULL),
-		loader (NULL), created_elements (NULL), expecting(NULL), hydrating(false)
+		loader (NULL), created_elements (NULL), hydrate_expecting(NULL), hydrating(false)
 	{
 		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	}
@@ -846,8 +846,8 @@ start_element (void *data, const char *el, const char **attr)
 		return;
 
 	if (elem) {
-		if (p->expecting){
-			Type::Kind expecting_type =  p->expecting->GetObjectType ();
+		if (p->hydrate_expecting){
+			Type::Kind expecting_type =  p->hydrate_expecting->GetObjectType ();
 			
 			if (elem->dependency_type != expecting_type){
 				parser_error (p, el, NULL, -1,
@@ -855,8 +855,8 @@ start_element (void *data, const char *el, const char **attr)
 							       Type::Find (expecting_type)->GetName ()));
 				return;
 			}
-			inst = wrap_dependency_object (p, elem, p->expecting);
-			p->expecting = NULL;
+			inst = wrap_dependency_object (p, elem, p->hydrate_expecting);
+			p->hydrate_expecting = NULL;
 		} else
 			inst = elem->create_element (p, elem);
 
@@ -1423,8 +1423,13 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 
 	parser_info->loader = loader;
 
-	object->ref ();
-	parser_info->expecting = object;
+	//
+	// If we are hydrating, we are not null
+	//
+	if (object != NULL)
+		object->ref ();
+	
+	parser_info->hydrate_expecting = object;
 	parser_info->hydrating = true;
 	
 	// from_str gets the default namespaces implictly added
