@@ -1469,7 +1469,8 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 				*element_type = Type::INVALID;
 			goto cleanup_and_return;
 		}
-		
+		if (object == NULL)
+			res->ref ();
 	}
 
  cleanup_and_return:
