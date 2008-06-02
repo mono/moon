@@ -1,3 +1,10 @@
+2008-06-02  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Make sure we don't try to look up Content Properties
+	on anything but elments.  Property elements are given the
+	XamlElementInfo of their parent so GetContentProperty on a
+	PROPERTY element will return the parent's content property.
+
 2008-06-02  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: If we have duration-based RepeatBehavior set the

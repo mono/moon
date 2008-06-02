@@ -954,13 +954,13 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	DependencyProperty *content;
 	const char *prop_name = NULL;
 	Type::Kind prop_type;
-	
+
 	if (!p->cdata || !p->current_element)
 		return;
-	
-	if (p->current_element->info)
+
+	if (p->current_element->info && p->current_element->element_type == XamlElementInstance::ELEMENT)
 		prop_name = p->current_element->info->GetContentProperty ();
-	
+
 	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
 		parser_error (p, p->current_element->element_name, NULL, 2011, err);
