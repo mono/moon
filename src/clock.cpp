@@ -1279,7 +1279,7 @@ Timeline::Validate ()
 	}
 
 	if (duration->HasTimeSpan () && duration->GetTimeSpan () == 0 && 
-	    GetFillBehavior () == FillBehaviorStop)
+	    (GetFillBehavior () == FillBehaviorStop || (repeat->HasCount () && repeat->GetCount () > 1.0)))
 		return false;
 
 	return true;

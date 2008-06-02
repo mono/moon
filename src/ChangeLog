@@ -1,3 +1,7 @@
+2008-06-02  Michael Dominic K.  <mdk@mdk.am>
+	
+	* clock.cpp: Even more timeline validation rules.
+
 2008-06-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* font.cpp: Use the existing DOUBLE_FROM_26_6 instead of dividing
