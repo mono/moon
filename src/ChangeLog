@@ -1,5 +1,13 @@
 2008-06-02  Michael Dominic K.  <mdk@mdk.am>
 	
+	* xaml.cpp: SL seems to correctly parse 0:0:0 TimeSpans in "bug-mode"
+	even.
+
+	* clock.cpp: Remove the RepeatBehavior=1.0 forcing in Validate when
+	RepeatBehavior=0:0:0.
+
+2008-06-02  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: Even more timeline validation rules.
 
 2008-06-02  Sebastien Pouliot  <sebastien@ximian.com>

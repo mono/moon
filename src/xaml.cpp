@@ -1645,7 +1645,10 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 #ifndef COMPATIBILITY_BUGS
 	*res = RepeatBehavior (t);
 #else
-	*res = RepeatBehavior (1.0);
+	if (t == 0)
+		*res = RepeatBehavior ((TimeSpan) t);
+	else
+		*res = RepeatBehavior (1.0);
 #endif
 
 	return true;
