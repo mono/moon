@@ -112,34 +112,67 @@ struct GlyphInfo {
 	gunichar unichar;
 	uint32_t index;
 	GlyphMetrics metrics;
-	GlyphBitmap *bitmap;
 	moon_path *path;
 	int requested;
 };
+
+struct FontFaceExtents {
+	double underline_thickness;
+	double underline_position;
+	double descent;
+	double ascent;
+	double height;
+};
+
+class FontFace {
+	int ref_count;
+	
+	FcPattern *pattern;
+	FT_Face face;
+	double size;
+	
+	FontFace (FcPattern *pattern, const char *family_name, const char *debug_name);
+	~FontFace ();
+	
+	bool OpenFontDirectory (FcPattern *pattern, const char *path, const char **families);
+	
+ public:
+	
+	void ref ();
+	void unref ();
+	
+	static FontFace *Load (FcPattern *pattern, const char *family_name, const char *debug_name);
+	
+	gunichar GetCharFromIndex (uint32_t index);
+	uint32_t GetCharIndex (gunichar unichar);
+	bool HasChar (gunichar unichar);
+	
+	bool IsScalable ();
+	
+	double Kerning (double size, gunichar left, gunichar right);
+	void GetExtents (double size, FontFaceExtents *extents);
+	bool LoadGlyph (double size, GlyphInfo *glyph);
+};
+
 
 class TextFont {
 	int ref_count;
 	
 	FcPattern *pattern;
-	FT_Face face;
 	
-	double underline_thickness;
-	double underline_position;
-	double scale;
+	FontFaceExtents extents;
+	FontFace *face;
+	double size;
 	
 	GlyphInfo glyphs[256];
 	int nglyphs;
 	
 	TextFont (FcPattern *pattern, const char *family_name, const char *debug_name);
-	
-	bool OpenFontDirectory (FcPattern *pattern, const char *path, const char **families);
+	~TextFont ();
 	
 	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
-	void RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	
  public:
-	
-	~TextFont ();
 	
 	void ref ();
 	void unref ();

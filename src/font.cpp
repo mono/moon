@@ -32,12 +32,16 @@
 
 #include FT_OUTLINE_H
 
+#define FONT_DEBUG 1
+
 #ifdef FONT_DEBUG
 #define d(x) x
 #else
 #define d(x)
 #endif
 
+
+#define FONT_FACE_SIZE 41.0
 
 #define DOUBLE_TO_26_6(d) ((FT_F26Dot6)((d) * 64.0))
 #define DOUBLE_FROM_26_6(t) ((double)(t) / 64.0)
@@ -112,6 +116,7 @@ struct FontDir {
 	void CacheFileInfo (const char *filename, FT_Face face);
 };
 
+static GHashTable *face_cache = NULL;
 static GHashTable *font_cache = NULL;
 static GHashTable *fontdirs = NULL;
 static bool initialized = false;
@@ -138,6 +143,7 @@ font_init (void)
 		return;
 	}
 	
+	face_cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
 	font_cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
 	
 	fontdirs = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) delete_fontdir);
@@ -159,6 +165,7 @@ font_shutdown (void)
 	if (!initialized)
 		return;
 	
+	g_hash_table_destroy (face_cache);
 	g_hash_table_destroy (font_cache);
 	g_hash_table_destroy (fontdirs);
 	
@@ -507,14 +514,14 @@ DeobfuscateFontFileWithGUID (const char *filename, const char *guid, FT_Face *pF
 	
 	return true;
 	
-undo:
+ undo:
 	
 	if (fseek (fp, 0, SEEK_SET) == 0) {
 		fwrite (buf, 1, 32, fp);
 		fflush (fp);
 	}
 	
-exception:
+ exception:
 	
 	fclose (fp);
 	
@@ -569,7 +576,7 @@ IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
 		// cache font info
 		fontdir->CacheFileInfo (path->str, face);
 		
-	next:
+	 next:
 		g_string_truncate (path, len);
 	}
 	
@@ -730,7 +737,7 @@ struct FontFaceSimilarity {
 
 
 bool
-TextFont::OpenFontDirectory (FcPattern *pattern, const char *path, const char **families)
+FontFace::OpenFontDirectory (FcPattern *pattern, const char *path, const char **families)
 {
 #ifdef FONT_DEBUG
 	char stylebuf1[256], stylebuf2[256];
@@ -848,7 +855,7 @@ TextFont::OpenFontDirectory (FcPattern *pattern, const char *path, const char **
 	file = similar.face->file;
 	fface = similar.face;
 	
-found:
+ found:
 	
 	d(fprintf (stderr, "\t\t* using font '%s, %s'\n", fface->family_name, style_name (&fface->style, stylebuf1)));
 	
@@ -859,22 +866,17 @@ found:
 	return FT_New_Face (libft2, file->path, fface->index, &face) == 0;
 }
 
-TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *debug_name)
+FontFace::FontFace (FcPattern *pattern, const char *family_name, const char *debug_name)
 {
 	FcPattern *matched = NULL, *fallback = NULL;
-	FT_Long position, thickness;
 	FcChar8 *filename = NULL;
 	bool try_nofile = false;
 	char **families = NULL;
 	FcResult result;
 	FT_Error err;
-	double size;
 	int id, i;
 	
-	d(fprintf (stderr, "\nTextFont %p: Attempting to load %s\n", this, debug_name));
-	
-	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
-	FcPatternGetDouble (pattern, FC_SCALE, 0, &scale);
+	d(fprintf (stderr, "\nFontFace %p: Attempting to load %s\n", this, debug_name));
 	
 	// FIXME: would be nice to simply get this from the original
 	// pattern... then we'd have fewer args to pass in.
@@ -944,10 +946,10 @@ TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *deb
 			d(fprintf (stderr, "failed :(\n"));
 		}
 		
-	fail:
+	 fail:
 		
 		if (try_nofile && family_name) {
-		try_nofile:
+		 try_nofile:
 			// We couldn't find a matching font in the font directory, so let's try
 			// removing the filename from the pattern and see if that gets us what
 			// we are looking for.
@@ -978,8 +980,6 @@ TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *deb
 		FcPatternAddString (fallback, FC_FAMILY, (FcChar8 *) "Lucida Sans Unicode");
 		FcPatternAddString (fallback, FC_FAMILY, (FcChar8 *) "Lucida Sans");
 		FcPatternAddString (fallback, FC_FAMILY, (FcChar8 *) "Sans");
-		FcPatternAddDouble (fallback, FC_PIXEL_SIZE, size);
-		FcPatternAddDouble (fallback, FC_SCALE, scale);
 		FcPatternAddDouble (fallback, FC_DPI, dpi);
 		
 		FcPatternDestroy (matched);
@@ -992,81 +992,57 @@ TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *deb
 	
 	FcPatternDestroy (matched);
 	
-loaded:
+ loaded:
 	
 	if (families)
 		g_strfreev (families);
 	
-	if (face != NULL) {
-		FT_Set_Pixel_Sizes (face, 0, (int) size);
-		
-		// calculate underline thickness
-		thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
-		underline_thickness = ((double) thickness) / (scale * 64);
-		
-		// calculate underline position
-		position = FT_MulFix (-face->underline_position, face->size->metrics.y_scale);
-		underline_position = ((double) position) / (scale * 64) + ((underline_thickness + 1) / 2.0);
-		
-		if (underline_thickness < 1.0)
-			underline_thickness = 1.0;
-	} else {
-		underline_thickness = 1.0;
-		underline_position = 0.0;
-	}
+	if (face != NULL)
+		FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
 	
-	g_hash_table_insert (font_cache, pattern, this);
+	g_hash_table_insert (face_cache, pattern, this);
 	FcPatternReference (pattern);
 	this->pattern = pattern;
+	size = FONT_FACE_SIZE;
 	ref_count = 1;
-	nglyphs = 0;
 }
 
-TextFont::~TextFont ()
+FontFace::~FontFace ()
 {
-	int i;
-	
-	for (i = 0; i < nglyphs; i++) {
-		if (glyphs[i].path)
-			moon_path_destroy (glyphs[i].path);
-		
-		if (glyphs[i].bitmap) {
-			if (glyphs[i].bitmap->surface)
-				cairo_surface_destroy (glyphs[i].bitmap->surface);
-			
-			g_free (glyphs[i].bitmap->buffer);
-			g_free (glyphs[i].bitmap);
-		}
-	}
-	
 	if (face)
 		FT_Done_Face (face);
 	
-	g_hash_table_remove (font_cache, pattern);
+	g_hash_table_remove (face_cache, pattern);
 	FcPatternDestroy (pattern);
 }
 
-TextFont *
-TextFont::Load (FcPattern *pattern, const char *family_name, const char *debug_name)
+FontFace *
+FontFace::Load (FcPattern *pattern, const char *family_name, const char *debug_name)
 {
-	TextFont *font;
+	FontFace *face;
 	
-	if ((font = (TextFont *) g_hash_table_lookup (font_cache, pattern))) {
-		font->ref ();
-		return font;
-	}
+	// copy the original pattern and then remove the size field
+	pattern = FcPatternDuplicate (pattern);
+	FcPatternDel (pattern, FC_PIXEL_SIZE);
 	
-	return new TextFont (pattern, family_name, debug_name);
+	if (!(face = (FontFace *) g_hash_table_lookup (face_cache, pattern)))
+		face = new FontFace (pattern, family_name, debug_name);
+	else
+		face->ref ();
+	
+	FcPatternDestroy (pattern);
+	
+	return face;
 }
 
 void
-TextFont::ref ()
+FontFace::ref ()
 {
 	ref_count++;
 }
 
 void
-TextFont::unref ()
+FontFace::unref ()
 {
 	ref_count--;
 	
@@ -1075,7 +1051,7 @@ TextFont::unref ()
 }
 
 bool
-TextFont::IsScalable ()
+FontFace::IsScalable ()
 {
 	if (!face)
 		return false;
@@ -1083,44 +1059,46 @@ TextFont::IsScalable ()
 	return FT_IS_SCALABLE (face);
 }
 
-double
-TextFont::Kerning (gunichar left, gunichar right)
+void
+FontFace::GetExtents (double size, FontFaceExtents *extents)
 {
-	FT_Vector kerning;
+	double scale = 1.0 / 64.0;
+	FT_Long thickness;
+	FT_Long position;
 	
-	if (!face || !FT_HAS_KERNING (face) || left == 0 || right == 0)
-		return 0.0;
+	if (!face) {
+		extents->underline_thickness = 1.0;
+		extents->underline_position = 0.0;
+		extents->descent = 0.0;
+		extents->ascent = 0.0;
+		extents->height = 0.0;
+		
+		return;
+	}
 	
-	FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
+	if (size <= FONT_FACE_SIZE) {
+		if (this->size != FONT_FACE_SIZE) {
+			FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
+			this->size = FONT_FACE_SIZE;
+		}
+		
+		scale *= (size / FONT_FACE_SIZE);
+	} else {
+		FT_Set_Pixel_Sizes (face, 0, (int) size);
+		this->size = size;
+	}
 	
-	return (double) kerning.x / (scale * 64);
-}
-
-double
-TextFont::Descender ()
-{
-	if (!face)
-		return 0.0;
+	thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
+	position = FT_MulFix (-face->underline_position, face->size->metrics.y_scale);
 	
-	return (double) face->size->metrics.descender / (scale * 64);
-}
-
-double
-TextFont::Ascender ()
-{
-	if (!face)
-		return 0.0;
+	extents->underline_thickness = thickness * scale;
+	extents->underline_position = (position * scale) + ((extents->underline_thickness + 1) / 2.0);
+	if (extents->underline_thickness < 1.0)
+		extents->underline_thickness = 1.0;
 	
-	return (double) face->size->metrics.ascender / (scale * 64);
-}
-
-double
-TextFont::Height ()
-{
-	if (!face)
-		return 0.0;
-	
-	return (double) face->size->metrics.height / (scale * 64);
+	extents->descent = face->size->metrics.descender * scale;
+	extents->ascent = face->size->metrics.ascender * scale;
+	extents->height = face->size->metrics.height * scale;
 }
 
 static int
@@ -1211,55 +1189,189 @@ static const FT_Outline_Funcs outline_funcs = {
         0, /* delta */
 };
 
-#define BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
-
-static void
-prepare_bitmap (GlyphInfo *glyph, FT_Bitmap *bitmap)
+bool
+FontFace::LoadGlyph (double size, GlyphInfo *glyph)
 {
-	int width, height, stride;
-	unsigned char *buffer, *d;
-	cairo_format_t format;
-	size_t size;
-	int count;
+	FT_Glyph_Metrics *metrics;
+	FT_Matrix matrix;
+	double scale;
 	
-	height = bitmap->rows;
-	width = bitmap->width;
+	if (!face)
+		return false;
 	
-	size = bitmap->rows * bitmap->pitch;
-	buffer = glyph->bitmap->buffer = (unsigned char *) g_malloc (size);
-	memcpy (buffer, bitmap->buffer, size);
-	
-	switch (bitmap->pixel_mode) {
-	case FT_PIXEL_MODE_MONO:
-		//printf ("pixel_mode is FT_PIXEL_MODE_MONO\n");
-		stride = (((width + 31) & ~31) >> 3);
-		format = CAIRO_FORMAT_A1;
-		
-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
-		count = stride * height;
-		d = buffer;
-		
-		while (count--) {
-			*d = BITSWAP8 (*d);
-			d++;
+	if (size <= FONT_FACE_SIZE) {
+		if (this->size != FONT_FACE_SIZE) {
+			FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
+			this->size = FONT_FACE_SIZE;
 		}
-#endif
-		break;
-	case FT_PIXEL_MODE_LCD:
-	case FT_PIXEL_MODE_LCD_V:
-	case FT_PIXEL_MODE_GRAY:
-		//printf ("pixel_mode is FT_PIXEL_MODE_GRAY\n");
-		stride = bitmap->pitch;
-		format = CAIRO_FORMAT_A8;
-		break;
-	default:
-		//printf ("unknown pixel format\n");
-		return;
+		
+		scale = size / FONT_FACE_SIZE;
+	} else {
+		FT_Set_Pixel_Sizes (face, 0, (int) size);
+		this->size = size;
+		scale = 1.0;
 	}
 	
-	glyph->bitmap->surface = cairo_image_surface_create_for_data (buffer, format, width, height, stride);
-	glyph->bitmap->height = height;
-	glyph->bitmap->width = width;
+	if (FT_Load_Glyph (face, glyph->index, LOAD_FLAGS) != 0)
+		return false;
+	
+	if (FT_Render_Glyph (face->glyph, FT_RENDER_MODE_NORMAL) != 0)
+		return false;
+	
+	matrix.xx = (FT_Fixed) (65535 * scale);
+	matrix.xy = 0;
+	matrix.yy = (FT_Fixed) (-65535 * scale);
+	matrix.yx = 0;
+	
+	glyph->path = moon_path_new (8);
+	FT_Outline_Transform (&face->glyph->outline, &matrix);
+	FT_Outline_Decompose (&face->glyph->outline, &outline_funcs, glyph->path);
+	
+	metrics = &face->glyph->metrics;
+	
+	glyph->metrics.horiBearingX = DOUBLE_FROM_26_6 (metrics->horiBearingX) * scale;
+	glyph->metrics.horiBearingY = DOUBLE_FROM_26_6 (metrics->horiBearingY) * scale;
+	if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
+		glyph->metrics.horiAdvance = DOUBLE_FROM_16_16 (face->glyph->linearHoriAdvance) * scale;
+	else
+		glyph->metrics.horiAdvance = DOUBLE_FROM_26_6 (metrics->horiAdvance) * scale;
+	glyph->metrics.height = DOUBLE_FROM_26_6 (metrics->height) * scale;
+	glyph->metrics.width = DOUBLE_FROM_26_6 (metrics->width) * scale;
+	
+	return true;
+}
+
+double
+FontFace::Kerning (double size, gunichar left, gunichar right)
+{
+	FT_Vector kerning;
+	
+	if (!face || !FT_HAS_KERNING (face) || left == 0 || right == 0)
+		return 0.0;
+	
+	FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
+	
+	return (kerning.x * size) / (FONT_FACE_SIZE * 64.0);
+}
+
+gunichar
+FontFace::GetCharFromIndex (uint32_t index)
+{
+	gunichar unichar;
+	uint32_t idx;
+	
+	if (!face || index == 0)
+		return 0;
+	
+	unichar = FT_Get_First_Char (face, &idx);
+	while (idx != index && idx != 0)
+		unichar = FT_Get_Next_Char (face, unichar, &idx);
+	
+	if (idx == 0)
+		unichar = 0;
+	
+	return unichar;
+}
+
+uint32_t
+FontFace::GetCharIndex (gunichar unichar)
+{
+	return face ? FT_Get_Char_Index (face, unichar) : 0;
+}
+
+bool
+FontFace::HasChar (gunichar unichar)
+{
+	if (!face)
+		return false;
+	
+	return FcFreeTypeCharIndex (face, unichar) != 0;
+}
+
+
+
+TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *debug_name)
+{
+	face = FontFace::Load (pattern, family_name, debug_name);
+	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
+	g_hash_table_insert (font_cache, pattern, this);
+	face->GetExtents (size, &extents);
+	FcPatternReference (pattern);
+	this->pattern = pattern;
+	ref_count = 1;
+	nglyphs = 0;
+}
+
+TextFont::~TextFont ()
+{
+	int i;
+	
+	for (i = 0; i < nglyphs; i++) {
+		if (glyphs[i].path)
+			moon_path_destroy (glyphs[i].path);
+	}
+	
+	g_hash_table_remove (font_cache, pattern);
+	FcPatternDestroy (pattern);
+	face->unref ();
+}
+
+TextFont *
+TextFont::Load (FcPattern *pattern, const char *family_name, const char *debug_name)
+{
+	TextFont *font;
+	
+	if ((font = (TextFont *) g_hash_table_lookup (font_cache, pattern))) {
+		font->ref ();
+		return font;
+	}
+	
+	return new TextFont (pattern, family_name, debug_name);
+}
+
+void
+TextFont::ref ()
+{
+	ref_count++;
+}
+
+void
+TextFont::unref ()
+{
+	ref_count--;
+	
+	if (ref_count == 0)
+		delete this;
+}
+
+bool
+TextFont::IsScalable ()
+{
+	return face->IsScalable ();
+}
+
+double
+TextFont::Kerning (gunichar left, gunichar right)
+{
+	return face->Kerning (size, left, right);
+}
+
+double
+TextFont::Descender ()
+{
+	return extents.descent;
+}
+
+double
+TextFont::Ascender ()
+{
+	return extents.ascent;
+}
+
+double
+TextFont::Height ()
+{
+	return extents.height;
 }
 
 static int
@@ -1274,9 +1386,7 @@ glyphsort (const void *v1, const void *v2)
 GlyphInfo *
 TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 {
-	double scale = 1.0 / this->scale;
-	FT_Glyph_Metrics *metrics;
-	GlyphInfo *glyph;
+	GlyphInfo glyph, *slot;
 	int i;
 	
 	if (!face)
@@ -1284,78 +1394,34 @@ TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 	
 	for (i = 0; i < nglyphs; i++) {
 		if (glyphs[i].index == index) {
-			glyph = &glyphs[i];
-			glyph->requested++;
-			return glyph;
+			slot = &glyphs[i];
+			slot->requested++;
+			return slot;
 		}
 	}
 	
-	if (FT_Load_Glyph (face, index, LOAD_FLAGS) != 0)
-		return NULL;
+	glyph.unichar = unichar;
+	glyph.index = index;
+	glyph.requested = 1;
+	glyph.path = NULL;
 	
-	if (FT_Render_Glyph (face->glyph, FT_RENDER_MODE_NORMAL) != 0)
-		return NULL;
+	if (!face->LoadGlyph (size, &glyph))
+		return false;
 	
 	if (nglyphs == 256) {
 		// need to expire the least requested glyph (which will be the last element in the array after sorting)
 		qsort (glyphs, nglyphs, sizeof (GlyphInfo), glyphsort);
-		glyph = &glyphs[nglyphs - 1];
+		slot = &glyphs[nglyphs - 1];
 		
-		if (glyph->bitmap) {
-			if (glyph->bitmap->surface) {
-				cairo_surface_destroy (glyph->bitmap->surface);
-				glyph->bitmap->surface = NULL;
-			}
-			
-			g_free (glyph->bitmap->buffer);
-			glyph->bitmap->buffer = NULL;
-		}
-		
-		if (glyph->path)
-			moon_path_destroy (glyph->path);
+		if (slot->path)
+			moon_path_destroy (slot->path);
 	} else {
-		glyph = &glyphs[nglyphs++];
-		glyph->bitmap = NULL;
+		slot = &glyphs[nglyphs++];
 	}
 	
-	glyph->unichar = unichar;
-	glyph->index = index;
-	glyph->requested = 1;
-	glyph->path = NULL;
+	memcpy (slot, &glyph, sizeof (GlyphInfo));
 	
-	if (FT_IS_SCALABLE (face)) {
-		FT_Matrix matrix;
-		
-		// FIXME: can the scale ever overflow the 16.16 Fixed type?
-		matrix.xx = (FT_Fixed) (65535 / this->scale);
-		matrix.xy = 0;
-		matrix.yy = (FT_Fixed) (-65535 / this->scale);
-		matrix.yx = 0;
-		
-		glyph->path = moon_path_new (8);
-		FT_Outline_Transform (&face->glyph->outline, &matrix);
-		FT_Outline_Decompose (&face->glyph->outline, &outline_funcs, glyph->path);
-	} else {
-		if (glyph->bitmap == NULL)
-			glyph->bitmap = g_new (GlyphBitmap, 1);
-		
-		glyph->bitmap->left = face->glyph->bitmap_left;
-		glyph->bitmap->top = face->glyph->bitmap_top;
-		prepare_bitmap (glyph, &face->glyph->bitmap);
-	}
-	
-	metrics = &face->glyph->metrics;
-	
-	glyph->metrics.horiBearingX = DOUBLE_FROM_26_6 (metrics->horiBearingX) * scale;
-	glyph->metrics.horiBearingY = DOUBLE_FROM_26_6 (metrics->horiBearingY) * scale;
-	if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
-		glyph->metrics.horiAdvance = DOUBLE_FROM_16_16 (face->glyph->linearHoriAdvance) * scale;
-	else
-		glyph->metrics.horiAdvance = DOUBLE_FROM_26_6 (metrics->horiAdvance) * scale;
-	glyph->metrics.height = DOUBLE_FROM_26_6 (metrics->height) * scale;
-	glyph->metrics.width = DOUBLE_FROM_26_6 (metrics->width) * scale;
-	
-	return glyph;
+	return slot;
 }
 
 GlyphInfo *
@@ -1363,10 +1429,7 @@ TextFont::GetGlyphInfo (gunichar unichar)
 {
 	uint32_t index;
 	
-	if (!face)
-		return NULL;
-	
-	index = FT_Get_Char_Index (face, unichar);
+	index = face->GetCharIndex (unichar);
 	
 	return GetGlyphInfo (unichar, index);
 }
@@ -1375,21 +1438,8 @@ GlyphInfo *
 TextFont::GetGlyphInfoByIndex (uint32_t index)
 {
 	gunichar unichar;
-	uint32_t idx;
 	
-	if (!face)
-		return NULL;
-	
-	if (index != 0) {
-		unichar = FT_Get_First_Char (face, &idx);
-		while (idx != index && idx != 0)
-			unichar = FT_Get_Next_Char (face, unichar, &idx);
-		
-		if (idx == 0)
-			unichar = 0;
-	} else {
-		unichar = 0;
-	}
+	unichar = face->GetCharFromIndex (index);
 	
 	return GetGlyphInfo (unichar, index);
 }
@@ -1397,53 +1447,28 @@ TextFont::GetGlyphInfoByIndex (uint32_t index)
 bool
 TextFont::HasGlyph (gunichar unichar)
 {
-	if (!face)
-		return false;
-	
-	return FcFreeTypeCharIndex (face, unichar) != 0;
+	return face->HasChar (unichar);
 }
 
 double
 TextFont::UnderlinePosition ()
 {
-	return underline_position;
+	return extents.underline_position;
 }
 
 double
 TextFont::UnderlineThickness ()
 {
-	return underline_thickness;
-}
-
-void
-TextFont::RenderGlyphBitmap (cairo_t *cr, GlyphInfo *glyph, double x, double y)
-{
-	// take horiBearingX into consideration
-	x += glyph->metrics.horiBearingX;
-	
-	// Bitmap glyphs are rendered from the top down
-	y -= glyph->metrics.horiBearingY;
-	
-	cairo_save (cr);
-	
-	cairo_mask_surface (cr, glyph->bitmap->surface, x, y);
-	cairo_set_operator (cr, CAIRO_OPERATOR_SATURATE);
-	
-	cairo_new_path (cr);
-	cairo_rectangle (cr, x, y, (double) glyph->bitmap->width, (double) glyph->bitmap->height);
-	cairo_close_path (cr);
-	cairo_fill (cr);
-	
-	cairo_restore (cr);
+	return extents.underline_thickness;
 }
 
 void
 TextFont::RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 {
-	cairo_new_path (cr);
-	Path (cr, glyph, x, y);
-	cairo_close_path (cr);
-	cairo_fill (cr);
+       cairo_new_path (cr);
+       Path (cr, glyph, x, y);
+       cairo_close_path (cr);
+       cairo_fill (cr);
 }
 
 void
@@ -1451,8 +1476,6 @@ TextFont::Render (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 {
 	if (glyph->path)
 		RenderGlyphPath (cr, glyph, x, y);
-	else
-		RenderGlyphBitmap (cr, glyph, x, y);
 }
 
 void
@@ -1565,8 +1588,6 @@ TextFontDescription::~TextFontDescription ()
 	g_free (family);
 }
 
-#define MIN_FONT_SIZE 41.0f
-
 FcPattern *
 TextFontDescription::CreatePattern ()
 {
@@ -1592,13 +1613,7 @@ TextFontDescription::CreatePattern ()
 	FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
 	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
 	FcPatternAddInteger (pattern, FC_WIDTH, fc_stretch (stretch));
-	if (size < MIN_FONT_SIZE) {
-		FcPatternAddDouble (pattern, FC_PIXEL_SIZE, MIN_FONT_SIZE);
-		FcPatternAddDouble (pattern, FC_SCALE, MIN_FONT_SIZE / size);
-	} else {
-		FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);
-		FcPatternAddDouble (pattern, FC_SCALE, 1.0);
-	}
+	FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);
 	
 	FcDefaultSubstitute (pattern);
 	

@@ -1,3 +1,12 @@
+2008-06-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	Text rendering optimization via reduction of font loading.
+
+	* font.cpp (FontFace): A new abstraction for FT_Face which is
+	meant to prevent Moonlight from ahving to load the same font face
+	multiple times just because the FontSize attributes don't match.
+	(TextFont): Greatly simplified this class by using FontFace.
+
 2008-06-02  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Make sure we don't try to look up Content Properties
