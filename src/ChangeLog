@@ -1,3 +1,16 @@
+2008-06-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* control.cpp (user_control_new): %p does what %x was trying to do
+	in this case, but without compile warnings :)
+
+2008-06-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	Glyphs rendering optimization.
+
+	* text.cpp (Glyphs::Layout): Accumulate the glyph paths here
+	instead of re-looping this logic again in Glyphs::Render().
+	(Glyphs::Render): Just blit the path.
+
 2008-06-03  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (DependencyObject::SetValue): Simplify this

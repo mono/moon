@@ -289,10 +289,10 @@ class Glyphs : public FrameworkElement {
 	double left;
 	double top;
 	
-	int invalid:1;
-	int dirty:1;
 	int origin_y_specified:1;
 	int simulation_none:1;
+	int invalid:1;
+	int dirty:1;
 	
 	void Layout ();
 	void SetIndicesInternal (const char *in);

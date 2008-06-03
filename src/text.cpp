@@ -1354,20 +1354,20 @@ Glyphs::Glyphs ()
 	left = 0.0;
 	top = 0.0;
 	
+	simulation_none	= true;
 	invalid = false;
 	dirty = false;
-	simulation_none	= true;
 }
 
 Glyphs::~Glyphs ()
 {
-	if (path)
-		moon_path_destroy (path);
-	
 	if (downloader) {
 		downloader_abort (downloader);
 		downloader->unref ();
 	}
+	
+	if (path)
+		moon_path_destroy (path);
 	
 	attrs->Clear (true);
 	delete attrs;
@@ -1381,11 +1381,15 @@ void
 Glyphs::Layout ()
 {
 	uint32_t code_units, glyph_count, i;
-	bool plot = false, first_char = true;
-	double right, bottom, x, y, v;
+	bool first_char = true;
+	double x0, x1, y0, y1;
+	double bottom, right;
+	double bottom0, top0;
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
+	int nglyphs = 0;
 	TextFont *font;
+	double offset;
 	bool cluster;
 	double scale;
 	int n = 0;
@@ -1402,7 +1406,7 @@ Glyphs::Layout ()
 		moon_path_destroy (path);
 		path = NULL;
 	}
-
+	
 	// Silverlight only renders for None (other, invalid, values do not render anything)
 	if (!simulation_none) {
 		invalid = true;
@@ -1431,18 +1435,23 @@ Glyphs::Layout ()
 	
 	right = origin_x;
 	left = origin_x;
-	x = origin_x;
+	x0 = origin_x;
 	
-	// OriginY is the baseline if specified; set 'y' to the topline
+	// OriginY is the baseline if specified
 	if (origin_y_specified) {
-		y = origin_y - font->Ascender ();
-		bottom = y + font->Height ();
-		top = y;
+		top0 = origin_y - font->Ascender ();
+		y0 = origin_y;
 	} else {
-		bottom = font->Height ();
-		top = 0.0;
-		y = 0.0;
+		y0 = font->Ascender ();
+		top0 = 0.0;
 	}
+	
+	bottom0 = top0 + font->Height ();
+	
+	bottom = bottom0;
+	top = top0;
+	
+	path = moon_path_new (16);
 	
 	attr = (GlyphAttr *) attrs->First ();
 	
@@ -1465,7 +1474,6 @@ Glyphs::Layout ()
 				cluster = true;
 			
 			// render the glyph cluster
-			plot = true;
 			i = 0;
 			do {
 				if (attr && (attr->set & Index)) {
@@ -1473,40 +1481,45 @@ Glyphs::Layout ()
 						goto next1;
 				} else if (cluster) {
 					// indexes MUST be specified for each glyph in a cluster
+					moon_path_destroy (path);
 					invalid = true;
+					path = NULL;
 					goto done;
 				} else {
 					glyph = font->GetGlyphInfo (*c);
 				}
 				
+				y1 = y0;
 				if (attr && (attr->set & vOffset)) {
-					v = (attr->voffset * scale);
-					bottom = MAX (bottom, y + v + font->Height ());
-					top = MIN (top, y + v);
-				}
+					offset = -(attr->voffset * scale);
+					bottom = MAX (bottom, bottom0 + offset);
+					top = MIN (top, top0 + offset);
+					y1 += offset;
+				} 
 				
 				if (attr && (attr->set & uOffset)) {
-					v = x + (attr->uoffset * scale);
-					right = MAX (right, x);
-					left = MIN (left, x);
-				} else {
-					if (first_char) {
-						if (glyph->metrics.horiBearingX < 0)
-							x -= glyph->metrics.horiBearingX;
-						
-						first_char = false;
-					}
+					offset = (attr->uoffset * scale);
+					left = MIN (left, x0 + offset);
+					x1 = x0 + offset;
+				} else if (first_char) {
+					if (glyph->metrics.horiBearingX < 0)
+						x0 -= glyph->metrics.horiBearingX;
 					
-					v = x;
+					first_char = false;
+					x1 = x0;
+				} else {
+					x1 = x0;
 				}
 				
-				v += glyph->metrics.horiAdvance;
-				right = MAX (right, v);
+				right = MAX (right, x1 + glyph->metrics.horiAdvance);
+				
+				font->AppendPath (path, glyph, x1, y1);
+				nglyphs++;
 				
 				if (attr && (attr->set & Advance))
-					x += attr->advance * scale;
+					x0 += attr->advance * scale;
 				else
-					x += glyph->metrics.horiAdvance;
+					x0 += glyph->metrics.horiAdvance;
 				
 			next1:
 				
@@ -1518,13 +1531,17 @@ Glyphs::Layout ()
 				
 				if (!attr) {
 					// there MUST be an attr for each glyph in a cluster
+					moon_path_destroy (path);
 					invalid = true;
+					path = NULL;
 					goto done;
 				}
 				
 				if ((attr->set & Cluster)) {
 					// only the first glyph in a cluster may specify a cluster mapping
+					moon_path_destroy (path);
 					invalid = true;
+					path = NULL;
 					goto done;
 				}
 			} while (true);
@@ -1540,49 +1557,54 @@ Glyphs::Layout ()
 	while (attr) {
 		if (attr->set & Cluster) {
 			d(fprintf (stderr, "Can't use clusters past the end of the UnicodeString\n"));
+			moon_path_destroy (path);
 			invalid = true;
+			path = NULL;
 			goto done;
 		}
 		
 		if (!(attr->set & Index)) {
 			d(fprintf (stderr, "No index specified for glyph %d\n", n + 1));
+			moon_path_destroy (path);
 			invalid = true;
+			path = NULL;
 			goto done;
 		}
 		
 		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 			goto next;
 		
-		plot = true;
-		
+		y1 = y0;
 		if ((attr->set & vOffset)) {
-			v = (attr->voffset * scale);
-			bottom = MAX (bottom, y + v + font->Height ());
-			top = MIN (top, y + v);
+			offset = -(attr->voffset * scale);
+			bottom = MAX (bottom, bottom0 + offset);
+			top = MIN (top, top0 + offset);
+			y1 += offset;
 		}
 		
 		if ((attr->set & uOffset)) {
-			v = x + (attr->uoffset * scale);
-			right = MAX (right, x);
-			left = MIN (left, x);
-		} else {
-			if (first_char) {
-				if (glyph->metrics.horiBearingX < 0)
-					x -= glyph->metrics.horiBearingX;
-				
-				first_char = false;
-			}
+			offset = (attr->uoffset * scale);
+			left = MIN (left, x0 + offset);
+			x1 = x0 + offset;
+		} else if (first_char) {
+			if (glyph->metrics.horiBearingX < 0)
+				x0 -= glyph->metrics.horiBearingX;
 			
-			v = x;
+			first_char = false;
+			x1 = x0;
+		} else {
+			x1 = x0;
 		}
 		
-		v += glyph->metrics.horiAdvance;
-		right = MAX (right, v);
+		right = MAX (right, x1 + glyph->metrics.horiAdvance);
+		
+		font->AppendPath (path, glyph, x1, y1);
+		nglyphs++;
 		
 		if ((attr->set & Advance))
-			x += attr->advance * scale;
+			x0 += attr->advance * scale;
 		else
-			x += glyph->metrics.horiAdvance;
+			x0 += glyph->metrics.horiAdvance;
 		
 	next:
 		
@@ -1590,9 +1612,12 @@ Glyphs::Layout ()
 		n++;
 	}
 	
-	if (plot) {
+	if (nglyphs > 0) {
 		height = bottom - top;
 		width = right - left;
+	} else {
+		moon_path_destroy (path);
+		path = NULL;
 	}
 	
 done:
@@ -1630,15 +1655,6 @@ Glyphs::GetOriginPoint ()
 void
 Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 {
-	uint32_t code_units, glyph_count, i;
-	bool first_char = true;
-	GlyphInfo *glyph;
-	GlyphAttr *attr;
-	TextFont *font;
-	double x0, y0;
-	double x1, y1;
-	double scale;
-	
 	if (this->width == 0.0 && this->height == 0.0)
 		return;
 	
@@ -1648,152 +1664,18 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 		return;
 	}
 	
+	if (path == NULL || path->cairo.num_data == 0) {
+		// No glyphs to render
+		return;
+	}
+	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	fill->SetupBrush (cr, this);
 	
-	if (path) {
-		if (path->cairo.num_data) {
-			cairo_append_path (cr, &path->cairo);
-			cairo_fill (cr);
-		}
-		
-		cairo_restore (cr);
-		return;
-	}
-	
-	font = desc->GetFont ();
-	
-	// scale Advance, uOffset and vOffset units to pixels
-	scale = desc->GetSize () * 20.0 / 2048.0;
-	
-	x0 = origin_x;
-	
-	// OriginY is the baseline if specified
-	if (!origin_y_specified)
-		y0 = font->Height () + font->Descender ();
-	else
-		y0 = origin_y;
-	
-	attr = (GlyphAttr *) attrs->First ();
-	
-	if (font->IsScalable ()) {
-		path = moon_path_new (16);
-		cairo_new_path (cr);
-	}
-	
-	if (text && text[0]) {
-		gunichar *c = text;
-		
-		while (*c != 0) {
-			if (attr && (attr->set & Cluster)) {
-				// get the cluster's GlyphCount and CodeUnitCount
-				glyph_count = attr->glyph_count;
-				code_units = attr->code_units;
-			} else {
-				glyph_count = 1;
-				code_units = 1;
-			}
-			
-			// render the glyph cluster
-			for (i = 0; i < glyph_count; i++) {
-				if (attr && (attr->set & Index)) {
-					if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
-						goto next1;
-				} else {
-					glyph = font->GetGlyphInfo (*c);
-				}
-				
-				if (attr && (attr->set & vOffset))
-					y1 = y0 - (attr->voffset * scale);
-				else
-					y1 = y0;
-				
-				if (attr && (attr->set & uOffset)) {
-					x1 = x0 + (attr->uoffset * scale);
-				} else {
-					if (first_char) {
-						if (glyph->metrics.horiBearingX < 0)
-							x0 -= glyph->metrics.horiBearingX;
-						
-						first_char = false;
-					}
-					
-					x1 = x0;
-				}
-				
-				if (font->IsScalable ()) {
-					font->AppendPath (path, glyph, x1, y1);
-					font->Path (cr, glyph, x1, y1);
-				} else {
-					font->Render (cr, glyph, x1, y1);
-				}
-				
-				if (attr && (attr->set & Advance))
-					x0 += attr->advance * scale;
-				else
-					x0 += glyph->metrics.horiAdvance;
-				
-			next1:
-				
-				attr = attr ? (GlyphAttr *) attr->next : NULL;
-			}
-			
-			// consume the code units
-			for (i = 0; i < code_units && *c != 0; i++)
-				c++;
-		}
-	}
-	
-	while (attr) {
-		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
-			goto next;
-		
-		if ((attr->set & vOffset))
-			y1 = y0 - (attr->voffset * scale);
-		else
-			y1 = y0;
-		
-		if ((attr->set & uOffset)) {
-			x1 = x0 + (attr->uoffset * scale);
-		} else {
-			if (first_char) {
-				if (glyph->metrics.horiBearingX < 0)
-					x0 -= glyph->metrics.horiBearingX;
-				
-				first_char = false;
-			}
-			
-			x1 = x0;
-		}
-		
-		if (font->IsScalable ()) {
-			font->AppendPath (path, glyph, x1, y1);
-			font->Path (cr, glyph, x1, y1);
-		} else {
-			font->Render (cr, glyph, x1, y1);
-		}
-		
-		if ((attr->set & Advance))
-			x0 += attr->advance * scale;
-		else
-			x0 += glyph->metrics.horiAdvance;
-		
-	next:
-		
-		attr = (GlyphAttr *) attr->next;
-	}
-	
-	if (font->IsScalable ()) {
-		moon_close_path (path);
-		cairo_close_path (cr);
-		
-		if (path->cairo.num_data)
-			cairo_fill (cr);
-	}
-	
-	font->unref ();
+	cairo_append_path (cr, &path->cairo);
+	cairo_fill (cr);
 	
 	cairo_restore (cr);
 }

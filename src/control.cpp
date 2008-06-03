@@ -235,7 +235,7 @@ UserControl *
 user_control_new (void)
 {
 	UserControl *x = new UserControl ();
-	printf ("UserControl is 0x%x\n", x);
+	printf ("UserControl is %p\n", x);
 	return x;
 }
 
