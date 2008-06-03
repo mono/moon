@@ -757,23 +757,11 @@ DependencyObject::SetValue (DependencyProperty* property, Value value, GError** 
 bool
 DependencyObject::SetValue (DependencyProperty* property, Value* value, GError** error)
 {
-	if (!IsValueValid (property, value, error)) {
+	if (!IsValueValid (property, value, error))
 		return false;
-	}
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property);
 	bool equal = false;
-
-	if (current_value != NULL && current_value->Is (Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *current_as_dep = current_value->AsDependencyObject ();
-		if (current_as_dep)
-			current_as_dep->SetLogicalParent (NULL);
-	}
-	if (value != NULL && value->Is (Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *new_as_dep = value->AsDependencyObject ();
-		
-		new_as_dep->SetLogicalParent (this);
-	}
 
 	if (current_value != NULL && value != NULL) {
 		equal = !property->always_change && (*current_value == *value);
@@ -782,22 +770,26 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 	}
 
 	if (!equal) {
-		if (current_value) {
-			// unregister from the existing value
-			if (current_value->Is (Type::DEPENDENCY_OBJECT)){
-				DependencyObject *dob = current_value->AsDependencyObject();
+		DependencyObject *current_as_dep = NULL;
+		DependencyObject *new_as_dep = NULL;
 
-				if (dob != NULL) {
-					dob->RemovePropertyChangeListener (this, property);
-					dob->SetSurface (NULL);
-				}
-			}
+		if (current_value && current_value->Is (Type::DEPENDENCY_OBJECT))
+			current_as_dep = current_value->AsDependencyObject ();
+		if (value && value->Is (Type::DEPENDENCY_OBJECT))
+			new_as_dep = value->AsDependencyObject ();
+
+		if (current_as_dep) {
+			// unset its logical parent
+			current_as_dep->SetLogicalParent (NULL);
+
+			// unregister from the existing value
+			current_as_dep->RemovePropertyChangeListener (this, property);
+			current_as_dep->SetSurface (NULL);
 
 			// and remove its closure.
-			if (Type::Find(current_value->GetKind())->IsSubclassOf (Type::COLLECTION)) {
-				Collection *col = current_value->AsCollection ();
-				if (col)
-					col->closure = NULL;
+			if (current_as_dep->Is (Type::COLLECTION)) {
+				Collection *col = (Collection*)current_as_dep;
+				col->closure = NULL;
 			}
 		}
 
@@ -806,34 +798,25 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 		// store the new value in the hash
 		g_hash_table_insert (current_values, property, new_value);
 
-		if (new_value) {
+		if (new_as_dep) {
+			// set its logical parent
+			new_as_dep->SetLogicalParent (this);
+			
 			// listen for property changes on the new object
-			if (new_value->Is (Type::DEPENDENCY_OBJECT)){
-				DependencyObject *dob = new_value->AsDependencyObject();
-				
-				if (dob != NULL) {
-					dob->AddPropertyChangeListener (this, property);
-					dob->SetSurface (GetSurface ());
-				}
-			}
+			new_as_dep->AddPropertyChangeListener (this, property);
+			new_as_dep->SetSurface (GetSurface ());
 
 			// and set its closure to us.
-			if (Type::Find(new_value->GetKind())->IsSubclassOf (Type::COLLECTION)) {
-				Collection *col = new_value->AsCollection ();
-				if (col) {
-					if (col->closure)
-						g_warning ("Collection added as property of more than 1 dependency object");
-					col->closure = this;
-					MergeTemporaryNameScopes (col);
-				}
+			if (new_as_dep->Is (Type::COLLECTION)) {
+				Collection *col = (Collection*)new_as_dep;
+				if (col->closure)
+					g_warning ("Collection added as property of more than 1 dependency object");
+				col->closure = this;
 			}
 
-			if (new_value->Is (Type::DEPENDENCY_OBJECT)) {
-				DependencyObject *d_o = new_value->AsDependencyObject ();
-				if (d_o)
-					MergeTemporaryNameScope (d_o);
-			}
-
+			// merge any temporary namescopes in its
+			// subtree.
+			MergeTemporaryNameScopes (new_as_dep);
 		}
 		
 		listeners_notified = false;
@@ -875,28 +858,22 @@ merge_namescope (NameScope *parent_ns, NameScope *child_ns, DependencyObject *ow
 }
 
 void
-DependencyObject::MergeTemporaryNameScope (DependencyObject *d_o)
+DependencyObject::MergeTemporaryNameScopes (DependencyObject *dob)
 {
 	NameScope *ns = NameScope::GetNameScope (this);
-	NameScope *do_ns = NameScope::GetNameScope (d_o);
-	if (do_ns && do_ns->GetTemporary ())
-		merge_namescope (ns, do_ns, this);
-}
-
-void
-DependencyObject::MergeTemporaryNameScopes (Collection *c)
-{
-	NameScope *ns = NameScope::GetNameScope (this);
-	NameScope *col_ns = NameScope::GetNameScope (c);
-	Collection::Node *cn;
+	NameScope *dob_ns = NameScope::GetNameScope (dob);
 	
-	if (col_ns && col_ns->GetTemporary ())
-		merge_namescope (ns, col_ns, this);
+	if (dob_ns && dob_ns->GetTemporary ())
+		merge_namescope (ns, dob_ns, this);
 
-	for (cn = (Collection::Node *) c->list->First () ; cn != NULL; cn = (Collection::Node *) cn->next) {
-		NameScope *c_ns = NameScope::GetNameScope (cn->obj);
-		if (c_ns && c_ns->GetTemporary())
-			merge_namescope (ns, c_ns, this);
+	if (dob->Is (Type::COLLECTION)) {
+		Collection *c = (Collection*)dob;
+		Collection::Node *cn;
+		for (cn = (Collection::Node *) c->list->First () ; cn != NULL; cn = (Collection::Node *) cn->next) {
+			NameScope *c_ns = NameScope::GetNameScope (cn->obj);
+			if (c_ns && c_ns->GetTemporary())
+				merge_namescope (ns, c_ns, this);
+		}
 	}
 }
 

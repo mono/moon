@@ -264,8 +264,7 @@ class DependencyObject : public EventObject {
 	void AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property = NULL);
 	void RemovePropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property = NULL);
 
-	void MergeTemporaryNameScopes (Collection *c);
-	void MergeTemporaryNameScope (DependencyObject *o);
+	void MergeTemporaryNameScopes (DependencyObject *dob);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
 
