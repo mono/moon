@@ -1,3 +1,15 @@
+2008-06-03  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::SetValue): Simplify this
+	a bunch and remove all the redundant checks.
+	
+	(DependencyObject::MergeTemporaryNameScopes): merge both DO and
+	Collection versions into the same method to reduce code
+	duplication.
+
+	* dependencyobject.h: no need to provide multiple overloads for
+	MergeTemporaryNameScopes.
+
 2008-06-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	Text rendering optimization via reduction of font loading.
