@@ -834,8 +834,10 @@ Clock::ComputeNewTime ()
 
 	/* once we've calculated our time, make sure we don't
 	   go over our repeat time (if there is one) */
-	if (repeat_time >= 0 && repeat_time <= ret_time)
+	if (repeat_time >= 0 && repeat_time <= ret_time) {
+		ret_time = repeat_time;
 		SkipToFill ();
+	}
 
 	return ret_time;
 
@@ -939,7 +941,7 @@ Clock::Begin ()
 #else
 		repeat_count = 1;
 #endif
-		repeat_time = repeat->GetDuration();
+		repeat_time = (repeat->GetDuration() * timeline->GetSpeedRatio ());
 	}
 	else {
 		repeat_count = -1;
