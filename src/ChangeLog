@@ -1,5 +1,12 @@
 2008-06-04  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Slightly reworking the seek offsett calculations to include
+	the SpeeRatio multiplier but do not apply it to BeginTime. Fixes one
+	more block in AnimationMatrix2 and the test-seek-spee-ratio-begin.xaml
+	assorted test.
+
+2008-06-04  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: When seeking include the SpeedRatio calculations. Fixes the
 	test-seeking-speed-ratio.xaml from assorted tests and one more block in
 	the AnimationMatrix2 test. 

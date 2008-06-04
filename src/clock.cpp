@@ -997,17 +997,16 @@ Clock::Resume ()
 void
 Clock::Seek (TimeSpan timespan)
 {
-	seek_time = timespan * timeline->GetSpeedRatio ();
-
 	// Start the clock if seeking into it's timespan
-	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || GetBeginTime () <= seek_time)) {
+	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || GetBeginTime () <= timespan)) {
 		if (GetBeginOnTick()) {
 			BeginOnTick (false);
 			ComputeBeginTime ();
 		}
 		Begin ();
-		seek_time = seek_time - GetBeginTime ();
-	}
+		seek_time = (timespan - GetBeginTime ()) * timeline->GetSpeedRatio ();
+	} else
+		seek_time = timespan * timeline->GetSpeedRatio ();
 
 	seeking = true;
 }
