@@ -3502,11 +3502,17 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		
 		return true;
 	case MoonId_Open:
-		if (argCount > 3)
+		if (argCount != 2 || !NPVARIANT_IS_STRING (args[0]) ||
+		    !(NPVARIANT_IS_STRING (args[1]) || NPVARIANT_IS_NULL (args[1])))
 			THROW_JS_EXCEPTION ("open");
 		
 		verb = STRDUP_FROM_VARIANT (args[0]);
-		uri = STRDUP_FROM_VARIANT (args[1]);
+		
+		if (NPVARIANT_IS_STRING (args[1]))
+			uri = STRDUP_FROM_VARIANT (args[1]);
+		else
+			uri = NULL;
+		
 		downloader->Open (verb, uri);
 		g_free (verb);
 		g_free (uri);
@@ -3514,7 +3520,6 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		VOID_TO_NPVARIANT (*result);
 		
 		return true;
-
 	case MoonId_Send:
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("send");
