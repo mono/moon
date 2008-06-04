@@ -1,3 +1,9 @@
+2008-06-04  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: When seeking include the SpeedRatio calculations. Fixes the
+	test-seeking-speed-ratio.xaml from assorted tests and one more block in
+	the AnimationMatrix2 test. 
+
 2008-06-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* control.cpp (user_control_new): %p does what %x was trying to do
