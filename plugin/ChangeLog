@@ -1,5 +1,13 @@
 2008-06-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* plugin-class.cpp: Added argument sanity checking in all the
+	Invoke() methods I could find (may have missed some).
+	(check_arg_list): New function to sanity-check an NPVariant
+	argument vector for the correct types and the correct number of
+	arguments (supports optional args as well).
+
+2008-06-04  Jeffrey Stedfast  <fejj@novell.com>
+
 	* plugin-class.cpp (MoonlightDownloaderObject::Invoke): Check the
 	arg-types for ::Open(). Fixes bug #394943.
 
