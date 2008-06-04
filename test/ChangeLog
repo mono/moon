@@ -1,5 +1,11 @@
 2008-06-04  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/seek-test-speed-ratio-begin.html: Adding a test that
+	shows that we're incorectly calculating begin time shift with SpeeRatio
+	seeks.
+
+2008-06-04  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/seek-test-speed-ratio.html: Adding a test that shows
 	that we're incorrectly parsing (not including?) SpeedRatio in our
 	seeking calculations.
