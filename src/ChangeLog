@@ -1,5 +1,11 @@
 2008-06-05  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml.cpp: Removing the "broken parsing" of RepeatBehavior in
+	--with-compatibility-bugs mode. It looks like the parsing is fine. The
+	bug is now "implemented" in clock.cpp.
+
+2008-06-05  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: In ComputeNewTime when we're going over our duration time
 	and we're AutoReversed, check actually how big the diff is cause it
 	might be that we need to "wrap around self" and switch to forward time
