@@ -945,10 +945,8 @@ Clock::Begin ()
 	}
 	else if (repeat->HasDuration ()) {
 #ifndef COMPATIBILITY_BUGS
-		printf ("COMPAT BUGS!\n");
 		repeat_count = -1;
 #else
-		printf ("NO COMPAT BUGS!\n");
 		repeat_count = 1;
 #endif
 		repeat_time = (repeat->GetDuration() * timeline->GetSpeedRatio ());
