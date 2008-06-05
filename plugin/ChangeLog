@@ -4,8 +4,13 @@
 	same directory layout as the website.
 
 2008-06-05  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-class.cpp: Update to reflect API changes on the downloader
+	side.
+
+2008-06-05  Geoff Norton  <gnorton@novell.com>
 	
-	* plugin-downloader.cpp: Update the debugging outputs..
+	* plugin-downloader.cpp: Update the debugging outputs.
 
 2008-06-05  Geoff Norton  <gnorton@novell.com>
 

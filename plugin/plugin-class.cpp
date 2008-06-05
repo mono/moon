@@ -2196,7 +2196,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		Type::Kind element_type;
 		
 		char *path = STRDUP_FROM_VARIANT (args [1]);
-		char *fname = down->GetDownloadedFilePart (path);
+		char *fname = down->GetDownloadedFilename (path);
 		g_free (path);
 		
 		if (fname != NULL) {
