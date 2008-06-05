@@ -106,7 +106,7 @@ downloader_destroy_state (gpointer data)
 }
 
 static void
-downloader_open (const char *verb, const char *uri, gpointer state)
+downloader_open (const char *verb, const char *uri, bool streaming, gpointer state)
 {
 	((FileDownloadState*)state)->Open (verb, uri);
 }
@@ -121,6 +121,18 @@ static void
 downloader_abort (gpointer state)
 {
 	((FileDownloadState*)state)->Abort ();
+}
+
+static void
+downloader_header (gpointer state, const char *header, const char *value)
+{
+	g_assert_not_reached ();
+}
+
+static void
+downloader_body (gpointer state, void *body, uint32_t length)
+{
+	g_assert_not_reached ();
 }
 
 static gboolean
@@ -143,7 +155,7 @@ static int LoadXaml (const char* file)
 
 	file = g_basename (file);
 
-	downloader_set_functions (downloader_create_state, downloader_destroy_state, downloader_open, downloader_send, downloader_abort);
+	downloader_set_functions (downloader_create_state, downloader_destroy_state, downloader_open, downloader_send, downloader_abort, downloader_header, downloader_body);
 
 	Type::Kind et;
 	Surface* surface = surface_new (300, 300);

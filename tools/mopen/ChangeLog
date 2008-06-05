@@ -1,3 +1,8 @@
+2008-06-05  Geoff Norton  <gnorton@novell.com>
+
+	* mopen1.cpp: Update to call the new downloader_set_functions API.
+	We dont support mms in mopen1 at this time.
+
 2008-05-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Fix mopen script to use mopen.exe
