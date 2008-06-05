@@ -71,7 +71,7 @@ class GECKO_SYM(BrowserRequest) : public BrowserRequest {
 	BrowserResponse *GetResponse ();
 	bool GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
-	void SetBody (const char *body, int size);
+	void SetBody (void *body, int size);
 	
 	void Abort ();
 };
@@ -95,7 +95,7 @@ GECKO_SYM(BrowserResponse)::OnStartRequest (nsIRequest *request, nsISupports *co
 NS_IMETHODIMP
 GECKO_SYM(BrowserResponse)::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
-	return finished (this, this->context);
+	return finished (this, this->context, NULL);
 }
 
 NS_IMETHODIMP
@@ -185,7 +185,7 @@ GECKO_SYM(BrowserRequest)::SetHttpHeader (const char *name, const char *value)
 }
 
 void
-GECKO_SYM(BrowserRequest)::SetBody (const char *body, int size)
+GECKO_SYM(BrowserRequest)::SetBody (void *body, int size)
 {
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 	if (!httpchannel)
@@ -205,7 +205,7 @@ GECKO_SYM(BrowserRequest)::SetBody (const char *body, int size)
 	storage->GetOutputStream (0, getter_AddRefs (output));
 
 	PRUint32 written;
-	output->Write (body, size, &written);
+	output->Write ((const char *)body, size, &written);
 	output->Close ();
 
 	nsCOMPtr<nsIInputStream> input;

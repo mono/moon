@@ -1,3 +1,8 @@
+2008-06-05  Geoff Norotn  <gnorton@novell.com>
+
+	* browser-http.inc: SetBody takes a void instead of char to support the future
+	possibility of POSTing data.
+
 2008-05-23  Geoff Norton  <gnorton@novell.com>
 	
 	* browser-http.inc: Re-introduce the Abort decl in FF*Browser(Request|Response)
