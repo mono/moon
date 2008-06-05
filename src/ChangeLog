@@ -1,4 +1,10 @@
 2008-06-05  Geoff Norton <gnorton@novell.com>
+
+	* mms-downloader.cpp, mms-downloade.h: Implement time measuring of
+	the $P packet pair, and implement and initial algorithm to do proper
+	bandwidth stream selection.
+
+2008-06-05  Geoff Norton <gnorton@novell.com>
 	
 	* downloader.cpp:  Remove some left over unused variables, and the
 	is_valid_mms_type inline.

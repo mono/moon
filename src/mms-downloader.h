@@ -17,6 +17,7 @@
 G_BEGIN_DECLS
 
 #include "internal-downloader.h"
+#include "clock.h"
 #include "downloader.h"
 #include "http-streaming.h"
 
@@ -28,6 +29,9 @@ G_BEGIN_DECLS
 #define MMS_PAIR_P	      0x50
 
 #define ASF_DEFAULT_PACKET_SIZE 2888
+
+#define VIDEO_BITRATE_PERCENTAGE 75
+#define AUDIO_BITRATE_PERCENTAGE 25
 
 struct MmsHeader {
 	char b:1;
@@ -65,6 +69,9 @@ class MmsDownloader : public InternalDownloader {
 	uint32_t size;
 	uint32_t packets_received;
 
+	TimeSpan p_packet_times[3];
+	int32_t p_packet_sizes[3];
+
 	int32_t audio_streams[128];
 	int32_t video_streams[128];
 	int32_t best_audio_stream;
@@ -79,6 +86,9 @@ class MmsDownloader : public InternalDownloader {
 
 	void AddAudioStream (int index, int bitrate) { audio_streams [index] = bitrate; if (bitrate > best_audio_stream_rate) { best_audio_stream_rate = bitrate; best_audio_stream = index; } }
 	void AddVideoStream (int index, int bitrate) { video_streams [index] = bitrate; if (bitrate > best_video_stream_rate) { best_video_stream_rate = bitrate; best_video_stream = index; } }
+
+	int GetAudioStream ();
+	int GetVideoStream ();
 
 	bool ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
 

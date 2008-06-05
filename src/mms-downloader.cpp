@@ -18,6 +18,7 @@
 #include <gtk/gtk.h>
 #include "asf/asf.h"
 
+#include "clock.h"
 #include "mms-downloader.h"
 
 #define LOG_MMS(...) //printf (__VA_ARGS__);
@@ -54,6 +55,10 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 
 	memset (audio_streams, 0xff, 128 * 4);
 	memset (video_streams, 0xff, 128 * 4);
+
+	p_packet_times [0] = 0;
+	p_packet_times [1] = 0;
+	p_packet_times [2] = 0;
 }
 
 MmsDownloader::~MmsDownloader ()
@@ -111,7 +116,7 @@ MmsDownloader::Write (void *buf, int32_t off, int32_t n)
 		g_free (header);
 		/* stream-switch-count && stream-switch-entry need to be on their own pragma lines
 		 * we (ab)use SetBody for this*/
-		char *stream_headers = g_strdup_printf ("Pragma: stream-switch-count=2\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0\r\n\r\n", this->best_video_stream, this->best_audio_stream);
+		char *stream_headers = g_strdup_printf ("Pragma: stream-switch-count=2\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0\r\n\r\n", GetVideoStream (), GetAudioStream ());
 		dl->InternalSetBody (stream_headers, strlen (stream_headers));
 		g_free (stream_headers);
 
@@ -263,7 +268,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 		dl->InternalSetHeader ("Pragma", "xPlayStrm=1");
 		/* stream-switch-count && stream-switch-entry need to be on their own pragma lines
 		 * we (ab)use SetBody for this*/
-		char *stream_headers = g_strdup_printf ("Pragma: stream-switch-count=2\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0\r\n\r\n", this->best_video_stream, this->best_audio_stream);
+		char *stream_headers = g_strdup_printf ("Pragma: stream-switch-count=2\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0\r\n\r\n", GetVideoStream (), GetAudioStream ());
 		dl->InternalSetBody (stream_headers, strlen (stream_headers));
 		g_free (stream_headers);
 
@@ -360,6 +365,9 @@ MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *pa
 {
 	LOG_MMS ("MmsDownloader::ProcessPairPacket ()\n");
 	
+	if (p_packet_times [p_packet_count] == 0)
+		p_packet_times [p_packet_count] = get_now ();
+
 	// NOTE: If this is the 3rd $P packet, we need to increase the size reported in the header by
 	// the value in the reason field.  This is a break from the normal behaviour of MMS packets
 	// so we need to guard against this occurnace here and ensure we actually have enough data
@@ -381,10 +389,9 @@ MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *pa
 	if (p_packet_count == 2)
 		*offset += packet->packet.reason;
 
-	++p_packet_count;
+	p_packet_sizes [p_packet_count] = *offset;
 
-	// FIXME: Log the actual time stamp of packet creation so that we can do appropriate stream-select
-	// after finishing the describe request
+	++p_packet_count;
 
 	return true;
 }
@@ -407,4 +414,62 @@ MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *pa
 	packets_received++;
 	
 	return true;
+}
+
+int
+MmsDownloader::GetVideoStream ()
+{
+	int video_stream = 0;
+	int video_rate = 0;
+	uint64_t max_bitrate = (uint64_t)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
+	
+	for (int i = 0; i < 182; i++) {
+		int stream_rate = video_streams [i];
+
+		if (stream_rate == -1)
+			continue;
+
+		if (video_rate == 0) {
+			video_rate = stream_rate;
+			video_stream = i;
+		}
+
+		if (stream_rate > video_rate && stream_rate < (max_bitrate * VIDEO_BITRATE_PERCENTAGE)) {
+			video_rate = stream_rate;
+			video_stream = i;
+		}
+	}
+		
+	LOG_MMS ("MmsDownoader::GetVideoStream (): Selected stream %i of rate %i\n", video_stream, video_rate);
+
+	return video_stream;
+}
+
+int
+MmsDownloader::GetAudioStream ()
+{
+	int audio_stream = 0;
+	int audio_rate = 0;
+	uint64_t max_bitrate = (uint64_t)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
+	
+	for (int i = 0; i < 182; i++) {
+		int stream_rate = audio_streams [i];
+
+		if (stream_rate == -1)
+			continue;
+
+		if (audio_rate == 0) {
+			audio_rate = stream_rate;
+			audio_stream = i;
+		}
+
+		if (stream_rate > audio_rate && stream_rate < (max_bitrate * AUDIO_BITRATE_PERCENTAGE)) {
+			audio_rate = stream_rate;
+			audio_stream = i;
+		}
+	}
+		
+	LOG_MMS ("MmsDownoader::GetAudioStream (): Selected stream %i of rate %i\n", audio_stream, audio_rate);
+
+	return audio_stream;
 }
