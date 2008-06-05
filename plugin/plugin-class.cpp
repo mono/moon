@@ -3514,7 +3514,7 @@ MoonlightStrokeObject::Invoke (int id, NPIdentifier name,
 	}
 
 	case MoonId_HitTest: {
-		if (check_arg_list ("o", argCount, args) ||
+		if (!check_arg_list ("o", argCount, args) ||
 		    !npvariant_is_dependency_object (args[0]))
 			THROW_JS_EXCEPTION ("hitTest");
 		
