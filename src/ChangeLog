@@ -1,3 +1,16 @@
+2008-06-05  Geoff Norton <gnorton@novell.com>
+
+	* Makefile.am: Add file-downloader and mms-downloader to the build.
+	* file-downloader.(cpp|h): This class is a implementation of the new
+	InternalDownloader class utilized by the downloader to differentiate
+	between MMS and regular requests.  We should move the zip logic here.
+	* mms-downloader.(cpp|h): This class is the MMS implementation of the
+	InternalDownloader class.
+	* internal-downloader.h: Route callbacks from the plugin thru this class
+	to their appropriate file (NPStream) / MMS based implementations.
+	* downloader.cpp: Update the API to call the InternalDownloader based
+	representation instead of large if (mms) branches.
+
 2008-06-05  Geoff Norton  <gnorton@novell.com>
 
 	* downloader.cpp, downloader.h:  Initial implementation of MMS inside

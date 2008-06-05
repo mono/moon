@@ -26,15 +26,18 @@ libmoon_include_HEADERS = \
 	enums.h		\
 	eventargs.h	\
 	error.h		\
+	file-downloader.h	\
 	font.h		\
 	frameworkelement.h \
 	fullscreen.h	\
 	geometry.h	\
 	grid.h		\
 	http-streaming.h	\
+	internal-downloader.h	\
 	layout.h	\
 	list.h		\
 	media.h		\
+	mms-downloader.h	\
 	moon-path.h	\
 	mplayer.h	\
 	namescope.h	\
@@ -86,6 +89,7 @@ libmoon_la_SOURCES = 	\
 	dirty.cpp	\
 	downloader.cpp	\
 	eventargs.cpp	\
+	file-downloader.cpp	\
 	font.cpp	\
 	frameworkelement.cpp	\
 	geometry.cpp	\
@@ -94,6 +98,7 @@ libmoon_la_SOURCES = 	\
 	layout.cpp	\
 	list.cpp	\
 	media.cpp	\
+	mms-downloader.cpp	\
 	moon-path.c	\
 	enums.c		\
 	mplayer.cpp	\
