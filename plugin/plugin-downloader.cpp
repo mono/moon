@@ -61,9 +61,11 @@ plugin_downloader_finished (BrowserResponse *response, gpointer state, gpointer 
 static gpointer
 plugin_downloader_create_state (Downloader *dl)
 {
-	d (printf ("plugin_downloader_create_state (%p)\n", dl));
+	PluginDownloader *state = new PluginDownloader (dl);
 
-	return new PluginDownloader (dl);
+	d (printf ("plugin_downloader_create_state (%p)\n", state));
+
+	return state;
 }
 
 static void
@@ -97,7 +99,7 @@ plugin_downloader_send (gpointer state)
 static void
 plugin_downloader_set_body (gpointer state, void *body, uint32_t length)
 {
-	d (printf ("plugin_downloader_send (%p)\n", state));
+	d (printf ("plugin_downloader_set_body (%p)\n", state));
 	
 	PluginDownloader *pd = (PluginDownloader *) state;
 
@@ -107,7 +109,7 @@ plugin_downloader_set_body (gpointer state, void *body, uint32_t length)
 static void
 plugin_downloader_set_header (gpointer state, const char *header, const char *value)
 {
-	d (printf ("plugin_downloader_send (%p)\n", state));
+	d (printf ("plugin_downloader_set_header (%p)\n", state));
 	
 	PluginDownloader *pd = (PluginDownloader *) state;
 
@@ -140,7 +142,7 @@ PluginDownloader::PluginDownloader (Downloader *dl)
 
 PluginDownloader::~PluginDownloader ()
 {
-	d (printf ("PluginDownloader::~PluginDownloader (), dl: %p, bdl: %p\n", dl, bdl));
+	d (printf ("PluginDownloader::~PluginDownloader (), dl: %p\n", dl));
 	g_free (verb);
 	g_free (uri);
 	dl = NULL;

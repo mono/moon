@@ -1,4 +1,8 @@
 2008-06-05  Geoff Norton  <gnorton@novell.com>
+	
+	* plugin-downloader.cpp: Update the debugging outputs..
+
+2008-06-05  Geoff Norton  <gnorton@novell.com>
 
 	* http-downloader.cpp, http-downloader.h, mms-downloader.cpp,
 	mms-downloader.h: Drop from the build in preparation to move
