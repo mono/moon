@@ -128,7 +128,7 @@ StylusPointCollection::GetBounds ()
 	Collection::Node *n = (Collection::Node *)list->First ();
 	Rect r = Rect (stylus_point_get_x((StylusPoint *)n->obj), stylus_point_get_y((StylusPoint *)n->obj), 0, 0);
 	for (n = (Collection::Node *) n->next; n; n = (Collection::Node *) n->next)
-		r.ExtendTo (stylus_point_get_x ((StylusPoint *)n->obj), stylus_point_get_y ((StylusPoint *)n->obj));
+		r = r.ExtendTo (stylus_point_get_x ((StylusPoint *)n->obj), stylus_point_get_y ((StylusPoint *)n->obj));
 	return r;
 }
 

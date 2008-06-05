@@ -1,5 +1,9 @@
 2008-06-05  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* stylus.cpp: fixing a bug. stupid me.
+
+2008-06-05  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* rect.h: new Rect (Point, Point) ctor, new ExtendTo (point) and
 	ExtendTo (double, double) methods.
 
