@@ -1,3 +1,11 @@
+2008-06-05  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/seek-test-multiple-repeat.html: Adding a test that shows
+	we're incorectly seeking into animations that have AutoReverse and
+	RepeatBehavior >= 1.0. We're not correctly figuring out when the
+	forward/backward timing needs to wrap around itself once we pass the
+	first iteration.
+
 2008-06-04  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/seek-test-speed-ratio-begin.html: Adding a test that
