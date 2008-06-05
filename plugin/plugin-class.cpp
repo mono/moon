@@ -3310,7 +3310,7 @@ MoonlightTextBlockObject::Invoke (int id, NPIdentifier name,
 	
 	switch (id) {
 	case MoonId_SetFontSource:
-		if (!check_arg_list ("(no)", argCount, args) || npvariant_is_downloader (args[0]))
+		if (!check_arg_list ("(no)", argCount, args) && (!NPVARIANT_IS_NULL(args[0]) || !npvariant_is_downloader (args[0])))
 			THROW_JS_EXCEPTION ("setFontSource");
 		
 		if (NPVARIANT_IS_OBJECT (args[0]))
