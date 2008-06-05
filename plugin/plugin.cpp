@@ -18,7 +18,7 @@
 #include "moon-mono.h"
 #include "downloader.h"
 #include "plugin-downloader.h"
-#include "npstream-downloader.h"
+#include "npstream-request.h"
 #include "xap.h"
 
 #define Visual _XxVisual
@@ -882,7 +882,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, u
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
 		StreamNotify *notify = (StreamNotify *) stream->notifyData;
 		
-		npstream_downloader_set_stream_data ((Downloader *) notify->pdata, instance, stream);
+		npstream_request_set_stream_data ((Downloader *) notify->pdata, instance, stream);
 		*stype = NP_ASFILE;
 		
 		return NPERR_NO_ERROR;
@@ -905,9 +905,9 @@ PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 	
 	PluginDownloader *pd = (PluginDownloader*) stream->pdata;
 	if (pd != NULL) {
-		NPStreamDownloader *npsd = (NPStreamDownloader *) pd->getBrowserDownloader ();
-		if (npsd != NULL) 
-			npsd->StreamDestroyed ();
+		NPStreamRequest *req = (NPStreamRequest *) pd->getRequest ();
+		if (req != NULL) 
+			req->StreamDestroyed ();
 	}
 
 	return NPERR_NO_ERROR;

@@ -46,6 +46,8 @@ libmoonplugin_la_SOURCES = \
 	moonlight.h		\
 	mono.cpp		\
 	moon-mono.h		\
+	npstream-request.cpp	\
+	npstream-request.h	\
 	plugin.cpp		\
 	plugin.h		\
 	plugin-downloader.cpp	\
@@ -55,12 +57,6 @@ libmoonplugin_la_SOURCES = \
 	plugin-class.cpp 	\
 	plugin-class.h		\
 	plugin-debug.cpp	\
-	http-downloader.h	\
-	http-downloader.cpp	\
-	mms-downloader.h	\
-	mms-downloader.cpp	\
-	npstream-downloader.h	\
-	npstream-downloader.cpp	\
 	plugin-debug.h
 
 # custom install rule

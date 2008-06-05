@@ -11,7 +11,7 @@ class BrowserResponse;
 
 typedef uint32_t (* BrowserResponseStartedHandler) (BrowserResponse *response, gpointer context);
 typedef uint32_t (* BrowserResponseDataAvailableHandler) (BrowserResponse *response, gpointer context, char *buffer, uint32_t length);
-typedef uint32_t (* BrowserResponseFinishedHandler) (BrowserResponse *response, gpointer context);
+typedef uint32_t (* BrowserResponseFinishedHandler) (BrowserResponse *response, gpointer context, gpointer data);
 
 G_BEGIN_DECLS
 
@@ -75,7 +75,7 @@ class BrowserRequest {
 	virtual bool GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context) = 0;
 	virtual const bool IsAborted () { return this->aborted; }
 	virtual void SetHttpHeader (const char *name, const char *value) = 0;
-	virtual void SetBody (const char *body, int size) = 0;
+	virtual void SetBody (void *body, int size) = 0;
 };
 
 class BrowserBridge {

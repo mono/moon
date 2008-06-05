@@ -12,26 +12,26 @@
 
 #include "plugin-downloader.h"
 #include "browser-bridge.h"
-#include "npstream-downloader.h"
+#include "npstream-request.h"
 
 void
-npstream_downloader_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream)
+npstream_request_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream)
 {
 	PluginDownloader *pd = (PluginDownloader *) downloader->GetDownloaderState ();
 
 	if (pd != NULL) {
-		NPStreamDownloader *dl = (NPStreamDownloader *) pd->getBrowserDownloader ();
+		NPStreamRequest *req = (NPStreamRequest *) pd->getRequest ();
 		
-		if (dl != NULL) {
-			dl->SetNPP (npp);
-			dl->SetStream (stream);
+		if (req != NULL) {
+			req->SetNPP (npp);
+			req->SetStream (stream);
 		}
 	}
 	stream->pdata = pd;
 }
 
 void
-NPStreamDownloader::Abort ()
+NPStreamRequest::Abort ()
 {
 	if (npp != NULL && stream != NULL) {
 		NPN_DestroyStream (npp, stream, NPRES_USER_BREAK);
@@ -39,30 +39,14 @@ NPStreamDownloader::Abort ()
 	}
 }
 
-uint32_t
-NPStreamDownloader::Read (char *buffer, uint32_t length)
+bool
+NPStreamRequest::GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context)
 {
-	return DOWNLOADER_OK;
-}
-
-void
-NPStreamDownloader::Started ()
-{
-}
-
-void
-NPStreamDownloader::Finished ()
-{
-}
-
-void
-NPStreamDownloader::Send ()
-{
-	PluginInstance *instance = GetPlugin ();
+	PluginDownloader *pd = (PluginDownloader *) context;
 
 	if (instance != NULL) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd->dl);
-		NPError err = NPN_GetURLNotify (instance->getInstance (), pd->GetUri (), NULL, notify);
+		NPError err = NPN_GetURLNotify (instance->getInstance (), uri, NULL, notify);
 
 		if (err != NPERR_NO_ERROR) {
 			const char *msg;
@@ -88,4 +72,16 @@ NPStreamDownloader::Send ()
 			pd->dl->NotifyFailed (msg);
 		}
 	}
+}
+
+void
+NPStreamRequest::SetHttpHeader (const char *name, const char *value)
+{
+	g_assert_not_reached ();
+}
+
+void
+NPStreamRequest::SetBody (void *body, int length)
+{
+	g_assert_not_reached ();
 }

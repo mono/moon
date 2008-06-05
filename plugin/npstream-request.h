@@ -1,5 +1,5 @@
  /*
- * npstream-downloader.h: NPStream Browser Downloader
+ * npstream-downloader.h: NPStream Browser Request
  *
  * Author:
  *   Geoff Norton  (gnorton@novell.com)
@@ -14,40 +14,41 @@
 #define __NPSTREAM_DOWNLOADER_H
 
 #include "moonlight.h"
+#include "browser-bridge.h"
 #include "plugin-downloader.h"
 
-class NPStreamDownloader : public BrowserDownloader {
+class NPStreamRequest : public BrowserRequest {
  private:
 	NPP npp;
 	NPStream *stream;
 	char *buffer;
+	PluginInstance *instance;
 
 	uint32_t offset;
 
  public:
-	NPStreamDownloader (PluginDownloader *pdl) : BrowserDownloader (pdl)
+	NPStreamRequest (const char *verb, const char *uri, PluginInstance *instance) : BrowserRequest (verb, uri)
 	{
 		this->npp = NULL;
 		this->stream = NULL;
 		this->buffer = NULL;
 		this->offset = 0;
+		this->instance = instance;
 	}
 
-	virtual ~NPStreamDownloader ()
+	virtual ~NPStreamRequest ()
 	{
 		g_free (buffer);
 	}
 
 	void Abort ();
-	void Send ();
-	void Started ();
-	void Finished ();
-	uint32_t Read (char *buffer, uint32_t length);
+	bool GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context);
+	const bool IsAborted () { return this->aborted; }
+	void SetHttpHeader (const char *name, const char *value);
+	void SetBody (void *body, int size);
 	
-	void SetResponse (BrowserResponse *response) { this->response = response; }
 	void SetNPP (NPP npp) { this->npp = npp; }
 	void SetStream (NPStream *stream) { this->stream = stream; }
-
 	void StreamDestroyed () { stream = NULL; }
 };
 
