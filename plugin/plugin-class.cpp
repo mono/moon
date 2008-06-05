@@ -1201,7 +1201,7 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 
 	switch (id) {
 	case MoonId_GetPosition: {
-		if (!check_arg_list ("o", argCount, args))
+		if (!check_arg_list ("(no)", argCount, args) && (!NPVARIANT_IS_NULL(args[0]) || !npvariant_is_dependency_object (args[0])))
 			return true;
 
 		double x;
