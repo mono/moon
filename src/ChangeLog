@@ -1,3 +1,13 @@
+2008-06-05  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* rect.h: new Rect (Point, Point) ctor, new ExtendTo (point) and
+	ExtendTo (double, double) methods.
+
+	* stylus.h|cpp: new StylusPointCollection::GetBounds (), check for
+	intersection of bounds and StylusPointCollection::GetBounds in HitTest
+	to avoid checking for stroke intersection in most of the cases. Speed
+	up erasing in inkJournal.
+
 2008-06-04  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: Interesting -- looks like in SL the timespan-based 

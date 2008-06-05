@@ -38,6 +38,14 @@ struct Rect {
 		h = rect.h;
 	}
 
+	Rect (Point p1, Point p2)
+	{
+		x = MIN (p1.x, p2.x);
+		y = MIN (p1.y, p2.y);
+		w = ABS (p1.x - p2.x);
+		h = ABS (p1.y - p2.y);
+	}
+
         Rect Transform (cairo_matrix_t *matrix);
 
 	bool PointInside (double px, double py)
@@ -132,6 +140,24 @@ struct Rect {
 	Rect GrowBy (double d)
 	{
 		return GrowBy (d, d);
+	}
+
+	Rect ExtendTo (double x, double y)
+	{
+		Rect result = *this;
+		if (x < result.x || x > (result.x + result.w))
+			result.w = MAX (ABS(x - result.x), ABS(x - result.x - result.w));
+		if (y < result.y || y > (result.y + result.h))
+			result.h = MAX (ABS(y - result.y), ABS(y - result.y - result.h));
+		result.x = MIN (result.x, x);
+		result.y = MIN (result.y, y);
+
+		return result;
+	}
+	
+	Rect ExtendTo (Point p) 
+	{
+		return ExtendTo (p.x, p.y);	
 	}
 
 	GdkRectangle 

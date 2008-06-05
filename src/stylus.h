@@ -71,6 +71,8 @@ class StylusPointCollection : public Collection {
 	virtual Type::Kind GetElementType () { return Type::STYLUSPOINT; }
 
 	double AddStylusPoints (StylusPointCollection *stylusPointCollection);
+
+	Rect GetBounds ();
 };
 
 StylusPointCollection *stylus_point_collection_new (void);

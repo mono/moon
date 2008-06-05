@@ -119,6 +119,18 @@ StylusPointCollection::AddStylusPoints (StylusPointCollection *stylusPointCollec
 	return list->Length () - 1;
 }
 
+Rect
+StylusPointCollection::GetBounds ()
+{
+	if (list->Length () == 0)
+		return Rect (0, 0, 0, 0);
+
+	Collection::Node *n = (Collection::Node *)list->First ();
+	Rect r = Rect (stylus_point_get_x((StylusPoint *)n->obj), stylus_point_get_y((StylusPoint *)n->obj), 0, 0);
+	for (n = (Collection::Node *) n->next; n; n = (Collection::Node *) n->next)
+		r.ExtendTo (stylus_point_get_x ((StylusPoint *)n->obj), stylus_point_get_y ((StylusPoint *)n->obj));
+	return r;
+}
 
 Stroke::Stroke ()
 {
@@ -578,6 +590,8 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 		n = (Collection::Node *) n->next;
 	}
 #endif	
+	if (!GetBounds ().IntersectsWith (stylusPoints->GetBounds ()))
+		return false;
 
 	/* test the beginning endcap */
 	n = (Collection::Node *) myStylusPoints->list->First ();
