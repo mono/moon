@@ -1,4 +1,9 @@
 2008-06-05  Geoff Norton <gnorton@novell.com>
+	
+	* downloader.cpp:  Remove some left over unused variables, and the
+	is_valid_mms_type inline.
+
+2008-06-05  Geoff Norton <gnorton@novell.com>
 
 	* Makefile.am: Add file-downloader and mms-downloader to the build.
 	* file-downloader.(cpp|h): This class is a implementation of the new

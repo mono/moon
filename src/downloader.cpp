@@ -58,21 +58,6 @@
 #include "error.h"
 
 //
-// MMS
-//
-
-#define LOG_MMS(...) //printf (__VA_ARGS__);
-
-static inline bool
-is_valid_mms_header (MmsHeader *header)
-{
-	if (header->id != MMS_DATA && header->id != MMS_HEADER && header->id != MMS_METADATA && header->id != MMS_STREAM_C && header->id != MMS_END && header->id != MMS_PAIR_P)
-		return false;
-
-	return true;
-}
-
-//
 // Downloader
 //
 
@@ -423,8 +408,6 @@ Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
 void
 Downloader::Open (const char *verb, const char *uri)
 {
-	char *internal_uri;
-
 	CleanupUnzipDir ();
 	
 	if (filename) {
@@ -439,7 +422,6 @@ Downloader::Open (const char *verb, const char *uri)
 	unzipped = false;
 	started = false;
 	aborted = false;
-	mms = false;
 	file_size = -2;
 	total = 0;
 	
