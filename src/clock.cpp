@@ -743,8 +743,6 @@ Clock::ComputeNewTime ()
 			SetClockState (Clock::Active);
 
 		ret_time = seek_time;
-
-		seeking = false;
 	}
 	else {
 		if (state == Clock::Stopped)
@@ -754,8 +752,10 @@ Clock::ComputeNewTime ()
 	}
 
 	/* if our duration is automatic or forever, we're done. */
-	if (!natural_duration.HasTimeSpan())
+	if (!natural_duration.HasTimeSpan()) {
+		seeking = false;
 		return ret_time;
+	}
 
 	// XXX there are a number of missing 'else's in the following
 	// block of code.  it would be nice to figure out if they need
@@ -772,8 +772,14 @@ Clock::ComputeNewTime ()
 				/* since autoreverse is true we need
 				   to turn around and head back to
 				   0.0 */
-				forward = false;
-				ret_time = duration_timespan - (ret_time - duration_timespan);
+				int repeated_count = ret_time / duration_timespan;
+				if (repeated_count % 2 == 1) {
+					forward = false;
+					ret_time = duration_timespan - (ret_time - duration_timespan);
+				} else {
+					forward = true;
+					ret_time = ret_time % duration_timespan;
+				}
 			}
 			else {
 				/* but autoreverse is false. Decrement
@@ -839,12 +845,14 @@ Clock::ComputeNewTime ()
 		SkipToFill ();
 	}
 
+	seeking = false;
 	return ret_time;
 
 #if false
 	// XXX I think we only need to check repeat_count in
 	// the forward direction.
 	if (forward) {
+		printf ("HERE!\n");
 		if (repeat_count > 0 && repeat_count <= new_progress) {
 			repeat_count = 0;
 			SkipToFill ();
@@ -937,8 +945,10 @@ Clock::Begin ()
 	}
 	else if (repeat->HasDuration ()) {
 #ifndef COMPATIBILITY_BUGS
+		printf ("COMPAT BUGS!\n");
 		repeat_count = -1;
 #else
+		printf ("NO COMPAT BUGS!\n");
 		repeat_count = 1;
 #endif
 		repeat_time = (repeat->GetDuration() * timeline->GetSpeedRatio ());

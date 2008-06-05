@@ -1,3 +1,17 @@
+2008-06-05  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: In ComputeNewTime when we're going over our duration time
+	and we're AutoReversed, check actually how big the diff is cause it
+	might be that we need to "wrap around self" and switch to forward time
+	direction anyways (such is the case with seeking). 
+
+	In other words, allow to seek into particular interation of
+	RepeatBehavior="XXXx", not only the first one. Fixes one more
+	AnimationMatrix2 block and seek-test-multiple-repeat.xaml in assorted.
+
+	This prolly needs a littlbe bit more work still, similiar mechanism
+	needs to be present in DoRepeat etc.
+
 2008-06-05  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* stylus.cpp: fixing a bug. stupid me.
