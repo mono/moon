@@ -215,48 +215,103 @@ static void clicked_callback (GtkWidget *widget, gpointer data)
 	}
 }
 
-static const gchar *dir = "/tmp/moon-dump";
 
-static gboolean
-foreach_func (GtkTreeModel *model, GtkTreePath *tree_path, GtkTreeIter *iter, gpointer user_data)
+static size_t
+get_common_prefix_len (GtkTreeModel *model)
 {
-	char *filename, *url, *name, *path;
+	char *filename, *path, *url, *buf, *p, *q;
+	size_t max = (size_t) -1;
+	GtkTreeIter iter;
 	Uri *uri;
-	int fd;
 	
-	gtk_tree_model_get (model, iter, 0, &url, 1, &filename, -1);
+	if (!gtk_tree_model_get_iter_first (model, &iter))
+		return 0;
+	
+	gtk_tree_model_get (model, &iter, 0, &url, 1, &filename, -1);
 	
 	uri = new Uri ();
-	if (uri->Parse (url))
-		name = g_path_get_basename (uri->path);
-	else
-		name = g_path_get_basename (filename);
+	if (!uri->Parse (url)) {
+		buf = g_strdup (filename);
+	} else {
+		buf = uri->path;
+		uri->path = NULL;
+	}
 	
-	path = g_build_filename (dir, name, NULL);
+	if ((p = strrchr (buf, '/')))
+		max = (p - buf);
+	else
+		max = 0;
 	
 	delete uri;
 	
-	printf ("Copying uri '%s' with local filename '%s' to '%s'...\n", url, filename, path);
-	
-	if ((fd = open (path, O_CREAT | O_WRONLY | O_EXCL, 0644)) != -1) {
-		if (CopyFileTo (filename, fd) == -1)
-			printf (" Failed: Could not copy file `%s' to `%s': %s\n", filename, path, g_strerror (errno));
-	} else {
-		printf (" Failed: Could not create file `%s': %s\n", path, g_strerror (errno));
+	while (gtk_tree_model_iter_next (model, &iter)) {
+		gtk_tree_model_get (model, &iter, 0, &url, 1, &filename, -1);
+		
+		uri = new Uri ();
+		if (!uri->Parse (url))
+			path = filename;
+		else
+			path = uri->path;
+		
+		for (p = buf, q = path; *p && *q; p++, q++) {
+			if (*p != *q)
+				break;
+		}
+		
+		if ((size_t) (p - buf) < max)
+			max = p - buf;
+		
+		delete uri;
 	}
 	
-	g_free (name);
-	g_free (path);
+	g_free (buf);
 	
-	return false;
+	return max;
 }
 
-static void save_callback (GtkWidget *widget, gpointer data)
+static void
+save_callback (GtkWidget *widget, gpointer data)
 {
-	mkdir (dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
-	GtkTreeStore *store = (GtkTreeStore*) data;
-	gtk_tree_model_foreach (GTK_TREE_MODEL (store), foreach_func, NULL);
+	GtkTreeModel *model = (GtkTreeModel *) data;
+	char *filename, *dirname, *url, *path;
+	GtkTreeIter iter;
+	size_t prelen;
+	Uri *uri;
+	int fd;
+	
+	if (mkdir ("/tmp/moon-dump", 0777) == -1 && errno != EEXIST)
+		return;
+	
+	prelen = get_common_prefix_len (model);
+	
+	if (!gtk_tree_model_get_iter_first (model, &iter))
+		return;
+	
+	do {
+		gtk_tree_model_get (model, &iter, 0, &url, 1, &filename, -1);
+		
+		uri = new Uri ();
+		if (uri->Parse (url))
+			path = uri->path;
+		else
+			path = filename;
+		
+		path = g_build_filename ("/tmp/moon-dump", path + prelen, NULL);
+		delete uri;
+		
+		dirname = g_path_get_dirname (path);
+		g_mkdir_with_parents (dirname, 0777);
+		g_free (dirname);
+		
+		if ((fd = open (path, O_CREAT | O_WRONLY | O_EXCL, 0644)) != -1) {
+			if (CopyFileTo (filename, fd) == -1)
+				printf (" Failed: Could not copy file `%s' to `%s': %s\n", filename, path, g_strerror (errno));
+		} else if (errno != EEXIST) {
+			printf (" Failed: Could not create file `%s': %s\n", path, g_strerror (errno));
+		}
+		
+		g_free (path);
+	} while (gtk_tree_model_iter_next (model, &iter));
 }
 
 void
@@ -274,7 +329,7 @@ plugin_sources (PluginInstance *plugin)
 
 	populate_tree_from_surface (plugin, tree_store, NULL);
 
-	GtkWidget* tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (tree_store));
+	GtkWidget *tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (tree_store));
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view));
 
