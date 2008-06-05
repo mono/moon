@@ -23,6 +23,7 @@ G_BEGIN_DECLS
 #include "internal-downloader.h"
 #include "http-streaming.h"
 
+class FileDownloader;
 class Downloader;
 
 typedef void     (*downloader_write_func) (void *buf, int32_t offset, int32_t n, gpointer cb_data);
@@ -62,19 +63,13 @@ class Downloader : public DependencyObject {
 	int64_t total;
 	
 	char *filename;
-	char *unzipdir;
 	
 	char *failed_msg;
-	bool deobfuscated;
 	bool send_queued;
-	bool unlinkit;
-	bool unzipped;
 	bool started;
 	bool aborted;
 	InternalDownloader *internal_dl;
 
-	void CleanupUnzipDir ();
-	
  protected:
 	virtual ~Downloader ();
 	
@@ -119,16 +114,7 @@ class Downloader : public DependencyObject {
 	void NotifyFinished (const char *fname);
 	void NotifyFailed (const char *msg);
 	void NotifySize (int64_t size);
-	
-	char *GetDownloadedFilePart (const char *PartName);
-	const char *GetDownloadedFile ();
-	bool DownloadedFileIsZipped ();
-	const char *GetUnzippedPath ();
-	
-	void RequestPosition (int64_t *pos);
-	bool IsDeobfuscated ();
-	void SetDeobfuscated (bool val);
-	void SetDeobfuscatedFile (const char *filename);
+	char *GetDownloadedFilename (const char *partname);
 	
 	// This is called by the consumer of the downloaded data (the
 	// Image class for instance)
@@ -147,6 +133,7 @@ class Downloader : public DependencyObject {
 				  downloader_body_func body,
 				  bool only_if_not_set);
 	
+	void RequestPosition (int64_t *pos);
 	void SetRequestPositionFunc (downloader_request_position_func request_position);
 	
 	bool Started ();
@@ -169,6 +156,9 @@ class Downloader : public DependencyObject {
 	
 	void SetUri (const char *uri);
 	const char *GetUri ();
+
+	// FIXME: This is exposed for text right now and should be cleaned up.
+	FileDownloader *getFileDownloader () { return (FileDownloader *) internal_dl; }
 };
 
 

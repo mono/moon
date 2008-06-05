@@ -1,3 +1,13 @@
+2008-06-05  Geoff Norton  <gnorton@novell.com>
+
+	* downloader.cpp, downloader.h: More refactoring to hide the zip related
+	details in the FileDownloader.  NOTE: The exposure of the file downloader
+	to the Text side is ugly and should be cleaned up.
+	* text.cpp: Access obfuscated font details thru the FileDownloader API.
+	* file-downloader.cpp, mms-downloader.cpp, internal-downloader.h: Expose
+	the filename thru the downlodaer api.
+	* downloader.cpp: No longer leak InternalDownloaders.
+
 2008-06-05  Geoff Norton <gnorton@novell.com>
 
 	* mms-downloader.cpp, mms-downloade.h: Implement time measuring of

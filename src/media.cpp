@@ -1205,7 +1205,7 @@ MediaElement::TryOpen ()
 	
 	if (flags & DownloadComplete) {
 		IMediaSource *current_downloaded_file = downloaded_file;
-		char *filename = downloader->GetDownloadedFilePart (part_name);
+		char *filename = downloader->GetDownloadedFilename (part_name);
 		Media *media = new Media (this);
 		IMediaSource *source;
 		
@@ -2172,7 +2172,7 @@ Image::DownloaderComplete ()
 {
 	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
 	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
-	char *filename = downloader->GetDownloadedFilePart (part_name);
+	char *filename = downloader->GetDownloadedFilename (part_name);
 	
 	CleanupSurface ();
 	

@@ -103,6 +103,8 @@ class MmsDownloader : public InternalDownloader {
 
 	void Open (const char *verb, const char *uri);
 	void Write (void *buf, int32_t offset, int32_t n);
+	char *GetDownloadedFilename (const char *partname);
+	char *GetResponseText (const char *partname, uint64_t *size);
 };
 
 G_END_DECLS

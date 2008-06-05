@@ -22,6 +22,17 @@ G_BEGIN_DECLS
 class FileDownloader : public InternalDownloader {
  private:
 	char *uri;
+	char *filename;
+	char *unzipdir;
+	
+	bool deobfuscated;
+	bool unlinkit;
+	bool unzipped;
+
+	InternalDownloader *internal_dl;
+	
+	bool DownloadedFileIsZipped ();
+	void CleanupUnzipDir ();
 
  public:
 	FileDownloader (Downloader *dl);
@@ -29,6 +40,18 @@ class FileDownloader : public InternalDownloader {
 
 	void Open (const char *verb, const char *uri);
 	void Write (void *buf, int32_t offset, int32_t n);
+	char *GetDownloadedFilename (const char *partname);
+	char *GetResponseText (const char *partname, uint64_t *size);
+	
+	const char *GetDownloadedFile ();
+
+	bool IsDeobfuscated ();
+	void SetDeobfuscated (bool val);
+	void SetDeobfuscatedFile (const char *filename);
+
+	const char *GetUnzippedPath ();
+
+	void setFilename (char *filename) { if (filename) g_free (filename); this->filename = g_strdup (filename); }
 };
 
 G_END_DECLS

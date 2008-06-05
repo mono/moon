@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "file-downloader.h"
 #include "runtime.h"
 #include "color.h"
 #include "text.h"
@@ -974,10 +975,10 @@ deobfuscate_font (Downloader *downloader, const char *path)
 		return NULL;
 	}
 	
-	downloader->SetDeobfuscatedFile (filename);
+	downloader->getFileDownloader ()->SetDeobfuscatedFile (filename);
 	g_free (filename);
 	
-	return downloader->GetDownloadedFile ();
+	return downloader->getFileDownloader ()->GetDownloadedFile ();
 }
 
 void
@@ -987,18 +988,18 @@ TextBlock::DownloaderComplete ()
 	struct stat st;
 	
 	/* the download was aborted */
-	if (!(path = downloader->GetUnzippedPath ()))
+	if (!(path = downloader->getFileDownloader ()->GetUnzippedPath ()))
 		return;
 	
 	if (stat (path, &st) == -1)
 		return;
 	
 	// check for obfuscated fonts
-	if (S_ISREG (st.st_mode) && !downloader->IsDeobfuscated ()) {
+	if (S_ISREG (st.st_mode) && !downloader->getFileDownloader ()->IsDeobfuscated ()) {
 		if ((filename = deobfuscate_font (downloader, path)))
 			path = filename;
 		
-		downloader->SetDeobfuscated (true);
+		downloader->getFileDownloader ()->SetDeobfuscated (true);
 	}
 	
 	font->SetFilename (path);
@@ -1741,17 +1742,17 @@ Glyphs::DownloaderComplete ()
 	struct stat st;
 	
 	/* the download was aborted */
-	if (!(filename = downloader->GetDownloadedFile ()))
+	if (!(filename = downloader->getFileDownloader ()->GetDownloadedFile ()))
 		return;
 	
 	if (stat (filename, &st) == -1 || !S_ISREG (st.st_mode))
 		return;
 	
-	if (!downloader->IsDeobfuscated ()) {
+	if (!downloader->getFileDownloader ()->IsDeobfuscated ()) {
 		if ((path = deobfuscate_font (downloader, filename)))
 			filename = path;
 		
-		downloader->SetDeobfuscated (true);
+		downloader->getFileDownloader ()->SetDeobfuscated (true);
 	}
 	
 	desc->SetFilename (filename);

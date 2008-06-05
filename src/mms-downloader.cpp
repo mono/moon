@@ -166,6 +166,18 @@ process_packet:
 	}
 }
 
+char *
+MmsDownloader::GetDownloadedFilename (const char *partname)
+{
+	g_warning ("MmsDownloader::GetDownloadedFilename (): GetDownloadedFilename isn't supported on the MmsDownloader");
+}
+
+char *
+MmsDownloader::GetResponseText (const char *partname, uint64_t *size)
+{
+	g_warning ("MmsDownloader::GetResponseText (): GetResponseText isn't supported on the MmsDownloader");
+}
+
 bool
 MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
 {
