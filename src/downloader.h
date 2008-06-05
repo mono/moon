@@ -24,6 +24,39 @@ G_BEGIN_DECLS
 #include "dependencyobject.h"
 #include "http-streaming.h"
 
+#define MMS_DATA		0x44
+#define MMS_HEADER	      0x48
+#define MMS_METADATA	    0x4D
+#define MMS_STREAM_C	    0x43
+#define MMS_END		 0x45
+#define MMS_PAIR_P	      0x50
+
+#define ASF_DEFAULT_PACKET_SIZE 2888
+
+struct MmsHeader {
+	char b:1;
+	char frame:7;
+	uint8_t id;
+	uint16_t length;
+};
+
+struct MmsDataPacket {
+	uint32_t id;
+	uint8_t incarnation;
+	uint8_t flags;
+	uint16_t size;
+};
+
+struct MmsPacket {
+	union {
+		uint32_t reason;
+		struct MmsDataPacket data;
+	} packet;
+};
+
+typedef struct MmsHeader MmsHeader;
+typedef struct MmsPacket MmsPacket;
+
 class Downloader;
 
 typedef void     (*downloader_write_func) (void *buf, int32_t offset, int32_t n, gpointer cb_data);
@@ -32,9 +65,11 @@ typedef void     (*downloader_request_position_func) (int64_t *pos, gpointer cb_
 
 typedef gpointer (*downloader_create_state_func) (Downloader *dl);
 typedef void     (*downloader_destroy_state_func) (gpointer state);
-typedef void     (*downloader_open_func) (const char *verb, const char *uri, gpointer state);
+typedef void     (*downloader_open_func) (const char *verb, const char *uri, bool streaming, gpointer state);
 typedef void     (*downloader_send_func) (gpointer state);
 typedef void     (*downloader_abort_func) (gpointer state);
+typedef void     (*downloader_header_func) (gpointer state, const char *header, const char *value);
+typedef void     (*downloader_body_func) (gpointer state, void *body, uint32_t length);
 
 class Downloader : public DependencyObject {
 	static downloader_create_state_func create_state;
@@ -42,6 +77,8 @@ class Downloader : public DependencyObject {
 	static downloader_open_func open_func;
 	static downloader_send_func send_func;
 	static downloader_abort_func abort_func;
+	static downloader_header_func header_func;
+	static downloader_body_func body_func;
 	
 	// Set by the consumer
 	downloader_notify_size_func notify_size;
@@ -68,7 +105,42 @@ class Downloader : public DependencyObject {
 	bool unzipped;
 	bool started;
 	bool aborted;
-	
+	bool mms;
+
+	// mms stuff
+	char *buffer;
+
+	int64_t requested_position;
+
+	uint32_t asf_packet_size;
+	uint32_t header_size;
+	uint32_t size;
+	uint32_t packets_received;
+
+	int32_t audio_streams[128];
+	int32_t video_streams[128];
+	int32_t best_audio_stream;
+	int32_t best_audio_stream_rate;
+	int32_t best_video_stream;
+	int32_t best_video_stream_rate;
+
+	uint8_t p_packet_count;
+
+	bool described;
+	bool seekable;
+
+	void AddAudioStream (int index, int bitrate) { audio_streams [index] = bitrate; if (bitrate > best_audio_stream_rate) { best_audio_stream_rate = bitrate; best_audio_stream = index; } }
+	void AddVideoStream (int index, int bitrate) { video_streams [index] = bitrate; if (bitrate > best_video_stream_rate) { best_video_stream_rate = bitrate; best_video_stream = index; } }
+
+	bool ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
+
+	bool ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
+	bool ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
+	bool ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
+	bool ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
+
+
+	void InternalWrite (void *buf, int32_t offset, int32_t n);
 	void CleanupUnzipDir ();
 	
  protected:
@@ -133,6 +205,8 @@ class Downloader : public DependencyObject {
 				  downloader_open_func open,
 				  downloader_send_func send,
 				  downloader_abort_func abort,
+				  downloader_header_func header,
+				  downloader_body_func body,
 				  bool only_if_not_set);
 	
 	void SetRequestPositionFunc (downloader_request_position_func request_position);
@@ -173,17 +247,17 @@ const char *downloader_get_uri (Downloader *dl);
 Surface *downloader_get_surface    (Downloader *dl);
 
 
-void  downloader_abort               (Downloader *dl);
+void  downloader_abort	       (Downloader *dl);
 char *downloader_get_downloaded_file (Downloader *dl);
 char *downloader_get_response_text   (Downloader *dl, const char *PartName, uint64_t *size);
 char *downloader_get_response_file   (Downloader *dl, const char *PartName);
-void  downloader_open                (Downloader *dl, const char *verb, const char *uri);
-void  downloader_send                (Downloader *dl);
+void  downloader_open		(Downloader *dl, const char *verb, const char *uri);
+void  downloader_send		(Downloader *dl);
 
 //
 // Used to push data to the consumer
 //
-void downloader_write           (Downloader *dl, void *buf, int32_t offset, int32_t n);
+void downloader_write		(Downloader *dl, void *buf, int32_t offset, int32_t n);
 void downloader_completed       (Downloader *dl, const char *filename);
 
 void downloader_notify_size     (Downloader *dl, int64_t size);
@@ -196,7 +270,9 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_destroy_state_func destroy_state,
 			       downloader_open_func open,
 			       downloader_send_func send,
-			       downloader_abort_func abort);
+			       downloader_abort_func abort,
+			       downloader_header_func header,
+			       downloader_body_func body);
 
 void downloader_init (void);
 

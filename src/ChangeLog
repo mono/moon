@@ -1,3 +1,9 @@
+2008-06-05  Geoff Norton  <gnorton@novell.com>
+
+	* downloader.cpp, downloader.h:  Initial implementation of MMS inside
+	libmoon.  The API has been extended to register two additional callbacks
+	to set HTTP headers, and the HTTP body.
+
 2008-06-05  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml.cpp: Removing the "broken parsing" of RepeatBehavior in
