@@ -1,3 +1,8 @@
+2008-06-06  Geoff Norton  <gnorton@novell.com>
+
+	* file-downloader.h: Fix a bug between argument sending and class
+	variables that was causing us to free and strdup the free'd pointer.
+
 2008-06-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mms-downloader.cpp: Return NULL from GetDownloadedFilename and
