@@ -154,9 +154,8 @@ rating:4
 
 site:Photo Gallery Wall
 url:http://designwithsilverlight.com/tutorials/photoGalleryWall/default.html
-rating:-1
- * URL broken
- * Slide show cycles through pictures very fast
+rating:3
+ * Images load very slowly
  * Thumbnails on left should outline immediately when the mouse is over it
  * Clicking on a thumbnail, the picture in the panel on the right doesn't changed quickly Bug 375283
 
@@ -174,6 +173,7 @@ rating:3
 site:Popfly
 url:http://www.popfly.com
 rating:3
+ * Not using Moonlight. It looks like it's detecting it, but it's not using it. 
  * toolbox mouse events are slow, out of sync Bug 375269
  * Edit a control has missing background and button Bug 375270
 
