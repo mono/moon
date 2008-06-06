@@ -1,3 +1,7 @@
+2008-06-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* tools/xamlg/Makefile.am: fixing the do_subst.
+
 2008-06-02  Michael Dominic K.  <mdk@mdk.am>
 
 	* configure.ac: By default build with Silverlight bugs.
