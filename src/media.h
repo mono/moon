@@ -101,10 +101,10 @@ double media_base_get_download_progress (MediaBase *media);
 
 
 class Image : public MediaBase {
-	bool create_xlib_surface;
-	bool use_img_height;
-	bool use_img_width;
-	bool updating;
+	int create_xlib_surface:1;
+	int use_img_height:1;
+	int use_img_width:1;
+	int updating:1;
 	
 	bool CreateSurface (const char *fname);
 	void CleanupSurface ();
@@ -131,17 +131,17 @@ class Image : public MediaBase {
 	const static int ImageFailedEvent;
 	
 	struct CachedSurface {
-		int ref_cnt;
+		int xlib_surface_created:1;
+		int ref_count:30;
+		int has_alpha:1;
 		
-		char *fname;
-		cairo_surface_t *cairo;
-		bool xlib_surface_created;
 		GdkPixbuf *backing_pixbuf;
+		cairo_surface_t *cairo;
 		guchar *backing_data;
+		char *filename;
 		
-		bool has_alpha;
-		int width;
 		int height;
+		int width;
 	};
 	
 	CachedSurface *surface;

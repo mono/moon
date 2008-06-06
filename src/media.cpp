@@ -2099,10 +2099,10 @@ Image::CleanupSurface ()
 	CleanupPattern ();
 
 	if (surface) {
-		surface->ref_cnt --;
-		if (surface->ref_cnt == 0) {
-			g_hash_table_remove (surface_cache, surface->fname);
-			g_free (surface->fname);
+		surface->ref_count--;
+		if (surface->ref_count == 0) {
+			g_hash_table_remove (surface_cache, surface->filename);
+			g_free (surface->filename);
 			cairo_surface_destroy (surface->cairo);
 			if (surface->backing_pixbuf)
 				g_object_unref (surface->backing_pixbuf);
@@ -2110,7 +2110,7 @@ Image::CleanupSurface ()
 				g_free (surface->backing_data);
 			g_free (surface);
 		}
-
+		
 		surface = NULL;
 	}
 }
@@ -2362,7 +2362,7 @@ unmultiply_rgba_in_place (GdkPixbuf *pixbuf)
 }
 
 bool
-Image::CreateSurface (const char *fname)
+Image::CreateSurface (const char *filename)
 {
 	if (surface) {
 		// image surface already created
@@ -2374,7 +2374,7 @@ Image::CreateSurface (const char *fname)
 	if (!surface_cache)
 		surface_cache = g_hash_table_new (g_str_hash, g_str_equal);
 	
-	if (!(surface = (CachedSurface*)g_hash_table_lookup (surface_cache, fname))) {
+	if (!(surface = (CachedSurface *) g_hash_table_lookup (surface_cache, filename))) {
 		GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
 		GdkPixbuf *pixbuf = NULL;
 		GError *err = NULL;
@@ -2383,8 +2383,8 @@ Image::CreateSurface (const char *fname)
 		char *msg;
 		int fd;
 		
-		if ((fd = open (fname, O_RDONLY)) == -1) {
-			msg = g_strdup_printf ("Failed to load image %s: %s", fname, g_strerror (errno));
+		if ((fd = open (filename, O_RDONLY)) == -1) {
+			msg = g_strdup_printf ("Failed to load image %s: %s", filename, g_strerror (errno));
 			Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
 			return false;
 		}
@@ -2405,9 +2405,9 @@ Image::CreateSurface (const char *fname)
 		
 		if (!(pixbuf = gdk_pixbuf_loader_get_pixbuf (GDK_PIXBUF_LOADER (loader)))) {
 			if (err && err->message)
-				msg = g_strdup_printf ("Failed to load image %s: %s", fname, err->message);
+				msg = g_strdup_printf ("Failed to load image %s: %s", filename, err->message);
 			else
-				msg = g_strdup_printf ("Failed to load image %s", fname);
+				msg = g_strdup_printf ("Failed to load image %s", filename);
 			
 			Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
 			
@@ -2421,15 +2421,15 @@ Image::CreateSurface (const char *fname)
 		
 		surface = g_new0 (CachedSurface, 1);
 		
-		surface->ref_cnt = 1;
-		surface->fname = g_strdup (fname);
+		surface->ref_count = 1;
+		surface->filename = g_strdup (filename);
 		surface->height = gdk_pixbuf_get_height (pixbuf);
 		surface->width = gdk_pixbuf_get_width (pixbuf);
 		
 		bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
 		guchar *data;
 		int stride;
-
+		
 		if (has_alpha) {
 			surface->backing_pixbuf = pixbuf;
 			surface->backing_data = NULL;
@@ -2456,9 +2456,9 @@ Image::CreateSurface (const char *fname)
 #if USE_OPT_RGB24
 		surface->has_alpha = has_alpha;
 #endif
-		g_hash_table_insert (surface_cache, surface->fname, surface);
+		g_hash_table_insert (surface_cache, surface->filename, surface);
 	} else {
-		surface->ref_cnt++;
+		surface->ref_count++;
 	}
 
 	return true;

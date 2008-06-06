@@ -1,3 +1,7 @@
+2008-06-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (Image): Made bools share a single int.
+
 2008-06-06  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Use the Type system for looking up elements, make
