@@ -1,3 +1,10 @@
+2008-06-06  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Use the Type system for looking up elements, make
+	things a little more OOP so we can easily add some of the 2.0
+	features.  Note:  This is going to break x:Code and deployment
+	temporarily.
+	
 2008-06-05  Geoff Norton  <gnorton@novell.com>
 
 	* downloader.cpp, downloader.h: More refactoring to hide the zip related

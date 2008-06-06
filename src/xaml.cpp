@@ -63,7 +63,12 @@ class XamlParserInfo;
 class XamlNamespace;
 class DefaultNamespace;
 class XNamespace;
+class XamlElementInfoNative;
+class XamlElementInstanceNative;
+class XamlElementInfoCustom;
+class XamlElementInstanceCustom;
 
+		
 
 static DefaultNamespace *default_namespace = NULL;
 static DefaultNamespace *deploy_namespace = NULL;
@@ -78,11 +83,13 @@ static const char* default_namespace_names [] = {
 
 
 typedef DependencyObject *(*create_item_func) (void);
-typedef XamlElementInstance *(*create_element_instance_func) (XamlParserInfo *p, XamlElementInfo *i);
-typedef void  (*add_child_func) (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 typedef void  (*set_property_func) (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 typedef void  (*set_attributes_func) (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 
+XamlElementInstance* create_toplevel_property_element_instance (XamlParserInfo *p, const char *name);
+XamlElementInstance* dependency_object_create_element_instance (XamlParserInfo *p, XamlElementInfo *i);
+void dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
+void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
@@ -103,10 +110,8 @@ void process_x_code_directive (XamlParserInfo *p, const char **attr);
 class XamlElementInstance : public List::Node {
  public:
 	const char *element_name;
-	const char *instance_name;
-
 	XamlElementInfo *info;
-
+	
 	XamlElementInstance *parent;
 	List *children;
 
@@ -122,9 +127,8 @@ class XamlElementInstance : public List::Node {
 
 	GHashTable *set_properties;
 
-	XamlElementInstance (XamlElementInfo *info) : element_name (NULL), instance_name (NULL),
-						      info (info), parent (NULL), element_type (INVALID),
-						      item (NULL), set_properties (NULL)
+	XamlElementInstance (XamlElementInfo *info, const char* element_name, ElementType type) :
+		info (info), element_name (element_name), element_type (type), parent (NULL), item (NULL), set_properties (NULL)
 	{
 		children = new List ();
 	}
@@ -143,6 +147,29 @@ class XamlElementInstance : public List::Node {
 		//	delete element_name;
 	}
 
+	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
+	{
+		MarkPropertyAsSet (property->element_name);
+	}
+
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child)
+	{
+	}
+
+	virtual void SetAttributes (XamlParserInfo *p, const char **attr)
+	{
+	}
+
+	virtual const char *GetContentProperty ()
+	{
+		return NULL;
+	}
+
+	virtual Type::Kind GetKind ()
+	{
+		return Type::INVALID;
+	}
+
 	bool IsPropertySet (const char *name)
 	{
 		if (!set_properties)
@@ -151,12 +178,12 @@ class XamlElementInstance : public List::Node {
 		return g_hash_table_lookup (set_properties, name) != NULL;
 	}
 
-	void MarkPropertyAsSet (char *name)
+	void MarkPropertyAsSet (const char *name)
 	{
 		if (!set_properties)
 			set_properties = g_hash_table_new (g_str_hash, g_str_equal);
 
-		g_hash_table_insert (set_properties, name, GINT_TO_POINTER (TRUE));
+		g_hash_table_insert (set_properties, (void *) name, GINT_TO_POINTER (TRUE));
 	}
 
 	void ClearSetProperties ()
@@ -173,6 +200,7 @@ class XamlElementInstance : public List::Node {
 		set_properties = NULL;
 #endif
 	}
+
 };
 
 void 
@@ -245,30 +273,67 @@ class XamlElementInfo {
  public:
 	const char *name;
 	XamlElementInfo *parent;
-	Type::Kind dependency_type;
 
-	create_item_func create_item;
-	create_element_instance_func create_element;
-	add_child_func add_child;
-	set_property_func set_property;
-	set_attributes_func set_attributes;
-
-	XamlElementInfo (const char *name, XamlElementInfo *parent, Type::Kind dependency_type) :
-		name (name), parent (parent), dependency_type (dependency_type), 
-		create_item (NULL), create_element (NULL), add_child (NULL), set_property (NULL), set_attributes (NULL)
+	XamlElementInfo (const char *name, Type::Kind kind) : name (name), kind (kind)
 	{
-
 	}
 
-        const char * GetContentProperty ()
-	{
-		return Type::Find (dependency_type)->GetContentPropertyName ();
-	}
-	
+	Type::Kind GetKind () { return kind; }
+	virtual XamlElementInstance* CreateElementInstance (XamlParserInfo *p) = 0;
+	virtual XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
+
  protected:
-	XamlElementInfo () { }
+	Type::Kind kind;
+};
+
+
+
+class XamlElementInfoNative : public XamlElementInfo {
+ public:
+	XamlElementInfoNative (Type *t) : XamlElementInfo (t->name, t->type)
+	{
+		type = t;
+	}
+
+	Type* GetType ()
+	{
+		return type;
+	}
+
+	const char* GetName ()
+	{
+		return type->name;
+	}
+
+	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
+	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
+
+ private:
+	Type* type;
 
 };
+
+
+class XamlElementInstanceNative : public XamlElementInstance {
+
+ public:
+	XamlElementInstanceNative (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type, bool create_item = true);
+
+	virtual DependencyObject *CreateItem ();
+	virtual const char *GetContentProperty ();
+
+	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
+	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
+
+	Type::Kind GetKind ();
+ private:
+	XamlElementInfoNative *element_info;
+	XamlParserInfo *parser_info;
+};
+
+
+
 
 class XamlNamespace {
  public:
@@ -291,7 +356,17 @@ class DefaultNamespace : public XamlNamespace {
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
-		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
+		Type* t = Type::Find (el);
+		if (!t) {
+			if (!strchr (el, '.'))
+				g_critical ("Type not found:  %s\n", el);
+			return NULL;
+		}
+
+		return new XamlElementInfoNative (t);
+
+//		return wrap_type (p, t);
+//		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
 	}
 
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
@@ -382,15 +457,30 @@ class XNamespace : public XamlNamespace {
 };
 
 
-class CustomElementInfo : public XamlElementInfo {
+class XamlElementInfoCustom : public XamlElementInfo {
 
  public:
-	DependencyObject *dependency_object;
-
-	CustomElementInfo (const char *name, XamlElementInfo *parent, Type::Kind dependency_type)
-		: XamlElementInfo (name, parent, dependency_type)
+	XamlElementInfoCustom (const char *name, XamlElementInfo *parent, Type::Kind dependency_type, DependencyObject *dob) : XamlElementInfo (name, dependency_type)
 	{
+		this->dependency_object = dob;
 	}
+
+	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
+	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
+
+ private:
+	DependencyObject *dependency_object;
+};
+
+
+class XamlElementInstanceCustom : public XamlElementInstance {
+
+ public:
+	XamlElementInstanceCustom (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob);
+
+	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
+	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 };
 
 
@@ -417,13 +507,7 @@ class CustomNamespace : public XamlNamespace {
 			return NULL;
 		}
 
-		CustomElementInfo *info = new CustomElementInfo (g_strdup (el), NULL, dob->GetObjectType ());
-
-		info->create_element = create_custom_element;
-		info->set_attributes = custom_set_attributes;
-		info->add_child = custom_add_child;
-		info->set_property = custom_set_property;
-		info->dependency_object = dob;
+		XamlElementInfoCustom *info = new XamlElementInfoCustom (g_strdup (el), NULL, dob->GetObjectType (), dob);
 
 		return info;
 	}
@@ -674,53 +758,11 @@ xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
 	loader->vm_loaded = true;
 }
 
-XamlElementInstance *
-create_custom_element (XamlParserInfo *p, XamlElementInfo *i)
-{
-	CustomElementInfo *c = (CustomElementInfo *) i;
-	XamlElementInstance *inst = new XamlElementInstance (i);
-
-	inst->element_name = i->name;
-	inst->element_type = XamlElementInstance::ELEMENT;
-	inst->item = c->dependency_object;
-
-	if (p->loader)
-        	inst->item->SetSurface (p->loader->GetSurface ());
-	p->AddCreatedElement (inst->item);
-
-	return inst;
-}
-
-void
-custom_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
-{
-	dependency_object_set_attributes (p, item, attr);
-}
-
-void
-custom_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	// XXX do we need to do anything here?
-
-
-	// if it's not handled, we definitely need to at least check if the
-	// object is a panel subclass, and if so add it as we would a normal
-	// child.
-	if (parent->item->Is (Type::PANEL) && child->item->Is (Type::UIELEMENT))
-		((Panel *) parent->item)->AddChild ((UIElement *) child->item);
-}
-
-void
-custom_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
-{
-
-}
 
 XamlElementInstance *
 create_x_code_directive_element (XamlParserInfo *p, XamlElementInfo *i)
 {
-	XamlElementInstance *inst = new XamlElementInstance (i);
-	inst->element_type = XamlElementInstance::X_CODE_DIRECTIVE;
+	XamlElementInstance *inst = new XamlElementInstance (i, "xcode", XamlElementInstance::X_CODE_DIRECTIVE);
 
 	return inst;
 }
@@ -748,16 +790,6 @@ process_x_code_directive (XamlParserInfo *p, const char **attr)
 	}
 }
 
-static bool
-is_instance_of (XamlElementInstance *item, Type::Kind kind)
-{
-	for (XamlElementInfo *walk = item->info; walk; walk = walk->parent) {
-		if (walk->dependency_type == kind)
-			return true;
-	}
-
-	return false;
-}
 
 //
 // Called when we encounter an error.  Note that memory ownership is taken for everything
@@ -848,8 +880,8 @@ start_element (void *data, const char *el, const char **attr)
 	if (elem) {
 		if (p->hydrate_expecting){
 			Type::Kind expecting_type =  p->hydrate_expecting->GetObjectType ();
-			
-			if (elem->dependency_type != expecting_type){
+
+			if (elem->GetKind () != expecting_type){
 				parser_error (p, el, NULL, -1,
 					      g_strdup_printf ("Invalid top-level element found %s, expecting %s", el,
 							       Type::Find (expecting_type)->GetName ()));
@@ -858,7 +890,7 @@ start_element (void *data, const char *el, const char **attr)
 			inst = wrap_dependency_object (p, elem, p->hydrate_expecting);
 			p->hydrate_expecting = NULL;
 		} else
-			inst = elem->create_element (p, elem);
+			inst = elem->CreateElementInstance (p);
 
 		if (!inst)
 			return;
@@ -883,15 +915,15 @@ start_element (void *data, const char *el, const char **attr)
 			}
 		}
 
-		elem->set_attributes (p, inst, attr);
+		inst->SetAttributes (p, attr);
 
 		// Setting the attributes can kill the item
 		if (!inst->item)
 			return;
 
-		if (p->current_element){
+		if (p->current_element){			
 			if (p->current_element->info) {
-				p->current_element->info->add_child (p, p->current_element, inst);
+				p->current_element->AddChild (p, inst);
 				if (p->error_args)
 					return;
 			}
@@ -908,21 +940,19 @@ start_element (void *data, const char *el, const char **attr)
 		}
 
 		if (property) {
-			inst = new XamlElementInstance (NULL);
+			XamlElementInfo *prop_info = (p->current_element ? p->current_element->info : NULL);
 
-			if (p->current_element)
-				inst->info = p->current_element->info;
-			else
-				inst->info = NULL;
+			if (!prop_info) {
+				// hmmmmm.  this is legal but i is not exactly sure how to handle it
+				inst = create_toplevel_property_element_instance (p, g_strdup (el));
+			} else
+				inst = prop_info->CreatePropertyElementInstance (p, g_strdup (el));
 
 			if (attr [0] != NULL) {
 				// It appears there is a bug in the error string but it matches the MS runtime
 				parser_error (p, el, NULL, 2018, g_strdup_printf ("The element %s does not support attributes.", attr [0]));
 				return;
 			}
-
-			inst->element_name = g_strdup (el);
-			inst->element_type = XamlElementInstance::PROPERTY;
 
 			if (!p->top_element) {
 				Type* property_type = get_type_for_property_name (inst->element_name);
@@ -954,12 +984,12 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	DependencyProperty *content;
 	const char *prop_name = NULL;
 	Type::Kind prop_type;
-
+	
 	if (!p->cdata || !p->current_element)
 		return;
 
 	if (p->current_element->info && p->current_element->element_type == XamlElementInstance::ELEMENT)
-		prop_name = p->current_element->info->GetContentProperty ();
+		prop_name = p->current_element->GetContentProperty ();
 
 	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
@@ -969,7 +999,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		goto done;
 	}
 	
-	prop_type = p->current_element->info->dependency_type;
+	prop_type = p->current_element->GetKind ();
 	content = DependencyObject::GetDependencyProperty (prop_type, prop_name);
 	
 	// TODO: There might be other types that can be specified here,
@@ -979,7 +1009,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	
 	if ((content->value_type) == Type::STRING && p->cdata_content) {
 		p->current_element->item->SetValue (content, Value (g_strstrip (p->cdata->str)));
-	} else if (p->current_element->item && is_instance_of (p->current_element, Type::TEXTBLOCK)) {
+	} else if (Type::Find (p->current_element->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) p->current_element->item;
 		Inlines *inlines = textblock->GetInlines ();
 		Collection::Node *last = inlines ? (Collection::Node *) inlines->list->Last () : NULL;
@@ -1096,7 +1126,7 @@ end_element_handler (void *data, const char *el)
 		while (walk) {
 			XamlElementInstance *child = (XamlElementInstance *) walk;
 			if (info->current_element->parent) {
-				info->current_element->parent->info->set_property (info, info->current_element->parent,	info->current_element, child);
+				info->current_element->parent->SetProperty (info, info->current_element, child);
 				break;
 			}
 			walk = walk->next;
@@ -1233,7 +1263,7 @@ print_tree (XamlElementInstance *el, int depth)
 
 	if (el->element_type == XamlElementInstance::ELEMENT)
 		v = el->item->GetValue (DependencyObject::NameProperty);
-	printf ("%s  (%s)\n", el->element_name, v ? v->AsString () : "-no name-");
+	printf ("%s  (%s)  (%p)\n", el->element_name, v ? v->AsString () : "-no name-", el->parent);
 	
 	for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->next) {
 		XamlElementInstance *el = (XamlElementInstance *) walk;
@@ -1346,12 +1376,12 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 			break;
 	}
 	
-	d(print_tree (parser_info->top_element, 0));
+	d (print_tree (parser_info->top_element, 0));
 	
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
 		if (element_type)
-			*element_type = parser_info->top_element->info->dependency_type;
+			*element_type = parser_info->top_element->GetKind ();
 
 		if (parser_info->error_args) {
 			*element_type = Type::INVALID;
@@ -1461,7 +1491,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
 		if (element_type)
-			*element_type = parser_info->top_element->info->dependency_type;
+			*element_type = parser_info->top_element->GetKind ();
 
 		if (parser_info->error_args) {
 			res = NULL;
@@ -2570,8 +2600,15 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 }
 
 XamlElementInstance *
-default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
+create_toplevel_property_element_instance (XamlParserInfo *p, const char *name)
 {
+	return new XamlElementInstanceNative (NULL, p, name, XamlElementInstance::PROPERTY, false);
+}
+
+XamlElementInstance *
+dependency_object_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
+{
+	/*
 	XamlElementInstance *inst = new XamlElementInstance (i);
 
 	inst->element_name = i->name;
@@ -2580,58 +2617,16 @@ default_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
 	DependencyProperty *dep = NULL;
 	XamlElementInstance *walk = p->current_element;
 
-	if (is_instance_of (inst, Type::COLLECTION)) {
-		// If we are creating a collection, try walking up the element tree,
-		// to find the parent that we belong to and using that instance for
-		// our collection, instead of creating a new one
-
-		// We attempt to advance past the property setter, because we might be dealing with a
-		// content element
-		if (walk && walk->element_type == XamlElementInstance::PROPERTY) {
-			char **prop_name = g_strsplit (walk->element_name, ".", -1);
-			
-			walk = walk->parent;
-			dep = DependencyObject::GetDependencyProperty (walk->info->dependency_type, prop_name [1]);
-
-			g_strfreev (prop_name);
-		} else if (walk && walk->info->GetContentProperty ()) {
-			dep = DependencyObject::GetDependencyProperty (walk->info->dependency_type,
-					(char *) walk->info->GetContentProperty ());			
-		}
-
-		if (dep && Type::Find (dep->value_type)->IsSubclassOf (i->dependency_type)) {
-			Value *v = ((DependencyObject * ) walk->item)->GetValue (dep);
-			if (v) {
-				inst->item = v->AsCollection ();
-				dep = NULL;
-			}
-			// note: if !v then the default collection is NULL (e.g. PathFigureCollection)
-		}
-	}
-
-	if (!inst->item) {
-		inst->item = i->create_item ();
-
-		if (p->loader)
-			inst->item->SetSurface (p->loader->GetSurface ());
-
-		// in case we must store the collection into the parent
-		if (dep && dep->value_type == i->dependency_type)
-			((DependencyObject * ) walk->item)->SetValue (dep, new Value (inst->item));
-
-		p->AddCreatedElement (inst->item);
-	}
-
+	
 	return inst;
+	*/
+	return NULL;
 }
 
 static XamlElementInstance *
 wrap_dependency_object (XamlParserInfo *p, XamlElementInfo *i, DependencyObject *depobject)
 {
-	XamlElementInstance *inst = new XamlElementInstance (i);
-
-	inst->element_name = i->name;
-	inst->element_type = XamlElementInstance::ELEMENT;
+	XamlElementInstance *inst = new XamlElementInstance (i, i->name, XamlElementInstance::ELEMENT);
 
 	DependencyProperty *dep = NULL;
 	XamlElementInstance *walk = p->current_element;
@@ -2650,10 +2645,8 @@ static XamlElementInstance *
 wrap_type (XamlParserInfo *p, Type *t)
 {
 	XamlElementInfo *info = p->current_namespace->FindElement (p, t->name);
-	XamlElementInstance *inst = new XamlElementInstance (info);
+	XamlElementInstance *inst = new XamlElementInstance (info, info->name, XamlElementInstance::ELEMENT);
 
-	inst->element_name = info->name;
-	inst->element_type = XamlElementInstance::ELEMENT;
 	inst->item = t->CreateInstance ();
 	
 	if (p->loader)
@@ -2662,6 +2655,171 @@ wrap_type (XamlParserInfo *p, Type *t)
 
 	return inst;
 }
+
+
+XamlElementInstance *
+XamlElementInfoNative::CreateElementInstance (XamlParserInfo *p)
+{
+	return new XamlElementInstanceNative (this, p, GetName (), XamlElementInstance::ELEMENT);
+}
+
+XamlElementInstance *
+XamlElementInfoNative::CreatePropertyElementInstance (XamlParserInfo *p, const char *name)
+{
+	return new XamlElementInstanceNative (this, p, name, XamlElementInstance::PROPERTY, false);
+}
+
+XamlElementInstanceNative::XamlElementInstanceNative (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type, bool create_item) :
+	XamlElementInstance (element_info, name, type)
+{
+	this->element_info = element_info;
+	this->parser_info = parser_info;
+	if (create_item)
+		item = CreateItem ();
+}
+
+
+
+DependencyObject *
+XamlElementInstanceNative::CreateItem ()
+{
+	XamlElementInstance *walk = parser_info->current_element;
+	Type *type = element_info->GetType ();
+
+	DependencyObject *item = NULL;
+	DependencyProperty *dep = NULL;
+
+	if (type->IsSubclassOf (Type::COLLECTION)) {
+		
+
+		// If we are creating a collection, try walking up the element tree,
+		// to find the parent that we belong to and using that instance for
+		// our collection, instead of creating a new one
+
+		// We attempt to advance past the property setter, because we might be dealing with a
+		// content element
+
+		
+		if (walk && walk->element_type == XamlElementInstance::PROPERTY) {
+			char **prop_name = g_strsplit (walk->element_name, ".", -1);
+			
+			walk = walk->parent;
+			dep = DependencyObject::GetDependencyProperty (walk->info->GetKind (), prop_name [1]);
+
+			g_strfreev (prop_name);
+		} else if (walk && walk->GetContentProperty ()) {
+			dep = DependencyObject::GetDependencyProperty (walk->info->GetKind (),
+					(char *) walk->GetContentProperty ());			
+		}
+
+		if (dep && Type::Find (dep->value_type)->IsSubclassOf (type->type)) {
+			Value *v = ((DependencyObject * ) walk->item)->GetValue (dep);
+			if (v) {
+				item = v->AsCollection ();
+				dep = NULL;
+			}
+			// note: if !v then the default collection is NULL (e.g. PathFigureCollection)
+		}
+	}
+
+	if (!item) {
+		item = element_info->GetType ()->CreateInstance ();
+
+		if (parser_info->loader)
+			item->SetSurface (parser_info->loader->GetSurface ());
+
+		// in case we must store the collection into the parent
+		if (dep && dep->value_type == type->type)
+			((DependencyObject * ) walk->item)->SetValue (dep, new Value (item));
+
+		parser_info->AddCreatedElement (item);
+	}
+
+	return item;
+}
+
+const char *
+XamlElementInstanceNative::GetContentProperty ()
+{
+	return element_info->GetType ()->GetContentPropertyName ();
+}
+
+void
+XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
+{
+	dependency_object_set_property (p, this, property, value);
+}
+
+void
+XamlElementInstanceNative::AddChild (XamlParserInfo *p, XamlElementInstance *child)
+{
+	dependency_object_add_child (p, this, child);
+}
+
+void
+XamlElementInstanceNative::SetAttributes (XamlParserInfo *p, const char **attr)
+{
+	dependency_object_set_attributes (p, this, attr);
+}
+
+
+Type::Kind
+XamlElementInstanceNative::GetKind ()
+{
+	return element_info->GetType ()->type;
+}
+
+XamlElementInstance *
+XamlElementInfoCustom::CreateElementInstance (XamlParserInfo *p)
+{
+	XamlElementInstanceCustom *inst = new XamlElementInstanceCustom (this, dependency_object->GetTypeName (), XamlElementInstance::ELEMENT, dependency_object);
+
+	if (p->loader)
+        	inst->item->SetSurface (p->loader->GetSurface ());
+	p->AddCreatedElement (inst->item);
+
+	return inst;
+}
+
+XamlElementInstance *
+XamlElementInfoCustom::CreatePropertyElementInstance (XamlParserInfo *p, const char *name)
+{
+	XamlElementInstanceCustom *inst = new XamlElementInstanceCustom (this, name, XamlElementInstance::PROPERTY, dependency_object);
+
+	if (p->loader)
+        	inst->item->SetSurface (p->loader->GetSurface ());
+	p->AddCreatedElement (inst->item);
+
+	return inst;
+}
+
+XamlElementInstanceCustom::XamlElementInstanceCustom (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob) :
+	XamlElementInstance (info, name, type)
+{
+	this->item = dob;
+};
+
+
+void
+XamlElementInstanceCustom::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
+{
+	dependency_object_set_property (p, this, property, value);
+}
+
+void
+XamlElementInstanceCustom::AddChild (XamlParserInfo *p, XamlElementInstance *child)
+{
+	dependency_object_add_child (p, this, child);
+}
+
+void
+XamlElementInstanceCustom::SetAttributes (XamlParserInfo *p, const char **attr)
+{
+	dependency_object_set_attributes (p, this, attr);
+}
+
+
+
 
 ///
 /// Add Child funcs
@@ -2689,7 +2847,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 					     g_strdup_printf ("Unknown element: %s.", parent->element_name));
 
 		// Don't add the child element, if it is the entire collection
-		if (dep->value_type == child->info->dependency_type)
+		if (dep->value_type == child->GetKind ())
 			return;
 
 		Type *col_type = Type::Find (dep->value_type);
@@ -2715,7 +2873,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		return;
 	}
 
-	if (is_instance_of (parent, Type::COLLECTION)) {
+	if (Type::Find (parent->GetKind ())->IsSubclassOf (Type::COLLECTION)) {
 		Collection *col = (Collection *) parent->item;
 
 		col->Add ((DependencyObject *) child->item);
@@ -2723,9 +2881,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	}
 
 	
-	if (parent->info->GetContentProperty ()) {
-		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->info->dependency_type,
-				(char *) parent->info->GetContentProperty ());
+	if (parent->GetContentProperty ()) {
+		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->GetKind (),
+				(char *) parent->GetContentProperty ());
 
 		if (!dep)
 			return;
@@ -2733,7 +2891,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		Type *prop_type = Type::Find (dep->value_type);
 		bool is_collection = prop_type->IsSubclassOf (Type::COLLECTION);
 
-		if (!is_collection && prop_type->IsSubclassOf (child->info->dependency_type)) {
+		if (!is_collection && prop_type->IsSubclassOf (child->GetKind ())) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			obj->SetValue (dep, (DependencyObject *) child->item);
 			return;
@@ -2743,7 +2901,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		// We only want to enter this if statement if we are NOT dealing with the content property element,
 		// otherwise, attempting to use explicit property setting, would add the content property element
 		// to the content property element collection
-		if (is_collection && dep->value_type != child->info->dependency_type) {
+		if (is_collection && dep->value_type != child->GetKind ()) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			Value *col_v = obj->GetValue (dep);
 			Collection *col;
@@ -2791,7 +2949,6 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 
 	DependencyObject *dep = (DependencyObject *) item->item;
 	DependencyProperty *prop = NULL;
-	XamlElementInfo *walk = item->info;
 
 	if (!dep) {
 		// FIXME is this really where this check should live
@@ -2801,18 +2958,13 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		return;
 	}
 
-	while (walk) {
-		prop = DependencyObject::GetDependencyProperty (walk->dependency_type, prop_name [1]);
-		if (prop)
-			break;
-		walk = walk->parent;
-	}
+	prop = DependencyObject::GetDependencyProperty (item->GetKind (), prop_name [1]);
 
 	if (prop) {
 		if (prop->IsReadOnly ()) {
 			parser_error (p, item->element_name, NULL, 2014,
 				      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->name));
-		} else if (is_instance_of (value, prop->value_type)) {
+		} else if (Type::Find (value->GetKind ())->IsSubclassOf (prop->value_type)) {
 			// an empty collection can be NULL and valid
 			if (value->item) {
 				if (item->IsPropertySet (prop->name)) {
@@ -2971,18 +3123,11 @@ start_parse:
 		}
 
 		DependencyProperty *prop = NULL;
-		XamlElementInfo *walk = item->info;
-
-		if (atchname) {
-			XamlElementInfo *attached = (XamlElementInfo *) g_hash_table_lookup (default_namespace->element_map, atchname);
-			walk = attached;
-		}
-
-		while (walk) {
-			prop = DependencyObject::GetDependencyProperty (walk->dependency_type, (char *) pname);
-			if (prop)
-				break;
-			walk = walk->parent;
+		if (atchname ) {
+			Type *attached_type = Type::Find (atchname);
+			prop = DependencyObject::GetDependencyProperty (attached_type->type, pname);
+		} else {
+			prop = DependencyObject::GetDependencyProperty (item->GetKind (), pname);
 		}
 
 		if (prop) {
@@ -3084,43 +3229,6 @@ get_type_for_property_name (const char* prop)
 	return Type::Find (p->value_type);
 }
 
-
-// We still use a name for ghost elements to make debugging easier
-XamlElementInfo *
-register_ghost_element (const char *name, XamlElementInfo *parent, Type::Kind dt)
-{
-	return new XamlElementInfo (name, parent, dt);
-}
-
-XamlElementInfo *
-register_dependency_object_element (GHashTable *table, const char *name, XamlElementInfo *parent, Type::Kind dt,
-		create_item_func create_item)
-{
-	XamlElementInfo *res = new XamlElementInfo (name, parent, dt);
-
-	res->create_item = create_item;
-	res->create_element = default_create_element_instance;
-	res->add_child = dependency_object_add_child;
-	res->set_property = dependency_object_set_property;
-	res->set_attributes = dependency_object_set_attributes;
-
-	g_hash_table_insert (table, (char *) name, GINT_TO_POINTER (res));
-
-	return res;
-}
-
-XamlElementInfo *
-register_x_code_element (GHashTable *table)
-{
-	XamlElementInfo *res = new XamlElementInfo ("Code", NULL, Type::INVALID);
-
-	res->create_element = create_x_code_directive_element;
-
-	g_hash_table_insert (table, (char *) "Code", res);
-
-	return res;
-}
-
 void
 xaml_init (void)
 {
@@ -3128,255 +3236,16 @@ xaml_init (void)
 	GHashTable *deploy = g_hash_table_new (g_str_hash, g_str_equal); // deployment element map
 	GHashTable *x_dem = g_hash_table_new (g_str_hash, g_str_equal); // x element map
 
-	XamlElementInfo *col = register_ghost_element ("Collection", NULL, Type::COLLECTION);
-
-#define rdoe register_dependency_object_element
-
-	//
-	// ui element ->
-	//
-	XamlElementInfo *ui = register_ghost_element ("UIElement", NULL, Type::UIELEMENT);
-	XamlElementInfo *fw = register_ghost_element ("FrameworkElement", ui, Type::FRAMEWORKELEMENT);
-	XamlElementInfo *shape = register_ghost_element ("Shape", fw, Type::SHAPE);
-
-	rdoe (dem, "ResourceDictionary", col, Type::RESOURCE_DICTIONARY, (create_item_func) resource_dictionary_new);
-	rdoe (dem, "VisualCollection", col, Type::VISUAL_COLLECTION, (create_item_func) visual_collection_new);
-
-	///
-	/// Shapes
-	///
-	
-	rdoe (dem, "Ellipse", shape, Type::ELLIPSE, (create_item_func) ellipse_new);
-	rdoe (dem, "Line", shape, Type::LINE, (create_item_func) line_new);
-	rdoe (dem, "Path", shape, Type::PATH, (create_item_func) path_new);
-	rdoe (dem, "Polygon", shape, Type::POLYGON, (create_item_func) polygon_new);
-	rdoe (dem, "Polyline", shape, Type::POLYLINE, (create_item_func) polyline_new);
-	rdoe (dem, "Rectangle", shape, Type::RECTANGLE, (create_item_func) rectangle_new);
-	
-	///
-	/// Geometry
-	///
-
-	XamlElementInfo *geo = register_ghost_element ("Geometry", NULL, Type::GEOMETRY);
-	rdoe (dem, "EllipseGeometry", geo, Type::ELLIPSEGEOMETRY, (create_item_func) ellipse_geometry_new);
-	rdoe (dem, "LineGeometry", geo, Type::LINEGEOMETRY, (create_item_func) line_geometry_new);
-	rdoe (dem, "RectangleGeometry", geo, Type::RECTANGLEGEOMETRY, (create_item_func) rectangle_geometry_new);
-
-	XamlElementInfo *gg = rdoe (dem, "GeometryGroup", geo, Type::GEOMETRYGROUP, (create_item_func) geometry_group_new);
-
-
-	/*XamlElementInfo *gc = */ rdoe (dem, "GeometryCollection", col, Type::GEOMETRY_COLLECTION, (create_item_func) geometry_collection_new);
-	XamlElementInfo *pg = rdoe (dem, "PathGeometry", geo, Type::PATHGEOMETRY, (create_item_func) path_geometry_new);
-
-	/*XamlElementInfo *pfc = */ rdoe (dem, "PathFigureCollection", col, Type::PATHFIGURE_COLLECTION, (create_item_func) path_figure_collection_new);
-
-	XamlElementInfo *pf = rdoe (dem, "PathFigure", geo, Type::PATHFIGURE, (create_item_func) path_figure_new);
-
-	/*XamlElementInfo *psc = */ rdoe (dem, "PathSegmentCollection", col, Type::PATHSEGMENT_COLLECTION, (create_item_func) path_segment_collection_new);
-
-	XamlElementInfo *ps = register_ghost_element ("PathSegment", NULL, Type::PATHSEGMENT);
-	rdoe (dem, "ArcSegment", ps, Type::ARCSEGMENT, (create_item_func) arc_segment_new);
-	rdoe (dem, "BezierSegment", ps, Type::BEZIERSEGMENT, (create_item_func) bezier_segment_new);
-	rdoe (dem, "LineSegment", ps, Type::LINESEGMENT, (create_item_func) line_segment_new);
-	rdoe (dem, "PolyBezierSegment", ps, Type::POLYBEZIERSEGMENT, (create_item_func) poly_bezier_segment_new);
-	rdoe (dem, "PolyLineSegment", ps, Type::POLYLINESEGMENT, (create_item_func) poly_line_segment_new);
-	rdoe (dem, "PolyQuadraticBezierSegment", ps, Type::POLYQUADRATICBEZIERSEGMENT, (create_item_func) poly_quadratic_bezier_segment_new);
-	rdoe (dem, "QuadraticBezierSegment", ps, Type::QUADRATICBEZIERSEGMENT, (create_item_func) quadratic_bezier_segment_new);
-
-	///
-	/// Panels
-	///
-	
-	XamlElementInfo *panel = register_ghost_element ("Panel", fw, Type::PANEL);
-	XamlElementInfo *canvas = rdoe (dem, "Canvas", panel, Type::CANVAS, (create_item_func) canvas_new);
-	panel->add_child = panel_add_child;
-	canvas->add_child = panel_add_child;
-
-	///
-	/// Animation
-	///
-	
-	XamlElementInfo *tl = register_ghost_element ("Timeline", NULL, Type::TIMELINE);
-	XamlElementInfo *anim = register_ghost_element ("Animation", tl, Type::ANIMATION);
-	
-	
-	XamlElementInfo * da = rdoe (dem, "DoubleAnimation", anim, Type::DOUBLEANIMATION, (create_item_func) double_animation_new);
-	XamlElementInfo *ca = rdoe (dem, "ColorAnimation", anim, Type::COLORANIMATION, (create_item_func) color_animation_new);
-	XamlElementInfo *pa = rdoe (dem, "PointAnimation", anim, Type::POINTANIMATION, (create_item_func) point_animation_new);
-
-	XamlElementInfo *daukf = rdoe (dem, "DoubleAnimationUsingKeyFrames", da, Type::DOUBLEANIMATIONUSINGKEYFRAMES, (create_item_func) double_animation_using_key_frames_new);
-
-	XamlElementInfo *caukf = rdoe (dem, "ColorAnimationUsingKeyFrames", ca, Type::COLORANIMATIONUSINGKEYFRAMES, (create_item_func) color_animation_using_key_frames_new);
-
-	XamlElementInfo *paukf = rdoe (dem, "PointAnimationUsingKeyFrames", pa, Type::POINTANIMATIONUSINGKEYFRAMES, (create_item_func) point_animation_using_key_frames_new);
-
-	XamlElementInfo *kfcol = rdoe (dem, "KeyFrameCollection", col, Type::KEYFRAME_COLLECTION, NULL);
-
-	rdoe (dem, "ColorKeyFrameCollection", kfcol, Type::COLORKEYFRAME_COLLECTION, (create_item_func) color_key_frame_collection_new);
-	rdoe (dem, "DoubleKeyFrameCollection", kfcol, Type::DOUBLEKEYFRAME_COLLECTION, (create_item_func) double_key_frame_collection_new);
-	rdoe (dem, "PointKeyFrameCollection", kfcol, Type::POINTKEYFRAME_COLLECTION, (create_item_func) point_key_frame_collection_new);
-
-	XamlElementInfo *keyfrm = register_ghost_element ("KeyFrame", NULL, Type::KEYFRAME);
-
-	XamlElementInfo *ckf = register_ghost_element ("ColorKeyFrame", keyfrm, Type::COLORKEYFRAME);
-	rdoe (dem, "DiscreteColorKeyFrame", ckf, Type::DISCRETECOLORKEYFRAME, (create_item_func) discrete_color_key_frame_new);
-	rdoe (dem, "LinearColorKeyFrame", ckf, Type::LINEARCOLORKEYFRAME, (create_item_func) linear_color_key_frame_new);
-	rdoe (dem, "SplineColorKeyFrame", ckf, Type::SPLINECOLORKEYFRAME, (create_item_func) spline_color_key_frame_new);
-
-	XamlElementInfo *dkf = register_ghost_element ("DoubleKeyFrame", keyfrm, Type::DOUBLEKEYFRAME);
-	rdoe (dem, "DiscreteDoubleKeyFrame", dkf, Type::DISCRETEDOUBLEKEYFRAME, (create_item_func) discrete_double_key_frame_new);
-	rdoe (dem, "LinearDoubleKeyFrame", dkf, Type::LINEARDOUBLEKEYFRAME, (create_item_func) linear_double_key_frame_new);
-	rdoe (dem, "SplineDoubleKeyFrame", dkf, Type::SPLINEDOUBLEKEYFRAME, (create_item_func) spline_double_key_frame_new);
-
-	XamlElementInfo *pkf = register_ghost_element ("PointKeyFrame", keyfrm, Type::POINTKEYFRAME);
-	rdoe (dem, "DiscretePointKeyFrame", pkf, Type::DISCRETEPOINTKEYFRAME, (create_item_func) discrete_point_key_frame_new);
-	rdoe (dem, "LinearPointKeyFrame", pkf, Type::LINEARPOINTKEYFRAME, (create_item_func) linear_point_key_frame_new);
-	rdoe (dem, "SplinePointKeyFrame", pkf, Type::SPLINEPOINTKEYFRAME, (create_item_func) spline_point_key_frame_new);
-
-	rdoe (dem, "KeySpline", NULL, Type::KEYSPLINE, (create_item_func) key_spline_new);
-
-	rdoe (dem, "TimelineCollection", col, Type::TIMELINE_COLLECTION, (create_item_func) timeline_collection_new);
-
-	XamlElementInfo *timel = register_ghost_element ("Timeline", NULL, Type::TIMELINE);
-	XamlElementInfo *tlg = rdoe (dem, "TimelineGroup", timel, Type::TIMELINEGROUP, (create_item_func) timeline_group_new);
-	XamlElementInfo *prltl = register_ghost_element ("ParallelTimeline", tlg, Type::PARALLELTIMELINE);
-
-	XamlElementInfo *sb = rdoe (dem, "Storyboard", prltl, Type::STORYBOARD, (create_item_func) storyboard_new);
-
-	rdoe (dem, "TimelineMarkerCollection", col, Type::TIMELINEMARKER_COLLECTION, (create_item_func) timeline_marker_collection_new);
-	rdoe (dem, "TimelineMarker", NULL, Type::TIMELINEMARKER, (create_item_func) timeline_marker_new);
-
-	///
-	/// Triggers
-	///
-	XamlElementInfo *trg = register_ghost_element ("Trigger", NULL, Type::TRIGGERACTION);
-	XamlElementInfo *bsb = rdoe (dem, "BeginStoryboard", trg, Type::BEGINSTORYBOARD,
-			(create_item_func) begin_storyboard_new);
-
-	XamlElementInfo *evt = rdoe (dem, "EventTrigger", NULL, Type::EVENTTRIGGER, (create_item_func) event_trigger_new);
-
-	rdoe (dem, "TriggerCollection", col, Type::TRIGGER_COLLECTION, (create_item_func) trigger_collection_new);
-	rdoe (dem, "TriggerActionCollection", col, Type::TRIGGERACTION_COLLECTION, (create_item_func) trigger_action_collection_new);
-	
-	/// Matrix
-
-	rdoe (dem, "Matrix", NULL, Type::MATRIX, (create_item_func) matrix_new);
-
-	///
-	/// Transforms
-	///
-
-	XamlElementInfo *tf = register_ghost_element ("Transform", NULL, Type::TRANSFORM);
-	rdoe (dem, "RotateTransform", tf, Type::ROTATETRANSFORM, (create_item_func) rotate_transform_new);
-	rdoe (dem, "ScaleTransform", tf, Type::SCALETRANSFORM, (create_item_func) scale_transform_new);
-	rdoe (dem, "SkewTransform", tf, Type::SKEWTRANSFORM, (create_item_func) skew_transform_new);
-	rdoe (dem, "TranslateTransform", tf, Type::TRANSLATETRANSFORM, (create_item_func) translate_transform_new);
-	rdoe (dem, "MatrixTransform", tf, Type::MATRIXTRANSFORM, (create_item_func) matrix_transform_new);
-	XamlElementInfo *tg = rdoe (dem, "TransformGroup", tf, Type::TRANSFORMGROUP, (create_item_func) transform_group_new);
-	
-	rdoe (dem, "TransformCollection", col, Type::TRANSFORM_COLLECTION, (create_item_func) transform_collection_new);
-
-
-	///
-	/// Brushes
-	///
-
-	XamlElementInfo *brush = register_ghost_element ("Brush", NULL, Type::BRUSH);
-	rdoe (dem, "SolidColorBrush", brush, Type::SOLIDCOLORBRUSH, (create_item_func) solid_color_brush_new);
-
-	XamlElementInfo *gb = register_ghost_element ("GradientBrush", brush, Type::GRADIENTBRUSH);
-
-	rdoe (dem, "LinearGradientBrush", gb, Type::LINEARGRADIENTBRUSH, (create_item_func) linear_gradient_brush_new);
-	rdoe (dem, "RadialGradientBrush", gb, Type::RADIALGRADIENTBRUSH, (create_item_func) radial_gradient_brush_new);
-
-	rdoe (dem, "GradientStopCollection", col, Type::GRADIENTSTOP_COLLECTION, (create_item_func) gradient_stop_collection_new);
-
-	rdoe (dem, "GradientStop", NULL, Type::GRADIENTSTOP, (create_item_func) gradient_stop_new);
-
-	rdoe (dem, "TileBrush", brush, Type::TILEBRUSH, (create_item_func) tile_brush_new);
-	rdoe (dem, "ImageBrush", brush, Type::IMAGEBRUSH, (create_item_func) image_brush_new);
-	rdoe (dem, "VideoBrush", brush, Type::VIDEOBRUSH, (create_item_func) video_brush_new);
-	rdoe (dem, "VisualBrush", brush, Type::VISUALBRUSH, (create_item_func) visual_brush_new);
-
-	///
-	/// Media
-	///
-
-	XamlElementInfo *mb = register_ghost_element ("MediaBase", NULL, Type::MEDIABASE);
-
-	rdoe (dem, "Image", mb, Type::IMAGE, (create_item_func) image_new);
-	rdoe (dem, "MediaElement", mb, Type::MEDIAELEMENT, (create_item_func) media_element_new);
-	rdoe (dem, "MediaAttribute", NULL, Type::MEDIAATTRIBUTE, (create_item_func) media_attribute_new);
-	rdoe (dem, "MediaAttributeCollection", col, Type::MEDIAATTRIBUTE_COLLECTION, (create_item_func) media_attribute_collection_new);
-	
-	///
-	/// Text
-	///
-	
-	XamlElementInfo *in = register_ghost_element ("Inline", NULL, Type::INLINE);
-	XamlElementInfo *txtblk = rdoe (dem, "TextBlock", fw, Type::TEXTBLOCK, (create_item_func) text_block_new);
-
-	rdoe (dem, "Inlines", col, Type::INLINES, (create_item_func) inlines_new);
-
-	XamlElementInfo *run = rdoe (dem, "Run", in, Type::RUN, (create_item_func) run_new);
-	rdoe (dem, "LineBreak", in, Type::LINEBREAK, (create_item_func) line_break_new);
-	rdoe (dem, "Glyphs", fw, Type::GLYPHS, (create_item_func) glyphs_new);
-
-	//
-	// Stylus
-	//
-
-	rdoe (dem, "StylusPoint", NULL, Type::STYLUSPOINT, (create_item_func) stylus_point_new);
-	rdoe (dem, "Stroke", NULL, Type::STROKE, (create_item_func) stroke_new);
-	rdoe (dem, "DrawingAttributes", NULL, Type::DRAWINGATTRIBUTES, (create_item_func) drawing_attributes_new);
-	XamlElementInfo *inkpresenter = rdoe (dem, "InkPresenter", canvas, Type::INKPRESENTER, (create_item_func) ink_presenter_new);
-	inkpresenter->add_child = panel_add_child;
-	rdoe (dem, "StrokeCollection", col, Type::STROKE_COLLECTION, (create_item_func) stroke_collection_new);
-	rdoe (dem, "StylusPointCollection", col, Type::STYLUSPOINT_COLLECTION, (create_item_func) stylus_point_collection_new);
-
-	//
-	// Mouse Events
-	//
-
-	rdoe (dem, "MouseEventArgs", NULL, Type::MOUSEEVENTARGS, (create_item_func) mouse_event_args_new);
-
-	//
-	// User controls
-	//
-
-	rdoe (dem, "UserControl", NULL, Type::USERCONTROL, (create_item_func) user_control_new);
-
-	//
-	// Grid
-	//
-	rdoe (dem, "Grid", NULL, Type::GRID, (create_item_func) grid_new);
-	XamlElementInfo *aaa = rdoe (dem, "ColumnDefinitions", col, Type::COLUMNDEFINITION_COLLECTION, (create_item_func) column_definition_collection_new);
-	rdoe (dem, "RowDefinitions", col, Type::ROWDEFINITION_COLLECTION, (create_item_func) row_definition_collection_new);
-
-	rdoe (dem, "ColumnDefinition", NULL, Type::COLUMNDEFINITION, (create_item_func) column_definition_new);
-	rdoe (dem, "RowDefinition", NULL, Type::ROWDEFINITION, (create_item_func) row_definition_new);
-	
-	
-	//
-	// Code
-	//
-	// FIXME: Make this v1.1 only
-	register_x_code_element (x_dem);
-
-	//
-	// Deployment namespace
-	//
-
+	/*
 	rdoe (deploy, "Deployment", NULL, Type::DEPLOYMENT, (create_item_func) deployment_new);
 	rdoe (deploy, "AssemblyPart", NULL, Type::ASSEMBLYPART, (create_item_func) assembly_part_new);
 	rdoe (deploy, "AssemblyPartCollection", col, Type::ASSEMBLYPART_COLLECTION, (create_item_func) assembly_part_collection_new);
+	
 
 	// Is this correct, since there is no SupportedCulture item
 	rdoe (deploy, "SupportedCultureCollection", col, Type::SUPPORTEDCULTURE_COLLECTION, (create_item_func) supported_culture_collection_new);
+	*/
 
-
-#undef rdoe
-	
 	default_namespace = new DefaultNamespace (dem);
 	deploy_namespace = new DefaultNamespace (deploy);
 	x_namespace = new XNamespace (x_dem);
