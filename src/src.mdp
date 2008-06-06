@@ -1,5 +1,5 @@
-<Project name="src" fileversion="2.0" language="CPP" ctype="CProject">
-  <Configurations>
+<Project name="src" fileversion="2.0" language="CPP" Target="Bin" ctype="CProject">
+  <Configurations active="Default">
     <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="src" />
       <Build debugmode="True" target="SharedLibrary" />
@@ -139,6 +139,15 @@
     <File name="enums.c" subtype="Code" buildaction="Compile" />
     <File name="http-streaming.h" subtype="Code" buildaction="Nothing" />
     <File name="http-streaming.cpp" subtype="Code" buildaction="Compile" />
+    <File name="mms-downloader.cpp" subtype="Code" buildaction="Compile" />
+    <File name="mms-downloader.h" subtype="Code" buildaction="Nothing" />
+    <File name="xap.cpp" subtype="Code" buildaction="Compile" />
+    <File name="xap.h" subtype="Code" buildaction="Nothing" />
+    <File name="internal-downloader.h" subtype="Code" buildaction="Nothing" />
+    <File name="file-downloader.h" subtype="Code" buildaction="Nothing" />
+    <File name="file-downloader.cpp" subtype="Code" buildaction="Compile" />
+    <File name="deployment.h" subtype="Code" buildaction="Nothing" />
+    <File name="deployment.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

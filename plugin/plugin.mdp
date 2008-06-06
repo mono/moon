@@ -1,5 +1,5 @@
-<Project name="plugin" fileversion="2.0" language="C" ctype="CProject">
-  <Configurations>
+<Project name="plugin" fileversion="2.0" language="C" Target="Bin" ctype="CProject">
+  <Configurations active="Default">
     <Configuration name="Debug" ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="plugin" />
       <Build debugmode="True" target="Bin" />
@@ -34,14 +34,7 @@
     <File name="plugin-downloader.h" subtype="Code" buildaction="Nothing" />
     <File name="plugin-debug.cpp" subtype="Code" buildaction="Nothing" />
     <File name="plugin-debug.h" subtype="Code" buildaction="Nothing" />
-    <File name="install.rdf" subtype="Code" buildaction="Nothing" />
-    <File name="mms-downloader.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="mms-downloader.h" subtype="Code" buildaction="Nothing" />
-    <File name="http-downloader.h" subtype="Code" buildaction="Nothing" />
-    <File name="http-downloader.cpp" subtype="Code" buildaction="Nothing" />
     <File name="browser-bridge.h" subtype="Code" buildaction="Nothing" />
-    <File name="npstream-downloader.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="npstream-downloader.h" subtype="Code" buildaction="Nothing" />
     <File name="firefox/ff3/ff3-bridge.cpp" subtype="Code" buildaction="Nothing" />
     <File name="firefox/ff3/ff3-bridge.h" subtype="Code" buildaction="Nothing" />
     <File name="firefox/ff3/ff3-dom.cpp" subtype="Code" buildaction="Nothing" />
@@ -56,6 +49,8 @@
     <File name="firefox/Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="firefox/ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="firefox/browser-http.inc" subtype="Code" buildaction="Nothing" />
+    <File name="npstream-request.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="npstream-request.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

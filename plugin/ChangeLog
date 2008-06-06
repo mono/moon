@@ -1,3 +1,7 @@
+2008-06-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.mdp: Updated.
+
 2008-06-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-debug.cpp (save_callback): Modified to save mirror in the
