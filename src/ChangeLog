@@ -1,5 +1,9 @@
 2008-06-06  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp: Don't use the c++ ctor initializer stuff, it breaks if
+	members change order (like it did recently).
+	(wrap_dependency_object): Get rid of unused variables.
+
 	* media.cpp (Image): Made bools share a single int.
 
 2008-06-06  Jackson Harper  <jackson@ximian.com>

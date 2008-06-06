@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * xaml.cpp: xaml parser
  *
@@ -93,7 +94,6 @@ void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent
 void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
-static XamlElementInstance *create_custom_element  (XamlParserInfo *p, XamlElementInfo *i);
 static XamlElementInstance *wrap_dependency_object (XamlParserInfo *p, XamlElementInfo *i, DependencyObject *depobject);
 static XamlElementInstance *wrap_type (XamlParserInfo *p, Type *t);
 
@@ -127,9 +127,15 @@ class XamlElementInstance : public List::Node {
 
 	GHashTable *set_properties;
 
-	XamlElementInstance (XamlElementInfo *info, const char* element_name, ElementType type) :
-		info (info), element_name (element_name), element_type (type), parent (NULL), item (NULL), set_properties (NULL)
+	XamlElementInstance (XamlElementInfo *info, const char* element_name, ElementType type)
 	{
+		this->element_name = element_name;
+		this->set_properties = NULL;
+		this->element_type = type;
+		this->parent = NULL;
+		this->info = info;
+		this->item = NULL;
+		
 		children = new List ();
 	}
 	
@@ -2627,16 +2633,13 @@ static XamlElementInstance *
 wrap_dependency_object (XamlParserInfo *p, XamlElementInfo *i, DependencyObject *depobject)
 {
 	XamlElementInstance *inst = new XamlElementInstance (i, i->name, XamlElementInstance::ELEMENT);
-
-	DependencyProperty *dep = NULL;
-	XamlElementInstance *walk = p->current_element;
-
+	
 	inst->item = depobject;
 	
 	if (p->loader)
 		inst->item->SetSurface (p->loader->GetSurface ());
-
-		p->AddCreatedElement (inst->item);
+	
+	p->AddCreatedElement (inst->item);
 
 	return inst;
 }
@@ -2651,6 +2654,7 @@ wrap_type (XamlParserInfo *p, Type *t)
 	
 	if (p->loader)
 		inst->item->SetSurface (p->loader->GetSurface ());
+	
 	p->AddCreatedElement (inst->item);
 
 	return inst;
