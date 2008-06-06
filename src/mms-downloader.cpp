@@ -169,13 +169,13 @@ process_packet:
 char *
 MmsDownloader::GetDownloadedFilename (const char *partname)
 {
-	g_warning ("MmsDownloader::GetDownloadedFilename (): GetDownloadedFilename isn't supported on the MmsDownloader");
+	return NULL;
 }
 
 char *
 MmsDownloader::GetResponseText (const char *partname, uint64_t *size)
 {
-	g_warning ("MmsDownloader::GetResponseText (): GetResponseText isn't supported on the MmsDownloader");
+	return NULL;
 }
 
 bool

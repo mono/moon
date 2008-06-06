@@ -1,5 +1,10 @@
 2008-06-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mms-downloader.cpp: Return NULL from GetDownloadedFilename and
+	  GetResponseText.
+
+2008-06-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Updated.
 
 2008-06-06  Jeffrey Stedfast  <fejj@novell.com>
