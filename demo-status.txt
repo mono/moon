@@ -126,12 +126,8 @@ rating:1
 
 site:Office Ribbon
 url:http://xmldocs.net
-rating:2
- * Controls are out of order. Bug 375223
- * Drop down menus aren't clickable Bug 375223
- * Missing check box. Bug 375223
+rating:3
  * Drop down list doesn't stay open Bug 351568
- * Text boxes aren't editable Bug 375224
 
 site:On9Games
 url:http://www.on9games.net/GameAction.aspx
@@ -186,6 +182,11 @@ url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playli
 rating:4
  * Works!
 
+site:Share the Love
+url:http://www.microsoft.com/silverlight/sharethelove/Default.html
+rating: 0
+* Crashes firefox - maybe caused by Alsa?
+
 site:Silverlight Pad
 url:http://silverlight.net/samples/1.0/Silverlight-Pad/default.html
 rating:2
@@ -209,13 +210,13 @@ rating:4
 
 site:Space Invaders
 url:http://www.tek.co.jp/Legend/
-rating:0
- * Not detecting Moonlight
+rating:4
+ * Works
 
 site:Sparkleball
 url:http://www.ddjsilverlight.com/sparkleball
-rating:4
- * Works
+rating:1
+ * [regression] Just an empty white page
 
 site:Sprawl
 url:http://silverlight.net/samples/1.0/Sprawl/default.html
@@ -224,14 +225,14 @@ rating:4
 
 site:Tile Text
 url:http://silverlight.net/samples/1.0/Tile-Text/default.html
-rating:3
- * Missing text box to change text due to windowless plugin not working. Bug 375263
- * Animation works well
+rating:4
+ * Works on FF3
+ * Missing text box on FF2 due to the "windowless" issue
 
 site:TI-M Silverlight
 url:http://silverlight.timovil.com
-rating:2
- * Cannot interact with window. Mouse events don't work. Bug 375264
+rating:-1
+ * Site has moved?
 
 site:Video Page Turn
 url:http://mapul.com/Tutorials.html
@@ -241,6 +242,7 @@ rating:1
 site:Video Slide puzzle
 url:http://miguelmoreno.net/sandbox/Silverlight_0/
 rating:0
+ * Not detecting Moonlight - even in FF3 with greasemonkey
  * Cannot slide pieces Bug 389460
  * No video playing Bug 391696
 
