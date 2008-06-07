@@ -1,17 +1,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <title>Loaded handler tests</title>
+  <title>event bubbling tests</title>
   
   <script src="Silverlight.js"></script>
 
   <script type="text/xaml" id="TestXaml">
     <Canvas xmlns="http://schemas.microsoft.com/client/2007"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            x:Name="root" Width="460" Height="200" Background="Orange">
+            x:Name="root" Width="260" Height="200" Background="Orange">
 
-      <Canvas x:Name="FinishArea" MouseLeftButtonDown="FinishTest" Canvas.Left="400" Canvas.Top="10" Width="50" Height="50" Background="Red" />
+      <Canvas x:Name="FinishArea" MouseLeftButtonDown="FinishTest" Canvas.Left="200" Canvas.Top="10" Width="50" Height="50" Background="Red" />
 
-      <TextBlock x:Name="Log" Canvas.Left="470" Canvas.Top="0" Width="300" Height="200" FontSize="10" />
+      <TextBlock x:Name="Log" Canvas.Left="270" Canvas.Top="0" Width="300" Height="200" FontSize="10" />
     </Canvas>
   </script>
 
@@ -72,7 +72,6 @@
 
     function FinishTest1 ()
     {
-    console.log ("test1 mouseDowns = " + mouseDownCount);
         Assert (mouseDownCount == 3);
     }
 
@@ -100,7 +99,6 @@
 
     function FinishTest2 ()
     {
-    console.log ("test2 mouseDowns = " + mouseDownCount);
         Assert (mouseDownCount == 3);
     }
 
@@ -128,7 +126,6 @@
 
     function FinishTest3 ()
     {
-    console.log ("test3 mouseDowns = " + mouseDownCount);
         Assert (mouseDownCount == 4);
     }
 
@@ -149,8 +146,8 @@
         var C = root.findName ("C");
 
         C.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+        C.addEventListener ("MouseLeftButtonDown", "AddHandlerParent_and_mouseLeftButtonDownCount");
         B.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
-        A.addEventListener ("MouseLeftButtonDown", "AddHandlerParent_and_mouseLeftButtonDownCount");
         A.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
 
         mouseDownCount = 0;
@@ -158,7 +155,6 @@
 
     function FinishTest4 ()
     {
-    console.log ("test4 mouseDowns = " + mouseDownCount);
         Assert (mouseDownCount == 4);
     }
 
@@ -178,9 +174,9 @@
         var C = root.findName ("C");
 
         C.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+        C.addEventListener ("MouseLeftButtonDown", "RemoveHandlerParent_and_mouseLeftButtonDownCount");
         B.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
         token_to_remove = B.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
-        A.addEventListener ("MouseLeftButtonDown", "RemoveHandlerParent_and_mouseLeftButtonDownCount");
         A.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
 
         mouseDownCount = 0;
@@ -188,7 +184,6 @@
 
     function FinishTest5 ()
     {
-    console.log ("test5 mouseDowns = " + mouseDownCount);
         Assert (mouseDownCount == 5);
     }
 
@@ -202,7 +197,7 @@
         var C = root.findName ("C");
 
         C.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
-        A.addEventListener ("MouseLeftButtonDown", "AddHandlerParent_and_mouseLeftButtonDownCount");
+        C.addEventListener ("MouseLeftButtonDown", "AddHandlerParent_and_mouseLeftButtonDownCount");
         A.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
 
         mouseDownCount = 0;
@@ -210,7 +205,6 @@
 
     function FinishTest6 ()
     {
-    console.log ("test6 mouseDowns = " + mouseDownCount);
         Assert (mouseDownCount == 3);
     }
 
@@ -230,18 +224,79 @@
         var C = root.findName ("C");
 
         C.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+        C.addEventListener ("MouseLeftButtonDown", "removeParentElement");
         B.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
         A.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
-        A.addEventListener ("MouseLeftButtonDown", "removeParentElement");
 
         mouseDownCount = 0;
     }
 
     function FinishTest7 ()
     {
-    console.log ("test7 mouseDowns = " + mouseDownCount);
         Assert (mouseDownCount == 3);
     }
+
+
+    // Test8 = splice in a new parent element between child and parent
+    function SpliceParentElement (sender, args)
+    {
+        var B = root.findName ("B");
+        var C = root.findName ("C");
+        var xaml = root.getHost().content.createFromXaml ('<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="D"/>');
+        B.children.add (xaml);
+ 
+        var D = root.findName ("D");
+        D.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+
+        B.children.remove(C);
+        D.children.add(C);
+    }
+
+    function StartTest8 ()
+    {
+        var A = root.findName("A");
+        var B = root.findName ("B");
+        var C = root.findName ("C");
+
+        C.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+        C.addEventListener ("MouseLeftButtonDown", "SpliceParentElement");
+        B.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+        A.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+
+        mouseDownCount = 0;
+    }
+
+    function FinishTest8 ()
+    {
+        Assert (mouseDownCount == 3);
+    }
+
+    // Test9 = clear the root canvas's children
+    function clearParentChildren (sender, args)
+    {
+        var A = root.findName("A");
+        A.children.clear ();
+    }
+
+    function StartTest9 ()
+    {
+        var A = root.findName("A");
+        var B = root.findName("B");
+        var C = root.findName ("C");
+
+        C.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+        C.addEventListener ("MouseLeftButtonDown", "clearParentChildren");
+        B.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+        A.addEventListener ("MouseLeftButtonDown", "mouseLeftButtonDownCount");
+
+        mouseDownCount = 0;
+    }
+
+    function FinishTest9 ()
+    {
+        Assert (mouseDownCount == 3);
+    }
+
 
     // harness foo
 
@@ -257,6 +312,9 @@
         { name:"AddParentHandler0", start: StartTest6, finish: FinishTest6 },
 
         { name:"RemoveParentElement", start: StartTest7, finish: FinishTest7 },
+        { name:"SpliceParentElement", start: StartTest8, finish: FinishTest8 },
+
+        { name:"ClearParentChildren", start: StartTest9, finish: FinishTest9 },
     ];
     
     var testNum = -1;
@@ -264,7 +322,7 @@
     function Assert (f)
     {
         var Log = root.findName ("Log");
-        Log.text += ("'" + Tests[testNum].name + (f ? "' PASSED\n" : "' FAILED\n"));
+        Log.text += (f ? "PASSED" : "FAILED") + ".\n";
     }
 
     function AdvanceTest ()
@@ -278,6 +336,9 @@
         if (testNum < Tests.length) {
 	    var xaml = root.getHost().content.createFromXaml (testXamlFragment);
 	    root.children.add (xaml);
+
+            var Log = root.findName ("Log");
+	    Log.text += "test ('" + Tests[testNum].name + "') ";
 
 	    Tests [testNum].start ();
         }
@@ -326,7 +387,7 @@
 </head>
 <body>
 
-  <div id="SilverlightControlHostTest" style="position:absolute; top:150px; left:50px; width:800px; height:300px;"></div>
+  <div id="SilverlightControlHostTest" style="position:absolute; top:150px; left:50px; width:600px; height:200px;"></div>
 
   <script type="text/javascript">
     CreateSilverlightControl ("Test");
