@@ -7,9 +7,9 @@
   <script type="text/xaml" id="TestXaml">
     <Canvas xmlns="http://schemas.microsoft.com/client/2007"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            x:Name="root" Width="260" Height="200" Background="Orange">
+            x:Name="root" Width="260" Height="200" Background="Orange" Loaded="OnLoaded">
 
-      <Canvas x:Name="FinishArea" MouseLeftButtonDown="FinishTest" Canvas.Left="200" Canvas.Top="10" Width="50" Height="50" Background="Red" />
+      <Canvas x:Name="AdvanceArea" MouseLeftButtonDown="AdvanceTest" Canvas.Left="200" Canvas.Top="10" Width="50" Height="50" Background="Red" />
 
       <TextBlock x:Name="Log" Canvas.Left="270" Canvas.Top="0" Width="300" Height="200" FontSize="10" />
     </Canvas>
@@ -318,14 +318,17 @@
     ];
     
     var testNum = -1;
+    var failure = false;
 
     function Assert (f)
     {
         var Log = root.findName ("Log");
         Log.text += (f ? "PASSED" : "FAILED") + ".\n";
+        if (!f)
+            failure = true;
     }
 
-    function AdvanceTest ()
+    function AdvanceTest (sender, args)
     {
         if (testNum >= 0) {
             var A = root.findName("A");
@@ -341,56 +344,79 @@
 	    Log.text += "test ('" + Tests[testNum].name + "') ";
 
 	    Tests [testNum].start ();
+
+            window.setTimeout ("DoClicks ()", 50);
         }
         else {
-	    var FinishArea = root.findName ("FinishArea");
-            FinishArea.removeEventListener ("MouseLeftButtonDown", 0);
+	    var AdvanceArea = root.findName ("AdvanceArea");
+            AdvanceArea.removeEventListener ("MouseLeftButtonDown", 0);
             var Log = root.findName ("Log");
 	    Log.text += "Done.\n";
+
+	    FinishTest();
         }
     }
 
-    function FinishTest (sender, args)
+    function OnLoaded(sender, args)
     {
-        AdvanceTest ();
-    }
+        root = sender;
 
-    function OnLoaded(control, userContext, rootElement)
-    {
-        root = rootElement;
-
-        var Log = root.findName ("Log");
+        var Log = sender.findName ("Log");
         Log.text += "Alternate between clicking green and red, starting with green.\n";
-
-        AdvanceTest ();
     }
 
-    function CreateSilverlightControl(name)
+    var test_plugin;
+
+    function DoClicks ()
     {
-        Silverlight.createObjectEx({
-            source: ("#" + name + "Xaml"),
-            parentElement: document.getElementById ("SilverlightControlHost" + name),
-            id: "SilverlightControl" + name,
-            properties: {
-                width: "100%",
-                height: "100%",
-                version: "1.0",
-                background: "#E0E0E0FF"
-            },
-            events: {
-                  onLoad: OnLoaded
-//                onError: OnError
-            }
-        });
+            // click in the green rectangle
+            test_plugin.moveMouseLogarithmic (75, 75);
+            test_plugin.mouseLeftClick ();
+
+            // click in the red rectangle
+            test_plugin.moveMouseLogarithmic (205, 15);
+            test_plugin.mouseLeftClick ();
     }
+		      
+
+      QueueTestReady ();
+
+      function QueueTestReady ()
+      {
+          if (document.body == null) {
+              window.setTimeout ("QueueTestReady ()", 100);
+              return;
+          }
+
+          window.setTimeout ("RunTest ()", 50);
+      }
+
+      function RunTest ()
+      {
+          test_plugin = document.getElementById ("_TestPlugin");
+          AdvanceTest ();
+      }
+
+      function FinishTest ()
+      {
+	  test_plugin.LogResult (failure ? 0 : 1);
+          test_plugin.SignalShutdown ();
+      }
+
 </script>
 </head>
 <body>
 
-  <div id="SilverlightControlHostTest" style="position:absolute; top:150px; left:50px; width:600px; height:200px;"></div>
+  <div>
+    <embed type="application/x-silverlight" width="600" height="200"
+           id="_MoonlightControl" Source="#TestXaml"
+           style="position:absolute; left:0px; top:0px" >
+    </embed>
+  </div>
 
-  <script type="text/javascript">
-    CreateSilverlightControl ("Test");
-  </script>
+  <div>
+    <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest"></embed>
+  </div>
+
 </body>
 </html>

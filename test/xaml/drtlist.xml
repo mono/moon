@@ -843,4 +843,10 @@
 	 knownFailure="True"
 	 knownFailureReason="We never call removed event handlers"
 	 />
+   <Test id="191"
+	 inputFile="test-bubbling.html"
+	 masterFile10="None"
+	 knownFailure="True"
+	 knownFailureReason="parent event handler lists are modifiable from within child event handlers"
+	 />
 </DRTList>
