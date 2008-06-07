@@ -837,4 +837,10 @@
 	 inputFile="test-animation-zero-duration.xaml"
 	 masterFile10="../harness/masters/test-animation-zero-durationMaster.png"
 	 />
+   <Test id="190"
+	 inputFile="test-downloader-events.html"
+	 masterFile10="None"
+	 knownFailure="True"
+	 knownFailureReason="We never call removed event handlers"
+	 />
 </DRTList>

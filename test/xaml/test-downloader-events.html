@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Test file</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<script src="../js/js/utils.js"></script>
+	<script src="../js/js/testplugin.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xamlA">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+		Loaded="XamlALoaded" 
+		Height="200" Width="200" 
+		Background="Blue" />
+</script>
+
+<script type="text/javascript">
+	var CurrentStep = 0;
+	var dl = null;
+	var plugin = null;
+	var tokenA, tokenB;
+	
+	function EndTest ()
+	{
+		if (ShutdownRequested)
+			return;
+
+		if (CurrentStep < 2) {
+			setTimeout("EndTest ();", 100);
+		} else {
+			if (CurrentStep == 3)
+				TestLogger.LogError ("Test timed out. Both OnDownloadCompleteA and OnDownloadCompleteB should have been called.");
+			TestLogger.LogResult (CurrentStep == 2 ? 1 : -1);
+			SignalShutdown ();
+		}
+	}
+
+	function XamlALoaded (sender, args)
+	{
+		TestLogger.LogDebug ("XamlALoaded");
+		plugin = document.getElementById ("JoltActiveX");
+		dl = plugin.createObject ("Downloader");
+			
+		// Download a file
+		dl.Open ("GET", "test-downloader-events.html");
+		tokenA = dl.AddEventListener ("Completed", "OnDownloadCompletedA");
+		tokenB = dl.AddEventListener ("Completed", "OnDownloadCompletedB");
+		dl.Send();
+				
+		EndTest ();
+
+		// Given that we're downloading ourselves, the download should finish almost instantly
+		// 2 seconds should be more than enough
+		setTimeout ("CurrentStep = 3; EndTest ();", 2000);
+	}
+	
+	
+	function OnDownloadCompletedA (sender, args)
+	{
+		TestLogger.LogDebug ("OnDownloadCompleteA");
+		dl.RemoveEventListener ("Completed", tokenB);
+		CurrentStep++;
+	}
+	
+	function OnDownloadCompletedB (sender, args)
+	{
+		TestLogger.LogDebug ("OnDownloadCompleteB");
+		dl.RemoveEventListener ("Completed", tokenA);
+		CurrentStep++;
+	}
+
+	function OnPluginError (sender, args)
+	{
+		Fail ("OnPluginError: " + ErrorEventArgsToOneLineString (args));
+	}
+	
+	function Fail (msg)
+	{
+		TestLogger.LogError (msg);
+		TestLogger.LogResult (-1)
+		SignalShutdown ();
+	}
+
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="300" height="300"
+     id="JoltActiveX" Source="#xamlA" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+
+</body>
+</html>
