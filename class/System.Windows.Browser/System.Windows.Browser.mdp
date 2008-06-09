@@ -1,5 +1,5 @@
 <Project name="System.Windows.Browser" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
-  <Configurations active="Debug">
+  <Configurations active="Default">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="System.Windows.Browser" />
       <Build debugmode="True" target="Library" />

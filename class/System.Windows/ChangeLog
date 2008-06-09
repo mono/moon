@@ -1,3 +1,7 @@
+2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* System.Windows.mdp: Updated.
+
 2008-05-30  Miguel de Icaza  <miguel@novell.com>
 
 	* Add stubs to get enough to get a sample Button on a page to

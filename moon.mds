@@ -7,16 +7,17 @@
       <Entry build="True" name="System.Windows" configuration="Debug" />
       <Entry build="True" name="System.Windows.Browser" configuration="Debug" />
       <Entry build="True" name="harness" configuration="Debug" />
+      <Entry build="True" name="test" configuration="Default" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">
-    <Execute type="None" entry="moon" />
     <Execute type="None" entry="src" />
     <Execute type="None" entry="plugin" />
     <Execute type="None" entry="Mono.Moonlight" />
     <Execute type="None" entry="System.Windows" />
     <Execute type="None" entry="System.Windows.Browser" />
     <Execute type="None" entry="harness" />
+    <Execute type="None" entry="test" />
   </StartMode>
   <Entries>
     <Entry filename="src/src.mdp" />
@@ -25,5 +26,6 @@
     <Entry filename="class/System.Windows/System.Windows.mdp" />
     <Entry filename="class/System.Windows.Browser/System.Windows.Browser.mdp" />
     <Entry filename="test/harness/harness.mdp" />
+    <Entry filename="test/test.mdp" />
   </Entries>
 </Combine>

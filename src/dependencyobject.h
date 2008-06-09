@@ -105,7 +105,7 @@ class EventObject {
 			// may not crash. It might very well be an exploitable security problem. Anyways when unref is called, we 
 			// have a second delete on the same object, which *will* crash. To make things easier and safer
 			// lets just abort right away.
-			g_error ("Ref was called an object with a refcount of 0.\n");
+			g_error ("Ref was called an object with a refcount of 0.\n"); // g_error valid, see comment above.
 		}
 
 		g_atomic_int_inc (&refcount);

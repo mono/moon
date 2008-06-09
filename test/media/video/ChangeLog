@@ -1,3 +1,7 @@
+2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Silverlight.js: Removed, not needed.
+
 2008-05-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* video-seek.html, test-video-seek-7.html, test-video-seek.html,

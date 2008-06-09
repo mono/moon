@@ -1,3 +1,7 @@
+2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* moon.mds: Updated.
+
 2008-06-06  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* tools/xamlg/Makefile.am: fixing the do_subst.

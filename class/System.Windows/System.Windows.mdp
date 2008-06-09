@@ -1,5 +1,5 @@
 <Project name="System.Windows" fileversion="2.0" language="C#" clr-version="Clr_2_1" ctype="DotNetProject">
-  <Configurations active="Debug">
+  <Configurations active="Default">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="System.Windows" />
       <Build debugmode="True" target="Library" />

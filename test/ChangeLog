@@ -1,3 +1,7 @@
+2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test.mdp: Added.
+
 2008-06-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/test-downloader-events.html: Added.

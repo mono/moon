@@ -1,0 +1,68 @@
+<Project name="test" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Default">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="test" />
+      <Build debugmode="True" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="test" />
+      <Build debugmode="False" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="drtlist.xml" subtype="Code" buildaction="Nothing" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="make-xephyr" subtype="Code" buildaction="Nothing" />
+    <File name="xaml/README" subtype="Code" buildaction="Nothing" />
+    <File name="xaml/drtlist.xml" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/drtlist.xml" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-all.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-autoplay.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-all.js" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-bufferingprogress.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-downloadprogress-on-small-files.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-download-and-buffering-progress-on-big-files.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-events-with-playlist.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-events-with-playlist.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-http-failure.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-inexistent-media.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-invalid-video-codec.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-mediaopened.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-mediaopened.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-mediaopened-2.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-mediaopened-3.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-misc.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-mms-failure.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-live-with-duration.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-live-with-duration.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-01.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-02.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-03.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-04.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-05.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-06.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-07.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-08.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-09.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-10.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-11.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-12.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-base-13.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-clientskip.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-clientskip.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-duration.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-duration.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-zero-duration.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-with-zero-duration.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-reset-media-element-source.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-state-after-setsource.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-video-seek.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-video-seek-7.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-yuv-converter.html" subtype="Code" buildaction="Nothing" />
+  </Contents>
+</Project>

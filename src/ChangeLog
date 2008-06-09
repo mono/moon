@@ -1,5 +1,9 @@
 2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.h: Another greppable comment.
+
+2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.cpp: Add comment to assert which shows up while
 	  grepping.
 
