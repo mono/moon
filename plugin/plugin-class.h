@@ -330,7 +330,11 @@ struct MoonlightDependencyObjectObject : MoonlightEventObjectObject {
 	
 	DependencyObject *GetDependencyObject ()
 	{
-		g_assert (eo->Is (Type::DEPENDENCY_OBJECT));
+		if (eo == NULL || !eo->Is (Type::DEPENDENCY_OBJECT)) {
+			g_warning ("MoonlightDependencyObjectObject::GetDependencyObject (): Not a dependency object!");
+			return NULL;
+		}
+		
 		return (DependencyObject*) eo;
 	}
 

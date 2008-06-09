@@ -1363,7 +1363,7 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent)
 	// Check for circular families
 	DependencyObject *current = logical_parent;
 	while (current != NULL) {
-		g_assert (current != this);
+		g_assert (current != this); // (assert within #if DEBUG)
 		current = current->GetLogicalParent ();
 	} 
 #endif
