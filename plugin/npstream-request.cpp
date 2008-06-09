@@ -77,11 +77,11 @@ NPStreamRequest::GetResponse (BrowserResponseStartedHandler started, BrowserResp
 void
 NPStreamRequest::SetHttpHeader (const char *name, const char *value)
 {
-	g_assert_not_reached ();
+	g_warning ("NPStream does not suppoert SetHttpHeader");
 }
 
 void
 NPStreamRequest::SetBody (void *body, int length)
 {
-	g_assert_not_reached ();
+	g_warning ("NPStream does not suppoert SetBody");
 }
