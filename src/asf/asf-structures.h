@@ -301,7 +301,6 @@ struct asf_multiple_payloads {
 		while (index < get_number_of_payloads () && payloads [index] != NULL) {
 			if (payloads[index]->stream_id == stream_id) {
 				size = payloads [index]->payload_data_length;
-				g_assert ((size_t) (destination - initial_destination) + size  <= max_size);
 				memcpy (destination, payloads [index]->payload_data, size);
 				destination += size;
 			}

@@ -1,3 +1,7 @@
+2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-structures.h: Remove g_assert.
+
 2008-05-09  Geoff Norton  <gnorton@novell.com>
 
 	* asf.cpp, asf.h:  Expose the extended stream properties in the 
