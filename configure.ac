@@ -115,7 +115,7 @@ AM_CONDITIONAL(HAVE_MOZILLA, test x$with_mozilla = xyes)
 dnl
 dnl Mono (Silverlight 2.0) checks
 dnl
-AC_ARG_WITH(mono,[  --with-mono=yes,no   If you want to enable support for Silverlight 2.0],[],[with_mono=yes])
+AC_ARG_WITH(mono,[  --with-mono=yes,no   If you want to enable support for Silverlight 2.0],[],[with_mono=no])
 if test x$with_mono = xyes; then
   if pkg-config mono; then
     PKG_CHECK_MODULES(MONO,mono)
