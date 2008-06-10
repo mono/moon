@@ -1812,7 +1812,7 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 		gchar *version_list = STRDUP_FROM_VARIANT (args [0]);
 		gchar **versions = g_strsplit (version_list, ".", 4);
 		char *version = NULL;
-		uint64_t numbers [4];
+		gint64 numbers [4];
 
 		supported = versions [0] != NULL && versions [1] != NULL;
 
@@ -3563,7 +3563,7 @@ bool
 MoonlightDownloaderObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	Downloader *downloader = (Downloader *) GetDependencyObject ();
-	uint64_t size;
+	guint64 size;
 	char *text;
 	
 	switch (id) {
@@ -3591,7 +3591,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 {
 	Downloader *downloader = (Downloader *) GetDependencyObject ();
 	char *part, *verb, *uri, *text;
-	uint64_t size;
+	guint64 size;
 	
 	switch (id) {
 	case MoonId_Abort:

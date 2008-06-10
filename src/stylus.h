@@ -14,6 +14,7 @@
 #ifndef MOON_STYLUS_H
 #define MOON_STYLUS_H
 
+#include <glib.h>
 #include "canvas.h"
 #include "collection.h"
 

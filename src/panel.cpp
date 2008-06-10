@@ -9,16 +9,12 @@
 
 #include <config.h>
 
-#include <gtk/gtk.h>
-
 #include "geometry.h"
 #include "panel.h"
 #include "brush.h"
-#include "color.h"
 #include "math.h"
 #include "collection.h"
 #include "runtime.h"
-#include "dirty.h"
 
 
 DependencyProperty *Panel::BackgroundProperty;

@@ -10,6 +10,7 @@
 #ifndef __MOON_GRID_H__
 #define __MOON_GRID_H__
 
+#include <glib.h>
 #include "panel.h"
 
 enum GridUnitType {

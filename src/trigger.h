@@ -10,6 +10,8 @@
 #ifndef __MOON_TRIGGER_H__
 #define __MOON_TRIGGER_H__
 
+#include <glib.h>
+
 #include "dependencyobject.h"
 
 class TriggerAction : public DependencyObject {

@@ -11,8 +11,9 @@
 #ifndef __MOON_FRAMEWORKELEMENT_H__
 #define __MOON_FRAMEWORKELEMENT_H__
 
+#include <glib.h>
+
 #include "uielement.h"
-#include "dependencyobject.h"
 
 class FrameworkElement : public UIElement {
  protected:

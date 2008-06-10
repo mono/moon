@@ -13,6 +13,8 @@
 #ifndef __MOON_UIELEMENT_H__
 #define __MOON_UIELEMENT_H__
 
+#include <glib.h>
+
 #include "visual.h"
 #include "point.h"
 #include "rect.h"

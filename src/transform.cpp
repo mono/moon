@@ -11,11 +11,6 @@
  */
 
 #include <config.h>
-#include <string.h>
-#include <gtk/gtk.h>
-#include <malloc.h>
-#include <glib.h>
-#include <stdlib.h>
 
 #include "transform.h"
 #include "math.h"

@@ -39,11 +39,6 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
-
-#include <stdlib.h>
-#include <string.h>
-#include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -131,7 +126,7 @@ Downloader::GetDownloadedFilename (const char *partname)
 }
 
 char *
-Downloader::GetResponseText (const char *PartName, uint64_t *size)
+Downloader::GetResponseText (const char *PartName, guint64 *size)
 {
 	return internal_dl->GetResponseText (PartName, size);
 }
@@ -175,7 +170,7 @@ Downloader::InternalSetHeader (const char *header, const char *value)
 }
 
 void
-Downloader::InternalSetBody (void *body, uint32_t length)
+Downloader::InternalSetBody (void *body, guint32 length)
 {
 	body_func (downloader_state, body, length);
 }
@@ -254,7 +249,7 @@ Downloader::SendNow ()
 // A zero write means that we are done
 //
 void
-Downloader::Write (void *buf, int32_t offset, int32_t n)
+Downloader::Write (void *buf, gint32 offset, gint32 n)
 {
 	if (aborted)
 		return;
@@ -266,7 +261,7 @@ Downloader::Write (void *buf, int32_t offset, int32_t n)
 }
 
 void
-Downloader::InternalWrite (void *buf, int32_t offset, int32_t n)
+Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 {
 	double progress;
 
@@ -289,7 +284,7 @@ Downloader::InternalWrite (void *buf, int32_t offset, int32_t n)
 }
 
 void
-Downloader::RequestPosition (int64_t *pos)
+Downloader::RequestPosition (gint64 *pos)
 {
 	if (aborted)
 		return;
@@ -343,7 +338,7 @@ Downloader::NotifyFailed (const char *msg)
 }
 
 void
-Downloader::NotifySize (int64_t size)
+Downloader::NotifySize (gint64 size)
 {
 	file_size = size;
 	
@@ -510,7 +505,7 @@ downloader_abort (Downloader *dl)
 }
 
 char *
-downloader_get_response_text (Downloader *dl, const char *PartName, uint64_t *size)
+downloader_get_response_text (Downloader *dl, const char *PartName, guint64 *size)
 {
 	return dl->GetResponseText (PartName, size);
 }
@@ -544,13 +539,13 @@ downloader_set_functions (downloader_create_state_func create_state,
 }
 
 void
-downloader_request_position (Downloader *dl, int64_t *pos)
+downloader_request_position (Downloader *dl, gint64 *pos)
 {
 	dl->RequestPosition (pos);
 }
 
 void
-downloader_write (Downloader *dl, void *buf, int32_t offset, int32_t n)
+downloader_write (Downloader *dl, void *buf, gint32 offset, gint32 n)
 {
 	dl->Write (buf, offset, n);
 }
@@ -568,7 +563,7 @@ downloader_notify_error (Downloader *dl, const char *msg)
 }
 
 void
-downloader_notify_size (Downloader *dl, int64_t size)
+downloader_notify_size (Downloader *dl, gint64 size)
 {
 	dl->NotifySize (size);
 }
@@ -612,7 +607,7 @@ dummy_downloader_header (gpointer state, const char *header, const char *value)
 }
 
 static void
-dummy_downloader_body (gpointer state, void *body, uint32_t length)
+dummy_downloader_body (gpointer state, void *body, guint32 length)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }

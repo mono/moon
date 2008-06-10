@@ -10,6 +10,8 @@
 #ifndef __MONO_DEPOBJECT_H__
 #define __MONO_DEPOBJECT_H__
 
+#include <glib.h>
+
 #include "value.h"
 #include "enums.h"
 #include "list.h"
@@ -175,7 +177,7 @@ class EventObject {
  private:
 
 	Surface *surface;
-	int32_t refcount;
+	gint32 refcount;
 	EventLists *events;
 };
 

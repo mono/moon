@@ -10,8 +10,6 @@
 
 #include <config.h>
 
-#include <gtk/gtk.h>
-
 #include "frameworkelement.h"
 
 

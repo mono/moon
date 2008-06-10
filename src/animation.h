@@ -14,6 +14,8 @@
 #ifndef MOON_ANIMATION_H
 #define MOON_ANIMATION_H
 
+#include <glib.h>
+
 #include "trigger.h"
 #include "collection.h"
 #include "clock.h"

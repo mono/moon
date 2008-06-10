@@ -14,11 +14,9 @@
 #include <config.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <stdint.h>
 
 #include <pthread.h>
 #include <sched.h>
@@ -336,7 +334,7 @@ Media::AddError (MediaErrorEventArgs *args)
 }
 
 MediaResult
-Media::Seek (uint64_t pts)
+Media::Seek (guint64 pts)
 {
 	if (demuxer)
 		return demuxer->Seek (pts);
@@ -345,7 +343,7 @@ Media::Seek (uint64_t pts)
 }
 
 MediaResult
-Media::SeekAsync (uint64_t pts, MediaClosure *closure)
+Media::SeekAsync (guint64 pts, MediaClosure *closure)
 {
 	LOG_PIPELINE ("Media::SeekAsync (%llu, %p), id: %i\n", pts, closure, GET_OBJ_ID (this));
 
@@ -609,7 +607,7 @@ MediaResult
 Media::GetNextFrame (MediaWork *work)
 {
 	MediaFrame *frame = NULL;
-	uint16_t states= work->data.frame.states;	
+	guint16 states= work->data.frame.states;	
 	IMediaStream *stream = work->data.frame.stream;
 	MediaResult result = MEDIA_SUCCESS;
 	
@@ -738,7 +736,7 @@ Media::WorkerLoop ()
 }
 
 void
-Media::GetNextFrameAsync (MediaClosure *closure, IMediaStream *stream, uint16_t states)
+Media::GetNextFrameAsync (MediaClosure *closure, IMediaStream *stream, guint16 states)
 {
 	MoonWorkType type;
 	
@@ -867,7 +865,7 @@ ASFDemuxer::~ASFDemuxer ()
 	if (parser)
 		delete parser;
 }
-uint64_t 
+guint64 
 ASFDemuxer::GetLastAvailablePts ()
 {
 	if (reader == NULL)
@@ -876,10 +874,10 @@ ASFDemuxer::GetLastAvailablePts ()
 	return reader->GetLastAvailablePts ();
 }
 
-int64_t
-ASFDemuxer::EstimatePtsPosition (uint64_t pts)
+gint64
+ASFDemuxer::EstimatePtsPosition (guint64 pts)
 {
-	int64_t result = -1;
+	gint64 result = -1;
 	
 	for (int i = 0; i < GetStreamCount (); i++) {
 		if (!GetStream (i)->GetSelected ())
@@ -901,7 +899,7 @@ ASFDemuxer::UpdateSelected (IMediaStream *stream)
 }
 
 MediaResult
-ASFDemuxer::Seek (uint64_t pts)
+ASFDemuxer::Seek (guint64 pts)
 {
 	//printf ("ASFDemuxer::Seek (%llu)\n", pts);
 	
@@ -942,8 +940,8 @@ ASFDemuxer::ReadMarkers ()
 	// Read the markers (if any)
 	List *markers = media->GetMarkers ();
 	const char *type;
-	uint64_t pts;
-	uint64_t preroll_pts = MilliSeconds_ToPts (parser->GetFileProperties ()->preroll);
+	guint64 pts;
+	guint64 preroll_pts = MilliSeconds_ToPts (parser->GetFileProperties ()->preroll);
 	char *text;
 	int i = -1;
 	
@@ -1013,7 +1011,7 @@ ASFDemuxer::ReadHeader ()
 {
 	MediaResult result = MEDIA_SUCCESS;
 	ASFParser *asf_parser = new ASFParser (source, media);
-	int32_t *stream_to_asf_index = NULL;
+	gint32 *stream_to_asf_index = NULL;
 	IMediaStream **streams = NULL;
 	int current_stream = 1;
 	int stream_count = 0;
@@ -1036,7 +1034,7 @@ ASFDemuxer::ReadHeader ()
 	
 	current_stream = 1;
 	streams = (IMediaStream **) g_malloc0 (sizeof (IMediaStream *) * (stream_count + 1)); // End with a NULL element.
-	stream_to_asf_index = (int32_t *) g_malloc0 (sizeof (int32_t) * (stream_count + 1)); 
+	stream_to_asf_index = (gint32 *) g_malloc0 (sizeof (gint32) * (stream_count + 1)); 
 
 	// Loop through all the streams and set stream-specific data	
 	for (int i = 0; i < stream_count; i++) {
@@ -1211,7 +1209,7 @@ ASFDemuxer::ReadFrame (MediaFrame *frame)
 	if (reader->IsKeyFrame ())
 		frame->AddState (FRAME_KEYFRAME);
 	frame->buflen = reader->Size ();
-	frame->buffer = (uint8_t *) g_try_malloc (frame->buflen + frame->stream->min_padding);
+	frame->buffer = (guint8 *) g_try_malloc (frame->buflen + frame->stream->min_padding);
 	
 	if (frame->buffer == NULL) {
 		media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
@@ -1249,7 +1247,7 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 	gunichar2 *uni_text = NULL;
 	int text_length = 0;
 	int type_length = 0;
-	uint32_t size = 0;
+	guint32 size = 0;
 	
 	if (frame->buflen % 2 != 0 || frame->buflen == 0 || frame->buffer == NULL)
 		return MEDIA_CORRUPTED_MEDIA;
@@ -1263,7 +1261,7 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 	// there should be at least two null characters.
 	int null_count = 0;
 	
-	for (uint32_t i = 0; i < (size / sizeof (gunichar2)); i++) {
+	for (guint32 i = 0; i < (size / sizeof (gunichar2)); i++) {
 		if (uni_text == NULL) {
 			type_length++;
 		} else {
@@ -1285,7 +1283,7 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 		
 		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): sending script command to %p, type: '%s', text: '%s', pts: '%llu'.\n", parser->embedded_script_command, type, text, pts);
 
-		frame->buffer = (uint8_t *) new MediaMarker (type, text, frame->pts);
+		frame->buffer = (guint8 *) new MediaMarker (type, text, frame->pts);
 		frame->buflen = sizeof (MediaMarker);
 		
 		g_free (text);
@@ -1307,7 +1305,7 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 bool
 ASFDemuxerInfo::Supports (IMediaSource *source)
 {
-	uint8_t buffer[16];
+	guint8 buffer[16];
 	
 #if DEBUG
 	if (!source->GetPosition () == 0) {
@@ -1375,7 +1373,7 @@ ASXDemuxer::ReadHeader ()
 bool
 ASXDemuxerInfo::Supports (IMediaSource *source)
 {
-	uint8_t buffer[4];
+	guint8 buffer[4];
 	
 	if (!source->Peek (buffer, 4))
 		return false;
@@ -1399,20 +1397,20 @@ ASXDemuxerInfo::Create (Media *media, IMediaSource *source)
  */
 
 struct MpegFrameHeader {
-	uint8_t version:2;
-	uint8_t layer:2;
+	guint8 version:2;
+	guint8 layer:2;
 	
-	uint8_t copyright:1;
-	uint8_t original:1;
-	uint8_t padded:1;
-	uint8_t prot:1;
+	guint8 copyright:1;
+	guint8 original:1;
+	guint8 padded:1;
+	guint8 prot:1;
 	
-	uint8_t channels:6;
-	uint8_t intensity:1;
-	uint8_t ms:1;
+	guint8 channels:6;
+	guint8 intensity:1;
+	guint8 ms:1;
 	
-	int32_t bit_rate;
-	int32_t sample_rate;
+	gint32 bit_rate;
+	gint32 sample_rate;
 };
 
 enum MpegVBRHeaderType {
@@ -1423,7 +1421,7 @@ enum MpegVBRHeaderType {
 
 struct MpegVBRHeader {
 	MpegVBRHeaderType type;
-	uint32_t nframes;
+	guint32 nframes;
 };
 
 static int mpeg1_bitrates[3][15] = {
@@ -1445,7 +1443,7 @@ static int mpeg2_bitrates[3][15] = {
 };
 
 static bool
-mpeg_parse_bitrate (MpegFrameHeader *mpeg, uint8_t byte)
+mpeg_parse_bitrate (MpegFrameHeader *mpeg, guint8 byte)
 {
 	int i = (byte & 0xf0) >> 4;
 	
@@ -1460,7 +1458,7 @@ mpeg_parse_bitrate (MpegFrameHeader *mpeg, uint8_t byte)
 	return true;
 }
 
-static uint8_t
+static guint8
 mpeg_encode_bitrate (MpegFrameHeader *mpeg, int bit_rate)
 {
 	int i;
@@ -1490,7 +1488,7 @@ static int mpeg_samplerates[3][3] = {
 };
 
 static bool
-mpeg_parse_samplerate (MpegFrameHeader *mpeg, uint8_t byte)
+mpeg_parse_samplerate (MpegFrameHeader *mpeg, guint8 byte)
 {
 	int i = (byte >> 2) & 0x03;
 	
@@ -1503,7 +1501,7 @@ mpeg_parse_samplerate (MpegFrameHeader *mpeg, uint8_t byte)
 }
 
 static bool
-mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
+mpeg_parse_channels (MpegFrameHeader *mpeg, guint8 byte)
 {
 	int mode = (byte >> 6) & 0x03;
 	
@@ -1541,7 +1539,7 @@ mpeg_parse_channels (MpegFrameHeader *mpeg, uint8_t byte)
 
 
 static bool
-mpeg_parse_header (MpegFrameHeader *mpeg, const uint8_t *buffer)
+mpeg_parse_header (MpegFrameHeader *mpeg, const guint8 *buffer)
 {
 	if (!is_mpeg_header (buffer))
 		return false;
@@ -1609,10 +1607,10 @@ static int mpeg_block_sizes[3][3] = {
 
 #define mpeg_block_size(mpeg) mpeg_block_sizes[(mpeg)->version - 1][(mpeg)->layer - 1]
 
-static uint32_t
+static guint32
 mpeg_frame_length (MpegFrameHeader *mpeg, bool xing)
 {
-	uint32_t len;
+	guint32 len;
 	
 	// calculate the frame length
 	if (mpeg->layer == 1)
@@ -1634,10 +1632,10 @@ mpeg_frame_length (MpegFrameHeader *mpeg, bool xing)
 
 #define mpeg_frame_size(mpeg) (((mpeg)->bit_rate * (mpeg)->channels * mpeg_block_size (mpeg)) / (mpeg)->sample_rate)
 
-static uint64_t
+static guint64
 mpeg_frame_duration (MpegFrameHeader *mpeg)
 {
-	uint64_t result;
+	guint64 result;
 	
 	if (mpeg->version == 1) // Layer III
 		result = 1152ULL * TIMESPANTICKS_IN_SECOND / mpeg->sample_rate;
@@ -1688,11 +1686,11 @@ mpeg_xing_header_offset (MpegFrameHeader *mpeg)
 #define mpeg_vbri_header_offset 36
 
 static bool
-mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, int64_t pos)
+mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 pos)
 {
-	uint32_t nframes = 0, size = 0, len;
-	uint8_t buffer[24], *bufptr;
-	int64_t offset;
+	guint32 nframes = 0, size = 0, len;
+	guint8 buffer[24], *bufptr;
+	gint64 offset;
 	int i;
 	
 	// first, check for a Xing header
@@ -1752,7 +1750,7 @@ mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource 
 
 #define MPEG_JUMP_TABLE_GROW_SIZE 16
 
-Mp3FrameReader::Mp3FrameReader (IMediaSource *source, int64_t start, uint32_t frame_len, uint32_t frame_duration, bool xing)
+Mp3FrameReader::Mp3FrameReader (IMediaSource *source, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing)
 {
 	jmptab = g_new (MpegFrame, MPEG_JUMP_TABLE_GROW_SIZE);
 	avail = MPEG_JUMP_TABLE_GROW_SIZE;
@@ -1775,7 +1773,7 @@ Mp3FrameReader::~Mp3FrameReader ()
 }
 
 void
-Mp3FrameReader::AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32_t bit_rate)
+Mp3FrameReader::AddFrameIndex (gint64 offset, guint64 pts, guint32 dur, gint32 bit_rate)
 {
 	if (used == avail) {
 		avail += MPEG_JUMP_TABLE_GROW_SIZE;
@@ -1807,13 +1805,13 @@ Mp3FrameReader::AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32
  **/
 #define MID(lo, hi) (lo + ((hi - lo) >> 1))
 
-uint32_t
-Mp3FrameReader::MpegFrameSearch (uint64_t pts)
+guint32
+Mp3FrameReader::MpegFrameSearch (guint64 pts)
 {
-	uint64_t start, end;
-	uint32_t hi = used - 1;
-	uint32_t m = hi >> 1;
-	uint32_t lo = 0;
+	guint64 start, end;
+	guint32 hi = used - 1;
+	guint32 m = hi >> 1;
+	guint32 lo = 0;
 	
 	do {
 		end = start = jmptab[m].pts;
@@ -1838,12 +1836,12 @@ Mp3FrameReader::MpegFrameSearch (uint64_t pts)
 	return m;
 }
 
-int64_t
-Mp3FrameReader::EstimatePtsPosition (uint64_t pts)
+gint64
+Mp3FrameReader::EstimatePtsPosition (guint64 pts)
 {
-	uint32_t frame;
-	int64_t pos;
-	uint64_t n;
+	guint32 frame;
+	gint64 pos;
+	guint64 n;
 	
 	if (pts == cur_pts)		
 		return stream->GetPosition ();
@@ -1875,12 +1873,12 @@ Mp3FrameReader::EstimatePtsPosition (uint64_t pts)
 }
 
 bool
-Mp3FrameReader::Seek (uint64_t pts)
+Mp3FrameReader::Seek (guint64 pts)
 {
-	int64_t offset = stream->GetPosition ();
-	int32_t bit_rate = this->bit_rate;
-	uint64_t cur_pts = this->cur_pts;
-	uint32_t frame;
+	gint64 offset = stream->GetPosition ();
+	gint32 bit_rate = this->bit_rate;
+	guint64 cur_pts = this->cur_pts;
+	guint32 frame;
 	
 	if (pts == cur_pts)
 		return true;
@@ -1952,10 +1950,10 @@ bool
 Mp3FrameReader::SkipFrame ()
 {
 	MpegFrameHeader mpeg;
-	uint64_t duration;
-	uint8_t buffer[4];
-	int64_t offset;
-	uint32_t len;
+	guint64 duration;
+	guint8 buffer[4];
+	gint64 offset;
+	guint32 len;
 	
 	offset = stream->GetPosition ();
 	
@@ -1979,7 +1977,7 @@ Mp3FrameReader::SkipFrame ()
 	
 	len = mpeg_frame_length (&mpeg, xing);
 	
-	if (!stream->Seek ((int64_t) len, SEEK_CUR))
+	if (!stream->Seek ((gint64) len, SEEK_CUR))
 		return false;
 	
 	cur_pts += duration;
@@ -1991,10 +1989,10 @@ MediaResult
 Mp3FrameReader::ReadFrame (MediaFrame *frame)
 {
 	MpegFrameHeader mpeg;
-	uint64_t duration;
-	uint8_t buffer[4];
-	int64_t offset;
-	uint32_t len;
+	guint64 duration;
+	guint8 buffer[4];
+	gint64 offset;
+	guint32 len;
 	
 	offset = stream->GetPosition ();
 	
@@ -2026,9 +2024,9 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	frame->buflen = len;
 	
 	if (mpeg.layer != 1 && !mpeg.padded)
-		frame->buffer = (uint8_t *) g_try_malloc (frame->buflen + 1);
+		frame->buffer = (guint8 *) g_try_malloc (frame->buflen + 1);
 	else
-		frame->buffer = (uint8_t *) g_try_malloc (frame->buflen);
+		frame->buffer = (guint8 *) g_try_malloc (frame->buflen);
 	
 	if (frame->buffer == NULL)
 		return MEDIA_OUT_OF_MEMORY;
@@ -2072,7 +2070,7 @@ Mp3Demuxer::~Mp3Demuxer ()
 }
 
 MediaResult
-Mp3Demuxer::Seek (uint64_t pts)
+Mp3Demuxer::Seek (guint64 pts)
 {
 	if (reader && reader->Seek (pts))
 		return MEDIA_SUCCESS;
@@ -2080,8 +2078,8 @@ Mp3Demuxer::Seek (uint64_t pts)
 	return MEDIA_FAIL;
 }
 
-int64_t
-Mp3Demuxer::EstimatePtsPosition (uint64_t pts)
+gint64
+Mp3Demuxer::EstimatePtsPosition (guint64 pts)
 {
 	if (reader != NULL)
 		return reader->EstimatePtsPosition (pts);
@@ -2089,15 +2087,15 @@ Mp3Demuxer::EstimatePtsPosition (uint64_t pts)
 	return -1;
 }
 
-static int64_t
-FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, int64_t start)
+static gint64
+FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 start)
 {
-	uint8_t buf[4096], hdr[4], *inbuf, *inend;
-	int64_t pos, offset = start;
-	register uint8_t *inptr;
+	guint8 buf[4096], hdr[4], *inbuf, *inend;
+	gint64 pos, offset = start;
+	register guint8 *inptr;
 	MpegFrameHeader next;
-	int32_t n = 0;
-	uint32_t len;
+	gint32 n = 0;
+	guint32 len;
 	
 	if (!source->Seek (start, SEEK_SET))
 		return -1;
@@ -2176,18 +2174,18 @@ MediaResult
 Mp3Demuxer::ReadHeader ()
 {
 	IMediaStream **streams = NULL;
-	int64_t stream_start;
+	gint64 stream_start;
 	IMediaStream *stream;
 	MpegFrameHeader mpeg;
 	AudioStream *audio;
-	uint8_t buffer[10];
+	guint8 buffer[10];
 	MpegVBRHeader vbr;
-	uint64_t duration;
-	uint32_t size = 0;
-	uint32_t nframes;
+	guint64 duration;
+	guint32 size = 0;
+	guint32 nframes;
 	int stream_count;
-	uint32_t len;
-	int64_t end;
+	guint32 len;
+	gint64 end;
 	int i;
 	
 	if (!source->Peek (buffer, 10))
@@ -2209,7 +2207,7 @@ Mp3Demuxer::ReadHeader ()
 			size += 10;
 		
 		// MPEG stream data starts at the end of the ID3 tag
-		stream_start = (int64_t) size;
+		stream_start = (gint64) size;
 	} else {
 		stream_start = 0;
 	}
@@ -2285,10 +2283,10 @@ Mp3Demuxer::ReadFrame (MediaFrame *frame)
 bool
 Mp3DemuxerInfo::Supports (IMediaSource *source)
 {
-	int64_t stream_start = 0;
+	gint64 stream_start = 0;
 	MpegFrameHeader mpeg;
-	uint8_t buffer[10];
-	uint32_t size = 0;
+	guint8 buffer[10];
+	guint32 size = 0;
 	MpegVBRHeader vbr;
 	int i;
 	
@@ -2313,7 +2311,7 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 			size += 10;
 		
 		// skip over the ID3 tag
-		stream_start = (int64_t) size;
+		stream_start = (gint64) size;
 	}
 	
 	stream_start = FindMpegHeader (&mpeg, &vbr, source, stream_start);
@@ -2342,7 +2340,7 @@ NullMp3Decoder::DecodeFrame (MediaFrame *frame)
 	g_free (frame->buffer);
 	
 	frame->buflen = mpeg_frame_size (&mpeg);
-	frame->buffer = (uint8_t *) g_malloc0 (frame->buflen);
+	frame->buffer = (guint8 *) g_malloc0 (frame->buflen);
 	
 	frame->AddState (FRAME_DECODED);
 	
@@ -2401,7 +2399,7 @@ FileSource::Initialize ()
 	return MEDIA_SUCCESS;
 }
 
-int64_t
+gint64
 FileSource::GetSizeInternal ()
 {
 	struct stat st;
@@ -2412,16 +2410,16 @@ FileSource::GetSizeInternal ()
 	return st.st_size;
 }
 
-int64_t
+gint64
 FileSource::GetPositionInternal ()
 {
 	return pos;
 }
 
 bool
-FileSource::SeekInternal (int64_t offset, int mode)
+FileSource::SeekInternal (gint64 offset, int mode)
 {
-	int64_t n;
+	gint64 n;
 	
 	if (fd == -1)
 		return false;
@@ -2497,8 +2495,8 @@ noint_read (int fd, char *buf, size_t n)
 	return nread;
 }
 
-int32_t
-FileSource::ReadInternal (void *buf, uint32_t n)
+gint32
+FileSource::ReadInternal (void *buf, guint32 n)
 {
 	ssize_t r, nread = 0;
 	
@@ -2530,7 +2528,7 @@ FileSource::ReadInternal (void *buf, uint32_t n)
 		} else if (n > 0) {
 			/* buffer more data */
 			if ((r = noint_read (fd, buffer, sizeof (buffer))) > 0)
-				buflen = (uint32_t) r;
+				buflen = (guint32) r;
 			
 			bufptr = buffer;
 		}
@@ -2552,12 +2550,12 @@ FileSource::ReadInternal (void *buf, uint32_t n)
 	return nread;
 }
 
-int32_t
-FileSource::PeekInternal (void *buf, uint32_t n, int64_t start)
+gint32
+FileSource::PeekInternal (void *buf, guint32 n, gint64 start)
 {
-	int32_t result;
-	int64_t current_pos;
-	int64_t initial_pos;
+	gint32 result;
+	gint64 current_pos;
+	gint64 initial_pos;
 
 	if (start == -1) {
 		initial_pos = GetPosition ();
@@ -2587,9 +2585,9 @@ FileSource::PeekInternal (void *buf, uint32_t n, int64_t start)
 }
 
 bool
-FileSource::PeekInBuffer (void *buf, uint32_t n)
+FileSource::PeekInBuffer (void *buf, guint32 n)
 {
-	uint32_t need, used, avail, shift;
+	guint32 need, used, avail, shift;
 	ssize_t r;
 	
 	if (fd == -1)
@@ -2709,7 +2707,7 @@ write_all (int fd, char *buf, size_t len)
 }
 
 void
-ProgressiveSource::Write (void *buf, int64_t offset, int32_t n)
+ProgressiveSource::Write (void *buf, gint64 offset, gint32 n)
 {
 	ssize_t nwritten;
 	bool new_pos = false;
@@ -2757,7 +2755,7 @@ cleanup:
 }
 
 bool
-ProgressiveSource::SeekInternal (int64_t offset, int mode)
+ProgressiveSource::SeekInternal (gint64 offset, int mode)
 {
 	if (offset < first_write_pos) {
 		LOG_PIPELINE_ERROR ("Trying to seek to a position never filled: %llu and first write pos is: %llu\n", offset, first_write_pos);
@@ -2767,7 +2765,7 @@ ProgressiveSource::SeekInternal (int64_t offset, int mode)
 }
 
 void
-ProgressiveSource::NotifySize (int64_t size)
+ProgressiveSource::NotifySize (gint64 size)
 {
 	Lock ();
 	this->size = size;
@@ -2784,7 +2782,7 @@ ProgressiveSource::NotifyFinished ()
 }
 
 bool
-ProgressiveSource::SeekToPts (uint64_t pts)
+ProgressiveSource::SeekToPts (guint64 pts)
 {
 
 	if (last_requested_pts == pts)
@@ -2809,7 +2807,7 @@ ProgressiveSource::SeekToPts (uint64_t pts)
 }
 
 void
-ProgressiveSource::RequestPosition (int64_t *pos)
+ProgressiveSource::RequestPosition (gint64 *pos)
 {
 	Lock ();
 	if (requested_pts != UINT64_MAX && requested_pts != last_requested_pts) {
@@ -2824,7 +2822,7 @@ ProgressiveSource::RequestPosition (int64_t *pos)
 /*
  *
  */
-MemorySource::MemorySource (Media *media, void *memory, int32_t size, int64_t start)
+MemorySource::MemorySource (Media *media, void *memory, gint32 size, gint64 start)
 	: IMediaSource (media)
 {
 	this->memory = memory;
@@ -2841,9 +2839,9 @@ MemorySource::~MemorySource ()
 }
 
 bool
-MemorySource::SeekInternal (int64_t offset, int mode)
+MemorySource::SeekInternal (gint64 offset, int mode)
 {
-	int64_t real_offset;
+	gint64 real_offset;
 
 	switch (mode) {
 	case SEEK_SET:
@@ -2868,17 +2866,17 @@ MemorySource::SeekInternal (int64_t offset, int mode)
 	return true;
 }
 
-int32_t 
-MemorySource::ReadInternal (void *buffer, uint32_t n)
+gint32 
+MemorySource::ReadInternal (void *buffer, guint32 n)
 {
-	uint32_t k = MIN (n, size - pos);
+	guint32 k = MIN (n, size - pos);
 	memcpy (buffer, ((char*) memory) + pos, k);
 	pos += k;
 	return k;
 }
 
-int32_t
-MemorySource::PeekInternal (void *buffer, uint32_t n, int64_t start)
+gint32
+MemorySource::PeekInternal (void *buffer, guint32 n, gint64 start)
 {
 	if (start == -1)
 		start = pos;
@@ -3038,10 +3036,10 @@ IMediaDemuxer::~IMediaDemuxer ()
 	source->unref ();
 }
 
-uint64_t
+guint64
 IMediaDemuxer::GetDuration ()
 {
-	uint64_t result = 0;
+	guint64 result = 0;
 	for (int i = 0; i < GetStreamCount (); i++)
 		result = MAX (result, GetStream (i)->duration);
 	return result;
@@ -3189,7 +3187,7 @@ IMediaSource::IsWaiting ()
 }
 
 void
-IMediaSource::WaitForPosition (bool block, int64_t position)
+IMediaSource::WaitForPosition (bool block, gint64 position)
 {
 	LOG_PIPELINE ("IMediaSource<%i>::WaitForPosition (%i, %lld) last available pos: %lld, aborted: %i\n", GET_OBJ_ID (this), block, position, GetLastAvailablePositionInternal (), aborted);
 
@@ -3218,10 +3216,10 @@ IMediaSource::WaitForPosition (bool block, int64_t position)
 	LOG_PIPELINE ("IMediaSource<%i>::WaitForPosition (%i, %lld): aborted: %i\n", GET_OBJ_ID (this), block, position, aborted);
 }
 
-int32_t
-IMediaSource::ReadSome (void *buf, uint32_t n, bool block, int64_t start)
+gint32
+IMediaSource::ReadSome (void *buf, guint32 n, bool block, gint64 start)
 {
-	int32_t result;
+	gint32 result;
 
 	LOG_PIPELINE ("IMediaSource<%i>::ReadSome (%p, %i, %s, %lld)\n", GET_OBJ_ID (this), buf, n, block ? "true" : "false", start);
 	
@@ -3242,23 +3240,23 @@ IMediaSource::ReadSome (void *buf, uint32_t n, bool block, int64_t start)
 }
 
 bool
-IMediaSource::ReadAll (void *buf, uint32_t n, bool block, int64_t start)
+IMediaSource::ReadAll (void *buf, guint32 n, bool block, gint64 start)
 {
-	int32_t read;
+	gint32 read;
 
 	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld).\n", GET_OBJ_ID (this), buf, n, block ? "true" : "false", start);
 
 	read = ReadSome (buf, n, block, start);
 
-	LOG_PIPELINE_ERROR_CONDITIONAL ((int64_t) read != (int64_t) n, "IMediaSource<%d>::ReadAll (%p, %u, %s, %lld): Could only read %i bytes.\n",
+	LOG_PIPELINE_ERROR_CONDITIONAL ((gint64) read != (gint64) n, "IMediaSource<%d>::ReadAll (%p, %u, %s, %lld): Could only read %i bytes.\n",
 					GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
 	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld), read: %d [Done].\n", GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
 
-	return (int64_t) read == (int64_t) n;
+	return (gint64) read == (gint64) n;
 }
 
 bool
-IMediaSource::Peek (void *buf, uint32_t n, bool block, int64_t start)
+IMediaSource::Peek (void *buf, guint32 n, bool block, gint64 start)
 {
 	bool result;
 
@@ -3269,7 +3267,7 @@ IMediaSource::Peek (void *buf, uint32_t n, bool block, int64_t start)
 
 	WaitForPosition (block, start + n);
 
-	result = (int64_t) PeekInternal (buf, n, start) == (int64_t) n;
+	result = (gint64) PeekInternal (buf, n, start) == (gint64) n;
 
 	Unlock ();
 
@@ -3277,7 +3275,7 @@ IMediaSource::Peek (void *buf, uint32_t n, bool block, int64_t start)
 }
 
 bool
-IMediaSource::Seek (int64_t offset, int mode)
+IMediaSource::Seek (gint64 offset, int mode)
 {
 	LOG_PIPELINE ("IMediaSource<%i> (%s)::Seek (%lld, %i = %s)\n", GET_OBJ_ID (this), ToString (), offset, mode, mode == SEEK_SET ? "SEEK_SET" : (mode == SEEK_CUR ? "SEEK_CUR" : (mode == SEEK_END ? "SEEK_END" : "<invalid value>")));
 
@@ -3288,30 +3286,30 @@ IMediaSource::Seek (int64_t offset, int mode)
 	return result;
 }
 
-int64_t
+gint64
 IMediaSource::GetLastAvailablePosition ()
 {
-	int64_t result;
+	gint64 result;
 	Lock ();
 	result = GetLastAvailablePositionInternal ();
 	Unlock ();
 	return result;
 }
 
-int64_t
+gint64
 IMediaSource::GetPosition ()
 {
-	int64_t result;
+	gint64 result;
 	Lock ();
 	result = GetPositionInternal ();
 	Unlock ();
 	return result;
 }
 
-int64_t
+gint64
 IMediaSource::GetSize ()
 {
-	int64_t result;
+	gint64 result;
 	Lock ();
 	result = GetSizeInternal ();
 	Unlock ();
@@ -3378,7 +3376,7 @@ VideoStream::~VideoStream ()
  * MediaMarker
  */ 
 
-MediaMarker::MediaMarker (const char *type, const char *text, uint64_t pts)
+MediaMarker::MediaMarker (const char *type, const char *text, guint64 pts)
 {
 	this->type = g_strdup (type);
 	this->text = g_strdup (text);
@@ -3446,7 +3444,7 @@ MarkerStream::SetCallback (MediaClosure *closure)
 /*
  * MediaWork
  */ 
-MediaWork::MediaWork (MediaClosure *closure, IMediaStream *stream, uint16_t states)
+MediaWork::MediaWork (MediaClosure *closure, IMediaStream *stream, guint16 states)
 {
 	switch (stream->GetType ()) {
 	case MediaTypeVideo:
@@ -3465,7 +3463,7 @@ MediaWork::MediaWork (MediaClosure *closure, IMediaStream *stream, uint16_t stat
 	this->data.frame.stream->ref ();
 }
 
-MediaWork::MediaWork (MediaClosure *closure, uint64_t seek_pts)
+MediaWork::MediaWork (MediaClosure *closure, guint64 seek_pts)
 {
 	type = WorkTypeSeek;
 	this->closure = closure;

@@ -14,6 +14,8 @@
 #ifndef __FILE_DOWNLOADER_H__
 #define __FILE_DOWNLOADER_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 #include "internal-downloader.h"
@@ -39,9 +41,9 @@ class FileDownloader : public InternalDownloader {
 	~FileDownloader ();
 
 	void Open (const char *verb, const char *uri);
-	void Write (void *buf, int32_t offset, int32_t n);
+	void Write (void *buf, gint32 offset, gint32 n);
 	char *GetDownloadedFilename (const char *partname);
-	char *GetResponseText (const char *partname, uint64_t *size);
+	char *GetResponseText (const char *partname, guint64 *size);
 	
 	const char *GetDownloadedFile ();
 

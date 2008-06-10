@@ -15,15 +15,10 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
-
-#include <stdlib.h>
-#include <string.h>
 #include <math.h>
 
-#include "runtime.h"
+#include "utils.h"
 #include "geometry.h"
-#include "rect.h"
 #include "shape.h"
 #include "array.h"
 

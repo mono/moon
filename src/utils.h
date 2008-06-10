@@ -14,7 +14,7 @@
 #define __MOON_GARRAY_EXT_H__
 
 #include <glib.h>
-#include <sys/types.h>
+#include <cairo.h>
 
 #include "zip/unzip.h"
 
@@ -29,6 +29,9 @@ char *CreateTempDir (const char *filename);
 int RemoveDir (const char *dir);
 
 int CopyFileTo (const char *filename, int fd);
+
+cairo_t *measuring_context_create (void);
+void     measuring_context_destroy (cairo_t *cr);
 
 G_END_DECLS
 

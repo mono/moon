@@ -13,19 +13,11 @@
  */
 
 #include <config.h>
-#include <unistd.h>
-#include <string.h>
-#include <gtk/gtk.h>
 #include <cairo.h>
-#include <malloc.h>
 #include <glib.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <errno.h>
-#include <math.h>
 #include "brush.h"
+#include "media.h"
 #include "color.h"
-#include "frameworkelement.h"
 #include "transform.h"
 
 //

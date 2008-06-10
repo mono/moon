@@ -26,7 +26,6 @@
 #include "clock.h"
 
 #include "uielement.h"
-#include "dirty.h"
 #include "runtime.h"
 
 #define CLOCK_DEBUG 0

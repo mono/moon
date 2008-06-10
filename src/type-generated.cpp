@@ -26,6 +26,7 @@
 #include "panel.h"
 #include "clock.h"
 #include "runtime.h"
+#include "visual.h"
 #include "xaml.h"
 
 const int Clock::CompletedEvent = 1;
@@ -139,8 +140,8 @@ Type type_infos [] = {
 	{ Type::INKPRESENTER, Type::CANVAS, false, "InkPresenter", "INKPRESENTER", 0, 12, NULL, (create_inst_func *) ink_presenter_new, NULL }, 
 	{ Type::INLINE, Type::DEPENDENCY_OBJECT, false, "Inline", "INLINE", 0, 1, NULL, NULL, NULL }, 
 	{ Type::INLINES, Type::COLLECTION, false, "Inlines", "INLINES", 0, 1, NULL, (create_inst_func *) inlines_new, NULL }, 
-	{ Type::INT32, Type::INVALID, false, "int32_t", "INT32", 0, 0, NULL, NULL, NULL }, 
-	{ Type::INT64, Type::INVALID, false, "int64_t", "INT64", 0, 0, NULL, NULL, NULL }, 
+	{ Type::INT32, Type::INVALID, false, "gint32", "INT32", 0, 0, NULL, NULL, NULL }, 
+	{ Type::INT64, Type::INVALID, false, "gint64", "INT64", 0, 0, NULL, NULL, NULL }, 
 	{ Type::KEYBOARDEVENTARGS, Type::EVENTARGS, false, "KeyboardEventArgs", "KEYBOARDEVENTARGS", 0, 1, NULL, NULL, NULL }, 
 	{ Type::KEYFRAME, Type::DEPENDENCY_OBJECT, false, "KeyFrame", "KEYFRAME", 0, 1, NULL, (create_inst_func *) key_frame_new, NULL }, 
 	{ Type::KEYFRAME_COLLECTION, Type::COLLECTION, false, "KeyFrameCollection", "KEYFRAME_COLLECTION", 0, 1, NULL, NULL, NULL }, 
@@ -233,8 +234,8 @@ Type type_infos [] = {
 	{ Type::TRIGGERACTION, Type::DEPENDENCY_OBJECT, false, "TriggerAction", "TRIGGERACTION", 0, 1, NULL, NULL, NULL }, 
 	{ Type::TRIGGERACTION_COLLECTION, Type::COLLECTION, false, "TriggerActionCollection", "TRIGGERACTION_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_action_collection_new, NULL }, 
 	{ Type::UIELEMENT, Type::VISUAL, false, "UIElement", "UIELEMENT", 11, 12, UIElement_Events, NULL, NULL }, 
-	{ Type::UINT32, Type::INVALID, false, "uint32_t", "UINT32", 0, 0, NULL, NULL, NULL }, 
-	{ Type::UINT64, Type::INVALID, false, "uint64_t", "UINT64", 0, 0, NULL, NULL, NULL }, 
+	{ Type::UINT32, Type::INVALID, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL }, 
+	{ Type::UINT64, Type::INVALID, false, "guint64", "UINT64", 0, 0, NULL, NULL, NULL }, 
 	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 12, NULL, (create_inst_func *) user_control_new, NULL }, 
 	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL }, 
 	{ Type::VISUAL, Type::DEPENDENCY_OBJECT, false, "Visual", "VISUAL", 0, 1, NULL, NULL, NULL }, 

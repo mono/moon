@@ -10,6 +10,8 @@
 #ifndef __MOON_XAP_H__
 #define __MOON_XAP_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 class Xap {
 	char *xap_dir;

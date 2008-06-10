@@ -12,8 +12,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include <gtk/gtk.h>
-
 #include "array.h"
 
 
@@ -37,7 +35,7 @@ GArray *double_garray_from_str (const char *s, gint max)
 	while (next && values->len < end) {
 		while (g_ascii_isspace (*next) || *next == ',')
 			next = g_utf8_next_char (next);
-
+		
 		if (next) {
 			errno = 0;
 			char *prev = next;

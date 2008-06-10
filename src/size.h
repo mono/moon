@@ -10,8 +10,6 @@
 #ifndef __MOON_SIZE_H__
 #define __MOON_SIZE_H__
 
-#include <glib.h>
-
 struct Size {
 public:
        double width, height;
@@ -25,9 +23,5 @@ public:
        }
 
 };
-
-G_BEGIN_DECLS
-
-G_END_DECLS
 
 #endif /* __MOON_POINT_H__ */

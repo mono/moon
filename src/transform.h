@@ -13,9 +13,10 @@
 #ifndef __TRANSFORM_H__
 #define __TRANSFORM_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
-#include <stdint.h>
 #include <cairo.h>
 #include "collection.h"
 

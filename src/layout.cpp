@@ -362,7 +362,7 @@ TextLayout::LayoutWrapWithOverflow ()
 	GlyphInfo *glyph;
 	TextLine *line;
 	double advance;
-	uint32_t prev;
+	guint32 prev;
 	TextRun *run;
 	
 	line = new TextLine ();
@@ -544,7 +544,7 @@ TextLayout::LayoutNoWrap ()
 	GlyphInfo *glyph;
 	TextLine *line;
 	double advance;
-	uint32_t prev;
+	guint32 prev;
 	TextRun *run;
 	
 	line = new TextLine ();
@@ -748,7 +748,7 @@ TextLayout::LayoutWrap ()
 	TextLine *line;
 	double advance;
 	GArray *array;
-	uint32_t prev;
+	guint32 prev;
 	TextRun *run;
 	WordChar wc;
 	bool after;
@@ -1108,7 +1108,7 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 	TextDecorations deco;
 	TextSegment *segment;
 	const gunichar *text;
-	uint32_t prev = 0;
+	guint32 prev = 0;
 	GlyphInfo *glyph;
 	moon_path *path;
 	double x1, y1;

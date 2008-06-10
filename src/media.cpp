@@ -16,8 +16,6 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
-
 #include "runtime.h"
 #include "media.h"
 #include "error.h"
@@ -287,7 +285,7 @@ marker_callback (MediaClosure *closure)
 	if (mmarker == NULL)
 		return MEDIA_FAIL;
 	
-	uint64_t pts = mmarker->Pts ();
+	guint64 pts = mmarker->Pts ();
 	
 	TimelineMarker *marker = new TimelineMarker ();
 	marker->SetText (mmarker->Text ());
@@ -364,7 +362,7 @@ MediaElement::ReadMarkers ()
 }
 
 void
-MediaElement::CheckMarkers (uint64_t from, uint64_t to)
+MediaElement::CheckMarkers (guint64 from, guint64 to)
 {
 	TimelineMarkerCollection *markers;
 	
@@ -381,12 +379,12 @@ MediaElement::CheckMarkers (uint64_t from, uint64_t to)
 }
 
 void
-MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *markers, bool remove)
+MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *markers, bool remove)
 {
 	Collection::Node *node, *next;
 	TimelineMarker *marker;
 	Value *val = NULL;
-	uint64_t pts;
+	guint64 pts;
 	bool emit;
 	
 	//printf ("MediaElement::CheckMarkers (%llu, %llu, %p, %i). count: %i\n", from, to, col, remove, col ? col->list->Length () : -1);
@@ -405,7 +403,7 @@ MediaElement::CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection
 		if (!(val = marker->GetValue (TimelineMarker::TimeProperty)))
 			return;
 		
-		pts = (uint64_t) val->AsTimeSpan ();
+		pts = (guint64) val->AsTimeSpan ();
 		
 		//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
 		
@@ -451,7 +449,7 @@ MediaElement::AudioFinished ()
 bool
 MediaElement::AdvanceFrame ()
 {
-	uint64_t position; // pts
+	guint64 position; // pts
 	bool advanced;
 	
 	e(printf ("MediaElement::AdvanceFrame (), IsPlaying: %i, HasVideo: %i, HasAudio: %i\n",
@@ -910,10 +908,10 @@ double
 MediaElement::GetBufferedSize ()
 {
 	double progress;
-	uint64_t current_pts;
-	uint64_t buffer_pts;
+	guint64 current_pts;
+	guint64 buffer_pts;
 	IMediaDemuxer *demuxer;
-	uint64_t currently_available_pts;
+	guint64 currently_available_pts;
 	
 	current_pts = mplayer->GetPosition ();
 	buffer_pts = TimeSpan_ToPts (GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ());
@@ -1030,12 +1028,12 @@ MediaElement::SetState (MediaElementState state)
 }
 
 void 
-MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
+MediaElement::DataWrite (void *buf, gint32 offset, gint32 n)
 {
 	//printf ("MediaElement::DataWrite (%p, %d, %d), size: %llu\n", buf, offset, n, downloaded_file ? downloaded_file->GetSize () : 0);
 	
 	if (downloaded_file != NULL) {
-		downloaded_file->Write (buf, (int64_t) offset, n);
+		downloaded_file->Write (buf, (gint64) offset, n);
 		
  		// FIXME: How much do we actually have to download in order to try to open the file?
 		if (!(flags & BufferingFailed) && IsOpening () && offset > 1024 && (part_name == NULL || part_name[0] == 0))
@@ -1051,26 +1049,26 @@ MediaElement::DataWrite (void *buf, int32_t offset, int32_t n)
 }
 
 void
-MediaElement::DataRequestPosition (int64_t *position)
+MediaElement::DataRequestPosition (gint64 *position)
 {
        if (downloaded_file != NULL)
                downloaded_file->RequestPosition (position);
 }
 
 void 
-MediaElement::data_write (void *buf, int32_t offset, int32_t n, gpointer data)
+MediaElement::data_write (void *buf, gint32 offset, gint32 n, gpointer data)
 {
 	((MediaElement *) data)->DataWrite (buf, offset, n);
 }
 
 void 
-MediaElement::data_request_position (int64_t *position, gpointer data)
+MediaElement::data_request_position (gint64 *position, gpointer data)
 {
        ((MediaElement *) data)->DataRequestPosition (position);
 }
 
 void
-MediaElement::size_notify (int64_t size, gpointer data)
+MediaElement::size_notify (gint64 size, gpointer data)
 {
 	MediaElement *element = (MediaElement *) data;
 	
@@ -1511,7 +1509,7 @@ MediaElement::GetValue (DependencyProperty *prop)
 		}
 		
 		if (use_mplayer) {
-			uint64_t position = mplayer->GetPosition ();
+			guint64 position = mplayer->GetPosition ();
 			Value v = Value (TimeSpan_FromPts (position), Type::TIMESPAN);
 			
 			flags |= UpdatingPosition;
@@ -2162,7 +2160,7 @@ Image::SetSource (Downloader *downloader, const char *PartName)
 }
 
 void
-Image::PixbufWrite (void *buf, int32_t offset, int32_t n)
+Image::PixbufWrite (void *buf, gint32 offset, gint32 n)
 {
 	UpdateProgress ();
 }
@@ -2465,7 +2463,7 @@ Image::CreateSurface (const char *filename)
 }
 
 void
-Image::size_notify (int64_t size, gpointer data)
+Image::size_notify (gint64 size, gpointer data)
 {
 	// Do something with it?
 	// if size == -1, we do not know the size of the file, can happen
@@ -2474,7 +2472,7 @@ Image::size_notify (int64_t size, gpointer data)
 }
 
 void
-Image::pixbuf_write (void *buf, int32_t offset, int32_t n, gpointer data)
+Image::pixbuf_write (void *buf, gint32 offset, gint32 n, gpointer data)
 {
 	((Image *) data)->PixbufWrite (buf, offset, n);
 }
@@ -2639,6 +2637,101 @@ void
 media_attribute_set_value (MediaAttribute *attribute, const char *value)
 {
 	attribute->SetValue (MediaAttribute::ValueProperty, Value (value));
+}
+
+//
+// MediaAttributeCollection
+//
+
+static bool
+media_attribute_by_name_finder (List::Node *node, void *data)
+{
+	Collection::Node *cn = (Collection::Node *) node;
+	MediaAttribute *attribute = (MediaAttribute *) cn->obj;
+	const char *name = (const char *) data;
+
+	Value *value = attribute->GetValue (DependencyObject::NameProperty);
+	if (!value)
+		return false;
+
+	return !strcmp (name, value->AsString ());
+}
+
+MediaAttribute *
+MediaAttributeCollection::GetItemByName (const char *name)
+{
+	Collection::Node *cn = (Collection::Node *) list->Find (media_attribute_by_name_finder, (char *) name);
+	if (!cn)
+		return NULL;
+
+	return (MediaAttribute *) cn->obj;
+}
+
+MediaAttributeCollection *
+media_attribute_collection_new (void)
+{
+	return new MediaAttributeCollection ();
+}
+
+MediaAttribute *
+media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name)
+{
+	return collection->GetItemByName (name);
+}
+
+//
+// TimelineMarkerCollection
+// 
+bool
+TimelineMarkerCollection::Insert (int index, DependencyObject *data)
+{
+	return Add (data) != -1;
+}
+
+int
+TimelineMarkerCollection::AddToList (Collection::Node *node)
+{
+	TimelineMarker *added_marker = (TimelineMarker *) node->obj;
+	TimelineMarker *current_marker;
+	Collection::Node *current;
+	int counter = 0;
+		
+	current = (Collection::Node *) list->First ();
+	while (current != NULL) {
+		current_marker = (TimelineMarker *) current->obj;
+		
+		if (current_marker->GetTime () >= added_marker->GetTime ()) {
+			list->InsertBefore (node, current);
+			return counter;
+		}
+		
+		current = (Collection::Node *) current->next;
+		counter++;
+	}
+	
+	list->Append (node);
+	return counter;
+}
+
+TimelineMarkerCollection *
+timeline_marker_collection_new (void)
+{
+	return new TimelineMarkerCollection ();
+}
+
+//
+// MarkerReachedEventArgs
+//
+
+MarkerReachedEventArgs::MarkerReachedEventArgs (TimelineMarker *marker)
+{
+	this->marker = marker;
+	this->marker->ref ();
+}
+
+MarkerReachedEventArgs::~MarkerReachedEventArgs ()
+{
+	marker->unref ();
 }
 
 

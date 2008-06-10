@@ -11,7 +11,7 @@
 #define __MOON_REGION_H__
 
 #include <cairo.h>
-#include <gtk/gtk.h>
+#include <gdk/gdk.h> // for GdkRegion
 #include "rect.h"
 
 class Region {

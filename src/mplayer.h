@@ -36,7 +36,7 @@ struct Audio {
 	AudioStream *stream;
 	
 	// sync
-	uint64_t pts_per_frame;
+	guint64 pts_per_frame;
 	
 	Audio ();
 };
@@ -49,7 +49,7 @@ struct Video {
 	
 	// rendering
 	cairo_surface_t *surface;
-	uint8_t *rgb_buffer;
+	guint8 *rgb_buffer;
 	
 	Video ();
 };
@@ -85,24 +85,24 @@ class MediaPlayer : public EventObject {
 	MediaElement *element;
 	Media *media;
 	PlayerState state;
-	int32_t height;
-	int32_t width;
+	gint32 height;
+	gint32 width;
 	
 	// sync
 	pthread_mutex_t target_pts_lock;
-	uint64_t start_time; // 100-nanosecond units (pts)
-	uint64_t duration; // 100-nanosecond units (pts)
+	guint64 start_time; // 100-nanosecond units (pts)
+	guint64 duration; // 100-nanosecond units (pts)
 	// This is the first pts with live streams (when the first pts might not be 0).
-	uint64_t first_live_pts; // 100-nanosecond units (pts)
+	guint64 first_live_pts; // 100-nanosecond units (pts)
 	// This is the pts we start playing (0 is still the first pts in the media).
-	uint64_t start_pts; // 100-nanosecond units (pts)
-	uint64_t current_pts; // 100-nanosecond units (pts)
-	uint64_t target_pts; // 100-nanosecond units (pts)
+	guint64 start_pts; // 100-nanosecond units (pts)
+	guint64 current_pts; // 100-nanosecond units (pts)
+	guint64 target_pts; // 100-nanosecond units (pts)
 	
 	bool LoadVideoFrame ();
 	void Initialize ();
 	
-	void SeekInternal (uint64_t pts/* 100-nanosecond units (pts) */);
+	void SeekInternal (guint64 pts/* 100-nanosecond units (pts) */);
 	void RenderFrame (MediaFrame *frame);
 	static MediaResult SeekCallback (MediaClosure *closure);
 	static MediaResult FrameCallback (MediaClosure *closure);
@@ -154,10 +154,10 @@ class MediaPlayer : public EventObject {
 	
 	void SetCanSeek (bool value);
 	bool GetCanSeek ();
-	void Seek (uint64_t pts /* 100-nanosecond units (pts) */);
+	void Seek (guint64 pts /* 100-nanosecond units (pts) */);
 	
 	cairo_surface_t *GetCairoSurface () { return video.surface; }
-	int32_t GetTimeoutInterval ();
+	gint32 GetTimeoutInterval ();
 	
 	int GetAudioStreamCount () { return audio.stream_count; }
 	Media *GetMedia () { return media; }
@@ -165,14 +165,14 @@ class MediaPlayer : public EventObject {
 	bool HasVideo () { return video.stream != NULL; }
 	bool HasAudio () { return audio.stream != NULL; }
 	
-	uint64_t GetPosition () { return GetTargetPts (); }
-	uint64_t GetDuration () { return duration; }
+	guint64 GetPosition () { return GetTargetPts (); }
+	guint64 GetDuration () { return duration; }
 	
 	void SetMuted (bool muted) { audio.muted = muted; }
 	bool GetMuted () { return audio.muted; }
 	
-	int32_t GetVideoHeight () { return height; }
-	int32_t GetVideoWidth () { return width; }
+	gint32 GetVideoHeight () { return height; }
+	gint32 GetVideoWidth () { return width; }
 	
 	double GetBalance () { return audio.balance; }
 	void SetBalance (double balance);
@@ -183,8 +183,8 @@ class MediaPlayer : public EventObject {
 	double GetVolume () { return audio.volume; }
 	void SetVolume (double volume);
 	
-	void SetTargetPts (uint64_t pts);
-	uint64_t GetTargetPts ();
+	void SetTargetPts (guint64 pts);
+	guint64 GetTargetPts ();
 };
 
 class AudioPlayer {
@@ -210,14 +210,14 @@ class AudioPlayer {
 		AudioState state;		
 		bool started;
 		
-		uint8_t *first_buffer;
-		uint32_t first_used;
-		uint32_t first_size;
-		uint64_t first_pts;
+		guint8 *first_buffer;
+		guint32 first_used;
+		guint32 first_size;
+		guint64 first_pts;
 		
-		uint64_t updated_pts;
-		uint64_t sent_pts;
-		uint64_t sent_samples;
+		guint64 updated_pts;
+		guint64 sent_pts;
+		guint64 sent_samples;
 		
 		AudioNode ();
 		~AudioNode ();
@@ -250,8 +250,8 @@ class AudioPlayer {
 	
 	// A list of all the audio nodes.
 	AudioNode **list;
-	uint32_t list_size;
-	uint32_t list_count;
+	guint32 list_size;
+	guint32 list_count;
 	
 	sem_t semaphore;
 	

@@ -13,6 +13,8 @@
 #ifndef __OPENFILE_H__
 #define __OPENFILE_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 char **open_file_dialog_show              (const char *title, bool multsel, const char *filter, int idx);

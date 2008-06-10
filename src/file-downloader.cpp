@@ -15,15 +15,11 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
-
-#include <stdlib.h>
-#include <string.h>
-#include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #include "file-downloader.h"
 #include "zip/unzip.h"
@@ -79,7 +75,7 @@ FileDownloader::DownloadedFileIsZipped ()
 }
 
 char *
-FileDownloader::GetResponseText (const char *partname, uint64_t *size)
+FileDownloader::GetResponseText (const char *partname, guint64 *size)
 {
 	TextStream *stream;
 	char buffer[4096];
@@ -337,7 +333,7 @@ FileDownloader::Open (const char *verb, const char *uri)
 }
 
 void
-FileDownloader::Write (void *buf, int32_t offset, int32_t n)
+FileDownloader::Write (void *buf, gint32 offset, gint32 n)
 {
 	dl->InternalWrite (buf, offset, n);
 }

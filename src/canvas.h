@@ -14,8 +14,9 @@
 #ifndef __MOON_CANVAS_H__
 #define __MOON_CANVAS_H__
 
+#include <glib.h>
+
 #include "panel.h"
-#include "runtime.h"
 
 //
 // Canvas Class, the only purpose is to have the Left/Top properties that

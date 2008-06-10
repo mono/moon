@@ -20,11 +20,6 @@
 #include <unistd.h>
 #include <pthread.h>
 
-G_BEGIN_DECLS
-#include <stdint.h>
-#include <limits.h>
-G_END_DECLS
-
 #include "pipeline-ffmpeg.h"
 #include "pipeline.h"
 #include "debug.h"
@@ -130,7 +125,7 @@ FfmpegDecoder::Open ()
 	if (stream->extra_data_size > 0) {
 		//printf ("FfmpegDecoder::Open (): Found %i bytes of extra data.\n", stream->extra_data_size);
 		context->extradata_size = stream->extra_data_size;
-		context->extradata = (uint8_t*) av_mallocz (stream->extra_data_size + FF_INPUT_BUFFER_PADDING_SIZE + 100);
+		context->extradata = (guint8*) av_mallocz (stream->extra_data_size + FF_INPUT_BUFFER_PADDING_SIZE + 100);
 		if (context->extradata == NULL) {
 			result = MEDIA_OUT_OF_MEMORY;
 			media->AddMessage (MEDIA_OUT_OF_MEMORY, "Failed to allocate space for extra data.");
@@ -149,7 +144,7 @@ FfmpegDecoder::Open ()
 		context->channels = as->channels;
 		context->bit_rate = as->bit_rate;
 		context->block_align = as->block_align;
-		audio_buffer = (uint8_t*) av_mallocz (AUDIO_BUFFER_SIZE);
+		audio_buffer = (guint8*) av_mallocz (AUDIO_BUFFER_SIZE);
 	} else {
 		result = MEDIA_FAIL;
 		media->AddMessage (MEDIA_FAIL, "Invalid stream type.");
@@ -313,9 +308,9 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 	} else if (stream->GetType () == MediaTypeAudio) {
 		int frame_size = AUDIO_BUFFER_SIZE;
 		
-		length = avcodec_decode_audio2 (context, (int16_t *) audio_buffer, &frame_size, mf->buffer, mf->buflen);
+		length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &frame_size, mf->buffer, mf->buflen);
 		
-		if (length < 0 || (uint32_t) frame_size < mf->buflen) {
+		if (length < 0 || (guint32) frame_size < mf->buflen) {
 			//media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding audio frame (length: %i, frame_size. %i, buflen: %u).", length, frame_size, mf->buflen));
 			return MEDIA_CODEC_ERROR;
 		}
@@ -323,7 +318,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		g_free (mf->buffer);
 		
 		if (frame_size > 0) {
-			mf->buffer = (uint8_t *) g_malloc (frame_size);
+			mf->buffer = (guint8 *) g_malloc (frame_size);
 			memcpy (mf->buffer, audio_buffer, frame_size);
 			mf->buflen = frame_size;
 		} else {

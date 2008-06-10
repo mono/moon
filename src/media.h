@@ -14,9 +14,9 @@
 #ifndef __MEDIA_H__
 #define __MEDIA_H__
 
-G_BEGIN_DECLS
+#include <glib.h>
 
-#include <string.h>
+G_BEGIN_DECLS
 
 #include <gdk/gdkpixbuf.h>
 
@@ -27,6 +27,23 @@ G_BEGIN_DECLS
 #include "brush.h"
 #include "frameworkelement.h"
 #include "error.h"
+
+
+class MediaErrorEventArgs : public ErrorEventArgs {
+protected:
+	virtual ~MediaErrorEventArgs () {}
+
+public:
+	MediaErrorEventArgs (MediaResult result, const char *msg)
+		: ErrorEventArgs (MediaError, (int) result, msg)
+	{
+		
+	}
+	
+	virtual Type::Kind GetObjectType () { return Type::MEDIAERROREVENTARGS; };
+
+	MediaResult GetMediaResult () { return (MediaResult) error_code; }
+};
 
 class MediaAttribute : public DependencyObject {
  protected:
@@ -43,6 +60,58 @@ MediaAttribute *media_attribute_new (void);
 
 const char *media_attribute_get_value (MediaAttribute *attribute);
 void media_attribute_set_value (MediaAttribute *attribute, const char *value);
+
+
+class MediaAttributeCollection : public Collection {
+ protected:
+	virtual ~MediaAttributeCollection () {}
+
+public:
+	MediaAttributeCollection () {}
+	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
+
+	MediaAttribute *GetItemByName (const char *name);
+};
+
+MediaAttributeCollection *media_attribute_collection_new (void);
+MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name);
+
+
+/*
+ * This collection is always sorted by the time value of the markers.
+ * We override AddToList to add the node where it's supposed to be, keeping the
+ * collection sorted at all times.
+ * We also override Insert to ignore the index and behave just like Add.
+ */
+class TimelineMarkerCollection : public Collection {
+ protected:
+	virtual ~TimelineMarkerCollection () {}
+	virtual int AddToList (Collection::Node *node);
+
+ public:
+	TimelineMarkerCollection () {}
+	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
+	
+	virtual bool Insert (int index, DependencyObject *data);
+};
+
+TimelineMarkerCollection *timeline_marker_collection_new (void);
+
+class MarkerReachedEventArgs : public EventArgs {
+private:
+	TimelineMarker *marker;
+
+protected:
+	virtual ~MarkerReachedEventArgs ();
+
+public:
+	MarkerReachedEventArgs (TimelineMarker *marker);
+	virtual Type::Kind GetObjectType () { return Type::MARKERREACHEDEVENTARGS; };
+
+	TimelineMarker *GetMarker () { return marker; }
+};
 
 
 class MediaBase : public FrameworkElement {
@@ -111,13 +180,13 @@ class Image : public MediaBase {
 	void CleanupPattern ();
 	
 	// downloader callbacks
-	void PixbufWrite (void *buf, int32_t offset, int32_t n);
+	void PixbufWrite (void *buf, gint32 offset, gint32 n);
 	virtual void DownloaderFailed (EventArgs *args);
 	virtual void DownloaderComplete ();
 	void UpdateProgress ();
 	
-	static void pixbuf_write (void *buf, int32_t offset, int32_t n, gpointer data);
-	static void size_notify (int64_t size, gpointer data);
+	static void pixbuf_write (void *buf, gint32 offset, gint32 n, gpointer data);
+	static void size_notify (gint64 size, gpointer data);
 	
 	// pattern caching
 	cairo_pattern_t *pattern;
@@ -186,9 +255,9 @@ class MediaElement : public MediaBase {
 	};
 	
  private:
-	static void data_write (void *data, int32_t offset, int32_t n, void *closure);
-	static void data_request_position (int64_t *pos, void *closure);
-	static void size_notify (int64_t size, gpointer data);
+	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
+	static void data_request_position (gint64 *pos, void *closure);
+	static void size_notify (gint64 size, gpointer data);
 	
 	TimelineMarkerCollection *streamed_markers;
 	MediaClosure *marker_closure;
@@ -202,7 +271,7 @@ class MediaElement : public MediaBase {
 	// When checking if a marker has been reached, we need to 
 	// know the last time the check was made, to see if 
 	// the marker's pts hit the region.
-	uint64_t previous_position;
+	guint64 previous_position;
 	
 	// Buffering can be caused by:
 	//   * When the media is opened, we automatically buffer an amount equal to BufferingTime.
@@ -221,7 +290,7 @@ class MediaElement : public MediaBase {
 	//
 	//   So the general formula turns out to be:
 	//     ("currently available pts" - last_played_pts) / (mplayer->GetPosition () - last_played_pts + BufferingTime)
-	uint64_t last_played_pts;
+	guint64 last_played_pts;
 	
 	// this is used to know what to do after a Buffering state finishes
 	MediaElementState prev_state;
@@ -229,13 +298,13 @@ class MediaElement : public MediaBase {
 	// The current state of the media element.
 	MediaElementState state;
 	
-	uint32_t flags;
+	guint32 flags;
 	
 	// downloader methods/data
 	ProgressiveSource *downloaded_file;
 	
-	void DataWrite (void *data, int32_t offset, int32_t n);
-	void DataRequestPosition (int64_t *pos);
+	void DataWrite (void *data, gint32 offset, gint32 n);
+	void DataRequestPosition (gint64 *pos);
 	virtual void DownloaderComplete ();
 	virtual void DownloaderFailed (EventArgs *args);
 	void BufferingComplete ();
@@ -252,8 +321,8 @@ class MediaElement : public MediaBase {
 	bool MediaOpened (Media *media);
 	void EmitMediaEnded ();
 	
-	void CheckMarkers (uint64_t from, uint64_t to, TimelineMarkerCollection *col, bool remove);
-	void CheckMarkers (uint64_t from, uint64_t to);
+	void CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *col, bool remove);
+	void CheckMarkers (guint64 from, guint64 to);
 	void ReadMarkers ();
 	
 	TimeSpan UpdatePlayerPosition (Value *value);

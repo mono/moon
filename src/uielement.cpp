@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "uielement.h"
 #include "collection.h"
 #include "brush.h"
@@ -22,6 +20,8 @@
 #include "shape.h"
 #include "dirty.h"
 #include "eventargs.h"
+#include "clock.h"
+#include "media.h"
 
 //#define DEBUG_INVALIDATE 0
 

@@ -14,10 +14,15 @@
 #ifndef __BRUSH__H__
 #define __BRUSH__H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 #include "enums.h"
-#include "media.h"
+#include "collection.h"
+#include "uielement.h"
+
+class MediaElement;
 
 enum AlignmentX {
 	AlignmentXLeft,

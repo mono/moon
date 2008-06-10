@@ -1253,10 +1253,10 @@ FontFace::Kerning (double size, gunichar left, gunichar right)
 }
 
 gunichar
-FontFace::GetCharFromIndex (uint32_t index)
+FontFace::GetCharFromIndex (guint32 index)
 {
 	gunichar unichar;
-	uint32_t idx;
+	guint32 idx;
 	
 	if (!face || index == 0)
 		return 0;
@@ -1271,7 +1271,7 @@ FontFace::GetCharFromIndex (uint32_t index)
 	return unichar;
 }
 
-uint32_t
+guint32
 FontFace::GetCharIndex (gunichar unichar)
 {
 	return face ? FT_Get_Char_Index (face, unichar) : 0;
@@ -1382,7 +1382,7 @@ glyphsort (const void *v1, const void *v2)
 }
 
 GlyphInfo *
-TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
+TextFont::GetGlyphInfo (gunichar unichar, guint32 index)
 {
 	GlyphInfo glyph, *slot;
 	int i;
@@ -1425,7 +1425,7 @@ TextFont::GetGlyphInfo (gunichar unichar, uint32_t index)
 GlyphInfo *
 TextFont::GetGlyphInfo (gunichar unichar)
 {
-	uint32_t index;
+	guint32 index;
 	
 	index = face->GetCharIndex (unichar);
 	
@@ -1433,7 +1433,7 @@ TextFont::GetGlyphInfo (gunichar unichar)
 }
 
 GlyphInfo *
-TextFont::GetGlyphInfoByIndex (uint32_t index)
+TextFont::GetGlyphInfoByIndex (guint32 index)
 {
 	gunichar unichar;
 	
@@ -1638,14 +1638,14 @@ TextFontDescription::GetFont ()
 	return font;
 }
 
-uint8_t
+guint8
 TextFontDescription::GetFields ()
 {
 	return set;
 }
 
 void
-TextFontDescription::UnsetFields (uint8_t mask)
+TextFontDescription::UnsetFields (guint8 mask)
 {
 	if (!(set & mask))
 		return;

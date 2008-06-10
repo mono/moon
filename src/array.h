@@ -10,6 +10,7 @@
 #ifndef __MOON_ARRAY_H__
 #define __MOON_ARRAY_H__
 
+#include <glib.h>
 #include "point.h"
 
 //

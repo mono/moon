@@ -91,7 +91,7 @@ class IImageConverter;
 class MediaMarker;
 class ProgressiveSource;
 
-typedef int32_t MediaResult;
+typedef gint32 MediaResult;
 
 #define MEDIA_SUCCESS ((MediaResult) 0)
 #define MEDIA_FAIL ((MediaResult) 1)
@@ -251,10 +251,10 @@ public:
 	MediaClosure *closure;
 	union {
 		struct {
-			uint64_t seek_pts;
+			guint64 seek_pts;
 		} seek;
 		struct {
-			uint16_t states;
+			guint16 states;
 			IMediaStream *stream;
 		} frame;
 		struct {
@@ -262,8 +262,8 @@ public:
 		} open;
 	} data;
 	
-	MediaWork (MediaClosure *closure, IMediaStream *stream, uint16_t states); // GetNextFrame
-	MediaWork (MediaClosure *closure, uint64_t seek_pts); // Seek
+	MediaWork (MediaClosure *closure, IMediaStream *stream, guint16 states); // GetNextFrame
+	MediaWork (MediaClosure *closure, guint64 seek_pts); // Seek
 	MediaWork (MediaClosure *closure, IMediaSource *source); // Open
 	~MediaWork ();
 };
@@ -325,8 +325,8 @@ public:
 	MediaResult OpenAsync (IMediaSource *source, MediaClosure *closure);
 	
 	// Seeks to the specified pts (if seekable).
-	MediaResult Seek (uint64_t pts);
-	MediaResult SeekAsync (uint64_t pts, MediaClosure *closure);
+	MediaResult Seek (guint64 pts);
+	MediaResult SeekAsync (guint64 pts, MediaClosure *closure);
 	
 	//	Reads the next frame from the demuxer
 	//	Requests the decoder to decode the frame
@@ -334,7 +334,7 @@ public:
 	MediaResult GetNextFrame (MediaWork *work);
 	
 	//	Requests reading of the next frame
-	void GetNextFrameAsync (MediaClosure *closure, IMediaStream *stream, uint16_t states); 
+	void GetNextFrameAsync (MediaClosure *closure, IMediaStream *stream, guint16 states); 
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
 	
 	IMediaSource *GetSource ();
@@ -373,7 +373,7 @@ public:
 	MediaFrame (IMediaStream *stream);
 	~MediaFrame ();
 	
-	void AddState (uint16_t state) { this->state |= state; } // There's no way of "going back" to an earlier state 
+	void AddState (guint16 state) { this->state |= state; } // There's no way of "going back" to an earlier state 
 	bool IsDecoded () { return (state & FRAME_DECODED) == FRAME_DECODED; }
 	bool IsDemuxed () { return (state & FRAME_DEMUXED) == FRAME_DEMUXED; }
 	bool IsConverted () { return (state & FRAME_CONVERTED) == FRAME_CONVERTED; }
@@ -384,27 +384,27 @@ public:
 	
 	IMediaStream *stream;
 	void *decoder_specific_data; // data specific to the decoder
-	uint64_t pts; // Set by the demuxer
-	uint64_t duration; // Set by the demuxer
+	guint64 pts; // Set by the demuxer
+	guint64 duration; // Set by the demuxer
 	
-	uint16_t state; // Current state of the frame
-	uint16_t event; // special frame event if non-0
+	guint16 state; // Current state of the frame
+	guint16 event; // special frame event if non-0
 	
 	// The demuxer sets these to the encoded data which the
 	// decoder then uses and replaces with the decoded data.
 	// For markers this is a MarkerStream *
-	uint8_t *buffer;
-	uint32_t buflen;
+	guint8 *buffer;
+	guint32 buflen;
 	
 	// planar data
-	uint8_t *data_stride[4]; // Set by the decoder
+	guint8 *data_stride[4]; // Set by the decoder
 	int srcSlideY; // Set by the decoder
 	int srcSlideH; // Set by the decoder
 	int srcStride[4]; // Set by the decoder
 };
 
 class MediaMarker {
-	uint64_t pts; // 100-nanosecond units (pts)
+	guint64 pts; // 100-nanosecond units (pts)
 	char *type;
 	char *text;
 	
@@ -416,12 +416,12 @@ public:
 		MediaMarker *marker;
 	};
 	
-	MediaMarker (const char *type, const char *text, uint64_t pts);
+	MediaMarker (const char *type, const char *text, guint64 pts);
 	~MediaMarker ();
 	
 	const char *Type () { return type; }
 	const char *Text () { return text; }
-	uint64_t Pts () { return pts; }
+	guint64 Pts () { return pts; }
 };
 
 // Interfaces
@@ -468,13 +468,13 @@ public:
 	bool GetSelected () { return selected; }
 	void SetSelected (bool value);
 
-	uint32_t GetBitrate ();
+	guint32 GetBitrate ();
 
 	void *extra_data;
 	int extra_data_size;
 	int codec_id;
-	uint64_t duration; // 100-nanosecond units (pts)
-	int32_t msec_per_frame;
+	guint64 duration; // 100-nanosecond units (pts)
+	gint32 msec_per_frame;
 	IMediaDecoder *decoder;
 	const char *codec;
 	// The minimum amount of padding any other part of the pipeline needs for frames from this stream.
@@ -503,7 +503,7 @@ public:
 	virtual MediaResult ReadHeader () = 0;
 	// Fills the uncompressed_data field in the frame with data.
 	virtual MediaResult ReadFrame (MediaFrame *frame) = 0;
-	virtual MediaResult Seek (uint64_t pts) = 0;
+	virtual MediaResult Seek (guint64 pts) = 0;
 	int GetStreamCount () { return stream_count; }
 	// Estimate a position for the pts.
 	// This value is used when calculating the buffering progress percentage
@@ -511,13 +511,13 @@ public:
 	// This method will be called on the main thread, so it can't
 	// do anything that might block (such as read/seek ahead).
 	// It's generally better to make an over-estimation than an under-estimation.
-	virtual int64_t EstimatePtsPosition (uint64_t pts) = 0;
+	virtual gint64 EstimatePtsPosition (guint64 pts) = 0;
 	IMediaStream *GetStream (int index);
 	// Gets the longest duration from all the streams
-	virtual uint64_t GetDuration (); // 100-nanosecond units (pts)
+	virtual guint64 GetDuration (); // 100-nanosecond units (pts)
 	virtual const char *GetName () = 0;
 	virtual void UpdateSelected (IMediaStream *stream) {};
-	virtual uint64_t GetLastAvailablePts () { return 0; }
+	virtual guint64 GetLastAvailablePts () { return 0; }
 };
 
 class IMediaDecoder : public IMediaObject {
@@ -554,7 +554,7 @@ public:
 	IImageConverter (Media *media, VideoStream *stream);
 	
 	virtual MediaResult Open () = 0;
-	virtual MediaResult Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t *dest[], int dstStride []) = 0;
+	virtual MediaResult Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8 *dest[], int dstStride []) = 0;
 };
 
 /*
@@ -582,7 +582,7 @@ private:
 	pthread_cond_t condition;
 
 	// This method must be called with the lock locked.
-	void WaitForPosition (bool block, int64_t position);
+	void WaitForPosition (bool block, gint64 position);
 
 protected:
 	virtual ~IMediaSource ();
@@ -599,12 +599,12 @@ protected:
 	bool Aborted () { return aborted; }
 
 	// All these methods must/will be called with the lock locked.	
-	virtual int32_t ReadInternal (void *buf, uint32_t n) = 0;
-	virtual int32_t PeekInternal (void *buf, uint32_t n, int64_t start) = 0;
-	virtual bool SeekInternal (int64_t offset, int mode) = 0;
-	virtual int64_t GetLastAvailablePositionInternal () { return -1; }
-	virtual int64_t GetPositionInternal () = 0;
-	virtual int64_t GetSizeInternal () = 0;
+	virtual gint32 ReadInternal (void *buf, guint32 n) = 0;
+	virtual gint32 PeekInternal (void *buf, guint32 n, gint64 start) = 0;
+	virtual bool SeekInternal (gint64 offset, int mode) = 0;
+	virtual gint64 GetLastAvailablePositionInternal () { return -1; }
+	virtual gint64 GetPositionInternal () = 0;
+	virtual gint64 GetSizeInternal () = 0;
 
 public:
 	IMediaSource (Media *media);
@@ -620,13 +620,13 @@ public:
 	// GetLastAvailablePosition) it will block if 'block' is true, otherwise
 	// read the amount of data available. Returns the number of bytes read.
 	// This method will lock the mutex.
-	int32_t ReadSome (void *buf, uint32_t n, bool block = true, int64_t start = -1);
+	gint32 ReadSome (void *buf, guint32 n, bool block = true, gint64 start = -1);
 
 	// Reads 'n' bytes into 'buf'. If data isn't available (as reported by
 	// GetLastAvailablePosition) it will block if 'block' is true.
 	// Returns false if 'n' bytes couldn't be read.
 	// This method will lock the mutex.
-	bool ReadAll (void *buf, uint32_t n, bool block = true, int64_t start = -1);
+	bool ReadAll (void *buf, guint32 n, bool block = true, gint64 start = -1);
 
 	// Reads 'n' bytes into 'buf', starting at position 'start'. If 'start' is -1,
 	// then start at the current position. If data isn't available (as reported 
@@ -634,26 +634,26 @@ public:
 	// read the amount of data available. Returns false if 'n' bytes couldn't be
 	// read.
 	// This method will lock the mutex.
-	bool Peek (void *buf, uint32_t n, bool block = true, int64_t start = -1);
+	bool Peek (void *buf, guint32 n, bool block = true, gint64 start = -1);
 	
 	virtual bool CanSeek () { return true; }
 
 	// Seeks to the specified 'offset', using the specified 'mode'. 
 	// This method will lock the mutex.
-	bool Seek (int64_t offset, int mode = SEEK_CUR);
+	bool Seek (gint64 offset, int mode = SEEK_CUR);
 	
 	// Seeks to the specified 'pts'.
 	virtual bool CanSeekToPts () { return false; }
-	virtual bool SeekToPts (uint64_t pts) { return false; }
+	virtual bool SeekToPts (guint64 pts) { return false; }
 
 	// Returns the current reading position
 	// This method will lock the mutex.
-	int64_t GetPosition ();
+	gint64 GetPosition ();
 
 	// Returns the size of the source. This method may return -1 if the
 	// size isn't known.
 	// This method will lock the mutex.
-	int64_t GetSize ();
+	gint64 GetSize ();
 
 	virtual bool Eof () = 0;
 
@@ -661,7 +661,7 @@ public:
 	// can be read without blocking).
 	// If the returned value is -1, then everything is available.
 	// This method will lock the mutex.
-	int64_t GetLastAvailablePosition ();
+	gint64 GetLastAvailablePosition ();
 
 	// Aborts all current and future waits, no more waits will be done either.
 	void Abort (); 
@@ -676,25 +676,25 @@ public:
  
 class FileSource : public IMediaSource {
 private:
-	bool PeekInBuffer (void *buf, uint32_t n);
+	bool PeekInBuffer (void *buf, guint32 n);
 
 protected:
 	char *filename;
-	int64_t pos;
+	gint64 pos;
 	int fd;
 	bool eof;
 	
 	char buffer[4096];
-	uint32_t buflen;
+	guint32 buflen;
 	char *bufptr;
 	
 	virtual ~FileSource ();
 
-	virtual int32_t ReadInternal (void *buf, uint32_t n);
-	virtual int32_t PeekInternal (void *buf, uint32_t n, int64_t start);
-	virtual bool SeekInternal (int64_t offset, int mode);
-	virtual int64_t GetPositionInternal ();
-	virtual int64_t GetSizeInternal ();
+	virtual gint32 ReadInternal (void *buf, guint32 n);
+	virtual gint32 PeekInternal (void *buf, guint32 n, gint64 start);
+	virtual bool SeekInternal (gint64 offset, int mode);
+	virtual gint64 GetPositionInternal ();
+	virtual gint64 GetSizeInternal ();
 
 public:
 	FileSource (Media *media);
@@ -714,16 +714,16 @@ class ProgressiveSource : public FileSource {
 private:
 	bool is_live;
 	
-	int64_t write_pos;
-	int64_t wait_pos;
-	int64_t size;
-	int64_t first_write_pos;
-	uint64_t requested_pts;
-	uint64_t last_requested_pts;
+	gint64 write_pos;
+	gint64 wait_pos;
+	gint64 size;
+	gint64 first_write_pos;
+	guint64 requested_pts;
+	guint64 last_requested_pts;
 	
-	virtual int64_t GetLastAvailablePositionInternal () { return write_pos; }
-	virtual int64_t GetSizeInternal () { return size; }
-	virtual bool SeekInternal (int64_t offset, int mode);
+	virtual gint64 GetLastAvailablePositionInternal () { return write_pos; }
+	virtual gint64 GetSizeInternal () { return size; }
+	virtual bool SeekInternal (gint64 offset, int mode);
 
 protected:
 	virtual ~ProgressiveSource ();
@@ -734,14 +734,14 @@ public:
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeProgressive; }
 	
-	void SetTotalSize (int64_t size);
+	void SetTotalSize (gint64 size);
 	
-	void Write (void *buf, int64_t offset, int32_t n);
-	void NotifySize (int64_t size);
-	void RequestPosition (int64_t *pos);
+	void Write (void *buf, gint64 offset, gint32 n);
+	void NotifySize (gint64 size);
+	void RequestPosition (gint64 *pos);
 	void NotifyFinished ();
 	virtual bool CanSeekToPts () { return is_live && size > 0; }
-	virtual bool SeekToPts (uint64_t pts);
+	virtual bool SeekToPts (guint64 pts);
 
 };
 
@@ -757,14 +757,14 @@ public:
 	virtual MediaSourceType GetType () { return MediaSourceTypeLive; }
 	
 	virtual bool CanSeek () { return false; }
-	virtual int64_t GetPosition () { return 0; }
-	virtual bool Seek (int64_t offset) { return false; }
-	virtual bool Seek (int64_t offset, int mode) { return false; }
-	virtual int32_t ReadSome (void *buffer, uint32_t n) { return -1; }
-	virtual bool ReadAll (void *buffer, uint32_t n) { return false; }
-	virtual bool Peek (void *buffer, uint32_t n) { return false; }
-	virtual bool Peek (void *buf, uint32_t n, int64_t start) { return false; }
-	virtual int64_t GetSize () { return -1; }
+	virtual gint64 GetPosition () { return 0; }
+	virtual bool Seek (gint64 offset) { return false; }
+	virtual bool Seek (gint64 offset, int mode) { return false; }
+	virtual gint32 ReadSome (void *buffer, guint32 n) { return -1; }
+	virtual bool ReadAll (void *buffer, guint32 n) { return false; }
+	virtual bool Peek (void *buffer, guint32 n) { return false; }
+	virtual bool Peek (void *buf, guint32 n, gint64 start) { return false; }
+	virtual gint64 GetSize () { return -1; }
 	virtual bool Eof () { return false; }
 };
 */
@@ -772,22 +772,22 @@ public:
 class MemorySource : public IMediaSource {
 private:
 	void *memory;
-	int32_t size;
-	int64_t start;
-	int64_t pos;
+	gint32 size;
+	gint64 start;
+	gint64 pos;
 	bool owner;
 
 protected:
 	virtual ~MemorySource ();
 
-	virtual int32_t ReadInternal (void *buf, uint32_t n);
-	virtual int32_t PeekInternal (void *buf, uint32_t n, int64_t start);
-	virtual bool SeekInternal (int64_t offset, int mode);
-	virtual int64_t GetPositionInternal () { return pos + start; }
-	virtual int64_t GetSizeInternal () { return size; }
+	virtual gint32 ReadInternal (void *buf, guint32 n);
+	virtual gint32 PeekInternal (void *buf, guint32 n, gint64 start);
+	virtual bool SeekInternal (gint64 offset, int mode);
+	virtual gint64 GetPositionInternal () { return pos + start; }
+	virtual gint64 GetSizeInternal () { return size; }
 
 public:
-	MemorySource (Media *media, void *memory, int32_t size, int64_t start = 0);
+	MemorySource (Media *media, void *memory, gint32 size, gint64 start = 0);
 
 	void SetOwner (bool value) { owner = value; }
 
@@ -806,17 +806,17 @@ protected:
 
 public:
 	IImageConverter *converter; // This stream has the ownership of the converter, it will be deleted upon destruction.
-	uint32_t bits_per_sample;
-	uint32_t msec_per_frame;
-	uint64_t initial_pts;
-	uint32_t height;
-	uint32_t width;
-	uint32_t bit_rate;
+	guint32 bits_per_sample;
+	guint32 msec_per_frame;
+	guint64 initial_pts;
+	guint32 height;
+	guint32 width;
+	guint32 bit_rate;
 	
 	VideoStream (Media *media);
 	
 	virtual MoonMediaType GetType () { return MediaTypeVideo; } 
-	uint32_t GetBitRate () { return (uint32_t) bit_rate; }
+	guint32 GetBitRate () { return (guint32) bit_rate; }
 };
  
 class AudioStream : public IMediaStream {
@@ -833,7 +833,7 @@ public:
 	AudioStream (Media *media) : IMediaStream (media) {}
 	
 	virtual MoonMediaType GetType () { return MediaTypeAudio; }
-	uint32_t GetBitRate () { return (uint32_t) bit_rate; }
+	guint32 GetBitRate () { return (guint32) bit_rate; }
 };
 
 /*
@@ -851,8 +851,8 @@ public:
 	
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame) { return MEDIA_FAIL; }
-	virtual MediaResult Seek (uint64_t pts) { return MEDIA_FAIL; }
-	virtual int64_t EstimatePtsPosition (uint64_t pts) { return 0; }
+	virtual MediaResult Seek (guint64 pts) { return MEDIA_FAIL; }
+	virtual gint64 EstimatePtsPosition (guint64 pts) { return 0; }
 
 	Playlist *GetPlaylist () { return playlist; }
 	virtual const char *GetName () { return "ASXDemuxer"; }
@@ -870,7 +870,7 @@ public:
  */
 class ASFDemuxer : public IMediaDemuxer {
 private:
-	int32_t *stream_to_asf_index;
+	gint32 *stream_to_asf_index;
 	ASFReader *reader;
 	ASFParser *parser;
 	
@@ -884,13 +884,13 @@ public:
 	
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
-	virtual MediaResult Seek (uint64_t pts);
-	virtual int64_t EstimatePtsPosition (uint64_t pts);
+	virtual MediaResult Seek (guint64 pts);
+	virtual gint64 EstimatePtsPosition (guint64 pts);
 	virtual void UpdateSelected (IMediaStream *stream);
 	
 	ASFParser *GetParser () { return parser; }
 	virtual const char *GetName () { return "ASFDemuxer"; }
-	virtual uint64_t GetLastAvailablePts ();
+	virtual guint64 GetLastAvailablePts ();
 };
 
 class ASFDemuxerInfo : public DemuxerInfo {
@@ -955,42 +955,42 @@ public:
  */
 
 struct MpegFrame {
-	int64_t offset;
-	uint64_t pts;
-	uint32_t dur;
+	gint64 offset;
+	guint64 pts;
+	guint32 dur;
 	
 	// this is needed in case this frame did not specify it's own
 	// bit rate which is possible for MPEG-1 Layer 3 audio.
-	int32_t bit_rate;
+	gint32 bit_rate;
 };
 
 class Mp3FrameReader {
 	IMediaSource *stream;
-	int64_t stream_start;
-	uint32_t frame_dur;
-	uint32_t frame_len;
-	uint64_t cur_pts;
-	int32_t bit_rate;
+	gint64 stream_start;
+	guint32 frame_dur;
+	guint32 frame_len;
+	guint64 cur_pts;
+	gint32 bit_rate;
 	bool xing;
 	
 	MpegFrame *jmptab;
-	uint32_t avail;
-	uint32_t used;
+	guint32 avail;
+	guint32 used;
 	
-	uint32_t MpegFrameSearch (uint64_t pts);
-	void AddFrameIndex (int64_t offset, uint64_t pts, uint32_t dur, int32_t bit_rate);
+	guint32 MpegFrameSearch (guint64 pts);
+	void AddFrameIndex (gint64 offset, guint64 pts, guint32 dur, gint32 bit_rate);
 	
 	bool SkipFrame ();
 	
 public:
-	Mp3FrameReader (IMediaSource *source, int64_t start, uint32_t frame_len, uint32_t frame_duration, bool xing);
+	Mp3FrameReader (IMediaSource *source, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing);
 	~Mp3FrameReader ();
 	
-	bool Seek (uint64_t pts);
+	bool Seek (guint64 pts);
 	
 	MediaResult ReadFrame (MediaFrame *frame);
 	
-	int64_t EstimatePtsPosition (uint64_t pts);
+	gint64 EstimatePtsPosition (guint64 pts);
 };
 
 class Mp3Demuxer : public IMediaDemuxer {
@@ -1006,8 +1006,8 @@ public:
 	
 	virtual MediaResult ReadHeader ();
 	virtual MediaResult ReadFrame (MediaFrame *frame);
-	virtual MediaResult Seek (uint64_t pts);
-	virtual int64_t EstimatePtsPosition (uint64_t pts);
+	virtual MediaResult Seek (guint64 pts);
+	virtual gint64 EstimatePtsPosition (guint64 pts);
 	virtual const char *GetName () { return "Mp3Demuxer"; }
 };
 

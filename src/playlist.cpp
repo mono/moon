@@ -8,8 +8,6 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#include <glib.h>
-#include <gtk/gtk.h>
 #include <expat.h>
 #include <string.h>
 #include <math.h>

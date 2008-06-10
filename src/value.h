@@ -17,6 +17,7 @@
 #ifndef MOON_VALUE_H
 #define MOON_VALUE_H
 
+#include <glib.h>
 #include <string.h>
 #include <stdint.h>
 #include <cairo.h>
@@ -196,8 +197,8 @@ public:
 	Value (Type::Kind k);
 	Value (bool z);
 	Value (double d);
-	Value (int64_t i, Type::Kind as); // Use for TimeSpan and int64 values.
-	Value (int32_t i);
+	Value (gint64 i, Type::Kind as); // Use for TimeSpan and int64 values.
+	Value (gint32 i);
 	Value (Color c);
 	Value (EventObject *obj);
 	Value (Point pt);
@@ -249,10 +250,10 @@ public:
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
-	uint64_t	AsUint64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
-	int64_t		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
+	guint64		AsUint64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
+	gint64		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
 	TimeSpan	AsTimeSpan ()	{ checked_get_exact (Type::TIMESPAN, 0, (TimeSpan)u.i64); }
-	int32_t		AsInt32 ()	{ checked_get_exact (Type::INT32, 0, u.i32); }
+	gint32		AsInt32 ()	{ checked_get_exact (Type::INT32, 0, u.i32); }
 	Color*		AsColor ()	{ checked_get_exact (Type::COLOR, NULL, u.color); }
 	Point*		AsPoint ()	{ checked_get_exact (Type::POINT, NULL, u.point); }
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
@@ -425,9 +426,9 @@ public:
 
 	union {
 		double d;
-		uint64_t ui64;
-		int64_t i64;
-		int32_t i32;
+		guint64 ui64;
+		gint64 i64;
+		gint32 i32;
 		char *s;
 		EventObject *dependency_object;
 		Color *color;
@@ -448,12 +449,12 @@ public:
 	// favor, and don't expose this ctor. :)
 	Value (void* v) { }
 	// You don't want to be using this ctor either.
-	// Use the Value (int64_t, Type::Kind) ctor
+	// Use the Value (gint64, Type::Kind) ctor
 	// (Both for TimeSpan and int64_t)
 	// This one is bad because it get used by either int64_t
 	// and TimeSpan, and the constructor doesn't know which 
 	// of the two types it is.
-	Value (int64_t i) {};
+	Value (gint64 i) {};
 };
 
 G_BEGIN_DECLS

@@ -14,6 +14,7 @@
 #ifndef MOON_CLOCK_H
 #define MOON_CLOCK_H
 
+#include <glib.h>
 #include <stdint.h>
 #include "collection.h"
 
@@ -27,7 +28,7 @@ G_BEGIN_DECLS
  *  Seconds
  */ 
  
-typedef uint64_t TimePts;
+typedef guint64 TimePts;
 
 #define TIMESPANTICKS_IN_SECOND 10000000
 #define TIMESPANTICKS_IN_SECOND_FLOAT 10000000.0
@@ -38,10 +39,10 @@ typedef uint64_t TimePts;
 #define TimeSpan_FromSecondsFloat(s)  ((TimeSpan)((s) * TIMESPANTICKS_IN_SECOND_FLOAT))
 #define TimeSpan_ToSecondsFloat(s)  (((TimeSpan)(s)) / TIMESPANTICKS_IN_SECOND_FLOAT)
 
-#define TimeSpan_ToPts(s)	((uint64_t) (s))
+#define TimeSpan_ToPts(s)	((guint64) (s))
 #define TimeSpan_FromPts(s)	((TimeSpan) (s))
 
-#define MilliSeconds_ToPts(s) ((uint64_t) (s) * 10000)
+#define MilliSeconds_ToPts(s) ((guint64) (s) * 10000)
 #define MilliSeconds_FromPts(s) ((s) / 10000)
 
 // misc types
@@ -106,7 +107,7 @@ struct Duration {
 
  private:
 	DurationKind k;
-	int32_t padding;
+	gint32 padding;
 	TimeSpan timespan;
 };
 
@@ -169,7 +170,7 @@ struct RepeatBehavior {
 
  private:
 	RepeatKind k;
-	int32_t padding;
+	gint32 padding;
 	double count;
 	TimeSpan duration;
 };

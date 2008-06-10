@@ -10,7 +10,7 @@
 #include <config.h>
 #include <stdlib.h>
 
-#include <gtk/gtk.h>
+#include <glib.h>
 
 #include "array.h"
 #include "point.h"

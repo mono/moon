@@ -27,11 +27,6 @@
 
 #include <asoundlib.h>
 
-G_BEGIN_DECLS
-#include <stdint.h>
-#include <limits.h>
-G_END_DECLS
-
 #include "clock.h"
 #include "mplayer.h"
 #include "pipeline.h"
@@ -169,7 +164,7 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	closure->frame = NULL;
 	
 	if (element->IsLive ()) {
-		if (player->first_live_pts == UINT64_MAX) {
+		if (player->first_live_pts == G_MAXULONG) {
 			player->first_live_pts = frame->pts;
 		} else if (player->first_live_pts > frame->pts) {
 			//printf ("MediaPlayer::FrameCallback (): Found a frame with lower pts (%llu) than a previous frame (%llu).\n", frame->pts, player->first_live_pts);
@@ -275,7 +270,7 @@ MediaPlayer::Open (Media *media)
 	int stride;
 	IMediaDecoder *encoding;
 	IMediaStream *stream;
-	uint64_t asx_duration;
+	guint64 asx_duration;
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::Open (%p), current media: %p\n", media, this->media);
 	
@@ -417,7 +412,7 @@ MediaPlayer::Initialize ()
 	start_pts = 0;
 	current_pts = 0;
 	target_pts = 0;
-	first_live_pts = UINT64_MAX;
+	first_live_pts = G_MAXULONG;
 	
 	height = 0;
 	width = 0;
@@ -480,7 +475,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 	
 	if (!frame->IsPlanar ()) {
 		// Just copy the data
-		memcpy (video.rgb_buffer, frame->buffer, MIN (frame->buflen, (uint32_t) (cairo_image_surface_get_stride (video.surface) * height)));
+		memcpy (video.rgb_buffer, frame->buffer, MIN (frame->buflen, (guint32) (cairo_image_surface_get_stride (video.surface) * height)));
 		SetBit (RenderedFrame);
 		return;
 	}
@@ -491,7 +486,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 		return;
 	}
 	
-	uint8_t *rgb_dest [3] = { video.rgb_buffer, NULL, NULL };
+	guint8 *rgb_dest [3] = { video.rgb_buffer, NULL, NULL };
 	int rgb_stride [3] = { cairo_image_surface_get_stride (video.surface), 0, 0 };
 	
 	stream->converter->Convert (frame->data_stride, frame->srcStride, frame->srcSlideY,
@@ -507,16 +502,16 @@ MediaPlayer::AdvanceFrame ()
 	Packet *pkt = NULL;
 	MediaFrame *frame = NULL;
 	IMediaStream *stream;
-	uint64_t target_pts = 0;
-	uint64_t target_pts_start = 0;
-	uint64_t target_pts_end = 0;
-	uint64_t target_pts_delta = MilliSeconds_ToPts (100);
+	guint64 target_pts = 0;
+	guint64 target_pts_start = 0;
+	guint64 target_pts_end = 0;
+	guint64 target_pts_delta = MilliSeconds_ToPts (100);
 	bool update = false;
 	
 #if DEBUG_ADVANCEFRAME
 	static int frames_per_second = 0;
 	static int skipped_per_second = 0;
-	static uint64_t last_second_pts = 0;
+	static guint64 last_second_pts = 0;
 	int skipped = 0;
 #endif
 	
@@ -541,8 +536,8 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = GetTargetPts ();	
 	} else {
 		// no audio to sync to
-		uint64_t now = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
-		uint64_t elapsed_pts = now - start_time;
+		guint64 now = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
+		guint64 elapsed_pts = now - start_time;
 		
 		target_pts = elapsed_pts;
 		
@@ -635,7 +630,7 @@ MediaPlayer::AdvanceFrame ()
 	if (update && frame && GetBit (SeekSynched)) {
 #if DEBUG_ADVANCEFRAME
 		int fps = 0, sps = 0;
-		uint64_t ms = 0;
+		guint64 ms = 0;
 		frames_per_second++;
 		skipped_per_second += skipped;
 		if (MilliSeconds_FromPts (target_pts - last_second_pts) > 1000) {
@@ -774,12 +769,12 @@ MediaPlayer::Pause ()
 	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i [Done]\n", state);	
 }
 
-uint64_t
+guint64
 MediaPlayer::GetTargetPts ()
 {
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::GetTargetPts (): target_pts: %llu\n", target_pts);
 
-	uint64_t result;
+	guint64 result;
 	
 	pthread_mutex_lock (&target_pts_lock);
 	result = target_pts;
@@ -789,7 +784,7 @@ MediaPlayer::GetTargetPts ()
 }
 
 void
-MediaPlayer::SetTargetPts (uint64_t pts)
+MediaPlayer::SetTargetPts (guint64 pts)
 {
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::SetTargetPts (%llu = %llu ms), current_pts: %llu, IsSeeking (): %i\n", pts, MilliSeconds_FromPts (pts), current_pts, IsSeeking ());
 
@@ -819,7 +814,7 @@ MediaPlayer::SeekCallback (MediaClosure *closure)
 }
 
 void
-MediaPlayer::SeekInternal (uint64_t pts)
+MediaPlayer::SeekInternal (guint64 pts)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::SeekInternal (%llu = %llu ms), media: %p, state: %i, Position (): %llu\n", pts, MilliSeconds_FromPts (pts), media, state, GetPosition ());
 
@@ -836,11 +831,11 @@ MediaPlayer::SeekInternal (uint64_t pts)
 }
 
 void
-MediaPlayer::Seek (uint64_t pts)
+MediaPlayer::Seek (guint64 pts)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu = %llu ms), media: %p, state: %i, current_pts: %llu\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts);
 
-	uint64_t duration = GetDuration ();
+	guint64 duration = GetDuration ();
 	bool resume = IsPlaying ();
 	
 	if (!GetCanSeek ())
@@ -1060,7 +1055,7 @@ AudioPlayer::~AudioPlayer ()
 	StopThread ();
 	
 	if (list != NULL) {	
-		for (uint32_t i = 0; i < list_count; i++)
+		for (guint32 i = 0; i < list_count; i++)
 			delete list [i];
 		g_free (list);
 		list = NULL;
@@ -1110,7 +1105,7 @@ AudioPlayer::AddInternal (MediaPlayer *mplayer)
 		list_size = (list_size == 0) ? 1 : list_size << 1;
 		new_list = (AudioNode**) g_malloc0 (sizeof (AudioNode*) * (list_size + 1));
 		if (list != NULL) {
-			for (uint32_t i = 0; i < list_count - 1; i++)
+			for (guint32 i = 0; i < list_count - 1; i++)
 				new_list [i] = list [i];
 			g_free (list);
 		}
@@ -1144,12 +1139,12 @@ AudioPlayer::RemoveInternal (MediaPlayer *mplayer)
 	
 	Lock ();
 	
-	for (uint32_t i = 0; i < list_count; i++) {
+	for (guint32 i = 0; i < list_count; i++) {
 		if (list [i]->mplayer == mplayer) {
 			// printf ("AudioPlayer::Remove (%p): removing... (node: %p)\n", list [i]->mplayer, list [i]);
 			delete list [i];
 
-			for (uint32_t k = i + 1; k < list_count; k++)
+			for (guint32 k = i + 1; k < list_count; k++)
 				list [k - 1] = list [k];
 			
 			list [list_count - 1] = NULL;
@@ -1212,7 +1207,7 @@ AudioPlayer::Find (MediaPlayer *mplayer)
 {
 	AudioNode *result = NULL;
 	
-	for (uint32_t i = 0; i < list_count; i++) {
+	for (guint32 i = 0; i < list_count; i++) {
 		if (list [i]->mplayer == mplayer) {
 			result = list [i];
 			break;
@@ -1267,7 +1262,7 @@ AudioPlayer::UpdatePollList (bool locked)
 	}
 	
 	ndfs = 1;
-	for (uint32_t i = 0; i < list_count; i++) {
+	for (guint32 i = 0; i < list_count; i++) {
 		if (list [i]->state == Playing)
 			ndfs += list [i]->ndfs;
 	}
@@ -1278,7 +1273,7 @@ AudioPlayer::UpdatePollList (bool locked)
 	udfs [0].events = POLLIN;
 
 	current = 1;
-	for (uint32_t i = 0; i < list_count; i++) {
+	for (guint32 i = 0; i < list_count; i++) {
 		if (list [i]->state == Playing) {
 			memcpy (&udfs [current], list [i]->udfs, list [i]->ndfs * sizeof (pollfd));
 			current += list[i]->ndfs;
@@ -1300,7 +1295,7 @@ void
 AudioPlayer::Loop ()
 {
 	AudioNode *current = NULL;
-	uint32_t current_index = 0;
+	guint32 current_index = 0;
 	// Keep track of how many of the audio nodes actually played something
 	// If none of the nodes played anything, then we poll until something happens.
 	int pc = 0; // The number of consecutive nodes which haven't played anything
@@ -1547,7 +1542,7 @@ AudioPlayer::AudioNode::SetupHW ()
 	bool result = false;
 	
 	snd_pcm_hw_params_t *params = NULL;
-	uint32_t buffer_time = 500000; // request 0.5 seconds of buffer time.
+	guint32 buffer_time = 500000; // request 0.5 seconds of buffer time.
 	int err = 0;
 	int dir = 0;
 	int channels = mplayer->audio.stream->channels;
@@ -1656,7 +1651,7 @@ AudioPlayer::AudioNode::PreparePcm (snd_pcm_sframes_t *avail)
 {
 	int err;
 	snd_pcm_state_t state = snd_pcm_state (pcm);
-	int32_t period_size = sample_size;
+	gint32 period_size = sample_size;
 	
 	switch (state) {
 	case SND_PCM_STATE_XRUN:
@@ -1723,17 +1718,17 @@ AudioPlayer::AudioNode::Play ()
 
 	bool result = false;	
 	Audio *audio = &mplayer->audio;
-	uint32_t channels = audio->stream->channels;
+	guint32 channels = audio->stream->channels;
 	const snd_pcm_channel_area_t *areas = NULL;
 	snd_pcm_uframes_t offset = 0, frames, size;
 	snd_pcm_sframes_t avail, commitres;
 	int err = 0;
 	
-	int32_t bpf = snd_pcm_format_width (MOON_AUDIO_FORMAT) / 8 * channels; // bytes per frame
-	int32_t steps [channels];
-	int32_t count;
-	int16_t *samples [channels];
-	int16_t *outptr;
+	gint32 bpf = snd_pcm_format_width (MOON_AUDIO_FORMAT) / 8 * channels; // bytes per frame
+	gint32 steps [channels];
+	gint32 count;
+	gint16 *samples [channels];
+	gint16 *outptr;
 	
 	if (state != Playing)
 		return false;
@@ -1741,11 +1736,11 @@ AudioPlayer::AudioNode::Play ()
 	if (!PreparePcm (&avail))
 		return false;
 	
-	LOG_AUDIO_EX ("AudioPlayer::AudioNode::Play (): entering play loop, avail: %lld, sample size: %i\n", (int64_t) avail, (int) sample_size);
+	LOG_AUDIO_EX ("AudioPlayer::AudioNode::Play (): entering play loop, avail: %lld, sample size: %i\n", (gint64) avail, (int) sample_size);
 
 	// Set the volume
-	int32_t	volume = audio->volume * 8192;
-	int32_t volumes [channels]; // channel #0 = left, #1 = right 
+	gint32	volume = audio->volume * 8192;
+	gint32 volumes [channels]; // channel #0 = left, #1 = right 
 	
 	// FIXME: Can we get audio with channels != 2?
 
@@ -1777,11 +1772,11 @@ AudioPlayer::AudioNode::Play ()
 
 		count = frames;
 		
-		for (uint32_t channel = 0; channel < channels; channel++) {
+		for (guint32 channel = 0; channel < channels; channel++) {
 			// number of 16bit samples between each sample
 			steps [channel] = areas [channel].step / 16;
 			// pointer to the first sample to write to
-			samples [channel] = ((int16_t*) areas [channel].addr) + (areas [channel].first / 16);
+			samples [channel] = ((gint16*) areas [channel].addr) + (areas [channel].first / 16);
 			samples [channel] += offset * steps [channel];
 		}
 
@@ -1808,7 +1803,7 @@ AudioPlayer::AudioNode::Play ()
 					return result;
 				}
 				//printf ("play: sent_pts = %llu (from frame, old pts: %llu, diff: %lld, time: %lld milliseconds), samples sent: %i\n", first_pts, 
-				//	sent_pts, first_pts - sent_pts, (int64_t) MilliSeconds_FromPts ((int64_t) first_pts - (int64_t) sent_pts), sent_samples);
+				//	sent_pts, first_pts - sent_pts, (gint64) MilliSeconds_FromPts ((gint64) first_pts - (gint64) sent_pts), sent_samples);
 				sent_pts = first_pts;
 				sent_samples = 0;
 				update_target_pts = true;
@@ -1816,12 +1811,12 @@ AudioPlayer::AudioNode::Play ()
 				sent_pts = first_pts + sent_samples * 10000000 / audio->stream->sample_rate;
 			}
 
-			outptr = (int16_t*) &first_buffer [first_used];
+			outptr = (gint16*) &first_buffer [first_used];
 			first_used += bpf;
 			sent_samples++;
-			for (uint32_t channel = 0; channel < channels; channel++) {
-				int32_t value = (outptr [channel] * volumes [channel]) >> 13;
-				*(samples[channel]) = (int16_t) CLAMP (value, -32768, 32767);
+			for (guint32 channel = 0; channel < channels; channel++) {
+				gint32 value = (outptr [channel] * volumes [channel]) >> 13;
+				*(samples[channel]) = (gint16) CLAMP (value, -32768, 32767);
 				samples[channel] += steps[channel];
 			}
 		}
@@ -1838,11 +1833,11 @@ AudioPlayer::AudioNode::Play ()
 		
 		if (update_target_pts || (sent_pts - updated_pts) > 10000) {
 			snd_pcm_sframes_t delay;
-			uint64_t pts = sent_pts;
-			uint64_t delay_pts;
+			guint64 pts = sent_pts;
+			guint64 delay_pts;
 			err = snd_pcm_delay (pcm, &delay);
 			if (err >= 0) {
-				delay_pts = delay * (uint64_t) 10000000 / audio->stream->sample_rate;
+				delay_pts = delay * (guint64) 10000000 / audio->stream->sample_rate;
 				if (delay_pts > pts)
 					pts = 0;
 				else

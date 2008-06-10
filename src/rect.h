@@ -10,9 +10,10 @@
 #ifndef __MOON_RECT_H__
 #define __MOON_RECT_H__
 
+#include <glib.h>
 #include <cairo.h>
 #include <math.h>
-#include <gtk/gtk.h>
+#include <gdk/gdk.h> // for GdkRectangle
 
 #include "point.h"
 

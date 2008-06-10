@@ -11,8 +11,7 @@
 #include "uielement.h"
 #include "collection.h"
 #include "stylus.h"
-#include "dirty.h"
-#include "media.h"
+#include "runtime.h"
 
 MouseEventArgs::MouseEventArgs (GdkEvent *event)
 {
@@ -155,19 +154,3 @@ mouse_event_args_get_stylus_points (MouseEventArgs *args, UIElement *ink_present
 {
 	return args->GetStylusPoints (ink_presenter);
 }
-
-/*
- * MarkerReachedEventArgs
- */
-
-MarkerReachedEventArgs::MarkerReachedEventArgs (TimelineMarker *marker)
-{
-	this->marker = marker;
-	this->marker->ref ();
-}
-
-MarkerReachedEventArgs::~MarkerReachedEventArgs ()
-{
-	marker->unref ();
-}
-

@@ -10,6 +10,8 @@
 #ifndef __MOON_COLLECTION_H__
 #define __MOON_COLLECTION_H__
 
+#include <glib.h>
+
 #include "dependencyobject.h"
 #include "list.h"
 #include "eventargs.h"
@@ -98,26 +100,6 @@ class CollectionIterator {
 	bool first;
 };
 
-class VisualCollection : public Collection {
- protected:
-	virtual ~VisualCollection ();
-
- public:
-	VisualCollection ();
-	virtual Type::Kind GetObjectType () { return Type::VISUAL_COLLECTION; }
-	virtual Type::Kind GetElementType () { return Type::VISUAL; }
-
-	virtual int  Add    (DependencyObject *data);
-	virtual bool Remove (DependencyObject *data);
-	virtual bool RemoveAt (int index);
-	virtual bool Insert (int index, DependencyObject *data);
-	virtual void Clear  ();
-	virtual DependencyObject *SetVal (int index, DependencyObject *data);
-
-	void ResortByZIndex ();
-	GPtrArray *z_sorted;
-};
-
 class TriggerCollection : public Collection {
  protected:
 	virtual ~TriggerCollection () {}
@@ -155,37 +137,6 @@ class ResourceDictionary : public Collection {
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 };
 
-/*
- * This collection is always sorted by the time value of the markers.
- * We override AddToList to add the node where it's supposed to be, keeping the
- * collection sorted at all times.
- * We also override Insert to ignore the index and behave just like Add.
- */
-class TimelineMarkerCollection : public Collection {
- protected:
-	virtual ~TimelineMarkerCollection () {}
-	virtual int AddToList (Collection::Node *node);
-
- public:
-	TimelineMarkerCollection () {}
-	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
-	virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
-	
-	virtual bool Insert (int index, DependencyObject *data);
-};
-
-class MediaAttributeCollection : public Collection {
- protected:
-	virtual ~MediaAttributeCollection () {}
-
-public:
-	MediaAttributeCollection () {}
-	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
-	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
-
-	MediaAttribute *GetItemByName (const char *name);
-};
-
 class Inlines : public Collection {
  protected:
 	virtual ~Inlines () {}
@@ -219,16 +170,11 @@ DependencyObject *collection_iterator_get_current (CollectionIterator *iterator,
 
 Collection *collection_new (Type::Kind kind);
 
-VisualCollection *visual_collection_new (void);
 TriggerCollection *trigger_collection_new (void);
 TriggerActionCollection *trigger_action_collection_new (void);
 ResourceDictionary *resource_dictionary_new (void);
-TimelineMarkerCollection *timeline_marker_collection_new (void);
 GradientStopCollection *gradient_stop_collection_new (void);
 Inlines *inlines_new (void);
-
-MediaAttributeCollection *media_attribute_collection_new (void);
-MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name);
 
 void collection_init (void);
 

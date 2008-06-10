@@ -38,6 +38,7 @@
 #include "animation.h"
 #include "downloader.h"
 #include "frameworkelement.h"
+#include "media.h"
 #include "stylus.h"
 #include "rect.h"
 #include "text.h"
@@ -994,7 +995,7 @@ void
 Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Surface *s = (Surface *) closure;
-	int64_t now;
+	gint64 now;
 	bool dirty = false;
 
 	GDK_THREADS_ENTER ();
@@ -1878,6 +1879,12 @@ Surface::SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data)
 	cache_data = user_data;
 }
 
+class DownloaderNode : public List::Node {
+public:
+	Downloader *downloader;
+	DownloaderNode (Downloader *dl) { downloader = dl; }		
+};
+
 void
 Surface::DetachDownloaders ()
 {
@@ -1963,16 +1970,16 @@ Surface::VerifyWithCacheSizeCounter (int w, int h)
 		return false;
 }
 
-int64_t
+gint64
 Surface::AddToCacheSizeCounter (int w, int h)
 {
-	int64_t new_size = w * h * cache_size_multiplier;
+	gint64 new_size = w * h * cache_size_multiplier;
 	cache_size_in_bytes += new_size;
 	return new_size;
 }
 
 void 
-Surface::RemoveFromCacheSizeCounter (int64_t size)
+Surface::RemoveFromCacheSizeCounter (gint64 size)
 {
 	cache_size_in_bytes -= size;
 }
@@ -2154,20 +2161,6 @@ surface_get_trans (Surface *s)
 }
 
 
-cairo_t*
-measuring_context_create (void)
-{
-	cairo_surface_t* surf = cairo_image_surface_create (CAIRO_FORMAT_A1, 1, 1);
-	return cairo_create (surf);
-}
-
-void
-measuring_context_destroy (cairo_t *cr)
-{
-	cairo_surface_destroy (cairo_get_target (cr));
-	cairo_destroy (cr);
-}
-
 void
 runtime_init (guint32 flags)
 {
@@ -2275,14 +2268,14 @@ runtime_init (guint32 flags)
 //
 // These are the plugin-less versions of these methods
 //
-uint32_t
+guint32
 runtime_html_timer_timeout_add (int interval, GSourceFunc callback, gpointer data)
 {
 	return  g_timeout_add (interval, callback, data);
 }
 
 void 
-runtime_html_timer_timeout_stop (uint32_t source_id)
+runtime_html_timer_timeout_stop (guint32 source_id)
 {
 	g_source_remove (source_id);
 }

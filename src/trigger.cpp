@@ -9,8 +9,6 @@
 
 #include <config.h>
 
-#include <gtk/gtk.h>
-
 #include "trigger.h"
 #include "collection.h"
 #include "uielement.h"

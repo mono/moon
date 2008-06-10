@@ -10,11 +10,7 @@
  * 
  */
 #include <config.h>
-#include <string.h>
-#include <gtk/gtk.h>
-#include <malloc.h>
 #include <glib.h>
-#include <stdlib.h>
 #define Visual _XVisual
 #include <cairo-xlib.h>
 #undef Visual

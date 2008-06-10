@@ -12,11 +12,9 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
 #include <cairo.h>
 
-#include <stdlib.h>
-#include <string.h>
+#include <errno.h>
 
 #include "file-downloader.h"
 #include "runtime.h"
@@ -494,7 +492,7 @@ TextBlock::Layout (cairo_t *cr)
 {
 	TextDecorations decorations;
 	double width = GetWidth ();
-	uint8_t font_mask;
+	guint8 font_mask;
 	const char *text;
 	List *runs;
 	
@@ -514,7 +512,7 @@ TextBlock::Layout (cairo_t *cr)
 	
 	if (inlines != NULL) {
 		Collection::Node *node = (Collection::Node *) inlines->list->First ();
-		uint8_t run_mask, inherited_mask;
+		guint8 run_mask, inherited_mask;
 		TextFontDescription *ifont;
 		TextDecorations deco;
 		Value *value;
@@ -912,13 +910,13 @@ TextBlock::GetValue (DependencyProperty *property)
 }
 
 void
-TextBlock::data_write (void *buf, int32_t offset, int32_t n, gpointer data)
+TextBlock::data_write (void *buf, gint32 offset, gint32 n, gpointer data)
 {
 	;
 }
 
 void
-TextBlock::size_notify (int64_t size, gpointer data)
+TextBlock::size_notify (gint64 size, gpointer data)
 {
 	;
 }
@@ -1315,13 +1313,13 @@ enum GlyphAttrMask {
 
 class GlyphAttr : public List::Node {
 public:
-	uint32_t glyph_count;
-	uint32_t code_units;
-	uint32_t index;
+	guint32 glyph_count;
+	guint32 code_units;
+	guint32 index;
 	double advance;
 	double uoffset;
 	double voffset;
-	uint8_t set;
+	guint8 set;
 	
 	GlyphAttr ();
 };
@@ -1381,7 +1379,7 @@ Glyphs::~Glyphs ()
 void
 Glyphs::Layout ()
 {
-	uint32_t code_units, glyph_count, i;
+	guint32 code_units, glyph_count, i;
 	bool first_char = true;
 	double x0, x1, y0, y1;
 	double bottom, right;
@@ -1718,13 +1716,13 @@ Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 }
 
 void
-Glyphs::data_write (void *buf, int32_t offset, int32_t n, gpointer data)
+Glyphs::data_write (void *buf, gint32 offset, gint32 n, gpointer data)
 {
 	;
 }
 
 void
-Glyphs::size_notify (int64_t size, gpointer data)
+Glyphs::size_notify (gint64 size, gpointer data)
 {
 	;
 }

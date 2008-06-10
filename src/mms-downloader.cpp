@@ -15,7 +15,6 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
 #include "asf/asf.h"
 
 #include "clock.h"
@@ -82,12 +81,12 @@ MmsDownloader::Open (const char *verb, const char *uri)
 }
 
 void
-MmsDownloader::Write (void *buf, int32_t off, int32_t n)
+MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 {
 	MmsHeader *header;
 	MmsPacket *packet;
 	char *payload;
-	uint32_t offset = 0;
+	guint32 offset = 0;
 	int64_t requested_position = -1;
 
 	// Resize our internal buffer
@@ -176,13 +175,13 @@ MmsDownloader::GetDownloadedFilename (const char *partname)
 }
 
 char *
-MmsDownloader::GetResponseText (const char *partname, uint64_t *size)
+MmsDownloader::GetResponseText (const char *partname, guint64 *size)
 {
 	return NULL;
 }
 
 bool
-MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
+MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
 	LOG_MMS ("MmsDownloader::ProcessPacket ()\n");
 	
@@ -209,7 +208,7 @@ MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payloa
 }
 
 bool
-MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
+MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
 	LOG_MMS ("MmsDownloader::ProcessHeaderPacket ()\n");
 	
@@ -231,7 +230,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 
 	if (!this->described) {
 		gpointer state;
-		uint8_t current_stream;
+		guint8 current_stream;
 
 		for (int i = 1; i < 127; i++) {
 			if (!parser->IsValidStream (i))
@@ -314,14 +313,14 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 }
 
 bool
-MmsDownloader::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
+MmsDownloader::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
 	LOG_MMS ("MmsDownloader::ProcessMetadataPacket (%p, %p, %s, %p)\n", header, packet, payload, offset);
 	
 	//playlist-gen-id and broadcast-id isn't used anywhere right now,
 	//but I'm keeping the code since we'll probably need it
-	//uint32_t playlist_gen_id = 0;
-	//uint32_t broadcast_id = 0;
+	//guint32 playlist_gen_id = 0;
+	//guint32 broadcast_id = 0;
 	HttpStreamingFeatures features = HttpStreamingFeaturesNone;
 	
 	char *start = payload;
@@ -379,7 +378,7 @@ MmsDownloader::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char
 }
 
 bool
-MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
+MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
 	LOG_MMS ("MmsDownloader::ProcessPairPacket ()\n");
 	
@@ -415,12 +414,12 @@ MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *pa
 }
 
 bool
-MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *offset)
+MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
 	LOG_MMS ("MmsDownloader::ProcessDataPacket ()\n");
 	
-	int32_t off = this->header_size;
-	int32_t size = this->asf_packet_size;
+	gint32 off = this->header_size;
+	gint32 size = this->asf_packet_size;
 		
 	if (this->seekable) {
 		off += packet->packet.data.id * size;
@@ -439,7 +438,7 @@ MmsDownloader::GetVideoStream ()
 {
 	int video_stream = 0;
 	int video_rate = 0;
-	uint64_t max_bitrate = (uint64_t)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
+	guint64 max_bitrate = (guint64)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
 	
 	for (int i = 0; i < 128; i++) {
 		int stream_rate = video_streams [i];
@@ -468,7 +467,7 @@ MmsDownloader::GetAudioStream ()
 {
 	int audio_stream = 0;
 	int audio_rate = 0;
-	uint64_t max_bitrate = (uint64_t)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
+	guint64 max_bitrate = (guint64)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
 	
 	for (int i = 0; i < 128; i++) {
 		int stream_rate = audio_streams [i];

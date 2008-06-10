@@ -10,9 +10,10 @@
 #ifndef __MOON_EVENTARGS_H__
 #define __MOON_EVENTARGS_H__
 
-#include <stdint.h>
+#include <glib.h>
+
 #include <cairo.h>
-#include <gtk/gtk.h>
+#include <gdk/gdkevents.h>
 #include "dependencyobject.h"
 
 class StylusInfo;
@@ -68,20 +69,6 @@ public:
 
  private:
 	GdkEvent *event;
-};
-
-class MarkerReachedEventArgs : public EventArgs {
-private:
-	TimelineMarker *marker;
-
-protected:
-	virtual ~MarkerReachedEventArgs ();
-
-public:
-	MarkerReachedEventArgs (TimelineMarker *marker);
-	virtual Type::Kind GetObjectType () { return Type::MARKERREACHEDEVENTARGS; };
-
-	TimelineMarker *GetMarker () { return marker; }
 };
 
 G_BEGIN_DECLS

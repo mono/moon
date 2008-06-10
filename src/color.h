@@ -10,6 +10,7 @@
 #ifndef __MOON_COLOR_H__
 #define __MOON_COLOR_H__
 
+#include <glib.h>
 #include <stdint.h>
 
 struct Color {
@@ -17,7 +18,7 @@ struct Color {
  public:
 	Color () : r(0.0), g(0.0), b(0.0), a(0.0) {}
 
-	Color (uint32_t argb)
+	Color (guint32 argb)
 	{
 		a = (argb >> 24) / 255.0f;
 		r = ((argb >> 16) & 0xFF) / 255.0f;

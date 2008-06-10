@@ -16,14 +16,17 @@
 #ifndef __SHAPE_H__
 #define __SHAPE_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
-#include <stdint.h>
 #include <cairo.h>
 
-#include "brush.h"
 #include "geometry.h"
+#include "frameworkelement.h"
 #include "moon-path.h"
+
+class Brush;
 
 //
 // Helpers
@@ -43,7 +46,7 @@ class Shape : public FrameworkElement {
 	Brush *stroke, *fill;
 	Point origin;
 	cairo_surface_t *cached_surface;
-	int64_t cached_size;
+	gint64 cached_size;
 	bool needs_clip;
 
 	void DoDraw (cairo_t *cr, bool do_op);

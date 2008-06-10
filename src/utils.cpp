@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -86,8 +85,8 @@ g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item)
 	g_ptr_array_set_size (array, array->len + 1);
 	
 	if (ins < array->len) {
-		uint8_t *dest = ((uint8_t *) array->pdata) + (sizeof (void *) * (ins + 1));
-		uint8_t *src = ((uint8_t *) array->pdata) + (sizeof (void *) * ins);
+		guint8 *dest = ((guint8 *) array->pdata) + (sizeof (void *) * (ins + 1));
+		guint8 *src = ((guint8 *) array->pdata) + (sizeof (void *) * ins);
 		guint n = array->len - ins - 1;
 		
 		g_memmove (dest, src, (sizeof (void *) * n));
@@ -300,6 +299,20 @@ exception:
 	close (fd);
 	
 	return -1;
+}
+
+cairo_t*
+measuring_context_create (void)
+{
+	cairo_surface_t* surf = cairo_image_surface_create (CAIRO_FORMAT_A1, 1, 1);
+	return cairo_create (surf);
+}
+
+void
+measuring_context_destroy (cairo_t *cr)
+{
+	cairo_surface_destroy (cairo_get_target (cr));
+	cairo_destroy (cr);
 }
 
 

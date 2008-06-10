@@ -10,6 +10,7 @@
 #ifndef __MOON_PANEL_H__
 #define __MOON_PANEL_H__
 
+#include <glib.h>
 #include "frameworkelement.h"
 
 /* @ContentProperty="Children" */

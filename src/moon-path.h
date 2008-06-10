@@ -14,7 +14,6 @@
 #define __MOON_PATH_H__
 
 #include <math.h>
-#include <string.h>
 #include <glib.h>
 #include <cairo.h>
 

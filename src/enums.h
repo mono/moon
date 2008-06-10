@@ -10,6 +10,8 @@
 #ifndef __MOON_ENUMS_H__
 #define __MOON_ENUMS_H__
 
+#include <glib.h>
+
 enum ErrorType {
 	NoError,
 	UnknownError,

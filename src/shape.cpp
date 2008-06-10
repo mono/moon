@@ -17,16 +17,13 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
 #include <cairo.h>
 
-#include <stdlib.h>
-#include <string.h>
-#include <sys/time.h>
 #include <math.h>
 
 #include "runtime.h"
 #include "shape.h"
+#include "brush.h"
 #include "array.h"
 
 //

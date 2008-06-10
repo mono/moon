@@ -15,7 +15,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include <gtk/gtk.h>
 
 #include "color.h"
 
@@ -277,7 +276,7 @@ color_from_str (const char *name)
 	}
 	
 	if (name[0] >= '0' && name[0] <= '9') {
-		uint32_t color = strtoul (name, NULL, 10);
+		guint32 color = strtoul (name, NULL, 10);
 		
 		return new Color (color);
 	}

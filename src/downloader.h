@@ -14,6 +14,8 @@
 #ifndef __DOWNLOADER_H__
 #define __DOWNLOADER_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 #include <stdint.h>
@@ -26,9 +28,9 @@ G_BEGIN_DECLS
 class FileDownloader;
 class Downloader;
 
-typedef void     (*downloader_write_func) (void *buf, int32_t offset, int32_t n, gpointer cb_data);
-typedef void     (*downloader_notify_size_func) (int64_t size, gpointer cb_data);
-typedef void     (*downloader_request_position_func) (int64_t *pos, gpointer cb_data);
+typedef void     (*downloader_write_func) (void *buf, gint32 offset, gint32 n, gpointer cb_data);
+typedef void     (*downloader_notify_size_func) (gint64 size, gpointer cb_data);
+typedef void     (*downloader_request_position_func) (gint64 *pos, gpointer cb_data);
 
 typedef gpointer (*downloader_create_state_func) (Downloader *dl);
 typedef void     (*downloader_destroy_state_func) (gpointer state);
@@ -36,7 +38,7 @@ typedef void     (*downloader_open_func) (const char *verb, const char *uri, boo
 typedef void     (*downloader_send_func) (gpointer state);
 typedef void     (*downloader_abort_func) (gpointer state);
 typedef void     (*downloader_header_func) (gpointer state, const char *header, const char *value);
-typedef void     (*downloader_body_func) (gpointer state, void *body, uint32_t length);
+typedef void     (*downloader_body_func) (gpointer state, void *body, guint32 length);
 
 class Downloader : public DependencyObject {
 	static downloader_create_state_func create_state;
@@ -59,8 +61,8 @@ class Downloader : public DependencyObject {
 	gpointer context;
 	HttpStreamingFeatures streaming_features;
 	
-	int64_t file_size;
-	int64_t total;
+	gint64 file_size;
+	gint64 total;
 	
 	char *filename;
 	
@@ -94,7 +96,7 @@ class Downloader : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::DOWNLOADER; };	
 	
 	void Abort ();
-	char *GetResponseText (const char *Partname, uint64_t *size);
+	char *GetResponseText (const char *Partname, guint64 *size);
 	void Open (const char *verb, const char *uri);
 	void SendInternal ();
 	void Send ();
@@ -105,15 +107,15 @@ class Downloader : public DependencyObject {
 	// or data sinks.
 	
 	void InternalAbort ();
-	void InternalWrite (void *buf, int32_t offset, int32_t n);
+	void InternalWrite (void *buf, gint32 offset, gint32 n);
 	void InternalOpen (const char *verb, const char *uri, bool streaming);
 	void InternalSetHeader (const char *header, const char *value);
-	void InternalSetBody (void *body, uint32_t length);
+	void InternalSetBody (void *body, guint32 length);
 
-	void Write (void *buf, int32_t offset, int32_t n);
+	void Write (void *buf, gint32 offset, gint32 n);
 	void NotifyFinished (const char *fname);
 	void NotifyFailed (const char *msg);
-	void NotifySize (int64_t size);
+	void NotifySize (gint64 size);
 	char *GetDownloadedFilename (const char *partname);
 	
 	// This is called by the consumer of the downloaded data (the
@@ -133,7 +135,7 @@ class Downloader : public DependencyObject {
 				  downloader_body_func body,
 				  bool only_if_not_set);
 	
-	void RequestPosition (int64_t *pos);
+	void RequestPosition (gint64 *pos);
 	void SetRequestPositionFunc (downloader_request_position_func request_position);
 	
 	bool Started ();
@@ -177,7 +179,7 @@ Surface *downloader_get_surface    (Downloader *dl);
 
 void  downloader_abort	       (Downloader *dl);
 char *downloader_get_downloaded_file (Downloader *dl);
-char *downloader_get_response_text   (Downloader *dl, const char *PartName, uint64_t *size);
+char *downloader_get_response_text   (Downloader *dl, const char *PartName, guint64 *size);
 char *downloader_get_response_file   (Downloader *dl, const char *PartName);
 void  downloader_open		(Downloader *dl, const char *verb, const char *uri);
 void  downloader_send		(Downloader *dl);
@@ -185,13 +187,13 @@ void  downloader_send		(Downloader *dl);
 //
 // Used to push data to the consumer
 //
-void downloader_write		(Downloader *dl, void *buf, int32_t offset, int32_t n);
+void downloader_write		(Downloader *dl, void *buf, gint32 offset, gint32 n);
 void downloader_completed       (Downloader *dl, const char *filename);
 
-void downloader_notify_size     (Downloader *dl, int64_t size);
+void downloader_notify_size     (Downloader *dl, gint64 size);
 void downloader_notify_finished (Downloader *dl, const char *filename);
 void downloader_notify_error    (Downloader *dl, const char *msg);
-void downloader_request_position (Downloader *dl, int64_t *pos);
+void downloader_request_position (Downloader *dl, gint64 *pos);
 
 
 void downloader_set_functions (downloader_create_state_func create_state,

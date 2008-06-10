@@ -12,7 +12,6 @@
 
 #include <config.h>
 #include <string.h>
-#include <gtk/gtk.h>
 #include <cairo.h>
 #include <malloc.h>
 #include <stdlib.h>

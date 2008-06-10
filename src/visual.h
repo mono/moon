@@ -13,7 +13,10 @@
 #ifndef __MOON_VISUAL_H__
 #define __MOON_VISUAL_H__
 
+#include <glib.h>
+
 #include "dependencyobject.h"
+#include "collection.h"
 
 class TimeManager;
 
@@ -40,10 +43,32 @@ private:
 	UIElement *visual_parent;
 };
 
+class VisualCollection : public Collection {
+ protected:
+	virtual ~VisualCollection ();
+
+ public:
+	VisualCollection ();
+	virtual Type::Kind GetObjectType () { return Type::VISUAL_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::VISUAL; }
+
+	virtual int  Add    (DependencyObject *data);
+	virtual bool Remove (DependencyObject *data);
+	virtual bool RemoveAt (int index);
+	virtual bool Insert (int index, DependencyObject *data);
+	virtual void Clear  ();
+	virtual DependencyObject *SetVal (int index, DependencyObject *data);
+
+	void ResortByZIndex ();
+	GPtrArray *z_sorted;
+};
+
 
 G_BEGIN_DECLS
 
 void visual_set_surface (Visual* visual, Surface* surface);
+
+VisualCollection *visual_collection_new (void);
 
 G_END_DECLS
 

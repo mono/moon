@@ -13,7 +13,6 @@
 #ifndef __MOON_HTTP_STREAMING__
 #define __MOON_HTTP_STREAMING__
 
-#include <stdint.h>
 #include <glib.h>
 
 enum HttpStreamingFeatures {

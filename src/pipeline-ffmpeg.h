@@ -54,7 +54,7 @@ public:
 	static MoonPixelFormat ToMoonPixFmt (PixelFormat format);
 private:
 	AVCodecContext *context;
-	uint8_t* audio_buffer;
+	guint8* audio_buffer;
 	bool has_delayed_frame;
 };
 

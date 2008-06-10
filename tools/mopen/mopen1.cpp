@@ -14,16 +14,12 @@
 //
 
 #include <config.h>
-#include <string.h>
 #include <gtk/gtk.h>
-#include <malloc.h>
-#include <glib.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/time.h>
 #include <errno.h>
 
+#include "downloader.h"
 #include "runtime.h"
 #include "xaml.h"
 #include "canvas.h"

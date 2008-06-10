@@ -29,7 +29,7 @@ public:
 	~YUVConverter ();
 	
 	MediaResult Open ();
-	MediaResult Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride []);
+	MediaResult Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8* dest[], int dstStride []);
 private:
 	char *rgb_uv;
 	bool have_mmx;

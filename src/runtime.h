@@ -14,11 +14,13 @@
 #ifndef __RUNTIME_H__
 #define __RUNTIME_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 #include <stdint.h>
 #include <cairo.h>
-#include <gtk/gtk.h>
+#include <gtk/gtkwidget.h>
 
 #include "point.h"
 #include "uielement.h"
@@ -27,7 +29,6 @@ G_BEGIN_DECLS
 #include "value.h"
 #include "type.h"
 #include "list.h"
-#include "downloader.h"
 #include "error.h"
 
 #define MAXIMUM_CACHE_SIZE 6000000
@@ -66,6 +67,7 @@ extern guint32 moonlight_flags;
 
 class TimeManager;
 class Surface;
+class Downloader;
 
 typedef void (* MoonlightInvalidateFunc) (Surface *surface, Rect r, void *user_data);
 typedef void (* MoonlightRenderFunc) (Surface *surface, void *user_data);
@@ -74,12 +76,6 @@ typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *us
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
-
-	class DownloaderNode : public List::Node {
-	public:
-		Downloader *downloader;
-		DownloaderNode (Downloader *dl) { downloader = dl; }		
-	};
 
 	// are we headed for death?
 	bool zombie;
@@ -182,13 +178,13 @@ class Surface : public EventObject {
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
-	int64_t fps_start;
+	gint64 fps_start;
 	int fps_nframes;
 	void *fps_data;
 	
 	// Variables for reporting cache size
 	MoonlightCacheReportFunc cache_report;
-	int64_t cache_size_in_bytes;
+	gint64 cache_size_in_bytes;
 	int cache_size_ticker;
 	void *cache_data;
 	int cache_size_multiplier;
@@ -285,8 +281,8 @@ class Surface : public EventObject {
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
 
 	bool VerifyWithCacheSizeCounter (int w, int h);
-	int64_t AddToCacheSizeCounter (int w, int h);
-	void RemoveFromCacheSizeCounter (int64_t size);
+	gint64 AddToCacheSizeCounter (int w, int h);
+	void RemoveFromCacheSizeCounter (gint64 size);
 
 	// called from the plugin if the surface is headed for death.
 	// stops event emission (since the plugin counterparts to xaml
@@ -366,13 +362,10 @@ void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, i
 void    *surface_get_widget (Surface *s);
 TimeManager* surface_get_time_manager (Surface* s);
 
-cairo_t *measuring_context_create (void);
-void     measuring_context_destroy (cairo_t *cr);
-
 void runtime_init (guint32 flags);
 
-uint32_t runtime_html_timer_timeout_add (int32_t interval, GSourceFunc callback, gpointer data);
-void     runtime_html_timer_timeout_stop (uint32_t source_id);
+guint32  runtime_html_timer_timeout_add (gint32 interval, GSourceFunc callback, gpointer data);
+void     runtime_html_timer_timeout_stop (guint32 source_id);
 
 void runtime_shutdown (void);
 

@@ -12,9 +12,6 @@
 
 #include <config.h>
 
-#include <gtk/gtk.h>
-
-#include "brush.h"
 #include "rect.h"
 #include "canvas.h"
 #include "runtime.h"

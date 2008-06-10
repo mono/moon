@@ -374,10 +374,10 @@ class Generator {
 		// Add all the manual types
 		types.Add (new TypeInfo ("bool", "BOOL", null, true));
 		types.Add (new TypeInfo ("double", "DOUBLE", null, true));
-		types.Add (new TypeInfo ("uint64_t", "UINT64", null, true));
-		types.Add (new TypeInfo ("int64_t", "INT64", null, true));
-		types.Add (new TypeInfo ("uint32_t", "UINT32", null, true));
-		types.Add (new TypeInfo ("int32_t", "INT32", null, true));
+		types.Add (new TypeInfo ("guint64", "UINT64", null, true));
+		types.Add (new TypeInfo ("gint64", "INT64", null, true));
+		types.Add (new TypeInfo ("guint32", "UINT32", null, true));
+		types.Add (new TypeInfo ("gint32", "INT32", null, true));
 		types.Add (new TypeInfo ("char*", "STRING", null, true));
 		types.Add (new TypeInfo ("Color", "COLOR", null, true));
 		types.Add (new TypeInfo ("Point", "POINT", null, true));

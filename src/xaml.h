@@ -13,6 +13,8 @@
 #ifndef __MOON_XAML_H__
 #define __MOON_XAML_H__
 
+#include <glib.h>
+
 #include "enums.h"
 #include "uielement.h"
 #include "error.h"

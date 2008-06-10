@@ -11,12 +11,9 @@
 #ifndef __FONT_H__
 #define __FONT_H__
 
-#include <stdint.h>
-
 #include <glib.h>
 #include <cairo.h>
 #include <ft2build.h>
-#include <gtk/gtk.h>
 #include FT_FREETYPE_H
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>
@@ -110,7 +107,7 @@ struct GlyphMetrics {
 
 struct GlyphInfo {
 	gunichar unichar;
-	uint32_t index;
+	guint32 index;
 	GlyphMetrics metrics;
 	moon_path *path;
 	int requested;
@@ -143,8 +140,8 @@ class FontFace {
 	
 	static FontFace *Load (FcPattern *pattern, const char *family_name, const char *debug_name);
 	
-	gunichar GetCharFromIndex (uint32_t index);
-	uint32_t GetCharIndex (gunichar unichar);
+	gunichar GetCharFromIndex (guint32 index);
+	guint32 GetCharIndex (gunichar unichar);
 	bool HasChar (gunichar unichar);
 	
 	bool IsScalable ();
@@ -180,8 +177,8 @@ class TextFont {
 	static TextFont *Load (FcPattern *pattern, const char *family_name, const char *debug_name);
 	
 	GlyphInfo *GetGlyphInfo (gunichar unichar);
-	GlyphInfo *GetGlyphInfoByIndex (uint32_t index);
-	GlyphInfo *GetGlyphInfo (gunichar unichar, uint32_t index);
+	GlyphInfo *GetGlyphInfoByIndex (guint32 index);
+	GlyphInfo *GetGlyphInfo (gunichar unichar, guint32 index);
 	
 	bool HasGlyph (gunichar unichar);
 	
@@ -210,7 +207,7 @@ class TextFontDescription {
 	TextFont *font;
 	
 	// bitmask of set attributes
-	uint8_t set;
+	guint8 set;
 	
 	// font attributes
 	char *family;
@@ -230,9 +227,9 @@ class TextFontDescription {
 	
 	TextFont *GetFont ();
 	
-	uint8_t GetFields ();
+	guint8 GetFields ();
 	
-	void UnsetFields (uint8_t mask);
+	void UnsetFields (guint8 mask);
 	
 	void Merge (TextFontDescription *desc, bool replace);
 	

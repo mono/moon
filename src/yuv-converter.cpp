@@ -15,11 +15,6 @@
 #include <glib.h>
 #include <unistd.h>
 
-G_BEGIN_DECLS
-#include <stdint.h>
-#include <limits.h>
-G_END_DECLS
-
 #include "yuv-converter.h"
 
 /* R = 1.164 * (Y - 16)		+ 1.596 * (V - 128)
@@ -43,7 +38,7 @@ G_END_DECLS
 #define ALPHA_MASK 0xFFFFFFFFFFFFFFFFULL
 
 #if HAVE_SSE2 || HAVE_MMX
-static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
+static const guint64 simd_table [16] __attribute__ ((aligned (16))) = {
 									RED_V_C, RED_V_C,
 									GREEN_V_C, GREEN_V_C,
 									GREEN_U_C, GREEN_U_C,
@@ -240,7 +235,7 @@ static const uint64_t simd_table [16] __attribute__ ((aligned (16))) = {
 #define YUV2RGB_MMX(y_plane, dest) YUV2RGB_INTEL_SIMD("movq", "mm", "8", "16", "24", y_plane, dest)
 #endif
 
-static inline void YUV444ToBGRA(uint8_t Y, uint8_t U, uint8_t V, uint8_t *dst)
+static inline void YUV444ToBGRA(guint8 Y, guint8 U, guint8 V, guint8 *dst)
 {
 	dst[2] = CLAMP((298 * (Y - 16) + 409 * (V - 128) + 128) >> 8, 0, 255);
 	dst[1] = CLAMP((298 * (Y - 16) - 100 * (U - 128) - 208 * (V - 128) + 128) >> 8, 0, 255);
@@ -345,16 +340,16 @@ YUVConverter::Open ()
 }
 
 MediaResult
-YUVConverter::Convert (uint8_t *src[], int srcStride[], int srcSlideY, int srcSlideH, uint8_t* dest[], int dstStride [])
+YUVConverter::Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8* dest[], int dstStride [])
 {
-	uint8_t *y_row1 = src[0];
-	uint8_t *y_row2 = src[0]+srcStride[0];
+	guint8 *y_row1 = src[0];
+	guint8 *y_row2 = src[0]+srcStride[0];
 
-	uint8_t *u_plane = src[1];
-	uint8_t *v_plane = src[2];
+	guint8 *u_plane = src[1];
+	guint8 *v_plane = src[2];
 	
-	uint8_t *dest_row1 = dest[0];
-	uint8_t *dest_row2 = dest[0]+dstStride[0];
+	guint8 *dest_row1 = dest[0];
+	guint8 *dest_row2 = dest[0]+dstStride[0];
 
 	int i, j;
 

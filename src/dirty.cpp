@@ -1,15 +1,11 @@
 
 #include "config.h"
-#include <string.h>
-#include <gtk/gtk.h>
-#include <malloc.h>
 #include <glib.h>
-#include <stdlib.h>
 
 #include "uielement.h"
 #include "panel.h"
 #include "control.h"
-#include "collection.h"
+#include "visual.h"
 #include "runtime.h"
 #include "clock.h"
 #include "dirty.h"

@@ -9,6 +9,8 @@
 #ifndef __DEPLOYMENT_H__
 #define __DEPLOYMENT_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 #include "enums.h"

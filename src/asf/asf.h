@@ -15,13 +15,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <inttypes.h>
 
-typedef uint8_t asf_byte;
-typedef uint16_t asf_wchar; 
-typedef uint16_t asf_word;
-typedef uint32_t asf_dword;
-typedef uint64_t asf_qword;
+typedef guint8 asf_byte;
+typedef guint16 asf_wchar; 
+typedef guint16 asf_word;
+typedef guint32 asf_dword;
+typedef guint64 asf_qword;
 
 struct asf_guid;
 struct asf_object;

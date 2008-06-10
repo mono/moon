@@ -33,8 +33,8 @@ class InternalDownloader {
 	}
 
 	virtual void Open (const char *verb, const char *uri) = 0;
-	virtual void Write (void *buf, int32_t offset, int32_t n) = 0;
-	virtual char *GetResponseText (const char *partname, uint64_t *size) = 0; 
+	virtual void Write (void *buf, gint32 offset, gint32 n) = 0;
+	virtual char *GetResponseText (const char *partname, guint64 *size) = 0; 
 	virtual char *GetDownloadedFilename (const char *partname) = 0;
 };
 

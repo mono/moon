@@ -14,6 +14,8 @@
 #ifndef __MMS_DOWNLOADER_H__
 #define __MMS_DOWNLOADER_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 #include "internal-downloader.h"
@@ -36,20 +38,20 @@ G_BEGIN_DECLS
 struct MmsHeader {
 	char b:1;
 	char frame:7;
-	uint8_t id;
-	uint16_t length;
+	guint8 id;
+	guint16 length;
 };
 
 struct MmsDataPacket {
-	uint32_t id;
-	uint8_t incarnation;
-	uint8_t flags;
-	uint16_t size;
+	guint32 id;
+	guint8 incarnation;
+	guint8 flags;
+	guint16 size;
 };
 
 struct MmsPacket {
 	union {
-		uint32_t reason;
+		guint32 reason;
 		struct MmsDataPacket data;
 	} packet;
 };
@@ -62,22 +64,22 @@ class MmsDownloader : public InternalDownloader {
 	char *uri;
 	char *buffer;
 
-	uint32_t asf_packet_size;
-	uint32_t header_size;
-	uint32_t size;
-	uint32_t packets_received;
+	guint32 asf_packet_size;
+	guint32 header_size;
+	guint32 size;
+	guint32 packets_received;
 
 	TimeSpan p_packet_times[3];
-	int32_t p_packet_sizes[3];
+	gint32 p_packet_sizes[3];
 
-	int32_t audio_streams[128];
-	int32_t video_streams[128];
-	int32_t best_audio_stream;
-	int32_t best_audio_stream_rate;
-	int32_t best_video_stream;
-	int32_t best_video_stream_rate;
+	gint32 audio_streams[128];
+	gint32 video_streams[128];
+	gint32 best_audio_stream;
+	gint32 best_audio_stream_rate;
+	gint32 best_video_stream;
+	gint32 best_video_stream_rate;
 
-	uint8_t p_packet_count;
+	guint8 p_packet_count;
 
 	bool described;
 	bool seekable;
@@ -89,21 +91,21 @@ class MmsDownloader : public InternalDownloader {
 	int GetAudioStream ();
 	int GetVideoStream ();
 
-	bool ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
+	bool ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size);
 
-	bool ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
-	bool ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
-	bool ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
-	bool ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *payload, uint32_t *size);
+	bool ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size);
+	bool ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size);
+	bool ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size);
+	bool ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size);
 
  public:
 	MmsDownloader (Downloader *dl);
 	~MmsDownloader ();
 
 	void Open (const char *verb, const char *uri);
-	void Write (void *buf, int32_t offset, int32_t n);
+	void Write (void *buf, gint32 offset, gint32 n);
 	char *GetDownloadedFilename (const char *partname);
-	char *GetResponseText (const char *partname, uint64_t *size);
+	char *GetResponseText (const char *partname, guint64 *size);
 };
 
 G_END_DECLS
