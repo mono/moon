@@ -76,7 +76,9 @@
     }
 
 
-    // Test2 = add a handler to the element which is emitting the event
+    // Test2 = add a handler to the element which is emitting the
+    // event.  The result should be 3, showing that the newly added
+    // handler is not invoked.
     function AddHandler_and_mouseLeftButtonDownCount (sender, args)
     {
         var A = root.findName("A");
@@ -102,7 +104,9 @@
         Assert (mouseDownCount == 3);
     }
 
-    // Test3 = remove a handler from the element which is emitting the event
+    // Test3 = remove a handler from the element which is emitting the
+    // event.  The result should be 3, showing that the removed
+    // handler is not actually removed until after the emitting.
     function RemoveHandler_and_mouseLeftButtonDownCount (sender, args)
     {
         var A = root.findName("A");
@@ -130,8 +134,10 @@
     }
 
 
-    // Test4 = add a handler to the parent of the element which is
-    // emitting the event (when it has one already)
+    // Test4 = add a handler to the parent of the element which is //
+    // emitting the event (when it has one already).  The result should
+    // be 4 because the new handler isn't added to the list of event
+    // listeners to call.
     function AddHandlerParent_and_mouseLeftButtonDownCount (sender, args)
     {
         var B = sender.findName ("B");
@@ -158,8 +164,10 @@
         Assert (mouseDownCount == 4);
     }
 
-    // Test5 = remove a handler from the parent of the element which is
-    // emitting the event (when it has one already)
+    // Test5 = remove a handler from the parent of the element which
+    // is emitting the event (when it has one already).  The result
+    // should be 5, because the handler is not removed until after
+    // emitting is complete.
     function RemoveHandlerParent_and_mouseLeftButtonDownCount (sender, args)
     {
         var B = root.findName ("B");
@@ -189,7 +197,8 @@
 
 
     // Test6 = add a handler to the parent of the element which is
-    // emitting the event (when it doesn't have one already)
+    // emitting the event (when it doesn't have one already).  The result
+    // should be 3 because the newly added handler is not invoked.
     function StartTest6 ()
     {
         var A = root.findName("A");
@@ -209,7 +218,8 @@
     }
 
     // Test7 = remove the parent element from the xaml hierarchy in
-    // the child's handler.
+    // the child's handler.  The result should be 3 because the listeners
+    // are copied before emitting.
     function RemoveParentElement (sender, args)
     {
         var A = root.findName ("A");
@@ -237,7 +247,10 @@
     }
 
 
-    // Test8 = splice in a new parent element between child and parent
+    // Test8 = splice in a new parent element between child and
+    // parent.  The result should be 3 because the hierarchy isn't walked
+    // during emitting, but before.
+
     function SpliceParentElement (sender, args)
     {
         var B = root.findName ("B");
@@ -271,7 +284,8 @@
         Assert (mouseDownCount == 3);
     }
 
-    // Test9 = clear the root canvas's children
+    // Test9 = clear the root canvas's children.  The result should be
+    // 3 because the list of listeners is copied before emitting.
     function clearParentChildren (sender, args)
     {
         var A = root.findName("A");
