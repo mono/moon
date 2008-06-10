@@ -163,11 +163,6 @@ class XamlElementInstance : public List::Node {
 	{
 	}
 
-	virtual const char *GetContentProperty ()
-	{
-		return NULL;
-	}
-
 	virtual Type::Kind GetKind ()
 	{
 		return Type::INVALID;
@@ -282,6 +277,8 @@ class XamlElementInfo {
 	}
 
 	Type::Kind GetKind () { return kind; }
+
+	virtual const char* GetContentProperty () = 0;
 	virtual XamlElementInstance* CreateElementInstance (XamlParserInfo *p) = 0;
 	virtual XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
 
@@ -308,6 +305,8 @@ class XamlElementInfoNative : public XamlElementInfo {
 		return type->name;
 	}
 
+	const char* GetContentProperty ();
+
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
 
@@ -323,7 +322,6 @@ class XamlElementInstanceNative : public XamlElementInstance {
 	XamlElementInstanceNative (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type, bool create_item = true);
 
 	virtual DependencyObject *CreateItem ();
-	virtual const char *GetContentProperty ();
 
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
@@ -463,6 +461,8 @@ class XamlElementInfoCustom : public XamlElementInfo {
 	{
 		this->dependency_object = dob;
 	}
+
+	const char* GetContentProperty () { return NULL; }
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
@@ -935,7 +935,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		return;
 
 	if (p->current_element->info && p->current_element->element_type == XamlElementInstance::ELEMENT)
-		prop_name = p->current_element->GetContentProperty ();
+		prop_name = p->current_element->info->GetContentProperty ();
 
 	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
@@ -2593,6 +2593,11 @@ wrap_type (XamlParserInfo *p, Type *t)
 	return inst;
 }
 
+const char *
+XamlElementInfoNative::GetContentProperty ()
+{
+	return type->GetContentPropertyName ();
+}
 
 XamlElementInstance *
 XamlElementInfoNative::CreateElementInstance (XamlParserInfo *p)
@@ -2644,9 +2649,9 @@ XamlElementInstanceNative::CreateItem ()
 			dep = DependencyObject::GetDependencyProperty (walk->info->GetKind (), prop_name [1]);
 
 			g_strfreev (prop_name);
-		} else if (walk && walk->GetContentProperty ()) {
+		} else if (walk && walk->info->GetContentProperty ()) {
 			dep = DependencyObject::GetDependencyProperty (walk->info->GetKind (),
-					(char *) walk->GetContentProperty ());			
+					(char *) walk->info->GetContentProperty ());			
 		}
 
 		if (dep && Type::Find (dep->value_type)->IsSubclassOf (type->type)) {
@@ -2673,12 +2678,6 @@ XamlElementInstanceNative::CreateItem ()
 	}
 
 	return item;
-}
-
-const char *
-XamlElementInstanceNative::GetContentProperty ()
-{
-	return element_info->GetType ()->GetContentPropertyName ();
 }
 
 void
@@ -2816,9 +2815,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	}
 
 	
-	if (parent->GetContentProperty ()) {
+	if (parent->info->GetContentProperty ()) {
 		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->GetKind (),
-				(char *) parent->GetContentProperty ());
+				(char *) parent->info->GetContentProperty ());
 
 		if (!dep)
 			return;

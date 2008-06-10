@@ -1,3 +1,9 @@
+2008-06-10  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: ContentProperty should be on the ElementInfo not the
+	ElementInstance, since you can only have one content property per
+	a type.
+
 2008-06-10  Geoff Norton  <gnorton@novell.com>
 	
 	* mms-downloader.cpp: Fix some looping logic when seeking (partially
