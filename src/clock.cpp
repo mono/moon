@@ -1405,8 +1405,8 @@ TimelineGroup::~TimelineGroup ()
 {
 }
 
-ClockGroup *
-TimelineGroup::CreateClock ()
+Clock*
+TimelineGroup::AllocateClock ()
 {
 	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection();
 	ClockGroup *group = new ClockGroup (this);

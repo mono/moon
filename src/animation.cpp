@@ -445,7 +445,7 @@ Storyboard::Begin ()
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
-	root_clock = CreateClock ();
+	root_clock = AllocateClock ();
 	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
 	root_clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);

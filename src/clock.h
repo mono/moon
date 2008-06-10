@@ -553,10 +553,8 @@ class TimelineGroup : public Timeline {
 
 	static DependencyProperty *ChildrenProperty;
 
-	virtual Clock *AllocateClock () { return new ClockGroup (this); }
+	virtual Clock *AllocateClock ();
 	virtual bool Validate ();
-
-	ClockGroup *CreateClock ();
 
 	void AddChild (Timeline *child);
 	void RemoveChild (Timeline *child);
