@@ -1,3 +1,7 @@
+2008-06-10  Geoff Norotn  <gnorton@novell.com>
+	* browser-http.inc: SetRequestHeader should merge instead of replace.
+	Partially fixes MMS seeking.
+
 2008-06-05  Geoff Norotn  <gnorton@novell.com>
 
 	* browser-http.inc: SetBody takes a void instead of char to support the future

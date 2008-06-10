@@ -181,7 +181,7 @@ GECKO_SYM(BrowserRequest)::SetHttpHeader (const char *name, const char *value)
 	nsname = name;
 	nsvalue = value;
 
-	httpchannel->SetRequestHeader (nsname, nsvalue, false);
+	httpchannel->SetRequestHeader (nsname, nsvalue, true);
 }
 
 void
