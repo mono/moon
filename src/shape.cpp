@@ -244,7 +244,7 @@ Shape::Fill (cairo_t *cr, bool do_op)
 }
 
 Rect
-Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
+Shape::ComputeStretchBounds (Rect shape_bounds)
 {
 	Value *vh, *vw;
 	needs_clip = true;
@@ -281,6 +281,8 @@ Shape::ComputeStretchBounds (Rect shape_bounds, Rect logical_bounds)
 
 	Stretch stretch = GetStretch ();
 	if (stretch != StretchNone) {
+		Rect logical_bounds = ComputeShapeBounds (true);
+
 		bool adj_x = logical_bounds.w != 0.0;
 		bool adj_y = logical_bounds.h != 0.0;
              
@@ -533,9 +535,8 @@ Shape::ComputeBounds ()
 	InvalidateSurfaceCache ();
 	
 	extents = ComputeShapeBounds (false);
-	Rect logical_extents = ComputeShapeBounds (true);
 
-	extents = ComputeStretchBounds (extents, logical_extents);
+	extents = ComputeStretchBounds (extents);
 	origin = ComputeOriginPoint (extents);
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
@@ -545,6 +546,11 @@ Shape::ComputeBounds ()
 Rect
 Shape::ComputeShapeBounds (bool logical)
 {
+	// this base version of ComputeShapeBounds does not need to distinguish between
+	// logical and physical bounds and we know that physical is already computed
+	if (logical)
+		return extents;
+
 	if (IsEmpty ())
 		return Rect ();
 	
