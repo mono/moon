@@ -1,3 +1,7 @@
+2008-06-10  Geoff Norton  <gnorton@novell.com>
+	
+	* npstream-request.cpp: Return the status of GetResponse.
+
 2008-06-11  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-downloader.cpp: Only call into the downloader to Write

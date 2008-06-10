@@ -70,8 +70,11 @@ NPStreamRequest::GetResponse (BrowserResponseStartedHandler started, BrowserResp
 			}
 			
 			pd->dl->NotifyFailed (msg);
+			return false;
 		}
+		return true;
 	}
+	return false;
 }
 
 void
