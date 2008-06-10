@@ -62,8 +62,6 @@ class MmsDownloader : public InternalDownloader {
 	char *uri;
 	char *buffer;
 
-	int64_t requested_position;
-
 	uint32_t asf_packet_size;
 	uint32_t header_size;
 	uint32_t size;
@@ -83,6 +81,7 @@ class MmsDownloader : public InternalDownloader {
 
 	bool described;
 	bool seekable;
+	bool seeked;
 
 	void AddAudioStream (int index, int bitrate) { audio_streams [index] = bitrate; if (bitrate > best_audio_stream_rate) { best_audio_stream_rate = bitrate; best_audio_stream = index; } }
 	void AddVideoStream (int index, int bitrate) { video_streams [index] = bitrate; if (bitrate > best_video_stream_rate) { best_video_stream_rate = bitrate; best_video_stream = index; } }

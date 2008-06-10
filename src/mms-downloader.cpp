@@ -21,7 +21,7 @@
 #include "clock.h"
 #include "mms-downloader.h"
 
-#define LOG_MMS(...) //printf (__VA_ARGS__);
+#define LOG_MMS(...) printf (__VA_ARGS__);
 
 static inline bool
 is_valid_mms_header (MmsHeader *header)
@@ -39,7 +39,6 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 
 	this->asf_packet_size = 0;
 	this->header_size = 0;
-	this->requested_position = -1;
 	this->size = 0;
 	this->packets_received = 0;
 
@@ -47,6 +46,7 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 
 	this->described = false;
 	this->seekable = false;
+	this->seeked = false;
 
 	this->best_audio_stream = 0;
 	this->best_video_stream = 0;
@@ -88,6 +88,7 @@ MmsDownloader::Write (void *buf, int32_t off, int32_t n)
 	MmsPacket *packet;
 	char *payload;
 	uint32_t offset = 0;
+	int64_t requested_position = -1;
 
 	// Resize our internal buffer
 	if (this->buffer == NULL) {
@@ -103,6 +104,8 @@ MmsDownloader::Write (void *buf, int32_t off, int32_t n)
 	// FIXME: We shouldn't poll here, we should notify over
 	dl->RequestPosition (&requested_position);
 	if (requested_position != -1) {
+		seeked = true;
+
 		dl->InternalAbort ();
 
 		dl->InternalOpen ("GET", uri, true);
@@ -210,6 +213,9 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 {
 	LOG_MMS ("MmsDownloader::ProcessHeaderPacket ()\n");
 	
+	if (seeked)
+		return true;
+
 	MemorySource *asf_src = new MemorySource (NULL, payload, header->length-sizeof (MmsDataPacket), 0);
 	ASFParser *parser = new ASFParser (asf_src, NULL);
 
@@ -435,7 +441,7 @@ MmsDownloader::GetVideoStream ()
 	int video_rate = 0;
 	uint64_t max_bitrate = (uint64_t)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
 	
-	for (int i = 0; i < 182; i++) {
+	for (int i = 0; i < 128; i++) {
 		int stream_rate = video_streams [i];
 
 		if (stream_rate == -1)
@@ -464,7 +470,7 @@ MmsDownloader::GetAudioStream ()
 	int audio_rate = 0;
 	uint64_t max_bitrate = (uint64_t)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
 	
-	for (int i = 0; i < 182; i++) {
+	for (int i = 0; i < 128; i++) {
 		int stream_rate = audio_streams [i];
 
 		if (stream_rate == -1)
