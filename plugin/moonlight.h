@@ -40,7 +40,7 @@
 
 // Plugin information
 #define MIME_SILVERLIGHT_1  "application/x-silverlight"
-#define MIME_SILVERLIGHT_2  "application/x-silverlight-2-b1"
+#define MIME_SILVERLIGHT_2  "application/x-silverlight-2-b2"
 #define PLUGIN_NAME         "Silverlight Plug-In"
 #define PLUGIN_VERSION      VERSION
 #define PLUGIN_OURNAME      "Novell Moonlight"
