@@ -1,5 +1,11 @@
 2008-06-10  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Remove default prefix override check.  This must have
+	only been in one of the early versions of SL because I can't get
+	SL to do it anymore.  This helps fix video page turn.
+
+2008-06-10  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Remove x:Code since this isn't used in SL 2.0.
 
 2008-06-10  Chris Toshok  <toshok@ximian.com>

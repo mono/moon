@@ -1145,10 +1145,6 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 
 	for (int i = 0; default_namespace_names [i]; i++) {
 		if (!strcmp (default_namespace_names [i], uri)) {
-			if (prefix)
-				return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,
-						     g_strdup_printf  ("It is illegal to add a prefix (xmlns:%s) to the default namespace.\n", prefix));
-
 			g_hash_table_insert (p->namespace_map, g_strdup (uri), default_namespace);
 			return;
 		}
