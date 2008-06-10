@@ -1,3 +1,17 @@
+2008-06-10  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h, dependencyobject.cpp: split the Emit()
+	machinery up into 3 methods.  StartEmit, DoEmit, and FinishEmit.
+	StartEmit returns a context object passed to the other two
+	methods.
+
+	* runtime.h, runtime.cpp: use the new
+	EventObject::{Start,Do,Finish}Emit methods to make event bubbling
+	more transactional - any changes made to the listener list for the
+	event we're bubbling up, for any element in our input list, are
+	delayed until after the event has propagated.  Fixes our test id
+	191 (test-bubbling.html) as well as bug #351568.
+
 2008-06-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Don't call ComputeShapeBounds(true) unless we need

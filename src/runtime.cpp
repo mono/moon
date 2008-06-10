@@ -1044,7 +1044,7 @@ Surface::update_input_cb (EventObject *sender, EventArgs *calldata, gpointer clo
 #if notyet
 	Surface *s = (Surface *) closure;
 
-	s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
+	s->HandleMouseEvent (UIElement::MouseMoveEvent, true, true, false, s->mouse_event_state, s->mouse_event_x, s->mouse_event_y);
 	s->UpdateCursorFromInputList ()
 #endif
 }
@@ -1288,37 +1288,6 @@ UIElementNode::~UIElementNode ()
 	uielement = NULL;
 }
 
-// I really wish C++ had anonymous delegates...
-static bool
-emit_MouseLeftButtonDown (UIElement *element, GdkEvent *event)
-{
-	return element->EmitMouseLeftButtonDown (event);
-}
-
-static bool
-emit_MouseLeftButtonUp (UIElement *element, GdkEvent *event)
-{
-	return element->EmitMouseLeftButtonUp (event);
-}
-
-static bool
-emit_MouseMove (UIElement *element, GdkEvent *event)
-{
-	return element->EmitMouseMove (event);
-}
-
-static bool
-emit_MouseEnter (UIElement *element, GdkEvent *event)
-{
-	return element->EmitMouseEnter (event);
-}
-
-static bool
-emit_MouseLeave (UIElement *element, GdkEvent *event)
-{
-	return element->EmitMouseLeave ();
-}
-
 void
 Surface::PerformCapture (UIElement *capture)
 {
@@ -1388,30 +1357,40 @@ Surface::SetMouseCapture (UIElement *capture)
 }
 
 bool
-Surface::EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *event, int end_idx)
+Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx)
 {
 	bool handled = false;
-
-	if (emitter == NULL)
-		return handled;
 
 	int idx;
 	UIElementNode *node;
 
 	if (end_idx == -1)
-		end_idx = list->Length();
+		end_idx = element_list->Length();
+
+	EmitContext** emit_ctxs = g_new (EmitContext*, end_idx + 1);
+	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
+		emit_ctxs[idx] = node->uielement->StartEmit (event_id);
+	}
 
 	emittingMouseEvent = true;
-	for (node = (UIElementNode*)list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-		bool h = emitter (node->uielement, event);
+	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
+		bool h = node->uielement->DoEmit (event_id, emit_ctxs[idx],
+						  // XXX i don't like how i'm doing this here... we need a way to remove this logic and
+						  // put it in the UIElement... maybe UIElement::GetEventArgsForMouseEvent(event_id, GdkEvent)?
+						  event_id == UIElement::MouseLeaveEvent ? new EventArgs() : new MouseEventArgs (event));
 		if (h)
 			handled = true;
 		if (zombie) {
-			emittingMouseEvent = false;
-			return handled;
+			handled = false;
+			break;
 		}
 	}
 	emittingMouseEvent = false;
+
+	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
+		node->uielement->FinishEmit (event_id, emit_ctxs[idx]);
+	}
+	g_free (emit_ctxs);
 
 	return handled;
 }
@@ -1476,7 +1455,7 @@ copy_input_list_with_visibility_check (List *input_list)
 }
 
 bool
-Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event)
+Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event)
 {
 	bool handled = false;
 
@@ -1506,7 +1485,7 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 		// if the mouse is captured, the input_list doesn't ever
 		// change, and we don't emit enter/leave events.  just emit
 		// the event on the input_list.
-		handled = EmitEventOnList (emitter, input_list, event, -1);
+		handled = EmitEventOnList (event_id, input_list, event, -1);
 	}
 	else {
 		int surface_index;
@@ -1562,13 +1541,13 @@ Surface::HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool
 					new_input_list, &new_index);
 
 		if (emit_leave)
-			handled = EmitEventOnList (emit_MouseLeave, input_list, event, surface_index);
+			handled = EmitEventOnList (UIElement::MouseLeaveEvent, input_list, event, surface_index);
 
 		if (emit_enter)
-			handled = EmitEventOnList (emit_MouseEnter, new_input_list, event, new_index) || handled;
+			handled = EmitEventOnList (UIElement::MouseEnterEvent, new_input_list, event, new_index) || handled;
 
 		if ((surface_index == 0 && new_index == 0) || force_emit) {
-			handled = EmitEventOnList (emitter, new_input_list, event, -1) || handled;
+			handled = EmitEventOnList (event_id, new_input_list, event, -1) || handled;
 		}
 
 		// We need to remove from the new_input_list the events which have just 
@@ -1662,7 +1641,7 @@ Surface::button_release_callback (GtkWidget *widget, GdkEventButton *event, gpoi
 	
 	s->mouse_event = gdk_event_copy ((GdkEvent *) event);
 
-	s->HandleMouseEvent (emit_MouseLeftButtonUp, true, true, true, s->mouse_event);
+	s->HandleMouseEvent (UIElement::MouseLeftButtonUpEvent, true, true, true, s->mouse_event);
 
 	s->UpdateCursorFromInputList ();
 	s->SetCanFullScreen (false);
@@ -1692,7 +1671,7 @@ Surface::button_press_callback (GtkWidget *widget, GdkEventButton *event, gpoint
 	
 	s->mouse_event = gdk_event_copy ((GdkEvent *) event);
 
-	bool handled = s->HandleMouseEvent (emit_MouseLeftButtonDown, true, true, true, s->mouse_event);
+	bool handled = s->HandleMouseEvent (UIElement::MouseLeftButtonDownEvent, true, true, true, s->mouse_event);
 
 	s->UpdateCursorFromInputList ();
 	s->SetCanFullScreen (false);
@@ -1727,7 +1706,7 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 	    }    
 	}
 
-	handled = s->HandleMouseEvent (emit_MouseMove, true, true, true, s->mouse_event);
+	handled = s->HandleMouseEvent (UIElement::MouseMoveEvent, true, true, true, s->mouse_event);
 	s->UpdateCursorFromInputList ();
 
 	return widget ? TRUE : handled;
@@ -1749,7 +1728,7 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 			gdk_event_free (s->mouse_event);
 		s->mouse_event = gdk_event_copy ((GdkEvent *) event);
 		
-		handled = s->HandleMouseEvent (emit_MouseMove, true, true, false, s->mouse_event);
+		handled = s->HandleMouseEvent (UIElement::MouseMoveEvent, true, true, false, s->mouse_event);
 
 		s->UpdateCursorFromInputList ();
 	
@@ -1759,7 +1738,7 @@ Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, g
 		// should be the same as the current one since we pass
 		// in the same x,y but I'm not sure that's something
 		// we can rely on.
-		handled = s->HandleMouseEvent (emit_MouseLeave, false, false, true, s->mouse_event);
+		handled = s->HandleMouseEvent (UIElement::MouseLeaveEvent, false, false, true, s->mouse_event);
 
 		// MS specifies that mouse capture is lost when you mouse out of the control
 		if (s->captured)

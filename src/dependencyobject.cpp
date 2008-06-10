@@ -264,6 +264,7 @@ public:
 		emit_count = 0;
 	}
 	
+
 	EventHandler func;
 	gpointer data;
 	int token;
@@ -343,11 +344,11 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->func == handler && closure->data == data) {
-			if (events->lists [event_id].emitting > 0) {
-				closure->pending_removal = true;
-			} else {
+ 			if (events->lists [event_id].emitting > 0) {
+ 				closure->pending_removal = true;
+ 			} else {
 				events->lists [event_id].event_list->Remove (closure);
-			}
+ 			}
 			break;
 		}
 		
@@ -438,18 +439,13 @@ EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted)
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 {
-	EventClosure *closure;
-	EventClosure *next;
-	EventClosure **closures;
-	int length;
-
 #ifdef DEBUG_EVENTS
 	const char *event_name = GetType ()->LookupEventName (event_id);
 	if (GetObjectType () == Type::MEDIAELEMENT)
 	printf ("%s::Emit (%s (%i), %p, %i). Listeners: %i\n", GetTypeName (), event_name, event_id, calldata, only_unemitted, events == NULL ? 0 : events->lists [event_id].event_list->Length ());
 #endif
 
-	if (GetType()->GetEventCount() <= 0) {
+	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
 		if (calldata)
 			calldata->unref ();
@@ -461,51 +457,110 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 			calldata->unref ();
 		return false;
 	}
-	
+
+	EmitContext* ctx = StartEmit (event_id);
+
+	DoEmit (event_id, ctx, calldata, only_unemitted);
+
+	if (calldata)
+		calldata->unref ();
+
+	FinishEmit (event_id, ctx);
+
+	return true;
+}
+
+struct EmitContext {
+  int length;
+  EventClosure **closures;
+
+  EmitContext()
+  {
+    length = 0;
+    closures = NULL;
+  }
+  ~EmitContext()
+  {
+    g_free (closures);
+  }
+};
+
+EmitContext*
+EventObject::StartEmit (int event_id)
+{
+	EmitContext *ctx = new EmitContext();
+	EventClosure *closure;
+
+	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
+		g_warning ("trying to start emit with id %d, which has not been registered\n", event_id);
+		return ctx;
+	}
+
+	if (events == NULL || events->lists [event_id].event_list->IsEmpty ()) {
+		return ctx;
+	}
+
 	events->emitting++;
 	events->lists [event_id].emitting++;
 
-	length = events->lists [event_id].event_list->Length ();
-	closures = (EventClosure **) g_malloc (sizeof (EventClosure*) * length);
-	
+	ctx->length = events->lists [event_id].event_list->Length();
+	ctx->closures = g_new (EventClosure*, ctx->length);
+
 	/* make a copy of the event list to use for emitting */
 	closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	for (int i = 0; closure != NULL; i++) {
-		closures [i] = closure;
+		ctx->closures [i] = closure;
 		closure = (EventClosure *) closure->next;
 	}
-	
+
+	return ctx;
+}
+
+bool
+EventObject::DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata, bool only_unemitted)
+{
 	/* emit the events using the copied list */
-	for (int i = 0; i < length; i++) {
-		closure = closures [i];
-		if (closure && closure->func && !closure->pending_removal
+	for (int i = 0; i < ctx->length; i++) {
+		EventClosure *closure = ctx->closures[i];
+		if (closure && closure->func
 		    && (!only_unemitted || closure->emit_count == 0)) {
 			closure->func (this, calldata, closure->data);
 			closure->emit_count ++;
 		}
 	}
 
-	if (calldata)
-		calldata->unref ();
+	return ctx->length > 0;
+}
+
+void
+EventObject::FinishEmit (int event_id, EmitContext *ctx)
+{
+	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
+		g_warning ("trying to finish emit with id %d, which has not been registered\n", event_id);
+		goto delete_ctx;
+	}
+
+	if (events == NULL || events->lists [event_id].event_list->IsEmpty ()) {
+		goto delete_ctx;
+	}
 
 	events->lists [event_id].emitting--;
 	events->emitting--;
 
 	if (events->lists [event_id].emitting == 0) {
 		// Remove closures which are waiting for removal
-		closure = (EventClosure *) events->lists [event_id].event_list->First ();
+		EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 		while (closure != NULL) {
-			next = (EventClosure *) closure->next;
+			EventClosure *next = (EventClosure *) closure->next;
 			if (closure->pending_removal)
 				events->lists [event_id].event_list->Remove (closure);
 			closure = next;
 		}
 	}
 
-	g_free (closures);
-
-
-	return true;
+ delete_ctx:
+	// make sure to pass false here, as the lists are shallow copied and the nodes are shared
+	delete ctx;
 }
 
 Surface*

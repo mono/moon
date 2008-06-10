@@ -209,10 +209,9 @@ class Surface : public EventObject {
 	static void widget_destroyed (GtkWidget *w, gpointer data);
 	
 	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
-	bool EmitEventOnList (MoonlightEventEmitFunc emitter, List *list, GdkEvent *event, int end_idx);
+	bool EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx);
 	void UpdateCursorFromInputList ();
-	bool HandleMouseEvent (MoonlightEventEmitFunc emitter, bool emit_leave, bool emit_enter, bool force_emit,
-			       GdkEvent *event);
+	bool HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event);
 	void PerformCapture (UIElement *capture);
 	void PerformReleaseCapture ();
 	

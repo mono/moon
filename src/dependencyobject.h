@@ -24,6 +24,7 @@
 
 class EventObject;
 class EventArgs;
+struct EmitContext;
 
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 
@@ -158,7 +159,11 @@ class EventObject {
 	const static int DestroyedEvent;
 	
 	void unref_delayed ();
-	
+
+	EmitContext* StartEmit (int event_id);
+	bool DoEmit (int event_id, EmitContext* ctx, EventArgs *calldata = NULL, bool only_unemitted = false);
+	void FinishEmit (int event_id, EmitContext* ctx);
+
  protected:
 	virtual ~EventObject ();
 	
