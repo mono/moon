@@ -104,8 +104,6 @@ void  custom_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const
 void  custom_add_child      (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 void  custom_set_property   (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 
-XamlElementInstance *create_x_code_directive_element (XamlParserInfo *p, XamlElementInfo *i);
-void process_x_code_directive (XamlParserInfo *p, const char **attr);
 
 class XamlElementInstance : public List::Node {
  public:
@@ -118,7 +116,6 @@ class XamlElementInstance : public List::Node {
 	enum ElementType {
 		ELEMENT,
 		PROPERTY,
-		X_CODE_DIRECTIVE,
 		INVALID
 	};
 
@@ -340,7 +337,6 @@ class XamlElementInstanceNative : public XamlElementInstance {
 
 
 
-
 class XamlNamespace {
  public:
 	const char *name;
@@ -370,9 +366,6 @@ class DefaultNamespace : public XamlNamespace {
 		}
 
 		return new XamlElementInfoNative (t);
-
-//		return wrap_type (p, t);
-//		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
 	}
 
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
@@ -391,7 +384,7 @@ class XNamespace : public XamlNamespace {
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
-		return (XamlElementInfo *) g_hash_table_lookup (element_map, el);
+		return NULL;
 	}
 
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
@@ -676,17 +669,6 @@ XamlLoader::GetMapping (const char* key)
 	return result;
 }
 
-bool
-XamlLoader::LoadCode (const char *source, const char *type)
-{
-	if (!vm_loaded)
-		LoadVM ();
-
-	if (callbacks.load_code)
-		return callbacks.load_code (source, type);
-	return false;
-}
-
 XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 {
 	this->filename = g_strdup (filename);
@@ -762,38 +744,6 @@ xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
 	
 	loader->callbacks = callbacks;
 	loader->vm_loaded = true;
-}
-
-
-XamlElementInstance *
-create_x_code_directive_element (XamlParserInfo *p, XamlElementInfo *i)
-{
-	XamlElementInstance *inst = new XamlElementInstance (i, "xcode", XamlElementInstance::X_CODE_DIRECTIVE);
-
-	return inst;
-}
-
-void
-process_x_code_directive (XamlParserInfo *p, const char **attr)
-{
-	const char *source = NULL;
-	const char *type = NULL;
-	int i;
-	bool res;
-
-	i = 0;
-	while (attr [i]) {
-		if (!strcmp (attr [i], "Source"))
-			source = attr [i + 1];
-		else if (!strcmp (attr [i], "Type"))
-			type = attr [i + 1];
-		i += 2;
-	}
-
-	if (p->loader) {
-		if (!(res = p->loader->LoadCode (source, type)))
-			parser_error (p, "", "", -1, g_strdup_printf ("Unable to load '%s'\n", source));
-	}
 }
 
 
@@ -898,17 +848,7 @@ start_element (void *data, const char *el, const char **attr)
 		} else
 			inst = elem->CreateElementInstance (p);
 
-		if (!inst)
-			return;
-
-		if (inst->element_type == XamlElementInstance::X_CODE_DIRECTIVE) {
-			process_x_code_directive (p, attr);
-			inst->parent = p->current_element;
-			p->current_element = inst;
-			return;
-		}
-
-		if (!inst->item)
+		if (!inst && !inst->item)
 			return;
 
 		if (!p->top_element) {
@@ -1140,9 +1080,6 @@ end_element_handler (void *data, const char *el)
 		flush_char_data (info, NULL);
 		break;
 	}
-	case XamlElementInstance::X_CODE_DIRECTIVE:
-		/* Nothing to do */
-		break;
 	}
 
 	info->current_element = info->current_element->parent;
@@ -2821,8 +2758,6 @@ XamlElementInstanceCustom::SetAttributes (XamlParserInfo *p, const char **attr)
 {
 	dependency_object_set_attributes (p, this, attr);
 }
-
-
 
 
 ///

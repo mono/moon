@@ -1,3 +1,7 @@
+2008-06-10  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Remove x:Code since this isn't used in SL 2.0.
+
 2008-06-10  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h, dependencyobject.cpp: split the Emit()
