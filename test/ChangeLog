@@ -1,3 +1,8 @@
+2008-06-10  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/test-animation-nested-storyboard.xaml: Adding a test for nested
+	storyboards.
+
 2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test.mdp: Added.

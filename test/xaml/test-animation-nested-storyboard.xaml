@@ -1,0 +1,40 @@
+<Canvas x:Name="root" 
+  Loaded="OnLoaded" 
+  xmlns="http://schemas.microsoft.com/client/2007"  
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
+
+  <Rectangle x:Name="rect1" Canvas.Top="10" Canvas.Left="10" Width="30" Height="30" Fill="red"/>
+  <Rectangle x:Name="rect2" Canvas.Top="50" Canvas.Left="10" Width="30" Height="30" Fill="black" />
+
+    <Canvas.Triggers>
+      <EventTrigger RoutedEvent="Canvas.Loaded">
+        <EventTrigger.Actions>
+          <BeginStoryboard>                                                                                                                                               
+            <Storyboard  
+                  Storyboard.TargetName="rect1"
+                  Storyboard.TargetProperty="(Canvas.Left)"
+                  BeginTime="0:0:1"
+            >
+              <Storyboard
+                  Storyboard.TargetName="rect2">
+               
+		<DoubleAnimation 
+                  BeginTime="0:0:1"
+                  Storyboard.TargetProperty="(Canvas.Left)"
+                  Duration="0:0:3"
+                  To="200" 
+                />
+	</Storyboard>
+		<DoubleAnimation 
+                  BeginTime="0:0:1"
+                  Storyboard.TargetProperty="(Canvas.Left)"
+                  Duration="0:0:3"
+                  To="200" 
+                />
+	</Storyboard>
+	</BeginStoryboard>
+	</EventTrigger.Actions>
+	</EventTrigger>
+	</Canvas.Triggers>
+
+</Canvas>
