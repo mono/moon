@@ -88,6 +88,7 @@ namespace Mono {
 				UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
 				e.InvokeLoaded ();
 				
+				//FIXME: BrowserHost is now replaced by SilverlightHost.Content
 				BrowserHost.InvokeResize ();
 			}
 			catch (Exception ex) {
@@ -209,6 +210,7 @@ namespace Mono {
 		{
 			try {
 				// Parameter ignored
+				//FIXME: BrowserHost is now replaced by SilverlightHost.Content
 				BrowserHost.InvokeResize ();
 			}
 			catch (Exception ex) {

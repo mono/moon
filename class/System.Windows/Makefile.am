@@ -131,6 +131,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/MouseEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/MouseEventHandler.cs			\
 	$(srcdir)/System.Windows.Interop/BrowserHost.cs				\
+	$(srcdir)/System.Windows.Interop/Content.cs				\
+	$(srcdir)/System.Windows.Interop/Settings.cs				\
+	$(srcdir)/System.Windows.Interop/SilverlightHost.cs			\
 	$(srcdir)/System.Windows.Markup/XamlParseException.cs			\
 	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\

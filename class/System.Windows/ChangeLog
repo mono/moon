@@ -1,3 +1,9 @@
+2008-06-10  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* System.Windows.Interrop/SilverlightHost.cs:
+	* System.Windows.Interrop/Content.cs:
+	* System.Windows.Interrop/Settings.cs: new 2.0 classes
+
 2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* System.Windows.mdp: Updated.
