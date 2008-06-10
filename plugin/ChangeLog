@@ -1,3 +1,9 @@
+2008-06-11  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-downloader.cpp: Only call into the downloader to Write
+	if we have a downloader set.  Fixes a crash when navigating away from
+	live streams.
+
 2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.h: Replace g_assert with g_warning.

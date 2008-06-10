@@ -194,9 +194,13 @@ PluginDownloader::Started ()
 uint32_t
 PluginDownloader::Read (char *buffer, uint32_t length)
 {
-	dl->Write (buffer, this->offset, length);
-	this->offset += length;
-	return DOWNLOADER_OK;
+	if (dl != NULL) {
+		dl->Write (buffer, this->offset, length);
+		this->offset += length;
+		return DOWNLOADER_OK;
+	}
+
+	return DOWNLOADER_ERR;
 }
 
 void
