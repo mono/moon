@@ -294,38 +294,38 @@ if test x$user_plugin = xyes; then
   if test x$with_ff3 = xno -a x$with_ff2 = xno; then
     AC_MSG_ERROR([Building the plugin installer requires Firefox2 or Firefox3 support.])
   fi
+  case "$target_os" in
+    *linux* )
+    TARGET_PLATFORM="Linux"
+    ;;
+    * )
+    AC_MSG_ERROR([Target os $target_os is unknown.
+    Please add the appropriate string to configure.ac.
+    See http://developer.mozilla.org/en/docs/OS_TARGET])
+    ;;
+  esac
+  
+  case "$target_cpu" in
+    i*86 )
+    TARGET_PLATFORM="$TARGET_PLATFORM"_x86-gcc3
+    ;;
+    x86_64 )
+    TARGET_PLATFORM="$TARGET_PLATFORM"_x86_64-gcc3
+    ;;
+    powerpc )
+    TARGET_PLATFORM="$TARGET_PLATFORM"_ppc-gcc3
+    ;;
+    sparc64 )
+    TARGET_PLATFORM="$TARGET_PLATFORM"_sparc64-gcc3
+    ;;
+    * )
+    AC_MSG_ERROR([Target cpu $target_cpu is unknown.
+    Please add the appropriate string to configure.ac.
+    See http://developer.mozilla.org/en/docs/XPCOM_ABI])
+    ;;
+  esac
+  AC_SUBST(TARGET_PLATFORM)
 fi
-
-case "$target_os" in
-  *linux* )
-  TARGET_PLATFORM="Linux"
-  ;;
-  * )
-  AC_MSG_ERROR([Target os $target_os is unknown.
-Please add the appropriate string to configure.ac.
-See http://developer.mozilla.org/en/docs/OS_TARGET])
-  ;;
-esac
-
-case "$target_cpu" in
-  i*86 )
-  TARGET_PLATFORM="$TARGET_PLATFORM"_x86-gcc3
-  ;;
-  x86_64 )
-  TARGET_PLATFORM="$TARGET_PLATFORM"_x86_64-gcc3
-  ;;
-  powerpc )
-  TARGET_PLATFORM="$TARGET_PLATFORM"_ppc-gcc3
-  ;;
-  sparc* )
-  TARGET_PLATFORM="$TARGET_PLATFORM"_sparc-gcc3
-  ;;
-  * )
-  AC_MSG_ERROR([Target cpu $target_cpu is unknown.
-Please add the appropriate string to configure.ac.
-See http://developer.mozilla.org/en/docs/XPCOM_ABI])
-esac
-AC_SUBST(TARGET_PLATFORM)
 
 dnl *************************************
 dnl *** Checks for large file support ***
