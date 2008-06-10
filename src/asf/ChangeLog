@@ -1,3 +1,7 @@
+2008-06-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-structures.h: Fix warning.
+
 2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-structures.h: Remove g_assert.
