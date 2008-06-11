@@ -790,6 +790,11 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 				return false;
 			}
 		}
+		// TODO: Name validation
+		// This doesn't happen in 1.0 or 2.0b according to my tests, but according to the 2.0 docs
+		// names need to start with a '_' or letter.  They can't start with a _.  Also characters
+		// should be limited to a-z A-Z 0-9 and _.  Once a newer beta actually enforces this
+		// I'll implement the validation method.
 	}
 
 	return true;
