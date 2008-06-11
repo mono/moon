@@ -1117,7 +1117,11 @@ ClockGroup::Begin ()
 void
 ClockGroup::ComputeBeginTime ()
 {
-	begin_time = GetParentTime() + (timeline->HasBeginTime() ? timeline->GetBeginTime() : 0);
+	if (GetParent () && GetParent ()->GetObjectType () >= Type::CLOCKGROUP)
+		begin_time = (timeline->HasBeginTime() ? timeline->GetBeginTime() : 0);
+	else
+		begin_time = GetParentTime () + (timeline->HasBeginTime() ? timeline->GetBeginTime() : 0);
+ 
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *c = (Clock*)l->data;
 		c->ComputeBeginTime ();

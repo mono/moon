@@ -1,3 +1,9 @@
+2008-06-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: Fixing seeking on nested storyboards. Fixes
+	seek-test-nested-storyboard.xaml in assorted and one more
+	AnimationMatrix2 block. Now only one left to fix...
+
 2008-06-10  Geoff Norton  <gnorton@novell.com>
 
 	* mms-downlodaer.cpp: Remove some improperly commited debug code
