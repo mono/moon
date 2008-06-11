@@ -105,6 +105,10 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 	if (requested_position != -1) {
 		seeked = true;
 
+		g_free (this->buffer);
+		this->buffer = NULL;
+		this->size = 0;
+
 		dl->InternalAbort ();
 
 		dl->InternalOpen ("GET", uri, true);
