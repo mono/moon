@@ -51,7 +51,7 @@ run-tests:
 	DRTLIST=$(top_builddir)/test/xaml/drtlist.xml $(MAKE) $(MAKEFLAGS) run-drtlist
 
 run-ms-tests:
-	DRTLIST=$(MS_DRTLIST) $(MAKE) $(MAKEFLAGS) run-drtlist
+	DRTLIST=$(MS_DRTLIST) $(MAKE) run-drtlist
 
 gtksilver.dll: ../gtk/gtksilver.dll
 	cp ../gtk/gtksilver.dll .

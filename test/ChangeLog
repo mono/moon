@@ -1,5 +1,9 @@
 2008-06-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Makefile.am: Remove $(MAKEFLAGS), it's causing problems.
+
+2008-06-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile.am: Add a run-xephyr target.
 
 2008-06-11  Michael Dominic K.  <mdk@mdk.am>
