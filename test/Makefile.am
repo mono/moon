@@ -49,7 +49,7 @@ run-drtlist: all check-testing
 
 run-tests:
 	DRTLIST=$(top_builddir)/test/xaml/drtlist.xml $(MAKE) run-drtlist
-tudio
+
 run-ms-tests:
 	DRTLIST=$(MS_DRTLIST) $(MAKE) run-drtlist
 
