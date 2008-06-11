@@ -20,7 +20,7 @@
 #include "npapi.h"
 #include "npupp.h"
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 #include <mono/metadata/assembly.h>
 #endif
 
@@ -82,7 +82,7 @@ load (void)
 	g_free (avcodec_path);
 #endif
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	// load libmono
 	char *mono_path = g_build_filename (plugin_dir, "libmono.so", NULL);
 	void *real_mono = dlopen (mono_path, RTLD_LAZY | RTLD_GLOBAL);

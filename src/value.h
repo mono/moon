@@ -274,10 +274,10 @@ public:
 	Animation*                     AsAnimation () { checked_get_subclass (Type::ANIMATION, Animation) }
 	AnimationClock*                AsAnimationClock () { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
 	ArcSegment*                    AsArcSegment () { checked_get_subclass (Type::ARCSEGMENT, ArcSegment) }
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	AssemblyPart*                  AsAssemblyPart () { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
 #endif
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	AssemblyPartCollection*        AsAssemblyPartCollection () { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
 #endif
 	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
@@ -291,15 +291,15 @@ public:
 	ColorAnimationUsingKeyFrames*  AsColorAnimationUsingKeyFrames () { checked_get_subclass (Type::COLORANIMATIONUSINGKEYFRAMES, ColorAnimationUsingKeyFrames) }
 	ColorKeyFrame*                 AsColorKeyFrame () { checked_get_subclass (Type::COLORKEYFRAME, ColorKeyFrame) }
 	ColorKeyFrameCollection*       AsColorKeyFrameCollection () { checked_get_subclass (Type::COLORKEYFRAME_COLLECTION, ColorKeyFrameCollection) }
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	ColumnDefinition*              AsColumnDefinition () { checked_get_subclass (Type::COLUMNDEFINITION, ColumnDefinition) }
 #endif
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	ColumnDefinitionCollection*    AsColumnDefinitionCollection () { checked_get_subclass (Type::COLUMNDEFINITION_COLLECTION, ColumnDefinitionCollection) }
 #endif
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	DependencyObject*              AsDependencyObject () { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	Deployment*                    AsDeployment () { checked_get_subclass (Type::DEPLOYMENT, Deployment) }
 #endif
 	DiscreteColorKeyFrame*         AsDiscreteColorKeyFrame () { checked_get_subclass (Type::DISCRETECOLORKEYFRAME, DiscreteColorKeyFrame) }
@@ -325,7 +325,7 @@ public:
 	GradientBrush*                 AsGradientBrush () { checked_get_subclass (Type::GRADIENTBRUSH, GradientBrush) }
 	GradientStop*                  AsGradientStop () { checked_get_subclass (Type::GRADIENTSTOP, GradientStop) }
 	GradientStopCollection*        AsGradientStopCollection () { checked_get_subclass (Type::GRADIENTSTOP_COLLECTION, GradientStopCollection) }
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	Grid*                          AsGrid () { checked_get_subclass (Type::GRID, Grid) }
 #endif
 	Image*                         AsImage () { checked_get_subclass (Type::IMAGE, Image) }
@@ -381,10 +381,10 @@ public:
 	RectangleGeometry*             AsRectangleGeometry () { checked_get_subclass (Type::RECTANGLEGEOMETRY, RectangleGeometry) }
 	ResourceDictionary*            AsResourceDictionary () { checked_get_subclass (Type::RESOURCE_DICTIONARY, ResourceDictionary) }
 	RotateTransform*               AsRotateTransform () { checked_get_subclass (Type::ROTATETRANSFORM, RotateTransform) }
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	RowDefinition*                 AsRowDefinition () { checked_get_subclass (Type::ROWDEFINITION, RowDefinition) }
 #endif
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	RowDefinitionCollection*       AsRowDefinitionCollection () { checked_get_subclass (Type::ROWDEFINITION_COLLECTION, RowDefinitionCollection) }
 #endif
 	Run*                           AsRun () { checked_get_subclass (Type::RUN, Run) }
@@ -401,10 +401,10 @@ public:
 	StylusInfo*                    AsStylusInfo () { checked_get_subclass (Type::STYLUSINFO, StylusInfo) }
 	StylusPoint*                   AsStylusPoint () { checked_get_subclass (Type::STYLUSPOINT, StylusPoint) }
 	StylusPointCollection*         AsStylusPointCollection () { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	SupportedCulture*              AsSupportedCulture () { checked_get_subclass (Type::SUPPORTEDCULTURE, SupportedCulture) }
 #endif
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	SupportedCultureCollection*    AsSupportedCultureCollection () { checked_get_subclass (Type::SUPPORTEDCULTURE_COLLECTION, SupportedCultureCollection) }
 #endif
 	Surface*                       AsSurface () { checked_get_subclass (Type::SURFACE, Surface) }
@@ -426,7 +426,7 @@ public:
 	TriggerAction*                 AsTriggerAction () { checked_get_subclass (Type::TRIGGERACTION, TriggerAction) }
 	TriggerActionCollection*       AsTriggerActionCollection () { checked_get_subclass (Type::TRIGGERACTION_COLLECTION, TriggerActionCollection) }
 	UIElement*                     AsUIElement () { checked_get_subclass (Type::UIELEMENT, UIElement) }
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	UserControl*                   AsUserControl () { checked_get_subclass (Type::USERCONTROL, UserControl) }
 #endif
 	VideoBrush*                    AsVideoBrush () { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }

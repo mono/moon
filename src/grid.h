@@ -10,7 +10,7 @@
 #ifndef __MOON_GRID_H__
 #define __MOON_GRID_H__
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 
 #include <glib.h>
 #include "panel.h"

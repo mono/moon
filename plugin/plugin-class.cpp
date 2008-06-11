@@ -1838,7 +1838,7 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 			switch (numbers [0]) {
 			case 0: // We support all versions of the format "0.*"
 				break;
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 			case 1:
 				supported &= numbers [1] <= 1; // 1.0* or 1.1*
 				break;

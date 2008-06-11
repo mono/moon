@@ -44,7 +44,7 @@ class FrameworkElement : public UIElement {
 	double GetWidth ();
 
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
        //
        // 2.0 methods
        //

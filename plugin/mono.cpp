@@ -15,7 +15,7 @@
 #include <glib.h>
 #include <dlfcn.h>
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 #include "moon-mono.h"
 G_BEGIN_DECLS
 #include <mono/jit/jit.h>

@@ -9,7 +9,7 @@
 #ifndef __DEPLOYMENT_H__
 #define __DEPLOYMENT_H__
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 
 #include <glib.h>
 

@@ -85,10 +85,10 @@ Type type_infos [] = {
 	{ Type::ANIMATION, Type::TIMELINE, false, "Animation", "ANIMATION", 0, 1, NULL, NULL, NULL }, 
 	{ Type::ANIMATIONCLOCK, Type::CLOCK, false, "AnimationClock", "ANIMATIONCLOCK", 0, 5, NULL, NULL, NULL }, 
 	{ Type::ARCSEGMENT, Type::PATHSEGMENT, false, "ArcSegment", "ARCSEGMENT", 0, 1, NULL, (create_inst_func *) arc_segment_new, NULL }, 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::ASSEMBLYPART, Type::DEPENDENCY_OBJECT, false, "AssemblyPart", "ASSEMBLYPART", 0, 1, NULL, (create_inst_func *) assembly_part_new, NULL }, 
 #endif
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::ASSEMBLYPART_COLLECTION, Type::COLLECTION, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 1, NULL, (create_inst_func *) assembly_part_collection_new, NULL }, 
 #endif
 	{ Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard" }, 
@@ -105,15 +105,15 @@ Type type_infos [] = {
 	{ Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION, false, "ColorAnimationUsingKeyFrames", "COLORANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) color_animation_using_key_frames_new, NULL }, 
 	{ Type::COLORKEYFRAME, Type::KEYFRAME, false, "ColorKeyFrame", "COLORKEYFRAME", 0, 1, NULL, (create_inst_func *) color_key_frame_new, NULL }, 
 	{ Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ColorKeyFrameCollection", "COLORKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) color_key_frame_collection_new, NULL }, 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::COLUMNDEFINITION, Type::DEPENDENCY_OBJECT, false, "ColumnDefinition", "COLUMNDEFINITION", 0, 1, NULL, (create_inst_func *) column_definition_new, NULL }, 
 #endif
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::COLUMNDEFINITION_COLLECTION, Type::COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL }, 
 #endif
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 12, NULL, (create_inst_func *) control_new, "Content" }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, NULL, NULL }, 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::DEPLOYMENT, Type::DEPENDENCY_OBJECT, false, "Deployment", "DEPLOYMENT", 0, 1, NULL, (create_inst_func *) deployment_new, NULL }, 
 #endif
 	{ Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME, false, "DiscreteColorKeyFrame", "DISCRETECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_color_key_frame_new, NULL }, 
@@ -142,7 +142,7 @@ Type type_infos [] = {
 	{ Type::GRADIENTBRUSH, Type::BRUSH, false, "GradientBrush", "GRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) gradient_brush_new, "GradientStops" }, 
 	{ Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT, false, "GradientStop", "GRADIENTSTOP", 0, 1, NULL, (create_inst_func *) gradient_stop_new, NULL }, 
 	{ Type::GRADIENTSTOP_COLLECTION, Type::COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, (create_inst_func *) gradient_stop_collection_new, NULL }, 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::GRID, Type::PANEL, false, "Grid", "GRID", 0, 12, NULL, (create_inst_func *) grid_new, NULL }, 
 #endif
 	{ Type::GRIDLENGTH, Type::INVALID, false, "GridLength", "GRIDLENGTH", 0, 0, NULL, NULL, NULL }, 
@@ -207,10 +207,10 @@ Type type_infos [] = {
 	{ Type::REPEATBEHAVIOR, Type::INVALID, false, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL }, 
 	{ Type::RESOURCE_DICTIONARY, Type::COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL }, 
 	{ Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL }, 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::ROWDEFINITION, Type::DEPENDENCY_OBJECT, false, "RowDefinition", "ROWDEFINITION", 0, 1, NULL, (create_inst_func *) row_definition_new, NULL }, 
 #endif
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::ROWDEFINITION_COLLECTION, Type::COLLECTION, false, "RowDefinitionCollection", "ROWDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) row_definition_collection_new, NULL }, 
 #endif
 	{ Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text" }, 
@@ -228,10 +228,10 @@ Type type_infos [] = {
 	{ Type::STYLUSINFO, Type::DEPENDENCY_OBJECT, false, "StylusInfo", "STYLUSINFO", 0, 1, NULL, (create_inst_func *) stylus_info_new, NULL }, 
 	{ Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, false, "StylusPoint", "STYLUSPOINT", 0, 1, NULL, (create_inst_func *) stylus_point_new, NULL }, 
 	{ Type::STYLUSPOINT_COLLECTION, Type::COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL }, 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::SUPPORTEDCULTURE, Type::DEPENDENCY_OBJECT, false, "SupportedCulture", "SUPPORTEDCULTURE", 0, 1, NULL, NULL, NULL }, 
 #endif
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::SUPPORTEDCULTURE_COLLECTION, Type::COLLECTION, false, "SupportedCultureCollection", "SUPPORTEDCULTURE_COLLECTION", 0, 1, NULL, (create_inst_func *) supported_culture_collection_new, NULL }, 
 #endif
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, (create_inst_func *) surface_new, NULL }, 
@@ -256,7 +256,7 @@ Type type_infos [] = {
 	{ Type::UIELEMENT, Type::VISUAL, false, "UIElement", "UIELEMENT", 11, 12, UIElement_Events, NULL, NULL }, 
 	{ Type::UINT32, Type::INVALID, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL }, 
 	{ Type::UINT64, Type::INVALID, false, "guint64", "UINT64", 0, 0, NULL, NULL, NULL }, 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 12, NULL, (create_inst_func *) user_control_new, NULL }, 
 #endif
 	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL }, 

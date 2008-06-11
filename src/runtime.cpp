@@ -2257,7 +2257,7 @@ runtime_init (guint32 flags)
 	panel_init ();
 	stylus_init ();
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	//
 	// 2.0 classes
 	//

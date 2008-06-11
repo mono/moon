@@ -64,7 +64,7 @@ class Control : public FrameworkElement {
 	Rect bounds_with_children;
 };
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 //
 // UserControl
 //

@@ -52,7 +52,7 @@ UIElement::UIElement ()
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	desired_size = Size (0, 0);
 #endif
 	
@@ -863,7 +863,7 @@ uielement_get_parent (UIElement *item)
 	return item->GetVisualParent ();
 }
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 Size
 uielement_get_desired_size (UIElement *item)
 {

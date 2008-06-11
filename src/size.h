@@ -10,7 +10,7 @@
 #ifndef __MOON_SIZE_H__
 #define __MOON_SIZE_H__
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 
 struct Size {
 public:

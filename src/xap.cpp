@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 
 #include "xaml.h"
 #include "error.h"

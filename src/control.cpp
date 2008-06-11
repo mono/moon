@@ -227,7 +227,7 @@ control_new (void)
 	return new Control ();
 }
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 
 UserControl *
 user_control_new (void)

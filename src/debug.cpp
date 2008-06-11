@@ -12,7 +12,7 @@
  
 #if DEBUG
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 // Define to enable stack traces for managed frames.
 // You'll also need to call enable_vm_stack_trace when the vm is loaded
 // (since we don't link with mono, you'll get some unresolved externals errors otherwise). 

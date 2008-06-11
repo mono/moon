@@ -341,7 +341,7 @@ class UIElement : public Visual {
 		return *vu->AsPoint ();
 	}
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 	//
 	// 2.0 methods
 	//
@@ -412,7 +412,7 @@ Brush     *uielement_get_opacity_mask     (UIElement *item);
 void       uielement_transform_point      (UIElement *item, double *x, double *y);
 UIElement *uielement_get_parent           (UIElement *item);
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 Size       uielement_get_desired_size     (UIElement *item);
 #endif
 

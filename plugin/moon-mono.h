@@ -11,7 +11,7 @@
  *
  */
 
-#if INCLUDE_MONO_RUNTIME
+#if SL_2_0
 G_BEGIN_DECLS
 
 bool vm_is_loaded (void);

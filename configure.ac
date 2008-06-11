@@ -132,7 +132,7 @@ if test x$with_mono = xyes; then
             PKG_CHECK_MODULES(RSVGSHARP,$rsvg_sharp,[
             		    RSVG_SHARP=$rsvg_sharp
           		    AC_SUBST(RSVG_SHARP)])
-            AC_DEFINE([INCLUDE_MONO_RUNTIME],[1],[Include the mono runtime in the build (and enable Silverlight 2.0 plugin usage)])
+            AC_DEFINE([SL_2_0],[1],[Enable Silverlight 2.0 support)])
         else
 	    with_mono=no
 	    mreason="(reason: gtk-sharp-2.0 or rsvg-sharp-2.0 is missing)"
