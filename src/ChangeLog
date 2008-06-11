@@ -1,3 +1,15 @@
+2008-06-10  Chris Toshok  <toshok@ximian.com>
+
+	* control.h, control.cpp, deployment.h, uielement.h,
+	uielement.cpp, frameworkelement.h, value.h, grid.h, size.h, xap.h,
+	runtime.cpp: wrap everything SL2.0 with INCLUDE_MONO_RUNTIME (for
+	now.  I'll be changing that ifdef soon.)  Also, mark all 2.0
+	specific types with the following typegen pragma: /*
+	@SilverlightVersion="2" */ so that the generated files contain the
+	proper ifdefs as well.
+
+	* type-generated.cpp, type.h, value.h: resync with new ifdefs.
+
 2008-06-10  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyobject.cpp: Add todo for Name validation.

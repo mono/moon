@@ -341,6 +341,7 @@ class UIElement : public Visual {
 		return *vu->AsPoint ();
 	}
 
+#if INCLUDE_MONO_RUNTIME
 	//
 	// 2.0 methods
 	//
@@ -355,6 +356,7 @@ class UIElement : public Visual {
 	{
 		return Size (0, 0);
 	}
+#endif
 	
 	static DependencyProperty *ClipProperty;
 	static DependencyProperty *CursorProperty;
@@ -410,7 +412,9 @@ Brush     *uielement_get_opacity_mask     (UIElement *item);
 void       uielement_transform_point      (UIElement *item, double *x, double *y);
 UIElement *uielement_get_parent           (UIElement *item);
 
+#if INCLUDE_MONO_RUNTIME
 Size       uielement_get_desired_size     (UIElement *item);
+#endif
 
 bool       uielement_capture_mouse         (UIElement *item);
 void       uielement_release_mouse_capture (UIElement *item);

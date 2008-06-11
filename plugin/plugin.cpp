@@ -348,7 +348,9 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	
 	vm_missing_file = NULL;
 	xaml_loader = NULL;
+#if INCLUDE_MONO_RUNTIME
 	xap_loaded = false;
+#endif
 	plugin_unload = NULL;
 	
 	timers = NULL;
@@ -396,8 +398,10 @@ PluginInstance::~PluginInstance ()
 	g_free (id);
 	delete xaml_loader;
 
+#if INCLUDE_MONO_RUNTIME
 	// Destroy the XAP application
 	DestroyApplication ();
+#endif
 
 	g_free (source);
 
@@ -969,18 +973,6 @@ PluginInstance::DestroyApplication ()
 		vm_application_destroy (this);
 	xap_loaded = false;
 }
-#else
-
-void
-PluginInstance::DestroyApplication ()
-{
-}
-
-void
-PluginInstance::LoadXAP (const char *fname)
-{
-	// never called when Mono is not linked in.
-}
 #endif
 
 /*
@@ -1168,13 +1160,17 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		if (xaml_loader != NULL)
 			delete xaml_loader;
 	
+#if INCLUDE_MONO_RUNTIME
 		if (IsSilverlight2 ()) 
 			LoadXAP (fname);
 		else {
+#endif
 			xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
 	
 			LoadXAML ();
+#if INCLUDE_MONO_RUNTIME
 		}
+#endif
 	} else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
 		
@@ -1833,19 +1829,19 @@ PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, Plugi
 	xaml_is_managed = false;
 	initialized = false;
 	error_args = NULL;
+#if INCLUDE_MONO_RUNTIME
 	xap = NULL;
 
-#if INCLUDE_MONO_RUNTIME
 	managed_loader = NULL;
 #endif
 }
 
 PluginXamlLoader::~PluginXamlLoader ()
 {
+#if INCLUDE_MONO_RUNTIME
 	if (xap)
 		delete xap;
 	
-#if INCLUDE_MONO_RUNTIME
 	if (managed_loader)
 		vm_loader_destroy (managed_loader);
 #endif

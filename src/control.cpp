@@ -227,6 +227,8 @@ control_new (void)
 	return new Control ();
 }
 
+#if INCLUDE_MONO_RUNTIME
+
 UserControl *
 user_control_new (void)
 {
@@ -266,4 +268,5 @@ user_control_init ()
 	UserControl::ContentProperty = DependencyObject::Register (Type::USERCONTROL, "Content", Type::UIELEMENT);
 }
 
+#endif
 

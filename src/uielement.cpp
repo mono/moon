@@ -52,7 +52,9 @@ UIElement::UIElement ()
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
 
+#if INCLUDE_MONO_RUNTIME
 	desired_size = Size (0, 0);
+#endif
 	
 	// XXX bad bad bad.  no virtual method calls in ctors
 	this->SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
@@ -861,11 +863,13 @@ uielement_get_parent (UIElement *item)
 	return item->GetVisualParent ();
 }
 
+#if INCLUDE_MONO_RUNTIME
 Size
 uielement_get_desired_size (UIElement *item)
 {
 	return item->desired_size; 
 }
+#endif
 
 bool
 uielement_capture_mouse (UIElement *item)

@@ -20,7 +20,9 @@ class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
 class BrowserBridge;
+#if INCLUDE_MONO_RUNTIME
 class Xap;
+#endif
 
 typedef void plugin_unload_callback (PluginInstance *plugin);
 char *NPN_strdup (const char *val);
@@ -62,7 +64,9 @@ class PluginInstance
 	// The XAML loader, contains a handle to a MonoObject *
 	//
 	PluginXamlLoader *xaml_loader;
+#if INCLUDE_MONO_RUNTIME
 	bool xap_loaded;
+#endif
 	
 	//
 	// A (managed) callback to call when the plugin is unloaded.
@@ -77,9 +81,11 @@ class PluginInstance
 	void UpdateSource ();
 	void UpdateSourceByReference (const char *value);
 	void LoadXAML ();
+#if INCLUDE_MONO_RUNTIME
 	void LoadXAP  (const char *fname);
-	void SetPageURL ();
 	void DestroyApplication ();
+#endif
+	void SetPageURL ();
 
 	void TryLoadBridge (const char *prefix);
 	
@@ -242,9 +248,9 @@ class PluginXamlLoader : public XamlLoader
 	bool initialized;
 	bool xaml_is_managed;
 
+#if INCLUDE_MONO_RUNTIME
 	Xap *xap;
 
-#if INCLUDE_MONO_RUNTIME
 	gpointer managed_loader;
 #endif
 public:

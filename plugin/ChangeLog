@@ -1,3 +1,8 @@
+2008-06-10  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp, plugin.h: wrap everything 2.0 related with
+	INCLUDE_MONO_RUNTIME.
+
 2008-06-10  Geoff Norton  <gnorton@novell.com>
 	
 	* npstream-request.cpp: Return the status of GetResponse.

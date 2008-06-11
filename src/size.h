@@ -10,6 +10,8 @@
 #ifndef __MOON_SIZE_H__
 #define __MOON_SIZE_H__
 
+#if INCLUDE_MONO_RUNTIME
+
 struct Size {
 public:
        double width, height;
@@ -23,5 +25,7 @@ public:
        }
 
 };
+
+#endif
 
 #endif /* __MOON_POINT_H__ */

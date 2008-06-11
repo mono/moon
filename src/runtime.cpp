@@ -2257,12 +2257,14 @@ runtime_init (guint32 flags)
 	panel_init ();
 	stylus_init ();
 
+#if INCLUDE_MONO_RUNTIME
 	//
 	// 2.0 classes
 	//
 	deployment_init ();
 	user_control_init ();
 	grid_init ();
+#endif
 }
 
 //

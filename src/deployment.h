@@ -9,6 +9,8 @@
 #ifndef __DEPLOYMENT_H__
 #define __DEPLOYMENT_H__
 
+#if INCLUDE_MONO_RUNTIME
+
 #include <glib.h>
 
 G_BEGIN_DECLS
@@ -17,7 +19,7 @@ G_BEGIN_DECLS
 #include "dependencyobject.h"
 #include "collection.h"
 
-
+/* @SilverlightVersion="2" */
 class AssemblyPart : public DependencyObject {
  protected:
 	virtual ~AssemblyPart () {}
@@ -32,6 +34,7 @@ class AssemblyPart : public DependencyObject {
 AssemblyPart *assembly_part_new (void);
 
 
+/* @SilverlightVersion="2" */
 class AssemblyPartCollection : public Collection {
  protected:
 	virtual ~AssemblyPartCollection () {}
@@ -45,6 +48,7 @@ class AssemblyPartCollection : public Collection {
 AssemblyPartCollection *assembly_part_collection_new (void);
 
 
+/* @SilverlightVersion="2" */
 class SupportedCulture : public DependencyObject {
  protected:
 	virtual ~SupportedCulture () {}
@@ -55,6 +59,7 @@ class SupportedCulture : public DependencyObject {
 };
 
 
+/* @SilverlightVersion="2" */
 class SupportedCultureCollection : public Collection {
  protected:
 	virtual ~SupportedCultureCollection () {}
@@ -68,6 +73,7 @@ class SupportedCultureCollection : public Collection {
 SupportedCultureCollection *supported_culture_collection_new (void);
 
 
+/* @SilverlightVersion="2" */
 class Deployment : public DependencyObject {
  protected:
 	virtual ~Deployment () {}
@@ -93,5 +99,7 @@ Deployment *deployment_new (void);
 void deployment_init (void);
 
 G_END_DECLS
+
+#endif
 
 #endif /* __DEPLOYMENT_H__ */

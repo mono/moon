@@ -10,6 +10,8 @@
 #ifndef __MOON_GRID_H__
 #define __MOON_GRID_H__
 
+#if INCLUDE_MONO_RUNTIME
+
 #include <glib.h>
 #include "panel.h"
 
@@ -36,6 +38,7 @@ public:
        }
 };
 
+/* @SilverlightVersion="2" */
 class ColumnDefinition : public DependencyObject {
 protected:
        ~ColumnDefinition() {}
@@ -51,6 +54,7 @@ public:
        static DependencyProperty *MinWidthProperty;
 };
 
+/* @SilverlightVersion="2" */
 class RowDefinition : public DependencyObject {
 protected:
        ~RowDefinition() { actual = 0; }
@@ -66,6 +70,7 @@ public:
        static DependencyProperty *MinHeightProperty;
 };
 
+/* @SilverlightVersion="2" */
 class ColumnDefinitionCollection : public Collection {
 protected:
        virtual ~ColumnDefinitionCollection () {}
@@ -77,6 +82,7 @@ public:
 };
 
 
+/* @SilverlightVersion="2" */
 class RowDefinitionCollection : public Collection {
 protected:
        virtual ~RowDefinitionCollection () {}
@@ -87,6 +93,7 @@ public:
 };
 
 
+/* @SilverlightVersion="2" */
 class Grid : public Panel {
  private:
 
@@ -131,5 +138,7 @@ Grid *grid_new (void);
 void grid_init (void);
 
 G_END_DECLS
+
+#endif
 
 #endif /* __MOON_PANEL_H__ */

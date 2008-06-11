@@ -20,7 +20,6 @@ libmoon_include_HEADERS = \
 	control.h	\
 	debug.h		\
 	dependencyobject.h \
-	deployment.h	\
 	dirty.h		\
 	downloader.h	\
 	enums.h		\
@@ -31,7 +30,6 @@ libmoon_include_HEADERS = \
 	frameworkelement.h \
 	fullscreen.h	\
 	geometry.h	\
-	grid.h		\
 	http-streaming.h	\
 	internal-downloader.h	\
 	layout.h	\
@@ -62,7 +60,6 @@ libmoon_include_HEADERS = \
 	value.h		\
 	visual.h	\
 	xaml.h		\
-	xap.h		\
 	yuv-converter.h	\
 	libmoon.h
 
@@ -84,7 +81,6 @@ libmoon_la_SOURCES = 	\
 	control.cpp	\
 	debug.cpp	\
 	dependencyobject.cpp	\
-	deployment.cpp	\
 	dirty.h	\
 	dirty.cpp	\
 	downloader.cpp	\
@@ -93,7 +89,6 @@ libmoon_la_SOURCES = 	\
 	font.cpp	\
 	frameworkelement.cpp	\
 	geometry.cpp	\
-	grid.cpp	\
 	http-streaming.cpp	\
 	layout.cpp	\
 	list.cpp	\
@@ -124,13 +119,24 @@ libmoon_la_SOURCES = 	\
 	value.cpp	\
 	visual.cpp	\
 	xaml.cpp	\
-	xap.cpp		\
 	yuv-converter.cpp	\
 	zip/ioapi.c	\
 	zip/ioapi.h	\
 	zip/unzip.c	\
 	zip/unzip.h	\
 	zip/crypt.h
+
+if INCLUDE_MONO_RUNTIME
+libmoon_include_HEADERS += \
+	deployment.h	\
+	grid.h		\
+	xap.h
+
+libmoon_la_SOURCES += \
+	deployment.cpp	\
+	grid.cpp	\
+	xap.cpp
+endif
 
 if INCLUDE_FFMPEG
 libmoon_la_SOURCES += pipeline-ffmpeg.cpp pipeline-ffmpeg.h

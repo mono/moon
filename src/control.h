@@ -12,6 +12,8 @@
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 #include "frameworkelement.h"
 #include "xaml.h"
 
@@ -62,9 +64,11 @@ class Control : public FrameworkElement {
 	Rect bounds_with_children;
 };
 
+#if INCLUDE_MONO_RUNTIME
 //
 // UserControl
 //
+/* @SilverlightVersion="2" */
 class UserControl : public Control {
 protected:
 	virtual ~UserControl ();
@@ -79,17 +83,17 @@ public:
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 };
 
-G_BEGIN_DECLS
+UserControl *user_control_new (void);
+
+void user_control_init (void);
+
+#endif
 
 Control *control_new (void);
 UIElement* control_initialize_from_xaml (Control *control, const char *xaml,
 					 Type::Kind *element_type);
 UIElement* control_initialize_from_xaml_callbacks (Control *control, const char *xaml, 
 					Type::Kind *element_type, XamlLoader* loader);
-
-UserControl *user_control_new (void);
-
-void user_control_init (void);
 
 G_END_DECLS
 

@@ -44,6 +44,7 @@ class FrameworkElement : public UIElement {
 	double GetWidth ();
 
 
+#if INCLUDE_MONO_RUNTIME
        //
        // 2.0 methods
        //
@@ -63,6 +64,7 @@ class FrameworkElement : public UIElement {
                //
                return MeasureOverride (availableSize);
        }
+#endif
 };
 
 G_BEGIN_DECLS
