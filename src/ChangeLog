@@ -1,3 +1,7 @@
+2008-06-11  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Clean up the namespace map when destroying the parser.
+
 2008-06-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.h: Fix GeometryGround::ComputeBounds so it does

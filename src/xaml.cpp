@@ -256,7 +256,9 @@ class XamlParserInfo {
 		created_elements = g_list_reverse (created_elements);
 		g_list_foreach (created_elements, unref_xaml_element, NULL);
 		g_list_free (created_elements);
-		
+
+		g_hash_table_destroy (namespace_map);
+
 		if (cdata)
 			g_string_free (cdata, TRUE);
 		if (top_element)
