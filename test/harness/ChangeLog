@@ -1,3 +1,8 @@
+2008-06-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/DbusServices.cs, test-runner/LoggingServer.cs: Don't fail
+	  a test run if logging-server.exe is running.
+
 2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* harness.mdp: Updated.

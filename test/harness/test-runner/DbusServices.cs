@@ -52,9 +52,11 @@ namespace MoonlightTests {
 		public static void Start ()
 		{
 			Bus bus = Bus.Session;
-
-			if (!(bus.RequestName (BusName) == RequestNameReply.PrimaryOwner)) {
-				Console.Error.WriteLine ("Unable to request dbus bus name while registering object.");
+			RequestNameReply reply;
+			
+			reply = bus.RequestName (BusName, NameFlag.ReplaceExisting | NameFlag.AllowReplacement);
+			if (!(reply == RequestNameReply.PrimaryOwner)) {
+				Console.Error.WriteLine ("Unable to request dbus bus name while registering object ({0})", reply);
 				return;
 			}
 

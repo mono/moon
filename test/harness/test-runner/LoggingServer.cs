@@ -268,6 +268,8 @@ namespace MoonlightTests {
 					Console.ForegroundColor = ConsoleColor.Red;
 				} else if (level == "Warning") {
 					Console.ForegroundColor = ConsoleColor.Yellow;
+				} else {
+					Console.ForegroundColor = ConsoleColor.Blue;
 				}
 				Console.WriteLine ("{0}: {1}, {2}", test, level, message);
 				Console.ResetColor ();
@@ -305,7 +307,7 @@ namespace MoonlightTests {
 			string bus_name = "mono.moonlight.tests";
 			ObjectPath path = new ObjectPath ("/mono/moonlight/tests/logger");
 
-			if (!(bus.RequestName (bus_name) == RequestNameReply.PrimaryOwner)) {
+			if (!(bus.RequestName (bus_name, NameFlag.ReplaceExisting | NameFlag.AllowReplacement) == RequestNameReply.PrimaryOwner)) {
 				Console.Error.WriteLine ("Unable to request bus name.");
 				return;
 			}
