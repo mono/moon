@@ -1,3 +1,7 @@
+2008-06-10  Geoff Norton  <gnorton@novell.com>
+
+	* mms-downlodaer.cpp: Remove some improperly commited debug code
+
 2008-06-10  Chris Toshok  <toshok@ximian.com>
 
 	* control.h, control.cpp, deployment.h, uielement.h,
