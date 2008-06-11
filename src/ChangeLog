@@ -1,3 +1,12 @@
+2008-06-11  Fernando Herrera  <fherrera@novell.com>
+
+	* xaml.cpp: Accept numbers and strings representing numbers as
+	values for BOOL properties. Also accept "true" and "false" case
+	variants.
+	* playlist.cpp: ASX2 files can use ?MSWMExt=.asf and &MSWMExt=.asf
+	ending uris, so just check for "MSWMExt=.asf".
+	Fixes hsn.tv, bug #362328.
+
 2008-06-10  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: ContentProperty should be on the ElementInfo not the

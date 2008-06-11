@@ -2328,12 +2328,26 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	switch (type) {
 	case Type::BOOL: {
 		bool b;
-		if (!g_strcasecmp ("true", str))
+		if (!strcmp ("true", str))
 			b = true;
-		else if (!g_strcasecmp ("false", str))
+		else if (!strcmp ("false", str))
 			b = false;
-		else
-			return false;
+		else {
+			// Check if it's a string representing a decimal value
+			gint64 l;
+
+			errno = 0;
+			l = strtol (str, &endptr, 10);
+
+			if (errno || endptr == str || *endptr || l > G_MAXINT32 || l < G_MININT32)
+				return false;
+
+			if (l == 0)
+				b = false;
+			else
+				b = true;
+		}
+				
 
 		*v = new Value (b);
 		break;

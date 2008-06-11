@@ -1334,11 +1334,11 @@ PlaylistParser::ParseASX2 ()
 	}
 	
 	if (!g_str_has_prefix (buffer, "[Reference]\r\nRef1=http://") ||
-	    !strstr (buffer, "?MSWMExt=.asf")) {
+	    !strstr (buffer, "MSWMExt=.asf")) {
 		return false;
 	}
 
-	end = strstr (buffer, "?MSWMExt=.asf");
+	end = strstr (buffer, "MSWMExt=.asf");
 	*end = '\0';
 
 	mms_uri = g_strdup_printf ("mms://%s", buffer + strlen ("[Reference]\r\nRef1=http://"));
