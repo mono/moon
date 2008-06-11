@@ -1,3 +1,9 @@
+2008-06-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp: Remove unneeded cairo_save|restore inside Draw 
+	methods (since Shape::Draw already does it) and remove
+	cairo_set_fill_rule (since Shape::Fill does it).
+
 2008-06-11  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Clean up the namespace map when destroying the parser.

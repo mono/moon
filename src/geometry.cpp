@@ -39,10 +39,6 @@ Geometry::~Geometry ()
 void
 Geometry::Draw (Path *shape, cairo_t *cr)
 {
-	cairo_save (cr);
-	
-	cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
-	
 	Transform *transform = GetTransform ();
 	if (transform) {
 		cairo_matrix_t matrix;
@@ -55,20 +51,7 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 
 	if (path)
 		cairo_append_path (cr, &path->cairo);
-
-	cairo_restore (cr);
 }
-
-/*
-Rect
-Geometry::ComputeBounds (Path *shape)
-{
-	if (!IsBuilt ())
-		Build (shape);
-
-	return path ? path_get_bounds (shape, &path->cairo) : Rect (0, 0, 0, 0);
-}
-*/
 
 void
 Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
@@ -199,10 +182,6 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, 
 void
 GeometryGroup::Draw (Path *shape, cairo_t *cr)
 {
-	cairo_save (cr);
-	
-	cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
-	
 	Transform *transform = GetTransform ();
 	if (transform) {
 		cairo_matrix_t matrix;
@@ -219,8 +198,6 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 		
 		geometry->Draw  (shape, cr);
 	}
-	
-	cairo_restore (cr);
 }
 
 Rect
