@@ -2328,9 +2328,9 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	switch (type) {
 	case Type::BOOL: {
 		bool b;
-		if (!strcmp ("true", str))
+		if (!g_strcasecmp ("true", str))
 			b = true;
-		else if (!strcmp ("false", str))
+		else if (!g_strcasecmp ("false", str))
 			b = false;
 		else {
 			// Check if it's a string representing a decimal value
