@@ -1,3 +1,8 @@
+2008-06-11  Geoff Norton <gnorton@novell.com>
+
+	* downloader.cpp: Only Abort if we have a surface.
+	* runtime.cpp: Detach the downloaders when we zombify.
+
 2008-06-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moon-path.c: Reorder ellipse points so the fill rule can be 

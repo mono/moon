@@ -105,6 +105,9 @@ Downloader::~Downloader ()
 void
 Downloader::InternalAbort ()
 {
+	if (!GetSurface ())
+		return;
+
 	abort_func (downloader_state);
 }
 

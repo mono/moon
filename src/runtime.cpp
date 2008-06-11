@@ -304,7 +304,6 @@ Surface::~Surface ()
 	delete up_dirty;
 	delete down_dirty;
 	
-	DetachDownloaders ();
 	delete downloaders;
 }
 
@@ -312,6 +311,7 @@ void
 Surface::Zombify ()
 {
 	time_manager->Shutdown ();
+	DetachDownloaders ();
 	zombie = true;
 }
 
