@@ -11,7 +11,7 @@
 
 2008-06-10  Geoff Norton  <gnorton@novell.com>
 
-	* mms-downloader.cpp: Reset our internal state after seeking so 
+	* mms-downloader.cpp: Reset our internal state after seeking so
 	we can resume the stream in the right place.
 
 2008-06-10  Geoff Norton  <gnorton@novell.com>
