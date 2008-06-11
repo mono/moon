@@ -1,3 +1,8 @@
+2008-06-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/seek-test-nested-storyboard.html: Adding a test for
+	seeking on nested storyboards.
+
 2008-06-10  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/test-animation-nested-storyboard.xaml: Adding a test for nested

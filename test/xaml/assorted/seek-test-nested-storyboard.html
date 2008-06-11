@@ -1,0 +1,63 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>seek-test-nested-storyboard</title>
+<meta></meta>
+</head>
+<body bgcolor="#eeeeee">
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+	sender.findName ("master").Begin ();
+	sender.findName ("master").Pause ();
+	sender.findName ("master").Seek ("00:00:3.0");
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="640" height="480">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas
+  xmlns="http://schemas.microsoft.com/client/2007"  
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
+
+  <Rectangle x:Name="rect1" Canvas.Top="10" Canvas.Left="10" Width="30" Height="30" Fill="red" MouseEnter="OnMouseEnter"/>
+  <Rectangle x:Name="rect2" Canvas.Top="50" Canvas.Left="10" Width="30" Height="30" Fill="black" MouseEnter="OnMouseEnter"/>
+
+    <Canvas.Resources>
+            <Storyboard  
+                  Storyboard.TargetName="rect1"
+                  Storyboard.TargetProperty="(Canvas.Left)"
+                  BeginTime="0:0:1"
+		  x:Name="master"
+            >
+              <Storyboard
+		  x:Name="nested"
+                  Storyboard.TargetName="rect2"
+		  BeginTime="0:0:1">
+               
+		<DoubleAnimation 
+                  Storyboard.TargetProperty="(Canvas.Left)"
+                  Duration="0:0:3"
+                  To="200" 
+		  x:Name="animation1"
+                />
+	</Storyboard>
+		<DoubleAnimation
+		  BeginTime="0:0:1"
+                  Storyboard.TargetProperty="(Canvas.Left)"
+                  Duration="0:0:3"
+                  To="200" 
+		  x:Name="animation2"
+                />
+	</Storyboard>
+	</Canvas.Resources>
+
+</Canvas>
+</script>
+</body>
+</html>
+
