@@ -17,6 +17,7 @@ TESTING = echo ERROR: Test harness is disabled by configuration; false
 endif
 
 export MS_DRTLIST
+XEPHYR_DEFAULT=2
 
 check-testing:
 	$(TESTING)
@@ -30,20 +31,27 @@ run-server: all check-testing
 run-logging-server: all check-testing
 	mono harness/test-runner/logging-server.exe
 
-run-gdb: all check-testing
-	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono --debug harness/test-runner/test-runner.exe -drtlist $(DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -html-report -gdb
+run-gdb:
+	HARNESS_FLAGS="-gdb" $(MAKE) $(MAKEFLAGS) run-drtlist
 
-run-valgrind: all check-testing
-	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono --debug harness/test-runner/test-runner.exe -drtlist $(DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -html-report -valgrind
+run-valgrind:
+	HARNESS_FLAGS="-valgrind" $(MAKE) $(MAKEFLAGS) run-drtlist
+
+run-xephyr:
+	(test -z "$$XEPHYR" && XEPHYR=$(XEPHYR_DEFAULT); export XEPHYR; echo Running Xephyr in display $$XEPHYR; \
+	test -z "$$DRT_TARGET" && DRT_TARGET="run-drtlist"; export DRT_TARGET; echo Executing target $$DRT_TARGET; \
+	Xephyr -screen 1200x960 -ac -noreset :$$XEPHYR & xephyr_pid=$$!; \
+	DISPLAY=:$$XEPHYR $(MAKE) $(MAKEFLAGS) $$DRT_TARGET; \
+	kill $$xephyr_pid)
 
 run-drtlist: all check-testing
-	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono --debug harness/test-runner/test-runner.exe -drtlist $(DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -html-report
+	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono --debug harness/test-runner/test-runner.exe -drtlist $(DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -html-report -run-known-failures $(HARNESS_FLAGS)
 
-run-tests: all check-testing
-	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(top_builddir)/test/xaml/drtlist.xml -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -html-report
+run-tests:
+	DRTLIST=$(top_builddir)/test/xaml/drtlist.xml $(MAKE) $(MAKEFLAGS) run-drtlist
 
-run-ms-tests: all check-testing
-	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono harness/test-runner/test-runner.exe -drtlist $(MS_DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -v -v -v -html-report -run-known-failures
+run-ms-tests:
+	DRTLIST=$(MS_DRTLIST) $(MAKE) $(MAKEFLAGS) run-drtlist
 
 gtksilver.dll: ../gtk/gtksilver.dll
 	cp ../gtk/gtksilver.dll .
