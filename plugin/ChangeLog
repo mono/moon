@@ -4,6 +4,12 @@
 	INCLUDE_MONO_RUNTIME.
 
 2008-06-10  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-downloader.cpp, plugin-downloader.h:  Aborted guarding
+	is handled in the bridge now, as plugin-downloader's might be 
+	reused.  Also add a null check for Downloader in the Read callback
+
+2008-06-10  Geoff Norton  <gnorton@novell.com>
 	
 	* npstream-request.cpp: Return the status of GetResponse.
 

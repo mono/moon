@@ -135,7 +135,6 @@ PluginDownloader::PluginDownloader (Downloader *dl)
 	this->dl = dl;
 	this->uri = NULL;
 	this->verb = NULL;
-	this->aborted = false;
 	this->response = NULL;
 	this->request = NULL;
 }
@@ -151,11 +150,6 @@ PluginDownloader::~PluginDownloader ()
 void
 PluginDownloader::Abort ()
 {
-	if (aborted)
-		return;
-
-	aborted = true;
-
 	if (this->request)
 		this->request->Abort ();
 	if (this->response)
@@ -206,7 +200,7 @@ PluginDownloader::Read (char *buffer, uint32_t length)
 void
 PluginDownloader::Finished (gpointer data)
 {
-	if (!aborted) {
+	if (dl != NULL) {
 		dl->NotifySize (this->offset);
 		dl->NotifyFinished ((const char *)data);
 	}
