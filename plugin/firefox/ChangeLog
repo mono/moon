@@ -1,4 +1,9 @@
 2008-06-10  Geoff Norotn  <gnorton@novell.com>
+	
+	* browser-http.inc: Dont raise Started/Stopped if we've been aborted.
+
+2008-06-10  Geoff Norotn  <gnorton@novell.com>
+
 	* browser-http.inc: SetRequestHeader should merge instead of replace.
 	Partially fixes MMS seeking.
 

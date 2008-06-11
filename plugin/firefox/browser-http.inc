@@ -30,6 +30,7 @@
 class GECKO_SYM(BrowserResponse) : public BrowserResponse, public nsIStreamListener {
  private:
 	nsCOMPtr<nsIChannel> channel;
+	bool aborted;
 
  protected:
 	NS_DECL_NSIREQUESTOBSERVER
@@ -42,6 +43,7 @@ class GECKO_SYM(BrowserResponse) : public BrowserResponse, public nsIStreamListe
 		: BrowserResponse (started, available, finished, context)
 	{
 		this->channel = channel;
+		this->aborted = false;
 	}
 
 	virtual ~GECKO_SYM(BrowserResponse) ()
@@ -83,19 +85,26 @@ NS_IMPL_ISUPPORTS1 (GECKO_SYM(BrowserResponse), nsIStreamListener)
 void
 GECKO_SYM(BrowserResponse)::Abort ()
 {
-	this->channel->Cancel (NS_BINDING_ABORTED);
+	if (!aborted) {
+		this->channel->Cancel (NS_BINDING_ABORTED);
+		aborted = true;
+	}
 }
 
 NS_IMETHODIMP
 GECKO_SYM(BrowserResponse)::OnStartRequest (nsIRequest *request, nsISupports *context)
 {
-	return started (this, this->context);
+	if (!aborted)
+		return started (this, this->context);
+	return NS_OK;
 }
 
 NS_IMETHODIMP
 GECKO_SYM(BrowserResponse)::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
-	return finished (this, this->context, NULL);
+	if (!aborted)
+		return finished (this, this->context, NULL);
+	return NS_OK;
 }
 
 NS_IMETHODIMP
@@ -103,6 +112,9 @@ GECKO_SYM(BrowserResponse)::OnDataAvailable (nsIRequest *request, nsISupports *c
 {
 	PRUint32 length = 0;
 	nsresult res;
+
+	if (aborted)
+		return NS_OK;
 
 	char *buffer = (char *) NS_Alloc (count);
 	input->Read (buffer, count, &length);
