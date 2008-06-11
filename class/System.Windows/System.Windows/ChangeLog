@@ -1,3 +1,7 @@
+2008-06-11  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* Application.cs: new Host property (stubbed).
+
 2008-05-16  Miguel de Icaza  <miguel@novell.com>
 
 	* DependencyObject.cs (SetValue): Drop the parametrized type, we

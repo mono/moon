@@ -335,6 +335,10 @@ namespace System.Windows {
 			}
 		}
 
+		public SilverlightHost Host {
+			get { throw new NotImplementedException (); }
+		}
+
 		public event EventHandler Exit;
 		public event StartupEventHandler Startup;
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> UnhandledException;
