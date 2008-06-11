@@ -1,3 +1,8 @@
+2008-06-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.h: Fix GeometryGround::ComputeBounds so it does
+	not always returns 0,0,0,0 (from Geometry).
+
 2008-06-11  Geoff Norton <gnorton@novell.com>
 
 	* downloader.cpp: Only Abort if we have a surface.
