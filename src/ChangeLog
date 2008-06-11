@@ -1,3 +1,9 @@
+2008-06-11  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Move GetKind to the info.  Doesn't make sense for
+	Instances to have a kind (they can access their kind from their
+	info).
+
 2008-06-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp: Remove unneeded cairo_save|restore inside Draw 

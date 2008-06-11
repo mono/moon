@@ -162,11 +162,6 @@ class XamlElementInstance : public List::Node {
 	{
 	}
 
-	virtual Type::Kind GetKind ()
-	{
-		return Type::INVALID;
-	}
-
 	bool IsPropertySet (const char *name)
 	{
 		if (!set_properties)
@@ -277,7 +272,7 @@ class XamlElementInfo {
 	{
 	}
 
-	Type::Kind GetKind () { return kind; }
+	virtual Type::Kind GetKind () { return kind; }
 
 	virtual const char* GetContentProperty () = 0;
 	virtual XamlElementInstance* CreateElementInstance (XamlParserInfo *p) = 0;
@@ -328,7 +323,6 @@ class XamlElementInstanceNative : public XamlElementInstance {
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
-	Type::Kind GetKind ();
  private:
 	XamlElementInfoNative *element_info;
 	XamlParserInfo *parser_info;
@@ -946,7 +940,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		goto done;
 	}
 	
-	prop_type = p->current_element->GetKind ();
+	prop_type = p->current_element->info->GetKind ();
 	content = DependencyObject::GetDependencyProperty (prop_type, prop_name);
 	
 	// TODO: There might be other types that can be specified here,
@@ -956,7 +950,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	
 	if ((content->value_type) == Type::STRING && p->cdata_content) {
 		p->current_element->item->SetValue (content, Value (g_strstrip (p->cdata->str)));
-	} else if (Type::Find (p->current_element->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
+	} else if (Type::Find (p->current_element->info->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) p->current_element->item;
 		Inlines *inlines = textblock->GetInlines ();
 		Collection::Node *last = inlines ? (Collection::Node *) inlines->list->Last () : NULL;
@@ -1321,7 +1315,7 @@ xaml_create_from_file (XamlLoader* loader, const char *xaml_file, bool create_na
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
 		if (element_type)
-			*element_type = parser_info->top_element->GetKind ();
+			*element_type = parser_info->top_element->info->GetKind ();
 
 		if (parser_info->error_args) {
 			*element_type = Type::INVALID;
@@ -1431,7 +1425,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
 		if (element_type)
-			*element_type = parser_info->top_element->GetKind ();
+			*element_type = parser_info->top_element->info->GetKind ();
 
 		if (parser_info->error_args) {
 			res = NULL;
@@ -2714,12 +2708,6 @@ XamlElementInstanceNative::SetAttributes (XamlParserInfo *p, const char **attr)
 }
 
 
-Type::Kind
-XamlElementInstanceNative::GetKind ()
-{
-	return element_info->GetType ()->type;
-}
-
 XamlElementInstance *
 XamlElementInfoCustom::CreateElementInstance (XamlParserInfo *p)
 {
@@ -2796,7 +2784,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 					     g_strdup_printf ("Unknown element: %s.", parent->element_name));
 
 		// Don't add the child element, if it is the entire collection
-		if (dep->value_type == child->GetKind ())
+		if (dep->value_type == child->info->GetKind ())
 			return;
 
 		Type *col_type = Type::Find (dep->value_type);
@@ -2822,7 +2810,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		return;
 	}
 
-	if (Type::Find (parent->GetKind ())->IsSubclassOf (Type::COLLECTION)) {
+	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::COLLECTION)) {
 		Collection *col = (Collection *) parent->item;
 
 		col->Add ((DependencyObject *) child->item);
@@ -2831,7 +2819,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 
 	
 	if (parent->info->GetContentProperty ()) {
-		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->GetKind (),
+		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->info->GetKind (),
 				(char *) parent->info->GetContentProperty ());
 
 		if (!dep)
@@ -2840,7 +2828,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		Type *prop_type = Type::Find (dep->value_type);
 		bool is_collection = prop_type->IsSubclassOf (Type::COLLECTION);
 
-		if (!is_collection && prop_type->IsSubclassOf (child->GetKind ())) {
+		if (!is_collection && prop_type->IsSubclassOf (child->info->GetKind ())) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			obj->SetValue (dep, (DependencyObject *) child->item);
 			return;
@@ -2850,7 +2838,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		// We only want to enter this if statement if we are NOT dealing with the content property element,
 		// otherwise, attempting to use explicit property setting, would add the content property element
 		// to the content property element collection
-		if (is_collection && dep->value_type != child->GetKind ()) {
+		if (is_collection && dep->value_type != child->info->GetKind ()) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			Value *col_v = obj->GetValue (dep);
 			Collection *col;
@@ -2907,13 +2895,13 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		return;
 	}
 
-	prop = DependencyObject::GetDependencyProperty (item->GetKind (), prop_name [1]);
+	prop = DependencyObject::GetDependencyProperty (item->info->GetKind (), prop_name [1]);
 
 	if (prop) {
 		if (prop->IsReadOnly ()) {
 			parser_error (p, item->element_name, NULL, 2014,
 				      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->name));
-		} else if (Type::Find (value->GetKind ())->IsSubclassOf (prop->value_type)) {
+		} else if (Type::Find (value->info->GetKind ())->IsSubclassOf (prop->value_type)) {
 			// an empty collection can be NULL and valid
 			if (value->item) {
 				if (item->IsPropertySet (prop->name)) {
@@ -3076,7 +3064,7 @@ start_parse:
 			Type *attached_type = Type::Find (atchname);
 			prop = DependencyObject::GetDependencyProperty (attached_type->type, pname);
 		} else {
-			prop = DependencyObject::GetDependencyProperty (item->GetKind (), pname);
+			prop = DependencyObject::GetDependencyProperty (item->info->GetKind (), pname);
 		}
 
 		if (prop) {
