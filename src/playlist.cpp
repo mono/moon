@@ -76,7 +76,7 @@ PlaylistEntry::PlaylistEntry (MediaElement *element, Playlist *parent, Media *me
 	full_source_name = NULL;
 	start_time = 0;
 	duration = 0;
-	play_when_available = true;
+	play_when_available = false;
 	base = NULL;
 	title = NULL;
 	author = NULL;
@@ -518,6 +518,7 @@ Playlist::Playlist (MediaElement *element, Media *media)
 	: PlaylistEntry (element, NULL, media)
 {
 	is_single_file = true;
+	autoplayed = false;
 	Init (element);
 
 	AddEntry (new PlaylistEntry (element, this, media));
@@ -658,7 +659,6 @@ Playlist::Stop ()
 	if (GetParent () == NULL && !is_single_file) {
 		element->Reinitialize (false);
 		Open ();
-		element->EmitMediaOpened ();
 	}
 }
 

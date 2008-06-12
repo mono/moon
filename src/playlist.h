@@ -158,6 +158,7 @@ private:
 	MediaElement *element;
 	IMediaSource *source;
 	bool is_single_file;
+	bool autoplayed;
 
 	void Init (MediaElement *element);
 
@@ -189,6 +190,8 @@ public:
 
 	virtual bool IsPlaylist () { return true; }
 	bool IsSingleFile () { return is_single_file; }
+	bool GetAutoPlayed () { return autoplayed; }
+	void SetAutoPlayed (bool value) { autoplayed = value; }
 	bool IsCurrentEntryLastEntry ();
 	void OnEntryEnded ();
 };

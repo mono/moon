@@ -64,5 +64,15 @@
     <File name="media/video/test-video-seek.html" subtype="Code" buildaction="Nothing" />
     <File name="media/video/test-video-seek-7.html" subtype="Code" buildaction="Nothing" />
     <File name="media/video/test-yuv-converter.html" subtype="Code" buildaction="Nothing" />
+    <File name="js/js/codemodel.js" subtype="Code" buildaction="Nothing" />
+    <File name="js/js/errors.js" subtype="Code" buildaction="Nothing" />
+    <File name="js/js/props.js" subtype="Code" buildaction="Nothing" />
+    <File name="js/js/prototype.js" subtype="Code" buildaction="Nothing" />
+    <File name="js/js/testplugin.js" subtype="Code" buildaction="Nothing" />
+    <File name="js/js/unittest.js" subtype="Code" buildaction="Nothing" />
+    <File name="js/js/unittestsl.js" subtype="Code" buildaction="Nothing" />
+    <File name="js/js/utils.js" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-autoplayed-stop.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-playlist-autoplayed-stop.asx" subtype="Code" buildaction="Nothing" />
   </Contents>
 </Project>

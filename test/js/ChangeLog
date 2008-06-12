@@ -1,3 +1,8 @@
+2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* js/testplugin.js: Added a GetNonCachableUrl method which appends ? to
+	  the url with some random key/value pair.
+
 2008-05-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* js/testplugin.js: Spaces->Tabs.

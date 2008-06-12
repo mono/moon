@@ -272,6 +272,11 @@ class MediaElement : public MediaBase {
 	// know the last time the check was made, to see if 
 	// the marker's pts hit the region.
 	guint64 previous_position;
+	// When the position is changed by the client, we store the requested position
+	// here and do the actual seeking async. Note that we might get several seek requests
+	// before the actual seek is done, currently we just seek to the last position requested,
+	// the previous requests are ignored. -1 denotes that there are no pending seeks.
+	TimeSpan seek_to_position;
 	
 	// Buffering can be caused by:
 	//   * When the media is opened, we automatically buffer an amount equal to BufferingTime.
@@ -325,7 +330,7 @@ class MediaElement : public MediaBase {
 	void CheckMarkers (guint64 from, guint64 to);
 	void ReadMarkers ();
 	
-	TimeSpan UpdatePlayerPosition (Value *value);
+	TimeSpan UpdatePlayerPosition (TimeSpan position);
 	
 	//
 	// Private Property Accessors
@@ -340,6 +345,15 @@ class MediaElement : public MediaBase {
 	void SetNaturalDuration (TimeSpan duration);
 	void SetNaturalVideoHeight (double height);
 	void SetNaturalVideoWidth (double width);
+	
+	void PauseNow ();
+	void PlayNow ();
+	void StopNow ();
+	void SeekNow ();
+	static void PauseNow (gpointer value);
+	static void PlayNow (gpointer value);
+	static void StopNow (gpointer value);
+	static void SeekNow (gpointer value);
 	
  protected:
 	virtual ~MediaElement ();

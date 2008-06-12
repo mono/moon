@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/utils.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		   <MediaElement x:Name="TestVideo" Width="1280" Height="720" 
+			MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" BufferingProgressChanged="OnBufferingProgressChanged" MediaEnded="OnMediaEnded"
+			DownloadProgressChanged="OnDownloadProgressChanged" CurrentStateChanged="OnCurrentStateChanged"
+	/> 
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var mediaElement = null;
+	var plugin = null;
+	var current_test = -1;
+	var media_opened_count = [0, 0, 0, 0, 0, 0, 0];
+	var expected = [false, true, true, true, true, false, false];
+	var played = [false, false, false, false, false, false, false];
+	var updated = [0, 0, 0, 0, 0, 0, 0, 0];
+	var downloaded = [0, 0, 0, 0, 0, 0, 0];
+	var steps_left = [2, 3, 3, 3, 3, 5, 5];
+	var dl_progress = [-1, -1, -1, -1, -1, -1, -1];
+	
+/*
+ * Test when setting AutoPlay actually causes the video to start playing.
+ *  We check for playing like this: we update 'updated' to current time on every event. 
+ *  In every tick we check if Position > 0, in which case we're playing. 
+ *  If we're not playing, and haven't gotten an event in 5 seconds, mark as not playing.
+ * 
+ *	Test 0: Set AutoPlay to true in MediaOpened (file not cached).
+ *		Step 2: Wait for MediaOpened, set AutoPlay = true
+ * 	Test 1: Set AutoPlay to true in DownloadProgressChanged (before MediaOpened, file not cached)
+ *		Step 3: Wait for DownloadProgressChanged, set AutoPlay = true
+ *		Step 2: Wait for MediaOpened
+ * 	Test 2: Set AutoPlay to true in BufferingProgressChanged (before MediaOpened, file not cached)
+ *		Step 3: Wait for BufferingProgressChanged, set AutoPlay = true
+ *		Step 2: Wait for MediaOpened
+ * 	Test 3: Set AutoPlay to true before any other event has been raised (file not cached)
+ *		Step 3: Wait for any event (but MediaOpened), set AutoPlay = true
+ *		Step 2: Wait for MediaOpened
+ * 	Test 4: Set AutoPlay to true in CurrentStateChanged (before MediaOpened, file not cached)
+ *		Step 3: Wait for CurrentStateChanged, set AutoPlay = true
+ *		Step 2: Wait for MediaOpened
+ *	Test 5: Set AutoPlay to true in BufferingProgressChanged (before MediaOpened, and with a cached file).
+ *		Step 5: Download a source.
+ * 		Step 4: Set the source to the same file to reload the media.
+ *		Step 3: Wait for BufferingProgressChanged, set AutoPlay = true
+ *		Step 2: Wait for MediaOpened
+ *	Test 6: Set AutoPlay to true in DownloadProgressChanged (before MediaOpened, and with a cached file).
+ *		Step 5: Download a source.
+ * 		Step 4: Set the source to the same file to reload the media.
+ *		Step 3: Wait for DownloadProgressChanged, set AutoPlay = true
+ *		Step 2: Wait for MediaOpened
+ */
+
+	function NextTest ()
+	{
+		current_test++;
+		
+		Log ("NextTest (), current_test: " + current_test);
+		document.getElementById ("logger").innerHTML += "NextTest (), current_test: " + current_test + "<br/>";
+
+		mediaElement.AutoPlay = false;
+
+		switch (current_test) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			mediaElement.AutoPlay = false;
+			mediaElement.Source = TestHelper.GetNonCachableUrl ("http://moonlightmedia:81/source/time.wmv");
+			break;
+		case 5:
+		case 6:
+			mediaElement.AutoPlay = false;
+			mediaElement.Source = "http://moonlightmedia:81/source/time.wmv";
+			break;
+		default: // We're done
+			var success = true;
+			for (var i = 0; i < played.length; i++) {
+				if (played [i])
+					TestLogger.LogDebug ("Test #" + i + " started playing.");
+			}
+			for (var i = 0; i < played.length; i++) {
+				if (expected [i] != played [i]) {
+					success = false;
+					TestLogger.LogError ("Test #" + i + " failed, expected result: " + expected [i] + " actual result: " + played [i]);
+				}
+			}
+			TestLogger.LogResult (success ? 1 : -1);
+			SignalShutdown ();
+		}
+	}
+
+	function getNow ()
+	{
+		return new Date ().getTime ();
+	}
+
+	function Tick ()
+	{
+		if (mediaElement.Position.Seconds > 0) {
+			TestLogger.LogDebug ("Tick, current test (" + current_test + ") has played for " + mediaElement.Position.Seconds + " seconds");
+			played [current_test] = true;
+		}
+
+		TestLogger.LogDebug ("Tick, now: " + getNow () + " current_test: " + current_test + ", steps left: " + steps_left [current_test]);
+
+		switch (current_test) {
+		case 5:
+		case 6:
+			switch (steps_left [current_test]) {
+			case 4:
+				steps_left [current_test]--;
+				media_opened_count [current_test] = 0;
+				mediaElement.Source = mediaElement.Source;
+				break;
+			}
+			// Fall through
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			switch (steps_left [current_test]) {
+			case 2:
+				if (updated [current_test] > 0 && (updated [current_test] + 5000 < getNow ())) {
+					TestLogger.LogError ("Test #" + current_test + " timed out.");
+					steps_left [current_test]--;
+				}
+				break;
+			case 1:
+				steps_left [current_test]--;
+				NextTest ();
+				break;
+			}
+			break;
+		}
+	}
+
+	function OnPluginLoaded (o, e)
+	{
+		Log ("OnPluginLoaded");
+		plugin = document.getElementById ("JoltActiveX");
+		mediaElement = plugin.content.findName ("TestVideo");
+		NextTest ();
+		setInterval ("Tick ();", 100);
+	}
+	
+	function OnMediaOpened (obj, args)
+	{
+		Log ("OnMediaOpened: " + obj.Source);
+		
+		media_opened_count [current_test]++;
+		updated [current_test] = getNow ();
+		
+		switch (current_test) {
+		case 0:
+			if (steps_left [current_test] == 2) {
+				mediaElement.AutoPlay = true;
+				steps_left [current_test]--;
+			}
+			break;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+			if (steps_left [current_test] == 2) {
+				steps_left [current_test]--;
+			} else if (steps_left [current_test] == 3) {
+				steps_left [current_test] -= 2;
+				TestLogger.LogWarning ("Test #" + current_test + " undetermined, got MediaOpened event first.");
+			}
+			break;
+		}
+	}
+	
+	function OnCurrentStateChanged (sender, args)
+	{
+		Log ("OnCurrentStateChanged: " + sender.CurrentState);
+		
+		updated [current_test] = getNow ();
+
+		switch (current_test) {
+		case 3:
+		case 4:
+			if (steps_left [current_test] == 3) {
+				if (media_opened_count [current_test] > 0) {
+					TestLogger.LogWarning ("Test #" + current_test + " undetermined, didn't get any CurrentStateChanged events before the MediaOpened event.");
+				} else {
+					mediaElement.AutoPlay = true;
+				}
+				steps_left [current_test]--;
+			}
+			break;
+		}
+	}
+	
+	function OnBufferingProgressChanged (sender, args)
+	{
+		Log ("OnBufferingProgressChanged: " + sender.BufferingProgress);
+		
+		updated [current_test] = getNow ();
+		
+		switch (current_test) {
+		case 2:
+		case 3:
+		case 5:
+			if (steps_left [current_test] == 3) {
+				if (media_opened_count [current_test] > 0) {
+					TestLogger.LogWarning ("Test #" + current_test + " undetermined, didn't get any BufferingProgressChanged events before the MediaOpened event.");
+				} else {
+					mediaElement.AutoPlay = true;
+				}
+				steps_left [current_test]--;
+			}
+			break;
+		}
+	}
+	
+	function OnDownloadProgressChanged (sender, args)
+	{		
+		updated [current_test] = getNow ();
+		
+		// This is SL doing something weird, when we print logging information in this event handler
+		// SL might hang at a specific DownloadProgress percentage, raising the event over and over again
+		// with the same DownloadProgress value.
+		if (dl_progress [current_test] == sender.DownloadProgress)
+			return;
+		dl_progress [current_test] = sender.DownloadProgress;
+	
+		Log ("OnDownloadProgressChanged: " + sender.DownloadProgress + " test: " + current_test + " step: " + steps_left [current_test]);
+		
+		switch (current_test) {
+		case 1:
+		case 3:
+			if (steps_left [current_test] == 3) {
+				if (sender.DownloadProgress == 1.0) {
+					TestLogger.LogWarning ("Test #" + current_test + " undetermined, got first DownloadProgressChanged event when download reached 100%.");
+				} else if (media_opened_count [current_test] > 0) {
+					TestLogger.LogWarning ("Test #" + current_test + " undetermined, didn't get any DownloadProgressChanged events before the MediaOpened event.");
+				} else {
+					mediaElement.AutoPlay = true;
+				}
+				steps_left [current_test]--;
+			}
+			break;
+		case 5:
+			if (steps_left [current_test] == 5 && sender.DownloadProgress == 1.0) {
+				steps_left [current_test]--;
+			}
+			break;
+		case 6:
+			switch (steps_left [current_test]) {
+			case 5:
+				if (sender.DownloadProgress == 1.0) {
+					steps_left [current_test]--;
+				}
+				break;
+			case 3:
+				if (media_opened_count [current_test] > 0) {
+					TestLogger.LogWarning ("Test #" + current_test + " undetermined, didn't get any DownloadProgressChanged events before the MediaOpened event.");
+				} else {
+					mediaElement.AutoPlay = true;
+				}
+				steps_left [current_test]--;
+				break;		
+			}
+			break;
+		}
+	}
+	
+	function OnMediaEnded (obj, args)
+	{
+		Log ("OnMediaEnded");
+	}
+	
+	function OnMediaFailed (obj, args)
+	{
+		Log ("OnMediaFailed");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		SignalShutdown ();
+	}
+	
+	function Log (msg)
+	{
+		TestLogger.LogDebug (msg);
+	}
+</script>
+
+
+<div style="position:absolute; left:0px; top:0px">
+	<embed type="application/x-silverlight" width="1280" height="720"
+	id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+	background="#CCCCCC">
+	</embed>
+	<div > </div>
+	<div id="currentstate" >CurrentState: Unknown</div>
+	<div id="autoplay" >AutoPlay: Unknown</div>
+	
+	<div id="logger"> </div>
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+</body>
+
+</html>
+
+
+
+

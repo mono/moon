@@ -1,3 +1,7 @@
+2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test.mdp: Updated.
+
 2008-06-11  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Remove $(MAKEFLAGS) from run-tests as well

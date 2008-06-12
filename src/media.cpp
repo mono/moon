@@ -622,6 +622,7 @@ MediaElement::Reinitialize (bool dtor)
 	// playlist->unref ();
 	
 	last_played_pts = 0;
+	seek_to_position = -1;
 	
 	if (streamed_markers) {
 		streamed_markers->unref ();
@@ -701,7 +702,7 @@ MediaElement::SetMedia (Media *media)
 	mplayer->SetCanPause (GetCanPause ());
 	mplayer->SetCanSeek (GetCanSeek ());
 	
-	UpdatePlayerPosition (GetValue (MediaElement::PositionProperty));
+	UpdatePlayerPosition (GetPosition ());
 	
 	ComputeBounds ();
 }
@@ -711,7 +712,7 @@ MediaElement::MediaOpened (Media *media)
 {
 	const char *demux_name = media->GetDemuxer ()->GetName ();
 	
-	d(printf ("MediaElement::MediaOpened (%p), demuxer name: %s\n", media, demux_name));
+	d(printf ("MediaElement::MediaOpened (%p), demuxer name: %s, download complete: %i\n", media, demux_name, flags & DownloadComplete));
 	
 	if (demux_name != NULL && strcmp (demux_name, "ASXDemuxer") == 0) {
 		Playlist *pl = ((ASXDemuxer *) media->GetDemuxer ())->GetPlaylist ();
@@ -735,12 +736,18 @@ MediaElement::MediaOpened (Media *media)
 		SetMedia (media);
 		
 		if (flags & DownloadComplete) {
-			SetState (Buffering);
-			if ((flags & PlayRequested) || GetAutoPlay ())
-				Play ();
-			else
-				Pause ();
-			
+			if (!playlist->GetAutoPlayed ()) {
+				SetState (Buffering);
+				if (flags & PlayRequested) {
+					PlayNow ();
+				} else if (GetAutoPlay ()) {
+					playlist->SetAutoPlayed (true);
+					PlayNow ();
+				} else {
+					PauseNow ();
+				}
+			}
+		
 			Invalidate ();
 			EmitMediaOpened ();
 		}
@@ -752,8 +759,8 @@ MediaElement::MediaOpened (Media *media)
 void
 MediaElement::EmitMediaOpened ()
 {
-	d (printf ("MediaElement::EmitMediaOpened (): already emitted: %s\n", flags & MediaOpenedEmitted ? "true" : "false"));
-	
+	d (printf ("MediaElement::EmitMediaOpened (): already emitted: %s, current state: %s\n", flags & MediaOpenedEmitted ? "true" : "false", GetStateName (state)));
+
 	if (flags & MediaOpenedEmitted)
 		return;
 
@@ -1087,14 +1094,18 @@ MediaElement::BufferingComplete ()
 	
 	switch (prev_state) {
 	case Opening: // Start playback
-		if ((flags & PlayRequested) || GetAutoPlay ())
-			Play ();
-		else
-			Pause ();
+		if (flags & PlayRequested) {
+			PlayNow ();
+		} else if (GetAutoPlay () && !playlist->GetAutoPlayed ()) {
+			playlist->SetAutoPlayed (true);
+			PlayNow ();
+		} else {
+			PauseNow ();
+		}
 		EmitMediaOpened ();
 		return;
 	case Playing: // Restart playback
-		Play ();
+		PlayNow ();
 		return;
 	case Paused: // Do nothing
 		// TODO: Should we show the first (new) frame here?
@@ -1177,13 +1188,15 @@ MediaElement::TryOpen ()
 		return;
 	case Playing:
 	case Paused:
-	case Stopped:
 	case Buffering:
 		// I don't think this should happen either
 		d(printf ("MediaElement::TryOpen (): Current state (%s) was unexpected.\n", GetStateName (state)));
 		// Media is already open.
 		// There's nothing to do here.
 		return;
+	case Stopped:
+		// This may happen if we stop a playlist (and we're not playing the first item in the list).
+		// We must reload the first item, but the current state remains as stopped. 
 	case Opening:
 		// Try to open it now
 		break;
@@ -1307,17 +1320,26 @@ MediaElement::DownloaderComplete ()
 		return;
 	case Playing:
 	case Paused:
-	case Stopped:
-		// Media was opened, buffered, and then played/paused/stopped
+		// Media was opened, buffered, and then played/paused
 		// There's nothing to do here
+		return;
+	case Stopped:
+		if (!(flags & MediaOpenedEmitted)) {
+			// We're a stopped playlist, and we're now reloading the first media
+			TryOpen ();
+		}
 		return;
 	case Buffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
-		if ((flags & PlayRequested) || prev_state == Playing || GetAutoPlay ())
-			Play ();
-		else
-			Pause ();
+		if ((flags & PlayRequested) || prev_state == Playing) {
+			PlayNow ();
+		} else if (GetAutoPlay () && !playlist->GetAutoPlayed ()) {
+			playlist->SetAutoPlayed (true);
+			PlayNow ();
+		} else {
+			PauseNow ();
+		}
 		EmitMediaOpened ();
 		break;
 	case Opening:
@@ -1404,6 +1426,24 @@ MediaElement::Pause ()
 {
 	d(printf ("MediaElement::Pause (): current state: %s\n", GetStateName (state)));
 	
+	AddTickCall (MediaElement::PauseNow);
+}
+
+void
+MediaElement::PauseNow (gpointer data)
+{
+	((MediaElement *) data)->PauseNow ();
+	((MediaElement *) data)->unref ();
+}
+
+void
+MediaElement::PauseNow ()
+{
+	d(printf ("MediaElement::PauseNow (): current state: %s\n", GetStateName (state)));
+	
+	if (GetSurface () == NULL)
+		return;
+	
 	switch (state) {
 	case Opening:// docs: No specified behaviour
 		flags &= ~PlayRequested;
@@ -1428,6 +1468,25 @@ MediaElement::Play ()
 {
 	d(printf ("MediaElement::Play (): current state: %s\n", GetStateName (state)));
 	
+	AddTickCall (MediaElement::PlayNow);
+}
+
+void
+MediaElement::PlayNow (gpointer data)
+{
+	((MediaElement *) data)->PlayNow ();
+	// AddTickCall refs us, unref us here.
+	((MediaElement *) data)->unref ();
+}
+
+void
+MediaElement::PlayNow ()
+{
+	d(printf ("MediaElement::PlayNow (): current state: %s\n", GetStateName (state)));
+	
+	if (GetSurface () == NULL)
+		return;
+		
 	switch (state) {
 	case Closed: // docs: No specified behaviour
 	case Opening:// docs: No specified behaviour
@@ -1440,7 +1499,6 @@ MediaElement::Play ()
 	case Paused:
 	case Stopped: // docs: start playing
 		playlist->Play ();
-		EmitMediaOpened ();
 		break;
 	}
 }
@@ -1466,6 +1524,8 @@ MediaElement::PlayInternal ()
 	
 	d(printf ("MediaElement::PlayInternal (), state = %s, timeout_id: %i, interval: %i [Done]\n",
 		  GetStateName (state), advance_frame_timeout_id, mplayer->GetTimeoutInterval ()));
+		  
+	EmitMediaOpened ();
 }
 
 void
@@ -1473,6 +1533,24 @@ MediaElement::Stop ()
 {
 	d(printf ("MediaElement::Stop (): current state: %s\n", GetStateName (state)));
 	
+	AddTickCall (MediaElement::StopNow);
+}
+
+void
+MediaElement::StopNow (gpointer data)
+{
+	((MediaElement *) data)->StopNow ();
+	((MediaElement *) data)->unref ();
+}
+
+void
+MediaElement::StopNow ()
+{
+	d(printf ("MediaElement::StopNow (): current state: %s\n", GetStateName (state)));
+	
+	if (GetSurface () == NULL)
+		return;
+
 	switch (state) {
 	case Opening:// docs: No specified behaviour
 		flags &= ~PlayRequested;
@@ -1496,6 +1574,7 @@ MediaElement::GetValue (DependencyProperty *prop)
 {
 	if (prop == MediaElement::PositionProperty) {
 		bool use_mplayer;
+		guint64 position = TimeSpan_ToPts (seek_to_position);
 		
 		switch (state) {
 		case Opening:
@@ -1512,8 +1591,12 @@ MediaElement::GetValue (DependencyProperty *prop)
 			break;
 		}
 		
-		if (use_mplayer) {
-			guint64 position = mplayer->GetPosition ();
+		// If a seek is pending, we need to return that position.
+		
+		if (use_mplayer && (TimeSpan_FromPts (position) == -1))
+			position = mplayer->GetPosition ();
+		
+		if (TimeSpan_FromPts (position) != -1) {
 			Value v = Value (TimeSpan_FromPts (position), Type::TIMESPAN);
 			
 			flags |= UpdatingPosition;
@@ -1526,10 +1609,9 @@ MediaElement::GetValue (DependencyProperty *prop)
 }
 
 TimeSpan
-MediaElement::UpdatePlayerPosition (Value *value)
+MediaElement::UpdatePlayerPosition (TimeSpan position)
 {
 	Duration *duration = GetNaturalDuration ();
-	TimeSpan position = value->AsTimeSpan ();
 	
 	if (duration->HasTimeSpan () && position > duration->GetTimeSpan ())
 		position = duration->GetTimeSpan ();
@@ -1543,8 +1625,8 @@ MediaElement::UpdatePlayerPosition (Value *value)
 	mplayer->Seek (TimeSpan_ToPts (position));
 	Invalidate ();
 	
-	d(printf ("MediaElement::UpdatePlayerPosition (%p), position: %llu = %llu ms, "
-		  "mplayer->GetPosition (): %llu = %llu ms\n", value, position, MilliSeconds_FromPts (position),
+	d(printf ("MediaElement::UpdatePlayerPosition (%llu = %llu ms, "
+		  "mplayer->GetPosition (): %llu = %llu ms\n", position, MilliSeconds_FromPts (position),
 		  mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ())));
 	
 	return position;
@@ -1561,6 +1643,60 @@ MediaElement::OnLoaded ()
 	}
 	
 	MediaBase::OnLoaded ();
+}
+
+void
+MediaElement::SeekNow (gpointer data)
+{
+	((MediaElement *) data)->SeekNow ();
+	((MediaElement *) data)->unref ();
+}
+
+void
+MediaElement::SeekNow ()
+{
+	d (printf ("MediaElement::SeekNow (), position: %llu = %llu ms\n", seek_to_position, MilliSeconds_FromPts (seek_to_position)));
+
+	if (GetSurface () == NULL)
+		return;
+
+	if (seek_to_position == -1) {
+		// This may happen if we get two seek requests in a row,
+		// we handle the first one, and when we get to the second
+		// seek_to_position is -1.
+		return;
+	}
+				
+	if (!(flags & UpdatingPosition)) {
+		// Some outside source is updating the Position
+		// property which means we need to Seek
+		TimeSpan position;
+		
+		switch (state) {
+		case Opening:
+		case Closed:
+		case Error:
+		default:
+			break;
+		case Buffering:
+		case Playing:
+		case Paused:
+		case Stopped:
+			position = UpdatePlayerPosition (seek_to_position);
+			seek_to_position = -1;
+			
+			if (state == Stopped)
+				SetState (Paused);
+			
+			if (position != seek_to_position) {
+				flags |= UpdatingPosition;
+				SetPosition (TimeSpan_FromPts (position));
+				flags &= ~UpdatingPosition;
+			}
+			
+			break;
+		}
+	}
 }
 
 void
@@ -1606,32 +1742,8 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		flags |= RecalculateMatrix;
 	} else if (args->property == MediaElement::PositionProperty) {
 		if (!(flags & UpdatingPosition)) {
-			// Some outside source is updating the Position
-			// property which means we need to Seek
-			TimeSpan position;
-			
-			switch (state) {
-			case Opening:
-			case Closed:
-			case Error:
-			default:
-				break;
-			case Buffering:
-			case Playing:
-			case Paused:
-			case Stopped:
-				position = UpdatePlayerPosition (args->new_value);
-				if (state == Stopped)
-					SetState (Paused);
-				
-				if (position != args->new_value->AsTimeSpan ()) {
-					Value v = Value (position, Type::TIMESPAN);
-					SetValue (args->property, &v);
-					return;
-				}
-				
-				break;
-			}
+			seek_to_position = args->new_value->AsTimeSpan ();
+			AddTickCall (MediaElement::SeekNow);
 		} else if (IsPlaying() && mplayer->HasVideo ()) {
 			Invalidate ();
 		}

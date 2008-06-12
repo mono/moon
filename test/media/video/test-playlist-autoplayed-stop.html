@@ -1,0 +1,121 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Source="test-playlist-autoplayed-stop.asx" x:Name="media" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" AutoPlay="True" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		var media_opened_count = 0;
+		var failed = 0;
+		var mediaElement = null;
+
+		function EndTest (reason)
+		{
+			if (reason == "timeout") {
+				TestLogger.LogError ("Test timed out.");
+				failed++;
+			} else if (reason == "ended") {
+				TestLogger.LogError ("Got unexpected MediaEnded event (probably due to too few MediaOpened events)");
+				failed++;
+			} else if (reason == "failed") {
+				failed++;
+			} else if (reason == "done") {
+				if (mediaElement.Position.Seconds > 0.02 /* Stopping a video doesn't seem to always take it all the way back to 0 */) {
+					TestLogger.LogError ("Expected Position to remain at 0 after a Stop, but it is: " + mediaElement.Position.Seconds);
+					failed++;
+				}
+				
+				if (mediaElement.NaturalDuration.Seconds > 2) {
+					TestLogger.LogError ("Expected the first video to remain the first after a Stop.");
+					failed++;
+				}
+
+				if (mediaElement.CurrentState != "Stopped") {
+					TestLogger.LogError ("Expected CurrentState to be 'Stopped' after stopping");
+					failed++;
+				}
+			}
+		
+			if (!failed) {
+				//TestHost.CaptureSingleImage ("", "test-playlist-autoplayed-stop.html.png", 0, 0, 400, 400);
+			}
+
+			TestLogger.LogResult (failed ? -1 : 1);
+			SignalShutdown ();
+		}
+		
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.Source + ", NaturalDuration: " + sender.NaturalDuration.Seconds);
+		
+			mediaElement = sender;
+			media_opened_count++;
+			
+			if (media_opened_count == 2) {
+				mediaElement.Stop ();
+				
+				if (mediaElement.NaturalDuration.Seconds < 2) {
+					TestLogger.LogError ("OnMediaOpened: Stop shouldn't be done sync");
+					failure++;
+				}
+				setTimeout ("EndTest ('done');", 2500);
+			}
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+			EndTest ("ended");
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			EndTest ("failed");
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+
+			setTimeout ("EndTest ('timeout');", 20000);
+		}
+		
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		</script>
+	</head>
+
+  <body>
+    <div id="ML">
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="MLControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+

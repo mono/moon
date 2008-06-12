@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/utils.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		<MediaElement x:Name="TestVideo" Width="500" Height="500" 
+			MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded"
+			DownloadProgressChanged="OnDownloadProgressChanged" BufferingProgressChanged="OnBufferingProgressChanged" CurrentStateChanged="OnCurrentStateChanged"
+			Canvas.Left="0" Canvas.Top="0"/> 		
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var pl_src = "test-mediaopened.asx";
+	var norm_src = "timecode-long.wmv";
+	var live_src = "mms://moonlightmedia/LiveStream";
+	var mediaElement = null;
+	var steps_left = [2, 2, 2, 2, 2, 2];
+	var success = [false, false, false, false, false, false];
+	var autoplay = [false, true, false, true, false, true];
+	var sources = [pl_src, pl_src, norm_src, norm_src, live_src, live_src];
+	var updated = [0, 0, 0, 0, 0, 0];
+	var interval = null;
+	var current_test = -1;
+
+/*
+ * Testing that we always get a CurrentStateChanged event with CurrentState = 'Playing' before we get a MediaOpened event (for the first MediaOpened of a source)
+ * 
+ * Test 0: Load a playlist (Autoplay = false)
+ * Test 1: Load a playlist (Autoplay = true)
+ * Test 2: Load a normal file (AutoPlay = false)
+ * Test 3: Load a normal file (AutoPlay = true)
+ * Test 4: Load a live mms stream (AutoPlay = false)
+ * Test 5: Load a live mms stream (AutoPlay = true)
+ */
+	
+	function NextTest ()
+	{
+		current_test++;
+
+		TestLogger.LogDebug ("  ** NextTest (), Current Test = " + current_test + " current test's steps left: " + steps_left [current_test]);
+		
+		switch (current_test) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			mediaElement.AutoPlay = autoplay [current_test];
+			mediaElement.Source = sources [current_test];
+			updated [current_test] = getNow ();
+			break;
+		default:
+			// We're done
+			var result = true;
+			for (var i = 0; i < success.length; i++) {
+				if (!success [i]) {
+					result = false;
+					TestLogger.LogError ("Test #" + i + " failed.");
+				}
+			}
+			TestLogger.LogResult (result ? 1 : -1);
+			SignalShutdown ();			
+		}
+	}
+
+
+	function Tick ()
+	{
+		var now = new Date ().getTime ();
+
+		TestLogger.LogDebug ("Tick, now: " + now + " current_test: " + current_test + ", steps left: " + steps_left [current_test]);
+
+		switch (current_test) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			switch (steps_left [current_test]) {
+			case 2:
+				if (updated [current_test] + 5000 < getNow ()) {
+					TestLogger.LogError ("Test #" + current_test + " timed out.");
+					steps_left [current_test]--;
+				}
+				break;
+			case 1:
+				steps_left [current_test]--;
+				NextTest ();
+				break;
+			}
+			break;
+		}
+	}
+
+	function getNow ()
+	{
+		return new Date ().getTime ();
+	}
+
+	function Fail (msg)
+	{
+		TestLogger.LogError (msg);
+		TestLogger.LogResult (-1);
+		SignalShutdown ();
+	}
+	
+	function OnMediaOpened (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaOpened: " + obj.Source);
+
+		switch (current_test) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			switch (steps_left [current_test]) {
+			case 2:
+				TestLogger.LogError ("Test #" + current_test + " failed");
+				steps_left [current_test]--;
+				NextTest ();
+				break;
+			}
+			break;
+		}
+	}
+	
+	function OnMediaEnded (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaEnded: " + obj.Source);
+	}
+	
+	function OnBufferingProgressChanged (sender, args)
+	{
+		TestLogger.LogDebug ("OnBufferingProgressChanged: " + sender.Source + " " + sender.BufferingProgress);
+		updated [current_test] = getNow ();
+	}
+
+	function OnDownloadProgressChanged (sender, args)
+	{
+		TestLogger.LogDebug ("OnDownloadProgressChanged: " + sender.Source + " " + sender.DownloadProgress);
+		updated [current_test] = getNow ();
+	}
+
+	function OnCurrentStateChanged (sender, args)
+	{
+		TestLogger.LogDebug ("OnCurrentStateChanged: " + sender.Source + " " + current_test + " " + sender.CurrentState);
+
+		switch (current_test) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			switch (steps_left [current_test]) {
+			case 2:
+				if (sender.CurrentState == "Playing") {
+					success [current_test] = true;
+					steps_left [current_test]--;
+				}
+				break;
+			}
+			break;
+		}
+	}
+
+	function OnMediaFailed (obj, args)
+	{
+		Fail ("OnMediaFailed: " + obj.Source + " " + ErrorEventArgsToOneLineString (args));
+	}
+	
+	function OnPluginLoaded (o, e)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		mediaElement = o.getHost ().content.findName ("TestVideo");
+		interval = setInterval ("Tick ();", 450);
+		NextTest ();
+	}
+	
+	function OnPluginError (o, e)
+	{
+		Fail ("OnPluginError: " + ErrorEventArgsToOneLineString (args));
+	}
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+</body>
+
+</html>
+
+
+
+

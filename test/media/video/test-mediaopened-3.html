@@ -1,0 +1,422 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/utils.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		<MediaElement x:Name="TestVideo" Width="500" Height="500" 
+			MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded"
+			DownloadProgressChanged="OnDownloadProgressChanged" BufferingProgressChanged="OnBufferingProgressChanged"
+			CurrentStateChanged="OnCurrentStateChanged"
+			Canvas.Left="0" Canvas.Top="0"/> 
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var mediaElement = null;
+	var source_playlist = "test-mediaopened.asx";
+	var source_normal = "timecode-long.wmv";
+	var steps_left = [4, 3, 2, 2, 2, 2, 2, 2, 2];
+	var failed = [false, false, false, false, false, false, false, false, false];
+	var media_opened_count = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+	var downloaded = [false, false, false, false, false, false, false, false, false];
+	var start_time = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+	// Playing P, Stopped S, Paused W, Closed C, Opening O, Buffering B, Error E
+	var valid_states = ["SP" /* Will get both Stopped and Playing states */, "P", "S", "S", "P", "P", "PW" /* May be either Playing or Paused */, "S", "W"];
+
+	var interval = null;
+	var current_test = -1;
+
+/*
+ * Testing that in a MediaOpened event CurrentState is always either Playing, Paused or Stopped.
+ * 
+ * Test 0:
+ *	Start a playlist, wait for it to play the first video, and a couple of seconds after having started the second video, stop it.
+* 		Step 4: Play
+ * 		Step 3: Record when second video starts
+ *		Step 2: Stop video when we've played for 2 seconds
+ *		Step 1: Goto next test
+ * Test 1:
+ *	Start a normal file, stop it a couple of seconds after it has started playing.
+ *		Step 3: Record when video starts
+ *		Step 2: Stop video when we've played for 2 seconds
+ *		Step 1: Goto next test
+ *
+ * Test 2:
+ * 	Start a normal file, stop it before a MediaOpened event is raised.
+ *		Step 2: Stop the video (before any MediaOpened events)
+ *		Step 1: Goto next test
+ *
+ * Test 3:
+ *	Start a normal file, AutoPlay = false
+ *		Step 2: Wait for MediaOpened events
+ *		Step 1: Goto next test
+ * 
+ * Test 4:
+ *	Start a normal file, AutoPlay = true
+ *		Step 2: Wait for MediaOpened events
+ *		Step 1: Goto next test
+ *	
+ * Test 5:
+ * 	Start a normal file, AutoPlay = true
+ *		Step 2: Immediately after setting the source, Pause
+ *		Step 1: Goto next test
+ *	
+ * Test 6:
+ * 	Start a normal file, AutoPlay = true, pause it before a MediaOpened event is raised
+ *		Step 2: Pause the video (before any MediaOpened events)
+ *		Step 1: Goto next test
+ *	
+ * Test 7:
+ * 	Start a normal file, AutoPlay = false, pause it before a MediaOpened event is raised
+ *		Step 2: Pause the video (before any MediaOpened events)
+ *		Step 1: Goto next test
+ *
+ * Test 8:
+ * 	Start a normal file, AutoPlay = false, pause it when CurrentStateChanged event is raised and CurrentState is 'Playing'
+ *		Step 2: Pause the video when we receive CurrentStateChanged event with CurrentState = 'Playing' (before any MediaOpened events)
+ *		Step 1: Goto next test
+ */
+
+	function NextTest ()
+	{
+		current_test++;
+
+		TestLogger.LogDebug ("  ** NextTest (), Current Test = " + current_test + " current test's steps left: " + steps_left [current_test]);
+		
+		switch (current_test) {
+		case 0:
+			interval = setInterval ("Tick ();", 450);
+			mediaElement.AutoPlay = false;
+			mediaElement.Source = source_playlist;
+			break;
+		case 1:
+			mediaElement.AutoPlay = true;
+			mediaElement.Source = source_normal;
+			break;
+		case 2:
+			mediaElement.AutoPlay = true;
+			mediaElement.Source = source_normal;
+			break;
+		case 3:
+			mediaElement.AutoPlay = false;
+			mediaElement.Source = source_normal;
+			break;
+		case 4:
+			mediaElement.AutoPlay = true;
+			mediaElement.Source = source_normal;
+			break;
+		case 5:
+			mediaElement.AutoPlay = true;
+			mediaElement.Source = source_normal;
+			mediaElement.Pause ();
+			break;
+		case 6:
+			mediaElement.AutoPlay = true;
+			mediaElement.Source = source_normal;
+			break;
+		case 7:
+			mediaElement.AutoPlay = false;
+			mediaElement.Source = source_normal;
+			break;
+		case 8:
+			mediaElement.AutoPlay = true;
+			mediaElement.Source = source_normal;
+			break;
+		default:
+			// We're done
+			var success = true;
+			for (var i = 0; i < failed.length; i++) {
+				if (failed [i]) {
+					success = false;
+					TestLogger.LogError ("Test #" + i + " failed.");
+				}
+			}
+			TestLogger.LogResult (success ? 1 : -1);
+			SignalShutdown ();			
+		}
+	}
+	
+	function Tick ()
+	{
+		var now = new Date ().getTime ();
+
+		TestLogger.LogDebug ("Tick, now: " + now + " current_test: " + current_test + ", steps left: " + steps_left [current_test]);
+
+		switch (current_test) {
+		case 0:
+			if (!downloaded [current_test])
+				break;
+
+			switch (steps_left [current_test]) {
+			case 4:
+				TestLogger.LogDebug ("Tick: Starting to play video 1 at " + now);
+				mediaElement.Play ();
+				steps_left [current_test]--;
+				break;
+			case 3:
+				if (media_opened_count [current_test] == 2) {
+					// The second video in the asx file has been opened, record the time.
+					start_time [current_test] = now;
+					steps_left [current_test]--;
+				}
+				break;
+			case 2:
+				if (now - start_time [current_test] > 2000) {
+					TestLogger.LogDebug ("Tick: Stopping video 0, we've played for " + (now - start_time [current_test]) + " ms");
+					mediaElement.Stop ();
+					steps_left [current_test]--;
+				}
+				break;
+			case 1:
+				steps_left [current_test]--;
+				NextTest ();
+				break;
+			}
+			break;
+		case 1:
+			if (!downloaded [current_test])
+				break;
+			
+			switch (steps_left [current_test]) {
+			case 3:	
+				start_time [current_test] == now;
+				steps_left [current_test]--;
+				break;				
+			case 2:
+				if (now - start_time [current_test] > 2000) {
+					TestLogger.LogDebug ("Tick: Stopping video 1, we've played for " + (now - start_time [current_test]) + " ms");
+					mediaElement.Stop ();
+					steps_left [current_test]--;
+				}
+				break;
+			case 1:
+				steps_left [current_test]--;
+				NextTest ();
+				break;
+			}
+			break;
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+			switch (steps_left [current_test]) {
+			case 1:
+				steps_left [current_test]--;
+				NextTest ();
+				break;
+			}
+			break;
+		}
+	}
+	
+	function OnMediaOpened (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaOpened: " + obj.Source + " current_test: " + current_test + ", CurrentState: " + obj.CurrentState);
+		media_opened_count [current_test]++;
+
+		if (!IsStateValid (obj.CurrentState, valid_states [current_test])) {
+			TestLogger.LogError ("In the MediaOpened event expected CurrentState to be " + GetStateList (valid_states [current_test]) + ", but it is '" + obj.CurrentState + "' (Test #" + current_test + ")");
+			failed [current_test] = true;
+		}
+
+		switch (current_test) {
+		case 2:
+		case 6:
+		case 7:
+		case 8:
+			switch (steps_left [current_test]) {
+			case current_test: // We didn't succeed in stopping/pausing the media before the MediaOpened event was raised
+				TestLogger.LogWarning ("Test #" + current_test + " was inconclusive, didn't succeed in stopping/pausing the video before MediaOpened was raised");
+				steps_left [current_test]--;
+				break;
+			}
+			break;
+		case 3:
+		case 4:
+		case 5:
+			switch (steps_left [current_test]) {
+			case 2:
+				steps_left [current_test]--;
+				break;
+			}
+			break;
+		}
+	}
+	
+	function OnBufferingProgressChanged (sender, args)
+	{
+		TestLogger.LogDebug ("OnBufferingProgressChanged: " + sender.Source + " " + sender.BufferingProgress);
+
+		switch (current_test) {
+		case 2:
+			switch (steps_left [current_test]) {
+			case 2:
+				mediaElement.Stop ();
+				steps_left [current_test]--;
+				break;
+			}
+			break;
+		case 6:
+		case 7:
+			switch (steps_left [current_test]) {
+			case 2:
+				mediaElement.Pause ();
+				steps_left [current_test]--;
+				break;
+			}
+			break;
+		}
+	}
+
+	function OnDownloadProgressChanged (sender, args)
+	{
+		TestLogger.LogDebug ("OnDownloadProgressChanged: " + sender.Source + " " + sender.DownloadProgress);
+		downloaded [current_test] = (sender.DownloadProgress == 1);
+
+		switch (current_test) {
+		case 2:
+			switch (steps_left [current_test]) {
+			case 2:
+				mediaElement.Stop ();
+				steps_left [current_test]--;
+				break;
+			}
+			break;
+		case 6:
+		case 7:
+			switch (steps_left [current_test]) {
+			case 2:
+				mediaElement.Pause ();
+				steps_left [current_test]--;
+				break;
+			}
+			break;
+		}
+	}
+
+	function OnCurrentStateChanged (sender, args)
+	{
+		TestLogger.LogDebug ("OnCurrentStateChanged: " + sender.Source + " " + current_test + " " + sender.CurrentState);
+
+		switch (current_test) {
+		case 6:
+		case 7:
+			switch (steps_left [current_test]) {
+			case 2:
+				mediaElement.Pause ();
+				steps_left [current_test]--;
+				break;
+			}
+			break;
+		case 8:
+			switch (steps_left [current_test]) {
+			case 2:
+				if (sender.CurrentState == "Playing") {
+					mediaElement.Pause ();
+					steps_left [current_test]--;
+				}
+				break;
+			}
+			break;
+		}
+	}
+
+	function IsStateValid (state, valid)
+	{
+		TestLogger.LogDebug ("IsStateValid (" + state + ", " + valid + ")");
+
+		if (state == "Paused") {
+			return valid.indexOf ("W") >= 0;
+		} else {
+			return valid.indexOf (state.substring (0, 1)) >= 0;
+		}
+	}
+
+	function GetStateList (valid)
+	{
+		var result = "";
+		var state = "";
+		var comma = "";
+
+		TestLogger.LogDebug ("GetStateList (" + valid + ")");
+
+		for (var i = 0; i < valid.length; i++) {
+			var letter = valid.substring (i, i + 1);
+			switch (letter) {
+			case "P": state = "Playing"; break;
+			case "S": state = "Stopped"; break;
+			case "B": state = "Buffering"; break;
+			case "W": state = "Paused"; break;
+			case "C": state = "Closed"; break;
+			case "E": state = "Error"; break;
+			case "O": state = "Opening"; break;
+			default: state = "Unknown (" + letter + ")"; break;
+			}
+			result += comma + "'" + state + "'";
+			comma = " or ";
+		}
+	
+		return result;
+	}
+	
+	function OnMediaEnded (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaEnded: " + obj.Source);
+	}
+	
+	function OnMediaFailed (obj, args)
+	{
+		Fail ("OnMediaFailed: " + obj.Source + " " + ErrorEventArgsToOneLineString (args));
+	}
+
+	function OnPluginLoaded (o, e)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		mediaElement = o.getHost ().content.findName ("TestVideo");
+		NextTest ();
+	}
+	
+	function OnPluginError (o, e)
+	{
+		Fail ("OnPluginError: " + ErrorEventArgsToOneLineString (args));
+	}
+
+	function Fail (msg)
+	{
+		TestLogger.LogError (msg);
+		TestLogger.LogResult (-1);
+		SignalShutdown ();
+	}
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+</body>
+
+</html>
+
+
+
+

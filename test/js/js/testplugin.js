@@ -147,6 +147,15 @@ function TakeMultipleSnapshotsAndShutdown (control, max_images_to_capture, captu
 	FinishTest ();
 }
 
+TestHelper = new function()
+{
+	this.GetNonCachableUrl = function (url)
+	{
+		url += ((url.indexOf ("?") > 0) ? "&" : "?")
+		return url + "dontcache=" + Math.random ();
+	}
+}
+
 TestLogger = new function()
 {
     this.LogMessage = function (msg)

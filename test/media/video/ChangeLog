@@ -1,3 +1,10 @@
+2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Added more tests.
+	* test-autoplay.html, test-mediaopened-2.html, test-mediaopened-3.html,
+	  test-playlist-autoplayed-stop.asx,
+	  test-playlist-autoplayed-stop.html: Added.
+
 2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Silverlight.js: Removed, not needed.
