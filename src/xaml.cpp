@@ -2578,15 +2578,7 @@ static XamlElementInstance *
 wrap_type (XamlParserInfo *p, Type *t)
 {
 	XamlElementInfo *info = p->current_namespace->FindElement (p, t->name);
-	XamlElementInstance *inst = new XamlElementInstance (info, info->name, XamlElementInstance::ELEMENT);
-
-	inst->item = t->CreateInstance ();
-	
-	if (p->loader)
-		inst->item->SetSurface (p->loader->GetSurface ());
-	
-	p->AddCreatedElement (inst->item);
-
+	XamlElementInstance *inst = info->CreateElementInstance (p);
 	return inst;
 }
 

@@ -1,5 +1,9 @@
 2008-06-12  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Use the new stuff for creating wrapped types.
+
+2008-06-12  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Clean up API for creating wrapped dependency objects.
 
 2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
