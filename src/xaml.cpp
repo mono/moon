@@ -94,7 +94,6 @@ void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent
 void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
-static XamlElementInstance *wrap_dependency_object (XamlParserInfo *p, XamlElementInfo *i, DependencyObject *depobject);
 static XamlElementInstance *wrap_type (XamlParserInfo *p, Type *t);
 
 static Type *get_type_for_property_name (const char* prop_name);
@@ -277,6 +276,7 @@ class XamlElementInfo {
 
 	virtual const char* GetContentProperty () = 0;
 	virtual XamlElementInstance* CreateElementInstance (XamlParserInfo *p) = 0;
+	virtual XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o) = 0;
 	virtual XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
 
  protected:
@@ -305,6 +305,7 @@ class XamlElementInfoNative : public XamlElementInfo {
 	const char* GetContentProperty ();
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
+	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
 
  private:
@@ -461,6 +462,7 @@ class XamlElementInfoCustom : public XamlElementInfo {
 	const char* GetContentProperty () { return NULL; }
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
+	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
 
  private:
@@ -839,7 +841,7 @@ start_element (void *data, const char *el, const char **attr)
 							       Type::Find (expecting_type)->GetName ()));
 				return;
 			}
-			inst = wrap_dependency_object (p, elem, p->hydrate_expecting);
+			inst = elem->CreateWrappedElementInstance (p, p->hydrate_expecting);
 			p->hydrate_expecting = NULL;
 		} else
 			inst = elem->CreateElementInstance (p);
@@ -2573,21 +2575,6 @@ dependency_object_create_element_instance (XamlParserInfo *p, XamlElementInfo *i
 }
 
 static XamlElementInstance *
-wrap_dependency_object (XamlParserInfo *p, XamlElementInfo *i, DependencyObject *depobject)
-{
-	XamlElementInstance *inst = new XamlElementInstance (i, i->name, XamlElementInstance::ELEMENT);
-	
-	inst->item = depobject;
-	
-	if (p->loader)
-		inst->item->SetSurface (p->loader->GetSurface ());
-	
-	p->AddCreatedElement (inst->item);
-
-	return inst;
-}
-
-static XamlElementInstance *
 wrap_type (XamlParserInfo *p, Type *t)
 {
 	XamlElementInfo *info = p->current_namespace->FindElement (p, t->name);
@@ -2613,6 +2600,15 @@ XamlElementInstance *
 XamlElementInfoNative::CreateElementInstance (XamlParserInfo *p)
 {
 	return new XamlElementInstanceNative (this, p, GetName (), XamlElementInstance::ELEMENT);
+}
+
+XamlElementInstance *
+XamlElementInfoNative::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+{
+	XamlElementInstance *res = new XamlElementInstanceNative (this, p, GetName (), XamlElementInstance::ELEMENT, false);
+	res->item = o;
+
+	return res;
 }
 
 XamlElementInstance *
@@ -2713,6 +2709,18 @@ XamlElementInstance *
 XamlElementInfoCustom::CreateElementInstance (XamlParserInfo *p)
 {
 	XamlElementInstanceCustom *inst = new XamlElementInstanceCustom (this, dependency_object->GetTypeName (), XamlElementInstance::ELEMENT, dependency_object);
+
+	if (p->loader)
+        	inst->item->SetSurface (p->loader->GetSurface ());
+	p->AddCreatedElement (inst->item);
+
+	return inst;
+}
+
+XamlElementInstance *
+XamlElementInfoCustom::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+{
+	XamlElementInstanceCustom *inst = new XamlElementInstanceCustom (this, o->GetTypeName (), XamlElementInstance::ELEMENT, o);
 
 	if (p->loader)
         	inst->item->SetSurface (p->loader->GetSurface ());
