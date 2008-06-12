@@ -88,7 +88,7 @@ typedef void  (*set_property_func) (XamlParserInfo *p, XamlElementInstance *item
 typedef void  (*set_attributes_func) (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 
 XamlElementInstance* create_toplevel_property_element_instance (XamlParserInfo *p, const char *name);
-XamlElementInstance* dependency_object_create_element_instance (XamlParserInfo *p, XamlElementInfo *i);
+
 void dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
@@ -2541,28 +2541,15 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	return true;
 }
 
+//
+//  This is used in a scenario like this:
+//    createFromXaml ("<UIElement.Triggers> .... ");
+//  essentially it's just a wrapper that does nothing at all
+//
 XamlElementInstance *
 create_toplevel_property_element_instance (XamlParserInfo *p, const char *name)
 {
 	return new XamlElementInstanceNative (NULL, p, name, XamlElementInstance::PROPERTY, false);
-}
-
-XamlElementInstance *
-dependency_object_create_element_instance (XamlParserInfo *p, XamlElementInfo *i)
-{
-	/*
-	XamlElementInstance *inst = new XamlElementInstance (i);
-
-	inst->element_name = i->name;
-	inst->element_type = XamlElementInstance::ELEMENT;
-
-	DependencyProperty *dep = NULL;
-	XamlElementInstance *walk = p->current_element;
-
-	
-	return inst;
-	*/
-	return NULL;
 }
 
 static XamlElementInstance *
