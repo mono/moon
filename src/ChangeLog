@@ -2,6 +2,8 @@
 
 	* xaml.cpp: Remove some cruft.
 	- Rename Custom to Managed
+	- We don't need element maps for the namespaces anymore
+	- Deploy can go into the default list of namespaces.
 
 2008-06-12  Fernando Herrera  <fherrera@novell.com>
 

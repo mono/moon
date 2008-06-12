@@ -79,6 +79,7 @@ static const char* default_namespace_names [] = {
 	"http://schemas.microsoft.com/winfx/2006/xaml/presentation",
 	"http://schemas.microsoft.com/client/2007",
 	"http://schemas.microsoft.com/xps/2005/06",
+	"http://schemas.microsoft.com/client/2007/deployment",
 	NULL
 };
 
@@ -325,9 +326,7 @@ class XamlNamespace {
 
 class DefaultNamespace : public XamlNamespace {
  public:
-	GHashTable *element_map;
-
-	DefaultNamespace (GHashTable *element_map) : element_map (element_map) { }
+	DefaultNamespace () { }
 
 	virtual ~DefaultNamespace () { }
 
@@ -351,9 +350,7 @@ class DefaultNamespace : public XamlNamespace {
 
 class XNamespace : public XamlNamespace {
  public:
-	GHashTable *element_map;
-
-	XNamespace (GHashTable *element_map) : element_map (element_map) { }
+	XNamespace () { }
 
 	virtual ~XNamespace () { }
 
@@ -466,9 +463,9 @@ class ManagedNamespace : public XamlNamespace {
  public:
 	char *xmlns;
 
-	ManagedNamespace (char *xmlns) :
-		xmlns (xmlns)
+	ManagedNamespace (char *xmlns)
 	{
+		this->xmlns = xmlns;
 	}
 
 	virtual ~ManagedNamespace () { }
@@ -1130,8 +1127,6 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 		
 	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml", uri)){
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
-	} else if (!strcmp ("http://schemas.microsoft.com/client/2007/deployment", uri)){
-		g_hash_table_insert (p->namespace_map, g_strdup (uri), deploy_namespace);
 	} else {
 		if (!p->loader) {
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,
@@ -3137,11 +3132,6 @@ get_type_for_property_name (const char* prop)
 void
 xaml_init (void)
 {
-	GHashTable *dem = g_hash_table_new (g_str_hash, g_str_equal); // default element map
-	GHashTable *deploy = g_hash_table_new (g_str_hash, g_str_equal); // deployment element map
-	GHashTable *x_dem = g_hash_table_new (g_str_hash, g_str_equal); // x element map
-
-	default_namespace = new DefaultNamespace (dem);
-	deploy_namespace = new DefaultNamespace (deploy);
-	x_namespace = new XNamespace (x_dem);
+	default_namespace = new DefaultNamespace ();
+	x_namespace = new XNamespace ();
 }
