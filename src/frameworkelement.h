@@ -44,7 +44,6 @@ class FrameworkElement : public UIElement {
 	double GetWidth ();
 
 
-#if SL_2_0
        //
        // 2.0 methods
        //
@@ -64,7 +63,6 @@ class FrameworkElement : public UIElement {
                //
                return MeasureOverride (availableSize);
        }
-#endif
 };
 
 G_BEGIN_DECLS

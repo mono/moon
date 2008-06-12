@@ -50,9 +50,11 @@
 #include "fullscreen.h"
 #include "utils.h"
 
-// 2.0
+#if SL_2_0
 #include "grid.h"
 #include "deployment.h"
+#include "usercontrol.h"
+#endif
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1

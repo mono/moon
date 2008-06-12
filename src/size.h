@@ -10,8 +10,7 @@
 #ifndef __MOON_SIZE_H__
 #define __MOON_SIZE_H__
 
-#if SL_2_0
-
+/* @SilverlightVersion="2" */
 struct Size {
 public:
        double width, height;
@@ -25,7 +24,5 @@ public:
        }
 
 };
-
-#endif
 
 #endif /* __MOON_POINT_H__ */

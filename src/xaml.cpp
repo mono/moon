@@ -40,9 +40,10 @@
 #include "utils.h"
 #include "control.h"
 
-// 2.0
+#if SL_2_0
 #include "deployment.h"
 #include "grid.h"
+#endif
 
 #ifdef DEBUG_XAML
 #define d(x) x

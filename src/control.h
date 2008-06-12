@@ -64,31 +64,6 @@ class Control : public FrameworkElement {
 	Rect bounds_with_children;
 };
 
-#if SL_2_0
-//
-// UserControl
-//
-/* @SilverlightVersion="2" */
-class UserControl : public Control {
-protected:
-	virtual ~UserControl ();
-
-public:
-	UserControl ();
-
-	virtual Type::Kind GetObjectType () { return Type::USERCONTROL; }
-
-	static DependencyProperty *ContentProperty;
-
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-};
-
-UserControl *user_control_new (void);
-
-void user_control_init (void);
-
-#endif
-
 Control *control_new (void);
 UIElement* control_initialize_from_xaml (Control *control, const char *xaml,
 					 Type::Kind *element_type);

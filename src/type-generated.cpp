@@ -6,12 +6,10 @@
 #include <stdlib.h>
 
 #include "geometry.h"
-#include "deployment.h"
 #include "animation.h"
 #include "brush.h"
 #include "canvas.h"
 #include "collection.h"
-#include "grid.h"
 #include "control.h"
 #include "array.h"
 #include "downloader.h"
@@ -28,6 +26,11 @@
 #include "runtime.h"
 #include "visual.h"
 #include "xaml.h"
+#if SL_2_0
+#include "deployment.h"
+#include "grid.h"
+#include "usercontrol.h"
+#endif
 
 const int Clock::CompletedEvent = 1;
 const int Clock::CurrentGlobalSpeedInvalidatedEvent = 2;

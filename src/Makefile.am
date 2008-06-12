@@ -130,11 +130,13 @@ if INCLUDE_MONO_RUNTIME
 libmoon_include_HEADERS += \
 	deployment.h	\
 	grid.h		\
+	usercontrol.h	\
 	xap.h
 
 libmoon_la_SOURCES += \
 	deployment.cpp	\
 	grid.cpp	\
+	usercontrol.cpp \
 	xap.cpp
 endif
 

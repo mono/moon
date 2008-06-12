@@ -10,8 +10,6 @@
 #ifndef __MOON_GRID_H__
 #define __MOON_GRID_H__
 
-#if SL_2_0
-
 #include <glib.h>
 #include "panel.h"
 
@@ -138,7 +136,5 @@ Grid *grid_new (void);
 void grid_init (void);
 
 G_END_DECLS
-
-#endif
 
 #endif /* __MOON_PANEL_H__ */

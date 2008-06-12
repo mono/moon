@@ -341,7 +341,6 @@ class UIElement : public Visual {
 		return *vu->AsPoint ();
 	}
 
-#if SL_2_0
 	//
 	// 2.0 methods
 	//
@@ -356,7 +355,6 @@ class UIElement : public Visual {
 	{
 		return Size (0, 0);
 	}
-#endif
 	
 	static DependencyProperty *ClipProperty;
 	static DependencyProperty *CursorProperty;

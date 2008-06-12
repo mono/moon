@@ -1,3 +1,21 @@
+2008-06-12  Chris Toshok  <toshok@ximian.com>
+
+	* control.cpp, control.h, deployment.h, frameworkelement.h,
+	grid.h, runtime.cpp, size.h, type-generated.cpp, type.h,
+	uielement.h, value.h, xaml.cpp: I was a little too aggressive.  we
+	can't use SL_2_0 in most places in headers (or rather, shouldn't).
+	It might be a good idea to remove all references to it, but this
+	at least gets the ms-tests running and passing again --with-mono.
+	Switch to using SL_2_0 around the #includes in the .cpp files, and
+	in value.h/type.h just include the 2.0 types.
+
+	* usercontrol.h, usercontrol.cpp: split out the code from
+	control.h, control.cpp here.
+
+	* Makefile.am: add usercontrol.[h,cpp]
+
+	* typegen/typegen.cs: fix up the header emission.
+
 2008-06-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp|h: Refactor work between PathGeometry and PathFigure

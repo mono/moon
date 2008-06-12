@@ -9,8 +9,6 @@
 #ifndef __DEPLOYMENT_H__
 #define __DEPLOYMENT_H__
 
-#if SL_2_0
-
 #include <glib.h>
 
 G_BEGIN_DECLS
@@ -99,7 +97,5 @@ Deployment *deployment_new (void);
 void deployment_init (void);
 
 G_END_DECLS
-
-#endif
 
 #endif /* __DEPLOYMENT_H__ */
