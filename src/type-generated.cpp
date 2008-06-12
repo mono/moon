@@ -90,9 +90,13 @@ Type type_infos [] = {
 	{ Type::ARCSEGMENT, Type::PATHSEGMENT, false, "ArcSegment", "ARCSEGMENT", 0, 1, NULL, (create_inst_func *) arc_segment_new, NULL }, 
 #if SL_2_0
 	{ Type::ASSEMBLYPART, Type::DEPENDENCY_OBJECT, false, "AssemblyPart", "ASSEMBLYPART", 0, 1, NULL, (create_inst_func *) assembly_part_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ASSEMBLYPART'", "ASSEMBLYPART", 0, 0, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
 	{ Type::ASSEMBLYPART_COLLECTION, Type::COLLECTION, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 1, NULL, (create_inst_func *) assembly_part_collection_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ASSEMBLYPART_COLLECTION'", "ASSEMBLYPART_COLLECTION", 0, 0, NULL, NULL, NULL }, 
 #endif
 	{ Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard" }, 
 	{ Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL }, 
@@ -110,14 +114,20 @@ Type type_infos [] = {
 	{ Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ColorKeyFrameCollection", "COLORKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) color_key_frame_collection_new, NULL }, 
 #if SL_2_0
 	{ Type::COLUMNDEFINITION, Type::DEPENDENCY_OBJECT, false, "ColumnDefinition", "COLUMNDEFINITION", 0, 1, NULL, (create_inst_func *) column_definition_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'COLUMNDEFINITION'", "COLUMNDEFINITION", 0, 0, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
 	{ Type::COLUMNDEFINITION_COLLECTION, Type::COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'COLUMNDEFINITION_COLLECTION'", "COLUMNDEFINITION_COLLECTION", 0, 0, NULL, NULL, NULL }, 
 #endif
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 12, NULL, (create_inst_func *) control_new, "Content" }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, NULL, NULL }, 
 #if SL_2_0
 	{ Type::DEPLOYMENT, Type::DEPENDENCY_OBJECT, false, "Deployment", "DEPLOYMENT", 0, 1, NULL, (create_inst_func *) deployment_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'DEPLOYMENT'", "DEPLOYMENT", 0, 0, NULL, NULL, NULL }, 
 #endif
 	{ Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME, false, "DiscreteColorKeyFrame", "DISCRETECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_color_key_frame_new, NULL }, 
 	{ Type::DISCRETEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "DiscreteDoubleKeyFrame", "DISCRETEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_double_key_frame_new, NULL }, 
@@ -147,6 +157,8 @@ Type type_infos [] = {
 	{ Type::GRADIENTSTOP_COLLECTION, Type::COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, (create_inst_func *) gradient_stop_collection_new, NULL }, 
 #if SL_2_0
 	{ Type::GRID, Type::PANEL, false, "Grid", "GRID", 0, 12, NULL, (create_inst_func *) grid_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'GRID'", "GRID", 0, 0, NULL, NULL, NULL }, 
 #endif
 	{ Type::GRIDLENGTH, Type::INVALID, false, "GridLength", "GRIDLENGTH", 0, 0, NULL, NULL, NULL }, 
 	{ Type::IMAGE, Type::MEDIABASE, false, "Image", "IMAGE", 1, 14, Image_Events, (create_inst_func *) image_new, NULL }, 
@@ -212,9 +224,13 @@ Type type_infos [] = {
 	{ Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL }, 
 #if SL_2_0
 	{ Type::ROWDEFINITION, Type::DEPENDENCY_OBJECT, false, "RowDefinition", "ROWDEFINITION", 0, 1, NULL, (create_inst_func *) row_definition_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ROWDEFINITION'", "ROWDEFINITION", 0, 0, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
 	{ Type::ROWDEFINITION_COLLECTION, Type::COLLECTION, false, "RowDefinitionCollection", "ROWDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) row_definition_collection_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ROWDEFINITION_COLLECTION'", "ROWDEFINITION_COLLECTION", 0, 0, NULL, NULL, NULL }, 
 #endif
 	{ Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text" }, 
 	{ Type::SCALETRANSFORM, Type::TRANSFORM, false, "ScaleTransform", "SCALETRANSFORM", 0, 1, NULL, (create_inst_func *) scale_transform_new, NULL }, 
@@ -233,9 +249,13 @@ Type type_infos [] = {
 	{ Type::STYLUSPOINT_COLLECTION, Type::COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL }, 
 #if SL_2_0
 	{ Type::SUPPORTEDCULTURE, Type::DEPENDENCY_OBJECT, false, "SupportedCulture", "SUPPORTEDCULTURE", 0, 1, NULL, NULL, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SUPPORTEDCULTURE'", "SUPPORTEDCULTURE", 0, 0, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
 	{ Type::SUPPORTEDCULTURE_COLLECTION, Type::COLLECTION, false, "SupportedCultureCollection", "SUPPORTEDCULTURE_COLLECTION", 0, 1, NULL, (create_inst_func *) supported_culture_collection_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SUPPORTEDCULTURE_COLLECTION'", "SUPPORTEDCULTURE_COLLECTION", 0, 0, NULL, NULL, NULL }, 
 #endif
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, (create_inst_func *) surface_new, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL }, 
@@ -261,6 +281,8 @@ Type type_infos [] = {
 	{ Type::UINT64, Type::INVALID, false, "guint64", "UINT64", 0, 0, NULL, NULL, NULL }, 
 #if SL_2_0
 	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 12, NULL, (create_inst_func *) user_control_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'USERCONTROL'", "USERCONTROL", 0, 0, NULL, NULL, NULL }, 
 #endif
 	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL }, 
 	{ Type::VISUAL, Type::DEPENDENCY_OBJECT, false, "Visual", "VISUAL", 0, 1, NULL, NULL, NULL }, 

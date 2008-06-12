@@ -517,8 +517,14 @@ class Generator {
 			                                type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
 			                                )
 			                 );
-			if (type.SilverlightVersion == 2)
+			if (type.SilverlightVersion == 2) {
+				text.AppendLine ("#else");
+				text.AppendLine (string.Format ("	{{ Type::INVALID, Type::INVALID, false, \"2.0 specific type '{0}'\", {1}, 0, 0, NULL, NULL, NULL }}, ",
+								type.KindName,
+								"\"" + type.KindName + "\""));
 				text.AppendLine ("#endif");
+			}
+			
 		}
 		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL }");
 		text.AppendLine ("};");
