@@ -64,43 +64,6 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
-static Rect
-path_get_bounds (Path *shape, cairo_path_t *path, bool logical, cairo_matrix_t *matrix)
-{
-	if (!path)
-		return Rect (0.0, 0.0, 0.0, 0.0);
-
-	double thickness;
-	if (logical)
-		thickness = 0.0;
-	else
-		thickness = shape && shape->GetStroke () ? shape->GetStrokeThickness () : 0;
-	
-	cairo_t *cr = measuring_context_create ();
-	cairo_set_line_width (cr, thickness);
-	if (matrix) 
-		cairo_set_matrix (cr, matrix);
-
-	cairo_append_path (cr, path);
-	if (matrix) 
-		cairo_identity_matrix (cr);
-	
-	double x1, y1, x2, y2;
-
-	if (logical)
-		cairo_path_extents (cr, &x1, &y1, &x2, &y2);
-	else {
-		if (thickness > 0.0)
-			cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-		else
-			cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
-	}
-
-	measuring_context_destroy (cr);
-
-	return Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
-}
-
 void
 Geometry::SetFillRule (FillRule rule)
 {
@@ -196,7 +159,7 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		Geometry *geometry = (Geometry *) node->obj;
 		
-		geometry->Draw  (shape, cr);
+		geometry->Draw (shape, cr);
 	}
 }
 
@@ -591,14 +554,25 @@ PathGeometry::ComputeBounds (Path *shape, bool logical, cairo_matrix_t * matrix)
 	
 	if (!figures)
 		return bounds;
+
+	double thickness;
+	if (logical)
+		thickness = 0.0;
+	else
+		thickness = shape && shape->GetStroke () ? shape->GetStrokeThickness () : 0;
+	
+	cairo_t *cr = measuring_context_create ();
+	cairo_set_line_width (cr, thickness);
 	
 	Collection::Node *node = (Collection::Node *) figures->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathFigure *figure = (PathFigure *) node->obj;
 		
-		bounds = bounds.Union (figure->ComputeBounds (shape, logical, matrix));
+		bounds = bounds.Union (figure->ComputeBounds (cr, shape, logical, thickness, matrix));
 	}
-	
+
+	measuring_context_destroy (cr);
+
 	Transform *transform = GetTransform ();
 	if (transform) {
 		cairo_matrix_t matrix;
@@ -870,44 +844,57 @@ void
 PathFigure::Build (Path *shape)
 {
 	PathSegmentCollection *segments = GetSegments ();
-	bool closed = GetIsClosed ();
-	Collection::Node *node;
 	
-	int path_size = MOON_PATH_MOVE_TO_LENGTH;
-	node = (Collection::Node *) segments->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		PathSegment *segment = (PathSegment *) node->obj;
-		
-		path_size += segment->GetPathSize ();
-	}
-	
-	if (closed)
-		path_size += MOON_PATH_CLOSE_PATH_LENGTH;
-	
-	path = moon_path_renew (path, path_size);
+	if (path)
+		moon_path_clear (path);
+	else
+		path = moon_path_new (MOON_PATH_MOVE_TO_LENGTH + (segments->list->Length () * 4) + MOON_PATH_CLOSE_PATH_LENGTH);
 	
 	Point *start = GetStartPoint ();
-	
 	moon_move_to (path, start ? start->x : 0.0, start ? start->y : 0.0);
 	
-	node = (Collection::Node *) segments->list->First ();
+	Collection::Node *node = (Collection::Node *) segments->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
 		PathSegment *segment = (PathSegment *) node->obj;
 		
 		segment->Append (path);
 	}
 	
-	if (closed)
+	if (GetIsClosed ())
 		moon_close_path (path);
 }
 
 Rect
-PathFigure::ComputeBounds (Path *shape, bool logical, cairo_matrix_t *matrix)
+PathFigure::ComputeBounds (cairo_t *cr, Path *shape, bool logical, double thickness, cairo_matrix_t *matrix)
 {
 	if (!IsBuilt ())
 		Build (shape);
 
-	return path_get_bounds (shape, &path->cairo, logical, matrix);
+	if (!path)
+		return Rect (0.0, 0.0, 0.0, 0.0);
+
+	if (matrix) 
+		cairo_set_matrix (cr, matrix);
+
+	cairo_append_path (cr, &path->cairo);
+	if (matrix) 
+		cairo_identity_matrix (cr);
+	
+	double x1, y1, x2, y2;
+
+	if (logical || !shape) {
+		cairo_path_extents (cr, &x1, &y1, &x2, &y2);
+	} else {
+		if (thickness > 0.0) {
+			cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+		} else if (shape->CanFill() && shape->IsFilled ()) {
+			cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+		} else {
+			return Rect (0.0, 0.0, 0.0, 0.0);
+		}
+	}
+
+	return Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
 }
 
 void

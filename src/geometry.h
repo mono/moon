@@ -353,7 +353,7 @@ class PathFigure : public DependencyObject {
 	virtual bool IsBuilt () { return path && path->cairo.num_data != 0; }
 	virtual cairo_path_t *GetCairoPath () { return (path) ? &path->cairo : NULL; }
 	
-	Rect ComputeBounds (Path *shape, bool logical, cairo_matrix_t *matrix);
+	Rect ComputeBounds (cairo_t *cr, Path *shape, bool logical, double thickness, cairo_matrix_t *matrix);
 	
 	//
 	// Property Accessors

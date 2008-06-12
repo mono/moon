@@ -642,6 +642,8 @@ void
 cairo_path_display (cairo_path_t *path)
 {
 #if FALSE
+	g_return_if_fail (path != NULL);
+
 	int i = 0;
 	g_warning ("path %p status %d, num_data %d", path, path->status, path->num_data);
 	for (; i < path->num_data; i+= path->data[i].header.length) {
