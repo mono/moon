@@ -1,3 +1,10 @@
+2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* runtime.cpp: CreateDownloader: don't allow creating downloaders if we
+	  can't get a surface, nor if the surface is a zombie.
+	* text.cpp, playlist.cpp, media.cpp: Surface::CreateDownloader may
+	  return NULL now, add a null check.
+
 2008-06-11  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Move GetKind to the info.  Doesn't make sense for

@@ -20,13 +20,7 @@
 #include "clock.h"
 
 
-//#define DEBUG_PLAYLISTS
-
-#ifdef DEBUG_PLAYLISTS
-#define d(x) x
-#else
 #define d(x)
-#endif
 
 // warnings
 #define w(x)
@@ -442,15 +436,17 @@ PlaylistEntry::Open ()
 	}
 
 	Downloader *dl = element->GetSurface ()->CreateDownloader ();
-	dl->Open ("GET", GetFullSourceName ());
-	element->SetSourceInternal (dl, NULL);
-	dl->unref ();
+	if (dl) {
+		dl->Open ("GET", GetFullSourceName ());
+		element->SetSourceInternal (dl, NULL);
+		dl->unref ();
+	}
 }
 
 bool
 PlaylistEntry::Play ()
 {
-	d(printf ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name));
+	d(printf ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name ? source_name->ToString () : "NULL"));
 
 	if (media == NULL) {
 		play_when_available = true;

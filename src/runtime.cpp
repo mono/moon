@@ -1928,6 +1928,11 @@ Surface::OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer c
 Downloader*
 Surface::CreateDownloader (void) 
 {
+	if (zombie) {
+		g_warning ("Surface::CreateDownloader (): Trying to create a downloader on a zombified surface.\n");
+		return NULL;
+	}
+	
 	Downloader *downloader = new Downloader ();
 	downloader->SetSurface (this);
 	downloader->SetContext (downloader_context);
@@ -1947,12 +1952,11 @@ Surface::CreateDownloader (UIElement *element)
 	if (surface)
 		return surface->CreateDownloader ();
 
-	//printf ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n",
-	//	element, GET_OBJ_ID (element));
 
-	//print_stack_trace ();
+	g_warning ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n",
+		element, GET_OBJ_ID (element));
 
-	return new Downloader ();
+	return NULL;
 }
 
 bool 

@@ -1267,6 +1267,10 @@ MediaElement::DownloaderFailed (EventArgs *args)
 		if (!strncmp (uri, protocols[i], n)) {
 			new_uri = g_strdup_printf ("http://%s", uri + n);
 			dl = Surface::CreateDownloader (this);
+			
+			if (dl == NULL)
+				return;
+				
 			dl->Open ("GET", new_uri);
 			SetSource (dl, "");
 			g_free (new_uri);
@@ -1567,6 +1571,10 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		if (uri && *uri) {
 			Downloader *dl = Surface::CreateDownloader (this);
+			
+			if (dl == NULL)
+				return;
+				
 			dl->Open ("GET", uri);
 			SetSource (dl, "");
 			dl->unref ();
@@ -2568,6 +2576,10 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		if (uri && *uri) {
 			Downloader *dl = Surface::CreateDownloader (this);
+			
+			if (dl == NULL)
+				return; 
+				
 			dl->Open ("GET", uri);
 			SetSource (dl, "");
 			dl->unref ();
