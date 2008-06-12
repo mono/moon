@@ -215,8 +215,14 @@ types_init ()
 {
 #if DEBUG
 	for (int i = 0; i <= Type::LASTTYPE; i++) {
-		if (type_infos [i].type != i)
+#if !SL_2_0
+		if (type_infos [i].type != i && (type_infos [i].name == NULL || strstr (type_infos [i].name, "2.0 specific") == NULL)) {
+			
+#else
+		if (type_infos [i].type != i) {
+#endif
 			fprintf (stderr, "Type verification: type #%i is stored with Kind %i, name %s\n", i, type_infos [i].type, type_infos [i].name);
+		}
 	}
 #endif
 }

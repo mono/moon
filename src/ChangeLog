@@ -1,5 +1,10 @@
 2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* type.cpp: Fix type verification to not check 2.0 types for 1.0
+	  builds.
+
+2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp, media.h: Don't AutoPlay playlists which have already been
 	  autoplayed. Make Play/Pause/Stop/Seek async.
 	* playlist.cpp, playlist.h: Add a AutoPlayed field to Playlist.
