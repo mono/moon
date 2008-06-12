@@ -66,8 +66,8 @@ class DefaultNamespace;
 class XNamespace;
 class XamlElementInfoNative;
 class XamlElementInstanceNative;
-class XamlElementInfoCustom;
-class XamlElementInstanceCustom;
+class XamlElementInfoManaged;
+class XamlElementInstanceManaged;
 
 		
 
@@ -83,25 +83,14 @@ static const char* default_namespace_names [] = {
 };
 
 
-typedef DependencyObject *(*create_item_func) (void);
-typedef void  (*set_property_func) (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
-typedef void  (*set_attributes_func) (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
-
-XamlElementInstance* create_toplevel_property_element_instance (XamlParserInfo *p, const char *name);
-
 void dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
+XamlElementInstance* create_toplevel_property_element_instance (XamlParserInfo *p, const char *name);
 static XamlElementInstance *wrap_type (XamlParserInfo *p, Type *t);
-
 static Type *get_type_for_property_name (const char* prop_name);
-
-
-void  custom_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
-void  custom_add_child      (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
-void  custom_set_property   (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 
 
 class XamlElementInstance : public List::Node {
@@ -442,10 +431,10 @@ class XNamespace : public XamlNamespace {
 };
 
 
-class XamlElementInfoCustom : public XamlElementInfo {
+class XamlElementInfoManaged : public XamlElementInfo {
 
  public:
-	XamlElementInfoCustom (const char *name, XamlElementInfo *parent, Type::Kind dependency_type, DependencyObject *dob) : XamlElementInfo (name, dependency_type)
+	XamlElementInfoManaged (const char *name, XamlElementInfo *parent, Type::Kind dependency_type, DependencyObject *dob) : XamlElementInfo (name, dependency_type)
 	{
 		this->dependency_object = dob;
 	}
@@ -461,10 +450,10 @@ class XamlElementInfoCustom : public XamlElementInfo {
 };
 
 
-class XamlElementInstanceCustom : public XamlElementInstance {
+class XamlElementInstanceManaged : public XamlElementInstance {
 
  public:
-	XamlElementInstanceCustom (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob);
+	XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob);
 
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
@@ -472,17 +461,17 @@ class XamlElementInstanceCustom : public XamlElementInstance {
 };
 
 
-class CustomNamespace : public XamlNamespace {
+class ManagedNamespace : public XamlNamespace {
 
  public:
 	char *xmlns;
 
-	CustomNamespace (char *xmlns) :
+	ManagedNamespace (char *xmlns) :
 		xmlns (xmlns)
 	{
 	}
 
-	virtual ~CustomNamespace () { }
+	virtual ~ManagedNamespace () { }
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
@@ -491,11 +480,11 @@ class CustomNamespace : public XamlNamespace {
 			dob = p->loader->CreateManagedObject (xmlns, el);
 
 		if (!dob) {
-			parser_error (p, el, NULL, -1, g_strdup_printf ("Unable to resolve custom type %s\n", el));
+			parser_error (p, el, NULL, -1, g_strdup_printf ("Unable to resolve managed type %s\n", el));
 			return NULL;
 		}
 
-		XamlElementInfoCustom *info = new XamlElementInfoCustom (g_strdup (el), NULL, dob->GetObjectType (), dob);
+		XamlElementInfoManaged *info = new XamlElementInfoManaged (g_strdup (el), NULL, dob->GetObjectType (), dob);
 
 		return info;
 	}
@@ -1146,7 +1135,7 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	} else {
 		if (!p->loader) {
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,
-					     g_strdup_printf ("No custom element callback installed to handle %s", uri));
+					     g_strdup_printf ("No managed element callback installed to handle %s", uri));
 		}
 
 		if (!prefix) {
@@ -1155,7 +1144,7 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 			return;
 		}
 		
-		CustomNamespace *c = new CustomNamespace (g_strdup (uri));
+		ManagedNamespace *c = new ManagedNamespace (g_strdup (uri));
 		g_hash_table_insert (p->namespace_map, g_strdup (c->xmlns), c);
 	}
 }
@@ -2676,9 +2665,9 @@ XamlElementInstanceNative::SetAttributes (XamlParserInfo *p, const char **attr)
 
 
 XamlElementInstance *
-XamlElementInfoCustom::CreateElementInstance (XamlParserInfo *p)
+XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 {
-	XamlElementInstanceCustom *inst = new XamlElementInstanceCustom (this, dependency_object->GetTypeName (), XamlElementInstance::ELEMENT, dependency_object);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, dependency_object->GetTypeName (), XamlElementInstance::ELEMENT, dependency_object);
 
 	if (p->loader)
         	inst->item->SetSurface (p->loader->GetSurface ());
@@ -2688,9 +2677,9 @@ XamlElementInfoCustom::CreateElementInstance (XamlParserInfo *p)
 }
 
 XamlElementInstance *
-XamlElementInfoCustom::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+XamlElementInfoManaged::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
 {
-	XamlElementInstanceCustom *inst = new XamlElementInstanceCustom (this, o->GetTypeName (), XamlElementInstance::ELEMENT, o);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, o->GetTypeName (), XamlElementInstance::ELEMENT, o);
 
 	if (p->loader)
         	inst->item->SetSurface (p->loader->GetSurface ());
@@ -2700,9 +2689,9 @@ XamlElementInfoCustom::CreateWrappedElementInstance (XamlParserInfo *p, Dependen
 }
 
 XamlElementInstance *
-XamlElementInfoCustom::CreatePropertyElementInstance (XamlParserInfo *p, const char *name)
+XamlElementInfoManaged::CreatePropertyElementInstance (XamlParserInfo *p, const char *name)
 {
-	XamlElementInstanceCustom *inst = new XamlElementInstanceCustom (this, name, XamlElementInstance::PROPERTY, dependency_object);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, name, XamlElementInstance::PROPERTY, dependency_object);
 
 	if (p->loader)
         	inst->item->SetSurface (p->loader->GetSurface ());
@@ -2711,7 +2700,7 @@ XamlElementInfoCustom::CreatePropertyElementInstance (XamlParserInfo *p, const c
 	return inst;
 }
 
-XamlElementInstanceCustom::XamlElementInstanceCustom (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob) :
+XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob) :
 	XamlElementInstance (info, name, type)
 {
 	this->item = dob;
@@ -2719,19 +2708,19 @@ XamlElementInstanceCustom::XamlElementInstanceCustom (XamlElementInfo *info, con
 
 
 void
-XamlElementInstanceCustom::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
+XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
 	dependency_object_set_property (p, this, property, value);
 }
 
 void
-XamlElementInstanceCustom::AddChild (XamlParserInfo *p, XamlElementInstance *child)
+XamlElementInstanceManaged::AddChild (XamlParserInfo *p, XamlElementInstance *child)
 {
 	dependency_object_add_child (p, this, child);
 }
 
 void
-XamlElementInstanceCustom::SetAttributes (XamlParserInfo *p, const char **attr)
+XamlElementInstanceManaged::SetAttributes (XamlParserInfo *p, const char **attr)
 {
 	dependency_object_set_attributes (p, this, attr);
 }
@@ -3013,7 +3002,7 @@ start_parse:
 
 			g_strfreev (attr_name);
 
-			// Setting custom attributes can cause errors galore
+			// Setting managed attributes can cause errors galore
 			if (p->error_args)
 				return;
 
@@ -3151,16 +3140,6 @@ xaml_init (void)
 	GHashTable *dem = g_hash_table_new (g_str_hash, g_str_equal); // default element map
 	GHashTable *deploy = g_hash_table_new (g_str_hash, g_str_equal); // deployment element map
 	GHashTable *x_dem = g_hash_table_new (g_str_hash, g_str_equal); // x element map
-
-	/*
-	rdoe (deploy, "Deployment", NULL, Type::DEPLOYMENT, (create_item_func) deployment_new);
-	rdoe (deploy, "AssemblyPart", NULL, Type::ASSEMBLYPART, (create_item_func) assembly_part_new);
-	rdoe (deploy, "AssemblyPartCollection", col, Type::ASSEMBLYPART_COLLECTION, (create_item_func) assembly_part_collection_new);
-	
-
-	// Is this correct, since there is no SupportedCulture item
-	rdoe (deploy, "SupportedCultureCollection", col, Type::SUPPORTEDCULTURE_COLLECTION, (create_item_func) supported_culture_collection_new);
-	*/
 
 	default_namespace = new DefaultNamespace (dem);
 	deploy_namespace = new DefaultNamespace (deploy);

@@ -1,6 +1,7 @@
 2008-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Remove some cruft.
+	- Rename Custom to Managed
 
 2008-06-12  Fernando Herrera  <fherrera@novell.com>
 
