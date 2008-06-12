@@ -1693,57 +1693,46 @@ plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length)
 	XamlLoader
 */
 
-#if SL_2_0
 bool
 PluginXamlLoader::LoadVM ()
 {
+#if SL_2_0
 	if (!vm_is_loaded ())
 		vm_init ();
 
 	if (vm_is_loaded ())
 		return InitializeLoader ();
-
-	return FALSE;
+#endif
+	return false;
 }
 
 bool
 PluginXamlLoader::InitializeLoader ()
 {
 	if (initialized)
-		return TRUE;
+		return true;
 
+#if SL_2_0
 	if (!vm_is_loaded ())
-		return FALSE;
+		return false;
 
 	if (managed_loader)
-		return TRUE;
+		return true;
 
 	if (GetFilename ()) {
 		managed_loader = vm_xaml_file_loader_new (this, plugin, GetSurface (), GetFilename ());
 	} else if (GetString ()) {
 		managed_loader = vm_xaml_str_loader_new (this, plugin, GetSurface (), GetString ());
 	} else {
-		return FALSE;
+		return false;
 	}
 
 	initialized = managed_loader != NULL;
-
+#else
+	initialized = true;
+#endif
 	return initialized;
 }
-#else
-bool
-PluginXamlLoader::LoadVM ()
-{
-	return FALSE;
-}
-
-bool
-PluginXamlLoader::InitializeLoader ()
-{
-	initialized = TRUE;
-	return TRUE;
-}
-#endif
 
 //
 // On error it sets the @error ref to 1
