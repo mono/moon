@@ -1317,8 +1317,9 @@ PlaylistParser::ParseASX2 ()
 #define BUFFER_SIZE 1024
 	int bytes_read;
 	char buffer[BUFFER_SIZE];
+	char *ref;
 	char *mms_uri;
-	char *end;
+	GKeyFile *key_file;
 	Uri *uri;
 	
 	playlist_version = 2;
@@ -1328,16 +1329,33 @@ PlaylistParser::ParseASX2 ()
 		w(fprintf (stderr, "Could not read asx document for parsing.\n"));
 		return false;
 	}
-	
-	if (!g_str_has_prefix (buffer, "[Reference]\r\nRef1=http://") ||
-	    !strstr (buffer, "MSWMExt=.asf")) {
+
+	key_file = g_key_file_new ();
+	if (!g_key_file_load_from_data (key_file, buffer, bytes_read,
+					G_KEY_FILE_NONE, NULL)) {
+		w(fprintf (stderr, "Invalid asx2 document.\n"));
+		g_key_file_free (key_file);
 		return false;
 	}
 
-	end = strstr (buffer, "MSWMExt=.asf");
-	*end = '\0';
+	ref = g_key_file_get_value (key_file, "Reference", "Ref1", NULL);
+	if (ref == NULL) {
+		w(fprintf (stderr, "Could not find Ref1 entry in asx2 document.\n"));
+		g_key_file_free (key_file);
+		return false;
+	}
 
-	mms_uri = g_strdup_printf ("mms://%s", buffer + strlen ("[Reference]\r\nRef1=http://"));
+	if (!g_str_has_prefix (ref, "http://") || !g_str_has_suffix (ref, "MSWMExt=.asf")) {
+		w(fprintf (stderr, "Could not find a valid uri within Ref1 entry in asx2 document.\n"));
+		g_free (ref);
+		g_key_file_free (key_file);
+		return false;
+	}
+
+	mms_uri = g_strdup_printf ("mms://%s", strstr (ref, "http://") + strlen ("http://"));
+	g_free (ref);
+	g_key_file_free (key_file);
+
 
 	playlist = new Playlist (element, source);
 
