@@ -149,18 +149,9 @@ class XamlElementInstance : public List::Node {
 		//	delete element_name;
 	}
 
-	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
-	{
-		MarkPropertyAsSet (property->element_name);
-	}
-
-	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child)
-	{
-	}
-
-	virtual void SetAttributes (XamlParserInfo *p, const char **attr)
-	{
-	}
+	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) = 0;
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) = 0;
+	virtual void SetAttributes (XamlParserInfo *p, const char **attr) = 0;
 
 	bool IsPropertySet (const char *name)
 	{

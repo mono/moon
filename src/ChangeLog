@@ -1,6 +1,7 @@
 2008-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Use the new stuff for creating wrapped types.
+	- make XamlElementInstance pure virtual.
 
 2008-06-12  Jackson Harper  <jackson@ximian.com>
 
