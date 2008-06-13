@@ -23,7 +23,7 @@ void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj)
 // Converts from ASF's WCHAR fields to a utf8 string.
 // The returned string must be freed with g_free.
 G_BEGIN_DECLS
-char* wchar_to_utf8 (void* unicode, uint32_t length);
+char* wchar_to_utf8 (void* unicode, guint32 length);
 G_END_DECLS
 
 #define ASF_DECODE_PACKED_SIZE(x) ((x == 3 ? 4 : x))
@@ -204,7 +204,7 @@ struct asf_single_payload {
 	
 	MediaResult FillInAll (ASFContext *context, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp);
 	
-	uint8_t get_presentation_time_delta ()
+        asf_byte get_presentation_time_delta ()
 	{
 		if (replicated_data_length == 1) {
 			return *payload_data;
@@ -212,7 +212,7 @@ struct asf_single_payload {
 		return 0;
 	}
 	
-	uint64_t get_presentation_time ()
+	asf_dword get_presentation_time ()
 	{
 		return presentation_time;
 	}
@@ -565,7 +565,7 @@ struct asf_marker : public asf_object {
 		return result;
 	}
 	
-	const asf_marker_entry* get_entry (uint32_t index) 
+	const asf_marker_entry* get_entry (guint32 index) 
 	{
 		asf_marker_entry* result = NULL;
 		
@@ -573,10 +573,10 @@ struct asf_marker : public asf_object {
 			return NULL;
 		
 		asf_marker_entry* tmp = (asf_marker_entry*) (sizeof (asf_marker) + name_length + (char*) this);	
-		for (uint32_t i = 0; i < index; i++) {
+		for (guint32 i = 0; i < index; i++) {
 			char* next = (char*) tmp;
 			next += sizeof (asf_marker_entry);
-			next += (tmp->marker_description_length * sizeof (uint16_t));
+			next += (tmp->marker_description_length * sizeof (asf_word));
 			tmp = (asf_marker_entry*) next;
 		}
 		result = tmp;
