@@ -1,3 +1,10 @@
+2008-06-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for jumping to the last page in PageTurn.
+
+	* uielement.cpp (UIElement::OnSubPropertyChanged): Need to call
+	UpdateTotalRenderVisibility() when the clip changes.
+
 2008-06-13  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:

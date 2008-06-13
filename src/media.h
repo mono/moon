@@ -175,7 +175,7 @@ class Image : public MediaBase {
 	int use_img_width:1;
 	int updating:1;
 	
-	bool CreateSurface (const char *fname);
+	bool CreateSurface (const char *filename);
 	void CleanupSurface ();
 	void CleanupPattern ();
 	

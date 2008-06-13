@@ -282,6 +282,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		UpdateTransform ();
 	}
 	else if (prop == UIElement::ClipProperty) {
+		UpdateTotalRenderVisibility ();
 		FullInvalidate (true);
 	}
 	else if (prop == UIElement::OpacityMaskProperty) {
