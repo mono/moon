@@ -37,6 +37,7 @@ libmoon_include_HEADERS = \
 	media.h		\
 	mms-downloader.h	\
 	moon-path.h	\
+	moon-curves.h	\
 	mplayer.h	\
 	namescope.h	\
 	openfile.h	\
