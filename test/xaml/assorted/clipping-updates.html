@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Clipping Update test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+	sender.findName ("LowerLeft").point = "0,125";
+	sender.findName ("LowerRight").point = "100,125";
+	sender.findName ("UpperRight").point = "100,0";
+}
+function OnMouseLeave (sender, eventArgs)
+{
+	sender.findName ("LowerLeft").point = "0,10";
+	sender.findName ("LowerRight").point = "10,10";
+	sender.findName ("UpperRight").point = "10,0";
+}
+
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="100" height="125">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
+
+  <Canvas>
+    <Canvas.Clip>
+      <PathGeometry>
+        <PathFigure>
+          <LineSegment Point="0,0"/>
+          <LineSegment x:Name="LowerLeft" Point="0,10"/>
+          <LineSegment x:Name="LowerRight" Point="10,10"/>
+          <LineSegment x:Name="UpperRight" Point="10,0"/>
+          <LineSegment Point="0,0"/>
+        </PathFigure>
+      </PathGeometry>
+    </Canvas.Clip>
+    <Image Width="100" Height="125" Source="moonlight_logo.png"/>
+  </Canvas>
+
+</Canvas>
+</script>
+
+</body>
+</html>
