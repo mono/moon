@@ -1,5 +1,7 @@
 2008-06-13  Jeffrey Stedfast  <fejj@novell.com>
 
+	* dependencyobject.cpp (include): stdlib.h for strtol()
+
 	Fix for jumping to the last page in PageTurn.
 
 	* uielement.cpp (UIElement::OnSubPropertyChanged): Need to call
