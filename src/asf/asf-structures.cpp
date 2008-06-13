@@ -11,7 +11,7 @@
 #include "asf.h"
 
 char*
-wchar_to_utf8 (void* unicode, uint32_t length)
+wchar_to_utf8 (void* unicode, guint32 length)
 {
 	char* result = NULL;
 	
@@ -555,7 +555,7 @@ asf_multiple_payloads::CountCompressedPayloads (ASFParser* parser, asf_single_pa
 	asf_byte* data = payload->payload_data;
 	asf_dword length = payload->payload_data_length;
 	asf_byte size = 0;
-	uint32_t offset = 0;
+	guint32 offset = 0;
 	int counter = 0;
 	
 	if (data == NULL) {
@@ -583,7 +583,7 @@ asf_multiple_payloads::ReadCompressedPayload (ASFParser* parser, asf_single_payl
 {
 	asf_byte* data = first->payload_data;
 	asf_byte size = 0;
-	uint32_t offset = 0;
+	guint32 offset = 0;
 	asf_single_payload* payload = NULL;
 
 	for (int i = 0; i < count; i++) {
@@ -851,7 +851,7 @@ void asf_marker_dump (const asf_marker* obj)
 	ASF_DUMP ("\tname_length = %u\n", (asf_dword) obj->name_length);
 	ASF_DUMP ("\tname = %s\n", o->get_name ());
 	
-	for (uint32_t i = 0; i < obj->marker_count; i++) {
+	for (guint32 i = 0; i < obj->marker_count; i++) {
 		asf_marker_entry_dump (o->get_entry (i));
 	}
 }
@@ -860,7 +860,7 @@ void asf_script_command_dump (ASFParser* parser, const asf_script_command* obj)
 {
 #ifdef ASF_DUMPING
 	asf_script_command* o = (asf_script_command*) obj;
-	uint32_t i;
+	guint32 i;
 	
 	ASF_DUMP ("ASF_SCRIPT_COMMAND\n");
 	ASF_DUMP ("\tid = %s\n", asf_guid_tostring (&obj->id));
