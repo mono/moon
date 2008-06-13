@@ -15,10 +15,10 @@
 #include "moon-curves.h"
 
 static void 
-point_lerp (moon_point *dest, moon_point a, moon_point b, double t)
+point_half_lerp (moon_point *dest, moon_point a, moon_point b)
 {
-	dest->x = a.x + (b.x - a.x) * t;
-	dest->y = a.y + (b.y - a.y) * t;
+	dest->x = a.x + (b.x - a.x) * 0.5;
+	dest->y = a.y + (b.y - a.y) * 0.5;
 }
 
 void 
@@ -36,22 +36,25 @@ double
 moon_quadratic_y_for_x (double x, moon_quadratic *src)
 {
 	double l = src->c2.x - src->c0.x;
-	x = (x - src->c0.x) / l;
-	return ((1 - x) * (1 - x)) * src->c0.y + ((2 * x) * (1 - x) * src->c1.y) + ((x * x) * src->c2.y);
+	if (l <= 0)
+		return 0.0;
+	else {
+		x = (x - src->c0.x) / l;
+		return ((1 - x) * (1 - x)) * src->c0.y + ((2 * x) * (1 - x) * src->c1.y) + ((x * x) * src->c2.y);
+	}
 }
 
 double 
-moon_quadratic_array_y_for_x (moon_quadratic *qarr, double x)
+moon_quadratic_array_y_for_x (moon_quadratic *qarr, double x, int count)
 {
-	int i = 0;
-	moon_quadratic iter = qarr [i];
-	
-	while (x > iter.c2.x) {
-		i++;
-		iter = qarr [i];
+	int i;
+
+	for (i = 0; i < count; i++) {
+		if (x < qarr [i].c2.x) 
+			return moon_quadratic_y_for_x (x, &qarr [i]);
 	} 
-	
-	return moon_quadratic_y_for_x (x, &iter);
+
+	g_assert_not_reached ();
 }
 
 void 
@@ -68,14 +71,14 @@ moon_subdivide_cubic (moon_cubic *dest1, moon_cubic *dest2, moon_cubic *src)
 	moon_point p01, p012, p0123;
 	moon_point p12, p23, p123;
 	
-	point_lerp (&p01, src->c0, src->c1, 0.5);
-	point_lerp (&p12, src->c1, src->c2, 0.5);
-	point_lerp (&p23, src->c2, src->c3, 0.5);
+	point_half_lerp (&p01, src->c0, src->c1);
+	point_half_lerp (&p12, src->c1, src->c2);
+	point_half_lerp (&p23, src->c2, src->c3);
 	
-	point_lerp (&p012, p01, p12, 0.5);
+	point_half_lerp (&p012, p01, p12);
 	
-	point_lerp (&p123, p12, p23, 0.5);
-	point_lerp (&p0123, p012, p123, 0.5);
+	point_half_lerp (&p123, p12, p23);
+	point_half_lerp (&p0123, p012, p123);
 	
 	dest1->c0 = src->c0;
 	dest1->c1 = p01;

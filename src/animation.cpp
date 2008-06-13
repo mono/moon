@@ -919,8 +919,7 @@ KeySpline::GetSplineProgress (double linearProgress)
 	if (linearProgress <= 0.0)
 		return 0.0;
 
-	double v =  moon_quadratic_array_y_for_x (quadraticsArray, linearProgress);
-	return v;
+	return moon_quadratic_array_y_for_x (quadraticsArray, linearProgress, 16);
 }
 
 DependencyProperty* KeyFrame::KeyTimeProperty;

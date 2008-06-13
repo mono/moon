@@ -43,7 +43,7 @@ typedef struct
 
 void	moon_quadratic_from_cubic		(moon_quadratic *dest, moon_cubic *src);
 double	moon_quadratic_y_for_x			(double x, moon_quadratic *src);
-double	moon_quadratic_array_y_for_x		(moon_quadratic *qarr, double x);
+double	moon_quadratic_array_y_for_x		(moon_quadratic *qarr, double x, int count);
 void	moon_convert_cubics_to_quadratics	(moon_quadratic *dest_array, moon_cubic *src_array, int count);
 void	moon_subdivide_cubic			(moon_cubic *dest1, moon_cubic *dest2, moon_cubic *src);
 void	moon_subdivide_cubic_at_level		(moon_cubic *b, int lvl, moon_cubic *src);

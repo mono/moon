@@ -1,5 +1,11 @@
 2008-06-13  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp:
+	* moon-curves.c:
+	* moon-curves.h: Cleaning up the KeySpline curve implementation a bit.
+
+2008-06-13  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile.am:
 	* animation.cpp:
 	* animation.h:
