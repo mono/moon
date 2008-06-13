@@ -1,3 +1,13 @@
+2008-06-13  Michael Dominic K.  <mdk@mdk.am>
+
+	* Makefile.am:
+	* animation.cpp:
+	* animation.h:
+	* moon-curves.c:
+	* moon-curves.h: First version of the new algho for calculating the "y
+	at x" for KeySplines, now with 200% more accuracy guaranteed! Fixes the
+	AnimationMatrix2 test.
+
 2008-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Remove some cruft.

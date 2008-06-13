@@ -95,6 +95,7 @@ libmoon_la_SOURCES = 	\
 	media.cpp	\
 	mms-downloader.cpp	\
 	moon-path.c	\
+	moon-curves.c	\
 	enums.c		\
 	mplayer.cpp	\
 	namescope.cpp	\

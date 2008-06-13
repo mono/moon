@@ -21,6 +21,7 @@
 #include "clock.h"
 #include "list.h"
 #include "point.h"
+#include "moon-curves.h"
 
 // misc types
 class KeySpline : public DependencyObject {
@@ -45,6 +46,7 @@ class KeySpline : public DependencyObject {
  private:
 	Point controlPoint1;
 	Point controlPoint2;
+	moon_quadratic quadraticsArray [16];
 };
 
 struct KeyTime {

@@ -841,16 +841,33 @@ point_animation_new (void)
 	return new PointAnimation ();
 }
 
+static void
+regenerate_quadratics_array (Point c1, Point c2, moon_quadratic *qarr)
+{
+	moon_cubic src;
+	src.c0.x = 0; src.c0.y = 0;
+	src.c1.x = c1.x; src.c1.y = c1.y;
+	src.c2.x = c2.x; src.c2.y = c2.y;
+	src.c3.x  = 1.0; src.c3.y = 1.0;
+
+	moon_cubic carr [16];
+	
+	moon_subdivide_cubic_at_level (carr, 4, &src);
+	moon_convert_cubics_to_quadratics (qarr, carr, 16);
+}
+
 KeySpline::KeySpline ()
 {
 	controlPoint1 = Point (0.0, 0.0);
 	controlPoint2 = Point (1.0, 1.0);
+	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
 }
 
 KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
 {
 	this->controlPoint1 = controlPoint1;
 	this->controlPoint2 = controlPoint2;
+	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
 }
 
 KeySpline::KeySpline (double x1, double y1,
@@ -858,6 +875,7 @@ KeySpline::KeySpline (double x1, double y1,
 {
 	this->controlPoint1 = Point (x1, y1);
 	this->controlPoint2 = Point (x2, y2);
+	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
 }
 
 Point
@@ -865,10 +883,12 @@ KeySpline::GetControlPoint1 ()
 {
 	return controlPoint1;
 }
+
 void
 KeySpline::SetControlPoint1 (Point controlPoint1)
 {
 	this->controlPoint1 = controlPoint1;
+	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
 }
 
 Point
@@ -876,34 +896,18 @@ KeySpline::GetControlPoint2 ()
 {
 	return controlPoint2;
 }
+
 void
 KeySpline::SetControlPoint2 (Point controlPoint2)
 {
 	this->controlPoint2 = controlPoint2;
+	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
 }
 
 KeySpline *
 key_spline_new (void)
 {
 	return new KeySpline ();
-}
-
-static double
-get_bezier_x_for_t (Point p2, Point p3, double t)
-{
-	return 0.0 * (1.0 - t) * (1.0 - t) * (1.0 - t) +
-	       p2.x * 3.0 * t * (1.0 - t) * (1.0 - t) +
-	       p3.x * 3.0 * t * t * (1.0 - t) +
-	       1.0 * t * t * t;
-}
-
-static double
-get_bezier_y_for_t (Point p2, Point p3, double t)
-{
-	return 0.0 * (1.0 - t) * (1.0 - t) * (1.0 - t) +
-	       p2.y * 3.0 * t * (1.0 - t) * (1.0 - t) +
-	       p3.y * 3.0 * t * t * (1.0 - t) +
-	       1.0 * t * t * t;
 }
 
 double
@@ -915,16 +919,8 @@ KeySpline::GetSplineProgress (double linearProgress)
 	if (linearProgress <= 0.0)
 		return 0.0;
 
-	double approx_1, approx_2;
-	double factor_1, factor_2;
-
-	approx_1 = get_bezier_x_for_t (controlPoint1, controlPoint2, linearProgress);
-	factor_1 = (approx_1 != 0) ? linearProgress / approx_1 : 1.0;
-
-	approx_2 = get_bezier_x_for_t (controlPoint1, controlPoint2, linearProgress * factor_1);
-	factor_2 = (approx_2 != 0) ? linearProgress / approx_2 : 1.0;
-
-	return get_bezier_y_for_t (controlPoint1, controlPoint2, linearProgress * factor_2);
+	double v =  moon_quadratic_array_y_for_x (quadraticsArray, linearProgress);
+	return v;
 }
 
 DependencyProperty* KeyFrame::KeyTimeProperty;
