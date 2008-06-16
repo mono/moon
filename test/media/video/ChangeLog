@@ -1,3 +1,8 @@
+2008-06-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml, test-nested-playlist.A.asx, test-nested-playlist.B.asx,
+	  test-nested-playlist.html: Added test-nested-playlist.html.
+
 2008-06-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml, test-stopped-media.asx, test-stopped-media.html: Added

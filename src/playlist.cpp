@@ -583,7 +583,7 @@ Playlist::Open ()
 	current_entry = GetCurrentEntry ();	
 	
 	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
-		d(printf ("Playlist::Open (), current entry has zero duration, skipping it.\n"));
+		d(printf ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ()));
 		current_node = (PlaylistNode *) current_node->next;
 		current_entry = GetCurrentEntry ();
 	}
@@ -626,7 +626,7 @@ Playlist::Play ()
 	d(printf ("Playlist::Play (), current entry: %p\n", current_entry));
 
 	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
-		d(printf ("Playlist::Play (), current entry has zero duration, skipping it.\n"));
+		d(printf ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ()));
 		OnEntryEnded ();
 		current_entry = GetCurrentEntry ();
 	}
@@ -736,8 +736,8 @@ Playlist::MergeWith (PlaylistEntry *entry)
 	SetCopyright (g_strdup (entry->GetCopyright ()));
 
 	SetSourceName (entry->GetSourceName () ? entry->GetSourceName ()->Clone () : NULL);
-	SetStartTime (entry->GetStartTime ());
-	SetDuration (entry->GetDuration ());
+	if (entry->HasDuration ()) 
+		SetDuration (entry->GetDuration ());
 	
 	element = entry->GetElement ();
 }

@@ -1,3 +1,11 @@
+2008-06-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* playlist.cpp: When Merging items only merge duration if the source
+	  has duration.
+	* media.cpp: MediaElement::MediaOpened: when setting the media on the
+	  current item in the playlist, make sure we set the media on a
+	  PlaylistEntry, not on a (nested) Playlist.
+
 2008-06-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* yuv-converter.cpp (YUVConverter::YUVConverter): Replace

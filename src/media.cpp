@@ -727,7 +727,7 @@ MediaElement::MediaOpened (Media *media)
 		return false;
 	} else {
 		if (playlist != NULL) {	
-			playlist->GetCurrentEntry ()->SetMedia (media);
+			playlist->GetCurrentPlaylistEntry ()->SetMedia (media);
 		} else {
 			playlist = new Playlist (this, media);
 		}
@@ -1086,7 +1086,6 @@ MediaElement::BufferingComplete ()
 	switch (prev_state) {
 	case Opening: // Start playback
 		PlayOrPauseNow ();
-		EmitMediaOpened ();
 		return;
 	case Playing: // Restart playback
 		PlayNow ();
@@ -1462,6 +1461,7 @@ MediaElement::PauseNow ()
 			if (playlist && playlist->Pause ())
 				SetState (Paused);
 		}
+		EmitMediaOpened ();	
 		break;
 	}
 }
