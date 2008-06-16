@@ -294,6 +294,7 @@ MediaPlayer::Open (Media *media)
 	IMediaDemuxer *demuxer = media->GetDemuxer ();
 	VideoStream *vstream;
 	AudioStream *astream;
+	
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		stream = demuxer->GetStream (i);
 		encoding = stream->GetDecoder (); //stream->codec;
@@ -332,8 +333,10 @@ MediaPlayer::Open (Media *media)
 			
 			// for conversion to rgb32 format needed for rendering with 16 byte alignment
 			if (posix_memalign ((void **)(&video.rgb_buffer), 16, height * stride)) {
-				g_error ("Could not allocate memory");
+				g_warning ("Could not allocate memory for video RGB buffer");
+				return false;
 			}
+			
 			memset (video.rgb_buffer, 0, height * stride);
 			
 			// rendering surface

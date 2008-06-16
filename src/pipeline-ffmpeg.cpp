@@ -284,7 +284,8 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 			for (int i = 0; i < 4; i++) {
 				if (plane_bytes [i] != 0) {
 					if (posix_memalign ((void **)&mf->data_stride [i], 16, plane_bytes[i] + stream->min_padding)) {
-						g_error ("Could not allocate memory");
+						g_warning ("Could not allocate memory for data stride");
+						return MEDIA_OUT_OF_MEMORY;
 					}
 					memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);
 				} else {

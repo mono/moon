@@ -1,3 +1,18 @@
+2008-06-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* yuv-converter.cpp (YUVConverter::YUVConverter): Replace
+	g_error() with g_warning(). There's really nothing else we can do
+	here...
+	(YUVConverter::Convert): Check if rgb_uv is NULL, if it is try
+	allocating it again? Maybe some resources have been released since
+	the ctor was called?
+
+	* pipeline-ffmpeg.cpp (FfmpegDecoder::DecodeFrame): Replace
+	g_error() with a g_warning() and return MEDIA_OUT_OF_MEMORY error.
+
+	* mplayer.cpp (MediaPlayer::Open): Change g_error() into a
+	g_warning() and return fail.
+
 2008-06-16  Michael Dominic K.  <mdk@mdk.am>
 	
 	* clock.cpp: Don't do the ExtraRepeat action when seeking.
