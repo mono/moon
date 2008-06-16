@@ -54,7 +54,8 @@ moon_quadratic_array_y_for_x (moon_quadratic *qarr, double x, int count)
 			return moon_quadratic_y_for_x (x, &qarr [i]);
 	} 
 
-	g_assert_not_reached ();
+	g_warning ("Failed to find a matching quadratic segment for %.5f", x);
+	return 0.0;
 }
 
 void 
