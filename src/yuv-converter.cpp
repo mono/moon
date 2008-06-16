@@ -314,7 +314,7 @@ YUVConverter::YUVConverter (Media* media, VideoStream* stream) : IImageConverter
 #  endif
 #endif
 	if (posix_memalign ((void **)(&rgb_uv), 16, 96))
-		g_warning ("Could not allocate memory for YUVConverter");
+		rgb_uv = NULL;
 }
 
 YUVConverter::~YUVConverter ()
@@ -365,8 +365,10 @@ YUVConverter::Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSli
 		}
 	}
 	
-	if (rgb_uv == NULL && posix_memalign ((void **)(&rgb_uv), 16, 96) != 0)
+	if (rgb_uv == NULL && posix_memalign ((void **)(&rgb_uv), 16, 96) != 0) {
+		g_warning ("Could not allocate memory for YUVConverter");
 		return MEDIA_OUT_OF_MEMORY;
+	}
 	
 #if HAVE_SSE2
 	if (have_sse2 && aligned) {
