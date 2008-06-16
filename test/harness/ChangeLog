@@ -1,3 +1,7 @@
+2008-06-16  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* test-runner/HtmlReport.cs: Use index.html rather than index.htm
+
 2008-06-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/DbusServices.cs, test-runner/LoggingServer.cs: Don't fail

@@ -132,7 +132,7 @@ namespace MoonlightTests {
 
 		private void WriteDocument ()
 		{
-			using (StreamWriter writer = new StreamWriter (Path.Combine (ReportDirectory, "index.htm"), false)) {
+			using (StreamWriter writer = new StreamWriter (Path.Combine (ReportDirectory, "index.html"), false)) {
 				writer.Write (doc.ToString ());
 			}
 		}
