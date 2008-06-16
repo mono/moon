@@ -2342,6 +2342,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 	} else {
 		char *strval = NULL;
 		char strbuf[64];
+		bool rv;
 		
 		if (NPVARIANT_IS_BOOLEAN (*value)) {
 			if (NPVARIANT_TO_BOOLEAN (*value))
@@ -2383,12 +2384,12 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			return true;
 		}
 		
-		g_assert (strval != NULL);
+		rv = xaml_set_property_from_str (dob, prop, strval);
 		
-		return xaml_set_property_from_str (dob, prop, strval);
-
 		if (strval != strbuf)
 			g_free (strval);
+		
+		return rv;
 	}
 	
 	return true;

@@ -1,3 +1,9 @@
+2008-06-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (_set_dependency_property_value): Don't
+	g_assert() here, it's not necessary plus we want to get rid of
+	them anyway for bug #335413.
+
 2008-06-10  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp, plugin.h: wrap everything 2.0 related with
