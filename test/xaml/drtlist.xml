@@ -847,4 +847,19 @@
 	 inputFile="test-bubbling.html"
 	 masterFile10="None"
 	 />
+   <Test id="192"
+	 inputFile="test-animation-nested-storyboard.xaml"
+	 masterFile10="../harness/masters/test-animation-nested-storyboardMaster.png"
+	 captureSpecifier="0,1,10000"
+	 />
+   <Test id="193"
+	 inputFile="test-animation-only-from.xaml"
+	 masterFile10="../harness/masters/test-animation-only-fromMaster.png"
+	 captureSpecifier="0,1,10000"
+	 />
+   <Test id="194"
+	 inputFile="test-animation-hold-stop-speed.xaml"
+	 masterFile10="../harness/masters/test-animation-hold-stop-speedMaster.png"
+	 captureSpecifier="0,1,10000"
+	 />
 </DRTList>

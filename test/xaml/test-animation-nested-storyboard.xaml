@@ -1,7 +1,7 @@
 <Canvas x:Name="root" 
   Loaded="OnLoaded" 
   xmlns="http://schemas.microsoft.com/client/2007"  
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="400" Height="400">
 
   <Rectangle x:Name="rect1" Canvas.Top="10" Canvas.Left="10" Width="30" Height="30" Fill="red"/>
   <Rectangle x:Name="rect2" Canvas.Top="50" Canvas.Left="10" Width="30" Height="30" Fill="black" />
