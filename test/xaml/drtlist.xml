@@ -836,6 +836,7 @@
    <Test id="189"
 	 inputFile="test-animation-zero-duration.xaml"
 	 masterFile10="../harness/masters/test-animation-zero-durationMaster.png"
+	 captureSpecifier="0,1,10000"
 	 />
    <Test id="190"
 	 inputFile="test-downloader-events.html"
@@ -860,6 +861,11 @@
    <Test id="194"
 	 inputFile="test-animation-hold-stop-speed.xaml"
 	 masterFile10="../harness/masters/test-animation-hold-stop-speedMaster.png"
+	 captureSpecifier="0,1,10000"
+	 />
+   <Test id="195"
+	 inputFile="test-animation-repeat-behavior.xaml"
+	 masterFile10="../harness/masters/test-animation-repeat-behaviorMaster.png"
 	 captureSpecifier="0,1,10000"
 	 />
 </DRTList>
