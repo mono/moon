@@ -1,3 +1,11 @@
+2008-06-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp, media.h: Move Play/Pause due to AutoPlay logic into one
+	  method.
+	* playlist.cpp: When we stop, clear out our media. This fixes an issue
+	  where we didn't correctly download a file if it was stopped after
+	  it was opened, but before fully downloaded, and then restarted.
+
 2008-06-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp (include): stdlib.h for strtol()

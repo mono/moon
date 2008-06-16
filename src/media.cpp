@@ -736,18 +736,8 @@ MediaElement::MediaOpened (Media *media)
 		SetMedia (media);
 		
 		if (flags & DownloadComplete) {
-			if (!playlist->GetAutoPlayed ()) {
-				SetState (Buffering);
-				if (flags & PlayRequested) {
-					PlayNow ();
-				} else if (GetAutoPlay ()) {
-					playlist->SetAutoPlayed (true);
-					PlayNow ();
-				} else {
-					PauseNow ();
-				}
-			}
-		
+			SetState (Buffering);
+			PlayOrPauseNow ();
 			Invalidate ();
 			EmitMediaOpened ();
 		}
@@ -970,6 +960,7 @@ MediaElement::UpdateProgress ()
 			  MilliSeconds_FromPts (mplayer->GetPosition ()),
 			  media ? media->GetDemuxer ()->GetLastAvailablePts () : 0));
 		
+		flags |= PlayRequested;
 		SetBufferingProgress (0.0);
 		Emit (BufferingProgressChangedEvent);
 		SetState (Buffering);
@@ -1037,7 +1028,7 @@ MediaElement::SetState (MediaElementState state)
 void 
 MediaElement::DataWrite (void *buf, gint32 offset, gint32 n)
 {
-	//printf ("MediaElement::DataWrite (%p, %d, %d), size: %llu\n", buf, offset, n, downloaded_file ? downloaded_file->GetSize () : 0);
+	//printf ("MediaElement::DataWrite (%p, %d, %d), size: %llu, source: %s\n", buf, offset, n, downloaded_file ? downloaded_file->GetSize () : 0, downloader ? downloader->GetUri () : NULL);
 	
 	if (downloaded_file != NULL) {
 		downloaded_file->Write (buf, (gint64) offset, n);
@@ -1094,14 +1085,7 @@ MediaElement::BufferingComplete ()
 	
 	switch (prev_state) {
 	case Opening: // Start playback
-		if (flags & PlayRequested) {
-			PlayNow ();
-		} else if (GetAutoPlay () && !playlist->GetAutoPlayed ()) {
-			playlist->SetAutoPlayed (true);
-			PlayNow ();
-		} else {
-			PauseNow ();
-		}
+		PlayOrPauseNow ();
 		EmitMediaOpened ();
 		return;
 	case Playing: // Restart playback
@@ -1332,14 +1316,7 @@ MediaElement::DownloaderComplete ()
 	case Buffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
-		if ((flags & PlayRequested) || prev_state == Playing) {
-			PlayNow ();
-		} else if (GetAutoPlay () && !playlist->GetAutoPlayed ()) {
-			playlist->SetAutoPlayed (true);
-			PlayNow ();
-		} else {
-			PauseNow ();
-		}
+		PlayOrPauseNow ();
 		EmitMediaOpened ();
 		break;
 	case Opening:
@@ -1422,6 +1399,32 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 }
 
 void
+MediaElement::SetPlayRequested ()
+{
+	flags |= PlayRequested;
+}
+
+void
+MediaElement::PlayOrPauseNow ()
+{
+	d (printf ("MediaElement::PlayOrPause (): GetCanPause (): %i, PlayRequested: %i, GetAutoPlay: %i, AutoPlayed: %i\n", GetCanPause (), flags & PlayRequested, GetAutoPlay (), playlist->GetAutoPlayed ()));
+
+	if (!GetCanPause ()) {
+		// If we can't pause, we play
+		PlayNow ();
+	} else if (flags & PlayRequested) {
+		// A Play has already been requested.
+		PlayNow ();
+	} else if (GetAutoPlay () && !playlist->GetAutoPlayed ()) {
+		// Autoplay us.
+		playlist->SetAutoPlayed (true);
+		PlayNow ();
+	} else {
+		PauseNow ();
+	}
+}
+
+void
 MediaElement::Pause ()
 {
 	d(printf ("MediaElement::Pause (): current state: %s\n", GetStateName (state)));
@@ -1498,6 +1501,7 @@ MediaElement::PlayNow ()
 	case Buffering:
 	case Paused:
 	case Stopped: // docs: start playing
+		flags |= PlayRequested;
 		playlist->Play ();
 		break;
 	}

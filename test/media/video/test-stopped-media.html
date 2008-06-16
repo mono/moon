@@ -1,0 +1,115 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" x:Name="media"
+				 BufferingProgressChanged="OnBufferingProgressChanged" DownloadProgressChanged="OnDownloadProgressChanged" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		var mediaElement = null;
+		var bufferingDone = false;
+		var stopped = false;
+
+		/*
+			This is a regression test for an issue when stopping and restarting a playlist 
+			(we aborted the downloader if it wasn't completed, and never restarted it)
+		*/
+		
+		function timeOut ()
+		{
+			TestLogger.LogError ("Nothing happened, didn't get MediaEnded event.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function Tick ()
+		{
+			TestLogger.LogDebug ("Tick, Position: " + mediaElement.Position.Seconds);
+		}
+		
+		function OnBufferingProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnBufferingProgressChanged: " + sender.BufferingProgress);
+		}
+		
+		function StopMedia ()
+		{
+			if (stopped)
+				return;
+				
+			stopped = true;
+			TestLogger.LogWarning ("OnDownloadProgressChanged: Stopping video");
+			mediaElement.Stop ();
+			setTimeout ("TestLogger.LogDebug ('Calling Play...'); mediaElement.Play ();", 1000);
+		}
+		
+		function OnDownloadProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnDownloadProgressChanged: " + sender.DownloadProgress + ", CurrentState: " + sender.CurrentState);
+		}
+		
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
+			TestLogger.LogDebug ("NaturalDuration: " + sender.NaturalDuration.Seconds);
+			
+			StopMedia ();
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded: Test succeeded");
+			TestLogger.LogResult (1);
+			SignalShutdown ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			mediaElement = sender.findName ("media");
+			mediaElement.Source = "test-stopped-media.asx";
+			setTimeout ("timeOut ();", 60000);
+			setInterval ("Tick ();", 250);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+

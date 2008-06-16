@@ -479,6 +479,11 @@ PlaylistEntry::Stop ()
 
 	play_when_available = false;
 	element->GetMediaPlayer ()->Stop ();
+	
+	if (media) {
+		media->unref ();
+		media = NULL;
+	}
 }
 
 Media *
@@ -510,6 +515,7 @@ Playlist::Playlist (MediaElement *element, IMediaSource *source)
 	: PlaylistEntry (element, NULL)
 {
 	is_single_file = false;
+	autoplayed = false;
 	Init (element);
 	this->source = source;
 }
@@ -601,8 +607,10 @@ Playlist::OnEntryEnded ()
 	current_node = (PlaylistNode *) current_node->next;
 	
 	current_entry = GetCurrentEntry ();
-	if (current_entry)
+	if (current_entry) {
+		element->SetPlayRequested ();
 		current_entry->Play ();
+	}
 	
 	d(printf ("Playlist::OnEntryEnded () current_node: %p [Done]\n", current_node));
 }

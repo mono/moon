@@ -24,4 +24,5 @@
     <Test id="23" inputFile="test-mediaopened-3.html" masterFile10="None" timeout="15000" categories="video,media,playlist"  knownFailure="True" knownFailureReason="not known" />
     <Test id="24" inputFile="test-autoplay.html" masterFile10="None" timeout="15000" categories="video,media,playlist,mediaserver"  knownFailure="True" knownFailureReason="not known" />
     <Test id="25" inputFile="test-playlist-autoplayed-stop.html" masterFile10="None" timeout="15000" categories="video,media,playlist" />
+    <Test id="26" inputFile="test-stopped-media.html" masterFile10="None" timeout="120000" categories="video,media,playlist,mediaserver" />
 </DRTList>

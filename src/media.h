@@ -346,6 +346,7 @@ class MediaElement : public MediaBase {
 	void SetNaturalVideoHeight (double height);
 	void SetNaturalVideoWidth (double width);
 	
+	void PlayOrPauseNow ();
 	void PauseNow ();
 	void PlayNow ();
 	void StopNow ();
@@ -432,6 +433,7 @@ class MediaElement : public MediaBase {
 	pthread_mutex_t open_mutex; // Used when accessing closure.
 	MediaClosure *closure;
 	static void TryOpenFinished (void *user_data);
+	void SetPlayRequested ();
 	
 	// Reset all information to defaults, set state to 'Error' and raise MediaFailedEvent
 	void MediaFailed (ErrorEventArgs *args = NULL);

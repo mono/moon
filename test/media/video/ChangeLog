@@ -1,3 +1,8 @@
+2008-06-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml, test-stopped-media.asx, test-stopped-media.html: Added
+	  test-stopped-media.html
+
 2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml: Added more tests.
