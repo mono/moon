@@ -47,7 +47,7 @@
 
 #define LOG_TIME_FORMAT		"%Y-%m-%d %H:%M:%S"
 
-
+static int use_printf = 0;
 
 LogProvider::LogProvider (const char* test_name) : log_file (NULL)
 {
@@ -145,6 +145,26 @@ LogProvider::Log (const char* level, const char* msg)
 
 	fprintf (log_file, "%s:%s:%s:%s\n", level, timestr, test_name, msg);
 	fflush (log_file);
+
+	if (use_printf == 0) {
+		char *env = getenv ("MOON_SHOCKER_LOG_TO_STDOUT");
+		if (env != NULL && env [0] != 0)
+			use_printf = 1;
+		else
+			use_printf = 2;
+	}
+	if (use_printf == 1) {
+		const char *forecolor = "39";
+		if (strcmp (level, "Warning") == 0) {
+			forecolor = "37";
+		} else if (strcmp (level, "Error") == 0) {
+			forecolor = "31";
+		} else {
+			forecolor = "34";
+		} 
+		printf ("\033[%s;49m%s: %s: %s\033[39;49m\n", forecolor, test_name, level, msg);
+		
+	}
 
 #ifdef DBUS_ENABLED
 	g_return_if_fail (dbus_proxy);

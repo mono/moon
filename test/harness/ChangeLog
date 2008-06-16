@@ -1,3 +1,9 @@
+2008-06-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* shocker/logging.cpp: Added an option to have the test plugin write
+	  logging output directly to stdout instead of going through
+	  dbus/logging server.
+
 2008-06-16  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* test-runner/HtmlReport.cs: Use index.html rather than index.htm
