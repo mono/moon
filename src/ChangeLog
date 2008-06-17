@@ -1,3 +1,15 @@
+2008-06-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	Partial fix for bug #400657.
+
+	* dependencyobject.cpp (DependencyObject::IsValueValid): If the
+	value is a null dependency object, don't check that the types
+	match - it doesn't matter.
+
+	* color.cpp (color_to_string): New convenience utility function to
+	aid in debugging. Returns a pointer to a static string buffer, so
+	be careful...
+
 2008-06-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* playlist.cpp, playlist.h: Only unref/null out the media in

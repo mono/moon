@@ -762,7 +762,12 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 		return false;
 	}
 
-	if (value != NULL){
+	if (value != NULL) {
+		if (value->Is (Type::EVENTOBJECT) && !value->AsEventObject ()) {
+			// if it's a null DependencyObject, it doesn't matter what type it is
+			return true;
+		}
+		
 		if (!value->Is (property->value_type)) {
 			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
 				     "DependencyObject::SetValue, value cannot be assigned to the "

@@ -15,7 +15,7 @@
 
 struct Color {
 	double r, g, b, a;
- public:
+	
 	Color () : r(0.0), g(0.0), b(0.0), a(0.0) {}
 
 	Color (guint32 argb)
@@ -78,6 +78,8 @@ struct Color {
 };
 
 G_BEGIN_DECLS
+
+const char *color_to_string (Color *color);
 
 Color *color_from_str  (const char *name);
 

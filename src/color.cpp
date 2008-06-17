@@ -288,3 +288,39 @@ color_from_str (const char *name)
 	
 	return NULL;
 }
+
+
+const char *
+color_to_string (Color *color)
+{
+	static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+	static char buf[10];
+	guint8 v;
+	
+	buf[0] = '#';
+	
+	v = (guint8) (color->r * 256);
+	buf[1] = hex[(v >> 4) & 0x0f];
+	buf[2] = hex[v & 0x0f];
+	
+	v = (guint8) (color->g * 256);
+	buf[3] = hex[(v >> 4) & 0x0f];
+	buf[4] = hex[v & 0x0f];
+	
+	v = (guint8) (color->b * 256);
+	buf[5] = hex[(v >> 4) & 0x0f];
+	buf[6] = hex[v & 0x0f];
+	
+	v = (guint8) (color->a * 256);
+	if (v > 0) {
+		buf[7] = hex[(v >> 4) & 0x0f];
+		buf[8] = hex[v & 0x0f];
+	} else {
+		buf[7] = '\0';
+		buf[8] = '\0';
+	}
+	
+	buf[9] = '\0';
+	
+	return buf;
+}
