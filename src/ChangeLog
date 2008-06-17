@@ -1,3 +1,10 @@
+2008-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (UIElement::OnPropertyChanged): call
+	Invalidate(GetSubtreeBounds()) and UpdateBounds() directly instead
+	of FullInvalidate.
+	(UIElement::OnSubPropertyChanged): same.
+
 2008-06-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* playlist.cpp: When Merging items only merge duration if the source

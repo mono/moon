@@ -144,9 +144,10 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		UpdateTotalHitTestVisibility();
 	}
 	else if (args->property == UIElement::ClipProperty) {
-		// Since clip modifies bounds and subtreebounds
-		// we need to invalidate everything
-		FullInvalidate (false);
+		Invalidate(GetSubtreeBounds());
+		// force invalidation even if the bounding rectangle
+		// changes (since the clip can be concave)
+		UpdateBounds (true);
 	}
 	else if (args->property == UIElement::OpacityMaskProperty) {
 		opacityMask = args->new_value ? args->new_value->AsBrush() : NULL;
@@ -282,8 +283,10 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		UpdateTransform ();
 	}
 	else if (prop == UIElement::ClipProperty) {
-		UpdateTotalRenderVisibility ();
-		FullInvalidate (true);
+		Invalidate(GetSubtreeBounds());
+		// force invalidation even if the bounding rectangle
+		// changes (since the clip can be concave)
+		UpdateBounds (true);
 	}
 	else if (prop == UIElement::OpacityMaskProperty) {
 	        Invalidate ();
