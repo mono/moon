@@ -1,0 +1,68 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>InkPresenter Clipping Update test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+	sender.findName ("LowerLeft").point = "0,125";
+	sender.findName ("LowerRight").point = "100,125";
+	sender.findName ("UpperRight").point = "100,-25";
+}
+function OnMouseLeave (sender, eventArgs)
+{
+	sender.findName ("LowerLeft").point = "0,10";
+	sender.findName ("LowerRight").point = "10,10";
+	sender.findName ("UpperRight").point = "10,0";
+}
+
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="500" height="525">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Name="root" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
+
+  <InkPresenter x:Name="foo" Canvas.Top="50" Canvas.Left="50">
+    <InkPresenter.Strokes>
+      <Stroke>
+        <Stroke.DrawingAttributes>
+          <DrawingAttributes Color="#FFFF0000" Height="5" Width="5"/>
+        </Stroke.DrawingAttributes>
+	<Stroke.StylusPoints>
+	  <StylusPoint X="100" Y="-25" />
+	  <StylusPoint X="225" Y="85" />
+	  <StylusPoint X="100" Y="200" />
+	  <StylusPoint X="-25" Y="85" />
+	  <StylusPoint X="100" Y="-25" />
+	</Stroke.StylusPoints>
+      </Stroke>
+    </InkPresenter.Strokes>
+    <InkPresenter.Clip>
+      <PathGeometry>
+        <PathFigure>
+          <LineSegment Point="0,0"/>
+          <LineSegment x:Name="LowerLeft" Point="0,10"/>
+          <LineSegment x:Name="LowerRight" Point="10,10"/>
+          <LineSegment x:Name="UpperRight" Point="10,0"/>
+          <LineSegment Point="0,0"/>
+        </PathFigure>
+      </PathGeometry>
+    </InkPresenter.Clip>
+    <Image Width="100" Height="125" Source="moonlight_logo.png"/>
+  </InkPresenter>
+
+</Canvas>
+</script>
+
+</body>
+</html>
