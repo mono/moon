@@ -149,6 +149,7 @@ public:
 	virtual void PopulateMediaAttributes ();
 	
 	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return this; }
+	virtual bool IsSingleFile ();
 };
 
 class Playlist : public PlaylistEntry {
@@ -189,7 +190,7 @@ public:
 	bool ReplaceCurrentEntry (Playlist *entry);
 
 	virtual bool IsPlaylist () { return true; }
-	bool IsSingleFile () { return is_single_file; }
+	virtual bool IsSingleFile () { return is_single_file; }
 	bool GetAutoPlayed () { return autoplayed; }
 	void SetAutoPlayed (bool value) { autoplayed = value; }
 	bool IsCurrentEntryLastEntry ();

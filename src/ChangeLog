@@ -1,3 +1,9 @@
+2008-06-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* playlist.cpp, playlist.h: Only unref/null out the media in
+	  PlaylistEntry::Stop if we're a playlist and not if we're a single
+	  file.
+
 2008-06-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moon-path.c|h: Add moon_quad_curve_to and moon_arc_to so they

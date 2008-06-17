@@ -480,7 +480,7 @@ PlaylistEntry::Stop ()
 	play_when_available = false;
 	element->GetMediaPlayer ()->Stop ();
 	
-	if (media) {
+	if (media && !IsSingleFile ()) {
 		media->unref ();
 		media = NULL;
 	}
@@ -505,6 +505,12 @@ PlaylistEntry::SetMedia (Media *media)
 
 	if (play_when_available && element->GetState () != MediaElement::Buffering)
 		Play ();
+}
+
+bool
+PlaylistEntry::IsSingleFile ()
+{
+	return parent ? parent->IsSingleFile () : false;
 }
 
 /*
@@ -664,7 +670,7 @@ Playlist::Stop ()
 	
 	current_node = NULL;
 
-	if (GetParent () == NULL && !is_single_file) {
+	if (GetParent () == NULL && !IsSingleFile ()) {
 		element->Reinitialize (false);
 		Open ();
 	}
