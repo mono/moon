@@ -4,7 +4,7 @@
  * Author:
  *	Sebastien Pouliot  <sebastien@ximian.com>
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007, 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -13,6 +13,7 @@
 #ifndef __MOON_PATH_H__
 #define __MOON_PATH_H__
 
+#include <string.h>
 #include <math.h>
 #include <glib.h>
 #include <cairo.h>
@@ -36,6 +37,11 @@ typedef struct {
 #define MOON_PATH_ROUNDED_RECTANGLE_LENGTH	27
 #define MOON_PATH_CLOSE_PATH_LENGTH		1
 
+// is it true only for arcs or for everything ? if so using the same values ?
+// note: lupus noted this suggest SL uses floats, not doubles, internally (MIL?)
+#define IS_ZERO(x)	(fabs(x) < 0.000019)
+#define IS_TOO_SMALL(x)	(fabs(x) < 0.000117)
+
 /*
  * These functions are similar to cairo_* functions (with some extra ones) except that they don't require a cairo_context_t
  * in order to build a cairo_path_t.
@@ -49,6 +55,8 @@ void		moon_get_current_point (moon_path *path, double *x, double *y);
 void		moon_move_to (moon_path *path, double x, double y);
 void		moon_line_to (moon_path *path, double x, double y);
 void		moon_curve_to (moon_path *path, double x1, double y1, double x2, double y2, double x3, double y3);
+void		moon_quad_curve_to (moon_path* path, double x1, double y1, double x2, double y2);
+void		moon_arc_to (moon_path *path, double width, double height, double angle, gboolean large, gboolean sweep, double ex, double ey);
 void		moon_ellipse (moon_path *path, double x, double y, double w, double h);
 void		moon_rectangle (moon_path *path, double x, double y, double w, double h);
 void		moon_rounded_rectangle (moon_path *path, double x, double y, double w, double h, double radius_x, double radius_y);

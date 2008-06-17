@@ -1,3 +1,9 @@
+2008-06-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moon-path.c|h: Add moon_quad_curve_to and moon_arc_to so they
+	can be reused without a PathFigure-derived instance. Refactor
+	code to expand/realloc paths to reduce duplication.
+
 2008-06-16  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::OnPropertyChanged): call
