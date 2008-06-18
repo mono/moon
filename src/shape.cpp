@@ -308,30 +308,34 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 		break;
 		}
 
-		// FIXME: this is (or could be) fucking slow
-		// hereafter we're doing a second pass to refine the sw and sh we guessed
-		// the first time. This usually gives pixel-recise stretches for Paths
-		cairo_matrix_t temp;
-		cairo_matrix_init_scale (&temp, adj_x ? sw : 1.0, adj_y ? sh : 1.0);
-		Rect extents = ComputeShapeBounds (false, &temp);
-		if (extents.w != shape_bounds.w && extents.h != shape_bounds.h) {
-			sw *= adj_x ? (w - extents.w + logical_bounds.w * sw) / (logical_bounds.w * sw): 1.0;
-			sh *= adj_y ? (h - extents.h + logical_bounds.h * sh) / (logical_bounds.h * sh): 1.0;
-		}
+		// trying to avoid the *VERY*SLOW* adjustments
+		// e.g. apps like Silverlight World have a ratio up to 50 unneeded for 1 needed adjustment
+		// so it all boilds down are we gonna change bounds anyway ?
+		#define IS_SIGNIFICANT(dx,x)	(IS_ZERO(dx) && (fabs(dx) * x - x > 1.0))
+		if ((adj_x && IS_SIGNIFICANT((sw - 1), shape_bounds.w)) || (adj_y && IS_SIGNIFICANT((sh - 1), shape_bounds.h))) {
+			// FIXME: this IS still UBER slow
+			// hereafter we're doing a second pass to refine the sw and sh we guessed
+			// the first time. This usually gives pixel-recise stretches for Paths
+			cairo_matrix_t temp;
+			cairo_matrix_init_scale (&temp, adj_x ? sw : 1.0, adj_y ? sh : 1.0);
+			Rect extents = ComputeShapeBounds (false, &temp);
+			if (extents.w != shape_bounds.w && extents.h != shape_bounds.h) {
+				sw *= adj_x ? (w - extents.w + logical_bounds.w * sw) / (logical_bounds.w * sw): 1.0;
+				sh *= adj_y ? (h - extents.h + logical_bounds.h * sh) / (logical_bounds.h * sh): 1.0;
 
-		switch (stretch) {
-		case StretchUniform:
-			sw = sh = (sw < sh) ? sw : sh;
-			break;
-		case StretchUniformToFill:
-			sw = sh = (sw > sh) ? sw : sh;
-			break;
-		default:
-		        // not reached
-			break;
+				switch (stretch) {
+				case StretchUniform:
+					sw = sh = (sw < sh) ? sw : sh;
+					break;
+				case StretchUniformToFill:
+					sw = sh = (sw > sh) ? sw : sh;
+					break;
+				default:
+					break;
+				}
+			}
+			// end of the 2nd pass code
 		}
-
-		// end of the 2nd pass code
 
 		double x = vh || adj_x ? shape_bounds.x : 0;
 		double y = vw || adj_y ? shape_bounds.y : 0;

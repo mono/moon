@@ -1,3 +1,10 @@
+2008-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: When possible (i.e. if we won't change the bounds
+	anyway)	avoid the second pass inside Shape::ComputeStretchBounds.
+	This reduce (but does not eliminate) a BIG bottleneck for SL
+	applications with many path using stretch (e.g. SL world).
+
 2008-06-18  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: The state when Seeking should not be changed to Stopped.
