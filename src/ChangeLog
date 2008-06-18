@@ -1,3 +1,18 @@
+2008-06-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (Surface::ShowFullScreenMessage): Simplified to use
+	SetLeft().
+
+	* control.cpp (Control::GetTransformFor): Simplified.
+
+	* uielement.cpp (UIElement::SetLeft): Added for setting
+	Canvas.Left property.
+	(UIElement::GetLeft): Same.
+	(UIElement::SetTop): Same.
+	(UIElement::GetTop): Same.
+
+	* canvas.cpp (Canvas::GetTransformFor): Simplified.
+
 2008-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: When possible (i.e. if we won't change the bounds

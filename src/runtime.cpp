@@ -856,13 +856,13 @@ Surface::ShowFullScreenMessage ()
 	// Center the url block
 	if (url_block != NULL) {
 		double url_width = url_block->GetActualWidth ();
-		url_block->SetValue (Canvas::LeftProperty, (box_width - url_width) / 2);
+		url_block->SetLeft ((box_width - url_width) / 2);
 	}
 
 	// Center the message block
 	if (message_block != NULL) {
 		double message_width = message_block->GetActualWidth ();
-		message_block->SetValue (Canvas::LeftProperty, (box_width - message_width) / 2);
+		message_block->SetLeft ((box_width - message_width) / 2);
 	}	
 
 	// Put the box in the middle of the screen

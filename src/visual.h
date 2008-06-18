@@ -21,6 +21,8 @@
 class TimeManager;
 
 class Visual : public DependencyObject {
+	UIElement *visual_parent;
+	
  protected:
 	virtual ~Visual () {}
 
@@ -36,11 +38,8 @@ class Visual : public DependencyObject {
 	
 	virtual TimeManager *GetTimeManager ();
 	
-	void SetVisualParent (UIElement* visual_parent) { this->visual_parent = visual_parent; }
-	UIElement* GetVisualParent () { return visual_parent; }
-
-private:
-	UIElement *visual_parent;
+	void SetVisualParent (UIElement *visual_parent) { this->visual_parent = visual_parent; }
+	UIElement *GetVisualParent () { return visual_parent; }
 };
 
 class VisualCollection : public Collection {

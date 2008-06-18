@@ -369,7 +369,15 @@ class UIElement : public Visual {
 	static DependencyProperty *VisibilityProperty;
 	static DependencyProperty *ZIndexProperty;
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
+	void SetLeft (double left);
+	double GetLeft ();
+	
+	void SetTop (double top);
+	double GetTop ();
+	
 	void SetOpacityMask (Brush *mask);
 	Brush *GetOpacityMask ();
 	

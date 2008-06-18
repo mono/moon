@@ -13,6 +13,7 @@
 
 #include "uielement.h"
 #include "collection.h"
+#include "canvas.h"
 #include "brush.h"
 #include "transform.h"
 #include "runtime.h"
@@ -712,6 +713,34 @@ UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	g_warning ("UIElement:GetSizeForBrush has been called. The derived class %s should have overridden it.",
 		   GetTypeName ());
 	*height = *width = 0.0;
+}
+
+void
+UIElement::SetLeft (double left)
+{
+	SetValue (Canvas::LeftProperty, Value (left));
+}
+
+double
+UIElement::GetLeft ()
+{
+	Value *value = GetValue (Canvas::LeftProperty);
+	
+	return value ? value->AsDouble () : 0.0;
+}
+
+void
+UIElement::SetTop (double top)
+{
+	SetValue (Canvas::TopProperty, Value (top));
+}
+
+double
+UIElement::GetTop ()
+{
+	Value *value = GetValue (Canvas::TopProperty);
+	
+	return value ? value->AsDouble () : 0.0;
 }
 
 void

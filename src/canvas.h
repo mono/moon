@@ -27,6 +27,9 @@ class Canvas : public Panel {
 	virtual ~Canvas () {}
 	
  public:
+	static DependencyProperty *LeftProperty;
+	static DependencyProperty *TopProperty;
+	
 	Canvas ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
@@ -38,9 +41,6 @@ class Canvas : public Panel {
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	
-	static DependencyProperty *TopProperty;
-	static DependencyProperty *LeftProperty;
 };
 
 G_BEGIN_DECLS

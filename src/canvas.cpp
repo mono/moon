@@ -18,6 +18,10 @@
 #include "namescope.h"
 #include "collection.h"
 
+
+DependencyProperty *Canvas::TopProperty;
+DependencyProperty *Canvas::LeftProperty;
+
 Canvas::Canvas ()
 {
 	NameScope *ns = new NameScope ();
@@ -29,13 +33,9 @@ Canvas::Canvas ()
 void
 Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	// Compute left/top if its attached to the item
-	Value *val_top = item->GetValue (Canvas::TopProperty);
-	double top = val_top == NULL ? 0.0 : val_top->AsDouble();
-
-	Value *val_left = item->GetValue (Canvas::LeftProperty);
-	double left = val_left == NULL ? 0.0 : val_left->AsDouble();
-		
+	double left = item->GetLeft ();
+	double top = item->GetTop ();
+	
 	cairo_matrix_init_translate (result, left, top);
 }
 
@@ -102,9 +102,6 @@ canvas_new (void)
 {
 	return new Canvas ();
 }
-
-DependencyProperty* Canvas::TopProperty;
-DependencyProperty* Canvas::LeftProperty;
 
 void 
 canvas_init (void)
