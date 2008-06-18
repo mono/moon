@@ -1689,9 +1689,6 @@ MediaElement::SeekNow ()
 			position = UpdatePlayerPosition (seek_to_position);
 			seek_to_position = -1;
 			
-			if (state == Stopped)
-				SetState (Paused);
-			
 			if (position != seek_to_position) {
 				flags |= UpdatingPosition;
 				SetPosition (TimeSpan_FromPts (position));

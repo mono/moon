@@ -1,3 +1,8 @@
+2008-06-18  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp: The state when Seeking should not be changed to Stopped.
+	Fixes another test.
+
 2008-06-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	Partial fix for bug #400657.
