@@ -1,3 +1,9 @@
+2008-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp: Use the new moon-path functions for ArcSegment
+	and QuadraticBezierSegment
+	* moon-path.c: Change some validation to use g_return_if_fail
+
 2008-06-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (Surface::ShowFullScreenMessage): Simplified to use
