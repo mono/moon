@@ -1,3 +1,8 @@
+2008-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-progressive-mms-seek.html: Added, not complete test about
+	  progressive mms seeking (backwards).
+
 2008-06-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml, test-nested-playlist.A.asx, test-nested-playlist.B.asx,

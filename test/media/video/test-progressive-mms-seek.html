@@ -1,0 +1,106 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+				<MediaElement 
+					MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" 
+					DownloadProgressChanged="OnDownloadProgressChanged" BufferingProgressChanged="OnBufferingProgressChanged"
+					x:Name="media"
+				/>
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		var mediaElement = null;
+
+		function timeOut ()
+		{
+			TestLogger.LogError ("Nothing happened, didn't get neither MediaOpened nor MediaFailed events.");
+			//TestLogger.LogResult (-1);
+			//SignalShutdown ();
+		}
+
+		function SeekTest ()
+		{
+			TestLogger.LogDebug ("SeekTest");
+			
+			if (mediaElement.CurrentState != "Playing") {
+				TestLogger.LogDebug ("Postponing seek test, we're not Playing, we're " + mediaElement.CurrentState);
+				setTimeout ("SeekTest ();", 2500);
+			} else {
+				TestLogger.LogDebug ("Seeking to 00:00:01.000");
+				mediaElement.Position = "00:00:01.000";
+			}
+		}
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnDownloadProgressChanged: " + sender.DownloadProgress);
+		}
+
+		function OnBufferingProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnBufferingProgressChanged: " + sender.BufferingProgress);
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
+//			TestLogger.LogResult (1);
+//			SignalShutdown ();
+			setTimeout ("SeekTest ();", 2500);
+			// TODO:
+			//  Change the media 
+			//  Wait a bit here, take a screenshot at a specified position
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			mediaElement = sender.findName ("media");
+			mediaElement.Source = "mms://MOONLIGHTMEDIA/mediamatrix/cthd_320x240x24fps_WMV3_1250000bps_3125000bps_10i_5000ms_75q_3complexity_complex_mode4.wmv";
+			setTimeout ("timeOut ();", 60000);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+
