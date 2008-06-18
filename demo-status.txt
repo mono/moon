@@ -90,7 +90,7 @@ rating:1
  * 3D picture grid - black canvas appears Bug 375217
 
 site:LCD Clock
-url:http://www.designwithsilverlight.com/tutorials/LCDClock/default.html
+url:http://www.designwithsilverlight.com/tutorials/LCDClock/Default.html
 rating:3
  * Hours, seconds are out of place Bug 394947
  * Outer frame is still showing - windowless
