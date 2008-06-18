@@ -37,6 +37,7 @@ class PluginDownloader {
 	BrowserResponse *response;
 	BrowserRequest *request;
 	uint64_t offset;
+	bool finished;
 	
  protected:
 	char *uri;

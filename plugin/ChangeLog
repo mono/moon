@@ -1,3 +1,9 @@
+2008-06-17  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-downloader.cpp, plugin-downloader.h:  Ensure that we dont
+	attempt to abort a finished stream, as it may have dissappeared from
+	Firefox already.
+
 2008-06-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (_set_dependency_property_value): Don't
