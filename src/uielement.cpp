@@ -57,8 +57,8 @@ UIElement::UIElement ()
 #endif
 	
 	// XXX bad bad bad.  no virtual method calls in ctors
-	this->SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
-	this->SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
+	SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
+	SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 
 	ComputeLocalTransform ();
 	ComputeTotalRenderVisibility ();
