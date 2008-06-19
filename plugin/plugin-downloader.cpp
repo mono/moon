@@ -157,10 +157,17 @@ PluginDownloader::Abort ()
 	if (finished)
 		return;
 
-	if (this->request)
+	if (this->request) {
 		this->request->Abort ();
-	if (this->response)
+		delete request;
+		this->request = NULL;
+	}
+	if (this->response) {
 		this->response->Abort ();
+		// NOTE: Firefox will make some callbacks after aborting so
+		// we cannot delete this object here, currently we leak it :(
+		this->response = NULL;
+	}
 }
 
 void

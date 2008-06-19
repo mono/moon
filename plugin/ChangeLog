@@ -1,5 +1,11 @@
 2008-06-17  Geoff Norton  <gnorton@novell.com>
 
+	* plugin-downloader.cpp: When we are Aborted NULL our request
+	and response objects so that we dont do a double abort from our
+	dtor.  Fully fixes the Downloader::Write issue (i hope).
+
+2008-06-17  Geoff Norton  <gnorton@novell.com>
+
 	* plugin-downloader.cpp:  Set the finished state regardless of 
 	wether we have a downloader or not.
 
