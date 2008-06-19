@@ -188,6 +188,26 @@ struct Rect {
 	{
 		cairo_rectangle (cr, x, y, w, h);
 	}
+
+	Point GetTopLeft ()
+	{
+		return Point (x, y);
+	}
+
+	Point GetTopRight ()
+	{
+		return Point (x + w, y);
+	}
+
+	Point GetBottomLeft ()
+	{
+		return Point (x, y + h);
+	}
+
+	Point GetBottomRight ()
+	{
+		return Point (x + w, y + h);
+	}
 };
 
 G_BEGIN_DECLS

@@ -30,3 +30,13 @@ point_from_str (const char *s, Point *p)
 	return true;
 }
 
+Point
+Point::Transform (cairo_matrix_t *matrix)
+{
+	double nx = x;
+	double ny = y;
+
+	cairo_matrix_transform_point (matrix, &nx, &ny);
+
+	return Point (nx, ny);
+}

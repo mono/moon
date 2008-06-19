@@ -11,6 +11,7 @@
 #define __MOON_POINT_H__
 
 #include <glib.h>
+#include <cairo.h>
 
 struct Point {
 public:
@@ -46,6 +47,8 @@ public:
 	{
 		return Point (x * v, y * v);
 	}
+
+	Point Transform (cairo_matrix_t *matrix);
 };
 
 G_BEGIN_DECLS

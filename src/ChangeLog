@@ -1,3 +1,9 @@
+2008-06-19  Chris Toshok  <toshok@ximian.com>
+
+	* rect.h: add Get{Top,Bottom}{Left,Right} methods.
+
+	* point.h, point.cpp: add Transform method.
+
 2008-06-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: In a *AnimationUsingKeyFrames if we don't have any
