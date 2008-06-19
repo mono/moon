@@ -1,5 +1,10 @@
 2008-06-17  Geoff Norton  <gnorton@novell.com>
 
+	* plugin-downloader.cpp:  Set the finished state regardless of 
+	wether we have a downloader or not.
+
+2008-06-17  Geoff Norton  <gnorton@novell.com>
+
 	* plugin-downloader.cpp:  If we destroy ourselves, ensure that we
 	abort our request/response so that firefox doesn't call back
 	into a destroyed object.

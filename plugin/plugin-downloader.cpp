@@ -207,11 +207,12 @@ PluginDownloader::Read (char *buffer, uint32_t length)
 void
 PluginDownloader::Finished (gpointer data)
 {
+	finished = true;
+
 	if (dl != NULL) {
 		dl->NotifySize (this->offset);
 		dl->NotifyFinished ((const char *)data);
 
-		finished = true;
 	}
 }
 	
