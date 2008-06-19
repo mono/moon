@@ -1,3 +1,7 @@
+2008-06-19  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/timer-test.html: A test for using StoryBoard as timer.
+
 2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test.mdp: Updated.
