@@ -1081,7 +1081,7 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 		}
 		
 		scale *= (size / FONT_FACE_SIZE);
-	} else {
+	} else if (this->size != size) {
 		FT_Set_Pixel_Sizes (face, 0, (int) size);
 		this->size = size;
 	}
@@ -1205,8 +1205,11 @@ FontFace::LoadGlyph (double size, GlyphInfo *glyph)
 		
 		scale = size / FONT_FACE_SIZE;
 	} else {
-		FT_Set_Pixel_Sizes (face, 0, (int) size);
-		this->size = size;
+		if (this->size != size) {
+			FT_Set_Pixel_Sizes (face, 0, (int) size);
+			this->size = size;
+		}
+		
 		scale = 1.0;
 	}
 	
@@ -1247,9 +1250,25 @@ FontFace::Kerning (double size, gunichar left, gunichar right)
 	if (!face || !FT_HAS_KERNING (face) || left == 0 || right == 0)
 		return 0.0;
 	
-	FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
-	
-	return (kerning.x * size) / (FONT_FACE_SIZE * 64.0);
+	if (size <= FONT_FACE_SIZE) {
+		if (this->size != FONT_FACE_SIZE) {
+			FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
+			this->size = FONT_FACE_SIZE;
+		}
+		
+		FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
+		
+		return (kerning.x * size) / (FONT_FACE_SIZE * 64.0);
+	} else {
+		if (this->size != size) {
+			FT_Set_Pixel_Sizes (face, 0, (int) size);
+			this->size = size;
+		}
+		
+		FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
+		
+		return kerning.x / 64.0;
+	}
 }
 
 gunichar

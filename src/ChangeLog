@@ -1,3 +1,11 @@
+2008-06-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (FontFace::GetExtents): Only set face pixel size if the
+	requested size is not what we already have set.
+	(FontFace::LoadGlyph): Same.
+	(FontFace::Kerning): Need to set pixel sizes here or our kerning
+	could be off.
+
 2008-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* canvas.cpp (Canvas::OnSubPropertyChanged): call
