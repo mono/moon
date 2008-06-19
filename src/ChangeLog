@@ -1,3 +1,7 @@
+2008-06-19  Jackson Harper  <jackson@ximian.com>
+
+	* animation.h: Make sure the content property is set.
+
 2008-06-19  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (UIElement::PreRender): work around what appears

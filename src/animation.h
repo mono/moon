@@ -579,8 +579,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual bool Validate ();
 };
 
-
-/* ContentProperty="KeyFrames" */
+/* @ContentProperty="KeyFrames" */
 class ColorAnimationUsingKeyFrames : public ColorAnimation {
  protected:
 	virtual ~ColorAnimationUsingKeyFrames ();
