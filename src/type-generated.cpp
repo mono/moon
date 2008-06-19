@@ -109,7 +109,7 @@ Type type_infos [] = {
 	{ Type::COLLECTION, Type::DEPENDENCY_OBJECT, false, "Collection", "COLLECTION", 0, 1, NULL, (create_inst_func *) collection_new, NULL }, 
 	{ Type::COLOR, Type::INVALID, false, "Color", "COLOR", 0, 0, NULL, NULL, NULL }, 
 	{ Type::COLORANIMATION, Type::ANIMATION, false, "ColorAnimation", "COLORANIMATION", 0, 1, NULL, (create_inst_func *) color_animation_new, NULL }, 
-	{ Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION, false, "ColorAnimationUsingKeyFrames", "COLORANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) color_animation_using_key_frames_new, NULL }, 
+	{ Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION, false, "ColorAnimationUsingKeyFrames", "COLORANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) color_animation_using_key_frames_new, "KeyFrames" }, 
 	{ Type::COLORKEYFRAME, Type::KEYFRAME, false, "ColorKeyFrame", "COLORKEYFRAME", 0, 1, NULL, (create_inst_func *) color_key_frame_new, NULL }, 
 	{ Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ColorKeyFrameCollection", "COLORKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) color_key_frame_collection_new, NULL }, 
 #if SL_2_0
