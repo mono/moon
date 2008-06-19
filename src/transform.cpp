@@ -58,9 +58,9 @@ transform_new (void)
 
 
 
-DependencyProperty* RotateTransform::CenterXProperty;
-DependencyProperty* RotateTransform::CenterYProperty;
-DependencyProperty* RotateTransform::AngleProperty;
+DependencyProperty *RotateTransform::CenterXProperty;
+DependencyProperty *RotateTransform::CenterYProperty;
+DependencyProperty *RotateTransform::AngleProperty;
 
 void
 RotateTransform::UpdateTransform ()
@@ -85,6 +85,42 @@ RotateTransform::UpdateTransform ()
 	//printf ("Returning2 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
+void
+RotateTransform::SetAngle (double angle)
+{
+	SetValue (RotateTransform::AngleProperty, Value (angle));
+}
+
+double
+RotateTransform::GetAngle ()
+{
+	return GetValue (RotateTransform::AngleProperty)->AsDouble ();
+}
+
+void
+RotateTransform::SetCenterX (double centerX)
+{
+	SetValue (RotateTransform::CenterXProperty, Value (centerX));
+}
+
+double
+RotateTransform::GetCenterX ()
+{
+	return GetValue (RotateTransform::CenterXProperty)->AsDouble ();
+}
+
+void
+RotateTransform::SetCenterY (double centerY)
+{
+	SetValue (RotateTransform::CenterYProperty, Value (centerY));
+}
+
+double
+RotateTransform::GetCenterY ()
+{
+	return GetValue (RotateTransform::CenterYProperty)->AsDouble ();
+}
+
 RotateTransform *
 rotate_transform_new (void)
 {
@@ -92,46 +128,44 @@ rotate_transform_new (void)
 }
 
 void
-rotate_transform_set_angle (RotateTransform *t, double angle)
+rotate_transform_set_angle (RotateTransform *transform, double angle)
 {
-	t->SetValue (RotateTransform::AngleProperty, Value(angle));
+	transform->SetAngle (angle);
 }
 
 double
-rotate_transform_get_angle (RotateTransform *t)
+rotate_transform_get_angle (RotateTransform *transform)
 {
-	return t->GetValue (RotateTransform::AngleProperty)->AsDouble();
+	return transform->GetAngle ();
 }
 
 void
-rotate_transform_set_center_x (RotateTransform *t, double centerX)
+rotate_transform_set_center_x (RotateTransform *transform, double centerX)
 {
-	t->SetValue (RotateTransform::CenterXProperty, Value(centerX));
+	transform->SetCenterX (centerX);
 }
 
 double
-rotate_transform_get_center_x (RotateTransform *t)
+rotate_transform_get_center_x (RotateTransform *transform)
 {
-	return t->GetValue (RotateTransform::CenterXProperty)->AsDouble();
+	return transform->GetCenterX ();
 }
 
 void
-rotate_transform_set_center_y (RotateTransform *t, double centerY)
+rotate_transform_set_center_y (RotateTransform *transform, double centerY)
 {
-	t->SetValue (RotateTransform::CenterYProperty, Value(centerY));
+	transform->SetCenterY (centerY);
 }
 
 double
-rotate_transform_get_center_y (RotateTransform *t)
+rotate_transform_get_center_y (RotateTransform *transform)
 {
-	return t->GetValue (RotateTransform::CenterYProperty)->AsDouble();
+	return transform->GetCenterY ();
 }
 
 
-
-
-DependencyProperty* TranslateTransform::XProperty;
-DependencyProperty* TranslateTransform::YProperty;
+DependencyProperty *TranslateTransform::XProperty;
+DependencyProperty *TranslateTransform::YProperty;
 
 void
 TranslateTransform::UpdateTransform ()
@@ -144,6 +178,30 @@ TranslateTransform::UpdateTransform ()
 	//printf ("TranslateTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
+void
+TranslateTransform::SetX (double x)
+{
+	SetValue (TranslateTransform::XProperty, Value (x));
+}
+
+double
+TranslateTransform::GetX ()
+{
+	return GetValue (TranslateTransform::XProperty)->AsDouble ();
+}
+
+void
+TranslateTransform::SetY (double y)
+{
+	SetValue (TranslateTransform::YProperty, Value (y));
+}
+
+double
+TranslateTransform::GetY ()
+{
+	return GetValue (TranslateTransform::YProperty)->AsDouble ();
+}
+
 TranslateTransform *
 translate_transform_new (void)
 {
@@ -151,27 +209,27 @@ translate_transform_new (void)
 }
 
 void
-translate_transform_set_x (TranslateTransform *t, double x)
+translate_transform_set_x (TranslateTransform *transform, double x)
 {
-	t->SetValue (TranslateTransform::XProperty, Value(x));
+	transform->SetX (x);
 }
 
 double
-translate_transform_get_x (TranslateTransform *t)
+translate_transform_get_x (TranslateTransform *transform)
 {
-	return t->GetValue (TranslateTransform::XProperty)->AsDouble();
+	return transform->GetX ();
 }
 
 void
-translate_transform_set_y (TranslateTransform *t, double y)
+translate_transform_set_y (TranslateTransform *transform, double y)
 {
-	t->SetValue (TranslateTransform::YProperty, Value(y));
+	transform->SetY (y);
 }
 
 double
-translate_transform_get_y (TranslateTransform *t)
+translate_transform_get_y (TranslateTransform *transform)
 {
-	return t->GetValue (TranslateTransform::YProperty)->AsDouble();
+	return transform->GetY ();
 }
 
 

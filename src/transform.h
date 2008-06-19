@@ -22,6 +22,9 @@ G_BEGIN_DECLS
 
 class Transform : public DependencyObject {
  protected:
+	cairo_matrix_t _matrix;
+	bool need_update;
+	
 	virtual ~Transform () {}
 
  public:
@@ -37,67 +40,85 @@ class Transform : public DependencyObject {
 	};
 
 	virtual void UpdateTransform ();
- protected:
-	cairo_matrix_t _matrix;
-	bool need_update;
 };
 
 Transform *transform_new (void);
-void   transform_get_transform (Transform *t, cairo_matrix_t *value);
+void   transform_get_transform (Transform *transform, cairo_matrix_t *value);
+
 
 class RotateTransform : public Transform {
  protected:
 	virtual ~RotateTransform () {}
-
+	
  public:
-
+	static DependencyProperty *AngleProperty;
+	static DependencyProperty *CenterXProperty;
+	static DependencyProperty *CenterYProperty;
+	
 	RotateTransform () { }
 	virtual Type::Kind GetObjectType () { return Type::ROTATETRANSFORM; };
 	virtual void UpdateTransform ();
-
-	static DependencyProperty* AngleProperty;
-	static DependencyProperty* CenterXProperty;
-	static DependencyProperty* CenterYProperty;
+	
+	//
+	// Property Accessors
+	//
+	void SetAngle (double angle);
+	double GetAngle ();
+	
+	void SetCenterX (double centerX);
+	double GetCenterX ();
+	
+	void SetCenterY (double centerY);
+	double GetCenterY ();
 };
 
 RotateTransform *rotate_transform_new (void);
 
-void   rotate_transform_set_angle (RotateTransform *t, double angle);
-double rotate_transform_get_angle (RotateTransform *t);
+void   rotate_transform_set_angle (RotateTransform *transform, double angle);
+double rotate_transform_get_angle (RotateTransform *transform);
 
-void   rotate_transform_set_center_x (RotateTransform *t, double centerX);
-double rotate_transform_get_center_x (RotateTransform *t);
+void   rotate_transform_set_center_x (RotateTransform *transform, double centerX);
+double rotate_transform_get_center_x (RotateTransform *transform);
 
-void   rotate_transform_set_center_y (RotateTransform *t, double centerY);
-double rotate_transform_get_center_y (RotateTransform *t);
+void   rotate_transform_set_center_y (RotateTransform *transform, double centerY);
+double rotate_transform_get_center_y (RotateTransform *transform);
+
 
 class TranslateTransform : public Transform {
  protected:
 	virtual ~TranslateTransform () {}
-
+	
  public:
-
+	static DependencyProperty *XProperty;
+	static DependencyProperty *YProperty;
+	
 	TranslateTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::TRANSLATETRANSFORM; };
 	virtual void UpdateTransform ();
-
-	static DependencyProperty* XProperty;
-	static DependencyProperty* YProperty;
+	
+	//
+	// Property Accessors
+	//
+	void SetX (double x);
+	double GetX ();
+	
+	void SetY (double y);
+	double GetY ();
 };
 
 TranslateTransform *translate_transform_new (void);
-void   translate_transform_set_x (TranslateTransform *t, double x);
-double translate_transform_get_x (TranslateTransform *t);
+void   translate_transform_set_x (TranslateTransform *transform, double x);
+double translate_transform_get_x (TranslateTransform *transform);
 
-void   translate_transform_set_y (TranslateTransform *t, double y);
-double translate_transform_get_y (TranslateTransform *t);
+void   translate_transform_set_y (TranslateTransform *transform, double y);
+double translate_transform_get_y (TranslateTransform *transform);
 
 
 class ScaleTransform : public Transform {
  protected:
 	virtual ~ScaleTransform () {}
 
-public:
+ public:
 
 	ScaleTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; };
@@ -110,17 +131,17 @@ public:
 };
 
 ScaleTransform *scale_transform_new (void);
-void   scale_transform_set_scale_x (ScaleTransform *t, double scaleX);
-double scale_transform_get_scale_x (ScaleTransform *t);
+void   scale_transform_set_scale_x (ScaleTransform *transform, double scaleX);
+double scale_transform_get_scale_x (ScaleTransform *transform);
 
-void   scale_transform_set_scale_y (ScaleTransform *t, double scaleY);
-double scale_transform_get_scale_y (ScaleTransform *t);
+void   scale_transform_set_scale_y (ScaleTransform *transform, double scaleY);
+double scale_transform_get_scale_y (ScaleTransform *transform);
 
-void   scale_transform_set_center_x (ScaleTransform *t, double centerX);
-double scale_transform_get_center_x (ScaleTransform *t);
+void   scale_transform_set_center_x (ScaleTransform *transform, double centerX);
+double scale_transform_get_center_x (ScaleTransform *transform);
 
-void   scale_transform_set_center_y (ScaleTransform *t, double centerY);
-double scale_transform_get_center_y (ScaleTransform *t);
+void   scale_transform_set_center_y (ScaleTransform *transform, double centerY);
+double scale_transform_get_center_y (ScaleTransform *transform);
 
 
 class SkewTransform : public Transform {
@@ -140,17 +161,17 @@ public:
 };
 
 SkewTransform *skew_transform_new (void);
-void   skew_transform_set_angle_x (SkewTransform *t, double angleX);
-double skew_transform_get_angle_x (SkewTransform *t);
+void   skew_transform_set_angle_x (SkewTransform *transform, double angleX);
+double skew_transform_get_angle_x (SkewTransform *transform);
 
-void   skew_transform_set_angle_y (SkewTransform *t, double angleY);
-double skew_transform_get_angle_y (SkewTransform *t);
+void   skew_transform_set_angle_y (SkewTransform *transform, double angleY);
+double skew_transform_get_angle_y (SkewTransform *transform);
 
-void   skew_transform_set_center_x (SkewTransform *t, double centerX);
-double skew_transform_get_center_x (SkewTransform *t);
+void   skew_transform_set_center_x (SkewTransform *transform, double centerX);
+double skew_transform_get_center_x (SkewTransform *transform);
 
-void   skew_transform_set_center_y (SkewTransform *t, double centerY);
-double skew_transform_get_center_y (SkewTransform *t);
+void   skew_transform_set_center_y (SkewTransform *transform, double centerY);
+double skew_transform_get_center_y (SkewTransform *transform);
 
 class Matrix : public DependencyObject {
 private:
@@ -207,8 +228,8 @@ class MatrixTransform : public Transform {
 };
 
 MatrixTransform *matrix_transform_new (void);
-void	matrix_transform_set_matrix (MatrixTransform *t, Matrix* matrix);
-Matrix*	matrix_transform_get_matrix (MatrixTransform *t);
+void	matrix_transform_set_matrix (MatrixTransform *transform, Matrix* matrix);
+Matrix*	matrix_transform_get_matrix (MatrixTransform *transform);
 
 
 class TransformCollection : public Collection {

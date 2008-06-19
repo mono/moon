@@ -1,5 +1,7 @@
 2008-06-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* transform.cpp: Started adding property accessor methods.
+
 	* canvas.cpp (Canvas::[G,S]etLeft): Implemented.
 	(Canvas::[G,S]etTop): Same.
 
