@@ -175,7 +175,7 @@ SystemTimeSource::Start ()
 	if (frequency == -1)
 		g_warning ("SystemTimeSource::frequency uninitialized in ::Start()");
 	
-	timeout_id = g_timeout_add_full (G_PRIORITY_HIGH, frequency, SystemTimeSource::tick_timeout, this, NULL);
+	timeout_id = g_timeout_add_full (G_PRIORITY_DEFAULT, frequency, SystemTimeSource::tick_timeout, this, NULL);
 }
 
 void

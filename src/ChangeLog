@@ -1,3 +1,13 @@
+2008-06-19  Larry Ewing  <lewing@novell.com>
+
+	* clock.cpp (SystemTimeSource::Start): make the timer priority
+	DEFAULT again since otherwise we can get into starvation
+	situations.
+
+	* uielement.cpp (UIElement::PreRender): don't save/restore around
+	the clip changes, they restrict the group bounds and speed up
+	opacity related masking substantially.  (See bubblemark).
+
 2008-06-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (FontFace::GetExtents): Only set face pixel size if the
