@@ -136,6 +136,8 @@ class PluginInstance
 	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
 	void *LoadUrl (char *url, int32_t *length);
 
+	NPObject* GetHost();
+
 	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
 	void      RemoveWrappedObject (EventObject *obj);
 	NPObject *LookupWrappedObject (EventObject *obj);
@@ -161,32 +163,32 @@ class PluginInstance
 	GdkDisplay *display;
 
 	// Property getters and setters
-	char *getInitParams () { return this->initParams; }
-	char *getSource () { return this->source; }
-	char *getSourceLocation () { return this->source_location; }
-	char *getId () { return this->id; }
+	char *GetInitParams () { return this->initParams; }
+	char *GetSource () { return this->source; }
+	char *GetSourceLocation () { return this->source_location; }
+	char *GetId () { return this->id; }
 
-	void setSource (const char *value);
+	void SetSource (const char *value);
 
-	char *getBackground ();
-	bool setBackground (const char *value);
-	bool getEnableFramerateCounter ();
-	bool getEnableRedrawRegions ();
-	void setEnableRedrawRegions (bool value);
-	bool getEnableHtmlAccess ();
-	bool getWindowless ();
-	void setMaxFrameRate (int value);
-	int  getMaxFrameRate ();
+	char *GetBackground ();
+	bool SetBackground (const char *value);
+	bool GetEnableFramerateCounter ();
+	bool GetEnableRedrawRegions ();
+	void SetEnableRedrawRegions (bool value);
+	bool GetEnableHtmlAccess ();
+	bool GetWindowless ();
+	void SetMaxFrameRate (int value);
+	int  GetMaxFrameRate ();
 
 	BrowserBridge *GetBridge () { return bridge; }
 
-	MoonlightScriptControlObject *getRootObject ();
-	NPP getInstance ();
+	MoonlightScriptControlObject *GetRootObject ();
+	NPP GetInstance ();
 
-	int32_t getActualHeight ();
-	int32_t getActualWidth ();
+	int32_t GetActualHeight ();
+	int32_t GetActualWidth ();
 
-	void getBrowserInformation (char **name, char **version,
+	void GetBrowserInformation (char **name, char **version,
 				    char **platform, char **userAgent,
 				    bool *cookieEnabled);
 	bool IsSilverlight2 () { return silverlight2; } 

@@ -264,9 +264,9 @@ PluginInstance::Properties ()
 	
 	row = 0;
 	table_add (table, source, 1, row++);
-	snprintf (buffer, sizeof (buffer), "%dpx", getActualWidth ());
+	snprintf (buffer, sizeof (buffer), "%dpx", GetActualWidth ());
 	table_add (table, buffer, 1, row++);
-	snprintf (buffer, sizeof (buffer), "%dpx", getActualHeight ());
+	snprintf (buffer, sizeof (buffer), "%dpx", GetActualHeight ());
 	table_add (table, buffer, 1, row++);
 	table_add (table, background, 1, row++);
 	table_add (table, xaml_loader == NULL ? "(Unknown)" : (xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)"), 1, row++);
@@ -604,7 +604,7 @@ PluginInstance::GetValue (NPPVariable variable, void *result)
 		*((NPBool *)result) = !windowless;
 		break;
 	case NPPVpluginScriptableNPObject:
-		*((NPObject**) result) = getRootObject ();
+		*((NPObject**) result) = GetRootObject ();
 		break;
 	default:
 		err = NPERR_INVALID_PARAM;
@@ -646,6 +646,16 @@ PluginInstance::SetWindow (NPWindow *window)
 	CreateWindow ();
 	
 	return NPERR_NO_ERROR;
+}
+
+NPObject*
+PluginInstance::GetHost()
+{
+	NPObject *object = NULL;
+	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
+		d(printf ("Failed to get plugin host object\n"));
+	}
+	return object;
 }
 
 void
@@ -753,7 +763,7 @@ PluginInstance::CreateWindow ()
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onError");
-		NPN_SetProperty (instance, getRootObject (), 
+		NPN_SetProperty (instance, GetRootObject (), 
 				 identifier, &npvalue);
 	}
 
@@ -763,7 +773,7 @@ PluginInstance::CreateWindow ()
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onResize");
-		NPN_SetProperty (instance, getRootObject ()->content,
+		NPN_SetProperty (instance, GetRootObject ()->content,
 				 identifier, &npvalue);
 	}
 
@@ -773,7 +783,7 @@ PluginInstance::CreateWindow ()
 
 		STRINGZ_TO_NPVARIANT (retval, npvalue);
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onLoad");
-		NPN_SetProperty (instance, getRootObject (), 
+		NPN_SetProperty (instance, GetRootObject (), 
 				 identifier, &npvalue);
 	}
 
@@ -1014,7 +1024,7 @@ string_to_js (char *s)
 void
 PluginInstance::ReportException (char *msg, char *details, char **stack_trace, int num_frames)
 {
-	NPObject *object = NULL;
+	NPObject *object;
 	NPVariant result;
 	char *script, *row_js, *msg_escaped, *details_escaped;
 	char **stack_trace_escaped;
@@ -1023,10 +1033,9 @@ PluginInstance::ReportException (char *msg, char *details, char **stack_trace, i
 	bool res;
 
 	// Get a reference to our element
-	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
-		d(printf ("Failed to get plugin element object\n"));
+	object = GetHost();
+	if (!object)
 		return;
-	}
 
 	// FIXME:
 	// - make sure the variables do not become global
@@ -1084,10 +1093,9 @@ PluginInstance::LoadUrl (char *url, int32_t *length)
 	*length = 0;
 
 	// Get a reference to our element
-	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
-		d(printf ("Failed to get plugin element object\n"));
+	object = GetHost();
+	if (!object)
 		return NULL;
-	}
 
 	//
 	// Since NPAPI doesn't contain the neccessary functionality, we use the JS XMLHttpRequest
@@ -1484,7 +1492,7 @@ PluginInstance::RemoveCleanupPointer (gpointer p)
 /*** Getters and Setters ******************************************************/
 
 void
-PluginInstance::setSource (const char *value)
+PluginInstance::SetSource (const char *value)
 {
 	if (!value)
 		return;
@@ -1501,13 +1509,13 @@ PluginInstance::setSource (const char *value)
 }
 
 char *
-PluginInstance::getBackground ()
+PluginInstance::GetBackground ()
 {
 	return background;
 }
 
 bool
-PluginInstance::setBackground (const char *value)
+PluginInstance::SetBackground (const char *value)
 {
 	g_free (background);
 	background = g_strdup (value);
@@ -1526,43 +1534,43 @@ PluginInstance::setBackground (const char *value)
 }
 
 bool
-PluginInstance::getEnableFramerateCounter ()
+PluginInstance::GetEnableFramerateCounter ()
 {
 	return false;
 }
 
 bool
-PluginInstance::getEnableRedrawRegions ()
+PluginInstance::GetEnableRedrawRegions ()
 {
 	return false;
 }
 
 void
-PluginInstance::setEnableRedrawRegions (bool value)
+PluginInstance::SetEnableRedrawRegions (bool value)
 {
 	// not implemented yet.
 }
 
 bool
-PluginInstance::getEnableHtmlAccess ()
+PluginInstance::GetEnableHtmlAccess ()
 {
 	return true;
 }
 
 bool
-PluginInstance::getWindowless ()
+PluginInstance::GetWindowless ()
 {
 	return windowless;
 }
 
 int
-PluginInstance::getMaxFrameRate ()
+PluginInstance::GetMaxFrameRate ()
 {
 	return maxFrameRate;
 }
 
 void
-PluginInstance::setMaxFrameRate (int value)
+PluginInstance::SetMaxFrameRate (int value)
 {
 	maxFrameRate = value;
 	
@@ -1570,19 +1578,19 @@ PluginInstance::setMaxFrameRate (int value)
 }
 
 int32_t
-PluginInstance::getActualHeight ()
+PluginInstance::GetActualHeight ()
 {
 	return surface->GetActualHeight ();
 }
 
 int32_t
-PluginInstance::getActualWidth ()
+PluginInstance::GetActualWidth ()
 {
 	return surface->GetActualWidth ();
 }
 
 void
-PluginInstance::getBrowserInformation (char **name, char **version,
+PluginInstance::GetBrowserInformation (char **name, char **version,
 				       char **platform, char **userAgent,
 				       bool *cookieEnabled)
 {
@@ -1598,7 +1606,7 @@ PluginInstance::getBrowserInformation (char **name, char **version,
 }
 
 MoonlightScriptControlObject *
-PluginInstance::getRootObject ()
+PluginInstance::GetRootObject ()
 {
 	if (rootobject == NULL)
 		rootobject = NPN_CreateObject (instance, MoonlightScriptControlClass);
@@ -1608,7 +1616,7 @@ PluginInstance::getRootObject ()
 }
 
 NPP
-PluginInstance::getInstance ()
+PluginInstance::GetInstance ()
 {
 	return instance;
 }
@@ -1622,19 +1630,19 @@ plugin_instance_get_surface (PluginInstance *instance)
 int32_t
 plugin_instance_get_actual_width (PluginInstance *instance)
 {
-	return instance->getActualWidth ();
+	return instance->GetActualWidth ();
 }
 
 int32_t
 plugin_instance_get_actual_height (PluginInstance *instance)
 {
-	return instance->getActualHeight ();
+	return instance->GetActualHeight ();
 }
 
 char*
 plugin_instance_get_init_params  (PluginInstance *instance)
 {
-	return instance->getInitParams();
+	return instance->GetInitParams();
 }
 
 uint32_t
@@ -1668,7 +1676,7 @@ plugin_instance_get_browser_information (PluginInstance *instance,
 					 char **platform, char **userAgent,
 					 bool *cookieEnabled)
 {
-	instance->getBrowserInformation (name, version, platform, userAgent, cookieEnabled);
+	instance->GetBrowserInformation (name, version, platform, userAgent, cookieEnabled);
 }
 
 void

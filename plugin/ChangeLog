@@ -1,5 +1,20 @@
 2008-06-19  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.h: add GetHost(), and rename all the "get"/"set" methods
+	to "Get"/"Set" to match everything else.
+
+	* plugin.cpp: fix up the renaming, and abstract out the code used
+	in a couple of places (getting the NPNVPluginElementNPObject) into
+	GetHost().
+	
+	* npstream-request.cpp (NPStreamRequest::GetResponse): track
+	renaming.
+
+	* plugin-class.cpp: track renaming.
+	(MoonlightDependencyObjectObject::Invoke): use GetHost().
+
+2008-06-19  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp (MoonlightScriptControlObject::Invoke): comment
 	out the version requested spew.
 

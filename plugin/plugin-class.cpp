@@ -740,7 +740,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 void
 event_object_add_javascript_listener (EventObject *obj, PluginInstance *plugin, const char *event_name, const char *cb_name)
 {
-	EventListenerProxy *proxy = new EventListenerProxy (plugin->getInstance (), event_name, cb_name);
+	EventListenerProxy *proxy = new EventListenerProxy (plugin->GetInstance (), event_name, cb_name);
 	proxy->AddHandler (obj);
 }
 
@@ -1695,7 +1695,7 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 		OBJECT_TO_NPVARIANT (content, *result);
 		return true;
 	case MoonId_InitParams:
-		string_to_npvariant (plugin->getInitParams (), result);
+		string_to_npvariant (plugin->GetInitParams (), result);
 		return true;
 	case MoonId_IsLoaded:
 		BOOLEAN_TO_NPVARIANT (plugin->surface->IsLoaded(), *result);
@@ -1709,11 +1709,11 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 		return true;
 	}
 	case MoonId_Source:
-		string_to_npvariant (plugin->getSource (), result);
+		string_to_npvariant (plugin->GetSource (), result);
 		return true;
 
 	case MoonId_Id: {
-		char *id = plugin->getId ();
+		char *id = plugin->GetId ();
 		if (id)
 			string_to_npvariant (id, result);
 		else 
@@ -1735,7 +1735,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 	switch (id) {
 	case MoonId_Source: {
 		char *source = STRDUP_FROM_VARIANT (*value);
-		plugin->setSource (source);
+		plugin->SetSource (source);
 		g_free (source);
 		return true;
 	}
@@ -1903,19 +1903,19 @@ MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *resu
 
 	switch (id) {
 	case MoonId_Background:
-		string_to_npvariant (plugin->getBackground (), result);
+		string_to_npvariant (plugin->GetBackground (), result);
 		return true;
 
 	case MoonId_EnableFramerateCounter:
-		BOOLEAN_TO_NPVARIANT (plugin->getEnableFramerateCounter (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->GetEnableFramerateCounter (), *result);
 		return true;
 
 	case MoonId_EnableRedrawRegions:
-		BOOLEAN_TO_NPVARIANT (plugin->getEnableRedrawRegions (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->GetEnableRedrawRegions (), *result);
 		return true;
 
 	case MoonId_EnableHtmlAccess:
-		BOOLEAN_TO_NPVARIANT (plugin->getEnableHtmlAccess (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->GetEnableHtmlAccess (), *result);
 		return true;
 
 	// not implemented yet, just return 0.
@@ -1928,7 +1928,7 @@ MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *resu
 		return true;
 
 	case MoonId_Windowless:
-		BOOLEAN_TO_NPVARIANT (plugin->getWindowless (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->GetWindowless (), *result);
 		return true;
 
 	default:
@@ -1945,7 +1945,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 
 	case MoonId_Background: {
 		char *color = STRDUP_FROM_VARIANT (*value);
-		if (!plugin->setBackground (color)) {
+		if (!plugin->SetBackground (color)) {
 			g_free (color);
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
 		}
@@ -1958,7 +1958,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 		return true;
  
 	case MoonId_EnableRedrawRegions:
-		plugin->setEnableRedrawRegions (NPVARIANT_TO_BOOLEAN (*value));
+		plugin->SetEnableRedrawRegions (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
 
 	// Cant be set after initialization so return true
@@ -1967,7 +1967,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 
 	// not implemented yet.
 	case MoonId_MaxFrameRate:
-		plugin->setMaxFrameRate (NPVARIANT_TO_INT32 (*value));
+		plugin->SetMaxFrameRate (NPVARIANT_TO_INT32 (*value));
 		return true;
 
 	// Cant be set after initialization so return true
@@ -2050,10 +2050,10 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 
 	switch (id) {
 	case MoonId_ActualHeight:
-		INT32_TO_NPVARIANT (plugin->getActualHeight (), *result);
+		INT32_TO_NPVARIANT (plugin->GetActualHeight (), *result);
 		return true;
 	case MoonId_ActualWidth:
-		INT32_TO_NPVARIANT (plugin->getActualWidth (), *result);
+		INT32_TO_NPVARIANT (plugin->GetActualWidth (), *result);
 		return true;
 	case MoonId_FullScreen:
 		BOOLEAN_TO_NPVARIANT (plugin->surface->GetFullScreen (), *result);
@@ -2610,7 +2610,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_GETHOST");
 
-		OBJECT_TO_NPVARIANT ((NPObject *) plugin->getRootObject (), *result);
+		OBJECT_TO_NPVARIANT (plugin->GetHost (), *result);
 
 		return true;
 	}
@@ -3933,7 +3933,7 @@ moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scr
 					    EventHandlerDelegate removeevent_func)
 
 {
-	MoonlightScriptControlObject *root_object = plugin->getRootObject ();
+	MoonlightScriptControlObject *root_object = plugin->GetRootObject ();
 
 	MoonlightScriptableObjectObject *obj = (MoonlightScriptableObjectObject *)
 		NPN_CreateObject (((MoonlightObject *) root_object)->instance,
@@ -4014,7 +4014,7 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 {
 	ds(printf ("registering scriptable object '%s' => %p\n", name, obj));
 	
-	MoonlightContentObject *content = (MoonlightContentObject *) plugin->getRootObject ()->content;
+	MoonlightContentObject *content = (MoonlightContentObject *) plugin->GetRootObject ()->content;
 	
 	g_hash_table_insert (content->registered_scriptable_objects, NPID (name), obj);
 	
@@ -4033,7 +4033,7 @@ moonlight_scriptable_object_emit_event (PluginInstance *plugin,
 	OBJECT_TO_NPVARIANT (sobj, args[0]);
 	OBJECT_TO_NPVARIANT (event_args, args[1]);
 
-	if (NPN_InvokeDefault (plugin->getInstance (), cb_obj, args, 2, &result))
+	if (NPN_InvokeDefault (plugin->GetInstance (), cb_obj, args, 2, &result))
 		NPN_ReleaseVariantValue (&result);
 }
 
@@ -4045,7 +4045,7 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 {
 	NPVariant npresult;
 	NPObject *window = NULL;
-	NPP npp = plugin->getInstance ();
+	NPP npp = plugin->GetInstance ();
 	NPIdentifier identifier = NPN_GetStringIdentifier (name);
 
 	if (npobj == NULL) {
@@ -4069,7 +4069,7 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 {
 	NPVariant npvalue;
 	NPObject *window = NULL;
-	NPP npp = plugin->getInstance ();
+	NPP npp = plugin->GetInstance ();
 	NPIdentifier identifier = NPN_GetStringIdentifier (name);
 
 	if (npobj == NULL) {
@@ -4089,7 +4089,7 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 	NPVariant npresult;
 	NPVariant *npargs = NULL;
 	NPObject *window = NULL;
-	NPP npp = plugin->getInstance ();
+	NPP npp = plugin->GetInstance ();
 	NPIdentifier identifier = NPN_GetStringIdentifier (name);
 
 	if (npobj == NULL) {
@@ -4124,7 +4124,7 @@ html_get_element_text (PluginInstance *plugin, const char *element_id)
 {
         if (!plugin->GetBridge())
                 return NULL;
-        return plugin->GetBridge()->HtmlElementGetText(plugin->getInstance(), element_id);
+        return plugin->GetBridge()->HtmlElementGetText(plugin->GetInstance(), element_id);
 }
 
 gpointer
@@ -4132,7 +4132,7 @@ html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, c
 {
         if (!plugin->GetBridge())
                 return NULL;
-        return plugin->GetBridge()->HtmlObjectAttachEvent (plugin->getInstance(), npobj, name, cb);
+        return plugin->GetBridge()->HtmlObjectAttachEvent (plugin->GetInstance(), npobj, name, cb);
 }
 
 void
@@ -4140,7 +4140,7 @@ html_object_detach_event (PluginInstance *plugin, const char *name, gpointer lis
 {
         if (!plugin->GetBridge())
                 return;
-        plugin->GetBridge()->HtmlObjectDetachEvent (plugin->getInstance(), name, listener_ptr);
+        plugin->GetBridge()->HtmlObjectDetachEvent (plugin->GetInstance(), name, listener_ptr);
 }
 
 void
@@ -4155,7 +4155,7 @@ browser_do_alert (PluginInstance *plugin, char *msg)
 	NPVariant npresult;
 	NPVariant *npargs = new NPVariant [1];
 	NPObject *window = NULL;
-	NPP npp = plugin->getInstance ();
+	NPP npp = plugin->GetInstance ();
 	NPIdentifier identifier = NPN_GetStringIdentifier ("alert");
 
 	NPN_GetValue (npp, NPNVWindowNPObject, &window);

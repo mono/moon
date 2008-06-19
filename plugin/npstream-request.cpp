@@ -46,7 +46,7 @@ NPStreamRequest::GetResponse (BrowserResponseStartedHandler started, BrowserResp
 
 	if (instance != NULL) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd->dl);
-		NPError err = NPN_GetURLNotify (instance->getInstance (), uri, NULL, notify);
+		NPError err = NPN_GetURLNotify (instance->GetInstance (), uri, NULL, notify);
 
 		if (err != NPERR_NO_ERROR) {
 			const char *msg;
