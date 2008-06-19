@@ -143,6 +143,9 @@ PluginDownloader::PluginDownloader (Downloader *dl)
 PluginDownloader::~PluginDownloader ()
 {
 	d (printf ("PluginDownloader::~PluginDownloader (), dl: %p\n", dl));
+
+	Abort ();
+
 	g_free (verb);
 	g_free (uri);
 	dl = NULL;
