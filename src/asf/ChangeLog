@@ -1,3 +1,8 @@
+2008-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: Set key_frames_only to true in ASFFrameReader ctor, so that
+	  the first frame returned will always be a key frame.
+
 2008-06-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-structures.h: Fix warning.

@@ -859,7 +859,7 @@ ASFReader::ReadMore ()
 			stream_id = payloads [i]->stream_id;
 			reader = GetFrameReader (stream_id);
 			if (reader == NULL) {
-				ASF_LOG ("ASFReader::ReadMore (): skipped, stream: %i, added pts: %llu\n", payloads [i]->stream_id, payloads [i]->get_presentation_time ());
+				ASF_LOG ("ASFReader::ReadMore (): skipped, stream: %i, added pts: %llu\n", payloads [i]->stream_id, (guint64) payloads [i]->get_presentation_time ());
 				delete payloads [i];
 				continue;
 			}
@@ -867,7 +867,7 @@ ASFReader::ReadMore ()
 			if (stream_id != last_reader && last_reader != 0)
 				GetFrameReader (last_reader)->SetLastPayload (false);
 			last_reader = stream_id;
-			ASF_LOG ("ASFReader::ReadMore (): delived payload for stream %i with pts %llu\n", payloads [i]->stream_id, payloads [i]->get_presentation_time () - 5000);
+			ASF_LOG ("ASFReader::ReadMore (): delived payload for stream %i with pts %llu\n", payloads [i]->stream_id, (guint64) payloads [i]->get_presentation_time () - 5000);
 			reader->AppendPayload (payloads [i], positioned ? 0 : current_packet_index);
 			payloads_added++;
 		}
@@ -927,7 +927,7 @@ ASFReader::SeekToPts (guint64 pts)
 bool
 ASFReader::Seek (guint64 pts)
 {
-	ASF_LOG ("ASFReader::Seek (%llu).\n", pts);
+	ASF_LOG ("ASFReader::Seek (%llu), CanSeek: %i, positioned: %i, CanSeekToPts(): %i\n", pts, CanSeek (), positioned, source->CanSeekToPts ());
 	
 	if (!CanSeek ())
 		return false;
@@ -1304,7 +1304,7 @@ ASFFrameReader::ASFFrameReader (ASFParser *p, int s, IMediaDemuxer *d, ASFReader
 	
 	index = NULL;
 	index_size = 0;
-	key_frames_only = false;
+	key_frames_only = true;
 	positioned = false;
 	last_payload = false;
 }
