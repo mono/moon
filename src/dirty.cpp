@@ -165,6 +165,36 @@ Surface::ProcessDownDirtyElements ()
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
 
+		if (el->dirty_flags & DirtyLocalClip) {
+			el->dirty_flags &= ~DirtyLocalClip;
+			el->dirty_flags |= DirtyClip;
+
+			// XXX el->ComputeLocalClip ();
+		}
+
+		if (el->dirty_flags & DirtyClip) {
+			el->dirty_flags &= ~DirtyTransform;
+
+			// XXX el->ComputeClip ();
+			// XXX el->UpdateBounds ();
+
+			PropagateDirtyFlagToChildren (el, DirtyClip);
+		}
+
+		if (el->dirty_flags & DirtyPosition) {
+			el->dirty_flags &= ~DirtyPosition;
+
+			Rect obounds = el->GetBounds ();
+
+			el->Invalidate ();
+			el->ComputePosition ();
+ 			if (obounds != el->GetBounds() && el->GetVisualParent ())
+				el->GetVisualParent()->UpdateBounds();
+			el->Invalidate ();
+
+ 			PropagateDirtyFlagToChildren (el, DirtyPosition);
+		}
+
 		if (!(el->dirty_flags & DownDirtyState)) {
 			down_dirty->Remove (node);
 			el->down_dirty_node = NULL;

@@ -1,3 +1,27 @@
+2008-06-19  Chris Toshok  <toshok@ximian.com>
+
+	* canvas.cpp (Canvas::OnSubPropertyChanged): call
+	ui->UpdatePosition instead of UpdateTransform.  Since
+	UpdateTransform calls UpdateBounds, this should save us a
+	sometimes costly (in the case of Shape's) trip through
+	ComputeBounds.
+
+	* uielement.h, uielement.cpp: Add UpdatePosition (adds the dirty
+	node) and ComputePosition (called from ProcessDownDirtyElements.)
+	(UIElement::ComputePosition): Apply the inverse absolute transform
+	to the bounds x/y, compute the new transform, then reapply it to
+	the bounds x/y to compute our new position.
+	(UIElement::UpdateTransform): clear the DirtyPosition flag.
+	(UIElement::UpdatePosition): only add the DirtyPosition flag if
+	the Dirty*Transform flags aren't already set.
+
+	
+	* dirty.cpp (Surface::ProcessDownDirtyElements): add blocks for
+	Clip, LocalClip, and Position (only Position is implemented).
+
+	* dirty.h: clean up the enum some, and add 3 new passes (only one
+	of which, DirtyPosition, is implemented).
+
 2008-06-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* transform.cpp: Started adding property accessor methods.

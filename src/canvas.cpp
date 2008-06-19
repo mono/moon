@@ -83,7 +83,7 @@ Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 		}
 		UIElement *ui = (UIElement *) obj;
 
-		ui->UpdateTransform ();
+		ui->UpdatePosition ();
 	}
 	else
 		Panel::OnSubPropertyChanged (prop, obj, subobj_args);

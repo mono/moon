@@ -26,20 +26,6 @@
 
 //#define DEBUG_INVALIDATE 0
 
-void
-UIElement::UpdateBounds (bool force_redraw)
-{
-	if (GetSurface ())
-		GetSurface ()->AddDirtyElement (this, DirtyBounds);
-	force_invalidate_of_new_bounds |= force_redraw;
-}
-
-void
-UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
-{
-	g_warning ("GetTransformFor called on a non-container, you must implement this in your container\n");
-}
-
 UIElement::UIElement ()
 {
 	opacityMask = NULL;
@@ -177,6 +163,14 @@ UIElement::DumpHierarchy (UIElement *obj)
 #endif
 
 void
+UIElement::UpdateBounds (bool force_redraw)
+{
+	if (GetSurface ())
+		GetSurface ()->AddDirtyElement (this, DirtyBounds);
+	force_invalidate_of_new_bounds |= force_redraw;
+}
+
+void
 UIElement::UpdateTotalRenderVisibility ()
 {
 	if (GetSurface())
@@ -188,6 +182,16 @@ UIElement::UpdateTotalHitTestVisibility ()
 {
 	if (GetSurface())
 		GetSurface ()->AddDirtyElement (this, DirtyHitTestVisibility);
+}
+
+void
+UIElement::UpdatePosition ()
+{
+	if (this->dirty_flags & (DirtyLocalTransform | DirtyTransform))
+		return;
+
+	if (GetSurface())
+		GetSurface()->AddDirtyElement (this, DirtyPosition);
 }
 
 bool
@@ -243,8 +247,10 @@ UIElement::ComputeTotalHitTestVisibility ()
 void
 UIElement::UpdateTransform ()
 {
-	if (GetSurface())
+	if (GetSurface()) {
 		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
+		this->dirty_flags &= ~DirtyPosition;
+	}
 }
 
 void
@@ -275,6 +281,41 @@ UIElement::ComputeTransform ()
 	//printf ("      Final position for %s x=%g y=%g\n", GetTypeName(), absolute_xform.x0, absolute_xform.y0);
 
 	// a change in transform requires a change in our bounds, more than likely
+}
+
+void
+UIElement::ComputeBounds ()
+{
+	g_warning ("UIElement:ComputeBounds has been called. The derived class %s should have overridden it.",
+		   GetTypeName ());
+}
+
+void
+UIElement::ComputePosition ()
+{
+	Point p (bounds.x, bounds.y);
+
+	cairo_matrix_t inverse = absolute_xform;
+	cairo_matrix_invert (&inverse);
+
+	p = p.Transform (&inverse);
+
+	ComputeLocalTransform();
+	ComputeTransform();
+
+	p = p.Transform (&absolute_xform);
+
+// 	printf ("old position is %g %g, new position is %g %g\n",
+// 		bounds.x, bounds.y, p.x, p.y);
+
+	bounds.x = p.x;
+	bounds.y = p.y;
+}
+
+void
+UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
+{
+	g_warning ("GetTransformFor called on a non-container, you must implement this in your container\n");
 }
 
 void
@@ -486,13 +527,6 @@ UIElement::ReleaseMouseCapture ()
 		return;
 
 	s->SetMouseCapture (NULL);
-}
-
-void
-UIElement::ComputeBounds ()
-{
-	g_warning ("UIElement:ComputeBounds has been called. The derived class %s should have overridden it.",
-		   GetTypeName ());
 }
 
 void
