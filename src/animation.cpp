@@ -1605,7 +1605,7 @@ DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 	if (len > 0)
 		return ((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->resolved_keytime;
 	else
-		return Duration::Automatic;
+		return Duration (0);
 }
 
 void
@@ -1721,7 +1721,7 @@ ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 	if (len > 0)
 		return ((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->resolved_keytime;
 	else
-		return Duration::Automatic;
+		return Duration (0);
 }
 
 void
@@ -1838,7 +1838,7 @@ PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 	if (len > 0)
 		return ((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->resolved_keytime;
 	else
-		return Duration::Automatic;
+		return Duration (0);
 }
 
 void

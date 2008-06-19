@@ -1,5 +1,11 @@
-2008-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+2008-06-19  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp: In a *AnimationUsingKeyFrames if we don't have any
+	keyframes specified the duration is 0, not Automatic. This fixes the 
+	http://www.etonline.com/silverlight/grammys50/ website.
+
+2008-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+	
 	* geometry.cpp: Use the new moon-path functions for ArcSegment
 	and QuadraticBezierSegment
 	* moon-path.c: Change some validation to use g_return_if_fail
