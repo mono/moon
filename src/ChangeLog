@@ -1,5 +1,8 @@
 2008-06-19  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp (UIElement::PreRender): work around what appears
+	to be a bug in the ftb logic by not clipping to the render region.
+
 	* clock.cpp (SystemTimeSource::Start): make the timer priority
 	DEFAULT again since otherwise we can get into starvation
 	situations.

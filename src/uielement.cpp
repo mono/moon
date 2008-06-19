@@ -647,8 +647,10 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
 		Rect r = GetSubtreeBounds ().RoundOut();
 		cairo_identity_matrix (cr);
-		region->Draw (cr);
-		cairo_clip (cr);
+		// FIXME we should be able to apply the region clip here
+		// it appears something may be wrong with ftb logic
+		//region->Draw (cr);
+		//cairo_clip (cr);
 		cairo_rectangle (cr, r.x, r.y, r.w, r.h);
 		cairo_clip (cr);
 		cairo_set_matrix (cr, &absolute_xform);
