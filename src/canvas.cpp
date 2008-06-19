@@ -33,8 +33,8 @@ Canvas::Canvas ()
 void
 Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	double left = item->GetLeft ();
-	double top = item->GetTop ();
+	double left = Canvas::GetLeft (item);
+	double top = Canvas::GetTop (item);
 	
 	cairo_matrix_init_translate (result, left, top);
 }
@@ -96,6 +96,59 @@ Canvas::GetTransformOrigin ()
 	return Point (GetWidth () * user_xform_origin.x, 
 		      GetHeight () * user_xform_origin.y);
 }
+
+void
+Canvas::SetLeft (UIElement *item, double left)
+{
+	item->SetValue (Canvas::LeftProperty, Value (left));
+}
+
+double
+Canvas::GetLeft (UIElement *item)
+{
+	Value *value = item->GetValue (Canvas::LeftProperty);
+	
+	return value ? value->AsDouble () : 0.0;
+}
+
+void
+Canvas::SetTop (UIElement *item, double top)
+{
+	item->SetValue (Canvas::TopProperty, Value (top));
+}
+
+double
+Canvas::GetTop (UIElement *item)
+{
+	Value *value = item->GetValue (Canvas::TopProperty);
+	
+	return value ? value->AsDouble () : 0.0;
+}
+
+void
+Canvas::SetLeft (double left)
+{
+	SetValue (Canvas::LeftProperty, Value (left));
+}
+
+double
+Canvas::GetLeft ()
+{
+	return GetValue (Canvas::LeftProperty)->AsDouble ();
+}
+
+void
+Canvas::SetTop (double top)
+{
+	SetValue (Canvas::TopProperty, Value (top));
+}
+
+double
+Canvas::GetTop ()
+{
+	return GetValue (Canvas::TopProperty)->AsDouble ();
+}
+
 
 Canvas *
 canvas_new (void)

@@ -41,6 +41,21 @@ class Canvas : public Panel {
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	
+	//
+	// Property Accessors
+	//
+	static void SetLeft (UIElement *item, double left);
+	static double GetLeft (UIElement *item);
+	
+	static void SetTop (UIElement *item, double top);
+	static double GetTop (UIElement *item);
+	
+	void SetLeft (double left);
+	double GetLeft ();
+	
+	void SetTop (double top);
+	double GetTop ();
 };
 
 G_BEGIN_DECLS

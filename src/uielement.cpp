@@ -716,34 +716,6 @@ UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 }
 
 void
-UIElement::SetLeft (double left)
-{
-	SetValue (Canvas::LeftProperty, Value (left));
-}
-
-double
-UIElement::GetLeft ()
-{
-	Value *value = GetValue (Canvas::LeftProperty);
-	
-	return value ? value->AsDouble () : 0.0;
-}
-
-void
-UIElement::SetTop (double top)
-{
-	SetValue (Canvas::TopProperty, Value (top));
-}
-
-double
-UIElement::GetTop ()
-{
-	Value *value = GetValue (Canvas::TopProperty);
-	
-	return value ? value->AsDouble () : 0.0;
-}
-
-void
 UIElement::SetOpacityMask (Brush *mask)
 {
 	SetValue (UIElement::OpacityMaskProperty, Value (mask));

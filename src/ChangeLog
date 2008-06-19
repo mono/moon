@@ -1,3 +1,11 @@
+2008-06-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* canvas.cpp (Canvas::[G,S]etLeft): Implemented.
+	(Canvas::[G,S]etTop): Same.
+
+	* uielement.cpp (UIElement::[G,S]etLeft): Moved to Canvas.
+	(UIElement::[G,S]etTop): Same.
+
 2008-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* rect.h: add Get{Top,Bottom}{Left,Right} methods.

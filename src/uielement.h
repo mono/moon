@@ -372,12 +372,6 @@ class UIElement : public Visual {
 	//
 	// Property Accessors
 	//
-	void SetLeft (double left);
-	double GetLeft ();
-	
-	void SetTop (double top);
-	double GetTop ();
-	
 	void SetOpacityMask (Brush *mask);
 	Brush *GetOpacityMask ();
 	

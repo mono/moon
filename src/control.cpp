@@ -107,8 +107,8 @@ Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, 
 void
 Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	double left = item->GetLeft ();
-	double top = item->GetTop ();
+	double left = Canvas::GetLeft (item);
+	double top = Canvas::GetTop (item);
 	
 	cairo_matrix_init_translate (result, left, top);
 }
