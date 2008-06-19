@@ -1,3 +1,9 @@
+2008-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* elephants-dream-320x180-first-minute.wmv,
+	  test-markers-after-seek.html: Added.
+	* drtlist.xml: Added test-markers-after-seek.
+
 2008-06-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-progressive-mms-seek.html: Added, not complete test about

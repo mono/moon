@@ -1,0 +1,112 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+				<MediaElement x:Name="media" Canvas.Left="10" Canvas.Top="10" Volume="1.0"
+					MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded"
+					MarkerReached="OnMarkerReached"
+				/>
+				<TextBlock x:Name="subtitle" Text="Elephant's Dream" Canvas.Top="200" Canvas.Left="10" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		var mediaElement = null;
+		var subtitle = null;
+		var do_test = 0;
+		
+		function timeOut ()
+		{
+			TestLogger.LogError ("Nothing happened, didn't get neither MediaOpened nor MediaFailed events.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMarkerReached (sender, args)
+		{
+			TestLogger.LogDebug ("OnMarkerReached: do_test: " + do_test + " (Text: '" + args.marker.Text + "', Type: " + args.marker.Type + ", Time: " + args.marker.Time.Seconds + ")");
+			subtitle.Text = args.marker.Text;
+
+			if (do_test == 1) {
+				do_test = 2;
+				if (args.marker.Text != "Watch out! ") {
+					TestLogger.LogError ("Expected marker's text to be 'Watch out! ' but it was: '" + args.marker.Text + "'");
+					TestLogger.LogResult (-11);
+				} else {
+					TestLogger.LogDebug ("Test succeeded");
+					TestLogger.LogResult (1);
+				}
+				SignalShutdown ();
+			}
+
+
+			if (args.marker.Text == "...the head-snarlers ") {
+				TestLogger.LogDebug ("OnMarkerReached: seeking to 28s");
+				mediaElement.Position = "00:00:28.000";
+				do_test = 1;
+			}
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
+			mediaElement.Position = "00:00:15.000";
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			setTimeout ("timeOut ();", 75000);
+			subtitle = sender.findName ("subtitle");
+			mediaElement = sender.findName ("media");
+			mediaElement.Source = "elephants-dream-320x180-first-minute.wmv";
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="340"
+             height="220"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+

@@ -26,4 +26,5 @@
     <Test id="25" inputFile="test-playlist-autoplayed-stop.html" masterFile10="None" timeout="15000" categories="video,media,playlist" />
     <Test id="26" inputFile="test-stopped-media.html" masterFile10="None" timeout="120000" categories="video,media,playlist,mediaserver" />
     <Test id="27" inputFile="test-nested-playlist.html" masterFile10="None" timeout="20000" categories="video,media,playlist" />
+    <Test id="28" inputFile="test-nested-playlist.html" masterFile10="None" timeout="30000" categories="video,media" knownFailure="True" knownFailureReason="We're emitting markers which should be skipped due to seeking over them" />
 </DRTList>
