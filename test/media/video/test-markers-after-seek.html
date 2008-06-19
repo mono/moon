@@ -17,37 +17,67 @@
 		<script language="javascript">
 		var mediaElement = null;
 		var subtitle = null;
-		var do_test = 0;
+		var current_step = 0;
+		var failures = 0;
+		
+		// Steps:
+		// 0: Wait for marker with text '...the head-snarlers ' and seek to 00:00:28.000 (forward seek).
+		// 1: Wait for next marker, whose text should be 'Watch out! '
+		// 2: Seek to 00:00:10.000 (backward seek).
+		// 3: Wait for next marker, whose text should be 'At the left we can see... '
+		// 4: End the test
 		
 		function timeOut ()
 		{
-			TestLogger.LogError ("Nothing happened, didn't get neither MediaOpened nor MediaFailed events.");
+			TestLogger.LogError ("Test timed out.");
 			TestLogger.LogResult (-1);
 			SignalShutdown ();
 		}
 
 		function OnMarkerReached (sender, args)
 		{
-			TestLogger.LogDebug ("OnMarkerReached: do_test: " + do_test + " (Text: '" + args.marker.Text + "', Type: " + args.marker.Type + ", Time: " + args.marker.Time.Seconds + ")");
+			TestLogger.LogDebug ("OnMarkerReached: current_step: " + current_step + " (Text: '" + args.marker.Text + "', Type: " + args.marker.Type + ", Time: " + args.marker.Time.Seconds + ")");
 			subtitle.Text = args.marker.Text;
 
-			if (do_test == 1) {
-				do_test = 2;
-				if (args.marker.Text != "Watch out! ") {
-					TestLogger.LogError ("Expected marker's text to be 'Watch out! ' but it was: '" + args.marker.Text + "'");
-					TestLogger.LogResult (-11);
-				} else {
-					TestLogger.LogDebug ("Test succeeded");
-					TestLogger.LogResult (1);
+			switch (current_step) {
+			case 0:
+				if (args.marker.Text == "...the head-snarlers ") {
+					TestLogger.LogDebug ("OnMarkerReached: performing forward seek to 28s");
+					mediaElement.Position = "00:00:28.000";
+					current_step++;
 				}
+				break;
+			case 1:
+				if (args.marker.Text != "Watch out! ") {
+					TestLogger.LogError ("Forward seek test failed: Expected marker's text to be 'Watch out! ' but it was: '" + args.marker.Text + "'");
+					failures++;
+				} else {
+					TestLogger.LogDebug ("Forward seek test succeeded");
+				}
+				current_step++;
+				break;
+			case 2:
+				TestLogger.LogDebug ("OnMarkerReached: performing backward seek (to 10s)");
+				mediaElement.Position = "00:00:10.000";
+				current_step++;
+				break;
+			case 3:
+				if (args.marker.Text != "At the left we can see... ") {
+					TestLogger.LogError ("Backward seek test failed: Expected marker's text to be 'At the left we can see... ' but it was: '" + args.marker.Text + "'");
+					failures++;
+				} else {
+					TestLogger.LogDebug ("Backward seek test succeeded");
+				}
+				current_step++;
+				// No need to wait for the next marker, just fall through
+				// break;
+			case 4:
+				if (failures > 0)
+					TestLogger.LogError ("There were " + failures + " failures");
+				TestLogger.LogResult (failures > 0 ? -1 : 1);
 				SignalShutdown ();
-			}
-
-
-			if (args.marker.Text == "...the head-snarlers ") {
-				TestLogger.LogDebug ("OnMarkerReached: seeking to 28s");
-				mediaElement.Position = "00:00:28.000";
-				do_test = 1;
+				current_step++;
+				break;
 			}
 		}
 

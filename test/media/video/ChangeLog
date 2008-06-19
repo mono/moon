@@ -1,5 +1,10 @@
 2008-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* drtlist.xml: Fixed test path.
+	* test-markers-after-seek.html: Enhanced to test backwards seeking too.
+
+2008-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* elephants-dream-320x180-first-minute.wmv,
 	  test-markers-after-seek.html: Added.
 	* drtlist.xml: Added test-markers-after-seek.
