@@ -1853,7 +1853,7 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 			}
 		}
 		
-		d(printf ("version requested = '%s' (%s)\n", version_list, supported ? "yes" : "no"));
+		//		d(printf ("version requested = '%s' (%s)\n", version_list, supported ? "yes" : "no"));
 		
 		BOOLEAN_TO_NPVARIANT (supported, *result);
 

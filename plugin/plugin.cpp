@@ -508,7 +508,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	NPN_Version(&plugin_major, &plugin_minor,
 		    &netscape_major, &netscape_minor);
 
-	d(printf ("Browser NPAPI version = %d.%d\n", netscape_major, netscape_minor));
+	//d(printf ("Browser NPAPI version = %d.%d\n", netscape_major, netscape_minor));
 
 	if (netscape_major >= 1 || netscape_minor >= 18) {
 		if (windowless)
@@ -529,13 +529,12 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
         // grovel around in the useragent and try to figure out which
         // browser bridge we should use.
         const char *useragent = NPN_UserAgent (instance);
-        printf ("useragent = %s\n", useragent);
 
 	if (strstr (useragent, "Opera")) {
 		// opera based
 		TryLoadBridge ("opera");
 	}
-	if (strstr (useragent, "AppleWebKit")) {
+	else if (strstr (useragent, "AppleWebKit")) {
 		// webkit based
 		TryLoadBridge ("webkit");
 	}
@@ -549,8 +548,10 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		}
         }
 
-        if (!bridge)
-		g_warning ("probing for browser type failed");
+        if (!bridge) {
+		g_warning ("probing for browser type failed, user agent = `%s'",
+			   useragent);
+	}
 }
 
 typedef BrowserBridge* (*create_bridge_func)();

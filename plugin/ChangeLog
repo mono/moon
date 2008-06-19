@@ -1,3 +1,12 @@
+2008-06-19  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightScriptControlObject::Invoke): comment
+	out the version requested spew.
+
+	* plugin.cpp (PluginInstance::Initialize): comment some bridge
+	spew, and make sure to use "else if" for the useragent tests so we
+	don't end up possibly loading 2 bridges.
+
 2008-06-17  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-downloader.cpp: When we are Aborted NULL our request
