@@ -165,6 +165,14 @@ AnimationStorage::DetachUpdateHandler ()
 }
 
 void
+AnimationStorage::ReAttachUpdateHandler ()
+{
+	if (clock != NULL) {
+		clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
+	}
+}
+
+void
 AnimationStorage::Float ()
 {
 	DetachUpdateHandler ();
@@ -198,6 +206,24 @@ AnimationStorage::~AnimationStorage ()
 		targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 		targetprop->DetachAnimationStorage (targetobj, this);
 	}
+}
+
+void
+AnimationClock::OnSurfaceDetach ()
+{
+	Clock::OnSurfaceDetach ();
+
+	if (storage)
+		storage->DetachUpdateHandler ();
+}
+
+void
+AnimationClock::OnSurfaceReAttach ()
+{
+	Clock::OnSurfaceReAttach ();
+
+	if (storage)
+		storage->ReAttachUpdateHandler ();
 }
 
 AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
@@ -576,11 +602,13 @@ Storyboard::SetSurface (Surface *surface)
 	if (GetSurface() && surface == NULL && root_clock && root_clock->GetClockState() == Clock::Active) {
 		/* we're being detached from a surface, so pause clock */
 		Pause ();
+		root_clock->OnSurfaceDetach ();
 	}
  	else if (!GetSurface() && surface) {
 		/* we're being (re-)attached to a surface, so resume clock */
 		if (root_clock && root_clock->GetIsPaused() && GetLogicalParent()) {
 			Resume ();
+			root_clock->OnSurfaceReAttach ();
 		}
  	}
 	DependencyObject::SetSurface (surface);

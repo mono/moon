@@ -263,6 +263,8 @@ class Clock : public DependencyObject {
 	bool        GetIsReversed ()      { return !forward; }
 	TimeSpan    GetBeginTime ()       { return begin_time; }
 	TimeManager* GetTimeManager ()    { return time_manager; }
+	virtual void OnSurfaceDetach ()   {};
+	virtual void OnSurfaceReAttach () {};
 
 	TimeSpan begin_time;
 
@@ -382,6 +384,8 @@ class ClockGroup : public Clock {
 	virtual void Seek (TimeSpan timespan);
 	virtual void SkipToFill ();
 	virtual void Stop ();
+	virtual void OnSurfaceDetach ();
+	virtual void OnSurfaceReAttach ();
 
 	virtual void ComputeBeginTime ();
 

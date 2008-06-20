@@ -130,6 +130,7 @@ class AnimationStorage {
 	
 	void ResetPropertyValue ();
 	void DetachUpdateHandler ();
+	void ReAttachUpdateHandler ();
 	void DetachTarget ();
 	void FlagAsNonResetable ();
 	void Float ();
@@ -167,6 +168,8 @@ class AnimationClock : public Clock {
 	AnimationClock (Animation/*Timeline*/ *timeline);
 	virtual Type::Kind GetObjectType () { return Type::ANIMATIONCLOCK; };
 	virtual void ExtraRepeatAction ();
+	virtual void OnSurfaceDetach ();
+	virtual void OnSurfaceReAttach ();
 
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 

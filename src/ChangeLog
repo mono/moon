@@ -1,3 +1,13 @@
+2008-06-20  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
+	* animation.h:
+	* clock.cpp:
+	* clock.h: When detaching/reattaching to Surface execute a special
+	handler on clocks that (in case of animation clocks) removes the update
+	property handler. This fixes the (regressed some time ago)
+	StoryboardEnterLeave semantics test.
+
 2008-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* animation.h: 
