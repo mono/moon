@@ -1,5 +1,12 @@
 2008-06-20  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/remove-while-running-test.html: Making the test trigger
+	the remove/reset action on MouseLeave instead of separate timer
+	storyboard. Having just one storyboard in the test makes it easier to
+	debug.
+
+2008-06-20  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/remove-while-running-test.html: A test for removing the
 	Storyboard from resources while it's still running. 
 

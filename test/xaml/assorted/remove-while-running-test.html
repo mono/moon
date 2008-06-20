@@ -9,10 +9,8 @@ function OnMouseEnter (sender, eventArgs)
 {
   sb = sender.findName("sb");
   sb.Begin();
-  timer = sender.findName("timer");
-  timer.Begin();
 }
-function OnCompleted (sender)
+function OnMouseLeave (sender)
 {
   sb = sender.findName("sb");
   sender.findName("cvs").Resources.Remove(sb);
@@ -30,16 +28,12 @@ function OnCompleted (sender)
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="cvs">
 
-	<Rectangle x:Name="activator" Fill="Blue" Canvas.Top="200" Canvas.Left="100" MouseEnter="OnMouseEnter" Width="200" Height="25" />
+	<Rectangle x:Name="activator" Fill="Blue" Canvas.Top="200" Canvas.Left="100" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave" Width="200" Height="25" />
 	<Rectangle x:Name="target" Fill="Orange" Canvas.Top="10" Canvas.Left="10" Width="10" Height="10" />
 
 	<Canvas.Resources>
 			<Storyboard x:Name="sb">
 				<DoubleAnimation Storyboard.TargetName="target" Storyboard.TargetProperty="(Canvas.Left)" From="10" To="500" Duration="00:00:10"/>
-			</Storyboard>
-			<Storyboard x:Name="timer" Completed="OnCompleted">
-				<DoubleAnimationUsingKeyFrames BeginTime="00:00:3" Storyboard.TargetName="target" Storyboard.TargetProperty="(UIElement.Opacity)">
-			</DoubleAnimationUsingKeyFrames>
 			</Storyboard>
 	</Canvas.Resources>
 	</Canvas>
