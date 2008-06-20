@@ -1,5 +1,8 @@
 2008-06-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* animation.h: Added "Property Accessor" comments and grouped the
+	property accessors, etc.
+
 	* dependencyobject.cpp (EventObject::SetSurface): Reworded debug
 	printf.
 	(EventObject::AddTickCall): Same.
