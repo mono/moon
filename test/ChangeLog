@@ -1,3 +1,8 @@
+2008-06-20  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/remove-while-running-test.html: A test for removing the
+	Storyboard from resources while it's still running. 
+
 2008-06-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/timer-test.html: A test for using StoryBoard as timer.
