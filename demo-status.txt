@@ -165,6 +165,11 @@ rating:3
  * Works with local copy!
  * Original page never shows playback controls Bug 351580
 
+site:Podium '08
+url:http://election.msn.com/podium08.aspx
+rating:4
+ * Works
+
 site:Poker
 url:http://home.people.net.au/~chriso/poker/poker.html
 rating:3
@@ -176,6 +181,11 @@ rating:3
  * Not using Moonlight. It looks like it's detecting it, but it's not using it. 
  * toolbox mouse events are slow, out of sync Bug 375269
  * Edit a control has missing background and button Bug 375270
+
+site:Ray Tracer
+url:http://www.nokola.com/Raytracer/
+rating:0
+ * not recognizing Moonlight
 
 site:Scrolling Video Playlist
 url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
@@ -234,6 +244,13 @@ url:http://silverlight.timovil.com
 rating:-1
  * Site has moved?
 
+site:Trainmaster Cannonball Watch
+url: http://xmldocs.net/ball/
+rating:2
+ * Night time lights are slow
+ * not sync'd with system time bug 402035
+ * stop watch second hand is broken bug 402370
+
 site:Video Page Turn
 url:http://mapul.com/Tutorials.html
 rating:1
@@ -245,6 +262,11 @@ rating:0
  * Not detecting Moonlight - even in FF3 with greasemonkey
  * Cannot slide pieces Bug 389460
  * No video playing Bug 391696
+
+site:Weather Widget
+url:http://silverlight.r2musings.com/weatherwidget/default.aspx
+rating:2
+ * kind of works
 
 site:Web Analytics
 url:http://xmldocs.net/Analytics
