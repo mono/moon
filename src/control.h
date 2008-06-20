@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * control.h:
  *
@@ -30,6 +31,7 @@ class Control : public FrameworkElement {
 
  public:
 	FrameworkElement *real_object;
+	Rect bounds_with_children;
 
 	Control ();
 	
@@ -58,17 +60,14 @@ class Control : public FrameworkElement {
 	virtual void OnLoaded ();
 
 	void SetContent (UIElement *element, Surface *surface);
-	UIElement* InitializeFromXaml (const char *xaml,
-				       Type::Kind *element_type, XamlLoader* loader);
-
-	Rect bounds_with_children;
+	UIElement *InitializeFromXaml (const char *xaml, Type::Kind *element_type, XamlLoader *loader);
 };
 
 Control *control_new (void);
-UIElement* control_initialize_from_xaml (Control *control, const char *xaml,
+UIElement *control_initialize_from_xaml (Control *control, const char *xaml,
 					 Type::Kind *element_type);
 UIElement* control_initialize_from_xaml_callbacks (Control *control, const char *xaml, 
-					Type::Kind *element_type, XamlLoader* loader);
+					Type::Kind *element_type, XamlLoader *loader);
 
 G_END_DECLS
 

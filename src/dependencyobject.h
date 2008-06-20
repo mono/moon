@@ -1,4 +1,5 @@
- /*
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
  * dependencyobject.h: 
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
@@ -76,14 +77,18 @@ public:
 #endif
 
 class EventObject {
+	Surface *surface;
+	gint32 refcount;
+	EventLists *events;
+	
  public:
 	EventObject ();
-
+	
 #if DEBUG
 	static int objects_created;
 	static int objects_destroyed;
 #endif
-
+	
 #if OBJECT_TRACKING
 	void weak_ref (EventObject *base);
 	void weak_unref (EventObject *base);
@@ -92,7 +97,7 @@ class EventObject {
 	
 	GHashTable *weak_refs;
 	int id;
-
+	
 	char *GetStackTrace (const char *prefix);
 	char *GetStackTrace () { return GetStackTrace (""); }
 	void PrintStackTrace ();
@@ -110,13 +115,13 @@ class EventObject {
 			// lets just abort right away.
 			g_error ("Ref was called an object with a refcount of 0.\n"); // g_error valid, see comment above.
 		}
-
+		
 		g_atomic_int_inc (&refcount);
 		OBJECT_TRACK ("Ref", GetTypeName ());
 	}
 	
 	void unref ();
-
+	
 	int GetRefCount () { return refcount; }
 	
 	//
@@ -148,10 +153,10 @@ class EventObject {
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, int token);
 	void RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure);
-
-	virtual Surface *GetSurface () { return surface; }
+	
+	Surface *GetSurface () { return surface; }
 	virtual void SetSurface (Surface *surface);
-
+	
 	// This method is safe to call from other than the main thread.
 	// This object is reffed before adding the tick call, the callback must unref.
 	void AddTickCall (void (*func)(gpointer));
@@ -161,11 +166,11 @@ class EventObject {
 	const static int DestroyedEvent;
 	
 	void unref_delayed ();
-
-	EmitContext* StartEmit (int event_id);
-	bool DoEmit (int event_id, EmitContext* ctx, EventArgs *calldata = NULL, bool only_unemitted = false);
-	void FinishEmit (int event_id, EmitContext* ctx);
-
+	
+	EmitContext *StartEmit (int event_id);
+	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false);
+	void FinishEmit (int event_id, EmitContext *ctx);
+	
  protected:
 	virtual ~EventObject ();
 	
@@ -173,12 +178,6 @@ class EventObject {
 	// Emit will call unref on the calldata.
 	bool Emit (char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false);
 	bool Emit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false);
-
- private:
-
-	Surface *surface;
-	gint32 refcount;
-	EventLists *events;
 };
 
 
@@ -191,6 +190,19 @@ struct PropertyChangedEventArgs {
 };
 
 class DependencyObject : public EventObject {
+	static GHashTable *properties;
+	GHashTable        *current_values;
+	GSList            *listener_list;
+	DependencyObject  *logical_parent;
+
+ protected:
+	virtual ~DependencyObject ();
+	
+	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args);
+	void NotifyListenersOfPropertyChange (DependencyProperty *property);
+	
+	void RemoveAllListeners ();
+	
  public:
 	DependencyObject ();
 
@@ -232,11 +244,10 @@ class DependencyObject : public EventObject {
 	virtual void SetSurface (Surface *surface);
 
 	void SetLogicalParent (DependencyObject *logical_parent);
-	DependencyObject* GetLogicalParent ();
-
-
+	DependencyObject *GetLogicalParent ();
+	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-
+	
 	// See the comment below about AddPropertyChangeListener for
 	// the meaning of the @prop arg in this method.  it's not what
 	// you might think it is.
@@ -286,20 +297,6 @@ class DependencyObject : public EventObject {
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
 
 	static void Shutdown ();
-
- protected:
-	virtual ~DependencyObject ();
-
-	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args);
-	void NotifyListenersOfPropertyChange (DependencyProperty *property);
-
-	void RemoveAllListeners ();
-
- private:
-	static GHashTable *properties;
-	GHashTable        *current_values;
-	GSList            *listener_list;
-	DependencyObject  *logical_parent;
 };
 
 
@@ -307,6 +304,9 @@ class DependencyObject : public EventObject {
 // DependencyProperty
 //
 class DependencyProperty {
+	GHashTable *storage_hash; // keys: objects, values: animation storage's
+	bool is_readonly;
+	
  public:
 	DependencyProperty () {};
 	~DependencyProperty ();
@@ -323,13 +323,9 @@ class DependencyProperty {
 	bool IsNullable () { return is_nullable; }
 	bool IsReadOnly () { return is_readonly; }
 
-	AnimationStorage* AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
+	AnimationStorage *AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
 	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
-	AnimationStorage* GetAnimationStorageFor (DependencyObject *obj);
-
- private:
-	GHashTable *storage_hash; // keys: objects, values: animation storage's
-	bool is_readonly;
+	AnimationStorage *GetAnimationStorageFor (DependencyObject *obj);
 };
 
 G_BEGIN_DECLS

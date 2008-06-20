@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * dependencyobject.h: 
  *
@@ -22,6 +23,14 @@
 #include "runtime.h"
 #include "uielement.h"
 #include "animation.h"
+
+
+#ifdef DEBUG
+#define d(x) x
+#else
+#define d(x)
+#endif
+
 
 EventLists::EventLists (int n)
 {
@@ -110,7 +119,7 @@ EventObject::SetSurface (Surface *surface)
 	int result;
 	
 	if ((result = pthread_rwlock_wrlock (&surface_lock)) != 0) {
-		printf ("EventObject::SetSurface (%p): Couldn't aquire write lock: %i (%s). Things may not work as expected.\n", surface, result, strerror (result));
+		printf ("EventObject::SetSurface (%p): Couldn't aquire write lock: %s\n", surface, strerror (result));
 		return;
 	}
 	
@@ -133,25 +142,21 @@ EventObject::AddTickCall (void (*func)(gpointer))
 	 */
 	
 	if ((result = pthread_rwlock_rdlock (&surface_lock)) != 0) {
-		printf ("EventObject::AddTickCall (): Couldn't aquire read lock: %i (%s), tick call will not be added.\n", result, strerror (result));
+		printf ("EventObject::AddTickCall (): Couldn't aquire read lock: %s\n", strerror (result));
 		return;
 	}
 	
 	surface = GetSurface ();
 	
 	if (!surface) {
-#if DEBUG
-		printf ("EventObject::AddTickCall (): Could not add tick call, no surface\n");
-#endif
+		d(printf ("EventObject::AddTickCall (): Could not add tick call, no surface\n"));
 		goto cleanup;
 	}
 	
 	timemanager = surface->GetTimeManager ();
 	
 	if (!timemanager) {
-#if DEBUG
-		printf ("EventObject::AddTickCAll (): Could not add tick call, no time manager\n");
-#endif
+		d(printf ("EventObject::AddTickCAll (): Could not add tick call, no time manager\n"));
 		goto cleanup;
 	}
 
@@ -238,7 +243,7 @@ EventObject::weak_unref (EventObject* base)
 	g_hash_table_remove (weak_refs, base);
 }
 
-char* 
+char *
 EventObject::GetStackTrace (const char* prefix)
 {
 	return get_stack_trace_prefix (prefix);
@@ -1146,9 +1151,8 @@ Type::Kind
 DependencyObject::GetObjectType ()
 {
 	g_critical ("%p This class is missing an override of GetObjectType ()", this);
-#if DEBUG
-	print_stack_trace ();
-#endif
+	d(print_stack_trace ());
+	
 	g_hash_table_foreach (current_values, dump, NULL);
 	return Type::DEPENDENCY_OBJECT; 
 }
@@ -1434,7 +1438,7 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent)
 	this->logical_parent = logical_parent;
 }
 
-DependencyObject*
+DependencyObject *
 DependencyObject::GetLogicalParent ()
 {
 	DependencyObject *res = logical_parent;
