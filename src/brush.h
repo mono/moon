@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * brush.h: Brushes
  *
@@ -307,7 +308,6 @@ void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 
 
 class ImageBrush : public TileBrush {
- private:
 	static void image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 

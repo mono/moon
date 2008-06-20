@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * eventargs.cpp: specialized code for dealing with mouse/stylus/keyboard event args.
  *
@@ -6,6 +7,10 @@
  * See the LICENSE file included with the distribution for details.
  *
  */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "eventargs.h"
 #include "uielement.h"

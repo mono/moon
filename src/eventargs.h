@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * eventargs.h
  *
@@ -26,20 +27,20 @@ class UIElement;
  */
 
 class EventArgs : public DependencyObject {
-protected:
+ protected:
 	virtual ~EventArgs () {};
 
-public:
+ public:
 	EventArgs () {}
 	virtual Type::Kind GetObjectType () { return Type::EVENTARGS; };
 };
 
 
 class KeyboardEventArgs : public EventArgs {
-protected:
+ protected:
 	virtual ~KeyboardEventArgs () {}
 
-public:
+ public:
 	KeyboardEventArgs () {}
 	KeyboardEventArgs (int state_, int platformcode_, int key_) : 
 		state (state_), platformcode (platformcode_), key (key_)
@@ -54,10 +55,10 @@ public:
 };
 
 class MouseEventArgs : public EventArgs {
-protected:
+ protected:
 	virtual ~MouseEventArgs ();
 
-public:
+ public:
 	MouseEventArgs ();
 	MouseEventArgs (GdkEvent *event);
 	virtual Type::Kind GetObjectType () { return Type::MOUSEEVENTARGS; };
@@ -82,4 +83,3 @@ StylusPointCollection* mouse_event_args_get_stylus_points (MouseEventArgs *args,
 G_END_DECLS
 
 #endif /* __MOON_EVENTARGS_H__ */
-
