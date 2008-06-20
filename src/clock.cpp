@@ -771,7 +771,7 @@ Clock::ComputeNewTime ()
 				/* since autoreverse is true we need
 				   to turn around and head back to
 				   0.0 */
-				int repeated_count = ret_time / duration_timespan;
+				int repeated_count = (duration_timespan != 0) ? ret_time / duration_timespan : 0;
 				if (repeated_count % 2 == 1) {
 					forward = false;
 					ret_time = duration_timespan - (ret_time - duration_timespan);
