@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/utils.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+		   <MediaElement x:Name="media" AutoPlay="False"
+		   	MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" 
+		   	MarkerReached="OnMarkerReached"
+		   	/> 
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var mediaElement = null;
+	
+	function Cheese ()
+	{
+		TestLogger.LogDebug ("Taking screenshot");
+		TestHost.CaptureSingleImage ("", "test-asf-demuxer-shuffled-payloads.html.png", 0, 0, 350, 250);
+		SignalShutdown ();
+	}
+
+	function Seek ()
+	{
+		TestLogger.LogDebug ("Seeking to 3.5 s");
+		mediaElement.Position = "00:00:03.500";
+		setTimeout ("Cheese ();", 2000);
+	}
+
+	function OnPluginLoaded (obj, args)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		mediaElement = obj.findName ("media");
+		mediaElement.Source = "embedded-script-commands.wmv";
+		setTimeout ("Seek ();", 200);
+	}
+
+	function OnMarkerReached (obj, args)
+	{
+		TestLogger.LogDebug ("OnMarkerReached: Text: " + args.marker.Text + ", Type: " + args.marker.Type + ", Time: " + args.marker.Time.Seconds);
+	}
+
+	function OnMediaOpened (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaOpened: " + mediaElement.Source);
+	}
+	
+	function OnMediaEnded (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaEnded");
+		if (!ShutdownRequested) {
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+	}
+
+	function OnMediaFailed (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaFailed");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		SignalShutdown ();
+	}
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+</body>
+
+</html>
+
+
+
+

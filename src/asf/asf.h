@@ -87,7 +87,6 @@ private:
 	bool positioned;
 	// The index of the next packet to be read.
 	uint64_t next_packet_index;
-	int last_reader; // The index of the last reader which was given a payload
 
 	// Seeks to the specified pts directly on the source.
 	bool SeekToPts (uint64_t pts);
@@ -162,8 +161,16 @@ struct ASFFrameReaderIndex {
  *			Packets
  *				Payload(s)
  *					Chunks of Media objects
- *	
- *	The problem is that one chunk of "Media object data" can span several payloads (and packets).
+ *		
+ *	The problem is that one chunk of "Media object data" can span several payloads (and packets),
+ *	and the pieces may come unordered, like this:
+ *
+ *	- first 25% of media object #1 for stream #1
+ *	- first 25% of media object #1 for stream #2
+ *	- first 25% of media object #1 for stream #3
+ *	- middle 50% of media object #1 for stream #2
+ *	- last 75% of media object #1 for stream #1
+ *	=> we have now all the data for the first media object of stream #1
  *	
  *	This class implements a reader that allows the consumer to just call Advance() and then get the all data
  *	for each "Media object" (here called "Frame", since it's shorter, and in general it corresponds
@@ -188,7 +195,6 @@ private:
 	bool key_frames_only;
 	int stream_number; // The stream this reader is reading for 
 	bool positioned;
-	bool last_payload; // If the last payload in this reader is the last payload in the entire file.
 	
 	// The queue of payloads we've built.
 	ASFFrameReaderData *first;
@@ -216,7 +222,7 @@ public:
 	~ASFFrameReader ();
 	
 	// Advance to the next frame
-	MediaResult Advance ();
+	MediaResult Advance (bool read_if_needed = true);
 	
 	// Write the frame's data to a the destination
 	bool Write (void *dest);
@@ -246,7 +252,6 @@ public:
 	
 	void SetMarkerStream (MarkerStream *stream);
 	MarkerStream *GetMarkerStream () { return marker_stream; }
-	void SetLastPayload (bool value) { last_payload = value; }
 };
 
 class ASFParser {

@@ -374,6 +374,30 @@ void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj)
 	ASF_DUMP ("\tduration = %u\n", (asf_dword) obj->duration);
 }
 
+asf_single_payload *
+asf_single_payload::Clone ()
+{
+	asf_single_payload *result = new asf_single_payload ();
+	
+	result->stream_id = stream_id;
+	result->is_key_frame = is_key_frame;
+	result->media_object_number = media_object_number;
+	result->offset_into_media_object = offset_into_media_object;
+	result->replicated_data_length = replicated_data_length;
+	if (replicated_data != NULL) {
+		result->replicated_data = (asf_byte *) g_malloc (replicated_data_length);
+		memcpy (result->replicated_data, replicated_data, replicated_data_length);
+	}
+	result->payload_data_length = payload_data_length;
+	if (payload_data != NULL) {
+		result->payload_data = (asf_byte *) g_malloc (payload_data_length);
+		memcpy (result->payload_data, payload_data, payload_data_length);
+	}
+	result->presentation_time = presentation_time;
+	
+	return result;
+}
+
 MediaResult
 asf_single_payload::FillInAll (ASFContext *context, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp)
 {	
@@ -400,6 +424,8 @@ asf_single_payload::FillInAll (ASFContext *context, asf_error_correction_data* e
 	payload_data_length =  0;
 	payload_data = NULL;
 	presentation_time = 0;
+	
+	ASF_LOG ("asf_single_payload::FillInAll (%p, %p, [Length type flags: %i, property flags: %i (mon:%i,oimo:%i,rpl:%i,sl:%i]). Stream: %i\n", context, ecd, ppi.length_type_flags, ppi.property_flags, ppi.get_offset_into_media_object_length_type (), ppi.get_media_object_number_length_type (), ppi.get_replicated_data_length_type (), ppi.get_stream_number_length_type (), stream_id);
 	
 	if (!ASFParser::ReadEncoded (source, ppi.get_media_object_number_length_type (), &media_object_number)) {
 		ASF_LOG_ERROR ("asf_single_payload::FillInAll (): Error while reading 'media_object_number'.\n");
@@ -669,6 +695,8 @@ asf_multiple_payloads::FillInAll (ASFContext *context, asf_error_correction_data
 			current_index++;
 		}
 	} else {
+		ASF_LOG ("asf_multiple_payloads::FillInAll (%p, %p, ?): A single payload\n", context, ecd);
+		
 		asf_single_payload* payload = new asf_single_payload ();
 		result = payload->FillInAll (context, ecd, ppi, NULL);
 		if (!MEDIA_SUCCEEDED (result)) {

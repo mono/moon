@@ -1,5 +1,5 @@
 <DRTList>
-	<Test id="1" inputFile="test-media-ended.html" masterFile10="None" timeout="10000" categories="audio,media"  />
-	<Test id="2" inputFile="test-seek-mp3.html" masterFile10="None" timeout="30000" categories="audio,media"  />
-	<Test id="2" inputFile="test-mp3-media-properties.html" masterFile10="None" timeout="10000" categories="audio,media"  />
+	<Test id="11" inputFile="test-media-ended.html" masterFile10="None" timeout="10000" categories="audio,media"  />
+	<Test id="12" inputFile="test-seek-mp3.html" masterFile10="None" timeout="30000" categories="audio,media"  />
+	<Test id="13" inputFile="test-mp3-media-properties.html" masterFile10="None" timeout="10000" categories="audio,media"  />
 </DRTList>

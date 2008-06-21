@@ -1,3 +1,11 @@
+2008-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: Don't check markers if from > to, no markers will ever be
+	  found in that interval. Also detect forward seeks by checking the
+	  difference between from and to, if difference > 1s, behave as a
+	  seek (and don't emit markers in that interval). 
+	* pipeline-ffmpeg.cpp: Give more missing information to ffmpeg.
+
 2008-06-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* animation.h: Added "Property Accessor" comments and grouped the

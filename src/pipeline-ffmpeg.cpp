@@ -138,12 +138,15 @@ FfmpegDecoder::Open ()
 		VideoStream *vs = (VideoStream*) stream;
 		context->width = vs->width;
 		context->height = vs->height;
+		context->bits_per_sample = vs->bits_per_sample;
+		context->codec_type = CODEC_TYPE_VIDEO;
 	} else if (stream->GetType () == MediaTypeAudio) {
 		AudioStream *as = (AudioStream*) stream;
 		context->sample_rate = as->sample_rate;
 		context->channels = as->channels;
 		context->bit_rate = as->bit_rate;
 		context->block_align = as->block_align;
+		context->codec_type = CODEC_TYPE_AUDIO;
 		audio_buffer = (guint8*) av_mallocz (AUDIO_BUFFER_SIZE);
 	} else {
 		result = MEDIA_FAIL;

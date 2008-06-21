@@ -1,3 +1,7 @@
+2008-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Updated ids to not conflict with any other media ids.
+
 2008-05-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* miguel.wma: Added wma version of this file.

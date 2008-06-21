@@ -204,7 +204,7 @@ struct asf_single_payload {
 	
 	MediaResult FillInAll (ASFContext *context, asf_error_correction_data* ecd, asf_payload_parsing_information ppi, asf_multiple_payloads* mp);
 	
-        asf_byte get_presentation_time_delta ()
+	asf_byte get_presentation_time_delta ()
 	{
 		if (replicated_data_length == 1) {
 			return *payload_data;
@@ -221,6 +221,8 @@ struct asf_single_payload {
 	{
 		return replicated_data_length == 1;
 	}
+	
+	asf_single_payload *Clone ();
 	
 	asf_single_payload () 
 	{

@@ -1,3 +1,11 @@
+2008-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-asf-demuxer-big-markers.html,
+	  test-asf-demuxer-shuffled-payloads.html: Added.
+	* drtlist.xml: Updated ids to not conflict with any other media ids.
+	  Added test-asf-demuxer-shuffled-payloads and
+	  test-asf-demuxer-big-markers.
+
 2008-06-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml: Fixed test path.

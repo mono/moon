@@ -767,7 +767,6 @@ ASFReader::ASFReader (ASFParser *parser, IMediaDemuxer *demuxer)
 	next_packet_index = 0;
 	memset (readers, 0, sizeof (ASFFrameReader*) * 128);
 	positioned = false;
-	last_reader = 0;
 }
 
 ASFReader::~ASFReader ()
@@ -864,10 +863,7 @@ ASFReader::ReadMore ()
 				continue;
 			}
 			
-			if (stream_id != last_reader && last_reader != 0)
-				GetFrameReader (last_reader)->SetLastPayload (false);
-			last_reader = stream_id;
-			ASF_LOG ("ASFReader::ReadMore (): delived payload for stream %i with pts %llu\n", payloads [i]->stream_id, (guint64) payloads [i]->get_presentation_time () - 5000);
+			ASF_LOG ("ASFReader::ReadMore (): delivered payload for stream %i with pts %llu\n", payloads [i]->stream_id, (guint64) payloads [i]->get_presentation_time () - 5000);
 			reader->AppendPayload (payloads [i], positioned ? 0 : current_packet_index);
 			payloads_added++;
 		}
@@ -1306,7 +1302,6 @@ ASFFrameReader::ASFFrameReader (ASFParser *p, int s, IMediaDemuxer *d, ASFReader
 	index_size = 0;
 	key_frames_only = true;
 	positioned = false;
-	last_payload = false;
 }
 
 ASFFrameReader::~ASFFrameReader ()
@@ -1474,7 +1469,7 @@ ASFFrameReader::SetFirstPts (guint64 pts)
 }
 
 MediaResult
-ASFFrameReader::Advance ()
+ASFFrameReader::Advance (bool read_if_needed)
 {
 	MediaResult result = MEDIA_SUCCESS;
 	MediaResult read_result;
@@ -1515,18 +1510,15 @@ ASFFrameReader::Advance ()
 		
 		// Make sure we have any payloads in our queue of payloads
 		while (current == NULL) {
-			
-			// The last payload found in the file wasn't ours,
-			// and we have at least one payload.
-			if (!last_payload && payload_count > 0) {
-				goto end_frame;
-				break;
-			}
-			
 			// We went past the end of the payloads, read another packet to get more data.
 			current = last; // go back to the last element.
 			
 			ASF_LOG ("ASFFrameReader::Advance (): No more payloads, requesting more data.\n");
+
+			if (!read_if_needed) {
+				read_result = MEDIA_NO_MORE_DATA;
+				goto end_frame;
+			}
 
 			read_result = reader->ReadMore ();
 			if (read_result == MEDIA_NO_MORE_DATA) {
@@ -1703,8 +1695,10 @@ ASFFrameReader::EstimatePacketIndexOfPts (guint64 pts)
 void
 ASFFrameReader::AppendPayload (asf_single_payload *payload, guint64 packet_index)
 {
-	MarkerStream *tmp;
+	ASF_LOG ("ASFFrameReader::AppendPayload (%p, %llu). Stream #%i\n", payload, packet_index, StreamId ());
+
 	bool advanced;
+	bool restore = false;
 	
 	ASFFrameReaderData* node = new ASFFrameReaderData (payload);
 	node->packet_index = packet_index;
@@ -1716,26 +1710,85 @@ ASFFrameReader::AppendPayload (asf_single_payload *payload, guint64 packet_index
 		last->next = node;
 		last = node;
 	}
-	last_payload = true;
 	
 	if (marker_stream != NULL) {
-		tmp = marker_stream; // Crude way of avoiding a stack overflow.
-		marker_stream = NULL;
-		advanced = MEDIA_SUCCEEDED (Advance ());
-		marker_stream = tmp;
-
+		// Here we try to figure out if we have an entire marker or not
+		// (determined by finding two NULL WCHARs in the data).
+		// Make a copy of our payloads, Advance will delete them, 
+		// and we might want to keep them until the next payload arrives.
+		ASFFrameReaderData *clone_head = NULL;
+		ASFFrameReaderData *clone = NULL;
+		ASFFrameReaderData *tmp = first;
+		ASFFrameReaderData *copy = NULL;
+		
+		while (tmp != NULL) {
+			copy = new ASFFrameReaderData (tmp->payload->Clone ());
+			if (clone == NULL) {
+				clone = copy;
+				clone_head = clone;
+			} else {
+				clone->next = copy;
+				copy->prev = clone;
+				clone = clone->next;
+			}
+			tmp = tmp->next;
+		}
+		
+		advanced = MEDIA_SUCCEEDED (Advance (false));
+		
 		if (advanced) {
-			void *buffer = g_malloc (Size ());
-			if (Write (buffer)) {
+			// Check if we got all the data
+			// determined by finding two NULL WCHARs
+			gint16 *data = (gint16 *) g_malloc (Size ());
+			int nulls = 0;
+			
+			if (Write (data)) {
+				for (guint32 i = 0; i < Size () / 2; i++) {
+					if (data [i] == 0) {
+						nulls++;
+						if (nulls >= 2)
+							break;
+					}
+				}
+			}
+			
+			ASF_LOG ("ASFFrameReader::AppendPayload () in data with size %llu found %i nulls.\n", Size (), nulls);
+	
+			if (nulls >= 2) {
 				MediaFrame *frame = new MediaFrame (marker_stream);
 				frame->pts = Pts ();
 				frame->buflen = Size ();
-				frame->buffer = (guint8 *) buffer;
+				frame->buffer = (guint8 *) data;
 				marker_stream->MarkerFound (frame);
 				frame->buffer = NULL;
 				delete frame;
+			} else {
+				restore = true;
 			}
-			g_free (buffer);
+			g_free (data);
+		}
+		
+		
+		if (restore && first == NULL) {
+			ASF_LOG ("ASFFrameReader::AppendPayload (%p, %llu). Restoring nodes.\n", payload, packet_index);
+			// Restore everything
+			// Advance () should have consumed all of the ASFFrameReaderDataNodes
+			// otherwise we're having corruption (since the only way to not have consumed
+			// all nodes is to get a second payload with a different media object number
+			// than a first payload, and the first payload doesn't contain 2 NULLs).
+			first = clone_head;
+			last = first;
+			while (last->next != NULL)
+				last = last->next;
+		} else {
+			ASF_LOG ("ASFFrameReader::AppendPayload (%p, %llu). Freeing copied list of nodes.\n", payload, packet_index);
+			// Free the copied list of nodes.
+			tmp = clone_head;
+			while (tmp != NULL) {
+				copy = tmp->next;
+				delete tmp;
+				tmp = copy;
+			}
 		}
 	}
 #if 0

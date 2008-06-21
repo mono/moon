@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/utils.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+		   <MediaElement x:Name="media"
+		   	MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" 
+		   	MarkerReached="OnMarkerReached"
+		   	/> 
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var mediaElement = null;
+	
+	function OnPluginLoaded (obj, args)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		mediaElement = obj.findName ("media");
+		mediaElement.Source = "big-streamed-markers.wmv";
+	}
+
+	function OnMarkerReached (obj, args)
+	{
+		var failures = 0;
+		
+		TestLogger.LogDebug ("OnMarkerReached: Text: " + args.marker.Text + ", Type: " + args.marker.Type + ", Time: " + args.marker.Time.Seconds);
+		TestLogger.LogDebug ("Marker length: " + args.marker.Text.length);
+		
+		if (Math.round (args.marker.Time.Seconds * 1000) != 251) {
+			TestLogger.LogError ("Markers time was " + args.marker.Time.Seconds + " s, expected 0.251 s");
+			failures++;
+		} else {
+			TestLogger.LogDebug ("Marker time matched");
+		}
+		
+		if (args.marker.Type != "caption") {
+			TestLogger.LogError ("Markers type was '" + args.marker.Type + "', expected 'caption'");
+			failures++;
+		} else {
+			TestLogger.LogDebug ("Marker type matched");
+		}
+
+
+		var expected_text = "At the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we can seeAt the left we ";
+		if (args.marker.Text != expected_text) {
+			TestLogger.LogError ("Markers text was '" + args.marker.Text + "'");
+			TestLogger.LogError ("expected text is '" + expected_text + "'");
+			failures++;
+		} else {
+			TestLogger.LogDebug ("Marker text matched");
+		}
+		
+		TestLogger.LogResult (failures > 0 ? -1 : 1);
+		SignalShutdown ();
+	}
+
+	function OnMediaOpened (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaOpened: " + mediaElement.Source);
+	}
+	
+	function OnMediaEnded (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaEnded");
+		if (!ShutdownRequested) {
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+	}
+
+	function OnMediaFailed (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaFailed");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		SignalShutdown ();
+	}
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+</body>
+
+</html>
+
+
+
+

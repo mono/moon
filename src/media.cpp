@@ -301,6 +301,8 @@ marker_callback (MediaClosure *closure)
 void
 MediaElement::AddStreamedMarker (TimelineMarker *marker)
 {
+	d (printf ("MediaElement::AddStreamedMarker (): got marker %s, %s, %llu = %llu ms\n", marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ())));
+	
 	if (streamed_markers == NULL)
 		streamed_markers = new TimelineMarkerCollection ();
 	streamed_markers->Add (marker);
@@ -356,10 +358,12 @@ MediaElement::ReadMarkers ()
 	}
 	
 	// Docs says we overwrite whatever's been loaded already.
-	//printf ("MediaElement::ReadMarkers (): setting %d markers.\n", collection_count (col));
+	d (printf ("MediaElement::ReadMarkers (): setting %d markers.\n", markers->GetCount ()));
 	SetMarkers (markers);
 	markers->unref ();
 }
+
+#define LOG_MARKERS(...)// printf (__VA_ARGS__);
 
 void
 MediaElement::CheckMarkers (guint64 from, guint64 to)
@@ -367,12 +371,26 @@ MediaElement::CheckMarkers (guint64 from, guint64 to)
 	TimelineMarkerCollection *markers;
 	
 	if (from == to) {
-		//printf ("MediaElement::CheckMarkers (%llu, %llu). from == to\n", from, to);
+		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). from == to\n", from, to);
 		return;
 	}
 	
-	if (!(markers = GetMarkers ()))
+	if (!(markers = GetMarkers ())) {
+		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). No markers\n", from, to);
 		return;
+	}
+	
+	if (from > to) {
+		// if from > to we've seeked backwards (last played position is after this one)
+		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). from > to (diff: %llu = %llu ms).\n", from, to, from - to, MilliSeconds_FromPts (from - to));
+		return;
+	}
+	
+	if (MilliSeconds_FromPts (to - from) > 1000) {
+		// to detect forward seeks we check if the gap between to and from is bigger than 1s.
+		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). [Skipped] from > to or diff bigger thatn 1000 ms (diff: %llu = %llu ms).\n", from, to, to - from, MilliSeconds_FromPts (to - from));
+		return;
+	}
 	
 	CheckMarkers (from, to, markers, false);
 	CheckMarkers (from, to, streamed_markers, true);	
@@ -387,7 +405,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 	guint64 pts;
 	bool emit;
 	
-	//printf ("MediaElement::CheckMarkers (%llu, %llu, %p, %i). count: %i\n", from, to, col, remove, col ? col->list->Length () : -1);
+	LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu, %p, %i). count: %i\n", from, to, markers, remove, markers ? markers->GetCount () : -1);
 	
 	if (markers == NULL)
 		return;
@@ -405,26 +423,26 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 		
 		pts = (guint64) val->AsTimeSpan ();
 		
-		//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
+		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
 		
 		emit = false;
 		if (remove) {
-			// Streamed markers. Emit these even if we passed them with up to 0.1 s.
-			if (from <= MilliSeconds_ToPts (100)) {
+			// Streamed markers. Emit these even if we passed them with up to 1 s.
+			if (from <= MilliSeconds_ToPts (1000)) {
 				emit = pts >= 0 && pts <= to;
 			} else {
-				emit = pts >= (from - MilliSeconds_ToPts (100)) && pts <= to;
+				emit = pts >= (from - MilliSeconds_ToPts (1000)) && pts <= to;
 			}
 			
-			//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n", from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
+			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n", from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
 		} else {
 			// Normal markers.
 			emit = pts >= from && pts <= to;
-			//printf ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n", from, to, pts, marker->GetText (), marker->GetType ());
+			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n", from, to, pts, marker->GetText (), marker->GetType ());
 		}
 		
 		if (emit) {
-			//printf ("MediaElement::CheckMarkers (%llu, %llu): Emitting: Text = %s, Type = %s, Time = %llu = %llu ms\n", from, to, marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ()));
+			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Emitting: Text = %s, Type = %s, Time = %llu = %llu ms\n", from, to, marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ()));
 			Emit (MarkerReachedEvent, new MarkerReachedEventArgs (marker));
 		}
 
