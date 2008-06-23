@@ -1,3 +1,7 @@
+2008-06-23  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: Fixing a problem with repeating animations. Fixes #401983.
+
 2008-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: Don't check markers if from > to, no markers will ever be

@@ -1139,7 +1139,7 @@ ClockGroup::Begin ()
 void
 ClockGroup::ComputeBeginTime ()
 {
-	if (GetParent () && GetParent ()->GetObjectType () >= Type::CLOCKGROUP)
+	if (GetParent () && GetParent () != GetTimeManager ()->GetRootClock ())
 		begin_time = (timeline->HasBeginTime() ? timeline->GetBeginTime() : 0);
 	else
 		begin_time = GetParentTime () + (timeline->HasBeginTime() ? timeline->GetBeginTime() : 0);
