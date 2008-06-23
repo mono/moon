@@ -1,5 +1,17 @@
 2008-06-23  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h, uielement.cpp (UIElement::ShiftPosition): virtualize
+	the "bounds.x = p.x; bounds.y = p.y" code, since subclasses have
+	other, more specialized bounds that also need updating.
+
+	* panel.h, panel.cpp (Panel::ShiftPosition): new method, chain up
+	to UIElement::ShiftPosition and also update bounds_with_children.
+
+	* stylus.h, stylus.cpp (InkPresenter::ShiftPosition): new method,
+	chain up to Canvas::ShiftPosition, and also update render_bounds.
+
+2008-06-23  Chris Toshok  <toshok@ximian.com>
+
 	* canvas.cpp (Canvas::OnSubPropertyChanged): allow switching
 	between UpdatePosition and UpdateTransform according to the
 	updatepos=yes/no override.

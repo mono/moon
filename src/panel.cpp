@@ -153,6 +153,19 @@ Panel::ComputeBounds ()
 #endif
 }
 
+void
+Panel::ShiftPosition (Point p)
+{
+	double dx = p.x - bounds.x;
+	double dy = p.y - bounds.y;
+
+	// need to do this after computing the delta
+	FrameworkElement::ShiftPosition (p);
+
+	bounds_with_children.x += dx;
+	bounds_with_children.y += dy;
+}
+
 //#define DEBUG_INVALIDATE 1
 
 void

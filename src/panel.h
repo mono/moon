@@ -58,7 +58,9 @@ class Panel : public FrameworkElement {
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
 	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
-	
+
+	virtual void ShiftPosition (Point p);
+
 	virtual void UpdateTotalRenderVisibility ();
 	virtual void UpdateTotalHitTestVisibility ();
 

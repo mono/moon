@@ -185,6 +185,8 @@ class InkPresenter : public Canvas {
 
 	virtual Rect GetRenderBounds ();
 
+	virtual void ShiftPosition (Point p);
+
 	static DependencyProperty* StrokesProperty;
 
  private:

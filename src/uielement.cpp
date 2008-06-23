@@ -291,6 +291,13 @@ UIElement::ComputeBounds ()
 }
 
 void
+UIElement::ShiftPosition (Point p)
+{
+	bounds.x = p.x;
+	bounds.y = p.y;
+}
+
+void
 UIElement::ComputePosition ()
 {
 	Point p (bounds.x, bounds.y);
@@ -308,8 +315,7 @@ UIElement::ComputePosition ()
 // 	printf ("old position is %g %g, new position is %g %g\n",
 // 		bounds.x, bounds.y, p.x, p.y);
 
-	bounds.x = p.x;
-	bounds.y = p.y;
+	ShiftPosition (p);
 }
 
 void

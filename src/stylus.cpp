@@ -1081,6 +1081,19 @@ InkPresenter::GetRenderBounds ()
 	return render_bounds;
 }
 
+void
+InkPresenter::ShiftPosition (Point p)
+{
+	double dx = p.x - bounds.x;
+	double dy = p.y - bounds.y;
+
+	// need to do this after computing the delta
+	Canvas::ShiftPosition (p);
+
+	render_bounds.x += dx;
+	render_bounds.y += dy;
+}
+
 InkPresenter*
 ink_presenter_new (void)
 {

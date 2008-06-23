@@ -179,6 +179,16 @@ class UIElement : public Visual {
 	virtual void ComputePosition ();
 
 	//
+	// ShiftPosition:
+	//
+	//   This method should actually set the x/y of the bounds
+	//   rectangle to the new position.  It is virtual to allow
+	//   subclasses with specialized bounds (Panel, InkPresenter)
+	//   the opportunity to set those bounds' positions as well.
+	//
+	virtual void ShiftPosition (Point p);
+
+	//
 	// UpdateBounds:
 	//   Recomputes the bounds of this element, and if they're
 	//   different chains up to its parent telling it to update
