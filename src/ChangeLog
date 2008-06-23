@@ -1,3 +1,11 @@
+2008-06-23  Chris Toshok  <toshok@ximian.com>
+
+	* canvas.cpp (Canvas::OnSubPropertyChanged): allow switching
+	between UpdatePosition and UpdateTransform according to the
+	updatepos=yes/no override.
+
+	* runtime.h, runtime.cpp: add updatepos=yes/no override.
+	
 2008-06-23  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: Fixing a problem with repeating animations. Fixes #401983.
