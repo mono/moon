@@ -1,3 +1,9 @@
+2008-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* shocker/plugin.cpp:
+	* shocker/image-capture.cpp|h:
+	* test-runner/HtmlTest.cs:  Add support for offsetting the screencapture.
+	
 2008-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* masters/test-asf-demuxer-shuffled-payloadsMaster.png: Added.

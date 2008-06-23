@@ -170,14 +170,14 @@ acquire_screenshot (Window window, int x, int y, int width, int height)
 
 
 // TODO: Figure out defaults, maybe width/height need to be calculated?
-AutoCapture::AutoCapture () : capture_interval (1000), max_images_to_capture (1), initial_delay (0), capture_width (640), capture_height (480)
+AutoCapture::AutoCapture () : capture_interval (1000), max_images_to_capture (1), initial_delay (0), capture_x (0), capture_y (0), capture_width (640), capture_height (480)
 {
 }
 
 void
 AutoCapture::Run (const char* test_path, ImageCaptureProvider* provider)
 {
-	provider->CaptureMultipleImages (test_path, 0, 0, capture_width, capture_height, max_images_to_capture, capture_interval, initial_delay);
+	provider->CaptureMultipleImages (test_path, capture_x, capture_y, capture_width, capture_height, max_images_to_capture, capture_interval, initial_delay);
 }
 
 

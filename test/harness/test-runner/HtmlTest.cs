@@ -38,6 +38,8 @@ namespace MoonlightTests {
 		private int? capture_interval;
 		private int? max_images_to_capture;
 		private int initial_delay = 500;
+		private int? capture_x;
+		private int? capture_y;
 		private int? capture_width;
 		private int? capture_height;
 
@@ -59,6 +61,12 @@ namespace MoonlightTests {
 
 			if (node.Attributes ["initialDelay"] != null)
 				InitialDelay = Int32.Parse (node.Attributes ["initialDelay"].Value);
+
+			if (node.Attributes ["captureX"] != null)
+				CaptureX = Int32.Parse (node.Attributes ["captureX"].Value);
+
+			if (node.Attributes ["captureY"] != null)
+				CaptureY = Int32.Parse (node.Attributes ["captureY"].Value);
 
 			if (node.Attributes ["captureWidth"] != null)
 				CaptureWidth = Int32.Parse (node.Attributes ["captureWidth"].Value);
@@ -100,6 +108,24 @@ namespace MoonlightTests {
 				if (value < 0)
 					throw new ArgumentException ("initial delay must be greater than or equal to zero.");
 				initial_delay = value;
+			}
+		}
+
+		private int? CaptureX {
+			get { return capture_x; }
+			set {
+				if (value < 0)
+					throw new ArgumentException ("Capture X coordindate must be zero or greater.");
+				capture_y = value;
+			}
+		}
+
+		private int? CaptureY {
+			get { return capture_y; }
+			set {
+				if (value < 0)
+					throw new ArgumentException ("Capture Y coordindate must be zero or greater.");
+				capture_y = value;
 			}
 		}
 
@@ -311,6 +337,10 @@ namespace MoonlightTests {
 				res.AppendFormat ("captureinterval=\"{0}\"\n", capture_interval != null ? capture_interval : 300);
 				res.AppendFormat ("maximagestocapture=\"{0}\"\n", max_images_to_capture != null ? max_images_to_capture : 15);
 				res.AppendFormat ("initialdelay=\"{0}\"\n", InitialDelay);
+				if (capture_x != null)
+					res.AppendFormat ("capturex=\"{0}\"\n", capture_x);
+				if (capture_y != null)
+					res.AppendFormat ("capturey=\"{0}\"\n", capture_y);
 				res.AppendFormat ("capturewidth=\"{0}\"\n", capture_width != null ? capture_width : ResultWidth);
 				res.AppendFormat ("captureheight=\"{0}\"", capture_height != null ? capture_height : ResultHeight);
 			}

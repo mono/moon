@@ -72,6 +72,18 @@ PluginObject::PluginObject (NPP npp, int argc, char* argn[], char* argv[]) : ins
 			auto_capture->SetInitialDelay (strtol (argv [i], NULL, 10));
 		}
 
+		if (!strcasecmp (argn [i], "capturex")) {
+			if (!auto_capture)
+				auto_capture = new AutoCapture ();
+			auto_capture->SetCaptureX (strtol (argv [i], NULL, 10));
+		}
+
+		if (!strcasecmp (argn [i], "capturey")) {
+			if (!auto_capture)
+				auto_capture = new AutoCapture ();
+			auto_capture->SetCaptureY (strtol (argv [i], NULL, 10));
+		}
+		
 		if (!strcasecmp (argn [i], "capturewidth")) {
 			if (!auto_capture)
 				auto_capture = new AutoCapture ();
