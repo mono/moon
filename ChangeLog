@@ -1,3 +1,7 @@
+2008-06-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* acinclude.m4, configure.ac: Added DOLT support.
+
 2008-06-10  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Figure out the firefox ABI string only if we're
