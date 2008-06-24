@@ -1,8 +1,8 @@
 /*
  * yuv-converter.h: YUV2RGB converters for the pipeline
  *
- * Author:
- *   Geoff Norton (RKvinge@novell.com)
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *

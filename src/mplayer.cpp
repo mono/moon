@@ -2,9 +2,8 @@
 /*
  * mplayer.cpp: 
  *
- * Authors: Jeffrey Stedfast <fejj@novell.com>
- *          Rolf Bjarne Kvinge  <RKvinge@novell.com>
- *          Michael Dominic K. <mkostrzewa@novell.com>
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007, 2008 Novell, Inc. (http://www.novell.com)
  *

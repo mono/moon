@@ -1,9 +1,8 @@
 /*
  * error.h: ErrorEventArgs and its subclasses
  *
- * Authors:
- *   Jackson Harper (jackson@ximian.com)
- *   Chris Toshok (toshok@ximian.com)
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *

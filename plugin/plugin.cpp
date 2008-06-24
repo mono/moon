@@ -1,9 +1,8 @@
 /*
  * moon-plugin.cpp: MoonLight browser plugin.
  *
- * Author:
- *   Everaldo Canuto (ecanuto@novell.com)
- *   Michael Dominic K. <mdk@mdk.am>
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *

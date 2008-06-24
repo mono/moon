@@ -24,9 +24,8 @@
  *    code in demo.cpp and ManagedDownloader are not complete in this regard as
  *    they only stream
  *
- * Author:
- *   Chris Toshok (toshok@novell.com)
- *   Miguel de Icaza (miguel@novell.com).
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *

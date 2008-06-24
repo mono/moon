@@ -1,9 +1,8 @@
 /*
  * transform.h: 
  *
- * Author:
- *   Sebastien Pouliot (spouliot@novell.com)
- *   Chris Toshok <toshok@novell.com>
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *

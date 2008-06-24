@@ -1,9 +1,8 @@
 /*
  * plugin-entry.cpp: MoonLight browser plugin.
  *
- * Author:
- *   Everaldo Canuto (everaldo@novell.com)
- *   Andrew Jorgensen (ajorgensen@novell.com)
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *

@@ -20,8 +20,8 @@ class convert {
 			dest.Add (@"/*
  * fullscreen.h: the xaml for the fullscreen message.
  *
- * Author:
- *  Rolf Bjarne Kvinge  (RKvinge@novell.com)
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *

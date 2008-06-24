@@ -1,8 +1,8 @@
 /*
  * xaml.cpp: xaml parser
  *
- * Author:
- *   Miguel de Icaza (miguel@ximian.com)
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *

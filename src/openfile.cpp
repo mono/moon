@@ -1,9 +1,8 @@
 /*
  * openfile.cpp: File open interfaces
  *
- * Authors:
- *   Miguel de Icaza (miguel@novell.com)
- *   Sebastien Pouliot  <sebastien@ximian.com>
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *

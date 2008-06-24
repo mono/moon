@@ -1,8 +1,8 @@
 /*
  * moon-path.h: Path-based API, similar to cairo but without requiring a cairo_context_t
  *
- * Author:
- *	Sebastien Pouliot  <sebastien@ximian.com>
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007, 2008 Novell, Inc. (http://www.novell.com)
  *

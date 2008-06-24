@@ -3,8 +3,8 @@
  *		  for cubic curves. This is used ONLY for KeySpline animation, 
  *		  not used in any way for drawing.
  *
- * Author:
- *   Michael Dominic K. <mdk@mdk.am>
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *

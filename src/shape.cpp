@@ -1,11 +1,8 @@
 /*
  * shape.cpp: This match the classes inside System.Windows.Shapes
  *
- * Authors:
- *   Miguel de Icaza (miguel@novell.com)
- *   Sebastien Pouliot  <sebastien@ximian.com>
- *   Stephane Delcroix  <sdelcroix@novell.com>
- *   Michael Dominic K. <mdk@mdk.am>
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
