@@ -21,7 +21,7 @@
       function EllipseMouseEnter (sender, args)
       {
               var popup = get_popup_canvas ();
-              var info = sender.tag.split (",");
+              var info = sender.tag.split ("$");
 
 	      // sender.width *= 2;
 	      // sender.height *= 2;
@@ -30,6 +30,11 @@
 	      popup ["Canvas.Top"] = sender ["Canvas.Top"] - popup.height / 2;
 	      popup.findName ("run_block").text = info [0];
 	      popup.findName ("info_block").text = info [1] + ":" + info [2];
+
+	      set_titles_text (info [0]);
+	      set_failures_text (info [3]);
+	      set_passing_text (info [4]);
+	      
 	      popup.visibility = 0;
       }
 
@@ -39,6 +44,24 @@
 	      // sender.width /= 2;
 	      // sender.height /= 2;
 	      popup.visibility = 1;
+      }
+
+      function set_titles_text (text)
+      {
+              var title_span = document.getElementById ('title_span');
+	      title_span.innerHTML = text;
+      }
+      
+      function set_failures_text (text)
+      {
+              var failures_box = document.getElementById ('failures_box');
+	      failures_box.value = text;
+      }
+
+      function set_passing_text (text)
+      {
+              var passing_text = document.getElementById ('passing_box');
+	      passing_box.value = text;
       }
       </script>
 
@@ -52,6 +75,14 @@
     <div>
         <embed type="application/x-silverlight" Width="700" Height="520" id="graph" Source="#graph_xaml">
         </embed>
+    </div>
+
+    <div style="background-color: yellow; border-color: black; border-style: solid; width: 700px; padding-left: 5px;">
+        <form id="tehform">
+            <p><b>Run:</b> <span id="title_span"></span></p>
+            <p><b>Failures:</b><input type="text" id="failures_box" style="width: 500px"/></p>
+            <p><b>Passes:</b><input type="text" id="passing_box" style="width: 500px;"/></p>
+        </form>
     </div>
     <div>
     $COMPARE_HTML
