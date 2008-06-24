@@ -740,11 +740,24 @@ Surface::Paint (cairo_t *ctx, Region *region)
 void
 Surface::Resize (int width, int height)
 {
+
 	if (widget)
 		gtk_widget_set_size_request (widget, width, height);
-	
-	if (!full_screen)
+	else {
+		if (width == this->width 
+		    && height == this->height
+		    && width == normal_width
+		    && height == normal_height)
+			return;
+
+		this->width = width;
+		this->height = height;
+		this->normal_width = width;
+		this->normal_height = height;
+
+		g_warning ("XXXXXXXXXXXXX resizing (%d, %d)", width, height);
 		Emit (ResizeEvent);
+	}
 }
 
 void
@@ -1007,8 +1020,13 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 
 	GDK_THREADS_ENTER ();
 	if (s->IsAnythingDirty ()) {
-		s->ProcessDirtyElements ();
-		dirty = true;
+		if (s->zombie) {
+			s->up_dirty->Clear (true);
+			s->down_dirty->Clear (true);
+		} else {
+			s->ProcessDirtyElements ();
+			dirty = true;
+		}
 	}
 	GDK_THREADS_LEAVE ();
 

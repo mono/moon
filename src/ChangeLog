@@ -1,3 +1,12 @@
+2008-06-24  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::Resize): set the width and height properly
+	in the windowless case, let the widget resize logic handle it
+	otherwise.
+	(Surface:render_cb): don't process dirty elements if we are in a
+	zombie state, just clear the dirty lists and move on.  Fixes a
+	crash we were seeing when calling ForceRender on a zombie plugin.
+
 2008-06-24  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp: in the switch from function pointer to integer in
