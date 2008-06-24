@@ -1,3 +1,8 @@
+2008-06-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agviewer/agviewer.cpp: Log a message when starting a test, and when
+	  aborting if we're hanged, print a stack trace.
+
 2008-06-24  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/XmlReport.cs: Don't save so much stuff.

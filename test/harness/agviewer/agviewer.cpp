@@ -90,9 +90,11 @@ static void signal_test_complete (const char* test_name, bool successful);
 static bool wait_for_next_test (int* timeout);
 static void mark_test_as_complete_and_start_next_test (bool successful);
 static void log_message (const char* test_name, const char* message);
+static void log_output (const char* test_name, const char* message, const char* level);
 static void set_current_dir (const char* test_path);
 static void agviewer_handle_native_sigsegv (int signal);
 static void agviewer_add_signal_handler ();
+static void print_stack_traces ();
 
 static gpointer
 hang_detector (gpointer data)
@@ -103,6 +105,7 @@ hang_detector (gpointer data)
 		now = time (NULL);
 		if (hung_time > 0 && hung_time < now) {
 			fprintf (stderr, "Agviewer seems to be hung, aborting process.\n");
+			print_stack_traces ();
 			abort ();
 		}
 		//printf ("hang_detector: We're %li seconds from hanging\n", hung_time - now);
@@ -276,7 +279,7 @@ run_test (char* test_path, int timeout)
 	hung_time = time (NULL) + timeout / 1000 + 60;
 	
 	set_current_dir (test_path);
-	
+	log_output (test_path, "[Test start]", "Debug");
 	gtk_moz_embed_load_url (GTK_MOZ_EMBED (browser->moz_embed), test_path);
 }
 
@@ -510,6 +513,12 @@ wait_for_next_test (int *timeout)
 void
 log_message (const char* test_name, const char* message)
 {
+	log_output (test_name, message, "Error");
+}
+
+void
+log_output (const char* test_name, const char* message, const char* level)
+{
 	DBusGProxy* dbus_proxy;
 	DBusGConnection* connection;
 	GError* error = NULL;  
@@ -526,9 +535,8 @@ log_message (const char* test_name, const char* message)
 			DRT_LOGGER_PATH,
 			DRT_LOGGER_INTERFACE);
 
-	dbus_g_proxy_call_no_reply (dbus_proxy, "Log", G_TYPE_STRING, test_name, G_TYPE_STRING, "Error", G_TYPE_STRING, message, G_TYPE_INVALID);
+	dbus_g_proxy_call_no_reply (dbus_proxy, "Log", G_TYPE_STRING, test_name, G_TYPE_STRING, level, G_TYPE_STRING, message, G_TYPE_INVALID);
 }
-
 
 static void
 agviewer_add_signal_handler ()
@@ -580,7 +588,15 @@ agviewer_handle_native_sigsegv (int signal)
 			 " can do managed and native stack traces together)            \n"
 			 "=============================================================\n"
 			 "\n", signal_str);
-	
+
+	print_stack_traces ();		
+
+	abort ();
+}
+
+static void
+print_stack_traces ()
+{
 	/* Try to get more meaningful information using gdb */
 #if !defined(PLATFORM_WIN32)
 	/* From g_spawn_command_line_sync () in eglib */
@@ -649,5 +665,4 @@ agviewer_handle_native_sigsegv (int signal)
 	if (print_stack_trace)
 		print_stack_trace ();
 	
-	abort ();
 }
