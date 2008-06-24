@@ -74,17 +74,13 @@ namespace MoonlightTests {
 
 			string result_file = GetFilePath (test.ResultFile);
 			string master_file = GetFilePath (test.MasterFile);
-			string edge_diff_file = GetFilePath (String.Concat (test.InputFile, "-edge-diff.png"));
 
 			CopyImageToRunDirectory (result_file);
-			CopyImageToRunDirectory (master_file);
-			CopyImageToRunDirectory (edge_diff_file);
 
 			el.SetAttribute ("Id", test.Id);
 			el.SetAttribute ("InputFile", test.InputFile);
 			el.SetAttribute ("ResultFile", MakeRelativePath (result_file));
-			el.SetAttribute ("MasterFile", MakeRelativePath (master_file));
-			el.SetAttribute ("EdgeDiffFile", MakeRelativePath (edge_diff_file));
+			el.SetAttribute ("MasterFile", Path.GetFullPath (master_file));
 			el.SetAttribute ("TestResult", result.ToString ());
 
 			foreach (string category in test.Categories) {
