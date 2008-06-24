@@ -1,3 +1,14 @@
+2008-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp: in the switch from function pointer to integer in
+	the HandleMouseEvent stuff, I didn't catch that C++ apparently
+	doesn't flag NULL as different from 0.  This was causing the
+	"HandleMouseEvent (NULL" to become effectively become
+	"HandleMouseEvent (UIElement::DestroyedEvent" which of course
+	breaks all sorts of things.  In bug 401884 it was causing the
+	namescope to drop the named item from its hashtable, causing the
+	tattoo needle to not move vertically.
+
 2008-06-23  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::PreRender): comment from the code is

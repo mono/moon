@@ -102,6 +102,8 @@ static struct {
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
 
+#define NO_EVENT_ID -1
+
 static void
 fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
 {
@@ -1329,7 +1331,7 @@ Surface::PerformReleaseCapture ()
 	// this causes any new elements we're over to be Enter'ed.  MS
 	// doesn't Leave the element that had the mouse captured,
 	// though.
-	HandleMouseEvent (NULL, false, true, false, mouse_event);
+	HandleMouseEvent (NO_EVENT_ID, false, true, false, mouse_event);
 }
 
 bool
@@ -1491,7 +1493,8 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		// if the mouse is captured, the input_list doesn't ever
 		// change, and we don't emit enter/leave events.  just emit
 		// the event on the input_list.
-		handled = EmitEventOnList (event_id, input_list, event, -1);
+		if (event_id != NO_EVENT_ID)
+			handled = EmitEventOnList (event_id, input_list, event, -1);
 	}
 	else {
 		int surface_index;
@@ -1552,7 +1555,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		if (emit_enter)
 			handled = EmitEventOnList (UIElement::MouseEnterEvent, new_input_list, event, new_index) || handled;
 
-		if ((surface_index == 0 && new_index == 0) || force_emit) {
+		if (event_id != NO_EVENT_ID && ((surface_index == 0 && new_index == 0) || force_emit)) {
 			handled = EmitEventOnList (event_id, new_input_list, event, -1) || handled;
 		}
 
