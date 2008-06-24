@@ -653,10 +653,25 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
 	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
 		Rect r = GetSubtreeBounds ().RoundOut();
 		cairo_identity_matrix (cr);
-		// FIXME we should be able to apply the region clip here
-		// it appears something may be wrong with ftb logic
-		//region->Draw (cr);
-		//cairo_clip (cr);
+
+		// we need this check because ::PreRender can (and
+		// will) be called for elements with empty regions.
+		//
+		// The region passed in here is the redraw region
+		// intersected with the render bounds of a given
+		// element.  For Panels with no width/height specified
+		// in the xaml, this region will be empty. (check
+		// panel.cpp::FrontToBack - we insert the ::PreRender
+		// calling node if either the panel background or any
+		// of the children intersect the redraw region.)  We
+		// can't clip to the empty region, obviously, as it
+		// will keep all descendents from drawing to the
+		// screen.
+		// 
+		if (!region->IsEmpty()) {
+			region->Draw (cr);
+			cairo_clip (cr);
+		}
 		cairo_rectangle (cr, r.x, r.y, r.w, r.h);
 		cairo_clip (cr);
 		cairo_set_matrix (cr, &absolute_xform);

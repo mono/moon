@@ -1,5 +1,22 @@
 2008-06-23  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::PreRender): comment from the code is
+	changelog-worthy:
+	
+	we need this check because ::PreRender can (and will) be called
+	for elements with empty regions.
+	
+	The region passed in here is the redraw region intersected with
+	the render bounds of a given element.  For Panels with no
+	width/height specified in the xaml, this region will be
+	empty. (check panel.cpp::FrontToBack - we insert the ::PreRender
+	calling node if either the panel background or any of the children
+	intersect the redraw region.)  We can't clip to the empty region,
+	obviously, as it will keep all descendents from drawing to the
+	screen.
+
+2008-06-23  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h, uielement.cpp (UIElement::ShiftPosition): virtualize
 	the "bounds.x = p.x; bounds.y = p.y" code, since subclasses have
 	other, more specialized bounds that also need updating.
