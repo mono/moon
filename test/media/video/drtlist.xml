@@ -29,4 +29,5 @@
     <Test id="48" inputFile="test-markers-after-seek.html" masterFile10="None" timeout="75000" categories="video,media" />
     <Test id="49" inputFile="test-asf-demuxer-shuffled-payloads.html" masterFile10="../../harness/masters/test-asf-demuxer-shuffled-payloadsMaster.png" timeout="10000" categories="video,media,asf"  />
     <Test id="50" inputFile="test-asf-demuxer-big-markers.html" masterFile10="None" timeout="10000" categories="video,media,asf"  />
+    <Test id="51" inputFile="test-video-only-seek.html" masterFile10="None" timeout="10000" categories="video,media"  />
 </DRTList>
