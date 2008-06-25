@@ -725,6 +725,7 @@ MediaPlayer::Play ()
 	
 	SetState (Playing);
 	start_time = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
+	start_time -= target_pts;
 
 	AudioPlayer::Play (this);
 	
