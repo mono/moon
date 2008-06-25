@@ -1,3 +1,10 @@
+2008-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* shape.cpp (calc_offsets): we don't want to divide by the sin,
+	because as angle approaches either 0, PI, or PI/2, the sin will
+	approach 0, and therefore the deltas will grow very, very large.
+	Turns out multiplying is what we want.
+
 2008-06-24  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Surface::Resize): set the width and height properly

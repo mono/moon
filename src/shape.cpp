@@ -2003,9 +2003,9 @@ calc_offsets (double x1, double y1, double x2, double y2, double thickness, doub
 		*x = t2;
 		*y = 0.0;
 	} else {
-		double angle = atan (dy / dx);
-		*x = t2 / sin (angle);
-		*y = t2 / sin (M_PI / 2.0 - angle);
+		double angle = atan2 (dy, dx);
+		*x = t2 * sin (angle);
+		*y = t2 * sin (M_PI / 2.0 - angle);
 	}
 }
 
@@ -2119,8 +2119,8 @@ Polygon::ComputeShapeBounds (bool logical)
 		y3 = y0;
 		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
 
-		x1 = points [count-1].x;
-		y1 = points [count-1].y;
+		x1 = x3;
+		y1 = y3;
 		x2 = x0;
 		y2 = y0;
 		x3 = points [1].x;
