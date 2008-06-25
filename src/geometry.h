@@ -235,6 +235,11 @@ PathFigureCollection *path_figure_collection_new (void);
 //
 /* @ContentProperty="Figures" */
 class PathGeometry : public Geometry {
+	int logical_bounds_available:1;
+	int physical_bounds_available:1;
+	Rect logical_bounds;
+	Rect physical_bounds;
+	Rect CacheBounds (Path *path, bool logical, cairo_matrix_t *matrix);
  protected:
 	virtual void Build (Path *path);
 	
@@ -243,11 +248,13 @@ class PathGeometry : public Geometry {
  public:
 	static DependencyProperty *FiguresProperty;
 	
-	PathGeometry () {}
+	PathGeometry ();
+	PathGeometry (moon_path *pml_path);
+
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 	
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
-	Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
+	virtual Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
 	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
 	
 	// this is an element-by-element decision

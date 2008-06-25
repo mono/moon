@@ -1,3 +1,16 @@
+2008-06-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp: Cache bounds, both logical and "physical" for
+	PathFigure. This reduce the number of time we need to call 
+	cairo_[path|stroke|fill]_extents functions and speed up many
+	sites.
+	* geometry.h: #ifdef out GeometryFlags until we start using it.
+	Add stuff needed for geometry.cpp changes.
+	* xaml.cpp: Change geometry_from_str to directly create a 
+	moon_path and avoid the PathFigure[Collection] DO. This match
+	how Silverlight handle Path Markup Language (PML) and reduce
+	memory requirements when huge PML are used.
+
 2008-06-24  Chris Toshok  <toshok@ximian.com>
 
 	* shape.cpp (calc_offsets): we don't want to divide by the sin,

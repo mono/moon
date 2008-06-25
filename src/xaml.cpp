@@ -1798,19 +1798,17 @@ Geometry *
 geometry_from_str (const char *str)
 {
 	char *inptr = (char *) str;
-	//int s; // For starting expression markers
 	Point cp = Point (0, 0);
 	Point cp1, cp2, cp3;
+	Point start;
 	char *end;
+	PathGeometry *pg = NULL;
+	FillRule fill_rule = FillRuleEvenOdd;
+	bool cbz = false; // last figure is a cubic bezier curve
+	bool qbz = false; // last figure is a quadratic bezier curve
+	Point cbzp, qbzp; // points needed to create "smooth" beziers
 
-	PathFigure *pf = NULL;
-	PathSegment *prev = NULL;
-	PathSegmentCollection *psc = NULL;
-	
-	PathGeometry *pg = new PathGeometry ();
-	PathFigureCollection *pfc = new PathFigureCollection ();
-	pg->SetFigures (pfc);
-	pfc->unref ();
+	moon_path *path = moon_path_new (10);
 
 	while (*inptr) {
 		if (g_ascii_isspace (*inptr))
@@ -1828,11 +1826,13 @@ geometry_from_str (const char *str)
 		case 'f':
 		case 'F':
 			if (*inptr == '0')
-				pg->SetFillRule (FillRuleEvenOdd);
+				fill_rule = FillRuleEvenOdd;
 			else if (*inptr == '1')
-				pg->SetFillRule (FillRuleNonzero);
-			
-			// FIXME: else it's a bad value and nothing should be rendered
+				fill_rule = FillRuleNonzero;
+			else
+				// FIXME: else it's a bad value and nothing should be rendered
+				goto bad_pml; // partial: only this Path won't be rendered
+
 			inptr = g_utf8_next_char (inptr);
 			break;
 		case 'm':
@@ -1844,22 +1844,11 @@ geometry_from_str (const char *str)
 			if (relative)
 				make_relative (&cp, &cp1);
 
-			if (pf) {
-				pfc->Add (pf);
-				pf->unref ();
-			}
+			// start point
+			moon_move_to (path, cp1.x, cp1.y);
 
-			pf = new PathFigure ();
-			psc = new PathSegmentCollection ();
-			pf->SetSegments (psc);
-			psc->unref ();
-
-			pf->SetStartPoint (&cp1);
-
-			prev = NULL;
-
-			cp.x = cp1.x;
-			cp.y = cp1.y;
+			start.x = cp.x = cp1.x;
+			start.y = cp.y = cp1.y;
 
 			advance (&inptr);
 			while (more_points_available (&inptr)) {
@@ -1869,25 +1858,18 @@ geometry_from_str (const char *str)
 				if (relative)
 					make_relative (&cp, &cp1);
 				
-				LineSegment *ls = new LineSegment ();
-				ls->SetPoint (&cp1);
-
-				psc->Add (ls);
-				ls->unref ();
-				prev = ls;
+				moon_line_to (path, cp1.x, cp1.y);
 			}
 
 			cp.x = cp1.x;
 			cp.y = cp1.y;
+			cbz = qbz = false;
 			break;
 
 		case 'l':
 			relative = true;
 		case 'L':
 		{
-			if (!psc)
-				return pg;
-
 			while (more_points_available (&inptr)) {
 				if (!get_point (&cp1, &inptr))
 					break;
@@ -1895,18 +1877,14 @@ geometry_from_str (const char *str)
 				if (relative)
 					make_relative (&cp, &cp1);
 
-				LineSegment *ls = new LineSegment ();
-				ls->SetPoint (&cp1);
-
-				psc->Add (ls);
-				ls->unref ();
-				prev = ls;
+				moon_line_to (path, cp1.x, cp1.y);
 
 				cp.x = cp1.x;
 				cp.y = cp1.y;
 
 				advance (&inptr);
 			}
+			cbz = qbz = false;
 			break;
 		}
 		
@@ -1914,9 +1892,6 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'H':
 		{
-			if (!psc)
-				return pg;
-
 			double x = g_ascii_strtod (inptr, &end);
 			if (end == inptr)
 				break;
@@ -1927,13 +1902,8 @@ geometry_from_str (const char *str)
 				x += cp.x;
 			cp = Point (x, cp.y);
 
-			LineSegment *ls = new LineSegment ();
-			ls->SetPoint (&cp);
-
-			psc->Add (ls);
-			ls->unref ();
-			prev = ls;
-
+			moon_line_to (path, cp.x, cp.y);
+			cbz = qbz = false;
 			break;
 		}
 		
@@ -1941,9 +1911,6 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'V':
 		{
-			if (!psc)
-				return pg;
-
 			double y = g_ascii_strtod (inptr, &end);
 			if (end == inptr)
 				break;
@@ -1954,13 +1921,8 @@ geometry_from_str (const char *str)
 				y += cp.y;
 			cp = Point (cp.x, y);
 
-			LineSegment *ls = new LineSegment ();
-			ls->SetPoint (&cp);
-
-			psc->Add (ls);
-			ls->unref ();
-			prev = ls;
-
+			moon_line_to (path, cp.x, cp.y);
+			cbz = qbz = false;
 			break;
 		}
 		
@@ -1968,9 +1930,6 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'C':
 		{
-			if (!psc)
-				return pg;
-
 			if (!get_point (&cp1, &inptr))
 				break;
 			
@@ -1979,66 +1938,40 @@ geometry_from_str (const char *str)
 			
 			advance (&inptr);
 			
-			if (!get_point (&cp2, &inptr))
-				break;
+			while (more_points_available (&inptr)) {
+				if (!get_point (&cp2, &inptr))
+					break;
 			
-			if (relative)
-				make_relative (&cp, &cp2);
+				if (relative)
+					make_relative (&cp, &cp2);
 			
-			advance (&inptr);
+				advance (&inptr);
 			
-			if (!get_point (&cp3, &inptr))
-				break;
+				if (!get_point (&cp3, &inptr))
+					break;
 			
-			if (relative)
-				make_relative (&cp, &cp3);
+				if (relative)
+					make_relative (&cp, &cp3);
 			
-			advance (&inptr);
+				advance (&inptr);
 			
-			if (more_points_available (&inptr)) {
-				GSList *pl = NULL;
-				int count = 3;
+				moon_curve_to (path, cp1.x, cp1.y, cp2.x, cp2.y, cp3.x, cp3.y);
 
-				pl = g_slist_append (pl, &cp1);
-				pl = g_slist_append (pl, &cp2);
-				pl = g_slist_append (pl, &cp3);
-
-				Point last;
-				Point *pts = get_point_array (inptr, pl, &count, relative, &cp, &last);
-				PolyBezierSegment *pbs = new PolyBezierSegment ();
-				pbs->SetPoints (pts, count);
-
-				psc->Add (pbs);
-				pbs->unref ();
-				prev = pbs;
-
-				cp.x = last.x;
-				cp.y = last.y;
-
-				g_slist_free (pl);
-			} else {
-				BezierSegment *bs = new BezierSegment ();
-				bs->SetPoint1 (&cp1);
-				bs->SetPoint2 (&cp2);
-				bs->SetPoint3 (&cp3);
-				
-				psc->Add (bs);
-				bs->unref ();
-				prev = bs;
-
-				cp.x = cp3.x;
-				cp.y = cp3.y;
+				cp1.x = cp3.x;
+				cp1.y = cp3.y;
 			}
-			
+			cp.x = cp3.x;
+			cp.y = cp3.y;
+			cbz = true;
+			cbzp.x = cp2.x;
+			cbzp.y = cp2.y;
+			qbz = false;
 			break;
 		}
 		case 's':
 			relative = true;
 		case 'S':
 		{
-			if (!psc)
-				return pg;
-
 			while (more_points_available (&inptr)) {
 				if (!get_point (&cp2, &inptr))
 					break;
@@ -2054,36 +1987,29 @@ geometry_from_str (const char *str)
 				if (relative)
 					make_relative (&cp, &cp3);
 
-				if (prev && prev->GetObjectType () == Type::BEZIERSEGMENT) {
-					Point *p = ((BezierSegment *) prev)->GetPoint2 ();
-					cp1.x = 2 * cp.x - p->x;
-					cp1.y = 2 * cp.y - p->y;
+				if (cbz) {
+					cp1.x = 2 * cp.x - cbzp.x;
+					cp1.y = 2 * cp.y - cbzp.y;
 				} else
 					cp1 = cp;
 
-				BezierSegment *bs = new BezierSegment ();
-				bs->SetPoint1 (&cp1);
-				bs->SetPoint2 (&cp2);
-				bs->SetPoint3 (&cp3);
-
-				psc->Add (bs);
-				bs->unref ();
-				prev = bs;
+				moon_curve_to (path, cp1.x, cp1.y, cp2.x, cp2.y, cp3.x, cp3.y);
+				cbz = true;
+				cbzp.x = cp2.x;
+				cbzp.y = cp2.y;
 
 				cp.x = cp3.x;
 				cp.y = cp3.y;
 
 				advance (&inptr);
 			}
+			qbz = false;
 			break;
 		}
 		case 'q':
 			relative = true;
 		case 'Q':
 		{
-			if (!psc)
-				return pg;
-
 			if (!get_point (&cp1, &inptr))
 				break;
 			
@@ -2092,54 +2018,30 @@ geometry_from_str (const char *str)
 
 			advance (&inptr);
 			
-			if (!get_point (&cp2, &inptr))
-				break;
+			while (more_points_available (&inptr)) {
+				if (!get_point (&cp2, &inptr))
+					break;
 			
-			if (relative)
-				make_relative (&cp, &cp2);
+				if (relative)
+					make_relative (&cp, &cp2);
 			
-			advance (&inptr);
-			if (more_points_available (&inptr)) {
-				GSList *pl = NULL;
-				int count = 2;
+				advance (&inptr);
 
-				pl = g_slist_append (pl, &cp1);
-				pl = g_slist_append (pl, &cp2);
-
-				Point last;
-				Point *pts = get_point_array (inptr, pl, &count, relative, &cp, &last);
-				PolyQuadraticBezierSegment *pqbs = new PolyQuadraticBezierSegment ();
-				pqbs->SetPoints (pts, count);
-
-				psc->Add (pqbs);
-				pqbs->unref ();
-				prev = pqbs;
-
-				cp.x = last.x;
-				cp.y = last.y;
-
-				g_slist_free (pl);
-			} else {
-				QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
-				qbs->SetPoint1 (&cp1);
-				qbs->SetPoint2 (&cp2);
-
-				psc->Add (qbs);
-				qbs->unref ();
-				prev = qbs;
+				moon_quad_curve_to (path, cp1.x, cp1.y, cp2.x, cp2.y);
 
 				cp.x = cp2.x;
 				cp.y = cp2.y;
 			}
+			qbz = true;
+			qbzp.x = cp1.x;
+			qbzp.y = cp1.y;
+			cbz = false;
 			break;
 		}
 		case 't':
 			relative = true;
 		case 'T':
 		{
-			if (!psc)
-				return pg;
-
 			while (more_points_available (&inptr)) {
 				if (!get_point (&cp2, &inptr))
 					break;
@@ -2147,36 +2049,29 @@ geometry_from_str (const char *str)
 				if (relative)
 					make_relative (&cp, &cp2);
 
-				if (prev && prev->GetObjectType () == Type::QUADRATICBEZIERSEGMENT) {
-					Point *p = ((QuadraticBezierSegment *) prev)->GetPoint1 ();
-					cp1.x = 2 * cp.x - p->x;
-					cp1.y = 2 * cp.y - p->y;
+				if (qbz) {
+					cp1.x = 2 * cp.x - qbzp.x;
+					cp1.y = 2 * cp.y - qbzp.y;
 				} else
 					cp1 = cp;
 
-				QuadraticBezierSegment *qbs = new QuadraticBezierSegment ();
-				qbs->SetPoint1 (&cp1);
-				qbs->SetPoint2 (&cp2);
+				moon_quad_curve_to (path, cp1.x, cp1.y, cp2.x, cp2.y);
+				qbz = true;
+				qbzp.x = cp1.x;
+				qbzp.y = cp1.y;
 				
-				psc->Add (qbs);
-				qbs->unref ();
-				prev = qbs;
-
 				cp.x = cp2.x;
 				cp.y = cp2.y;
 
 				advance (&inptr);
 			}
-				
+			cbz = false;
 			break;
 		}
 		case 'a':
 			relative = true;
 		case 'A':
 		{
-			if (!psc)
-				return pg;
-
 			while (more_points_available (&inptr)) {
 				if (!get_point (&cp1, &inptr))
 					break;
@@ -2210,70 +2105,37 @@ geometry_from_str (const char *str)
 				if (relative)
 					make_relative (&cp, &cp2);
 
-				ArcSegment *arc = new ArcSegment ();
-				arc->SetIsLargeArc ((bool) is_large);
-				arc->SetSweepDirection ((SweepDirection) sweep);
-				arc->SetRotationAngle (angle);
-				arc->SetSize (&cp1);
-				arc->SetPoint (&cp2);
-
-				psc->Add (arc);
-				arc->unref ();
-				prev = arc;
+				moon_arc_to (path, cp1.x, cp1.y, angle, is_large, sweep, cp2.x, cp2.y);
 					
 				cp.x = cp2.x;
 				cp.y = cp2.y;
 
 				advance (&inptr);
 			}
+			cbz = qbz = false;
 			break;
 		}
 		case 'z':
-		case 'Z': {
-			if (!psc)
-				return pg;
+		case 'Z':
+			moon_line_to (path, start.x, start.y);
+			moon_close_path (path);
 
-			Point *p = pf->GetStartPoint ();
-
-			if (!p)
-				p = new Point (0, 0);
-
-			LineSegment *ls = new LineSegment ();
-			ls->SetPoint (p);
-			
-			psc->Add (ls);
-			ls->unref ();
-
-			prev = NULL;
-			pf->SetIsClosed (true);
-			
-			cp.x = p->x;
-			cp.y = p->y;
-			
-			if (pf) {
-				pfc->Add (pf);
-				pf->unref ();
-			}
-
-			pf = new PathFigure ();
-			psc = new PathSegmentCollection ();
-			pf->SetStartPoint (p);
-			pf->SetSegments (psc);
-			psc->unref ();
-			
+			cp.x = start.x;
+			cp.y = start.y;
+			cbz = qbz = false;
 			break;
-		}
 		default:
 			break;
 		}
 	}
 
-	if (pf) {
-		pfc->Add (pf);
-		pf->unref ();
-	}
-	
+	pg = new PathGeometry (path);
+	pg->SetFillRule (fill_rule);
 	return pg;
+
+bad_pml:
+	moon_path_destroy (path);
+	return NULL;
 }
 
 bool
