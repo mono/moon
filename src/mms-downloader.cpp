@@ -33,24 +33,24 @@ is_valid_mms_header (MmsHeader *header)
 
 MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 {
-	this->uri = NULL;
-	this->buffer = NULL;
+	uri = NULL;
+	buffer = NULL;
 
-	this->asf_packet_size = 0;
-	this->header_size = 0;
-	this->size = 0;
-	this->packets_received = 0;
+	asf_packet_size = 0;
+	header_size = 0;
+	size = 0;
+	packets_received = 0;
 
-	this->p_packet_count = 0;
+	p_packet_count = 0;
 
-	this->described = false;
-	this->seekable = false;
-	this->seeked = false;
+	described = false;
+	seekable = false;
+	seeked = false;
 
-	this->best_audio_stream = 0;
-	this->best_video_stream = 0;
-	this->best_audio_stream_rate = 0;
-	this->best_video_stream_rate = 0;
+	best_audio_stream = 0;
+	best_video_stream = 0;
+	best_audio_stream_rate = 0;
+	best_video_stream_rate = 0;
 
 	memset (audio_streams, 0xff, 128 * 4);
 	memset (video_streams, 0xff, 128 * 4);
@@ -62,9 +62,7 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 
 MmsDownloader::~MmsDownloader ()
 {
-	if (this->buffer != NULL) {
-		g_free (this->buffer);
-	}
+	g_free (buffer);
 }
 
 void
@@ -90,24 +88,24 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 	int64_t requested_position = -1;
 
 	// Resize our internal buffer
-	if (this->buffer == NULL) {
-		this->buffer = (char *) g_malloc (n);
+	if (buffer == NULL) {
+		buffer = (char *) g_malloc (n);
 	} else {
-		this->buffer = (char *) g_realloc (this->buffer, this->size + n);
+		buffer = (char *) g_realloc (buffer, size + n);
 	}
 
 	// Populate the data into the buffer
-	memcpy (this->buffer + this->size, buf, n);
-	this->size += n;
+	memcpy (buffer + size, buf, n);
+	size += n;
 
 	// FIXME: We shouldn't poll here, we should notify over
 	dl->RequestPosition (&requested_position);
 	if (requested_position != -1) {
 		seeked = true;
 
-		g_free (this->buffer);
-		this->buffer = NULL;
-		this->size = 0;
+		g_free (buffer);
+		buffer = NULL;
+		size = 0;
 
 		dl->InternalAbort ();
 
@@ -133,10 +131,10 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 
 	// Check if we have an entire packet available.
 process_packet:
-	if (this->size < sizeof (MmsHeader))
+	if (size < sizeof (MmsHeader))
 		return;
 
-	header = (MmsHeader *) this->buffer;
+	header = (MmsHeader *) buffer;
 
 	if (!is_valid_mms_header (header)) {
 		dl->Abort ();
@@ -145,28 +143,28 @@ process_packet:
 	}
 
 
-	if (this->size < (header->length + sizeof (MmsHeader)))
+	if (size < (header->length + sizeof (MmsHeader)))
 		return;
 
-	packet = (MmsPacket *) (this->buffer + sizeof (MmsHeader));
-	payload = (this->buffer + sizeof (MmsHeader) + sizeof (MmsDataPacket));
+	packet = (MmsPacket *) (buffer + sizeof (MmsHeader));
+	payload = (buffer + sizeof (MmsHeader) + sizeof (MmsDataPacket));
 
 	if (ProcessPacket (header, packet, payload, &offset)) {
-		if (this->size - offset > 0) {
+		if (size - offset > 0) {
 			// FIXME: We should refactor this to increment the buffer pointer to the new position
 			// but coalense the free / malloc / memcpy into batches to improve performance on big
 			// streams
-			char *new_buffer = (char *) g_malloc (this->size - offset);
-			memcpy (new_buffer, this->buffer + offset, this->size - offset);
-			g_free (this->buffer);
+			char *new_buffer = (char *) g_malloc (size - offset);
+			memcpy (new_buffer, buffer + offset, size - offset);
+			g_free (buffer);
 
-			this->buffer = new_buffer;
+			buffer = new_buffer;
 		} else {
-			g_free (this->buffer);
-			this->buffer = NULL;
+			g_free (buffer);
+			buffer = NULL;
 		}
 
-		this->size -= offset;
+		size -= offset;
 
 		goto process_packet;
 	}
@@ -225,15 +223,14 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 	asf_src->SetOwner (false);
 	asf_src->unref ();
 	if (!parser->ReadHeader ()) {
-		this->asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
+		asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
 		delete parser;
 		return true;
 	}
 
 	asf_file_properties *properties = parser->GetFileProperties ();
 
-	if (!this->described) {
-		gpointer state;
+	if (!described) {
 		guint8 current_stream;
 
 		for (int i = 1; i < 127; i++) {
@@ -252,7 +249,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 
 			if (stream_properties->is_audio ()) {
 				const WAVEFORMATEX* wave = stream_properties->get_audio_data ();
-				this->AddAudioStream (current_stream, wave->bytes_per_second * 8);
+				AddAudioStream (current_stream, wave->bytes_per_second * 8);
 			}
 			if (stream_properties->is_video ()) {
 				int bit_rate = 0;
@@ -268,16 +265,16 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 					}
 				}
 
-				this->AddVideoStream (current_stream, bit_rate);
+				AddVideoStream (current_stream, bit_rate);
 			}
 			current_stream++;
 		}
-		this->described = true;
+		described = true;
 
 		// Free the current buffer of data, we've collected enough for our Describe request
-		g_free (this->buffer);
-		this->buffer = NULL;
-		this->size = 0;
+		g_free (buffer);
+		buffer = NULL;
+		size = 0;
 
 		// Abort and resend the real request
 		dl->InternalAbort ();
@@ -299,17 +296,17 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 
 		return false;
 	}
-	this->asf_packet_size = parser->GetPacketSize ();
-	this->header_size = header->length - sizeof (MmsDataPacket);
+	asf_packet_size = parser->GetPacketSize ();
+	header_size = header->length - sizeof (MmsDataPacket);
 
-	if (properties->file_size == this->header_size) {
-		this->seekable = false;
+	if (properties->file_size == header_size) {
+		seekable = false;
 	} else {
-		this->seekable = true;
+		seekable = true;
 		dl->NotifySize (properties->file_size);
 	}
 
-	dl->InternalWrite (payload, 0, this->header_size);
+	dl->InternalWrite (payload, 0, header_size);
 
 	delete parser;
 
@@ -393,7 +390,7 @@ MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *pa
 	// the value in the reason field.  This is a break from the normal behaviour of MMS packets
 	// so we need to guard against this occurnace here and ensure we actually have enough data
 	// buffered to consume
-	if (p_packet_count == 2 && this->size < (header->length + sizeof (MmsHeader) + packet->packet.reason))
+	if (p_packet_count == 2 && size < (header->length + sizeof (MmsHeader) + packet->packet.reason))
 		return false;
 
 	// NOTE: We also need to account for the size of the reason field manually with our packet massaging.
@@ -422,10 +419,10 @@ MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *pa
 {
 	LOG_MMS ("MmsDownloader::ProcessDataPacket ()\n");
 	
-	gint32 off = this->header_size;
-	gint32 size = this->asf_packet_size;
+	gint32 off = header_size;
+	gint32 size = asf_packet_size;
 		
-	if (this->seekable) {
+	if (seekable) {
 		off += packet->packet.data.id * size;
 	} else {
 		off += packets_received * size;
@@ -440,9 +437,9 @@ MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *pa
 int
 MmsDownloader::GetVideoStream ()
 {
+	gint64 max_bitrate = (gint64)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
 	int video_stream = 0;
 	int video_rate = 0;
-	guint64 max_bitrate = (guint64)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
 	
 	for (int i = 0; i < 128; i++) {
 		int stream_rate = video_streams [i];
@@ -469,9 +466,9 @@ MmsDownloader::GetVideoStream ()
 int
 MmsDownloader::GetAudioStream ()
 {
+	gint64 max_bitrate = (gint64)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
 	int audio_stream = 0;
 	int audio_rate = 0;
-	guint64 max_bitrate = (guint64)(((p_packet_sizes [1] + p_packet_sizes[2]) * 8)/((double) ((p_packet_times[2] - p_packet_times[0]) / (double) 10000000)));
 	
 	for (int i = 0; i < 128; i++) {
 		int stream_rate = audio_streams [i];
