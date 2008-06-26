@@ -1,0 +1,25 @@
+<Canvas
+  xmlns="http://schemas.microsoft.com/client/2007"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  Width="400" Height="400">
+  <Rectangle Width="63" Height="76" Canvas.Top="10" Canvas.Left="10">
+    <Rectangle.Fill>
+     <ImageBrush ImageSource="mono.png" >
+       <ImageBrush.RelativeTransform>
+         <RotateTransform x:Name="Rotation" CenterX="0.5" CenterY="0.5" Angle="0" />
+       </ImageBrush.RelativeTransform>
+     </ImageBrush>
+   </Rectangle.Fill>
+   <Rectangle.Triggers>
+     <TriggerCollection>
+        <EventTrigger RoutedEvent="Rectangle.Loaded">
+           <BeginStoryboard>
+             <Storyboard>
+		<DoubleAnimation Storyboard.TargetName="Rotation" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="00:00:30" />
+	      </Storyboard>
+	    </BeginStoryboard>
+	</EventTrigger>
+      </TriggerCollection>
+    </Rectangle.Triggers>
+  </Rectangle>
+</Canvas>
