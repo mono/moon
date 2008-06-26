@@ -458,7 +458,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 {
 	bool ret = FALSE;
 
-	// quick out if, when building the path, we detected a empty shape
+	// quick out if, when building the path, we detected an empty shape
 	if (IsEmpty ())
 		goto cleanpath;
 

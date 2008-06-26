@@ -128,7 +128,7 @@ class Shape : public FrameworkElement {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
-	//
+	// State helpers
 	bool IsEmpty () { return (flags & UIElement::SHAPE_EMPTY); };
 	bool IsNormal () { return (flags & UIElement::SHAPE_NORMAL); };
 	bool IsDegenerate () { return (flags & UIElement::SHAPE_DEGENERATE); };
