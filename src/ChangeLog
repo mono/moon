@@ -1,5 +1,19 @@
 2008-06-26  Chris Toshok  <toshok@ximian.com>
 
+	* dirty.cpp (Surface::ProcessDownDirtyElements): add code to
+	re-sort the children by zindex.
+
+	* dirty.h (enum DirtyType): add DirtyChildrenZIndices.
+
+	* panel.cpp (Panel::OnCollectionChanged): don't resort-by-zindex
+	here.  just add it to the dirty list.
+
+	* transform.h, transform.cpp: move the OnSubPropertyChanged method
+	to MatrixTransform, so we can notify our listeners with the right
+	property.
+
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
 	* transform.h, transform.cpp (Transform::OnSubPropertyChanged): we
 	need this to deal with sub-dependencyobjects of transforms (in
 	this case, MatrixTransform's Matrix object.)  when you set

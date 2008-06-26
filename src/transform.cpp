@@ -38,14 +38,6 @@ Transform::OnPropertyChanged (PropertyChangedEventArgs *args)
 }
 
 void
-Transform::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
-{
-	need_update = true;
-
-	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
-}
-
-void
 Transform::UpdateTransform ()
 {
 	g_warning ("Transform:UpdateTransform has been called. The derived class should have overridden it.");
@@ -540,6 +532,17 @@ matrix_set_offset_y (Matrix *matrix, double value)
 }
 
 DependencyProperty* MatrixTransform::MatrixProperty;
+
+void
+MatrixTransform::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	need_update = true;
+
+	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
+
+	NotifyListenersOfPropertyChange (MatrixTransform::MatrixProperty);
+}
+
 
 void
 MatrixTransform::UpdateTransform ()

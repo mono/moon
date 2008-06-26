@@ -195,6 +195,18 @@ Surface::ProcessDownDirtyElements ()
  			PropagateDirtyFlagToChildren (el, DirtyPosition);
 		}
 
+		if (el->dirty_flags & DirtyChildrenZIndices) {
+			el->dirty_flags &= ~DirtyChildrenZIndices;
+			if (!el->Is(Type::PANEL)) { 
+				g_warning ("DirtyChildrenZIndices is only applicable to Panel subclasses");
+			}
+			else {
+				((Panel*)el)->GetChildren ()->ResortByZIndex();
+				el->Invalidate (el->GetSubtreeBounds());
+			}
+			    
+		}
+
 		if (!(el->dirty_flags & DownDirtyState)) {
 			down_dirty->Remove (node);
 			el->down_dirty_node = NULL;

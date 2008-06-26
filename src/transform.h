@@ -29,7 +29,6 @@ class Transform : public DependencyObject {
  public:
 	Transform () : need_update (true) { }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };
 	virtual void GetTransform (cairo_matrix_t *value) {
 		if (need_update) {
@@ -221,9 +220,8 @@ class MatrixTransform : public Transform {
 	MatrixTransform () {}
 	virtual Type::Kind GetObjectType () { return Type::MATRIXTRANSFORM; };
 
-	/* these are dependency properties
-	   Matrix matrix;
-	*/
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+
 	virtual void UpdateTransform ();
 };
 
