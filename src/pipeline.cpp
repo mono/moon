@@ -1373,9 +1373,9 @@ ASXDemuxer::ReadHeader ()
 bool
 ASXDemuxerInfo::Supports (IMediaSource *source)
 {
-	guint8 buffer[4];
+	char buffer[4];
 	
-	if (!source->Peek (buffer, 4))
+	if (!source->Peek ((guint8 *) buffer, 4))
 		return false;
 	
 	return !g_ascii_strncasecmp (buffer, "<asx", 4) ||
