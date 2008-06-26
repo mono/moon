@@ -29,6 +29,7 @@ class EventObject;
 class EventArgs;
 struct EmitContext;
 
+typedef void (* TickCallHandler) (EventObject *object);
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 
 struct EventList {
@@ -159,7 +160,7 @@ class EventObject {
 	
 	// This method is safe to call from other than the main thread.
 	// This object is reffed before adding the tick call, the callback must unref.
-	void AddTickCall (void (*func)(gpointer));
+	void AddTickCall (TickCallHandler handler);
 	
 	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
 	

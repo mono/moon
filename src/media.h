@@ -350,10 +350,10 @@ class MediaElement : public MediaBase {
 	void PlayNow ();
 	void StopNow ();
 	void SeekNow ();
-	static void PauseNow (gpointer value);
-	static void PlayNow (gpointer value);
-	static void StopNow (gpointer value);
-	static void SeekNow (gpointer value);
+	static void PauseNow (EventObject *value);
+	static void PlayNow (EventObject *value);
+	static void StopNow (EventObject *value);
+	static void SeekNow (EventObject *value);
 	
  protected:
 	virtual ~MediaElement ();
@@ -431,7 +431,7 @@ class MediaElement : public MediaBase {
 	
 	pthread_mutex_t open_mutex; // Used when accessing closure.
 	MediaClosure *closure;
-	static void TryOpenFinished (void *user_data);
+	static void TryOpenFinished (EventObject *user_data);
 	void SetPlayRequested ();
 	
 	// Reset all information to defaults, set state to 'Error' and raise MediaFailedEvent

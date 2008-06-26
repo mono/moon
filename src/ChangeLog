@@ -1,3 +1,11 @@
+2008-06-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* clock.h, clock.cpp, dependencyobject.h, downloader.cpp,
+	  dependencyobject.cpp, mplayer.h, media.h, mplayer.cpp, media.cpp:
+	  Change AddTickCall to take a TickCallHandler (EventObject*)
+	  function pointer and a EventObject * tick_data instead of untyped
+	  function pointer/tick_data.
+
 2008-06-26  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h,

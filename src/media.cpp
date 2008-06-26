@@ -129,7 +129,7 @@ MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
 }
 
 static void
-set_source_async (void *user_data)
+set_source_async (EventObject *user_data)
 {
 	MediaBase *media = (MediaBase *) user_data;
 	
@@ -458,6 +458,8 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 void
 MediaElement::AudioFinished ()
 {
+	d (printf ("MediaElement::AudioFinished ()\n"));
+	
 	SetState (Stopped);
 	Emit (MediaElement::MediaEndedEvent);
 }
@@ -488,6 +490,9 @@ MediaElement::AdvanceFrame ()
 		last_played_pts = position;
 	}
 	
+	e (printf ("MediaElement::AdvanceFrame () previous_position: %llu = %llu ms, position: %llu = %llu ms, advanced: %i\n", 
+		previous_position, MilliSeconds_FromPts (previous_position), position, MilliSeconds_FromPts (position), advanced));
+		
 	CheckMarkers (previous_position, position);
 	
 	// Add 1 to avoid the same position to be able to be both
@@ -1140,7 +1145,7 @@ media_element_open_callback (MediaClosure *closure)
 }
 
 void
-MediaElement::TryOpenFinished (void *user_data)
+MediaElement::TryOpenFinished (EventObject *user_data)
 {
 	d(printf ("MediaElement::TryOpenFinished ()\n"));
 	
@@ -1448,7 +1453,7 @@ MediaElement::Pause ()
 }
 
 void
-MediaElement::PauseNow (gpointer data)
+MediaElement::PauseNow (EventObject *data)
 {
 	((MediaElement *) data)->PauseNow ();
 	((MediaElement *) data)->unref ();
@@ -1491,7 +1496,7 @@ MediaElement::Play ()
 }
 
 void
-MediaElement::PlayNow (gpointer data)
+MediaElement::PlayNow (EventObject *data)
 {
 	((MediaElement *) data)->PlayNow ();
 	// AddTickCall refs us, unref us here.
@@ -1557,7 +1562,7 @@ MediaElement::Stop ()
 }
 
 void
-MediaElement::StopNow (gpointer data)
+MediaElement::StopNow (EventObject *data)
 {
 	((MediaElement *) data)->StopNow ();
 	((MediaElement *) data)->unref ();
@@ -1666,7 +1671,7 @@ MediaElement::OnLoaded ()
 }
 
 void
-MediaElement::SeekNow (gpointer data)
+MediaElement::SeekNow (EventObject *data)
 {
 	((MediaElement *) data)->SeekNow ();
 	((MediaElement *) data)->unref ();

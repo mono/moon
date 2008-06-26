@@ -129,7 +129,7 @@ EventObject::SetSurface (Surface *surface)
 }
 
 void
-EventObject::AddTickCall (void (*func)(gpointer))
+EventObject::AddTickCall (TickCallHandler func)
 {
 	int result;
 	Surface *surface;

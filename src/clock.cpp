@@ -226,8 +226,8 @@ ManualTimeSource::GetNow ()
 
 
 typedef struct {
-	void (*func)(gpointer);
-	gpointer data;
+	TickCallHandler func;
+	EventObject *data;
 } TickCall;
 
 TimeManager::TimeManager ()
@@ -501,7 +501,7 @@ TimeManager::RemoveAllRegisteredTimeouts ()
 }
 
 void
-TimeManager::AddTickCall (void (*func)(gpointer), gpointer tick_data)
+TimeManager::AddTickCall (TickCallHandler func, EventObject *tick_data)
 {
 	TickCall *call = g_new (TickCall, 1);
 	call->func = func;
@@ -548,7 +548,7 @@ TimeManager::NeedClockTick ()
 }
 
 void
-time_manager_add_tick_call (TimeManager *manager, void (*func)(gpointer), gpointer tick_data)
+time_manager_add_tick_call (TimeManager *manager, TickCallHandler func, EventObject *tick_data)
 {
 	manager->AddTickCall (func, tick_data);
 }
