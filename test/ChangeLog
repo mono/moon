@@ -1,3 +1,8 @@
+2008-06-26  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/test-keyframe-keytime.html: A test for accessing
+	KeyFrame's KeyTime, as described in #402035.
+
 2008-06-20  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/remove-while-running-test.html: Making the test trigger

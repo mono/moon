@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Accessing keyframe keytime</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+	keyframe = sender.findName ("one");
+	console.log ("Seconds: %d", keyframe.KeyTime.Seconds);
+	keyframe.KeyTime.Seconds = 3.1;
+	sender.findName ("sb").Begin ();
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="300" height="400">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Rectangle x:Name="target" Fill="Blue" Canvas.Top="10" Canvas.Left="10" MouseEnter="OnMouseEnter" Width="100" Height="100" />
+
+	<Canvas.Resources>
+		<Storyboard x:Name="sb">
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetName="target" Storyboard.TargetProperty="(Canvas.Left)">
+				<DiscreteDoubleKeyFrame x:Name="zero" KeyTime="00:00:00" Value="10.0"/>
+				<DiscreteDoubleKeyFrame x:Name="one" KeyTime="00:00:02" Value="100.0"/>
+			</DoubleAnimationUsingKeyFrames>
+		</Storyboard>
+	</Canvas.Resources>
+	</Canvas>
+</script>
+
+</body>
+</html>
