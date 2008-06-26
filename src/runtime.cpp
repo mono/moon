@@ -2393,24 +2393,3 @@ runtime_shutdown (void)
 	
 
 }
-
-gboolean
-strcase_equal (gconstpointer  v1,
-	       gconstpointer  v2)
-{
-	return !g_strcasecmp ((char*)v1, (char*)v2);
-}
-
-guint
-strcase_hash (gconstpointer v)
-{
-	guint hash = 0;
-	char *p = (char *) v;
-
-	if (p) {
-		while (*p++)
-			hash = (hash << 5) - (hash + g_ascii_tolower (*p));
-	}
-
-	return hash;
-}

@@ -312,6 +312,7 @@ class DependencyProperty {
 	~DependencyProperty ();
 	DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly, bool always_change);
 
+	char *hash_key;
 	char *name;
 	Value *default_value;
 	Type::Kind type;

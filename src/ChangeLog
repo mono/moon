@@ -1,3 +1,18 @@
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h,
+	dependencyobject.cpp (DependencyProperty::DependencyProperty):
+	convert the name to downcase prior to registering and prior to
+	calling g_hash_table_lookup to remove the casecmp overhead from
+	our key comparisons.  store the converted name in DP::hash_key.
+
+	* runtime.h, runtime.cpp: remove strcase_equal (use g_strcasecmp)
+	and strcase_hash.
+
+	* type.cpp: strcase_equal -> g_strcasecmp.
+
+	* playlist.cpp (PlaylistParser::OnStartElement): same.
+
 2008-06-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (ASXDemuxerInfo::Supports): Fix broken boolean

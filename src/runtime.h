@@ -370,9 +370,6 @@ void     runtime_html_timer_timeout_stop (guint32 source_id);
 
 void runtime_shutdown (void);
 
-gboolean strcase_equal (gconstpointer  v1, gconstpointer  v2);
-guint strcase_hash     (gconstpointer v);
-
 G_END_DECLS
 
 #endif

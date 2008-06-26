@@ -1199,8 +1199,11 @@ DependencyObject::GetDependencyProperty (Type::Kind type, const char *name, bool
 
 	table = (GHashTable*) g_hash_table_lookup (properties, &type);
 
-	if (table)
-		property = (DependencyProperty*) g_hash_table_lookup (table, name);
+	if (table) {
+		char *key = g_ascii_strdown (name, -1);
+		property = (DependencyProperty*) g_hash_table_lookup (table, key);
+		g_free (key);
+	}
 
 	if (property != NULL)
 		return property;
@@ -1387,12 +1390,12 @@ DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *defaul
 	table = (GHashTable*) g_hash_table_lookup (properties, &property->type);
 
 	if (table == NULL) {
-		table = g_hash_table_new_full (strcase_hash, strcase_equal,
+		table = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       NULL, free_property);
 		g_hash_table_insert (properties, &property->type, table);
 	}
 
-	g_hash_table_insert (table, property->name, property);
+	g_hash_table_insert (table, property->hash_key, property);
 
 	return property;
 }
@@ -1480,6 +1483,7 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly, bool always_change)
 {
 	this->type = type;
+	this->hash_key = g_ascii_strdown (name, -1);
 	this->name = g_strdup (name);
 	this->default_value = default_value;
 	this->value_type = value_type;
