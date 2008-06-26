@@ -1,5 +1,12 @@
 2008-06-26  Chris Toshok  <toshok@ximian.com>
 
+	* transform.h, transform.cpp (Transform::OnSubPropertyChanged): we
+	need this to deal with sub-dependencyobjects of transforms (in
+	this case, MatrixTransform's Matrix object.)  when you set
+	properties on these subobjects, we need to update the transform.
+
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
 	* brush.h, brush.cpp (Brush::OnSubPropertyChanged): add this (i
 	think it used to be there and was removed by me in a flurry of
 	propertychanged event fixing way back) to take care of brushes
