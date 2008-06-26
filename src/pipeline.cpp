@@ -1378,12 +1378,8 @@ ASXDemuxerInfo::Supports (IMediaSource *source)
 	if (!source->Peek (buffer, 4))
 		return false;
 	
-	return (buffer [0] == '<' && 
-			(buffer [1] == 'A' || buffer [1] == 'a') && 
-			(buffer [2] == 'S' || buffer [2] == 's') &&
-			(buffer [3] == 'X' || buffer [3] == 'x') ||
-		(buffer [0] == '[' && 
-			 buffer [1] == 'R' && buffer [2] == 'e' && buffer [3] == 'f'));
+	return !g_ascii_strncasecmp (buffer, "<asx", 4) ||
+		!g_ascii_strncasecmp (buffer, "[Ref", 4);
 }
 
 IMediaDemuxer *

@@ -1,5 +1,8 @@
 2008-06-26  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pipeline.cpp (ASXDemuxerInfo::Supports): Fix broken boolean
+	logic/compiler warning and at the same time simplified.
+
 	* shape.cpp (Shape::ComputeShapeBounds): Need to take stroke
 	thickness into consideration. Fixes bug #400657.
 	(Ellipse::ComputeShapeBounds): Same.
