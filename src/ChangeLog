@@ -2,6 +2,7 @@
 
 	* shape.cpp (Shape::ComputeShapeBounds): Need to take stroke
 	thickness into consideration. Fixes bug #400657.
+	(Ellipse::ComputeShapeBounds): Same.
 
 2008-06-26  Chris Toshok  <toshok@ximian.com>
 
