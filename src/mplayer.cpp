@@ -212,6 +212,9 @@ MediaPlayer::AudioFinished ()
 	if (HasVideo ())
 		return;
 
+	if (!HasAudio ())
+		return;
+
 	if (element) {
 		Stop ();
 		element->AudioFinished ();

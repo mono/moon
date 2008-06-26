@@ -1,5 +1,10 @@
 2008-06-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: AudioFinished: Check if we still have audio when the
+	  callback is reached. Fixes test-double-stop.html.
+
+2008-06-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp: When calculating start_time take into account current
 	  position. Fixes test-video-only-seek.html (and fox seeking without
 	  audio).
