@@ -1,5 +1,10 @@
 2008-06-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* drtlist.xml: Added test-double-stop.html.
+	* test-double-stop.asx, test-double-stop.html: Added.
+
+2008-06-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* drtlist.xml: Added test-video-only-seek.html.
 	* test-video-only-seek.html: Added.
 

@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/utils.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		   <MediaElement x:Name="media" MediaOpened="OnMediaOpened" MediaEnded="OnMediaEnded" MediaFailed="OnMediaFailed" Width="200" Height="200" AutoPlay="False"/> 
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	/*
+	 * Issue: 
+	 *  Audio thread plays last sample, and queues an AudioFinished callback
+	 *  MediaElement plays last video frame, clears out state and starts opening next entry in a playlist
+	 *  The AudioFinished callback stops media, checks if we have video (which we doesn't given that we cleared out state in previous step) and raises MediaEnded.
+	 *
+	 * Step 1: Play the video, wait 0.5 second.
+	 * Step 2: Seek to (duration - 0.5) seconds (our video has 60 seconds, so seek to 29.5 s), wait 2 second
+ 	 * Step 3: Check that MediEnded has not been emitted.
+ 	 */
+	
+	var mediaEnded = false;
+	var mediaElement = null;
+	
+	function Step1 ()
+	{
+		TestLogger.LogDebug ("Step1");
+		mediaElement.Source = "test-double-stop.asx";
+		mediaElement.Play ();
+		setTimeout ("Step2 ();", 500);
+	}
+	
+	function Step2 ()
+	{
+		TestLogger.LogDebug ("Step2");
+		mediaElement.Position = "00:00:59.500";
+		setTimeout ("Step3 ();", 2000);
+	}
+	
+	function Step3 ()
+	{
+		TestLogger.LogDebug ("Step3");
+		if (mediaEnded) {
+			TestLogger.LogError ("Didn't expect MediaEnded to have been raised.");
+			TestLogger.LogError ("This test may fail only sporadically, given that it's testing a race condition.");
+		}
+		TestLogger.LogResult (mediaEnded ? -1 : 1);
+		SignalShutdown ();
+	}
+	
+	function OnPluginError (sender, args)
+	{
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1);
+		SignalShutdown ();
+	}
+
+	function OnPluginLoaded (sender, args)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		mediaElement = sender.findName ("media");
+		Step1 ();
+	}
+
+	function OnMediaOpened (sender, args)
+	{
+		TestLogger.LogDebug ("OnMediaOpened");
+	}
+	
+	function OnMediaEnded (sender, args)
+	{
+		TestLogger.LogDebug ("OnMediaEnded");
+		mediaEnded = true;
+	}
+
+	function OnMediaFailed (sender, args)
+	{
+		TestLogger.LogDebug ("OnMediaFailed");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		SignalShutdown ();
+	}
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+</body>
+
+</html>
+
+
+
+
