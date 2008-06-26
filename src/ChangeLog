@@ -1,3 +1,8 @@
+2008-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* shape.cpp (Shape::ComputeShapeBounds): Need to take stroke
+	thickness into consideration. Fixes bug #400657.
+
 2008-06-26  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.cpp (Surface::ProcessDownDirtyElements): add code to

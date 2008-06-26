@@ -556,9 +556,13 @@ Shape::ComputeShapeBounds (bool logical)
 	if ((w <= 0.0) || (h <= 0.0))
 		return Rect ();
 	
-	//double t = GetValue (Shape::StrokeThicknessProperty)->AsDouble () * 0.5;
+	if (!GetStroke ())
+		return Rect (0, 0, w, h);
 	
-	return Rect (0, 0, w, h);
+	double t = GetStrokeThickness ();
+	Rect bounds = Rect (0, 0, w, h);
+	
+	return bounds.GrowBy (t * 0.5);
 }
 
 Rect
