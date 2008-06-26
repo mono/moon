@@ -70,7 +70,9 @@ class Brush : public DependencyObject {
 	
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement);
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
-	
+
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+
 	// returns true if OpacityProperty == 1.0.
 	// subclasses override this to deal with their local coloring
 	virtual bool IsOpaque ();

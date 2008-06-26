@@ -1,3 +1,11 @@
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* brush.h, brush.cpp (Brush::OnSubPropertyChanged): add this (i
+	think it used to be there and was removed by me in a flurry of
+	propertychanged event fixing way back) to take care of brushes
+	properly causing the uielement to invalidate when the Brush's
+	transform/relativetransform changes.
+
 2008-06-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.h: #ifdef out GeometryFlags until we start using it.
