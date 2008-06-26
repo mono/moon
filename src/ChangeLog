@@ -1,3 +1,8 @@
+2008-06-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.h: #ifdef out GeometryFlags until we start using it.
+	* shape.cpp: Remove unused global variable.
+
 2008-06-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: AudioFinished: Check if we still have audio when the
@@ -20,8 +25,7 @@
 	PathFigure. This reduce the number of time we need to call 
 	cairo_[path|stroke|fill]_extents functions and speed up many
 	sites.
-	* geometry.h: #ifdef out GeometryFlags until we start using it.
-	Add stuff needed for geometry.cpp changes.
+	* geometry.h: Add stuff needed for geometry.cpp changes.
 	* xaml.cpp: Change geometry_from_str to directly create a 
 	moon_path and avoid the PathFigure[Collection] DO. This match
 	how Silverlight handle Path Markup Language (PML) and reduce

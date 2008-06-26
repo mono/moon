@@ -418,8 +418,6 @@ Shape::Clip (cairo_t *cr)
 	}
 }
 
-int number = 0;
-
 //
 // Returns TRUE if surface is a good candidate for caching.
 // Our current strategy is to cache big surfaces (likely backgrounds)
@@ -1027,8 +1025,6 @@ Ellipse::ComputeShapeBounds (bool logical)
 {
 	if (IsEmpty ())
 		return Rect ();
-	
-
 
 	Value *height, *width;
 	
