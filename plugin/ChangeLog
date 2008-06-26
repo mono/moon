@@ -1,3 +1,9 @@
+2008-06-26  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin-class.cpp:
+	* plugin-class.h: Adding ways/wrapper to access the KeyTime property of
+	the KeyFrame. Fixes #402370 and #402035.
+
 2008-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.h: add GetHost(), and rename all the "get"/"set" methods

@@ -421,6 +421,12 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		INT32_TO_NPVARIANT (color, *result);
 		break;
 	}
+	case Type::KEYTIME: {
+		MoonlightKeyTime *keytime = (MoonlightKeyTime *) NPN_CreateObject (((MoonlightObject *) npobj)->instance, MoonlightKeyTimeClass);
+		keytime->SetParentInfo (parent_obj, parent_property);
+		OBJECT_TO_NPVARIANT (keytime, *result);
+		break;
+	}
 	default:
 		/* more builtins.. */
 		if (v->Is (Type::DEPENDENCY_OBJECT)) {
@@ -1152,7 +1158,82 @@ MoonlightTimeSpanType::MoonlightTimeSpanType ()
 
 MoonlightTimeSpanType *MoonlightTimeSpanClass;
 
+/*** KeyTime ***/
+static NPObject *
+keytime_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightKeyTime (instance);
+}
 
+static const MoonNameIdMapping
+keytime_mapping[] = {
+	{ "name", MoonId_Name },
+	{ "seconds", MoonId_Seconds }
+};
+
+void
+MoonlightKeyTime::SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property)
+{
+	this->parent_obj = parent_obj;
+	this->parent_property = parent_property;
+	parent_obj->ref();
+}
+
+KeyTime*
+MoonlightKeyTime::GetValue()
+{
+	Value *v = parent_obj->GetValue (parent_property);
+	return (v ? v->AsKeyTime() : NULL);
+}
+
+bool
+MoonlightKeyTime::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	switch (id) {
+	case MoonId_Name:
+		string_to_npvariant ("", result);
+		return true;
+	case MoonId_Seconds:
+		DOUBLE_TO_NPVARIANT (TimeSpan_ToSecondsFloat (GetValue ()->GetTimeSpan ()), *result);
+		return true;
+	default:
+		return MoonlightObject::GetProperty (id, name, result);
+	}
+}
+
+bool
+MoonlightKeyTime::SetProperty (int id, NPIdentifier name, const NPVariant *value)
+{
+	switch (id) {
+	case MoonId_Name:
+		return true;
+
+	case MoonId_Seconds:
+		if (NPVARIANT_IS_INT32 (*value))
+			parent_obj->SetValue (parent_property, Value(KeyTime::FromTimeSpan (TimeSpan_FromSecondsFloat (NPVARIANT_TO_INT32 (*value)))));
+		else if (NPVARIANT_IS_DOUBLE (*value)) 
+			parent_obj->SetValue (parent_property, Value(KeyTime::FromTimeSpan (TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value)))));
+
+		return true;
+	default:
+		return MoonlightObject::SetProperty (id, name, value);
+	}
+}
+
+MoonlightKeyTime::~MoonlightKeyTime ()
+{
+	if (parent_obj)
+		parent_obj->unref ();
+}
+
+MoonlightKeyTimeType::MoonlightKeyTimeType ()
+{
+	allocate = keytime_allocate;
+
+	AddMapping (keytime_mapping, G_N_ELEMENTS (keytime_mapping));
+}
+
+MoonlightKeyTimeType *MoonlightKeyTimeClass;
 
 /*** MoonlightMouseEventArgsClass  **************************************************************/
 
@@ -4203,6 +4284,7 @@ plugin_init_classes (void)
 	MoonlightScriptControlClass = new MoonlightScriptControlType ();
 	MoonlightSettingsClass = new MoonlightSettingsType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
+	MoonlightKeyTimeClass = new MoonlightKeyTimeType ();
 }
 
 void
@@ -4226,5 +4308,6 @@ plugin_destroy_classes (void)
 	delete MoonlightPointClass; MoonlightPointClass = NULL;
 	delete MoonlightDurationClass; MoonlightDurationClass = NULL;
 	delete MoonlightTimeSpanClass; MoonlightTimeSpanClass = NULL;
+	delete MoonlightKeyTimeClass; MoonlightKeyTimeClass = NULL;
 	delete MoonlightMarkerReachedEventArgsClass; MoonlightMarkerReachedEventArgsClass = NULL;
 }
