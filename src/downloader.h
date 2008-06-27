@@ -39,7 +39,7 @@ typedef void     (*downloader_send_func) (gpointer state);
 typedef void     (*downloader_abort_func) (gpointer state);
 typedef void     (*downloader_header_func) (gpointer state, const char *header, const char *value);
 typedef void     (*downloader_body_func) (gpointer state, void *body, guint32 length);
-typedef void	 *(*downloader_create_webrequest_func) (const char *method, const char *uri, gpointer context);
+typedef gpointer (*downloader_create_webrequest_func) (const char *method, const char *uri, gpointer context);
 
 class Downloader : public DependencyObject {
 	static downloader_create_state_func create_state;

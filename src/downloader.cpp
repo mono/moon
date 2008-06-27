@@ -688,10 +688,11 @@ dummy_downloader_body (gpointer state, void *body, guint32 length)
 	g_warning ("downloader_set_function has never been called.\n");
 }
 
-static void
-*dummy_downloader_create_web_request (const char *method, const char *uri, gpointer context)
+static gpointer
+dummy_downloader_create_web_request (const char *method, const char *uri, gpointer context)
 {
 	g_warning ("downloader_set_function has never been called.\n");
+	return NULL;
 }
 
 
