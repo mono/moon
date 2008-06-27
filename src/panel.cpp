@@ -340,6 +340,8 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	
 	render_list->Prepend (panel_cleanup_node);
 
+	Region *self_region = new Region (region);
+
 	VisualCollection *children = GetChildren ();
 	for (guint i = children->z_sorted->len; i > 0; i--) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i - 1];
@@ -347,8 +349,13 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 		item->FrontToBack (region, render_list);
 	}
 
-	Region *self_region = new Region (region);
-	self_region->Intersect (GetRenderBounds().RoundOut ()); // note the RoundOut
+	if (!GetOpacityMask () && !IS_TRANSLUCENT (local_opacity)) {
+		delete self_region;
+		self_region = new Region (region);
+		self_region->Intersect (GetRenderBounds().RoundOut ()); // note the RoundOut
+	} else {
+		self_region->Intersect (GetSubtreeBounds().RoundOut ()); // note the RoundOut
+	}
 
 	if (self_region->IsEmpty() && render_list->First() == panel_cleanup_node) {
 		/* we don't intersect the surface region, and none of

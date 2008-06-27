@@ -1,3 +1,8 @@
+2008-06-27  Larry Ewing  <lewing@novell.com>
+
+	* test/xaml/test-opacity-outside-canvas-bounds.xaml: modify to
+	catch another possible opacity clip case.
+
 2008-06-27  Michael Dominic K.  <mdk@mdk.am>
 
 	* test/xaml/test-radialgradientbrush-origin.xaml: Adding an example of

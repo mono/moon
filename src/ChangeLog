@@ -1,3 +1,8 @@
+2008-06-27  Larry Ewing  <lewing@novell.com>
+
+	* panel.cpp (Panel::FrontToBack): treat opacity specially for
+	panel since we need the right subtree render region in PreRender.
+
 2008-06-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.cpp (dummy_downloader_create_web_request): Return
