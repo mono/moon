@@ -1,3 +1,10 @@
+2008-06-27  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (UIElement::OnPropertyChanged): on things that can
+	potentially be trapped by the Invalidate visibility check we need
+	to invalidate the whole subtree before we start processing the
+	dirty lists to avoid ordering issues.
+
 2008-06-27  Chris Toshok  <toshok@ximian.com>
 
 	* panel.cpp (Panel::FrontToBack): add a special case for

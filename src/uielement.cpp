@@ -111,7 +111,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	  
 	if (args->property == UIElement::OpacityProperty) {
 		UpdateTotalRenderVisibility ();
-		Invalidate ();
+		Invalidate (GetSubtreeBounds ());
 	}
 	else if (args->property == UIElement::VisibilityProperty) {
 		// note: invalid enum values are only validated in 1.1 (managed code),
@@ -122,6 +122,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		else
 			flags &= ~UIElement::RENDER_VISIBLE;
 		UpdateTotalRenderVisibility();
+		Invalidate (GetSubtreeBounds ());
 	}
 	else if (args->property == UIElement::IsHitTestVisibleProperty) {
 		if (args->new_value->AsBool())
@@ -167,6 +168,7 @@ UIElement::UpdateBounds (bool force_redraw)
 {
 	if (GetSurface ())
 		GetSurface ()->AddDirtyElement (this, DirtyBounds);
+
 	force_invalidate_of_new_bounds |= force_redraw;
 }
 
