@@ -36,6 +36,7 @@ using System.Windows.Interop;
 using System.Collections;
 using System.Collections.Generic;
 using System.Resources;
+using System.Windows.Markup;
 
 namespace System.Windows {
 
@@ -58,7 +59,7 @@ namespace System.Windows {
 		//
 		string xap_dir;
 		IntPtr surface;
-		DependencyObject root_visual;
+		UIElement root_visual;
 		
 		public Application ()
 		{
@@ -138,7 +139,7 @@ namespace System.Windows {
 				return null;
 			}
 
-			DependencyObject entry_point_assembly = deployment.DepObjectFindName (deployment.EntryPointAssembly);
+			AssemblyPart entry_point_assembly = (AssemblyPart) deployment.DepObjectFindName (deployment.EntryPointAssembly);
 			if (entry_point_assembly == null){
 				Report.Error ("AppManifest.xaml: Could not find the referenced entry point assembly");
 				return null;
@@ -150,22 +151,39 @@ namespace System.Windows {
 			}
 
 			//
+			// Load the XAML to CLR object mappings from this assembly.
+			//
+			LoadXmlnsDefinitionMappings (typeof (Application).Assembly);
+			
+			//
 			// Load the assemblies from the XAP file, and find the startup assembly
 			//
+			Assembly a;
 			Assembly startup = null;
 			assemblies = new Assembly [deployment.Parts.Count];
 			int i = 0;
-				
+
+			// Console.WriteLine ("entry point assembly:  {0}", entry_point_assembly.Name);
 			foreach (var part in deployment.Parts){
 				try {
-					Assembly a = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
-					if (part == entry_point_assembly)
+					// Console.WriteLine ("loading:  {0}/{1}   {2}", xap_dir, part.Source, loader.LoadAssembly (xap_dir, part.Source, out a));
+					
+					a = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
+					if (part.Name == entry_point_assembly.Name)
 						startup = a;
-					assemblies [i++] = a;
-				} catch {
-					Report.Error ("Error while loading the {0} assembly", part.Source);
+				} catch (Exception e) {
+					Report.Error ("Error while loading the {0} assembly  {1}", part.Source, e);
 					return null;
 				}
+			}
+
+			try {
+				a = Assembly.LoadFrom (Path.Combine (xap_dir, entry_point_assembly.Source));
+				startup = a;
+				assemblies [0] = a;
+			} catch (Exception e) {
+				Report.Error ("Errror while loading startup assembly {0}  {1}", entry_point_assembly.Source, e);
+				return null;
 			}
 
 			if (startup == null){
@@ -313,18 +331,12 @@ namespace System.Windows {
 			}
 		}
 
-		public DependencyObject RootVisual {
+		public UIElement RootVisual {
 			get {
 				return root_visual;
 			}
 
 			set {
-				//
-				// Must be a UIElement, and can only be set once
-				//
-				if (!(value is UIElement))
-					throw new InvalidOperationException ();
-
 				// Can only be set once according to the docs.
 				if (root_visual != null)
 					return;
@@ -343,5 +355,36 @@ namespace System.Windows {
 		public event StartupEventHandler Startup;
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> UnhandledException;
 
+
+		internal static Dictionary<XmlnsDefinitionAttribute,Assembly> xmlns_definitions = new Dictionary<XmlnsDefinitionAttribute, Assembly> ();
+		
+		internal static void LoadXmlnsDefinitionMappings (Assembly a)
+		{
+			object [] xmlns_defs = a.GetCustomAttributes (typeof (XmlnsDefinitionAttribute), false);
+
+			foreach (var ns_mapping in xmlns_defs){
+				xmlns_definitions [(XmlnsDefinitionAttribute) ns_mapping] = a;
+			}
+		}
+
+		//
+		// Creates the proper component by looking the namespace and name
+		// in the various assemblies loaded
+		//
+		internal static DependencyObject CreateComponentFromName (string [] imported_namespaces, string name)
+		{
+			Type t = (from def in xmlns_definitions
+					where imported_namespaces.Contains (def.Key.XmlNamespace)
+					let clr_namespace = def.Key.ClrNamespace
+					let assembly = def.Value
+					from type in assembly.GetTypes ()
+				  	where type.Namespace == clr_namespace && type.Name == name && type.IsSubclassOf (typeof (DependencyObject))
+				  	select type).FirstOrDefault ();
+
+			if (t == null)
+				return null;
+
+			return (DependencyObject) Activator.CreateInstance (t);
+		}
 	}
 }
