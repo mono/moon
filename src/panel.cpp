@@ -351,8 +351,12 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 
 	if (!GetOpacityMask () && !IS_TRANSLUCENT (local_opacity)) {
 		delete self_region;
-		self_region = new Region (region);
-		self_region->Intersect (GetRenderBounds().RoundOut ()); // note the RoundOut
+		if (GetValue (Panel::BackgroundProperty) == NULL)
+			self_region = new Region ();
+		else {
+			self_region = new Region (region);
+			self_region->Intersect (GetRenderBounds().RoundOut ()); // note the RoundOut
+		}
 	} else {
 		self_region->Intersect (GetSubtreeBounds().RoundOut ()); // note the RoundOut
 	}
