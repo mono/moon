@@ -139,7 +139,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	else if (args->property == UIElement::OpacityMaskProperty) {
 		opacityMask = args->new_value ? args->new_value->AsBrush() : NULL;
-		Invalidate ();
+		Invalidate (GetSubtreeBounds ());
 	}
 	else if (args->property == UIElement::RenderTransformProperty || args->property == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();

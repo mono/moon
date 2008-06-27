@@ -76,6 +76,7 @@ enum DirtyType {
 	// they're found to be different, invalidate the node and set
 	// DirtyBounds on the parent.
 	DirtyBounds            = 0x00000100,
+	DirtyNewBounds         = 0x00000200,
 
 	// DirtyInvalidate
 	//
@@ -84,14 +85,10 @@ enum DirtyType {
 	// the surface.  Otherwise we pass the rect up to our parent
 	// (and union it in with the parent's dirty_rect), and set
 	// DirtyInvalidate on the parent.
-	DirtyInvalidate        = 0x00000200,
-
-
+	DirtyInvalidate        = 0x00000400,
 
 	UpDirtyState           = (DirtyBounds |
 				  DirtyInvalidate),
-
-
 
 	DirtyState             = DownDirtyState | UpDirtyState,
 	DirtyInUpDirtyList     = 0x40000000,

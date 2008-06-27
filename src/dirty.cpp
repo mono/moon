@@ -123,9 +123,8 @@ Surface::ProcessDownDirtyElements ()
 			if (el->GetVisualParent ())
 				el->GetVisualParent ()->UpdateBounds ();
 
-			el->Invalidate ();
 			el->ComputeTotalRenderVisibility ();
-			el->Invalidate ();
+			el->dirty_flags |= DirtyNewBounds;
 
 			PropagateDirtyFlagToChildren (el, DirtyRenderVisibility);
 		}
@@ -159,8 +158,10 @@ Surface::ProcessDownDirtyElements ()
 		if (el->dirty_flags & DirtyTransform) {
 			el->dirty_flags &= ~DirtyTransform;
 
+			el->Invalidate ();
 			el->ComputeTransform ();
 			el->UpdateBounds ();
+			el->dirty_flags |= DirtyNewBounds;
 
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
@@ -181,20 +182,6 @@ Surface::ProcessDownDirtyElements ()
 			PropagateDirtyFlagToChildren (el, DirtyClip);
 		}
 
-		if (el->dirty_flags & DirtyPosition) {
-			el->dirty_flags &= ~DirtyPosition;
-
-			Rect obounds = el->GetBounds ();
-
-			el->Invalidate ();
-			el->ComputePosition ();
- 			if (obounds != el->GetBounds() && el->GetVisualParent ())
-				el->GetVisualParent()->UpdateBounds();
-			el->Invalidate ();
-
- 			PropagateDirtyFlagToChildren (el, DirtyPosition);
-		}
-
 		if (el->dirty_flags & DirtyChildrenZIndices) {
 			el->dirty_flags &= ~DirtyChildrenZIndices;
 			if (!el->Is(Type::PANEL)) { 
@@ -205,6 +192,20 @@ Surface::ProcessDownDirtyElements ()
 				el->Invalidate (el->GetSubtreeBounds());
 			}
 			    
+		}
+
+		if (el->dirty_flags & DirtyPosition) {
+			el->dirty_flags &= ~DirtyPosition;
+
+			Rect obounds = el->GetBounds ();
+
+			el->Invalidate ();
+			el->ComputePosition ();
+ 			if (obounds != el->GetBounds() && el->GetVisualParent ())
+				el->GetVisualParent()->UpdateBounds();
+			el->dirty_flags |= DirtyNewBounds;
+
+ 			PropagateDirtyFlagToChildren (el, DirtyPosition);
 		}
 
 		if (!(el->dirty_flags & DownDirtyState)) {
@@ -271,7 +272,10 @@ Surface::ProcessUpDirtyElements ()
 				el->Invalidate (el->GetSubtreeBounds ());
 			}
 		}
-
+		if (el->dirty_flags & DirtyNewBounds) {
+			el->Invalidate ();
+			el->dirty_flags &= ~DirtyNewBounds;
+		}
 		if (el->dirty_flags & DirtyInvalidate) {
 //  			printf (" + invalidating %p (%s) %s, %f %f %f %f\n",
 // 				el, el->GetTypeName(), el->GetName(), el->dirty_rect.x, el->dirty_rect.y, el->dirty_rect.w, el->dirty_rect.h);
