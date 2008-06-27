@@ -19,7 +19,7 @@
 bool downloader_shutdown = false;
 
 uint32_t
-plugin_downloader_started (BrowserResponse *response, gpointer state)
+plugin_downloader_started (DownloaderResponse *response, gpointer state)
 {
 	d(printf ("plugin_downloader_started (%p, %p).\n", response, state));
 	PluginDownloader *pd = (PluginDownloader *)state;
@@ -33,7 +33,7 @@ plugin_downloader_started (BrowserResponse *response, gpointer state)
 }
 
 uint32_t
-plugin_downloader_available (BrowserResponse *response, gpointer state, char *buffer, uint32_t length)
+plugin_downloader_available (DownloaderResponse *response, gpointer state, char *buffer, uint32_t length)
 {
 	d(printf ("plugin_downloader_available (%p, %p, %p, %u).\n", response, state, buffer, length));
 	PluginDownloader *pd = (PluginDownloader *)state;
@@ -46,7 +46,7 @@ plugin_downloader_available (BrowserResponse *response, gpointer state, char *bu
 }
 
 uint32_t
-plugin_downloader_finished (BrowserResponse *response, gpointer state, gpointer data)
+plugin_downloader_finished (DownloaderResponse *response, gpointer state, gpointer data)
 {
 	d(printf ("plugin_downloader_finished (%p, %p).\n", response, state));
 	PluginDownloader *pd = (PluginDownloader *)state;
@@ -129,6 +129,16 @@ plugin_downloader_abort (gpointer state)
 	pd->Abort ();
 }
 
+static void
+*plugin_downloader_create_webrequest (const char *method, const char *uri, gpointer context)
+{
+	if (!context)
+		return NULL;
+
+	PluginInstance *instance = (PluginInstance *) context;
+	return instance->GetBridge ()->CreateDownloaderRequest (method, uri);
+}
+
 PluginDownloader::PluginDownloader (Downloader *dl)
 {
 	d (printf ("PluginDownloader::PluginDownloader (), dl: %p\n", dl));
@@ -181,7 +191,7 @@ PluginDownloader::Open (const char *verb, const char *uri, bool streaming)
 	this->uri = g_strdup (uri);
 	
 	if (streaming) {
-		this->request = GetPlugin ()->GetBridge ()->CreateBrowserRequest ("GET", this->uri);
+		this->request = GetPlugin ()->GetBridge ()->CreateDownloaderRequest ("GET", this->uri);
 	} else {
 		this->request = new NPStreamRequest ("GET", this->uri, GetPlugin ());
 	}
@@ -267,7 +277,8 @@ downloader_initialize (void)
 		plugin_downloader_send,
 		plugin_downloader_abort,
 		plugin_downloader_set_header,
-		plugin_downloader_set_body);
+		plugin_downloader_set_body,
+		plugin_downloader_create_webrequest);
 }
 
 void

@@ -63,6 +63,7 @@ downloader_send_func Downloader::send_func = NULL;
 downloader_abort_func Downloader::abort_func = NULL;
 downloader_header_func Downloader::header_func = NULL;
 downloader_body_func Downloader::body_func = NULL;
+downloader_create_webrequest_func Downloader::request_func = NULL;
 
 DependencyProperty *Downloader::DownloadProgressProperty;
 DependencyProperty *Downloader::ResponseTextProperty;
@@ -429,6 +430,7 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 			  downloader_abort_func abort,
 			  downloader_header_func header,
 			  downloader_body_func body,
+			  downloader_create_webrequest_func request,
 			  bool only_if_not_set)
 {
 	d (printf ("Downloader::SetFunctions\n"));
@@ -440,7 +442,8 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 	     Downloader::send_func != NULL ||
 	     Downloader::abort_func != NULL ||
 	     Downloader::header_func != NULL ||
-	     Downloader::body_func != NULL))
+	     Downloader::body_func != NULL ||
+	     Downloader::request_func != NULL))
 	  return;
 
 	Downloader::create_state = create_state;
@@ -450,6 +453,7 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 	Downloader::abort_func = abort;
 	Downloader::header_func = header;
 	Downloader::body_func = body;
+	Downloader::request_func = request;
 }
 
 void
@@ -599,12 +603,17 @@ downloader_set_functions (downloader_create_state_func create_state,
 			  downloader_send_func send,
 			  downloader_abort_func abort, 
 			  downloader_header_func header,
-			  downloader_body_func body)
+			  downloader_body_func body,
+			  downloader_create_webrequest_func request)
 {
 	Downloader::SetFunctions (create_state, destroy_state,
-				  open, send, abort, header, body, false);
+				  open, send, abort, header, body, request, false);
 }
 
+void *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri)
+{
+	return dl->GetRequestFunc() (method, uri, dl->GetContext());
+}
 void
 downloader_request_position (Downloader *dl, gint64 *pos)
 {
@@ -679,6 +688,12 @@ dummy_downloader_body (gpointer state, void *body, guint32 length)
 	g_warning ("downloader_set_function has never been called.\n");
 }
 
+static void
+*dummy_downloader_create_web_request (const char *method, const char *uri, gpointer context)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+
 
 void
 downloader_init (void)
@@ -695,5 +710,6 @@ downloader_init (void)
 				  dummy_downloader_send,
 				  dummy_downloader_abort,
 				  dummy_downloader_header,
-				  dummy_downloader_body, true);
+				  dummy_downloader_body,
+				  dummy_downloader_create_web_request, true);
 }

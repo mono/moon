@@ -1,3 +1,17 @@
+2008-06-27  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* browser-bridge.h:
+	* firefox/browser-http.inc:
+	* firefox/ff2/ff2-bridge.h:
+	* firefox/ff2/ff2-http.cpp:
+	* firefox/ff3/ff3-bridge.h:
+	* firefox/ff3/ff3-http.cpp:
+	* npstream-request.cpp:
+	* npstream-request.h:
+	* plugin-downloader.cpp:
+	* plugin-downloader.h: move browserrequest/response from the plugin
+	as downloaderrequest/response.
+
 2008-06-26  Michael Dominic K.  <mdk@mdk.am>
 
 	* plugin-class.cpp:

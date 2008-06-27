@@ -40,7 +40,7 @@ NPStreamRequest::Abort ()
 }
 
 bool
-NPStreamRequest::GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context)
+NPStreamRequest::GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
 {
 	PluginDownloader *pd = (PluginDownloader *) context;
 
