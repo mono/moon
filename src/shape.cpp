@@ -420,19 +420,15 @@ Shape::Clip (cairo_t *cr)
 
 //
 // Returns TRUE if surface is a good candidate for caching.
-// Our current strategy is to cache big surfaces (likely backgrounds)
-// that don't scale tranformations. We accept a little bit of scaling though.
+// We accept a little bit of scaling.
 //
 bool
 Shape::IsCandidateForCaching (void)
 {
-	if (IsEmpty ())
+	if (IsEmpty ()) 
 		return FALSE;
 
 	if (! GetSurface ())
-		return FALSE;
-
-	if (bounds.w * bounds.h < 60000)
 		return FALSE;
 
 	// This is not 100% correct check -- the actual surface size might be
@@ -492,11 +488,8 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cached_pattern = cairo_pattern_create_for_surface (cached_surface);
 		cairo_identity_matrix (cr);
 		cairo_set_source (cr, cached_pattern);
-		cairo_paint (cr);
 		cairo_pattern_destroy (cached_pattern);
-		
-		if (ret)
-			return;
+		cairo_paint (cr);
 	} else {
 		cairo_set_matrix (cr, &absolute_xform);
 		Clip (cr);
@@ -522,6 +515,16 @@ Point
 Shape::ComputeOriginPoint (Rect shape_bounds)
 {
 	return Point (shape_bounds.x, shape_bounds.y);
+}
+
+void
+Shape::ShiftPosition (Point p)
+{
+	if (cached_surface) {
+		cairo_surface_set_device_offset (cached_surface, -p.x, -p.y);
+	}
+
+	FrameworkElement::ShiftPosition (p);
 }
 
 void

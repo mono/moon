@@ -1,3 +1,15 @@
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h (RUNTIME_INIT_DESKTOP, RUNTIME_INIT_BROWSER): enable
+	the shape cache.
+
+	* shape.h, shape.cpp (Shape::IsCandidateForCaching): remove the
+	condition that was keeping small surfaces from being cached, so
+	bubblemark gets a win from this (from ~38 to 70+ fps on my
+	laptop).
+	(Shape::ShiftPosition): if we have a cached surface, set the
+	device offset to mirror the new bounds x/y.
+
 2008-06-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* clock.h, clock.cpp, dependencyobject.h, downloader.cpp,
