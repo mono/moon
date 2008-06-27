@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * pipeline.cpp: Pipeline for the media
  *
@@ -1641,7 +1642,7 @@ mpeg_frame_duration (MpegFrameHeader *mpeg)
 	return result;
 }
 
-#if 1
+#if 0
 static void
 mpeg_print_info (MpegFrameHeader *mpeg)
 {
@@ -2001,8 +2002,8 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	if (!mpeg_parse_header (&mpeg, buffer))
 		return MEDIA_DEMUXER_ERROR;
 	
-	printf ("Mp3FrameReader::ReadFrame():\n");
-	mpeg_print_info (&mpeg);
+	//printf ("Mp3FrameReader::ReadFrame():\n");
+	//mpeg_print_info (&mpeg);
 	
 	if (mpeg.bit_rate == 0) {
 		// use the most recently specified bit rate
@@ -2218,8 +2219,6 @@ Mp3Demuxer::ReadHeader ()
 	if ((stream_start = FindMpegHeader (&mpeg, &vbr, source, stream_start)) == -1)
 		return MEDIA_INVALID_MEDIA;
 	
-	printf ("mpeg stream starts at position %lld, seeking to start\n", stream_start);
-	
 	if (!source->Seek (stream_start, SEEK_SET))
 		return MEDIA_INVALID_MEDIA;
 	
@@ -2233,8 +2232,6 @@ Mp3Demuxer::ReadHeader ()
 		} else {
 			nframes = 0;
 		}
-		
-		printf ("no VBR header; len=%u; nframes=%u\n", len, nframes);
 	} else {
 		if (vbr.type == MpegXingHeader)
 			xing = true;
@@ -2242,8 +2239,6 @@ Mp3Demuxer::ReadHeader ()
 		// calculate the frame length
 		len = mpeg_frame_length (&mpeg, xing);
 		nframes = vbr.nframes;
-		
-		printf ("VBR header (Xing=%s); len=%u; nframes=%u\n", xing ? "true" : "false", len, nframes);
 	}
 	
 	// calculate the duration of the first frame
@@ -2319,13 +2314,7 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 		stream_start = (gint64) size;
 	}
 	
-	if ((stream_start = FindMpegHeader (&mpeg, &vbr, source, stream_start)) != -1) {
-		printf ("Mp3DemuxerInfo::Supports() says:\n");
-		mpeg_print_info (&mpeg);
-		printf ("first frame starts at position %lld\n", stream_start);
-	} else {
-		printf ("Mp3DemuxerInfo::Supports() says no way jose\n");
-	}
+	stream_start = FindMpegHeader (&mpeg, &vbr, source, stream_start);
 	
 	source->Seek (0, SEEK_SET);
 	
