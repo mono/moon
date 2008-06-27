@@ -1,3 +1,8 @@
+2008-06-27  Michael Dominic K.  <mdk@mdk.am>
+
+	* test/xaml/test-radialgradientbrush-origin.xaml: Adding an example of
+	broken radial gradient brush, as seen in #401871.
+
 2008-06-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* acinclude.m4, configure.ac: Added DOLT support.
