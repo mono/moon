@@ -1,3 +1,8 @@
+2008-06-28  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-downloader.(ccp|h): The finished event raises a success condition now
+	so that we can notify failure on unsuccessful downloads.
+
 2008-06-27  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* browser-bridge.h:
