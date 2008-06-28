@@ -1,3 +1,8 @@
+2008-06-28  Geoff Norton  <gnorton@novell.com>
+
+	* downloader.h: The finished event raises a success condition now
+	so that we can notify failure on unsuccessful downloads.
+
 2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.h: Add AudioPlayer::Drain to drain whatever data the audio

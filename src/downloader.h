@@ -171,7 +171,7 @@ class DownloaderResponse;
 
 typedef uint32_t (* DownloaderResponseStartedHandler) (DownloaderResponse *response, gpointer context);
 typedef uint32_t (* DownloaderResponseDataAvailableHandler) (DownloaderResponse *response, gpointer context, char *buffer, uint32_t length);
-typedef uint32_t (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, gpointer data);
+typedef uint32_t (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data);
 
 
 class DownloaderResponse {
