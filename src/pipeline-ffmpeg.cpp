@@ -24,6 +24,8 @@
 #include "pipeline.h"
 #include "debug.h"
 
+#define LOG_FFMPEG(...)// printf(__VA_ARGS__);
+
 bool ffmpeg_initialized = false;
 bool ffmpeg_registered = false;
 
@@ -313,6 +315,9 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		int frame_size = AUDIO_BUFFER_SIZE;
 		
 		length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &frame_size, mf->buffer, mf->buflen);
+		
+		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p): Decoded audio frame, length: %i, frame_size, %i, buflen: %i, pts: %llu\n",
+			mf, length, frame_size, mf->buflen, mf->pts);
 		
 		if (length < 0 || (guint32) frame_size < mf->buflen) {
 			//media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding audio frame (length: %i, frame_size. %i, buflen: %u).", length, frame_size, mf->buflen));

@@ -1,5 +1,10 @@
 2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline-ffmpeg.cpp: Add debug spew.
+	* media.cpp: Remove debug spew.
+
+2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp, media.h: Add streamed markers to the media element on the
 	  main thread.
 

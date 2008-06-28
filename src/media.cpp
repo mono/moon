@@ -585,7 +585,7 @@ MediaElement::~MediaElement ()
 void 
 MediaElement::SetPreviousPosition (guint64 pos)
 {
-	printf ("MediaElement::SetPreviousPosition (%llu)\n", pos);
+	d (printf ("MediaElement::SetPreviousPosition (%llu)\n", pos));
 	
 	previous_position = pos;
 }
