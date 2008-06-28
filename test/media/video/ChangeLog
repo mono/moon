@@ -1,5 +1,10 @@
 2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-inexistent-medias.html: Added.
+	* drtlist.xml: Added test-inexistent-medias.html.
+
+2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* drtlist.xml: Added test-seek-race.
 	* test-http-failure.html, test-playlist-live-with-duration.html: Inform
 	  about the most probable (duh) cause for this test to fail.

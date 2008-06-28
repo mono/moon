@@ -1,0 +1,126 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		var root = null;
+		var content = null;
+		var sources = [ "inexistent.wmv", "http://never.ever.land/inexistent.wmv", "mms://never.ever.land/inexistent.wmv", "rtsp://never.ever.land/inexistent.wmv" ];
+		var results = [0, 0, 0, 0]; // 0 = not executed, 1 = MediaFailed, 2 = MediaOpened
+		var errors = ["AG_E_UNKNOWN_ERROR", "AG_E_NETWORK_ERROR", "AG_E_NETWORK_ERROR", "AG_E_NETWORK_ERROR"];
+		var errornumbers = [1001, 4001, 4001, 4001];
+		var msg = [ "", "", "", ""];
+		var current_test = -1;
+		var test_count = sources.length;
+
+		function NextTest ()
+		{
+			var failed = false;
+			current_test++;
+
+			if (current_test >= test_count) {
+				for (var i = 0; i < test_count; i++) {
+					if (results [i] != 1) {
+						failed = true;
+						TestLogger.LogError ("Test #" + i + " failed, expected MediaFailed event, but '" + msg [i] + "'");
+					} else if (msg [i] != "") {
+						failed = true;
+						TestLogger.LogError ("Test #" + i + " failed, got MediaFailed event, but '" + msg [i] + "'");
+					}
+				}
+				TestLogger.LogResult (failed ? -1 : 1);
+				SignalShutdown ();
+			} else {
+				root.Children.Clear ();
+				mediaElement = content.createFromXaml ('<MediaElement MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" />');
+				root.Children.Add (mediaElement);
+				mediaElement.Source = sources [current_test];
+			}
+		}
+
+		function timeOut ()
+		{
+			TestLogger.LogError ("Nothing happened (test timed out), didn't get neither MediaOpened nor MediaFailed events.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogError ("OnMediaOpened: the media does not exist, so it should be impossible to open it");
+			results [current_test] = 2;
+			msg [current_test] = "got MediaOpened event";
+			NextTest ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			var succeeded = true;
+
+			TestLogger.LogDebug ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+
+			if (ShutdownRequested)
+				return;
+
+			results [current_test] = 1;
+
+			try {
+				if (args.ErrorMessage != errors [current_test])
+					msg [current_test] = "expected ErrorMessage to be '" + errors [current_test] + "', but got: '" + args.ErrorMessage + "'";
+				if (args.ErrorType != "MediaError")
+					msg [current_test] =  "expected ErrorType to be 'MediaError', but got: '" + args.ErrorType + "'";
+				if (args.ErrorCode != errornumbers [current_test])
+					msg [current_test] = "expected ErrorCode to be " + errornumbers [current_test] + ", but got: " + args.ErrorCode;
+			} catch (ex) {
+				succeeded = false;
+				msg [current_test] = "got exception: " + ex;
+			}
+			NextTest ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			setTimeout ("timeOut ();", 10000);
+			root = sender;
+			content = document.getElementById ("_MoonlightControl").content;
+			NextTest ();
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+
