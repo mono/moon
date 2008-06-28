@@ -1,3 +1,8 @@
+2008-06-27  Geoff Norton  <gnorton@novell.com>
+
+	* browser-http.inc: Set the failure condition for the finished event based
+	on the nsresult send by mozilla.
+
 2008-06-10  Geoff Norotn  <gnorton@novell.com>
 	
 	* browser-http.inc: Dont raise Started/Stopped if we've been aborted.
