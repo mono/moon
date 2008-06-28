@@ -158,6 +158,10 @@ class MediaPlayer : public EventObject {
 	bool GetCanSeek ();
 	void Seek (guint64 pts /* 100-nanosecond units (pts) */);
 	
+	void SeekCallback ();
+	static void SeekCallback (EventObject *mplayer);
+	virtual void SetSurface (Surface *surface);
+	
 	cairo_surface_t *GetCairoSurface () { return video.surface; }
 	gint32 GetTimeoutInterval ();
 	
@@ -301,6 +305,7 @@ class AudioPlayer {
 	void PauseInternal (MediaPlayer *mplayer, bool value);
 	void StopInternal (MediaPlayer *mplayer);
 	void PlayInternal (MediaPlayer *mplayer);
+	void DrainInternal (MediaPlayer *mplayer);
 	void WaitForData (AudioNode *node);
 	
  public:
@@ -311,6 +316,7 @@ class AudioPlayer {
 	static void Pause (MediaPlayer *mplayer, bool value);
 	static void Stop (MediaPlayer *mplayer);
 	static void Play (MediaPlayer *mplayer);
+	static void Drain (MediaPlayer *mplayer);
 	static void WakeUp ();
 	static void Shutdown ();
 };

@@ -1,0 +1,117 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+				<MediaElement x:Name="media" Canvas.Left="10" Canvas.Top="10" Volume="1.0"
+					MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded"
+				/>
+				<TextBlock x:Name="subtitle" Text="Elephant's Dream" Canvas.Top="200" Canvas.Left="10" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		var mediaElement = null;
+		var max_runs = 20; // Tried to run it 100 times in SL, passed every time. 10 runs seems to reproduce consistently in ML.
+		var runs = 0;
+		var current_step = 0;
+		var failures = 0;
+		var seek_time = 0;
+		
+		function CheckPosition ()
+		{
+			var now = new Date ().getTime ();
+			var seconds = mediaElement.Position.Seconds;
+			
+			TestLogger.LogDebug ("CheckPosition, seek_time: " + seek_time + ", now: " + now + ", diff: " + (now - seek_time) + " position: " + seconds);
+			
+			if (seek_time == 0 || seconds == 0)
+				return;
+				
+			if (seconds > 15.05 || seconds < 14.95) {
+				if (runs > max_runs) {
+					TestLogger.LogDebug ("CheckPosition: Seeked " + runs + " times, didn't find any problems.");
+					TestLogger.LogResult (1);
+					SignalShutdown ();
+				} else {
+					TestLogger.LogDebug ("CheckPosition: Succeeded. Trying again.");
+					setTimeout ("DoTest ();", 1);
+				}
+			} else if (now - seek_time > 1000) {
+				TestLogger.LogError ("CheckPosition: Failed. Position didn't change (tried " + runs + " times before reproducing this issue)");
+				TestLogger.LogError ("Expected MediaElement to play after seeking.");
+				TestLogger.LogError ("This test may fail only sporadically given that it is testing a race condition. Don't ignore failures.");
+				TestLogger.LogResult (-1);
+				SignalShutdown ();
+			}
+		}
+
+		function DoTest ()
+		{
+			TestLogger.LogDebug ("DoTest, runs: " + runs);
+			
+			runs++;
+			seek_time = new Date ().getTime ();
+			mediaElement.Source = "elephants-dream-320x180-first-minute.wmv";
+		}
+		
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
+			mediaElement.Position = "00:00:15.000";
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			mediaElement = sender.findName ("media");
+			DoTest ();
+			setInterval ("CheckPosition ();", 20);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="340"
+             height="220"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+

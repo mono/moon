@@ -110,6 +110,17 @@ MediaPlayer::~MediaPlayer ()
 }
 
 void
+MediaPlayer::SetSurface (Surface *s)
+{
+	if (!SetSurfaceLock ())
+		return;
+	
+	EventObject::SetSurface (s);
+	
+	SetSurfaceUnlock ();
+}
+
+void
 MediaPlayer::EnqueueVideoFrameCallback (EventObject *user_data)
 {
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueVideoFrameCallback ()\n");
@@ -177,7 +188,7 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 		player->video.queue.Push (new Packet (frame));
 		if (player->IsLoadFramePending ()) {
 			// We need to call LoadVideoFrame on the main thread
-			player->AddTickCall (LoadFrameCallback);
+			player->AddTickCallSafe (LoadFrameCallback);
 		}
 		return MEDIA_SUCCESS;
 	case MediaTypeAudio: 
@@ -205,7 +216,7 @@ MediaPlayer::AudioFinished ()
 	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinished ()\n");
 
 	if (!Surface::InMainThread ()) {
-		AddTickCall (AudioFinishedCallback);
+		AddTickCallSafe (AudioFinishedCallback);
 		return;
 	}
 
@@ -225,10 +236,10 @@ void
 MediaPlayer::EnqueueFramesAsync (int audio_frames, int video_frames)
 {
 	for (int i = 0; i < audio_frames; i++)
-		AddTickCall (EnqueueAudioFrameCallback);
+		AddTickCallSafe (EnqueueAudioFrameCallback);
 	
 	for (int i = 0; i < video_frames; i++)
-		AddTickCall (EnqueueVideoFrameCallback);
+		AddTickCallSafe (EnqueueVideoFrameCallback);
 }
 
 void
@@ -565,6 +576,8 @@ MediaPlayer::AdvanceFrame ()
 #endif
 		return false;
 	}
+	
+	//printf ("MediaPlayer::AdvanceFrame (): target pts: %llu = %llu ms\n", target_pts, MilliSeconds_FromPts (target_pts));
 		
 	while ((pkt = (Packet *) video.queue.Pop ())) {
 		if (pkt->frame->event == FrameEventEOF) {
@@ -815,6 +828,31 @@ MediaPlayer::SetTargetPts (guint64 pts)
 	pthread_mutex_unlock (&target_pts_lock);
 }
 
+void
+MediaPlayer::SeekCallback ()
+{
+	LOG_MEDIAPLAYER ("MediaPlayer::SeekCallback ()\n");
+
+	element->SetPreviousPosition (GetTargetPts ());
+
+	// Clear all queues.
+	audio.queue.Clear (true);
+	video.queue.Clear (true);
+	
+	RemoveBit (Seeking);
+	current_pts = 0;
+	
+	EnqueueFrames (1, 1);
+	
+	unref ();
+}
+
+void
+MediaPlayer::SeekCallback (EventObject *mplayer)
+{
+	((MediaPlayer *) mplayer)->SeekCallback ();
+}
+
 MediaResult
 MediaPlayer::SeekCallback (MediaClosure *closure)
 {
@@ -822,12 +860,7 @@ MediaPlayer::SeekCallback (MediaClosure *closure)
 
 	MediaElement *element = (MediaElement *) closure->GetContext ();
 	MediaPlayer *mplayer = element->GetMediaPlayer ();
-	mplayer->RemoveBit (Seeking);
-	mplayer->current_pts = 0;
-
-	// Clear all queues.
-	mplayer->audio.queue.Clear (true);
-	mplayer->video.queue.Clear (true);
+	mplayer->AddTickCallSafe (SeekCallback);
 	
 	return MEDIA_SUCCESS;
 }
@@ -887,11 +920,8 @@ MediaPlayer::Seek (guint64 pts)
 	
 	SeekInternal (pts);
 	
-	if (resume) {
+	if (resume)
 		Play ();
-	} else if (IsLoadFramePending ()) {
-		EnqueueFrames (0, 1);
-	}
 
 	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu = %llu ms), media: %p, state: %i, current_pts: %llu, resume: %i [END]\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts, resume);
 }
@@ -1422,6 +1452,43 @@ AudioPlayer::Loop ()
 }
 
 void
+AudioPlayer::Drain (MediaPlayer *mplayer)
+{
+	if (instance == NULL)
+		return; // We've been shutdown (or not initialized);
+
+	instance->DrainInternal (mplayer);
+}
+
+void
+AudioPlayer::DrainInternal (MediaPlayer *mplayer)
+{
+	AudioNode *node;
+
+	LOG_AUDIO ("AudioPlayer::DrainInternal (%p)\n", mplayer);
+	
+	Lock ();
+	
+	node = Find (mplayer);
+	
+	if (node == NULL) {
+		Unlock ();
+		return;
+	}
+	
+	if (node->first_buffer) {
+		g_free (node->first_buffer);
+		node->first_buffer = NULL;
+	}
+
+	node->first_used = 0;
+	node->first_size = 0;
+	node->first_pts = 0;
+	
+	Unlock ();
+}
+
+void
 AudioPlayer::Pause (MediaPlayer *mplayer, bool value)
 {
 	if (instance == NULL)
@@ -1436,6 +1503,8 @@ AudioPlayer::PauseInternal (MediaPlayer *mplayer, bool value)
 	AudioNode *node;
 	int err = 0;
 	LOG_AUDIO ("AudioPlayer::DrainInternal (%p)\n", mplayer);
+	
+	LOG_AUDIO ("AudioPlayer::PauseInternal (%p, %i)\n", mplayer, value);
 	
 	Lock ();
 	
@@ -1485,8 +1554,8 @@ AudioPlayer::Stop (MediaPlayer *mplayer)
 void
 AudioPlayer::StopInternal (MediaPlayer *mplayer)
 {
-	// Take a minor shortcut and handle a stop just like a pause command.
 	PauseInternal (mplayer, true);
+	DrainInternal (mplayer);
 }
 
 void

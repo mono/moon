@@ -6,7 +6,8 @@
 			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
 				<MediaElement x:Name="media" Canvas.Left="10" Canvas.Top="10" Volume="1.0"
 					MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded"
-					MarkerReached="OnMarkerReached"
+					MarkerReached="OnMarkerReached" CurrentStateChanged="OnCurrentStateChanged"
+					DownloadProgressChanged="OnDownloadProgressChanged" BufferingProgressChanged="OnBufferingProgressChanged"
 				/>
 				<TextBlock x:Name="subtitle" Text="Elephant's Dream" Canvas.Top="200" Canvas.Left="10" />
 			</Canvas>
@@ -20,6 +21,8 @@
 		var current_step = 0;
 		var failures = 0;
 		
+		var start_time = new Date ().getTime ();
+
 		// Steps:
 		// 0: Wait for marker with text '...the head-snarlers ' and seek to 00:00:28.000 (forward seek).
 		// 1: Wait for next marker, whose text should be 'Watch out! '
@@ -34,9 +37,34 @@
 			SignalShutdown ();
 		}
 
+		function getTs ()
+		{
+			return (new Date ().getTime () - start_time) + " ms: ";
+		}
+
+		function logPosition ()
+		{
+			TestLogger.LogDebug (getTs () + "logPosition: " + mediaElement.Position.Seconds);
+		}
+
+		function OnCurrentStateChanged (sender, args)
+		{
+			TestLogger.LogDebug (getTs () + "OnCurrentStateChanged: " + sender.CurrentState + ", Position: " + mediaElement.Position.Seconds);
+		}
+
+		function OnBufferingProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug (getTs () + "OnBufferingProgressChanged: " + sender.BufferingProgress + ", Position: " + mediaElement.Position.Seconds);
+		}
+		
+		function OnDownloadProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug (getTs () + "OnDownloadProgressChanged: " + sender.DownloadProgress + ", Position: " + mediaElement.Position.Seconds);
+		}
+
 		function OnMarkerReached (sender, args)
 		{
-			TestLogger.LogDebug ("OnMarkerReached: current_step: " + current_step + " (Text: '" + args.marker.Text + "', Type: " + args.marker.Type + ", Time: " + args.marker.Time.Seconds + ")");
+			TestLogger.LogDebug (getTs () + "OnMarkerReached: current_step: " + current_step + ", Position: " + mediaElement.Position.Seconds + " (Text: '" + args.marker.Text + "', Type: " + args.marker.Type + ", Time: " + args.marker.Time.Seconds + ")");
 			subtitle.Text = args.marker.Text;
 
 			switch (current_step) {
@@ -49,7 +77,7 @@
 				break;
 			case 1:
 				if (args.marker.Text != "Watch out! ") {
-					TestLogger.LogError ("Forward seek test failed: Expected marker's text to be 'Watch out! ' but it was: '" + args.marker.Text + "'");
+					TestLogger.LogError ("Forward seek test failed: Expected marker's text to be 'Watch out! ' but it was: '" + args.marker.Text + "' (Time: " + args.marker.Time.Seconds + ")");
 					failures++;
 				} else {
 					TestLogger.LogDebug ("Forward seek test succeeded");
@@ -63,7 +91,7 @@
 				break;
 			case 3:
 				if (args.marker.Text != "At the left we can see... ") {
-					TestLogger.LogError ("Backward seek test failed: Expected marker's text to be 'At the left we can see... ' but it was: '" + args.marker.Text + "'");
+					TestLogger.LogError ("Backward seek test failed: Expected marker's text to be 'At the left we can see... ' but it was: '" + args.marker.Text + "' (Time: " + args.marker.Time.Seconds + ")");
 					failures++;
 				} else {
 					TestLogger.LogDebug ("Backward seek test succeeded");
@@ -81,10 +109,19 @@
 			}
 		}
 
+		function InitialSeek ()
+		{
+			// Start out seeking to 15s to save 15s of testing time given that there
+			// are no markers before this time
+			var pos = "00:00:15.000";
+			TestLogger.LogDebug (getTs () + "Seek: CurrentState: " + mediaElement.CurrentState + ", will now seek to " + pos);
+			mediaElement.Position = pos;
+		}
+
 		function OnMediaOpened (sender, args)
 		{
-			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
-			mediaElement.Position = "00:00:15.000";
+			TestLogger.LogDebug (getTs () + "OnMediaOpened: " + sender.CurrentState + ", Position: " + mediaElement.Position.Seconds);
+			setTimeout ("InitialSeek ();", 100);
 		}
 
 		function OnMediaEnded (sender, args)

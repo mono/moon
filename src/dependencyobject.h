@@ -157,10 +157,24 @@ class EventObject {
 	
 	Surface *GetSurface () { return surface; }
 	virtual void SetSurface (Surface *surface);
+	// SetSurfaceLock/Unlock
+	//  If AddTickCallSafe is called on a type, that type must override SetSurface and surround the call to its base SetSurface implementation
+	//  with Lock/Unlock. Catch: none of the base implementation can cause SetSurfaceLock to be called again, it might cause a dead-lock.
+	//  (This could happen if a MediaElement could contain another MediaElement, in which case DependencyObject::SetSurface would cause 
+	//  the contained MediaElement's SetSurface(Lock) to be called).
+	bool SetSurfaceLock ();
+	void SetSurfaceUnlock ();
 	
-	// This method is safe to call from other than the main thread.
-	// This object is reffed before adding the tick call, the callback must unref.
+	// AddTickCall*: 
+	//  Queues a delegate which will be called on the main thread.
+	//  The delegate's parameter will be the 'this' pointer.
+	//  AddTickCall will also ref itself, the callback has to unref.
+	//  Only AddTickCallSafe is safe to call on threads other than the main thread,
+	//  and only if the type on which it is called overrides SetSurface and surrounds
+	//  the call to the base type's SetSurface with SetSurfaceLock/Unlock.
 	void AddTickCall (TickCallHandler handler);
+	void AddTickCallSafe (TickCallHandler handler);
+	void AddTickCallInternal (TickCallHandler handler);
 	
 	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
 	

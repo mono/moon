@@ -362,6 +362,7 @@ MediaElement::ReadMarkers ()
 }
 
 #define LOG_MARKERS(...)// printf (__VA_ARGS__);
+#define LOG_MARKERS_EX(...) //printf (__VA_ARGS__);
 
 void
 MediaElement::CheckMarkers (guint64 from, guint64 to)
@@ -381,12 +382,6 @@ MediaElement::CheckMarkers (guint64 from, guint64 to)
 	if (from > to) {
 		// if from > to we've seeked backwards (last played position is after this one)
 		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). from > to (diff: %llu = %llu ms).\n", from, to, from - to, MilliSeconds_FromPts (from - to));
-		return;
-	}
-	
-	if (MilliSeconds_FromPts (to - from) > 1000) {
-		// to detect forward seeks we check if the gap between to and from is bigger than 1s.
-		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). [Skipped] from > to or diff bigger thatn 1000 ms (diff: %llu = %llu ms).\n", from, to, to - from, MilliSeconds_FromPts (to - from));
 		return;
 	}
 	
@@ -421,7 +416,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 		
 		pts = (guint64) val->AsTimeSpan ();
 		
-		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
+		LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
 		
 		emit = false;
 		if (remove) {
@@ -432,11 +427,11 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 				emit = pts >= (from - MilliSeconds_ToPts (1000)) && pts <= to;
 			}
 			
-			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n", from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n", from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
 		} else {
 			// Normal markers.
 			emit = pts >= from && pts <= to;
-			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n", from, to, pts, marker->GetText (), marker->GetType ());
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n", from, to, pts, marker->GetText (), marker->GetType ());
 		}
 		
 		if (emit) {
@@ -490,10 +485,12 @@ MediaElement::AdvanceFrame ()
 		last_played_pts = position;
 	}
 	
-	e (printf ("MediaElement::AdvanceFrame () previous_position: %llu = %llu ms, position: %llu = %llu ms, advanced: %i\n", 
-		previous_position, MilliSeconds_FromPts (previous_position), position, MilliSeconds_FromPts (position), advanced));
-		
-	CheckMarkers (previous_position, position);
+	if (advanced || !mplayer->IsSeeking ()) {
+		e (printf ("MediaElement::AdvanceFrame () previous_position: %llu = %llu ms, position: %llu = %llu ms, advanced: %i\n", 
+			previous_position, MilliSeconds_FromPts (previous_position), position, MilliSeconds_FromPts (position), advanced));
+			
+		CheckMarkers (previous_position, position);
+	}
 	
 	// Add 1 to avoid the same position to be able to be both
 	// beginning and end of a range (otherwise the same marker
@@ -552,6 +549,14 @@ MediaElement::~MediaElement ()
 	pthread_mutex_destroy (&open_mutex);
 }
 
+void 
+MediaElement::SetPreviousPosition (guint64 pos)
+{
+	printf ("MediaElement::SetPreviousPosition (%llu)\n", pos);
+	
+	previous_position = pos;
+}
+
 void
 MediaElement::SetSurface (Surface *s)
 {
@@ -564,8 +569,12 @@ MediaElement::SetSurface (Surface *s)
 		}
 	}
 	
-	UIElement::SetSurface (s);
 	mplayer->SetSurface (s);
+
+	if (!SetSurfaceLock ())
+		return;
+	UIElement::SetSurface (s);
+	SetSurfaceUnlock ();
 }
 
 void
@@ -1138,7 +1147,7 @@ media_element_open_callback (MediaClosure *closure)
 		element->closure = closure->Clone ();
 		pthread_mutex_unlock (&element->open_mutex);
 		// We need to call TryOpenFinished on the main thread, so 
-		element->AddTickCall (MediaElement::TryOpenFinished);
+		element->AddTickCallSafe (MediaElement::TryOpenFinished);
 	}
 	
 	return MEDIA_SUCCESS;

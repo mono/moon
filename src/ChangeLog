@@ -1,3 +1,29 @@
+2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.h: Add AudioPlayer::Drain to drain whatever data the audio
+	  has stored, now called by the MediaPlayer when seeking. Execute the
+	  'seeking complete' logic on the main thread (marshalling
+	  SeekCallback to the main thread). Always use the thread-safe
+	  AddTickCallSafe instead of AddTickCall, and override
+	  EventSurface::SetSurface to lock/unlock the required locks.
+	* mplayer.cpp: Add AudioPlayer::Drain to drain whatever data the audio
+	  has stored, now called by the MediaPlayer when seeking. Execute the
+	  'seeking complete' logic on the main thread (marshalling
+	  SeekCallback to the main thread), and set the previous_position on
+	  the MediaElement to the seeked-to position when the seek is
+	  finished. Always use the thread-safe AddTickCallSafe instead of
+	  AddTickCall, and override EventSurface::SetSurface to lock/unlock
+	  the required locks.
+	* dependencyobject.cpp, dependencyobject.h: Split AddTickCall into a
+	  thread-safe version (AddTickCallSafe) and don't do any locking in
+	  AddTickCall. Add SetSurfaceLock/Unlock so that types overriding
+	  SetSurface can do the proper locking.
+	* media.cpp, media.h: CheckMarkers: Don't try to detect seeking by
+	  comparing to/from pts, MediaPlayer will now set previous_position
+	  correctly when seeking. AdvanceFrame: only check markers if we
+	  advanced or if we're not seeking. SetSurface: add proper locking,
+	  and use AddTickCallSafe where appropiate.
+
 2008-06-27  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (UIElement::OnPropertyChanged): opcacity mask

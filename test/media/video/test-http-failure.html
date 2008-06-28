@@ -15,6 +15,7 @@
 		function timeOut ()
 		{
 			TestLogger.LogError ("Nothing happened, didn't get neither MediaOpened nor MediaFailed events.");
+			TestLogger.LogError ("You might want to confirm that the media server is doing live encoding of http://moonlightmedia/LiveStream.");
 			TestLogger.LogResult (-1);
 			SignalShutdown ();
 		}

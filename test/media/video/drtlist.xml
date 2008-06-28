@@ -26,9 +26,10 @@
     <Test id="45" inputFile="test-playlist-autoplayed-stop.html" masterFile10="None" timeout="15000" categories="video,media,playlist" />
     <Test id="46" inputFile="test-stopped-media.html" masterFile10="None" timeout="120000" categories="video,media,playlist,mediaserver" />
     <Test id="47" inputFile="test-nested-playlist.html" masterFile10="None" timeout="20000" categories="video,media,playlist" />
-    <Test id="48" inputFile="test-markers-after-seek.html" masterFile10="None" timeout="75000" categories="video,media" />
+    <Test id="48" inputFile="test-markers-after-seek.html" masterFile10="None" timeout="30000" categories="video,media" />
     <Test id="49" inputFile="test-asf-demuxer-shuffled-payloads.html" masterFile10="../../harness/masters/test-asf-demuxer-shuffled-payloadsMaster.png" timeout="10000" categories="video,media,asf"  />
     <Test id="50" inputFile="test-asf-demuxer-big-markers.html" masterFile10="None" timeout="10000" categories="video,media,asf"  />
     <Test id="51" inputFile="test-video-only-seek.html" masterFile10="None" timeout="10000" categories="video,media"  />
     <Test id="52" inputFile="test-double-stop.html" masterFile10="None" timeout="10000" categories="video,audio,media"  />
+    <Test id="53" inputFile="test-seek-race.html" masterFile10="None" timeout="45000" categories="video,audio,media"  />
 </DRTList>
