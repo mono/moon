@@ -54,8 +54,7 @@ Changes from 0.6 to 0.7
 
    * Glyph rendering speedups (fejj)
 
-   * Resort by ZIndex as a dirty pass, instead of at the time of the
-     property change (toshok)
+   * Resort by ZIndex as a dirty pass (toshok)
 
 
  * Silverlight 2.0
