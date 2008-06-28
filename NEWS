@@ -1,0 +1,49 @@
+Changes from 0.6 to 0.7
+=======================
+
+ * The plugin now loads in opera 9.5b2 (lewing).
+
+ * The stream/downloader/request/response logic (used for downloading
+   media) has been been almost entirely moved from the browser bridges
+   into libmoon, with the browsers providing subclasses. (kangaroo,
+   sde)
+
+ * Many clock/animation framework fixes.  We now pass both animation
+   matrix tests, and many, *many* other bugs (and regressions) have
+   been fixed. (mdk).
+
+ * Bug fixes in the Stroke{Collection}.HitTest and
+   Stroke{Collection}.Bounds code (toshok, sde).
+
+ * Namescope merging fixes (sde, jackson)
+
+ * Parser fixes, and changes paving the way for 2.0 work (jackson)
+
+ * Big, big strides in our media framework and the various (file,
+   http, mms) downloaders (fejj, rolf, kangaroo, fer)
+
+ * Finally add argument checking to all wrapped plugin objects (fejj).
+
+ * Windowless mode fixes (lewing, toshok)
+
+ * Plugin event handling fixes (lewing)
+
+ * Fix mouse event bubbling behavior (toshok)
+
+ * Made big gains in performance:
+
+   * Shape caching and bounds computation reduction (spouliot)
+
+   * Geometry bounds work (spouliot)
+
+   * Fast path for position updates (Canvas.Left/Canvas.Top) (toshok)
+
+   * Improved temporary cairo surface bounds (lewing)
+
+   * Glyph rendering (fejj)
+
+   * Resort by ZIndex as a dirty pass, instead of at the time of the
+     property change (toshok)
+
+ * 2.0 work is progressing. A very simple 2.0 application successfully
+   ran. (miguel, jackson, sde).
