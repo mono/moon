@@ -14,7 +14,13 @@ Moonlight: Core Support
 
 		svn co -r 10885 svn://svn.mplayerhq.hu/ffmpeg/trunk ffmpeg
 
-		Then configure/make/make install
+	Then configure:
+
+		./configure --enable-shared
+
+	Build and install:
+
+			make && make install
 
 	You also need the alsa-devel package for Audio support.
 
