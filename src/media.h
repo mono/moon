@@ -259,6 +259,7 @@ class MediaElement : public MediaBase {
 	static void size_notify (gint64 size, gpointer data);
 	
 	TimelineMarkerCollection *streamed_markers;
+	Queue *pending_streamed_markers;
 	MediaClosure *marker_closure;
 	int advance_frame_timeout_id;
 	bool recalculate_matrix;
@@ -448,6 +449,8 @@ class MediaElement : public MediaBase {
 	virtual bool EnableAntiAlias ();
 	
 	void AddStreamedMarker (TimelineMarker *marker);
+	static void AddStreamedMarkersCallback (EventObject *obj);
+	void AddStreamedMarkers ();
 	void SetMedia (Media *media);
 	
 	//

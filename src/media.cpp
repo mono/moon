@@ -296,14 +296,44 @@ marker_callback (MediaClosure *closure)
 	return MEDIA_SUCCESS;
 }
 
+class MarkerNode : public List::Node {
+	public:
+		TimelineMarker *marker;
+		MarkerNode (TimelineMarker *marker) { this->marker = marker; this->marker->ref (); }
+		virtual ~MarkerNode () { this->marker->unref (); }
+};
+
 void
 MediaElement::AddStreamedMarker (TimelineMarker *marker)
-{
+{	
 	d (printf ("MediaElement::AddStreamedMarker (): got marker %s, %s, %llu = %llu ms\n", marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ())));
+
+	pending_streamed_markers->Push (new MarkerNode (marker));
+	
+	AddTickCallSafe (AddStreamedMarkersCallback);
+}
+
+void
+MediaElement::AddStreamedMarkersCallback (EventObject *obj)
+{
+	((MediaElement *) obj)->AddStreamedMarkers ();
+	obj->unref ();
+}
+
+void
+MediaElement::AddStreamedMarkers ()
+{
+	MarkerNode *node;
+	
+	d (printf ("MediaElement::AddStreamedMarkers ()\n"));
 	
 	if (streamed_markers == NULL)
 		streamed_markers = new TimelineMarkerCollection ();
-	streamed_markers->Add (marker);
+
+	while ((node = (MarkerNode *) pending_streamed_markers->Pop ()) != NULL) {
+		streamed_markers->Add (node->marker);
+		delete node;
+	}
 }
 
 void
@@ -527,6 +557,7 @@ MediaElement::MediaElement ()
 	media = NULL;
 	closure = NULL;
 	flags = 0;
+	pending_streamed_markers = new Queue ();
 	
 	Reinitialize (false);
 	
@@ -545,6 +576,8 @@ MediaElement::~MediaElement ()
 	
 	if (playlist)
 		playlist->unref ();
+	
+	delete pending_streamed_markers;
 	
 	pthread_mutex_destroy (&open_mutex);
 }
@@ -658,6 +691,8 @@ MediaElement::Reinitialize (bool dtor)
 		streamed_markers->unref ();
 		streamed_markers = NULL;
 	}
+	
+	pending_streamed_markers->Clear (true);
 	
 	previous_position = 0;
 	

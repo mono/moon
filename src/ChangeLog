@@ -1,3 +1,8 @@
+2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp, media.h: Add streamed markers to the media element on the
+	  main thread.
+
 2008-06-28  Geoff Norton  <gnorton@novell.com>
 
 	* downloader.h: The finished event raises a success condition now
