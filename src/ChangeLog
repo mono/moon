@@ -1,3 +1,11 @@
+2008-06-29  Chris Toshok  <toshok@ximian.com>
+
+	* panel.cpp (Panel::OnCollectionChanged): when the ZIndex of a
+	child changes, invalidate them here.
+
+	* dirty.cpp (Surface::ProcessDownDirtyElements): and remove the
+	subtree invalidate from the zindex processing here.
+
 2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline-ffmpeg.cpp: Add debug spew.

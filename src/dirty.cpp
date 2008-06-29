@@ -189,7 +189,6 @@ Surface::ProcessDownDirtyElements ()
 			}
 			else {
 				((Panel*)el)->GetChildren ()->ResortByZIndex();
-				el->Invalidate (el->GetSubtreeBounds());
 			}
 			    
 		}

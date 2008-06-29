@@ -593,6 +593,7 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, Dependen
 		case CollectionChangeTypeItemChanged:
 			// if a child changes its ZIndex property we need to resort our Children
 			if (element_args->property == UIElement::ZIndexProperty) {
+				((UIElement*)obj)->Invalidate ();
 				if (GetSurface())
 					GetSurface()->AddDirtyElement (this, DirtyChildrenZIndices);
 			}
