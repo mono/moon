@@ -1,0 +1,170 @@
+#page {
+	margin: 2em 20% 0 20%;
+}
+
+body {
+	color: #ddd;
+	background: #222;
+	font-family: sans-serif;
+	font-size: 1.0em;
+}
+
+a img {
+	color: #222; // this hides the outlines around the status icons.
+}
+a {
+	color: #fc0;
+}
+
+a:hover {
+	color:	#f60;
+}
+
+p {
+	margin-left: .5em;
+}
+
+
+#col1 {
+	width: 10em;
+	float: left;
+}
+
+#col2 { 
+	margin-left: 10em;
+	min-width: 20em;
+}
+
+#col2 h1, h2, h3 {
+	color:#F59F1A;
+}
+
+#col2 h1 {
+	font-size:2em;
+	margin:0pt 0pt 0.5em;
+	padding:0pt;
+	border:0pt none;
+	font-weight:bold;
+}
+
+#col2 h3 {
+	font-weight: normal;
+	margin-left: 0.5em;
+}
+
+ul.machine {
+	list-style: none;
+	padding: 0;
+	margin-left: 0.5em;
+}
+
+ul.machine li {
+	margin: 0 0 1em 0;
+	width: 18em;
+	border-color: #aaa;
+	border-style: solid;
+	border-width: 2px 2px 2px 10px;
+	background: #555;
+	padding: 0.5em;
+	cursor: pointer;
+}
+
+ul li.disuaded {
+	/* display: none; */
+	opacity: 0.25;
+}
+
+ul.machine li:hover {
+	background-color: #777;
+}
+
+ul.machine a:hover {
+	color:	#fc0;
+}
+
+ul.machine li a {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+ul.machine li a img {
+	float: left;
+	border: none;
+	padding-right: 5px;
+}
+
+/* ul.machine > li:last-child {
+	margin-bottom: 0em;
+} */
+
+.updated {
+	font-size: 1em;
+	font-weight: normal;
+	color: #aaa;
+}
+
+.filesize {
+	/* justify: right; */
+	font-size: 0.75em;
+	font-weight: normal;
+	color: #aaa;
+}
+
+.button {
+
+}
+
+.title {
+
+}
+
+.download {
+
+}
+
+.clear {
+	clear: both;
+	margin: 0;
+	padding: 0;
+}
+
+pre,
+tt {
+    font-size: 1em;
+    font-family: bitstream vera sans mono,luxi mono,monospace;
+}
+pre {
+    padding: 6pt;
+    background-color: #222;
+    border: 1px solid #ddd;
+}
+
+table.maintable {
+	border-width: 0px;
+	border-style:solid;
+	//border-color: #f00;
+	border-spacing:0px;
+}
+
+table.maintable td.colheader {
+	color: #f00;
+	border-width:0px 0px 0px 0px;
+	border:1pt;
+	padding: 0.5ex;
+}
+
+table.maintable td.rowheader {
+	border-width:0px 0px 0px 0px;
+	color: #f00;
+	border:1pt;
+	padding:0.5ex;
+}
+
+table.maintable td
+{
+	border-style:dotted;
+	border-spacing: 0px;
+	border-color: #ddd;
+	border-width: 1px 1px 1px 1px;
+}
+
