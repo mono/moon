@@ -51,7 +51,9 @@ class UIElement : public Visual {
 
 	int dirty_flags;
 	List::Node *up_dirty_node;
+	List::Node *up_dirty_node_pred;
 	List::Node *down_dirty_node;
+	List::Node *down_dirty_node_succ;
 
 	bool force_invalidate_of_new_bounds;
 	Region *dirty_region;

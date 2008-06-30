@@ -36,6 +36,7 @@ UIElement::UIElement ()
 
 	dirty_flags = 0;
 	up_dirty_node = down_dirty_node = NULL;
+	up_dirty_node_pred = down_dirty_node_succ = NULL;
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
 

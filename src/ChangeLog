@@ -1,3 +1,13 @@
+2008-06-30  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp: add all the ordering smarts to keep the two dirty
+	lists partially sorted.  hopefully this won't be a huge
+	performance hit.
+
+	* uielement.h, uielement.cpp: add 2 new dirty pointers.  a "succ"
+	pointer for the down dirty list, and a "pred" for the up dirty
+	list.
+
 2008-06-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* list.cpp (List::InsertBefore): Handle a NULL @before.
