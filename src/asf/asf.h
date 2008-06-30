@@ -77,6 +77,7 @@ public:
 	asf_single_payload *GetFirstPayload (int stream_id /* 1 - 127 */); // Gets the index first payload of the specified stream.
 	
 	IMediaSource *GetSource () { return source; }
+	void SetSource (IMediaSource *source) { this->source = source; }
 };
 
 class ASFReader {
@@ -281,7 +282,7 @@ public:
 	// Seeks to the packet index (as long as the packet index >= 0), then reads it.
 	// If the packet index is < 0, then just read at the current position
 	MediaResult ReadPacket (ASFPacket *packet, int packet_index); 
-	
+
 	// Reads the number of the specified encoded length (0-3)
 	// encoded length 3 = read 4 bytes, rest equals encoded length and #bytes
 	// into the destionation.

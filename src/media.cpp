@@ -1115,7 +1115,7 @@ void
 MediaElement::DataRequestPosition (gint64 *position)
 {
        if (downloaded_file != NULL)
-               downloaded_file->RequestPosition (position);
+               ((MemoryQueueSource*)downloaded_file)->RequestPosition (position);
 }
 
 void 
@@ -1355,8 +1355,8 @@ MediaElement::DownloaderComplete ()
 		Emit (DownloadProgressChangedEvent);
 	}
 	
-	if (downloaded_file != NULL)
-		downloaded_file->NotifyFinished ();
+	if (downloaded_file != NULL && downloaded_file->GetType () == MediaSourceTypeProgressive)
+		((ProgressiveSource*)downloaded_file)->NotifyFinished ();
 	
 	UpdateProgress ();
 	
@@ -1398,14 +1398,14 @@ void
 MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 {
 	const char *uri = downloader ? downloader->GetUri () : NULL;
-	bool is_live = uri ? g_str_has_prefix (uri, "mms:") : false;
+	bool is_streaming = uri ? g_str_has_prefix (uri, "mms:") : false;
 	
 	d(printf ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader, PartName, uri));
 	
 	Reinitialize (false);
 	
-	SetCanPause (!is_live);
-	SetCanSeek (!is_live);
+	SetCanPause (!is_streaming);
+	SetCanSeek (!is_streaming);
 	
 	MediaBase::SetSourceInternal (downloader, PartName);
 	
@@ -1420,14 +1420,18 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 			
 			TryOpen ();
 		} else {
-			downloaded_file = new ProgressiveSource (mplayer->GetMedia (), is_live);
+			if (is_streaming)
+				downloaded_file = new MemoryQueueSource (mplayer->GetMedia() );
+			 else 
+				downloaded_file = new ProgressiveSource (mplayer->GetMedia (), false);
 			
 			// FIXME: error check Initialize()
 			downloaded_file->Initialize ();
 			
-			downloader->SetWriteFunc (data_write, size_notify, this);
-			if (is_live)
+			if (is_streaming) {
 				downloader->SetRequestPositionFunc (data_request_position);
+			}
+			downloader->SetWriteFunc (data_write, size_notify, this);
 		}
 		
 		if (!(flags & DownloadComplete)) {

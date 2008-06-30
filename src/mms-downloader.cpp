@@ -146,6 +146,9 @@ process_packet:
 	if (size < (header->length + sizeof (MmsHeader)))
 		return;
 
+	if (asf_packet_size > 0 && size < asf_packet_size)
+		return;
+
 	packet = (MmsPacket *) (buffer + sizeof (MmsHeader));
 	payload = (buffer + sizeof (MmsHeader) + sizeof (MmsDataPacket));
 

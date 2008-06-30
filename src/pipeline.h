@@ -135,7 +135,8 @@ enum MediaSourceType {
 	MediaSourceTypeFile = 1,
 	MediaSourceTypeLive = 2,
 	MediaSourceTypeProgressive = 3,
-	MediaSourceTypeMemory = 4
+	MediaSourceTypeMemory = 4,
+	MediaSourceTypeQueueMemory = 5
 };
 
 enum FrameEvent {
@@ -646,6 +647,8 @@ public:
 	virtual bool CanSeekToPts () { return false; }
 	virtual bool SeekToPts (guint64 pts) { return false; }
 
+	virtual void NotifySize (gint64 size) { return; }
+
 	// Returns the current reading position
 	// This method will lock the mutex.
 	gint64 GetPosition ();
@@ -670,6 +673,8 @@ public:
 	bool IsWaiting (); 
 
 	virtual const char *ToString () { return "IMediaSource"; }
+
+	virtual void Write (void *buf, gint64 offset, gint32 n) { return; }
 };
 
 // Implementations
@@ -736,9 +741,9 @@ public:
 	
 	void SetTotalSize (gint64 size);
 	
-	void Write (void *buf, gint64 offset, gint32 n);
+	virtual void Write (void *buf, gint64 offset, gint32 n);
 	void NotifySize (gint64 size);
-	void RequestPosition (gint64 *pos);
+	virtual void RequestPosition (gint64 *pos);
 	void NotifyFinished ();
 	virtual bool CanSeekToPts () { return is_live && size > 0; }
 	virtual bool SeekToPts (guint64 pts);
@@ -783,11 +788,14 @@ protected:
 	virtual gint32 ReadInternal (void *buf, guint32 n);
 	virtual gint32 PeekInternal (void *buf, guint32 n, gint64 start);
 	virtual bool SeekInternal (gint64 offset, int mode);
-	virtual gint64 GetPositionInternal () { return pos + start; }
 	virtual gint64 GetSizeInternal () { return size; }
+	virtual gint64 GetPositionInternal () { return pos + start; }
+	virtual gint64 GetLastAvailablePositionInternal () { return start + size - 1; }
 
 public:
 	MemorySource (Media *media, void *memory, gint32 size, gint64 start = 0);
+
+	void Release (void) { delete this; }
 
 	void SetOwner (bool value) { owner = value; }
 
@@ -799,6 +807,49 @@ public:
 
 	virtual const char *ToString () { return "MemorySource"; }
 };
+
+class MemoryQueueSource : public IMediaSource {
+private:
+	GQueue *queue;
+	gint64 start;
+	gint64 end;
+	gint64 size;
+	guint64 requested_pts;
+	guint64 last_requested_pts;
+	MemorySource *current;
+
+protected:
+
+	virtual gint32 ReadInternal (void *buf, guint32 n);
+	virtual gint32 PeekInternal (void *buf, guint32 n, gint64 start);
+	virtual bool SeekInternal (gint64 offset, int mode);
+	virtual gint64 GetSizeInternal ();
+	virtual gint64 GetLastAvailablePositionInternal ();
+	void WaitForQueue ();
+
+public:
+	MemoryQueueSource (Media *media);
+	virtual ~MemoryQueueSource ();
+	void AddPacket (MemorySource *packet);
+	MemorySource *GetCurrent () { return current; }
+
+	virtual void NotifySize (gint64 size);
+	void RequestPosition (gint64 *pos);
+
+	virtual MediaResult Initialize () { return MEDIA_SUCCESS; }
+	virtual MediaSourceType GetType () { return MediaSourceTypeQueueMemory; }
+	virtual gint64 GetPositionInternal ();
+	virtual void Write (void *buf, gint64 offset, gint32 n);
+	
+	virtual bool CanSeek () { return true; }
+	virtual bool Eof () { return GetPosition () >= end; }
+
+	virtual const char *ToString () { return "MemoryQueueSource"; }
+	virtual bool CanSeekToPts () { return size > 0; }
+	virtual bool SeekToPts (guint64 pts);
+};
+
+
 
 class VideoStream : public IMediaStream {
 protected:

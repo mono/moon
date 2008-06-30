@@ -213,13 +213,19 @@ ASFParser::ReadPacket (ASFPacket *packet, int packet_index)
 
 	if (packet_index >= 0) {
 		gint64 position = GetPacketOffset (packet_index);
-		
-		if (position == 0 || (source->GetPosition () != position && !source->Seek (position, SEEK_SET))) {
-			//printf ("ASFParser::ReadPacket (%p, %i): position is 0 or seek failed (position: %lld).\n", packet, packet_index, position); 
-			return MEDIA_SEEK_ERROR;
+
+		if (position == 0 || (source->GetPosition () != position) || 
+		    (source->GetPosition ()  == position && source->GetType() == MediaSourceTypeQueueMemory)) {
+			if (!source->Seek (position, SEEK_SET)) 
+				return MEDIA_SEEK_ERROR;
 		}
 	}
-	
+
+	if (source->GetType() == MediaSourceTypeQueueMemory) {
+		((MemoryQueueSource*)source)->GetCurrent()->ref ();
+		packet->SetSource (((MemoryQueueSource*)source)->GetCurrent());	
+	}
+
 	return ASFParser::ReadPacket (packet);
 }
 

@@ -306,7 +306,7 @@ class MediaElement : public MediaBase {
 	guint32 flags;
 	
 	// downloader methods/data
-	ProgressiveSource *downloaded_file;
+	IMediaSource *downloaded_file;
 	
 	void DataWrite (void *data, gint32 offset, gint32 n);
 	void DataRequestPosition (gint64 *pos);
