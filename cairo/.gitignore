@@ -12,3 +12,5 @@
 /config.sub
 /ltmain.sh
 /aclocal.m4
+/doltcompile
+/doltlibtool
