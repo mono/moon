@@ -3084,7 +3084,8 @@ MemoryQueueSource::SeekToPts (guint64 pts)
 
 	Lock ();
 	g_queue_foreach (queue, memory_queue_source_remove, NULL);
-	g_queue_clear (queue);
+	g_list_free (queue->head);
+	g_queue_init (queue);
 	current = NULL;
 	requested_pts = pts;
 

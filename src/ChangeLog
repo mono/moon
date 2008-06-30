@@ -1,5 +1,9 @@
 2008-06-30  Fernando Herrera  <fherrera@novell.com>
 
+	* pipeline.cpp: don't use g_queue_clear as is present only in glib >= 2.14
+
+2008-06-30  Fernando Herrera  <fherrera@novell.com>
+
 	* pipeline.h:
 	* pipeline.cpp: Implement the packet writer MemoryQueueSource.
 	* asf/asf.h:
