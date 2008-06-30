@@ -1,0 +1,44 @@
+<head>
+<title>Test default KeySpline animation</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+  run = sender.findName("Run");
+  run.Begin();
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="400" height="500">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        
+  	<Rectangle Width="120" Height="30" Canvas.Left="10" Canvas.Top="10" Fill="#eeeeee" />
+  	<Rectangle Width="30" Height="30" Canvas.Left="10" Canvas.Top="10" x:Name="Target" Fill="#FF0000" MouseEnter="OnMouseEnter"/>
+
+	<Canvas.Resources>
+		<Storyboard x:Name="Run">
+			<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+				Storyboard.TargetName="Target" Storyboard.TargetProperty="(Canvas.Left)">
+					<SplineDoubleKeyFrame KeyTime="00:00:00" Value="10"/>
+					<SplineDoubleKeyFrame KeyTime="00:00:5" Value="100"/>
+			</DoubleAnimationUsingKeyFrames>
+		</Storyboard>
+	</Canvas.Resources>
+		
+</Canvas>
+</script>
+
+</body>
+</html>
+
+
