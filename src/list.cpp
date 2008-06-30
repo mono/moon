@@ -169,6 +169,9 @@ List::Insert (List::Node *node, int index)
 List::Node *
 List::InsertBefore (List::Node *node, List::Node *before)
 {
+	if (before == NULL)
+		return Append (node);
+	
 	node->next = before;
 	node->prev = before->prev;
 	
