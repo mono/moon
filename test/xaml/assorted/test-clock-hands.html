@@ -1,0 +1,104 @@
+<head>
+<title>Clock hands test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+  	run = sender.findName("Run");
+	var time = new Date();
+	var timeString = time.toTimeString();
+	var index = timeString.search(" ");
+	timeString = timeString.substr(0, index);
+	run.Begin();
+	run.Seek(timeString);
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="400" height="500">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Ellipse Width="400" Height="400" Fill="#eeeeee" />
+	
+	<Rectangle Width="100" Height="10" Canvas.Left="200" Canvas.Top="200" x:Name="HourHand" Fill="#cccccc">
+					<Rectangle.RenderTransform>
+						<TransformGroup>
+							<ScaleTransform ScaleX="1" ScaleY="1"/>
+							<SkewTransform AngleX="0" AngleY="0"/>
+							<RotateTransform Angle="0"/>
+							<RotateTransform Angle="-90"/>
+							<TranslateTransform X="0" Y="0"/>
+						</TransformGroup>
+					</Rectangle.RenderTransform>
+		</Rectangle>
+        
+
+	<Rectangle Width="200" Height="5" Canvas.Left="200" Canvas.Top="200" x:Name="MinuteHand" Fill="#000000">
+					<Rectangle.RenderTransform>
+						<TransformGroup>
+							<ScaleTransform ScaleX="1" ScaleY="1"/>
+							<SkewTransform AngleX="0" AngleY="0"/>
+							<RotateTransform Angle="0"/>
+							<RotateTransform Angle="-90"/>
+							<TranslateTransform X="0" Y="0"/>
+						</TransformGroup>
+					</Rectangle.RenderTransform>
+		</Rectangle>
+
+
+		<Rectangle Width="200" Height="2" Canvas.Left="200" Canvas.Top="200" x:Name="SecondHand" Fill="#FF0000">
+					<Rectangle.RenderTransform>
+						<TransformGroup>
+							<ScaleTransform ScaleX="1" ScaleY="1"/>
+							<SkewTransform AngleX="0" AngleY="0"/>
+							<RotateTransform Angle="0"/>
+							<RotateTransform Angle="-90"/>
+							<TranslateTransform X="0" Y="0"/>
+						</TransformGroup>
+					</Rectangle.RenderTransform>
+		</Rectangle>
+
+  <Rectangle Width="480" Height="20" Canvas.Top="420" Canvas.Left="10" MouseEnter="OnMouseEnter" Fill="Gray"/>
+
+  <Canvas.Resources>
+		<Storyboard x:Name="Run" RepeatBehavior="Forever">
+			<DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+				Storyboard.TargetName="SecondHand" x:Name="SecondAnimation" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" RepeatBehavior="Forever">
+				<SplineDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+				<SplineDoubleKeyFrame KeyTime="00:01:00" Value="360"/>
+			</DoubleAnimationUsingKeyFrames>
+			
+			<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="MinuteHand" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" RepeatBehavior="Forever">
+
+				<SplineDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+
+				<SplineDoubleKeyFrame KeyTime="01:00:00" Value="360"/>
+
+			</DoubleAnimationUsingKeyFrames>
+
+			<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="HourHand" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" RepeatBehavior="Forever">
+
+				<SplineDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+
+				<SplineDoubleKeyFrame KeyTime="12:00:00" Value="360"/>
+
+			</DoubleAnimationUsingKeyFrames>
+		</Storyboard>
+  </Canvas.Resources>
+		
+</Canvas>
+</script>
+
+</body>
+</html>
+
+

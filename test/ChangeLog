@@ -1,3 +1,9 @@
+2008-06-30  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/test-clock-hands.html: Adding a test doing a analog
+	clock using similiar technique to http://xmldocs.net/ball/. Uses a very
+	far-off seeks.
+
 2008-06-26  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/test-keyframe-keytime.html: A test for accessing
