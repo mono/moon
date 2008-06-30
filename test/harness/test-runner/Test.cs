@@ -143,6 +143,9 @@ namespace MoonlightTests {
 			if (node.Attributes ["codebehind"] != null)
 				test.codebehind = node.Attributes ["codebehind"].Value;
 			
+			SqliteData db = SqliteData.GetInstance();
+			db.AddTestCase(id, string.Empty, master_file);
+			
 			return test;
 		}
 
@@ -151,6 +154,7 @@ namespace MoonlightTests {
 			this.id = id;
 			this.input_file = input_file;
 			this.master_file = master_file;
+			
 		}
 
 		public string Id {

@@ -30,6 +30,9 @@ using System.Collections;
 namespace MoonlightTests {
 
 	public class ConsoleReport : IReport {
+		
+		private static SqliteData database = null;
+		
 
 		private TestRun run;
 
@@ -58,8 +61,12 @@ namespace MoonlightTests {
 
 		public void AddResult (Test test, TestResult result)
 		{
+			if (database == null)
+				database = SqliteData.GetInstance();
+			database.LogRun(test.Id, result);
+			
 			string state = string.Empty;
-			ConsoleColor color;
+			ConsoleColor color;			
 			
 			switch (result) {
 			case TestResult.Pass:

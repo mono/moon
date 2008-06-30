@@ -1,7 +1,7 @@
 
 MCS = gmcs
 RUNTIME = mono
-MCSFLAGS = -debug+ -unsafe -r:System.Drawing.dll -r:Mono.Posix.dll -r:$(srcdir)/NDesk.Options.dll -pkg:ndesk-dbus-1.0
+MCSFLAGS = -debug+ -unsafe -r:System.Drawing.dll -r:Mono.Posix.dll -r:System.Data.dll -r:Mono.Data.SqliteClient.dll -r:$(srcdir)/NDesk.Options.dll -pkg:ndesk-dbus-1.0
 
 CLEANFILES = test-runner.exe test-runner.exe.mdb logging-server.exe ndesk-options.flags
 
@@ -29,7 +29,8 @@ test_runner_sources = 		\
 	ComparisonReport.cs	\
 	ConsoleReport.cs	\
 	HtmlReport.cs		\
-	XmlReport.cs
+	XmlReport.cs		\
+	SqliteData.cs
 
 test_runner_resources = 				\
 	/resource:$(srcdir)/html_template.html		\
