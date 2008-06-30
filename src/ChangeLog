@@ -1,3 +1,8 @@
+2008-06-30  Geoff Norton  <gnorton@novell.com>
+
+	* mms-downloader.cpp: Rework Fernando's incomplete packet guard to be a little
+	more sane while we determine how to fix this properly.
+
 2008-06-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* shape.cpp (Shape::ComputeShapeBounds): Reverted my previous fix,

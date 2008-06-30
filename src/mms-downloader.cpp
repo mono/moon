@@ -146,9 +146,6 @@ process_packet:
 	if (size < (header->length + sizeof (MmsHeader)))
 		return;
 
-	if (asf_packet_size > 0 && size < asf_packet_size)
-		return;
-
 	packet = (MmsPacket *) (buffer + sizeof (MmsHeader));
 	payload = (buffer + sizeof (MmsHeader) + sizeof (MmsDataPacket));
 
@@ -424,6 +421,9 @@ MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *pa
 	
 	gint32 off = header_size;
 	gint32 size = asf_packet_size;
+	
+	if (this->size < asf_packet_size+sizeof (MmsHeader)+sizeof (MmsDataPacket))
+		return false;
 		
 	if (seekable) {
 		off += packet->packet.data.id * size;
