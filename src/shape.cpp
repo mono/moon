@@ -660,8 +660,19 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 		UpdateBounds (true);
 	}
 	else if (args->property == Shape::StrokeProperty) {
-		stroke = args->new_value ? args->new_value->AsBrush() : NULL;
-		InvalidateSurfaceCache ();
+		Brush *new_stroke = args->new_value ? args->new_value->AsBrush () : NULL;
+		
+		if (!stroke || !new_stroke) {
+			// If the stroke changes from null to
+			// <something> or <something> to null, then
+			// some shapes need to reclaculate the offset
+			// (based on stroke thickness) to start
+			// painting.
+			InvalidatePathCache ();
+		} else
+			InvalidateSurfaceCache ();
+		
+		stroke = new_stroke;
 		UpdateBounds ();
 	} else if (args->property == Shape::FillProperty) {
 		fill = args->new_value ? args->new_value->AsBrush() : NULL;
