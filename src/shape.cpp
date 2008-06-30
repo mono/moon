@@ -559,13 +559,7 @@ Shape::ComputeShapeBounds (bool logical)
 	if ((w <= 0.0) || (h <= 0.0))
 		return Rect ();
 	
-	if (!GetStroke ())
-		return Rect (0, 0, w, h);
-	
-	double t = GetStrokeThickness ();
-	Rect bounds = Rect (0, 0, w, h);
-	
-	return bounds.GrowBy (t * 0.5);
+	return Rect (0, 0, w, h);
 }
 
 Rect
@@ -1049,13 +1043,7 @@ Ellipse::ComputeShapeBounds (bool logical)
 	if ((w < 0.0) || (h <= 0.0))
 		return Rect ();
 	
-	if (!GetStroke ())
-		return Rect (0, 0, w, h);
-	
-	double t = GetStrokeThickness ();
-	Rect bounds = Rect (0, 0, w, h);
-	
-	return bounds.GrowBy (t * 0.5);
+	return Rect (0, 0, w, h);
 }
 
 // The Ellipse shape can be drawn while ignoring properties:

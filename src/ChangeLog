@@ -1,3 +1,9 @@
+2008-06-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* shape.cpp (Shape::ComputeShapeBounds): Reverted my previous fix,
+	it's not correct.
+	(Ellipse::ComputeShapeBounds): Same.
+
 2008-06-30  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: Make sure our default KeySplines parameters are correct
