@@ -1,3 +1,9 @@
+2008-07-01  Fernando Herrera  <fherrera@novell.com>
+
+	* apps/od-msn.html:
+	* apps/od-msn.xaml: Add a new mms stream dropping packets with the current
+	packet writer code
+
 2008-04-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio: Added test for MediaEnded event when audio-only media is used.
