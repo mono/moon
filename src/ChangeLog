@@ -1,3 +1,13 @@
+2008-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Use Cairo by default to ComputeBounds. In effect 
+	this change Polyline and Polygon to use Cairo instead of (faster
+	but less acurate) custom code. In reality PathGeometry (PML) is 
+	much more used than those Poly[line|gon] and (upcoming) caching 
+	negate much of the impact.
+	* geometry.cpp: Use the more precise (and surviving) 
+	calc_line_bounds function that accept PenLineCap.
+
 2008-06-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* shape.cpp (Shape::OnPropertyChanged): If the Stroke property

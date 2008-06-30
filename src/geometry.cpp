@@ -427,14 +427,22 @@ LineGeometry::ComputeBounds (Path *shape, bool logical)
 	Point *p1 = GetStartPoint ();
 	Point *p2 = GetEndPoint ();
 	double thickness;
+	PenLineCap start_cap;
+	PenLineCap end_cap;
 	Rect bounds;
-	
-	if (shape && !logical)
-		thickness = shape->GetStrokeThickness ();
-	else
+
+	if (shape) {
+		start_cap = shape->GetStrokeStartLineCap ();
+		end_cap = shape->GetStrokeEndLineCap ();
+		thickness = (logical) ? 0.0 : shape->GetStrokeThickness ();
+	} else {
+		start_cap = PenLineCapFlat;
+		end_cap = PenLineCapFlat;
 		thickness = 0.0;
+	}
 	
-	calc_line_bounds (p1 ? p1->x : 0.0, p2 ? p2->x : 0.0, p1 ? p1->y : 0.0, p2 ? p2->y : 0.0, thickness, &bounds);
+	calc_line_bounds (p1 ? p1->x : 0.0, p2 ? p2->x : 0.0, p1 ? p1->y : 0.0, p2 ? p2->y : 0.0, 
+		thickness, start_cap, end_cap, &bounds);
 	
 	Transform *transform = GetTransform ();
 	if (transform) {

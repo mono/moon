@@ -22,6 +22,7 @@
 #include "shape.h"
 #include "brush.h"
 #include "array.h"
+#include "utils.h"
 
 //
 // SL-Cairo convertion and helper routines
@@ -545,21 +546,34 @@ Shape::ComputeBounds ()
 Rect
 Shape::ComputeShapeBounds (bool logical)
 {
-	// this base version of ComputeShapeBounds does not need to distinguish between
-	// logical and physical bounds and we know that physical is already computed
-	if (logical)
-		return extents;
+	if (!path || (path->cairo.num_data == 0))
+		BuildPath ();
 
-	if (IsEmpty ())
+	if (IsEmpty () || Shape::MixedHeightWidth (NULL, NULL))
 		return Rect ();
+
+	double thickness = (logical || !IsStroked ()) ? 0.0 : GetStrokeThickness ();
 	
-	double h = GetHeight ();
-	double w = GetWidth ();
+	cairo_t *cr = measuring_context_create ();
+	cairo_set_line_width (cr, thickness);
+
+	cairo_append_path (cr, &path->cairo);
 	
-	if ((w <= 0.0) || (h <= 0.0))
-		return Rect ();
-	
-	return Rect (0, 0, w, h);
+	double x1, y1, x2, y2;
+
+	if (logical) {
+		cairo_path_extents (cr, &x1, &y1, &x2, &y2);
+	} else if (thickness > 0) {
+		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	} else {
+		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+	}
+
+	Rect bounds = Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
+
+	measuring_context_destroy (cr);
+
+	return bounds;
 }
 
 Rect
@@ -1211,6 +1225,26 @@ Rectangle::Rectangle ()
 	SetStretch (StretchFill);
 }
 
+Rect
+Rectangle::ComputeShapeBounds (bool logical)
+{
+	// this base version of ComputeShapeBounds does not need to distinguish between
+	// logical and physical bounds and we know that physical is already computed
+	if (logical)
+		return extents;
+
+	if (IsEmpty ())
+		return Rect ();
+	
+	double h = GetHeight ();
+	double w = GetWidth ();
+	
+	if ((w <= 0.0) || (h <= 0.0))
+		return Rect ();
+	
+	return Rect (0, 0, w, h);
+}
+
 // The Rectangle shape can be drawn while ignoring properties:
 // * Shape::StrokeStartLineCap
 // * Shape::StrokeEndLineCap
@@ -1726,12 +1760,6 @@ calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, 
 }
 
 void
-calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds)
-{
-	calc_line_bounds (x1, x2, y1, y2, thickness, PenLineCapFlat, PenLineCapFlat, bounds);
-}
-
-void
 Line::BuildPath ()
 {
 	if (Shape::MixedHeightWidth (NULL, NULL))
@@ -1996,147 +2024,6 @@ polygon_extend_line (double *x1, double *x2, double *y1, double *y2, double thic
 	}
 }
 
-static void
-calc_offsets (double x1, double y1, double x2, double y2, double thickness, double *x, double *y)
-{
-	double dx = x1 - x2;
-	double dy = y1 - y2;
-	double t2 = thickness / 2.0;
-	if (dx == 0.0) {
-		*x = 0.0;
-		*y = t2;
-	} else if (dy == 0.0) {
-		*x = t2;
-		*y = 0.0;
-	} else {
-		double angle = atan2 (dy, dx);
-		*x = t2 * sin (angle);
-		*y = t2 * sin (M_PI / 2.0 - angle);
-	}
-}
-
-static void
-calc_line_bounds_with_joins (double x1, double y1, double x2, double y2, double x3, double y3, double thickness, Rect *bounds)
-{
-	double dx1, dy1;
-	calc_offsets (x1, y1, x2, y2, thickness, &dx1, &dy1);
-
-	double dx2, dy2;
-	calc_offsets (x2, y2, x3, y3, thickness, &dx2, &dy2);
-
-	double xi = x2;
-	if (x1 < x2)
-		xi += fabs (dx1);
-	else
-		xi -= fabs (dx1);
-	if (x3 < x2)
-		xi += fabs (dx2);
-	else
-		xi -= fabs (dx2);
-
-	double yi = y2;
-	if (y1 < y2)
-		yi += fabs (dy1);
-	else
-		yi -= fabs (dy1);
-	if (y3 < y2)
-		yi += fabs (dy2);
-	else
-		yi -= fabs (dy2);
-
-	if (bounds->x > xi) {
-		bounds->w += (bounds->x - xi);
-		bounds->x = xi;
-	}
-	double dx = bounds->x + bounds->w - xi;
-	if (dx < 0.0) {
-		bounds->w -= dx;
-	}
-	if (bounds->y > yi) {
-		bounds->h += (bounds->y - yi);
-		bounds->y = yi;
-	}
-	double dy = bounds->y + bounds->h - yi; 
-	if (dy < 0.0) {
-		bounds->h -= dy;
-	}
-}
-
-Rect
-Polygon::ComputeShapeBounds (bool logical)
-{
-	Rect shape_bounds = Rect ();
-	
-	if (Shape::MixedHeightWidth (NULL, NULL))
-		return shape_bounds;
-
-	int i, count = 0;
-	Point *points = GetPoints (&count);
-	
-	// the first point is a move to, resulting in an empty shape
-	if (!points || (count < 2))
-		return shape_bounds;
-	
-	double thickness;
-	if (!logical)
-		thickness = GetStrokeThickness ();
-	else
-		thickness = 0.0;
-	
-	if (thickness == 0.0)
-		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
-
-	double x0 = points [0].x;
-	double y0 = points [0].y;
-	double x1, y1;
-
-	if (count == 2) {
-		x1 = points [1].x;
-		y1 = points [1].y;
-
-		polygon_extend_line (&x0, &x1, &y0, &y1, thickness);
-		calc_line_bounds (x0, x1, y0, y1, thickness, &shape_bounds);
-	} else {
-		shape_bounds.x = x1 = x0;
-		shape_bounds.y = y1 = y0;
-		// FIXME: we're too big for large thickness and/or steep angle
-		Rect line_bounds;
-		double x2 = points [1].x;
-		double y2 = points [1].y;
-		double x3 = points [2].x;
-		double y3 = points [2].y;
-
-		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
-		for (i = 3; i < count; i++) {
-			x1 = x2;
-			y1 = y2;
-			x2 = x3;
-			y2 = y3;
-			x3 = points [i].x;
-			y3 = points [i].y;
-			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
-		}
-		// a polygon is a closed shape (unless it's a line)
-		x1 = x2;
-		y1 = y2;
-		x2 = x3;
-		y2 = y3;
-		x3 = x0;
-		y3 = y0;
-		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
-
-		x1 = x3;
-		y1 = y3;
-		x2 = x0;
-		y2 = y0;
-		x3 = points [1].x;
-		y3 = points [1].y;
-		calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
-	}
-
-	return shape_bounds;
-}
-
 void
 Polygon::BuildPath ()
 {
@@ -2329,60 +2216,6 @@ Polyline::DrawShape (cairo_t *cr, bool do_op)
 	Draw (cr);
 	Stroke (cr, do_op);
 	return true;
-}
-
-Rect
-Polyline::ComputeShapeBounds (bool logical)
-{
-	Rect shape_bounds = Rect ();
-
-	if (Shape::MixedHeightWidth (NULL, NULL))
-		return shape_bounds;
-
-	int i, count = 0;
-	Point *points = GetPoints (&count);
-	
-	// the first point is a move to, resulting in an empty shape
-	if (!points || (count < 2))
-		return shape_bounds;
-
-	double thickness;
-	if (!logical)
-		thickness = GetStrokeThickness ();
-	else
-		thickness = 0.0;
-	
-	if (thickness == 0.0)
-		thickness = 0.01; // avoid creating an empty rectangle (for union-ing)
-
-	double x1 = points [0].x;
-	double y1 = points [0].y;
-	
-	if (count == 2) {
-		// this is a "simple" line (move to + line to)
-		double x2 = points [1].x;
-		double y2 = points [1].y;
-		calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
-	} else {
-		// FIXME: we're too big for large thickness and/or steep angle
-		Rect line_bounds;
-		double x2 = points [1].x;
-		double y2 = points [1].y;
-		calc_line_bounds (x1, x2, y1, y2, thickness, &shape_bounds);
-		for (i = 2; i < count; i++) {
-			double x3 = points [i].x;
-			double y3 = points [i].y;
-			calc_line_bounds_with_joins (x1, y1, x2, y2, x3, y3, thickness, &shape_bounds);
-			x1 = x2;
-			y1 = y2;
-			x2 = x3;
-			y2 = y3;
-		}
-		calc_line_bounds (x1, x2, y1, y2, thickness, &line_bounds);
-		shape_bounds = shape_bounds.Union (line_bounds);
-	}
-
-	return shape_bounds;
 }
 
 void
