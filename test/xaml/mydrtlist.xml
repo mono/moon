@@ -1,0 +1,55 @@
+<DRTList>
+  <Test id="1"
+	inputFile="nested-canvas-empty.xaml"
+	masterFile10="../harness/masters/nested-canvas-emptyMaster.png"
+   />
+   <Test id="2"
+	inputFile="nested-canvas.xaml"
+	masterFile10="../harness/masters/nested-canvasMaster.png"
+	codebehind="nested-canvas.cs"
+   />
+   <Test id="3"
+	inputFile="points-torture.xaml"
+	masterFile10="../harness/masters/points-tortureMaster.png"
+   />
+   <Test id="4"
+	inputFile="test-45-bounding-box.xaml"
+	masterFile10="../harness/masters/test-45-bounding-boxMaster.png"
+   />
+   <Test id="5"
+	inputFile="test-animation-beginstoryboard-empty.xaml"
+	masterFile10="../harness/masters/test-animation-beginstoryboard-emptyMaster.tif"
+        captureSpecifier="300,15"
+        categories="animation"
+   />
+   <Test id="6"
+	inputFile="test-animation-begintimes.xaml"
+	masterFile10="../harness/masters/test-animation-begintimesMaster.tif"
+	captureSpecifier="300,15"
+        categories="animation"
+   />
+   <Test id="7"
+	inputFile="test-animation-ellipse-stroke.xaml"
+	masterFile10="../harness/masters/test-animation-ellipse-strokeMaster.tif"
+	captureSpecifier="300,15"
+        categories="animation"
+   />
+   <Test id="8"
+	inputFile="test-animation-ellipse.xaml"
+	masterFile10="../harness/masters/test-animation-ellipseMaster.tif"
+	captureSpecifier="300,15"
+        categories="animation"
+   />
+   <Test id="9"
+	inputFile="test-animation-line-bounds.xaml"
+	masterFile10="../harness/masters/test-animation-line-boundsMaster.tif"
+	captureSpecifier="300,15"
+        categories="animation"
+   />
+   <Test id="10"
+	inputFile="test-animation-line.xaml"
+	masterFile10="../harness/masters/test-animation-lineMaster.tif"
+	captureSpecifier="300,15"
+        categories="animation"
+   />
+</DRTList>
