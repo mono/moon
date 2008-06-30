@@ -63,7 +63,7 @@ function OnLoaded (sender, eventArgs)
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Loaded="OnLoaded">
-  <TextBlock Canvas.Top="350" Canvas.Left="5" Text="The purpose of this test is to check that no stroke artifacts are left after moving the mouse off of a menu item"/>
+  <TextBlock Canvas.Top="350" Canvas.Left="5" Width="450" TextWrapping="WrapWithOverflow">The purpose of this test is to check that no stroke artifacts are left after moving the mouse off of a menu item. The stroke for each menu item should also have rounded egdes (not square).</TextBlock>
 </Canvas>
 </script>
 
