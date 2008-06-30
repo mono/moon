@@ -72,11 +72,11 @@
     <File name="test-runner/ExocortexDSP/src/ComplexStats.cs" subtype="Code" buildaction="Compile" />
     <File name="test-runner/ExocortexDSP/src/Fourier.cs" subtype="Code" buildaction="Compile" />
     <File name="test-runner/ExocortexDSP/src/FourierDirection.cs" subtype="Code" buildaction="Compile" />
-    <File name="results_web/Global.asax" subtype="Code" buildaction="Nothing" />
-    <File name="results_web/Global.asax.cs" subtype="Code" buildaction="Compile" />
-    <File name="results_web/ShowTest.aspx" subtype="Code" buildaction="Nothing" />
-    <File name="results_web/ShowTest.aspx.cs" subtype="Code" buildaction="Compile" />
-    <File name="results_web/ShowTest.aspx.designer.cs" subtype="Code" buildaction="Compile" />
+    <File name="results_asp/Global.asax" subtype="Code" buildaction="Nothing" />
+    <File name="results_asp/Global.asax.cs" subtype="Code" buildaction="Compile" />
+    <File name="results_asp/ShowTest.aspx" subtype="Code" buildaction="Nothing" />
+    <File name="results_asp/ShowTest.aspx.cs" subtype="Code" buildaction="Compile" />
+    <File name="results_asp/ShowTest.aspx.designer.cs" subtype="Code" buildaction="Compile" />
     <File name="test-runner/SqliteData.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
