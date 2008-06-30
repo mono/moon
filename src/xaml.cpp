@@ -1930,15 +1930,15 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'C':
 		{
-			if (!get_point (&cp1, &inptr))
-				break;
-			
-			if (relative)
-				make_relative (&cp, &cp1);
-			
-			advance (&inptr);
-			
 			while (more_points_available (&inptr)) {
+				if (!get_point (&cp1, &inptr))
+					break;
+
+				if (relative)
+					make_relative (&cp, &cp1);
+			
+				advance (&inptr);
+
 				if (!get_point (&cp2, &inptr))
 					break;
 			
@@ -2010,15 +2010,15 @@ geometry_from_str (const char *str)
 			relative = true;
 		case 'Q':
 		{
-			if (!get_point (&cp1, &inptr))
-				break;
-			
-			if (relative)
-				make_relative (&cp, &cp1);
-
-			advance (&inptr);
-			
 			while (more_points_available (&inptr)) {
+				if (!get_point (&cp1, &inptr))
+					break;
+			
+				if (relative)
+					make_relative (&cp, &cp1);
+
+				advance (&inptr);
+			
 				if (!get_point (&cp2, &inptr))
 					break;
 			

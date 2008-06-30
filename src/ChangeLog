@@ -1,3 +1,9 @@
+2008-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Move reading the first point of C|Q beziers into the 
+	loop. Fix quite a few misrendering for http://xmldocs.net/ball
+	[Partial fix for #404858]
+
 2008-06-30  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.cpp: add all the ordering smarts to keep the two dirty
