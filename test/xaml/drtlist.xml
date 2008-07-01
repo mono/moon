@@ -211,6 +211,7 @@
    <Test id="48"
 	inputFile="test-path-group-rectangle.xaml"
 	masterFile10="../harness/masters/test-path-group-rectangleMaster.png"
+	categories="rectangle"
    />
    <Test id="49"
 	inputFile="test-path-group-stretch.xaml"
@@ -249,23 +250,27 @@
    <Test id="57"
 	inputFile="test-path-rectangle-renderxorigin.xaml"
 	masterFile10="../harness/masters/test-path-rectangle-renderxoriginMaster.png"
+	categories="rectangle"
    />
    <Test id="58"
 	inputFile="test-path-rectangle-round-stroke.xaml"
 	masterFile10="../harness/masters/test-path-rectangle-round-strokeMaster.png"
+	categories="rectangle"
    />
    <Test id="59"
 	inputFile="test-path-rectangle-stretch.xaml"
 	masterFile10="../harness/masters/test-path-rectangle-stretchMaster.png"
-        categories="stretch"
+        categories="stretch,rectangle"
    />
    <Test id="60"
 	inputFile="test-path-rectangle-stroke.xaml"
 	masterFile10="../harness/masters/test-path-rectangle-strokeMaster.png"
+	categories="rectangle"
    />
    <Test id="61"
 	inputFile="test-path-rectangle.xaml"
 	masterFile10="../harness/masters/test-path-rectangleMaster.png"
+	categories="rectangle"
    />
    <Test id="62"
 	inputFile="test-path-segments-arc-2.xaml"
@@ -327,6 +332,7 @@
    <Test id="76"
 	inputFile="test-rectangle-aliasing.xaml"
 	masterFile10="../harness/masters/test-rectangle-aliasingMaster.png"
+	categories="rectangle"
    />
    <Test id="77"
 	inputFile="test-relativetransform.xaml"
@@ -452,27 +458,32 @@
    <Test id="106"
 	inputFile="test-shape-rectangle-matrix.xaml"
 	masterFile10="../harness/masters/test-shape-rectangle-matrixMaster.png"
+	categories="rectangle"
    />
    <Test id="107"
 	inputFile="test-shape-rectangle-renderxorigin.xaml"
 	masterFile10="../harness/masters/test-shape-rectangle-renderxoriginMaster.png"
+	categories="rectangle"
    />
    <Test id="108"
 	inputFile="test-shape-rectangle-round-stroke.xaml"
 	masterFile10="../harness/masters/test-shape-rectangle-round-strokeMaster.png"
+	categories="rectangle"
    />
    <Test id="109"
 	inputFile="test-shape-rectangle-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-rectangle-stretchMaster.png"
-        categories="stretch"
+        categories="stretch,rectangle"
    />
    <Test id="110"
 	inputFile="test-shape-rectangle-stroke.xaml"
 	masterFile10="../harness/masters/test-shape-rectangle-strokeMaster.png"
+	categories="rectangle"
    />
    <Test id="111"
 	inputFile="test-shape-rectangle.xaml"
 	masterFile10="../harness/masters/test-shape-rectangleMaster.png"
+	categories="rectangle"
    />
    <Test id="112"
 	inputFile="test-shape-styles.xaml"
