@@ -1,3 +1,13 @@
+2008-07-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes for bug #405514.
+
+	* text.cpp (TextBlock::Layout): If the Text property is empty,
+	default the actualHeight to the font's height.
+	(TextBlock::OnPropertyChanged): If the FrameworkElement::Width
+	property changes, we need to set dirty to true (in most cases) so
+	that the actual width/height values are recalculated.
+
 2008-06-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: Use Cairo by default to ComputeBounds. In effect 

@@ -590,6 +590,15 @@ TextBlock::Layout (cairo_t *cr)
 	layout->GetActualExtents (&actual_width, &actual_height);
 	layout->GetLayoutExtents (&bbox_width, &bbox_height);
 	
+	if (runs->IsEmpty ()) {
+		// If the Text property is empty, Silverlight seems to
+		// set the ActualHeight property to the font
+		// height. See bug #405514 for details.
+		TextFont *font = this->font->GetFont ();
+		actual_height = font->Height ();
+		font->unref ();
+	}
+	
 	SetActualHeight (actual_height);
 	SetActualWidth (actual_width);
 	
@@ -771,8 +780,12 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	if (args->property->type != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args);
-		if (args->property == FrameworkElement::WidthProperty)
+		if (args->property == FrameworkElement::WidthProperty) {
+			if (GetTextWrapping () != TextWrappingNoWrap)
+				dirty = true;
+			
 			UpdateBounds (true);
+		}
 		
 		return;
 	}
