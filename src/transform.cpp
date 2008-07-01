@@ -534,6 +534,17 @@ matrix_set_offset_y (Matrix *matrix, double value)
 DependencyProperty* MatrixTransform::MatrixProperty;
 
 void
+MatrixTransform::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	need_update = true;
+
+	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
+
+	NotifyListenersOfPropertyChange (MatrixTransform::MatrixProperty);
+}
+
+
+void
 MatrixTransform::UpdateTransform ()
 {
 	Matrix *matrix = GetValue (MatrixTransform::MatrixProperty)->AsMatrix();

@@ -1,0 +1,71 @@
+<Canvas
+	xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="50" Height="68"
+	Background="Green"
+	Visibility="Visible"
+	Opacity="0.5"
+	x:Name="Foo"
+	>
+	<Canvas.Triggers>
+		<EventTrigger RoutedEvent="Canvas.Loaded">
+			<BeginStoryboard>
+				<Storyboard x:Name="FadeOut">
+					<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="message" Storyboard.TargetProperty="(UIElement.Opacity)">
+						<SplineDoubleKeyFrame KeyTime="00:00:04.6000000" Value="1"/>
+						<SplineDoubleKeyFrame KeyTime="00:00:05" Value="0"/>
+					</DoubleAnimationUsingKeyFrames>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Canvas.Triggers>
+	<Canvas.RenderTransform>
+		<TranslateTransform X="0" Y="0"/>
+	</Canvas.RenderTransform>
+	<Rectangle Canvas.Left="100" Canvas.Top="100" Width="500" Height="68" Stroke="#FF000000" StrokeThickness="0" RadiusX="8" RadiusY="8">
+		<Rectangle.Fill>
+			<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+				<GradientStop Color="#FF242323" Offset="0"/>
+				<GradientStop Color="#FF515151" Offset="1"/>
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+	</Rectangle>
+	<TextBlock
+	 Width="458" Height="27" Canvas.Left="224" Canvas.Top="114" TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" Text="Press &quot;Esc&quot; to exit full-screen mode." x:Name="message"/>
+	<TextBlock Width="458" Height="20" Canvas.Left="293" Canvas.Top="134" Text="&lt;url: file://&gt;" TextWrapping="Wrap" x:Name="url" Foreground="#FFC8C4C4" FontSize="13" FontStretch="Normal"/>
+<Canvas
+        Canvas.Top="100"
+	Width="200" Height="200"
+	Background="Red"
+	Visibility="Visible"
+	Opacity="0.5"
+	x:Name="Bar"
+	>
+	<Canvas.Triggers>
+		<EventTrigger RoutedEvent="Canvas.Loaded">
+			<BeginStoryboard>
+				<Storyboard x:Name="FadeOut1">
+					<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="message1" Storyboard.TargetProperty="(UIElement.Opacity)">
+						<SplineDoubleKeyFrame KeyTime="00:00:04.6000000" Value="1"/>
+						<SplineDoubleKeyFrame KeyTime="00:00:05" Value="0"/>
+					</DoubleAnimationUsingKeyFrames>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Canvas.Triggers>
+	<Canvas.RenderTransform>
+		<TranslateTransform X="0" Y="0"/>
+	</Canvas.RenderTransform>
+	<Rectangle Canvas.Left="100" Canvas.Top="100" Width="500" Height="68" Stroke="#FF000000" StrokeThickness="0" RadiusX="8" RadiusY="8">
+		<Rectangle.Fill>
+			<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+				<GradientStop Color="#FF242323" Offset="0"/>
+				<GradientStop Color="#FF515151" Offset="1"/>
+			</LinearGradientBrush>
+		</Rectangle.Fill>
+	</Rectangle>
+	<TextBlock
+	 Width="458" Height="27" Canvas.Left="224" Canvas.Top="114" TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" Text="Press &quot;Esc&quot; to exit full-screen mode." x:Name="message1"/>
+	<TextBlock Width="458" Height="20" Canvas.Left="293" Canvas.Top="134" Text="&lt;url: file://&gt;" TextWrapping="Wrap" x:Name="url1" Foreground="#FFC8C4C4" FontSize="13" FontStretch="Normal"/>
+</Canvas>
+</Canvas>

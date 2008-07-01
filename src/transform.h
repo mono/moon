@@ -220,9 +220,8 @@ class MatrixTransform : public Transform {
 	MatrixTransform () {}
 	virtual Type::Kind GetObjectType () { return Type::MATRIXTRANSFORM; };
 
-	/* these are dependency properties
-	   Matrix matrix;
-	*/
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+
 	virtual void UpdateTransform ();
 };
 

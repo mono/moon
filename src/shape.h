@@ -31,7 +31,7 @@ class Brush;
 //
 
 cairo_fill_rule_t convert_fill_rule (FillRule fill_rule);
-void calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, Rect* bounds);
+void calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, PenLineCap start_cap, PenLineCap end_cap, Rect* bounds);
 
 
 //
@@ -67,7 +67,9 @@ class Shape : public FrameworkElement {
 	virtual Rect ComputeShapeBounds (bool logical);
 	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t * matrix) { return ComputeShapeBounds (logical); }
 	virtual Rect ComputeLargestRectangle ();
-	
+
+	virtual void ShiftPosition (Point p);
+
 	cairo_matrix_t stretch_transform;
 	Rect ComputeStretchBounds (Rect shape_bounds);
 	Point ComputeOriginPoint (Rect shape_bounds);
@@ -128,7 +130,7 @@ class Shape : public FrameworkElement {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
-	//
+	// State helpers
 	bool IsEmpty () { return (flags & UIElement::SHAPE_EMPTY); };
 	bool IsNormal () { return (flags & UIElement::SHAPE_NORMAL); };
 	bool IsDegenerate () { return (flags & UIElement::SHAPE_DEGENERATE); };
@@ -236,6 +238,8 @@ class Rectangle : public Shape {
  protected:
 	virtual ~Rectangle () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
+	virtual Rect ComputeShapeBounds (bool logical);
+
  public:
 	static DependencyProperty *RadiusXProperty;
 	static DependencyProperty *RadiusYProperty;
@@ -329,7 +333,6 @@ class Polygon : public Shape {
  protected:
 	virtual ~Polygon () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
-	virtual Rect ComputeShapeBounds (bool logical);
 	
 	Point *GetPoints (int *n);
 	
@@ -374,7 +377,6 @@ class Polyline : public Shape {
  protected:
 	virtual ~Polyline () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
-	virtual Rect ComputeShapeBounds (bool logical);
 	
 	Point *GetPoints (int *n);
 	

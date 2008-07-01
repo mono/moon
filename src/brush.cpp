@@ -75,6 +75,14 @@ Brush::SetupBrush (cairo_t *cr, UIElement *uielement)
 	SetupBrush (cr, uielement, w, h);
 }
 
+void
+Brush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	// if our transforms change in some fashion, we need to redraw
+	// the element.
+	NotifyListenersOfPropertyChange (Brush::ChangedProperty);
+}
+
 bool
 Brush::IsOpaque ()
 {

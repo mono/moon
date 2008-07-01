@@ -27,7 +27,7 @@
 #include <xpcom/nsIStorageStream.h>
 #endif
 
-class GECKO_SYM(BrowserResponse) : public BrowserResponse, public nsIStreamListener {
+class GECKO_SYM(DownloaderResponse) : public DownloaderResponse, public nsIStreamListener {
  private:
 	nsCOMPtr<nsIChannel> channel;
 	bool aborted;
@@ -39,51 +39,51 @@ class GECKO_SYM(BrowserResponse) : public BrowserResponse, public nsIStreamListe
  public:
 	NS_DECL_ISUPPORTS
 
-	GECKO_SYM(BrowserResponse) (nsCOMPtr<nsIChannel> channel, BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context)
-		: BrowserResponse (started, available, finished, context)
+	GECKO_SYM(DownloaderResponse) (nsCOMPtr<nsIChannel> channel, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
+		: DownloaderResponse (started, available, finished, context)
 	{
 		this->channel = channel;
 		this->aborted = false;
 	}
 
-	virtual ~GECKO_SYM(BrowserResponse) ()
+	virtual ~GECKO_SYM(DownloaderResponse) ()
 	{
 	}
 
 	void Abort ();
 };
 
-class GECKO_SYM(BrowserRequest) : public BrowserRequest {
+class GECKO_SYM(DownloaderRequest) : public DownloaderRequest {
  private:
 	nsCOMPtr<nsIChannel> channel;
 
 	void CreateChannel ();
 
  public:
-	GECKO_SYM(BrowserRequest) (const char *method, const char *uri)
-	    : BrowserRequest (method, uri)
+	GECKO_SYM(DownloaderRequest) (const char *method, const char *uri)
+	    : DownloaderRequest (method, uri)
 	{
 		CreateChannel ();
 	}
 
-	~GECKO_SYM(BrowserRequest) ()
+	~GECKO_SYM(DownloaderRequest) ()
 	{
 	}
 
-	BrowserResponse *GetResponse ();
-	bool GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context);
+	DownloaderResponse *GetResponse ();
+	bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 	void SetHttpHeader (const char *name, const char *value);
 	void SetBody (void *body, int size);
 	
 	void Abort ();
 };
 
-// BrowserResponse
+// DownloaderResponse
 
-NS_IMPL_ISUPPORTS1 (GECKO_SYM(BrowserResponse), nsIStreamListener)
+NS_IMPL_ISUPPORTS1 (GECKO_SYM(DownloaderResponse), nsIStreamListener)
 
 void
-GECKO_SYM(BrowserResponse)::Abort ()
+GECKO_SYM(DownloaderResponse)::Abort ()
 {
 	if (!aborted) {
 		this->channel->Cancel (NS_BINDING_ABORTED);
@@ -92,7 +92,7 @@ GECKO_SYM(BrowserResponse)::Abort ()
 }
 
 NS_IMETHODIMP
-GECKO_SYM(BrowserResponse)::OnStartRequest (nsIRequest *request, nsISupports *context)
+GECKO_SYM(DownloaderResponse)::OnStartRequest (nsIRequest *request, nsISupports *context)
 {
 	if (!aborted)
 		return started (this, this->context);
@@ -100,15 +100,15 @@ GECKO_SYM(BrowserResponse)::OnStartRequest (nsIRequest *request, nsISupports *co
 }
 
 NS_IMETHODIMP
-GECKO_SYM(BrowserResponse)::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
+GECKO_SYM(DownloaderResponse)::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
 	if (!aborted)
-		return finished (this, this->context, NULL);
+		return finished (this, this->context, (status == NS_OK), NULL);
 	return NS_OK;
 }
 
 NS_IMETHODIMP
-GECKO_SYM(BrowserResponse)::OnDataAvailable (nsIRequest *request, nsISupports *context, nsIInputStream *input, PRUint32 offset, PRUint32 count)
+GECKO_SYM(DownloaderResponse)::OnDataAvailable (nsIRequest *request, nsISupports *context, nsIInputStream *input, PRUint32 offset, PRUint32 count)
 {
 	PRUint32 length = 0;
 	nsresult res;
@@ -124,10 +124,10 @@ GECKO_SYM(BrowserResponse)::OnDataAvailable (nsIRequest *request, nsISupports *c
 	return res;
 }
 
-// BrowserRequest
+// DownloaderRequest
 
 void
-GECKO_SYM(BrowserRequest)::CreateChannel ()
+GECKO_SYM(DownloaderRequest)::CreateChannel ()
 {
 	nsresult rv = NS_OK;
 	nsCOMPtr<nsIServiceManager> mgr;
@@ -149,7 +149,7 @@ GECKO_SYM(BrowserRequest)::CreateChannel ()
 	nsEmbedCString url;
 	url = this->uri;
 
-	printf ("BrowserRequest: %s\n", uri);
+	printf ("DownloaderRequest: %s\n", uri);
 
 	nsCOMPtr<nsIURI> uri;
 	rv = ioservice->NewURI (url, nsnull, nsnull, getter_AddRefs (uri));
@@ -166,24 +166,24 @@ GECKO_SYM(BrowserRequest)::CreateChannel ()
 }
 
 void
-GECKO_SYM(BrowserRequest)::Abort ()
+GECKO_SYM(DownloaderRequest)::Abort ()
 {
 	channel->Cancel (NS_BINDING_ABORTED);
 }
 
 bool
-GECKO_SYM(BrowserRequest)::GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context)
+GECKO_SYM(DownloaderRequest)::GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
 {
 	nsresult rs = NS_OK;
-	GECKO_SYM(BrowserResponse) *response;
+	GECKO_SYM(DownloaderResponse) *response;
 
-	response = new GECKO_SYM(BrowserResponse) (channel, started, available, finished, context);
-	rs = channel->AsyncOpen (response, (GECKO_SYM(BrowserResponse)*)response);
+	response = new GECKO_SYM(DownloaderResponse) (channel, started, available, finished, context);
+	rs = channel->AsyncOpen (response, (GECKO_SYM(DownloaderResponse)*)response);
 	return !NS_FAILED (rs);
 }
 
 void
-GECKO_SYM(BrowserRequest)::SetHttpHeader (const char *name, const char *value)
+GECKO_SYM(DownloaderRequest)::SetHttpHeader (const char *name, const char *value)
 {
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 	if (!httpchannel)
@@ -197,7 +197,7 @@ GECKO_SYM(BrowserRequest)::SetHttpHeader (const char *name, const char *value)
 }
 
 void
-GECKO_SYM(BrowserRequest)::SetBody (void *body, int size)
+GECKO_SYM(DownloaderRequest)::SetBody (void *body, int size)
 {
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 	if (!httpchannel)

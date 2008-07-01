@@ -61,8 +61,8 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_USE_UPDATE_POSITION   = 1 << 12
 };
 
-#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION)
-#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_MICROSOFT_CODECS | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION)
+#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE)
+#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_MICROSOFT_CODECS | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE)
 
 extern guint32 moonlight_flags;
 
@@ -369,9 +369,6 @@ guint32  runtime_html_timer_timeout_add (gint32 interval, GSourceFunc callback, 
 void     runtime_html_timer_timeout_stop (guint32 source_id);
 
 void runtime_shutdown (void);
-
-gboolean strcase_equal (gconstpointer  v1, gconstpointer  v2);
-guint strcase_hash     (gconstpointer v);
 
 G_END_DECLS
 

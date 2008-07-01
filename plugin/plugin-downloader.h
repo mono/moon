@@ -21,21 +21,19 @@ class PluginDownloader;
 #include "plugin.h"
 #include "plugin-class.h"
 
-class BrowserResponse;
-class BrowserRequest;
 
 G_BEGIN_DECLS
 
-uint32_t plugin_downloader_started (BrowserResponse *response, gpointer state);
-uint32_t plugin_downloader_available (BrowserResponse *response, gpointer state, char *buffer, uint32_t length);
-uint32_t plugin_downloader_finished (BrowserResponse *response, gpointer state, gpointer data);
+uint32_t plugin_downloader_started (DownloaderResponse *response, gpointer state);
+uint32_t plugin_downloader_available (DownloaderResponse *response, gpointer state, char *buffer, uint32_t length);
+uint32_t plugin_downloader_finished (DownloaderResponse *response, gpointer state, gpointer data);
 
 G_END_DECLS
 
 class PluginDownloader {
  private:
-	BrowserResponse *response;
-	BrowserRequest *request;
+	DownloaderResponse *response;
+	DownloaderRequest *request;
 	uint64_t offset;
 	bool finished;
 	
@@ -53,15 +51,15 @@ class PluginDownloader {
 
 	uint32_t Read (char *buffer, uint32_t length);
 	void Started ();
-	void Finished (gpointer data);
+	void Finished (bool success, gpointer data);
 
 	void SetHttpHeader (const char *header, const char *value);
 	void SetBody (void *body, uint32_t length);
 	
 	PluginInstance *GetPlugin ();
 
-	void setResponse (BrowserResponse *response) { this->response = response; }
-	BrowserRequest *getRequest () { return this->request; }
+	void setResponse (DownloaderResponse *response) { this->response = response; }
+	DownloaderRequest *getRequest () { return this->request; }
 	
 	Downloader *dl;
 };

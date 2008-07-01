@@ -54,6 +54,8 @@ namespace MoonlightTests {
 			public int NumTestsFailed;
 			public int NumTestsIgnored;
 			public int NumTestsKnownFailure;
+			public string FailingIds;
+			public string PassingIds;
 		}
 
 		private class TestCompareData {
@@ -124,9 +126,48 @@ namespace MoonlightTests {
 			test_run.NumTestsIgnored = Int32.Parse (iterator.Current.GetAttribute ("IgnoredTests", String.Empty));
 			test_run.NumTestsKnownFailure = Int32.Parse (iterator.Current.GetAttribute ("KnownFailures", String.Empty));
 
+			test_run.FailingIds = GetFailingIds (run_file);
+			test_run.PassingIds = GetPassingIds (run_file);
+
 			test_runs.Add (test_run);
 		}
 
+		private string GetPassingIds (string file)
+		{
+			return GetResultIds (file, TestResult.Pass);
+		}
+
+		private string GetFailingIds (string file)
+		{
+			return GetResultIds (file, TestResult.Fail);
+		}
+		
+		private string GetResultIds (string file, TestResult result)
+		{
+			XPathDocument doc = new XPathDocument (file);
+			XPathNavigator nav = doc.CreateNavigator ();
+			string expression = String.Format ("/TestRun/Test[@TestResult='{0}']", result);
+			XPathExpression expr = nav.Compile (expression);
+			XPathNodeIterator iterator = nav.Select (expr);
+
+			List<string> ids = new List<string> ();
+			while (iterator.MoveNext ()) {
+				ids.Add (iterator.Current.GetAttribute ("Id", String.Empty));
+			}
+
+			if (ids.Count == 0)
+				return String.Empty;
+
+			StringBuilder builder = new StringBuilder ();
+			for (int i = 0; i < ids.Count; i++) {
+				builder.Append (ids [i]);
+				if (i < ids.Count - 1)
+					builder.Append (",");
+			}
+
+			return builder.ToString ();
+		}
+		
 		private void SetPreviousResultData (Test test, TestCompareData data)
 		{
 			foreach (string run_dir in run_directories) {
@@ -419,7 +460,7 @@ namespace MoonlightTests {
 
 		private string TagForEllipse (TestRunData run_data, string line, int count)
 		{
-			return String.Format ("{0},{1},{2}", run_data.StartTime, line, count);
+			return String.Format ("{0}${1}${2}${3}${4}", run_data.StartTime, line, count, run_data.FailingIds, run_data.PassingIds);
 		}
 
 		private string GetBaseDirectory (string str)

@@ -109,10 +109,10 @@ class MediaPlayer : public EventObject {
 	static MediaResult SeekCallback (MediaClosure *closure);
 	static MediaResult FrameCallback (MediaClosure *closure);
 	
-	static void EnqueueVideoFrameCallback (void *user_data);
-	static void EnqueueAudioFrameCallback (void *user_data);
-	static void LoadFrameCallback (void *user_data);
-	static void AudioFinishedCallback (void *user_data);
+	static void EnqueueVideoFrameCallback (EventObject *user_data);
+	static void EnqueueAudioFrameCallback (EventObject *user_data);
+	static void LoadFrameCallback (EventObject *user_data);
+	static void AudioFinishedCallback (EventObject *user_data);
 	
  protected:
 	virtual ~MediaPlayer ();
@@ -157,6 +157,10 @@ class MediaPlayer : public EventObject {
 	void SetCanSeek (bool value);
 	bool GetCanSeek ();
 	void Seek (guint64 pts /* 100-nanosecond units (pts) */);
+	
+	void SeekCallback ();
+	static void SeekCallback (EventObject *mplayer);
+	virtual void SetSurface (Surface *surface);
 	
 	cairo_surface_t *GetCairoSurface () { return video.surface; }
 	gint32 GetTimeoutInterval ();
@@ -301,6 +305,7 @@ class AudioPlayer {
 	void PauseInternal (MediaPlayer *mplayer, bool value);
 	void StopInternal (MediaPlayer *mplayer);
 	void PlayInternal (MediaPlayer *mplayer);
+	void DrainInternal (MediaPlayer *mplayer);
 	void WaitForData (AudioNode *node);
 	
  public:
@@ -311,6 +316,7 @@ class AudioPlayer {
 	static void Pause (MediaPlayer *mplayer, bool value);
 	static void Stop (MediaPlayer *mplayer);
 	static void Play (MediaPlayer *mplayer);
+	static void Drain (MediaPlayer *mplayer);
 	static void WakeUp ();
 	static void Shutdown ();
 };

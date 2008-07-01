@@ -1,0 +1,14 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+   <Rectangle x:Name="test" RadiusX="4" RadiusY="4" Width="170" Height="200">
+      <Rectangle.Fill>
+        <RadialGradientBrush GradientOrigin="0.5,1.0">
+          <GradientStop Color="#FFA051A1" Offset="0.5"/>
+          <GradientStop Color="#33000000" Offset="1"/>
+        </RadialGradientBrush>
+      </Rectangle.Fill>
+    </Rectangle>
+
+</Canvas>
+

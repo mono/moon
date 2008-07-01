@@ -39,6 +39,7 @@ typedef void     (*downloader_send_func) (gpointer state);
 typedef void     (*downloader_abort_func) (gpointer state);
 typedef void     (*downloader_header_func) (gpointer state, const char *header, const char *value);
 typedef void     (*downloader_body_func) (gpointer state, void *body, guint32 length);
+typedef gpointer (*downloader_create_webrequest_func) (const char *method, const char *uri, gpointer context);
 
 class Downloader : public DependencyObject {
 	static downloader_create_state_func create_state;
@@ -48,7 +49,8 @@ class Downloader : public DependencyObject {
 	static downloader_abort_func abort_func;
 	static downloader_header_func header_func;
 	static downloader_body_func body_func;
-	
+	static downloader_create_webrequest_func request_func;
+
 	// Set by the consumer
 	downloader_notify_size_func notify_size;
 	downloader_write_func write;
@@ -133,6 +135,7 @@ class Downloader : public DependencyObject {
 				  downloader_abort_func abort,
 				  downloader_header_func header,
 				  downloader_body_func body,
+			          downloader_create_webrequest_func request,
 				  bool only_if_not_set);
 	
 	void RequestPosition (gint64 *pos);
@@ -146,7 +149,8 @@ class Downloader : public DependencyObject {
 	gpointer GetDownloaderState () { return downloader_state; }
 	void     SetHttpStreamingFeatures (HttpStreamingFeatures features) { streaming_features = features; }
 	HttpStreamingFeatures GetHttpStreamingFeatures () { return streaming_features; }
-	
+	downloader_create_webrequest_func GetRequestFunc () {return request_func; }
+
 	//
 	// Property Accessors
 	//
@@ -161,6 +165,72 @@ class Downloader : public DependencyObject {
 
 	// FIXME: This is exposed for text right now and should be cleaned up.
 	FileDownloader *getFileDownloader () { return (FileDownloader *) internal_dl; }
+};
+
+class DownloaderResponse;
+
+typedef uint32_t (* DownloaderResponseStartedHandler) (DownloaderResponse *response, gpointer context);
+typedef uint32_t (* DownloaderResponseDataAvailableHandler) (DownloaderResponse *response, gpointer context, char *buffer, uint32_t length);
+typedef uint32_t (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data);
+
+
+class DownloaderResponse {
+ protected:
+	DownloaderResponseStartedHandler started;
+	DownloaderResponseDataAvailableHandler available;
+	DownloaderResponseFinishedHandler finished;
+	gpointer context;
+
+	bool aborted;
+
+ public:
+	DownloaderResponse ()
+	{
+		aborted = false;
+	}
+
+	DownloaderResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
+	{
+		this->aborted = false;
+		this->started = started;
+		this->available = available;
+		this->finished = finished;
+		this->context = context;
+	}
+
+	virtual ~DownloaderResponse ()
+	{
+	}
+
+	virtual void Abort () = 0;
+	virtual const bool IsAborted () { return this->aborted; }
+};
+
+class DownloaderRequest {
+ protected:
+	char *uri;
+	char *method;
+
+	bool aborted;
+
+ public:
+	DownloaderRequest (const char *method, const char *uri)
+	{
+		this->method = g_strdup (method);
+		this->uri = g_strdup (uri);
+	}
+
+	virtual ~DownloaderRequest ()
+	{
+		g_free (method);
+		g_free (uri);
+	}
+
+	virtual void Abort () = 0;
+	virtual bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context) = 0;
+	virtual const bool IsAborted () { return this->aborted; }
+	virtual void SetHttpHeader (const char *name, const char *value) = 0;
+	virtual void SetBody (void *body, int size) = 0;
 };
 
 
@@ -202,9 +272,12 @@ void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_send_func send,
 			       downloader_abort_func abort,
 			       downloader_header_func header,
-			       downloader_body_func body);
+			       downloader_body_func body,
+			       downloader_create_webrequest_func request);
 
 void downloader_init (void);
+
+void *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri);
 
 G_END_DECLS
 

@@ -10,8 +10,8 @@
 #define GECKO_SYM(x) CONCAT(FF3,x)
 #include "../browser-http.inc"
 
-BrowserRequest*
-FF3BrowserBridge::CreateBrowserRequest (const char *method, const char *uri)
+DownloaderRequest*
+FF3BrowserBridge::CreateDownloaderRequest (const char *method, const char *uri)
 {
-	return new FF3BrowserRequest (method, uri);
+	return new FF3DownloaderRequest (method, uri);
 }

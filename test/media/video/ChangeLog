@@ -1,3 +1,31 @@
+2008-06-30  Fernando Herrera  <fherrera@novell.com>
+
+	* test-http-failure.html: increase timeout.
+
+2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-inexistent-medias.html: Added.
+	* drtlist.xml: Added test-inexistent-medias.html.
+
+2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Added test-seek-race.
+	* test-http-failure.html, test-playlist-live-with-duration.html: Inform
+	  about the most probable (duh) cause for this test to fail.
+	* test-markers-after-seek.html: Don't seek in MediaOpened, SL has some
+	  really random seeking behaviour if we do that.
+	* test-seek-race.html: Added.
+
+2008-06-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Added test-double-stop.html.
+	* test-double-stop.asx, test-double-stop.html: Added.
+
+2008-06-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Added test-video-only-seek.html.
+	* test-video-only-seek.html: Added.
+
 2008-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-asf-demuxer-big-markers.html,

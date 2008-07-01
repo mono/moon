@@ -113,58 +113,93 @@ EventObject::~EventObject()
 
 static pthread_rwlock_t surface_lock = PTHREAD_RWLOCK_INITIALIZER;
 
-void
-EventObject::SetSurface (Surface *surface)
+bool
+EventObject::SetSurfaceLock ()
 {
 	int result;
 	
 	if ((result = pthread_rwlock_wrlock (&surface_lock)) != 0) {
 		printf ("EventObject::SetSurface (%p): Couldn't aquire write lock: %s\n", surface, strerror (result));
+		return false;
+	}
+	
+	return true;
+}
+
+
+void
+EventObject::SetSurface (Surface *surface)
+{
+	if (!Surface::InMainThread ()) {
+		g_warning ("EventObject::SetSurface (): This method must not be called on any other than the main thread!\n");
+		d (print_stack_trace ());
 		return;
 	}
 	
 	this->surface = surface;
-	
+}
+
+void
+EventObject::SetSurfaceUnlock ()
+{
 	pthread_rwlock_unlock (&surface_lock);
 }
 
 void
-EventObject::AddTickCall (void (*func)(gpointer))
+EventObject::AddTickCallSafe (TickCallHandler handler)
 {
 	int result;
-	Surface *surface;
-	TimeManager *timemanager;
 	
 	/*
-	 * This code assumes that the surface won't be destructed without setting the surface field on every EventObject
-	 * to NULL first. In other words: if we have a read lock here, the surface won't get destroyed, given that setting
+	 * This code assumes that the surface won't be destructed without setting the surface field on to NULL first. 
+	 * In other words: if we have a read lock here, the surface won't get destroyed, given that setting
 	 * the surface field to NULL will block until we release the read lock.
 	 */
 	
 	if ((result = pthread_rwlock_rdlock (&surface_lock)) != 0) {
-		printf ("EventObject::AddTickCall (): Couldn't aquire read lock: %s\n", strerror (result));
+		printf ("EventObject::AddTickCallSafe (): Couldn't aquire read lock: %s\n", strerror (result));
 		return;
 	}
+
+	AddTickCallInternal (handler);
+ 	
+	pthread_rwlock_unlock (&surface_lock);
+}
+
+void
+EventObject::AddTickCall (TickCallHandler handler)
+{
+	if (!Surface::InMainThread ()) {
+		g_warning ("EventObject::AddTickCall (): This method must not be called on any other than the main thread! Tick call won't be added.\n");
+		d (print_stack_trace ());
+		return;
+	}
+	
+	AddTickCallInternal (handler);
+}
+
+void
+EventObject::AddTickCallInternal (TickCallHandler handler)
+{
+	Surface *surface;
+	TimeManager *timemanager;
 	
 	surface = GetSurface ();
 	
 	if (!surface) {
 		d(printf ("EventObject::AddTickCall (): Could not add tick call, no surface\n"));
-		goto cleanup;
+		return;
 	}
 	
 	timemanager = surface->GetTimeManager ();
 	
 	if (!timemanager) {
-		d(printf ("EventObject::AddTickCAll (): Could not add tick call, no time manager\n"));
-		goto cleanup;
+		d(printf ("EventObject::AddTickCall (): Could not add tick call, no time manager\n"));
+		return;
 	}
 
 	ref ();
-	timemanager->AddTickCall (func, this);
-	
-cleanup:
-	pthread_rwlock_unlock (&surface_lock);
+	timemanager->AddTickCall (handler, this);
 }
 
 void 
@@ -1199,8 +1234,11 @@ DependencyObject::GetDependencyProperty (Type::Kind type, const char *name, bool
 
 	table = (GHashTable*) g_hash_table_lookup (properties, &type);
 
-	if (table)
-		property = (DependencyProperty*) g_hash_table_lookup (table, name);
+	if (table) {
+		char *key = g_ascii_strdown (name, -1);
+		property = (DependencyProperty*) g_hash_table_lookup (table, key);
+		g_free (key);
+	}
 
 	if (property != NULL)
 		return property;
@@ -1387,12 +1425,12 @@ DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *defaul
 	table = (GHashTable*) g_hash_table_lookup (properties, &property->type);
 
 	if (table == NULL) {
-		table = g_hash_table_new_full (strcase_hash, strcase_equal,
+		table = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       NULL, free_property);
 		g_hash_table_insert (properties, &property->type, table);
 	}
 
-	g_hash_table_insert (table, property->name, property);
+	g_hash_table_insert (table, property->hash_key, property);
 
 	return property;
 }
@@ -1480,6 +1518,7 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly, bool always_change)
 {
 	this->type = type;
+	this->hash_key = g_ascii_strdown (name, -1);
 	this->name = g_strdup (name);
 	this->default_value = default_value;
 	this->value_type = value_type;

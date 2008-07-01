@@ -992,11 +992,11 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 						failed = true;
 					} else if (uri->protocol == NULL) {
 						failed = true;
-					} else if (!strcase_equal (uri->protocol, "http") && 
-								!strcase_equal (uri->protocol, "https") && 
-								!strcase_equal (uri->protocol, "mms") &&
-								!strcase_equal (uri->protocol, "rtsp") && 
-								!strcase_equal (uri->protocol, "rstpt")) {
+					} else if (g_strcasecmp (uri->protocol, "http") && 
+						   g_strcasecmp (uri->protocol, "https") && 
+						   g_strcasecmp (uri->protocol, "mms") &&
+						   g_strcasecmp (uri->protocol, "rtsp") && 
+						   g_strcasecmp (uri->protocol, "rstpt")) {
 						failed = true;
 					}
 					

@@ -26,6 +26,98 @@ Surface::IsAnythingDirty ()
 	return !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
 }
 
+/*
+** We keep the dirty lists partially sorted, with the following
+** invariants:
+**
+** 1. In the down dirty list, ancestors always appear before
+**    descendents.
+** 2. In the up dirty list, descendents always appear before
+**    ancestors.
+**
+** No ordering guarantee is made between siblings, regardless of their
+** zindex.
+**
+** To make the previous invariants hold, inserting nodes into the list
+** is complicated a little.
+**
+** When inserting a node in the down dirty list:
+**
+** 1. Has a descendent been inserted (is down_dirty_node_succ !=
+**    NULL)?  If so, insert the node directly before the descendent in
+**    the list.
+**
+**    Then walk up the tree until we find an element that is in the
+**    list, setting their down_dirty_node_succ to the node we just
+**    inserted.
+**
+** 2. If a descendent hasn't been inserted (down_dirty_node_succ ==
+**    NULL), we walk up the tree looking for the first element that is
+**    in the list (down_dirty_node != NULL).  If we find one, we
+**    insert the new node directly after the ancestor, and set the
+**    ancestor's down_dirty_node_succ to the new node.
+** 
+** 3. If neither ancestor nor descendent has been inserted, we prepend
+**    the node to the start of the list and walk up the tree setting
+**    down_dirty_node_succ on all elements.
+**
+**
+** This 3 step process proceeds analogously in the up dirty case,
+** except we insert the new nodes after descendents and before
+** parents.
+**
+*/
+static List::Node*
+find_down_pred (UIElement *element)
+{
+	UIElement *parent = element->GetVisualParent();
+	for (; parent; parent = parent->GetVisualParent())
+		if (parent->down_dirty_node)
+			return parent->down_dirty_node;
+
+	return NULL;
+}
+
+static List::Node*
+find_up_succ (UIElement *element)
+{
+	UIElement *parent = element->GetVisualParent();
+	for (; parent; parent = parent->GetVisualParent())
+		if (parent->up_dirty_node)
+			return parent->up_dirty_node;
+
+	return NULL;
+}
+
+static void
+update_ancestor_down_succ (UIElement *element, List::Node *new_succ)
+{
+	UIElement *parent = element->GetVisualParent();
+	for (; parent; parent = parent->GetVisualParent()) {
+		parent->down_dirty_node_succ = new_succ;
+		if (parent->down_dirty_node) {
+			// if an element has a down_dirty_node all of its
+			// ancestors will have that node as their succ link.
+			return;
+		}
+	}
+}
+
+static void
+update_ancestor_up_pred (UIElement *element, List::Node *new_pred)
+{
+	UIElement *parent = element->GetVisualParent();
+	for (; parent; parent = parent->GetVisualParent()) {
+		parent->up_dirty_node_pred = new_pred;
+		if (parent->up_dirty_node) {
+			// if an element has an up_dirty_node all of
+			// its ancestors will have that node as their
+			// pred link.
+			return;
+		}
+	}
+}
+
 void
 Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 {
@@ -41,28 +133,103 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 		if (element->down_dirty_node)
 			return;
 		element->down_dirty_node = new DirtyNode (element);
-		down_dirty->Prepend (element->down_dirty_node);
+
+		if (element->down_dirty_node_succ) {
+			// a descendent already exists in the tree, we
+			// need to insert ourselves before it
+			down_dirty->InsertBefore (element->down_dirty_node, element->down_dirty_node_succ);
+		}
+		else {
+			List::Node *pred = find_down_pred (element);
+			if (pred) {
+				// an ancestor already exists in the
+				// tree, we need to insert ourselves
+				// after it
+				down_dirty->InsertBefore (element->down_dirty_node, pred->next);
+			}
+			else {
+				// no descendent or ancestor exists in
+				// the tree.  insert ourselves at the
+				// start of the list.
+				down_dirty->Prepend (element->down_dirty_node);
+			}
+		}
+
+		// and update our ancestors' succ links.
+		update_ancestor_down_succ (element, element->down_dirty_node);
 	}
 
 	if (dirt & UpDirtyState) {
 		if (element->up_dirty_node)
 			return;
 		element->up_dirty_node = new DirtyNode (element);
-		up_dirty->Prepend (element->up_dirty_node);
+
+		if (element->up_dirty_node_pred) {
+			// a descendent already exists in the tree, we
+			// need to insert ourselves after it
+			up_dirty->InsertBefore (element->up_dirty_node, element->up_dirty_node_pred->next);
+		}
+		else {
+			List::Node *succ = find_up_succ (element);
+			if (succ) {
+				// an ancestor already exists in the
+				// tree, we need to insert ourselves
+				// before it
+				up_dirty->InsertBefore (element->up_dirty_node, succ);
+			}
+			else {
+				// no descendent or ancestor exists in
+				// the tree.  insert ourselves at the
+				// start of the list.
+				up_dirty->Prepend (element->up_dirty_node);
+			}
+		}
+
+		// and update our ancestors' pred links.
+		update_ancestor_up_pred (element, element->up_dirty_node);
 	}
+}
+
+/*
+**
+** Removing nodes is also a little complicated, in that we need to
+** update pred/succ pointers if they refered to the node we're
+** deleting.  So each removal method walks up the tree splicing the
+** element's succ/pred into the ancestor's dirty info.
+**
+** It may not be immediately apparent, but these methods guarantee
+** that once the list has been completely drained, the pred/succ links
+** are NULL for all elements.
+*/
+static void
+remove_up_dirty_node (List* up_dirty, UIElement *element)
+{
+	UIElement *parent = element->GetVisualParent();
+	for (; parent; parent = parent->GetVisualParent())
+		if (parent->up_dirty_node_pred == element->up_dirty_node)
+			parent->up_dirty_node_pred = element->up_dirty_node_pred;
+	up_dirty->Remove (element->up_dirty_node); // deletes the node
+	element->up_dirty_node = NULL;
+}
+
+static void
+remove_down_dirty_node (List* down_dirty, UIElement *element)
+{
+	UIElement *parent = element->GetVisualParent();
+	for (; parent; parent = parent->GetVisualParent())
+		if (parent->down_dirty_node_succ == element->down_dirty_node)
+			parent->down_dirty_node_succ = element->down_dirty_node_succ;
+	down_dirty->Remove (element->down_dirty_node); // deletes the node
+	element->down_dirty_node = NULL;
 }
 
 void
 Surface::RemoveDirtyElement (UIElement *element)
 {
-	if (element->up_dirty_node) {
-		up_dirty->Remove (element->up_dirty_node); // deletes the node
-		element->up_dirty_node = NULL;
-	}
-	if (element->down_dirty_node) {
-		down_dirty->Remove (element->down_dirty_node); // deletes the node
-		element->down_dirty_node = NULL;
-	}
+	if (element->up_dirty_node)
+		remove_up_dirty_node (up_dirty, element);
+	if (element->down_dirty_node)
+		remove_down_dirty_node (down_dirty, element);
 }
 
 
@@ -123,9 +290,8 @@ Surface::ProcessDownDirtyElements ()
 			if (el->GetVisualParent ())
 				el->GetVisualParent ()->UpdateBounds ();
 
-			el->Invalidate ();
 			el->ComputeTotalRenderVisibility ();
-			el->Invalidate ();
+			el->dirty_flags |= DirtyNewBounds;
 
 			PropagateDirtyFlagToChildren (el, DirtyRenderVisibility);
 		}
@@ -159,8 +325,10 @@ Surface::ProcessDownDirtyElements ()
 		if (el->dirty_flags & DirtyTransform) {
 			el->dirty_flags &= ~DirtyTransform;
 
+			el->Invalidate ();
 			el->ComputeTransform ();
 			el->UpdateBounds ();
+			el->dirty_flags |= DirtyNewBounds;
 
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
@@ -181,6 +349,17 @@ Surface::ProcessDownDirtyElements ()
 			PropagateDirtyFlagToChildren (el, DirtyClip);
 		}
 
+		if (el->dirty_flags & DirtyChildrenZIndices) {
+			el->dirty_flags &= ~DirtyChildrenZIndices;
+			if (!el->Is(Type::PANEL)) { 
+				g_warning ("DirtyChildrenZIndices is only applicable to Panel subclasses");
+			}
+			else {
+				((Panel*)el)->GetChildren ()->ResortByZIndex();
+			}
+			    
+		}
+
 		if (el->dirty_flags & DirtyPosition) {
 			el->dirty_flags &= ~DirtyPosition;
 
@@ -190,14 +369,13 @@ Surface::ProcessDownDirtyElements ()
 			el->ComputePosition ();
  			if (obounds != el->GetBounds() && el->GetVisualParent ())
 				el->GetVisualParent()->UpdateBounds();
-			el->Invalidate ();
+			el->dirty_flags |= DirtyNewBounds;
 
  			PropagateDirtyFlagToChildren (el, DirtyPosition);
 		}
 
 		if (!(el->dirty_flags & DownDirtyState)) {
-			down_dirty->Remove (node);
-			el->down_dirty_node = NULL;
+			remove_down_dirty_node (down_dirty, el);
 		}
 	}
 	
@@ -259,7 +437,10 @@ Surface::ProcessUpDirtyElements ()
 				el->Invalidate (el->GetSubtreeBounds ());
 			}
 		}
-
+		if (el->dirty_flags & DirtyNewBounds) {
+			el->Invalidate ();
+			el->dirty_flags &= ~DirtyNewBounds;
+		}
 		if (el->dirty_flags & DirtyInvalidate) {
 //  			printf (" + invalidating %p (%s) %s, %f %f %f %f\n",
 // 				el, el->GetTypeName(), el->GetName(), el->dirty_rect.x, el->dirty_rect.y, el->dirty_rect.w, el->dirty_rect.h);
@@ -294,8 +475,7 @@ Surface::ProcessUpDirtyElements ()
 		}
 
 		if (!(el->dirty_flags & UpDirtyState)) {
-			up_dirty->Remove (node);
-			el->up_dirty_node = NULL;
+			remove_up_dirty_node (up_dirty, el);
 		}
 	}
 	

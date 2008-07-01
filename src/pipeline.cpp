@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * pipeline.cpp: Pipeline for the media
  *
@@ -482,7 +483,7 @@ Media::Open (IMediaSource *source)
 			case MediaSourceTypeFile:
 				source_name = ((FileSource *) source)->GetFileName ();
 				break;
-			case MediaSourceTypeLive:
+			case MediaSourceTypeQueueMemory:
 				source_name = "live source";
 				break;
 			default:
@@ -1281,7 +1282,7 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 		text = wchar_to_utf8 (uni_text, text_length);
 		type = wchar_to_utf8 (uni_type, type_length);
 		
-		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): sending script command to %p, type: '%s', text: '%s', pts: '%llu'.\n", parser->embedded_script_command, type, text, pts);
+		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): sending script command type: '%s', text: '%s'.\n", type, text);
 
 		frame->buffer = (guint8 *) new MediaMarker (type, text, frame->pts);
 		frame->buflen = sizeof (MediaMarker);
@@ -1373,17 +1374,13 @@ ASXDemuxer::ReadHeader ()
 bool
 ASXDemuxerInfo::Supports (IMediaSource *source)
 {
-	guint8 buffer[4];
+	char buffer[4];
 	
-	if (!source->Peek (buffer, 4))
+	if (!source->Peek ((guint8 *) buffer, 4))
 		return false;
 	
-	return (buffer [0] == '<' && 
-			(buffer [1] == 'A' || buffer [1] == 'a') && 
-			(buffer [2] == 'S' || buffer [2] == 's') &&
-			(buffer [3] == 'X' || buffer [3] == 'x') ||
-		(buffer [0] == '[' && 
-			 buffer [1] == 'R' && buffer [2] == 'e' && buffer [3] == 'f'));
+	return !g_ascii_strncasecmp (buffer, "<asx", 4) ||
+		!g_ascii_strncasecmp (buffer, "[Ref", 4);
 }
 
 IMediaDemuxer *
@@ -2004,6 +2001,9 @@ Mp3FrameReader::ReadFrame (MediaFrame *frame)
 	
 	if (!mpeg_parse_header (&mpeg, buffer))
 		return MEDIA_DEMUXER_ERROR;
+	
+	//printf ("Mp3FrameReader::ReadFrame():\n");
+	//mpeg_print_info (&mpeg);
 	
 	if (mpeg.bit_rate == 0) {
 		// use the most recently specified bit rate
@@ -2846,7 +2846,7 @@ MemorySource::SeekInternal (gint64 offset, int mode)
 	switch (mode) {
 	case SEEK_SET:
 		real_offset = offset - start;
-		if (real_offset < 0 || real_offset > size)
+		if (real_offset < 0 || real_offset >= size)
 			return false;
 		pos = real_offset;
 		return true;
@@ -2879,13 +2879,227 @@ gint32
 MemorySource::PeekInternal (void *buffer, guint32 n, gint64 start)
 {
 	if (start == -1)
-		start = pos;
+		start = this->start + pos;
 
-	if (n > size - start)
+	if (this->start > start)
 		return 0;
-	memcpy (buffer, ((char*) memory) + start, n);
+
+	if ((this->start + size) < (start + n))
+		return 0;
+
+	memcpy (buffer, ((char*) memory) + this->start - start, n);
 	return n;
 }
+
+/*
+ *
+ */
+MemoryQueueSource::MemoryQueueSource (Media *media)
+	: IMediaSource (media)
+{
+	queue = g_queue_new ();
+	current = NULL;
+	size = -1;
+	end = -1;
+	start = 0;
+	requested_pts = UINT64_MAX;
+	last_requested_pts = UINT64_MAX;
+}
+
+static void
+memory_queue_source_remove (gpointer data, gpointer user_data)
+{
+	MemorySource *mem = (MemorySource*) data;
+	mem->unref();
+}
+
+MemoryQueueSource::~MemoryQueueSource ()
+{
+	g_queue_foreach (queue, memory_queue_source_remove, NULL);
+	g_queue_free (queue);
+}
+
+void
+MemoryQueueSource::WaitForQueue ()
+{
+	if (size == end || end == 0)
+		return;
+
+	StartWaitLoop ();
+	while ((current == NULL) && !Aborted ()) {
+		Wait ();
+	}
+	EndWaitLoop ();
+}
+
+
+gint64
+MemoryQueueSource::GetPositionInternal ()
+{
+	WaitForQueue ();
+	return current ? current->GetPosition () : 0;
+}
+
+
+void
+MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
+{
+	void *new_mem = g_memdup (buf, n);
+	MemorySource *mem_source = new MemorySource (NULL, new_mem, n, offset);
+	g_queue_push_head (queue, mem_source);
+	if (current == NULL) {
+		current = (MemorySource*) g_queue_pop_tail (queue);
+		start = offset;
+	}
+	size += n;
+
+        if (IsWaiting ())
+                Signal ();
+
+}
+
+bool
+MemoryQueueSource::SeekInternal (gint64 offset, int mode)
+{
+	gint64 real_offset;
+
+	WaitForQueue ();
+
+	switch (mode) {
+	case SEEK_SET:
+		if (offset < start)
+			return false;
+
+		while (current && offset > current->GetLastAvailablePosition()) {
+			current->unref ();
+			current = (MemorySource*) g_queue_pop_tail (queue);
+		} 
+		return current ? current->Seek(offset, SEEK_SET) : false;
+	default:
+		return false;
+	}
+	return true;
+}
+
+gint32 
+MemoryQueueSource::ReadInternal (void *buffer, guint32 n)
+{
+	WaitForQueue ();
+
+	if (current && current->ReadAll (buffer, n, true, current->GetPosition()))
+		return n;
+
+	return -1;
+
+}
+
+gint32
+MemoryQueueSource::PeekInternal (void *buffer, guint32 n, gint64 start)
+{
+	MemorySource *head;
+	MemorySource *tail;
+	MemorySource *tmp = NULL;
+	gint64 head_end;
+	gint64 tail_start;
+
+	if (current && current->Peek (buffer, n, true, start))
+		return n;
+
+	head = (MemorySource*) g_queue_peek_head (queue);
+	head_end = head ? head->GetLastAvailablePosition() : -1;
+
+	tail = (MemorySource*) g_queue_peek_tail (queue);
+	tail_start = tail ? tail->GetLastAvailablePosition() - tail->GetSize() : -1;
+
+	if (head_end < start && tail_start > start)
+		return -1;
+
+	if ((head_end - start) < (start - tail_start) && head) {
+		gint pos = g_queue_index (queue, head);
+		do {
+			tmp = (MemorySource*) g_queue_peek_nth (queue, pos);
+			pos++;
+		} while (pos < g_queue_get_length (queue) && tmp && (tmp->GetLastAvailablePosition() - tmp->GetSize()) > start);
+	} else if (tail) {
+		gint pos = g_queue_index (queue, tail);
+		do {
+			tmp = (MemorySource*) g_queue_peek_nth (queue, pos);
+			pos--;
+		} while (pos >= 0 && tmp && (tmp->GetLastAvailablePosition() - tmp->GetSize()) > start);
+	}
+
+
+	if (tmp && tmp->Peek (buffer, n, true, -1))
+		return n;
+
+	return -1;	
+}
+
+gint64
+MemoryQueueSource::GetLastAvailablePositionInternal ()
+{
+	MemorySource *last = (MemorySource*) g_queue_peek_head (queue);
+	if (last == NULL)
+		last = current;
+
+	return last ? last->GetLastAvailablePosition() : 0;
+}
+
+void
+MemoryQueueSource::NotifySize (gint64 size)
+{
+	Lock ();
+	this->end = size;
+	Unlock ();
+}
+
+gint64
+MemoryQueueSource::GetSizeInternal ()
+{
+	return end;
+}
+
+void
+MemoryQueueSource::RequestPosition (gint64 *pos)
+{
+	Lock ();
+	if (requested_pts != UINT64_MAX && requested_pts != last_requested_pts) {
+		*pos = requested_pts;
+		last_requested_pts = requested_pts;
+		requested_pts = UINT64_MAX;
+		Signal ();
+	}
+	Unlock ();
+}
+
+bool
+MemoryQueueSource::SeekToPts (guint64 pts)
+{
+
+	if (last_requested_pts == pts)
+		return true;
+
+	if (pts == 0 && Seek (0, SEEK_SET))
+		return true;
+
+	Lock ();
+	g_queue_foreach (queue, memory_queue_source_remove, NULL);
+	g_list_free (queue->head);
+	queue->head = queue->tail = NULL;
+	queue->length = 0;
+	current = NULL;
+	requested_pts = pts;
+
+	StartWaitLoop ();
+	while (!Aborted () && requested_pts != UINT64_MAX)
+		Wait ();
+	EndWaitLoop ();
+
+	Unlock ();
+
+	return !Aborted ();
+}
+
 
 /*
  * MediaClosure
@@ -3196,7 +3410,7 @@ IMediaSource::WaitForPosition (bool block, gint64 position)
 	if (block && GetLastAvailablePositionInternal () != -1) {
 		while (!aborted) {
 			// Check if the entire file is available.
-			if (GetSizeInternal () >= 0 && GetSizeInternal () <= GetLastAvailablePositionInternal ()) {
+			if (GetSizeInternal () >= 0 && GetSizeInternal () <= GetLastAvailablePositionInternal () + 1) {
 				LOG_PIPELINE ("IMediaSource<%i>::WaitForPosition (%i, %lld): GetSize (): %lld, GetLastAvailablePositionInternal (): %lld.\n", GET_OBJ_ID (this), block, position, GetSizeInternal (), GetLastAvailablePositionInternal ());	
 				break;
 			}
@@ -3230,7 +3444,7 @@ IMediaSource::ReadSome (void *buf, guint32 n, bool block, gint64 start)
 	else if (start != GetPositionInternal () && !SeekInternal (start, SEEK_SET))
 		return -1;
 	
-	WaitForPosition (block, start + n);
+	WaitForPosition (block, start + n - 1);
 
 	result = ReadInternal (buf, n);
 

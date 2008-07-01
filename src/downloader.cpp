@@ -50,6 +50,8 @@
 #include "utils.h"
 #include "error.h"
 
+#define d(x)
+
 //
 // Downloader
 //
@@ -61,6 +63,7 @@ downloader_send_func Downloader::send_func = NULL;
 downloader_abort_func Downloader::abort_func = NULL;
 downloader_header_func Downloader::header_func = NULL;
 downloader_body_func Downloader::body_func = NULL;
+downloader_create_webrequest_func Downloader::request_func = NULL;
 
 DependencyProperty *Downloader::DownloadProgressProperty;
 DependencyProperty *Downloader::ResponseTextProperty;
@@ -70,6 +73,8 @@ DependencyProperty *Downloader::UriProperty;
 
 Downloader::Downloader ()
 {
+	d (printf ("Downloader::Downloader ()\n"));
+	
 	downloader_state = Downloader::create_state (this);
 	consumer_closure = NULL;
 	context = NULL;
@@ -92,6 +97,8 @@ Downloader::Downloader ()
 
 Downloader::~Downloader ()
 {
+	d (printf ("Downloader::~Downloader ()\n"));
+	
 	Downloader::destroy_state (downloader_state);
 	
 	g_free (filename);
@@ -104,6 +111,7 @@ Downloader::~Downloader ()
 void
 Downloader::InternalAbort ()
 {
+	d (printf ("Downloader::InternalAbort ()\n"));
 	if (!GetSurface ())
 		return;
 
@@ -113,6 +121,8 @@ Downloader::InternalAbort ()
 void
 Downloader::Abort ()
 {
+	d (printf ("Downloader::Abort ()\n"));
+	
 	if (!aborted && !failed_msg) {
 		InternalAbort ();
 		SetDownloadProgress (0.0);
@@ -124,25 +134,33 @@ Downloader::Abort ()
 char *
 Downloader::GetDownloadedFilename (const char *partname)
 {
+	d (printf ("Downloader::GetDownloadedFilename (%s)\n", filename));
+	
 	return internal_dl->GetDownloadedFilename (partname);
 }
 
 char *
 Downloader::GetResponseText (const char *PartName, guint64 *size)
 {
+	d (printf ("Downloader::GetResponseText (%s, %p)\n", PartName, size));
+	
 	return internal_dl->GetResponseText (PartName, size);
 }
 
 void
 Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
 {
+	d (printf ("Downloader::InternalOpen (%s, %s, %i)\n", verb, uri, streaming));
+	
 	open_func (verb, uri, streaming, downloader_state);
 }
 
 void
 Downloader::Open (const char *verb, const char *uri)
 {
-        send_queued = false;
+	d (printf ("Downloader::Open (%s, %s)\n", verb, uri));
+	
+	send_queued = false;
 	started = false;
 	aborted = false;
 	file_size = -2;
@@ -168,18 +186,24 @@ Downloader::Open (const char *verb, const char *uri)
 void
 Downloader::InternalSetHeader (const char *header, const char *value)
 {
+	d (printf ("Downloader::InternalSetHeader (%s, %s)\n", header, value));
+	
 	header_func (downloader_state, header, value);
 }
 
 void
 Downloader::InternalSetBody (void *body, guint32 length)
 {
+	d (printf ("Downloader::InternalSetBody (%p, %u)\n", body, length));
+	
 	body_func (downloader_state, body, length);
 }
 
 void
 Downloader::SendInternal ()
 {
+	d (printf ("Downloader::SendInternal ()\n"));
+	
 	if (!GetSurface ()) {
 		// The plugin is already checking for surface before calling Send, so
 		// if we get here, it's either managed code doing something wrong or ourselves.
@@ -210,7 +234,7 @@ Downloader::SendInternal ()
 }
 
 static void
-send_async (void *user_data)
+send_async (EventObject *user_data)
 {
 	Downloader *downloader = (Downloader *) user_data;
 	
@@ -221,6 +245,8 @@ send_async (void *user_data)
 void
 Downloader::Send ()
 {
+	d (printf ("Downloader::Send ()\n"));
+	
 	if (!GetSurface ()) {
 		// The plugin is already checking for surface before calling Send, so
 		// if we get here, it's either managed code doing something wrong or ourselves.
@@ -240,6 +266,8 @@ Downloader::Send ()
 void
 Downloader::SendNow ()
 {
+	d (printf ("Downloader::SendNow ()\n"));
+	
 	send_queued = true;
 	SetStatusText ("");
 	SetStatus (0);
@@ -253,6 +281,8 @@ Downloader::SendNow ()
 void
 Downloader::Write (void *buf, gint32 offset, gint32 n)
 {
+	d (printf ("Downloader::Write (%p, %i, %i). Uri: %s\n", buf, offset, n, GetUri ()));
+	
 	if (aborted)
 		return;
 		
@@ -265,6 +295,8 @@ Downloader::Write (void *buf, gint32 offset, gint32 n)
 void
 Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 {
+	d (printf ("Downloader::InternalWrite (%p, %i, %i)\n", buf, offset, n));
+	
 	double progress;
 
 	// Update progress
@@ -288,6 +320,8 @@ Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 void
 Downloader::RequestPosition (gint64 *pos)
 {
+	d (printf ("Downloader::RequestPosition (%p)\n", pos));
+	
 	if (aborted)
 		return;
 	
@@ -299,6 +333,8 @@ Downloader::RequestPosition (gint64 *pos)
 void
 Downloader::NotifyFinished (const char *fname)
 {
+	d (printf ("Downloader::NotifyFinished (%s)\n", fname));
+	
 	if (aborted)
 		return;
 	
@@ -322,6 +358,8 @@ Downloader::NotifyFinished (const char *fname)
 void
 Downloader::NotifyFailed (const char *msg)
 {
+	d (printf ("Downloader::NotifyFailed (%s)\n", msg));
+	
 	/* if we've already been notified of failure, no-op */
 	if (failed_msg)
 		return;
@@ -342,6 +380,8 @@ Downloader::NotifyFailed (const char *msg)
 void
 Downloader::NotifySize (gint64 size)
 {
+	d (printf ("Downloader::NotifySize (%lld)\n", size));
+	
 	file_size = size;
 	
 	if (aborted)
@@ -357,12 +397,16 @@ Downloader::NotifySize (gint64 size)
 bool
 Downloader::Started ()
 {
+	d (printf ("Downloader::Started (): %i\n", started));
+	
 	return started;
 }
 
 bool
 Downloader::Completed ()
 {
+	d (printf ("Downloader::Completed (), filename: %s\n", filename));
+	
 	return filename != NULL;
 }
 
@@ -371,6 +415,8 @@ Downloader::SetWriteFunc (downloader_write_func write,
 			  downloader_notify_size_func notify_size,
 			  gpointer data)
 {
+	d (printf ("Downloader::SetWriteFunc\n"));
+	
 	this->write = write;
 	this->notify_size = notify_size;
 	this->consumer_closure = data;
@@ -384,8 +430,11 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 			  downloader_abort_func abort,
 			  downloader_header_func header,
 			  downloader_body_func body,
+			  downloader_create_webrequest_func request,
 			  bool only_if_not_set)
 {
+	d (printf ("Downloader::SetFunctions\n"));
+	
 	if (only_if_not_set &&
 	    (Downloader::create_state != NULL ||
 	     Downloader::destroy_state != NULL ||
@@ -393,7 +442,8 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 	     Downloader::send_func != NULL ||
 	     Downloader::abort_func != NULL ||
 	     Downloader::header_func != NULL ||
-	     Downloader::body_func != NULL))
+	     Downloader::body_func != NULL ||
+	     Downloader::request_func != NULL))
 	  return;
 
 	Downloader::create_state = create_state;
@@ -403,35 +453,46 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 	Downloader::abort_func = abort;
 	Downloader::header_func = header;
 	Downloader::body_func = body;
+	Downloader::request_func = request;
 }
 
 void
 Downloader::SetRequestPositionFunc (downloader_request_position_func request_position)
 {
-       this->request_position = request_position;
+	d (printf ("Downloader::SetRequestPositionFunc\n"));
+	
+	this->request_position = request_position;
 }
 
 void
 Downloader::SetDownloadProgress (double progress)
 {
+	d (printf ("Downloader::SetDownloadProgress\n"));
+	
 	SetValue (Downloader::DownloadProgressProperty, Value (progress));
 }
 
 double
 Downloader::GetDownloadProgress ()
 {
+	d (printf ("Downloader::GetDownloadProgress\n"));
+	
 	return GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
 }
 
 void
 Downloader::SetStatusText (const char *text)
 {
+	d (printf ("Downloader::SetStatusText\n"));
+	
 	SetValue (Downloader::StatusTextProperty, Value (text));
 }
 
 const char *
 Downloader::GetStatusText ()
 {
+	d (printf ("Downloader::GetStatusText\n"));
+	
 	Value *value = GetValue (Downloader::StatusTextProperty);
 	
 	return value ? value->AsString () : NULL;
@@ -440,18 +501,24 @@ Downloader::GetStatusText ()
 void
 Downloader::SetStatus (int status)
 {
+	d (printf ("Downloader::SetStatus\n"));
+	
 	SetValue (Downloader::StatusProperty, Value (status));
 }
 
 int
 Downloader::GetStatus ()
 {
+	d (printf ("Downloader::GetStatus\n"));
+	
 	return GetValue (Downloader::StatusProperty)->AsInt32 ();
 }
 
 void
 Downloader::SetUri (const char *uri)
 {
+	d (printf ("Downloader::SetUri (%s)\n", uri));
+	
 	SetValue (Downloader::UriProperty, Value (uri));
 
 }
@@ -459,6 +526,8 @@ Downloader::SetUri (const char *uri)
 const char *
 Downloader::GetUri ()
 {
+	d (printf ("Downloader::GetUri ()\n"));
+	
 	Value *value = GetValue (Downloader::UriProperty);
 	
 	return value ? value->AsString () : NULL;
@@ -534,12 +603,17 @@ downloader_set_functions (downloader_create_state_func create_state,
 			  downloader_send_func send,
 			  downloader_abort_func abort, 
 			  downloader_header_func header,
-			  downloader_body_func body)
+			  downloader_body_func body,
+			  downloader_create_webrequest_func request)
 {
 	Downloader::SetFunctions (create_state, destroy_state,
-				  open, send, abort, header, body, false);
+				  open, send, abort, header, body, request, false);
 }
 
+void *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri)
+{
+	return dl->GetRequestFunc() (method, uri, dl->GetContext());
+}
 void
 downloader_request_position (Downloader *dl, gint64 *pos)
 {
@@ -614,6 +688,13 @@ dummy_downloader_body (gpointer state, void *body, guint32 length)
 	g_warning ("downloader_set_function has never been called.\n");
 }
 
+static gpointer
+dummy_downloader_create_web_request (const char *method, const char *uri, gpointer context)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+	return NULL;
+}
+
 
 void
 downloader_init (void)
@@ -630,5 +711,6 @@ downloader_init (void)
 				  dummy_downloader_send,
 				  dummy_downloader_abort,
 				  dummy_downloader_header,
-				  dummy_downloader_body, true);
+				  dummy_downloader_body,
+				  dummy_downloader_create_web_request, true);
 }

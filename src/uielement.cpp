@@ -36,6 +36,7 @@ UIElement::UIElement ()
 
 	dirty_flags = 0;
 	up_dirty_node = down_dirty_node = NULL;
+	up_dirty_node_pred = down_dirty_node_succ = NULL;
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
 
@@ -111,7 +112,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	  
 	if (args->property == UIElement::OpacityProperty) {
 		UpdateTotalRenderVisibility ();
-		Invalidate ();
+		Invalidate (GetSubtreeBounds ());
 	}
 	else if (args->property == UIElement::VisibilityProperty) {
 		// note: invalid enum values are only validated in 1.1 (managed code),
@@ -122,6 +123,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		else
 			flags &= ~UIElement::RENDER_VISIBLE;
 		UpdateTotalRenderVisibility();
+		Invalidate (GetSubtreeBounds ());
 	}
 	else if (args->property == UIElement::IsHitTestVisibleProperty) {
 		if (args->new_value->AsBool())
@@ -138,7 +140,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	else if (args->property == UIElement::OpacityMaskProperty) {
 		opacityMask = args->new_value ? args->new_value->AsBrush() : NULL;
-		Invalidate ();
+		Invalidate (GetSubtreeBounds ());
 	}
 	else if (args->property == UIElement::RenderTransformProperty || args->property == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
@@ -167,6 +169,7 @@ UIElement::UpdateBounds (bool force_redraw)
 {
 	if (GetSurface ())
 		GetSurface ()->AddDirtyElement (this, DirtyBounds);
+
 	force_invalidate_of_new_bounds |= force_redraw;
 }
 

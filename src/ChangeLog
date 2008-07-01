@@ -1,3 +1,277 @@
+2008-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: Use Cairo by default to ComputeBounds. In effect 
+	this change Polyline and Polygon to use Cairo instead of (faster
+	but less acurate) custom code. In reality PathGeometry (PML) is 
+	much more used than those Poly[line|gon] and (upcoming) caching 
+	negate much of the impact.
+	* geometry.cpp: Use the more precise (and surviving) 
+	calc_line_bounds function that accept PenLineCap.
+
+2008-06-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* shape.cpp (Shape::OnPropertyChanged): If the Stroke property
+	chanegs between null and an actual brush (in either direction),
+	invalidate the cached path because the shape may need to
+	recalculate the stroke offsets.
+
+2008-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Move reading the first point of C|Q beziers into the 
+	loop. Fix quite a few misrendering for http://xmldocs.net/ball
+	[Partial fix for #404858]
+
+2008-06-30  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp: add all the ordering smarts to keep the two dirty
+	lists partially sorted.  hopefully this won't be a huge
+	performance hit.
+
+	* uielement.h, uielement.cpp: add 2 new dirty pointers.  a "succ"
+	pointer for the down dirty list, and a "pred" for the up dirty
+	list.
+
+2008-06-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* list.cpp (List::InsertBefore): Handle a NULL @before.
+
+2008-06-30  Geoff Norton  <gnorton@novell.com>
+
+	* mms-downloader.cpp: Rework Fernando's incomplete packet guard to be a little
+	more sane while we determine how to fix this properly.
+
+2008-06-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* shape.cpp (Shape::ComputeShapeBounds): Reverted my previous fix,
+	it's not correct.
+	(Ellipse::ComputeShapeBounds): Same.
+
+2008-06-30  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Make sure our default KeySplines parameters are correct
+	to generate a linear dynamics curve as Silverlight. Fixes #404850.
+
+2008-06-30  Fernando Herrera  <fherrera@novell.com>
+
+	* pipeline.cpp: don't use g_queue_clear as is present only in glib >= 2.14
+
+2008-06-30  Fernando Herrera  <fherrera@novell.com>
+
+	* pipeline.h:
+	* pipeline.cpp: Implement the packet writer MemoryQueueSource.
+	* asf/asf.h:
+	* asf/asf.cpp: 
+	* media.h:
+	* media.cpp: Use MemoryQueueSource for all mms streams
+	* mms-downloader.cpp: Don't try to parse/write incomplete data packets.
+
+2008-06-29  Chris Toshok  <toshok@ximian.com>
+
+	* panel.cpp (Panel::OnCollectionChanged): when the ZIndex of a
+	child changes, invalidate them here.
+
+	* dirty.cpp (Surface::ProcessDownDirtyElements): and remove the
+	subtree invalidate from the zindex processing here.
+
+2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline-ffmpeg.cpp: Add debug spew.
+	* media.cpp: Remove debug spew.
+
+2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp, media.h: Add streamed markers to the media element on the
+	  main thread.
+
+2008-06-28  Geoff Norton  <gnorton@novell.com>
+
+	* downloader.h: The finished event raises a success condition now
+	so that we can notify failure on unsuccessful downloads.
+
+2008-06-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.h: Add AudioPlayer::Drain to drain whatever data the audio
+	  has stored, now called by the MediaPlayer when seeking. Execute the
+	  'seeking complete' logic on the main thread (marshalling
+	  SeekCallback to the main thread). Always use the thread-safe
+	  AddTickCallSafe instead of AddTickCall, and override
+	  EventSurface::SetSurface to lock/unlock the required locks.
+	* mplayer.cpp: Add AudioPlayer::Drain to drain whatever data the audio
+	  has stored, now called by the MediaPlayer when seeking. Execute the
+	  'seeking complete' logic on the main thread (marshalling
+	  SeekCallback to the main thread), and set the previous_position on
+	  the MediaElement to the seeked-to position when the seek is
+	  finished. Always use the thread-safe AddTickCallSafe instead of
+	  AddTickCall, and override EventSurface::SetSurface to lock/unlock
+	  the required locks.
+	* dependencyobject.cpp, dependencyobject.h: Split AddTickCall into a
+	  thread-safe version (AddTickCallSafe) and don't do any locking in
+	  AddTickCall. Add SetSurfaceLock/Unlock so that types overriding
+	  SetSurface can do the proper locking.
+	* media.cpp, media.h: CheckMarkers: Don't try to detect seeking by
+	  comparing to/from pts, MediaPlayer will now set previous_position
+	  correctly when seeking. AdvanceFrame: only check markers if we
+	  advanced or if we're not seeking. SetSurface: add proper locking,
+	  and use AddTickCallSafe where appropiate.
+
+2008-06-27  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (UIElement::OnPropertyChanged): opcacity mask
+	affects the subtree as well.
+
+2008-06-27  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (UIElement::OnPropertyChanged): on things that can
+	potentially be trapped by the Invalidate visibility check we need
+	to invalidate the whole subtree before we start processing the
+	dirty lists to avoid ordering issues.
+
+	Fixes test/xaml/assorted/rendering-glitches2.html.
+
+2008-06-27  Chris Toshok  <toshok@ximian.com>
+
+	* panel.cpp (Panel::FrontToBack): add a special case for
+	non-translucent (but NULL background) panels - we don't render
+	them at all.
+
+2008-06-27  Larry Ewing  <lewing@novell.com>
+
+	* panel.cpp (Panel::FrontToBack): treat opacity specially for
+	panel since we need the right subtree render region in PreRender.
+
+2008-06-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (dummy_downloader_create_web_request): Return
+	NULL to fix a compile warning about control reaching the end of a
+	non-void function.
+
+2008-06-27  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* downloader.[h|cpp]: move browserrequest/response from the plugin
+	as downloaderrequest/response.
+
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h (RUNTIME_INIT_DESKTOP, RUNTIME_INIT_BROWSER): enable
+	the shape cache.
+
+	* shape.h, shape.cpp (Shape::IsCandidateForCaching): remove the
+	condition that was keeping small surfaces from being cached, so
+	bubblemark gets a win from this (from ~38 to 70+ fps on my
+	laptop).
+	(Shape::ShiftPosition): if we have a cached surface, set the
+	device offset to mirror the new bounds x/y.
+
+2008-06-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* clock.h, clock.cpp, dependencyobject.h, downloader.cpp,
+	  dependencyobject.cpp, mplayer.h, media.h, mplayer.cpp, media.cpp:
+	  Change AddTickCall to take a TickCallHandler (EventObject*)
+	  function pointer and a EventObject * tick_data instead of untyped
+	  function pointer/tick_data.
+
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h,
+	dependencyobject.cpp (DependencyProperty::DependencyProperty):
+	convert the name to downcase prior to registering and prior to
+	calling g_hash_table_lookup to remove the casecmp overhead from
+	our key comparisons.  store the converted name in DP::hash_key.
+
+	* runtime.h, runtime.cpp: remove strcase_equal (use g_strcasecmp)
+	and strcase_hash.
+
+	* type.cpp: strcase_equal -> g_strcasecmp.
+
+	* playlist.cpp (PlaylistParser::OnStartElement): same.
+
+2008-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp (ASXDemuxerInfo::Supports): Fix broken boolean
+	logic/compiler warning and at the same time simplified.
+
+	* shape.cpp (Shape::ComputeShapeBounds): Need to take stroke
+	thickness into consideration. Fixes bug #400657.
+	(Ellipse::ComputeShapeBounds): Same.
+
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp (Surface::ProcessDownDirtyElements): add code to
+	re-sort the children by zindex.
+
+	* dirty.h (enum DirtyType): add DirtyChildrenZIndices.
+
+	* panel.cpp (Panel::OnCollectionChanged): don't resort-by-zindex
+	here.  just add it to the dirty list.
+
+	* transform.h, transform.cpp: move the OnSubPropertyChanged method
+	to MatrixTransform, so we can notify our listeners with the right
+	property.
+
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* transform.h, transform.cpp (Transform::OnSubPropertyChanged): we
+	need this to deal with sub-dependencyobjects of transforms (in
+	this case, MatrixTransform's Matrix object.)  when you set
+	properties on these subobjects, we need to update the transform.
+
+2008-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* brush.h, brush.cpp (Brush::OnSubPropertyChanged): add this (i
+	think it used to be there and was removed by me in a flurry of
+	propertychanged event fixing way back) to take care of brushes
+	properly causing the uielement to invalidate when the Brush's
+	transform/relativetransform changes.
+
+2008-06-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.h: #ifdef out GeometryFlags until we start using it.
+	* shape.cpp: Remove unused global variable.
+
+2008-06-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: AudioFinished: Check if we still have audio when the
+	  callback is reached. Fixes test-double-stop.html.
+
+2008-06-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: When calculating start_time take into account current
+	  position. Fixes test-video-only-seek.html (and fox seeking without
+	  audio).
+
+2008-06-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mms-downloader.cpp: Got rid of overuse of this-> and some int vs
+	uint comparisons.
+
+2008-06-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp: Cache bounds, both logical and "physical" for
+	PathFigure. This reduce the number of time we need to call 
+	cairo_[path|stroke|fill]_extents functions and speed up many
+	sites.
+	* geometry.h: Add stuff needed for geometry.cpp changes.
+	* xaml.cpp: Change geometry_from_str to directly create a 
+	moon_path and avoid the PathFigure[Collection] DO. This match
+	how Silverlight handle Path Markup Language (PML) and reduce
+	memory requirements when huge PML are used.
+
+2008-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* shape.cpp (calc_offsets): we don't want to divide by the sin,
+	because as angle approaches either 0, PI, or PI/2, the sin will
+	approach 0, and therefore the deltas will grow very, very large.
+	Turns out multiplying is what we want.
+
+2008-06-24  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Surface::Resize): set the width and height properly
+	in the windowless case, let the widget resize logic handle it
+	otherwise.
+	(Surface:render_cb): don't process dirty elements if we are in a
+	zombie state, just clear the dirty lists and move on.  Fixes a
+	crash we were seeing when calling ForceRender on a zombie plugin.
+
 2008-06-24  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp: in the switch from function pointer to integer in

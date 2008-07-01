@@ -115,9 +115,22 @@ namespace MoonlightTests
 				dbcmd.CommandText = query;
 				dbcmd.ExecuteNonQuery();
 			}
+			/*
 			catch(SqliteExecutionException ex)
 			{
-				Console.WriteLine("Bad command: {0}",query);
+				Console.WriteLine("SqliteExecutionException: {0}",query);
+				//Console.WriteLine(ex.ToString());
+			}
+			catch(SqliteSyntaxException ex)
+			{
+				Console.WriteLine("SqliteSyntaxException: {0}",query);
+				//Console.WriteLine(ex.ToString());
+			}
+			//*/
+			catch(Exception ex)
+			{
+				
+				Console.WriteLine("{0}: {1}",ex.GetType().ToString(), query);
 				//Console.WriteLine(ex.ToString());
 			}
 		}

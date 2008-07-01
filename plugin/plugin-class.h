@@ -219,6 +219,34 @@ struct MoonlightTimeSpan : MoonlightObject {
 	DependencyObject *parent_obj;
 };
 
+/*** MoonlightKeyTimeClass  ****************************************************************/
+struct MoonlightKeyTimeType : MoonlightObjectType {
+	MoonlightKeyTimeType ();
+};
+
+extern MoonlightKeyTimeType *MoonlightKeyTimeClass;
+
+struct MoonlightKeyTime : MoonlightObject {
+	MoonlightKeyTime (NPP instance) : MoonlightObject (instance)
+	{
+		moonlight_type = Type::KEYTIME;
+		parent_property = NULL;
+		parent_obj = NULL;
+	}
+	
+	virtual ~MoonlightKeyTime ();
+	
+	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
+	
+	KeyTime* GetValue ();
+	
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+	
+	DependencyProperty *parent_property;
+	DependencyObject *parent_obj;
+};
+
 /*** MoonlightSettingsClass ***********************************************************/
 
 struct MoonlightSettingsType : MoonlightObjectType {

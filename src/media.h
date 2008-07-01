@@ -259,6 +259,7 @@ class MediaElement : public MediaBase {
 	static void size_notify (gint64 size, gpointer data);
 	
 	TimelineMarkerCollection *streamed_markers;
+	Queue *pending_streamed_markers;
 	MediaClosure *marker_closure;
 	int advance_frame_timeout_id;
 	bool recalculate_matrix;
@@ -305,7 +306,7 @@ class MediaElement : public MediaBase {
 	guint32 flags;
 	
 	// downloader methods/data
-	ProgressiveSource *downloaded_file;
+	IMediaSource *downloaded_file;
 	
 	void DataWrite (void *data, gint32 offset, gint32 n);
 	void DataRequestPosition (gint64 *pos);
@@ -350,10 +351,10 @@ class MediaElement : public MediaBase {
 	void PlayNow ();
 	void StopNow ();
 	void SeekNow ();
-	static void PauseNow (gpointer value);
-	static void PlayNow (gpointer value);
-	static void StopNow (gpointer value);
-	static void SeekNow (gpointer value);
+	static void PauseNow (EventObject *value);
+	static void PlayNow (EventObject *value);
+	static void StopNow (EventObject *value);
+	static void SeekNow (EventObject *value);
 	
  protected:
 	virtual ~MediaElement ();
@@ -391,6 +392,7 @@ class MediaElement : public MediaBase {
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
 	
 	virtual void SetSurface (Surface *surface);
+	void SetPreviousPosition (guint64 pos);
 	
 	bool AdvanceFrame ();
 	void AudioFinished (); // Called by MediaPlayer when the audio reaches its end. Only called if we have no video.
@@ -431,7 +433,7 @@ class MediaElement : public MediaBase {
 	
 	pthread_mutex_t open_mutex; // Used when accessing closure.
 	MediaClosure *closure;
-	static void TryOpenFinished (void *user_data);
+	static void TryOpenFinished (EventObject *user_data);
 	void SetPlayRequested ();
 	
 	// Reset all information to defaults, set state to 'Error' and raise MediaFailedEvent
@@ -447,6 +449,8 @@ class MediaElement : public MediaBase {
 	virtual bool EnableAntiAlias ();
 	
 	void AddStreamedMarker (TimelineMarker *marker);
+	static void AddStreamedMarkersCallback (EventObject *obj);
+	void AddStreamedMarkers ();
 	void SetMedia (Media *media);
 	
 	//

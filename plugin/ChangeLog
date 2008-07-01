@@ -1,3 +1,28 @@
+2008-06-28  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-downloader.(ccp|h): The finished event raises a success condition now
+	so that we can notify failure on unsuccessful downloads.
+
+2008-06-27  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* browser-bridge.h:
+	* firefox/browser-http.inc:
+	* firefox/ff2/ff2-bridge.h:
+	* firefox/ff2/ff2-http.cpp:
+	* firefox/ff3/ff3-bridge.h:
+	* firefox/ff3/ff3-http.cpp:
+	* npstream-request.cpp:
+	* npstream-request.h:
+	* plugin-downloader.cpp:
+	* plugin-downloader.h: move browserrequest/response from the plugin
+	as downloaderrequest/response.
+
+2008-06-26  Michael Dominic K.  <mdk@mdk.am>
+
+	* plugin-class.cpp:
+	* plugin-class.h: Adding ways/wrapper to access the KeyTime property of
+	the KeyFrame. Fixes #402370 and #402035.
+
 2008-06-19  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.h: add GetHost(), and rename all the "get"/"set" methods

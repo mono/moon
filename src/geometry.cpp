@@ -427,14 +427,22 @@ LineGeometry::ComputeBounds (Path *shape, bool logical)
 	Point *p1 = GetStartPoint ();
 	Point *p2 = GetEndPoint ();
 	double thickness;
+	PenLineCap start_cap;
+	PenLineCap end_cap;
 	Rect bounds;
-	
-	if (shape && !logical)
-		thickness = shape->GetStrokeThickness ();
-	else
+
+	if (shape) {
+		start_cap = shape->GetStrokeStartLineCap ();
+		end_cap = shape->GetStrokeEndLineCap ();
+		thickness = (logical) ? 0.0 : shape->GetStrokeThickness ();
+	} else {
+		start_cap = PenLineCapFlat;
+		end_cap = PenLineCapFlat;
 		thickness = 0.0;
+	}
 	
-	calc_line_bounds (p1 ? p1->x : 0.0, p2 ? p2->x : 0.0, p1 ? p1->y : 0.0, p2 ? p2->y : 0.0, thickness, &bounds);
+	calc_line_bounds (p1 ? p1->x : 0.0, p2 ? p2->x : 0.0, p1 ? p1->y : 0.0, p2 ? p2->y : 0.0, 
+		thickness, start_cap, end_cap, &bounds);
 	
 	Transform *transform = GetTransform ();
 	if (transform) {
@@ -512,10 +520,22 @@ line_geometry_set_start_point (LineGeometry *line, Point *point)
 
 DependencyProperty *PathGeometry::FiguresProperty;
 
+PathGeometry::PathGeometry ()
+{
+	logical_bounds_available = physical_bounds_available = false;
+}
+
+// special case for the XAML parser when Path Markup Language (PML) is being used
+PathGeometry::PathGeometry (moon_path *pml)
+{
+	logical_bounds_available = physical_bounds_available = false;
+	path = pml;
+}
 
 void
 PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
 {
+	logical_bounds_available = physical_bounds_available = false;
 	if (path)
 		moon_path_clear (path);
 
@@ -527,12 +547,11 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 void
 PathGeometry::Build (Path *shape)
 {
+	path = moon_path_renew (path, 0);
+
 	PathFigureCollection *figures = GetFigures ();
-	
 	if (!figures)
 		return;
-	
-	path = moon_path_renew (path, 0);
 	
 	Collection::Node *node = (Collection::Node *) figures->list->First ();
 	for ( ; node != NULL; node = (Collection::Node *) node->next) {
@@ -546,29 +565,59 @@ PathGeometry::Build (Path *shape)
 }
 
 Rect
-PathGeometry::ComputeBounds (Path *shape, bool logical, cairo_matrix_t * matrix)
+PathGeometry::ComputeBounds (Path *shape, bool logical, cairo_matrix_t *matrix)
 {
-	PathFigureCollection *figures = GetFigures ();
-	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
-	
-	if (!figures)
-		return bounds;
+	Rect bounds;
 
-	double thickness;
-	if (logical)
-		thickness = 0.0;
-	else
-		thickness = shape && shape->GetStroke () ? shape->GetStrokeThickness () : 0;
+	if (logical) {
+		if (!logical_bounds_available) {
+			logical_bounds = CacheBounds (shape, true, NULL);
+			logical_bounds_available = true;
+		}
+		bounds = logical_bounds;
+	} else {
+		if (!physical_bounds_available) {
+			physical_bounds = CacheBounds (shape, false, matrix);
+			physical_bounds_available = true;
+		}
+		bounds = physical_bounds;
+	}
+
+	return bounds;
+}
+
+Rect
+PathGeometry::CacheBounds (Path *shape, bool logical, cairo_matrix_t *matrix)
+{
+	if (!IsBuilt ())
+		Build (shape);
+
+	PathFigureCollection *figures = GetFigures ();
+	if (!figures && (!path || (path->cairo.num_data == 0)))
+		return Rect ();
+
+	double thickness = (logical || !shape || !shape->IsStroked ()) ? 0.0 : shape->GetStrokeThickness ();
 	
 	cairo_t *cr = measuring_context_create ();
 	cairo_set_line_width (cr, thickness);
+
+	if (matrix) 
+		cairo_set_matrix (cr, matrix);
+	cairo_append_path (cr, &path->cairo);
+	if (matrix) 
+		cairo_identity_matrix (cr);
 	
-	Collection::Node *node = (Collection::Node *) figures->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		PathFigure *figure = (PathFigure *) node->obj;
-		
-		bounds = bounds.Union (figure->ComputeBounds (cr, shape, logical, thickness, matrix));
+	double x1, y1, x2, y2;
+
+	if (logical) {
+		cairo_path_extents (cr, &x1, &y1, &x2, &y2);
+	} else if (thickness > 0) {
+		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	} else {
+		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
 	}
+
+	Rect bounds = Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
 
 	measuring_context_destroy (cr);
 
@@ -579,9 +628,6 @@ PathGeometry::ComputeBounds (Path *shape, bool logical, cairo_matrix_t * matrix)
 		bounds = bounds.Transform (&matrix);
 	}
 	
-	//g_warning ("PathGeometry::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
-	// some AA glitches occurs when no stroke is present or when drawning unfilled curves
-	// (e.g. arcs) adding 1.0 will cover the extra pixels used by Cairo's AA
 	return bounds;
 }
 

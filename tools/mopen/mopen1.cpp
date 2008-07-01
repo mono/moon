@@ -131,6 +131,12 @@ downloader_body (gpointer state, void *body, uint32_t length)
 	g_assert_not_reached ();
 }
 
+static void
+*downloader_request (const char *method, const char *uri, gpointer context)
+{
+	g_assert_not_reached ();
+}
+
 static gboolean
 delete_event (GtkWidget *widget, GdkEvent *e, gpointer data)
 {
@@ -151,7 +157,7 @@ static int LoadXaml (const char* file)
 
 	file = g_basename (file);
 
-	downloader_set_functions (downloader_create_state, downloader_destroy_state, downloader_open, downloader_send, downloader_abort, downloader_header, downloader_body);
+	downloader_set_functions (downloader_create_state, downloader_destroy_state, downloader_open, downloader_send, downloader_abort, downloader_header, downloader_body, downloader_request);
 
 	Type::Kind et;
 	Surface* surface = surface_new (300, 300);

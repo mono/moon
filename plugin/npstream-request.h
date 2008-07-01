@@ -17,7 +17,7 @@
 #include "browser-bridge.h"
 #include "plugin-downloader.h"
 
-class NPStreamRequest : public BrowserRequest {
+class NPStreamRequest : public DownloaderRequest {
  private:
 	NPP npp;
 	NPStream *stream;
@@ -27,7 +27,7 @@ class NPStreamRequest : public BrowserRequest {
 	uint32_t offset;
 
  public:
-	NPStreamRequest (const char *verb, const char *uri, PluginInstance *instance) : BrowserRequest (verb, uri)
+	NPStreamRequest (const char *verb, const char *uri, PluginInstance *instance) : DownloaderRequest (verb, uri)
 	{
 		this->npp = NULL;
 		this->stream = NULL;
@@ -42,7 +42,7 @@ class NPStreamRequest : public BrowserRequest {
 	}
 
 	void Abort ();
-	bool GetResponse (BrowserResponseStartedHandler started, BrowserResponseDataAvailableHandler available, BrowserResponseFinishedHandler finished, gpointer context);
+	bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 	const bool IsAborted () { return this->aborted; }
 	void SetHttpHeader (const char *name, const char *value);
 	void SetBody (void *body, int size);

@@ -425,7 +425,7 @@ class TimeManager : public EventObject {
 	virtual TimeSpan GetLastTime ()        { return last_global_time - start_time; }
 	TimeSpan GetCurrentTimeUsec () { return current_global_time_usec - start_time_usec; }
 
-	void AddTickCall (void (*func)(gpointer), gpointer tick_data);
+	void AddTickCall (TickCallHandler handler, EventObject *tick_data);
 	void NeedRedraw ();
 	void NeedClockTick ();
 
@@ -489,7 +489,7 @@ class TimeManager : public EventObject {
 	GList *registered_timeouts;
 };
 
-void time_manager_add_tick_call (TimeManager *manager, void (*func)(gpointer), gpointer tick_data);
+void time_manager_add_tick_call (TimeManager *manager, TickCallHandler handler, EventObject *obj);
 void time_manager_list_clocks   (TimeManager *manager);
 
 

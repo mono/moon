@@ -29,6 +29,7 @@ G_BEGIN_DECLS
 //
 class Geometry : public DependencyObject {
  protected:
+#if FALSE
 	enum GeometryFlags {
 		GEOMETRY_NORMAL		= 0x01,	// normal drawing
 		GEOMETRY_DEGENERATE	= 0x02,	// degenerate drawing, use the Stroke brush for filling
@@ -42,6 +43,7 @@ class Geometry : public DependencyObject {
 	void SetGeometryFlags (GeometryFlags sf) { flags &= ~Geometry::GEOMETRY_MASK; flags |= sf; };
 
 	int flags;
+#endif
 	moon_path *path;
 	
 	virtual ~Geometry ();
@@ -50,7 +52,7 @@ class Geometry : public DependencyObject {
 	static DependencyProperty *FillRuleProperty;
 	static DependencyProperty *TransformProperty;
 
-	Geometry () : flags (GEOMETRY_NORMAL), path (NULL) {};
+	Geometry () : path (NULL) {};
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; };
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -235,6 +237,11 @@ PathFigureCollection *path_figure_collection_new (void);
 //
 /* @ContentProperty="Figures" */
 class PathGeometry : public Geometry {
+	int logical_bounds_available:1;
+	int physical_bounds_available:1;
+	Rect logical_bounds;
+	Rect physical_bounds;
+	Rect CacheBounds (Path *path, bool logical, cairo_matrix_t *matrix);
  protected:
 	virtual void Build (Path *path);
 	
@@ -243,11 +250,13 @@ class PathGeometry : public Geometry {
  public:
 	static DependencyProperty *FiguresProperty;
 	
-	PathGeometry () {}
+	PathGeometry ();
+	PathGeometry (moon_path *pml_path);
+
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 	
 	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
-	Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
+	virtual Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
 	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
 	
 	// this is an element-by-element decision

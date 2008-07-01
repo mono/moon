@@ -1,0 +1,99 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Clipping Update test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+var control = null;
+var content = null;
+var parent = null;
+
+function OnMouseEnter (sender, eventArgs)
+{
+	var name = sender.name;
+	var color = "skyblue";
+	
+	sender.findName (name + "text").foreground = color;
+	sender.findName (name + "border").stroke = color;
+	sender.findName (name + "arrow").stroke = color;
+	sender.findName (name + "arrow").fill = color;
+	
+	var tooltip = parent.findName ("tooltip");
+	tooltip.setValue ("Canvas.Left", eventArgs.getPosition().x + 10);
+	tooltip.setValue ("Canvas.Top", eventArgs.getPosition().y - 10);
+	tooltip.opacity = 1;
+}
+
+function OnMouseLeave (sender, eventArgs)
+{
+	var name = sender.name;
+	sender.findName (name + "text").foreground = "black";
+	sender.findName (name + "border").stroke = null;
+	sender.findName (name + "arrow").stroke = null;
+	sender.findName (name + "arrow").fill = null;
+	
+	var tooltip = parent.findName ("tooltip");
+	tooltip.opacity = 0;
+}
+
+function OnMouseMove (sender, eventArgs)
+{
+	//var tooltip = parent.findName ("tooltip");
+	//tooltip.setValue ("Canvas.Left", eventArgs.getPosition().x + 10);
+	//tooltip.setValue ("Canvas.Top", eventArgs.getPosition().y - 10);
+}
+
+function AddMenuItem (canvas, id)
+{
+	var xaml = "<Canvas xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='button" + id + "' Canvas.Top='" + ((id * 20) + 5) + "' Canvas.Left='5' MouseEnter='OnMouseEnter' MouseLeave='OnMouseLeave'>";
+	xaml +=    "  <Rectangle x:Name='button" + id + "border' Width='105' Height='20' Fill='white' RadiusX='5' RadiusY='5' StrokeThickness='2'/>";
+	xaml +=    "  <Path x:Name='button" + id + "arrow' Stretch='Fill' StrokeLineJoin='Round' Width='7' Height='8.75' Data='M195,7 L201.5,11 195.25,14.75z' Canvas.Left='95' Canvas.Top='5.625'/>";
+	xaml +=    "  <TextBlock x:Name='button" + id + "text' Canvas.Left='5' Foreground='black' Text='Button #" + id + "'/>";
+	xaml +=    "</Canvas>";
+	
+	var item = content.createFromXaml (xaml);
+	canvas.children.add (item);
+}
+
+function OnLoaded (sender, eventArgs)
+{
+	control = document.getElementById ("agControl");
+	content = control.content;
+	parent = sender;
+	
+	for (var i = 0; i < 16; i++)
+		AddMenuItem (parent, i);
+	
+	var xaml = "<Canvas xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='tooltip' Opacity='0' MouseMove='OnMouseMove'>";
+	xaml +=    "  <Rectangle x:Name='tooltipBg' Fill='ivory' Stroke='black' RadiusX='5' RadiusY='5' StrokeThickness='1'/>";
+	xaml +=    "  <TextBlock x:Name='tooltipText' Canvas.Top='5' Canvas.Left='5' FontSize='10' Width='105' TextWrapping='WrapWithOverflow'>";
+	xaml +=    "    <Run>Does moving your mouse cursor around over the buttons leave artifacts? If so, this is a bug!</Run>";
+	xaml +=    "  </TextBlock>";
+	xaml +=    "</Canvas>";
+	
+	var tooltip = content.createFromXaml (xaml);
+	parent.children.add (tooltip);
+	
+	tooltip.findName ("tooltipBg").height = tooltip.findName ("tooltipText").actualHeight + 10;
+	tooltip.findName ("tooltipBg").width = tooltip.findName ("tooltipText").actualWidth + 10;
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="agControl" width="100%" height="100%">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Loaded="OnLoaded" MouseMove="OnMouseMove">
+  <TextBlock Canvas.Left="5" Canvas.Top="400" Width="400" TextWrapping="WrapWithOverflow" Text="Move your mouse along the menu items. Once a tooltip pops up, slowly move the mouse to the right until your mouse is over the tooltip. The tooltip should disappear when the mouse is over it. Does it leave behind the tooltip's border stroke? If so, this is a bug!"/>
+</Canvas>
+</script>
+
+</body>
+</html>

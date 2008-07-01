@@ -27,6 +27,7 @@
 			TestLogger.LogDebug ("EndTest");
 			if (end_time == 0) {
 				TestLogger.LogError ("MediaEnded wasn't raised");
+				TestLogger.LogError ("You might want to confirm that the media server is doing live encoding of http://moonlightmedia/LiveStream.");
 				failed++;
 			} else if (end_time - start_time > 2500) {
 				TestLogger.LogError ("Difference between start time and end time is " + (end_time - start_time) / 1000 + " s, should be at most 2.5 seconds");

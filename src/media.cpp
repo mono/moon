@@ -129,7 +129,7 @@ MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
 }
 
 static void
-set_source_async (void *user_data)
+set_source_async (EventObject *user_data)
 {
 	MediaBase *media = (MediaBase *) user_data;
 	
@@ -296,14 +296,44 @@ marker_callback (MediaClosure *closure)
 	return MEDIA_SUCCESS;
 }
 
+class MarkerNode : public List::Node {
+	public:
+		TimelineMarker *marker;
+		MarkerNode (TimelineMarker *marker) { this->marker = marker; this->marker->ref (); }
+		virtual ~MarkerNode () { this->marker->unref (); }
+};
+
 void
 MediaElement::AddStreamedMarker (TimelineMarker *marker)
-{
+{	
 	d (printf ("MediaElement::AddStreamedMarker (): got marker %s, %s, %llu = %llu ms\n", marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ())));
+
+	pending_streamed_markers->Push (new MarkerNode (marker));
+	
+	AddTickCallSafe (AddStreamedMarkersCallback);
+}
+
+void
+MediaElement::AddStreamedMarkersCallback (EventObject *obj)
+{
+	((MediaElement *) obj)->AddStreamedMarkers ();
+	obj->unref ();
+}
+
+void
+MediaElement::AddStreamedMarkers ()
+{
+	MarkerNode *node;
+	
+	d (printf ("MediaElement::AddStreamedMarkers ()\n"));
 	
 	if (streamed_markers == NULL)
 		streamed_markers = new TimelineMarkerCollection ();
-	streamed_markers->Add (marker);
+
+	while ((node = (MarkerNode *) pending_streamed_markers->Pop ()) != NULL) {
+		streamed_markers->Add (node->marker);
+		delete node;
+	}
 }
 
 void
@@ -362,6 +392,7 @@ MediaElement::ReadMarkers ()
 }
 
 #define LOG_MARKERS(...)// printf (__VA_ARGS__);
+#define LOG_MARKERS_EX(...) //printf (__VA_ARGS__);
 
 void
 MediaElement::CheckMarkers (guint64 from, guint64 to)
@@ -381,12 +412,6 @@ MediaElement::CheckMarkers (guint64 from, guint64 to)
 	if (from > to) {
 		// if from > to we've seeked backwards (last played position is after this one)
 		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). from > to (diff: %llu = %llu ms).\n", from, to, from - to, MilliSeconds_FromPts (from - to));
-		return;
-	}
-	
-	if (MilliSeconds_FromPts (to - from) > 1000) {
-		// to detect forward seeks we check if the gap between to and from is bigger than 1s.
-		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). [Skipped] from > to or diff bigger thatn 1000 ms (diff: %llu = %llu ms).\n", from, to, to - from, MilliSeconds_FromPts (to - from));
 		return;
 	}
 	
@@ -421,7 +446,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 		
 		pts = (guint64) val->AsTimeSpan ();
 		
-		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
+		LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
 		
 		emit = false;
 		if (remove) {
@@ -432,11 +457,11 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 				emit = pts >= (from - MilliSeconds_ToPts (1000)) && pts <= to;
 			}
 			
-			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n", from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n", from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
 		} else {
 			// Normal markers.
 			emit = pts >= from && pts <= to;
-			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n", from, to, pts, marker->GetText (), marker->GetType ());
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n", from, to, pts, marker->GetText (), marker->GetType ());
 		}
 		
 		if (emit) {
@@ -458,6 +483,8 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 void
 MediaElement::AudioFinished ()
 {
+	d (printf ("MediaElement::AudioFinished ()\n"));
+	
 	SetState (Stopped);
 	Emit (MediaElement::MediaEndedEvent);
 }
@@ -488,7 +515,12 @@ MediaElement::AdvanceFrame ()
 		last_played_pts = position;
 	}
 	
-	CheckMarkers (previous_position, position);
+	if (advanced || !mplayer->IsSeeking ()) {
+		e (printf ("MediaElement::AdvanceFrame () previous_position: %llu = %llu ms, position: %llu = %llu ms, advanced: %i\n", 
+			previous_position, MilliSeconds_FromPts (previous_position), position, MilliSeconds_FromPts (position), advanced));
+			
+		CheckMarkers (previous_position, position);
+	}
 	
 	// Add 1 to avoid the same position to be able to be both
 	// beginning and end of a range (otherwise the same marker
@@ -525,6 +557,7 @@ MediaElement::MediaElement ()
 	media = NULL;
 	closure = NULL;
 	flags = 0;
+	pending_streamed_markers = new Queue ();
 	
 	Reinitialize (false);
 	
@@ -544,7 +577,17 @@ MediaElement::~MediaElement ()
 	if (playlist)
 		playlist->unref ();
 	
+	delete pending_streamed_markers;
+	
 	pthread_mutex_destroy (&open_mutex);
+}
+
+void 
+MediaElement::SetPreviousPosition (guint64 pos)
+{
+	d (printf ("MediaElement::SetPreviousPosition (%llu)\n", pos));
+	
+	previous_position = pos;
 }
 
 void
@@ -559,8 +602,12 @@ MediaElement::SetSurface (Surface *s)
 		}
 	}
 	
-	UIElement::SetSurface (s);
 	mplayer->SetSurface (s);
+
+	if (!SetSurfaceLock ())
+		return;
+	UIElement::SetSurface (s);
+	SetSurfaceUnlock ();
 }
 
 void
@@ -644,6 +691,8 @@ MediaElement::Reinitialize (bool dtor)
 		streamed_markers->unref ();
 		streamed_markers = NULL;
 	}
+	
+	pending_streamed_markers->Clear (true);
 	
 	previous_position = 0;
 	
@@ -1066,7 +1115,7 @@ void
 MediaElement::DataRequestPosition (gint64 *position)
 {
        if (downloaded_file != NULL)
-               downloaded_file->RequestPosition (position);
+               ((MemoryQueueSource*)downloaded_file)->RequestPosition (position);
 }
 
 void 
@@ -1133,14 +1182,14 @@ media_element_open_callback (MediaClosure *closure)
 		element->closure = closure->Clone ();
 		pthread_mutex_unlock (&element->open_mutex);
 		// We need to call TryOpenFinished on the main thread, so 
-		element->AddTickCall (MediaElement::TryOpenFinished);
+		element->AddTickCallSafe (MediaElement::TryOpenFinished);
 	}
 	
 	return MEDIA_SUCCESS;
 }
 
 void
-MediaElement::TryOpenFinished (void *user_data)
+MediaElement::TryOpenFinished (EventObject *user_data)
 {
 	d(printf ("MediaElement::TryOpenFinished ()\n"));
 	
@@ -1306,8 +1355,8 @@ MediaElement::DownloaderComplete ()
 		Emit (DownloadProgressChangedEvent);
 	}
 	
-	if (downloaded_file != NULL)
-		downloaded_file->NotifyFinished ();
+	if (downloaded_file != NULL && downloaded_file->GetType () == MediaSourceTypeProgressive)
+		((ProgressiveSource*)downloaded_file)->NotifyFinished ();
 	
 	UpdateProgress ();
 	
@@ -1349,14 +1398,14 @@ void
 MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 {
 	const char *uri = downloader ? downloader->GetUri () : NULL;
-	bool is_live = uri ? g_str_has_prefix (uri, "mms:") : false;
+	bool is_streaming = uri ? g_str_has_prefix (uri, "mms:") : false;
 	
 	d(printf ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader, PartName, uri));
 	
 	Reinitialize (false);
 	
-	SetCanPause (!is_live);
-	SetCanSeek (!is_live);
+	SetCanPause (!is_streaming);
+	SetCanSeek (!is_streaming);
 	
 	MediaBase::SetSourceInternal (downloader, PartName);
 	
@@ -1371,14 +1420,18 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 			
 			TryOpen ();
 		} else {
-			downloaded_file = new ProgressiveSource (mplayer->GetMedia (), is_live);
+			if (is_streaming)
+				downloaded_file = new MemoryQueueSource (mplayer->GetMedia() );
+			 else 
+				downloaded_file = new ProgressiveSource (mplayer->GetMedia (), false);
 			
 			// FIXME: error check Initialize()
 			downloaded_file->Initialize ();
 			
-			downloader->SetWriteFunc (data_write, size_notify, this);
-			if (is_live)
+			if (is_streaming) {
 				downloader->SetRequestPositionFunc (data_request_position);
+			}
+			downloader->SetWriteFunc (data_write, size_notify, this);
 		}
 		
 		if (!(flags & DownloadComplete)) {
@@ -1448,7 +1501,7 @@ MediaElement::Pause ()
 }
 
 void
-MediaElement::PauseNow (gpointer data)
+MediaElement::PauseNow (EventObject *data)
 {
 	((MediaElement *) data)->PauseNow ();
 	((MediaElement *) data)->unref ();
@@ -1491,7 +1544,7 @@ MediaElement::Play ()
 }
 
 void
-MediaElement::PlayNow (gpointer data)
+MediaElement::PlayNow (EventObject *data)
 {
 	((MediaElement *) data)->PlayNow ();
 	// AddTickCall refs us, unref us here.
@@ -1557,7 +1610,7 @@ MediaElement::Stop ()
 }
 
 void
-MediaElement::StopNow (gpointer data)
+MediaElement::StopNow (EventObject *data)
 {
 	((MediaElement *) data)->StopNow ();
 	((MediaElement *) data)->unref ();
@@ -1666,7 +1719,7 @@ MediaElement::OnLoaded ()
 }
 
 void
-MediaElement::SeekNow (gpointer data)
+MediaElement::SeekNow (EventObject *data)
 {
 	((MediaElement *) data)->SeekNow ();
 	((MediaElement *) data)->unref ();
