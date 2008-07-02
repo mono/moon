@@ -1,3 +1,10 @@
+2008-07-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moon-path.c: Revert ordering change I made in r105586 to fix
+	a clipping issue (fillrule bug) as this breaks stroke dash (which
+	confirm the original behaviour was the correct one).
+	[Fix most of #404858]
+
 2008-07-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes for bug #405514.
