@@ -1,3 +1,8 @@
+2008-07-02  Fernando Herrera  <fherrera@novell.com>
+
+	* drtlist.xml:
+	* test-mms-failure.html: Added.
+
 2008-06-30  Fernando Herrera  <fherrera@novell.com>
 
 	* test-http-failure.html: increase timeout.
