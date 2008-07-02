@@ -48,8 +48,6 @@ class TextLayout {
 	// cached info
 	double actual_height;
 	double actual_width;
-	double bbox_height;
-	double bbox_width;
 	
 	void LayoutWrapWithOverflow ();
 	void LayoutNoWrap ();
@@ -74,7 +72,7 @@ class TextLayout {
 	
 	void Layout ();
 	void GetActualExtents (double *width, double *height);
-	void GetLayoutExtents (double *width, double *height);
+	//void GetLayoutExtents (double *width, double *height);
 	void Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y);
 };
 

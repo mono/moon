@@ -1,3 +1,24 @@
+2008-07-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes for bug #404858
+
+	* runtime.cpp: Added SHOW_TEXTBOXES bit flag.
+
+	* layout.cpp: Don't keep track of bbox_width and height anymore,
+	it was never actually set to anything other than
+	actual_width/height anyway.
+
+	* text.cpp (TextBlock::Paint): If SHOW_TEXTBOXES, render a green
+	bounding box around the text (this is to aid in debugging text
+	which may have a transform applied to it).
+
+	* text.h (class TextBlock): Removed bbox_width and
+	bbox_height. These were never anything other than
+	actual_width/height respectively anyway.
+	(TextBlock::GetBoundingWidth): Return the FrameworkElement::Width
+	if set, else the ActualWidth.
+	(TextBlock::GetBoundingHeight): Same.
+
 2008-07-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Remove cairo_save|restore from [Shape|Path]::Draw

@@ -352,8 +352,6 @@ TextBlock::TextBlock ()
 	
 	actual_height = 0.0;
 	actual_width = 0.0;
-	bbox_height = 0.0;
-	bbox_width = 0.0;
 	
 	/* initialize the font description and layout */
 	layout = new TextLayout ();
@@ -588,7 +586,7 @@ TextBlock::Layout (cairo_t *cr)
 	layout->Layout ();
 	
 	layout->GetActualExtents (&actual_width, &actual_height);
-	layout->GetLayoutExtents (&bbox_width, &bbox_height);
+	//layout->GetLayoutExtents (&bbox_width, &bbox_height);
 	
 	if (runs->IsEmpty ()) {
 		// If the Text property is empty, Silverlight seems to
@@ -614,6 +612,13 @@ TextBlock::Paint (cairo_t *cr)
 		fg = default_foreground ();
 	
 	layout->Render (cr, this, fg, 0.0, 0.0);
+	
+	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
+		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
+		cairo_set_line_width (cr, 1);
+		cairo_rectangle (cr, 0, 0, actual_width, actual_height);
+		cairo_stroke (cr);
+	}
 }
 
 char *

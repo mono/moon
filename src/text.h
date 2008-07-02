@@ -119,8 +119,6 @@ class TextBlock : public FrameworkElement {
 	
 	double actual_height;
 	double actual_width;
-	double bbox_height;
-	double bbox_width;
 	bool setvalue;
 	bool dirty;
 	
@@ -136,16 +134,22 @@ class TextBlock : public FrameworkElement {
 	
 	double GetBoundingWidth ()
 	{
-		if (dirty)
-			CalcActualWidthHeight (NULL);
-		return bbox_width;
+		Value *value;
+		
+		if ((value = GetValue (FrameworkElement::WidthProperty)))
+			return value->AsDouble ();
+		
+		return GetActualWidth ();
 	}
 	
 	double GetBoundingHeight ()
 	{
-		if (dirty)
-			CalcActualWidthHeight (NULL);
-		return bbox_height;
+		Value *value;
+		
+		if ((value = GetValue (FrameworkElement::HeightProperty)))
+			return value->AsDouble ();
+		
+		return GetActualHeight ();
 	}
 	
 	void DownloaderComplete ();

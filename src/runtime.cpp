@@ -86,6 +86,8 @@ static struct {
 	{ "clipping=hide",     RUNTIME_INIT_SHOW_CLIPPING,         false },
 	{ "bbox=show",         RUNTIME_INIT_SHOW_BOUNDING_BOXES,   true  },
 	{ "bbox=hide",         RUNTIME_INIT_SHOW_BOUNDING_BOXES,   false },
+	{ "textbox=show",      RUNTIME_INIT_SHOW_TEXTBOXES,        true  },
+	{ "textbox=hide",      RUNTIME_INIT_SHOW_TEXTBOXES,        false },
 	{ "fps=show",          RUNTIME_INIT_SHOW_FPS,              true  },
 	{ "fps=hide",          RUNTIME_INIT_SHOW_FPS,              false },
 	{ "render=ftb",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  true  },

@@ -138,8 +138,6 @@ TextLayout::TextLayout ()
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
-	bbox_height = -1.0;
-	bbox_width = -1.0;
 }
 
 TextLayout::~TextLayout ()
@@ -169,8 +167,6 @@ TextLayout::SetMaxWidth (double max)
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
-	bbox_height = -1.0;
-	bbox_width = -1.0;
 }
 
 double
@@ -189,8 +185,6 @@ TextLayout::SetMaxHeight (double max)
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
-	bbox_height = -1.0;
-	bbox_width = -1.0;
 }
 
 TextWrapping
@@ -209,8 +203,6 @@ TextLayout::SetWrapping (TextWrapping wrapping)
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
-	bbox_height = -1.0;
-	bbox_width = -1.0;
 }
 
 List *
@@ -231,8 +223,6 @@ TextLayout::SetTextRuns (List *runs)
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
-	bbox_height = -1.0;
-	bbox_width = -1.0;
 }
 
 /**
@@ -250,6 +240,7 @@ TextLayout::GetActualExtents (double *width, double *height)
 	*width = actual_width;
 }
 
+#if 0
 /**
  * TextLayout::GetLayoutExtents:
  * @width:
@@ -264,6 +255,7 @@ TextLayout::GetLayoutExtents (double *width, double *height)
 	*height = bbox_height;
 	*width = bbox_width;
 }
+#endif
 
 
 #if d(!)0
@@ -1098,8 +1090,8 @@ TextLayout::Layout ()
 	printf ("actualWidth = %f, actualHeight = %f\n", actual_width, actual_height);
 #endif
 	
-	bbox_height = actual_height;
-	bbox_width = actual_width;
+	//bbox_height = actual_height;
+	//bbox_width = actual_width;
 }
 
 static inline void
