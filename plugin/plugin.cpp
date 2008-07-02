@@ -140,11 +140,12 @@ plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer
 char *
 NPN_strdup (const char *tocopy)
 {
-	char *ptr = (char *)NPN_MemAlloc (strlen (tocopy)+1);
+	int len = strlen(tocopy);
+	char *ptr = (char *)NPN_MemAlloc (len+1);
 	if (ptr != NULL) {
-		// WebKit should calloc so we dont have to do this
-		memset (ptr, 0, strlen(tocopy)+1);
 		strcpy (ptr, tocopy);
+		// WebKit should calloc so we dont have to do this
+		ptr[len] = 0;
 	}
 
 	return ptr;
@@ -710,6 +711,20 @@ PluginInstance::InvalidateSurface (Surface *surface, Rect rect, void *user_data)
 }
 
 void
+PluginInstance::SetSurfaceCursor (Surface *surface, GdkCursor *cursor, void *user_data)
+{
+	// turned off for now.  hopefully we can get this switched on for
+	// newer versions of ff3
+	// see https://bugzilla.mozilla.org/show_bug.cgi?id=430451
+
+#if 0 && (NP_VERSION_MINOR >= NPVERS_HAS_CURSOR)
+	PluginInstance *plugin = (PluginInstance *) user_data;
+
+	NPN_SetValue (plugin->instance, NPNVcursor, GDK_CURSOR_XCURSOR(cursor));
+#endif
+}
+
+void
 PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data)
 {
 	PluginInstance *plugin = (PluginInstance *) user_data;
@@ -753,6 +768,7 @@ PluginInstance::CreateWindow ()
 	if (windowless) {
 		surface->SetInvalidateFunc (InvalidateSurface, this);
 		surface->SetRenderFunc (RenderSurface, this);
+		surface->SetCursorFunc (SetSurfaceCursor, this);
 		surface->SetTrans (true);
 	}
 

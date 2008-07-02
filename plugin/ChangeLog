@@ -1,3 +1,11 @@
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (NPN_strdup): just set 1 byte to 0 instead of all of
+	them :)
+	(PluginInstance::SetSurfaceCursor): ifdefed out implementation of
+	a proposed method for setting the cursor in windowless plugins.
+	(PluginInstance::CreateWindow): hook up SetSurfaceCursor.
+
 2008-06-28  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-downloader.(ccp|h): The finished event raises a success condition now
