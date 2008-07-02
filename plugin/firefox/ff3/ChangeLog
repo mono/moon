@@ -1,3 +1,9 @@
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
+	* ff3-dom.cpp: rip out the duplicated NPN_strdup and
+	string_to_npvariant from here, and use the one in plugin-class.cpp
+	instead.
+
 2008-05-12  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Dist ff3-bridge.h as well

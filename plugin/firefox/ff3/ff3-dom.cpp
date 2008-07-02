@@ -5,6 +5,7 @@
 #include "plugin.h"
 
 #include "ff3-bridge.h"
+#include "plugin-class.h"
 
 #include <nsCOMPtr.h>
 #include <nsIDOMElement.h>
@@ -30,32 +31,6 @@
 #endif
 
 #define STR_FROM_VARIANT(v) ((char *) NPVARIANT_TO_STRING (v).utf8characters)
-
-char *
-NPN_strdup (const char *tocopy)
-{
-	char *ptr = (char *)NPN_MemAlloc (strlen (tocopy)+1);
-	if (ptr != NULL) {
-		// WebKit should calloc so we dont have to do this
-		memset (ptr, 0, strlen(tocopy)+1);
-		strcpy (ptr, tocopy);
-	}
-
-	return ptr;
-}
-
-static void
-string_to_npvariant (const char *value, NPVariant *result)
-{
-	char *retval;
-
-	if (value)
-		retval = NPN_strdup ((char *)value);
-	else
-		retval = NPN_strdup ("");
-
-	STRINGZ_TO_NPVARIANT (retval, *result);
-}
 
 class FF3DomEventWrapper : public nsIDOMEventListener {
 

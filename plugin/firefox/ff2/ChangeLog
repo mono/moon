@@ -1,3 +1,9 @@
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
+	* ff2-dom.cpp: rip out the duplicated NPN_strdup and
+	string_to_npvariant from here, and use the one in plugin-class.cpp
+	instead.
+
 2008-05-23  Geoff Norton  <gnorton@novell.com>
 
 	* ff2-http.cpp: Update the declaration to the newly named BrowserRequest class

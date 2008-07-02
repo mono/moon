@@ -23,6 +23,9 @@ void plugin_init_classes (void);
 void plugin_destroy_classes (void);
 
 void event_object_add_javascript_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
+
+void string_to_npvariant (const char *value, NPVariant *result);
+
 G_END_DECLS
 
 struct MoonNameIdMapping {
@@ -720,6 +723,7 @@ struct MoonlightScriptableObjectObject : MoonlightObject {
 
 
 G_BEGIN_DECLS
+
 // These are meant to be called by System.Silverlight.dll
 
 MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scriptable,

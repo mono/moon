@@ -361,7 +361,7 @@ map_moon_id_to_event_name (int moon_id)
 }
 
 
-static void
+void
 string_to_npvariant (const char *value, NPVariant *result)
 {
 	char *retval;
