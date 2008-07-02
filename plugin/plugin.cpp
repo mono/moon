@@ -1450,6 +1450,33 @@ PluginInstance::GetWindow ()
 	return window;
 }
 
+// [Obselete (this is obsolete in SL b2.)]
+uint32_t
+PluginInstance::TimeoutAdd (int32_t interval, GSourceFunc callback, gpointer data)
+{
+	uint32_t id;
+
+#if GLIB_CHECK_VERSION(2,14,0)
+	if (interval > 1000 && ((interval % 1000) == 0))
+		id = g_timeout_add_seconds (interval / 1000, callback, data);
+	else
+#endif
+		id = g_timeout_add (interval, callback, data);
+
+	timers = g_slist_append (timers, GINT_TO_POINTER ((int)id));
+
+	return id;
+}
+
+// [Obselete (this is obsolete in SL b2.)]
+void
+PluginInstance::TimeoutStop (uint32_t source_id)
+{
+	g_source_remove (source_id);
+	timers = g_slist_remove (timers, GINT_TO_POINTER (source_id));
+}
+
+
 Surface *
 plugin_instance_get_surface (PluginInstance *instance)
 {
@@ -1477,27 +1504,14 @@ plugin_instance_get_init_params  (PluginInstance *instance)
 uint32_t
 plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data)
 {
-	uint32_t id;
-
-#if GLIB_CHECK_VERSION(2,14,0)
-	if (interval > 1000 && ((interval % 1000) == 0))
-		id = g_timeout_add_seconds (interval / 1000, callback, data);
-	else
-#endif
-		id = g_timeout_add (interval, callback, data);
-
-	instance->timers = g_slist_append (instance->timers, GINT_TO_POINTER ((int)id));
-
-	return id;
+	return instance->TimeoutAdd (interval, callback, data);
 }
 
 void
 plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id)
 {
-	g_source_remove (source_id);
-	instance->timers = g_slist_remove (instance->timers, GINT_TO_POINTER (source_id));
+	instance->TimeoutStop (source_id);
 }
-
 
 void
 plugin_instance_get_browser_information (PluginInstance *instance,

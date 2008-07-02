@@ -1,5 +1,13 @@
 2008-07-02  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.h, plugin.cpp: reorder PluginInstance's class decl so
+	that public: comes before private:, and make "timers" private,
+	forcing the addition of TimeoutAdd and TimeoutStop instance
+	methods so that the C binding can call them.  put comments all
+	over them saying they're obsolete in b2.
+
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.h, plugin-class.cpp (string_to_npvariant): make
 	public.
 

@@ -28,7 +28,113 @@ char *NPN_strdup (const char *val);
 
 class PluginInstance
 {
+ public:
+ 
+#if DEBUG
+	struct moon_source : List::Node {
+		char *uri;
+		char *filename;
+		virtual ~moon_source ()
+		{
+			g_free (uri);
+			g_free (filename);
+		}
+	};
+	List *moon_sources;
+	void AddSource (const char *uri, const char *filename);
+	List *GetSources ();
+#endif
+
+	PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mode);
+	~PluginInstance ();
+	
+	void SetUnloadCallback (plugin_unload_callback *puc);
+	void Initialize (int argc, char *const argn[], char *const argv[]);
+	void Finalize ();
+	
+	// Mozilla plugin related methods
+	NPError GetValue (NPPVariable variable, void *result);
+	NPError SetValue (NPNVariable variable, void *value);
+	NPError SetWindow (NPWindow *window);
+	NPError NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype);
+	NPError DestroyStream (NPStream *stream, NPError reason);
+	void StreamAsFile (NPStream *stream, const char *fname);
+	int32_t WriteReady (NPStream *stream);
+	int32_t Write (NPStream *stream, int32_t offset, int32_t len, void *buffer);
+	void UrlNotify (const char *url, NPReason reason, void *notifyData);
+	void Print (NPPrint *platformPrint);
+	int16 EventHandle (void *event);
+	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
+	void *LoadUrl (char *url, int32_t *length);
+
+	NPObject* GetHost();
+
+	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
+	void      RemoveWrappedObject (EventObject *obj);
+	NPObject *LookupWrappedObject (EventObject *obj);
+
+	void      AddCleanupPointer    (gpointer p);
+	void      RemoveCleanupPointer (gpointer p);
+
+	// [Obselete (this is obsolete in SL b2)]
+	uint32_t TimeoutAdd (int32_t interval, GSourceFunc callback, gpointer data);
+	// [Obselete (this is obsolete in SL b2)]
+	void     TimeoutStop (uint32_t source_id);
+
+	void Properties ();
+
+	static Downloader *CreateDownloader (PluginInstance *instance)
+	{
+		if (instance) {
+			return instance->surface->CreateDownloader ();
+		} else {
+			printf ("PluginInstance::CreateDownloader (%p): Unable to create contextual downloader.\n", instance);
+			return new Downloader ();
+		}
+	}
+
+	// Gtk controls
+	GtkWidget *container;  // plugin container object
+ 	Surface *surface;      // plugin surface object
+	GdkDisplay *display;
+
+	// Property getters and setters
+	char *GetInitParams () { return this->initParams; }
+	char *GetSource () { return this->source; }
+	char *GetSourceLocation () { return this->source_location; }
+	char *GetId () { return this->id; }
+
+	void SetSource (const char *value);
+
+	char *GetBackground ();
+	bool SetBackground (const char *value);
+	bool GetEnableFramerateCounter ();
+	bool GetEnableRedrawRegions ();
+	void SetEnableRedrawRegions (bool value);
+	bool GetEnableHtmlAccess ();
+	bool GetWindowless ();
+	void SetMaxFrameRate (int value);
+	int  GetMaxFrameRate ();
+
+	BrowserBridge *GetBridge () { return bridge; }
+
+	MoonlightScriptControlObject *GetRootObject ();
+	NPP GetInstance ();
+	NPWindow *GetWindow ();
+
+	int32_t GetActualHeight ();
+	int32_t GetActualWidth ();
+
+	void GetBrowserInformation (char **name, char **version,
+				    char **platform, char **userAgent,
+				    bool *cookieEnabled);
+	bool IsSilverlight2 () { return silverlight2; } 
+
+	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+
  private:
+	GSList *timers;
+
   	uint16_t mode;         // NP_EMBED, NP_FULL, or NP_BACKGROUND
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
@@ -93,107 +199,6 @@ class PluginInstance
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
 	static void ReportCache (Surface *surface, long bytes, void *user_data);
 	static void properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin);
-
- public:
- 
-#if DEBUG
-	struct moon_source : List::Node {
-		char *uri;
-		char *filename;
-		virtual ~moon_source ()
-		{
-			g_free (uri);
-			g_free (filename);
-		}
-	};
-	List *moon_sources;
-	void AddSource (const char *uri, const char *filename);
-	List *GetSources ();
-#endif
-
-	PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mode);
-	~PluginInstance ();
-	
-	void SetUnloadCallback (plugin_unload_callback *puc);
-	void Initialize (int argc, char *const argn[], char *const argv[]);
-	void Finalize ();
-	
-	// Mozilla plugin related methods
-	NPError GetValue (NPPVariable variable, void *result);
-	NPError SetValue (NPNVariable variable, void *value);
-	NPError SetWindow (NPWindow *window);
-	NPError NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype);
-	NPError DestroyStream (NPStream *stream, NPError reason);
-	void StreamAsFile (NPStream *stream, const char *fname);
-	int32_t WriteReady (NPStream *stream);
-	int32_t Write (NPStream *stream, int32_t offset, int32_t len, void *buffer);
-	void UrlNotify (const char *url, NPReason reason, void *notifyData);
-	void Print (NPPrint *platformPrint);
-	int16 EventHandle (void *event);
-	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
-	void *LoadUrl (char *url, int32_t *length);
-
-	NPObject* GetHost();
-
-	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
-	void      RemoveWrappedObject (EventObject *obj);
-	NPObject *LookupWrappedObject (EventObject *obj);
-
-	void      AddCleanupPointer    (gpointer p);
-	void      RemoveCleanupPointer (gpointer p);
-
-	void Properties ();
-
-	static Downloader *CreateDownloader (PluginInstance *instance)
-	{
-		if (instance) {
-			return instance->surface->CreateDownloader ();
-		} else {
-			printf ("PluginInstance::CreateDownloader (%p): Unable to create contextual downloader.\n", instance);
-			return new Downloader ();
-		}
-	}
-
-	// Gtk controls
-	GtkWidget *container;  // plugin container object
- 	Surface *surface;      // plugin surface object
-	GdkDisplay *display;
-
-	// Property getters and setters
-	char *GetInitParams () { return this->initParams; }
-	char *GetSource () { return this->source; }
-	char *GetSourceLocation () { return this->source_location; }
-	char *GetId () { return this->id; }
-
-	void SetSource (const char *value);
-
-	char *GetBackground ();
-	bool SetBackground (const char *value);
-	bool GetEnableFramerateCounter ();
-	bool GetEnableRedrawRegions ();
-	void SetEnableRedrawRegions (bool value);
-	bool GetEnableHtmlAccess ();
-	bool GetWindowless ();
-	void SetMaxFrameRate (int value);
-	int  GetMaxFrameRate ();
-
-	BrowserBridge *GetBridge () { return bridge; }
-
-	MoonlightScriptControlObject *GetRootObject ();
-	NPP GetInstance ();
-	NPWindow *GetWindow ();
-
-	int32_t GetActualHeight ();
-	int32_t GetActualWidth ();
-
-	void GetBrowserInformation (char **name, char **version,
-				    char **platform, char **userAgent,
-				    bool *cookieEnabled);
-	bool IsSilverlight2 () { return silverlight2; } 
-
-	GSList *timers;
-
-	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 };
 
 extern GSList *plugin_instances;
@@ -293,7 +298,9 @@ void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_acces
 void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames);
 void *plugin_instance_load_url (PluginInstance *instance, char *url, int32_t *length);
 
+// [Obselete (this is obsolete in SL b2)]
 void     plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);
+// [Obselete (this is obsolete in SL b2)]
 uint32_t plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data);
 void     plugin_set_unload_callback (PluginInstance *instance, plugin_unload_callback *puc);
 PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface);
