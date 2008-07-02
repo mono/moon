@@ -3,19 +3,19 @@ MCS = gmcs
 RUNTIME = mono
 MCSFLAGS = -debug+ -t:library -out:moonlight.dll -r:System.Web.dll -r:System.Xml.dll -r:System.Data.dll -r:Mono.Data.SqliteClient.dll
 
-CLEANFILES = test-runner.exe test-runner.exe.mdb logging-server.exe ndesk-options.flags
+CLEANFILES = moonlight.dll
 
 results_asp_sources = 		\
-	Global.asax.cs
-	ShowTest.aspx.cs
-	ShowTest.aspx.designer.cs
-	TestHarness.aspx.cs
+	Global.asax.cs \
+	ShowTest.aspx.cs \
+	ShowTest.aspx.designer.cs \
+	TestHarness.aspx.cs \
 	TestHarness.aspx.designer.cs
 
 all: moonlight.dll
 
 moonlight.dll: $(results_asp_sources)
-	$(MCS) $(MCSFLAGS) $(results_asp_sources) /out:$@ $^ 
+	$(MCS) $(MCSFLAGS) $(results_asp_sources)
 
 setup-test-dir: all
 	mkdir -p $(TEST_DIR)

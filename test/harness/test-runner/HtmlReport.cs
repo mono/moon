@@ -186,11 +186,6 @@ namespace MoonlightTests {
 		{
 			StringBuilder str = GenerateSummaryTable(); //Get summary table
 			
-			/*
-			Console.WriteLine("summary.Length = " + str.Length);
-			Console.WriteLine("summary_pt = " + summary_pt);
-			Console.WriteLine("doc.Length = " + doc.Length);
-			*/
 			if (summary_pt + str.Length < doc.Length)
 			{
 				doc.Remove(summary_pt, str.Length);			// Delete old summary table
