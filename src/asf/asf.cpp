@@ -216,8 +216,10 @@ ASFParser::ReadPacket (ASFPacket *packet, int packet_index)
 
 		if (position == 0 || (source->GetPosition () != position) || 
 		    (source->GetPosition ()  == position && source->GetType() == MediaSourceTypeQueueMemory)) {
-			if (!source->Seek (position, SEEK_SET)) 
-				return MEDIA_SEEK_ERROR;
+			if (!source->Seek (position, SEEK_SET)) {
+				MemorySource *new_src = new MemorySource (NULL, 0, 0);
+				source = new_src;
+			}
 		}
 	}
 

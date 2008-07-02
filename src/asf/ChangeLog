@@ -1,3 +1,11 @@
+2008-07-02  Fernando Herrera  <fherrera@novell.com>
+
+	* asf.cpp: Don't return MEDIA_SEEK_ERROR while trying to read
+	a packet that the server has skipped. Instead create a fake empty
+	packet to be passed to the Parser so we behave like the old mms
+	ProgressiveSource (file with holes). The real fix should be in 
+	the pipeline error handling. Fixes test/media/apps/od-msn.html stream.
+
 2008-06-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.h, asf.cpp: Apparently payloads can interleave parts of media
