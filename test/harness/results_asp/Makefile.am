@@ -16,6 +16,9 @@ all: moonlight.dll
 
 moonlight.dll: $(results_asp_sources)
 	$(MCS) $(MCSFLAGS) $(results_asp_sources)
+	mkdir bin
+	mv moonlight.dll bin
+	
 
 setup-test-dir: all
 	mkdir -p $(TEST_DIR)
@@ -24,4 +27,4 @@ setup-test-dir: all
 	cp *.aspx $(TEST_DIR)/.
 
 cleanup-test-dir:
-	rm -rf $(TEST_DIR)
+	rm -rf bin
