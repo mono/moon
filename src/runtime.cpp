@@ -222,6 +222,9 @@ Surface::Surface(int w, int h, bool windowless)
 	invalidate = NULL;
 	invalidate_data = NULL;
 
+	cursor_func = NULL;
+	cursor_func_data = NULL;
+
 	fps_report = fps_report_default;
 	fps_data = NULL;
 
@@ -429,9 +432,6 @@ Surface::SetCursor (MouseCursor new_cursor)
 	if (new_cursor != cursor) {
 		cursor = new_cursor;
 
-		if (!widget)
-			return;
-
 		GdkCursor *c = NULL;
 		GdkPixmap *empty = gdk_bitmap_create_from_data (NULL, "0x00", 1, 1);
 		GdkColor empty_color = {0, 0, 0, 0};
@@ -465,7 +465,10 @@ Surface::SetCursor (MouseCursor new_cursor)
 			break;
 		}
 
-		gdk_window_set_cursor (widget->window, c);
+		if (widget)
+			gdk_window_set_cursor (widget->window, c);
+		else
+			cursor_func (this, c, cursor_func_data);
 	}
 }
 
@@ -1889,6 +1892,13 @@ Surface::SetInvalidateFunc (MoonlightInvalidateFunc invalidate, void *user_data)
 {
 	this->invalidate = invalidate;
 	this->invalidate_data = user_data;
+}
+
+void
+Surface::SetCursorFunc (MoonlightSetCursorFunc cursor, void *user_data)
+{
+	this->cursor_func = cursor;
+	this->cursor_func_data = user_data;
 }
 
 void

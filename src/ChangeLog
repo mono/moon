@@ -1,3 +1,8 @@
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: virtualize SetCursor so the plugin can
+	override the behavior.
+
 2008-07-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moon-path.c: Revert ordering change I made in r105586 to fix
