@@ -30,7 +30,7 @@ namespace moonlight
 		}
 		private void  OpenCommand()
 		{
-			string connectionString = "URI=file:testdata.db";
+			string connectionString = "URI=file:/var/tmp/moonlightTests.db";
 			dbcon = (IDbConnection) new SqliteConnection(connectionString);
 					
 			dbcon.Open();

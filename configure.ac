@@ -436,6 +436,7 @@ test/harness/Makefile
 test/harness/shocker/Makefile
 test/harness/agviewer/Makefile
 test/harness/test-runner/Makefile
+test/harness/results_asp/Makefile
 test/parsertest/Makefile
 test/sizes/Makefile
 tools/Makefile
