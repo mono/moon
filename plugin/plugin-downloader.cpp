@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * plugin-downloader.cpp: Moonlight plugin download routines.
  *
@@ -9,6 +10,10 @@
  * See the LICENSE file included with the distribution for details.
  *
  */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "plugin-downloader.h"
 #include "browser-bridge.h"

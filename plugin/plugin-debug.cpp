@@ -10,6 +10,10 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <gtk/gtkmessagedialog.h>
 
 #include <sys/types.h>
@@ -18,10 +22,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "uri.h"
-#include "utils.h"
 #include "plugin-debug.h"
-
 #include "utils.h"
 #include "uri.h"
 

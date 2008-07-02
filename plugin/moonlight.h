@@ -1,5 +1,5 @@
 /*
- * config.h: MoonLight browser plugin.
+ * moonlight.h: MoonLight browser plugin.
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -15,7 +15,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <config.h>
 
 #define MOZ_X11
 #ifndef XP_UNIX

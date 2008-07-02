@@ -1,5 +1,6 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * moon-plugin.h: MoonLight browser plugin.
+ * plugin.h: MoonLight browser plugin.
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)

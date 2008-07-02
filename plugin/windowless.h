@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * windowless.h: windowless plugin's surface
  *
@@ -17,7 +18,9 @@
 #include "plugin.h"
 
 class WindowlessSurface : public Surface {
-public:
+	PluginInstance *plugin;
+	
+ public:
 	WindowlessSurface (int width, int height, PluginInstance *plugin);
 
 	virtual void SetCursor (GdkCursor *cursor);
@@ -25,9 +28,6 @@ public:
 	virtual void ProcessUpdates ();
 
 	gboolean HandleEvent (XEvent *event);
-
- private:
-	PluginInstance *plugin;
 };
 
 #endif /* __MOON_PLUGIN_WINDOWLESS__ */

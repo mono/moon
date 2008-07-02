@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * plugin-class.cpp: MoonLight browser plugin.
  *
@@ -10,7 +11,12 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <ctype.h>
+
 #include "plugin-class.h"
 #include "browser-bridge.h"
 #include "plugin.h"

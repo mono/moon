@@ -1,9 +1,23 @@
-#include "config.h"
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * windowless.cpp: Windowsless Surface subclass
+ *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ *
+ */
+
+#include <config.h>
+
 #include "windowless.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
-#include "gdk/gdkx.h"
+#include <gdk/gdkx.h>
 #undef Visual
 #undef Region
 
