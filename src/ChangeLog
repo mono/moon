@@ -1,3 +1,10 @@
+2008-07-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Remove cairo_save|restore from [Shape|Path]::Draw
+	since their callers already do this. Simplify a bit Shape::
+	InsideObject to check ret only if a Clip is present (instead of
+	always checking it).
+
 2008-07-02  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp: get rid of the cursor_func,

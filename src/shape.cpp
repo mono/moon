@@ -142,13 +142,10 @@ Shape::Draw (cairo_t *cr)
 	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
 
-	cairo_save (cr);
 	cairo_transform (cr, &stretch_transform);
 
 	cairo_new_path (cr);
 	cairo_append_path (cr, &path->cairo);
-
-	cairo_restore (cr);
 }
 
 // break up operations so we can exclude optional stuff, like:
@@ -619,21 +616,21 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 		Geometry *clip = clip_geometry->AsGeometry ();
 		if (clip) {
 			clip->Draw (NULL, cr);
-			ret &= cairo_in_fill (cr, x, y);
+			ret = cairo_in_fill (cr, x, y);
 			cairo_new_path (cr);
-		}
-	}
 
-	if (ret == false) {
-		cairo_restore (cr);
-		return false;
+			if (!ret) {
+				cairo_restore (cr);
+				return false;
+			}
+		}
 	}
 
 	// don't do the operation but do consider filling
 	DoDraw (cr, false);
 
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)
-	ret &= ((stroke && cairo_in_stroke (cr, x, y)) || (fill && CanFill () && cairo_in_fill (cr, x, y)));
+	ret = ((stroke && cairo_in_stroke (cr, x, y)) || (fill && CanFill () && cairo_in_fill (cr, x, y)));
 
 	cairo_new_path (cr);
 	cairo_restore (cr);
@@ -2428,11 +2425,8 @@ Path::Draw (cairo_t *cr)
 	if (!(geometry = GetData ()))
 		return;
 	
-	cairo_save (cr);
 	cairo_transform (cr, &stretch_transform);
 	geometry->Draw (this, cr);
-	
-	cairo_restore (cr);
 }
 
 void
