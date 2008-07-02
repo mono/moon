@@ -1,5 +1,16 @@
 2008-07-02  Chris Toshok  <toshok@ximian.com>
 
+	* windowless.h, windowless.cpp (WindowlessSurface::HandleEvent):
+	move the windowless event handling here so it's not cluttering up
+	plugin.cpp.
+
+	* plugin.h, plugin.cpp: add GetWindow() to return the NPWindow,
+	make plugin_button_press_callback a public static method so
+	WindowlessSurface can call it, and remove the entire EventHandle
+	method body (so it can be moved to WindowlessSurface).
+
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
 	* plugin.h, plugin.cpp: remove the old static methods for doing
 	windowless things, and instead just instantiate a
 	WindowlessSurface in CreateWindow when windowless == true.

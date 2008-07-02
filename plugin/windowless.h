@@ -24,6 +24,8 @@ public:
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
 
+	gboolean HandleEvent (XEvent *event);
+
  private:
 	PluginInstance *plugin;
 };

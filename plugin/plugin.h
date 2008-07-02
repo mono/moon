@@ -93,7 +93,7 @@ class PluginInstance
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
 	static void ReportCache (Surface *surface, long bytes, void *user_data);
 	static void properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin);
-	
+
  public:
  
 #if DEBUG
@@ -181,6 +181,7 @@ class PluginInstance
 
 	MoonlightScriptControlObject *GetRootObject ();
 	NPP GetInstance ();
+	NPWindow *GetWindow ();
 
 	int32_t GetActualHeight ();
 	int32_t GetActualWidth ();
@@ -191,6 +192,8 @@ class PluginInstance
 	bool IsSilverlight2 () { return silverlight2; } 
 
 	GSList *timers;
+
+	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 };
 
 extern GSList *plugin_instances;
