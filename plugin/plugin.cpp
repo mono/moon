@@ -19,6 +19,7 @@
 #include "plugin-downloader.h"
 #include "npstream-request.h"
 #include "xap.h"
+#include "windowless.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -686,45 +687,6 @@ PluginInstance::SetPageURL ()
 }
 
 void
-PluginInstance::RenderSurface (Surface *surface, void *user_data)
-{
-	PluginInstance *plugin = (PluginInstance *) user_data;
-
-	NPN_ForceRedraw (plugin->instance);
-}
-
-void
-PluginInstance::InvalidateSurface (Surface *surface, Rect rect, void *user_data)
-{
-	PluginInstance *plugin = (PluginInstance *) user_data;
-
-	NPRect nprect;
-
-	rect = rect.RoundOut();
-
-	nprect.left = (uint16)rect.x;
-	nprect.top = (uint16)rect.y;
-	nprect.right = (uint16)(rect.x + rect.w);
-	nprect.bottom = (uint16)(rect.y + rect.h);
-
-	NPN_InvalidateRect (plugin->instance, &nprect);
-}
-
-void
-PluginInstance::SetSurfaceCursor (Surface *surface, GdkCursor *cursor, void *user_data)
-{
-	// turned off for now.  hopefully we can get this switched on for
-	// newer versions of ff3
-	// see https://bugzilla.mozilla.org/show_bug.cgi?id=430451
-
-#if 0 && (NP_VERSION_MINOR >= NPVERS_HAS_CURSOR)
-	PluginInstance *plugin = (PluginInstance *) user_data;
-
-	NPN_SetValue (plugin->instance, NPNVcursor, GDK_CURSOR_XCURSOR(cursor));
-#endif
-}
-
-void
 PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data)
 {
 	PluginInstance *plugin = (PluginInstance *) user_data;
@@ -763,13 +725,11 @@ PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 void
 PluginInstance::CreateWindow ()
 {
-	surface = new Surface (window->width, window->height, windowless);
-
 	if (windowless) {
-		surface->SetInvalidateFunc (InvalidateSurface, this);
-		surface->SetRenderFunc (RenderSurface, this);
-		surface->SetCursorFunc (SetSurfaceCursor, this);
-		surface->SetTrans (true);
+		surface = new WindowlessSurface (window->width, window->height, this);
+	}
+	else {
+		surface = new Surface (window->width, window->height, false);
 	}
 
 	if (onError != NULL) {

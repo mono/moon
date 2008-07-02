@@ -1,5 +1,14 @@
 2008-07-02  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h, runtime.cpp: get rid of the cursor_func,
+	invalidate_func, render_func stuff.  Instead use 3 virtual
+	methods: SetCursor(GdkCursor*), Invalidate(Rect), and
+	ProcessUpdates().  That way the plugin can instantiate a
+	WindowlessSurface which overrides those methods instead of having
+	the stupid callback mechanism we had.
+
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h, runtime.cpp: virtualize SetCursor so the plugin can
 	override the behavior.
 

@@ -70,9 +70,6 @@ class TimeManager;
 class Surface;
 class Downloader;
 
-typedef void (* MoonlightInvalidateFunc) (Surface *surface, Rect r, void *user_data);
-typedef void (* MoonlightRenderFunc) (Surface *surface, void *user_data);
-typedef void (* MoonlightSetCursorFunc) (Surface *surface, GdkCursor* cursor, void *user_data);
 typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
 typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *user_data);
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
@@ -172,15 +169,6 @@ class Surface : public EventObject {
 	
 	GdkEvent *mouse_event;
 	
-	MoonlightInvalidateFunc invalidate;
-	void *invalidate_data;
-	
-	MoonlightRenderFunc render;
-	void *render_data;
-
-	MoonlightSetCursorFunc cursor_func;
-	void *cursor_func_data;
-
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
 	gint64 fps_start;
@@ -230,6 +218,7 @@ class Surface : public EventObject {
 
 	void Attach (UIElement *toplevel);
 
+	virtual void SetCursor (GdkCursor *cursor);
 	void SetCursor (MouseCursor cursor);
 
 	bool SetMouseCapture (UIElement *capture);
@@ -249,7 +238,8 @@ class Surface : public EventObject {
 	int GetFrameCount () { return frames; }
 	void ResetFrameCount () { frames = 0; }
 
-	void Invalidate (Rect r);
+	virtual void Invalidate (Rect r);
+	virtual void ProcessUpdates ();
 
 	GtkWidget *GetWidget () { return widget; }
 	UIElement *GetToplevel() { return toplevel; }
@@ -280,9 +270,6 @@ class Surface : public EventObject {
 	Downloader *CreateDownloader ();
 	static Downloader *CreateDownloader (UIElement *element);
 
-	void SetRenderFunc (MoonlightRenderFunc render, void *user_data);
-	void SetInvalidateFunc (MoonlightInvalidateFunc invalidate, void *user_data);
-	void SetCursorFunc (MoonlightSetCursorFunc cursor, void *user_data);
 	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data);
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
 

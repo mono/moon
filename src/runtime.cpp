@@ -216,15 +216,6 @@ Surface::Surface(int w, int h, bool windowless)
 	full_screen_message = NULL;
 	source_location = NULL;
 
-	render = NULL;
-	render_data = NULL;
-
-	invalidate = NULL;
-	invalidate_data = NULL;
-
-	cursor_func = NULL;
-	cursor_func_data = NULL;
-
 	fps_report = fps_report_default;
 	fps_data = NULL;
 
@@ -465,11 +456,17 @@ Surface::SetCursor (MouseCursor new_cursor)
 			break;
 		}
 
-		if (widget)
-			gdk_window_set_cursor (widget->window, c);
-		else
-			cursor_func (this, c, cursor_func_data);
+		SetCursor (c);
+
+		// XXX unref the cursor?
 	}
+}
+
+void
+Surface::SetCursor (GdkCursor *c)
+{
+	if (widget)
+		gdk_window_set_cursor (widget->window, c);
 }
 
 void
@@ -619,20 +616,19 @@ Surface::Attach (UIElement *element)
 void
 Surface::Invalidate (Rect r)
 {
-	// Mozilla gets seriously confused about invalidations 
-	// outside the windowless bounds.
-	r = r.Intersection (Rect (0, 0, width, height)).RoundOut ();
-
 	if (widget)
 		gtk_widget_queue_draw_area (widget,
 					    (int) (widget->allocation.x + r.x), 
 					    (int) (widget->allocation.y + r.y), 
 					    (int) r.w, (int)r.h);
-	else if (invalidate)
-		invalidate (this, r, invalidate_data);
-
 }
 
+void
+Surface::ProcessUpdates ()
+{
+	if (widget)
+		gdk_window_process_updates (GTK_WIDGET (widget)->window, false);
+}
 
 void
 Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
@@ -1037,10 +1033,7 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 		s->fps_start = get_now ();
 	
 	if (dirty) {
-		if (s->widget)
-			gdk_window_process_updates (GTK_WIDGET (s->widget)->window, false);
-		else if (s->render)
-			s->render (s, s->render_data);
+		s->ProcessUpdates ();
 	}
 
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_report) {
@@ -1878,27 +1871,6 @@ Surface::gdk_keyval_to_key (guint keyval)
 	default:
 		return KeyKEYUNKNOWN;
 	}
-}
-
-void
-Surface::SetRenderFunc (MoonlightRenderFunc render, void *user_data)
-{
-	this->render = render;
-	this->render_data = user_data;
-}
-
-void
-Surface::SetInvalidateFunc (MoonlightInvalidateFunc invalidate, void *user_data)
-{
-	this->invalidate = invalidate;
-	this->invalidate_data = user_data;
-}
-
-void
-Surface::SetCursorFunc (MoonlightSetCursorFunc cursor, void *user_data)
-{
-	this->cursor_func = cursor;
-	this->cursor_func_data = user_data;
 }
 
 void

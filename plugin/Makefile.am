@@ -57,7 +57,9 @@ libmoonplugin_la_SOURCES = \
 	plugin-class.cpp 	\
 	plugin-class.h		\
 	plugin-debug.cpp	\
-	plugin-debug.h
+	plugin-debug.h		\
+	windowless.cpp		\
+	windowless.h
 
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la

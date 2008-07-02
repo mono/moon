@@ -1,5 +1,16 @@
 2008-07-02  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.h, plugin.cpp: remove the old static methods for doing
+	windowless things, and instead just instantiate a
+	WindowlessSurface in CreateWindow when windowless == true.
+
+	* Makefile.am (libmoonplugin_la_SOURCES): add windowless.{cpp,h}
+
+	* windowless.h, windowless.cpp: new WindowlessSurface subclass
+	which proxies things over to mozilla.
+
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
 	* plugin.cpp (NPN_strdup): just set 1 byte to 0 instead of all of
 	them :)
 	(PluginInstance::SetSurfaceCursor): ifdefed out implementation of

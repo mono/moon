@@ -90,9 +90,6 @@ class PluginInstance
 	
 	static gboolean IdleUpdateSourceByReference (gpointer data);
 
-	static void SetSurfaceCursor (Surface *surface, GdkCursor *cursor, void *user_data);
-	static void RenderSurface (Surface *surface, void *user_data);
-	static void InvalidateSurface (Surface *surface, Rect rect, void *user_data);
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
 	static void ReportCache (Surface *surface, long bytes, void *user_data);
 	static void properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin);
