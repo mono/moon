@@ -50,8 +50,8 @@ NPP_Destroy (NPP instance, NPSavedData **save)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
-	if (plugin->surface)
-		plugin->surface->AddHandler (EventObject::DestroyedEvent, plugin_surface_destroyed, NULL);
+	if (plugin->GetSurface())
+		plugin->GetSurface()->AddHandler (EventObject::DestroyedEvent, plugin_surface_destroyed, NULL);
 	plugin->Finalize ();
 
 	instance->pdata = NULL;

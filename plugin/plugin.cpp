@@ -878,6 +878,19 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	g_free ((gpointer) xaml);
 }
 
+
+Downloader*
+PluginInstance::CreateDownloader (PluginInstance *instance)
+{
+	if (instance) {
+		return instance->surface->CreateDownloader ();
+	} else {
+		printf ("PluginInstance::CreateDownloader (%p): Unable to create contextual downloader.\n", instance);
+		return new Downloader ();
+	}
+}
+
+
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
@@ -1499,7 +1512,7 @@ PluginInstance::TimeoutStop (uint32_t source_id)
 Surface *
 plugin_instance_get_surface (PluginInstance *instance)
 {
-	return instance->surface;
+	return instance->GetSurface ();
 }
 
 int32_t

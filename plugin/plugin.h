@@ -30,22 +30,6 @@ char *NPN_strdup (const char *val);
 class PluginInstance
 {
  public:
- 
-#if DEBUG
-	struct moon_source : List::Node {
-		char *uri;
-		char *filename;
-		virtual ~moon_source ()
-		{
-			g_free (uri);
-			g_free (filename);
-		}
-	};
-	List *moon_sources;
-	void AddSource (const char *uri, const char *filename);
-	List *GetSources ();
-#endif
-
 	PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mode);
 	~PluginInstance ();
 	
@@ -84,21 +68,6 @@ class PluginInstance
 
 	void Properties ();
 
-	static Downloader *CreateDownloader (PluginInstance *instance)
-	{
-		if (instance) {
-			return instance->surface->CreateDownloader ();
-		} else {
-			printf ("PluginInstance::CreateDownloader (%p): Unable to create contextual downloader.\n", instance);
-			return new Downloader ();
-		}
-	}
-
-	// Gtk controls
-	GtkWidget *container;  // plugin container object
- 	Surface *surface;      // plugin surface object
-	GdkDisplay *display;
-
 	// Property getters and setters
 	char *GetInitParams () { return this->initParams; }
 	char *GetSource () { return this->source; }
@@ -122,6 +91,7 @@ class PluginInstance
 	MoonlightScriptControlObject *GetRootObject ();
 	NPP GetInstance ();
 	NPWindow *GetWindow ();
+	Surface *GetSurface () { return surface; }
 
 	int32_t GetActualHeight ();
 	int32_t GetActualWidth ();
@@ -133,7 +103,32 @@ class PluginInstance
 
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 
+	static Downloader *CreateDownloader (PluginInstance *instance);
+
+#if DEBUG
+	struct moon_source : List::Node {
+		char *uri;
+		char *filename;
+		virtual ~moon_source ()
+		{
+			g_free (uri);
+			g_free (filename);
+		}
+	};
+	void AddSource (const char *uri, const char *filename);
+	List *GetSources ();
+#endif
+
  private:
+#if DEBUG
+	List *moon_sources;
+#endif
+
+	// Gtk controls
+	GtkWidget *container;  // plugin container object
+ 	Surface *surface;      // plugin surface object
+	GdkDisplay *display;
+
 	GSList *timers;
 
   	uint16_t mode;         // NP_EMBED, NP_FULL, or NP_BACKGROUND

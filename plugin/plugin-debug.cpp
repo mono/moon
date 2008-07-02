@@ -65,11 +65,11 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 	GtkTreeIter iter;
 	UIElement *el;
 
-	if (plugin->surface->debug_selected_element) {
-		UIElement *el = plugin->surface->debug_selected_element;
+	if (plugin->GetSurface()->debug_selected_element) {
+		UIElement *el = plugin->GetSurface()->debug_selected_element;
 		el->Invalidate (el->GetSubtreeBounds().GrowBy(1).RoundOut());
 		el->unref ();
-		plugin->surface->debug_selected_element = NULL;
+		plugin->GetSurface()->debug_selected_element = NULL;
 	}
 
 	if (!gtk_tree_selection_get_selected (selection, 
@@ -86,14 +86,14 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 		printf ("%p selected, name = %s, type = %s\n", el, el->GetName(), el->GetTypeName());
 		el->Invalidate (el->GetSubtreeBounds().GrowBy(1).RoundOut());
 		el->ref ();
-		plugin->surface->debug_selected_element = el;
+		plugin->GetSurface()->debug_selected_element = el;
 	}
 }
 
 void
 plugin_debug (PluginInstance *plugin)
 {
-	if (!plugin->surface) {
+	if (!plugin->GetSurface()) {
 		GtkWidget *d = gtk_message_dialog_new (NULL,
 						       GTK_DIALOG_NO_SEPARATOR,
 						       GTK_MESSAGE_ERROR,
@@ -113,7 +113,7 @@ plugin_debug (PluginInstance *plugin)
 						       G_TYPE_STRING,
 						       G_TYPE_POINTER);
 
-	populate_tree_from_xaml (plugin->surface->GetToplevel (), tree_store, NULL);
+	populate_tree_from_xaml (plugin->GetSurface()->GetToplevel (), tree_store, NULL);
 
 	GtkWidget* tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (tree_store));
 

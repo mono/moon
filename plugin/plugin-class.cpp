@@ -1784,12 +1784,12 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 		string_to_npvariant (plugin->GetInitParams (), result);
 		return true;
 	case MoonId_IsLoaded:
-		BOOLEAN_TO_NPVARIANT (plugin->surface->IsLoaded(), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->GetSurface()->IsLoaded(), *result);
 		return true;
 	case MoonId_OnError:
 	case MoonId_OnLoad: {
 		const char *event_name = map_moon_id_to_event_name (id);
-		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
+		int event_id = plugin->GetSurface()->GetType()->LookupEvent (event_name);
 		EventListenerProxy *proxy = LookupEventProxy (event_id);
 		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
 		return true;
@@ -1828,7 +1828,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 	case MoonId_OnError:
 	case MoonId_OnLoad: {
 		const char *event_name = map_moon_id_to_event_name (id);
-		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
+		int event_id = plugin->GetSurface()->GetType()->LookupEvent (event_name);
 
 		if (event_id != -1) {
 			// If we have a handler, remove it.
@@ -1838,7 +1838,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 				EventListenerProxy *proxy = new EventListenerProxy (instance,
 										    event_name,
 										    value);
-				proxy->AddHandler (plugin->surface);
+				proxy->AddHandler (plugin->GetSurface());
 				// we only emit that event once, when
 				// the plugin is initialized, so don't
 				// leave it in the event list
@@ -2142,18 +2142,18 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		INT32_TO_NPVARIANT (plugin->GetActualWidth (), *result);
 		return true;
 	case MoonId_FullScreen:
-		BOOLEAN_TO_NPVARIANT (plugin->surface->GetFullScreen (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->GetSurface()->GetFullScreen (), *result);
 		return true;
 	case MoonId_OnResize:
 	case MoonId_OnFullScreenChange: {
 		const char *event_name = map_moon_id_to_event_name (id);
-		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
+		int event_id = plugin->GetSurface()->GetType()->LookupEvent (event_name);
 		EventListenerProxy *proxy = LookupEventProxy (event_id);
 		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
 		return true;
 	}
 	case MoonId_Root: {
-		DependencyObject *top = plugin->surface->GetToplevel ();
+		DependencyObject *top = plugin->GetSurface()->GetToplevel ();
 		if (top == NULL) {
 			NULL_TO_NPVARIANT (*result);
 		} else {
@@ -2188,12 +2188,12 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 
 	switch (id) {
 	case MoonId_FullScreen:
-		plugin->surface->SetFullScreen (NPVARIANT_TO_BOOLEAN (*value));
+		plugin->GetSurface()->SetFullScreen (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
 	case MoonId_OnFullScreenChange:
 	case MoonId_OnResize: {
 		const char *event_name = map_moon_id_to_event_name (id);
-		int event_id = plugin->surface->GetType()->LookupEvent (event_name);
+		int event_id = plugin->GetSurface()->GetType()->LookupEvent (event_name);
 
 		if (event_id != -1) {
 			// If we have a handler, remove it.
@@ -2203,7 +2203,7 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 				EventListenerProxy *proxy = new EventListenerProxy (instance,
 										    event_name,
 										    value);
-				proxy->AddHandler (plugin->surface);
+				proxy->AddHandler (plugin->GetSurface());
 				SetEventProxy (event_id, proxy);
 			}
 
@@ -2226,11 +2226,11 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		if (!check_arg_list ("s", argCount, args))
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_FINDNAME");
 
-		if (!plugin->surface || !plugin->surface->GetToplevel ())
+		if (!plugin->GetSurface() || !plugin->GetSurface()->GetToplevel ())
 			return true;
 
 		char *name = STRDUP_FROM_VARIANT (args [0]);
-		DependencyObject *element = plugin->surface->GetToplevel ()->FindName (name);
+		DependencyObject *element = plugin->GetSurface()->GetToplevel ()->FindName (name);
 		g_free (name);
 
 		if (!element) {
@@ -2258,7 +2258,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("createFromXaml");
 		
 		Type::Kind element_type;
-		XamlLoader *loader = PluginXamlLoader::FromStr (xaml, plugin, plugin->surface);
+		XamlLoader *loader = PluginXamlLoader::FromStr (xaml, plugin, plugin->GetSurface());
 		DependencyObject *dep = xaml_create_from_str (loader, xaml, create_namescope, &element_type);
 		delete loader;
 		g_free (xaml);
@@ -2286,7 +2286,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		g_free (path);
 		
 		if (fname != NULL) {
-			XamlLoader *loader = PluginXamlLoader::FromFilename (fname, plugin, plugin->surface);
+			XamlLoader *loader = PluginXamlLoader::FromFilename (fname, plugin, plugin->GetSurface());
 			dep = xaml_create_from_file (loader, fname, false, &element_type);
 			delete loader;
 

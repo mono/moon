@@ -1,3 +1,10 @@
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.h, plugin.cpp: more clean up in the class decl.
+
+	* plugin-class.cpp, plugin-debug.cpp, plugin-glue.cpp: fallout
+	from the above change.
+
 2008-07-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (PluginInstance::Properties): Added a "Show text
