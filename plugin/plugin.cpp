@@ -70,7 +70,7 @@ plugin_menu_about (PluginInstance *plugin)
 	gtk_about_dialog_set_name (about, PLUGIN_OURNAME);
 	gtk_about_dialog_set_version (about, VERSION);
 
-	gtk_about_dialog_set_copyright (about, "Copyright 2007 Novell, Inc. (http://www.novell.com/)");
+	gtk_about_dialog_set_copyright (about, "Copyright 2007-2008 Novell, Inc. (http://www.novell.com/)");
 	gtk_about_dialog_set_website (about, "http://mono-project.com/Moonlight");
 	gtk_about_dialog_set_website_label (about, "Project Website");
 
@@ -217,6 +217,15 @@ bounding_boxes (GtkToggleButton *checkbox, gpointer user_data)
 }
 
 static void
+textboxes (GtkToggleButton *checkbox, gpointer user_data)
+{
+	if (gtk_toggle_button_get_active (checkbox))
+		moonlight_flags |= RUNTIME_INIT_SHOW_TEXTBOXES;
+	else
+		moonlight_flags &= ~RUNTIME_INIT_SHOW_TEXTBOXES;
+}
+
+static void
 show_fps (GtkToggleButton *checkbox, gpointer user_data)
 {
 	if (gtk_toggle_button_get_active (checkbox))
@@ -302,6 +311,11 @@ PluginInstance::Properties ()
 	checkbox = gtk_check_button_new_with_label ("Show bounding boxes");
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES);
 	g_signal_connect (checkbox, "toggled", G_CALLBACK (bounding_boxes), NULL);
+	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+	
+	checkbox = gtk_check_button_new_with_label ("Show text boxes");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (textboxes), NULL);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	checkbox = gtk_check_button_new_with_label ("Show Frames Per Second");

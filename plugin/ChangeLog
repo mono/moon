@@ -1,3 +1,8 @@
+2008-07-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (PluginInstance::Properties): Added a "Show text
+	boxes" checkbox.
+
 2008-07-02  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.h, plugin.cpp: reorder PluginInstance's class decl so
