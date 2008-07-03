@@ -320,7 +320,7 @@ PluginInstance::Properties ()
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	checkbox = gtk_check_button_new_with_label ("Show text boxes");
-// 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES);
 	g_signal_connect (checkbox, "toggled", G_CALLBACK (textboxes), NULL);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
