@@ -664,7 +664,9 @@ Surface::Paint (cairo_t *ctx, Region *region)
 		toplevel->FrontToBack (copy, render_list);
 
 		if (render_list->IsEmpty()) {
-			g_warning ("error building up render list - region corresponds to no UIElement intersections");
+#if DEBUG
+			printf ("region corresponds to no UIElement intersections\n")
+#endif
 		}
 		else {
 			Region *empty_region = new Region ();
