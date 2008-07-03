@@ -16,7 +16,7 @@ all: moonlight.dll
 
 moonlight.dll: $(results_asp_sources)
 	$(MCS) $(MCSFLAGS) $(results_asp_sources)
-	mkdir bin
+	mkdir -p bin
 	mv moonlight.dll bin
 	
 
