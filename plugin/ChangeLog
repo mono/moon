@@ -1,5 +1,13 @@
 2008-07-02  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (INCLUDES): add src/zip
+
+	* plugin.cpp (PluginInstance::StreamAsFile): in the case where the
+	1.0 version of the plugin is fed a .xap file, show something to
+	the user saying it's not going to be able to render it.
+
+2008-07-02  Chris Toshok  <toshok@ximian.com>
+
 	* plugin.h, plugin.cpp: more clean up in the class decl.
 
 	* plugin-class.cpp, plugin-debug.cpp, plugin-glue.cpp: fallout

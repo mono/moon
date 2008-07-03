@@ -25,6 +25,7 @@
 #include "npstream-request.h"
 #include "xap.h"
 #include "windowless.h"
+#include "unzip.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -224,10 +225,10 @@ bounding_boxes (GtkToggleButton *checkbox, gpointer user_data)
 static void
 textboxes (GtkToggleButton *checkbox, gpointer user_data)
 {
-	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_SHOW_TEXTBOXES;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_SHOW_TEXTBOXES;
+// 	if (gtk_toggle_button_get_active (checkbox))
+// 		moonlight_flags |= RUNTIME_INIT_SHOW_TEXTBOXES;
+// 	else
+// 		moonlight_flags &= ~RUNTIME_INIT_SHOW_TEXTBOXES;
 }
 
 static void
@@ -319,7 +320,7 @@ PluginInstance::Properties ()
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	checkbox = gtk_check_button_new_with_label ("Show text boxes");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES);
+// 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES);
 	g_signal_connect (checkbox, "toggled", G_CALLBACK (textboxes), NULL);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
@@ -1163,6 +1164,21 @@ PluginInstance::LoadUrl (char *url, int32_t *length)
 	return load_res;
 }
 
+#define MOONLIGHT_1_0_LOADING_2_0_ERROR_XAML \
+"<Canvas " \
+	"xmlns=\"http://schemas.microsoft.com/client/2007\" " \
+	"xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" " \
+        "Background=\"White\" " \
+        "Width=\"400\" " \
+        "Height=\"200\" " \
+        ">" \
+                "<TextBlock Canvas.Top=\"10\" Canvas.Left=\"10\" Foreground=\"Red\">" \
+			"<Run Text=\"Moonlight was compiled with 1.0 support only.\" />" \
+			"<LineBreak />" \
+			"<Run Text=\"This page requires 2.0 support.\" />" \
+		"</TextBlock>" \
+"</Canvas>"
+
 void
 PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 {
@@ -1180,8 +1196,16 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		if (IsSilverlight2 ()) 
 			LoadXAP (fname);
 		else {
+#else
+			unzFile zf = unzOpen (fname);
+			if (zf) {
+				unzClose (zf);
+				xaml_loader = PluginXamlLoader::FromStr (MOONLIGHT_1_0_LOADING_2_0_ERROR_XAML,
+									 this, surface);
+			}
+			else
 #endif
-			xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
+				xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
 	
 			LoadXAML ();
 #if SL_2_0

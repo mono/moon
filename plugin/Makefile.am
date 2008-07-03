@@ -19,6 +19,7 @@ endif
 
 INCLUDES = \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/zip \
 	-I$(srcdir)/moz-sdk \
 	-I/usr/include/X11 \
 	$(PLUGIN_CFLAGS) \
