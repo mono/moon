@@ -142,10 +142,13 @@ Shape::Draw (cairo_t *cr)
 	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
 
+	cairo_save (cr);
 	cairo_transform (cr, &stretch_transform);
 
 	cairo_new_path (cr);
 	cairo_append_path (cr, &path->cairo);
+
+	cairo_restore (cr);
 }
 
 // break up operations so we can exclude optional stuff, like:
@@ -2425,8 +2428,10 @@ Path::Draw (cairo_t *cr)
 	if (!(geometry = GetData ()))
 		return;
 	
+	cairo_save (cr);
 	cairo_transform (cr, &stretch_transform);
 	geometry->Draw (this, cr);
+	cairo_restore (cr);
 }
 
 void
