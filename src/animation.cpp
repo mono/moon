@@ -1305,6 +1305,11 @@ linear_point_key_frame_new (void)
 
 DependencyProperty* SplineDoubleKeyFrame::KeySplineProperty;
 
+SplineDoubleKeyFrame::SplineDoubleKeyFrame ()
+{
+	this->DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
+}
+
 KeySpline*
 SplineDoubleKeyFrame::GetKeySpline ()
 {
@@ -1340,6 +1345,12 @@ spline_double_key_frame_new (void)
 
 DependencyProperty* SplineColorKeyFrame::KeySplineProperty;
 
+SplineColorKeyFrame::SplineColorKeyFrame ()
+{
+	this->DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
+}
+
+
 KeySpline*
 SplineColorKeyFrame::GetKeySpline ()
 {
@@ -1374,6 +1385,11 @@ spline_color_key_frame_new (void)
 
 
 DependencyProperty* SplinePointKeyFrame::KeySplineProperty;
+
+SplinePointKeyFrame::SplinePointKeyFrame ()
+{
+	this->DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
+}
 
 KeySpline*
 SplinePointKeyFrame::GetKeySpline ()
@@ -1934,9 +1950,9 @@ animation_init (void)
  	ColorKeyFrame::ValueProperty = DependencyObject::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);
 
 	/* Spline keyframe properties */
-	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", Value::CreateUnrefPtr (new KeySpline (0, 0, 1, 1)));
- 	SplineColorKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", Value::CreateUnrefPtr (new KeySpline (0, 0, 1, 1)));
- 	SplinePointKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", Value::CreateUnrefPtr (new KeySpline (0, 0, 1, 1)));
+	SplineDoubleKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", Type::KEYSPLINE);
+ 	SplineColorKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
+ 	SplinePointKeyFrame::KeySplineProperty = DependencyObject::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
 
 	/* KeyFrame animation properties */
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyObject::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);

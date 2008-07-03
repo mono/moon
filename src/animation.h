@@ -531,7 +531,7 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
  public:
 	static DependencyProperty *KeySplineProperty;
 	
-	SplineDoubleKeyFrame () { }
+	SplineDoubleKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::SPLINEDOUBLEKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
@@ -551,7 +551,7 @@ class SplineColorKeyFrame : public ColorKeyFrame {
  public:
 	static DependencyProperty *KeySplineProperty;
 	
-	SplineColorKeyFrame () { }
+	SplineColorKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::SPLINECOLORKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
@@ -571,7 +571,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
  public:
 	static DependencyProperty *KeySplineProperty;
 	
-	SplinePointKeyFrame () { }
+	SplinePointKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::SPLINEPOINTKEYFRAME; };
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);

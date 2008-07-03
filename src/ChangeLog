@@ -1,3 +1,8 @@
+2008-07-03  Chris Toshok  <toshok@ximian.com>
+
+	* animation.h, animation.cpp: the *KeyFrame KeySplineProperty
+	values need to be initialized in the ctors, not in animation_init.
+
 2008-07-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Add back the cairo_[save|restore] in ::Draw methods
