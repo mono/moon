@@ -1,3 +1,8 @@
+2008-07-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: Include the FreeType2 and FontConfig CFLAGS/LIBS
+	in the MOON_CFLAGS/LIBS variable. Same for zlib.
+
 2008-06-27  Larry Ewing  <lewing@novell.com>
 
 	* test/xaml/test-opacity-outside-canvas-bounds.xaml: modify to
