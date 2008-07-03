@@ -136,7 +136,7 @@ class TextBlock : public FrameworkElement {
 	{
 		Value *value;
 		
-		if ((value = GetValue (FrameworkElement::WidthProperty)))
+		if ((value = GetValueNoDefault (FrameworkElement::WidthProperty)))
 			return value->AsDouble ();
 		
 		return GetActualWidth ();
@@ -146,7 +146,7 @@ class TextBlock : public FrameworkElement {
 	{
 		Value *value;
 		
-		if ((value = GetValue (FrameworkElement::HeightProperty)))
+		if ((value = GetValueNoDefault (FrameworkElement::HeightProperty)))
 			return value->AsDouble ();
 		
 		return GetActualHeight ();

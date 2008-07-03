@@ -1,5 +1,9 @@
 2008-07-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.h (TextBlock::GetBoundingWidth/Height): Use
+	GetValueNoDefault() so we don't get 0.0 for the width/height if
+	unset.
+
 	Fixes for bug #404858
 
 	* runtime.cpp: Added SHOW_TEXTBOXES bit flag.
