@@ -665,7 +665,7 @@ Surface::Paint (cairo_t *ctx, Region *region)
 
 		if (render_list->IsEmpty()) {
 #if DEBUG
-			printf ("region corresponds to no UIElement intersections\n")
+			printf ("region corresponds to no UIElement intersections\n");
 #endif
 		}
 		else {
