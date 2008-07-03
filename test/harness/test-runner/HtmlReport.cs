@@ -41,10 +41,17 @@ namespace MoonlightTests {
 		private TestRun run;
 
 		private StringBuilder doc;
+		private int summary_pt;
 		private int pass_pt;
 		private int fail_pt;
 		private int knfl_pt;
 		private int ignore_pt;
+		
+		private int fail_count = 0;
+		private int pass_count = 0;
+		private int ignore_count = 0;
+		private int known_fail_count = 0;
+		
 
 		public void BeginRun (TestRun run)
 		{
@@ -63,6 +70,8 @@ namespace MoonlightTests {
 			}
 
 			GeneratePageHeader ();
+			summary_pt = doc.Length;
+			UpdateSummaryTable();
 
 			GenerateTableHeader ("red", "Failing Tests");
 			fail_pt = doc.Length;
@@ -98,16 +107,20 @@ namespace MoonlightTests {
 			switch (result) {
 			case TestResult.Fail:
 				len = GenerateTableRow (fail_pt, "red", " - FAIL", test);
+				++fail_count;
 				break;
 			case TestResult.KnownFailure:
 				len = GenerateTableRow (knfl_pt, "orange", " - Known Failure", test);
+				++known_fail_count;
 				break;
 			case TestResult.Pass:
 			case TestResult.UnexpectedPass:
 				len = GenerateTableRow (pass_pt, "green", " - PASS", test);
+				++pass_count;
 				break;
 			case TestResult.Ignore:
 				len = GenerateIgnoreTableRow (ignore_pt, test);
+				++ignore_count;
 				break;
 			}
 
@@ -126,6 +139,7 @@ namespace MoonlightTests {
 				ignore_pt += len;
 				break;
 			}
+			UpdateSummaryTable();
 
 			WriteDocument ();
 		}
@@ -153,9 +167,37 @@ namespace MoonlightTests {
 			doc.AppendLine ("</html>");
 		}
 
+		private StringBuilder GenerateSummaryTable ()
+		{
+			StringBuilder summary = new StringBuilder();
+			summary.AppendLine ("<p><p><b>");
+			summary.AppendLine ("<table border=\"1\" width=\"30%\">");
+
+			float pct = (pass_count * 100.0f) / (pass_count + fail_count + known_fail_count);
+
+			summary.AppendLine (String.Format ("<th colspan=\"2\" bgcolor=\"{0}\" width=><b>{1} {2,5}%</b></th>", "blue","Test Summary",pct.ToString("##")));
+			summary.AppendLine (String.Format("<tr><td width=\"50%\"><a href=\"#Failing Tests\">Failures</a></td><td style=\"color:{0}\">{1,5}</td","red",fail_count));
+			summary.AppendLine (String.Format("<tr><td><a href=\"#Known Failures\">Known Failures</a></td><td style=\"color:{0}\">{1,5}</td","orange",known_fail_count));
+			summary.AppendLine (String.Format("<tr><td><a href=\"#Passing Tests\">Passes</a></td><td style=\"color:{0}\">{1,5}</td","green",pass_count));
+			summary.AppendLine (String.Format("<tr><td><a href=\"#Ignored\">Ignored</a></td><td style=\"color:{0}\">{1,5}</td","gray",ignore_count));
+			summary.AppendLine("</b>");
+			
+			return summary;
+		}
+		private void UpdateSummaryTable()
+		{
+			StringBuilder str = GenerateSummaryTable(); //Get summary table
+			
+			if (summary_pt + str.Length < doc.Length)
+			{
+				doc.Remove(summary_pt, str.Length);			// Delete old summary table
+			}
+			doc.Insert(summary_pt, str);                // Insert new table
+		}
+		
 		private void GenerateTableHeader (string bgcolor, string title)
 		{
-			doc.AppendLine ("<p><p>");
+			doc.AppendLine (String.Format("<p><p><a name=\"{0}\"></a>",title));
 			doc.AppendLine ("<table border=\"1\" width=\"100%\">");
 
 			doc.AppendLine (String.Format ("<th colspan=\"2\" bgcolor=\"{0}\"><b>{1}</b></th>", bgcolor, title));
