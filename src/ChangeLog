@@ -1,3 +1,10 @@
+2008-07-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moon-path.c|h: Draw ellipse clockwise to match Silverlight.
+	Also remove the closing point since it's not needed (but that was
+	not the problem, just a small memory saving).
+	[Re-fix bug #391684]
+
 2008-07-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.h (TextBlock::GetBoundingWidth/Height): Use
