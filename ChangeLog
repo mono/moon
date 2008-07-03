@@ -1,7 +1,10 @@
 2008-07-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* acinclude.m4: Add some pthread lib checking action.
+
 	* configure.ac: Include the FreeType2 and FontConfig CFLAGS/LIBS
-	in the MOON_CFLAGS/LIBS variable. Same for zlib.
+	in the MOON_CFLAGS/LIBS variable. Same for zlib. Call our new
+	PTHREAD_CHECK macro and add PTHREAD_LIBS to MOON_LIBS.
 
 2008-06-27  Larry Ewing  <lewing@novell.com>
 

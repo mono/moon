@@ -20,12 +20,10 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 
-#define Visual _XVisual
-#define Region _joe_ball
+#define Visual _XxVisual
+#define Region _XxRegion
 #include <gdk/gdkx.h>
-
 #include <gdk/gdkkeysyms.h>
- 
 #include <cairo-xlib.h>
 #undef Visual
 #undef Region

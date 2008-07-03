@@ -175,3 +175,20 @@ AC_SUBST(LTCOMPILE)
 AC_SUBST(LTCXXCOMPILE)
 # end dolt
 ])
+
+
+# PTHREAD_CHECK
+AC_DEFUN([PTHREAD_CHECK],[
+	PTHREAD_LIBS=""
+	AC_CHECK_LIB(pthread, pthread_create, PTHREAD_LIBS="-lpthread",
+		[AC_CHECK_LIB(pthreads, pthread_create, PTHREAD_LIBS="-lpthreads",
+		    [AC_CHECK_LIB(c_r, pthread_create, PTHREAD_LIBS="-lc_r",
+			[AC_CHECK_LIB(pthread, __pthread_attr_init_system, PTHREAD_LIBS="-lpthread",
+				[AC_CHECK_FUNC(pthread_create)]
+			)]
+		    )]
+		)]
+	)
+	AC_SUBST(PTHREAD_LIBS)
+	AC_PROVIDE([PTHREAD_CHECK])
+])
