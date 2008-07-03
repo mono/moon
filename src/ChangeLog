@@ -1,3 +1,8 @@
+2008-07-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::Render): Check to see if we need to
+	calculate layout before painting.
+
 2008-07-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moon-path.c|h: Draw ellipse clockwise to match Silverlight.
