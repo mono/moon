@@ -175,7 +175,7 @@ namespace MoonlightTests {
 
 			float pct = (pass_count * 100.0f) / (pass_count + fail_count + known_fail_count);
 
-			summary.AppendLine (String.Format ("<th colspan=\"2\" bgcolor=\"{0}\" width=><b>{1} {2,5}%</b></th>", "blue","Test Summary",pct.ToString("##")));
+			summary.AppendLine (String.Format ("<th colspan=\"2\" bgcolor=\"{0}\" width=><b>{1} {2,5}%</b></th>", "blue","Test Summary",pct.ToString("##.#")));
 			summary.AppendLine (String.Format("<tr><td width=\"50%\"><a href=\"#Failing Tests\">Failures</a></td><td style=\"color:{0}\">{1,5}</td","red",fail_count));
 			summary.AppendLine (String.Format("<tr><td><a href=\"#Known Failures\">Known Failures</a></td><td style=\"color:{0}\">{1,5}</td","orange",known_fail_count));
 			summary.AppendLine (String.Format("<tr><td><a href=\"#Passing Tests\">Passes</a></td><td style=\"color:{0}\">{1,5}</td","green",pass_count));
