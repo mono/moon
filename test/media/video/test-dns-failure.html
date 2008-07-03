@@ -22,15 +22,15 @@
 
 		function OnMediaOpened (sender, args)
 		{
-			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
-			TestLogger.LogResult (1);
+			TestLogger.LogError ("OnMediaOpened: " + sender.CurrentState);
+			TestLogger.LogResult (-1);
 			SignalShutdown ();
 		}
 
 		function OnMediaFailed (sender, args)
 		{
-			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
-			TestLogger.LogResult (-1);
+			TestLogger.LogDebug ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (1);
 			SignalShutdown ();
 		}
 

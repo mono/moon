@@ -1,3 +1,7 @@
+2008-07-03  Fernando Herrera  <fherrera@novell.com>
+
+	* test-dns-failure.html: Fixed.
+
 2008-07-02  Fernando Herrera  <fherrera@novell.com>
 
 	* drtlist.xml:
