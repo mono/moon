@@ -225,10 +225,10 @@ bounding_boxes (GtkToggleButton *checkbox, gpointer user_data)
 static void
 textboxes (GtkToggleButton *checkbox, gpointer user_data)
 {
-// 	if (gtk_toggle_button_get_active (checkbox))
-// 		moonlight_flags |= RUNTIME_INIT_SHOW_TEXTBOXES;
-// 	else
-// 		moonlight_flags &= ~RUNTIME_INIT_SHOW_TEXTBOXES;
+ 	if (gtk_toggle_button_get_active (checkbox))
+ 		moonlight_flags |= RUNTIME_INIT_SHOW_TEXTBOXES;
+ 	else
+ 		moonlight_flags &= ~RUNTIME_INIT_SHOW_TEXTBOXES;
 }
 
 static void
