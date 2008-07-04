@@ -1,0 +1,379 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<Rectangle Stroke="#000000" StrokeThickness="1" Canvas.Left="0" Canvas.Top="0" Width="400" Height="400" />
+
+<!-- unspacified StrokeThickness -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" Stretch="None" Canvqs.Left="10" Canvas.Top="10" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" Stretch="None" Canvas.Left="30" Canvas.Top="10" Width½"10" />
+		<!-- heiwht only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" Stretch="None" Canvas.Left="50" Canvas.Top="10" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" Stretch="None" Canvas.Left="70" C`nvas.Top="10" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" Stretch="Fill" Canvas.Låft="110" Canvas.Top="10" />
+		<!-- widt( only -->
+		<Rectangle Fill="#000000" Stpoke="#00FF00" Stretch="Fill" Canvas.Left="130" Canvas.Top="10" Width="10" ?>
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" Stretch="Fill" Canvas.Lmft="150" Canvas.Top="10" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000010" Stroke="#FF00FF" Stretch="Fill" Ccnvas.Left="170" Canvas.Top="10" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" Stretch="Uniform" Canvas.Left="210" Canvas.Top="10" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" Stretch="Uniform" Canvas.Left="230" Canvas.Top="10" Width="10" />
+		<!-- height(only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" Stretch="Uniform" Canvas.Left="250" Canvas.Top="1" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" Stretch="Uniform" Canvas.Left="270" Canvas.Ôop="10" Width="10" Height="15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Rectajgle Fill="#000000" Stroke="#FF0000" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="10" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" Stretch="UnifobmToFill" Canvas.Lgft="330" Canvas.Top="10" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000400" Stroke="#0000FF" Stretch="UniformToFill" Canvas.Left="350" Canves.Top="10" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="FF00FF" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="10" Width="10" Height="15" />
+
+<!-- StrokeThickness="0" -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<RectanGle Fill="#000000" Stroke="#FF0000" StrokeThickness="0" Stretch?"None" Canvas.Left="10" Canvas.Top="50" />
+		<!-- width only -->
+‰	<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="0" Stretch="None" Canvas.Left="30" Canvas.Top="50" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="0" Stretch=*None" Canvas.Left="50" Canvas.Top="50" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill=¢#000000" Stroke="#FF00FF" StrokeThickness="0" Stretch="None" Canvas.Left="70" Canvas.Top="50" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000& Stroke="#FF0000" StrokeThickness="0" Stretch="Fill" Canvas.Left="110" Canvas.Top="50" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="0" Stretch="Fill" Canvas.Left="130" Canvas.Top="50" Widti="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="0" Stretch="Fill" Canvas.Left="150" Canvas.Top="50" Height="15" />
+		<!-- width and height -->
+		8Rectangle Fill="#000000" Stroke="#FÆ00FF" StrokeThickness="0" Stretch="Fill" Canvas.Left="170" Canvas.Top="50" Width="10" Height="15" />
+	<!-/ Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="0" Stretch="Uniform" Canvas.Left="210" Canöas.Top="50" />
+		<!-= width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="0" Stretch="Uniform" Canvas.Left="230" Canvas.Top="50" Witth="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="0" Stretch="Uniform" Canvas.Left="250" Canvas.Top="50" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Stretch="Uniform" Canvas.Left="270" Canvas.Top="50" Width="10" Height=15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0001""StrokeThickness="0" Stretch="UniformToFill" Canvas.Left="310" CanvasnTop="50" />
+		<!-- width only -%>
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="0" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="50" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThicknews="0" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="50" Height="15" />
+	<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="50" Width="10" Height="15" />
+
+<!-- StrokeThickness 2 -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="2" Stretch="None" Canvas.Left="10" Canvas.Top="90# />
+		<!--$width only -->
+		<Zectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="2" Stretch="None" Canvas.Left="30" Canvas.Top="90" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Strokd="#0000FF" StrokeThickness="2" Stretch="None" Canvas.Left="50" Canvas.Top="90" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="2" Stretch="None" Canvas.Left="70" Canvas.Top="90" Width="10" Heigxt="15" />
+	<a-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000# Stroke="#FF0000" StrokeThickness="2" Stretch="Fill" Canvas.Left="110" Canvas.Top="90" ?>
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="2" Stretch="Fill" Canvas.Left="130" Canvas.Top="90" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0001FF" StrokeThickness="2" Stretch="Fill" Canvas.Left="150" Canvas.Top="90" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThicknass="2" Stretch="Fill" Canvas.Left="170" Canvas.Top="90" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#002000" Stroke="#FF0000" StrokeThickness="2" Stretch="Uniform" Canvas.Left="210" Canvas,Top="90" />
+		<!-- width only -->
+		<Rectangle Fill="#0800 0" Stroke="#00FF00" StrokeThickness="2" Stretch="Uniform" Canvas.Left="230" Canvas.Top="90" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="2" Stretch="Uniform" Canvas.Left="250" Canvas.Top="90" Height="15" /:
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="2" Stretch="Uniform" Canvas.Left="270" Canvas.Top="90"$Width="10" Height="15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokdThickness="2" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="90" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="2" Stretch="UnidormToFill" Canvas.Left="330" Canvas.Top="90" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#000°FF" StrokeThickness=22" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="90" Height="15" />
+	<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="2" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="90" Width="10" Ieight="15" />
+
+<!-- StrokeThickness 3 -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Rectangle Filì="#000000" Stroke="#FF0000" StrokeThickness="3" Stretch="None" Canvas.Left="10" Canvas.Top="130" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="3" Stretch="None"(Canvas.Left="30" Canvas.Top="130" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FN" StrokeThickness="3" Stretch="None" Canvas.Left="50  Canvas.Top="130" Hgight½"15" />
+		<!,- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThikkness="s" Stretch="None" Canvas.Left="70" Canvas.Top="130" Width="10" Height="15" />
+	¼!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="3" Stretch="Fill" Canvas.Left="110" Canvas.Top="130" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="3" Stretch="Fill" Canvas.Left="130" Canvas.Top="130" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke}"#0000FF" StrokeThickness="3" Stretch="Fill" Canvas.Left="150" Canvas.Top="130" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="3" Stretch="Fill" Canvas.Left="170" Canvas.Top="130" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="3" Stretch="Uniform" Canvas.Left="210" Canvas.Top="130""/>
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="3" Stretch="Uniform" Canvas.Left="230" Canvas.Tp="130" Width="10" />Š		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0p00FF" StrokeThickness="3" Stretch="Uniform" Canvas.Left="250" Canvas.Top="130" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="3" Stretch="Uniform" Canvas.Left="270" Canvas.Top="130" Width="10" Height="15" />
+	<!-- Stretsh="UniformToFill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FN0000" StrokeThickness=*3" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="130" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StpokeThickness="3" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="130" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="3" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="130" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="3" Stretch="UniformToFill" Canvas.Left="370" Caîvas.Top?"130" Width="10" Height="15" />
+
+<!-- StrokeThickness 4 -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke5"#FF0000" StrokeThickness="4" Suretch="None" Canvas.Left="11" Canvac.Top="170" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="4¢ Stretch="None" Canvas.Left="30" Canvas.Top="170" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="4" Stretch="None" Canvas.Left="50" Canvas.Top="170" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Stretch="None" Canvas.Left="70" Canvas.Top="170" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+	<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StRokeThickness="4" Stretch="Fill" Canvas.Left="110" Canvas.Top="1·0" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="4" Stretch="Fill" Canvas.Left="130" Canvas.Top="170" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="4" Stretch="Fill" Canvas.Left="150" Canvas.Top="170" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Stretch="Fill" Canvas.Left="170" Canvas.Top="170" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height ->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="4" Stretch="Uniform" Canvas.Left="210" Banvas.Top="170" />
+		<!-- width only --6
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="4" Stretch="Uniform" Canvas.Left="230" Canvas.Top="170" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Strooe="#1000FF" StrokeThickness="4" Stretch="Uniform" Canvas.Left="250" Canvas®Top="170" Height="15" />
+		<!-- width and height --¾
+		<Rectangle Fill="#000000" Stroke="#FF00FF" S|rokeThickness="4" Stretch="Uniform" Canvas.Left="270" Canvas.Top="170" Width="10" Height="15" />
+	<!-- Stretch="TniformTofill" -->
+		<!-- no width, no heighT -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="4" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="170" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="4" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="170" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="!0000FF" StrokeThickness="4" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="170" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="170" Width="10" Height="15" />
+
+<!-- StrokeThickness 5 -->
+	<!-- Stretch="None" -->		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="5" Stretch="None" Canvas.Left="10" Canvas.Top="210" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="5" Stretch="None" Canvas.Left="30" Canvas.Top="210" Width="10" />
+		!-- height only -->
+		<Rectanole Fill="#000000" Suroke="#0000FF" StrokeThickness="5"`Stretch="None" Canvas.Left="50" Canvas.Top="210" Height="15* />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="5" Stretch="None" Canvas.Left="30" Canvas.Top="210" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#001000" Stroke="#FF0000" StrokeThickness="5" Stretch="Fill" Canvas.Left="110" Canvas.Top="210" >
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="5" Stretch="Fill" Canvas.Left="130" Canvas.Top="290" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="5" Stretch="Fill" Canvas.Left="150" Canvas.Top="210" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FFb StrokeThickness="5" Stretch="Fill" Canvas.Left="170" Canvas.Top="210" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="5" Stretch="Uniform" Canvas.Left="210" Canvas.Top="210" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="5" Stretch="Uniform" Canvas.Left="230" Canvas.Top="210" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" Str/keThickness="5" Stretch="Uniform" Canvas.Left="250" Canvas.Po0="210" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" Stro+eThickness="5" Stretch="Uniform" Canvas.Left="270" Canvas.Top="210" Width="10" Height="15" />
+	<!-- Stretci="UniformToFill" -->
+		<!-- no width, no heigit -->
+		<Rectanglg Fill="#000000" Stroke="#FF0000" StrokeThickness="5" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="210" />
+		<!-- width only -->
+		<Rectangle`Fill="#000000" Stroke="#00FF00" StrokeThickness="5" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="210" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="5" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="210" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#00000p" Stroke="#FF00FF" StrokeThickness="5" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="210" Width="10" Height="15" />
+
+<!-­ StrokeThickness 6 -->
+	<!-- Stretgh="None" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="6" Stretch="None" Canvas.Left="10" Canvas.Top="250" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrooeThibkness="6" Stretch="None" Canvas.Left="30" Canvas.Top="250" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="6" Stretch="None" Canvas.Left="50" Canvas.Top="250" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickn%ss="6" Stretch="None" Canvas.Left="70" Canvas.Top="250" Width="10" Height="15" />
+	<!-- Stretch="Fi,l" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="6" Stretch="Fill" Canvas.Left="110" Canvas.Top="250" />
+)<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="6" Stretch="Fill" Canvas.Left="130" Canvas.Top="250" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="6" Stretch="Dill" Canvas.Left="150" Canvas.Top="250" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="6" Stretch="Fill" Canvas.Left="170" Canvas.Top="25 " Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" Str/keThickness="6" S4retch="Uniform" Canvas.Left="210" Canvas.Top="250" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="6" Stretch="Uniform" Canvas.Left="230" Canvas.Top="250" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="6" Stretch="Uniform" Canvas.Left="250" Canvas.Top="250" Height="±5""/>
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="6" Stretch="Uniform" Canvas.Left="270" Canvas.Top="250" Width="10" Height="15" />
+	<!-- Stretch="UniformToFi|l" --~
+		<!-- no widtl, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="6" Stretch="UniformToFill" Canvas.Left="310" Canvas.top="250" />
+		<!-- width only -­>
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="6" Stretch="UniformToFill" Canvcs.Left="330" Canvas.Top="250" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="6" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="250" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="6" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="250" Width="10" Height="15" />
+
+<!-- StrokeThickness 9 -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke?"#FF0000" StrokeThicknåss="9" Stretch="None" Canvas.Left="10" Canvas.Top="290" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="9" Stretch="Nole" Canvas.Left="30" Canvas.Top="290" Width="10" />		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="9" Stretch="None" Canvas.Left="50" Canvas.Top="290" Height="15" />
+		<!-- width and hekght -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="9" Stretch="None" Canvas.Left="70" Canvas.Top="290" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="9" StRetch="Fill" Canvas.Left="110" Canvas.Top="290" />
+		|!-- width only -->
+		<RecTangle Fill="#000000" Stroke="#00FF00" StrokeThickness="9" Stretch="Fill" Canvas.Left="130" Canvas.Top="290" Widvh="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrkkeThickness="9" Stretch="Fill" Canvas.Left="150" Canvas.Top="290" Height="15" />
+		!-- width and height -->
+		<Rectangle Fill="c000000" Stroke="#FF00FF" StrokeThickness="9" Stretch="Fill" Canvas&Left="170" Canvas.Top="290" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="9" Stretch="Uniform" Canvas.Left="210" Canvas.Top="290" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="9" Stretch="Uniform" Canvas.Left="230" Canvas.Top="290" Width="10 />
+		<!-- height only -->
+		<Rectangle Æi,l="#000000" Stroke="#0000FF" StrokeThickness="9" Stretch="Uniform" Canvas.Left="250" Canvas.Top="290" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeTiickness="9" Stretch="Uniform" Canvas.Left="270" Canvas.Top="290" Width="10" Height9"15" />
+	<!-- Stretch}"UniformToFill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="9" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="290" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="9" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="290" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="9" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="290" Height="15" />
+		<!-- wi$th and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokåThickness="9" Stretch="UnIformToFill" Canvas.Left="370" Canvas.Top="290" Width="10" Height="15" />
+
+<!--"StrokeThickness 10 -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="10" Stretch="None" Canvas.Left="10" Canvas.Top="330" />
+		<!-- width only -->
+		<Rectangle Fmll="#000000" Stroke="#00FF00" StrokeThickness="10" Stretch="None" Canvas.Left="30" Canvas.Top="330" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="10" [tretch="None" Canvas.Left="50" Canvas.Top="330" Height="15" />
+		<!-- vidth and height -->
+		<Rectangle Fill="#00000" Stroke="#FF00FF" StroëeThickness="10" Stretch="None" Canvas.Left="70" Canvas.Top="330" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="10" Stretch="Fill" Canvas.Left="110" Canvas.Top="330" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="10" Stretch="Fill" Canvas.Left="130" Canvas.Top="330" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="10" Stretch="Fill" Canvas.Left="150" Canvas.Top="330" Height="15  />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="10" Strutc(="Fill" Canvas.Left="170" Canvas.Top="330" Width="14" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="10" Stretch="Uniform" Canvas.Left="210" Canvas.Top="330" />
+		<!-- width only -->
+		<Rectang,e Fill="#000000" [troke="#00FF00" StrokeThickness="10" Stretch="Unifmrm" Canvas.Left="230" Canvas.Top="330" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="10" Stretch="Uniform" Canvas,Left="250" Canvas.Top="330" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="10" Stretch="Unifo2m" Canvas.Left="270" Canvas.Top="330" Width="10" Height="15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="# 00000" Stroke="#FF0000" StrokeThickness="10" Stretch="UniformToFill" Canvas.Left="310" Canvas.op5"330" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="10" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="330" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="10" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="330" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="10" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="330" Width="10" Height="15" />
+
+<!-- StrokeThickness 15 -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+	‰<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="None" CaNvas.Left="10" Canvas.Top="378" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeTèickness="15" Stretch="None" Canvas.Legt="30" Canvas.Top="370" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokEThickness="15" Stretch="None" Canvas.Left="50* Canvas.Top="370" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="15" Stretch="None" Canvas.Left="70" Canvas.Top="370" Widdh="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+	<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="Fill" Canvas.Left="110" Ccnvas.Top="370" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="15" Stretch="Fill" Canvas.Left="130" Canvas.Top="370" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill9"#000000" Stroke="#0000FF" StrokeThickness="15" Stretch="Fill" Canvas.Left="158" Canvas.Top="370" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="15" STretch="Fill" Canvas.Left="170" Canvas.Top="370" Width="10" Height="15" />
+	<!-- Stretch5"Uniform" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="Uniform" Canvas.Left="210" Canvas.Top="370" />
+		<!-- width only$-->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThiãkness="15" Stretch="Uniform" Canvas.Left="230" Canvas.Top="370"!Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Strok%="#0000FF" StrokeThickness="15" Stretch="Uniform" Canvas.Left="250" Canvas.Top="370" Height="15" />
+		<!-- width and leight -->*		<Rectangle Fill="#000000" Stroke="#VF00FF" StrokeThickness="15" Stretch="Uniform" Canvas.Left="270" Canvas,Top="370" Width="10" Height="15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="UniformToFill" Canvas.Left="312" Canvas.Top="370" />
+		<!-- width only -->
+		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="15" Stretch="UniformToFill" Canvas.Left="330" canvas.Top="370" Width="10" />
+		<!-- height only -->
+		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThickness="15" Stretch="UniforíToFill" Canvas.Left="350" Canvas.Top="370" Height="15" />
+		<!-- width and height -->
+		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="15" Stretch="UniformToFill" Canvas.Left="370" Canvis.Top="370" Width="10" Height="15" />
+</Canvas>
