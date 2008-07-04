@@ -1,3 +1,8 @@
+2008-07-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Avoid a SIGSEGV in dependency_object_set_attributes
+	when the atchname is invalid.
+
 2008-07-04  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::EmitEventOnList): don't leak the event

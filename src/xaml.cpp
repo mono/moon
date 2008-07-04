@@ -2885,9 +2885,10 @@ start_parse:
 		}
 
 		DependencyProperty *prop = NULL;
-		if (atchname ) {
+		if (atchname) {
 			Type *attached_type = Type::Find (atchname);
-			prop = DependencyObject::GetDependencyProperty (attached_type->type, pname);
+			if (attached_type)
+				prop = DependencyObject::GetDependencyProperty (attached_type->type, pname);
 		} else {
 			prop = DependencyObject::GetDependencyProperty (item->info->GetKind (), pname);
 		}
