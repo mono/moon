@@ -1398,10 +1398,11 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 
 	emittingMouseEvent = true;
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-		bool h = node->uielement->DoEmit (event_id, emit_ctxs[idx],
-						  // XXX i don't like how i'm doing this here... we need a way to remove this logic and
-						  // put it in the UIElement... maybe UIElement::GetEventArgsForMouseEvent(event_id, GdkEvent)?
-						  event_id == UIElement::MouseLeaveEvent ? new EventArgs() : new MouseEventArgs (event));
+		// XXX i don't like how i'm doing this here... we need a way to remove this logic and
+		// put it in the UIElement... maybe UIElement::GetEventArgsForMouseEvent(event_id, GdkEvent)?
+		EventArgs *args = event_id == UIElement::MouseLeaveEvent ? new EventArgs() : new MouseEventArgs (event);
+		bool h = node->uielement->DoEmit (event_id, emit_ctxs[idx], args);
+		args->unref();
 		if (h)
 			handled = true;
 		if (zombie) {
