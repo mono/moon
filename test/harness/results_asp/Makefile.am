@@ -21,6 +21,7 @@ moonlight.dll: $(results_asp_sources)
 	mv -v moonlight.dll $(TEST_DIR)/bin
 	cp -v images/*png $(TEST_DIR)/images
 	cp -v *.as*x $(TEST_DIR)
+	cp -v *.css $(TEST_DIR)
 	sqlite $(TEST_DIR)/moonTestSuite.db < schema.sql || echo "Database already initialized"
 
 setup-test-dir: all

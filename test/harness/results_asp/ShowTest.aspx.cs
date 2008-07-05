@@ -41,10 +41,14 @@ namespace moonlight
 			string connectionString = "URI=file:moonTestSuite.db";
 			IDbConnection dbcon = (IDbConnection) new SqliteConnection(connectionString);
 					
+			Console.WriteLine("runtime = " + runtime);
+			Console.WriteLine("testid = " + testid);
+			
+			
 			dbcon.Open();
 			IDbCommand dbcmd = dbcon.CreateCommand();
 			// select runs.status, testcases.masterfile, runs.renderedfile from runs,testcases where testcases.id=1 and runs.revision=1001 and runs.testcaseid=testcases.id;
-			dbcmd.CommandText = string.Format("select runs.status, testcases.masterfile, runs.renderedfile from runs,testcases where runs.testcaseid=testcases.id and testcases.id={0} and runs.revision={1};",testid, runtime);
+			dbcmd.CommandText = string.Format("select results.status, testcases.masterfile, results.renderedfile from results,testcases where results.testcaseid=testcases.id and testcases.id={0} and results.runtime='{1}';",testid, runtime);
 			
 			//Console.WriteLine(dbcmd.CommandText);
 			

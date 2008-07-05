@@ -98,7 +98,7 @@ namespace moonlight
 			IDataReader reader = null;
 			if(dbcmd == null)
 				throw new Exception("dbcmd is null");
-			dbcmd.CommandText = string.Format("select status from results where testcaseid = {0} and runtime = {1};",testid,runtime);
+			dbcmd.CommandText = string.Format("select status from results where testcaseid = {0} and runtime = '{1}';",testid,runtime);
 				
 			string status = string.Empty;
 			
@@ -135,7 +135,7 @@ namespace moonlight
 				case "fail":
 				case "ignore":
 					//status = string.Format("<a href=\"http://www.google.com\"><img src=\"images/{0}.png\"></a>", status.ToLower());
-					status = string.Format("<a class=\'showtest\' href=\"ShowTest.aspx?runtime={1}&testid={2}\"><img src=\"images/{0}.png\"></a>", status.ToLower(),runtime,testid);
+					status = string.Format("<a class=\'showtest\' href=\"ShowTest.aspx?runtime={1}&testid={2}\"><img src=\"images/{0}.png\"></a>", status.ToLower(),runtime, testid);
 					break;
 				default:
 					status = " ";

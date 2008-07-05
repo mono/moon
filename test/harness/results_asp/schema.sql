@@ -1,6 +1,6 @@
 CREATE TABLE builds (
 	revision INTEGER,
-	builddate DATE
+	runtime DATE
 );
 
 CREATE TABLE testcases (
