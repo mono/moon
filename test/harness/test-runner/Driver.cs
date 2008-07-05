@@ -29,7 +29,6 @@ using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using NDesk.Options;
 
@@ -440,43 +439,6 @@ namespace MoonlightTests {
 
 			Environment.Exit (0);
 		}
-		private static void AddRunToDB()
-		{
-			ProcessStartInfo info = new ProcessStartInfo();
-			info.FileName = "svn";
-			info.Arguments = "info";			
-			info.UseShellExecute = false;		
-			info.RedirectStandardOutput = true;			
-			Process p = new Process();
-			p.StartInfo = info;
-			p.Start();
-			
-			string output = p.StandardOutput.ReadToEnd();
-			string revision = string.Empty;
-			string[] lines = output.Split('\n');
-			string time = string.Empty;
-			
-			foreach (string line in lines)
-			{
-				if (line.StartsWith("Revision"))
-				{
-					revision = line.Split(':')[1].Trim();
-				}
-				if (line.StartsWith("Last Changed Date"))
-				{
-					//Last Changed Date: 2008-06-11 06:30:36 -0600 (Wed, 11 Jun 2008)
-					time = line.Split()[3];
-				}
-			}
-			Console.WriteLine("revision = {0}",revision);
-			Console.WriteLine("date = {0}", time);
-			//Console.ReadLine();
-			
-			SqliteData db = SqliteData.GetInstance();
-			db.AddBuild(revision, time);
-			db.Revision = revision;
-			
-		}
 
 		public static int Main (string [] args)
 		{
@@ -485,8 +447,6 @@ namespace MoonlightTests {
 			Driver d = new Driver ();
 			bool add_console_report = true;
 			
-			AddRunToDB();
-
 			CheckEnvVars (d);
 
 			OptionSet p = new OptionSet ();
@@ -530,6 +490,7 @@ namespace MoonlightTests {
 
 			d.AddReport (new XmlReport ());
 			d.AddReport (new ComparisonReport ());
+			d.AddReport (new DbReport());
 
 			return d.Run (drtlist);
 		}

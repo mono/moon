@@ -4,6 +4,7 @@ RUNTIME = mono
 MCSFLAGS = -debug+ -t:library -out:moonlight.dll -r:System.Web.dll -r:System.Xml.dll -r:System.Data.dll -r:Mono.Data.SqliteClient.dll
 
 CLEANFILES = moonlight.dll
+TEST_DIR=../../test-run-data
 
 results_asp_sources = 		\
 	Global.asax.cs \
@@ -16,9 +17,11 @@ all: moonlight.dll
 
 moonlight.dll: $(results_asp_sources)
 	$(MCS) $(MCSFLAGS) $(results_asp_sources)
-	mkdir -p bin
-	mv moonlight.dll bin
-	
+	mkdir -p $(TEST_DIR)/{bin,images}
+	mv -v moonlight.dll $(TEST_DIR)/bin
+	cp -v images/*png $(TEST_DIR)/images
+	cp -v *.as*x $(TEST_DIR)
+	sqlite $(TEST_DIR)/moonTestSuite.db < schema.sql || echo "Database already initialized"
 
 setup-test-dir: all
 	mkdir -p $(TEST_DIR)
@@ -27,4 +30,4 @@ setup-test-dir: all
 	cp *.aspx $(TEST_DIR)/.
 
 cleanup-test-dir:
-	rm -rf bin
+	rm -rf $(TEST_DIR)/bin

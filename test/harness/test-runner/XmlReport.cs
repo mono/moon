@@ -46,7 +46,7 @@ namespace MoonlightTests {
 		private XmlElement runs_node;
 		private string test_run_dir;
 		private string test_run_path;
-
+		
 		public void BeginRun (TestRun run)
 		{
 			this.run = run;
@@ -69,13 +69,13 @@ namespace MoonlightTests {
 		}
 
 		public void AddResult (Test test, TestResult result)
-		{
+		{			
 			XmlElement el = document.CreateElement ("Test");
 
 			string result_file = GetFilePath (test.ResultFile);
 			string master_file = GetFilePath (test.MasterFile);
 
-			CopyImageToRunDirectory (result_file);
+			CopyImageToRunDirectory (test_run_dir,result_file);
 
 			el.SetAttribute ("Id", test.Id);
 			el.SetAttribute ("InputFile", test.InputFile);
@@ -117,7 +117,7 @@ namespace MoonlightTests {
 		}
 
 		private void CreateTestRunPathNames (TestRun run)
-		{
+		{			
 			test_run_dir = Path.Combine (TestRunDirectoryName, run.StartTime.ToString ("yyyy-MM-dd-hh-mm"));
 			test_run_path = Path.Combine (test_run_dir, TestRunFileName);
 
@@ -125,7 +125,7 @@ namespace MoonlightTests {
 				Directory.CreateDirectory (test_run_dir);
 		}
 
-		private string GetFilePath (string path)
+		public static string GetFilePath (string path)
 		{
 			string res = path;
 
@@ -133,13 +133,13 @@ namespace MoonlightTests {
 				return "image-not-found.png";
 
 			if (path.EndsWith (".tif") || path.EndsWith (".tiff"))
-				res = CreateMosaicFromTiff (path);
+				res = ImageCompare.CreateMosaicFromTiff(path);
 
 			
 			return res;
 		}
 
-		private void CopyImageToRunDirectory (string path)
+		public static void CopyImageToRunDirectory (string test_run_dir, string path)
 		{
 			if (!File.Exists (path))
 				return;
@@ -154,7 +154,7 @@ namespace MoonlightTests {
 			}
 		}
 
-		private void ResizeImage (Bitmap image, string path)
+		public static void ResizeImage (Bitmap image, string path)
 		{
 			float ratio = (float) image.Height / image.Width;
 			using (Bitmap ni = new Bitmap (image, MaxImageWidth, (int) (MaxImageWidth * ratio))) 
@@ -164,67 +164,6 @@ namespace MoonlightTests {
 		private string MakeRelativePath (string path)
 		{
 			return Path.Combine (test_run_dir, Path.GetFileName (path));
-		}
-
-		private string CreateMosaicFromTiff (string tiff_path)
-		{
-			int num_images = 0;
-			string result_path = String.Concat (tiff_path, ".png");
-			
-			using (Bitmap tiff = (Bitmap) Image.FromFile (tiff_path)) {
-	
-				Guid [] tiff_frames = tiff.FrameDimensionsList;
-				for (int i = 0; i < tiff_frames.Length; i++) {
-					FrameDimension tiff_dimension = new FrameDimension (tiff_frames [0]);
-					int frames_count = tiff.GetFrameCount (tiff_dimension);
-	
-					for (int f = 0; f < frames_count; f++)
-						num_images++;
-				}
-	
-				if (num_images == 1) {
-					using (Bitmap result = new Bitmap (tiff.Width, tiff.Height)) {
-						using (Graphics g = Graphics.FromImage (result)) {
-							g.DrawImage (tiff, 0, 0);
-							result.Save (result_path, ImageFormat.Png);
-							return result_path;
-						}
-					}
-				}
-
-			
-				int border_width = 2;
-				int x = border_width;
-				int y = border_width;
-				int images_per_row = Math.Max (num_images / 4, 1);			
-	
-				using (Bitmap result = new Bitmap (tiff.Width + border_width * 5, (images_per_row * (tiff.Height / 4)) + (border_width * (images_per_row + 1)))) {
-					using (Graphics g = Graphics.FromImage (result)) {
-						g.Clear (Color.Black);
-			
-						for (int i = 0; i < tiff_frames.Length; i++) {
-							FrameDimension tiff_dimension = new FrameDimension (tiff_frames [0]);
-							int frames_count = tiff.GetFrameCount (tiff_dimension);
-			
-							for (int f = 0; f < frames_count; f++) {
-								tiff.SelectActiveFrame (tiff_dimension, f);
-			
-								g.DrawImage (tiff, x, y, tiff.Width / 4, tiff.Height / 4);
-			
-								x += tiff.Width / 4 + border_width;
-								if (x >= tiff.Width) {
-									x = border_width;
-									y += tiff.Height / 4 + border_width;
-								}
-									
-							}
-						}
-		
-						result.Save (result_path, ImageFormat.Png);
-					}
-				}
-			}
-			return result_path;
 		}
 	}
 }

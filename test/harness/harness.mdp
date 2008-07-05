@@ -77,7 +77,10 @@
     <File name="results_asp/ShowTest.aspx" subtype="Code" buildaction="Nothing" />
     <File name="results_asp/ShowTest.aspx.cs" subtype="Code" buildaction="Compile" />
     <File name="results_asp/ShowTest.aspx.designer.cs" subtype="Code" buildaction="Compile" />
-    <File name="test-runner/SqliteData.cs" subtype="Code" buildaction="Compile" />
+    <File name="results_asp/TestHarness.aspx" subtype="Code" buildaction="Nothing" />
+    <File name="results_asp/TestHarness.aspx.cs" subtype="Code" buildaction="Compile" />
+    <File name="results_asp/TestHarness.aspx.designer.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/DbReport.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

@@ -16,7 +16,7 @@ namespace moonlight
 {
 	
 	
-	public partial class TestHarness2
+	public partial class TestHarness
 	{
 		protected System.Web.UI.WebControls.Table tblData;
 

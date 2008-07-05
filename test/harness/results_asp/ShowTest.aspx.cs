@@ -16,7 +16,7 @@ namespace moonlight
 	
 	public partial class ShowTest : System.Web.UI.Page
 	{
-		string build = string.Empty;
+		string runtime = string.Empty;
 		string testid = string.Empty;
 		string status = string.Empty;
 		string master = string.Empty;
@@ -24,27 +24,27 @@ namespace moonlight
 		
 		private void Page_Load(object sender, EventArgs e)
 		{
-			build = this.Request.QueryString["build"];
+			runtime = this.Request.QueryString["runtime"];
 			testid = this.Request.QueryString["testid"];
 			
-			if (build == null) build = string.Empty;
+			if (runtime == null) runtime = string.Empty;
 			if (testid == null) testid = string.Empty;			
 			
-			if ((build.Trim() == string.Empty) || (testid.Trim() == string.Empty))
+			if ((runtime.Trim() == string.Empty) || (testid.Trim() == string.Empty))
 			{
 				tcBuild.Text = "Please set build and testid";
 				//tcTestid.Text = "Unknown";
 				return;
 			}
-			lblStatus.Text = string.Format("Results for test \'{0}\' on r{1}",testid,build);
+			lblStatus.Text = string.Format("Results for test \'{0}\' on r{1}", testid, runtime);
 			
-			string connectionString = "URI=file:testdata.db";
+			string connectionString = "URI=file:moonTestSuite.db";
 			IDbConnection dbcon = (IDbConnection) new SqliteConnection(connectionString);
 					
 			dbcon.Open();
 			IDbCommand dbcmd = dbcon.CreateCommand();
 			// select runs.status, testcases.masterfile, runs.renderedfile from runs,testcases where testcases.id=1 and runs.revision=1001 and runs.testcaseid=testcases.id;
-			dbcmd.CommandText = string.Format("select runs.status, testcases.masterfile, runs.renderedfile from runs,testcases where runs.testcaseid=testcases.id and testcases.id={0} and runs.revision={1};",testid, build);
+			dbcmd.CommandText = string.Format("select runs.status, testcases.masterfile, runs.renderedfile from runs,testcases where runs.testcaseid=testcases.id and testcases.id={0} and runs.revision={1};",testid, runtime);
 			
 			//Console.WriteLine(dbcmd.CommandText);
 			
@@ -55,7 +55,7 @@ namespace moonlight
 			master = reader.GetString(1);
 			rendered = reader.GetString(2);
 						
-			tcBuild.Text = build;
+			tcBuild.Text = runtime;
 			tcTestid.Text = testid;
 			tcStatus.Text = string.Format("<img src=\"images/{0}.png\">&nbsp;<b>{1}</b>",status.ToLower(),status);
 			tcMasterImg.Text = string.Format("<img src=\"{0}\" alt=\"{0}\">",master);

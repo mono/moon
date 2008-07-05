@@ -17,7 +17,7 @@ namespace moonlight
 {
 	
 	
-	public partial class TestHarness2 : System.Web.UI.Page
+	public partial class TestHarness : System.Web.UI.Page
 	{
 		private IDbCommand dbcmd;
 		private IDbConnection dbcon;
@@ -30,7 +30,7 @@ namespace moonlight
 		}
 		private void  OpenCommand()
 		{
-			string connectionString = "URI=file:/var/tmp/moonlightTests.db";
+			string connectionString = "URI=file:moonTestSuite.db";
 			dbcon = (IDbConnection) new SqliteConnection(connectionString);
 					
 			dbcon.Open();
@@ -59,7 +59,7 @@ namespace moonlight
 			try
 			{
 			
-				List<int> builds = GetBuilds();
+				List<string> runtimes = GetBuilds();
 				List<int> ids = GetTestCases();
 					
 				OpenCommand();
@@ -74,9 +74,9 @@ namespace moonlight
 					tc.HorizontalAlign = HorizontalAlign.Center;
 					tr.Cells.Add(tc);
 					
-					foreach(int build in builds)
+					foreach(string runtime in runtimes)
 					{
-						tc = GetTestRun(testcase,build);
+						tc = GetTestRun(testcase,runtime);
 						tr.Cells.Add(tc);
 					}
 					tblData.Rows.Add(tr);
@@ -92,13 +92,13 @@ namespace moonlight
 			}
 			
 		}//end FillUserTable
-		private TableCell GetTestRun(int testid, int buildid)
+		private TableCell GetTestRun(int testid, string runtime)
 		{
 			
 			IDataReader reader = null;
 			if(dbcmd == null)
 				throw new Exception("dbcmd is null");
-			dbcmd.CommandText = string.Format("select status from runs where testcaseid = {0} and revision = {1};",testid,buildid);
+			dbcmd.CommandText = string.Format("select status from results where testcaseid = {0} and runtime = {1};",testid,runtime);
 				
 			string status = string.Empty;
 			
@@ -135,7 +135,7 @@ namespace moonlight
 				case "fail":
 				case "ignore":
 					//status = string.Format("<a href=\"http://www.google.com\"><img src=\"images/{0}.png\"></a>", status.ToLower());
-					status = string.Format("<a class=\'showtest\' href=\"ShowTest.aspx?build={1}&testid={2}\"><img src=\"images/{0}.png\"></a>", status.ToLower(),buildid,testid);
+					status = string.Format("<a class=\'showtest\' href=\"ShowTest.aspx?runtime={1}&testid={2}\"><img src=\"images/{0}.png\"></a>", status.ToLower(),runtime,testid);
 					break;
 				default:
 					status = " ";
@@ -178,9 +178,9 @@ namespace moonlight
 			return testcaseids;
 		}
 		
-		private List<int> GetBuilds()
+		private List<string> GetBuilds()
 		{
-			List<int> builds = new List<int>();
+			List<string> builds = new List<string>();
 			
 			try
 			{
@@ -191,13 +191,13 @@ namespace moonlight
 				tr.Cells.Add(tc);
 				
 				OpenCommand();
-				dbcmd.CommandText = "select revision from builds order by revision;";
+				dbcmd.CommandText = "select runtime from builds order by runtime;";
 				
 				IDataReader reader = dbcmd.ExecuteReader();
 				
 				while(reader.Read())
 				{
-					int id = reader.GetInt32(0);
+					string id = reader.GetString(0);
 					builds.Add(id);
 					tc = new TableCell();
 					tc.Text = id.ToString();					

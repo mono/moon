@@ -30,7 +30,7 @@ test_runner_sources = 		\
 	ConsoleReport.cs	\
 	HtmlReport.cs		\
 	XmlReport.cs		\
-	SqliteData.cs
+	DbReport.cs
 
 test_runner_resources = 				\
 	/resource:$(srcdir)/html_template.html		\

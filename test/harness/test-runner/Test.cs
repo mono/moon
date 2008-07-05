@@ -142,10 +142,7 @@ namespace MoonlightTests {
 
 			if (node.Attributes ["codebehind"] != null)
 				test.codebehind = node.Attributes ["codebehind"].Value;
-			
-			SqliteData db = SqliteData.GetInstance();
-			db.AddTestCase(id, string.Empty, master_file);
-			
+						
 			return test;
 		}
 
@@ -425,6 +422,18 @@ namespace MoonlightTests {
 			foreach (string cat in cats) {
 				categories.Add (cat.Trim ());
 			}
+		}
+		
+		public override string ToString()
+		{
+			string str = string.Empty;
+			str += "--- Test ---";
+			str += "\nID: " + this.Id;
+			str += "\n InputFile: " + this.InputFile;
+			str += "\nMasterFile: " + this.MasterFile;
+			str += "\nResultFile: " + this.ResultFile;
+			str += "\n--- ---";
+			return str;
 		}
 	}
 }

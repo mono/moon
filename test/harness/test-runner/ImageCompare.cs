@@ -228,6 +228,66 @@ namespace MoonlightTests {
 			
 			return data;
 		}
+		
+		public static string CreateMosaicFromTiff (string tiff_path)
+		{
+			int num_images = 0;
+			string result_path = String.Concat (tiff_path, ".png");
+			
+			using (Bitmap tiff = (Bitmap) Image.FromFile (tiff_path)) {
+				Guid [] tiff_frames = tiff.FrameDimensionsList;
+				for (int i = 0; i < tiff_frames.Length; i++) {
+					FrameDimension tiff_dimension = new FrameDimension (tiff_frames [0]);
+					int frames_count = tiff.GetFrameCount (tiff_dimension);
+	
+					for (int f = 0; f < frames_count; f++)
+						num_images++;
+				}
+	
+				if (num_images == 1) {
+					using (Bitmap result = new Bitmap (tiff.Width, tiff.Height)) {
+						using (Graphics g = Graphics.FromImage (result)) {
+							g.DrawImage (tiff, 0, 0);
+							result.Save (result_path, ImageFormat.Png);
+							return result_path;
+						}
+					}
+				}
+	
+				
+				int border_width = 2;
+				int x = border_width;
+				int y = border_width;
+				int images_per_row = Math.Max (num_images / 4, 1);			
+	
+				using (Bitmap result = new Bitmap (tiff.Width + border_width * 5, (images_per_row * (tiff.Height / 4)) + (border_width * (images_per_row + 1)))) {
+					using (Graphics g = Graphics.FromImage (result)) {
+						g.Clear (Color.Black);
+				
+						for (int i = 0; i < tiff_frames.Length; i++) {
+							FrameDimension tiff_dimension = new FrameDimension (tiff_frames [0]);
+							int frames_count = tiff.GetFrameCount (tiff_dimension);
+				
+							for (int f = 0; f < frames_count; f++) {
+								tiff.SelectActiveFrame (tiff_dimension, f);
+				
+								g.DrawImage (tiff, x, y, tiff.Width / 4, tiff.Height / 4);
+				
+								x += tiff.Width / 4 + border_width;
+								if (x >= tiff.Width) {
+									x = border_width;
+									y += tiff.Height / 4 + border_width;
+								}
+									
+							}
+						}
+									
+						result.Save (result_path, ImageFormat.Png);
+					}
+				}
+			}
+			return result_path;
+		}
 	}
 }
 
