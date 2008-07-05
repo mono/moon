@@ -14,6 +14,7 @@ namespace MoonlightTests {
 		private bool inited = false;
 		private string revision = string.Empty;
 		private string runtime = string.Empty;
+		private string masters = "masters";
 		
 		private string test_run_dir;
 		
@@ -34,13 +35,14 @@ namespace MoonlightTests {
 			string dir = "test-run-data";
 			string filename = "moonTestSuite.db";
 			
-			test_run_dir = Path.Combine(dir,run.StartTime.ToString("yyyy-MM-dd-hh-mm"));
+			runtime = run.StartTime.ToString("yyyy-MM-dd-hh-mm");
+			test_run_dir = Path.Combine(dir,runtime);
 			
 			if (!Directory.Exists(test_run_dir)) {
 				Directory.CreateDirectory(test_run_dir);
 			}
-			if (!Directory.Exists(Path.Combine(dir,"masters"))) {
-				Directory.CreateDirectory(Path.Combine(dir,"masters"));
+			if (!Directory.Exists(Path.Combine(dir,masters))) {
+				Directory.CreateDirectory(Path.Combine(dir,masters));
 			}
 			
 			string connectionString = string.Format("URI=file:{0}",Path.Combine(dir,filename));
@@ -48,6 +50,8 @@ namespace MoonlightTests {
 			dbcon = (IDbConnection) new SqliteConnection(connectionString);
 			dbcon.Open();
 			dbcmd = dbcon.CreateCommand();
+			
+			AddRunToDB();
 		}
 		
 		public void EndRun()
@@ -65,9 +69,9 @@ namespace MoonlightTests {
 			// copy result file to test run dir
 			// copy master file to test run dir
 			
-			string masterfile = Path.GetFullPath(test.MasterFile);
-			string renderfile = Path.Combine ("test-run-data", Path.GetFileName (test.ResultFile));
-			string build = string.Empty;
+			string masterfile = Path.Combine(masters, Path.GetFileName(test.MasterFile));
+			string renderfile = Path.Combine(runtime, Path.GetFileName(test.ResultFile));
+			//string build = string.Empty;
 			
 			
 			string result_file = XmlReport.GetFilePath (test.ResultFile);
@@ -80,13 +84,14 @@ namespace MoonlightTests {
 			Console.WriteLine("master_file = " + master_file);
 			
 			
-			XmlReport.CopyImageToRunDirectory (test_run_dir,result_file);
+			XmlReport.CopyImageToRunDirectory(test_run_dir,result_file);
+			XmlReport.CopyImageToRunDirectory(Path.Combine("test-run-data",masters), master_file);
 			
 			
-			string query = string.Format("INSERT INTO testcases VALUES ('{0}','{1}','{2}');",test.Id, string.Empty, test.MasterFile);
+			string query = string.Format("INSERT INTO testcases VALUES ('{0}','{1}','{2}');",test.Id, string.Empty, masterfile);
 			execnonquery(query);
 			
-			query = string.Format("INSERT INTO runs VALUES ('{0}','{1}','{2}','');",test.Id, runtime, result.ToString());
+			query = string.Format("INSERT INTO results VALUES ('{0}','{1}','{2}','{3}');",test.Id, runtime, result.ToString(), renderfile);
 			execnonquery(query);
 			
 		}
@@ -142,16 +147,13 @@ namespace MoonlightTests {
 			foreach (string line in lines) {
 				if (line.StartsWith("Revision")) {
 					revision = line.Split(':')[1].Trim();
-				}
-				if (line.StartsWith("Last Changed Date")) {
-					//Last Changed Date: 2008-06-11 06:30:36 -0600 (Wed, 11 Jun 2008)
-					runtime = line.Split()[3];
-				}
+				}				
 			}
-			Console.WriteLine("revision = {0}",revision);
-			Console.WriteLine("runtime = {0}", runtime);
+			AddBuild(revision,runtime);
+			
 			//Console.ReadLine();
-						
+				
+		
 		}
 	}
 }
