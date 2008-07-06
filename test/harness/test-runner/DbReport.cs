@@ -63,16 +63,9 @@ namespace MoonlightTests {
 		
 		public void AddResult(Test test, TestResult result)
 		{
-			
-			//Console.WriteLine(test);
-			
-			// copy result file to test run dir
-			// copy master file to test run dir
-			
+			string info = string.Empty;
 			string masterfile = Path.Combine(masters, Path.GetFileName(test.MasterFile));
 			string renderfile = Path.Combine(runtime, Path.GetFileName(test.ResultFile));
-			//string build = string.Empty;
-			
 			
 			string result_file = XmlReport.GetFilePath (test.ResultFile);
 			string master_file = XmlReport.GetFilePath (test.MasterFile);
@@ -98,7 +91,26 @@ namespace MoonlightTests {
 			string query = string.Format("INSERT INTO testcases VALUES ('{0}','{1}','{2}');",test.Id, string.Empty, masterfile);
 			execnonquery(query);
 			
-			query = string.Format("INSERT INTO results VALUES ('{0}','{1}','{2}','{3}');",test.Id, runtime, result.ToString(), renderfile);
+			switch(result)
+			{
+			case TestResult.Fail:
+				info = test.FailedReason;
+				break;
+			case TestResult.Ignore:
+				info = test.IgnoreReason;
+				break;
+			case TestResult.KnownFailure:
+				info = test.KnownFailureReason;
+				break;
+			default:
+				info = string.Empty;
+				break;
+				
+			}
+					
+			
+			
+			query = string.Format("INSERT INTO results VALUES ('{0}','{1}','{2}','{3}', '{4}');",test.Id, runtime, result.ToString(), renderfile, info);
 			execnonquery(query);
 			
 		}
