@@ -1,3 +1,14 @@
+2008-07-05  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp: remove the down_dirty_node_succ and
+	up_dirty_node_pred code from here.  it arguably helped speed up
+	insertions into the dirty lists, but at the cost of lots of
+	dangling pointers.  we always walk up the tree looking for a
+	down/up node.  works, and is much simpler.  and fixes bug #362561.
+
+	* uielement.h, uielement.cpp: remove the down_dirty_node_succ and
+	up_dirty_node_pred code.
+	
 2008-07-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Avoid a SIGSEGV in dependency_object_set_attributes
