@@ -13,7 +13,8 @@ CREATE TABLE results (
 	testcaseid INTEGER,
 	runtime DATE,
 	status VARCHAR(32),
-	renderedfile VARCHAR(255)
+	renderedfile VARCHAR(255),
+	info VARCHAR(255)
 );
 
 CREATE TABLE taggedcases (

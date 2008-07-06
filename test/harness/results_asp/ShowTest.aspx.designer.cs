@@ -22,6 +22,7 @@ namespace moonlight
 		protected System.Web.UI.WebControls.TableCell tcTestid;
 		protected System.Web.UI.WebControls.TableCell tcBuild;
 		protected System.Web.UI.WebControls.TableCell tcStatus;
+		protected System.Web.UI.WebControls.TableCell tcInfo;
 		protected System.Web.UI.WebControls.TableCell tcMasterImg;
 		protected System.Web.UI.WebControls.TableCell tcRenderedImg;
 		protected System.Web.UI.WebControls.Label lblStatus;

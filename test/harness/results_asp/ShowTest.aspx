@@ -42,6 +42,12 @@
 				<asp:TableCell id="tcStatus" runat="server">
 				</asp:TableCell>
 			</asp:TableRow>
+			<asp:TableRow>
+				<asp:TableCell>
+				</asp:TableCell>
+				<asp:TableCell id="tcInfo" runat="server">
+				</asp:TableCell>
+			</asp:TableRow>
 		</asp:Table>
 		<br>
 		<asp:Table runat="server">
