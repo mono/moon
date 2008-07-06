@@ -64,7 +64,7 @@ namespace MoonlightTests {
 		public void AddResult(Test test, TestResult result)
 		{
 			
-			Console.WriteLine(test);
+			//Console.WriteLine(test);
 			
 			// copy result file to test run dir
 			// copy master file to test run dir
@@ -77,15 +77,22 @@ namespace MoonlightTests {
 			string result_file = XmlReport.GetFilePath (test.ResultFile);
 			string master_file = XmlReport.GetFilePath (test.MasterFile);
 
+			/*
 			Console.WriteLine("masterfile = " + masterfile);
 			Console.WriteLine("renderfile = " + renderfile);
 			
 			Console.WriteLine("result_file = " + result_file);
 			Console.WriteLine("master_file = " + master_file);
+			*/
 			
 			
 			XmlReport.CopyImageToRunDirectory(test_run_dir,result_file);
 			XmlReport.CopyImageToRunDirectory(Path.Combine("test-run-data",masters), master_file);
+			
+			if (masterfile.EndsWith("tif") || masterfile.EndsWith("tiff")) {
+				masterfile += ".png";
+				renderfile += ".png";
+			}
 			
 			
 			string query = string.Format("INSERT INTO testcases VALUES ('{0}','{1}','{2}');",test.Id, string.Empty, masterfile);

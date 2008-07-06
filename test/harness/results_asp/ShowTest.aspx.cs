@@ -36,13 +36,13 @@ namespace moonlight
 				//tcTestid.Text = "Unknown";
 				return;
 			}
-			lblStatus.Text = string.Format("Results for test \'{0}\' on r{1}", testid, runtime);
+			lblStatus.Text = string.Format("Results for test \'{0}\' on {1}", testid, runtime);
 			
 			string connectionString = "URI=file:moonTestSuite.db";
 			IDbConnection dbcon = (IDbConnection) new SqliteConnection(connectionString);
 					
-			Console.WriteLine("runtime = " + runtime);
-			Console.WriteLine("testid = " + testid);
+			//Console.WriteLine("runtime = " + runtime);
+			//Console.WriteLine("testid = " + testid);
 			
 			
 			dbcon.Open();
@@ -63,6 +63,7 @@ namespace moonlight
 			tcTestid.Text = testid;
 			tcStatus.Text = string.Format("<img src=\"images/{0}.png\">&nbsp;<b>{1}</b>",status.ToLower(),status);
 			tcMasterImg.Text = string.Format("<img src=\"{0}\" alt=\"{0}\">",master);
+			//tcRenderedImg.VerticalAlign = WebControls.VerticalAlign.Top;
 			tcRenderedImg.Text = string.Format("<img src=\"{0}\" alt=\"{0}\">",rendered);
 			
 			reader.Close();

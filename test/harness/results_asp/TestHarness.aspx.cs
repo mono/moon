@@ -168,7 +168,7 @@ namespace moonlight
 				reader = null;
 				CloseCommand();
 				
-				debug2.Text = "test cases = " + testcaseids.Count;
+				//debug2.Text = "test cases = " + testcaseids.Count;
 			}
 			catch (Exception ex)
 			{
@@ -200,13 +200,19 @@ namespace moonlight
 					string id = reader.GetString(0);
 					builds.Add(id);
 					tc = new TableCell();
-					tc.Text = id.ToString();					
+
+					string date = id.Substring(0,10);
+					string time = id.Substring(11,5).Replace('-',':');
+					
+					tc.Text = string.Format("{0} {1}", date,time);
+					
+					//2008-07-05-06-04
 					tc.CssClass = "colheader";
 					tr.Cells.Add(tc);
 				}
 				
 				tblData.Rows.Add(tr);
-				debug3.Text = "Builds: " + builds.Count;
+				//debug3.Text = "Builds: " + builds.Count;
 				
 				reader.Close();
 				reader = null;

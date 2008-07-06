@@ -43,11 +43,16 @@
 				</asp:TableCell>
 			</asp:TableRow>
 		</asp:Table>
+		<br>
 		<asp:Table runat="server">
+			<asp:TableRow>
+				<asp:TableCell Text="<h3>Master Image</h3>"></asp:TableCell>
+				<asp:TableCell Text="<h3>Rendered Image</h3>"></asp:TableCell>
+			</asp:TableRow>
 			<asp:TableRow>
 				<asp:TableCell id="tcMasterImg" runat="server">
 				</asp:TableCell>
-				<asp:TableCell id="tcRenderedImg" runat="server">
+				<asp:TableCell id="tcRenderedImg" VerticalAlign="Top" runat="server">
 				</asp:TableCell>
 			</asp:TableRow>
 		</asp:Table>
