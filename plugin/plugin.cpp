@@ -536,6 +536,12 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
 	}
 
+#ifdef DEBUG
+	if (getenv ("MOONLIGHT_NO_WINDOWLESS")) {
+		printf ("plugin wants to be windowless, but we're not going to let it\n");
+		windowless = false;
+	}
+#endif
 	if (windowless) {
 		if (supportsWindowless) {
 			NPN_SetValue (instance, NPPVpluginWindowBool, (void *) FALSE);
@@ -543,7 +549,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			d(printf ("windowless mode\n"));
 		} else {
 			d(printf ("browser doesn't support windowless mode.\n"));
-			windowless = FALSE;
+			windowless = false;
 		}
 	}
 

@@ -1,3 +1,10 @@
+2008-07-06  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::Initialize): add a way to override
+	the windowless setting.  set the MOONLIGHT_NO_WINDOWLESS
+	environment variable, and plugins will be created windowed,
+	regardless of the JS.
+
 2008-07-02  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (INCLUDES): add src/zip
