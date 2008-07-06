@@ -149,7 +149,7 @@ WindowlessSurface::HandleEvent (XEvent *event)
 		button.axes = NULL;
 
 		if (xev->type == ButtonPress)
-			handled = PluginInstance::plugin_button_press_callback (NULL, &button, this);
+			handled = PluginInstance::plugin_button_press_callback (NULL, &button, plugin);
 		if (!handled) {
 			if (xev->type == ButtonPress)
 				handled = Surface::button_press_callback (NULL, &button, this);
