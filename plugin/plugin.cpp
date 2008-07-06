@@ -537,7 +537,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	}
 
 #ifdef DEBUG
-	if (getenv ("MOONLIGHT_NO_WINDOWLESS")) {
+	if ((moonlight_flags & RUNTIME_INIT_ALLOW_WINDOWLESS) == 0) {
 		printf ("plugin wants to be windowless, but we're not going to let it\n");
 		windowless = false;
 	}
