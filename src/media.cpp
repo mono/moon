@@ -45,6 +45,9 @@ MediaBase::MediaBase ()
 	source.part_name = NULL;
 	downloader = NULL;
 	part_name = NULL;
+	updating_size_from_media = false;
+	use_media_height = true;
+	use_media_width = true;
 }
 
 MediaBase::~MediaBase ()
@@ -184,6 +187,15 @@ MediaBase::GetStretch ()
 {
 	return (Stretch) GetValue (MediaBase::StretchProperty)->AsInt32 ();
 }
+
+void
+MediaBase::ComputeBounds ()
+{
+	Rect box = Rect (0,0, GetWidth (), GetHeight ());
+	
+	bounds = IntersectBoundsWithClipPath (box, false).Transform (&absolute_xform);
+}
+
 
 
 MediaBase *
@@ -768,8 +780,28 @@ MediaElement::SetMedia (Media *media)
 	mplayer->SetCanSeek (GetCanSeek ());
 	
 	UpdatePlayerPosition (GetPosition ());
+
+	updating_size_from_media = true;
+
+	if (use_media_width) {
+		Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
+
+		if (!use_media_height)
+			SetWidth ((double) mplayer->GetVideoWidth() * height->AsDouble () / (double) mplayer->GetVideoHeight());
+		else
+			SetWidth ((double) mplayer->GetVideoWidth());
+	}
 	
-	ComputeBounds ();
+	if (use_media_height) {
+		Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+
+		if (!use_media_width)
+			SetHeight ((double) mplayer->GetVideoHeight() * width->AsDouble () / (double) mplayer->GetVideoWidth());
+		else
+			SetHeight ((double) mplayer->GetVideoHeight());
+	}
+	
+	updating_size_from_media = false;
 }
 
 bool
@@ -856,22 +888,6 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 	DownloaderAbort ();
 	
 	Emit (MediaFailedEvent, args);
-}
-
-void
-MediaElement::ComputeBounds ()
-{
-	double h = GetHeight ();
-	double w = GetWidth ();
-	
-	if (w == 0.0 && h == 0.0) {
-		h = (double) mplayer->GetVideoHeight ();
-		w = (double) mplayer->GetVideoWidth ();
-	}
-	
-	Rect box = Rect (0, 0, w, h);
-	
-	bounds = IntersectBoundsWithClipPath (box, false).Transform (&absolute_xform); 
 }
 
 Point
@@ -1819,6 +1835,12 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 	} else if (args->property == MediaElement::VolumeProperty) {
 		mplayer->SetVolume (args->new_value->AsDouble ());
+	} else if (args->property == FrameworkElement::HeightProperty) {
+		if (!updating_size_from_media)
+			use_media_height = args->new_value == NULL;
+	} else if (args->property == FrameworkElement::WidthProperty) {
+		if (!updating_size_from_media)
+			use_media_width = args->new_value == NULL;
 	}
 	
 	if (args->property->type == Type::MEDIAELEMENT) {
@@ -2258,9 +2280,6 @@ GHashTable *Image::surface_cache = NULL;
 Image::Image ()
 {
 	create_xlib_surface = true;
-	use_img_height = true;
-	use_img_width = true;
-	updating = false;
 	
 	pattern = NULL;
 	brush = NULL;
@@ -2358,8 +2377,6 @@ Image::PixbufWrite (void *buf, gint32 offset, gint32 n)
 void
 Image::DownloaderComplete ()
 {
-	Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
-	Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
 	char *filename = downloader->GetDownloadedFilename (part_name);
 	
 	CleanupSurface ();
@@ -2379,23 +2396,27 @@ Image::DownloaderComplete ()
 	
 	g_free (filename);
 	
-	updating = true;
+	updating_size_from_media = true;
 	
-	if (use_img_width) {
-		if (!use_img_height)
+	if (use_media_width) {
+		Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
+
+		if (!use_media_height)
 			SetWidth ((double) surface->width * height->AsDouble () / (double) surface->height);
 		else
 			SetWidth ((double) surface->width);
 	}
 	
-	if (use_img_height) {
-		if (!use_img_width)
+	if (use_media_height) {
+		Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+
+		if (!use_media_width)
 			SetHeight ((double) surface->height * width->AsDouble () / (double) surface->width);
 		else
 			SetHeight ((double) surface->height);
 	}
 	
-	updating = false;
+	updating_size_from_media = false;
 	
 	if (brush) {
 		// FIXME: this is wrong, we probably need to set the
@@ -2727,14 +2748,6 @@ Image::Render (cairo_t *cr, Region *region)
 	cairo_restore (cr);
 }
 
-void
-Image::ComputeBounds ()
-{
-	Rect box = Rect (0,0, GetWidth (), GetHeight ());
-	
-	bounds = IntersectBoundsWithClipPath (box, false).Transform (&absolute_xform);
-}
-
 Point
 Image::GetTransformOrigin ()
 {
@@ -2771,11 +2784,11 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 			Invalidate ();
 		}
 	} else if (args->property == FrameworkElement::HeightProperty) {
-		if (!updating)
-			use_img_height = args->new_value == NULL;
+		if (!updating_size_from_media)
+			use_media_height = args->new_value == NULL;
 	} else if (args->property == FrameworkElement::WidthProperty) {
-		if (!updating)
-			use_img_width = args->new_value == NULL;
+		if (!updating_size_from_media)
+			use_media_width = args->new_value == NULL;
 	}
 
 	if (args->property->type != Type::IMAGE) {

@@ -1,3 +1,21 @@
+2008-07-07  Chris Toshok  <toshok@ximian.com>
+
+	[ fixes the media element not showing up in flowers-for-you, bug
+	#382490. ]
+	* media.h, media.cpp: move Image::use_img_{width,height} and
+	Image::updating into MediaBase and rename then
+	use_media_{width,height} and updating_size_from_media.
+	(MediaElement::OnPropertyChanged) duplicate the
+	WidthProperty/HeightProperty stuff here (c&p from
+	Image::OnPropertyChanged - this should probably just be refactored
+	to MediaBase.  will do this later).
+	(MediaBase::ComputeBounds): we don't need the subclass
+	ComputeBounds methods.  Just put it here, as they share the same
+	behavior.
+	(MediaElement::SetMedia): remove the call to ComputeBounds here,
+	since the new block of use_media_{width,height} checks will call
+	UpdateBounds if they need to.
+	
 2008-07-07  Fernando Herrera  <fherrera@novell.com>
 
 	* media.cpp:

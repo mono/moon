@@ -122,8 +122,14 @@ class MediaBase : public FrameworkElement {
 	
 	Downloader *downloader;
 	char *part_name;
+
+	int use_media_height:1;
+	int use_media_width:1;
+	int updating_size_from_media:1;
 	
 	virtual ~MediaBase ();
+
+	virtual void ComputeBounds ();
 	
 	virtual void DownloaderFailed (EventArgs *args);
 	virtual void DownloaderComplete ();
@@ -170,9 +176,6 @@ double media_base_get_download_progress (MediaBase *media);
 
 class Image : public MediaBase {
 	int create_xlib_surface:1;
-	int use_img_height:1;
-	int use_img_width:1;
-	int updating:1;
 	
 	bool CreateSurface (const char *filename);
 	void CleanupSurface ();
@@ -220,7 +223,6 @@ class Image : public MediaBase {
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	
 	virtual void Render (cairo_t *cr, Region *region);
-	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	
 	cairo_surface_t *GetCairoSurface ();
@@ -401,7 +403,6 @@ class MediaElement : public MediaBase {
 	
 	// overrides
 	virtual void Render (cairo_t *cr, Region *region);
-	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	
 	virtual Value *GetValue (DependencyProperty *prop);
