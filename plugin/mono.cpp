@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * mono.cpp: Support routines to load the Mono VM as a browser plugin.
  *
@@ -10,11 +11,15 @@
  *
  */
 
-#include "moonlight.h"
-#include <stdlib.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <glib.h>
+#include <stdlib.h>
 #include <dlfcn.h>
 
+#include "moonlight.h"
 #if SL_2_0
 #include "moon-mono.h"
 G_BEGIN_DECLS
