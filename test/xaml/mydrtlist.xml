@@ -7,38 +7,17 @@
 	inputFile="nested-canvas.xaml"
 	masterFile10="../harness/masters/nested-canvasMaster.png"
 	codebehind="nested-canvas.cs"
+	categories="nested"
    />
    <Test id="3"
 	inputFile="points-torture.xaml"
 	masterFile10="../harness/masters/points-tortureMaster.png"
+        categories="point"
    />
    <Test id="4"
 	inputFile="test-45-bounding-box.xaml"
 	masterFile10="../harness/masters/test-45-bounding-boxMaster.png"
-   />
-   <Test id="5"
-	inputFile="test-animation-beginstoryboard-empty.xaml"
-	masterFile10="../harness/masters/test-animation-beginstoryboard-emptyMaster.tif"
-        captureSpecifier="300,15"
-        categories="animation"
-   />
-   <Test id="6"
-	inputFile="test-animation-begintimes.xaml"
-	masterFile10="../harness/masters/test-animation-begintimesMaster.tif"
-	captureSpecifier="300,15"
-        categories="animation"
-   />
-   <Test id="7"
-	inputFile="test-animation-ellipse-stroke.xaml"
-	masterFile10="../harness/masters/test-animation-ellipse-strokeMaster.tif"
-	captureSpecifier="300,15"
-        categories="animation"
-   />
-   <Test id="8"
-	inputFile="test-animation-ellipse.xaml"
-	masterFile10="../harness/masters/test-animation-ellipseMaster.tif"
-	captureSpecifier="300,15"
-        categories="animation"
+        categories="bound"
    />
    <Test id="9"
 	inputFile="test-animation-line-bounds.xaml"
@@ -51,5 +30,43 @@
 	masterFile10="../harness/masters/test-animation-lineMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
+   />
+   <Test id="17"
+	inputFile="test-brush-linear.xaml"
+	masterFile10="../harness/masters/test-brush-linearMaster.png"
+	categories="brush"
+   />
+   <Test id="18"
+	inputFile="test-brush-radial.xaml"
+	masterFile10="../harness/masters/test-brush-radialMaster.png"
+	categories="brush"
+   />
+   <Test id="23"
+	inputFile="test-custom-element.xaml"
+	masterFile10="../harness/masters/test-custom-elementMaster.png"
+   />
+   <Test id="45"
+	inputFile="test-path-group-2.xaml"
+	masterFile10="../harness/masters/test-path-group-2Master.png"
+	categories="path"
+   />
+   <Test id="50"
+	inputFile="test-path-group-stroke.xaml"
+	masterFile10="../harness/masters/test-path-group-strokeMaster.png"
+	categories="path"
+   />
+   <Test id="76"
+	inputFile="test-rectangle-aliasing.xaml"
+	masterFile10="../harness/masters/test-rectangle-aliasingMaster.png"
+   />
+   <Test id="77"
+	inputFile="test-relativetransform.xaml"
+	masterFile10="../harness/masters/test-relativetransformMaster.png"
+	categories="path"
+   />
+   <Test id="78"
+	inputFile="test-render-xorigin.xaml"
+	masterFile10="../harness/masters/test-render-xoriginMaster.png"
+	categories="path"
    />
 </DRTList>

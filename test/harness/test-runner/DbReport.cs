@@ -63,6 +63,7 @@ namespace MoonlightTests {
 		
 		public void AddResult(Test test, TestResult result)
 		{
+			AddTags(test);
 			string info = string.Empty;
 			string masterfile = Path.Combine(masters, Path.GetFileName(test.MasterFile));
 			string renderfile = Path.Combine(runtime, Path.GetFileName(test.ResultFile));
@@ -134,6 +135,54 @@ namespace MoonlightTests {
 			}
 			catch(Exception ex) {
 				Console.WriteLine(ex);
+			}
+		}
+		public void AddTags(Test test)
+		{
+			foreach(string tag in test.Categories)
+			{
+				string query = string.Format("SELECT id FROM tags WHERE name = '{0}';",tag.ToLower());
+				dbcmd.CommandText = query;
+				IDataReader reader = null;
+				int tagid = int.MinValue;
+				try
+				{
+					reader = dbcmd.ExecuteReader();
+					reader.Read();
+					tagid = reader.GetInt32(0);
+					
+				}
+				catch(Exception) {
+					tagid = int.MinValue;
+				}
+				finally {
+					if (reader != null)
+						reader.Close();
+				}
+					
+				if (tagid == int.MinValue) {
+					query = string.Format("INSERT INTO tags (name) VALUES ('{0}');",tag.ToLower());
+					execnonquery(query);					
+					
+					query = string.Format("SELECT id FROM tags WHERE name = '{0}';",tag.ToLower());
+					dbcmd.CommandText = query;
+					reader = dbcmd.ExecuteReader();
+					reader.Read();
+					tagid = reader.GetInt32(0);
+					reader.Close();					
+				}
+				
+				query = string.Format("INSERT INTO taggedcases values ({0},'{1}');",test.Id,tagid);				
+				execnonquery(query);
+				/*
+				dbcmd.CommandText = query;
+				try 			{
+					dbcmd.ExecuteNonQuery();
+				}
+				catch(Exception ex) {
+					Console.WriteLine(ex);
+				}
+				*/
 			}
 		}
 		private void execnonquery(string query)

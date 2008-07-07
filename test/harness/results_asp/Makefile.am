@@ -11,7 +11,9 @@ results_asp_sources = 		\
 	ShowTest.aspx.cs \
 	ShowTest.aspx.designer.cs \
 	TestHarness.aspx.cs \
-	TestHarness.aspx.designer.cs
+	TestHarness.aspx.designer.cs \
+	ShowRun.aspx.cs \
+	ShowRun.aspx.designer.cs
 
 all: moonlight.dll
 

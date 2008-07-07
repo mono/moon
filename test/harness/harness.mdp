@@ -80,6 +80,9 @@
     <File name="results_asp/TestHarness.aspx" subtype="Code" buildaction="Nothing" />
     <File name="results_asp/TestHarness.aspx.cs" subtype="Code" buildaction="Compile" />
     <File name="results_asp/TestHarness.aspx.designer.cs" subtype="Code" buildaction="Compile" />
+    <File name="results_asp/ShowRun.aspx" subtype="Code" buildaction="Nothing" />
+    <File name="results_asp/ShowRun.aspx.cs" subtype="Code" buildaction="Compile" />
+    <File name="results_asp/ShowRun.aspx.designer.cs" subtype="Code" buildaction="Compile" />
     <File name="test-runner/DbReport.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
