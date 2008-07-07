@@ -648,6 +648,7 @@ public:
 	virtual bool SeekToPts (guint64 pts) { return false; }
 
 	virtual void NotifySize (gint64 size) { return; }
+	virtual void NotifyFinished () { return; }
 
 	// Returns the current reading position
 	// This method will lock the mutex.
@@ -744,7 +745,7 @@ public:
 	virtual void Write (void *buf, gint64 offset, gint32 n);
 	void NotifySize (gint64 size);
 	virtual void RequestPosition (gint64 *pos);
-	void NotifyFinished ();
+	virtual void NotifyFinished ();
 	virtual bool CanSeekToPts () { return is_live && size > 0; }
 	virtual bool SeekToPts (guint64 pts);
 
@@ -814,6 +815,7 @@ private:
 	gint64 start;
 	gint64 end;
 	gint64 size;
+	bool finished;
 	guint64 requested_pts;
 	guint64 last_requested_pts;
 	MemorySource *current;
@@ -834,6 +836,7 @@ public:
 	MemorySource *GetCurrent () { return current; }
 
 	virtual void NotifySize (gint64 size);
+	virtual void NotifyFinished ();
 	void RequestPosition (gint64 *pos);
 
 	virtual MediaResult Initialize () { return MEDIA_SUCCESS; }
@@ -842,7 +845,7 @@ public:
 	virtual void Write (void *buf, gint64 offset, gint32 n);
 	
 	virtual bool CanSeek () { return true; }
-	virtual bool Eof () { return GetPosition () >= end; }
+	virtual bool Eof () { return size >= end; }
 
 	virtual const char *ToString () { return "MemoryQueueSource"; }
 	virtual bool CanSeekToPts () { return size > 0; }

@@ -2902,6 +2902,7 @@ MemoryQueueSource::MemoryQueueSource (Media *media)
 	size = -1;
 	end = -1;
 	start = 0;
+	finished = false;
 	requested_pts = UINT64_MAX;
 	last_requested_pts = UINT64_MAX;
 }
@@ -2922,11 +2923,11 @@ MemoryQueueSource::~MemoryQueueSource ()
 void
 MemoryQueueSource::WaitForQueue ()
 {
-	if (size == end || end == 0)
+	if (end == 0)
 		return;
 
 	StartWaitLoop ();
-	while ((current == NULL) && !Aborted ()) {
+	while ((current == NULL) && !finished && !Aborted ()) {
 		Wait ();
 	}
 	EndWaitLoop ();
@@ -2937,7 +2938,12 @@ gint64
 MemoryQueueSource::GetPositionInternal ()
 {
 	WaitForQueue ();
-	return current ? current->GetPosition () : 0;
+	if (current)
+		return current->GetPosition();
+	else if (finished)
+		return size;
+
+	return -1;
 }
 
 
@@ -2951,7 +2957,11 @@ MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 		current = (MemorySource*) g_queue_pop_tail (queue);
 		start = offset;
 	}
-	size += n;
+
+	if (end == -1)
+		size += n;
+	else
+		size = offset + n;
 
         if (IsWaiting ())
                 Signal ();
@@ -3053,10 +3063,21 @@ MemoryQueueSource::NotifySize (gint64 size)
 	Unlock ();
 }
 
+void
+MemoryQueueSource::NotifyFinished ()
+{
+	Lock ();
+	this->finished = true;
+	Unlock ();
+	Signal ();
+}
+
+
+
 gint64
 MemoryQueueSource::GetSizeInternal ()
 {
-	return end;
+	return size;
 }
 
 void

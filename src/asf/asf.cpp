@@ -214,18 +214,8 @@ ASFParser::ReadPacket (ASFPacket *packet, int packet_index)
 	if (packet_index >= 0) {
 		gint64 position = GetPacketOffset (packet_index);
 
-		if (position == 0 || (source->GetPosition () != position) || 
-		    (source->GetPosition ()  == position && source->GetType() == MediaSourceTypeQueueMemory)) {
-			if (!source->Seek (position, SEEK_SET)) {
-				MemorySource *new_src = new MemorySource (NULL, 0, 0);
-				source = new_src;
-			}
-		}
-	}
-
-	if (source->GetType() == MediaSourceTypeQueueMemory) {
-		((MemoryQueueSource*)source)->GetCurrent()->ref ();
-		packet->SetSource (((MemoryQueueSource*)source)->GetCurrent());	
+		if (position == 0 || (source->GetPosition () != position))
+			source->Seek (position, SEEK_SET);
 	}
 
 	return ASFParser::ReadPacket (packet);
@@ -893,8 +883,12 @@ ASFReader::Eof ()
 
 	if (packet_count == 0)
 		return false;
+	if (source->GetSize () <= 0)
+		return false;
 
-	return next_packet_index >= packet_count;
+	return (source->GetPosition() >= source->GetSize () ||
+	        next_packet_index >= packet_count);
+
 }
 
 void

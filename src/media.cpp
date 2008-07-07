@@ -1355,8 +1355,8 @@ MediaElement::DownloaderComplete ()
 		Emit (DownloadProgressChangedEvent);
 	}
 	
-	if (downloaded_file != NULL && downloaded_file->GetType () == MediaSourceTypeProgressive)
-		((ProgressiveSource*)downloaded_file)->NotifyFinished ();
+	if (downloaded_file != NULL)
+		downloaded_file->NotifyFinished ();
 	
 	UpdateProgress ();
 	

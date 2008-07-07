@@ -1,3 +1,9 @@
+2008-07-07  Fernando Herrera  <fherrera@novell.com>
+
+	* asf.cpp: don't point to the MemorySource source at ReadPacket
+	and just use the global MemoryQueueSource. 
+	Fix Eof() to support also positioned streams (after seeking).
+
 2008-07-02  Fernando Herrera  <fherrera@novell.com>
 
 	* asf.cpp: Don't return MEDIA_SEEK_ERROR while trying to read
