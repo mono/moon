@@ -81,6 +81,12 @@ find_up_succ (UIElement *element)
 void
 Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 {
+	// there's no point in adding an element to the dirty list if it
+	// isn't in the hierarchy.  it will be added to the dirty list when
+	// it's added to the hierarchy anyway.
+	if (element->GetVisualParent() == NULL && element != toplevel)
+		return;
+
 	// XXX this should really be here...
 // 	if (element->dirty_flags & dirt)
 // 		return;

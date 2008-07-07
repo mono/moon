@@ -1,3 +1,9 @@
+2008-07-07  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp (Surface::AddDirtyElement): don't add elements to the
+	list if they lack a visual parent (and aren't the toplevel.)
+	Fixes bug #406935.
+
 2008-07-07  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Rectangle::BuildPath): handle some special case
