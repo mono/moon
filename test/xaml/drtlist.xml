@@ -891,4 +891,9 @@
 	 masterFile10="../harness/masters/test-animation-repeat-behaviorMaster.png"
 	 captureSpecifier="0,1,10000"
 	 />
+   <Test id="196"
+	 inputFile="test-stroke-thickness.xaml"
+	 masterFile10="../harness/masters/test-stroke-thicknessMaster.png"
+	 captureSpecifier="0,1,10000"
+	 />
 </DRTList>
