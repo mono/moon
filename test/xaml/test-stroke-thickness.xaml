@@ -17,7 +17,6 @@
   <TextBlock Canvas.Left="365" Canvas.Top="70" FontSize="10" Text="Shape #4"/>
 
   <Ellipse Canvas.Left="450" Canvas.Top="10" Width="100" Height="50" Stroke="Red" StrokeThickness="50"/>
-  <Ellipse Canvas.Left="570" Canvas.Top="10" Width="100" Height="50" Stroke="Red" StrokeThickness="50"/>
   <Ellipse Canvas.Left="450" Canvas.Top="10" Width="100" Height="50" Fill="Pink"/>
   <TextBlock Canvas.Left="475" Canvas.Top="70" FontSize="10" Text="Shape #5"/>
 
