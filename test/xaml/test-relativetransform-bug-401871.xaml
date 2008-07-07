@@ -1,0 +1,22 @@
+<Canvas
+   xmlns="http://schemas.microsoft.com/client/2007"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Rectangle x:Name="btnMyButtonClickHighlight" RadiusX="4" RadiusY="4" Width="170" Height="24" Canvas.Top="0.333" Opacity="1">
+      <Rectangle.Fill>
+        <RadialGradientBrush GradientOrigin="0.5,1.177">
+          <RadialGradientBrush.RelativeTransform>
+            <TransformGroup>
+              <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1.396" ScaleY="1.396"/>
+              <SkewTransform AngleX="0" AngleY="0" CenterX="0.5" CenterY="0.5"/>
+              <RotateTransform Angle="0" CenterX="0.5" CenterY="0.5"/>
+              <TranslateTransform X="0" Y="0"/>
+            </TransformGroup>
+          </RadialGradientBrush.RelativeTransform>
+          <GradientStop Color="#FFFF00E6" Offset="0.062"/>
+          <GradientStop Color="#33000000" Offset="1"/>
+        </RadialGradientBrush>
+      </Rectangle.Fill>
+    </Rectangle>
+
+</Canvas>
