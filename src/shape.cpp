@@ -1279,7 +1279,7 @@ Rectangle::BuildPath ()
 	// unless both Width and Height are specified or when no streching is required
 	double radius_x = 0.0, radius_y = 0.0;
 	Rect rect = Rect (0, 0, GetWidth (), GetHeight ());
-	round = GetRadius (&radius_x, &radius_y);
+	GetRadius (&radius_x, &radius_y);
 
 	switch (stretch) {
 	case StretchNone:
