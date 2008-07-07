@@ -1,0 +1,6 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+  <MediaElement Source="../media/video/timecode-mini-caption-all.wmv"
+    Width="200"
+    Stretch="UniformToFill"
+  />
+</Canvas>

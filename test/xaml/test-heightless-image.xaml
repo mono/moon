@@ -1,0 +1,6 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+  <Image Source="mono.png"
+   Width="126"
+   Stretch="UniformToFill"
+   />
+</Canvas>
