@@ -1120,7 +1120,7 @@ Ellipse::BuildPath ()
 		break;
 	}
 
-	if (rect.w < t || rect.h < t){
+	if (rect.w <= t || rect.h <= t){
 		rect.w = MAX (rect.w, t + t * 0.001);
 		rect.h = MAX (rect.h, t + t * 0.001);
 		SetShapeFlags (UIElement::SHAPE_DEGENERATE);

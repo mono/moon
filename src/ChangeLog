@@ -1,3 +1,10 @@
+2008-07-07  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (Ellipse::BuildPath): a thickness equal to a width
+	degenerates in drawing, use the workaround there too.
+
+	Fixes shape #5 in test/xaml/assorted/stroke-thickness-test.html
+
 2008-07-03  Larry Ewing  <lewing@novell.com>
 
 	* geometry.cpp (RectangleGeometry::ComputeBounds): simplify the
