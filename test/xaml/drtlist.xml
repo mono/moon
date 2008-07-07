@@ -896,4 +896,9 @@
 	 masterFile10="../harness/masters/test-stroke-thicknessMaster.png"
 	 captureSpecifier="0,1,10000"
 	 />
+   <Test id="197"
+	inputFile="test-shape-ellipse-matrix.xaml"
+	masterFile10="../harness/masters/test-shape-ellipse-matrixMaster.png"
+	categories="ellipse"
+   />
 </DRTList>

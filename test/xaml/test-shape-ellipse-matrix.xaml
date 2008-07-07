@@ -1,0 +1,192 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+<!-- unspecified StrokeThickness -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" Stretch="None" Canvas.Left="10" Canvas.Top="10" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" Stretch="None" Canvas.Left="30" Canvas.Top="10" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" Stretch="None" Canvas.Left="50" Canvas.Top="10" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="None" Canvas.Left="70" Canvas.Top="10" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" Stretch="Fill" Canvas.Left="110" Canvas.Top="10" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" Stretch="Fill" Canvas.Left="130" Canvas.Top="10" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" Stretch="Fill" Canvas.Left="150" Canvas.Top="10" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Fill" Canvas.Left="170" Canvas.Top="10" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" Stretch="Uniform" Canvas.Left="210" Canvas.Top="10" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" Stretch="Uniform" Canvas.Left="230" Canvas.Top="10" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" Stretch="Uniform" Canvas.Left="250" Canvas.Top="10" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="Uniform" Canvas.Left="270" Canvas.Top="10" Width="10" Height="15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="10" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="10" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="10" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="10" Width="10" Height="15" />
+
+<!-- StrokeThickness="0" -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="0" Stretch="None" Canvas.Left="10" Canvas.Top="50" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="0" Stretch="None" Canvas.Left="30" Canvas.Top="50" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="0" Stretch="None" Canvas.Left="50" Canvas.Top="50" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Stretch="None" Canvas.Left="70" Canvas.Top="50" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="0" Stretch="Fill" Canvas.Left="110" Canvas.Top="50" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="0" Stretch="Fill" Canvas.Left="130" Canvas.Top="50" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="0" Stretch="Fill" Canvas.Left="150" Canvas.Top="50" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Stretch="Fill" Canvas.Left="170" Canvas.Top="50" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="0" Stretch="Uniform" Canvas.Left="210" Canvas.Top="50" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="0" Stretch="Uniform" Canvas.Left="230" Canvas.Top="50" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="0" Stretch="Uniform" Canvas.Left="250" Canvas.Top="50" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Stretch="Uniform" Canvas.Left="270" Canvas.Top="50" Width="10" Height="15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="0" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="50" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="0" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="50" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="0" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="50" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="50" Width="10" Height="15" />
+
+<!-- StrokeThickness smaller than width and height -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="1" Stretch="None" Canvas.Left="10" Canvas.Top="90" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="1" Stretch="None" Canvas.Left="30" Canvas.Top="90" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="1" Stretch="None" Canvas.Left="50" Canvas.Top="90" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="1" Stretch="None" Canvas.Left="70" Canvas.Top="90" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="1" Stretch="Fill" Canvas.Left="110" Canvas.Top="90" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="1" Stretch="Fill" Canvas.Left="130" Canvas.Top="90" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="1" Stretch="Fill" Canvas.Left="150" Canvas.Top="90" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="1" Stretch="Fill" Canvas.Left="170" Canvas.Top="90" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="1" Stretch="Uniform" Canvas.Left="210" Canvas.Top="90" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="1" Stretch="Uniform" Canvas.Left="230" Canvas.Top="90" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="1" Stretch="Uniform" Canvas.Left="250" Canvas.Top="90" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="1" Stretch="Uniform" Canvas.Left="270" Canvas.Top="90" Width="10" Height="15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="1" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="90" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="1" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="90" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="1" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="90" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="1" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="90" Width="10" Height="15" />
+
+<!-- StrokeThickness larger than width (but smaller than height) -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="None" Canvas.Left="10" Canvas.Top="130" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="15" Stretch="None" Canvas.Left="30" Canvas.Top="130" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="15" Stretch="None" Canvas.Left="50" Canvas.Top="130" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="15" Stretch="None" Canvas.Left="70" Canvas.Top="130" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="Fill" Canvas.Left="110" Canvas.Top="130" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="15" Stretch="Fill" Canvas.Left="130" Canvas.Top="130" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="15" Stretch="Fill" Canvas.Left="150" Canvas.Top="130" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="15" Stretch="Fill" Canvas.Left="170" Canvas.Top="130" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="Uniform" Canvas.Left="210" Canvas.Top="130" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="15" Stretch="Uniform" Canvas.Left="230" Canvas.Top="130" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="15" Stretch="Uniform" Canvas.Left="250" Canvas.Top="130" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="15" Stretch="Uniform" Canvas.Left="270" Canvas.Top="130" Width="10" Height="15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="15" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="130" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="15" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="130" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="15" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="130" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="15" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="130" Width="10" Height="15" />
+
+<!-- StrokeThickness larger than both width and height -->
+	<!-- Stretch="None" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="20" Stretch="None" Canvas.Left="10" Canvas.Top="170" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="20" Stretch="None" Canvas.Left="30" Canvas.Top="170" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="20" Stretch="None" Canvas.Left="50" Canvas.Top="170" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="20" Stretch="None" Canvas.Left="70" Canvas.Top="170" Width="10" Height="15" />
+	<!-- Stretch="Fill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="20" Stretch="Fill" Canvas.Left="110" Canvas.Top="170" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="20" Stretch="Fill" Canvas.Left="130" Canvas.Top="170" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="20" Stretch="Fill" Canvas.Left="150" Canvas.Top="170" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="20" Stretch="Fill" Canvas.Left="170" Canvas.Top="170" Width="10" Height="15" />
+	<!-- Stretch="Uniform" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="20" Stretch="Uniform" Canvas.Left="210" Canvas.Top="170" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="20" Stretch="Uniform" Canvas.Left="230" Canvas.Top="170" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="20" Stretch="Uniform" Canvas.Left="250" Canvas.Top="170" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="20" Stretch="Uniform" Canvas.Left="270" Canvas.Top="170" Width="10" Height="15" />
+	<!-- Stretch="UniformToFill" -->
+		<!-- no width, no height -->
+		<Ellipse Fill="#000000" Stroke="#FF0000" StrokeThickness="20" Stretch="UniformToFill" Canvas.Left="310" Canvas.Top="170" />
+		<!-- width only -->
+		<Ellipse Fill="#000000" Stroke="#00FF00" StrokeThickness="20" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="170" Width="10" />
+		<!-- height only -->
+		<Ellipse Fill="#000000" Stroke="#0000FF" StrokeThickness="20" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="170" Height="15" />
+		<!-- width and height -->
+		<Ellipse Fill="#000000" Stroke="#FF00FF" StrokeThickness="20" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="170" Width="10" Height="15" />
+</Canvas>

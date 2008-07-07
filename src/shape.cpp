@@ -247,7 +247,12 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 	 */
 	Stretch stretch = GetStretch ();
 
+	// FIXME this should really be a shape flag or something
 	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
+		/*
+		 * Rectangles and Ellipses are special and they don't need to participate
+		 * in the other stretch logic
+		 */
 		needs_clip = !IsDegenerate () && (stretch == StretchUniformToFill);
 		return shape_bounds;
 	}
@@ -369,14 +374,10 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 	shape_bounds = shape_bounds.Transform (&stretch_transform);
 	
 	if (vh && vw) {
-		if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
-			needs_clip == !IsDegenerate () && (stretch == StretchUniformToFill) && (vh != vw);
-		} else {
-			Rect reduced_bounds = shape_bounds.Intersection (Rect (0, 0, vw->AsDouble (), vh->AsDouble ()));
-			needs_clip = reduced_bounds != shape_bounds;
-			needs_clip = needs_clip && stretch != StretchFill;
-			needs_clip = needs_clip && stretch != StretchUniform;
-		}
+		Rect reduced_bounds = shape_bounds.Intersection (Rect (0, 0, vw->AsDouble (), vh->AsDouble ()));
+		needs_clip = reduced_bounds != shape_bounds;
+		needs_clip = needs_clip && stretch != StretchFill;
+		needs_clip = needs_clip && stretch != StretchUniform;
 	}
 	
 	return shape_bounds;
@@ -1190,18 +1191,43 @@ Rectangle::ComputeShapeBounds (bool logical)
 		return Rect ();
 	}
 
-	double w = GetWidth ();
-	double h = GetHeight ();
+	Rect rect = Rect (0, 0, GetWidth (), GetHeight ());
 
-	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
+	if ((vw && (rect.w <= 0.0)) || (vh && (rect.h <= 0.0))) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
 
-	Rect rect = Rect (0, 0, w, h);
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
-	if (t > w || t > h)
-		rect = rect.GrowBy ( t/2.0, t/2.0);
+	switch (GetStretch ()) {
+	case StretchNone:
+		rect.w = rect.h = 0.0;
+		break;
+	case StretchUniform:
+		rect.w = rect.h = MIN (rect.w, rect.h);
+		break;
+	case StretchUniformToFill:
+		// this gets an rectangle larger than it's dimension, relative
+		// scaling is ok but we need Shape::Draw to clip to it's original size
+		rect.w = rect.h = MAX (rect.w, rect.h);
+		break;
+	case StretchFill:
+		/* nothing needed here.  the assignment of w/h above
+		   is correct for this case. */
+		break;
+	}
+	
+	if (rect.w == 0)
+		rect.x = t *.5;
+	if (rect.h == 0)
+		rect.y = t *.5;
+
+	if (t >= rect.w || t >= rect.h) {
+		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+		rect = rect.GrowBy (t * .5, t * .5);
+	} else {
+		SetShapeFlags (UIElement::SHAPE_NORMAL);
+	}
 
 	return rect;
 }
@@ -1252,13 +1278,12 @@ Rectangle::BuildPath ()
 	// nothing is drawn (nor filled) if no StrokeThickness="0"
 	// unless both Width and Height are specified or when no streching is required
 	double radius_x = 0.0, radius_y = 0.0;
-	bool round = FALSE;
 	Rect rect = Rect (0, 0, GetWidth (), GetHeight ());
 	round = GetRadius (&radius_x, &radius_y);
 
 	switch (stretch) {
 	case StretchNone:
-		rect.w = rect.h = 0.0;
+		rect.w = rect.h = 0;
 		break;
 	case StretchUniform:
 		rect.w = rect.h = MIN (rect.w, rect.h);
@@ -1274,10 +1299,16 @@ Rectangle::BuildPath ()
 		break;
 	}
 	
-	if (rect.w < t || rect.h < t)  {
+	if (rect.w == 0)
+		rect.x = t *.5;
+	if (rect.h == 0)
+		rect.y = t *.5;
+
+	if (t >= rect.w || t >= rect.h) {
+		rect = rect.GrowBy (t * 0.001, t * 0.001);
 		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
 	} else {
-		rect = rect.GrowBy (-t/2, -t/2);
+		rect = rect.GrowBy (-t * 0.5, -t * 0.5);
 		SetShapeFlags (UIElement::SHAPE_NORMAL);
 	}
 

@@ -1,5 +1,12 @@
 2008-07-07  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp (Rectangle::BuildPath): handle some special case
+	degenerates slightly differently.
+
+	Fixes most of test-shape-rectangle-matrix.xaml.
+
+2008-07-07  Larry Ewing  <lewing@novell.com>
+
 	* shape.cpp (Ellipse::BuildPath): a thickness equal to a width
 	degenerates in drawing, use the workaround there too.
 
