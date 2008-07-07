@@ -166,10 +166,7 @@ Shape::SetupLine (cairo_t *cr)
 	if (thickness == 0)
 		return false;
 
-	if (IsDegenerate ())
-		cairo_set_line_width (cr, 1.0);
-	else
-		cairo_set_line_width (cr, thickness);
+	cairo_set_line_width (cr, thickness);
 
 	return SetupDashes (cr, thickness);
 }
@@ -248,6 +245,12 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 	 * NOTE: this code is extremely fragile don't make a change here without
 	 * checking the results of the test harness on with MOON_DRT_CATEGORIES=stretch
 	 */
+	Stretch stretch = GetStretch ();
+
+	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
+		needs_clip = !IsDegenerate () && (stretch == StretchUniformToFill);
+		return shape_bounds;
+	}
 
 	if (Shape::MixedHeightWidth (&vh, &vw)) {
 		return shape_bounds;
@@ -274,7 +277,6 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 		return shape_bounds;
 	}
 
-	Stretch stretch = GetStretch ();
 	if (stretch != StretchNone) {
 		Rect logical_bounds = ComputeShapeBounds (true);
 
@@ -385,14 +387,7 @@ Shape::Stroke (cairo_t *cr, bool do_op)
 {
 	if (do_op) {
 		stroke->SetupBrush (cr, this);
-		if (IsDegenerate ())
-			cairo_fill_preserve (cr);
-#if DONT_STROKE_DEGENERATES		
-		else 
-			cairo_stroke (cr);
-#else
 		cairo_stroke (cr);
-#endif
 	}
 }
 
@@ -675,7 +670,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	else if (args->property == Shape::StrokeProperty) {
 		Brush *new_stroke = args->new_value ? args->new_value->AsBrush () : NULL;
-		
+
 		if (!stroke || !new_stroke) {
 			// If the stroke changes from null to
 			// <something> or <something> to null, then
@@ -683,7 +678,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 			// (based on stroke thickness) to start
 			// painting.
 			InvalidatePathCache ();
-		} else
+               } else
 			InvalidateSurfaceCache ();
 		
 		stroke = new_stroke;
@@ -701,7 +696,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 		   || args->property == Shape::StrokeMiterLimitProperty
 		   || args->property == Shape::StrokeStartLineCapProperty) {
 		UpdateBounds ();
-		InvalidateSurfaceCache ();
+		InvalidatePathCache ();
 	}
 	
 	Invalidate ();
@@ -1049,26 +1044,25 @@ Ellipse::Ellipse ()
 Rect
 Ellipse::ComputeShapeBounds (bool logical)
 {
-	if (IsEmpty ())
-		return Rect ();
+	Value *vh, *vw;
 
-	Value *height, *width;
-	
-	if (Shape::MixedHeightWidth (&height, &width))
-		return Rect ();
+	if (logical)
+		return extents;
 
-	if (!height && !width && !logical) {
-		double t = GetStrokeThickness ();
-		return Rect (0, 0, t, t);
+	if (Shape::MixedHeightWidth (&vh, &vw)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return Rect ();
 	}
 
-	double h = GetHeight ();
 	double w = GetWidth ();
-	
-	if ((w < 0.0) || (h <= 0.0))
+	double h = GetHeight ();
+	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
-	
-	return Rect (0, 0, w, h);
+	}
+
+	double t = IsStroked () ? GetStrokeThickness () : 0.0;
+	return Rect (0, 0, MAX (w, t), MAX (h, t));
 }
 
 // The Ellipse shape can be drawn while ignoring properties:
@@ -1102,84 +1096,41 @@ Ellipse::BuildPath ()
 		return;
 
 	Stretch stretch = GetStretch ();
-	double t = GetStrokeThickness ();
-	double x = 0.0;
-	double y = 0.0;
-	double w = 0.0;
-	double h = 0.0;
-	double t2;
+	double t = IsStroked () ? GetStrokeThickness () : 0.0;
+	Rect rect = Rect (0.0, 0.0, GetWidth (), GetHeight ());
 
-	// if both width and height are missing then the width and height are equal (on screen) to the thickness
-	if ((!width && !height) || (stretch == StretchNone)) {
-		// don't make invisible points
-		x = 0.5;
-		if (t <= 1.0) {
-			if (t > 0.0)
-				y = 0.0;
-			w = h = 0.5;
-		} else {
-			w = h = (t - 1.0);
-		}
-
-		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
-		goto shape;
-	}
-
-	w = width->AsDouble ();
-	h = height->AsDouble ();
-
-	if ((w < 0.0) || (h < 0.0)) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
+	if (rect.w < 0.0 || rect.h < 0.0) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);		
 		return;
 	}
 
-	t2 = t * 2.0;
-	if ((t2 > w) || (t2 > h)) {
-		if (w < t)
-			w = t;
-		if (h < t)
-			h = t;
-		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
-	} else {
-		double half = t / 2;
-		x = y = half;
-		w -= t;
-		h -= t;
-		SetShapeFlags (UIElement::SHAPE_NORMAL);
-	}
-
 	switch (stretch) {
+	case StretchNone:
+		rect.w = rect.h = 0.0;
+		break;
 	case StretchUniform:
-		w = h = (w < h) ? w : h;
+		rect.w = rect.h = (rect.w < rect.h) ? rect.w : rect.h;
 		break;
 	case StretchUniformToFill:
-		// this gets an ellipse larger than it's dimension, relative
-		// scaling is ok but we need Shape::Draw to clip to it's original size
-		w = h = (w > h) ? w : h;
+		rect.w = rect.h = (rect.w > rect.h) ? rect.w : rect.h;
 		break;
 	case StretchFill:
 		/* nothing needed here.  the assignment of w/h above
 		   is correct for this case. */
 		break;
-	case StretchNone:
-		/* not reached */
-		break;
 	}
 
-shape:
-	if (IsDegenerate ()) {
-		/*
-		 * XXX this appears to be the closest we can easily get to
-		 * the windows logic
-		 */
-		double radius = MIN (w, h) / 2;
-		path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
-		moon_rounded_rectangle (path, x, y, w, h, radius, radius);
-	} else {
-		path = moon_path_renew (path, MOON_PATH_ELLIPSE_LENGTH);
-		moon_ellipse (path, x, y, w, h);
-	}
-	// note: both moon_rounded_rectangle and moon_ellipse close the path
+	if (rect.w < t || rect.h < t){
+		rect.w = MAX (rect.w, t + t * 0.001);
+		rect.h = MAX (rect.h, t + t * 0.001);
+		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+	} else
+		SetShapeFlags (UIElement::SHAPE_NORMAL);
+
+	rect = rect.GrowBy ( -t/2, -t/2);
+
+	path = moon_path_renew (path, MOON_PATH_ELLIPSE_LENGTH);
+	moon_ellipse (path, rect.x, rect.y, rect.w, rect.h);
 }
 
 Rect
@@ -1233,16 +1184,26 @@ Rectangle::ComputeShapeBounds (bool logical)
 	if (logical)
 		return extents;
 
-	if (IsEmpty ())
+	Value *vh, *vw;
+	if (Shape::MixedHeightWidth (&vh, &vw)) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
-	
-	double h = GetHeight ();
+	}
+
 	double w = GetWidth ();
-	
-	if ((w <= 0.0) || (h <= 0.0))
+	double h = GetHeight ();
+
+	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
-	
-	return Rect (0, 0, w, h);
+	}
+
+	Rect rect = Rect (0, 0, w, h);
+	double t = IsStroked () ? GetStrokeThickness () : 0.0;
+	if (t > w || t > h)
+		rect = rect.GrowBy ( t/2.0, t/2.0);
+
+	return rect;
 }
 
 // The Rectangle shape can be drawn while ignoring properties:
@@ -1290,136 +1251,38 @@ Rectangle::BuildPath ()
 	
 	// nothing is drawn (nor filled) if no StrokeThickness="0"
 	// unless both Width and Height are specified or when no streching is required
-	if ((t == 0.0) && (!width || !height || (stretch == StretchNone))) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
-	}
-
-	double x = 0.5, y = 0.5;
-	double w, h;
-	double radius_x, radius_y;
-	bool compute_origin = false;
+	double radius_x = 0.0, radius_y = 0.0;
 	bool round = FALSE;
-
-	// if both width and height are missing then the width and height are equal (on screen) to the thickness
-	if ((!width && !height) || (stretch == StretchNone)) {
-		// don't make invisible points
-		x = 0.5;
-		if (t <= 1.0) {
-			if (t > 0.0)
-				y = 0.0;
-			w = h = 0.5;
-		} else {
-			w = h = (t - 1.0);
-		}
-
-		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
-		// note: in this case the Radius[X|Y] properties are ignored
-		goto shape;
-	}
-
-	w = width->AsDouble ();
-	h = height->AsDouble ();
-
-	if ((w < 0.0) || (h < 0.0)) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return;
-	}
-
-	// degenerate cases are handled differently for round-corner rectangles
+	Rect rect = Rect (0, 0, GetWidth (), GetHeight ());
 	round = GetRadius (&radius_x, &radius_y);
-
-	// there are two kinds of degenerations 
-	// (a) the thickness is larger (or equal) to the width or height
-	if ((t > w) || (t > h)) {
-		// in this case we must adjust the values to make a (much) larger rectangle
-		x -= t / 2.0;
-		y -= t / 2.0 - 1.0;
-		switch (stretch) {
-		case StretchUniform:
-			w = h = ((w < h) ? w : h) + t;
-			if (round)
-				radius_x = radius_y = w / 3;	// FIXME - not quite correct
-			break;
-		case StretchUniformToFill:
-			w = h = ((w > h) ? w : h) + t - 1;
-			if (round)
-				radius_x = radius_y = w / 3;	// FIXME - not quite correct
-			break;
-		default:
-			w += (t - 1.0);
-			h += (t - 1.0);
-			if (round)
-				radius_x = radius_y = t / 2;
-			break;
-		}
-		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
-		goto shape;
-	} else {
-		// (b) the thickness is larger (or equal) to half the width or half the height
-		double t2 = t * 2.0;
-		if ((t2 >= w) || (t2 >= h)) {
-			x = 0.5;
-			if (stretch == StretchUniform) {
-				w = h = (w < h) ? w : h;
-			} else {
-				w -= 1.0;
-				h -= 1.0;
-				if (round) {
-					radius_x = w;
-					radius_y = h;
-				}
-			}
-			SetShapeFlags (UIElement::SHAPE_DEGENERATE);
-			goto shape;
-		}
-	}
-
-	// both Width and Height are specified
-	if (stretch != StretchNone) {
-		compute_origin = true;
-		if (t > w - t) {
-			t = w / 2.0;
-		}
-		w -= t;
-		if (t > h - t) {
-			t = h / 2.0;
-		}
-		h -= t;
-	}
 
 	switch (stretch) {
 	case StretchNone:
+		rect.w = rect.h = 0.0;
 		break;
 	case StretchUniform:
-		w = h = (w < h) ? w : h;
+		rect.w = rect.h = MIN (rect.w, rect.h);
 		break;
 	case StretchUniformToFill:
 		// this gets an rectangle larger than it's dimension, relative
 		// scaling is ok but we need Shape::Draw to clip to it's original size
-		w = h = (w > h) ? w : h;
+		rect.w = rect.h = MAX (rect.w, rect.h);
 		break;
 	case StretchFill:
 		/* nothing needed here.  the assignment of w/h above
 		   is correct for this case. */
 		break;
 	}
-
-	if (compute_origin && (!IsStroked () || (t != 1.0)))
-		x = y = t / 2.0;
-
-	SetShapeFlags (UIElement::SHAPE_NORMAL);
-
-shape:
-	// rounded-corner rectangle ?
-	if (round) {
-		AddShapeFlags (UIElement::SHAPE_RADII);
-		path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
-		moon_rounded_rectangle (path, x, y, w, h, radius_x, radius_y);
+	
+	if (rect.w < t || rect.h < t)  {
+		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
 	} else {
-		path = moon_path_renew (path, MOON_PATH_RECTANGLE_LENGTH);
-		moon_rectangle (path, x, y, w, h);
+		rect = rect.GrowBy (-t/2, -t/2);
+		SetShapeFlags (UIElement::SHAPE_NORMAL);
 	}
+
+	path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
+	moon_rounded_rectangle (path, rect.x, rect.y, rect.w, rect.h, radius_x, radius_y);
 }
 
 void
@@ -2402,7 +2265,7 @@ Path::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 	
 	double w = vw ? vw->AsDouble () : 0.0;
 	double h = vh ? vh->AsDouble () : 0.0;
-	
+
 	if ((h < 0.0) || (w < 0.0)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return shape_bounds;

@@ -170,27 +170,32 @@
    <Test id="38"
 	inputFile="test-path-ellipse-renderxorigin.xaml"
 	masterFile10="../harness/masters/test-path-ellipse-renderxoriginMaster.png"
+	categories="ellipse"
    />
    <Test id="39"
 	inputFile="test-path-ellipse-stretch.xaml"
 	masterFile10="../harness/masters/test-path-ellipse-stretchMaster.png"
-        categories="stretch"
+        categories="stretch,ellipse"
    />
    <Test id="40"
 	inputFile="test-path-ellipse-stroke-2.xaml"
 	masterFile10="../harness/masters/test-path-ellipse-stroke-2Master.png"
+	categories="ellipse"
    />
    <Test id="41"
 	inputFile="test-path-ellipse-stroke-3.xaml"
 	masterFile10="../harness/masters/test-path-ellipse-stroke-3Master.png"
+	categories="ellipse"
    />
    <Test id="42"
 	inputFile="test-path-ellipse-stroke.xaml"
 	masterFile10="../harness/masters/test-path-ellipse-strokeMaster.png"
+	categories="ellipse"
    />
    <Test id="43"
 	inputFile="test-path-ellipse.xaml"
 	masterFile10="../harness/masters/test-path-ellipseMaster.png"
+	categories="ellipse"
    />
    <Test id="44"
 	inputFile="test-path-figure-collection.xaml"
@@ -203,6 +208,7 @@
    <Test id="46"
 	inputFile="test-path-group-ellipse.xaml"
 	masterFile10="../harness/masters/test-path-group-ellipseMaster.png"
+	categories="ellipse"
    />
    <Test id="47"
 	inputFile="test-path-group-empty.xaml"
@@ -221,6 +227,7 @@
    <Test id="50"
 	inputFile="test-path-group-stroke.xaml"
 	masterFile10="../harness/masters/test-path-group-strokeMaster.png"
+	categories="ellipse"
    />
    <Test id="51"
 	inputFile="test-path-group-torture.xaml"
@@ -362,23 +369,27 @@
    <Test id="83"
 	inputFile="test-shape-ellipse-renderxorigin.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-renderxoriginMaster.png"
+	categories="ellipse"
    />
    <Test id="84"
 	inputFile="test-shape-ellipse-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-stretchMaster.png"
-        categories="stretch"
+        categories="stretch,ellipse"
    />
    <Test id="85"
 	inputFile="test-shape-ellipse-stroke-2.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-stroke-2Master.png"
+	categories="ellipse"
    />
    <Test id="86"
 	inputFile="test-shape-ellipse-stroke.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-strokeMaster.png"
+	categories="ellipse"
    />
    <Test id="87"
 	inputFile="test-shape-ellipse.xaml"
 	masterFile10="../harness/masters/test-shape-ellipseMaster.png"
+	categories="ellipse"
    />
    <Test id="88"
 	inputFile="test-shape-line-renderxorigin.xaml"
@@ -404,6 +415,7 @@
    <Test id="93"
 	inputFile="test-shape-negative.xaml"
 	masterFile10="../harness/masters/test-shape-negativeMaster.png"
+	categories="ellipse"
    />
    <Test id="94"
 	inputFile="test-shape-opacity.xaml"

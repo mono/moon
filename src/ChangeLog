@@ -1,3 +1,14 @@
+2008-07-03  Larry Ewing  <lewing@novell.com>
+
+	* geometry.cpp (RectangleGeometry::ComputeBounds): simplify the
+	rectangle geometry computation.  It matches in the sl
+	implementation now.
+
+	* shape.cpp: simplify rectangle and ellipse drawing and bounds so
+	that they match the sl implementation and deal with degenerate
+	cases better.  Try to avoid setting up a clip rectangle when it
+	isn't needed.
+
 2008-07-07  Chris Toshok  <toshok@ximian.com>
 
 	[ fixes the media element not showing up in flowers-for-you, bug

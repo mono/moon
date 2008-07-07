@@ -677,35 +677,13 @@ void
 RectangleGeometry::Build (Path *shape)
 {
 	Rect *rect = GetRect ();
-	
 	if (!rect)
 		return;
 	
-	double half_thick = 0.0;
-	// shape is optional (e.g. not available for clipping)
-	if (shape) {
-		double thick = shape->GetStrokeThickness ();
-		if ((thick > rect->w) || (thick > rect->h)) {
-			half_thick = thick / 2.0;
-			rect->x -= half_thick;
-			rect->y -= half_thick;
-			rect->w += thick;
-			rect->h += thick;
-/* FIXME
- * - this doesn't match MS-SL if mixed with some "normal" (non-degenerated) geometry
- */
-			shape->SetShapeFlags (UIElement::SHAPE_DEGENERATE);
-		}
-	}
-
-	double radius_x, radius_y;
-	if (GetRadius (&radius_x, &radius_y)) {
-		path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
-		moon_rounded_rectangle (path, rect->x, rect->y, rect->w, rect->h, radius_x + half_thick, radius_y + half_thick);
-	} else {
-		path = moon_path_renew (path, MOON_PATH_RECTANGLE_LENGTH);
-		moon_rectangle (path, rect->x, rect->y, rect->w, rect->h);
-	}
+	double radius_x = 0, radius_y = 0;
+	GetRadius (&radius_x, &radius_y);
+	path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
+	moon_rounded_rectangle (path, rect->x, rect->y, rect->w, rect->h, radius_x, radius_y);
 }
 
 Rect
@@ -718,19 +696,14 @@ RectangleGeometry::ComputeBounds (Path *path, bool logical)
 		return Rect (0.0, 0.0, 0.0, 0.0);
 	
 	double thickness;
-	if (path && !logical)
-		thickness = path->GetStrokeThickness ();
-	else
+	if (path && !logical) {
+		thickness = path->IsStroked () ? path->GetStrokeThickness () : 0;
+	} else
 		thickness = 0.0;
-	
-	// UIElement::SHAPE_DEGENERATE flags may be unset at this stage
-	if ((thickness > rect->w) || (thickness > rect->h))
-		thickness += 2.0;
-	
-	if (! logical)
-		bounds = rect->GrowBy (thickness / 2.0);
-	else
-		bounds = *rect;
+
+	//bounds = *rect;
+	bounds = rect->GrowBy (thickness / 2.0);
+
 	
 	Transform *transform = GetTransform ();
 	if (transform) {
