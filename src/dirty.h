@@ -1,10 +1,13 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * dirty.h: 
+ *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
  */
 
 #ifndef __DIRTY_H__
