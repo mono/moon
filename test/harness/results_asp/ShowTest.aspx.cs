@@ -22,6 +22,7 @@ namespace moonlight
 		string master = string.Empty;
 		string rendered = string.Empty;
 		string info = string.Empty;
+		string name = string.Empty;
 		
 		private void Page_Load(object sender, EventArgs e)
 		{
@@ -49,7 +50,7 @@ namespace moonlight
 			dbcon.Open();
 			IDbCommand dbcmd = dbcon.CreateCommand();
 			// select runs.status, testcases.masterfile, runs.renderedfile from runs,testcases where testcases.id=1 and runs.revision=1001 and runs.testcaseid=testcases.id;
-			dbcmd.CommandText = string.Format("select results.status, testcases.masterfile, results.renderedfile, results.info from results,testcases where results.testcaseid=testcases.id and testcases.id={0} and results.runtime='{1}';",testid, runtime);
+			dbcmd.CommandText = string.Format("select results.status, testcases.masterfile, results.renderedfile, results.info, testcases.name from results,testcases where results.testcaseid=testcases.id and testcases.id={0} and results.runtime='{1}';",testid, runtime);
 			
 			//Console.WriteLine(dbcmd.CommandText);
 			
@@ -60,7 +61,9 @@ namespace moonlight
 			master = reader.GetString(1);
 			rendered = reader.GetString(2);
 			info = reader.GetString(3);
+			name = reader.GetString(4);
 						
+			tcTestName.Text = name;
 			tcBuild.Text = runtime;
 			tcTestid.Text = testid;
 			tcInfo.Text = info;

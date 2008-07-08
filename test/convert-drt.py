@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import xml.dom.minidom
 import getopt
-import sys
+import sys,os
 
 ##########################
 # Important: This script is to be run from trunk/moon/test
@@ -37,8 +37,9 @@ class drtTest:
 		x += '\t\t<featureName="%s"/>\n' % self.feature
 		x += '\t</Test>'
 		return x
+
 def usage():
-	print "\nUsage: convert-drt.py [--missing]\n"
+	print "\nUsage: convert-drt.py [--missing] [drtlist]\n"
 	print " --missing 	Creates a drtlist.txt of only test with missing master files"
 
 def main():
@@ -56,7 +57,6 @@ def main():
 		print str(err)
 		sys.exit(1)
 
-
 	for o, a in opts:
 		if o in ('-h','--help'):
 			usage()
@@ -64,7 +64,16 @@ def main():
 		if o in ('-m','--missing'):
 			missing = True
 
+	filename = "drtlist.xml"
+	if len(args) > 0:
+		filename = args[0]
+
+
 			
+	filename = os.path.join("xaml",filename)
+
+	print "drtlist = %s" % filename
+
 	doc = xml.dom.minidom.parse("xaml/drtlist.xml")
 	drtnode = doc.childNodes[0]
 

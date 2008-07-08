@@ -5,7 +5,7 @@ CREATE TABLE builds (
 
 CREATE TABLE testcases (
 	id INTEGER PRIMARY KEY,
-	desc VARCHAR(255),
+	name VARCHAR(255),
 	masterfile VARCHAR(255)
 );
 

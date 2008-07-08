@@ -65,6 +65,8 @@ namespace MoonlightTests {
 		{
 			AddTags(test);
 			string info = string.Empty;
+			
+			string testname = test.InputFileName.Split('.')[0];
 			string masterfile = Path.Combine(masters, Path.GetFileName(test.MasterFile));
 			string renderfile = Path.Combine(runtime, Path.GetFileName(test.ResultFile));
 			
@@ -89,7 +91,7 @@ namespace MoonlightTests {
 			}
 			
 			
-			string query = string.Format("INSERT INTO testcases VALUES ('{0}','{1}','{2}');",test.Id, string.Empty, masterfile);
+			string query = string.Format("INSERT INTO testcases VALUES ('{0}','{1}','{2}');",test.Id, testname, masterfile);
 			execnonquery(query);
 			
 			switch(result)

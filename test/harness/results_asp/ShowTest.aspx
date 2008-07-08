@@ -31,6 +31,12 @@
 				</asp:TableCell>
 			</asp:TableRow>
 			<asp:TableRow>
+				<asp:TableCell>Test Name:&nbsp;&nbsp;&nbsp;
+				</asp:TableCell>
+				<asp:TableCell id="tcTestName" runat="server">
+				</asp:TableCell>
+			</asp:TableRow>			
+			<asp:TableRow>
 				<asp:TableCell>Build:
 				</asp:TableCell>
 				<asp:TableCell id="tcBuild" runat="server">

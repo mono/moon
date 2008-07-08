@@ -20,6 +20,7 @@ namespace moonlight
 	{
 		protected System.Web.UI.HtmlControls.HtmlForm form1;
 		protected System.Web.UI.WebControls.TableCell tcTestid;
+		protected System.Web.UI.WebControls.TableCell tcTestName;
 		protected System.Web.UI.WebControls.TableCell tcBuild;
 		protected System.Web.UI.WebControls.TableCell tcStatus;
 		protected System.Web.UI.WebControls.TableCell tcInfo;
