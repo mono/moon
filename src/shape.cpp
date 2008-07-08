@@ -553,6 +553,14 @@ Shape::ComputeShapeBounds (bool logical)
 	cairo_t *cr = measuring_context_create ();
 	cairo_set_line_width (cr, thickness);
 
+	if (thickness > 0.0) {
+		//FIXME: still not 100% precise since it could be different from the end cap
+		PenLineCap cap = GetStrokeStartLineCap ();
+		if (cap == PenLineCapFlat)
+			cap = GetStrokeEndLineCap ();
+		cairo_set_line_cap (cr, convert_line_cap (cap));
+	}
+
 	cairo_append_path (cr, &path->cairo);
 	
 	double x1, y1, x2, y2;

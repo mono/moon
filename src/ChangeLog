@@ -1,3 +1,8 @@
+2008-07-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: Consider PenLineCap when computing bounds using
+	cairo. Fix (even if it was passing) some corners in DRT test #7
+
 2008-07-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.h: Reorganized a bit.
