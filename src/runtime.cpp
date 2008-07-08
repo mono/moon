@@ -137,29 +137,6 @@ runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual)
 	return cr;
 }
 
-void
-Surface::CreateSimilarSurface ()
-{
-	if (widget == NULL || widget->window == NULL)
-		return;
-	
-	cairo_t *ctx = runtime_cairo_create (widget->window, gdk_drawable_get_visual (widget->window));
-	
-	if (cairo_xlib)
-		cairo_destroy (cairo_xlib);
-	
-	cairo_surface_t *xlib_surface = cairo_surface_create_similar (
-		cairo_get_target (ctx), 
-		CAIRO_CONTENT_COLOR_ALPHA,
-		width, height);
-	
-	cairo_destroy (ctx);
-	
-	cairo_xlib = cairo_create (xlib_surface);
-	cairo_surface_destroy (xlib_surface);
-}
-
-
 Surface::Surface(int w, int h, bool windowless)
 {
 	main_thread = pthread_self ();
@@ -169,13 +146,6 @@ Surface::Surface(int w, int h, bool windowless)
 	downloaders = NULL;
 	width = w;
 	height = h;
-	buffer = NULL;
-	pixbuf = NULL;
-	using_cairo_xlib_surface = 0;
-	cairo_buffer_surface = NULL;
-	cairo_buffer = NULL;
-	cairo_xlib = NULL;
-	cairo = NULL;
 	transparent = false;
 	background_color = NULL;
 	cursor = MouseCursorDefault;
@@ -193,8 +163,6 @@ Surface::Surface(int w, int h, bool windowless)
 		widget_normal = NULL;
 		widget = NULL;
 	}
-	
-	buffer = NULL;
 	
 	normal_width = width;
 	normal_height = height;
@@ -267,8 +235,6 @@ Surface::~Surface ()
 		toplevel->unref ();
 	}
 	
-	g_free (buffer);
-	
 #if DEBUG
 	if (debug_selected_element) {
 		debug_selected_element->unref ();
@@ -282,9 +248,6 @@ Surface::~Surface ()
 	delete input_list;
 	
 	g_free (source_location);
-	
-	cairo_destroy (cairo_buffer);
-	cairo_surface_destroy (cairo_buffer_surface);
 	
 	if (widget_fullscreen) {
 		g_signal_handlers_disconnect_matched (widget_fullscreen, G_SIGNAL_MATCH_DATA,
@@ -772,24 +735,6 @@ Surface::EmitError (ErrorEventArgs *args)
 void
 Surface::Realloc ()
 {
-	if (buffer)
-		free (buffer);
-
-	int size = width * height * 4;
-	buffer = (unsigned char *) g_malloc (size);
-	
-	cairo_buffer_surface = cairo_image_surface_create_for_data (
-		buffer, CAIRO_FORMAT_ARGB32, width, height, width * 4);
-	
-	cairo_buffer = cairo_create (cairo_buffer_surface);
-	
-	if (cairo_xlib == NULL) {
-		cairo = cairo_buffer;
-	} else {
-		CreateSimilarSurface ();
-		cairo = cairo_xlib;
-	}
-
 	if (toplevel)
 		toplevel->UpdateBounds();
 }
@@ -1080,9 +1025,6 @@ Surface::realized_callback (GtkWidget *widget, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	s->CreateSimilarSurface ();
-	s->cairo = s->cairo_xlib;
-
 #ifdef USE_XRANDR
 #if INTEL_DRIVERS_STOP_SUCKING
 	// apparently the i965 drivers blank external screens when
@@ -1118,12 +1060,6 @@ Surface::unrealized_callback (GtkWidget *widget, gpointer data)
 {
 	Surface *s = (Surface *) data;
 
-	if (s->cairo_xlib) {
-		cairo_destroy (s->cairo_xlib);
-		s->cairo_xlib = NULL;
-	}
-
-	s->cairo = s->cairo_buffer;
 	s->time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, s);
 	s->time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, s);
 	return true;
@@ -1140,18 +1076,6 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 #if TIME_REDRAW
 	STARTTIMER (expose, "redraw");
 #endif
-	cairo = cairo_xlib;
-
-	if (cairo) {
-		//
-		// BIG DEBUG BLOB
-		// 
-		if (cairo_status (cairo) != CAIRO_STATUS_SUCCESS){
-			printf ("expose event: the cairo context has an error condition and refuses to paint: %s\n", 
-				cairo_status_to_string (cairo_status (cairo)));
-		}
-	}
-
 	if (cache_size_multiplier == -1)
 		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
 
@@ -1528,17 +1452,9 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 
 		gdk_event_get_coords (event, &x, &y);
 
-		cairo_t *ctx = cairo;
-		bool destroy_ctx = false;
-		if (ctx == NULL) {
-			// this will happen in the windowless case
-			ctx = measuring_context_create ();
-			destroy_ctx = true;
-		}
-
+		cairo_t *ctx = measuring_context_create ();
 		toplevel->HitTest (ctx, x, y, new_input_list);
 		
-
 		// for 2 lists:
 		//   l1:  [a1, a2, a3, a4, ... ]
 		//   l2:  [b1, b2, b3, b4, ... ]
@@ -1598,8 +1514,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			}
 		}
 
-		if (destroy_ctx)
-			measuring_context_destroy (ctx);
+		measuring_context_destroy (ctx);
 
 		delete input_list;
 		input_list = new_input_list;

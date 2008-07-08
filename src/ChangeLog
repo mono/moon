@@ -1,3 +1,8 @@
+2008-07-08  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp, runtime.h: remove a bunch of code rot relating to
+	temporary cairo surfaces that is no longer used.
+
 2008-07-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: Consider PenLineCap when computing bounds using

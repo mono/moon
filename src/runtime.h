@@ -99,30 +99,7 @@ class Surface : public EventObject {
 	// otherwise normal size.
 	int width, height;
 	
-	// The data lives here
-	unsigned char *buffer;
-	
-	// The above buffer, as a pixbuf, for the software mode
-	GdkPixbuf *pixbuf;
-	
-	bool using_cairo_xlib_surface;
-	
-	cairo_surface_t *cairo_buffer_surface;
-	cairo_t         *cairo_buffer;
-	cairo_t         *cairo_xlib;
-	
-	//
-	// This is what code uses, and its equal to either:
-	//    cairo_buffer: when the widget has not been realized
-	//    cairo_xlib:   when the widget has been realized
-	//
-	cairo_t *cairo;		
-	
-	// The pixmap used for the backing storage for xlib_surface
-	GdkPixmap *pixmap;
-	
 	bool transparent;
-	
 	Color *background_color;
 	
 	// The current widget we are drawing to. If in windowless
