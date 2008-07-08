@@ -128,7 +128,7 @@ namespace MoonlightTests {
 
 			reports.ForEach (delegate (IReport report) { report.EndRun (); });
 
-			return 0;
+			return FailedTests.Count;
 		}
 
 		private void TestBegin (Test test)

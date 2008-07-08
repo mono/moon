@@ -1,3 +1,10 @@
+2008-07-08  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/TestRun.cs: Return the number of tests that failed.
+	* test-runner/Makefile.am: Add the regression report template
+	* test-runner/ComparisonReport.cs: Create a text file if there are
+	regressions listing each regression.
+
 2008-06-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* agviewer/agviewer.cpp: Log a message when starting a test, and when

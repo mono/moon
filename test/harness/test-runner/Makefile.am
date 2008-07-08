@@ -33,7 +33,8 @@ test_runner_sources = 		\
 
 test_runner_resources = 				\
 	/resource:$(srcdir)/html_template.html		\
-	/resource:$(srcdir)/comparison_report.html
+	/resource:$(srcdir)/comparison_report.html	\
+	/resource:$(srcdir)/regression_report.txt
 
 logging_server_sources =	\
 	IDbusService.cs		\

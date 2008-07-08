@@ -85,6 +85,7 @@ namespace MoonlightTests {
 		{
 			BuildCompleteTestRunsList ();
 			WriteHtml ();
+			WriteRegressionsReport ();
 		}
 
 		public void Executing (Test test)
@@ -241,6 +242,32 @@ namespace MoonlightTests {
 
 			using (StreamWriter writer = new StreamWriter ("comparison_report.html", false)) {
 				writer.Write (html);
+			}
+		}
+
+		private void WriteRegressionsReport ()
+		{
+			bool regression_found = false;
+			StringBuilder report_body = new StringBuilder ();
+
+			foreach (TestCompareData tcd in compare_data) {
+				if (tcd.CurrentResult != TestResult.Fail || tcd.PreviousResult == TestResult.Fail)
+					continue;
+
+				regression_found = true;
+				report_body.AppendLine (Path.GetFileName (tcd.InputFile));
+			}
+
+			if (!regression_found)
+				return;
+			
+			StreamReader reader = new StreamReader (Assembly.GetExecutingAssembly ().GetManifestResourceStream ("regression_report.txt"));
+			string report = reader.ReadToEnd ();
+
+			report = report.Replace ("$REGRESSION_LIST", report_body.ToString ());
+
+			using (StreamWriter writer = new StreamWriter ("regression_report.txt", false)) {
+				writer.Write (report);
 			}
 		}
 
