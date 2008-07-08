@@ -1,3 +1,8 @@
+2008-07-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Always do a move after closing a path. Fix DRT test
+	#138 (even if it was passing too!) for a bad (extra) arc.
+
 2008-07-08  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp, runtime.h: remove a bunch of code rot relating to

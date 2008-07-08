@@ -2119,6 +2119,7 @@ geometry_from_str (const char *str)
 		case 'Z':
 			moon_line_to (path, start.x, start.y);
 			moon_close_path (path);
+			moon_move_to (path, start.x, start.y);
 
 			cp.x = start.x;
 			cp.y = start.y;
