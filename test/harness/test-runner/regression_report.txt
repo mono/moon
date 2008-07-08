@@ -1,0 +1,6 @@
+
+The following tests have regressed in the moonlight tests:
+
+$REGRESSION_LIST
+
+For more information please look at the comparison report:
