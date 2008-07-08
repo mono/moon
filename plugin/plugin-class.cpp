@@ -1503,8 +1503,8 @@ MoonlightObject::HasProperty (NPIdentifier name)
 bool
 MoonlightObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
-	THROW_JS_EXCEPTION ("AG_E_RUNTIME_GETVALUE");
 	NULL_TO_NPVARIANT (*result);
+	THROW_JS_EXCEPTION ("AG_E_RUNTIME_GETVALUE");
 	return true;
 }
 
@@ -1881,10 +1881,10 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 			g_free (object_type);
 			return true;
 		} else {
-			THROW_JS_EXCEPTION ("createObject");
-
 			NULL_TO_NPVARIANT (*result);
 			g_free (object_type);
+
+			THROW_JS_EXCEPTION ("createObject");
 			return true;
 		}
 	}
@@ -2723,13 +2723,11 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		name[0] = toupper(name[0]);
 
 		EventListenerProxy *proxy = new EventListenerProxy (instance, name, &args[1]);
-		
 		int token = proxy->AddHandler (dob);
+		g_free (name);
 		
 		if (token == -1)
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_ADDEVENT");
-
-		g_free (name);
 
 		INT32_TO_NPVARIANT (token, *result);
 		return true;

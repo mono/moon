@@ -1,3 +1,8 @@
+2008-07-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: Make sure we free (or nullify) before calling
+	THROW_JS_EXCEPTION
+
 2008-07-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mono.cpp: Fixed includes.
