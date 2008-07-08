@@ -309,17 +309,19 @@ marker_callback (MediaClosure *closure)
 }
 
 class MarkerNode : public List::Node {
-	public:
-		TimelineMarker *marker;
-		MarkerNode (TimelineMarker *marker) { this->marker = marker; this->marker->ref (); }
-		virtual ~MarkerNode () { this->marker->unref (); }
+ public:
+	TimelineMarker *marker;
+	MarkerNode (TimelineMarker *marker) { this->marker = marker; this->marker->ref (); }
+	virtual ~MarkerNode () { this->marker->unref (); }
 };
 
 void
 MediaElement::AddStreamedMarker (TimelineMarker *marker)
 {	
-	d (printf ("MediaElement::AddStreamedMarker (): got marker %s, %s, %llu = %llu ms\n", marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ())));
-
+	d(printf ("MediaElement::AddStreamedMarker (): got marker %s, %s, %llu = %llu ms\n",
+		  marker->GetText (), marker->GetType (), marker->GetTime (),
+		  MilliSeconds_FromPts (marker->GetTime ())));
+	
 	pending_streamed_markers->Push (new MarkerNode (marker));
 	
 	AddTickCallSafe (AddStreamedMarkersCallback);
@@ -337,7 +339,7 @@ MediaElement::AddStreamedMarkers ()
 {
 	MarkerNode *node;
 	
-	d (printf ("MediaElement::AddStreamedMarkers ()\n"));
+	d(printf ("MediaElement::AddStreamedMarkers ()\n"));
 	
 	if (streamed_markers == NULL)
 		streamed_markers = new TimelineMarkerCollection ();
@@ -1362,7 +1364,8 @@ MediaElement::DownloaderFailed (EventArgs *args)
 void
 MediaElement::DownloaderComplete ()
 {
-	d(printf ("MediaElement::DownloaderComplete (), downloader: %d, state: %s, previous state: %s\n", GET_OBJ_ID (downloader), GetStateName (state), GetStateName (prev_state)));
+	d(printf ("MediaElement::DownloaderComplete (), downloader: %d, state: %s, previous state: %s\n",
+		  GET_OBJ_ID (downloader), GetStateName (state), GetStateName (prev_state)));
 	
 	flags |= DownloadComplete;
 	
