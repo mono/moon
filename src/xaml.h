@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * xaml.h: xaml parser
  *
@@ -7,7 +8,6 @@
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
  */
 
 #ifndef __MOON_XAML_H__
@@ -20,38 +20,14 @@
 #include "error.h"
 
 class XamlLoader;
-struct XamlLoaderCallbacks;
 
-typedef DependencyObject *xaml_load_managed_object_callback (const char* asm_name, const char* asm_path, const char* name, const char* type_name);
+typedef DependencyObject *xaml_load_managed_object_callback (const char *asm_name, const char *asm_path, const char *name, const char *type_name);
 typedef bool xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
 typedef bool xaml_hookup_event_callback (void *target, const char *ename, const char *evalue);
-typedef void xaml_insert_mapping_callback (const char* key, const char* value); 
-typedef const char* xaml_get_mapping_callback (const char* key);
+typedef void xaml_insert_mapping_callback (const char *key, const char *value); 
+typedef const char *xaml_get_mapping_callback (const char *key);
 typedef bool xaml_load_code_callback (const char *source, const char *type);
 typedef void xaml_set_name_attribute_callback (void *target, const char *name);
-
-G_BEGIN_DECLS
-
-DependencyObject  *xaml_create_from_file (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
-DependencyObject  *xaml_create_from_str  (XamlLoader* loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
-DependencyObject  *xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
-
-bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
-
-bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v);
-bool        value_from_str (Type::Kind type, const char *prop_name, const char *str, Value **v);
-bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s);
-
-void xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks);
-
-void        xaml_init (void);
-
-bool            time_span_from_str (const char *str, TimeSpan *res);
-XamlLoader* xaml_loader_new (const char* filename, const char* str, Surface* surface);
-void		xaml_loader_free (XamlLoader* loader);
-void		xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** assembly);
-void		xaml_loader_add_missing (XamlLoader* loader, const char* file);
-G_END_DECLS
 
 struct XamlLoaderCallbacks {
 	xaml_load_managed_object_callback *load_managed_object;
@@ -70,6 +46,31 @@ struct XamlLoaderCallbacks {
 	{
 	}
 };
+
+G_BEGIN_DECLS
+
+void        xaml_init (void);
+
+bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
+
+bool        time_span_from_str (const char *str, TimeSpan *res);
+bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v);
+bool        value_from_str (Type::Kind type, const char *prop_name, const char *str, Value **v);
+bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s);
+
+void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char **assembly);
+
+XamlLoader *xaml_loader_new (const char *filename, const char *str, Surface *surface);
+void	    xaml_loader_free (XamlLoader *loader);
+
+void        xaml_loader_set_callbacks (XamlLoader *loader, XamlLoaderCallbacks callbacks);
+void	    xaml_loader_add_missing (XamlLoader *loader, const char *file);
+
+DependencyObject  *xaml_create_from_file (XamlLoader *loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
+DependencyObject  *xaml_create_from_str  (XamlLoader *loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
+DependencyObject  *xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
+
+G_END_DECLS
 
 /*
 
@@ -101,39 +102,41 @@ struct XamlLoaderCallbacks {
 
 
 class XamlLoader {
-	Surface* surface;
-	char* filename;
-	char* str;
-	GHashTable* mappings;
-	GHashTable* missing_assemblies;
-
-public:
+	Surface *surface;
+	char *filename;
+	char *str;
+	GHashTable *mappings;
+	GHashTable *missing_assemblies;
+	
+ public:
 	enum AssemblyLoadResult {
 		SUCCESS = -1,
 		MissingAssembly = 1,
 		LoadFailure = 2
 	};
 	
-	XamlLoader (const char* filename, const char* str, Surface* surface);
+	XamlLoader (const char *filename, const char *str, Surface *surface);
 	virtual ~XamlLoader ();
+	
 	virtual bool LoadVM ();
-	virtual DependencyObject* CreateManagedObject (const char* xmlns, const char* name);
-	virtual DependencyObject* CreateManagedObject (const char* asm_name, const char* asm_path, const char* name, const char* type_name);
-	virtual bool SetAttribute (void* target, const char* name, const char* value);
-	virtual void SetNameAttribute (void* target, const char* name);
-	virtual bool HookupEvent (void* target, const char* name, const char* value);
-	virtual void InsertMapping (const char* key, const char* value);
-	const char* GetMapping (const char* key);
+	virtual DependencyObject *CreateManagedObject (const char *xmlns, const char *name);
+	virtual DependencyObject *CreateManagedObject (const char *asm_name, const char *asm_path, const char *name, const char *type_name);
+	virtual bool SetAttribute (void *target, const char *name, const char *value);
+	virtual void SetNameAttribute (void *target, const char *name);
+	virtual bool HookupEvent (void *target, const char *name, const char *value);
+	virtual void InsertMapping (const char *key, const char *value);
+	
+	const char *GetMapping (const char *key);
 	bool LoadCode (const char *source, const char *type);
 	
-	char* GetFilename () { return filename; }
-	char* GetString () { return str; }
-	Surface* GetSurface () { return surface; }
+	char *GetFilename () { return filename; }
+	char *GetString () { return str; }
+	Surface *GetSurface () { return surface; }
 	
-	const char* GetMissing ();
-	virtual void AddMissing (const char* assembly);
-	void RemoveMissing (const char* assembly);
-
+	const char *GetMissing ();
+	virtual void AddMissing (const char *assembly);
+	void RemoveMissing (const char *assembly);
+	
 	bool vm_loaded;
 	
 	XamlLoaderCallbacks callbacks;
