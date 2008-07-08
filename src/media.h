@@ -65,7 +65,7 @@ class MediaAttributeCollection : public Collection {
  protected:
 	virtual ~MediaAttributeCollection () {}
 
-public:
+ public:
 	MediaAttributeCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
@@ -99,13 +99,12 @@ class TimelineMarkerCollection : public Collection {
 TimelineMarkerCollection *timeline_marker_collection_new (void);
 
 class MarkerReachedEventArgs : public EventArgs {
-private:
 	TimelineMarker *marker;
-
-protected:
+	
+ protected:
 	virtual ~MarkerReachedEventArgs ();
-
-public:
+	
+ public:
 	MarkerReachedEventArgs (TimelineMarker *marker);
 	virtual Type::Kind GetObjectType () { return Type::MARKERREACHEDEVENTARGS; };
 
