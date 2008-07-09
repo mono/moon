@@ -1,3 +1,10 @@
+2008-07-09  Larry Ewing  <lewing@novell.com>
+
+	* windowless.cpp: make sure we proxy events to the fullscreen
+	widget when we are in fullscreen mode.
+
+	Fixes silverlight.net/fox in fullscreen mode.
+	
 2008-07-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-class.cpp: Make sure we free (or nullify) before calling

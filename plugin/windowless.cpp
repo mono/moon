@@ -37,6 +37,12 @@ WindowlessSurface::WindowlessSurface (int width, int height, PluginInstance *plu
 void
 WindowlessSurface::SetCursor (GdkCursor *cursor)
 {
+	if (widget) {
+		// In fullscreen mode
+		Surface::SetCursor (cursor);
+		return;
+	}
+
 	// turned off for now.  hopefully we can get this switched on for
 	// newer versions of ff3
 	// see https://bugzilla.mozilla.org/show_bug.cgi?id=430451
@@ -49,6 +55,13 @@ WindowlessSurface::SetCursor (GdkCursor *cursor)
 void
 WindowlessSurface::Invalidate (Rect r)
 {
+	if (widget) {
+		// In fullscreen mode
+		Surface::Invalidate (r);
+		return;
+	}
+
+
 	NPRect nprect;
 
 	// Mozilla gets seriously confused about invalidations 
@@ -66,6 +79,12 @@ WindowlessSurface::Invalidate (Rect r)
 void
 WindowlessSurface::ProcessUpdates ()
 {
+	if (widget) {
+		// In fullscreen mode
+		Surface::ProcessUpdates ();
+		return;
+	}
+
 	NPN_ForceRedraw (plugin->GetInstance());
 }
 

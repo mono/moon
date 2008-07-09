@@ -102,12 +102,6 @@ class Surface : public EventObject {
 	bool transparent;
 	Color *background_color;
 	
-	// The current widget we are drawing to. If in windowless
-	// mode, widget will be NULL - otherwise it will either point
-	// to widget_normal or widget_fullscreen depending on whether
-	// or not we are in fullscreen mode.
-	GtkWidget *widget;
-	
 	// This is the normal widget
 	GtkWidget *widget_normal;
 	
@@ -184,6 +178,12 @@ class Surface : public EventObject {
 	void PerformReleaseCapture ();
 	
  protected:
+	// The current widget we are drawing to. If in windowless
+	// mode, widget will be NULL - otherwise it will either point
+	// to widget_normal or widget_fullscreen depending on whether
+	// or not we are in fullscreen mode.
+	GtkWidget *widget;
+	
 	virtual ~Surface();
 
  public:

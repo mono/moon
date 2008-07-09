@@ -1,3 +1,8 @@
+2008-07-09  Larry Ewing  <lewing@novell.com>
+
+	* runtime.h (class Surface): make widget public so that we can
+	peek at it in windowless mode.
+
 2008-07-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Always do a move after closing a path. Fix DRT test
