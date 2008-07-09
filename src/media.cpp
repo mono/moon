@@ -104,6 +104,7 @@ void
 MediaBase::SetSurface (Surface *surface)
 {
 	const char *uri;
+	Downloader *dl;
 	
 	FrameworkElement::SetSurface (surface);
 	
@@ -113,7 +114,11 @@ MediaBase::SetSurface (Surface *surface)
 	source_changed = false;
 	
 	if ((uri = GetSource ()) && *uri) {
-		Downloader *dl = surface->CreateDownloader ();
+		if (!(dl = surface->CreateDownloader ())) {
+			// we're shutting down
+			return;
+		}
+		
 		dl->Open ("GET", uri);
 		SetSource (dl, "");
 		dl->unref ();
@@ -195,13 +200,16 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		if (uri && *uri) {
 			Surface *surface = GetSurface ();
+			Downloader *dl;
 			
 			if (surface) {
-				Downloader *dl = surface->CreateDownloader ();
-				
-				dl->Open ("GET", uri);
-				SetSource (dl, "");
-				dl->unref ();
+				if ((dl = surface->CreateDownloader ())) {
+					dl->Open ("GET", uri);
+					SetSource (dl, "");
+					dl->unref ();
+				} else {
+					// we're shutting down
+				}
 			} else {
 				source_changed = true;
 			}

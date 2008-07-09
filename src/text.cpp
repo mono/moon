@@ -1968,26 +1968,28 @@ Glyphs::DownloadFont (Surface *surface, const char *url)
 	char *str;
 	
 	if (uri->Parse (url)) {
-		downloader = surface->CreateDownloader ();
-		
-		if (uri->fragment) {
-			if ((index = strtol (uri->fragment, NULL, 10)) < 0 || index == LONG_MAX)
-				index = 0;
-		}
-		
-		str = uri->ToString (UriHideFragment);
-		downloader_open (downloader, "GET", str);
-		g_free (str);
-		
-		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-		if (downloader->Started () || downloader->Completed ()) {
-			if (downloader->Completed ())
-				DownloaderComplete ();
-		} else {
-			downloader->SetWriteFunc (data_write, size_notify, this);
+		if ((downloader = surface->CreateDownloader ())) {
+			if (uri->fragment) {
+				if ((index = strtol (uri->fragment, NULL, 10)) < 0 || index == LONG_MAX)
+					index = 0;
+			}
 			
-			// This is what actually triggers the download
-			downloader->Send ();
+			str = uri->ToString (UriHideFragment);
+			downloader_open (downloader, "GET", str);
+			g_free (str);
+			
+			downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+			if (downloader->Started () || downloader->Completed ()) {
+				if (downloader->Completed ())
+					DownloaderComplete ();
+			} else {
+				downloader->SetWriteFunc (data_write, size_notify, this);
+				
+				// This is what actually triggers the download
+				downloader->Send ();
+			}
+		} else {
+			// we're shutting down
 		}
 	}
 	
