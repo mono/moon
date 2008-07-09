@@ -53,7 +53,7 @@ public class GtkSilver : EventBox {
 	//
 	internal delegate IntPtr downloader_create_state_func  (IntPtr native);
 	internal delegate void   downloader_destroy_state_func (IntPtr state);
-	internal delegate void   downloader_open_func  (string verb, string uri, IntPtr state);
+	internal delegate void   downloader_open_func  (string verb, string uri, bool streaming, IntPtr state);
 	internal delegate void   downloader_send_func  (IntPtr state);
 	internal delegate void   downloader_abort_func (IntPtr state);
 	

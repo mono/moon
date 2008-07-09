@@ -1,3 +1,8 @@
+2008-06-09  Geoff Norton  <gnorton@novell.com>
+	
+	* gtk.cs:
+	* ManagedDownloader.cs: Update delegates to the new open prototype.
+
 2008-05-23  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am: Dont remove index.xml when cleaning
