@@ -2287,6 +2287,8 @@ Image::Image ()
 	pattern = NULL;
 	brush = NULL;
 	surface = NULL;
+	loader = NULL;
+	loader_err = NULL;
 }
 
 Image::~Image ()
@@ -2375,29 +2377,36 @@ void
 Image::PixbufWrite (void *buf, gint32 offset, gint32 n)
 {
 	UpdateProgress ();
+	if (loader == NULL)
+		loader = gdk_pixbuf_loader_new ();
+
+	if (!loader_err) {
+		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buf, n, &loader_err);
+
+		if (loader_err)
+			gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
+	}
 }
 
 void
 Image::DownloaderComplete ()
 {
-	char *filename = downloader->GetDownloadedFilename (part_name);
+	char *uri;
+
+	if (strcmp (part_name, "") == 0)
+		uri = g_strdup (downloader->GetUri ());
+	else
+		uri = g_strdup (downloader->GetDownloadedFilename (part_name));
 	
 	CleanupSurface ();
 	
-	if (!filename) {
-		/* the download was aborted */
-		/* FIXME: should this emit ImageFailed? */
+	if (!CreateSurface (uri)) {
+		g_free (uri);
 		Invalidate ();
 		return;
 	}
 	
-	if (!CreateSurface (filename)) {
-		g_free (filename);
-		Invalidate ();
-		return;
-	}
-	
-	g_free (filename);
+	g_free (uri);
 	
 	updating_size_from_media = true;
 	
@@ -2574,7 +2583,7 @@ unmultiply_rgba_in_place (GdkPixbuf *pixbuf)
 }
 
 bool
-Image::CreateSurface (const char *filename)
+Image::CreateSurface (const char *uri)
 {
 	if (surface) {
 		// image surface already created
@@ -2586,55 +2595,63 @@ Image::CreateSurface (const char *filename)
 	if (!surface_cache)
 		surface_cache = g_hash_table_new (g_str_hash, g_str_equal);
 	
-	if (!(surface = (CachedSurface *) g_hash_table_lookup (surface_cache, filename))) {
-		GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+	if (!(surface = (CachedSurface *) g_hash_table_lookup (surface_cache, uri))) {
 		GdkPixbuf *pixbuf = NULL;
-		GError *err = NULL;
-		guchar buf[4096];
-		ssize_t n;
 		char *msg;
-		int fd;
 		
-		if ((fd = open (filename, O_RDONLY)) == -1) {
-			msg = g_strdup_printf ("Failed to load image %s: %s", filename, g_strerror (errno));
-			Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
-			return false;
-		}
-		
-		do {
+		if (loader == NULL) {
+			guchar buf[4096];
+			ssize_t n;
+			char *msg;
+			char *filename;
+			int fd;
+                
+			filename = downloader->GetDownloadedFilename (part_name);
+
+			loader = gdk_pixbuf_loader_new ();
+
+			if ((fd = open (filename, O_RDONLY)) == -1) {
+				msg = g_strdup_printf ("Failed to load image %s: %s", filename, g_strerror (errno));
+				Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
+				return false;
+			}
+
 			do {
-				n = read (fd, buf, sizeof (buf));
-			} while (n == -1 && errno == EINTR);
-			
-			if (n == -1)
-				break;
-			
-			gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &err);
-		} while (n > 0 && !err);
-		
-		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), err ? NULL : &err);
-		close (fd);
+				do {
+					n = read (fd, buf, sizeof (buf));
+				} while (n == -1 && errno == EINTR);
+
+				if (n == -1)
+					break;
+
+				gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &loader_err);
+			} while (n > 0 && !loader_err);
+
+			close (fd);
+		}
+
+		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), loader_err ? NULL : &loader_err);
 		
 		if (!(pixbuf = gdk_pixbuf_loader_get_pixbuf (GDK_PIXBUF_LOADER (loader)))) {
-			if (err && err->message)
-				msg = g_strdup_printf ("Failed to load image %s: %s", filename, err->message);
+			if (loader_err && loader_err->message)
+				msg = g_strdup_printf ("Failed to load image %s: %s", uri, loader_err->message);
 			else
-				msg = g_strdup_printf ("Failed to load image %s", filename);
+				msg = g_strdup_printf ("Failed to load image %s", uri);
 			
 			Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
 			
-			if (err)
-				g_error_free (err);
+			if (loader_err)
+				g_error_free (loader_err);
 			
 			return false;
-		} else if (err) {
-			g_error_free (err);
+		} else if (loader_err) {
+			g_error_free (loader_err);
 		}
 		
 		surface = g_new0 (CachedSurface, 1);
 		
 		surface->ref_count = 1;
-		surface->filename = g_strdup (filename);
+		surface->filename = g_strdup (uri);
 		surface->height = gdk_pixbuf_get_height (pixbuf);
 		surface->width = gdk_pixbuf_get_width (pixbuf);
 		

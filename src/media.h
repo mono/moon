@@ -191,6 +191,10 @@ class Image : public MediaBase {
 	
 	// pattern caching
 	cairo_pattern_t *pattern;
+
+	// pixbuf loading
+	 GdkPixbufLoader *loader;
+	 GError *loader_err;
 	
  protected:
 	virtual ~Image ();

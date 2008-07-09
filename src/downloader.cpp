@@ -217,7 +217,7 @@ Downloader::SendInternal ()
 	
 	if (filename != NULL) {
 		// Consumer is re-sending a request which finished successfully.
-		NotifyFinished (filename);
+		NotifyFinished ();
 		return;
 	}
 	
@@ -329,21 +329,24 @@ Downloader::RequestPosition (gint64 *pos)
 		request_position (pos, consumer_closure);
 }
 
+void
+Downloader::SetFilename (const char *fname)
+{
+	d (printf ("Downloader::SetFilename (%s)\n", fname));
+	
+	filename = g_strdup (fname);
+	((FileDownloader *)internal_dl)->setFilename (filename);
+}
 
 void
-Downloader::NotifyFinished (const char *fname)
+Downloader::NotifyFinished ()
 {
-	d (printf ("Downloader::NotifyFinished (%s)\n", fname));
-	
 	if (aborted)
 		return;
 	
 	if (!GetSurface ())
 		return;
-	
-	filename = g_strdup (fname);
-	((FileDownloader *)internal_dl)->setFilename (filename);
-	
+
 	SetDownloadProgress (1.0);
 	
 	Emit (DownloadProgressChangedEvent);
@@ -629,7 +632,8 @@ downloader_write (Downloader *dl, void *buf, gint32 offset, gint32 n)
 void
 downloader_notify_finished (Downloader *dl, const char *fname)
 {
-	dl->NotifyFinished (fname);
+	dl->SetFilename (fname);
+	dl->NotifyFinished ();
 }
 
 void

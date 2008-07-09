@@ -1,3 +1,11 @@
+2008-07-09  Geoff Norton  <gnorton@novell.com>
+	
+	* downloader.(cpp|h): NotifyFinished is now the finished
+	event.  The filename will be set (if available) in SetFilename.
+	* media.(cpp|h): Change to progressivly loading the image
+	where available (fixes popfly).  We still fallback to file loading
+	for the JS downloader case for now.
+
 2008-07-09  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Surface::motion_notify_callback): don't call

@@ -115,10 +115,11 @@ class Downloader : public DependencyObject {
 	void InternalSetBody (void *body, guint32 length);
 
 	void Write (void *buf, gint32 offset, gint32 n);
-	void NotifyFinished (const char *fname);
+	void NotifyFinished ();
 	void NotifyFailed (const char *msg);
 	void NotifySize (gint64 size);
 	char *GetDownloadedFilename (const char *partname);
+	void SetFilename (const char *fname);
 	
 	// This is called by the consumer of the downloaded data (the
 	// Image class for instance)
