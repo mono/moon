@@ -1,3 +1,7 @@
+2008-07-09  Geoff Norton  <gnorton@novell.com>
+
+	* Makefile.am: xsetroot our Xephyr instance.
+
 2008-06-30  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/test-default-keyspline-animation.html: Adding a test for

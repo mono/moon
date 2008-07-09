@@ -41,6 +41,8 @@ run-xephyr:
 	(test -z "$$XEPHYR" && XEPHYR=$(XEPHYR_DEFAULT); export XEPHYR; echo Running Xephyr in display $$XEPHYR; \
 	test -z "$$DRT_TARGET" && DRT_TARGET="run-drtlist"; export DRT_TARGET; echo Executing target $$DRT_TARGET; \
 	Xephyr -screen 1200x960 -ac -noreset :$$XEPHYR & xephyr_pid=$$!; \
+	sleep 1; \
+	DISPLAY=:$$XEPHYR xsetroot -solid '#ffffff'; \
 	DISPLAY=:$$XEPHYR $(MAKE) $(MAKEFLAGS) $$DRT_TARGET; \
 	kill $$xephyr_pid)
 
