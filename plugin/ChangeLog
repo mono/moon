@@ -1,3 +1,10 @@
+2008-07-09  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: UrlNotify now calls dl->NotifyFinished() and
+	StreamAsFile calls SetFilename
+	* plugin-downloader.cpp: Update for the Downloader changes
+	to NotifyFinished / SetFilename
+
 2008-07-09  Larry Ewing  <lewing@novell.com>
 
 	* windowless.cpp: make sure we proxy events to the fullscreen

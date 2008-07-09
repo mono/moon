@@ -1220,7 +1220,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	} else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
 		
-		dl->NotifyFinished (fname);
+		dl->SetFilename (fname);
 	} else if (IS_NOTIFY_REQUEST (stream->notifyData)) {
 		bool reload = true;
 
@@ -1305,9 +1305,10 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	//		  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
 	//}
 	
-	if (reason != NPRES_DONE) {
-		if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
-			Downloader *dl = (Downloader *) notify->pdata;
+	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
+		Downloader *dl = (Downloader *) notify->pdata;
+
+		if (reason != NPRES_DONE) {
 			
 			switch (reason) {
 			case NPRES_USER_BREAK:
@@ -1320,6 +1321,8 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 				dl->NotifyFailed ("unknown error");
 				break;
 			}
+		} else {
+			dl->NotifyFinished ();
 		}
 	}
 	

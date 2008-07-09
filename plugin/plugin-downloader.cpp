@@ -234,7 +234,8 @@ PluginDownloader::Finished (bool success, gpointer data)
 	if (dl != NULL) {
 		if (success) {
 			dl->NotifySize (this->offset);
-			dl->NotifyFinished ((const char *)data);
+			dl->SetFilename ((const char *)data);
+			dl->NotifyFinished ();
 		} else {
 			dl->NotifyFailed ("download failed");
 		}
