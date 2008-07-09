@@ -299,6 +299,7 @@ class Glyphs : public FrameworkElement {
 	
 	int origin_y_specified:1;
 	int simulation_none:1;
+	int uri_changed:1;
 	int invalid:1;
 	int dirty:1;
 	
@@ -310,6 +311,8 @@ class Glyphs : public FrameworkElement {
 	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void size_notify (gint64 size, gpointer data);
+	
+	void DownloadFont (Surface *surface, const char *url);
 	
  protected:
 	virtual ~Glyphs ();
@@ -334,6 +337,7 @@ class Glyphs : public FrameworkElement {
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint ();
+	virtual void SetSurface (Surface *surface);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	

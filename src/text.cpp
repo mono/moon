@@ -1379,6 +1379,7 @@ Glyphs::Glyphs ()
 	top = 0.0;
 	
 	simulation_none	= true;
+	uri_changed = false;
 	invalid = false;
 	dirty = false;
 }
@@ -1961,6 +1962,55 @@ Glyphs::SetIndicesInternal (const char *in)
 }
 
 void
+Glyphs::DownloadFont (Surface *surface, const char *url)
+{
+	Uri *uri = new Uri ();
+	char *str;
+	
+	if (uri->Parse (url)) {
+		downloader = surface->CreateDownloader ();
+		
+		if (uri->fragment) {
+			if ((index = strtol (uri->fragment, NULL, 10)) < 0 || index == LONG_MAX)
+				index = 0;
+		}
+		
+		str = uri->ToString (UriHideFragment);
+		downloader_open (downloader, "GET", str);
+		g_free (str);
+		
+		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+		if (downloader->Started () || downloader->Completed ()) {
+			if (downloader->Completed ())
+				DownloaderComplete ();
+		} else {
+			downloader->SetWriteFunc (data_write, size_notify, this);
+			
+			// This is what actually triggers the download
+			downloader->Send ();
+		}
+	}
+	
+	delete uri;
+}
+
+void
+Glyphs::SetSurface (Surface *surface)
+{
+	const char *uri;
+	
+	FrameworkElement::SetSurface (surface);
+	
+	if (!uri_changed || !surface)
+		return;
+	
+	if ((uri = GetFontUri ()) && *uri)
+		DownloadFont (surface, uri);
+	
+	uri_changed = false;
+}
+
+void
 Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	bool invalidate = true;
@@ -1971,49 +2021,29 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	
 	if (args->property == Glyphs::FontUriProperty) {
-		char *str = args->new_value ? args->new_value->AsString() : NULL;
-		Uri *uri = new Uri ();
+		const char *str = args->new_value ? args->new_value->AsString () : NULL;
+		Surface *surface = GetSurface ();
 		
 		if (downloader) {
-			downloader_abort (downloader);
+			downloader->Abort ();
 			downloader->unref ();
 			downloader = NULL;
 			index = 0;
 		}
 		
-		if (str && *str && uri->Parse (str)) {
-			downloader = Surface::CreateDownloader (this);
-			
-			if (downloader) {			
-				if (uri->fragment) {
-					if ((index = strtol (uri->fragment, NULL, 10)) < 0 || index == LONG_MAX)
-						index = 0;
-				}
-				
-				str = uri->ToString (UriHideFragment);
-				downloader_open (downloader, "GET", str);
-				g_free (str);
-				
-				downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-				if (downloader->Started () || downloader->Completed ()) {
-					if (downloader->Completed ())
-						DownloaderComplete ();
-				} else {
-					downloader->SetWriteFunc (data_write, size_notify, this);
-					
-					// This is what actually triggers the download
-					downloader->Send ();
-				}
-			}
+		if (surface) {
+			if (str && *str)
+				DownloadFont (surface, str);
+			uri_changed = false;
+		} else {
+			uri_changed = true;
 		}
-		
-		delete uri;
 		
 		invalidate = false;
 	} else if (args->property == Glyphs::FillProperty) {
 		fill = args->new_value ? args->new_value->AsBrush() : NULL;
 	} else if (args->property == Glyphs::UnicodeStringProperty) {
-		char *str = args->new_value ? args->new_value->AsString() : NULL;
+		const char *str = args->new_value ? args->new_value->AsString () : NULL;
 		g_free (text);
 		
 		if (str != NULL)
@@ -2023,7 +2053,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		dirty = true;
 	} else if (args->property == Glyphs::IndicesProperty) {
-		char *str = args->new_value ? args->new_value->AsString() : NULL;
+		const char *str = args->new_value ? args->new_value->AsString () : NULL;
 		SetIndicesInternal (str);
 		dirty = true;
 	} else if (args->property == Glyphs::FontRenderingEmSizeProperty) {

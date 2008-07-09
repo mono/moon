@@ -10,6 +10,14 @@
 
 2008-07-09  Jeffrey Stedfast  <fejj@novell.com>
 
+	Fixes for bug #406934
+
+	* text.cpp (Glyphs::SetSurface): Override so that we can start
+	downloading the font as soon as the element gets (re)attached.
+	(Glyphs::OnPropertyChanged): If we aren't attached, set
+	uri_changed to true so that when we are (re)attached, we can start
+	the download.
+
 	* media.cpp (MediaBase::MediaBase): Init new state variable
 	'source_changed' to false.
 	(MediaBase::SetSurface): If source_changed and we are being
