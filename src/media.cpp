@@ -116,9 +116,7 @@ MediaBase::SetSurface (Surface *surface)
 	if (!(uri = GetSource ()) || *uri == '\0')
 		return;
 	
-	if (!(dl = surface->CreateDownloader ()))
-		return;
-	
+	dl = surface->CreateDownloader ();
 	dl->Open ("GET", uri);
 	SetSource (dl, "");
 	dl->unref ();
