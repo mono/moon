@@ -29,7 +29,7 @@
                   BeginTime="0:0:1"
                   Storyboard.TargetProperty="(Canvas.Left)"
                   Duration="0:0:3"
-                  To="200" 
+                  To="150" 
                 />
 	</Storyboard>
 	</BeginStoryboard>
