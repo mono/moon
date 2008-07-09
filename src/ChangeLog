@@ -1,3 +1,16 @@
+2008-07-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (MediaBase::MediaBase): Init new state variable
+	'source_changed' to false.
+	(MediaBase::SetSurface): If source_changed and we are being
+	attached to a surface, initiate a download.
+	(MediaBase::SetSource): Set source_changed to false.
+	(MediaBase::OnPropertyChanged): Handle SourceProperty changes for
+	our subclasses.
+	(MediaElement::OnPropertyChanged): Don't handle SourceProperty
+	changes anymore, let MediaBase do that for us.
+	(Image::OnPropertyChanged): Same.
+
 2008-07-09  Geoff Norton  <gnorton@novell.com>
 	
 	* downloader.(cpp|h): NotifyFinished is now the finished

@@ -77,7 +77,6 @@ typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *us
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
-
 	// are we headed for death?
 	bool zombie;
 	
@@ -308,8 +307,9 @@ public:
 
 /* for rendering */
 typedef void (*RenderFunc) (cairo_t *ctx, UIElement *uielement, Region *region, bool front_to_back);
+
 class RenderNode : public List::Node {
-public:
+ public:
 	UIElement *uielement;
 	Region *region;
 	bool render_element;

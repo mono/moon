@@ -48,6 +48,7 @@ MediaBase::MediaBase ()
 	updating_size_from_media = false;
 	use_media_height = true;
 	use_media_width = true;
+	source_changed = false;
 }
 
 MediaBase::~MediaBase ()
@@ -100,6 +101,30 @@ MediaBase::DownloaderAbort ()
 }
 
 void
+MediaBase::SetSurface (Surface *surface)
+{
+	const char *uri;
+	Downloader *dl;
+	
+	FrameworkElement::SetSurface (surface);
+	
+	if (!source_changed || !surface)
+		return;
+	
+	source_changed = false;
+	
+	if (!(uri = GetSource ()) || *uri == '\0')
+		return;
+	
+	if (!(dl = surface->CreateDownloader ()))
+		return;
+	
+	dl->Open ("GET", uri);
+	SetSource (dl, "");
+	dl->unref ();
+}
+
+void
 MediaBase::SetSourceAsyncCallback ()
 {
 	Downloader *downloader;
@@ -143,6 +168,8 @@ set_source_async (EventObject *user_data)
 void
 MediaBase::SetSource (Downloader *downloader, const char *PartName)
 {
+	source_changed = false;
+	
 	DownloaderAbort ();
 	
 	if (source.downloader) {
@@ -165,6 +192,39 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 }
 
 void
+MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property == MediaBase::SourceProperty) {
+		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
+		
+		if (uri && *uri) {
+			Surface *surface = GetSurface ();
+			
+			if (surface) {
+				Downloader *dl = surface->CreateDownloader ();
+				
+				dl->Open ("GET", uri);
+				SetSource (dl, "");
+				dl->unref ();
+			} else {
+				source_changed = true;
+			}
+		} else {
+			DownloaderAbort ();
+			OnEmptySource ();
+			Invalidate ();
+		}
+	}
+	
+	if (args->property->type != Type::MEDIABASE) {
+		FrameworkElement::OnPropertyChanged (args);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (args);
+}
+
+void
 MediaBase::SetDownloadProgress (double progress)
 {
 	SetValue (MediaBase::DownloadProgressProperty, Value (progress));
@@ -174,6 +234,14 @@ double
 MediaBase::GetDownloadProgress ()
 {
 	return GetValue (MediaBase::DownloadProgressProperty)->AsDouble ();
+}
+
+const char *
+MediaBase::GetSource ()
+{
+	Value *value = GetValue (MediaBase::SourceProperty);
+	
+	return value ? value->AsString () : NULL;
 }
 
 void
@@ -599,7 +667,7 @@ MediaElement::~MediaElement ()
 void 
 MediaElement::SetPreviousPosition (guint64 pos)
 {
-	d (printf ("MediaElement::SetPreviousPosition (%llu)\n", pos));
+	d(printf ("MediaElement::SetPreviousPosition (%llu)\n", pos));
 	
 	previous_position = pos;
 }
@@ -617,10 +685,10 @@ MediaElement::SetSurface (Surface *s)
 	}
 	
 	mplayer->SetSurface (s);
-
+	
 	if (!SetSurfaceLock ())
 		return;
-	UIElement::SetSurface (s);
+	MediaBase::SetSurface (s);
 	SetSurfaceUnlock ();
 }
 
@@ -1792,22 +1860,7 @@ void
 MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == MediaBase::SourceProperty) {
-		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
-		
-		if (uri && *uri) {
-			Downloader *dl = Surface::CreateDownloader (this);
-			
-			if (dl == NULL)
-				return;
-				
-			dl->Open ("GET", uri);
-			SetSource (dl, "");
-			dl->unref ();
-		} else {
-			DownloaderAbort ();
-			Invalidate ();
-		}
-		
+		// MediaBase will handle the rest
 		flags |= RecalculateMatrix;
 	} else if (args->property == MediaElement::AudioStreamIndexProperty) {
 		// FIXME: set the audio stream index
@@ -1846,13 +1899,14 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 			use_media_width = args->new_value == NULL;
 	}
 	
-	if (args->property->type == Type::MEDIAELEMENT) {
-		NotifyListenersOfPropertyChange (args);
-	} else {
+	if (args->property->type != Type::MEDIAELEMENT) {
 		// propagate to parent class
 		MediaBase::OnPropertyChanged (args);
 		flags |= RecalculateMatrix;
+		return;
 	}
+	
+	NotifyListenersOfPropertyChange (args);
 }
 
 bool 
@@ -2786,36 +2840,19 @@ Image::GetCairoSurface ()
 void
 Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property == MediaBase::SourceProperty) {
-		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
-		
-		if (uri && *uri) {
-			Downloader *dl = Surface::CreateDownloader (this);
-			
-			if (dl == NULL)
-				return; 
-				
-			dl->Open ("GET", uri);
-			SetSource (dl, "");
-			dl->unref ();
-		} else {
-			DownloaderAbort ();
-			CleanupSurface ();
-			Invalidate ();
-		}
-	} else if (args->property == FrameworkElement::HeightProperty) {
+	if (args->property == FrameworkElement::HeightProperty) {
 		if (!updating_size_from_media)
 			use_media_height = args->new_value == NULL;
 	} else if (args->property == FrameworkElement::WidthProperty) {
 		if (!updating_size_from_media)
 			use_media_width = args->new_value == NULL;
 	}
-
+	
 	if (args->property->type != Type::IMAGE) {
 		MediaBase::OnPropertyChanged (args);
 		return;
 	}
-
+	
 	// we need to notify attachees if our DownloadProgress changed.
 	NotifyListenersOfPropertyChange (args);
 }

@@ -1853,7 +1853,7 @@ Surface::OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer c
 	printf ("Surface::OnDownloaderDestroyed (): Couldn't find the downloader %p in the list of downloaders\n", sender);
 }
 
-Downloader*
+Downloader *
 Surface::CreateDownloader (void) 
 {
 	if (zombie) {
@@ -1872,18 +1872,17 @@ Surface::CreateDownloader (void)
 	return downloader;
 }
 
-Downloader*
+Downloader *
 Surface::CreateDownloader (UIElement *element)
 {
 	Surface *surface = element ? element->GetSurface () : NULL;
-
+	
 	if (surface)
 		return surface->CreateDownloader ();
-
-
+	
 	g_warning ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n",
-		element, GET_OBJ_ID (element));
-
+		   element, GET_OBJ_ID (element));
+	
 	return NULL;
 }
 

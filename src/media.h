@@ -29,10 +29,10 @@ G_BEGIN_DECLS
 
 
 class MediaErrorEventArgs : public ErrorEventArgs {
-protected:
+ protected:
 	virtual ~MediaErrorEventArgs () {}
 
-public:
+ public:
 	MediaErrorEventArgs (MediaResult result, const char *msg)
 		: ErrorEventArgs (MediaError, (int) result, msg)
 	{
@@ -121,13 +121,14 @@ class MediaBase : public FrameworkElement {
 	
 	Downloader *downloader;
 	char *part_name;
-
+	
+	int updating_size_from_media:1;
 	int use_media_height:1;
 	int use_media_width:1;
-	int updating_size_from_media:1;
+	int source_changed:1;
 	
 	virtual ~MediaBase ();
-
+	
 	virtual void ComputeBounds ();
 	
 	virtual void DownloaderFailed (EventArgs *args);
@@ -136,6 +137,8 @@ class MediaBase : public FrameworkElement {
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
+	virtual void OnEmptySource () { }
 	
 	void SetDownloadProgress (double progress);
 	
@@ -153,10 +156,16 @@ class MediaBase : public FrameworkElement {
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
 	
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	
+	virtual void SetSurface (Surface *surface);
+	
 	//
 	// Property Accessors
 	//
 	double GetDownloadProgress ();
+	
+	const char *GetSource ();
 	
 	void SetStretch (Stretch stretch);
 	Stretch GetStretch ();
@@ -198,6 +207,8 @@ class Image : public MediaBase {
 	
  protected:
 	virtual ~Image ();
+	
+	virtual void OnEmptySource () { CleanupSurface (); }
 	
  public:
 	static GHashTable *surface_cache;
