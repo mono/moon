@@ -81,7 +81,7 @@ button_motion_event (GtkWidget *widget, GdkEventMotion *e, gpointer data)
 
 static gpointer downloader_create_state (Downloader* dl);
 static void downloader_destroy_state (gpointer data);
-static void downloader_open (const char *verb, const char *uri, gpointer state);
+static void downloader_open (const char *verb, const char *uri, bool streamin, gpointer state);
 static void downloader_send (gpointer state);
 static void downloader_abort (gpointer state);
 static void downloader_abort (gpointer state);
@@ -161,7 +161,10 @@ main (int argc, char *argv [])
 				  downloader_destroy_state,
 				  downloader_open,
 				  downloader_send,
-				  downloader_abort);
+				  downloader_abort, 
+				  NULL, 
+				  NULL,
+				  NULL);
 
 	w = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
@@ -554,7 +557,7 @@ downloader_destroy_state (gpointer data)
 }
 
 static void
-downloader_open (const char *verb, const char *uri, gpointer state)
+downloader_open (const char *verb, const char *uri, bool sreaming, gpointer state)
 {
 	((FileDownloadState*)state)->Open (verb, uri);
 }
