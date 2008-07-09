@@ -1,3 +1,9 @@
+2008-07-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml/assorted/unattached-image-set-source.html: New test to
+	check that setting an image.source on an unattached image will
+	display the correct image when the image is reattached.
+
 2008-07-09  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am: xsetroot our Xephyr instance.

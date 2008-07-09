@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Test Setting the Source on an Unattached Image Element</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+var control = null;
+var content = null;
+var parent = null;
+var id = 0;
+
+function OnMouseClick (sender, eventArgs)
+{
+	var image = parent.findName ("image");
+	parent.children.remove (image);
+	
+	id = (id + 1) % 2;
+	image.source = "image" + id + ".jpg";
+	
+	parent.children.add (image);
+}
+
+function OnLoaded (sender, eventArgs)
+{
+	control = document.getElementById ("agControl");
+	content = control.content;
+	parent = sender;
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="agControl" width="100%" height="100%">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Loaded="OnLoaded">
+  <Image x:Name="image" Source="image0.jpg" MouseLeftButtonDown="OnMouseClick"/>
+</Canvas>
+</script>
+
+</body>
+</html>
