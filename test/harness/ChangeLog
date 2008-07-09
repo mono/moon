@@ -1,3 +1,7 @@
+2008-07-09  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* test-runner/Makefile.am: Dist the regression report template
+
 2008-07-08  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/TestRun.cs: Return the number of tests that failed.
