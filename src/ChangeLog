@@ -1,3 +1,8 @@
+2008-07-09  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp: Ensure that we clear our old loader when we set
+	a new source.
+
 2008-07-09  Fernando Herrera  <fherrera@novell.com>
 
 	* pipeline.cpp: Always set MemoryQueueSource element's size

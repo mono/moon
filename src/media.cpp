@@ -2424,6 +2424,7 @@ Image::SetSourceInternal (Downloader *downloader, char *PartName)
 void
 Image::SetSource (Downloader *downloader, const char *PartName)
 {
+	loader = NULL;
 	MediaBase::SetSource (downloader, PartName);
 }
 
