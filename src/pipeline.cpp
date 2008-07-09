@@ -2958,10 +2958,7 @@ MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 		start = offset;
 	}
 
-	if (end == -1)
-		size += n;
-	else
-		size = offset + n;
+	size = offset + n;
 
         if (IsWaiting ())
                 Signal ();
