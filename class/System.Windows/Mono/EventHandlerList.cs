@@ -41,7 +41,7 @@ namespace Mono {
 	// <remarks>
 	//   Longer description
 	// </remarks>
-	public sealed class EventHandlerList : IDisposable {
+	sealed class EventHandlerList : IDisposable {
 		public EventHandlerList ()
 		{
 			head = null;
