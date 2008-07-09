@@ -1634,7 +1634,7 @@ Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpoin
 
 	bool handled = false;
 
-	if (event->is_hint) {
+	if (widget && event->is_hint) {
 #if GTK_CHECK_VERSION(2,12,0)
 	  if (gtk_check_version (2, 12, 0))
 	  	gdk_event_request_motions (event);

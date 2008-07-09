@@ -1,5 +1,9 @@
 2008-07-09  Larry Ewing  <lewing@novell.com>
 
+	* runtime.cpp (Surface::motion_notify_callback): don't call
+	get_pointer when in windowless mode, I don't think we can trust
+	the results.
+
 	* runtime.h (class Surface): make widget public so that we can
 	peek at it in windowless mode.
 
