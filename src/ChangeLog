@@ -12,6 +12,12 @@
 	(Image::OnPropertyChanged): Same.
 
 2008-07-09  Geoff Norton  <gnorton@novell.com>
+
+	* mms-downloader.cpp: Remove the guard we had against copying
+	random memory and provide the correct amount of data to the 
+	pipeline from each packet.
+
+2008-07-09  Geoff Norton  <gnorton@novell.com>
 	
 	* downloader.(cpp|h): NotifyFinished is now the finished
 	event.  The filename will be set (if available) in SetFilename.

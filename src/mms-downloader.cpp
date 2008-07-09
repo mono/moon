@@ -420,18 +420,14 @@ MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *pa
 	LOG_MMS ("MmsDownloader::ProcessDataPacket ()\n");
 	
 	gint32 off = header_size;
-	gint32 size = asf_packet_size;
-	
-	if (this->size < asf_packet_size+sizeof (MmsHeader)+sizeof (MmsDataPacket))
-		return false;
-		
+
 	if (seekable) {
-		off += packet->packet.data.id * size;
+		off += packet->packet.data.id * asf_packet_size;
 	} else {
-		off += packets_received * size;
+		off += packets_received * asf_packet_size;
 	}
 	
-	dl->InternalWrite (payload, off, size);
+	dl->InternalWrite (payload, off, header->length - sizeof (MmsDataPacket));
 	packets_received++;
 	
 	return true;
