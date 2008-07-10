@@ -1,5 +1,9 @@
 2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.cpp: Fix leak.
+
+2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* debug.cpp: Make valgrind happy.
 
 2008-07-09  Geoff Norton  <gnorton@novell.com>

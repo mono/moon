@@ -1580,6 +1580,7 @@ DependencyProperty::~DependencyProperty ()
 		g_hash_table_destroy (storage_hash);
 		storage_hash = NULL;
 	}
+	g_free (hash_key);
 }
 
 DependencyProperty *dependency_property_lookup (Type::Kind type, char *name)
