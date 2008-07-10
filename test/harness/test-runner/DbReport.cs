@@ -2,35 +2,85 @@ using System;
 using System.IO;
 using System.Data;
 using System.Collections.Generic;
-using Mono.Data.SqliteClient;
+//using Mono.Data.SqliteClient;
 using System.Diagnostics;
+using MySql.Data.MySqlClient;
 
 
 namespace MoonlightTests {
 	
 	public class DbReport : IReport {
+		
+		private string connectionString = string.Empty;
 		private IDbConnection dbcon = null;
 		private IDbCommand dbcmd = null;
-		private bool inited = false;
-		private string revision = string.Empty;
-		private string runtime = string.Empty;
+		
+		private string runtime;
+		private int runtimeid;
 		private string masters = "masters";
 		
 		private string test_run_dir;
 		
-		public string Revision
+		public bool HasConnection
 		{
-			get { return revision; }
-			set { revision = value; }
+			get {return (connectionString != string.Empty);}
 		}
-		
 		
 		public DbReport()
 		{
+			try
+			{
+				StreamReader reader = new StreamReader(".dbconnection.txt");
+				connectionString = reader.ReadLine();
+				reader.Close();
+				
+				//test out the 
+				dbcon =  new MySqlConnection(connectionString);
+				dbcon.Open();
+				dbcmd = dbcon.CreateCommand();
+				string query = "select id from testcases;";
+				
+				dbcmd.CommandText = query;
+				IDataReader dbreader = dbcmd.ExecuteReader();
+				while(dbreader.Read())
+				{
+					int id = dbreader.GetInt32(0);
+					Console.WriteLine("reading testcase {0}",id);
+				}
+				dbreader.Close();
+				dbreader = null;
+				
+				Console.WriteLine("MySql connection successful");
+			
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				WriteHelp();
+				connectionString = string.Empty;
+			}
+			
+		}
+		private void WriteHelp()
+		{
+			
+			string str = "\nDbReport is disabled because of missing file or invalid connection string\n";
+			str += "\nCreate file .dbconnection.txt with the first line being the connection string to use.";
+			str += "\nServer=mysqlserver.company.com;Database=moonlight;User ID=root;Password=password;Pooling=false;\n";
+			
+			Console.WriteLine(str);
+				
 		}
 #region IReport members
 		public void BeginRun(TestRun run)
 		{
+			
+			if (!HasConnection)
+			{
+				WriteHelp();
+				return;
+			}
+				
 			
 			string dir = "test-run-data";
 			string filename = "moonTestSuite.db";
@@ -45,13 +95,7 @@ namespace MoonlightTests {
 				Directory.CreateDirectory(Path.Combine(dir,masters));
 			}
 			
-			string connectionString = string.Format("URI=file:{0}",Path.Combine(dir,filename));
-			
-			dbcon = (IDbConnection) new SqliteConnection(connectionString);
-			dbcon.Open();
-			dbcmd = dbcon.CreateCommand();
-			
-			AddRunToDB();
+			AddBuild(runtime);
 		}
 		
 		public void EndRun()
@@ -63,6 +107,11 @@ namespace MoonlightTests {
 		
 		public void AddResult(Test test, TestResult result)
 		{
+			if (!HasConnection)
+			{
+				return;
+			}
+				
 			AddTags(test);
 			string info = string.Empty;
 			
@@ -79,7 +128,7 @@ namespace MoonlightTests {
 			
 			Console.WriteLine("result_file = " + result_file);
 			Console.WriteLine("master_file = " + master_file);
-			*/
+			//*/
 			
 			
 			XmlReport.CopyImageToRunDirectory(test_run_dir,result_file);
@@ -90,9 +139,7 @@ namespace MoonlightTests {
 				renderfile += ".png";
 			}
 			
-			
-			string query = string.Format("INSERT INTO testcases VALUES ('{0}','{1}','{2}');",test.Id, testname, masterfile);
-			execnonquery(query);
+			AddTestCase(test.Id,testname,masterfile);
 			
 			switch(result)
 			{
@@ -109,12 +156,29 @@ namespace MoonlightTests {
 				info = string.Empty;
 				break;
 				
-			}
-					
+			}		
 			
-			
-			query = string.Format("INSERT INTO results VALUES ('{0}','{1}','{2}','{3}', '{4}');",test.Id, runtime, result.ToString(), renderfile, info);
+			string query = string.Format("INSERT INTO results VALUES ('{0}','{1}','{2}','{3}', '{4}');",test.Id, runtimeid, result.ToString(), renderfile, info);
 			execnonquery(query);
+			
+		}
+		private void AddTestCase(string id, string testname, string masterfile)
+		{
+			int intid = Convert.ToInt32(id);
+			string query = string.Format("Select id from testcases where id={0}",intid);
+			
+			dbcmd.CommandText = query;
+			IDataReader reader = dbcmd.ExecuteReader();
+			
+			// If the test case is not found, add it
+			if(!reader.Read())
+			{		
+				reader.Close();
+				query = string.Format("INSERT INTO testcases VALUES ({0},'{1}','{2}');",intid, testname, masterfile);
+				execnonquery(query);
+			}
+			reader.Close();
+			reader = null;
 			
 		}
 #endregion
@@ -127,9 +191,12 @@ namespace MoonlightTests {
 			dbcon = null;
 		}
 
-		public void AddBuild(string revision, string time)
+		private void AddBuild(string time)
 		{
-			string query = string.Format("INSERT INTO builds VALUES ('{0}','{1}');",revision,time);
+			
+			string revision = GetSubersionRevision();
+			
+			string query = string.Format("INSERT INTO builds VALUES ('','{0}','{1}');",revision,time);
 			//execnonquery(query);
 			dbcmd.CommandText = query;
 			try 			{
@@ -138,8 +205,17 @@ namespace MoonlightTests {
 			catch(Exception ex) {
 				Console.WriteLine(ex);
 			}
+			IDataReader reader = execreader(string.Format("select id from builds where revision='{0}' and runtime='{1}';",revision,time));
+			if (reader.Read())
+			{
+				this.runtimeid = reader.GetInt32(0);
+			}
+			reader.Close();
+			
+			
+			                                
 		}
-		public void AddTags(Test test)
+		private void AddTags(Test test)
 		{
 			foreach(string tag in test.Categories)
 			{
@@ -154,38 +230,60 @@ namespace MoonlightTests {
 					tagid = reader.GetInt32(0);
 					
 				}
-				catch(Exception) {
+				catch(Exception ex) {
+					Console.WriteLine("Tag exists:" + tag);
 					tagid = int.MinValue;
 				}
 				finally {
 					if (reader != null)
+					{
 						reader.Close();
+						reader = null;
+					}
 				}
 					
 				if (tagid == int.MinValue) {
-					query = string.Format("INSERT INTO tags (name) VALUES ('{0}');",tag.ToLower());
-					execnonquery(query);					
-					
-					query = string.Format("SELECT id FROM tags WHERE name = '{0}';",tag.ToLower());
-					dbcmd.CommandText = query;
-					reader = dbcmd.ExecuteReader();
-					reader.Read();
-					tagid = reader.GetInt32(0);
-					reader.Close();					
+					try {
+						query = string.Format("INSERT INTO tags VALUES ('','{0}');",tag.ToLower());
+						execnonquery(query);					
+						
+						query = string.Format("SELECT id FROM tags WHERE name = '{0}';",tag.ToLower());
+						dbcmd.CommandText = query;
+						reader = dbcmd.ExecuteReader();
+						reader.Read();
+						tagid = reader.GetInt32(0);
+						reader.Close();
+					}
+					catch (Exception ex) {
+						
+						Console.WriteLine("ADDTAG " +ex.Message);
+					}
+					finally{
+						if (reader != null) {
+							reader.Close();
+							reader = null;
+						}
+					}
 				}
 				
-				query = string.Format("INSERT INTO taggedcases values ({0},'{1}');",test.Id,tagid);				
-				execnonquery(query);
-				/*
-				dbcmd.CommandText = query;
-				try 			{
-					dbcmd.ExecuteNonQuery();
-				}
-				catch(Exception ex) {
-					Console.WriteLine(ex);
-				}
-				*/
+				AddTaggedCase(test.Id,tagid);
 			}
+		}
+		private void AddTaggedCase(string testid, int tagid)
+		{
+			string query = string.Format("select testcaseid,tagid from taggedcases where testcaseid={0} and tagid={1};",testid,tagid);
+			IDataReader reader = execreader(query);
+			if (reader.Read()) {
+				reader.Close();
+				Console.WriteLine("tagged case EXISTS for testcaseid={0} and tagid={1};",testid,tagid);
+			}
+			else {
+				reader.Close();
+				query = string.Format("INSERT INTO taggedcases values ({0},'{1}');",testid,tagid);				
+				execnonquery(query);
+			}
+			reader = null;
+				
 		}
 		private void execnonquery(string query)
 		{
@@ -194,12 +292,26 @@ namespace MoonlightTests {
 				dbcmd.ExecuteNonQuery();
 			}
 			catch(Exception ex) {
-				Console.WriteLine("{0}: {1}",ex.GetType().ToString(), query);
+				Console.WriteLine("EXECQUERY {0}: {1}",ex.GetType().ToString(), ex.Message);
+				Console.WriteLine("{0}",query);
+			}
+		}
+		private IDataReader execreader(string query)
+		{
+			try {
+				dbcmd.CommandText = query;
+				IDataReader reader = dbcmd.ExecuteReader();
+				return reader;
+			}
+			catch(Exception ex) {
+				Console.WriteLine("NONEXEC {0}: {1}",ex.GetType().ToString(), query);
+				return null;
 			}
 		}
 		
-		private void AddRunToDB()
+		private string GetSubersionRevision()
 		{
+			
 			ProcessStartInfo info = new ProcessStartInfo();
 			info.FileName = "svn";
 			info.Arguments = "info";			
@@ -208,7 +320,8 @@ namespace MoonlightTests {
 			Process p = new Process();
 			p.StartInfo = info;
 			p.Start();
-			
+
+			string revision = string.Empty;
 			string output = p.StandardOutput.ReadToEnd();
 			//string revision = string.Empty;
 			string[] lines = output.Split('\n');
@@ -219,8 +332,7 @@ namespace MoonlightTests {
 					revision = line.Split(':')[1].Trim();
 				}				
 			}
-			AddBuild(revision,runtime);
-			
+			return revision;
 			//Console.ReadLine();
 				
 		
