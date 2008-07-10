@@ -548,6 +548,7 @@ agviewer_add_signal_handler ()
 	sa.sa_flags = 0;
 
 	g_assert (sigaction (SIGSEGV, &sa, NULL) != -1);
+	g_assert (sigaction (SIGQUIT, &sa, NULL) != -1);
 }
 
 /*
@@ -564,6 +565,13 @@ void
 agviewer_handle_native_sigsegv (int signal)
 {
 	const char *signal_str = (signal == SIGSEGV) ? "SIGSEGV" : "SIGABRT";
+	switch (signal) {
+	case SIGSEGV: signal_str = "SIGSEGV"; break;
+	case SIGABRT: signal_str = "SIGABRT"; break;
+	case SIGQUIT: signal_str = "SIGQUIT"; break;
+	default:
+		signal_str = "UNKNOWN"; break;
+	}
 	
 	if (handling_sigsegv) {
 		fprintf (stderr, "\nGot a SIGSEGV while executing the SIGSEGV handler, aborting.\n");
@@ -591,7 +599,11 @@ agviewer_handle_native_sigsegv (int signal)
 
 	print_stack_traces ();		
 
-	abort ();
+	if (signal != SIGQUIT) {
+		abort ();
+	} else {
+		handling_sigsegv = false;
+	}
 }
 
 static void
