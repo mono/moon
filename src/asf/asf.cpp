@@ -212,6 +212,10 @@ ASFParser::ReadPacket (ASFPacket *packet, int packet_index)
 	}
 
 	if (packet_index >= 0) {
+		int64_t packet_count = GetPacketCount ();
+		if (packet_count > 0 && packet_count < packet_index + 1)
+			return MEDIA_NO_MORE_DATA;
+		
 		gint64 position = GetPacketOffset (packet_index);
 
 		if (position == 0 || (source->GetPosition () != position))
