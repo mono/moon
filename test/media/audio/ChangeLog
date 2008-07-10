@@ -1,3 +1,8 @@
+2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-mp3-media-properties.html: Remove Silverlight.js and reorder
+	  testplugin.js and utils.js.
+
 2008-06-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-seek-mp3.html: Remove Silverlight.js and include utils.js before
