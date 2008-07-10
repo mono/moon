@@ -14,6 +14,7 @@
 #include <string.h>
 #include <dlfcn.h>
 
+#include <config.h>
 #include "moonlight.h"
 
 #include "npapi.h"
