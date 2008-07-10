@@ -1,3 +1,8 @@
+2008-07-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp|h: Remove useless code for computing bounds on
+	PathFigure (now all handled at PathGeometry level).
+
 2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Fix a couple of leaks.

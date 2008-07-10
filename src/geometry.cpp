@@ -882,39 +882,6 @@ PathFigure::Build (Path *shape)
 		moon_close_path (path);
 }
 
-Rect
-PathFigure::ComputeBounds (cairo_t *cr, Path *shape, bool logical, double thickness, cairo_matrix_t *matrix)
-{
-	if (!IsBuilt ())
-		Build (shape);
-
-	if (!path)
-		return Rect (0.0, 0.0, 0.0, 0.0);
-
-	if (matrix) 
-		cairo_set_matrix (cr, matrix);
-
-	cairo_append_path (cr, &path->cairo);
-	if (matrix) 
-		cairo_identity_matrix (cr);
-	
-	double x1, y1, x2, y2;
-
-	if (logical || !shape) {
-		cairo_path_extents (cr, &x1, &y1, &x2, &y2);
-	} else {
-		if (thickness > 0.0) {
-			cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-		} else if (shape->CanFill() && shape->IsFilled ()) {
-			cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
-		} else {
-			return Rect (0.0, 0.0, 0.0, 0.0);
-		}
-	}
-
-	return Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
-}
-
 void
 PathFigure::SetIsClosed (bool closed)
 {
