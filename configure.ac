@@ -65,15 +65,10 @@ mozilla_nspr_pcs="nspr mozilla-nspr firefox-nspr xulrunner-nspr seamonkey-nspr"
 for pc in $mozilla_nspr_pcs; do
   PKG_CHECK_EXISTS($pc,[mozilla_nspr=$pc])
 done
-mozilla_nss="nss-missing"
-mozilla_nss_pcs="nss mozilla-nss firefox-nss xulrunner-nss seamonkey-nss"
-for pc in $mozilla_nss_pcs; do
-  PKG_CHECK_EXISTS($pc,[mozilla_nss=$pc])
-done
 
 AC_ARG_WITH(ff3,[  --with-ff3=no,yes  If you want to enable the xulrunner 1.9 (Firefox 3) bridge],[],[with_ff3=yes])
 if test x$with_ff3 = xyes; then
-  FF3_MODULES="libxul-unstable mozilla-plugin mozilla-js $mozilla_nss $mozilla_nspr"
+  FF3_MODULES="libxul-unstable mozilla-plugin mozilla-js $mozilla_nspr"
 
   PKG_CHECK_EXISTS($FF3_MODULES,[with_ff3=yes],[with_ff3=no])
 
@@ -100,7 +95,7 @@ if test x$with_ff2 = xyes; then
   if test $mozilla_xpcom = "libxul-missing" -o $mozilla_plugin = "plugin-missing"; then
     with_ff2=no
   else
-    PKG_CHECK_MODULES(FF2,[$mozilla_xpcom $mozilla_nss $mozilla_nspr $mozilla_plugin])
+    PKG_CHECK_MODULES(FF2,[$mozilla_xpcom $mozilla_nspr $mozilla_plugin])
   fi
 fi
 AM_CONDITIONAL(HAVE_GECKO_1_8,test x$with_ff2 = xyes)
@@ -206,10 +201,10 @@ dnl testing checks
 dnl
 with_testing=yes
 if test x$with_ff3 = xyes; then
-  PKG_CHECK_MODULES(XULRUNNER,[mozilla-gtkmozembed mozilla-js $mozilla_nss],,
+  PKG_CHECK_MODULES(XULRUNNER,[mozilla-gtkmozembed mozilla-js],,
 		  [with_testing=no])
 elif test x$with_ff2 = xyes; then
-  PKG_CHECK_MODULES(XULRUNNER,xulrunner-gtkmozembed $mozilla_nss,,
+  PKG_CHECK_MODULES(XULRUNNER,xulrunner-gtkmozembed,,
 		  [with_testing=no])
 fi
 
