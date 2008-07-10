@@ -1,3 +1,7 @@
+2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* debug.cpp: Make valgrind happy.
+
 2008-07-09  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: Ensure that we clear our old loader when we set

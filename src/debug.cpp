@@ -331,7 +331,7 @@ get_stack_trace_prefix (const char* prefix)
 		total_length += prefix_length + strlen (frame) + 1;
 	}
 	
-	char* result = (char*) g_malloc0 (total_length);
+	char* result = (char*) g_malloc0 (total_length + 1);
 	int position = 0;
 	for (int i = 2; i < address_count; i++) {
 		char* frame = frames [i];
