@@ -51,6 +51,8 @@
     <File name="firefox/browser-http.inc" subtype="Code" buildaction="Nothing" />
     <File name="npstream-request.cpp" subtype="Code" buildaction="Nothing" />
     <File name="npstream-request.h" subtype="Code" buildaction="Nothing" />
+    <File name="windowless.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="windowless.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

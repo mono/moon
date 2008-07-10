@@ -1,3 +1,7 @@
+2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.mdp: Updated.
+
 2008-07-09  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp: UrlNotify now calls dl->NotifyFinished() and
