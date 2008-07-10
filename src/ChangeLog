@@ -1,3 +1,8 @@
+2008-07-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp|h: (ComputeStretchBounds) Move shape-specific code
+	inside each type (and out of the general case).
+
 2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp: Fix leak.

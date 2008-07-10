@@ -245,17 +245,6 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 	 * NOTE: this code is extremely fragile don't make a change here without
 	 * checking the results of the test harness on with MOON_DRT_CATEGORIES=stretch
 	 */
-	Stretch stretch = GetStretch ();
-
-	// FIXME this should really be a shape flag or something
-	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
-		/*
-		 * Rectangles and Ellipses are special and they don't need to participate
-		 * in the other stretch logic
-		 */
-		needs_clip = !IsDegenerate () && (stretch == StretchUniformToFill);
-		return shape_bounds;
-	}
 
 	if (Shape::MixedHeightWidth (&vh, &vw)) {
 		return shape_bounds;
@@ -282,6 +271,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 		return shape_bounds;
 	}
 
+	Stretch stretch = GetStretch ();
 	if (stretch != StretchNone) {
 		Rect logical_bounds = ComputeShapeBounds (true);
 
@@ -1050,6 +1040,17 @@ Ellipse::Ellipse ()
 	SetStretch (StretchFill);
 }
 
+/*
+ * Ellipses (like Rectangles) are special and they don't need to participate
+ * in the other stretch logic
+ */
+Rect
+Ellipse::ComputeStretchBounds (Rect shape_bounds)
+{
+	needs_clip = !IsDegenerate () && (GetStretch () == StretchUniformToFill);
+	return shape_bounds;
+}
+
 Rect
 Ellipse::ComputeShapeBounds (bool logical)
 {
@@ -1183,6 +1184,17 @@ DependencyProperty *Rectangle::RadiusYProperty;
 Rectangle::Rectangle ()
 {
 	SetStretch (StretchFill);
+}
+
+/*
+ * Rectangles (like Ellipses) are special and they don't need to participate
+ * in the other stretch logic
+ */
+Rect
+Rectangle::ComputeStretchBounds (Rect shape_bounds)
+{
+	needs_clip = !IsDegenerate () && (GetStretch () == StretchUniformToFill);
+	return shape_bounds;
 }
 
 Rect

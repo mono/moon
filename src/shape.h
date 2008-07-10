@@ -71,7 +71,7 @@ class Shape : public FrameworkElement {
 	virtual void ShiftPosition (Point p);
 
 	cairo_matrix_t stretch_transform;
-	Rect ComputeStretchBounds (Rect shape_bounds);
+	virtual Rect ComputeStretchBounds (Rect shape_bounds);
 	Point ComputeOriginPoint (Rect shape_bounds);
 	Rect extents;
 	
@@ -217,6 +217,7 @@ class Ellipse : public Shape {
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeLargestRectangle ();
 	virtual Rect ComputeShapeBounds (bool logical);
+	virtual Rect ComputeStretchBounds (Rect shape_bounds);
 	
  public:
 	Ellipse ();
@@ -239,6 +240,7 @@ class Rectangle : public Shape {
 	virtual ~Rectangle () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds (bool logical);
+	virtual Rect ComputeStretchBounds (Rect shape_bounds);
 
  public:
 	static DependencyProperty *RadiusXProperty;
