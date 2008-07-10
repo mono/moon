@@ -871,10 +871,53 @@ PluginInstance::IdleUpdateSourceByReference (gpointer data)
 void
 PluginInstance::UpdateSourceByReference (const char *value)
 {
-	const char *xaml;
+	// basically do the equivalent of document.getElementById('@value').textContent
+	// all using NPAPI.
+	//
+	NPVariant _document;
+	NPVariant _element;
+	NPVariant _elementName;
+	NPVariant _textContent;
 
-	if (!(xaml = html_get_element_text (this, value)))
+	NPIdentifier id_ownerDocument = NPN_GetStringIdentifier ("ownerDocument");
+	NPIdentifier id_getElementById = NPN_GetStringIdentifier ("getElementById");
+	NPIdentifier id_textContent = NPN_GetStringIdentifier ("textContent");
+
+	NPObject *host = GetHost();
+	if (!host) {
+//		printf ("no host\n");
 		return;
+	}
+
+	// get host.ownerDocument
+	bool nperr;
+	if (!(nperr = NPN_GetProperty (instance, host, id_ownerDocument, &_document))
+	    || !NPVARIANT_IS_OBJECT (_document)) {
+//		printf ("no document (type == %d, nperr = %d)\n", _document.type, nperr);
+		return;
+	}
+
+	// _element = document.getElementById ('@value')
+	string_to_npvariant (value, &_elementName);
+	if (!(nperr = NPN_Invoke (instance, NPVARIANT_TO_OBJECT (_document), id_getElementById,
+				  &_elementName, 1, &_element))
+	    || !NPVARIANT_IS_OBJECT (_element)) {
+//		printf ("no valid element named #%s (type = %d, nperr = %d)\n", value, _element.type, nperr);
+		NPN_ReleaseVariantValue (&_document);
+	}
+
+	// _textContent = _element.textContent
+	if (!(nperr = NPN_GetProperty (instance, NPVARIANT_TO_OBJECT (_element), id_textContent, &_textContent))
+	    || !NPVARIANT_IS_STRING (_textContent)) {
+//		printf ("no text content for element named #%s (type = %d, nperr = %d)\n", value, _textContent.type, nperr);
+		NPN_ReleaseVariantValue (&_document);
+		NPN_ReleaseVariantValue (&_element);
+		return;
+	}
+
+	char *xaml = g_strndup ((char *) NPVARIANT_TO_STRING (_textContent).utf8characters, NPVARIANT_TO_STRING (_textContent).utf8length);
+
+//	printf ("yay, xaml = %s\n", xaml);
 
 	if (xaml_loader)
 		delete xaml_loader;
@@ -882,7 +925,11 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	xaml_loader = PluginXamlLoader::FromStr (xaml, this, surface);
 	LoadXAML ();
 
-	g_free ((gpointer) xaml);
+	g_free (xaml);
+
+	NPN_ReleaseVariantValue (&_document);
+	NPN_ReleaseVariantValue (&_element);
+	NPN_ReleaseVariantValue (&_textContent);
 }
 
 
