@@ -3408,9 +3408,9 @@ IMediaSource::Abort ()
 
 	// There's no need to lock here, since aborted can only be set to true.
 	aborted = true;
-	while (IsWaiting ()) {
+	//while (IsWaiting ()) {
 		Signal ();
-	}
+	//}
 }
 
 bool

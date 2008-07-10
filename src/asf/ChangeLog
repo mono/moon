@@ -1,5 +1,9 @@
 2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp: Comment out some debug code.
+
+2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp: ASFReader::ReadPacket: detect earlier if the requested
 	  packet index is after the last one.
 

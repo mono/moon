@@ -1101,6 +1101,8 @@ AudioPlayer::ShutdownInternal ()
 void
 AudioPlayer::AddWork (MediaPlayer *mplayer, AudioAction action)
 {
+	LOG_AUDIO ("AudioPlayer::AddWork (%p, %i)\n", mplayer, action);
+	
 	if (mplayer != NULL && mplayer->GetRefCount () == 0) {
 		// MediaPlayer might end up calling us when it is in the destructor
 		// Since we ref the MediaPlayer, we are guaranteed to not be playing
@@ -1790,7 +1792,7 @@ AudioPlayer::AudioNode::PreparePcm (snd_pcm_sframes_t *avail)
 	if (!mmap) {
 		err = snd_pcm_delay (pcm, &pending_frames);
 		if (err < 0) {
-			fprintf (stderr, "AudioPlayer: could not get delay from audio hw: %s\n", snd_strerror (err));
+			//fprintf (stderr, "AudioPlayer: could not get delay from audio hw: %s\n", snd_strerror (err));
 			return false;
 		}
 		if (pending_frames < 0) {
@@ -1891,7 +1893,7 @@ AudioPlayer::AudioNode::Play ()
 				started = false;
 			}
 		} else {
-			// Fake the mmap api fo rthe rest of the code
+			// Fake the mmap api for the rest of the code
 			frames = avail;
 			offset = 0;
 			areas = (snd_pcm_channel_area_t *) g_malloc0 (sizeof (snd_pcm_channel_area_t) * 2);
@@ -2006,6 +2008,8 @@ AudioPlayer::AudioNode::Play ()
 		}
 		
 		result = true;
+		if (!mmap)
+			break;
 	}
 	
 	return result;

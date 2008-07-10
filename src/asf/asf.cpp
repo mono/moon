@@ -247,7 +247,7 @@ ASFParser::ReadPacket (ASFPacket *packet)
 		 packet ? "non-null" : "null", source->GetPosition (), GetPacketIndex (source->GetPosition ()),
 		 data->data_packet_count);
 	
-#if DEBUG
+#if 0
 	// Check if we're positioned at the start of a packet.
 	bool ok = false;
 	gint64 current_pos = source->GetPosition ();

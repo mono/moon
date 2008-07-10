@@ -1,3 +1,10 @@
+2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: Don't Signal more than once. I have no idea why the
+	  waiting thread doesn't wake up though.
+	* mplayer.cpp: Comment out a printf, and always break the play loop
+	  when we're doing rw access.
+
 2008-07-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp|h: Remove useless code for computing bounds on
