@@ -1931,8 +1931,15 @@ AudioPlayer::AudioNode::Play ()
 				// FIXME: if the buffer doesn't have a size which is a multiple of the bits per frame, we currently drop the extra bits.
 				GetNextBuffer ();
 				if (first_size == 0 || first_used + bpf > first_size) {
-					if ((gint32) frames <= count + 1)
+					if ((gint32) frames <= count + 1) {
+						if (mmap) {
+							commitres = snd_pcm_mmap_commit (pcm, offset, 0);
+						} else {
+							g_free (areas [0].addr);
+							g_free (areas);
+						}
 						return result; // We haven't read anything
+					}
 					
 					// Set 'frames' to how many frames we got
 					frames = frames - (count + 1);
@@ -1970,6 +1977,8 @@ AudioPlayer::AudioNode::Play ()
 			// a full buffer (in order to play nicely when we're playing more than one audio source
 			// at the same time).
 			commitres = snd_pcm_writei (pcm, areas [0].addr, frames);
+			g_free (areas [0].addr);
+			g_free (areas);
 			if (commitres < 0 || (snd_pcm_uframes_t) commitres != frames) {
 				if (!XrunRecovery (commitres >= 0 ? -EPIPE : commitres)) {
 					fprintf (stderr, "AudioPlayer: could not write audio data: %s\n", snd_strerror(err));
@@ -1977,8 +1986,6 @@ AudioPlayer::AudioNode::Play ()
 				}
 				started = false;
 			}
-			g_free (areas [0].addr);
-			g_free (areas);
 		}
 		size -= frames;
 		

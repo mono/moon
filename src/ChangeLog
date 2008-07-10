@@ -1,5 +1,9 @@
 2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: Fix a couple of leaks.
+
+2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp: There's no need to call AudioPlayer::Initialize
 	  anymore.
 	* runtime.cpp, runtime.h: Added
