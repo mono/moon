@@ -202,13 +202,27 @@ class AudioPlayer {
 		WaitingForData
 	};
 	
+	enum AudioAction {
+		ActionPlay,
+		ActionPause,
+		ActionRestart,
+		ActionStop,
+		ActionRemove,
+		ActionAdd,
+		ActionDrain,
+		ActionShutdown
+	};
+	
 	struct AudioNode  {
+	private:
 		MediaPlayer *mplayer;
 		
+	public:
 		snd_pcm_t *pcm;
 		snd_pcm_hw_params_t *hwparams;
 		snd_pcm_sw_params_t *swparams;
 		snd_pcm_uframes_t sample_size;
+		bool mmap;
 		pollfd *udfs;
 		int ndfs;
 		snd_pcm_uframes_t buffer_size;
@@ -224,14 +238,17 @@ class AudioPlayer {
 		guint64 updated_pts;
 		guint64 sent_pts;
 		guint64 sent_samples;
+		guint32 channels;
+		int sample_rate;
 		
-		AudioNode ();
+		AudioNode (MediaPlayer *mplayer);
 		~AudioNode ();
 		
 		bool GetNextBuffer ();
 		bool Initialize ();
 		bool SetupHW ();
 		bool PreparePcm (snd_pcm_sframes_t *avail);
+		MediaPlayer *GetMediaPlayer () { return mplayer; }
 		
 		// Underrun recovery
 		// Handles EPIPE and ESTRPIPE, prints an error if recovery failed
@@ -248,18 +265,20 @@ class AudioPlayer {
 		void Close ();
 	};
 	
-	// This value will be false if initialization fails (no audio devices, etc).
-	bool initialized;
+	class AudioListNode : public List::Node {
+	public:
+		AudioAction action;
+		MediaPlayer *mplayer;
+		AudioListNode (MediaPlayer *mplayer, AudioAction action);
+		virtual ~AudioListNode ();
+	};
 	
-	// The Loop will exit once this value is true
-	bool shutdown;
+	Queue work;
 	
 	// A list of all the audio nodes.
 	AudioNode **list;
 	guint32 list_size;
 	guint32 list_count;
-	
-	sem_t semaphore;
 	
 	// A list of all the file descriptors in all the 
 	// audio nodes. We need to poll on changes in any of the 
@@ -267,7 +286,7 @@ class AudioPlayer {
 	// and poll on that.
 	pollfd *udfs;
 	int ndfs;
-	void UpdatePollList (bool locked);
+	void UpdatePollList ();
 	
 	// We also need to be able to wake up from the poll
 	// whenever we want to, so we create a pipe which we
@@ -278,13 +297,10 @@ class AudioPlayer {
 	AudioPlayer ();
 	~AudioPlayer ();
 	
-	void StartThread ();
-	void StopThread ();
-	
 	AudioNode *Find (MediaPlayer *mplayer);
 	
 	// The audio thread	
-	pthread_t *audio_thread;
+	pthread_t audio_thread;
 	
 	// The audio loop which is executed 
 	// on the audio thread.
@@ -293,25 +309,24 @@ class AudioPlayer {
 	
 	// our AudioPlayer instance
 	static AudioPlayer *instance;
-	static AudioPlayer *Instance ();
-	static bool Initialize ();
+	static pthread_mutex_t instance_mutex;
 	
-	void Lock (); // tries to wait on the semaphore, and if not successful, wakes up the audio thread and tries again.
-	void SimpleLock (); // just waits on the semaphore
-	void Unlock ();
-	
-	bool AddInternal (MediaPlayer *mplayer);
+	void AddInternal (MediaPlayer *mplayer);
 	void RemoveInternal (MediaPlayer *mplayer);
 	void PauseInternal (MediaPlayer *mplayer, bool value);
 	void StopInternal (MediaPlayer *mplayer);
 	void PlayInternal (MediaPlayer *mplayer);
 	void DrainInternal (MediaPlayer *mplayer);
+	void ShutdownInternal ();
 	void WaitForData (AudioNode *node);
 	
+	void AddWork (MediaPlayer *mplayer, AudioAction action);
+	
  public:
-	// None of the following functions are thread-safe, they must all be called from 
-	// the main thread.
-	static bool Add (MediaPlayer *mplayer);
+	// The following methods are thread-safe.
+	// They are also async, the actions are just passed 
+	// on to the audio thread.
+	static void Add (MediaPlayer *mplayer);
 	static void Remove (MediaPlayer *mplayer);
 	static void Pause (MediaPlayer *mplayer, bool value);
 	static void Stop (MediaPlayer *mplayer);

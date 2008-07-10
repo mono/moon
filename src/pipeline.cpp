@@ -249,8 +249,6 @@ Media::Initialize ()
 #else
 	Media::RegisterDecoder (new NullMp3DecoderInfo ());
 #endif
-	
-	AudioPlayer::Initialize ();
 }
 
 void
@@ -1282,7 +1280,7 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 		text = wchar_to_utf8 (uni_text, text_length);
 		type = wchar_to_utf8 (uni_type, type_length);
 		
-		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): sending script command type: '%s', text: '%s'.\n", type, text);
+		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): sending script command type: '%s', text: '%s', pts: '%llu'.\n", type, text, frame->pts);
 
 		frame->buffer = (guint8 *) new MediaMarker (type, text, frame->pts);
 		frame->buflen = sizeof (MediaMarker);
@@ -2784,6 +2782,7 @@ ProgressiveSource::NotifyFinished ()
 bool
 ProgressiveSource::SeekToPts (guint64 pts)
 {
+	LOG_PIPELINE ("ProgressiveSource::SeekToPts (%llu) last_requested_pts: %llu\n", pts, last_requested_pts);
 
 	if (last_requested_pts == pts)
 		return true;
@@ -2803,6 +2802,8 @@ ProgressiveSource::SeekToPts (guint64 pts)
 
 	Unlock ();
 
+	LOG_PIPELINE ("ProgressiveSource::SeekToPts (%llu) [Done] last_requested_pts: %llu\n", pts, last_requested_pts);
+	
 	return !Aborted ();
 }
 

@@ -1,3 +1,15 @@
+2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: There's no need to call AudioPlayer::Initialize
+	  anymore.
+	* runtime.cpp, runtime.h: Added
+	  RUNTIME_INIT_AUDIO_NO_MMAP/audio=mmap|rw to runtime flags.
+	* mplayer.cpp, mplayer.h: Implement support for using RW access mode in
+	  addition to the already supported MMAP access mode for alsa. This
+	  also required a major refactoring to only call alsa on the audio
+	  thread due to buggy pulseaudio hanging us (and the rest of the
+	  machine) otherwise.
+
 2008-07-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp|h: (ComputeStretchBounds) Move shape-specific code

@@ -99,7 +99,9 @@ static struct {
 	{ "updatepos=yes",     RUNTIME_INIT_USE_UPDATE_POSITION,   true  },
 	{ "updatepos=no",      RUNTIME_INIT_USE_UPDATE_POSITION,   false },
 	{ "windowless=yes",    RUNTIME_INIT_ALLOW_WINDOWLESS,      true  },
-	{ "windowless=no",     RUNTIME_INIT_ALLOW_WINDOWLESS,      false }
+	{ "windowless=no",     RUNTIME_INIT_ALLOW_WINDOWLESS,      false },
+	{ "audio=mmap",        RUNTIME_INIT_AUDIO_NO_MMAP,         false },
+	{ "audio=rw",          RUNTIME_INIT_AUDIO_NO_MMAP,         true },
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
