@@ -1223,10 +1223,8 @@ FontFace::LoadGlyph (double size, GlyphInfo *glyph)
 	
 	glyph->metrics.horiBearingX = DOUBLE_FROM_26_6 (metrics->horiBearingX) * scale;
 	glyph->metrics.horiBearingY = DOUBLE_FROM_26_6 (metrics->horiBearingY) * scale;
-	if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
-		glyph->metrics.horiAdvance = DOUBLE_FROM_16_16 (face->glyph->linearHoriAdvance) * scale;
-	else
-		glyph->metrics.horiAdvance = DOUBLE_FROM_26_6 (metrics->horiAdvance) * scale;
+	// always prefer linearHoriAdvance over horiAdvance since the later is rounded to an integer
+	glyph->metrics.horiAdvance = DOUBLE_FROM_16_16 (face->glyph->linearHoriAdvance) * scale;
 	glyph->metrics.height = DOUBLE_FROM_26_6 (metrics->height) * scale;
 	glyph->metrics.width = DOUBLE_FROM_26_6 (metrics->width) * scale;
 	

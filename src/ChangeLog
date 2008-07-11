@@ -1,3 +1,10 @@
+2008-07-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* font.cpp: (FontFace::LoadGlyph) Use linearHoriAdvance instead 
+	of horiAdvance since the later is rounded to an integer. FixMS
+	DRT#45 and get better results (less differences) on many font
+	related tests.
+
 2008-07-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* http-streaming.cpp, playlist.cpp: Add missing #include <config.h>
