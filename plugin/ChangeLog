@@ -1,3 +1,8 @@
+2008-07-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* npstream-request.cpp, plugin-entry.cpp: Add missing #include
+	  <config.h>
+
 2008-07-10  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* plugin-proxy.cpp: Include config.h (which got un-included

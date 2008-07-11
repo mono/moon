@@ -10,6 +10,7 @@
  * 
  */
 
+#include <config.h>
 #include <string.h>
 
 #include "http-streaming.h"

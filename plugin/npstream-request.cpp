@@ -10,6 +10,7 @@
  *
  */
 
+#include <config.h>
 #include "plugin-downloader.h"
 #include "browser-bridge.h"
 #include "npstream-request.h"

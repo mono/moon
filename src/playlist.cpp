@@ -9,6 +9,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+#include <config.h>
 #include <expat.h>
 #include <string.h>
 #include <math.h>
