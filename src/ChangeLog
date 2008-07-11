@@ -1,3 +1,8 @@
+2008-07-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* font.cpp: (font_conic_to) Directly use moon_quad_curve_to 
+	instead of doing it's own second to third order calculation.
+
 2008-07-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Don't store target pts from audio thread if we're paused

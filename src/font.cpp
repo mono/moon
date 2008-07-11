@@ -1133,13 +1133,8 @@ static int
 font_conic_to (FT_Vector *control, FT_Vector *to, void *user_data)
 {
 	moon_path *path = (moon_path *) user_data;
-	double x0, y0;
-	double x1, y1;
-	double x2, y2;
 	double x3, y3;
 	double x, y;
-	
-	moon_get_current_point (path, &x0, &y0);
 	
 	x = DOUBLE_FROM_26_6 (control->x);
 	y = DOUBLE_FROM_26_6 (control->y);
@@ -1147,13 +1142,7 @@ font_conic_to (FT_Vector *control, FT_Vector *to, void *user_data)
 	x3 = DOUBLE_FROM_26_6 (to->x);
 	y3 = DOUBLE_FROM_26_6 (to->y);
 	
-	x1 = x0 + 2.0/3.0 * (x - x0);
-	y1 = y0 + 2.0/3.0 * (y - y0);
-	
-	x2 = x3 + 2.0/3.0 * (x - x3);
-	y2 = y3 + 2.0/3.0 * (y - y3);
-	
-	moon_curve_to (path, x1, y1, x2, y2, x3, y3);
+	moon_quad_curve_to (path, x, y, x3, y3);
 	
 	return 0;
 }
