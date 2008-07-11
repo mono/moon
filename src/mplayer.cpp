@@ -827,7 +827,7 @@ MediaPlayer::SetTargetPts (guint64 pts)
 {
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::SetTargetPts (%llu = %llu ms), current_pts: %llu, IsSeeking (): %i\n", pts, MilliSeconds_FromPts (pts), current_pts, IsSeeking ());
 
-	if (IsSeeking ())
+	if (IsSeeking () || IsPaused ())
 		return;
 
 	pthread_mutex_lock (&target_pts_lock);
