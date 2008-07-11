@@ -1,6 +1,6 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
-	<Rectangle Fill="#FFFF0000" Canvas.Left="10" Canvas.Top="10" Width="50" Height="50" ZIndex="5" />
-	<Rectangle Fill="#FF00FF00" Canvas.Left="20" Canvas.Top="10" Width="50" Height="50" RadiusX="10" RadiusY="10" ZIndex="1"/>
+	<Rectangle Fill="#FFFF0000" Canvas.Left="10" Canvas.Top="10" Width="50" Height="50" Canvas.ZIndex="5" />
+	<Rectangle Fill="#FF00FF00" Canvas.Left="20" Canvas.Top="10" Width="50" Height="50" RadiusX="10" RadiusY="10" Canvas.ZIndex="1"/>
 
 </Canvas>

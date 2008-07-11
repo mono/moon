@@ -8,12 +8,12 @@
        <BeginStoryboard>
         <Storyboard x:Name="sb_1" 
           BeginTime="0:0:0"
-          RepeatBehavior="0:0:3">
+          RepeatBehavior="2x">
           <DoubleAnimation x:Name="anim_1" 
             Storyboard.TargetName="rect1"
             Storyboard.TargetProperty="(Canvas.Left)"
             To="200"
-	    Duration="00:00:05"
+	    Duration="00:00:02"
           />
         </Storyboard>
        </BeginStoryboard>

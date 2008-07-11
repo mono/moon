@@ -1,6 +1,6 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	
-	<!--  Test case for Bug 352072  ->
+	<!--  Test case for Bug 352072  -->
         <!-- a "dot" (same X and Y) is invisible unless line caps are used -->
         
         <Line Stroke="Black" StrokeThickness="5" X1="10" Y1="10" X2="10" Y2="10" />

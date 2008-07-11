@@ -854,11 +854,12 @@
 	 />
    <Test id="188"
 	 inputFile="test-animation-zero-repeat-behavior.xaml"
-	 masterFile10="../harness/masters/test-animation-zero-repeat-behaviorMaster.png"
+	 masterFile10="../harness/masters/test-animation-zero-repeat-behaviorMaster.tif"
+	 captureSpecifier="300,15"	 
 	 />
    <Test id="189"
 	 inputFile="test-animation-zero-duration.xaml"
-	 masterFile10="../harness/masters/test-animation-zero-durationMaster.png"
+	 masterFile10="../harness/masters/test-animation-zero-durationMaster.tif"
 	 captureSpecifier="0,1,10000"
 	 />
    <Test id="190"
@@ -873,32 +874,32 @@
 	 />
    <Test id="192"
 	 inputFile="test-animation-nested-storyboard.xaml"
-	 masterFile10="../harness/masters/test-animation-nested-storyboardMaster.png"
-	 captureSpecifier="0,1,10000"
-	 />
+	 masterFile10="../harness/masters/test-animation-nested-storyboardMaster.tif"
+	 captureSpecifier="300,15"
+        />
    <Test id="193"
 	 inputFile="test-animation-only-from.xaml"
-	 masterFile10="../harness/masters/test-animation-only-fromMaster.png"
-	 captureSpecifier="0,1,10000"
-	 />
+	 masterFile10="../harness/masters/test-animation-only-fromMaster.tif"
+	 captureSpecifier="300,15"
+        />
    <Test id="194"
 	 inputFile="test-animation-hold-stop-speed.xaml"
-	 masterFile10="../harness/masters/test-animation-hold-stop-speedMaster.png"
-	 captureSpecifier="0,1,10000"
-	 />
+	 masterFile10="../harness/masters/test-animation-hold-stop-speedMaster.tif"
+	 captureSpecifier="300,15"
+        />
    <Test id="195"
 	 inputFile="test-animation-repeat-behavior.xaml"
-	 masterFile10="../harness/masters/test-animation-repeat-behaviorMaster.png"
-	 captureSpecifier="0,1,10000"
-	 />
+	 masterFile10="../harness/masters/test-animation-repeat-behaviorMaster.tif"
+	 captureSpecifier="300,15"
+         />
    <Test id="196"
 	 inputFile="test-stroke-thickness.xaml"
-	 masterFile10="../harness/masters/test-stroke-thicknessMaster.png"
-	 captureSpecifier="0,1,10000"
-	 />
+	 masterFile10="../harness/masters/test-stroke-thicknessMaster.tif"
+	 captureSpecifier="300,15"
+         />
    <Test id="197"
 	inputFile="test-shape-ellipse-matrix.xaml"
-	masterFile10="../harness/masters/test-shape-ellipse-matrixMaster.png"
+	masterFile10="../harness/masters/test-shape-ellipse-matrixMaster.tif"
 	categories="ellipse"
    />
 </DRTList>

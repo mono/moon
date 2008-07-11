@@ -1,5 +1,9 @@
 <Canvas xmlns="http://schemas.microsoft.com/client/2007">
-  <TextBlock Canvas.Left="10" Text="I am a TextBlock!!" />
-  
-  <TextBlock Cursor="IBeam" Canvas.Left="10" Canvas.Top="100" Stroke="Red">I am the other textblock</TextBlock>
+	<TextBlock Canvas.Left="10" Text="I am a TextBlock!!" />
+
+	<TextBlock Cursor="IBeam" Canvas.Left="10" Canvas.Top="100">I am the other textblock
+		<TextBlock.Foreground>
+			<SolidColorBrush Color="Red"/>
+		</TextBlock.Foreground>
+	</TextBlock>
 </Canvas>
