@@ -2121,6 +2121,9 @@ AudioPlayer::AudioNode::GetNextBuffer ()
 	MediaFrame *frame = NULL;
 	Packet *packet = NULL;
 	
+	if (mplayer->GetEof ())
+		return false;
+
 	if (first_buffer) {
 		g_free (first_buffer);
 		first_buffer = NULL;

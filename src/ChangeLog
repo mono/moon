@@ -1,4 +1,10 @@
-2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-07-14  Geoff Norton  <gnorton@novell.com>
+
+	* mplayer.cpp: If we've already reached the EOF in the audio stream
+	don't keep processing GetNextBuffer.  This was causing us to emit
+	MediaEnded more than once, causing failures in the test suite.
+ 
+2008-07-14  Geoff Norton  <gnorton@novell.com>
 
 	* downloader.cpp:  Change completed to check a bool instead of 
 	filename, as filename can now be set before the downloader is in fact
