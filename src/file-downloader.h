@@ -3,7 +3,7 @@
  * file-downloader.h: File Downloader class.
  *
  * Contact:
- *   Moonlight List (moonlist-list@lists.ximian.com)
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
@@ -44,6 +44,7 @@ class FileDownloader : public InternalDownloader {
 	void Write (void *buf, gint32 offset, gint32 n);
 	char *GetDownloadedFilename (const char *partname);
 	char *GetResponseText (const char *partname, guint64 *size);
+	virtual InternalDownloader::DownloaderType GetType () { return InternalDownloader::FileDownloader; }
 	
 	const char *GetDownloadedFile ();
 

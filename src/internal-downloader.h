@@ -3,7 +3,7 @@
  * downloader.h: Downloader class.
  *
  * Contact:
- *   Moonlight List (moonligt-list@lists.ximian.com)
+ *   Moonlight List (moonlight-list@lists.ximian.com)
  *
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
@@ -19,6 +19,11 @@
 class Downloader;
 
 class InternalDownloader {
+ public:
+ 	enum DownloaderType {
+	 	MmsDownloader,
+	 	FileDownloader,
+ 	};
  protected:
 	Downloader *dl;
 
@@ -36,6 +41,7 @@ class InternalDownloader {
 	virtual void Write (void *buf, gint32 offset, gint32 n) = 0;
 	virtual char *GetResponseText (const char *partname, guint64 *size) = 0; 
 	virtual char *GetDownloadedFilename (const char *partname) = 0;
+	virtual DownloaderType GetType () = 0;
 };
 
 #endif

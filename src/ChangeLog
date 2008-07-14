@@ -1,5 +1,37 @@
 2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* internal-downloader.h: Add InternalDownloader::GetType to allow the
+	  derived internal downloader to tell what kind of internal
+	  downloader it is.
+	* file-downloader.h: Implement InternalDownloader::GetType.
+	* downloader.h: Make the internal downloader publicly accessible. Add a
+	  Downloader::IsAborted method.
+	* mms-downloader.h, mms-downloader.cpp: Implement
+	  InternalDownloader::GetType. Store the ASFParser we create in the
+	  class instance, so that the pipeline can get it. No need to write
+	  the header packet to the stream anymore.
+	* media.cpp: Don't unref in AddTickCall callbacks anymore. Fix
+	  calculation of buffering progress to take into account that the
+	  currently available pts might be before the last played pts.
+	* mplayer.cpp, mplayer.h, downloader.cpp: Don't unref in AddTickCall
+	  callbacks anymore.
+	* pipeline.cpp, pipeline.h: Make the Media ctor take a Downloader
+	  argument and access the internal mms downloader on that Downloader
+	  to get the asf parser. Remove Read/Seek support from
+	  MemoryQueueSource, and just add a Pop method which returns a
+	  MemorySource for the next packet in the queue. Also add support to
+	  return all the packets in the queue as an array so that the
+	  ASFParser can easily determine the last pts available.
+	* clock.cpp, clock.h: Use our own thread-safe Queue instead of GList +
+	  g_mutex. Also make TickCall take a ref to the data parameter until
+	  the tick call has been made. This also ensures that the data
+	  parameter gets unreffed correctly when the tick call is never made
+	  (such as when we skip calls due to the TimeManager getting shut
+	  down).
+	* dependencyobject.cpp: Don't ref in AddTickCall anymore.
+
+2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* playlist.cpp: Fix warning.
 
 2008-07-11  Sebastien Pouliot  <sebastien@ximian.com>

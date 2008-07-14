@@ -22,6 +22,7 @@ G_BEGIN_DECLS
 #include "clock.h"
 #include "downloader.h"
 #include "http-streaming.h"
+#include "pipeline.h"
 
 #define MMS_DATA		0x44
 #define MMS_HEADER	      0x48
@@ -84,6 +85,8 @@ class MmsDownloader : public InternalDownloader {
 	bool described;
 	bool seekable;
 	bool seeked;
+	
+	ASFParser *parser;
 
 	void AddAudioStream (int index, int bitrate) { audio_streams [index] = bitrate; if (bitrate > best_audio_stream_rate) { best_audio_stream_rate = bitrate; best_audio_stream = index; } }
 	void AddVideoStream (int index, int bitrate) { video_streams [index] = bitrate; if (bitrate > best_video_stream_rate) { best_video_stream_rate = bitrate; best_video_stream = index; } }
@@ -106,6 +109,9 @@ class MmsDownloader : public InternalDownloader {
 	void Write (void *buf, gint32 offset, gint32 n);
 	char *GetDownloadedFilename (const char *partname);
 	char *GetResponseText (const char *partname, guint64 *size);
+	virtual InternalDownloader::DownloaderType GetType () { return InternalDownloader::MmsDownloader; }
+	
+	ASFParser *GetASFParser () { return parser; }
 };
 
 G_END_DECLS

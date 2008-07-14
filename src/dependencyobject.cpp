@@ -198,7 +198,6 @@ EventObject::AddTickCallInternal (TickCallHandler handler)
 		return;
 	}
 
-	ref ();
 	timemanager->AddTickCall (handler, this);
 }
 

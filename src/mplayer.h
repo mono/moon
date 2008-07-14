@@ -191,6 +191,10 @@ class MediaPlayer : public EventObject {
 	
 	void SetTargetPts (guint64 pts);
 	guint64 GetTargetPts ();
+	
+#if OBJECT_TRACKING
+	virtual const char * GetTypeName () { return "MediaPlayer"; }
+#endif
 };
 
 class AudioPlayer {

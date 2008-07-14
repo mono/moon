@@ -163,7 +163,6 @@ set_source_async (EventObject *user_data)
 	MediaBase *media = (MediaBase *) user_data;
 	
 	media->SetSourceAsyncCallback ();
-	media->unref ();
 }
 
 void
@@ -403,7 +402,6 @@ void
 MediaElement::AddStreamedMarkersCallback (EventObject *obj)
 {
 	((MediaElement *) obj)->AddStreamedMarkers ();
-	obj->unref ();
 }
 
 void
@@ -1070,8 +1068,13 @@ MediaElement::GetBufferedSize ()
 	demuxer = media ? media->GetDemuxer () : NULL;
 	currently_available_pts = demuxer ? demuxer->GetLastAvailablePts () : 0;
 		
-	// Check that we don't cause any div/0.		
-	if (current_pts - last_played_pts + buffer_pts == currently_available_pts - last_played_pts) {
+	// Check that we don't cause any div/0.
+	if (currently_available_pts == 0) {
+		progress = 0.0;
+	} else if (currently_available_pts < last_played_pts) {
+		last_played_pts = currently_available_pts;
+		progress = 0.0;
+	} else if (current_pts - last_played_pts + buffer_pts == currently_available_pts - last_played_pts) {
 		progress = 1.0;
 	} else {
 		progress = (double) (currently_available_pts - last_played_pts) / (double) (current_pts - last_played_pts + buffer_pts);
@@ -1081,7 +1084,7 @@ MediaElement::GetBufferedSize ()
 			"buffer_pts: %llu = %llu ms, "
 			"last_played_pts: %llu = %llu ms, "
 			"current_pts: %llu = %llu ms, "
-			"last_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
+			"currently_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
 			buffer_pts, MilliSeconds_FromPts (buffer_pts),
 			last_played_pts, MilliSeconds_FromPts (last_played_pts),
 			current_pts, MilliSeconds_FromPts (current_pts),
@@ -1136,7 +1139,7 @@ MediaElement::UpdateProgress ()
 		// Emit the event if it's 100%, or a change of at least 0.05%
 		if (emit || (progress == 1.0 && current != 1.0) || (progress - current) >= 0.0005) {
 			SetBufferingProgress (progress);
-			//printf ("Emitting BufferingProgressChanged: progress: %.3f, current: %.3f\n", progress, current);
+			//printf ("MediaElement::UpdateProgress (): Emitting BufferingProgressChanged: progress: %.3f, current: %.3f\n", progress, current);
 			Emit (BufferingProgressChangedEvent);
 		}
 		
@@ -1289,10 +1292,8 @@ MediaElement::TryOpenFinished (EventObject *user_data)
 	element->closure = NULL;
 	element->flags &= ~WaitingForOpen;
 	
-	if (!closure) {
-		element->unref ();
+	if (!closure)
 		return;
-	}
 	
 	if (MEDIA_SUCCEEDED (closure->result)) {
 		d(printf ("MediaElement::TryOpen (): download is not complete, but media was "
@@ -1308,7 +1309,6 @@ MediaElement::TryOpenFinished (EventObject *user_data)
 	}
 	
 	delete closure;
-	element->unref ();
 }
 
 void
@@ -1393,7 +1393,7 @@ MediaElement::TryOpen ()
 	} else if (!(flags & BufferingFailed)) {
 		flags |= WaitingForOpen;
 		
-		Media *media = new Media (this);
+		Media *media = new Media (this, downloader);
 		
 		MediaClosure *closure = new MediaClosure (media_element_open_callback);
 		closure->SetContext (this);
@@ -1595,7 +1595,6 @@ void
 MediaElement::PauseNow (EventObject *data)
 {
 	((MediaElement *) data)->PauseNow ();
-	((MediaElement *) data)->unref ();
 }
 
 void
@@ -1638,8 +1637,6 @@ void
 MediaElement::PlayNow (EventObject *data)
 {
 	((MediaElement *) data)->PlayNow ();
-	// AddTickCall refs us, unref us here.
-	((MediaElement *) data)->unref ();
 }
 
 void
@@ -1704,7 +1701,6 @@ void
 MediaElement::StopNow (EventObject *data)
 {
 	((MediaElement *) data)->StopNow ();
-	((MediaElement *) data)->unref ();
 }
 
 void
@@ -1813,7 +1809,6 @@ void
 MediaElement::SeekNow (EventObject *data)
 {
 	((MediaElement *) data)->SeekNow ();
-	((MediaElement *) data)->unref ();
 }
 
 void

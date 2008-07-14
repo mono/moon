@@ -482,9 +482,7 @@ class TimeManager : public EventObject {
 
 	TimeSource *source;
 
-	GMutex *tick_call_mutex;
-
-	GList *tick_calls;
+	Queue tick_calls;
 
 	GList *registered_timeouts;
 };

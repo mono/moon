@@ -289,6 +289,7 @@ private:
 	bool stopped; // If the worker thread has been stopped.
 	
 	MediaElement *element;
+	Downloader *downloader;
 
 	//	Called on another thread, loops the queue of requested frames 
 	//	and calls GetNextFrame and FrameReadCallback.
@@ -298,23 +299,14 @@ private:
 	static void *WorkerLoop (void *data);
 	void EnqueueWork (MediaWork *work);	
 	void StopThread (); // Stops the worker thread.
+
+	void Init (MediaElement *element, Downloader *dl);
 	
 protected:
 	~Media ();
 
 public:
-	Media (MediaElement *element);
-	
-	// 1. Initialize the media with a file or url (this does not read any data, but it creates the source objects and prepares for downloading content, if necessary).
-	// 2. Open it (this reads headers and initializes streams)
-	
-	//	If it's a file, just open it with FileStream.
-	//	If it's a url:
-	//	 mms://		try to open with LiveStream, fallback to ProgressiveStream.
-	//	 http(s)://	try to open with ProgressiveStream, fallback to LiveStream
-	//   file://	try to open with FileSource
-	//	 others://	no idea (FIXME).
-	MediaResult Initialize (const char *file_or_url); 
+	Media (MediaElement *element, Downloader *dl = NULL);
 	
 	//	Determines the container type and selects a demuxer
 	//	- Default is to use our own ASF demuxer (if it's an ASF file), otherwise use ffmpeg (if available). Overridable by the environment variable MOONLIGHT_OVERRIDES, set demuxer=ffmpeg to force the ffmpeg demuxer.
@@ -367,6 +359,10 @@ public:
 
 	static Queue* media_objects;
 	static int media_thread_count;
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "Media"; }
+#endif
 };
  
 class MediaFrame {
@@ -436,6 +432,10 @@ public:
 	IMediaObject (Media *media);
 	
 	Media *GetMedia () { return media; }
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "IMediaObject"; }
+#endif
 };
 
 
@@ -485,6 +485,10 @@ public:
 	// 0-based index of the stream in the media
 	// set by the demuxer, until then its value must be -1
 	int index; 
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "IMediaStream"; }
+#endif
 };
 
 class IMediaDemuxer : public IMediaObject {
@@ -519,6 +523,10 @@ public:
 	virtual const char *GetName () = 0;
 	virtual void UpdateSelected (IMediaStream *stream) {};
 	virtual guint64 GetLastAvailablePts () { return 0; }
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return GetName (); }
+#endif
 };
 
 class IMediaDecoder : public IMediaObject {
@@ -537,6 +545,10 @@ public:
 	virtual bool HasDelayedFrame () { return false; }
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream *stream;
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "IMediaDecoder"; }
+#endif
 }; // Set when this is the callback in Media::GetNextFrameAsync
 
 
@@ -556,6 +568,10 @@ public:
 	
 	virtual MediaResult Open () = 0;
 	virtual MediaResult Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8 *dest[], int dstStride []) = 0;
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "IImageConverter"; }
+#endif
 };
 
 /*
@@ -577,8 +593,8 @@ private:
 	// locked. If a derived virtual method needs to lock, it needs
 	// to be implemented as a protected virtual method xxxInternal
 	// which requires the mutex to be locked, and then a public 
-	// method in IMediaSource which does the locking. No public in 
-	// IMediaSource may be called from the xxxInternal methods.
+	// method in IMediaSource which does the locking. No public method
+	// in IMediaSource may be called from the xxxInternal methods.
 	pthread_mutex_t mutex;
 	pthread_cond_t condition;
 
@@ -676,6 +692,10 @@ public:
 	virtual const char *ToString () { return "IMediaSource"; }
 
 	virtual void Write (void *buf, gint64 offset, gint32 n) { return; }
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "IMediaSource"; }
+#endif
 };
 
 // Implementations
@@ -714,6 +734,10 @@ public:
 	virtual const char *ToString () { return filename; }
 
 	const char *GetFileName () { return filename; }
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "FileSource"; }
+#endif
 };
 
 class ProgressiveSource : public FileSource {
@@ -749,6 +773,9 @@ public:
 	virtual bool CanSeekToPts () { return is_live && size > 0; }
 	virtual bool SeekToPts (guint64 pts);
 
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "ProgressiveSource"; }
+#endif
 };
 
 /*
@@ -799,6 +826,7 @@ public:
 	void Release (void) { delete this; }
 
 	void SetOwner (bool value) { owner = value; }
+	gint64 GetStart () { return start; }
 
 	virtual MediaResult Initialize () { return MEDIA_SUCCESS; }
 	virtual MediaSourceType GetType () { return MediaSourceTypeMemory; }
@@ -807,21 +835,21 @@ public:
 	virtual bool Eof () { return pos >= size; }
 
 	virtual const char *ToString () { return "MemorySource"; }
+
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "MemorySource"; }
+#endif
 };
 
 class MemoryQueueSource : public IMediaSource {
 private:
-	GQueue *queue;
-	gint64 start;
-	gint64 end;
-	gint64 size;
+	Queue queue;
 	bool finished;
 	guint64 requested_pts;
 	guint64 last_requested_pts;
-	MemorySource *current;
+	guint64 write_count;
 
 protected:
-
 	virtual gint32 ReadInternal (void *buf, guint32 n);
 	virtual gint32 PeekInternal (void *buf, guint32 n, gint64 start);
 	virtual bool SeekInternal (gint64 offset, int mode);
@@ -830,10 +858,19 @@ protected:
 	void WaitForQueue ();
 
 public:
+	class QueueNode : public List::Node {
+	 public:
+		MemorySource *source;
+		ASFPacket *packet; // TODO: Determine ownership and delete accordingly (maybe refcount)
+		QueueNode (MemorySource *src, ASFPacket *packet = NULL);
+		virtual ~QueueNode ();
+	};
+	
 	MemoryQueueSource (Media *media);
 	virtual ~MemoryQueueSource ();
 	void AddPacket (MemorySource *packet);
-	MemorySource *GetCurrent () { return current; }
+	MemorySource *Pop (); // Pops the first memory source from the queue. TODO: If the source already has a packet associated, return that too.
+	bool Advance (); 
 
 	virtual void NotifySize (gint64 size);
 	virtual void NotifyFinished ();
@@ -845,11 +882,25 @@ public:
 	virtual void Write (void *buf, gint64 offset, gint32 n);
 	
 	virtual bool CanSeek () { return true; }
-	virtual bool Eof () { return size >= end; }
+	virtual bool Eof () { return finished && queue.IsEmpty (); }
 
 	virtual const char *ToString () { return "MemoryQueueSource"; }
-	virtual bool CanSeekToPts () { return size > 0; }
+	virtual bool CanSeekToPts () { return true; }
 	virtual bool SeekToPts (guint64 pts);
+	
+	bool IsFinished () { return finished; } // If the server sent the MMS_END packet.
+	
+	// Returns the queue as a NULL terminated array, first item in the queue is first in the array.
+	// The caller must free the array and delete each element.
+	// If the queue is empty, returns NULL
+	QueueNode **ToArray ();
+	
+	// Stores the specified packet with the source in the queue.
+	void SetASFPacket (MemorySource *source, ASFPacket *packet);
+
+#if DEBUG
+	virtual const char* GetTypeName () { return "MemoryQueueSource"; }
+#endif
 };
 
 
@@ -871,6 +922,10 @@ public:
 	
 	virtual MoonMediaType GetType () { return MediaTypeVideo; } 
 	guint32 GetBitRate () { return (guint32) bit_rate; }
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "VideoStream"; }
+#endif
 };
  
 class AudioStream : public IMediaStream {
@@ -888,6 +943,10 @@ public:
 	
 	virtual MoonMediaType GetType () { return MediaTypeAudio; }
 	guint32 GetBitRate () { return (guint32) bit_rate; }
+	
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "AudioStream"; }
+#endif
 };
 
 /*
@@ -943,6 +1002,7 @@ public:
 	virtual void UpdateSelected (IMediaStream *stream);
 	
 	ASFParser *GetParser () { return parser; }
+	void SetParser (ASFParser *parser);
 	virtual const char *GetName () { return "ASFDemuxer"; }
 	virtual guint64 GetLastAvailablePts ();
 };

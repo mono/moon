@@ -239,7 +239,6 @@ send_async (EventObject *user_data)
 	Downloader *downloader = (Downloader *) user_data;
 	
 	downloader->SendInternal ();
-	downloader->unref ();
 }
 
 void

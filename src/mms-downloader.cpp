@@ -58,6 +58,8 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 	p_packet_times [0] = 0;
 	p_packet_times [1] = 0;
 	p_packet_times [2] = 0;
+	
+	parser = NULL;
 }
 
 MmsDownloader::~MmsDownloader ()
@@ -199,8 +201,10 @@ MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payloa
 	case MMS_DATA:
 		return ProcessDataPacket (header, packet, payload, offset);
 	case MMS_END:
+		LOG_MMS ("MmsDownloader::ProcessPacket (): Got MMS_END packet\n");
 		return true; // TODO: Do we need to do something here?
 	case MMS_STREAM_C:
+		LOG_MMS ("MmsDownloader::ProcessPacket (): Got MMS_STREAM_C packet\n");
 		return true; // TODO: Do we need to do something here?
 	}
 	
@@ -212,23 +216,44 @@ MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payloa
 bool
 MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
+	asf_file_properties *properties;
+	ASFParser *parser;
+	
 	LOG_MMS ("MmsDownloader::ProcessHeaderPacket ()\n");
 	
 	if (seeked)
 		return true;
 
-	MemorySource *asf_src = new MemorySource (NULL, payload, header->length-sizeof (MmsDataPacket), 0);
-	ASFParser *parser = new ASFParser (asf_src, NULL);
-
-	asf_src->SetOwner (false);
-	asf_src->unref ();
-	if (!parser->ReadHeader ()) {
-		asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
-		delete parser;
-		return true;
+	if (this->parser == NULL) {
+		ASFDemuxerInfo *dx_info = new ASFDemuxerInfo ();
+		MemorySource *asf_src = new MemorySource (NULL, payload, header->length - sizeof (MmsDataPacket), 0);
+		
+		if (!dx_info->Supports (asf_src)) {
+			// TODO: What should we do here?
+			asf_packet_size = ASF_DEFAULT_PACKET_SIZE,
+			delete dx_info;
+			asf_src->unref ();
+			return true;
+		}
+		
+		parser = new ASFParser (asf_src, NULL);
+		
+		asf_src->SetOwner (false);
+		asf_src->unref ();
+		if (!parser->ReadHeader ()) {
+			// TODO: And what should we do here?
+			asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
+			delete parser;
+			parser = NULL;
+			return true;
+		}
+		
+		this->parser = parser;
+	} else {
+		parser = this->parser;
 	}
-
-	asf_file_properties *properties = parser->GetFileProperties ();
+	
+	properties = parser->GetFileProperties ();
 
 	if (!described) {
 		guint8 current_stream;
@@ -292,8 +317,6 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 
 		dl->Send ();
 	
-		delete parser;
-
 		return false;
 	}
 	asf_packet_size = parser->GetPacketSize ();
@@ -306,9 +329,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 		dl->NotifySize (properties->file_size);
 	}
 
-	dl->InternalWrite (payload, 0, header_size);
-
-	delete parser;
+	//dl->InternalWrite (payload, 0, header_size);
 
 	return true;
 }

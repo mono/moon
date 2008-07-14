@@ -121,6 +121,8 @@ class Downloader : public DependencyObject {
 	char *GetDownloadedFilename (const char *partname);
 	void SetFilename (const char *fname);
 	
+	InternalDownloader *GetInternalDownloader () { return internal_dl; }
+	
 	// This is called by the consumer of the downloaded data (the
 	// Image class for instance)
 	void SetWriteFunc (downloader_write_func write,
@@ -144,6 +146,7 @@ class Downloader : public DependencyObject {
 	
 	bool Started ();
 	bool Completed ();
+	bool IsAborted () { return aborted; }
 	
 	void     SetContext (gpointer context) { this->context = context;}
 	gpointer GetContext () { return context; }

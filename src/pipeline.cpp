@@ -30,6 +30,7 @@
 #include "asf/asf-structures.h"
 #include "yuv-converter.h"
 #include "runtime.h"
+#include "mms-downloader.h"
 
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
@@ -65,7 +66,7 @@ DecoderInfo *Media::registered_decoders = NULL;
 ConverterInfo *Media::registered_converters = NULL;
 Queue *Media::media_objects = NULL;
 
-Media::Media (MediaElement *element)
+Media::Media (MediaElement *element, Downloader *dl)
 {
 	LOG_PIPELINE ("Media::Media (%p <id:%i>), id: %i\n", element, GET_OBJ_ID (element), GET_OBJ_ID (this));
 
@@ -76,6 +77,10 @@ Media::Media (MediaElement *element)
 	
 	this->element = element;
 	this->SetSurface (element->GetSurface ());
+
+	downloader = dl;
+	if (downloader)
+		downloader->ref ();
 
 	queued_requests = new List ();
 	
@@ -111,6 +116,9 @@ Media::~Media ()
 	queued_requests = NULL;
 	pthread_cond_signal (&queue_condition);
 	pthread_mutex_unlock (&queue_mutex);
+	
+	if (downloader)
+		downloader->unref ();
 	
 	if (source)
 		source->Abort ();
@@ -355,72 +363,6 @@ Media::SeekAsync (guint64 pts, MediaClosure *closure)
 }
 
 MediaResult
-Media::Initialize (const char *file_or_url)
-{
-	LOG_PIPELINE ("Media::Initialize ('%s'), id: %i\n", file_or_url, GET_OBJ_ID (this));
-	
-	Uri* uri = new Uri ();
-	MediaResult result = MEDIA_FAIL;
-	SetSource (NULL);
-	
-	this->file_or_url = g_strdup (file_or_url);
-	
-	if (uri->Parse (file_or_url)) {
-		LOG_PIPELINE ("Media::Open ('%s'): uri parsing succeeded, protocol: '%s'.\n", file_or_url, uri->protocol);
-		if (uri->protocol == NULL) {
-			result = MEDIA_INVALID_PROTOCOL;
-/*
-		} else if (strcmp (uri->protocol, "mms") == 0) {
-			source = new LiveSource (this);
-			result = source->Initialize ();
-			if (!MEDIA_SUCCEEDED (result)) {
-				LOG_PIPELINE ("Media::Open ('%s'): live source failed, trying progressive source.\n", file_or_url);
-				source->unref ();
-				source = new ProgressiveSource (this, true);
-				result = source->Initialize ();
-			}
-*/
-		} else if (strcmp (uri->protocol, "http") == 0 || strcmp (uri->protocol, "https") == 0) {
-			source = new ProgressiveSource (this, false);
-			result = source->Initialize ();
-/*
-			if (!MEDIA_SUCCEEDED (result)) {
-				LOG_PIPELINE ("Media::Open ('%s'): progressive source failed, trying live source.\n", file_or_url);
-				source->unref ();
-				source = new LiveSource (this);
-				result = source->Initialize ();
-			}
-*/
-		} else if (strcmp (uri->protocol, "file") == 0) {
-			source = new FileSource (this),
-			result = source->Initialize ();
-			if (!MEDIA_SUCCEEDED (result)) {
-				LOG_PIPELINE ("Media::Open ('%s'): file source failed.\n", file_or_url);
-			}
-		} else {
-			result = MEDIA_INVALID_PROTOCOL;
-		}
-	} else {
-		// FIXME: Is it safe to assume that if the path cannot be parsed as an uri it is a filename?
-		LOG_PIPELINE ("Media::Open ('%s'): uri parsing failed, assuming source is a filename.\n", file_or_url);
-		source = new FileSource (this);	
-		result = source->Initialize ();
-	}
-	
-	delete uri;
-	
-	if (!MEDIA_SUCCEEDED (result)) {
-		LOG_PIPELINE ("Media::Open ('%s'): failed, result: %i.\n", file_or_url, result);
-		source->unref ();
-		source = NULL;
-	} else {
-		LOG_PIPELINE ("Media::Open ('%s'): succeeded.\n", file_or_url);
-	}
-	
-	return result;
-}
-
-MediaResult
 Media::Open ()
 {
 	LOG_PIPELINE ("Media::Open (), id: %i\n", GET_OBJ_ID (this));
@@ -453,18 +395,43 @@ Media::OpenAsync (IMediaSource *source, MediaClosure *closure)
 MediaResult
 Media::Open (IMediaSource *source)
 {
-	LOG_PIPELINE ("Media::Open (%p <id:%i>), id: %i\n", source, GET_OBJ_ID (source), GET_OBJ_ID (this));
+	LOG_PIPELINE ("Media::Open (%p <id:%i>), id: %i, downloader: %p\n", source, GET_OBJ_ID (source), GET_OBJ_ID (this), downloader);
 
 	MediaResult result;
+	MmsDownloader *mms_dl = NULL;
+	ASFParser *asf_parser = NULL;
 	
 	LOG_PIPELINE ("Media::Open ().\n");
 	
 	if (source == NULL || IsOpened ()) // Initialize wasn't called (or didn't succeed) or already open.
 		return MEDIA_INVALID_ARGUMENT;
 	
+	if (downloader != NULL && downloader->GetInternalDownloader () != NULL && downloader->GetInternalDownloader ()->GetType () == InternalDownloader::MmsDownloader) {
+		// The internal downloader doesn't get deleted until the Downloader itself is destructed, which won't happen 
+		// because we have a ref to it. Which means that it's safe to access the internal dl here.
+		mms_dl = (MmsDownloader *) downloader->GetInternalDownloader ();
+		while ((asf_parser = mms_dl->GetASFParser ()) == NULL) {
+			if (stopped || stopping)
+				return MEDIA_FAIL;
+				
+			if (downloader->IsAborted ())
+				return MEDIA_READ_ERROR;
+				
+			
+			LOG_PIPELINE ("Media::Open (): Waiting for asf parser...");
+			g_usleep (G_USEC_PER_SEC / 100); // Sleep a bit
+		}
+		
+		demuxer = new ASFDemuxer (this, source);
+		((ASFDemuxer *) demuxer)->SetParser (asf_parser);
+		asf_parser->SetSource (source);
+		LOG_PIPELINE ("Media::Open (): Using parser from MmsDownloader, source: %s.\n", source->ToString ());
+	}
+	
+	
 	// Select a demuxer
 	DemuxerInfo *demuxerInfo = registered_demuxers;
-	while (demuxerInfo != NULL) {
+	while (demuxer == NULL && demuxerInfo != NULL) {
 		if (demuxerInfo->Supports (source))
 			break;
 		
@@ -472,7 +439,7 @@ Media::Open (IMediaSource *source)
 		demuxerInfo = (DemuxerInfo *) demuxerInfo->next;
 	}
 	
-	if (demuxerInfo == NULL) {
+	if (demuxer == NULL && demuxerInfo == NULL) {
 		const char *source_name = file_or_url;
 		
 		if (!source_name) {
@@ -497,7 +464,8 @@ Media::Open (IMediaSource *source)
 	}
 	
 	// Found a demuxer
-	demuxer = demuxerInfo->Create (this, source);
+	if (demuxer == NULL)
+		demuxer = demuxerInfo->Create (this, source);
 	result = demuxer->ReadHeader ();
 	
 	if (!MEDIA_SUCCEEDED (result))
@@ -1005,16 +973,28 @@ cleanup:
 	g_free (commands);
 }
 
+void
+ASFDemuxer::SetParser (ASFParser *parser)
+{
+	this->parser = parser;
+}
+
 MediaResult
 ASFDemuxer::ReadHeader ()
 {
 	MediaResult result = MEDIA_SUCCESS;
-	ASFParser *asf_parser = new ASFParser (source, media);
+	ASFParser *asf_parser = NULL;
 	gint32 *stream_to_asf_index = NULL;
 	IMediaStream **streams = NULL;
 	int current_stream = 1;
 	int stream_count = 0;
 	
+	if (parser != NULL) {
+		asf_parser = parser;
+	} else {
+		asf_parser = new ASFParser (source, media);
+	}
+
 	//printf ("ASFDemuxer::ReadHeader ().\n");
 	
 	if (!asf_parser->ReadHeader ()) {
@@ -2821,8 +2801,29 @@ ProgressiveSource::RequestPosition (gint64 *pos)
 }
 
 /*
- *
+ * MemoryQueueSource::QueueNode
  */
+
+MemoryQueueSource::QueueNode::QueueNode (MemorySource *source, ASFPacket *packet)
+{
+	if (packet)
+		packet->ref ();
+	this->packet = packet;
+	source->ref ();
+	this->source = source;
+}
+
+MemoryQueueSource::QueueNode::~QueueNode ()
+{
+	if (packet)
+		packet->unref ();
+	source->unref ();
+}
+
+/*
+ * MemoryQueueSource
+ */
+ 
 MemorySource::MemorySource (Media *media, void *memory, gint32 size, gint64 start)
 	: IMediaSource (media)
 {
@@ -2898,167 +2899,163 @@ MemorySource::PeekInternal (void *buffer, guint32 n, gint64 start)
 MemoryQueueSource::MemoryQueueSource (Media *media)
 	: IMediaSource (media)
 {
-	queue = g_queue_new ();
-	current = NULL;
-	size = -1;
-	end = -1;
-	start = 0;
 	finished = false;
 	requested_pts = UINT64_MAX;
 	last_requested_pts = UINT64_MAX;
-}
-
-static void
-memory_queue_source_remove (gpointer data, gpointer user_data)
-{
-	MemorySource *mem = (MemorySource*) data;
-	mem->unref();
+	write_count = 0;
 }
 
 MemoryQueueSource::~MemoryQueueSource ()
 {
-	g_queue_foreach (queue, memory_queue_source_remove, NULL);
-	g_queue_free (queue);
 }
 
 void
 MemoryQueueSource::WaitForQueue ()
 {
-	if (end == 0)
+	if (finished)
 		return;
 
+	Lock ();
 	StartWaitLoop ();
-	while ((current == NULL) && !finished && !Aborted ()) {
+	while (!finished && !Aborted () && queue.IsEmpty ()) {
 		Wait ();
 	}
 	EndWaitLoop ();
+	Unlock ();
 }
 
 
 gint64
 MemoryQueueSource::GetPositionInternal ()
 {
-	WaitForQueue ();
-	if (current)
-		return current->GetPosition();
-	else if (finished)
-		return size;
+	printf ("MemoryQueueSource::GetPositionInternal ()\n");
+	print_stack_trace ();
 
 	return -1;
 }
 
+void
+MemoryQueueSource::SetASFPacket (MemorySource *source, ASFPacket *packet)
+{
+	QueueNode *current;
+	
+	queue.Lock ();
+	current = (QueueNode *) queue.LinkedList ()->First ();
+	while (current != NULL) {
+		if (current->source == source) {
+			current->packet = packet;
+			break;
+		}
+		current = (QueueNode *) current->next;
+	}
+	queue.Unlock ();
+}
+
+MemoryQueueSource::QueueNode **
+MemoryQueueSource::ToArray ()
+{
+	int length = 0, current = 0;
+	QueueNode **result = NULL;
+	QueueNode *node;
+	
+	queue.Lock ();
+	length = queue.LinkedList ()->Length ();
+	if (length > 0) {
+		result = (QueueNode **) g_malloc (sizeof (QueueNode *) * (length + 1));
+		result [length] = NULL;
+		
+		node = (QueueNode *) queue.LinkedList ()->First ();
+		do {
+			result [current++] = new QueueNode (node->source, node->packet);
+			node = (QueueNode *) node->next;
+		} while (node != NULL);
+	}
+	queue.Unlock ();
+	
+	return result;
+}
+
+MemorySource *
+MemoryQueueSource::Pop ()
+{
+	//printf ("MemoryQueueSource::Pop (), there are %i packets in the queue, of a total of %lld packets written.\n", queue.Length (), write_count);
+	
+	QueueNode *node;
+	MemorySource *result;
+	
+	node = (QueueNode *) queue.Pop ();
+	
+	if (node == NULL) {
+		WaitForQueue ();
+		
+		node = (QueueNode *) queue.Pop ();
+	}
+	
+	if (node == NULL) {
+		printf ("MemoryQueueSource::Pop (): No more packets.\n");
+		return NULL; // We waited and got nothing, reached end of stream
+	}
+	
+	result = node->source;
+	result->ref ();
+	
+	delete node;
+	
+	return result;
+}
 
 void
 MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 {
-	void *new_mem = g_memdup (buf, n);
-	MemorySource *mem_source = new MemorySource (NULL, new_mem, n, offset);
-	g_queue_push_head (queue, mem_source);
-	if (current == NULL) {
-		current = (MemorySource*) g_queue_pop_tail (queue);
-		start = offset;
-	}
+	//printf ("MemoryQueueSource::Write (%p, %lld, %i), write_count: %lld\n", buf, offset, n, write_count + 1);
+	
+	write_count++;
+	queue.Push (new QueueNode (new MemorySource (NULL, g_memdup (buf, n), n, offset)));
 
-	size = offset + n;
-
-        if (IsWaiting ())
-                Signal ();
-
+	if (IsWaiting ())
+		Signal ();
 }
 
 bool
 MemoryQueueSource::SeekInternal (gint64 offset, int mode)
 {
-	gint64 real_offset;
+	printf ("MemoryQueueSource::SeekInternal (%lld, %i)\n", offset, mode);
+	print_stack_trace ();
 
-	WaitForQueue ();
-
-	switch (mode) {
-	case SEEK_SET:
-		if (offset < start)
-			return false;
-
-		while (current && offset > current->GetLastAvailablePosition()) {
-			current->unref ();
-			current = (MemorySource*) g_queue_pop_tail (queue);
-		} 
-		return current ? current->Seek(offset, SEEK_SET) : false;
-	default:
-		return false;
-	}
-	return true;
+	return false;
 }
 
 gint32 
 MemoryQueueSource::ReadInternal (void *buffer, guint32 n)
 {
-	WaitForQueue ();
-
-	if (current && current->ReadAll (buffer, n, true, current->GetPosition()))
-		return n;
-
-	return -1;
-
+	printf ("MemoryQueueSource::ReadInternal (%p, %u)\n", buffer, n);
+	print_stack_trace ();
+	
+	return 0;
 }
 
 gint32
 MemoryQueueSource::PeekInternal (void *buffer, guint32 n, gint64 start)
 {
-	MemorySource *head;
-	MemorySource *tail;
-	MemorySource *tmp = NULL;
-	gint64 head_end;
-	gint64 tail_start;
-
-	if (current && current->Peek (buffer, n, true, start))
-		return n;
-
-	head = (MemorySource*) g_queue_peek_head (queue);
-	head_end = head ? head->GetLastAvailablePosition() : -1;
-
-	tail = (MemorySource*) g_queue_peek_tail (queue);
-	tail_start = tail ? tail->GetLastAvailablePosition() - tail->GetSize() : -1;
-
-	if (head_end < start && tail_start > start)
-		return -1;
-
-	if ((head_end - start) < (start - tail_start) && head) {
-		gint pos = g_queue_index (queue, head);
-		do {
-			tmp = (MemorySource*) g_queue_peek_nth (queue, pos);
-			pos++;
-		} while (pos < g_queue_get_length (queue) && tmp && (tmp->GetLastAvailablePosition() - tmp->GetSize()) > start);
-	} else if (tail) {
-		gint pos = g_queue_index (queue, tail);
-		do {
-			tmp = (MemorySource*) g_queue_peek_nth (queue, pos);
-			pos--;
-		} while (pos >= 0 && tmp && (tmp->GetLastAvailablePosition() - tmp->GetSize()) > start);
-	}
-
-
-	if (tmp && tmp->Peek (buffer, n, true, -1))
-		return n;
-
-	return -1;	
+	printf ("MemoryQueueSource::PeekInternal (%p, %u, %lld)\n", buffer, n, start);
+	print_stack_trace ();
+	
+	return 0;
 }
 
 gint64
 MemoryQueueSource::GetLastAvailablePositionInternal ()
 {
-	MemorySource *last = (MemorySource*) g_queue_peek_head (queue);
-	if (last == NULL)
-		last = current;
-
-	return last ? last->GetLastAvailablePosition() : 0;
+	printf ("MemoryQueueSource::GetLastAvailablePositionInternal ()\n");
+	print_stack_trace ();
+	
+	return 0;
 }
 
 void
 MemoryQueueSource::NotifySize (gint64 size)
 {
-	Lock ();
-	this->end = size;
-	Unlock ();
+	// We don't care.
 }
 
 void
@@ -3075,7 +3072,10 @@ MemoryQueueSource::NotifyFinished ()
 gint64
 MemoryQueueSource::GetSizeInternal ()
 {
-	return size;
+	printf ("MemoryQueueSource::GetSizeInternal ()\n");
+	print_stack_trace ();
+	
+	return 0;
 }
 
 void
@@ -3098,16 +3098,10 @@ MemoryQueueSource::SeekToPts (guint64 pts)
 	if (last_requested_pts == pts)
 		return true;
 
-	if (pts == 0 && Seek (0, SEEK_SET))
-		return true;
-
 	Lock ();
-	g_queue_foreach (queue, memory_queue_source_remove, NULL);
-	g_list_free (queue->head);
-	queue->head = queue->tail = NULL;
-	queue->length = 0;
-	current = NULL;
+	queue.Clear (true);
 	requested_pts = pts;
+	finished = false;
 
 	StartWaitLoop ();
 	while (!Aborted () && requested_pts != UINT64_MAX)
@@ -3408,9 +3402,9 @@ IMediaSource::Abort ()
 
 	// There's no need to lock here, since aborted can only be set to true.
 	aborted = true;
-	//while (IsWaiting ()) {
+	while (IsWaiting ()) {
 		Signal ();
-	//}
+	}
 }
 
 bool

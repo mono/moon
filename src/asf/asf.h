@@ -57,16 +57,18 @@ struct ASFContext {
 	IMediaSource *source;
 };
 
-class ASFPacket {
+class ASFPacket : public EventObject {
 private:
 	int64_t position; // The position of this packet. -1 if not known.
 	int index; // The index of this packet. -1 if not known.
 	IMediaSource *source; // The source which is to be used for reading into this packet.
 	
+protected:
+	virtual ~ASFPacket ();
+	
 public:
 	ASFPacket ();	
 	ASFPacket (IMediaSource *source);
-	virtual ~ASFPacket ();
 	
 	asf_multiple_payloads *payloads; // The payloads in this packet
 	
@@ -77,7 +79,7 @@ public:
 	asf_single_payload *GetFirstPayload (int stream_id /* 1 - 127 */); // Gets the index first payload of the specified stream.
 	
 	IMediaSource *GetSource () { return source; }
-	void SetSource (IMediaSource *source) { this->source = source; }
+	void SetSource (IMediaSource *source);
 };
 
 class ASFReader {
@@ -259,6 +261,7 @@ public:
 class ASFParser {
 private:	
 	MediaErrorEventArgs *error;
+	bool header_read_successfully;
 	
 	void Initialize ();
 	bool ReadData ();
@@ -343,6 +346,7 @@ public:
 	int GetStreamCount ();
 	
 	IMediaSource *GetSource () { return source; }
+	void SetSource (IMediaSource *source);
 
 	// Field accessors
 	

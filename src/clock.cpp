@@ -224,11 +224,23 @@ ManualTimeSource::GetNow ()
 	return current_time;
 }
 
-
-typedef struct {
-	TickCallHandler func;
-	EventObject *data;
-} TickCall;
+class TickCall : public List::Node {
+ public:
+ 	TickCallHandler func;
+ 	EventObject *data;
+ 	TickCall (TickCallHandler func, EventObject *data)
+ 	{
+	 	this->func = func;
+	 	this->data = data;
+	 	if (this->data)
+	 		this->data->ref ();
+ 	}
+ 	virtual ~TickCall ()
+ 	{
+	 	if (data)
+	 		data->unref ();
+ 	}
+};
 
 TimeManager::TimeManager ()
 {
@@ -240,13 +252,11 @@ TimeManager::TimeManager ()
 	current_timeout = FPS_TO_DELAY (DEFAULT_FPS);  /* something suitably small */
 	max_fps = MAXIMUM_FPS;
 	flags = (TimeManagerOp) (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/);
-	tick_calls = NULL;
 
 	start_time = source->GetNow ();
 	start_time_usec = start_time / 10;
 	source->AddHandler (TimeSource::TickEvent, source_tick_callback, this);
 
-	tick_call_mutex = g_mutex_new ();
 	registered_timeouts = NULL;
 	source_tick_pending = false;
 	first_tick = true;
@@ -262,9 +272,6 @@ TimeManager::TimeManager ()
 
 TimeManager::~TimeManager ()
 {
-	g_mutex_free (tick_call_mutex);
-	tick_call_mutex = NULL;
-
 	source->RemoveHandler (TimeSource::TickEvent, source_tick_callback, this);
 	source->unref ();
 	source = NULL;
@@ -319,25 +326,15 @@ TimeManager::source_tick_callback (EventObject *sender, EventArgs *calldata, gpo
 bool
 TimeManager::InvokeTickCall ()
 {
-	// Helgrind reports an issue here (reading from 'tick_calls' without locking)
-	// This should be safe, given that tick_calls only goes from NULL -> something
-	if (tick_calls) {
-		g_mutex_lock (tick_call_mutex);
-
-		TickCall *call = (TickCall*)tick_calls->data;
-
-		// unlink the call first
-		GList *new_tick_calls = tick_calls->next;
-		g_list_free_1 (tick_calls);
-		tick_calls = new_tick_calls;
-
-		g_mutex_unlock (tick_call_mutex);
-
-		// now invoke it
-		call->func (call->data);
-		g_free (call);
-	}
-	return tick_calls != NULL;
+	TickCall *call = (TickCall *) tick_calls.Pop ();
+	
+	if (call == NULL)
+		return false;
+	
+	call->func (call->data);
+	delete call;
+	
+	return true;
 }
 
 void
@@ -503,11 +500,7 @@ TimeManager::RemoveAllRegisteredTimeouts ()
 void
 TimeManager::AddTickCall (TickCallHandler func, EventObject *tick_data)
 {
-	TickCall *call = g_new (TickCall, 1);
-	call->func = func;
-	call->data = tick_data;
-	g_mutex_lock (tick_call_mutex);
-	tick_calls = g_list_append (tick_calls, call);
+	tick_calls.Push (new TickCall (func, tick_data));
 
 #if PUT_TIME_MANAGER_TO_SLEEP
 	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
@@ -517,8 +510,6 @@ TimeManager::AddTickCall (TickCallHandler func, EventObject *tick_data)
 		source->Start();
 	}
 #endif
-
-	g_mutex_unlock (tick_call_mutex);
 }
 
 void

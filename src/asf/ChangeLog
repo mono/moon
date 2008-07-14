@@ -1,3 +1,8 @@
+2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h: Make reading/seeking more intelligent when we're
+	  dealing with mms streams.
+
 2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Comment out some debug code.

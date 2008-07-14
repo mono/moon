@@ -126,7 +126,6 @@ MediaPlayer::EnqueueVideoFrameCallback (EventObject *user_data)
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueVideoFrameCallback ()\n");
 	MediaPlayer *mplayer = (MediaPlayer *) user_data;
 	mplayer->EnqueueFrames (0, 1);
-	mplayer->unref ();
 }
 
 void
@@ -135,7 +134,6 @@ MediaPlayer::EnqueueAudioFrameCallback (EventObject *user_data)
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueAudioFrameCallback ()\n");
 	MediaPlayer *mplayer = (MediaPlayer *) user_data;
 	mplayer->EnqueueFrames (1, 0);
-	mplayer->unref ();
 }
 
 void
@@ -150,7 +148,6 @@ MediaPlayer::LoadFrameCallback (EventObject *user_data)
 		// Check again if LoadFrame is still pending.
  		if (player->IsLoadFramePending ())
 			result = player->LoadVideoFrame ();
-		player->unref ();
 	}		
 }
 
@@ -207,7 +204,6 @@ MediaPlayer::AudioFinishedCallback (EventObject *user_data)
 
 	MediaPlayer *mplayer = (MediaPlayer *) user_data;
 	mplayer->AudioFinished ();
-	mplayer->unref ();
 }
 
 void
@@ -250,7 +246,7 @@ MediaPlayer::EnqueueFrames (int audio_frames, int video_frames)
 
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueFrames (%i, %i)\n", audio_frames, video_frames);
 	
-	if (element == NULL)
+	if (element == NULL || GetBit (Seeking))
 		return;
 
 	if (HasAudio ()) {	
@@ -850,8 +846,6 @@ MediaPlayer::SeekCallback ()
 	current_pts = 0;
 	
 	EnqueueFrames (1, 1);
-	
-	unref ();
 }
 
 void
