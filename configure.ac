@@ -60,21 +60,17 @@ dnl Mozilla checks
 dnl
 with_mozilla=no
 
-mozilla_nspr="nspr-missing"
-mozilla_nspr_pcs="nspr mozilla-nspr firefox-nspr xulrunner-nspr seamonkey-nspr"
-for pc in $mozilla_nspr_pcs; do
-  PKG_CHECK_EXISTS($pc,[mozilla_nspr=$pc])
-done
-
 AC_ARG_WITH(ff3,[  --with-ff3=no,yes  If you want to enable the xulrunner 1.9 (Firefox 3) bridge],[],[with_ff3=yes])
 if test x$with_ff3 = xyes; then
-  FF3_MODULES="libxul-unstable mozilla-plugin mozilla-js $mozilla_nspr"
+  FF3_MODULES="libxul-unstable mozilla-plugin mozilla-js"
 
   PKG_CHECK_EXISTS($FF3_MODULES,[with_ff3=yes],[with_ff3=no])
 
   if test x$with_ff3 = xyes; then
     AC_DEFINE([HAVE_GECKO_1_9],[1],[Gecko 1.9 support])
     PKG_CHECK_MODULES(FF3, [$FF3_MODULES])
+    dnl Strip out problem libraries (should already be in process space)
+    FF3_LIBS="$(echo $FF3_LIBS | sed -e 's/-lmozjs\|-lplds4\|-lplc4\|-lnspr4//g')"
   fi
 fi
 AM_CONDITIONAL(HAVE_GECKO_1_9,test x$with_ff3 = xyes)
@@ -95,7 +91,9 @@ if test x$with_ff2 = xyes; then
   if test $mozilla_xpcom = "libxul-missing" -o $mozilla_plugin = "plugin-missing"; then
     with_ff2=no
   else
-    PKG_CHECK_MODULES(FF2,[$mozilla_xpcom $mozilla_nspr $mozilla_plugin])
+    PKG_CHECK_MODULES(FF2,[$mozilla_xpcom $mozilla_plugin])
+    dnl Strip out problem libraries (should already be in process space)
+    FF2_LIBS="$(echo $FF2_LIBS | sed -e 's/-lmozjs\|-lplds4\|-lplc4\|-lnspr4//g')"
   fi
 fi
 AM_CONDITIONAL(HAVE_GECKO_1_8,test x$with_ff2 = xyes)
