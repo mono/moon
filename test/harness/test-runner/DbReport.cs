@@ -70,7 +70,7 @@ namespace MoonlightTests {
 				while(dbreader.Read())
 				{
 					int id = dbreader.GetInt32(0);
-					Console.WriteLine("reading testcase {0}",id);
+					//Console.WriteLine("reading testcase {0}",id);
 				}
 				dbreader.Close();
 				dbreader = null;
@@ -80,7 +80,7 @@ namespace MoonlightTests {
 			}
 			catch(Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine("\n{0}",ex.Message);
 				WriteHelp();
 				connectionString = string.Empty;
 			}
@@ -90,7 +90,7 @@ namespace MoonlightTests {
 		{
 			
 			string str = "\nDbReport is disabled because of missing file or invalid connection string\n";
-			str += "\nCreate file .dbconnection.txt with the first line being the connection string to use.";
+			str += "\nCreate file moon/test/.dbconnection.txt with the first line being the connection string to use.";
 			str += "\nServer=mysqlserver.company.com;Database=moonlight;User ID=root;Password=password;Pooling=false;\n";
 			
 			Console.WriteLine(str);
@@ -102,7 +102,6 @@ namespace MoonlightTests {
 			
 			if (!HasConnection)
 			{
-				WriteHelp();
 				return;
 			}
 				
@@ -220,8 +219,9 @@ namespace MoonlightTests {
 		{
 			
 			string revision = GetSubersionRevision();
+			string arch = GetArch();
 			
-			string query = string.Format("INSERT INTO builds VALUES ('','{0}','{1}');",revision,time);
+			string query = string.Format("INSERT INTO builds VALUES ('','{0}','{1}','{2}');",revision,time,arch);
 			//execnonquery(query);
 			dbcmd.CommandText = query;
 			try 			{
@@ -230,12 +230,13 @@ namespace MoonlightTests {
 			catch(Exception ex) {
 				Console.WriteLine(ex);
 			}
-			IDataReader reader = execreader(string.Format("select id from builds where revision='{0}' and runtime='{1}';",revision,time));
-			if (reader.Read())
+			IDataReader reader = execreader(string.Format("select id from builds where revision='{0}' and runtime='{1}' and arch='{2}';",revision,time,arch));
+			if ((reader != null) && reader.Read())
 			{
 				this.runtimeid = reader.GetInt32(0);
 			}
-			reader.Close();
+			if (reader != null)
+				reader.Close();
 			
 			
 			                                
@@ -298,12 +299,13 @@ namespace MoonlightTests {
 		{
 			string query = string.Format("select testcaseid,tagid from taggedcases where testcaseid={0} and tagid={1};",testid,tagid);
 			IDataReader reader = execreader(query);
-			if (reader.Read()) {
+			if ((reader != null) && reader.Read()) {
 				reader.Close();
 				Console.WriteLine("tagged case EXISTS for testcaseid={0} and tagid={1};",testid,tagid);
 			}
 			else {
-				reader.Close();
+				if (reader != null)
+					reader.Close();
 				query = string.Format("INSERT INTO taggedcases values ({0},'{1}');",testid,tagid);				
 				execnonquery(query);
 			}
@@ -333,34 +335,53 @@ namespace MoonlightTests {
 				return null;
 			}
 		}
+
+		private string GetArch()
+		{
+			ProcessStartInfo info = new ProcessStartInfo();
+			info.FileName = "uname";
+			info.Arguments = "-i";
+			
+			info.UseShellExecute = false;
+			info.RedirectStandardOutput = true;
+			Process p = new Process();
+			p.StartInfo = info;
+			p.Start();
+
+			string output = p.StandardOutput.ReadToEnd();
+			
+			return output.Trim();
+		}
 		
 		private string GetSubersionRevision()
 		{
 			
 			ProcessStartInfo info = new ProcessStartInfo();
 			info.FileName = "svn";
-			info.Arguments = "info";			
-			info.UseShellExecute = false;		
-			info.RedirectStandardOutput = true;			
+			info.Arguments = "info";
+			info.UseShellExecute = false;
+			info.RedirectStandardOutput = true;
 			Process p = new Process();
 			p.StartInfo = info;
 			p.Start();
 
 			string revision = string.Empty;
 			string output = p.StandardOutput.ReadToEnd();
-			//string revision = string.Empty;
 			string[] lines = output.Split('\n');
-			//string time = string.Empty;
+
+			try {
 			
-			foreach (string line in lines) {
-				if (line.StartsWith("Revision")) {
-					revision = line.Split(':')[1].Trim();
-				}				
+				foreach (string line in lines) {
+					if (line.StartsWith("Revision")) {
+						revision = line.Split(':')[1].Trim();
+					}
+				}
+			}
+			catch (Exception ex) {
+				revision = string.Empty;
 			}
 			return revision;
-			//Console.ReadLine();
-				
-		
+
 		}
 	}
 }
