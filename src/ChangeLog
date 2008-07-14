@@ -1,5 +1,11 @@
 2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: Initialize Media with our downloader.
+	* pipeline.cpp: Media::Open: Check if the source has ended while
+	  waiting for an asfparser. Remove print_stack_traces.
+
+2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* internal-downloader.h: Add InternalDownloader::GetType to allow the
 	  derived internal downloader to tell what kind of internal
 	  downloader it is.

@@ -416,7 +416,9 @@ Media::Open (IMediaSource *source)
 				
 			if (downloader->IsAborted ())
 				return MEDIA_READ_ERROR;
-				
+	
+			if (source->Eof ())
+				return MEDIA_READ_ERROR;						
 			
 			LOG_PIPELINE ("Media::Open (): Waiting for asf parser...");
 			g_usleep (G_USEC_PER_SEC / 100); // Sleep a bit
@@ -2928,8 +2930,7 @@ MemoryQueueSource::WaitForQueue ()
 gint64
 MemoryQueueSource::GetPositionInternal ()
 {
-	printf ("MemoryQueueSource::GetPositionInternal ()\n");
-	print_stack_trace ();
+	g_warning ("MemoryQueueSource::GetPositionInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.");
 
 	return -1;
 }
@@ -3019,17 +3020,15 @@ MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 bool
 MemoryQueueSource::SeekInternal (gint64 offset, int mode)
 {
-	printf ("MemoryQueueSource::SeekInternal (%lld, %i)\n", offset, mode);
-	print_stack_trace ();
-
+	g_warning ("MemoryQueueSource::SeekInternal (%lld, %i): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", offset, mode);
+	
 	return false;
 }
 
 gint32 
 MemoryQueueSource::ReadInternal (void *buffer, guint32 n)
 {
-	printf ("MemoryQueueSource::ReadInternal (%p, %u)\n", buffer, n);
-	print_stack_trace ();
+	g_warning ("MemoryQueueSource::ReadInternal (%p, %u): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", buffer, n);
 	
 	return 0;
 }
@@ -3037,8 +3036,7 @@ MemoryQueueSource::ReadInternal (void *buffer, guint32 n)
 gint32
 MemoryQueueSource::PeekInternal (void *buffer, guint32 n, gint64 start)
 {
-	printf ("MemoryQueueSource::PeekInternal (%p, %u, %lld)\n", buffer, n, start);
-	print_stack_trace ();
+	g_warning ("MemoryQueueSource::PeekInternal (%p, %u, %lld): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", buffer, n, start);
 	
 	return 0;
 }
@@ -3046,8 +3044,7 @@ MemoryQueueSource::PeekInternal (void *buffer, guint32 n, gint64 start)
 gint64
 MemoryQueueSource::GetLastAvailablePositionInternal ()
 {
-	printf ("MemoryQueueSource::GetLastAvailablePositionInternal ()\n");
-	print_stack_trace ();
+	g_warning ("MemoryQueueSource::GetLastAvailablePositionInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.");
 	
 	return 0;
 }
@@ -3072,8 +3069,7 @@ MemoryQueueSource::NotifyFinished ()
 gint64
 MemoryQueueSource::GetSizeInternal ()
 {
-	printf ("MemoryQueueSource::GetSizeInternal ()\n");
-	print_stack_trace ();
+	g_warning ("MemoryQueueSource::GetSizeInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.");
 	
 	return 0;
 }
