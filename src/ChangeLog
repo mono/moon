@@ -1,5 +1,11 @@
 2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* downloader.cpp:  Change completed to check a bool instead of 
+	filename, as filename can now be set before the downloader is in fact
+	completed.
+
+2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: Initialize Media with our downloader.
 	* pipeline.cpp: Media::Open: Check if the source has ended while
 	  waiting for an asfparser. Remove print_stack_traces.

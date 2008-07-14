@@ -87,6 +87,7 @@ Downloader::Downloader ()
 	send_queued = false;
 	started = false;
 	aborted = false;
+	completed = false;
 	file_size = -2;
 	total = 0;
 	
@@ -215,7 +216,7 @@ Downloader::SendInternal ()
 	
 	send_queued = false;
 	
-	if (filename != NULL) {
+	if (completed) {
 		// Consumer is re-sending a request which finished successfully.
 		NotifyFinished ();
 		return;
@@ -354,6 +355,8 @@ Downloader::NotifyFinished ()
 	SetStatusText ("OK");
 	SetStatus (200);
 	
+	completed = true;
+
 	Emit (CompletedEvent, NULL);
 }
 
@@ -409,7 +412,7 @@ Downloader::Completed ()
 {
 	d (printf ("Downloader::Completed (), filename: %s\n", filename));
 	
-	return filename != NULL;
+	return completed;
 }
 
 void

@@ -72,6 +72,7 @@ class Downloader : public DependencyObject {
 	bool send_queued;
 	bool started;
 	bool aborted;
+	bool completed;
 	InternalDownloader *internal_dl;
 
  protected:
