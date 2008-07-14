@@ -1,3 +1,7 @@
+2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* playlist.cpp: Fix warning.
+
 2008-07-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* font.cpp: (FontFace::LoadGlyph) Use linearHoriAdvance instead 

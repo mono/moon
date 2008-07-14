@@ -1284,7 +1284,7 @@ PlaylistParser::OnText (const char *text, int len)
 
 #if DEBUG
 	char *p = g_strndup (text, len);
-	for (int i = 0; p [i] != NULL; i++)
+	for (int i = 0; p [i] != 0; i++)
 		if (p [i] == 10 || p [i] == 13)
 			p [i] = ' ';
 
