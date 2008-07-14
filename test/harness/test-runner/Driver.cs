@@ -446,7 +446,7 @@ namespace MoonlightTests {
 
 			Driver d = new Driver ();
 			bool add_console_report = true;
-
+			
 			CheckEnvVars (d);
 
 			OptionSet p = new OptionSet ();
@@ -490,6 +490,7 @@ namespace MoonlightTests {
 
 			d.AddReport (new XmlReport ());
 			d.AddReport (new ComparisonReport ());
+			d.AddReport (new DbReport());
 
 			return d.Run (drtlist);
 		}
