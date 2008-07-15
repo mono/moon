@@ -1,3 +1,7 @@
+2008-07-15  Jb Evain  <jbevain@novell.com>
+
+	* Kind.cs: regenerate (remove SupportedCulture and SupportedCultureCollection).
+
 2008-05-08  Chris Toshok  <toshok@ximian.com>
 
 	* NativeMethods.cs: browser_http_request_new needs the plugin
