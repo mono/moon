@@ -1,5 +1,5 @@
 <Project name="System.Windows" fileversion="2.0" language="C#" clr-version="Clr_2_1" ctype="DotNetProject">
-  <Configurations active="Default">
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="System.Windows" />
       <Build debugmode="True" target="Library" />
@@ -180,6 +180,24 @@
     <File name="System.Collections.Specialized" subtype="Directory" buildaction="Compile" />
     <File name="System.Collections.ObjectModel" subtype="Directory" buildaction="Compile" />
     <File name="../Consts.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Application.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ApplicationUnhandledExceptionEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/AssemblyPart.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/AssemblyPartCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/CrossDomainAccess.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DataTemplate.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DependencyPropertyChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Deployment.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/XapHackProxyImpl.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows/FrameworkTemplate.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/GridLength.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/GridUnitType.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/PresentationFrameworkCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/RoutedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/RoutedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/StartupEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/StartupEventHandler.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

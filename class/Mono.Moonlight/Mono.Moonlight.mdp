@@ -1,5 +1,5 @@
 <Project name="Mono.Moonlight" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
-  <Configurations active="Default">
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="Mono.Moonlight" />
       <Build debugmode="True" target="Library" />
@@ -26,6 +26,7 @@
     <File name="System.IO/SimpleUnmanagedMemoryStream.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Interop/PluginHost.cs" subtype="Code" buildaction="Compile" />
     <File name="../Consts.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/XapHack.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
