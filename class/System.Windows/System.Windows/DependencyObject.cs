@@ -239,8 +239,6 @@ namespace System.Windows {
 				throw new Exception (
 					String.Format ("Kind missing from switch: {0}", k ));
 			}
-
-			return null;
 		}
 
 		internal void Free ()
