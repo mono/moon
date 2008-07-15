@@ -1,3 +1,7 @@
+2008-07-15  Jb Evain  <jbevain@novell.com>
+
+	* list.cpp: set pointers to NULL instead of 0.
+
 2008-07-14  Geoff Norton  <gnorton@novell.com>
 
 	* mplayer.cpp: If we've already reached the EOF in the audio stream

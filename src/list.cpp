@@ -20,16 +20,16 @@
 
 List::Node::Node ()
 {
-	next = 0;
-	prev = 0;
+	next = NULL;
+	prev = NULL;
 }
 
 
 List::List ()
 {
 	length = 0;
-	head = 0;
-	tail = 0;
+	head = NULL;
+	tail = NULL;
 }
 
 
@@ -82,8 +82,8 @@ List::Clear (bool freeNodes)
 	}
 	
 	length = 0;
-	head = 0;
-	tail = 0;
+	head = NULL;
+	tail = NULL;
 }
 
 
@@ -91,7 +91,7 @@ List::Node *
 List::Append (List::Node *node)
 {
 	node->prev = tail;
-	node->next = 0;
+	node->next = NULL;
 	
 	if (tail)
 		tail->next = node;
@@ -110,7 +110,7 @@ List::Node *
 List::Prepend (List::Node *node)
 {
 	node->next = head;
-	node->prev = 0;
+	node->prev = NULL;
 	
 	if (head)
 		head->prev = node;
@@ -152,13 +152,13 @@ List::Insert (List::Node *node, int index)
 			// Inserting @node after @n (means @n was the tail)
 			tail = n->next = node;
 			node->prev = n;
-			node->next = 0;
+			node->next = NULL;
 		}
 	} else {
 		// @node will be the only node in the list
 		head = tail = node;
-		node->next = 0;
-		node->prev = 0;
+		node->next = NULL;
+		node->prev = NULL;
 	}
 	
 	length++;
@@ -194,7 +194,7 @@ List::Replace (List::Node *node, int index)
 	List::Node *n;
 	
 	if (!(n = Index (index)))
-		return 0;
+		return NULL;
 	
 	node->next = n->next;
 	node->prev = n->prev;
@@ -209,8 +209,8 @@ List::Replace (List::Node *node, int index)
 	else
 		tail = node;
 	
-	n->next = 0;
-	n->prev = 0;
+	n->next = NULL;
+	n->prev = NULL;
 	
 	return n;
 }
@@ -221,7 +221,7 @@ List::Find (NodeAction find, void *data)
 	List::Node *n = head;
 	
 	if (!find)
-		return 0;
+		return NULL;
 	
 	while (n) {
 		if (find (n, data))
@@ -230,7 +230,7 @@ List::Find (NodeAction find, void *data)
 		n = n->next;
 	}
 	
-	return 0;
+	return NULL;
 }
 
 
@@ -276,8 +276,8 @@ List::Unlink (List::Node *node)
 	else
 		tail = node->prev;
 	
-	node->prev = 0;
-	node->next = 0;
+	node->prev = NULL;
+	node->next = NULL;
 	
 	length--;
 }
@@ -290,7 +290,7 @@ List::Index (int index)
 	int i = 0;
 	
 	if (index < 0)
-		return 0;
+		return NULL;
 	
 	while (n && i < index) {
 		n = n->next;
@@ -300,7 +300,7 @@ List::Index (int index)
 	if (i == index)
 		return n;
 	
-	return 0;
+	return NULL;
 }
 
 int
