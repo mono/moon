@@ -568,12 +568,6 @@ namespace Mono {
 		public extern static IntPtr deployment_new ();
 
 		[DllImport ("moon")]
-		public extern static IntPtr supported_culture_collection_new ();
-		
-		[DllImport ("moon")]
-		public extern static IntPtr supported_culture_new ();
-
-		[DllImport ("moon")]
 		public extern static IntPtr assembly_part_new ();
 
 		[DllImport ("moon")]
