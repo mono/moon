@@ -62,20 +62,12 @@ namespace System.Windows {
 		
 		public void Add (T value)
 		{
-			DependencyObject dob = value as DependencyObject;
-			if (dob != null)
-				NativeMethods.collection_add (native, dob.native);
-			else
-				throw new Exception ("The collection only supports DependencyObjects");
+			NativeMethods.collection_add (native, value.native);
 		}
 
 		public bool Remove (T value)
 		{
-			DependencyObject dob = value as DependencyObject;
-			if (dob != null)
-				return NativeMethods.collection_remove (native, dob.native);
-			else
-				throw new Exception ("The collection only supports DependencyObjects");
+			return NativeMethods.collection_remove (native, value.native);
 		}
 
 		public void Clear ()
@@ -85,11 +77,7 @@ namespace System.Windows {
 
 		public void Insert (int index, T value)
 		{
-			DependencyObject dob = value as DependencyObject;
-			if (dob != null)
-				NativeMethods.collection_insert (native, index, dob.native);
-			else
-				throw new Exception ("The collection only supports DependencyObjects");
+			NativeMethods.collection_insert (native, index, value.native);
 		}
 
 		public void RemoveAt (int index)
@@ -129,12 +117,7 @@ namespace System.Windows {
 			}
 
 			set {
-				DependencyObject dob = value as DependencyObject;
-
-				if (dob == null)
-					throw new Exception ("The collection only supports DependencyObjects");
-
-				NativeMethods.collection_set_value_at (native, index, dob.native);
+				NativeMethods.collection_set_value_at (native, index, value.native);
 			}
 		}
 		
@@ -304,11 +287,8 @@ namespace System.Windows {
 		{
 			if (value == null)
 				throw new ArgumentNullException ("value");
-			DependencyObject dob = value as DependencyObject;
-			if (dob == null)
-				throw new Exception ("The collection only supports DependencyObjects");
 
-			return NativeMethods.collection_get_index_of (native, dob.native);
+			return NativeMethods.collection_get_index_of (native, value.native);
 		}
 
 		public bool IsFixedSize {
