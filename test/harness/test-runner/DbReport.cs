@@ -45,6 +45,7 @@ namespace MoonlightTests {
 		private string masters = "masters";
 		
 		private string test_run_dir;
+		private string test_suite = string.Empty;
 		
 		public bool HasConnection
 		{
@@ -75,13 +76,13 @@ namespace MoonlightTests {
 				dbreader.Close();
 				dbreader = null;
 				
-				Console.WriteLine("MySql connection successful");
+				Console.WriteLine("\nMySql connection successful\n");
 			
 			}
 			catch(Exception ex)
 			{
-				Console.WriteLine("\n{0}",ex.Message);
 				WriteHelp();
+				Console.WriteLine("\n{1} {0}",ex.GetType(), ex.Message);
 				connectionString = string.Empty;
 			}
 			
@@ -91,7 +92,7 @@ namespace MoonlightTests {
 			
 			string str = "\nDbReport is disabled because of missing file or invalid connection string\n";
 			str += "\nCreate file moon/test/.dbconnection.txt with the first line being the connection string to use.";
-			str += "\nServer=mysqlserver.company.com;Database=moonlight;User ID=root;Password=password;Pooling=false;\n";
+			str += "\nServer=mysqlserver.company.com;Database=db;User ID=user;Password=password;Pooling=false;\n";
 			
 			Console.WriteLine(str);
 				
@@ -100,8 +101,7 @@ namespace MoonlightTests {
 		public void BeginRun(TestRun run)
 		{
 			
-			if (!HasConnection)
-			{
+			if (!HasConnection) {
 				return;
 			}
 				
@@ -118,6 +118,14 @@ namespace MoonlightTests {
 			if (!Directory.Exists(Path.Combine(dir,masters))) {
 				Directory.CreateDirectory(Path.Combine(dir,masters));
 			}
+
+			test_suite = Environment.GetEnvironmentVariable ("MS_DRTLIST");
+			if (test_suite != string.Empty)
+				test_suite = "ms";
+			else
+				test_suite = "moon";
+
+			Console.WriteLine("Runtime: {0}", runtime);
 			
 			AddBuild(runtime);
 		}
@@ -163,7 +171,7 @@ namespace MoonlightTests {
 				renderfile += ".png";
 			}
 			
-			AddTestCase(test.Id,testname,masterfile);
+			AddTestCase(test.Id,testname,masterfile,test_suite);
 			
 			switch(result)
 			{
@@ -186,10 +194,10 @@ namespace MoonlightTests {
 			execnonquery(query);
 			
 		}
-		private void AddTestCase(string id, string testname, string masterfile)
+		private void AddTestCase(string id, string testname, string masterfile, string suite)
 		{
 			int intid = Convert.ToInt32(id);
-			string query = string.Format("Select id from testcases where id={0}",intid);
+			string query = string.Format("Select id from testcases where id={0} and suite='{1}'",intid,suite);
 			
 			dbcmd.CommandText = query;
 			IDataReader reader = dbcmd.ExecuteReader();
@@ -198,7 +206,7 @@ namespace MoonlightTests {
 			if(!reader.Read())
 			{		
 				reader.Close();
-				query = string.Format("INSERT INTO testcases VALUES ({0},'{1}','{2}');",intid, testname, masterfile);
+				query = string.Format("INSERT INTO testcases VALUES ({0},'{1}','{2}','{3}');",intid, suite, testname, masterfile);
 				execnonquery(query);
 			}
 			reader.Close();
@@ -209,9 +217,12 @@ namespace MoonlightTests {
 		
 		public void Close()
 		{
-			dbcmd.Dispose();
+			if (dbcmd != null)
+				dbcmd.Dispose();
 			dbcmd = null;
-			dbcon.Close();
+
+			if (dbcon != null)
+				dbcon.Close();
 			dbcon = null;
 		}
 
