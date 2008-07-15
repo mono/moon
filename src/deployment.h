@@ -45,6 +45,11 @@ class AssemblyPartCollection : public Collection {
 
 AssemblyPartCollection *assembly_part_collection_new (void);
 
+enum CrossDomainAccess {
+	CrossDomainAccessNoAccess,
+	CrossDomainAccessFullAccess,
+	CrossDomainAccessScriptableOnly,
+};
 
 /* @SilverlightVersion="2" */
 class Deployment : public DependencyObject {
@@ -53,7 +58,7 @@ class Deployment : public DependencyObject {
 	
  public:
 	// DependencyProperties
-	static DependencyProperty *AllowInboundCallsFromXDomainProperty;
+	static DependencyProperty *ExternalCallersFromCrossDomainProperty;
 	static DependencyProperty *EntryPointAssemblyProperty;
 	static DependencyProperty *EntryPointTypeProperty;
 	static DependencyProperty *PartsProperty;

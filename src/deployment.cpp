@@ -29,7 +29,7 @@ assembly_part_collection_new (void)
 	return new AssemblyPartCollection ();
 }
 
-DependencyProperty *Deployment::AllowInboundCallsFromXDomainProperty;
+DependencyProperty *Deployment::ExternalCallersFromCrossDomainProperty;
 DependencyProperty *Deployment::EntryPointAssemblyProperty;
 DependencyProperty *Deployment::EntryPointTypeProperty;
 DependencyProperty *Deployment::PartsProperty;
@@ -46,7 +46,7 @@ deployment_init (void)
 {
 	AssemblyPart::SourceProperty = DependencyObject::Register (Type::ASSEMBLYPART, "Source", Type::STRING);
 	
-	Deployment::AllowInboundCallsFromXDomainProperty = DependencyObject::Register (Type::DEPLOYMENT, "AllowInboundCallsFromXDomain", new Value (false));
+	Deployment::ExternalCallersFromCrossDomainProperty = DependencyObject::Register (Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", new Value (CrossDomainAccessNoAccess));
 	Deployment::EntryPointAssemblyProperty = DependencyObject::Register (Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
 	Deployment::EntryPointTypeProperty = DependencyObject::Register (Type::DEPLOYMENT, "EntryPointType", Type::STRING);
 	Deployment::PartsProperty = DependencyObject::Register (Type::DEPLOYMENT, "Parts", Type::ASSEMBLYPART_COLLECTION);
