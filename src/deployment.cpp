@@ -41,15 +41,13 @@ DependencyProperty *Deployment::EntryPointTypeProperty;
 DependencyProperty *Deployment::NeutralResourcesLanguageProperty;
 DependencyProperty *Deployment::PartsProperty;
 DependencyProperty *Deployment::SupportedCulturesProperty;
-DependencyProperty *Deployment::RuntimeVersion;
+DependencyProperty *Deployment::RuntimeVersionProperty;
 
 Deployment *
 deployment_new (void)
 {
 	return new Deployment ();
 }
-
-
 
 void
 deployment_init (void)
@@ -62,5 +60,5 @@ deployment_init (void)
 	Deployment::NeutralResourcesLanguageProperty = DependencyObject::Register (Type::DEPLOYMENT, "NeutralResourcesLanguage", Type::STRING);
 	Deployment::PartsProperty = DependencyObject::Register (Type::DEPLOYMENT, "Parts", Type::ASSEMBLYPART_COLLECTION);
 	Deployment::SupportedCulturesProperty = DependencyObject::Register (Type::DEPLOYMENT, "SupportedCultures", Type::SUPPORTEDCULTURE_COLLECTION);
-	Deployment::RuntimeVersion = DependencyObject::Register (Type::DEPLOYMENT, "RuntimeVersion", Type::STRING);
+	Deployment::RuntimeVersionProperty = DependencyObject::Register (Type::DEPLOYMENT, "RuntimeVersion", Type::STRING);
 }

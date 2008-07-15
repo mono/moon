@@ -1,5 +1,9 @@
 2008-07-15  Jb Evain  <jbevain@novell.com>
 
+	* deployment.cpp|h: rename RuntimeVersion DP to RuntimeVersionProperty.
+
+2008-07-15  Jb Evain  <jbevain@novell.com>
+
 	* list.cpp: set pointers to NULL instead of 0.
 
 2008-07-14  Geoff Norton  <gnorton@novell.com>

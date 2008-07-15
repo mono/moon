@@ -84,7 +84,7 @@ class Deployment : public DependencyObject {
 	static DependencyProperty *NeutralResourcesLanguageProperty;
 	static DependencyProperty *PartsProperty;
 	static DependencyProperty *SupportedCulturesProperty;
-	static DependencyProperty *RuntimeVersion;
+	static DependencyProperty *RuntimeVersionProperty;
 
 
 	Deployment () {} 
