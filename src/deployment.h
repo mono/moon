@@ -56,9 +56,7 @@ class Deployment : public DependencyObject {
 	static DependencyProperty *AllowInboundCallsFromXDomainProperty;
 	static DependencyProperty *EntryPointAssemblyProperty;
 	static DependencyProperty *EntryPointTypeProperty;
-	static DependencyProperty *NeutralResourcesLanguageProperty;
 	static DependencyProperty *PartsProperty;
-	static DependencyProperty *SupportedCulturesProperty;
 	static DependencyProperty *RuntimeVersionProperty;
 
 

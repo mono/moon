@@ -1,5 +1,9 @@
 2008-07-15  Jb Evain  <jbevain@novell.com>
 
+	* deployment.cpp|h: start updating Deployment to sl2b2.
+
+2008-07-15  Jb Evain  <jbevain@novell.com>
+
 	* deployment.h: remove SupportedCulture and SupportedCultureCollection
 	as they no longer exist.
 	* value.h, type.h, type-generated.cpp: regenerate.
