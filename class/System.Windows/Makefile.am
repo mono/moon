@@ -63,6 +63,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
+	$(srcdir)/System.Windows/CrossDomainAccess.cs					\
 	$(srcdir)/System.Windows/DataTemplate.cs				\
 	$(srcdir)/System.Windows/Deployment.cs					\
 	$(srcdir)/System.Windows/DependencyObject.cs				\
@@ -96,8 +97,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/StartupEventArgs.cs				\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/StyleSimulations.cs				\
-	$(srcdir)/System.Windows/SupportedCulture.cs				\
-	$(srcdir)/System.Windows/SupportedCultureCollection.cs			\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\

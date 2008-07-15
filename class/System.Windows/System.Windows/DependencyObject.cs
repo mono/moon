@@ -203,8 +203,6 @@ namespace System.Windows {
 			case Kind.STYLUSINFO: return new StylusInfo (raw);
 			case Kind.STYLUSPOINT_COLLECTION: return new StylusPointCollection (raw);
 			case Kind.STYLUSPOINT: return new StylusPoint (raw);
-			case Kind.SUPPORTEDCULTURE: return new SupportedCulture (raw); 
-			case Kind.SUPPORTEDCULTURE_COLLECTION: return new SupportedCultureCollection (raw);
 			case Kind.TEXTBLOCK: return new TextBlock (raw);
 			case Kind.TIMELINE_COLLECTION: return new TimelineCollection (raw);
 			case Kind.TIMELINEMARKER_COLLECTION: return new TimelineMarkerCollection (raw);

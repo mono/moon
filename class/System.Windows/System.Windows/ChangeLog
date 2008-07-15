@@ -1,3 +1,9 @@
+2008-07-15  Jb Evain  <jbevain@novell.com>
+
+	* CrossDomainAccess.cs: added.
+	* Deployment.cs: update to sl2b2 api.
+	* DependecyObject.cs: update after SupportedCulture removal.
+
 2008-06-27  Jackson Harper  <jackson@ximian.com>
 
 	* Application.cs: Creating a component requires a list of the

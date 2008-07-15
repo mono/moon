@@ -25,20 +25,50 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using Mono;
 
 namespace System.Windows {
 
 	public sealed class Deployment : DependencyObject {
 
+		public static readonly DependencyProperty EntryPointAssemblyProperty;
+		public static readonly DependencyProperty EntryPointTypeProperty;
+		public static readonly DependencyProperty ExternalCallersFromCrossDomainProperty;
+		public static readonly DependencyProperty PartsProperty;
+		public static readonly DependencyProperty RuntimeVersionProperty;
+
 		static Deployment ()
 		{
-			AllowInboundCallsFromXDomainProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "AllowInboundCallsFromXDomain", typeof (bool));
 			EntryPointAssemblyProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointAssembly", typeof (string));
 			EntryPointTypeProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointType", typeof (string));
-			NeutralResourcesLanguageProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "NeutralResourcesLanguage", typeof (string));
+			ExternalCallersFromCrossDomainProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalCallersFromCrossDomain", typeof (CrossDomainAccess));
 			PartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Parts", typeof (AssemblyPartCollection));;
-			SupportedCulturesProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "SupportedCultures", typeof (SupportedCultureCollection));
+			RuntimeVersionProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "RuntimeVersion", typeof (string));
+		}
+
+		public static Deployment Current {
+			get { throw new NotImplementedException (); }
+		}
+
+		public string EntryPointAssembly {
+			get { return (string) GetValue (EntryPointAssemblyProperty); }
+		}
+
+		public string EntryPointType {
+			get { return (string) GetValue (EntryPointTypeProperty); }
+		}
+
+		public CrossDomainAccess ExternalCallersFromCrossDomain {
+			get { return (CrossDomainAccess) GetValue (ExternalCallersFromCrossDomainProperty); }
+		}
+
+		public AssemblyPartCollection Parts {
+			get { return (AssemblyPartCollection) GetValue (PartsProperty); }
+		}
+
+		public string RuntimeVersion {
+			get { return (string) GetValue (RuntimeVersionProperty); }
 		}
 
 		public Deployment () : base (NativeMethods.deployment_new ())
@@ -48,73 +78,6 @@ namespace System.Windows {
 		internal Deployment (IntPtr raw) : base (raw)
 		{
 		}
-
-		public bool AllowInboundCallsFromXDomain {
-			get {
-				return (bool) GetValue (AllowInboundCallsFromXDomainProperty);
-			}
-
-			set {
-				SetValue (AllowInboundCallsFromXDomainProperty, value);
-			}
-		}
-
-		public string EntryPointAssembly {
-			get {
-				return (string) GetValue (EntryPointAssemblyProperty);
-			}
-
-			set {
-				SetValue (EntryPointAssemblyProperty, value);
-			}
-		}
-		
-		public string EntryPointType {
-			get {
-				return (string) GetValue (EntryPointTypeProperty);
-			}
-
-			set {
-				SetValue (EntryPointTypeProperty, value);
-			}
-		}
-		
-		public string NeutralResourcesLanguage {
-			get {
-				return (string) GetValue (NeutralResourcesLanguageProperty);
-			}
-
-			set {
-				SetValue (NeutralResourcesLanguageProperty, value);
-			}
-		}
-			
-		public AssemblyPartCollection Parts {
-			get {
-				return (AssemblyPartCollection) GetValue (PartsProperty);
-			}
-
-			set {
-				SetValue (PartsProperty, value);
-			}
-		}
-		
-		public SupportedCultureCollection SupportedCultures {
-			get {
-				return (SupportedCultureCollection) GetValue (SupportedCulturesProperty);
-			}
-
-			set {
-				SetValue (SupportedCulturesProperty, value);
-			}
-		}
-
-		public static readonly DependencyProperty AllowInboundCallsFromXDomainProperty;
-		public static readonly DependencyProperty EntryPointAssemblyProperty;
-		public static readonly DependencyProperty EntryPointTypeProperty;
-		public static readonly DependencyProperty NeutralResourcesLanguageProperty;
-		public static readonly DependencyProperty PartsProperty;
-		public static readonly DependencyProperty SupportedCulturesProperty;
 
 		internal override Kind GetKind ()
 		{
