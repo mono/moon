@@ -1,5 +1,11 @@
 2008-07-15  Jb Evain  <jbevain@novell.com>
 
+	* deployment.h: remove SupportedCulture and SupportedCultureCollection
+	as they no longer exist.
+	* value.h, type.h, type-generated.cpp: regenerate.
+
+2008-07-15  Jb Evain  <jbevain@novell.com>
+
 	* deployment.cpp|h: rename RuntimeVersion DP to RuntimeVersionProperty.
 
 2008-07-15  Jb Evain  <jbevain@novell.com>

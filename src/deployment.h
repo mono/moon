@@ -47,31 +47,6 @@ AssemblyPartCollection *assembly_part_collection_new (void);
 
 
 /* @SilverlightVersion="2" */
-class SupportedCulture : public DependencyObject {
- protected:
-	virtual ~SupportedCulture () {}
-	
- public:
-	SupportedCulture () {}
-	virtual Type::Kind GetObjectType () { return Type::SUPPORTEDCULTURE; }
-};
-
-
-/* @SilverlightVersion="2" */
-class SupportedCultureCollection : public Collection {
- protected:
-	virtual ~SupportedCultureCollection () {}
-
- public:
-	SupportedCultureCollection () {}
-	virtual Type::Kind GetObjectType ()  { return Type::SUPPORTEDCULTURE_COLLECTION; }
-	virtual Type::Kind GetElementType () { return Type::SUPPORTEDCULTURE; }
-};
-
-SupportedCultureCollection *supported_culture_collection_new (void);
-
-
-/* @SilverlightVersion="2" */
 class Deployment : public DependencyObject {
  protected:
 	virtual ~Deployment () {}

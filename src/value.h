@@ -157,8 +157,6 @@ class StrokeCollection;
 class StylusInfo;
 class StylusPoint;
 class StylusPointCollection;
-class SupportedCulture;
-class SupportedCultureCollection;
 class Surface;
 class SystemTimeSource;
 class TextBlock;
@@ -385,8 +383,6 @@ public:
 	StylusInfo*                    AsStylusInfo () { checked_get_subclass (Type::STYLUSINFO, StylusInfo) }
 	StylusPoint*                   AsStylusPoint () { checked_get_subclass (Type::STYLUSPOINT, StylusPoint) }
 	StylusPointCollection*         AsStylusPointCollection () { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }
-	SupportedCulture*              AsSupportedCulture () { checked_get_subclass (Type::SUPPORTEDCULTURE, SupportedCulture) }
-	SupportedCultureCollection*    AsSupportedCultureCollection () { checked_get_subclass (Type::SUPPORTEDCULTURE_COLLECTION, SupportedCultureCollection) }
 	Surface*                       AsSurface () { checked_get_subclass (Type::SURFACE, Surface) }
 	SystemTimeSource*              AsSystemTimeSource () { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
 	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }

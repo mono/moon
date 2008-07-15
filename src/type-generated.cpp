@@ -247,16 +247,6 @@ Type type_infos [] = {
 	{ Type::STYLUSINFO, Type::DEPENDENCY_OBJECT, false, "StylusInfo", "STYLUSINFO", 0, 1, NULL, (create_inst_func *) stylus_info_new, NULL }, 
 	{ Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, false, "StylusPoint", "STYLUSPOINT", 0, 1, NULL, (create_inst_func *) stylus_point_new, NULL }, 
 	{ Type::STYLUSPOINT_COLLECTION, Type::COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL }, 
-#if SL_2_0
-	{ Type::SUPPORTEDCULTURE, Type::DEPENDENCY_OBJECT, false, "SupportedCulture", "SUPPORTEDCULTURE", 0, 1, NULL, NULL, NULL }, 
-#else
-	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SUPPORTEDCULTURE'", "SUPPORTEDCULTURE", 0, 0, NULL, NULL, NULL }, 
-#endif
-#if SL_2_0
-	{ Type::SUPPORTEDCULTURE_COLLECTION, Type::COLLECTION, false, "SupportedCultureCollection", "SUPPORTEDCULTURE_COLLECTION", 0, 1, NULL, (create_inst_func *) supported_culture_collection_new, NULL }, 
-#else
-	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SUPPORTEDCULTURE_COLLECTION'", "SUPPORTEDCULTURE_COLLECTION", 0, 0, NULL, NULL, NULL }, 
-#endif
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, (create_inst_func *) surface_new, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL }, 
 	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 12, NULL, (create_inst_func *) text_block_new, "Inlines" }, 
