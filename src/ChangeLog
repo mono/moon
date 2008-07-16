@@ -1,3 +1,7 @@
+2008-07-16  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline.cpp: Update to be able to build with LOG_PIPELINE still
+
 2008-07-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* layout.cpp: (TextLayout::LayoutWrap) Don't let actualWidth be 

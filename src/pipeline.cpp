@@ -2993,7 +2993,7 @@ trynext:
 cleanup:				
 	delete node;
 	
-	LOG_PIPELINE ("MemoryQueueSource::Pop (): popped 1 packet of size: %i, there are %i packets left, of a total of %lld packets written\n", (int) result->GetSize (), queue.Length (), write_count);
+	LOG_PIPELINE ("MemoryQueueSource::Pop (): popped 1 packet, there are %i packets left, of a total of %lld packets written\n", queue.Length (), write_count);
 	
 	return result;
 }
