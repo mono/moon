@@ -708,12 +708,6 @@
         inputFile="test-blending-gradients.xaml"
         masterFile10="../harness/masters/test-blending-gradientsMaster.png"
    />
-   <Test id="multiple-canvases"
-	 inputFile="test-parser-multiple-canvases.xaml"
-	 masterFile10="None"
-	 categories="parser"
-	 expectedError="ParserError"
-   />
    <Test id="159"
 	 inputFile="test-shape-path-stretch.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch.png"
@@ -901,5 +895,11 @@
 	inputFile="test-shape-ellipse-matrix.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-matrixMaster.tif"
 	categories="ellipse"
+   />
+   <Test id="200"
+	 inputFile="test-parser-multiple-canvases.xaml"
+	 masterFile10="None"
+	 categories="parser"
+	 expectedError="ParserError"
    />
 </DRTList>
