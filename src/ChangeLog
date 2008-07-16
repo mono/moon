@@ -1,3 +1,8 @@
+2008-07-15  Larry Ewing  <lewing@novell.com>
+
+	* dirty.cpp (Surface::AddDirtyElement): quick patch from toshok to
+	fix a regression in the fullscreen message code.
+
 2008-07-15  Jb Evain  <jbevain@novell.com>
 
 	* deployment.cpp|h: start updating Deployment to sl2b2.

@@ -98,7 +98,7 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 	// there's no point in adding an element to the dirty list if it
 	// isn't in the hierarchy.  it will be added to the dirty list when
 	// it's added to the hierarchy anyway.
-	if (element->GetVisualParent() == NULL && element != toplevel)
+	if (element->GetVisualParent() == NULL && !IsTopLevel(element))
 		return;
 
 	// XXX this should really be here...
