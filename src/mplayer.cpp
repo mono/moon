@@ -2148,6 +2148,14 @@ AudioPlayer::AudioNode::GetNextBuffer ()
 	frame = packet->frame;
 	
 	if (frame->event == FrameEventEOF) {
+		if (!started) {
+			LOG_AUDIO ("AudioPlayer::GetNextBuffer (): starting pcm as we're out of data but never started");
+			int err = snd_pcm_start (pcm);
+			if (err < 0) {
+				fprintf (stderr, "AudioPlayer: Could not start pcm: %s\n", snd_strerror (err));
+			}
+			started = true;
+		}
 		mplayer->AudioFinished ();
 		mplayer->SetEof (true);
 		return false;
