@@ -391,6 +391,11 @@ namespace MoonlightTests {
 			catch (Exception ex) {
 				revision = string.Empty;
 			}
+
+			if (revision == string.Empty) {
+				revision = Environment.GetEnvironmentVariable ("SVN_REVISION");
+
+			}
 			return revision;
 
 		}
