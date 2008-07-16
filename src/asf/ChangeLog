@@ -1,3 +1,11 @@
+2008-07-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp, asf.h: Refcount ASFParser to track lifetime correctly.  Move
+	  the parsing code from ASFParser to ASFPacket, and make
+	  ASFParser::ReadPacket return a packet instead of filling in an
+	  already created packet. Remove ASFParser::GetPacketIndexOfPts,
+	  never used.
+
 2008-07-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h: Make reading/seeking more intelligent when we're

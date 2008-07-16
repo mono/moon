@@ -1,3 +1,22 @@
+2008-07-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, pipeline.h: ProgressiveSource: clean up a bit, this
+	  class doesn't do anything live/mms anymore. LiveSource: removed
+	  completely, never used. Added MemoryNestedSource to wrap another
+	  MemorySource without messing with its current position pointer.
+	  MemoryQueueSource: store already parsed packets instead of
+	  MemorySources in the queue, saves a memory allocation and prevents
+	  parsing each packet twice when buffering (once for the code which
+	  determines the last available pts, and again for the normal
+	  demuxing code path).
+	* mms-downloader.cpp: Updated to not delete asf parser, unref it
+	  instead.
+	* mplayer.cpp: Enqueue 3 audio frames instead of 10, makes the pipeline
+	  wait a bit longer before ending up waiting for more data (which
+	  causes the MediaElement to go into buffering mode).
+	* media.cpp: ProgressiveSource ctor doesn't take any bool arguments
+	  anymore.
+
 2008-07-15  Larry Ewing  <lewing@novell.com>
 
 	* dirty.cpp (Surface::AddDirtyElement): quick patch from toshok to

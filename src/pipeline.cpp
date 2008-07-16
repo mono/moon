@@ -738,7 +738,7 @@ Media::EnqueueWork (MediaWork *work)
 {
 	MediaWork *current;
 	
-	//printf ("Media::EnqueueWork (%p).\n", stream);
+	//printf ("Media::EnqueueWork (%p), type: %i.\n", work, work->type);
 	
 	pthread_mutex_lock (&queue_mutex);
 	
@@ -828,11 +828,10 @@ ASFDemuxer::~ASFDemuxer ()
 {
 	g_free (stream_to_asf_index);
 	
-	if (reader)
-		delete reader;
+	delete reader;
 
 	if (parser)
-		delete parser;
+		parser->unref ();
 }
 guint64 
 ASFDemuxer::GetLastAvailablePts ()
@@ -1146,7 +1145,7 @@ ASFDemuxer::ReadHeader ()
 	return result;
 	
 failure:
-	delete asf_parser;
+	asf_parser->unref ();
 	asf_parser = NULL;
 	
 	g_free (stream_to_asf_index);
@@ -2626,15 +2625,11 @@ FileSource::PeekInBuffer (void *buf, guint32 n)
  * ProgressiveSource
  */
 
-ProgressiveSource::ProgressiveSource (Media *media, bool is_live) : FileSource (media, NULL)
+ProgressiveSource::ProgressiveSource (Media *media) : FileSource (media, NULL)
 {
-	last_requested_pts = UINT64_MAX;
 	write_pos = 0;
 	wait_pos = 0;
-	first_write_pos = 0;
 	size = -1;
-	requested_pts = UINT64_MAX;
-	this->is_live = is_live;
 }
 
 ProgressiveSource::~ProgressiveSource ()
@@ -2719,7 +2714,6 @@ ProgressiveSource::Write (void *buf, gint64 offset, gint32 n)
 	
 	if (new_pos) {
 		// Set pos to the new write position
-		first_write_pos = offset;
 		pos = offset;
 		lseek (fd, offset, SEEK_SET);
 	} else {
@@ -2737,10 +2731,6 @@ cleanup:
 bool
 ProgressiveSource::SeekInternal (gint64 offset, int mode)
 {
-	if (offset < first_write_pos) {
-		LOG_PIPELINE_ERROR ("Trying to seek to a position never filled: %llu and first write pos is: %llu\n", offset, first_write_pos);
-		return false;
-	}
 	return FileSource::SeekInternal (offset, mode);
 }
 
@@ -2761,65 +2751,47 @@ ProgressiveSource::NotifyFinished ()
 	Signal ();
 }
 
-bool
-ProgressiveSource::SeekToPts (guint64 pts)
-{
-	LOG_PIPELINE ("ProgressiveSource::SeekToPts (%llu) last_requested_pts: %llu\n", pts, last_requested_pts);
-
-	if (last_requested_pts == pts)
-		return true;
-
-	if (pts == 0 && Seek (0, SEEK_SET))
-		return true;
-
-	Lock ();
-	requested_pts = pts;
-	write_pos = -1;
-	buflen = 0;
-
-	StartWaitLoop ();
-	while (!Aborted () && requested_pts != UINT64_MAX)
-		Wait ();
-	EndWaitLoop ();
-
-	Unlock ();
-
-	LOG_PIPELINE ("ProgressiveSource::SeekToPts (%llu) [Done] last_requested_pts: %llu\n", pts, last_requested_pts);
-	
-	return !Aborted ();
-}
-
-void
-ProgressiveSource::RequestPosition (gint64 *pos)
-{
-	Lock ();
-	if (requested_pts != UINT64_MAX && requested_pts != last_requested_pts) {
-		*pos = requested_pts;
-		last_requested_pts = requested_pts;
-		requested_pts = UINT64_MAX;
-		Signal ();
-	}
-	Unlock ();
-}
-
 /*
  * MemoryQueueSource::QueueNode
  */
 
-MemoryQueueSource::QueueNode::QueueNode (MemorySource *source, ASFPacket *packet)
+MemoryQueueSource::QueueNode::QueueNode (MemorySource *source)
+{
+	if (source)
+		source->ref ();
+	this->source = source;
+	packet = NULL;
+}
+
+MemoryQueueSource::QueueNode::QueueNode (ASFPacket *packet)
 {
 	if (packet)
 		packet->ref ();
 	this->packet = packet;
-	source->ref ();
-	this->source = source;
+	source = NULL;
 }
 
 MemoryQueueSource::QueueNode::~QueueNode ()
 {
 	if (packet)
 		packet->unref ();
-	source->unref ();
+	if (source)
+		source->unref ();
+}
+
+/*
+ * MemoryNestedSource
+ */
+
+MemoryNestedSource::MemoryNestedSource (MemorySource *src) : MemorySource (src->GetMedia (), src->GetMemory (), src->GetSize (), src->GetStart ())
+{
+	src->ref ();
+	this->src = src;
+}
+
+MemoryNestedSource::~MemoryNestedSource ()
+{
+	src->unref ();
 }
 
 /*
@@ -2896,8 +2868,9 @@ MemorySource::PeekInternal (void *buffer, guint32 n, gint64 start)
 }
 
 /*
- *
+ * MemoryQueueSource
  */
+ 
 MemoryQueueSource::MemoryQueueSource (Media *media)
 	: IMediaSource (media)
 {
@@ -2905,10 +2878,29 @@ MemoryQueueSource::MemoryQueueSource (Media *media)
 	requested_pts = UINT64_MAX;
 	last_requested_pts = UINT64_MAX;
 	write_count = 0;
+	parser = NULL;
 }
 
 MemoryQueueSource::~MemoryQueueSource ()
 {
+	if (this->parser)
+		this->parser->unref ();
+}
+
+ASFParser *
+MemoryQueueSource::GetParser ()
+{
+	return parser;
+}
+
+void
+MemoryQueueSource::SetParser (ASFParser *parser)
+{
+	if (this->parser)
+		this->parser->unref ();
+	this->parser = parser;
+	if (this->parser)
+		this->parser->ref ();
 }
 
 void
@@ -2935,55 +2927,40 @@ MemoryQueueSource::GetPositionInternal ()
 	return -1;
 }
 
-void
-MemoryQueueSource::SetASFPacket (MemorySource *source, ASFPacket *packet)
+Queue*
+MemoryQueueSource::GetQueue ()
 {
-	QueueNode *current;
-	
-	queue.Lock ();
-	current = (QueueNode *) queue.LinkedList ()->First ();
-	while (current != NULL) {
-		if (current->source == source) {
-			current->packet = packet;
-			break;
-		}
-		current = (QueueNode *) current->next;
-	}
-	queue.Unlock ();
-}
-
-MemoryQueueSource::QueueNode **
-MemoryQueueSource::ToArray ()
-{
-	int length = 0, current = 0;
-	QueueNode **result = NULL;
 	QueueNode *node;
+	QueueNode *next;
 	
+	// Make sure all nodes have asf packets.
 	queue.Lock ();
-	length = queue.LinkedList ()->Length ();
-	if (length > 0) {
-		result = (QueueNode **) g_malloc (sizeof (QueueNode *) * (length + 1));
-		result [length] = NULL;
+	node = (QueueNode *) queue.LinkedList ()->First ();
+	while (node != NULL && node->packet == NULL) {
+		next = (QueueNode *) node->next;
 		
-		node = (QueueNode *) queue.LinkedList ()->First ();
-		do {
-			result [current++] = new QueueNode (node->source, node->packet);
-			node = (QueueNode *) node->next;
-		} while (node != NULL);
+		node->packet = new ASFPacket (parser, node->source);
+		if (!MEDIA_SUCCEEDED (node->packet->Read ())) {
+			LOG_PIPELINE_ERROR ("MemoryQueueSource::GetQueue (): Error while parsing packet, dropping packet.\n");
+			queue.LinkedList ()->Remove (node);
+		}
+		
+		node = next;
 	}
 	queue.Unlock ();
 	
-	return result;
+	return &queue;
 }
 
-MemorySource *
+ASFPacket *
 MemoryQueueSource::Pop ()
 {
 	//printf ("MemoryQueueSource::Pop (), there are %i packets in the queue, of a total of %lld packets written.\n", queue.Length (), write_count);
 	
 	QueueNode *node;
-	MemorySource *result;
+	ASFPacket *result = NULL;
 	
+trynext:
 	node = (QueueNode *) queue.Pop ();
 	
 	if (node == NULL) {
@@ -2993,14 +2970,30 @@ MemoryQueueSource::Pop ()
 	}
 	
 	if (node == NULL) {
-		printf ("MemoryQueueSource::Pop (): No more packets.\n");
+		LOG_PIPELINE ("MemoryQueueSource::Pop (): No more packets.\n");
 		return NULL; // We waited and got nothing, reached end of stream
 	}
 	
-	result = node->source;
-	result->ref ();
+	if (node->packet == NULL) {
+		if (parser == NULL) {
+			g_warning ("MemoryQueueSource::Pop (): No parser to parse the packet.\n");
+			goto cleanup;
+		}
+		node->packet = new ASFPacket (parser, node->source);
+		if (!MEDIA_SUCCEEDED (node->packet->Read ())) {
+			LOG_PIPELINE_ERROR ("MemoryQueueSource::Pop (): Error while parsing packet, getting a new packet\n");
+			delete node;
+			goto trynext;
+		}
+	}
 	
+	result = node->packet;
+	result->ref ();
+
+cleanup:				
 	delete node;
+	
+	LOG_PIPELINE ("MemoryQueueSource::Pop (): popped 1 packet of size: %i, there are %i packets left, of a total of %lld packets written\n", (int) result->GetSize (), queue.Length (), write_count);
 	
 	return result;
 }
@@ -3008,11 +3001,29 @@ MemoryQueueSource::Pop ()
 void
 MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 {
+	MemorySource *src;
+	ASFPacket *packet;
+	
 	//printf ("MemoryQueueSource::Write (%p, %lld, %i), write_count: %lld\n", buf, offset, n, write_count + 1);
 	
 	write_count++;
-	queue.Push (new QueueNode (new MemorySource (NULL, g_memdup (buf, n), n, offset)));
-
+	if (parser != NULL) {
+		src = new MemorySource (NULL, buf, n, offset);
+		src->SetOwner (false);
+		packet = new ASFPacket (parser, src);
+		if (!MEDIA_SUCCEEDED (packet->Read ())) {
+			LOG_PIPELINE_ERROR ("MemoryQueueSource::Write (%p, %lld, %i): Error while parsing packet, dropping packet.\n", buf, offset, n);
+		} else {
+			queue.Push (new QueueNode (packet));
+		}
+		packet->unref ();
+		src->unref ();
+	} else {
+		src = new MemorySource (NULL, g_memdup (buf, n), n, offset);
+		queue.Push (new QueueNode (src));
+		src->unref ();
+	}
+	
 	if (IsWaiting ())
 		Signal ();
 }
@@ -3064,8 +3075,6 @@ MemoryQueueSource::NotifyFinished ()
 	Signal ();
 }
 
-
-
 gint64
 MemoryQueueSource::GetSizeInternal ()
 {
@@ -3090,6 +3099,7 @@ MemoryQueueSource::RequestPosition (gint64 *pos)
 bool
 MemoryQueueSource::SeekToPts (guint64 pts)
 {
+	LOG_PIPELINE ("MemoryQueueSource::SeekToPts (%llu)\n", pts);
 
 	if (last_requested_pts == pts)
 		return true;
@@ -3106,6 +3116,8 @@ MemoryQueueSource::SeekToPts (guint64 pts)
 
 	Unlock ();
 
+	LOG_PIPELINE ("MemoryQueueSource::SeekToPts (%llu) [Done]\n", pts);
+	
 	return !Aborted ();
 }
 

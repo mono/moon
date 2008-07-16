@@ -159,7 +159,8 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	MediaFrame *frame = closure->frame;
 	IMediaStream *stream = frame ? frame->stream : NULL;
 	
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (%p), state: %i, frame: %p, pts: %llu = %llu\n", closure, player->state, closure->frame, closure->frame->pts, MilliSeconds_FromPts (closure->frame->pts));
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (%p), state: %i, frame: %p, pts: %llu = %llu, type: %i, audio packets: %i, video packets: %i\n", 
+		closure, player->state, closure->frame, closure->frame->pts, MilliSeconds_FromPts (closure->frame->pts), stream->GetType (), player->audio.queue.Length (), player->video.queue.Length ());
 
 	if (player->GetBit (MediaPlayer::Seeking)) {
 		// We don't want any frames while we're waiting for a seek.
@@ -605,7 +606,8 @@ MediaPlayer::AdvanceFrame ()
 				element->IsLive (),
 				current_pts, MilliSeconds_FromPts (current_pts),
 				duration, MilliSeconds_FromPts (duration),
-				first_live_pts, MilliSeconds_FromPts (first_live_pts));
+				first_live_pts, MilliSeconds_FromPts (first_live_pts),
+				current_pts - first_live_pts, MilliSeconds_FromPts (current_pts - first_live_pts));
 */
 			if (element->IsLive ()) {
 				if (current_pts - first_live_pts > duration)
@@ -760,7 +762,7 @@ MediaPlayer::Play ()
 	// be able to send more audio samples to the hardware in one call than what's
 	// in one single frame, but this depends of course on having more than one 
 	// decoded frame available.
-	EnqueueFrames (10, 1);
+	EnqueueFrames (3, 1);
 
 	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i [Done]\n", state);
 }

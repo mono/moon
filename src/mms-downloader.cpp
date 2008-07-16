@@ -65,6 +65,8 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 MmsDownloader::~MmsDownloader ()
 {
 	g_free (buffer);
+	if (parser)
+		parser->unref ();
 }
 
 void
@@ -243,7 +245,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 		if (!parser->ReadHeader ()) {
 			// TODO: And what should we do here?
 			asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
-			delete parser;
+			parser->unref ();
 			parser = NULL;
 			return true;
 		}

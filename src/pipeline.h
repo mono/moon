@@ -742,14 +742,9 @@ public:
 
 class ProgressiveSource : public FileSource {
 private:
-	bool is_live;
-	
 	gint64 write_pos;
 	gint64 wait_pos;
 	gint64 size;
-	gint64 first_write_pos;
-	guint64 requested_pts;
-	guint64 last_requested_pts;
 	
 	virtual gint64 GetLastAvailablePositionInternal () { return write_pos; }
 	virtual gint64 GetSizeInternal () { return size; }
@@ -759,7 +754,7 @@ protected:
 	virtual ~ProgressiveSource ();
 
 public:
-	ProgressiveSource (Media *media, bool is_live);
+	ProgressiveSource (Media *media);
 	
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeProgressive; }
@@ -768,39 +763,12 @@ public:
 	
 	virtual void Write (void *buf, gint64 offset, gint32 n);
 	void NotifySize (gint64 size);
-	virtual void RequestPosition (gint64 *pos);
 	virtual void NotifyFinished ();
-	virtual bool CanSeekToPts () { return is_live && size > 0; }
-	virtual bool SeekToPts (guint64 pts);
 
 #if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "ProgressiveSource"; }
 #endif
 };
-
-/*
-class LiveSource : public IMediaSource {
-protected:
-	virtual ~LiveSource () {}
-
-public:
-	LiveSource (Media *media) : IMediaSource (media) {}
-	
-	virtual MediaResult Initialize () { return MEDIA_FAIL; }
-	virtual MediaSourceType GetType () { return MediaSourceTypeLive; }
-	
-	virtual bool CanSeek () { return false; }
-	virtual gint64 GetPosition () { return 0; }
-	virtual bool Seek (gint64 offset) { return false; }
-	virtual bool Seek (gint64 offset, int mode) { return false; }
-	virtual gint32 ReadSome (void *buffer, guint32 n) { return -1; }
-	virtual bool ReadAll (void *buffer, guint32 n) { return false; }
-	virtual bool Peek (void *buffer, guint32 n) { return false; }
-	virtual bool Peek (void *buf, guint32 n, gint64 start) { return false; }
-	virtual gint64 GetSize () { return -1; }
-	virtual bool Eof () { return false; }
-};
-*/
 
 class MemorySource : public IMediaSource {
 private:
@@ -823,6 +791,7 @@ protected:
 public:
 	MemorySource (Media *media, void *memory, gint32 size, gint64 start = 0);
 
+	void *GetMemory () { return memory; }
 	void Release (void) { delete this; }
 
 	void SetOwner (bool value) { owner = value; }
@@ -841,9 +810,27 @@ public:
 #endif
 };
 
+
+// MemoryNestedSource is used to allow independent reading/seeking
+// into an already created MemorySource. This is required when we 
+// read data to calculate bufferingprogress (on main thread), while
+// the same data might get read on the worker thread. Using the same 
+// MemorySource would corrupt the current position.
+class MemoryNestedSource : public MemorySource {
+private:
+	MemorySource *src;
+
+protected:
+	virtual ~MemoryNestedSource ();
+	
+public:
+	MemoryNestedSource (MemorySource *src);
+};
+
 class MemoryQueueSource : public IMediaSource {
 private:
 	Queue queue;
+	ASFParser *parser;
 	bool finished;
 	guint64 requested_pts;
 	guint64 last_requested_pts;
@@ -860,16 +847,17 @@ protected:
 public:
 	class QueueNode : public List::Node {
 	 public:
+		ASFPacket *packet;
 		MemorySource *source;
-		ASFPacket *packet; // TODO: Determine ownership and delete accordingly (maybe refcount)
-		QueueNode (MemorySource *src, ASFPacket *packet = NULL);
+		QueueNode (ASFPacket *packet);
+		QueueNode (MemorySource *source);
 		virtual ~QueueNode ();
 	};
 	
 	MemoryQueueSource (Media *media);
 	virtual ~MemoryQueueSource ();
 	void AddPacket (MemorySource *packet);
-	MemorySource *Pop (); // Pops the first memory source from the queue. TODO: If the source already has a packet associated, return that too.
+	ASFPacket *Pop ();
 	bool Advance (); 
 
 	virtual void NotifySize (gint64 size);
@@ -890,20 +878,14 @@ public:
 	
 	bool IsFinished () { return finished; } // If the server sent the MMS_END packet.
 	
-	// Returns the queue as a NULL terminated array, first item in the queue is first in the array.
-	// The caller must free the array and delete each element.
-	// If the queue is empty, returns NULL
-	QueueNode **ToArray ();
-	
-	// Stores the specified packet with the source in the queue.
-	void SetASFPacket (MemorySource *source, ASFPacket *packet);
+	Queue *GetQueue ();
+	void SetParser (ASFParser *parser);
+	ASFParser *GetParser ();
 
 #if DEBUG
 	virtual const char* GetTypeName () { return "MemoryQueueSource"; }
 #endif
 };
-
-
 
 class VideoStream : public IMediaStream {
 protected:

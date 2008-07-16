@@ -1110,13 +1110,14 @@ MediaElement::UpdateProgress ()
 	if (state & WaitingForOpen)
 		return;
 	
-	if (downloaded_file != NULL && IsPlaying () && downloaded_file->IsWaiting ()) {
+	if (downloaded_file != NULL && IsPlaying () && downloaded_file->IsWaiting () && GetBufferedSize () < 0.2) {
 		// We're waiting for more data, switch to the 'Buffering' state.
 		d(printf ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: "
-			  "%llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, last available pts: %llu\n", 
+			  "%llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, last available pts: %llu, "
+			  "buffering progress: %.2f\n", 
 			  previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (),
 			  MilliSeconds_FromPts (mplayer->GetPosition ()),
-			  media ? media->GetDemuxer ()->GetLastAvailablePts () : 0));
+			  media ? media->GetDemuxer ()->GetLastAvailablePts () : 0, GetBufferedSize ()));
 		
 		flags |= PlayRequested;
 		SetBufferingProgress (0.0);
@@ -1514,7 +1515,7 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 			if (is_streaming)
 				downloaded_file = new MemoryQueueSource (mplayer->GetMedia() );
 			 else 
-				downloaded_file = new ProgressiveSource (mplayer->GetMedia (), false);
+				downloaded_file = new ProgressiveSource (mplayer->GetMedia ());
 			
 			// FIXME: error check Initialize()
 			downloaded_file->Initialize ();

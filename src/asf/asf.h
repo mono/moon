@@ -62,13 +62,13 @@ private:
 	int64_t position; // The position of this packet. -1 if not known.
 	int index; // The index of this packet. -1 if not known.
 	IMediaSource *source; // The source which is to be used for reading into this packet.
+	ASFParser *parser;
 	
 protected:
 	virtual ~ASFPacket ();
 	
 public:
-	ASFPacket ();	
-	ASFPacket (IMediaSource *source);
+	ASFPacket (ASFParser *parser, IMediaSource *source);
 	
 	asf_multiple_payloads *payloads; // The payloads in this packet
 	
@@ -80,6 +80,7 @@ public:
 	
 	IMediaSource *GetSource () { return source; }
 	void SetSource (IMediaSource *source);
+	MediaResult Read ();
 };
 
 class ASFReader {
@@ -258,8 +259,8 @@ public:
 	MarkerStream *GetMarkerStream () { return marker_stream; }
 };
 
-class ASFParser {
-private:	
+class ASFParser : public EventObject {
+private:
 	MediaErrorEventArgs *error;
 	bool header_read_successfully;
 	
@@ -271,20 +272,22 @@ private:
 	Media *media;
 	IMediaSource *source; // The source used to read data.
 	
+protected:
+	virtual ~ASFParser ();
+	
 public:
 	// The parser takes ownership of the source and will delete it when the parser is deleted.
 	ASFParser (IMediaSource *source, Media *media);
-	virtual ~ASFParser ();
 	
 	bool ReadHeader ();
 	// Reads a packet
 	// In any case (failure or success), the position of the source
 	// is set to the next packet.
-	MediaResult ReadPacket (ASFPacket *packet);
+	MediaResult ReadPacket (ASFPacket **packet);
 	
 	// Seeks to the packet index (as long as the packet index >= 0), then reads it.
 	// If the packet index is < 0, then just read at the current position
-	MediaResult ReadPacket (ASFPacket *packet, int packet_index); 
+	MediaResult ReadPacket (ASFPacket **packet, int packet_index); 
 
 	// Reads the number of the specified encoded length (0-3)
 	// encoded length 3 = read 4 bytes, rest equals encoded length and #bytes
@@ -334,9 +337,6 @@ public:
 	// returns -1 if nothing is found.
 	int GetHeaderObjectIndex (const asf_guid *guid, int start = 0);
 	
-	// Returns the packet index where the desired pts is found.
-	uint64_t GetPacketIndexOfPts (int stream_id, uint64_t pts);
-	
 	// The number of packets in the stream (0 if unknown).
 	uint64_t GetPacketCount ();
 	
@@ -376,6 +376,10 @@ public:
 	int64_t data_offset; // location of data object
 	int64_t packet_offset; // location of the beginning of the first packet
 	int64_t packet_offset_end; // location of the end of the last packet
+	
+#if OBJECT_TRACKING
+	virtual const char *GetTypeName () { return "ASFParser"; }
+#endif
 };
 
 
