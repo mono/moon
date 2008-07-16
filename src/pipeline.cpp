@@ -44,7 +44,7 @@
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
 
-#define LOG_PIPELINE(...)// printf (__VA_ARGS__);
+#define LOG_PIPELINE(...) //printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR(...) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (x) printf (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
@@ -694,8 +694,9 @@ Media::WorkerLoop ()
 		node->closure->result = result;
 		node->closure->Call ();
 
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processed node %p with type %i, result: %i.\n", node, node->type, result);
-
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processed node %p with type %i, result: %i.\n",
+				     node, node->type, result);
+		
 		delete node;
 	}
 	
@@ -3478,15 +3479,18 @@ bool
 IMediaSource::ReadAll (void *buf, guint32 n, bool block, gint64 start)
 {
 	gint32 read;
-
-	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld).\n", GET_OBJ_ID (this), buf, n, block ? "true" : "false", start);
-
+	
+	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld).\n",
+		      GET_OBJ_ID (this), buf, n, block ? "true" : "false", start);
+	
 	read = ReadSome (buf, n, block, start);
-
-	LOG_PIPELINE_ERROR_CONDITIONAL ((gint64) read != (gint64) n, "IMediaSource<%d>::ReadAll (%p, %u, %s, %lld): Could only read %i bytes.\n",
+	
+	LOG_PIPELINE_ERROR_CONDITIONAL ((gint64) read != (gint64) n,
+					"IMediaSource<%d>::ReadAll (%p, %u, %s, %lld): Could only read %i bytes.\n",
 					GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
-	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld), read: %d [Done].\n", GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
-
+	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld), read: %d [Done].\n",
+		      GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
+	
 	return (gint64) read == (gint64) n;
 }
 
@@ -3512,8 +3516,10 @@ IMediaSource::Peek (void *buf, guint32 n, bool block, gint64 start)
 bool
 IMediaSource::Seek (gint64 offset, int mode)
 {
-	LOG_PIPELINE ("IMediaSource<%i> (%s)::Seek (%lld, %i = %s)\n", GET_OBJ_ID (this), ToString (), offset, mode, mode == SEEK_SET ? "SEEK_SET" : (mode == SEEK_CUR ? "SEEK_CUR" : (mode == SEEK_END ? "SEEK_END" : "<invalid value>")));
-
+	LOG_PIPELINE ("IMediaSource<%d> (%s)::Seek (%lld, %d = %s)\n",
+		      GET_OBJ_ID (this), ToString (), offset, mode, mode == SEEK_SET ? "SEEK_SET"
+		      : (mode == SEEK_CUR ? "SEEK_CUR" : (mode == SEEK_END ? "SEEK_END" : "<invalid value>")));
+	
 	bool result;
 	Lock ();
 	result = SeekInternal (offset, mode);
@@ -3689,7 +3695,8 @@ MediaWork::MediaWork (MediaClosure *closure, IMediaStream *stream, guint16 state
 	case MediaTypeMarker:
 		type = WorkTypeMarker; break;
 	default:
-		fprintf (stderr, "MediaWork::MediaWork (%p, %p, %i): Invalid stream type %u\n", closure, stream, (uint) states, stream->GetType ());
+		fprintf (stderr, "MediaWork::MediaWork (%p, %p, %i): Invalid stream type %u\n",
+			 closure, stream, (uint) states, stream->GetType ());
 		break;
 	}
 	this->closure = closure;

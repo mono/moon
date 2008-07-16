@@ -151,6 +151,10 @@ MediaPlayer::LoadFrameCallback (EventObject *user_data)
 	}		
 }
 
+static const char *media_type_name[] = {
+	"None", "Video", "Audio", "Marker"
+};
+
 MediaResult
 MediaPlayer::FrameCallback (MediaClosure *closure)
 {
@@ -159,9 +163,13 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	MediaFrame *frame = closure->frame;
 	IMediaStream *stream = frame ? frame->stream : NULL;
 	
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (%p), state: %i, frame: %p, pts: %llu = %llu, type: %i, audio packets: %i, video packets: %i\n", 
-		closure, player->state, closure->frame, closure->frame->pts, MilliSeconds_FromPts (closure->frame->pts), stream->GetType (), player->audio.queue.Length (), player->video.queue.Length ());
-
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (closure=%p)\n"
+			    "\tstate: %d, frame: %p, pts: %llu = %llu, type: %s\n"
+			    "\taudio packets: %d, video packets: %d\n",
+			    closure, player->state, closure->frame, frame ? frame->pts : 0,
+			    frame ? MilliSeconds_FromPts (frame->pts) : 0, media_type_name[stream->GetType ()],
+			    player->audio.queue.Length (), player->video.queue.Length ());
+	
 	if (player->GetBit (MediaPlayer::Seeking)) {
 		// We don't want any frames while we're waiting for a seek.
 		return MEDIA_SUCCESS;
@@ -176,11 +184,11 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 		if (player->first_live_pts == G_MAXULONG) {
 			player->first_live_pts = frame->pts;
 		} else if (player->first_live_pts > frame->pts) {
-			//printf ("MediaPlayer::FrameCallback (): Found a frame with lower pts (%llu) than a previous frame (%llu).\n", frame->pts, player->first_live_pts);
+			//printf ("\tMediaPlayer::FrameCallback (): Found a frame with lower pts (%llu) than a previous frame (%llu).\n", frame->pts, player->first_live_pts);
 			player->first_live_pts = frame->pts;
 		}
 	}
-
+	
 	switch (stream->GetType ()) {
 	case MediaTypeVideo:
 		player->video.queue.Push (new Packet (frame));
@@ -250,7 +258,7 @@ MediaPlayer::EnqueueFrames (int audio_frames, int video_frames)
 	if (element == NULL || GetBit (Seeking))
 		return;
 
-	if (HasAudio ()) {	
+	if (HasAudio ()) {
 		for (int i = 0; i < audio_frames; i++) {
 			closure = new MediaClosure (FrameCallback);
 			closure->SetContext (element);

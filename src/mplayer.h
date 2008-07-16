@@ -67,20 +67,20 @@ class MediaPlayer : public EventObject {
 		
 		Seeking				= (1 << 4),
 		// If we're waiting for a frame to show immediately
-		LoadFramePending	= (1 << 5),
+		LoadFramePending		= (1 << 5),
 		// after seeking, we don't want to show any frames until the video has synced with
 		// the audio. Since the video seeks to key frames, and there can be several seconds
 		// between key frames, after seeking we will decode video as fast as possible to 
 		// catch up with the audio.
 		SeekSynched			= (1 << 6),
-		RenderedFrame		= (1 << 7),
-		Eof					= (1 << 8),
+		RenderedFrame			= (1 << 7),
+		Eof		       		= (1 << 8),
 		Opened				= (1 << 9),
 		CanSeek				= (1 << 10),
 		CanPause			= (1 << 11),
 		// If we should stop playing when we reach the duration
 		// Used to support the Duration tag in asx files.
-		FixedDuration		= (1 << 12), 
+		FixedDuration			= (1 << 12), 
 	};
 	
  private:
