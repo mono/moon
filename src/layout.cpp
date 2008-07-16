@@ -885,7 +885,7 @@ TextLayout::LayoutWrap ()
 						advance -= glyph->metrics.horiBearingX;
 				}
 				
-				if (max_width > 0.0 && (x1 + advance) > (max_width + 1.0)) {
+				if (max_width > 0.0 && (x1 + advance) > max_width) {
 					if (wx == 0.0 && inptr > word && !last_word) {
 						// break in the middle of a word
 						// FIXME: need to respect unicode breaking

@@ -1,3 +1,9 @@
+2008-07-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* layout.cpp: (TextLayout::LayoutWrap) Don't let actualWidth be 
+	greater than Width. Fix MS DRT#184 and #208. ALso makes #206 
+	looks better (but it already passed)
+
 2008-07-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp, pipeline.h: ProgressiveSource: clean up a bit, this
