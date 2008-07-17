@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Image brush stretching test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnMouseEnter (sender, eventArgs)
+{
+	sender.findName ("image").Source = "http://farm4.static.flickr.com/3096/2671186252_c1a5ca42d5_b.jpg";
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="640" height="480">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+        <Image x:Name="image" Source="http://farm4.static.flickr.com/3064/2671187678_f3e1f18f3e_b.jpg" Canvas.Left="0" Canvas.Top="50" Width="640" Height="430"/>
+	<Rectangle Canvas.Top="0" Canvas.Left="0" Width="640" Height="50" Fill="#ff0000" MouseEnter="OnMouseEnter" />
+</Canvas>
+</script>
+
+</body>
+</html>
