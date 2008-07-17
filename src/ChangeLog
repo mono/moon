@@ -1,5 +1,11 @@
 2008-07-17  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: When _USE_IDLE_HINT is not sent, don't do idle hinting.
+
+	* runtime.h: On desktop and browser by default use idle hinting.
+
+2008-07-17  Michael Dominic K.  <mdk@mdk.am>
+
 	* runtime.cpp: Adding "idlehint" to moonlight overrides that will 
 	control the use of idle hint in the clocks.
 

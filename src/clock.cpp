@@ -1230,7 +1230,7 @@ ClockGroup::Tick ()
 			DoRepeat (current_time);
 	}
 
-	if (state == Clock::Stopped || idle_hint == true)
+	if (state == Clock::Stopped || (idle_hint == true && (moonlight_flags & RUNTIME_INIT_USE_IDLE_HINT)))
 		return false;
 	else
 		return true;
