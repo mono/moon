@@ -238,7 +238,6 @@ class DownloaderRequest {
 	virtual void SetBody (void *body, int size) = 0;
 };
 
-
 Downloader *downloader_new (void);
 
 double downloader_get_download_progress (Downloader *dl);
@@ -283,6 +282,12 @@ void downloader_set_functions (downloader_create_state_func create_state,
 void downloader_init (void);
 
 void *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri);
+
+void downloader_request_abort (DownloaderRequest *dr);
+void downloader_request_get_response (DownloaderRequest *dr, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
+bool downloader_request_is_aborted (DownloaderRequest *dr);
+void downloader_request_set_http_header (DownloaderRequest *dr, const char *name, const char *value);
+void downloader_request_set_body (DownloaderRequest *dr, void *body, int size);
 
 G_END_DECLS
 

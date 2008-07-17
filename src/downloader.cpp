@@ -615,10 +615,42 @@ downloader_set_functions (downloader_create_state_func create_state,
 				  open, send, abort, header, body, request, false);
 }
 
-void *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri)
+void
+*downloader_create_webrequest (Downloader *dl, const char *method, const char *uri)
 {
 	return dl->GetRequestFunc() (method, uri, dl->GetContext());
 }
+
+void
+downloader_request_abort (DownloaderRequest *dr)
+{
+	dr->Abort ();
+}
+
+void
+downloader_request_get_response (DownloaderRequest *dr, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
+{
+	dr->GetResponse (started, available, finished, context);
+}
+
+bool
+downloader_request_is_aborted (DownloaderRequest *dr)
+{
+	return dr->IsAborted ();
+}
+
+void
+downloader_request_set_http_header (DownloaderRequest *dr, const char *name, const char *value)
+{
+	dr->SetHttpHeader (name, value);
+}
+
+void
+downloader_request_set_body (DownloaderRequest *dr, void *body, int size)
+{
+	dr->SetBody (body, size);
+}
+
 void
 downloader_request_position (Downloader *dl, gint64 *pos)
 {
