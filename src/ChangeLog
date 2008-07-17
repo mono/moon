@@ -1,3 +1,7 @@
+2008-07-17  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* downloader.h|cpp: provide hooks for DownloadeRequest
+
 2008-07-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (surface_create_downloader): We need to actually

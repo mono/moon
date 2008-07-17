@@ -1,3 +1,7 @@
+2008-07-17  Stephane Delcrois <sdelcroix@novell.com>
+
+	* NativeMethods.cs: new P/Invokes for DownloaderRequest
+
 2008-07-15  Jb Evain  <jbevain@novell.com>
 
 	* Kind.cs: regenerate (remove SupportedCulture and SupportedCultureCollection).

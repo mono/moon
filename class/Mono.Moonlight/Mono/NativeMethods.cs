@@ -634,8 +634,29 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static void downloader_want_events (IntPtr handle, UpdateFunction func, IntPtr closure);
+
+		[DllImport("moon")]
+		public extern static IntPtr downloader_create_webrequest (IntPtr downloader, string method, string uri);
+
 #endregion
-		
+
+#region DownloaderRequest
+		[DllImport("moon")]
+		public extern static void downloader_request_abort (IntPtr downloader_request);
+
+		[DllImport("moon")]
+		public extern static void downloader_request_get_response (IntPtr downloader_request, IntPtr started, IntPtr available, IntPtr finished, IntPtr context);
+
+		[DllImport("moon")]
+		public extern static bool downloader_request_is_aborted (IntPtr downloader_request);
+
+		[DllImport("moon")]
+		public extern static void downloader_request_set_http_header (IntPtr doanloader_request, string name, string value);
+
+		[DllImport("moon")]
+		public extern static void downloader_request_set_body (IntPtr downloader_request, IntPtr body, int size);
+#endregion
+
 		[DllImport ("moon")]
 		public extern static void surface_attach (IntPtr surface, IntPtr toplevel);
 
@@ -656,6 +677,9 @@ namespace Mono {
 		
 		[DllImport ("moon")]
 		public extern static bool surface_get_trans (IntPtr surface);
+
+		[DllImport ("moon")]
+		public extern static IntPtr surface_create_downloader (IntPtr surface);
 		
 		[DllImport ("moon")]
 		public extern static void image_set_source (IntPtr image, IntPtr downloader, string PartName);
@@ -753,9 +777,6 @@ namespace Mono {
 		public extern static IntPtr plugin_instance_load_url (IntPtr plugin_handle, string url, ref int length);
 
 		[DllImport("moonplugin")]
-		public extern static IntPtr browser_http_request_new (IntPtr plugin_handle, string method, string uri);
-
-		[DllImport("moonplugin")]
 		public extern static void browser_http_request_destroy (IntPtr handle);
 
 		[DllImport("moonplugin")]
@@ -769,9 +790,6 @@ namespace Mono {
 
 		[DllImport("moonplugin")]
 		public extern static IntPtr browser_http_request_get_response (IntPtr handle);
-
-		[DllImport("moonplugin")]
-		public extern static bool browser_http_request_get_async_response (IntPtr handle, AsyncResponseAvailableHandler handler, IntPtr context);
 
 		[DllImport("moonplugin")]
 		public extern static IntPtr browser_http_response_read (IntPtr handler, out int size);
