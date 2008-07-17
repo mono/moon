@@ -157,7 +157,6 @@ Surface::Surface(int w, int h, bool windowless)
 	
 	if (!windowless) {
 		widget_normal = widget = gtk_event_box_new ();
-		gtk_widget_set_size_request (widget, width, height);
 		InitializeWidget (widget);
 		widget_fullscreen = NULL;
 	} else {
@@ -166,14 +165,11 @@ Surface::Surface(int w, int h, bool windowless)
 		widget = NULL;
 	}
 	
-	normal_width = width;
-	normal_height = height;
-	
+
 	toplevel = NULL;
 	input_list = new List ();
 	captured = false;
 	
-	Realloc ();
 	
 	full_screen = false;
 	can_full_screen = false;
@@ -211,6 +207,8 @@ Surface::Surface(int w, int h, bool windowless)
 
 	up_dirty = new List ();
 	down_dirty = new List ();
+
+	Resize (width, height);
 }
 
 Surface::~Surface ()
@@ -538,40 +536,20 @@ Surface::Attach (UIElement *element)
 	if (widget && GTK_WIDGET_HAS_FOCUS (widget))
 		canvas->EmitGotFocus ();
 	
-	bool change_size = false;
-	//
-	// If the did not get a size specified
-	//
-	if (normal_width == 0){
-		Value *v = toplevel->GetValue (FrameworkElement::WidthProperty);
-		
-		if (v) {
-			normal_width = (int) v->AsDouble ();
-			if (normal_width < 0)
-				normal_width = 0;
-			change_size = true;
-		}
+	if (widget && normal_width == 0 && normal_height == 0 && toplevel) {
+		/*
+		 * this should only be hit in the nonplugin case ans is 
+		 * simply here to give a reasonable default size
+		 */
+		Value *vh, *vw;
+		vw = toplevel->GetValue (FrameworkElement::WidthProperty);
+		vh = toplevel->GetValue (FrameworkElement::HeightProperty);
+		if (vh || vw)
+			gtk_widget_set_size_request (widget,
+						     MAX (vw ? (int)vw->AsDouble () : 0, 0),
+						     MAX (vh ? (int)vh->AsDouble () : 0, 0));
 	}
 
-	if (normal_height == 0){
-		Value *v = toplevel->GetValue (FrameworkElement::HeightProperty);
-		
-		if (v) {
-			normal_height = (int) v->AsDouble ();
-			if (normal_height < 0)
-				normal_height = 0;
-			change_size = true;
-		}
-	}
-
-	if (!full_screen) {
-		height = normal_height;
-		width = normal_width;
-	}
-
-	if (change_size)
-		Realloc ();
-		
 	Emit (ResizeEvent);
 
 	toplevel->UpdateTotalRenderVisibility ();
@@ -709,9 +687,10 @@ void
 Surface::Resize (int width, int height)
 {
 
-	if (widget)
+	if (widget) {
 		gtk_widget_set_size_request (widget, width, height);
-	else {
+		gtk_widget_queue_resize (widget);
+	} else {
 		if (width == this->width 
 		    && height == this->height
 		    && width == normal_width
@@ -724,6 +703,8 @@ Surface::Resize (int width, int height)
 		this->normal_height = height;
 
 		g_warning ("XXXXXXXXXXXXX resizing (%d, %d)", width, height);
+
+		Realloc ();
 		Emit (ResizeEvent);
 	}
 }
@@ -1097,13 +1078,13 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 
 	region->Offset (-off_x, -off_y);
 	if (widget)
-	cairo_surface_set_device_offset (cairo_get_target (ctx),
-					 off_x - event->area.x, 
-					 off_y - event->area.y);
+		cairo_surface_set_device_offset (cairo_get_target (ctx),
+						 off_x - event->area.x, 
+						 off_y - event->area.y);
 	else
-	cairo_surface_set_device_offset (cairo_get_target (ctx),
-					 off_x, 
-					 off_y);
+		cairo_surface_set_device_offset (cairo_get_target (ctx),
+						 off_x, 
+						 off_y);
 
 	region->Draw (ctx);
 	//
@@ -1987,18 +1968,20 @@ Surface::widget_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpo
 	//	s->width, s->height, allocation->width, allocation->height);
 	
         if (s->width != allocation->width || s->height != allocation->height) {
-                s->width = allocation->width;
-                s->height = allocation->height;
-		
-		s->Realloc ();
+		s->width = allocation->width;
+		s->height = allocation->height;
 		
 		s->Emit (ResizeEvent);
 	}
-	
+
+	if (widget == s->widget_normal) {
+		s->normal_width = s->width;
+		s->normal_height = s->height;
+	}
+
 	// if x or y changed we need to recompute the presentation matrix
 	// because the toplevel position depends on the allocation.
-	if (s->toplevel)
-		s->toplevel->UpdateBounds ();
+	s->Realloc ();
 }
 
 void

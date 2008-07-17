@@ -893,7 +893,7 @@
          />
    <Test id="197"
 	inputFile="test-shape-ellipse-matrix.xaml"
-	masterFile10="../harness/masters/test-shape-ellipse-matrixMaster.tif"
+	masterFile10="../harness/masters/test-shape-ellipse-matrixMaster.png"
 	categories="ellipse"
    />
    <Test id="200"

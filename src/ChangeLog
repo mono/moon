@@ -1,3 +1,10 @@
+2008-07-16  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp: try to get the resize logic correct for all cases,
+	including popfly, ControlState.htm and fullscreen tests.
+
+	Fixes the (non)rendering issues in the popfly game creator.
+
 2008-07-16  Geoff Norton  <gnorton@novell.com>
 
 	* mplayer.cpp: Its possible that extremely small audio files will
