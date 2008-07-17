@@ -2045,6 +2045,12 @@ surface_get_time_manager (Surface* s)
 	return s->GetTimeManager();
 }
 
+Downloader*
+surface_create_downloader (Surface *s)
+{
+	s->CreateDownloader ();
+}
+
 void
 Surface::SetTrans (bool trans)
 {

@@ -332,8 +332,9 @@ void     surface_set_trans (Surface *s, bool trans);
 bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
 
-void    *surface_get_widget (Surface *s);
+void	 *surface_get_widget (Surface *s);
 TimeManager* surface_get_time_manager (Surface* s);
+Downloader* surface_create_downloader (Surface *s);
 
 void runtime_init (guint32 flags);
 
@@ -341,6 +342,7 @@ guint32  runtime_html_timer_timeout_add (gint32 interval, GSourceFunc callback, 
 void     runtime_html_timer_timeout_stop (guint32 source_id);
 
 void runtime_shutdown (void);
+
 
 G_END_DECLS
 
