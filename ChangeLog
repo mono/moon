@@ -1,3 +1,16 @@
+2008-07-17  Michael Dominic K.  <mdk@mdk.am>
+
+	* examples/photo-browser/1.jpg:
+	* examples/photo-browser/2.jpg:
+	* examples/photo-browser/3.jpg:
+	* examples/photo-browser/4.jpg:
+	* examples/photo-browser/5.jpg:
+	* examples/photo-browser/Makefile:
+	* examples/photo-browser/PhotoBrowser.boo:
+	* examples/photo-browser/README: Adding a photobrowser example, one of the few simple 
+	Moonlight apps demoed at GUADEC 2008. Shows how to mix & match GTK with Moonlight. 
+	Uses Boo, excluded from default build.
+
 2008-07-14  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac: Remove linking in nspr and strip out nspr libraries
