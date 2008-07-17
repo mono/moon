@@ -100,15 +100,8 @@ namespace System.Windows {
 		
 		static Application CreateFromXap (IntPtr plugin, IntPtr surface, string xapPath)
 		{			
-			if (plugin != IntPtr.Zero){
+			if (plugin != IntPtr.Zero)
 				PluginHost.SetPluginHandle (plugin);
-
-				// Why this?   I have no idea, am copying from the XamlLoader code
-				// I think this should be gone, and we should only use
-				// PluginHost
-
-				AppDomain.CurrentDomain.SetData ("PluginInstance", plugin);
-			}
 			
 			string xap_dir = NativeMethods.xap_unpack (xapPath);
 			if (xap_dir == null){

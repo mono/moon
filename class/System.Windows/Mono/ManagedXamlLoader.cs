@@ -82,10 +82,8 @@ namespace Mono.Xaml
 
 			NativeMethods.xaml_loader_set_callbacks (native_loader, callbacks);
 			
-			if (plugin != IntPtr.Zero) {
-				AppDomain.CurrentDomain.SetData ("PluginInstance", plugin);
+			if (plugin != IntPtr.Zero)
 				System.Windows.Interop.PluginHost.SetPluginHandle (plugin);
-			}
 
 			if (!AllowMultipleSurfacesPerDomain) {
 				PluginInDomain = plugin;
