@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Browser;
+using System.Windows.Interop;
 
 namespace System.Windows
 {
@@ -53,26 +54,22 @@ namespace System.Windows
 
 		private WebApplication ()
 		{
-			object o = AppDomain.CurrentDomain.GetData ("PluginInstance");
-			if (o is IntPtr) {
-				plugin_handle = (IntPtr) o;
+			plugin_handle = PluginHost.Handle;
 
-				string initParams = plugin_instance_get_init_params (plugin_handle);
-				if (initParams != null) {
-					startup_args = new Dictionary<string,string> ();
+			string initParams = plugin_instance_get_init_params (plugin_handle);
+			if (initParams != null) {
+				startup_args = new Dictionary<string,string> ();
 
-					string[] kvs = initParams.Split (',');
+				string[] kvs = initParams.Split (',');
 
-					foreach (string kv in kvs) {
-						string[] stuff = kv.Split ('=');
-						if (stuff.Length > 1)
-							startup_args[stuff[0]] = stuff[1];
-						else
-							startup_args[stuff[0]] = String.Empty;
-					}
+				foreach (string kv in kvs) {
+					string[] stuff = kv.Split ('=');
+					if (stuff.Length > 1)
+						startup_args[stuff[0]] = stuff[1];
+					else
+						startup_args[stuff[0]] = String.Empty;
 				}
 			}
-
 		}
 
 		internal IntPtr PluginHandle {
