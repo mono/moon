@@ -1,5 +1,10 @@
-2008-07-17  Stephane Delcroix  <sdelcroix@novell.com>
+2008-07-17  Michael Dominic K.  <mdk@mdk.am>
 
+	* runtime.cpp: Adding "idlehint" to moonlight overrides that will 
+	control the use of idle hint in the clocks.
+
+2008-07-17  Stephane Delcroix  <sdelcroix@novell.com>
+	
 	* runtime.h|cpp: add surface_get_downloader
 
 2008-07-16  Larry Ewing  <lewing@novell.com>

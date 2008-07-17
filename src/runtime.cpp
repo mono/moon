@@ -102,6 +102,8 @@ static struct {
 	{ "windowless=no",     RUNTIME_INIT_ALLOW_WINDOWLESS,      false },
 	{ "audio=mmap",        RUNTIME_INIT_AUDIO_NO_MMAP,         false },
 	{ "audio=rw",          RUNTIME_INIT_AUDIO_NO_MMAP,         true },
+	{ "idlehint=yes",      RUNTIME_INIT_USE_IDLE_HINT,         false },
+	{ "idlehint=no",       RUNTIME_INIT_USE_IDLE_HINT,         true },
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
