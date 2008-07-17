@@ -76,6 +76,7 @@ namespace System.Windows {
 
 		public string Name {
 			get { return (string) GetValue(NameProperty); }
+			set { SetValue (NameProperty, value); }
 		}
 
 		static DependencyObject ()
