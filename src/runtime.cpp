@@ -2047,10 +2047,10 @@ surface_get_time_manager (Surface* s)
 	return s->GetTimeManager();
 }
 
-Downloader*
+Downloader *
 surface_create_downloader (Surface *s)
 {
-	s->CreateDownloader ();
+	return s->CreateDownloader ();
 }
 
 void

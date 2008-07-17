@@ -1,3 +1,8 @@
+2008-07-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (surface_create_downloader): We need to actually
+	return the downloader here or our caller will just get garbage ;-)
+
 2008-07-17  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: When _USE_IDLE_HINT is not sent, don't do idle hinting.
