@@ -4,6 +4,8 @@
 
 2008-07-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pipeline.cpp (FileSource::ReadInternal): EOF isn't an error.
+
 	* runtime.cpp (surface_create_downloader): We need to actually
 	return the downloader here or our caller will just get garbage ;-)
 

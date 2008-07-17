@@ -2520,8 +2520,6 @@ FileSource::ReadInternal (void *buf, guint32 n)
 		}
 		
 		if (r == 0) {
-			LOG_PIPELINE_ERROR ("FileSource<%d>::ReadInternal ('%s', %p, %u): Could not read all the data, eof reached. Current position: %lld\n",
-					    GET_OBJ_ID (this), filename, buf, n, GetPositionInternal ());
 			eof = true;
 			break;
 		}
