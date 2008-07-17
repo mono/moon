@@ -37,6 +37,11 @@ namespace System.Windows.Media.Animation {
 		public static readonly DependencyProperty TargetPropertyProperty;
 		public static readonly DependencyProperty TargetNameProperty;
 
+		public string TargetName {
+			get { return (string) GetValue(TargetNameProperty); }
+			set { SetValue (TargetNameProperty, value); }
+		}
+
 		static Storyboard ()
 		{
 			TargetPropertyProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetProperty", typeof (string));

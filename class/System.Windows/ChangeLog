@@ -1,5 +1,9 @@
 2008-07-16  Michael Dominic K.  <mdk@mdk.am>
-	
+
+	* System.Windows.Media.Animation/Storyboard.cs: Adding TargetNameProperty.
+
+2008-07-16  Michael Dominic K.  <mdk@mdk.am>
+
 	* System.Windows/DependencyObject.cs: Adding a setter for Name.
 
 2008-07-15  Jb Evain  <jbevain@novell.com>
