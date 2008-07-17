@@ -20,6 +20,7 @@ G_BEGIN_DECLS
 // UserControl
 //
 /* @SilverlightVersion="2" */
+/* @ContentProperty="ContentProperty" */
 class UserControl : public Control {
 protected:
 	virtual ~UserControl ();

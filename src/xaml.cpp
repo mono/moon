@@ -2654,7 +2654,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		Type *prop_type = Type::Find (dep->value_type);
 		bool is_collection = prop_type->IsSubclassOf (Type::COLLECTION);
 
-		if (!is_collection && prop_type->IsSubclassOf (child->info->GetKind ())) {
+		if (!is_collection && Type::Find (child->info->GetKind ())->IsSubclassOf (dep->value_type)) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			obj->SetValue (dep, (DependencyObject *) child->item);
 			return;
