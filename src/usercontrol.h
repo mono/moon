@@ -35,7 +35,8 @@ public:
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 };
 
-UserControl *user_control_new (void);
+UserControl*   user_control_new (void);
+UIElement*     user_control_get_content (UserControl *user_control);
 
 void user_control_init (void);
 

@@ -18,6 +18,15 @@ user_control_new (void)
 	return x;
 }
 
+UIElement *
+user_control_get_content (UserControl *user_control)
+{
+	Value* v = GetValue (ContentProperty);
+	if (!v)
+		return NULL;
+	return v->AsUIElement ();
+}
+
 void
 UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 {

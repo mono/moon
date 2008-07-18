@@ -1,3 +1,7 @@
+2008-07-18  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-debug.cpp: Use new method for getting content element.
+
 2008-07-17  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-debug.cpp: Add the contents of UserControls to the tree too.

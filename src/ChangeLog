@@ -1,3 +1,8 @@
+2008-07-18  Jackson Harper  <jackson@ximian.com>
+
+	* usercontrol.cpp|h: Add C functions for accessing the Content
+	element.
+
 2008-07-17  Jackson Harper  <jackson@ximian.com>
 
 	* type.h:
