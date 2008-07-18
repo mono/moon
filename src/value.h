@@ -45,6 +45,7 @@ class AnimationStorage;
 
 class Animation;
 class AnimationClock;
+class Application;
 class ArcSegment;
 class AssemblyPart;
 class AssemblyPartCollection;
@@ -271,6 +272,7 @@ public:
 
 	Animation*                     AsAnimation () { checked_get_subclass (Type::ANIMATION, Animation) }
 	AnimationClock*                AsAnimationClock () { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
+	Application*                   AsApplication () { checked_get_subclass (Type::APPLICATION, Application) }
 	ArcSegment*                    AsArcSegment () { checked_get_subclass (Type::ARCSEGMENT, ArcSegment) }
 	AssemblyPart*                  AsAssemblyPart () { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
 	AssemblyPartCollection*        AsAssemblyPartCollection () { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }

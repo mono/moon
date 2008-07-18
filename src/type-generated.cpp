@@ -87,6 +87,11 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "INVALID", NULL, 0, 0, NULL, NULL, NULL },
 	{ Type::ANIMATION, Type::TIMELINE, false, "Animation", "ANIMATION", 0, 1, NULL, NULL, NULL }, 
 	{ Type::ANIMATIONCLOCK, Type::CLOCK, false, "AnimationClock", "ANIMATIONCLOCK", 0, 5, NULL, NULL, NULL }, 
+#if SL_2_0
+	{ Type::APPLICATION, Type::DEPENDENCY_OBJECT, false, "Application", "APPLICATION", 0, 1, NULL, (create_inst_func *) application_new, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'APPLICATION'", "APPLICATION", 0, 0, NULL, NULL, NULL }, 
+#endif
 	{ Type::ARCSEGMENT, Type::PATHSEGMENT, false, "ArcSegment", "ARCSEGMENT", 0, 1, NULL, (create_inst_func *) arc_segment_new, NULL }, 
 #if SL_2_0
 	{ Type::ASSEMBLYPART, Type::DEPENDENCY_OBJECT, false, "AssemblyPart", "ASSEMBLYPART", 0, 1, NULL, (create_inst_func *) assembly_part_new, NULL }, 

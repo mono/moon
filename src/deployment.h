@@ -72,6 +72,21 @@ class Deployment : public DependencyObject {
 Deployment *deployment_new (void);
 
 
+
+/* @SilverlightVersion="2" */
+class Application : public DependencyObject {
+ protected:
+	virtual ~Application () {}
+	
+ public:
+
+	Application () {} 
+	virtual Type::Kind GetObjectType () { return Type::APPLICATION; }
+};
+
+Application *application_new (void);
+
+
 void deployment_init (void);
 
 G_END_DECLS

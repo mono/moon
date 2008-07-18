@@ -41,6 +41,12 @@ deployment_new (void)
 	return new Deployment ();
 }
 
+Application *
+application_new (void)
+{
+	return new Application ();
+}
+
 void
 deployment_init (void)
 {

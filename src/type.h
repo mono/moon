@@ -30,6 +30,7 @@ public:
 		INVALID,
 		ANIMATION,
 		ANIMATIONCLOCK,
+		APPLICATION,// Silverlight 2.0 only
 		ARCSEGMENT,
 		ASSEMBLYPART,// Silverlight 2.0 only
 		ASSEMBLYPART_COLLECTION,// Silverlight 2.0 only

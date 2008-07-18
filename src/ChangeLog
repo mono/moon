@@ -1,5 +1,15 @@
 2008-07-17  Jackson Harper  <jackson@ximian.com>
 
+	* type.h:
+	* value.h:
+	* type-generated.cpp:
+	* deployment.cpp|h: Add an Application type.  This doesnt directly
+	map to the managed Application because it inherits from
+	DependencyObject, but it allows us to parse Application XAML files
+	and then we can pull the values we need.
+
+2008-07-17  Jackson Harper  <jackson@ximian.com>
+
 	* libmoon.h: Add usercontrol.h, I want access to this in the
 	plugin debug code.
 
