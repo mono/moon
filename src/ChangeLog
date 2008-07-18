@@ -1,3 +1,11 @@
+2008-07-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for bug #410206
+
+	* text.h (TextBlock::GetBoundingHeight): Return the larger of the
+	2 values.
+	(TextBlock::GetBoundingWidth): Same.
+
 2008-07-18  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (libmoon_include_HEADERS): add window.h and

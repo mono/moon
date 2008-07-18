@@ -134,22 +134,30 @@ class TextBlock : public FrameworkElement {
 	
 	double GetBoundingWidth ()
 	{
+		double actual = GetActualWidth ();
 		Value *value;
 		
-		if ((value = GetValueNoDefault (FrameworkElement::WidthProperty)))
+		if (!(value = GetValueNoDefault (FrameworkElement::WidthProperty)))
+			return actual;
+		
+		if (value->AsDouble () > actual)
 			return value->AsDouble ();
 		
-		return GetActualWidth ();
+		return actual;
 	}
 	
 	double GetBoundingHeight ()
 	{
+		double actual = GetActualHeight ();
 		Value *value;
 		
-		if ((value = GetValueNoDefault (FrameworkElement::HeightProperty)))
+		if (!(value = GetValueNoDefault (FrameworkElement::HeightProperty)))
+			return actual;
+		
+		if (value->AsDouble () > actual)
 			return value->AsDouble ();
 		
-		return GetActualHeight ();
+		return actual;
 	}
 	
 	void DownloaderComplete ();
