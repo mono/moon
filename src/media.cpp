@@ -187,8 +187,11 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 	source.part_name = g_strdup (PartName);
 	source.downloader = downloader;
 	downloader->ref ();
-	
-	AddTickCall (set_source_async);
+
+	if (downloader->Completed ())
+		SetSourceAsyncCallback ();
+	else
+		AddTickCall (set_source_async);
 }
 
 void
