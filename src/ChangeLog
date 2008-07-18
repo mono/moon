@@ -1,5 +1,11 @@
 2008-07-18  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp:
+	* media.cpp: Reverting prev change, different solution: process the tick calls
+	before processing the render.
+
+2008-07-18  Michael Dominic K.  <mdk@mdk.am>
+
 	* media.cpp: If the downloader is already completed, don't do an extra async 
 	call when setting source. Fixes the downloader-set-source... testcase.
 

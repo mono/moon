@@ -382,19 +382,19 @@ TimeManager::SourceTick ()
 		ENDTICKTIMER (tick_input, "TimeManager::Tick - Input");
 	}
 
-	if (current_flags & TIME_MANAGER_RENDER) {
-	  //	  fprintf (stderr, "rendering\n"); fflush (stderr);
-		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
-		Emit (RenderEvent);
-		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
-	}
-
 	if (current_flags & TIME_MANAGER_TICK_CALL) {
 		STARTTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 		bool remaining_tick_calls = InvokeTickCall ();
 		if (remaining_tick_calls)
 			flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
 		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
+	}
+
+	if (current_flags & TIME_MANAGER_RENDER) {
+	  //	  fprintf (stderr, "rendering\n"); fflush (stderr);
+		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
+		Emit (RenderEvent);
+		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
 
 #if CLOCK_DEBUG
