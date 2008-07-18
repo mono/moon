@@ -1,3 +1,7 @@
+2008-07-17  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-debug.cpp: Add the contents of UserControls to the tree too.
+
 2008-07-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* npstream-request.cpp, plugin-entry.cpp: Add missing #include

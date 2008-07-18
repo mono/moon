@@ -56,6 +56,12 @@ populate_tree_from_xaml (UIElement *el, GtkTreeStore *store, GtkTreeIter *parent
 			}
 		}
 	}
+
+	if (el->Is(Type::USERCONTROL)) {
+		Value *v = ((UserControl *)el)->GetValue (UserControl::ContentProperty);
+		if (v)
+			populate_tree_from_xaml (v->AsUIElement (), store, &iter);
+	}
 }
 
 static void
