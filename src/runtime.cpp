@@ -910,9 +910,9 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 	Region *region = new Region (event->region);
 
 	region->Offset (-off_x, -off_y);
-		cairo_surface_set_device_offset (cairo_get_target (ctx),
-						 off_x - event->area.x, 
-						 off_y - event->area.y);
+	cairo_surface_set_device_offset (cairo_get_target (ctx),
+					 off_x - event->area.x, 
+					 off_y - event->area.y);
 	region->Draw (ctx);
 	//
 	// These are temporary while we change this to paint at the offset position
