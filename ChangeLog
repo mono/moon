@@ -1,5 +1,9 @@
 2008-07-18  Jackson Harper  <jackson@ximian.com>
 
+	* tools/xamlg/xamlg.cs: Fix component stream name creation.
+
+2008-07-18  Jackson Harper  <jackson@ximian.com>
+
 	* tools/respack/Makefile.am: Fix script.
 
 2008-07-18  Jackson Harper  <jackson@ximian.com>

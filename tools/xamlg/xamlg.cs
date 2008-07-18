@@ -167,7 +167,7 @@ namespace Moonlight {
 
 				initcomp.Statements.Add (set_content_loaded);
 
-				string component_path = String.Format ("/{0};/component/{1}", app_name, xaml_file);
+				string component_path = String.Format ("/{0};component/{1}", app_name, xaml_file);
 				CodeMethodInvokeExpression load_component = new CodeMethodInvokeExpression (
 					new CodeTypeReferenceExpression ("System.Windows.Application"), "LoadComponent",
 					new CodeExpression [] { new CodeThisReferenceExpression (),
