@@ -149,16 +149,9 @@ namespace Moonlight {
 			Console.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): {1}.", plugin, domain.FriendlyName);
 
 			domains.Remove (plugin);
-			
-			try {
-				PluginUnloadCallback callback;
-				if (callbacks.TryGetValue (plugin, out callback)) {
-					callback (plugin);
-					callbacks.Remove (plugin);
-				}
-			} finally {
-				Helper.UnloadDomain (domain);
-			}
+			callbacks.Remove (plugin);
+
+			Helper.UnloadDomain (domain);
 		}
 
 		static void UnloadDomain (IntPtr plugin)
