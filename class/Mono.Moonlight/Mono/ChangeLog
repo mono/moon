@@ -1,3 +1,7 @@
+2008-07-18  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs:  Add the new callbacks needed for 2.0 stuff.
+
 2008-07-17  Jackson Harper  <jackson@ximian.com>
 
 	* Kind.cs: Add the APPLICATION kind.

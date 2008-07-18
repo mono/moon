@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.IO;
+using System.Reflection;
 using Mono;
 
 namespace Mono.Xaml
@@ -38,6 +40,8 @@ namespace Mono.Xaml
 	public delegate string GetMappingCallback (string key);
 	public delegate bool LoadCodeCallback (string source, string type);
 	public delegate void SetNameAttributeCallback (IntPtr target, string name);
+	public delegate void ImportXamlNamespaceCallback (string xmlns);
+	public delegate IntPtr CreateComponentFromNameCallback (string name);
 	
 	public struct XamlLoaderCallbacks {
 		public LoadObjectCallback load_managed_object;
@@ -47,6 +51,8 @@ namespace Mono.Xaml
 		public InsertMappingCallback insert_mapping;
 		public LoadCodeCallback load_code;
 		public SetNameAttributeCallback set_name_attribute;
+		public ImportXamlNamespaceCallback import_xaml_xmlns;
+		public CreateComponentFromNameCallback create_component_from_name;
 	}
 
 	public enum AssemblyLoadResult
