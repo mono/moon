@@ -1,3 +1,15 @@
+2008-07-17  Jackson Harper  <jackson@ximian.com>
+
+	* libmoon.h: Add usercontrol.h, I want access to this in the
+	plugin debug code.
+
+2008-07-17  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Had a backwards IsSubclassOf here causing
+	UserControl's content property to not get set (and I imagine many
+	other content properties).
+	* usercontrol.h: Add the ContentProperty metadata.
+
 2008-07-17  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* downloader.h|cpp: provide hooks for DownloadeRequest

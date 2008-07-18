@@ -39,6 +39,7 @@
 #include "transform.h"
 #include "type.h"
 #include "uielement.h"
+#include "usercontrol.h"
 #include "value.h"
 #include "visual.h"
 #include "xaml.h"
