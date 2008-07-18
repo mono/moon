@@ -48,6 +48,8 @@ namespace Moonlight {
 				"lang may be CS for C Sharp or VB for Visual Basic\n";
 
 		private static CodeDomProvider provider = new CSharpCodeProvider ();
+		private static bool sl2 = false;  // Silverlight 2 support
+		private static string app_name;   // Only used in SL2
 
 		public static void Main (string [] args)
 		{
@@ -72,6 +74,10 @@ namespace Moonlight {
 						Console.WriteLine ("unknown language specified.");
 						break;
 					}
+				} else if (args [ind].StartsWith ("-sl2app:")) {
+					int sub = "-sl2app:".Length;
+					app_name = args [ind].Substring (sub, args [ind].Length - sub);
+					sl2 = true;
 				} else if (args [ind] == "-help" || args [ind] == "-?") {
 					Console.WriteLine (help_string);
 					return;
@@ -145,11 +151,42 @@ namespace Moonlight {
 			initcomp.Name = "InitializeComponent";
 			decl_type.Members.Add (initcomp);
 
+			if (sl2) {
+				CodeMemberField field = new CodeMemberField ();
+				field.Name = "_contentLoaded";
+				field.Type = new CodeTypeReference (typeof (bool));
+
+				decl_type.Members.Add (field);
+
+				CodeConditionStatement is_content_loaded = new CodeConditionStatement (new CodeVariableReferenceExpression ("_contentLoaded"),
+						new CodeStatement [] { new CodeMethodReturnStatement () });
+				initcomp.Statements.Add (is_content_loaded);
+
+				CodeAssignStatement set_content_loaded = new CodeAssignStatement (new CodeVariableReferenceExpression ("_contentLoaded"),
+						new CodePrimitiveExpression (true));
+
+				initcomp.Statements.Add (set_content_loaded);
+
+				string component_path = String.Format ("/{0};/component/{1}", app_name, xaml_file);
+				CodeMethodInvokeExpression load_component = new CodeMethodInvokeExpression (
+					new CodeTypeReferenceExpression ("System.Windows.Application"), "LoadComponent",
+					new CodeExpression [] { new CodeThisReferenceExpression (),
+								new CodeObjectCreateExpression (new CodeTypeReference ("System.Uri"), new CodeExpression [] {
+									new CodePrimitiveExpression (component_path),
+									new CodeFieldReferenceExpression (new CodeTypeReferenceExpression ("System.UriKind"), "Relative") })
+					});
+				initcomp.Statements.Add (load_component);
+			}
+
 			foreach (DictionaryEntry entry  in names_and_types) {
 				string name = (string) entry.Key;
 				string type = (string) entry.Value;
 					
 				CodeMemberField field = new CodeMemberField ();
+
+				if (sl2)
+					field.Attributes = MemberAttributes.Assembly;
+
 				field.Name = name;
 				field.Type = new CodeTypeReference (type);
 
