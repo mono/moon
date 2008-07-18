@@ -10,7 +10,7 @@
 function OnDownloadCompleted (sender)
 {
 	sender.findName ("image2").Visibility = "Collapsed";
-	sender.findName ("image1").Source = "http://farm4.static.flickr.com/3096/2671186252_c1a5ca42d5_b.jpg";
+	sender.findName ("image1").SetSource (sender, "");
 }
 
 function OnMouseEnter (sender, eventArgs)

@@ -1,3 +1,9 @@
+2008-07-18  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/downloader-smooth-set-source.html: Fixing this test to actually 
+	take the image from the downloader. This is the correct way websites do it. 
+	It should be flicker-free.
+
 2008-07-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml/assorted/unattached-image-set-source.html: New test to
