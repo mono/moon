@@ -48,6 +48,7 @@
 #include "dirty.h"
 #include "fullscreen.h"
 #include "utils.h"
+#include "window-gtk.h"
 
 #if SL_2_0
 #include "grid.h"
@@ -62,6 +63,8 @@
 #define CAIRO_CLIP 0
 #define TIME_CLIP 0
 #define TIME_REDRAW 1
+
+#define NO_EVENT_ID -1
 
 pthread_t Surface::main_thread = 0;
 
@@ -108,7 +111,6 @@ static struct {
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
 
-#define NO_EVENT_ID -1
 
 static void
 fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
@@ -141,33 +143,29 @@ runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual)
 	return cr;
 }
 
-Surface::Surface(int w, int h, bool windowless)
+Surface::Surface(MoonWindow *window)
 {
 	main_thread = pthread_self ();
 
 	zombie = false;
 	downloader_context = NULL;
 	downloaders = NULL;
-	width = w;
-	height = h;
 	transparent = false;
 	background_color = NULL;
 	cursor = MouseCursorDefault;
 	mouse_event = NULL;
 	
 	background_color = new Color (1, 1, 1, 0);
-	
-	if (!windowless) {
-		widget_normal = widget = gtk_event_box_new ();
-		InitializeWidget (widget);
-		widget_fullscreen = NULL;
-	} else {
-		widget_fullscreen = NULL;
-		widget_normal = NULL;
-		widget = NULL;
-	}
-	
 
+	time_manager = new TimeManager ();
+	time_manager->Start ();
+
+	fullscreen_window = NULL;
+	normal_window = active_window = window;
+	if (active_window->IsFullScreen())
+		g_warning ("Surfaces cannot be initialized with fullscreen windows.");
+	window->SetSurface (this);
+	
 	toplevel = NULL;
 	input_list = new List ();
 	captured = false;
@@ -175,13 +173,6 @@ Surface::Surface(int w, int h, bool windowless)
 	
 	full_screen = false;
 	can_full_screen = false;
-
-	time_manager = new TimeManager ();
-	if (windowless) {
-		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
-		time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
-	}
-	time_manager->Start ();
 
 	full_screen_message = NULL;
 	source_location = NULL;
@@ -209,8 +200,6 @@ Surface::Surface(int w, int h, bool windowless)
 
 	up_dirty = new List ();
 	down_dirty = new List ();
-
-	Resize (width, height);
 }
 
 Surface::~Surface ()
@@ -250,18 +239,12 @@ Surface::~Surface ()
 	delete input_list;
 	
 	g_free (source_location);
+
+	if (fullscreen_window)
+		delete fullscreen_window;
 	
-	if (widget_fullscreen) {
-		g_signal_handlers_disconnect_matched (widget_fullscreen, G_SIGNAL_MATCH_DATA,
-						      0, 0, NULL, NULL, this);
-		gtk_widget_destroy (widget_fullscreen);
-	}
-	
-	if (widget_normal) {
-		g_signal_handlers_disconnect_matched (widget_normal, G_SIGNAL_MATCH_DATA,
-						      0, 0, NULL, NULL, this);
-		gtk_widget_destroy (widget_normal);
-	}
+	if (normal_window)
+		delete normal_window;
 	
 	delete background_color;
 	
@@ -432,34 +415,7 @@ Surface::SetCursor (MouseCursor new_cursor)
 void
 Surface::SetCursor (GdkCursor *c)
 {
-	if (widget)
-		gdk_window_set_cursor (widget->window, c);
-}
-
-void
-Surface::ConnectEvents (bool realization_signals)
-{
-	if (!widget)
-		return;
-	
-	g_signal_connect (widget, "expose-event", G_CALLBACK (expose_event_callback), this);
-	g_signal_connect (widget, "motion-notify-event", G_CALLBACK (motion_notify_callback), this);
-	g_signal_connect (widget, "enter-notify-event", G_CALLBACK (crossing_notify_callback), this);
-	g_signal_connect (widget, "leave-notify-event", G_CALLBACK (crossing_notify_callback), this);
-	g_signal_connect (widget, "key-press-event", G_CALLBACK (key_press_callback), this);
-	g_signal_connect (widget, "key-release-event", G_CALLBACK (key_release_callback), this);
-	g_signal_connect (widget, "button-press-event", G_CALLBACK (button_press_callback), this);
-	g_signal_connect (widget, "button-release-event", G_CALLBACK (button_release_callback), this);
-	g_signal_connect (widget, "focus-in-event", G_CALLBACK (focus_in_callback), this);
-	g_signal_connect (widget, "focus-out-event", G_CALLBACK (focus_out_callback), this);
-	
-	if (realization_signals) {
-		g_signal_connect (widget, "realize", G_CALLBACK (realized_callback), this);
-		g_signal_connect (widget, "unrealize", G_CALLBACK (unrealized_callback), this);
-		
-		if (GTK_WIDGET_REALIZED (widget))
-			realized_callback (widget, this);
-	}
+	active_window->SetCursor (c);
 }
 
 void
@@ -496,11 +452,11 @@ Surface::Attach (UIElement *element)
 
 	if (!element) {
 		DetachDownloaders ();
-	
-		if (first)
-			ConnectEvents (true);
 
-		Invalidate (Rect (0, 0, width, height));
+		if (first)
+			active_window->EnableEvents (first);
+
+		active_window->Invalidate();
 
 		toplevel = NULL;
 		return;
@@ -512,7 +468,6 @@ Surface::Attach (UIElement *element)
 	}
 
 	UIElement *canvas = element;
-	//Canvas *canvas = (Canvas *) element;
 	canvas->ref ();
 
 	// make sure we have a namescope at the toplevel so that names
@@ -526,7 +481,7 @@ Surface::Attach (UIElement *element)
 
 	// First time we connect the surface, start responding to events
 	if (first)
-		ConnectEvents (true);
+		active_window->EnableEvents (first);
 
 	canvas->OnLoaded ();
 	
@@ -535,21 +490,23 @@ Surface::Attach (UIElement *element)
 
 	Emit (Surface::LoadEvent);
 	
-	if (widget && GTK_WIDGET_HAS_FOCUS (widget))
+	if (active_window->HasFocus())
 		canvas->EmitGotFocus ();
 	
-	if (widget && normal_width == 0 && normal_height == 0 && toplevel) {
+	//
+	// If the did not get a size specified
+	//
+	if (normal_window->GetWidth() == 0 && normal_window->GetHeight() == 0 && toplevel) {
 		/*
-		 * this should only be hit in the nonplugin case ans is 
+		 * this should only be hit in the nonplugin case ans is
 		 * simply here to give a reasonable default size
 		 */
 		Value *vh, *vw;
 		vw = toplevel->GetValue (FrameworkElement::WidthProperty);
 		vh = toplevel->GetValue (FrameworkElement::HeightProperty);
 		if (vh || vw)
-			gtk_widget_set_size_request (widget,
-						     MAX (vw ? (int)vw->AsDouble () : 0, 0),
-						     MAX (vh ? (int)vh->AsDouble () : 0, 0));
+			normal_window->Resize (MAX (vw ? (int)vw->AsDouble () : 0, 0),
+					       MAX (vh ? (int)vh->AsDouble () : 0, 0));
 	}
 
 	Emit (ResizeEvent);
@@ -563,18 +520,13 @@ Surface::Attach (UIElement *element)
 void
 Surface::Invalidate (Rect r)
 {
-	if (widget)
-		gtk_widget_queue_draw_area (widget,
-					    (int) (widget->allocation.x + r.x), 
-					    (int) (widget->allocation.y + r.y), 
-					    (int) r.w, (int)r.h);
+	active_window->Invalidate (r);
 }
 
 void
 Surface::ProcessUpdates ()
 {
-	if (widget)
-		gdk_window_process_updates (GTK_WIDGET (widget)->window, false);
+	active_window->ProcessUpdates();
 }
 
 void
@@ -688,27 +640,11 @@ Surface::Paint (cairo_t *ctx, Region *region)
 void
 Surface::Resize (int width, int height)
 {
+	if (width == normal_window->GetWidth()
+	    && height == normal_window->GetHeight())
+		return;
 
-	if (widget) {
-		gtk_widget_set_size_request (widget, width, height);
-		gtk_widget_queue_resize (widget);
-	} else {
-		if (width == this->width 
-		    && height == this->height
-		    && width == normal_width
-		    && height == normal_height)
-			return;
-
-		this->width = width;
-		this->height = height;
-		this->normal_width = width;
-		this->normal_height = height;
-
-		g_warning ("XXXXXXXXXXXXX resizing (%d, %d)", width, height);
-
-		Realloc ();
-		Emit (ResizeEvent);
-	}
+	normal_window->Resize (width, height);
 }
 
 void
@@ -817,8 +753,8 @@ Surface::ShowFullScreenMessage ()
 	}	
 
 	// Put the box in the middle of the screen
-	transform->SetValue (TranslateTransform::XProperty, (width - box_width) / 2);
-	transform->SetValue (TranslateTransform::YProperty, (height - box_height) / 2);
+	transform->SetValue (TranslateTransform::XProperty, (active_window->GetWidth() - box_width) / 2);
+	transform->SetValue (TranslateTransform::YProperty, (active_window->GetHeight() - box_height) / 2);
 	
 	full_screen_message->UpdateTotalRenderVisibility ();
 	full_screen_message->UpdateTotalHitTestVisibility ();
@@ -850,47 +786,23 @@ Surface::UpdateFullScreen (bool value)
 		return;
 	
 	if (value) {
-		widget_fullscreen = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-		
-		// Flip the drawing area
-		widget = widget_fullscreen;		
-		// Get the screen size
-		int screen_width = gdk_screen_get_width (gdk_screen_get_default ());
-		int screen_height = gdk_screen_get_height (gdk_screen_get_default ());
-		
-		//screen_width = (int) (screen_width * 0.8);
-		//screen_height = (int) (screen_height * 0.8);
-		
-		width = screen_width;
-		height = screen_height;
-		
-		gtk_widget_set_size_request (widget, width, height);
-		gtk_window_fullscreen (GTK_WINDOW (widget));
-		
-		InitializeWidget (widget);
+		fullscreen_window = new MoonWindowGtk (true);
+		fullscreen_window->SetSurface (this);
+
+		active_window = fullscreen_window;
 		
 		ShowFullScreenMessage ();
-		
-		ConnectEvents (false);
+
+		fullscreen_window->EnableEvents (false);
 	} else {
+		active_window = normal_window;
+
 		HideFullScreenMessage ();
-		
-		// Flip back.
-		widget = widget_normal;
-		
-		// Destroy the fullscreen widget.
-		GtkWidget *fs = widget_fullscreen;
-		widget_fullscreen = NULL;
-		
-		if (fs != NULL) {
-			g_signal_handlers_disconnect_matched (fs, G_SIGNAL_MATCH_DATA,
-							      0, 0, NULL, NULL, this);
-			gtk_widget_destroy (fs);
-		}
-		
-		width = normal_width;
-		height = normal_height;
+
+		delete fullscreen_window;
+		fullscreen_window = NULL;
 	}
+
 	full_screen = value;
 	
 	Realloc ();
@@ -898,50 +810,6 @@ Surface::UpdateFullScreen (bool value)
 	time_manager->GetSource()->Stop();
 	Emit (FullScreenChangeEvent);
 	time_manager->GetSource()->Start();
-}
-
-void
-Surface::InitializeWidget (GtkWidget *widget)
-{
-	// don't let gtk clear the window we'll do all the drawing.
-	//gtk_widget_set_app_paintable (widget, true);
-	gtk_widget_set_double_buffered (widget, false);
-	
-	//
-	// Set to true, need to change that to false later when we start
-	// repainting again.   
-	//
-	if (GTK_IS_EVENT_BOX (widget))
-		gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
-	
-	g_signal_connect (widget, "size-allocate", G_CALLBACK (widget_size_allocate), this);
-	g_signal_connect (widget, "destroy", G_CALLBACK (widget_destroyed), this);
-	
-	gtk_widget_add_events (widget, 
-			       GDK_POINTER_MOTION_MASK |
-			       //GDK_POINTER_MOTION_HINT_MASK |
-			       GDK_KEY_PRESS_MASK |
-			       GDK_KEY_RELEASE_MASK |
-			       GDK_BUTTON_PRESS_MASK |
-			       GDK_BUTTON_RELEASE_MASK |
-			       GDK_FOCUS_CHANGE_MASK);
-	
-	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
-	
-	gtk_widget_show (widget);
-	
-	// The window has to be realized for this call to work
-	gtk_widget_set_extension_events (widget, GDK_EXTENSION_EVENTS_CURSOR);
-	/* we need to explicitly enable the devices */
-	for (GList *l = gdk_devices_list(); l; l = l->next) {
-#if THIS_NOLONGER_BREAKS_LARRYS_MOUSE
-		GdkDevice *device = GDK_DEVICE(l->data);
-		//if (!device->has_cursor)
-		gdk_device_set_mode (device, GDK_MODE_SCREEN);
-#endif
-	}
-
-	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
 }
 
 void
@@ -1005,58 +873,29 @@ Surface::update_input_cb (EventObject *sender, EventArgs *calldata, gpointer clo
 #endif
 }
 
-gboolean
-Surface::realized_callback (GtkWidget *widget, gpointer data)
+void
+Surface::HandleUIWindowAvailable ()
 {
-	Surface *s = (Surface *) data;
+	time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
+	time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 
-#ifdef USE_XRANDR
-#if INTEL_DRIVERS_STOP_SUCKING
-	// apparently the i965 drivers blank external screens when
-	// getting the screen info (um, ugh?).  needless to say, this
-	// annoyance is worse than not using the monitor's refresh as
-	// the upper bound for our fps.
-	//
-	// http://lists.freedesktop.org/archives/xorg/2007-August/027616.html
-	int event_base, error_base;
-	GdkWindow *gdk_root = gtk_widget_get_root_window (widget);
-	Display *dpy = GDK_WINDOW_XDISPLAY(gdk_root);
-	Window root = GDK_WINDOW_XID (gdk_root);
-	if (XRRQueryExtension (dpy, &event_base, &error_base)) {
-		XRRScreenConfiguration *info = XRRGetScreenInfo (dpy,
-								 root);
-		short rate = XRRConfigCurrentRate (info);
-		printf ("screen refresh rate = %d\n", rate);
- 		time_manager->SetMaximumRefreshRate (rate);
-		XRRFreeScreenConfigInfo (info);
-	}
-#endif
-#endif
-	s->time_manager->AddHandler (TimeManager::RenderEvent, render_cb, s);
-	s->time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, s);
-
-	s->time_manager->NeedRedraw ();
-
-	return true;
+	time_manager->NeedRedraw ();
 }
 
-gboolean
-Surface::unrealized_callback (GtkWidget *widget, gpointer data)
+void
+Surface::HandleUIWindowUnavailable ()
 {
-	Surface *s = (Surface *) data;
-
-	s->time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, s);
-	s->time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, s);
-	return true;
+	time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
+	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 }
 
-gboolean
-Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y)
+void
+Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool clear_transparent)
 {
 	frames++;
 
-	if (event->area.x > (off_x + width) || event->area.y > (off_y + height))
-		return true;
+	if (event->area.x > (off_x + active_window->GetWidth()) || event->area.y > (off_y + active_window->GetHeight()))
+		return;
 
 #if TIME_REDRAW
 	STARTTIMER (expose, "redraw");
@@ -1067,27 +906,13 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
-	GdkPixmap *pixmap = NULL;
-	if (widget) {
-		/* create our own backbuffer if we're windowed.  in
-		   the windowless case we assume we're drawing to the
-		   backbuffer already, so no need for the additional
-		   step. */
-		pixmap = gdk_pixmap_new (drawable, MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
-	}
-	cairo_t *ctx = runtime_cairo_create (widget ? pixmap : drawable, visual);
+	cairo_t *ctx = runtime_cairo_create (drawable, visual);
 	Region *region = new Region (event->region);
 
 	region->Offset (-off_x, -off_y);
-	if (widget)
 		cairo_surface_set_device_offset (cairo_get_target (ctx),
 						 off_x - event->area.x, 
 						 off_y - event->area.y);
-	else
-		cairo_surface_set_device_offset (cairo_get_target (ctx),
-						 off_x, 
-						 off_y);
-
 	region->Draw (ctx);
 	//
 	// These are temporary while we change this to paint at the offset position
@@ -1111,7 +936,7 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 
 	if (transparent) {
-		if (widget) {
+		if (clear_transparent) {
 			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
 			cairo_fill_preserve (ctx);
 			cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
@@ -1145,44 +970,14 @@ Surface::expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventE
 		cairo_stroke (ctx);
 	}
 
-	delete (region);
+	delete region;
 
-	if (widget) {
-		GdkGC *gc = gdk_gc_new (pixmap);
-
-		gdk_gc_set_clip_region (gc, event->region);
-
-		gdk_draw_drawable (drawable, gc, pixmap,
-				   0, 0,
-				   event->area.x, event->area.y,
-				   event->area.width, event->area.height);
-	
-		g_object_unref (pixmap);
-		g_object_unref (gc);
-	}
 	cairo_destroy (ctx);
 
 #if TIME_REDRAW
 	ENDTIMER (expose, "redraw");
 #endif
 
-	
-	return true;
-}
-
-gboolean
-Surface::expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer data)
-{
-	Surface *s = (Surface *) data;
-
-	if (widget == NULL)
-		return true;
-
-	return s->expose_to_drawable (widget->window,
-				      gdk_drawable_get_visual (widget->window),
-				      event,
-				      widget->allocation.x,
-				      widget->allocation.y);
 }
 
 RenderNode::RenderNode (UIElement *el,
@@ -1532,157 +1327,6 @@ Surface::UpdateCursorFromInputList ()
 	SetCursor (new_cursor);
 }
 
-gboolean
-Surface::focus_in_callback (GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
-{
-	Surface *surface = (Surface *) user_data;
-	
-	if (surface->toplevel)
-		surface->toplevel->EmitGotFocus ();
-	
-	return false;
-}
-
-gboolean
-Surface::focus_out_callback (GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
-{
-	Surface *surface = (Surface *) user_data;
-	
-	if (surface->toplevel)
-		surface->toplevel->EmitLostFocus ();
-	
-	return false;
-}
-
-gboolean
-Surface::button_release_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data)
-{
-	Surface *s = (Surface *) user_data;
-	
-	if (event->button != 1)
-		return false;
-	
-	s->SetCanFullScreen (true);
-	
-	if (s->mouse_event)
-		gdk_event_free (s->mouse_event);
-	
-	s->mouse_event = gdk_event_copy ((GdkEvent *) event);
-
-	s->HandleMouseEvent (UIElement::MouseLeftButtonUpEvent, true, true, true, s->mouse_event);
-
-	s->UpdateCursorFromInputList ();
-	s->SetCanFullScreen (false);
-
-	// XXX MS appears to do this here, which is completely stupid.
-	if (s->captured)
-		s->PerformReleaseCapture ();
-
-	return true;
-}
-
-gboolean
-Surface::button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data)
-{
-	Surface *s = (Surface *) user_data;
-
-	if (widget)
-		gtk_widget_grab_focus (widget);
-	
-	if (event->button != 1)
-		return false;
-
-	s->SetCanFullScreen (true);
-
-	if (s->mouse_event)
-		gdk_event_free (s->mouse_event);
-	
-	s->mouse_event = gdk_event_copy ((GdkEvent *) event);
-
-	bool handled = s->HandleMouseEvent (UIElement::MouseLeftButtonDownEvent, true, true, true, s->mouse_event);
-
-	s->UpdateCursorFromInputList ();
-	s->SetCanFullScreen (false);
-	
-	return widget ? true : handled;
-}
-
-gboolean
-Surface::motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer user_data)
-{
-	Surface *s = (Surface *) user_data;
-	
-	if (s->mouse_event)
-		gdk_event_free (s->mouse_event);
-	
-	s->mouse_event = gdk_event_copy ((GdkEvent *) event);
-
-	bool handled = false;
-
-	if (widget && event->is_hint) {
-#if GTK_CHECK_VERSION(2,12,0)
-	  if (gtk_check_version (2, 12, 0))
-	  	gdk_event_request_motions (event);
-	  else
-#endif
-	    {
-		int ix, iy;
-		GdkModifierType state;
-		gdk_window_get_pointer (event->window, &ix, &iy, (GdkModifierType*)&state);
-		((GdkEventMotion *) s->mouse_event)->x = ix;
-		((GdkEventMotion *) s->mouse_event)->y = iy;
-	    }    
-	}
-
-	handled = s->HandleMouseEvent (UIElement::MouseMoveEvent, true, true, true, s->mouse_event);
-	s->UpdateCursorFromInputList ();
-
-	return widget ? TRUE : handled;
-}
-
-gboolean
-Surface::crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer user_data)
-{
-	Surface *s = (Surface *) user_data;
-	bool handled;
-	
-	// Ignore the enter/leave events coming as a result of grab/press
-	// started finished
-	if (event->mode != GDK_CROSSING_NORMAL)
-		return true;
-	
-	if (event->type == GDK_ENTER_NOTIFY) {
-		if (s->mouse_event)
-			gdk_event_free (s->mouse_event);
-		s->mouse_event = gdk_event_copy ((GdkEvent *) event);
-		
-		handled = s->HandleMouseEvent (UIElement::MouseMoveEvent, true, true, false, s->mouse_event);
-
-		s->UpdateCursorFromInputList ();
-	
-	} else {
-		// forceably emit MouseLeave on the current input
-		// list..  the "new" list computed by HandleMouseEvent
-		// should be the same as the current one since we pass
-		// in the same x,y but I'm not sure that's something
-		// we can rely on.
-		handled = s->HandleMouseEvent (UIElement::MouseLeaveEvent, false, false, true, s->mouse_event);
-
-		// MS specifies that mouse capture is lost when you mouse out of the control
-		if (s->captured)
-			s->PerformReleaseCapture ();
-
-		// clear out the input list so we emit the right
-		// events when the pointer reenters the control.
-		if (!s->emittingMouseEvent) {
-			delete s->input_list;
-			s->input_list = new List();
-		}
-	}
-
-	return handled;
-}
-
 Key
 Surface::gdk_keyval_to_key (guint keyval)
 {
@@ -1914,12 +1558,149 @@ Surface::FullScreenKeyHandled (GdkEventKey *key)
 	return true;
 }
 
-gboolean 
-Surface::key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+gboolean
+Surface::HandleUIFocusIn (GdkEventFocus *event)
 {
-	Surface *s = (Surface *) user_data;
+	if (toplevel)
+		toplevel->EmitGotFocus ();
+
+	return false;
+}
+
+gboolean
+Surface::HandleUIFocusOut (GdkEventFocus *event)
+{
+	if (toplevel)
+		toplevel->EmitLostFocus ();
+
+	return false;
+}
+
+gboolean
+Surface::HandleUIButtonRelease (GdkEventButton *event)
+{
+	if (event->button != 1)
+		return false;
 	
-	if (s->FullScreenKeyHandled (event))
+	SetCanFullScreen (true);
+	
+	if (mouse_event)
+		gdk_event_free (mouse_event);
+	
+	mouse_event = gdk_event_copy ((GdkEvent *) event);
+
+	HandleMouseEvent (UIElement::MouseLeftButtonUpEvent, true, true, true, mouse_event);
+
+	UpdateCursorFromInputList ();
+	SetCanFullScreen (false);
+
+	// XXX MS appears to do this here, which is completely stupid.
+	if (captured)
+		PerformReleaseCapture ();
+
+	return true;
+}
+
+gboolean
+Surface::HandleUIButtonPress (GdkEventButton *event)
+{
+	active_window->GrabFocus ();
+	
+	if (event->button != 1)
+		return false;
+
+	SetCanFullScreen (true);
+
+	if (mouse_event)
+		gdk_event_free (mouse_event);
+	
+	mouse_event = gdk_event_copy ((GdkEvent *) event);
+
+	bool handled = HandleMouseEvent (UIElement::MouseLeftButtonDownEvent, true, true, true, mouse_event);
+
+	UpdateCursorFromInputList ();
+	SetCanFullScreen (false);
+
+	return handled;
+}
+
+gboolean
+Surface::HandleUIMotion (GdkEventMotion *event)
+{
+	if (mouse_event)
+		gdk_event_free (mouse_event);
+	
+	mouse_event = gdk_event_copy ((GdkEvent *) event);
+
+	bool handled = false;
+
+	if (event->is_hint) {
+#if GTK_CHECK_VERSION(2,12,0)
+	  if (gtk_check_version (2, 12, 0))
+	  	gdk_event_request_motions (event);
+	  else
+#endif
+	    {
+		int ix, iy;
+		GdkModifierType state;
+		gdk_window_get_pointer (event->window, &ix, &iy, (GdkModifierType*)&state);
+		((GdkEventMotion *) mouse_event)->x = ix;
+		((GdkEventMotion *) mouse_event)->y = iy;
+	    }    
+	}
+
+	handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, true, mouse_event);
+	UpdateCursorFromInputList ();
+
+	return handled;
+}
+
+gboolean
+Surface::HandleUICrossing (GdkEventCrossing *event)
+{
+	bool handled;
+	
+	// Ignore the enter/leave events coming as a result of grab/press
+	// started finished
+	if (event->mode != GDK_CROSSING_NORMAL)
+		return true;
+	
+	if (event->type == GDK_ENTER_NOTIFY) {
+		if (mouse_event)
+			gdk_event_free (mouse_event);
+		mouse_event = gdk_event_copy ((GdkEvent *) event);
+		
+		handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, false, mouse_event);
+
+		UpdateCursorFromInputList ();
+	
+	} else {
+		// forceably emit MouseLeave on the current input
+		// list..  the "new" list computed by HandleMouseEvent
+		// should be the same as the current one since we pass
+		// in the same x,y but I'm not sure that's something
+		// we can rely on.
+		handled = HandleMouseEvent (UIElement::MouseLeaveEvent, false, false, true, mouse_event);
+
+		// MS specifies that mouse capture is lost when you mouse out of the control
+		if (captured)
+			PerformReleaseCapture ();
+
+		// clear out the input list so we emit the right
+		// events when the pointer reenters the control.
+		if (!emittingMouseEvent) {
+			delete input_list;
+			input_list = new List();
+		}
+	}
+
+	return handled;
+}
+
+gboolean 
+Surface::HandleUIKeyPress (GdkEventKey *event)
+{
+	if (FullScreenKeyHandled (event))
 		return true;
 	
 #if DEBUG_MARKER_KEY
@@ -1934,81 +1715,60 @@ Surface::key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer use
 	}
 #endif
 	
-	s->SetCanFullScreen (true);
+	SetCanFullScreen (true);
 	// key events are only ever delivered to the toplevel
-	s->toplevel->EmitKeyDown (event->state, gdk_keyval_to_key (event->keyval), event->hardware_keycode);
+	toplevel->EmitKeyDown (event->state, gdk_keyval_to_key (event->keyval), event->hardware_keycode);
 				    
-	s->SetCanFullScreen (false);
+	SetCanFullScreen (false);
 	
 	return true;
 }
 
 gboolean 
-Surface::key_release_callback (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+Surface::HandleUIKeyRelease (GdkEventKey *event)
 {
-	Surface *s = (Surface *) user_data;
-
-	if (s->FullScreenKeyHandled (event))
+	if (FullScreenKeyHandled (event))
 		return true;
 
-	s->SetCanFullScreen (true);
+	SetCanFullScreen (true);
 	
 	// key events are only ever delivered to the toplevel
-	s->toplevel->EmitKeyUp (event->state, gdk_keyval_to_key (event->keyval), event->hardware_keycode);
+	toplevel->EmitKeyUp (event->state, gdk_keyval_to_key (event->keyval), event->hardware_keycode);
 	
-	s->SetCanFullScreen (false);
+	SetCanFullScreen (false);
 	
 	return true;
 }
 
 void
-Surface::widget_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
+Surface::HandleUIWindowAllocation (bool emit_resize)
 {
-	Surface *s = (Surface *) user_data;
-	
-	//printf ("Surface::size-allocate callback: current = %dx%d; new = %dx%d\n",
-	//	s->width, s->height, allocation->width, allocation->height);
-	
-        if (s->width != allocation->width || s->height != allocation->height) {
-		s->width = allocation->width;
-		s->height = allocation->height;
-		
-		s->Emit (ResizeEvent);
-	}
-
-	if (widget == s->widget_normal) {
-		s->normal_width = s->width;
-		s->normal_height = s->height;
-	}
-
-	// if x or y changed we need to recompute the presentation matrix
-	// because the toplevel position depends on the allocation.
-	s->Realloc ();
+	Realloc ();
+	if (emit_resize)
+		Emit (ResizeEvent);
 }
 
 void
-Surface::widget_destroyed (GtkWidget *widget, gpointer user_data)
+Surface::HandleUIWindowDestroyed (MoonWindow *window)
 {
-	Surface *s = (Surface *) user_data;
-
-	if (s->widget_fullscreen == widget) {
-		s->UpdateFullScreen (false);
-		s->widget_fullscreen = NULL;
+	if (window == fullscreen_window) {
+		// switch out of fullscreen mode, as something has
+		// destroyed our fullscreen window.
+		UpdateFullScreen (false);
 	}
-	else if (s->widget_normal == widget) {
-		s->widget_normal = NULL;
+	else if (window == normal_window) {
+		// something destroyed our normal window
+		normal_window = NULL;
 	}
 
-	if (s->widget == widget)
-		s->widget = NULL;
+	if (window == active_window)
+		active_window = NULL;
 }
 
-
-
 Surface *
-surface_new (int width, int height)
+surface_new (MoonWindow *window)
 {
-	return new Surface (width, height);
+	return new Surface (window);
 }
 
 void 
@@ -2035,12 +1795,6 @@ surface_paint (Surface *s, cairo_t *ctx, int x, int y, int width, int height)
 	s->Paint (ctx, x, y, width, height);
 }
 
-void *
-surface_get_widget (Surface *s)
-{
-	return s->GetWidget ();
-}
-
 TimeManager*
 surface_get_time_manager (Surface* s)
 {
@@ -2058,7 +1812,7 @@ Surface::SetTrans (bool trans)
 {
 	transparent = trans;
 
-	Invalidate (Rect (0, 0, width, height));
+	active_window->Invalidate ();
 }
 
 void
@@ -2069,7 +1823,7 @@ Surface::SetBackgroundColor (Color *color)
 		
 	background_color = new Color (*color);
 
-	Invalidate (Rect (0, 0, width, height));
+	active_window->Invalidate ();
 }
 
 void 

@@ -47,6 +47,7 @@ namespace Gtk.Moonlight {
 	/// </remarks>
 public class GtkSilver : EventBox {
 	IntPtr surface;
+	IntPtr window;
 
 	//
 	// The downloader callbacks
@@ -117,8 +118,9 @@ public class GtkSilver : EventBox {
 	public GtkSilver (int width, int height)
 	{
 		Mono.Xaml.XamlLoader.AllowMultipleSurfacesPerDomain = true;
-		surface = NativeMethods.surface_new (width, height);
-		Raw = NativeMethods.surface_get_widget (surface);
+		window = NativeMethods.moon_window_gtk_new (false, width, height);
+		surface = NativeMethods.surface_new (window);
+		Raw = NativeMethods.moon_window_gtk_get_widget (window);
 	}
 
 	public GtkSilver () : this (100, 100)

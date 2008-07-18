@@ -30,6 +30,7 @@ G_BEGIN_DECLS
 #include "type.h"
 #include "list.h"
 #include "error.h"
+#include "window.h"
 
 #define MAXIMUM_CACHE_SIZE 6000000
 
@@ -94,20 +95,14 @@ class Surface : public EventObject {
 	void DetachDownloaders ();
 	static void OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure);
 	
-	int normal_width, normal_height;
-	// the actual size of the drawing area, 
-	// screen size in fullscreen mode,
-	// otherwise normal size.
-	int width, height;
-	
 	bool transparent;
 	Color *background_color;
 	
-	// This is the normal widget
-	GtkWidget *widget_normal;
+	// This is the normal-sized window
+	MoonWindow *normal_window;
 	
-	// We set widget to this whenever we are in fullscreen mode.
-	GtkWidget *widget_fullscreen;
+	// We set active_window to this whenever we are in fullscreen mode.
+	MoonWindow *fullscreen_window;
 	
 	// This currently can only be a canvas.
 	UIElement *toplevel;
@@ -156,9 +151,7 @@ class Surface : public EventObject {
 	void *cache_data;
 	int cache_size_multiplier;
 	
-	void ConnectEvents (bool realization_signals);
 	void Realloc ();
-	void InitializeWidget (GtkWidget *widget);
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
 	
@@ -168,7 +161,6 @@ class Surface : public EventObject {
 	
 	static void render_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void widget_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
 	static void widget_destroyed (GtkWidget *w, gpointer data);
 	
 	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
@@ -179,17 +171,15 @@ class Surface : public EventObject {
 	void PerformReleaseCapture ();
 	
  protected:
-	// The current widget we are drawing to. If in windowless
-	// mode, widget will be NULL - otherwise it will either point
-	// to widget_normal or widget_fullscreen depending on whether
-	// or not we are in fullscreen mode.
-	GtkWidget *widget;
+	// The current window we are drawing to
+	MoonWindow *active_window;
 	
 	virtual ~Surface();
 
  public:
-	// if we're windowed, @d will be NULL.
-	Surface (int width, int height, bool windowless = false);
+	Surface (MoonWindow *window);
+
+	MoonWindow* GetWindow () { return active_window; }
 
 	// allows you to redirect painting of the surface to an
 	// arbitrary cairo context.
@@ -204,8 +194,6 @@ class Surface : public EventObject {
 	bool SetMouseCapture (UIElement *capture);
 
 	void Resize (int width, int height);
-	int GetWidth () { return width; }
-	int GetHeight () { return height; }
 
 	void EmitError (ErrorEventArgs *args);
 	void EmitLoad ();
@@ -221,7 +209,6 @@ class Surface : public EventObject {
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
 
-	GtkWidget *GetWidget () { return widget; }
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
 
@@ -237,8 +224,6 @@ class Surface : public EventObject {
 	void SetCanFullScreen (bool value) { can_full_screen = value; }
 	void SetSourceLocation (const char *location);
 	bool FullScreenKeyHandled (GdkEventKey *key);
-	int GetActualWidth () { return width; }
-	int GetActualHeight () { return height; }
 
 	TimeManager *GetTimeManager () { return time_manager; }
 
@@ -271,21 +256,21 @@ class Surface : public EventObject {
 	UIElement *debug_selected_element;
 #endif
 
-	gboolean expose_to_drawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y);
+	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool clear_transparent);
 
-	// widget callbacks
-	static gboolean expose_event_callback (GtkWidget *widget, GdkEventExpose *event, gpointer user_data);
-	static gboolean motion_notify_callback (GtkWidget *widget, GdkEventMotion *event, gpointer user_data);
-	static gboolean crossing_notify_callback (GtkWidget *widget, GdkEventCrossing *event, gpointer user_data);
-	static gboolean key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
-	static gboolean key_release_callback (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
-	static gboolean button_release_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
-	static gboolean button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
-	static gboolean focus_in_callback (GtkWidget *widget, GdkEventFocus *event, gpointer user_data);
-	static gboolean focus_out_callback (GtkWidget *widget, GdkEventFocus *event, gpointer user_data);
-	static gboolean realized_callback (GtkWidget *widget, gpointer user_data);
-	static gboolean unrealized_callback (GtkWidget *widget, gpointer user_data);
-	
+
+	gboolean HandleUIMotion (GdkEventMotion *event);
+	gboolean HandleUICrossing (GdkEventCrossing *event);
+	gboolean HandleUIKeyPress (GdkEventKey *event);
+	gboolean HandleUIKeyRelease (GdkEventKey *event);
+	gboolean HandleUIButtonRelease (GdkEventButton *event);
+	gboolean HandleUIButtonPress (GdkEventButton *event);
+	gboolean HandleUIFocusIn (GdkEventFocus *event);
+	gboolean HandleUIFocusOut (GdkEventFocus *event);
+	void HandleUIWindowAllocation (bool emit_resize);
+	void HandleUIWindowAvailable ();
+	void HandleUIWindowUnavailable ();
+	void HandleUIWindowDestroyed (MoonWindow *window);
 
 	// bad, but these live in dirty.cpp, not runtime.cpp
 	void AddDirtyElement (UIElement *element, DirtyType dirt);
@@ -324,7 +309,7 @@ class RenderNode : public List::Node {
 };
 
 
-Surface *surface_new       (int width, int height);
+Surface *surface_new       (MoonWindow *window);
 void     surface_resize    (Surface *s, int width, int height);
 void     surface_attach    (Surface *s, UIElement *element);
 void     surface_init      (Surface *s, int width, int height);
@@ -333,7 +318,6 @@ void     surface_set_trans (Surface *s, bool trans);
 bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
 
-void	 *surface_get_widget (Surface *s);
 TimeManager* surface_get_time_manager (Surface* s);
 Downloader* surface_create_downloader (Surface *s);
 

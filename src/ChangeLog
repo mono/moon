@@ -1,3 +1,25 @@
+2008-07-18  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmoon_include_HEADERS): add window.h and
+	window-gtk.h
+	(libmoon_la_SOURCES): add window-gtk.cpp
+
+	* window.h: abstract class for windows, that surface will use to
+	deal with window/widget level operations.
+
+	* window-gtk.h, window-gtk.cpp: MoonWindow implementation using
+	gtk widgets.
+
+	* runtime.h, runtime.cpp: factor out all the widget stuff from
+	this file, along with all "width" and "height" fields.  now
+	Surface knows nothing about widgets or windowless.  It speaks to
+	MoonWindow implementations instead.  Add several public methods
+	that the window implementations can call (anything HandleUI*) to
+	communicate events back to the surface.
+
+	* canvas.cpp: surface->Get{Width,Height} ==>
+	surface->GetWindow()->Get{Width,Height}.
+	
 2008-07-18  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp:

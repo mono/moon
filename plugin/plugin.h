@@ -127,6 +127,7 @@ class PluginInstance
 	// Gtk controls
 	GtkWidget *container;  // plugin container object
  	Surface *surface;      // plugin surface object
+	MoonWindow *moon_window;
 	GdkDisplay *display;
 
 	GSList *timers;

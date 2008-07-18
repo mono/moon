@@ -1,3 +1,8 @@
+2008-07-18  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add dllimports for the moon_window_gtk_*
+	methods, and remove a couple of dead surface_ methods.
+
 2008-07-18  Jackson Harper  <jackson@ximian.com>
 
 	* XamlLoaderCallbacks.cs:  Add the new callbacks needed for 2.0 stuff.

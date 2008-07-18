@@ -1,3 +1,7 @@
+2008-07-18  Chris Toshok  <toshok@ximian.com>
+
+	* gtk.cs: create a MoonWindowGtk and pass that to surface_new.
+
 2008-06-09  Geoff Norton  <gnorton@novell.com>
 	
 	* gtk.cs:

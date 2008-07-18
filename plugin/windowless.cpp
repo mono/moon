@@ -27,22 +27,30 @@
 #define d(x)
 #endif
 
-WindowlessSurface::WindowlessSurface (int width, int height, PluginInstance *plugin)
-  : Surface (width, height, true)
+MoonWindowless::MoonWindowless (int width, int height, PluginInstance *plugin)
+	: MoonWindow (width, height)
 {
 	this->plugin = plugin;
-	SetTrans (true);
 }
 
 void
-WindowlessSurface::SetCursor (GdkCursor *cursor)
+MoonWindowless::Resize (int width, int height)
 {
-	if (widget) {
-		// In fullscreen mode
-		Surface::SetCursor (cursor);
-		return;
+	bool emit_resize = false;
+
+        if (this->width != width || this->height != height) {
+		this->width = width;
+		this->height = height;
+		
+		emit_resize = true;
 	}
 
+	surface->HandleUIWindowAllocation (emit_resize);
+}
+
+void
+MoonWindowless::SetCursor (GdkCursor *cursor)
+{
 	// turned off for now.  hopefully we can get this switched on for
 	// newer versions of ff3
 	// see https://bugzilla.mozilla.org/show_bug.cgi?id=430451
@@ -53,15 +61,8 @@ WindowlessSurface::SetCursor (GdkCursor *cursor)
 }
 
 void
-WindowlessSurface::Invalidate (Rect r)
+MoonWindowless::Invalidate (Rect r)
 {
-	if (widget) {
-		// In fullscreen mode
-		Surface::Invalidate (r);
-		return;
-	}
-
-
 	NPRect nprect;
 
 	// Mozilla gets seriously confused about invalidations 
@@ -77,19 +78,13 @@ WindowlessSurface::Invalidate (Rect r)
 }
 
 void
-WindowlessSurface::ProcessUpdates ()
+MoonWindowless::ProcessUpdates ()
 {
-	if (widget) {
-		// In fullscreen mode
-		Surface::ProcessUpdates ();
-		return;
-	}
-
 	NPN_ForceRedraw (plugin->GetInstance());
 }
 
 gboolean
-WindowlessSurface::HandleEvent (XEvent *event)
+MoonWindowless::HandleEvent (XEvent *event)
 {
 	XEvent *xev = (XEvent*)event;
 	gboolean handled = FALSE;
@@ -120,7 +115,10 @@ WindowlessSurface::HandleEvent (XEvent *event)
 				/* XXX ugh */
 				expose.region = gdk_region_rectangle (&expose.area);
 
-				handled = expose_to_drawable (drawable, visual, &expose, window->x, window->y);
+				expose.area.x = expose.area.y = 0;
+
+				surface->PaintToDrawable (drawable, visual, &expose, window->x, window->y, false);
+				handled = TRUE;
 
 				gdk_region_destroy (expose.region);
 			} else {
@@ -148,7 +146,7 @@ WindowlessSurface::HandleEvent (XEvent *event)
 		motion.x_root = xev->xmotion.x_root;
 		motion.y_root = xev->xmotion.y_root;
 
-		handled = Surface::motion_notify_callback (NULL, &motion, this);
+		handled = surface->HandleUIMotion (&motion);
 		break;
 	}
 	case ButtonPress:
@@ -171,9 +169,9 @@ WindowlessSurface::HandleEvent (XEvent *event)
 			handled = PluginInstance::plugin_button_press_callback (NULL, &button, plugin);
 		if (!handled) {
 			if (xev->type == ButtonPress)
-				handled = Surface::button_press_callback (NULL, &button, this);
+				handled = surface->HandleUIButtonPress (&button);
 			else
-				handled = Surface::button_release_callback (NULL, &button, this);
+				handled = surface->HandleUIButtonRelease (&button);
 		}
 		break;
 	}
@@ -202,9 +200,9 @@ WindowlessSurface::HandleEvent (XEvent *event)
 		key.group = (guint8)effective_group;
 
 		if (xev->type == KeyPress)
-			handled = Surface::key_press_callback (NULL, &key, this);
+			handled = surface->HandleUIKeyPress (&key);
 		else
-			handled = Surface::key_release_callback (NULL, &key, this);
+			handled = surface->HandleUIKeyRelease (&key);
 
 		break;
 	}
@@ -225,16 +223,16 @@ WindowlessSurface::HandleEvent (XEvent *event)
 		crossing.focus = xev->xcrossing.focus;
 		crossing.state = xev->xcrossing.state;
 
-		Surface::crossing_notify_callback (NULL, &crossing, this);
+		surface->HandleUICrossing (&crossing);
 		break;
 	}
 	case FocusIn: {
-		Surface::focus_in_callback (NULL, NULL, this);
+		surface->HandleUIFocusIn (NULL);
 		break;
 	}
 
 	case FocusOut: {
-		Surface::focus_out_callback (NULL, NULL, this);
+		surface->HandleUIFocusOut (NULL);
 		break;
 	}
 	default:
@@ -243,4 +241,50 @@ WindowlessSurface::HandleEvent (XEvent *event)
 	}
 
 	return handled;
+}
+
+void
+MoonWindowless::Show ()
+{
+	// nothing needed here
+}
+
+void
+MoonWindowless::Hide ()
+{
+	// nothing needed here
+}
+
+void
+MoonWindowless::EnableEvents (bool first)
+{
+	// nothing needed here, NPAPI pushes events through
+	// HandleEvent.
+}
+
+void
+MoonWindowless::DisableEvents ()
+{
+	// nothing needed here, NPAPI pushes events through
+	// HandleEvent.
+}
+
+void
+MoonWindowless::GrabFocus ()
+{
+	// we can't grab focus - the browser handles that.
+}
+
+bool
+MoonWindowless::HasFocus ()
+{
+	// XXX maybe we should track the focus in/out events?
+	return false;
+}
+
+void
+MoonWindowless::SetSurface (Surface *s)
+{
+	MoonWindow::SetSurface (s);
+	s->HandleUIWindowAvailable ();
 }

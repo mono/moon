@@ -25,6 +25,7 @@
 #include "npstream-request.h"
 #include "xap.h"
 #include "windowless.h"
+#include "window-gtk.h"
 #include "unzip.h"
 
 #define Visual _XxVisual
@@ -347,6 +348,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	
 	container = NULL;
 	surface = NULL;
+	moon_window = NULL;
 	
 	// Property fields
 	initParams = false;
@@ -752,11 +754,17 @@ void
 PluginInstance::CreateWindow ()
 {
 	if (windowless) {
-		surface = new WindowlessSurface (window->width, window->height, this);
+		moon_window = new MoonWindowless (window->width, window->height, this);
 	}
 	else {
-		surface = new Surface (window->width, window->height, false);
+		moon_window = new MoonWindowGtk (false, window->width, window->height);
 	}
+
+	surface = new Surface (moon_window);
+	moon_window->SetSurface (surface);
+
+	if (windowless)
+		surface->SetTrans (true);
 
 	if (onError != NULL) {
 		char *retval = NPN_strdup (onError);
@@ -833,7 +841,7 @@ PluginInstance::CreateWindow ()
 
 		g_signal_connect (G_OBJECT(container), "button-press-event", G_CALLBACK (PluginInstance::plugin_button_press_callback), this);
 
-		gtk_container_add (GTK_CONTAINER (container), surface->GetWidget());
+		gtk_container_add (GTK_CONTAINER (container), ((MoonWindowGtk*)moon_window)->GetWidget());
 		//display = gdk_drawable_get_display (surface->GetWidget()->window);
 		gtk_widget_show_all (container);
 	}
@@ -1391,7 +1399,13 @@ PluginInstance::EventHandle (void *event)
 		return 0;
 	}
 
-	return ((WindowlessSurface*)surface)->HandleEvent ((XEvent*)event);
+	if (!windowless) {
+		g_warning ("EventHandle called for windowed plugin, discarding event.");
+		return 0;
+	}
+		
+
+	return ((MoonWindowless*)moon_window)->HandleEvent ((XEvent*)event);
 }
 
 void
@@ -1515,13 +1529,13 @@ PluginInstance::SetMaxFrameRate (int value)
 int32_t
 PluginInstance::GetActualHeight ()
 {
-	return surface->GetActualHeight ();
+	return surface->GetWindow()->GetHeight();
 }
 
 int32_t
 PluginInstance::GetActualWidth ()
 {
-	return surface->GetActualWidth ();
+	return surface->GetWindow()->GetWidth();
 }
 
 void

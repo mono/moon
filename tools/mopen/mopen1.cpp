@@ -23,6 +23,7 @@
 #include "runtime.h"
 #include "xaml.h"
 #include "canvas.h"
+#include "window-gtk.h"
 #include "frameworkelement.h"
 
 static void 
@@ -160,7 +161,9 @@ static int LoadXaml (const char* file)
 	downloader_set_functions (downloader_create_state, downloader_destroy_state, downloader_open, downloader_send, downloader_abort, downloader_header, downloader_body, downloader_request);
 
 	Type::Kind et;
-	Surface* surface = surface_new (300, 300);
+
+	MoonWindowGtk *moon_window = new MoonWindowGtk (false, 300, 300);
+	Surface* surface = surface_new (moon_window);
 	XamlLoader* loader = xaml_loader_new (file, NULL, surface);
 	DependencyObject* dob = xaml_create_from_file (loader, file, FALSE, &et);
 
@@ -191,7 +194,7 @@ static int LoadXaml (const char* file)
 		gtk_widget_set_app_paintable (window, TRUE);
 
 		gtk_signal_connect (GTK_OBJECT (window), "delete-event", G_CALLBACK (delete_event), surface);
-		gtk_container_add (GTK_CONTAINER(window), surface->GetWidget ());
+		gtk_container_add (GTK_CONTAINER(window), moon_window->GetWidget ());
 
 		gtk_widget_set_usize (window, width, height);
 

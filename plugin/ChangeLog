@@ -1,3 +1,10 @@
+2008-07-18  Chris Toshok  <toshok@ximian.com>
+
+	* windowless.h, windowless.cpp: switch this from being a surface
+	subclass to being a MoonWindow subclass, which fixes the need for
+	us to worry about whether we have a widget (for fullscreen) in
+	windowless code.
+
 2008-07-18  Jb Evain  <jbevain@novell.com>
 
 	* moonlight.cs (UnloadDomain): actually call the plugin unload callback.

@@ -657,6 +657,12 @@ namespace Mono {
 		public extern static void downloader_request_set_body (IntPtr downloader_request, IntPtr body, int size);
 #endregion
 
+		[DllImport ("mono")]
+		public extern static IntPtr moon_window_gtk_new (bool fullscreen, int w, int h);
+
+		[DllImport ("moon")]
+		public extern static IntPtr moon_window_gtk_get_widget (IntPtr window);
+
 		[DllImport ("moon")]
 		public extern static void surface_attach (IntPtr surface, IntPtr toplevel);
 
@@ -667,10 +673,7 @@ namespace Mono {
 		public extern static void surface_paint (IntPtr surface, IntPtr ctx, int x, int y, int width, int height);
 		
 		[DllImport ("moon")]
-		public extern static IntPtr surface_new (int w, int h);
-		
-		[DllImport ("moon")]
-		public extern static IntPtr surface_get_widget (IntPtr surface);
+		public extern static IntPtr surface_new (IntPtr window);
 
 		[DllImport ("moon")]
 		public extern static void surface_set_trans (IntPtr surface, bool trans);
