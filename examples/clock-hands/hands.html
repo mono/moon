@@ -1,0 +1,204 @@
+<head>
+<title>Clock hands test</title>
+<meta></meta>
+</head>
+    <style type="text/css">
+    body { 
+      margin-left: 8;
+      margin-top: 8;
+    };
+
+    object {
+      margin-left: 0;
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+    };
+    </style>
+<body bgcolor="#000">
+
+<script type="text/javascript">
+function GenerateSecondsKeyframes (sender)
+{
+	var control = sender.getHost();
+	var animation = sender.findName("SecondAnimation");
+	animation.KeyFrames.Clear();
+
+	for (var i = 0; i <= 60; i++)
+	{
+		var xaml = '<DiscreteDoubleKeyFrame xmlns="http://schemas.microsoft.com/client/2007" KeyTime="00:00:00"/>';
+		var keyFrame = control.content.createFromXaml(xaml);
+		keyFrame.KeyTime.Seconds = i;
+		keyFrame.Value = i * 6;
+		animation.KeyFrames.Add(keyFrame);
+	}
+}
+
+function CreateTicks (sender)
+{
+	var control = sender.getHost();
+	var canvas = sender.findName("MasterCanvas");
+
+	for (var i = 0; i <= 12; i++)
+	{
+		var xaml = '<Rectangle Width="10" Height="20" Fill="Gray" Canvas.Left="200" Canvas.Top="0" RenderTransformOrigin="0, 10"><Rectangle.RenderTransform><TransformGroup><ScaleTransform ScaleX="1" ScaleY="1"/><SkewTransform AngleX="0" AngleY="0"/><RotateTransform Angle="45"/><TranslateTransform X="0" Y="0"/></TransformGroup></Rectangle.RenderTransform></Rectangle>';
+
+		var rectangle = control.content.createFromXaml(xaml);
+		rectangle.RenderTransform.Children.GetItem (2).Angle = i * 30;
+		canvas.Children.Add(rectangle);
+	}
+}
+
+function OnLoaded (sender)
+{
+	GenerateSecondsKeyframes (sender);
+	CreateTicks (sender);
+  	var run = sender.findName("Run");
+	var time = new Date();
+	var timeString = time.toTimeString();
+	var index = timeString.search(" ");
+	timeString = timeString.substr(0, index);
+	run.Begin();
+	run.Seek(timeString);
+}
+
+function SpeedButtonClicked (sender)
+{
+  	var anim = sender.findName("MakeRed");
+	anim.Begin ();
+	
+}
+
+function OnMouseEnter (sender)
+{
+	var btn = sender.findName("Button");
+	btn.StrokeThickness = 2.0;
+	var txt = sender.FindName("Text");
+	txt.Foreground = "Black";
+}
+
+function OnMouseLeave (sender)
+{
+	var btn = sender.findName("Button");
+	btn.StrokeThickness = 1.0;
+	var txt = sender.FindName("Text");
+	txt.Foreground = "Gray";
+}
+
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="400" height="400">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded" x:Name="MasterCanvas">
+
+	<Rectangle Width="400" Height="400" Fill="Black" />
+
+	<Ellipse Width="400" Height="400">
+  	<Ellipse.Fill>
+     		<RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+       			<RadialGradientBrush.GradientStops>
+        			<GradientStop x:Name="FirstGradientColor" Color="White" Offset="0" />
+        			<GradientStop x:Name="SecondGradientColor" Color="LightGray" Offset="1" />
+      			</RadialGradientBrush.GradientStops>
+    		</RadialGradientBrush>
+  	</Ellipse.Fill>
+	</Ellipse>
+
+	<Canvas MouseLeftButtonDown="SpeedButtonClicked" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
+		<Rectangle x:Name="Button" Fill="White" Stroke="Gray" StrokeThickness="1" RadiusX="10" RadiusY="10" Width="100" Height="25" Canvas.Left="150" Canvas.Top="250" Opacity="0.5" />
+
+		<TextBlock x:Name="Text" TextWrapping="NoWrap" Width="100" FontFamily="Verdana" FontSize="13" FontWeight="Bold" Canvas.Left="165.0" Canvas.Top="255" Opacity="0.7" Text="Click me!" Foreground="Gray" />
+	</Canvas>
+
+	
+	<Rectangle Width="100" Height="10" Canvas.Left="200" Canvas.Top="195" x:Name="HourHand" Fill="Black" RenderTransformOrigin="0, 0.5">
+					<Rectangle.RenderTransform>
+						<TransformGroup>
+							<ScaleTransform ScaleX="1" ScaleY="1"/>
+							<SkewTransform AngleX="0" AngleY="0"/>
+							<RotateTransform Angle="0"/>
+							<RotateTransform Angle="-90"/>
+							<TranslateTransform X="0" Y="0"/>
+						</TransformGroup>
+					</Rectangle.RenderTransform>
+		</Rectangle>
+        
+
+	<Rectangle Width="160" Height="6" Canvas.Left="200" Canvas.Top="197" x:Name="MinuteHand" Fill="#000000" RenderTransformOrigin="0, 0.5">
+					<Rectangle.RenderTransform>
+						<TransformGroup>
+							<ScaleTransform ScaleX="1" ScaleY="1"/>
+							<SkewTransform AngleX="0" AngleY="0"/>
+							<RotateTransform Angle="0"/>
+							<RotateTransform Angle="-90"/>
+							<TranslateTransform X="0" Y="0"/>
+						</TransformGroup>
+					</Rectangle.RenderTransform>
+		</Rectangle>
+
+
+		<Rectangle Width="180" Height="2" Canvas.Left="200" Canvas.Top="199" x:Name="SecondHand" Fill="#FF0000" RenderTransformOrigin="0, 0.5">
+					<Rectangle.RenderTransform>
+						<TransformGroup>
+							<ScaleTransform ScaleX="1" ScaleY="1"/>
+							<SkewTransform AngleX="0" AngleY="0"/>
+							<RotateTransform Angle="0"/>
+							<RotateTransform Angle="-90"/>
+							<TranslateTransform X="0" Y="0"/>
+						</TransformGroup>
+					</Rectangle.RenderTransform>
+		</Rectangle>
+
+	<Ellipse Canvas.Left="185" Canvas.Top="185" Width="30" Height="30" Stroke="Black" StrokeThickness="3"> 
+	<Ellipse.Fill>
+     		<RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+       			<RadialGradientBrush.GradientStops>
+        			<GradientStop Color="White" Offset="0" />
+        			<GradientStop Color="Black" Offset="1" />
+      			</RadialGradientBrush.GradientStops>
+    		</RadialGradientBrush>
+  	</Ellipse.Fill>
+	</Ellipse>
+
+  <Canvas.Resources>
+		<Storyboard x:Name="Run" RepeatBehavior="Forever" SpeedRatio="1.0"
+>
+			<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" 
+				Storyboard.TargetName="SecondHand" x:Name="SecondAnimation" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" RepeatBehavior="Forever">
+			</DoubleAnimationUsingKeyFrames>
+			
+			<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="MinuteHand" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" RepeatBehavior="Forever">
+
+				<SplineDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+
+				<SplineDoubleKeyFrame KeyTime="01:00:00" Value="360"/>
+
+			</DoubleAnimationUsingKeyFrames>
+
+			<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="HourHand" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" RepeatBehavior="Forever">
+
+				<SplineDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+
+				<SplineDoubleKeyFrame KeyTime="12:00:00" Value="360"/>
+
+			</DoubleAnimationUsingKeyFrames>
+		</Storyboard>
+		<Storyboard x:Name="MakeRed">
+			<ColorAnimation Storyboard.TargetName="FirstGradientColor" Storyboard.TargetProperty="Color" To="Yellow" Duration="0:0:03" />
+			<ColorAnimation Storyboard.TargetName="SecondGradientColor" Storyboard.TargetProperty="Color" To="Green" Duration="0:0:03" />
+		</Storyboard>
+  </Canvas.Resources>
+		
+</Canvas>
+</script>
+
+</body>
+</html>
+
+
