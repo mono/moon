@@ -777,6 +777,9 @@ namespace Mono {
 		public extern static IntPtr plugin_instance_load_url (IntPtr plugin_handle, string url, ref int length);
 
 		[DllImport("moonplugin")]
+		public extern static IntPtr browser_http_request_new (IntPtr plugin_handle, string method, string uri);
+
+		[DllImport("moonplugin")]
 		public extern static void browser_http_request_destroy (IntPtr handle);
 
 		[DllImport("moonplugin")]
@@ -790,6 +793,10 @@ namespace Mono {
 
 		[DllImport("moonplugin")]
 		public extern static IntPtr browser_http_request_get_response (IntPtr handle);
+
+		[DllImport("moonplugin")]
+		public extern static bool browser_http_request_get_async_response (IntPtr handle, AsyncResponseAvailableHandler handler, IntPtr context);
+
 
 		[DllImport("moonplugin")]
 		public extern static IntPtr browser_http_response_read (IntPtr handler, out int size);

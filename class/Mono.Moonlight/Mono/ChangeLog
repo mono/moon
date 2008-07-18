@@ -1,3 +1,7 @@
+2008-07-17  Jackson Harper  <jackson@ximian.com>
+
+	* NativeMethods.cs: Add these methods back in to fix the build.
+	
 2008-07-17  Stephane Delcrois <sdelcroix@novell.com>
 
 	* NativeMethods.cs: new P/Invokes for DownloaderRequest
