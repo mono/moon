@@ -1,7 +1,7 @@
 site:Aglux Silverlight
 url:http://www.aglux.com.my
-rating:3
- *  Hangs firefox. Bug 375266
+rating:2
+ *  Site is super slow
  *  color gradient is wrong. Should go purple(top) to light blue(bottom)
  *  Mouse over animation is slow
 
@@ -13,8 +13,8 @@ rating:4
 
 site:Bubble Mark
 url:http://bubblemark.com/wpfe.htm
-rating:3
- *  choppy with 16+ balls Bug 362022
+rating:4
+ *  Works!
 
 
 site:Chess Viewer 1.0
@@ -44,13 +44,12 @@ rating:3
 site:E-commerce Catalog
 url:http://www.flowers-for-you.com.my/catalog2.aspx
 rating:0
- * [regression] Crashes Firefox 2 Bug 394943
  * Audio works. No video
 
 site:Festive Greetings
 url:http://www.mason-zimbler.com/festivegreetings
 rating:4
- * Works!
+ * Audio and video work!
 
 site:Glyph Map
 url:http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx
@@ -76,12 +75,13 @@ rating:4
 site:Ink Journal
 url:http://www.thedatafarm.com/silverlight/journalsample
 rating:2
- * Eraser erases too many lines Bug 394945
+ * Line drawing lags behind the mouse cursor Bug 409793
 
 site:Ink Tattoo Studio
 url:http://silverlight.net/samples/1.0/Ink-Tattoo-Studio/default.html
 rating:4
  * Works!
+ * Sounds are delayed slightly Bug 409797
 
 site:Kit 3D
 url:http://www.markdawson.org/kit3d
@@ -91,9 +91,9 @@ rating:1
 
 site:LCD Clock
 url:http://www.designwithsilverlight.com/tutorials/LCDClock/Default.html
-rating:3
- * Hours, seconds are out of place Bug 394947
- * Outer frame is still showing - windowless
+rating:4
+ * Works! 
+ * Outer frame is still showing - windowless / FF3
 
 site:Matrix Digital Rain
 url:http://blogs.sqlxml.org/wpfe/matrix
@@ -118,11 +118,8 @@ rating:4
 
 site:Mircosoft Downloads
 url:http://www.microsoft.com/beta/downloads/Default.aspx
-rating:1
- * Background color is missing  - Bug 375218
- * In 'Browse Downloads', the index chars repeatedly highlight/unhighlight during mouse over Bug 375220
- * FF crashes if you hit the navigate back off the page. Bug 375219
- * Download categories don't appear when page is loaded. Bug 375221
+rating:4
+ * Works great!
 
 site:Office Ribbon
 url:http://xmldocs.net
@@ -181,11 +178,6 @@ rating:3
  * Not using Moonlight. It looks like it's detecting it, but it's not using it. 
  * toolbox mouse events are slow, out of sync Bug 375269
  * Edit a control has missing background and button Bug 375270
-
-site:Ray Tracer
-url:http://www.nokola.com/Raytracer/
-rating:0
- * not recognizing Moonlight
 
 site:Scrolling Video Playlist
 url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
