@@ -68,3 +68,22 @@ Technical Details
 
 	For implementation details and notes, see the NOTES file.
 
+
+Test Suite
+==========
+
+	To run the test suite, make sure that the output from
+	configure indicates that the tests will be run.  Once this is
+	done, you can run the tests like this:
+
+	To run the Novell tests:
+
+	        cd moon/tests
+		./make-xephyr run-tests
+
+	To run the Microsoft tests (you need the moonlight-ms module
+	as a peer of moon):
+
+		cd moon/test
+		./make-xephyr run-ms-tests
+
