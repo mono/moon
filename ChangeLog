@@ -1,5 +1,9 @@
 2008-07-18  Jackson Harper  <jackson@ximian.com>
 
+	* tools/respack/Makefile.am: Fix script.
+
+2008-07-18  Jackson Harper  <jackson@ximian.com>
+
 	* tools/xamlg/xamlg.cs: Add support for creating SL2 partial
 	classes.  You need to supply the app (xap) name on the cmdline
 	like so: xamlg -sl2app:MyApp Page.xaml
