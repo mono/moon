@@ -1,3 +1,8 @@
+2008-07-18  Geoff Norton  <gnorton@novell.com>
+
+	* asf.cpp: Prevent a crash when we try to seek before populating 
+	payloads.
+
 2008-07-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h: Refcount ASFParser to track lifetime correctly.  Move

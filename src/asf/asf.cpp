@@ -1110,40 +1110,42 @@ ASFReader::Seek (guint64 pts)
 			break;
 		}
 		
-		asf_single_payload** payloads = packet->payloads->payloads;
-		for (int i = 0; payloads [i] != NULL; i++) {
-			asf_single_payload *payload = payloads [i];
-			int stream_id = payload->stream_id;
-			guint64 payload_pts = MilliSeconds_ToPts (payload->get_presentation_time () - parser->GetFileProperties ()->preroll);
-			ASFFrameReader *reader = readers [stream_id];
-
-			// Ignore payloads for streams we're not handling
-			if (reader == NULL)
-				continue;
-
-			// Found a pts above the requested pts, save it.
-			if (payload_pts > pts) {
-				found_above [stream_id] = true;
-				continue;
-			}
-
-			// We've already found a higher pts for the given stream, no need to look for another one.
-			if (found_above [stream_id])
-				continue;
-
-			// We're not interested in payloads which doesn't represent the start of a frame
-			if (payload->offset_into_media_object != 0)
-				continue;
+		if (packet->payloads != NULL) {
+			asf_single_payload** payloads = packet->payloads->payloads;
+			for (int i = 0; payloads [i] != NULL; i++) {
+				asf_single_payload *payload = payloads [i];
+				int stream_id = payload->stream_id;
+				guint64 payload_pts = MilliSeconds_ToPts (payload->get_presentation_time () - parser->GetFileProperties ()->preroll);
+				ASFFrameReader *reader = readers [stream_id];
 	
-			// We're only interested in key frames.
-			if (!payload->is_key_frame && !reader->IsAudio ())
-				continue;
-			
-			// We've found another key frame which is below the requested one
-			highest_pts [stream_id] = MAX (highest_pts [stream_id], payload_pts);
-			highest_pi [stream_id] = test_pi;
-
-			ASF_LOG ("ASFReader::Seek (%llu): Found higher key frame of stream #%i with pts %llu in packet index %llu\n", pts, stream_id, payload_pts, test_pi);
+				// Ignore payloads for streams we're not handling
+				if (reader == NULL)
+					continue;
+	
+				// Found a pts above the requested pts, save it.
+				if (payload_pts > pts) {
+					found_above [stream_id] = true;
+					continue;
+				}
+	
+				// We've already found a higher pts for the given stream, no need to look for another one.
+				if (found_above [stream_id])
+					continue;
+	
+				// We're not interested in payloads which doesn't represent the start of a frame
+				if (payload->offset_into_media_object != 0)
+					continue;
+		
+				// We're only interested in key frames.
+				if (!payload->is_key_frame && !reader->IsAudio ())
+					continue;
+				
+				// We've found another key frame which is below the requested one
+				highest_pts [stream_id] = MAX (highest_pts [stream_id], payload_pts);
+				highest_pi [stream_id] = test_pi;
+	
+				ASF_LOG ("ASFReader::Seek (%llu): Found higher key frame of stream #%i with pts %llu in packet index %llu\n", pts, stream_id, payload_pts, test_pi);
+			}
 		}
 		
 		packet->unref ();;
