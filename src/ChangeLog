@@ -1,5 +1,12 @@
 2008-07-18  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.h: New delegates and functions for the loader.  We need to
+	call back into managed code when we import a xaml namespace so
+	that it knows which objects are available and we need a new
+	function for creating those objects.
+
+2008-07-18  Jackson Harper  <jackson@ximian.com>
+
 	* usercontrol.cpp|h: Add C functions for accessing the Content
 	element.
 

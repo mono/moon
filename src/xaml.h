@@ -28,6 +28,8 @@ typedef void xaml_insert_mapping_callback (const char *key, const char *value);
 typedef const char *xaml_get_mapping_callback (const char *key);
 typedef bool xaml_load_code_callback (const char *source, const char *type);
 typedef void xaml_set_name_attribute_callback (void *target, const char *name);
+typedef void xaml_import_xaml_xmlns_callback (const char* xmlns);
+typedef void xaml_create_component_from_name_callback (const char* name);
 
 struct XamlLoaderCallbacks {
 	xaml_load_managed_object_callback *load_managed_object;
@@ -37,12 +39,15 @@ struct XamlLoaderCallbacks {
 	xaml_insert_mapping_callback *insert_mapping;
 	xaml_load_code_callback *load_code;
 	xaml_set_name_attribute_callback *set_name_attribute;
+	xaml_import_xaml_xmlns_callback *import_xaml_xmlns;
+	xaml_create_component_from_name_callback *create_component_from_name;
 
 	XamlLoaderCallbacks () :
 		load_managed_object (NULL), set_custom_attribute (NULL),
 		hookup_event (NULL), get_mapping (NULL),
 		insert_mapping (NULL), load_code (NULL),
-		set_name_attribute (NULL) 
+		set_name_attribute (NULL), import_xaml_xmlns (NULL),
+		create_component_from_name (NULL)
 	{
 	}
 };
@@ -142,5 +147,6 @@ class XamlLoader {
 	XamlLoaderCallbacks callbacks;
 	ParserErrorEventArgs *error_args;
 };
+
 
 #endif /* __MOON_XAML_H__ */
