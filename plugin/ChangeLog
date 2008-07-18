@@ -1,3 +1,7 @@
+2008-07-18  Jb Evain  <jbevain@novell.com>
+
+	* moonlight.cs (UnloadDomain): actually call the plugin unload callback.
+
 2008-07-18  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-debug.cpp: Use new method for getting content element.
