@@ -1,3 +1,7 @@
+2008-07-18  Michael Dominic K.  <mdk@mdk.am>
+
+	* media.cpp: Fixing a crasher in case bad parameters passed from js.
+
 2008-07-18  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.h: New delegates and functions for the loader.  We need to

@@ -2647,6 +2647,11 @@ Image::CreateSurface (const char *uri)
 
 	CleanupPattern ();
 
+    if (uri == NULL) {
+        g_warning ("URI is NULL!");
+        return false;
+    }
+
 	if (!surface_cache)
 		surface_cache = g_hash_table_new (g_str_hash, g_str_equal);
 	
