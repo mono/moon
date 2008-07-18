@@ -21,7 +21,7 @@ user_control_new (void)
 UIElement *
 user_control_get_content (UserControl *user_control)
 {
-	Value* v = GetValue (ContentProperty);
+	Value* v =user_control-> GetValue (UserControl::ContentProperty);
 	if (!v)
 		return NULL;
 	return v->AsUIElement ();
