@@ -657,7 +657,7 @@ namespace Mono {
 		public extern static void downloader_request_set_body (IntPtr downloader_request, IntPtr body, int size);
 #endregion
 
-		[DllImport ("mono")]
+		[DllImport ("moon")]
 		public extern static IntPtr moon_window_gtk_new (bool fullscreen, int w, int h);
 
 		[DllImport ("moon")]

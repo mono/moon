@@ -1,4 +1,8 @@
 2008-07-18  Chris Toshok  <toshok@ximian.com>
+	* NativeMethods.cs: Fixed typo on line 663, It was dllimporting from 
+	mono instead of moon.
+
+2008-07-18  Chris Toshok  <toshok@ximian.com>
 
 	* NativeMethods.cs: add dllimports for the moon_window_gtk_*
 	methods, and remove a couple of dead surface_ methods.
