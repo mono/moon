@@ -308,16 +308,16 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static IntPtr stroke_collection_new ();
 
-		[DllImport("mono")]
+		[DllImport("moon")]
 		public extern static IntPtr stroke_collection_hit_test (IntPtr native, IntPtr stylusPointCollection);
 
-		[DllImport("mono")]
+		[DllImport("moon")]
 		public extern static void stroke_collection_get_bounds (IntPtr native, ref UnmanagedRect urect);
 
-		[DllImport("mono")]
+		[DllImport("moon")]
 		public extern static bool stroke_hit_test (IntPtr native, IntPtr stylusPointCollection);
 
-		[DllImport("mono")]
+		[DllImport("moon")]
 		public extern static void stroke_get_bounds (IntPtr native, ref UnmanagedRect urect);
 #endregion
 		
