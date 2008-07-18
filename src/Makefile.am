@@ -38,6 +38,7 @@ libmoon_include_HEADERS = \
 	mms-downloader.h	\
 	moon-path.h	\
 	moon-curves.h	\
+	mp3.h		\
 	mplayer.h	\
 	namescope.h	\
 	openfile.h	\
@@ -100,6 +101,7 @@ libmoon_la_SOURCES = 	\
 	moon-path.c	\
 	moon-curves.c	\
 	enums.c		\
+	mp3.cpp		\
 	mplayer.cpp	\
 	namescope.cpp	\
 	openfile.cpp	\

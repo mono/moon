@@ -55,6 +55,8 @@ public:
 private:
 	AVCodecContext *context;
 	guint8* audio_buffer;
+	guint8* frame_buffer;
+	guint32 frame_buffer_length;
 	bool has_delayed_frame;
 };
 

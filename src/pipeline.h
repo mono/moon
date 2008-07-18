@@ -17,6 +17,17 @@
 #include <stdio.h>
 #include <pthread.h>
 
+#define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
+
+#define CODEC_WMV1	MAKE_CODEC_ID ('W', 'M', 'V', '1')
+#define CODEC_WMV2	MAKE_CODEC_ID ('W', 'M', 'V', '2')
+#define CODEC_WMV3	MAKE_CODEC_ID ('W', 'M', 'V', '3')
+#define CODEC_WMVA	MAKE_CODEC_ID ('W', 'M', 'V', 'A')
+#define CODEC_WVC1	MAKE_CODEC_ID ('W', 'V', 'C', '1')
+#define CODEC_MP3	0x55
+#define CODEC_WMAV1 0x160
+#define CODEC_WMAV2 0x161
+
 /*
  *	Should be capable of:
  *	- play files and live streams
@@ -1045,101 +1056,6 @@ public:
 	}	
 	virtual const char *GetName () { return "ASFMarkerDecoder"; }
 };
-
-/*
- * Mp3 related implementations
- */
-
-struct MpegFrame {
-	gint64 offset;
-	guint64 pts;
-	guint32 dur;
-	
-	// this is needed in case this frame did not specify it's own
-	// bit rate which is possible for MPEG-1 Layer 3 audio.
-	gint32 bit_rate;
-};
-
-class Mp3FrameReader {
-	IMediaSource *stream;
-	gint64 stream_start;
-	guint32 frame_dur;
-	guint32 frame_len;
-	guint64 cur_pts;
-	gint32 bit_rate;
-	bool xing;
-	
-	MpegFrame *jmptab;
-	guint32 avail;
-	guint32 used;
-	
-	guint32 MpegFrameSearch (guint64 pts);
-	void AddFrameIndex (gint64 offset, guint64 pts, guint32 dur, gint32 bit_rate);
-	
-	bool SkipFrame ();
-	
-public:
-	Mp3FrameReader (IMediaSource *source, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing);
-	~Mp3FrameReader ();
-	
-	bool Seek (guint64 pts);
-	
-	MediaResult ReadFrame (MediaFrame *frame);
-	
-	gint64 EstimatePtsPosition (guint64 pts);
-};
-
-class Mp3Demuxer : public IMediaDemuxer {
-private:
-	Mp3FrameReader *reader;
-	bool xing;
-
-protected:
-	virtual ~Mp3Demuxer ();
-
-public:
-	Mp3Demuxer (Media *media, IMediaSource *source);
-	
-	virtual MediaResult ReadHeader ();
-	virtual MediaResult ReadFrame (MediaFrame *frame);
-	virtual MediaResult Seek (guint64 pts);
-	virtual gint64 EstimatePtsPosition (guint64 pts);
-	virtual const char *GetName () { return "Mp3Demuxer"; }
-};
-
-class Mp3DemuxerInfo : public DemuxerInfo {
-public:
-	virtual bool Supports (IMediaSource *source);
-	virtual IMediaDemuxer *Create (Media *media, IMediaSource *source); 
-	virtual const char *GetName () { return "Mp3Demuxer"; }
-};
-
-class NullMp3Decoder : public IMediaDecoder {
-protected:
-	virtual ~NullMp3Decoder () {};
-
-public:
-	NullMp3Decoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream) {}
-	
-	virtual MediaResult DecodeFrame (MediaFrame *frame);
-	
-	virtual MediaResult Open ()
-	{
-		return MEDIA_SUCCESS;
-	}
-};
-
-class NullMp3DecoderInfo : public DecoderInfo {
-public:
-	virtual bool Supports (const char *codec) { return !strcmp (codec, "mp3"); };
-	
-	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream)
-	{
-		return new NullMp3Decoder (media, stream);
-	}
-};
-
-
 
 /*
  * MS related implementations

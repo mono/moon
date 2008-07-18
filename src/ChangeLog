@@ -1,3 +1,12 @@
+2008-07-18  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline.(cpp|h), mp3.(cpp|h): Break mp3 out into its own files.
+	* Makefile.am: Add mp3.(cpp|h) to the build.
+	* pipeline-ffmpeg.cpp: MP3 streamed over asf will bunch multiple frames
+	together, so we need to split them up and pass them to avcodec_decode_audio2
+	one at a time.  Its also possible that we could get a partial frame, so we need
+	to buffer that data. Fixes mms+mp3.
+
 2008-07-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #410206

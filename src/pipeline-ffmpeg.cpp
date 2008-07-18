@@ -22,6 +22,7 @@
 
 #include "pipeline-ffmpeg.h"
 #include "pipeline.h"
+#include "mp3.h"
 #include "debug.h"
 
 #define LOG_FFMPEG(...)// printf(__VA_ARGS__);
@@ -67,7 +68,8 @@ FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream)
 	
 	initialize_ffmpeg ();
 	
-
+	frame_buffer = NULL;
+	frame_buffer_length = 0;
 }
 
 PixelFormat 
@@ -202,6 +204,9 @@ FfmpegDecoder::~FfmpegDecoder ()
 	
 	av_free (audio_buffer);
 	audio_buffer = NULL;
+
+	if (frame_buffer != NULL)
+		g_free (frame_buffer);
 	
 	pthread_mutex_unlock (&ffmpeg_mutex);
 }
@@ -312,28 +317,66 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		// when the MediaFrame is deleted.
 		mf->decoder_specific_data = frame;
 	} else if (stream->GetType () == MediaTypeAudio) {
-		int frame_size = AUDIO_BUFFER_SIZE;
-		
-		length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &frame_size, mf->buffer, mf->buflen);
-		
-		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p): Decoded audio frame, length: %i, frame_size, %i, buflen: %i, pts: %llu\n",
-			mf, length, frame_size, mf->buflen, mf->pts);
-		
-		if (length < 0 || (guint32) frame_size < mf->buflen) {
-			//media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding audio frame (length: %i, frame_size. %i, buflen: %u).", length, frame_size, mf->buflen));
-			return MEDIA_CODEC_ERROR;
+		MpegFrameHeader mpeg;
+		int remain = mf->buflen;
+		int offset = 0;
+		int decoded_size = 0;
+		guint8 *decoded_frames = NULL;
+
+		if (frame_buffer != NULL) {
+			mf->buffer = (guint8 *) g_realloc (mf->buffer, mf->buflen+frame_buffer_length);
+			memmove (mf->buffer+frame_buffer_length, mf->buffer, mf->buflen);
+			memcpy (mf->buffer, frame_buffer, frame_buffer_length);
+			remain += frame_buffer_length;
+			
+			g_free (frame_buffer);
+			frame_buffer = NULL;
 		}
+
+		do {
+			guint32 frame_size;
+			int buffer_size = AUDIO_BUFFER_SIZE;
+
+			if (stream->codec_id == CODEC_MP3 && mpeg_parse_header (&mpeg, mf->buffer+offset)) {
+				frame_size = mpeg_frame_length (&mpeg, false);
+	
+				if (frame_size > remain) {
+					frame_buffer_length = remain;
+					frame_buffer = (guint8 *) malloc (remain);
+					memcpy (frame_buffer, mf->buffer+offset, remain);
+					remain = 0;
+					continue;
+				}
+			} else {
+				frame_size = mf->buflen;
+			}
+
+			length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &buffer_size, mf->buffer+offset, frame_size);
+
+			if (length < 0 || (guint32) buffer_size < frame_size) {
+				//media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding audio frame (length: %i, frame_size. %i, buflen: %u).", length, frame_size, mf->buflen));
+				return MEDIA_CODEC_ERROR;
+			}
+
+			if (buffer_size > 0) {
+				decoded_frames = (guint8 *) g_realloc (decoded_frames, buffer_size+decoded_size);
+				memcpy (decoded_frames+decoded_size, audio_buffer, buffer_size);
+				offset += frame_size;
+				decoded_size += buffer_size;
+				remain -= frame_size;
+			} else {
+				if (decoded_frames != NULL)
+					g_free (decoded_frames);
+				decoded_frames = NULL;
+				remain = 0;
+				decoded_size = 0;
+			}	
+		} while (remain > 0);
 		
 		g_free (mf->buffer);
-		
-		if (frame_size > 0) {
-			mf->buffer = (guint8 *) g_malloc (frame_size);
-			memcpy (mf->buffer, audio_buffer, frame_size);
-			mf->buflen = frame_size;
-		} else {
-			mf->buffer = NULL;
-			mf->buflen = 0;
-		}
+
+		mf->buffer = decoded_frames;
+		mf->buflen = decoded_size;;
 	} else {
 		media->AddMessage (MEDIA_FAIL, "Invalid media type.");
 		return MEDIA_FAIL;
