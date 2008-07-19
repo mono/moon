@@ -51,6 +51,7 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 	best_video_stream = 0;
 	best_audio_stream_rate = 0;
 	best_video_stream_rate = 0;
+	marker_stream = -1;
 
 	memset (audio_streams, 0xff, 128 * 4);
 	memset (video_streams, 0xff, 128 * 4);
@@ -111,25 +112,7 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 		buffer = NULL;
 		size = 0;
 
-		dl->InternalAbort ();
-
-		dl->InternalOpen ("GET", uri, true);
-		dl->InternalSetHeader ("User-Agent", "NSPlayer/11.1.0.3856");
-		dl->InternalSetHeader ("Pragma", "no-cache,xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
-		dl->InternalSetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0");
-		dl->InternalSetHeader ("Pragma", "xPlayStrm=1");
-		dl->InternalSetHeader ("Pragma", "LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647");
-
-		char *header = g_strdup_printf ("stream-time=%lld, packet-num=4294967295", requested_position / 10000);
-		dl->InternalSetHeader ("Pragma", header);
-		g_free (header);
-		/* stream-switch-count && stream-switch-entry need to be on their own pragma lines
-		 * we (ab)use SetBody for this*/
-		char *stream_headers = g_strdup_printf ("Pragma: stream-switch-count=2\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0\r\n\r\n", GetVideoStream (), GetAudioStream ());
-		dl->InternalSetBody (stream_headers, strlen (stream_headers));
-		g_free (stream_headers);
-
-		dl->Send ();
+		RestartAtPts (requested_position);
 
 		return;
 	}
@@ -185,6 +168,35 @@ char *
 MmsDownloader::GetResponseText (const char *partname, guint64 *size)
 {
 	return NULL;
+}
+
+void
+MmsDownloader::RestartAtPts (guint64 pts)
+{
+	dl->InternalAbort ();
+
+	dl->InternalOpen ("GET", uri, true);
+	dl->InternalSetHeader ("User-Agent", "NSPlayer/11.1.0.3856");
+	dl->InternalSetHeader ("Pragma", "no-cache,xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
+	dl->InternalSetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0");
+	dl->InternalSetHeader ("Pragma", "xPlayStrm=1");
+	dl->InternalSetHeader ("Pragma", "LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647");
+
+	char *header = g_strdup_printf ("stream-time=%lld, packet-num=4294967295", pts / 10000);
+	dl->InternalSetHeader ("Pragma", header);
+	g_free (header);
+	/* stream-switch-count && stream-switch-entry need to be on their own pragma lines
+	 * we (ab)use SetBody for this*/
+	char *stream_headers = NULL;
+
+	if (marker_stream == -1)
+		stream_headers = g_strdup_printf ("Pragma: stream-switch-count=2\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0\r\n\r\n", GetVideoStream (), GetAudioStream ());
+	else
+		stream_headers = g_strdup_printf ("Pragma: stream-switch-count=3\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0 ffff:%i:0\r\n\r\n", marker_stream, GetVideoStream (), GetAudioStream ());
+	dl->InternalSetBody (stream_headers, strlen (stream_headers));
+	g_free (stream_headers);
+
+	dl->Send ();
 }
 
 bool
@@ -295,6 +307,9 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 
 				AddVideoStream (current_stream, bit_rate);
 			}
+			if (stream_properties->is_command ()) {
+				marker_stream = current_stream;
+			}
 			current_stream++;
 		}
 		described = true;
@@ -305,21 +320,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 		size = 0;
 
 		// Abort and resend the real request
-		dl->InternalAbort ();
-
-		dl->InternalOpen ("GET", uri, true);
-		dl->InternalSetHeader ("User-Agent", "NSPlayer/11.1.0.3856");
-		dl->InternalSetHeader ("Pragma", "no-cache,xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
-		dl->InternalSetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0");
-		dl->InternalSetHeader ("Pragma", "xPlayStrm=1");
-		dl->InternalSetHeader ("Pragma", "LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647");
-		/* stream-switch-count && stream-switch-entry need to be on their own pragma lines
-		 * we (ab)use SetBody for this*/
-		char *stream_headers = g_strdup_printf ("Pragma: stream-switch-count=2\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0\r\n\r\n", GetVideoStream (), GetAudioStream ());
-		dl->InternalSetBody (stream_headers, strlen (stream_headers));
-		g_free (stream_headers);
-
-		dl->Send ();
+		RestartAtPts (0);
 	
 		return false;
 	}

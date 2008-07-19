@@ -75,6 +75,7 @@ class MmsDownloader : public InternalDownloader {
 
 	gint32 audio_streams[128];
 	gint32 video_streams[128];
+	gint32 marker_stream;
 	gint32 best_audio_stream;
 	gint32 best_audio_stream_rate;
 	gint32 best_video_stream;
@@ -94,6 +95,7 @@ class MmsDownloader : public InternalDownloader {
 	int GetAudioStream ();
 	int GetVideoStream ();
 
+	void RestartAtPts (guint64 pts);
 	bool ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size);
 
 	bool ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size);

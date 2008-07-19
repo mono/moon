@@ -1,3 +1,9 @@
+2008-07-19  Geoff Norton  <gnorton@novell.com>
+
+	* mms-downloader.(cpp|h):  Ensure that we always stream-select a marker
+	stream when there is one available.  Fixes drt #2.
+	Refactor some code duplication into a utility method.
+
 2008-07-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: We can't blindly assume an object has a content
