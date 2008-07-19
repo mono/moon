@@ -1,4 +1,9 @@
 2008-07-18  Geoff Norton  <gnorton@novell.com>
+	
+	* mms-downloader.cpp: Set LinkBW, AccelBW and AccelDuration so we can fill
+	our initial buffer quickly.
+
+2008-07-18  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline.(cpp|h), mp3.(cpp|h): Break mp3 out into its own files.
 	* Makefile.am: Add mp3.(cpp|h) to the build.

@@ -118,6 +118,7 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 		dl->InternalSetHeader ("Pragma", "no-cache,xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
 		dl->InternalSetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0");
 		dl->InternalSetHeader ("Pragma", "xPlayStrm=1");
+		dl->InternalSetHeader ("Pragma", "LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647");
 
 		char *header = g_strdup_printf ("stream-time=%lld, packet-num=4294967295", requested_position / 10000);
 		dl->InternalSetHeader ("Pragma", header);
@@ -311,6 +312,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 		dl->InternalSetHeader ("Pragma", "no-cache,xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
 		dl->InternalSetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0");
 		dl->InternalSetHeader ("Pragma", "xPlayStrm=1");
+		dl->InternalSetHeader ("Pragma", "LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647");
 		/* stream-switch-count && stream-switch-entry need to be on their own pragma lines
 		 * we (ab)use SetBody for this*/
 		char *stream_headers = g_strdup_printf ("Pragma: stream-switch-count=2\r\nPragma: stream-switch-entry=ffff:%i:0 ffff:%i:0\r\n\r\n", GetVideoStream (), GetAudioStream ());
