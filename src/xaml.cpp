@@ -928,7 +928,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	// types, i should pull the property setting out of set_attributes
 	// and use that code
 	
-	if ((content->value_type) == Type::STRING && p->cdata_content) {
+	if (content && (content->value_type) == Type::STRING && p->cdata_content) {
 		p->current_element->item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 	} else if (Type::Find (p->current_element->info->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) p->current_element->item;

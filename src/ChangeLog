@@ -1,5 +1,10 @@
 2008-07-19  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: We can't blindly assume an object has a content
+	property.
+
+2008-07-19  Jackson Harper  <jackson@ximian.com>
+
 	* type-generated.cpp: UserControl has a content property.
 	* value.h|.h.in|.cpp: Add GridLength to Value.
 
