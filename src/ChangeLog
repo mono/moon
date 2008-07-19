@@ -1,5 +1,10 @@
 2008-07-18  Geoff Norton  <gnorton@novell.com>
 
+	* media.cpp: Revert InitialBuffer work around as it has some unexpected
+	consequences. :(
+
+2008-07-18  Geoff Norton  <gnorton@novell.com>
+
 	* media.cpp: Clear the InitialBuffer state when we seek as well, as that will
 	get a new burst from the mms server with AccelBW.
 

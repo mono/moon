@@ -341,8 +341,6 @@ enum MediaElementFlags {
 	WaitingForOpen      = (1 << 8),  // set if we've called OpenAsync on a media and we're waiting for the result	
 	MediaOpenedEmitted  = (1 << 9),  // set if MediaOpened has been emitted.
 	Broadcast           = (1 << 10), // set if we have a live stream as source
-	Streaming           = (1 << 11), // set if we have a streaming source
-	InitialBuffer       = (1 << 12), // set if we have completed a buffer state before
 };
 
 
@@ -1146,15 +1144,6 @@ MediaElement::UpdateProgress ()
 			Emit (BufferingProgressChangedEvent);
 		}
 		
-		// Silverlight does some "adaptive" smart buffering for streaming channels.  
-		// We are busting data with AccelBW/AccelDuration, so we're going to start mms:// buffers at 1s
-		// rather than waiting for the full 5s buffer. 
-		// Channel9 is a good example.  We're going to 30% the buffer on the first run to get it playing quickly
-		if ((flags & Streaming) && progress > 0.2 && !(flags & InitialBuffer) && (downloaded_file == NULL || !downloaded_file->IsWaiting ())) {
-			BufferingComplete ();
-			flags |= InitialBuffer;
-		} 
-
 		// Don't call BufferingComplete until the pipeline isn't waiting for anything anymore,
 		// since otherwise we'll jump back to the Buffering state on the next call to UpdateProgress.
 		if (progress == 1.0 && (downloaded_file == NULL || !downloaded_file->IsWaiting ()))
@@ -1526,7 +1515,6 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 			if (is_streaming) {
 				downloaded_file = new MemoryQueueSource (mplayer->GetMedia() );
 				downloader->SetRequestPositionFunc (data_request_position);
-				flags |= Streaming;
 			} else {
 				downloaded_file = new ProgressiveSource (mplayer->GetMedia ());
 			}
@@ -1862,8 +1850,6 @@ MediaElement::SeekNow ()
 				flags &= ~UpdatingPosition;
 			}
 
-			flags &= ~InitialBuffer;
-			
 			break;
 		}
 	}
