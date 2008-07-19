@@ -1,5 +1,10 @@
 2008-07-18  Geoff Norton  <gnorton@novell.com>
 
+	* media.cpp: Clear the InitialBuffer state when we seek as well, as that will
+	get a new burst from the mms server with AccelBW.
+
+2008-07-18  Geoff Norton  <gnorton@novell.com>
+
 	* media.cpp: If we're using a mms source we can attempt to start playing the 
 	first time before the entire 5s buffer is full due to AccelBW/AccelDuration.
 	Fixes c9 stream start lag.

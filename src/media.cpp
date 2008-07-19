@@ -1861,6 +1861,8 @@ MediaElement::SeekNow ()
 				SetPosition (TimeSpan_FromPts (position));
 				flags &= ~UpdatingPosition;
 			}
+
+			flags &= ~InitialBuffer;
 			
 			break;
 		}
