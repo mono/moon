@@ -342,7 +342,7 @@ enum MediaElementFlags {
 	MediaOpenedEmitted  = (1 << 9),  // set if MediaOpened has been emitted.
 	Broadcast           = (1 << 10), // set if we have a live stream as source
 	Streaming           = (1 << 11), // set if we have a streaming source
-	InitialBuffer       = (1 << 11), // set if we have completed a buffer state before
+	InitialBuffer       = (1 << 12), // set if we have completed a buffer state before
 };
 
 
