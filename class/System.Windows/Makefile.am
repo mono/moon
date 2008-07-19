@@ -87,6 +87,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ParserErrorEventHandler.cs			\
 	$(srcdir)/System.Windows/Point.cs					\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
+	$(srcdir)/System.Windows/PropertyChangedCallback.cs			\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
 	$(srcdir)/System.Windows/Rect.cs					\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
@@ -126,7 +127,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/KeyboardEventHandler.cs			\
 	$(srcdir)/System.Windows.Input/Key.cs					\
 	$(srcdir)/System.Windows.Input/KeyEventArgs.cs				\
+	$(srcdir)/System.Windows.Input/KeyEventHandler.cs			\
 	$(srcdir)/System.Windows.Input/MouseButtonEventArgs.cs			\
+	$(srcdir)/System.Windows.Input/MouseButtonEventHandler.cs		\
 	$(srcdir)/System.Windows.Input/MouseEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/MouseEventHandler.cs			\
 	$(srcdir)/System.Windows.Interop/BrowserHost.cs				\
