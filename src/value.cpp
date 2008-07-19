@@ -22,6 +22,7 @@
 #include "animation.h"
 #include "array.h"
 #include "point.h"
+#include "grid.h"
 
 /**
  * Value implementation
@@ -100,6 +101,10 @@ Value::Value (const Value& v)
 	case Type::KEYTIME:
 		u.keytime = g_new (KeyTime, 1);
 		*u.keytime = KeyTime (*v.u.keytime);
+		break;
+	case Type::GRIDLENGTH:
+		u.grid_length = g_new (GridLength, 1);
+		*u.grid_length = GridLength (*v.u.grid_length);
 		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)
@@ -230,6 +235,14 @@ Value::Value (double *values, int count)
 	u.double_array = double_array_new (count, values);
 }
 
+Value::Value (GridLength grid_length)
+{
+	Init ();
+	k = Type::GRIDLENGTH;
+	u.grid_length = g_new (GridLength, 1);
+	*u.grid_length = GridLength (grid_length);
+}
+
 void
 Value::FreeValue ()
 {
@@ -262,6 +275,9 @@ Value::FreeValue ()
 		break;
 	case Type::KEYTIME:
 		g_free (u.keytime);
+		break;
+	case Type::GRIDLENGTH:
+		g_free (u.grid_length);
 		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)
@@ -332,6 +348,9 @@ Value::ToString ()
 		break;
 	case Type::KEYTIME:
 		g_string_append_printf (str, "{keytime/TODO}");
+		break;
+	case Type::GRIDLENGTH:
+		g_string_append_printf (str, "{gridlength value:%d type:%d}", u.grid_length->val, u.grid_length->type);
 		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)

@@ -36,6 +36,8 @@ struct Point;
 struct PointArray;
 struct Rect;
 struct RepeatBehavior;
+struct GridLength;
+
 struct Value;
 
 class Type;
@@ -205,6 +207,7 @@ public:
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
+	Value (GridLength grid_length);
 	Value (const char *s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
@@ -263,6 +266,7 @@ public:
 	RepeatBehavior*	AsRepeatBehavior ()	{ checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
 	Duration*	AsDuration ()	{ checked_get_exact (Type::DURATION, NULL, u.duration); }
 	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
+	GridLength*     AsGridLength () { checked_get_exact (Type::GRIDLENGTH, NULL, u.grid_length); }
 
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
@@ -437,6 +441,7 @@ public:
 		KeyTime *keytime;
 		PointArray *point_array;
 		DoubleArray *double_array;
+		GridLength *grid_length;
 	} u;
 
 

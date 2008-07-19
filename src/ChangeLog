@@ -1,3 +1,8 @@
+2008-07-19  Jackson Harper  <jackson@ximian.com>
+
+	* type-generated.cpp: UserControl has a content property.
+	* value.h|.h.in|.cpp: Add GridLength to Value.
+
 2008-07-18  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: Revert InitialBuffer work around as it has some unexpected
