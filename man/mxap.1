@@ -1,0 +1,16 @@
+TH "mxap" 1
+.SH NAME
+mxap \- Mono XAP file Generator
+.SH SYNOPSIS
+.B mxap
+.SH DESCRIPTION
+mxap is a utility for generating Silverlight 2.0 xap files
+.PP
+mxap will create a .xap file based on the contents of the current
+directory.  mxap will create an application manifest
+(AppManifest.xaml), Create the XAML code behind files (using xamlg),
+create a <appname>.g.resource file including all of the
+directories .xaml files (using respack), compile the directories C#
+files, including the generated files and zip all of the libraries and
+application manifest into a .xap file.
+
