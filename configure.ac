@@ -444,6 +444,7 @@ test/parsertest/Makefile
 test/sizes/Makefile
 tools/Makefile
 tools/mopen/Makefile
+tools/mxap/Makefile
 tools/svg2xaml/Makefile
 tools/xamlg/Makefile
 tools/xaml2html/Makefile
