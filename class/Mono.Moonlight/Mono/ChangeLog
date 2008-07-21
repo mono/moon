@@ -1,3 +1,7 @@
+2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeMethods.cs: collection_add() returns int.
+
 2008-07-18  Manuel Cerón  <ceronman@unicauca.edu.co>
 	* NativeMethods.cs: Fixed some typos, It was dllimporting from 
 	mono instead of moon.

@@ -207,7 +207,7 @@ namespace Mono {
 		
 #region Collections
 		[DllImport("moon")]
-		public extern static void collection_add (IntPtr collection, IntPtr value);
+		public extern static int collection_add (IntPtr collection, IntPtr value);
 
 		[DllImport("moon")]
 		public extern static bool collection_remove (IntPtr collection, IntPtr value);
