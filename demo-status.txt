@@ -96,6 +96,8 @@ rating:4
  * Works! 
  * Outer frame is still showing - windowless / FF3
 
+site:Matrix Falling Chars
+url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
 rating:2
  * Fullscreen is super slow. Bug 350174
 
