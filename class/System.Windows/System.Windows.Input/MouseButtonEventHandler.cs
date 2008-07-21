@@ -1,5 +1,5 @@
 //
-// MouseEventHandler.cs
+// MouseButtonEventHandler.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
