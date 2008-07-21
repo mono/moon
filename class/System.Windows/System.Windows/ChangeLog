@@ -1,5 +1,9 @@
 2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* HorizontalAlignment.cs: Added.
+
+	* VerticalAlignment.cs: Added.
+
 	* TextAlignment.cs: Added.
 
 	* DependencyObject.cs: Use InlineCollection instead of Inlines.

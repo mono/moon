@@ -82,6 +82,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/FrameworkTemplate.cs				\
 	$(srcdir)/System.Windows/GridLength.cs					\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
+	$(srcdir)/System.Windows/HorizontalAlignment.cs				\
 	$(srcdir)/System.Windows/ParserErrorEventArgs.cs			\
 	$(srcdir)/System.Windows/ParserErrorEventHandler.cs			\
 	$(srcdir)/System.Windows/Point.cs					\
@@ -103,6 +104,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\
 	$(srcdir)/System.Windows/TriggerActionCollection.cs			\
 	$(srcdir)/System.Windows/UIElement.cs					\
+	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/XamlReader.cs					\
 	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
