@@ -51,7 +51,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty ForegroundProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Foreground", typeof (Brush));
 		public static readonly DependencyProperty InlinesProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (Inlines));
+			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (InlineCollection));
 		public static readonly DependencyProperty TextDecorationsProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorations));
 		public static readonly DependencyProperty TextProperty =
