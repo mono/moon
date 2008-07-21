@@ -82,7 +82,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/FrameworkTemplate.cs				\
 	$(srcdir)/System.Windows/GridLength.cs					\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
-	$(srcdir)/System.Windows/Inlines.cs					\
 	$(srcdir)/System.Windows/ParserErrorEventArgs.cs			\
 	$(srcdir)/System.Windows/ParserErrorEventHandler.cs			\
 	$(srcdir)/System.Windows/Point.cs					\

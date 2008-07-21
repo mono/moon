@@ -32,7 +32,6 @@
     <File name="System.Windows/FontStyles.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FontWeights.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FrameworkElement.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/Inlines.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ParserErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ParserErrorEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Point.cs" subtype="Code" buildaction="Compile" />
