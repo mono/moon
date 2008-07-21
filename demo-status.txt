@@ -43,8 +43,9 @@ rating:3
 
 site:E-commerce Catalog
 url:http://www.flowers-for-you.com.my/catalog2.aspx
-rating:0
- * Audio works. No video
+rating:3
+ * Audio/video works!
+ * Animation for the list on the left is kind of slow.
 
 site:Festive Greetings
 url:http://www.mason-zimbler.com/festivegreetings
@@ -95,14 +96,6 @@ rating:4
  * Works! 
  * Outer frame is still showing - windowless / FF3
 
-site:Matrix Digital Rain
-url:http://blogs.sqlxml.org/wpfe/matrix
-rating:0
- * Nothing shows in the browser, with this error in the JS Console: \n Error: wpfeControl1Host is not defined Source File: \n http://blogs.sqlxml.org/wpfe/matrix/ Line: 26
- * This is actually broken javascript which relies on IE exposing element id's as properties of the page.
-
-site:Matrix Falling Characters
-url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
 rating:2
  * Fullscreen is super slow. Bug 350174
 
@@ -158,9 +151,8 @@ rating:3
 
 site:Picture-in-picture screen cast
 url:http://blogs.msdn.com/synergist/archive/2007/07/30/groove-and-virtual-earth.aspx
-rating:3
- * Works with local copy!
- * Original page never shows playback controls Bug 351580
+rating:4
+ * Works!
 
 site:Podium '08
 url:http://election.msn.com/podium08.aspx
@@ -186,13 +178,15 @@ rating:4
 
 site:Share the Love
 url:http://www.microsoft.com/silverlight/sharethelove/Default.html
-rating: 0
-* Crashes firefox - maybe caused by Alsa?
+rating: 4
+ * Works. 
+ * Text boxes are windowless - FF3 only
 
 site:Silverlight Pad
 url:http://silverlight.net/samples/1.0/Silverlight-Pad/default.html
-rating:2
- * windowless bug causing xaml / js code to not appear. Bug 375235
+rating:3
+ * Xaml/Javascript sections are windowless, ie FF3 only
+ * xaml not showing in workspace Bug 410632
 
 site:Silverlight Showcase
 url:http://silverlight.net/Showcase/default.aspx
@@ -217,8 +211,8 @@ rating:4
 
 site:Sparkleball
 url:http://www.ddjsilverlight.com/sparkleball
-rating:1
- * [regression] Just an empty white page
+rating:4
+ * Works!
 
 site:Sprawl
 url:http://silverlight.net/samples/1.0/Sprawl/default.html
@@ -245,22 +239,20 @@ rating:2
 
 site:Video Page Turn
 url:http://mapul.com/Tutorials.html
-rating:1
- * No video player displayed Bug 391684
+rating:3
+ * Animation is slow if there is a video playing Bug 410638
 
 site:Video Slide puzzle
 url:http://miguelmoreno.net/sandbox/Silverlight_0/
-rating:0
- * Not detecting Moonlight - even in FF3 with greasemonkey
- * Cannot slide pieces Bug 389460
- * No video playing Bug 391696
+rating:4
+ * Works
 
 site:Weather Widget
 url:http://silverlight.r2musings.com/weatherwidget/default.aspx
-rating:2
- * kind of works
+rating:4
+ * Works
 
 site:Web Analytics
 url:http://xmldocs.net/Analytics
-rating:3
- * Video is white washed. Bug 375259
+rating:4
+ * Works
