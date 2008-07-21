@@ -32,7 +32,6 @@ using System.Windows.Input;
 using Mono;
 
 namespace System.Windows {
-
 	public sealed class AssemblyPartCollection : PresentationFrameworkCollection<AssemblyPart> {
 		public AssemblyPartCollection () : base (NativeMethods.assembly_part_collection_new ())
 		{

@@ -1,5 +1,7 @@
 2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* PresentationFrameworkCollection.cs: Explicitly implement IList.
+
 	* HorizontalAlignment.cs: Added.
 
 	* VerticalAlignment.cs: Added.
