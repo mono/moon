@@ -1,5 +1,7 @@
 2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* TextAlignment.cs: Added.
+
 	* DependencyObject.cs: Use InlineCollection instead of Inlines.
 
 	* Inlines.cs: Removed.

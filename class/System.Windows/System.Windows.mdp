@@ -41,6 +41,7 @@
     <File name="System.Windows/RuntimeErrorEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Size.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/StyleSimulations.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TextAlignment.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TextDecorations.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TextWrapping.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TriggerActionCollection.cs" subtype="Code" buildaction="Compile" />

@@ -97,6 +97,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/StartupEventArgs.cs				\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/StyleSimulations.cs				\
+	$(srcdir)/System.Windows/TextAlignment.cs				\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\
