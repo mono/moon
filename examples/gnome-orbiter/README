@@ -1,0 +1,15 @@
+A simple RSS reader (shows planet gnome items) demonstrating XAML "theming" capabilities.
+
+Use:
+
+    $> mono gnome-orbiter.exe --blue 
+
+    ...to use with the blue theme.
+
+    $> mono gnome-orbiter.exe --black
+
+    ...to use with the black theme.
+
+This shows how different visual results (look, colors, animations) can be achived just be
+changing an external XAML file. No recompiling, no code changes.
+

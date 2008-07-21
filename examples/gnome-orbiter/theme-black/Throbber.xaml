@@ -1,0 +1,136 @@
+<Canvas
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="400" Height="400">
+
+	<Canvas Canvas.Left="0" Canvas.Top="0" x:Name="Container">
+	<Ellipse x:Name="Ball1" Fill="Orange"  Width="50" Height="50" Opacity="0.75" Canvas.Left="50">
+		<Ellipse.Triggers>
+			<EventTrigger RoutedEvent="Ellipse.Loaded">
+				<BeginStoryboard>
+					<Storyboard>
+						<DoubleAnimationUsingKeyFrames
+							Storyboard.TargetName="Ball1"
+							Storyboard.TargetProperty="(Canvas.Left)"
+							RepeatBehavior="Forever" AutoReverse="true">
+							<SplineDoubleKeyFrame Value="100" KeyTime="0:0:2" KeySpline="0.2,0.0 0.8,1.0" />
+						</DoubleAnimationUsingKeyFrames>
+						<DoubleAnimation
+							Storyboard.TargetName="Ball1"
+							Storyboard.TargetProperty="(Canvas.Top)" From="0" To="400" Duration="0:0:20" />
+						<DoubleAnimation
+							Storyboard.TargetName="Ball1"
+							Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:2" BeginTime="0:0:15"/>
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Ellipse.Triggers>
+	</Ellipse>
+
+	<Ellipse x:Name="Ball2" Fill="Red"  Width="30" Height="30" Opacity="0.75" Canvas.Left="120">
+		<Ellipse.Triggers>
+			<EventTrigger RoutedEvent="Ellipse.Loaded">
+				<BeginStoryboard>
+					<Storyboard>
+						<DoubleAnimationUsingKeyFrames
+							Storyboard.TargetName="Ball2"
+							Storyboard.TargetProperty="(Canvas.Left)"
+							RepeatBehavior="Forever" AutoReverse="true">
+							<SplineDoubleKeyFrame Value="150" KeyTime="0:0:3" KeySpline="0.2,0.0 0.8,1.0" />
+						</DoubleAnimationUsingKeyFrames>
+						<DoubleAnimation
+							Storyboard.TargetName="Ball2"
+							Storyboard.TargetProperty="(Canvas.Top)" From="0" To="400" Duration="0:0:17" />
+						<DoubleAnimation
+							Storyboard.TargetName="Ball2"
+							Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:1.5" BeginTime="0:0:13"/>
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Ellipse.Triggers>
+	</Ellipse>
+
+	<Ellipse x:Name="Ball3" Fill="Red"  Width="40" Height="40" Opacity="0.5" Canvas.Left="160">
+		<Ellipse.Triggers>
+			<EventTrigger RoutedEvent="Ellipse.Loaded">
+				<BeginStoryboard>
+					<Storyboard>
+						<DoubleAnimationUsingKeyFrames
+							Storyboard.TargetName="Ball3"
+							Storyboard.TargetProperty="(Canvas.Left)"
+							RepeatBehavior="Forever" AutoReverse="true">
+							<SplineDoubleKeyFrame Value="200" KeyTime="0:0:4" KeySpline="0.2,0.0 0.8,1.0" />
+						</DoubleAnimationUsingKeyFrames>
+						<DoubleAnimation
+							Storyboard.TargetName="Ball3"
+							Storyboard.TargetProperty="(Canvas.Top)" From="0" To="400" Duration="0:0:15" />
+						<DoubleAnimation
+							Storyboard.TargetName="Ball3"
+							Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:2" BeginTime="0:0:12"/>
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Ellipse.Triggers>
+	</Ellipse>
+
+	<Ellipse x:Name="Ball4" Fill="Orange"  Width="45" Height="45" Opacity="0.5" Canvas.Left="190">
+		<Ellipse.Triggers>
+			<EventTrigger RoutedEvent="Ellipse.Loaded">
+				<BeginStoryboard>
+					<Storyboard>
+						<DoubleAnimationUsingKeyFrames
+							Storyboard.TargetName="Ball4"
+							Storyboard.TargetProperty="(Canvas.Left)"
+							RepeatBehavior="Forever" AutoReverse="true">
+							<SplineDoubleKeyFrame Value="230" KeyTime="0:0:4" KeySpline="0.2,0.0 0.8,1.0" />
+						</DoubleAnimationUsingKeyFrames>
+						<DoubleAnimation
+							Storyboard.TargetName="Ball4"
+							Storyboard.TargetProperty="(Canvas.Top)" From="0" To="400" Duration="0:0:10" />
+						<DoubleAnimation
+							Storyboard.TargetName="Ball4"
+							Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:1" BeginTime="0:0:7"/>
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Ellipse.Triggers>
+	</Ellipse>
+
+	<Ellipse x:Name="Ball5" Fill="Red"  Width="25" Height="25" Opacity="0.5" Canvas.Left="30">
+		<Ellipse.Triggers>
+			<EventTrigger RoutedEvent="Ellipse.Loaded">
+				<BeginStoryboard>
+					<Storyboard>
+						<DoubleAnimationUsingKeyFrames
+							Storyboard.TargetName="Ball5"
+							Storyboard.TargetProperty="(Canvas.Left)"
+							RepeatBehavior="Forever" AutoReverse="true">
+							<SplineDoubleKeyFrame Value="60" KeyTime="0:0:6" KeySpline="0.2,0.0 0.8,1.0" />
+						</DoubleAnimationUsingKeyFrames>
+						<DoubleAnimation
+							Storyboard.TargetName="Ball5"
+							Storyboard.TargetProperty="(Canvas.Top)" From="0" To="400" Duration="0:0:14" />
+						<DoubleAnimation
+							Storyboard.TargetName="Ball5"
+							Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:2" BeginTime="0:0:11"/>
+					</Storyboard>
+				</BeginStoryboard>
+			</EventTrigger>
+		</Ellipse.Triggers>
+	</Ellipse>
+
+	<TextBlock TextWrapping="NoWrap" FontFamily="Arial" FontSize="15" FontWeight="Bold" Canvas.Left="120.0" Canvas.Top="370.0" Opacity="0.5" Text="Please wait" Foreground="White" />
+
+
+	<Canvas.Resources>
+		<Storyboard x:Name="AnimateOut">
+			<DoubleAnimationUsingKeyFrames
+				Storyboard.TargetName = "Container"
+				Storyboard.TargetProperty = "Opacity">
+					<SplineDoubleKeyFrame Value="0.0" KeyTime="0:0:1" />
+			</DoubleAnimationUsingKeyFrames>
+		</Storyboard>
+	</Canvas.Resources>
+
+	</Canvas>
+</Canvas>

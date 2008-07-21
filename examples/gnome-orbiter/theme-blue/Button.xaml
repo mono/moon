@@ -1,0 +1,111 @@
+<Canvas
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	
+	x:Name="Container" Width="130" Height="30">
+
+	<Rectangle x:Name="ButtonFrame" RadiusX="10" RadiusY="10" Width="130" Height="30" StrokeThickness="1.0">
+		<Rectangle.Fill>
+				<LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="0.0,1.0">
+					<LinearGradientBrush.GradientStops>
+						<GradientStop x:Name="ButtonFrameFillColor1" Color="#f8d8" Offset="0.0" />
+						<GradientStop x:Name="ButtonFrameFillColor2" Color="#f6b6" Offset="1.0" />
+					</LinearGradientBrush.GradientStops> 
+				</LinearGradientBrush>
+		</Rectangle.Fill>
+		<Rectangle.Stroke>
+				<LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1.0,1.0">
+					<LinearGradientBrush.GradientStops>
+						<GradientStop x:Name="ButtonFrameOutStrokeColor1" Color="#7131" Offset="0.0" />
+						<GradientStop x:Name="ButtonFrameOutStrokeColor2" Color="#3131" Offset="1.0" />
+					</LinearGradientBrush.GradientStops> 
+				</LinearGradientBrush>
+		</Rectangle.Stroke>
+	</Rectangle>
+
+	<Rectangle Canvas.Left="1" Canvas.Top="1" RadiusX="9" RadiusY="9" Width="128" Height="28" StrokeThickness="1.0">
+		<Rectangle.Stroke>
+				<LinearGradientBrush SpreadMethod="Reflect" StartPoint="0,0" EndPoint="1.0,1.0">
+					<LinearGradientBrush.GradientStops>
+						<GradientStop x:Name="ButtonFrameInStrokeColor1" Color="#cfff" Offset="0.0" />
+						<GradientStop x:Name="ButtonFrameInStrokeColor2" Color="#8fff" Offset="1.0" />
+					</LinearGradientBrush.GradientStops> 
+				</LinearGradientBrush>
+		</Rectangle.Stroke>
+	</Rectangle>
+		
+	<TextBlock x:Name="ButtonText" FontFamily="Trebuchet MS" FontSize="15" FontWeight="Bold" Canvas.Left="10.0" Canvas.Top="10.0" Opacity="0.8" Text="Button" RenderTransformOrigin="0.5,0.5" />
+
+	<Canvas.Resources>
+		<Storyboard x:Name="Highlight">
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameFillColor1"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#ffff" KeyTime="0:0:0.1" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+		</Storyboard>
+		<Storyboard x:Name="DeHighlight">
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameFillColor1"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#f8d8" KeyTime="0:0:0.1" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+		</Storyboard>
+		<Storyboard x:Name="Disable">
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameFillColor1"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#f8a8" KeyTime="0:0:0.2" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameFillColor2"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#f686" KeyTime="0:0:0.2" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameInStrokeColor1"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#7fff" KeyTime="0:0:0.2" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameInStrokeColor2"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#3fff" KeyTime="0:0:0.2" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonText"
+				Storyboard.TargetProperty = "Opacity">
+					<SplineDoubleKeyFrame Value="0.4" KeyTime="0:0:0.2" KeySpline="0.4,0.0 0.7,0.5"/>
+			</DoubleAnimationUsingKeyFrames>
+		</Storyboard>
+		<Storyboard x:Name="UnDisable">
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameFillColor1"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#f8d8" KeyTime="0:0:1" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameFillColor2"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#f6b6" KeyTime="0:0:1" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameInStrokeColor1"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#cfff" KeyTime="0:0:1" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+			<ColorAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonFrameInStrokeColor2"
+				Storyboard.TargetProperty = "Color">
+					<SplineColorKeyFrame Value="#8fff" KeyTime="0:0:1" KeySpline="0.4,0.0 0.7,0.5" />
+			</ColorAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames
+				Storyboard.TargetName = "ButtonText"
+				Storyboard.TargetProperty = "Opacity">
+					<SplineDoubleKeyFrame Value="0.8" KeyTime="0:0:1" KeySpline="0.4,0.0 0.7,0.5"/>
+			</DoubleAnimationUsingKeyFrames>
+		</Storyboard>
+	</Canvas.Resources>
+
+</Canvas>
+

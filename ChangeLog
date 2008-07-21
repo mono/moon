@@ -1,3 +1,26 @@
+2008-07-21  Michael Dominic K.  <mdk@mdk.am>
+
+	* examples/gnome-orbiter/Background.cs:
+	* examples/gnome-orbiter/Button.cs:
+	* examples/gnome-orbiter/Entry.cs:
+	* examples/gnome-orbiter/EntryData.cs:
+	* examples/gnome-orbiter/LayoutFu.cs:
+	* examples/gnome-orbiter/Main.cs:
+	* examples/gnome-orbiter/Makefile:
+	* examples/gnome-orbiter/PlanetFetcher.cs:
+	* examples/gnome-orbiter/README:
+	* examples/gnome-orbiter/Throbber.cs:
+	* examples/gnome-orbiter/Window.cs:
+	* examples/gnome-orbiter/theme-black/Background.xaml:
+	* examples/gnome-orbiter/theme-black/Button.xaml:
+	* examples/gnome-orbiter/theme-black/Entry.xaml:
+	* examples/gnome-orbiter/theme-black/Throbber.xaml:
+	* examples/gnome-orbiter/theme-blue/Background.xaml:
+	* examples/gnome-orbiter/theme-blue/Button.xaml:
+	* examples/gnome-orbiter/theme-blue/Entry.xaml:
+	* examples/gnome-orbiter/theme-blue/Throbber.xaml: One more example showing XAML 
+	theming capabilities. Check out the README file.
+
 2008-07-18  Jackson Harper  <jackson@ximian.com>
 
 	* tools/xamlg/xamlg.cs: Fix component stream name creation.
