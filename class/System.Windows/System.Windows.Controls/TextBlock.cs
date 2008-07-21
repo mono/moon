@@ -27,6 +27,7 @@
 //
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Documents;
 using Mono;
 
 namespace System.Windows.Controls {
@@ -104,8 +105,8 @@ namespace System.Windows.Controls {
 			set { SetValue (ForegroundProperty, value); }
 		}
 
-		public Inlines Inlines {
-			get { return (Inlines) GetValue (InlinesProperty); }
+		public InlineCollection Inlines {
+			get { return (InlineCollection) GetValue (InlinesProperty); }
 			set { SetValue (InlinesProperty, value); }
 		}
 

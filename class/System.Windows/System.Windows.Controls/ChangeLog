@@ -1,3 +1,8 @@
+2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBlock.cs: Use System.Windows.Documents.InlineCollection
+	instead of System.Windows.Inlines.
+
 2008-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextBlock.cs (SetFontSource): It would appear that you can
