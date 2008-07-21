@@ -360,7 +360,7 @@ collection_init (void)
 	Collection::CountProperty = DependencyObject::Register (Type::COLLECTION, "Count", Type::INT32);
 }
 
-bool
+int
 collection_add (Collection *collection, DependencyObject *data)
 {
 	return collection->Add (data);

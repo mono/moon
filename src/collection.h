@@ -149,7 +149,7 @@ class Inlines : public Collection {
 
 G_BEGIN_DECLS
 
-bool collection_add    (Collection *collection, DependencyObject *data);
+int collection_add (Collection *collection, DependencyObject *data);
 bool collection_remove (Collection *collection, DependencyObject *data);
 bool collection_remove_at (Collection *collection, int index);
 bool collection_insert (Collection *collection, int index, DependencyObject *data);

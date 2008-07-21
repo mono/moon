@@ -1,3 +1,7 @@
+2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* collection.cpp (collection_add): Fixed to return int.
+
 2008-07-21  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add support for parsing GridLength attribute values.
