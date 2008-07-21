@@ -178,7 +178,7 @@ rating:4
 
 site:Share the Love
 url:http://www.microsoft.com/silverlight/sharethelove/Default.html
-rating: 4
+rating:4
  * Works. 
  * Text boxes are windowless - FF3 only
 
