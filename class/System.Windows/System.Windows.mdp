@@ -61,6 +61,7 @@
     <File name="System.Windows.Data/BindingMode.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Documents/Glyphs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Documents/Inline.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Documents/InlineCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Documents/LineBreak.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Documents/Run.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Ink/DrawingAttributes.cs" subtype="Code" buildaction="Compile" />

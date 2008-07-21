@@ -118,10 +118,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/UserControl.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
+	$(srcdir)/System.Windows.Documents/InlineCollection.cs			\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
+	$(srcdir)/System.Windows.Documents/Run.cs				\
 	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/RowDefinitionCollection.cs		\
-	$(srcdir)/System.Windows.Documents/Run.cs				\
 	$(srcdir)/System.Windows.Input/Cursors.cs				\
 	$(srcdir)/System.Windows.Input/KeyboardEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/KeyboardEventHandler.cs			\
