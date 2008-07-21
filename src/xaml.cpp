@@ -1690,6 +1690,31 @@ matrix_from_str (const char *str)
 	return matrix;
 }
 
+#if SL_2_0
+bool
+grid_length_from_str (const char *str, GridLength *grid_length)
+{
+	if (str [0] == '*') {
+		*grid_length = GridLength (0, Star);
+		return true;
+	}
+		
+	if (!strcmp (str, "Auto")) {
+		*grid_length = GridLength ();
+		return true;
+	}
+
+	char *endptr;
+	errno = 0;
+	double d = g_ascii_strtod (str, &endptr);
+
+	if (errno || endptr == str)
+		return false;
+
+	*grid_length = GridLength (d, Pixel);
+	return true;
+}
+#endif
 
 void
 advance (char **in)
@@ -2380,6 +2405,17 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		geometry->unref ();
 		break;
 	}
+#if SL_2_0
+	case Type::GRIDLENGTH: {
+		GridLength grid_length;
+
+		if (!grid_length_from_str (str, &grid_length))
+			return false;
+
+		*v = new Value (grid_length);
+		break;
+	}
+#endif
 	default:
 		// we don't care about NULL or empty values
 		return IS_NULL_OR_EMPTY(str);
