@@ -1,7 +1,7 @@
 var SJ = null;
 var master = null;
 var carousel = null;
-var imagesLength = 4;
+var imagesLength = 0;
 var selection = 0;
 
 function onLoad (sender)
@@ -18,8 +18,22 @@ function onLoad (sender)
 	positionImages ();
 	resizeAnimation (272, 92);
 
-	fire ();
+	//fire ();
+	animateTurn (1.5 / 4);
 }
+
+function animateTurn (duration) 
+{
+    duration = Math.round(duration * 1000) / 1000; // only 3 decimal places to keep WPF/E happy
+    for (var i = 0; i < imagesLength; i++) {
+        //var image = carousel.findName (generateName ("image", i));
+        var storyBoard = carousel.findName(generateName ("storyboard", i));
+        storyBoard["Duration"] = "0:0:" + duration; // assumes duration <= 60 seconds
+        storyBoard.Begin();
+    }
+}
+
+
 
 function positionImages ()
 {
@@ -134,6 +148,11 @@ function generateName (keyword, number)
 	return "image_" + keyword + "_" + number;
 }
 
+function onStoryboardCompleted ()
+{
+	console.log ("Storyboard completed...");
+}
+
 
 function addImage (imagePath, imageWidth, imageHeight, imageName) 
 {
@@ -213,4 +232,13 @@ function addImage (imagePath, imageWidth, imageHeight, imageName)
 
     	carousel.findName(generateName ("scale", imageName)).CenterX = imageWidth / 2;
     	carousel.findName(generateName ("scale", imageName)).CenterY = imageHeight / 2;
+
+	imagesLength += 1;
+
+    	if (imagesLength == 1) {
+        	// Hook the storyboard's 'Completed' event for just the first image.
+        	// We use this event to turn the carousel multiple times.
+        	var storyboard = element.resources.GetItem(0);
+		storyboard.AddEventListener ("Completed", onStoryboardCompleted);
+    	}
 }
