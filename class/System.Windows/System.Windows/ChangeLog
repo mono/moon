@@ -1,5 +1,11 @@
 2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyObject.cs: SetValue isn't virtual anymore. Remove comment
+	  about SetValue's generic signature (given that it isn't generic
+	  anymore).
+
+2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DependencyProperty.cs: Stubbed a bit.
 
 2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 

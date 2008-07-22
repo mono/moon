@@ -160,6 +160,7 @@ namespace System.Windows {
 			case Kind.GLYPHS: return new Glyphs (raw);
 			case Kind.GRADIENTSTOP_COLLECTION: return new GradientStopCollection (raw);
 			case Kind.GRADIENTSTOP: return new GradientStop (raw);
+			case Kind.GRID : return new Grid (raw);
 			case Kind.IMAGEBRUSH: return new ImageBrush (raw);
 			case Kind.IMAGE: return new Image (raw);
 			case Kind.INLINES: return new InlineCollection (raw);
@@ -519,14 +520,6 @@ namespace System.Windows {
 		}
 
 		//
-		// This signature seems incredibly painful, why make
-		// it generic if we still have to dig into its
-		// internals?  am I missing something fundamentally
-		// awesome about it.  Perhaps for derived classes it
-		// would be awesome?  as it stands its just annoying.
-		//
-
-		//
 		// SetValue differs from SetValue in that the caller
 		// code has ensured the proper type is being passed (which
 		// is already the case for anything that is a setter as the
@@ -534,7 +527,7 @@ namespace System.Windows {
 		//
 		// External users go through SetValue that can do conversions.
 		//
-		public virtual void SetValue (DependencyProperty property, object obj)
+		public void SetValue (DependencyProperty property, object obj)
 		{
 			if (property == null)
 				throw new ArgumentNullException ("property");
