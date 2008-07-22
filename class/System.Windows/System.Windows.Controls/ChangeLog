@@ -1,5 +1,9 @@
 2008-07-22  Jeffrey Stedfast <fejj@novell.com>
 
+	* ClickMode.cs: Added
+
+	* Orientation.cs: Added
+
 	* MediaElement.cs: No longer inherits from MediaBase,
 	AudioStreamIndex is now nullable, NaturalVideoWidth/Height are now
 	int instead of double. Can no longer set Markers.
