@@ -270,7 +270,7 @@ namespace Mono.Xaml
 			clientlib = null;
 
 			clientlib = Application.GetAssembly (asm_name);
-			return clientlib != null AssemblyLoadResult.Success : AssemblyLoadResult.MissingAssembly;
+			return clientlib != null ? AssemblyLoadResult.Success : AssemblyLoadResult.MissingAssembly;
 		}
 
 		//
