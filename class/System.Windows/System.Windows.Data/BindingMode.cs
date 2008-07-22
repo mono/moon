@@ -27,9 +27,9 @@
 //
 
 namespace System.Windows.Data {
-
 	public enum BindingMode {
 		OneWay = 1,
-		OneTime = 2
+		OneTime = 2,
+		TwoWay = 3
 	}
 }
