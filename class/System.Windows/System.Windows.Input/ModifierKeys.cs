@@ -28,11 +28,11 @@ using System;
 namespace System.Windows.Input {
 	[FlagsAttribute]
 	public enum ModifierKeys {
-		None,
-		Alt,
-		Control,
-		Windows,
-		Shift,
-		Apple
+		None     = 0,
+		Alt      = (1 << 0),
+		Control  = (1 << 1),
+		Shift    = (1 << 2),
+		Windows  = (1 << 3),
+		Apple    = (1 << 3)
 	}
 }
