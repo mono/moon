@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Windows;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Browser;
@@ -99,7 +100,7 @@ namespace System.Windows
 			get { return startup_args; }
 		}
 
-		public event EventHandler<ApplicationUnhandledExceptionEventArgs> ApplicationUnhandledException;
+		//public event EventHandler<System.Windows.ApplicationUnhandledExceptionEventArgs> ApplicationUnhandledException;
 
 		internal static T GetProperty<T> (IntPtr obj, string name)
 		{

@@ -36,6 +36,7 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser/HtmlObject.cs				\
 	$(srcdir)/System.Windows.Browser/HtmlPage.cs				\
 	$(srcdir)/System.Windows.Browser/HtmlTimer.cs				\
+	$(srcdir)/System.Windows.Browser/HtmlWindow.cs				\
 	$(srcdir)/System.Windows.Browser/HttpUtility.cs				\
 	$(srcdir)/System.Windows.Browser/ScriptableAttribute.cs			\
 	$(srcdir)/System.Windows.Browser/ScriptableObject.cs			\
@@ -43,7 +44,6 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Controls/FileDialogFileInfo.cs			\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
 	$(srcdir)/System.Windows.Hosting/Callback.cs				\
-	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/ScriptableObjectGenerator.cs			\
 	$(srcdir)/System.Windows/WebApplication.cs
 

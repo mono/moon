@@ -16,9 +16,7 @@
   <Contents>
     <File name="." subtype="Directory" buildaction="Compile" />
     <File name="Assembly/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/ApplicationUnhandledExceptionEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ScriptableObjectGenerator.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/WebApplication.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/BrowserInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/BrowserRuntimeSettings.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/HtmlDocument.cs" subtype="Code" buildaction="Compile" />
@@ -46,10 +44,14 @@
     <File name="System.Windows.Hosting/Callback.cs" subtype="Code" buildaction="Compile" />
     <File name="../Consts.cs" subtype="Code" buildaction="Compile" />
     <File name="../System.Windows/Assembly/MonoTODOAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows/WebApplication.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Browser/HtmlWindow.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />
     <ProjectReference type="Project" localcopy="True" refto="System.Windows" />
   </References>
+  <GtkDesignInfo gtkVersion="2.12.2" />
 </Project>

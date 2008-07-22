@@ -1,3 +1,7 @@
+2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* WebApplication.cs: Removed ApplicationUnhandledException.
+
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* ScriptableObjectGenerator.cs: Completely remove Kind.NPOBJ.

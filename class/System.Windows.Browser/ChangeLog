@@ -1,3 +1,9 @@
+2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am: Remove ApplicationUnhandledExceptionEventArgs, it's
+	  defined in System.Windows.dll. Added HtmlWindow.
+	* System.Windows.Browser.mdp: Updated.
+
 2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* System.Windows.Browser.mdp: Updated.

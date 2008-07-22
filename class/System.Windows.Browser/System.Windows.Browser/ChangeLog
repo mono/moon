@@ -1,3 +1,9 @@
+2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* HtmlPage.cs: HtmlWindow is now a public class, and return that from
+	  Window.
+	* HtmlWindow.cs: Added.
+
 2008-02-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserInformation.cs: Fix pinvoke to avoid crashes in monotone

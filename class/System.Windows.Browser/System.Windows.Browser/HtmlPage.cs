@@ -35,15 +35,6 @@ namespace System.Windows.Browser {
 
 		private static BrowserInformation browser_info;
 
-		
-		internal class HtmlWindow : HtmlObject
-		{
-			internal HtmlWindow (IntPtr handle)
-				: base (handle)
-			{
-			}
-		}
-
 		public HtmlPage ()
 		{
 		}
@@ -127,7 +118,7 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		public static HtmlObject Window {
+		public static HtmlWindow Window {
 			get {
 				return new HtmlWindow (GetPropertyInternal<IntPtr> (IntPtr.Zero, "window"));
 			}
