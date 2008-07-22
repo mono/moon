@@ -21,6 +21,22 @@
 	* examples/gnome-orbiter/theme-blue/Throbber.xaml: One more example showing XAML 
 	theming capabilities. Check out the README file.
 
+2008-07-20  Jackson Harper  <jackson@ximian.com>
+
+	* configure.ac:
+	* tools/Makefile.am: Add mxap to the 2.0 build
+
+2008-07-20  Jackson Harper  <jackson@ximian.com>
+
+	* tools/mxap/*: New mxap tool for creating very simple .xap
+	files.  This is a pretty basic version, but useful for most simple
+	cases.
+
+2008-07-20  Jackson Harper  <jackson@ximian.com>
+
+	* man/Makefile.am:
+	* man/mxap.1: man page for new mxap tool
+
 2008-07-18  Jackson Harper  <jackson@ximian.com>
 
 	* tools/xamlg/xamlg.cs: Fix component stream name creation.
