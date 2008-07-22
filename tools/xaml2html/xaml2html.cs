@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Reflection;
 
 class XamlToHtml {
 
@@ -31,24 +32,6 @@ class XamlToHtml {
 						"<?xml version=\"1.0\"?>\n" + 
 						"@XAML@" + 
 						"</script>\n" + 
-						"</body>\n" + 
-						"</html>\n";
-
-	static readonly string sl2_html_template =  "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n" + 
-						"<head>\n" +
-						"<title>@TITLE@</title>\n" +
-						"<meta>@META@</meta>\n" +
-						"</head>\n" +
-						"<body bgcolor=\"#eeeeee\">\n" +
-						"<div id=\"silverlightControlHost\">\n" +
-						"<object data=\"data:application/x-silverlight,\" type=\"application/x-silverlight-2-b2\" width=\"@WIDTH@\" height=\"@HEIGHT@\">\n" +
-						"<param name=\"source\" value=\"@XAP_FILE@\"/>\n" +
-						"<param name=\"background\" value=\"white\" />\n" +
-						"<a href=\"http://go.microsoft.com/fwlink/?LinkID=115261\" style=\"text-decoration: none;\">\n" +
-     						"<img src=\"http://go.microsoft.com/fwlink/?LinkId=108181\" alt=\"Get Microsoft Silverlight\" style=\"border-style: none\"/>\n" +
-						"</a>\n" +
-						"</object>\n" +
-						"</div>\n" +
 						"</body>\n" + 
 						"</html>\n";
 
@@ -79,7 +62,7 @@ class XamlToHtml {
 		try {
 			string xaml_basename = Path.GetFileNameWithoutExtension (file);
 			string xaml_content = File.ReadAllText (file);
-			string html_content = file.EndsWith (".xap") ? sl2_html_template : html_template;
+			string html_content = file.EndsWith (".xap") ? (new StreamReader (Assembly.GetExecutingAssembly ().GetManifestResourceStream ("sl2template.html"))).ReadToEnd () : html_template;
 
 			string canvas_width = FindMasterCanvasAttribute (xaml_content, "Width", "640");
 			string canvas_height = FindMasterCanvasAttribute (xaml_content, "Height", "480");

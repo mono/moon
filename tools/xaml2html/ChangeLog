@@ -1,3 +1,8 @@
+2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml2html.cs, sl2template.html, Makefile.am: Changed the sl2 template
+	  to include error handling.
+
 2008-07-22  Jackson Harper  <jackson@ximian.com>
 
 	* xaml2html.cs: Add support for .xap files.  If you specify a
