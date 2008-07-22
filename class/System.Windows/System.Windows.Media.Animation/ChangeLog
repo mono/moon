@@ -1,3 +1,9 @@
+2008-07-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TimelineMarkerCollection.cs: Moved to System.Windows.Media
+
+	* TimelineMarker.cs: Same.
+
 2007-09-30  Jb Evain  <jbevain@novell.com>
 
 	* RepeatBehavior.cs: some corcompare work.
