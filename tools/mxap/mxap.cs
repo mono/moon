@@ -69,7 +69,7 @@ namespace Moonlight {
 
 			manifest.AppendLine ("<Deployment xmlns=\"http://schemas.microsoft.com/client/2007/deployment\"");
 			manifest.AppendLine ("\txmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
-			manifest.AppendFormat ("EntryPointAssembly=\"{0}.dll\" EntryPointType=\"{0}.App\" RuntimeVersion=\"2.0.30226.2\">\n", ApplicationName);
+			manifest.AppendFormat ("EntryPointAssembly=\"{0}\" EntryPointType=\"{0}.App\" RuntimeVersion=\"2.0.30226.2\">\n", ApplicationName);
 
 			manifest.AppendLine ("\t<Deployment.Parts>");
 
