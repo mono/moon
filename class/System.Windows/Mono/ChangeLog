@@ -1,3 +1,12 @@
+2008-07-21  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Dont hookup to the asssembly resolve event
+	anymore, this is all handled in Application (at least it should
+	be).
+	- Hookup the new parser callbacks to the Application methods
+	- Get Assemblies from the Application instead of trying to
+	download, ect.
+
 2008-04-20  Geoff Norton  <gnorton@novell.com>
 
 	* Events.cs: Pass a IntPtr to native code, as a GCHandle is

@@ -79,6 +79,8 @@ namespace Mono.Xaml
 			callbacks.get_mapping = new GetMappingCallback (cb_get_mapping);
 			callbacks.load_code = new LoadCodeCallback (cb_load_code);
 			callbacks.set_name_attribute = new SetNameAttributeCallback (cb_set_name_attribute);
+			callbacks.import_xaml_xmlns = new ImportXamlNamespaceCallback (cb_import_xaml_xmlns);
+			callbacks.create_component_from_name = new CreateComponentFromNameCallback (cb_create_component_from_name);
 
 			NativeMethods.xaml_loader_set_callbacks (native_loader, callbacks);
 			
@@ -96,7 +98,7 @@ namespace Mono.Xaml
 			// download (Phalanger.NET first exposed this). 
 			//
 
-			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolver;
+//			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolver;
 		}
 		
 		// 
@@ -148,7 +150,6 @@ namespace Mono.Xaml
 			
 			DependencyObject.Ping ();
 
-			Console.WriteLine ("File: {0}", file);
 			top = CreateFromFile (file, createNamescope, out kind);
 			
 			if (top == IntPtr.Zero)
@@ -266,29 +267,10 @@ namespace Mono.Xaml
 		//
 		public AssemblyLoadResult LoadAssembly (string asm_path, string asm_name, out Assembly clientlib)
 		{
-			//Console.WriteLine ("ManagedXamlLoader::LoadAssembly (asm_path={0} asm_name={1})", asm_path, asm_name);
-
 			clientlib = null;
 
-			//
-			// NOTE: Moonlight.LoadFile is only used for loading assemblies
-			// for the desktop case (if Moonlight.RegisterLoader has been
-			// called).   For browser use, the following block is a
-			// no-op.
-			//
-			try {
-				clientlib = Moonlight.LoadFile (asm_path);
-				if (clientlib != null){
-					AssemblyToSource (clientlib, asm_path);
-					return AssemblyLoadResult.Success;
-				}
-			} catch (System.IO.FileNotFoundException) {
-				//Console.WriteLine ("ManagedXamlLoader::LoadAssembly (asm_path={0} asm_name={1}): client library not found.", asm_path, asm_name);
-				RequestFile (asm_path);
-				return AssemblyLoadResult.MissingAssembly;
-			}
-
-			return LoadAssemblyPlugin (asm_path, asm_name, LoadDepsSynch, ref clientlib);
+			clientlib = Application.GetAssembly (asm_name);
+			return clientlib != null AssemblyLoadResult.Success : AssemblyLoadResult.MissingAssembly;
 		}
 
 		//
@@ -661,6 +643,33 @@ namespace Mono.Xaml
 			}
 			catch (Exception ex) {
 				Console.WriteLine ("ManagedXamlLoader::SetNameAttribute () threw an exception: " + ex);
+			}
+		}
+
+		private void cb_import_xaml_xmlns (string xmlns)
+		{
+			try {
+				Application.ImportXamlNamespace (xmlns);
+			} catch (Exception ex) {
+				Console.WriteLine ("Application::ImportXamlNamespace ({0}) threw an exception:\n{1}", xmlns, ex);
+			}
+
+		}
+
+		private IntPtr cb_create_component_from_name (string name)
+		{
+			try {
+				DependencyObject res = Application.CreateComponentFromName (name);
+				if (res == null) {
+					Console.Error.WriteLine ("Application::CreateComponentFromName ({0}) return null.", name);
+					return IntPtr.Zero;
+				}
+
+				NativeMethods.base_ref (res.native);
+				return res.native;
+			} catch (Exception ex) {
+				Console.WriteLine ("Application::CreateComponentFromName ({0}) threw an exception:\n{1}", name, ex);
+				return IntPtr.Zero;
 			}
 		}
 
