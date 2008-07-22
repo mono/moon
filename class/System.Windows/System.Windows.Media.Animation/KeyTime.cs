@@ -31,9 +31,7 @@ using System.Runtime.InteropServices;
 using Mono;
 
 namespace System.Windows.Media.Animation {
-	
-	public struct KeyTime
-	{
+	public struct KeyTime {
 		internal KeyTimeType type;
 		internal double percent;
 		internal TimeSpan time_span;
@@ -45,22 +43,9 @@ namespace System.Windows.Media.Animation {
 			this.time_span = time_span;
 		}
 		
-		public static KeyTime FromPercent(double percent)
-		{
-			return new KeyTime (KeyTimeType.Percent, percent, TimeSpan.Zero);
-		}
-		
 		public static KeyTime FromTimeSpan(TimeSpan timeSpan)
 		{
 			return new KeyTime (KeyTimeType.TimeSpan, 0, timeSpan);
-		}
-		
-		public static KeyTime Uniform { 
-			get { return new KeyTime (KeyTimeType.Uniform, 0, TimeSpan.Zero); }
-		}
-		
-		public static KeyTime Paced { 
-			get { return new KeyTime (KeyTimeType.Paced, 0, TimeSpan.Zero); }
 		}
 		
 		public static bool Equals (KeyTime keyTime1, KeyTime keyTime2)
@@ -73,13 +58,7 @@ namespace System.Windows.Media.Animation {
 			if (keyTime1.type != keyTime2.type)
 				return false;
 			
-			switch (keyTime1.type)
-			{
-			case KeyTimeType.Paced:
-			case KeyTimeType.Uniform:
-				return true;
-			case KeyTimeType.Percent:
-				return keyTime1.percent == keyTime2.percent;
+			switch (keyTime1.type) {
 			case KeyTimeType.TimeSpan:
 				return keyTime1.time_span == keyTime2.time_span;
 			}
@@ -106,13 +85,7 @@ namespace System.Windows.Media.Animation {
 		
 		public override int GetHashCode()
 		{
-			switch (type)
-			{
-			case KeyTimeType.Paced:
-			case KeyTimeType.Uniform:
-				return type.GetHashCode ();
-			case KeyTimeType.Percent:
-				return percent.GetHashCode ();
+			switch (type) {
 			case KeyTimeType.TimeSpan:
 				return time_span.GetHashCode ();
 			default:
@@ -120,16 +93,9 @@ namespace System.Windows.Media.Animation {
 			}
 		}
 		
-		public override string ToString()
+		public override string ToString ()
 		{
-			switch (type)
-			{
-			case KeyTimeType.Paced:
-				return "Paced";
-			case KeyTimeType.Uniform:
-				return "Uniform";
-			case KeyTimeType.Percent:
-				return (percent * 100).ToString () + "%";
+			switch (type) {
 			case KeyTimeType.TimeSpan:
 				return time_span.ToString ();
 			default:
@@ -137,17 +103,13 @@ namespace System.Windows.Media.Animation {
 			}
 		}
 		
-		public static implicit operator KeyTime(TimeSpan timeSpan)
+		public static implicit operator KeyTime (TimeSpan timeSpan)
 		{
 			return KeyTime.FromTimeSpan (timeSpan);
 		}
 		
 		public TimeSpan TimeSpan { 
 			get { return time_span; }
-		}
-		
-		public double Percent { 
-			get { return percent; }
 		}
 		
 		public KeyTimeType Type { 

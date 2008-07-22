@@ -1,3 +1,11 @@
+2008-07-22  Jeffrey Stedfast <fejj@novell.com>
+
+	* KeyTime.cs: Updated to reflect Silverlight 2 beta 2
+
+	* ClockState.cs: Added
+
+	* KeyTimeType.cs: Updated to reflect Silverlight 2 beta 2
+
 2008-07-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TimelineMarkerCollection.cs: Moved to System.Windows.Media
