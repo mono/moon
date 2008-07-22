@@ -1,5 +1,9 @@
 2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyProperty.cs: Stubbed a bit.
+
+2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* PropertyMetadata.cs: Added.
 
 2008-07-21  Jackson Harper  <jackson@ximian.com>

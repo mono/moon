@@ -36,12 +36,14 @@ namespace System.Windows {
 		internal Type type;
 		private Kind declaring_type;
 		
+		public static readonly object UnsetValue = new object ();
+		
 		static DependencyProperty ()
 		{
 			NativeMethods.runtime_init (0);
 		}
 		
-		public DependencyProperty ()
+		internal DependencyProperty ()
 		{
 			// useless constructor.
 		}
@@ -52,6 +54,18 @@ namespace System.Windows {
 			type = t;
 			declaring_type = dtype;
 		}
+		
+		public static DependencyProperty Register (string name, Type propertyType, Type ownerType, PropertyMetadata typeMetadata)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+		public static DependencyProperty RegisterAttached (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+		
 		internal static DependencyProperty Lookup (Kind type, string name, Type ownerType)
 		{
 			IntPtr handle = NativeMethods.dependency_property_lookup (type, name);
