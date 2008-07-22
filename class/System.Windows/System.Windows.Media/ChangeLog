@@ -1,3 +1,10 @@
+2008-07-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TimelineMarkerCollection.cs: Moved here from
+	System.Windows.Media.Animation namespace.
+
+	* TimelineMarker.cs: Same.
+
 2008-03-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Color.cs: Fix compiler warnings.
