@@ -1,3 +1,7 @@
+2008-07-22  Jackson Harper  <jackson@ximian.com>
+
+	* tools/mxap/mxap.cs: Create an HTML wrapper for our application.
+
 2008-07-21  Michael Dominic K.  <mdk@mdk.am>
 
 	* examples/gnome-orbiter/Background.cs:

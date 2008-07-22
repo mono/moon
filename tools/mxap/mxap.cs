@@ -61,6 +61,7 @@ namespace Moonlight {
 			CreateResources ();
 			CreateApplicationAssembly ();
 			CreateXap ();
+			CreateHtmlWrapper ();
 		}
 
 		public void CreateManifest ()
@@ -93,7 +94,7 @@ namespace Moonlight {
 			foreach (string xaml_file in XamlFiles) {
 				if (Path.GetFileName (xaml_file) == "AppManifest.xaml")
 					continue;
-				xamlg_args.AppendFormat (" {0}", xaml_file);
+				xamlg_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
 			}
 
 			RunProcess ("xamlg", xamlg_args.ToString ());
@@ -156,6 +157,15 @@ namespace Moonlight {
 
 			RunProcess ("zip", zip_args.ToString ());
 			
+		}
+
+		public void CreateHtmlWrapper ()
+		{
+			StringBuilder xaml2html_args = new StringBuilder ();
+
+			xaml2html_args.AppendFormat (" {0}.xap ", ApplicationName);
+
+			RunProcess ("xaml2html", xaml2html_args.ToString ());
 		}
 
 		private void RunProcess (string name, string args)
