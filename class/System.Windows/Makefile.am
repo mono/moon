@@ -44,6 +44,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/TabletDeviceType.cs			\
 	$(srcdir)/System.Windows.Input/TimelineMarkerEventArgs.cs		\
 	$(srcdir)/System.Windows.Input/TimelineMarkerEventHandler.cs		\
+	$(srcdir)/System.Windows.Media.Animation/ClockState.cs			\
 	$(srcdir)/System.Windows.Media.Animation/ColorAnimationUsingKeyFrames.cs\
 	$(srcdir)/System.Windows.Media.Animation/ColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/ColorKeyFrameCollection.cs	\

@@ -1,3 +1,7 @@
+2008-07-22  Jeffrey Stedfast <fejj@novell.com>
+
+	* DependencyObject.cs: Updated for Silverlight 2 beta 2 KeyTime changes.
+
 2008-07-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextDecorationCollection.cs: Added

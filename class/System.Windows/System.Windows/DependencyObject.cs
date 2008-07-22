@@ -361,7 +361,7 @@ namespace System.Windows {
 				case Kind.KEYTIME: {
 					UnmanagedKeyTime* keytime = (UnmanagedKeyTime*)val->u.p;
 					if (keytime == null)
-						return KeyTime.Uniform;
+						return KeyTime.FromTimeSpan (TimeSpan.Zero);
 					return new KeyTime ((KeyTimeType) keytime->kind, keytime->percent, new TimeSpan (keytime->timespan));
 				}
 					
