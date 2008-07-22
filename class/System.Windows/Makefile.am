@@ -88,6 +88,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/Point.cs					\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/PropertyChangedCallback.cs			\
+	$(srcdir)/System.Windows/PropertyMetadata.cs			\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
 	$(srcdir)/System.Windows/Rect.cs					\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
