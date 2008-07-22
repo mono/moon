@@ -276,7 +276,7 @@ Type type_infos [] = {
 	{ Type::UINT32, Type::INVALID, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL }, 
 	{ Type::UINT64, Type::INVALID, false, "guint64", "UINT64", 0, 0, NULL, NULL, NULL }, 
 #if SL_2_0
-	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 12, NULL, (create_inst_func *) user_control_new, "ContentProperty" }, 
+	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 12, NULL, (create_inst_func *) user_control_new, "Content" }, 
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'USERCONTROL'", "USERCONTROL", 0, 0, NULL, NULL, NULL }, 
 #endif

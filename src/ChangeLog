@@ -1,3 +1,9 @@
+2008-07-21  Jackson Harper  <jackson@ximian.com>
+
+	* user-control.h:
+	* type-generated.cpp: The UserControl's Content Property name is
+	Content not ContentProperty.
+
 2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* collection.cpp (collection_add): Fixed to return int.
