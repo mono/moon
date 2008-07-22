@@ -9,7 +9,8 @@
 
 2008-07-16  Michael Dominic K.  <mdk@mdk.am>
 
-	* System.Windows.Media.Animation/Storyboard.cs: Adding TargetNameProperty.
+	* System.Windows.Media.Animation/Storyboard.cs: Adding
+	TargetNameProperty.
 
 2008-07-16  Michael Dominic K.  <mdk@mdk.am>
 

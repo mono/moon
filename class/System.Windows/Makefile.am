@@ -63,7 +63,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
-	$(srcdir)/System.Windows/CrossDomainAccess.cs					\
+	$(srcdir)/System.Windows/CrossDomainAccess.cs				\
 	$(srcdir)/System.Windows/DataTemplate.cs				\
 	$(srcdir)/System.Windows/Deployment.cs					\
 	$(srcdir)/System.Windows/DependencyObject.cs				\
@@ -83,12 +83,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/GridLength.cs					\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/HorizontalAlignment.cs				\
+	$(srcdir)/System.Windows/LineStackingStrategy.cs			\
 	$(srcdir)/System.Windows/ParserErrorEventArgs.cs			\
 	$(srcdir)/System.Windows/ParserErrorEventHandler.cs			\
 	$(srcdir)/System.Windows/Point.cs					\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/PropertyChangedCallback.cs			\
-	$(srcdir)/System.Windows/PropertyMetadata.cs			\
+	$(srcdir)/System.Windows/PropertyMetadata.cs				\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
 	$(srcdir)/System.Windows/Rect.cs					\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
@@ -100,6 +101,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/StyleSimulations.cs				\
 	$(srcdir)/System.Windows/TextAlignment.cs				\
+	$(srcdir)/System.Windows/TextDecorationCollection.cs			\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\

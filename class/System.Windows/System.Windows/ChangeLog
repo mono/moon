@@ -1,3 +1,9 @@
+2008-07-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextDecorationCollection.cs: Added
+
+	* LineStackingStrategy.cs: Added
+
 2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyObject.cs: SetValue isn't virtual anymore. Remove comment

@@ -205,6 +205,8 @@
     <File name="System.Windows/PropertyMetadata.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/PropertyChangedCallback.cs" subtype="Code" buildaction="Compile" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows/TextDecorationCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/LineStackingStrategy.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Grid.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Collections.ObjectModel/ObservableCollection_T.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Collections.Specialized/INotifyCollectionChanged.cs" subtype="Code" buildaction="Compile" />
