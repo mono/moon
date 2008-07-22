@@ -68,18 +68,18 @@ namespace Moonlight {
 		{
 			StringBuilder manifest = new StringBuilder ();
 
-			manifest.AppendLine ("<Deployment xmlns=\"http://schemas.microsoft.com/client/2007/deployment\"");
-			manifest.AppendLine ("\txmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
-			manifest.AppendFormat ("EntryPointAssembly=\"{0}\" EntryPointType=\"{0}.App\" RuntimeVersion=\"2.0.30226.2\">\n", ApplicationName);
+			manifest.Append ("<Deployment xmlns=\"http://schemas.microsoft.com/client/2007/deployment\"");
+			manifest.Append (" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" ");
+			manifest.AppendFormat ("EntryPointAssembly=\"{0}\" EntryPointType=\"{0}.App\" RuntimeVersion=\"2.0.30523.6\">\n", ApplicationName);
 
-			manifest.AppendLine ("\t<Deployment.Parts>");
+			manifest.AppendLine ("  <Deployment.Parts>");
 
 			foreach (string assembly in ReferenceAssemblies) {
-				manifest.AppendFormat ("<AssemblyPart x:Name=\"{0}\" Source=\"{1}\" />\n", Path.GetFileNameWithoutExtension (assembly), assembly);
+				manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}\" />\n", Path.GetFileNameWithoutExtension (assembly), assembly);
 			}
-			manifest.AppendFormat ("<AssemblyPart x:Name=\"{0}\" Source=\"{1}.dll\" />\n", ApplicationName, ApplicationName);
+			manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}.dll\" />\n", ApplicationName, ApplicationName);
 			
-			manifest.AppendLine ("\t</Deployment.Parts>");
+			manifest.AppendLine ("  </Deployment.Parts>");
 			manifest.AppendLine ("</Deployment>");
 
 			File.WriteAllText ("AppManifest.xaml", manifest.ToString ());
