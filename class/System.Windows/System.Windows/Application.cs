@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Controls;
 using System.Windows.Resources;
 using System.Windows.Interop;
 using System.Collections;
@@ -156,24 +157,22 @@ namespace System.Windows {
 			assemblies = new Assembly [deployment.Parts.Count];
 			int i = 0;
 
-			// Console.WriteLine ("entry point assembly:  {0}", entry_point_assembly.Name);
 			foreach (var part in deployment.Parts){
 				try {
-					// Console.WriteLine ("loading:  {0}/{1}   {2}", xap_dir, part.Source, loader.LoadAssembly (xap_dir, part.Source, out a));
-					
 					a = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
 					if (part.Name == entry_point_assembly.Name)
 						startup = a;
+					assemblies [i++] = a;
 				} catch (Exception e) {
 					Report.Error ("Error while loading the {0} assembly  {1}", part.Source, e);
 					return null;
 				}
+				LoadXmlnsDefinitionMappings (a);
 			}
 
 			try {
 				a = Assembly.LoadFrom (Path.Combine (xap_dir, entry_point_assembly.Source));
 				startup = a;
-				assemblies [0] = a;
 			} catch (Exception e) {
 				Report.Error ("Errror while loading startup assembly {0}  {1}", entry_point_assembly.Source, e);
 				return null;
@@ -211,14 +210,13 @@ namespace System.Windows {
 
 			// TODO:
 			// Get the event args to pass to startup
-			
 			if (instance.Startup != null){
 				StartupEventArgs sargs = new StartupEventArgs ();
 
 				Report.Warning ("TODO: Need to pass correct StartupEventArgs");
 				instance.Startup (instance, sargs);
 			}
-			
+
 			return instance;
 		}
 		
@@ -234,15 +232,10 @@ namespace System.Windows {
 		//
 		public static void LoadComponent (object component, Uri xamlUri)
 		{
-			//Console.WriteLine ("LoadComponent: {0} of type {1} for {2}", component, component.GetType (), xamlUri);
-
-			// For now, do nothing, we cant cope with Applications 
-			if (component is Application)
-				return;
-
+			Application app = component as Application;
 			DependencyObject cdo = component as DependencyObject;
 			
-			if (cdo == null)
+			if (cdo == null && app == null)
 				throw new ArgumentException ("Not a DependencyObject or Application", "component");
 
 			StreamResourceInfo sr = GetResourceStream (xamlUri);
@@ -254,8 +247,16 @@ namespace System.Windows {
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			ManagedXamlLoader loader = new ManagedXamlLoader ();
 
-			// This can throw a System.Exception if the XAML file is invalid.
-			loader.Hydrate (cdo.native, xaml);
+			if (cdo != null) {
+				// This can throw a System.Exception if the XAML file is invalid.
+				loader.Hydrate (cdo.native, xaml);
+			} else {
+				// todo, create an ApplicationInternal type, so we can enforce more parsing rules
+				UserControl temp = new UserControl ();
+				loader.Hydrate (temp.native, xaml);
+
+				// TODO: Copy the important stuff such as Resourcesfrom the temp DO to the app
+			}
 		}
 
 		//
@@ -293,8 +294,6 @@ namespace System.Windows {
 			}
 			rest = rest.Substring (10);
 
-			//Console.WriteLine ("Before RM, rest={0}", rest);
-			//Console.WriteLine ("Requesting assembly: " + aname + ".g");
 			ResourceManager rm = new ResourceManager (aname + ".g", assembly);
 			rm.IgnoreCase = true;
 			Stream s = rm.GetStream (rest);
@@ -350,21 +349,28 @@ namespace System.Windows {
 
 
 		internal static Dictionary<XmlnsDefinitionAttribute,Assembly> xmlns_definitions = new Dictionary<XmlnsDefinitionAttribute, Assembly> ();
+		internal static List<string> imported_namespaces = new List<string> ();
 		
 		internal static void LoadXmlnsDefinitionMappings (Assembly a)
 		{
 			object [] xmlns_defs = a.GetCustomAttributes (typeof (XmlnsDefinitionAttribute), false);
 
-			foreach (var ns_mapping in xmlns_defs){
-				xmlns_definitions [(XmlnsDefinitionAttribute) ns_mapping] = a;
+			foreach (XmlnsDefinitionAttribute ns_mapping in xmlns_defs){
+				xmlns_definitions [ns_mapping] = a;
 			}
+		}
+
+		
+		internal static void ImportXamlNamespace (string xmlns)
+		{
+			imported_namespaces.Add (xmlns);
 		}
 
 		//
 		// Creates the proper component by looking the namespace and name
 		// in the various assemblies loaded
 		//
-		internal static DependencyObject CreateComponentFromName (string [] imported_namespaces, string name)
+		internal static DependencyObject CreateComponentFromName (string name)
 		{
 			Type t = (from def in xmlns_definitions
 					where imported_namespaces.Contains (def.Key.XmlNamespace)
@@ -378,6 +384,12 @@ namespace System.Windows {
 				return null;
 
 			return (DependencyObject) Activator.CreateInstance (t);
+		}
+
+		internal static Assembly GetAssembly (string assembly_name)
+		{
+			Assembly a = (from def in assemblies where def.GetName ().Name == assembly_name select def).FirstOrDefault ();
+			return a;
 		}
 	}
 }
