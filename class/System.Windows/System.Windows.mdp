@@ -205,6 +205,30 @@
     <File name="System.Windows/PropertyMetadata.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/PropertyChangedCallback.cs" subtype="Code" buildaction="Compile" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Controls/Grid.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.ObjectModel/ObservableCollection_T.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.Specialized/INotifyCollectionChanged.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.Specialized/NotifyCollectionChangedAction.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Resources/StreamResourceInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Markup/ContentPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Markup/XmlnsDefinitionAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Interop/Content.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Interop/Settings.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Interop/SilverlightHost.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/Key.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/KeyEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/KeyEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/MouseButtonEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/MouseButtonEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/UserControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/RowDefinitionCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/RowDefinition.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ColumnDefinitionCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ColumnDefinition.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Report.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/DLRHost.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

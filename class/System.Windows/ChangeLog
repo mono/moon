@@ -1,6 +1,10 @@
 2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* System.Windows.mdp: Updated.
+
+2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* System.Windows.mdp: Updated.
 	* Makefile.am: Added PropertyMetadata.cs.
 
 2008-07-16  Michael Dominic K.  <mdk@mdk.am>
