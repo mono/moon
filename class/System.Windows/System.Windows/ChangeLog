@@ -1,5 +1,11 @@
 2008-07-21  Jackson Harper  <jackson@ximian.com>
 
+	* Application.cs: Add an internal Application class for loading
+	Applications in unmanaged land. This allows us to pass in a DO
+	instead of adding special cases just for the Application class.
+
+2008-07-21  Jackson Harper  <jackson@ximian.com>
+
 	* Application.cs: Add in the xaml parsers new callback handlers,
 	expose a method for getting assemblies from the xap, add a hack
 	parsing an Application into a temporary UserControl so we can

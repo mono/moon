@@ -251,8 +251,7 @@ namespace System.Windows {
 				// This can throw a System.Exception if the XAML file is invalid.
 				loader.Hydrate (cdo.native, xaml);
 			} else {
-				// todo, create an ApplicationInternal type, so we can enforce more parsing rules
-				UserControl temp = new UserControl ();
+				ApplicationInternal temp = new ApplicationInternal ();
 				loader.Hydrate (temp.native, xaml);
 
 				// TODO: Copy the important stuff such as Resourcesfrom the temp DO to the app
@@ -302,7 +301,7 @@ namespace System.Windows {
 				Report.Info ("Could not find resource: {0}", rest);
 				return null;
 			}
-			
+
 			return new StreamResourceInfo (s, "");
 		}
 
@@ -390,6 +389,21 @@ namespace System.Windows {
 		{
 			Assembly a = (from def in assemblies where def.GetName ().Name == assembly_name select def).FirstOrDefault ();
 			return a;
+		}
+
+		private class ApplicationInternal : DependencyObject {
+
+			public ApplicationInternal () : base (NativeMethods.application_new ())
+			{
+				Console.WriteLine ("*** Created a {0} (Application) with {1}", this.GetType (), native);
+			}
+
+		
+
+			internal override Kind GetKind ()
+			{
+				return Kind.APPLICATION;
+			}
 		}
 	}
 }
