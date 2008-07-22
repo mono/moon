@@ -1,3 +1,7 @@
+2008-07-21  Jackson Harper  <jackson@ximian.com>
+
+	* NativeMethods.cs: Add application_new.
+
 2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* NativeMethods.cs: collection_add() returns int.

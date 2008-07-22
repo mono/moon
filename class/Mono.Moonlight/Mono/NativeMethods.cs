@@ -818,5 +818,10 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static string xap_unpack (string xapfile);
 #endregion
+
+#region application
+		[DllImport("moon")]
+		public extern static IntPtr application_new ();
+#endregion
 	}
 }
