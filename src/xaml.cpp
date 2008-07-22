@@ -10,6 +10,8 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
+
 #include <config.h>
 #include <string.h>
 #include <malloc.h>
@@ -90,6 +92,7 @@ void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *i
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
 XamlElementInstance* create_toplevel_property_element_instance (XamlParserInfo *p, const char *name);
+XamlElementInfo* create_element_info_from_managed_type (XamlParserInfo *p, const char *name);
 static XamlElementInstance *wrap_type (XamlParserInfo *p, Type *t);
 static Type *get_type_for_property_name (const char* prop_name);
 
@@ -333,13 +336,17 @@ class DefaultNamespace : public XamlNamespace {
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
 		Type* t = Type::Find (el);
-		if (!t) {
-			if (!strchr (el, '.'))
-				g_critical ("Type not found:  %s\n", el);
-			return NULL;
-		}
+		if (t)
+			return new XamlElementInfoNative (t);
 
-		return new XamlElementInfoNative (t);
+		XamlElementInfo* managed_element = create_element_info_from_managed_type (p, el);
+		if (managed_element)
+			return managed_element;
+
+		if (!strchr (el, '.'))
+			g_critical ("Type not found:  %s\n", el);
+		return NULL;
+		
 	}
 
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
@@ -386,7 +393,6 @@ class XNamespace : public XamlNamespace {
 		}
 
 		if (!strcmp ("Class", attr)) {
-
 			// While hydrating, we do not need to create the toplevel class, its created already
 			if (p->hydrating)
 				return TRUE;
@@ -473,8 +479,9 @@ class ManagedNamespace : public XamlNamespace {
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
 		DependencyObject *dob = NULL;
-		if (p->loader)
+		if (p->loader) {
 			dob = p->loader->CreateManagedObject (xmlns, el);
+		}
 
 		if (!dob) {
 			parser_error (p, el, NULL, -1, g_strdup_printf ("Unable to resolve managed type %s\n", el));
@@ -539,8 +546,9 @@ XamlLoader::CreateManagedObject (const char* asm_name, const char* asm_path, con
 {
 	//printf ("XamlLoader::CreateManagedObject (%s, %s, %s, %s)\n", asm_name, asm_path, name, type_name);
 	
-	if (callbacks.load_managed_object)
+	if (callbacks.load_managed_object) {
 		return callbacks.load_managed_object (asm_name, asm_path, name, type_name);
+	}
 		
 	return NULL;
 }
@@ -1118,6 +1126,9 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	if (p->error_args)
 		return;
 
+	if (p->loader != NULL && p->loader->callbacks.import_xaml_xmlns != NULL)
+		p->loader->callbacks.import_xaml_xmlns (uri);
+
 	for (int i = 0; default_namespace_names [i]; i++) {
 		if (!strcmp (default_namespace_names [i], uri)) {
 			g_hash_table_insert (p->namespace_map, g_strdup (uri), default_namespace);
@@ -1339,7 +1350,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 	XamlParserInfo *parser_info = NULL;
 	DependencyObject *res = NULL;
 	char *start = (char*)xaml;
-	
+
 	if (!p) {
 		d(printf ("can not create parser\n"));
 		goto cleanup_and_return;
@@ -1398,7 +1409,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 		goto cleanup_and_return;
 	}
 	
-	d(print_tree (parser_info->top_element, 0));
+	d (print_tree (parser_info->top_element, 0));
 	
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
@@ -2435,6 +2446,23 @@ create_toplevel_property_element_instance (XamlParserInfo *p, const char *name)
 	return new XamlElementInstanceNative (NULL, p, name, XamlElementInstance::PROPERTY, false);
 }
 
+XamlElementInfo *
+create_element_info_from_managed_type (XamlParserInfo *p, const char *name)
+{
+	if (!p->loader)
+		return NULL;
+
+	DependencyObject *obj = p->loader->CreateManagedObject (NULL, name);
+	if (!obj) {
+		return NULL;
+	}
+
+	XamlElementInfoManaged *info = new  XamlElementInfoManaged (name, NULL, obj->GetObjectType (), obj);
+	obj->SetSurface (p->loader->GetSurface ());
+
+	return info;
+}
+
 static XamlElementInstance *
 wrap_type (XamlParserInfo *p, Type *t)
 {
@@ -2679,7 +2707,6 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		return;
 	}
 
-	
 	if (parent->info->GetContentProperty ()) {
 		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->info->GetKind (),
 				(char *) parent->info->GetContentProperty ());
@@ -2712,7 +2739,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			} else {
 				col = (Collection *) col_v->AsCollection ();
 			}
-			
+
 			col->Add ((DependencyObject *) child->item);
 			return;
 		}

@@ -1,5 +1,10 @@
 2008-07-21  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Add back in the ability to create elements from
+	managed elements using the x:Class syntax.
+
+2008-07-21  Jackson Harper  <jackson@ximian.com>
+
 	* user-control.h:
 	* type-generated.cpp: The UserControl's Content Property name is
 	Content not ContentProperty.
