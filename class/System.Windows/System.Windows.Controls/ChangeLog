@@ -1,5 +1,9 @@
 2008-07-22  Jeffrey Stedfast <fejj@novell.com>
 
+	* ValidationErrorEventAction.cs: Added
+
+	* ScrollBarVisibility.cs: Added
+
 	* ClickMode.cs: Added
 
 	* Orientation.cs: Added

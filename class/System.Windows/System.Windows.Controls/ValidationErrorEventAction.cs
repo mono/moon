@@ -1,4 +1,4 @@
-// Orientation.cs
+// ValidationErrorEventAction.cs
 //
 // Author: Jeffrey Stedfast <fejj@novell.com>
 //
@@ -26,8 +26,8 @@
 using System;
 
 namespace System.Windows.Controls {
-	public enum Orientation {
-		Vertical,
-		Horizontal
+	public enum ValidationErrorEventAction {
+		Added,
+		Removed
 	}
 }

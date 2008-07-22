@@ -235,6 +235,8 @@
     <File name="System.Windows.Media/TimelineMarkerCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ClickMode.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Orientation.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ScrollBarVisibility.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ValidationErrorEventAction.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

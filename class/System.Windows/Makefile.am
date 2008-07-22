@@ -31,6 +31,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Controls/Orientation.cs			\
+	$(srcdir)/System.Windows.Controls/ScrollBarVisibility.cs		\
+	$(srcdir)/System.Windows.Controls/ValidationErrorEventAction.cs		\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
 	$(srcdir)/System.Windows.Ink/Stroke.cs					\
 	$(srcdir)/System.Windows.Ink/StrokeCollection.cs			\
