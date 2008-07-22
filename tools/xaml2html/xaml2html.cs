@@ -34,11 +34,29 @@ class XamlToHtml {
 						"</body>\n" + 
 						"</html>\n";
 
+	static readonly string sl2_html_template =  "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n" + 
+						"<head>\n" +
+						"<title>@TITLE@</title>\n" +
+						"<meta>@META@</meta>\n" +
+						"</head>\n" +
+						"<body bgcolor=\"#eeeeee\">\n" +
+						"<div id=\"silverlightControlHost\">\n" +
+						"<object data=\"data:application/x-silverlight,\" type=\"application/x-silverlight-2-b2\" width=\"@WIDTH@\" height=\"@HEIGHT@\">\n" +
+						"<param name=\"source\" value=\"@XAP_FILE@\"/>\n" +
+						"<param name=\"background\" value=\"white\" />\n" +
+						"<a href=\"http://go.microsoft.com/fwlink/?LinkID=115261\" style=\"text-decoration: none;\">\n" +
+     						"<img src=\"http://go.microsoft.com/fwlink/?LinkId=108181\" alt=\"Get Microsoft Silverlight\" style=\"border-style: none\"/>\n" +
+						"</a>\n" +
+						"</object>\n" +
+						"</div>\n" +
+						"</body>\n" + 
+						"</html>\n";
+
 	static int verbose = 0;
 
 	static void Help ()
 	{
-		Console.WriteLine ("Usage is: xaml2html [--v] [--chain] [file.xaml ...]\n");
+		Console.WriteLine ("Usage is: xaml2html [--v] [--chain] [file.[xaml|.xap] ...]|\n");
 	}
 
 	static string FindMasterCanvasAttribute (string xml, string attribute, string def)
@@ -61,13 +79,14 @@ class XamlToHtml {
 		try {
 			string xaml_basename = Path.GetFileNameWithoutExtension (file);
 			string xaml_content = File.ReadAllText (file);
-			string html_content = html_template;
+			string html_content = file.EndsWith (".xap") ? sl2_html_template : html_template;
 
 			string canvas_width = FindMasterCanvasAttribute (xaml_content, "Width", "640");
 			string canvas_height = FindMasterCanvasAttribute (xaml_content, "Height", "480");
 
 			// Substitute
 			html_content = html_content.Replace ("@XAML@", xaml_content);
+			html_content = html_content.Replace ("@XAP_FILE@", Path.GetFileName (file));
 			html_content = html_content.Replace ("@TITLE@", xaml_basename);
 			html_content = html_content.Replace ("@WIDTH@", canvas_width);
 			html_content = html_content.Replace ("@HEIGHT@", canvas_height);

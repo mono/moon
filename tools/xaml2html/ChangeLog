@@ -1,3 +1,9 @@
+2008-07-22  Jackson Harper  <jackson@ximian.com>
+
+	* xaml2html.cs: Add support for .xap files.  If you specify a
+	.xaml file instead of a .xaml file you will get a SL2.0 html
+	wrapper.
+
 2008-04-22  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml2html.cs: Try to be smart and find the master canvas Width/Height
