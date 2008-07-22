@@ -1,3 +1,9 @@
+2008-07-22  Jeffrey Stedfast <fejj@novell.com>
+
+	* ModifierKeys.cs: Added
+
+	* KeyboardNavigationMode.cs: Added
+
 2008-04-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* MouseEventArgs.cs: Two more base_unref_delayed -> base_unref cases.
