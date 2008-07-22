@@ -59,8 +59,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/PointKeyFrameCollection.cs	\
 	$(srcdir)/System.Windows.Media.Animation/SplineColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
-	$(srcdir)/System.Windows.Media.Animation/TimelineMarker.cs		\
-	$(srcdir)/System.Windows.Media.Animation/TimelineMarkerCollection.cs	\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
@@ -119,7 +117,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/Control.cs				\
 	$(srcdir)/System.Windows.Controls/Grid.cs				\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
-	$(srcdir)/System.Windows.Controls/MediaBase.cs				\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
 	$(srcdir)/System.Windows.Controls/UserControl.cs			\
@@ -196,6 +193,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/SweepDirection.cs			\
 	$(srcdir)/System.Windows.Media/TileBrush.cs				\
 	$(srcdir)/System.Windows.Media/TimelineCollection.cs			\
+	$(srcdir)/System.Windows.Media/TimelineMarker.cs			\
+	$(srcdir)/System.Windows.Media/TimelineMarkerCollection.cs		\
 	$(srcdir)/System.Windows.Media/TransformCollection.cs			\
 	$(srcdir)/System.Windows.Media/Transform.cs				\
 	$(srcdir)/System.Windows.Media/TransformGroup.cs			\

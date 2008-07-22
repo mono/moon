@@ -23,13 +23,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Windows.Media.Animation;
 using System;
+using System.Windows.Media;
 
 namespace System.Windows.Input {
-	
 	public sealed class TimelineMarkerEventArgs : EventArgs {
-		private TimelineMarker marker;
+		TimelineMarker marker;
 		
 		public TimelineMarkerEventArgs ()
 		{

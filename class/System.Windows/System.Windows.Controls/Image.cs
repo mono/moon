@@ -26,50 +26,44 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System.Windows;
+using System.Windows.Media;
 using Mono;
 
 namespace System.Windows.Controls {
-
-	public sealed class Image : MediaBase {
-
-		public static readonly DependencyProperty DownloadProgressProperty =
-			DependencyProperty.Lookup (Kind.IMAGE, "DownloadProgress", typeof (double));
-
-
+	public sealed class Image : FrameworkElement {
+		public static readonly DependencyProperty SourceProperty =
+			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (string));
+		
+		public static readonly DependencyProperty StretchProperty =
+			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
+		
 		public Image ()  : base (NativeMethods.image_new ())
 		{
 		}
-
+		
 		internal Image (IntPtr raw) : base (raw)
 		{
 		}
-
-		public double DownloadProgress {
-			get { return (double) GetValue (DownloadProgressProperty); }
-			set { SetValue (DownloadProgressProperty, value); }
-		}
-
-		public void SetSource (DependencyObject Downloader, string PartName)
-		{
-			if (Downloader == null)
-				throw new ArgumentNullException ("Downloader");
-
-			Downloader dl = Downloader as Downloader;
-			if (dl == null)
-				throw new ArgumentException ("Downloader");
-			
-			if (dl.Status != 200){
-				dl.Completed += delegate {
-					NativeMethods.image_set_source (native, dl.native, PartName);
-				};
-				dl.Send ();
-			} else {
-				NativeMethods.image_set_source (native, dl.native, PartName);
+		
+		public Uri Source {
+			get {
+				// Uri is not a DependencyObject, we save it as a string
+				string uri = (string) GetValue (SourceProperty);
+				return new Uri (uri, UriKind.RelativeOrAbsolute);
+			}
+			set {
+				string uri = value.OriginalString;
+				SetValue (SourceProperty, uri); 
 			}
 		}
-
+		
+		public Stretch Stretch {
+			get { return (Stretch) GetValue (StretchProperty); }
+			set { SetValue (StretchProperty, value); }
+		}
+		
 		static object ImageFailedEvent = new object ();
-
+		
 		public event ErrorEventHandler ImageFailed {
 			add {
 				if (events[ImageFailedEvent] == null)
@@ -82,20 +76,20 @@ namespace System.Windows.Controls {
 				events.AddHandler (ImageFailedEvent, value);
 			}
 		}
-
+		
 		static UnmanagedEventHandler image_failed = new UnmanagedEventHandler (image_failed_cb);
-
+		
 		private static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
 			// XXX we need to marshal calldata to an ErrorEventArgs struct
 			((Image) Helper.GCHandleFromIntPtr (closure).Target).InvokeImageFailed (/* XXX and pass it here*/);
 		}
-
+		
 		private void InvokeImageFailed (/* XXX ErrorEventArgs args */)
 		{
 			ErrorEventHandler h = (ErrorEventHandler)events[ImageFailedEvent];
 			if (h != null) h (this, new ErrorEventArgs ()); // XXX pass args here
 		}
-
+		
 		internal override Kind GetKind ()
 		{
 			return Kind.IMAGE;

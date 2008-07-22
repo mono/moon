@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 
 namespace System.Windows.Controls
 {
-	public sealed class MediaElement : MediaBase {
+	public sealed class MediaElement : FrameworkElement {
 		
 		public static readonly DependencyProperty AttributesProperty = 
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Attributes", typeof (MediaAttributeCollection));
@@ -87,6 +87,12 @@ namespace System.Windows.Controls
 		public static readonly DependencyProperty PositionProperty = 
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Position", typeof (TimeSpan));
 		
+		public static readonly DependencyProperty SourceProperty =
+			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (string));
+		
+		public static readonly DependencyProperty StretchProperty =
+			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
+		
 		public static readonly DependencyProperty VolumeProperty = 
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Volume", typeof (double));
 		
@@ -137,9 +143,9 @@ namespace System.Windows.Controls
 			}
 		}
 		
-		public int AudioStreamIndex {
+		public int? AudioStreamIndex {
 			get {
-				return (int) GetValue (AudioStreamIndexProperty);
+				return (int?) GetValue (AudioStreamIndexProperty);
 			}
 			set {
 				SetValue (AudioStreamIndexProperty, value);
@@ -222,9 +228,6 @@ namespace System.Windows.Controls
 			get {
 				return (TimelineMarkerCollection) GetValue (MarkersProperty);
 			}
-			set {
-				SetValue (MarkersProperty, value);
-			}
 		}
 		
 		public Duration NaturalDuration { 
@@ -236,21 +239,21 @@ namespace System.Windows.Controls
 			}
 		}
 		
-		public double NaturalVideoHeight { 
+		public int NaturalVideoHeight { 
 			get {
-				return (double) GetValue (NaturalVideoHeightProperty);
+				return (int) GetValue (NaturalVideoHeightProperty);
 			}
 			set {
-				SetValue (NaturalVideoHeightProperty, value);
+				SetValue (NaturalVideoHeightProperty, (double) value);
 			}
 		}
 		
-		public double NaturalVideoWidth { 
+		public int NaturalVideoWidth { 
 			get {
-				return (double) GetValue (NaturalVideoWidthProperty);
+				return (int) GetValue (NaturalVideoWidthProperty);
 			}
 			set {
-				SetValue (NaturalVideoWidthProperty, value);
+				SetValue (NaturalVideoWidthProperty, (double) value);
 			}
 		}
 		
@@ -263,6 +266,23 @@ namespace System.Windows.Controls
 			}
 		}
 		
+		public Uri Source {
+			get {
+				// Uri is not a DependencyObject, we save it as a string
+				string uri = (string) GetValue (SourceProperty);
+				return new Uri (uri, UriKind.RelativeOrAbsolute);
+			}
+			set {
+				string uri = value.OriginalString;
+				SetValue (SourceProperty, uri); 
+			}
+		}
+		
+		public Stretch Stretch {
+			get { return (Stretch) GetValue (StretchProperty); }
+			set { SetValue (StretchProperty, value); }
+		}
+		
 		public double Volume { 
 			get {
 				return (double) GetValue (VolumeProperty);
@@ -271,7 +291,7 @@ namespace System.Windows.Controls
 				SetValue (VolumeProperty, value);
 			}
 		}
-
+		
 		internal override Kind GetKind ()
 		{
 			return Kind.MEDIAELEMENT;

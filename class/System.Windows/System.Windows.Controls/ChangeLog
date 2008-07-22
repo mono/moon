@@ -1,3 +1,12 @@
+2008-07-22  Jeffrey Stedfast <fejj@novell.com>
+
+	* MediaElement.cs: No longer inherits from MediaBase,
+	AudioStreamIndex is now nullable, NaturalVideoWidth/Height are now
+	int instead of double. Can no longer set Markers.
+
+	* Image.cs: No longer inherits from MediaBase and removed
+	DownloadProgress property.
+
 2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextBlock.cs: Use System.Windows.Documents.InlineCollection
