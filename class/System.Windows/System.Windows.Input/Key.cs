@@ -113,6 +113,6 @@ namespace System.Windows.Input {
 		Subtract,
 		Decimal,
 		Divide,
-		Unknown
+		Unknown = 255
 	}
 }
