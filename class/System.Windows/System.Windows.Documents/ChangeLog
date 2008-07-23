@@ -1,3 +1,7 @@
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Inline.cs: Implement Font(Style|Weight|Stretch).
+
 2008-07-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* InlineCollection.cs: New. Maps to Silverlight 1.0 "Inlines"

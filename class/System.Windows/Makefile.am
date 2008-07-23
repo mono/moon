@@ -79,10 +79,17 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/Duration.cs					\
 	$(srcdir)/System.Windows/ErrorType.cs					\
 	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs					\
+	$(srcdir)/System.Windows/Expression.cs					\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
+	$(srcdir)/System.Windows/FontStretch.cs				\
+	$(srcdir)/System.Windows/FontStretchKind.cs				\
 	$(srcdir)/System.Windows/FontStretches.cs				\
+	$(srcdir)/System.Windows/FontStyle.cs					\
+	$(srcdir)/System.Windows/FontStyleKind.cs					\
 	$(srcdir)/System.Windows/FontStyles.cs					\
+	$(srcdir)/System.Windows/FontWeight.cs					\
 	$(srcdir)/System.Windows/FontWeights.cs					\
+	$(srcdir)/System.Windows/FontWeightKind.cs					\
 	$(srcdir)/System.Windows/FrameworkElement.cs				\
 	$(srcdir)/System.Windows/FrameworkTemplate.cs				\
 	$(srcdir)/System.Windows/GridLength.cs					\

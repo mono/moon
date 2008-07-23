@@ -1,5 +1,8 @@
+//
+// FontStetches.cs
+//
 // Author:
-//   Rolf Bjarne Kvinge  (RKvinge@novell.com)
+//   Atsushi Enomoto  <atsushi@ximian.com>
 //
 // Copyright 2007 Novell, Inc.
 //
@@ -22,7 +25,6 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
 using System;
 using System.Windows;
 using System.Windows.Media;
@@ -30,46 +32,17 @@ using System.Windows.Input;
 
 namespace System.Windows {
 
-	public static class FontWeights
-	{
-		public static FontWeight Black {
-			get { return new FontWeight (FontWeightKind.Black); }
-		}
-		
-		public static FontWeight Bold {
-			get { return new FontWeight (FontWeightKind.Bold); }
-		}
-		
-		public static FontWeight ExtraBlack {
-			get { return new FontWeight (FontWeightKind.ExtraBlack); }
-		}
-		
-		public static FontWeight ExtraBold {
-			get { return new FontWeight (FontWeightKind.ExtraBold); }
-		}
-		
-		public static FontWeight ExtraLight {
-			get { return new FontWeight (FontWeightKind.ExtraLight); }
-		}
-		
-		public static FontWeight Light {
-			get { return new FontWeight (FontWeightKind.Light); }
-		}
-		
-		public static FontWeight Medium {
-			get { return new FontWeight (FontWeightKind.Medium); }
-		}
-		
-		public static FontWeight Normal {
-			get { return new FontWeight (FontWeightKind.Normal); }
-		}
-		
-		public static FontWeight SemiBold {
-			get { return new FontWeight (FontWeightKind.SemiBold); }
-		}
-		
-		public static FontWeight Thin {
-			get { return new FontWeight (FontWeightKind.Thin); }
-		}
+	internal enum FontStretchKind {
+		UltraCondensed = 1,
+		ExtraCondensed,
+		Condensed,
+		SemiCondensed,
+		Medium,
+		SemiExpanded,
+		Expanded,
+		ExtraExpanded,
+		UltraExpanded,
+		Normal = Medium
 	}
 }
+

@@ -236,6 +236,13 @@
     <File name="System" subtype="Directory" buildaction="Compile" />
     <File name="System/UriTypeConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ExceptionRoutedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Expression.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontStretch.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontStretchKind.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontStyle.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontStyleKind.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontWeightKind.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontWeight.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

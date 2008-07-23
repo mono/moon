@@ -32,16 +32,41 @@ using System.Windows.Input;
 
 namespace System.Windows {
 
-	public enum FontStretches {
-		UltraCondensed = 1,
-		ExtraCondensed,
-		Condensed,
-		SemiCondensed,
-		Medium,
-		SemiExpanded,
-		Expanded,
-		ExtraExpanded,
-		UltraExpanded,
-		Normal = Medium
+	public static class FontStretches {
+		public static FontStretch Condensed	{
+			get { return new FontStretch (FontStretchKind.Condensed); }
+		}
+			
+		public static FontStretch Expanded	{
+			get { return new FontStretch (FontStretchKind.Expanded); }
+		}
+				
+		public static FontStretch ExtraCondensed	{
+			get { return new FontStretch (FontStretchKind.ExtraCondensed); }
+		}
+					
+		public static FontStretch ExtraExpanded	{
+			get { return new FontStretch (FontStretchKind.ExtraExpanded); }
+		}
+						
+		public static FontStretch Normal	{
+			get { return new FontStretch (FontStretchKind.Normal); }
+		}
+							
+		public static FontStretch SemiCondensed	{
+			get { return new FontStretch (FontStretchKind.SemiCondensed); }
+		}
+								
+		public static FontStretch SemiExpanded	{
+			get { return new FontStretch (FontStretchKind.SemiExpanded); }
+		}
+									
+		public static FontStretch UltraCondensed	{
+			get { return new FontStretch (FontStretchKind.UltraCondensed); }
+		}
+										
+		public static FontStretch UltraExpanded	{
+			get { return new FontStretch (FontStretchKind.UltraExpanded); }
+		}
 	}
 }

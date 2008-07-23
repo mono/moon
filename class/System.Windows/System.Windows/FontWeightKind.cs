@@ -30,46 +30,17 @@ using System.Windows.Input;
 
 namespace System.Windows {
 
-	public static class FontWeights
+	internal enum FontWeightKind
 	{
-		public static FontWeight Black {
-			get { return new FontWeight (FontWeightKind.Black); }
-		}
-		
-		public static FontWeight Bold {
-			get { return new FontWeight (FontWeightKind.Bold); }
-		}
-		
-		public static FontWeight ExtraBlack {
-			get { return new FontWeight (FontWeightKind.ExtraBlack); }
-		}
-		
-		public static FontWeight ExtraBold {
-			get { return new FontWeight (FontWeightKind.ExtraBold); }
-		}
-		
-		public static FontWeight ExtraLight {
-			get { return new FontWeight (FontWeightKind.ExtraLight); }
-		}
-		
-		public static FontWeight Light {
-			get { return new FontWeight (FontWeightKind.Light); }
-		}
-		
-		public static FontWeight Medium {
-			get { return new FontWeight (FontWeightKind.Medium); }
-		}
-		
-		public static FontWeight Normal {
-			get { return new FontWeight (FontWeightKind.Normal); }
-		}
-		
-		public static FontWeight SemiBold {
-			get { return new FontWeight (FontWeightKind.SemiBold); }
-		}
-		
-		public static FontWeight Thin {
-			get { return new FontWeight (FontWeightKind.Thin); }
-		}
+		Thin       = 100,
+		ExtraLight = 200,
+		Light      = 300,
+		Normal     = 400,
+		Medium     = 500,
+		SemiBold   = 600,
+		Bold       = 700,
+		ExtraBold  = 800,
+		Black      = 900,
+		ExtraBlack = 950,
 	}
 }

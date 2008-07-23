@@ -1,5 +1,12 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* FontWeight.cs, FontStyleKind.cs, Expression.cs, FontStretchKind.cs,
+	  FontWeightKind.cs, FontStyle.cs, FontStretches.cs, FontWeights.cs,
+	  FontStretch.cs, FontStyles.cs: Implement
+	  Font(Style|Weight|Stretch).
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* ErrorEventHandler.cs, RuntimeErrorEventArgs.cs,
 	  ParserErrorEventArgs.cs, RuntimeErrorEventHandler.cs,
 	  Downloader.cs, ErrorEventArgs.cs: Removed.

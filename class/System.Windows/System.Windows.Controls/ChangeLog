@@ -1,5 +1,9 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* TextBlock.cs: Implement Font(Style|Weight|Stretch).
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Image.cs: Fixed ImageFailed signature.
 	* MediaElement.cs: Fixed MediaFailed signature.
 	* TextBlock.cs: Removed SetFontSource.

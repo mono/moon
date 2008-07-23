@@ -1,10 +1,10 @@
 //
-// FontStyles.cs
+// Expression.cs
 //
-// Author:
-//   Atsushi Enomoto  <atsushi@ximian.com>
+// Authors:
+//   Rolf Bjarne Kvinge (rkvinge@novell.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2008 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,20 +25,15 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using System;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Input;
 
-namespace System.Windows {
-
-	public static class FontStyles {
-		public static FontStyle Italic {
-			get { return new FontStyle (FontStyleKind.Italic); }
-		}
-		
-		public static FontStyle Normal {
-			get { return new FontStyle (FontStyleKind.Normal); }
+namespace System.Windows
+{
+	public abstract class Expression
+	{
+		protected Expression()
+		{
 		}
 	}
 }

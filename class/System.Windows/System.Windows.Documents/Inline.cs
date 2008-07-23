@@ -38,11 +38,11 @@ namespace System.Windows.Documents {
 		public static readonly DependencyProperty FontSizeProperty =
 			DependencyProperty.Lookup (Kind.INLINE, "FontSize", typeof (double));
 		public static readonly DependencyProperty FontStretchProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "FontStretch", typeof (FontStretches));
+			DependencyProperty.Lookup (Kind.INLINE, "FontStretch", typeof (FontStretch));
 		public static readonly DependencyProperty FontStyleProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "FontStyle", typeof (FontStyles));
+			DependencyProperty.Lookup (Kind.INLINE, "FontStyle", typeof (FontStyle));
 		public static readonly DependencyProperty FontWeightProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "FontWeight", typeof (int));
+			DependencyProperty.Lookup (Kind.INLINE, "FontWeight", typeof (FontWeight));
 		public static readonly DependencyProperty ForegroundProperty =
 			DependencyProperty.Lookup (Kind.INLINE, "Foreground", typeof (Brush));
 		public static readonly DependencyProperty TextDecorationsProperty =
@@ -66,18 +66,18 @@ namespace System.Windows.Documents {
 			set { SetValue (FontSizeProperty, value); }
 		}
 
-		public FontStretches FontStretch {
-			get { return (FontStretches) GetValue (FontStretchProperty); }
+		public FontStretch FontStretch {
+			get { return (FontStretch) GetValue (FontStretchProperty); }
 			set { SetValue (FontStretchProperty, value); }
 		}
 
-		public FontStyles FontStyle {
-			get { return (FontStyles) GetValue (FontStyleProperty); }
+		public FontStyle FontStyle {
+			get { return (FontStyle) GetValue (FontStyleProperty); }
 			set { SetValue (FontStyleProperty, value); }
 		}
 
-		public FontWeights FontWeight {
-			get { return (FontWeights) GetValue (FontWeightProperty); }
+		public FontWeight FontWeight {
+			get { return (FontWeight) GetValue (FontWeightProperty); }
 			set { SetValue (FontWeightProperty, value); }
 		}
 
