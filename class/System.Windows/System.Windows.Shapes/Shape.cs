@@ -29,9 +29,7 @@
 using System.Windows.Media;
 using Mono;
 namespace System.Windows.Shapes {
-
 	public abstract class Shape : FrameworkElement {
-
 		public static readonly DependencyProperty FillProperty =
 			DependencyProperty.Lookup (Kind.SHAPE, "Fill", typeof (Brush));
 		public static readonly DependencyProperty StretchProperty = 
@@ -59,7 +57,7 @@ namespace System.Windows.Shapes {
 		{
 		}
 		
-		public Shape () : base (NativeMethods.shape_new ())
+		protected Shape () : base (NativeMethods.shape_new ())
 		{
 		}
 
