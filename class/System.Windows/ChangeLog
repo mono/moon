@@ -1,3 +1,9 @@
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* MS.Internal, Makefile.am,
+	  MS.Internal/IManagedFrameworkInternalHelper.cs: Implemented
+	  MS.Internal/ManagedFrameworkInternalHelper.cs.
+
 2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* System.Windows.mdp: Updated.

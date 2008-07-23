@@ -16,6 +16,7 @@ system_windows_sources =							\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
+	$(srcdir)/MS.Internal/IManagedFrameworkInternalHelper.cs	\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/Hosting.cs						\
