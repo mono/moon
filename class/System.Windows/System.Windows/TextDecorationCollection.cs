@@ -27,17 +27,8 @@ using System;
 
 namespace System.Windows {
 	public sealed class TextDecorationCollection {
-		TextDecorations decorations;
-		
-		internal TextDecorationCollection (TextDecorations decorations)
+		internal TextDecorationCollection ()
 		{
-			this.decorations = decorations;
-		}
-		
-		internal TextDecorations TextDecorations {
-			get {
-				return decorations;
-			}
 		}
 	}
 }

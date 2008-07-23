@@ -28,8 +28,9 @@
 
 namespace System.Windows {
 
-	public enum TextDecorations {
-		None = 0,
-		Underline = 1
+	public static class TextDecorations {
+    	public static TextDecorationCollection Underline { 
+			get { throw new System.NotImplementedException (); }
+		}
 	}
 }

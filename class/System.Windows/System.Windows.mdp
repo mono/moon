@@ -23,7 +23,6 @@
     <File name="System.Windows/DependencyObject.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/DependencyProperty.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Duration.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/ErrorType.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/EventTrigger.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FontStretches.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FontStyles.cs" subtype="Code" buildaction="Compile" />
@@ -243,6 +242,14 @@
     <File name="System.Windows/FontStyleKind.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FontWeightKind.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FontWeight.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/PropertyPath.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/RoutedEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/RoutedPropertyChangedEventArgs_T.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/RoutedPropertyChangedEventHandler_T.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TextDecorationKind.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/SizeChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ExceptionRoutedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/SizeChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

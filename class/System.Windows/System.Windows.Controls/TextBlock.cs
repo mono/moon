@@ -53,7 +53,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty InlinesProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (InlineCollection));
 		public static readonly DependencyProperty TextDecorationsProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorations));
+			DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorationCollection));
 		public static readonly DependencyProperty TextProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Text", typeof (string));
 		public static readonly DependencyProperty TextWrappingProperty =
@@ -110,8 +110,8 @@ namespace System.Windows.Controls {
 			set { SetValue (InlinesProperty, value); }
 		}
 
-		public TextDecorations TextDecorations {
-			get { return (TextDecorations) GetValue (TextDecorationsProperty); }
+		public TextDecorationCollection TextDecorations {
+			get { return (TextDecorationCollection) GetValue (TextDecorationsProperty); }
 			set { SetValue (TextDecorationsProperty, value); }
 		}
 

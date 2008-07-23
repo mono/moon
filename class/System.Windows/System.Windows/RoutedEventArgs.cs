@@ -23,15 +23,20 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Security;
+
 namespace System.Windows {
 
 	public class RoutedEventArgs : EventArgs {
+		private object source;
+		
 		public RoutedEventArgs ()
 		{
 		}
 
 		public Object Source {
-			get; set;
+			get  { return source; }
+			set { source = value; }
 		}
 	}
 }

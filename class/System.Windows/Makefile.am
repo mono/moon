@@ -77,7 +77,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/DependencyProperty.cs				\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
 	$(srcdir)/System.Windows/Duration.cs					\
-	$(srcdir)/System.Windows/ErrorType.cs					\
 	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs					\
 	$(srcdir)/System.Windows/Expression.cs					\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
@@ -100,16 +99,23 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/PropertyChangedCallback.cs			\
 	$(srcdir)/System.Windows/PropertyMetadata.cs				\
+	$(srcdir)/System.Windows/PropertyPath.cs				\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
 	$(srcdir)/System.Windows/Rect.cs					\
+	$(srcdir)/System.Windows/RoutedEvent.cs				\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
 	$(srcdir)/System.Windows/RoutedEventHandler.cs				\
+	$(srcdir)/System.Windows/RoutedPropertyChangedEventArgs_T.cs	\
+	$(srcdir)/System.Windows/RoutedPropertyChangedEventHandler_T.cs	\
 	$(srcdir)/System.Windows/Size.cs					\
+	$(srcdir)/System.Windows/SizeChangedEventArgs.cs					\
+	$(srcdir)/System.Windows/SizeChangedEventHandler.cs					\
 	$(srcdir)/System.Windows/StartupEventArgs.cs				\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/StyleSimulations.cs				\
 	$(srcdir)/System.Windows/TextAlignment.cs				\
 	$(srcdir)/System.Windows/TextDecorationCollection.cs			\
+	$(srcdir)/System.Windows/TextDecorationKind.cs				\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\

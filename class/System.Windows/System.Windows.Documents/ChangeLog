@@ -1,5 +1,9 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Inline.cs: Updated TextDecoration* according to SL2B2.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Inline.cs: Implement Font(Style|Weight|Stretch).
 
 2008-07-21  Jeffrey Stedfast  <fejj@novell.com>

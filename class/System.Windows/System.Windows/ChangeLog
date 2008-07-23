@@ -1,5 +1,16 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* PropertyPath.cs, ParserErrorEventHandler.cs, ErrorType.cs: Removed.
+	* TextDecorationKind.cs, TextDecorationCollection.cs,
+	  TextDecorations.cs: Updated TextDecoration* according to SL2B2.
+	* RoutedEvent.cs, SizeChangedEventHandler.cs,
+	  RoutedPropertyChangedEventHandler_T.cs, RoutedEventArgs.cs,
+	  ExceptionRoutedEventHandler.cs,
+	  RoutedPropertyChangedEventArgs_T.cs, SizeChangedEventArgs.cs:
+	  Added.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* FontWeight.cs, FontStyleKind.cs, Expression.cs, FontStretchKind.cs,
 	  FontWeightKind.cs, FontStyle.cs, FontStretches.cs, FontWeights.cs,
 	  FontStretch.cs, FontStyles.cs: Implement

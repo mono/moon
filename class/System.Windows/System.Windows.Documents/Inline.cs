@@ -46,7 +46,7 @@ namespace System.Windows.Documents {
 		public static readonly DependencyProperty ForegroundProperty =
 			DependencyProperty.Lookup (Kind.INLINE, "Foreground", typeof (Brush));
 		public static readonly DependencyProperty TextDecorationsProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "TextDecorations", typeof (TextDecorations));
+			DependencyProperty.Lookup (Kind.INLINE, "TextDecorations", typeof (TextDecorationCollection));
 
 		public Inline ()  : base (NativeMethods.glyphs_new ())
 		{
@@ -86,8 +86,8 @@ namespace System.Windows.Documents {
 			set { SetValue (ForegroundProperty, value); }
 		}
 
-		public TextDecorations TextDecorations {
-			get { return (TextDecorations) GetValue (TextDecorationsProperty); }
+		public TextDecorationCollection TextDecorations {
+			get { return (TextDecorationCollection) GetValue (TextDecorationsProperty); }
 			set { SetValue (TextDecorationsProperty, value); }
 		}
 
