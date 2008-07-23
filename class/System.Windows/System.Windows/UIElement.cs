@@ -33,7 +33,7 @@ using Mono;
 
 namespace System.Windows {
 	
-	public abstract class UIElement : Visual {
+	public abstract class UIElement : DependencyObject {
 	        public static readonly DependencyProperty ClipProperty;
 	        public static readonly DependencyProperty CursorProperty;
 	        public static readonly DependencyProperty IsHitTestVisibleProperty;
@@ -200,7 +200,6 @@ namespace System.Windows {
 			
 		static object GotFocusEvent = new object ();
 		static object LostFocusEvent = new object ();
-		static object LoadedEvent = new object ();
 		static object KeyDownEvent = new object ();
 		static object KeyUpEvent = new object ();
 		static object MouseEnterEvent = new object ();
@@ -209,7 +208,7 @@ namespace System.Windows {
 		static object MouseLeftButtonUpEvent = new object ();
 		static object MouseMoveEvent = new object ();
 
-		public event EventHandler GotFocus {
+		public event RoutedEventHandler GotFocus {
 			add {
 				if (events[GotFocusEvent] == null)
 					Events.AddHandler (this, "GotFocus", Events.got_focus);
@@ -222,7 +221,7 @@ namespace System.Windows {
 			}
 		}
 
-		public event EventHandler LostFocus {
+		public event RoutedEventHandler LostFocus {
 			add {
 				if (events[LostFocusEvent] == null)
 					Events.AddHandler (this, "LostFocus", Events.lost_focus);
@@ -235,20 +234,7 @@ namespace System.Windows {
 			}
 		}
 
-		public event EventHandler Loaded {
-			add {
-				if (events[LoadedEvent] == null)
-					Events.AddHandler (this, "Loaded", Events.loaded);
-				events.AddHandler (LoadedEvent, value);
-			}
-			remove {
-				events.RemoveHandler (LoadedEvent, value);
-				if (events[LoadedEvent] == null)
-					Events.RemoveHandler (this, "Loaded", Events.loaded);
-			}
-		}
-			
-		public event KeyboardEventHandler KeyDown {
+		public event KeyEventHandler KeyDown {
 			add {
 				if (events[KeyDownEvent] == null)
 					Events.AddHandler (this, "KeyDown", Events.key_down);
@@ -261,7 +247,7 @@ namespace System.Windows {
 			}
 		}
 
-		public event KeyboardEventHandler KeyUp {
+		public event KeyEventHandler KeyUp {
 			add {
 				if (events[KeyUpEvent] == null)
 					Events.AddHandler (this, "KeyUp", Events.key_up);
@@ -287,7 +273,7 @@ namespace System.Windows {
 			}
 		}
 
-		public event EventHandler MouseLeave {
+		public event MouseEventHandler MouseLeave {
 			add {
 				if (events[MouseLeaveEvent] == null)
 					Events.AddHandler (this, "MouseLeave", Events.mouse_leave);
@@ -300,7 +286,7 @@ namespace System.Windows {
 			}
 		}
 
-		public event MouseEventHandler MouseLeftButtonDown {
+		public event MouseButtonEventHandler MouseLeftButtonDown {
 			add {
 				if (events[MouseLeftButtonDownEvent] == null)
 					Events.AddHandler (this, "MouseLeftButtonDown", Events.mouse_button_down);
@@ -313,7 +299,7 @@ namespace System.Windows {
 			}
 		}
 
-		public event MouseEventHandler MouseLeftButtonUp {
+		public event MouseButtonEventHandler MouseLeftButtonUp {
 			add {
 				if (events[MouseLeftButtonUpEvent] == null)
 					Events.AddHandler (this, "MouseLeftButtonUp", Events.mouse_button_up);
@@ -401,13 +387,6 @@ namespace System.Windows {
 			MouseEventHandler h = (MouseEventHandler)events[MouseEnterEvent];
 			if (h != null)
 				h (this, m);
-		}
-
-		internal void InvokeLoaded ()
-		{
-			EventHandler h = (EventHandler)events[LoadedEvent];
-			if (h != null)
-				h (this, null);
 		}
 
 		internal override Kind GetKind ()

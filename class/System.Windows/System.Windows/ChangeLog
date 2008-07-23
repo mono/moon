@@ -1,5 +1,12 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* GridLength.cs: Implement missing methods.
+	* UIElement.cs: Fix event signatures and base class.
+	* Thickness.cs, CornerRadius.cs: Implemented.
+	* ResourceDictionary.cs: Fix base class.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* SizeChangedEventArgs.cs: Fixed base class.
 	* XamlReader.cs: Removed.
 	* StyleSimulations.cs: Moved StyleSimulations to System.Windows.Media.

@@ -58,10 +58,6 @@ namespace System.Windows {
 			get {
 				return val;
 			}
-
-			set {
-				val = value;
-			}
 		}
 
 		public GridUnitType GridUnitType {
@@ -92,6 +88,45 @@ namespace System.Windows {
 			get {
 				return auto;
 			}
+		}
+		
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			
+			if (!(obj is GridLength))
+				return false;
+			
+			return this == (GridLength) obj;
+		}
+		
+		public bool Equals (GridLength obj)
+		{
+			return this == obj;
+		}
+		
+		public static bool operator == (GridLength cr1, GridLength cr2)
+		{
+			return cr1.val == cr2.val &&
+				cr1.type == cr2.type;
+		}
+		
+		public static bool operator != (GridLength cr1, GridLength cr2)
+		{
+			return !(cr1 == cr2);
+		}
+		
+		[MonoTODO ("We need a hash code algorithm based on the values in the struct")]
+		public override int GetHashCode()
+		{
+			return base.GetHashCode ();
+		}
+		
+		[MonoTODO ()]
+		public override string ToString ()
+		{
+			return base.ToString ();
 		}
 	}
 }

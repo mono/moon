@@ -70,6 +70,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
+	$(srcdir)/System.Windows/CornerRadius.cs				\
 	$(srcdir)/System.Windows/CrossDomainAccess.cs				\
 	$(srcdir)/System.Windows/DataTemplate.cs				\
 	$(srcdir)/System.Windows/Deployment.cs					\
@@ -118,6 +119,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/TextDecorationKind.cs				\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
+	$(srcdir)/System.Windows/Thickness.cs			\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\
 	$(srcdir)/System.Windows/TriggerActionCollection.cs			\
 	$(srcdir)/System.Windows/UIElement.cs					\

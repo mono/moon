@@ -1,5 +1,9 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* System.Windows.mdp, Makefile.am: Updated.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile.am, System.Windows.mdp: Updated.
 
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 

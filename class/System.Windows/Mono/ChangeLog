@@ -1,3 +1,7 @@
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Events.cs: Fix event signatures and base class.
+
 2008-07-21  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Dont hookup to the asssembly resolve event

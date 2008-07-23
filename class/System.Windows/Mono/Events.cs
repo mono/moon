@@ -86,7 +86,7 @@ namespace Mono {
 		{
 			try {
 				UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeLoaded ();
+				//e.InvokeLoaded ();
 				
 				//FIXME: BrowserHost is now replaced by SilverlightHost.Content
 				BrowserHost.InvokeResize ();
