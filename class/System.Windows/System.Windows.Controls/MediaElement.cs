@@ -39,7 +39,7 @@ namespace System.Windows.Controls
 	public sealed class MediaElement : FrameworkElement {
 		
 		public static readonly DependencyProperty AttributesProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Attributes", typeof (MediaAttributeCollection));
+			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Attributes", typeof (Dictionary <string, string>));
 		
 		public static readonly DependencyProperty AudioStreamCountProperty = 
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "AudioStreamCount", typeof (int));

@@ -1,5 +1,10 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* MediaAttributeCollection.cs, MediaAttribute.cs: Removed
+	  MediaAttribute(Collection).
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* MediaStreamSample.cs, MediaSourceAttributesKeys.cs,
 	  MediaStreamSource.cs, MediaStreamDescription.cs,
 	  MediaStreamSourceDiagnosticKind.cs,

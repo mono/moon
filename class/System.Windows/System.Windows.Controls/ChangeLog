@@ -1,5 +1,9 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* MediaElement.cs: Removed MediaAttribute(Collection).
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* MediaElement.cs: More B2 updates.
 
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
