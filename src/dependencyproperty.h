@@ -21,6 +21,7 @@
 // DependencyProperty
 //
 class DependencyProperty {
+	static GHashTable *properties;
 	GHashTable *storage_hash; // keys: objects, values: animation storage's
 	bool is_readonly;
 	
@@ -44,6 +45,16 @@ class DependencyProperty {
 	AnimationStorage *AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
 	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
 	AnimationStorage *GetAnimationStorageFor (DependencyObject *obj);
+	
+	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value);
+	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
+	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
+	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
+	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
+	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
+	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
+	
+	static void Shutdown ();
 };
 
 G_BEGIN_DECLS

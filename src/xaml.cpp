@@ -929,7 +929,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	}
 	
 	prop_type = p->current_element->info->GetKind ();
-	content = DependencyObject::GetDependencyProperty (prop_type, prop_name);
+	content = DependencyProperty::GetDependencyProperty (prop_type, prop_name);
 	
 	// TODO: There might be other types that can be specified here,
 	// but string is all i have found so far.  If you can specify other
@@ -2533,11 +2533,11 @@ XamlElementInstanceNative::CreateItem ()
 			char **prop_name = g_strsplit (walk->element_name, ".", -1);
 			
 			walk = walk->parent;
-			dep = DependencyObject::GetDependencyProperty (walk->info->GetKind (), prop_name [1]);
+			dep = DependencyProperty::GetDependencyProperty (walk->info->GetKind (), prop_name [1]);
 
 			g_strfreev (prop_name);
 		} else if (walk && walk->info->GetContentProperty ()) {
-			dep = DependencyObject::GetDependencyProperty (walk->info->GetKind (),
+			dep = DependencyProperty::GetDependencyProperty (walk->info->GetKind (),
 					(char *) walk->info->GetContentProperty ());			
 		}
 
@@ -2665,7 +2665,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 					     g_strdup_printf ("Unknown element: %s.", parent->element_name));
 		}
 
-		DependencyProperty *dep = DependencyObject::GetDependencyProperty (owner->type, prop_name [1]);
+		DependencyProperty *dep = DependencyProperty::GetDependencyProperty (owner->type, prop_name [1]);
 
 		g_strfreev (prop_name);
 
@@ -2708,7 +2708,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	}
 
 	if (parent->info->GetContentProperty ()) {
-		DependencyProperty *dep = DependencyObject::GetDependencyProperty (parent->info->GetKind (),
+		DependencyProperty *dep = DependencyProperty::GetDependencyProperty (parent->info->GetKind (),
 				(char *) parent->info->GetContentProperty ());
 
 		if (!dep)
@@ -2784,7 +2784,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		return;
 	}
 
-	prop = DependencyObject::GetDependencyProperty (item->info->GetKind (), prop_name [1]);
+	prop = DependencyProperty::GetDependencyProperty (item->info->GetKind (), prop_name [1]);
 
 	if (prop) {
 		if (prop->IsReadOnly ()) {
@@ -2952,9 +2952,9 @@ start_parse:
 		if (atchname) {
 			Type *attached_type = Type::Find (atchname);
 			if (attached_type)
-				prop = DependencyObject::GetDependencyProperty (attached_type->type, pname);
+				prop = DependencyProperty::GetDependencyProperty (attached_type->type, pname);
 		} else {
-			prop = DependencyObject::GetDependencyProperty (item->info->GetKind (), pname);
+			prop = DependencyProperty::GetDependencyProperty (item->info->GetKind (), pname);
 		}
 
 		if (prop) {

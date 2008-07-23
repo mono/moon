@@ -1132,21 +1132,21 @@ DependencyProperty* InkPresenter::StrokesProperty;
 
 void stylus_init ()
 {
-	StylusInfo::DeviceTypeProperty = DependencyObject::Register (Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse));
-	StylusInfo::IsInvertedProperty = DependencyObject::Register (Type::STYLUSINFO, "IsInverted", new Value (false));
+	StylusInfo::DeviceTypeProperty = DependencyProperty::Register (Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse));
+	StylusInfo::IsInvertedProperty = DependencyProperty::Register (Type::STYLUSINFO, "IsInverted", new Value (false));
 
-	StylusPoint::PressureFactorProperty = DependencyObject::Register (Type::STYLUSPOINT, "PressureFactor", new Value (0.5));
-	StylusPoint::XProperty = DependencyObject::Register (Type::STYLUSPOINT, "X", new Value (0.0));
-	StylusPoint::YProperty = DependencyObject::Register (Type::STYLUSPOINT, "Y", new Value (0.0));
+	StylusPoint::PressureFactorProperty = DependencyProperty::Register (Type::STYLUSPOINT, "PressureFactor", new Value (0.5));
+	StylusPoint::XProperty = DependencyProperty::Register (Type::STYLUSPOINT, "X", new Value (0.0));
+	StylusPoint::YProperty = DependencyProperty::Register (Type::STYLUSPOINT, "Y", new Value (0.0));
 
-	Stroke::DrawingAttributesProperty = DependencyObject::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
-	Stroke::StylusPointsProperty = DependencyObject::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
+	Stroke::DrawingAttributesProperty = DependencyProperty::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
+	Stroke::StylusPointsProperty = DependencyProperty::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
 
-	DrawingAttributes::ColorProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "Color", new Value (Color (0xFF000000)));
-	DrawingAttributes::OutlineColorProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "OutlineColor", new Value (Color (0x00000000)));
-	DrawingAttributes::HeightProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "Height", new Value (3.0));
-	DrawingAttributes::WidthProperty = DependencyObject::Register (Type::DRAWINGATTRIBUTES, "Width", new Value (3.0));
+	DrawingAttributes::ColorProperty = DependencyProperty::Register (Type::DRAWINGATTRIBUTES, "Color", new Value (Color (0xFF000000)));
+	DrawingAttributes::OutlineColorProperty = DependencyProperty::Register (Type::DRAWINGATTRIBUTES, "OutlineColor", new Value (Color (0x00000000)));
+	DrawingAttributes::HeightProperty = DependencyProperty::Register (Type::DRAWINGATTRIBUTES, "Height", new Value (3.0));
+	DrawingAttributes::WidthProperty = DependencyProperty::Register (Type::DRAWINGATTRIBUTES, "Width", new Value (3.0));
 
-	InkPresenter::StrokesProperty = DependencyObject::Register (Type::INKPRESENTER, "Strokes", Type::STROKE_COLLECTION);
+	InkPresenter::StrokesProperty = DependencyProperty::Register (Type::INKPRESENTER, "Strokes", Type::STROKE_COLLECTION);
 }
 

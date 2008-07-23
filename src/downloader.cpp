@@ -737,11 +737,11 @@ dummy_downloader_create_web_request (const char *method, const char *uri, gpoint
 void
 downloader_init (void)
 {
-	Downloader::DownloadProgressProperty = DependencyObject::Register (Type::DOWNLOADER, "DownloadProgress", new Value (0.0));
-	Downloader::ResponseTextProperty = DependencyObject::Register (Type::DOWNLOADER, "ResponseText", Type::STRING);
-	Downloader::StatusProperty = DependencyObject::Register (Type::DOWNLOADER, "Status", new Value (0));
-	Downloader::StatusTextProperty = DependencyObject::Register (Type::DOWNLOADER, "StatusText", new Value (""));
-	Downloader::UriProperty = DependencyObject::Register (Type::DOWNLOADER, "Uri", Type::STRING);
+	Downloader::DownloadProgressProperty = DependencyProperty::Register (Type::DOWNLOADER, "DownloadProgress", new Value (0.0));
+	Downloader::ResponseTextProperty = DependencyProperty::Register (Type::DOWNLOADER, "ResponseText", Type::STRING);
+	Downloader::StatusProperty = DependencyProperty::Register (Type::DOWNLOADER, "Status", new Value (0));
+	Downloader::StatusTextProperty = DependencyProperty::Register (Type::DOWNLOADER, "StatusText", new Value (""));
+	Downloader::UriProperty = DependencyProperty::Register (Type::DOWNLOADER, "Uri", Type::STRING);
 		
 	Downloader::SetFunctions (dummy_downloader_create_state,
 				  dummy_downloader_destroy_state,

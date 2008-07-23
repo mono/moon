@@ -162,8 +162,8 @@ canvas_new (void)
 void 
 canvas_init (void)
 {
-	Canvas::TopProperty = DependencyObject::RegisterFull (Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, true, false);
-	Canvas::LeftProperty = DependencyObject::RegisterFull (Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, true, false);
+	Canvas::TopProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, true, false);
+	Canvas::LeftProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, true, false);
 }
 
 

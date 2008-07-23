@@ -55,5 +55,5 @@ DependencyProperty *UserControl::ContentProperty;
 void 
 user_control_init ()
 {
-	UserControl::ContentProperty = DependencyObject::Register (Type::USERCONTROL, "Content", Type::UIELEMENT);
+	UserControl::ContentProperty = DependencyProperty::Register (Type::USERCONTROL, "Content", Type::UIELEMENT);
 }

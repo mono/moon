@@ -678,9 +678,6 @@ EventObject::unref_delayed ()
 	pthread_mutex_unlock (&delayed_unref_mutex);
 }
 
-
-GHashTable *DependencyObject::properties = NULL;
-
 typedef struct {
 	DependencyObject *dob;
 	DependencyProperty *prop;
@@ -1213,55 +1210,13 @@ DependencyObject::~DependencyObject ()
 DependencyProperty *
 DependencyObject::GetDependencyProperty (const char *name)
 {
-	return DependencyObject::GetDependencyProperty (GetObjectType (), name);
-}
-
-DependencyProperty *
-DependencyObject::GetDependencyProperty (Type::Kind type, const char *name)
-{
-	return GetDependencyProperty (type, name, true);
-}
-
-DependencyProperty *
-DependencyObject::GetDependencyProperty (Type::Kind type, const char *name, bool inherits)
-{
-	GHashTable *table;
-	DependencyProperty *property = NULL;
-
-	if (properties == NULL)
-		return NULL;
-
-	table = (GHashTable*) g_hash_table_lookup (properties, &type);
-
-	if (table) {
-		char *key = g_ascii_strdown (name, -1);
-		property = (DependencyProperty*) g_hash_table_lookup (table, key);
-		g_free (key);
-	}
-
-	if (property != NULL)
-		return property;
-
-	if (!inherits)
-		return NULL;	
-
-	// Look in the parent type
-	Type *current_type;
-	current_type = Type::Find (type);
-	
-	if (current_type == NULL)
-		return NULL;
-	
-	if (current_type->GetParent () == Type::INVALID)
-		return NULL;
-
-	return GetDependencyProperty (current_type->GetParent (), name);
+	return DependencyProperty::GetDependencyProperty (GetObjectType (), name);
 }
 
 bool
 DependencyObject::HasProperty (const char *name, bool inherits)
 {
-	return GetDependencyProperty (GetObjectType (), name, inherits) != NULL;
+	return DependencyProperty::GetDependencyProperty (GetObjectType (), name, inherits) != NULL;
 }
 
 DependencyObject *
@@ -1345,101 +1300,10 @@ dependency_object_set_name (DependencyObject *obj, const char *name)
 	obj->SetValue (DependencyObject::NameProperty, Value (name));
 }
 
-//
-// Use this for values that can be null
-//
-DependencyProperty *
-DependencyObject::Register (Type::Kind type, const char *name, Type::Kind vtype)
-{
-	g_return_val_if_fail (name != NULL, NULL);
-
-	return RegisterFull (type, name, NULL, vtype, false, false);
-}
-
-//
-// DependencyObject takes ownership of the Value * for default_value
-//
-DependencyProperty *
-DependencyObject::Register (Type::Kind type, const char *name, Value *default_value)
-{
-	g_return_val_if_fail (default_value != NULL, NULL);
-	g_return_val_if_fail (name != NULL, NULL);
-
-	return RegisterFull (type, name, default_value, default_value->GetKind (), false, false);
-}
-
-static void
-free_property_hash (gpointer v)
-{
-	g_hash_table_destroy ((GHashTable*)v);
-}
-
-static void
-free_property (gpointer v)
-{
-	delete (DependencyProperty*)v;
-}
-
-//
-// DependencyObject takes ownership of the Value * for default_value
-// This overload can be used to set the type of the property to a different type
-// than the default value (the default value can for instance be a SolidColorBrush
-// while the property type can be a Brush).
-//
-DependencyProperty *
-DependencyObject::Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype)
-{
-	g_return_val_if_fail (default_value != NULL, NULL);
-	g_return_val_if_fail (name != NULL, NULL);
-
-	return RegisterFull (type, name, default_value, vtype, false, false);
-}
-
-DependencyProperty *
-DependencyObject::RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype)
-{
-	DependencyProperty *property;
-	property = Register (type, name, vtype);
-	property->is_nullable = true;
-	return property;
-}
-
-//
-// Register the dependency property that belongs to @type with the name @name
-// The default value is @default_value (if provided) and the type that can be
-// stored in the dependency property is of type @vtype
-//
-DependencyProperty *
-DependencyObject::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
-{
-	GHashTable *table;
-
-	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype, attached, readonly, always_change);
-	
-	/* first add the property to the global 2 level property hash */
-	if (properties == NULL)
-		properties = g_hash_table_new_full (g_int_hash, g_int_equal,
-						    NULL, free_property_hash);
-
-	table = (GHashTable*) g_hash_table_lookup (properties, &property->type);
-
-	if (table == NULL) {
-		table = g_hash_table_new_full (g_str_hash, g_str_equal,
-					       NULL, free_property);
-		g_hash_table_insert (properties, &property->type, table);
-	}
-
-	g_hash_table_insert (table, property->hash_key, property);
-
-	return property;
-}
-
 void
 DependencyObject::Shutdown ()
 {
 	drain_unrefs ();
-	g_hash_table_destroy (DependencyObject::properties);
-	DependencyObject::properties = NULL;
 }
 
 static void
@@ -1528,5 +1392,5 @@ DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 dependencyobject_init(void)
 {
-	DependencyObject::NameProperty = DependencyObject::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
+	DependencyObject::NameProperty = DependencyProperty::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
 }

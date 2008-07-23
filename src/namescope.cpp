@@ -115,5 +115,5 @@ DependencyProperty *NameScope::NameScopeProperty;
 void
 namescope_init (void)
 {
-	NameScope::NameScopeProperty = DependencyObject::Register (Type::NAMESCOPE, "NameScope", Type::NAMESCOPE);
+	NameScope::NameScopeProperty = DependencyProperty::Register (Type::NAMESCOPE, "NameScope", Type::NAMESCOPE);
 }

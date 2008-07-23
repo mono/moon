@@ -75,6 +75,6 @@ DependencyProperty* EventTrigger::ActionsProperty;
 void
 event_trigger_init (void)
 {
-	EventTrigger::RoutedEventProperty = DependencyObject::Register (Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
-	EventTrigger::ActionsProperty = DependencyObject::Register (Type::EVENTTRIGGER, "Actions", Type::TRIGGERACTION_COLLECTION);
+	EventTrigger::RoutedEventProperty = DependencyProperty::Register (Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
+	EventTrigger::ActionsProperty = DependencyProperty::Register (Type::EVENTTRIGGER, "Actions", Type::TRIGGERACTION_COLLECTION);
 }

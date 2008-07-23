@@ -50,11 +50,11 @@ application_new (void)
 void
 deployment_init (void)
 {
-	AssemblyPart::SourceProperty = DependencyObject::Register (Type::ASSEMBLYPART, "Source", Type::STRING);
+	AssemblyPart::SourceProperty = DependencyProperty::Register (Type::ASSEMBLYPART, "Source", Type::STRING);
 	
-	Deployment::ExternalCallersFromCrossDomainProperty = DependencyObject::Register (Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", new Value (CrossDomainAccessNoAccess));
-	Deployment::EntryPointAssemblyProperty = DependencyObject::Register (Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
-	Deployment::EntryPointTypeProperty = DependencyObject::Register (Type::DEPLOYMENT, "EntryPointType", Type::STRING);
-	Deployment::PartsProperty = DependencyObject::Register (Type::DEPLOYMENT, "Parts", Type::ASSEMBLYPART_COLLECTION);
-	Deployment::RuntimeVersionProperty = DependencyObject::Register (Type::DEPLOYMENT, "RuntimeVersion", Type::STRING);
+	Deployment::ExternalCallersFromCrossDomainProperty = DependencyProperty::Register (Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", new Value (CrossDomainAccessNoAccess));
+	Deployment::EntryPointAssemblyProperty = DependencyProperty::Register (Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
+	Deployment::EntryPointTypeProperty = DependencyProperty::Register (Type::DEPLOYMENT, "EntryPointType", Type::STRING);
+	Deployment::PartsProperty = DependencyProperty::Register (Type::DEPLOYMENT, "Parts", Type::ASSEMBLYPART_COLLECTION);
+	Deployment::RuntimeVersionProperty = DependencyProperty::Register (Type::DEPLOYMENT, "RuntimeVersion", Type::STRING);
 }

@@ -2003,6 +2003,7 @@ runtime_shutdown (void)
 	font_shutdown ();
 	
 	DependencyObject::Shutdown ();
+	DependencyProperty::Shutdown ();
 
 #if OBJECT_TRACKING
 	if (EventObject::objects_created == EventObject::objects_destroyed) {

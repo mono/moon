@@ -2311,41 +2311,41 @@ text_init (void)
 	font_init ();
 	
 	// Inline
-	Inline::FontFamilyProperty = DependencyObject::Register (Type::INLINE, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
-	Inline::FontSizeProperty = DependencyObject::Register (Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));
-	Inline::FontStretchProperty = DependencyObject::Register (Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
-	Inline::FontStyleProperty = DependencyObject::Register (Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
-	Inline::FontWeightProperty = DependencyObject::Register (Type::INLINE, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
-	Inline::ForegroundProperty = DependencyObject::Register (Type::INLINE, "Foreground", Type::BRUSH);
-	Inline::TextDecorationsProperty = DependencyObject::Register (Type::INLINE, "TextDecorations", new Value (TextDecorationsNone));
+	Inline::FontFamilyProperty = DependencyProperty::Register (Type::INLINE, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
+	Inline::FontSizeProperty = DependencyProperty::Register (Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));
+	Inline::FontStretchProperty = DependencyProperty::Register (Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
+	Inline::FontStyleProperty = DependencyProperty::Register (Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
+	Inline::FontWeightProperty = DependencyProperty::Register (Type::INLINE, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
+	Inline::ForegroundProperty = DependencyProperty::Register (Type::INLINE, "Foreground", Type::BRUSH);
+	Inline::TextDecorationsProperty = DependencyProperty::Register (Type::INLINE, "TextDecorations", new Value (TextDecorationsNone));
 	
 	
 	// Run
-	Run::TextProperty = DependencyObject::Register (Type::RUN, "Text", Type::STRING);
+	Run::TextProperty = DependencyProperty::Register (Type::RUN, "Text", Type::STRING);
 	
 	
 	// TextBlock
-	TextBlock::ActualHeightProperty = DependencyObject::RegisterFull (Type::TEXTBLOCK, "ActualHeight", NULL, Type::DOUBLE, false, true);
-	TextBlock::ActualWidthProperty = DependencyObject::RegisterFull (Type::TEXTBLOCK, "ActualWidth", NULL, Type::DOUBLE, false, true);
-	TextBlock::FontFamilyProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
-	TextBlock::FontSizeProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));
-	TextBlock::FontStretchProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
-	TextBlock::FontStyleProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
-	TextBlock::FontWeightProperty = DependencyObject::Register (Type::TEXTBLOCK, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
-	TextBlock::ForegroundProperty = DependencyObject::Register (Type::TEXTBLOCK, "Foreground", Type::BRUSH);
-	TextBlock::InlinesProperty = DependencyObject::Register (Type::TEXTBLOCK, "Inlines", Type::INLINES);
-	TextBlock::TextProperty = DependencyObject::Register (Type::TEXTBLOCK, "Text", Type::STRING);
-	TextBlock::TextDecorationsProperty = DependencyObject::Register (Type::TEXTBLOCK, "TextDecorations", new Value (TextDecorationsNone));
-	TextBlock::TextWrappingProperty = DependencyObject::Register (Type::TEXTBLOCK, "TextWrapping", new Value (TextWrappingNoWrap));
+	TextBlock::ActualHeightProperty = DependencyProperty::RegisterFull (Type::TEXTBLOCK, "ActualHeight", NULL, Type::DOUBLE, false, true);
+	TextBlock::ActualWidthProperty = DependencyProperty::RegisterFull (Type::TEXTBLOCK, "ActualWidth", NULL, Type::DOUBLE, false, true);
+	TextBlock::FontFamilyProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
+	TextBlock::FontSizeProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));
+	TextBlock::FontStretchProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
+	TextBlock::FontStyleProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
+	TextBlock::FontWeightProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
+	TextBlock::ForegroundProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Foreground", Type::BRUSH);
+	TextBlock::InlinesProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Inlines", Type::INLINES);
+	TextBlock::TextProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Text", Type::STRING);
+	TextBlock::TextDecorationsProperty = DependencyProperty::Register (Type::TEXTBLOCK, "TextDecorations", new Value (TextDecorationsNone));
+	TextBlock::TextWrappingProperty = DependencyProperty::Register (Type::TEXTBLOCK, "TextWrapping", new Value (TextWrappingNoWrap));
 	
 	
 	// Glyphs
-	Glyphs::FillProperty = DependencyObject::Register (Type::GLYPHS, "Fill", Type::BRUSH);
-	Glyphs::FontRenderingEmSizeProperty = DependencyObject::Register (Type::GLYPHS, "FontRenderingEmSize", new Value (0.0));
-	Glyphs::FontUriProperty = DependencyObject::Register (Type::GLYPHS, "FontUri", Type::STRING);
-	Glyphs::IndicesProperty = DependencyObject::Register (Type::GLYPHS, "Indices", Type::STRING);
-	Glyphs::OriginXProperty = DependencyObject::Register (Type::GLYPHS, "OriginX", new Value (0.0));
-	Glyphs::OriginYProperty = DependencyObject::Register (Type::GLYPHS, "OriginY", new Value (0.0));
-	Glyphs::StyleSimulationsProperty = DependencyObject::Register (Type::GLYPHS, "StyleSimulations", new Value (StyleSimulationsNone));
-	Glyphs::UnicodeStringProperty = DependencyObject::Register (Type::GLYPHS, "UnicodeString", Type::STRING);
+	Glyphs::FillProperty = DependencyProperty::Register (Type::GLYPHS, "Fill", Type::BRUSH);
+	Glyphs::FontRenderingEmSizeProperty = DependencyProperty::Register (Type::GLYPHS, "FontRenderingEmSize", new Value (0.0));
+	Glyphs::FontUriProperty = DependencyProperty::Register (Type::GLYPHS, "FontUri", Type::STRING);
+	Glyphs::IndicesProperty = DependencyProperty::Register (Type::GLYPHS, "Indices", Type::STRING);
+	Glyphs::OriginXProperty = DependencyProperty::Register (Type::GLYPHS, "OriginX", new Value (0.0));
+	Glyphs::OriginYProperty = DependencyProperty::Register (Type::GLYPHS, "OriginY", new Value (0.0));
+	Glyphs::StyleSimulationsProperty = DependencyProperty::Register (Type::GLYPHS, "StyleSimulations", new Value (StyleSimulationsNone));
+	Glyphs::UnicodeStringProperty = DependencyProperty::Register (Type::GLYPHS, "UnicodeString", Type::STRING);
 }

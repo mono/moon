@@ -206,7 +206,6 @@ struct PropertyChangedEventArgs {
 };
 
 class DependencyObject : public EventObject {
-	static GHashTable *properties;
 	GHashTable        *current_values;
 	GSList            *listener_list;
 	DependencyObject  *logical_parent;
@@ -303,14 +302,6 @@ class DependencyObject : public EventObject {
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
 
 	static DependencyProperty *NameProperty;
-
-	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value);
-	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
-	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
-	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
-	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
-	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
-	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
 
 	static void Shutdown ();
 };

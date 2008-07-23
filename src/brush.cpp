@@ -1569,47 +1569,47 @@ void
 brush_init (void)
 {
 	/* Brush fields */
-	Brush::OpacityProperty = DependencyObject::Register (Type::BRUSH, "Opacity", new Value (1.0));
-	Brush::RelativeTransformProperty = DependencyObject::Register (Type::BRUSH, "RelativeTransform", Type::TRANSFORM);
-	Brush::TransformProperty = DependencyObject::Register (Type::BRUSH, "Transform", Type::TRANSFORM);
-	Brush::ChangedProperty = DependencyObject::Register (Type::BRUSH, "Changed", Type::BOOL);
+	Brush::OpacityProperty = DependencyProperty::Register (Type::BRUSH, "Opacity", new Value (1.0));
+	Brush::RelativeTransformProperty = DependencyProperty::Register (Type::BRUSH, "RelativeTransform", Type::TRANSFORM);
+	Brush::TransformProperty = DependencyProperty::Register (Type::BRUSH, "Transform", Type::TRANSFORM);
+	Brush::ChangedProperty = DependencyProperty::Register (Type::BRUSH, "Changed", Type::BOOL);
 	
 	/* SolidColorBrush fields */
-	SolidColorBrush::ColorProperty = DependencyObject::Register (Type::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00000000)));
+	SolidColorBrush::ColorProperty = DependencyProperty::Register (Type::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00000000)));
 
 	/* GradientBrush fields */
-	GradientBrush::ColorInterpolationModeProperty = DependencyObject::Register (Type::GRADIENTBRUSH, "ColorInterpolationMode",  new Value (ColorInterpolationModeSRgbLinearInterpolation));
-	GradientBrush::GradientStopsProperty = DependencyObject::Register (Type::GRADIENTBRUSH, "GradientStops", Type::GRADIENTSTOP_COLLECTION);
-	GradientBrush::MappingModeProperty = DependencyObject::Register (Type::GRADIENTBRUSH, "MappingMode",  new Value (BrushMappingModeRelativeToBoundingBox));
-	GradientBrush::SpreadMethodProperty = DependencyObject::Register (Type::GRADIENTBRUSH, "SpreadMethod",  new Value (0));
+	GradientBrush::ColorInterpolationModeProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "ColorInterpolationMode",  new Value (ColorInterpolationModeSRgbLinearInterpolation));
+	GradientBrush::GradientStopsProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "GradientStops", Type::GRADIENTSTOP_COLLECTION);
+	GradientBrush::MappingModeProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "MappingMode",  new Value (BrushMappingModeRelativeToBoundingBox));
+	GradientBrush::SpreadMethodProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "SpreadMethod",  new Value (0));
 
 	/* LinearGradientBrush fields */
-	LinearGradientBrush::EndPointProperty = DependencyObject::Register (Type::LINEARGRADIENTBRUSH, "EndPoint", Type::POINT);
-	LinearGradientBrush::StartPointProperty = DependencyObject::Register (Type::LINEARGRADIENTBRUSH, "StartPoint", Type::POINT);
+	LinearGradientBrush::EndPointProperty = DependencyProperty::Register (Type::LINEARGRADIENTBRUSH, "EndPoint", Type::POINT);
+	LinearGradientBrush::StartPointProperty = DependencyProperty::Register (Type::LINEARGRADIENTBRUSH, "StartPoint", Type::POINT);
 
 	/* RadialGradientBrush fields */
-	RadialGradientBrush::CenterProperty = DependencyObject::Register (Type::RADIALGRADIENTBRUSH, "Center", Type::POINT);
-	RadialGradientBrush::GradientOriginProperty = DependencyObject::Register (Type::RADIALGRADIENTBRUSH, "GradientOrigin", Type::POINT);
-	RadialGradientBrush::RadiusXProperty = DependencyObject::Register (Type::RADIALGRADIENTBRUSH, "RadiusX",  new Value (0.5));
-	RadialGradientBrush::RadiusYProperty = DependencyObject::Register (Type::RADIALGRADIENTBRUSH, "RadiusY",  new Value (0.5));
+	RadialGradientBrush::CenterProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "Center", Type::POINT);
+	RadialGradientBrush::GradientOriginProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "GradientOrigin", Type::POINT);
+	RadialGradientBrush::RadiusXProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "RadiusX",  new Value (0.5));
+	RadialGradientBrush::RadiusYProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "RadiusY",  new Value (0.5));
 
 	/* GradientStop fields */
-	GradientStop::ColorProperty = DependencyObject::Register (Type::GRADIENTSTOP, "Color", new Value (Color (0x00000000)));
-	GradientStop::OffsetProperty = DependencyObject::Register (Type::GRADIENTSTOP, "Offset", new Value (0.0));
+	GradientStop::ColorProperty = DependencyProperty::Register (Type::GRADIENTSTOP, "Color", new Value (Color (0x00000000)));
+	GradientStop::OffsetProperty = DependencyProperty::Register (Type::GRADIENTSTOP, "Offset", new Value (0.0));
 
 	/* ImageBrush */
-	ImageBrush::DownloadProgressProperty = DependencyObject::Register (Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0));
-	ImageBrush::ImageSourceProperty = DependencyObject::Register (Type::IMAGEBRUSH, "ImageSource", new Value (""));
+	ImageBrush::DownloadProgressProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0));
+	ImageBrush::ImageSourceProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "ImageSource", new Value (""));
 
 	/* VideoBrush */
-	VideoBrush::SourceNameProperty = DependencyObject::Register (Type::VIDEOBRUSH, "SourceName", new Value (""));
+	VideoBrush::SourceNameProperty = DependencyProperty::Register (Type::VIDEOBRUSH, "SourceName", new Value (""));
 
 	/* TileBrush fields */
-	TileBrush::AlignmentXProperty = DependencyObject::Register (Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter));
-	TileBrush::AlignmentYProperty = DependencyObject::Register (Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter));
-	TileBrush::StretchProperty = DependencyObject::Register (Type::TILEBRUSH, "Stretch", new Value (StretchFill));
+	TileBrush::AlignmentXProperty = DependencyProperty::Register (Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter));
+	TileBrush::AlignmentYProperty = DependencyProperty::Register (Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter));
+	TileBrush::StretchProperty = DependencyProperty::Register (Type::TILEBRUSH, "Stretch", new Value (StretchFill));
 
 	/* VisualBrush */
-	VisualBrush::VisualProperty = DependencyObject::Register (Type::VISUALBRUSH, "Visual", new Value (Type::VISUAL));
+	VisualBrush::VisualProperty = DependencyProperty::Register (Type::VISUALBRUSH, "Visual", new Value (Type::VISUAL));
 
 }

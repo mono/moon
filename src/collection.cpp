@@ -357,7 +357,7 @@ Collection::GetCount ()
 void
 collection_init (void)
 {
-	Collection::CountProperty = DependencyObject::Register (Type::COLLECTION, "Count", Type::INT32);
+	Collection::CountProperty = DependencyProperty::Register (Type::COLLECTION, "Count", Type::INT32);
 }
 
 int

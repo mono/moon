@@ -666,7 +666,7 @@ panel_child_add (Panel *panel, UIElement *element)
 void 
 panel_init (void)
 {
-	Panel::ChildrenProperty = DependencyObject::Register (Type::PANEL, "Children", Type::VISUAL_COLLECTION);
-	Panel::BackgroundProperty = DependencyObject::Register (Type::PANEL, "Background", Type::BRUSH);
+	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::VISUAL_COLLECTION);
+	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
 }
 

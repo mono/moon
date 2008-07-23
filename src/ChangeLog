@@ -1,5 +1,16 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* animation.cpp, brush.cpp, canvas.cpp, clock.cpp, collection.cpp,
+	  dependencyobject.cpp, dependencyobject.h, dependencyproperty.cpp,
+	  dependencyproperty.h, deployment.cpp, downloader.cpp,
+	  frameworkelement.cpp, geometry.cpp, grid.cpp, media.cpp,
+	  namescope.cpp, panel.cpp, runtime.cpp, shape.cpp, stylus.cpp,
+	  text.cpp, transform.cpp, trigger.cpp, uielement.cpp,
+	  usercontrol.cpp, xaml.cpp: Move Register(Full|Nullable) and
+	  GetDependencyObject from DependencyObject to DependencyProperty.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.h, dependencyproperty.h, Makefile.am,
 	  dependencyproperty.cpp, src.mdp, dependencyobject.cpp: Move
 	  DependencyProperty to its own file before it grows bigger.

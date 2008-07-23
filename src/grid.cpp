@@ -137,22 +137,22 @@ void
 grid_init (void)
 {
        // RowDefinition
-       RowDefinition::HeightProperty = DependencyObject::Register (Type::ROWDEFINITION, "Height", Type::GRIDLENGTH);
-       RowDefinition::MaxHeightProperty = DependencyObject::Register (Type::ROWDEFINITION, "MaxHeight", Type::DOUBLE);
-       RowDefinition::MinHeightProperty = DependencyObject::Register (Type::ROWDEFINITION, "MinHeight", Type::DOUBLE);
+       RowDefinition::HeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Height", Type::GRIDLENGTH);
+       RowDefinition::MaxHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxHeight", Type::DOUBLE);
+       RowDefinition::MinHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinHeight", Type::DOUBLE);
 
        // ColumnDefinition
-       ColumnDefinition::WidthProperty = DependencyObject::Register (Type::ROWDEFINITION, "Width", Type::GRIDLENGTH);
-       ColumnDefinition::MaxWidthProperty = DependencyObject::Register (Type::ROWDEFINITION, "MaxWidth", Type::DOUBLE);
-       ColumnDefinition::MinWidthProperty = DependencyObject::Register (Type::ROWDEFINITION, "MinWidth", Type::DOUBLE);
+       ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Width", Type::GRIDLENGTH);
+       ColumnDefinition::MaxWidthProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxWidth", Type::DOUBLE);
+       ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinWidth", Type::DOUBLE);
 
        // Grid
-       Grid::ColumnProperty = DependencyObject::RegisterFull (Type::GRID, "Column", new Value (0), Type::INT32, true, false);
-       Grid::ColumnSpanProperty = DependencyObject::RegisterFull (Type::GRID, "ColumnSpan", new Value (0), Type::INT32, true, false);
-       Grid::RowProperty = DependencyObject::RegisterFull (Type::GRID, "Row", new Value (0), Type::INT32, true, false);
-       Grid::RowSpanProperty = DependencyObject::RegisterFull (Type::GRID, "RowSpan", new Value (0), Type::INT32, true, false);
-       Grid::ShowGridLinesProperty = DependencyObject::RegisterFull (Type::GRID, "ShowGridLines", new Value (false), Type::BOOL, true, false);
+       Grid::ColumnProperty = DependencyProperty::RegisterFull (Type::GRID, "Column", new Value (0), Type::INT32, true, false);
+       Grid::ColumnSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "ColumnSpan", new Value (0), Type::INT32, true, false);
+       Grid::RowProperty = DependencyProperty::RegisterFull (Type::GRID, "Row", new Value (0), Type::INT32, true, false);
+       Grid::RowSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "RowSpan", new Value (0), Type::INT32, true, false);
+       Grid::ShowGridLinesProperty = DependencyProperty::RegisterFull (Type::GRID, "ShowGridLines", new Value (false), Type::BOOL, true, false);
 
-       Grid::ColumnDefinitions = DependencyObject::Register (Type::GRID, "ColumnDefinitions", Type::COLUMNDEFINITION_COLLECTION);
-       Grid::RowDefinitions    = DependencyObject::Register (Type::GRID, "RowDefinitions", Type::ROWDEFINITION_COLLECTION);
+       Grid::ColumnDefinitions = DependencyProperty::Register (Type::GRID, "ColumnDefinitions", Type::COLUMNDEFINITION_COLLECTION);
+       Grid::RowDefinitions    = DependencyProperty::Register (Type::GRID, "RowDefinitions", Type::ROWDEFINITION_COLLECTION);
 }
