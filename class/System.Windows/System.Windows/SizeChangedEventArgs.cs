@@ -31,7 +31,7 @@ using System;
 
 namespace System.Windows
 {
-	public class SizeChangedEventArgs
+	public class SizeChangedEventArgs : RoutedEventArgs
 	{
 		private Size new_size;
 		private Size previous_size;

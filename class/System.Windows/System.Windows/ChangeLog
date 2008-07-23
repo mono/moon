@@ -1,5 +1,11 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* SizeChangedEventArgs.cs: Fixed base class.
+	* XamlReader.cs: Removed.
+	* StyleSimulations.cs: Moved StyleSimulations to System.Windows.Media.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* PropertyPath.cs, ParserErrorEventHandler.cs, ErrorType.cs: Removed.
 	* TextDecorationKind.cs, TextDecorationCollection.cs,
 	  TextDecorations.cs: Updated TextDecoration* according to SL2B2.

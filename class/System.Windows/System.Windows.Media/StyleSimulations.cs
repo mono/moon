@@ -26,7 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace System.Windows {
+namespace System.Windows.Media {
 
 	public enum StyleSimulations {
 		None

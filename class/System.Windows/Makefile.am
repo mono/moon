@@ -78,6 +78,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
 	$(srcdir)/System.Windows/Duration.cs					\
 	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs					\
+	$(srcdir)/System.Windows/ExceptionRoutedEventHandler.cs					\
 	$(srcdir)/System.Windows/Expression.cs					\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
 	$(srcdir)/System.Windows/FontStretch.cs				\
@@ -112,7 +113,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/SizeChangedEventHandler.cs					\
 	$(srcdir)/System.Windows/StartupEventArgs.cs				\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
-	$(srcdir)/System.Windows/StyleSimulations.cs				\
 	$(srcdir)/System.Windows/TextAlignment.cs				\
 	$(srcdir)/System.Windows/TextDecorationCollection.cs			\
 	$(srcdir)/System.Windows/TextDecorationKind.cs				\
@@ -123,7 +123,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/UIElement.cs					\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
-	$(srcdir)/System.Windows/XamlReader.cs					\
 	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
 	$(srcdir)/System.Windows.Controls/Canvas.cs				\
 	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
@@ -204,6 +203,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/SkewTransform.cs				\
 	$(srcdir)/System.Windows.Media/SolidColorBrush.cs			\
 	$(srcdir)/System.Windows.Media/Stretch.cs				\
+	$(srcdir)/System.Windows.Media/StyleSimulations.cs				\
 	$(srcdir)/System.Windows.Media/SweepDirection.cs			\
 	$(srcdir)/System.Windows.Media/TileBrush.cs				\
 	$(srcdir)/System.Windows.Media/TimelineCollection.cs			\
