@@ -1,3 +1,7 @@
+2008-07-23  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: track dependency_property api change.
+
 2008-07-21  Jackson Harper  <jackson@ximian.com>
 
 	* NativeMethods.cs: Add application_new.

@@ -771,8 +771,8 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 	// attached properties are implicitly listened to by the
 	// object's logical parent.  Notify them, but sure not to do
 	// it twice.
-	if (args->property->is_attached_property && !notified_parent) {
-		if (logical_parent /*&& args->property->type == logical_parent->GetObjectType ()*/)
+	if (args->property->IsAttached() && !notified_parent) {
+		if (logical_parent /*&& args->property->GetOwnerType() == logical_parent->GetObjectType ()*/)
 			logical_parent->OnSubPropertyChanged (NULL, this, args);
 	}
 }
@@ -804,19 +804,19 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 			return true;
 		}
 		
-		if (!value->Is (property->value_type)) {
+		if (!value->Is (property->GetPropertyType())) {
 			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
 				     "DependencyObject::SetValue, value cannot be assigned to the "
 				     "property %s::%s (property has type '%s', value has type '%s')",
-				     GetTypeName (), property->name, Type::Find (property->value_type)->name,
+				     GetTypeName (), property->GetName(), Type::Find (property->GetPropertyType())->name,
 				     Type::Find (value->GetKind ())->name);
 			return false;
 		}
 	} else {
-		if (!(Type::IsSubclassOf (property->value_type, Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
+		if (!(Type::IsSubclassOf (property->GetPropertyType(), Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
 			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
 				     "Can not set a non-nullable scalar type to NULL (property: %s)",
-				     property->name);
+				     property->GetName());
 			return false;
 		}
 	}
@@ -864,7 +864,7 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 	bool equal = false;
 
 	if (current_value != NULL && value != NULL) {
-		equal = !property->always_change && (*current_value == *value);
+		equal = !property->AlwaysChange() && (*current_value == *value);
 	} else {
 		equal = (current_value == NULL) && (value == NULL);
 	}
@@ -927,7 +927,7 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 
 		if (!listeners_notified)
 			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
-				   Type::Find(property->type)->GetName (), property->name, GetTypeName ());
+				   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
 
 		if (current_value)
 			delete current_value;
@@ -1036,7 +1036,7 @@ DependencyObject::SetValue (DependencyProperty *property, Value value)
 Value *
 DependencyObject::GetDefaultValue (DependencyProperty *property)
 {
-	return property->default_value;
+	return property->GetDefaultValue();
 }
 
 Value *
@@ -1111,7 +1111,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 
 		if (!listeners_notified)
 			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
-				   Type::Find(property->type)->GetName (), property->name, GetTypeName ());
+				   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
 	}
 
 	delete current_value;

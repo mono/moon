@@ -56,7 +56,7 @@ Canvas::ComputeBounds ()
 void
 Canvas::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::CANVAS) {
+	if (args->property->GetPropertyType() != Type::CANVAS) {
 		Panel::OnPropertyChanged (args);
 		return;
 	}

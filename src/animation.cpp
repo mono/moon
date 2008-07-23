@@ -239,14 +239,14 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 	/* Before hooking up make sure that the values our animation generates
 	   (doubles, colors, points...) match the values that the property is
 	   ready to receive. If not, print an informative message. */
-	if (timeline->GetValueKind () != targetprop->value_type) {
+	if (timeline->GetValueKind () != targetprop->GetPropertyType()) {
 		Type *timeline_type = Type::Find (timeline->GetValueKind ());
-		Type *property_type = Type::Find (targetprop->value_type);
+		Type *property_type = Type::Find (targetprop->GetPropertyType());
 
 		const char *timeline_type_name = (timeline_type != NULL) ? timeline_type->GetName () : "Invalid";
 		const char *property_type_name = (property_type != NULL) ? property_type->GetName () : "Invalid";
 		g_warning ("%s.%s property value type is '%s' but animation type is '%s'.",
-			   targetobj->GetTypeName (), targetprop->name,
+			   targetobj->GetTypeName (), targetprop->GetName(),
 			   property_type_name, timeline_type_name);
 
 		return false;

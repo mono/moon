@@ -1,3 +1,8 @@
+2008-07-23  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyProperty.cs: track dependencyproperty unmanaged api
+	change.
+
 2008-07-22  Jeffrey Stedfast <fejj@novell.com>
 
 	* DependencyObject.cs: Updated for Silverlight 2 beta 2 KeyTime changes.

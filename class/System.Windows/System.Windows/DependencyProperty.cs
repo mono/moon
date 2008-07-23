@@ -89,7 +89,7 @@ namespace System.Windows {
 		}
 		
 		internal Kind GetKind {
-			get { return NativeMethods.dependency_property_get_value_type (native); }
+			get { return NativeMethods.dependency_property_get_property_type (native); }
 		}
 		
 		internal bool IsValueType {

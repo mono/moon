@@ -104,7 +104,7 @@ UIElement::RenderClipPath (cairo_t *cr)
 void
 UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::UIELEMENT) {
+	if (args->property->GetOwnerType() != Type::UIELEMENT) {
 		Visual::OnPropertyChanged (args);
 		return;
 	}

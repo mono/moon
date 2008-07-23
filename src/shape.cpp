@@ -645,7 +645,7 @@ Shape::CacheInvalidateHint (void)
 void
 Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::SHAPE) {
+	if (args->property->GetOwnerType() != Type::SHAPE) {
 		if ((args->property == FrameworkElement::HeightProperty) || (args->property == FrameworkElement::WidthProperty))
 			InvalidatePathCache ();
 
@@ -1339,7 +1339,7 @@ Rectangle::BuildPath ()
 void
 Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::RECTANGLE) {
+	if (args->property->GetOwnerType() != Type::RECTANGLE) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}
@@ -1729,7 +1729,7 @@ Line::ComputeShapeBounds (bool logical)
 void
 Line::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::LINE) {
+	if (args->property->GetOwnerType() != Type::LINE) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}
@@ -1981,7 +1981,7 @@ Polygon::BuildPath ()
 void
 Polygon::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::POLYGON) {
+	if (args->property->GetOwnerType() != Type::POLYGON) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}
@@ -2160,7 +2160,7 @@ Polyline::BuildPath ()
 void
 Polyline::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::POLYLINE) {
+	if (args->property->GetOwnerType() != Type::POLYLINE) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}
@@ -2351,7 +2351,7 @@ Path::Draw (cairo_t *cr)
 void
 Path::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::PATH) {
+	if (args->property->GetOwnerType() != Type::PATH) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}

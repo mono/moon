@@ -936,7 +936,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	// types, i should pull the property setting out of set_attributes
 	// and use that code
 	
-	if (content && (content->value_type) == Type::STRING && p->cdata_content) {
+	if (content && (content->GetPropertyType()) == Type::STRING && p->cdata_content) {
 		p->current_element->item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 	} else if (Type::Find (p->current_element->info->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) p->current_element->item;
@@ -2541,7 +2541,7 @@ XamlElementInstanceNative::CreateItem ()
 					(char *) walk->info->GetContentProperty ());			
 		}
 
-		if (dep && Type::Find (dep->value_type)->IsSubclassOf (type->type)) {
+		if (dep && Type::Find (dep->GetPropertyType())->IsSubclassOf (type->type)) {
 			Value *v = ((DependencyObject * ) walk->item)->GetValue (dep);
 			if (v) {
 				item = v->AsCollection ();
@@ -2558,7 +2558,7 @@ XamlElementInstanceNative::CreateItem ()
 			item->SetSurface (parser_info->loader->GetSurface ());
 
 		// in case we must store the collection into the parent
-		if (dep && dep->value_type == type->type)
+		if (dep && dep->GetPropertyType() == type->type)
 			((DependencyObject * ) walk->item)->SetValue (dep, new Value (item));
 
 		parser_info->AddCreatedElement (item);
@@ -2674,10 +2674,10 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 					     g_strdup_printf ("Unknown element: %s.", parent->element_name));
 
 		// Don't add the child element, if it is the entire collection
-		if (dep->value_type == child->info->GetKind ())
+		if (dep->GetPropertyType() == child->info->GetKind ())
 			return;
 
-		Type *col_type = Type::Find (dep->value_type);
+		Type *col_type = Type::Find (dep->GetPropertyType());
 		if (!col_type->IsSubclassOf (Type::COLLECTION))
 			return;
 
@@ -2714,10 +2714,10 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		if (!dep)
 			return;
 
-		Type *prop_type = Type::Find (dep->value_type);
+		Type *prop_type = Type::Find (dep->GetPropertyType());
 		bool is_collection = prop_type->IsSubclassOf (Type::COLLECTION);
 
-		if (!is_collection && Type::Find (child->info->GetKind ())->IsSubclassOf (dep->value_type)) {
+		if (!is_collection && Type::Find (child->info->GetKind ())->IsSubclassOf (dep->GetPropertyType())) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			obj->SetValue (dep, (DependencyObject *) child->item);
 			return;
@@ -2727,13 +2727,13 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		// We only want to enter this if statement if we are NOT dealing with the content property element,
 		// otherwise, attempting to use explicit property setting, would add the content property element
 		// to the content property element collection
-		if (is_collection && dep->value_type != child->info->GetKind ()) {
+		if (is_collection && dep->GetPropertyType() != child->info->GetKind ()) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			Value *col_v = obj->GetValue (dep);
 			Collection *col;
 			
 			if (!col_v) {
-				col = collection_new (dep->value_type);
+				col = collection_new (dep->GetPropertyType());
 				obj->SetValue (dep, Value (col));
 				col->unref ();
 			} else {
@@ -2789,11 +2789,11 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	if (prop) {
 		if (prop->IsReadOnly ()) {
 			parser_error (p, item->element_name, NULL, 2014,
-				      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->name));
-		} else if (Type::Find (value->info->GetKind ())->IsSubclassOf (prop->value_type)) {
+				      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->GetName()));
+		} else if (Type::Find (value->info->GetKind ())->IsSubclassOf (prop->GetPropertyType())) {
 			// an empty collection can be NULL and valid
 			if (value->item) {
-				if (item->IsPropertySet (prop->name)) {
+				if (item->IsPropertySet (prop->GetName())) {
 					parser_error (p, item->element_name, NULL, 2033,
 						g_strdup_printf ("Cannot specify the value multiple times for property: %s.",
 								 property->element_name));
@@ -2803,7 +2803,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 						parser_error (p, item->element_name, NULL, seterror->code, seterror->message);
 						g_error_free (seterror);
 					}
-					item->MarkPropertyAsSet (prop->name);
+					item->MarkPropertyAsSet (prop->GetName());
 				}
 			}
 		} else {
@@ -2823,7 +2823,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 {
 	Value *v = NULL;
 	
-	if (!value_from_str (prop->value_type, prop->name, value, &v))
+	if (!value_from_str (prop->GetPropertyType(), prop->GetName(), value, &v))
 		return false;
 	
 	// it's possible for (a valid) value to be NULL (and we must keep the default value)
@@ -2960,22 +2960,22 @@ start_parse:
 		if (prop) {
 			if (prop->IsReadOnly ()) {
 				parser_error (p, item->element_name, NULL, 2014,
-					      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->name));
+					      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->GetName()));
 				if (atchname)
 					g_free (atchname);
 				return;
 			} 
 
-			if (item->IsPropertySet (prop->name)) {
+			if (item->IsPropertySet (prop->GetName())) {
 				parser_error (p, item->element_name, attr [i], 2033,
-					      g_strdup_printf ("Cannot specify the value multiple times for property: %s.", prop->name));
+					      g_strdup_printf ("Cannot specify the value multiple times for property: %s.", prop->GetName()));
 				if (atchname)
 					g_free (atchname);
 				return;
 			}
 
 			Value *v = NULL;
-			if (!value_from_str (prop->value_type, prop->name, attr [i + 1], &v)) {
+			if (!value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v)) {
 				parser_error (p, item->element_name, attr [i], 2024,
 					      g_strdup_printf ("Invalid attribute value %s for property %s.",
 							       attr [i + 1], attr [i]));
@@ -2990,7 +2990,7 @@ start_parse:
 					parser_error (p, item->element_name, attr [i], seterror->code, seterror->message);
 					g_error_free (seterror);
 				} else
-					item->MarkPropertyAsSet (prop->name);
+					item->MarkPropertyAsSet (prop->GetName());
 
 				delete v;
 				
@@ -3053,7 +3053,7 @@ get_type_for_property_name (const char* prop)
 		return NULL;
 	}
 
-	return Type::Find (p->value_type);
+	return Type::Find (p->GetPropertyType());
 }
 
 void

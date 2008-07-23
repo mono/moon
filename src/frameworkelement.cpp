@@ -23,13 +23,15 @@ FrameworkElement::FrameworkElement ()
 void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::FRAMEWORKELEMENT) {
+	if (args->property->GetOwnerType() != Type::FRAMEWORKELEMENT) {
 		UIElement::OnPropertyChanged (args);
 		return;
 	}
 
 	if (args->property == FrameworkElement::WidthProperty ||
 	    args->property == FrameworkElement::HeightProperty) {
+	  printf ("%s changed %s to %g\n", GetName(), args->property->GetName(), args->new_value->AsDouble());
+
 		Point p = GetRenderTransformOrigin ();
 
 		/* normally we'd only update the bounds of this

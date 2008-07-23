@@ -2448,11 +2448,11 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 		} else if (NPVARIANT_IS_STRING (*value)) {
 			strval = STRDUP_FROM_VARIANT (*value);
 		} else if (NPVARIANT_IS_NULL (*value)) {
-			if (Type::IsSubclassOf (prop->value_type, Type::DEPENDENCY_OBJECT)) {
+			if (Type::IsSubclassOf (prop->GetPropertyType(), Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *val = NULL;
 				
 				dob->SetValue (prop, Value (val));
-			} else if (prop->value_type == Type::STRING) {
+			} else if (prop->GetPropertyType() == Type::STRING) {
 				char *val = NULL;
 				
 				dob->SetValue (prop, Value (val));
@@ -2462,11 +2462,11 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			return true;
 		} else if (NPVARIANT_IS_VOID (*value)) {
 			d(printf ("unhandled variant type VOID in do.set_property for (%s::%s)\n",
-				  dob->GetTypeName (), prop->name));
+				  dob->GetTypeName (), prop->GetName()));
 			return true;
 		} else {
 			d(printf ("unhandled variant type in do.set_property for (%s::%s)\n",
-				  dob->GetTypeName (), prop->name));
+				  dob->GetTypeName (), prop->GetName()));
 			return true;
 		}
 		
@@ -2521,7 +2521,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	if (prop) {
 		if (!(value = dob->GetValue (prop))) {
 			// strings aren't null, they seem to just be empty strings
-			if (prop->value_type == Type::STRING) {
+			if (prop->GetPropertyType() == Type::STRING) {
 				string_to_npvariant ("", result);
 				return true;
 			}
@@ -2531,7 +2531,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		}
 		
 		if (value->GetKind () == Type::INT32) {
-			const char *s = enums_int_to_str (prop->name, value->AsInt32 ());
+			const char *s = enums_int_to_str (prop->GetName(), value->AsInt32 ());
 			if (s)
 				string_to_npvariant (s, result);
 			else

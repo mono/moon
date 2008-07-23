@@ -17,7 +17,7 @@
 void
 Transform::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type == Type::DEPENDENCY_OBJECT) {
+	if (args->property->GetOwnerType() == Type::DEPENDENCY_OBJECT) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
@@ -426,7 +426,7 @@ Matrix::Matrix ()
 void
 Matrix::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::MATRIX) {
+	if (args->property->GetOwnerType() != Type::MATRIX) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
@@ -586,7 +586,7 @@ TransformGroup::~TransformGroup ()
 void
 TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::TRANSFORMGROUP) {
+	if (args->property->GetOwnerType() != Type::TRANSFORMGROUP) {
 		Transform::OnPropertyChanged (args);
 		return;
 	}

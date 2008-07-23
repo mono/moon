@@ -1,3 +1,17 @@
+2008-07-23  Chris Toshok  <toshok@ximian.com>
+
+	* panel.cpp, xaml.cpp, stylus.cpp, usercontrol.cpp, canvas.cpp,
+	transform.cpp, grid.cpp, animation.cpp, text.cpp,
+	dependencyproperty.h, dependencyproperty.cpp, uielement.cpp,
+	geometry.cpp, shape.cpp, dependencyobject.cpp,
+	frameworkelement.cpp, media.cpp, brush.cpp: a couple of
+	DependencyPropertyChanges:
+
+	1. switch to the Silverlight/WPF naming of the two Types.
+	type/value_type change to owner_type/property_type.
+
+	2. go all gtk-3.0, and make things private with accessors.
+
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* animation.cpp, brush.cpp, canvas.cpp, clock.cpp, collection.cpp,

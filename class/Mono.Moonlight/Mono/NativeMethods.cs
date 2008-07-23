@@ -75,7 +75,7 @@ namespace Mono {
 		public extern static IntPtr dependency_property_lookup (Kind type, string name);
 
 		[DllImport("moon")]
-		public extern static Kind dependency_property_get_value_type (IntPtr obj);
+		public extern static Kind dependency_property_get_property_type (IntPtr obj);
 		
 		[DllImport("moon")]
 		public extern static bool dependency_property_is_nullable (IntPtr obj);

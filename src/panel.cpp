@@ -501,7 +501,7 @@ Panel::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
 void
 Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::PANEL) {
+	if (args->property->GetOwnerType() != Type::PANEL) {
 		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}

@@ -30,7 +30,7 @@ user_control_get_content (UserControl *user_control)
 void
 UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::USERCONTROL) {
+	if (args->property->GetOwnerType() != Type::USERCONTROL) {
 		Control::OnPropertyChanged (args);
 		return;
 	}

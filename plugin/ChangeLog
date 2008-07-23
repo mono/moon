@@ -1,3 +1,7 @@
+2008-07-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp: track DependencyProperty changes.
+
 2008-07-18  Chris Toshok  <toshok@ximian.com>
 
 	* windowless.h, windowless.cpp: switch this from being a surface

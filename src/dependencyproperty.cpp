@@ -20,15 +20,15 @@
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly, bool always_change)
+DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change)
 {
-	this->type = type;
+	this->owner_type = owner_type;
 	this->hash_key = g_ascii_strdown (name, -1);
 	this->name = g_strdup (name);
 	this->default_value = default_value;
-	this->value_type = value_type;
+	this->property_type = property_type;
 	this->is_nullable = false;
-	this->is_attached_property = attached;
+	this->is_attached = attached;
 	this->is_readonly = readonly;
 	this->storage_hash = NULL; // Create it on first usage request
 	this->always_change = always_change;
@@ -206,12 +206,12 @@ DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *defa
 		properties = g_hash_table_new_full (g_int_hash, g_int_equal,
 						    NULL, free_property_hash);
 
-	table = (GHashTable*) g_hash_table_lookup (properties, &property->type);
+	table = (GHashTable*) g_hash_table_lookup (properties, &property->owner_type);
 
 	if (table == NULL) {
 		table = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       NULL, free_property);
-		g_hash_table_insert (properties, &property->type, table);
+		g_hash_table_insert (properties, &property->owner_type, table);
 	}
 
 	g_hash_table_insert (table, property->hash_key, property);
@@ -227,13 +227,13 @@ DependencyProperty *dependency_property_lookup (Type::Kind type, char *name)
 char*
 dependency_property_get_name (DependencyProperty *property)
 {
-	return property->name;
+	return property->GetName();
 }
 
 Type::Kind
-dependency_property_get_value_type (DependencyProperty *property)
+dependency_property_get_property_type (DependencyProperty *property)
 {
-	return property->value_type;
+	return property->GetPropertyType();
 }
 
 bool
@@ -321,7 +321,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 				return NULL;
 			}
 
-			if (! res->is_attached_property && ! lu->Is (t->GetKind ())) {
+			if (! res->IsAttached() && ! lu->Is (t->GetKind ())) {
 				// We try to be gracefull here and do something smart...
 				res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), propn);
 

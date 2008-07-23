@@ -704,7 +704,7 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangeType type, Depende
 void
 Stroke::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::STROKE) {
+	if (args->property->GetOwnerType() != Type::STROKE) {
 		DependencyObject::OnPropertyChanged (args);
 	}
 
@@ -999,7 +999,7 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 void
 InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::INKPRESENTER) {
+	if (args->property->GetOwnerType() != Type::INKPRESENTER) {
 		Canvas::OnPropertyChanged (args);
 		return;
 	}

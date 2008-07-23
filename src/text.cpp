@@ -112,7 +112,7 @@ Inline::GetDefaultValue (DependencyProperty *prop)
 		if (text_prop)
 			return parent->GetValue (text_prop);
 		
-		return prop->default_value;
+		return prop->GetDefaultValue();
 	}
 	
 	// not yet attached to a textblock
@@ -127,13 +127,13 @@ Inline::GetDefaultValue (DependencyProperty *prop)
 	}
 	
 	// all other properties have a default value
-	return prop->default_value;
+	return prop->GetDefaultValue();
 }
 
 void
 Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->type != Type::INLINE) {
+	if (args->property->GetOwnerType() != Type::INLINE) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
@@ -786,7 +786,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	bool invalidate = true;
 	
-	if (args->property->type != Type::TEXTBLOCK) {
+	if (args->property->GetOwnerType() != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args);
 		if (args->property == FrameworkElement::WidthProperty) {
 			if (GetTextWrapping () != TextWrappingNoWrap)
@@ -2017,7 +2017,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	bool invalidate = true;
 	
-	if (args->property->type != Type::GLYPHS) {
+	if (args->property->GetOwnerType() != Type::GLYPHS) {
 		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}

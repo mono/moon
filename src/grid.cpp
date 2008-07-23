@@ -29,7 +29,7 @@ Grid::Grid ()
 void
 Grid::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-       if (args->property->type != Type::GRID) {
+	if (args->property->GetOwnerType() != Type::GRID) {
                Panel::OnPropertyChanged (args);
                return;
        }

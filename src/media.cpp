@@ -219,7 +219,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 	}
 	
-	if (args->property->type != Type::MEDIABASE) {
+	if (args->property->GetOwnerType() != Type::MEDIABASE) {
 		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}
@@ -1898,7 +1898,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 			use_media_width = args->new_value == NULL;
 	}
 	
-	if (args->property->type != Type::MEDIAELEMENT) {
+	if (args->property->GetOwnerType() != Type::MEDIAELEMENT) {
 		// propagate to parent class
 		MediaBase::OnPropertyChanged (args);
 		flags |= RecalculateMatrix;
@@ -2853,7 +2853,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 			use_media_width = args->new_value == NULL;
 	}
 	
-	if (args->property->type != Type::IMAGE) {
+	if (args->property->GetOwnerType() != Type::IMAGE) {
 		MediaBase::OnPropertyChanged (args);
 		return;
 	}
