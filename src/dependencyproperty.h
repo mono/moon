@@ -22,22 +22,6 @@
 // DependencyProperty
 //
 class DependencyProperty {
-	static GHashTable *properties;
-	GHashTable *storage_hash; // keys: objects, values: animation storage's
-
-	bool is_readonly;
-	bool is_nullable;
-	bool is_attached;
-	bool always_change; // determines if SetValue will do something if the current and new values are equal.
-	
-	char *hash_key;
-	char *name;
-
-	Value *default_value;
-
-	Type::Kind owner_type;
-	Type::Kind property_type;
-
  public:
 	DependencyProperty () {};
 	~DependencyProperty ();
@@ -68,6 +52,23 @@ class DependencyProperty {
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
 	
 	static void Shutdown ();
+
+private:
+	static GHashTable *properties;
+	GHashTable *storage_hash; // keys: objects, values: animation storage's
+
+	bool is_readonly;
+	bool is_nullable;
+	bool is_attached;
+	bool always_change; // determines if SetValue will do something if the current and new values are equal.
+	
+	char *hash_key;
+	char *name;
+
+	Value *default_value;
+
+	Type::Kind owner_type;
+	Type::Kind property_type;
 };
 
 G_BEGIN_DECLS
