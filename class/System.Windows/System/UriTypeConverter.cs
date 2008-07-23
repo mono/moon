@@ -1,10 +1,10 @@
 //
-// System.Windows.RuntimeErrorEventArgs class
+// UriTypeConverter.cs
 //
 // Authors:
-//	Jb Evain  <jbevain@novell.com>
+//   Rolf Bjarne Kvinge (rkvinge@novell.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright 2008 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,31 +26,30 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace System.Windows {
+using System;
+using System.ComponentModel;
 
-	public class RuntimeErrorEventArgs : ErrorEventArgs {
-	
-		int char_position;
-		int line_number;
-		string method_name;
-
-		public RuntimeErrorEventArgs ()
+namespace System
+{	
+	public sealed class UriTypeConverter : TypeConverter
+	{
+		public UriTypeConverter()
 		{
 		}
 		
-		public int CharPosition {
-			get { return char_position; }
-			set { char_position = value; }
+		public /*override*/ bool CanConvertFrom (Type sourceType)
+		{
+			throw new NotImplementedException ();
 		}
-
-		public int LineNumber {
-			get { return line_number; }
-			set { line_number = value; }
+		
+		public /*override*/ object ConvertFrom (object value)
+		{
+			throw new NotImplementedException ();
 		}
-
-		public string MethodName {
-			get { return method_name; }
-			set { method_name = value; }
+		
+		public /*override*/ object ConvertFromString(string text)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

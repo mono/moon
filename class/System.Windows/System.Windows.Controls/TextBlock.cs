@@ -125,16 +125,6 @@ namespace System.Windows.Controls {
 			set { SetValue (TextProperty, value); }
 		}
 
-		public void SetFontSource (DependencyObject Downloader)
-		{
-			if (Downloader != null) {
-				Downloader dl = (Downloader as Downloader);
-				NativeMethods.text_block_set_font_source (native, dl.native);
-			} else {
-				NativeMethods.text_block_set_font_source (native, IntPtr.Zero);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.TEXTBLOCK;

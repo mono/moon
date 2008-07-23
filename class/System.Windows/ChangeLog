@@ -1,5 +1,10 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* System, System/UriTypeConverter.cs: Added (stubbed).
+	* System.Windows.mdp, Makefile.am: Updated.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* MS.Internal, Makefile.am,
 	  MS.Internal/IManagedFrameworkInternalHelper.cs: Implemented
 	  MS.Internal/ManagedFrameworkInternalHelper.cs.

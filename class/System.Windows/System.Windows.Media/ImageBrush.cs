@@ -75,6 +75,6 @@ namespace System.Windows.Media {
 			return Kind.IMAGEBRUSH;
 		}
 
-		public event ErrorEventHandler ImageFailed;
+		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed;
 	}
 }

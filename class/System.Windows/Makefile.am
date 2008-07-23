@@ -23,6 +23,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
 	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
+	$(srcdir)/System/UriTypeConverter.cs	\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedAction.cs \
@@ -75,11 +76,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/DependencyObject.cs				\
 	$(srcdir)/System.Windows/DependencyProperty.cs				\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
-	$(srcdir)/System.Windows/Downloader.cs					\
 	$(srcdir)/System.Windows/Duration.cs					\
-	$(srcdir)/System.Windows/ErrorEventArgs.cs				\
-	$(srcdir)/System.Windows/ErrorEventHandler.cs				\
 	$(srcdir)/System.Windows/ErrorType.cs					\
+	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs					\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
 	$(srcdir)/System.Windows/FontStretches.cs				\
 	$(srcdir)/System.Windows/FontStyles.cs					\
@@ -90,8 +89,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/HorizontalAlignment.cs				\
 	$(srcdir)/System.Windows/LineStackingStrategy.cs			\
-	$(srcdir)/System.Windows/ParserErrorEventArgs.cs			\
-	$(srcdir)/System.Windows/ParserErrorEventHandler.cs			\
 	$(srcdir)/System.Windows/Point.cs					\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/PropertyChangedCallback.cs			\
@@ -100,8 +97,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/Rect.cs					\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
 	$(srcdir)/System.Windows/RoutedEventHandler.cs				\
-	$(srcdir)/System.Windows/RuntimeErrorEventArgs.cs			\
-	$(srcdir)/System.Windows/RuntimeErrorEventHandler.cs			\
 	$(srcdir)/System.Windows/Size.cs					\
 	$(srcdir)/System.Windows/StartupEventArgs.cs				\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\

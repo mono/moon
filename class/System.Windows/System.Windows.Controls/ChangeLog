@@ -1,3 +1,9 @@
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Image.cs: Fixed ImageFailed signature.
+	* MediaElement.cs: Fixed MediaFailed signature.
+	* TextBlock.cs: Removed SetFontSource.
+
 2008-07-22  Jeffrey Stedfast <fejj@novell.com>
 
 	* ValidationErrorEventAction.cs: Added

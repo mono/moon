@@ -64,7 +64,7 @@ namespace System.Windows.Controls {
 		
 		static object ImageFailedEvent = new object ();
 		
-		public event ErrorEventHandler ImageFailed {
+		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed {
 			add {
 				if (events[ImageFailedEvent] == null)
 					Events.AddHandler (this, "ImageFailed", image_failed);
@@ -86,8 +86,9 @@ namespace System.Windows.Controls {
 		
 		private void InvokeImageFailed (/* XXX ErrorEventArgs args */)
 		{
-			ErrorEventHandler h = (ErrorEventHandler)events[ImageFailedEvent];
-			if (h != null) h (this, new ErrorEventArgs ()); // XXX pass args here
+			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) events[ImageFailedEvent];
+			if (h != null)
+				h (this, null); // XXX pass args here
 		}
 		
 		internal override Kind GetKind ()

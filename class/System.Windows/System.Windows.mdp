@@ -22,10 +22,7 @@
     <File name="Mono/ManagedXamlLoader.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/DependencyObject.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/DependencyProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/Downloader.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Duration.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/ErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/ErrorEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ErrorType.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/EventTrigger.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FontStretches.cs" subtype="Code" buildaction="Compile" />
@@ -33,13 +30,9 @@
     <File name="System.Windows/FontWeights.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FrameworkElement.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/HorizontalAlignment.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/ParserErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/ParserErrorEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Point.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Rect.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ResourceDictionary.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/RuntimeErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/RuntimeErrorEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Size.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/StyleSimulations.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TextAlignment.cs" subtype="Code" buildaction="Compile" />
@@ -238,6 +231,11 @@
     <File name="System.Windows.Controls/ScrollBarVisibility.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ValidationErrorEventAction.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ClockState.cs" subtype="Code" buildaction="Compile" />
+    <File name="MS.Internal" subtype="Directory" buildaction="Compile" />
+    <File name="MS.Internal/IManagedFrameworkInternalHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="System" subtype="Directory" buildaction="Compile" />
+    <File name="System/UriTypeConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ExceptionRoutedEventArgs.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

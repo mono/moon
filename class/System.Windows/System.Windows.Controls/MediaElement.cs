@@ -383,7 +383,7 @@ namespace System.Windows.Controls
 			}
 		}
 
-		public event ErrorEventHandler MediaFailed {
+		public event EventHandler <ExceptionRoutedEventArgs> MediaFailed {
 			add {
 				if (events[MediaFailedEvent] == null)
 					Events.AddHandler (this, "MediaFailed", media_failed);

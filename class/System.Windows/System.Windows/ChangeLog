@@ -1,3 +1,10 @@
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ErrorEventHandler.cs, RuntimeErrorEventArgs.cs,
+	  ParserErrorEventArgs.cs, RuntimeErrorEventHandler.cs,
+	  Downloader.cs, ErrorEventArgs.cs: Removed.
+	* ExceptionRoutedEventArgs.cs: Added.
+
 2008-07-23  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyProperty.cs: track dependencyproperty unmanaged api
