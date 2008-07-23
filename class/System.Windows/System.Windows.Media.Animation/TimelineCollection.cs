@@ -1,10 +1,10 @@
 //
-// VisualCollection.cs
+// System.Windows.Media.TimelineCollection class
 //
-// Author:
-//   Miguel de Icaza (miguel@novell.com)
+// Authors:
+//	Sebastien Pouliot  <sebastien@ximian.com>
 //
-// Copyright 2007 Novell, Inc.
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -27,22 +27,23 @@
 //
 
 using System.Windows;
+using System.Windows.Media.Animation;
 using Mono;
 
-namespace System.Windows.Media {
-	public sealed class VisualCollection : PresentationFrameworkCollection<Visual> {
-		
-		internal VisualCollection (IntPtr native) : base (native)
+namespace System.Windows.Media.Animation {
+
+	public sealed class TimelineCollection : PresentationFrameworkCollection<Timeline> {
+		public TimelineCollection () : base (NativeMethods.timeline_collection_new ())
 		{
 		}
 		
-		public VisualCollection () : base (NativeMethods.visual_collection_new ())
+		internal TimelineCollection (IntPtr raw) : base (raw)
 		{
 		}
 		
 		internal override Kind GetKind ()
 		{
-			return Kind.VISUAL_COLLECTION;
+			return Kind.TIMELINE_COLLECTION;
 		}
 	}
 }

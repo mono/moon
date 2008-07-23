@@ -36,7 +36,7 @@ namespace System.Windows.Controls {
 
 		static Panel ()
 		{
-			ChildrenProperty = DependencyProperty.Lookup (Kind.PANEL, "Children", typeof (VisualCollection));
+			ChildrenProperty = DependencyProperty.Lookup (Kind.PANEL, "Children", typeof (UIElementCollection));
 			BackgroundProperty = DependencyProperty.Lookup (Kind.PANEL, "Background", typeof (Brush));
 		}
 		
@@ -58,9 +58,9 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-		public VisualCollection Children {
+		public UIElementCollection Children {
 			get {
-				return (VisualCollection) GetValue (ChildrenProperty);
+				return (UIElementCollection) GetValue (ChildrenProperty);
 			}
 			
 			set {

@@ -1,5 +1,11 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* PresentationFrameworkCollection.cs: Make some methods virtual so that
+	  derived classes can use the right member signatures.
+	* DependencyObject.cs: Removed VisualCollection.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* TextWrapping.cs: More B2 updates.
 
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 

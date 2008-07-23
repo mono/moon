@@ -213,8 +213,7 @@ namespace System.Windows {
 			case Kind.TRANSLATETRANSFORM: return new TranslateTransform (raw);
 			case Kind.TRIGGERACTION_COLLECTION: return new TriggerActionCollection (raw);
 			case Kind.TRIGGER_COLLECTION: return new TriggerCollection (raw);
-			case Kind.VISUAL_COLLECTION: return new VisualCollection (raw);
-				
+							
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:
 			case Kind.CLOCK: 

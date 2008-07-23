@@ -70,7 +70,7 @@ namespace System.Windows {
 			return NativeMethods.collection_add (native, dob.native);
 		}
 		
-		public void Add (T value)
+		public virtual void Add (T value)
 		{
 			// FIXME: this is supposed to be abstract
 			DependencyObject dob = value as DependencyObject;
@@ -89,7 +89,7 @@ namespace System.Windows {
 			NativeMethods.collection_remove (native, dob.native);
 		}
 		
-		public bool Remove (T value)
+		public virtual bool Remove (T value)
 		{
 			// FIXME: this is supposed to be abstract
 			DependencyObject dob = value as DependencyObject;
@@ -113,7 +113,7 @@ namespace System.Windows {
 			NativeMethods.collection_insert (native, index, dob.native);
 		}
 		
-		public void Insert (int index, T value)
+		public virtual void Insert (int index, T value)
 		{
 			DependencyObject dob = value as DependencyObject;
 			if (dob == null)
@@ -185,7 +185,7 @@ namespace System.Windows {
 			}
 		}
 		
-		public T this [int index] {
+		public virtual T this [int index] {
 			get {
 				IntPtr o = NativeMethods.collection_get_value_at (native, index);
 				

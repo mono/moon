@@ -1,5 +1,10 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Panel.cs: More B2 updates.
+	* UIElementCollection.cs: Added.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* MediaElement.cs: Removed MediaAttribute(Collection).
 
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 

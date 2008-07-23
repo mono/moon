@@ -1,3 +1,7 @@
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TimelineCollection.cs: Moved.
+
 2008-07-22  Jeffrey Stedfast <fejj@novell.com>
 
 	* KeyTime.cs: Updated to reflect Silverlight 2 beta 2

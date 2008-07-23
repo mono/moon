@@ -66,6 +66,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/PointKeyFrameCollection.cs	\
 	$(srcdir)/System.Windows.Media.Animation/SplineColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
+	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs			\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
@@ -135,6 +136,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
 	$(srcdir)/System.Windows.Controls/UserControl.cs			\
+	$(srcdir)/System.Windows.Controls/UIElementCollection.cs			\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
@@ -215,7 +217,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/StyleSimulations.cs				\
 	$(srcdir)/System.Windows.Media/SweepDirection.cs			\
 	$(srcdir)/System.Windows.Media/TileBrush.cs				\
-	$(srcdir)/System.Windows.Media/TimelineCollection.cs			\
 	$(srcdir)/System.Windows.Media/TimelineMarker.cs			\
 	$(srcdir)/System.Windows.Media/TimelineMarkerCollection.cs		\
 	$(srcdir)/System.Windows.Media/TimelineMarkerRoutedEventArgs.cs			\
@@ -225,9 +226,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/TransformGroup.cs			\
 	$(srcdir)/System.Windows.Media/TranslateTransform.cs			\
 	$(srcdir)/System.Windows.Media/VideoBrush.cs				\
-	$(srcdir)/System.Windows.Media/VisualBrush.cs				\
-	$(srcdir)/System.Windows.Media/VisualCollection.cs			\
-	$(srcdir)/System.Windows.Media/Visual.cs				\
 	$(srcdir)/System.Windows.Media.Animation/Animation.cs			\
 	$(srcdir)/System.Windows.Media.Animation/BeginStoryBoard.cs		\
 	$(srcdir)/System.Windows.Media.Animation/ColorAnimation.cs		\

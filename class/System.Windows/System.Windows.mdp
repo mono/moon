@@ -116,15 +116,11 @@
     <File name="System.Windows.Media/Stretch.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/SweepDirection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/TileBrush.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Media/TimelineCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/Transform.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/TransformCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/TransformGroup.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/TranslateTransform.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/VideoBrush.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Media/Visual.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Media/VisualBrush.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Media/VisualCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/Animation.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/BeginStoryBoard.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ColorAnimation.cs" subtype="Code" buildaction="Compile" />
@@ -260,6 +256,8 @@
     <File name="System.Windows.Media/MediaSourceAttributesKeys.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/MediaStreamAttributesKeys.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/MediaSampleAttributeKeys.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/TimelineCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/UIElementCollection.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
