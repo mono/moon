@@ -1,5 +1,9 @@
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* TextWrapping.cs: More B2 updates.
+
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* GridLength.cs: Implement missing methods.
 	* UIElement.cs: Fix event signatures and base class.
 	* Thickness.cs, CornerRadius.cs: Implemented.

@@ -29,8 +29,7 @@
 namespace System.Windows {
 
 	public enum TextWrapping {
-		WrapWithOverflow = 0,
-		NoWrap,
+		NoWrap = 1,
 		Wrap,
 	}
 }

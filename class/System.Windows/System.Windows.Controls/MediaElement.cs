@@ -25,6 +25,8 @@
 
 using Mono;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Ink;
 using System.Windows.Input;
@@ -72,7 +74,7 @@ namespace System.Windows.Controls
 		public static readonly DependencyProperty IsMutedProperty = 
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "IsMuted", typeof (bool));
 		
-		public static readonly DependencyProperty MarkersProperty = 
+		private static readonly DependencyProperty MarkersProperty = 
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Markers", typeof (TimelineMarkerCollection));
 		
 		public static readonly DependencyProperty NaturalDurationProperty = 
@@ -105,6 +107,11 @@ namespace System.Windows.Controls
 		{
 		}
 		
+		public override object GetValue (DependencyProperty dp)
+		{
+			return base.GetValue (dp);
+		}
+		
 		public void Pause ()
 		{
 			NativeMethods.media_element_pause (native);
@@ -115,9 +122,14 @@ namespace System.Windows.Controls
 			NativeMethods.media_element_play (native);
 		}
 		
-		public void SetSource (DependencyObject Downloader, string PartName)
+		public void SetSource (Stream stream)
 		{
-			NativeMethods.media_element_set_source (native, Downloader.native, PartName);
+			throw new NotImplementedException ();
+		}
+		
+		public void SetSource (MediaStreamSource mediaStreamSource)
+		{
+			throw new NotImplementedException ();
 		}
 		
 		public void Stop ()
@@ -125,21 +137,15 @@ namespace System.Windows.Controls
 			NativeMethods.media_element_stop (native);
 		}
 		
-		public MediaAttributeCollection Attributes { 
+		public Dictionary <string, string> Attributes { 
 			get {
-				return (MediaAttributeCollection) GetValue (AttributesProperty);
-			}
-			set {
-				SetValue (AttributesProperty, value);
+				return (Dictionary <string, string>) GetValue (AttributesProperty);
 			}
 		}
 		
 		public int AudioStreamCount {
 			get {
 				return (int) GetValue (AudioStreamCountProperty);
-			}
-			set {
-				SetValue (AudioStreamCountProperty, value);
 			}
 		}
 		
@@ -174,9 +180,6 @@ namespace System.Windows.Controls
 			get {
 				return (double) GetValue (BufferingProgressProperty); 
 			}
-			set {
-				SetValue (BufferingProgressProperty, value);
-			}
 		}
 		
 		public TimeSpan BufferingTime { 
@@ -199,19 +202,10 @@ namespace System.Windows.Controls
 				return (bool) GetValue (CanSeekProperty);
 			}
 		}
-		
-		public string CurrentState { 
-			get {
-				return (string) GetValue (CurrentStateProperty);
-			}
-		}
-		
+				
 		public double DownloadProgress { 
 			get {
 				return (double) GetValue (DownloadProgressProperty);
-			}
-			set {
-				SetValue (DownloadProgressProperty, value);
 			}
 		}
 		
@@ -234,26 +228,17 @@ namespace System.Windows.Controls
 			get {
 				return (Duration) GetValue (NaturalDurationProperty);
 			}
-			set {
-				SetValue (NaturalDurationProperty, value);
-			}
 		}
 		
 		public int NaturalVideoHeight { 
 			get {
 				return (int) GetValue (NaturalVideoHeightProperty);
 			}
-			set {
-				SetValue (NaturalVideoHeightProperty, (double) value);
-			}
 		}
 		
 		public int NaturalVideoWidth { 
 			get {
 				return (int) GetValue (NaturalVideoWidthProperty);
-			}
-			set {
-				SetValue (NaturalVideoWidthProperty, (double) value);
 			}
 		}
 		
@@ -263,6 +248,15 @@ namespace System.Windows.Controls
 			}
 			set {
 				SetValue (PositionProperty, value);
+			}
+		}
+		
+		public MediaElementState CurrentState {
+			get {
+				return (MediaElementState) GetValue (CurrentStateProperty);
+			}
+			set {
+				SetValue (CurrentStateProperty, value);
 			}
 		}
 		
@@ -305,7 +299,7 @@ namespace System.Windows.Controls
 		static object MediaEndedEvent = new object ();
 		static object MediaFailedEvent = new object ();
 		
-		public event EventHandler BufferingProgressChanged {
+		public event RoutedEventHandler BufferingProgressChanged {
 			add {
 				if (events[BufferingProgressChangedEvent] == null)
 					Events.AddHandler (this, "BufferingProgressChanged", buffering_progress_changed);
@@ -318,7 +312,7 @@ namespace System.Windows.Controls
 			}
 		}
 
-		public event EventHandler CurrentStateChanged {
+		public event RoutedEventHandler CurrentStateChanged {
 			add {
 				if (events[CurrentStateChangedEvent] == null)
 					Events.AddHandler (this, "CurrentStateChanged", current_state_changed);
@@ -331,7 +325,7 @@ namespace System.Windows.Controls
 			}
 		}
 		
-		public event EventHandler DownloadProgressChanged {
+		public event RoutedEventHandler DownloadProgressChanged {
 			add {
 				if (events[DownloadProgressChangedEvent] == null)
 					Events.AddHandler (this, "DownloadProgressChanged", download_progress_changed);
@@ -344,7 +338,7 @@ namespace System.Windows.Controls
 			}
 		}
 		
-		public event TimelineMarkerEventHandler MarkerReached {
+		public event TimelineMarkerRoutedEventHandler MarkerReached {
 			add {
 				if (events[MarkerReachedEvent] == null)
 					Events.AddHandler (this, "MarkerReached", marker_reached);
@@ -357,7 +351,7 @@ namespace System.Windows.Controls
 			}
 		}
 
-		public event EventHandler MediaOpened {
+		public event RoutedEventHandler MediaOpened {
 			add {
 				if (events[MediaOpenedEvent] == null)
 					Events.AddHandler (this, "MediaOpened", media_opened);
@@ -370,7 +364,7 @@ namespace System.Windows.Controls
 			}
 		}
 
-		public event EventHandler MediaEnded {
+		public event RoutedEventHandler MediaEnded {
 			add {
 				if (events[MediaEndedEvent] == null)
 					Events.AddHandler (this, "MediaEnded", media_ended);

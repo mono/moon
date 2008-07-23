@@ -187,6 +187,15 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/Matrix.cs				\
 	$(srcdir)/System.Windows.Media/MediaAttribute.cs			\
 	$(srcdir)/System.Windows.Media/MediaAttributeCollection.cs		\
+	$(srcdir)/System.Windows.Media/MediaElementState.cs			\
+	$(srcdir)/System.Windows.Media/MediaSampleAttributeKeys.cs	\
+	$(srcdir)/System.Windows.Media/MediaSourceAttributesKeys.cs	\
+	$(srcdir)/System.Windows.Media/MediaStreamAttributesKeys.cs	\
+	$(srcdir)/System.Windows.Media/MediaStreamDescription.cs	\
+	$(srcdir)/System.Windows.Media/MediaStreamSample.cs			\
+	$(srcdir)/System.Windows.Media/MediaStreamSource.cs			\
+	$(srcdir)/System.Windows.Media/MediaStreamSourceDiagnosticKind.cs	\
+	$(srcdir)/System.Windows.Media/MediaStreamType.cs			\
 	$(srcdir)/System.Windows.Media/PathFigure.cs				\
 	$(srcdir)/System.Windows.Media/PathFigureCollection.cs			\
 	$(srcdir)/System.Windows.Media/PathGeometry.cs				\
@@ -211,6 +220,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/TimelineCollection.cs			\
 	$(srcdir)/System.Windows.Media/TimelineMarker.cs			\
 	$(srcdir)/System.Windows.Media/TimelineMarkerCollection.cs		\
+	$(srcdir)/System.Windows.Media/TimelineMarkerRoutedEventArgs.cs			\
+	$(srcdir)/System.Windows.Media/TimelineMarkerRoutedEventHandler.cs			\
 	$(srcdir)/System.Windows.Media/TransformCollection.cs			\
 	$(srcdir)/System.Windows.Media/Transform.cs				\
 	$(srcdir)/System.Windows.Media/TransformGroup.cs			\
