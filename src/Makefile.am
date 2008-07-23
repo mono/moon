@@ -20,6 +20,7 @@ libmoon_include_HEADERS = \
 	control.h	\
 	debug.h		\
 	dependencyobject.h \
+	dependencyproperty.h \
 	dirty.h		\
 	downloader.h	\
 	enums.h		\
@@ -85,6 +86,7 @@ libmoon_la_SOURCES = 	\
 	control.cpp	\
 	debug.cpp	\
 	dependencyobject.cpp	\
+	dependencyproperty.cpp	\
 	dirty.h	\
 	dirty.cpp	\
 	downloader.cpp	\

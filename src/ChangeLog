@@ -1,3 +1,9 @@
+2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.h, dependencyproperty.h, Makefile.am,
+	  dependencyproperty.cpp, src.mdp, dependencyobject.cpp: Move
+	  DependencyProperty to its own file before it grows bigger.
+
 2008-07-21  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add back in the ability to create elements from

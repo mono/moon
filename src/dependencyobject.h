@@ -16,6 +16,7 @@
 #include "value.h"
 #include "enums.h"
 #include "list.h"
+#include "dependencyproperty.h"
 
 //#define OBJECT_TRACKING 1
 
@@ -314,36 +315,6 @@ class DependencyObject : public EventObject {
 	static void Shutdown ();
 };
 
-
-//
-// DependencyProperty
-//
-class DependencyProperty {
-	GHashTable *storage_hash; // keys: objects, values: animation storage's
-	bool is_readonly;
-	
- public:
-	DependencyProperty () {};
-	~DependencyProperty ();
-	DependencyProperty (Type::Kind type, const char *name, Value *default_value, Type::Kind value_type, bool attached, bool readonly, bool always_change);
-
-	char *hash_key;
-	char *name;
-	Value *default_value;
-	Type::Kind type;
-	bool is_attached_property;
-	Type::Kind value_type;
-	bool is_nullable;
-	bool always_change; // determines if SetValue will do something if the current and new values are equal.
-
-	bool IsNullable () { return is_nullable; }
-	bool IsReadOnly () { return is_readonly; }
-
-	AnimationStorage *AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
-	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
-	AnimationStorage *GetAnimationStorageFor (DependencyObject *obj);
-};
-
 G_BEGIN_DECLS
 
 void base_ref (EventObject *obj);
@@ -361,12 +332,6 @@ void dependency_object_set_name (DependencyObject *obj, const char *name);
 
 Type::Kind dependency_object_get_object_type (DependencyObject *obj);
 const char *dependency_object_get_type_name (DependencyObject *obj);
-
-DependencyProperty *dependency_property_lookup (Type::Kind type, char *name);
-char *dependency_property_get_name (DependencyProperty* property);
-bool  dependency_property_is_nullable (DependencyProperty* property);
-Type::Kind dependency_property_get_value_type (DependencyProperty* property);
-DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
 
 void dependencyobject_init (void);
 
