@@ -451,15 +451,11 @@ tools/respack/Makefile
 examples/Makefile
 examples/desklet/Makefile
 examples/desklet/calculator/Makefile
-examples/desklet/calendar/Makefile
 examples/desklet/cpumonitor/Makefile
-examples/desklet/ruler/Makefile
-examples/desklet/glassycalendar/Makefile
 examples/desklet/glassyclock/Makefile
 examples/desklet/glassymonitor/Makefile
 examples/desklet/glassyslides/Makefile
 examples/desklet/simpleclock/Makefile
-examples/desklet/weather/Makefile
 plugin/Makefile
 plugin/firefox/Makefile
 plugin/firefox/ff2/Makefile
