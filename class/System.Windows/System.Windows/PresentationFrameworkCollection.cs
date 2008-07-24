@@ -45,7 +45,7 @@ namespace System.Windows {
 		public static readonly System.Windows.DependencyProperty CountProperty =
 			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (int));
 		
-		internal PresentationFrameworkCollection () : base (NativeMethods.collection_new ())
+		internal PresentationFrameworkCollection () : base (NativeMethods.dependency_object_collection_new ())
 		{
 			//
 			// We really need to revisit native collections, should
@@ -368,7 +368,7 @@ namespace System.Windows {
 			if (value == null)
 				throw new ArgumentNullException ("value");
 			
-			return NativeMethods.collection_get_index_of (native, value.native) != -1;
+			return NativeMethods.collection_index_of (native, value.native) != -1;
 		}
 		
 		protected internal bool ContainsDouble (double value)
@@ -412,7 +412,7 @@ namespace System.Windows {
 			if (dob == null)
 				throw new Exception ("The collection only supports DependencyObjects");
 			
-			return NativeMethods.collection_get_index_of (native, dob.native);
+			return NativeMethods.collection_index_of (native, dob.native);
 		}
 		
 		public virtual int IndexOf (T value)
@@ -424,8 +424,8 @@ namespace System.Windows {
 			DependencyObject dob = value as DependencyObject;
 			if (dob == null)
 				throw new Exception ("The collection only supports DependencyObjects");
-
-			return NativeMethods.collection_get_index_of (native, dob.native);
+			
+			return NativeMethods.collection_index_of (native, dob.native);
 		}
 
 		public bool IsFixedSize {

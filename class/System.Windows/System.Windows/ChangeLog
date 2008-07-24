@@ -1,3 +1,8 @@
+2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PresentationFrameworkCollection.cs: Fixed to build, altho this
+	code needs some serious rethinking.
+
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* PresentationFrameworkCollection.cs: Make some methods virtual so that
