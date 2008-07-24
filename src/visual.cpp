@@ -102,7 +102,7 @@ VisualCollection::RemovedFromCollection (Value *value)
 bool
 VisualCollection::Insert (int index, Value value)
 {
-	if (!Collection::Insert (index, value))
+	if (!DependencyObjectCollection::Insert (index, value))
 		return false;
 	
 	// FIXME: If z_sorted was an array of structs containing both

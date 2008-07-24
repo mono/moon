@@ -78,6 +78,10 @@ class DependencyObjectCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 	
+	virtual int Add (Value value) { return Collection::Add (value); }
+	virtual void Clear () { Collection::Clear (); }
+	virtual bool Insert (int index, Value value) { return Collection::Insert (index, value); }
+	
 	// Convenience wrappers
 	int Add (DependencyObject *value) { return Collection::Add (Value (value)); }
 	bool Contains (DependencyObject *value) { return Collection::Contains (Value (value)); }
@@ -105,6 +109,10 @@ class DoubleCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::DOUBLE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DOUBLE; }
 	
+	virtual int Add (Value value) { return Collection::Add (value); }
+	virtual void Clear () { Collection::Clear (); }
+	virtual bool Insert (int index, Value value) { return Collection::Insert (index, value); }
+	
 	// Convenience wrappers
 	int Add (double value) { return Collection::Add (Value (value)); }
 	bool Contains (double value) { return Collection::Contains (Value (value)); }
@@ -122,6 +130,10 @@ class PointCollection : public Collection {
 	
 	virtual Type::Kind GetObjectType () { return Type::POINT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::POINT; }
+	
+	virtual int Add (Value value) { return Collection::Add (value); }
+	virtual void Clear () { Collection::Clear (); }
+	virtual bool Insert (int index, Value value) { return Collection::Insert (index, value); }
 	
 	// Convenience wrappers
 	int Add (Point value) { return Collection::Add (Value (value)); }

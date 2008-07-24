@@ -1,10 +1,19 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* collection.h (class DependencyObjectCollection): Add virtual
+	Add(), Clear() and Insert(). This makes it possible for subclasses
+	to chain up if they need to override any of these.
+	(class DoubleCollection): Same.
+	(class PointCollection): Here too.
+
 	* visual.cpp (VisualCollection::Clear): Chain up to
 	DependencyObjectCollection::Clear() rather than
 	Collection::Clear().
 	(VisualCollection::Insert): Don't bother resizing the z_sorted
 	array here, it will be done inside ResortByZIndex() anyway.
+	(VisualCollection::Insert): Chain up to
+	DependencyObjectCollection::Insert() rather than
+	Collection::Insert()
 
 2008-07-24  Geoff Norton  <gnorton@novell.com>
 
