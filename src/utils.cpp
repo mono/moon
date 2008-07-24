@@ -49,7 +49,7 @@
 #define MID(lo, hi) (lo + ((hi - lo) >> 1))
 
 
-static int
+static guint
 bsearch (GPtrArray *array, bool stable, GCompareFunc cmp, void *item)
 {
 	register guint lo, hi;
@@ -82,19 +82,30 @@ bsearch (GPtrArray *array, bool stable, GCompareFunc cmp, void *item)
 void
 g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item)
 {
-	guint ins = bsearch (array, true, cmp, item);
+	guint index = bsearch (array, true, cmp, item);
+	
+	g_ptr_array_insert (array, index, item);
+}
+
+void
+g_ptr_array_insert (GPtrArray *array, guint index, void *item)
+{
+	guint8 *dest, *src;
+	guint n;
+	
+	if (index >= array->len) {
+		g_ptr_array_add (array, item);
+		return;
+	}
 	
 	g_ptr_array_set_size (array, array->len + 1);
 	
-	if (ins < array->len) {
-		guint8 *dest = ((guint8 *) array->pdata) + (sizeof (void *) * (ins + 1));
-		guint8 *src = ((guint8 *) array->pdata) + (sizeof (void *) * ins);
-		guint n = array->len - ins - 1;
-		
-		g_memmove (dest, src, (sizeof (void *) * n));
-	}
+	dest = ((guint8 *) array->pdata) + (sizeof (void *) * (index + 1));
+	src = ((guint8 *) array->pdata) + (sizeof (void *) * index);
+	n = array->len - index - 1;
 	
-	array->pdata[ins] = item;
+	g_memmove (dest, src, (sizeof (void *) * n));
+	array->pdata[index] = item;
 }
 
 static ssize_t

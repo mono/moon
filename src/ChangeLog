@@ -1,3 +1,9 @@
+2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* utils.cpp (g_ptr_array_insert): New utility function.
+	(g_ptr_array_insert_sorted): Call g_ptr_array_insert() once we
+	find the index where we want to add the item.
+
 2008-07-23  Chris Toshok  <toshok@ximian.com>
 
 	* panel.cpp, xaml.cpp, stylus.cpp, usercontrol.cpp, canvas.cpp,

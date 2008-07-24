@@ -21,6 +21,8 @@
 
 G_BEGIN_DECLS
 
+void g_ptr_array_insert (GPtrArray *array, guint index, void *item);
+
 void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
 
 bool ExtractFile (unzFile zip, int fd);
