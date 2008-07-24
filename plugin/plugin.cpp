@@ -1724,7 +1724,7 @@ PluginXamlLoader::TryLoad (int *error)
 	
 	*error = 0;
 	
-	d(printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ()));
+	//d(printf ("PluginXamlLoader::TryLoad, filename: %s, str: %s\n", GetFilename (), GetString ()));
 	
 	GetSurface ()->Attach (NULL);
 	
@@ -1769,7 +1769,7 @@ PluginXamlLoader::TryLoad (int *error)
 		return NULL;
 	}
 	
-	d(printf ("PluginXamlLoader::TryLoad () succeeded.\n"));
+	//d(printf ("PluginXamlLoader::TryLoad () succeeded.\n"));
 	
 	GetSurface ()->Attach ((Canvas*) element);
 
