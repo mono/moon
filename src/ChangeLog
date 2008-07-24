@@ -1,5 +1,13 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
-	
+
+	* visual.cpp (VisualCollection::Clear): Chain up to
+	DependencyObjectCollection::Clear() rather than
+	Collection::Clear().
+	(VisualCollection::Insert): Don't bother resizing the z_sorted
+	array here, it will be done inside ResortByZIndex() anyway.
+
+2008-07-24  Geoff Norton  <gnorton@novell.com>
+
 	* downloader.cpp: When a downloader is reused reset the completed
 	state when we get the new Open call.
 

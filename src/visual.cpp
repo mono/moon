@@ -109,7 +109,6 @@ VisualCollection::Insert (int index, Value value)
 	// the item *and* the array index, our comparer could take
 	// that into consideration when sorting and so we'd never have
 	// to completely re-sort on Insert()
-	g_ptr_array_set_size (z_sorted, z_sorted->len + 1);
 	ResortByZIndex ();
 	
 	return true;
@@ -118,8 +117,8 @@ VisualCollection::Insert (int index, Value value)
 void
 VisualCollection::Clear ()
 {
-	Collection::Clear ();
 	g_ptr_array_set_size (z_sorted, 0);
+	DependencyObjectCollection::Clear ();
 }
 
 
