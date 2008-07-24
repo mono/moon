@@ -386,27 +386,27 @@ collection_clear (Collection *collection)
 }
 
 bool
-collection_contains (Collection *collection, Value value)
+collection_contains (Collection *collection, Value *value)
 {
-	return collection->Contains (value);
+	return collection->Contains (*value);
 }
 
 int
-collection_index_of (Collection *collection, Value value)
+collection_index_of (Collection *collection, Value *value)
 {
-	return collection->IndexOf (value);
+	return collection->IndexOf (*value);
 }
 
 bool
-collection_insert (Collection *collection, int index, Value value)
+collection_insert (Collection *collection, int index, Value *value)
 {
-	return collection->Insert (index, value);
+	return collection->Insert (index, *value);
 }
 
 bool
-collection_remove (Collection *collection, Value value)
+collection_remove (Collection *collection, Value *value)
 {
-	return collection->Remove (value);
+	return collection->Remove (*value);
 }
 
 bool
@@ -422,11 +422,11 @@ collection_get_value_at (Collection *collection, int index)
 }
 
 void
-collection_set_value_at (Collection *collection, int index, Value value)
+collection_set_value_at (Collection *collection, int index, Value *value)
 {
 	Value *v;
 	
-	if (!(v = collection->SetValueAt (index, value)))
+	if (!(v = collection->SetValueAt (index, *value)))
 		return;
 	
 	delete v;
@@ -524,9 +524,26 @@ collection_new (Type::Kind kind)
 		return NULL;
 	}
 	
-	return (Collection*)t->CreateInstance();
+	return (Collection *) t->CreateInstance();
 }
 
+DependencyObjectCollection *
+dependency_object_collection_new (void)
+{
+	return new DependencyObjectCollection ();
+}
+
+DoubleCollection *
+double_collection_new (void)
+{
+	return new DoubleCollection ();
+}
+
+PointCollection *
+point_collection_new (void)
+{
+	return new PointCollection ();
+}
 
 TriggerCollection *
 trigger_collection_new (void)
@@ -546,11 +563,8 @@ resource_dictionary_new (void)
 	return new ResourceDictionary ();
 }
 
-
 Inlines *
 inlines_new (void)
 {
 	return new Inlines ();
 }
-
-

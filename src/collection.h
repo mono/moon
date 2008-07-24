@@ -70,10 +70,11 @@ class DependencyObjectCollection : public Collection {
 	virtual void AddedToCollection (Value *value);
 	virtual void RemovedFromCollection (Value *value);
 	
-	DependencyObjectCollection () { unique = true; }
 	virtual ~DependencyObjectCollection () {}
 	
  public:
+	DependencyObjectCollection () { unique = true; }
+	
 	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 	
@@ -198,16 +199,16 @@ Collection *collection_new (Type::Kind kind);
 Type::Kind collection_get_element_type (Collection *collection);
 int collection_get_count (Collection *collection);
 
-int collection_add (Collection *collection, Value value);
+int collection_add (Collection *collection, Value *value);
 void collection_clear (Collection *collection);
-bool collection_contains (Collection *collection, Value value);
-int collection_index_of (Collection *collection, Value value);
-bool collection_insert (Collection *collection, int index, Value value);
-bool collection_remove (Collection *collection, Value value);
+bool collection_contains (Collection *collection, Value *value);
+int collection_index_of (Collection *collection, Value *value);
+bool collection_insert (Collection *collection, int index, Value *value);
+bool collection_remove (Collection *collection, Value *value);
 bool collection_remove_at (Collection *collection, int index);
 
 Value *collection_get_value_at (Collection *collection, int index);
-void collection_set_value_at (Collection *collection, int index, Value value);
+void collection_set_value_at (Collection *collection, int index, Value *value);
 
 CollectionIterator *collection_get_iterator (Collection *collection);
 int collection_iterator_next (CollectionIterator *iterator);
@@ -215,10 +216,12 @@ bool collection_iterator_reset (CollectionIterator *iterator);
 void collection_iterator_destroy (CollectionIterator *iterator);
 Value *collection_iterator_get_current (CollectionIterator *iterator, int *error);
 
+DependencyObjectCollection *dependency_object_collection_new (void);
+DoubleCollection *double_collection_new (void);
+PointCollection *point_collection_new (void);
 TriggerCollection *trigger_collection_new (void);
 TriggerActionCollection *trigger_action_collection_new (void);
 ResourceDictionary *resource_dictionary_new (void);
-GradientStopCollection *gradient_stop_collection_new (void);
 Inlines *inlines_new (void);
 
 G_END_DECLS

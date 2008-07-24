@@ -1,5 +1,13 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* collection.cpp: Added c-wrappers for creating new
+	collections. Also changed the c-bindings for
+	setting/adding/inserting/etc items to the collection to take
+	Value* instead of Value. Should make it simpler for the managed
+	code to pass that.
+
+2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
 	* collection.cpp (DependencyObjectCollection::RemovedFromCollection):
 	Unregister the NameScope the same way it was done in the more
 	common case in the old code (why were there different ways?).
