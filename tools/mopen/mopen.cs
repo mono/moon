@@ -203,8 +203,8 @@ class MonoOpen {
 		}
 
 		if (desklet) {
-			canvas.MouseLeftButtonDown += new MouseEventHandler (HandleMouseLeftButtonDown);
-			canvas.MouseLeftButtonUp += new MouseEventHandler (HandleMouseLeftButtonUp);
+			canvas.MouseLeftButtonDown += new MouseButtonEventHandler (HandleMouseLeftButtonDown);
+			canvas.MouseLeftButtonUp += new MouseButtonEventHandler (HandleMouseLeftButtonUp);
 			canvas.MouseMove += new MouseEventHandler (HandleMouseMove);
 		}
 
