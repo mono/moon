@@ -76,13 +76,14 @@ namespace MoonlightTests {
 				dbreader.Close();
 				dbreader = null;
 				
-				Console.WriteLine("\nMySql connection successful\n");
+				Console.WriteLine("\nDbReport enabled\n");
 			
 			}
 			catch(Exception ex)
 			{
-				WriteHelp();
-				Console.WriteLine("\n{1} {0}",ex.GetType(), ex.Message);
+				Console.WriteLine("DbReport disabled");
+				//WriteHelp();
+				//Console.WriteLine("\n{1} {0}",ex.GetType(), ex.Message);
 				connectionString = string.Empty;
 			}
 			
