@@ -219,8 +219,6 @@ Collection::EmitChanged (CollectionChangedAction action, Value *new_value, Value
 	
 	if (closure) {
 		args = new CollectionChangedEventArgs (action, new_value, old_value, index);
-		//args->prop = element_args ? element_args->property : NULL;
-		
 		closure->OnCollectionChanged (this, args);
 		args->unref ();
 	}

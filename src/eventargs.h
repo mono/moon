@@ -51,7 +51,7 @@ class CollectionChangedEventArgs : public EventArgs {
 	
 	CollectionChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
 	{
-		this->action = CollectionChangedActionReplace;
+		this->action = action;
 		this->new_value = new_value;
 		this->old_value = old_value;
 		this->index = index;
