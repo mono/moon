@@ -88,12 +88,13 @@ void geometry_set_transform (Geometry *geometry, Transform *transform);
 //
 // GeometryCollection
 //
-class GeometryCollection : public Collection {
+class GeometryCollection : public DependencyObjectCollection {
  protected:
 	virtual ~GeometryCollection () {}
 
  public:
 	GeometryCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::GEOMETRY; }
 };
@@ -116,7 +117,7 @@ class GeometryGroup : public Geometry {
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; };
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
 	virtual void Draw (Path *path, cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
@@ -192,7 +193,7 @@ class LineGeometry : public Geometry {
 	static DependencyProperty *EndPointProperty;
 	static DependencyProperty *StartPointProperty;
 	
-	LineGeometry () { };
+	LineGeometry () {}
 	virtual Type::Kind GetObjectType () { return Type::LINEGEOMETRY; };
 	
 	virtual Rect ComputeBounds (Path *path, bool logical);
@@ -219,12 +220,13 @@ void line_geometry_set_start_point (LineGeometry *line, Point *point);
 //
 // PathFigureCollection
 //
-class PathFigureCollection : public Collection {
+class PathFigureCollection : public DependencyObjectCollection {
  protected:
 	virtual ~PathFigureCollection () {}
 
  public:
 	PathFigureCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::PATHFIGURE; }
 };
@@ -255,7 +257,7 @@ class PathGeometry : public Geometry {
 
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 	
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
 	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
 	
@@ -324,12 +326,13 @@ void rectangle_geometry_set_rect (RectangleGeometry *rectangle, Rect *rect);
 //
 // PathSegmentCollection
 //
-class PathSegmentCollection : public Collection {
+class PathSegmentCollection : public DependencyObjectCollection {
  protected:
 	virtual ~PathSegmentCollection () {}
 
  public:
 	PathSegmentCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::PATHSEGMENT; }
 };
@@ -356,7 +359,7 @@ class PathFigure : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; };
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void Build (Path *shape);
 	
 	virtual bool IsBuilt () { return path && path->cairo.num_data != 0; }

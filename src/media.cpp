@@ -506,7 +506,6 @@ MediaElement::CheckMarkers (guint64 from, guint64 to)
 void
 MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *markers, bool remove)
 {
-	Collection::Node *node, *next;
 	TimelineMarker *marker;
 	Value *val = NULL;
 	guint64 pts;
@@ -520,10 +519,8 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 	// We might want to use a more intelligent algorithm here, 
 	// this code only loops through all markers on every frame.
 	
-	node = (Collection::Node *) markers->list->First ();
-	while (node != NULL) {
-		if (!(marker = (TimelineMarker *) node->obj))
-			return;
+	for (int i = 0; i < markers->GetCount (); i++) {
+		marker = markers->GetValueAt (i)->AsTimelineMarker ();
 		
 		if (!(val = marker->GetValue (TimelineMarker::TimeProperty)))
 			return;
@@ -541,33 +538,33 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 				emit = pts >= (from - MilliSeconds_ToPts (1000)) && pts <= to;
 			}
 			
-			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n", from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n",
+					from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
 		} else {
 			// Normal markers.
 			emit = pts >= from && pts <= to;
-			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n", from, to, pts, marker->GetText (), marker->GetType ());
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n",
+					from, to, pts, marker->GetText (), marker->GetType ());
 		}
 		
 		if (emit) {
-			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Emitting: Text = %s, Type = %s, Time = %llu = %llu ms\n", from, to, marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ()));
+			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Emitting: Text = %s, Type = %s, Time = %llu = %llu ms\n",
+				     from, to, marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ()));
 			Emit (MarkerReachedEvent, new MarkerReachedEventArgs (marker));
 		}
-
-		next = (Collection::Node *) node->next;
 		
 		if (remove && (pts <= to || emit)) {
 			// Also delete markers we've passed by already
-			markers->list->Remove (node);
+			markers->RemoveAt (i);
+			i--;
 		}
-		
-		node = next;
 	}
 }
 
 void
 MediaElement::AudioFinished ()
 {
-	d (printf ("MediaElement::AudioFinished ()\n"));
+	d(printf ("MediaElement::AudioFinished ()\n"));
 	
 	SetState (Stopped);
 	Emit (MediaElement::MediaEndedEvent);
@@ -2912,28 +2909,22 @@ media_attribute_set_value (MediaAttribute *attribute, const char *value)
 // MediaAttributeCollection
 //
 
-static bool
-media_attribute_by_name_finder (List::Node *node, void *data)
-{
-	Collection::Node *cn = (Collection::Node *) node;
-	MediaAttribute *attribute = (MediaAttribute *) cn->obj;
-	const char *name = (const char *) data;
-
-	Value *value = attribute->GetValue (DependencyObject::NameProperty);
-	if (!value)
-		return false;
-
-	return !strcmp (name, value->AsString ());
-}
-
 MediaAttribute *
 MediaAttributeCollection::GetItemByName (const char *name)
 {
-	Collection::Node *cn = (Collection::Node *) list->Find (media_attribute_by_name_finder, (char *) name);
-	if (!cn)
-		return NULL;
-
-	return (MediaAttribute *) cn->obj;
+	MediaAttribute *attr;
+	Value *value;
+	
+	for (guint i = 0; i < array->len; i++) {
+		attr = ((Value *) array->pdata[i])->AsMediaAttribute ();
+		if (!(value = attr->GetValue (DependencyObject::NameProperty)))
+			continue;
+		
+		if (!strcmp (value->AsString (), name))
+			return attr;
+	}
+	
+	return NULL;
 }
 
 MediaAttributeCollection *
@@ -2950,36 +2941,32 @@ media_attribute_collection_get_item_by_name (MediaAttributeCollection *collectio
 
 //
 // TimelineMarkerCollection
-// 
-bool
-TimelineMarkerCollection::Insert (int index, DependencyObject *data)
-{
-	return Add (data) != -1;
-}
-
+//
 int
-TimelineMarkerCollection::AddToList (Collection::Node *node)
+TimelineMarkerCollection::Add (Value value)
 {
-	TimelineMarker *added_marker = (TimelineMarker *) node->obj;
-	TimelineMarker *current_marker;
-	Collection::Node *current;
-	int counter = 0;
-		
-	current = (Collection::Node *) list->First ();
-	while (current != NULL) {
-		current_marker = (TimelineMarker *) current->obj;
-		
-		if (current_marker->GetTime () >= added_marker->GetTime ()) {
-			list->InsertBefore (node, current);
-			return counter;
+	TimelineMarker *marker, *cur;
+	
+	if (!value.Is (Type::TIMELINEMARKER))
+		return -1;
+	
+	marker = value.AsTimelineMarker ();
+	
+	for (guint i = 0; i < array->len; i++) {
+		cur = ((Value *) array->pdata[i])->AsTimelineMarker ();
+		if (cur->GetTime () >= marker->GetTime ()) {
+			Collection::Insert (i, value);
+			return i;
 		}
-		
-		current = (Collection::Node *) current->next;
-		counter++;
 	}
 	
-	list->Append (node);
-	return counter;
+	return Collection::Add (value);
+}
+
+bool
+TimelineMarkerCollection::Insert (int index, Value value)
+{
+	return Add (value) != -1;
 }
 
 TimelineMarkerCollection *
@@ -2995,7 +2982,7 @@ timeline_marker_collection_new (void)
 MarkerReachedEventArgs::MarkerReachedEventArgs (TimelineMarker *marker)
 {
 	this->marker = marker;
-	this->marker->ref ();
+	marker->ref ();
 }
 
 MarkerReachedEventArgs::~MarkerReachedEventArgs ()

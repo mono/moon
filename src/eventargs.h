@@ -35,6 +35,28 @@ class EventArgs : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::EVENTARGS; };
 };
 
+enum CollectionChangedAction {
+	CollectionChangedActionAdd,
+	CollectionChangedActionRemove,
+	CollectionChangedActionReplace,
+	CollectionChangedActionReset
+};
+
+class CollectionChangedEventArgs : public EventArgs {
+ public:
+	CollectionChangedAction action;
+	Value *old_value;
+	Value *new_value;
+	int index;
+	
+	CollectionChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
+	{
+		this->action = CollectionChangedActionReplace;
+		this->new_value = new_value;
+		this->old_value = old_value;
+		this->index = index;
+	}
+};
 
 class KeyboardEventArgs : public EventArgs {
  protected:
@@ -74,11 +96,11 @@ class MouseEventArgs : public EventArgs {
 
 G_BEGIN_DECLS
 
-MouseEventArgs*        mouse_event_args_new               (void);
-int                    mouse_event_args_get_state         (MouseEventArgs *args);
-void                   mouse_event_args_get_position      (MouseEventArgs *args, UIElement *relative_to, double *x, double *y);
-StylusInfo*            mouse_event_args_get_stylus_info   (MouseEventArgs *args);
-StylusPointCollection* mouse_event_args_get_stylus_points (MouseEventArgs *args, UIElement *ink_presenter);
+MouseEventArgs *mouse_event_args_new (void);
+int mouse_event_args_get_state (MouseEventArgs *args);
+void mouse_event_args_get_position (MouseEventArgs *args, UIElement *relative_to, double *x, double *y);
+StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *args);
+StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *args, UIElement *ink_presenter);
 
 G_END_DECLS
 

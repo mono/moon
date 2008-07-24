@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
  * deployment.h: Deployment
  *
@@ -25,7 +26,8 @@ class AssemblyPart : public DependencyObject {
  public:
 	static DependencyProperty *SourceProperty;
 	
-	AssemblyPart () {} 
+	AssemblyPart () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::ASSEMBLYPART; }
 };
 
@@ -33,12 +35,13 @@ AssemblyPart *assembly_part_new (void);
 
 
 /* @SilverlightVersion="2" */
-class AssemblyPartCollection : public Collection {
+class AssemblyPartCollection : public ObjectCollection {
  protected:
 	virtual ~AssemblyPartCollection () {}
 
  public:
 	AssemblyPartCollection () {}
+	
 	virtual Type::Kind GetObjectType ()  { return Type::ASSEMBLYPART_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::ASSEMBLYPART; }
 };

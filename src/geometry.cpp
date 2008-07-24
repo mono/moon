@@ -134,7 +134,7 @@ GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject 
 }
 
 void
-GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
+GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	// GeometryGroup only has one collection, so let's save the hash lookup
 	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
@@ -152,11 +152,10 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 	}
 	
 	GeometryCollection *children = GetChildren ();
-	Collection::Node *node;
+	Geometry *geometry;
 	
-	node = (Collection::Node *) children->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		Geometry *geometry = (Geometry *) node->obj;
+	for (int i = 0; i < children->GetCount (); i++) {
+		geometry = children->GetValueAt (i)->AsGeometry ();
 		
 		geometry->Draw (shape, cr);
 	}
@@ -167,10 +166,11 @@ GeometryGroup::ComputeBounds (Path *path, bool logical, cairo_matrix_t * matrix)
 {
 	GeometryCollection *children = GetChildren ();
 	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
+	Geometry *geometry;
 	
-	Collection::Node *node = (Collection::Node *) children->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		Geometry *geometry = (Geometry *) node->obj;
+	for (int i = 0; i < children->GetCount (); i++) {
+		geometry = children->GetValueAt (i)->AsGeometry ();
+		
 		bounds = bounds.Union (geometry->ComputeBounds (path, logical, matrix), logical);
 	}
 	
@@ -533,7 +533,7 @@ PathGeometry::PathGeometry (moon_path *pml)
 }
 
 void
-PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
+PathGeometry::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	logical_bounds_available = physical_bounds_available = false;
 	if (path)
@@ -547,15 +547,16 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangeType type, D
 void
 PathGeometry::Build (Path *shape)
 {
+	PathFigureCollection *figures;
+	PathFigure *figure;
+	
 	path = moon_path_renew (path, 0);
 
-	PathFigureCollection *figures = GetFigures ();
-	if (!figures)
+	if (!(figures = GetFigures ()))
 		return;
 	
-	Collection::Node *node = (Collection::Node *) figures->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		PathFigure *figure = (PathFigure *) node->obj;
+	for (int i = 0; i < figures->GetCount (); i++) {
+		figure = figures->GetValueAt (i)->AsPathFigure ();
 		
 		if (!figure->IsBuilt ())
 			figure->Build (shape);
@@ -849,10 +850,11 @@ PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args)
 }
 
 void
-PathFigure::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
+PathFigure::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	if (path)
 		moon_path_clear (path);
+	
 	// PathFigure only has one collection, so let's save the hash lookup
 	//if (col == GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection())
 		NotifyListenersOfPropertyChange (PathFigure::SegmentsProperty);
@@ -862,18 +864,18 @@ void
 PathFigure::Build (Path *shape)
 {
 	PathSegmentCollection *segments = GetSegments ();
+	PathSegment *segment;
 	
 	if (path)
 		moon_path_clear (path);
 	else
-		path = moon_path_new (MOON_PATH_MOVE_TO_LENGTH + (segments->list->Length () * 4) + MOON_PATH_CLOSE_PATH_LENGTH);
+		path = moon_path_new (MOON_PATH_MOVE_TO_LENGTH + (segments->GetCount () * 4) + MOON_PATH_CLOSE_PATH_LENGTH);
 	
 	Point *start = GetStartPoint ();
 	moon_move_to (path, start ? start->x : 0.0, start ? start->y : 0.0);
 	
-	Collection::Node *node = (Collection::Node *) segments->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		PathSegment *segment = (PathSegment *) node->obj;
+	for (int i = 0; i < segments->GetCount (); i++) {
+		segment = segments->GetValueAt (i)->AsPathSegment ();
 		
 		segment->Append (path);
 	}

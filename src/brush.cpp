@@ -270,7 +270,7 @@ GradientBrush::GradientBrush ()
 }
 
 void
-GradientBrush::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
+GradientBrush::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	// GeometryGroup only has one collection, so let's save the hash lookup
 	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
@@ -283,7 +283,9 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 	GradientStopCollection *children = GetGradientStops ();
 	GradientSpreadMethod gsm = GetSpreadMethod ();
 	double opacity = GetOpacity ();
-	Collection::Node *node;
+	GradientStop *stop;
+	double offset;
+	int index;
 	
 	cairo_pattern_set_extend (pattern, convert_gradient_spread_method (gsm));
 	
@@ -291,9 +293,9 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 	if (single) {
 		// if a single color is shown (e.g. start == end point) Cairo will,
 		// by default, use the start color while SL use the end color
-		node = (Collection::Node *) children->list->Last ();
+		index = children->GetCount () - 1;
 	} else {
-		node = (Collection::Node *) children->list->First ();
+		index = 0;
 	}
 	
 	GradientStop *negative_stop = NULL;	//the biggest negative stop
@@ -305,9 +307,9 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 	GradientStop *outofbounds_stop = NULL;	//the smallest stop > 1
 	double out_offset = 0.0;		//idem
 	
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		GradientStop *stop = (GradientStop *) node->obj;
-		double offset = stop->GetOffset ();
+	for ( ; index < children->GetCount (); index++) {
+		stop = children->GetValueAt (index)->AsGradientStop ();
+		offset = stop->GetOffset ();
 		
 		if (offset >= 0.0 && offset <= 1.0) {
 			Color *color = stop->GetColor ();
@@ -392,24 +394,20 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bo
 bool
 GradientBrush::IsOpaque ()
 {
-	if (!Brush::IsOpaque())
+	if (!Brush::IsOpaque ())
 		return false;
 	
 	GradientStopCollection *stops = GetGradientStops ();
+	GradientStop *stop;
+	Color *c;
 	
-	if (stops->list->Length() > 0) {
-		Collection::Node *cn;
-		for (cn = (Collection::Node *) stops->list->First ();
-		     cn != NULL;
-		     cn = (Collection::Node *) cn->next) {
-
-			GradientStop *stop = (GradientStop*)cn->obj;
-			Color *c = stop->GetColor ();
-			if (IS_TRANSLUCENT (c->a))
-				return false;
-		}
+	for (int i = 0; i < stops->GetCount (); i++) {
+		stop = stops->GetValueAt (i)->AsGradientStop ();
+		c = stop->GetColor ();
+		if (IS_TRANSLUCENT (c->a))
+			return false;
 	}
-
+	
 	return true;
 }
 

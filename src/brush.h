@@ -124,14 +124,14 @@ Color           *solid_color_brush_get_color (SolidColorBrush *solid_color_brush
 void             solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color);
 
 
-class GradientStopCollection : public Collection {
+class GradientStopCollection : public DependencyObjectCollection {
  protected:
 	virtual ~GradientStopCollection () {}
 
  public:
 	GradientStopCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP_COLLECTION; }
-
 	virtual Type::Kind GetElementType() { return Type::GRADIENTSTOP; }
 };
 
@@ -179,7 +179,7 @@ class GradientBrush : public Brush {
 	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTBRUSH; }
 	
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bool single = false);
 	
 	virtual bool IsOpaque ();

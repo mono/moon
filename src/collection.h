@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * collection.h: different types of collections
  *
@@ -13,8 +14,9 @@
 #include <glib.h>
 
 #include "dependencyobject.h"
-#include "list.h"
 #include "eventargs.h"
+#include "point.h"
+
 
 //
 // Collection: provides a collection that we can monitor for
@@ -23,100 +25,140 @@
 // chance to reflect the changes
 //
 class Collection : public DependencyObject {
- public:
-	class ChangeEventArgs : public EventArgs {
-	public:
-		CollectionChangeType type;
-		DependencyObject *obj;
-		DependencyProperty *prop;
-		virtual Type::Kind GetObjectType () { return Type::CHANGEEVENTARGS; };
-	};
-
-	class Node : public List::Node {
-	public:
-		DependencyObject *obj, *parent;
-		
-		Node (DependencyObject *dob, DependencyObject *parent);
-		virtual ~Node ();
-	};
-	
-	DependencyObject *closure;
+ protected:
+	GPtrArray *array;
 	int generation;
-	List *list;
+	bool unique;
 	
-	static DependencyProperty *CountProperty;
+	void EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
+	
+	virtual void AddedToCollection (Value *value) {}
+	virtual void RemovedFromCollection (Value *value) {}
 	
 	Collection ();
-	virtual Type::Kind GetObjectType () { return Type::COLLECTION; };	
-	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
-
-	virtual int  Add    (DependencyObject *data);
-	virtual bool Remove (DependencyObject *data);
-	virtual bool RemoveAt (int index);
-	virtual bool Insert (int index, DependencyObject *data);
-	virtual void Clear  ();
-
-	virtual void SetSurface (Surface *surface);
-
-	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
-	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
-
-	void MergeNames (DependencyObject *new_obj);
-
-	// non virtual version callable from the dtor.
-	void Clear (bool emit_event);
-
-	//
-	// Returns the old value
-	//
-	virtual DependencyObject *SetVal (int index, DependencyObject *data);
+	virtual ~Collection ();
+	
+ public:
+	static DependencyProperty *CountProperty;
+	
+	DependencyObject *closure;
+	
+	virtual Type::Kind GetObjectType () = 0;
+	virtual Type::Kind GetElementType () = 0;
+	
 	virtual Value *GetValue (DependencyProperty *property);
 	
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-
-	void EmitChanged (CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	int Generation () { return generation; }
+	GPtrArray *Array () { return array; }
 	
-	int GetCount ();
+	int GetCount () { return array->len; }
 	
- protected:
-	virtual int AddToList (Collection::Node *node);
-	virtual ~Collection ();
+	virtual int Add (Value value);
+	virtual void Clear ();
+	bool Contains (Value value);
+	int IndexOf (Value value);
+	virtual bool Insert (int index, Value value);
+	bool Remove (Value value);
+	bool RemoveAt (int index);
+	
+	Value *GetValueAt (int index);
+	Value *SetValueAt (int index, Value value);
 };
 
-bool CollectionNodeFinder (List::Node *n, void *data);
+class DependencyObjectCollection : public Collection {
+ protected:
+	virtual void AddedToCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value);
+	
+	DependencyObjectCollection () { unique = true; }
+	virtual ~DependencyObjectCollection () {}
+	
+ public:
+	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
+	
+	// Convenience wrappers
+	int Add (DependencyObject *value) { return Collection::Add (Value (value)); }
+	bool Contains (DependencyObject *value) { return Collection::Contains (Value (value)); }
+	int IndexOf (DependencyObject *value) { return Collection::IndexOf (Value (value)); }
+	bool Insert (int index, DependencyObject *value) { return Collection::Insert (index, Value (value)); }
+	bool Remove (DependencyObject *value) { return Collection::Remove (Value (value)); }
+	virtual DependencyObject *SetValueAt (int index, DependencyObject *obj);
+	
+	virtual void SetSurface (Surface *surface);
+	
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *args);
+	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
+	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
+	
+	void MergeNames (DependencyObject *new_obj);
+};
+
+class DoubleCollection : public Collection {
+ protected:
+	virtual ~DoubleCollection ();
+	
+ public:
+	DoubleCollection () {}
+	
+	virtual Type::Kind GetObjectType () { return Type::DOUBLE_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::DOUBLE; }
+	
+	// Convenience wrappers
+	int Add (double value) { return Collection::Add (Value (value)); }
+	bool Contains (double value) { return Collection::Contains (Value (value)); }
+	int IndexOf (double value) { return Collection::IndexOf (Value (value)); }
+	bool Insert (int index, double value) { return Collection::Insert (index, Value (value)); }
+	bool Remove (double value) { return Collection::Remove (Value (value)); }
+};
+
+class PointCollection : public Collection {
+ protected:
+	virtual ~PointCollection ();
+	
+ public:
+	PointCollection () {}
+	
+	virtual Type::Kind GetObjectType () { return Type::POINT_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::POINT; }
+	
+	// Convenience wrappers
+	int Add (Point value) { return Collection::Add (Value (value)); }
+	bool Contains (Point value) { return Collection::Contains (Value (value)); }
+	int IndexOf (Point value) { return Collection::IndexOf (Value (value)); }
+	bool Insert (int index, Point value) { return Collection::Insert (index, Value (value)); }
+	bool Remove (Point value) { return Collection::Remove (Value (value)); }
+};
 
 class CollectionIterator {
  public:
-	CollectionIterator (Collection *c) {
-		first = true;
+	CollectionIterator (Collection *c)
+	{
+		generation = c->Generation ();
 		collection = c;
-		current = c->list->First ();
-		generation = c->generation;
+		index = -1;
 	}
 	
 	Collection *collection;
-	List::Node *current;
 	int generation;
-	bool first;
+	int index;
 };
 
-class TriggerCollection : public Collection {
+class TriggerCollection : public DependencyObjectCollection {
  protected:
+	virtual void AddedToCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value);
+	
 	virtual ~TriggerCollection () {}
-
+	
  public:
 	TriggerCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::EVENTTRIGGER; }
-
-	virtual int  Add    (DependencyObject *data);
-	virtual bool Remove (DependencyObject *data);
-	virtual bool RemoveAt (int index);
-	virtual bool Insert (int index, DependencyObject *data);
-	virtual DependencyObject *SetVal (int index, DependencyObject *data);
 };
 
-class TriggerActionCollection : public Collection {
+class TriggerActionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TriggerActionCollection () {}
 
@@ -127,17 +169,17 @@ class TriggerActionCollection : public Collection {
 	virtual Type::Kind GetElementType () { return Type::BEGINSTORYBOARD; }
 };
 
-class ResourceDictionary : public Collection {
+class ResourceDictionary : public DependencyObjectCollection {
  protected:
 	virtual ~ResourceDictionary () {}
-
+	
  public:
 	ResourceDictionary () {}
 	virtual Type::Kind GetObjectType () { return Type::RESOURCE_DICTIONARY; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 };
 
-class Inlines : public Collection {
+class Inlines : public DependencyObjectCollection {
  protected:
 	virtual ~Inlines () {}
 
@@ -149,34 +191,35 @@ class Inlines : public Collection {
 
 G_BEGIN_DECLS
 
-int collection_add (Collection *collection, DependencyObject *data);
-bool collection_remove (Collection *collection, DependencyObject *data);
-bool collection_remove_at (Collection *collection, int index);
-bool collection_insert (Collection *collection, int index, DependencyObject *data);
-void collection_clear  (Collection *collection);
-int  collection_get_count  (Collection *collection);
-
-DependencyObject   *collection_get_value_at (Collection *collection, int index);
-void                collection_set_value_at (Collection *collection, int index, DependencyObject *obj);
-Type::Kind          collection_get_element_type (Collection *collection);
-CollectionIterator *collection_get_iterator (Collection *collection);
-int                 collection_get_index_of (Collection *collection, DependencyObject *obj);
-
-int    collection_iterator_move_next   (CollectionIterator *iterator);
-bool   collection_iterator_reset       (CollectionIterator *iterator);
-void   collection_iterator_destroy     (CollectionIterator *iterator);
-DependencyObject *collection_iterator_get_current (CollectionIterator *iterator, int *error);
-
+void collection_init (void);
 
 Collection *collection_new (Type::Kind kind);
+
+Type::Kind collection_get_element_type (Collection *collection);
+int collection_get_count (Collection *collection);
+
+int collection_add (Collection *collection, Value value);
+void collection_clear (Collection *collection);
+bool collection_contains (Collection *collection, Value value);
+int collection_index_of (Collection *collection, Value value);
+bool collection_insert (Collection *collection, int index, Value value);
+bool collection_remove (Collection *collection, Value value);
+bool collection_remove_at (Collection *collection, int index);
+
+Value *collection_get_value_at (Collection *collection, int index);
+void collection_set_value_at (Collection *collection, int index, Value value);
+
+CollectionIterator *collection_get_iterator (Collection *collection);
+int collection_iterator_next (CollectionIterator *iterator);
+bool collection_iterator_reset (CollectionIterator *iterator);
+void collection_iterator_destroy (CollectionIterator *iterator);
+Value *collection_iterator_get_current (CollectionIterator *iterator, int *error);
 
 TriggerCollection *trigger_collection_new (void);
 TriggerActionCollection *trigger_action_collection_new (void);
 ResourceDictionary *resource_dictionary_new (void);
 GradientStopCollection *gradient_stop_collection_new (void);
 Inlines *inlines_new (void);
-
-void collection_init (void);
 
 G_END_DECLS
 

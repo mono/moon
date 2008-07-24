@@ -532,14 +532,14 @@ class Timeline : public DependencyObject {
 
 
 
-class TimelineCollection : public Collection {
+class TimelineCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TimelineCollection () {}
 
  public:
 	TimelineCollection () {}
+	
 	virtual Type::Kind GetObjectType() { return Type::TIMELINE_COLLECTION; }
-
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
 };
 

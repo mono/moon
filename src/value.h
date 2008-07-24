@@ -66,10 +66,12 @@ class ColumnDefinition;
 class ColumnDefinitionCollection;
 class Control;
 class DependencyObject;
+class DependencyObjectCollection;
 class Deployment;
 class DiscreteColorKeyFrame;
 class DiscreteDoubleKeyFrame;
 class DiscretePointKeyFrame;
+class DoubleCollection;
 class DoubleAnimation;
 class DoubleAnimationUsingKeyFrames;
 class DoubleKeyFrame;
@@ -129,6 +131,7 @@ class PathFigureCollection;
 class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
+class PointCollection;
 class PointAnimation;
 class PointAnimationUsingKeyFrames;
 class PointKeyFrame;
@@ -295,10 +298,12 @@ public:
 	ColumnDefinitionCollection*    AsColumnDefinitionCollection () { checked_get_subclass (Type::COLUMNDEFINITION_COLLECTION, ColumnDefinitionCollection) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	DependencyObject*              AsDependencyObject () { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }
+	DependencyObjectCollection*    AsDependencyObjectCollection () { checked_get_subclass (Type::DEPENDENCY_OBJECT_COLLECTION, DependencyObjectCollection) }
 	Deployment*                    AsDeployment () { checked_get_subclass (Type::DEPLOYMENT, Deployment) }
 	DiscreteColorKeyFrame*         AsDiscreteColorKeyFrame () { checked_get_subclass (Type::DISCRETECOLORKEYFRAME, DiscreteColorKeyFrame) }
 	DiscreteDoubleKeyFrame*        AsDiscreteDoubleKeyFrame () { checked_get_subclass (Type::DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame) }
 	DiscretePointKeyFrame*         AsDiscretePointKeyFrame () { checked_get_subclass (Type::DISCRETEPOINTKEYFRAME, DiscretePointKeyFrame) }
+	DoubleCollection*              AsDoubleCollection () { checked_get_subclass (Type::DOUBLE_COLLECTION, DoubleCollection) }
 	DoubleAnimation*               AsDoubleAnimation () { checked_get_subclass (Type::DOUBLEANIMATION, DoubleAnimation) }
 	DoubleAnimationUsingKeyFrames* AsDoubleAnimationUsingKeyFrames () { checked_get_subclass (Type::DOUBLEANIMATIONUSINGKEYFRAMES, DoubleAnimationUsingKeyFrames) }
 	DoubleKeyFrame*                AsDoubleKeyFrame () { checked_get_subclass (Type::DOUBLEKEYFRAME, DoubleKeyFrame) }
@@ -358,6 +363,7 @@ public:
 	PathGeometry*                  AsPathGeometry () { checked_get_subclass (Type::PATHGEOMETRY, PathGeometry) }
 	PathSegment*                   AsPathSegment () { checked_get_subclass (Type::PATHSEGMENT, PathSegment) }
 	PathSegmentCollection*         AsPathSegmentCollection () { checked_get_subclass (Type::PATHSEGMENT_COLLECTION, PathSegmentCollection) }
+	PointCollection*               AsPointCollection () { checked_get_subclass (Type::POINT_COLLECTION, PointCollection) }
 	PointAnimation*                AsPointAnimation () { checked_get_subclass (Type::POINTANIMATION, PointAnimation) }
 	PointAnimationUsingKeyFrames*  AsPointAnimationUsingKeyFrames () { checked_get_subclass (Type::POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames) }
 	PointKeyFrame*                 AsPointKeyFrame () { checked_get_subclass (Type::POINTKEYFRAME, PointKeyFrame) }

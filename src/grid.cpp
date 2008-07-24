@@ -63,11 +63,10 @@ Grid::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pro
 }
 
 void
-Grid::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
+Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
        if (col == GetValue (Grid::ColumnDefinitions)->AsColumnDefinitionCollection () ||
-           col == GetValue (Grid::RowDefinitions)->AsRowDefinitionCollection ()){
-
+           col == GetValue (Grid::RowDefinitions)->AsRowDefinitionCollection ()) {
                //
                // Do something
                //

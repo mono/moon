@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * trigger.cpp
  *
@@ -16,7 +17,7 @@
 
 EventTrigger::EventTrigger ()
 {
-	this->SetValue (EventTrigger::ActionsProperty, Value::CreateUnref (new TriggerActionCollection ()));
+	SetValue (EventTrigger::ActionsProperty, Value::CreateUnref (new TriggerActionCollection ()));
 }
 
 void
@@ -43,15 +44,14 @@ EventTrigger::~EventTrigger ()
 void
 EventTrigger::event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	EventTrigger *trigger = (EventTrigger*)closure;
-
-	g_return_if_fail (trigger);
-
-	TriggerActionCollection *actions = trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection();
-	Collection::Node *n = (Collection::Node *) actions->list->First ();
+	EventTrigger *trigger = (EventTrigger *) closure;
 	
-	for ( ; n != NULL; n = (Collection::Node *) n->next) {
-		TriggerAction *action = (TriggerAction *) n->obj;
+	g_return_if_fail (trigger);
+	
+	TriggerActionCollection *actions = trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection ();
+	
+	for (int i = 0; i < actions->GetCount (); i++) {
+		TriggerAction *action = actions->GetValueAt (i)->AsTriggerAction ();
 		action->Fire ();
 	}
 }

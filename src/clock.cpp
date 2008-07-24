@@ -1421,16 +1421,15 @@ TimelineGroup::~TimelineGroup ()
 {
 }
 
-Clock*
+Clock *
 TimelineGroup::AllocateClock ()
 {
-	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection();
+	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection ();
 	ClockGroup *group = new ClockGroup (this);
-	Collection::Node *node;
+	Clock *clock;
 	
-	node = (Collection::Node *) collection->list->First ();
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		Clock *clock = ((Timeline *) node->obj)->AllocateClock ();
+	for (int i = 0; i < collection->GetCount (); i++) {
+		clock = collection->GetValueAt (i)->AsTimeline ()->AllocateClock ();
 		group->AddChild (clock);
 		clock->unref ();
 	}
@@ -1442,19 +1441,16 @@ TimelineGroup::AllocateClock ()
 bool
 TimelineGroup::Validate ()
 {
-	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection();
-	Collection::Node *node = (Collection::Node *) collection->list->First ();
-
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		Timeline *timeline = (Timeline *) node->obj;
-		if (! timeline->Validate ())
+	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection ();
+	Timeline *timeline;
+	
+	for (int i = 0; i < collection->GetCount (); i++) {
+		timeline = collection->GetValueAt (i)->AsTimeline ();
+		if (!timeline->Validate ())
 			return false;
 	}
-
-	if (Timeline::Validate ())
-		return true;
-	else
-		return false;
+	
+	return Timeline::Validate ();
 }
 
 void
@@ -1478,21 +1474,21 @@ timeline_group_new (void)
 Duration
 ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 {
-	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection();
-	Collection::Node *node = (Collection::Node *) collection->list->First ();
+	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection ();
 	Duration d = Duration::Automatic;
 	TimeSpan duration_span = 0;
+	Timeline *timeline;
 	
-	if (!node)
+	if (collection->GetCount () == 0)
 		return Duration::FromSeconds (0);
 	
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		Timeline *timeline = (Timeline *) node->obj;
-
+	for (int i = 0; i < collection->GetCount (); i++) {
+		timeline = collection->GetValueAt (i)->AsTimeline ();
+		
 		Duration duration = timeline->GetNaturalDuration (clock);
 		if (duration.IsAutomatic())
 			continue;
-
+		
 		if (duration.IsForever())
 			return Duration::Forever;
 		
@@ -1502,19 +1498,17 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 		if (repeat->IsForever())
 			return Duration::Forever;
 		
-		if (repeat->HasCount ()) {
+		if (repeat->HasCount ())
 			span = (TimeSpan) (span * repeat->GetCount ());
-		}
-
+		
 		if (timeline->GetAutoReverse ())
 			span *= 2;
 
 		// If we have duration-base repeat behavior, 
 		// clamp/up our span to that.
-		if (repeat->HasDuration ()) {
+		if (repeat->HasDuration ())
 			span = repeat->GetDuration ();
-		}
-
+		
 		if (span != 0)
 			span = (TimeSpan)(span / timeline->GetSpeedRatio());
 

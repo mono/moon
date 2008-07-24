@@ -63,17 +63,17 @@ Panel::SetChildren (VisualCollection *children)
 void
 Panel::SetSurface (Surface *s)
 {
+	VisualCollection *children;
+	UIElement *item;
+	
 	FrameworkElement::SetSurface (s);
 
-	VisualCollection *children = GetChildren ();
-	Collection::Node *cn;
-
-	if (children != NULL) {
-		cn = (Collection::Node *) children->list->First ();
-		for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
-			UIElement *item = (UIElement *) cn->obj;
-			item->SetSurface (s);
-		}
+	if (!(children = GetChildren ()))
+		return;
+	
+	for (int i = 0; i < children->GetCount (); i++) {
+		item = children->GetValueAt (i)->AsUIElement ();
+		item->SetSurface (s);
 	}
 }
 
@@ -99,23 +99,20 @@ void
 Panel::ComputeBounds ()
 {
 	VisualCollection *children = GetChildren ();
-	Collection::Node *cn;
-	bool first = true;
-
+	
 #if DEBUG_BOUNDS
 	levelb += 4;
 	space (levelb);
 	printf ("Panel: Enter ComputeBounds (%s)\n", GetName());
 #endif
 	if (children != NULL) {
-		cn = (Collection::Node *) children->list->First ();
-		for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
-			UIElement *item = (UIElement *) cn->obj;
-
+		for (int i = 0; i < children->GetCount (); i++) {
+			UIElement *item = children->GetValueAt (i)->AsUIElement ();
+			
 			// if the item isn't drawn, skip it
 			if (!item->GetRenderVisible ())
 				continue;
-
+			
 			Rect r = item->GetSubtreeBounds ();
 				
 			r = IntersectBoundsWithClipPath (r, true);
@@ -124,13 +121,10 @@ Panel::ComputeBounds ()
 			printf ("Item (%s, %s) bounds %g %g %g %g\n", 
 				dependency_object_get_name (item), item->GetTypeName(),r.x, r.y, r.w, r.h);
 #endif
-			if (first) {
-				bounds_with_children = r;
-				first = false;
-			}
-			else {
+			if (i > 0)
 				bounds_with_children = bounds_with_children.Union (r);
-			}
+			else
+				bounds_with_children = r;
 		}
 		bounds_with_children = IntersectBoundsWithClipPath (bounds_with_children, true);
 	} else {
@@ -192,7 +186,12 @@ Panel::UpdateTotalHitTestVisibility ()
 bool
 Panel::UseBackToFront ()
 {
-	return GetChildren ()->list->Length() < 25;
+	Collection *children;
+	
+	if (!(children = GetChildren ()))
+		return true;
+	
+	return children->GetCount () < 25;
 }
 
 void
@@ -398,14 +397,13 @@ void
 Panel::CacheInvalidateHint (void)
 {
 	VisualCollection *children = GetChildren ();
-	Collection::Node *cn;
-
-	if (children != NULL) {
-		cn = (Collection::Node *) children->list->First ();
-		for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
-			UIElement *item = (UIElement *) cn->obj;
-			item->CacheInvalidateHint ();
-		}
+	
+	if (!children)
+		return;
+	
+	for (int i = 0; i < children->GetCount (); i++) {
+		UIElement *item = children->GetValueAt (i)->AsUIElement ();
+		item->CacheInvalidateHint ();
 	}
 }
 
@@ -510,15 +508,18 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 		Invalidate ();
 
 	if (args->property == Panel::ChildrenProperty) {
-		Collection::Node *n;
+		Collection *collection;
+		
 		if (args->old_value) {
-			for (n = (Collection::Node *) args->old_value->AsCollection()->list->First (); n; n = (Collection::Node *) n->next) 
-				ChildRemoved ((Visual*)n->obj);
+			collection = args->old_value->AsCollection ();
+			for (int i = 0; i < collection->GetCount (); i++)
+				ChildRemoved (collection->GetValueAt (i)->AsVisual ());
 		}
-
+		
 		if (args->new_value) {
-			for (n = (Collection::Node *) args->new_value->AsCollection()->list->First (); n; n = (Collection::Node *) n->next) 
-				ChildAdded ((Visual*)n->obj);
+			collection = args->new_value->AsCollection ();
+			for (int i = 0; i < collection->GetCount (); i++)
+				ChildAdded (collection->GetValueAt (i)->AsVisual ());
 		}
 
 		UpdateBounds();
@@ -563,42 +564,59 @@ Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 }
 
 void
-Panel::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
+Panel::OnCollectionClear (Collection *col)
 {
-	if (col == GetValue (Panel::ChildrenProperty)->AsCollection()) {
-		switch (type) {
-		case CollectionChangeTypeItemAdded:
-			ChildAdded ((Visual*)obj);
+	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
+		for (int i = 0; i < col->GetCount (); i++)
+			ChildRemoved (col->GetValueAt (i)->AsVisual ());
+	}
+	
+	FrameworkElement::OnCollectionClear (col);
+}
+
+void
+Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
+		switch (args->action) {
+		case CollectionChangedActionReplace:
+			ChildRemoved (args->old_value->AsVisual ());
+			// now fall thru to Add
+		case CollectionChangedActionAdd:
+			ChildAdded (args->new_value->AsVisual ());
 			UpdateBounds (true);
+			
 			if (flags & UIElement::IS_LOADED) {
 				if (GetSurface() && GetSurface()->GetToplevel())
 					GetSurface()->GetToplevel()->OnLoaded ();
 			}
 			break;
-		case CollectionChangeTypeItemRemoved:
-			ChildRemoved ((Visual*)obj);
+		case CollectionChangedActionRemove:
+			ChildRemoved (args->old_value->AsVisual ());
 			UpdateBounds (true);
 			break;
-		case CollectionChangeTypeChanged:
-			Collection::Node *n;
-			for (n = (Collection::Node *) col->list->First (); n; n = (Collection::Node *) n->next) 
-				ChildAdded ((Visual*)n->obj);
-			break;
-		case CollectionChangeTypeChanging: {
-			Collection::Node *n;
-			for (n = (Collection::Node *) col->list->First (); n; n = (Collection::Node *) n->next) 
-				ChildRemoved ((Visual*)n->obj);
+		case CollectionChangedActionReset:
+			for (int i = 0; i < col->GetCount (); i++)
+				ChildAdded (col->GetValueAt (i)->AsVisual ());
 			break;
 		}
-		case CollectionChangeTypeItemChanged:
-			// if a child changes its ZIndex property we need to resort our Children
-			if (element_args->property == UIElement::ZIndexProperty) {
-				((UIElement*)obj)->Invalidate ();
-				if (GetSurface())
-					GetSurface()->AddDirtyElement (this, DirtyChildrenZIndices);
-			}
-			break;
+	} else {
+		FrameworkElement::OnCollectionChanged (col, args);
+	}
+}
+
+void
+Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
+		// if a child changes its ZIndex property we need to resort our Children
+		if (args->property == UIElement::ZIndexProperty) {
+			((UIElement *) obj)->Invalidate ();
+			if (GetSurface ())
+				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
 		}
+	} else {
+		FrameworkElement::OnCollectionItemChanged (col, obj, args);
 	}
 }
 
@@ -607,17 +625,15 @@ Panel::OnLoaded ()
 {
  	if (emitting_loaded)
  		return;
-
+	
  	emitting_loaded = true;
-
+	
 	flags |= UIElement::IS_LOADED;
-
+	
 	VisualCollection *children = GetChildren ();
-	Collection::Node *cn;
-
-	cn = (Collection::Node *) children->list->First ();
-	for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
-		UIElement *item = (UIElement *) cn->obj;
+	
+	for (int i = 0; i < children->GetCount (); i++) {
+		UIElement *item = children->GetValueAt (i)->AsUIElement ();
 
 		item->OnLoaded ();
 	}

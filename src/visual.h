@@ -42,24 +42,25 @@ class Visual : public DependencyObject {
 	UIElement *GetVisualParent () { return visual_parent; }
 };
 
-class VisualCollection : public Collection {
+class VisualCollection : public DependencyObjectCollection {
  protected:
+	virtual void AddedToCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value);
+	
 	virtual ~VisualCollection ();
-
+	
  public:
+	GPtrArray *z_sorted;
+	
 	VisualCollection ();
+	
 	virtual Type::Kind GetObjectType () { return Type::VISUAL_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::VISUAL; }
-
-	virtual int  Add    (DependencyObject *data);
-	virtual bool Remove (DependencyObject *data);
-	virtual bool RemoveAt (int index);
-	virtual bool Insert (int index, DependencyObject *data);
-	virtual void Clear  ();
-	virtual DependencyObject *SetVal (int index, DependencyObject *data);
-
+	
+	virtual bool Insert (int index, Value value);
+	virtual void Clear ();
+	
 	void ResortByZIndex ();
-	GPtrArray *z_sorted;
 };
 
 

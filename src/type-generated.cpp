@@ -100,7 +100,7 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ASSEMBLYPART'", "ASSEMBLYPART", 0, 0, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
-	{ Type::ASSEMBLYPART_COLLECTION, Type::COLLECTION, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 1, NULL, (create_inst_func *) assembly_part_collection_new, NULL }, 
+	{ Type::ASSEMBLYPART_COLLECTION, Type::INVALID, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 0, NULL, (create_inst_func *) assembly_part_collection_new, NULL }, 
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ASSEMBLYPART_COLLECTION'", "ASSEMBLYPART_COLLECTION", 0, 0, NULL, NULL, NULL }, 
 #endif
@@ -109,7 +109,6 @@ Type type_infos [] = {
 	{ Type::BOOL, Type::INVALID, false, "bool", "BOOL", 0, 0, NULL, NULL, NULL }, 
 	{ Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL }, 
 	{ Type::CANVAS, Type::PANEL, false, "Canvas", "CANVAS", 0, 12, NULL, (create_inst_func *) canvas_new, NULL }, 
-	{ Type::CHANGEEVENTARGS, Type::EVENTARGS, false, "Collection::ChangeEventArgs", "CHANGEEVENTARGS", 0, 1, NULL, NULL, NULL }, 
 	{ Type::CLOCK, Type::DEPENDENCY_OBJECT, false, "Clock", "CLOCK", 4, 5, Clock_Events, NULL, NULL }, 
 	{ Type::CLOCKGROUP, Type::CLOCK, false, "ClockGroup", "CLOCKGROUP", 0, 5, NULL, NULL, NULL }, 
 	{ Type::COLLECTION, Type::DEPENDENCY_OBJECT, false, "Collection", "COLLECTION", 0, 1, NULL, (create_inst_func *) collection_new, NULL }, 
@@ -124,12 +123,13 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'COLUMNDEFINITION'", "COLUMNDEFINITION", 0, 0, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
-	{ Type::COLUMNDEFINITION_COLLECTION, Type::COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL }, 
+	{ Type::COLUMNDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL }, 
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'COLUMNDEFINITION_COLLECTION'", "COLUMNDEFINITION_COLLECTION", 0, 0, NULL, NULL, NULL }, 
 #endif
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 12, NULL, (create_inst_func *) control_new, "Content" }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, NULL, NULL }, 
+	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, NULL, NULL }, 
 #if SL_2_0
 	{ Type::DEPLOYMENT, Type::DEPENDENCY_OBJECT, false, "Deployment", "DEPLOYMENT", 0, 1, NULL, (create_inst_func *) deployment_new, NULL }, 
 #else
@@ -140,6 +140,7 @@ Type type_infos [] = {
 	{ Type::DISCRETEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "DiscretePointKeyFrame", "DISCRETEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_point_key_frame_new, NULL }, 
 	{ Type::DOUBLE, Type::INVALID, false, "double", "DOUBLE", 0, 0, NULL, NULL, NULL }, 
 	{ Type::DOUBLE_ARRAY, Type::INVALID, false, "double*", "DOUBLE_ARRAY", 0, 0, NULL, NULL, NULL }, 
+	{ Type::DOUBLE_COLLECTION, Type::COLLECTION, false, "DoubleCollection", "DOUBLE_COLLECTION", 0, 1, NULL, NULL, NULL }, 
 	{ Type::DOUBLEANIMATION, Type::ANIMATION, false, "DoubleAnimation", "DOUBLEANIMATION", 0, 1, NULL, (create_inst_func *) double_animation_new, NULL }, 
 	{ Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION, false, "DoubleAnimationUsingKeyFrames", "DOUBLEANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) double_animation_using_key_frames_new, "KeyFrames" }, 
 	{ Type::DOUBLEKEYFRAME, Type::KEYFRAME, false, "DoubleKeyFrame", "DOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) double_key_frame_new, NULL }, 
@@ -155,12 +156,12 @@ Type type_infos [] = {
 	{ Type::EVENTTRIGGER, Type::DEPENDENCY_OBJECT, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions" }, 
 	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 0, 12, NULL, (create_inst_func *) framework_element_new, NULL }, 
 	{ Type::GEOMETRY, Type::DEPENDENCY_OBJECT, false, "Geometry", "GEOMETRY", 0, 1, NULL, NULL, NULL }, 
-	{ Type::GEOMETRY_COLLECTION, Type::COLLECTION, false, "GeometryCollection", "GEOMETRY_COLLECTION", 0, 1, NULL, (create_inst_func *) geometry_collection_new, NULL }, 
+	{ Type::GEOMETRY_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GeometryCollection", "GEOMETRY_COLLECTION", 0, 1, NULL, (create_inst_func *) geometry_collection_new, NULL }, 
 	{ Type::GEOMETRYGROUP, Type::GEOMETRY, false, "GeometryGroup", "GEOMETRYGROUP", 0, 1, NULL, (create_inst_func *) geometry_group_new, "Children" }, 
 	{ Type::GLYPHS, Type::FRAMEWORKELEMENT, false, "Glyphs", "GLYPHS", 0, 12, NULL, (create_inst_func *) glyphs_new, NULL }, 
 	{ Type::GRADIENTBRUSH, Type::BRUSH, false, "GradientBrush", "GRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) gradient_brush_new, "GradientStops" }, 
 	{ Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT, false, "GradientStop", "GRADIENTSTOP", 0, 1, NULL, (create_inst_func *) gradient_stop_new, NULL }, 
-	{ Type::GRADIENTSTOP_COLLECTION, Type::COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, (create_inst_func *) gradient_stop_collection_new, NULL }, 
+	{ Type::GRADIENTSTOP_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, (create_inst_func *) gradient_stop_collection_new, NULL }, 
 #if SL_2_0
 	{ Type::GRID, Type::PANEL, false, "Grid", "GRID", 0, 12, NULL, (create_inst_func *) grid_new, NULL }, 
 #else
@@ -172,12 +173,12 @@ Type type_infos [] = {
 	{ Type::IMAGEERROREVENTARGS, Type::ERROREVENTARGS, false, "ImageErrorEventArgs", "IMAGEERROREVENTARGS", 0, 1, NULL, NULL, NULL }, 
 	{ Type::INKPRESENTER, Type::CANVAS, false, "InkPresenter", "INKPRESENTER", 0, 12, NULL, (create_inst_func *) ink_presenter_new, NULL }, 
 	{ Type::INLINE, Type::DEPENDENCY_OBJECT, false, "Inline", "INLINE", 0, 1, NULL, NULL, NULL }, 
-	{ Type::INLINES, Type::COLLECTION, false, "Inlines", "INLINES", 0, 1, NULL, (create_inst_func *) inlines_new, NULL }, 
+	{ Type::INLINES, Type::DEPENDENCY_OBJECT_COLLECTION, false, "Inlines", "INLINES", 0, 1, NULL, (create_inst_func *) inlines_new, NULL }, 
 	{ Type::INT32, Type::INVALID, false, "gint32", "INT32", 0, 0, NULL, NULL, NULL }, 
 	{ Type::INT64, Type::INVALID, false, "gint64", "INT64", 0, 0, NULL, NULL, NULL }, 
 	{ Type::KEYBOARDEVENTARGS, Type::EVENTARGS, false, "KeyboardEventArgs", "KEYBOARDEVENTARGS", 0, 1, NULL, NULL, NULL }, 
 	{ Type::KEYFRAME, Type::DEPENDENCY_OBJECT, false, "KeyFrame", "KEYFRAME", 0, 1, NULL, (create_inst_func *) key_frame_new, NULL }, 
-	{ Type::KEYFRAME_COLLECTION, Type::COLLECTION, false, "KeyFrameCollection", "KEYFRAME_COLLECTION", 0, 1, NULL, NULL, NULL }, 
+	{ Type::KEYFRAME_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "KeyFrameCollection", "KEYFRAME_COLLECTION", 0, 1, NULL, NULL, NULL }, 
 	{ Type::KEYSPLINE, Type::DEPENDENCY_OBJECT, false, "KeySpline", "KEYSPLINE", 0, 1, NULL, (create_inst_func *) key_spline_new, NULL }, 
 	{ Type::KEYTIME, Type::INVALID, false, "KeyTime", "KEYTIME", 0, 0, NULL, NULL, NULL }, 
 	{ Type::LINE, Type::SHAPE, false, "Line", "LINE", 0, 12, NULL, (create_inst_func *) line_new, NULL }, 
@@ -193,7 +194,7 @@ Type type_infos [] = {
 	{ Type::MATRIX, Type::DEPENDENCY_OBJECT, false, "Matrix", "MATRIX", 0, 1, NULL, (create_inst_func *) matrix_new, NULL }, 
 	{ Type::MATRIXTRANSFORM, Type::TRANSFORM, false, "MatrixTransform", "MATRIXTRANSFORM", 0, 1, NULL, (create_inst_func *) matrix_transform_new, NULL }, 
 	{ Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, false, "MediaAttribute", "MEDIAATTRIBUTE", 0, 1, NULL, (create_inst_func *) media_attribute_new, NULL }, 
-	{ Type::MEDIAATTRIBUTE_COLLECTION, Type::COLLECTION, false, "MediaAttributeCollection", "MEDIAATTRIBUTE_COLLECTION", 0, 1, NULL, (create_inst_func *) media_attribute_collection_new, NULL }, 
+	{ Type::MEDIAATTRIBUTE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "MediaAttributeCollection", "MEDIAATTRIBUTE_COLLECTION", 0, 1, NULL, (create_inst_func *) media_attribute_collection_new, NULL }, 
 	{ Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 13, MediaBase_Events, (create_inst_func *) media_base_new, NULL }, 
 	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 19, MediaElement_Events, (create_inst_func *) media_element_new, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL }, 
@@ -205,12 +206,13 @@ Type type_infos [] = {
 	{ Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL }, 
 	{ Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 12, NULL, (create_inst_func *) path_new, NULL }, 
 	{ Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, false, "PathFigure", "PATHFIGURE", 0, 1, NULL, (create_inst_func *) path_figure_new, "Segments" }, 
-	{ Type::PATHFIGURE_COLLECTION, Type::COLLECTION, false, "PathFigureCollection", "PATHFIGURE_COLLECTION", 0, 1, NULL, (create_inst_func *) path_figure_collection_new, NULL }, 
+	{ Type::PATHFIGURE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathFigureCollection", "PATHFIGURE_COLLECTION", 0, 1, NULL, (create_inst_func *) path_figure_collection_new, NULL }, 
 	{ Type::PATHGEOMETRY, Type::GEOMETRY, false, "PathGeometry", "PATHGEOMETRY", 0, 1, NULL, (create_inst_func *) path_geometry_new, "Figures" }, 
 	{ Type::PATHSEGMENT, Type::DEPENDENCY_OBJECT, false, "PathSegment", "PATHSEGMENT", 0, 1, NULL, NULL, NULL }, 
-	{ Type::PATHSEGMENT_COLLECTION, Type::COLLECTION, false, "PathSegmentCollection", "PATHSEGMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) path_segment_collection_new, NULL }, 
+	{ Type::PATHSEGMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathSegmentCollection", "PATHSEGMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) path_segment_collection_new, NULL }, 
 	{ Type::POINT, Type::INVALID, false, "Point", "POINT", 0, 0, NULL, NULL, NULL }, 
 	{ Type::POINT_ARRAY, Type::INVALID, false, "Point*", "POINT_ARRAY", 0, 0, NULL, NULL, NULL }, 
+	{ Type::POINT_COLLECTION, Type::COLLECTION, false, "PointCollection", "POINT_COLLECTION", 0, 1, NULL, NULL, NULL }, 
 	{ Type::POINTANIMATION, Type::ANIMATION, false, "PointAnimation", "POINTANIMATION", 0, 1, NULL, (create_inst_func *) point_animation_new, NULL }, 
 	{ Type::POINTANIMATIONUSINGKEYFRAMES, Type::POINTANIMATION, false, "PointAnimationUsingKeyFrames", "POINTANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) point_animation_using_key_frames_new, "KeyFrames" }, 
 	{ Type::POINTKEYFRAME, Type::KEYFRAME, false, "PointKeyFrame", "POINTKEYFRAME", 0, 1, NULL, (create_inst_func *) point_key_frame_new, NULL }, 
@@ -226,7 +228,7 @@ Type type_infos [] = {
 	{ Type::RECTANGLE, Type::SHAPE, false, "Rectangle", "RECTANGLE", 0, 12, NULL, (create_inst_func *) rectangle_new, NULL }, 
 	{ Type::RECTANGLEGEOMETRY, Type::GEOMETRY, false, "RectangleGeometry", "RECTANGLEGEOMETRY", 0, 1, NULL, (create_inst_func *) rectangle_geometry_new, NULL }, 
 	{ Type::REPEATBEHAVIOR, Type::INVALID, false, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL }, 
-	{ Type::RESOURCE_DICTIONARY, Type::COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL }, 
+	{ Type::RESOURCE_DICTIONARY, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL }, 
 	{ Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL }, 
 #if SL_2_0
 	{ Type::ROWDEFINITION, Type::DEPENDENCY_OBJECT, false, "RowDefinition", "ROWDEFINITION", 0, 1, NULL, (create_inst_func *) row_definition_new, NULL }, 
@@ -234,7 +236,7 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ROWDEFINITION'", "ROWDEFINITION", 0, 0, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
-	{ Type::ROWDEFINITION_COLLECTION, Type::COLLECTION, false, "RowDefinitionCollection", "ROWDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) row_definition_collection_new, NULL }, 
+	{ Type::ROWDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "RowDefinitionCollection", "ROWDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) row_definition_collection_new, NULL }, 
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ROWDEFINITION_COLLECTION'", "ROWDEFINITION_COLLECTION", 0, 0, NULL, NULL, NULL }, 
 #endif
@@ -249,29 +251,29 @@ Type type_infos [] = {
 	{ Type::STORYBOARD, Type::PARALLELTIMELINE, false, "Storyboard", "STORYBOARD", 1, 2, Storyboard_Events, (create_inst_func *) storyboard_new, "Children" }, 
 	{ Type::STRING, Type::INVALID, false, "char*", "STRING", 0, 0, NULL, NULL, NULL }, 
 	{ Type::STROKE, Type::DEPENDENCY_OBJECT, false, "Stroke", "STROKE", 0, 1, NULL, (create_inst_func *) stroke_new, NULL }, 
-	{ Type::STROKE_COLLECTION, Type::COLLECTION, false, "StrokeCollection", "STROKE_COLLECTION", 0, 1, NULL, (create_inst_func *) stroke_collection_new, NULL }, 
+	{ Type::STROKE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StrokeCollection", "STROKE_COLLECTION", 0, 1, NULL, (create_inst_func *) stroke_collection_new, NULL }, 
 	{ Type::STYLUSINFO, Type::DEPENDENCY_OBJECT, false, "StylusInfo", "STYLUSINFO", 0, 1, NULL, (create_inst_func *) stylus_info_new, NULL }, 
 	{ Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, false, "StylusPoint", "STYLUSPOINT", 0, 1, NULL, (create_inst_func *) stylus_point_new, NULL }, 
-	{ Type::STYLUSPOINT_COLLECTION, Type::COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL }, 
+	{ Type::STYLUSPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL }, 
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, (create_inst_func *) surface_new, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL }, 
 	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 12, NULL, (create_inst_func *) text_block_new, "Inlines" }, 
 	{ Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, NULL, NULL }, 
 	{ Type::TIMELINE, Type::DEPENDENCY_OBJECT, false, "Timeline", "TIMELINE", 0, 1, NULL, NULL, NULL }, 
-	{ Type::TIMELINE_COLLECTION, Type::COLLECTION, false, "TimelineCollection", "TIMELINE_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_collection_new, NULL }, 
+	{ Type::TIMELINE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TimelineCollection", "TIMELINE_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_collection_new, NULL }, 
 	{ Type::TIMELINEGROUP, Type::TIMELINE, false, "TimelineGroup", "TIMELINEGROUP", 0, 1, NULL, (create_inst_func *) timeline_group_new, NULL }, 
 	{ Type::TIMELINEMARKER, Type::DEPENDENCY_OBJECT, false, "TimelineMarker", "TIMELINEMARKER", 0, 1, NULL, (create_inst_func *) timeline_marker_new, NULL }, 
-	{ Type::TIMELINEMARKER_COLLECTION, Type::COLLECTION, false, "TimelineMarkerCollection", "TIMELINEMARKER_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_marker_collection_new, NULL }, 
+	{ Type::TIMELINEMARKER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TimelineMarkerCollection", "TIMELINEMARKER_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_marker_collection_new, NULL }, 
 	{ Type::TIMEMANAGER, Type::EVENTOBJECT, false, "TimeManager", "TIMEMANAGER", 2, 3, TimeManager_Events, NULL, NULL }, 
 	{ Type::TIMESOURCE, Type::EVENTOBJECT, false, "TimeSource", "TIMESOURCE", 1, 2, TimeSource_Events, NULL, NULL }, 
 	{ Type::TIMESPAN, Type::INVALID, false, "TimeSpan", "TIMESPAN", 0, 0, NULL, NULL, NULL }, 
 	{ Type::TRANSFORM, Type::DEPENDENCY_OBJECT, false, "Transform", "TRANSFORM", 0, 1, NULL, (create_inst_func *) transform_new, NULL }, 
-	{ Type::TRANSFORM_COLLECTION, Type::COLLECTION, false, "TransformCollection", "TRANSFORM_COLLECTION", 0, 1, NULL, (create_inst_func *) transform_collection_new, NULL }, 
+	{ Type::TRANSFORM_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TransformCollection", "TRANSFORM_COLLECTION", 0, 1, NULL, (create_inst_func *) transform_collection_new, NULL }, 
 	{ Type::TRANSFORMGROUP, Type::TRANSFORM, false, "TransformGroup", "TRANSFORMGROUP", 0, 1, NULL, (create_inst_func *) transform_group_new, "Children" }, 
 	{ Type::TRANSLATETRANSFORM, Type::TRANSFORM, false, "TranslateTransform", "TRANSLATETRANSFORM", 0, 1, NULL, (create_inst_func *) translate_transform_new, NULL }, 
-	{ Type::TRIGGER_COLLECTION, Type::COLLECTION, false, "TriggerCollection", "TRIGGER_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_collection_new, NULL }, 
+	{ Type::TRIGGER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerCollection", "TRIGGER_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_collection_new, NULL }, 
 	{ Type::TRIGGERACTION, Type::DEPENDENCY_OBJECT, false, "TriggerAction", "TRIGGERACTION", 0, 1, NULL, NULL, NULL }, 
-	{ Type::TRIGGERACTION_COLLECTION, Type::COLLECTION, false, "TriggerActionCollection", "TRIGGERACTION_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_action_collection_new, NULL }, 
+	{ Type::TRIGGERACTION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerActionCollection", "TRIGGERACTION_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_action_collection_new, NULL }, 
 	{ Type::UIELEMENT, Type::VISUAL, false, "UIElement", "UIELEMENT", 11, 12, UIElement_Events, NULL, NULL }, 
 	{ Type::UINT32, Type::INVALID, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL }, 
 	{ Type::UINT64, Type::INVALID, false, "guint64", "UINT64", 0, 0, NULL, NULL, NULL }, 
@@ -282,7 +284,7 @@ Type type_infos [] = {
 #endif
 	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL }, 
 	{ Type::VISUAL, Type::DEPENDENCY_OBJECT, false, "Visual", "VISUAL", 0, 1, NULL, NULL, NULL }, 
-	{ Type::VISUAL_COLLECTION, Type::COLLECTION, false, "VisualCollection", "VISUAL_COLLECTION", 0, 1, NULL, (create_inst_func *) visual_collection_new, NULL }, 
+	{ Type::VISUAL_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "VisualCollection", "VISUAL_COLLECTION", 0, 1, NULL, (create_inst_func *) visual_collection_new, NULL }, 
 	{ Type::VISUALBRUSH, Type::TILEBRUSH, false, "VisualBrush", "VISUALBRUSH", 0, 1, NULL, (create_inst_func *) visual_brush_new, NULL }, 
 	{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL }
 };

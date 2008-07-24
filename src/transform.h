@@ -230,15 +230,18 @@ void	matrix_transform_set_matrix (MatrixTransform *transform, Matrix* matrix);
 Matrix*	matrix_transform_get_matrix (MatrixTransform *transform);
 
 
-class TransformCollection : public Collection {
+class TransformCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TransformCollection () {}
 
  public:
 	TransformCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::TRANSFORM; }
 };
-TransformCollection* transform_collection_new ();
+
+TransformCollection *transform_collection_new (void);
 
 /* @ContentProperty="Children" */
 class TransformGroup : public Transform {
@@ -246,12 +249,12 @@ protected:
 	virtual ~TransformGroup ();
 
 public:
-	static DependencyProperty* ChildrenProperty;
+	static DependencyProperty *ChildrenProperty;
 
 	TransformGroup ();
 	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
 
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void UpdateTransform ();
 };

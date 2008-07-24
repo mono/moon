@@ -1,5 +1,17 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* collection.cp|h: Reworked Collections a lot. Collection is now a
+	generic collection of Values. Added 3 new collections:
+	DependencyObjectCollection (which holds DO's like the old
+	Collection class did), DoubleCollection and PointCollection.
+
+	* dependencyobject.h (DependencyObject::OnCollectionChanged):
+	Changed the way this works to reflect the managed API.
+
+	*.cpp|h: Updated to reflect above changes.
+
+2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
 	* utils.cpp (g_ptr_array_insert): New utility function.
 	(g_ptr_array_insert_sorted): Call g_ptr_array_insert() once we
 	find the index where we want to add the item.

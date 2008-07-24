@@ -221,7 +221,6 @@ class XamlParserInfo {
 	}
 
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
-	  
 		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL),
 		cdata_content (false), cdata (NULL), implicit_default_namespace (false), error_args (NULL),
@@ -248,12 +247,18 @@ class XamlParserInfo {
 
 
 class XamlElementInfo {
+ protected:
+	Type::Kind kind;
+	
  public:
-	const char *name;
 	XamlElementInfo *parent;
-
-	XamlElementInfo (const char *name, Type::Kind kind) : name (name), kind (kind)
+	const char *name;
+	
+	XamlElementInfo (const char *name, Type::Kind kind)
 	{
+		this->parent = NULL;
+		this->kind = kind;
+		this->name = name;
 	}
 
 	virtual Type::Kind GetKind () { return kind; }
@@ -262,14 +267,13 @@ class XamlElementInfo {
 	virtual XamlElementInstance* CreateElementInstance (XamlParserInfo *p) = 0;
 	virtual XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o) = 0;
 	virtual XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
-
- protected:
-	Type::Kind kind;
 };
 
 
 
 class XamlElementInfoNative : public XamlElementInfo {
+	Type *type;
+	
  public:
 	XamlElementInfoNative (Type *t) : XamlElementInfo (t->name, t->type)
 	{
@@ -291,15 +295,13 @@ class XamlElementInfoNative : public XamlElementInfo {
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
 	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
-
- private:
-	Type* type;
-
 };
 
 
 class XamlElementInstanceNative : public XamlElementInstance {
-
+	XamlElementInfoNative *element_info;
+	XamlParserInfo *parser_info;
+	
  public:
 	XamlElementInstanceNative (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type, bool create_item = true);
 
@@ -308,10 +310,6 @@ class XamlElementInstanceNative : public XamlElementInstance {
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
-
- private:
-	XamlElementInfoNative *element_info;
-	XamlParserInfo *parser_info;
 };
 
 
@@ -435,7 +433,8 @@ class XNamespace : public XamlNamespace {
 
 
 class XamlElementInfoManaged : public XamlElementInfo {
-
+	DependencyObject *dependency_object;
+	
  public:
 	XamlElementInfoManaged (const char *name, XamlElementInfo *parent, Type::Kind dependency_type, DependencyObject *dob) : XamlElementInfo (name, dependency_type)
 	{
@@ -447,14 +446,10 @@ class XamlElementInfoManaged : public XamlElementInfo {
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
 	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
-
- private:
-	DependencyObject *dependency_object;
 };
 
 
 class XamlElementInstanceManaged : public XamlElementInstance {
-
  public:
 	XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob);
 
@@ -465,7 +460,6 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 
 
 class ManagedNamespace : public XamlNamespace {
-
  public:
 	char *xmlns;
 
@@ -634,7 +628,6 @@ XamlLoader::InsertMapping (const char* key, const char* value)
 const char*
 XamlLoader::GetMapping (const char* key)
 {
-	
 	const char* result = NULL;
 	if (mappings) {
 		result = (const char*) g_hash_table_lookup (mappings, key);
@@ -941,12 +934,14 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	} else if (Type::Find (p->current_element->info->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) p->current_element->item;
 		Inlines *inlines = textblock->GetInlines ();
-		Collection::Node *last = inlines ? (Collection::Node *) inlines->list->Last () : NULL;
-		DependencyObject *obj = last ? last->obj : NULL;
+		Inline *last = NULL;
+		
+		if (inlines && inlines->GetCount () > 0)
+			last = inlines->GetValueAt (inlines->GetCount () - 1)->AsInline ();
 		
 		if (!p->cdata_content) {
-			if (next_element && !strcmp (next_element, "Run") && obj && obj->GetObjectType () == Type::RUN &&
-			    !((Inline *) last->obj)->autogen) {
+			if (next_element && !strcmp (next_element, "Run") && last && last->GetObjectType () == Type::RUN &&
+			    !last->autogen) {
 				// LWSP between <Run> elements is to be treated as a single-SPACE <Run> element
 				// Note: p->cdata is already canonicalized
 			} else {
@@ -964,7 +959,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 			//if (next_element && !strcmp (next_element, "Run"))
 			//	g_strchug (p->cdata->str);
 			
-			if (!obj || obj->GetObjectType () != Type::RUN || ((Inline *) last->obj)->autogen)
+			if (!last || last->GetObjectType () != Type::RUN || last->autogen)
 				g_strchug (p->cdata->str);
 		}
 		
@@ -2519,15 +2514,12 @@ XamlElementInstanceNative::CreateItem ()
 	DependencyProperty *dep = NULL;
 
 	if (type->IsSubclassOf (Type::COLLECTION)) {
-		
-
 		// If we are creating a collection, try walking up the element tree,
 		// to find the parent that we belong to and using that instance for
 		// our collection, instead of creating a new one
 
 		// We attempt to advance past the property setter, because we might be dealing with a
 		// content element
-
 		
 		if (walk && walk->element_type == XamlElementInstance::PROPERTY) {
 			char **prop_name = g_strsplit (walk->element_name, ".", -1);
@@ -2798,11 +2790,13 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 						g_strdup_printf ("Cannot specify the value multiple times for property: %s.",
 								 property->element_name));
 				} else {
-					GError *seterror = NULL;
-					if (!dep->SetValue (prop, Value (value->item), &seterror)) {
-						parser_error (p, item->element_name, NULL, seterror->code, seterror->message);
-						g_error_free (seterror);
+					GError *err = NULL;
+					
+					if (!dep->SetValue (prop, Value (value->item), &err)) {
+						parser_error (p, item->element_name, NULL, err->code, err->message);
+						g_error_free (err);
 					}
+					
 					item->MarkPropertyAsSet (prop->GetName());
 				}
 			}
@@ -2985,21 +2979,20 @@ start_parse:
 			}
 
 			if (v) {
-				GError *seterror = NULL;
-				if (!dep->SetValue (prop, v, &seterror)) {
-					parser_error (p, item->element_name, attr [i], seterror->code, seterror->message);
-					g_error_free (seterror);
+				GError *err = NULL;
+				
+				if (!dep->SetValue (prop, v, &err)) {
+					parser_error (p, item->element_name, attr [i], err->code, err->message);
+					g_error_free (err);
 				} else
 					item->MarkPropertyAsSet (prop->GetName());
-
-				delete v;
 				
+				delete v;
 			} else {
-				if (prop->IsNullable ())
-					dep->SetValue (prop, NULL);
-				else {
+				if (!prop->IsNullable ())
 					parser_error (p, item->element_name, attr [i], 2017, g_strdup_printf ("Null is not a legal value for attribute %s.", attr [i]));
-				}
+				else
+					dep->SetValue (prop, NULL);
 			}
 		} else {
 			// This might be a property of a managed object

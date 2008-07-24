@@ -32,7 +32,7 @@ visual_set_surface (Visual* visual, Surface* surface)
 		visual->SetSurface (surface);
 }
 
-TimeManager*
+TimeManager *
 Visual::GetTimeManager ()
 {
 	Surface *surface = GetSurface ();
@@ -47,15 +47,14 @@ VisualCollection::VisualCollection ()
 
 VisualCollection::~VisualCollection ()
 {
-	Collection::Node *n = (Collection::Node *) list->First ();
+	UIElement *item;
+	
+	for (guint i = 0; i < array->len; i++) {
+		item = ((Value *) array->pdata[i])->AsUIElement ();
+		item->SetVisualParent (NULL);
+	}
 	
 	g_ptr_array_free (z_sorted, true);
-	
-	while (n) {
-		((UIElement *) n->obj)->SetVisualParent (NULL);
-		
-		n = (Collection::Node *) n->next;
-	}
 }
 
 static int
@@ -70,94 +69,50 @@ UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 void
 VisualCollection::ResortByZIndex ()
 {
-	Collection::Node *node;
-	guint i = 0;
-	
-	if (z_sorted->len < 1)
+	if (array->len <= 1)
 		return;
 	
-	node = (Collection::Node *) list->First ();
-	while (node) {
-		z_sorted->pdata[i++] = node->obj;
-		node = (Collection::Node *) node->next;
-	}
+	g_ptr_array_set_size (z_sorted, array->len);
+	for (guint i = 0; i < array->len; i++)
+		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsUIElement ();
 	
 	g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
 }
 
-int
-VisualCollection::Add (DependencyObject *data)
+void
+VisualCollection::AddedToCollection (Value *value)
 {
-	UIElement *item = (UIElement *) data;
+	UIElement *item = value->AsUIElement ();
 	
-	int n = Collection::Add (item);
-
-	if (n != -1)
-		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
+	g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
 	
-	return n;
+	DependencyObjectCollection::AddedToCollection (value);
 }
 
-DependencyObject *
-VisualCollection::SetVal (int index, DependencyObject *data)
+void
+VisualCollection::RemovedFromCollection (Value *value)
 {
-	UIElement *item = (UIElement *) data;
+	UIElement *item = value->AsUIElement ();
 	
-	UIElement *old = (UIElement *) Collection::SetVal (index, item);
+	g_ptr_array_remove (z_sorted, item);
 	
-	if (old) {
-		g_ptr_array_remove (z_sorted, old);
-		g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
-	}
-
-	return old;
+	DependencyObjectCollection::RemovedFromCollection (value);
 }
 
 bool
-VisualCollection::Insert (int index, DependencyObject *data)
+VisualCollection::Insert (int index, Value value)
 {
-	UIElement *item = (UIElement *) data;
-	
-	if (!Collection::Insert (index, item))
+	if (!Collection::Insert (index, value))
 		return false;
 	
+	// FIXME: If z_sorted was an array of structs containing both
+	// the item *and* the array index, our comparer could take
+	// that into consideration when sorting and so we'd never have
+	// to completely re-sort on Insert()
 	g_ptr_array_set_size (z_sorted, z_sorted->len + 1);
 	ResortByZIndex ();
 	
 	return true;
-}
-
-bool
-VisualCollection::Remove (DependencyObject *data)
-{
-	if (!list->Find (CollectionNodeFinder, data))
-		return false;
-
-	UIElement *item = (UIElement *) data;
-
-	if (Collection::Remove (item)) {
-		g_ptr_array_remove (z_sorted, item);
-		return true;
-	}
-	
-	return false;
-}
-
-bool
-VisualCollection::RemoveAt (int index)
-{
-	Collection::Node *n = (Collection::Node *) list->Index (index);
-	if (n == NULL)
-		return false;
-	
-	UIElement *item = (UIElement *) n->obj;
-
-	if (Collection::RemoveAt (index)) {
-		g_ptr_array_remove (z_sorted, item);
-		return true;
-	}
-	
-	return false;
 }
 
 void

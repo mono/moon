@@ -61,12 +61,13 @@ const char *media_attribute_get_value (MediaAttribute *attribute);
 void media_attribute_set_value (MediaAttribute *attribute, const char *value);
 
 
-class MediaAttributeCollection : public Collection {
+class MediaAttributeCollection : public DependencyObjectCollection {
  protected:
 	virtual ~MediaAttributeCollection () {}
 
  public:
 	MediaAttributeCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
 
@@ -83,17 +84,18 @@ MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeColle
  * collection sorted at all times.
  * We also override Insert to ignore the index and behave just like Add.
  */
-class TimelineMarkerCollection : public Collection {
+class TimelineMarkerCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TimelineMarkerCollection () {}
-	virtual int AddToList (Collection::Node *node);
-
+	
  public:
 	TimelineMarkerCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
 	
-	virtual bool Insert (int index, DependencyObject *data);
+	virtual int Add (Value value);
+	virtual bool Insert (int index, Value value);
 };
 
 TimelineMarkerCollection *timeline_marker_collection_new (void);

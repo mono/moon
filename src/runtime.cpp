@@ -56,6 +56,10 @@
 #include "usercontrol.h"
 #endif
 
+#ifdef DEBUG
+#undef DEBUG
+#endif
+
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
 #define DEBUG_REFCNT 0
@@ -1418,7 +1422,7 @@ Surface::gdk_keyval_to_key (guint keyval)
 	case GDK_KP_Divide:				return KeyDIVIDE;
 	  
 	default:
-		return KeyKEYUNKNOWN;
+		return KeyUNKNOWN;
 	}
 }
 

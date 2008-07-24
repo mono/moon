@@ -59,15 +59,6 @@ enum Visibility {
 	VisibilityCollapsed
 };
 
-enum CollectionChangeType {
-	CollectionChangeTypeItemAdded,
-	CollectionChangeTypeItemRemoved,
-	CollectionChangeTypeItemChanged,
-
-	CollectionChangeTypeChanging,
-	CollectionChangeTypeChanged
-};
-
 enum MouseCursor {
 	MouseCursorDefault,
 	MouseCursorArrow,
@@ -163,7 +154,7 @@ enum Key {
 	KeySUBTRACT = 80,
 	KeyDECIMAL = 81,
 	KeyDIVIDE = 82,
-	KeyKEYUNKNOWN = 255
+	KeyUNKNOWN = 255
 };
 
 G_BEGIN_DECLS

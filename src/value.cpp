@@ -350,7 +350,7 @@ Value::ToString ()
 		g_string_append_printf (str, "{keytime/TODO}");
 		break;
 	case Type::GRIDLENGTH:
-		g_string_append_printf (str, "{gridlength value:%d type:%d}", u.grid_length->val, u.grid_length->type);
+		g_string_append_printf (str, "{gridlength value:%.2f type:%d}", u.grid_length->val, u.grid_length->type);
 		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)

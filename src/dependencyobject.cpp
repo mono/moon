@@ -966,12 +966,12 @@ DependencyObject::MergeTemporaryNameScopes (DependencyObject *dob)
 	if (dob_ns && dob_ns->GetTemporary ())
 		merge_namescope (ns, dob_ns, this);
 
-	if (dob->Is (Type::COLLECTION)) {
-		Collection *c = (Collection*)dob;
-		Collection::Node *cn;
-		for (cn = (Collection::Node *) c->list->First () ; cn != NULL; cn = (Collection::Node *) cn->next) {
-			NameScope *c_ns = NameScope::GetNameScope (cn->obj);
-			if (c_ns && c_ns->GetTemporary())
+	if (dob->Is (Type::DEPENDENCY_OBJECT_COLLECTION)) {
+		Collection *c = (Collection *) dob;
+		
+		for (int i = 0; i < c->GetCount (); i++) {
+			NameScope *c_ns = NameScope::GetNameScope (c->GetValueAt (i)->AsDependencyObject ());
+			if (c_ns && c_ns->GetTemporary ())
 				merge_namescope (ns, c_ns, this);
 		}
 	}

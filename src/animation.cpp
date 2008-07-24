@@ -1014,39 +1014,20 @@ KeyFrameCollection::~KeyFrameCollection ()
 	g_ptr_array_free (sorted_list, true);
 }
 
-int
-KeyFrameCollection::Add (DependencyObject *data)
+void
+KeyFrameCollection::AddedToCollection (Value *value)
 {
-	int n;
-	
-	if ((n = Collection::Add (data)) == -1)
-		return -1;
+	DependencyObjectCollection::AddedToCollection (value);
 	
 	resolved = false;
-	
-	return n;
 }
 
-bool
-KeyFrameCollection::Insert (int index, DependencyObject *data)
+void
+KeyFrameCollection::RemovedFromCollection (Value *value)
 {
-	if (!Collection::Insert (index, data))
-		return false;
+	DependencyObjectCollection::AddedToCollection (value);
 	
 	resolved = false;
-	
-	return true;
-}
-
-bool
-KeyFrameCollection::Remove (DependencyObject *data)
-{
-	if (!Collection::Remove (data))
-		return false;
-	
-	resolved = false;
-	
-	return true;
 }
 
 void
@@ -1054,7 +1035,7 @@ KeyFrameCollection::Clear ()
 {
 	resolved = false;
 	g_ptr_array_set_size (sorted_list, 0);
-	Collection::Clear ();
+	DependencyObjectCollection::Clear ();
 }
 
 KeyFrame *
@@ -1438,23 +1419,28 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
 	TimeSpan total_interpolation_time;
 	bool has_timespan_keyframe = false;
 	TimeSpan highest_keytime_timespan = 0;
-	List::Node *cur;
-
-	for (cur = col->list->First (); cur; cur = cur->next) {
-		KeyFrame *keyframe = (KeyFrame *) ((Collection::Node *) cur)->obj;
+	KeyFrame *keyframe;
+	Value *value;
+	int i;
+	
+	for (i = 0; i < col->GetCount (); i++) {
+		value = col->GetValueAt (i);
+		keyframe = value->AsKeyFrame ();
 		keyframe->resolved_keytime = 0;
 		keyframe->resolved = false;
 	}
 
 	/* resolve TimeSpan keyframes (step 1 from url) */
-	for (cur = col->list->First (); cur; cur = cur->next) {
-		KeyFrame *keyframe = (KeyFrame *) ((Collection::Node *) cur)->obj;
+	for (i = 0; i < col->GetCount (); i++) {
+		value = col->GetValueAt (i);
+		keyframe = value->AsKeyFrame ();
+		
 		if (keyframe->GetKeyTime()->HasTimeSpan()) {
 			has_timespan_keyframe = true;
 			TimeSpan ts = keyframe->GetKeyTime()->GetTimeSpan ();
 			if (ts > highest_keytime_timespan)
 				highest_keytime_timespan = ts;
-
+			
 			keyframe->resolved_keytime = ts;
 			keyframe->resolved = true;
 		}
@@ -1471,11 +1457,12 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
 	else {
 		total_interpolation_time = TimeSpan_FromSeconds (1);
 	}
-
-
+	
 	/* use the total interpolation time to resolve percent keytime keyframes (step 3 from url) */
-	for (cur = col->list->First (); cur; cur = cur->next) {
-		KeyFrame *keyframe = (KeyFrame *) ((Collection::Node *) cur)->obj;
+	for (i = 0; i < col->GetCount (); i++) {
+		value = col->GetValueAt (i);
+		keyframe = value->AsKeyFrame ();
+		
 		if (keyframe->GetKeyTime()->HasPercent()) {
 			keyframe->resolved_keytime = (TimeSpan)(total_interpolation_time * keyframe->GetKeyTime()->GetPercent ());
 			keyframe->resolved = true;
@@ -1483,20 +1470,21 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
  	}
 
 	/* step 4 from url */
-	KeyFrame *keyframe;
 	KeyTime *kt;
+	
 	/* if the last frame is KeyTime Uniform or Paced, resolve it
 	   to be equal to the total interpolation time */
-	cur = col->list->Last ();
-	if (cur) {
-		keyframe = (KeyFrame *) ((Collection::Node *) cur)->obj;
+	if (col->GetCount () > 0) {
+		value = col->GetValueAt (col->GetCount () - 1);
+		keyframe = value->AsKeyFrame ();
+		
 		kt = keyframe->GetKeyTime ();
 		if (*kt == KeyTime::Paced || *kt == KeyTime::Uniform) {
 			keyframe->resolved_keytime = total_interpolation_time;
 			keyframe->resolved = true;
 		}
 	}
-
+	
 	/* if the first frame is KeyTime::Paced:
 	**   1. if there is only 1 frame, its KeyTime is the total interpolation time.
 	**   2. if there is more than 1 frame, its KeyTime is 0.
@@ -1504,9 +1492,9 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
 	** note 1 is handled in the above block so we only have to
 	** handle 2 here.
 	*/
-	cur = (Collection::Node*) col->list->First ();
-	if (cur) {
-		keyframe = (KeyFrame *) ((Collection::Node*) cur)->obj;
+	if (col->GetCount () > 0) {
+		value = col->GetValueAt (0);
+		keyframe = value->AsKeyFrame ();
 		kt = keyframe->GetKeyTime ();
 
 		if (!keyframe->resolved && *kt == KeyTime::Paced) {
@@ -1529,11 +1517,12 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
 	   secondary key (step 8 from url) */
 	g_ptr_array_set_size (col->sorted_list, 0);
 	
-	for (cur = col->list->Last (); cur; cur = cur->prev) {
-		KeyFrame *keyframe = (KeyFrame *) ((Collection::Node *) cur)->obj;
-		if (!keyframe->resolved) {
+	for (i = col->GetCount (); i > 0; i--) {
+		value = col->GetValueAt (i - 1);
+		keyframe = value->AsKeyFrame ();
+		
+		if (!keyframe->resolved)
 			g_warning ("***** unresolved keyframe!");
-		}
 		
 		g_ptr_array_insert_sorted (col->sorted_list, KeyFrameComparer, keyframe);
 	}
@@ -1544,10 +1533,12 @@ KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCo
 static bool
 generic_keyframe_validator (KeyFrameCollection *col)
 {
-	List::Node *cur;
-
-	for (cur = col->list->First (); cur; cur = cur->next) {
-		KeyFrame *keyframe = (KeyFrame *) ((Collection::Node *) cur)->obj;
+	KeyFrame *keyframe;
+	Value *value;
+	
+	for (int i = 0; i < col->GetCount (); i++) {
+		value = col->GetValueAt (i);
+		keyframe = value->AsKeyFrame ();
 		if (keyframe->GetKeyTime () == NULL)
 			return false;
 	}
@@ -1555,11 +1546,11 @@ generic_keyframe_validator (KeyFrameCollection *col)
 	return true;
 }
 
-DependencyProperty* DoubleAnimationUsingKeyFrames::KeyFramesProperty;
+DependencyProperty *DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
-DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames()
+DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames ()
 {
-	this->SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new DoubleKeyFrameCollection ()));
+	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new DoubleKeyFrameCollection ()));
 }
 
 DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()

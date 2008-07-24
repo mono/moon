@@ -572,11 +572,11 @@ matrix_transform_get_matrix (MatrixTransform *t)
 	return t->GetValue (MatrixTransform::MatrixProperty)->AsMatrix();
 }
 
-DependencyProperty* TransformGroup::ChildrenProperty;
+DependencyProperty *TransformGroup::ChildrenProperty;
 
 TransformGroup::TransformGroup ()
 {
-	this->SetValue (TransformGroup::ChildrenProperty, Value::CreateUnref (new TransformCollection ()));
+	SetValue (TransformGroup::ChildrenProperty, Value::CreateUnref (new TransformCollection ()));
 }
 
 TransformGroup::~TransformGroup ()
@@ -599,7 +599,7 @@ TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args)
 }
 
 void
-TransformGroup::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
+TransformGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	need_update = true;
 	NotifyListenersOfPropertyChange (TransformGroup::ChildrenProperty);
@@ -609,12 +609,11 @@ void
 TransformGroup::UpdateTransform ()
 {
 	TransformCollection *children = GetValue (TransformGroup::ChildrenProperty)->AsTransformCollection ();
-	Collection::Node *node = (Collection::Node *) children->list->First ();
 	
 	cairo_matrix_init_identity (&_matrix);
 	
-	for ( ; node != NULL; node = (Collection::Node *) node->next) {
-		Transform *transform = (Transform *) node->obj;
+	for (int i = 0; i < children->GetCount (); i++) {
+		Transform *transform = children->GetValueAt (i)->AsTransform ();
 		cairo_matrix_t matrix;
 		
 		transform->GetTransform (&matrix);

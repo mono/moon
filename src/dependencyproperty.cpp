@@ -367,12 +367,13 @@ resolve_property_path (DependencyObject **o, const char *path)
 			if (path [i] != ']'
 			    || path [i + 1] != '.')
 				break;
-
+			
 			Collection *col = lu->GetValue (res)->AsCollection ();
-			List::Node *n = col->list->Index (indexer);
-			if (n)
-				lu = ((Collection::Node *) n)->obj;
-			else {
+			Value *n = col->GetValueAt (indexer);
+			
+			if (n) {
+				lu = n->AsDependencyObject ();
+			} else {
 				g_warning ("%s collection doesn't have element %d!", lu->GetTypeName (), indexer);
 				*o = NULL;
 				return NULL;

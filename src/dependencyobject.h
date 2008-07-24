@@ -13,10 +13,10 @@
 
 #include <glib.h>
 
+#include "dependencyproperty.h"
 #include "value.h"
 #include "enums.h"
 #include "list.h"
-#include "dependencyproperty.h"
 
 //#define OBJECT_TRACKING 1
 
@@ -26,6 +26,7 @@
 #define GET_OBJ_ID(x) (-1)
 #endif
 
+class CollectionChangedEventArgs;
 class EventObject;
 class EventArgs;
 struct EmitContext;
@@ -267,7 +268,14 @@ class DependencyObject : public EventObject {
 	// the meaning of the @prop arg in this method.  it's not what
 	// you might think it is.
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args) { }
-
+	
+	//
+	// OnCollectionClear:
+	//
+	// This method is invoked when the @col is being cleared.
+	//
+	virtual void OnCollectionClear (Collection *col) { }
+	
 	//
 	// OnCollectionChanged:
 	//
@@ -275,8 +283,15 @@ class DependencyObject : public EventObject {
 	// collection, the kind of change is described in @type (change start,
 	// change end, adding, removing, or altering an existing item).
 	//
-	virtual void OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args) { }
-
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args) { }
+	
+	//
+	// OnCollectionItemChanged:
+	//
+	// This method is invoked when an item in the collection has had a property changed.
+	//
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args) { }
+	
 	// These two methods are a little confusing.  @child_property
 	// is *not* the property you're interested in receiving change
 	// notifications on.  Listeners are always notified of all

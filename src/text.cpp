@@ -516,7 +516,6 @@ TextBlock::Layout (cairo_t *cr)
 	Inlines *inlines = GetInlines ();
 	
 	if (inlines != NULL) {
-		Collection::Node *node = (Collection::Node *) inlines->list->First ();
 		guint8 run_mask, inherited_mask;
 		TextFontDescription *ifont;
 		TextDecorations deco;
@@ -524,8 +523,8 @@ TextBlock::Layout (cairo_t *cr)
 		Inline *item;
 		Run *run;
 		
-		while (node != NULL) {
-			item = (Inline *) node->obj;
+		for (int i = 0; i < inlines->GetCount (); i++) {
+			item = inlines->GetValueAt (i)->AsInline ();
 			
 			ifont = item->font;
 			
@@ -580,8 +579,6 @@ TextBlock::Layout (cairo_t *cr)
 			
 			if (inherited_mask != 0)
 				ifont->UnsetFields (inherited_mask);
-			
-			node = (Collection::Node *) node->next;
 		}
 	}
 	
@@ -634,12 +631,11 @@ TextBlock::GetTextInternal ()
 	block = g_string_new ("");
 	
 	if (inlines != NULL) {
-		Collection::Node *node = (Collection::Node *) inlines->list->First ();
 		const char *text;
 		Inline *item;
 		
-		while (node != NULL) {
-			item = (Inline *) node->obj;
+		for (int i = 0; i < inlines->GetCount (); i++) {
+			item = inlines->GetValueAt (i)->AsInline ();
 			
 			switch (item->GetObjectType ()) {
 			case Type::RUN:
@@ -654,8 +650,6 @@ TextBlock::GetTextInternal ()
 			default:
 				break;
 			}
-			
-			node = (Collection::Node *) node->next;
 		}
 	}
 	
@@ -668,16 +662,15 @@ TextBlock::GetTextInternal ()
 static bool
 inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 {
-	Collection::Node *node1, *node2;
 	const char *text1, *text2;
 	Inline *run1, *run2;
 	
-	node1 = (Collection::Node *) curInlines->list->First ();
-	node2 = (Collection::Node *) newInlines->list->First ();
+	if (curInlines->GetCount () != newInlines->GetCount ())
+		return false;
 	
-	while (node1 && node2) {
-		run1 = (Inline *) node1->obj;
-		run2 = (Inline *) node2->obj;
+	for (int i = 0; i < curInlines->GetCount () && i < newInlines->GetCount (); i++) {
+		run1 = curInlines->GetValueAt (i)->AsInline ();
+		run1 = newInlines->GetValueAt (i)->AsInline ();
 		
 		if (run1->GetObjectType () != run2->GetObjectType ())
 			return false;
@@ -704,13 +697,7 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 		
 		if (run1->foreground != NULL)
 			return false;
-		
-		node1 = (Collection::Node *) node1->next;
-		node2 = (Collection::Node *) node2->next;
 	}
-	
-	if (node1 != NULL || node2 != NULL)
-		return false;
 	
 	return true;
 }
@@ -878,29 +865,21 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 }
 
 void
-TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, DependencyObject *obj, PropertyChangedEventArgs *element_args)
+TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	bool update_bounds = false;
 	bool update_text = false;
 	
-	switch (type) {
-	case CollectionChangeTypeItemAdded:
-	case CollectionChangeTypeItemRemoved:
+	switch (args->action) {
+	case CollectionChangedActionAdd:
+	case CollectionChangedActionRemove:
+	case CollectionChangedActionReplace:
 		// an Inline element has been added or removed, update our TextProperty
 		update_bounds = true;
 		update_text = true;
 		dirty = true;
 		break;
-	case CollectionChangeTypeItemChanged:
-		// only update bounds if a property other than the Foreground changed
-		update_bounds = element_args->property != Inline::ForegroundProperty;
-		
-		// only update our TextProperty if change was in a Run's Text property
-		update_text = element_args->property == Run::TextProperty;
-		
-		dirty = true;
-		break;
-	case CollectionChangeTypeChanged:
+	case CollectionChangedActionReset:
 		// the collection has changed, only update our TextProperty if it was the result of a SetValue
 		update_bounds = setvalue;
 		update_text = setvalue;
@@ -909,6 +888,32 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangeType type, Depe
 	default:
 		break;
 	}
+	
+	if (update_text) {
+		char *text = GetTextInternal ();
+		
+		setvalue = false;
+		SetValue (TextBlock::TextProperty, Value (text));
+		setvalue = true;
+		g_free (text);
+	}
+	
+	if (update_bounds)
+		UpdateBounds (true);
+	
+	Invalidate ();
+}
+
+void
+TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	// only update bounds if a property other than the Foreground changed
+	bool update_bounds = args->property != Inline::ForegroundProperty;
+	
+	// only update our TextProperty if change was in a Run's Text property
+	bool update_text = args->property == Run::TextProperty;
+	
+	dirty = true;
 	
 	if (update_text) {
 		char *text = GetTextInternal ();
@@ -1142,7 +1147,7 @@ const char *
 TextBlock::GetText ()
 {
 	Value *value = GetValue (TextBlock::TextProperty);
-
+	
 	return value ? value->AsString () : NULL;
 }
 

@@ -332,26 +332,24 @@ class KeyFrame : public DependencyObject {
 	void SetKeyTime (KeyTime keytime);
 };
 
-class KeyFrameCollection : public Collection {
+class KeyFrameCollection : public DependencyObjectCollection {
  protected:
+	virtual void AddedToCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value);
+	
 	virtual ~KeyFrameCollection ();
 
  public:
-
+	GPtrArray *sorted_list;
+	bool resolved;
+	
 	KeyFrameCollection ();
 
 	virtual Type::Kind GetObjectType() { return Type::KEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::KEYFRAME; }
-
-	virtual int  Add (DependencyObject *obj);
-	virtual bool Remove (DependencyObject *obj);
-	virtual bool Insert (int index, DependencyObject *data);
+	
 	virtual void Clear ();
-
-	GPtrArray *sorted_list;
-
-	bool resolved;
-
+	
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);

@@ -207,13 +207,12 @@ void
 Surface::PropagateDirtyFlagToChildren (UIElement *el, DirtyType flags)
 {
 	if (el->Is (Type::PANEL)) {
-		Panel *p = (Panel*)el;
-		VisualCollection *children = p->GetChildren();
-
-		Collection::Node* n = (Collection::Node *) children->list->First ();
-		while (n != NULL) {
-			AddDirtyElement ((UIElement *)n->obj, flags);
-			n = (Collection::Node *) n->next;
+		VisualCollection *children = ((Panel *) el)->GetChildren ();
+		DependencyObject *obj;
+		
+		for (int i = 0; i < children->GetCount (); i++) {
+			obj = children->GetValueAt (i)->AsDependencyObject ();
+			AddDirtyElement ((UIElement *) obj, flags);
 		}
 	}
 	else if (el->Is (Type::CONTROL)) {
