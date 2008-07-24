@@ -1,1 +1,1 @@
-SUBDIRS = calculator calendar cpumonitor glassycalendar glassyclock glassymonitor glassyslides simpleclock weather ruler
+SUBDIRS = calculator cpumonitor glassyclock glassymonitor glassyslides simpleclock
