@@ -1,5 +1,7 @@
 2008-07-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Geometry.cs: Updated.
+
 	* StyleSimulations.cs: Updated.
 
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 

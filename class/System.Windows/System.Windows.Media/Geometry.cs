@@ -25,36 +25,22 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using Mono;
+
 namespace System.Windows.Media {
 	public abstract class Geometry : DependencyObject {
-		public static readonly DependencyProperty FillRuleProperty;
-		public static readonly DependencyProperty TransformProperty;
-
-		static Geometry ()
-		{
-			FillRuleProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "FillRule", typeof (FillRule));
-			TransformProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "Transform", typeof (Transform));
-		}
-
-		public Geometry () : base (NativeMethods.geometry_new ())
+		public static readonly DependencyProperty TransformProperty =
+		       TransformProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "Transform", typeof (Transform));
+		
+		protected Geometry () : base (NativeMethods.geometry_new ())
 		{
 		}
 		
 		internal Geometry (IntPtr raw) : base (raw)
 		{
 		}
-
-		public FillRule FillRule {
-			get {
-				return (FillRule) GetValue (FillRuleProperty);
-			}
-			
-			set {
-				SetValue (FillRuleProperty, value);
-			}
-		}
-
+		
 		public Transform Transform {
 			get {
 				return (Transform) GetValue (TransformProperty);
@@ -64,11 +50,10 @@ namespace System.Windows.Media {
 				SetValue (TransformProperty, value);
 			}
 		}
-
+		
 		internal override Kind GetKind ()
 		{
 			return Kind.GEOMETRY;
 		}
-		
 	}
 }
