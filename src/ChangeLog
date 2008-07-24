@@ -1,5 +1,39 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* collection.cpp (DependencyObjectCollection::RemovedFromCollection):
+	Unregister the NameScope the same way it was done in the more
+	common case in the old code (why were there different ways?).
+
+	* text.cpp (TextBlock::OnCollectionChanged): Chain up.
+	(TextBlock::OnCollectionItemChanged): Same.
+
+	* brush.cpp (GradientBrush::OnCollectionChanged): Chain up.
+	(GradientBrush::OnCollectionItemChanged): Chain up and notify
+	listeners.
+
+	* geometry.cpp (GeometryGroup::OnCollectionChanged): Chain up.
+	(GeometryGroup::OnCollectionItemChanged): Chain up and notify
+	listeners.
+	(PathGeometry::OnCollectionChanged): Chain up.
+	(PathGeometry::OnCollectionItemChanged): Chain up and notify
+	listeners.
+	(PathFigure::OnCollectionChanged): Chain up.
+	(PathFigure::OnCollectionItemChanged): Chain up and notify
+	listeners.
+
+	* shape.cpp (Polygon::OnCollectionChanged): Chain up.
+	(Polygon::OnCollectionItemChanged): Same.
+	(Polyline::OnCollectionChanged): Same.
+	(Polyline::OnCollectionItemChanged): Same.
+
+	* stylus.cpp (Stroke::OnCollectionItemChanged): Need to
+	call NotifyListersOfPropertyChange().
+
+	* transform.cpp (TransformGroup::OnCollectionItemChanged): Need to
+	call NotifyListersOfPropertyChange().
+
+2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
 	* collection.cp|h: Reworked Collections a lot. Collection is now a
 	generic collection of Values. Added 3 new collections:
 	DependencyObjectCollection (which holds DO's like the old

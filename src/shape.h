@@ -353,6 +353,7 @@ class Polygon : public Shape {
 	virtual bool CanFill () { return true; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
 	//
@@ -397,6 +398,7 @@ class Polyline : public Shape {
 	virtual bool CanFill () { return true; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
 	//

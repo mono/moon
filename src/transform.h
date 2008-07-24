@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * transform.h: 
  *
@@ -253,7 +254,8 @@ public:
 
 	TransformGroup ();
 	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
-
+	
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void UpdateTransform ();

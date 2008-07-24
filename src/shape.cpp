@@ -1998,6 +1998,17 @@ Polygon::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Polygon::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	Shape::OnCollectionChanged (col, args);
+	
+	UpdateBounds (true);
+	Invalidate ();
+}
+
+void
+Polygon::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	Shape::OnCollectionItemChanged (col, obj, args);
+	
 	UpdateBounds (true);
 	Invalidate ();
 }
@@ -2177,6 +2188,17 @@ Polyline::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Polyline::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	Shape::OnCollectionChanged (col, args);
+	
+	UpdateBounds ();
+	Invalidate ();
+}
+
+void
+Polyline::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	Shape::OnCollectionItemChanged (col, obj, args);
+	
 	UpdateBounds ();
 	Invalidate ();
 }

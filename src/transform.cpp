@@ -601,6 +601,23 @@ TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 TransformGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	if (col != GetValue (TransformGroup::ChildrenProperty)->AsCollection ()) {
+		Transform::OnCollectionChanged (col, args);
+		return;
+	}
+	
+	need_update = true;
+	NotifyListenersOfPropertyChange (TransformGroup::ChildrenProperty);
+}
+
+void
+TransformGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (col != GetValue (TransformGroup::ChildrenProperty)->AsCollection ()) {
+		Transform::OnCollectionItemChanged (col, obj, args);
+		return;
+	}
+	
 	need_update = true;
 	NotifyListenersOfPropertyChange (TransformGroup::ChildrenProperty);
 }

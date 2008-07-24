@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * geometry.h: Geometry classes
  *
@@ -117,6 +118,7 @@ class GeometryGroup : public Geometry {
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; };
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
 	virtual void Draw (Path *path, cairo_t *cr);
@@ -257,6 +259,7 @@ class PathGeometry : public Geometry {
 
 	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
 	
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
 	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
@@ -359,6 +362,7 @@ class PathFigure : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; };
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void Build (Path *shape);
 	

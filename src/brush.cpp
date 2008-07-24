@@ -272,8 +272,22 @@ GradientBrush::GradientBrush ()
 void
 GradientBrush::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	// GeometryGroup only has one collection, so let's save the hash lookup
-	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
+	if (col != GetValue (GradientBrush::GradientStopsProperty)->AsCollection ()) {
+		Brush::OnCollectionChanged (col, args);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (GradientBrush::GradientStopsProperty);
+}
+
+void
+GradientBrush::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (col != GetValue (GradientBrush::GradientStopsProperty)->AsCollection ()) {
+		Brush::OnCollectionItemChanged (col, obj, args);
+		return;
+	}
+	
 	NotifyListenersOfPropertyChange (GradientBrush::GradientStopsProperty);
 }
 

@@ -682,6 +682,11 @@ Stroke::ComputeBounds ()
 void
 Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	if (col != GetValue (Stroke::StylusPointsProperty)->AsCollection ()) {
+		DependencyObject::OnCollectionChanged (col, args);
+		return;
+	}
+	
 	old_bounds = bounds;
 	
 	switch (args->action) {
@@ -694,7 +699,18 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 		ComputeBounds ();
 		break;
 	}
+	
+	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty);
+}
 
+void
+Stroke::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (col != GetValue (Stroke::StylusPointsProperty)->AsCollection ()) {
+		DependencyObject::OnCollectionItemChanged (col, obj, args);
+		return;
+	}
+	
 	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty);
 }
 
@@ -1026,51 +1042,53 @@ InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 InkPresenter::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col == GetValue (InkPresenter::StrokesProperty)->AsCollection ()) {
-		Stroke *stroke;
-		
-		switch (args->action) {
-		case CollectionChangedActionAdd:
-			stroke = args->new_value->AsStroke ();
-			Invalidate (stroke->GetBounds().Transform (&absolute_xform));
-			UpdateBounds ();
-			break;
-		case CollectionChangedActionRemove:
-			stroke = args->old_value->AsStroke ();
-			Invalidate (stroke->GetOldBounds ().Transform (&absolute_xform));
-			Invalidate (stroke->GetBounds ().Transform (&absolute_xform));
-			UpdateBounds ();
-			break;
-		case CollectionChangedActionReplace:
-			stroke = args->old_value->AsStroke ();
-			Invalidate (stroke->GetOldBounds ().Transform (&absolute_xform));
-			stroke = args->new_value->AsStroke ();
-			Invalidate (stroke->GetBounds().Transform (&absolute_xform));
-			UpdateBounds ();
-			break;
-		case CollectionChangedActionReset:
-			Invalidate (render_bounds);
-			Invalidate (((StrokeCollection*)col)->GetBounds().Transform (&absolute_xform));
-			UpdateBounds ();
-			break;
-		}
-	} else {
+	Stroke *stroke;
+	
+	if (col != GetValue (InkPresenter::StrokesProperty)->AsCollection ()) {
 		Canvas::OnCollectionChanged (col, args);
+		return;
+	}
+	
+	switch (args->action) {
+	case CollectionChangedActionAdd:
+		stroke = args->new_value->AsStroke ();
+		Invalidate (stroke->GetBounds().Transform (&absolute_xform));
+		UpdateBounds ();
+		break;
+	case CollectionChangedActionRemove:
+		stroke = args->old_value->AsStroke ();
+		Invalidate (stroke->GetOldBounds ().Transform (&absolute_xform));
+		Invalidate (stroke->GetBounds ().Transform (&absolute_xform));
+		UpdateBounds ();
+		break;
+	case CollectionChangedActionReplace:
+		stroke = args->old_value->AsStroke ();
+		Invalidate (stroke->GetOldBounds ().Transform (&absolute_xform));
+		stroke = args->new_value->AsStroke ();
+		Invalidate (stroke->GetBounds().Transform (&absolute_xform));
+		UpdateBounds ();
+		break;
+	case CollectionChangedActionReset:
+		Invalidate (render_bounds);
+		Invalidate (((StrokeCollection*)col)->GetBounds().Transform (&absolute_xform));
+		UpdateBounds ();
+		break;
 	}
 }
 
 void
 InkPresenter::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col == GetValue (InkPresenter::StrokesProperty)->AsCollection ()) {
-		Stroke *stroke = (Stroke *) obj;
-		
-		Invalidate (stroke->GetOldBounds ().Transform (&absolute_xform));
-		Invalidate (stroke->GetBounds ().Transform (&absolute_xform));
-		UpdateBounds ();
-	} else {
+	Stroke *stroke = (Stroke *) obj;
+	
+	if (col != GetValue (InkPresenter::StrokesProperty)->AsCollection ()) {
 		Canvas::OnCollectionItemChanged (col, obj, args);
+		return;
 	}
+	
+	Invalidate (stroke->GetOldBounds ().Transform (&absolute_xform));
+	Invalidate (stroke->GetBounds ().Transform (&absolute_xform));
+	UpdateBounds ();
 }
 
 void

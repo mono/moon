@@ -139,7 +139,8 @@ class Stroke : public DependencyObject {
 	Rect GetBounds ();
 	Rect GetOldBounds ();
 	bool HitTest (StylusPointCollection *stylusPoints);
-
+	
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);

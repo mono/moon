@@ -870,6 +870,11 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	bool update_bounds = false;
 	bool update_text = false;
 	
+	if (col != GetValue (TextBlock::InlinesProperty)->AsCollection ()) {
+		FrameworkElement::OnCollectionChanged (col, args);
+		return;
+	}
+	
 	switch (args->action) {
 	case CollectionChangedActionAdd:
 	case CollectionChangedActionRemove:
@@ -907,11 +912,19 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 void
 TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
+	bool update_bounds;
+	bool update_text;
+	
+	if (col != GetValue (TextBlock::InlinesProperty)->AsCollection ()) {
+		FrameworkElement::OnCollectionItemChanged (col, obj, args);
+		return;
+	}
+	
 	// only update bounds if a property other than the Foreground changed
-	bool update_bounds = args->property != Inline::ForegroundProperty;
+	update_bounds = args->property != Inline::ForegroundProperty;
 	
 	// only update our TextProperty if change was in a Run's Text property
-	bool update_text = args->property == Run::TextProperty;
+	update_text = args->property == Run::TextProperty;
 	
 	dirty = true;
 	

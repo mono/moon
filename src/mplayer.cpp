@@ -1758,10 +1758,10 @@ AudioPlayer::AudioNode::XrunRecovery (int err)
 bool
 AudioPlayer::AudioNode::PreparePcm (snd_pcm_sframes_t *avail)
 {
-	int err;
 	snd_pcm_state_t state = snd_pcm_state (pcm);
 	snd_pcm_sframes_t pending_frames;
 	gint32 period_size = sample_size;
+	int err;
 	
 	switch (state) {
 	case SND_PCM_STATE_XRUN:

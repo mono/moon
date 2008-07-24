@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * geometry.cpp: Geometry classes
  *
@@ -136,9 +137,23 @@ GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject 
 void
 GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	// GeometryGroup only has one collection, so let's save the hash lookup
-	//if (col == GetValue (GeometryGroup::ChildrenProperty)->AsGeometryCollection())
-		NotifyListenersOfPropertyChange (GeometryGroup::ChildrenProperty);
+	if (col != GetValue (GeometryGroup::ChildrenProperty)->AsCollection ()) {
+		Geometry::OnCollectionChanged (col, args);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (GeometryGroup::ChildrenProperty);
+}
+
+void
+GeometryGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (col != GetValue (GeometryGroup::ChildrenProperty)->AsCollection ()) {
+		Geometry::OnCollectionItemChanged (col, obj, args);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (GeometryGroup::ChildrenProperty);
 }
 
 void
@@ -535,13 +550,31 @@ PathGeometry::PathGeometry (moon_path *pml)
 void
 PathGeometry::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	if (col != GetValue (PathGeometry::FiguresProperty)->AsCollection ()) {
+		Geometry::OnCollectionChanged (col, args);
+		return;
+	}
+	
 	logical_bounds_available = physical_bounds_available = false;
 	if (path)
 		moon_path_clear (path);
+	
+	NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
+}
 
-	// PathGeometry only has one collection, so let's save the hash lookup
-	//if (col == GetValue (PathGeometry::FiguresProperty)->AsPathFigureCollection ())
-	        NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
+void
+PathGeometry::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (col != GetValue (PathGeometry::FiguresProperty)->AsCollection ()) {
+		Geometry::OnCollectionItemChanged (col, obj, args);
+		return;
+	}
+	
+	logical_bounds_available = physical_bounds_available = false;
+	if (path)
+		moon_path_clear (path);
+	
+	NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
 }
 
 void
@@ -852,12 +885,29 @@ PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 PathFigure::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	if (col != GetValue (PathFigure::SegmentsProperty)->AsCollection ()) {
+		DependencyObject::OnCollectionChanged (col, args);
+		return;
+	}
+	
 	if (path)
 		moon_path_clear (path);
 	
-	// PathFigure only has one collection, so let's save the hash lookup
-	//if (col == GetValue (PathFigure::SegmentsProperty)->AsPathSegmentCollection())
-		NotifyListenersOfPropertyChange (PathFigure::SegmentsProperty);
+	NotifyListenersOfPropertyChange (PathFigure::SegmentsProperty);
+}
+
+void
+PathFigure::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (col != GetValue (PathFigure::SegmentsProperty)->AsCollection ()) {
+		DependencyObject::OnCollectionItemChanged (col, obj, args);
+		return;
+	}
+	
+	if (path)
+		moon_path_clear (path);
+	
+	NotifyListenersOfPropertyChange (PathFigure::SegmentsProperty);
 }
 
 void
