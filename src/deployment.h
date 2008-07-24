@@ -35,7 +35,7 @@ AssemblyPart *assembly_part_new (void);
 
 
 /* @SilverlightVersion="2" */
-class AssemblyPartCollection : public ObjectCollection {
+class AssemblyPartCollection : public DependencyObjectCollection {
  protected:
 	virtual ~AssemblyPartCollection () {}
 
