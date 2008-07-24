@@ -1,5 +1,10 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* collection.h: Get rid of convenience wrappers that aren't even
+	used. Also removes the need for previous commit.
+
+2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
 	* collection.h (class DependencyObjectCollection): Add virtual
 	Add(), Clear() and Insert(). This makes it possible for subclasses
 	to chain up if they need to override any of these.

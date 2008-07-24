@@ -78,16 +78,7 @@ class DependencyObjectCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 	
-	virtual int Add (Value value) { return Collection::Add (value); }
-	virtual void Clear () { Collection::Clear (); }
-	virtual bool Insert (int index, Value value) { return Collection::Insert (index, value); }
-	
 	// Convenience wrappers
-	int Add (DependencyObject *value) { return Collection::Add (Value (value)); }
-	bool Contains (DependencyObject *value) { return Collection::Contains (Value (value)); }
-	int IndexOf (DependencyObject *value) { return Collection::IndexOf (Value (value)); }
-	bool Insert (int index, DependencyObject *value) { return Collection::Insert (index, Value (value)); }
-	bool Remove (DependencyObject *value) { return Collection::Remove (Value (value)); }
 	virtual DependencyObject *SetValueAt (int index, DependencyObject *obj);
 	
 	virtual void SetSurface (Surface *surface);
@@ -108,17 +99,6 @@ class DoubleCollection : public Collection {
 	
 	virtual Type::Kind GetObjectType () { return Type::DOUBLE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DOUBLE; }
-	
-	virtual int Add (Value value) { return Collection::Add (value); }
-	virtual void Clear () { Collection::Clear (); }
-	virtual bool Insert (int index, Value value) { return Collection::Insert (index, value); }
-	
-	// Convenience wrappers
-	int Add (double value) { return Collection::Add (Value (value)); }
-	bool Contains (double value) { return Collection::Contains (Value (value)); }
-	int IndexOf (double value) { return Collection::IndexOf (Value (value)); }
-	bool Insert (int index, double value) { return Collection::Insert (index, Value (value)); }
-	bool Remove (double value) { return Collection::Remove (Value (value)); }
 };
 
 class PointCollection : public Collection {
@@ -130,17 +110,6 @@ class PointCollection : public Collection {
 	
 	virtual Type::Kind GetObjectType () { return Type::POINT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::POINT; }
-	
-	virtual int Add (Value value) { return Collection::Add (value); }
-	virtual void Clear () { Collection::Clear (); }
-	virtual bool Insert (int index, Value value) { return Collection::Insert (index, value); }
-	
-	// Convenience wrappers
-	int Add (Point value) { return Collection::Add (Value (value)); }
-	bool Contains (Point value) { return Collection::Contains (Value (value)); }
-	int IndexOf (Point value) { return Collection::IndexOf (Value (value)); }
-	bool Insert (int index, Point value) { return Collection::Insert (index, Value (value)); }
-	bool Remove (Point value) { return Collection::Remove (Value (value)); }
 };
 
 class CollectionIterator {
