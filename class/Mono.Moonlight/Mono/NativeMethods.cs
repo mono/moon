@@ -225,7 +225,7 @@ namespace Mono {
 		public extern static int collection_index_of (IntPtr collection, IntPtr value);
 		
 		[DllImport("moon")]
-		public extern static void collection_insert (IntPtr collection, int index, IntPtr value);
+		public extern static bool collection_insert (IntPtr collection, int index, IntPtr value);
 		
 		[DllImport("moon")]
 		public extern static bool collection_remove (IntPtr collection, IntPtr value);
@@ -247,9 +247,18 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static IntPtr collection_iterator_get_current (IntPtr iterator, out int error);
-
+		
 		[DllImport("moon")]
 		public extern static void collection_iterator_destroy (IntPtr iterator);
+		
+		[DllImport("moon")]
+		public extern static IntPtr dependency_object_collection_new ();
+		
+		[DllImport("moon")]
+		public extern static IntPtr double_collection_new ();
+		
+		[DllImport("moon")]
+		public extern static IntPtr point_collection_new ();
 		
 		[DllImport("moon")]
 		public extern static IntPtr resource_dictionary_new ();
