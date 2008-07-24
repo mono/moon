@@ -188,10 +188,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/MatrixTransform.cs			\
 	$(srcdir)/System.Windows.Media/Matrix.cs				\
 	$(srcdir)/System.Windows.Media/MediaElementState.cs			\
-	$(srcdir)/System.Windows.Media/MediaSampleAttributeKeys.cs	\
-	$(srcdir)/System.Windows.Media/MediaSourceAttributesKeys.cs	\
-	$(srcdir)/System.Windows.Media/MediaStreamAttributesKeys.cs	\
-	$(srcdir)/System.Windows.Media/MediaStreamDescription.cs	\
+	$(srcdir)/System.Windows.Media/MediaSampleAttributeKeys.cs		\
+	$(srcdir)/System.Windows.Media/MediaSourceAttributesKeys.cs		\
+	$(srcdir)/System.Windows.Media/MediaStreamAttributesKeys.cs		\
+	$(srcdir)/System.Windows.Media/MediaStreamDescription.cs		\
 	$(srcdir)/System.Windows.Media/MediaStreamSample.cs			\
 	$(srcdir)/System.Windows.Media/MediaStreamSource.cs			\
 	$(srcdir)/System.Windows.Media/MediaStreamSourceDiagnosticKind.cs	\

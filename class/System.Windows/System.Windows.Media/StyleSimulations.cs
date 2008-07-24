@@ -27,9 +27,10 @@
 //
 
 namespace System.Windows.Media {
-
 	public enum StyleSimulations {
-		None
+		None                 = 0x00,
+		BoldSimulation       = 0x01,
+		ItalicSimulation     = 0x02,
+		BoldItalicSimulation = 0x03
 	}
-
 }
