@@ -164,6 +164,7 @@ Downloader::Open (const char *verb, const char *uri)
 	send_queued = false;
 	started = false;
 	aborted = false;
+	completed = false;
 	file_size = -2;
 	total = 0;
 

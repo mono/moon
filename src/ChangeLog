@@ -1,4 +1,9 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
+	
+	* downloader.cpp: When a downloader is reused reset the completed
+	state when we get the new Open call.
+
+2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (inlines_simple_text_equal): Fixed a stupid typo.
 
