@@ -445,7 +445,7 @@ test/sizes/Makefile
 tools/Makefile
 tools/mopen/Makefile
 tools/mxap/Makefile
-tools/svg2xaml/Makefile
+dnl tools/svg2xaml/Makefile
 tools/xamlg/Makefile
 tools/xaml2html/Makefile
 tools/respack/Makefile
@@ -459,7 +459,7 @@ examples/desklet/glassycalendar/Makefile
 examples/desklet/glassyclock/Makefile
 examples/desklet/glassymonitor/Makefile
 examples/desklet/glassyslides/Makefile
-examples/desklet/picasa/Makefile
+dnl examples/desklet/picasa/Makefile
 examples/desklet/simpleclock/Makefile
 examples/desklet/weather/Makefile
 plugin/Makefile
