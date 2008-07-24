@@ -255,8 +255,10 @@ DependencyObjectCollection::RemovedFromCollection (Value *value)
 	
 	// unregister the name from whatever scope it's registered in
 	// if it's got its own, don't worry about it.
-	if ((ns = obj->FindNameScope ()))
-		obj->UnregisterAllNamesRootedAt (ns);
+	if (!(ns = NameScope::GetNameScope (obj))) {
+		if ((ns = obj->FindNameScope ()))
+			obj->UnregisterAllNamesRootedAt (ns);
+	}
 	
 	Collection::RemovedFromCollection (value);
 }

@@ -1,5 +1,12 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* collection.cpp (DependencyObjectCollection::RemovedFromCollection):
+	Unregister the NameScope the same way the old Collection::Remove()
+	way did it. This way seems the most correct (RemoveAt() was
+	totally broken and SetVal() doesn't seem right afterall).
+
+2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
 	* collection.cpp: Added c-wrappers for creating new
 	collections. Also changed the c-bindings for
 	setting/adding/inserting/etc items to the collection to take
