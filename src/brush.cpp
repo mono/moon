@@ -1063,7 +1063,7 @@ ImageBrush::SetSurface (Surface *surface)
 void
 ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetPropertyType() != Type::IMAGEBRUSH) {
+	if (args->property->GetOwnerType() != Type::IMAGEBRUSH) {
 		TileBrush::OnPropertyChanged (args);
 		return;
 	}
@@ -1379,7 +1379,7 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 void
 VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetPropertyType() != Type::VIDEOBRUSH) {
+	if (args->property->GetOwnerType() != Type::VIDEOBRUSH) {
 		TileBrush::OnPropertyChanged (args);
 		return;
 	}
@@ -1520,7 +1520,7 @@ VisualBrush::update_brush (EventObject *, EventArgs *, gpointer closure)
 void
 VisualBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetPropertyType() != Type::VISUALBRUSH) {
+	if (args->property->GetOwnerType() != Type::VISUALBRUSH) {
 		TileBrush::OnPropertyChanged (args);
 		return;
 	}
