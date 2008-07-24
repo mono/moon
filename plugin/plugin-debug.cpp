@@ -44,20 +44,17 @@ populate_tree_from_xaml (UIElement *el, GtkTreeStore *store, GtkTreeIter *parent
 			    1, el->GetTypeName(),
 			    2, el,
 			    -1);
-
-	if (el->Is(Type::PANEL)) {
-		VisualCollection *children = ((Panel*)el)->GetChildren ();
+	
+	if (el->Is (Type::PANEL)) {
+		VisualCollection *children = ((Panel *) el)->GetChildren ();
+		
 		if (children != NULL) {
-			Collection::Node *cn;
-			cn = (Collection::Node *) children->list->First ();
-			for ( ; cn != NULL; cn = (Collection::Node *) cn->next) {
-				UIElement *item = (UIElement *) cn->obj;
+			for (int i = 0; i < children->GetCount (); i++) {
+				UIElement *item = children->GetValueAt (i)->AsUIElement ();
 				populate_tree_from_xaml (item, store, &iter);
 			}
 		}
-	}
-
-	if (el->Is(Type::USERCONTROL)) {
+	} else if (el->Is (Type::USERCONTROL)) {
 		UIElement *content = user_control_get_content ((UserControl *) el);
 		if (content)
 			populate_tree_from_xaml (content, store, &iter);

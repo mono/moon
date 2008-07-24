@@ -2939,7 +2939,7 @@ MoonlightCollectionObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 
 	switch (id) {
 	case MoonId_Count:
-		INT32_TO_NPVARIANT (col->list->Length (), *result);
+		INT32_TO_NPVARIANT (col->GetCount (), *result);
 		return true;
 	default:
 		return MoonlightDependencyObjectObject::GetProperty (id, name, result);
@@ -2952,7 +2952,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 				   NPVariant *result)
 {
 	Collection *col = (Collection *) GetDependencyObject ();
-
+	
 	switch (id) {
 	case MoonId_Add: {
 		if (!check_arg_list ("o", argCount, args) ||
@@ -2960,14 +2960,13 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("add");
 		
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]);
-
-		int n = col->Add (el->GetDependencyObject ());
-
+		int n = col->Add (Value (el->GetDependencyObject ()));
+		
 		if (n == -1)
 			THROW_JS_EXCEPTION ("add");
 		
 		INT32_TO_NPVARIANT (n, *result);
-
+		
 		return true;
 	}
 	case MoonId_Remove: {
@@ -2976,7 +2975,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("remove");
 		
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject *) NPVARIANT_TO_OBJECT (args[0]);
-		bool res = col->Remove (el->GetDependencyObject ());
+		bool res = col->Remove (Value (el->GetDependencyObject ()));
 		
 		BOOLEAN_TO_NPVARIANT (res, *result);
 		
@@ -2988,12 +2987,12 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		
 		int index = NPVARIANT_TO_INT32 (args [0]);
 		
-		if (index < 0 || index >= col->list->Length ())
+		if (index < 0 || index >= col->GetCount ())
 			THROW_JS_EXCEPTION ("removeAt");
-
-		Collection::Node *n = (Collection::Node *) col->list->Index (index);
-		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, n->obj), *result);
-
+		
+		DependencyObject *obj = col->GetValueAt (index)->AsDependencyObject ();
+		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, obj), *result);
+		
 		col->RemoveAt (index);
 		
 		return true;
@@ -3013,7 +3012,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args[1]);
 		int index = NPVARIANT_TO_INT32 (args[0]);
 		
-		if (!col->Insert (index, el->GetDependencyObject ()))
+		if (!col->Insert (index, Value (el->GetDependencyObject ())))
 			THROW_JS_EXCEPTION ("insert");
 		
 		VOID_TO_NPVARIANT (*result);
@@ -3023,11 +3022,11 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 	case MoonId_Clear: {
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("clear");
-
+		
 		col->Clear ();
-
+		
 		VOID_TO_NPVARIANT (*result);
-
+		
 		return true;
 	}
 	case MoonId_GetItem: {
@@ -3035,18 +3034,17 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("getItem");
 		
 		int index = NPVARIANT_TO_INT32 (args[0]);
-
+		
 		if (index < 0)
 			THROW_JS_EXCEPTION ("getItem");
 		
-		if (index >= col->list->Length ()) {
+		if (index >= col->GetCount ()) {
 			NULL_TO_NPVARIANT (*result);
 			return true;
 		}
 		
-		Collection::Node *n = (Collection::Node *) col->list->Index (index);
-		
-		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, n->obj), *result);
+		DependencyObject *obj = col->GetValueAt (index)->AsDependencyObject ();
+		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, obj), *result);
 		
 		return true;
 	}
@@ -3056,9 +3054,9 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("getItemByName");
 		
 		char *name = STRDUP_FROM_VARIANT (args[0]);
-		DependencyObject *obj = media_attribute_collection_get_item_by_name ((MediaAttributeCollection *) col, name);
+		DependencyObject *obj = ((MediaAttributeCollection *) col)->GetItemByName (name);
 		g_free (name);
-
+		
 		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, obj), *result);
 		
 		return true;

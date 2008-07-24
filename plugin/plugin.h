@@ -51,31 +51,31 @@ class PluginInstance
 	int16 EventHandle (void *event);
 	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
 	void *LoadUrl (char *url, int32_t *length);
-
-	NPObject* GetHost();
-
+	
+	NPObject *GetHost ();
+	
 	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
 	void      RemoveWrappedObject (EventObject *obj);
 	NPObject *LookupWrappedObject (EventObject *obj);
-
+	
 	void      AddCleanupPointer    (gpointer p);
 	void      RemoveCleanupPointer (gpointer p);
-
+	
 	// [Obselete (this is obsolete in SL b2)]
 	uint32_t TimeoutAdd (int32_t interval, GSourceFunc callback, gpointer data);
 	// [Obselete (this is obsolete in SL b2)]
 	void     TimeoutStop (uint32_t source_id);
-
+	
 	void Properties ();
-
+	
 	// Property getters and setters
 	char *GetInitParams () { return this->initParams; }
 	char *GetSource () { return this->source; }
 	char *GetSourceLocation () { return this->source_location; }
 	char *GetId () { return this->id; }
-
+	
 	void SetSource (const char *value);
-
+	
 	char *GetBackground ();
 	bool SetBackground (const char *value);
 	bool GetEnableFramerateCounter ();
@@ -85,26 +85,26 @@ class PluginInstance
 	bool GetWindowless ();
 	void SetMaxFrameRate (int value);
 	int  GetMaxFrameRate ();
-
+	
 	BrowserBridge *GetBridge () { return bridge; }
-
+	
 	MoonlightScriptControlObject *GetRootObject ();
 	NPP GetInstance ();
 	NPWindow *GetWindow ();
 	Surface *GetSurface () { return surface; }
-
+	
 	int32_t GetActualHeight ();
 	int32_t GetActualWidth ();
-
+	
 	void GetBrowserInformation (char **name, char **version,
 				    char **platform, char **userAgent,
 				    bool *cookieEnabled);
 	bool IsSilverlight2 () { return silverlight2; } 
-
+	
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
-
+	
 	static Downloader *CreateDownloader (PluginInstance *instance);
-
+	
 #if DEBUG
 	struct moon_source : List::Node {
 		char *uri;
@@ -118,7 +118,7 @@ class PluginInstance
 	void AddSource (const char *uri, const char *filename);
 	List *GetSources ();
 #endif
-
+	
  private:
 #if DEBUG
 	List *moon_sources;
@@ -224,7 +224,10 @@ class StreamNotify
 		DOWNLOADER = 2,
 		REQUEST = 3
 	};
-
+	
+	StreamNotifyFlags type;
+	void *pdata;
+	
 	StreamNotify () : type (NONE), pdata (NULL) {};
 	StreamNotify (void *data) : type (NONE), pdata (data) {};
 	StreamNotify (StreamNotifyFlags type) : type (type), pdata (NULL) {};
@@ -239,9 +242,6 @@ class StreamNotify
 		if (type == DOWNLOADER)
 			base_unref ((DependencyObject *) pdata);
 	}
-
-	StreamNotifyFlags type;
-	void *pdata;
 };
 
 class PluginXamlLoader : public XamlLoader
@@ -251,13 +251,12 @@ class PluginXamlLoader : public XamlLoader
 	PluginInstance *plugin;
 	bool initialized;
 	bool xaml_is_managed;
-
+	
 #if SL_2_0
-	Xap *xap;
-
 	gpointer managed_loader;
+	Xap *xap;
 #endif
-public:
+ public:
 	virtual ~PluginXamlLoader ();
 	const char *TryLoad (int *error);
 	
@@ -265,6 +264,7 @@ public:
 	{
 		return new PluginXamlLoader (filename, NULL, plugin, surface);
 	}
+	
 	static PluginXamlLoader *FromStr (const char *str, PluginInstance *plugin, Surface *surface)
 	{
 		return new PluginXamlLoader (NULL, str, plugin, surface);

@@ -1,3 +1,11 @@
+2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (MoonlightCollectionObject::GetProperty): Use
+	collection->GetCount() instead of poking at the internal
+	representation of the data.
+	(MoonlightCollectionObject::Invoke): Need to add/remove/insert/etc
+	items as Values now.
+
 2008-07-23  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp: track DependencyProperty changes.

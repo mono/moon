@@ -941,7 +941,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 }
 
 
-Downloader*
+Downloader *
 PluginInstance::CreateDownloader (PluginInstance *instance)
 {
 	if (instance) {
