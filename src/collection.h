@@ -97,7 +97,7 @@ class DependencyObjectCollection : public Collection {
 
 class DoubleCollection : public Collection {
  protected:
-	virtual ~DoubleCollection ();
+	virtual ~DoubleCollection () {}
 	
  public:
 	DoubleCollection () {}
@@ -115,7 +115,7 @@ class DoubleCollection : public Collection {
 
 class PointCollection : public Collection {
  protected:
-	virtual ~PointCollection ();
+	virtual ~PointCollection () {}
 	
  public:
 	PointCollection () {}
