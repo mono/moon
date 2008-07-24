@@ -1,5 +1,7 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* collection.cpp (collection_add): Fixed.
+
 	* collection.h: Get rid of convenience wrappers that aren't even
 	used. Also removes the need for previous commit.
 

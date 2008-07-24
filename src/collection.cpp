@@ -376,9 +376,9 @@ collection_get_element_type (Collection *collection)
 }
 
 int
-collection_add (Collection *collection, Value value)
+collection_add (Collection *collection, Value *value)
 {
-	return collection->Add (value);
+	return collection->Add (*value);
 }
 
 void 
