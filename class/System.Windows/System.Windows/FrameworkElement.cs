@@ -29,12 +29,11 @@ using Mono;
 
 namespace System.Windows {
 	public abstract class FrameworkElement : UIElement {
-		
-		static FrameworkElement ()
-		{
-			WidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Width", typeof (double));
-			HeightProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Height", typeof (double));
-		}
+		public static readonly DependencyProperty HeightProperty =
+			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Height", typeof (double));
+
+		public static readonly DependencyProperty WidthProperty =
+			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Width", typeof (double));
 		
 		public FrameworkElement () : base (NativeMethods.framework_element_new ())
 		{
@@ -69,15 +68,12 @@ namespace System.Windows {
 		public double Width {
 			get {
 				return (double) GetValue (WidthProperty);
-		}
+			}
 
-		set {
+			set {
 				SetValue (WidthProperty, value);
 			}
 		}
-
-		public static readonly DependencyProperty WidthProperty;
-		public static readonly DependencyProperty HeightProperty;
 		
 		internal override Kind GetKind ()
 		{
