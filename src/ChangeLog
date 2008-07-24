@@ -1,5 +1,7 @@
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (inlines_simple_text_equal): Fixed a stupid typo.
+
 	* collection.cpp (DependencyObjectCollection::RemovedFromCollection):
 	Unregister the NameScope the same way the old Collection::Remove()
 	way did it. This way seems the most correct (RemoveAt() was

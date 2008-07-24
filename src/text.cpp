@@ -670,7 +670,7 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 	
 	for (int i = 0; i < curInlines->GetCount () && i < newInlines->GetCount (); i++) {
 		run1 = curInlines->GetValueAt (i)->AsInline ();
-		run1 = newInlines->GetValueAt (i)->AsInline ();
+		run2 = newInlines->GetValueAt (i)->AsInline ();
 		
 		if (run1->GetObjectType () != run2->GetObjectType ())
 			return false;
