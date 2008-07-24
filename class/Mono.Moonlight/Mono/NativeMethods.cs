@@ -207,37 +207,37 @@ namespace Mono {
 		
 #region Collections
 		[DllImport("moon")]
-		public extern static int collection_add (IntPtr collection, IntPtr value);
-
+		public extern static Kind collection_get_element_type (IntPtr collection);
+		
 		[DllImport("moon")]
-		public extern static bool collection_remove (IntPtr collection, IntPtr value);
-
-		[DllImport("moon")]
-		public extern static bool collection_remove_at (IntPtr collection, int index);
-
-		[DllImport("moon")]
-		public extern static void collection_insert (IntPtr collection, int index, IntPtr value);
-
-		[DllImport("moon")]
-		public extern static void collection_clear (IntPtr collection);
+		public extern static IntPtr collection_get_iterator (IntPtr collection);
 		
 		[DllImport("moon")]
 		public extern static int collection_get_count (IntPtr collection);
 		
 		[DllImport("moon")]
+		public extern static int collection_add (IntPtr collection, IntPtr value);
+		
+		[DllImport("moon")]
+		public extern static void collection_clear (IntPtr collection);
+		
+		[DllImport("moon")]
+		public extern static int collection_index_of (IntPtr collection, IntPtr value);
+		
+		[DllImport("moon")]
+		public extern static void collection_insert (IntPtr collection, int index, IntPtr value);
+		
+		[DllImport("moon")]
+		public extern static bool collection_remove (IntPtr collection, IntPtr value);
+		
+		[DllImport("moon")]
+		public extern static bool collection_remove_at (IntPtr collection, int index);
+		
+		[DllImport("moon")]
 		public extern static IntPtr collection_get_value_at (IntPtr collection, int index);
 		
 		[DllImport("moon")]
-		public extern static IntPtr collection_set_value_at (IntPtr collection, int index, IntPtr value);
-
-		[DllImport("moon")]
-		public extern static int collection_get_index_of (IntPtr collection, IntPtr obj);
-		
-		[DllImport("moon")]
-		public extern static IntPtr collection_get_iterator (IntPtr collection);
-
-		[DllImport("moon")]
-		public extern static Kind collection_get_element_type (IntPtr collection);
+		public extern static void collection_set_value_at (IntPtr collection, int index, IntPtr value);
 		
 		[DllImport("moon")]
 		public extern static int collection_iterator_move_next (IntPtr iterator);
@@ -271,9 +271,6 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static IntPtr path_segment_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr collection_new ();
 		
 		[DllImport("moon")]
 		public extern static IntPtr visual_collection_new ();
