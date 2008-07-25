@@ -26,7 +26,6 @@ Collection::Collection ()
 	array = g_ptr_array_new ();
 	generation = 0;
 	closure = NULL;
-	unique = false;
 }
 
 Collection::~Collection ()
@@ -60,8 +59,8 @@ Collection::Add (Value value)
 	if (!value.Is (GetElementType ()))
 		return -1;
 	
-	// make sure the value isn't already in the collection (if the collection must only hold unique values)
-	if (unique && Contains (value))
+	// Check that the item can be added to our collection
+	if (!CanAdd (value))
 		return -1;
 	
 	added = new Value (value);
@@ -110,6 +109,10 @@ Collection::IndexOf (Value value)
 {
 	Value *v;
 	
+	// make sure value is of the proper type
+	if (!value.Is (GetElementType ()))
+		return -1;
+	
 	for (guint i = 0; i < array->len; i++) {
 		v = (Value *) array->pdata[i];
 		if (*v == value)
@@ -128,7 +131,12 @@ Collection::Insert (int index, Value value)
 	if (!value.Is (GetElementType ()))
 		return false;
 	
+	// bounds check
 	if (index < 0)
+		return false;
+	
+	// Check that the item can be added to our collection
+	if (!CanAdd (value))
 		return false;
 	
 	if (index > GetCount ())
@@ -198,6 +206,10 @@ Collection::SetValueAt (int index, Value value)
 	
 	// check array bounds
 	if (index < 0 || (guint) index >= array->len)
+		return NULL;
+	
+	// Check that the value can be added to our collection
+	if (!CanAdd (value))
 		return NULL;
 	
 	removed = (Value *) array->pdata[index];

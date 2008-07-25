@@ -28,10 +28,10 @@ class Collection : public DependencyObject {
  protected:
 	GPtrArray *array;
 	int generation;
-	bool unique;
 	
 	void EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
 	
+	virtual bool CanAdd (Value value) { return true; }
 	virtual void AddedToCollection (Value *value) {}
 	virtual void RemovedFromCollection (Value *value) {}
 	
@@ -67,18 +67,18 @@ class Collection : public DependencyObject {
 
 class DependencyObjectCollection : public Collection {
  protected:
+	virtual bool CanAdd (Value value) { return value.AsDependencyObject ()->GetLogicalParent () == NULL; }
 	virtual void AddedToCollection (Value *value);
 	virtual void RemovedFromCollection (Value *value);
 	
 	virtual ~DependencyObjectCollection () {}
 	
  public:
-	DependencyObjectCollection () { unique = true; }
+	DependencyObjectCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 	
-	// Convenience wrappers
 	virtual DependencyObject *SetValueAt (int index, DependencyObject *obj);
 	
 	virtual void SetSurface (Surface *surface);
@@ -157,6 +157,7 @@ class ResourceDictionary : public DependencyObjectCollection {
 	
  public:
 	ResourceDictionary () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::RESOURCE_DICTIONARY; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 };

@@ -1,3 +1,32 @@
+2008-07-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* stylus.h (StrokeCollection::CanAdd): Strokes can exist in
+	multiple StrokeCollections at a time but they cannot be added to
+	the same collection multiple times. Do not default to
+	DependencyObjectCollection::CanAdd()'s behavior because it checks
+	that the logical parent is unset (which will not be accurate for
+	strokes).
+	(StylusPointCollection): Same as StrokeCollection.
+
+	* xaml.cpp (dependency_object_add_child): Set the logical parent
+	of items to NULL before adding them to a collection.
+
+	* collection.h (class Collection): Removed 'unique' field, it's
+	not necessary afterall.
+	(Collection::CanAdd): New virtual method to check if the value can
+	be added to the collection (by default always returns true).
+	(DependencyObjectCollection::CanAdd): Override CanAdd() by
+	checking if the object being added has a logical parent. If it
+	already has a parent, it cannot be added (this is how Silverlight
+	behaves).
+
+	* collection.cpp (Collection::Add): There's no such thing as
+	'unique' anymore. Don't check if the value is already contained
+	within our collection like the old code used to do, instead call
+	our new virtual method CanAdd() to see if we can add it.
+	(Collection::Insert): Check CanAdd().
+	(Collection::SetValueAt): Check CanAdd().
+
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* collection.cpp (collection_add): Fixed.

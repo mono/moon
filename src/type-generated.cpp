@@ -100,7 +100,7 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ASSEMBLYPART'", "ASSEMBLYPART", 0, 0, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
-	{ Type::ASSEMBLYPART_COLLECTION, Type::INVALID, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 0, NULL, (create_inst_func *) assembly_part_collection_new, NULL }, 
+	{ Type::ASSEMBLYPART_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 1, NULL, (create_inst_func *) assembly_part_collection_new, NULL }, 
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ASSEMBLYPART_COLLECTION'", "ASSEMBLYPART_COLLECTION", 0, 0, NULL, NULL, NULL }, 
 #endif
@@ -129,7 +129,7 @@ Type type_infos [] = {
 #endif
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 12, NULL, (create_inst_func *) control_new, "Content" }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, NULL, NULL }, 
-	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, NULL, NULL }, 
+	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL }, 
 #if SL_2_0
 	{ Type::DEPLOYMENT, Type::DEPENDENCY_OBJECT, false, "Deployment", "DEPLOYMENT", 0, 1, NULL, (create_inst_func *) deployment_new, NULL }, 
 #else
@@ -140,7 +140,7 @@ Type type_infos [] = {
 	{ Type::DISCRETEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "DiscretePointKeyFrame", "DISCRETEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_point_key_frame_new, NULL }, 
 	{ Type::DOUBLE, Type::INVALID, false, "double", "DOUBLE", 0, 0, NULL, NULL, NULL }, 
 	{ Type::DOUBLE_ARRAY, Type::INVALID, false, "double*", "DOUBLE_ARRAY", 0, 0, NULL, NULL, NULL }, 
-	{ Type::DOUBLE_COLLECTION, Type::COLLECTION, false, "DoubleCollection", "DOUBLE_COLLECTION", 0, 1, NULL, NULL, NULL }, 
+	{ Type::DOUBLE_COLLECTION, Type::COLLECTION, false, "DoubleCollection", "DOUBLE_COLLECTION", 0, 1, NULL, (create_inst_func *) double_collection_new, NULL }, 
 	{ Type::DOUBLEANIMATION, Type::ANIMATION, false, "DoubleAnimation", "DOUBLEANIMATION", 0, 1, NULL, (create_inst_func *) double_animation_new, NULL }, 
 	{ Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION, false, "DoubleAnimationUsingKeyFrames", "DOUBLEANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) double_animation_using_key_frames_new, "KeyFrames" }, 
 	{ Type::DOUBLEKEYFRAME, Type::KEYFRAME, false, "DoubleKeyFrame", "DOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) double_key_frame_new, NULL }, 
@@ -212,7 +212,7 @@ Type type_infos [] = {
 	{ Type::PATHSEGMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathSegmentCollection", "PATHSEGMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) path_segment_collection_new, NULL }, 
 	{ Type::POINT, Type::INVALID, false, "Point", "POINT", 0, 0, NULL, NULL, NULL }, 
 	{ Type::POINT_ARRAY, Type::INVALID, false, "Point*", "POINT_ARRAY", 0, 0, NULL, NULL, NULL }, 
-	{ Type::POINT_COLLECTION, Type::COLLECTION, false, "PointCollection", "POINT_COLLECTION", 0, 1, NULL, NULL, NULL }, 
+	{ Type::POINT_COLLECTION, Type::COLLECTION, false, "PointCollection", "POINT_COLLECTION", 0, 1, NULL, (create_inst_func *) point_collection_new, NULL }, 
 	{ Type::POINTANIMATION, Type::ANIMATION, false, "PointAnimation", "POINTANIMATION", 0, 1, NULL, (create_inst_func *) point_animation_new, NULL }, 
 	{ Type::POINTANIMATIONUSINGKEYFRAMES, Type::POINTANIMATION, false, "PointAnimationUsingKeyFrames", "POINTANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) point_animation_using_key_frames_new, "KeyFrames" }, 
 	{ Type::POINTKEYFRAME, Type::KEYFRAME, false, "PointKeyFrame", "POINTKEYFRAME", 0, 1, NULL, (create_inst_func *) point_key_frame_new, NULL }, 

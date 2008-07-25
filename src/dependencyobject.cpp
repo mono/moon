@@ -1168,8 +1168,8 @@ free_value (gpointer key, gpointer value, gpointer data)
 DependencyObject::DependencyObject ()
 {
 	current_values = g_hash_table_new (g_direct_hash, g_direct_equal);
-	this->listener_list = NULL;
-	this->logical_parent = NULL;
+	listener_list = NULL;
+	logical_parent = NULL;
 }
 
 static void

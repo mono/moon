@@ -68,6 +68,11 @@ double	stylus_point_get_pressure_factor (StylusPoint *stylus_point);
 void	stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure);
 
 class StylusPointCollection : public DependencyObjectCollection {
+ protected:
+	virtual bool CanAdd (Value value) { return !Contains (value); }
+	
+	virtual ~StylusPointCollection () {}
+	
  public:
 	StylusPointCollection () {}
 	
@@ -156,13 +161,15 @@ bool                   stroke_hit_test (Stroke *stroke, StylusPointCollection *s
 
 class StrokeCollection : public DependencyObjectCollection {
  protected:
+	virtual bool CanAdd (Value value) { return !Contains (value); }
+	
 	virtual ~StrokeCollection () {}
-
+	
  public:
 	StrokeCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STROKE; }
-
+	
 	Rect GetBounds ();
 	StrokeCollection *HitTest (StylusPointCollection *stylusPoints);
 };

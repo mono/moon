@@ -2670,7 +2670,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			return;
 
 		Type *col_type = Type::Find (dep->GetPropertyType());
-		if (!col_type->IsSubclassOf (Type::COLLECTION))
+		if (!col_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION))
 			return;
 
 		// Most common case, we will have a parent that we can snag the collection from
@@ -2687,14 +2687,18 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		} else {
 			col = (Collection *) col_v->AsCollection ();
 		}
-
+		
+		((DependencyObject *) child->item)->SetLogicalParent (NULL);
+		
 		col->Add ((DependencyObject*)child->item);
 		return;
 	}
 
-	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::COLLECTION)) {
+	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
 		Collection *col = (Collection *) parent->item;
-
+		
+		((DependencyObject *) child->item)->SetLogicalParent (NULL);
+		
 		col->Add ((DependencyObject *) child->item);
 		return;
 	}
@@ -2707,13 +2711,12 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			return;
 
 		Type *prop_type = Type::Find (dep->GetPropertyType());
-		bool is_collection = prop_type->IsSubclassOf (Type::COLLECTION);
+		bool is_collection = prop_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION);
 
 		if (!is_collection && Type::Find (child->info->GetKind ())->IsSubclassOf (dep->GetPropertyType())) {
 			DependencyObject *obj = (DependencyObject *) parent->item;
 			obj->SetValue (dep, (DependencyObject *) child->item);
 			return;
-
 		}
 
 		// We only want to enter this if statement if we are NOT dealing with the content property element,
@@ -2731,7 +2734,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			} else {
 				col = (Collection *) col_v->AsCollection ();
 			}
-
+			
+			((DependencyObject *) child->item)->SetLogicalParent (NULL);
+			
 			col->Add ((DependencyObject *) child->item);
 			return;
 		}
