@@ -147,9 +147,11 @@ runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual)
 	return cr;
 }
 
-Surface::Surface(MoonWindow *window)
+Surface::Surface (MoonWindow *window, bool silverlight2)
 {
 	main_thread = pthread_self ();
+
+	this->silverlight2 = silverlight2;
 
 	zombie = false;
 	downloader_context = NULL;
@@ -1770,9 +1772,9 @@ Surface::HandleUIWindowDestroyed (MoonWindow *window)
 }
 
 Surface *
-surface_new (MoonWindow *window)
+surface_new (MoonWindow *window, bool silverlight2)
 {
-	return new Surface (window);
+	return new Surface (window, silverlight2);
 }
 
 void 

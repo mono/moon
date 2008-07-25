@@ -1,3 +1,8 @@
+2008-07-25  Chris Toshok  <toshok@ximian.com>
+
+	* mopen1.cpp (LoadXaml): pass false to the Surface ctor, and use
+	ctors instead of the *_new functions.
+
 2008-07-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mopen.cs: Updated.

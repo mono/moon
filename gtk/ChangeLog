@@ -1,3 +1,9 @@
+2008-07-25  Chris Toshok  <toshok@ximian.com>
+
+	* gtk.cs: pass "true" for silverlight2 in surface_new.  this might
+	not be totally correct (people might want 1.0 apps in gtksilver),
+	but I bet it'll serve.
+
 2008-07-18  Chris Toshok  <toshok@ximian.com>
 
 	* gtk.cs: create a MoonWindowGtk and pass that to surface_new.

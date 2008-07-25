@@ -679,7 +679,7 @@ namespace Mono {
 		public extern static void surface_paint (IntPtr surface, IntPtr ctx, int x, int y, int width, int height);
 		
 		[DllImport ("moon")]
-		public extern static IntPtr surface_new (IntPtr window);
+		public extern static IntPtr surface_new (IntPtr window, bool silverlight2);
 
 		[DllImport ("moon")]
 		public extern static void surface_set_trans (IntPtr surface, bool trans);

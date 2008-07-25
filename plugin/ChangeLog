@@ -1,3 +1,11 @@
+2008-07-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h, plugin-class.cpp: add a flags field to the
+	mapping, so we can start to differentiate the 1.0 and 2.0 JS apis.
+
+	* plugin.cpp (PluginInstance::CreateWindow): pass silverlight2 to
+	the Surface ctor.
+
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightCollectionObject::GetProperty): Use

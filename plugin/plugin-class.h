@@ -29,9 +29,13 @@ void string_to_npvariant (const char *value, NPVariant *result);
 
 G_END_DECLS
 
+#define MAPPING_FLAG_SL1 0x01
+#define MAPPING_FLAG_SL2 0x02
+
 struct MoonNameIdMapping {
 	const char *name;
 	int id;
+	int flags; // 0 means both SL 1 & 2.  if either FLAG above is set alone, it means that release only.
 };
 
 /*** EventListenerProxy */
@@ -85,7 +89,7 @@ struct MoonlightObjectType : NPClass {
 
 	bool Enumerate (NPIdentifier **value, uint32_t *count);
 
-	int LookupName (NPIdentifier name);
+	int LookupName (NPIdentifier name, bool include_silverlight2);
 
 	MoonNameIdMapping *mapping;
 	int mapping_count;
@@ -114,7 +118,7 @@ struct MoonlightObject : NPObject {
 	virtual bool HasMethod (NPIdentifier unmapped);
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
-	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name); }
+	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name, ((PluginInstance*)instance->pdata)->IsSilverlight2()); }
 	
 	EventListenerProxy *LookupEventProxy (int event_id);
 	void SetEventProxy (int event_id, EventListenerProxy* proxy);

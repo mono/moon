@@ -80,104 +80,8 @@ typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *us
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 
 class Surface : public EventObject {
-	// are we headed for death?
-	bool zombie;
-	
-	// bad, but these two live in dirty.cpp, not runtime.cpp
-	void ProcessDownDirtyElements ();
-	void ProcessUpDirtyElements ();
-	
-	List *down_dirty;
-	List *up_dirty;
-	
-	gpointer downloader_context;
-	List *downloaders;
-	void DetachDownloaders ();
-	static void OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure);
-	
-	bool transparent;
-	Color *background_color;
-	
-	// This is the normal-sized window
-	MoonWindow *normal_window;
-	
-	// We set active_window to this whenever we are in fullscreen mode.
-	MoonWindow *fullscreen_window;
-	
-	// This currently can only be a canvas.
-	UIElement *toplevel;
-	
-	// the list of elements (from most deeply nested to the
-	// toplevel) we've most recently sent a mouse event to.
-	List *input_list;
-	
-	// is the mouse captured?  if it is, it'll be by the first element in input_list.
-	bool captured;
-	UIElement *pendingCapture;
-	bool pendingReleaseCapture;
-	
-	// are we currently emitting a mouse event?
-	bool emittingMouseEvent;
-	
-	// the currently shown cursor
-	MouseCursor cursor;
-	
-	// Fullscreen support
-	bool full_screen;
-	Canvas *full_screen_message;
-	char *source_location;
-	// Should be set to true only while executing MouseLeftButtonDown, 
-	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
-	bool can_full_screen; 
-	
-	void UpdateFullScreen (bool value);
-	
-	TimeManager *time_manager;
-	
-	int frames;
-	
-	GdkEvent *mouse_event;
-	
-	// Variables for reporting FPS
-	MoonlightFPSReportFunc fps_report;
-	gint64 fps_start;
-	int fps_nframes;
-	void *fps_data;
-	
-	// Variables for reporting cache size
-	MoonlightCacheReportFunc cache_report;
-	gint64 cache_size_in_bytes;
-	int cache_size_ticker;
-	void *cache_data;
-	int cache_size_multiplier;
-	
-	void Realloc ();
-	void ShowFullScreenMessage ();
-	void HideFullScreenMessage ();
-	
-	void CreateSimilarSurface ();
-	
-	static Key gdk_keyval_to_key (guint keyval);
-	
-	static void render_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void widget_destroyed (GtkWidget *w, gpointer data);
-	
-	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
-	bool EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx);
-	void UpdateCursorFromInputList ();
-	bool HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event);
-	void PerformCapture (UIElement *capture);
-	void PerformReleaseCapture ();
-	
- protected:
-	// The current window we are drawing to
-	MoonWindow *active_window;
-	
-	virtual ~Surface();
-
- public:
-	Surface (MoonWindow *window);
+public:
+	Surface (MoonWindow *window, bool silverlight2);
 
 	MoonWindow* GetWindow () { return active_window; }
 
@@ -281,6 +185,106 @@ class Surface : public EventObject {
 
 	static pthread_t main_thread;
 	static bool InMainThread () { return pthread_equal (main_thread, pthread_self ()); }
+
+protected:
+	// The current window we are drawing to
+	MoonWindow *active_window;
+	
+	virtual ~Surface();
+
+private:
+	// are we being run in a silverlight2 context?
+	bool silverlight2;
+
+	// are we headed for death?
+	bool zombie;
+	
+	// bad, but these two live in dirty.cpp, not runtime.cpp
+	void ProcessDownDirtyElements ();
+	void ProcessUpDirtyElements ();
+	
+	List *down_dirty;
+	List *up_dirty;
+	
+	gpointer downloader_context;
+	List *downloaders;
+	void DetachDownloaders ();
+	static void OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure);
+	
+	bool transparent;
+	Color *background_color;
+	
+	// This is the normal-sized window
+	MoonWindow *normal_window;
+	
+	// We set active_window to this whenever we are in fullscreen mode.
+	MoonWindow *fullscreen_window;
+	
+	// This currently can only be a canvas.
+	UIElement *toplevel;
+
+	// the list of elements (from most deeply nested to the
+	// toplevel) we've most recently sent a mouse event to.
+	List *input_list;
+	
+	// is the mouse captured?  if it is, it'll be by the first element in input_list.
+	bool captured;
+	UIElement *pendingCapture;
+	bool pendingReleaseCapture;
+	
+	// are we currently emitting a mouse event?
+	bool emittingMouseEvent;
+	
+	// the currently shown cursor
+	MouseCursor cursor;
+	
+	// Fullscreen support
+	bool full_screen;
+	Canvas *full_screen_message;
+	char *source_location;
+	// Should be set to true only while executing MouseLeftButtonDown, 
+	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
+	bool can_full_screen; 
+	
+	void UpdateFullScreen (bool value);
+	
+	TimeManager *time_manager;
+	
+	int frames;
+	
+	GdkEvent *mouse_event;
+	
+	// Variables for reporting FPS
+	MoonlightFPSReportFunc fps_report;
+	gint64 fps_start;
+	int fps_nframes;
+	void *fps_data;
+	
+	// Variables for reporting cache size
+	MoonlightCacheReportFunc cache_report;
+	gint64 cache_size_in_bytes;
+	int cache_size_ticker;
+	void *cache_data;
+	int cache_size_multiplier;
+	
+	void Realloc ();
+	void ShowFullScreenMessage ();
+	void HideFullScreenMessage ();
+	
+	void CreateSimilarSurface ();
+	
+	static Key gdk_keyval_to_key (guint keyval);
+	
+	static void render_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void widget_destroyed (GtkWidget *w, gpointer data);
+	
+	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
+	bool EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx);
+	void UpdateCursorFromInputList ();
+	bool HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event);
+	void PerformCapture (UIElement *capture);
+	void PerformReleaseCapture ();
 };
 
 /* for hit testing */
@@ -309,7 +313,7 @@ class RenderNode : public List::Node {
 };
 
 
-Surface *surface_new       (MoonWindow *window);
+Surface *surface_new       (MoonWindow *window, bool silverlight2);
 void     surface_resize    (Surface *s, int width, int height);
 void     surface_attach    (Surface *s, UIElement *element);
 void     surface_init      (Surface *s, int width, int height);

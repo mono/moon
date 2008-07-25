@@ -317,7 +317,7 @@ compare_mapping (const void *m1, const void *m2)
 }
 
 static int
-map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count)
+map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count, bool include_silverlight2)
 {
 	char *strname = npidentifier_to_downstr (name);
 	if (!strname)
@@ -331,7 +331,21 @@ map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count)
 
 
 	NPN_MemFree (strname);
-	return result ? result->id : NoMapping;
+	if (!result)
+		return NoMapping;
+
+	if (result->flags != 0) {
+		if (include_silverlight2) {
+			if ((result->flags & MAPPING_FLAG_SL2) == 0)
+				return NoMapping;
+		}
+		else {
+			if ((result->flags & MAPPING_FLAG_SL1) == 0)
+				return NoMapping;
+		}
+	}
+
+	return result->id;
 }
 
 static const char *
@@ -1705,12 +1719,12 @@ MoonlightObjectType::AddMapping (const MoonNameIdMapping *mapping, int count)
 }
 
 int
-MoonlightObjectType::LookupName (NPIdentifier name)
+MoonlightObjectType::LookupName (NPIdentifier name, bool include_silverlight2)
 {
 	if (last_lookup == name)
 		return last_id;
 	
-	int id = map_name_to_id (name, mapping, mapping_count);
+	int id = map_name_to_id (name, mapping, mapping_count, include_silverlight2);
 	
 	if (id) {
 		/* only cache hits */

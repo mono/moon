@@ -1,3 +1,8 @@
+2008-07-25  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: add "bool silverlight2" parameter to
+	surface_new.
+
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* NativeMethods.cs: Added more collection ctor bindings.

@@ -760,7 +760,7 @@ PluginInstance::CreateWindow ()
 		moon_window = new MoonWindowGtk (false, window->width, window->height);
 	}
 
-	surface = new Surface (moon_window);
+	surface = new Surface (moon_window, silverlight2);
 	moon_window->SetSurface (surface);
 
 	if (windowless)
