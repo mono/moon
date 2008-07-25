@@ -35,17 +35,36 @@ function OnLoaded (sender, eventArgs)
 	var image = content.createFromXaml (xaml);
 	
 	// add the image to canvas1
-	index = canvas1.children.add (image);
-	Log (content, log, "canvas1.children.add (image) => " + index);
+	try {
+		index = canvas1.children.add (image);
+		Log (content, log, "canvas1.children.add (image) => PASS");
+	} catch (err) {
+		Log (content, log, "canvas1.children.add (image) => FAIL");
+	}
 	
-	// try adding it to canvas1 again (should fail?)
-	canvas1.children.insert (1, image);
-	count = canvas1.children.count;
-	Log (content, log, "canvas1.children.insert (1, image) => worked");
+	// try adding it to canvas1 again (should fail)
+	try {
+		index = canvas1.children.add (image);
+		Log (content, log, "canvas1.children.add (image) => FAIL");
+	} catch (err) {
+		Log (content, log, "canvas1.children.add (image) => PASS");
+	}
 	
-	// try adding it to canvas2
-	index = canvas2.children.add (image);
-	Log (content, log, "canvas2.children.add (image) => " + index);
+	// try inserting it into canvas1 again (should fail)
+	try {
+		index = canvas1.children.insert (0, image);
+		Log (content, log, "canvas1.children.insert (0, image) => FAIL");
+	} catch (err) {
+		Log (content, log, "canvas1.children.insert (0, image) => PASS");
+	}
+	
+	// try adding it to canvas2 (should fail)
+	try {
+		index = canvas2.children.add (image);
+		Log (content, log, "canvas2.children.add (image) => FAIL");
+	} catch (err) {
+		Log (content, log, "canvas2.children.add (image) => PASS");
+	}
 }
 </script>
 
