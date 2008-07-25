@@ -902,4 +902,12 @@
 	 categories="parser"
 	 expectedError="ParserError"
    />
+   <Test id="201"
+	 inputFile="assorted/test-collections.html"
+	 masterFile10="None"
+	 />
+   <Test id="202"
+	 inputFile="assorted/test-stroke-collection.html"
+	 masterFile10="None"
+	 />
 </DRTList>
