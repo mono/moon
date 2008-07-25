@@ -1,0 +1,83 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>StrokeCollections test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+// StrokeCollections differ from other DependencyObjectCollections in
+// that the same Stroke can exist in multiple StrokeCollections at the
+// same time.
+
+function Log (content, textblock, message)
+{
+	var run = content.createFromXaml ("<Run/>");
+	run.text = message;
+	
+	if (textblock.inlines == null) {
+		textblock.text = "";
+	}
+	
+	textblock.inlines.add (run);
+	run = content.createFromXaml ("<LineBreak/>");
+	textblock.inlines.add (run);
+}
+
+function OnLoaded (sender, eventArgs)
+{
+	var control = document.getElementById ("agControl");
+	var content = control.content;
+	
+	var stroke = content.createFromXaml ("<Stroke/>");
+	var ink1 = content.findName ("ink1");
+	var ink2 = content.findName ("ink2");
+	var log = content.findName ("log");
+	
+	// add the stroke to ink1
+	try {
+		index = ink1.strokes.add (stroke);
+		Log (content, log, "ink1.strokes.add (stroke) => PASS");
+	} catch (err) {
+		Log (content, log, "ink1.strokes.add (stroke) => FAIL");
+	}
+	
+	// try adding it to ink1 again (should fail)
+	try {
+		index = ink1.strokes.add (stroke);
+		Log (content, log, "ink1.strokes.add (stroke) => FAIL");
+	} catch (err) {
+		Log (content, log, "ink1.strokes.add (stroke) => PASS");
+	}
+	
+	// try adding it to ink2
+	try {
+		index = ink2.strokes.add (stroke);
+		Log (content, log, "ink2.strokes.add (stroke) => PASS");
+	} catch (err) {
+		Log (content, log, "ink2.strokes.add (stroke) => FAIL");
+	}
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="agControl" width="100%" height="100%">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Loaded="OnLoaded">
+
+  <InkPresenter x:Name="ink1" Canvas.Left="5" Canvas.Top="5" Width="400" Height="195"/>
+
+  <InkPresenter x:Name="ink2" Canvas.Left="5" Canvas.Top="205" Width="400" Height="195"/>
+
+  <TextBlock x:Name="log" Canvas.Left="5" Canvas.Top="400" Width="400" TextWrapping="WrapWithOverflow"/>
+</Canvas>
+</script>
+
+</body>
+</html>
