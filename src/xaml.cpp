@@ -70,6 +70,8 @@ class XamlElementInfoNative;
 class XamlElementInstanceNative;
 class XamlElementInfoManaged;
 class XamlElementInstanceManaged;
+class XamlElementInfoImportedManaged;
+class XamlElementInstanceImportedManaged;
 
 		
 
@@ -92,7 +94,7 @@ void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *i
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
 XamlElementInstance* create_toplevel_property_element_instance (XamlParserInfo *p, const char *name);
-XamlElementInfo* create_element_info_from_managed_type (XamlParserInfo *p, const char *name);
+XamlElementInfo* create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
 static XamlElementInstance *wrap_type (XamlParserInfo *p, Type *t);
 static Type *get_type_for_property_name (const char* prop_name);
 
@@ -263,7 +265,7 @@ class XamlElementInfo {
 
 	virtual Type::Kind GetKind () { return kind; }
 
-	virtual const char* GetContentProperty () = 0;
+	virtual const char* GetContentProperty (XamlParserInfo *p) = 0;
 	virtual XamlElementInstance* CreateElementInstance (XamlParserInfo *p) = 0;
 	virtual XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o) = 0;
 	virtual XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
@@ -290,7 +292,7 @@ class XamlElementInfoNative : public XamlElementInfo {
 		return type->name;
 	}
 
-	const char* GetContentProperty ();
+	const char* GetContentProperty (XamlParserInfo *p);
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
 	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
@@ -337,7 +339,7 @@ class DefaultNamespace : public XamlNamespace {
 		if (t)
 			return new XamlElementInfoNative (t);
 
-		XamlElementInfo* managed_element = create_element_info_from_managed_type (p, el);
+		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el);
 		if (managed_element)
 			return managed_element;
 
@@ -441,7 +443,7 @@ class XamlElementInfoManaged : public XamlElementInfo {
 		this->dependency_object = dob;
 	}
 
-	const char* GetContentProperty () { return NULL; }
+	const char* GetContentProperty (XamlParserInfo *p) { return NULL; }
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
 	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
@@ -452,6 +454,33 @@ class XamlElementInfoManaged : public XamlElementInfo {
 class XamlElementInstanceManaged : public XamlElementInstance {
  public:
 	XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob);
+
+	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
+	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
+};
+
+
+class XamlElementInfoImportedManaged : public XamlElementInfo {
+	DependencyObject *dependency_object;
+	
+ public:
+	XamlElementInfoImportedManaged (const char *name, XamlElementInfo *parent, Type::Kind dependency_type, DependencyObject *dob) : XamlElementInfo (name, dependency_type)
+	{
+		this->dependency_object = dob;
+	}
+
+	const char* GetContentProperty (XamlParserInfo *p);
+
+	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
+	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
+	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
+};
+
+
+class XamlElementInstanceImportedManaged : public XamlElementInstance {
+ public:
+	XamlElementInstanceImportedManaged (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob);
 
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
@@ -544,6 +573,24 @@ XamlLoader::CreateManagedObject (const char* asm_name, const char* asm_path, con
 		return callbacks.load_managed_object (asm_name, asm_path, name, type_name);
 	}
 		
+	return NULL;
+}
+
+DependencyObject *
+XamlLoader::CreateComponentFromName (const char* name)
+{
+	if (callbacks.create_component_from_name) {
+		return callbacks.create_component_from_name (name);
+	}
+	return NULL;
+}
+
+const char *
+XamlLoader::GetContentPropertyName (DependencyObject *dob)
+{
+	if (callbacks.get_content_property_name) {
+		return callbacks.get_content_property_name (dob);
+	}
 	return NULL;
 }
 
@@ -911,7 +958,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		return;
 
 	if (p->current_element->info && p->current_element->element_type == XamlElementInstance::ELEMENT)
-		prop_name = p->current_element->info->GetContentProperty ();
+		prop_name = p->current_element->info->GetContentProperty (p);
 
 	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
@@ -2442,17 +2489,17 @@ create_toplevel_property_element_instance (XamlParserInfo *p, const char *name)
 }
 
 XamlElementInfo *
-create_element_info_from_managed_type (XamlParserInfo *p, const char *name)
+create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name)
 {
 	if (!p->loader)
 		return NULL;
 
-	DependencyObject *obj = p->loader->CreateManagedObject (NULL, name);
+	DependencyObject *obj = p->loader->CreateComponentFromName (name);
 	if (!obj) {
 		return NULL;
 	}
 
-	XamlElementInfoManaged *info = new  XamlElementInfoManaged (name, NULL, obj->GetObjectType (), obj);
+	XamlElementInfoImportedManaged *info = new  XamlElementInfoImportedManaged (name, NULL, obj->GetObjectType (), obj);
 	obj->SetSurface (p->loader->GetSurface ());
 
 	return info;
@@ -2467,7 +2514,7 @@ wrap_type (XamlParserInfo *p, Type *t)
 }
 
 const char *
-XamlElementInfoNative::GetContentProperty ()
+XamlElementInfoNative::GetContentProperty (XamlParserInfo *p)
 {
 	return type->GetContentPropertyName ();
 }
@@ -2528,9 +2575,9 @@ XamlElementInstanceNative::CreateItem ()
 			dep = DependencyProperty::GetDependencyProperty (walk->info->GetKind (), prop_name [1]);
 
 			g_strfreev (prop_name);
-		} else if (walk && walk->info->GetContentProperty ()) {
+		} else if (walk && walk->info->GetContentProperty (parser_info)) {
 			dep = DependencyProperty::GetDependencyProperty (walk->info->GetKind (),
-					(char *) walk->info->GetContentProperty ());			
+					(char *) walk->info->GetContentProperty (parser_info));			
 		}
 
 		if (dep && Type::Find (dep->GetPropertyType())->IsSubclassOf (type->type)) {
@@ -2620,7 +2667,6 @@ XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, c
 	this->item = dob;
 };
 
-
 void
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
@@ -2635,6 +2681,77 @@ XamlElementInstanceManaged::AddChild (XamlParserInfo *p, XamlElementInstance *ch
 
 void
 XamlElementInstanceManaged::SetAttributes (XamlParserInfo *p, const char **attr)
+{
+	dependency_object_set_attributes (p, this, attr);
+}
+
+XamlElementInstance *
+XamlElementInfoImportedManaged::CreateElementInstance (XamlParserInfo *p)
+{
+	XamlElementInstanceImportedManaged *inst = new XamlElementInstanceImportedManaged (this, dependency_object->GetTypeName (), XamlElementInstance::ELEMENT, dependency_object);
+
+	if (p->loader)
+        	inst->item->SetSurface (p->loader->GetSurface ());
+	p->AddCreatedElement (inst->item);
+
+	return inst;
+}
+
+const char *
+XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
+{
+	if (!p->loader)
+		return NULL;
+
+	// TODO: We could cache this, but for now lets keep things as simple as possible.
+	return p->loader->GetContentPropertyName (dependency_object);
+}
+
+XamlElementInstance *
+XamlElementInfoImportedManaged::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+{
+	XamlElementInstanceImportedManaged *inst = new XamlElementInstanceImportedManaged (this, o->GetTypeName (), XamlElementInstance::ELEMENT, o);
+
+	if (p->loader)
+        	inst->item->SetSurface (p->loader->GetSurface ());
+	p->AddCreatedElement (inst->item);
+
+	return inst;
+}
+
+XamlElementInstance *
+XamlElementInfoImportedManaged::CreatePropertyElementInstance (XamlParserInfo *p, const char *name)
+{
+	XamlElementInstanceImportedManaged *inst = new XamlElementInstanceImportedManaged (this, name, XamlElementInstance::PROPERTY, dependency_object);
+
+	if (p->loader)
+        	inst->item->SetSurface (p->loader->GetSurface ());
+	p->AddCreatedElement (inst->item);
+
+	return inst;
+}
+
+XamlElementInstanceImportedManaged::XamlElementInstanceImportedManaged (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob) :
+	XamlElementInstance (info, name, type)
+{
+	this->item = dob;
+};
+
+
+void
+XamlElementInstanceImportedManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
+{
+	dependency_object_set_property (p, this, property, value);
+}
+
+void
+XamlElementInstanceImportedManaged::AddChild (XamlParserInfo *p, XamlElementInstance *child)
+{
+	dependency_object_add_child (p, this, child);
+}
+
+void
+XamlElementInstanceImportedManaged::SetAttributes (XamlParserInfo *p, const char **attr)
 {
 	dependency_object_set_attributes (p, this, attr);
 }
@@ -2703,9 +2820,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		return;
 	}
 
-	if (parent->info->GetContentProperty ()) {
+	if (parent->info->GetContentProperty (p)) {
 		DependencyProperty *dep = DependencyProperty::GetDependencyProperty (parent->info->GetKind (),
-				(char *) parent->info->GetContentProperty ());
+				(char *) parent->info->GetContentProperty (p));
 
 		if (!dep)
 			return;

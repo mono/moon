@@ -1,3 +1,7 @@
+2008-07-26  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.h|cpp: Create elements for imported managed namespaces.
+	
 2008-07-25  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp: reformat the class decl to put public:
