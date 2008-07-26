@@ -157,6 +157,16 @@ enum Key {
 	KeyUNKNOWN = 255
 };
 
+// 2.0-only property for Keyboard class.
+enum ModifierKey {
+	ModifierKeyNone     = 0,
+	ModifierKeyAlt      = (1 << 0),
+	ModifierKeyControl  = (1 << 1),
+	ModifierKeyShift    = (1 << 2),
+	ModifierKeyWindows  = (1 << 3),
+	ModifierKeyApple    = (1 << 3)
+};
+
 G_BEGIN_DECLS
 
 int		enums_str_to_int (const char *prop_name, const char *str);

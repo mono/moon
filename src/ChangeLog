@@ -1,3 +1,8 @@
+2008-07-26  Chris Toshok  <toshok@ximian.com>
+
+	* enums.h (enum ModifierKey): 2.0 specific enum for use by the
+	Keyboard class.
+
 2008-07-26  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: If there isn't a managed content property, try looking
