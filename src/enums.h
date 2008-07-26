@@ -158,7 +158,7 @@ enum Key {
 };
 
 // 2.0-only property for Keyboard class.
-enum ModifierKey {
+enum ModifierKeys {
 	ModifierKeyNone     = 0,
 	ModifierKeyAlt      = (1 << 0),
 	ModifierKeyControl  = (1 << 1),
