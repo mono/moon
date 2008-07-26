@@ -42,6 +42,7 @@ namespace Mono.Xaml
 	public delegate void SetNameAttributeCallback (IntPtr target, string name);
 	public delegate void ImportXamlNamespaceCallback (string xmlns);
 	public delegate IntPtr CreateComponentFromNameCallback (string name);
+	public delegate string GetContentPropertyNameCallback (IntPtr dob);
 	
 	public struct XamlLoaderCallbacks {
 		public LoadObjectCallback load_managed_object;
@@ -53,6 +54,7 @@ namespace Mono.Xaml
 		public SetNameAttributeCallback set_name_attribute;
 		public ImportXamlNamespaceCallback import_xaml_xmlns;
 		public CreateComponentFromNameCallback create_component_from_name;
+		public GetContentPropertyNameCallback get_content_property_name;
 	}
 
 	public enum AssemblyLoadResult
