@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Markup;
 using Mono;
 
 namespace Mono.Xaml
@@ -81,6 +82,7 @@ namespace Mono.Xaml
 			callbacks.set_name_attribute = new SetNameAttributeCallback (cb_set_name_attribute);
 			callbacks.import_xaml_xmlns = new ImportXamlNamespaceCallback (cb_import_xaml_xmlns);
 			callbacks.create_component_from_name = new CreateComponentFromNameCallback (cb_create_component_from_name);
+			callbacks.get_content_property_name = new GetContentPropertyNameCallback (cb_get_content_property_name);
 
 			NativeMethods.xaml_loader_set_callbacks (native_loader, callbacks);
 			
@@ -671,6 +673,21 @@ namespace Mono.Xaml
 				Console.WriteLine ("Application::CreateComponentFromName ({0}) threw an exception:\n{1}", name, ex);
 				return IntPtr.Zero;
 			}
+		}
+
+		private string cb_get_content_property_name (IntPtr dob_ptr)
+		{
+			DependencyObject dob = DependencyObject.Lookup (dob_ptr);
+			if (dob == null)
+				return null;
+
+			Type t = dob.GetType ();
+			object [] o = t.GetCustomAttributes (typeof (ContentPropertyAttribute), true);
+			if (o.Length == 0)
+				return null;
+			ContentPropertyAttribute cpa = (ContentPropertyAttribute ) o [0];
+
+			return cpa.Name;
 		}
 
 #endregion
