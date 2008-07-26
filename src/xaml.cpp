@@ -264,8 +264,8 @@ class XamlElementInfo {
 	}
 
 	virtual Type::Kind GetKind () { return kind; }
+	virtual const char* GetContentProperty (XamlParserInfo *p) { return Type::Find (kind)->GetContentPropertyName (); }
 
-	virtual const char* GetContentProperty (XamlParserInfo *p) = 0;
 	virtual XamlElementInstance* CreateElementInstance (XamlParserInfo *p) = 0;
 	virtual XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o) = 0;
 	virtual XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
@@ -2704,7 +2704,10 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 		return NULL;
 
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	return p->loader->GetContentPropertyName (dependency_object);
+	const char *res = p->loader->GetContentPropertyName (dependency_object);
+	if (res)
+		return res;
+	return XamlElementInfo::GetContentProperty (p);
 }
 
 XamlElementInstance *

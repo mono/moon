@@ -1,5 +1,10 @@
 2008-07-26  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: If there isn't a managed content property, try looking
+	for an unmanaged one.
+
+2008-07-26  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.h|cpp: Create elements for imported managed namespaces.
 	
 2008-07-25  Chris Toshok  <toshok@ximian.com>
