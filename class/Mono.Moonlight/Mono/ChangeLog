@@ -1,5 +1,8 @@
 2008-07-26  Chris Toshok  <toshok@ximian.com>
 
+	* NativeMethods.cs: add new native methods for RoutedEventArgs,
+	KeyEventArgs, MouseEventArgs, Keyboard
+
 	* Kind.cs: sync - add ROUTEDEVENTARGS.
 
 2008-07-26  Jackson Harper  <jackson@ximian.com>
