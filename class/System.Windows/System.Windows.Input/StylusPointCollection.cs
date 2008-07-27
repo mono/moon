@@ -23,6 +23,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Security;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
@@ -44,6 +45,44 @@ namespace System.Windows.Input
 		internal override Kind GetKind ()
 		{
 			return Kind.STYLUSPOINT_COLLECTION;
+		}
+
+		public override bool Contains (StylusPoint point)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (StylusPoint point)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (StylusPoint point)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (StylusPoint point)
+		{
+			throw new NotImplementedException ();
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void Add (StylusPointCollection points)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, StylusPoint point)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override StylusPoint this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
 		}
 	}
 }
