@@ -1,3 +1,7 @@
+2008-07-26  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: KeyboardEventArgs -> KeyEventArgs.
+
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* PresentationFrameworkCollection.cs: Fixed to build, altho this

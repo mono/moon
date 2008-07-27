@@ -84,6 +84,7 @@ enum PluginPropertyId {
 	MoonId_ResponseText,
 	MoonId_DeviceType,
 	MoonId_IsInverted,
+	MoonId_Handled,
 
 	// event names (handled by the property setters)
 	MoonId_BufferingProgressChanged,
@@ -509,6 +510,7 @@ enum DependencyObjectClassNames {
 	STROKE_CLASS,
 	TEXT_BLOCK_CLASS,
 	EVENT_ARGS_CLASS,
+	ROUTED_EVENT_ARGS_CLASS,
 	ERROR_EVENT_ARGS_CLASS,
 	KEYBOARD_EVENT_ARGS_CLASS,
 	MARKER_REACHED_EVENT_ARGS_CLASS,
@@ -803,6 +805,52 @@ MoonlightEventArgsType::MoonlightEventArgsType ()
 }
 
 MoonlightEventArgsType *MoonlightEventArgsClass;
+
+/*** RoutedEventArgs ***/
+static NPObject *
+routedeventargs_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightRoutedEventArgs (instance);
+}
+
+static const MoonNameIdMapping
+routedeventargs_mapping[] = {
+	{ "source", MoonId_Source, MAPPING_FLAG_SL2 },
+};
+
+bool
+MoonlightRoutedEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	RoutedEventArgs *args = GetRoutedEventArgs ();
+
+	switch (id) {
+	case MoonId_Source: {
+		DependencyObject *source = args->GetSource ();
+		if (source) {
+			MoonlightEventObjectObject *source_obj = EventObjectCreateWrapper (instance, source);
+			OBJECT_TO_NPVARIANT (source_obj, *result);
+		}
+		else {
+			NULL_TO_NPVARIANT (*result);
+		}
+
+		return true;
+	}
+
+	default:
+		return MoonlightEventArgs::GetProperty (id, name, result);
+	}
+}
+
+MoonlightRoutedEventArgsType::MoonlightRoutedEventArgsType ()
+{
+	allocate = routedeventargs_allocate;
+
+	AddMapping (routedeventargs_mapping, G_N_ELEMENTS (routedeventargs_mapping));
+}
+
+MoonlightRoutedEventArgsType *MoonlightRoutedEventArgsClass;
+
 
 /*** ErrorEventArgs ***/
 static NPObject *
@@ -1266,6 +1314,7 @@ mouse_event_allocate (NPP instance, NPClass *klass)
 static const MoonNameIdMapping
 mouse_event_mapping[] = {
 	{ "ctrl", MoonId_Ctrl },
+	{ "handled", MoonId_Handled, MAPPING_FLAG_SL2 },
 	{ "getposition", MoonId_GetPosition },
 	{ "getstylusinfo", MoonId_GetStylusInfo },
 	{ "getstyluspoints", MoonId_GetStylusPoints },
@@ -1287,8 +1336,27 @@ MoonlightMouseEventArgsObject::GetProperty (int id, NPIdentifier name, NPVariant
 		BOOLEAN_TO_NPVARIANT ((state & GDK_CONTROL_MASK) != 0, *result);
 		return true;
 
+	case MoonId_Handled:
+		BOOLEAN_TO_NPVARIANT (event_args->GetHandled(), *result);
+		return true;
+
 	default:
-		return MoonlightEventArgs::GetProperty (id, name, result);
+		return MoonlightRoutedEventArgs::GetProperty (id, name, result);
+	}
+}
+
+bool
+MoonlightMouseEventArgsObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
+{
+	MouseEventArgs *event_args = GetMouseEventArgs ();
+
+	switch (id) {
+	case MoonId_Handled:
+		if (NPVARIANT_IS_BOOLEAN (*value))
+			event_args->SetHandled (NPVARIANT_TO_BOOLEAN (*value));
+		return true;
+	default:
+		return MoonlightRoutedEventArgs::SetProperty (id, name, value);
 	}
 }
 
@@ -1357,7 +1425,7 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	default:
-		return MoonlightEventArgs::Invoke (id, name, args, argCount, result);
+		return MoonlightRoutedEventArgs::Invoke (id, name, args, argCount, result);
 	}
 }
 
@@ -1422,6 +1490,7 @@ keyboard_event_allocate (NPP instance, NPClass *klass)
 static const MoonNameIdMapping
 keyboard_event_mapping[] = {
 	{ "ctrl", MoonId_Ctrl },
+	{ "handled", MoonId_Handled, MAPPING_FLAG_SL2 },
 	{ "key", MoonId_Key },
 	{ "platformkeycode", MoonId_PlatformKeyCode },
 	{ "shift", MoonId_Shift },
@@ -1440,6 +1509,10 @@ MoonlightKeyboardEventArgsObject::GetProperty (int id, NPIdentifier name, NPVari
 
 	case MoonId_Ctrl:
 		BOOLEAN_TO_NPVARIANT ((args->state & GDK_CONTROL_MASK) != 0, *result);
+		return true;
+
+	case MoonId_Handled:
+		BOOLEAN_TO_NPVARIANT (args->GetHandled(), *result);
 		return true;
 
 	case MoonId_Key:
@@ -2879,6 +2952,9 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::STROKE:
 		np_class = dependency_object_classes [STROKE_CLASS];
 		break;
+	case Type::ROUTEDEVENTARGS:
+		np_class = dependency_object_classes [ROUTED_EVENT_ARGS_CLASS];
+		break;
 	case Type::MOUSEEVENTARGS:
 		np_class = dependency_object_classes [MOUSE_EVENT_ARGS_CLASS];
 		break;
@@ -4285,6 +4361,7 @@ plugin_init_classes (void)
 	dependency_object_classes [TEXT_BLOCK_CLASS] = new MoonlightTextBlockType ();
 	/* Event Arg Types */
 	dependency_object_classes [EVENT_ARGS_CLASS] = new MoonlightEventArgsType ();
+	dependency_object_classes [ROUTED_EVENT_ARGS_CLASS] = new MoonlightRoutedEventArgsType ();
 	dependency_object_classes [ERROR_EVENT_ARGS_CLASS] = new MoonlightErrorEventArgsType ();
 	dependency_object_classes [KEYBOARD_EVENT_ARGS_CLASS] = new MoonlightKeyboardEventArgsType ();
 	dependency_object_classes [MARKER_REACHED_EVENT_ARGS_CLASS] = new MoonlightMarkerReachedEventArgsType ();

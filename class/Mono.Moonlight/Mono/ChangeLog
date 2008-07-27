@@ -1,3 +1,7 @@
+2008-07-26  Chris Toshok  <toshok@ximian.com>
+
+	* Kind.cs: sync - add ROUTEDEVENTARGS.
+
 2008-07-26  Jackson Harper  <jackson@ximian.com>
 
 	* XamlLoaderCallbacks.cs: Add a callback for getting the content

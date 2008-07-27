@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System.Windows;
+using System.Security;
+using Mono;
 
 namespace System.Windows.Input {
 
@@ -37,16 +39,28 @@ namespace System.Windows.Input {
 		{
 		}
 
+		internal KeyEventArgs (bool ctrl, bool shift, int key, int platform_key_code)
+		{
+			this.key = (Key)key;
+			this.platform_key_code = platform_key_code;
+			//this.ctrl = ctrl;
+			//this.shift = shift;
+		}
+
 		public bool Handled {
-			get;
-			set;
+			//[SecuritySafeCritical]
+			get { return NativeMethods.keyboard_event_args_get_handled (native); }
+			//[SecuritySafeCritical]
+			set { NativeMethods.keyboard_event_args_set_handled (native, value); }
 		}
 
 		public Key Key {
+			//[SecuritySafeCritical]
 			get { return key; }
 		}
 
 		public int PlatformKeyCode {
+			//[SecuritySafeCritical]
 			get { return platform_key_code; }
 		}
 	}

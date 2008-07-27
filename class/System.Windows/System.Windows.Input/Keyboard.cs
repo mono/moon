@@ -1,10 +1,7 @@
 //
-// KeyboardEventHandler.cs
+// Keyboard.cs
 //
-// Author:
-//   Miguel de Icaza (miguel@novell.com)
-//
-// Copyright 2007 Novell, Inc.
+// Copyright 2008 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,8 +23,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace System.Windows.Input {
-	
-	public delegate void KeyboardEventHandler (object sender, KeyboardEventArgs e);
+using System;
+using System.Windows;
+using System.Security;
+using Mono;
 
+namespace System.Windows.Input {
+
+	public static class Keyboard {
+		public static ModifierKeys Modifiers {
+			//[SecuritySafeCritical]
+			get {
+				return (ModifierKeys)NativeMethods.keyboard_get_modifiers ();
+			}
+		}
+	}
 }

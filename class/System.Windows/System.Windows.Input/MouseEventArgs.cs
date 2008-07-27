@@ -27,29 +27,20 @@
 //
 
 using Mono;
+using System.Security;
+
 namespace System.Windows.Input {
 	
 	public class MouseEventArgs : RoutedEventArgs {
-		IntPtr native;
-
-		internal MouseEventArgs (IntPtr raw)
-		{
-			native = raw;
-			NativeMethods.base_ref (native);
-		}
-
-		public MouseEventArgs ()
+		internal MouseEventArgs (IntPtr raw) : base (raw)
 		{
 		}
-		
-		~MouseEventArgs ()
+
+		public MouseEventArgs () : base (NativeMethods.mouse_event_args_new ())
 		{
-			if (this.native != IntPtr.Zero) {
-				NativeMethods.base_unref (this.native);
-				this.native = IntPtr.Zero;
-			}
 		}
 
+		//[SecuritySafeCritical]
 		public Point GetPosition (UIElement uiElement)
 		{
 			double nx;
@@ -79,8 +70,10 @@ namespace System.Windows.Input {
 		}
 		
 		public bool Handled {
-			get;
-			set;
+			//[SecuritySafeCritical]
+			get { return NativeMethods.mouse_event_args_get_handled (native); }
+			//[SecuritySafeCritical]
+			set { NativeMethods.mouse_event_args_set_handled (native, value); }
 		}
 	}
 }

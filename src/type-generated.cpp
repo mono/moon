@@ -176,7 +176,7 @@ Type type_infos [] = {
 	{ Type::INLINES, Type::DEPENDENCY_OBJECT_COLLECTION, false, "Inlines", "INLINES", 0, 1, NULL, (create_inst_func *) inlines_new, NULL }, 
 	{ Type::INT32, Type::INVALID, false, "gint32", "INT32", 0, 0, NULL, NULL, NULL }, 
 	{ Type::INT64, Type::INVALID, false, "gint64", "INT64", 0, 0, NULL, NULL, NULL }, 
-	{ Type::KEYBOARDEVENTARGS, Type::EVENTARGS, false, "KeyboardEventArgs", "KEYBOARDEVENTARGS", 0, 1, NULL, NULL, NULL }, 
+	{ Type::KEYBOARDEVENTARGS, Type::ROUTEDEVENTARGS, false, "KeyboardEventArgs", "KEYBOARDEVENTARGS", 0, 1, NULL, NULL, NULL }, 
 	{ Type::KEYFRAME, Type::DEPENDENCY_OBJECT, false, "KeyFrame", "KEYFRAME", 0, 1, NULL, (create_inst_func *) key_frame_new, NULL }, 
 	{ Type::KEYFRAME_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "KeyFrameCollection", "KEYFRAME_COLLECTION", 0, 1, NULL, NULL, NULL }, 
 	{ Type::KEYSPLINE, Type::DEPENDENCY_OBJECT, false, "KeySpline", "KEYSPLINE", 0, 1, NULL, (create_inst_func *) key_spline_new, NULL }, 
@@ -198,7 +198,7 @@ Type type_infos [] = {
 	{ Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 13, MediaBase_Events, (create_inst_func *) media_base_new, NULL }, 
 	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 19, MediaElement_Events, (create_inst_func *) media_element_new, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL }, 
-	{ Type::MOUSEEVENTARGS, Type::EVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL }, 
+	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::INVALID, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL }, 
 	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 12, NULL, (create_inst_func *) panel_new, "Children" }, 
@@ -230,6 +230,7 @@ Type type_infos [] = {
 	{ Type::REPEATBEHAVIOR, Type::INVALID, false, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL }, 
 	{ Type::RESOURCE_DICTIONARY, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL }, 
 	{ Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL }, 
+	{ Type::ROUTEDEVENTARGS, Type::EVENTARGS, false, "RoutedEventArgs", "ROUTEDEVENTARGS", 0, 1, NULL, (create_inst_func *) routed_event_args_new, NULL }, 
 #if SL_2_0
 	{ Type::ROWDEFINITION, Type::DEPENDENCY_OBJECT, false, "RowDefinition", "ROWDEFINITION", 0, 1, NULL, (create_inst_func *) row_definition_new, NULL }, 
 #else

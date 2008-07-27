@@ -1,3 +1,11 @@
+2008-07-26  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h, plugin-class.cpp: add MoonlightRoutedEventArgs
+	stuff between EventArgs and KeyboardEventArgs/MouseEventArgs.
+	RoutedEventArgs exposes a 2.0-only property ("source"), and both
+	Keyboard/MouseEventArgs expose a 2.0-only property as
+	well ("handled").
+
 2008-07-25  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h, plugin-class.cpp: add a flags field to the

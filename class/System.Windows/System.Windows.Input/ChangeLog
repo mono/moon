@@ -1,3 +1,9 @@
+2008-07-26  Chris Toshok  <toshok@ximian.com>
+
+	* KeyEventArgs.cs, MouseEventArgs.cs: factor some of these (to
+	RoutedEventArgs), and implement the Handled property (backed by
+	NativeMethods stuff.)
+
 2008-07-22  Jeffrey Stedfast <fejj@novell.com>
 
 	* ModifierKeys.cs: Added

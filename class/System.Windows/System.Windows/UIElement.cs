@@ -361,16 +361,16 @@ namespace System.Windows {
 				h (this, m);
 		}
 
-		internal void InvokeKeyDown (KeyboardEventArgs k)
+		internal void InvokeKeyDown (KeyEventArgs k)
 		{
-			KeyboardEventHandler h = (KeyboardEventHandler)events[KeyDownEvent];
+			KeyEventHandler h = (KeyEventHandler)events[KeyDownEvent];
 			if (h != null)
 				h (this, k);
 		}
 
-		internal void InvokeKeyUp (KeyboardEventArgs k)
+		internal void InvokeKeyUp (KeyEventArgs k)
 		{
-			KeyboardEventHandler h = (KeyboardEventHandler)events[KeyUpEvent];
+			KeyEventHandler h = (KeyEventHandler)events[KeyUpEvent];
 			if (h != null)
 				h (this, k);
 		}

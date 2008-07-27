@@ -754,10 +754,24 @@ namespace Mono {
 		public extern static void event_object_remove_event_handler (IntPtr handle, string eventName, UnmanagedEventHandler handler, IntPtr closure);
 #endregion
 
+#region RoutedEventArgs
+		[DllImport("moon")]
+		public extern static IntPtr routed_event_args_new ();
+		
+		[DllImport("moon")]
+		public extern static IntPtr routed_event_args_get_source (IntPtr handle);
+
+		[DllImport("moon")]
+		public extern static void routed_event_args_set_source (IntPtr handle, IntPtr source_handle);
+#endregion
+
 #region MouseEventArgs
 		// No longer exposed
 		//[DllImport("moon")]
 		//public extern static int mouse_event_args_get_state (IntPtr handle);
+
+		[DllImport("moon")]
+		public extern static IntPtr mouse_event_args_new ();
 
 		[DllImport("moon")]
 		public extern static void mouse_event_args_get_position (IntPtr handle, IntPtr uielement_handle, out double x, out double y);
@@ -767,6 +781,25 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static IntPtr mouse_event_args_get_stylus_points (IntPtr handle, IntPtr uielement_handle);
+
+		[DllImport("moon")]
+		public extern static bool mouse_event_args_get_handled (IntPtr handle);
+
+		[DllImport("moon")]
+		public extern static void mouse_event_args_set_handled (IntPtr handle, bool handled);
+#endregion
+
+#region KeyEventArgs
+		[DllImport("moon")]
+		public extern static bool keyboard_event_args_get_handled (IntPtr handle);
+
+		[DllImport("moon")]
+		public extern static void keyboard_event_args_set_handled (IntPtr handle, bool handled);
+#endregion
+
+#region Keyboard
+		[DllImport("moon")]
+		public extern static int keyboard_get_modifiers ();
 #endregion
 
 #region plugin

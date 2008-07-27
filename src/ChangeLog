@@ -1,5 +1,18 @@
 2008-07-26  Chris Toshok  <toshok@ximian.com>
 
+	* eventargs.h, eventargs.cpp: some 2.0 event stuff.  Make the
+	MouseEventArgs and KeyboardEventArgs classes subclasses of a new
+	class - RoutedEventArgs.  Also, add a "Handled" field to both
+	MouseEventArgs and KeyboardEventArgs.  Lastly add a "Keyboard"
+	class to map to the 2.0 static Keyboard class.  it exposes nothing
+	but a Modifiers property, which isn't updated at present, but will
+	be by the Surface code (in the key event handler).
+
+	* type.h, value.h, type-generated.cpp: sync - new ROUTEDEVENTARGS
+	type/value.
+
+2008-07-26  Chris Toshok  <toshok@ximian.com>
+
 	* enums.h (enum ModifierKey): 2.0 specific enum for use by the
 	Keyboard class.
 

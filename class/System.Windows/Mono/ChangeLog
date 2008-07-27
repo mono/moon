@@ -1,3 +1,7 @@
+2008-07-26  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: KeyboardEventArgs -> KeyEventArgs.
+
 2008-07-26  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Allow the parser to get content properties

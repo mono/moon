@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 namespace Mono {
 
 	[StructLayout(LayoutKind.Sequential)]
-	struct UnmanagedKeyboardEventArgs {
+	struct UnmanagedKeyEventArgs {
 		public int state;
 		public int platformcode;
 		public int key;
@@ -113,20 +113,20 @@ namespace Mono {
 			}
 		}
 
-		static KeyboardEventArgs MarshalKeyboardEventArgs (IntPtr calldata)
+		static KeyEventArgs MarshalKeyEventArgs (IntPtr calldata)
 		{
-			UnmanagedKeyboardEventArgs args =
-				(UnmanagedKeyboardEventArgs)Marshal.PtrToStructure (calldata,
-										    typeof (UnmanagedKeyboardEventArgs));
+			UnmanagedKeyEventArgs args =
+				(UnmanagedKeyEventArgs)Marshal.PtrToStructure (calldata,
+									       typeof (UnmanagedKeyEventArgs));
 
-			return new KeyboardEventArgs ((args.state & 4) != 0, (args.state & 1) != 0, args.key, args.platformcode);
+			return new KeyEventArgs ((args.state & 4) != 0, (args.state & 1) != 0, args.key, args.platformcode);
 		}
 
 		static void key_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			try {
 				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeKeyUp (MarshalKeyboardEventArgs (calldata));
+				e.InvokeKeyUp (MarshalKeyEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())
@@ -140,7 +140,7 @@ namespace Mono {
 		{
 			try {
 				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeKeyDown (MarshalKeyboardEventArgs (calldata));
+				e.InvokeKeyDown (MarshalKeyEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())

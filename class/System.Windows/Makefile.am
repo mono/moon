@@ -147,9 +147,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/RowDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Input/Cursors.cs				\
-	$(srcdir)/System.Windows.Input/KeyboardEventArgs.cs			\
-	$(srcdir)/System.Windows.Input/KeyboardEventHandler.cs			\
 	$(srcdir)/System.Windows.Input/Key.cs					\
+	$(srcdir)/System.Windows.Input/Keyboard.cs				\
 	$(srcdir)/System.Windows.Input/KeyEventArgs.cs				\
 	$(srcdir)/System.Windows.Input/KeyEventHandler.cs			\
 	$(srcdir)/System.Windows.Input/MouseButtonEventArgs.cs			\

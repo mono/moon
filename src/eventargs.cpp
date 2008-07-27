@@ -18,14 +18,37 @@
 #include "stylus.h"
 #include "runtime.h"
 
+RoutedEventArgs::RoutedEventArgs ()
+{
+	source = NULL;
+}
+
+RoutedEventArgs::~RoutedEventArgs ()
+{
+	if (source)
+		source->unref ();
+}
+
+void
+RoutedEventArgs::SetSource (DependencyObject* el)
+{
+	if (source)
+		source->unref();
+	source = el;
+	if (source)
+		source->ref();
+}
+
 MouseEventArgs::MouseEventArgs (GdkEvent *event)
 {
 	this->event = gdk_event_copy (event);
+	this->handled = false;
 }
 
 MouseEventArgs::MouseEventArgs ()
 {
 	this->event = gdk_event_new (GDK_MOTION_NOTIFY);
+	this->handled = false;
 }
 
 MouseEventArgs::~MouseEventArgs ()
@@ -158,4 +181,54 @@ StylusPointCollection*
 mouse_event_args_get_stylus_points (MouseEventArgs *args, UIElement *ink_presenter)
 {
 	return args->GetStylusPoints (ink_presenter);
+}
+
+bool
+mouse_event_args_get_handled (MouseEventArgs *args)
+{
+	return args->GetHandled ();
+}
+
+void
+mouse_event_args_set_handled (MouseEventArgs *args, bool handled)
+{
+	args->SetHandled (handled);
+}
+
+bool
+keyboard_event_args_get_handled (KeyboardEventArgs *args)
+{
+	return args->GetHandled ();
+}
+
+void
+keyboard_event_args_set_handled (KeyboardEventArgs *args, bool handled)
+{
+	args->SetHandled (handled);
+}
+
+ModifierKeys Keyboard::Modifiers = ModifierKeyNone;
+
+ModifierKeys
+keyboard_get_modifiers ()
+{
+	return Keyboard::Modifiers;
+}
+
+RoutedEventArgs*
+routed_event_args_new (void)
+{
+	return new RoutedEventArgs ();
+}
+
+DependencyObject*
+routed_event_args_get_source (RoutedEventArgs *args)
+{
+	return args->GetSource();
+}
+
+void
+routed_event_args_set_source (RoutedEventArgs *args, DependencyObject *source)
+{
+	args->SetSource (source);
 }

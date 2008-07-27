@@ -397,18 +397,35 @@ struct MoonlightEventArgs : MoonlightDependencyObjectObject {
 	}
 };
 
+/*** MoonlightEventArgsClass ******************************************************/
+struct MoonlightRoutedEventArgsType : MoonlightEventArgsType {
+	MoonlightRoutedEventArgsType ();
+};
+
+struct MoonlightRoutedEventArgs : MoonlightEventArgs {
+	MoonlightRoutedEventArgs (NPP instance) : MoonlightEventArgs (instance)
+	{
+		moonlight_type = Type::ROUTEDEVENTARGS;
+	}
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+
+	RoutedEventArgs *GetRoutedEventArgs () { return (RoutedEventArgs *) eo; }
+};
+
 /*** MoonlightMouseEventArgsClass  **************************************************************/
-struct MoonlightMouseEventArgsType : MoonlightEventArgsType {
+struct MoonlightMouseEventArgsType : MoonlightRoutedEventArgsType {
 	MoonlightMouseEventArgsType ();
 };
 
-struct MoonlightMouseEventArgsObject : MoonlightEventArgs {
-	MoonlightMouseEventArgsObject (NPP instance) : MoonlightEventArgs (instance)
+struct MoonlightMouseEventArgsObject : MoonlightRoutedEventArgs {
+	MoonlightMouseEventArgsObject (NPP instance) : MoonlightRoutedEventArgs (instance)
 	{
 		moonlight_type = Type::MOUSEEVENTARGS;
 	}
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 
@@ -416,14 +433,14 @@ struct MoonlightMouseEventArgsObject : MoonlightEventArgs {
 };
 
 /*** MoonlightMarkerReachedEventArgsClass ******************************************/
-struct MoonlightMarkerReachedEventArgsType : MoonlightEventArgsType {
+struct MoonlightMarkerReachedEventArgsType : MoonlightRoutedEventArgsType {
 	MoonlightMarkerReachedEventArgsType ();
 };
 
 extern MoonlightMarkerReachedEventArgsType *MoonlightMarkerReachedEventArgsClass;
 
-struct MoonlightMarkerReachedEventArgsObject : MoonlightEventArgs {
-	MoonlightMarkerReachedEventArgsObject (NPP instance) : MoonlightEventArgs (instance)
+struct MoonlightMarkerReachedEventArgsObject : MoonlightRoutedEventArgs {
+	MoonlightMarkerReachedEventArgsObject (NPP instance) : MoonlightRoutedEventArgs (instance)
 	{
 		moonlight_type = Type::MARKERREACHEDEVENTARGS;
 	}

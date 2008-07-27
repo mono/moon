@@ -24,19 +24,47 @@
 //
 
 using System.Security;
+using Mono;
 
 namespace System.Windows {
 
 	public class RoutedEventArgs : EventArgs {
-		private object source;
-		
-		public RoutedEventArgs ()
+		internal IntPtr native;
+
+		internal RoutedEventArgs (IntPtr raw)
+		{
+			native = raw;
+			NativeMethods.base_ref (native);
+		}
+
+		~RoutedEventArgs ()
+		{
+			if (this.native != IntPtr.Zero) {
+				NativeMethods.base_unref (this.native);
+				this.native = IntPtr.Zero;
+			}
+		}
+
+		public RoutedEventArgs () : this (NativeMethods.routed_event_args_new ())
 		{
 		}
 
-		public Object Source {
-			get  { return source; }
-			set { source = value; }
+		object source;
+		public object Source {
+			//[SecuritySafeCritical]
+			get { return source; }
+			//[SecuritySafeCritical]
+			set {
+				// not sure what to do here...  test
+				// if there's an exception if you set
+				// it to a non-DO.
+				DependencyObject v = value as DependencyObject;
+				if (v == null)
+					NativeMethods.routed_event_args_set_source (native, IntPtr.Zero);
+				else
+					NativeMethods.routed_event_args_set_source (native, v.native);
+				source = value;
+			}
 		}
 	}
 }
