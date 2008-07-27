@@ -1,5 +1,9 @@
 2008-07-26  Chris Toshok  <toshok@ximian.com>
 
+	* RoutedEventArgs.cs: flesh this out (along with a
+	question/comment for set_Source.)  start using a similar internal
+	ctor setup (like the DO's) for the unmanaged event objects.
+
 	* UIElement.cs: KeyboardEventArgs -> KeyEventArgs.
 
 2008-07-24  Jeffrey Stedfast  <fejj@novell.com>
