@@ -48,19 +48,27 @@ namespace System.Windows.Input {
 		}
 
 		public bool Handled {
-			//[SecuritySafeCritical]
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get { return NativeMethods.keyboard_event_args_get_handled (native); }
-			//[SecuritySafeCritical]
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			set { NativeMethods.keyboard_event_args_set_handled (native, value); }
 		}
 
 		public Key Key {
-			//[SecuritySafeCritical]
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get { return key; }
 		}
 
 		public int PlatformKeyCode {
-			//[SecuritySafeCritical]
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get { return platform_key_code; }
 		}
 	}

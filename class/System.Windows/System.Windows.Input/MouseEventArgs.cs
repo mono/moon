@@ -40,7 +40,9 @@ namespace System.Windows.Input {
 		{
 		}
 
-		//[SecuritySafeCritical]
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public Point GetPosition (UIElement uiElement)
 		{
 			double nx;
@@ -70,9 +72,13 @@ namespace System.Windows.Input {
 		}
 		
 		public bool Handled {
-			//[SecuritySafeCritical]
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get { return NativeMethods.mouse_event_args_get_handled (native); }
-			//[SecuritySafeCritical]
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			set { NativeMethods.mouse_event_args_set_handled (native, value); }
 		}
 	}

@@ -32,7 +32,9 @@ namespace System.Windows.Input {
 
 	public static class Keyboard {
 		public static ModifierKeys Modifiers {
-			//[SecuritySafeCritical]
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get {
 				return (ModifierKeys)NativeMethods.keyboard_get_modifiers ();
 			}

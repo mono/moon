@@ -1,5 +1,10 @@
 2008-07-26  Chris Toshok  <toshok@ximian.com>
 
+	* MouseEventArgs.cs, KeyEventArgs.cs, Keyboard.cs: add
+	SecuritySafeCritical attribute if NET_2_1.
+
+2008-07-26  Chris Toshok  <toshok@ximian.com>
+
 	* Keyboard.cs: new class.
 
 	* KeyEventArgs.cs, MouseEventArgs.cs: factor some of these (to
