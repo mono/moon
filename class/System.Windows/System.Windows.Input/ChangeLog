@@ -1,5 +1,7 @@
 2008-07-26  Chris Toshok  <toshok@ximian.com>
 
+	* Keyboard.cs: new class.
+
 	* KeyEventArgs.cs, MouseEventArgs.cs: factor some of these (to
 	RoutedEventArgs), and implement the Handled property (backed by
 	NativeMethods stuff.)
