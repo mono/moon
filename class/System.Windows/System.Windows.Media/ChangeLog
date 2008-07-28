@@ -1,3 +1,7 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* PointCollection.cs, DoubleCollection.cs: new classes.
+
 2008-07-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Geometry.cs: Updated.
