@@ -198,7 +198,7 @@ namespace System.Windows {
 			
 			public bool MoveNext ()
 			{
-				int r = NativeMethods.collection_iterator_move_next (native_iter);
+				int r = NativeMethods.collection_iterator_next (native_iter);
 
 				if (r == -1)
 					throw GetInvalid ();
@@ -252,7 +252,7 @@ namespace System.Windows {
 			
 			public bool MoveNext ()
 			{
-				int r = NativeMethods.collection_iterator_move_next (native_iter);
+				int r = NativeMethods.collection_iterator_next (native_iter);
 
 				if (r == -1)
 					throw GetInvalid ();
