@@ -3,6 +3,9 @@ var master = null;
 var carousel = null;
 var imagesLength = 0;
 var selection = 0;
+var unveiling;
+var target = 1;
+var direction = 0;
 
 function onLoad (sender)
 {
@@ -19,7 +22,122 @@ function onLoad (sender)
 	resizeAnimation (272, 92);
 
 	//fire ();
-	animateTurn (1.5 / 4);
+	//animateTurn (1.5 / 4);
+	unveil ();
+}
+
+function animate (animation, handlerName)
+{
+	var sb = carousel.findName (animation);
+	if (handlerName)
+		sb.AddEventListener("Completed", handlerName);
+	sb.Begin ();
+}
+
+function unveil () 
+{
+
+    // hide all images
+    //for (var i = 0; i < imagesLength; i++) {
+    //   var image = carousel.findName (generateName ("image", i));
+    //    image.Opacity = 0;
+    //ss}
+
+    // setup our multi-part animation
+    unveiling = {};
+
+    unveiling.next = 0;
+    unveiling.callback = unveilNextSpinStep;
+    unveiling.storyboard = carousel.findName (generateName ("image", "0")).resources.GetItem(0);
+    //unveiling.eventToken = unveiling.storyboard.addEventListener("Completed", this.unveiling.callback);
+    //unveiling.onCompleted = onCompleted;
+    
+    animate ("fadeIn", unveilNextSpinStep);
+}
+
+
+
+function animateClockwiseCore() {
+
+    if (direction == 1) {
+        flipDirection();
+    }
+
+    // update position based on current selection
+    positionImages();
+
+    // It takes 1.5 seconds to animate the carrousel 360 degrees; thus to turn 1 image, run the animation 1.5 / (# of images) seconds
+    var duration = 1.5 / imagesLength;
+    animateTurn(duration);
+
+    selection++;
+    selection %= imagesLength;
+}
+
+function animateCounterclockwiseCore () 
+{
+    if (direction == 0) {
+        flipDirection();
+    }
+    
+    // update position based on current selection
+    positionImages();
+
+    // It takes 1.5 seconds to animate the carrousel 360 degrees; thus to turn 1 image, run the animation 1.5 / (# of images) seconds
+    var duration = 1.5 / imagesLength;
+    animateTurn(duration);
+
+    selection += imagesLength - 1;
+    selection %= imagesLength;
+}
+
+function flipDirection () 
+{
+    // WPF/E doesn't support running an animation in reverse (AutoReverse doesn't cut it).
+    // As a workground, we set up the X coords of the animation based on the current direction.
+    
+    direction = direction ? 0 : 1;
+    resizeAnimation(272, 92);
+}
+
+
+function animateClockwise () 
+{
+    target++;
+    target %= imagesLength;
+    TurnTowardTarget();
+}
+
+function animateCounterclockwise () 
+{
+    target += imagesLength - 1;
+    target %= imagesLength;
+    TurnTowardTarget();
+}
+
+function unveilNextSpinStep ()
+{
+	console.log ("Unveiling next spin step...");
+
+    if (unveiling.next == imagesLength) {
+        // cleanup
+        //var onCompleted = this.unveiling.onCompleted;
+        //this.unveiling.storyboard.removeEventListener("Completed", this.unveiling.eventToken);
+        //this.unveiling = null;
+        //delete this.unveiling;
+        //if (onCompleted)
+        //    onCompleted(this, null);
+    }
+    else {
+        // unhide the next image
+	var image = carousel.findName (generateName ("image", unveiling.next))
+        image.Opacity = 1;
+        
+        unveiling.next++;
+
+        // animate one turn
+        animateClockwise();
+    }
 }
 
 function animateTurn (duration) 
@@ -97,7 +215,7 @@ function createCarousel ()
                 <TranslateTransform x:Name="%translate%" /> \
             </Canvas.RenderTransform> \
             <Canvas.Resources> \
-                <Storyboard x:Name="%fadeIn%"> \
+                <Storyboard x:Name="fadeIn"> \
                     <DoubleAnimation \
                          Storyboard.TargetName="carousel" \
                          Storyboard.TargetProperty="Opacity" \
@@ -116,7 +234,7 @@ function resizeAnimation (width, height)
 {
     for (var i = 0; i < imagesLength; i++) {
         var animateX = carousel.findName (generateName ("animateX", i));
-        if (this.direction == 0) {
+        if (direction == 0) {
             animateX.KeyFrames.GetItem(0).Value = width / 2;
             animateX.KeyFrames.GetItem(1).Value = 20;
             animateX.KeyFrames.GetItem(2).Value = width / 2 - 16;
@@ -143,16 +261,31 @@ function resizeAnimation (width, height)
     }        
 }
 
+function onStoryboardCompleted ()
+{
+	console.log ("Completed, will turn toward target");
+	TurnTowardTarget();
+}
+
 function generateName (keyword, number)
 {
 	return "image_" + keyword + "_" + number;
 }
 
-function onStoryboardCompleted ()
+function TurnTowardTarget ()
 {
-	console.log ("Storyboard completed...");
+    if (target != selection) {
+        // Determine the best direction to turn the carousel
+        var clockwiseOffset = (target + imagesLength - selection) % imagesLength;
+        var turnClockwise = clockwiseOffset < imagesLength / 2;
+        if (turnClockwise)
+            animateClockwiseCore();
+        else
+            animateCounterclockwiseCore();
+    } else {
+	console.log ("Target matches selection, not turning!");
+    }
 }
-
 
 function addImage (imagePath, imageWidth, imageHeight, imageName) 
 {
