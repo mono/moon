@@ -1,3 +1,8 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* InlineCollection.cs: stub out PresentationFrameworkCollection<T>
+	overrides.
+
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Inline.cs: Updated TextDecoration* according to SL2B2.

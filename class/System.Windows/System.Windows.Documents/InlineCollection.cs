@@ -42,5 +42,35 @@ namespace System.Windows.Documents {
 		{
 			return Kind.INLINES;
 		}
+
+		public override bool Contains (Inline inline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (Inline inline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (Inline inline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (Inline inline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, Inline inline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override Inline this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }
