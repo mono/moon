@@ -1,3 +1,16 @@
+2008-07-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* typegen/typegen.cs: Added Thickness.
+
+	* value.h.in, type.h.in: Added Thickness.
+
+	* value.cpp: Implemented Thickness value ctor/etc.
+
+	* enums.h: Added more 2.0-specific enums.
+
+	* control.cpp|h: Implemented property accessors/bindings and
+	Thickness struct.
+
 2008-07-28  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp: When starting an SB that has been started already make sure to

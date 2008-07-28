@@ -1947,6 +1947,7 @@ runtime_init (guint32 flags)
 	//
 	deployment_init ();
 	user_control_init ();
+	control_init ();
 	grid_init ();
 #endif
 }

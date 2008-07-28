@@ -37,6 +37,7 @@ struct PointArray;
 struct Rect;
 struct RepeatBehavior;
 struct GridLength;
+struct Thickness;
 
 struct Value;
 
@@ -212,6 +213,7 @@ public:
 	Value (Duration duration);
 	Value (KeyTime keytime);
 	Value (GridLength grid_length);
+	Value (Thickness thickness);
 	Value (const char *s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
@@ -271,6 +273,7 @@ public:
 	Duration*	AsDuration ()	{ checked_get_exact (Type::DURATION, NULL, u.duration); }
 	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
 	GridLength*     AsGridLength () { checked_get_exact (Type::GRIDLENGTH, NULL, u.grid_length); }
+	Thickness*      AsThickness () { checked_get_exact (Type::THICKNESS, NULL, u.thickness); }
 
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
@@ -450,6 +453,7 @@ public:
 		PointArray *point_array;
 		DoubleArray *double_array;
 		GridLength *grid_length;
+		Thickness *thickness;
 	} u;
 
 

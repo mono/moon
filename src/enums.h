@@ -157,7 +157,22 @@ enum Key {
 	KeyUNKNOWN = 255
 };
 
-// 2.0-only property for Keyboard class.
+
+// Silverlight 2.0 Enums:
+
+enum HorizontalAlignment {
+	HorizontalAlignmentLeft,
+	HorizontalAlignmentCenter,
+	HorizontalAlignmentRight,
+	HorizontalAlignmentStretch
+};
+
+enum KeyboardNavigationMode {
+	KeyboardNavigationModeLocal,
+	KeyboardNavigationModeCycle,
+	KeyboardNavigationModeOnce
+};
+
 enum ModifierKeys {
 	ModifierKeyNone     = 0,
 	ModifierKeyAlt      = (1 << 0),
@@ -165,6 +180,13 @@ enum ModifierKeys {
 	ModifierKeyShift    = (1 << 2),
 	ModifierKeyWindows  = (1 << 3),
 	ModifierKeyApple    = (1 << 3)
+};
+
+enum VerticalAlignment {
+	VerticalAlignmentTop,
+	VerticalAlignmentCenter,
+	VerticalAlignmentBottom,
+	VerticalAlignmentStretch
 };
 
 G_BEGIN_DECLS

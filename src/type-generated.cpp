@@ -259,6 +259,7 @@ Type type_infos [] = {
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, (create_inst_func *) surface_new, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL }, 
 	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 12, NULL, (create_inst_func *) text_block_new, "Inlines" }, 
+	{ Type::THICKNESS, Type::INVALID, false, "Thickness", "THICKNESS", 0, 0, NULL, NULL, NULL }, 
 	{ Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, NULL, NULL }, 
 	{ Type::TIMELINE, Type::DEPENDENCY_OBJECT, false, "Timeline", "TIMELINE", 0, 1, NULL, NULL, NULL }, 
 	{ Type::TIMELINE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TimelineCollection", "TIMELINE_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_collection_new, NULL }, 

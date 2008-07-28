@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * value.cpp: Implementation of for Value.
  *
@@ -15,11 +16,13 @@
 #include <cairo.h>
 #include <malloc.h>
 #include <stdlib.h>
+
 #include "value.h"
 #include "rect.h"
 #include "color.h"
 #include "clock.h"
 #include "animation.h"
+#include "control.h"
 #include "array.h"
 #include "point.h"
 #include "grid.h"
@@ -105,6 +108,10 @@ Value::Value (const Value& v)
 	case Type::GRIDLENGTH:
 		u.grid_length = g_new (GridLength, 1);
 		*u.grid_length = GridLength (*v.u.grid_length);
+		break;
+	case Type::THICKNESS:
+		u.thickness = g_new (Thickness, 1);
+		*u.thickness = Thickness (*v.u.thickness);
 		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)
@@ -241,6 +248,14 @@ Value::Value (GridLength grid_length)
 	k = Type::GRIDLENGTH;
 	u.grid_length = g_new (GridLength, 1);
 	*u.grid_length = GridLength (grid_length);
+}
+
+Value::Value (Thickness thickness)
+{
+	Init ();
+	k = Type::THICKNESS;
+	u.thickness = g_new (Thickness, 1);
+	*u.thickness = Thickness (thickness);
 }
 
 void
