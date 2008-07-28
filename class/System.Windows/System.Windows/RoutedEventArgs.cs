@@ -51,9 +51,14 @@ namespace System.Windows {
 
 		object source;
 		public object Source {
-			//[SecuritySafeCritical]
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get { return source; }
-			//[SecuritySafeCritical]
+
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			set {
 				// not sure what to do here...  test
 				// if there's an exception if you set
