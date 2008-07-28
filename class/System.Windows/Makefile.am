@@ -171,6 +171,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/Color.cs					\
 	$(srcdir)/System.Windows.Media/Colors.cs				\
 	$(srcdir)/System.Windows.Media/ColorInterpolationMode.cs		\
+	$(srcdir)/System.Windows.Media/DoubleCollection.cs			\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
 	$(srcdir)/System.Windows.Media/FillRule.cs				\
 	$(srcdir)/System.Windows.Media/Geometry.cs				\
@@ -202,6 +203,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/PathSegmentCollection.cs			\
 	$(srcdir)/System.Windows.Media/PenLineCap.cs				\
 	$(srcdir)/System.Windows.Media/PenLineJoin.cs				\
+	$(srcdir)/System.Windows.Media/PointCollection.cs			\
 	$(srcdir)/System.Windows.Media/PolyBezierSegment.cs			\
 	$(srcdir)/System.Windows.Media/PolyLineSegment.cs			\
 	$(srcdir)/System.Windows.Media/PolyQuadraticBezierSegment.cs		\
