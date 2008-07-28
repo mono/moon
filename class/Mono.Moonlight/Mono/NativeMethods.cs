@@ -240,7 +240,7 @@ namespace Mono {
 		public extern static void collection_set_value_at (IntPtr collection, int index, IntPtr value);
 		
 		[DllImport("moon")]
-		public extern static int collection_iterator_move_next (IntPtr iterator);
+		public extern static int collection_iterator_next (IntPtr iterator);
 
 		[DllImport("moon")]
 		public extern static bool collection_iterator_reset (IntPtr iterator);

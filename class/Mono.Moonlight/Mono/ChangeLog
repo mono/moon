@@ -1,3 +1,8 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* NativeMethods.cs: collection_iterator_move_next ->
+	collection_iterator_next.
+
 2008-07-26  Chris Toshok  <toshok@ximian.com>
 
 	* NativeMethods.cs: add new native methods for RoutedEventArgs,
