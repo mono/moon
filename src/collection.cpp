@@ -459,10 +459,10 @@ collection_iterator_next (CollectionIterator *iterator)
 	if (iterator->generation != iterator->collection->Generation ())
 		return -1;
 	
+	iterator->index++;
+	
 	if (iterator->index >= iterator->collection->GetCount ())
 		return 0;
-	
-	iterator->index++;
 	
 	return 1;
 }
