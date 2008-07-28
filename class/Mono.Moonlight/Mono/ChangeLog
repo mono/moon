@@ -1,5 +1,10 @@
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
+	* NativeMethods.cs: fix signature of collection_index_of.  the
+	rest of this api needs an audit.
+
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
 	* NativeMethods.cs: collection_iterator_move_next ->
 	collection_iterator_next.
 

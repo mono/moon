@@ -1,5 +1,10 @@
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
+	* PresentationFrameworkCollection.cs: remove the rest of the DO
+	specific code.
+
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
 	* PresentationFrameworkCollection.cs: implement
 	GenericCollectionIterator.GetCurrent in a non-DO specific way.
 

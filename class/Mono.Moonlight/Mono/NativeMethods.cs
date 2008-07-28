@@ -222,7 +222,7 @@ namespace Mono {
 		public extern static void collection_clear (IntPtr collection);
 		
 		[DllImport("moon")]
-		public extern static int collection_index_of (IntPtr collection, IntPtr value);
+		public extern static int collection_index_of (IntPtr collection, ref Value value);
 		
 		[DllImport("moon")]
 		public extern static bool collection_insert (IntPtr collection, int index, IntPtr value);

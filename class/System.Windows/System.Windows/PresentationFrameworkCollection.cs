@@ -32,11 +32,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace System.Windows {
-	//
-	// It seems that this only works for DependencyObjects, but its not in 
-	// the public contract, I added the `where' so I can cast DependencyObjects
-	// into T's but it might just be that I do not know how to do this.
-	//
 	public abstract class PresentationFrameworkCollection<T> : DependencyObject,
 		IEnumerable, IList,
 		IList<T>, ICollection<T> {
@@ -44,16 +39,18 @@ namespace System.Windows {
 		public static readonly System.Windows.DependencyProperty CountProperty =
 			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (int));
 		
-		internal PresentationFrameworkCollection () : base (NativeMethods.dependency_object_collection_new ())
+		internal PresentationFrameworkCollection ()
 		{
-			//
-			// We really need to revisit native collections, should
-			// they all be Collection *, instead of Collection fields?
-			//
-			// If we keep them as Collection fields, when we "new" one,
-			// the "new" versions should be immediately dispossed once
-			// we do a 'set' operation (which should be a bitwise copy).
-			//
+			if (typeof(DependencyObject).IsAssignableFrom(typeof(T)))
+				native = NativeMethods.dependency_object_collection_new ();
+			else if (typeof (T) == typeof(double))
+				native = NativeMethods.double_collection_new ();
+			else if (typeof (T) == typeof(Point))
+				native = NativeMethods.point_collection_new ();
+			else
+				// XXX FIXME - support other types
+				// than just the three above.
+				throw new NotSupportedException ("unsupported type for collection");
 		}
 		
 		internal PresentationFrameworkCollection (IntPtr raw) : base (raw)
@@ -62,22 +59,15 @@ namespace System.Windows {
 		
 		int IList.Add (object value)
 		{
-			DependencyObject dob = value as DependencyObject;
-			if (dob == null)
-				throw new Exception ("The collection only supports DependencyObjects");
-			
-			return NativeMethods.collection_add (native, dob.native);
+			Add ((T)value);
+			return Count;
 		}
 		
 		public abstract void Add (T value);
 		
 		void IList.Remove (object value)
 		{
-			DependencyObject dob = value as DependencyObject;
-			if (dob == null)
-				throw new Exception ("The collection only supports DependencyObjects");
-			
-			NativeMethods.collection_remove (native, dob.native);
+			Remove ((T) value);
 		}
 		
 		public abstract bool Remove (T value);
@@ -89,11 +79,7 @@ namespace System.Windows {
 		
 		void IList.Insert (int index, object value)
 		{
-			DependencyObject dob = value as DependencyObject;
-			if (dob == null)
-				throw new Exception ("The collection only supports DependencyObjects");
-			
-			NativeMethods.collection_insert (native, index, dob.native);
+			Insert (index, (T)value);
 		}
 		
 		public abstract void Insert (int index, T value);
@@ -141,24 +127,8 @@ namespace System.Windows {
 		}
 		
 		object IList.this [int index] {
-			get {
-				IntPtr o = NativeMethods.collection_get_value_at (native, index);
-				
-				if (o == IntPtr.Zero)
-					throw new ArgumentOutOfRangeException ("index");
-				
-				Kind k = NativeMethods.dependency_object_get_object_type (o);
-				return DependencyObject.Lookup (k, o) as object;
-			}
-			
-			set {
-				DependencyObject dob = value as DependencyObject;
-				
-				if (dob == null)
-					throw new Exception ("The collection only supports DependencyObjects");
-				
-				NativeMethods.collection_set_value_at (native, index, dob.native);
-			}
+			get { return this[index]; }
+			set { this[index] = (T)value; }
 		}
 		
 		public abstract T this [int index] {
@@ -327,20 +297,31 @@ namespace System.Windows {
 		{
 			if (value == null)
 				throw new ArgumentNullException ("value");
-			
-			return NativeMethods.collection_index_of (native, value.native) != -1;
+
+			if (typeof(DependencyObject).IsAssignableFrom(typeof(T))) {
+				Value v = DependencyObject.GetAsValue (value);
+				return NativeMethods.collection_index_of (native, ref v) != -1;
+			}
+			else
+				return false;
 		}
 		
 		protected internal bool ContainsDouble (double value)
 		{
-			// FIXME: implement me
-			return false;
+			if (typeof(double) != typeof(T))
+				return false;
+
+			Value v = DependencyObject.GetAsValue (value);
+			return NativeMethods.collection_index_of (native, ref v) != -1;
 		}
 		
 		protected internal bool ContainsPoint (Point value)
 		{
-			// FIXME: implement me
-			return false;
+			if (typeof(Point) != typeof(T))
+				return false;
+
+			Value v = DependencyObject.GetAsValue (value);
+			return NativeMethods.collection_index_of (native, ref v) != -1;
 		}
 		
 		protected internal virtual bool ContainsImpl (object value)
@@ -361,14 +342,7 @@ namespace System.Windows {
 		
 		int IList.IndexOf (object value)
 		{
-			if (value == null)
-				throw new ArgumentNullException ("value");
-			
-			DependencyObject dob = value as DependencyObject;
-			if (dob == null)
-				throw new Exception ("The collection only supports DependencyObjects");
-			
-			return NativeMethods.collection_index_of (native, dob.native);
+			return IndexOf ((T) value);
 		}
 		
 		public abstract int IndexOf (T value);
