@@ -216,22 +216,17 @@ namespace System.Windows {
 
 			public object Current {
 				get {
-					throw new NotImplementedException ();
-#if false
 					int error;
-					IntPtr o = NativeMethods.collection_iterator_get_current (native_iter, out error);
+					IntPtr val = NativeMethods.collection_iterator_get_current (native_iter, out error);
 					Kind k;
 
 					if (error == 1)
 						throw GetInvalid ();
 					
-					if (o == IntPtr.Zero)
+					if (val == IntPtr.Zero)
 						return null;
 					
-					k = NativeMethods.dependency_object_get_object_type (o);
-					
-					return DependencyObject.Lookup (k, o);
-#endif
+					return DependencyObject.ValueToObject (val);
 				}
 			}
 
