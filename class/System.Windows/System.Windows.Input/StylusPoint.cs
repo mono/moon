@@ -32,55 +32,28 @@ using Mono;
 
 namespace System.Windows.Input
 {
-	public sealed class StylusPoint : DependencyObject
+	public struct StylusPoint
 	{
-		public static readonly DependencyProperty PressureFactorProperty = 
-			DependencyProperty.Lookup (Kind.STYLUSPOINT, "PressureFactor", typeof (double));
-		
-		public static readonly DependencyProperty XProperty = 
-			DependencyProperty.Lookup (Kind.STYLUSPOINT, "X", typeof (double));
-		
-		public static readonly DependencyProperty YProperty = 
-			DependencyProperty.Lookup (Kind.STYLUSPOINT, "Y", typeof (double));
-		
-		public StylusPoint() : base (NativeMethods.stylus_point_new ())
+		internal StylusPoint (IntPtr raw)
 		{
-		}
-		
-		internal StylusPoint (IntPtr raw) : base (raw)
-		{
+			// XXX this should go away, but doing so will
+			// require some changes elsewhere
+			// (DependencyObject.cs, for instance).
 		}
 
 		public double PressureFactor { 
-			get {
-				return (double) GetValue (PressureFactorProperty);
-			}
-			set {
-				SetValue (PressureFactorProperty, value);
-			}
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
 		}
-		
+
 		public double X {
-			get {
-				return (double) GetValue (XProperty);
-			}
-			set {
-				SetValue (XProperty, value);
-			}
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
 		}
 
 		public double Y {
-			get {
-				return (double) GetValue (YProperty);
-			}
-			set {
-				SetValue (YProperty, value);
-			}
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.STYLUSPOINT;
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
 		}
 	}
 }

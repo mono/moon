@@ -1,3 +1,8 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* StylusPoint.cs: this is a struct in b2, not a class.  it has no
+	DependencyProperties either.
+	
 2008-07-26  Chris Toshok  <toshok@ximian.com>
 
 	* MouseEventArgs.cs, KeyEventArgs.cs, Keyboard.cs: add
