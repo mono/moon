@@ -1,3 +1,12 @@
+2008-07-28  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/carousel.png:
+	* xaml/assorted/icon-1.png:
+	* xaml/assorted/icon-2.png:
+	* xaml/assorted/icon-3.png:
+	* xaml/assorted/icon-4.png: Replacing images with stubs not to infringe anybody's
+	copyright.
+
 2008-07-18  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/downloader-smooth-set-source.html: Fixing this test to actually 
