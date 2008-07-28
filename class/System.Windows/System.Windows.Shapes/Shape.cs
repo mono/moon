@@ -37,7 +37,7 @@ namespace System.Windows.Shapes {
 		public static readonly DependencyProperty StrokeProperty =
 			DependencyProperty.Lookup (Kind.SHAPE, "Stroke", typeof (Brush));
 		public static readonly DependencyProperty StrokeDashArrayProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "StrokeDashArray", typeof (double []));
+			DependencyProperty.Lookup (Kind.SHAPE, "StrokeDashArray", typeof (DoubleCollection));
 		public static readonly DependencyProperty StrokeDashCapProperty =
 			DependencyProperty.Lookup (Kind.SHAPE, "StrokeDashCap", typeof (PenLineCap));
 		public static readonly DependencyProperty StrokeDashOffsetProperty =
@@ -76,7 +76,8 @@ namespace System.Windows.Shapes {
 			set { SetValue (StrokeProperty, value); }
 		}
 
-		public double[] StrokeDashArray {
+		public DoubleCollection StrokeDashArray {
+			get { return (DoubleCollection)GetValue(StrokeDashArrayProperty); }
 			set { SetValue (StrokeDashArrayProperty, value); }
 		}
 

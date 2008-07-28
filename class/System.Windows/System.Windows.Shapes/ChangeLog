@@ -1,3 +1,13 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* Polyline.cs: change PointsProperty to PointCollection from
+	Point[].
+
+	* Polygon.cs: same.
+
+	* Shape.cs: change StrokeDashArrayProperty from Double[] to
+	DoubleCollection.
+
 2008-07-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Shape.cs (Shape.ctor): Made protected.

@@ -34,7 +34,7 @@ namespace System.Windows.Shapes {
 	public sealed class Polyline : Shape {
 
 		public static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.POLYLINE, "FillRule", typeof (FillRule));
-		public static readonly DependencyProperty PointsProperty = DependencyProperty.Lookup (Kind.POLYLINE, "Points", typeof (Point []));
+		public static readonly DependencyProperty PointsProperty = DependencyProperty.Lookup (Kind.POLYLINE, "Points", typeof (PointCollection));
 
 		public Polyline () : base (NativeMethods.polyline_new ())
 		{
@@ -49,9 +49,8 @@ namespace System.Windows.Shapes {
 			set { SetValue (FillRuleProperty, value); }
 		}
 
-		public Point[] Points {
-			// MS doesn't have a getter here
-			//get { return (Point[]) GetValue (PointsProperty); }
+		public PointCollection Points {
+			get { return (PointCollection)GetValue (PointsProperty); }
 			set { SetValue (PointsProperty, value); }
 		}
 		
