@@ -23,21 +23,21 @@
 #define CONTROL_FONT_STYLE   FontStylesNormal
 #define CONTROL_FONT_SIZE    14.666666984558105
 
-static DependencyProperty *BackgroundProperty;
-static DependencyProperty *BorderBrushProperty;
-static DependencyProperty *BorderThicknessProperty;
-static DependencyProperty *FontFamilyProperty;
-static DependencyProperty *FontSizeProperty;
-static DependencyProperty *FontStretchProperty;
-static DependencyProperty *FontStyleProperty;
-static DependencyProperty *FontWeightProperty;
-static DependencyProperty *ForegroundProperty;
-static DependencyProperty *HorizontalContentAlignmentProperty;
-static DependencyProperty *IsTabStopProperty;
-static DependencyProperty *PaddingProperty;
-static DependencyProperty *TabIndexProperty;
-static DependencyProperty *TabNavigationProperty;
-static DependencyProperty *VerticalContentAlignmentProperty;
+DependencyProperty *Control::BackgroundProperty;
+DependencyProperty *Control::BorderBrushProperty;
+DependencyProperty *Control::BorderThicknessProperty;
+DependencyProperty *Control::FontFamilyProperty;
+DependencyProperty *Control::FontSizeProperty;
+DependencyProperty *Control::FontStretchProperty;
+DependencyProperty *Control::FontStyleProperty;
+DependencyProperty *Control::FontWeightProperty;
+DependencyProperty *Control::ForegroundProperty;
+DependencyProperty *Control::HorizontalContentAlignmentProperty;
+DependencyProperty *Control::IsTabStopProperty;
+DependencyProperty *Control::PaddingProperty;
+DependencyProperty *Control::TabIndexProperty;
+DependencyProperty *Control::TabNavigationProperty;
+DependencyProperty *Control::VerticalContentAlignmentProperty;
 
 Control::Control ()
 {
