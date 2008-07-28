@@ -1,3 +1,8 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* StrokeCollection.cs: stub out PresentationFrameworkCollection<T>
+	overrides.
+
 2008-01-09  Chris Toshok  <toshok@ximian.com>
 
 	* StrokeCollection.cs: implement GetBounds.

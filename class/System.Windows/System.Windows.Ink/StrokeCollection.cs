@@ -23,6 +23,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Security;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
@@ -41,6 +42,9 @@ namespace System.Windows.Ink
 		{
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public Rect GetBounds ()
 		{
 			UnmanagedRect urect = new UnmanagedRect();
@@ -48,6 +52,9 @@ namespace System.Windows.Ink
 			return new Rect (urect.left, urect.top, urect.width, urect.height);
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public StrokeCollection HitTest (StylusPointCollection stylusPointCollection)
 		{
 			IntPtr col = NativeMethods.stroke_collection_hit_test (native, stylusPointCollection.native);
@@ -55,6 +62,36 @@ namespace System.Windows.Ink
 				return null;
 
 			return (StrokeCollection)DependencyObject.Lookup (Kind.STROKE_COLLECTION, col);
+		}
+
+		public override bool Contains (Stroke stroke)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (Stroke stroke)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (Stroke stroke)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (Stroke stroke)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, Stroke stroke)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override Stroke this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
 		}
 		
 		internal override Kind GetKind ()
