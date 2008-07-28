@@ -18,7 +18,7 @@ xaml2html_exe_CS = 	\
 xaml2html.exe: $(xaml2html_exe_CS) 
 	gmcs -debug -out:$@ $(xaml2html_exe_CS) -res:sl2template.html
 
-xaml2html: $(srcdir)/../launcher.in
+xaml2html: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > xaml2html
 	chmod +x xaml2html
 

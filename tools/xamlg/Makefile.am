@@ -18,7 +18,7 @@ xamlg_exe_CS = 		\
 xamlg.exe: $(xamlg_exe_CS) 
 	gmcs -debug -out:$@ $(xamlg_exe_CS) -r:System -r:System.Xml
 
-xamlg: $(srcdir)/../launcher.in
+xamlg: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > xamlg
 	chmod +x xamlg
 

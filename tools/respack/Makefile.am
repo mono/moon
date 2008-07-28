@@ -15,7 +15,7 @@ CLEANFILES = 		\
 respack.exe: $(srcdir)/respack.cs
 	gmcs -d:LINQ -debug -out:$@ $(srcdir)/respack.cs $(srcdir)/../Options.cs
 
-respack: $(srcdir)/../launcher.in
+respack: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > respack
 	chmod +x respack
 

@@ -18,7 +18,7 @@ mxap_exe_CS = 		\
 mxap.exe: $(mxap_exe_CS) 
 	gmcs -debug -out:$@ $(mxap_exe_CS) -r:System -r:System.Xml
 
-mxap: $(srcdir)/../launcher.in
+mxap: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > mxap
 	chmod +x mxap
 

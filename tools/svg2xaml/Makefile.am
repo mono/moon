@@ -29,7 +29,7 @@ svg2xaml_gui_exe_CS = 		\
 	$(srcdir)/gtk-gui/MainWindow.cs	\
 	$(srcdir)/gtk-gui/generated.cs
 
-svg2xaml: $(srcdir)/../launcher.in
+svg2xaml: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > svg2xaml
 	chmod +x svg2xaml
 
