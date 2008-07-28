@@ -39,8 +39,7 @@ namespace System.Windows {
 	//
 	public abstract class PresentationFrameworkCollection<T> : DependencyObject,
 		IEnumerable, IList,
-		IList<T>, ICollection<T>
-		where T : DependencyObject {
+		IList<T>, ICollection<T> {
 
 		public static readonly System.Windows.DependencyProperty CountProperty =
 			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (int));
@@ -70,15 +69,7 @@ namespace System.Windows {
 			return NativeMethods.collection_add (native, dob.native);
 		}
 		
-		public virtual void Add (T value)
-		{
-			// FIXME: this is supposed to be abstract
-			DependencyObject dob = value as DependencyObject;
-			if (dob == null)
-				throw new Exception ("The collection only supports DependencyObjects");
-			
-			NativeMethods.collection_add (native, dob.native);
-		}
+		public abstract void Add (T value);
 		
 		void IList.Remove (object value)
 		{
@@ -89,15 +80,7 @@ namespace System.Windows {
 			NativeMethods.collection_remove (native, dob.native);
 		}
 		
-		public virtual bool Remove (T value)
-		{
-			// FIXME: this is supposed to be abstract
-			DependencyObject dob = value as DependencyObject;
-			if (dob == null)
-				throw new Exception ("The collection only supports DependencyObjects");
-			
-			return NativeMethods.collection_remove (native, dob.native);
-		}
+		public abstract bool Remove (T value);
 		
 		public void Clear ()
 		{
@@ -113,15 +96,8 @@ namespace System.Windows {
 			NativeMethods.collection_insert (native, index, dob.native);
 		}
 		
-		public virtual void Insert (int index, T value)
-		{
-			DependencyObject dob = value as DependencyObject;
-			if (dob == null)
-				throw new Exception ("The collection only supports DependencyObjects");
-			
-			NativeMethods.collection_insert (native, index, dob.native);
-		}
-		
+		public abstract void Insert (int index, T value);
+
 		public void RemoveAt (int index)
 		{
 			NativeMethods.collection_remove_at (native, index);
@@ -185,25 +161,9 @@ namespace System.Windows {
 			}
 		}
 		
-		public virtual T this [int index] {
-			get {
-				IntPtr o = NativeMethods.collection_get_value_at (native, index);
-				
-				if (o == IntPtr.Zero)
-					throw new ArgumentOutOfRangeException ("index");
-				
-				Kind k = NativeMethods.dependency_object_get_object_type (o);
-				return DependencyObject.Lookup (k, o) as T;
-			}
-			
-			set {
-				DependencyObject dob = value as DependencyObject;
-				
-				if (dob == null)
-					throw new Exception ("The collection only supports DependencyObjects");
-
-				NativeMethods.collection_set_value_at (native, index, dob.native);
-			}
+		public abstract T this [int index] {
+			get;
+			set;
 		}
 		
 		public object SyncRoot {
@@ -256,6 +216,8 @@ namespace System.Windows {
 
 			public object Current {
 				get {
+					throw new NotImplementedException ();
+#if false
 					int error;
 					IntPtr o = NativeMethods.collection_iterator_get_current (native_iter, out error);
 					Kind k;
@@ -269,6 +231,7 @@ namespace System.Windows {
 					k = NativeMethods.dependency_object_get_object_type (o);
 					
 					return DependencyObject.Lookup (k, o);
+#endif
 				}
 			}
 
@@ -307,6 +270,8 @@ namespace System.Windows {
 
 			T GetCurrent ()
 			{
+				throw new NotImplementedException ();
+#if false
 				int error;
 				IntPtr o = NativeMethods.collection_iterator_get_current (native_iter, out error);
 				Kind k;
@@ -320,6 +285,7 @@ namespace System.Windows {
 				k = NativeMethods.dependency_object_get_object_type (o);
 				
 				return (T) DependencyObject.Lookup (k, o);
+#endif
 			}
 			
 			public T Current {
@@ -397,11 +363,7 @@ namespace System.Windows {
 			return ((IList) this).IndexOf (value) != -1;
 		}
 		
-		public virtual bool Contains (T value)
-		{
-			// FIXME: this is supposed to be abstract
-			return IndexOf (value) != -1;
-		}
+		public abstract bool Contains (T value);
 		
 		int IList.IndexOf (object value)
 		{
@@ -415,18 +377,7 @@ namespace System.Windows {
 			return NativeMethods.collection_index_of (native, dob.native);
 		}
 		
-		public virtual int IndexOf (T value)
-		{
-			// FIXME: this is supposed to be abstract
-			if (value == null)
-				throw new ArgumentNullException ("value");
-			
-			DependencyObject dob = value as DependencyObject;
-			if (dob == null)
-				throw new Exception ("The collection only supports DependencyObjects");
-			
-			return NativeMethods.collection_index_of (native, dob.native);
-		}
+		public abstract int IndexOf (T value);
 
 		public bool IsFixedSize {
 			get {

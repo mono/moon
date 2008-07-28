@@ -1,5 +1,12 @@
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
+	* PresentationFrameworkCollection.cs: remove the DependencyObject
+	subclass restriction (required for the StylusPoint change), and
+	make the methods abstract that are supposed to be.  let's fix this
+	:)
+
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
 	* TriggerCollection.cs: stub out
 	PresentationFrameworkCollection<T> overrides.
 
