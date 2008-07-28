@@ -248,7 +248,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Shapes/Polygon.cs				\
 	$(srcdir)/System.Windows.Shapes/Polyline.cs				\
 	$(srcdir)/System.Windows.Shapes/Rectangle.cs				\
-	$(srcdir)/System.Windows.Shapes/Shape.cs
+	$(srcdir)/System.Windows.Shapes/Shape.cs				\
+	$(srcdir)/System.Windows.Threading/Dispatcher.cs			\
+	$(srcdir)/System.Windows.Threading/DispatcherOperation.cs		\
+	$(srcdir)/System.Windows.Threading/DispatcherSynchronizationContext.cs	\
+	$(srcdir)/System.Windows.Threading/DispatcherTimer.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\

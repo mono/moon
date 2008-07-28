@@ -1,3 +1,8 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add the
+	System.Windows.Threading directory.
+
 2008-07-26  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): remove

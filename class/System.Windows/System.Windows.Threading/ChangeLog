@@ -1,0 +1,10 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* Dispatcher.cs: new stubs.
+
+	* DispatcherTimer.cs: same.
+
+	* DispatcherSynchronizationContext.cs: same.
+
+	* DispatcherOperation.cs: same.
+
