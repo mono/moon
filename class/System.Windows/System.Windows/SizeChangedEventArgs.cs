@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Security;
 
 namespace System.Windows
 {
@@ -39,12 +40,18 @@ namespace System.Windows
 		public SizeChangedEventArgs ()
 		{
 		}
-		
+
 		public Size NewSize {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get { return new_size; }
 		}
-		
+
 		public Size PreviousSize {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get { return previous_size; }
 		}
 	}
