@@ -44,5 +44,35 @@ namespace System.Windows.Media {
 		{
 			return Kind.PATHFIGURE_COLLECTION;
 		}
+
+		public override bool Contains (PathFigure figure)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (PathFigure figure)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (PathFigure figure)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (PathFigure figure)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, PathFigure figure)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override PathFigure this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

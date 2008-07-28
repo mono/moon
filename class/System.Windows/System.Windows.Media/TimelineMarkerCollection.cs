@@ -40,5 +40,35 @@ namespace System.Windows.Media {
 		{
 			return Kind.TIMELINEMARKER_COLLECTION;
 		}
+
+		public override bool Contains (TimelineMarker marker)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (TimelineMarker marker)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (TimelineMarker marker)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (TimelineMarker marker)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, TimelineMarker marker)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override TimelineMarker this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

@@ -44,5 +44,35 @@ namespace System.Windows.Media {
 		{
 			return Kind.GEOMETRY_COLLECTION;
 		}
+
+		public override bool Contains (Geometry geometry)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (Geometry geometry)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (Geometry geometry)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (Geometry geometry)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, Geometry geometry)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override Geometry this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

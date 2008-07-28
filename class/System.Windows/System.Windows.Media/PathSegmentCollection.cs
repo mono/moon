@@ -44,5 +44,35 @@ namespace System.Windows.Media {
 		{
 			return Kind.PATHSEGMENT_COLLECTION;
 		}
+
+		public override bool Contains (PathSegment segment)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (PathSegment segment)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (PathSegment segment)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (PathSegment segment)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, PathSegment segment)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override PathSegment this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

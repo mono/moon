@@ -44,5 +44,35 @@ namespace System.Windows.Media {
 		{
 			return Kind.TRANSFORM_COLLECTION;
 		}
+
+		public override bool Contains (Transform transform)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (Transform transform)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (Transform transform)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (Transform transform)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, Transform transform)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override Transform this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

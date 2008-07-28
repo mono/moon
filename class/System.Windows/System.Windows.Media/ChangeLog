@@ -1,5 +1,20 @@
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
+	* GradientStopCollection.cs: stub out
+	PresentationFrameworkCollection<T> overrides.
+
+	* TimelineMarkerCollection.cs: same.
+
+	* GeometryCollection.cs: same.
+
+	* PathFigureCollection.cs: same.
+
+	* TransformCollection.cs: same.
+
+	* PathSegmentCollection.cs: same.
+
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
 	* PointCollection.cs, DoubleCollection.cs: new classes.
 
 2008-07-23  Jeffrey Stedfast  <fejj@novell.com>
