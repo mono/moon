@@ -44,5 +44,36 @@ namespace System.Windows.Controls {
 		{
 			return Kind.COLUMNDEFINITION_COLLECTION;
 		}
+
+		public override bool Contains (ColumnDefinition column)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (ColumnDefinition column)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (ColumnDefinition column)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (ColumnDefinition column)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, ColumnDefinition column)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override ColumnDefinition this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
+
 	}
 }

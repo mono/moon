@@ -27,6 +27,7 @@ using Mono;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security;
 using System.Windows;
 using System.Windows.Ink;
 using System.Windows.Input;
@@ -112,26 +113,41 @@ namespace System.Windows.Controls
 			return base.GetValue (dp);
 		}
 		
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public void Pause ()
 		{
 			NativeMethods.media_element_pause (native);
 		}
 		
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public void Play ()
 		{
 			NativeMethods.media_element_play (native);
 		}
 		
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public void SetSource (Stream stream)
 		{
 			throw new NotImplementedException ();
 		}
 		
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public void SetSource (MediaStreamSource mediaStreamSource)
 		{
 			throw new NotImplementedException ();
 		}
 		
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public void Stop ()
 		{
 			NativeMethods.media_element_stop (native);
