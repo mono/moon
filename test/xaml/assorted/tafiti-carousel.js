@@ -209,7 +209,7 @@ function createCarousel ()
         '<Canvas \
             xmlns="http://schemas.microsoft.com/client/2007" \
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" \
-            x:Name="carousel" Left="100" Top="100"> \
+            x:Name="carousel" Canvas.Left="100" Canvas.Top="100"> \
 	    <Image Source="carousel.png" /> \
 	    <Canvas.RenderTransform> \
                 <TranslateTransform x:Name="%translate%" /> \
@@ -367,6 +367,7 @@ function addImage (imagePath, imageWidth, imageHeight, imageName)
     	carousel.findName(generateName ("scale", imageName)).CenterY = imageHeight / 2;
 
 	imagesLength += 1;
+
 
     	if (imagesLength == 1) {
         	// Hook the storyboard's 'Completed' event for just the first image.
