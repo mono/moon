@@ -45,5 +45,35 @@ namespace System.Windows {
 		{
 			return Kind.ASSEMBLYPART_COLLECTION;
 		}
+
+		public override bool Contains (AssemblyPart part)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (AssemblyPart part)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (AssemblyPart part)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (AssemblyPart part)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, AssemblyPart part)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override AssemblyPart this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

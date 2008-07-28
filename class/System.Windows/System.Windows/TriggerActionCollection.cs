@@ -26,10 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using Mono;
+using System.Windows.Media.Animation;
+
 namespace System.Windows 
 {
-	public sealed class TriggerActionCollection :
-				PresentationFrameworkCollection<System.Windows.Media.Animation.BeginStoryboard>  
+	public sealed class TriggerActionCollection : PresentationFrameworkCollection<BeginStoryboard>  
 	{
 		public TriggerActionCollection(): base (Mono.NativeMethods.trigger_action_collection_new ())
 		{
@@ -43,6 +44,37 @@ namespace System.Windows
 		internal override Kind GetKind()
 		{
 			return Kind.TRIGGERACTION_COLLECTION;
+		}
+
+
+		public override bool Contains (BeginStoryboard action)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (BeginStoryboard action)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (BeginStoryboard action)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (BeginStoryboard action)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, BeginStoryboard action)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override BeginStoryboard this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
 		}
 	}
 }
