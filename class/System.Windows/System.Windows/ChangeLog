@@ -1,5 +1,10 @@
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
+	* PresentationFrameworkCollection.cs: implement
+	GenericCollectionIterator.GetCurrent in a non-DO specific way.
+
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
 	* PresentationFrameworkCollection.cs: track change to collection
 	unmanaged api.
 

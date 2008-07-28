@@ -270,22 +270,21 @@ namespace System.Windows {
 
 			T GetCurrent ()
 			{
-				throw new NotImplementedException ();
-#if false
 				int error;
-				IntPtr o = NativeMethods.collection_iterator_get_current (native_iter, out error);
+				IntPtr val = NativeMethods.collection_iterator_get_current (native_iter, out error);
 				Kind k;
 
 				if (error == 1)
 					throw GetInvalid ();
 				
-				if (o == IntPtr.Zero)
-					return null;
-				
-				k = NativeMethods.dependency_object_get_object_type (o);
-				
-				return (T) DependencyObject.Lookup (k, o);
-#endif
+				if (val == IntPtr.Zero) {
+					// not sure if this is valid,
+					// as _get_current returns a
+					// Value*
+					return default(T);
+				}
+
+				return (T) DependencyObject.ValueToObject (val);
 			}
 			
 			public T Current {
