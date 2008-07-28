@@ -106,6 +106,11 @@ url:http://minbashian.com/matrixanim.html
 rating:4
  * works
 
+site:Media Preview TV
+url:http://www.mediapreview.tv/
+rating:0
+ * Never finishes loading. Stays at 99%
+
 site:Minesweeper
 url:http://www.softencrypt.com/mines/
 rating:4
@@ -158,8 +163,8 @@ rating:4
 
 site:Podium '08
 url:http://election.msn.com/podium08.aspx
-rating:4
- * Works
+rating:3
+ * Works, but animation on for the Issues column is slow
 
 site:Poker
 url:http://home.people.net.au/~chriso/poker/poker.html
@@ -235,14 +240,13 @@ rating:-1
 site:Trainmaster Cannonball Watch
 url: http://xmldocs.net/ball/
 rating:2
- * Night time lights are slow
- * not sync'd with system time bug 402035
- * stop watch second hand is broken bug 402370
+ * Night time lights are slow Bug 412445
 
-site:Video Page Turn
+site:Video Tutorials
 url:http://mapul.com/Tutorials.html
-rating:3
+rating:2
  * Animation is slow if there is a video playing Bug 410638
+ * Playback controls don't work Bug 412444
 
 site:Video Slide puzzle
 url:http://miguelmoreno.net/sandbox/Silverlight_0/
