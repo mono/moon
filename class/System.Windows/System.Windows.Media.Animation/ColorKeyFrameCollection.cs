@@ -41,5 +41,35 @@ namespace System.Windows.Media.Animation
 		{
 			return Kind.COLORKEYFRAME_COLLECTION;
 		}
+
+		public override bool Contains (ColorKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (ColorKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (ColorKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (ColorKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, ColorKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override ColorKeyFrame this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

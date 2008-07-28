@@ -42,5 +42,35 @@ namespace System.Windows.Media.Animation
 		{
 			return Kind.POINTKEYFRAME_COLLECTION;
 		}
+
+		public override bool Contains (PointKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (PointKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (PointKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (PointKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, PointKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override PointKeyFrame this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

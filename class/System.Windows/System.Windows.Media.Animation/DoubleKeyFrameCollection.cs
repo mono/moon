@@ -42,5 +42,35 @@ namespace System.Windows.Media.Animation
 		{
 			return Kind.DOUBLEKEYFRAME_COLLECTION;
 		}
+
+		public override bool Contains (DoubleKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (DoubleKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (DoubleKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (DoubleKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, DoubleKeyFrame keyframe)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override DoubleKeyFrame this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

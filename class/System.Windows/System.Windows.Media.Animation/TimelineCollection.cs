@@ -45,5 +45,35 @@ namespace System.Windows.Media.Animation {
 		{
 			return Kind.TIMELINE_COLLECTION;
 		}
+
+		public override bool Contains (Timeline timeline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override bool Remove (Timeline timeline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override int IndexOf (Timeline timeline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Add (Timeline timeline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override void Insert (int index, Timeline timeline)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override Timeline this[int index] {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

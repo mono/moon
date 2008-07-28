@@ -1,3 +1,11 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* TimelineCollection.cs: stub out
+	PresentationFrameworkCollection<T> overrides.
+
+	* ColorKeyFrameCollection.cs, DoubleKeyFrameCollection.cs,
+	PointKeyFrameCollection.cs: same.
+
 2008-07-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* TimelineCollection.cs: Moved.
