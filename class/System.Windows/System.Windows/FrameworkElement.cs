@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using Mono;
+using System.Security;
 
 namespace System.Windows {
 	public abstract class FrameworkElement : UIElement {
@@ -54,7 +55,11 @@ namespace System.Windows {
 			}
 		}
 
-		public object Parent {
+		public DependencyObject Parent
+		{
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get {
 				IntPtr parent_handle = NativeMethods.uielement_get_parent (native);
 				if (parent_handle == IntPtr.Zero)
@@ -80,6 +85,9 @@ namespace System.Windows {
 			return Kind.FRAMEWORKELEMENT;
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public object FindName (string name)
 		{
 			return DepObjectFindName (name);
