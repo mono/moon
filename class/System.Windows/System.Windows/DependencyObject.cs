@@ -63,7 +63,7 @@ namespace System.Windows {
 				return _native;
 			}
 
-			private set {
+			set {
 				_native = value;
 				if (objects.ContainsKey (value))
 					return;
@@ -84,6 +84,11 @@ namespace System.Windows {
 			NativeMethods.runtime_init (0);
 			moonlight_thread = Thread.CurrentThread;
 			Helper.Agclr = typeof (DependencyObject).Assembly;
+		}
+
+		internal DependencyObject ()
+		{
+			events = new EventHandlerList ();
 		}
 
 		internal DependencyObject (IntPtr raw)
