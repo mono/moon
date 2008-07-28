@@ -25,12 +25,21 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System.Collections.Generic;
+using System.Security;
 
 namespace System.Windows {
 	public sealed class StartupEventArgs : EventArgs {
 
 		public StartupEventArgs () {}
 
-		public IDictionary<string,string> InitParams { get; internal set; }
+
+		public IDictionary<string,string> InitParams {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
+			get;
+
+			internal set;
+		}
 	}
 }

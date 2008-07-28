@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Security;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
@@ -193,6 +194,9 @@ namespace System.Windows {
 		}
 
 		public Size DesiredSize {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get {
 				return System.Windows.NativeMethods2.uielement_get_desired_size (native);
 			}
