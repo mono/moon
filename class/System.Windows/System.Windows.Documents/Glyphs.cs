@@ -27,83 +27,87 @@
 //
 
 using Mono;
+using System;
 using System.Windows;
 using System.Windows.Media;
 
 namespace System.Windows.Documents {
-
 	public sealed class Glyphs : FrameworkElement {
-
 		public static readonly DependencyProperty FillProperty =
 			DependencyProperty.Lookup (Kind.GLYPHS, "Fill", typeof (Brush));
+		
 		public static readonly DependencyProperty FontRenderingEmSizeProperty =
 			DependencyProperty.Lookup (Kind.GLYPHS, "FontRenderingEmSize", typeof (double));
+		
 		public static readonly DependencyProperty FontUriProperty =
-			DependencyProperty.Lookup (Kind.GLYPHS, "FontUri", typeof (string));
-		public static readonly DependencyProperty IndicesProperty=
+			DependencyProperty.Lookup (Kind.GLYPHS, "FontUri", typeof (Uri));
+		
+		public static readonly DependencyProperty IndicesProperty =
 			DependencyProperty.Lookup (Kind.GLYPHS, "Indices", typeof (string));
+		
 		public static readonly DependencyProperty OriginXProperty =
 			DependencyProperty.Lookup (Kind.GLYPHS, "OriginX", typeof (double));
+		
 		public static readonly DependencyProperty OriginYProperty =
 			DependencyProperty.Lookup (Kind.GLYPHS, "OriginY", typeof (double));
+		
 		public static readonly DependencyProperty StyleSimulationsProperty =
 			DependencyProperty.Lookup (Kind.GLYPHS, "StyleSimulations", typeof (StyleSimulations));
+		
 		public static readonly DependencyProperty UnicodeStringProperty =
 			DependencyProperty.Lookup (Kind.GLYPHS, "UnicodeString", typeof (string));
-
-
+		
 		public Glyphs ()  : base (NativeMethods.glyphs_new ())
 		{
 		}
-
+		
 		internal Glyphs (IntPtr raw) : base (raw)
 		{
 		}
-
+		
+		internal override Kind GetKind ()
+		{
+			return Kind.GLYPHS;
+		}
+		
 		public Brush Fill {
 			get { return (Brush) GetValue (FillProperty); }
 			set { SetValue (FillProperty, value); }
 		}
-
+		
 		public double FontRenderingEmSize {
 			get { return (double) GetValue (FontRenderingEmSizeProperty); }
 			set { SetValue (FontRenderingEmSizeProperty, value); }
 		}
-
+		
 		public Uri FontUri {
-			// Uri is not a DependencyProperty so we convert it to string.
-			get { return new Uri ((string) GetValue (FontUriProperty)); }
-			set { SetValue (FontUriProperty, value.OriginalString); }
+			get { return (Uri) GetValue (FontUriProperty); }
+			set { SetValue (FontUriProperty, value); }
 		}
-
+		
 		public string Indices {
 			get { return (string) GetValue (IndicesProperty); }
 			set { SetValue (IndicesProperty, value); }
 		}
-
+		
 		public double OriginX {
 			get { return (double) GetValue (OriginXProperty); }
 			set { SetValue (OriginXProperty, value); }
 		}
-
+		
 		public double OriginY {
 			get { return (double) GetValue (OriginYProperty); }
 			set { SetValue (OriginYProperty, value); }
 		}
-
+		
 		public StyleSimulations StyleSimulations {
 			get { return (StyleSimulations) GetValue (StyleSimulationsProperty); }
 			set { SetValue (StyleSimulationsProperty, value); }
 		}
-
+		
 		public string UnicodeString {
 			get { return (string) GetValue (UnicodeStringProperty); }
 			set { SetValue (UnicodeStringProperty, value); }
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.GLYPHS;
 		}
 	}
 }

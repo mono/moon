@@ -1,5 +1,8 @@
 2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Glyphs.cs: FontUriProperty is not of type string, change it to
+	Uri. Also, do not do conversion in the property accessors.
+
 	* Inline.cs: Added Language property and fixed ctor.
 
 	* FontSource.cs: Added
