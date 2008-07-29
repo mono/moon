@@ -22,10 +22,10 @@ G_BEGIN_DECLS
 #include "xaml.h"
 
 struct Thickness {
-	double bottom;
-	double right;
 	double left;
 	double top;
+	double right;
+	double bottom;
 	
 	Thickness (double uniform)
 	{

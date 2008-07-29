@@ -77,6 +77,13 @@ namespace Mono {
 		public double height;
 	}
 
+	public struct UnmanagedThickness {
+		public double left;
+		public double top;
+		public double right;
+		public double bottom;
+	}
+
 	[StructLayout(LayoutKind.Explicit)]
 	public struct ValUnion {
 		[FieldOffset(0)] public double d;

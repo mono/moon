@@ -324,6 +324,11 @@ namespace System.Windows {
 					return new Rect (rect->left, rect->top, rect->width, rect->height);
 				}
 				
+				case Kind.THICKNESS: {
+					UnmanagedThickness *thickness = (UnmanagedThickness*)val->u.p;
+					return new Thickness (thickness->left, thickness->top, thickness->right, thickness->bottom);
+				}
+
 				case Kind.DOUBLE_ARRAY: {
 					UnmanagedArray *array = (UnmanagedArray*)val->u.p;
 					double [] values = new double [array->count];
@@ -478,6 +483,11 @@ namespace System.Windows {
 					value.k = Kind.POINT;
 					value.u.p = Helper.AllocHGlobal (sizeof (Point));
 					Marshal.StructureToPtr (pnt, value.u.p, false); // Unmanaged and managed structure layout is equal.
+				} else if (v is Thickness) {
+					Thickness thickness = (Thickness)v;
+					value.k = Kind.THICKNESS;
+					value.u.p = Helper.AllocHGlobal (sizeof (Thickness));
+					Marshal.StructureToPtr (thickness, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				} else if (v is Color){
 					Color c = (Color) v;
 					value.k = Kind.COLOR;

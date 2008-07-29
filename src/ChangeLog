@@ -1,3 +1,8 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* control.h (struct Thickness): reorder fields to match managed
+	struct.
+
 2008-07-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* typegen/typegen.cs: Added Thickness.
@@ -18,7 +23,7 @@
 
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 	
-	 * collection.cpp (collection_iterator_next): move the check for
+	* collection.cpp (collection_iterator_next): move the check for
 	index-in-range to after the increment of it.  that way managed
 	code doesn't step off the end of the list.
 

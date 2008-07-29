@@ -1,5 +1,10 @@
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
+	* DependencyObject.cs (ValueToObject): add Thickness support.
+	(GetAsValue): same.
+
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
 	* PresentationFrameworkCollection.cs: remove the rest of the DO
 	specific code.
 

@@ -1,3 +1,7 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: add UnmanagedThickness struct.
+
 2008-07-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* NativeMethods.cs: Updated the rest of the collection_*() API.
