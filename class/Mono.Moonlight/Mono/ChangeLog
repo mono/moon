@@ -1,3 +1,7 @@
+2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeMethods.cs: Added binding for inline_new().
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* Value.cs: add UnmanagedSize struct.

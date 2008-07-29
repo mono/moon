@@ -195,14 +195,20 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static IntPtr text_block_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr run_new ();
 #endregion
 
 #region Documents
 		[DllImport ("moon")]
 		public extern static IntPtr glyphs_new ();
+		
+		[DllImport ("moon")]
+		public extern static IntPtr inline_new ();
+		
+		[DllImport("moon")]
+		public extern static IntPtr linebreak_new ();
+		
+		[DllImport("moon")]
+		public extern static IntPtr run_new ();
 #endregion
 		
 #region Collections
