@@ -35,6 +35,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -273,7 +274,7 @@ namespace System.Windows {
 				throw new ArgumentNullException ("property");
 			
 			CheckNativeAndThread ();
-
+			
 			IntPtr val = NativeMethods.dependency_object_get_value (native, property.native);
 			if (val == IntPtr.Zero) {
 				if (property.IsValueType && !property.IsNullable)
@@ -281,18 +282,17 @@ namespace System.Windows {
 				
 				return null;
 			}
-
-			return ValueToObject (val);
+			
+			return ValueToObject (property.Type, val);
 		}
 
 		static bool slow_codepath_error_shown = false;
 		
-		internal static object ValueToObject (IntPtr value)
+		internal static object ValueToObject (Type type, IntPtr value)
 		{
-						
 			unsafe {
-				Value* val = (Value *) value;
-
+				Value *val = (Value *) value;
+				
 				switch (val->k) {
 				case Kind.INVALID:
 					return null;
@@ -315,14 +315,29 @@ namespace System.Windows {
 				case Kind.INT32:
 					return val->u.i32;
 
-				case Kind.STRING:
-					return Helper.PtrToStringAuto (val->u.p);
-
+				case Kind.STRING: {
+					string str = Helper.PtrToStringAuto (val->u.p);
+					if (type == null)
+						return str;
+					
+					// marshall back to the .NET type that we simply serialised as 'string' for unmanaged usage
+					switch (type.FullName) {
+					case "System.Windows.Markup.XmlLanguage":
+						return XmlLanguage.GetLanguage (str);
+					case "System.Windows.Media.FontFamily":
+						return new FontFamily (str);
+					case "System.Uri":
+						return new Uri (str);
+					default:
+						return str;
+					}
+				}
+				
 				case Kind.POINT: {
 					UnmanagedPoint *point = (UnmanagedPoint*)val->u.p;
 					return new Point (point->x, point->y);
 				}
-					
+				
 				case Kind.RECT: {
 					UnmanagedRect *rect = (UnmanagedRect*)val->u.p;
 					return new Rect (rect->left, rect->top, rect->width, rect->height);
@@ -417,7 +432,7 @@ namespace System.Windows {
 		{
 			Value value = new Value ();
 			unsafe {
-				if (v is DependencyObject){
+				if (v is DependencyObject) {
 					DependencyObject dov = (DependencyObject) v;
 
 					if (dov.native == IntPtr.Zero)
@@ -436,23 +451,23 @@ namespace System.Windows {
 				} else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
 					value.k = Kind.INT32;
 					value.u.i32 = (int) v;
-				} else if (v is bool){
+				} else if (v is bool) {
 					value.k = Kind.BOOL;
 					value.u.i32 = ((bool) v) ? 1 : 0;
-				} else if (v is double){
+				} else if (v is double) {
 					value.k = Kind.DOUBLE;
 					value.u.d = (double) v;
-				} else if (v is long){
+				} else if (v is long) {
 					value.k = Kind.INT64;
 					value.u.i64 = (long) v;
 				} else if (v is TimeSpan) {
 					TimeSpan ts = (TimeSpan) v;
 					value.k = Kind.TIMESPAN;
 					value.u.i64 = ts.Ticks;
-				} else if (v is ulong){
+				} else if (v is ulong) {
 					value.k = Kind.UINT64;
 					value.u.ui64 = (ulong) v;
-				} else if (v is string){
+				} else if (v is string) {
 					value.k = Kind.STRING;
 
 					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (v as string);
@@ -461,7 +476,7 @@ namespace System.Windows {
 					Marshal.WriteByte (result, bytes.Length, 0);
 
 					value.u.p = result;
-				} else if (v is double []){
+				} else if (v is double []) {
 					double [] dv = (double []) v;
 
 					value.k = Kind.DOUBLE_ARRAY;
@@ -470,7 +485,7 @@ namespace System.Windows {
 					array->count = dv.Length;
 					array->refcount = 1;
 					Marshal.Copy (dv, 0, (IntPtr) (&array->first_d), array->count);
-				} else if (v is Point []){
+				} else if (v is Point []) {
 					Point [] dv = (Point []) v;
 
 					value.k = Kind.POINT_ARRAY;
@@ -502,7 +517,7 @@ namespace System.Windows {
 					value.k = Kind.THICKNESS;
 					value.u.p = Helper.AllocHGlobal (sizeof (Thickness));
 					Marshal.StructureToPtr (thickness, value.u.p, false); // Unmanaged and managed structure layout is equal.
-				} else if (v is Color){
+				} else if (v is Color) {
 					Color c = (Color) v;
 					value.k = Kind.COLOR;
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedColor));
@@ -539,6 +554,39 @@ namespace System.Windows {
 					rep->kind = d.kind;
 					rep->count = d.count;
 					rep->timespan = d.duration.Ticks;
+				} else if (v is FontFamily) {
+					FontFamily family = v as FontFamily;
+					
+					value.k = Kind.STRING;
+					
+					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (family.Source);
+					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
+					Marshal.Copy (bytes, 0, result, bytes.Length);
+					Marshal.WriteByte (result, bytes.Length, 0);
+					
+					value.u.p = result;
+				} else if (v is Uri) {
+					Uri uri = v as Uri;
+					
+					value.k = Kind.STRING;
+					
+					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (uri.OriginalString);
+					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
+					Marshal.Copy (bytes, 0, result, bytes.Length);
+					Marshal.WriteByte (result, bytes.Length, 0);
+					
+					value.u.p = result;
+				} else if (v is XmlLanguage) {
+					XmlLanguage lang = v as XmlLanguage;
+					
+					value.k = Kind.STRING;
+					
+					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (lang.IetfLanguageTag);
+					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
+					Marshal.Copy (bytes, 0, result, bytes.Length);
+					Marshal.WriteByte (result, bytes.Length, 0);
+					
+					value.u.p = result;
 				} else {
 					throw new Exception (
 						String.Format ("Do not know how to encode {0} yet", v.GetType ()));
@@ -562,7 +610,7 @@ namespace System.Windows {
 
 			CheckNativeAndThread ();
 			
-			if (obj == null){
+			if (obj == null) {
 				NativeMethods.dependency_object_set_value (native, property.native, IntPtr.Zero);
 				return;
 			}
@@ -599,7 +647,7 @@ namespace System.Windows {
 		
 		private void CheckNativeAndThread ()
 		{
-			if (native == IntPtr.Zero){
+			if (native == IntPtr.Zero) {
 				throw new Exception (
 					string.Format ("Uninitialized object: this object ({0}) has not set its native handle or overwritten SetValue", GetType ().FullName));
 			}

@@ -25,6 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using Mono;
 using System;
 using System.Windows;
@@ -160,8 +161,9 @@ namespace System.Windows {
 		
 		internal class CollectionIterator : System.Collections.IEnumerator {
 			IntPtr native_iter;
+			Type type;
 			
-			public CollectionIterator(IntPtr native_iter)
+			public CollectionIterator(Type type, IntPtr native_iter)
 			{
 				this.native_iter = native_iter;
 			}
@@ -196,7 +198,7 @@ namespace System.Windows {
 					if (val == IntPtr.Zero)
 						return null;
 					
-					return DependencyObject.ValueToObject (val);
+					return DependencyObject.ValueToObject (type, val);
 				}
 			}
 
@@ -248,8 +250,8 @@ namespace System.Windows {
 					// Value*
 					return default(T);
 				}
-
-				return (T) DependencyObject.ValueToObject (val);
+				
+				return (T) DependencyObject.ValueToObject (typeof (T), val);
 			}
 			
 			public T Current {
@@ -290,7 +292,7 @@ namespace System.Windows {
 		
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
-			return new CollectionIterator (NativeMethods.collection_get_iterator (native));
+			return new CollectionIterator (typeof (T), NativeMethods.collection_get_iterator (native));
 		}
 		
 		protected internal bool ContainsDependencyObject (DependencyObject value)

@@ -1,3 +1,16 @@
+2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PresentationFrameworkCollection.cs: Updated for DependencyObject
+	API changes.
+
+	* DependencyObject.cs (ValueAsObject): Now takes a Type argument
+	so that we can marshall Kind.STRING back to the proper .NET type.
+	(GetAsValue): Marshall FontFamily, Uri, and XmlLanguage to
+	Kind.STRING.
+
+	* DependencyProperty.cs: Allow us to get the Type and renamed
+	GetKind property to just Kind.
+
 2008-07-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyProperty.cs: Update error message from agclr/agmono to

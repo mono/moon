@@ -88,16 +88,20 @@ namespace System.Windows {
 			get { return NativeMethods.dependency_property_is_nullable (native); }
 		}
 		
-		internal Kind GetKind {
+		internal Kind Kind {
 			get { return NativeMethods.dependency_property_get_property_type (native); }
 		}
 		
 		internal bool IsValueType {
-			get { return NativeMethods.type_get_value_type (GetKind); }
+			get { return NativeMethods.type_get_value_type (this.Kind); }
 		}
 		
 		internal Kind DeclaringType {
 			get { return declaring_type; }
-		}		
+		}
+		
+		internal Type Type {
+			get { return type; }
+		}
 	}
 }
