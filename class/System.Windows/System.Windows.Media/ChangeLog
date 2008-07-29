@@ -1,3 +1,7 @@
+2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FontFamily.cs: Implemented.
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* GradientStopCollection.cs: stub out
