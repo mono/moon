@@ -327,7 +327,12 @@ namespace System.Windows {
 					UnmanagedRect *rect = (UnmanagedRect*)val->u.p;
 					return new Rect (rect->left, rect->top, rect->width, rect->height);
 				}
-				
+
+				case Kind.SIZE: {
+					UnmanagedSize *size = (UnmanagedSize*)val->u.p;
+					return new Size (size->width, size->height);
+				}
+
 				case Kind.THICKNESS: {
 					UnmanagedThickness *thickness = (UnmanagedThickness*)val->u.p;
 					return new Thickness (thickness->left, thickness->top, thickness->right, thickness->bottom);
@@ -482,6 +487,11 @@ namespace System.Windows {
 					value.k = Kind.RECT;
 					value.u.p = Helper.AllocHGlobal (sizeof (Rect));
 					Marshal.StructureToPtr (rect, value.u.p, false); // Unmanaged and managed structure layout is equal.
+				} else if (v is Size) {
+					Size rect = (Size) v;
+					value.k = Kind.SIZE;
+					value.u.p = Helper.AllocHGlobal (sizeof (Size));
+					Marshal.StructureToPtr (size, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				} else if (v is Point) {
 					Point pnt = (Point) v;
 					value.k = Kind.POINT;

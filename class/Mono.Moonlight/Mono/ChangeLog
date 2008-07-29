@@ -1,5 +1,9 @@
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
+	* Value.cs: add UnmanagedSize struct.
+
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
 	* Value.cs: add UnmanagedThickness struct.
 
 2008-07-28  Jeffrey Stedfast  <fejj@novell.com>
