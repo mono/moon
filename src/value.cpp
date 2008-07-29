@@ -294,6 +294,9 @@ Value::FreeValue ()
 	case Type::GRIDLENGTH:
 		g_free (u.grid_length);
 		break;
+	case Type::THICKNESS:
+		g_free (u.thickness);
+		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)
 			u.dependency_object->unref ();

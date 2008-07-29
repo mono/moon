@@ -1,3 +1,7 @@
+2008-07-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* value.cpp (Value::FreeValue): Oops, free Thickness.
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* control.h (struct Thickness): reorder fields to match managed
