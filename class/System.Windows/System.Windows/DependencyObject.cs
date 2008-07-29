@@ -488,7 +488,7 @@ namespace System.Windows {
 					value.u.p = Helper.AllocHGlobal (sizeof (Rect));
 					Marshal.StructureToPtr (rect, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				} else if (v is Size) {
-					Size rect = (Size) v;
+					Size size = (Size) v;
 					value.k = Kind.SIZE;
 					value.u.p = Helper.AllocHGlobal (sizeof (Size));
 					Marshal.StructureToPtr (size, value.u.p, false); // Unmanaged and managed structure layout is equal.
