@@ -154,12 +154,14 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
+	$(srcdir)/System.Windows.Documents/FontSource.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
 	$(srcdir)/System.Windows.Documents/InlineCollection.cs			\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
 	$(srcdir)/System.Windows.Documents/Run.cs				\
 	$(srcdir)/System.Windows.Markup/XamlParseException.cs			\
+	$(srcdir)/System.Windows.Markup/XmlLanguage.cs				\
 	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\

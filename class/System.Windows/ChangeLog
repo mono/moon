@@ -1,3 +1,7 @@
+2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Markup/XmlLanguage.cs: Implemented.
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): add the
