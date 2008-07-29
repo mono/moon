@@ -1,5 +1,7 @@
 2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* TextBlock.cs: Fixed FontFamily property.
+
 	* Control.cs: Added properties and accessors.
 
 2008-07-28  Jeffrey Stedfast  <fejj@novell.com>

@@ -25,109 +25,119 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
+using Mono;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Documents;
-using Mono;
 
 namespace System.Windows.Controls {
-
 	public sealed class TextBlock : FrameworkElement {
-
 		public static readonly DependencyProperty ActualHeightProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualHeight", typeof (double));
+		
 		public static readonly DependencyProperty ActualWidthProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualWidth", typeof (double));
+		
 		public static readonly DependencyProperty FontFamilyProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontFamily", typeof (string));
+			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontFamily", typeof (FontFamily));
+		
 		public static readonly DependencyProperty FontSizeProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontSize", typeof (double));
+		
 		public static readonly DependencyProperty FontStretchProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStretch", typeof (FontStretch));
+		
 		public static readonly DependencyProperty FontStyleProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStyle", typeof (FontStyle));
+		
 		public static readonly DependencyProperty FontWeightProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontWeight", typeof (FontWeight));
+		
 		public static readonly DependencyProperty ForegroundProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Foreground", typeof (Brush));
+		
 		public static readonly DependencyProperty InlinesProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (InlineCollection));
+		
 		public static readonly DependencyProperty TextDecorationsProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorationCollection));
+		
 		public static readonly DependencyProperty TextProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Text", typeof (string));
+		
 		public static readonly DependencyProperty TextWrappingProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextWrapping", typeof (TextWrapping));
-
+		
 		public TextBlock ()  : base (NativeMethods.text_block_new ())
 		{
 		}
-
+		
 		internal TextBlock (IntPtr raw) : base (raw)
 		{
 		}
-
+		
+		internal override Kind GetKind ()
+		{
+			return Kind.TEXTBLOCK;
+		}
+		
 		public double ActualHeight {
 			get { return (double) GetValue (ActualHeightProperty); }
 		}
-
+		
 		public double ActualWidth {
 			get { return (double) GetValue (ActualWidthProperty); }
 		}
-
-		public string FontFamily {
-			get { return (string) GetValue (FontFamilyProperty); }
+		
+		public FontFamily FontFamily {
+			get { return (FontFamily) GetValue (FontFamilyProperty); }
 			set { SetValue (FontFamilyProperty, value); }
 		}
-
+		
 		public double FontSize {
 			get { return (double) GetValue (FontSizeProperty); }
 			set { SetValue (FontSizeProperty, value); }
 		}
-
+		
 		public FontStretch FontStretch {
 			get { return (FontStretch) GetValue (FontStretchProperty); }
 			set { SetValue (FontStretchProperty, value); }
 		}
-
+		
 		public FontStyle FontStyle {
 			get { return (FontStyle) GetValue (FontStyleProperty); }
 			set { SetValue (FontStyleProperty, value); }
 		}
-
+		
 		public FontWeight FontWeight {
 			get { return (FontWeight) GetValue (FontWeightProperty); }
 			set { SetValue (FontWeightProperty, value); }
 		}
-
+		
 		public Brush Foreground {
 			get { return (Brush) GetValue (ForegroundProperty); }
 			set { SetValue (ForegroundProperty, value); }
 		}
-
+		
 		public InlineCollection Inlines {
 			get { return (InlineCollection) GetValue (InlinesProperty); }
 			set { SetValue (InlinesProperty, value); }
 		}
-
+		
 		public TextDecorationCollection TextDecorations {
 			get { return (TextDecorationCollection) GetValue (TextDecorationsProperty); }
 			set { SetValue (TextDecorationsProperty, value); }
 		}
-
+		
 		public TextWrapping TextWrapping {
 			get { return (TextWrapping) GetValue (TextWrappingProperty); }
 			set { SetValue (TextWrappingProperty, value); }
 		}
-
+		
 		public string Text {
 			get { return (string) GetValue (TextProperty); }
 			set { SetValue (TextProperty, value); }
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.TEXTBLOCK;
 		}
 	}
 }
