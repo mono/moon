@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Windows.Controls;
 using System.Windows.Resources;
 using System.Windows.Interop;
@@ -230,6 +231,9 @@ namespace System.Windows {
 		// we are loading, makes no sense to me, sounds like a
 		// hack.
 		//
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public static void LoadComponent (object component, Uri xamlUri)
 		{
 			Application app = component as Application;
@@ -265,6 +269,9 @@ namespace System.Windows {
 		//   "AssemblyName;component/pathname"   embedded in AssemblyName, the file pathname
 		//
 		// 
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public static StreamResourceInfo GetResourceStream (Uri resourceUri)
 		{
 			string loc = resourceUri.ToString ();
@@ -305,28 +312,43 @@ namespace System.Windows {
 			return new StreamResourceInfo (s, "");
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPakResourceStreamInfo, Uri resourceUri)
 		{
 			throw new NotImplementedException ("GetResourceStream-2");
 		}
 
 		public static Application Current {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get {
 				return current;
 			}
 		}
 
 		public ResourceDictionary Resources {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get {
 				throw new NotImplementedException ("Resources");
 			}
 		}
 
 		public UIElement RootVisual {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get {
 				return root_visual;
 			}
 
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			set {
 				// Can only be set once according to the docs.
 				if (root_visual != null)

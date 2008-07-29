@@ -28,6 +28,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using System.Security;
 using System.Reflection;
 using Mono;
 
@@ -58,6 +59,9 @@ namespace System.Windows {
 			}
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public Assembly Load (Stream assemblyStream)
 		{
 			//

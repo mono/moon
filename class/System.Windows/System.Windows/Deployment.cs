@@ -27,6 +27,7 @@
 //
 
 using Mono;
+using System.Security;
 
 namespace System.Windows {
 
@@ -48,6 +49,9 @@ namespace System.Windows {
 		}
 
 		public static Deployment Current {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get { throw new NotImplementedException (); }
 		}
 

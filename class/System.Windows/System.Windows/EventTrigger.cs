@@ -34,7 +34,7 @@ namespace System.Windows
 			   DependencyProperty.Lookup (Kind.EVENTTRIGGER, "Actions", typeof (TriggerActionCollection));
 
 		public static readonly DependencyProperty RoutedEventProperty = 
-			   DependencyProperty.Lookup (Kind.EVENTTRIGGER, "RoutedEvent", typeof (string));
+			   DependencyProperty.Lookup (Kind.EVENTTRIGGER, "RoutedEvent", typeof (RoutedEvent));
 
 
 		public EventTrigger(): base (Mono.NativeMethods.event_trigger_new ())
@@ -48,11 +48,10 @@ namespace System.Windows
 
 		public TriggerActionCollection Actions {
 			get { return (TriggerActionCollection) GetValue(ActionsProperty); }
-			set { SetValue(ActionsProperty, value); }
 		}
 
-		public string RoutedEvent {
-			get { return (string) GetValue(RoutedEventProperty); }
+		public RoutedEvent RoutedEvent {
+			get { return (RoutedEvent) GetValue(RoutedEventProperty); }
 			set { SetValue(RoutedEventProperty, value); }
 		}
 

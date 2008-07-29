@@ -33,21 +33,20 @@ namespace System.Windows
 {
 	public class RoutedPropertyChangedEventArgs<T> : RoutedEventArgs
 	{
-		private T old_value;
-		private T new_value;
-		
 		public RoutedPropertyChangedEventArgs(T oldValue, T newValue)
 		{
-			old_value = oldValue;
-			new_value = newValue;
+			OldValue = oldValue;
+			NewValue = newValue;
 		}
 
 		public T NewValue {
-			get { return new_value; }
+			get;
+			private set;
 		}
 
 		public T OldValue {
-			get { return old_value; }
+			get;
+			private set;
 		}
 	}
 }
