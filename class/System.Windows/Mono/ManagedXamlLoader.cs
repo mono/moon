@@ -366,13 +366,13 @@ namespace Mono.Xaml
 			Helper.SetPropertyFromString (target, name, value, out error, out unmanaged_value);
 
 			if (unmanaged_value != IntPtr.Zero) {
-				object obj_value = DependencyObject.ValueToObject (unmanaged_value);
-
+				object obj_value = DependencyObject.ValueToObject (null, unmanaged_value);
+				
 				error = null;
 				Helper.SetPropertyFromValue (target, name, obj_value, out error);
 			}
-
-			if (error != null){
+			
+			if (error != null) {
 				//Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}) unable to set property: {3}.", target_ptr, name, value, error);
 				return false;
 			}
