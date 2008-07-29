@@ -1,3 +1,9 @@
+2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Inline.cs: Added Language property and fixed ctor.
+
+	* FontSource.cs: Added
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* InlineCollection.cs: stub out PresentationFrameworkCollection<T>

@@ -25,75 +25,89 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System.Windows;
+
 using Mono;
+using System.Windows;
 using System.Windows.Media;
+using System.Windows.Markup;
 
 namespace System.Windows.Documents {
-
 	public abstract class Inline : DependencyObject {
-
 		public static readonly DependencyProperty FontFamilyProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "FontFamily", typeof (string));
+			DependencyProperty.Lookup (Kind.INLINE, "FontFamily", typeof (FontFamily));
+		
 		public static readonly DependencyProperty FontSizeProperty =
 			DependencyProperty.Lookup (Kind.INLINE, "FontSize", typeof (double));
+		
 		public static readonly DependencyProperty FontStretchProperty =
 			DependencyProperty.Lookup (Kind.INLINE, "FontStretch", typeof (FontStretch));
+		
 		public static readonly DependencyProperty FontStyleProperty =
 			DependencyProperty.Lookup (Kind.INLINE, "FontStyle", typeof (FontStyle));
+		
 		public static readonly DependencyProperty FontWeightProperty =
 			DependencyProperty.Lookup (Kind.INLINE, "FontWeight", typeof (FontWeight));
+		
 		public static readonly DependencyProperty ForegroundProperty =
 			DependencyProperty.Lookup (Kind.INLINE, "Foreground", typeof (Brush));
+		
+		public static readonly DependencyProperty LanguageProperty =
+			DependencyProperty.Lookup (Kind.INLINE, "Language", typeof (XmlLanguage));
+		
 		public static readonly DependencyProperty TextDecorationsProperty =
 			DependencyProperty.Lookup (Kind.INLINE, "TextDecorations", typeof (TextDecorationCollection));
-
-		public Inline ()  : base (NativeMethods.glyphs_new ())
+		
+		protected Inline () : base (NativeMethods.inline_new ())
 		{
 		}
-
+		
 		internal Inline (IntPtr raw) : base (raw)
 		{
 		}
-
-		public string FontFamily {
-			get { return (string) GetValue (FontFamilyProperty); }
+		
+		internal override Kind GetKind ()
+		{
+			return Kind.INLINE;
+		}
+		
+		public FontFamily FontFamily {
+			get { return (FontFamily) GetValue (FontFamilyProperty); }
 			set { SetValue (FontFamilyProperty, value); }
 		}
-
+		
 		public double FontSize {
 			get { return (double) GetValue (FontSizeProperty); }
 			set { SetValue (FontSizeProperty, value); }
 		}
-
+		
 		public FontStretch FontStretch {
 			get { return (FontStretch) GetValue (FontStretchProperty); }
 			set { SetValue (FontStretchProperty, value); }
 		}
-
+		
 		public FontStyle FontStyle {
 			get { return (FontStyle) GetValue (FontStyleProperty); }
 			set { SetValue (FontStyleProperty, value); }
 		}
-
+		
 		public FontWeight FontWeight {
 			get { return (FontWeight) GetValue (FontWeightProperty); }
 			set { SetValue (FontWeightProperty, value); }
 		}
-
+		
 		public Brush Foreground {
 			get { return (Brush) GetValue (ForegroundProperty); }
 			set { SetValue (ForegroundProperty, value); }
 		}
-
+		
+		public XmlLanguage Language {
+			get { return (XmlLanguage) GetValue (LanguageProperty); }
+			set { SetValue (LanguageProperty, value); }
+		}
+		
 		public TextDecorationCollection TextDecorations {
 			get { return (TextDecorationCollection) GetValue (TextDecorationsProperty); }
 			set { SetValue (TextDecorationsProperty, value); }
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.INLINE;
 		}
 	}
 }
