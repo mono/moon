@@ -36,7 +36,7 @@ namespace System.Windows {
 		public static readonly DependencyProperty WidthProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Width", typeof (double));
 		
-		public FrameworkElement () : base (NativeMethods.framework_element_new ())
+		internal FrameworkElement () : base (NativeMethods.framework_element_new ())
 		{
 			Console.WriteLine ("*** Created a {0} (frameworkelement) with {1}", this.GetType (), native);
 		}

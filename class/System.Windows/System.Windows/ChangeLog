@@ -1,5 +1,10 @@
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
+	* FrameworkElement.cs: in 2.0, FrameworkElement doesn't expose a
+	public (or even protected) ctor.
+
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
 	* DependencyObject.cs (ValueToObject): add Thickness support.
 	(GetAsValue): same.
 
