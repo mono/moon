@@ -172,7 +172,7 @@ Type type_infos [] = {
 	{ Type::IMAGEBRUSH, Type::TILEBRUSH, false, "ImageBrush", "IMAGEBRUSH", 2, 3, ImageBrush_Events, (create_inst_func *) image_brush_new, NULL }, 
 	{ Type::IMAGEERROREVENTARGS, Type::ERROREVENTARGS, false, "ImageErrorEventArgs", "IMAGEERROREVENTARGS", 0, 1, NULL, NULL, NULL }, 
 	{ Type::INKPRESENTER, Type::CANVAS, false, "InkPresenter", "INKPRESENTER", 0, 12, NULL, (create_inst_func *) ink_presenter_new, NULL }, 
-	{ Type::INLINE, Type::DEPENDENCY_OBJECT, false, "Inline", "INLINE", 0, 1, NULL, NULL, NULL }, 
+	{ Type::INLINE, Type::DEPENDENCY_OBJECT, false, "Inline", "INLINE", 0, 1, NULL, (create_inst_func *) inline_new, NULL }, 
 	{ Type::INLINES, Type::DEPENDENCY_OBJECT_COLLECTION, false, "Inlines", "INLINES", 0, 1, NULL, (create_inst_func *) inlines_new, NULL }, 
 	{ Type::INT32, Type::INVALID, false, "gint32", "INT32", 0, 0, NULL, NULL, NULL }, 
 	{ Type::INT64, Type::INVALID, false, "gint64", "INT64", 0, 0, NULL, NULL, NULL }, 

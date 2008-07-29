@@ -55,6 +55,8 @@ class Inline : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 };
 
+Inline *inline_new (void);
+
 const char *inline_get_font_family (Inline *inline_);
 void inline_set_font_family (Inline *inline_, const char *value);
 

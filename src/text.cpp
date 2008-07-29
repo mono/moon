@@ -191,6 +191,12 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	}
 }
 
+Inline *
+inline_new (void)
+{
+	return new Inline ();
+}
+
 const char *
 inline_get_font_family (Inline *inline_)
 {

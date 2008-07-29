@@ -1,3 +1,7 @@
+2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (inline_new): Added.
+
 2008-07-29  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add a set_parent call, I need to do some fanagling
