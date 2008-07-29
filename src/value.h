@@ -35,6 +35,7 @@ struct KeyTime;
 struct Point;
 struct PointArray;
 struct Rect;
+struct Size;
 struct RepeatBehavior;
 struct GridLength;
 struct Thickness;
@@ -209,6 +210,7 @@ public:
 	Value (EventObject *obj);
 	Value (Point pt);
 	Value (Rect rect);
+	Value (Size size);
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
@@ -265,6 +267,7 @@ public:
 	Color*		AsColor ()	{ checked_get_exact (Type::COLOR, NULL, u.color); }
 	Point*		AsPoint ()	{ checked_get_exact (Type::POINT, NULL, u.point); }
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
+	Size*		AsSize ()	{ checked_get_exact (Type::SIZE, NULL, u.size); }
 	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
 	PointArray*	AsPointArray ()	{ checked_get_exact (Type::POINT_ARRAY, NULL, u.point_array); }
 	DoubleArray*	AsDoubleArray ()	{ checked_get_exact (Type::DOUBLE_ARRAY, NULL, u.double_array); }
@@ -447,6 +450,7 @@ public:
 		Color *color;
 		Point *point;
 		Rect *rect;
+		Size *size;
 		RepeatBehavior *repeat;
 		Duration *duration;
 		KeyTime *keytime;

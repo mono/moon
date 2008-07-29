@@ -403,6 +403,7 @@ class Generator {
 		types.Add (new TypeInfo ("NPObj", "NPOBJ", null, true));
 		types.Add (new TypeInfo ("GridLength", "GRIDLENGTH", null, true));
 		types.Add (new TypeInfo ("Thickness", "THICKNESS", null, true));
+		types.Add (new TypeInfo ("Size", "SIZE", null, true));
 	}
 	
 	static void WriteAllText (string filename, string contents)

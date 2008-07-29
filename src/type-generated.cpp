@@ -244,6 +244,11 @@ Type type_infos [] = {
 	{ Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text" }, 
 	{ Type::SCALETRANSFORM, Type::TRANSFORM, false, "ScaleTransform", "SCALETRANSFORM", 0, 1, NULL, (create_inst_func *) scale_transform_new, NULL }, 
 	{ Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 12, NULL, NULL, NULL }, 
+#if SL_2_0
+	{ Type::SIZE, Type::INVALID, false, "Size", "SIZE", 0, 0, NULL, NULL, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SIZE'", "SIZE", 0, 0, NULL, NULL, NULL }, 
+#endif
 	{ Type::SKEWTRANSFORM, Type::TRANSFORM, false, "SkewTransform", "SKEWTRANSFORM", 0, 1, NULL, (create_inst_func *) skew_transform_new, NULL }, 
 	{ Type::SOLIDCOLORBRUSH, Type::BRUSH, false, "SolidColorBrush", "SOLIDCOLORBRUSH", 0, 1, NULL, (create_inst_func *) solid_color_brush_new, NULL }, 
 	{ Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME, false, "SplineColorKeyFrame", "SPLINECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_color_key_frame_new, NULL }, 

@@ -1,3 +1,8 @@
+2008-07-28  Chris Toshok  <toshok@ximian.com>
+
+	* value.cpp, value.h.in, value.h, type.h, typegen/typegen.cs,
+	type-generated.cpp: Add Size foo.
+
 2008-07-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* value.cpp (Value::FreeValue): Oops, free Thickness.

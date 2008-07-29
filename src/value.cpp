@@ -19,6 +19,7 @@
 
 #include "value.h"
 #include "rect.h"
+#include "size.h"
 #include "color.h"
 #include "clock.h"
 #include "animation.h"
@@ -92,6 +93,10 @@ Value::Value (const Value& v)
 	case Type::RECT:
 		u.rect = g_new (Rect, 1);
 		*u.rect = Rect (*v.u.rect);
+		break;
+	case Type::SIZE:
+		u.size = g_new (Size, 1);
+		*u.size = Size (*v.u.size);
 		break;
 	case Type::REPEATBEHAVIOR:
 		u.repeat = g_new (RepeatBehavior, 1);
@@ -197,6 +202,14 @@ Value::Value (Rect rect)
 	*u.rect = Rect (rect);
 }
 
+Value::Value (Size size)
+{
+	Init ();
+	k = Type::SIZE;
+	u.size = g_new (Size, 1);
+	*u.size = Size (size);
+}
+
 Value::Value (RepeatBehavior repeat)
 {
 	Init();
@@ -282,6 +295,9 @@ Value::FreeValue ()
 	case Type::RECT:
 		g_free (u.rect);
 		break;
+	case Type::SIZE:
+		g_free (u.size);
+		break;
 	case Type::REPEATBEHAVIOR:
 		g_free (u.repeat);
 		break;
@@ -350,6 +366,9 @@ Value::ToString ()
 	case Type::POINT:
 		g_string_append_printf (str, "{ %g, %g }", (u.point)->x, (u.point)->y);
 		break;
+	case Type::SIZE:
+		g_string_append_printf (str, "{ %g, %g }", (u.size)->width, (u.size)->height);
+		break;
 	case Type::RECT:
 		g_string_append_printf (str, "{ x=%g, y=%g, w=%g, h=%g }", (u.rect)->x, (u.rect)->y, (u.rect)->w, (u.rect)->h);
 		break;
@@ -360,6 +379,9 @@ Value::ToString ()
 			g_string_append_printf (str, "{repeat=duration}");
 		else if ((u.repeat)->HasCount ())
 			g_string_append_printf (str, "{repeat=count %g}", (u.repeat)->GetCount ());
+		break;
+	case Type::THICKNESS:
+		g_string_append_printf (str, "{ l=%g, t=%g, r=%g, b=%g }", (u.thickness)->left, (u.thickness)->top, (u.thickness)->right, (u.thickness)->bottom);
 		break;
 	case Type::DURATION:
 		g_string_append_printf (str, "{duration/TODO}");
