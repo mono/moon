@@ -443,7 +443,7 @@ class XamlElementInfoManaged : public XamlElementInfo {
 		this->dependency_object = dob;
 	}
 
-	const char* GetContentProperty (XamlParserInfo *p) { return NULL; }
+	const char* GetContentProperty (XamlParserInfo *p);
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
 	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
@@ -845,6 +845,14 @@ get_parent (XamlElementInstance *inst)
 }
 
 static void
+set_parent (XamlElementInstance *inst, DependencyObject *parent)
+{
+
+	DependencyObject *item = inst->item;
+	item->SetLogicalParent (parent);
+}
+
+static void
 start_element (void *data, const char *el, const char **attr)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
@@ -880,7 +888,7 @@ start_element (void *data, const char *el, const char **attr)
 		} else {
 			DependencyObject *parent = get_parent (p->current_element);
 			if (parent) {
-				inst->item->SetLogicalParent (parent);
+				set_parent (inst, parent);
 			}
 		}
 
@@ -2624,6 +2632,18 @@ XamlElementInstanceNative::SetAttributes (XamlParserInfo *p, const char **attr)
 	dependency_object_set_attributes (p, this, attr);
 }
 
+const char *
+XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
+{
+	if (!p->loader)
+		return NULL;
+
+	// TODO: We could cache this, but for now lets keep things as simple as possible.
+	const char *res = p->loader->GetContentPropertyName (dependency_object);
+	if (res)
+		return res;
+	return XamlElementInfo::GetContentProperty (p);
+}
 
 XamlElementInstance *
 XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
@@ -2807,7 +2827,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		} else {
 			col = (Collection *) col_v->AsCollection ();
 		}
-		
+
 		((DependencyObject *) child->item)->SetLogicalParent (NULL);
 		
 		col->Add ((DependencyObject*)child->item);

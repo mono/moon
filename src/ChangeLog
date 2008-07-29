@@ -1,3 +1,10 @@
+2008-07-29  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add a set_parent call, I need to do some fanagling
+	there so collection items don't have their parents set.
+	- Managed items that are being hydrated or created using x:Class
+	need to get content properties from the managed world.
+	
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* value.cpp, value.h.in, value.h, type.h, typegen/typegen.cs,
