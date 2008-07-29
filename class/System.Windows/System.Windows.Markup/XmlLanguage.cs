@@ -55,10 +55,12 @@ namespace System.Windows.Markup {
 		
 		public override bool Equals (object obj)
 		{
-			if (obj == null)
+			XmlLanguage lang = obj as XmlLanguage;
+			
+			if (lang == null)
 				return false;
 			
-			return IetfLanguageTag.Equals (((XmlLanguage) obj).IetfLanguageTag);
+			return IetfLanguageTag.Equals (lang.IetfLanguageTag);
 		}
 		
 		public override int GetHashCode ()

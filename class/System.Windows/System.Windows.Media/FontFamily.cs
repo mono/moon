@@ -47,10 +47,12 @@ namespace System.Windows.Media {
 		
 		public override bool Equals (object obj)
 		{
-			if (obj == null)
+			FontFamily family = obj as FontFamily;
+			
+			if (family == null)
 				return false;
 			
-			return Source.Equals (((FontFamily) obj).Source);
+			return Source.Equals (family.Source);
 		}
 		
 		public override int GetHashCode ()
