@@ -1,3 +1,8 @@
+2008-07-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.cs: Update error message from agclr/agmono to
+	  System.Windows/Mono.Moonlight.
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyObject.cs (ValueToObject): add Size support.

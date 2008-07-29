@@ -72,7 +72,7 @@ namespace System.Windows {
 
 			if (handle == IntPtr.Zero)
 				throw new Exception (
-					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally because agclr.dll or agmono.dll and libmoon is out of sync. Updating /moon/src and /olive/class/, and do 'make install' in /moon/src and 'make clean install' TWICE in /olive/class/ will probably fix it. Remember to specify 'PROFILE=net_2_1' if that's your profile, only the net_3_0 profile is built by default.", type, name));
+					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally because System.Windows.dll or Mono.Moonlight.dll and libmoon is out of sync. Update /moon and do 'make install' in /moon/src and 'make clean install' TWICE in /moon/class/ will probably fix it.", type, name));
 
 			if (ownerType == null)
 				throw new ArgumentNullException ("ownerType");	
