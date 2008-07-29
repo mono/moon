@@ -1,3 +1,13 @@
+2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Control.cs: Added properties and accessors.
+
+2008-07-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Control.cs (.ctor): Made protected.
+	(InitializeFromXaml): Seems this method no longer exists in
+	Silverlight 2.0 Beta 2.
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* MediaElement.cs: add some SecuritySafeCritical's.

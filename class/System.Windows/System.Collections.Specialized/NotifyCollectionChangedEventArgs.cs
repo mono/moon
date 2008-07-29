@@ -56,6 +56,7 @@ namespace System.Collections.Specialized {
 			new_items.Add (newItem);
 			old_items.Add (oldItem);
 			NewStartingIndex = index;
+			OldStartingIndex = index;
 		}
 
 		public IList NewItems {
@@ -71,7 +72,6 @@ namespace System.Collections.Specialized {
 		}
 
 		public int NewStartingIndex { get; private set; }
-			
-		
+		public int OldStartingIndex { get; private set; }
 	}
 }

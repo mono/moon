@@ -16,14 +16,14 @@ system_windows_sources =							\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
-	$(srcdir)/MS.Internal/IManagedFrameworkInternalHelper.cs	\
+	$(srcdir)/MS.Internal/IManagedFrameworkInternalHelper.cs		\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
 	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
-	$(srcdir)/System/UriTypeConverter.cs	\
+	$(srcdir)/System/UriTypeConverter.cs					\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedAction.cs \
@@ -35,6 +35,18 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/Orientation.cs			\
 	$(srcdir)/System.Windows.Controls/ScrollBarVisibility.cs		\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventAction.cs		\
+	$(srcdir)/System.Windows.Controls/Canvas.cs				\
+	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
+	$(srcdir)/System.Windows.Controls/ColumnDefinitionCollection.cs		\
+	$(srcdir)/System.Windows.Controls/Control.cs				\
+	$(srcdir)/System.Windows.Controls/Grid.cs				\
+	$(srcdir)/System.Windows.Controls/Image.cs				\
+	$(srcdir)/System.Windows.Controls/Panel.cs				\
+	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
+	$(srcdir)/System.Windows.Controls/UserControl.cs			\
+	$(srcdir)/System.Windows.Controls/UIElementCollection.cs		\
+	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
+	$(srcdir)/System.Windows.Controls/RowDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
 	$(srcdir)/System.Windows.Ink/Stroke.cs					\
 	$(srcdir)/System.Windows.Ink/StrokeCollection.cs			\
@@ -46,6 +58,19 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/TabletDeviceType.cs			\
 	$(srcdir)/System.Windows.Input/TimelineMarkerEventArgs.cs		\
 	$(srcdir)/System.Windows.Input/TimelineMarkerEventHandler.cs		\
+	$(srcdir)/System.Windows.Input/Cursors.cs				\
+	$(srcdir)/System.Windows.Input/Key.cs					\
+	$(srcdir)/System.Windows.Input/Keyboard.cs				\
+	$(srcdir)/System.Windows.Input/KeyEventArgs.cs				\
+	$(srcdir)/System.Windows.Input/KeyEventHandler.cs			\
+	$(srcdir)/System.Windows.Input/MouseButtonEventArgs.cs			\
+	$(srcdir)/System.Windows.Input/MouseButtonEventHandler.cs		\
+	$(srcdir)/System.Windows.Input/MouseEventArgs.cs			\
+	$(srcdir)/System.Windows.Input/MouseEventHandler.cs			\
+	$(srcdir)/System.Windows.Interop/BrowserHost.cs				\
+	$(srcdir)/System.Windows.Interop/Content.cs				\
+	$(srcdir)/System.Windows.Interop/Settings.cs				\
+	$(srcdir)/System.Windows.Interop/SilverlightHost.cs			\
 	$(srcdir)/System.Windows.Media.Animation/ClockState.cs			\
 	$(srcdir)/System.Windows.Media.Animation/ColorAnimationUsingKeyFrames.cs\
 	$(srcdir)/System.Windows.Media.Animation/ColorKeyFrame.cs		\
@@ -66,7 +91,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/PointKeyFrameCollection.cs	\
 	$(srcdir)/System.Windows.Media.Animation/SplineColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
-	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs			\
+	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs		\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
@@ -79,19 +104,19 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/DependencyProperty.cs				\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
 	$(srcdir)/System.Windows/Duration.cs					\
-	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs					\
-	$(srcdir)/System.Windows/ExceptionRoutedEventHandler.cs					\
+	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs			\
+	$(srcdir)/System.Windows/ExceptionRoutedEventHandler.cs			\
 	$(srcdir)/System.Windows/Expression.cs					\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
-	$(srcdir)/System.Windows/FontStretch.cs				\
+	$(srcdir)/System.Windows/FontStretch.cs					\
 	$(srcdir)/System.Windows/FontStretchKind.cs				\
 	$(srcdir)/System.Windows/FontStretches.cs				\
 	$(srcdir)/System.Windows/FontStyle.cs					\
-	$(srcdir)/System.Windows/FontStyleKind.cs					\
+	$(srcdir)/System.Windows/FontStyleKind.cs				\
 	$(srcdir)/System.Windows/FontStyles.cs					\
 	$(srcdir)/System.Windows/FontWeight.cs					\
 	$(srcdir)/System.Windows/FontWeights.cs					\
-	$(srcdir)/System.Windows/FontWeightKind.cs					\
+	$(srcdir)/System.Windows/FontWeightKind.cs				\
 	$(srcdir)/System.Windows/FrameworkElement.cs				\
 	$(srcdir)/System.Windows/FrameworkTemplate.cs				\
 	$(srcdir)/System.Windows/GridLength.cs					\
@@ -105,14 +130,14 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/PropertyPath.cs				\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
 	$(srcdir)/System.Windows/Rect.cs					\
-	$(srcdir)/System.Windows/RoutedEvent.cs				\
+	$(srcdir)/System.Windows/RoutedEvent.cs					\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
 	$(srcdir)/System.Windows/RoutedEventHandler.cs				\
-	$(srcdir)/System.Windows/RoutedPropertyChangedEventArgs_T.cs	\
-	$(srcdir)/System.Windows/RoutedPropertyChangedEventHandler_T.cs	\
+	$(srcdir)/System.Windows/RoutedPropertyChangedEventArgs_T.cs		\
+	$(srcdir)/System.Windows/RoutedPropertyChangedEventHandler_T.cs		\
 	$(srcdir)/System.Windows/Size.cs					\
-	$(srcdir)/System.Windows/SizeChangedEventArgs.cs					\
-	$(srcdir)/System.Windows/SizeChangedEventHandler.cs					\
+	$(srcdir)/System.Windows/SizeChangedEventArgs.cs			\
+	$(srcdir)/System.Windows/SizeChangedEventHandler.cs			\
 	$(srcdir)/System.Windows/StartupEventArgs.cs				\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/TextAlignment.cs				\
@@ -120,23 +145,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/TextDecorationKind.cs				\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
-	$(srcdir)/System.Windows/Thickness.cs			\
+	$(srcdir)/System.Windows/Thickness.cs					\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\
 	$(srcdir)/System.Windows/TriggerActionCollection.cs			\
 	$(srcdir)/System.Windows/UIElement.cs					\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
-	$(srcdir)/System.Windows.Controls/Canvas.cs				\
-	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
-	$(srcdir)/System.Windows.Controls/ColumnDefinitionCollection.cs		\
-	$(srcdir)/System.Windows.Controls/Control.cs				\
-	$(srcdir)/System.Windows.Controls/Grid.cs				\
-	$(srcdir)/System.Windows.Controls/Image.cs				\
-	$(srcdir)/System.Windows.Controls/Panel.cs				\
-	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
-	$(srcdir)/System.Windows.Controls/UserControl.cs			\
-	$(srcdir)/System.Windows.Controls/UIElementCollection.cs			\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
@@ -144,21 +159,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Documents/InlineCollection.cs			\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
 	$(srcdir)/System.Windows.Documents/Run.cs				\
-	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
-	$(srcdir)/System.Windows.Controls/RowDefinitionCollection.cs		\
-	$(srcdir)/System.Windows.Input/Cursors.cs				\
-	$(srcdir)/System.Windows.Input/Key.cs					\
-	$(srcdir)/System.Windows.Input/Keyboard.cs				\
-	$(srcdir)/System.Windows.Input/KeyEventArgs.cs				\
-	$(srcdir)/System.Windows.Input/KeyEventHandler.cs			\
-	$(srcdir)/System.Windows.Input/MouseButtonEventArgs.cs			\
-	$(srcdir)/System.Windows.Input/MouseButtonEventHandler.cs		\
-	$(srcdir)/System.Windows.Input/MouseEventArgs.cs			\
-	$(srcdir)/System.Windows.Input/MouseEventHandler.cs			\
-	$(srcdir)/System.Windows.Interop/BrowserHost.cs				\
-	$(srcdir)/System.Windows.Interop/Content.cs				\
-	$(srcdir)/System.Windows.Interop/Settings.cs				\
-	$(srcdir)/System.Windows.Interop/SilverlightHost.cs			\
 	$(srcdir)/System.Windows.Markup/XamlParseException.cs			\
 	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
@@ -174,6 +174,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/DoubleCollection.cs			\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
 	$(srcdir)/System.Windows.Media/FillRule.cs				\
+	$(srcdir)/System.Windows.Media/FontFamily.cs				\
 	$(srcdir)/System.Windows.Media/Geometry.cs				\
 	$(srcdir)/System.Windows.Media/GeometryCollection.cs			\
 	$(srcdir)/System.Windows.Media/GeometryGroup.cs				\
