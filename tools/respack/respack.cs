@@ -53,7 +53,7 @@ class ResourcePacker {
 		
 
 		foreach (string file in files.Skip(1)){
-			string key = Path.GetFileName (file);
+			string key = Path.GetFileName (file).ToLower ();
 			
 			using (FileStream source = File.OpenRead (file)){
 				byte [] buffer = new byte [source.Length];

@@ -70,12 +70,12 @@ namespace Moonlight {
 
 			manifest.Append ("<Deployment xmlns=\"http://schemas.microsoft.com/client/2007/deployment\"");
 			manifest.Append (" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" ");
-			manifest.AppendFormat ("EntryPointAssembly=\"{0}\" EntryPointType=\"{0}.App\" RuntimeVersion=\"2.0.30523.6\">\n", ApplicationName);
+			manifest.AppendFormat ("EntryPointAssembly=\"{0}\" EntryPointType=\"{0}.App\" RuntimeVersion=\"2.0.30523.4\">\n", ApplicationName);
 
 			manifest.AppendLine ("  <Deployment.Parts>");
 
 			foreach (string assembly in ReferenceAssemblies) {
-				manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}\" />\n", Path.GetFileNameWithoutExtension (assembly), assembly);
+				manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}\" />\n", Path.GetFileNameWithoutExtension (assembly), Path.GetFileName (assembly));
 			}
 			manifest.AppendFormat ("    <AssemblyPart x:Name=\"{0}\" Source=\"{1}.dll\" />\n", ApplicationName, ApplicationName);
 			

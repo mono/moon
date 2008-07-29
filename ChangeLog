@@ -1,3 +1,9 @@
+2008-07-28  Jackson Harper  <jackson@ximian.com>
+
+	* tools/mxap/mxap.cs: Use only the .dll name for Assembly Source.
+	* tools/respack/respack.cs: For some reason, these names need to
+	be lower case to run on windows.
+
 2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* tools/mxap/mxap.cs: Changed indenting and newlines to match MS'
