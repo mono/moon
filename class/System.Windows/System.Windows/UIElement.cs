@@ -1,5 +1,5 @@
 //
-// UIElemtn.cs
+// System.Windows.UIElement.cs
 //
 // Author:
 //   Miguel de Icaza (miguel@novell.com)
@@ -33,38 +33,44 @@ using System.Windows.Input;
 using Mono;
 
 namespace System.Windows {
-	
 	public abstract class UIElement : DependencyObject {
-	        public static readonly DependencyProperty ClipProperty;
-	        public static readonly DependencyProperty CursorProperty;
-	        public static readonly DependencyProperty IsHitTestVisibleProperty;
-	        public static readonly DependencyProperty OpacityMaskProperty;
-	        public static readonly DependencyProperty OpacityProperty;
-	        public static readonly DependencyProperty RenderTransformOriginProperty;
-	        public static readonly DependencyProperty RenderTransformProperty;
-	        public static readonly DependencyProperty ResourcesProperty;
-	        public static readonly DependencyProperty TagProperty;
-	        public static readonly DependencyProperty TriggersProperty;
-	        public static readonly DependencyProperty VisibilityProperty;
-	        public static readonly DependencyProperty ZIndexProperty;
-
-		static UIElement ()
-		{
-	        	ClipProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Clip", typeof (Geometry));
-			CursorProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Cursor", typeof (Cursors));
-			IsHitTestVisibleProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "IsHitTestVisible", typeof (bool));
-			OpacityMaskProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "OpacityMask", typeof (Brush));
-	        	OpacityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Opacity", typeof (double));
-			RenderTransformOriginProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransformOrigin", typeof (Point));
-	        	RenderTransformProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransform", typeof (Transform));
-			ResourcesProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Resources", typeof (ResourceDictionary));
-			TagProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Tag", typeof (string));
-	        	TriggersProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Triggers", typeof (TriggerCollection));
-			VisibilityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Visibility", typeof (Visibility));
-			ZIndexProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "ZIndex", typeof (int));
-		}
-			
-		public UIElement () : base (NativeMethods.uielement_new ())
+		public static readonly DependencyProperty ClipProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Clip", typeof (Geometry));
+		
+		public static readonly DependencyProperty CursorProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Cursor", typeof (Cursors));
+		
+		public static readonly DependencyProperty IsHitTestVisibleProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "IsHitTestVisible", typeof (bool));
+		
+		public static readonly DependencyProperty OpacityMaskProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "OpacityMask", typeof (Brush));
+		
+		public static readonly DependencyProperty OpacityProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Opacity", typeof (double));
+		
+		public static readonly DependencyProperty RenderTransformOriginProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransformOrigin", typeof (Point));
+		
+		public static readonly DependencyProperty RenderTransformProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransform", typeof (Transform));
+		
+		public static readonly DependencyProperty ResourcesProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Resources", typeof (ResourceDictionary));
+		
+		public static readonly DependencyProperty TagProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Tag", typeof (string));
+		
+		public static readonly DependencyProperty TriggersProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Triggers", typeof (TriggerCollection));
+		
+		public static readonly DependencyProperty VisibilityProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Visibility", typeof (Visibility));
+		
+		public static readonly DependencyProperty ZIndexProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "ZIndex", typeof (int));
+		
+		protected UIElement () : base (NativeMethods.uielement_new ())
 		{
 		}
 		
@@ -72,11 +78,15 @@ namespace System.Windows {
 		{
 		}
 		
+		internal override Kind GetKind ()
+		{
+			return Kind.UIELEMENT;
+		}
+		
 		public Geometry Clip {
 			get {
 				return (Geometry) GetValue (ClipProperty);
 			}
-				
 			set {
 				SetValue (ClipProperty, value);
 			}
@@ -86,7 +96,6 @@ namespace System.Windows {
 			get {
 				return (Cursors) GetValue (CursorProperty);
 			}
-				
 			set {
 				SetValue (CursorProperty, value);
 			}
@@ -96,7 +105,6 @@ namespace System.Windows {
 			get {
 				return (bool) GetValue (IsHitTestVisibleProperty);
 			}
-				
 			set {
 				SetValue (IsHitTestVisibleProperty, value);
 			}
@@ -106,7 +114,6 @@ namespace System.Windows {
 			get {
 				return (double) GetValue (OpacityProperty);
 			}
-				
 			set {
 				SetValue (OpacityProperty, value);
 			}
@@ -116,7 +123,6 @@ namespace System.Windows {
 			get {
 				return (Brush) GetValue (OpacityMaskProperty);
 			}
-				
 			set {
 				SetValue (OpacityMaskProperty, value);
 			}
@@ -126,7 +132,6 @@ namespace System.Windows {
 			get {
 				return (Transform) GetValue (RenderTransformProperty);
 			}
-				
 			set {
 				SetValue (RenderTransformProperty, value);
 			}
@@ -136,7 +141,6 @@ namespace System.Windows {
 			get {
 				return (Point) GetValue (RenderTransformOriginProperty);
 			}
-				
 			set {
 				SetValue (RenderTransformOriginProperty, value);
 			}
@@ -146,7 +150,6 @@ namespace System.Windows {
 			get {
 				return (ResourceDictionary) GetValue (ResourcesProperty);
 			}
-				
 			set {
 				SetValue (ResourcesProperty, value);
 			}
@@ -156,7 +159,6 @@ namespace System.Windows {
 			get {
 				return (string) GetValue (TagProperty);
 			}
-
 			set {
 				SetValue (TagProperty, value);
 			}
@@ -166,7 +168,6 @@ namespace System.Windows {
 			get {
 				return (TriggerCollection) GetValue (TriggersProperty);
 			}
-				
 			set {
 				SetValue (TriggersProperty, value);
 			}
@@ -176,7 +177,6 @@ namespace System.Windows {
 			get {
 				return (Visibility) GetValue (VisibilityProperty);
 			}
-				
 			set {
 				SetValue (VisibilityProperty, value);
 			}
@@ -187,7 +187,6 @@ namespace System.Windows {
 			get {
 				return (int) GetValue (ZIndexProperty);
 			}
-				
 			set {
 				SetValue (ZIndexProperty, value);
 			}
@@ -201,7 +200,7 @@ namespace System.Windows {
 				return System.Windows.NativeMethods2.uielement_get_desired_size (native);
 			}
 		}
-			
+		
 		static object GotFocusEvent = new object ();
 		static object LostFocusEvent = new object ();
 		static object KeyDownEvent = new object ();
@@ -211,7 +210,7 @@ namespace System.Windows {
 		static object MouseLeftButtonDownEvent = new object ();
 		static object MouseLeftButtonUpEvent = new object ();
 		static object MouseMoveEvent = new object ();
-
+		
 		public event RoutedEventHandler GotFocus {
 			add {
 				if (events[GotFocusEvent] == null)
@@ -224,7 +223,7 @@ namespace System.Windows {
 					Events.RemoveHandler (this, "GotFocus", Events.got_focus);
 			}
 		}
-
+		
 		public event RoutedEventHandler LostFocus {
 			add {
 				if (events[LostFocusEvent] == null)
@@ -391,11 +390,6 @@ namespace System.Windows {
 			MouseEventHandler h = (MouseEventHandler)events[MouseEnterEvent];
 			if (h != null)
 				h (this, m);
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.UIELEMENT;
 		}
 	}
 }

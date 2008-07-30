@@ -1,3 +1,9 @@
+2008-07-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FrameworkElement.cs: Added Loaded event.
+
+	* UIElement.cs: Make the ctor protected instead of public.
+
 2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyObject.cs: Implement CheckAccess and stub a bit.

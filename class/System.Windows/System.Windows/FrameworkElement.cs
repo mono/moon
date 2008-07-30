@@ -25,6 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using Mono;
 using System.Security;
 
@@ -44,7 +45,12 @@ namespace System.Windows {
 		internal FrameworkElement (IntPtr raw) : base (raw)
 		{
 		}
-			
+		
+		internal override Kind GetKind ()
+		{
+			return Kind.FRAMEWORKELEMENT;
+		}
+		
 		public double Height {
 			get {
 				return (double) GetValue (HeightProperty);
@@ -55,8 +61,7 @@ namespace System.Windows {
 			}
 		}
 
-		public DependencyObject Parent
-		{
+		public DependencyObject Parent {
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
@@ -80,17 +85,27 @@ namespace System.Windows {
 			}
 		}
 		
-		internal override Kind GetKind ()
-		{
-			return Kind.FRAMEWORKELEMENT;
-		}
-
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
 		public object FindName (string name)
 		{
 			return DepObjectFindName (name);
+		}
+		
+		static object LoadedEvent = new object ();
+		
+		public event RoutedEventHandler Loaded {
+			add {
+				if (events[LoadedEvent] == null)
+					Events.AddHandler (this, "Loaded", Events.loaded);
+				events.AddHandler (LoadedEvent, value);
+			}
+			remove {
+				events.RemoveHandler (LoadedEvent, value);
+				if (events[LoadedEvent] == null)
+					Events.RemoveHandler (this, "Loaded", Events.loaded);
+			}
 		}
 	}
 }
