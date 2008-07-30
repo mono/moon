@@ -25,29 +25,32 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using System.Windows.Media;
 using System.Windows;
 using Mono;
 
 namespace System.Windows.Controls {
 	public abstract class Panel : FrameworkElement {
-		public static readonly DependencyProperty ChildrenProperty;
-		public static readonly DependencyProperty BackgroundProperty;
-
-		static Panel ()
-		{
-			ChildrenProperty = DependencyProperty.Lookup (Kind.PANEL, "Children", typeof (UIElementCollection));
-			BackgroundProperty = DependencyProperty.Lookup (Kind.PANEL, "Background", typeof (Brush));
-		}
+		static readonly DependencyProperty ChildrenProperty =
+			DependencyProperty.Lookup (Kind.PANEL, "Children", typeof (UIElementCollection));
 		
-		public Panel () : base (NativeMethods.panel_new ())
+		public static readonly DependencyProperty BackgroundProperty =
+			DependencyProperty.Lookup (Kind.PANEL, "Background", typeof (Brush));
+		
+		protected Panel () : base (NativeMethods.panel_new ())
 		{
 		}
 		
 		internal Panel (IntPtr raw) : base (raw)
 		{
 		}
-
+		
+		internal override Kind GetKind ()
+		{
+			return Kind.PANEL;
+		}
+		
 		public Brush Background {
 			get {
 				return (Brush) GetValue (BackgroundProperty);
@@ -62,15 +65,6 @@ namespace System.Windows.Controls {
 			get {
 				return (UIElementCollection) GetValue (ChildrenProperty);
 			}
-			
-			set {
-				SetValue (ChildrenProperty, value);
-			}
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.PANEL;
 		}
 	}
 }

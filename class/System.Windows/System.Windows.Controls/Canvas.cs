@@ -25,63 +25,64 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using System.Windows;
 using Mono;
 
 namespace System.Windows.Controls {
-
 	public partial class Canvas : Panel {
-		public static readonly DependencyProperty LeftProperty;
-		public static readonly DependencyProperty TopProperty;
-
-		static Canvas ()
-		{
-			LeftProperty = DependencyProperty.Lookup (Kind.CANVAS, "Left", typeof (double));
-			TopProperty = DependencyProperty.Lookup (Kind.CANVAS, "Top", typeof (double));
-		}
-
+		public static readonly DependencyProperty LeftProperty =
+			DependencyProperty.Lookup (Kind.CANVAS, "Left", typeof (double));
+		
+		public static readonly DependencyProperty TopProperty =
+			DependencyProperty.Lookup (Kind.CANVAS, "Top", typeof (double));
+		
 		public Canvas () : base (NativeMethods.canvas_new ())
 		{
 		}
-
+		
 		internal Canvas (IntPtr raw) : base (raw)
 		{
 		}
-
+		
 		static internal Canvas FromPtr (IntPtr raw)
 		{
 			return new Canvas (raw);
 		}
+		
 		internal override Kind GetKind ()
 		{
 			return Kind.CANVAS;
 		}
-
+		
                 public static double GetLeft (UIElement element)
                 {
                         return (double) element.GetValue (Canvas.LeftProperty);
                 }
-
+		
                 public static void SetLeft (UIElement element, double value)
                 {
                         element.SetValue (Canvas.LeftProperty, value);
                 }
-
+		
                 public static double GetTop (UIElement element)
                 {
                         return (double) element.GetValue (Canvas.TopProperty);
                 }
-
+		
                 public static void SetTop (UIElement element, double value)
                 {
                         element.SetValue (Canvas.TopProperty, value);
                 }
-
-                public static double GetZIndex (UIElement element)
+		
+                public static int GetZIndex (UIElement element)
                 {
-                        // This will change
-
-                        return (double) element.GetValue (UIElement.ZIndexProperty);
+                        return (int) element.GetValue (UIElement.ZIndexProperty);
+                }
+		
+		public static void SetZIndex (UIElement element, int value)
+                {
+                        element.SetValue (UIElement.ZIndexProperty, value);
                 }
 	}
 }
