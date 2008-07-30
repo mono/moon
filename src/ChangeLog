@@ -1,5 +1,9 @@
 2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* runtime.cpp: Fix 1.0 build.
+
+2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.cpp, dependencyproperty.h, runtime.cpp, runtime.h,
 	  type.cpp, type.h, type.h.in, typegen/typegen.cs,
 	  type-generated.cpp: Store DependencyProperties in the Type* instead

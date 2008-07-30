@@ -267,7 +267,9 @@ Surface::~Surface ()
 	
 	delete downloaders;
 	
+#if SL_2_0
 	UnregisterManagedTypes ();
+#endif
 }
 
 void
