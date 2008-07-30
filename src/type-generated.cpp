@@ -10,6 +10,7 @@
 #include "brush.h"
 #include "canvas.h"
 #include "collection.h"
+#include "contentcontrol.h"
 #include "control.h"
 #include "array.h"
 #include "downloader.h"
@@ -127,6 +128,7 @@ Type type_infos [] = {
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'COLUMNDEFINITION_COLLECTION'", "COLUMNDEFINITION_COLLECTION", 0, 0, NULL, NULL, NULL, NULL }, 
 #endif
+	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 0, 12, NULL, (create_inst_func *) content_control_new, "Content", NULL }, 
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 12, NULL, (create_inst_func *) control_new, "Content", NULL }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL, NULL }, 

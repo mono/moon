@@ -30,7 +30,6 @@
 
 #include "runtime.h"
 #include "canvas.h"
-#include "control.h"
 #include "color.h"
 #include "shape.h"
 #include "transform.h"
@@ -51,9 +50,10 @@
 #include "window-gtk.h"
 
 #if SL_2_0
-#include "grid.h"
-#include "deployment.h"
+#include "contentcontrol.h"
 #include "usercontrol.h"
+#include "deployment.h"
+#include "grid.h"
 #endif
 
 #ifdef DEBUG
@@ -2042,6 +2042,7 @@ runtime_init (guint32 flags)
 	//
 	deployment_init ();
 	user_control_init ();
+	content_control_init ();
 	control_init ();
 	grid_init ();
 #endif

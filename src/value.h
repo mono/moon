@@ -66,6 +66,7 @@ class ColorKeyFrame;
 class ColorKeyFrameCollection;
 class ColumnDefinition;
 class ColumnDefinitionCollection;
+class ContentControl;
 class Control;
 class DependencyObject;
 class DependencyObjectCollection;
@@ -305,6 +306,7 @@ public:
 	ColorKeyFrameCollection*       AsColorKeyFrameCollection () { checked_get_subclass (Type::COLORKEYFRAME_COLLECTION, ColorKeyFrameCollection) }
 	ColumnDefinition*              AsColumnDefinition () { checked_get_subclass (Type::COLUMNDEFINITION, ColumnDefinition) }
 	ColumnDefinitionCollection*    AsColumnDefinitionCollection () { checked_get_subclass (Type::COLUMNDEFINITION_COLLECTION, ColumnDefinitionCollection) }
+	ContentControl*                AsContentControl () { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	DependencyObject*              AsDependencyObject () { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }
 	DependencyObjectCollection*    AsDependencyObjectCollection () { checked_get_subclass (Type::DEPENDENCY_OBJECT_COLLECTION, DependencyObjectCollection) }
