@@ -21,6 +21,34 @@
  * Type implementation
  */
 
+Type::~Type ()
+{
+	if (properties) {
+		g_hash_table_destroy (properties);
+		properties = NULL;
+	}
+}
+
+Type *
+Type::Clone ()
+{
+	Type *result = new Type ();
+	
+	result->type = type;
+	result->parent = parent;
+	result->value_type = value_type;
+	result->name = g_strdup (name);
+	result->kindname = g_strdup (kindname);
+	result->event_count = event_count;
+	result->total_event_count = total_event_count;
+	result->events = events;
+	result->create_inst = create_inst;
+	result->content_property = g_strdup (content_property);
+	result->properties = NULL;
+	
+	return result;
+}
+
 const char *
 Type::LookupEventName (int id)
 {
@@ -130,49 +158,32 @@ Type::Find (const char *name)
 Type *
 Type::Find (Type::Kind type)
 {
-	if (type < Type::INVALID || type >= Type::LASTTYPE)
-		return NULL;
-
-	return &type_infos [type];
+	return Find (NULL, type);
 }
 
-#if SL_2_0
+
 Type *
 Type::Find (Surface *surface, Type::Kind type)
 {
-	GPtrArray *managed_types;
 	int index;
-	
-	printf ("Type::Find (%p, %i)\n", surface, type);
-	
+		
 	if (type < Type::INVALID || type == Type::LASTTYPE)
 		return NULL;
 		
 	if (type < Type::LASTTYPE)
 		return &type_infos [type];
-		
+
+#if SL_2_0				
 	if (surface == NULL) {
 		fprintf (stderr, "Type::Find (%p, %i): No surface to look in.\n", surface, type);
 		return NULL;
 	}
 	
-	managed_types = surface->GetManagedTypes ();
-	
-	if (managed_types == NULL) {
-		fprintf (stderr, "Type::Find (%p, %i): No managed types have been registered.\n", surface, type);
-		return NULL;
-	}
-	
-	index = (int) type - (int) Type::LASTTYPE - 1;
-	
-	if (managed_types->len <= index) {
-		fprintf (stderr, "Type::Find (%p, %i): There are only %i managed types (and %i unmanaged types).\n", surface, type, managed_types->len, Type::LASTTYPE);
-		return NULL;
-	}
-	
-	return (Type *) g_ptr_array_index (managed_types, index);
-}
+	return surface->GetManagedType (type, false);
+#else
+	return NULL;
 #endif
+}
 
 DependencyObject *
 Type::CreateInstance ()

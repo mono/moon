@@ -216,6 +216,10 @@ public:
 	const char *GetName () { return name; }
 	int GetEventCount () { return total_event_count; }
 
+	~Type ();
+	
+	Type *Clone ();
+	
 public: // private:
 	Type::Kind type; // this type
 	Type::Kind parent; // parent type, INVALID if no parent
@@ -231,6 +235,7 @@ public: // private:
 	create_inst_func *create_inst; // a function pointer to create an instance of this type
 
 	const char *content_property;
+	GHashTable *properties; // Registered DependencyProperties for this type
 };
 
 extern Type type_infos [Type::LASTTYPE + 1];

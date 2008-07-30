@@ -208,7 +208,8 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 	down_dirty = new List ();
 	
 	managed_types = NULL;
-	managed_properties = NULL;
+	managed_type_length = 0;
+	managed_type_count = 0;
 }
 
 Surface::~Surface ()
@@ -265,6 +266,8 @@ Surface::~Surface ()
 	delete down_dirty;
 	
 	delete downloaders;
+	
+	UnregisterManagedTypes ();
 }
 
 void
@@ -1775,15 +1778,55 @@ Surface::HandleUIWindowDestroyed (MoonWindow *window)
 }
 
 #if SL_2_0
+Type *
+Surface::GetManagedType (Type::Kind type, bool create_native)
+{
+	bool create = false;
+	int type_id = (int) type;
+
+	if ((int) type + 1 > managed_type_length) {
+		create = create_native;
+	} else if (managed_types [type] == NULL) {
+		create = create_native;
+	} else {
+		return managed_types [type];
+	}
+	
+	if (!create_native)
+		return NULL;
+	
+	if (managed_types == NULL) {
+		managed_type_length = type_id + 1;
+		managed_types = (Type **) g_malloc0 (sizeof (Type *) * (managed_type_length));
+	} else if (managed_type_length < type_id + 1) {
+		managed_types = (Type **) g_realloc (managed_types, sizeof (Type *) * (type_id + 1));
+		// NULL out the new entries
+		for (int i = managed_type_length; i < type_id + 1; i++)
+			managed_types [i] = NULL;
+		managed_type_length = type_id + 1;
+	}
+	
+	if (type > Type::INVALID && type < Type::LASTTYPE) {
+		managed_types [type] = Type::Find (type)->Clone ();
+	}
+	
+	return managed_types [type];
+}
+
 int
 Surface::RegisterManagedType (const char *name, void *gc_handle, int parent)
 {
 	Type *type = new Type ();
+	int type_id = Type::LASTTYPE + managed_type_count + 1;
 	
-	if (managed_types == NULL)
-		managed_types = g_ptr_array_new ();
+	//printf ("Surface::RegisterManagedType (%s, %p, %i). managed_type_length: %i, count: %i\n", name, gc_handle, parent, managed_type_length, managed_type_count);
+	
+	// This will ensure the array is big enough
+	GetManagedType ((Type::Kind) type_id, true); 
 
-	type->type = (Type::Kind) (Type::LASTTYPE + managed_types->len + 1);
+	managed_type_count++;
+	
+	type->type = (Type::Kind) type_id;
 	type->parent = (Type::Kind) parent;
 	type->value_type = false;
 	type->name = g_strdup (name);
@@ -1794,15 +1837,9 @@ Surface::RegisterManagedType (const char *name, void *gc_handle, int parent)
 	type->create_inst = NULL;
 	type->content_property = NULL;
 	
-	g_ptr_array_add (managed_types, type);
+	managed_types [type_id] = type;
 	
 	return type->type;
-}
-
-static void
-free_managed_type (gpointer data, gpointer userdata)
-{
-	delete (Type *) data;
 }
 
 void
@@ -1811,9 +1848,13 @@ Surface::UnregisterManagedTypes ()
 	if (managed_types == NULL)
 		return;
 	
-	g_ptr_array_foreach (managed_types, free_managed_type, NULL);
-	
-	g_ptr_array_free (managed_types, true);
+	for (int i = 0; i < managed_type_length; i++) {
+		delete managed_types [i];
+	}
+	g_free (managed_types);
+	managed_types = NULL;
+	managed_type_length = 0;
+	managed_type_count = 0;
 }
 
 int

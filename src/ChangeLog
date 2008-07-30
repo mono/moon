@@ -1,5 +1,12 @@
 2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyproperty.cpp, dependencyproperty.h, runtime.cpp, runtime.h,
+	  type.cpp, type.h, type.h.in, typegen/typegen.cs,
+	  type-generated.cpp: Store DependencyProperties in the Type* instead
+	  of a hashtable keyed on the kind.
+
+2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.cpp: IsValueValid: treat all MANAGED types as valid,
 	  given that since we might not have access to the surface where the
 	  type was registered, it's not possible to do any type checking 

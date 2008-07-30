@@ -47,18 +47,18 @@ class DependencyProperty {
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
 	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
-	static DependencyProperty *RegisterFull (GHashTable **properties, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
+	static DependencyProperty *RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
+	// 2.0 only, registers properties per surface.
 	static DependencyProperty *RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
 
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
-	static DependencyProperty *GetDependencyProperty (GHashTable *properties, Type::Kind type, const char *name, bool inherits);
+	static DependencyProperty *GetDependencyProperty (Type *type, const char *name, bool inherits);
 	static DependencyProperty *GetDependencyProperty (Surface *surface, Type::Kind type, const char *name, bool inherits);
 	
-	static void Shutdown ();
+	static void Shutdown () {}
 
 private:
-	static GHashTable *properties;
 	GHashTable *storage_hash; // keys: objects, values: animation storage's
 
 	bool is_readonly;

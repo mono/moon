@@ -499,7 +499,7 @@ class Generator {
 		// Create the array of type data
 		text.AppendLine ("");
 		text.AppendLine ("Type type_infos [] = {");
-		text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL },");
+		text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL },");
 		foreach (TypeInfo type in types.SortedList) {
 			TypeInfo parent = null;
 			string events = "NULL";
@@ -515,7 +515,7 @@ class Generator {
 
 			if (type.SilverlightVersion == 2)
 				text.AppendLine ("#if SL_2_0");
-			text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9} }}, ",
+			text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL }}, ",
 			                                "Type::" + type.KindName, 
 			                                "Type::" + (parent != null ? parent.KindName : "INVALID"),
 			                                type.IsValueType ? "true" : "false",
@@ -530,14 +530,14 @@ class Generator {
 			                 );
 			if (type.SilverlightVersion == 2) {
 				text.AppendLine ("#else");
-				text.AppendLine (string.Format ("	{{ Type::INVALID, Type::INVALID, false, \"2.0 specific type '{0}'\", {1}, 0, 0, NULL, NULL, NULL }}, ",
+				text.AppendLine (string.Format ("	{{ Type::INVALID, Type::INVALID, false, \"2.0 specific type '{0}'\", {1}, 0, 0, NULL, NULL, NULL, NULL }}, ",
 								type.KindName,
 								"\"" + type.KindName + "\""));
 				text.AppendLine ("#endif");
 			}
 			
 		}
-		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL }");
+		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL }");
 		text.AppendLine ("};");
 				
 		WriteAllText ("type-generated.cpp", text.ToString ());

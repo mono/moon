@@ -187,8 +187,8 @@ public:
 	static bool InMainThread () { return pthread_equal (main_thread, pthread_self ()); }
 
 	// 2.0 methods
-	GHashTable **GetManagedProperties () { return &managed_properties; }
-	GPtrArray *GetManagedTypes () { return managed_types; }
+	Type **GetManagedTypes () { return managed_types; }
+	Type *GetManagedType (Type::Kind type, bool create_native);
 	int RegisterManagedType (const char *name, void *gc_handle, int parent);
 	void UnregisterManagedTypes ();
 	
@@ -273,9 +273,12 @@ private:
 	void *cache_data;
 	int cache_size_multiplier;
 	
-	// Types and properties in this surface (2.0 only)
-	GHashTable *managed_properties;
-	GPtrArray *managed_types;
+	// Types in this surface (2.0 only)
+	// Note that we need to clone native types here too, since user code can 
+	// register properties with native types, and those properties are per-surface.
+	Type **managed_types; // A sparse array of types, will contain holes for types which haven't been registered.
+	int managed_type_length; // The length of managed_types array (!= number of non-null elements)
+	int managed_type_count; // The number of managed types registered (excluding native types)
 	
 	void Realloc ();
 	void ShowFullScreenMessage ();

@@ -76,12 +76,6 @@ detach_target_func (DependencyObject *obj, AnimationStorage *storage)
 }
 
 static void
-free_property_hash (gpointer v)
-{
-	g_hash_table_destroy ((GHashTable*)v);
-}
-
-static void
 free_property (gpointer v)
 {
 	delete (DependencyProperty*)v;
@@ -110,7 +104,7 @@ DependencyProperty::GetDependencyProperty (Type::Kind type, const char *name)
 DependencyProperty *
 DependencyProperty::GetDependencyProperty (Type::Kind type, const char *name, bool inherits)
 {
-	return GetDependencyProperty (properties, type, name, inherits);
+	return GetDependencyProperty (Type::Find (type), name, inherits);
 }
 
 #if SL_2_0
@@ -122,46 +116,38 @@ DependencyProperty::GetDependencyProperty (Surface *surface, Type::Kind type, co
 	property = GetDependencyProperty (type, name, inherits);
 	
 	if (property == NULL)
-		property = GetDependencyProperty (*surface->GetManagedProperties (), type, name, inherits);
+		property = GetDependencyProperty (surface->GetManagedType (type, false), type, name, inherits);
 
 	return property;
 }
 #endif
 
 DependencyProperty *
-DependencyProperty::GetDependencyProperty (GHashTable *properties, Type::Kind type, const char *name, bool inherits)
+DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool inherits)
 {
-	GHashTable *table;
 	DependencyProperty *property = NULL;
 
-	if (properties == NULL)
+	if (type == NULL)
 		return NULL;
 
-	table = (GHashTable*) g_hash_table_lookup (properties, &type);
-
-	if (table) {
+	if (type->properties != NULL) {
 		char *key = g_ascii_strdown (name, -1);
-		property = (DependencyProperty*) g_hash_table_lookup (table, key);
+		property = (DependencyProperty*) g_hash_table_lookup (type->properties, key);
 		g_free (key);
+	
+		if (property != NULL)
+			return property;
 	}
 
-	if (property != NULL)
-		return property;
-
-	if (!inherits)
-		return NULL;	
-
-	// Look in the parent type
-	Type *current_type;
-	current_type = Type::Find (type);
-	
-	if (current_type == NULL)
+	if (!inherits) {
+		fprintf (stderr, "DependencyProperty::GetDependencyProperty (%s, %s, %i): Property not found.\n", type->name, name, inherits);
 		return NULL;
+	}
 	
-	if (current_type->GetParent () == Type::INVALID)
+	if (type->GetParent () == Type::INVALID)
 		return NULL;
 
-	return GetDependencyProperty (current_type->GetParent (), name);
+	return GetDependencyProperty (Type::Find (type->GetParent ()), name, inherits);
 }
 
 //
@@ -214,14 +200,14 @@ DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::K
 DependencyProperty *
 DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
 {
-	return RegisterFull (&properties, type, name, default_value, vtype, attached, readonly, always_change);
+	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change);
 }
 
 #if SL_2_0
 DependencyProperty *
 DependencyProperty::RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
 {
-	return RegisterFull (surface->GetManagedProperties (), type, name, default_value, vtype, attached, readonly, always_change);
+	return RegisterFull (surface, surface->GetManagedType (type, true), name, default_value, vtype, attached, readonly, always_change);
 }
 #endif
 
@@ -231,26 +217,28 @@ DependencyProperty::RegisterFull (Surface *surface, Type::Kind type, const char 
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyProperty::RegisterFull (GHashTable **properties, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
+DependencyProperty::RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
 {
-	GHashTable *table;
-
-	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype, attached, readonly, always_change);
+	DependencyProperty *property;
 	
-	/* first add the property to the global 2 level property hash */
-	if (*properties == NULL)
-		*properties = g_hash_table_new_full (g_int_hash, g_int_equal,
-						    NULL, free_property_hash);
-
-	table = (GHashTable*) g_hash_table_lookup (*properties, &property->owner_type);
-
-	if (table == NULL) {
-		table = g_hash_table_new_full (g_str_hash, g_str_equal,
-					       NULL, free_property);
-		g_hash_table_insert (*properties, &property->owner_type, table);
+	if (type == NULL)
+		return NULL;
+	
+	property = new DependencyProperty (type->type, name, default_value, vtype, attached, readonly, always_change);
+	
+	if (type->properties == NULL) {
+		type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_property);
+//		printf ("DependencyProperty::RegisterFull (%p, %s, %s, %p, %i, %i, %i, %i): Created hashtable for type (hash table: %p)\n", type->properties, type->name, name, default_value, vtype, attached, readonly, always_change, type->properties);
 	}
 
-	g_hash_table_insert (table, property->hash_key, property);
+	// TODO: managed code is allowed to register several properties with the same name
+	// and they all get the callback called when the property value changes. Here we 
+	// overwrite (and leak) any previous DP's with the same name (and therefore 
+	// will (but shouldn't) raise an exception if managed code changes the previous
+	// value (given that the type doesn't contain the property anymore).
+
+	g_hash_table_insert (type->properties, property->hash_key, property);
+//	printf ("DependencyProperty::RegisterFull (%p, %s, %s, %p, %i, %i, %i, %i): Created property in hash table: %p\n", type->properties, type->name, name, default_value, vtype, attached, readonly, always_change, type->properties);
 
 	return property;
 }
@@ -434,13 +422,4 @@ resolve_property_path (DependencyObject **o, const char *path)
 
 	*o = lu;
 	return res;
-}
-
-GHashTable *DependencyProperty::properties = NULL;
-
-void
-DependencyProperty::Shutdown ()
-{
-	g_hash_table_destroy (properties);
-	properties = NULL;
 }
