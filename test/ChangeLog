@@ -1,3 +1,10 @@
+2008-07-30  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/downloader-smooth-set-source-direct.html: Adding an example for
+	the "flickering" (non-atomic Source setting on Image) as seen on Vertigo Slideshow. 
+	This is version two, not using the SetSource (as opposed to
+	downloader-smooth-set-source.html that uses it). 
+
 2008-07-28  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/carousel.png:
