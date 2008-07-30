@@ -16,6 +16,10 @@ url:http://bubblemark.com/wpfe.htm
 rating:4
  *  Works!
 
+site:Channel 9
+url:http://channel9.msdn.com
+rating:4
+ * works
 
 site:Chess Viewer 1.0
 url:http://www.vertigo.com/downloads/SilverlightChess/10RC/default.html
@@ -174,10 +178,7 @@ rating:3
 site:Popfly
 url:http://www.popfly.com
 rating:3
- * Not using Moonlight. It looks like it's detecting it, but it's not using it. 
- * toolbox mouse events are slow, out of sync Bug 375269
- * Edit a control has missing background and button Bug 375270
-
+ * Controls 
 site:Scrolling Video Playlist
 url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
 rating:4
@@ -225,6 +226,12 @@ site:Sprawl
 url:http://silverlight.net/samples/1.0/Sprawl/default.html
 rating:4
  * Works
+
+site:Tafiti
+url:http://www.tafiti.com
+rating:2
+ * Mouse over event not working Bug 412986
+ * Cannot drag search result to the list on the right  Bug 412985
 
 site:Tile Text
 url:http://silverlight.net/samples/1.0/Tile-Text/default.html
