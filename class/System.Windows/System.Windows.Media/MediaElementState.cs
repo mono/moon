@@ -28,10 +28,8 @@
 
 using System;
 
-namespace System.Windows.Media
-{
-	public enum MediaElementState
-	{
+namespace System.Windows.Media {
+	public enum MediaElementState {
 	    Closed = 0,
 	    Opening,
 	    Buffering,

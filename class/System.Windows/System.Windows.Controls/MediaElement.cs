@@ -35,10 +35,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Runtime.InteropServices;
 
-namespace System.Windows.Controls
-{
+namespace System.Windows.Controls {
 	public sealed class MediaElement : FrameworkElement {
-		
 		public static readonly DependencyProperty AttributesProperty = 
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Attributes", typeof (Dictionary <string, string>));
 		
@@ -67,7 +65,7 @@ namespace System.Windows.Controls
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CanSeek", typeof (bool));
 		
 		public static readonly DependencyProperty CurrentStateProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CurrentState", typeof (string));
+			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CurrentState", typeof (MediaElementState));
 		
 		public static readonly DependencyProperty DownloadProgressProperty = 
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "DownloadProgress", typeof (double));
@@ -91,7 +89,7 @@ namespace System.Windows.Controls
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Position", typeof (TimeSpan));
 		
 		public static readonly DependencyProperty SourceProperty =
-			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (string));
+			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (Uri));
 		
 		public static readonly DependencyProperty StretchProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
@@ -106,6 +104,11 @@ namespace System.Windows.Controls
 	
 		internal MediaElement (IntPtr raw) : base (raw) 
 		{
+		}
+		
+		internal override Kind GetKind ()
+		{
+			return Kind.MEDIAELEMENT;
 		}
 		
 		public override object GetValue (DependencyProperty dp)
@@ -271,20 +274,14 @@ namespace System.Windows.Controls
 			get {
 				return (MediaElementState) GetValue (CurrentStateProperty);
 			}
-			set {
-				SetValue (CurrentStateProperty, value);
-			}
 		}
 		
 		public Uri Source {
 			get {
-				// Uri is not a DependencyObject, we save it as a string
-				string uri = (string) GetValue (SourceProperty);
-				return new Uri (uri, UriKind.RelativeOrAbsolute);
+				return (Uri) GetValue (SourceProperty);
 			}
 			set {
-				string uri = value.OriginalString;
-				SetValue (SourceProperty, uri); 
+				SetValue (SourceProperty, value); 
 			}
 		}
 		
@@ -302,11 +299,6 @@ namespace System.Windows.Controls
 			}
 		}
 		
-		internal override Kind GetKind ()
-		{
-			return Kind.MEDIAELEMENT;
-		}
-
 		static object BufferingProgressChangedEvent = new object ();
 		static object CurrentStateChangedEvent = new object ();
 		static object DownloadProgressChangedEvent = new object ();

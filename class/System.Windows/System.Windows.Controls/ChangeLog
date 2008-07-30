@@ -1,5 +1,9 @@
 2008-07-30  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MediaElement.cs: Source property is a Uri, not a
+	string. Similarly, CurrentState is a MediaElementState and not a
+	string. Remove ability to set the CurrentState.
+
 	* Canvas.cs: Updated a bit.
 
 	* Panel.cs: Fixed ctor and removed ability to set the Children
