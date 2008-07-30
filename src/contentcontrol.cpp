@@ -13,6 +13,14 @@
 #include "contentcontrol.h"
 
 
+DependencyProperty *ContentControl::ContentProperty;
+DependencyProperty *ContentControl::ContentTemplateProperty;
+DependencyProperty *ContentControl::IsEnabledProperty;
+DependencyProperty *ContentControl::TextAlignmentProperty;
+DependencyProperty *ContentControl::TextDecorationsProperty;
+DependencyProperty *ContentControl::TextWrappingProperty;
+
+
 void
 ContentControl::SetContent (DependencyObject *content)
 {
