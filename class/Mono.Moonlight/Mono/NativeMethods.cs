@@ -189,7 +189,10 @@ namespace Mono {
 #region Controls
 		[DllImport("moon")]
 		public extern static IntPtr control_new ();
-
+		
+		[DllImport("moon")]
+		public extern static IntPtr content_control_new ();
+		
 		[DllImport("moon")]
 		public extern static IntPtr user_control_new ();
 
