@@ -23,61 +23,12 @@
 #include "moon-path.h"
 #include "uielement.h"
 #include "brush.h"
+#include "enums.h"
 #include "list.h"
-
-enum FontStretches {
-	FontStretchesUltraCondensed = 1,
-	FontStretchesExtraCondensed = 2,
-	FontStretchesCondensed      = 3,
-	FontStretchesSemiCondensed  = 4,
-	FontStretchesNormal         = 5,
-	FontStretchesMedium         = 5,
-	FontStretchesSemiExpanded   = 6,
-	FontStretchesExpanded       = 7,
-	FontStretchesExtraExpanded  = 8,
-	FontStretchesUltraExpanded  = 9
-};
-
-enum FontStyles {
-	FontStylesNormal,
-	FontStylesOblique,
-	FontStylesItalic
-};
-
-enum FontWeights {
-	FontWeightsThin       = 100,
-	FontWeightsExtraLight = 200,
-	FontWeightsLight      = 300,
-	FontWeightsNormal     = 400,
-	FontWeightsMedium     = 500,
-	FontWeightsSemiBold   = 600,
-	FontWeightsBold       = 700,
-	FontWeightsExtraBold  = 800,
-	FontWeightsBlack      = 900,
-	FontWeightsExtraBlack = 950,
-};
 
 // Silverlight accept negative values ]0,-475[ as bold and everything over 1023 as normal
 #define FONT_LOWER_BOLD_LIMIT	-475
 #define FONT_UPPER_BOLD_LIMIT	1024
-
-enum StyleSimulations {
-	StyleSimulationsNone
-};
-
-// TextDecorations would appear to be a collection of bit flags rather
-// than a normal enumeration of values
-enum TextDecorations {
-	TextDecorationsNone      = 0,
-	TextDecorationsUnderline = (1 << 0)
-};
-
-enum TextWrapping {
-	TextWrappingWrap,
-	TextWrappingNoWrap,
-	TextWrappingWrapWithOverflow
-};
-
 
 enum FontMask {
 	FontMaskFamily   = (1 << 0),

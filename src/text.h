@@ -19,12 +19,12 @@ G_BEGIN_DECLS
 
 #include <cairo.h>
 
-#include "frameworkelement.h"
-#include "downloader.h"
-#include "moon-path.h"
-#include "layout.h"
-#include "brush.h"
-#include "font.h"
+#include <frameworkelement.h>
+#include <downloader.h>
+#include <moon-path.h>
+#include <layout.h>
+#include <brush.h>
+#include <font.h>
 
 
 void text_init (void);

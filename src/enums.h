@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * enums.c: various enumerated types + enum -> str helpers
  *
@@ -22,6 +23,55 @@ enum ErrorType {
 	DownloadError,
 	MediaError,
 	ImageError
+};
+
+enum FontStretches {
+	FontStretchesUltraCondensed = 1,
+	FontStretchesExtraCondensed = 2,
+	FontStretchesCondensed      = 3,
+	FontStretchesSemiCondensed  = 4,
+	FontStretchesNormal         = 5,
+	FontStretchesMedium         = 5,
+	FontStretchesSemiExpanded   = 6,
+	FontStretchesExpanded       = 7,
+	FontStretchesExtraExpanded  = 8,
+	FontStretchesUltraExpanded  = 9
+};
+
+enum FontStyles {
+	FontStylesNormal,
+	FontStylesOblique,
+	FontStylesItalic
+};
+
+enum FontWeights {
+	FontWeightsThin       = 100,
+	FontWeightsExtraLight = 200,
+	FontWeightsLight      = 300,
+	FontWeightsNormal     = 400,
+	FontWeightsMedium     = 500,
+	FontWeightsSemiBold   = 600,
+	FontWeightsBold       = 700,
+	FontWeightsExtraBold  = 800,
+	FontWeightsBlack      = 900,
+	FontWeightsExtraBlack = 950,
+};
+
+enum StyleSimulations {
+	StyleSimulationsNone
+};
+
+// TextDecorations would appear to be a collection of bit flags rather
+// than a normal enumeration of values
+enum TextDecorations {
+	TextDecorationsNone      = 0,
+	TextDecorationsUnderline = (1 << 0)
+};
+
+enum TextWrapping {
+	TextWrappingWrap,
+	TextWrappingNoWrap,
+	TextWrappingWrapWithOverflow
 };
 
 enum Stretch {
@@ -180,6 +230,12 @@ enum ModifierKeys {
 	ModifierKeyShift    = (1 << 2),
 	ModifierKeyWindows  = (1 << 3),
 	ModifierKeyApple    = (1 << 3)
+};
+
+enum TextAlignment {
+	TextAlignmentCenter,
+	TextAlignmentLeft,
+	TextAlignmentRight
 };
 
 enum VerticalAlignment {

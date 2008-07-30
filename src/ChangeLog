@@ -1,3 +1,7 @@
+2008-07-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* enums.h: Moved some font/text enums here from font.h
+
 2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyproperty.cpp: Fix build.

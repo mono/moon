@@ -15,9 +15,9 @@
 #include <cairo.h>
 #include <glib.h>
 
-#include "brush.h"
-#include "font.h"
-#include "list.h"
+#include <brush.h>
+#include <font.h>
+#include <list.h>
 
 
 class TextRun : public List::Node {
