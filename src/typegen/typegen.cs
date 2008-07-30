@@ -157,6 +157,14 @@ class TypeInfo {
 		this.Base = Base;
 		this.Include = Include;
 	}
+	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion)
+	{
+		this.Name = Name;
+		this.KindName = KindName;
+		this.Base = Base;
+		this.Include = Include;
+		this.SilverlightVersion = SLVersion;
+	}
 	
 }
 
@@ -402,6 +410,7 @@ class Generator {
 		types.Add (new TypeInfo ("Point*", "POINT_ARRAY", null, true));
 		types.Add (new TypeInfo ("NPObj", "NPOBJ", null, true));
 		types.Add (new TypeInfo ("GridLength", "GRIDLENGTH", null, true));
+		types.Add (new TypeInfo ("Managed", "MANAGED", null, true, 2));
 		types.Add (new TypeInfo ("Thickness", "THICKNESS", null, true));
 		types.Add (new TypeInfo ("Size", "SIZE", null, true));
 	}

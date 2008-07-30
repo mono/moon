@@ -182,6 +182,11 @@ namespace Mono {
 			return GCHandle.FromIntPtr (ptr);
 		}
 
+		public static IntPtr GCHandleToIntPtr (GCHandle handle)
+		{
+			return GCHandle.ToIntPtr (handle);
+		}
+		
 		public static void FreeHGlobal (IntPtr ptr)
 		{
 			Marshal.FreeHGlobal (ptr);

@@ -189,6 +189,11 @@ Type type_infos [] = {
 	{ Type::LINEBREAK, Type::INLINE, false, "LineBreak", "LINEBREAK", 0, 1, NULL, (create_inst_func *) line_break_new, NULL }, 
 	{ Type::LINEGEOMETRY, Type::GEOMETRY, false, "LineGeometry", "LINEGEOMETRY", 0, 1, NULL, (create_inst_func *) line_geometry_new, NULL }, 
 	{ Type::LINESEGMENT, Type::PATHSEGMENT, false, "LineSegment", "LINESEGMENT", 0, 1, NULL, (create_inst_func *) line_segment_new, NULL }, 
+#if SL_2_0
+	{ Type::MANAGED, Type::INVALID, false, "Managed", "MANAGED", 0, 0, NULL, NULL, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'MANAGED'", "MANAGED", 0, 0, NULL, NULL, NULL }, 
+#endif
 	{ Type::MANUALTIMESOURCE, Type::TIMESOURCE, false, "ManualTimeSource", "MANUALTIMESOURCE", 0, 2, NULL, NULL, NULL }, 
 	{ Type::MARKERREACHEDEVENTARGS, Type::EVENTARGS, false, "MarkerReachedEventArgs", "MARKERREACHEDEVENTARGS", 0, 1, NULL, NULL, NULL }, 
 	{ Type::MATRIX, Type::DEPENDENCY_OBJECT, false, "Matrix", "MATRIX", 0, 1, NULL, (create_inst_func *) matrix_new, NULL }, 

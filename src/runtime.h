@@ -186,6 +186,12 @@ public:
 	static pthread_t main_thread;
 	static bool InMainThread () { return pthread_equal (main_thread, pthread_self ()); }
 
+	// 2.0 methods
+	GHashTable **GetManagedProperties () { return &managed_properties; }
+	GPtrArray *GetManagedTypes () { return managed_types; }
+	int RegisterManagedType (const char *name, void *gc_handle, int parent);
+	void UnregisterManagedTypes ();
+	
 protected:
 	// The current window we are drawing to
 	MoonWindow *active_window;
@@ -267,6 +273,10 @@ private:
 	void *cache_data;
 	int cache_size_multiplier;
 	
+	// Types and properties in this surface (2.0 only)
+	GHashTable *managed_properties;
+	GPtrArray *managed_types;
+	
 	void Realloc ();
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
@@ -321,6 +331,7 @@ void     surface_destroy   (Surface *s);
 void     surface_set_trans (Surface *s, bool trans);
 bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
+int      surface_register_managed_type (Surface *s, const char *name, void *gc_handle, int parent);
 
 TimeManager* surface_get_time_manager (Surface* s);
 Downloader* surface_create_downloader (Surface *s);

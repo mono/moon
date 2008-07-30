@@ -73,7 +73,7 @@ namespace Mono.Xaml
 	{
 		// Contains any surface/plugins already loaded in the current domain.
 		// This is required form System.Windows.XamlReader.Load to work.
-		private static IntPtr surface_in_domain;
+		private static Surface surface_in_domain;
 		private static IntPtr plugin_in_domain;
 		private static bool allow_multiple_surfaces_per_domain;
 		
@@ -158,21 +158,28 @@ namespace Mono.Xaml
 				if (allow_multiple_surfaces_per_domain)
 					throw new ArgumentException ("Multiple surfaces per domain is enabled, so calling SurfaceInDomain/PluginInDomain is wrong.");
 				
-				return surface_in_domain;
+				return surface_in_domain == null ? IntPtr.Zero : surface_in_domain.Native;
 			}
 			set {
 				if (allow_multiple_surfaces_per_domain)
 					throw new ArgumentException ("Multiple surfaces per domain is enabled, so calling SurfaceInDomain/PluginInDomain is wrong.");
 				
-				if (value == IntPtr.Zero || (value == surface_in_domain && value != IntPtr.Zero))
+				if (value == IntPtr.Zero)
+					return;
+								
+				if (surface_in_domain != null && surface_in_domain.Native == value)
 					return;
 				
-				if (surface_in_domain != IntPtr.Zero) {
+				if (surface_in_domain != null) {
 					Console.Error.WriteLine ("There already is a surface in this AppDomain.");
 				} else {
-					surface_in_domain = value;
+					surface_in_domain = new Surface (value);
 				}
 			}
+		}
+		
+		public static Surface SurfaceObjectInDomain {
+			get { return surface_in_domain; }
 		}
 		
 		public static IntPtr PluginInDomain {

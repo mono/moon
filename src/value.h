@@ -272,6 +272,8 @@ public:
 	PointArray*	AsPointArray ()	{ checked_get_exact (Type::POINT_ARRAY, NULL, u.point_array); }
 	DoubleArray*	AsDoubleArray ()	{ checked_get_exact (Type::DOUBLE_ARRAY, NULL, u.double_array); }
 	
+	void *		AsManagedObject () { checked_get_exact (Type::MANAGED, NULL, u.managed_object); }
+	
 	RepeatBehavior*	AsRepeatBehavior ()	{ checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
 	Duration*	AsDuration ()	{ checked_get_exact (Type::DURATION, NULL, u.duration); }
 	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
@@ -458,6 +460,7 @@ public:
 		DoubleArray *double_array;
 		GridLength *grid_length;
 		Thickness *thickness;
+		void *managed_object;
 	} u;
 
 

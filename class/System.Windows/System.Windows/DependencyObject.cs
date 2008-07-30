@@ -315,6 +315,11 @@ namespace System.Windows {
 				case Kind.INT32:
 					return val->u.i32;
 
+				case Kind.MANAGED:
+					IntPtr managed_object = val->u.p;
+					GCHandle handle = Helper.GCHandleFromIntPtr (managed_object);
+					return handle.Target;
+					
 				case Kind.STRING: {
 					string str = Helper.PtrToStringAuto (val->u.p);
 					if (type == null)
@@ -425,12 +430,29 @@ namespace System.Windows {
 			}
 		}
 
+		internal static Value GetAsValue (object v)
+		{
+			return GetAsValue (v, false);
+		}
+		
 		//
 		// How do we support "null" values, should the caller take care of that?
 		//
-		internal static Value GetAsValue (object v)
+		internal static Value GetAsValue (object v, bool as_managed_object)
 		{
 			Value value = new Value ();
+			
+			if (as_managed_object) {
+				// TODO: We probably need to marshal types that can animate as the 
+				// corresponding type (Point, Double, Color, etc).
+				// TODO: We need to store the GCHandle somewhere so that we can free it,
+				// or register a callback on the surface for the unmanaged code to call.
+				GCHandle handle = GCHandle.Alloc (v);
+				value.k = Kind.MANAGED;
+				value.u.p = Helper.GCHandleToIntPtr (handle);
+				return value;
+			}
+			
 			unsafe {
 				if (v is DependencyObject) {
 					DependencyObject dov = (DependencyObject) v;
@@ -595,35 +617,29 @@ namespace System.Windows {
 			return value;
 		}
 
-		//
-		// SetValue differs from SetValue in that the caller
-		// code has ensured the proper type is being passed (which
-		// is already the case for anything that is a setter as the
-		// setters are strongly typed)
-		//
-		// External users go through SetValue that can do conversions.
-		//
 		public void SetValue (DependencyProperty property, object obj)
 		{
+			Type object_type;
+			Value v;
+			
 			if (property == null)
 				throw new ArgumentNullException ("property");
 
 			CheckNativeAndThread ();
 			
 			if (obj == null) {
+				// TODO: do we need to check if the property is nullable (i.e. a double value for instance)?
+				// Tried to test, but SL crashes.
 				NativeMethods.dependency_object_set_value (native, property.native, IntPtr.Zero);
 				return;
 			}
 
-			Type t = obj.GetType ();
-			Value v;
-			if (t == property.type || property.type.IsAssignableFrom (t))
-				v = GetAsValue (obj);
-			else if (t == typeof (string)) {
-				NativeMethods.xaml_set_property_from_str (native, property.native, obj.ToString ());
-				return;
-			} else
-				v = GetAsValue (Helper.ChangeType (obj, property.type));
+			object_type = obj.GetType ();
+			if (object_type == property.property_type || property.property_type.IsAssignableFrom (object_type)) {
+				v = GetAsValue (obj, property is CustomDependencyProperty);
+			} else {
+				throw new ArgumentException (string.Format ("A DependencyProperty whose property type is {0} can't be set to value whose type is {1}", property.property_type.FullName, object_type.FullName));
+			}
 			
 			NativeMethods.dependency_object_set_value (native, property.native, ref v);
 

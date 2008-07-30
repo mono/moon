@@ -72,6 +72,9 @@ namespace Mono {
 		public extern static bool type_is_dependency_object (Kind type);
 		
 		[DllImport("moon")]
+		public extern static int surface_register_managed_type (IntPtr surface, string name, IntPtr gc_handle, int parent);
+		
+		[DllImport("moon")]
 		public extern static IntPtr dependency_property_lookup (Kind type, string name);
 
 		[DllImport("moon")]
@@ -79,6 +82,9 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static bool dependency_property_is_nullable (IntPtr obj);
+		
+		[DllImport("moon")]
+		public extern static IntPtr dependency_property_register_managed_property (IntPtr surface, string name, int property_type, int owner_type, bool attached);
 		
 		[DllImport("moon", EntryPoint="dependency_property_get_name")]
 		public extern static IntPtr _dependency_property_get_name (IntPtr obj);

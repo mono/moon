@@ -1,3 +1,15 @@
+2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: IsValueValid: treat all MANAGED types as valid,
+	  given that since we might not have access to the surface where the
+	  type was registered, it's not possible to do any type checking 
+	* dependencyproperty.cpp, dependencyproperty.h, runtime.cpp, runtime.h:
+	  Implement registration of managed properties on a surface.
+	* type.cpp, type.h, type.h.in: Implement a Type::Find which can look in
+	  types registered on a surface, added a Type::MANAGED enum value.
+	* typegen/typegen.cs, type-generated.cpp, value.h, value.h.in: Add a
+	  MANAGED type.
+
 2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (inline_new): Added.

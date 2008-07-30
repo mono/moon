@@ -206,6 +206,9 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 
 	up_dirty = new List ();
 	down_dirty = new List ();
+	
+	managed_types = NULL;
+	managed_properties = NULL;
 }
 
 Surface::~Surface ()
@@ -1770,6 +1773,55 @@ Surface::HandleUIWindowDestroyed (MoonWindow *window)
 	if (window == active_window)
 		active_window = NULL;
 }
+
+#if SL_2_0
+int
+Surface::RegisterManagedType (const char *name, void *gc_handle, int parent)
+{
+	Type *type = new Type ();
+	
+	if (managed_types == NULL)
+		managed_types = g_ptr_array_new ();
+
+	type->type = (Type::Kind) (Type::LASTTYPE + managed_types->len + 1);
+	type->parent = (Type::Kind) parent;
+	type->value_type = false;
+	type->name = g_strdup (name);
+	type->kindname = NULL;
+	type->event_count = 0;
+	type->total_event_count = 0;
+	type->events = NULL;
+	type->create_inst = NULL;
+	type->content_property = NULL;
+	
+	g_ptr_array_add (managed_types, type);
+	
+	return type->type;
+}
+
+static void
+free_managed_type (gpointer data, gpointer userdata)
+{
+	delete (Type *) data;
+}
+
+void
+Surface::UnregisterManagedTypes ()
+{
+	if (managed_types == NULL)
+		return;
+	
+	g_ptr_array_foreach (managed_types, free_managed_type, NULL);
+	
+	g_ptr_array_free (managed_types, true);
+}
+
+int
+surface_register_managed_type (Surface *s, const char *name, void *gc_handle, int parent)
+{
+	return s->RegisterManagedType (name, gc_handle, parent);
+}
+#endif
 
 Surface *
 surface_new (MoonWindow *window, bool silverlight2)

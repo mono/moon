@@ -136,6 +136,44 @@ Type::Find (Type::Kind type)
 	return &type_infos [type];
 }
 
+#if SL_2_0
+Type *
+Type::Find (Surface *surface, Type::Kind type)
+{
+	GPtrArray *managed_types;
+	int index;
+	
+	printf ("Type::Find (%p, %i)\n", surface, type);
+	
+	if (type < Type::INVALID || type == Type::LASTTYPE)
+		return NULL;
+		
+	if (type < Type::LASTTYPE)
+		return &type_infos [type];
+		
+	if (surface == NULL) {
+		fprintf (stderr, "Type::Find (%p, %i): No surface to look in.\n", surface, type);
+		return NULL;
+	}
+	
+	managed_types = surface->GetManagedTypes ();
+	
+	if (managed_types == NULL) {
+		fprintf (stderr, "Type::Find (%p, %i): No managed types have been registered.\n", surface, type);
+		return NULL;
+	}
+	
+	index = (int) type - (int) Type::LASTTYPE - 1;
+	
+	if (managed_types->len <= index) {
+		fprintf (stderr, "Type::Find (%p, %i): There are only %i managed types (and %i unmanaged types).\n", surface, type, managed_types->len, Type::LASTTYPE);
+		return NULL;
+	}
+	
+	return (Type *) g_ptr_array_index (managed_types, index);
+}
+#endif
+
 DependencyObject *
 Type::CreateInstance ()
 {

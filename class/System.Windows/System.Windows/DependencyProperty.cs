@@ -33,7 +33,7 @@ using Mono;
 namespace System.Windows {
 	public class DependencyProperty {
 		internal IntPtr native;
-		internal Type type;
+		internal Type property_type;
 		private Kind declaring_type;
 		
 		public static readonly object UnsetValue = new object ();
@@ -48,21 +48,35 @@ namespace System.Windows {
 			// useless constructor.
 		}
 
-		internal DependencyProperty (IntPtr handle, Type t, Kind dtype)
+		internal DependencyProperty (IntPtr handle, Type property_type, Kind owner_type)
 		{
-			native = handle;
-			type = t;
-			declaring_type = dtype;
+			this.native = handle;
+			this.property_type = property_type;
+			this.declaring_type = owner_type;
 		}
 		
 		public static DependencyProperty Register (string name, Type propertyType, Type ownerType, PropertyMetadata typeMetadata)
 		{
-			throw new System.NotImplementedException ();
+			return RegisterAny (name, propertyType, ownerType, typeMetadata, false);
 		}
 		
 		public static DependencyProperty RegisterAttached (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
 		{
-			throw new System.NotImplementedException ();
+			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true);
+		}
+		
+		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached)
+		{
+			Surface surface = Mono.Xaml.XamlLoader.SurfaceObjectInDomain;
+			ManagedType property_type = surface.FindType (propertyType);
+			ManagedType owner_type = surface.FindType (ownerType);
+			
+			IntPtr handle = NativeMethods.dependency_property_register_managed_property (surface.Native, name, property_type.native_handle, owner_type.native_handle, attached);
+			
+			if (handle == IntPtr.Zero)
+				return null;
+			
+			return new CustomDependencyProperty (handle, name, property_type, owner_type, metadata);
 		}
 		
 		
@@ -101,7 +115,7 @@ namespace System.Windows {
 		}
 		
 		internal Type Type {
-			get { return type; }
+			get { return property_type; }
 		}
 	}
 }

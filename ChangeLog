@@ -1,3 +1,7 @@
+2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* moon.mds: Updated.
+
 2008-07-28  Jackson Harper  <jackson@ximian.com>
 
 	* tools/mxap/mxap.cs: Use only the .dll name for Assembly Source.

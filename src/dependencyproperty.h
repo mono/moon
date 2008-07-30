@@ -1,8 +1,8 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * dependencyobject.h: 
+ * dependencypropery.cpp: 
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -47,9 +47,13 @@ class DependencyProperty {
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
 	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
+	static DependencyProperty *RegisterFull (GHashTable **properties, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
+	static DependencyProperty *RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
 
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
+	static DependencyProperty *GetDependencyProperty (GHashTable *properties, Type::Kind type, const char *name, bool inherits);
+	static DependencyProperty *GetDependencyProperty (Surface *surface, Type::Kind type, const char *name, bool inherits);
 	
 	static void Shutdown ();
 
@@ -78,6 +82,8 @@ char *dependency_property_get_name (DependencyProperty* property);
 bool  dependency_property_is_nullable (DependencyProperty* property);
 Type::Kind dependency_property_get_property_type (DependencyProperty* property);
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
+
+DependencyProperty *dependency_property_register_managed_property (Surface *surface, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached);
 
 G_END_DECLS
 

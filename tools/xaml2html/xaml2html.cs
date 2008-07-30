@@ -60,12 +60,13 @@ class XamlToHtml {
 	static bool ProcessFile (string file, string next)
 	{
 		try {
+			bool is_xap = file.EndsWith (".xap");
 			string xaml_basename = Path.GetFileNameWithoutExtension (file);
 			string xaml_content = File.ReadAllText (file);
-			string html_content = file.EndsWith (".xap") ? (new StreamReader (Assembly.GetExecutingAssembly ().GetManifestResourceStream ("sl2template.html"))).ReadToEnd () : html_template;
+			string html_content = is_xap ? (new StreamReader (Assembly.GetExecutingAssembly ().GetManifestResourceStream ("sl2template.html"))).ReadToEnd () : html_template;
 
-			string canvas_width = FindMasterCanvasAttribute (xaml_content, "Width", "640");
-			string canvas_height = FindMasterCanvasAttribute (xaml_content, "Height", "480");
+			string canvas_width = FindMasterCanvasAttribute (xaml_content, "Width", is_xap ? "1600" : "640");
+			string canvas_height = FindMasterCanvasAttribute (xaml_content, "Height", is_xap ? "1200" : "480");
 
 			// Substitute
 			html_content = html_content.Replace ("@XAML@", xaml_content);

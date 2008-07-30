@@ -1,3 +1,7 @@
+2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* harness.mdp: Updated.
+
 2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* agviewer/agviewer.cpp: Add support for doing 'pkill -QUIT agviewer'

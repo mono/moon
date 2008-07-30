@@ -1,3 +1,7 @@
+2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am, Mono.Moonlight.mdp: Updated.
+
 2008-06-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Mono.Moonlight.mdp: Updated.

@@ -1,3 +1,8 @@
+2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml2html.cs: Make xap surfaces bigger, pending looking into every
+	  xaml file in the xap file for the exact size.
+
 2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml2html.cs, sl2template.html, Makefile.am: Changed the sl2 template

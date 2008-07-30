@@ -97,6 +97,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
 	$(srcdir)/System.Windows/CornerRadius.cs				\
+	$(srcdir)/System.Windows/CustomDependencyProperty.cs				\
 	$(srcdir)/System.Windows/CrossDomainAccess.cs				\
 	$(srcdir)/System.Windows/DataTemplate.cs				\
 	$(srcdir)/System.Windows/Deployment.cs					\

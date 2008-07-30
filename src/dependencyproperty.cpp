@@ -1,8 +1,8 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * dependencyobject.h: 
+ * dependencypropery.h: 
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -16,6 +16,7 @@
 
 #include "dependencyproperty.h"
 #include "animation.h"
+#include "runtime.h"
 
 /*
  *	DependencyProperty
@@ -109,6 +110,27 @@ DependencyProperty::GetDependencyProperty (Type::Kind type, const char *name)
 DependencyProperty *
 DependencyProperty::GetDependencyProperty (Type::Kind type, const char *name, bool inherits)
 {
+	return GetDependencyProperty (properties, type, name, inherits);
+}
+
+#if SL_2_0
+DependencyProperty *
+DependencyProperty::GetDependencyProperty (Surface *surface, Type::Kind type, const char *name, bool inherits)
+{
+	DependencyProperty *property;
+	
+	property = GetDependencyProperty (type, name, inherits);
+	
+	if (property == NULL)
+		property = GetDependencyProperty (*surface->GetManagedProperties (), type, name, inherits);
+
+	return property;
+}
+#endif
+
+DependencyProperty *
+DependencyProperty::GetDependencyProperty (GHashTable *properties, Type::Kind type, const char *name, bool inherits)
+{
 	GHashTable *table;
 	DependencyProperty *property = NULL;
 
@@ -189,29 +211,43 @@ DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::K
 	return property;
 }
 
+DependencyProperty *
+DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
+{
+	return RegisterFull (&properties, type, name, default_value, vtype, attached, readonly, always_change);
+}
+
+#if SL_2_0
+DependencyProperty *
+DependencyProperty::RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
+{
+	return RegisterFull (surface->GetManagedProperties (), type, name, default_value, vtype, attached, readonly, always_change);
+}
+#endif
+
 //
 // Register the dependency property that belongs to @type with the name @name
 // The default value is @default_value (if provided) and the type that can be
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
+DependencyProperty::RegisterFull (GHashTable **properties, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
 {
 	GHashTable *table;
 
 	DependencyProperty *property = new DependencyProperty (type, name, default_value, vtype, attached, readonly, always_change);
 	
 	/* first add the property to the global 2 level property hash */
-	if (properties == NULL)
-		properties = g_hash_table_new_full (g_int_hash, g_int_equal,
+	if (*properties == NULL)
+		*properties = g_hash_table_new_full (g_int_hash, g_int_equal,
 						    NULL, free_property_hash);
 
-	table = (GHashTable*) g_hash_table_lookup (properties, &property->owner_type);
+	table = (GHashTable*) g_hash_table_lookup (*properties, &property->owner_type);
 
 	if (table == NULL) {
 		table = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       NULL, free_property);
-		g_hash_table_insert (properties, &property->owner_type, table);
+		g_hash_table_insert (*properties, &property->owner_type, table);
 	}
 
 	g_hash_table_insert (table, property->hash_key, property);
@@ -242,6 +278,14 @@ dependency_property_is_nullable (DependencyProperty *property)
 	return property->IsNullable ();
 }
 
+
+#if SL_2_0
+DependencyProperty *
+dependency_property_register_managed_property (Surface *surface, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached)
+{
+	return DependencyProperty::RegisterFull (surface, owner_type, name, NULL, property_type, attached, false, false);
+}
+#endif
 
 //
 // Everything inside of a ( ) resolves to a DependencyProperty, if there is a

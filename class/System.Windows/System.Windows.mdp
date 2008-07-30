@@ -60,8 +60,6 @@
     <File name="System.Windows.Ink/StrokeCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Ink/Stroke.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/Cursors.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Input/KeyboardEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Input/KeyboardEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/MouseEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/MouseEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/StylusInfo.cs" subtype="Code" buildaction="Compile" />
@@ -258,6 +256,8 @@
     <File name="System.Windows.Media/MediaSampleAttributeKeys.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/TimelineCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/UIElementCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/Keyboard.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/CustomDependencyProperty.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

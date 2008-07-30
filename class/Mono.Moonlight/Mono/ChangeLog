@@ -1,3 +1,13 @@
+2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Helper.cs: Added GCHandleToIntPtr.
+	* Kind.cs: Updated.
+	* ManagedType.cs, Surface.cs: Added.
+	* NativeMethods.cs: Added surface_register_managed_type and
+	  dependency_property_register_managed_property.
+	* XamlLoaderCallbacks.cs: Store a Surface object instead of an IntPtr
+	  to the unmanaged Surface.
+
 2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* NativeMethods.cs: Added binding for inline_new().

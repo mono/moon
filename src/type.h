@@ -19,6 +19,7 @@
 #include <glib.h>
 
 class DependencyObject;
+class Surface;
 
 typedef gint64 TimeSpan;
 typedef DependencyObject *create_inst_func (void);
@@ -103,6 +104,7 @@ public:
 		LINEBREAK,
 		LINEGEOMETRY,
 		LINESEGMENT,
+		MANAGED,// Silverlight 2.0 only
 		MANUALTIMESOURCE,
 		MARKERREACHEDEVENTARGS,
 		MATRIX,
@@ -198,6 +200,7 @@ public:
 
 	static Type* Find (const char *name);
 	static Type* Find (Type::Kind type);
+	static Type* Find (Surface *surface, Type::Kind type);
 	
 	bool IsSubclassOf (Type::Kind super);
 	static bool IsSubclassOf (Type::Kind type, Type::Kind super);

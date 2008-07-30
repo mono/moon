@@ -4,7 +4,7 @@
       <Entry build="True" name="src" configuration="Debug" />
       <Entry build="True" name="plugin" configuration="Debug" />
       <Entry build="True" name="Mono.Moonlight" configuration="Debug" />
-      <Entry build="True" name="System.Windows" configuration="Debug" />
+      <Entry build="True" name="System.Windows" configuration="Default" />
       <Entry build="True" name="System.Windows.Browser" configuration="Debug" />
       <Entry build="True" name="harness" configuration="Debug" />
       <Entry build="True" name="test" configuration="Default" />

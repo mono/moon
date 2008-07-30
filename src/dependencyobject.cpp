@@ -804,6 +804,15 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 			return true;
 		}
 		
+#if SL_2_0
+		if (value->Is (Type::MANAGED)) {
+			// This is a big hack, we do no type-checking if we try to set a managed type.
+			// Given that for the moment we might not have the surface available, we can't
+			// do any type checks since we can't access types registered on the surface.
+			return true;
+		}
+#endif
+		
 		if (!value->Is (property->GetPropertyType())) {
 			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
 				     "DependencyObject::SetValue, value cannot be assigned to the "
