@@ -57,7 +57,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty ForegroundProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Foreground", typeof (Brush));
 		
-		public static readonly DependencyProperty InlinesProperty =
+		static readonly DependencyProperty InlinesProperty =
 			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (InlineCollection));
 		
 		public static readonly DependencyProperty TextDecorationsProperty =
@@ -122,7 +122,6 @@ namespace System.Windows.Controls {
 		
 		public InlineCollection Inlines {
 			get { return (InlineCollection) GetValue (InlinesProperty); }
-			set { SetValue (InlinesProperty, value); }
 		}
 		
 		public TextDecorationCollection TextDecorations {
