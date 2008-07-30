@@ -41,6 +41,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Runtime.InteropServices;
 using System.Windows.Documents;
+using System.Windows.Threading;
 using System.Threading;
 
 namespace System.Windows {
@@ -286,6 +287,36 @@ namespace System.Windows {
 			return ValueToObject (property.Type, val);
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public object GetAnimationBaseValue (DependencyProperty property)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public object ReadLocalValue (DependencyProperty property)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+		
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void ClearValue (DependencyProperty property)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Advanced)]
+		public Dispatcher Dispatcher {
+			get { throw new System.NotImplementedException (); }
+		}
+		
 		static bool slow_codepath_error_shown = false;
 		
 		internal static object ValueToObject (Type type, IntPtr value)
@@ -660,6 +691,15 @@ namespace System.Windows {
 		{
 			return Kind.DEPENDENCY_OBJECT;
 		}
+
+#if SL_2_1
+		[SecuritySafeCritical ()]
+#endif
+		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Never)]
+		public bool CheckAccess ()
+		{
+			return Thread.CurrentThread == moonlight_thread;
+		}
 		
 		private void CheckNativeAndThread ()
 		{
@@ -668,7 +708,7 @@ namespace System.Windows {
 					string.Format ("Uninitialized object: this object ({0}) has not set its native handle or overwritten SetValue", GetType ().FullName));
 			}
 
-			if (Thread.CurrentThread != moonlight_thread)
+			if (!CheckAccess ())
 				throw new UnauthorizedAccessException ("Invalid access of Moonlight from an external thread");
 		}
 

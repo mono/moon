@@ -1,5 +1,9 @@
 2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyObject.cs: Implement CheckAccess and stub a bit.
+
+2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* CustomDependencyProperty.cs: Added.
 	* DependencyObject.cs: Don't do any type conversion in SetValue and
 	  implement marshalling of managed objects.
