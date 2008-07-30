@@ -116,7 +116,7 @@ DependencyProperty::GetDependencyProperty (Surface *surface, Type::Kind type, co
 	property = GetDependencyProperty (type, name, inherits);
 	
 	if (property == NULL)
-		property = GetDependencyProperty (surface->GetManagedType (type, false), type, name, inherits);
+		property = GetDependencyProperty (surface->GetManagedType (type, false), name, inherits);
 
 	return property;
 }
