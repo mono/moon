@@ -1,3 +1,12 @@
+2008-07-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* HtmlElement.cs: GetProperty isn't generic anymore, do type casting
+	  instead.
+	* ScriptableObject.cs, ScriptObject.cs: Rename ScriptableObject to
+	  ScriptObject, stub out missing methods.
+	* HtmlObject.cs, HtmlPage.cs: Rename ScriptableObject to ScriptObject.
+	* HtmlDocument.cs: Fix GetElementByID/Id case mismatch and stub a bit.
+
 2008-07-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* HtmlPage.cs: HtmlWindow is now a public class, and return that from

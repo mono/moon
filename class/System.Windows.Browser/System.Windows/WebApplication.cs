@@ -102,9 +102,9 @@ namespace System.Windows
 
 		//public event EventHandler<System.Windows.ApplicationUnhandledExceptionEventArgs> ApplicationUnhandledException;
 
-		internal static T GetProperty<T> (IntPtr obj, string name)
+		internal static object GetProperty (IntPtr obj, string name)
 		{
-			return (T) GetPropertyInternal (Current.plugin_handle, obj, name);
+			return GetPropertyInternal (Current.plugin_handle, obj, name);
 		}
 
 		internal static void SetProperty (IntPtr obj, string name, object value)

@@ -28,7 +28,7 @@
     <File name="System.Windows.Browser/HtmlTimer.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/HttpUtility.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/ScriptableAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Browser/ScriptableObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Browser/ScriptObject.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser.Net/BrowserHttpWebRequest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser.Net/BrowserHttpWebResponse.cs" subtype="Code" buildaction="Compile" />

@@ -129,12 +129,12 @@ namespace System.Windows.Browser {
 			SetPropertyInternal (Window.Handle, "location", navigateToUri);
 		}
 
-		public static ScriptableObject Navigate (string navigateToUri, string target)
+		public static ScriptObject Navigate (string navigateToUri, string target)
 		{
 			return new HtmlWindow (InvokeInternal<IntPtr> (Window.Handle, "open", navigateToUri, target));
 		}
 
-		public static ScriptableObject Navigate (string navigateToUri, string target, string targetFeatures)
+		public static ScriptObject Navigate (string navigateToUri, string target, string targetFeatures)
 		{
 			return new HtmlWindow (InvokeInternal<IntPtr> (Window.Handle, "open", navigateToUri, target, targetFeatures));
 		}
@@ -154,7 +154,7 @@ namespace System.Windows.Browser {
 
 		public static void Submit (string formId)
 		{
-			HtmlElement form = Document.GetElementByID (formId);
+			HtmlElement form = Document.GetElementById (formId);
 			if (form == null)
 				return;
 			InvokeInternal<object> (form.Handle, "submit");

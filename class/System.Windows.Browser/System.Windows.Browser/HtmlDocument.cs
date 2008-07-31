@@ -55,7 +55,7 @@ namespace System.Windows.Browser
 			return new HtmlElement (InvokeInternal<IntPtr> (Handle, "createElement", tagName));
 		}
 
-		public HtmlElement GetElementByID (string id)
+		public HtmlElement GetElementById (string id)
 		{
 			return new HtmlElement (InvokeInternal<IntPtr> (Handle, "getElementById", id));
 		}
@@ -63,6 +63,20 @@ namespace System.Windows.Browser
 		public HtmlElementCollection GetElementsByTagName (string tagName)
 		{
 			return new HtmlElementCollection (InvokeInternal<IntPtr> (Handle, "getElementsByTagName", tagName));
+		}
+		
+		public void Submit ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public void Submit (string tagName)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public bool IsReady {
+			get { throw new NotImplementedException (); }
 		}
 	}
 }

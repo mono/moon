@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 
 namespace System.Windows.Browser {
 
-	public abstract class HtmlObject : ScriptableObject {
+	public abstract class HtmlObject : ScriptObject {
 
 		internal delegate void DomEventCallback (string name, int client_x, int client_y, int offset_x, int offset_y,
 				bool alt_key, bool ctrl_key, bool shift_key, int mouse_button);

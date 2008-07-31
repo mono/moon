@@ -77,6 +77,7 @@ namespace System.Windows.Browser
 			InvokeInternal<object> (Handle, "removeChild", element);
 		}
 
+				
 		[MonoTODO]
 		public void RemoveStyleAttribute (string name)
 		{
@@ -101,7 +102,7 @@ namespace System.Windows.Browser
 		}
 
 		public HtmlElementCollection Children {
-			get { return new HtmlElementCollection (GetProperty<IntPtr> ("childNodes")); }
+			get { return new HtmlElementCollection ((IntPtr) GetProperty ("childNodes")); }
 		}
 
 		public string CssClass {

@@ -6,7 +6,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:Mono.Moonlight -d:AGCLR -unsafe
+CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:Mono.Moonlight -r:System.Windows -d:AGCLR -unsafe
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
@@ -39,7 +39,7 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser/HtmlWindow.cs				\
 	$(srcdir)/System.Windows.Browser/HttpUtility.cs				\
 	$(srcdir)/System.Windows.Browser/ScriptableAttribute.cs			\
-	$(srcdir)/System.Windows.Browser/ScriptableObject.cs			\
+	$(srcdir)/System.Windows.Browser/ScriptObject.cs			\
 	$(srcdir)/System.Windows.Controls/DialogResult.cs				\
 	$(srcdir)/System.Windows.Controls/FileDialogFileInfo.cs			\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
