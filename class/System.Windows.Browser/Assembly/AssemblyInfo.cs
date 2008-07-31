@@ -53,7 +53,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright ("(c) 2007 Various Authors")]
 [assembly: AssemblyTrademark ("")]
 
-[assembly: CLSCompliant (true)]
 [assembly: AssemblyDefaultAlias ("System.Windows.Browser.dll")]
 [assembly: AssemblyInformationalVersion ("0.0.0.1")]
 [assembly: NeutralResourcesLanguage ("en-US")]

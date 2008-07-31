@@ -32,7 +32,6 @@ using System.Windows.Threading;
 
 
 namespace System.Windows.Browser {
-
 	public class ScriptObject {
 		IntPtr handle;
 		string script_key;
