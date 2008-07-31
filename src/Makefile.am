@@ -17,6 +17,8 @@ libmoon_include_HEADERS = 	\
 	clock.h			\
 	collection.h		\
 	color.h			\
+	contentcontrol.h	\
+	control.h		\
 	debug.h			\
 	dependencyobject.h	\
 	dependencyproperty.h	\
@@ -82,6 +84,8 @@ libmoon_la_SOURCES = 		\
 	clock.cpp		\
 	collection.cpp		\
 	color.cpp		\
+	contentcontrol.cpp	\
+	control.cpp		\
 	debug.cpp		\
 	dependencyobject.cpp	\
 	dependencyproperty.cpp	\
@@ -135,16 +139,12 @@ libmoon_la_SOURCES = 		\
 
 if INCLUDE_MONO_RUNTIME
 libmoon_include_HEADERS += 	\
-	contentcontrol.h	\
-	control.h		\
 	deployment.h		\
 	grid.h			\
 	usercontrol.h		\
 	xap.h
 
 libmoon_la_SOURCES += 		\
-	contentcontrol.cpp	\
-	control.cpp		\
 	deployment.cpp		\
 	grid.cpp		\
 	usercontrol.cpp 	\

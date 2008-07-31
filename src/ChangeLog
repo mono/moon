@@ -1,3 +1,8 @@
+2008-07-31  Geoff Norton  <gnorton@novell.com>
+
+	* Makefile.am: Undo part of the recent Makefile changes as they broke 
+	the 1.0 build.
+
 2008-07-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes bug #412443
