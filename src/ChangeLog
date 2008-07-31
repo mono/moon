@@ -1,5 +1,13 @@
 2008-07-31  Jeffrey Stedfast  <fejj@novell.com>
 
+	Fixes bug #412443
+
+	* dependencyobject.cpp (DependencyObject::AddPropertyChangeListener):
+	Ref the listener.
+	(DependencyObject::RemovePropertyChangeListener): Unref the listener.
+
+2008-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
 	* animation.cpp (KeyFrameCollection::RemovedFromCollection): Oops,
 	this needs to chain up to
 	DependencyObjectCollection::RemovedFromCollection() rather than

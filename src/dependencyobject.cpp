@@ -678,10 +678,13 @@ EventObject::unref_delayed ()
 	pthread_mutex_unlock (&delayed_unref_mutex);
 }
 
-typedef struct {
-	DependencyObject *dob;
+struct Listener {
+	DependencyObject *obj;
 	DependencyProperty *prop;
-} Listener;
+	
+	Listener (DependencyObject *obj, DependencyProperty *prop) { this->obj = obj; this->prop = prop; if (obj) obj->ref (); }
+	~Listener () { if (obj) obj->unref (); }
+};
 
 //
 // Registers @listener as a listener on changes to @child_property of this DO.
@@ -689,10 +692,7 @@ typedef struct {
 void
 DependencyObject::AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
-	Listener *listen = new Listener ();
-	listen->dob = listener;
-	listen->prop = child_property;
-	listener_list = g_slist_append (listener_list, listen);
+	listener_list = g_slist_append (listener_list, new Listener (listener, child_property));
 }
 
 //
@@ -702,9 +702,9 @@ void
 DependencyObject::RemovePropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
 	for (GSList *l = listener_list; l; l = l->next) {
-		Listener *listen = (Listener*)l->data;
-
-		if ((listen->dob == listener) && (child_property == NULL || listen->prop == child_property)) {
+		Listener *listen = (Listener *) l->data;
+		
+		if ((listen->obj == listener) && (child_property == NULL || listen->prop == child_property)) {
 			listener_list = g_slist_remove_link (listener_list, l);
 			delete listen;
 		}
@@ -763,8 +763,8 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 	for (GSList *l = listener_list; l != NULL; l = l->next){
 		Listener *listener = (Listener*)l->data;
 
-		listener->dob->OnSubPropertyChanged (listener->prop, this, args);
-		if (listener->dob == logical_parent)
+		listener->obj->OnSubPropertyChanged (listener->prop, this, args);
+		if (listener->obj == logical_parent)
 			notified_parent = true;
 	}
 
