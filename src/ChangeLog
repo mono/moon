@@ -1,3 +1,7 @@
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp: Updated.
+
 2008-07-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	This is the proper fix for bug #412443

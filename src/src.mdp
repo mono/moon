@@ -150,6 +150,19 @@
     <File name="deployment.cpp" subtype="Code" buildaction="Compile" />
     <File name="dependencyproperty.cpp" subtype="Code" buildaction="Compile" />
     <File name="dependencyproperty.h" subtype="Code" buildaction="Compile" />
+    <File name="contentcontrol.cpp" subtype="Code" buildaction="Compile" />
+    <File name="contentcontrol.h" subtype="Code" buildaction="Nothing" />
+    <File name="grid.cpp" subtype="Code" buildaction="Compile" />
+    <File name="grid.h" subtype="Code" buildaction="Nothing" />
+    <File name="moon-curves.c" subtype="Code" buildaction="Compile" />
+    <File name="moon-curves.h" subtype="Code" buildaction="Nothing" />
+    <File name="mp3.cpp" subtype="Code" buildaction="Compile" />
+    <File name="mp3.h" subtype="Code" buildaction="Nothing" />
+    <File name="usercontrol.cpp" subtype="Code" buildaction="Compile" />
+    <File name="usercontrol.h" subtype="Code" buildaction="Nothing" />
+    <File name="window.h" subtype="Code" buildaction="Nothing" />
+    <File name="window-gtk.cpp" subtype="Code" buildaction="Compile" />
+    <File name="window-gtk.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
