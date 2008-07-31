@@ -17,8 +17,6 @@ libmoon_include_HEADERS = 	\
 	clock.h			\
 	collection.h		\
 	color.h			\
-	contentcontrol.h	\
-	control.h		\
 	debug.h			\
 	dependencyobject.h	\
 	dependencyproperty.h	\
@@ -84,8 +82,6 @@ libmoon_la_SOURCES = 		\
 	clock.cpp		\
 	collection.cpp		\
 	color.cpp		\
-	contentcontrol.cpp	\
-	control.cpp		\
 	debug.cpp		\
 	dependencyobject.cpp	\
 	dependencyproperty.cpp	\

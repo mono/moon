@@ -692,6 +692,9 @@ struct Listener {
 void
 DependencyObject::AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
+	if (Is (Type::IMAGE))
+		printf ("%p Image::AddPropertyChangeListener (%p=\"%s\", %s);\n", this, listener, listener->GetTypeName(), child_property->GetName());
+	
 	listener_list = g_slist_append (listener_list, new Listener (listener, child_property));
 }
 
