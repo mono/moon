@@ -57,21 +57,19 @@ namespace Mono {
 				}
 			}
 
-			if (at == null || at == TypeConverterAttribute.Default)
-				converter = TypeDescriptor.GetConverter (info.PropertyType);
-			else {
-				Type t = Type.GetType (at.ConverterTypeName);
-				if (t == null) {
-					converter = TypeDescriptor.GetConverter (info.PropertyType);
-				}
-				else {
-					ConstructorInfo ci = t.GetConstructor (new Type[] { typeof(Type) });
-					if (ci != null)
-						converter = (TypeConverter) ci.Invoke (new object[] { info.PropertyType });
-					else
-						converter = (TypeConverter) Activator.CreateInstance (t);
-				}
-			}
+			if (at == null)
+				return null;
+
+			Type t = Type.GetType (at.ConverterTypeName);
+			if (t == null)
+					return null;
+
+			ConstructorInfo ci = t.GetConstructor (new Type[] { typeof(Type) });
+			if (ci != null)
+				converter = (TypeConverter) ci.Invoke (new object[] { info.PropertyType });
+			else
+				converter = (TypeConverter) Activator.CreateInstance (t);
+
 			return converter;
 		}
 		

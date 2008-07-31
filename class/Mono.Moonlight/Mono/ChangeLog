@@ -1,3 +1,8 @@
+2008-07-31  Jb Evain  <jbevain@novell.com>
+
+	* Helper.cs (GetConverterFor): clean up according to the SL TypeConverter
+	changes.
+
 2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Helper.cs: Added GCHandleToIntPtr.
