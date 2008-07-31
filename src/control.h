@@ -63,6 +63,7 @@ struct Thickness {
 // Control Class
 //
 /* @ContentProperty="Content" */
+/* @SilverlightVersion="2" */
 class Control : public FrameworkElement {
 	bool emitting_loaded;
 	

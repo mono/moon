@@ -139,12 +139,16 @@ libmoon_la_SOURCES = 		\
 
 if INCLUDE_MONO_RUNTIME
 libmoon_include_HEADERS += 	\
+	contentcontrol.h	\
+	control.h		\
 	deployment.h		\
 	grid.h			\
 	usercontrol.h		\
 	xap.h
 
 libmoon_la_SOURCES += 		\
+	contentcontrol.cpp	\
+	control.cpp		\
 	deployment.cpp		\
 	grid.cpp		\
 	usercontrol.cpp 	\

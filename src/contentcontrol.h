@@ -21,6 +21,7 @@ G_BEGIN_DECLS
 // ContentControl Class
 //
 /* @ContentProperty="Content" */
+/* @SilverlightVersion="2" */
 class ContentControl : public Control {
  protected:
 	virtual ~ContentControl () {}
