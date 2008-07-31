@@ -1,3 +1,12 @@
+2008-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (struct Listener): Comment out the listener
+	reffing from previous commit. I don't think this is correct.
+
+	* visual.cpp (VisualCollection): Set z_sorted to NULL after
+	freeing it so that parent class dtor calling
+	RemovedFromCollection() will not poke at free'd memory.
+
 2008-07-31  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am: Undo part of the recent Makefile changes as they broke 

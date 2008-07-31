@@ -55,6 +55,7 @@ VisualCollection::~VisualCollection ()
 	}
 	
 	g_ptr_array_free (z_sorted, true);
+	z_sorted = NULL;
 }
 
 static int
@@ -94,7 +95,8 @@ VisualCollection::RemovedFromCollection (Value *value)
 {
 	UIElement *item = value->AsUIElement ();
 	
-	g_ptr_array_remove (z_sorted, item);
+	if (z_sorted)
+		g_ptr_array_remove (z_sorted, item);
 	
 	DependencyObjectCollection::RemovedFromCollection (value);
 }
