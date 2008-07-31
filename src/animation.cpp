@@ -1027,7 +1027,7 @@ KeyFrameCollection::AddedToCollection (Value *value)
 void
 KeyFrameCollection::RemovedFromCollection (Value *value)
 {
-	DependencyObjectCollection::AddedToCollection (value);
+	DependencyObjectCollection::RemovedFromCollection (value);
 	
 	resolved = false;
 }

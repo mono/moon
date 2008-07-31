@@ -1,3 +1,10 @@
+2008-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* animation.cpp (KeyFrameCollection::RemovedFromCollection): Oops,
+	this needs to chain up to
+	DependencyObjectCollection::RemovedFromCollection() rather than
+	AddedToCollection(). Duh.
+
 2008-07-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* contentcontrol.cpp|h: Added.
