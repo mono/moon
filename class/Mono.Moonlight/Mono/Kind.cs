@@ -26,8 +26,8 @@ namespace Mono {
 		COLORKEYFRAME_COLLECTION,
 		COLUMNDEFINITION,// Silverlight 2.0 only
 		COLUMNDEFINITION_COLLECTION,// Silverlight 2.0 only
-		CONTENTCONTROL,
-		CONTROL,
+		CONTENTCONTROL,// Silverlight 2.0 only
+		CONTROL,// Silverlight 2.0 only
 		DEPENDENCY_OBJECT,
 		DEPENDENCY_OBJECT_COLLECTION,
 		DEPLOYMENT,// Silverlight 2.0 only
