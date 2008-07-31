@@ -516,7 +516,9 @@
    />
    <Test id="116"
 	inputFile="test-text-animation.xaml"
-	masterFile10="../harness/masters/test-text-animationMaster.png"
+	masterFile10="../harness/masters/test-text-animationMaster.tif"
+        captureSpecifier="300,15"
+        categories="animation"
    />
    <Test id="117"
 	inputFile="test-text-runs.xaml"
@@ -909,5 +911,9 @@
    <Test id="202"
 	 inputFile="assorted/test-stroke-collection.html"
 	 masterFile10="None"
+	 />
+   <Test id="203"
+	 inputFile="test-gradientbrush-spreadmethod.xaml"
+	 masterFile10="../harness/masters/test-gradientbrush-spreadmethodMaster.png"
 	 />
 </DRTList>
