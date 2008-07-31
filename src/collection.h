@@ -37,6 +37,7 @@ class Collection : public DependencyObject {
 	
 	Collection ();
 	virtual ~Collection ();
+	virtual void Dispose ();
 	
  public:
 	static DependencyProperty *CountProperty;

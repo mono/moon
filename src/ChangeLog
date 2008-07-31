@@ -1,5 +1,22 @@
 2008-07-31  Jeffrey Stedfast  <fejj@novell.com>
 
+	This is the proper fix for bug #412443
+
+	* visual.cpp (VisualCollection::Dispose): Implement Dispose()
+	method.
+	(VisualCollection::RemovedFromCollection): Now that we know we are
+	disposing, we can unset VisualParent here instead of in our
+	dtor/Dispose() method, saving us from having to interate over our
+	children twice.
+
+	* collection.cpp (Collection::Dispose): Implement a Dispose()
+	method which does what the dtor used to do.
+
+	* dependencyobject.cpp (EventObject::unref): Call Dispose() just
+	before deleting the object.
+
+2008-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
 	* dependencyobject.cpp (struct Listener): Comment out the listener
 	reffing from previous commit. I don't think this is correct.
 

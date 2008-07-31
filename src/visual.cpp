@@ -47,15 +47,15 @@ VisualCollection::VisualCollection ()
 
 VisualCollection::~VisualCollection ()
 {
-	UIElement *item;
-	
-	for (guint i = 0; i < array->len; i++) {
-		item = ((Value *) array->pdata[i])->AsUIElement ();
-		item->SetVisualParent (NULL);
-	}
-	
 	g_ptr_array_free (z_sorted, true);
-	z_sorted = NULL;
+}
+
+void
+VisualCollection::Dispose ()
+{
+	g_ptr_array_set_size (z_sorted, 0);
+	
+	DependencyObjectCollection::Dispose ();
 }
 
 static int
@@ -95,8 +95,10 @@ VisualCollection::RemovedFromCollection (Value *value)
 {
 	UIElement *item = value->AsUIElement ();
 	
-	if (z_sorted)
-		g_ptr_array_remove (z_sorted, item);
+	if (IsDisposed ())
+		item->SetVisualParent (NULL);
+	
+	g_ptr_array_remove (z_sorted, item);
 	
 	DependencyObjectCollection::RemovedFromCollection (value);
 }

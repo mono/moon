@@ -61,7 +61,7 @@ EventObject::EventObject ()
 	surface = NULL;
 	refcount = 1;
 	events = NULL;
-
+	
 #if OBJECT_TRACKING
 	id = ++objects_created;
 	if (objects_alive == NULL)
@@ -225,6 +225,7 @@ EventObject::unref ()
 
 	if (delete_me) {
 		SetSurface (NULL);
+		Dispose ();
 		delete this;
 	}
 }
@@ -682,8 +683,7 @@ struct Listener {
 	DependencyObject *obj;
 	DependencyProperty *prop;
 	
-	Listener (DependencyObject *obj, DependencyProperty *prop) { this->obj = obj; this->prop = prop; /*if (obj) obj->ref ();*/ }
-	~Listener () { /*if (obj) obj->unref ();*/ }
+	Listener (DependencyObject *obj, DependencyProperty *prop) { this->obj = obj; this->prop = prop; }
 };
 
 //
@@ -692,9 +692,6 @@ struct Listener {
 void
 DependencyObject::AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
-	//if (Is (Type::IMAGE))
-	//	printf ("%p Image::AddPropertyChangeListener (%p=\"%s\", %s);\n", this, listener, listener->GetTypeName(), child_property ? child_property->GetName() : "(null)");
-	
 	listener_list = g_slist_append (listener_list, new Listener (listener, child_property));
 }
 
@@ -704,9 +701,6 @@ DependencyObject::AddPropertyChangeListener (DependencyObject *listener, Depende
 void
 DependencyObject::RemovePropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
-	//if (Is (Type::IMAGE))
-	//	printf ("%p Image::RemovePropertyChangeListener (%p=\"%s\", %s);\n", this, listener, listener->GetTypeName(), child_property ? child_property->GetName() : "(null)");
-	
 	for (GSList *l = listener_list; l; l = l->next) {
 		Listener *listen = (Listener *) l->data;
 		

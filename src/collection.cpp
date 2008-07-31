@@ -30,6 +30,12 @@ Collection::Collection ()
 
 Collection::~Collection ()
 {
+	g_ptr_array_free (array, true);
+}
+
+void
+Collection::Dispose ()
+{
 	Value *value;
 	
 	for (guint i = 0; i < array->len; i++) {
@@ -37,8 +43,6 @@ Collection::~Collection ()
 		RemovedFromCollection (value);
 		delete value;
 	}
-	
-	g_ptr_array_free (array, true);
 }
 
 Value *

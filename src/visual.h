@@ -48,6 +48,7 @@ class VisualCollection : public DependencyObjectCollection {
 	virtual void RemovedFromCollection (Value *value);
 	
 	virtual ~VisualCollection ();
+	virtual void Dispose ();
 	
  public:
 	GPtrArray *z_sorted;

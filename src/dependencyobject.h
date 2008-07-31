@@ -80,9 +80,9 @@ public:
 #endif
 
 class EventObject {
+	EventLists *events;
 	Surface *surface;
 	gint32 refcount;
-	EventLists *events;
 	
  public:
 	EventObject ();
@@ -190,6 +190,9 @@ class EventObject {
 	
  protected:
 	virtual ~EventObject ();
+	virtual void Dispose () {}
+	
+	bool IsDisposed () { return refcount == 0; }
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
