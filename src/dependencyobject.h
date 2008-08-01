@@ -190,7 +190,7 @@ class EventObject {
 	
  protected:
 	virtual ~EventObject ();
-	virtual void Dispose () {}
+	virtual void Dispose ();
 	
 	bool IsDisposed () { return refcount == 0; }
 	

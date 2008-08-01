@@ -201,6 +201,12 @@ EventObject::AddTickCallInternal (TickCallHandler handler)
 	timemanager->AddTickCall (handler, this);
 }
 
+void
+EventObject::Dispose ()
+{
+	SetSurface (NULL);
+}
+
 void 
 EventObject::unref ()
 {
@@ -224,7 +230,6 @@ EventObject::unref ()
 	OBJECT_TRACK ("Unref", GetTypeName ());
 
 	if (delete_me) {
-		SetSurface (NULL);
 		Dispose ();
 		delete this;
 	}
