@@ -63,6 +63,7 @@ ImageCaptureProvider::CaptureSingleImage (const char* image_dir, const char* fil
 
 	gdk_pixbuf_save (buf, image_path, "png", &error, "tEXt::CREATOR", "moonlight-test-harness", NULL);
 
+    gdk_pixbuf_unref (buf);
 	g_free (image_path);
 }
 
