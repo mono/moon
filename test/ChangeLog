@@ -1,25 +1,3 @@
-2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
-
-	* 2.0, 2.0/dependency_properties, 2.0/dependency_properties/App.xaml,
-	  2.0/dependency_properties/App.xaml.cs,
-	  2.0/dependency_properties/dependency_properties.csproj,
-	  2.0/dependency_properties/dependency_properties.html,
-	  2.0/dependency_properties/dependency_properties.sln,
-	  2.0/dependency_properties/DependencyPropertyTest.cs,
-	  2.0/dependency_properties/IOutput.cs,
-	  2.0/dependency_properties/HtmlOutput.cs,
-	  2.0/dependency_properties/Makefile,
-	  2.0/dependency_properties/Page.xaml,
-	  2.0/dependency_properties/Page.xaml.cs,
-	  2.0/dependency_properties/Properties,
-	  2.0/dependency_properties/Properties/AppManifest.xml,
-	  2.0/dependency_properties/Properties/AssemblyInfo.cs,
-	  2.0/dependency_properties/site,
-	  2.0/dependency_properties/site/dependency_propertiesTestPage.html,
-	  2.0/dependency_properties/Tester.cs,
-	  2.0/dependency_properties/site/web.config: Added some unittests for
-	  dependency properties.
-
 2008-08-01  Michael Dominic K.  <mdk@mdk.am>
 
 	* harness/shocker/image-capture.cpp: Fixing a memleak (screenshot pixbuf not being unreffed).

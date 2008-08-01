@@ -1,0 +1,17 @@
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* App.xaml, App.xaml.cs,
+	  dependency_properties.csproj,
+	  dependency_properties.html,
+	  dependency_properties.sln,
+	  DependencyPropertyTest.cs,
+	  IOutput.cs, HtmlOutput.cs,
+	  Makefile, Page.xaml,
+	  Page.xaml.cs, Properties,
+	  Properties/AppManifest.xml,
+	  Properties/AssemblyInfo.cs, site,
+	  site/dependency_propertiesTestPage.html,
+	  Tester.cs,
+	  site/web.config: Added some unittests for
+	  dependency properties.
+
