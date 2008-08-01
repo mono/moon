@@ -39,6 +39,7 @@ namespace Mono {
 
 	public delegate void HttpHeaderHandler (string name, string value);
 	public delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
+	public delegate void NativePropertyChangedHandler (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value);
 
 	public static class NativeMethods {
 
@@ -84,7 +85,7 @@ namespace Mono {
 		public extern static bool dependency_property_is_nullable (IntPtr obj);
 		
 		[DllImport("moon")]
-		public extern static IntPtr dependency_property_register_managed_property (IntPtr surface, string name, int property_type, int owner_type, bool attached);
+		public extern static IntPtr dependency_property_register_managed_property (IntPtr surface, string name, int property_type, int owner_type, bool attached, NativePropertyChangedHandler handler);
 		
 		[DllImport("moon", EntryPoint="dependency_property_get_name")]
 		public extern static IntPtr _dependency_property_get_name (IntPtr obj);
@@ -834,6 +835,9 @@ namespace Mono {
 		public extern static IntPtr plugin_instance_load_url (IntPtr plugin_handle, string url, ref int length);
 
 		[DllImport("moonplugin")]
+		public extern static IntPtr plugin_instance_evaluate  (IntPtr plugin_handle, string code);
+		
+		[DllImport("moonplugin")]
 		public extern static IntPtr browser_http_request_new (IntPtr plugin_handle, string method, string uri);
 
 		[DllImport("moonplugin")]
@@ -866,6 +870,8 @@ namespace Mono {
 
 		[DllImport("moonplugin")]
 		public extern static void browser_http_response_destroy (IntPtr handle);
+		
+		
 #endregion
 
 #region xap

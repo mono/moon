@@ -36,17 +36,21 @@ namespace System.Windows
 	{		
 	
 		private string name;
-		private ManagedType property_type;
 		private ManagedType owner_type;
+		private ManagedType property_type;
 		private PropertyMetadata type_metadata;
 		
 		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType, PropertyMetadata typeMetadata)
-			: base (handle, propertyType.type, Kind.MANAGED)
+			: base (handle, propertyType.type, ownerType.type, name)
 		{
 			this.name = name;	
-			this.property_type = propertyType;
 			this.owner_type = ownerType;
+			this.property_type = propertyType;
 			this.type_metadata = typeMetadata;
+		}
+		
+		public PropertyMetadata Metadata {
+			get { return type_metadata; }
 		}
 	}
 }

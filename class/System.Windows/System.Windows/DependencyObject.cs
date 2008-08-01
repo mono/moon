@@ -271,12 +271,14 @@ namespace System.Windows {
 #endif
 		public virtual object GetValue (DependencyProperty property)
 		{
+			object result;
+			
 			if (property == null)
 				throw new ArgumentNullException ("property");
 			
 			CheckNativeAndThread ();
 			
-			IntPtr val = NativeMethods.dependency_object_get_value (native, property.native);
+			IntPtr val = NativeMethods.dependency_object_get_value (native, property.Native);
 			if (val == IntPtr.Zero) {
 				if (property.IsValueType && !property.IsNullable)
 					Console.WriteLine ("Found null for object {0}, with property {1}", GetType ().FullName, property.Name);
@@ -284,7 +286,12 @@ namespace System.Windows {
 				return null;
 			}
 			
-			return ValueToObject (property.Type, val);
+			result = ValueToObject (property.PropertyType, val);
+			
+			if (result == null && property.PropertyType.IsValueType)
+				result = Activator.CreateInstance (property.PropertyType);
+			
+			return result;
 		}
 
 #if NET_2_1
@@ -321,6 +328,9 @@ namespace System.Windows {
 		
 		internal static object ValueToObject (Type type, IntPtr value)
 		{
+			if (value == IntPtr.Zero)
+				return null;
+			
 			unsafe {
 				Value *val = (Value *) value;
 				
@@ -661,18 +671,18 @@ namespace System.Windows {
 			if (obj == null) {
 				// TODO: do we need to check if the property is nullable (i.e. a double value for instance)?
 				// Tried to test, but SL crashes.
-				NativeMethods.dependency_object_set_value (native, property.native, IntPtr.Zero);
+				NativeMethods.dependency_object_set_value (native, property.Native, IntPtr.Zero);
 				return;
 			}
 
 			object_type = obj.GetType ();
-			if (object_type == property.property_type || property.property_type.IsAssignableFrom (object_type)) {
+			if (object_type == property.PropertyType || property.PropertyType.IsAssignableFrom (object_type)) {
 				v = GetAsValue (obj, property is CustomDependencyProperty);
 			} else {
-				throw new ArgumentException (string.Format ("A DependencyProperty whose property type is {0} can't be set to value whose type is {1}", property.property_type.FullName, object_type.FullName));
+				throw new ArgumentException (string.Format ("A DependencyProperty whose property type is {0} can't be set to value whose type is {1}", property.PropertyType.FullName, object_type.FullName));
 			}
 			
-			NativeMethods.dependency_object_set_value (native, property.native, ref v);
+			NativeMethods.dependency_object_set_value (native, property.Native, ref v);
 
 			NativeMethods.value_free_value (ref v);
 		}

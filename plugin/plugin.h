@@ -51,6 +51,7 @@ class PluginInstance
 	int16 EventHandle (void *event);
 	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
 	void *LoadUrl (char *url, int32_t *length);
+	void *Evaluate (const char *code);
 	
 	NPObject *GetHost ();
 	
@@ -294,6 +295,8 @@ void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_acces
 
 void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames);
 void *plugin_instance_load_url (PluginInstance *instance, char *url, int32_t *length);
+
+void *plugin_instance_evaluate (PluginInstance *instance, const char *code);
 
 // [Obselete (this is obsolete in SL b2)]
 void     plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);

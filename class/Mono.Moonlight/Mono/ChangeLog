@@ -1,3 +1,7 @@
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Implemented HtmlWindow.Eval.
+
 2008-07-31  Jb Evain  <jbevain@novell.com>
 
 	* Helper.cs (GetConverterFor): clean up according to the SL TypeConverter

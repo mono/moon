@@ -48,7 +48,14 @@ namespace System.Windows.Browser
 #endif
 		public object Eval (string code)
 		{
-			throw new NotImplementedException ();
+			IntPtr result;
+			result = Mono.NativeMethods.plugin_instance_evaluate (WebApplication.Current.PluginHandle, code);
+			
+			if (result == IntPtr.Zero) {
+				return null;
+			} else {
+				throw new NotImplementedException ();
+			}
 		}
 		
 		public bool Confirm (string confirmText)

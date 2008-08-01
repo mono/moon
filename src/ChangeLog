@@ -1,5 +1,10 @@
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.cpp, dependencyproperty.cpp, dependencyproperty.h:
+	  Implement property changed callbacks.
+
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* contentcontrol.h, control.h: Fix includes.
 
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 

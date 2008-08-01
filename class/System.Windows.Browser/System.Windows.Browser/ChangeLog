@@ -1,5 +1,9 @@
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* HtmlWindow.cs: Implemented HtmlWindow.Eval.
+
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* ScriptableAttribute.cs, ScriptableTypeAttribute.cs, HtmlElement.cs,
 	  HtmlEventArgs.cs, BrowserInformation.cs, HtmlElementCollection.cs,
 	  HtmlObject.cs, HtmlWindow.cs, HtmlPage.cs, HtmlDocument.cs,

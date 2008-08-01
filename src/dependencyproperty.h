@@ -18,6 +18,8 @@
 #include "list.h"
 
 
+typedef	void NativePropertyChangedHandler (DependencyProperty *dependency_property, DependencyObject *dependency_object, Value *old_value, Value *new_value);
+
 //
 // DependencyProperty
 //
@@ -25,7 +27,7 @@ class DependencyProperty {
  public:
 	DependencyProperty () {};
 	~DependencyProperty ();
-	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change);
+	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
 
 	char *GetName() { return name; }
 	Type::Kind GetOwnerType() { return owner_type; }
@@ -35,7 +37,8 @@ class DependencyProperty {
 	bool IsReadOnly () { return is_readonly; }
 	bool IsAttached () { return is_attached; }
 	bool AlwaysChange () { return always_change; }
-
+	NativePropertyChangedHandler *GetChangedCallback () { return changed_callback; }
+	
 	Value *GetDefaultValue () { return default_value; }
 
 	AnimationStorage *AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
@@ -46,10 +49,10 @@ class DependencyProperty {
 	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
 	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
-	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
-	static DependencyProperty *RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
+	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false, NativePropertyChangedHandler *changed_callback = NULL);
+	static DependencyProperty *RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
 	// 2.0 only, registers properties per surface.
-	static DependencyProperty *RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false);
+	static DependencyProperty *RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
 
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
@@ -73,6 +76,7 @@ private:
 
 	Type::Kind owner_type;
 	Type::Kind property_type;
+	NativePropertyChangedHandler *changed_callback;
 };
 
 G_BEGIN_DECLS
@@ -83,7 +87,7 @@ bool  dependency_property_is_nullable (DependencyProperty* property);
 Type::Kind dependency_property_get_property_type (DependencyProperty* property);
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
 
-DependencyProperty *dependency_property_register_managed_property (Surface *surface, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached);
+DependencyProperty *dependency_property_register_managed_property (Surface *surface, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback);
 
 G_END_DECLS
 

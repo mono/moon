@@ -1,3 +1,13 @@
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* PropertyMetadata.cs: Make property_changed_callback internal.
+	* DependencyProperty.cs: Store DP data in managed code, and implement
+	  property changed callbacks.
+	* DependencyObject.cs: GetValue: if the property type is a value type
+	  we need to return the default value for that type, not null.
+	* CustomDependencyProperty.cs: Create a public Metadata property and
+	  update according to DependencyProperty changes.
+
 2008-07-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FrameworkElement.cs: Added Loaded event.

@@ -1225,6 +1225,30 @@ PluginInstance::LoadUrl (char *url, int32_t *length)
 	return load_res;
 }
 
+void *
+PluginInstance::Evaluate (const char *code)
+{
+	NPObject *object = GetHost ();
+	NPString string;
+	NPVariant output;
+	bool result;
+	
+	if (object == NULL)
+		return NULL;
+		
+	
+	string.utf8characters = code;
+	string.utf8length = strlen (code);
+		
+	result = NPN_Evaluate (instance, object, &string, &output);
+	
+	// TODO: Return result to caller.
+	
+	NPN_ReleaseVariantValue (&output);
+	
+	return NULL;
+}
+
 #define MOONLIGHT_1_0_LOADING_2_0_ERROR_XAML \
 "<Canvas " \
 	"xmlns=\"http://schemas.microsoft.com/client/2007\" " \
@@ -1665,6 +1689,12 @@ void*
 plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length)
 {
 	return instance->LoadUrl (url, length);
+}
+
+void *
+plugin_instance_evaluate (PluginInstance *instance, const char *code)
+{
+	return instance->Evaluate (code);
 }
 
 /*

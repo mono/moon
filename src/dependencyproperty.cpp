@@ -21,7 +21,7 @@
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change)
+DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
 	this->owner_type = owner_type;
 	this->hash_key = g_ascii_strdown (name, -1);
@@ -33,6 +33,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->is_readonly = readonly;
 	this->storage_hash = NULL; // Create it on first usage request
 	this->always_change = always_change;
+	this->changed_callback = changed_callback;
 }
 
 AnimationStorage*
@@ -158,7 +159,7 @@ DependencyProperty::Register (Type::Kind type, const char *name, Type::Kind vtyp
 {
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, NULL, vtype, false, false);
+	return RegisterFull (type, name, NULL, vtype, false, false, false, NULL);
 }
 
 //
@@ -170,7 +171,7 @@ DependencyProperty::Register (Type::Kind type, const char *name, Value *default_
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, default_value->GetKind (), false, false);
+	return RegisterFull (type, name, default_value, default_value->GetKind (), false, false, false, NULL);
 }
 
 //
@@ -185,7 +186,7 @@ DependencyProperty::Register (Type::Kind type, const char *name, Value *default_
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, vtype, false, false);
+	return RegisterFull (type, name, default_value, vtype, false, false, false, NULL);
 }
 
 DependencyProperty *
@@ -198,16 +199,16 @@ DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::K
 }
 
 DependencyProperty *
-DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
+DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
-	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change);
+	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback);
 }
 
 #if SL_2_0
 DependencyProperty *
-DependencyProperty::RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
+DependencyProperty::RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
-	return RegisterFull (surface, surface->GetManagedType (type, true), name, default_value, vtype, attached, readonly, always_change);
+	return RegisterFull (surface, surface->GetManagedType (type, true), name, default_value, vtype, attached, readonly, always_change, changed_callback);
 }
 #endif
 
@@ -217,17 +218,17 @@ DependencyProperty::RegisterFull (Surface *surface, Type::Kind type, const char 
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyProperty::RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change)
+DependencyProperty::RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
 	DependencyProperty *property;
 	
 	if (type == NULL)
 		return NULL;
 	
-	property = new DependencyProperty (type->type, name, default_value, vtype, attached, readonly, always_change);
+	property = new DependencyProperty (type->type, name, default_value, vtype, attached, readonly, always_change, changed_callback);
 	
 	if (type->properties == NULL) {
-		type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_property);
+		type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL /* If we overwrite properties they still need to live *//* free_property */);
 //		printf ("DependencyProperty::RegisterFull (%p, %s, %s, %p, %i, %i, %i, %i): Created hashtable for type (hash table: %p)\n", type->properties, type->name, name, default_value, vtype, attached, readonly, always_change, type->properties);
 	}
 
@@ -238,7 +239,7 @@ DependencyProperty::RegisterFull (Surface *surface, Type *type, const char *name
 	// value (given that the type doesn't contain the property anymore).
 
 	g_hash_table_insert (type->properties, property->hash_key, property);
-//	printf ("DependencyProperty::RegisterFull (%p, %s, %s, %p, %i, %i, %i, %i): Created property in hash table: %p\n", type->properties, type->name, name, default_value, vtype, attached, readonly, always_change, type->properties);
+//	printf ("DependencyProperty::RegisterFull (%p, %s, %s, %p, %i, %i, %i, %i, %p): Created property in hash table: %p\n", type->properties, type->name, name, default_value, vtype, attached, readonly, always_change, changed_callback, type->properties);
 
 	return property;
 }
@@ -269,9 +270,9 @@ dependency_property_is_nullable (DependencyProperty *property)
 
 #if SL_2_0
 DependencyProperty *
-dependency_property_register_managed_property (Surface *surface, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached)
+dependency_property_register_managed_property (Surface *surface, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback)
 {
-	return DependencyProperty::RegisterFull (surface, owner_type, name, NULL, property_type, attached, false, false);
+	return DependencyProperty::RegisterFull (surface, owner_type, name, NULL, property_type, attached, false, false, callback);
 }
 #endif
 

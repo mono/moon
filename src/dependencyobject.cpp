@@ -943,6 +943,13 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
 				   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
 
+#if SL_2_0
+		if (property && property->GetChangedCallback () != NULL) {
+			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
+			callback (property, this, current_value, new_value);
+		}
+#endif
+
 		if (current_value)
 			delete current_value;
 	}
