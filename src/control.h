@@ -15,10 +15,10 @@
 
 G_BEGIN_DECLS
 
-#include <frameworkelement.h>
-#include <brush.h>
-#include <enums.h>
-#include <xaml.h>
+#include "frameworkelement.h"
+#include "brush.h"
+#include "enums.h"
+#include "xaml.h"
 
 struct Thickness {
 	double left;

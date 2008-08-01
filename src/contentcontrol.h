@@ -15,7 +15,7 @@
 
 G_BEGIN_DECLS
 
-#include <control.h>
+#include "control.h"
 
 //
 // ContentControl Class

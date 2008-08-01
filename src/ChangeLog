@@ -1,5 +1,9 @@
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* contentcontrol.h, control.h: Fix includes.
+
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline-ffmpeg.cpp: Fix warning.
 
 2008-08-01  Jeffrey Stedfast  <fejj@novell.com>
