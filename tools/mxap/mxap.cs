@@ -13,8 +13,26 @@ namespace Moonlight {
 
 		private string application_name;
 		private List<string> reference_assemblies;
+		private List<string> mdb_files;
 		private List<string> csharp_files;
 		private List<string> xaml_files;
+		private bool generate_html = true; // Defaults to true
+		private bool include_mdb = true; // Defaults to true
+		private int result;
+
+		public bool GenerateHtml {
+			get { return generate_html; }
+			set { generate_html = value; }
+		}
+
+		public bool IncludeMdb {
+			get { return include_mdb; }
+			set { include_mdb = value; }
+		}
+		
+		public int Result {
+			get { return result; }
+		}
 
 		public string ApplicationName {
 			get {
@@ -37,6 +55,14 @@ namespace Moonlight {
 				return reference_assemblies;
 			}
 		}
+		
+		public List<string> MdbFiles {
+			get {
+				if (mdb_files == null)
+					mdb_files = new List<string> ();
+				return mdb_files;
+			}
+		}
 
 		public List<string> CSharpFiles {
 			get {
@@ -54,7 +80,7 @@ namespace Moonlight {
 			}
 		}
 
-		public void Run ()
+		public int Run ()
 		{
 			CreateManifest ();
 			CreateCodeBehind ();
@@ -62,6 +88,7 @@ namespace Moonlight {
 			CreateApplicationAssembly ();
 			CreateXap ();
 			CreateHtmlWrapper ();
+			return result;
 		}
 
 		public void CreateManifest ()
@@ -119,7 +146,7 @@ namespace Moonlight {
 		{
 			StringBuilder smcs_args = new StringBuilder ();
 
-			smcs_args.AppendFormat (" -pkg:silver -debug -target:library -out:{0}.dll ", ApplicationName);
+			smcs_args.AppendFormat (" -pkg:silver -debug+ -target:library -out:{0}.dll ", ApplicationName);
 
 			foreach (string asm in ReferenceAssemblies) {
 				smcs_args.AppendFormat (" -r:{0} ", asm);
@@ -151,7 +178,10 @@ namespace Moonlight {
 			foreach (string asm in ReferenceAssemblies) {
 				zip_args.AppendFormat (" {0} ", Path.GetFileName (asm));
 			}
-
+			foreach (string mdb in MdbFiles) {
+				zip_args.AppendFormat (" {0} ", Path.GetFileName (mdb));
+			}
+			
 			zip_args.AppendFormat (" AppManifest.xaml ");
 			zip_args.AppendFormat (" {0}.dll ", ApplicationName);
 
@@ -161,6 +191,9 @@ namespace Moonlight {
 
 		public void CreateHtmlWrapper ()
 		{
+			if (!GenerateHtml)
+				return;
+
 			StringBuilder xaml2html_args = new StringBuilder ();
 
 			xaml2html_args.AppendFormat (" {0}.xap ", ApplicationName);
@@ -181,16 +214,48 @@ namespace Moonlight {
 			process.Start ();
 
 			process.WaitForExit ();
+
+			if (process.ExitCode != 0)
+				result = 1;
 		}
 
-		public static void Main ()
+		static void ShowHelp ()
+		{
+			Console.WriteLine ("mxap usage is: mxap [--generate-html=[yes (default)|no]] [--include-mdb=[yes (default)|no]]");
+		}
+
+		public static int Main (string [] args)
 		{
 			MXap mxap = new MXap ();
+
+			foreach (string arg in args) {
+				switch (arg) {
+				case "--generate-html=false":
+				case "--generate-html=no": mxap.GenerateHtml = false; break;
+				case "--generate-html=true":
+				case "--generate-html=yes": mxap.GenerateHtml = true; break;
+				case "--include-mdb=false":
+				case "--include-mdb=no": mxap.IncludeMdb = false; break;
+				case "--include-mdb=true":
+				case "--include-mdb=yes": mxap.IncludeMdb = true; break;
+				default:
+					ShowHelp ();
+					return 1;
+				}
+			}
 
 			string cd = Directory.GetCurrentDirectory ();
 			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (cd, "*.dll"));
 			mxap.XamlFiles.AddRange (Directory.GetFiles (cd, "*.xaml"));
 			mxap.CSharpFiles.AddRange (Directory.GetFiles (cd, "*.cs"));
+			
+			if (mxap.IncludeMdb)
+				mxap.MdbFiles.AddRange (Directory.GetFiles (cd, "*.mdb"));
+
+			if (mxap.XamlFiles.Count == 0 || mxap.CSharpFiles.Count == 0) {
+				ShowHelp ();
+				return 1;
+			}
 
 			// Make sure we didn't add the Application assembly into the referenced assemblies
 			DirectoryInfo info = new DirectoryInfo (cd);
@@ -198,7 +263,8 @@ namespace Moonlight {
 			if (mxap.ReferenceAssemblies.Contains (Path.Combine (cd, info.Name + ".dll")))
 				mxap.ReferenceAssemblies.Remove (Path.Combine (cd, info.Name + ".dll"));
 
-			mxap.Run ();
+
+			return mxap.Run ();
 		}
 	}
 }

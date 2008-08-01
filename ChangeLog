@@ -1,3 +1,9 @@
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* tools/mxap/mxap.cs: Implement custom html files, stack traces for
+	  assemblies (by including mdb files too) and return a non-zero error
+	  code if any of the sub-processes fail.
+
 2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* moon.mds: Updated.
