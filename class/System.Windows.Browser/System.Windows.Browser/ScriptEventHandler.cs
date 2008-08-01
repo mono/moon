@@ -1,10 +1,10 @@
 //
-// HtmlElementCollection.cs
+// ScriptEventHandler.cs
 //
 // Authors:
-//	Atsushi Enomoto  <atsushi@ximian.com>
+//   Rolf Bjarne Kvinge (rkvinge@novell.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright 2008 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -25,54 +25,11 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+//
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Security;
-
 
 namespace System.Windows.Browser
 {
-	public sealed class HtmlElementCollection : ScriptObject, IEnumerable, IEnumerable<HtmlElement>
-	{
-		private IntPtr node_list;
-
-		internal HtmlElementCollection (IntPtr nodeList)
-		{
-			this.node_list = nodeList;
-		}
-
-		public int Count {
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
-			get {
-				return HtmlObject.GetPropertyInternal<int> (node_list, "length");
-			}
-		}
-
-		public HtmlElement this [int i] {
-			// is this approach (creating HtmlElement every time) bogus?
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
-			get {
-				return new HtmlElement (HtmlObject.InvokeInternal<IntPtr> (node_list, "item", i));
-			}
-		}
-
-		IEnumerator<HtmlElement> IEnumerable<HtmlElement>.GetEnumerator ()
-		{
-			for (int i = 0; i < Count; i++)
-				yield return this [i];
-		}
-
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			for (int i = 0; i < Count; i++)
-				yield return this [i];
-		}
-	}
+	public delegate void ScriptEventHandler(ScriptObject sender, ScriptObject args);
 }
-

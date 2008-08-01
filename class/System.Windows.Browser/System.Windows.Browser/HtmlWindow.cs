@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Security;
 
 namespace System.Windows.Browser
 {
@@ -42,9 +43,63 @@ namespace System.Windows.Browser
 			throw new NotImplementedException ();
 		}
 		
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public object Eval (string code)
 		{
 			throw new NotImplementedException ();
 		}
+		
+		public bool Confirm (string confirmText)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public void Alert (string alertText)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public void Navigate (Uri navigateToUri)
+		{
+			new HtmlWindow (InvokeInternal<IntPtr> (HtmlPage.Window.Handle, "open", navigateToUri, null));
+		}
+		
+		public HtmlWindow Navigate (Uri navigateToUri, string target)
+		{
+			return new HtmlWindow (InvokeInternal<IntPtr> (HtmlPage.Window.Handle, "open", navigateToUri, target));
+		}
+
+		public HtmlWindow Navigate (Uri navigateToUri, string target, string targetFeatures)
+		{
+			return new HtmlWindow (InvokeInternal<IntPtr> (HtmlPage.Window.Handle, "open", navigateToUri, target, targetFeatures));
+		}
+
+		public void NavigateToBookmark (string bookmark)
+		{
+			CurrentBookmark = bookmark;
+		}
+
+		public string CurrentBookmark {
+			get {
+				IntPtr loc = GetPropertyInternal<IntPtr> (HtmlPage.Document.Handle, "location");
+				string hash = GetPropertyInternal<string> (loc, "hash");
+
+				if (hash == null || hash [0] != '#')
+					return null;
+				return hash.Substring (1, hash.Length - 1);
+			}
+			set {
+				IntPtr loc = GetPropertyInternal<IntPtr> (HtmlPage.Document.Handle, "location");
+				SetPropertyInternal (loc, "hash", String.Concat ("#", value));
+			}
+		}
+
+
+		public ScriptObject CreateInstance (string typeName, params object [] args)
+		{
+			throw new NotImplementedException ();
+		} 
 	}
 }

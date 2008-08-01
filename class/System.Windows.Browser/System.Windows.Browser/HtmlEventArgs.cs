@@ -26,25 +26,27 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Security;
 
 namespace System.Windows.Browser
 {
 	public class HtmlEventArgs : EventArgs
 	{
-		HtmlElement source_element;
+		HtmlObject source_element;
 		int client_x, client_y, offset_x, offset_y;
 		bool alt, ctrl, shift;
-		int mouse_button, key_code, char_code;
+		MouseButtons mouse_button;
+		int key_code, char_code;
 		string event_type;
 
-		public HtmlEventArgs (HtmlElement sourceElement,
+		internal HtmlEventArgs (HtmlObject source,
 				      int clientX, int clientY,
 				      int offsetX, int offsetY,
 				      bool altKey, bool ctrlKey, bool shiftKey,
-				      int mouseButton, int keyCode, int charCode,
+				      MouseButtons mouseButton, int keyCode, int charCode,
 				      string eventType)
 		{
-			source_element = sourceElement;
+			source_element = source;
 			client_x = clientX;
 			client_y = clientY;
 			offset_x = offsetX;
@@ -62,7 +64,23 @@ namespace System.Windows.Browser
 			event_type = eventType;
 		}
 
-		public HtmlElement SourceElement {
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
+		public void PreventDefault ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
+		public void StopPropagation ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public HtmlObject Source {
 			get { return source_element; }
 		}
 
@@ -78,6 +96,14 @@ namespace System.Windows.Browser
 			get { return client_y; }
 		}
 
+		public int ScreenX {
+			get { throw new NotImplementedException (); }
+		}
+
+		public int ScreenY {
+			get { throw new NotImplementedException (); }
+		}
+		
 		public int OffsetX {
 			get { return offset_x; }
 		}
@@ -98,7 +124,7 @@ namespace System.Windows.Browser
 			get { return shift; }
 		}
 
-		public int MouseButton {
+		public MouseButtons MouseButton {
 			get { return mouse_button; }
 		}
 
@@ -106,8 +132,12 @@ namespace System.Windows.Browser
 			get { return key_code; }
 		}
 
-		public int CharCode {
+		public int CharacterCode {
 			get { return char_code; }
+		}
+		
+		public ScriptObject EventObject {
+			get { throw new NotImplementedException (); }
 		}
 	}
 }

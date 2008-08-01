@@ -26,13 +26,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Security;
 
 namespace System.Windows.Browser
 {
 	public class HtmlElement : HtmlObject
 	{
 		// When does this .ctor make sense?
-		public HtmlElement ()
+		internal HtmlElement ()
 		{
 		}
 
@@ -41,16 +42,25 @@ namespace System.Windows.Browser
 		{
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public void AppendChild (HtmlElement element)
 		{
 			InvokeInternal<object> (Handle, "appendChild", element);
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public void AppendChild (HtmlElement element, HtmlElement referenceElement)
 		{
 			InvokeInternal<object> (Handle, "insertBefore", element, referenceElement);
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public void Focus ()
 		{
 			InvokeInternal<object> (Handle, "focus");
@@ -72,6 +82,10 @@ namespace System.Windows.Browser
 			InvokeInternal<object> (Handle, "removeAttribute", name);
 		}
 
+
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public void RemoveChild (HtmlElement element)
 		{
 			InvokeInternal<object> (Handle, "removeChild", element);
@@ -102,6 +116,9 @@ namespace System.Windows.Browser
 		}
 
 		public HtmlElementCollection Children {
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 			get { return new HtmlElementCollection ((IntPtr) GetProperty ("childNodes")); }
 		}
 
@@ -110,12 +127,15 @@ namespace System.Windows.Browser
 			set { SetPropertyInternal (Handle, "class", value); }
 		}
 
-		public string ID {
+		public string Id {
 			get { return GetPropertyInternal<string> (Handle, "id"); }
 			set { SetPropertyInternal (Handle, "id", value); }
 		}
 
 		public HtmlElement Parent {
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 			get { return new HtmlElement (GetPropertyInternal<IntPtr> (Handle, "parentNode")); }
 		}
 

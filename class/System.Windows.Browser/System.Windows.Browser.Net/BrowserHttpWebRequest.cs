@@ -142,7 +142,7 @@ namespace System.Windows.Browser.Net
 		{
 			//FIXME: there's most probably a better way to do this.
 
-			string uri = HtmlPage.DocumentUri.AbsoluteUri;
+			string uri = HtmlPage.Document.DocumentUri.AbsoluteUri;
 			return new Uri (uri.Substring (0, uri.LastIndexOf ("/") + 1));
 		}
 

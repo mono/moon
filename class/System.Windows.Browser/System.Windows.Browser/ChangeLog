@@ -1,3 +1,11 @@
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ScriptableAttribute.cs, ScriptableTypeAttribute.cs, HtmlElement.cs,
+	  HtmlEventArgs.cs, BrowserInformation.cs, HtmlElementCollection.cs,
+	  HtmlObject.cs, HtmlWindow.cs, HtmlPage.cs, HtmlDocument.cs,
+	  ScriptEventHandler.cs, ScriptableMemberAttribute.cs,
+	  MouseButtons.cs: Moved and stubbed stuff according to SL2B2.
+
 2008-07-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* HtmlElement.cs: GetProperty isn't generic anymore, do type casting

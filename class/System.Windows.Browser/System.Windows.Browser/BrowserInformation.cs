@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace System.Windows.Browser {
@@ -64,8 +65,8 @@ namespace System.Windows.Browser {
 			this.cookie_enabled = cookieEnabled;
 		}
 
-		public string BrowserVersion {
-			get { return version; }
+		public Version BrowserVersion {
+			get { return new Version (version); }
 		}
 
 		public bool CookiesEnabled {

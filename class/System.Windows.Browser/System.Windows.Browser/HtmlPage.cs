@@ -28,8 +28,9 @@
 
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Security;
 
-namespace System.Windows.Browser {
+namespace System.Windows.Browser{
 
 	public class HtmlPage : HtmlObject {
 
@@ -40,6 +41,9 @@ namespace System.Windows.Browser {
 		}
 
 		public static BrowserInformation BrowserInformation {
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 			get {
 				if (browser_info == null)
 					browser_info = new BrowserInformation ();
@@ -47,40 +51,19 @@ namespace System.Windows.Browser {
 			}
 		}
 
-		public static string Cookies {
-			get {
-				return GetPropertyInternal<string> (Document.Handle, "cookie");
-			}
-			set {
-				SetPropertyInternal (Document.Handle, "cookie", value);
-			}
+		public static bool IsEnabled {		
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
+			get { throw new System.NotImplementedException (); }
 		}
-
-		public static string CurrentBookmark {
-			get {
-				IntPtr loc = GetPropertyInternal<IntPtr> (Document.Handle, "location");
-				string hash = GetPropertyInternal<string> (loc, "hash");
-
-				if (hash == null || hash [0] != '#')
-					return null;
-				return hash.Substring (1, hash.Length - 1);
-			}
-			set {
-				IntPtr loc = GetPropertyInternal<IntPtr> (Document.Handle, "location");
-				SetPropertyInternal (loc, "hash", String.Concat ("#", value));
-			}
-		}
-
+		
 		public static HtmlDocument Document {
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 			get {
 				return new HtmlDocument (GetPropertyInternal<IntPtr> (IntPtr.Zero, "document"));
-			}
-		}
-
-		public static Uri DocumentUri {
-			get {
-
-				return new Uri (GetPropertyInternal<string> (Document.Handle, "URL"));
 			}
 		}
 
@@ -117,47 +100,36 @@ namespace System.Windows.Browser {
 				return res;
 			}
 		}
+		
+		public static void UnregisterCreateableType (string scriptAlias)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+		public static void RegisterScriptableObject (string scriptKey, object instance)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+		public static void RegisterCreateableType (string scriptAlias, Type type)
+		{
+			throw new System.NotImplementedException ();
+		}
 
 		public static HtmlWindow Window {
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 			get {
 				return new HtmlWindow (GetPropertyInternal<IntPtr> (IntPtr.Zero, "window"));
 			}
 		}
 
-		public static void Navigate (string navigateToUri)
-		{
-			SetPropertyInternal (Window.Handle, "location", navigateToUri);
-		}
-
-		public static ScriptObject Navigate (string navigateToUri, string target)
-		{
-			return new HtmlWindow (InvokeInternal<IntPtr> (Window.Handle, "open", navigateToUri, target));
-		}
-
-		public static ScriptObject Navigate (string navigateToUri, string target, string targetFeatures)
-		{
-			return new HtmlWindow (InvokeInternal<IntPtr> (Window.Handle, "open", navigateToUri, target, targetFeatures));
-		}
-
-		public static void NavigateToBookmark (string bookmark)
-		{
-			CurrentBookmark = bookmark;
-		}
-
-		public static void Submit ()
-		{
-			HtmlElementCollection forms = Document.GetElementsByTagName ("form");
-			if (forms.Count < 1)
-				return;
-			InvokeInternal<object> (forms [0].Handle, "submit");
-		}
-
-		public static void Submit (string formId)
-		{
-			HtmlElement form = Document.GetElementById (formId);
-			if (form == null)
-				return;
-			InvokeInternal<object> (form.Handle, "submit");
+		public static HtmlElement Plugin {
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
+			get { throw new System.NotImplementedException (); }
 		}
 	}
 }

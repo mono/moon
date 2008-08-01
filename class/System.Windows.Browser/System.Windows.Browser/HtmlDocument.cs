@@ -26,14 +26,16 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Collections.Generic;
+using System.Security;
 
 namespace System.Windows.Browser
 {
-	public class HtmlDocument : HtmlObject
+	public class HtmlDocument  : HtmlObject 
 	{
 		private HtmlElement document_element;
 
-		public HtmlDocument ()
+		internal HtmlDocument ()
 		{
 		}
 
@@ -50,34 +52,76 @@ namespace System.Windows.Browser
 			}
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public HtmlElement CreateElement (string tagName)
 		{
 			return new HtmlElement (InvokeInternal<IntPtr> (Handle, "createElement", tagName));
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public HtmlElement GetElementById (string id)
 		{
 			return new HtmlElement (InvokeInternal<IntPtr> (Handle, "getElementById", id));
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public HtmlElementCollection GetElementsByTagName (string tagName)
 		{
 			return new HtmlElementCollection (InvokeInternal<IntPtr> (Handle, "getElementsByTagName", tagName));
 		}
 		
-		public void Submit ()
-		{
-			throw new NotImplementedException ();
+		public IDictionary<string, string> QueryString {
+			get { throw new NotImplementedException (); }
 		}
 		
-		public void Submit (string tagName)
+		public string Cookies {
+			get {
+				return GetPropertyInternal<string> (HtmlPage.Document.Handle, "cookie");
+			}
+			set {
+				SetPropertyInternal (HtmlPage.Document.Handle, "cookie", value);
+			}
+		}
+
+		public Uri DocumentUri {
+			get {
+
+				return new Uri (GetPropertyInternal<string> (HtmlPage.Document.Handle, "URL"));
+			}
+		}
+		
+		public HtmlElement Body {
+			get { throw new NotImplementedException (); }
+		}
+		
+		public void Submit ()
 		{
-			throw new NotImplementedException ();
+			HtmlElementCollection forms = HtmlPage.Document.GetElementsByTagName ("form");
+			if (forms.Count < 1)
+				return;
+			InvokeInternal<object> (forms [0].Handle, "submit");
+		}
+
+		public void Submit (string formId)
+		{
+			HtmlElement form = HtmlPage.Document.GetElementById (formId);
+			if (form == null)
+				return;
+			InvokeInternal<object> (form.Handle, "submit");
 		}
 		
 		public bool IsReady {
 			get { throw new NotImplementedException (); }
 		}
+		
+		
+		public event EventHandler DocumentReady;
 	}
 }
 

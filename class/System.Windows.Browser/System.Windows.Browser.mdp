@@ -27,7 +27,7 @@
     <File name="System.Windows.Browser/HtmlPage.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/HtmlTimer.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/HttpUtility.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Browser/ScriptableAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Browser/ScriptableMemberAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/ScriptObject.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser.Net/BrowserHttpWebRequest.cs" subtype="Code" buildaction="Compile" />
@@ -47,6 +47,9 @@
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="System.Windows/WebApplication.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/HtmlWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Browser/MouseButtons.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Browser/ScriptEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Browser/ScriptableTypeAttribute.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

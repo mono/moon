@@ -35,7 +35,7 @@ namespace System.Windows.Browser {
 	public abstract class HtmlObject : ScriptObject {
 
 		internal delegate void DomEventCallback (string name, int client_x, int client_y, int offset_x, int offset_y,
-				bool alt_key, bool ctrl_key, bool shift_key, int mouse_button);
+				bool alt_key, bool ctrl_key, bool shift_key, MouseButtons mouse_button);
 
 		private class EventInfo {
 			public Delegate handler;
@@ -66,7 +66,7 @@ namespace System.Windows.Browser {
 		{
 			DomEventCallback pe = delegate (string name, int client_x, int client_y,
 					int offset_x, int offset_y, bool alt_key,
-					bool ctrl_key, bool shift_key, int mouse_button)
+					bool ctrl_key, bool shift_key, MouseButtons mouse_button)
 			{
 				handler (this, EventArgs.Empty);
 			};
@@ -83,7 +83,7 @@ namespace System.Windows.Browser {
 		{
 			DomEventCallback pe = delegate (string name, int client_x, int client_y,
 					int offset_x, int offset_y, bool alt_key,
-					bool ctrl_key, bool shift_key, int mouse_button)
+					bool ctrl_key, bool shift_key, MouseButtons mouse_button)
 			{
 				handler (this, new HtmlEventArgs ((HtmlElement) this, client_x, client_y, offset_x, offset_y, alt_key,
 							 ctrl_key, shift_key, mouse_button, 0, 0, name));
@@ -130,6 +130,11 @@ namespace System.Windows.Browser {
 		public void DetachEvent (string eventName, EventHandler<HtmlEventArgs> handler)
 		{
 			DetachEvent (WebApplication.Current.PluginHandle, Handle, eventName, handler);
+		}
+		
+		protected virtual object ConvertTo (Type targetType, bool allowSerialization)
+		{
+			throw new NotImplementedException ();
 		}
 
 		internal static T GetPropertyInternal<T> (IntPtr handle, string name)

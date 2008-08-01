@@ -436,12 +436,12 @@ namespace System.Windows
 		{
 			bool hasItem = false;
 
-			if (t.GetCustomAttributes (typeof (ScriptableAttribute), false).Length == 0)
+			if (t.GetCustomAttributes (typeof (ScriptableTypeAttribute), false).Length == 0)
 				throw new NotSupportedException (
 						 String.Format ("Class {0} must have [ScriptableAttribute] to be used as a scriptable object type", type));
 
 			foreach (PropertyInfo pi in type.GetProperties ()) {
-				if (pi.GetCustomAttributes (typeof (ScriptableAttribute), false).Length == 0)
+				if (pi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
 					continue;
 
 				TypeCode tc = Type.GetTypeCode (pi.PropertyType);
@@ -454,7 +454,7 @@ namespace System.Windows
 			}
 
 			foreach (EventInfo ei in type.GetEvents ()) {
-				if (ei.GetCustomAttributes (typeof (ScriptableAttribute), false).Length == 0)
+				if (ei.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
 					continue;
 
 // 				Console.WriteLine ("event handler type = {0}", ei.EventHandlerType);
@@ -476,7 +476,7 @@ namespace System.Windows
 			}
 
 			foreach (MethodInfo mi in type.GetMethods ()) {
-				if (mi.GetCustomAttributes (typeof (ScriptableAttribute), false).Length == 0)
+				if (mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
 					continue;
 
 				TypeCode rc = Type.GetTypeCode (mi.ReturnType);
@@ -511,21 +511,21 @@ namespace System.Windows
 			// add properties
 
 			foreach (PropertyInfo pi in type.GetProperties ()) {
-				if (pi.GetCustomAttributes (typeof (ScriptableAttribute), false).Length == 0)
+				if (pi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
 					continue;
 				scriptable.AddProperty (pi);
 			}
 
 			// add events
 			foreach (EventInfo ei in type.GetEvents ()) {
-				if (ei.GetCustomAttributes (typeof (ScriptableAttribute), false).Length == 0)
+				if (ei.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
 					continue;
 				scriptable.AddEvent (ei);
 			}
 
 			// add functions
 			foreach (MethodInfo mi in type.GetMethods ()) {
-				if (mi.GetCustomAttributes (typeof (ScriptableAttribute), false).Length == 0)
+				if (mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
 					continue;
 				scriptable.AddMethod (mi);
 			}
