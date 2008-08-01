@@ -334,7 +334,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		}
 
 		do {
-			guint32 frame_size;
+			int frame_size;
 			int buffer_size = AUDIO_BUFFER_SIZE;
 
 			if (stream->codec_id == CODEC_MP3 && mpeg_parse_header (&mpeg, mf->buffer+offset)) {
@@ -353,7 +353,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 
 			length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &buffer_size, mf->buffer+offset, frame_size);
 
-			if (length < 0 || (guint32) buffer_size < frame_size) {
+			if (length < 0 || buffer_size < frame_size) {
 				//media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding audio frame (length: %i, frame_size. %i, buflen: %u).", length, frame_size, mf->buflen));
 				return MEDIA_CODEC_ERROR;
 			}
