@@ -339,7 +339,9 @@ int      surface_register_managed_type (Surface *s, const char *name, void *gc_h
 TimeManager* surface_get_time_manager (Surface* s);
 Downloader* surface_create_downloader (Surface *s);
 
-void runtime_init (guint32 flags);
+void     runtime_init (guint32 flags);
+
+GList*   runtime_get_surface_list (void);
 
 guint32  runtime_html_timer_timeout_add (gint32 interval, GSourceFunc callback, gpointer data);
 void     runtime_html_timer_timeout_stop (guint32 source_id);

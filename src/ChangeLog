@@ -1,5 +1,11 @@
-2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-01  Michael Dominic K.  <mdk@mdk.am>
 
+	* runtime.cpp:
+	* runtime.h: Adding a global surface list and an ability to access it. 
+	I have a bad feeling we need some locking in the _get_surface_list function.
+
+2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+	
 	* src.mdp: Updated.
 
 2008-07-31  Jeffrey Stedfast  <fejj@novell.com>

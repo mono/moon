@@ -75,6 +75,7 @@ pthread_t Surface::main_thread = 0;
 static bool inited = false;
 static bool g_type_inited = false;
 guint32 moonlight_flags = 0;
+static GList* surface_list = NULL;
 
 static struct {
 	const char *override;
@@ -126,6 +127,13 @@ static void
 cache_report_default (Surface *surface, long bytes, void *user_data)
 {
 	printf ("Cache size is ~%.3f MB\n", bytes / 1048576.0);
+}
+
+GList*
+runtime_get_surface_list (void)
+{
+	// FIXME Need some locking here?
+	return surface_list;
 }
 
 static cairo_t *
@@ -210,6 +218,8 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 	managed_types = NULL;
 	managed_type_length = 0;
 	managed_type_count = 0;
+
+	surface_list = g_list_append (surface_list, this);
 }
 
 Surface::~Surface ()
@@ -270,6 +280,8 @@ Surface::~Surface ()
 #if SL_2_0
 	UnregisterManagedTypes ();
 #endif
+
+	surface_list = g_list_remove (surface_list, this);
 }
 
 void
