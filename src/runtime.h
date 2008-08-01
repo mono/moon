@@ -353,8 +353,12 @@ GList*   runtime_get_surface_list (void);
 guint32  runtime_html_timer_timeout_add (gint32 interval, GSourceFunc callback, gpointer data);
 void     runtime_html_timer_timeout_stop (guint32 source_id);
 
-void runtime_shutdown (void);
 
+void	 runtime_flags_set_manual_timesource (gboolean flag);
+void	 runtime_flags_set_show_fps (gboolean flag);
+void	 runtime_flags_set_use_shapecache (gboolean flag);
+
+void     runtime_shutdown (void);
 
 G_END_DECLS
 

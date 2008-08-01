@@ -1,6 +1,13 @@
 2008-08-01  Michael Dominic K.  <mdk@mdk.am>
 
 	* runtime.cpp:
+	* runtime.h: Adding few utility functions to modify the flags at runtime -- 
+	provided that there are no surfaces currently present. Would be nice to be able
+	to somehow do it before calling runtime_init ().
+
+2008-08-01  Michael Dominic K.  <mdk@mdk.am>
+
+	* runtime.cpp:
 	* runtime.h: Adding an expose handoff custom function that can be set on surface.
 	It's called just after render_cb when something has been updated on the screen.
 

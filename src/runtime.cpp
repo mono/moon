@@ -155,6 +155,42 @@ runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual)
 	return cr;
 }
 
+static gboolean
+flags_can_be_modifed (void)
+{
+	if (g_list_length (surface_list) != 0) {
+		g_warning ("Flags can be dynamically modified only when there are no surfaces created!");
+		return FALSE;
+	} else if (inited == FALSE) {
+		g_warning ("Runtime has not been initialized yet, your flags will be overriden!");
+		return FALSE;
+	} else 
+		return TRUE;
+}
+
+void
+runtime_flags_set_manual_timesource (gboolean flag)
+{
+	if (flags_can_be_modifed ())
+		moonlight_flags |= RUNTIME_INIT_MANUAL_TIMESOURCE;
+}
+
+void
+runtime_flags_set_use_shapecache (gboolean flag)
+{
+	if (flags_can_be_modifed ())
+		moonlight_flags |= RUNTIME_INIT_USE_SHAPE_CACHE;
+}
+
+void
+runtime_flags_set_show_fps (gboolean flag)
+{
+	if (flags_can_be_modifed ())
+		moonlight_flags |= RUNTIME_INIT_SHOW_FPS;
+}
+
+/* FIXME More flag setters here */
+
 Surface::Surface (MoonWindow *window, bool silverlight2)
 {
 	main_thread = pthread_self ();
