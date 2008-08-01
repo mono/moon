@@ -40,7 +40,7 @@
 #include <nsXPCOMGlue.h>
 
 static const GREVersionRange gre_version = {
-	"1.8", PR_TRUE,
+	"1.9", PR_TRUE,
 	"9.9", PR_TRUE
 };
 
