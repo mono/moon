@@ -1,0 +1,136 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7C7C3610-047E-4064-8DB3-4061252AC417}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>System.Windows.Controls</RootNamespace>
+    <AssemblyName>System.Windows.Controls</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\MixControls.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <DocumentationFile>ClientBin\System.Windows.Controls.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;SILVERLIGHT;RemoveInM4</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;RemoveInM4</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>ClientBin\System.Windows.Controls.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ButtonBase\ButtonBase.cs" />
+    <Compile Include="ButtonBase\ClickMode.cs" />
+    <Compile Include="Button\Button.cs" />
+    <Compile Include="CheckBox\CheckBox.cs" />
+    <Compile Include="Common\DragCompletedEventArgs.cs" />
+    <Compile Include="Common\DragDeltaEventArgs.cs" />
+    <Compile Include="Common\DragEventArgs.cs" />
+    <Compile Include="Common\DragStartedEventArgs.cs" />
+    <Compile Include="Common\FontFamilyConverter.cs" />
+    <Compile Include="Common\FontStretchConverter.cs" />
+    <Compile Include="Common\FontStyleConverter.cs" />
+    <Compile Include="Common\FontWeightConverter.cs" />
+    <Compile Include="Common\KeyboardNavigation.cs" />
+    <Compile Include="Common\RoutedPropertyChangedEventArgs.cs" />
+    <Compile Include="Common\RoutedPropertyChangedEventHandler.cs" />
+    <Compile Include="Common\TextDecorationCollectionConverter.cs" />
+    <Compile Include="Common\TypeConverters.cs" />
+    <Compile Include="Common\UriTypeConverter.cs" />
+    <Compile Include="ContentControl\ContentControl.cs" />
+    <Compile Include="ContentControl\ContentPresenter.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="HyperlinkButton\HyperlinkButton.cs" />
+    <Compile Include="ListBox\DisplayMemberValueConverter.cs" />
+    <Compile Include="ListBox\ListBox.cs" />
+    <Compile Include="ListBox\ListBoxItem.cs" />
+    <Compile Include="Common\SelectionChangedEventArgs.cs" />
+    <Compile Include="Common\SelectionChangedEventHandler.cs" />
+    <Compile Include="ListBox\SelectionMode.cs" />
+    <Compile Include="ScrollBar\ScrollBar.cs" />
+    <Compile Include="ScrollBar\ScrollBarVisibility.cs" />
+    <Compile Include="ScrollBar\ScrollEventArgs.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RadioButton\RadioButton.cs" />
+    <Compile Include="RangeBase\RangeBase.cs" />
+    <Compile Include="RepeatButton\RepeatButton.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ScrollBar\ScrollEventType.cs" />
+    <Compile Include="ScrollViewer\ScrollContentPresenter.cs" />
+    <Compile Include="ScrollViewer\ScrollViewer.cs" />
+    <Compile Include="Thumb\Thumb.cs" />
+    <Compile Include="Common\NullableBoolConverter.cs" />
+    <Compile Include="ToggleButton\ToggleButton.cs" />
+    <Compile Include="ToolTip\ToolTip.cs" />
+    <Compile Include="ToolTip\ToolTipService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="generic.xaml">
+      <Generator>MSBuild:CompileXaml</Generator>
+    </Resource>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

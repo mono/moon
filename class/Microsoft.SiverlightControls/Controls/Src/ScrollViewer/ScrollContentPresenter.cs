@@ -1,0 +1,147 @@
+﻿// Copyright © Microsoft Corporation. 
+// This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
+// Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
+// All other rights reserved. 
+
+using System;
+using System.Diagnostics; 
+using System.Windows; 
+using System.Windows.Controls;
+using System.Windows.Input; 
+using System.Windows.Media;
+
+#if WPF 
+namespace WPF
+#else
+namespace System.Windows.Controlsb1
+#endif 
+{
+    /// <summary> 
+    /// Displays the content of a ScrollViewer control.
+    /// </summary>
+    public sealed class ScrollContentPresenter : ContentPresenter 
+    {
+        /// <summary>
+        /// Reference to the ScrollViewer parent control. 
+        /// </summary> 
+        internal ScrollViewer ViewerParent { get; set; }
+ 
+        /// <summary>
+        /// Gets the horizontal offset of the scrolled content.
+        /// </summary> 
+        public double HorizontalOffset
+        {
+            get { return _horizontalOffset; } 
+            set { _horizontalOffset = value; InvalidateArrange(); } 
+        }
+        private double _horizontalOffset; 
+
+        /// <summary>
+        /// Gets the vertical offset of the scrolled content. 
+        /// </summary>
+        public double VerticalOffset
+        { 
+            get { return _verticalOffset; } 
+            set { _verticalOffset = value; InvalidateArrange(); }
+        } 
+        private double _verticalOffset;
+
+        /// <summary> 
+        /// Gets the horizontal size of the extent.
+        /// </summary>
+        public double ExtentWidth { get; private set; } 
+ 
+        /// <summary>
+        /// Gets the vertical size of the extent. 
+        /// </summary>
+        public double ExtentHeight { get; private set; }
+ 
+        /// <summary>
+        /// Gets the horizontal size of the viewport for this content.
+        /// </summary> 
+        public double ViewportWidth { get; private set; } 
+
+        /// <summary> 
+        /// Gets the vertical size of the viewport for this content.
+        /// </summary>
+        public double ViewportHeight { get; private set; } 
+
+        /// <summary>
+        /// Clipping rectangle used to replace WPF's GetLayoutClip virtual 
+        /// </summary> 
+        private RectangleGeometry _clippingRectangle;
+ 
+        /// <summary>
+        /// Initializes a new instance of the ScrollContentPresenter class.
+        /// </summary> 
+        public ScrollContentPresenter()
+        {
+            _clippingRectangle = new RectangleGeometry(); 
+            Clip = _clippingRectangle; 
+        }
+ 
+        /// <summary>
+        /// Called to remeasure a control.
+        /// </summary> 
+        /// <param name="availableSize">Measurement constraints, a control cannot return a size larger than the constraint.</param>
+        /// <returns>The size of the control.</returns>
+        protected override Size MeasureOverride(Size availableSize) 
+        { 
+            if (null == ViewerParent)
+            { 
+                return base.MeasureOverride(availableSize);
+            }
+ 
+            Size ideal = new Size(
+                ScrollBarVisibility.Disabled != ViewerParent.HorizontalScrollBarVisibility ? double.PositiveInfinity : availableSize.Width,
+                ScrollBarVisibility.Disabled != ViewerParent.VerticalScrollBarVisibility ? double.PositiveInfinity : availableSize.Height); 
+            Size ExtentSize = base.MeasureOverride(ideal); 
+            ExtentWidth = ExtentSize.Width;
+            ExtentHeight = ExtentSize.Height; 
+            ViewportWidth = Math.Min(availableSize.Width, ExtentWidth);
+            ViewportHeight = Math.Min(availableSize.Height, ExtentHeight);
+            HorizontalOffset = Math.Max(HorizontalOffset, 0); 
+            VerticalOffset = Math.Max(VerticalOffset, 0);
+            ViewerParent.InvalidateMeasure();
+            return new Size(ViewportWidth, ViewportHeight); 
+        } 
+
+        /// <summary> 
+        /// Called to arrange and size the content of a Control object.
+        /// </summary>
+        /// <param name="finalSize">The computed size that is used to arrange the content.</param> 
+        /// <returns>The size of the control.</returns>
+        protected override Size ArrangeOverride(Size finalSize)
+        { 
+            if (null == ViewerParent) 
+            {
+                return base.ArrangeOverride(finalSize); 
+            }
+
+            UIElement child = 
+#if WPF
+                GetVisualChild(0) as UIElement;
+#else 
+                // The base class implementation of ContentPresenter includes an 
+                // additional element above what it returns for GetVisualChild. When
+                // doing the work for ArrangeOverride, that additional element must be 
+                // used instead.
+                _elementRoot;
+#endif 
+            Debug.Assert(null != child);
+            Rect desired = new Rect(
+                0, 
+                0, 
+                child.DesiredSize.Width,
+                child.DesiredSize.Height); 
+            Rect arranged = new Rect(
+                desired.X - Math.Min(HorizontalOffset, ExtentWidth - ViewportWidth),
+                desired.Y - Math.Min(VerticalOffset, ExtentHeight - ViewportHeight), 
+                Math.Max(desired.Width, finalSize.Width),
+                Math.Max(desired.Height, finalSize.Height));
+            child.Arrange(arranged); 
+            _clippingRectangle.Rect = new Rect(0, 0, finalSize.Width, finalSize.Height); 
+            return finalSize;
+        } 
+    }
+}
