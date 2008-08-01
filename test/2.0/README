@@ -1,0 +1,10 @@
+This is a few very simple 2.0 SL applications.
+
+first
+	The default template created by VS2008, the only change is to make the Grid's background color Blue instead of white to be able to see it. (Moonlight can't load this yet)
+
+simple
+	A very simple sample using no 2.0 controls (Moonlight can currently load this)
+
+HelloWorld
+	A sample jackson created (http://jacksonito.blogspot.com/2008/07/silverlight-20-without-visual-studio.html)
