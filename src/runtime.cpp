@@ -204,6 +204,10 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 	cache_size_ticker = 0;
 	cache_size_multiplier = -1;
 
+	expose_handoff = NULL;
+	expose_handoff_data = NULL;
+	expose_handoff_last_timespan = G_MAXINT64; 
+
 	emittingMouseEvent = false;
 	pendingCapture = NULL;
 	pendingReleaseCapture = false;
@@ -855,6 +859,15 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 			dirty = true;
 		}
 	}
+
+	if (s->expose_handoff) {
+		TimeSpan time = s->GetTimeManager ()->GetCurrentTime ();
+		if (time != s->expose_handoff_last_timespan) {
+			s->expose_handoff (s, time , s->expose_handoff_data);
+			s->expose_handoff_last_timespan = time;
+		}
+	}
+
 	GDK_THREADS_LEAVE ();
 
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
@@ -1460,6 +1473,14 @@ Surface::SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data)
 {
 	cache_report = report;
 	cache_data = user_data;
+}
+
+void 
+Surface::SetExposeHandoffFunc (MoonlightExposeHandoffFunc func, void *user_data)
+{
+	expose_handoff = func;
+	expose_handoff_data = user_data;
+	expose_handoff_last_timespan = G_MAXINT64; 
 }
 
 class DownloaderNode : public List::Node {

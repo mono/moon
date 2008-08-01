@@ -78,6 +78,7 @@ class Downloader;
 typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
 typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *user_data);
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
+typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, void *user_data);
 
 class Surface : public EventObject {
 public:
@@ -141,6 +142,7 @@ public:
 
 	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data);
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
+	void SetExposeHandoffFunc (MoonlightExposeHandoffFunc func, void *user_data);
 
 	bool VerifyWithCacheSizeCounter (int w, int h);
 	gint64 AddToCacheSizeCounter (int w, int h);
@@ -272,6 +274,11 @@ private:
 	int cache_size_ticker;
 	void *cache_data;
 	int cache_size_multiplier;
+
+	// Expose handoff
+	TimeSpan expose_handoff_last_timespan;
+	MoonlightExposeHandoffFunc expose_handoff;
+	void *expose_handoff_data;
 	
 	// Types in this surface (2.0 only)
 	// Note that we need to clone native types here too, since user code can 

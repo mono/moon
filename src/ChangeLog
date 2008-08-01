@@ -1,6 +1,12 @@
 2008-08-01  Michael Dominic K.  <mdk@mdk.am>
 
 	* runtime.cpp:
+	* runtime.h: Adding an expose handoff custom function that can be set on surface.
+	It's called just after render_cb when something has been updated on the screen.
+
+2008-08-01  Michael Dominic K.  <mdk@mdk.am>
+
+	* runtime.cpp:
 	* runtime.h: Adding a global surface list and an ability to access it. 
 	I have a bad feeling we need some locking in the _get_surface_list function.
 
