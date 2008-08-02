@@ -1,3 +1,10 @@
+2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* moon.mds: Updated.
+	* tools/tools.mdp: Added.
+	* tools/generators: Moved typegen to moon/generators, and add methodgen
+	  to generate pinvokes, and cgen to generate c bindings.
+
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* tools/mxap/mxap.cs: Implement custom html files, stack traces for

@@ -17,6 +17,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Generation;
 
 class TypeInfo {
 	public string Name; // The name as it appears in code (char*, Point[], etc)
@@ -221,7 +222,21 @@ class Types : Dictionary <string, TypeInfo> {
 
 class Generator {
 #region Helper methods
-	static void Main ()
+	static int Main ()
+	{
+		Generator generator = new Generator ();
+		try {
+			Helper.InitializeCurrentDirectory ();
+			generator.Generate ();
+			return 0;
+		} catch (Exception ex) {
+			Console.WriteLine (ex.ToString ());
+			return 1;
+		}
+		
+	}
+	
+	public void Generate ()
 	{
 		Types types = new Types ();
 
@@ -275,7 +290,7 @@ class Generator {
 		int linenumber = 0;
 		TypeInfo current_type = null;
 
-		foreach (string f in Directory.GetFiles (Environment.CurrentDirectory, "*.h")) {
+		foreach (string f in Directory.GetFiles (Path.Combine (Environment.CurrentDirectory, "src"), "*.h")) {
 			all.AppendLine ("#file " + f);
 			all.AppendLine (File.ReadAllText (f));
 		}
@@ -414,16 +429,6 @@ class Generator {
 		types.Add (new TypeInfo ("Thickness", "THICKNESS", null, true));
 		types.Add (new TypeInfo ("Size", "SIZE", null, true));
 	}
-	
-	static void WriteAllText (string filename, string contents)
-	{
-		if (File.ReadAllText (filename) != contents) {
-			File.WriteAllText (filename, contents);
-			Console.WriteLine ("Wrote {0}.", filename);
-		} else {
-			Console.WriteLine ("Skipped writing {0}, no changes.", filename);
-		}
-	}
 #endregion
 		
 	static void GenerateTypeStaticCpp (Types types)
@@ -540,12 +545,12 @@ class Generator {
 		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL }");
 		text.AppendLine ("};");
 				
-		WriteAllText ("type-generated.cpp", text.ToString ());
+		Helper.WriteAllText ("src/type-generated.cpp", text.ToString ());
 	}
 	
 	static void GenerateTypeH (Types types)
 	{
-		const string file = "type.h";
+		const string file = "src/type.h";
 		StringBuilder text;
 		string contents = File.ReadAllText (file + ".in");
 		
@@ -558,12 +563,12 @@ class Generator {
 		text.AppendLine (" */");
 		contents = text.ToString () + contents;
 
-		WriteAllText (file, contents);
+		Helper.WriteAllText (file, contents);
 	}
 
 	static void GenerateKindCs (Types types)
 	{
-		const string file = "type.h";
+		const string file = "src/type.h";
 		StringBuilder text = new StringBuilder ();
 		string contents = File.ReadAllText (file);
 		int a = contents.IndexOf ("// START_MANAGED_MAPPING") + "// START_MANAGED_MAPPING".Length;
@@ -605,28 +610,23 @@ class Generator {
 		                 
 */
 		text.AppendLine ("}");
-		File.WriteAllText ("Kind.cs", text.ToString ());
+		string realfile = "class/Mono.Moonlight/Mono/Kind.cs".Replace ('/', Path.DirectorySeparatorChar);
+		Helper.WriteAllText (realfile, text.ToString ());
 
-		string realfile = "../class/Mono.Moonlight/Mono/Kind.cs";
-		realfile = realfile.Replace ('/', Path.DirectorySeparatorChar);
-		realfile = Path.GetFullPath (realfile);
 		try {
-			File.Copy ("Kind.cs", realfile, true);
-			File.Delete ("Kind.cs");
-
 			string svn;
 			svn =  Path.Combine (Path.GetDirectoryName (realfile), ".svn/text-base/Kind.cs.svn-base".Replace ('/', Path.DirectorySeparatorChar));
 			if (!File.Exists (svn) || string.CompareOrdinal (File.ReadAllText (realfile), File.ReadAllText (svn)) != 0) {
 				Console.WriteLine ("The file '{0}' has been updated, don't forget to commit the changes.", realfile);
 			}
 		} catch {
-			Console.WriteLine ("You need to update the file 'Kind.cs' in the 'moon/class/Mono.Moonlight/Mono/' directory with the Kind.cs file generated here");
+			Console.WriteLine ("You need to update the file 'Kind.cs' in the 'class/Mono.Moonlight/Mono/' directory with the Kind.cs file generated here");
 		}
 	}
 	
 	static void GenerateValueH (Types types)
 	{
-		const string file = "value.h";
+		const string file = "src/value.h";
 		StringBuilder text;
 		string contents = File.ReadAllText (file + ".in");
 
@@ -661,6 +661,6 @@ class Generator {
 		text.AppendLine (" */");
 		contents = text.ToString () + contents;
 
-		WriteAllText (file, contents);
+		Helper.WriteAllText (file, contents);
 	}
 }

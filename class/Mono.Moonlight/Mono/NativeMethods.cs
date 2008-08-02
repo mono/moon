@@ -41,7 +41,7 @@ namespace Mono {
 	public delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
 	public delegate void NativePropertyChangedHandler (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value);
 
-	public static class NativeMethods {
+	public static partial class NativeMethods {
 
 	
 		[DllImport("moon")]
@@ -74,31 +74,7 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static int surface_register_managed_type (IntPtr surface, string name, IntPtr gc_handle, int parent);
-		
-		[DllImport("moon")]
-		public extern static IntPtr dependency_property_lookup (Kind type, string name);
 
-		[DllImport("moon")]
-		public extern static Kind dependency_property_get_property_type (IntPtr obj);
-		
-		[DllImport("moon")]
-		public extern static bool dependency_property_is_nullable (IntPtr obj);
-		
-		[DllImport("moon")]
-		public extern static IntPtr dependency_property_register_managed_property (IntPtr surface, string name, int property_type, int owner_type, bool attached, NativePropertyChangedHandler handler);
-		
-		[DllImport("moon", EntryPoint="dependency_property_get_name")]
-		public extern static IntPtr _dependency_property_get_name (IntPtr obj);
-
-		public static string dependency_property_get_name (IntPtr obj)
-		{
-			IntPtr p = _dependency_property_get_name (obj);
-			if (p == IntPtr.Zero)
-				return null;
-			
-			return Marshal.PtrToStringAnsi (p);
-		}
-		
 		[DllImport("moon")]
 		public extern static IntPtr dependency_object_get_value (IntPtr obj, IntPtr property);
 		

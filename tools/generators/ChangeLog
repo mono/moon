@@ -1,0 +1,6 @@
+2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* cgen.cs, ChangeLog, common.cs, Makefile, methodgen.cs, typegen,
+	  typegen.cs: Moved typegen to moon/generators, and add methodgen to
+	  generate pinvokes, and cgen to generate c bindings.
+

@@ -16,6 +16,7 @@ mono_moonlight_sources =				\
 	$(srcdir)/../Consts.cs				\
 	$(srcdir)/Assembly/AssemblyInfo.cs		\
 	$(srcdir)/Mono/Kind.cs				\
+	$(srcdir)/Mono/GeneratedPInvokes.cs			\
 	$(srcdir)/Mono/NativeMethods.cs			\
 	$(srcdir)/Mono/Value.cs				\
 	$(srcdir)/Mono/ManagedType.cs			\

@@ -29,10 +29,13 @@ class DependencyProperty {
 	~DependencyProperty ();
 	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
 
+	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
 	char *GetName() { return name; }
 	Type::Kind GetOwnerType() { return owner_type; }
+	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
 	Type::Kind GetPropertyType() { return property_type; }
 	
+	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
 	bool IsNullable () { return is_nullable; }
 	bool IsReadOnly () { return is_readonly; }
 	bool IsAttached () { return is_attached; }
@@ -45,6 +48,7 @@ class DependencyProperty {
 	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
 	AnimationStorage *GetAnimationStorageFor (DependencyObject *obj);
 	
+	/* @GenerateCBinding:Type=DependencyProperty */
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
@@ -52,8 +56,10 @@ class DependencyProperty {
 	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false, NativePropertyChangedHandler *changed_callback = NULL);
 	static DependencyProperty *RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
 	// 2.0 only, registers properties per surface.
+	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
 	static DependencyProperty *RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
 
+	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
 	static DependencyProperty *GetDependencyProperty (Type *type, const char *name, bool inherits);
@@ -81,12 +87,9 @@ private:
 
 G_BEGIN_DECLS
 
-DependencyProperty *dependency_property_lookup (Type::Kind type, char *name);
-char *dependency_property_get_name (DependencyProperty* property);
-bool  dependency_property_is_nullable (DependencyProperty* property);
-Type::Kind dependency_property_get_property_type (DependencyProperty* property);
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
 
+/* @GenerateManaged */
 DependencyProperty *dependency_property_register_managed_property (Surface *surface, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback);
 
 G_END_DECLS

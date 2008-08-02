@@ -2464,7 +2464,7 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 		Type *type = Type::Find (type_name);
 
 		if (type != NULL)
-			p = dependency_property_lookup (type->type, attrname);
+			p = DependencyProperty::GetDependencyProperty (type->type, attrname);
 
 		g_free (type_name);
 	}

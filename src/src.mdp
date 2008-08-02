@@ -163,6 +163,8 @@
     <File name="window.h" subtype="Code" buildaction="Nothing" />
     <File name="window-gtk.cpp" subtype="Code" buildaction="Compile" />
     <File name="window-gtk.h" subtype="Code" buildaction="Nothing" />
+    <File name="cbinding.h" subtype="Code" buildaction="Compile" />
+    <File name="cbinding.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

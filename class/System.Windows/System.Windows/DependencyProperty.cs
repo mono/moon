@@ -103,7 +103,7 @@ namespace System.Windows {
 				handler = new NativePropertyChangedHandler(NativePropertyChangedCallback);
 			else
 				handler = null;
-			IntPtr handle = NativeMethods.dependency_property_register_managed_property (surface.Native, name, property_type.native_handle, owner_type.native_handle, attached, handler);
+			IntPtr handle = NativeMethods.dependency_property_register_managed_property (surface.Native, name, (Kind) property_type.native_handle, (Kind) owner_type.native_handle, attached, handler);
 			
 			if (handle == IntPtr.Zero)
 				return null;
@@ -150,7 +150,7 @@ namespace System.Windows {
 		
 		internal static DependencyProperty Lookup (Kind type, string name, Type ownerType)
 		{
-			IntPtr handle = NativeMethods.dependency_property_lookup (type, name);
+			IntPtr handle = NativeMethods.dependency_property_get_dependency_property (type, name);
 			DependencyProperty result;
 
 			if (handle == IntPtr.Zero)

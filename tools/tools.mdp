@@ -1,0 +1,26 @@
+<Project name="tools" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+  <Configurations active="Default">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="tools" />
+      <Build debugmode="True" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="tools" />
+      <Build debugmode="False" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="generators/common.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/methodgen.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/cgen" subtype="Directory" buildaction="Compile" />
+    <File name="generators/typegen" subtype="Directory" buildaction="Compile" />
+    <File name="generators/Makefile" subtype="Code" buildaction="Nothing" />
+    <File name="generators/typegen.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/cgen.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <GtkDesignInfo gtkVersion="2.12.2" />
+</Project>

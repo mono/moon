@@ -8,6 +8,7 @@
       <Entry build="True" name="System.Windows.Browser" configuration="Debug" />
       <Entry build="True" name="harness" configuration="Debug" />
       <Entry build="True" name="test" configuration="Default" />
+      <Entry build="True" name="tools" configuration="Default" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">
@@ -18,7 +19,9 @@
     <Execute type="None" entry="System.Windows.Browser" />
     <Execute type="None" entry="harness" />
     <Execute type="None" entry="test" />
+    <Execute type="None" entry="tools" />
   </StartMode>
+  <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UpdateNearestChangeLog" />
   <Entries>
     <Entry filename="src/src.mdp" />
     <Entry filename="plugin/plugin.mdp" />
@@ -27,5 +30,6 @@
     <Entry filename="class/System.Windows.Browser/System.Windows.Browser.mdp" />
     <Entry filename="test/harness/harness.mdp" />
     <Entry filename="test/test.mdp" />
+    <Entry filename="tools/tools.mdp" />
   </Entries>
 </Combine>

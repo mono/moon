@@ -244,30 +244,6 @@ DependencyProperty::RegisterFull (Surface *surface, Type *type, const char *name
 	return property;
 }
 
-DependencyProperty *dependency_property_lookup (Type::Kind type, char *name)
-{
-	return DependencyProperty::GetDependencyProperty (type, name);
-}
-
-char*
-dependency_property_get_name (DependencyProperty *property)
-{
-	return property->GetName();
-}
-
-Type::Kind
-dependency_property_get_property_type (DependencyProperty *property)
-{
-	return property->GetPropertyType();
-}
-
-bool
-dependency_property_is_nullable (DependencyProperty *property)
-{
-	return property->IsNullable ();
-}
-
-
 #if SL_2_0
 DependencyProperty *
 dependency_property_register_managed_property (Surface *surface, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback)

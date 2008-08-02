@@ -1,3 +1,13 @@
+2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp: Updated.
+	* dependencyproperty.cpp, dependencyproperty.h, Makefile.am: Generate
+	  DependencyProperty's C methods.
+	* cbinding.cpp, cbinding.h: Added.
+	* typegen, typegen/typegen.cs, typegen/typegen.sh: Moved typegen to
+	  moon/generators, and add methodgen to generate pinvokes, and cgen
+	  to generate c bindings.
+
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp, dependencyproperty.cpp, dependencyproperty.h:

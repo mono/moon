@@ -14,6 +14,7 @@ libmoon_include_HEADERS = 	\
 	asf/asf-debug.h		\
 	brush.h			\
 	canvas.h		\
+	cbinding.h		\
 	clock.h			\
 	collection.h		\
 	color.h			\
@@ -79,6 +80,7 @@ libmoon_la_SOURCES = 		\
 	asf/asf-debug.cpp	\
 	brush.cpp		\
 	canvas.cpp		\
+	cbinding.cpp	\
 	clock.cpp		\
 	collection.cpp		\
 	color.cpp		\
