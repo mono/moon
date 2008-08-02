@@ -35,6 +35,7 @@ namespace dependency_properties
 			ConstructorInfo ctor;
 			TestResult result;
 			object test;
+			Exception e;
 			int failed = 0, succeeded = 0;
 
 			Tester.output = output;
@@ -73,22 +74,27 @@ namespace dependency_properties
 
 					test_output.Length = 0;
 
+					e = null;
 					try {
 						method.Invoke (test, null);
-						result.success = true;
-					} catch (TargetInvocationException tie) {
-						Exception ex = tie;
-						while (ex is TargetInvocationException)
-							ex = ex.InnerException;
-						result.success = false;
-						result.ex = ex;
-					} catch (UnitTestAssertException ex) {
-						result.success = false;
-						result.ex = null;
-						result.output = ex.ToString ();
 					} catch (Exception ex) {
+						e = ex;
+					}
+
+					while (e != null && e.InnerException != null && e is TargetInvocationException)
+						e = e.InnerException;
+
+					if (e == null) {
+						result.success = true;
+					} else if (e is UnitTestAssertException) {
+						UnitTestAssertException ex = e as UnitTestAssertException;
 						result.success = false;
-						result.ex = ex;
+						result.ex = e;
+						result.reason = ex.FailedMessage;
+						result.output = ex.ToString ();
+					} else {
+						result.success = false;
+						result.ex = e;
 					}
 					result.output = test_output.ToString ();
 					if (result.success)
@@ -115,6 +121,7 @@ namespace dependency_properties
 	public class TestResult
 	{
 		public bool success;
+		public string reason;
 		public Exception ex;
 		public string output;
 		public string name;
@@ -232,13 +239,16 @@ namespace dependency_properties
 
 		public static void Throws (TestCode code, Type expected_exception, string message)
 		{
+			bool failed = false;
 			try {
 				code ();
-				throw new AssertFailedException (message);
+				failed = true;
 			} catch (Exception ex) {
 				if (!(ex.GetType () == expected_exception))
-					throw new AssertFailedException (message);
+					throw new AssertFailedException (message, string.Format ("Expected '{0}', got '{1}'", expected_exception.FullName, ex.GetType ().FullName));
 			}
+			if (failed)
+				throw new AssertFailedException (message, string.Format ("Expected '{0}', but got no exception.", expected_exception.FullName));
 		}
 		public static void Throws (TestCode code, Type exception, string message, params object [] parameters)
 		{
@@ -248,13 +258,23 @@ namespace dependency_properties
 
 	public class UnitTestAssertException : Exception
 	{
+		private string failed_message;
 		public UnitTestAssertException () { }
 		public UnitTestAssertException (string message) : base (message) { }
+		public UnitTestAssertException (string message, string failed_message)
+			: base (message)
+		{
+			this.failed_message = failed_message;
+		}
+		public string FailedMessage	{
+			get { return failed_message; }
+		}
 	}
 	public class AssertFailedException : UnitTestAssertException 
 	{
 		public AssertFailedException () { }
 		public AssertFailedException (string message) : base (message) { }
+		public AssertFailedException (string message, string failed_message) : base (message, failed_message) { }
 	}
 	public class AssertInconclusiveException : UnitTestAssertException { }
 	public class InternalTestFailureException : UnitTestAssertException { }

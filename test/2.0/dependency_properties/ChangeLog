@@ -1,3 +1,8 @@
+2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* HtmlOutput.cs, Tester.cs: Make test output colored, and give more
+	  info in failures.
+
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* App.xaml, App.xaml.cs,

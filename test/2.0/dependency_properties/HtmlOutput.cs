@@ -26,12 +26,13 @@ namespace dependency_properties
 <td>{0}</td>
 <td>{1}</td>
 <td>{2}</td>
+<td>{5}</td>
 <td>{3}</td>
 </tr>
 ";
 			html = string.Format (html, HttpUtility.HtmlEncode (result.name), result.success ? "SUCCESS" : "FAIL", 
 				result.ex != null ? Encode (result.ex.ToString ()) : null, Encode (result.output),
-				result.success ? "Green" : "Red");
+				result.success ? "Green" : "Red", HttpUtility.HtmlEncode (result.reason));
 
 			builder.Append (html);
 		}
@@ -65,6 +66,7 @@ namespace dependency_properties
 <th>Name</th>
 <th>Result</th>
 <th>Exception</th>
+<th>Reason</th>
 <th>Output</th>
 </tr>
 ";
