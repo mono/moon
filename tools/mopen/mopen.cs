@@ -247,12 +247,19 @@ class MonoOpen {
 
 	static bool ParseGeometry (string geometry, out int width, out int height)
 	{
-		// FIXME: implement this
-		Console.WriteLine ("ParseGeometry not implemented");
-		
 		width = 100;
 		height = 100;
-
+		
+		int p = geometry.IndexOf ('x');
+		if (p == -1){
+			Console.Error.WriteLine ("Invalid geometry passed: {0}", geometry);
+		}
+		try {
+			width = Int32.Parse (geometry.Substring (0, p));
+			height = Int32.Parse (geometry.Substring (p+1));
+		} catch {
+		}
+		
 		return true;
 	}
 	
