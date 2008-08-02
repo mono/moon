@@ -1,17 +1,42 @@
 TH "mxap" 1
 .SH NAME
-mxap \- Mono XAP file Generator
+mxap \- Moonlight XAP file Generator.
 .SH SYNOPSIS
-.B mxap
+.B mxap [options] [directory]
 .SH DESCRIPTION
-mxap is a utility for generating Silverlight 2.0 xap files
+Use the 
+.B mxap 
+tool to generate Silverlight 2.0 XAP files.  These files pack a
+complete application for Silverlight to consume (XAML files, images,
+resources, libraries and their dependencies)
 .PP
-mxap will create a .xap file based on the contents of the current
-directory.  mxap will create an application manifest
-(AppManifest.xaml), Create the XAML code behind files (using xamlg),
-create a <appname>.g.resource file including all of the
-directories .xaml files (using respack), compile the directories C#
-files, including the generated files, zip all of the libraries and
-application manifest into a .xap file and create an html file for
-viewing the new application.
+mxap will create a .xap file based on the contents of the specified
+directory (or the current directory, if no directory is specified).
+.PP
+.B mxap 
+will create an application manifest (AppManifest.xaml), create the
+XAML code behind files (using xamlg), create a <appname>.g.resource
+file including all of the directories .xaml files (using respack),
+compile the directories C# files, including the generated files, zip
+all of the libraries and application manifest into a .xap file and
+create an html file for viewing the new application.
+.SH OPTIONS
+.TP
+.I \-\-generate\-html 
+If this option is specified, a sample HTML container file is generated
+using the 
+.B xaml2html
+command.
+.TP
+.I \-\-include\-mdb
+If this option is used, the XAP file will also package the debugging
+information (the files that end with the .mdb extension).  This is
+useful to get line number information and more detailed stack traces. 
+.SH MAILING LIST
+The Moonlight mailing lists is at
+http://www.mono-project.com/Mailing_Lists
+.SH WEB SITE
+http://www.go-mono.com/moonlight
+.SH SEE ALSO
+mono(1), mopen(1), respack(1), svg2xaml(1)
 

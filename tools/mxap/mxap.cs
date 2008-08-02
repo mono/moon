@@ -1,11 +1,10 @@
 
-
+using NDesk.Options;
 using System;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
-
 
 namespace Moonlight {
 
@@ -219,32 +218,41 @@ namespace Moonlight {
 				result = 1;
 		}
 
-		static void ShowHelp ()
+		static void ShowHelp (OptionSet os)
 		{
-			Console.WriteLine ("mxap usage is: mxap [--generate-html=[yes (default)|no]] [--include-mdb=[yes (default)|no]]");
+			Console.WriteLine ("mxap usage is: mxap [options] [directory]");
+			Console.WriteLine ();
+			os.WriteOptionDescriptions (Console.Out);
 		}
 
 		public static int Main (string [] args)
 		{
 			MXap mxap = new MXap ();
+			bool help = false;
+			string cd = Directory.GetCurrentDirectory ();
+			
+			var p = new OptionSet () {
+				{ "h|?|help", v => help = v != null },
+				{ "generate-html", v => mxap.GenerateHtml = true },
+				{ "include-mdb", v => mxap.IncludeMdb = true },
+			};
 
-			foreach (string arg in args) {
-				switch (arg) {
-				case "--generate-html=false":
-				case "--generate-html=no": mxap.GenerateHtml = false; break;
-				case "--generate-html=true":
-				case "--generate-html=yes": mxap.GenerateHtml = true; break;
-				case "--include-mdb=false":
-				case "--include-mdb=no": mxap.IncludeMdb = false; break;
-				case "--include-mdb=true":
-				case "--include-mdb=yes": mxap.IncludeMdb = true; break;
-				default:
-					ShowHelp ();
-					return 1;
-				}
+			List<string> extra = null;
+			try {
+				extra = p.Parse(args);
+			} catch (OptionException e){
+				Console.WriteLine ("Try `mxap --help' for more information.");
+				return 1;
 			}
 
-			string cd = Directory.GetCurrentDirectory ();
+			if (help){
+				ShowHelp (p);
+				return 0;
+			}
+
+			if (extra.Count > 0)
+				cd = extra [0];
+			
 			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (cd, "*.dll"));
 			mxap.XamlFiles.AddRange (Directory.GetFiles (cd, "*.xaml"));
 			mxap.CSharpFiles.AddRange (Directory.GetFiles (cd, "*.cs"));
@@ -253,7 +261,8 @@ namespace Moonlight {
 				mxap.MdbFiles.AddRange (Directory.GetFiles (cd, "*.mdb"));
 
 			if (mxap.XamlFiles.Count == 0 || mxap.CSharpFiles.Count == 0) {
-				ShowHelp ();
+				Console.Error.WriteLine ("No XAML files or C# files found");
+				ShowHelp (p);
 				return 1;
 			}
 

@@ -13,7 +13,8 @@ CLEANFILES = 		\
 	mxap.exe.mdb
 
 mxap_exe_CS = 		\
-	$(srcdir)/mxap.cs
+	$(srcdir)/mxap.cs	\
+	$(srcdir)/../Options.cs
 
 mxap.exe: $(mxap_exe_CS) 
 	gmcs -debug -out:$@ $(mxap_exe_CS) -r:System -r:System.Xml
