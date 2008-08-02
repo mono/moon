@@ -271,7 +271,7 @@ namespace System.Windows {
 #endif
 		public virtual object GetValue (DependencyProperty property)
 		{
-			object result;
+			object result = null;
 			
 			if (property == null)
 				throw new ArgumentNullException ("property");
@@ -279,14 +279,8 @@ namespace System.Windows {
 			CheckNativeAndThread ();
 			
 			IntPtr val = NativeMethods.dependency_object_get_value (native, property.Native);
-			if (val == IntPtr.Zero) {
-				if (property.IsValueType && !property.IsNullable)
-					Console.WriteLine ("Found null for object {0}, with property {1}", GetType ().FullName, property.Name);
-				
-				return null;
-			}
-			
-			result = ValueToObject (property.PropertyType, val);
+			if (val != IntPtr.Zero)
+				result = ValueToObject (property.PropertyType, val);
 			
 			if (result == null && property.PropertyType.IsValueType)
 				result = Activator.CreateInstance (property.PropertyType);

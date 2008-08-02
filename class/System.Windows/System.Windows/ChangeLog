@@ -1,3 +1,8 @@
+2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: We need to handle null value types when val is
+	  null to, not only when ValueToObject returns null.
+
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* PropertyMetadata.cs: Make property_changed_callback internal.
