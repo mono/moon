@@ -1,26 +1,38 @@
 
-This code is licensed under the terms of the GNU LGPL 2 license only
-(no "later versions").
+* Moonlight source code
 
-In addition to the GNU LGPL, this code is available for relicensing
-for non-LGPL use, contact Novell for details (mono@novell.com).  
+	Unless explicitly stated, this code is licensed under the
+	terms of the GNU LGPL 2 license only (no "later versions").
 
-We consider non-LGPL use instances where you use this on an embedded
-system where the end user is not able to upgrade the Moonlight
-installation or distribution that is part of your product (Section 6
-and 7), you would have to obtain a commercial license from Novell
-(consider software burned into a ROM, systems where end users would
-not be able to upgrade, an embedded console, a game console that
-imposes limitations on the distribution and access to the code, a
-phone platform that prevents end users from upgrading Moonlight).
+	In addition to the GNU LGPL, this code is available for
+	relicensing for non-LGPL use, contact Novell for details
+	(mono@novell.com).
 
-This code might contain code that optionally links to LGPL and
-GPL code, in those cases, if the library is built with those 
-bits the code is covered under those licenses.
+	We consider non-LGPL use instances where you use this on an
+	embedded system where the end user is not able to upgrade the
+	Moonlight installation or distribution that is part of your
+	product (Section 6 and 7), you would have to obtain a
+	commercial license from Novell (consider software burned into
+	a ROM, systems where end users would not be able to upgrade,
+	an embedded console, a game console that imposes limitations
+	on the distribution and access to the code, a phone platform
+	that prevents end users from upgrading Moonlight).
+	
+	This code might contain code that optionally links to LGPL and
+	GPL code, in those cases, if the library is built with those
+	bits the code is covered under those licenses.
 
 * Chiron Source Code (tools/chiron)
 
 	The Chiron Source code comes from the Silverlight Dynamic
 	Language SDK and is licensed under the terms of the Microsoft
+	Public License (MS-PL).
+
+* Microsoft Silverlight Controls (class/Microsoft.SilverlightControls)
+
+	This code is taken from Microsoft's web site, and contains the
+	Silverlight 2.0 Beta 1 controls ported to the Beta 2 API.
+	
+	The code is licensed under the terms of the Microsoft
 	Public License (MS-PL).
 
