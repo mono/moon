@@ -56,6 +56,7 @@ using Mono;
 using System.Reflection;
 using System.Xml;
 using Application = Gtk.Application;
+using NDesk.Options;
 
 class MonoOpen {
 	static Window window;
@@ -72,21 +73,11 @@ class MonoOpen {
 	static bool sync = false;
 	static int timeout = -1;
 	
-	static void Help ()
+	static void ShowHelp (OptionSet o)
 	{
 		Console.WriteLine ("Usage is: mopen [args] [file.xaml|dirname]\n\n" +
-				   "Arguments are:\n" +
-				   "   --desklet       Remove window decoration for desklets use\n" +
-				   "   --fixed         Disable window resizing\n"  +
-				   "   --geometry WxH  Overrides the geometry to be W x H pixels\n" +
-				   "   --host NAME     Specifies that this file should be loaded in host NAME\n" +
-				   "   --parseonly     Only parse (don't display) the XAML input\n" + 
-				   "   --story N1[,Nx] Plays the storyboard name N1, N2, .. Nx when the clicked\n" +
-				   "   -s,--stories    Automatically prepare to play all stories on click\n" + 
-				   "   --sync          Make the gdk connection synchronous\n" +
-				   "   --transparent   Transparent toplevel\n" +
-				   "   --timeout T     Time, in seconds, before closing the window\n"
-				   );
+				   "Arguments are:\n");
+		o.WriteOptionDescriptions (Console.Out);
 	}
 
 	[GLib.ConnectBefore]
@@ -134,7 +125,7 @@ class MonoOpen {
 		window.SkipTaskbarHint = true;
 	}
 
-	static int LoadXaml (string file, ArrayList args)
+	static int LoadXaml (string file, List<string> args)
 	{
 		string [] test = { "" };
 
@@ -269,7 +260,7 @@ class MonoOpen {
 	// TODO, if a host is specified, look for it, if not,
 	// create the domain ourselves and listen to requests.
 	//
-	static int DoLoad (string file, ArrayList args)
+	static int DoLoad (string file, List<string> args)
 	{
 		//
 		// Here:
@@ -284,99 +275,56 @@ class MonoOpen {
 	
 	static int Main (string [] args)
 	{
-		ArrayList cmdargs = new ArrayList ();
+		List<string> cmdargs = new List<string> ();
 		string [] names;
 		string file = null;
+		bool help = false;
 		
-		if (args.Length < 1){
-			Help ();
+		var p = new OptionSet () {
+			{ "h|?|help", v => help = v != null },
+			{ "f|fixed", "Disable window resizing", v => fixedwindow = true },
+			{ "sync", "Make the gdk connection synchronous", v => sync = true },
+			{ "d|desklet", "Remove window decoration for desklets use", v => { desklet = true;  transparent = true; } },
+			{ "t|transparent", "Transparent toplevel", v => transparent = true },
+			{ "g|geometry=", "Overrides the geometry to be W x H pixels", v => ParseGeometry (v, out width, out height) },
+			{ "story=", "Plays the storyboard name N1[,N2,N3], .. Nx when the clicked", v => {
+				if (story_names == null)
+					story_names = new List<string> ();
+				names = v.Split (new Char [] { ','});
+				foreach (string s in names)
+					story_names.Add (s);
+				}
+			},
+			{ "s|stories", "Automatically prepare to play all stories on click", v => { story_names = new List<string> (); all_stories = true; } },
+			{ "parseonly", "Only parse (don't display) the XAML input", v => parse_only = true },
+			{ "timeout=", "Time, in seconds, before closing the window", v => {
+				if (!Int32.TryParse (v, out timeout)) {
+					Console.Error.WriteLine ("mopen: invalid timeout value `{0}'", v);
+					Environment.Exit (1);
+				}
+				}
+			},
+		};
+
+		List<string> rest;
+		try {
+			rest = p.Parse (args);
+		} catch (OptionException){
+			Console.Error.WriteLine ("Try `mxap --help' for more information.");
+			return 1;
+		}
+		
+		if (help || rest.Count == 0){
+			ShowHelp (p);
 			return 1;
 		}
 
-		for (int i = 0; i < args.Length; i++){
-			switch (args [i]){
-			case "-h": case "-help": case "--help":
-				Help ();
-				return 0;
-
-			case "-f": case "--fixed":
-				fixedwindow = true;
-				break;
-			case "--sync":
-				sync = true;
-				break;
-			case "--desklet": case "-d":
-				desklet = true;
-				transparent = true;
-				break;
-			
-			case "--transparent": case "-t":
-				transparent = true;
-				break;
-
-			case "--geometry": case "-g":
-				if (i+1 == args.Length){
-					Console.Error.WriteLine ("mopen: geometry flag `{0}' takes an argument", args [i]);
-					return 1;
-				}
-				i++;
-				if (ParseGeometry (args [i], out width, out height))
-					break;
-				else
-					return 1;
-
-			case "--story":
-				if (i+1 == args.Length){
-					Console.Error.WriteLine ("mopen: --story flag takes the name of the storyboard to run");
-					return 1;
-				}
-				i++;
-				if (story_names == null)
-					story_names = new List<string> ();
-				names = args [i].Split (new Char [] { ','});
-				foreach (string s in names)
-					story_names.Add (s);
-				break;
-
-			case "--stories":
-			case "-s":
-				if (story_names == null)
-					story_names = new List<string> ();
-				all_stories = true;
-				break;
-					
-			case "--host":
-				if (i+1 == args.Length){
-					Console.WriteLine ("mopen: host flag `{0}' takes an argument", args [i]);
-					return 1;
-				}
-				// FIXME: implement this
-				Console.WriteLine ("--host not implemented");
-				break;
-				
-			case "--parseonly": case "--parse-only":
-				parse_only = true;
-				break;
-
-			case "--timeout":
-				if (i+1 == args.Length){
-					Console.Error.WriteLine ("mopen: timeout flag `{0}' takes an argument", args [i]);
-					return 1;
-				}
-				i++;
-				if (!Int32.TryParse (args [i], out timeout)) {
-					Console.Error.WriteLine ("mopen: invalid timeout value `{0}'", args [i]);
-					return 1;
-				}
-				break;
-
-			default:
-				if (file == null)
-					file = args [i];
-				else
-					cmdargs.Add (args [i]);
-				break;
-			}
+		if (rest.Count > 1){
+			file = rest [0];
+			rest.RemoveAt (0);
+			cmdargs = rest;
+		} else {
+			file = rest [0];
 		}
 
 		if (File.Exists (file)){
