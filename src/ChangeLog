@@ -1,5 +1,11 @@
 2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* cbinding.cpp, cbinding.h: Update.
+	* dependencyproperty.cpp: RegisterFull: Only wrap method code in
+	  SL_2_0, fixed 1.0 build.
+
+2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.h: Make GetName return a const char*, and rename
 	  parameters from readonly to read_only (to not conflict with C#
 	  keywords).

@@ -204,13 +204,17 @@ DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *defa
 	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback);
 }
 
-#if SL_2_0
+
 DependencyProperty *
 DependencyProperty::RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
+#if SL_2_0
 	return RegisterFull (surface, surface->GetManagedType (type, true), name, default_value, vtype, attached, readonly, always_change, changed_callback);
-}
+#else
+	g_warning ("Moonlight: Called 2.0 only method.");
+	return NULL;
 #endif
+}
 
 //
 // Register the dependency property that belongs to @type with the name @name

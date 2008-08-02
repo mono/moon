@@ -14,14 +14,14 @@ G_BEGIN_DECLS
 // DependencyProperty
 
 /* @GenerateManaged */
-char* dependency_property_get_name (DependencyProperty* instance);
+const char* dependency_property_get_name (DependencyProperty* instance);
 /* @GenerateManaged */
 Type::Kind dependency_property_get_property_type (DependencyProperty* instance);
 /* @GenerateManaged */
 bool dependency_property_is_nullable (DependencyProperty* instance);
 DependencyProperty* dependency_property_register (Type::Kind type, char* name, Value* default_value);
 /* @GenerateManaged */
-DependencyProperty* dependency_property_register_full (Surface* surface, Type::Kind type, char* name, Value* default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler* changed_callback);
+DependencyProperty* dependency_property_register_full (Surface* surface, Type::Kind type, char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback);
 /* @GenerateManaged */
 DependencyProperty* dependency_property_get_dependency_property (Type::Kind type, char* name);
 

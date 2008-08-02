@@ -8,7 +8,7 @@
 
 // DependencyProperty
 
-char*
+const char*
 dependency_property_get_name (DependencyProperty* instance)
 {
 	if (instance == NULL)
@@ -37,9 +37,9 @@ dependency_property_register (Type::Kind type, char* name, Value* default_value)
 }
 
 DependencyProperty*
-dependency_property_register_full (Surface* surface, Type::Kind type, char* name, Value* default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler* changed_callback)
+dependency_property_register_full (Surface* surface, Type::Kind type, char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback)
 {
-	return DependencyProperty::RegisterFull (surface, type, name, default_value, vtype, attached, readonly, always_change, changed_callback);
+	return DependencyProperty::RegisterFull (surface, type, name, default_value, vtype, attached, read_only, always_change, changed_callback);
 }
 
 DependencyProperty*
