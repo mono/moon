@@ -30,7 +30,7 @@ class DependencyProperty {
 	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
 
 	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
-	char *GetName() { return name; }
+	const char *GetName() { return name; }
 	Type::Kind GetOwnerType() { return owner_type; }
 	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
 	Type::Kind GetPropertyType() { return property_type; }
@@ -53,11 +53,11 @@ class DependencyProperty {
 	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
 	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
-	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change = false, NativePropertyChangedHandler *changed_callback = NULL);
-	static DependencyProperty *RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
+	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change = false, NativePropertyChangedHandler *changed_callback = NULL);
+	static DependencyProperty *RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
 	// 2.0 only, registers properties per surface.
 	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
-	static DependencyProperty *RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
+	static DependencyProperty *RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
 
 	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);

@@ -1,5 +1,11 @@
 2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyproperty.h: Make GetName return a const char*, and rename
+	  parameters from readonly to read_only (to not conflict with C#
+	  keywords).
+
+2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Updated.
 	* dependencyproperty.cpp, dependencyproperty.h, Makefile.am: Generate
 	  DependencyProperty's C methods.
