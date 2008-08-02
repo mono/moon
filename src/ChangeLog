@@ -1,5 +1,10 @@
 2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* canvas.cpp, grid.cpp: Use C++ binding instead of C binding.
+	* media.cpp: Use property accessors instead of GetValue.
+
+2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* cbinding.cpp, cbinding.h: Update.
 	* dependencyproperty.cpp: RegisterFull: Only wrap method code in
 	  SL_2_0, fixed 1.0 build.

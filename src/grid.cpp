@@ -51,7 +51,7 @@ Grid::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pro
                // with them, all the logic to relayout is in UIElement
                //
                if (!Type::Find (obj->GetObjectType ())->IsSubclassOf (Type::UIELEMENT)){
-                       printf ("Grid: Child %s is not a UIELEMENT\n", dependency_object_get_name (obj));
+                       printf ("Grid: Child %s is not a UIELEMENT\n",obj ? obj->GetName () : NULL);
                        return;
                }
                UIElement *ui = (UIElement *) obj;

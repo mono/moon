@@ -1061,7 +1061,7 @@ MediaElement::GetBufferedSize ()
 	guint64 currently_available_pts;
 	
 	current_pts = mplayer->GetPosition ();
-	buffer_pts = TimeSpan_ToPts (GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ());
+	buffer_pts = TimeSpan_ToPts (GetBufferingTime ());
 	demuxer = media ? media->GetDemuxer () : NULL;
 	currently_available_pts = demuxer ? demuxer->GetLastAvailablePts () : 0;
 		
@@ -1126,7 +1126,7 @@ MediaElement::UpdateProgress ()
 	
 	if (IsBuffering ()) {
 		progress = GetBufferedSize ();
-		current = GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
+		current = GetBufferingProgress ();
 		
 		if (current > progress) {
 			// Somebody might have seeked further away after the first change to Buffering,
