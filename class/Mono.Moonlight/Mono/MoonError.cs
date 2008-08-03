@@ -1,5 +1,5 @@
 //
-// ManagedType.cs
+// MoonError.cs
 //
 // Authors:
 //   Rolf Bjarne Kvinge (rkvinge@novell.com)
@@ -25,29 +25,34 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+//
 
 using System;
-using System.Windows;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Mono
-{	
-	public class ManagedType
+{
+	[StructLayout (LayoutKind.Sequential)]
+	public struct MoonError : IDisposable
 	{
-		public GCHandle gc_handle;
-		public Type type;
-		public int native_handle;
-		public ManagedType parent;
+		private int number;
+		private IntPtr message;
 		
-		public ManagedType ()
-		{
+		public int Number {
+			get { return number; }
 		}
 		
-		public ManagedType (Type type, Kind kind)
+		public string Message {
+			get { return message == IntPtr.Zero ? null : Marshal.PtrToStringAnsi (message); }
+		}
+		
+		public void Dispose ()
 		{
-			this.type = type;
-			this.native_handle = (int) kind;
+			if (message == IntPtr.Zero)
+				return;
+			
+			Marshal.FreeHGlobal (message);
+			message = IntPtr.Zero;
 		}
 	}
 }

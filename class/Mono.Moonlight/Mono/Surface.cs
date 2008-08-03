@@ -28,6 +28,8 @@
 
 
 using System;
+using System.Reflection;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Mono;
@@ -37,12 +39,13 @@ namespace Mono
 	/*
 	 *  The managed equivalent of the unmanaged Surface
 	 */
-	public class Surface
+	public partial class Surface
 	{
 		private IntPtr native;
 		private static Dictionary<Type,ManagedType> types = new Dictionary<Type,ManagedType> ();
+		
 		private static object sync_object = new object ();
-
+	
 		public IntPtr Native {
 			get { return native; }
 		}
@@ -50,6 +53,7 @@ namespace Mono
 		public Surface (IntPtr native)
 		{
 			this.native = native;
+			CreateNativeTypes ();
 		}
 	
 		~Surface()
@@ -95,6 +99,24 @@ namespace Mono
 			
 			return info;
 		}
-				
+		
+		public static Type KindToType (Kind kind)
+		{
+			foreach (ManagedType type in types.Values) {
+				if (type.native_handle == (int) kind)
+					return type.type;
+			}
+			return null;
+		}
+		
+		public static Kind TypeToKind (Type type)
+		{
+			ManagedType mt;
+			
+			if (!types.TryGetValue (type, mt))
+				return Kind.INVALID;
+			
+			return (Kind) mt.native_handle;
+		}
 	}
 }

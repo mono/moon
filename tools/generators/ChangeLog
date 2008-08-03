@@ -1,3 +1,8 @@
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* typeandkindgen.cs, Makefile: Added typeandkindgen: generates
+	  Mono.Moonlight/Mono/Surface.g.cs (a dictionary of Type/Kind).
+
 2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* cgen.cs, ChangeLog, common.cs, Makefile, methodgen.cs, typegen,

@@ -8,6 +8,9 @@ typegen: typegen.cs ../../src/*.cpp ../../src/*.h
 
 methodgen: methodgen.cs ../../src/*.cpp ../../src/*.h
 	MOON_GENERATOR=methodgen $(MAKE) generate
+
+typeandkind: typeandkind.cs  ../../src/*.cpp ../../src/*.h ../../class/System.Windows/*/*.cs
+	MOON_GENERATOR=typeandkind $(MAKE) generate
 	
 generate:
 	gmcs $(MOON_GENERATOR).cs common.cs -r:System.dll,System.Xml.dll -debug+ -out:$(MOON_GENERATOR).exe && \
