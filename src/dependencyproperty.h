@@ -56,7 +56,7 @@ class DependencyProperty {
 	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change = false, NativePropertyChangedHandler *changed_callback = NULL);
 	static DependencyProperty *RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
 	// 2.0 only, registers properties per surface.
-	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
+	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true,Version=2.0 */
 	static DependencyProperty *RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
 
 	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */

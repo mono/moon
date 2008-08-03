@@ -30,6 +30,7 @@ class CollectionChangedEventArgs;
 class EventObject;
 class EventArgs;
 struct EmitContext;
+struct MoonError;
 
 typedef void (* TickCallHandler) (EventObject *object);
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
@@ -241,19 +242,29 @@ class DependencyObject : public EventObject {
 	void SetValue (const char *name, Value *value);
 	void SetValue (const char *name, Value value);
 
-	virtual Value *GetDefaultValue (DependencyProperty *property);
-	virtual Value *GetValue (DependencyProperty *property);
-	Value *GetValueNoDefault (DependencyProperty *property);
+	/* @GenerateCBinding:Type=DependencyObject,GenerateManaged=true,Version=2.0 */
+	Value *GetValueWithError (Surface *surface, DependencyProperty *property, MoonError *error);
 	Value *GetValue (const char *name);
+	virtual Value *GetValue (DependencyProperty *property);
+
+	/* @GenerateCBinding:Type=DependencyObject,GenerateManaged=true,Version=2.0 */
+	Value *GetDefaultValueWithError (Surface *surface, DependencyProperty *property, MoonError *error);
+	virtual Value *GetDefaultValue (DependencyProperty *property);
+	
+	/* @GenerateCBinding:Type=DependencyObject,GenerateManaged=true,Version=2.0 */
+	Value *GetValueNoDefaultWithError (Surface *surface, DependencyProperty *property, MoonError *error);
+	Value *GetValueNoDefault (DependencyProperty *property);
 
 	void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 	bool HasProperty (const char *name, bool inherits);
+	bool HasProperty (Surface *surface, DependencyProperty *property, bool inherits);
 
 	virtual Type::Kind GetObjectType ();
 
 	DependencyObject *FindName (const char *name);
 	NameScope *FindNameScope ();
 
+	/* @GenerateCBinding:Type=DependencyObject,GenerateManaged=true */
 	const char *GetName ()
 	{
 		Value *v = GetValue (DependencyObject::NameProperty);
@@ -331,12 +342,9 @@ void base_unref (EventObject *obj);
 
 void drain_unrefs ();
 
-Value *dependency_object_get_value (DependencyObject *object, DependencyProperty *prop);
-Value *dependency_object_get_value_no_default (DependencyObject *object, DependencyProperty *prop);
 void   dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value *val);
 
 DependencyObject *dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind *element_type);
-const char       *dependency_object_get_name  (DependencyObject *obj);
 void dependency_object_set_name (DependencyObject *obj, const char *name);
 
 Type::Kind dependency_object_get_object_type (DependencyObject *obj);

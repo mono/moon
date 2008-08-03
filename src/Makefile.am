@@ -90,6 +90,7 @@ libmoon_la_SOURCES = 		\
 	dirty.h			\
 	dirty.cpp		\
 	downloader.cpp		\
+	error.cpp		\
 	eventargs.cpp		\
 	file-downloader.cpp	\
 	font.cpp		\

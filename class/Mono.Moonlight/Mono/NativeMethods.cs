@@ -74,12 +74,6 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static int surface_register_managed_type (IntPtr surface, string name, IntPtr gc_handle, int parent);
-
-		[DllImport("moon")]
-		public extern static IntPtr dependency_object_get_value (IntPtr obj, IntPtr property);
-		
-		[DllImport("moon")]
-		public extern static IntPtr dependency_object_get_value_no_default (IntPtr obj, IntPtr property);
 		
 		[DllImport("moon")]
 		public extern static IntPtr dependency_object_set_value (IntPtr obj, IntPtr property, ref Value val);
@@ -859,5 +853,16 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static IntPtr application_new ();
 #endregion
+		
+		private static Exception CreateManagedException (MoonError err)
+		{
+			string msg = err.Message;
+			err.Dispose ();
+			
+			switch (err.Number) {
+			default:
+				throw new Exception (msg);
+			}
+		}
 	}
 }

@@ -663,8 +663,9 @@ namespace System.Windows {
 			CheckNativeAndThread ();
 			
 			if (obj == null) {
-				// TODO: do we need to check if the property is nullable (i.e. a double value for instance)?
-				// Tried to test, but SL crashes.
+				if (property.PropertyType.IsValueType)
+					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", property.Name));
+				
 				NativeMethods.dependency_object_set_value (native, property.Native, IntPtr.Zero);
 				return;
 			}

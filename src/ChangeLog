@@ -1,3 +1,13 @@
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp, cbinding.h, cbinding.cpp: Updated.
+	* Makefile.am: Include error.cpp.
+	* error.h, error.cpp: Added MoonError.
+	* dependencyproperty.h: Make RegisterFull 2.0 only.
+	* dependencyobject.h, dependencyobject.cpp: Added and implemented
+	  Get[[No]Default]ValueWithError and a HasProperty method which takes
+	  into account properties registered on a surface.
+
 2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* canvas.cpp, grid.cpp: Use C++ binding instead of C binding.

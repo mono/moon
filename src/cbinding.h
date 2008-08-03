@@ -6,12 +6,34 @@
 #define __MOONLIGHT_C_BINDING_H__
 
 #include <glib.h>
+#include "dependencyobject.h"
 #include "dependencyproperty.h"
 
 G_BEGIN_DECLS
 
 
-// DependencyProperty
+/* 
+ * DependencyObject
+ */ 
+
+#if SL_2_0
+/* @GenerateManaged */
+Value* dependency_object_get_value_with_error (DependencyObject* instance, Surface* surface, DependencyProperty* property, MoonError* error);
+#endif
+#if SL_2_0
+/* @GenerateManaged */
+Value* dependency_object_get_default_value_with_error (DependencyObject* instance, Surface* surface, DependencyProperty* property, MoonError* error);
+#endif
+#if SL_2_0
+/* @GenerateManaged */
+Value* dependency_object_get_value_no_default_with_error (DependencyObject* instance, Surface* surface, DependencyProperty* property, MoonError* error);
+#endif
+/* @GenerateManaged */
+const char* dependency_object_get_name (DependencyObject* instance);
+
+/* 
+ * DependencyProperty
+ */ 
 
 /* @GenerateManaged */
 const char* dependency_property_get_name (DependencyProperty* instance);
@@ -19,11 +41,13 @@ const char* dependency_property_get_name (DependencyProperty* instance);
 Type::Kind dependency_property_get_property_type (DependencyProperty* instance);
 /* @GenerateManaged */
 bool dependency_property_is_nullable (DependencyProperty* instance);
-DependencyProperty* dependency_property_register (Type::Kind type, char* name, Value* default_value);
+DependencyProperty* dependency_property_register (Type::Kind type, const char* name, Value* default_value);
+#if SL_2_0
 /* @GenerateManaged */
-DependencyProperty* dependency_property_register_full (Surface* surface, Type::Kind type, char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback);
+DependencyProperty* dependency_property_register_full (Surface* surface, Type::Kind type, const char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback);
+#endif
 /* @GenerateManaged */
-DependencyProperty* dependency_property_get_dependency_property (Type::Kind type, char* name);
+DependencyProperty* dependency_property_get_dependency_property (Type::Kind type, const char* name);
 
 G_END_DECLS
 

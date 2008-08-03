@@ -1,5 +1,11 @@
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* NativeMethods.cs: Added CreateManagedException, removed two pinvokes
+	  which are generated now.
+	* GeneratedPInvokes.cs: Updated.
+
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* MoonError.cs: Added, contains the managed representation of
 	  MoonError.
 	* Surface.cs: Added Surface.KindToType and Surface.TypeToKind.

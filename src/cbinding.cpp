@@ -6,7 +6,58 @@
 #include "cbinding.h"
 
 
-// DependencyProperty
+/* 
+ * DependencyObject
+ */ 
+
+#if SL_2_0
+Value*
+dependency_object_get_value_with_error (DependencyObject* instance, Surface* surface, DependencyProperty* property, MoonError* error)
+{
+	if (instance == NULL)
+		return NULL;
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_get_value_with_error () with error == NULL.");
+	return instance->GetValueWithError (surface, property, error);
+}
+#endif
+
+#if SL_2_0
+Value*
+dependency_object_get_default_value_with_error (DependencyObject* instance, Surface* surface, DependencyProperty* property, MoonError* error)
+{
+	if (instance == NULL)
+		return NULL;
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_get_default_value_with_error () with error == NULL.");
+	return instance->GetDefaultValueWithError (surface, property, error);
+}
+#endif
+
+#if SL_2_0
+Value*
+dependency_object_get_value_no_default_with_error (DependencyObject* instance, Surface* surface, DependencyProperty* property, MoonError* error)
+{
+	if (instance == NULL)
+		return NULL;
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_get_value_no_default_with_error () with error == NULL.");
+	return instance->GetValueNoDefaultWithError (surface, property, error);
+}
+#endif
+
+const char*
+dependency_object_get_name (DependencyObject* instance)
+{
+	if (instance == NULL)
+		return NULL;
+	return instance->GetName ();
+}
+
+
+/* 
+ * DependencyProperty
+ */ 
 
 const char*
 dependency_property_get_name (DependencyProperty* instance)
@@ -31,19 +82,21 @@ dependency_property_is_nullable (DependencyProperty* instance)
 }
 
 DependencyProperty*
-dependency_property_register (Type::Kind type, char* name, Value* default_value)
+dependency_property_register (Type::Kind type, const char* name, Value* default_value)
 {
 	return DependencyProperty::Register (type, name, default_value);
 }
 
+#if SL_2_0
 DependencyProperty*
-dependency_property_register_full (Surface* surface, Type::Kind type, char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback)
+dependency_property_register_full (Surface* surface, Type::Kind type, const char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback)
 {
 	return DependencyProperty::RegisterFull (surface, type, name, default_value, vtype, attached, read_only, always_change, changed_callback);
 }
+#endif
 
 DependencyProperty*
-dependency_property_get_dependency_property (Type::Kind type, char* name)
+dependency_property_get_dependency_property (Type::Kind type, const char* name)
 {
 	return DependencyProperty::GetDependencyProperty (type, name);
 }

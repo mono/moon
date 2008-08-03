@@ -86,4 +86,17 @@ public:
 	char *xml_attribute;
 };
 
+struct MoonError {
+	// non-zero if an error occurred.
+	gint32 number;
+	// the caller of the method which returned the error must call Dispose to free this value
+	// (only necessary if there were any errors)
+	char *message;
+	
+	void Dispose ();
+	
+	static void FillIn (MoonError *error, gint32 number, char *message /* this message must be allocated using glib methods */);
+	static void FillIn (MoonError *error, gint32 number, const char *message);
+};
+
 #endif /* __MOON_ERROR_H__ */

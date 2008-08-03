@@ -1,3 +1,10 @@
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.cs: Add a default_value field, and assign it for
+	  value types upon construction.
+	* DependencyObject.cs: Throw an exception if SetValue is called to set
+	  a value type to null.
+
 2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyProperty.cs: Updated according to API changes.

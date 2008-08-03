@@ -38,6 +38,7 @@ namespace System.Windows {
 		private Type property_type;
 		private Kind declaring_kind = Kind.INVALID; // This should be obsoleted
 		private Type declaring_type; 
+		private object default_value;
 		
 		private static Dictionary <IntPtr, DependencyProperty> properties = new Dictionary<System.IntPtr,DependencyProperty> ();
 		
@@ -56,6 +57,9 @@ namespace System.Windows {
 			this.name = name;
 			
 			properties.Add (handle, this);
+			
+			if (this.property_type.IsValueType)
+				this.default_value = Activator.CreateInstance (this.property_type);
 			//Console.WriteLine ("DependencyProperty.DependencyProperty ({0:X}, {1}, {2})", handle, property_type.FullName, declaring_kind);
 		}
 		
@@ -67,6 +71,9 @@ namespace System.Windows {
 			this.name = name;
 			
 			properties.Add (handle, this);
+			
+			if (this.property_type.IsValueType)
+				this.default_value = Activator.CreateInstance (this.property_type);
 			//Console.WriteLine ("DependencyProperty.DependencyProperty ({0:X}, {1}, {2})", handle, property_type.FullName, declaring_type.FullName);
 		}
 		
@@ -142,6 +149,10 @@ namespace System.Windows {
 			
 			old_obj = DependencyObject.ValueToObject (property.property_type, old_value);
 			new_obj = DependencyObject.ValueToObject (property.property_type, new_value);
+			
+			if (old_obj == null && property.property_type.IsValueType)
+				old_obj = property.DefaultValue;
+			
 			args = new DependencyPropertyChangedEventArgs (old_obj, new_obj, property);
 			
 			custom_property.Metadata.property_changed_callback (obj, args);
@@ -196,6 +207,10 @@ namespace System.Windows {
 		
 		internal Kind DeclaringKind {
 			get { return declaring_kind; }
+		}
+		
+		internal object DefaultValue {
+			get { return default_value; }
 		}
 	}
 }
