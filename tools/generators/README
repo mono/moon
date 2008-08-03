@@ -119,9 +119,9 @@ cgen
 	  method the header file.
 	  
 	* Version=number: Surrounds the method both in the header and in the cpp file
-	  with #if NET_<Version>/#endif. Dots in the value is changed to underscores.
+	  with #if SL_<Version>/#endif. Dots in the value is changed to underscores.
 	  Example: for 2.0 methods do 'Version=2.0' which will generate 
-	  '#if NET_2_0'/'#endif'
+	  '#if SL_2_0'/'#endif'
 	
 	Possible TODOs/ideas (for the script)
 	

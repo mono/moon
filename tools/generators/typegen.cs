@@ -642,8 +642,6 @@ class Generator {
 			}
 		}
 		contents = contents.Replace ("/*DO_FWD_DECLS*/", text.ToString ());
-		
-		contents = contents.Replace ("/*DO_KINDS*/", types.GetKindsForEnum ().ToString ());
 
 		text = new StringBuilder ();
 		foreach (TypeInfo type in types.SortedList) {
