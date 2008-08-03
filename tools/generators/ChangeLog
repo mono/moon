@@ -1,5 +1,12 @@
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* README: Added.
+	* typeandkindgen.cs: Use logging methods instead of writing directly to
+	  stdout.
+	* Makefile: Execute typeandkind too in the default target.
+
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* typeandkindgen.cs, Makefile: Added typeandkindgen: generates
 	  Mono.Moonlight/Mono/Surface.g.cs (a dictionary of Type/Kind).
 

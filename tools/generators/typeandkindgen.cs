@@ -44,7 +44,7 @@ class Generator
 		text.AppendLine ("\t\t\ttry {");
 				
 		foreach (string dir in Directory.GetDirectories (sys_win_dir)) {
-			Console.WriteLine ("Checking: {0}", dir);
+			Log.WriteLine ("Checking: {0}", dir);
 			string ns = Path.GetFileName (dir);
 			foreach (string file in Directory.GetFiles (dir, "*.cs")) {
 				string contents = File.ReadAllText (file);
@@ -67,7 +67,7 @@ class Generator
 				if (type == "PresentationFrameworkCollection")
 					type = "PresentationFrameworkCollection`1";
 				
-				Console.WriteLine ("Found Kind.{0} in {1} which result in type: {2}.{3}", kind, file, ns, type);
+				Log.WriteLine ("Found Kind.{0} in {1} which result in type: {2}.{3}", kind, file, ns, type);
 				
 				text.Append ("\t\t\t\tt = agclr.GetType (\"");
 				text.Append (ns);
@@ -79,16 +79,18 @@ class Generator
 				text.Append ("\t\t\t\ttypes.Add (t, new ManagedType (t, Kind.");
 				text.Append (kind);
 				text.AppendLine ("));");
-				
 			}
 		}
+		
 		text.AppendLine ("\t\t\t} catch (Exception ex) {");
 		text.AppendLine ("\t\t\t\tConsole.WriteLine (\"There was an error while loading native types: \" + ex.Message);");
 		text.AppendLine ("\t\t\t}");
 		text.AppendLine ("\t\t}");
 		text.AppendLine ("\t}");
 		text.AppendLine ("}");
-	 	Console.WriteLine ("Done");
+		
+	 	Log.WriteLine ("typeandkidngen done");
+		
 		Generation.Helper.WriteAllText (Path.Combine (Path.Combine (moon_moonlight_dir, "Mono"), "Surface.g.cs"), text.ToString ());
 	}
 	

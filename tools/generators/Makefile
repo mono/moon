@@ -1,4 +1,4 @@
-default: cgen methodgen typegen
+default: cgen methodgen typegen typeandkind
 
 cgen: cgen.cs ../../src/*.cpp ../../src/*.h
 	MOON_GENERATOR=cgen $(MAKE) generate
