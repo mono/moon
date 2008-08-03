@@ -113,7 +113,7 @@ namespace Mono
 		{
 			ManagedType mt;
 			
-			if (!types.TryGetValue (type, mt))
+			if (!types.TryGetValue (type, out mt))
 				return Kind.INVALID;
 			
 			return (Kind) mt.native_handle;
