@@ -19,7 +19,7 @@ using Generation.C;
 
 class Generator
 {
-	void Generate ()
+	public void Generate ()
 	{
 		string base_dir = Environment.CurrentDirectory;
 		string plugin_dir = Path.Combine (base_dir, "plugin");
@@ -260,18 +260,5 @@ class Generator
 			//Console.WriteLine ("Got argument: '{0}' = '{1}'", v [0], v [1]);
 		}
 		return result;
-	}
-	
-	static int Main ()
-	{
-		Generator generator = new Generator ();
-		try {
-			Helper.InitializeCurrentDirectory ();
-			generator.Generate ();
-			return 0;
-		} catch (Exception ex) {
-			Console.WriteLine (ex.ToString ());
-			return 1;
-		}
 	}
 }

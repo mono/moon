@@ -222,20 +222,6 @@ class Types : Dictionary <string, TypeInfo> {
 
 class Generator {
 #region Helper methods
-	static int Main ()
-	{
-		Generator generator = new Generator ();
-		try {
-			Helper.InitializeCurrentDirectory ();
-			generator.Generate ();
-			return 0;
-		} catch (Exception ex) {
-			Console.WriteLine (ex.ToString ());
-			return 1;
-		}
-		
-	}
-	
 	public void Generate ()
 	{
 		Types types = new Types ();

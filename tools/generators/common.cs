@@ -40,13 +40,36 @@ namespace Generation {
 				Console.WriteLine ("Skipped writing {0}, no changes.", filename);
 			}
 		}
+		
+		static int Main (string [] args)
+		{
+			Generator generator;
+			
+			try {
+				foreach (string arg in args) {
+					if (arg == "--log")
+						Log.LogEnabled = true;
+					else
+						throw new Exception ("Invalid argument: " + arg);
+				}
+				InitializeCurrentDirectory ();
+				generator = new Generator ();
+				generator.Generate ();
+				return 0;
+			} catch (Exception ex) {
+				Console.WriteLine (ex.ToString ());
+				return 1;
+			}
+		}
 	}
 	
 	public static class Log {
+		public static bool LogEnabled;
 		
 		public static void Write (string text, params object [] args)
 		{
-			//Console.Write (text, args);
+			if (LogEnabled)
+				Console.Write (text, args);
 		}
 		public static void WriteLine (string text, params object [] args)
 		{

@@ -33,7 +33,7 @@ class Generator
 			return false;
 	}
 	
-	void Generate ()
+	public void Generate ()
 	{
 		string base_dir = Environment.CurrentDirectory;
 		string plugin_dir = Path.Combine (base_dir, "plugin");
@@ -182,19 +182,6 @@ class Generator
 				}
 				
 			}
-		}
-	}
-	
-	static int Main ()
-	{
-		Generator generator = new Generator ();
-		try {
-			Helper.InitializeCurrentDirectory ();
-			generator.Generate ();
-			return 0;
-		} catch (Exception ex) {
-			Console.WriteLine (ex.ToString ());
-			return 1;
 		}
 	}
 }

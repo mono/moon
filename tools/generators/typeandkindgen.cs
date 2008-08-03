@@ -19,7 +19,7 @@ using Generation.C;
 
 class Generator
 {
-	void Generate ()
+	public void Generate ()
 	{
 		string base_dir = Environment.CurrentDirectory;
 		string class_dir = Path.Combine (base_dir, "class");
@@ -92,19 +92,5 @@ class Generator
 	 	Log.WriteLine ("typeandkidngen done");
 		
 		Generation.Helper.WriteAllText (Path.Combine (Path.Combine (moon_moonlight_dir, "Mono"), "Surface.g.cs"), text.ToString ());
-	}
-	
-	
-	static int Main ()
-	{
-		Generator generator = new Generator ();
-		try {
-			Helper.InitializeCurrentDirectory ();
-			generator.Generate ();
-			return 0;
-		} catch (Exception ex) {
-			Console.WriteLine (ex.ToString ());
-			return 1;
-		}
 	}
 }

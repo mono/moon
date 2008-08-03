@@ -1,5 +1,11 @@
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* typegen.cs, cgen.cs, typeandkindgen.cs, common.cs, methodgen.cs:
+	  Unify some code.
+	* Makefile: typeandkind -> typeandkindgen.
+
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* README: Fix typo.
 	* typegen.cs: Remove slow no-op (DO_KINDS doesn't exist in value.h.in).
 
