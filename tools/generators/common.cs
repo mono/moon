@@ -161,6 +161,23 @@ namespace Generation {
 			PInvoke
 		}
 		
+		public class ManagedTypeDefinition
+		{
+			public bool is_ref;
+			public bool is_out;
+			public string type;
+			public ManagedTypeDefinition (string type)
+			{
+				this.type = type;
+			}
+			public ManagedTypeDefinition (string type, bool is_ref, bool is_out)
+			{
+				this.type = type;
+				this.is_ref = is_ref;
+				this.is_out = is_out;
+			}
+		}
+		
 		public class TypeDefinition
 		{
 			private bool is_const;
@@ -172,7 +189,7 @@ namespace Generation {
 				set { native = value; }
 			}
 			
-			public string Managed {
+			public ManagedTypeDefinition Managed {
 				get { return GetManagedType (native); }
 			}
 			
@@ -187,45 +204,60 @@ namespace Generation {
 			}
 			
 			public bool IsKnownType {
-				get { return !Managed.Contains ("/* Unknown */"); }
+				get { return !Managed.type.Contains ("/* Unknown */"); }
 			}
 			
 			public void Write (StringBuilder text, TypeDefinitionType which)
 			{
 				switch (which) {
 				case TypeDefinitionType.Managed:
-					text.Append (Managed); break;
+					ManagedTypeDefinition managed = Managed;
+					if (managed.is_out)
+						text.Append ("out ");
+					if (managed.is_ref)
+						text.Append ("ref ");
+					text.Append (managed.type);
+					break;
 				case TypeDefinitionType.Native:
+					if (is_const)
+						text.Append ("const ");
 					text.Append (native); break;
 				case TypeDefinitionType.PInvoke:
-					text.Append (string.IsNullOrEmpty (pinvoke) ? Managed : pinvoke); break;
+					if (string.IsNullOrEmpty (pinvoke))
+						Write (text, TypeDefinitionType.Managed);
+					else
+						text.Append (pinvoke);
+					break;
 				default:
 					throw new ArgumentOutOfRangeException ("which");
 				}
 			}
 			
-			public static string GetManagedType (string native)
+			public static ManagedTypeDefinition GetManagedType (string native)
 			{
 				if (string.IsNullOrEmpty (native))
 					throw new ArgumentNullException ();
 				
 				switch (native) {
 				case "char*":
-					return "string";
+					return new ManagedTypeDefinition ("string");
 				case "bool":
 				case "int":
-					return native;
+					return new ManagedTypeDefinition (native);
 				case "Type::Kind":
-					return "Kind";
+					return new ManagedTypeDefinition ("Kind");
+				case "MoonError*":
+					return new ManagedTypeDefinition ("MoonError", false, true);
+				case "Value*":
 				case "DependencyObject **o":
 				case "DependencyProperty*":
 				case "DependencyObject*":
 				case "Surface*":
-					return "IntPtr";
+					return new ManagedTypeDefinition ("IntPtr");
 				case "NativePropertyChangedHandler*":
-					return "Mono.NativePropertyChangedHandler";
+					return new ManagedTypeDefinition ("Mono.NativePropertyChangedHandler");
 				default:
-					return string.Format ("/* Unknown */ IntPtr", native);
+					return new ManagedTypeDefinition (string.Format ("/* Unknown */ IntPtr", native));
 				}
 			}
 		}
@@ -235,7 +267,10 @@ namespace Generation {
 			public MethodDefinition method;
 			public string name;
 			public TypeDefinition type;
-		
+			public bool not_managed;
+			public bool disabled_once;
+			public string managed_wrapper_code; // The code to put into the call to the call to the real pinvoke, defaults to the name of the parameter (if this field is null)
+			
 			public ParameterDefinition (MethodDefinition method, string name, TypeDefinition type)
 			{
 				this.method = method;
@@ -273,6 +308,7 @@ namespace Generation {
 			public string name;
 			public string declaringtype;
 			public bool is_static;
+			public bool is_virtual;
 			public TypeDefinition returntype = new TypeDefinition ();
 			public ParameterDefinitions parameters = new ParameterDefinitions ();
 			public Dictionary <string, object> properties = new Dictionary<string,object> ();
@@ -282,6 +318,16 @@ namespace Generation {
 				this.generator = generator;
 				this.signature = signature;
 				Parse ();
+			}
+			
+			public void Dump ()
+			{
+				Log.Write ("Method declaringtype: '{0}' name='{1}', is_static: {2}, is_virtual: {3}, returntype: '{3}'",
+				           declaringtype, name, is_static, is_virtual, returntype.Native);
+				foreach (KeyValuePair <string, object> pair in properties) {
+					Log.Write (" '{0}' = '{1}' ", pair.Key, pair.Value);
+				}
+				Log.WriteLine ();
 			}
 			
 			public bool ContainsUnknownTypes {
@@ -296,9 +342,14 @@ namespace Generation {
 			
 			public WrapperGenerator GetMarshaller ()
 			{
-				if (returntype.Managed == "string") {
+				if (returntype.Managed.type == "string") {
 					returntype.PInvoke = "IntPtr";
 					return StringReturnTypeMarshaller;
+				}
+				
+				if (parameters.Count > 0 && parameters [parameters.Count - 1].type.Native == "MoonError*") {
+					parameters [parameters.Count - 1].not_managed = true;
+					return MoonErrorMarshaller;
 				}
 				
 				return null;
@@ -319,6 +370,9 @@ namespace Generation {
 					if (tokens.Peek () == "static") {
 						tokens.Dequeue ();
 						is_static = true;
+					} else if (tokens.Peek () == "virtual") {
+						tokens.Dequeue ();
+						is_virtual = true;
 					}
 					
 					returntype = ReadType (tokens);
@@ -328,7 +382,7 @@ namespace Generation {
 					
 					name = tokens.Dequeue ().value;
 					
-					Log.WriteLine ("Parsed method name: '{0}' and return type: '{1}' (managed: '{2}')", name, returntype.Native, returntype.Managed);
+					//Log.WriteLine ("Parsed method name: '{0}' and return type: '{1}' (managed: '{2}') ", name, returntype.Native, returntype.Managed);
 					
 					if (tokens.Dequeue () != "(")
 						throw new ArgumentException ("Expected '(')");
@@ -340,7 +394,7 @@ namespace Generation {
 							    throw new ArgumentException ("Expected identifier");
 							parameter_name = tokens.Dequeue ().value;
 							
-							Log.WriteLine ("Parsed name: '{0}' type: '{1}'", parameter_name, parameter_type);
+							//Log.WriteLine ("Parsed name: '{0}' type: '{1}'", parameter_name, parameter_type);
 							
 							parameters.Add (new ParameterDefinition (this, parameter_name, parameter_type));
 							
@@ -356,7 +410,9 @@ namespace Generation {
 					if (tokens.Dequeue () != ")")
 						throw new ArgumentException ("Expected ')'");
 			
-					if (tokens.Peek () == "{") {
+					if (tokens.Count == 0) {
+						// we're done, the code is code starting on the next line
+					} else if (tokens.Peek () == "{") {
 						// we're done, the rest is code
 					} else if (tokens.Dequeue () != ";")
 						throw new ArgumentException ("Expected ';'");
@@ -407,6 +463,13 @@ namespace Generation {
 				bool first_done = false;
 				text.Append (" (");
 				foreach (ParameterDefinition parameter in parameters) {
+					if (parameter.disabled_once) {
+						parameter.disabled_once = false;
+						continue;
+					}
+					if (parameter.not_managed && which == TypeDefinitionType.Managed)
+						continue;
+					
 					if (first_done)
 						text.Append (", ");
 					parameter.Write (text, which);
@@ -415,23 +478,32 @@ namespace Generation {
 				text.Append (")");
 			}
 			
-			public void WriteWrapperCall (StringBuilder text)
-			{
-				WriteWrapperCall (text, false);
-			}
-			public void WriteWrapperCall (StringBuilder text, bool skip_first)
+			public void WriteWrapperCall (StringBuilder text, TypeDefinitionType which)
 			{
 				bool first_done = false;
-				bool first_skipped = !skip_first;
+				ManagedTypeDefinition type;
+				
 				text.Append (" (");
 				foreach (ParameterDefinition parameter in parameters) {
-					if (!first_skipped) {
-						first_skipped = true;
+					if (parameter.disabled_once) {
+						parameter.disabled_once = false;
 						continue;
 					}
+					
 					if (first_done)
 						text.Append (", ");
-					text.Append (parameter.name);
+					type = parameter.type.Managed;
+					if (parameter.managed_wrapper_code != null) {
+						text.Append (parameter.managed_wrapper_code);
+					} else {
+						if (which == TypeDefinitionType.Managed) {
+							if (type.is_out)
+								text.Append ("out ");
+							if (type.is_ref)
+								text.Append ("ref ");
+						}
+						text.Append (parameter.name);
+					}
 					first_done = true;
 				}
 				text.Append (")");
@@ -443,11 +515,40 @@ namespace Generation {
 				text.Append ("\tIntPtr p = ");
 				text.Append (name);
 				text.Append ("_ ");
-				WriteWrapperCall (text);
+				WriteWrapperCall (text, TypeDefinitionType.Managed);
 				text.AppendLine (";");
 				
 				text.Append (tabs);
 				text.AppendLine ("\treturn p == IntPtr.Zero ? null : Marshal.PtrToStringAnsi (p);");
+			}
+			
+			public void MoonErrorMarshaller (StringBuilder text, string tabs)
+			{
+				bool is_void = returntype.Native == "void";
+				text.Append (tabs);
+				text.AppendLine ("\tMoonError error;");
+				
+				text.Append (tabs);
+				text.Append ("\t");
+				if (!is_void) {
+					returntype.Write (text, TypeDefinitionType.Managed);
+					text.Append (" result = ");
+				}
+				text.Append (name);
+				text.Append ("_");
+				WriteWrapperCall (text, TypeDefinitionType.Managed);
+				text.AppendLine (";");
+				
+				text.Append (tabs);
+				text.AppendLine ("\tif (error.Number != 0)");
+				
+				text.Append (tabs);
+				text.AppendLine ("\t\tthrow CreateManagedException (error);");
+				
+				if (!is_void) {
+					text.Append (tabs);
+					text.AppendLine ("\treturn result;");
+				}
 			}
 		}
 			

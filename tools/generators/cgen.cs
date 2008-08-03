@@ -72,8 +72,10 @@ class Generator
 				last_type = method.declaringtype;
 				foreach (StringBuilder text in new StringBuilder [] {header, impl}) {
 					text.AppendLine ("");
-					text.Append ("// ");
+					text.AppendLine ("/* ");
+					text.Append (" * ");
 					text.AppendLine (last_type);
+					text.AppendLine (" */ ");
 					text.AppendLine ("");
 				}
 			}
@@ -97,25 +99,45 @@ class Generator
 		Helper.WriteAllText (Path.Combine (moon_dir, "cbinding.cpp"), impl.ToString ());
 	}
 	
+	void WriteMethodIfVersion (MethodDefinition method, StringBuilder text, bool end)
+	{
+		if (method.properties.ContainsKey ("Version")) {
+			if (!end) {
+				text.Append ("#if SL_");
+				text.AppendLine (((string) method.properties ["Version"]).Replace ('.', '_'));
+			} else {
+				text.AppendLine ("#endif");
+			}
+		}
+	}
+	
 	void WriteHeaderMethod (MethodDefinition method, StringBuilder text)	
 	{
-		if ((bool) method.properties ["GenerateManaged"])
+		Log.WriteLine ("Writing header: {0}::{1} (Version: {2}, GenerateManaged: {3})", 
+		               method.declaringtype, method.name, 
+		               method.properties.ContainsKey ("Version") ? method.properties ["Version"] : "none",
+		               method.properties.ContainsKey ("GenerateManaged") ? method.properties ["GenerateManaged"] : "none");
+		WriteMethodIfVersion (method, text, false);
+		if (method.properties.ContainsKey ("GenerateManaged") && (bool) method.properties ["GenerateManaged"])
 			text.AppendLine ("/* @GenerateManaged */");
 		method.returntype.Write (text, TypeDefinitionType.Native);
 		text.Append (" ");
 		text.Append (CppToCName (method.declaringtype + method.name));
 		method.WriteParameters (text, TypeDefinitionType.Native);
 		text.AppendLine (";");
+		WriteMethodIfVersion (method, text, true);
 	}
 	
 	void WriteImplMethod (MethodDefinition method, StringBuilder text)
 	{
+		WriteMethodIfVersion (method, text, false);
 		bool is_void = method.returntype.Native == "void";
 		bool is_static = method.is_static;
+		string c_name = CppToCName (method.declaringtype + method.name);
 		
 		method.returntype.Write (text, TypeDefinitionType.Native);
 		text.AppendLine ();
-		text.Append (CppToCName (method.declaringtype + method.name));
+		text.Append (c_name);
 		method.WriteParameters (text, TypeDefinitionType.Native);
 		text.AppendLine ("");
 		text.AppendLine ("{");
@@ -132,21 +154,32 @@ class Generator
 				text.AppendLine ("\t// Need to get the default value for the specified type and return that if instance is NULL.");
 			}
 		}
+		
+		if (method.parameters.Count > 0 && method.parameters [method.parameters.Count - 1].type.Native == "MoonError*") {
+			text.AppendLine ("\tif (error == NULL)");
+			text.Append ("\t\tg_warning (\"Moonlight: Called ");
+			text.Append (c_name);
+			text.AppendLine (" () with error == NULL.\");");
+		}
+		
 		text.Append ("\t");
 		if (!is_void)
 			text.Append ("return ");
+		
 		
 		if (is_static) {
 			text.Append (method.declaringtype);
 			text.Append ("::");
 		} else {
 			text.Append ("instance->");
+			method.parameters [0].disabled_once = true;
 		}
 		text.Append (method.name);
-		method.WriteWrapperCall (text, !is_static);
+		method.WriteWrapperCall (text, TypeDefinitionType.Native);
 		text.AppendLine (";");
              
 		text.AppendLine ("}");
+		WriteMethodIfVersion (method, text, true);
 		text.AppendLine ();
 	}
 	
@@ -174,8 +207,7 @@ class Generator
 		bool next = false;
 		string tmp;
 		string type = null;
-		bool generate_managed = false;
-		Dictionary <string, string> magic_arguments = new Dictionary<string,string> ();
+		Dictionary <string, object> magic_arguments = new Dictionary<string,object> ();
 		
 		foreach (string file in Directory.GetFiles (directory, "*.h")) {
 			foreach (string l in File.ReadAllLines (file)) {
@@ -189,9 +221,14 @@ class Generator
 						line = line.Substring (0, comment);
 					def = new MethodDefinition (this, line.Trim ().Replace ("  ", " "), file);
 					def.declaringtype = type;
-					def.properties.Add ("GenerateManaged", generate_managed);
+					
+					foreach (System.Collections.Generic.KeyValuePair <string, object> pair in magic_arguments)
+						def.properties.Add (pair.Key, pair.Value);
+					
 					def.header = file;
+					def.Dump ();
 					methods.Add (def);
+					//Console.WriteLine ("Found method: {0}::{1}", def.declaringtype, def.name);
 				} else if (line.Contains (magic)) {
 					next = true;
 					tmp = line.Substring (line.IndexOf (magic) + magic.Length +1 );
@@ -199,32 +236,30 @@ class Generator
 					magic_arguments = ParseArguments (tmp);
 					if (!magic_arguments.ContainsKey ("Type"))
 						throw new ArgumentException ("Magic comment must contain a Type=<Type> (something like: " + magic + ":Type=DependencyProperty */)");
-					type = magic_arguments ["Type"];
-					if (magic_arguments.ContainsKey ("GenerateManaged"))
-						generate_managed = magic_arguments ["GenerateManaged"] == "true";
-					else
-						generate_managed = false;
+					type = (string) magic_arguments ["Type"];
 				}
 			}
 		}
 	}
 	
-	Dictionary <string, string> ParseArguments (string args)
+	Dictionary <string, object> ParseArguments (string args)
 	{
-		Dictionary <string, string> result = new Dictionary<string,string> ();
+		Dictionary <string, object> result = new Dictionary<string,object> ();
 		
 		foreach (string pair in args.Split (new char [] {','}, StringSplitOptions.RemoveEmptyEntries)) {
 			string [] v = pair.Split ('=');
 			if (v.Length != 2)
 				throw new Exception (string.Format ("Invalid magic argument: '{0}', it must be of the format: key1=value1,key2=value2", pair));
-			result.Add (v [0], v [1]);
-			Console.WriteLine ("Got argument: '{0}' = '{1}'", v [0], v [1]);
+			if (v [1] == "true") {
+				result.Add (v [0], true);
+			} else if (v [1] == "false") {
+				result.Add (v [0], false);
+			} else {
+				result.Add (v [0], v [1]);
+			}
+			//Console.WriteLine ("Got argument: '{0}' = '{1}'", v [0], v [1]);
 		}
 		return result;
-	}
-	
-	void GenerateHeader ()
-	{
 	}
 	
 	static int Main ()

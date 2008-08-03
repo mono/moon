@@ -127,6 +127,7 @@ cgen
 	
 	* Generate *_new methods.
 	* Generate c++ implementations for dependency properties accessors.
+	* Add optional null checks (as defined by property in comment) for other parameters.
 	
 	
 typeandkindgen

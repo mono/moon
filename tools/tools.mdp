@@ -20,6 +20,7 @@
     <File name="generators/typegen.cs" subtype="Code" buildaction="Compile" />
     <File name="generators/cgen.cs" subtype="Code" buildaction="Compile" />
     <File name="generators/typeandkindgen.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/README" subtype="Code" buildaction="Nothing" />
   </Contents>
   <GtkDesignInfo gtkVersion="2.12.2" />
 </Project>

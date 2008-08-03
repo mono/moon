@@ -1,5 +1,11 @@
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* cgen.cs: Add support for Version=2.0 properties in comments.
+	* common.cs, methodgen.cs: Added support for MoonError* and Surface*.
+	* README: Add idea.
+
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* README: Added.
 	* typeandkindgen.cs: Use logging methods instead of writing directly to
 	  stdout.

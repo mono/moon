@@ -83,20 +83,29 @@ class Generator
 	
 	void WriteMethod (MethodDefinition method, StringBuilder text, string library)
 	{
-		string name = method.name;
-		string native_signature = method.signature;
-		TypeDefinition returntype = method.returntype;
-		bool is_defined = IsManuallyDefined (name);
-		bool contains_unknown_types = method.ContainsUnknownTypes;
-		bool comment_out = is_defined || contains_unknown_types;
 		WrapperGenerator wrapper_generator = method.GetMarshaller ();
 		bool generate_wrapper = wrapper_generator != null;
+		string name = method.name;
+		string managed_name = (generate_wrapper && name.Contains ("_with_error")) ? name.Replace ("_with_error", "") : name;
+		string native_signature = method.signature;
+		TypeDefinition returntype = method.returntype;
+		bool is_defined = IsManuallyDefined (managed_name);
+		bool contains_unknown_types = method.ContainsUnknownTypes;
+		bool comment_out = is_defined || contains_unknown_types;
+		bool generate_surface_call = false;
+		bool is_static = method.returntype.Native == "void";
 		string tabs = comment_out ? "\t\t// " : "\t\t";
+		
+		
+		int surface_param = is_static ? 0 : 1;
+		if (generate_wrapper && method.parameters.Count > surface_param && method.parameters [surface_param].name == "surface" && method.parameters [surface_param].type.Native == "Surface*") {
+			generate_surface_call = true;
+		}
 		
 		if (is_defined)
 			text.AppendLine ("\t\t// This method is already defined manually in NativeMethods.cs. Remove the import from there, and regenerate.");
 		if (contains_unknown_types) {
-			text.AppendLine ("\t\t// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' and add the missing case) and try again.");
+			text.AppendLine ("\t\t// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in common.cs and add the missing case) and try again.");
 		}
 			
 		text.Append (tabs);
@@ -133,7 +142,11 @@ class Generator
 			text.Append ("public static ");
 			returntype.Write (text, TypeDefinitionType.Managed);
 			text.Append (" ");
-			text.Append (name);
+			text.Append (managed_name);
+			if (generate_surface_call) {
+				method.parameters [surface_param].disabled_once = true;
+				method.parameters [surface_param].managed_wrapper_code = "Mono.Xaml.XamlLoader.SurfaceInDomain";
+			}
 			method.WriteParameters (text, TypeDefinitionType.Managed);
 			text.AppendLine ();
 			
