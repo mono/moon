@@ -102,7 +102,7 @@ namespace dependency_properties
 					else
 						failed++;
 					output.Report (result);
-					Console.WriteLine (result.success);
+					//Console.WriteLine (result.success);
 				}
 			}
 			result = new TestResult ();
@@ -246,6 +246,7 @@ namespace dependency_properties
 			} catch (Exception ex) {
 				if (!(ex.GetType () == expected_exception))
 					throw new AssertFailedException (message, string.Format ("Expected '{0}', got '{1}'", expected_exception.FullName, ex.GetType ().FullName));
+				System.Diagnostics.Debug.WriteLine (ex.ToString ());
 			}
 			if (failed)
 				throw new AssertFailedException (message, string.Format ("Expected '{0}', but got no exception.", expected_exception.FullName));

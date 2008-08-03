@@ -90,28 +90,25 @@ namespace dependency_properties
 			object previous_expected_value = (double) 0;
 			int iterations = 0;
 			int changes = 0;
-			Console.WriteLine ("0");
+			
 			Canvas_Custom_double = new DependencyPropertyInfo ("Custom", typeof (Canvas), typeof (double), false);
 			info = Canvas_Custom_double;
 
 			property = info.Property;
 
-			Console.WriteLine ("5");
 			Assert.AreEqual (0.0, (double) canvas.GetValue (property));
-			Console.WriteLine ("6");
+
 			Assert.AreEqual (0.0, (double) ink.GetValue (property));
-			Console.WriteLine ("10");
+
 			Assert.Throws (delegate { canvas.SetValue (property, 1); }, typeof (ArgumentException));
 			Assert.Throws (delegate { canvas.SetValue (property, ""); }, typeof (ArgumentException));
 			Assert.Throws (delegate { canvas.SetValue (property, new CustomClass ()); }, typeof (ArgumentException));
 			Assert.Throws (delegate { canvas.SetValue (property, null); }, typeof (ArgumentException));
 			Assert.Throws (delegate { canvas.SetValue (property, new Canvas ()); }, typeof (ArgumentException));
 
-			Console.WriteLine ("20");
 			foreach (object expected_value in new object [] { 1.1 }) {
 				iterations++;
 
-				Console.WriteLine ("30-" + iterations.ToString ());
 				canvas.SetValue (property, expected_value);
 				actual_value = canvas.GetValue (property);
 
