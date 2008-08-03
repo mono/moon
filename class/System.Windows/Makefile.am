@@ -232,7 +232,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/TranslateTransform.cs			\
 	$(srcdir)/System.Windows.Media/VideoBrush.cs				\
 	$(srcdir)/System.Windows.Media.Animation/Animation.cs			\
-	$(srcdir)/System.Windows.Media.Animation/BeginStoryBoard.cs		\
+	$(srcdir)/System.Windows.Media.Animation/BeginStoryboard.cs		\
 	$(srcdir)/System.Windows.Media.Animation/ColorAnimation.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleAnimation.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleAnimationUsingKeyFrames.cs\
