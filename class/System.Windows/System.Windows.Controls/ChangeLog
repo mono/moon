@@ -1,3 +1,7 @@
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* MediaBase.cs: Deleted. Not used anymore.
+
 2008-07-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextBlock.cs: Make InlinesProperty private and remove ability to

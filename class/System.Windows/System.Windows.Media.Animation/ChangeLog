@@ -1,3 +1,8 @@
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* BeginStoryboard.cs, BeginStoryBoard.cs: Renamed file to match type
+	  name.
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* TimelineCollection.cs: stub out

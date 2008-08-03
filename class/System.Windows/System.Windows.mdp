@@ -44,7 +44,6 @@
     <File name="System.Windows.Controls/Canvas.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Control.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Image.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Controls/MediaBase.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/InkPresenter.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/MediaElement.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Panel.cs" subtype="Code" buildaction="Compile" />
@@ -120,7 +119,7 @@
     <File name="System.Windows.Media/TranslateTransform.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/VideoBrush.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/Animation.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Media.Animation/BeginStoryBoard.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/BeginStoryboard.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ColorAnimation.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ColorAnimationUsingKeyFrames.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ColorKeyFrame.cs" subtype="Code" buildaction="Compile" />
