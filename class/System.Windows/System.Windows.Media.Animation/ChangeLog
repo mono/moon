@@ -1,3 +1,7 @@
+2008-08-04  Michael Dominic K.  <mdk@mdk.am>
+
+	* KeySpline.cs: Setters and getters for KeySpline.
+
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* BeginStoryboard.cs, BeginStoryBoard.cs: Renamed file to match type

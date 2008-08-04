@@ -157,6 +157,21 @@ namespace Mono {
 		public extern static double column_definition_get_actual_width (IntPtr handle);
 #endregion
 
+#region Animations
+		[DllImport("moon")]
+		public extern static void key_spline_set_control_point_1 (IntPtr handle, double x, double y);
+
+		[DllImport("moon")]
+		public extern static void key_spline_set_control_point_2 (IntPtr handle, double x, double y);
+
+		[DllImport("moon")]
+		public extern static void key_spline_get_control_point_1 (IntPtr handle, out double x, out double y);
+
+		[DllImport("moon")]
+		public extern static void key_spline_get_control_point_2 (IntPtr handle, out double x, out double y);
+
+#endregion
+
 #region Controls
 		[DllImport("moon")]
 		public extern static IntPtr control_new ();

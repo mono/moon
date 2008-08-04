@@ -34,7 +34,28 @@ namespace System.Windows.Media.Animation
 {
 	public sealed class KeySpline : DependencyObject 
 	{
-		
+		public Point ControlPoint1 {
+			set {
+				NativeMethods.key_spline_set_control_point_1 (native, value.X, value.Y);
+			}
+			get {
+				double x,y;
+				NativeMethods.key_spline_get_control_point_1 (native, out x, out y);
+				return new Point (x, y);
+			}
+		}
+	
+		public Point ControlPoint2 {
+			set {
+				NativeMethods.key_spline_set_control_point_2 (native, value.X, value.Y);
+			}
+			get {
+				double x,y;
+				NativeMethods.key_spline_get_control_point_1 (native, out x, out y);
+				return new Point (x, y);
+			}
+		}
+	
 		public KeySpline () : base (NativeMethods.key_spline_new ())
 		{
 		}

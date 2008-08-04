@@ -1,3 +1,7 @@
+2008-08-04  Michael Dominic K.  <mdk@mdk.am>
+
+	* NativeMethods.cs: Adding KeySpline getters/setters.
+
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am, Mono.Moonlight.mdp: Updated.
