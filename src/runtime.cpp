@@ -132,7 +132,11 @@ cache_report_default (Surface *surface, long bytes, void *user_data)
 GList*
 runtime_get_surface_list (void)
 {
-	// FIXME Need some locking here?
+	if (!Surface::InMainThread ()) {
+		g_warning ("This method can be only called from the main thread!\n");
+		return NULL;
+	}
+	
 	return surface_list;
 }
 
