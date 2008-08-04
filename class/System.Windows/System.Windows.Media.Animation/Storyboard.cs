@@ -45,6 +45,17 @@ namespace System.Windows.Media.Animation {
 			}
 		}
 
+		public PropertyPath TargetProperty {
+			get {
+				string p = GetValue (TargetPropertyPropertym);
+				return new PropertyPath (p);
+			}
+			set {
+				// FIXME Exception if setting on running
+				SetValue (TargetPropertyProperty, value.Path);
+			}
+		}
+
 		static Storyboard ()
 		{
 			TargetPropertyProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetProperty", typeof (string));
@@ -106,9 +117,21 @@ namespace System.Windows.Media.Animation {
 			element.SetValue (TargetNameProperty, name);
 		}
 
+		public void SetTargetProperty (Timeline element, PropertyPath path)
+		{
+			// FIXME Exception if setting on running
+			element.SetValue (TargetPropertyProperty, path.Path);
+		}
+
 		public string GetTargetName (Timeline element)
 		{
 			return (string) element.GetValue (TargetNameProperty);
+		}
+
+		public PropertyPath GetTargetProperty (Timeline element)
+		{
+			string path = (string) element.GetValue (TargetPropertyProperty);
+			return new PropertyPath (path);
 		}
 
 		static UnmanagedEventHandler completed_proxy = new UnmanagedEventHandler (UnmanagedCompleted);
