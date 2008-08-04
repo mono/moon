@@ -39,7 +39,10 @@ namespace System.Windows.Media.Animation {
 
 		public string TargetName {
 			get { return (string) GetValue(TargetNameProperty); }
-			set { SetValue (TargetNameProperty, value); }
+			set { 
+				// FIXME Exception if setting on running
+				SetValue (TargetNameProperty, value); 
+			}
 		}
 
 		static Storyboard ()
@@ -99,6 +102,7 @@ namespace System.Windows.Media.Animation {
 
 		public void SetTargetName (Timeline element, string name)
 		{
+			// FIXME Exception if setting on running
 			element.SetValue (TargetNameProperty, name);
 		}
 
