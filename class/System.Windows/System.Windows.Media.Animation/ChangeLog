@@ -1,5 +1,9 @@
 2008-08-04  Michael Dominic K.  <mdk@mdk.am>
 
+	* Storyboard.cs: Adding SetTarget.
+
+2008-08-04  Michael Dominic K.  <mdk@mdk.am>
+
 	* Storyboard.cs: More Property/Target missing methods & props.
 
 2008-08-04  Michael Dominic K.  <mdk@mdk.am>

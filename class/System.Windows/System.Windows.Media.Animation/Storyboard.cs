@@ -47,7 +47,7 @@ namespace System.Windows.Media.Animation {
 
 		public PropertyPath TargetProperty {
 			get {
-				string p = GetValue (TargetPropertyPropertym);
+				string p = (string) GetValue (TargetPropertyProperty);
 				return new PropertyPath (p);
 			}
 			set {
@@ -109,6 +109,12 @@ namespace System.Windows.Media.Animation {
 				if (events[CompletedEvent] == null)
 					Events.RemoveHandler (this, "Completed", completed_proxy);
 			}
+		}
+
+		public void SetTarget (Timeline element, DependencyObject o)
+		{
+			// FIXME Exception if setting on running
+			NativeMethods.timeline_set_manual_target (native, o.native);
 		}
 
 		public void SetTargetName (Timeline element, string name)
