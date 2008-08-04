@@ -1,7 +1,11 @@
 2008-08-04  Michael Dominic K.  <mdk@mdk.am>
 
-	* runtime.cpp: _get_surface can only be called from the main thread.
+	* animation.cpp:
+	* animation.h: A little bit of C API for KeySpline.
 
+2008-08-04  Michael Dominic K.  <mdk@mdk.am>
+
+	* runtime.cpp: _get_surface can only be called from the main thread.
 
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 

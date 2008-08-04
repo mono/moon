@@ -717,6 +717,10 @@ class BeginStoryboard : public TriggerAction {
 G_BEGIN_DECLS
 
 KeySpline *key_spline_new (void);
+void key_spline_set_control_point_1 (KeySpline *k, double x, double y);
+void key_spline_set_control_point_2 (KeySpline *k, double x, double y);
+void key_spline_get_control_point_1 (KeySpline *k, double *x, double *y);
+void key_spline_get_control_point_2 (KeySpline *k, double *x, double *y);
 
 DoubleAnimation *double_animation_new (void);
 ColorAnimation  *color_animation_new (void);

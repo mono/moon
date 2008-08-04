@@ -921,6 +921,36 @@ KeySpline::SetControlPoint1 (Point controlPoint1)
 	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
 }
 
+void
+key_spline_set_control_point_1 (KeySpline *k, double x, double y)
+{
+	Point p;
+	p.x = x; p.y = y;
+	k->SetControlPoint1 (p);
+}
+
+void
+key_spline_set_control_point_2 (KeySpline *k, double x, double y)
+{
+	Point p;
+	p.x = x; p.y = y;
+	k->SetControlPoint2 (p);
+}
+
+void
+key_spline_get_control_point_1 (KeySpline *k, double *x, double *y)
+{
+	Point p = k->GetControlPoint1 ();
+	*x = p.x; *y = p.y;
+}
+
+void
+key_spline_get_control_point_2 (KeySpline *k, double *x, double *y)
+{
+	Point p = k->GetControlPoint2 ();
+	*x = p.x; *y = p.y;
+}
+
 Point
 KeySpline::GetControlPoint2 ()
 {
