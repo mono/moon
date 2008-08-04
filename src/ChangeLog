@@ -1,6 +1,13 @@
 2008-08-04  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
+	* clock.cpp:
+	* clock.h: Adding method to store a manual target (instead of a named target)
+	for a timeline. This will be used to bind a Storyboard.SetTarget 2.0 method.
+
+2008-08-04  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
 	* animation.h: A little bit of C API for KeySpline.
 
 2008-08-04  Michael Dominic K.  <mdk@mdk.am>

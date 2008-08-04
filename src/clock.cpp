@@ -1294,6 +1294,13 @@ DependencyProperty *Timeline::SpeedRatioProperty;
 
 Timeline::Timeline ()
 {
+	manual_target = NULL;
+}
+
+void 
+timeline_set_manual_target (Timeline *timeline, DependencyObject *target)
+{
+	timeline->SetManualTarget (target);
 }
 
 bool

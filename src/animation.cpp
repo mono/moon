@@ -353,36 +353,50 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		AnimationClock *ac = (AnimationClock*)clock;
 
 		char *targetProperty = NULL;
+		char *targetName = NULL;
+		DependencyObject *o = NULL; 
+		DependencyObject *real_target_o = NULL;
+		DependencyProperty *prop = NULL;
+
 		for (Clock *c = ac; c; c = c->GetParent()) {
 			targetProperty = Storyboard::GetTargetProperty (c->GetTimeline());
 			if (targetProperty)
 				break;
 		}
+
 		if (!targetProperty) {
 			g_warning ("No target property!");
 			return;
 		}
 
-		char *targetName = NULL;
 		for (Clock *c = ac; c; c = c->GetParent()) {
-			targetName = Storyboard::GetTargetName (c->GetTimeline());
-			if (targetName)
+
+			Timeline *tl = c->GetTimeline ();
+
+			if (tl->HasManualTarget ()) 
+				o = tl->GetManualTarget ();
+			else 
+				targetName = Storyboard::GetTargetName (tl);
+
+			if (targetName || o)
 				break;
 		}
-		if (!targetName) {
+
+		if (!targetName && !o) {
 			g_warning ("No target name!");
 			return;
 		}
 
-		//printf ("Got %s %s\n", targetProperty, targetName);
-		DependencyObject *o = FindName (targetName);
+		if (!o)
+			o = FindName (targetName);
+
 		if (!o) {
 			g_warning ("No object named %s!", targetName);
 			return;
 		}
 
-		DependencyObject *real_target_o = o;
-		DependencyProperty *prop = resolve_property_path (&real_target_o, targetProperty);
+		real_target_o = o;
+		prop = resolve_property_path (&real_target_o, targetProperty);
 
 		if (!prop || !real_target_o) {
 			g_warning ("No property named %s on object %s, which has type %s!", targetProperty, targetName, o->GetTypeName());

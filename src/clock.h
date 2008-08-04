@@ -528,9 +528,16 @@ class Timeline : public DependencyObject {
 	
 	virtual Clock* AllocateClock () { return new Clock (this); }
 	virtual bool Validate ();
+
+	bool HasManualTarget () { return manual_target != NULL; }
+	DependencyObject* GetManualTarget () { return manual_target; }
+	void SetManualTarget (DependencyObject *o) { manual_target = o; }
+
+private:
+	DependencyObject *manual_target;
 };
 
-
+void timeline_set_manual_target (Timeline *timeline, DependencyObject *target);
 
 class TimelineCollection : public DependencyObjectCollection {
  protected:
