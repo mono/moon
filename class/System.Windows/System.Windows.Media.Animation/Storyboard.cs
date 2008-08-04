@@ -97,6 +97,16 @@ namespace System.Windows.Media.Animation {
 			}
 		}
 
+		public void SetTargetName (Timeline element, string name)
+		{
+			element.SetValue (TargetNameProperty, name);
+		}
+
+		public string GetTargetName (Timeline element)
+		{
+			return (string) element.GetValue (TargetNameProperty);
+		}
+
 		static UnmanagedEventHandler completed_proxy = new UnmanagedEventHandler (UnmanagedCompleted);
 
 		private static void UnmanagedCompleted (IntPtr target, IntPtr calldata, IntPtr closure)
