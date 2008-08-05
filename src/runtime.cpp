@@ -259,10 +259,6 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 	up_dirty = new List ();
 	down_dirty = new List ();
 	
-	managed_types = NULL;
-	managed_type_length = 0;
-	managed_type_count = 0;
-
 	surface_list = g_list_append (surface_list, this);
 }
 
@@ -321,10 +317,6 @@ Surface::~Surface ()
 	
 	delete downloaders;
 	
-#if SL_2_0
-	UnregisterManagedTypes ();
-#endif
-
 	surface_list = g_list_remove (surface_list, this);
 }
 
@@ -1851,93 +1843,6 @@ Surface::HandleUIWindowDestroyed (MoonWindow *window)
 	if (window == active_window)
 		active_window = NULL;
 }
-
-#if SL_2_0
-Type *
-Surface::GetManagedType (Type::Kind type, bool create_native)
-{
-	bool create = false;
-	int type_id = (int) type;
-
-	if ((int) type + 1 > managed_type_length) {
-		create = create_native;
-	} else if (managed_types [type] == NULL) {
-		create = create_native;
-	} else {
-		return managed_types [type];
-	}
-	
-	if (!create_native)
-		return NULL;
-	
-	if (managed_types == NULL) {
-		managed_type_length = type_id + 1;
-		managed_types = (Type **) g_malloc0 (sizeof (Type *) * (managed_type_length));
-	} else if (managed_type_length < type_id + 1) {
-		managed_types = (Type **) g_realloc (managed_types, sizeof (Type *) * (type_id + 1));
-		// NULL out the new entries
-		for (int i = managed_type_length; i < type_id + 1; i++)
-			managed_types [i] = NULL;
-		managed_type_length = type_id + 1;
-	}
-	
-	if (type > Type::INVALID && type < Type::LASTTYPE) {
-		managed_types [type] = Type::Find (type)->Clone ();
-	}
-	
-	return managed_types [type];
-}
-
-int
-Surface::RegisterManagedType (const char *name, void *gc_handle, int parent)
-{
-	Type *type = new Type ();
-	int type_id = Type::LASTTYPE + managed_type_count + 1;
-	
-	//printf ("Surface::RegisterManagedType (%s, %p, %i). managed_type_length: %i, count: %i\n", name, gc_handle, parent, managed_type_length, managed_type_count);
-	
-	// This will ensure the array is big enough
-	GetManagedType ((Type::Kind) type_id, true); 
-
-	managed_type_count++;
-	
-	type->type = (Type::Kind) type_id;
-	type->parent = (Type::Kind) parent;
-	type->value_type = false;
-	type->name = g_strdup (name);
-	type->kindname = NULL;
-	type->event_count = 0;
-	type->total_event_count = 0;
-	type->events = NULL;
-	type->create_inst = NULL;
-	type->content_property = NULL;
-	
-	managed_types [type_id] = type;
-	
-	return type->type;
-}
-
-void
-Surface::UnregisterManagedTypes ()
-{
-	if (managed_types == NULL)
-		return;
-	
-	for (int i = 0; i < managed_type_length; i++) {
-		delete managed_types [i];
-	}
-	g_free (managed_types);
-	managed_types = NULL;
-	managed_type_length = 0;
-	managed_type_count = 0;
-}
-
-int
-surface_register_managed_type (Surface *s, const char *name, void *gc_handle, int parent)
-{
-	return s->RegisterManagedType (name, gc_handle, parent);
-}
-#endif
 
 Surface *
 surface_new (MoonWindow *window, bool silverlight2)

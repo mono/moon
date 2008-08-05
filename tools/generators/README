@@ -133,7 +133,7 @@ cgen
 typeandkindgen
 ==============
 
-	Generates class/Mono.Moonlight/Mono/Surface.g.cs: A dictionary of Type and 
+	Generates class/Mono.Moonlight/Mono/Types.g.cs: A dictionary of Type and 
 	Kind to relate them to eachother.
 	
 	This script looks in every cs file in every subdirectory in 

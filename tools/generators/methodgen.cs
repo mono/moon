@@ -92,14 +92,16 @@ class Generator
 		bool is_defined = IsManuallyDefined (managed_name);
 		bool contains_unknown_types = method.ContainsUnknownTypes;
 		bool comment_out = is_defined || contains_unknown_types;
-		bool generate_surface_call = false;
 		bool is_static = method.returntype.Native == "void";
 		string tabs = comment_out ? "\t\t// " : "\t\t";
 		
-		
-		int surface_param = is_static ? 0 : 1;
-		if (generate_wrapper && method.parameters.Count > surface_param && method.parameters [surface_param].name == "surface" && method.parameters [surface_param].type.Native == "Surface*") {
-			generate_surface_call = true;
+		// Check for parameters we can automatically generate code for.
+		for (int i = 0; i < method.parameters.Count -1; i++) {
+			if (method.parameters [i].name == "surface" && method.parameters [i].type.Native == "Surface*") {
+				method.parameters [i].managed_wrapper_code = "Mono.Xaml.XamlLoader.SurfaceInDomain";
+			} else if (method.parameters [i].name == "additional_types" && method.parameters [i].type.Native == "Types*") {
+				method.parameters [i].managed_wrapper_code = "Mono.Types.Native";
+			}
 		}
 		
 		if (is_defined)
@@ -143,10 +145,10 @@ class Generator
 			returntype.Write (text, TypeDefinitionType.Managed);
 			text.Append (" ");
 			text.Append (managed_name);
-			if (generate_surface_call) {
-				method.parameters [surface_param].disabled_once = true;
-				method.parameters [surface_param].managed_wrapper_code = "Mono.Xaml.XamlLoader.SurfaceInDomain";
-			}
+			
+			for (int i = 0; i < method.parameters.Count - 1; i++)
+				method.parameters [i].disabled_once = method.parameters [i].managed_wrapper_code != null;
+
 			method.WriteParameters (text, TypeDefinitionType.Managed);
 			text.AppendLine ();
 			

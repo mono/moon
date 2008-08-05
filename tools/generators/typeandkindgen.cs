@@ -36,7 +36,7 @@ class Generator
 		text.AppendLine ("using System.Collections.Generic;");
 		text.AppendLine ("");
 		text.AppendLine ("namespace Mono {");
-		text.AppendLine ("\tpartial class Surface {");
+		text.AppendLine ("\tstatic partial class Types {");
 		text.AppendLine ("\t\tprivate static void CreateNativeTypes ()");
 		text.AppendLine ("\t\t{");
 		text.AppendLine ("\t\t\tAssembly agclr = Helper.GetAgclr ();");
@@ -91,6 +91,6 @@ class Generator
 		
 	 	Log.WriteLine ("typeandkidngen done");
 		
-		Generation.Helper.WriteAllText (Path.Combine (Path.Combine (moon_moonlight_dir, "Mono"), "Surface.g.cs"), text.ToString ());
+		Generation.Helper.WriteAllText (Path.Combine (Path.Combine (moon_moonlight_dir, "Mono"), "Types.g.cs"), text.ToString ());
 	}
 }

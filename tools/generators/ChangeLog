@@ -1,3 +1,13 @@
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* cgen.cs: Implement ctor (_new) and dtor (_free) generation.
+	* common.cs: Handle a few more types, and parse ctors and dtors
+	  correctly.
+	* methodgen.cs: Automatically handle 'Types *additional_types'
+	  parameters too.
+	* typeandkindgen.cs, README: We're generating to Types.g.cs now instead
+	  of Surface.g.cs.
+
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* typegen.cs, cgen.cs, typeandkindgen.cs, common.cs, methodgen.cs:

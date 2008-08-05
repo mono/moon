@@ -1,3 +1,8 @@
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile: Fix --generate-html argument.
+	* Tester.cs: Don't spam stdout with exceptions.
+
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyPropertyTest.cs, Tester.cs: Remove printfs.

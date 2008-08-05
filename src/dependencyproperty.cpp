@@ -110,14 +110,14 @@ DependencyProperty::GetDependencyProperty (Type::Kind type, const char *name, bo
 
 #if SL_2_0
 DependencyProperty *
-DependencyProperty::GetDependencyProperty (Surface *surface, Type::Kind type, const char *name, bool inherits)
+DependencyProperty::GetDependencyProperty (Types *additional_types, Type::Kind type, const char *name, bool inherits)
 {
 	DependencyProperty *property;
 	
 	property = GetDependencyProperty (type, name, inherits);
 	
 	if (property == NULL)
-		property = GetDependencyProperty (surface->GetManagedType (type, false), name, inherits);
+		property = GetDependencyProperty (additional_types->Find (type), name, inherits);
 
 	return property;
 }
@@ -206,10 +206,10 @@ DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *defa
 
 
 DependencyProperty *
-DependencyProperty::RegisterFull (Surface *surface, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
+DependencyProperty::RegisterFull (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
 #if SL_2_0
-	return RegisterFull (surface, surface->GetManagedType (type, true), name, default_value, vtype, attached, readonly, always_change, changed_callback);
+	return RegisterFull (additional_types, additional_types->Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback);
 #else
 	g_warning ("Moonlight: Called 2.0 only method.");
 	return NULL;
@@ -222,7 +222,7 @@ DependencyProperty::RegisterFull (Surface *surface, Type::Kind type, const char 
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyProperty::RegisterFull (Surface *surface, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
+DependencyProperty::RegisterFull (Types *additional_types, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
 	DependencyProperty *property;
 	
@@ -250,9 +250,9 @@ DependencyProperty::RegisterFull (Surface *surface, Type *type, const char *name
 
 #if SL_2_0
 DependencyProperty *
-dependency_property_register_managed_property (Surface *surface, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback)
+dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback)
 {
-	return DependencyProperty::RegisterFull (surface, owner_type, name, NULL, property_type, attached, false, false, callback);
+	return DependencyProperty::RegisterFull (additional_types, owner_type, name, NULL, property_type, attached, false, false, callback);
 }
 #endif
 

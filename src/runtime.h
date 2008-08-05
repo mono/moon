@@ -187,12 +187,6 @@ public:
 
 	static pthread_t main_thread;
 	static bool InMainThread () { return pthread_equal (main_thread, pthread_self ()); }
-
-	// 2.0 methods
-	Type **GetManagedTypes () { return managed_types; }
-	Type *GetManagedType (Type::Kind type, bool create_native);
-	int RegisterManagedType (const char *name, void *gc_handle, int parent);
-	void UnregisterManagedTypes ();
 	
 protected:
 	// The current window we are drawing to
@@ -280,13 +274,6 @@ private:
 	MoonlightExposeHandoffFunc expose_handoff;
 	void *expose_handoff_data;
 	
-	// Types in this surface (2.0 only)
-	// Note that we need to clone native types here too, since user code can 
-	// register properties with native types, and those properties are per-surface.
-	Type **managed_types; // A sparse array of types, will contain holes for types which haven't been registered.
-	int managed_type_length; // The length of managed_types array (!= number of non-null elements)
-	int managed_type_count; // The number of managed types registered (excluding native types)
-	
 	void Realloc ();
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
@@ -341,7 +328,6 @@ void     surface_destroy   (Surface *s);
 void     surface_set_trans (Surface *s, bool trans);
 bool     surface_get_trans (Surface *s);
 void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
-int      surface_register_managed_type (Surface *s, const char *name, void *gc_handle, int parent);
 
 TimeManager* surface_get_time_manager (Surface* s);
 Downloader* surface_create_downloader (Surface *s);

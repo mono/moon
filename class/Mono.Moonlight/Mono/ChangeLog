@@ -1,3 +1,13 @@
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* GeneratedPInvokes.cs: Updated.
+	* ManagedType.cs: Use the right type for native_handle.
+	* NativeMethods.cs: Removed method which doesn't exist anymore in the
+	  plugin.
+	* Surface.g.cs, Types.cs, Types.g.cs: Added Types(.g).cs and removed
+	  Surface.g.cs.
+	* Surface.cs: Moved type specific stuff to Types.
+
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* NativeMethods.cs: Added CreateManagedException, removed two pinvokes

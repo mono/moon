@@ -163,10 +163,8 @@ Type::Find (Type::Kind type)
 
 
 Type *
-Type::Find (Surface *surface, Type::Kind type)
+Type::Find (Types *additional_types, Type::Kind type)
 {
-	int index;
-		
 	if (type < Type::INVALID || type == Type::LASTTYPE)
 		return NULL;
 		
@@ -174,12 +172,12 @@ Type::Find (Surface *surface, Type::Kind type)
 		return &type_infos [type];
 
 #if SL_2_0				
-	if (surface == NULL) {
-		fprintf (stderr, "Type::Find (%p, %i): No surface to look in.\n", surface, type);
+	if (additional_types == NULL) {
+		fprintf (stderr, "Type::Find (%p, %i): No additional types to look in.\n", additional_types, type);
 		return NULL;
 	}
 	
-	return surface->GetManagedType (type, false);
+	return additional_types->Find (type);
 #else
 	return NULL;
 #endif
@@ -257,6 +255,102 @@ type_create_instance_from_kind (Type::Kind kind)
 	}
 	
 	return t->CreateInstance ();
+}
+
+/*
+ * Types
+ */
+
+Types::Types ()
+{
+	//printf ("Types::Types (). this: %p\n", this);
+	types = NULL;
+	size = 0;
+	count = 0;
+	CloneStaticTypes ();
+}
+
+Types::~Types ()
+{
+	//printf ("Types::~Types (). this: %p\n", this);
+	if (types != NULL) {
+		for (int i = 0; i < count; i++) {
+			if (types [i] != NULL)
+				delete types [i];
+		}
+		g_free (types);
+		types = NULL;
+		size = 0;
+		count = 0;
+	}
+}
+
+void
+Types::CloneStaticTypes ()
+{
+	count = (int) Type::LASTTYPE + 1;
+	EnsureSize (count);
+	for (int i = Type::INVALID; i < Type::LASTTYPE; i++) {
+		types [i] = Type::Find ((Type::Kind) i)->Clone ();
+	}
+}
+
+void
+Types::EnsureSize (int size)
+{
+	//printf ("Types::EnsureSize (%i). this: %p\n", size, this);
+	
+	Type **new_array;
+	
+	if (this->size > size)
+		return;
+	
+	new_array = (Type **) g_malloc0 (size * sizeof (Type *));
+	if (this->types != NULL) {
+		for (int i = 0; i < count; i++)
+			new_array [i] = this->types [i];
+		g_free (this->types);
+		this->types = NULL;
+	}
+	types = new_array;
+	this->size = size;
+}
+
+Type *
+Types::Find (Type::Kind type)
+{
+	if ((int) type + 1 > count)
+		return NULL;
+	
+	return types [(int) type];
+}
+
+Type::Kind
+Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent)
+{
+	Type *type = new Type ();
+	Type::Kind type_id = (Type::Kind) count;
+	
+	//printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
+	
+	EnsureSize (type_id + 1);
+
+	count++;
+	
+	type->type = type_id;
+	type->parent = parent;
+	type->value_type = false;
+	type->name = g_strdup (name);
+	type->kindname = NULL;
+	type->event_count = 0;
+	type->total_event_count = 0;
+	type->events = NULL;
+	type->create_inst = NULL;
+	type->content_property = NULL;
+	
+	types [type_id] = type;
+	
+	return type_id;
 }
 
 void

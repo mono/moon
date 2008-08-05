@@ -24,6 +24,7 @@
 #include "panel.h"
 #include "clock.h"
 #include "runtime.h"
+#include "type.h"
 #include "visual.h"
 #include "xaml.h"
 #if SL_2_0

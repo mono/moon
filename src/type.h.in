@@ -16,6 +16,7 @@
 
 class DependencyObject;
 class Surface;
+class Types;
 
 typedef gint64 TimeSpan;
 typedef DependencyObject *create_inst_func (void);
@@ -32,7 +33,7 @@ public:
 
 	static Type* Find (const char *name);
 	static Type* Find (Type::Kind type);
-	static Type* Find (Surface *surface, Type::Kind type);
+	static Type* Find (Types *additional_types, Type::Kind type);
 	
 	bool IsSubclassOf (Type::Kind super);
 	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
@@ -71,6 +72,29 @@ public: // private:
 };
 
 extern Type type_infos [Type::LASTTYPE + 1];
+
+class Types {
+private:
+	Type **types;
+	int size; // The allocated size of the array
+	int count; // The number of elements in the array (<= length)
+	
+	void EnsureSize (int size);
+	// Note that we need to clone native types here too, since user code can 
+	// register properties with native types.
+	void CloneStaticTypes ();
+	
+public:
+	/* @GenerateCBinding:Type=Types,GenerateManaged=true,Version=2.0 */
+	Types ();
+	/* @GenerateCBinding:Type=Types,GenerateManaged=true,Version=2.0 */
+	~Types ();
+	
+	/* @GenerateCBinding:Type=Types,GenerateManaged=true,Version=2.0 */
+	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent);
+	/* @GenerateCBinding:Type=Types,GenerateManaged=true,Version=2.0 */
+	Type *Find (Type::Kind type);
+};
 
 G_BEGIN_DECLS
 

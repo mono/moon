@@ -64,8 +64,11 @@ class Generator
 		header.AppendLine ();
 		
 		impl.AppendLine ("#include \"config.h\"");
-		impl.AppendLine ("#include \"cbinding.h\"");
 		impl.AppendLine ();
+		impl.AppendLine ("#include <stdlib.h>");
+		impl.AppendLine ("#include <stdio.h>");
+		impl.AppendLine ();
+		impl.AppendLine ("#include \"cbinding.h\"");
 		
 		foreach (MethodDefinition method in moon_methods) {
 			if (last_type != method.declaringtype) {
@@ -80,7 +83,7 @@ class Generator
 				}
 			}
 			
-			if (!method.is_static) {
+			if (!method.is_static && method.name != method.declaringtype) {
 				ParameterDefinition parameter = new ParameterDefinition (method, "instance", new TypeDefinition ());
 				parameter.type.Native = method.declaringtype + "*";
 				method.parameters.Insert (0, parameter);
@@ -122,7 +125,7 @@ class Generator
 			text.AppendLine ("/* @GenerateManaged */");
 		method.returntype.Write (text, TypeDefinitionType.Native);
 		text.Append (" ");
-		text.Append (CppToCName (method.declaringtype + method.name));
+		text.Append (CppToCName (method.declaringtype, method.name));
 		method.WriteParameters (text, TypeDefinitionType.Native);
 		text.AppendLine (";");
 		WriteMethodIfVersion (method, text, true);
@@ -132,8 +135,10 @@ class Generator
 	{
 		WriteMethodIfVersion (method, text, false);
 		bool is_void = method.returntype.Native == "void";
-		bool is_static = method.is_static;
-		string c_name = CppToCName (method.declaringtype + method.name);
+		bool is_ctor = method.name == method.declaringtype;
+		bool is_static = method.is_static || is_ctor;
+		bool is_dtor = method.name.StartsWith ("~");
+		string c_name = CppToCName (method.declaringtype, method.name);
 		
 		method.returntype.Write (text, TypeDefinitionType.Native);
 		text.AppendLine ();
@@ -142,51 +147,65 @@ class Generator
 		text.AppendLine ("");
 		text.AppendLine ("{");
 		
-		if (!is_static) {
-			if (method.returntype.Native.Contains ("*")) {
-				text.AppendLine ("\tif (instance == NULL)");
-				
-				text.Append ("\t\treturn");
-				if (!is_void)
-					text.Append (" NULL");
-				text.AppendLine (";");
-			} else {
-				text.AppendLine ("\t// Need to get the default value for the specified type and return that if instance is NULL.");
-			}
-		}
-		
-		if (method.parameters.Count > 0 && method.parameters [method.parameters.Count - 1].type.Native == "MoonError*") {
-			text.AppendLine ("\tif (error == NULL)");
-			text.Append ("\t\tg_warning (\"Moonlight: Called ");
-			text.Append (c_name);
-			text.AppendLine (" () with error == NULL.\");");
-		}
-		
-		text.Append ("\t");
-		if (!is_void)
-			text.Append ("return ");
-		
-		
-		if (is_static) {
+		if (is_ctor) {
+			text.Append ("\treturn new ");
 			text.Append (method.declaringtype);
-			text.Append ("::");
+			method.WriteWrapperCall (text, TypeDefinitionType.Native);
+			text.AppendLine (";");
+		} else if (is_dtor) {
+			text.AppendLine ("\tdelete instance;");
 		} else {
-			text.Append ("instance->");
-			method.parameters [0].disabled_once = true;
-		}
-		text.Append (method.name);
-		method.WriteWrapperCall (text, TypeDefinitionType.Native);
-		text.AppendLine (";");
-             
+			if (!is_static) {
+				text.AppendLine ("\tif (instance == NULL) {");
+				
+				if (method.returntype.Native.Contains ("*")) {	
+					text.Append ("\t\treturn");
+					if (!is_void)
+						text.Append (" NULL");
+				} else {
+					text.AppendLine ("\t\t// Need to find a property way to get the default value for the specified type and return that if instance is NULL.");
+					text.Append ("\t\treturn");
+					text.Append (" (");
+					text.Append (method.returntype.Native);
+					text.Append (") 0");
+				}
+				text.AppendLine (";");
+				
+				text.AppendLine ("\t}");
+			}
+			
+			if (method.parameters.Count > 0 && method.parameters [method.parameters.Count - 1].type.Native == "MoonError*") {
+				text.AppendLine ("\tif (error == NULL)");
+				text.Append ("\t\tg_warning (\"Moonlight: Called ");
+				text.Append (c_name);
+				text.AppendLine (" () with error == NULL.\");");
+			}
+			
+			text.Append ("\t");
+			if (!is_void)
+				text.Append ("return ");
+			
+			
+			if (is_static) {
+				text.Append (method.declaringtype);
+				text.Append ("::");
+			} else {
+				text.Append ("instance->");
+				method.parameters [0].disabled_once = true;
+			}
+			text.Append (method.name);
+			method.WriteWrapperCall (text, TypeDefinitionType.Native);
+			text.AppendLine (";");
+		} 
+			
 		text.AppendLine ("}");
 		WriteMethodIfVersion (method, text, true);
 		text.AppendLine ();
 	}
 	
-	string CppToCName (string name)
+	StringBuilder MakeCLowerCase (string name)
 	{
 		StringBuilder result = new StringBuilder (name.Length + 5);
-		
 		for (int i = 0; i < name.Length; i++) {
 			if (char.IsUpper (name [i])) {
 				if (i > 0)
@@ -195,6 +214,22 @@ class Generator
 			} else {
 				result.Append (name [i]);
 			}
+		}
+		return result;
+	}
+	
+	string CppToCName (string type, string name)
+	{
+		StringBuilder result = new StringBuilder (name.Length + type.Length + 5);
+		
+		result.Append (MakeCLowerCase (type));
+		result.Append ("_");
+		if (type == name) {
+			result.Append ("new");
+		} else if (name.StartsWith ("~")) {
+			result.Append ("free");
+		} else {
+			result.Append (MakeCLowerCase (name));
 		}
 		
 		return result.ToString ();

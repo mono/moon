@@ -1,3 +1,12 @@
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* cbinding.cpp, cbinding.h: Updated.
+	* dependencyobject.h, dependencyobject.cpp, dependencyproperty.cpp,
+	  dependencyproperty.h, runtime.cpp, runtime.h, type.cpp, type.h,
+	  type.h.in, type-generated.cpp: Create a Types class which may
+	  contain additional types. Change the DP/DO/Type overloads
+	  containing a Surface to take a Types argument instead.
+
 2008-08-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp: Implement Get[No[Default]]ValueWithError.

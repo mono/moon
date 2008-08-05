@@ -37,7 +37,7 @@ namespace Mono
 	{
 		public GCHandle gc_handle;
 		public Type type;
-		public int native_handle;
+		public Kind native_handle;
 		public ManagedType parent;
 		
 		public ManagedType ()
@@ -47,7 +47,7 @@ namespace Mono
 		public ManagedType (Type type, Kind kind)
 		{
 			this.type = type;
-			this.native_handle = (int) kind;
+			this.native_handle = kind;
 		}
 	}
 }

@@ -8,6 +8,7 @@
 #include <glib.h>
 #include "dependencyobject.h"
 #include "dependencyproperty.h"
+#include "type.h"
 
 G_BEGIN_DECLS
 
@@ -18,15 +19,15 @@ G_BEGIN_DECLS
 
 #if SL_2_0
 /* @GenerateManaged */
-Value* dependency_object_get_value_with_error (DependencyObject* instance, Surface* surface, DependencyProperty* property, MoonError* error);
+Value* dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
 #endif
 #if SL_2_0
 /* @GenerateManaged */
-Value* dependency_object_get_default_value_with_error (DependencyObject* instance, Surface* surface, DependencyProperty* property, MoonError* error);
+Value* dependency_object_get_default_value_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
 #endif
 #if SL_2_0
 /* @GenerateManaged */
-Value* dependency_object_get_value_no_default_with_error (DependencyObject* instance, Surface* surface, DependencyProperty* property, MoonError* error);
+Value* dependency_object_get_value_no_default_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
 #endif
 /* @GenerateManaged */
 const char* dependency_object_get_name (DependencyObject* instance);
@@ -44,10 +45,31 @@ bool dependency_property_is_nullable (DependencyProperty* instance);
 DependencyProperty* dependency_property_register (Type::Kind type, const char* name, Value* default_value);
 #if SL_2_0
 /* @GenerateManaged */
-DependencyProperty* dependency_property_register_full (Surface* surface, Type::Kind type, const char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback);
+DependencyProperty* dependency_property_register_full (Types* additional_types, Type::Kind type, const char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback);
 #endif
 /* @GenerateManaged */
 DependencyProperty* dependency_property_get_dependency_property (Type::Kind type, const char* name);
+
+/* 
+ * Types
+ */ 
+
+#if SL_2_0
+/* @GenerateManaged */
+Types* types_new ();
+#endif
+#if SL_2_0
+/* @GenerateManaged */
+void types_free (Types* instance);
+#endif
+#if SL_2_0
+/* @GenerateManaged */
+Type::Kind types_register_type (Types* instance, const char* name, void* gc_handle, Type::Kind parent);
+#endif
+#if SL_2_0
+/* @GenerateManaged */
+Type* types_find (Types* instance, Type::Kind type);
+#endif
 
 G_END_DECLS
 

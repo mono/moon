@@ -1,3 +1,8 @@
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am, Mono.Moonlight.mdp: Added Types(.g).cs and removed
+	  Surface.g.cs.
+
 2008-08-04  Michael Dominic K.  <mdk@mdk.am>
 
 	* NativeMethods.cs: Adding Timeline manual target setter.

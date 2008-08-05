@@ -246,7 +246,7 @@ namespace dependency_properties
 			} catch (Exception ex) {
 				if (!(ex.GetType () == expected_exception))
 					throw new AssertFailedException (message, string.Format ("Expected '{0}', got '{1}'", expected_exception.FullName, ex.GetType ().FullName));
-				System.Diagnostics.Debug.WriteLine (ex.ToString ());
+				//System.Diagnostics.Debug.WriteLine (ex.ToString ());
 			}
 			if (failed)
 				throw new AssertFailedException (message, string.Format ("Expected '{0}', but got no exception.", expected_exception.FullName));

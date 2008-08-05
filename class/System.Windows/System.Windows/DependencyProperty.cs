@@ -89,9 +89,8 @@ namespace System.Windows {
 		
 		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached)
 		{
-			Surface surface = Mono.Xaml.XamlLoader.SurfaceObjectInDomain;
-			ManagedType property_type = surface.FindType (propertyType);
-			ManagedType owner_type = surface.FindType (ownerType);
+			ManagedType property_type = Types.Find (propertyType);
+			ManagedType owner_type = Types.Find (ownerType);
 			NativePropertyChangedHandler handler;
 			
 			if (name == null)
@@ -110,7 +109,7 @@ namespace System.Windows {
 				handler = new NativePropertyChangedHandler(NativePropertyChangedCallback);
 			else
 				handler = null;
-			IntPtr handle = NativeMethods.dependency_property_register_managed_property (surface.Native, name, (Kind) property_type.native_handle, (Kind) owner_type.native_handle, attached, handler);
+			IntPtr handle = NativeMethods.dependency_property_register_managed_property (Types.Native, name, property_type.native_handle, owner_type.native_handle, attached, handler);
 			
 			if (handle == IntPtr.Zero)
 				return null;

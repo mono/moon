@@ -161,6 +161,8 @@ namespace Generation {
 						// do nothing
 					} else if (Parser.IsPunctuation (c)) {
 						Enqueue (new Token (c.ToString (), false));
+					} else if (c == '~') {
+						Enqueue (new Token (c.ToString (), false));
 					} else {
 						throw new ArgumentException (string.Format ("Unknown character: '{0}' (#{1})", c, (int) c));
 					}
@@ -266,6 +268,7 @@ namespace Generation {
 					return new ManagedTypeDefinition ("string");
 				case "bool":
 				case "int":
+				case "void":
 					return new ManagedTypeDefinition (native);
 				case "Type::Kind":
 					return new ManagedTypeDefinition ("Kind");
@@ -276,6 +279,9 @@ namespace Generation {
 				case "DependencyProperty*":
 				case "DependencyObject*":
 				case "Surface*":
+				case "Types*":
+				case "Type*":
+				case "void*":
 					return new ManagedTypeDefinition ("IntPtr");
 				case "NativePropertyChangedHandler*":
 					return new ManagedTypeDefinition ("Mono.NativePropertyChangedHandler");
@@ -398,17 +404,38 @@ namespace Generation {
 						is_virtual = true;
 					}
 					
-					returntype = ReadType (tokens);
-					
-					if (!tokens.Peek ().IsIdentifier)
-						throw new ArgumentException ("Expected an identifier after the type.");
-					
-					name = tokens.Dequeue ().value;
-					
-					//Log.WriteLine ("Parsed method name: '{0}' and return type: '{1}' (managed: '{2}') ", name, returntype.Native, returntype.Managed);
-					
-					if (tokens.Dequeue () != "(")
-						throw new ArgumentException ("Expected '(')");
+					if (tokens.Peek () == "~") {
+						// dtor
+						name = "~";
+						tokens.Dequeue ();
+						returntype = new TypeDefinition ();
+						returntype.Native = "void";
+						if (!tokens.Peek ().IsIdentifier)
+							throw new ArgumentException ("Expected an identifier after '~'");
+						name += tokens.Dequeue ().value;
+					} else {
+						returntype = ReadType (tokens);
+					}
+
+					if (name != null) {
+						// dtor
+						if (tokens.Dequeue () != "(")
+							throw new ArgumentException ("Expected '('");
+					} else if (tokens.Peek () == "(") {
+						tokens.Dequeue ();
+						name = returntype.Native;
+						returntype.Native += "*";
+					} else {
+						if (!tokens.Peek ().IsIdentifier)
+							throw new ArgumentException ("Expected an identifier after the type.");
+						
+						name = tokens.Dequeue ().value;
+						
+						//Log.WriteLine ("Parsed method name: '{0}' and return type: '{1}' (managed: '{2}') ", name, returntype.Native, returntype.Managed);
+						
+						if (tokens.Dequeue () != "(")
+							throw new ArgumentException ("Expected '(')");
+					}
 					
 					if (tokens.Peek () != ")") {
 						do {

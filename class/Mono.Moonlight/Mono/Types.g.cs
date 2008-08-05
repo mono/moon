@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Collections.Generic;
 
 namespace Mono {
-	partial class Surface {
+	static partial class Types {
 		private static void CreateNativeTypes ()
 		{
 			Assembly agclr = Helper.GetAgclr ();

@@ -42,7 +42,6 @@ namespace Mono
 	public partial class Surface
 	{
 		private IntPtr native;
-		private static Dictionary<Type,ManagedType> types = new Dictionary<Type,ManagedType> ();
 		
 		private static object sync_object = new object ();
 	
@@ -53,70 +52,10 @@ namespace Mono
 		public Surface (IntPtr native)
 		{
 			this.native = native;
-			CreateNativeTypes ();
 		}
 	
 		~Surface()
 		{
-			foreach (ManagedType ti in types.Values) {
-				ti.gc_handle.Free ();
-			}
-		}
-		
-		public ManagedType FindType (Type type)
-		{
-			ManagedType info;
-			ManagedType parent;
-			
-			if (types.TryGetValue (type, out info))
-				return info;
-			
-			if (type.BaseType == null || type.BaseType == typeof (object)) {
-				parent = null;
-			} else {
-				parent = FindType (type.BaseType);
-			}
-			
-			return RegisterManagedType (type, parent);
-		}
-		
-
-		private ManagedType RegisterManagedType (Type type, ManagedType parent)
-		{
-			ManagedType info;
-		
-			Console.WriteLine ("Surface.RegisterManagedType ({0}, {1})", type == null ? "null" : type.FullName, parent);
-			
-			lock (sync_object) {
-				info = new ManagedType ();
-				info.type = type;
-				info.gc_handle = GCHandle.Alloc (type);
-				info.parent = parent;
-				info.native_handle = NativeMethods.surface_register_managed_type (native, type.FullName, GCHandle.ToIntPtr (info.gc_handle), parent != null ? parent.native_handle : 0);
-				
-				types.Add (type, info);
-			}
-			
-			return info;
-		}
-		
-		public static Type KindToType (Kind kind)
-		{
-			foreach (ManagedType type in types.Values) {
-				if (type.native_handle == (int) kind)
-					return type.type;
-			}
-			return null;
-		}
-		
-		public static Kind TypeToKind (Type type)
-		{
-			ManagedType mt;
-			
-			if (!types.TryGetValue (type, out mt))
-				return Kind.INVALID;
-			
-			return (Kind) mt.native_handle;
 		}
 	}
 }

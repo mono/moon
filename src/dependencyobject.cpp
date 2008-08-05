@@ -1062,10 +1062,10 @@ DependencyObject::GetDefaultValue (DependencyProperty *property)
 
 #if SL_2_0
 Value *
-DependencyObject::GetDefaultValueWithError (Surface *surface, DependencyProperty *property, MoonError *error)
+DependencyObject::GetDefaultValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (surface, property, true)) {
-		Type *pt = Type::Find (surface, property->GetOwnerType ());
+	if (!HasProperty (additional_types, property, true)) {
+		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
 		MoonError::FillIn (error, 1, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
@@ -1073,10 +1073,10 @@ DependencyObject::GetDefaultValueWithError (Surface *surface, DependencyProperty
 }
 
 Value *
-DependencyObject::GetValueWithError (Surface *surface, DependencyProperty *property, MoonError *error)
+DependencyObject::GetValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (surface, property, true)) {
-		Type *pt = Type::Find (surface, property->GetOwnerType ());
+	if (!HasProperty (additional_types, property, true)) {
+		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
 		MoonError::FillIn (error, 1, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
@@ -1103,10 +1103,10 @@ DependencyObject::GetValueNoDefault (DependencyProperty *property)
 
 #if SL_2_0
 Value *
-DependencyObject::GetValueNoDefaultWithError (Surface *surface, DependencyProperty *property, MoonError *error)
+DependencyObject::GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (surface, property, true)) {
-		Type *pt = Type::Find (surface, property->GetOwnerType ());
+	if (!HasProperty (additional_types, property, true)) {
+		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
 		MoonError::FillIn (error, 1, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
@@ -1279,7 +1279,7 @@ DependencyObject::HasProperty (const char *name, bool inherits)
 
 #if SL_2_0
 bool
-DependencyObject::HasProperty (Surface *surface, DependencyProperty *property, bool inherits)
+DependencyObject::HasProperty (Types *additional_types, DependencyProperty *property, bool inherits)
 {
 	if (property == NULL)
 		return false;
@@ -1290,7 +1290,7 @@ DependencyObject::HasProperty (Surface *surface, DependencyProperty *property, b
 	if (!inherits)
 		return false;
 
-	if (!Type::Find (GetObjectType ())->IsSubclassOf (property->GetOwnerType ())) {
+	if (!Type::Find (additional_types, GetObjectType ())->IsSubclassOf (property->GetOwnerType ())) {
 		return false;
 	}
 	

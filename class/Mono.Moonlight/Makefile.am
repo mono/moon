@@ -24,7 +24,8 @@ mono_moonlight_sources =				\
 	$(srcdir)/Mono/Moonlight.cs			\
 	$(srcdir)/Mono/Helper.cs			\
 	$(srcdir)/Mono/Surface.cs						\
-	$(srcdir)/Mono/Surface.g.cs						\
+	$(srcdir)/Mono/Types.cs						\
+	$(srcdir)/Mono/Types.g.cs						\
 	$(srcdir)/Mono/XamlLoaderCallbacks.cs		\
 	$(srcdir)/Mono/XapHack.cs			\
 	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs\

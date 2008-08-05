@@ -73,9 +73,6 @@ namespace Mono {
 		public extern static bool type_is_dependency_object (Kind type);
 		
 		[DllImport("moon")]
-		public extern static int surface_register_managed_type (IntPtr surface, string name, IntPtr gc_handle, int parent);
-		
-		[DllImport("moon")]
 		public extern static IntPtr dependency_object_set_value (IntPtr obj, IntPtr property, ref Value val);
 
 		[DllImport("moon")]
