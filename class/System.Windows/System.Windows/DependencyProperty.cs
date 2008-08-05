@@ -152,6 +152,16 @@ namespace System.Windows {
 			if (old_obj == null && property.property_type.IsValueType)
 				old_obj = property.DefaultValue;
 			
+			if (old_obj == null && new_obj == null)
+				return; // Nothing changed.
+			
+			if (old_obj == new_obj)
+				return; // Nothing changed
+			
+			if (old_obj != null && new_obj != null)
+				if (object.Equals (old_obj, new_obj))
+					return; // Nothing changed
+			
 			args = new DependencyPropertyChangedEventArgs (old_obj, new_obj, property);
 			
 			custom_property.Metadata.property_changed_callback (obj, args);
