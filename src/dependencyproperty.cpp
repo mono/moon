@@ -21,7 +21,7 @@
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
+DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, bool is_custom)
 {
 	this->owner_type = owner_type;
 	this->hash_key = g_ascii_strdown (name, -1);
@@ -34,6 +34,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->storage_hash = NULL; // Create it on first usage request
 	this->always_change = always_change;
 	this->changed_callback = changed_callback;
+	this->is_custom = is_custom;
 }
 
 AnimationStorage*
@@ -201,7 +202,7 @@ DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::K
 DependencyProperty *
 DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
-	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback);
+	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, false);
 }
 
 
@@ -209,7 +210,7 @@ DependencyProperty *
 DependencyProperty::RegisterFull (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
 #if SL_2_0
-	return RegisterFull (additional_types, additional_types->Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback);
+	return RegisterFull (additional_types, additional_types->Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, true);
 #else
 	g_warning ("Moonlight: Called 2.0 only method.");
 	return NULL;
@@ -222,14 +223,14 @@ DependencyProperty::RegisterFull (Types *additional_types, Type::Kind type, cons
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyProperty::RegisterFull (Types *additional_types, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
+DependencyProperty::RegisterFull (Types *additional_types, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, bool is_custom)
 {
 	DependencyProperty *property;
 	
 	if (type == NULL)
 		return NULL;
 	
-	property = new DependencyProperty (type->type, name, default_value, vtype, attached, readonly, always_change, changed_callback);
+	property = new DependencyProperty (type->type, name, default_value, vtype, attached, readonly, always_change, changed_callback, is_custom);
 	
 	if (type->properties == NULL) {
 		type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL /* If we overwrite properties they still need to live *//* free_property */);

@@ -243,7 +243,7 @@ class DependencyObject : public EventObject {
 	void SetValue (const char *name, Value value);
 
 	/* @GenerateCBinding:Type=DependencyObject,GenerateManaged=true,Version=2.0 */
-	Value *GetValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error);
+	Value *GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	Value *GetValue (const char *name);
 	virtual Value *GetValue (DependencyProperty *property);
 
@@ -257,7 +257,7 @@ class DependencyObject : public EventObject {
 
 	void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 	bool HasProperty (const char *name, bool inherits);
-	bool HasProperty (Types *additional_types, DependencyProperty *property, bool inherits);
+	bool HasProperty (Types *additional_types, Type::Kind whatami, DependencyProperty *property, bool inherits);
 
 	virtual Type::Kind GetObjectType ();
 

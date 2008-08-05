@@ -278,7 +278,7 @@ namespace System.Windows {
 			
 			CheckNativeAndThread ();
 			
-			IntPtr val = NativeMethods.dependency_object_get_value (native, property.Native);
+			IntPtr val = NativeMethods.dependency_object_get_value (native, Types.TypeToKind (GetType ()), property.Native);
 			if (val != IntPtr.Zero)
 				result = ValueToObject (property.PropertyType, val);
 			
@@ -662,6 +662,11 @@ namespace System.Windows {
 
 			CheckNativeAndThread ();
 			
+			if (property.DeclaringType != null) {
+				if (property.DeclaringType != GetType () && !property.DeclaringType.IsAssignableFrom (GetType ()))
+					throw new System.ArgumentException (string.Format ("A DependencyProperty registered on type {0} can't be used to set a value on an object of type {1}", property.DeclaringType.FullName, GetType ().FullName));
+			}
+			
 			if (obj == null) {
 				if (property.PropertyType.IsValueType)
 					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", property.Name));
@@ -671,15 +676,16 @@ namespace System.Windows {
 			}
 
 			object_type = obj.GetType ();
-			if (object_type == property.PropertyType || property.PropertyType.IsAssignableFrom (object_type)) {
-				v = GetAsValue (obj, property is CustomDependencyProperty);
-			} else {
+			if (!(object_type == property.PropertyType || property.PropertyType.IsAssignableFrom (object_type)))
 				throw new ArgumentException (string.Format ("A DependencyProperty whose property type is {0} can't be set to value whose type is {1}", property.PropertyType.FullName, object_type.FullName));
-			}
 			
-			NativeMethods.dependency_object_set_value (native, property.Native, ref v);
+			v = GetAsValue (obj, property is CustomDependencyProperty);
+			try {
+				NativeMethods.dependency_object_set_value (native, property.Native, ref v);
+			} finally {
+				NativeMethods.value_free_value (ref v);
+			}
 
-			NativeMethods.value_free_value (ref v);
 		}
 
 		internal DependencyObject DepObjectFindName (string name)

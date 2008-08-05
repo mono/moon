@@ -14,12 +14,12 @@ namespace Mono {
 		/* libmoon methods */
 	
 		[DllImport ("moon", EntryPoint="dependency_object_get_value_with_error")]
-		// Value* dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
-		private extern static IntPtr dependency_object_get_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);
-		public static IntPtr dependency_object_get_value (IntPtr instance, IntPtr property)
+		// Value* dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, Type::Kind whatami, DependencyProperty* property, MoonError* error);
+		private extern static IntPtr dependency_object_get_value_with_error_ (IntPtr instance, IntPtr additional_types, Kind whatami, IntPtr property, out MoonError error);
+		public static IntPtr dependency_object_get_value (IntPtr instance, Kind whatami, IntPtr property)
 		{
 			MoonError error;
-			IntPtr result = dependency_object_get_value_with_error_ (instance, Mono.Types.Native, property, out error);
+			IntPtr result = dependency_object_get_value_with_error_ (instance, Mono.Types.Native, whatami, property, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 			return result;

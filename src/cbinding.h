@@ -19,7 +19,7 @@ G_BEGIN_DECLS
 
 #if SL_2_0
 /* @GenerateManaged */
-Value* dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
+Value* dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, Type::Kind whatami, DependencyProperty* property, MoonError* error);
 #endif
 #if SL_2_0
 /* @GenerateManaged */

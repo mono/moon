@@ -15,14 +15,14 @@
 
 #if SL_2_0
 Value*
-dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error)
+dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, Type::Kind whatami, DependencyProperty* property, MoonError* error)
 {
 	if (instance == NULL) {
 		return NULL;
 	}
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_get_value_with_error () with error == NULL.");
-	return instance->GetValueWithError (additional_types, property, error);
+	return instance->GetValueWithError (additional_types, whatami, property, error);
 }
 #endif
 

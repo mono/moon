@@ -27,7 +27,7 @@ class DependencyProperty {
  public:
 	DependencyProperty () {};
 	~DependencyProperty ();
-	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback);
+	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, bool is_custom);
 
 	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true */
 	const char *GetName() { return name; }
@@ -40,6 +40,7 @@ class DependencyProperty {
 	bool IsReadOnly () { return is_readonly; }
 	bool IsAttached () { return is_attached; }
 	bool AlwaysChange () { return always_change; }
+	bool IsCustom () { return is_custom; }
 	NativePropertyChangedHandler *GetChangedCallback () { return changed_callback; }
 	
 	Value *GetDefaultValue () { return default_value; }
@@ -54,7 +55,7 @@ class DependencyProperty {
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
 	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change = false, NativePropertyChangedHandler *changed_callback = NULL);
-	static DependencyProperty *RegisterFull (Types *additional_types, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
+	static DependencyProperty *RegisterFull (Types *additional_types, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback, bool is_custom);
 	// 2.0 only, registers properties per surface.
 	/* @GenerateCBinding:Type=DependencyProperty,GenerateManaged=true,Version=2.0 */
 	static DependencyProperty *RegisterFull (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
@@ -74,6 +75,7 @@ private:
 	bool is_nullable;
 	bool is_attached;
 	bool always_change; // determines if SetValue will do something if the current and new values are equal.
+	bool is_custom; // If created using managed api
 	
 	char *hash_key;
 	char *name;

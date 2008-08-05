@@ -827,12 +827,23 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 			return false;
 		}
 	} else {
+#if SL_2_0
+		// Only check built-in types for null
+		// Types registered on the managed side has their own check there.
+		if (property->GetPropertyType () < Type::LASTTYPE && !(Type::IsSubclassOf (property->GetPropertyType(), Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
+			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
+				     "Can not set a non-nullable scalar type to NULL (property: %s)",
+				     property->GetName());
+			return false;
+		}
+#else
 		if (!(Type::IsSubclassOf (property->GetPropertyType(), Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
 			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
 				     "Can not set a non-nullable scalar type to NULL (property: %s)",
 				     property->GetName());
 			return false;
 		}
+#endif
 	}
 
 	if (DependencyObject::NameProperty == property) {
@@ -1064,7 +1075,7 @@ DependencyObject::GetDefaultValue (DependencyProperty *property)
 Value *
 DependencyObject::GetDefaultValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (additional_types, property, true)) {
+	if (!HasProperty (additional_types, Type::INVALID, property, true)) {
 		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
 		MoonError::FillIn (error, 1, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
@@ -1073,9 +1084,9 @@ DependencyObject::GetDefaultValueWithError (Types *additional_types, DependencyP
 }
 
 Value *
-DependencyObject::GetValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
+DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (additional_types, property, true)) {
+	if (!HasProperty (additional_types, whatami, property, true)) {
 		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
 		MoonError::FillIn (error, 1, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
@@ -1105,7 +1116,7 @@ DependencyObject::GetValueNoDefault (DependencyProperty *property)
 Value *
 DependencyObject::GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (additional_types, property, true)) {
+	if (!HasProperty (additional_types, Type::INVALID, property, true)) {
 		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
 		MoonError::FillIn (error, 1, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
@@ -1279,19 +1290,48 @@ DependencyObject::HasProperty (const char *name, bool inherits)
 
 #if SL_2_0
 bool
-DependencyObject::HasProperty (Types *additional_types, DependencyProperty *property, bool inherits)
+DependencyObject::HasProperty (Types *additional_types, Type::Kind whatami, DependencyProperty *property, bool inherits)
 {
+	Type::Kind this_type = whatami == Type::INVALID ? GetObjectType () : whatami;
+	
+	// TODO: Handle attached properties correctly.
+	
+	/*
+	printf ("DependencyObject::HasProperty (%p, %i (%s), %p (%i %s.%s), %i)..\n", 
+		additional_types, 
+		whatami, Type::Find (additional_types, whatami)->name,
+		property, property->GetOwnerType (), Type::Find (additional_types, property->GetOwnerType ())->name, property->GetName (), 
+		inherits);
+	*/
+	
 	if (property == NULL)
 		return false;
 		
-	if (property->GetOwnerType () == GetObjectType ())
+	if (property->GetOwnerType () == this_type)
 		return true;
 		
 	if (!inherits)
 		return false;
 
-	if (!Type::Find (additional_types, GetObjectType ())->IsSubclassOf (property->GetOwnerType ())) {
-		return false;
+	if (!Type::Find (additional_types, this_type)->IsSubclassOf (property->GetOwnerType ())) {
+		bool is_prop_custom = property->IsCustom ();
+		bool is_owner_custom = property->GetOwnerType () > Type::LASTTYPE;
+		bool is_this_custom = this_type > Type::LASTTYPE;
+		bool accept = false;
+
+		// Yuck. 
+		// This looks very wrong, but it's what SL seems to do.
+		if (is_prop_custom) {
+			if (!is_owner_custom && !is_this_custom) {
+				// SL does not throw errors for custom properties defined on a builtin type 
+				// and then used on another (unrelated) builtin type (DO.GetValue usage at least)
+				accept = true;
+			} else if (is_owner_custom) {
+				// And this is a custom property defined on a custom type and used anywhere.
+				accept = true;
+			}
+		}
+		return accept;
 	}
 	
 	return true;

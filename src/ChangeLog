@@ -1,5 +1,15 @@
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* cbinding.cpp, cbinding.h, dependencyobject.cpp, dependencyobject.h:
+	  GetValueWithError: Add a parameter to specify the exact type
+	  (including managed subclassing) of the object. HasProperty: use
+	  that parameter to determine if the type has the specified property
+	  or not.
+	* dependencyproperty.cpp, dependencyproperty.h: DependencyProperty: Add
+	  a is_custom field to determine if the property is our own or not.
+
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* cbinding.cpp, cbinding.h: Updated.
 	* dependencyobject.h, dependencyobject.cpp, dependencyproperty.cpp,
 	  dependencyproperty.h, runtime.cpp, runtime.h, type.cpp, type.h,
