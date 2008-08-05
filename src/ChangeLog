@@ -1,3 +1,14 @@
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmoon_la_SOURCES): enums.c => enums.cpp
+
+	* enums.h: add comment about keeping MouseCursors enum in sync
+	with Cursor.cs.
+
+	* enums.cpp: make all the mappings use symbols instead of integer
+	constants.  Also, rename enums.c to enums.cpp so it can include
+	the .h files for enums not in enums.h.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Remove visual.cpp|h from here too.

@@ -1,5 +1,5 @@
 /*
- * enums.c: various enumerated types + enum -> str helpers
+ * enums.cpp: various enumerated types + enum -> str helpers
  *
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
@@ -12,7 +12,23 @@
 #include <glib.h>
 #include "enums.h"
 
+// XXX enums are contained in these headers and should be moved to
+// enums.h
+#include "brush.h"
+#include "clock.h"
+#include "stylus.h"
+
 static GHashTable *enum_map = NULL;
+
+#define MAP_ENUM_FULL(n,v) { (n), (v) }
+
+// use this when the name is the same as the quoted value
+#define MAP_NAME(n)          MAP_ENUM_FULL(#n, n)
+
+// use this when the name is the same as the quoted value, but with the enum type prefixed
+#define MAP_ENUM(t,n)        MAP_ENUM_FULL(#n, t##n)
+
+#define END_MAPPING          { NULL, 0 }
 
 typedef struct {
 	const char *name;
@@ -20,174 +36,174 @@ typedef struct {
 } enum_map_t;
 
 static enum_map_t alignment_x_map [] = {
-	{ "Left", 0 },
-	{ "Center", 1 },
-	{ "Right", 2 },
-	{ NULL, 0 },
+	MAP_ENUM (AlignmentX, Left),
+	MAP_ENUM (AlignmentX, Center),
+	MAP_ENUM (AlignmentX, Right),
+	END_MAPPING
 };
 
 static enum_map_t alignment_y_map [] = {
-	{ "Top", 0 },
-	{ "Center", 1 },
-	{ "Bottom", 2 },
-	{ NULL, 0 },
+	MAP_ENUM (AlignmentY, Top),
+	MAP_ENUM (AlignmentY, Center),
+	MAP_ENUM (AlignmentY, Bottom),
+	END_MAPPING
 };
 
 static enum_map_t brush_mapping_mode_map [] = {
-	{ "Absolute", 0 },
-	{ "RelativeToBoundingBox", 1},
-	{ NULL, 0 },
+	MAP_ENUM (BrushMappingMode, Absolute),
+	MAP_ENUM (BrushMappingMode, RelativeToBoundingBox),
+	END_MAPPING
 };
 
 static enum_map_t color_interpolation_mode_map [] = {
-	{ "ScRgbLinearInterpolation", 0 },
-	{ "SRgbLinearInterpolation", 1 },
-	{ NULL, 0 },
+	MAP_ENUM (ColorInterpolationMode, ScRgbLinearInterpolation),
+	MAP_ENUM (ColorInterpolationMode, SRgbLinearInterpolation),
+	END_MAPPING
 };
 
 static enum_map_t cursors_map [] = {
-	{ "Default", 0 },
-	{ "Arrow", 1 },
-	{ "Hand", 2 },
-	{ "Wait", 3 },
-	{ "IBeam", 4 },
-	{ "Stylus", 5 },
-	{ "Eraser", 6 },
-	{ "None", 7 },
-	{ NULL, 0 },
+	MAP_ENUM (MouseCursor, Default),
+	MAP_ENUM (MouseCursor, Arrow),
+	MAP_ENUM (MouseCursor, Hand),
+	MAP_ENUM (MouseCursor, Wait),
+	MAP_ENUM (MouseCursor, IBeam),
+	MAP_ENUM (MouseCursor, Stylus),
+	MAP_ENUM (MouseCursor, Eraser),
+	MAP_ENUM (MouseCursor, None),
+	END_MAPPING
 };
 
 static enum_map_t error_type_map [] = {
-	{ "NoError", 0 },
-	{ "UnknownError", 1 },
-	{ "InitializeError", 2 },
-	{ "ParserError", 3 },
-	{ "ObjectModelError", 4 },
-	{ "RuntimeError", 5 },
-	{ "DownloadError", 6 },
-	{ "MediaError", 7 },
-	{ "ImageError", 8 },
-	{ NULL, 0 },
+	MAP_NAME (NoError),
+	MAP_NAME (UnknownError),
+	MAP_NAME (InitializeError),
+	MAP_NAME (ParserError),
+	MAP_NAME (ObjectModelError),
+	MAP_NAME (RuntimeError),
+	MAP_NAME (DownloadError),
+	MAP_NAME (MediaError),
+	MAP_NAME (ImageError),
+	END_MAPPING
 };
 
 static enum_map_t fill_behavior_map [] = {
-	{ "HoldEnd", 0 },
-	{ "Stop", 1 },
-	{ NULL, 0 },
+	MAP_ENUM (FillBehavior, HoldEnd),
+	MAP_ENUM (FillBehavior, Stop),
+	END_MAPPING
 };
 
 static enum_map_t fill_rule_map [] = {
-	{ "EvenOdd", 0 },
-	{ "Nonzero", 1},
-	{ NULL, 0 },
+	MAP_ENUM (FillRule, EvenOdd),
+	MAP_ENUM (FillRule, Nonzero),
+	END_MAPPING
 };
 
 static enum_map_t font_stretches_map [] = {
-	{ "UltraCondensed", 1 },
-	{ "ExtraCondensed", 2 },
-	{ "Condensed",      3 },
-	{ "SemiCondensed",  4 },
-	{ "Normal",         5 },
-	{ "Medium",         5 },
-	{ "SemiExpanded",   6 },
-	{ "Expanded",       7 },
-	{ "ExtraExpanded",  8 },
-	{ "UltraExpanded",  9 },
-	{ NULL, 0 },
+	MAP_ENUM (FontStretches, UltraCondensed),
+	MAP_ENUM (FontStretches, ExtraCondensed),
+	MAP_ENUM (FontStretches, Condensed),
+	MAP_ENUM (FontStretches, SemiCondensed),
+	MAP_ENUM (FontStretches, Normal),
+	MAP_ENUM (FontStretches, Medium),
+	MAP_ENUM (FontStretches, SemiExpanded),
+	MAP_ENUM (FontStretches, Expanded),
+	MAP_ENUM (FontStretches, ExtraExpanded),
+	MAP_ENUM (FontStretches, UltraExpanded),
+	END_MAPPING
 };
 
 static enum_map_t font_styles_map [] = {
-	{ "Normal",  0 },
-	{ "Oblique", 1 },
-	{ "Italic",  2 },
-	{ NULL, 0 },
+	MAP_ENUM (FontStyles, Normal),
+	MAP_ENUM (FontStyles, Oblique),
+	MAP_ENUM (FontStyles, Italic),
+	END_MAPPING
 };
 
 static enum_map_t font_weights_map [] = {
-	{ "Thin",       100 },
-	{ "ExtraLight", 200 },
-	{ "UltraLight", 200 },  // deprecated as of July 2007 
-	{ "Light",      300 },
-	{ "Normal",     400 },
-	{ "Regular",    400 },  // deprecated as of July 2007 
-	{ "Medium",     500 },
-	{ "SemiBold",   600 },
-	{ "DemiBold",   600 },  // deprecated as of July 2007 
-	{ "Bold",       700 },
-	{ "ExtraBold",  800 },
-	{ "UltraBold",  800 },  // deprecated as of July 2007 
- 	{ "Black",      900 },
-	{ "Heavy",      900 },  // deprecated as of July 2007 
-	{ "ExtraBlack", 950 },
-	{ "UltraBlack", 950 },  // deprecated as of July 2007 
-	{ NULL, 0 },
+	MAP_ENUM (FontWeights, Thin),
+	MAP_ENUM (FontWeights, ExtraLight),
+	MAP_ENUM_FULL ("UltraLight", FontWeightsExtraLight),  // deprecated as of July 2007 
+	MAP_ENUM (FontWeights, Light),
+	MAP_ENUM (FontWeights, Normal),
+	MAP_ENUM_FULL ("Regular", FontWeightsNormal),         // deprecated as of July 2007 
+	MAP_ENUM (FontWeights, Medium),
+	MAP_ENUM (FontWeights, SemiBold),
+	MAP_ENUM_FULL ("DemiBold", FontWeightsSemiBold),      // deprecated as of July 2007 
+	MAP_ENUM (FontWeights, Bold),
+	MAP_ENUM (FontWeights, ExtraBold),
+	MAP_ENUM_FULL ("UltraBold", FontWeightsExtraBold),    // deprecated as of July 2007 
+ 	MAP_ENUM (FontWeights, Black),
+	MAP_ENUM_FULL ("Heavy", FontWeightsBlack),            // deprecated as of July 2007 
+	MAP_ENUM (FontWeights, ExtraBlack),
+	MAP_ENUM_FULL ("UltraBlack", FontWeightsExtraBlack),  // deprecated as of July 2007 
+	END_MAPPING
 };
 
 static enum_map_t style_simulations_map [] = {
-	{ "None", 0 },
-	{ NULL,   0 },
+	MAP_ENUM (StyleSimulations, None),
+	END_MAPPING
 };
 
 static enum_map_t gradient_spread_method_map [] = {
-	{ "Pad", 0 },
-	{ "Reflect", 1 },
-	{ "Repeat", 2 },
-	{ NULL, 0 },
+	MAP_ENUM (GradientSpreadMethod, Pad),
+	MAP_ENUM (GradientSpreadMethod, Reflect),
+	MAP_ENUM (GradientSpreadMethod, Repeat),
+	END_MAPPING
 };
 
 static enum_map_t pen_line_cap_map [] = {
-	{ "Flat", 0 },
-	{ "Square", 1 },
-	{ "Round", 2 },
-	{ "Triangle", 3 },
-	{ NULL, 0 },
+	MAP_ENUM (PenLineCap, Flat),
+	MAP_ENUM (PenLineCap, Square),
+	MAP_ENUM (PenLineCap, Round),
+	MAP_ENUM (PenLineCap, Triangle),
+	END_MAPPING
 };
 
 static enum_map_t pen_line_join_map [] = {
-	{ "Miter", 0 },
-	{ "Bevel", 1 },
-	{ "Round", 2 },
-	{ NULL, 0 },
+	MAP_ENUM (PenLineJoin, Miter),
+	MAP_ENUM (PenLineJoin, Bevel),
+	MAP_ENUM (PenLineJoin, Round),
+	END_MAPPING
 };
 
 static enum_map_t stretch_map [] = {
-	{ "None", 0 },
-	{ "Fill", 1 },
-	{ "Uniform", 2 },
-	{ "UniformToFill", 3 },
-	{ NULL, 0 },
+	MAP_ENUM (Stretch, None),
+	MAP_ENUM (Stretch, Fill),
+	MAP_ENUM (Stretch, Uniform),
+	MAP_ENUM (Stretch, UniformToFill),
+	END_MAPPING
 };
 
 static enum_map_t sweep_direction_map [] = {
-	{ "Counterclockwise", 0 },
-	{ "Clockwise", 1 },
-	{ NULL, 0 },
+	MAP_ENUM (SweepDirection, Counterclockwise),
+	MAP_ENUM (SweepDirection, Clockwise),
+	END_MAPPING
 };
 
 static enum_map_t tablet_device_type_map [] = {
-	{ "Mouse", 0 },
-	{ "Stylus", 1 },
-	{ "Touch", 2 },
-	{ NULL, 0 },
+	MAP_ENUM (TabletDeviceType, Mouse),
+	MAP_ENUM (TabletDeviceType, Stylus),
+	MAP_ENUM (TabletDeviceType, Touch),
+	END_MAPPING
 };
 
 static enum_map_t text_decorations_map [] = {
-	{ "None", 0 },
-	{ "Underline", 1 },
-	{ NULL, 0 },
+	MAP_ENUM (TextDecorations, None),
+	MAP_ENUM (TextDecorations, Underline),
+	END_MAPPING
 };
 
 static enum_map_t text_wrapping_map [] = {
-	{ "Wrap", 0 },
-	{ "NoWrap", 1 },
-	{ "WrapWithOverflow", 2 },
-	{ NULL, 0 },
+	MAP_ENUM (TextWrapping, Wrap),
+	MAP_ENUM (TextWrapping, NoWrap),
+	MAP_ENUM (TextWrapping, WrapWithOverflow),
+	END_MAPPING
 };
 
 static enum_map_t visibility_map [] = {
-	{ "Visible", 0 },
-	{ "Collapsed", 1 },
-	{ NULL, 0 },
+	MAP_ENUM (Visibility, Visible),
+	MAP_ENUM (Visibility, Collapsed),
+	END_MAPPING
 };
 
 static void

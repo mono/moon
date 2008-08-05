@@ -109,6 +109,7 @@ enum Visibility {
 	VisibilityCollapsed
 };
 
+// make sure this stays in sync with System.Windows/System.Windows.Input/Cursor.cs (CursorType enum)
 enum MouseCursor {
 	MouseCursorDefault,
 	MouseCursorArrow,
@@ -117,7 +118,7 @@ enum MouseCursor {
 	MouseCursorIBeam,
 	MouseCursorStylus,
 	MouseCursorEraser,
-	MouseCursorNone
+	MouseCursorNone	
 };
 
 enum Key {

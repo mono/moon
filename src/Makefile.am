@@ -102,7 +102,7 @@ libmoon_la_SOURCES = 		\
 	mms-downloader.cpp	\
 	moon-path.c		\
 	moon-curves.c		\
-	enums.c			\
+	enums.cpp		\
 	mp3.cpp			\
 	mplayer.cpp		\
 	namescope.cpp		\
