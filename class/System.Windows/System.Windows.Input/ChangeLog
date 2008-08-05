@@ -1,5 +1,10 @@
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
+	* KeyboardNavigation.cs: new static class, which exists solely to
+	provide the AcceptsReturn DP.
+
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
 	* MouseButtonEventArgs.cs: add internal ctor that takes a raw
 	pointer.
 
