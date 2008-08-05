@@ -38,7 +38,7 @@ namespace System.Windows {
 			DependencyProperty.Lookup (Kind.UIELEMENT, "Clip", typeof (Geometry));
 		
 		public static readonly DependencyProperty CursorProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Cursor", typeof (Cursors));
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Cursor", typeof (Cursor));
 		
 		public static readonly DependencyProperty IsHitTestVisibleProperty =
 			DependencyProperty.Lookup (Kind.UIELEMENT, "IsHitTestVisible", typeof (bool));
@@ -92,9 +92,9 @@ namespace System.Windows {
 			}
 		}
 		
-		public Cursors Cursor {
+		public Cursor Cursor {
 			get {
-				return (Cursors) GetValue (CursorProperty);
+				return (Cursor) GetValue (CursorProperty);
 			}
 			set {
 				SetValue (CursorProperty, value);

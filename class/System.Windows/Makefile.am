@@ -50,6 +50,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
 	$(srcdir)/System.Windows.Ink/Stroke.cs					\
 	$(srcdir)/System.Windows.Ink/StrokeCollection.cs			\
+	$(srcdir)/System.Windows.Input/Cursor.cs				\
+	$(srcdir)/System.Windows.Input/Cursors.cs				\
 	$(srcdir)/System.Windows.Input/FocusManager.cs				\
 	$(srcdir)/System.Windows.Input/KeyboardNavigation.cs			\
 	$(srcdir)/System.Windows.Input/KeyboardNavigationMode.cs		\

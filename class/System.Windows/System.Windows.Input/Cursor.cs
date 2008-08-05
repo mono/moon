@@ -1,5 +1,5 @@
 //
-// Cursors.cs
+// Cursor.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -30,15 +30,15 @@ using System;
 
 namespace System.Windows.Input {
 
-	public static class Cursors {
-		public static Cursor None { get { throw new NotImplementedException(); } }
-		public static Cursor Arrow { get { throw new NotImplementedException(); } }
-		public static Cursor SizeWE { get { throw new NotImplementedException(); } }
-		public static Cursor Eraser { get { throw new NotImplementedException(); } }
-		public static Cursor Hand { get { throw new NotImplementedException(); } }
-		public static Cursor Wait { get { throw new NotImplementedException(); } }
-		public static Cursor SizeNS { get { throw new NotImplementedException(); } }
-		public static Cursor IBeam { get { throw new NotImplementedException(); } }
-		public static Cursor Stylus { get { throw new NotImplementedException(); } }
+	public class Cursor
+	{
+		internal Cursor ()
+		{
+		}
+
+		public override string ToString ()
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
