@@ -31,14 +31,32 @@ using System;
 namespace System.Windows.Input {
 
 	public static class Cursors {
-		public static Cursor None { get { throw new NotImplementedException(); } }
-		public static Cursor Arrow { get { throw new NotImplementedException(); } }
-		public static Cursor SizeWE { get { throw new NotImplementedException(); } }
-		public static Cursor Eraser { get { throw new NotImplementedException(); } }
-		public static Cursor Hand { get { throw new NotImplementedException(); } }
-		public static Cursor Wait { get { throw new NotImplementedException(); } }
-		public static Cursor SizeNS { get { throw new NotImplementedException(); } }
-		public static Cursor IBeam { get { throw new NotImplementedException(); } }
-		public static Cursor Stylus { get { throw new NotImplementedException(); } }
+		public static Cursor None {
+			get { return new Cursor (CursorType.None); }
+		}
+		public static Cursor Arrow {
+			get { return new Cursor (CursorType.Arrow); }
+		}
+		public static Cursor SizeWE {
+			get { throw new NotImplementedException(); }
+		}
+		public static Cursor Eraser {
+			get { return new Cursor (CursorType.Eraser); }
+		}
+		public static Cursor Hand {
+			get { return new Cursor (CursorType.Hand); }
+		}
+		public static Cursor Wait {
+			get { return new Cursor (CursorType.Wait); }
+		}
+		public static Cursor SizeNS {
+			get { throw new NotImplementedException(); }
+		}
+		public static Cursor IBeam {
+			get { return new Cursor (CursorType.IBeam); }
+		}
+		public static Cursor Stylus {
+			get { return new Cursor (CursorType.Stylus); }
+		}
 	}
 }

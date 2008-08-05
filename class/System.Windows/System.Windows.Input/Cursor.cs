@@ -30,15 +30,30 @@ using System;
 
 namespace System.Windows.Input {
 
+	// This should match the MouseCursor enum in src/enums.h
+	internal enum CursorType {
+		Default,
+		Arrow,
+		Hand,
+		Wait,
+		IBeam,
+		Stylus,
+		Eraser,
+		None	
+	}
+
 	public class Cursor
 	{
-		internal Cursor ()
+		internal CursorType cursor;
+
+		internal Cursor (CursorType cursor)
 		{
+			this.cursor = cursor;
 		}
 
 		public override string ToString ()
 		{
-			throw new NotImplementedException ();
+			return Enum.GetName (typeof (CursorType), cursor);
 		}
 	}
 }

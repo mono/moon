@@ -1,5 +1,9 @@
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
+	* Cursors.cs, Cursor.cs: flesh these out a bit.
+
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
 	* FocusManager.cs: stub this out.
 
 	* KeyboardNavigation.cs: new static class, which exists solely to
