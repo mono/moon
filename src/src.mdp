@@ -94,8 +94,6 @@
     <File name="value.cpp" subtype="Code" buildaction="Compile" />
     <File name="value.h" subtype="Code" buildaction="Nothing" />
     <File name="value.h.in" subtype="Code" buildaction="Nothing" />
-    <File name="visual.cpp" subtype="Code" buildaction="Compile" />
-    <File name="visual.h" subtype="Code" buildaction="Nothing" />
     <File name="xaml.cpp" subtype="Code" buildaction="Compile" />
     <File name="xaml.h" subtype="Code" buildaction="Nothing" />
     <File name="zip/ioapi.c" subtype="Code" buildaction="Nothing" />

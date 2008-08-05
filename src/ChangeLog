@@ -1,5 +1,9 @@
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* src.mdp: Remove visual.cpp|h from here too.
+
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* brush.cpp, brush.h, dirty.cpp, panel.cpp, panel.h, type.h,
 	  type-generated.cpp, uielement.cpp, uielement.h, value.h,
 	  visual.cpp, visual.h, collection.h, collection.cpp, Makefile.am,
