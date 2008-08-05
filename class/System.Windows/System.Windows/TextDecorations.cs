@@ -1,8 +1,8 @@
 //
 // TextDecorations.cs
 //
-// Author:
-//   Atsushi Enomoto  <atsushi@ximian.com>
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2007 Novell, Inc.
 //

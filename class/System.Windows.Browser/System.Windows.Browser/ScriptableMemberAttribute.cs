@@ -1,9 +1,8 @@
 //
 // ScriptableTypeAttribute.cs
 //
-// Authors:
-//	 Jb Evain  <jbevain@novell.com>
-//   Rolf Bjarne Kvinge (rkvinge@novell.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2008 Novell, Inc.
 //

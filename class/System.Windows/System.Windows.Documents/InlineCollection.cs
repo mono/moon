@@ -1,7 +1,8 @@
 //
 // System.Windows.Documents.InlineCollection.cs
 //
-// Author: Jeffrey Stedfast <fejj@novell.com>
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 //

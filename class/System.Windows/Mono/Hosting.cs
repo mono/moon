@@ -2,8 +2,8 @@
 // Hosting.cs: Provide some hosting APIs, these are here only temporarily,
 // they should not be exposed to the public though.
 //
-// Author:
-//   Miguel de Icaza (miguel@novell.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2007 Novell, Inc.
 //

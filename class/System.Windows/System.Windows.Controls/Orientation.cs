@@ -1,6 +1,7 @@
 // Orientation.cs
 //
-// Author: Jeffrey Stedfast <fejj@novell.com>
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //

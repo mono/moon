@@ -4,10 +4,8 @@
 // to avoid making moonlight.exe a friend of the System and mscorlib
 // assemblies.
 //
-// Authors:
-//   Miguel de Icaza (miguel@novell.com)
-//   Chris Toshok (toshok@novell.com)
-//   Jb Evain (jbevain@novell.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2007 Novell, Inc.
 //

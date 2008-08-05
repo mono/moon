@@ -1,8 +1,8 @@
 //
 // DLRHost.cs
 //
-// Authors:
-//   Zoltan Varga (vargaz@gmail.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2007 Novell, Inc.
 //

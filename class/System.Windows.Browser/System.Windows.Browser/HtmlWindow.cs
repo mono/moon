@@ -1,8 +1,8 @@
 //
 // System.Windows.Browser.HtmlObject class
 //
-// Authors:
-//	Rolf Bjarne Kvinge (rkvinge@novell.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //

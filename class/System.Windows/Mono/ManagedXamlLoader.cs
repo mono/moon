@@ -1,9 +1,8 @@
 //
 // ManagedXamlLoader.cs
 //
-// Authors:
-//   Rolf Bjarne Kvinge (RKvinge@novell.com)
-//   Miguel de Icaza (miguel@ximian.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2007 Novell, Inc.
 //

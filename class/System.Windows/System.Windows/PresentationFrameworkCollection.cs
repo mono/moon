@@ -1,8 +1,8 @@
 //
 // PresentationFrameworkCollection.cs: provides a wrapper to the unmanaged collection class
 //
-// Author:
-//   Miguel de Icaza (miguel@novell.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2007, 2008 Novell, Inc.
 //
@@ -64,32 +64,53 @@ namespace System.Windows {
 			return Count;
 		}
 		
-		public abstract void Add (T value);
-		
 		void IList.Remove (object value)
 		{
 			Remove ((T) value);
-		}
-		
-		public abstract bool Remove (T value);
-		
-		public void Clear ()
-		{
-			NativeMethods.collection_clear (native);
 		}
 		
 		void IList.Insert (int index, object value)
 		{
 			Insert (index, (T)value);
 		}
-		
-		public abstract void Insert (int index, T value);
 
+		object IList.this [int index] {
+			get { return this[index]; }
+			set { this[index] = (T)value; }
+		}
+
+		bool IList.Contains (object value)
+		{
+			return ((IList) this).IndexOf (value) != -1;
+		}
+		
+		int IList.IndexOf (object value)
+		{
+			return IndexOf ((T) value);
+		}
+		
+		
+		public void Clear ()
+		{
+			NativeMethods.collection_clear (native);
+		}
+		
 		public void RemoveAt (int index)
 		{
 			NativeMethods.collection_remove_at (native, index);
 		}
-		
+
+		public abstract void Add (T value);
+		public abstract void Insert (int index, T value);
+		public abstract bool Remove (T value);
+		public abstract T this [int index] {
+			get;
+			set;
+		}
+
+		public abstract bool Contains (T value);
+		public abstract int IndexOf (T value);
+
 		//
 		// ICollection members
 		//
@@ -126,17 +147,7 @@ namespace System.Windows {
 			for (int i = 0; i < n; i++)
 				array[index + i] = this[i];
 		}
-		
-		object IList.this [int index] {
-			get { return this[index]; }
-			set { this[index] = (T)value; }
-		}
-		
-		public abstract T this [int index] {
-			get;
-			set;
-		}
-		
+
 		public object SyncRoot {
 			get {
 				return this;
@@ -335,20 +346,6 @@ namespace System.Windows {
 			return false;
 		}
 		
-		bool IList.Contains (object value)
-		{
-			return ((IList) this).IndexOf (value) != -1;
-		}
-		
-		public abstract bool Contains (T value);
-		
-		int IList.IndexOf (object value)
-		{
-			return IndexOf ((T) value);
-		}
-		
-		public abstract int IndexOf (T value);
-
 		public bool IsFixedSize {
 			get {
 				return false;

@@ -3,7 +3,7 @@
 //
 // Author:
 //   Iain McCoy (iain@mccoy.id.au)
-//   Miguel de Icaza (miguel@novell.com)
+//   Moonlight Team (moonlight-list@lists.ximian.com)
 // 
 //
 // Copyright 2005 Iain McCoy

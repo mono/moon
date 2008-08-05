@@ -1,8 +1,8 @@
 //
 // Content.cs
 //
-// Author:
-//   Stephane Delcroix (stephane@delcroix.org)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2008 Novell, Inc.
 //

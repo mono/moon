@@ -1,8 +1,8 @@
 //
 // Application.cs
 //
-// Authors:
-//   Miguel de Icaza (miguel@novell.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2008 Novell, Inc.
 //

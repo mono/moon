@@ -1,8 +1,8 @@
 //
 // System.Windows.Browser.Net.BrowserHttpWebRequest class
 //
-// Authors:
-//	Jb Evain  <jbevain@novell.com>
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //

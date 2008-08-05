@@ -1,9 +1,8 @@
 //
 // System.ComponentModel.EventHandlerList.cs
 //
-// Author:
-//   Miguel de Icaza (miguel@ximian.com)
-//   Gonzalo Paniagua Javier (gonzalo@ximian.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // (C) Ximian, Inc.  http://www.ximian.com
 //

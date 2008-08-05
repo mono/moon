@@ -1,8 +1,8 @@
 //
 // System.Windows.Media.Color struct
 //
-// Authors:
-//	Sebastien Pouliot  <sebastien@ximian.com>
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright (C) 2007-2008 Novell, Inc (http://www.novell.com)
 //

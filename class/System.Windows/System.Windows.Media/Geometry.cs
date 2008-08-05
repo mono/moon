@@ -1,8 +1,8 @@
 //
 // Geometry.cs
 //
-// Author:
-//   Miguel de Icaza (miguel@novell.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2007 Novell, Inc.
 //

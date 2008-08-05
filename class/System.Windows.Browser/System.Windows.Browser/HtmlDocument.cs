@@ -1,8 +1,8 @@
 //
 // HtmlDocument.cs
 //
-// Authors:
-//	Atsushi Enomoto  <atsushi@ximian.com>
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //

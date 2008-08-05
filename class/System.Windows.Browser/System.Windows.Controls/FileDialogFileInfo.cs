@@ -1,9 +1,8 @@
 //
 // OpenFileDialog.cs
 //
-// Authors:
-//	Atsushi Enomoto  <atsushi@ximian.com>
-//	Miguel de Icaza  <miguel@ximian.com>
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
