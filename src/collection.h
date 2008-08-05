@@ -173,6 +173,28 @@ class Inlines : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::INLINE; }
 };
 
+class UIElementCollection : public DependencyObjectCollection {
+ protected:
+	virtual void AddedToCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value);
+	
+	virtual ~UIElementCollection ();
+	virtual void Dispose ();
+	
+ public:
+	GPtrArray *z_sorted;
+	
+	UIElementCollection ();
+	
+	virtual Type::Kind GetObjectType () { return Type::UIELEMENT_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::UIELEMENT; }
+	
+	virtual bool Insert (int index, Value value);
+	virtual void Clear ();
+	
+	void ResortByZIndex ();
+};
+
 G_BEGIN_DECLS
 
 void collection_init (void);
@@ -206,6 +228,7 @@ TriggerCollection *trigger_collection_new (void);
 TriggerActionCollection *trigger_action_collection_new (void);
 ResourceDictionary *resource_dictionary_new (void);
 Inlines *inlines_new (void);
+UIElementCollection *uielement_collection_new (void);
 
 G_END_DECLS
 

@@ -25,7 +25,6 @@
 #include "clock.h"
 #include "runtime.h"
 #include "type.h"
-#include "visual.h"
 #include "xaml.h"
 #if SL_2_0
 #include "deployment.h"
@@ -297,7 +296,8 @@ Type type_infos [] = {
 	{ Type::TRIGGER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerCollection", "TRIGGER_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_collection_new, NULL, NULL }, 
 	{ Type::TRIGGERACTION, Type::DEPENDENCY_OBJECT, false, "TriggerAction", "TRIGGERACTION", 0, 1, NULL, NULL, NULL, NULL }, 
 	{ Type::TRIGGERACTION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerActionCollection", "TRIGGERACTION_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_action_collection_new, NULL, NULL }, 
-	{ Type::UIELEMENT, Type::VISUAL, false, "UIElement", "UIELEMENT", 11, 12, UIElement_Events, NULL, NULL, NULL }, 
+	{ Type::UIELEMENT, Type::DEPENDENCY_OBJECT, false, "UIElement", "UIELEMENT", 11, 12, UIElement_Events, NULL, NULL, NULL }, 
+	{ Type::UIELEMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "UIElementCollection", "UIELEMENT_COLLECTION", 0, 1, NULL, NULL, NULL, NULL }, 
 	{ Type::UINT32, Type::INVALID, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL, NULL }, 
 	{ Type::UINT64, Type::INVALID, false, "guint64", "UINT64", 0, 0, NULL, NULL, NULL, NULL }, 
 #if SL_2_0
@@ -306,8 +306,6 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'USERCONTROL'", "USERCONTROL", 0, 0, NULL, NULL, NULL, NULL }, 
 #endif
 	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL, NULL }, 
-	{ Type::VISUAL, Type::DEPENDENCY_OBJECT, false, "Visual", "VISUAL", 0, 1, NULL, NULL, NULL, NULL }, 
-	{ Type::VISUAL_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "VisualCollection", "VISUAL_COLLECTION", 0, 1, NULL, (create_inst_func *) visual_collection_new, NULL, NULL }, 
 	{ Type::VISUALBRUSH, Type::TILEBRUSH, false, "VisualBrush", "VISUALBRUSH", 0, 1, NULL, (create_inst_func *) visual_brush_new, NULL, NULL }, 
 	{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL }
 };

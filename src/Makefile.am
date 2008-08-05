@@ -61,7 +61,6 @@ libmoon_include_HEADERS = 	\
 	uri.h			\
 	utils.h			\
 	value.h			\
-	visual.h		\
 	window.h		\
 	window-gtk.h		\
 	xaml.h			\
@@ -126,7 +125,6 @@ libmoon_la_SOURCES = 		\
 	uri.cpp			\
 	utils.cpp		\
 	value.cpp		\
-	visual.cpp		\
 	window-gtk.cpp		\
 	xaml.cpp		\
 	yuv-converter.cpp	\

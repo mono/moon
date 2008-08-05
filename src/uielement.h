@@ -16,7 +16,7 @@
 
 #include <glib.h>
 
-#include "visual.h"
+#include "dependencyobject.h"
 #include "point.h"
 #include "rect.h"
 #include "region.h"
@@ -35,7 +35,8 @@
 
 class Surface;
 
-class UIElement : public Visual {
+class UIElement : public DependencyObject {
+	UIElement *visual_parent;
 	Brush *opacityMask;
 
 	double total_opacity;
@@ -92,6 +93,11 @@ class UIElement : public Visual {
 
 	Point transform_origin;
 
+	virtual TimeManager *GetTimeManager ();
+	
+	void SetVisualParent (UIElement *visual_parent) { this->visual_parent = visual_parent; }
+	UIElement *GetVisualParent () { return visual_parent; }
+	
 	virtual bool EnableAntiAlias() { return true; }
 
 	// UpdateTotalRenderVisibility:
@@ -246,6 +252,10 @@ class UIElement : public Visual {
 	//
 	void FullInvalidate (bool render_xform);
 
+	//
+	// InsideObject:
+	//   Returns whether the position x, y is inside the object
+	//
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
 	//
@@ -438,6 +448,8 @@ void       uielement_set_opacity          (UIElement *item, double opacity);
 Brush     *uielement_get_opacity_mask     (UIElement *item);
 void       uielement_transform_point      (UIElement *item, double *x, double *y);
 UIElement *uielement_get_parent           (UIElement *item);
+
+void       uielement_set_surface          (UIElement *item, Surface* surface);
 
 #if SL_2_0
 Size       uielement_get_desired_size     (UIElement *item);

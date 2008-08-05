@@ -1,5 +1,10 @@
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Kind.cs, NativeMethods.cs: Deleted Visual (moved content into
+	  UIElement), and renamed VisualCollection to UIElementCollection.
+
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* GeneratedPInvokes.cs: Updated.
 
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 

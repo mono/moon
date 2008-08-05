@@ -19,7 +19,6 @@
 #include "uielement.h"
 #include "panel.h"
 #include "control.h"
-#include "visual.h"
 #include "runtime.h"
 #include "clock.h"
 #include "dirty.h"
@@ -207,7 +206,7 @@ void
 Surface::PropagateDirtyFlagToChildren (UIElement *el, DirtyType flags)
 {
 	if (el->Is (Type::PANEL)) {
-		VisualCollection *children = ((Panel *) el)->GetChildren ();
+		UIElementCollection *children = ((Panel *) el)->GetChildren ();
 		DependencyObject *obj;
 		
 		for (int i = 0; i < children->GetCount (); i++) {

@@ -22,8 +22,8 @@ class Panel : public FrameworkElement {
 	//
 	UIElement *mouse_over;
 
-	void ChildAdded (Visual *child);
-	void ChildRemoved (Visual *child);
+	void ChildAdded (UIElement *child);
+	void ChildRemoved (UIElement *child);
 
 	bool emitting_loaded;
 
@@ -83,8 +83,8 @@ class Panel : public FrameworkElement {
 	void SetBackground (Brush *background);
 	Brush *GetBackground ();
 	
-	void SetChildren (VisualCollection *children);
-	VisualCollection *GetChildren ();
+	void SetChildren (UIElementCollection *children);
+	UIElementCollection *GetChildren ();
 };
 
 G_BEGIN_DECLS
@@ -94,8 +94,8 @@ Panel *panel_new (void);
 void panel_set_background (Panel *panel, Brush *background);
 Brush *panel_get_background (Panel *panel);
 
-void panel_set_children (Panel *panel, VisualCollection *children);
-VisualCollection *panel_get_children (Panel *panel);
+void panel_set_children (Panel *panel, UIElementCollection *children);
+UIElementCollection *panel_get_children (Panel *panel);
 
 void panel_child_add (Panel *panel, UIElement *element);
 

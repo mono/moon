@@ -26,13 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System;
 
 namespace System.Windows.Controls
 {
 	public sealed class UIElementCollection : PresentationFrameworkCollection <UIElement>
 	{
-		public UIElementCollection ()
+		public UIElementCollection () : base (NativeMethods.uielement_collection_new ())
+		{
+		}
+		
+		internal UIElementCollection (IntPtr raw) : base (raw)
 		{
 		}
 		

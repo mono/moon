@@ -56,7 +56,7 @@ main()
   PRINT_SIZEOF (ParallelTimeline);
   PRINT_SIZEOF (TimelineMarker);
   PRINT_SIZEOF (Collection);
-  PRINT_SIZEOF (VisualCollection);
+  PRINT_SIZEOF (UIElementCollection);
   PRINT_SIZEOF (TriggerCollection);
   PRINT_SIZEOF (TriggerActionCollection);
   PRINT_SIZEOF (ResourceDictionary);
@@ -129,5 +129,4 @@ main()
   PRINT_SIZEOF (TriggerAction);
   PRINT_SIZEOF (EventTrigger);
   PRINT_SIZEOF (UIElement);
-  PRINT_SIZEOF (Visual);
 }

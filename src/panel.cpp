@@ -23,7 +23,7 @@ DependencyProperty *Panel::ChildrenProperty;
 
 Panel::Panel ()
 {
-	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new VisualCollection ()));
+	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new UIElementCollection ()));
 	mouse_over = NULL;
 	emitting_loaded = false;
 }
@@ -46,16 +46,16 @@ Panel::SetBackground (Brush *background)
 	SetValue (Panel::BackgroundProperty, Value (background));
 }
 
-VisualCollection *
+UIElementCollection *
 Panel::GetChildren ()
 {
 	Value *value = GetValue (Panel::ChildrenProperty);
 	
-	return value ? value->AsVisualCollection () : NULL;
+	return value ? value->AsUIElementCollection () : NULL;
 }
 
 void
-Panel::SetChildren (VisualCollection *children)
+Panel::SetChildren (UIElementCollection *children)
 {
 	SetValue (Panel::ChildrenProperty, children);
 }
@@ -63,7 +63,7 @@ Panel::SetChildren (VisualCollection *children)
 void
 Panel::SetSurface (Surface *s)
 {
-	VisualCollection *children;
+	UIElementCollection *children;
 	UIElement *item;
 	
 	FrameworkElement::SetSurface (s);
@@ -98,7 +98,7 @@ static int levelb = 0;
 void
 Panel::ComputeBounds ()
 {
-	VisualCollection *children = GetChildren ();
+	UIElementCollection *children = GetChildren ();
 	
 #if DEBUG_BOUNDS
 	levelb += 4;
@@ -173,7 +173,7 @@ Panel::UpdateTotalHitTestVisibility ()
 {
 #if 1
 	// this really shouldn't need to be here, but our dirty code is broken
-	VisualCollection *children = GetChildren ();
+	UIElementCollection *children = GetChildren ();
 	for (guint i = 0; i < children->z_sorted->len; i++) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
 		item->UpdateTotalHitTestVisibility ();
@@ -231,7 +231,7 @@ Panel::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 void
 Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 {
-	VisualCollection *children = GetChildren ();
+	UIElementCollection *children = GetChildren ();
 
 	Region *clipped_region = new Region (bounds_with_children);
 	clipped_region->Intersect (parent_region);
@@ -341,7 +341,7 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 
 	Region *self_region = new Region (region);
 
-	VisualCollection *children = GetChildren ();
+	UIElementCollection *children = GetChildren ();
 	for (guint i = children->z_sorted->len; i > 0; i--) {
 		UIElement *item = (UIElement *) children->z_sorted->pdata[i - 1];
 
@@ -396,7 +396,7 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 void
 Panel::CacheInvalidateHint (void)
 {
-	VisualCollection *children = GetChildren ();
+	UIElementCollection *children = GetChildren ();
 	
 	if (!children)
 		return;
@@ -449,7 +449,7 @@ Panel::CheckOver (cairo_t *cr, UIElement *item, double x, double y)
 UIElement *
 Panel::FindMouseOver (cairo_t *cr, double x, double y)
 {
-	VisualCollection *children = GetChildren ();
+	UIElementCollection *children = GetChildren ();
 	
 	// Walk the list in reverse order, since it's sorted in ascending z-index order
 	//
@@ -513,13 +513,13 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 		if (args->old_value) {
 			collection = args->old_value->AsCollection ();
 			for (int i = 0; i < collection->GetCount (); i++)
-				ChildRemoved (collection->GetValueAt (i)->AsVisual ());
+				ChildRemoved (collection->GetValueAt (i)->AsUIElement());
 		}
 		
 		if (args->new_value) {
 			collection = args->new_value->AsCollection ();
 			for (int i = 0; i < collection->GetCount (); i++)
-				ChildAdded (collection->GetValueAt (i)->AsVisual ());
+				ChildAdded (collection->GetValueAt (i)->AsUIElement ());
 		}
 
 		UpdateBounds();
@@ -529,7 +529,7 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 }
 
 void
-Panel::ChildAdded (Visual *child)
+Panel::ChildAdded (UIElement *child)
 {
 	UIElement *item = (UIElement *) child;
 
@@ -541,7 +541,7 @@ Panel::ChildAdded (Visual *child)
 }
 
 void
-Panel::ChildRemoved (Visual *child)
+Panel::ChildRemoved (UIElement *child)
 {
 	UIElement *item = (UIElement *) child;
 
@@ -568,7 +568,7 @@ Panel::OnCollectionClear (Collection *col)
 {
 	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
 		for (int i = 0; i < col->GetCount (); i++)
-			ChildRemoved (col->GetValueAt (i)->AsVisual ());
+			ChildRemoved (col->GetValueAt (i)->AsUIElement ());
 	}
 	
 	FrameworkElement::OnCollectionClear (col);
@@ -580,10 +580,10 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
 		switch (args->action) {
 		case CollectionChangedActionReplace:
-			ChildRemoved (args->old_value->AsVisual ());
+			ChildRemoved (args->old_value->AsUIElement ());
 			// now fall thru to Add
 		case CollectionChangedActionAdd:
-			ChildAdded (args->new_value->AsVisual ());
+			ChildAdded (args->new_value->AsUIElement ());
 			UpdateBounds (true);
 			
 			if (flags & UIElement::IS_LOADED) {
@@ -592,12 +592,12 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 			}
 			break;
 		case CollectionChangedActionRemove:
-			ChildRemoved (args->old_value->AsVisual ());
+			ChildRemoved (args->old_value->AsUIElement ());
 			UpdateBounds (true);
 			break;
 		case CollectionChangedActionReset:
 			for (int i = 0; i < col->GetCount (); i++)
-				ChildAdded (col->GetValueAt (i)->AsVisual ());
+				ChildAdded (col->GetValueAt (i)->AsUIElement ());
 			break;
 		}
 	} else {
@@ -630,7 +630,7 @@ Panel::OnLoaded ()
 	
 	flags |= UIElement::IS_LOADED;
 	
-	VisualCollection *children = GetChildren ();
+	UIElementCollection *children = GetChildren ();
 	
 	for (int i = 0; i < children->GetCount (); i++) {
 		UIElement *item = children->GetValueAt (i)->AsUIElement ();
@@ -662,12 +662,12 @@ panel_get_background (Panel *panel)
 }
 
 void
-panel_set_children (Panel *panel, VisualCollection *children)
+panel_set_children (Panel *panel, UIElementCollection *children)
 {
 	panel->SetChildren (children);
 }
 
-VisualCollection *
+UIElementCollection *
 panel_get_children (Panel *panel)
 {
 	return panel->GetChildren ();
@@ -682,7 +682,7 @@ panel_child_add (Panel *panel, UIElement *element)
 void 
 panel_init (void)
 {
-	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::VISUAL_COLLECTION);
+	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
 	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
 }
 

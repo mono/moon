@@ -46,7 +46,7 @@ populate_tree_from_xaml (UIElement *el, GtkTreeStore *store, GtkTreeIter *parent
 			    -1);
 	
 	if (el->Is (Type::PANEL)) {
-		VisualCollection *children = ((Panel *) el)->GetChildren ();
+		UIElementCollection *children = ((Panel *) el)->GetChildren ();
 		
 		if (children != NULL) {
 			for (int i = 0; i < children->GetCount (); i++) {

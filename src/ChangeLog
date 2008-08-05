@@ -1,5 +1,13 @@
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* brush.cpp, brush.h, dirty.cpp, panel.cpp, panel.h, type.h,
+	  type-generated.cpp, uielement.cpp, uielement.h, value.h,
+	  visual.cpp, visual.h, collection.h, collection.cpp, Makefile.am,
+	  libmoon.h: Deleted Visual (moved content into UIElement), and
+	  renamed VisualCollection to UIElementCollection.
+
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* cbinding.cpp, cbinding.h, dependencyobject.cpp, dependencyobject.h:
 	  GetValueWithError: Add a parameter to specify the exact type
 	  (including managed subclassing) of the object. HasProperty: use

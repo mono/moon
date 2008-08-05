@@ -1527,7 +1527,7 @@ VisualBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	if (args->property == VisualBrush::VisualProperty) {
 		// XXX we really need a way to disconnect from the preview visual
-		Visual *v = args->new_value->AsVisual();
+		UIElement *v = args->new_value->AsUIElement();
 		v->AddHandler (((UIElement*)v)->InvalidatedEvent, update_brush, this);
 	}
 
@@ -1542,15 +1542,15 @@ VisualBrush::IsOpaque ()
 }
 
 void
-VisualBrush::SetVisual (Visual *visual)
+VisualBrush::SetVisual (UIElement *visual)
 {
 	SetValue (VisualBrush::VisualProperty, Value (visual));
 }
 
-Visual *
+UIElement *
 VisualBrush::GetVisual ()
 {
-	return GetValue (VisualBrush::VisualProperty)->AsVisual ();
+	return GetValue (VisualBrush::VisualProperty)->AsUIElement ();
 }
 
 
@@ -1561,12 +1561,12 @@ visual_brush_new (void)
 }
 
 void
-visual_brush_set_visual (VisualBrush *brush, Visual *visual)
+visual_brush_set_visual (VisualBrush *brush, UIElement *visual)
 {
 	brush->SetVisual (visual);
 }
 
-Visual *
+UIElement *
 visual_brush_get_visual (VisualBrush *brush)
 {
 	return brush->GetVisual ();
@@ -1622,6 +1622,6 @@ brush_init (void)
 	TileBrush::StretchProperty = DependencyProperty::Register (Type::TILEBRUSH, "Stretch", new Value (StretchFill));
 
 	/* VisualBrush */
-	VisualBrush::VisualProperty = DependencyProperty::Register (Type::VISUALBRUSH, "Visual", new Value (Type::VISUAL));
+	VisualBrush::VisualProperty = DependencyProperty::Register (Type::VISUALBRUSH, "Visual", new Value (Type::UIELEMENT));
 
 }

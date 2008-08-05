@@ -28,6 +28,7 @@
 
 UIElement::UIElement ()
 {
+	visual_parent = NULL;
 	opacityMask = NULL;
 	flags = UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE;
 
@@ -105,7 +106,7 @@ void
 UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property->GetOwnerType() != Type::UIELEMENT) {
-		Visual::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
 	  
@@ -342,7 +343,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 	        Invalidate ();
 	}
 	
-	Visual::OnSubPropertyChanged (prop, obj, subobj_args);
+	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 bool 
@@ -799,6 +800,13 @@ UIElement::GetOpacity ()
 	return GetValue (UIElement::OpacityProperty)->AsDouble ();
 }
 
+TimeManager *
+UIElement::GetTimeManager ()
+{
+	Surface *surface = GetSurface ();
+	return surface ? surface->GetTimeManager() : NULL;
+}
+
 
 DependencyProperty *UIElement::ClipProperty;
 DependencyProperty *UIElement::CursorProperty;
@@ -944,4 +952,11 @@ void
 uielement_release_mouse_capture (UIElement *item)
 {
 	item->ReleaseMouseCapture ();
+}
+
+void
+uielement_set_surface (UIElement *item, Surface* surface)
+{
+	if (item)
+		item->SetSurface (surface);
 }

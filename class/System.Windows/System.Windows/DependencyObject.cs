@@ -221,6 +221,7 @@ namespace System.Windows {
 			case Kind.TRANSLATETRANSFORM: return new TranslateTransform (raw);
 			case Kind.TRIGGERACTION_COLLECTION: return new TriggerActionCollection (raw);
 			case Kind.TRIGGER_COLLECTION: return new TriggerCollection (raw);
+			case Kind.UIELEMENT_COLLECTION: return new UIElementCollection (raw);
 							
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:
@@ -239,7 +240,6 @@ namespace System.Windows {
 			case Kind.TRANSFORM:
 			case Kind.SHAPE:
 			case Kind.GEOMETRY:
-			case Kind.VISUAL:
 			case Kind.MEDIAATTRIBUTE_COLLECTION: 
 				throw new Exception (
 					String.Format ("Should never get an abstract class from unmanaged code {0}", k));

@@ -1,3 +1,8 @@
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* UIElementCollection.cs: Deleted Visual (moved content into
+	  UIElement), and renamed VisualCollection to UIElementCollection.
+
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* MediaBase.cs: Deleted. Not used anymore.

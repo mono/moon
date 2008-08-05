@@ -404,13 +404,13 @@ class VisualBrush : public TileBrush {
 
 	virtual bool IsOpaque ();
 	
-	void SetVisual (Visual *visual);
-	Visual *GetVisual ();
+	void SetVisual (UIElement *visual);
+	UIElement *GetVisual ();
 };
 
 VisualBrush	*visual_brush_new (void);
-Visual          *visual_brush_get_visual (VisualBrush *brush);
-void             visual_brush_set_visual (VisualBrush *brush, Visual *visual);
+UIElement       *visual_brush_get_visual (VisualBrush *brush);
+void             visual_brush_set_visual (VisualBrush *brush, UIElement *visual);
 
 
 void brush_init (void);

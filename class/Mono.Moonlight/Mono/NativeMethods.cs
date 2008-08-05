@@ -283,7 +283,7 @@ namespace Mono {
 		public extern static IntPtr path_segment_collection_new ();
 		
 		[DllImport("moon")]
-		public extern static IntPtr visual_collection_new ();
+		public extern static IntPtr uielement_collection_new ();
 		
 		[DllImport("moon")]
 		public extern static IntPtr geometry_collection_new ();

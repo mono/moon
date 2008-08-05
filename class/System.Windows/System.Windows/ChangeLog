@@ -1,5 +1,10 @@
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyObject.cs: Deleted Visual (moved content into UIElement),
+	  and renamed VisualCollection to UIElementCollection.
+
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DependencyObject.cs: SetValue: Add another error check.
 
 2008-08-05  Chris Toshok  <toshok@ximian.com>

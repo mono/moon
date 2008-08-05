@@ -41,7 +41,6 @@
 #include "uielement.h"
 #include "usercontrol.h"
 #include "value.h"
-#include "visual.h"
 #include "xaml.h"
 
 #endif /* __LIBMOON_H__ */
