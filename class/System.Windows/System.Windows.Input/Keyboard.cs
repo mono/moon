@@ -1,6 +1,9 @@
 //
 // Keyboard.cs
 //
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
+//
 // Copyright 2008 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
