@@ -1,3 +1,7 @@
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: use MouseButtonEventArgs for ButtonUp/Down.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyProperty.cs: Check if values have changed before raising

@@ -1,3 +1,7 @@
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
+	* Events.cs: use MouseButtonEventArgs for button up/down.
+
 2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ManagedXamlLoader.cs: Updated for

@@ -30,6 +30,13 @@ using System.Windows;
 namespace System.Windows.Input {
 
 	public sealed class MouseButtonEventArgs : MouseEventArgs {
-		public MouseButtonEventArgs (){}
+		internal MouseButtonEventArgs (IntPtr raw) : base (raw)
+		{
+		}
+
+		public MouseButtonEventArgs ()
+		{
+		}
+
 	}
 }

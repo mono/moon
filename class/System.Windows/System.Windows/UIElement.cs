@@ -350,16 +350,16 @@ namespace System.Windows {
 				h (this, m);
 		}
 
-		internal void InvokeMouseButtonDown (MouseEventArgs m)
+		internal void InvokeMouseButtonDown (MouseButtonEventArgs m)
 		{
-			MouseEventHandler h = (MouseEventHandler)events[MouseLeftButtonDownEvent];
+			MouseButtonEventHandler h = (MouseButtonEventHandler)events[MouseLeftButtonDownEvent];
 			if (h != null)
 				h (this, m);
 		}
 
-		internal void InvokeMouseButtonUp (MouseEventArgs m)
+		internal void InvokeMouseButtonUp (MouseButtonEventArgs m)
 		{
-			MouseEventHandler h = (MouseEventHandler)events[MouseLeftButtonUpEvent];
+			MouseButtonEventHandler h = (MouseButtonEventHandler)events[MouseLeftButtonUpEvent];
 			if (h != null)
 				h (this, m);
 		}

@@ -1,3 +1,8 @@
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
+	* MouseButtonEventArgs.cs: add internal ctor that takes a raw
+	pointer.
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* StylusPoint.cs: this is a struct in b2, not a class.  it has no

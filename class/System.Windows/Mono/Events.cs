@@ -168,7 +168,7 @@ namespace Mono {
 		{
 			try {
 				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeMouseButtonDown (new MouseEventArgs (calldata));
+				e.InvokeMouseButtonDown (new MouseButtonEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())
@@ -182,7 +182,7 @@ namespace Mono {
 		{
 			try {
 				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeMouseButtonUp (new MouseEventArgs (calldata));
+				e.InvokeMouseButtonUp (new MouseButtonEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())
