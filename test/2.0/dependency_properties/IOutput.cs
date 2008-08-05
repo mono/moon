@@ -15,6 +15,6 @@ namespace dependency_properties
 	{
 		void StartReport ();
 		void Report (TestResult result);
-		void EndReport ();
+		void EndReport (TestResult total_result);
 	}
 }

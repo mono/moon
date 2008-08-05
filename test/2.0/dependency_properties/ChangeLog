@@ -1,5 +1,10 @@
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyPropertyTest.cs, HtmlOutput.cs, Tester.cs, IOutput.cs:
+	  Print summary at the top of the html to avoid scrolling.
+
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile: Fix --generate-html argument.
 	* Tester.cs: Don't spam stdout with exceptions.
 

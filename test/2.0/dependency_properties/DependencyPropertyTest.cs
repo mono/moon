@@ -410,8 +410,8 @@ namespace dependency_properties
 				if (!object.Equals (expected_value, previous_expected_value)) {
 					changes++;
 					changed_info = info.Changes [info.Changes.Count - 1];
-					Assert.AreEqual (changed_info.args.OldValue, previous_expected_value, "OldValue");
-					Assert.AreEqual (changed_info.args.NewValue, expected_value, "NewValue");
+					Assert.AreEqual (changed_info.args.OldValue, previous_expected_value, "OldValue, iteration: " + iterations.ToString ());
+					Assert.AreEqual (changed_info.args.NewValue, expected_value, "NewValue, iteration: " + iterations.ToString ());
 					Assert.AreSame (changed_info.obj, the_object);
 				}
 

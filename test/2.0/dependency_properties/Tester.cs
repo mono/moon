@@ -108,9 +108,9 @@ namespace dependency_properties
 			result = new TestResult ();
 			result.name = "Summary:";
 			result.success = failed == 0;
-			result.output = string.Format ("Succeeded: {0}/{2} Failed: {1}/{2}", succeeded, failed, failed + succeeded);
-			output.Report (result);
-			output.EndReport ();
+			result.output = "";
+			result.reason = string.Format ("Succeeded: {0}/{2} Failed: {1}/{2}", succeeded, failed, failed + succeeded);
+			output.EndReport (result);
 		}
 
 	}

@@ -60,7 +60,12 @@ namespace dependency_properties
 
 		public void StartReport ()
 		{
-			string html = @"
+			builder = new StringBuilder ();
+		}
+
+		public void EndReport (TestResult final_result)
+		{
+			string start_html = @"
 <table border='1'>
 <tr>
 <th>Name</th>
@@ -70,17 +75,19 @@ namespace dependency_properties
 <th>Output</th>
 </tr>
 ";
-
-			builder = new StringBuilder ();
-			builder.Append (html);
-		}
-
-		public void EndReport ()
-		{
-			string html = @"
+	
+			string end_html = @"
 </table>
 ";
-			builder.Append (html); 
+
+			StringBuilder tmp = builder;
+			builder = new StringBuilder ();
+		
+			builder.Append (start_html);
+			Report (final_result);
+			builder.Append (tmp.ToString ());
+			builder.Append (end_html);
+
 			Write (builder.ToString ());
 		}
 
