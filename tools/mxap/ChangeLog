@@ -1,0 +1,7 @@
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mxap.cs: Add support for specifying EntryPointType and
+	  ApplicationName manually. Removed -pkg switch to smcs, smcs doesn't
+	  support that switch anymore. Don't add *.g.cs files which doesn't
+	  exist.
+

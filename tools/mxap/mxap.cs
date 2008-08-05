@@ -17,8 +17,20 @@ namespace Moonlight {
 		private List<string> xaml_files;
 		private bool generate_html = true; // Defaults to true
 		private bool include_mdb = true; // Defaults to true
+		private bool generate_manifest = true; 
 		private int result;
+		private string entry_point_type = null;
 
+		public string EntryPointType {
+			get { return entry_point_type; }
+			set { entry_point_type = value;  }
+		}
+		
+		public bool GenerateManifest {
+			get { return generate_manifest; }
+			set { generate_manifest = value; }
+		}
+		
 		public bool GenerateHtml {
 			get { return generate_html; }
 			set { generate_html = value; }
@@ -92,11 +104,19 @@ namespace Moonlight {
 
 		public void CreateManifest ()
 		{
+			if (!GenerateManifest)
+				return;
+			
 			StringBuilder manifest = new StringBuilder ();
 
 			manifest.Append ("<Deployment xmlns=\"http://schemas.microsoft.com/client/2007/deployment\"");
 			manifest.Append (" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" ");
-			manifest.AppendFormat ("EntryPointAssembly=\"{0}\" EntryPointType=\"{0}.App\" RuntimeVersion=\"2.0.30523.4\">\n", ApplicationName);
+			manifest.AppendFormat ("EntryPointAssembly=\"{0}\" EntryPointType=\"", ApplicationName);
+			if (entry_point_type != null)
+				manifest.Append (entry_point_type);
+			else 
+				manifest.AppendFormat ("{0}.App", ApplicationName);
+			manifest.Append ("\" RuntimeVersion=\"2.0.30523.4\">\n");
 
 			manifest.AppendLine ("  <Deployment.Parts>");
 
@@ -145,7 +165,7 @@ namespace Moonlight {
 		{
 			StringBuilder smcs_args = new StringBuilder ();
 
-			smcs_args.AppendFormat (" -pkg:silver -debug+ -target:library -out:{0}.dll ", ApplicationName);
+			smcs_args.AppendFormat (" -debug+ -target:library -out:{0}.dll ", ApplicationName);
 
 			foreach (string asm in ReferenceAssemblies) {
 				smcs_args.AppendFormat (" -r:{0} ", asm);
@@ -159,6 +179,8 @@ namespace Moonlight {
 
 			foreach (string xaml in XamlFiles) {
 				if (Path.GetFileName (xaml) == "AppManifest.xaml")
+					continue;
+				if (!File.Exists (xaml + ".g.cs"))
 					continue;
 				smcs_args.AppendFormat (" {0}.g.cs ", xaml);
 			}
@@ -233,8 +255,11 @@ namespace Moonlight {
 			
 			var p = new OptionSet () {
 				{ "h|?|help", v => help = v != null },
-				{ "generate-html", v => mxap.GenerateHtml = true },
-				{ "include-mdb", v => mxap.IncludeMdb = true },
+				{ "generate-html", v => mxap.GenerateHtml = v != null },
+				{ "include-mdb", v => mxap.IncludeMdb = v != null},
+				{ "application-name=", v => mxap.ApplicationName = v },
+				{ "generate-manifest", v => mxap.GenerateManifest = v != null },
+				{ "entry-point-type=", v => mxap.EntryPointType = v }
 			};
 
 			List<string> extra = null;
