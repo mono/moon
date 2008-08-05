@@ -162,6 +162,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
 	$(srcdir)/System.Windows.Documents/Run.cs				\
 	$(srcdir)/System.Windows.Markup/XamlParseException.cs			\
+	$(srcdir)/System.Windows.Markup/XamlReader.cs		\
 	$(srcdir)/System.Windows.Markup/XmlLanguage.cs				\
 	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\

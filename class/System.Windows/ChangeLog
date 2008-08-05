@@ -1,3 +1,8 @@
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* System.Windows.mdp, Makefile.am: Added XamlReader.
+	* System.Windows.Markup/XamlReader.cs: Stub this one out for now.
+
 2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* System.Windows.mdp: Updated.
