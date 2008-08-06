@@ -1,3 +1,8 @@
+2008-08-06  Chris Toshok  <toshok@ximian.com>
+
+	* frameworkelement.h, frameworkelement.cpp: add
+	DataContextProperty.
+
 2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* type.cpp: Fix for old glib in sled.

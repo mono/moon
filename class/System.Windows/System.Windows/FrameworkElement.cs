@@ -40,9 +40,8 @@ namespace System.Windows {
 		public static readonly DependencyProperty ActualWidthProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "ActualWidth", typeof (double));
 
-		public static readonly DependencyProperty DataContextProperty = null;
-			// Commented out until native code has this too
-			// DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "DataContext", typeof (object));
+		public static readonly DependencyProperty DataContextProperty =
+			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "DataContext", typeof (object));
 
 		public static readonly DependencyProperty HeightProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Height", typeof (double));

@@ -1,5 +1,10 @@
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
+	* FrameworkElement.cs: enable DataContextProperty after enabling
+	it in the unmanaged code.
+
+2008-08-06  Chris Toshok  <toshok@ximian.com>
+
 	* DependencyObject.cs (ValueToObject): we need to use fixed in
 	some places here, fixes build with new mcs.
 	(GetAsValue): same.

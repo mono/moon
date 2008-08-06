@@ -26,6 +26,7 @@ class FrameworkElement : public UIElement {
 	// 2.0 only DPs
 	static DependencyProperty *ActualHeightProperty;
 	static DependencyProperty *ActualWidthProperty;
+	static DependencyProperty *DataContextProperty;
 	static DependencyProperty *HorizontalAlignmentProperty;
 	static DependencyProperty *LanguageProperty;
 	static DependencyProperty *MarginProperty;

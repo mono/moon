@@ -23,6 +23,7 @@ DependencyProperty *FrameworkElement::WidthProperty;
 // 2.0 only DPs
 DependencyProperty *FrameworkElement::ActualHeightProperty;
 DependencyProperty *FrameworkElement::ActualWidthProperty;
+DependencyProperty *FrameworkElement::DataContextProperty;
 DependencyProperty *FrameworkElement::HorizontalAlignmentProperty;
 DependencyProperty *FrameworkElement::LanguageProperty;
 DependencyProperty *FrameworkElement::MarginProperty;
@@ -159,6 +160,7 @@ framework_element_init (void)
 	// the 2.0 only DPs
 	FrameworkElement::ActualHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualHeight", new Value (0.0));
 	FrameworkElement::ActualWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualWidth", new Value (0.0));
+	FrameworkElement::DataContextProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "DataContext", Type::MANAGED);
 	FrameworkElement::HorizontalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "HorizontalAlignment", new Value (HorizontalAlignmentStretch));
 	FrameworkElement::LanguageProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Language", new Value ("en-US"));
 	FrameworkElement::MarginProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Margin", new Value (Thickness (0)));
