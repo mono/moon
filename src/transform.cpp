@@ -15,7 +15,7 @@
 #include "math.h"
 
 void
-Transform::OnPropertyChanged (PropertyChangedEventArgs *args)
+GeneralTransform::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property->GetOwnerType() == Type::DEPENDENCY_OBJECT) {
 		DependencyObject::OnPropertyChanged (args);
@@ -38,15 +38,50 @@ Transform::OnPropertyChanged (PropertyChangedEventArgs *args)
 }
 
 void
-Transform::UpdateTransform ()
+GeneralTransform::UpdateTransform ()
 {
-	g_warning ("Transform:UpdateTransform has been called. The derived class should have overridden it.");
+	g_warning ("GeneralTransform::UpdateTransform has been called. The derived class should have overridden it.");
 }
 
 void
-transform_get_transform (Transform *t, cairo_matrix_t *value)
+GeneralTransform::MaybeUpdateTransform ()
 {
-	t->GetTransform (value);
+	if (need_update) {
+		UpdateTransform ();
+		need_update = false;
+	}
+}
+
+void
+GeneralTransform::GetTransform (cairo_matrix_t *value)
+{
+	MaybeUpdateTransform ();
+	*value = _matrix;
+}
+
+Point
+GeneralTransform::Transform (Point point)
+{
+	MaybeUpdateTransform ();
+	return point.Transform (&_matrix);
+}
+
+GeneralTransform *
+general_transform_new (void)
+{
+	return new GeneralTransform ();
+}
+
+void
+general_transform_get_transform (GeneralTransform *transform, cairo_matrix_t *value)
+{
+	transform->GetTransform (value);
+}
+
+void
+general_transform_transform_point (GeneralTransform *t, Point *p, Point *r)
+{
+	*r = t->Transform (*p);
 }
 
 Transform *
@@ -54,8 +89,6 @@ transform_new (void)
 {
 	return new Transform ();
 }
-
-
 
 DependencyProperty *RotateTransform::CenterXProperty;
 DependencyProperty *RotateTransform::CenterYProperty;

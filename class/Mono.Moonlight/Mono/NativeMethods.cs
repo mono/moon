@@ -114,6 +114,38 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static void visual_set_surface (IntPtr visual, IntPtr surface);
+
+#region Transforms
+		[DllImport("moon")]
+		public extern static IntPtr general_transform_new ();
+		
+		[DllImport("moon")]
+		public extern static IntPtr transform_new ();
+		
+		[DllImport("moon")]
+		public extern static IntPtr skew_transform_new ();
+		
+		[DllImport("moon")]
+		public extern static IntPtr rotate_transform_new ();
+
+		[DllImport("moon")]
+		public extern static IntPtr translate_transform_new ();
+
+		[DllImport("moon")]
+		public extern static IntPtr scale_transform_new ();
+
+		[DllImport("moon")]
+		public extern static IntPtr matrix_transform_new ();
+
+		[DllImport("moon")]
+		public extern static IntPtr transform_group_new ();
+
+		[DllImport("moon")]
+		public extern static IntPtr transform_collection_new ();
+
+		[DllImport("moon")]
+		public extern static void general_transform_transform_point (IntPtr handle, ref UnmanagedPoint p, ref UnmanagedPoint r);
+#endregion
 		
 #region UIElements
 		[DllImport("moon")]
@@ -287,9 +319,6 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static IntPtr geometry_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr transform_collection_new ();
 		
 		[DllImport("moon")]
 		public extern static IntPtr timeline_collection_new ();
@@ -467,13 +496,7 @@ namespace Mono {
 		public extern static IntPtr media_attribute_new ();
 		
 		[DllImport("moon")]
-		public extern static IntPtr skew_transform_new ();
-		
-		[DllImport("moon")]
 		public extern static IntPtr tile_brush_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr transform_new ();
 		
 		[DllImport("moon")]
 		public extern static IntPtr video_brush_new ();
@@ -538,21 +561,6 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static IntPtr path_new ();
 
-		[DllImport("moon")]
-		public extern static IntPtr rotate_transform_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr translate_transform_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr scale_transform_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr matrix_transform_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr transform_group_new ();
-		
 		[DllImport("moon")]
 		public extern static IntPtr downloader_new ();
 

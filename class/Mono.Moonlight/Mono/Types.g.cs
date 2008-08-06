@@ -90,6 +90,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.BRUSH));
 				t = agclr.GetType ("System.Windows.Media.EllipseGeometry", true); 
 				types.Add (t, new ManagedType (t, Kind.ELLIPSEGEOMETRY));
+				t = agclr.GetType ("System.Windows.Media.GeneralTransform", true); 
+				types.Add (t, new ManagedType (t, Kind.GENERALTRANSFORM));
 				t = agclr.GetType ("System.Windows.Media.Geometry", true); 
 				types.Add (t, new ManagedType (t, Kind.GEOMETRY));
 				t = agclr.GetType ("System.Windows.Media.GeometryCollection", true); 

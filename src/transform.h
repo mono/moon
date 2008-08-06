@@ -20,35 +20,46 @@ G_BEGIN_DECLS
 #include <cairo.h>
 #include "collection.h"
 
-class Transform : public DependencyObject {
- protected:
+class GeneralTransform : public DependencyObject {
+protected:
 	cairo_matrix_t _matrix;
 	bool need_update;
-	
-	virtual ~Transform () {}
 
- public:
-	Transform () : need_update (true) { }
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };
-	virtual void GetTransform (cairo_matrix_t *value) {
-		if (need_update) {
-			UpdateTransform ();
-			need_update = false;
-		}
-		*value = _matrix;
-	};
+	virtual ~GeneralTransform () {};
 
 	virtual void UpdateTransform ();
+	void MaybeUpdateTransform ();
+public:
+	GeneralTransform () : need_update (true) { }
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual Type::Kind GetObjectType () { return Type::GENERALTRANSFORM; };
+
+	virtual void GetTransform (cairo_matrix_t *value);
+
+	Point Transform (Point point);
 };
 
-Transform *transform_new (void);
-void   transform_get_transform (Transform *transform, cairo_matrix_t *value);
+GeneralTransform *general_transform_new (void);
+void   general_transform_get_transform (GeneralTransform *transform, cairo_matrix_t *value);
+void   general_transform_transform_point (GeneralTransform *t, Point *p, Point *r);
 
+class Transform : public GeneralTransform {
+protected:
+	virtual ~Transform () {}
+
+public:
+	Transform () { }
+
+	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };
+};
+
+
+Transform *transform_new (void);
 
 class RotateTransform : public Transform {
  protected:
 	virtual ~RotateTransform () {}
+	virtual void UpdateTransform ();
 	
  public:
 	static DependencyProperty *AngleProperty;
@@ -57,7 +68,6 @@ class RotateTransform : public Transform {
 	
 	RotateTransform () { }
 	virtual Type::Kind GetObjectType () { return Type::ROTATETRANSFORM; };
-	virtual void UpdateTransform ();
 	
 	//
 	// Property Accessors
@@ -87,6 +97,7 @@ double rotate_transform_get_center_y (RotateTransform *transform);
 class TranslateTransform : public Transform {
  protected:
 	virtual ~TranslateTransform () {}
+	virtual void UpdateTransform ();
 	
  public:
 	static DependencyProperty *XProperty;
@@ -94,7 +105,6 @@ class TranslateTransform : public Transform {
 	
 	TranslateTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::TRANSLATETRANSFORM; };
-	virtual void UpdateTransform ();
 	
 	//
 	// Property Accessors
@@ -117,12 +127,12 @@ double translate_transform_get_y (TranslateTransform *transform);
 class ScaleTransform : public Transform {
  protected:
 	virtual ~ScaleTransform () {}
+	virtual void UpdateTransform ();
 
  public:
 
 	ScaleTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; };
-	virtual void UpdateTransform ();
 
 	static DependencyProperty* ScaleXProperty;
 	static DependencyProperty* ScaleYProperty;
@@ -147,12 +157,12 @@ double scale_transform_get_center_y (ScaleTransform *transform);
 class SkewTransform : public Transform {
  protected:
 	virtual ~SkewTransform () {}
+	virtual void UpdateTransform ();
 
 public:
 
 	SkewTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::SKEWTRANSFORM; };
-	virtual void UpdateTransform ();
 
 	static DependencyProperty* AngleXProperty;
 	static DependencyProperty* AngleYProperty;
@@ -215,6 +225,7 @@ class MatrixTransform : public Transform {
  protected:
 	virtual ~MatrixTransform () {}
 
+	virtual void UpdateTransform ();
  public:
 	static DependencyProperty* MatrixProperty;
 
@@ -222,8 +233,6 @@ class MatrixTransform : public Transform {
 	virtual Type::Kind GetObjectType () { return Type::MATRIXTRANSFORM; };
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-
-	virtual void UpdateTransform ();
 };
 
 MatrixTransform *matrix_transform_new (void);
@@ -249,6 +258,7 @@ class TransformGroup : public Transform {
 protected:
 	virtual ~TransformGroup ();
 
+	virtual void UpdateTransform ();
 public:
 	static DependencyProperty *ChildrenProperty;
 
@@ -258,7 +268,6 @@ public:
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	virtual void UpdateTransform ();
 };
 
 TransformGroup *transform_group_new (void);

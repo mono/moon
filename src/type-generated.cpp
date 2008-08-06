@@ -16,9 +16,9 @@
 #include "shape.h"
 #include "trigger.h"
 #include "frameworkelement.h"
+#include "transform.h"
 #include "text.h"
 #include "media.h"
-#include "transform.h"
 #include "window-gtk.h"
 #include "eventargs.h"
 #include "panel.h"
@@ -31,6 +31,7 @@
 #include "grid.h"
 #include "contentcontrol.h"
 #include "control.h"
+#include "size.h"
 #include "usercontrol.h"
 #endif
 
@@ -165,6 +166,7 @@ Type type_infos [] = {
 	{ Type::EVENTOBJECT, Type::INVALID, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL, NULL }, 
 	{ Type::EVENTTRIGGER, Type::DEPENDENCY_OBJECT, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL }, 
 	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 0, 12, NULL, (create_inst_func *) framework_element_new, NULL, NULL }, 
+	{ Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL, NULL }, 
 	{ Type::GEOMETRY, Type::DEPENDENCY_OBJECT, false, "Geometry", "GEOMETRY", 0, 1, NULL, NULL, NULL, NULL }, 
 	{ Type::GEOMETRY_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GeometryCollection", "GEOMETRY_COLLECTION", 0, 1, NULL, (create_inst_func *) geometry_collection_new, NULL, NULL }, 
 	{ Type::GEOMETRYGROUP, Type::GEOMETRY, false, "GeometryGroup", "GEOMETRYGROUP", 0, 1, NULL, (create_inst_func *) geometry_group_new, "Children", NULL }, 
@@ -264,7 +266,11 @@ Type type_infos [] = {
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SIZE'", "SIZE", 0, 0, NULL, NULL, NULL, NULL }, 
 #endif
+#if SL_2_0
 	{ Type::SIZECHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "SizeChangedEventArgs", "SIZECHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) size_changed_event_args_new, NULL, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SIZECHANGEDEVENTARGS'", "SIZECHANGEDEVENTARGS", 0, 0, NULL, NULL, NULL, NULL }, 
+#endif
 	{ Type::SKEWTRANSFORM, Type::TRANSFORM, false, "SkewTransform", "SKEWTRANSFORM", 0, 1, NULL, (create_inst_func *) skew_transform_new, NULL, NULL }, 
 	{ Type::SOLIDCOLORBRUSH, Type::BRUSH, false, "SolidColorBrush", "SOLIDCOLORBRUSH", 0, 1, NULL, (create_inst_func *) solid_color_brush_new, NULL, NULL }, 
 	{ Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME, false, "SplineColorKeyFrame", "SPLINECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_color_key_frame_new, NULL, NULL }, 
@@ -290,7 +296,7 @@ Type type_infos [] = {
 	{ Type::TIMEMANAGER, Type::EVENTOBJECT, false, "TimeManager", "TIMEMANAGER", 2, 3, TimeManager_Events, NULL, NULL, NULL }, 
 	{ Type::TIMESOURCE, Type::EVENTOBJECT, false, "TimeSource", "TIMESOURCE", 1, 2, TimeSource_Events, NULL, NULL, NULL }, 
 	{ Type::TIMESPAN, Type::INVALID, false, "TimeSpan", "TIMESPAN", 0, 0, NULL, NULL, NULL, NULL }, 
-	{ Type::TRANSFORM, Type::DEPENDENCY_OBJECT, false, "Transform", "TRANSFORM", 0, 1, NULL, (create_inst_func *) transform_new, NULL, NULL }, 
+	{ Type::TRANSFORM, Type::GENERALTRANSFORM, false, "Transform", "TRANSFORM", 0, 1, NULL, (create_inst_func *) transform_new, NULL, NULL }, 
 	{ Type::TRANSFORM_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TransformCollection", "TRANSFORM_COLLECTION", 0, 1, NULL, (create_inst_func *) transform_collection_new, NULL, NULL }, 
 	{ Type::TRANSFORMGROUP, Type::TRANSFORM, false, "TransformGroup", "TRANSFORMGROUP", 0, 1, NULL, (create_inst_func *) transform_group_new, "Children", NULL }, 
 	{ Type::TRANSLATETRANSFORM, Type::TRANSFORM, false, "TranslateTransform", "TRANSLATETRANSFORM", 0, 1, NULL, (create_inst_func *) translate_transform_new, NULL, NULL }, 

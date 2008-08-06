@@ -237,6 +237,7 @@ namespace System.Windows {
 			case Kind.FRAMEWORKELEMENT:
 			case Kind.BRUSH:
 			case Kind.TILEBRUSH:
+			case Kind.GENERALTRANSFORM:
 			case Kind.TRANSFORM:
 			case Kind.SHAPE:
 			case Kind.GEOMETRY:

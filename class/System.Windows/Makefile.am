@@ -193,6 +193,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
 	$(srcdir)/System.Windows.Media/FillRule.cs				\
 	$(srcdir)/System.Windows.Media/FontFamily.cs				\
+	$(srcdir)/System.Windows.Media/GeneralTransform.cs			\
 	$(srcdir)/System.Windows.Media/Geometry.cs				\
 	$(srcdir)/System.Windows.Media/GeometryCollection.cs			\
 	$(srcdir)/System.Windows.Media/GeometryGroup.cs				\

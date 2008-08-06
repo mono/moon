@@ -172,13 +172,13 @@ brush_set_transform (Brush *brush, Transform *transform)
 	brush->SetTransform (transform);
 }
 
-void
+static void
 transform_get_absolute_transform (Transform *relative_transform, double width, double height, cairo_matrix_t *result)
 {
 	cairo_matrix_t tm;
 	
 	cairo_matrix_init_scale (result, width, height);
-	transform_get_transform (relative_transform, &tm);
+	general_transform_get_transform (relative_transform, &tm);
 	cairo_matrix_multiply (result, &tm, result);
 	cairo_matrix_scale (result, 1.0/width, 1.0/height);
 }
@@ -573,7 +573,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	Transform *transform = GetTransform ();
 	if (transform) {
 		cairo_matrix_t tm;
-		transform_get_transform (transform, &tm);
+		general_transform_get_transform (transform, &tm);
 		// TODO - optimization, check for empty/identity matrix too ?
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
@@ -707,7 +707,7 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	Transform *transform = GetTransform ();
 	if (transform) {
 		cairo_matrix_t tm;
-		transform_get_transform (transform, &tm);
+		general_transform_get_transform (transform, &tm);
 		// TODO - optimization, check for empty/identity matrix too ?
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
@@ -1171,7 +1171,7 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 	if (transform || relative_transform) {
 		if (transform) {
 			cairo_matrix_t tm;
-			transform_get_transform (transform, &tm);
+			general_transform_get_transform (transform, &tm);
 			cairo_matrix_invert (&tm);
 			cairo_matrix_multiply (matrix, &tm, matrix);
 		}

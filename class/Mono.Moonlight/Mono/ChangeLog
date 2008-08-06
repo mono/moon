@@ -1,5 +1,11 @@
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
+	* NativeMethods.cs: add general_transform stuff.
+
+	* Kind.cs, Types.g.cs: add GeneralTransform foo.
+
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
 	* NativeMethods.cs: add in the size_changed_event_args methods.
 
 	* Kind.cs: resync.

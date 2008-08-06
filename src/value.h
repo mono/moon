@@ -88,6 +88,7 @@ class EventArgs;
 class EventObject;
 class EventTrigger;
 class FrameworkElement;
+class GeneralTransform;
 class Geometry;
 class GeometryCollection;
 class GeometryGroup;
@@ -328,6 +329,7 @@ public:
 	EventObject*                   AsEventObject () { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
 	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
 	FrameworkElement*              AsFrameworkElement () { checked_get_subclass (Type::FRAMEWORKELEMENT, FrameworkElement) }
+	GeneralTransform*              AsGeneralTransform () { checked_get_subclass (Type::GENERALTRANSFORM, GeneralTransform) }
 	Geometry*                      AsGeometry () { checked_get_subclass (Type::GEOMETRY, Geometry) }
 	GeometryCollection*            AsGeometryCollection () { checked_get_subclass (Type::GEOMETRY_COLLECTION, GeometryCollection) }
 	GeometryGroup*                 AsGeometryGroup () { checked_get_subclass (Type::GEOMETRYGROUP, GeometryGroup) }

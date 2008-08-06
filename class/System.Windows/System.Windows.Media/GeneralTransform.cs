@@ -1,5 +1,5 @@
 //
-// Transform.cs
+// GeneralTransform.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -25,21 +25,43 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using Mono;
+using System.Security;
+
 namespace System.Windows.Media {
-	public abstract class Transform : GeneralTransform {
+
+	public abstract class GeneralTransform : DependencyObject {
 		
-		protected Transform () : base (NativeMethods.transform_new ())
+		protected GeneralTransform () : base (NativeMethods.general_transform_new ())
 		{
 		}
 		
-		internal Transform (IntPtr raw) : base (raw)
+		internal GeneralTransform (IntPtr raw) : base (raw)
 		{
 		}
 
 		internal override Kind GetKind ()
 		{
-			return Kind.TRANSFORM;
+			return Kind.GENERALTRANSFORM;
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public Point Transform (Point p)
+		{
+			UnmanagedPoint p1, p2;
+
+			p1 = new UnmanagedPoint ();
+			p2 = new UnmanagedPoint ();
+
+			p1.x = p.X;
+			p1.y = p.Y;
+
+			NativeMethods.general_transform_transform_point (native, ref p1, ref p2);
+
+			return new Point (p2.x, p2.y);
 		}
 	}
 }
