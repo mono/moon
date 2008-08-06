@@ -401,6 +401,12 @@ class UIElement : public DependencyObject {
 	static DependencyProperty *RenderTransformProperty;
 	static DependencyProperty *VisibilityProperty;
 	static DependencyProperty *ZIndexProperty;
+
+	// in 2.0 these properties are actually in FrameworkElement
+	static DependencyProperty *CursorProperty;
+	static DependencyProperty *ResourcesProperty;
+	static DependencyProperty *TagProperty;
+	static DependencyProperty *TriggersProperty;
 	
 	//
 	// Property Accessors

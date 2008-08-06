@@ -1,5 +1,15 @@
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h, uielement.cpp, frameworkelement.h,
+	frameworkelement.cpp: move the UIElement DPs back - the move to
+	FrameworkElement breaks tests.
+
+	* collection.cpp (TriggerCollection::AddedToCollection): quiet
+	this down.
+	(TriggerCollection::RemovedFromCollection): same.
+
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
 	* frameworkelement.h, frameworkelement.cpp: add in the 2.0-only
 	DependencyProperties.  we need a way to limit access to these to
 	only the 2.0 case.

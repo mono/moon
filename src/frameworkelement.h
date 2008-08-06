@@ -23,12 +23,6 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty *HeightProperty;
 	static DependencyProperty *WidthProperty;
 
-	// DPs moved here from UIElement in 2.0
-	static DependencyProperty *CursorProperty;
-	static DependencyProperty *ResourcesProperty;
-	static DependencyProperty *TagProperty;
-	static DependencyProperty *TriggersProperty;
-
 	// 2.0 only DPs
 	static DependencyProperty *ActualHeightProperty;
 	static DependencyProperty *ActualWidthProperty;

@@ -599,8 +599,9 @@ TriggerCollection::AddedToCollection (Value *value)
 {
 	FrameworkElement *fwe = (FrameworkElement *) closure;
 	EventTrigger *trigger = value->AsEventTrigger ();
-	
-	trigger->SetTarget (fwe);
+
+	if (fwe)
+		trigger->SetTarget (fwe);
 	
 	DependencyObjectCollection::AddedToCollection (value);
 }
@@ -610,8 +611,9 @@ TriggerCollection::RemovedFromCollection (Value *value)
 {
 	FrameworkElement *fwe = (FrameworkElement *) closure;
 	EventTrigger *trigger = value->AsEventTrigger ();
-	
-	trigger->RemoveTarget (fwe);
+
+	if (fwe)
+		trigger->RemoveTarget (fwe);
 	
 	DependencyObjectCollection::RemovedFromCollection (value);
 }

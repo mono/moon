@@ -17,11 +17,7 @@
 #include "thickness.h"
 #include "collection.h"
 
-DependencyProperty *FrameworkElement::CursorProperty;
 DependencyProperty *FrameworkElement::HeightProperty;
-DependencyProperty *FrameworkElement::ResourcesProperty;
-DependencyProperty *FrameworkElement::TagProperty;
-DependencyProperty *FrameworkElement::TriggersProperty;
 DependencyProperty *FrameworkElement::WidthProperty;
 
 // 2.0 only DPs
@@ -158,10 +154,6 @@ void
 framework_element_init (void)
 {
 	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
-	FrameworkElement::CursorProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Cursor", new Value ((gint32)MouseCursorDefault));
-	FrameworkElement::ResourcesProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Resources", Type::RESOURCE_DICTIONARY);
-	FrameworkElement::TagProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Tag", Type::STRING);
-	FrameworkElement::TriggersProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
 	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
 
 	// the 2.0 only DPs
