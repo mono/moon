@@ -1,3 +1,7 @@
+2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp: Updated.
+
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
 	* transform.h, transform.cpp, brush.cpp: Add GeneralTransform as a

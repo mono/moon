@@ -132,7 +132,6 @@
     <File name="layout.cpp" subtype="Code" buildaction="Compile" />
     <File name="layout.h" subtype="Code" buildaction="Nothing" />
     <File name="type-generated.cpp" subtype="Code" buildaction="Compile" />
-    <File name="enums.c" subtype="Code" buildaction="Compile" />
     <File name="http-streaming.h" subtype="Code" buildaction="Nothing" />
     <File name="http-streaming.cpp" subtype="Code" buildaction="Compile" />
     <File name="mms-downloader.cpp" subtype="Code" buildaction="Compile" />
@@ -162,6 +161,10 @@
     <File name="cbinding.h" subtype="Code" buildaction="Compile" />
     <File name="cbinding.cpp" subtype="Code" buildaction="Compile" />
     <File name="error.cpp" subtype="Code" buildaction="Compile" />
+    <File name="enums.cpp" subtype="Code" buildaction="Compile" />
+    <File name="size.cpp" subtype="Code" buildaction="Compile" />
+    <File name="size.h" subtype="Code" buildaction="Nothing" />
+    <File name="thickness.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
