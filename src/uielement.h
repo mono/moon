@@ -394,15 +394,11 @@ class UIElement : public DependencyObject {
 	}
 	
 	static DependencyProperty *ClipProperty;
-	static DependencyProperty *CursorProperty;
 	static DependencyProperty *IsHitTestVisibleProperty;
 	static DependencyProperty *OpacityMaskProperty;
 	static DependencyProperty *OpacityProperty;
 	static DependencyProperty *RenderTransformOriginProperty;
 	static DependencyProperty *RenderTransformProperty;
-	static DependencyProperty *ResourcesProperty;
-	static DependencyProperty *TagProperty;
-	static DependencyProperty *TriggersProperty;
 	static DependencyProperty *VisibilityProperty;
 	static DependencyProperty *ZIndexProperty;
 	

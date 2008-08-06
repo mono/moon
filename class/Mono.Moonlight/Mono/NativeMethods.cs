@@ -798,6 +798,17 @@ namespace Mono {
 		public extern static void keyboard_event_args_set_handled (IntPtr handle, bool handled);
 #endregion
 
+#region SizeChangedEventArgs
+		[DllImport("moon")]
+		public extern static IntPtr size_changed_event_args_new ();
+
+		[DllImport("moon")]
+		public extern static void size_changed_event_args_get_new_size (IntPtr handle, ref UnmanagedSize size);
+
+		[DllImport("moon")]
+		public extern static void size_changed_event_args_get_prev_size (IntPtr handle, ref UnmanagedSize size);
+#endregion
+
 #region Keyboard
 		[DllImport("moon")]
 		public extern static int keyboard_get_modifiers ();

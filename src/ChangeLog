@@ -1,5 +1,27 @@
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
+	* frameworkelement.h, frameworkelement.cpp: add in the 2.0-only
+	DependencyProperties.  we need a way to limit access to these to
+	only the 2.0 case.
+
+	* uielement.h, uielement.cpp: CursorProperty, ResourcesProperty,
+	TagProperty, TriggersProperty are moved to
+	frameworkelement.h/.cpp.
+	
+	* runtime.cpp (Surface::UpdateCursorFromInputList): CursorProperty
+	moved from UIElement to FrameworkElement.
+
+	* size.h, size.cpp: add SizeChangedEventArgs.
+
+	* thickness.h: move this type here
+
+	* control.h: #include thickness.h
+
+	* type.h, value.h, type-generated.cpp: regenerate for
+	SIZECHANGEDEVENTARGS.
+	
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (libmoon_la_SOURCES): enums.c => enums.cpp
 
 	* enums.h: add comment about keeping MouseCursors enum in sync

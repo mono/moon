@@ -1390,7 +1390,7 @@ Surface::UpdateCursorFromInputList ()
 	// has its cursor set to the non-default.
 	UIElementNode *node;
 	for (node = (UIElementNode*)input_list->First(); node; node = (UIElementNode*)node->next) {
-		new_cursor = (MouseCursor)node->uielement->GetValue (UIElement::CursorProperty)->AsInt32();
+		new_cursor = (MouseCursor)node->uielement->GetValue (FrameworkElement::CursorProperty)->AsInt32();
 		if (new_cursor != MouseCursorDefault)
 			break;
 	}

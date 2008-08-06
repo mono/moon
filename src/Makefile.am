@@ -115,6 +115,7 @@ libmoon_la_SOURCES = 		\
 	region.cpp		\
 	runtime.cpp		\
 	shape.cpp		\
+	size.cpp		\
 	stylus.cpp		\
 	text.cpp		\
 	transform.cpp		\

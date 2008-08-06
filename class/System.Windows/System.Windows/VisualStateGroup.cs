@@ -1,5 +1,5 @@
 //
-// SizeChangedEventArgs.cs
+// VisualStateGroup.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -25,44 +25,27 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-//
 
-using System;
-using System.Security;
-using Mono;
+using System.Windows.Markup;
+using System.Collections.ObjectModel;
 
-namespace System.Windows
-{
-	public class SizeChangedEventArgs : RoutedEventArgs
+namespace System.Windows {
+
+	[ContentPropertyAttribute("States")]
+	public sealed class VisualStateGroup : DependencyObject
 	{
-		public SizeChangedEventArgs () : base (NativeMethods.size_changed_event_args_new ())
-		{
+
+		public string Name {
+			get { throw new NotImplementedException (); }
+		}
+		public Collection<VisualState> States {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
 		}
 
-		internal SizeChangedEventArgs (IntPtr raw) : base (raw)
-		{
-		}
-
-		public Size NewSize {
-#if NET_2_1
-			[SecuritySafeCritical]
-#endif
-			get {
-				UnmanagedSize u = new UnmanagedSize();
-				NativeMethods.size_changed_event_args_get_new_size (native, ref u);
-				return new Size (u.width, u.height);
-			}
-		}
-
-		public Size PreviousSize {
-#if NET_2_1
-			[SecuritySafeCritical]
-#endif
-			get {
-				UnmanagedSize u = new UnmanagedSize();
-				NativeMethods.size_changed_event_args_get_prev_size (native, ref u);
-				return new Size (u.width, u.height);
-			}
+		public Collection<VisualTransition> Transitions {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
 		}
 	}
 }

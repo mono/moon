@@ -37,9 +37,6 @@ namespace System.Windows {
 		public static readonly DependencyProperty ClipProperty =
 			DependencyProperty.Lookup (Kind.UIELEMENT, "Clip", typeof (Geometry));
 		
-		public static readonly DependencyProperty CursorProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Cursor", typeof (Cursor));
-		
 		public static readonly DependencyProperty IsHitTestVisibleProperty =
 			DependencyProperty.Lookup (Kind.UIELEMENT, "IsHitTestVisible", typeof (bool));
 		
@@ -54,15 +51,6 @@ namespace System.Windows {
 		
 		public static readonly DependencyProperty RenderTransformProperty =
 			DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransform", typeof (Transform));
-		
-		public static readonly DependencyProperty ResourcesProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Resources", typeof (ResourceDictionary));
-		
-		public static readonly DependencyProperty TagProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Tag", typeof (string));
-		
-		public static readonly DependencyProperty TriggersProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Triggers", typeof (TriggerCollection));
 		
 		public static readonly DependencyProperty VisibilityProperty =
 			DependencyProperty.Lookup (Kind.UIELEMENT, "Visibility", typeof (Visibility));
@@ -89,15 +77,6 @@ namespace System.Windows {
 			}
 			set {
 				SetValue (ClipProperty, value);
-			}
-		}
-		
-		public Cursor Cursor {
-			get {
-				return (Cursor) GetValue (CursorProperty);
-			}
-			set {
-				SetValue (CursorProperty, value);
 			}
 		}
 		
@@ -143,33 +122,6 @@ namespace System.Windows {
 			}
 			set {
 				SetValue (RenderTransformOriginProperty, value);
-			}
-		}
-		
-		public ResourceDictionary Resources {
-			get {
-				return (ResourceDictionary) GetValue (ResourcesProperty);
-			}
-			set {
-				SetValue (ResourcesProperty, value);
-			}
-		}
-
-		public string Tag {
-			get {
-				return (string) GetValue (TagProperty);
-			}
-			set {
-				SetValue (TagProperty, value);
-			}
-		}
-
-		public TriggerCollection Triggers {
-			get {
-				return (TriggerCollection) GetValue (TriggersProperty);
-			}
-			set {
-				SetValue (TriggersProperty, value);
 			}
 		}
 		

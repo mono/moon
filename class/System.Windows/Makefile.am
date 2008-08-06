@@ -140,11 +140,16 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/RoutedEventHandler.cs				\
 	$(srcdir)/System.Windows/RoutedPropertyChangedEventArgs_T.cs		\
 	$(srcdir)/System.Windows/RoutedPropertyChangedEventHandler_T.cs		\
+	$(srcdir)/System.Windows/SetterBaseCollection.cs			\
+	$(srcdir)/System.Windows/SetterBase.cs					\
+	$(srcdir)/System.Windows/Setter.cs					\
 	$(srcdir)/System.Windows/Size.cs					\
 	$(srcdir)/System.Windows/SizeChangedEventArgs.cs			\
 	$(srcdir)/System.Windows/SizeChangedEventHandler.cs			\
 	$(srcdir)/System.Windows/StartupEventArgs.cs				\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
+	$(srcdir)/System.Windows/Style.cs					\
+	$(srcdir)/System.Windows/TemplateBindingExpression.cs			\
 	$(srcdir)/System.Windows/TextAlignment.cs				\
 	$(srcdir)/System.Windows/TextDecorationCollection.cs			\
 	$(srcdir)/System.Windows/TextDecorationKind.cs				\
@@ -156,8 +161,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/UIElement.cs					\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
+	$(srcdir)/System.Windows/VisualStateGroup.cs				\
+	$(srcdir)/System.Windows/VisualState.cs					\
+	$(srcdir)/System.Windows/VisualStateManager.cs				\
+	$(srcdir)/System.Windows/VisualTransition.cs				\
 	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
+	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Documents/FontSource.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\

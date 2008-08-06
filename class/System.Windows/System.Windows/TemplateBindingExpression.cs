@@ -1,5 +1,5 @@
 //
-// SizeChangedEventArgs.cs
+// TemplateBindingExpression.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -25,44 +25,19 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-//
 
-using System;
-using System.Security;
 using Mono;
+using System.Windows.Data;
+using System.Windows.Controls;
 
-namespace System.Windows
-{
-	public class SizeChangedEventArgs : RoutedEventArgs
-	{
-		public SizeChangedEventArgs () : base (NativeMethods.size_changed_event_args_new ())
-		{
-		}
+namespace System.Windows {
+	public class TemplateBindingExpression : Expression {
+		internal TemplateBindingExpression () { }
 
-		internal SizeChangedEventArgs (IntPtr raw) : base (raw)
-		{
-		}
+		protected internal Control _source;
+		protected internal DependencyProperty _sourceProperty;
 
-		public Size NewSize {
-#if NET_2_1
-			[SecuritySafeCritical]
-#endif
-			get {
-				UnmanagedSize u = new UnmanagedSize();
-				NativeMethods.size_changed_event_args_get_new_size (native, ref u);
-				return new Size (u.width, u.height);
-			}
-		}
-
-		public Size PreviousSize {
-#if NET_2_1
-			[SecuritySafeCritical]
-#endif
-			get {
-				UnmanagedSize u = new UnmanagedSize();
-				NativeMethods.size_changed_event_args_get_prev_size (native, ref u);
-				return new Size (u.width, u.height);
-			}
-		}
+		protected internal FrameworkElement _target;
+		protected internal DependencyProperty _targetProperty;
 	}
 }

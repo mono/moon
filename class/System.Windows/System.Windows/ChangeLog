@@ -1,5 +1,20 @@
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
+	* Thickness.cs: remove ^M's.
+
+	* TemplateBindingExpression.cs: add.
+
+	* VisualStateManager.cs, VisualState.cs, VisualTransition.cs,
+	VisualStateGroup.cs: stub these out.
+
+	* FrameworkElement.cs, UIElement.cs: move properties from
+	UIElement to FrameworkElement.
+
+	* SizeChangedEventArgs.cs: wrap the unmanaged SizeChangedEventArgs
+	class.
+
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
 	* DependencyObject.cs (ValueToObject): don't switch on the
 	fullname of a type - compare it directly with == and typeof().
 	Add support for marshalling Cursor as unmanaged int32.

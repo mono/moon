@@ -42,6 +42,7 @@ namespace Mono {
 	}
 
 	internal class Events {
+		internal static UnmanagedEventHandler binding_validation_error = new UnmanagedEventHandler (binding_validation_error_callback);
 		internal static UnmanagedEventHandler mouse_motion = new UnmanagedEventHandler (mouse_motion_notify_callback);
 		internal static UnmanagedEventHandler mouse_button_down = new UnmanagedEventHandler (mouse_button_down_callback);
 		internal static UnmanagedEventHandler mouse_button_up = new UnmanagedEventHandler (mouse_button_up_callback);
@@ -50,9 +51,17 @@ namespace Mono {
 		internal static UnmanagedEventHandler key_up = new UnmanagedEventHandler (key_up_callback);
 		internal static UnmanagedEventHandler got_focus = new UnmanagedEventHandler (got_focus_callback);
 		internal static UnmanagedEventHandler lost_focus = new UnmanagedEventHandler (lost_focus_callback);
+		internal static UnmanagedEventHandler layout_updated = new UnmanagedEventHandler (layout_updated_callback);
 		internal static UnmanagedEventHandler loaded = new UnmanagedEventHandler (loaded_callback);
 		internal static UnmanagedEventHandler mouse_leave = new UnmanagedEventHandler (mouse_leave_callback);
+		internal static UnmanagedEventHandler size_changed = new UnmanagedEventHandler (size_changed_callback);
 		internal static UnmanagedEventHandler surface_resized = new UnmanagedEventHandler (surface_resized_callback);
+
+		static void binding_validation_error_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			// XXX
+			throw new NotImplementedException ();
+		}
 
 		static void got_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
@@ -82,11 +91,26 @@ namespace Mono {
 			}
 		}
 
+		static void layout_updated_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
+
+				e.InvokeLayoutUpdated ();
+			}
+			catch (Exception ex) {
+				if (IsPlugin ())
+					ReportException (ex);
+				else
+					throw;
+			}
+		}
+
 		static void loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			try {
-				UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
-				//e.InvokeLoaded ();
+				FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
+				e.InvokeLoaded ();
 				
 				//FIXME: BrowserHost is now replaced by SilverlightHost.Content
 				BrowserHost.InvokeResize ();
@@ -197,6 +221,20 @@ namespace Mono {
 			try {
 				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
 				e.InvokeMouseEnter (new MouseEventArgs (calldata));
+			}
+			catch (Exception ex) {
+				if (IsPlugin ())
+					ReportException (ex);
+				else
+					throw;
+			}
+		}
+
+		static void size_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
+				e.InvokeSizeChanged (new SizeChangedEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())

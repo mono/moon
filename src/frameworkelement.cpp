@@ -11,14 +11,36 @@
 
 #include <config.h>
 
+#include <math.h>
+
 #include "frameworkelement.h"
+#include "thickness.h"
+#include "collection.h"
 
-
+DependencyProperty *FrameworkElement::CursorProperty;
 DependencyProperty *FrameworkElement::HeightProperty;
+DependencyProperty *FrameworkElement::ResourcesProperty;
+DependencyProperty *FrameworkElement::TagProperty;
+DependencyProperty *FrameworkElement::TriggersProperty;
 DependencyProperty *FrameworkElement::WidthProperty;
+
+// 2.0 only DPs
+DependencyProperty *FrameworkElement::ActualHeightProperty;
+DependencyProperty *FrameworkElement::ActualWidthProperty;
+DependencyProperty *FrameworkElement::HorizontalAlignmentProperty;
+DependencyProperty *FrameworkElement::LanguageProperty;
+DependencyProperty *FrameworkElement::MarginProperty;
+DependencyProperty *FrameworkElement::MaxHeightProperty;
+DependencyProperty *FrameworkElement::MaxWidthProperty;
+DependencyProperty *FrameworkElement::MinHeightProperty;
+DependencyProperty *FrameworkElement::MinWidthProperty;
+DependencyProperty *FrameworkElement::VerticalAlignmentProperty;
 
 FrameworkElement::FrameworkElement ()
 {
+	// XXX bad bad bad.  no virtual method calls in ctors
+	SetValue (FrameworkElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
+	SetValue (FrameworkElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 }
 
 void
@@ -136,5 +158,22 @@ void
 framework_element_init (void)
 {
 	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
+	FrameworkElement::CursorProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Cursor", new Value ((gint32)MouseCursorDefault));
+	FrameworkElement::ResourcesProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Resources", Type::RESOURCE_DICTIONARY);
+	FrameworkElement::TagProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Tag", Type::STRING);
+	FrameworkElement::TriggersProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
 	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
+
+	// the 2.0 only DPs
+	FrameworkElement::ActualHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualHeight", new Value (0.0));
+	FrameworkElement::ActualWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualWidth", new Value (0.0));
+	FrameworkElement::HorizontalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "HorizontalAlignment", new Value (HorizontalAlignmentStretch));
+	FrameworkElement::LanguageProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Language", new Value ("en-US"));
+	FrameworkElement::MarginProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Margin", new Value (Thickness (0)));
+	FrameworkElement::MaxHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MaxHeight", new Value (INFINITY));
+	FrameworkElement::MaxWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MaxWidth", new Value (INFINITY));
+	FrameworkElement::MinHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MinHeight", new Value (0.0));
+	FrameworkElement::MinWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MinWidth", new Value (0.0));
+	FrameworkElement::VerticalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "VerticalAlignment", new Value (VerticalAlignmentStretch));
+
 }

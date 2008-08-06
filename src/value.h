@@ -156,6 +156,7 @@ class RowDefinitionCollection;
 class Run;
 class ScaleTransform;
 class Shape;
+class SizeChangedEventArgs;
 class SkewTransform;
 class SolidColorBrush;
 class SplineColorKeyFrame;
@@ -395,6 +396,7 @@ public:
 	Run*                           AsRun () { checked_get_subclass (Type::RUN, Run) }
 	ScaleTransform*                AsScaleTransform () { checked_get_subclass (Type::SCALETRANSFORM, ScaleTransform) }
 	Shape*                         AsShape () { checked_get_subclass (Type::SHAPE, Shape) }
+	SizeChangedEventArgs*          AsSizeChangedEventArgs () { checked_get_subclass (Type::SIZECHANGEDEVENTARGS, SizeChangedEventArgs) }
 	SkewTransform*                 AsSkewTransform () { checked_get_subclass (Type::SKEWTRANSFORM, SkewTransform) }
 	SolidColorBrush*               AsSolidColorBrush () { checked_get_subclass (Type::SOLIDCOLORBRUSH, SolidColorBrush) }
 	SplineColorKeyFrame*           AsSplineColorKeyFrame () { checked_get_subclass (Type::SPLINECOLORKEYFRAME, SplineColorKeyFrame) }

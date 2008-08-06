@@ -44,10 +44,6 @@ UIElement::UIElement ()
 	desired_size = Size (0, 0);
 #endif
 	
-	// XXX bad bad bad.  no virtual method calls in ctors
-	SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
-	SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
-
 	ComputeLocalTransform ();
 	ComputeTotalRenderVisibility ();
 	ComputeTotalHitTestVisibility ();
@@ -809,15 +805,11 @@ UIElement::GetTimeManager ()
 
 
 DependencyProperty *UIElement::ClipProperty;
-DependencyProperty *UIElement::CursorProperty;
 DependencyProperty *UIElement::IsHitTestVisibleProperty;
 DependencyProperty *UIElement::OpacityMaskProperty;
 DependencyProperty *UIElement::OpacityProperty;
 DependencyProperty *UIElement::RenderTransformOriginProperty;
 DependencyProperty *UIElement::RenderTransformProperty;
-DependencyProperty *UIElement::ResourcesProperty;
-DependencyProperty *UIElement::TagProperty;
-DependencyProperty *UIElement::TriggersProperty;
 DependencyProperty *UIElement::VisibilityProperty;
 DependencyProperty *UIElement::ZIndexProperty;
 
@@ -825,15 +817,11 @@ void
 uielement_init (void)
 {
 	UIElement::ClipProperty = DependencyProperty::Register (Type::UIELEMENT, "Clip", Type::GEOMETRY);
-	UIElement::CursorProperty = DependencyProperty::Register (Type::UIELEMENT, "Cursor", new Value ((gint32)MouseCursorDefault));
 	UIElement::IsHitTestVisibleProperty = DependencyProperty::Register (Type::UIELEMENT, "IsHitTestVisible", new Value (true));
 	UIElement::OpacityMaskProperty = DependencyProperty::Register (Type::UIELEMENT, "OpacityMask", Type::BRUSH);
 	UIElement::OpacityProperty = DependencyProperty::Register (Type::UIELEMENT, "Opacity", new Value(1.0));
 	UIElement::RenderTransformOriginProperty = DependencyProperty::Register (Type::UIELEMENT, "RenderTransformOrigin", new Value (Point (0,0)), Type::POINT);
 	UIElement::RenderTransformProperty = DependencyProperty::Register (Type::UIELEMENT, "RenderTransform", Type::TRANSFORM);
-	UIElement::ResourcesProperty = DependencyProperty::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_DICTIONARY);
-	UIElement::TagProperty = DependencyProperty::Register (Type::UIELEMENT, "Tag", Type::STRING);
-	UIElement::TriggersProperty = DependencyProperty::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
 	UIElement::VisibilityProperty = DependencyProperty::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
 	UIElement::ZIndexProperty = DependencyProperty::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;
 }

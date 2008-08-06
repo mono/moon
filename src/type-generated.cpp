@@ -264,6 +264,7 @@ Type type_infos [] = {
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SIZE'", "SIZE", 0, 0, NULL, NULL, NULL, NULL }, 
 #endif
+	{ Type::SIZECHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "SizeChangedEventArgs", "SIZECHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) size_changed_event_args_new, NULL, NULL }, 
 	{ Type::SKEWTRANSFORM, Type::TRANSFORM, false, "SkewTransform", "SKEWTRANSFORM", 0, 1, NULL, (create_inst_func *) skew_transform_new, NULL, NULL }, 
 	{ Type::SOLIDCOLORBRUSH, Type::BRUSH, false, "SolidColorBrush", "SOLIDCOLORBRUSH", 0, 1, NULL, (create_inst_func *) solid_color_brush_new, NULL, NULL }, 
 	{ Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME, false, "SplineColorKeyFrame", "SPLINECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_color_key_frame_new, NULL, NULL }, 

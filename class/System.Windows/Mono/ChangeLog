@@ -1,5 +1,10 @@
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
+	* Events.cs: add in some more event types for FrameworkElement's
+	new events.
+
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
 	* Events.cs: use MouseButtonEventArgs for button up/down.
 
 2008-07-29  Jeffrey Stedfast  <fejj@novell.com>

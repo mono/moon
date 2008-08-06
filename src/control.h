@@ -13,51 +13,11 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-
 #include "frameworkelement.h"
+#include "thickness.h"
 #include "brush.h"
 #include "enums.h"
 #include "xaml.h"
-
-struct Thickness {
-	double left;
-	double top;
-	double right;
-	double bottom;
-	
-	Thickness (double uniform)
-	{
-		bottom = uniform;
-		right = uniform;
-		left = uniform;
-		top = uniform;
-	}
-	
-	Thickness (double hori, double vert)
-	{
-		bottom = vert;
-		right = hori;
-		left = hori;
-		top = vert;
-	}
-	
-	Thickness (double left, double top, double right, double bottom)
-	{
-		this->bottom = bottom;
-		this->right = right;
-		this->left = left;
-		this->top = top;
-	}
-	
-	Thickness (const Thickness &thickness)
-	{
-		bottom = thickness.bottom;
-		right = thickness.right;
-		left = thickness.left;
-		top = thickness.top;
-	}
-};
 
 //
 // Control Class
@@ -168,6 +128,8 @@ class Control : public FrameworkElement {
 	VerticalAlignment GetVerticalContentAlignment ();
 };
 
+
+G_BEGIN_DECLS
 
 void control_init (void);
 

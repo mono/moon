@@ -1,5 +1,9 @@
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
+	* System.Windows.Data/BindingExpressionBase.cs: stub.
+
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (system_windows_sources): add KeyboardNavigation.cs
 
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
