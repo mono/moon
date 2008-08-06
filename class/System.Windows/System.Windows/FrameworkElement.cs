@@ -40,8 +40,9 @@ namespace System.Windows {
 		public static readonly DependencyProperty ActualWidthProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "ActualWidth", typeof (double));
 
-		public static readonly DependencyProperty DataContextProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "DataContext", typeof (object));
+		public static readonly DependencyProperty DataContextProperty = null;
+			// Commented out until native code has this too
+			// DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "DataContext", typeof (object));
 
 		public static readonly DependencyProperty HeightProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Height", typeof (double));
@@ -56,10 +57,10 @@ namespace System.Windows {
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Margin", typeof (Thickness));
 		
 		public static readonly DependencyProperty MaxHeightProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MaxHeightProperty", typeof (double));
+			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MaxHeight", typeof (double));
 
 		public static readonly DependencyProperty MaxWidthProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MaxWidthProperty", typeof (double));
+			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MaxWidth", typeof (double));
 
 		public static readonly DependencyProperty MinHeightProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinHeight", typeof (double));

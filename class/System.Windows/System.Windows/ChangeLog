@@ -1,3 +1,9 @@
+2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* FrameworkElement.cs: Comment out DataContextProperty, it doesn't
+	  exist in native code yet (so every managed app will crash when
+	  looking up this property). Fix MaxHeight/Width property lookup.
+
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyObject.cs: add GeneralTransform to the list of types
