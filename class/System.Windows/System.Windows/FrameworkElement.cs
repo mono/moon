@@ -40,9 +40,6 @@ namespace System.Windows {
 		public static readonly DependencyProperty ActualWidthProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "ActualWidth", typeof (double));
 
-		private static readonly DependencyProperty CursorProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Cursor", typeof (Cursor));
-
 		public static readonly DependencyProperty DataContextProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "DataContext", typeof (object));
 
@@ -70,20 +67,27 @@ namespace System.Windows {
 		public static readonly DependencyProperty MinWidthProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinWidth", typeof (double));
 
-		private static readonly DependencyProperty ResourcesProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Resources", typeof (ResourceDictionary));
-		
-		public static readonly DependencyProperty TagProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Tag", typeof (object));
-
-		private static readonly DependencyProperty TriggersProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Triggers", typeof (TriggerCollection));
-
 		public static readonly DependencyProperty VerticalAlignmentProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "VerticalAlignment", typeof (VerticalAlignment));
 
 		public static readonly DependencyProperty WidthProperty =
 			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Width", typeof (double));
+
+		// XXX we look these next four properties up based on
+		// Kind.UIELEMENT due to the fact that in order to
+		// maintain 1.0 and 2.0 working, we have to leave the
+		// unmanaged properties in the UIElement class.
+		private static readonly DependencyProperty CursorProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Cursor", typeof (Cursor));
+
+		private static readonly DependencyProperty ResourcesProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Resources", typeof (ResourceDictionary));
+		
+		public static readonly DependencyProperty TagProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Tag", typeof (object));
+
+		private static readonly DependencyProperty TriggersProperty =
+			DependencyProperty.Lookup (Kind.UIELEMENT, "Triggers", typeof (TriggerCollection));
 
 		
 		internal FrameworkElement () : base (NativeMethods.framework_element_new ())
