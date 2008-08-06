@@ -22,8 +22,6 @@
 
 #define LOG_MMS(...) //printf (__VA_ARGS__);
 
-#error break it again
-
 static inline bool
 is_valid_mms_header (MmsHeader *header)
 {
