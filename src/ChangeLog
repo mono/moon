@@ -1,5 +1,12 @@
 2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyproperty.cpp, type.cpp, type.h, type.h.in,
+	  type-generated.cpp: Add custom properties to a GSList instead of
+	  the hash table given that several custom properties can be
+	  registered on the same type with the same name.
+
+2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Make src and plugin projects build.
 
 2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -1,3 +1,7 @@
+2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* typegen.cs: Updated to cope with one more Type field.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* cgen.cs: Implement ctor (_new) and dtor (_free) generation.

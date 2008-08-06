@@ -205,17 +205,13 @@ DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *defa
 	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, false);
 }
 
-
+#if SL_2_0
 DependencyProperty *
 DependencyProperty::RegisterFull (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
-#if SL_2_0
 	return RegisterFull (additional_types, additional_types->Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, true);
-#else
-	g_warning ("Moonlight: Called 2.0 only method.");
-	return NULL;
-#endif
 }
+#endif
 
 //
 // Register the dependency property that belongs to @type with the name @name
@@ -232,19 +228,22 @@ DependencyProperty::RegisterFull (Types *additional_types, Type *type, const cha
 	
 	property = new DependencyProperty (type->type, name, default_value, vtype, attached, readonly, always_change, changed_callback, is_custom);
 	
-	if (type->properties == NULL) {
-		type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL /* If we overwrite properties they still need to live *//* free_property */);
-//		printf ("DependencyProperty::RegisterFull (%p, %s, %s, %p, %i, %i, %i, %i): Created hashtable for type (hash table: %p)\n", type->properties, type->name, name, default_value, vtype, attached, readonly, always_change, type->properties);
+	if (is_custom) {
+		// Managed code is allowed to register several properties with the same name
+		// and they all get the callback called when the property value changes.
+		// See comment in type.h.
+		type->custom_properties = g_slist_prepend (type->custom_properties, property);
+	} else {
+		if (type->properties == NULL)
+			type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_property);
+
+		if (g_hash_table_lookup (type->properties, property->hash_key) != NULL) {
+			g_warning ("DependencyProperty::RegisterFull (): Trying to register the property '%s' in the type '%s', and there already is a property registered on that type with the same name.",
+				property->GetName (), type->name);
+		} else {
+			g_hash_table_insert (type->properties, property->hash_key, property);
+		}
 	}
-
-	// TODO: managed code is allowed to register several properties with the same name
-	// and they all get the callback called when the property value changes. Here we 
-	// overwrite (and leak) any previous DP's with the same name (and therefore 
-	// will (but shouldn't) raise an exception if managed code changes the previous
-	// value (given that the type doesn't contain the property anymore).
-
-	g_hash_table_insert (type->properties, property->hash_key, property);
-//	printf ("DependencyProperty::RegisterFull (%p, %s, %s, %p, %i, %i, %i, %i, %p): Created property in hash table: %p\n", type->properties, type->name, name, default_value, vtype, attached, readonly, always_change, changed_callback, type->properties);
 
 	return property;
 }

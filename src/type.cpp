@@ -27,6 +27,13 @@ Type::~Type ()
 		g_hash_table_destroy (properties);
 		properties = NULL;
 	}
+	
+	while (custom_properties != NULL) {
+		GSList *current = custom_properties;
+		custom_properties = g_slist_remove_link (custom_properties, current);
+		delete (DependencyProperty *) current->data;
+		g_slist_free1 (current);
+	}
 }
 
 Type *
@@ -45,6 +52,7 @@ Type::Clone ()
 	result->create_inst = create_inst;
 	result->content_property = g_strdup (content_property);
 	result->properties = NULL;
+	result->custom_properties = NULL;
 	
 	return result;
 }
