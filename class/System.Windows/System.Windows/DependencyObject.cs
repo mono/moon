@@ -348,7 +348,11 @@ namespace System.Windows {
 					return new TimeSpan (val->u.i64);
 						
 				case Kind.INT32:
-					return val->u.i32;
+					// marshall back to the .NET type that we simply serialised as int for unmanaged usage
+					if (type == typeof (System.Windows.Input.Cursor))
+						return new Cursor ((CursorType)val->u.i32);
+					else
+						return val->u.i32;
 
 				case Kind.MANAGED:
 					IntPtr managed_object = val->u.p;
@@ -361,16 +365,14 @@ namespace System.Windows {
 						return str;
 					
 					// marshall back to the .NET type that we simply serialised as 'string' for unmanaged usage
-					switch (type.FullName) {
-					case "System.Windows.Markup.XmlLanguage":
+					if (type == typeof (System.Windows.Markup.XmlLanguage))
 						return XmlLanguage.GetLanguage (str);
-					case "System.Windows.Media.FontFamily":
+					else if (type == typeof (System.Windows.Media.FontFamily))
 						return new FontFamily (str);
-					case "System.Uri":
+					else if (type == typeof (System.Uri))
 						return new Uri (str);
-					default:
+					else
 						return str;
-					}
 				}
 				
 				case Kind.POINT: {
@@ -505,35 +507,43 @@ namespace System.Windows {
 					value.k = dov.GetKind ();
 					value.u.p = dov_native;
 					NativeMethods.base_ref (dov_native);
-				} else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
+				}
+				else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
 					value.k = Kind.INT32;
 					value.u.i32 = (int) v;
-				} else if (v is bool) {
+				}
+				else if (v is bool) {
 					value.k = Kind.BOOL;
 					value.u.i32 = ((bool) v) ? 1 : 0;
-				} else if (v is double) {
+				}
+				else if (v is double) {
 					value.k = Kind.DOUBLE;
 					value.u.d = (double) v;
-				} else if (v is long) {
+				}
+				else if (v is long) {
 					value.k = Kind.INT64;
 					value.u.i64 = (long) v;
-				} else if (v is TimeSpan) {
+				}
+				else if (v is TimeSpan) {
 					TimeSpan ts = (TimeSpan) v;
 					value.k = Kind.TIMESPAN;
 					value.u.i64 = ts.Ticks;
-				} else if (v is ulong) {
+				}
+				else if (v is ulong) {
 					value.k = Kind.UINT64;
 					value.u.ui64 = (ulong) v;
-				} else if (v is string) {
+				}
+				else if (v is string) {
 					value.k = Kind.STRING;
 
-					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (v as string);
+					byte[] bytes = System.Text.Encoding.UTF8.GetBytes ((string)v);
 					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
 					Marshal.Copy (bytes, 0, result, bytes.Length);
 					Marshal.WriteByte (result, bytes.Length, 0);
 
 					value.u.p = result;
-				} else if (v is double []) {
+				}
+				else if (v is double []) {
 					double [] dv = (double []) v;
 
 					value.k = Kind.DOUBLE_ARRAY;
@@ -542,7 +552,8 @@ namespace System.Windows {
 					array->count = dv.Length;
 					array->refcount = 1;
 					Marshal.Copy (dv, 0, (IntPtr) (&array->first_d), array->count);
-				} else if (v is Point []) {
+				}
+				else if (v is Point []) {
 					Point [] dv = (Point []) v;
 
 					value.k = Kind.POINT_ARRAY;
@@ -554,27 +565,32 @@ namespace System.Windows {
 					for (int i = 0; i < dv.Length; i++)
 						dp [i] = dv [i];
 					
-				} else if (v is Rect) {
+				}
+				else if (v is Rect) {
 					Rect rect = (Rect) v;
 					value.k = Kind.RECT;
 					value.u.p = Helper.AllocHGlobal (sizeof (Rect));
 					Marshal.StructureToPtr (rect, value.u.p, false); // Unmanaged and managed structure layout is equal.
-				} else if (v is Size) {
+				}
+				else if (v is Size) {
 					Size size = (Size) v;
 					value.k = Kind.SIZE;
 					value.u.p = Helper.AllocHGlobal (sizeof (Size));
 					Marshal.StructureToPtr (size, value.u.p, false); // Unmanaged and managed structure layout is equal.
-				} else if (v is Point) {
+				}
+				else if (v is Point) {
 					Point pnt = (Point) v;
 					value.k = Kind.POINT;
 					value.u.p = Helper.AllocHGlobal (sizeof (Point));
 					Marshal.StructureToPtr (pnt, value.u.p, false); // Unmanaged and managed structure layout is equal.
-				} else if (v is Thickness) {
+				}
+				else if (v is Thickness) {
 					Thickness thickness = (Thickness)v;
 					value.k = Kind.THICKNESS;
 					value.u.p = Helper.AllocHGlobal (sizeof (Thickness));
 					Marshal.StructureToPtr (thickness, value.u.p, false); // Unmanaged and managed structure layout is equal.
-				} else if (v is Color) {
+				}
+				else if (v is Color) {
 					Color c = (Color) v;
 					value.k = Kind.COLOR;
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedColor));
@@ -583,19 +599,22 @@ namespace System.Windows {
 					color->g = c.G / 255.0f;
 					color->b = c.B / 255.0f;
 					color->a = c.A / 255.0f;
-				} else if (v is Matrix) {
+				}
+				else if (v is Matrix) {
 					Matrix mat = (Matrix) v;
 					value.k = Kind.MATRIX;
 					value.u.p = Helper.AllocHGlobal (sizeof (double) * 6);
 					Marshal.StructureToPtr (mat, value.u.p, false); // Unmanaged and managed structure layout is equal.
-				} else if (v is Duration) {
+				}
+				else if (v is Duration) {
 					Duration d = (Duration) v;
 					value.k = Kind.DURATION;
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedDuration));
 					UnmanagedDuration* duration = (UnmanagedDuration*) value.u.p;
 					duration->kind = d.KindInternal;
 					duration->timespan = d.TimeSpanInternal.Ticks;
-				} else if (v is KeyTime) {
+				}
+				else if (v is KeyTime) {
 					KeyTime k = (KeyTime) v;
 					value.k = Kind.KEYTIME;
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedKeyTime));
@@ -603,7 +622,8 @@ namespace System.Windows {
 					keytime->kind = (int) k.type;
 					keytime->percent = k.percent;
 					keytime->timespan = k.time_span.Ticks;
-				} else if (v is RepeatBehavior) {
+				}
+				else if (v is RepeatBehavior) {
 					RepeatBehavior d = (RepeatBehavior) v;
 					value.k = Kind.REPEATBEHAVIOR;
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedRepeatBehavior));
@@ -611,8 +631,9 @@ namespace System.Windows {
 					rep->kind = d.kind;
 					rep->count = d.count;
 					rep->timespan = d.duration.Ticks;
-				} else if (v is FontFamily) {
-					FontFamily family = v as FontFamily;
+				}
+				else if (v is FontFamily) {
+					FontFamily family = (FontFamily) v;
 					
 					value.k = Kind.STRING;
 					
@@ -622,8 +643,9 @@ namespace System.Windows {
 					Marshal.WriteByte (result, bytes.Length, 0);
 					
 					value.u.p = result;
-				} else if (v is Uri) {
-					Uri uri = v as Uri;
+				}
+				else if (v is Uri) {
+					Uri uri = (Uri) v;
 					
 					value.k = Kind.STRING;
 					
@@ -633,8 +655,9 @@ namespace System.Windows {
 					Marshal.WriteByte (result, bytes.Length, 0);
 					
 					value.u.p = result;
-				} else if (v is XmlLanguage) {
-					XmlLanguage lang = v as XmlLanguage;
+				}
+				else if (v is XmlLanguage) {
+					XmlLanguage lang = (XmlLanguage) v;
 					
 					value.k = Kind.STRING;
 					
@@ -644,7 +667,15 @@ namespace System.Windows {
 					Marshal.WriteByte (result, bytes.Length, 0);
 					
 					value.u.p = result;
-				} else {
+				}
+				else if (v is Cursor) {
+					Cursor c = (Cursor) v;
+
+					value.k = Kind.INT32;
+
+					value.u.i32 = (int)c.cursor;
+				}
+				else {
 					throw new Exception (
 						String.Format ("Do not know how to encode {0} yet", v.GetType ()));
 				}

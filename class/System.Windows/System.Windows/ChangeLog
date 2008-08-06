@@ -1,3 +1,18 @@
+2008-08-05  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs (ValueToObject): don't switch on the
+	fullname of a type - compare it directly with == and typeof().
+	Add support for marshalling Cursor as unmanaged int32.
+
+	(GetAsValue): Add support for marshalling Cursor as unmanaged
+	int32.  Also, make the code more consistent - use a direct cast
+	inside the "if (foo is bar) { ... }" blocks, not "as".
+
+	Also, for the love of god, stop formatting code using using "}
+	else if (...) {".  Insert a blank line between "}" and "else".
+	Otherwise it's !#*&^!%# impossible to see what the condition is in
+	a mess of other code.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyObject.cs: Deleted Visual (moved content into UIElement),
