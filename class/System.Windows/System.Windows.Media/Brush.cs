@@ -40,7 +40,7 @@ namespace System.Windows.Media {
 			RelativeTransformProperty = DependencyProperty.Lookup (Kind.BRUSH, "RelativeTransform", typeof (Transform));
 		}
 		
-		public Brush () : base (NativeMethods.brush_new ())
+		protected Brush () : base (NativeMethods.brush_new ())
 		{
 		}
 		
