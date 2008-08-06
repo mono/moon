@@ -41,7 +41,7 @@ namespace System.Windows.Media {
 			DependencyProperty.Lookup (Kind.GRADIENTBRUSH, "SpreadMethod", typeof (GradientSpreadMethod));
 
 
-		public GradientBrush () : base (NativeMethods.gradient_brush_new ())
+		protected GradientBrush () : base (NativeMethods.gradient_brush_new ())
 		{
 		}
 		

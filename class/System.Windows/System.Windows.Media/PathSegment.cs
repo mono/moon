@@ -34,7 +34,7 @@ namespace System.Windows.Media {
 		{
 		}
 		
-		public PathSegment () : base (NativeMethods.path_segment_new ())
+		protected PathSegment () : base (NativeMethods.path_segment_new ())
 		{
 		}
 		
