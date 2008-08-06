@@ -1,5 +1,9 @@
 2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* type.cpp: Fix for old glib in sled.
+
+2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.cpp, type.cpp, type.h, type.h.in,
 	  type-generated.cpp: Add custom properties to a GSList instead of
 	  the hash table given that several custom properties can be

@@ -28,11 +28,13 @@ Type::~Type ()
 		properties = NULL;
 	}
 	
-	while (custom_properties != NULL) {
+	if (custom_properties != NULL) {
 		GSList *current = custom_properties;
-		custom_properties = g_slist_remove_link (custom_properties, current);
-		delete (DependencyProperty *) current->data;
-		g_slist_free1 (current);
+		while (current != NULL) {
+			delete (DependencyProperty *) current->data;
+			current = current->next;
+		}
+		g_slist_free (custom_properties);
 	}
 }
 
