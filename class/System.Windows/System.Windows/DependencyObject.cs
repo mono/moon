@@ -399,16 +399,18 @@ namespace System.Windows {
 				case Kind.DOUBLE_ARRAY: {
 					UnmanagedArray *array = (UnmanagedArray*)val->u.p;
 					double [] values = new double [array->count];
-					Marshal.Copy ((IntPtr) (&array->first_d), values, 0, array->count);
+					fixed (double* first_d = &array->first_d) {
+						Marshal.Copy ((IntPtr)first_d, values, 0, array->count);
+					}
 					return values;
 				}
 					
 				case Kind.POINT_ARRAY: {
 					UnmanagedArray *array = (UnmanagedArray*)val->u.p;
 					Point [] values = new Point [array->count];
-					Point* first = (Point*) &array->first_pnt;
-					for (int i = 0; i < array->count; i++) {
-						values [i] = first [i];
+					fixed (UnmanagedPoint *first = &array->first_pnt) {
+						for (int i = 0; i < array->count; i++)
+							values [i] = new Point (first [i].x, first[i].y);
 					}
 					return values;
 				}
@@ -552,7 +554,9 @@ namespace System.Windows {
 					UnmanagedArray* array = (UnmanagedArray*) value.u.p;
 					array->count = dv.Length;
 					array->refcount = 1;
-					Marshal.Copy (dv, 0, (IntPtr) (&array->first_d), array->count);
+					fixed (double* first_d = &array->first_d) {
+						Marshal.Copy (dv, 0, (IntPtr) first_d, array->count);
+					}
 				}
 				else if (v is Point []) {
 					Point [] dv = (Point []) v;
@@ -562,9 +566,13 @@ namespace System.Windows {
 					UnmanagedArray* array = (UnmanagedArray*) value.u.p;
 					array->count = dv.Length;
 					array->refcount = 1;
-					Point * dp = (Point*) &array->first_pnt;
-					for (int i = 0; i < dv.Length; i++)
-						dp [i] = dv [i];
+					fixed (UnmanagedPoint *dp = &array->first_pnt) {
+						for (int i = 0; i < dv.Length; i++) {
+							dp [i] = new UnmanagedPoint ();
+							dp [i].x = dv [i].X;
+							dp [i].y = dv [i].Y;
+						}
+					}
 					
 				}
 				else if (v is Rect) {
