@@ -1,3 +1,7 @@
+2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* moon.mds: Make src and plugin projects build.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* tools/tools.mdp: Updated.

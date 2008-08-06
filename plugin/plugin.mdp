@@ -1,10 +1,31 @@
 <Project name="plugin" fileversion="2.0" language="C" Target="Bin" ctype="CProject">
   <Configurations active="Default">
-    <Configuration name="Debug" ctype="CProjectConfiguration">
+    <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="plugin" />
-      <Build debugmode="True" target="Bin" />
+      <Build debugmode="True" target="SharedLibrary" />
       <Execution runwithwarnings="True" consolepause="True" />
-      <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP" ctype="CCompilationParameters" />
+      <Includes>
+        <Include>${ProjectDir}</Include>
+        <Include>${CombineDir}</Include>
+        <Include>${CombineDir}/cairo/src</Include>
+        <Include>${CombineDir}/src</Include>
+        <Include>${CombineDir}/src/zip</Include>
+        <Include>${ProjectDir}/moz-sdk</Include>
+        <Include>/usr/include/X11</Include>
+        <Include>/usr/include/gtk-2.0</Include>
+        <Include>/usr/lib/gtk-2.0/include</Include>
+        <Include>/usr/include/atk-1.0</Include>
+        <Include>/usr/include/cairo</Include>
+        <Include>/usr/include/pango-1.0</Include>
+        <Include>/usr/include/glib-2.0</Include>
+        <Include>/usr/lib/glib-2.0/include</Include>
+        <Include>/usr/include/freetype2</Include>
+        <Include>/usr/include/libpng12</Include>
+        <Include>/usr/include/alsa</Include>
+        <Include>/mono/main/install/include</Include>
+        <Include>/mono/main/install/include/mono-1.0</Include>
+      </Includes>
+      <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="-x none" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP HAVE_CONFIG_H _REENTRANT PLUGIN_DIR=\&quot;/mono/main/install/lib/moon\&quot;" ctype="CCompilationParameters" />
     </Configuration>
     <Configuration name="Release" ctype="CProjectConfiguration">
       <Output directory="bin/Release" output="plugin" />
@@ -17,22 +38,22 @@
     <File name="debug.js" subtype="Code" buildaction="Nothing" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="mono.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="mono.cpp" subtype="Code" buildaction="Compile" />
     <File name="moonlight.cs" subtype="Code" buildaction="Nothing" />
     <File name="moonlight.h" subtype="Code" buildaction="Nothing" />
     <File name="moon-mono.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin.cpp" subtype="Code" buildaction="Compile" />
     <File name="plugin.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-class.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-class.cpp" subtype="Code" buildaction="Compile" />
     <File name="plugin-class.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-entry.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-glue.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-proxy.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-entry.cpp" subtype="Code" buildaction="Compile" />
+    <File name="plugin-glue.cpp" subtype="Code" buildaction="Compile" />
+    <File name="plugin-proxy.cpp" subtype="Code" buildaction="Compile" />
     <File name="README" subtype="Code" buildaction="Nothing" />
     <File name="TODO" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-downloader.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-downloader.cpp" subtype="Code" buildaction="Compile" />
     <File name="plugin-downloader.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-debug.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-debug.cpp" subtype="Code" buildaction="Compile" />
     <File name="plugin-debug.h" subtype="Code" buildaction="Nothing" />
     <File name="browser-bridge.h" subtype="Code" buildaction="Nothing" />
     <File name="firefox/ff3/ff3-bridge.cpp" subtype="Code" buildaction="Nothing" />
@@ -53,6 +74,7 @@
     <File name="npstream-request.h" subtype="Code" buildaction="Nothing" />
     <File name="windowless.cpp" subtype="Code" buildaction="Nothing" />
     <File name="windowless.h" subtype="Code" buildaction="Nothing" />
+    <File name="plugin.mdp" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

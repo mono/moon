@@ -1,5 +1,9 @@
 2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* src.mdp: Make src and plugin projects build.
+
+2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Updated.
 
 2008-08-05  Chris Toshok  <toshok@ximian.com>

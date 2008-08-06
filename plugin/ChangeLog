@@ -1,3 +1,7 @@
+2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.mdp: Make src and plugin projects build.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-debug.cpp: Deleted Visual (moved content into UIElement), and

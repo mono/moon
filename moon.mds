@@ -1,14 +1,24 @@
 <Combine name="moon" fileversion="2.0">
   <Configurations active="Default">
-    <Configuration name="Default" ctype="CombineConfiguration">
+    <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="src" configuration="Debug" />
       <Entry build="True" name="plugin" configuration="Debug" />
       <Entry build="True" name="Mono.Moonlight" configuration="Debug" />
-      <Entry build="True" name="System.Windows" configuration="Default" />
+      <Entry build="True" name="System.Windows" configuration="Debug" />
       <Entry build="True" name="System.Windows.Browser" configuration="Debug" />
       <Entry build="True" name="harness" configuration="Debug" />
-      <Entry build="True" name="test" configuration="Default" />
-      <Entry build="True" name="tools" configuration="Default" />
+      <Entry build="True" name="test" configuration="Debug" />
+      <Entry build="True" name="tools" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="src" configuration="Release" />
+      <Entry build="True" name="plugin" configuration="Release" />
+      <Entry build="True" name="Mono.Moonlight" configuration="Release" />
+      <Entry build="True" name="System.Windows" configuration="Release" />
+      <Entry build="True" name="System.Windows.Browser" configuration="Release" />
+      <Entry build="True" name="harness" configuration="Release" />
+      <Entry build="True" name="test" configuration="Release" />
+      <Entry build="True" name="tools" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">

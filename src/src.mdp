@@ -4,6 +4,23 @@
       <Output directory="bin/Debug" output="src" />
       <Build debugmode="True" target="SharedLibrary" />
       <Execution runwithwarnings="True" consolepause="True" />
+      <Includes>
+        <Include>${ProjectDir}</Include>
+        <Include>${CombineDir}</Include>
+        <Include>${CombineDir}/cairo/src</Include>
+        <Include>/usr/include/gtk-2.0</Include>
+        <Include>/usr/lib/gtk-2.0/include</Include>
+        <Include>/usr/include/atk-1.0</Include>
+        <Include>/usr/include/cairo</Include>
+        <Include>/usr/include/pango-1.0</Include>
+        <Include>/usr/include/glib-2.0</Include>
+        <Include>/usr/lib/glib-2.0/include</Include>
+        <Include>/usr/include/freetype2</Include>
+        <Include>/usr/include/libpng12</Include>
+        <Include>/usr/include/alsa</Include>
+        <Include>/mono/main/install/include</Include>
+        <Include>/mono/main/install/lib/pkgconfig/../../include/mono-1.0</Include>
+      </Includes>
       <CodeGeneration WarningLevel="All" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="-x none" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP" ctype="CCompilationParameters" />
     </Configuration>
     <Configuration name="Release" ctype="CProjectConfiguration">
@@ -113,9 +130,9 @@
     <File name="zip/ioapi.h" subtype="Code" buildaction="Nothing" />
     <File name="zip/unzip.h" subtype="Code" buildaction="Nothing" />
     <File name="asf/asf-debug.h" subtype="Code" buildaction="Nothing" />
-    <File name="asf/asf-debug.cpp" subtype="Code" buildaction="Compile" />
+    <File name="asf/asf-debug.cpp" subtype="Code" buildaction="Nothing" />
     <File name="asf/asf-test.h" subtype="Code" buildaction="Nothing" />
-    <File name="asf/asf-test.cpp" subtype="Code" buildaction="Compile" />
+    <File name="asf/asf-test.cpp" subtype="Code" buildaction="Nothing" />
     <File name="pipeline.h" subtype="Code" buildaction="Nothing" />
     <File name="pipeline.cpp" subtype="Code" buildaction="Compile" />
     <File name="pipeline-ffmpeg.cpp" subtype="Code" buildaction="Nothing" />
@@ -144,7 +161,7 @@
     <File name="deployment.h" subtype="Code" buildaction="Nothing" />
     <File name="deployment.cpp" subtype="Code" buildaction="Compile" />
     <File name="dependencyproperty.cpp" subtype="Code" buildaction="Compile" />
-    <File name="dependencyproperty.h" subtype="Code" buildaction="Compile" />
+    <File name="dependencyproperty.h" subtype="Code" buildaction="Nothing" />
     <File name="contentcontrol.cpp" subtype="Code" buildaction="Compile" />
     <File name="contentcontrol.h" subtype="Code" buildaction="Nothing" />
     <File name="grid.cpp" subtype="Code" buildaction="Compile" />
@@ -158,13 +175,14 @@
     <File name="window.h" subtype="Code" buildaction="Nothing" />
     <File name="window-gtk.cpp" subtype="Code" buildaction="Compile" />
     <File name="window-gtk.h" subtype="Code" buildaction="Nothing" />
-    <File name="cbinding.h" subtype="Code" buildaction="Compile" />
+    <File name="cbinding.h" subtype="Code" buildaction="Nothing" />
     <File name="cbinding.cpp" subtype="Code" buildaction="Compile" />
     <File name="error.cpp" subtype="Code" buildaction="Compile" />
     <File name="enums.cpp" subtype="Code" buildaction="Compile" />
     <File name="size.cpp" subtype="Code" buildaction="Compile" />
     <File name="size.h" subtype="Code" buildaction="Nothing" />
     <File name="thickness.h" subtype="Code" buildaction="Nothing" />
+    <File name="src.mdp" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
