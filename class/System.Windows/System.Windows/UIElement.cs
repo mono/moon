@@ -245,7 +245,8 @@ namespace System.Windows {
 			[SecuritySafeCritical]
 #endif
 			get {
-				return System.Windows.NativeMethods.uielement_get_desired_size (native);
+				UnmanagedSize sz = NativeMethods.uielement_get_desired_size (native);
+				return new Size (sz.width, sz.height);
 			}
 		}
 

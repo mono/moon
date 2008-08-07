@@ -21,7 +21,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
-	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
 	$(srcdir)/System/UriTypeConverter.cs					\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
