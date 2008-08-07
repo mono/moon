@@ -435,7 +435,7 @@ namespace System.Windows {
 
 		internal void InvokeMouseLeave ()
 		{
-			EventHandler h = (EventHandler)events[MouseLeaveEvent];
+			MouseEventHandler h = (MouseEventHandler)events[MouseLeaveEvent];
 			if (h != null)
 				h (this, null);
 		}
