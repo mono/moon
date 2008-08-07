@@ -13,37 +13,14 @@ namespace Mono {
 	
 		/* libmoon methods */
 	
-		[DllImport ("moon", EntryPoint="dependency_object_get_value_with_error")]
-		// Value* dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, Type::Kind whatami, DependencyProperty* property, MoonError* error);
-		private extern static IntPtr dependency_object_get_value_with_error_ (IntPtr instance, IntPtr additional_types, Kind whatami, IntPtr property, out MoonError error);
-		public static IntPtr dependency_object_get_value (IntPtr instance, Kind whatami, IntPtr property)
-		{
-			MoonError error;
-			IntPtr result = dependency_object_get_value_with_error_ (instance, Mono.Types.Native, whatami, property, out error);
-			if (error.Number != 0)
-				throw CreateManagedException (error);
-			return result;
-		}
-
 		[DllImport ("moon", EntryPoint="dependency_object_get_default_value_with_error")]
 		// Value* dependency_object_get_default_value_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
 		private extern static IntPtr dependency_object_get_default_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);
 		public static IntPtr dependency_object_get_default_value (IntPtr instance, IntPtr property)
 		{
+			IntPtr result;
 			MoonError error;
-			IntPtr result = dependency_object_get_default_value_with_error_ (instance, Mono.Types.Native, property, out error);
-			if (error.Number != 0)
-				throw CreateManagedException (error);
-			return result;
-		}
-
-		[DllImport ("moon", EntryPoint="dependency_object_get_value_no_default_with_error")]
-		// Value* dependency_object_get_value_no_default_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
-		private extern static IntPtr dependency_object_get_value_no_default_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);
-		public static IntPtr dependency_object_get_value_no_default (IntPtr instance, IntPtr property)
-		{
-			MoonError error;
-			IntPtr result = dependency_object_get_value_no_default_with_error_ (instance, Mono.Types.Native, property, out error);
+			result = dependency_object_get_default_value_with_error_ (instance, Mono.Types.Native, property, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 			return result;
@@ -55,17 +32,49 @@ namespace Mono {
 		// private extern static IntPtr dependency_object_get_name_ (IntPtr instance);
 		// public static string dependency_object_get_name (IntPtr instance)
 		// {
-		// 	IntPtr p = dependency_object_get_name_  (instance);
-		// 	return p == IntPtr.Zero ? null : Marshal.PtrToStringAnsi (p);
+		// 	IntPtr result;
+		// 	result = dependency_object_get_name_ (instance);
+		// 	return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
 		// }
+
+		[DllImport ("moon", EntryPoint="dependency_object_get_value_no_default_with_error")]
+		// Value* dependency_object_get_value_no_default_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
+		private extern static IntPtr dependency_object_get_value_no_default_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);
+		public static IntPtr dependency_object_get_value_no_default (IntPtr instance, IntPtr property)
+		{
+			IntPtr result;
+			MoonError error;
+			result = dependency_object_get_value_no_default_with_error_ (instance, Mono.Types.Native, property, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
+
+		[DllImport ("moon", EntryPoint="dependency_object_get_value_with_error")]
+		// Value* dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, Type::Kind whatami, DependencyProperty* property, MoonError* error);
+		private extern static IntPtr dependency_object_get_value_with_error_ (IntPtr instance, IntPtr additional_types, Kind whatami, IntPtr property, out MoonError error);
+		public static IntPtr dependency_object_get_value (IntPtr instance, Kind whatami, IntPtr property)
+		{
+			IntPtr result;
+			MoonError error;
+			result = dependency_object_get_value_with_error_ (instance, Mono.Types.Native, whatami, property, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
+
+		[DllImport ("moon")]
+		// DependencyProperty* dependency_property_get_dependency_property (Type::Kind type, const char* name);
+		public extern static IntPtr dependency_property_get_dependency_property (Kind type, string name);
 
 		[DllImport ("moon", EntryPoint="dependency_property_get_name")]
 		// const char* dependency_property_get_name (DependencyProperty* instance);
 		private extern static IntPtr dependency_property_get_name_ (IntPtr instance);
 		public static string dependency_property_get_name (IntPtr instance)
 		{
-			IntPtr p = dependency_property_get_name_  (instance);
-			return p == IntPtr.Zero ? null : Marshal.PtrToStringAnsi (p);
+			IntPtr result;
+			result = dependency_property_get_name_ (instance);
+			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
 		}
 
 		[DllImport ("moon")]
@@ -76,33 +85,41 @@ namespace Mono {
 		// bool dependency_property_is_nullable (DependencyProperty* instance);
 		public extern static bool dependency_property_is_nullable (IntPtr instance);
 
-		[DllImport ("moon")]
+		[DllImport ("moon", EntryPoint="dependency_property_register_full")]
 		// DependencyProperty* dependency_property_register_full (Types* additional_types, Type::Kind type, const char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback);
-		public extern static IntPtr dependency_property_register_full (IntPtr additional_types, Kind type, string name, IntPtr default_value, Kind vtype, bool attached, bool read_only, bool always_change, Mono.NativePropertyChangedHandler changed_callback);
+		private extern static IntPtr dependency_property_register_full_ (IntPtr additional_types, Kind type, string name, IntPtr default_value, Kind vtype, bool attached, bool read_only, bool always_change, Mono.NativePropertyChangedHandler changed_callback);
+		public static IntPtr dependency_property_register_full (Kind type, string name, IntPtr default_value, Kind vtype, bool attached, bool read_only, bool always_change, Mono.NativePropertyChangedHandler changed_callback)
+		{
+			IntPtr result;
+			result = dependency_property_register_full_ (Mono.Types.Native, type, name, default_value, vtype, attached, read_only, always_change, changed_callback);
+			return result;
+		}
 
-		[DllImport ("moon")]
-		// DependencyProperty* dependency_property_get_dependency_property (Type::Kind type, const char* name);
-		public extern static IntPtr dependency_property_get_dependency_property (Kind type, string name);
-
-		[DllImport ("moon")]
-		// Types* types_new ();
-		public extern static IntPtr types_new ();
+		[DllImport ("moon", EntryPoint="dependency_property_register_managed_property")]
+		// DependencyProperty* dependency_property_register_managed_property (Types* additional_types, const char* name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler* callback);
+		private extern static IntPtr dependency_property_register_managed_property_ (IntPtr additional_types, string name, Kind property_type, Kind owner_type, bool attached, Mono.NativePropertyChangedHandler callback);
+		public static IntPtr dependency_property_register_managed_property (string name, Kind property_type, Kind owner_type, bool attached, Mono.NativePropertyChangedHandler callback)
+		{
+			IntPtr result;
+			result = dependency_property_register_managed_property_ (Mono.Types.Native, name, property_type, owner_type, attached, callback);
+			return result;
+		}
 
 		[DllImport ("moon")]
 		// void types_free (Types* instance);
 		public extern static void types_free (IntPtr instance);
 
 		[DllImport ("moon")]
-		// Type::Kind types_register_type (Types* instance, const char* name, void* gc_handle, Type::Kind parent);
-		public extern static Kind types_register_type (IntPtr instance, string name, IntPtr gc_handle, Kind parent);
-
-		[DllImport ("moon")]
 		// Type* types_find (Types* instance, Type::Kind type);
 		public extern static IntPtr types_find (IntPtr instance, Kind type);
 
 		[DllImport ("moon")]
-		// DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback);
-		public extern static IntPtr dependency_property_register_managed_property (IntPtr additional_types, string name, Kind property_type, Kind owner_type, bool attached, Mono.NativePropertyChangedHandler callback);
+		// Type::Kind types_register_type (Types* instance, const char* name, void* gc_handle, Type::Kind parent);
+		public extern static Kind types_register_type (IntPtr instance, string name, IntPtr gc_handle, Kind parent);
+
+		[DllImport ("moon")]
+		// Types* types_new ();
+		public extern static IntPtr types_new ();
 
 	}
 }

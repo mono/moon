@@ -60,6 +60,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.ROWDEFINITION_COLLECTION));
 				t = agclr.GetType ("System.Windows.Controls.TextBlock", true); 
 				types.Add (t, new ManagedType (t, Kind.TEXTBLOCK));
+				t = agclr.GetType ("System.Windows.Controls.UIElementCollection", true); 
+				types.Add (t, new ManagedType (t, Kind.UIELEMENT_COLLECTION));
 				t = agclr.GetType ("System.Windows.Controls.UserControl", true); 
 				types.Add (t, new ManagedType (t, Kind.USERCONTROL));
 				t = agclr.GetType ("System.Windows.Documents.Glyphs", true); 
@@ -88,6 +90,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.BEZIERSEGMENT));
 				t = agclr.GetType ("System.Windows.Media.Brush", true); 
 				types.Add (t, new ManagedType (t, Kind.BRUSH));
+				t = agclr.GetType ("System.Windows.Media.DoubleCollection", true); 
+				types.Add (t, new ManagedType (t, Kind.DOUBLE_COLLECTION));
 				t = agclr.GetType ("System.Windows.Media.EllipseGeometry", true); 
 				types.Add (t, new ManagedType (t, Kind.ELLIPSEGEOMETRY));
 				t = agclr.GetType ("System.Windows.Media.GeneralTransform", true); 
@@ -124,6 +128,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.PATHSEGMENT));
 				t = agclr.GetType ("System.Windows.Media.PathSegmentCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.PATHSEGMENT_COLLECTION));
+				t = agclr.GetType ("System.Windows.Media.PointCollection", true); 
+				types.Add (t, new ManagedType (t, Kind.POINT_COLLECTION));
 				t = agclr.GetType ("System.Windows.Media.PolyBezierSegment", true); 
 				types.Add (t, new ManagedType (t, Kind.POLYBEZIERSEGMENT));
 				t = agclr.GetType ("System.Windows.Media.PolyLineSegment", true); 

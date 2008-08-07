@@ -1,3 +1,7 @@
+2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* GeneratedPInvokes.cs, Kind.cs, Types.g.cs: Updated.
+
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
 	* NativeMethods.cs: add uielement_get_desired_size here.

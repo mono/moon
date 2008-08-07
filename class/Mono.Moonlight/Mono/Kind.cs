@@ -60,7 +60,7 @@ namespace Mono {
 		GRADIENTSTOP,
 		GRADIENTSTOP_COLLECTION,
 		GRID,// Silverlight 2.0 only
-		GRIDLENGTH,
+		GRIDLENGTH,// Silverlight 2.0 only
 		IMAGE,
 		IMAGEBRUSH,
 		IMAGEERROREVENTARGS,
