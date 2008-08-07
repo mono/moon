@@ -1,0 +1,36 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+        	<script type="text/javascript" src="Silverlight.js"> </script>
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Source="http://moonlightmedia:81/mediaDrop0123/testsource/mediamatrix/LoveSong_44_128_errorProtection.mp3" />
+			</Canvas>
+		</script>
+    <body>
+        <div id="MediaHost"> </div>
+    </body>
+    <script type="text/javascript">
+		Silverlight.createObject(
+			"#xaml",
+			 document.getElementById("MediaHost"),
+			"MoonlightMediaPlayer",  
+			{
+				width:'640',                
+				height:'480',               
+				inplaceInstallPrompt:false,
+				background:'#D6D6D6',
+				isWindowless:'false',       
+				framerate:'24',             
+				version:'1.0'
+			},
+			{
+				onError:null,               
+				onLoad:null                 
+			},
+			null
+		);
+ 
+    </script>
+</html>        
