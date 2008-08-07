@@ -507,8 +507,16 @@ Shape::ComputeOriginPoint (Rect shape_bounds)
 void
 Shape::ShiftPosition (Point p)
 {
-	if (cached_surface) {
-		cairo_surface_set_device_offset (cached_surface, -p.x, -p.y);
+	double dx = bounds.x - p.x;
+	double dy = bounds.y - p.y;
+
+	// FIXME this is much less than ideal but we must invalidate the surface cache
+	// if the shift is not an integer otherwise we can potentially drow outside our
+	// rounded out bounds.
+       	if (cached_surface && (dx == trunc(dx)) && (dy == trunc(dy))) {
+		cairo_surface_set_device_offset (cached_surface, trunc (-p.x), trunc (-p.y));
+	} else {
+		InvalidateSurfaceCache ();
 	}
 
 	FrameworkElement::ShiftPosition (p);
@@ -1055,10 +1063,6 @@ Rect
 Ellipse::ComputeShapeBounds (bool logical)
 {
 	Value *vh, *vw;
-
-	if (logical)
-		return extents;
-
 	if (Shape::MixedHeightWidth (&vh, &vw)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
@@ -1193,11 +1197,6 @@ Rectangle::ComputeStretchBounds (Rect shape_bounds)
 Rect
 Rectangle::ComputeShapeBounds (bool logical)
 {
-	// this base version of ComputeShapeBounds does not need to distinguish between
-	// logical and physical bounds and we know that physical is already computed
-	if (logical)
-		return extents;
-
 	Value *vh, *vw;
 	if (Shape::MixedHeightWidth (&vh, &vw)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
@@ -1237,7 +1236,7 @@ Rectangle::ComputeShapeBounds (bool logical)
 
 	if (t >= rect.w || t >= rect.h) {
 		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
-		rect = rect.GrowBy (t * .5, t * .5);
+		rect = rect.GrowBy (t * .5005, t * .5005);
 	} else {
 		SetShapeFlags (UIElement::SHAPE_NORMAL);
 	}

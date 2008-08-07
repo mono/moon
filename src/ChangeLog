@@ -1,3 +1,10 @@
+2008-08-07  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (Shape::ShiftPosition): add an unfortunate restriction
+	on ShiftPosition interaction with the shape cache to fix the
+	droppings we were seeing in AnimationMatrix and
+	StoryBoard_ModifyProperty.htm.
+
 2008-08-07  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: When the MediaElement source changes set the
