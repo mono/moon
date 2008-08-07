@@ -239,8 +239,12 @@ DependencyProperty::RegisterFull (Types *additional_types, Type *type, const cha
 			type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_property);
 
 		if ((existing = (DependencyProperty *)g_hash_table_lookup (type->properties, property->hash_key)) != NULL) {
+			/*
+			We'll end up here every time we call runtime_init more than once.
+			Proper fix is to make DPs not initialize more than once, or make them really static (like our Types).
 			g_warning ("DependencyProperty::RegisterFull (): Trying to register the property '%s' in the type '%s', and there already is a property registered on that type with the same name.",
 				property->GetName (), type->name);
+				*/
 			delete property;
 			return existing;
 		} else {

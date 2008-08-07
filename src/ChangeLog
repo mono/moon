@@ -1,3 +1,8 @@
+2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyproperty.cpp: DP: Comment out the duplicate DP warning
+	  until it's fixed.
+
 2008-08-06  Geoff Norton  <gnorton@novell.com>
 
 	* dependencyproperty.cpp: When registering a clashing DP
