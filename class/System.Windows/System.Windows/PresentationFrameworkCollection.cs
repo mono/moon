@@ -40,20 +40,6 @@ namespace System.Windows {
 		public static readonly System.Windows.DependencyProperty CountProperty =
 			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (int));
 		
-		internal PresentationFrameworkCollection ()
-		{
-			if (typeof(DependencyObject).IsAssignableFrom(typeof(T)))
-				native = NativeMethods.dependency_object_collection_new ();
-			else if (typeof (T) == typeof(double))
-				native = NativeMethods.double_collection_new ();
-			else if (typeof (T) == typeof(Point))
-				native = NativeMethods.point_collection_new ();
-			else
-				// XXX FIXME - support other types
-				// than just the three above.
-				throw new NotSupportedException ("unsupported type for collection");
-		}
-		
 		internal PresentationFrameworkCollection (IntPtr raw) : base (raw)
 		{
 		}

@@ -1,5 +1,12 @@
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
+	* PresentationFrameworkCollection.cs: remove the argument-less
+	ctor.  There's no need for it, as the class is abstract with no
+	public/protected ctor, so it can't be subclassed aside from the
+	subclasses we control.
+
+2008-08-06  Chris Toshok  <toshok@ximian.com>
+
 	* PresentationFrameworkCollection.cs: add *Impl methods for all
 	the abstract ones.  I have no clue why there needs to be abstract
 	methods in this class at all.. maybe for additional checking in
