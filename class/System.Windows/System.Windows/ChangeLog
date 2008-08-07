@@ -1,5 +1,9 @@
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
+	* SetterBaseCollection.cs: add MonoTODO for the ctor.
+
+2008-08-06  Chris Toshok  <toshok@ximian.com>
+
 	* PresentationFrameworkCollection.cs: remove the argument-less
 	ctor.  There's no need for it, as the class is abstract with no
 	public/protected ctor, so it can't be subclassed aside from the

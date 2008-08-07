@@ -32,7 +32,8 @@ namespace System.Windows {
 	public sealed class SetterBaseCollection : PresentationFrameworkCollection<SetterBase> {
 		bool isSealed;
 
-		public SetterBaseCollection ()
+		[MonoTODO ("we need a ctor for this collection type, or a general dependency_object_collection_new (Kind.SETTER_BASE)")]
+		public SetterBaseCollection () : base (IntPtr.Zero)
 		{
 		}
 
