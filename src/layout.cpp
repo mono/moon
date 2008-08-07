@@ -797,21 +797,24 @@ TextLayout::LayoutWrap ()
 		prev = 0;
 		x1 = x0;
 		
+		double bearing_adj = 0.0;
 		do {
 			// always include the lwsp, it is allowed to go past max_width
 			start = inptr;
 			btype = g_unichar_break_type (*inptr);
 			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
-					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-						if (prev != 0)
-							advance += run->font->Kerning (prev, glyph->index);
-						else if (glyph->metrics.horiBearingX < 0)
-							advance -= glyph->metrics.horiBearingX;
+					advance = glyph->metrics.horiAdvance;
+					if (prev != 0)
+						advance += run->font->Kerning (prev, glyph->index);
+					else if (glyph->metrics.horiBearingX < 0) {
+						bearing_adj = glyph->metrics.horiBearingX;
+						advance += bearing_adj;
 					}
 					
 					prev = glyph->index;
-					x1 += advance;
+					x1 += advance - bearing_adj;
+					bearing_adj = 0.0;
 				}
 				
 				inptr++;
@@ -878,11 +881,12 @@ TextLayout::LayoutWrap ()
 				if (!(glyph = run->font->GetGlyphInfo (*inptr)))
 					goto next;
 				
-				if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-					if (prev != 0)
-						advance += run->font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0)
-						advance -= glyph->metrics.horiBearingX;
+				advance = glyph->metrics.horiAdvance;
+				if (prev != 0)
+					advance += run->font->Kerning (prev, glyph->index);
+				else if (glyph->metrics.horiBearingX < 0) {
+					bearing_adj = glyph->metrics.horiBearingX;
+					advance += bearing_adj;
 				}
 				
 				if (max_width > 0.0 && (x1 + advance) > max_width) {
@@ -955,7 +959,8 @@ TextLayout::LayoutWrap ()
 					}
 				}
 				
-				x1 += advance;
+				x1 += advance - bearing_adj;
+				bearing_adj = 0.0;
 				
 			next:
 				
@@ -1159,7 +1164,7 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 				if (prev != 0)
 					x1 += font->Kerning (prev, glyph->index);
 				else if (glyph->metrics.horiBearingX < 0)
-					x1 -= glyph->metrics.horiBearingX;
+					x1 += glyph->metrics.horiBearingX;
 				
 				prev = glyph->index;
 				

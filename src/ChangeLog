@@ -1,3 +1,10 @@
+2008-08-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* layout.cpp: Handle negative horiBearingX correctly. This gives
+	better visual results in DRT #47 (same width value, up to 2 
+	decimal) and #209 (not enough to make it PASS but I doubt the 
+	master is ok, since I can't duplicate its output).
+
 2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp: HasProperty: accept attached properties for
