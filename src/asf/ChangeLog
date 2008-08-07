@@ -1,3 +1,9 @@
+2008-08-07  Geoff Norton  <gnorton@novell.com>
+
+	* asf.cpp: Return the failure state if there was a problem reading
+	the package.
+	* asf-generated.cpp, asf.cs: We are borg
+ 
 2008-07-18  Geoff Norton  <gnorton@novell.com>
 
 	* asf.cpp: Prevent a crash when we try to seek before populating 

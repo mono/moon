@@ -262,7 +262,7 @@ ASFParser::ReadPacket (ASFPacket **packet)
 	if (source->GetType () != MediaSourceTypeMemory)
 		source->Seek (next_pos, SEEK_SET);
 
-	return MEDIA_SUCCESS;
+	return result;
 }
 
 bool
