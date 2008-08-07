@@ -47,34 +47,34 @@ namespace System.Windows {
 			return Kind.TRIGGER_COLLECTION;
 		}
 
-		public override bool Contains (EventTrigger trigger)
+		public override void Add (EventTrigger value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (EventTrigger trigger)
+		
+		public override bool Contains (EventTrigger value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (EventTrigger trigger)
+		
+		public override int IndexOf (EventTrigger value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (EventTrigger trigger)
+		
+		public override void Insert (int index, EventTrigger value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, EventTrigger trigger)
+		
+		public override bool Remove (EventTrigger value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override EventTrigger this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

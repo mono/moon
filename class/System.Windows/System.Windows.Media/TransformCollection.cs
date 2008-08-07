@@ -30,7 +30,7 @@ using Mono;
 using System.Windows;
 
 namespace System.Windows.Media {
-	public sealed class TransformCollection : PresentationFrameworkCollection <Transform>{
+	public sealed class TransformCollection : PresentationFrameworkCollection <Transform> {
 		
 		public TransformCollection () : base (NativeMethods.transform_collection_new ())
 		{
@@ -45,34 +45,34 @@ namespace System.Windows.Media {
 			return Kind.TRANSFORM_COLLECTION;
 		}
 
-		public override bool Contains (Transform transform)
+		public override void Add (Transform value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (Transform transform)
+		
+		public override bool Contains (Transform value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (Transform transform)
+		
+		public override int IndexOf (Transform value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (Transform transform)
+		
+		public override void Insert (int index, Transform value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, Transform transform)
+		
+		public override bool Remove (Transform value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override Transform this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

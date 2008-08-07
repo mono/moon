@@ -47,24 +47,34 @@ namespace System.Windows.Input
 			return Kind.STYLUSPOINT_COLLECTION;
 		}
 
-		public override bool Contains (StylusPoint point)
+		public override void Add (StylusPoint value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (StylusPoint point)
+		
+		public override bool Contains (StylusPoint value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (StylusPoint point)
+		
+		public override int IndexOf (StylusPoint value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (StylusPoint point)
+		
+		public override void Insert (int index, StylusPoint value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
+		}
+		
+		public override bool Remove (StylusPoint value)
+		{
+			return RemoveImpl (value);
+		}
+		
+		public override StylusPoint this[int index] {
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 
 #if NET_2_1
@@ -73,16 +83,6 @@ namespace System.Windows.Input
 		public void Add (StylusPointCollection points)
 		{
 			throw new NotImplementedException ();
-		}
-
-		public override void Insert (int index, StylusPoint point)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override StylusPoint this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
 		}
 	}
 }

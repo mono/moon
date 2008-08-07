@@ -23,39 +23,53 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System.Windows;
 
 namespace System.Windows.Media {
 	public sealed class PointCollection : PresentationFrameworkCollection<Point>
 	{
-		public override bool Contains (Point p)
+		public PointCollection () : base (NativeMethods.point_collection_new ())
 		{
-			throw new NotImplementedException ();
+		}
+		
+		internal PointCollection (IntPtr raw) : base (raw)
+		{
 		}
 
-		public override bool Remove (Point p)
+		internal override Kind GetKind ()
 		{
-			throw new NotImplementedException ();
+			return Kind.POINT_COLLECTION;
 		}
 
-		public override int IndexOf (Point p)
+		public override void Add (Point value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override void Add (Point p)
+		
+		public override bool Contains (Point value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override void Insert (int index, Point p)
+		
+		public override int IndexOf (Point value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
+		
+		public override void Insert (int index, Point value)
+		{
+			InsertImpl (index, value);
+		}
+		
+		public override bool Remove (Point value)
+		{
+			return RemoveImpl (value);
+		}
+		
 		public override Point this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

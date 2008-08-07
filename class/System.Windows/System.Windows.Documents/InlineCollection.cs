@@ -44,34 +44,34 @@ namespace System.Windows.Documents {
 			return Kind.INLINES;
 		}
 
-		public override bool Contains (Inline inline)
+		public override void Add (Inline value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (Inline inline)
+		
+		public override bool Contains (Inline value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (Inline inline)
+		
+		public override int IndexOf (Inline value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (Inline inline)
+		
+		public override void Insert (int index, Inline value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, Inline inline)
+		
+		public override bool Remove (Inline value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override Inline this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

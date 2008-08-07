@@ -45,35 +45,34 @@ namespace System.Windows.Controls {
 			return Kind.COLUMNDEFINITION_COLLECTION;
 		}
 
-		public override bool Contains (ColumnDefinition column)
+		public override void Add (ColumnDefinition value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (ColumnDefinition column)
+		
+		public override bool Contains (ColumnDefinition value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (ColumnDefinition column)
+		
+		public override int IndexOf (ColumnDefinition value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (ColumnDefinition column)
+		
+		public override void Insert (int index, ColumnDefinition value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, ColumnDefinition column)
+		
+		public override bool Remove (ColumnDefinition value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override ColumnDefinition this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
-
 	}
 }

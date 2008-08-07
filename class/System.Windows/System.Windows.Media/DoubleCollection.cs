@@ -23,39 +23,53 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System.Windows;
 
 namespace System.Windows.Media {
 	public sealed class DoubleCollection : PresentationFrameworkCollection<double>
 	{
-		public override bool Contains (double d)
+		public DoubleCollection () : base (NativeMethods.double_collection_new ())
 		{
-			throw new NotImplementedException ();
+		}
+		
+		internal DoubleCollection (IntPtr raw) : base (raw)
+		{
 		}
 
-		public override bool Remove (double d)
+		internal override Kind GetKind ()
 		{
-			throw new NotImplementedException ();
+			return Kind.DOUBLE_COLLECTION;
 		}
 
-		public override int IndexOf (double d)
+		public override void Add (double value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override void Add (double d)
+		
+		public override bool Contains (double value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override void Insert (int index, double d)
+		
+		public override int IndexOf (double value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
+		
+		public override void Insert (int index, double value)
+		{
+			InsertImpl (index, value);
+		}
+		
+		public override bool Remove (double value)
+		{
+			return RemoveImpl (value);
+		}
+		
 		public override double this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

@@ -42,6 +42,11 @@ namespace System.Windows.Ink
 		{
 		}
 
+		internal override Kind GetKind ()
+		{
+			return Kind.STROKE_COLLECTION;
+		}
+
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
@@ -64,39 +69,34 @@ namespace System.Windows.Ink
 			return (StrokeCollection)DependencyObject.Lookup (Kind.STROKE_COLLECTION, col);
 		}
 
-		public override bool Contains (Stroke stroke)
+		public override void Add (Stroke value)
 		{
-			throw new NotImplementedException ();
-		}
-
-		public override bool Remove (Stroke stroke)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override int IndexOf (Stroke stroke)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override void Add (Stroke stroke)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override void Insert (int index, Stroke stroke)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override Stroke this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			AddImpl (value);
 		}
 		
-		internal override Kind GetKind ()
+		public override bool Contains (Stroke value)
 		{
-			return Kind.STROKE_COLLECTION;
+			return ContainsImpl (value);
+		}
+		
+		public override int IndexOf (Stroke value)
+		{
+			return IndexOfImpl (value);
+		}
+		
+		public override void Insert (int index, Stroke value)
+		{
+			InsertImpl (index, value);
+		}
+		
+		public override bool Remove (Stroke value)
+		{
+			return RemoveImpl (value);
+		}
+		
+		public override Stroke this[int index] {
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

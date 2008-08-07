@@ -44,34 +44,34 @@ namespace System.Windows.Media {
 			return Kind.GRADIENTSTOP_COLLECTION;
 		}
 
-		public override bool Contains (GradientStop stop)
+		public override void Add (GradientStop value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (GradientStop stop)
+		
+		public override bool Contains (GradientStop value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (GradientStop stop)
+		
+		public override int IndexOf (GradientStop value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (GradientStop stop)
+		
+		public override void Insert (int index, GradientStop value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, GradientStop stop)
+		
+		public override bool Remove (GradientStop value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override GradientStop this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

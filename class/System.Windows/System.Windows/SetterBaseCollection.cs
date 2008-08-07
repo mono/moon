@@ -49,33 +49,32 @@ namespace System.Windows {
 
 		public override void Add (SetterBase value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
+		
 		public override bool Contains (SetterBase value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
+		
 		public override int IndexOf (SetterBase value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Insert (int index,
-					     SetterBase value)
+		
+		public override void Insert (int index, SetterBase value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
+		
 		public override bool Remove (SetterBase value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override SetterBase this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 

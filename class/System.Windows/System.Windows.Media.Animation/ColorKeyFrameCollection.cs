@@ -42,34 +42,34 @@ namespace System.Windows.Media.Animation
 			return Kind.COLORKEYFRAME_COLLECTION;
 		}
 
-		public override bool Contains (ColorKeyFrame keyframe)
+		public override void Add (ColorKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (ColorKeyFrame keyframe)
+		
+		public override bool Contains (ColorKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (ColorKeyFrame keyframe)
+		
+		public override int IndexOf (ColorKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (ColorKeyFrame keyframe)
+		
+		public override void Insert (int index, ColorKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, ColorKeyFrame keyframe)
+		
+		public override bool Remove (ColorKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override ColorKeyFrame this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

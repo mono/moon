@@ -40,41 +40,39 @@ namespace System.Windows
 		{
 		}
 
-
 		internal override Kind GetKind()
 		{
 			return Kind.TRIGGERACTION_COLLECTION;
 		}
 
-
-		public override bool Contains (BeginStoryboard action)
+		public override void Add (BeginStoryboard value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (BeginStoryboard action)
+		
+		public override bool Contains (BeginStoryboard value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (BeginStoryboard action)
+		
+		public override int IndexOf (BeginStoryboard value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (BeginStoryboard action)
+		
+		public override void Insert (int index, BeginStoryboard value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, BeginStoryboard action)
+		
+		public override bool Remove (BeginStoryboard value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override BeginStoryboard this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

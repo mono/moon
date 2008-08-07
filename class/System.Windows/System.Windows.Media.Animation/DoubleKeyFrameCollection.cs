@@ -43,34 +43,34 @@ namespace System.Windows.Media.Animation
 			return Kind.DOUBLEKEYFRAME_COLLECTION;
 		}
 
-		public override bool Contains (DoubleKeyFrame keyframe)
+		public override void Add (DoubleKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (DoubleKeyFrame keyframe)
+		
+		public override bool Contains (DoubleKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (DoubleKeyFrame keyframe)
+		
+		public override int IndexOf (DoubleKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (DoubleKeyFrame keyframe)
+		
+		public override void Insert (int index, DoubleKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, DoubleKeyFrame keyframe)
+		
+		public override bool Remove (DoubleKeyFrame value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override DoubleKeyFrame this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

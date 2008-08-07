@@ -45,34 +45,34 @@ namespace System.Windows.Controls {
 			return Kind.ROWDEFINITION_COLLECTION;
 		}
 
-		public override bool Contains (RowDefinition row)
+		public override void Add (RowDefinition value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (RowDefinition row)
+		
+		public override bool Contains (RowDefinition value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (RowDefinition row)
+		
+		public override int IndexOf (RowDefinition value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (RowDefinition row)
+		
+		public override void Insert (int index, RowDefinition value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, RowDefinition row)
+		
+		public override bool Remove (RowDefinition value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override RowDefinition this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

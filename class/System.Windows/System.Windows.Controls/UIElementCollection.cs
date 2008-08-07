@@ -40,39 +40,40 @@ namespace System.Windows.Controls
 		internal UIElementCollection (IntPtr raw) : base (raw)
 		{
 		}
+
+		internal override Kind GetKind ()
+		{
+			return Kind.UIELEMENT_COLLECTION;
+		}
 		
 		public override void Add (UIElement value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
 		
 		public override bool Contains (UIElement value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
 		
 		public override int IndexOf (UIElement value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
 		
 		public override void Insert (int index, UIElement value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
 		
 		public override bool Remove (UIElement value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
 		
 		public override UIElement this[int index] {
-			get {
-			throw new NotImplementedException ();
-			}
-			set {
-				throw new NotImplementedException ();
-			}
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }

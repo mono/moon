@@ -46,34 +46,34 @@ namespace System.Windows.Media.Animation {
 			return Kind.TIMELINE_COLLECTION;
 		}
 
-		public override bool Contains (Timeline timeline)
+		public override void Add (Timeline value)
 		{
-			throw new NotImplementedException ();
+			AddImpl (value);
 		}
-
-		public override bool Remove (Timeline timeline)
+		
+		public override bool Contains (Timeline value)
 		{
-			throw new NotImplementedException ();
+			return ContainsImpl (value);
 		}
-
-		public override int IndexOf (Timeline timeline)
+		
+		public override int IndexOf (Timeline value)
 		{
-			throw new NotImplementedException ();
+			return IndexOfImpl (value);
 		}
-
-		public override void Add (Timeline timeline)
+		
+		public override void Insert (int index, Timeline value)
 		{
-			throw new NotImplementedException ();
+			InsertImpl (index, value);
 		}
-
-		public override void Insert (int index, Timeline timeline)
+		
+		public override bool Remove (Timeline value)
 		{
-			throw new NotImplementedException ();
+			return RemoveImpl (value);
 		}
-
+		
 		public override Timeline this[int index] {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return GetItemImpl (index); }
+			set { SetItemImpl (index, value); }
 		}
 	}
 }
