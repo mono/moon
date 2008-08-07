@@ -62,7 +62,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/TabletDeviceType.cs			\
 	$(srcdir)/System.Windows.Input/TimelineMarkerEventArgs.cs		\
 	$(srcdir)/System.Windows.Input/TimelineMarkerEventHandler.cs		\
-	$(srcdir)/System.Windows.Input/Cursors.cs				\
 	$(srcdir)/System.Windows.Input/Key.cs					\
 	$(srcdir)/System.Windows.Input/Keyboard.cs				\
 	$(srcdir)/System.Windows.Input/KeyEventArgs.cs				\
