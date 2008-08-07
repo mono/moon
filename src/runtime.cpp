@@ -1303,8 +1303,10 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 
 		gdk_event_get_coords (event, &x, &y);
 
+		Point p (x,y);
+
 		cairo_t *ctx = measuring_context_create ();
-		toplevel->HitTest (ctx, x, y, new_input_list);
+		toplevel->HitTest (ctx, p, new_input_list);
 		
 		// for 2 lists:
 		//   l1:  [a1, a2, a3, a4, ... ]
