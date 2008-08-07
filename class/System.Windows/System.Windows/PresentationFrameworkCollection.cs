@@ -111,6 +111,45 @@ namespace System.Windows {
 		public abstract bool Contains (T value);
 		public abstract int IndexOf (T value);
 
+
+		internal void AddImpl (T value)
+		{
+			Value v = DependencyObject.GetAsValue (value);
+			NativeMethods.collection_add (native, ref v);
+		}
+
+		internal void InsertImpl (int index, T value)
+		{
+			Value v = DependencyObject.GetAsValue (value);
+			NativeMethods.collection_insert (native, index, ref v);
+		}
+
+		internal bool RemoveImpl (T value)
+		{
+			Value v = DependencyObject.GetAsValue (value);
+			return NativeMethods.collection_remove (native, ref v);
+		}
+
+		internal T GetItemImpl (int index)
+		{
+			IntPtr val = NativeMethods.collection_get_value_at (native, index);
+			if (val == IntPtr.Zero)
+				return default(T);
+			return (T) DependencyObject.ValueToObject (typeof (T), val);
+		}
+
+		internal void SetItemImpl (int index, T value)
+		{
+			Value v = DependencyObject.GetAsValue (value);
+			NativeMethods.collection_set_value_at (native, index, ref v);
+		}
+
+		internal int IndexOfImpl (T value)
+		{
+			Value v = DependencyObject.GetAsValue (value);
+			return NativeMethods.collection_index_of (native, ref v);
+		}
+
 		//
 		// ICollection members
 		//
@@ -341,9 +380,9 @@ namespace System.Windows {
 		{
 			if (value == null)
 				throw new ArgumentNullException ("value");
-			
-			// FIXME: implement me
-			return false;
+
+			Value v = DependencyObject.GetAsValue (value);
+			return NativeMethods.collection_index_of (native, ref v) != -1;
 		}
 		
 		public bool IsFixedSize {
