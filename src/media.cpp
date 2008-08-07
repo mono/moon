@@ -1495,6 +1495,7 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 	
 	SetCanPause (!is_streaming);
 	SetCanSeek (!is_streaming);
+	SetBufferingProgress (0.0);
 	
 	MediaBase::SetSourceInternal (downloader, PartName);
 	
