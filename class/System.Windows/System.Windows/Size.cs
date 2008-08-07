@@ -30,10 +30,11 @@ namespace System.Windows {
 	public struct Size  {
 		double w, h;
 
-		static Size empty = new Size (Double.MinValue, Double.MinValue);
-		
 		public Size (double width, double height)
 		{
+			if (width < 0 || height < 0)
+				throw new ArgumentException ();
+
 			w = width;
 			h = height;
 		}
@@ -77,12 +78,15 @@ namespace System.Windows {
 		}
 
 		public bool IsEmpty {
-			get { return (h == Double.MinValue && w == Double.MinValue); }
+			get { return w == Double.NegativeInfinity && h == Double.NegativeInfinity; }
 		}
 		
 		public static Size Empty {
 			get {
-				return empty;
+				Size s = new Size ();
+				s.w = Double.NegativeInfinity;
+				s.h = Double.NegativeInfinity;
+				return s;
 			}
 		}
 	}

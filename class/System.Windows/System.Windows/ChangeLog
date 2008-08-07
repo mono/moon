@@ -1,5 +1,9 @@
 2008-08-07  Chris Toshok  <toshok@ximian.com>
 
+	* Size.cs: correct behavior wrt unit tests.
+
+2008-08-07  Chris Toshok  <toshok@ximian.com>
+
 	* Thickness.cs: implement ToString() properly.
 
 2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
