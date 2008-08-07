@@ -1,5 +1,9 @@
 2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyPropertyAttachedTest.cs: And actually add the file too.
+
+2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependency_properties.csproj: Add Attached tests.
 
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
