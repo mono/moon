@@ -109,7 +109,7 @@ namespace System.Windows {
 				handler = new NativePropertyChangedHandler(NativePropertyChangedCallback);
 			else
 				handler = null;
-			IntPtr handle = NativeMethods.dependency_property_register_managed_property (Types.Native, name, property_type.native_handle, owner_type.native_handle, attached, handler);
+			IntPtr handle = NativeMethods.dependency_property_register_managed_property ( name, property_type.native_handle, owner_type.native_handle, attached, handler);
 			
 			if (handle == IntPtr.Zero)
 				return null;

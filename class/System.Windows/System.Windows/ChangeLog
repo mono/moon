@@ -1,3 +1,7 @@
+2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.cs: Updated.
+
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
 	* UIElement.cs: stub out the rest of things.
