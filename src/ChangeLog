@@ -1,5 +1,10 @@
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
+	* transform.h, transform.cpp: add a convenience ctor for Matrix
+	that takes a cairo_matrix_t*.
+
+2008-08-06  Chris Toshok  <toshok@ximian.com>
+
 	* type-generated.cpp (type_infos): fix ctors for UIElement and
 	UIElementCollection.
 

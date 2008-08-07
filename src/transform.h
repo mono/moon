@@ -199,6 +199,7 @@ public:
 	static DependencyProperty *OffsetYProperty;
 
 	Matrix ();
+	Matrix (cairo_matrix_t *m);
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 

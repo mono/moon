@@ -456,6 +456,11 @@ Matrix::Matrix ()
 	cairo_matrix_init_identity (&matrix);
 }
 
+Matrix::Matrix(cairo_matrix_t *m)
+{
+	matrix = *m;
+}
+
 void
 Matrix::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
