@@ -81,11 +81,14 @@ class TypeInfo {
 	public void Generate ()
 	{
 		// C constructor
+		bool previous_capital = false;
 		for (int i = 0; i < Name.Length; i++) {
-			if (char.ToUpper (Name [i]) == Name [i] && C_Constructor != null)
+			bool capital = char.ToUpper (Name [i]) == Name [i];
+			if (capital && !previous_capital && C_Constructor != null)
 				C_Constructor += "_" + char.ToLower (Name [i]);
 			else
 				C_Constructor += char.ToLower (Name [i]);
+			previous_capital = capital;
 		}
 		C_Constructor += "_new";
 		
