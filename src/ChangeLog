@@ -1,5 +1,10 @@
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
+	* type-generated.cpp (type_infos): fix ctors for UIElement and
+	UIElementCollection.
+
+2008-08-06  Chris Toshok  <toshok@ximian.com>
+
 	* frameworkelement.h, frameworkelement.cpp: add
 	DataContextProperty.
 
