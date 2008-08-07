@@ -160,6 +160,8 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static void uielement_release_mouse_capture (IntPtr item);
 
+		[DllImport ("moon")]
+		public extern static Size uielement_get_desired_size (IntPtr item);
 #endregion
 
 

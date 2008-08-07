@@ -1,5 +1,9 @@
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
+	* UIElement.cs: stub out the rest of things.
+
+2008-08-06  Chris Toshok  <toshok@ximian.com>
+
 	* SetterBaseCollection.cs: add MonoTODO for the ctor.
 
 2008-08-06  Chris Toshok  <toshok@ximian.com>

@@ -25,9 +25,14 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using System;
+using System.Collections.Generic;
 using System.Security;
 using System.Windows;
+#if notyet
+using System.Windows.Automation.Peers;
+#endif
 using System.Windows.Media;
 using System.Windows.Input;
 using Mono;
@@ -58,7 +63,7 @@ namespace System.Windows {
 		public static readonly DependencyProperty ZIndexProperty =
 			DependencyProperty.Lookup (Kind.UIELEMENT, "ZIndex", typeof (int));
 		
-		protected UIElement () : base (NativeMethods.uielement_new ())
+		internal UIElement () : base (NativeMethods.uielement_new ())
 		{
 		}
 		
@@ -71,6 +76,97 @@ namespace System.Windows {
 			return Kind.UIELEMENT;
 		}
 		
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public bool CaptureMouse ()
+		{
+			return NativeMethods.uielement_capture_mouse (native);
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void ReleaseMouseCapture ()
+		{
+			NativeMethods.uielement_release_mouse_capture (native);
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void Arrange (Rect r)
+		{
+			throw new NotImplementedException ();
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void InvalidateArrange ()
+		{
+			throw new NotImplementedException ();
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void Measure (Size s)
+		{
+			throw new NotImplementedException ();
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void InvalidateMeasure ()
+		{
+			throw new NotImplementedException ();
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void UpdateLayout ()
+		{
+			throw new NotImplementedException ();
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public GeneralTransform TransformToVisual (UIElement el)
+		{
+			throw new NotImplementedException ();
+		}
+
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public IEnumerable<UIElement> HitTest (Point p)
+		{
+			throw new NotImplementedException ();
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public IEnumerable<UIElement> HitTest (Rect r)
+		{
+			throw new NotImplementedException ();
+		}
+
+#if notyet
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public AutomationPeer OnCreateAutomationPeer ()
+		{
+			throw new NotImplementedException ();
+		}
+#endif
+
 		public Geometry Clip {
 			get {
 				return (Geometry) GetValue (ClipProperty);
@@ -149,10 +245,16 @@ namespace System.Windows {
 			[SecuritySafeCritical]
 #endif
 			get {
-				return System.Windows.NativeMethods2.uielement_get_desired_size (native);
+				return System.Windows.NativeMethods.uielement_get_desired_size (native);
 			}
 		}
-		
+
+		public Size RenderSize {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
 		static object GotFocusEvent = new object ();
 		static object LostFocusEvent = new object ();
 		static object KeyDownEvent = new object ();
