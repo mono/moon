@@ -1,3 +1,9 @@
+2008-08-06  Geoff Norton  <gnorton@novell.com>
+
+	* dependencyproperty.cpp: When registering a clashing DP
+	return the original so that the code can act on it as it
+	expects.  Fixes about 18 DRT regressions.
+
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h, uielement.cpp: add GetTransformToUIElement, the

@@ -234,12 +234,15 @@ DependencyProperty::RegisterFull (Types *additional_types, Type *type, const cha
 		// See comment in type.h.
 		type->custom_properties = g_slist_prepend (type->custom_properties, property);
 	} else {
+		DependencyProperty *existing;
 		if (type->properties == NULL)
 			type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_property);
 
-		if (g_hash_table_lookup (type->properties, property->hash_key) != NULL) {
+		if ((existing = (DependencyProperty *)g_hash_table_lookup (type->properties, property->hash_key)) != NULL) {
 			g_warning ("DependencyProperty::RegisterFull (): Trying to register the property '%s' in the type '%s', and there already is a property registered on that type with the same name.",
 				property->GetName (), type->name);
+			delete property;
+			return existing;
 		} else {
 			g_hash_table_insert (type->properties, property->hash_key, property);
 		}
