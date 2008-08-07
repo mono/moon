@@ -53,10 +53,9 @@ namespace System.Windows
 			this.bottom = bottom;
 		}
 		
-		[MonoTODO ()]
 		public override string ToString ()
 		{
-			return base.ToString ();
+			return string.Format ("{0},{1},{2},{3}", left, top, right, bottom);
 		}
 
 		public override bool Equals(object obj)
