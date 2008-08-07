@@ -1296,6 +1296,9 @@ DependencyObject::HasProperty (Types *additional_types, Type::Kind whatami, Depe
 	
 	// TODO: Handle attached properties correctly.
 	
+	if (property->IsAttached ())
+		return true;
+	
 	/*
 	printf ("DependencyObject::HasProperty (%p, %i (%s), %p (%i %s.%s), %i)..\n", 
 		additional_types, 
