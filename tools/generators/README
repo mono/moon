@@ -1,143 +1,157 @@
-This directory includes several scripts to generate different parts of our code.
+This directory includes a scripts to generate different parts of our code.
 
-The scripts are executed using the makefile ('make <scriptname>'), or just 'make'
-to execute them all.
+Just run 'make' to execute the generator.
 
-typegen
-=======
+The generator parses every h file in src/ and creates a list of all the types,
+methods, enums, etc. it can find. It's not overly smart, feeding it complex
+C/C++ definitions will probably make it bork.
 
-	Generates src/type.h, src/type-generated.cpp, src/value.h and
-	class/Mono.Moonlight/Mono/Kind.cs.
-	
-	This script looks in every h file in src/ and searches for types derived
-	from DependencyObject.
+Comments
+========
 
-	A few properties can be added to a '/* @... */' comment (of the following 
-	format: '/* @Property1=Value1 */') on the lines just before the class 
-	declaration.
+It's possible to add comments to types and methods to give instructions or more
+information to the generator. The format is:
+
+	/* @Property1[=Value1],Property2[=Value2] */
+
+The properties can be split up in several comments, the following is also legal
+(and equivalent to the above):
+
+	/* @Property1[=Value1] */
+	/* @Property2[=Value2] */
+
+The currently understood properties are:
+
+	* Version: = SilverlightVersion
+	* SilverlightVersion: Specifies the SL version for the type/method. If 
+	  specified on a type, all contained members are considered to have the
+	  same version (unless explicitly set on a member).
+
+	* GenerateCBinding: Generate a C binding for this member (no effect on
+	  types).
+
+	* GeneratePInvoke: Generate a PInvoke for this member (no effect on 
+	  types).
 	
 	* ContentProperty: Jackson knows this one.
 	
-	* SilverlightVersion: Sets the SL version of the class.
-	
-	General generation logic:
-	
-	* type.h: Reads type.h.in and:
-	
-		* Replaces '/*DO_KINDS*/' with a sorted list of all the types
-		  which should be included in our type system (creating the Type::Kind
-		  enum).
-	
-	* type-generated.cpp: A sorted array (by name) of all types and the 
-	  type data (name, parent, etc). If SilverlightVersion is set to 2.0,
-	  the type data is filled with dummy data for 1.0 builds and real
-	  data for 2.0 builds.
-	
-	* value.h: Reads value.h.in and:
-		* Replaces '/*DO_FWD_DECLS*/' with a list of forward declarations 
-		  for every type that overrides and implements 
-		  DependencyObject::GetObjectType.
-		
-		* Replaces '/*DO_AS*/' with getters for every type that overrides 
-		  and implements DependencyObject::GetObjectType.	  
-	
-	* Kind.cs: Everything between '// START_MANAGED_MAPPING' and 
-	  '// END_MANAGED_MAPPING' in type.h is copied into an enum.
-	
-	Possible TODOs:
-	
-	* The script is somewhat slow (probably doing to many string operations).
-	  This could be made more efficient.
-	
-methodgen
-=========
 
-	Generates class/Mono.Moonlight/Mono/GeneratedPInvokes.cs
-	
-	This script looks in every h file in src/ and plugin/ and searches for lines 
-	containing a '/* @GenerateManaged */' comment. The next line is then supposed 
-	to be the c method for which the script should generate the managed pinvoke.
-	
-	The script automatically detects the following patterns:
-	
-	* Methods whose last parameter is a MoonError*. A managed wrapper is generated
-	  which detects any errors when the native method returns, and throws the
-	  appropiate managed exception. The MoonError* parameter is not present in 
-	  the managed signature. If the native method contains '_with_error' this 
-	  string is removed from the managed method. 
-	  Example: The native method 'dependency_object_get_value_with_error'
-	  generates the managed method 'dependency_object_get_value'.
-	
-	* Methods whose first parameter is Surface*. A managed wrapper is generated
-	  which just looks up the surface parameter in 
-	  Mono.Xaml.XamlLoader.SurfaceInDomain.
-	  
-	* Methods who return [const] char *. A managed wrapper is generated that
-	  property marshals the string to managed code.
+src/type.h
+==========
+Reads type.h.in and:
 
-	The script will also detect a few conditions for which it would generate 
-	invalid/wrong/non-buildable code. For these cases the code will still be
-	generated, but commented out (with a comment explaining the exact issue):
-	
-	* If there's a method with the same name in NativeMethods.cs (overloading 
-	  is not taken into account).
-	  
-	* If there are any types in the native signature which the script doesn't 
-	  know. If this happens you'll have to fix the script (search for the method
-	  'GetManagedType' in tools/generators/common.cs and add the missing case)
+* Replaces '/*DO_KINDS*/' with a sorted list of all the types which should be
+  included in our type system. This includes all types which inherits from
+  DependencyObject *and* implements GetObjectType, as well as manually included
+  types (included in the script code directly - this is generally types not
+  defined in our code, such as char*, guint64, etc). It's also possible to 
+  force inclusion by adding a IncludeInKinds instruction to the type.
 
-cgen
-====
-	
-	Generates src/cbinding.cpp|h: C bindings.
-	
-	This script looks in every h file in src/ and plugin/ and searches for lines
-	containing a '/* @GenerateCBinding */' comment. The next line is then 
-	supposed to be the method for which the script should generate the c binding.
-	
-	The c name is calculated from the c++ type and method name, making the 
-	entire c name lower case, putting a underscore between the type and the 
-	method name, and prepending any upper case letter in the c++ name with 
-	underscores (the general patter we've been using so far).
-	
-	The script automatically detects the following patterns:
-	
-	* Instance methods: A parameter is added to the c method called 'instance'
-	  containing a pointer to the type. In the c method the instance is checked
-	  for a null reference, and if so, the c++ instance method is not called.
-	  
-	* Methods whose last parameter is a MoonError*. A warning is printed to the 
-	  console if this parameter is NULL.
 
-	A few properties can also be added to the '/* @... */' comment (of the 
-	following format: '/* @GenerateCBinding:Property1=Value1,Property1=Value2 */')
-	
-	* Type: The type where the c++ method is declared. This property is required 
-	  for the moment, even though it is possible for the script to figure it out.
-	  
-	* GenerateManaged=true|false: Adds a '/* GenerateManaged */' comment to the 
-	  method the header file.
-	  
-	* Version=number: Surrounds the method both in the header and in the cpp file
-	  with #if SL_<Version>/#endif. Dots in the value is changed to underscores.
-	  Example: for 2.0 methods do 'Version=2.0' which will generate 
-	  '#if SL_2_0'/'#endif'
-	
-	Possible TODOs/ideas (for the script)
-	
-	* Generate *_new methods.
-	* Generate c++ implementations for dependency properties accessors.
-	* Add optional null checks (as defined by property in comment) for other parameters.
-	
-	
-typeandkindgen
-==============
+src/type-generated.cpp
+======================
+A sorted array (by name) of all types and the type data (name, parent, etc) 
+in our type system. 
 
-	Generates class/Mono.Moonlight/Mono/Types.g.cs: A dictionary of Type and 
-	Kind to relate them to eachother.
+If SilverlightVersion is set to 2.0, the type data is filled with dummy data
+for 1.0 builds and real data for 2.0 builds.
 	
-	This script looks in every cs file in every subdirectory in 
-	class/System.Windows/ searching for classes that implement 
-	DependencyObject.GetKind, retrieves the Kind value (string search for 
-	'return Kind.*') and gets the type's name from the filename.
+
+src/value.h
+===========
+Reads value.h.in and:
+* Replaces '/*DO_FWD_DECLS*/' with a list of forward declarations for every
+  type that overrides and implements DependencyObject::GetObjectType.
+
+* Replaces '/*DO_AS*/' with getters for every type that overrides and 
+  implements DependencyObject::GetObjectType.	  
+
+
+class/Mono.Moonlight/Mono/Kind.cs
+=================================
+Everything between '// START_MANAGED_MAPPING' and '// END_MANAGED_MAPPING' in 
+type.h is copied into the enum.
+
+	
+class/Mono.Moonlight/Mono/GeneratedPInvokes.cs
+==============================================
+Generates PInvokes for every method (in a class/struct or not) which has
+GeneratePInvoke defined.
+
+The script automatically detects the following patterns:
+
+* Methods that have a MoonError* parameter. A managed wrapper is generated
+  which detects any errors when the native method returns, and throws the
+  appropiate managed exception. The MoonError* parameter is not present in 
+  the managed signature. If the native method contains '_with_error' this 
+  string is removed from the managed method. 
+  Example: The native method 'dependency_object_get_value_with_error'
+  generates the managed method 'dependency_object_get_value'.
+
+* Methods that have a Surface* parameter. A managed wrapper is generated
+  which just looks up the surface parameter in 
+  Mono.Xaml.XamlLoader.SurfaceInDomain.
+  
+* Methods that return [const] char *. A managed wrapper is generated that
+  property marshals the string to managed code.
+
+* Methods that have a Types* parameter. A managed wrapper is generated which
+  just looks up the types pointer in Mono.Types.Native.
+
+The script will also detect a few conditions for which it would generate 
+invalid/wrong/non-buildable code. For these cases the code will still be
+generated, but commented out (with a comment explaining the exact issue):
+
+* If there's a method with the same name in NativeMethods.cs (overloading 
+  is not taken into account).
+  
+* If there are any types in the native signature which the script doesn't 
+  know. If this happens you'll have to fix the script (search for the method
+  'GetManagedType' in tools/generators/typegen.cs and add the missing case)
+
+src/cbinding.cpp|h
+==================
+Generates C bindings for every method (in classes/structs only) which has
+GenerateCBinding defined.
+
+The c name is calculated from the c++ type and method name, making the 
+entire c name lower case, putting a underscore between the type and the 
+method name, and prepending any upper case letter in the c++ name with 
+underscores (the general patter we've been using so far).
+
+The script automatically detects the following patterns:
+
+* Instance methods: A parameter is added to the c method called 'instance'
+  containing a pointer to the type. In the c method the instance is checked
+  for a null reference, and if so, the c++ instance method is not called.
+  
+* Methods whose last parameter is a MoonError*. A warning is printed to the 
+  console if this parameter is NULL.
+
+A few additional comment instructions are also handled:
+  
+* GeneratePInvoke: Adds a '/* GeneratePInvoke */' comment to the method the
+  header file.
+  
+* Version=number: Surrounds the method both in the header and in the cpp file
+  with #if SL_<Version>/#endif. Dots in the value is changed to underscores.
+  Example: for 2.0 methods do 'Version=2.0' which will generate 
+  '#if SL_2_0'/'#endif'.
+  Version=2 is understood to be 2.0 (and generates SL_2_0)
+
+Possible TODOs/ideas
+
+* Generate c++ implementations for dependency properties accessors.
+* Add optional null checks (as defined by property in comment) for other parameters.
+	
+	
+class/Mono.Moonlight/Mono/Types.g.cs
+====================================
+
+A dictionary of Type and Kind to relate them to eachother.
+
+We look in every cs file in every subdirectory in 
+class/System.Windows/ searching for classes that implement 
+DependencyObject.GetKind, retrieves the Kind value (string search for 
+'return Kind.*') and gets the type's name from the filename.
 	
