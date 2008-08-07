@@ -137,7 +137,9 @@ namespace System.Windows {
 #endif
 		public GeneralTransform TransformToVisual (UIElement el)
 		{
-			throw new NotImplementedException ();
+			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, el.native);
+
+			return (GeneralTransform)DependencyObject.Lookup (Kind.GENERALTRANSFORM, t);
 		}
 
 

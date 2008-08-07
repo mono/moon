@@ -1,5 +1,10 @@
 2008-08-07  Chris Toshok  <toshok@ximian.com>
 
+	* UIElement.cs: implement TransformToVisual by calling into
+	uielement_get_transform_to_uielement.
+
+2008-08-07  Chris Toshok  <toshok@ximian.com>
+
 	* Size.cs: correct behavior wrt unit tests.
 
 2008-08-07  Chris Toshok  <toshok@ximian.com>

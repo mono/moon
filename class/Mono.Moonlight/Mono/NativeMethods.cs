@@ -162,6 +162,9 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		public extern static UnmanagedSize uielement_get_desired_size (IntPtr item);
+
+		[DllImport ("moon")]
+		public extern static IntPtr uielement_get_transform_to_uielement (IntPtr item, IntPtr to_item);
 #endregion
 
 
