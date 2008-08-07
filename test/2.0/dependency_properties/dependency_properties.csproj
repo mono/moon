@@ -59,6 +59,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DependencyPropertyAttachedTest.cs" />
     <Compile Include="DependencyPropertyTest.cs" />
     <Compile Include="HtmlOutput.cs" />
     <Compile Include="IOutput.cs" />
