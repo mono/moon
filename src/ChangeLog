@@ -1,3 +1,9 @@
+2008-08-07  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp: When the MediaElement source changes set the
+	BufferingProgress back to 0 otherwise we may never emit a 
+	BufferingProgressChangedEvent for the new source.
+
 2008-08-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* layout.cpp: Handle negative horiBearingX correctly. This gives
