@@ -241,10 +241,13 @@ class UIElement : public DependencyObject {
 
 
 	// HitTest
-	//   Accumulate a list of all elements that will generate an
-	//   event from this x,y. The first node in the list is the most
-	//   deeply nested node, the last node is the root.
-	virtual void HitTest (cairo_t *cr, double x, double y, List *uielement_list);
+
+	//   Accumulate a list of all elements that will contain the
+	//   point (or intersect the rectangle). The first node in the
+	//   list is the most deeply nested node, the last node is the
+	//   root.
+	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
+	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 
 	//
 	// Recomputes the bounding box, requests redraws, 
@@ -378,6 +381,7 @@ class UIElement : public DependencyObject {
 		return *vu->AsPoint ();
 	}
 
+#if SL_2_0
 	//
 	// 2.0 methods
 	//
@@ -392,6 +396,9 @@ class UIElement : public DependencyObject {
 	{
 		return Size (0, 0);
 	}
+
+	GeneralTransform *GetTransformToUIElement (UIElement *to_element);
+#endif
 	
 	static DependencyProperty *ClipProperty;
 	static DependencyProperty *IsHitTestVisibleProperty;
@@ -454,6 +461,8 @@ UIElement *uielement_get_parent           (UIElement *item);
 void       uielement_set_surface          (UIElement *item, Surface* surface);
 
 #if SL_2_0
+GeneralTransform *uielement_get_transform_to_uielement (UIElement *from, UIElement *to);
+
 Size       uielement_get_desired_size     (UIElement *item);
 #endif
 

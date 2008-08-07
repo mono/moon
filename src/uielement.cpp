@@ -453,9 +453,14 @@ UIElement::Invalidate ()
 }
 
 void
-UIElement::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
+UIElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 {
 	uielement_list->Prepend (new UIElementNode (this));
+}
+
+void
+UIElement::HitTest (cairo_t *cr, Rect r, List *uielement_list)
+{
 }
 
 bool
@@ -935,6 +940,29 @@ uielement_get_parent (UIElement *item)
 }
 
 #if SL_2_0
+GeneralTransform *
+UIElement::GetTransformToUIElement (UIElement *to_element)
+{
+	cairo_matrix_t result;
+	cairo_matrix_t inverse = absolute_xform;
+	cairo_matrix_invert (&inverse);
+	cairo_matrix_multiply (&result, &inverse, &to_element->absolute_xform);
+
+	Matrix *matrix  = new Matrix (&result);
+
+	MatrixTransform *transform = new MatrixTransform ();
+	transform->SetValue (MatrixTransform::MatrixProperty, matrix);
+	matrix->unref ();
+
+	return transform;
+}
+
+GeneralTransform *
+uielement_get_transform_to_uielement (UIElement *from, UIElement *to)
+{
+	return from->GetTransformToUIElement (to);
+}
+
 Size
 uielement_get_desired_size (UIElement *item)
 {

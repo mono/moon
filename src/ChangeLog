@@ -1,5 +1,18 @@
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h, uielement.cpp: add GetTransformToUIElement, the
+	unmanaged equivalent to the managed UIElement.TransformToVisual.
+
+	Also change the signature of HitTest to take a Point, not two
+	doubles.  Add a HitTest overload that takes a Rect in
+	preparation for 2.0.
+
+	* panel.h, panel.cpp: track HitTest signature change.
+
+	* control.h, control.cpp: track HitTest signature change.
+
+2008-08-06  Chris Toshok  <toshok@ximian.com>
+
 	* transform.h, transform.cpp: add a convenience ctor for Matrix
 	that takes a cairo_matrix_t*.
 

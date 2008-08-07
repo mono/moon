@@ -150,12 +150,17 @@ Control::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
-Control::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
+Control::HitTest (cairo_t *cr, Point p, List *uielement_list)
 {
-	if (InsideObject (cr, x, y)) {
+	if (InsideObject (cr, p.x, p.y)) {
 		uielement_list->Prepend (new UIElementNode (this));
-		real_object->HitTest (cr, x, y, uielement_list);
+		real_object->HitTest (cr, p, uielement_list);
 	}
+}
+
+void
+Control::HitTest (cairo_t *cr, Rect r, List *uielement_list)
+{
 }
 
 void

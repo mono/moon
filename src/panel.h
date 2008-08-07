@@ -53,7 +53,8 @@ class Panel : public FrameworkElement {
 
 	virtual UIElement *FindMouseOver (cairo_t *cr, double x, double y);
 
-	virtual void HitTest (cairo_t *cr, double x, double y, List *uielement_list);
+	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
+	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 

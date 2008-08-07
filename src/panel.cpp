@@ -465,31 +465,36 @@ Panel::FindMouseOver (cairo_t *cr, double x, double y)
 }
 
 void
-Panel::HitTest (cairo_t *cr, double x, double y, List *uielement_list)
+Panel::HitTest (cairo_t *cr, Point p, List *uielement_list)
 {
 	/* in the interests of not calling FindMouseOver twice, this method
 	   cut & pastes from the bodies of both Panel::InsideObject and
 	   Panel::FindMouseOver */
 
-	UIElement *mouseover = FindMouseOver (cr, x, y);
+	UIElement *mouseover = FindMouseOver (cr, p.x, p.y);
 
 	if (mouseover) {
 		uielement_list->Prepend (new UIElementNode (this));
-		mouseover->HitTest (cr, x, y, uielement_list);
+		mouseover->HitTest (cr, p, uielement_list);
 	}
 	else {
-		bool is_inside_clip = InsideClip (cr, x, y);
+		bool is_inside_clip = InsideClip (cr, p.x, p.y);
 		if (!is_inside_clip)
 			return;
 	
 		/* if we have explicitly set width/height, we check them */
-		if (FrameworkElement::InsideObject (cr, x, y)) {
+		if (FrameworkElement::InsideObject (cr, p.x, p.y)) {
 			/* we're inside, check if we're actually painting any background,
 			   or, we're just transparent due to no painting. */
 			if (GetBackground ())
 				uielement_list->Prepend (new UIElementNode (this));
 		}
 	}
+}
+
+void
+Panel::HitTest (cairo_t *cr, Rect r, List *uielement_list)
+{
 }
 
 //
