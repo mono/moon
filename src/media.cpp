@@ -2132,13 +2132,6 @@ MediaElement::GetVolume ()
 	return GetValue (MediaElement::VolumeProperty)->AsDouble ();
 }
 
-
-MediaElement *
-media_element_new (void)
-{
-	return new MediaElement ();
-}
-
 void
 media_element_stop (MediaElement *media)
 {
@@ -2868,12 +2861,6 @@ Image::InsideObject (cairo_t *cr, double x, double y)
 	return FrameworkElement::InsideObject (cr, x, y);
 }
 
-Image *
-image_new (void)
-{
-	return new Image ();
-}
-
 void
 image_set_source (Image *img, Downloader *downloader, const char *PartName)
 {
@@ -2885,12 +2872,6 @@ image_set_source (Image *img, Downloader *downloader, const char *PartName)
 //
 
 DependencyProperty *MediaAttribute::ValueProperty;
-
-MediaAttribute *
-media_attribute_new (void)
-{
-	return new MediaAttribute ();
-}
 
 const char *
 media_attribute_get_value (MediaAttribute *attribute)
@@ -2927,12 +2908,6 @@ MediaAttributeCollection::GetItemByName (const char *name)
 	return NULL;
 }
 
-MediaAttributeCollection *
-media_attribute_collection_new (void)
-{
-	return new MediaAttributeCollection ();
-}
-
 MediaAttribute *
 media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name)
 {
@@ -2967,12 +2942,6 @@ bool
 TimelineMarkerCollection::Insert (int index, Value value)
 {
 	return Add (value) != -1;
-}
-
-TimelineMarkerCollection *
-timeline_marker_collection_new (void)
-{
-	return new TimelineMarkerCollection ();
 }
 
 //

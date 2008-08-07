@@ -62,6 +62,7 @@ public:
 class RoutedEventArgs : public EventArgs {
 
 public:
+ 	/* @GenerateCBinding */
 	RoutedEventArgs ();
 
 	virtual Type::Kind GetObjectType () { return Type::ROUTEDEVENTARGS; };
@@ -101,6 +102,7 @@ private:
 
 class MouseEventArgs : public RoutedEventArgs {
 public:
+ 	/* @GenerateCBinding */
 	MouseEventArgs ();
 	MouseEventArgs (GdkEvent *event);
 	virtual Type::Kind GetObjectType () { return Type::MOUSEEVENTARGS; };

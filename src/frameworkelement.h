@@ -36,6 +36,7 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty *MinWidthProperty;
 	static DependencyProperty *VerticalAlignmentProperty;
 
+	/* @GenerateCBinding */
 	FrameworkElement ();
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }
 

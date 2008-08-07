@@ -30,6 +30,7 @@ class Canvas : public Panel {
 	static DependencyProperty *LeftProperty;
 	static DependencyProperty *TopProperty;
 	
+	/* @GenerateCBinding */
 	Canvas ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }

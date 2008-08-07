@@ -20,6 +20,8 @@ enum GridUnitType {
        Star
 };
 
+/* @IncludeInKinds */
+/* @SilverlightVersion="2" */
 struct GridLength {
  public:
 	double val;
@@ -50,6 +52,7 @@ class ColumnDefinition : public DependencyObject {
 	// Actual width computed
 	double actual;
 	
+	/* @GenerateCBinding */
 	ColumnDefinition () { actual = 0; }
 	virtual Type::Kind GetObjectType () { return Type::COLUMNDEFINITION; }
 };
@@ -67,6 +70,7 @@ class RowDefinition : public DependencyObject {
 	// Actual height computed
 	double actual;
 	
+	/* @GenerateCBinding */
 	RowDefinition () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::ROWDEFINITION; }
@@ -78,6 +82,7 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
 	virtual ~ColumnDefinitionCollection () {}
 	
  public:
+	/* @GenerateCBinding */
 	ColumnDefinitionCollection () {}
 	
 	virtual Type::Kind GetObjectType ()  { return Type::COLUMNDEFINITION_COLLECTION; }
@@ -91,6 +96,7 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 	virtual ~RowDefinitionCollection () {}
 	
  public:
+	/* @GenerateCBinding */
 	RowDefinitionCollection () {}
 	
 	virtual Type::Kind GetObjectType ()  { return Type::ROWDEFINITION_COLLECTION; }
@@ -110,6 +116,7 @@ class Grid : public Panel {
 	static DependencyProperty *RowSpanProperty;
 	static DependencyProperty *ShowGridLinesProperty;
 	
+	/* @GenerateCBinding */
 	Grid ();
 	virtual Type::Kind GetObjectType () { return Type::GRID; }
 	

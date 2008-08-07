@@ -1,5 +1,31 @@
 2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* panel.cpp, stylus.cpp, trigger.h, usercontrol.cpp, canvas.h,
+	  control.h, deployment.h, text.h, thickness.h, trigger.cpp,
+	  canvas.cpp, transform.h, color.h, downloader.cpp, eventargs.cpp,
+	  transform.cpp, animation.h, grid.cpp, downloader.h, eventargs.h,
+	  shape.h, animation.cpp, size.h, deployment.cpp, control.cpp,
+	  text.cpp, clock.h, contentcontrol.h, clock.cpp, uielement.h,
+	  point.h, collection.h, geometry.h, contentcontrol.cpp,
+	  frameworkelement.h, uielement.cpp, grid.h, collection.cpp,
+	  geometry.cpp, shape.cpp, frameworkelement.cpp, media.h, brush.h,
+	  rect.h, panel.h, stylus.h, media.cpp, brush.cpp, usercontrol.h: Add
+	  instructions to generate c constructors in headers and remove *_new
+	  implementations from cpp files.
+	* dependencyobject.h: Typedef function pointer to avoid making the
+	  generator understand function pointer syntax. Update comments to
+	  new syntax.
+	* cbinding.h, value.h, src.mdp, cbinding.cpp: Updated.
+	* type.h, type.h.in: Updated comments to new syntax.
+	* mms-downloader.h: Use C++ syntax.
+	* dependencyproperty.h, dependencyproperty.cpp: Make
+	  dependency_property_register_managed_property a method on the type
+	  and update comments to new syntax.
+	* type-generated.cpp: Updated by new generator, which did actually
+	  catch a few errors.
+
+2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.cpp: DP: Comment out the duplicate DP warning
 	  until it's fixed.
 

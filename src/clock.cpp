@@ -1472,12 +1472,6 @@ TimelineGroup::RemoveChild (Timeline *child)
 	GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection()->Remove (child);
 }
 
-TimelineGroup *
-timeline_group_new (void)
-{
-	return new TimelineGroup ();
-}
-
 Duration
 ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 {
@@ -1530,18 +1524,6 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 	return d;
 }
 
-ParallelTimeline *
-parallel_timeline_new (void)
-{
-	return new ParallelTimeline ();
-}
-
-TimelineCollection *
-timeline_collection_new (void)
-{
-	return new TimelineCollection ();
-}
-
 /*
 	TimelineMarker
 */
@@ -1590,12 +1572,6 @@ TimelineMarker::GetType ()
 	Value *value = GetValue (TimelineMarker::TypeProperty);
 	
 	return value ? value->AsString () : NULL;
-}
-
-TimelineMarker *
-timeline_marker_new (void)
-{
-	return new TimelineMarker ();
 }
 
 void

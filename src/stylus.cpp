@@ -22,12 +22,6 @@
 
 #define DEBUG_HITTEST 0
 
-StylusInfo *
-stylus_info_new (void)
-{
-	return new StylusInfo ();
-}
-
 TabletDeviceType
 stylus_info_get_device_type (StylusInfo *stylus_info)
 {
@@ -50,12 +44,6 @@ void
 stylus_info_set_inverted (StylusInfo* stylus_info, bool inverted)
 {
 	stylus_info->SetValue (StylusInfo::IsInvertedProperty, Value (inverted));
-}
-
-StylusPoint*
-stylus_point_new (void)
-{
-	return new StylusPoint ();
 }
 
 double
@@ -92,13 +80,6 @@ void
 stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure)
 {
 	stylus_point->SetValue (StylusPoint::PressureFactorProperty, Value (pressure));
-}
-
-
-StylusPointCollection *
-stylus_point_collection_new (void)
-{
-	return new StylusPointCollection ();
 }
 
 double
@@ -742,12 +723,6 @@ Stroke::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-Stroke*
-stroke_new (void)
-{
-	return new Stroke ();
-}
-
 DrawingAttributes*
 stroke_get_drawing_attributes (Stroke *stroke)
 {
@@ -784,14 +759,6 @@ bool
 stroke_hit_test (Stroke *stroke, StylusPointCollection *stylusPointCollection)
 {
 	return stroke->HitTest (stylusPointCollection);
-}
-
-
-
-StrokeCollection *
-stroke_collection_new (void)
-{
-	return new StrokeCollection ();
 }
 
 Rect
@@ -835,14 +802,6 @@ stroke_collection_hit_test (StrokeCollection* col, StylusPointCollection* stylus
 	return col->HitTest (stylusPointCollection);
 }
 
-
-
-
-DrawingAttributes*
-drawing_attributes_new (void)
-{
-	return new DrawingAttributes ();
-}
 
 Color*
 drawing_attributes_get_color (DrawingAttributes* da)
@@ -1130,12 +1089,6 @@ InkPresenter::ShiftPosition (Point p)
 
 	render_bounds.x += dx;
 	render_bounds.y += dy;
-}
-
-InkPresenter*
-ink_presenter_new (void)
-{
-	return new InkPresenter ();
 }
 
 StrokeCollection*

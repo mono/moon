@@ -94,6 +94,7 @@ class GeometryCollection : public DependencyObjectCollection {
 	virtual ~GeometryCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	GeometryCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY_COLLECTION; }
@@ -114,6 +115,7 @@ class GeometryGroup : public Geometry {
  public:
 	static DependencyProperty *ChildrenProperty;
 	
+	/* @GenerateCBinding */
 	GeometryGroup ();
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; };
 	
@@ -152,6 +154,7 @@ class EllipseGeometry : public Geometry {
 	static DependencyProperty *RadiusXProperty;
 	static DependencyProperty *RadiusYProperty;
 
+	/* @GenerateCBinding */
 	EllipseGeometry () { };
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSEGEOMETRY; };
 
@@ -195,6 +198,7 @@ class LineGeometry : public Geometry {
 	static DependencyProperty *EndPointProperty;
 	static DependencyProperty *StartPointProperty;
 	
+	/* @GenerateCBinding */
 	LineGeometry () {}
 	virtual Type::Kind GetObjectType () { return Type::LINEGEOMETRY; };
 	
@@ -227,6 +231,7 @@ class PathFigureCollection : public DependencyObjectCollection {
 	virtual ~PathFigureCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	PathFigureCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE_COLLECTION; }
@@ -254,6 +259,7 @@ class PathGeometry : public Geometry {
  public:
 	static DependencyProperty *FiguresProperty;
 	
+	/* @GenerateCBinding */
 	PathGeometry ();
 	PathGeometry (moon_path *pml_path);
 
@@ -294,6 +300,7 @@ class RectangleGeometry : public Geometry {
 	static DependencyProperty *RadiusYProperty;
 	static DependencyProperty *RectProperty;
 	
+	/* @GenerateCBinding */
 	RectangleGeometry () { };
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLEGEOMETRY; };
 	
@@ -334,6 +341,7 @@ class PathSegmentCollection : public DependencyObjectCollection {
 	virtual ~PathSegmentCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	PathSegmentCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT_COLLECTION; }
@@ -358,6 +366,7 @@ class PathFigure : public DependencyObject {
 	
 	moon_path *path;
 	
+	/* @GenerateCBinding */
 	PathFigure ();
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; };
 	
@@ -425,6 +434,7 @@ class ArcSegment : public PathSegment {
 	static DependencyProperty *SizeProperty;
 	static DependencyProperty *SweepDirectionProperty;
 	
+	/* @GenerateCBinding */
 	ArcSegment () {}
 	virtual Type::Kind GetObjectType () { return Type::ARCSEGMENT; };
 	virtual int GetPathSize () { return 4 * MOON_PATH_CURVE_TO_LENGTH; } // non-optimal size, depends on angle
@@ -480,6 +490,7 @@ class BezierSegment : public PathSegment {
 	static DependencyProperty *Point2Property;
 	static DependencyProperty *Point3Property;
 	
+	/* @GenerateCBinding */
 	BezierSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::BEZIERSEGMENT; };
 	virtual int GetPathSize () { return MOON_PATH_CURVE_TO_LENGTH; }
@@ -521,6 +532,7 @@ class LineSegment : public PathSegment {
  public:
 	static DependencyProperty *PointProperty;
 	
+	/* @GenerateCBinding */
 	LineSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::LINESEGMENT; };
 	virtual int GetPathSize () { return MOON_PATH_LINE_TO_LENGTH; }
@@ -553,6 +565,7 @@ class PolyBezierSegment : public PathSegment {
  public:
 	static DependencyProperty *PointsProperty;
 	
+	/* @GenerateCBinding */
 	PolyBezierSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::POLYBEZIERSEGMENT; };
 	virtual int GetPathSize ();
@@ -582,6 +595,7 @@ class PolyLineSegment : public PathSegment {
  public:
 	static DependencyProperty *PointsProperty;
 	
+	/* @GenerateCBinding */
 	PolyLineSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::POLYLINESEGMENT; };
 	virtual int GetPathSize ();
@@ -611,6 +625,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
  public:
 	static DependencyProperty *PointsProperty;
 	
+	/* @GenerateCBinding */
 	PolyQuadraticBezierSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::POLYQUADRATICBEZIERSEGMENT; };
 	virtual int GetPathSize ();
@@ -639,6 +654,7 @@ class QuadraticBezierSegment : public PathSegment {
 	static DependencyProperty *Point1Property;
 	static DependencyProperty *Point2Property;
 	
+	/* @GenerateCBinding */
 	QuadraticBezierSegment () { }
 	virtual Type::Kind GetObjectType () { return Type::QUADRATICBEZIERSEGMENT; };
 	virtual int GetPathSize () { return MOON_PATH_CURVE_TO_LENGTH; }

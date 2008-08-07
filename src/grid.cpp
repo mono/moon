@@ -74,12 +74,6 @@ Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
        }
 }
 
-Grid *
-grid_new (void)
-{
-       return new Grid ();
-}
-
 DependencyProperty *Grid::ColumnProperty;
 DependencyProperty *Grid::ColumnSpanProperty;
 DependencyProperty *Grid::RowProperty;
@@ -95,30 +89,6 @@ DependencyProperty *RowDefinition::MinHeightProperty;
 DependencyProperty *ColumnDefinition::WidthProperty;
 DependencyProperty *ColumnDefinition::MaxWidthProperty;
 DependencyProperty *ColumnDefinition::MinWidthProperty;
-
-ColumnDefinitionCollection *
-column_definition_collection_new ()
-{
-       return new ColumnDefinitionCollection ();
-}
-
-RowDefinitionCollection
-*row_definition_collection_new ()
-{
-       return new RowDefinitionCollection ();
-}
-
-ColumnDefinition *
-column_definition_new ()
-{
-       return new ColumnDefinition ();
-}
-
-RowDefinition *
-row_definition_new ()
-{
-       return new RowDefinition ();
-}
 
 double
 row_definition_get_actual_height (RowDefinition *def)

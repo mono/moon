@@ -33,6 +33,7 @@ class KeySpline : public DependencyObject {
 	virtual ~KeySpline () {}
 	
  public:
+	/* @GenerateCBinding */
 	KeySpline ();
 	KeySpline (Point controlPoint1, Point controlPoint2);
 	KeySpline (double x1, double y1, double x2, double y2);
@@ -48,6 +49,7 @@ class KeySpline : public DependencyObject {
 	void SetControlPoint2 (Point controlPoint2);
 };
 
+/* @IncludeInKinds */
 struct KeyTime {
  public:
 	enum KeyTimeType {
@@ -219,6 +221,7 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty *FromProperty;
 	static DependencyProperty *ToProperty;
 	
+	/* @GenerateCBinding */
 	DoubleAnimation ();
 	virtual Type::Kind GetObjectType () { return Type::DOUBLEANIMATION; };
 	virtual Type::Kind GetValueKind () { return Type::DOUBLE; };
@@ -253,6 +256,7 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty *FromProperty;
 	static DependencyProperty *ToProperty;
 	
+	/* @GenerateCBinding */
 	ColorAnimation ();
 	virtual Type::Kind GetObjectType () { return Type::COLORANIMATION; };
 	virtual Type::Kind GetValueKind () { return Type::COLOR; };
@@ -287,6 +291,9 @@ class PointAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty *FromProperty;
 	static DependencyProperty *ToProperty;
 	
+ 	/* @GenerateCBinding */
+ 	PointAnimation () {}
+ 	
 	virtual Type::Kind GetObjectType () { return Type::POINTANIMATION; };
 	virtual Type::Kind GetValueKind () { return Type::POINT; };
 	
@@ -320,6 +327,7 @@ class KeyFrame : public DependencyObject {
 	TimeSpan resolved_keytime;
 	bool resolved;
 	
+	/* @GenerateCBinding */
 	KeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::KEYFRAME; };
 	
@@ -343,6 +351,7 @@ class KeyFrameCollection : public DependencyObjectCollection {
 	GPtrArray *sorted_list;
 	bool resolved;
 	
+	/* @GenerateCBinding */
 	KeyFrameCollection ();
 
 	virtual Type::Kind GetObjectType() { return Type::KEYFRAME_COLLECTION; }
@@ -360,6 +369,7 @@ class ColorKeyFrameCollection : public KeyFrameCollection {
 	virtual ~ColorKeyFrameCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	ColorKeyFrameCollection () { }
 
 	virtual Type::Kind GetObjectType() { return Type::COLORKEYFRAME_COLLECTION; }
@@ -371,6 +381,7 @@ class DoubleKeyFrameCollection : public KeyFrameCollection {
 	virtual ~DoubleKeyFrameCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	DoubleKeyFrameCollection () { }
 
 	virtual Type::Kind GetObjectType() { return Type::DOUBLEKEYFRAME_COLLECTION; }
@@ -382,6 +393,7 @@ class PointKeyFrameCollection : public KeyFrameCollection {
 	virtual ~PointKeyFrameCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	PointKeyFrameCollection () { }
 
 	virtual Type::Kind GetObjectType() { return Type::POINTKEYFRAME_COLLECTION; }
@@ -395,6 +407,7 @@ class DoubleKeyFrame : public KeyFrame {
  public:
 	static DependencyProperty *ValueProperty;
 	
+	/* @GenerateCBinding */
 	DoubleKeyFrame ();
 	virtual Type::Kind GetObjectType() { return Type::DOUBLEKEYFRAME; };
 	
@@ -413,6 +426,7 @@ class ColorKeyFrame : public KeyFrame {
  public:
 	static DependencyProperty *ValueProperty;
 	
+	/* @GenerateCBinding */
 	ColorKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::COLORKEYFRAME; };
 	
@@ -431,6 +445,7 @@ class PointKeyFrame : public KeyFrame {
  public:
 	static DependencyProperty *ValueProperty;
 	
+	/* @GenerateCBinding */
 	PointKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::POINTKEYFRAME; };
 	
@@ -449,6 +464,7 @@ class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
 	virtual ~DiscreteDoubleKeyFrame () {}
 
  public:
+	/* @GenerateCBinding */
 	DiscreteDoubleKeyFrame () { }
 	virtual Type::Kind GetObjectType () { return Type::DISCRETEDOUBLEKEYFRAME; };
 
@@ -463,6 +479,7 @@ class DiscreteColorKeyFrame : public ColorKeyFrame {
 	virtual ~DiscreteColorKeyFrame () {}
 
  public:
+	/* @GenerateCBinding */
 	DiscreteColorKeyFrame () { }
 	virtual Type::Kind GetObjectType () { return Type::DISCRETECOLORKEYFRAME; };
 
@@ -476,6 +493,7 @@ class DiscretePointKeyFrame : public PointKeyFrame {
 	virtual ~DiscretePointKeyFrame () {}
 
  public:
+	/* @GenerateCBinding */
 	DiscretePointKeyFrame () { }
 	virtual Type::Kind GetObjectType () { return Type::DISCRETEPOINTKEYFRAME; };
 
@@ -488,6 +506,7 @@ class LinearDoubleKeyFrame : public DoubleKeyFrame {
 	virtual ~LinearDoubleKeyFrame () {}
 
  public:
+	/* @GenerateCBinding */
 	LinearDoubleKeyFrame () { }
 	virtual Type::Kind GetObjectType () { return Type::LINEARDOUBLEKEYFRAME; };
 
@@ -501,6 +520,7 @@ class LinearColorKeyFrame : public ColorKeyFrame {
 	virtual ~LinearColorKeyFrame () {}
 
  public:
+	/* @GenerateCBinding */
 	LinearColorKeyFrame () { }
 	virtual Type::Kind GetObjectType () { return Type::LINEARCOLORKEYFRAME; };
 
@@ -514,6 +534,7 @@ class LinearPointKeyFrame : public PointKeyFrame {
 	virtual ~LinearPointKeyFrame () {}
 
  public:
+	/* @GenerateCBinding */
 	LinearPointKeyFrame () { }
 	virtual Type::Kind GetObjectType () { return Type::LINEARPOINTKEYFRAME; };
 
@@ -529,6 +550,7 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
  public:
 	static DependencyProperty *KeySplineProperty;
 	
+	/* @GenerateCBinding */
 	SplineDoubleKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::SPLINEDOUBLEKEYFRAME; };
 
@@ -549,6 +571,7 @@ class SplineColorKeyFrame : public ColorKeyFrame {
  public:
 	static DependencyProperty *KeySplineProperty;
 	
+	/* @GenerateCBinding */
 	SplineColorKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::SPLINECOLORKEYFRAME; };
 
@@ -569,6 +592,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
  public:
 	static DependencyProperty *KeySplineProperty;
 	
+	/* @GenerateCBinding */
 	SplinePointKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::SPLINEPOINTKEYFRAME; };
 
@@ -589,6 +613,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  public:
 	static DependencyProperty *KeyFramesProperty;
 	
+	/* @GenerateCBinding */
 	DoubleAnimationUsingKeyFrames ();
 	virtual Type::Kind GetObjectType () { return Type::DOUBLEANIMATIONUSINGKEYFRAMES; };
 
@@ -613,6 +638,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
  public:
 	static DependencyProperty *KeyFramesProperty;
 	
+	/* @GenerateCBinding */
 	ColorAnimationUsingKeyFrames ();
 	virtual Type::Kind GetObjectType () { return Type::COLORANIMATIONUSINGKEYFRAMES; };
 
@@ -637,6 +663,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
  public:
 	static DependencyProperty *KeyFramesProperty;
 	
+	/* @GenerateCBinding */
 	PointAnimationUsingKeyFrames ();
 	virtual Type::Kind GetObjectType () { return Type::POINTANIMATIONUSINGKEYFRAMES; };
 
@@ -671,6 +698,7 @@ class Storyboard : public ParallelTimeline {
 	static DependencyProperty *TargetNameProperty;
 	static DependencyProperty *TargetPropertyProperty;
 	
+	/* @GenerateCBinding */
 	Storyboard ();
 	virtual Type::Kind GetObjectType () { return Type::STORYBOARD; };
 	
@@ -701,6 +729,7 @@ class BeginStoryboard : public TriggerAction {
  public:
 	static DependencyProperty *StoryboardProperty;
 	
+	/* @GenerateCBinding */
 	BeginStoryboard () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::BEGINSTORYBOARD; };

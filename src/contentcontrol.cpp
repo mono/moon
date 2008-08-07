@@ -99,13 +99,6 @@ ContentControl::GetTextWrapping ()
 	return (TextWrapping) GetValue (ContentControl::TextWrappingProperty)->AsInt32 ();
 }
 
-
-ContentControl *
-content_control_new (void)
-{
-	return new ContentControl ();
-}
-
 void
 content_control_set_content (ContentControl *content_control, DependencyObject *content)
 {

@@ -539,12 +539,6 @@ Downloader::GetUri ()
 	return value ? value->AsString () : NULL;
 }
 
-Downloader *
-downloader_new (void)
-{
-	return new Downloader ();
-}
-
 double
 downloader_get_download_progress (Downloader *dl)
 {

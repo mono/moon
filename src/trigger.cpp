@@ -57,12 +57,6 @@ EventTrigger::event_trigger_fire_actions (EventObject *sender, EventArgs *callda
 }
 
 
-EventTrigger *
-event_trigger_new (void)
-{
-	return new EventTrigger ();
-}
-
 void
 event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
 {

@@ -211,6 +211,12 @@ DependencyProperty::RegisterFull (Types *additional_types, Type::Kind type, cons
 {
 	return RegisterFull (additional_types, additional_types->Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, true);
 }
+
+DependencyProperty *
+DependencyProperty::RegisterManagedProperty (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback)
+{
+	return DependencyProperty::RegisterFull (additional_types, owner_type, name, NULL, property_type, attached, false, false, callback);
+}
 #endif
 
 //
@@ -255,13 +261,6 @@ DependencyProperty::RegisterFull (Types *additional_types, Type *type, const cha
 	return property;
 }
 
-#if SL_2_0
-DependencyProperty *
-dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback)
-{
-	return DependencyProperty::RegisterFull (additional_types, owner_type, name, NULL, property_type, attached, false, false, callback);
-}
-#endif
 
 //
 // Everything inside of a ( ) resolves to a DependencyProperty, if there is a

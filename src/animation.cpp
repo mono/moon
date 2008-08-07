@@ -547,12 +547,6 @@ Storyboard::Stop ()
 	}
 }
 
-Storyboard *
-storyboard_new (void)
-{
-	return new Storyboard ();
-}
-
 void
 storyboard_begin  (Storyboard *sb)
 {
@@ -666,13 +660,6 @@ BeginStoryboard::~BeginStoryboard ()
 {
 }
 
-BeginStoryboard *
-begin_storyboard_new (void)
-{
-	return new BeginStoryboard ();
-}
-
-
 DependencyProperty* DoubleAnimation::ByProperty;
 DependencyProperty* DoubleAnimation::FromProperty;
 DependencyProperty* DoubleAnimation::ToProperty;
@@ -725,14 +712,6 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 	return new Value (LERP (start, end, progress));
 }
 
-DoubleAnimation *
-double_animation_new (void)
-{
-	return new DoubleAnimation ();
-}
-
-
-
 
 DependencyProperty* ColorAnimation::ByProperty;
 DependencyProperty* ColorAnimation::FromProperty;
@@ -782,12 +761,6 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	double progress = animationClock->GetCurrentProgress ();
 
 	return new Value (LERP (start, end, progress));
-}
-
-ColorAnimation *
-color_animation_new (void)
-{
-	return new ColorAnimation ();
 }
 
 void
@@ -877,12 +850,6 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	double progress = animationClock->GetCurrentProgress ();
 
 	return new Value (LERP (start, end, progress));
-}
-
-PointAnimation *
-point_animation_new (void)
-{
-	return new PointAnimation ();
 }
 
 static void
@@ -978,12 +945,6 @@ KeySpline::SetControlPoint2 (Point controlPoint2)
 	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
 }
 
-KeySpline *
-key_spline_new (void)
-{
-	return new KeySpline ();
-}
-
 double
 KeySpline::GetSplineProgress (double linearProgress)
 {
@@ -1025,13 +986,6 @@ KeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 		   GetName ());
 	return NULL;
 }
-
-KeyFrame*
-key_frame_new (void)
-{
-	return new KeyFrame ();
-}
-
 
 static int
 KeyFrameComparer (gconstpointer kf1, gconstpointer kf2)
@@ -1142,35 +1096,11 @@ KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyOb
 	Collection::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-ColorKeyFrameCollection *
-color_key_frame_collection_new (void)
-{
-	return new ColorKeyFrameCollection ();
-}
-
-DoubleKeyFrameCollection *
-double_key_frame_collection_new (void)
-{
-	return new DoubleKeyFrameCollection ();
-}
-
-PointKeyFrameCollection *
-point_key_frame_collection_new (void)
-{
-	return new PointKeyFrameCollection ();
-}
-
 DependencyProperty* DoubleKeyFrame::ValueProperty;
 
 DoubleKeyFrame::DoubleKeyFrame ()
 {
 	SetValue (0.0);
-}
-
-DoubleKeyFrame *
-double_key_frame_new (void)
-{
-	return new DoubleKeyFrame ();
 }
 
 DependencyProperty* ColorKeyFrame::ValueProperty;
@@ -1181,24 +1111,12 @@ ColorKeyFrame::ColorKeyFrame ()
 	SetValue (c);
 }
 
-ColorKeyFrame *
-color_key_frame_new (void)
-{
-	return new ColorKeyFrame ();
-}
-
 DependencyProperty* PointKeyFrame::ValueProperty;
 
 PointKeyFrame::PointKeyFrame ()
 {
 	static Point p = Point (0, 0);
 	SetValue (p);
-}
-
-PointKeyFrame *
-point_key_frame_new (void)
-{
-	return new PointKeyFrame ();
 }
 
 Value*
@@ -1212,14 +1130,6 @@ DiscreteDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgr
 		return new Value (baseValue->AsDouble());
 }
 
-DiscreteDoubleKeyFrame *
-discrete_double_key_frame_new (void)
-{
-	return new DiscreteDoubleKeyFrame ();
-}
-
-
-
 Value*
 DiscreteColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1231,14 +1141,6 @@ DiscreteColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 		return new Value (*baseValue->AsColor());
 }
 
-DiscreteColorKeyFrame *
-discrete_color_key_frame_new (void)
-{
-	return new DiscreteColorKeyFrame ();
-}
-
-
-
 Value*
 DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1249,15 +1151,6 @@ DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 	else
 		return new Value (*baseValue->AsPoint());
 }
-
-DiscretePointKeyFrame *
-discrete_point_key_frame_new (void)
-{
-	return new DiscretePointKeyFrame ();
-}
-
-
-
 
 Value*
 LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
@@ -1275,14 +1168,6 @@ LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	return new Value (LERP (start, end, keyFrameProgress));
 }
 
-LinearDoubleKeyFrame *
-linear_double_key_frame_new (void)
-{
-	return new LinearDoubleKeyFrame ();
-}
-
-
-
 Value*
 LinearColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1299,14 +1184,6 @@ LinearColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	return new Value (LERP (start, end, keyFrameProgress));
 }
 
-LinearColorKeyFrame *
-linear_color_key_frame_new (void)
-{
-	return new LinearColorKeyFrame ();
-}
-
-
-
 Value*
 LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1322,13 +1199,6 @@ LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 
 	return new Value (LERP (start, end, keyFrameProgress));
 }
-
-LinearPointKeyFrame *
-linear_point_key_frame_new (void)
-{
-	return new LinearPointKeyFrame ();
-}
-
 
 DependencyProperty* SplineDoubleKeyFrame::KeySplineProperty;
 
@@ -1362,13 +1232,6 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 
 	return new Value (LERP (start, end, splineProgress));
 }
-
-SplineDoubleKeyFrame *
-spline_double_key_frame_new (void)
-{
-	return new SplineDoubleKeyFrame ();
-}
-
 
 DependencyProperty* SplineColorKeyFrame::KeySplineProperty;
 
@@ -1404,13 +1267,6 @@ SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	return new Value (LERP (start, end, splineProgress));
 }
 
-SplineColorKeyFrame *
-spline_color_key_frame_new (void)
-{
-	return new SplineColorKeyFrame ();
-}
-
-
 DependencyProperty* SplinePointKeyFrame::KeySplineProperty;
 
 SplinePointKeyFrame::SplinePointKeyFrame ()
@@ -1443,13 +1299,6 @@ SplinePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 
 	return new Value (LERP (start, end, splineProgress));
 }
-
-SplinePointKeyFrame *
-spline_point_key_frame_new (void)
-{
-	return new SplinePointKeyFrame ();
-}
-
 
 /* implements the algorithm specified at the bottom of this page:
    http://msdn2.microsoft.com/en-us/library/ms742524.aspx
@@ -1703,14 +1552,6 @@ DoubleAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (col);
 }
 
-DoubleAnimationUsingKeyFrames *
-double_animation_using_key_frames_new (void)
-{
-	return new DoubleAnimationUsingKeyFrames ();
-}
-
-
-
 DependencyProperty* ColorAnimationUsingKeyFrames::KeyFramesProperty;
 
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
@@ -1819,15 +1660,6 @@ ColorAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (col);
 }
 
-ColorAnimationUsingKeyFrames *
-color_animation_using_key_frames_new (void)
-{
-	return new ColorAnimationUsingKeyFrames ();
-}
-
-
-
-
 DependencyProperty* PointAnimationUsingKeyFrames::KeyFramesProperty;
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
@@ -1935,14 +1767,6 @@ PointAnimationUsingKeyFrames::Validate ()
 	KeyFrameCollection *col = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
 	return generic_keyframe_validator (col);
 }
-
-PointAnimationUsingKeyFrames *
-point_animation_using_key_frames_new (void)
-{
-	return new PointAnimationUsingKeyFrames ();
-}
-
-
 
 
 

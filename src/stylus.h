@@ -34,6 +34,7 @@ class StylusInfo : public DependencyObject {
 	static DependencyProperty *DeviceTypeProperty;
 	static DependencyProperty *IsInvertedProperty;
 	
+	/* @GenerateCBinding */
 	StylusInfo () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSINFO; };
@@ -54,6 +55,7 @@ class StylusPoint : public DependencyObject {
 	static DependencyProperty *XProperty;
 	static DependencyProperty *YProperty;
 	
+	/* @GenerateCBinding */
 	StylusPoint () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT; };
@@ -74,6 +76,7 @@ class StylusPointCollection : public DependencyObjectCollection {
 	virtual ~StylusPointCollection () {}
 	
  public:
+	/* @GenerateCBinding */
 	StylusPointCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT_COLLECTION; }
@@ -97,6 +100,7 @@ class DrawingAttributes : public DependencyObject {
 	static DependencyProperty *HeightProperty;
 	static DependencyProperty *WidthProperty;
 	
+	/* @GenerateCBinding */
 	DrawingAttributes () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::DRAWINGATTRIBUTES; };
@@ -137,6 +141,7 @@ class Stroke : public DependencyObject {
 	static DependencyProperty *DrawingAttributesProperty;
 	static DependencyProperty *StylusPointsProperty;
 	
+	/* @GenerateCBinding */
 	Stroke ();
 
 	virtual Type::Kind GetObjectType () { return Type::STROKE; };
@@ -166,6 +171,7 @@ class StrokeCollection : public DependencyObjectCollection {
 	virtual ~StrokeCollection () {}
 	
  public:
+	/* @GenerateCBinding */
 	StrokeCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STROKE; }
@@ -188,6 +194,7 @@ class InkPresenter : public Canvas {
  public:
 	static DependencyProperty *StrokesProperty;
 	
+	/* @GenerateCBinding */
 	InkPresenter ();
 	
 	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };

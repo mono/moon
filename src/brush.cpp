@@ -129,13 +129,6 @@ Brush::GetTransform ()
 	return value ? value->AsTransform () : NULL;
 }
 
-
-Brush *
-brush_new (void)
-{
-	return new Brush ();
-}
-
 double
 brush_get_opacity (Brush *brush)
 {
@@ -233,12 +226,6 @@ bool
 SolidColorBrush::IsOpaque ()
 {
 	return Brush::IsOpaque () && !IS_TRANSLUCENT (GetColor ()->a);
-}
-
-SolidColorBrush *
-solid_color_brush_new (void)
-{
-	return new SolidColorBrush ();
 }
 
 Color *
@@ -475,13 +462,6 @@ GradientBrush::GetSpreadMethod ()
 	return (GradientSpreadMethod) GetValue (GradientBrush::SpreadMethodProperty)->AsInt32 ();
 }
 
-
-GradientBrush *
-gradient_brush_new (void)
-{
-	return new GradientBrush ();
-}
-
 void
 gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode)
 {
@@ -626,12 +606,6 @@ LinearGradientBrush::GetStartPoint ()
 	Value *value = GetValue (LinearGradientBrush::StartPointProperty);
 	
 	return value ? value->AsPoint () : NULL;
-}
-
-LinearGradientBrush *
-linear_gradient_brush_new (void)
-{
-	return new LinearGradientBrush ();
 }
 
 void
@@ -790,13 +764,6 @@ RadialGradientBrush::GetRadiusY ()
 	return GetValue (RadialGradientBrush::RadiusYProperty)->AsDouble ();
 }
 
-
-RadialGradientBrush *
-radial_gradient_brush_new (void)
-{
-	return new RadialGradientBrush ();
-}
-
 void
 radial_gradient_brush_set_center (RadialGradientBrush *brush, Point *center)
 {
@@ -847,17 +814,6 @@ radial_gradient_brush_get_radius_y (RadialGradientBrush *brush)
 
 
 //
-// GradientStopCollection
-//
-
-GradientStopCollection *
-gradient_stop_collection_new (void)
-{
-	return new GradientStopCollection ();
-}
-
-
-//
 // GradientStop
 //
 
@@ -886,12 +842,6 @@ double
 GradientStop::GetOffset ()
 {
 	return GetValue (GradientStop::OffsetProperty)->AsDouble ();
-}
-
-GradientStop *
-gradient_stop_new (void)
-{
-	return new GradientStop ();
 }
 
 void
@@ -1257,12 +1207,6 @@ ImageBrush::GetImageSource ()
 	return value ? value->AsString () : NULL;
 }
 
-ImageBrush *
-image_brush_new (void)
-{
-	return new ImageBrush ();
-}
-
 void
 image_brush_set_download_progress (ImageBrush *brush, double progress)
 {
@@ -1441,12 +1385,6 @@ VideoBrush::GetSourceName ()
 	return value ? value->AsString () : NULL;
 }
 
-VideoBrush *
-video_brush_new (void)
-{
-	return new VideoBrush ();
-}
-
 void
 video_brush_set_source_name (VideoBrush *brush, const char *name)
 {
@@ -1551,13 +1489,6 @@ UIElement *
 VisualBrush::GetVisual ()
 {
 	return GetValue (VisualBrush::VisualProperty)->AsUIElement ();
-}
-
-
-VisualBrush *
-visual_brush_new (void)
-{
-	return new VisualBrush ();
 }
 
 void

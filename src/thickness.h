@@ -13,6 +13,7 @@
 
 #include <glib.h>
 
+/* @IncludeInKinds */
 struct Thickness {
 	double left;
 	double top;

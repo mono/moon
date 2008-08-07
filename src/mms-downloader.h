@@ -53,7 +53,7 @@ struct MmsDataPacket {
 struct MmsPacket {
 	union {
 		guint32 reason;
-		struct MmsDataPacket data;
+		MmsDataPacket data;
 	} packet;
 };
 

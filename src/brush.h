@@ -65,6 +65,7 @@ class Brush : public DependencyObject {
 	// internal property - generic brush property change
 	static DependencyProperty *ChangedProperty;
 	
+	/* @GenerateCBinding */
 	Brush () { }
 	virtual Type::Kind GetObjectType () { return Type::BRUSH; };
 	
@@ -104,6 +105,7 @@ class SolidColorBrush : public Brush {
  public:
 	static DependencyProperty *ColorProperty;
 	
+	/* @GenerateCBinding */
 	SolidColorBrush () { };
 	SolidColorBrush (const char *color);
 	
@@ -129,6 +131,7 @@ class GradientStopCollection : public DependencyObjectCollection {
 	virtual ~GradientStopCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	GradientStopCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP_COLLECTION; }
@@ -146,6 +149,8 @@ class GradientStop : public DependencyObject {
 	static DependencyProperty *ColorProperty;
 	static DependencyProperty *OffsetProperty;
 	
+	/* @GenerateCBinding */
+	GradientStop () {}
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP; }
 	
 	// property accessors
@@ -175,6 +180,7 @@ class GradientBrush : public Brush {
 	static DependencyProperty *MappingModeProperty;
 	static DependencyProperty *SpreadMethodProperty;
 	
+	/* @GenerateCBinding */
 	GradientBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTBRUSH; }
@@ -218,6 +224,7 @@ class LinearGradientBrush : public GradientBrush {
 	static DependencyProperty *EndPointProperty;
 	static DependencyProperty *StartPointProperty;
 
+	/* @GenerateCBinding */
 	LinearGradientBrush () {};
 	virtual Type::Kind GetObjectType () { return Type::LINEARGRADIENTBRUSH; }
 
@@ -248,6 +255,7 @@ class RadialGradientBrush : public GradientBrush {
 	static DependencyProperty *RadiusXProperty;
 	static DependencyProperty *RadiusYProperty;
 	
+	/* @GenerateCBinding */
 	RadialGradientBrush () {};
 	virtual Type::Kind GetObjectType () { return Type::RADIALGRADIENTBRUSH; }
 	
@@ -325,6 +333,7 @@ class ImageBrush : public TileBrush {
 	const static int DownloadProgressChangedEvent;
 	const static int ImageFailedEvent;
 	
+	/* @GenerateCBinding */
 	ImageBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGEBRUSH; }
@@ -363,6 +372,7 @@ protected:
 public:
 	static DependencyProperty *SourceNameProperty;
 	
+	/* @GenerateCBinding */
 	VideoBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::VIDEOBRUSH; }
@@ -395,6 +405,7 @@ class VisualBrush : public TileBrush {
  public:
 	static DependencyProperty *VisualProperty;
 
+ 	/* @GenerateCBinding */
 	VisualBrush () { };
 
 	virtual Type::Kind GetObjectType () { return Type::VISUALBRUSH; };

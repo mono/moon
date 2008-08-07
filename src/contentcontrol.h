@@ -34,6 +34,7 @@ class ContentControl : public Control {
 	static DependencyProperty *TextDecorationsProperty;
 	static DependencyProperty *TextWrappingProperty;
 	
+	/* @GenerateCBinding */
 	ContentControl () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTENTCONTROL; }

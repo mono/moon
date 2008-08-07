@@ -48,6 +48,7 @@ class Inline : public DependencyObject {
 	Brush *foreground;
 	bool autogen;
 	
+	/* @GenerateCBinding */
 	Inline ();
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual Value *GetDefaultValue (DependencyProperty *prop);
@@ -84,6 +85,7 @@ class LineBreak : public Inline {
 	virtual ~LineBreak () {}
 
  public:
+	/* @GenerateCBinding */
 	LineBreak () { }
 	virtual Type::Kind GetObjectType () { return Type::LINEBREAK; };
 };
@@ -99,6 +101,7 @@ class Run : public Inline {
  public:
 	static DependencyProperty *TextProperty;
 	
+	/* @GenerateCBinding */
 	Run () { }
 	virtual Type::Kind GetObjectType () { return Type::RUN; };
 	
@@ -185,6 +188,7 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *TextDecorationsProperty;
 	static DependencyProperty *TextWrappingProperty;
 	
+	/* @GenerateCBinding */
 	TextBlock ();
 	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; };
 	
@@ -338,6 +342,7 @@ class Glyphs : public FrameworkElement {
 	static DependencyProperty *StyleSimulationsProperty;
 	static DependencyProperty *UnicodeStringProperty;
 	
+	/* @GenerateCBinding */
 	Glyphs ();
 	
 	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };

@@ -428,12 +428,6 @@ control_initialize_from_xaml_callbacks (Control *control, const char *xaml,
 	return control->InitializeFromXaml (xaml, element_type, loader);
 }
 
-Control *
-control_new (void)
-{
-	return new Control ();
-}
-
 void
 control_set_background (Control *control, Brush *bg)
 {

@@ -34,6 +34,7 @@ struct MoonError;
 
 typedef void (* TickCallHandler) (EventObject *object);
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
+typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_data, gpointer data);
 
 struct EventList {
 	int current_token;
@@ -151,12 +152,12 @@ class EventObject {
 	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, int token);
-	void RemoveMatchingHandlers (const char *event_name, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure);
+	void RemoveMatchingHandlers (const char *event_name, EventHandlerPredicate predicate, gpointer closure);
 
 	int AddHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, int token);
-	void RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure);
+	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);
 	
 	Surface *GetSurface () { return surface; }
 	virtual void SetSurface (Surface *surface);
@@ -242,16 +243,16 @@ class DependencyObject : public EventObject {
 	void SetValue (const char *name, Value *value);
 	void SetValue (const char *name, Value value);
 
-	/* @GenerateCBinding:Type=DependencyObject,GenerateManaged=true,Version=2.0 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	Value *GetValue (const char *name);
 	virtual Value *GetValue (DependencyProperty *property);
 
-	/* @GenerateCBinding:Type=DependencyObject,GenerateManaged=true,Version=2.0 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetDefaultValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error);
 	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
-	/* @GenerateCBinding:Type=DependencyObject,GenerateManaged=true,Version=2.0 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
 
@@ -264,7 +265,7 @@ class DependencyObject : public EventObject {
 	DependencyObject *FindName (const char *name);
 	NameScope *FindNameScope ();
 
-	/* @GenerateCBinding:Type=DependencyObject,GenerateManaged=true */
+	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetName ()
 	{
 		Value *v = GetValue (DependencyObject::NameProperty);

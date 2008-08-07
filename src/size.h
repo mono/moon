@@ -14,6 +14,7 @@
 #include "eventargs.h"
 
 /* @SilverlightVersion="2" */
+/* @IncludeInKinds */
 struct Size {
 public:
        double width, height;

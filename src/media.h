@@ -51,6 +51,7 @@ class MediaAttribute : public DependencyObject {
  public:
 	static DependencyProperty *ValueProperty;
 	
+ 	/* @GenerateCBinding */
 	MediaAttribute () { }
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE; };
 };
@@ -66,6 +67,7 @@ class MediaAttributeCollection : public DependencyObjectCollection {
 	virtual ~MediaAttributeCollection () {}
 
  public:
+ 	/* @GenerateCBinding */
 	MediaAttributeCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
@@ -89,6 +91,7 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 	virtual ~TimelineMarkerCollection () {}
 	
  public:
+ 	/* @GenerateCBinding */
 	TimelineMarkerCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
@@ -234,6 +237,7 @@ class Image : public MediaBase {
 	CachedSurface *surface;
 	ImageBrush *brush;
 	
+ 	/* @GenerateCBinding */
 	Image ();
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
@@ -406,6 +410,7 @@ class MediaElement : public MediaBase {
 	// MediaOpened is raised when media is ready to play (we've already started playing, or, if AutoPlay is false, paused).
 	const static int MediaOpenedEvent;
 	
+ 	/* @GenerateCBinding */
 	MediaElement ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
 	

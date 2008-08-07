@@ -10,14 +10,6 @@
 #include <config.h>
 #include "usercontrol.h"
 
-UserControl *
-user_control_new (void)
-{
-	UserControl *x = new UserControl ();
-	printf ("UserControl is %p\n", x);
-	return x;
-}
-
 UIElement *
 user_control_get_content (UserControl *user_control)
 {

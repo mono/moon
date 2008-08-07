@@ -153,12 +153,6 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 	return points;
 }
 
-MouseEventArgs*
-mouse_event_args_new (void)
-{
-	return new MouseEventArgs ();
-}
-
 int
 mouse_event_args_get_state (MouseEventArgs *args)
 {
@@ -213,12 +207,6 @@ ModifierKeys
 keyboard_get_modifiers ()
 {
 	return Keyboard::Modifiers;
-}
-
-RoutedEventArgs*
-routed_event_args_new (void)
-{
-	return new RoutedEventArgs ();
 }
 
 DependencyObject*

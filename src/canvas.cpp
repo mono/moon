@@ -152,13 +152,6 @@ Canvas::GetTop ()
 	return GetValue (Canvas::TopProperty)->AsDouble ();
 }
 
-
-Canvas *
-canvas_new (void)
-{
-	return new Canvas ();
-}
-
 void 
 canvas_init (void)
 {

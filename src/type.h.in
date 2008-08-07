@@ -96,14 +96,14 @@ private:
 	void CloneStaticTypes ();
 	
 public:
-	/* @GenerateCBinding:Type=Types,GenerateManaged=true,Version=2.0 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Types ();
-	/* @GenerateCBinding:Type=Types,GenerateManaged=true,Version=2.0 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	~Types ();
 	
-	/* @GenerateCBinding:Type=Types,GenerateManaged=true,Version=2.0 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent);
-	/* @GenerateCBinding:Type=Types,GenerateManaged=true,Version=2.0 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Type *Find (Type::Kind type);
 };
 

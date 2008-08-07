@@ -26,6 +26,7 @@ protected:
 	virtual ~UserControl ();
 
 public:
+ 	/* @GenerateCBinding */
 	UserControl ();
 
 	virtual Type::Kind GetObjectType () { return Type::USERCONTROL; }

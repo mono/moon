@@ -17,35 +17,11 @@
 
 DependencyProperty *AssemblyPart::SourceProperty;
 
-AssemblyPart *
-assembly_part_new (void)
-{
-	return new AssemblyPart ();
-}
-
-AssemblyPartCollection *
-assembly_part_collection_new (void)
-{
-	return new AssemblyPartCollection ();
-}
-
 DependencyProperty *Deployment::ExternalCallersFromCrossDomainProperty;
 DependencyProperty *Deployment::EntryPointAssemblyProperty;
 DependencyProperty *Deployment::EntryPointTypeProperty;
 DependencyProperty *Deployment::PartsProperty;
 DependencyProperty *Deployment::RuntimeVersionProperty;
-
-Deployment *
-deployment_new (void)
-{
-	return new Deployment ();
-}
-
-Application *
-application_new (void)
-{
-	return new Application ();
-}
 
 void
 deployment_init (void)

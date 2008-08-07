@@ -94,6 +94,7 @@ class Downloader : public DependencyObject {
 	const static int DownloadProgressChangedEvent;
 	const static int DownloadFailedEvent;
 	
+	/* @GenerateCBinding */
 	Downloader ();
 	
 	virtual Type::Kind GetObjectType () { return Type::DOWNLOADER; };	

@@ -843,12 +843,6 @@ uielement_init (void)
 	UIElement::TriggersProperty = DependencyProperty::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
 }
 
-UIElement *
-uielement_new (void)
-{
-	return new UIElement ();
-}
-
 Surface *
 uielement_get_surface (UIElement *item)
 {

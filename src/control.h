@@ -50,6 +50,7 @@ class Control : public FrameworkElement {
 	FrameworkElement *real_object;
 	Rect bounds_with_children;
 	
+	/* @GenerateCBinding */
 	Control ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }

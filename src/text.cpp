@@ -191,12 +191,6 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	}
 }
 
-Inline *
-inline_new (void)
-{
-	return new Inline ();
-}
-
 const char *
 inline_get_font_family (Inline *inline_)
 {
@@ -285,16 +279,6 @@ inline_set_text_decorations (Inline *inline_, TextDecorations value)
 	inline_->SetValue (Inline::TextDecorationsProperty, Value (value));
 }
 
-
-// LineBreak
-
-LineBreak *
-line_break_new (void)
-{
-	return new LineBreak ();
-}
-
-
 // Run
 
 DependencyProperty *Run::TextProperty;
@@ -313,12 +297,6 @@ Run::GetText ()
 	return value ? value->AsString () : NULL;
 }
 
-
-Run *
-run_new (void)
-{
-	return new Run ();
-}
 
 const char *
 run_get_text (Run *run)
@@ -1192,14 +1170,6 @@ TextWrapping
 TextBlock::GetTextWrapping ()
 {
 	return (TextWrapping) GetValue (TextBlock::TextWrappingProperty)->AsInt32 ();
-}
-
-
-
-TextBlock *
-text_block_new (void)
-{
-	return new TextBlock ();
 }
 
 double
@@ -2215,12 +2185,6 @@ Glyphs::GetUnicodeString ()
 	return value ? value->AsString () : NULL;
 }
 
-
-Glyphs *
-glyphs_new (void)
-{
-	return new Glyphs ();
-}
 
 Brush *
 glyphs_get_fill (Glyphs *glyphs)

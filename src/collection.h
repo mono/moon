@@ -75,6 +75,7 @@ class DependencyObjectCollection : public Collection {
 	virtual ~DependencyObjectCollection () {}
 	
  public:
+	/* @GenerateCBinding */
 	DependencyObjectCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
@@ -96,6 +97,7 @@ class DoubleCollection : public Collection {
 	virtual ~DoubleCollection () {}
 	
  public:
+	/* @GenerateCBinding */
 	DoubleCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::DOUBLE_COLLECTION; }
@@ -107,6 +109,7 @@ class PointCollection : public Collection {
 	virtual ~PointCollection () {}
 	
  public:
+	/* @GenerateCBinding */
 	PointCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::POINT_COLLECTION; }
@@ -135,6 +138,7 @@ class TriggerCollection : public DependencyObjectCollection {
 	virtual ~TriggerCollection () {}
 	
  public:
+	/* @GenerateCBinding */
 	TriggerCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
@@ -146,6 +150,7 @@ class TriggerActionCollection : public DependencyObjectCollection {
 	virtual ~TriggerActionCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	TriggerActionCollection () {}
 	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION_COLLECTION; }
 	/* this may seem wrong, but it's what the TriggerActionCollection mandates */
@@ -157,6 +162,7 @@ class ResourceDictionary : public DependencyObjectCollection {
 	virtual ~ResourceDictionary () {}
 	
  public:
+	/* @GenerateCBinding */
 	ResourceDictionary () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::RESOURCE_DICTIONARY; }
@@ -168,6 +174,7 @@ class Inlines : public DependencyObjectCollection {
 	virtual ~Inlines () {}
 
  public:
+	/* @GenerateCBinding */
 	Inlines () {}
 	virtual Type::Kind GetObjectType () { return Type::INLINES; }
 	virtual Type::Kind GetElementType () { return Type::INLINE; }
@@ -184,6 +191,7 @@ class UIElementCollection : public DependencyObjectCollection {
  public:
 	GPtrArray *z_sorted;
 	
+	/* @GenerateCBinding */
 	UIElementCollection ();
 	
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT_COLLECTION; }

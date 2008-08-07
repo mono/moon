@@ -26,6 +26,7 @@ class AssemblyPart : public DependencyObject {
  public:
 	static DependencyProperty *SourceProperty;
 	
+	/* @GenerateCBinding */
 	AssemblyPart () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::ASSEMBLYPART; }
@@ -40,6 +41,7 @@ class AssemblyPartCollection : public DependencyObjectCollection {
 	virtual ~AssemblyPartCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	AssemblyPartCollection () {}
 	
 	virtual Type::Kind GetObjectType ()  { return Type::ASSEMBLYPART_COLLECTION; }
@@ -68,6 +70,7 @@ class Deployment : public DependencyObject {
 	static DependencyProperty *RuntimeVersionProperty;
 
 
+	/* @GenerateCBinding */
 	Deployment () {} 
 	virtual Type::Kind GetObjectType () { return Type::DEPLOYMENT; } 
 };
@@ -83,6 +86,7 @@ class Application : public DependencyObject {
 	
  public:
 
+	/* @GenerateCBinding */
 	Application () {} 
 	virtual Type::Kind GetObjectType () { return Type::APPLICATION; }
 };

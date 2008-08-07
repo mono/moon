@@ -13,6 +13,7 @@
 #include <glib.h>
 #include <stdint.h>
 
+/* @IncludeInKinds */
 struct Color {
 	double r, g, b, a;
 	

@@ -6,70 +6,703 @@
 #define __MOONLIGHT_C_BINDING_H__
 
 #include <glib.h>
+// This should probably be changed to somehow not include c++ headers.
+#include "animation.h"
+#include "brush.h"
+#include "canvas.h"
+#include "clock.h"
+#include "collection.h"
+#include "contentcontrol.h"
+#include "control.h"
 #include "dependencyobject.h"
 #include "dependencyproperty.h"
+#include "deployment.h"
+#include "downloader.h"
+#include "eventargs.h"
+#include "frameworkelement.h"
+#include "geometry.h"
+#include "grid.h"
+#include "media.h"
+#include "panel.h"
+#include "shape.h"
+#include "stylus.h"
+#include "text.h"
+#include "transform.h"
+#include "trigger.h"
 #include "type.h"
+#include "uielement.h"
+#include "usercontrol.h"
 
 G_BEGIN_DECLS
 
+/* 
+ * Application
+ */ 
 
+#if SL_2_0
+Application* application_new ();
+#endif
+/* 
+ * ArcSegment
+ */ 
+
+ArcSegment* arc_segment_new ();
+/* 
+ * AssemblyPart
+ */ 
+
+#if SL_2_0
+AssemblyPart* assembly_part_new ();
+#endif
+/* 
+ * AssemblyPartCollection
+ */ 
+
+#if SL_2_0
+AssemblyPartCollection* assembly_part_collection_new ();
+#endif
+/* 
+ * BeginStoryboard
+ */ 
+
+BeginStoryboard* begin_storyboard_new ();
+/* 
+ * BezierSegment
+ */ 
+
+BezierSegment* bezier_segment_new ();
+/* 
+ * Brush
+ */ 
+
+Brush* brush_new ();
+/* 
+ * Canvas
+ */ 
+
+Canvas* canvas_new ();
+/* 
+ * ColorAnimation
+ */ 
+
+ColorAnimation* color_animation_new ();
+/* 
+ * ColorAnimationUsingKeyFrames
+ */ 
+
+ColorAnimationUsingKeyFrames* color_animation_using_key_frames_new ();
+/* 
+ * ColorKeyFrame
+ */ 
+
+ColorKeyFrame* color_key_frame_new ();
+/* 
+ * ColorKeyFrameCollection
+ */ 
+
+ColorKeyFrameCollection* color_key_frame_collection_new ();
+/* 
+ * ColumnDefinition
+ */ 
+
+#if SL_2_0
+ColumnDefinition* column_definition_new ();
+#endif
+/* 
+ * ColumnDefinitionCollection
+ */ 
+
+#if SL_2_0
+ColumnDefinitionCollection* column_definition_collection_new ();
+#endif
+/* 
+ * ContentControl
+ */ 
+
+#if SL_2_0
+ContentControl* content_control_new ();
+#endif
+/* 
+ * Control
+ */ 
+
+#if SL_2_0
+Control* control_new ();
+#endif
 /* 
  * DependencyObject
  */ 
 
 #if SL_2_0
-/* @GenerateManaged */
-Value* dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, Type::Kind whatami, DependencyProperty* property, MoonError* error);
-#endif
-#if SL_2_0
-/* @GenerateManaged */
+/* @GeneratePInvoke */
 Value* dependency_object_get_default_value_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
 #endif
+/* @GeneratePInvoke */
+const char* dependency_object_get_name (DependencyObject* instance);
 #if SL_2_0
-/* @GenerateManaged */
+/* @GeneratePInvoke */
 Value* dependency_object_get_value_no_default_with_error (DependencyObject* instance, Types* additional_types, DependencyProperty* property, MoonError* error);
 #endif
-/* @GenerateManaged */
-const char* dependency_object_get_name (DependencyObject* instance);
+#if SL_2_0
+/* @GeneratePInvoke */
+Value* dependency_object_get_value_with_error (DependencyObject* instance, Types* additional_types, Type::Kind whatami, DependencyProperty* property, MoonError* error);
+#endif
+/* 
+ * DependencyObjectCollection
+ */ 
 
+DependencyObjectCollection* dependency_object_collection_new ();
 /* 
  * DependencyProperty
  */ 
 
-/* @GenerateManaged */
+/* @GeneratePInvoke */
+DependencyProperty* dependency_property_get_dependency_property (Type::Kind type, const char* name);
+/* @GeneratePInvoke */
 const char* dependency_property_get_name (DependencyProperty* instance);
-/* @GenerateManaged */
+/* @GeneratePInvoke */
 Type::Kind dependency_property_get_property_type (DependencyProperty* instance);
-/* @GenerateManaged */
+/* @GeneratePInvoke */
 bool dependency_property_is_nullable (DependencyProperty* instance);
 DependencyProperty* dependency_property_register (Type::Kind type, const char* name, Value* default_value);
 #if SL_2_0
-/* @GenerateManaged */
+/* @GeneratePInvoke */
 DependencyProperty* dependency_property_register_full (Types* additional_types, Type::Kind type, const char* name, Value* default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler* changed_callback);
 #endif
-/* @GenerateManaged */
-DependencyProperty* dependency_property_get_dependency_property (Type::Kind type, const char* name);
+#if SL_2_0
+/* @GeneratePInvoke */
+DependencyProperty* dependency_property_register_managed_property (Types* additional_types, const char* name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler* callback);
+#endif
+/* 
+ * Deployment
+ */ 
 
+#if SL_2_0
+Deployment* deployment_new ();
+#endif
+/* 
+ * DiscreteColorKeyFrame
+ */ 
+
+DiscreteColorKeyFrame* discrete_color_key_frame_new ();
+/* 
+ * DiscreteDoubleKeyFrame
+ */ 
+
+DiscreteDoubleKeyFrame* discrete_double_key_frame_new ();
+/* 
+ * DiscretePointKeyFrame
+ */ 
+
+DiscretePointKeyFrame* discrete_point_key_frame_new ();
+/* 
+ * DoubleAnimation
+ */ 
+
+DoubleAnimation* double_animation_new ();
+/* 
+ * DoubleAnimationUsingKeyFrames
+ */ 
+
+DoubleAnimationUsingKeyFrames* double_animation_using_key_frames_new ();
+/* 
+ * DoubleCollection
+ */ 
+
+DoubleCollection* double_collection_new ();
+/* 
+ * DoubleKeyFrame
+ */ 
+
+DoubleKeyFrame* double_key_frame_new ();
+/* 
+ * DoubleKeyFrameCollection
+ */ 
+
+DoubleKeyFrameCollection* double_key_frame_collection_new ();
+/* 
+ * Downloader
+ */ 
+
+Downloader* downloader_new ();
+/* 
+ * DrawingAttributes
+ */ 
+
+DrawingAttributes* drawing_attributes_new ();
+/* 
+ * Ellipse
+ */ 
+
+Ellipse* ellipse_new ();
+/* 
+ * EllipseGeometry
+ */ 
+
+EllipseGeometry* ellipse_geometry_new ();
+/* 
+ * EventTrigger
+ */ 
+
+EventTrigger* event_trigger_new ();
+/* 
+ * FrameworkElement
+ */ 
+
+FrameworkElement* framework_element_new ();
+/* 
+ * GeneralTransform
+ */ 
+
+GeneralTransform* general_transform_new ();
+/* 
+ * GeometryCollection
+ */ 
+
+GeometryCollection* geometry_collection_new ();
+/* 
+ * GeometryGroup
+ */ 
+
+GeometryGroup* geometry_group_new ();
+/* 
+ * Glyphs
+ */ 
+
+Glyphs* glyphs_new ();
+/* 
+ * GradientBrush
+ */ 
+
+GradientBrush* gradient_brush_new ();
+/* 
+ * GradientStop
+ */ 
+
+GradientStop* gradient_stop_new ();
+/* 
+ * GradientStopCollection
+ */ 
+
+GradientStopCollection* gradient_stop_collection_new ();
+/* 
+ * Grid
+ */ 
+
+#if SL_2_0
+Grid* grid_new ();
+#endif
+/* 
+ * Image
+ */ 
+
+Image* image_new ();
+/* 
+ * ImageBrush
+ */ 
+
+ImageBrush* image_brush_new ();
+/* 
+ * InkPresenter
+ */ 
+
+InkPresenter* ink_presenter_new ();
+/* 
+ * Inline
+ */ 
+
+Inline* inline_new ();
+/* 
+ * Inlines
+ */ 
+
+Inlines* inlines_new ();
+/* 
+ * KeyFrame
+ */ 
+
+KeyFrame* key_frame_new ();
+/* 
+ * KeyFrameCollection
+ */ 
+
+KeyFrameCollection* key_frame_collection_new ();
+/* 
+ * KeySpline
+ */ 
+
+KeySpline* key_spline_new ();
+/* 
+ * Line
+ */ 
+
+Line* line_new ();
+/* 
+ * LinearColorKeyFrame
+ */ 
+
+LinearColorKeyFrame* linear_color_key_frame_new ();
+/* 
+ * LinearDoubleKeyFrame
+ */ 
+
+LinearDoubleKeyFrame* linear_double_key_frame_new ();
+/* 
+ * LinearGradientBrush
+ */ 
+
+LinearGradientBrush* linear_gradient_brush_new ();
+/* 
+ * LinearPointKeyFrame
+ */ 
+
+LinearPointKeyFrame* linear_point_key_frame_new ();
+/* 
+ * LineBreak
+ */ 
+
+LineBreak* line_break_new ();
+/* 
+ * LineGeometry
+ */ 
+
+LineGeometry* line_geometry_new ();
+/* 
+ * LineSegment
+ */ 
+
+LineSegment* line_segment_new ();
+/* 
+ * Matrix
+ */ 
+
+Matrix* matrix_new ();
+/* 
+ * MatrixTransform
+ */ 
+
+MatrixTransform* matrix_transform_new ();
+/* 
+ * MediaAttribute
+ */ 
+
+MediaAttribute* media_attribute_new ();
+/* 
+ * MediaAttributeCollection
+ */ 
+
+MediaAttributeCollection* media_attribute_collection_new ();
+/* 
+ * MediaElement
+ */ 
+
+MediaElement* media_element_new ();
+/* 
+ * MouseEventArgs
+ */ 
+
+MouseEventArgs* mouse_event_args_new ();
+/* 
+ * Panel
+ */ 
+
+Panel* panel_new ();
+/* 
+ * ParallelTimeline
+ */ 
+
+ParallelTimeline* parallel_timeline_new ();
+/* 
+ * Path
+ */ 
+
+Path* path_new ();
+/* 
+ * PathFigure
+ */ 
+
+PathFigure* path_figure_new ();
+/* 
+ * PathFigureCollection
+ */ 
+
+PathFigureCollection* path_figure_collection_new ();
+/* 
+ * PathGeometry
+ */ 
+
+PathGeometry* path_geometry_new ();
+/* 
+ * PathSegmentCollection
+ */ 
+
+PathSegmentCollection* path_segment_collection_new ();
+/* 
+ * PointAnimation
+ */ 
+
+PointAnimation* point_animation_new ();
+/* 
+ * PointAnimationUsingKeyFrames
+ */ 
+
+PointAnimationUsingKeyFrames* point_animation_using_key_frames_new ();
+/* 
+ * PointCollection
+ */ 
+
+PointCollection* point_collection_new ();
+/* 
+ * PointKeyFrame
+ */ 
+
+PointKeyFrame* point_key_frame_new ();
+/* 
+ * PointKeyFrameCollection
+ */ 
+
+PointKeyFrameCollection* point_key_frame_collection_new ();
+/* 
+ * PolyBezierSegment
+ */ 
+
+PolyBezierSegment* poly_bezier_segment_new ();
+/* 
+ * Polygon
+ */ 
+
+Polygon* polygon_new ();
+/* 
+ * Polyline
+ */ 
+
+Polyline* polyline_new ();
+/* 
+ * PolyLineSegment
+ */ 
+
+PolyLineSegment* poly_line_segment_new ();
+/* 
+ * PolyQuadraticBezierSegment
+ */ 
+
+PolyQuadraticBezierSegment* poly_quadratic_bezier_segment_new ();
+/* 
+ * QuadraticBezierSegment
+ */ 
+
+QuadraticBezierSegment* quadratic_bezier_segment_new ();
+/* 
+ * RadialGradientBrush
+ */ 
+
+RadialGradientBrush* radial_gradient_brush_new ();
+/* 
+ * Rectangle
+ */ 
+
+Rectangle* rectangle_new ();
+/* 
+ * RectangleGeometry
+ */ 
+
+RectangleGeometry* rectangle_geometry_new ();
+/* 
+ * ResourceDictionary
+ */ 
+
+ResourceDictionary* resource_dictionary_new ();
+/* 
+ * RotateTransform
+ */ 
+
+RotateTransform* rotate_transform_new ();
+/* 
+ * RoutedEventArgs
+ */ 
+
+RoutedEventArgs* routed_event_args_new ();
+/* 
+ * RowDefinition
+ */ 
+
+#if SL_2_0
+RowDefinition* row_definition_new ();
+#endif
+/* 
+ * RowDefinitionCollection
+ */ 
+
+#if SL_2_0
+RowDefinitionCollection* row_definition_collection_new ();
+#endif
+/* 
+ * Run
+ */ 
+
+Run* run_new ();
+/* 
+ * ScaleTransform
+ */ 
+
+ScaleTransform* scale_transform_new ();
+/* 
+ * SkewTransform
+ */ 
+
+SkewTransform* skew_transform_new ();
+/* 
+ * SolidColorBrush
+ */ 
+
+SolidColorBrush* solid_color_brush_new ();
+/* 
+ * SplineColorKeyFrame
+ */ 
+
+SplineColorKeyFrame* spline_color_key_frame_new ();
+/* 
+ * SplineDoubleKeyFrame
+ */ 
+
+SplineDoubleKeyFrame* spline_double_key_frame_new ();
+/* 
+ * SplinePointKeyFrame
+ */ 
+
+SplinePointKeyFrame* spline_point_key_frame_new ();
+/* 
+ * Storyboard
+ */ 
+
+Storyboard* storyboard_new ();
+/* 
+ * Stroke
+ */ 
+
+Stroke* stroke_new ();
+/* 
+ * StrokeCollection
+ */ 
+
+StrokeCollection* stroke_collection_new ();
+/* 
+ * StylusInfo
+ */ 
+
+StylusInfo* stylus_info_new ();
+/* 
+ * StylusPoint
+ */ 
+
+StylusPoint* stylus_point_new ();
+/* 
+ * StylusPointCollection
+ */ 
+
+StylusPointCollection* stylus_point_collection_new ();
+/* 
+ * TextBlock
+ */ 
+
+TextBlock* text_block_new ();
+/* 
+ * TimelineCollection
+ */ 
+
+TimelineCollection* timeline_collection_new ();
+/* 
+ * TimelineGroup
+ */ 
+
+TimelineGroup* timeline_group_new ();
+/* 
+ * TimelineMarker
+ */ 
+
+TimelineMarker* timeline_marker_new ();
+/* 
+ * TimelineMarkerCollection
+ */ 
+
+TimelineMarkerCollection* timeline_marker_collection_new ();
+/* 
+ * Transform
+ */ 
+
+Transform* transform_new ();
+/* 
+ * TransformCollection
+ */ 
+
+TransformCollection* transform_collection_new ();
+/* 
+ * TransformGroup
+ */ 
+
+TransformGroup* transform_group_new ();
+/* 
+ * TranslateTransform
+ */ 
+
+TranslateTransform* translate_transform_new ();
+/* 
+ * TriggerActionCollection
+ */ 
+
+TriggerActionCollection* trigger_action_collection_new ();
+/* 
+ * TriggerCollection
+ */ 
+
+TriggerCollection* trigger_collection_new ();
 /* 
  * Types
  */ 
 
 #if SL_2_0
-/* @GenerateManaged */
-Types* types_new ();
-#endif
-#if SL_2_0
-/* @GenerateManaged */
+/* @GeneratePInvoke */
 void types_free (Types* instance);
 #endif
 #if SL_2_0
-/* @GenerateManaged */
+/* @GeneratePInvoke */
+Type* types_find (Types* instance, Type::Kind type);
+#endif
+#if SL_2_0
+/* @GeneratePInvoke */
 Type::Kind types_register_type (Types* instance, const char* name, void* gc_handle, Type::Kind parent);
 #endif
 #if SL_2_0
-/* @GenerateManaged */
-Type* types_find (Types* instance, Type::Kind type);
+/* @GeneratePInvoke */
+Types* types_new ();
 #endif
+/* 
+ * UIElement
+ */ 
+
+UIElement* uielement_new ();
+/* 
+ * UIElementCollection
+ */ 
+
+UIElementCollection* uielement_collection_new ();
+/* 
+ * UserControl
+ */ 
+
+#if SL_2_0
+UserControl* user_control_new ();
+#endif
+/* 
+ * VideoBrush
+ */ 
+
+VideoBrush* video_brush_new ();
+/* 
+ * VisualBrush
+ */ 
+
+VisualBrush* visual_brush_new ();
 
 G_END_DECLS
 

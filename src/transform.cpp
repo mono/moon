@@ -66,12 +66,6 @@ GeneralTransform::Transform (Point point)
 	return point.Transform (&_matrix);
 }
 
-GeneralTransform *
-general_transform_new (void)
-{
-	return new GeneralTransform ();
-}
-
 void
 general_transform_get_transform (GeneralTransform *transform, cairo_matrix_t *value)
 {
@@ -82,12 +76,6 @@ void
 general_transform_transform_point (GeneralTransform *t, Point *p, Point *r)
 {
 	*r = t->Transform (*p);
-}
-
-Transform *
-transform_new (void)
-{
-	return new Transform ();
 }
 
 DependencyProperty *RotateTransform::CenterXProperty;
@@ -151,12 +139,6 @@ double
 RotateTransform::GetCenterY ()
 {
 	return GetValue (RotateTransform::CenterYProperty)->AsDouble ();
-}
-
-RotateTransform *
-rotate_transform_new (void)
-{
-	return new RotateTransform ();
 }
 
 void
@@ -234,12 +216,6 @@ TranslateTransform::GetY ()
 	return GetValue (TranslateTransform::YProperty)->AsDouble ();
 }
 
-TranslateTransform *
-translate_transform_new (void)
-{
-	return new TranslateTransform ();
-}
-
 void
 translate_transform_set_x (TranslateTransform *transform, double x)
 {
@@ -301,12 +277,6 @@ ScaleTransform::UpdateTransform ()
 	}
 	//printf ("scaling sx %g sy %g at center cx %g cy %g\n", sx, sy, cx, cy);
 	//printf ("ScaleTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
-}
-
-ScaleTransform *
-scale_transform_new (void)
-{
-	return new ScaleTransform ();
 }
 
 void
@@ -388,12 +358,6 @@ SkewTransform::UpdateTransform ()
 		cairo_matrix_translate (&_matrix, -cx, -cy);
 
 	//printf ("SkewTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
-}
-
-SkewTransform *
-skew_transform_new (void)
-{
-	return new SkewTransform ();
 }
 
 void
@@ -491,12 +455,6 @@ Matrix::GetUnderlyingMatrix ()
 	return matrix;
 }
 
-Matrix *
-matrix_new (void)
-{
-	return new Matrix ();
-}
-
 double
 matrix_get_m11 (Matrix *matrix)
 {
@@ -592,12 +550,6 @@ MatrixTransform::UpdateTransform ()
 		cairo_matrix_init_identity (&_matrix);
 }
 
-MatrixTransform *
-matrix_transform_new (void)
-{
-	return new MatrixTransform ();
-}
-
 void
 matrix_transform_set_matrix (MatrixTransform *t, Matrix *matrix)
 {
@@ -676,21 +628,9 @@ TransformGroup::UpdateTransform ()
 	}
 }
 
-TransformGroup *
-transform_group_new (void)
-{
-	return new TransformGroup ();
-}
-
 //
 // TransformCollection
 //
-
-TransformCollection *
-transform_collection_new (void)
-{
-	return new TransformCollection ();
-}
 
 void
 transform_init (void)

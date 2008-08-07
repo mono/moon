@@ -18,6 +18,7 @@
 #include "point.h"
 
 // map to System.Windows.Rect
+/* @IncludeInKinds */
 struct Rect {
  public:
 	double x, y, w, h;

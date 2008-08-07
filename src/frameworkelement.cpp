@@ -120,12 +120,6 @@ FrameworkElement::GetWidth ()
 	return GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 }
 
-FrameworkElement *
-framework_element_new (void)
-{
-	return new FrameworkElement ();
-}
-
 void
 framework_element_set_height (FrameworkElement *element, double height)
 {

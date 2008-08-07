@@ -220,6 +220,7 @@ class Ellipse : public Shape {
 	virtual Rect ComputeStretchBounds (Rect shape_bounds);
 	
  public:
+	/* @GenerateCBinding */
 	Ellipse ();
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
 
@@ -246,6 +247,7 @@ class Rectangle : public Shape {
 	static DependencyProperty *RadiusXProperty;
 	static DependencyProperty *RadiusYProperty;
 	
+	/* @GenerateCBinding */
 	Rectangle ();
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; };
 	
@@ -287,6 +289,9 @@ class Line : public Shape {
 	virtual Rect ComputeShapeBounds (bool logical);
 	
  public:
+	/* @GenerateCBinding */
+	Line () {}
+	
 	static DependencyProperty *X1Property;
 	static DependencyProperty *Y1Property;
 	static DependencyProperty *X2Property;
@@ -342,6 +347,7 @@ class Polygon : public Shape {
 	static DependencyProperty *FillRuleProperty;
 	static DependencyProperty *PointsProperty;
 
+	/* @GenerateCBinding */
 	Polygon () { };
 	virtual Type::Kind GetObjectType () { return Type::POLYGON; };
 
@@ -387,6 +393,7 @@ class Polyline : public Shape {
 	static DependencyProperty *FillRuleProperty;
 	static DependencyProperty *PointsProperty;
 	
+	/* @GenerateCBinding */
 	Polyline () { };
 	virtual Type::Kind GetObjectType () { return Type::POLYLINE; };
 	
@@ -432,6 +439,7 @@ class Path : public Shape {
  public:
 	static DependencyProperty *DataProperty;
 	
+	/* @GenerateCBinding */
 	Path () {};
 	virtual Type::Kind GetObjectType () { return Type::PATH; };
 	

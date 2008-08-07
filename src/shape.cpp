@@ -1167,13 +1167,6 @@ Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args)
 	Shape::OnPropertyChanged (args);
 }
 
-Ellipse *
-ellipse_new (void)
-{
-	return new Ellipse ();
-}
-
-
 //
 // Rectangle
 //
@@ -1443,12 +1436,6 @@ void
 rectangle_set_radius_y (Rectangle *rectangle, double radius)
 {
 	rectangle->SetRadiusY (radius);
-}
-
-Rectangle *
-rectangle_new (void)
-{
-	return new Rectangle ();
 }
 
 //
@@ -1794,12 +1781,6 @@ Line::GetY2 ()
 }
 
 
-Line *
-line_new (void)
-{
-	return new Line ();
-}
-
 double
 line_get_x1 (Line *line)
 {
@@ -2052,13 +2033,6 @@ Polygon::GetPoints (int *n)
 	return array->points;
 }
 
-
-Polygon *
-polygon_new (void)
-{
-	return new Polygon ();
-}
-
 FillRule
 polygon_get_fill_rule (Polygon *polygon)
 {
@@ -2242,13 +2216,6 @@ Polyline::GetPoints (int *n)
 	return array->points;
 }
 
-
-Polyline *
-polyline_new (void)
-{
-	return new Polyline ();
-}
-
 FillRule
 polyline_get_fill_rule (Polyline *polyline)
 {
@@ -2418,12 +2385,6 @@ Path::GetData ()
 	return value ? value->AsGeometry () : NULL;
 }
 
-
-Path *
-path_new (void)
-{
-	return new Path ();
-}
 
 Geometry *
 path_get_data (Path *path)

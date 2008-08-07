@@ -13,6 +13,7 @@
 #include <glib.h>
 #include <cairo.h>
 
+/* @IncludeInKinds */
 struct Point {
 public:
 	double x, y;

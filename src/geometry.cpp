@@ -229,13 +229,6 @@ GeometryGroup::GetChildren ()
 	return value ? value->AsGeometryCollection () : NULL;
 }
 
-
-GeometryGroup *
-geometry_group_new (void)
-{
-	return new GeometryGroup ();
-}
-
 GeometryCollection *
 geometry_group_get_children (GeometryGroup *group)
 {
@@ -247,40 +240,6 @@ geometry_group_set_children (GeometryGroup *group, GeometryCollection *children)
 {
 	group->SetChildren (children);
 }
-
-
-//
-// GeometryCollection
-//
-
-GeometryCollection *
-geometry_collection_new (void)
-{
-	return new GeometryCollection ();
-}
-
-
-//
-// PathFigureCollection
-//
-
-PathFigureCollection *
-path_figure_collection_new (void)
-{
-	return new PathFigureCollection ();
-}
-
-
-//
-// PathSegmentCollection
-//
-
-PathSegmentCollection *
-path_segment_collection_new (void)
-{
-	return new PathSegmentCollection ();
-}
-
 
 //
 // EllipseGeometry
@@ -370,13 +329,6 @@ double
 EllipseGeometry::GetRadiusY ()
 {
 	return GetValue (EllipseGeometry::RadiusYProperty)->AsDouble ();
-}
-
-
-EllipseGeometry *
-ellipse_geometry_new (void)
-{
-	return new EllipseGeometry ();
 }
 
 Point *
@@ -497,12 +449,6 @@ LineGeometry::GetStartPoint ()
 	return value ? value->AsPoint () : NULL;
 }
 
-
-LineGeometry *
-line_geometry_new (void)
-{
-	return new LineGeometry ();
-}
 
 Point *
 line_geometry_get_end_point (LineGeometry *line)
@@ -679,12 +625,6 @@ PathGeometry::GetFigures ()
 	return value ? value->AsPathFigureCollection () : NULL;
 }
 
-PathGeometry *
-path_geometry_new (void)
-{
-	return new PathGeometry ();
-}
-
 PathFigureCollection *
 path_geometry_get_figures (PathGeometry *path)
 {
@@ -801,13 +741,6 @@ RectangleGeometry::GetRect ()
 	Value *value = GetValue (RectangleGeometry::RectProperty);
 	
 	return value ? value->AsRect () : NULL;
-}
-
-
-RectangleGeometry *
-rectangle_geometry_new (void)
-{
-	return new RectangleGeometry ();
 }
 
 double
@@ -974,13 +907,6 @@ PathFigure::GetStartPoint ()
 	return value ? value->AsPoint () : NULL;
 }
 
-
-PathFigure *
-path_figure_new (void)
-{
-	return new PathFigure ();
-}
-
 bool
 path_figure_get_is_closed (PathFigure *figure)
 {
@@ -1107,13 +1033,6 @@ ArcSegment::GetSweepDirection ()
 	return (SweepDirection) GetValue (ArcSegment::SweepDirectionProperty)->AsInt32 ();
 }
 
-
-
-ArcSegment *
-arc_segment_new (void)
-{
-	return new ArcSegment ();
-}
 
 bool
 arc_segment_get_is_large_arc (ArcSegment *segment)
@@ -1245,12 +1164,6 @@ BezierSegment::GetPoint3 ()
 }
 
 
-BezierSegment *
-bezier_segment_new (void)
-{
-	return new BezierSegment ();
-}
-
 Point *
 bezier_segment_get_point1 (BezierSegment *segment)
 {
@@ -1320,12 +1233,6 @@ LineSegment::GetPoint ()
 	return value ? value->AsPoint () : NULL;
 }
 
-
-LineSegment *
-line_segment_new (void)
-{
-	return new LineSegment ();
-}
 
 Point *
 line_segment_get_point (LineSegment *segment)
@@ -1401,13 +1308,6 @@ PolyBezierSegment::GetPoints (int *n)
 	return array->points;
 }
 
-
-PolyBezierSegment *
-poly_bezier_segment_new (void)
-{
-	return new PolyBezierSegment ();
-}
-
 void
 poly_bezier_segment_set_points (PolyBezierSegment *segment, Point *points, int n)
 {
@@ -1471,12 +1371,6 @@ PolyLineSegment::GetPoints (int *n)
 	return array->points;
 }
 
-
-PolyLineSegment *
-poly_line_segment_new (void)
-{
-	return new PolyLineSegment ();
-}
 
 void
 poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int n)
@@ -1573,13 +1467,6 @@ PolyQuadraticBezierSegment::GetPoints (int *n)
 	return array->points;
 }
 
-
-PolyQuadraticBezierSegment *
-poly_quadratic_bezier_segment_new (void)
-{
-	return new PolyQuadraticBezierSegment ();
-}
-
 void
 poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, Point *points, int n)
 {
@@ -1636,12 +1523,6 @@ QuadraticBezierSegment::GetPoint2 ()
 	return value ? value->AsPoint () : NULL;
 }
 
-
-QuadraticBezierSegment *
-quadratic_bezier_segment_new (void)
-{
-	return new QuadraticBezierSegment ();
-}
 
 Point *
 quadratic_bezier_segment_get_point1 (QuadraticBezierSegment *segment)

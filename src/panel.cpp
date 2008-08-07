@@ -648,12 +648,6 @@ Panel::OnLoaded ()
  	emitting_loaded = false;
 }
 
-Panel *
-panel_new (void)
-{
-	return new Panel ();
-}
-
 void
 panel_set_background (Panel *panel, Brush *background)
 {

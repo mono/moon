@@ -32,6 +32,7 @@ class EventTrigger : public DependencyObject {
 	virtual ~EventTrigger ();
 
  public:
+	/* @GenerateCBinding */
 	EventTrigger ();
 	
 	virtual Type::Kind GetObjectType () { return Type::EVENTTRIGGER; };

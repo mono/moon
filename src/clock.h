@@ -51,7 +51,7 @@ enum FillBehavior {
 	FillBehaviorStop
 };
 
-
+/* @IncludeInKinds */
 struct Duration {
 	enum DurationKind {
 		TIMESPAN,
@@ -112,6 +112,7 @@ struct Duration {
 };
 
 
+/* @IncludeInKinds */
 struct RepeatBehavior {
 	enum RepeatKind {
 		COUNT,
@@ -544,6 +545,7 @@ class TimelineCollection : public DependencyObjectCollection {
 	virtual ~TimelineCollection () {}
 
  public:
+ 	/* @GenerateCBinding */
 	TimelineCollection () {}
 	
 	virtual Type::Kind GetObjectType() { return Type::TIMELINE_COLLECTION; }
@@ -557,6 +559,7 @@ class TimelineGroup : public Timeline {
 	virtual ~TimelineGroup ();
 
  public:
+ 	/* @GenerateCBinding */
 	TimelineGroup ();
 	
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEGROUP; };
@@ -579,6 +582,7 @@ class ParallelTimeline : public TimelineGroup {
 	virtual ~ParallelTimeline () {}
 
  public:
+ 	/* @GenerateCBinding */
 	ParallelTimeline () { }
 	virtual Type::Kind GetObjectType () { return Type::PARALLELTIMELINE; };
 
@@ -598,6 +602,7 @@ class TimelineMarker : public DependencyObject {
 	static DependencyProperty *TimeProperty;
 	static DependencyProperty *TypeProperty;
 	
+ 	/* @GenerateCBinding */
 	TimelineMarker () {}
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER; };
 	

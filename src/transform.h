@@ -30,6 +30,7 @@ protected:
 	virtual void UpdateTransform ();
 	void MaybeUpdateTransform ();
 public:
+	/* @GenerateCBinding */
 	GeneralTransform () : need_update (true) { }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual Type::Kind GetObjectType () { return Type::GENERALTRANSFORM; };
@@ -48,6 +49,7 @@ protected:
 	virtual ~Transform () {}
 
 public:
+	/* @GenerateCBinding */
 	Transform () { }
 
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };
@@ -66,6 +68,7 @@ class RotateTransform : public Transform {
 	static DependencyProperty *CenterXProperty;
 	static DependencyProperty *CenterYProperty;
 	
+	/* @GenerateCBinding */
 	RotateTransform () { }
 	virtual Type::Kind GetObjectType () { return Type::ROTATETRANSFORM; };
 	
@@ -103,6 +106,7 @@ class TranslateTransform : public Transform {
 	static DependencyProperty *XProperty;
 	static DependencyProperty *YProperty;
 	
+	/* @GenerateCBinding */
 	TranslateTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::TRANSLATETRANSFORM; };
 	
@@ -131,6 +135,7 @@ class ScaleTransform : public Transform {
 
  public:
 
+	/* @GenerateCBinding */
 	ScaleTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; };
 
@@ -161,6 +166,7 @@ class SkewTransform : public Transform {
 
 public:
 
+	/* @GenerateCBinding */
 	SkewTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::SKEWTRANSFORM; };
 
@@ -198,6 +204,7 @@ public:
 	static DependencyProperty *OffsetXProperty;
 	static DependencyProperty *OffsetYProperty;
 
+	/* @GenerateCBinding */
 	Matrix ();
 	Matrix (cairo_matrix_t *m);
 
@@ -230,6 +237,7 @@ class MatrixTransform : public Transform {
  public:
 	static DependencyProperty* MatrixProperty;
 
+	/* @GenerateCBinding */
 	MatrixTransform () {}
 	virtual Type::Kind GetObjectType () { return Type::MATRIXTRANSFORM; };
 
@@ -246,6 +254,7 @@ class TransformCollection : public DependencyObjectCollection {
 	virtual ~TransformCollection () {}
 
  public:
+	/* @GenerateCBinding */
 	TransformCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM_COLLECTION; }
@@ -263,6 +272,7 @@ protected:
 public:
 	static DependencyProperty *ChildrenProperty;
 
+	/* @GenerateCBinding */
 	TransformGroup ();
 	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
 	
