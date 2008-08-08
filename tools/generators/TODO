@@ -1,0 +1,13 @@
+Generate
+========
+* Implementation of C++ DP accessors
+* Declaration of C++ DP accessors (maybe, this would require modifying all the headers, instead of stuffing the generated code into a separate file)
+* Managed DP registration 
+* Managed DP property accessors
+* C bindings for C++ methods
+* Native (and maybe managed) enums
+* Add attributes to C/C++ methods to generate PInvokes.
+
+Other
+=====
+* Honor Version=2 for events

@@ -14,15 +14,26 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="generators/common.cs" subtype="Code" buildaction="Compile" />
-    <File name="generators/methodgen.cs" subtype="Code" buildaction="Compile" />
     <File name="generators/Makefile" subtype="Code" buildaction="Nothing" />
-    <File name="generators/typegen.cs" subtype="Code" buildaction="Compile" />
-    <File name="generators/cgen.cs" subtype="Code" buildaction="Compile" />
-    <File name="generators/typeandkindgen.cs" subtype="Code" buildaction="Compile" />
     <File name="generators/README" subtype="Code" buildaction="Nothing" />
     <File name="mxap/Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="mxap/mxap.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/Generator.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/Property.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/GlobalInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/MemberInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/MethodInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/ParameterInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/FieldInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/TypeReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/TypeInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/SignatureType.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/Helper.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/Tokenizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/Log.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/HeaderCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="generators/HOWTO" subtype="Code" buildaction="Nothing" />
+    <File name="generators/TODO" subtype="Code" buildaction="Nothing" />
   </Contents>
   <GtkDesignInfo gtkVersion="2.12.2" />
 </Project>
