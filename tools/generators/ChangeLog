@@ -1,5 +1,9 @@
 2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* README, HOWTO: Added documentation.
+
+2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* typegen.cs, GlobalInfo.cs, Helper.cs, Log.cs, MemberInfo.cs,
 	  Property.cs, Generator.cs, common.cs, MethodInfo.cs,
 	  ParameterInfo.cs, TypeInfo.cs, FieldInfo.cs, TypeReference.cs,

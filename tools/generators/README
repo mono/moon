@@ -35,6 +35,34 @@ The currently understood properties are:
 	
 	* ContentProperty: Jackson knows this one.
 	
+src/dependencyproperty.g.cpp
+============================
+Static implementation and registration of dependency properties. 
+
+The generator recognizes static fields of the type 'DependencyProperty*',
+and which ends with 'Property'.
+
+static DependencyProperty *FooProperty; // recognized
+static DependencyProperty *Bar; // not recognized
+
+The following annotations are understood by the generator:
+	* Version:
+	* SilverlightVersion: Surrounds registration (not cpp definition)
+	  in #if SL* ... #endif
+	* PropertyType: The type of the property. Required. Don't use the
+	  Kind value, but the real name of the type (DependencyObject
+	  instead of DEPENDENCY_OBJECT, etc). string = char*, enums = gint32.
+	* DefaultValue: Sets the default value for the property. The value
+	  is put directly as-is into a Value ctor. Example: 
+	  /* DefaultValue=TimeSpan_FromSeconds (5)\, Type::TIMESPAN */
+	  (note that the comma is escaped) will generate this default value:
+	  Value (TimeSpan_FromSeconds (5), Type::TIMESPAN)
+	* ReadOnly:
+	* AlwaysChange:
+	* Attached:
+	* Nullable: Creates the DP with the corresponding fields set (all
+	  defaults to false).
+	* Visibility: Not implemented.
 
 src/type.h
 ==========

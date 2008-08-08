@@ -1,0 +1,16 @@
+Create a new DependencyProperty
+===============================
+
+Add a field to the C++ class like this:
+
+class Foo {
+	/* @PropertyType=double */
+	static DependencyProperty *BarProperty;
+};
+
+and do 'make' in this directory.
+
+There's no need to define the property in any cpp file, nor register it
+in a foo_init method.
+
+See README for more annotations.
