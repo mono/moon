@@ -1,3 +1,12 @@
+2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* typegen.cs, GlobalInfo.cs, Helper.cs, Log.cs, MemberInfo.cs,
+	  Property.cs, Generator.cs, common.cs, MethodInfo.cs,
+	  ParameterInfo.cs, TypeInfo.cs, FieldInfo.cs, TypeReference.cs,
+	  SignatureType.cs, HeaderCollection.cs, Makefile, Tokenizer.cs:
+	  Split out classes into separate files. Added support for generating
+	  dependency property registration.
+
 2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* typegen.cs, cgen.cs, typeandkindgen.cs, common.cs, Makefile, README,

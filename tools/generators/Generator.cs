@@ -1,825 +1,19 @@
 /*
- * typegen.cs: Code generator for the type system
+ * Generator.cs
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
  */
-
 using System;
-using System.Text;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using Generation;
-using Generation.C;
+using System.IO;
+using System.Text;
 
-class Property {
-	public string Name;
-	public string Value;
-	public Property (string Name, string Value)
-	{
-		this.Name = Name;
-		this.Value = Value;
-	}
-	public Property (string Name) : this (Name, null)
-	{
-	}
-}
-
-class Properties : Dictionary <string, Property> {
-	public void Add (string args)
-	{
-		//
-		// The format is like: /* @... */
-		// Where ... is:
-		//  key1[=value1],key2=[value2]
-		//
-		foreach (string pair in args.Split (new char [] {','}, StringSplitOptions.RemoveEmptyEntries)) {
-			string [] v = pair.Split ('=');
-			
-			if (v.Length != 2 && v.Length != 1)
-				throw new Exception (string.Format ("Invalid magic argument: '{0}', it must be of the format: key1[=value1],key2[=value2]", pair));
-			
-			if (ContainsKey (v [0]))
-				throw new Exception (string.Format ("Invalid magic argument: '{0}' There already is a property with this name here.", v [0]));
-			
-			Property p = new Property (v [0]);
-			if (v.Length == 2) {
-				p.Value = v [1];
-				if (p.Value.Length >= 2 && p.Value.StartsWith ("\"") && p.Value.EndsWith ("\"")) {
-					p.Value = p.Value.Substring (1, p.Value.Length - 2);
-				}
-			}
-			Add (p);
-//			Console.WriteLine ("Got argument: '{0}' = '{1}'", v [0], v.Length > 1 ? v [1] : null);
-		}
-	}
-	
-	public void Add (Property p)
-	{
-		base.Add (p.Name, p);
-	}
-	
-	public string GetValue (string name)
-	{
-		Property property;
-		if (!TryGetValue (name, out property))
-			return null;
-		if (property != null)
-			return property.Value;
-		return null;
-	}
-	
-	public void Dump ()
-	{
-		foreach (KeyValuePair <string, Property> p in this) {
-			if (p.Value == null)
-				Console.WriteLine ("/* @{0}*/", p.Key);
-			else
-				Console.WriteLine ("/* @{0}={1}*/", p.Key, p.Value.Value);
-		}
-	}
-}
-
-class GlobalInfo : MemberInfo {
-	private List<MethodInfo> cppmethods_to_bind;
-	
-	public List<MethodInfo> CPPMethodsToBind {
-		get {
-			if (cppmethods_to_bind == null) {
-				cppmethods_to_bind = new List<MethodInfo> ();
-				foreach (MemberInfo member1 in Children.Values) {
-					TypeInfo type = member1 as TypeInfo;
-					if (type == null)
-						continue;
-					
-					foreach (MemberInfo member2 in type.Children.Values) {
-						MethodInfo method = member2 as MethodInfo;
-						if (method == null)
-							continue;
-						if (method.Parent == null) {
-							Console.WriteLine ("The method {0} in type {1} does not have its parent set.", method.Name, type.Name);
-							continue;
-						}
-						if (!method.Properties.ContainsKey ("GenerateCBinding"))
-							continue;
-						cppmethods_to_bind.Add (method);
-					}
-				}
-				cppmethods_to_bind.Sort (new Members.MembersSortedByFullName <MethodInfo> ());
-			}
-			return cppmethods_to_bind;
-		}
-	}
-}
-
-class MemberInfo {
-	public MemberInfo Parent;
-	public string Name;
-	
-	public bool IsPublic;
-	public bool IsPrivate;
-	public bool IsProtected;
-	
-	private string header; // The .h file where the member is defined
-	private Members children;
-	private Properties properties;
-	private string fullname;
-	private Nullable<int> silverlight_version;
-	
-	public bool IsPluginMember {
-		get {
-			if (Header == null || Header == string.Empty)
-				return false;
-			
-			return Path.GetFileName (Path.GetDirectoryName (Header)) == "plugin";
-		}
-	}
-	
-	public bool IsSrcMember {
-		get {
-			if (Header == null || Header == string.Empty)
-				return false;
-			
-			return Path.GetFileName (Path.GetDirectoryName (Header)) == "src";
-		}
-	}
-	
-	public virtual string Signature {
-		get { return Name; }
-	}
-	
-	public Members Children {
-		get {
-			if (children == null)
-				children = new Members (this);
-			return children;
-		}
-	}
-	
-	public Properties Properties {
-		get {
-			if (properties == null)
-				properties = new Properties ();
-			return properties;
-		}
-		set {
-			properties = value;
-		}
-	}
-	
-	public string Header {
-		get {
-			if (header == null) {
-				if (Parent != null)
-					header = Parent.Header;
-				else
-					header = string.Empty;
-			}
-			return header;
-		}
-		set {
-			header = value;
-		}
-	}
-	
-	public string FullName {
-		get {
-			if (fullname == null) {
-				if (Parent != null) {
-					fullname = Parent.FullName + "." + Name;
-				} else {
-					fullname = Name;
-				}
-			}
-			return fullname;
-		}
-	}
-	
-	public int SilverlightVersion {
-		get {
-			string value = null;
-			Property property;
-			if (!silverlight_version.HasValue) {
-				if (Properties.TryGetValue ("Version", out property)) {
-					value = property.Value;
-				} else if (Properties.TryGetValue ("SilverlightVersion", out property)) {
-					value = property.Value;
-				}
-				
-				if (value == null) {
-					if (Parent != null)
-						silverlight_version = new Nullable<int> (Parent.SilverlightVersion);
-					else
-						silverlight_version = new Nullable<int> (1);
-				} else {
-					if (value == "\"2\"" || value == "2" || value == "2.0")
-						silverlight_version = new Nullable<int> (2);
-					else if (value == "\"1\"" || value == "1" || value == "1.0")
-						silverlight_version = new Nullable<int> (1);
-					else
-						throw new Exception (string.Format ("Invalid Version/SilverlightVersion: '{0}'", value));
-				}
-			}
-			
-			return silverlight_version.Value;
-		}
-	}
-	
-	public void Dump (int ident)
-	{
-		if (properties != null)
-			properties.Dump ();
-		Console.Write (new string ('\t', ident));
-		Console.WriteLine ("{0} {1}", FullName, Header);
-		if (children != null)
-			foreach (MemberInfo info in children.Values)
-				info.Dump (ident + 1);
-	}
-}
-
-class Members : Dictionary <string, MemberInfo>{
-	private MemberInfo [] sorted;
-	private MemberInfo [] sorted_by_kind;
-	private List<TypeInfo> sorted_types_by_kind;
-	private StringBuilder kinds_for_enum;
-	private MemberInfo parent;
-	
-	public Members (MemberInfo Parent) : base (StringComparer.Ordinal)
-	{
-		parent = Parent;
-	}
-	
-	class TypeSortedByKind : IComparer <TypeInfo> {
-		public int Compare (TypeInfo a, TypeInfo b)
-		{
-			return string.Compare (a.KindName, b.KindName);
-		}
-	}
-	public class MembersSortedByFullName <T> : IComparer<T> where T : MemberInfo  {
-		public int Compare (T a, T b)
-		{
-			return string.Compare (a.FullName, b.FullName);
-		}
-	}
-	
-	public IEnumerable <TypeInfo> SortedTypesByKind {
-		get {
-			if (sorted_types_by_kind == null) {
-				sorted_types_by_kind = new List<TypeInfo> ();
-				foreach (MemberInfo member in this.Values) {
-					TypeInfo type = member as TypeInfo;
-					if (type != null)
-						sorted_types_by_kind.Add (type);
-				}
-				sorted_types_by_kind.Sort (new TypeSortedByKind ());
-			}
-			return sorted_types_by_kind;
-		}
-	}
-	
-	public IEnumerable <MemberInfo> SortedList {
-		get {
-			if (sorted == null) {
-				int i = 0;
-				sorted = new MemberInfo [Count];
-				foreach (MemberInfo type in this.Values)
-					sorted [i++] = type;
-				Array.Sort (sorted, delegate (MemberInfo x, MemberInfo y) {
-					return string.Compare (x.FullName, y.FullName);
-				});
-			}
-			return sorted;
-		}
-	}
-	public IEnumerable <MemberInfo> SortedByKindList {
-		get {
-			if (sorted_by_kind == null) {
-				int i = 0;
-				sorted_by_kind = new MemberInfo [Count];
-				foreach (MemberInfo type in this.Values) {
-					if (!(type is TypeInfo))
-					    continue;
-					if (type == null)
-						continue;
-					sorted_by_kind [i++] = type;
-				}
-				
-				Array.Sort (sorted_by_kind, delegate (MemberInfo x, MemberInfo y) {
-					if (x == null && y != null)
-						return 1;
-					else if (x != null && y == null)
-						return -1;
-					else if (x == null && y == null)
-						return 0;
-					else
-						return string.Compare ((x as TypeInfo).KindName, (y as TypeInfo).KindName);
-				});
-			}
-			return sorted_by_kind;
-		}
-	}
-	
-	public MemberInfo Add (MemberInfo value)
-	{
-		int counter = 1;
-		string signature = value.Signature;
-		
-		if (!base.ContainsKey (signature)) {
-			base.Add (signature, value);
-		} else if (value.Name == "<anonymous>") {
-			string tmp; 
-			do {
-				tmp = "<anonymous>" + counter.ToString ();
-				counter++;
-			} while (base.ContainsKey (tmp));
-			value.Name = tmp;
-			base.Add (value.Name, value);
-		} else {
-			throw new Exception (string.Format ("Could not add the member: {0}.{1} in parent {3}: There already is a member with the same signature ({2}).", parent.Name, value.Name, signature, parent.GetType ().FullName));
-		}
-		return value;
-	}
-	
-	public StringBuilder GetKindsForEnum ()
-	{
-		if (kinds_for_enum == null) {
-			kinds_for_enum = new StringBuilder ();
-			foreach (MemberInfo info in SortedByKindList) {
-				TypeInfo type = info as TypeInfo;
-				
-				if (type == null)
-					continue;
-				
-				if (!type.Properties.ContainsKey ("IncludeInKinds")) {
-					if (!type.ImplementsGetObjectType) {
-						continue;
-					}
-				}
-	
-			 	kinds_for_enum.Append ("\t\t");
-				kinds_for_enum.Append (type.KindName);
-				kinds_for_enum.Append (",");
-				if (type.Properties.ContainsKey ("SilverlightVersion"))// && type.Properties ["SilverlightVersion"].Value == "\"2\"")
-					kinds_for_enum.Append ("// Silverlight 2.0 only");
-				kinds_for_enum.AppendLine ();
-			}
-		}
-		return kinds_for_enum;
-	}
-}
-
-class MethodInfo : MemberInfo {
-	public TypeReference ReturnType;
-	public Parameters Parameters = new Parameters ();	
-	public bool IsConstructor;
-	public bool IsDestructor;
-	public bool IsVirtual;
-	public bool IsStatic;
-	public bool IsAbstract;
-	public bool IsCMethod;
-	
-	private MethodInfo c_method;
-	private string signature;
-	private Nullable<bool> contains_unknown_types;
-	
-	public bool ContainsUnknownTypes {
-		get {
-			if (!contains_unknown_types.HasValue) {
-				if (!ReturnType.IsKnown) {
-					contains_unknown_types = new Nullable<bool>(true);
-				} else {
-					foreach (ParameterInfo p in Parameters) {
-						if (!p.ParameterType.IsKnown) {
-							contains_unknown_types = new Nullable<bool> (true);
-							break;
-						}
-					}
-					if (!contains_unknown_types.HasValue)
-						contains_unknown_types = new Nullable<bool> (false);
-				}
-			}
-			return contains_unknown_types.Value;
-		}
-	}
-	
-	public MethodInfo CMethod {
-		get {
-			if (IsCMethod)
-				return null;
-			
-			if (c_method == null) {
-				c_method = new MethodInfo ();
-				c_method.IsStatic = IsStatic;
-				c_method.IsConstructor = IsConstructor;
-				c_method.IsDestructor = IsDestructor;
-				c_method.Name = Helper.CppToCName (Parent.Name, Name);
-				c_method.Properties = Properties;
-				c_method.ReturnType = ReturnType == null ? new TypeReference ("void") : ReturnType;
-				c_method.Parent = Parent;
-								
-				if (!IsStatic && !IsConstructor) {
-					ParameterInfo parameter = new ParameterInfo ();
-					parameter.Name = "instance";
-					parameter.ParameterType = new TypeReference (Parent.Name + "*");
-					c_method.Parameters.Add (parameter);
-				}
-				foreach (ParameterInfo parameter in Parameters)
-					c_method.Parameters.Add (parameter);
-				
-			}
-			return c_method;
-		}
-	}
-	
-	public override string Signature {
-		get { return GetSignature (); }
-	}
-	
-	public string GetSignature ()
-	{
-		StringBuilder s;
-		
-		if (signature != null)
-			return signature;
-		
-		s = new StringBuilder ();
-		s.Append (Name);
-		s.Append ("(");
-		foreach (ParameterInfo parameter in Parameters) {
-			if (parameter.ParameterType.IsConst)
-				s.Append ("const ");
-			s.Append (parameter.ParameterType.Value);
-			s.Append (",");
-		}
-		if (s [s.Length - 1] == ',')
-			s.Length--;
-		s.Append (")");
-		
-		signature = s.ToString ();
-		return signature;
-	}
-	
-	public void WriteFormatted (StringBuilder text)
-	{
-		ReturnType.WriteFormatted (text);
-		text.Append (" ");
-		text.Append (Name);
-		text.Append (" (");
-		for (int i = 0; i < Parameters.Count; i++) {
-			if (i > 0)
-				text.Append (", ");
-			Parameters [i].WriteFormatted (text);
-		}
-		text.Append (");");
-		
-	}
-}
-
-class ParameterInfo : MemberInfo {
-	public TypeReference ParameterType;
-	
-	public bool DisableWriteOnce;
-	public string ManagedWrapperCode;// Used by GeneratePInvoke
-	
-	public void WriteSignature (StringBuilder text, SignatureType type)
-	{
-		ParameterType.Write (text, type);
-		text.Append (" ");
-		text.Append (Name);
-	}
-	
-	public void WriteCall (StringBuilder text, SignatureType type)
-	{
-		if (type != SignatureType.Native) {
-			if (ParameterType.IsRef)
-				text.Append ("ref ");
-			if (ParameterType.IsOut)
-				text.Append ("out ");
-		}
-		if (type == SignatureType.Managed && ManagedWrapperCode != null)
-			text.Append (ManagedWrapperCode);
-		else
-			text.Append (Name);
-	}
-	
-	public void WriteFormatted (StringBuilder text)
-	{
-		ParameterType.WriteFormatted (text);
-		text.Append (" ");
-		text.Append (Name);
-	}
-}
-
-class Parameters : List <ParameterInfo> {
-	public void Write (StringBuilder text, SignatureType type, bool as_call)
-	{
-		bool first_done = false;
-		text.Append (" (");
-		foreach (ParameterInfo parameter in this) {
-			if (parameter.DisableWriteOnce) {
-				parameter.DisableWriteOnce = false;
-				continue;
-			}
-			
-			if (first_done)
-				text.Append (", ");
-			first_done = true;
-			
-			if (as_call)
-				parameter.WriteCall (text, type);
-			else
-				parameter.WriteSignature (text, type);
-		}
-		text.Append (")");
-	}
-}
-
-enum SignatureType {
-	Native,
-	Managed,
-	PInvoke
-}
-
-class TypeReference {
-	public string Value;
-	public bool IsConst;
-	public bool IsRef;
-	public bool IsOut;
-	
-	private string managed_type;
-	private Nullable <bool> is_known;
-	
-	public TypeReference () {}
-	public TypeReference (string value)
-	{
-		this.Value = value;
-	}
-	
-	public void WriteFormatted (StringBuilder text)
-	{
-		if (IsConst)
-			text.Append ("const ");
-		text.Append (Value);
-	}
-	
-	public void Write (StringBuilder text, SignatureType type)
-	{
-		if (IsConst && type == SignatureType.Native)
-			text.Append ("const ");
-		
-		if (type != SignatureType.Native) {
-			if (IsRef)
-				text.Append ("ref ");
-			if (IsOut)
-				text.Append ("out ");
-		}
-		
-		if (type == SignatureType.Native) {
-			text.Append (Value);
-		} else {
-			text.Append (GetManagedType ());
-		}
-	}
-	
-	public bool IsKnown {
-		get {
-			if (!is_known.HasValue) {
-				if (string.IsNullOrEmpty (GetManagedType ()))
-					is_known = new Nullable<bool> (false);
-				else if (GetManagedType ().Contains ("Unknown"))
-					is_known = new Nullable<bool> (false);
-				else
-					is_known = new Nullable<bool> (true);
-			}
-			return is_known.Value;
-		}
-	}
-	
-	public string GetManagedType ()
-	{
-		if (managed_type == null) {
-			switch (Value) {
-			case "bool":
-			case "void":
-				managed_type = Value;
-				break;
-			case "MoonError*":
-				IsOut = true;
-				managed_type = "MoonError";
-				break;
-			case "void*":
-			case "gpointer":
-			case "DependencyObject*":
-			case "DependencyProperty*":
-			case "Types*":
-			case "Type*":
-			case "Value*":
-				managed_type = "IntPtr";
-				break;
-			case "NativePropertyChangedHandler*":
-				managed_type = "Mono.NativePropertyChangedHandler";
-				break;
-			case "char*":
-				managed_type = "string";
-				break;
-			case "Type::Kind":
-				managed_type = "Kind";
-				break;
-			default:
-				managed_type = "/* Unknown: '" + Value + "' */";
-				break;
-			}
-		}
-		return managed_type;
-	}
-}
-
-class FieldInfo : MemberInfo {
-	public TypeReference FieldType;
-	public string BitField;
-	public bool IsConst;
-	public bool IsStatic;
-	public bool IsExtern;
-}
-
-class TypeInfo : MemberInfo {
-	private string _KindName; // The name as it appears in the Kind enum (STRING, POINT_ARRAY, etc)
-	private string c_constructor; // The C constructor
-	private List<string> events;
-	
-	public TypeReference Base; // The parent type
-	public bool IsStruct; // class or struct
-	public int TotalEventCount;
-
-	public bool Include; // Force inclusion of this type into the type system (for manual types, char, point[], etc)
-	public bool IsValueType;
-	public bool IsEnum;
-	
-	public List<string> Events {
-		get {
-			if (events == null) {
-				events = new List<string> ();
-
-				foreach (MemberInfo member in Children.Values) {
-					FieldInfo field = member as FieldInfo;
-					if (field == null)
-						continue;
-				
-					if (!field.Name.EndsWith ("Event"))
-						continue;
-					
-					if (!field.IsStatic)
-						continue;
-						
-					events.Add (field.Name.Substring (0, field.Name.LastIndexOf ("Event")));
-				}
-				events.Sort ();
-			}
-			return events;
-		}
-	}
-	
-	public bool GenerateCBindingCtor {
-		get {
-			bool result = false;
-			Property property;
-			
-			if (Properties.TryGetValue ("GenerateCBindingCtor", out property))
-				return property.Value != null;
-			
-			foreach (MemberInfo member in Children.Values) {
-				MethodInfo method = member as MethodInfo;
-				
-				if (method == null)
-					continue;
-				
-				if (method.Parameters.Count != 0)
-					continue;
-				
-				if (!method.Properties.ContainsKey ("GenerateCBinding"))
-					continue;
-				
-				if (method.IsConstructor) {
-					result = true;
-					break;
-				}
-			}
-			Properties.Add (new Property ("GenerateCBindingCtor", result ? "true" : null));
-			return result;
-		}
-	}
-	
-	public string C_Constructor {
-		get {
-			if (IsEnum)
-				return string.Empty;
-			
-			if (c_constructor == null)
-				c_constructor = Helper.CppToCName (Name, Name);
-			
-			return c_constructor;
-		}
-	}
-	
-	public bool ImplementsGetObjectType {
-		get {
-			foreach (MemberInfo child in Children.Values) {
-				if (child is MethodInfo && child.Name == "GetObjectType")
-					return true;
-			}
-			return false;
-		}
-	}
-	
-	public bool IsNested {
-		get {
-			return Name.Contains ("::");
-		}
-	}
-	
-	public int GetEventId (string Event)
-	{
-		if (Events != null && Events.Contains (Event)) {
-			return Events.IndexOf (Event) + GetBaseEventCount ();
-		} else {
-			return ((TypeInfo) Parent.Children [Base.Value]).GetEventId (Event);
-		}
-	}
-	
-	public string KindName {
-		get {
-			if (_KindName != null)
-				return _KindName;
-			if (Name == null || Name == string.Empty)
-				return "INVALID";
-			return Generator.getU (Name);
-		} 
-		set {
-			_KindName = value;
-		}
-	}
-			
-	public int GetBaseEventCount ()	
-	{
-		int result;
-		if (Base == null || string.IsNullOrEmpty (Base.Value)) {
-			result = -1;
-		} else if (Parent == null) {
-			result = -2;
-		} else if (!Parent.Children.ContainsKey (Base.Value)) {
-			result = -3;
-		} else
-			result = ((TypeInfo) Parent.Children [Base.Value]).GetTotalEventCount ();
-		//Console.WriteLine ("GetBaseEventCount '{2}' {0}, base: '{1}'", result, Base != null ? Base.Value : "<no base>", FullName);
-		return result < 0 ? 0 : result;
-	}
-	
-	public int GetTotalEventCount ()
-	{
-		return Events.Count + GetBaseEventCount ();
-	}
-	
-	public string ContentProperty {
-		get {
-			if (Properties.ContainsKey ("ContentProperty"))
-				return Properties ["ContentProperty"].Value;
-			return null;
-		}
-	}
-	
-	public TypeInfo ()
-	{
-	}
-	
-	public TypeInfo (string Name, string KindName, string Base, bool Include)
-	{
-		this.Name = Name;
-		this.KindName = KindName;
-		this.Base = new TypeReference (Base);
-		this.Include = Include;
-		if (Include)
-			Properties.Add (new Property ("IncludeInKinds"));
-	}
-	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion)
-	{
-		this.Name = Name;
-		this.KindName = KindName;
-		this.Base = new TypeReference (Base);
-		this.Include = Include;
-		if (Include)
-			Properties.Add (new Property ("IncludeInKinds"));
-		Properties.Add (new Property ("SilverlightVersion", "\"" + SLVersion.ToString () + "\""));
-	}
-	
-}
 
 class Generator {
 	public void Generate ()
@@ -835,6 +29,201 @@ class Generator {
 		GenerateCBindings (info);
 		GeneratePInvokes (info);
 		GenerateTypes_G ();
+		
+		GenerateDPs (info);
+	}
+	
+	static void GenerateDPs (GlobalInfo all)
+	{	
+		string base_dir = Environment.CurrentDirectory;
+		string moon_dir = Path.Combine (base_dir, "src");
+		string last_type = string.Empty;
+		int version_previous = 0;
+		StringBuilder text = new StringBuilder ();
+		List<FieldInfo> fields = new List<FieldInfo> ();
+		HeaderCollection headers = new HeaderCollection ();
+		Dictionary<string, string> known_properties = new Dictionary <string, string> ();
+		
+		known_properties.Add ("ReadOnly", null);
+		known_properties.Add ("AlwaysChange", null);
+		known_properties.Add ("Version", null);
+		known_properties.Add ("PropertyType", null);
+		known_properties.Add ("DefaultValue", null);
+		known_properties.Add ("Access", null);
+		known_properties.Add ("Nullable", null);
+		known_properties.Add ("Attached", null);
+		
+		
+		headers.Add ("dependencyproperty.h", 1);
+		headers.Add ("color.h", 1);
+		
+		foreach (MemberInfo member in all.Children.Values) {
+			TypeInfo type = member as TypeInfo;
+			
+			if (type == null)
+				continue;
+			
+			foreach (MemberInfo member2 in member.Children.Values) {
+				FieldInfo field = member2 as FieldInfo;
+				
+				if (field == null)
+					continue;
+				
+				if (field.FieldType == null || field.FieldType.Value != "DependencyProperty*")
+					continue;
+				
+				if (!field.IsStatic)
+					continue;
+				
+				if (!field.Name.EndsWith ("Property")) {
+					Console.WriteLine ("GenerateDPs: Found the static field {0} which returns a DependencyProperty*, but the property name doesn't end with 'Property' (ignore this warning if the field isn't supposed to be a DP).", field.FullName);
+					continue;
+				}
+				
+				fields.Add (field);
+				headers.Add (field.Header, field.SilverlightVersion);
+				
+				
+				foreach (Property p in field.Properties.Values) {
+					if (!known_properties.ContainsKey (p.Name))
+						Console.WriteLine ("The field {0} in {3} has an unknown property: '{1}' = '{2}'", field.FullName, p.Name, p.Value, Path.GetFileName (field.Header));
+				}
+			}
+		}
+		fields.Sort (new Members.MembersSortedByFullName <FieldInfo> ());
+		
+		text.AppendLine ("/* \n\tthis file was autogenerated. do not edit this file \n */\n");
+		text.AppendLine ();
+		text.AppendLine ("#include \"config.h\"");
+		text.AppendLine ();
+		headers.Write (text);		
+		text.AppendLine ();
+		text.AppendLine ("bool dependency_properties_initialized = false;");
+		text.AppendLine ("void");
+		text.AppendLine ("dependency_property_g_init ()");
+		text.AppendLine ("{");
+		text.AppendLine ("\tif (dependency_properties_initialized)");
+		text.AppendLine ("\t\treturn;");
+		text.AppendLine ("\tdependency_properties_initialized = true;");
+		
+		for (int i = 0; i < fields.Count; i++) {
+			FieldInfo field = fields [i];
+			TypeInfo type = (TypeInfo) field.Parent;
+			string property_type = field.Properties.GetValue ("PropertyType");
+			TypeInfo propertyType = null;
+			string default_value = field.Properties.GetValue ("DefaultValue");
+			bool has_default_value = !string.IsNullOrEmpty (default_value);
+			bool is_nullable = field.Properties.ContainsKey ("Nullable");
+			bool is_attached = field.Properties.ContainsKey ("Attached");
+			bool is_readonly = field.Properties.ContainsKey ("ReadOnly");
+			bool is_always_change = field.Properties.ContainsKey ("AlwaysChange");
+			bool is_full = is_attached || is_readonly || is_always_change;
+			int version = field.SilverlightVersion;
+			int version_next = (i + 1 < fields.Count) ? fields [i + 1].SilverlightVersion : -1;
+			
+			if (version > 1 && version_previous != version) {
+				text.Append ("#if SL_");
+				text.Append (version);
+				text.AppendLine ("_0");
+			}
+			
+			if (property_type == "string")
+				property_type = "char*";
+			if (property_type = "enum")
+				property_type = "gint32";
+			
+			if (!string.IsNullOrEmpty (property_type)) {
+				if (all.Children.ContainsKey (property_type)) {
+					propertyType = (TypeInfo) all.Children [property_type];
+				} else {
+					Console.WriteLine ("{0}'s PropertyType '{1}' was not recognized. Do not use the Kind value, but the real type name.", field.FullName, property_type);
+				}
+			} else {
+				Console.WriteLine ("{0} does not have a PropertyType defined.", field.FullName);
+			}
+			
+			text.Append ("\t");
+			headers.Add (propertyType.Header, version);
+			
+			if (propertyType == null)
+				text.Append ("// (no PropertyType was found for this DependencyProperty) ");
+			
+			text.Append (type.Name);
+			text.Append ("::");
+			text.Append (field.Name);
+			text.Append (" = DependencyProperty::Register");
+			if (is_nullable)
+				text.Append ("Nullable");
+			else if (is_full)
+				text.Append ("Full");
+			text.Append (" (Type::");
+			text.Append (type.KindName);
+			text.Append (", \"");
+			
+			text.Append (field.Name, 0, field.Name.LastIndexOf ("Property"));
+			text.Append ("\"");
+			text.Append (", ");
+			
+			if (is_full) {
+				if (has_default_value) {
+					text.Append ("new Value (");
+					text.Append (default_value);
+					text.Append (")");
+				} else {
+					text.Append ("NULL");
+				}
+			} else {
+				if (has_default_value) {
+					text.Append ("new Value (");
+					text.Append (default_value);
+					text.Append (")");
+				}
+			}
+			
+			if (is_full || !has_default_value) {
+				if (has_default_value || (is_full && !has_default_value))
+					text.Append (", ");
+				if (propertyType != null) {
+					text.Append ("Type::");
+					text.Append (propertyType.KindName);
+				} else {
+					text.Append ("Type::INVALID");
+					//Console.WriteLine ("{0} does not define its property type.", field.FullName);
+				}
+			}
+			
+			if (is_full) {
+				text.Append (", ");
+				text.Append (is_attached ? "true" : "false");
+				text.Append (", ");
+				text.Append (is_readonly ? "true" : "false");
+				if (is_always_change) {
+					text.Append (", ");
+					text.Append (is_always_change ? "true" : "false");
+					text.Append (", ");
+					text.Append ("NULL");
+				}
+			}
+			
+			text.AppendLine (");");
+			if (version > 1 && version_next != version)
+				text.AppendLine ("#endif");
+			version_previous = version;
+		}
+		text.AppendLine ("}");
+		text.AppendLine ();
+				
+		foreach (FieldInfo field in fields) {
+			text.Append ("DependencyProperty *");
+			text.Append (field.Parent.Name);
+			text.Append ("::");
+			text.Append (field.Name);
+			text.AppendLine (" = NULL;");
+		}
+		text.AppendLine ();
+		
+		Helper.WriteAllText (Path.Combine (moon_dir, "dependencyproperty.g.cpp"), text.ToString ());
+		
 	}
 	
 	static GlobalInfo GetTypes2 ()
@@ -1132,11 +521,12 @@ class Generator {
 					field.IsPublic = accessibility == "public";
 					field.IsPrivate = accessibility == "private";
 					field.IsProtected = accessibility == "protected";
+					field.Properties = properties;
 					
 					// Field
 					do {
 						//Console.WriteLine ("ParseMembers: found field '{0}'", name);
-						
+						field.Parent = parent;
 						parent.Children.Add (field);
 
 						if (tokenizer.Accept (Token2Type.Punctuation, "[")) {
@@ -1321,7 +711,7 @@ class Generator {
 		
 	 	Log.WriteLine ("typeandkidngen done");
 		
-		Generation.Helper.WriteAllText (Path.Combine (Path.Combine (moon_moonlight_dir, "Mono"), "Types.g.cs"), text.ToString ());
+		Helper.WriteAllText (Path.Combine (Path.Combine (moon_moonlight_dir, "Mono"), "Types.g.cs"), text.ToString ());
 	}
 	
 	public static void GenerateCBindings (GlobalInfo info)

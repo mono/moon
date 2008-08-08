@@ -1,0 +1,111 @@
+/*
+ * TypeReference.cs.
+ *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
+ *
+ * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+class TypeReference {
+	public string Value;
+	public bool IsConst;
+	public bool IsRef;
+	public bool IsOut;
+	
+	private string managed_type;
+	private Nullable <bool> is_known;
+	
+	public TypeReference () {}
+	public TypeReference (string value)
+	{
+		this.Value = value;
+	}
+	
+	public void WriteFormatted (StringBuilder text)
+	{
+		if (IsConst)
+			text.Append ("const ");
+		text.Append (Value);
+	}
+	
+	public void Write (StringBuilder text, SignatureType type)
+	{
+		if (IsConst && type == SignatureType.Native)
+			text.Append ("const ");
+		
+		if (type != SignatureType.Native) {
+			if (IsRef)
+				text.Append ("ref ");
+			if (IsOut)
+				text.Append ("out ");
+		}
+		
+		if (type == SignatureType.Native) {
+			text.Append (Value);
+		} else {
+			text.Append (GetManagedType ());
+		}
+	}
+	
+	public bool IsKnown {
+		get {
+			if (!is_known.HasValue) {
+				if (string.IsNullOrEmpty (GetManagedType ()))
+					is_known = new Nullable<bool> (false);
+				else if (GetManagedType ().Contains ("Unknown"))
+					is_known = new Nullable<bool> (false);
+				else
+					is_known = new Nullable<bool> (true);
+			}
+			return is_known.Value;
+		}
+	}
+	
+	public string GetManagedType ()
+	{
+		if (managed_type == null) {
+			switch (Value) {
+			case "bool":
+			case "void":
+				managed_type = Value;
+				break;
+			case "MoonError*":
+				IsOut = true;
+				managed_type = "MoonError";
+				break;
+			case "void*":
+			case "gpointer":
+			case "DependencyObject*":
+			case "DependencyProperty*":
+			case "Types*":
+			case "Type*":
+			case "Value*":
+				managed_type = "IntPtr";
+				break;
+			case "NativePropertyChangedHandler*":
+				managed_type = "Mono.NativePropertyChangedHandler";
+				break;
+			case "char*":
+				managed_type = "string";
+				break;
+			case "Type::Kind":
+				managed_type = "Kind";
+				break;
+			default:
+				managed_type = "/* Unknown: '" + Value + "' */";
+				break;
+			}
+		}
+		return managed_type;
+	}
+}
+
+
