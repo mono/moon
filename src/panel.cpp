@@ -17,10 +17,6 @@
 #include "collection.h"
 #include "runtime.h"
 
-
-DependencyProperty *Panel::BackgroundProperty;
-DependencyProperty *Panel::ChildrenProperty;
-
 Panel::Panel ()
 {
 	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new UIElementCollection ()));
@@ -681,6 +677,9 @@ panel_child_add (Panel *panel, UIElement *element)
 void 
 panel_init (void)
 {
+	// Don't register DPs here
+	return;
+
 	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
 	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
 }

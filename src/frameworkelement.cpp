@@ -17,22 +17,6 @@
 #include "thickness.h"
 #include "collection.h"
 
-DependencyProperty *FrameworkElement::HeightProperty;
-DependencyProperty *FrameworkElement::WidthProperty;
-
-// 2.0 only DPs
-DependencyProperty *FrameworkElement::ActualHeightProperty;
-DependencyProperty *FrameworkElement::ActualWidthProperty;
-DependencyProperty *FrameworkElement::DataContextProperty;
-DependencyProperty *FrameworkElement::HorizontalAlignmentProperty;
-DependencyProperty *FrameworkElement::LanguageProperty;
-DependencyProperty *FrameworkElement::MarginProperty;
-DependencyProperty *FrameworkElement::MaxHeightProperty;
-DependencyProperty *FrameworkElement::MaxWidthProperty;
-DependencyProperty *FrameworkElement::MinHeightProperty;
-DependencyProperty *FrameworkElement::MinWidthProperty;
-DependencyProperty *FrameworkElement::VerticalAlignmentProperty;
-
 FrameworkElement::FrameworkElement ()
 {
 	// XXX bad bad bad.  no virtual method calls in ctors
@@ -148,6 +132,9 @@ framework_element_get_width (FrameworkElement *element)
 void
 framework_element_init (void)
 {
+	// Don't register DPs here.
+	return;
+
 	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
 	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
 

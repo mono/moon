@@ -31,7 +31,9 @@ class StylusInfo : public DependencyObject {
 	virtual ~StylusInfo () {}
 	
  public:
+	/* @PropertyType=gint32,DefaultValue=TabletDeviceTypeMouse */
 	static DependencyProperty *DeviceTypeProperty;
+	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *IsInvertedProperty;
 	
 	/* @GenerateCBinding */
@@ -51,8 +53,11 @@ class StylusPoint : public DependencyObject {
 	virtual ~StylusPoint () {}
 	
  public:
+	/* @PropertyType=double,DefaultValue=0.5 */
 	static DependencyProperty *PressureFactorProperty;
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *XProperty;
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *YProperty;
 	
 	/* @GenerateCBinding */
@@ -95,9 +100,13 @@ class DrawingAttributes : public DependencyObject {
 	virtual ~DrawingAttributes () {}
 
  public:
+	/* @PropertyType=Color,DefaultValue=Color (0xFF000000) */
 	static DependencyProperty *ColorProperty;
+	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
 	static DependencyProperty *OutlineColorProperty;
+	/* @PropertyType=double,DefaultValue=3.0 */
 	static DependencyProperty *HeightProperty;
+	/* @PropertyType=double,DefaultValue=3.0 */
 	static DependencyProperty *WidthProperty;
 	
 	/* @GenerateCBinding */
@@ -138,7 +147,9 @@ class Stroke : public DependencyObject {
 	virtual ~Stroke () {}
 	
  public:
+	/* @PropertyType=DrawingAttributes */
 	static DependencyProperty *DrawingAttributesProperty;
+	/* @PropertyType=StylusPointCollection */
 	static DependencyProperty *StylusPointsProperty;
 	
 	/* @GenerateCBinding */
@@ -192,6 +203,7 @@ class InkPresenter : public Canvas {
 	virtual ~InkPresenter () {}
 
  public:
+	/* @PropertyType=StrokeCollection */
 	static DependencyProperty *StrokesProperty;
 	
 	/* @GenerateCBinding */

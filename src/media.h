@@ -49,6 +49,7 @@ class MediaAttribute : public DependencyObject {
 	virtual ~MediaAttribute () {}
 
  public:
+ 	/* @PropertyType=char* */
 	static DependencyProperty *ValueProperty;
 	
  	/* @GenerateCBinding */
@@ -148,8 +149,11 @@ class MediaBase : public FrameworkElement {
 	void SetDownloadProgress (double progress);
 	
  public:
+ 	/* @PropertyType=char*,AlwaysChange */
 	static DependencyProperty *SourceProperty;
+ 	/* @PropertyType=gint32,DefaultValue=StretchUniform */
 	static DependencyProperty *StretchProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *DownloadProgressProperty;
 	
 	const static int DownloadProgressChangedEvent;
@@ -383,22 +387,39 @@ class MediaElement : public MediaBase {
 	
  public:
 	// properties
+ 	/* @PropertyType=MediaAttributeCollection */
 	static DependencyProperty *AttributesProperty;
+ 	/* @PropertyType=gint32,DefaultValue=0,ReadOnly */
 	static DependencyProperty *AudioStreamCountProperty;
+ 	/* @PropertyType=gint32,Nullable */
 	static DependencyProperty *AudioStreamIndexProperty;
+ 	/* @PropertyType=bool,DefaultValue=true */
 	static DependencyProperty *AutoPlayProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *BalanceProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly */
 	static DependencyProperty *BufferingProgressProperty;
+ 	/* @PropertyType=TimeSpan,DefaultValue="TimeSpan_FromSeconds (5)\,Type::TIMESPAN" */
 	static DependencyProperty *BufferingTimeProperty;
+ 	/* @PropertyType=bool,DefaultValue=false,ReadOnly */
 	static DependencyProperty *CanPauseProperty;
+ 	/* @PropertyType=bool,DefaultValue=false,ReadOnly */
 	static DependencyProperty *CanSeekProperty;
+ 	/* @PropertyType=char*,ReadOnly */
 	static DependencyProperty *CurrentStateProperty;
+ 	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *IsMutedProperty;
+ 	/* @PropertyType=TimelineMarkerCollection */
 	static DependencyProperty *MarkersProperty;
+ 	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly */
 	static DependencyProperty *NaturalDurationProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly */
 	static DependencyProperty *NaturalVideoHeightProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly */
 	static DependencyProperty *NaturalVideoWidthProperty;
+ 	/* @PropertyType=TimeSpan */
 	static DependencyProperty *PositionProperty;
+ 	/* @PropertyType=double,DefaultValue=0.5 */
 	static DependencyProperty *VolumeProperty;
 	
 	// events

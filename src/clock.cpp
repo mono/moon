@@ -1285,13 +1285,6 @@ ClockGroup::~ClockGroup ()
 
 /* timeline */
 
-DependencyProperty *Timeline::AutoReverseProperty;
-DependencyProperty *Timeline::BeginTimeProperty;
-DependencyProperty *Timeline::DurationProperty;
-DependencyProperty *Timeline::FillBehaviorProperty;
-DependencyProperty *Timeline::RepeatBehaviorProperty;
-DependencyProperty *Timeline::SpeedRatioProperty;
-
 Timeline::Timeline ()
 {
 	manual_target = NULL;
@@ -1417,8 +1410,6 @@ Timeline::GetBeginTime ()
 
 /* timeline group */
 
-DependencyProperty *TimelineGroup::ChildrenProperty;
-
 TimelineGroup::TimelineGroup ()
 {
 	SetValue (TimelineGroup::ChildrenProperty, Value::CreateUnref (new TimelineCollection ()));
@@ -1528,10 +1519,6 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 	TimelineMarker
 */
 
-DependencyProperty *TimelineMarker::TextProperty;
-DependencyProperty *TimelineMarker::TimeProperty;
-DependencyProperty *TimelineMarker::TypeProperty;
-
 void
 TimelineMarker::SetTime (TimeSpan time)
 {
@@ -1614,6 +1601,9 @@ timeline_marker_get_time (TimelineMarker *marker)
 void
 clock_init (void)
 {
+	// Don't register any DPs here
+	return;
+
 	/* Timeline properties */
 	Timeline::AutoReverseProperty = DependencyProperty::Register (Type::TIMELINE, "AutoReverse", new Value (false));
 	Timeline::BeginTimeProperty = DependencyProperty::RegisterNullable (Type::TIMELINE, "BeginTime", Type::TIMESPAN);

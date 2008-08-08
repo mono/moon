@@ -83,10 +83,15 @@ class Downloader : public DependencyObject {
 	
  public:
 	// Properties
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *DownloadProgressProperty;
+	/* @PropertyType=char* */
 	static DependencyProperty *ResponseTextProperty;
+	/* @PropertyType=gint32,DefaultValue=0 */
 	static DependencyProperty *StatusProperty;
+	/* @PropertyType=char*,DefaultValue=\"\" */
 	static DependencyProperty *StatusTextProperty;
+	/* @PropertyType=char* */
 	static DependencyProperty *UriProperty;
 	
 	// Events you can AddHandler to

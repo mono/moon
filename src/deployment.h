@@ -24,6 +24,7 @@ class AssemblyPart : public DependencyObject {
 	virtual ~AssemblyPart () {}
 	
  public:
+ 	/* @PropertyType=char* */
 	static DependencyProperty *SourceProperty;
 	
 	/* @GenerateCBinding */
@@ -63,10 +64,15 @@ class Deployment : public DependencyObject {
 	
  public:
 	// DependencyProperties
+ 	/* @PropertyType=gint32,DefaultValue=CrossDomainAccessNoAccess */
 	static DependencyProperty *ExternalCallersFromCrossDomainProperty;
+ 	/* @PropertyType=char* */
 	static DependencyProperty *EntryPointAssemblyProperty;
+ 	/* @PropertyType=char* */
 	static DependencyProperty *EntryPointTypeProperty;
+ 	/* @PropertyType=AssemblyPartCollection */
 	static DependencyProperty *PartsProperty;
+ 	/* @PropertyType=char* */
 	static DependencyProperty *RuntimeVersionProperty;
 
 

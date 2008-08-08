@@ -17,28 +17,6 @@
 #include "control.h"
 #include "canvas.h"
 
-#define CONTROL_FONT_FAMILY  "Portable User Interface"
-#define CONTROL_FONT_STRETCH FontStretchesNormal
-#define CONTROL_FONT_WEIGHT  FontWeightsNormal
-#define CONTROL_FONT_STYLE   FontStylesNormal
-#define CONTROL_FONT_SIZE    14.666666984558105
-
-DependencyProperty *Control::BackgroundProperty;
-DependencyProperty *Control::BorderBrushProperty;
-DependencyProperty *Control::BorderThicknessProperty;
-DependencyProperty *Control::FontFamilyProperty;
-DependencyProperty *Control::FontSizeProperty;
-DependencyProperty *Control::FontStretchProperty;
-DependencyProperty *Control::FontStyleProperty;
-DependencyProperty *Control::FontWeightProperty;
-DependencyProperty *Control::ForegroundProperty;
-DependencyProperty *Control::HorizontalContentAlignmentProperty;
-DependencyProperty *Control::IsTabStopProperty;
-DependencyProperty *Control::PaddingProperty;
-DependencyProperty *Control::TabIndexProperty;
-DependencyProperty *Control::TabNavigationProperty;
-DependencyProperty *Control::VerticalContentAlignmentProperty;
-
 Control::Control ()
 {
 	real_object = NULL;
@@ -612,6 +590,8 @@ control_get_vertical_content_alignment (Control *control)
 void
 control_init (void)
 {
+	// Don't register DPs here anymore.
+	return;
 	Control::BackgroundProperty = DependencyProperty::Register (Type::CONTROL, "Background", Type::BRUSH);
 	Control::BorderBrushProperty = DependencyProperty::Register (Type::CONTROL, "BorderBrush", Type::BRUSH);
 	Control::BorderThicknessProperty = DependencyProperty::Register (Type::CONTROL, "BorderThickness", new Value (Thickness (0.0)));

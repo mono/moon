@@ -40,6 +40,7 @@ class Collection : public DependencyObject {
 	virtual void Dispose ();
 	
  public:
+ 	/* @PropertyType=gint32 */
 	static DependencyProperty *CountProperty;
 	
 	DependencyObject *closure;

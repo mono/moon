@@ -809,24 +809,12 @@ UIElement::GetTimeManager ()
 }
 
 
-DependencyProperty *UIElement::ClipProperty;
-DependencyProperty *UIElement::IsHitTestVisibleProperty;
-DependencyProperty *UIElement::OpacityMaskProperty;
-DependencyProperty *UIElement::OpacityProperty;
-DependencyProperty *UIElement::RenderTransformOriginProperty;
-DependencyProperty *UIElement::RenderTransformProperty;
-DependencyProperty *UIElement::VisibilityProperty;
-DependencyProperty *UIElement::ZIndexProperty;
-
-// in 2.0 these properties are actually in FrameworkElement
-DependencyProperty *UIElement::CursorProperty;
-DependencyProperty *UIElement::ResourcesProperty;
-DependencyProperty *UIElement::TagProperty;
-DependencyProperty *UIElement::TriggersProperty;
-
 void
 uielement_init (void)
 {
+	// Don't register any DPs here.
+	return;
+
 	UIElement::ClipProperty = DependencyProperty::Register (Type::UIELEMENT, "Clip", Type::GEOMETRY);
 	UIElement::IsHitTestVisibleProperty = DependencyProperty::Register (Type::UIELEMENT, "IsHitTestVisible", new Value (true));
 	UIElement::OpacityMaskProperty = DependencyProperty::Register (Type::UIELEMENT, "OpacityMask", Type::BRUSH);

@@ -33,6 +33,7 @@
   <Contents>
     <File name="cbinding.h" subtype="Code" buildaction="Nothing" />
     <File name="cbinding.cpp" subtype="Code" buildaction="Compile" />
+    <File name="dependencyproperty.g.cpp" subtype="Code" buildaction="Compile" />
     <File name="animation.cpp" subtype="Code" buildaction="Compile" />
     <File name="animation.h" subtype="Code" buildaction="Nothing" />
     <File name="array.cpp" subtype="Code" buildaction="Compile" />
@@ -164,7 +165,6 @@
     <File name="deployment.cpp" subtype="Code" buildaction="Compile" />
     <File name="dependencyproperty.cpp" subtype="Code" buildaction="Compile" />
     <File name="dependencyproperty.h" subtype="Code" buildaction="Nothing" />
-    <File name="contentcontrol.cpp" subtype="Code" buildaction="Compile" />
     <File name="contentcontrol.h" subtype="Code" buildaction="Nothing" />
     <File name="grid.cpp" subtype="Code" buildaction="Compile" />
     <File name="grid.h" subtype="Code" buildaction="Nothing" />
@@ -183,6 +183,7 @@
     <File name="size.h" subtype="Code" buildaction="Nothing" />
     <File name="thickness.h" subtype="Code" buildaction="Nothing" />
     <File name="src.mdp" subtype="Code" buildaction="Nothing" />
+    <File name="contentcontrol.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

@@ -43,13 +43,6 @@ convert_gradient_spread_method (GradientSpreadMethod method)
 // Brush
 //
 
-DependencyProperty *Brush::OpacityProperty;
-DependencyProperty *Brush::RelativeTransformProperty;
-DependencyProperty *Brush::TransformProperty;
-
-// used only for notifying attachees
-DependencyProperty *Brush::ChangedProperty;
-
 
 void
 Brush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
@@ -182,8 +175,6 @@ transform_get_absolute_transform (Transform *relative_transform, double width, d
 // SolidColorBrush
 //
 
-DependencyProperty *SolidColorBrush::ColorProperty;
-
 SolidColorBrush::SolidColorBrush (const char *color)
 {
 	Color *c = color_from_str (color);
@@ -244,12 +235,6 @@ solid_color_brush_set_color (SolidColorBrush *brush, Color *color)
 //
 // GradientBrush
 //
-
-DependencyProperty *GradientBrush::ColorInterpolationModeProperty;
-DependencyProperty *GradientBrush::GradientStopsProperty;
-DependencyProperty *GradientBrush::MappingModeProperty;
-DependencyProperty *GradientBrush::SpreadMethodProperty;
-
 
 GradientBrush::GradientBrush ()
 {
@@ -515,9 +500,6 @@ gradient_brush_get_spread_method (GradientBrush *brush)
 // LinearGradientBrush
 //
 
-DependencyProperty *LinearGradientBrush::EndPointProperty;
-DependencyProperty *LinearGradientBrush::StartPointProperty;
-
 void
 LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
@@ -637,11 +619,6 @@ linear_gradient_brush_get_start_point (LinearGradientBrush *brush)
 //
 // RadialGradientBrush
 //
-
-DependencyProperty *RadialGradientBrush::CenterProperty;
-DependencyProperty *RadialGradientBrush::GradientOriginProperty;
-DependencyProperty *RadialGradientBrush::RadiusXProperty;
-DependencyProperty *RadialGradientBrush::RadiusYProperty;
 
 void
 RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
@@ -817,9 +794,6 @@ radial_gradient_brush_get_radius_y (RadialGradientBrush *brush)
 // GradientStop
 //
 
-DependencyProperty *GradientStop::ColorProperty;
-DependencyProperty *GradientStop::OffsetProperty;
-
 void
 GradientStop::SetColor (Color *color)
 {
@@ -872,10 +846,6 @@ gradient_stop_get_offset (GradientStop *stop)
 //
 // TileBrush
 //
-
-DependencyProperty *TileBrush::AlignmentXProperty;
-DependencyProperty *TileBrush::AlignmentYProperty;
-DependencyProperty *TileBrush::StretchProperty;
 
 void
 TileBrush::SetAlignmentX (AlignmentX alignment)
@@ -960,9 +930,6 @@ tile_brush_get_stretch (TileBrush *brush)
 //
 // ImageBrush
 //
-
-DependencyProperty *ImageBrush::DownloadProgressProperty;
-DependencyProperty *ImageBrush::ImageSourceProperty;
 
 void
 ImageBrush::image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
@@ -1242,8 +1209,6 @@ image_brush_set_source (ImageBrush *brush, Downloader *downloader, const char *P
 // VideoBrush
 //
 
-DependencyProperty *VideoBrush::SourceNameProperty;
-
 
 VideoBrush::VideoBrush ()
 {
@@ -1402,8 +1367,6 @@ video_brush_get_source_name (VideoBrush *brush)
 // VisualBrush
 //
 
-DependencyProperty *VisualBrush::VisualProperty;
-
 void
 VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
 {
@@ -1511,6 +1474,8 @@ visual_brush_get_visual (VisualBrush *brush)
 void
 brush_init (void)
 {
+	// Don't register any DPs here.
+	return;
 	/* Brush fields */
 	Brush::OpacityProperty = DependencyProperty::Register (Type::BRUSH, "Opacity", new Value (1.0));
 	Brush::RelativeTransformProperty = DependencyProperty::Register (Type::BRUSH, "RelativeTransform", Type::TRANSFORM);

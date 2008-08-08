@@ -65,12 +65,6 @@ downloader_header_func Downloader::header_func = NULL;
 downloader_body_func Downloader::body_func = NULL;
 downloader_create_webrequest_func Downloader::request_func = NULL;
 
-DependencyProperty *Downloader::DownloadProgressProperty;
-DependencyProperty *Downloader::ResponseTextProperty;
-DependencyProperty *Downloader::StatusProperty;
-DependencyProperty *Downloader::StatusTextProperty;
-DependencyProperty *Downloader::UriProperty;
-
 Downloader::Downloader ()
 {
 	d (printf ("Downloader::Downloader ()\n"));
@@ -732,12 +726,15 @@ dummy_downloader_create_web_request (const char *method, const char *uri, gpoint
 void
 downloader_init (void)
 {
+	// Don't register DPs here.
+	if (false) {
 	Downloader::DownloadProgressProperty = DependencyProperty::Register (Type::DOWNLOADER, "DownloadProgress", new Value (0.0));
 	Downloader::ResponseTextProperty = DependencyProperty::Register (Type::DOWNLOADER, "ResponseText", Type::STRING);
 	Downloader::StatusProperty = DependencyProperty::Register (Type::DOWNLOADER, "Status", new Value (0));
 	Downloader::StatusTextProperty = DependencyProperty::Register (Type::DOWNLOADER, "StatusText", new Value (""));
 	Downloader::UriProperty = DependencyProperty::Register (Type::DOWNLOADER, "Uri", Type::STRING);
-		
+	}
+	
 	Downloader::SetFunctions (dummy_downloader_create_state,
 				  dummy_downloader_destroy_state,
 				  dummy_downloader_open,

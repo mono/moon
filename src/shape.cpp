@@ -90,18 +90,6 @@ convert_fill_rule (FillRule fill_rule)
 // Shape
 //
 
-DependencyProperty *Shape::FillProperty;
-DependencyProperty *Shape::StretchProperty;
-DependencyProperty *Shape::StrokeProperty;
-DependencyProperty *Shape::StrokeDashArrayProperty;
-DependencyProperty *Shape::StrokeDashCapProperty;
-DependencyProperty *Shape::StrokeDashOffsetProperty;
-DependencyProperty *Shape::StrokeEndLineCapProperty;
-DependencyProperty *Shape::StrokeLineJoinProperty;
-DependencyProperty *Shape::StrokeMiterLimitProperty;
-DependencyProperty *Shape::StrokeStartLineCapProperty;
-DependencyProperty *Shape::StrokeThicknessProperty;
-
 Shape::Shape ()
 {
 	stroke = NULL;
@@ -1168,9 +1156,6 @@ Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args)
 // Rectangle
 //
 
-DependencyProperty *Rectangle::RadiusXProperty;
-DependencyProperty *Rectangle::RadiusYProperty;
-
 Rectangle::Rectangle ()
 {
 	SetStretch (StretchFill);
@@ -1441,11 +1426,6 @@ rectangle_set_radius_y (Rectangle *rectangle, double radius)
 //	- Line::X1Property, Line::Y1Property, Line::X2Property and Line::Y2Property
 //	- Shape::StrokeThickness
 //
-
-DependencyProperty *Line::X1Property;
-DependencyProperty *Line::Y1Property;
-DependencyProperty *Line::X2Property;
-DependencyProperty *Line::Y2Property;
 
 #define LINECAP_SMALL_OFFSET	0.1
 
@@ -1836,9 +1816,6 @@ line_set_y2 (Line *line, double y2)
 //	- Shape::StrokeThickness
 //
 
-DependencyProperty *Polygon::FillRuleProperty;
-DependencyProperty *Polygon::PointsProperty;
-
 
 // The Polygon shape can be drawn while ignoring properties:
 // * Shape::StrokeStartLineCap
@@ -2054,9 +2031,6 @@ polygon_set_points (Polygon *polygon, PointCollection *points)
 //	- Shape::StretchProperty
 //	- Shape::StrokeThickness
 
-DependencyProperty *Polyline::FillRuleProperty;
-DependencyProperty *Polyline::PointsProperty;
-
 // The Polyline shape can be drawn while ignoring NO properties
 bool
 Polyline::DrawShape (cairo_t *cr, bool do_op)
@@ -2225,8 +2199,6 @@ polyline_set_points (Polyline *polyline, PointCollection *points)
 // Path
 //
 
-DependencyProperty *Path::DataProperty;
-
 bool
 Path::SetupLine (cairo_t* cr)
 {
@@ -2392,6 +2364,9 @@ path_set_data (Path *path, Geometry *data)
 void
 shape_init (void)
 {
+	// Don't register DPs here.
+	return;
+
 	/* Shape fields */
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
 	Shape::StretchProperty = DependencyProperty::Register (Type::SHAPE, "Stretch", new Value (StretchNone));

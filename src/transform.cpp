@@ -78,10 +78,6 @@ general_transform_transform_point (GeneralTransform *t, Point *p, Point *r)
 	*r = t->Transform (*p);
 }
 
-DependencyProperty *RotateTransform::CenterXProperty;
-DependencyProperty *RotateTransform::CenterYProperty;
-DependencyProperty *RotateTransform::AngleProperty;
-
 void
 RotateTransform::UpdateTransform ()
 {
@@ -177,10 +173,6 @@ rotate_transform_get_center_y (RotateTransform *transform)
 	return transform->GetCenterY ();
 }
 
-
-DependencyProperty *TranslateTransform::XProperty;
-DependencyProperty *TranslateTransform::YProperty;
-
 void
 TranslateTransform::UpdateTransform ()
 {
@@ -240,12 +232,6 @@ translate_transform_get_y (TranslateTransform *transform)
 	return transform->GetY ();
 }
 
-
-
-DependencyProperty* ScaleTransform::CenterXProperty;
-DependencyProperty* ScaleTransform::CenterYProperty;
-DependencyProperty* ScaleTransform::ScaleXProperty;
-DependencyProperty* ScaleTransform::ScaleYProperty;
 
 void
 ScaleTransform::UpdateTransform ()
@@ -329,11 +315,6 @@ scale_transform_get_center_y (ScaleTransform *t)
 
 
 
-DependencyProperty* SkewTransform::AngleXProperty;
-DependencyProperty* SkewTransform::AngleYProperty;
-DependencyProperty* SkewTransform::CenterXProperty;
-DependencyProperty* SkewTransform::CenterYProperty;
-
 void
 SkewTransform::UpdateTransform ()
 {
@@ -407,13 +388,6 @@ skew_transform_get_center_y (SkewTransform *t)
 {
 	return t->GetValue (SkewTransform::CenterYProperty)->AsDouble();
 }
-
-DependencyProperty *Matrix::M11Property;
-DependencyProperty *Matrix::M12Property;
-DependencyProperty *Matrix::M21Property;
-DependencyProperty *Matrix::M22Property;
-DependencyProperty *Matrix::OffsetXProperty;
-DependencyProperty *Matrix::OffsetYProperty;
 
 Matrix::Matrix ()
 {
@@ -527,7 +501,6 @@ matrix_set_offset_y (Matrix *matrix, double value)
 	matrix->SetValue (Matrix::OffsetYProperty, Value (value));
 }
 
-DependencyProperty* MatrixTransform::MatrixProperty;
 
 void
 MatrixTransform::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
@@ -562,7 +535,6 @@ matrix_transform_get_matrix (MatrixTransform *t)
 	return t->GetValue (MatrixTransform::MatrixProperty)->AsMatrix();
 }
 
-DependencyProperty *TransformGroup::ChildrenProperty;
 
 TransformGroup::TransformGroup ()
 {
@@ -635,6 +607,9 @@ TransformGroup::UpdateTransform ()
 void
 transform_init (void)
 {
+	// Don't register any DPs here
+	return;
+
 	/* RotateTransform fields */
 	RotateTransform::AngleProperty   = DependencyProperty::Register (Type::ROTATETRANSFORM, "Angle", new Value (0.0));
 	RotateTransform::CenterXProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "CenterX", new Value (0.0));

@@ -14,18 +14,12 @@
 
 #include "deployment.h"
 
-
-DependencyProperty *AssemblyPart::SourceProperty;
-
-DependencyProperty *Deployment::ExternalCallersFromCrossDomainProperty;
-DependencyProperty *Deployment::EntryPointAssemblyProperty;
-DependencyProperty *Deployment::EntryPointTypeProperty;
-DependencyProperty *Deployment::PartsProperty;
-DependencyProperty *Deployment::RuntimeVersionProperty;
-
 void
 deployment_init (void)
 {
+	// Don't register DPs here.
+	return;
+
 	AssemblyPart::SourceProperty = DependencyProperty::Register (Type::ASSEMBLYPART, "Source", Type::STRING);
 	
 	Deployment::ExternalCallersFromCrossDomainProperty = DependencyProperty::Register (Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", new Value (CrossDomainAccessNoAccess));

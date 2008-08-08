@@ -26,6 +26,11 @@ G_BEGIN_DECLS
 #include <brush.h>
 #include <font.h>
 
+#define TEXTBLOCK_FONT_FAMILY  "Portable User Interface"
+#define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
+#define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
+#define TEXTBLOCK_FONT_STYLE   FontStylesNormal
+#define TEXTBLOCK_FONT_SIZE    14.666666984558105
 
 void text_init (void);
 void text_shutdown (void);
@@ -35,12 +40,19 @@ class Inline : public DependencyObject {
 	virtual ~Inline ();
 
  public:
+ 	/* @PropertyType=char*,DefaultValue=TEXTBLOCK_FONT_FAMILY */
 	static DependencyProperty *FontFamilyProperty;
+ 	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_STRETCH */
 	static DependencyProperty *FontStretchProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_STYLE */
 	static DependencyProperty *FontStyleProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_WEIGHT */
 	static DependencyProperty *FontWeightProperty;
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *ForegroundProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TextDecorationsNone */
 	static DependencyProperty *TextDecorationsProperty;
 	
 	TextFontDescription *font;
@@ -99,6 +111,7 @@ class Run : public Inline {
 	virtual ~Run () {}
 
  public:
+ 	/* @PropertyType=char* */
 	static DependencyProperty *TextProperty;
 	
 	/* @GenerateCBinding */
@@ -175,17 +188,29 @@ class TextBlock : public FrameworkElement {
 	virtual ~TextBlock ();
 
  public:
+ 	/* @PropertyType=double,ReadOnly */
 	static DependencyProperty *ActualHeightProperty;
+ 	/* @PropertyType=double,ReadOnly */
 	static DependencyProperty *ActualWidthProperty;
+ 	/* @PropertyType=char*,DefaultValue=TEXTBLOCK_FONT_FAMILY */
 	static DependencyProperty *FontFamilyProperty;
+ 	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_STRETCH */
 	static DependencyProperty *FontStretchProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_STYLE */
 	static DependencyProperty *FontStyleProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_WEIGHT */
 	static DependencyProperty *FontWeightProperty;
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *ForegroundProperty;
+ 	/* @PropertyType=Inlines */
 	static DependencyProperty *InlinesProperty;
+ 	/* @PropertyType=char* */
 	static DependencyProperty *TextProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TextDecorationsNone */
 	static DependencyProperty *TextDecorationsProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TextWrappingNoWrap */
 	static DependencyProperty *TextWrappingProperty;
 	
 	/* @GenerateCBinding */
@@ -333,13 +358,21 @@ class Glyphs : public FrameworkElement {
 	virtual ~Glyphs ();
 	
  public:
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *FillProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *FontRenderingEmSizeProperty;
+ 	/* @PropertyType=char* */
 	static DependencyProperty *FontUriProperty;
+ 	/* @PropertyType=char* */
 	static DependencyProperty *IndicesProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OriginXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OriginYProperty;
+ 	/* @PropertyType=gint32,DefaultValue=StyleSimulationsNone */
 	static DependencyProperty *StyleSimulationsProperty;
+ 	/* @PropertyType=char* */
 	static DependencyProperty *UnicodeStringProperty;
 	
 	/* @GenerateCBinding */

@@ -35,10 +35,6 @@ void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, d
  * MediaBase
  */
 
-DependencyProperty *MediaBase::SourceProperty;
-DependencyProperty *MediaBase::StretchProperty;
-DependencyProperty *MediaBase::DownloadProgressProperty;
-
 MediaBase::MediaBase ()
 {
 	source.downloader = NULL;
@@ -310,24 +306,6 @@ media_base_get_download_progress (MediaBase *media)
 /*
  * MediaElement
  */
-
-DependencyProperty *MediaElement::AttributesProperty;
-DependencyProperty *MediaElement::AudioStreamCountProperty;
-DependencyProperty *MediaElement::AudioStreamIndexProperty;
-DependencyProperty *MediaElement::AutoPlayProperty;
-DependencyProperty *MediaElement::BalanceProperty;
-DependencyProperty *MediaElement::BufferingProgressProperty;
-DependencyProperty *MediaElement::BufferingTimeProperty;
-DependencyProperty *MediaElement::CanPauseProperty;
-DependencyProperty *MediaElement::CanSeekProperty;
-DependencyProperty *MediaElement::CurrentStateProperty;
-DependencyProperty *MediaElement::IsMutedProperty;
-DependencyProperty *MediaElement::MarkersProperty;
-DependencyProperty *MediaElement::NaturalDurationProperty;
-DependencyProperty *MediaElement::NaturalVideoHeightProperty;
-DependencyProperty *MediaElement::NaturalVideoWidthProperty;
-DependencyProperty *MediaElement::PositionProperty;
-DependencyProperty *MediaElement::VolumeProperty;
 
 enum MediaElementFlags {
 	Loaded              = (1 << 0),  // set once OnLoaded has been called
@@ -2872,8 +2850,6 @@ image_set_source (Image *img, Downloader *downloader, const char *PartName)
 // MediaAttribute
 //
 
-DependencyProperty *MediaAttribute::ValueProperty;
-
 const char *
 media_attribute_get_value (MediaAttribute *attribute)
 {
@@ -2965,6 +2941,11 @@ MarkerReachedEventArgs::~MarkerReachedEventArgs ()
 void
 media_init (void)
 {
+	Media::Initialize ();
+	
+	// Dont register DPs here.
+	return;
+
 	/* MediaAttribute */
 	MediaAttribute::ValueProperty = DependencyProperty::Register (Type::MEDIAATTRIBUTE, "Value", Type::STRING);
 	
@@ -2991,6 +2972,5 @@ media_init (void)
 	MediaElement::NaturalVideoWidthProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::DOUBLE, false, true);
 	MediaElement::PositionProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
- 	
-	Media::Initialize ();
+
 }

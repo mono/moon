@@ -50,7 +50,9 @@ class Geometry : public DependencyObject {
 	virtual ~Geometry ();
 	
  public:
+ 	/* @PropertyType=gint32,DefaultValue=FillRuleEvenOdd */
 	static DependencyProperty *FillRuleProperty;
+ 	/* @PropertyType=Transform */
 	static DependencyProperty *TransformProperty;
 
 	Geometry () : path (NULL) {};
@@ -113,6 +115,7 @@ class GeometryGroup : public Geometry {
 	virtual ~GeometryGroup () {}
 
  public:
+ 	/* @PropertyType=GeometryCollection */
 	static DependencyProperty *ChildrenProperty;
 	
 	/* @GenerateCBinding */
@@ -150,8 +153,11 @@ class EllipseGeometry : public Geometry {
 	virtual ~EllipseGeometry () {}
 	
  public:
+ 	/* @PropertyType=Point */
 	static DependencyProperty *CenterProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *RadiusXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *RadiusYProperty;
 
 	/* @GenerateCBinding */
@@ -195,7 +201,9 @@ class LineGeometry : public Geometry {
 	virtual ~LineGeometry () {}
 	
  public:
+ 	/* @PropertyType=Point */
 	static DependencyProperty *EndPointProperty;
+ 	/* @PropertyType=Point */
 	static DependencyProperty *StartPointProperty;
 	
 	/* @GenerateCBinding */
@@ -257,6 +265,7 @@ class PathGeometry : public Geometry {
 	virtual ~PathGeometry () {}
 	
  public:
+ 	/* @PropertyType=PathFigureCollection */
 	static DependencyProperty *FiguresProperty;
 	
 	/* @GenerateCBinding */
@@ -296,8 +305,11 @@ class RectangleGeometry : public Geometry {
 	virtual ~RectangleGeometry () {}
 	
  public:
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *RadiusXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *RadiusYProperty;
+ 	/* @PropertyType=Rect */
 	static DependencyProperty *RectProperty;
 	
 	/* @GenerateCBinding */
@@ -360,8 +372,11 @@ class PathFigure : public DependencyObject {
 	virtual ~PathFigure ();
 	
  public:
+ 	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *IsClosedProperty;
+ 	/* @PropertyType=PathSegmentCollection */
 	static DependencyProperty *SegmentsProperty;
+ 	/* @PropertyType=Point */
 	static DependencyProperty *StartPointProperty;
 	
 	moon_path *path;
@@ -428,10 +443,15 @@ class ArcSegment : public PathSegment {
 	virtual ~ArcSegment () {}
 
  public:
+ 	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *IsLargeArcProperty;
+ 	/* @PropertyType=Point */
 	static DependencyProperty *PointProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0*/
 	static DependencyProperty *RotationAngleProperty;
+ 	/* @PropertyType=Point */
 	static DependencyProperty *SizeProperty;
+ 	/* @PropertyType=gint32,DefaultValue=SweepDirectionCounterclockwise */
 	static DependencyProperty *SweepDirectionProperty;
 	
 	/* @GenerateCBinding */
@@ -486,8 +506,11 @@ class BezierSegment : public PathSegment {
 	virtual ~BezierSegment () {}
 
  public:
+ 	/* @PropertyType=Point */
 	static DependencyProperty *Point1Property;
+ 	/* @PropertyType=Point */
 	static DependencyProperty *Point2Property;
+ 	/* @PropertyType=Point */
 	static DependencyProperty *Point3Property;
 	
 	/* @GenerateCBinding */
@@ -530,6 +553,7 @@ class LineSegment : public PathSegment {
 	virtual ~LineSegment () {}
 
  public:
+ 	/* @PropertyType=Point */
 	static DependencyProperty *PointProperty;
 	
 	/* @GenerateCBinding */
@@ -563,6 +587,7 @@ class PolyBezierSegment : public PathSegment {
 	PointCollection* GetPoints ();
 	
  public:
+ 	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding */
@@ -593,6 +618,7 @@ class PolyLineSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
+ 	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding */
@@ -623,6 +649,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	PointCollection* GetPoints ();
 	
  public:
+ 	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding */
@@ -651,7 +678,9 @@ class QuadraticBezierSegment : public PathSegment {
 	virtual ~QuadraticBezierSegment () {}
 
  public:
+ 	/* @PropertyType=Point */
 	static DependencyProperty *Point1Property;
+ 	/* @PropertyType=Point */
 	static DependencyProperty *Point2Property;
 	
 	/* @GenerateCBinding */

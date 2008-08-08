@@ -58,11 +58,16 @@ class Brush : public DependencyObject {
 	virtual ~Brush () {}
 
  public:
+ 	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *OpacityProperty;
+ 	/* @PropertyType=Transform */
 	static DependencyProperty *RelativeTransformProperty;
+ 	/* @PropertyType=Transform */
 	static DependencyProperty *TransformProperty;
 	
 	// internal property - generic brush property change
+	// used only for notifying attachees
+ 	/* @PropertyType=bool,Access=Internal */
 	static DependencyProperty *ChangedProperty;
 	
 	/* @GenerateCBinding */
@@ -103,6 +108,7 @@ class SolidColorBrush : public Brush {
 	virtual ~SolidColorBrush () {}
 	
  public:
+ 	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
 	static DependencyProperty *ColorProperty;
 	
 	/* @GenerateCBinding */
@@ -146,7 +152,9 @@ class GradientStop : public DependencyObject {
 	virtual ~GradientStop () {}
 	
  public:
+ 	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
 	static DependencyProperty *ColorProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OffsetProperty;
 	
 	/* @GenerateCBinding */
@@ -175,9 +183,13 @@ class GradientBrush : public Brush {
 	virtual ~GradientBrush () {}
 
  public:
+ 	/* @PropertyType=gint32,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation */
 	static DependencyProperty *ColorInterpolationModeProperty;
+ 	/* @PropertyType=GradientStopCollection */
 	static DependencyProperty *GradientStopsProperty;
+ 	/* @PropertyType=gint32,DefaultValue=BrushMappingModeRelativeToBoundingBox */
 	static DependencyProperty *MappingModeProperty;
+ 	/* @PropertyType=gint32,DefaultValue=0 */
 	static DependencyProperty *SpreadMethodProperty;
 	
 	/* @GenerateCBinding */
@@ -221,7 +233,9 @@ class LinearGradientBrush : public GradientBrush {
 	virtual ~LinearGradientBrush () {}
 
  public:
+ 	/* @PropertyType=Point */
 	static DependencyProperty *EndPointProperty;
+ 	/* @PropertyType=Point */
 	static DependencyProperty *StartPointProperty;
 
 	/* @GenerateCBinding */
@@ -250,9 +264,13 @@ class RadialGradientBrush : public GradientBrush {
 	virtual ~RadialGradientBrush () {}
 
  public:
+ 	/* @PropertyType=Point */
 	static DependencyProperty *CenterProperty;
+ 	/* @PropertyType=Point */
 	static DependencyProperty *GradientOriginProperty;
+ 	/* @PropertyType=double,DefaultValue=0.5 */
 	static DependencyProperty *RadiusXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.5 */
 	static DependencyProperty *RadiusYProperty;
 	
 	/* @GenerateCBinding */
@@ -291,8 +309,11 @@ class TileBrush : public Brush {
 	virtual ~TileBrush () {}
 
  public:
+ 	/* @PropertyType=gint32,DefaultValue=AlignmentXCenter */
 	static DependencyProperty *AlignmentXProperty;
+ 	/* @PropertyType=gint32,DefaultValue=AlignmentYCenter */
 	static DependencyProperty *AlignmentYProperty;
+ 	/* @PropertyType=gint32,DefaultValue=StretchFill */
 	static DependencyProperty *StretchProperty;
 	
 	virtual Type::Kind GetObjectType () { return Type::TILEBRUSH; }
@@ -327,7 +348,9 @@ class ImageBrush : public TileBrush {
 	virtual ~ImageBrush ();
 
  public:
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *DownloadProgressProperty;
+ 	/* @PropertyType=char*,DefaultValue=\"\" */
 	static DependencyProperty *ImageSourceProperty;
 	
 	const static int DownloadProgressChangedEvent;
@@ -370,6 +393,7 @@ protected:
 	virtual ~VideoBrush ();
 
 public:
+ 	/* @PropertyType=char*,DefaultValue=\"\" */
 	static DependencyProperty *SourceNameProperty;
 	
 	/* @GenerateCBinding */
@@ -403,6 +427,7 @@ class VisualBrush : public TileBrush {
 	virtual ~VisualBrush () {}
 
  public:
+ 	/* @PropertyType=UIElement */
 	static DependencyProperty *VisualProperty;
 
  	/* @GenerateCBinding */

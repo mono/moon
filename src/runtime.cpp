@@ -1996,6 +1996,7 @@ runtime_init (guint32 flags)
 	moonlight_flags = flags;
 	
 	types_init ();
+	dependency_property_g_init ();
 	namescope_init ();
 	uielement_init ();
 	collection_init ();

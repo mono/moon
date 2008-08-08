@@ -30,14 +30,6 @@
 
 #define d(x) x
 
-
-#define TEXTBLOCK_FONT_FAMILY  "Portable User Interface"
-#define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
-#define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
-#define TEXTBLOCK_FONT_STYLE   FontStylesNormal
-#define TEXTBLOCK_FONT_SIZE    14.666666984558105
-
-
 static SolidColorBrush *default_foreground_brush = NULL;
 
 static Brush *
@@ -51,14 +43,6 @@ default_foreground (void)
 
 
 // Inline
-
-DependencyProperty *Inline::FontFamilyProperty;
-DependencyProperty *Inline::FontSizeProperty;
-DependencyProperty *Inline::FontStretchProperty;
-DependencyProperty *Inline::FontStyleProperty;
-DependencyProperty *Inline::FontWeightProperty;
-DependencyProperty *Inline::ForegroundProperty;
-DependencyProperty *Inline::TextDecorationsProperty;
 
 Inline::Inline ()
 {
@@ -281,8 +265,6 @@ inline_set_text_decorations (Inline *inline_, TextDecorations value)
 
 // Run
 
-DependencyProperty *Run::TextProperty;
-
 void
 Run::SetText (const char *text)
 {
@@ -312,20 +294,6 @@ run_set_text (Run *run, const char *text)
 
 
 // TextBlock
-
-DependencyProperty *TextBlock::ActualHeightProperty;
-DependencyProperty *TextBlock::ActualWidthProperty;
-DependencyProperty *TextBlock::FontFamilyProperty;
-DependencyProperty *TextBlock::FontSizeProperty;
-DependencyProperty *TextBlock::FontStretchProperty;
-DependencyProperty *TextBlock::FontStyleProperty;
-DependencyProperty *TextBlock::FontWeightProperty;
-DependencyProperty *TextBlock::ForegroundProperty;
-DependencyProperty *TextBlock::InlinesProperty;
-DependencyProperty *TextBlock::TextProperty;
-DependencyProperty *TextBlock::TextDecorationsProperty;
-DependencyProperty *TextBlock::TextWrappingProperty;
-
 
 TextBlock::TextBlock ()
 {
@@ -1313,14 +1281,6 @@ text_block_set_font_source (TextBlock *textblock, Downloader *downloader)
 
 // Glyphs
 
-DependencyProperty *Glyphs::FillProperty;
-DependencyProperty *Glyphs::FontRenderingEmSizeProperty;
-DependencyProperty *Glyphs::FontUriProperty;
-DependencyProperty *Glyphs::IndicesProperty;
-DependencyProperty *Glyphs::OriginXProperty;
-DependencyProperty *Glyphs::OriginYProperty;
-DependencyProperty *Glyphs::StyleSimulationsProperty;
-DependencyProperty *Glyphs::UnicodeStringProperty;
 
 enum GlyphAttrMask {
 	Cluster = 1 << 1,
@@ -2298,6 +2258,9 @@ text_init (void)
 {
 	font_init ();
 	
+	// Don't register DPs here anymore.
+	return;
+
 	// Inline
 	Inline::FontFamilyProperty = DependencyProperty::Register (Type::INLINE, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
 	Inline::FontSizeProperty = DependencyProperty::Register (Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));

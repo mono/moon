@@ -26,10 +26,6 @@
 // Geometry
 //
 
-DependencyProperty *Geometry::FillRuleProperty;
-DependencyProperty *Geometry::TransformProperty;
-
-
 Geometry::~Geometry ()
 {
 	if (path)
@@ -119,8 +115,6 @@ geometry_set_transform (Geometry *geometry, Transform *transform)
 //
 // GeometryGroup
 //
-
-DependencyProperty *GeometryGroup::ChildrenProperty;
 
 
 GeometryGroup::GeometryGroup ()
@@ -245,11 +239,6 @@ geometry_group_set_children (GeometryGroup *group, GeometryCollection *children)
 // EllipseGeometry
 //
 
-DependencyProperty *EllipseGeometry::CenterProperty;
-DependencyProperty *EllipseGeometry::RadiusXProperty;
-DependencyProperty *EllipseGeometry::RadiusYProperty;
-
-
 void
 EllipseGeometry::Build (Path *shape)
 {
@@ -373,9 +362,6 @@ ellipse_geometry_set_radius_y (EllipseGeometry *ellipse, double radius)
 // LineGeometry
 //
 
-DependencyProperty *LineGeometry::EndPointProperty;
-DependencyProperty *LineGeometry::StartPointProperty;
-
 
 void
 LineGeometry::Build (Path *shape)
@@ -478,8 +464,6 @@ line_geometry_set_start_point (LineGeometry *line, Point *point)
 //
 // PathGeometry
 //
-
-DependencyProperty *PathGeometry::FiguresProperty;
 
 PathGeometry::PathGeometry ()
 {
@@ -642,11 +626,6 @@ path_geometry_set_figures (PathGeometry *path, PathFigureCollection *figures)
 // RectangleGeometry
 //
 
-DependencyProperty *RectangleGeometry::RadiusXProperty;
-DependencyProperty *RectangleGeometry::RadiusYProperty;
-DependencyProperty *RectangleGeometry::RectProperty;
-
-
 void
 RectangleGeometry::Build (Path *shape)
 {
@@ -783,11 +762,6 @@ rectangle_geometry_set_rect (RectangleGeometry *rectangle, Rect *rect)
 //
 // PathFigure
 //
-
-DependencyProperty *PathFigure::IsClosedProperty;
-DependencyProperty *PathFigure::SegmentsProperty;
-DependencyProperty *PathFigure::StartPointProperty;
-
 
 PathFigure::PathFigure ()
 {
@@ -948,13 +922,6 @@ path_figure_set_start_point (PathFigure *figure, Point *point)
 // ArcSegment
 //
 
-DependencyProperty *ArcSegment::IsLargeArcProperty;
-DependencyProperty *ArcSegment::PointProperty;
-DependencyProperty *ArcSegment::RotationAngleProperty;
-DependencyProperty *ArcSegment::SizeProperty;
-DependencyProperty *ArcSegment::SweepDirectionProperty;
-
-
 void
 ArcSegment::Append (moon_path *path)
 {
@@ -1099,11 +1066,6 @@ arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction)
 // BezierSegment
 //
 
-DependencyProperty *BezierSegment::Point1Property;
-DependencyProperty *BezierSegment::Point2Property;
-DependencyProperty *BezierSegment::Point3Property;
-
-
 void
 BezierSegment::Append (moon_path *path)
 {
@@ -1205,9 +1167,6 @@ bezier_segment_set_point3 (BezierSegment *segment, Point *point)
 // LineSegment
 //
 
-DependencyProperty *LineSegment::PointProperty;
-
-
 void
 LineSegment::Append (moon_path *path)
 {
@@ -1250,8 +1209,6 @@ line_segment_set_point (LineSegment *segment, Point *point)
 //
 // PolyBezierSegment
 //
-
-DependencyProperty *PolyBezierSegment::PointsProperty;
 
 void
 PolyBezierSegment::Append (moon_path *path)
@@ -1318,9 +1275,6 @@ poly_bezier_segment_set_points (PolyBezierSegment *segment, PointCollection *poi
 // PolyLineSegment
 //
 
-DependencyProperty *PolyLineSegment::PointsProperty;
-
-
 void
 PolyLineSegment::Append (moon_path *path)
 {
@@ -1379,9 +1333,6 @@ poly_line_segment_set_points (PolyLineSegment *segment, PointCollection *points)
 //
 // PolyQuadraticBezierSegment
 //
-
-DependencyProperty *PolyQuadraticBezierSegment::PointsProperty;
-
 
 // quadratic to cubic bezier, the original control point and the end control point are the same
 // http://web.archive.org/web/20020209100930/http://www.icce.rug.nl/erikjan/bluefuzz/beziers/beziers/node2.html
@@ -1467,9 +1418,6 @@ poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, P
 // QuadraticBezierSegment
 //
 
-DependencyProperty *QuadraticBezierSegment::Point1Property;
-DependencyProperty *QuadraticBezierSegment::Point2Property;
-
 void
 QuadraticBezierSegment::Append (moon_path *path)
 {
@@ -1546,6 +1494,9 @@ quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *poi
 void
 geometry_init (void)
 {
+	// Don't register DPs here.
+	return;
+
 	/* Geometry fields */
 	Geometry::FillRuleProperty = DependencyProperty::Register (Type::GEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
 	Geometry::TransformProperty = DependencyProperty::Register (Type::GEOMETRY, "Transform", Type::TRANSFORM);

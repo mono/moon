@@ -401,19 +401,31 @@ class UIElement : public DependencyObject {
 	GeneralTransform *GetTransformToUIElement (UIElement *to_element);
 #endif
 	
+ 	/* @PropertyType=Geometry */
 	static DependencyProperty *ClipProperty;
+ 	/* @PropertyType=bool,DefaultValue=true */
 	static DependencyProperty *IsHitTestVisibleProperty;
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *OpacityMaskProperty;
+ 	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *OpacityProperty;
+ 	/* @PropertyType=Point,DefaultValue=Point (0\,0) */
 	static DependencyProperty *RenderTransformOriginProperty;
+ 	/* @PropertyType=Transform */
 	static DependencyProperty *RenderTransformProperty;
+ 	/* @PropertyType=gint32,DefaultValue=VisibilityVisible */
 	static DependencyProperty *VisibilityProperty;
+ 	/* @PropertyType=gint32,DefaultValue=0*/
 	static DependencyProperty *ZIndexProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
+ 	/* @PropertyType=gint32,DefaultValue=MouseCursorDefault */
 	static DependencyProperty *CursorProperty;
+ 	/* @PropertyType=ResourceDictionary */
 	static DependencyProperty *ResourcesProperty;
+ 	/* @PropertyType=char* */
 	static DependencyProperty *TagProperty;
+ 	/* @PropertyType=TriggerCollection */
 	static DependencyProperty *TriggersProperty;
 	
 	//

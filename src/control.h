@@ -19,6 +19,11 @@
 #include "enums.h"
 #include "xaml.h"
 
+#define CONTROL_FONT_FAMILY  "Portable User Interface"
+#define CONTROL_FONT_STRETCH FontStretchesNormal
+#define CONTROL_FONT_WEIGHT  FontWeightsNormal
+#define CONTROL_FONT_STYLE   FontStylesNormal
+#define CONTROL_FONT_SIZE    14.666666984558105
 //
 // Control Class
 //
@@ -31,20 +36,35 @@ class Control : public FrameworkElement {
 	virtual ~Control ();
 	
  public:
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *BackgroundProperty;
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *BorderBrushProperty;
+ 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0) */
 	static DependencyProperty *BorderThicknessProperty;
+ 	/* @PropertyType=char*,DefaultValue=CONTROL_FONT_FAMILY */
 	static DependencyProperty *FontFamilyProperty;
+ 	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
+ 	/* @PropertyType=gint32,DefaultValue=CONTROL_FONT_STRETCH */
 	static DependencyProperty *FontStretchProperty;
+ 	/* @PropertyType=gint32,DefaultValue=CONTROL_FONT_STYLE */
 	static DependencyProperty *FontStyleProperty;
+ 	/* @PropertyType=gint32,DefaultValue=CONTROL_FONT_WEIGHT */
 	static DependencyProperty *FontWeightProperty;
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *ForegroundProperty;
+ 	/* @PropertyType=gint32,DefaultValue=HorizontalAlignmentCenter */
 	static DependencyProperty *HorizontalContentAlignmentProperty;
+ 	/* @PropertyType=bool,DefaultValue=true */
 	static DependencyProperty *IsTabStopProperty;
+ 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0) */
 	static DependencyProperty *PaddingProperty;
+ 	/* @PropertyType=gint32,DefaultValue=INT_MAX */
 	static DependencyProperty *TabIndexProperty;
+ 	/* @PropertyType=gint32,DefaultValue=KeyboardNavigationModeLocal */
 	static DependencyProperty *TabNavigationProperty;
+ 	/* @PropertyType=gint32,DefaultValue=VerticalAlignmentCenter */
 	static DependencyProperty *VerticalContentAlignmentProperty;
 	
 	FrameworkElement *real_object;

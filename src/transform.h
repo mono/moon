@@ -64,8 +64,11 @@ class RotateTransform : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *AngleProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *CenterXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *CenterYProperty;
 	
 	/* @GenerateCBinding */
@@ -103,7 +106,9 @@ class TranslateTransform : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *XProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *YProperty;
 	
 	/* @GenerateCBinding */
@@ -139,9 +144,13 @@ class ScaleTransform : public Transform {
 	ScaleTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; };
 
+ 	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty* ScaleXProperty;
+ 	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty* ScaleYProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty* CenterXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty* CenterYProperty;
 };
 
@@ -170,9 +179,13 @@ public:
 	SkewTransform () {  }
 	virtual Type::Kind GetObjectType () { return Type::SKEWTRANSFORM; };
 
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty* AngleXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty* AngleYProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty* CenterXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty* CenterYProperty;
 };
 
@@ -197,11 +210,17 @@ protected:
 	virtual ~Matrix () {}
 
 public:
+ 	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *M11Property;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *M12Property;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *M21Property;
+ 	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *M22Property;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OffsetXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OffsetYProperty;
 
 	/* @GenerateCBinding */
@@ -235,6 +254,7 @@ class MatrixTransform : public Transform {
 
 	virtual void UpdateTransform ();
  public:
+ 	/* @PropertyType=Matrix */
 	static DependencyProperty* MatrixProperty;
 
 	/* @GenerateCBinding */
@@ -270,6 +290,7 @@ protected:
 
 	virtual void UpdateTransform ();
 public:
+ 	/* @PropertyType=TransformCollection */
 	static DependencyProperty *ChildrenProperty;
 
 	/* @GenerateCBinding */

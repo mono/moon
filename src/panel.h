@@ -32,7 +32,9 @@ class Panel : public FrameworkElement {
 	bool UseBackToFront ();
 
  public:
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *BackgroundProperty;
+ 	/* @PropertyType=UIElementCollection */
 	static DependencyProperty *ChildrenProperty;
 	
 	Rect bounds_with_children;

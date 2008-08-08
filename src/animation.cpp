@@ -337,9 +337,6 @@ Animation/*Timeline*/::GetNaturalDurationCore (Clock* clock)
 
 /* storyboard */
 
-DependencyProperty* Storyboard::TargetNameProperty;
-DependencyProperty* Storyboard::TargetPropertyProperty;
-
 Storyboard::Storyboard ()
 {
 	root_clock = NULL;
@@ -633,8 +630,6 @@ Storyboard::~Storyboard ()
 	}
 }
 
-DependencyProperty* BeginStoryboard::StoryboardProperty;
-
 void
 BeginStoryboard::Fire ()
 {
@@ -659,10 +654,6 @@ BeginStoryboard::GetStoryboard ()
 BeginStoryboard::~BeginStoryboard ()
 {
 }
-
-DependencyProperty* DoubleAnimation::ByProperty;
-DependencyProperty* DoubleAnimation::FromProperty;
-DependencyProperty* DoubleAnimation::ToProperty;
 
 DoubleAnimation::DoubleAnimation ()
 {
@@ -712,10 +703,6 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 	return new Value (LERP (start, end, progress));
 }
 
-
-DependencyProperty* ColorAnimation::ByProperty;
-DependencyProperty* ColorAnimation::FromProperty;
-DependencyProperty* ColorAnimation::ToProperty;
 
 ColorAnimation::ColorAnimation ()
 {
@@ -804,11 +791,6 @@ color_animation_get_to (ColorAnimation *da)
 
 
 
-
-
-DependencyProperty* PointAnimation::ByProperty;
-DependencyProperty* PointAnimation::FromProperty;
-DependencyProperty* PointAnimation::ToProperty;
 
 Value*
 PointAnimation::GetTargetValue (Value *defaultOriginValue)
@@ -957,7 +939,6 @@ KeySpline::GetSplineProgress (double linearProgress)
 	return moon_quadratic_array_y_for_x (quadraticsArray, linearProgress, 16);
 }
 
-DependencyProperty* KeyFrame::KeyTimeProperty;
 
 KeyFrame::KeyFrame ()
 {
@@ -1096,14 +1077,12 @@ KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyOb
 	Collection::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-DependencyProperty* DoubleKeyFrame::ValueProperty;
 
 DoubleKeyFrame::DoubleKeyFrame ()
 {
 	SetValue (0.0);
 }
 
-DependencyProperty* ColorKeyFrame::ValueProperty;
 
 ColorKeyFrame::ColorKeyFrame ()
 {
@@ -1111,7 +1090,6 @@ ColorKeyFrame::ColorKeyFrame ()
 	SetValue (c);
 }
 
-DependencyProperty* PointKeyFrame::ValueProperty;
 
 PointKeyFrame::PointKeyFrame ()
 {
@@ -1200,8 +1178,6 @@ LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	return new Value (LERP (start, end, keyFrameProgress));
 }
 
-DependencyProperty* SplineDoubleKeyFrame::KeySplineProperty;
-
 SplineDoubleKeyFrame::SplineDoubleKeyFrame ()
 {
 	this->DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
@@ -1233,7 +1209,6 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	return new Value (LERP (start, end, splineProgress));
 }
 
-DependencyProperty* SplineColorKeyFrame::KeySplineProperty;
 
 SplineColorKeyFrame::SplineColorKeyFrame ()
 {
@@ -1267,7 +1242,6 @@ SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	return new Value (LERP (start, end, splineProgress));
 }
 
-DependencyProperty* SplinePointKeyFrame::KeySplineProperty;
 
 SplinePointKeyFrame::SplinePointKeyFrame ()
 {
@@ -1441,7 +1415,6 @@ generic_keyframe_validator (KeyFrameCollection *col)
 	return true;
 }
 
-DependencyProperty *DoubleAnimationUsingKeyFrames::KeyFramesProperty;
 
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames ()
 {
@@ -1552,7 +1525,6 @@ DoubleAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (col);
 }
 
-DependencyProperty* ColorAnimationUsingKeyFrames::KeyFramesProperty;
 
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
@@ -1660,7 +1632,6 @@ ColorAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (col);
 }
 
-DependencyProperty* PointAnimationUsingKeyFrames::KeyFramesProperty;
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
@@ -1779,6 +1750,9 @@ KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 void 
 animation_init (void)
 {
+	// Don't register DPs here
+	return; 
+	
 	/* DoubleAnimation properties */
 	DoubleAnimation::ByProperty   = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "By",   Type::DOUBLE);
 	DoubleAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "From", Type::DOUBLE);
@@ -1796,10 +1770,8 @@ animation_init (void)
 	PointAnimation::ToProperty   = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "To",   Type::POINT);
 
 	/* Storyboard properties */
-	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", 
-									     NULL, Type::STRING, true, false);
-	Storyboard::TargetNameProperty     = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetName", 
-									     NULL, Type::STRING, true, false);
+	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", NULL, Type::STRING, true, false);
+	Storyboard::TargetNameProperty     = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetName", NULL, Type::STRING, true, false);
 
 	/* BeginStoryboard properties */
 	BeginStoryboard::StoryboardProperty = DependencyProperty::Register (Type::BEGINSTORYBOARD, "Storyboard",	Type::STORYBOARD);

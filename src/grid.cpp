@@ -22,8 +22,8 @@
 
 Grid::Grid ()
 {
-	SetValue (Grid::ColumnDefinitions, Value::CreateUnref (new ColumnDefinitionCollection ()));
-	SetValue (Grid::RowDefinitions, Value::CreateUnref (new RowDefinitionCollection ()));
+	SetValue (Grid::ColumnDefinitionsProperty, Value::CreateUnref (new ColumnDefinitionCollection ()));
+	SetValue (Grid::RowDefinitionsProperty, Value::CreateUnref (new RowDefinitionCollection ()));
 }
 
 void
@@ -65,30 +65,14 @@ Grid::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pro
 void
 Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-       if (col == GetValue (Grid::ColumnDefinitions)->AsColumnDefinitionCollection () ||
-           col == GetValue (Grid::RowDefinitions)->AsRowDefinitionCollection ()) {
+       if (col == GetValue (Grid::ColumnDefinitionsProperty)->AsColumnDefinitionCollection () ||
+           col == GetValue (Grid::RowDefinitionsProperty)->AsRowDefinitionCollection ()) {
                //
                // Do something
                //
                fprintf (stderr, "Grid:OnCollectionChanged: do something\n");
        }
 }
-
-DependencyProperty *Grid::ColumnProperty;
-DependencyProperty *Grid::ColumnSpanProperty;
-DependencyProperty *Grid::RowProperty;
-DependencyProperty *Grid::RowSpanProperty;
-DependencyProperty *Grid::ShowGridLinesProperty;
-DependencyProperty *Grid::RowDefinitions;
-DependencyProperty *Grid::ColumnDefinitions;
-
-DependencyProperty *RowDefinition::HeightProperty;
-DependencyProperty *RowDefinition::MaxHeightProperty;
-DependencyProperty *RowDefinition::MinHeightProperty;
-
-DependencyProperty *ColumnDefinition::WidthProperty;
-DependencyProperty *ColumnDefinition::MaxWidthProperty;
-DependencyProperty *ColumnDefinition::MinWidthProperty;
 
 double
 row_definition_get_actual_height (RowDefinition *def)
@@ -105,15 +89,18 @@ column_definition_get_actual_width (ColumnDefinition *def)
 void 
 grid_init (void)
 {
+	// Don't register DPs here
+	return;
+
        // RowDefinition
        RowDefinition::HeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Height", Type::GRIDLENGTH);
        RowDefinition::MaxHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxHeight", Type::DOUBLE);
        RowDefinition::MinHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinHeight", Type::DOUBLE);
 
        // ColumnDefinition
-       ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Width", Type::GRIDLENGTH);
-       ColumnDefinition::MaxWidthProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxWidth", Type::DOUBLE);
-       ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinWidth", Type::DOUBLE);
+       ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "Width", Type::GRIDLENGTH);
+       ColumnDefinition::MaxWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MaxWidth", Type::DOUBLE);
+       ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MinWidth", Type::DOUBLE);
 
        // Grid
        Grid::ColumnProperty = DependencyProperty::RegisterFull (Type::GRID, "Column", new Value (0), Type::INT32, true, false);
@@ -122,6 +109,6 @@ grid_init (void)
        Grid::RowSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "RowSpan", new Value (0), Type::INT32, true, false);
        Grid::ShowGridLinesProperty = DependencyProperty::RegisterFull (Type::GRID, "ShowGridLines", new Value (false), Type::BOOL, true, false);
 
-       Grid::ColumnDefinitions = DependencyProperty::Register (Type::GRID, "ColumnDefinitions", Type::COLUMNDEFINITION_COLLECTION);
-       Grid::RowDefinitions    = DependencyProperty::Register (Type::GRID, "RowDefinitions", Type::ROWDEFINITION_COLLECTION);
+       Grid::ColumnDefinitionsProperty = DependencyProperty::Register (Type::GRID, "ColumnDefinitions", Type::COLUMNDEFINITION_COLLECTION);
+       Grid::RowDefinitionsProperty    = DependencyProperty::Register (Type::GRID, "RowDefinitions", Type::ROWDEFINITION_COLLECTION);
 }

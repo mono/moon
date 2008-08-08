@@ -19,9 +19,6 @@
 #include "collection.h"
 
 
-DependencyProperty *Canvas::TopProperty;
-DependencyProperty *Canvas::LeftProperty;
-
 Canvas::Canvas ()
 {
 	NameScope *ns = new NameScope ();
@@ -155,6 +152,8 @@ Canvas::GetTop ()
 void 
 canvas_init (void)
 {
+	// Don't register any DPs here
+	return;
 	Canvas::TopProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, true, false);
 	Canvas::LeftProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, true, false);
 }

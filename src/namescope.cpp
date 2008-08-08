@@ -110,10 +110,10 @@ NameScope::MergeTemporaryScope (NameScope *temp)
 		g_hash_table_foreach (temp->names, merge_name, this);
 }
 
-DependencyProperty *NameScope::NameScopeProperty;
-
 void
 namescope_init (void)
 {
+	// Don't register DPs here anymore
+	return;
 	NameScope::NameScopeProperty = DependencyProperty::Register (Type::NAMESCOPE, "NameScope", Type::NAMESCOPE);
 }

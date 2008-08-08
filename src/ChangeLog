@@ -1,3 +1,19 @@
+2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* panel.cpp, stylus.cpp, trigger.h, usercontrol.cpp, canvas.h,
+	  control.h, deployment.h, text.h, trigger.cpp, dependencyobject.h,
+	  canvas.cpp, transform.h, downloader.cpp, transform.cpp,
+	  animation.h, grid.cpp, downloader.h, shape.h,
+	  dependencyproperty.g.cpp, animation.cpp, deployment.cpp,
+	  control.cpp, runtime.cpp, text.cpp, dependencyproperty.h,
+	  Makefile.am, clock.h, contentcontrol.h, dependencyproperty.cpp,
+	  clock.cpp, uielement.h, collection.h, geometry.h,
+	  contentcontrol.cpp, frameworkelement.h, src.mdp, uielement.cpp,
+	  grid.h, collection.cpp, geometry.cpp, shape.cpp,
+	  dependencyobject.cpp, frameworkelement.cpp, namescope.cpp, media.h,
+	  brush.h, panel.h, stylus.h, namescope.h, media.cpp, brush.cpp,
+	  usercontrol.h: Generate dependency property registration.
+
 2008-08-07  Chris Toshok  <toshok@ximian.com>
 
 	* collection.h, collection.cpp (double_collection_from_str): new

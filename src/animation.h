@@ -217,8 +217,11 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	virtual ~DoubleAnimation () {}
 
  public:
+ 	/* @PropertyType=double,Nullable */
 	static DependencyProperty *ByProperty;
+	/* @PropertyType=double,Nullable */
 	static DependencyProperty *FromProperty;
+	/* @PropertyType=double,Nullable */
 	static DependencyProperty *ToProperty;
 	
 	/* @GenerateCBinding */
@@ -252,8 +255,11 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	virtual ~ColorAnimation () {}
 
  public:
+ 	/* @PropertyType=Color,Nullable */
 	static DependencyProperty *ByProperty;
+ 	/* @PropertyType=Color,Nullable */
 	static DependencyProperty *FromProperty;
+ 	/* @PropertyType=Color,Nullable */
 	static DependencyProperty *ToProperty;
 	
 	/* @GenerateCBinding */
@@ -287,8 +293,11 @@ class PointAnimation : public Animation/*Timeline*/ {
 	virtual ~PointAnimation () {}
 
  public:
+ 	/* @PropertyType=Point,Nullable */
 	static DependencyProperty *ByProperty;
+ 	/* @PropertyType=Point,Nullable */
 	static DependencyProperty *FromProperty;
+ 	/* @PropertyType=Point,Nullable */
 	static DependencyProperty *ToProperty;
 	
  	/* @GenerateCBinding */
@@ -323,6 +332,7 @@ class KeyFrame : public DependencyObject {
 	virtual ~KeyFrame () {}
 
  public:
+ 	/* @PropertyType=KeyTime,Nullable */
 	static DependencyProperty *KeyTimeProperty;
 	TimeSpan resolved_keytime;
 	bool resolved;
@@ -405,6 +415,7 @@ class DoubleKeyFrame : public KeyFrame {
 	virtual ~DoubleKeyFrame () {}
 
  public:
+ 	/* @PropertyType=double,Nullable */
 	static DependencyProperty *ValueProperty;
 	
 	/* @GenerateCBinding */
@@ -424,6 +435,7 @@ class ColorKeyFrame : public KeyFrame {
 	virtual ~ColorKeyFrame () {}
 
  public:
+ 	/* @PropertyType=Color,Nullable */
 	static DependencyProperty *ValueProperty;
 	
 	/* @GenerateCBinding */
@@ -443,6 +455,7 @@ class PointKeyFrame : public KeyFrame {
 	virtual ~PointKeyFrame () {}
 
  public:
+ 	/* @PropertyType=Point,Nullable */
 	static DependencyProperty *ValueProperty;
 	
 	/* @GenerateCBinding */
@@ -548,6 +561,7 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	virtual ~SplineDoubleKeyFrame () {}
 
  public:
+ 	/* @PropertyType=KeySpline */
 	static DependencyProperty *KeySplineProperty;
 	
 	/* @GenerateCBinding */
@@ -569,6 +583,7 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 	virtual ~SplineColorKeyFrame () {}
 
  public:
+ 	/* @PropertyType=KeySpline */
 	static DependencyProperty *KeySplineProperty;
 	
 	/* @GenerateCBinding */
@@ -590,6 +605,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 	virtual ~SplinePointKeyFrame () {}
 
  public:
+ 	/* @PropertyType=KeySpline */
 	static DependencyProperty *KeySplineProperty;
 	
 	/* @GenerateCBinding */
@@ -611,6 +627,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual ~DoubleAnimationUsingKeyFrames ();
 
  public:
+ 	/* @PropertyType=DoubleKeyFrameCollection */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding */
@@ -636,6 +653,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual ~ColorAnimationUsingKeyFrames ();
 
  public:
+ 	/* @PropertyType=ColorKeyFrameCollection */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding */
@@ -661,6 +679,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual ~PointAnimationUsingKeyFrames ();
 
  public:
+ 	/* @PropertyType=PointKeyFrameCollection */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding */
@@ -695,7 +714,9 @@ class Storyboard : public ParallelTimeline {
 	virtual ~Storyboard ();
 
  public:
+ 	/* @PropertyType=char*,Attached */
 	static DependencyProperty *TargetNameProperty;
+ 	/* @PropertyType=char*,Attached */
 	static DependencyProperty *TargetPropertyProperty;
 	
 	/* @GenerateCBinding */
@@ -727,6 +748,7 @@ class BeginStoryboard : public TriggerAction {
 	virtual ~BeginStoryboard ();
 
  public:
+ 	/* @PropertyType=Storyboard*/
 	static DependencyProperty *StoryboardProperty;
 	
 	/* @GenerateCBinding */

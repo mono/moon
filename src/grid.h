@@ -45,8 +45,11 @@ class ColumnDefinition : public DependencyObject {
 	virtual ~ColumnDefinition () {}
 	
  public:
+ 	/* @PropertyType=double */
 	static DependencyProperty *MaxWidthProperty;
+ 	/* @PropertyType=double */
 	static DependencyProperty *MinWidthProperty;
+ 	/* @PropertyType=GridLength */
 	static DependencyProperty *WidthProperty;
 	
 	// Actual width computed
@@ -63,8 +66,11 @@ class RowDefinition : public DependencyObject {
 	virtual ~RowDefinition() { actual = 0; }
 	
  public:
+ 	/* @PropertyType=GridLength */
 	static DependencyProperty *HeightProperty;
+ 	/* @PropertyType=double */
 	static DependencyProperty *MaxHeightProperty;
+ 	/* @PropertyType=double */
 	static DependencyProperty *MinHeightProperty;
 	
 	// Actual height computed
@@ -110,10 +116,15 @@ class Grid : public Panel {
 	virtual ~Grid () {}
 
  public:
+ 	/* @PropertyType=gint32,DefaultValue=0,Attached */
 	static DependencyProperty *ColumnProperty;
+ 	/* @PropertyType=gint32,DefaultValue=0,Attached */
 	static DependencyProperty *ColumnSpanProperty;
+ 	/* @PropertyType=gint32,DefaultValue=0,Attached */
 	static DependencyProperty *RowProperty;
+ 	/* @PropertyType=gint32,DefaultValue=0,Attached */
 	static DependencyProperty *RowSpanProperty;
+ 	/* @PropertyType=bool,DefaultValue=false,Attached */
 	static DependencyProperty *ShowGridLinesProperty;
 	
 	/* @GenerateCBinding */
@@ -129,8 +140,10 @@ class Grid : public Panel {
 	// as DependencyProperties but as regular properties on the c#
 	// side
 	//
-	static DependencyProperty *ColumnDefinitions;
-	static DependencyProperty *RowDefinitions;
+ 	/* @PropertyType=ColumnDefinitionCollection,Access=Internal */
+	static DependencyProperty *ColumnDefinitionsProperty;
+ 	/* @PropertyType=RowDefinitionCollection,Access=Internal */
+	static DependencyProperty *RowDefinitionsProperty;
 };
 
 G_BEGIN_DECLS

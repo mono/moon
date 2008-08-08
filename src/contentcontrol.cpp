@@ -13,14 +13,6 @@
 #include "contentcontrol.h"
 
 
-DependencyProperty *ContentControl::ContentProperty;
-DependencyProperty *ContentControl::ContentTemplateProperty;
-DependencyProperty *ContentControl::IsEnabledProperty;
-DependencyProperty *ContentControl::TextAlignmentProperty;
-DependencyProperty *ContentControl::TextDecorationsProperty;
-DependencyProperty *ContentControl::TextWrappingProperty;
-
-
 void
 ContentControl::SetContent (DependencyObject *content)
 {
@@ -177,8 +169,11 @@ content_control_get_text_wrapping (ContentControl *content_control)
 void
 content_control_init (void)
 {
+	// Don't register any DPs here
+	return;
+	
 	ContentControl::ContentProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "Content", Type::DEPENDENCY_OBJECT);
-	//ContentControl::ContentTemplateProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "ContentTemplate", Type::DEPENDENCYOBJECT);
+	ContentControl::ContentTemplateProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "ContentTemplate", Type::DEPENDENCY_OBJECT);
 	ContentControl::IsEnabledProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "IsEnabled", new Value (true));
 	ContentControl::TextAlignmentProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "TextAlignment", new Value (TextAlignmentLeft));
 	ContentControl::TextDecorationsProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "TextDecorations", new Value (TextDecorationsNone));

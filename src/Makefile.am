@@ -87,6 +87,7 @@ libmoon_la_SOURCES = 		\
 	debug.cpp		\
 	dependencyobject.cpp	\
 	dependencyproperty.cpp	\
+	dependencyproperty.g.cpp	\
 	dirty.h			\
 	dirty.cpp		\
 	downloader.cpp		\

@@ -27,7 +27,9 @@ class Canvas : public Panel {
 	virtual ~Canvas () {}
 	
  public:
+ 	/* @PropertyType=double,DefaultValue=0.0,Attached */
 	static DependencyProperty *LeftProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0,Attached */
 	static DependencyProperty *TopProperty;
 	
 	/* @GenerateCBinding */

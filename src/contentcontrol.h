@@ -27,11 +27,18 @@ class ContentControl : public Control {
 	virtual ~ContentControl () {}
 	
  public:
+ 	/* @PropertyType=DependencyObject */
 	static DependencyProperty *ContentProperty;
+	
+ 	/* @PropertyType=DependencyObject */
 	static DependencyProperty *ContentTemplateProperty;
+ 	/* @PropertyType=bool,DefaultValue=true */
 	static DependencyProperty *IsEnabledProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TextAlignmentLeft */
 	static DependencyProperty *TextAlignmentProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TextDecorationsNone */
 	static DependencyProperty *TextDecorationsProperty;
+ 	/* @PropertyType=gint32,DefaultValue=TextWrappingNoWrap */
 	static DependencyProperty *TextWrappingProperty;
 	
 	/* @GenerateCBinding */

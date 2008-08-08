@@ -78,16 +78,27 @@ class Shape : public FrameworkElement {
 	DoubleCollection *GetStrokeDashArray ();
 	
  public: 
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *FillProperty;
+ 	/* @PropertyType=gint32,DefaultValue=StretchNone */
 	static DependencyProperty *StretchProperty;
+ 	/* @PropertyType=Brush */
 	static DependencyProperty *StrokeProperty;
+ 	/* @PropertyType=DoubleCollection */
 	static DependencyProperty *StrokeDashArrayProperty;
+ 	/* @PropertyType=gint32,DefaultValue=PenLineCapFlat */
 	static DependencyProperty *StrokeDashCapProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *StrokeDashOffsetProperty;
+ 	/* @PropertyType=gint32,DefaultValue=PenLineCapFlat */
 	static DependencyProperty *StrokeEndLineCapProperty;
+ 	/* @PropertyType=gint32,DefaultValue=PenLineJoinMiter */
 	static DependencyProperty *StrokeLineJoinProperty;
+ 	/* @PropertyType=double,DefaultValue=10.0 */
 	static DependencyProperty *StrokeMiterLimitProperty;
+ 	/* @PropertyType=gint32,DefaultValue=PenLineCapFlat */
 	static DependencyProperty *StrokeStartLineCapProperty;
+ 	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *StrokeThicknessProperty;
 	
 	Shape ();
@@ -244,7 +255,9 @@ class Rectangle : public Shape {
 	virtual Rect ComputeStretchBounds (Rect shape_bounds);
 
  public:
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *RadiusXProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *RadiusYProperty;
 	
 	/* @GenerateCBinding */
@@ -292,9 +305,13 @@ class Line : public Shape {
 	/* @GenerateCBinding */
 	Line () {}
 	
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *X1Property;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *Y1Property;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *X2Property;
+ 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *Y2Property;
 	
 	virtual Type::Kind GetObjectType () { return Type::LINE; };
@@ -344,7 +361,9 @@ class Polygon : public Shape {
 	PointCollection *GetPoints ();
 	
  public:
+ 	/* @PropertyType=gint32,DefaultValue=FillRuleEvenOdd */
 	static DependencyProperty *FillRuleProperty;
+ 	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 
 	/* @GenerateCBinding */
@@ -390,7 +409,9 @@ class Polyline : public Shape {
 	PointCollection *GetPoints ();
 	
  public:
+ 	/* @PropertyType=gint32,DefaultValue=FillRuleEvenOdd */
 	static DependencyProperty *FillRuleProperty;
+ 	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding */
@@ -437,6 +458,7 @@ class Path : public Shape {
 	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t *matrix);
 
  public:
+ 	/* @PropertyType=Geometry */
 	static DependencyProperty *DataProperty;
 	
 	/* @GenerateCBinding */

@@ -40,7 +40,9 @@ class EventTrigger : public DependencyObject {
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
 
+	/* @PropertyType=char* */
 	static DependencyProperty* RoutedEventProperty;
+	/* @PropertyType=TriggerActionCollection */
 	static DependencyProperty* ActionsProperty;
 
  private:

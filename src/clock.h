@@ -500,11 +500,17 @@ class Timeline : public DependencyObject {
 	Timeline ();
 	virtual Type::Kind GetObjectType () { return Type::TIMELINE; };
 
+ 	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *AutoReverseProperty;
+ 	/* @PropertyType=TimeSpan,Nullable */
 	static DependencyProperty *BeginTimeProperty;
+ 	/* @PropertyType=Duration,DefaultValue=Duration::Automatic */
 	static DependencyProperty *DurationProperty;
+ 	/* @PropertyType=gint32,DefaultValue=FillBehaviorHoldEnd */
 	static DependencyProperty *FillBehaviorProperty;
+ 	/* @PropertyType=RepeatBehavior,DefaultValue=RepeatBehavior ((double) 1) */
 	static DependencyProperty *RepeatBehaviorProperty;
+ 	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *SpeedRatioProperty;
 	
 	void SetAutoReverse (bool autoreverse);
@@ -564,6 +570,7 @@ class TimelineGroup : public Timeline {
 	
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEGROUP; };
 
+ 	/* @PropertyType=TimelineCollection */
 	static DependencyProperty *ChildrenProperty;
 
 	virtual Clock *AllocateClock ();
@@ -598,8 +605,11 @@ class TimelineMarker : public DependencyObject {
 	virtual ~TimelineMarker () {}
 
  public:
+ 	/* @PropertyType=char* */
 	static DependencyProperty *TextProperty;
+ 	/* @PropertyType=TimeSpan */
 	static DependencyProperty *TimeProperty;
+ 	/* @PropertyType=char* */
 	static DependencyProperty *TypeProperty;
 	
  	/* @GenerateCBinding */

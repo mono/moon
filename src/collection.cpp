@@ -20,8 +20,6 @@
 #include "utils.h"
 
 
-DependencyProperty *Collection::CountProperty;
-
 Collection::Collection ()
 {
 	array = g_ptr_array_new ();
@@ -463,6 +461,8 @@ UIElementCollection::Clear ()
 void
 collection_init (void)
 {
+	// Don't register DPs here anymore;
+	return;
 	Collection::CountProperty = DependencyProperty::Register (Type::COLLECTION, "Count", Type::INT32);
 }
 

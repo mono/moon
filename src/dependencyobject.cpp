@@ -1497,8 +1497,6 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 	object->SetValue (prop, val);
 }
 
-DependencyProperty* DependencyObject::NameProperty;
-
 void
 DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
@@ -1514,5 +1512,7 @@ DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 dependencyobject_init(void)
 {
+	// Don't register DPs here anymore
+	return;
 	DependencyObject::NameProperty = DependencyProperty::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
 }

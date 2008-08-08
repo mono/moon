@@ -1104,26 +1104,11 @@ ink_presenter_set_strokes (InkPresenter *ink_presenter, StrokeCollection* collec
 	ink_presenter->SetValue (InkPresenter::StrokesProperty, Value (collection));
 }
 
-
-DependencyProperty* StylusInfo::DeviceTypeProperty;
-DependencyProperty* StylusInfo::IsInvertedProperty;
-
-DependencyProperty* StylusPoint::PressureFactorProperty;
-DependencyProperty* StylusPoint::XProperty;
-DependencyProperty* StylusPoint::YProperty;
-
-DependencyProperty* Stroke::DrawingAttributesProperty;
-DependencyProperty* Stroke::StylusPointsProperty;
-
-DependencyProperty* DrawingAttributes::ColorProperty;
-DependencyProperty* DrawingAttributes::OutlineColorProperty;
-DependencyProperty* DrawingAttributes::HeightProperty;
-DependencyProperty* DrawingAttributes::WidthProperty;
-
-DependencyProperty* InkPresenter::StrokesProperty;
-
 void stylus_init ()
 {
+	// Don't register DPs here.
+	return;
+
 	StylusInfo::DeviceTypeProperty = DependencyProperty::Register (Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse));
 	StylusInfo::IsInvertedProperty = DependencyProperty::Register (Type::STYLUSINFO, "IsInverted", new Value (false));
 
