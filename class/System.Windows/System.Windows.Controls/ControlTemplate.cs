@@ -26,10 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
+
 namespace System.Windows.Controls {
 	public sealed class ControlTemplate : FrameworkTemplate {
-		public ControlTemplate() {
-			throw new NotImplementedException();
+		public ControlTemplate() : base (NativeMethods.control_template_new ())
+		{
 		}
 
 		public Type TargetType {

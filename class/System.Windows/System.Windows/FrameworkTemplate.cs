@@ -26,13 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
+
 namespace System.Windows {
 
 	public abstract class FrameworkTemplate : DependencyObject {
 
-		protected FrameworkTemplate () : base ((IntPtr) 0)
+		protected FrameworkTemplate () : base (NativeMethods.framework_template_new ())
 		{
-			Console.WriteLine ("IMPLEMENTME: FrameworkTemplate: Creating a bogus (incorrect handle passed as ctor) object");
+		}
+
+		internal FrameworkTemplate (IntPtr raw) : base (raw)
+		{
 		}
 	}
 }

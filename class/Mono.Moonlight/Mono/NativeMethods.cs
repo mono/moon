@@ -592,7 +592,12 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		public extern static IntPtr assembly_part_collection_new ();
-		
+
+		[DllImport ("moon")]
+		public extern static IntPtr framework_template_new ();
+
+		[DllImport ("moon")]
+		public extern static IntPtr control_template_new ();
 #endregion
 
 #region Storyboard
