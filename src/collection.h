@@ -167,6 +167,7 @@ class ResourceDictionary : public DependencyObjectCollection {
 	ResourceDictionary () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::RESOURCE_DICTIONARY; }
+	// XXX FIXME this should be "object"
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 };
 
