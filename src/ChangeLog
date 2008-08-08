@@ -1,3 +1,19 @@
+2008-08-07  Chris Toshok  <toshok@ximian.com>
+
+	* collection.h, collection.cpp (double_collection_from_str): new
+	method.
+	(point_collection_from_str): new method.
+
+	* xaml.cpp (value_from_str): add support for
+	DoubleCollection/PointCollection properties.  leave
+	DoubleArray/PointArray in for now, although nothing should use it.
+
+	* shape.h, shape.cpp, geometry.h, geometry.cpp: switch all
+	PointArray/DoubleArray properties to using
+	PointCollection/DoubleCollection.  This is unfortunately a
+	necessity due to the 2.0 changes, but it should be transparent for
+	everything else.
+
 2008-08-07  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Shape::ShiftPosition): add an unfortunate restriction

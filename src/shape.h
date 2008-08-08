@@ -75,7 +75,7 @@ class Shape : public FrameworkElement {
 	Point ComputeOriginPoint (Rect shape_bounds);
 	Rect extents;
 	
-	double *GetStrokeDashArray (int *n);
+	DoubleCollection *GetStrokeDashArray ();
 	
  public: 
 	static DependencyProperty *FillProperty;
@@ -150,7 +150,7 @@ class Shape : public FrameworkElement {
 	void SetStretch (Stretch stretch);
 	Stretch GetStretch ();
 	
-	void SetStrokeDashArray (double *dashes, int n);
+	void SetStrokeDashArray (DoubleCollection *dashes);
 	
 	void SetStrokeDashCap (PenLineCap cap);
 	PenLineCap GetStrokeDashCap ();
@@ -341,7 +341,7 @@ class Polygon : public Shape {
 	virtual ~Polygon () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	
-	Point *GetPoints (int *n);
+	PointCollection *GetPoints ();
 	
  public:
 	static DependencyProperty *FillRuleProperty;
@@ -368,7 +368,7 @@ class Polygon : public Shape {
 	void SetFillRule (FillRule rule);
 	virtual FillRule GetFillRule ();
 	
-	void SetPoints (Point *points, int n);
+	void SetPoints (PointCollection *points);
 };
 
 Polygon	       *polygon_new (void);
@@ -376,7 +376,7 @@ Polygon	       *polygon_new (void);
 FillRule	polygon_get_fill_rule	(Polygon *polygon);
 void		polygon_set_fill_rule	(Polygon *polygon, FillRule rule);
 
-void		polygon_set_points	(Polygon *polygon, Point *points, int n);
+void		polygon_set_points	(Polygon *polygon, PointCollection *points);
 
 
 //
@@ -387,7 +387,7 @@ class Polyline : public Shape {
 	virtual ~Polyline () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	
-	Point *GetPoints (int *n);
+	PointCollection *GetPoints ();
 	
  public:
 	static DependencyProperty *FillRuleProperty;
@@ -414,7 +414,7 @@ class Polyline : public Shape {
 	void SetFillRule (FillRule rule);
 	virtual FillRule GetFillRule ();
 	
-	void SetPoints (Point *points, int n);
+	void SetPoints (PointCollection *points);
 };
 
 Polyline       *polyline_new		(void);
@@ -422,7 +422,7 @@ Polyline       *polyline_new		(void);
 FillRule	polyline_get_fill_rule	(Polyline *polyline);
 void		polyline_set_fill_rule	(Polyline *polyline, FillRule value);
 
-void		polyline_set_points	(Polyline *polyline, Point *points, int n);
+void		polyline_set_points	(Polyline *polyline, PointCollection *points);
 
 
 //

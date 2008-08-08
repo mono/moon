@@ -2416,11 +2416,21 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (rect);
 		break;
 	}
+	case Type::DOUBLE_COLLECTION: {
+		DoubleCollection *doubles = double_collection_from_str (str);
+		*v = new Value (doubles);
+		break;
+	}
 	case Type::DOUBLE_ARRAY: {
 		int count = 0;
 		double *doubles = double_array_from_str (str, &count);
 
 		*v = new Value (doubles, count);
+		break;
+	}
+	case Type::POINT_COLLECTION: {
+		PointCollection *points = point_collection_from_str (str);
+		*v = new Value (points);
 		break;
 	}
 	case Type::POINT_ARRAY:	{

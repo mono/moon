@@ -238,6 +238,9 @@ ResourceDictionary *resource_dictionary_new (void);
 Inlines *inlines_new (void);
 UIElementCollection *uielement_collection_new (void);
 
+DoubleCollection *double_collection_from_str (const char *s);
+PointCollection *point_collection_from_str (const char *s);
+
 G_END_DECLS
 
 #endif /* __MOON_COLLECTION_H__ */

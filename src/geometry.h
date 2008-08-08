@@ -560,7 +560,7 @@ class PolyBezierSegment : public PathSegment {
  protected:
 	virtual ~PolyBezierSegment () {}
 	
-	Point *GetPoints (int *n);
+	PointCollection* GetPoints ();
 	
  public:
 	static DependencyProperty *PointsProperty;
@@ -575,11 +575,11 @@ class PolyBezierSegment : public PathSegment {
 	//
 	// Property Accessors
 	//
-	void SetPoints (Point *points, int n);
+	void SetPoints (PointCollection *points);
 };
 
 PolyBezierSegment *poly_bezier_segment_new (void);
-void poly_bezier_segment_set_points (PolyBezierSegment *segment, Point *points, int count);
+void poly_bezier_segment_set_points (PolyBezierSegment *segment, PointCollection *points);
 
 
 //
@@ -590,7 +590,7 @@ class PolyLineSegment : public PathSegment {
  protected:
 	virtual ~PolyLineSegment () {}
 	
-	Point *GetPoints (int *n);
+	PointCollection *GetPoints ();
 	
  public:
 	static DependencyProperty *PointsProperty;
@@ -605,11 +605,11 @@ class PolyLineSegment : public PathSegment {
 	//
 	// Property Accessors
 	//
-	void SetPoints (Point *point, int n);
+	void SetPoints (PointCollection *points);
 };
 
 PolyLineSegment *poly_line_segment_new (void);
-void poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int n);
+void poly_line_segment_set_points (PolyLineSegment *segment, PointCollection *points);
 
 
 //
@@ -620,7 +620,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
  protected:
 	virtual ~PolyQuadraticBezierSegment () {}
 	
-	Point *GetPoints (int *n);
+	PointCollection* GetPoints ();
 	
  public:
 	static DependencyProperty *PointsProperty;
@@ -635,11 +635,11 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	//
 	// Property Accessors
 	//
-	void SetPoints (Point *point, int n);
+	void SetPoints (PointCollection *points);
 };
 
 PolyQuadraticBezierSegment *poly_quadratic_bezier_segment_new (void);
-void poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, Point *points, int n);
+void poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, PointCollection *points);
 
 
 //

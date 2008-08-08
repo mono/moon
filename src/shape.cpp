@@ -180,17 +180,19 @@ Shape::SetupDashes (cairo_t *cr, double thickness)
 bool
 Shape::SetupDashes (cairo_t *cr, double thickness, double offset)
 {
-	int count = 0;
-	double *dashes = GetStrokeDashArray (&count);
-	if (dashes && (count > 0)) {
+	DoubleCollection *dashes = GetStrokeDashArray ();
+	if (dashes && (dashes->GetCount() > 0)) {
+		int count = dashes->GetCount();
+
 		// NOTE: special case - if we continue cairo will stops drawing!
-		if ((count == 1) && (*dashes == 0.0))
+		if ((count == 1) && (dashes->GetValueAt(0)->AsDouble() == 0.0))
 			return false;
 
 		// multiply dashes length with thickness
 		double *dmul = new double [count];
-		for (int i=0; i < count; i++)
-			dmul [i] = dashes [i] * thickness;
+		for (int i=0; i < count; i++) {
+			dmul [i] = dashes->GetValueAt(i)->AsDouble() * thickness;
+		}
 
 		cairo_set_dash (cr, dmul, count, offset);
 		delete [] dmul;
@@ -800,9 +802,9 @@ Shape::GetStretch ()
 }
 
 void
-Shape::SetStrokeDashArray (double *dashes, int n)
+Shape::SetStrokeDashArray (DoubleCollection *dashes)
 {
-	SetValue (Shape::StrokeDashArrayProperty, Value (dashes, n));
+	SetValue (Shape::StrokeDashArrayProperty, Value (dashes));
 }
 
 /*
@@ -810,20 +812,11 @@ Shape::SetStrokeDashArray (double *dashes, int n)
  * Silverlight Shape.StrokeDashArray only has a setter (no getter), so it's 
  * use is only internal.
  */
-double *
-Shape::GetStrokeDashArray (int *n)
+DoubleCollection*
+Shape::GetStrokeDashArray ()
 {
 	Value *value = GetValue (Shape::StrokeDashArrayProperty);
-	
-	if (!value) {
-		*n = 0;
-		return NULL;
-	}
-	
-	DoubleArray *array = value->AsDoubleArray ();
-	*n = array->basic.count;
-	
-	return array->values;
+	return value ? value->AsDoubleCollection() : NULL;
 }
 
 void
@@ -948,9 +941,9 @@ shape_set_stretch (Shape *shape, Stretch stretch)
 }
 
 void
-shape_set_stroke_dash_array (Shape *shape, double *dashes, int n)
+shape_set_stroke_dash_array (Shape *shape, DoubleCollection *dashes)
 {
-	shape->SetStrokeDashArray (dashes, n);
+	shape->SetStrokeDashArray (dashes);
 }
 
 PenLineCap
@@ -1520,10 +1513,9 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 	PenLineCap end = GetStrokeEndLineCap ();
 	PenLineCap dash = GetStrokeDashCap ();
 	bool dashed = false;
-	int count = 0;
-	double *dashes = GetStrokeDashArray (&count);
+	DoubleCollection *dashes = GetStrokeDashArray ();
 	
-	if (dashes && (count > 0))
+	if (dashes && (dashes->GetCount() > 0))
 		dashed = true;
 
 	//if (do_op && !(start == end && start == dash)) {
@@ -1924,14 +1916,16 @@ Polygon::BuildPath ()
 	if (Shape::MixedHeightWidth (NULL, NULL))
 		return;
 
-	int i, count = 0;
-	Point *points = GetPoints (&count);
+	PointCollection *col = GetPoints ();
 	
 	// the first point is a move to, resulting in an empty shape
-	if (!points || (count < 2)) {
+	if (!col || (col->GetCount() < 2)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
 	}
+
+	int i, count = col->GetCount();
+	GPtrArray* points = col->Array();
 
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
@@ -1941,19 +1935,23 @@ Polygon::BuildPath ()
 	// special case, both the starting and ending points are 5 * thickness than the actual points
 	if (count == 2) {
 		double thickness = GetStrokeThickness ();
-		double x1 = points [0].x;
-		double y1 = points [0].y;
-		double x2 = points [1].x;
-		double y2 = points [1].y;
+		double x1 = ((Value*)g_ptr_array_index(points, 0))->AsPoint()->x;
+		double y1 = ((Value*)g_ptr_array_index(points, 0))->AsPoint()->y;
+		double x2 = ((Value*)g_ptr_array_index(points, 1))->AsPoint()->x;
+		double y2 = ((Value*)g_ptr_array_index(points, 1))->AsPoint()->y;
 		
 		polygon_extend_line (&x1, &x2, &y1, &y2, thickness);
 
 		moon_move_to (path, x1, y1);
 		moon_line_to (path, x2, y2);
 	} else {
-		moon_move_to (path, points [0].x, points [0].y);
+		moon_move_to (path,
+			      ((Value*)g_ptr_array_index(points, 0))->AsPoint()->x,
+			      ((Value*)g_ptr_array_index(points, 0))->AsPoint()->y);
 		for (i = 1; i < count; i++)
-			moon_line_to (path, points [i].x, points [i].y);
+			moon_line_to (path,
+				      ((Value*)g_ptr_array_index(points, i))->AsPoint()->x,
+				      ((Value*)g_ptr_array_index(points, i))->AsPoint()->y);
 	}
 	moon_close_path (path);
 }
@@ -2006,9 +2004,9 @@ Polygon::GetFillRule ()
 }
 
 void
-Polygon::SetPoints (Point *points, int n)
+Polygon::SetPoints (PointCollection *points)
 {
-	SetValue (Polygon::PointsProperty, Value (points, n));
+	SetValue (Polygon::PointsProperty, Value (points));
 }
 
 /*
@@ -2016,20 +2014,11 @@ Polygon::SetPoints (Point *points, int n)
  * Silverlight Polygon.Points only has a setter (no getter), so it's use is 
  * only internal.
  */
-Point *
-Polygon::GetPoints (int *n)
+PointCollection *
+Polygon::GetPoints ()
 {
 	Value *value = GetValue (Polygon::PointsProperty);
-	
-	if (!value) {
-		*n = 0;
-		return NULL;
-	}
-	
-	PointArray *array = value->AsPointArray();
-	*n = array->basic.count;
-	
-	return array->points;
+	return value ? value->AsPointCollection() : NULL;
 }
 
 FillRule
@@ -2045,9 +2034,9 @@ polygon_set_fill_rule (Polygon *polygon, FillRule rule)
 }
 
 void
-polygon_set_points (Polygon *polygon, Point *points, int n)
+polygon_set_points (Polygon *polygon, PointCollection *points)
 {
-	polygon->SetPoints (points, n);
+	polygon->SetPoints (points);
 }
 
 
@@ -2122,23 +2111,30 @@ Polyline::BuildPath ()
 	if (Shape::MixedHeightWidth (NULL, NULL))
 		return;
 
-	int i, count = 0;
-	Point *points = GetPoints (&count);
+	PointCollection *col = GetPoints ();
 	
 	// the first point is a move to, resulting in an empty shape
-	if (!points || (count < 2)) {
+	if (!col || (col->GetCount() < 2)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return;
 	}
+
+	int i, count = col->GetCount();
+	GPtrArray *points = col->Array();
 
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
 	// 2 data per [move|line]_to
 	path = moon_path_renew (path, count * 2);
 
-	moon_move_to (path, points [0].x, points [0].y);
+	moon_move_to (path,
+		      ((Value*)g_ptr_array_index(points, 0))->AsPoint()->x,
+		      ((Value*)g_ptr_array_index(points, 0))->AsPoint()->y);
+
 	for (i = 1; i < count; i++)
-		moon_line_to (path, points [i].x, points [i].y);
+		moon_line_to (path,
+			      ((Value*)g_ptr_array_index(points, i))->AsPoint()->x,
+			      ((Value*)g_ptr_array_index(points, i))->AsPoint()->y);
 }
 
 void
@@ -2189,9 +2185,9 @@ Polyline::GetFillRule ()
 }
 
 void
-Polyline::SetPoints (Point *points, int n)
+Polyline::SetPoints (PointCollection *points)
 {
-	SetValue (Polyline::PointsProperty, Value (points, n));
+	SetValue (Polyline::PointsProperty, Value (points));
 }
 
 /*
@@ -2199,20 +2195,11 @@ Polyline::SetPoints (Point *points, int n)
  * Silverlight Polyline.Points only has a setter (no getter), so it's use is 
  * only internal.
  */
-Point *
-Polyline::GetPoints (int *n)
+PointCollection *
+Polyline::GetPoints ()
 {
 	Value *value = GetValue (Polyline::PointsProperty);
-	
-	if (!value) {
-		*n = 0;
-		return NULL;
-	}
-	
-	PointArray *array = value->AsPointArray();
-	*n = array->basic.count;
-	
-	return array->points;
+	return value ? value->AsPointCollection() : NULL;
 }
 
 FillRule
@@ -2228,9 +2215,9 @@ polyline_set_fill_rule (Polyline *polyline, FillRule rule)
 }
 
 void
-polyline_set_points (Polyline *polyline, Point *points, int n)
+polyline_set_points (Polyline *polyline, PointCollection *points)
 {
-	polyline->SetPoints (points, n);
+	polyline->SetPoints (points);
 }
 
 
@@ -2409,7 +2396,7 @@ shape_init (void)
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
 	Shape::StretchProperty = DependencyProperty::Register (Type::SHAPE, "Stretch", new Value (StretchNone));
 	Shape::StrokeProperty = DependencyProperty::Register (Type::SHAPE, "Stroke", Type::BRUSH);
-	Shape::StrokeDashArrayProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashArray", Type::DOUBLE_ARRAY);
+	Shape::StrokeDashArrayProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashArray", Type::DOUBLE_COLLECTION);
 	Shape::StrokeDashCapProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat));
 	Shape::StrokeDashOffsetProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashOffset", new Value (0.0));
 	Shape::StrokeEndLineCapProperty = DependencyProperty::Register (Type::SHAPE, "StrokeEndLineCap", new Value (PenLineCapFlat));
@@ -2430,11 +2417,11 @@ shape_init (void)
 
 	/* Polygon fields */
 	Polygon::FillRuleProperty = DependencyProperty::Register (Type::POLYGON, "FillRule", new Value (FillRuleEvenOdd));
-	Polygon::PointsProperty = DependencyProperty::Register (Type::POLYGON, "Points", Type::POINT_ARRAY);
+	Polygon::PointsProperty = DependencyProperty::Register (Type::POLYGON, "Points", Type::POINT_COLLECTION);
 
 	/* Polyline fields */
 	Polyline::FillRuleProperty = DependencyProperty::Register (Type::POLYLINE, "FillRule", new Value (FillRuleEvenOdd));
-	Polyline::PointsProperty = DependencyProperty::Register (Type::POLYLINE, "Points", Type::POINT_ARRAY);
+	Polyline::PointsProperty = DependencyProperty::Register (Type::POLYLINE, "Points", Type::POINT_COLLECTION);
 
 	/* Path fields */
 	Path::DataProperty = DependencyProperty::Register (Type::PATH, "Data", Type::GEOMETRY);

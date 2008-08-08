@@ -1256,35 +1256,43 @@ DependencyProperty *PolyBezierSegment::PointsProperty;
 void
 PolyBezierSegment::Append (moon_path *path)
 {
-	Point *points;
-	int n = 0;
+	PointCollection *col;
+	GPtrArray *points;
 	
-	points = GetPoints (&n);
+	col = GetPoints ();
 	
 	// we need at least 3 points
-	if (!points || (n % 3) != 0)
+	if (!col || (col->GetCount() % 3) != 0)
 		return;
+
+	points = col->Array();
 	
-	for (int i = 0; i < n - 2; i += 3) {
-		moon_curve_to (path, points[i].x, points[i].y, points[i+1].x, points[i+1].y,
-			       points[i+2].x, points[i+2].y);
+	for (int i = 0; i < col->GetCount() - 2; i += 3) {
+		moon_curve_to (path,
+			       ((Value*)g_ptr_array_index(points, i))->AsPoint()->x,
+			       ((Value*)g_ptr_array_index(points, i))->AsPoint()->y,
+
+			       ((Value*)g_ptr_array_index(points, i+1))->AsPoint()->x,
+			       ((Value*)g_ptr_array_index(points, i+1))->AsPoint()->y,
+
+			       ((Value*)g_ptr_array_index(points, i+2))->AsPoint()->x,
+			       ((Value*)g_ptr_array_index(points, i+2))->AsPoint()->y);
 	}
 }
 
 int
 PolyBezierSegment::GetPathSize ()
 {
-	int n = 0;
-	
-	GetPoints (&n);
-	
+	PointCollection *points = GetPoints ();
+	int n = points ? points->GetCount() : 0;
+
 	return (n / 3) * MOON_PATH_CURVE_TO_LENGTH;
 }
 
 void
-PolyBezierSegment::SetPoints (Point *points, int n)
+PolyBezierSegment::SetPoints (PointCollection *points)
 {
-	SetValue (PolyBezierSegment::PointsProperty, Value (points, n));
+	SetValue (PolyBezierSegment::PointsProperty, Value (points));
 }
 
 /*
@@ -1292,26 +1300,17 @@ PolyBezierSegment::SetPoints (Point *points, int n)
  * Silverlight PolyBezierSegment.Points only has a setter (no getter), so it's
  * use is only internal.
  */
-Point *
-PolyBezierSegment::GetPoints (int *n)
+PointCollection *
+PolyBezierSegment::GetPoints ()
 {
 	Value *value = GetValue (PolyBezierSegment::PointsProperty);
-	
-	if (!value) {
-		*n = 0;
-		return NULL;
-	}
-	
-	PointArray *array = value->AsPointArray ();
-	*n = array->basic.count;
-	
-	return array->points;
+	return value ? value->AsPointCollection() : NULL;
 }
 
 void
-poly_bezier_segment_set_points (PolyBezierSegment *segment, Point *points, int n)
+poly_bezier_segment_set_points (PolyBezierSegment *segment, PointCollection *points)
 {
-	segment->SetPoints (points, n);
+	segment->SetPoints (points);
 }
 
 
@@ -1325,29 +1324,35 @@ DependencyProperty *PolyLineSegment::PointsProperty;
 void
 PolyLineSegment::Append (moon_path *path)
 {
-	Point *points;
-	int n = 0;
+	PointCollection *col;
+	GPtrArray *points;
+
+	col = GetPoints ();
 	
-	points = GetPoints (&n);
+	if (!col)
+		return;
+
+	points = col->Array();
 	
-	for (int i = 0; i < n; i++)
-		moon_line_to (path, points[i].x, points[i].y);
+	for (int i = 0; i < col->GetCount(); i++)
+		moon_line_to (path,
+			      ((Value*)g_ptr_array_index(points, i))->AsPoint()->x,
+			      ((Value*)g_ptr_array_index(points, i))->AsPoint()->y);
 }
 
 int
 PolyLineSegment::GetPathSize ()
 {
-	int n = 0;
-	
-	GetPoints (&n);
+	PointCollection *points = GetPoints ();
+	int n = points ? points->GetCount() : 0;
 	
 	return n * MOON_PATH_LINE_TO_LENGTH;
 }
 
 void
-PolyLineSegment::SetPoints (Point *points, int n)
+PolyLineSegment::SetPoints (PointCollection *points)
 {
-	SetValue (PolyLineSegment::PointsProperty, Value (points, n));
+	SetValue (PolyLineSegment::PointsProperty, Value (points));
 }
 
 /*
@@ -1355,27 +1360,18 @@ PolyLineSegment::SetPoints (Point *points, int n)
  * Silverlight PolyLineSegment.Points only has a setter (no getter), so it's
  * use is only internal.
  */
-Point *
-PolyLineSegment::GetPoints (int *n)
+PointCollection *
+PolyLineSegment::GetPoints ()
 {
 	Value *value = GetValue (PolyLineSegment::PointsProperty);
-	
-	if (!value) {
-		*n = 0;
-		return NULL;
-	}
-	
-	PointArray *array = value->AsPointArray ();
-	*n = array->basic.count;
-	
-	return array->points;
+	return value ? value->AsPointCollection() : NULL;
 }
 
 
 void
-poly_line_segment_set_points (PolyLineSegment *segment, Point *points, int n)
+poly_line_segment_set_points (PolyLineSegment *segment, PointCollection *points)
 {
-	segment->SetPoints (points, n);
+	segment->SetPoints (points);
 }
 
 
@@ -1395,12 +1391,12 @@ DependencyProperty *PolyQuadraticBezierSegment::PointsProperty;
 void
 PolyQuadraticBezierSegment::Append (moon_path *path)
 {
-	Point *points;
-	int n = 0;
+	PointCollection *col;
+	GPtrArray *points;
 	
-	points = GetPoints (&n);
+	col = GetPoints ();
 	
-	if (!points || ((n % 2) != 0))
+	if (!col || ((col->GetCount() % 2) != 0))
 		return;
 	
 	// origin
@@ -1408,12 +1404,14 @@ PolyQuadraticBezierSegment::Append (moon_path *path)
 	double y0 = 0.0;
 	moon_get_current_point (path, &x0, &y0);
 	
+	points = col->Array();
+
 	// we need at least 2 points
-	for (int i = 0; i < n - 1; i+=2) {
-		double x1 = points[i].x;
-		double y1 = points[i].y;
-		double x2 = points[i+1].x;
-		double y2 = points[i+1].y;
+	for (int i = 0; i < col->GetCount() - 1; i+=2) {
+		double x1 = ((Value*)g_ptr_array_index(points, i))->AsPoint()->x;
+		double y1 = ((Value*)g_ptr_array_index(points, i))->AsPoint()->y;
+		double x2 = ((Value*)g_ptr_array_index(points, i+1))->AsPoint()->x;
+		double y2 = ((Value*)g_ptr_array_index(points, i+1))->AsPoint()->y;
 		double x3 = x2;
 		double y3 = y2;
 		
@@ -1433,17 +1431,17 @@ PolyQuadraticBezierSegment::Append (moon_path *path)
 int
 PolyQuadraticBezierSegment::GetPathSize ()
 {
-	int n = 0;
-	
-	GetPoints (&n);
-	
+	PointCollection* points = GetPoints ();
+
+	int n = points ? points->GetCount() : 0;
+
 	return (n / 2) * MOON_PATH_CURVE_TO_LENGTH;
 }
 
 void
-PolyQuadraticBezierSegment::SetPoints (Point *points, int n)
+PolyQuadraticBezierSegment::SetPoints (PointCollection *points)
 {
-	SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (points, n));
+	SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (points));
 }
 
 /*
@@ -1451,26 +1449,17 @@ PolyQuadraticBezierSegment::SetPoints (Point *points, int n)
  * Silverlight PolyQuadraticBezierSegment.Points only has a setter (no getter), so it's
  * use is only internal.
  */
-Point *
-PolyQuadraticBezierSegment::GetPoints (int *n)
+PointCollection*
+PolyQuadraticBezierSegment::GetPoints ()
 {
 	Value *value = GetValue (PolyQuadraticBezierSegment::PointsProperty);
-	
-	if (!value) {
-		*n = 0;
-		return NULL;
-	}
-	
-	PointArray *array = value->AsPointArray ();
-	*n = array->basic.count;
-	
-	return array->points;
+	return value ? value->AsPointCollection() : NULL;
 }
 
 void
-poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, Point *points, int n)
+poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, PointCollection *points)
 {
-	segment->SetPoints (points, n);
+	segment->SetPoints (points);
 }
 
 
@@ -1602,13 +1591,13 @@ geometry_init (void)
 	LineSegment::PointProperty = DependencyProperty::Register (Type::LINESEGMENT, "Point", Type::POINT);
 
 	/* PolyBezierSegment fields */
-	PolyBezierSegment::PointsProperty = DependencyProperty::Register (Type::POLYBEZIERSEGMENT, "Points", Type::POINT_ARRAY);
+	PolyBezierSegment::PointsProperty = DependencyProperty::Register (Type::POLYBEZIERSEGMENT, "Points", Type::POINT_COLLECTION);
 
 	/* PolyLineSegment fields */
-	PolyLineSegment::PointsProperty = DependencyProperty::Register (Type::POLYLINESEGMENT, "Points", Type::POINT_ARRAY);
+	PolyLineSegment::PointsProperty = DependencyProperty::Register (Type::POLYLINESEGMENT, "Points", Type::POINT_COLLECTION);
 
 	/* PolyQuadraticBezierSegment field */
-	PolyQuadraticBezierSegment::PointsProperty = DependencyProperty::Register (Type::POLYQUADRATICBEZIERSEGMENT, "Points", Type::POINT_ARRAY);
+	PolyQuadraticBezierSegment::PointsProperty = DependencyProperty::Register (Type::POLYQUADRATICBEZIERSEGMENT, "Points", Type::POINT_COLLECTION);
 
 	/* QuadraticBezierSegment field */
 	QuadraticBezierSegment::Point1Property = DependencyProperty::Register (Type::QUADRATICBEZIERSEGMENT, "Point1", Type::POINT);

@@ -10,6 +10,7 @@
 
 #include <config.h>
 
+#include "array.h"
 #include "collection.h"
 #include "geometry.h"
 #include "transform.h"
@@ -631,4 +632,46 @@ collection_new (Type::Kind kind)
 	}
 	
 	return (Collection *) t->CreateInstance();
+}
+
+DoubleCollection *
+double_collection_from_str (const char *s)
+{
+	GArray *values = double_garray_from_str (s, 0);
+
+	if (values->len == 0) {
+		g_array_free (values, true);
+		return NULL;
+	}
+
+	DoubleCollection *doubles = new DoubleCollection ();
+	for (guint i = 0; i < values->len; i ++)
+		doubles->Add (g_array_index (values, double, i));
+	g_array_free (values, true);
+
+	return doubles;
+}
+
+PointCollection *
+point_collection_from_str (const char *s)
+{
+	int i, j, n = 0;
+	GArray *values = double_garray_from_str (s, 0);
+
+	n = values->len / 2;
+	if (n == 0 || n % 1 == 1) {
+		g_array_free (values, true);
+		return NULL;
+	}
+
+	PointCollection *points = new PointCollection();
+	for (i = 0, j = 0; j < n; j++) {
+		double x = g_array_index (values, double, i++);
+		double y = g_array_index (values, double, i++);
+
+		points->Add (Point (x, y));
+	}
+
+	g_array_free (values, true);
+	return points;
 }
