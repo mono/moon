@@ -129,7 +129,7 @@ class Generator {
 			
 			if (property_type == "string")
 				property_type = "char*";
-			if (property_type = "enum")
+			if (property_type == "enum")
 				property_type = "gint32";
 			
 			if (!string.IsNullOrEmpty (property_type)) {
