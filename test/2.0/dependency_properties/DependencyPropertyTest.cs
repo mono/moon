@@ -10,7 +10,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
 
-namespace dependency_properties
+using dependency_properties;
+
+namespace MoonTest.System.Windows
 {
 	[TestClass ()]
 	public class DependencyPropertyTest
