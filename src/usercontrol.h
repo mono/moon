@@ -37,7 +37,6 @@ public:
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 };
 
-UserControl*   user_control_new (void);
 UIElement*     user_control_get_content (UserControl *user_control);
 
 G_END_DECLS
