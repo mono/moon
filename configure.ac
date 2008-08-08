@@ -431,6 +431,8 @@ class/Makefile
 class/Mono.Moonlight/Makefile
 class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
+class/Microsoft.SilverlightControls/Makefile
+class/Microsoft.SilverlightControls/Controls/Makefile
 gtk/Makefile
 man/Makefile
 gtk/gtksilver.pc
