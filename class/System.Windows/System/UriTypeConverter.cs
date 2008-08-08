@@ -26,6 +26,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+// Notes
+// * We do not need to provide this type outside of Silverlight 2.0 (NET_2_1)
+//   because this type already exists inside System.dll 2.0+ (same namepace).
+// * This SL-specific version use different signatures - so the needed code 
+//   was copy-pasted from mcs/class/System/System/UriTypeConverter.cs and
+//   adapted.
+
+#if NET_2_1
+
 using System;
 using System.ComponentModel;
 
@@ -33,23 +42,51 @@ namespace System
 {	
 	public sealed class UriTypeConverter : TypeConverter
 	{
-		public UriTypeConverter()
+		public UriTypeConverter ()
 		{
 		}
-		
-		public /*override*/ bool CanConvertFrom (Type sourceType)
+
+		private bool CanConvert (Type type)
 		{
-			throw new NotImplementedException ();
+			if (type == typeof (string))
+				return true;
+			return (type == typeof (Uri));
 		}
-		
-		public /*override*/ object ConvertFrom (object value)
+
+		public override bool CanConvertFrom (Type sourceType)
 		{
-			throw new NotImplementedException ();
+			if (sourceType == null)
+				throw new ArgumentNullException ("sourceType");
+
+			return CanConvert (sourceType);
 		}
-		
-		public /*override*/ object ConvertFromString(string text)
+
+		public override object ConvertFrom (object value)
 		{
-			throw new NotImplementedException ();
+			if (value == null)
+				throw new ArgumentNullException ("value");
+
+			Type type = value.GetType ();
+			if (!CanConvertFrom (type))
+				throw new NotSupportedException (type.ToString ());
+
+			if (value is Uri)
+				return value;
+
+			string s = (value as string);
+			if (s != null)
+				return new Uri (s, UriKind.RelativeOrAbsolute);
+
+			return base.ConvertFrom (value);
+		}
+
+		public override object ConvertFromString (string text)
+		{
+			if (text == null)
+				throw new ArgumentNullException ("text");
+
+			return new Uri (text, UriKind.RelativeOrAbsolute);
 		}
 	}
 }
+#endif
