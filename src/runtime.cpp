@@ -1996,11 +1996,11 @@ runtime_init (guint32 flags)
 	moonlight_flags = flags;
 	
 	types_init ();
-	dependency_property_g_init (); // keep
+	dependency_property_g_init ();
 	xaml_init ();
-	font_init (); // keep
-	downloader_init (); // keep
-	media_init (); // keep
+	font_init ();
+	downloader_init ();
+	media_init ();
 }
 
 //

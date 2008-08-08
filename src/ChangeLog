@@ -1,5 +1,9 @@
 2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* runtime.cpp: Remove comments to self :)
+
+2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* panel.cpp, stylus.cpp, trigger.h, usercontrol.cpp, canvas.h,
 	  control.h, deployment.h, text.h, trigger.cpp, dependencyobject.h,
 	  canvas.cpp, transform.h, downloader.cpp, transform.cpp,
