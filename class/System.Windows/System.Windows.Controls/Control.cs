@@ -77,8 +77,8 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty TabNavigationProperty =
 			DependencyProperty.Lookup (Kind.CONTROL, "TabNavigation", typeof (KeyboardNavigationMode));
 		
-		//public static readonly DependencyProperty TemplateProperty =
-		//	DependencyProperty.Lookup (Kind.CONTROL, "Template", typeof (ControlTemplate));
+		public static readonly DependencyProperty TemplateProperty =
+			DependencyProperty.Lookup (Kind.CONTROL, "Template", typeof (ControlTemplate));
 		
 		public static readonly DependencyProperty VerticalContentAlignmentProperty =
 			DependencyProperty.Lookup (Kind.CONTROL, "VerticalContentAlignment", typeof (VerticalAlignment));
@@ -166,14 +166,43 @@ namespace System.Windows.Controls {
 			set { SetValue (TabNavigationProperty, value); }
 		}
 		
-		//public ControlTemplate Template {
-		//	get { return (ControlTemplate) GetValue (TemplateProperty); }
-		//	set { SetValue (TemplateProperty, value); }
-		//}
+		public ControlTemplate Template {
+			get { return (ControlTemplate) GetValue (TemplateProperty); }
+			set { SetValue (TemplateProperty, value); }
+		}
 		
 		public VerticalAlignment VerticalContentAlignment {
 			get { return (VerticalAlignment) GetValue (VerticalContentAlignmentProperty); }
 			set { SetValue (VerticalContentAlignmentProperty, value); }
 		}
+
+		public virtual void OnApplyTemplate() {
+			// FIXME
+		}
+
+		public bool Focus() {
+			throw new NotImplementedException ();
+		}
+
+		public double ActualWidth {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public double ActualHeight {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		protected DependencyObject GetTemplateChild(string childName) {
+			throw new NotImplementedException ();
+		}
+
+		public bool ApplyTemplate() {
+			throw new NotImplementedException ();
+		}
+		
 	}
 }

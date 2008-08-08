@@ -23,6 +23,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
 	$(srcdir)/Mono/Report.cs						\
 	$(srcdir)/System/UriTypeConverter.cs					\
+	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedAction.cs \
@@ -41,6 +42,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/FileDialogFileInfo.cs			\
 	$(srcdir)/System.Windows.Controls/Grid.cs				\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
+	$(srcdir)/System.Windows.Controls/ItemCollection.cs			\
+	$(srcdir)/System.Windows.Controls/ItemsControl.cs			\
+	$(srcdir)/System.Windows.Controls/ItemsPanelTemplate.cs			\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
@@ -48,6 +52,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/UIElementCollection.cs		\
 	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/RowDefinitionCollection.cs		\
+	$(srcdir)/System.Windows.Controls/ControlTemplate.cs			\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
 	$(srcdir)/System.Windows.Ink/Stroke.cs					\
 	$(srcdir)/System.Windows.Ink/StrokeCollection.cs			\
@@ -140,7 +145,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/RoutedEventHandler.cs				\
 	$(srcdir)/System.Windows/RoutedPropertyChangedEventArgs_T.cs		\
 	$(srcdir)/System.Windows/RoutedPropertyChangedEventHandler_T.cs		\
-	$(srcdir)/System.Windows/SetterBaseCollection.cs			\
+	$(srcdir)/System.Windows/SetterBaseCollection.cs					\
 	$(srcdir)/System.Windows/SetterBase.cs					\
 	$(srcdir)/System.Windows/Setter.cs					\
 	$(srcdir)/System.Windows/Size.cs					\
@@ -150,6 +155,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/Style.cs					\
 	$(srcdir)/System.Windows/TemplateBindingExpression.cs			\
+	$(srcdir)/System.Windows/TemplatePart.cs				\
 	$(srcdir)/System.Windows/TextAlignment.cs				\
 	$(srcdir)/System.Windows/TextDecorationCollection.cs			\
 	$(srcdir)/System.Windows/TextDecorationKind.cs				\

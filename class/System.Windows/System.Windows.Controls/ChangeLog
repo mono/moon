@@ -1,3 +1,12 @@
+2008-08-08  Fernando Herrera  <fherrera@novell.com>
+
+	* Control.cs: Added some stubs methods for SL2
+	* ContentControl.cs:
+	* ControlTemplate.cs:
+	* ItemCollection.cs:
+	* ItemsControl.cs:
+	* ItemsPanelTemplate.cs: Added stubs for SL2 beta2
+
 2008-08-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ChangeLog: Merge history

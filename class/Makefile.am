@@ -1,4 +1,4 @@
-SUBDIRS = . Mono.Moonlight System.Windows System.Windows.Browser
+SUBDIRS = . Mono.Moonlight System.Windows System.Windows.Browser Microsoft.SilverlightControls
 
 noinst_SCRIPTS = lib/2.1/smcs.exe
 

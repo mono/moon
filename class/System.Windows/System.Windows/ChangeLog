@@ -1,3 +1,8 @@
+2008-08-08  Fernando Herrera  <fherrera@novell.com>
+
+	* ResourceDictionary.cs:
+	* TemplatePart.cs: Added stubs for SL2 methods.
+
 2008-08-07  Chris Toshok  <toshok@ximian.com>
 
 	* UIElement.cs: implement TransformToVisual by calling into
