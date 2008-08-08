@@ -132,23 +132,5 @@ framework_element_get_width (FrameworkElement *element)
 void
 framework_element_init (void)
 {
-	// Don't register DPs here.
-	return;
-
-	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
-	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
-
-	// the 2.0 only DPs
-	FrameworkElement::ActualHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualHeight", new Value (0.0));
-	FrameworkElement::ActualWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualWidth", new Value (0.0));
-	FrameworkElement::DataContextProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "DataContext", Type::MANAGED);
-	FrameworkElement::HorizontalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "HorizontalAlignment", new Value (HorizontalAlignmentStretch));
-	FrameworkElement::LanguageProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Language", new Value ("en-US"));
-	FrameworkElement::MarginProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Margin", new Value (Thickness (0)));
-	FrameworkElement::MaxHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MaxHeight", new Value (INFINITY));
-	FrameworkElement::MaxWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MaxWidth", new Value (INFINITY));
-	FrameworkElement::MinHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MinHeight", new Value (0.0));
-	FrameworkElement::MinWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MinWidth", new Value (0.0));
-	FrameworkElement::VerticalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "VerticalAlignment", new Value (VerticalAlignmentStretch));
-
+	// no-op
 }

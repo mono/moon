@@ -100,8 +100,6 @@ class Application : public DependencyObject {
 Application *application_new (void);
 
 
-void deployment_init (void);
-
 G_END_DECLS
 
 #endif /* __DEPLOYMENT_H__ */

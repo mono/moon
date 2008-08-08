@@ -158,7 +158,6 @@ double            row_definition_get_actual_height    (RowDefinition *def);
 double            column_definition_get_actual_width (ColumnDefinition *def);
 
 Grid *grid_new (void);
-void grid_init (void);
 
 G_END_DECLS
 

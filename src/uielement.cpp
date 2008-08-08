@@ -808,29 +808,6 @@ UIElement::GetTimeManager ()
 	return surface ? surface->GetTimeManager() : NULL;
 }
 
-
-void
-uielement_init (void)
-{
-	// Don't register any DPs here.
-	return;
-
-	UIElement::ClipProperty = DependencyProperty::Register (Type::UIELEMENT, "Clip", Type::GEOMETRY);
-	UIElement::IsHitTestVisibleProperty = DependencyProperty::Register (Type::UIELEMENT, "IsHitTestVisible", new Value (true));
-	UIElement::OpacityMaskProperty = DependencyProperty::Register (Type::UIELEMENT, "OpacityMask", Type::BRUSH);
-	UIElement::OpacityProperty = DependencyProperty::Register (Type::UIELEMENT, "Opacity", new Value(1.0));
-	UIElement::RenderTransformOriginProperty = DependencyProperty::Register (Type::UIELEMENT, "RenderTransformOrigin", new Value (Point (0,0)), Type::POINT);
-	UIElement::RenderTransformProperty = DependencyProperty::Register (Type::UIELEMENT, "RenderTransform", Type::TRANSFORM);
-	UIElement::VisibilityProperty = DependencyProperty::Register (Type::UIELEMENT, "Visibility", new Value ((gint32)VisibilityVisible));
-	UIElement::ZIndexProperty = DependencyProperty::Register (Type::UIELEMENT, "ZIndex", new Value ((gint32)0));;
-
-	// in 2.0 these properties are actually in FrameworkElement
-	UIElement::CursorProperty = DependencyProperty::Register (Type::UIELEMENT, "Cursor", new Value ((gint32)MouseCursorDefault));
-	UIElement::ResourcesProperty = DependencyProperty::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_DICTIONARY);
-	UIElement::TagProperty = DependencyProperty::Register (Type::UIELEMENT, "Tag", Type::STRING);
-	UIElement::TriggersProperty = DependencyProperty::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
-}
-
 Surface *
 uielement_get_surface (UIElement *item)
 {

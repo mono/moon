@@ -227,9 +227,6 @@ InkPresenter *ink_presenter_new (void);
 StrokeCollection *ink_presenter_get_strokes (InkPresenter *ink_presenter);
 void ink_presenter_set_strokes (InkPresenter *ink_presenter, StrokeCollection *collection);
 
-
-void stylus_init (void);
-
 G_END_DECLS
 
 #endif /* MOON_STYLUS_H */

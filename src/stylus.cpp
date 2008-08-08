@@ -1103,27 +1103,3 @@ ink_presenter_set_strokes (InkPresenter *ink_presenter, StrokeCollection* collec
 {
 	ink_presenter->SetValue (InkPresenter::StrokesProperty, Value (collection));
 }
-
-void stylus_init ()
-{
-	// Don't register DPs here.
-	return;
-
-	StylusInfo::DeviceTypeProperty = DependencyProperty::Register (Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse));
-	StylusInfo::IsInvertedProperty = DependencyProperty::Register (Type::STYLUSINFO, "IsInverted", new Value (false));
-
-	StylusPoint::PressureFactorProperty = DependencyProperty::Register (Type::STYLUSPOINT, "PressureFactor", new Value (0.5));
-	StylusPoint::XProperty = DependencyProperty::Register (Type::STYLUSPOINT, "X", new Value (0.0));
-	StylusPoint::YProperty = DependencyProperty::Register (Type::STYLUSPOINT, "Y", new Value (0.0));
-
-	Stroke::DrawingAttributesProperty = DependencyProperty::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
-	Stroke::StylusPointsProperty = DependencyProperty::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
-
-	DrawingAttributes::ColorProperty = DependencyProperty::Register (Type::DRAWINGATTRIBUTES, "Color", new Value (Color (0xFF000000)));
-	DrawingAttributes::OutlineColorProperty = DependencyProperty::Register (Type::DRAWINGATTRIBUTES, "OutlineColor", new Value (Color (0x00000000)));
-	DrawingAttributes::HeightProperty = DependencyProperty::Register (Type::DRAWINGATTRIBUTES, "Height", new Value (3.0));
-	DrawingAttributes::WidthProperty = DependencyProperty::Register (Type::DRAWINGATTRIBUTES, "Width", new Value (3.0));
-
-	InkPresenter::StrokesProperty = DependencyProperty::Register (Type::INKPRESENTER, "Strokes", Type::STROKE_COLLECTION);
-}
-

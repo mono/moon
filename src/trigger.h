@@ -54,9 +54,6 @@ G_BEGIN_DECLS
 EventTrigger *event_trigger_new (void);
 void          event_trigger_action_add (EventTrigger *trigger, TriggerAction *action);
 
-
-void          event_trigger_init (void);
-
 G_END_DECLS
 
 #endif /* __MOON_TRIGGER_H__ */

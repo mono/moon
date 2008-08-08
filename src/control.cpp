@@ -585,26 +585,3 @@ control_get_vertical_content_alignment (Control *control)
 {
 	return control->GetVerticalContentAlignment ();
 }
-
-
-void
-control_init (void)
-{
-	// Don't register DPs here anymore.
-	return;
-	Control::BackgroundProperty = DependencyProperty::Register (Type::CONTROL, "Background", Type::BRUSH);
-	Control::BorderBrushProperty = DependencyProperty::Register (Type::CONTROL, "BorderBrush", Type::BRUSH);
-	Control::BorderThicknessProperty = DependencyProperty::Register (Type::CONTROL, "BorderThickness", new Value (Thickness (0.0)));
-	Control::FontFamilyProperty = DependencyProperty::Register (Type::CONTROL, "FontFamily", new Value (CONTROL_FONT_FAMILY));
-	Control::FontSizeProperty = DependencyProperty::Register (Type::CONTROL, "FontSize", new Value (CONTROL_FONT_SIZE));
-	Control::FontStretchProperty = DependencyProperty::Register (Type::CONTROL, "FontStretch", new Value (CONTROL_FONT_STRETCH));
-	Control::FontStyleProperty = DependencyProperty::Register (Type::CONTROL, "FontStyle", new Value (CONTROL_FONT_STYLE));
-	Control::FontWeightProperty = DependencyProperty::Register (Type::CONTROL, "FontWeight", new Value (CONTROL_FONT_WEIGHT));
-	Control::ForegroundProperty = DependencyProperty::Register (Type::CONTROL, "Foreground", Type::BRUSH);
-	Control::HorizontalContentAlignmentProperty = DependencyProperty::Register (Type::CONTROL, "HorizontalContentAlignment", new Value (HorizontalAlignmentCenter));
-	Control::IsTabStopProperty = DependencyProperty::Register (Type::CONTROL, "IsTabStop", new Value (true));
-	Control::PaddingProperty = DependencyProperty::Register (Type::CONTROL, "Padding", new Value (Thickness (0.0)));
-	Control::TabIndexProperty = DependencyProperty::Register (Type::CONTROL, "TabIndex", new Value (INT_MAX));
-	Control::TabNavigationProperty = DependencyProperty::Register (Type::CONTROL, "TabNavigation", new Value (KeyboardNavigationModeLocal));
-	Control::VerticalContentAlignmentProperty = DependencyProperty::Register (Type::CONTROL, "VerticalContentAlignment", new Value (VerticalAlignmentCenter));
-}

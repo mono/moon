@@ -164,18 +164,3 @@ content_control_get_text_wrapping (ContentControl *content_control)
 {
 	return content_control->GetTextWrapping ();
 }
-
-
-void
-content_control_init (void)
-{
-	// Don't register any DPs here
-	return;
-	
-	ContentControl::ContentProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "Content", Type::DEPENDENCY_OBJECT);
-	ContentControl::ContentTemplateProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "ContentTemplate", Type::DEPENDENCY_OBJECT);
-	ContentControl::IsEnabledProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "IsEnabled", new Value (true));
-	ContentControl::TextAlignmentProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "TextAlignment", new Value (TextAlignmentLeft));
-	ContentControl::TextDecorationsProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "TextDecorations", new Value (TextDecorationsNone));
-	ContentControl::TextWrappingProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "TextWrapping", new Value (TextWrappingNoWrap));
-}

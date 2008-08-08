@@ -1996,37 +1996,11 @@ runtime_init (guint32 flags)
 	moonlight_flags = flags;
 	
 	types_init ();
-	dependency_property_g_init ();
-	namescope_init ();
-	uielement_init ();
-	collection_init ();
-	framework_element_init ();
-	canvas_init ();
-	dependencyobject_init();
-	event_trigger_init ();
-	transform_init ();
-	animation_init ();
-	brush_init ();
-	shape_init ();
-	geometry_init ();
+	dependency_property_g_init (); // keep
 	xaml_init ();
-	clock_init ();
-	text_init ();
-	downloader_init ();
-	media_init ();
-	panel_init ();
-	stylus_init ();
-
-#if SL_2_0
-	//
-	// 2.0 classes
-	//
-	deployment_init ();
-	user_control_init ();
-	content_control_init ();
-	control_init ();
-	grid_init ();
-#endif
+	font_init (); // keep
+	downloader_init (); // keep
+	media_init (); // keep
 }
 
 //

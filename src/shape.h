@@ -488,9 +488,6 @@ Path *path_new (void);
 Geometry *path_get_data (Path *path);
 void path_set_data (Path *path, Geometry *value);
 
-
-void shape_init (void);
-
 G_END_DECLS
 
 #endif

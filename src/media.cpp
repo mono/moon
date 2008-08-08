@@ -2942,35 +2942,4 @@ void
 media_init (void)
 {
 	Media::Initialize ();
-	
-	// Dont register DPs here.
-	return;
-
-	/* MediaAttribute */
-	MediaAttribute::ValueProperty = DependencyProperty::Register (Type::MEDIAATTRIBUTE, "Value", Type::STRING);
-	
-	/* MediaBase */
-	MediaBase::SourceProperty = DependencyProperty::RegisterFull (Type::MEDIABASE, "Source", NULL, Type::STRING, false, false, true);
-	MediaBase::StretchProperty = DependencyProperty::Register (Type::MEDIABASE, "Stretch", new Value (StretchUniform));
-	MediaBase::DownloadProgressProperty = DependencyProperty::Register (Type::MEDIABASE, "DownloadProgress", new Value (0.0));
-	
-	/* MediaElement */
-	MediaElement::AttributesProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Attributes", Type::MEDIAATTRIBUTE_COLLECTION);
-	MediaElement::AudioStreamCountProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "AudioStreamCount", new Value (0), Type::INT32, false, true);
-	MediaElement::AudioStreamIndexProperty = DependencyProperty::RegisterNullable (Type::MEDIAELEMENT, "AudioStreamIndex", Type::INT32);
-	MediaElement::AutoPlayProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "AutoPlay", new Value (true));
-	MediaElement::BalanceProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Balance", new Value (0.0));
-	MediaElement::BufferingProgressProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0), Type::DOUBLE, false, true);
-	MediaElement::BufferingTimeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "BufferingTime", new Value (TimeSpan_FromSeconds (5), Type::TIMESPAN));
-	MediaElement::CanPauseProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CanPause", new Value (false), Type::BOOL, false, true);
-	MediaElement::CanSeekProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CanSeek", new Value (false), Type::BOOL, false, true);
-	MediaElement::CurrentStateProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CurrentState", NULL, Type::STRING, false, true);
-	MediaElement::IsMutedProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "IsMuted", new Value (false));
-	MediaElement::MarkersProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Markers", Type::TIMELINEMARKER_COLLECTION);
-	MediaElement::NaturalDurationProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalDuration", new Value (Duration::FromSeconds (0)), Type::DURATION, false, true);
-	MediaElement::NaturalVideoHeightProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoHeight", new Value (0.0), Type::DOUBLE, false, true);
-	MediaElement::NaturalVideoWidthProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::DOUBLE, false, true);
-	MediaElement::PositionProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
-	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
-
 }

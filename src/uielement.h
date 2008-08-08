@@ -482,7 +482,6 @@ Size       uielement_get_desired_size     (UIElement *item);
 bool       uielement_capture_mouse         (UIElement *item);
 void       uielement_release_mouse_capture (UIElement *item);
 
-void       uielement_init (void);
 G_END_DECLS
 
 #endif /* __MOON_UIELEMENT_H__ */

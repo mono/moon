@@ -41,12 +41,3 @@ UserControl::UserControl ()
 UserControl::~UserControl ()
 {
 }
-
-void 
-user_control_init ()
-{
-	// Don't register any DPs here.
-	return;
-
-	UserControl::ContentProperty = DependencyProperty::Register (Type::USERCONTROL, "Content", Type::UIELEMENT);
-}

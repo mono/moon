@@ -448,9 +448,6 @@ VisualBrush	*visual_brush_new (void);
 UIElement       *visual_brush_get_visual (VisualBrush *brush);
 void             visual_brush_set_visual (VisualBrush *brush, UIElement *visual);
 
-
-void brush_init (void);
-
 G_END_DECLS
 
 #endif /* __BRUSH_H__ */

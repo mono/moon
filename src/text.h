@@ -32,7 +32,6 @@ G_BEGIN_DECLS
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
 #define TEXTBLOCK_FONT_SIZE    14.666666984558105
 
-void text_init (void);
 void text_shutdown (void);
 
 class Inline : public DependencyObject {

@@ -673,14 +673,3 @@ panel_child_add (Panel *panel, UIElement *element)
 {
 	panel->GetChildren ()->Add (element);
 }
-
-void 
-panel_init (void)
-{
-	// Don't register DPs here
-	return;
-
-	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
-	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
-}
-

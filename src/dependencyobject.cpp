@@ -1508,11 +1508,3 @@ DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	NotifyListenersOfPropertyChange (args);
 }
-
-void
-dependencyobject_init(void)
-{
-	// Don't register DPs here anymore
-	return;
-	DependencyObject::NameProperty = DependencyProperty::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
-}

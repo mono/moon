@@ -206,8 +206,6 @@ class UIElementCollection : public DependencyObjectCollection {
 
 G_BEGIN_DECLS
 
-void collection_init (void);
-
 Collection *collection_new (Type::Kind kind);
 
 Type::Kind collection_get_element_type (Collection *collection);

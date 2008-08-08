@@ -644,8 +644,6 @@ TimeSpan timeline_marker_get_time (TimelineMarker *marker);
 /* useful for timing things */
 TimeSpan get_now (void);
 
-void clock_init (void);
-
 G_END_DECLS
 
 #endif /* MOON_CLOCK_H */

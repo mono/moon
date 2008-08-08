@@ -1747,52 +1747,6 @@ Duration Duration::Forever (Duration::FOREVER);
 KeyTime KeyTime::Paced (KeyTime::PACED);
 KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 
-void 
-animation_init (void)
-{
-	// Don't register DPs here
-	return; 
-	
-	/* DoubleAnimation properties */
-	DoubleAnimation::ByProperty   = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "By",   Type::DOUBLE);
-	DoubleAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "From", Type::DOUBLE);
-	DoubleAnimation::ToProperty   = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "To",   Type::DOUBLE);
-
-
-	/* ColorAnimation properties */
-	ColorAnimation::ByProperty   = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "By",   Type::COLOR); // null defaults
-	ColorAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "From", Type::COLOR);
-	ColorAnimation::ToProperty   = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "To",   Type::COLOR);
-
-	/* PointAnimation properties */
-	PointAnimation::ByProperty   = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "By",   Type::POINT); // null defaults
-	PointAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "From", Type::POINT);
-	PointAnimation::ToProperty   = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "To",   Type::POINT);
-
-	/* Storyboard properties */
-	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", NULL, Type::STRING, true, false);
-	Storyboard::TargetNameProperty     = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetName", NULL, Type::STRING, true, false);
-
-	/* BeginStoryboard properties */
-	BeginStoryboard::StoryboardProperty = DependencyProperty::Register (Type::BEGINSTORYBOARD, "Storyboard",	Type::STORYBOARD);
-
-	/* KeyFrame properties */
- 	KeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::KEYFRAME, "KeyTime", Type::KEYTIME);
- 	DoubleKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::DOUBLEKEYFRAME, "Value", Type::DOUBLE);
- 	PointKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::POINTKEYFRAME, "Value", Type::POINT);
- 	ColorKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);
-
-	/* Spline keyframe properties */
-	SplineDoubleKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", Type::KEYSPLINE);
- 	SplineColorKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
- 	SplinePointKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
-
-	/* KeyFrame animation properties */
-	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);
-	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::DOUBLEKEYFRAME_COLLECTION);
-	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::POINTKEYFRAME_COLLECTION);
-}
-
 void
 animation_shutdown (void)
 {

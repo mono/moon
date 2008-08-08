@@ -103,8 +103,6 @@ UIElementCollection *panel_get_children (Panel *panel);
 
 void panel_child_add (Panel *panel, UIElement *element);
 
-void panel_init (void);
-
 G_END_DECLS
 
 #endif /* __MOON_PANEL_H__ */

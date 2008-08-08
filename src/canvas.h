@@ -64,7 +64,6 @@ class Canvas : public Panel {
 G_BEGIN_DECLS
 Canvas *canvas_new (void);
 
-void    canvas_init (void);
 G_END_DECLS
 
 #endif /* __MOON_CANVAS_H__ */

@@ -100,8 +100,6 @@ void	framework_element_set_height	(FrameworkElement *framework_element, double h
 double	framework_element_get_width	(FrameworkElement *framework_element);
 void	framework_element_set_width	(FrameworkElement *framework_element, double width);
 
-void	framework_element_init (void);
-
 G_END_DECLS
 
 

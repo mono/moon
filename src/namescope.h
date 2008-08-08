@@ -48,10 +48,4 @@ class NameScope : public DependencyObject {
 	static void SetNameScope (DependencyObject *obj, NameScope *scope);
 };
 
-G_BEGIN_DECLS
-
-void namescope_init (void);
-
-G_END_DECLS
-
 #endif /* __MOON_NAMESCOPE_H__ */

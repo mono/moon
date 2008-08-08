@@ -68,8 +68,6 @@ class ContentControl : public Control {
 	TextWrapping GetTextWrapping ();
 };
 
-void content_control_init (void);
-
 ContentControl *content_control_new (void);
 
 void content_control_set_content (ContentControl *content_control, DependencyObject *content);

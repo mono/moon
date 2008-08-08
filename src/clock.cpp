@@ -1596,27 +1596,3 @@ timeline_marker_get_time (TimelineMarker *marker)
 {
 	return marker->GetTime ();
 }
-
-
-void
-clock_init (void)
-{
-	// Don't register any DPs here
-	return;
-
-	/* Timeline properties */
-	Timeline::AutoReverseProperty = DependencyProperty::Register (Type::TIMELINE, "AutoReverse", new Value (false));
-	Timeline::BeginTimeProperty = DependencyProperty::RegisterNullable (Type::TIMELINE, "BeginTime", Type::TIMESPAN);
-	Timeline::DurationProperty = DependencyProperty::Register (Type::TIMELINE, "Duration", new Value (Duration::Automatic));
-	Timeline::RepeatBehaviorProperty = DependencyProperty::Register (Type::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double)1)));
-	Timeline::FillBehaviorProperty = DependencyProperty::Register (Type::TIMELINE, "FillBehavior", new Value ((int)FillBehaviorHoldEnd));
-	Timeline::SpeedRatioProperty = DependencyProperty::Register (Type::TIMELINE, "SpeedRatio", new Value (1.0));
-
-	/* TimelineGroup properties */
-	TimelineGroup::ChildrenProperty = DependencyProperty::Register (Type::TIMELINEGROUP, "Children", Type::TIMELINE_COLLECTION);
-
-	/* TimelineMarker properties */
-	TimelineMarker::TextProperty = DependencyProperty::Register (Type::TIMELINEMARKER, "Text", Type::STRING);
-	TimelineMarker::TimeProperty = DependencyProperty::Register (Type::TIMELINEMARKER, "Time", Type::TIMESPAN);
-	TimelineMarker::TypeProperty = DependencyProperty::Register (Type::TIMELINEMARKER, "Type", Type::STRING);
-}

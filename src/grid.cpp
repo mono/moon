@@ -85,30 +85,3 @@ column_definition_get_actual_width (ColumnDefinition *def)
 {
        return def->actual;
 }
-
-void 
-grid_init (void)
-{
-	// Don't register DPs here
-	return;
-
-       // RowDefinition
-       RowDefinition::HeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Height", Type::GRIDLENGTH);
-       RowDefinition::MaxHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxHeight", Type::DOUBLE);
-       RowDefinition::MinHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinHeight", Type::DOUBLE);
-
-       // ColumnDefinition
-       ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "Width", Type::GRIDLENGTH);
-       ColumnDefinition::MaxWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MaxWidth", Type::DOUBLE);
-       ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MinWidth", Type::DOUBLE);
-
-       // Grid
-       Grid::ColumnProperty = DependencyProperty::RegisterFull (Type::GRID, "Column", new Value (0), Type::INT32, true, false);
-       Grid::ColumnSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "ColumnSpan", new Value (0), Type::INT32, true, false);
-       Grid::RowProperty = DependencyProperty::RegisterFull (Type::GRID, "Row", new Value (0), Type::INT32, true, false);
-       Grid::RowSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "RowSpan", new Value (0), Type::INT32, true, false);
-       Grid::ShowGridLinesProperty = DependencyProperty::RegisterFull (Type::GRID, "ShowGridLines", new Value (false), Type::BOOL, true, false);
-
-       Grid::ColumnDefinitionsProperty = DependencyProperty::Register (Type::GRID, "ColumnDefinitions", Type::COLUMNDEFINITION_COLLECTION);
-       Grid::RowDefinitionsProperty    = DependencyProperty::Register (Type::GRID, "RowDefinitions", Type::ROWDEFINITION_COLLECTION);
-}

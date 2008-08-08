@@ -458,14 +458,6 @@ UIElementCollection::Clear ()
 	DependencyObjectCollection::Clear ();
 }
 
-void
-collection_init (void)
-{
-	// Don't register DPs here anymore;
-	return;
-	Collection::CountProperty = DependencyProperty::Register (Type::COLLECTION, "Count", Type::INT32);
-}
-
 int
 collection_get_count (Collection *collection)
 {

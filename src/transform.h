@@ -304,8 +304,6 @@ public:
 
 TransformGroup *transform_group_new (void);
 
-void transform_init (void);
-
 G_END_DECLS
 
 #endif

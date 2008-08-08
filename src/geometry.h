@@ -708,10 +708,6 @@ void quadratic_bezier_segment_set_point1 (QuadraticBezierSegment *segment, Point
 Point *quadratic_bezier_segment_get_point2 (QuadraticBezierSegment *segment);
 void quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *point);
 
-
-
-void geometry_init (void);
-
 G_END_DECLS
 
 #endif

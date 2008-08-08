@@ -153,8 +153,6 @@ class Control : public FrameworkElement {
 
 G_BEGIN_DECLS
 
-void control_init (void);
-
 
 Control *control_new (void);
 UIElement *control_initialize_from_xaml (Control *control, const char *xaml,

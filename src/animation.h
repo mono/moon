@@ -813,8 +813,6 @@ void        storyboard_resume (Storyboard *sb);
 void        storyboard_seek   (Storyboard *sb, TimeSpan ts);
 void        storyboard_stop   (Storyboard *sb);
 
-
-void animation_init (void);
 void animation_shutdown (void);
 
 G_END_DECLS

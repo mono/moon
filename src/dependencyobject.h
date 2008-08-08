@@ -352,8 +352,6 @@ void dependency_object_set_name (DependencyObject *obj, const char *name);
 Type::Kind dependency_object_get_object_type (DependencyObject *obj);
 const char *dependency_object_get_type_name (DependencyObject *obj);
 
-void dependencyobject_init (void);
-
 Surface *event_object_get_surface (EventObject *o);
 void event_object_add_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure);
 void event_object_remove_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure);

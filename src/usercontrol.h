@@ -40,8 +40,6 @@ public:
 UserControl*   user_control_new (void);
 UIElement*     user_control_get_content (UserControl *user_control);
 
-void user_control_init (void);
-
 G_END_DECLS
 
 #endif /* __MOON_USERCONTROL_H__ */

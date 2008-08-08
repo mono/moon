@@ -62,12 +62,3 @@ event_trigger_action_add (EventTrigger *trigger, TriggerAction *action)
 {
 	trigger->GetValue (EventTrigger::ActionsProperty)->AsTriggerActionCollection()->Add (action);
 }
-
-void
-event_trigger_init (void)
-{
-	// Don't register DPs here.
-	return;
-	EventTrigger::RoutedEventProperty = DependencyProperty::Register (Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
-	EventTrigger::ActionsProperty = DependencyProperty::Register (Type::EVENTTRIGGER, "Actions", Type::TRIGGERACTION_COLLECTION);
-}
