@@ -26,14 +26,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 
 namespace System.Windows {
 
 	public sealed class SetterBaseCollection : PresentationFrameworkCollection<SetterBase> {
 		bool isSealed;
 
-		[MonoTODO ("we need a ctor for this collection type, or a general dependency_object_collection_new (Kind.SETTER_BASE)")]
-		public SetterBaseCollection () : base (IntPtr.Zero)
+		public SetterBaseCollection () : base (NativeMethods.dependency_object_collection_new ())
 		{
 		}
 
