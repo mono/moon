@@ -34,7 +34,7 @@ namespace System.Windows.Controls
 {
 	// It simply opens a native file dialog
 
-	public sealed class OpenFileDialog : IDisposable 
+	public sealed class OpenFileDialog
 	{
 		FileDialogFileInfo [] files;
 		
@@ -47,13 +47,7 @@ namespace System.Windows.Controls
 		{
 		}
 
-		public void Dispose ()
-		{
-			// note: Dispose doesn't clear the SelectedFile or SelectedFiles properties
-			GC.SuppressFinalize (this);
-		}
-
-		public DialogResult ShowDialog ()
+		public bool? ShowDialog ()
 		{
 			IntPtr result = open_file_dialog_show (
 				String.IsNullOrEmpty (title) ? "Open" : title,
@@ -63,7 +57,7 @@ namespace System.Windows.Controls
 
 			if (result == IntPtr.Zero){
 				// when called several times the previous results are still available after a Cancel
-				return DialogResult.Cancel;
+				return false;
 			}
 
 			uint inc = (uint) IntPtr.Size;
@@ -77,7 +71,7 @@ namespace System.Windows.Controls
 			for (uint i = 0, ofs = 0; (p = Marshal.ReadIntPtr ((IntPtr)((ulong)result + ofs))) != IntPtr.Zero; ofs += inc)
 				files [i++] = new FileDialogFileInfo (Marshal.PtrToStringAnsi (p));
 			
-			return DialogResult.OK;
+			return true;
 		}
 
 		// selection results
@@ -99,7 +93,7 @@ namespace System.Windows.Controls
 
 		// dialog options
 
-		public bool EnableMultipleSelection {
+		public bool Multiselect {
 			get { return allow_multiple_selection; }
 			set { allow_multiple_selection = value; }
 		}
@@ -129,11 +123,6 @@ namespace System.Windows.Controls
 					throw new ArgumentOutOfRangeException ("FilterIndex");
 				filter_index = value;
 			}
-		}
-
-		public string Title {
-			get { return title; }
-			set { title = value; }
 		}
 
 		[DllImport ("moon")]

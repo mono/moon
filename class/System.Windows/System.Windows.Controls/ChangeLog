@@ -1,3 +1,10 @@
+2008-08-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ChangeLog: Merge history
+	* FileDialogFileInfo.cs: Moved from System.Windows.Browser.
+	* OpenFileDialog.cs: Moved from System.Windows.Browser. Updated
+	to SL2 beta2 API.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* UIElementCollection.cs: Deleted Visual (moved content into
@@ -97,6 +104,12 @@
 	actually set null as a downloader (equivalent to unsetting it)
 	according to the MS test suite.
 
+2007-11-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* OpenFileDialog.cs: Changed Dispose to public. Don't reset files
+	on Cancel. Added default "Open" title (when none is provided). Added
+	filter validations that SL has.
+
 2007-11-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MediaElement.cs (InvokeMediaOpened): Always pass null as the
@@ -147,6 +160,11 @@
 	* MediaElement.cs: use methods in [agmono]Mono.Helper to avoid calling
 	internal methods of mscorlib.
 
+2007-08-09  Miguel de Icaza  <miguel@novell.com>
+
+	* OpenFileDialog.cs: Do some bit of porting to use only what is
+	available in the 2.1 profile.
+
 2007-08-03  Chris Toshok  <toshok@ximian.com>
 
 	* MediaElement.cs: switch NaturalDuration back to Duration.
@@ -162,6 +180,15 @@
 
 	* MediaElement.cs: and add them here.  also, hook them up to their
 	unmanaged counterparts.
+
+2007-07-25  Miguel de Icaza  <miguel@novell.com>
+
+	* OpenFileDialog.cs: Implement support for returning more than one
+	file in one pass.
+
+2007-07-24  Miguel de Icaza  <miguel@novell.com>
+
+	* OpenFileDialog.cs: Implement.
 
 2007-07-09  Chris Toshok  <toshok@ximian.com>
 
@@ -251,6 +278,12 @@
 	* Canvas.cs, Panel.cs: Rework to use the dependency properties
 	registered in the unmanaged side, remove dead code.
 
+2007-06-06  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* FileDialogFileInfo.cs,
+	  OpenFileDialog.cs : some imaginary implementation using DllImports
+	  where those unmanaged functions do not exist.
+
 2007-06-04  Miguel de Icaza  <miguel@novell.com>
 
 	* Canvas.cs: Add native IntPtr field that points to the native
@@ -262,3 +295,6 @@
 
 	* Panel.cs: Add the early binding to the collection.
 
+2007-06-02  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* DialogResult.cs FileDialogFileInfo.cs OpenFileDialog.cs : stubs.

@@ -1,3 +1,8 @@
+2008-08-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove System.Windows.Controls/* source files
+	* System.Windows.Controls/*: Moved to System.Windows.dll (or removed)
+
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am, System.Windows.Browser.mdp: Moved and stubbed stuff
