@@ -71,12 +71,16 @@ namespace System.Windows.Markup {
 		
 		public static bool operator ==(XmlLanguage xmlLanguage1, XmlLanguage xmlLanguage2)
 		{
+			if ( object.ReferenceEquals(xmlLanguage1, null) 
+				|| object.ReferenceEquals(xmlLanguage2, null) )
+				return false;
+
 			return xmlLanguage1.IetfLanguageTag == xmlLanguage2.IetfLanguageTag;
 		}
 		
 		public static bool operator !=(XmlLanguage xmlLanguage1, XmlLanguage xmlLanguage2)
 		{
-			return xmlLanguage1.IetfLanguageTag != xmlLanguage2.IetfLanguageTag;
+			return !(xmlLanguage1 == xmlLanguage2);
 		}
 	}
 }
