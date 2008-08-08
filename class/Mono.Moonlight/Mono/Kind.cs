@@ -28,6 +28,7 @@ namespace Mono {
 		COLUMNDEFINITION_COLLECTION,// Silverlight 2.0 only
 		CONTENTCONTROL,// Silverlight 2.0 only
 		CONTROL,// Silverlight 2.0 only
+		CONTROLTEMPLATE,// Silverlight 2.0 only
 		DEPENDENCY_OBJECT,
 		DEPENDENCY_OBJECT_COLLECTION,
 		DEPLOYMENT,// Silverlight 2.0 only
@@ -51,6 +52,7 @@ namespace Mono {
 		EVENTOBJECT,
 		EVENTTRIGGER,
 		FRAMEWORKELEMENT,
+		FRAMEWORKTEMPLATE,// Silverlight 2.0 only
 		GENERALTRANSFORM,
 		GEOMETRY,
 		GEOMETRY_COLLECTION,
