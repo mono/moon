@@ -58,11 +58,11 @@ G_BEGIN_DECLS
 
 void        xaml_init (void);
 
-bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
+bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, bool sl2);
 
 bool        time_span_from_str (const char *str, TimeSpan *res);
-bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v);
-bool        value_from_str (Type::Kind type, const char *prop_name, const char *str, Value **v);
+bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v, bool sl2);
+bool        value_from_str (Type::Kind type, const char *prop_name, const char *str, Value **v, bool sl2);
 bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s);
 
 void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char **assembly);

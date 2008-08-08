@@ -1,3 +1,8 @@
+2008-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp: add sl2 arguments to the various parser/enum
+	functions that need them.
+
 2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.mdp: Make src and plugin projects build.

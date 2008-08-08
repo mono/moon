@@ -248,8 +248,8 @@ enum VerticalAlignment {
 
 G_BEGIN_DECLS
 
-int		enums_str_to_int (const char *prop_name, const char *str);
-const char*	enums_int_to_str (const char *prop_name, int e);
+int		enums_str_to_int (const char *prop_name, const char *str, bool sl2);
+const char*	enums_int_to_str (const char *prop_name, int e, bool sl2);
 
 G_END_DECLS
 

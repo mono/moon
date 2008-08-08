@@ -2473,7 +2473,7 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 }
 
 static bool
-_set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop, const NPVariant *value)
+_set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop, const NPVariant *value, bool sl2)
 {
 	if (npvariant_is_moonlight_object (*value)) {
 		MoonlightObject *obj = (MoonlightObject *) NPVARIANT_TO_OBJECT (*value);
@@ -2557,7 +2557,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			return true;
 		}
 		
-		rv = xaml_set_property_from_str (dob, prop, strval);
+		rv = xaml_set_property_from_str (dob, prop, strval, sl2);
 		
 		if (strval != strbuf)
 			g_free (strval);
@@ -2592,13 +2592,14 @@ bool
 MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	// don't need to downcase here since dependency property lookup is already case insensitive
+	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 	DependencyObject *dob = GetDependencyObject ();
 	DependencyProperty *prop;
 	const char *event_name;
 	int event_id;
 	Value *value;
-	
+
 	if (!strname)
 		return false;
 	
@@ -2618,7 +2619,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		}
 		
 		if (value->GetKind () == Type::INT32) {
-			const char *s = enums_int_to_str (prop->GetName(), value->AsInt32 ());
+			const char *s = enums_int_to_str (prop->GetName(), value->AsInt32 (), plugin->IsSilverlight2());
 			if (s)
 				string_to_npvariant (s, result);
 			else
@@ -2665,7 +2666,8 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 	NPN_MemFree (strname);
 	
 	if (prop) {
-		if (_set_dependency_property_value (dob, prop, value)) {
+		PluginInstance *plugin = (PluginInstance*) instance->pdata;
+		if (_set_dependency_property_value (dob, prop, value, plugin->IsSilverlight2())) {
 			return true;
 		} else {
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
@@ -3883,6 +3885,7 @@ MoonlightControlObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 bool
 MoonlightControlObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
+	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 	DependencyObject *dob = GetDependencyObject ();
 	DependencyObject *real_dob = ((MoonlightDependencyObjectObject*)real_object)->GetDependencyObject ();
 	DependencyProperty *p;
@@ -3901,7 +3904,7 @@ MoonlightControlObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 	if (!p)
 		return false;
 
-	if (_set_dependency_property_value (dob, p, value))
+	if (_set_dependency_property_value (dob, p, value, plugin->IsSilverlight2()))
 		return true;
 	else
 		THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");

@@ -1,3 +1,8 @@
+2008-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* parsertest/parsertest.cpp (parse_value_test): update for
+	value_from_str api change.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* sizes/sizes.cpp: Deleted Visual (moved content into UIElement), and

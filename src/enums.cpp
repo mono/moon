@@ -20,19 +20,25 @@
 
 static GHashTable *enum_map = NULL;
 
-#define MAP_ENUM_FULL(n,v) { (n), (v) }
+#define MAPPING_FLAG_SL1 0x01
+#define MAPPING_FLAG_SL2 0x02
+
+#define MAP_ENUM_FULL(n,v,f) { (n), (v), (f) }
 
 // use this when the name is the same as the quoted value
-#define MAP_NAME(n)          MAP_ENUM_FULL(#n, n)
+#define MAP_NAME(n)          MAP_ENUM_FULL(#n, n, 0)
 
-// use this when the name is the same as the quoted value, but with the enum type prefixed
-#define MAP_ENUM(t,n)        MAP_ENUM_FULL(#n, t##n)
+// use these when the name is the same as the quoted value, but with the enum type prefixed
+#define MAP_ENUM(t,n)        MAP_ENUM_FULL(#n, t##n, 0)
+#define MAP_ENUM_SL1(t,n)    MAP_ENUM_FULL(#n, t##n, MAPPING_FLAG_SL1)
+#define MAP_ENUM_SL2(t,n)    MAP_ENUM_FULL(#n, t##n, MAPPING_FLAG_SL2)
 
-#define END_MAPPING          { NULL, 0 }
+#define END_MAPPING          { NULL, 0, 0 }
 
 typedef struct {
 	const char *name;
 	int value;
+	int flags;
 } enum_map_t;
 
 static enum_map_t alignment_x_map [] = {
@@ -122,25 +128,28 @@ static enum_map_t font_styles_map [] = {
 static enum_map_t font_weights_map [] = {
 	MAP_ENUM (FontWeights, Thin),
 	MAP_ENUM (FontWeights, ExtraLight),
-	MAP_ENUM_FULL ("UltraLight", FontWeightsExtraLight),  // deprecated as of July 2007 
+	MAP_ENUM_FULL ("UltraLight", FontWeightsExtraLight,0),  // deprecated as of July 2007 
 	MAP_ENUM (FontWeights, Light),
 	MAP_ENUM (FontWeights, Normal),
-	MAP_ENUM_FULL ("Regular", FontWeightsNormal),         // deprecated as of July 2007 
+	MAP_ENUM_FULL ("Regular", FontWeightsNormal,0),         // deprecated as of July 2007 
 	MAP_ENUM (FontWeights, Medium),
 	MAP_ENUM (FontWeights, SemiBold),
-	MAP_ENUM_FULL ("DemiBold", FontWeightsSemiBold),      // deprecated as of July 2007 
+	MAP_ENUM_FULL ("DemiBold", FontWeightsSemiBold,0),      // deprecated as of July 2007 
 	MAP_ENUM (FontWeights, Bold),
 	MAP_ENUM (FontWeights, ExtraBold),
-	MAP_ENUM_FULL ("UltraBold", FontWeightsExtraBold),    // deprecated as of July 2007 
+	MAP_ENUM_FULL ("UltraBold", FontWeightsExtraBold,0),    // deprecated as of July 2007 
  	MAP_ENUM (FontWeights, Black),
-	MAP_ENUM_FULL ("Heavy", FontWeightsBlack),            // deprecated as of July 2007 
+	MAP_ENUM_FULL ("Heavy", FontWeightsBlack,0),            // deprecated as of July 2007 
 	MAP_ENUM (FontWeights, ExtraBlack),
-	MAP_ENUM_FULL ("UltraBlack", FontWeightsExtraBlack),  // deprecated as of July 2007 
+	MAP_ENUM_FULL ("UltraBlack", FontWeightsExtraBlack,0),  // deprecated as of July 2007 
 	END_MAPPING
 };
 
-static enum_map_t style_simulations_map [] = {
-	MAP_ENUM (StyleSimulations, None),
+static enum_map_t horizontal_alignment_map [] = {
+	MAP_ENUM_SL2 (HorizontalAlignment, Left),
+	MAP_ENUM_SL2 (HorizontalAlignment, Center),
+	MAP_ENUM_SL2 (HorizontalAlignment, Right),
+	MAP_ENUM_SL2 (HorizontalAlignment, Stretch),
 	END_MAPPING
 };
 
@@ -174,6 +183,11 @@ static enum_map_t stretch_map [] = {
 	END_MAPPING
 };
 
+static enum_map_t style_simulations_map [] = {
+	MAP_ENUM (StyleSimulations, None),
+	END_MAPPING
+};
+
 static enum_map_t sweep_direction_map [] = {
 	MAP_ENUM (SweepDirection, Counterclockwise),
 	MAP_ENUM (SweepDirection, Clockwise),
@@ -197,6 +211,14 @@ static enum_map_t text_wrapping_map [] = {
 	MAP_ENUM (TextWrapping, Wrap),
 	MAP_ENUM (TextWrapping, NoWrap),
 	MAP_ENUM (TextWrapping, WrapWithOverflow),
+	END_MAPPING
+};
+
+static enum_map_t vertical_alignment_map [] = {
+	MAP_ENUM_SL2 (VerticalAlignment, Top),
+	MAP_ENUM_SL2 (VerticalAlignment, Center),
+	MAP_ENUM_SL2 (VerticalAlignment, Bottom),
+	MAP_ENUM_SL2 (VerticalAlignment, Stretch),
 	END_MAPPING
 };
 
@@ -236,6 +258,11 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "TextDecorations", text_decorations_map);
 	g_hash_table_insert (enum_map, (char *) "TextWrapping", text_wrapping_map);
 	g_hash_table_insert (enum_map, (char *) "Visibility", visibility_map);
+
+#if SL_2_0
+	g_hash_table_insert (enum_map, (char *) "HorizontalAlignment", horizontal_alignment_map);
+	g_hash_table_insert (enum_map, (char *) "VerticalAlignment", vertical_alignment_map);
+#endif
 }
 
 static int
@@ -251,12 +278,19 @@ enum_from_str (const enum_map_t *emu, const char *str)
 }
 
 static const char*
-str_from_enum (const enum_map_t *emu, int e)
+str_from_enum (const enum_map_t *emu, int e, bool sl2)
 {
 	int i;
 	for (i = 0; emu [i].name; i++) {
-		if (emu [i].value == e)
+		if (emu [i].value == e) {
+			if (emu[i].flags != 0 // 0 means everything
+			    &&
+			    ((sl2 && ((emu[i].flags & MAPPING_FLAG_SL2) == 0)) ||
+			     (!sl2 && ((emu[i].flags & MAPPING_FLAG_SL1) == 0))))
+				continue;
+
 			return emu [i].name;
+		}
 	}
 
 	return NULL;
@@ -267,7 +301,7 @@ str_from_enum (const enum_map_t *emu, int e)
 // Returns -1 if no property or enum found.
 //
 int 
-enums_str_to_int (const char *prop_name, const char *str)
+enums_str_to_int (const char *prop_name, const char *str, bool sl2)
 {
 	if (enum_map == NULL)
 		initialize_enums ();
@@ -284,7 +318,7 @@ enums_str_to_int (const char *prop_name, const char *str)
 // Returns NULL if no match found.
 //
 const char *
-enums_int_to_str (const char *prop_name, int e)
+enums_int_to_str (const char *prop_name, int e, bool sl2)
 {
 	if (enum_map == NULL)
 		initialize_enums ();
@@ -293,6 +327,6 @@ enums_int_to_str (const char *prop_name, int e)
 	if (! emu)
 		return NULL;
 
-	return str_from_enum (emu, e);
+	return str_from_enum (emu, e, sl2);
 }
 

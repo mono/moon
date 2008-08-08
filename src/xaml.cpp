@@ -2226,19 +2226,19 @@ bad_pml:
 }
 
 bool
-value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v)
+value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v, bool sl2)
 {
 	Type *t = Type::Find (type_name);
 	if (!t)
 		return false;
 
-	return value_from_str (t->type, prop_name, str, v);
+	return value_from_str (t->type, prop_name, str, v, sl2);
 }
 
 #define IS_NULL_OR_EMPTY(str)	(!str || (*str == 0))
 
 bool
-value_from_str (Type::Kind type, const char *prop_name, const char *str, Value** v)
+value_from_str (Type::Kind type, const char *prop_name, const char *str, Value** v, bool sl2)
 {
 	char *endptr;
 	*v = NULL;
@@ -2316,7 +2316,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		int i;
 
 		if (isalpha (str [0]) && prop_name) {
-			i = enums_str_to_int (prop_name, str);
+			i = enums_str_to_int (prop_name, str, sl2);
 			if (i == -1) {
 				g_warning ("'%s' enum is not valid on '%s' property", str, prop_name);
 				return false;
@@ -2968,11 +2968,11 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 }
 
 bool
-xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value)
+xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, bool sl2)
 {
 	Value *v = NULL;
 	
-	if (!value_from_str (prop->GetPropertyType(), prop->GetName(), value, &v))
+	if (!value_from_str (prop->GetPropertyType(), prop->GetName(), value, &v, sl2))
 		return false;
 	
 	// it's possible for (a valid) value to be NULL (and we must keep the default value)
@@ -3124,7 +3124,7 @@ start_parse:
 			}
 
 			Value *v = NULL;
-			if (!value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v)) {
+			if (!value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
 				parser_error (p, item->element_name, attr [i], 2024,
 					      g_strdup_printf ("Invalid attribute value %s for property %s.",
 							       attr [i + 1], attr [i]));
