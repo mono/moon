@@ -1,6 +1,6 @@
 assembly = System.Windows.Controls
-assemblysl = ../lib/2.1/$(assembly).dll
-#assemblydesktop = ../lib/3.0/$(assembly).dll
+assemblysl = ../../lib/2.1/$(assembly).dll
+#assemblydesktop = ../../lib/3.0/$(assembly).dll
 
 assemblies = $(assemblysl) $(assemblydesktop)
 

@@ -1,5 +1,9 @@
 2008-08-08  Fernando Herrera  <fherrera@novell.com>
 
+	* Controls/Makefile.am: Fix lib/* path
+
+2008-08-08  Fernando Herrera  <fherrera@novell.com>
+
 	* Makefile.am:
 	* Controls/Makefile.am: Add to the build.
 	* Controls/Src/Button/Button.cs:
