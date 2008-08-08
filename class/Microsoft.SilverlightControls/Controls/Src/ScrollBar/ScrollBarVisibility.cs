@@ -4,7 +4,7 @@
 // All other rights reserved. 
 using System.Windows.Controls;
 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 { 
     /// <summary> 
     /// Specifies the visibility of a ScrollBar for scrollable content.

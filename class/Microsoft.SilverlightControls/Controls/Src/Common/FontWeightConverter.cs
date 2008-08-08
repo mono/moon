@@ -6,10 +6,10 @@
 using System;
 using System.Collections.Generic; 
 using System.ComponentModel; 
-using System.Windows.Controlsb1;
+using System.Windows.Controls;
 using System.Windows;
  
-namespace System.Windowsb1
+namespace System.Windows
 {
     /// <summary> 
     /// Converts instances of the String type to FontWeight instances.

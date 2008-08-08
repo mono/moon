@@ -8,9 +8,10 @@ using System.Windows.Input;
 using System.Windows.Markup; 
 using System.Windows.Media.Animation;
 using System.Windows.Media;
-using System.Windows.Controls.Primitives;
+using System.Windows.Controls;
+//using System.Windows.Controls.Primitives;
 
-namespace System.Windows.Controls.Primitivesb1
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary>
     ///    ScrollBars are the UI widgets that both let a user drive scrolling from the UI

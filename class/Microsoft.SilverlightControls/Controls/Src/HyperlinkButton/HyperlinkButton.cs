@@ -8,10 +8,10 @@ using System.ComponentModel;
 using System.Diagnostics; 
 using System.Globalization;
 using System.Windows.Browser; 
-using System.Windows.Controls.Primitivesb1;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media.Animation;
  
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 {
     /// <summary> 
     /// Represents a control that displays a link to another website. 

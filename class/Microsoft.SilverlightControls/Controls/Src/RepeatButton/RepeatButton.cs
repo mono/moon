@@ -9,9 +9,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Animation; 
 using System.Windows.Threading;
-using System.Windows.Controlsb1;
+using System.Windows.Controls;
 
-namespace System.Windows.Controls.Primitivesb1
+namespace System.Windows.Controls.Primitives
 {
     /// <summary>
     /// Control that raises its Click event repeatedly from the time it is 

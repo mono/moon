@@ -8,7 +8,7 @@ using System.Windows.Input;
 using System.Windows.Markup; 
 using System.Windows.Media.Animation;
  
-namespace System.Windows.Controls.Primitivesb1
+namespace System.Windows.Controls.Primitives
 {
     /// <summary> 
     /// Initializes a new instance of the Thumb class.

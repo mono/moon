@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Windows.Input; 
 using System.Windows.Threading;
  
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 {
     /// <summary> 
     ///     Service class that provides the system implementation for displaying ToolTips.

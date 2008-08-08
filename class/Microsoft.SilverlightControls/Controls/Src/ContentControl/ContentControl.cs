@@ -11,7 +11,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Controls;
 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 {
     /// <summary>
     /// Represents a control with a single piece of content. 
@@ -365,6 +365,8 @@ namespace System.Windows.Controlsb1
                 null); 
         #endregion TextWrapping
 
+
+/* FIXME: commented out until we get Popup and then tooltip
         #region ToolTip 
         /// <summary> 
         /// Gets or sets the tool-tip object that is displayed for this element
@@ -377,6 +379,7 @@ namespace System.Windows.Controlsb1
         } 
  
         #endregion ToolTip
+*/
  
         /// <summary>
         /// Initializes a new instance of the ContentControl class.

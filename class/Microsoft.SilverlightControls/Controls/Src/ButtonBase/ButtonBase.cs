@@ -7,9 +7,9 @@ using System;
 using System.Diagnostics; 
 using System.Windows.Input; 
 using System.Windows.Media.Animation;
-using System.Windows.Controlsb1;
+using System.Windows.Controls;
  
-namespace System.Windows.Controls.Primitivesb1
+namespace System.Windows.Controls.Primitives
 {
     /// <summary> 
     /// Represents the base class for all Button controls.

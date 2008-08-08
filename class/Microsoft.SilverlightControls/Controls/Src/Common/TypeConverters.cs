@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Globalization; 
 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 { 
     /// <summary>
     /// Common TypeConverter functionality.

@@ -5,10 +5,10 @@
 
 using System;
 using System.Diagnostics; 
-using System.Windows.Controls.Primitivesb1; 
+using System.Windows.Controls.Primitives; 
 using System.Windows.Media.Animation;
  
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 {
     /// <summary> 
     /// Represents a button control, which reacts to the Click event.

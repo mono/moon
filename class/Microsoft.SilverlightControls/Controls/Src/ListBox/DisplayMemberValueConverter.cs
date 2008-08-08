@@ -6,7 +6,7 @@
 using System.Windows.Data;
  
 #if !WPF 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 { 
     /// <summary>
     /// IValueConverter that converts any object to its ToString equivalent

@@ -8,9 +8,9 @@ using System.ComponentModel;
 using System.Diagnostics; 
 using System.Globalization;
 using System.Windows.Media.Animation;
-using System.Windows.Controlsb1;
+using System.Windows.Controls;
 
-namespace System.Windows.Controls.Primitivesb1
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary>
     /// Base class for controls that can switch states, such as CheckBox.

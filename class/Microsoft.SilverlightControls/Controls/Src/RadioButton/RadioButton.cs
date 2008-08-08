@@ -11,12 +11,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization; 
-using System.Windows.Controls.Primitivesb1;
-using System.Windows.Inputb1;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Controls;
  
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 { 
     /// <summary>
     /// Represents a button that can be selected, but not cleared, by a user.

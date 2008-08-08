@@ -3,7 +3,7 @@
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 { 
     /// <summary> 
     /// Defines the selection behavior for a ListBox.

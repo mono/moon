@@ -5,7 +5,7 @@
 
 using System;
  
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 {
     /// <summary> 
     /// Specifies when the ButtonBase.Click event should fire.

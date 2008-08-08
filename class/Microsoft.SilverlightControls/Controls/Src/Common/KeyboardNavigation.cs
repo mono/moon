@@ -5,7 +5,7 @@
 
 using System;
  
-namespace System.Windows.Inputb1
+namespace System.Windows.Input
 {
     /// <summary> 
     /// Provides logical and directional navigation between focusable objects.

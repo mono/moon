@@ -4,12 +4,12 @@
 // All other rights reserved. 
 
 using System;
-using System.Windows.Controls.Primitivesb1; 
+using System.Windows.Controls.Primitives; 
 using System.Windows.Input; 
 using System.Windows.Media.Animation;
 using System.Windows.Controls;
  
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 {
     /// <summary> 
     /// Represents a control that a user can select and clear.

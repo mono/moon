@@ -1,0 +1,39 @@
+2008-08-08  Fernando Herrera  <fherrera@novell.com>
+
+	* Makefile.am:
+	* Controls/Makefile.am: Add to the build.
+	* Controls/Src/Button/Button.cs:
+	* Controls/Src/ButtonBase/ButtonBase.cs:
+	* Controls/Src/ButtonBase/ClickMode.cs:
+	* Controls/Src/CheckBox/CheckBox.cs:
+	* Controls/Src/Common/FontFamilyConverter.cs:
+	* Controls/Src/Common/FontStretchConverter.cs:
+	* Controls/Src/Common/FontStyleConverter.cs:
+	* Controls/Src/Common/FontWeightConverter.cs:
+	* Controls/Src/Common/KeyboardNavigation.cs:
+	* Controls/Src/Common/NullableBoolConverter.cs:
+	* Controls/Src/Common/TextDecorationCollectionConverter.cs:
+	* Controls/Src/Common/TypeConverters.cs:
+	* Controls/Src/Common/UriTypeConverter.cs:
+	* Controls/Src/ContentControl/ContentControl.cs:
+	* Controls/Src/ContentControl/ContentPresenter.cs:
+	* Controls/Src/HyperlinkButton/HyperlinkButton.cs:
+	* Controls/Src/ListBox/DisplayMemberValueConverter.cs:
+	* Controls/Src/ListBox/ListBox.cs:
+	* Controls/Src/ListBox/ListBoxItem.cs:
+	* Controls/Src/ListBox/SelectionMode.cs:
+	* Controls/Src/RadioButton/RadioButton.cs:
+	* Controls/Src/RangeBase/RangeBase.cs:
+	* Controls/Src/RepeatButton/RepeatButton.cs:
+	* Controls/Src/Resource.Designer.cs:
+	* Controls/Src/ScrollBar/ScrollBar.cs:
+	* Controls/Src/ScrollBar/ScrollBarVisibility.cs:
+	* Controls/Src/ScrollBar/ScrollEventArgs.cs:
+	* Controls/Src/ScrollBar/ScrollEventType.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs:
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/Thumb/Thumb.cs:
+	* Controls/Src/ToggleButton/ToggleButton.cs:
+	* Controls/Src/ToolTip/ToolTip.cs:
+	* Controls/Src/ToolTip/ToolTipService.cs: Move back to System.Windows.Controls namespace.
+

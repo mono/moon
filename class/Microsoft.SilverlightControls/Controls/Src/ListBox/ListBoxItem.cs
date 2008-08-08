@@ -17,7 +17,7 @@ using PropertyChangedCallback = System.Windows.FrameworkPropertyMetadata;
 #if WPF 
 namespace WPF
 #else 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 #endif
 { 
     /// <summary>

@@ -20,14 +20,14 @@ using PropertyChangedCallback = System.Windows.FrameworkPropertyMetadata;
 namespace System.Windows.Controls.Placeholders
 {
     enum MouseButton { Left }; 
-    public class ItemsControl : System.Windows.Controls.ItemsControl { }
+    //public class ItemsControl : System.Windows.Controls.ItemsControl { }
 }
 #endif 
  
 #if WPF
 namespace WPF 
 #else
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 #endif 
 {
     /// <summary>

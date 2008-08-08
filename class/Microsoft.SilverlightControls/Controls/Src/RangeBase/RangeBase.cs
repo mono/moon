@@ -9,7 +9,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls; 
 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 { 
     /// <summary>
     /// Represents the base class for elements that have a specific range.

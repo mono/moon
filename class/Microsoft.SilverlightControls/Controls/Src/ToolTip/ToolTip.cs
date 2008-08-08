@@ -7,18 +7,18 @@ using System.Diagnostics;
 using System.Windows.Markup; 
 using System.Windows.Media; 
 using System.Windows.Media.Animation;
-using System.Windows.Controls.Primitivesb1;
+using System.Windows.Controls.Primitives;
 using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 { 
     /// <summary>
     /// A control to display information when the user hovers over an owner control
     /// </summary> 
-    [TemplatePart(Name = System.Windows.Controlsb1.ToolTip.NormalStateName, Type = typeof(Storyboard))] 
-    [TemplatePart(Name = System.Windows.Controlsb1.ToolTip.RootElementName, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = System.Windows.Controlsb1.ToolTip.VisibleStateName, Type = typeof(Storyboard))] 
+    [TemplatePart(Name = System.Windows.Controls.ToolTip.NormalStateName, Type = typeof(Storyboard))] 
+    [TemplatePart(Name = System.Windows.Controls.ToolTip.RootElementName, Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = System.Windows.Controls.ToolTip.VisibleStateName, Type = typeof(Storyboard))] 
     public partial class ToolTip : ContentControl
     {
         #region Constants 
@@ -213,7 +213,7 @@ namespace System.Windows.Controlsb1
             // don't display content, but don't throw either 
 
             // get the element
-            RootElement = GetTemplateChild(System.Windows.Controlsb1.ToolTip.RootElementName) as FrameworkElement; 
+            RootElement = GetTemplateChild(System.Windows.Controls.ToolTip.RootElementName) as FrameworkElement; 
  
             if (RootElement != null)
             { 

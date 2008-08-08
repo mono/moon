@@ -11,7 +11,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Controls;
 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 {
     /// <summary>
     /// Displays the content of a ContentControl. 

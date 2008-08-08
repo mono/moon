@@ -16,7 +16,7 @@ using PropertyChangedCallback = System.Windows.FrameworkPropertyMetadata;
 #if WPF 
 namespace WPF 
 #else
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 #endif
 {
     /// <summary> 
@@ -393,7 +393,7 @@ namespace System.Windows.Controlsb1
         /// </summary>
         /// <param name="orientation">Orientation of the ScrollBar.</param> 
         /// <param name="e">A ScrollEventArgs that contains the event data.</param> 
-        private void HandleScroll(Orientation orientation, System.Windows.Controls.Primitives.ScrollEventArgs e)
+        private void HandleScroll(Orientation orientation, ScrollEventArgs e)
         { 
             if (null != ElementScrollContentPresenter)
             {

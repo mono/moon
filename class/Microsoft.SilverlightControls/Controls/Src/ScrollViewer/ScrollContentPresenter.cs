@@ -13,7 +13,7 @@ using System.Windows.Media;
 #if WPF 
 namespace WPF
 #else
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 #endif 
 {
     /// <summary> 
