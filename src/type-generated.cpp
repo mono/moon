@@ -39,6 +39,7 @@
 #include "deployment.h"
 #include "grid.h"
 #include "size.h"
+#include "template.h"
 #include "usercontrol.h"
 #endif
 
@@ -50,16 +51,19 @@ const int Downloader::CompletedEvent = 1;
 const int Downloader::DownloadFailedEvent = 2;
 const int Downloader::DownloadProgressChangedEvent = 3;
 const int EventObject::DestroyedEvent = 0;
-const int Image::ImageFailedEvent = 13;
+const int FrameworkElement::BindingValidationErrorEvent = 12;
+const int FrameworkElement::LayoutUpdatedEvent = 13;
+const int FrameworkElement::SizeChangedEvent = 14;
+const int Image::ImageFailedEvent = 16;
 const int ImageBrush::DownloadProgressChangedEvent = 1;
 const int ImageBrush::ImageFailedEvent = 2;
-const int MediaBase::DownloadProgressChangedEvent = 12;
-const int MediaElement::BufferingProgressChangedEvent = 13;
-const int MediaElement::CurrentStateChangedEvent = 14;
-const int MediaElement::MarkerReachedEvent = 15;
-const int MediaElement::MediaEndedEvent = 16;
-const int MediaElement::MediaFailedEvent = 17;
-const int MediaElement::MediaOpenedEvent = 18;
+const int MediaBase::DownloadProgressChangedEvent = 15;
+const int MediaElement::BufferingProgressChangedEvent = 16;
+const int MediaElement::CurrentStateChangedEvent = 17;
+const int MediaElement::MarkerReachedEvent = 18;
+const int MediaElement::MediaEndedEvent = 19;
+const int MediaElement::MediaFailedEvent = 20;
+const int MediaElement::MediaOpenedEvent = 21;
 const int Storyboard::CompletedEvent = 1;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
@@ -83,6 +87,7 @@ const int UIElement::MouseMoveEvent = 11;
 const char *Clock_Events [] = { "Completed", "CurrentGlobalSpeedInvalidated", "CurrentStateInvalidated", "CurrentTimeInvalidated", NULL };
 const char *Downloader_Events [] = { "Completed", "DownloadFailed", "DownloadProgressChanged", NULL };
 const char *EventObject_Events [] = { "Destroyed", NULL };
+const char *FrameworkElement_Events [] = { "BindingValidationError", "LayoutUpdated", "SizeChanged", NULL };
 const char *Image_Events [] = { "ImageFailed", NULL };
 const char *ImageBrush_Events [] = { "DownloadProgressChanged", "ImageFailed", NULL };
 const char *MediaBase_Events [] = { "DownloadProgressChanged", NULL };
@@ -117,7 +122,7 @@ Type type_infos [] = {
 	{ Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL, NULL, NULL }, 
 	{ Type::BOOL, Type::INVALID, false, "bool", "BOOL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL, NULL, NULL }, 
-	{ Type::CANVAS, Type::PANEL, false, "Canvas", "CANVAS", 0, 12, NULL, (create_inst_func *) canvas_new, NULL, NULL, NULL }, 
+	{ Type::CANVAS, Type::PANEL, false, "Canvas", "CANVAS", 0, 15, NULL, (create_inst_func *) canvas_new, NULL, NULL, NULL }, 
 	{ Type::CLOCK, Type::DEPENDENCY_OBJECT, false, "Clock", "CLOCK", 4, 5, Clock_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::CLOCKGROUP, Type::CLOCK, false, "ClockGroup", "CLOCKGROUP", 0, 5, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::COLLECTION, Type::DEPENDENCY_OBJECT, false, "Collection", "COLLECTION", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
@@ -137,14 +142,19 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'COLUMNDEFINITION_COLLECTION'", "COLUMNDEFINITION_COLLECTION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
-	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 0, 12, NULL, (create_inst_func *) content_control_new, "Content", NULL, NULL }, 
+	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 0, 15, NULL, (create_inst_func *) content_control_new, "Content", NULL, NULL }, 
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CONTENTCONTROL'", "CONTENTCONTROL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 #endif
 #if SL_2_0
-	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 12, NULL, (create_inst_func *) control_new, "Content", NULL, NULL }, 
+	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 15, NULL, (create_inst_func *) control_new, "Content", NULL, NULL }, 
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CONTROL'", "CONTROL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+#endif
+#if SL_2_0
+	{ Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL, NULL, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CONTROLTEMPLATE'", "CONTROLTEMPLATE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 #endif
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL, NULL, NULL }, 
@@ -166,23 +176,28 @@ Type type_infos [] = {
 	{ Type::DOWNLOADER, Type::DEPENDENCY_OBJECT, false, "Downloader", "DOWNLOADER", 3, 4, Downloader_Events, (create_inst_func *) downloader_new, NULL, NULL, NULL }, 
 	{ Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT, false, "DrawingAttributes", "DRAWINGATTRIBUTES", 0, 1, NULL, (create_inst_func *) drawing_attributes_new, NULL, NULL, NULL }, 
 	{ Type::DURATION, Type::INVALID, false, "Duration", "DURATION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::ELLIPSE, Type::SHAPE, false, "Ellipse", "ELLIPSE", 0, 12, NULL, (create_inst_func *) ellipse_new, NULL, NULL, NULL }, 
+	{ Type::ELLIPSE, Type::SHAPE, false, "Ellipse", "ELLIPSE", 0, 15, NULL, (create_inst_func *) ellipse_new, NULL, NULL, NULL }, 
 	{ Type::ELLIPSEGEOMETRY, Type::GEOMETRY, false, "EllipseGeometry", "ELLIPSEGEOMETRY", 0, 1, NULL, (create_inst_func *) ellipse_geometry_new, NULL, NULL, NULL }, 
 	{ Type::ERROREVENTARGS, Type::EVENTARGS, false, "ErrorEventArgs", "ERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTARGS, Type::DEPENDENCY_OBJECT, false, "EventArgs", "EVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTOBJECT, Type::INVALID, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTTRIGGER, Type::DEPENDENCY_OBJECT, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL, NULL }, 
-	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 0, 12, NULL, (create_inst_func *) framework_element_new, NULL, NULL, NULL }, 
+	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 3, 15, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL, NULL, NULL }, 
+#if SL_2_0
+	{ Type::FRAMEWORKTEMPLATE, Type::DEPENDENCY_OBJECT, false, "FrameworkTemplate", "FRAMEWORKTEMPLATE", 0, 1, NULL, (create_inst_func *) framework_template_new, NULL, NULL, NULL }, 
+#else
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'FRAMEWORKTEMPLATE'", "FRAMEWORKTEMPLATE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+#endif
 	{ Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL, NULL, NULL }, 
 	{ Type::GEOMETRY, Type::DEPENDENCY_OBJECT, false, "Geometry", "GEOMETRY", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::GEOMETRY_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GeometryCollection", "GEOMETRY_COLLECTION", 0, 1, NULL, (create_inst_func *) geometry_collection_new, NULL, NULL, NULL }, 
 	{ Type::GEOMETRYGROUP, Type::GEOMETRY, false, "GeometryGroup", "GEOMETRYGROUP", 0, 1, NULL, (create_inst_func *) geometry_group_new, "Children", NULL, NULL }, 
-	{ Type::GLYPHS, Type::FRAMEWORKELEMENT, false, "Glyphs", "GLYPHS", 0, 12, NULL, (create_inst_func *) glyphs_new, NULL, NULL, NULL }, 
+	{ Type::GLYPHS, Type::FRAMEWORKELEMENT, false, "Glyphs", "GLYPHS", 0, 15, NULL, (create_inst_func *) glyphs_new, NULL, NULL, NULL }, 
 	{ Type::GRADIENTBRUSH, Type::BRUSH, false, "GradientBrush", "GRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) gradient_brush_new, "GradientStops", NULL, NULL }, 
 	{ Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT, false, "GradientStop", "GRADIENTSTOP", 0, 1, NULL, (create_inst_func *) gradient_stop_new, NULL, NULL, NULL }, 
 	{ Type::GRADIENTSTOP_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, (create_inst_func *) gradient_stop_collection_new, NULL, NULL, NULL }, 
 #if SL_2_0
-	{ Type::GRID, Type::PANEL, false, "Grid", "GRID", 0, 12, NULL, (create_inst_func *) grid_new, NULL, NULL, NULL }, 
+	{ Type::GRID, Type::PANEL, false, "Grid", "GRID", 0, 15, NULL, (create_inst_func *) grid_new, NULL, NULL, NULL }, 
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'GRID'", "GRID", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 #endif
@@ -191,10 +206,10 @@ Type type_infos [] = {
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'GRIDLENGTH'", "GRIDLENGTH", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 #endif
-	{ Type::IMAGE, Type::MEDIABASE, false, "Image", "IMAGE", 1, 14, Image_Events, (create_inst_func *) image_new, NULL, NULL, NULL }, 
+	{ Type::IMAGE, Type::MEDIABASE, false, "Image", "IMAGE", 1, 17, Image_Events, (create_inst_func *) image_new, NULL, NULL, NULL }, 
 	{ Type::IMAGEBRUSH, Type::TILEBRUSH, false, "ImageBrush", "IMAGEBRUSH", 2, 3, ImageBrush_Events, (create_inst_func *) image_brush_new, NULL, NULL, NULL }, 
 	{ Type::IMAGEERROREVENTARGS, Type::ERROREVENTARGS, false, "ImageErrorEventArgs", "IMAGEERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::INKPRESENTER, Type::CANVAS, false, "InkPresenter", "INKPRESENTER", 0, 12, NULL, (create_inst_func *) ink_presenter_new, NULL, NULL, NULL }, 
+	{ Type::INKPRESENTER, Type::CANVAS, false, "InkPresenter", "INKPRESENTER", 0, 15, NULL, (create_inst_func *) ink_presenter_new, NULL, NULL, NULL }, 
 	{ Type::INLINE, Type::DEPENDENCY_OBJECT, false, "Inline", "INLINE", 0, 1, NULL, (create_inst_func *) inline_new, NULL, NULL, NULL }, 
 	{ Type::INLINES, Type::DEPENDENCY_OBJECT_COLLECTION, false, "Inlines", "INLINES", 0, 1, NULL, (create_inst_func *) inlines_new, NULL, NULL, NULL }, 
 	{ Type::INT32, Type::INVALID, false, "gint32", "INT32", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
@@ -204,7 +219,7 @@ Type type_infos [] = {
 	{ Type::KEYFRAME_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "KeyFrameCollection", "KEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) key_frame_collection_new, NULL, NULL, NULL }, 
 	{ Type::KEYSPLINE, Type::DEPENDENCY_OBJECT, false, "KeySpline", "KEYSPLINE", 0, 1, NULL, (create_inst_func *) key_spline_new, NULL, NULL, NULL }, 
 	{ Type::KEYTIME, Type::INVALID, false, "KeyTime", "KEYTIME", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::LINE, Type::SHAPE, false, "Line", "LINE", 0, 12, NULL, (create_inst_func *) line_new, NULL, NULL, NULL }, 
+	{ Type::LINE, Type::SHAPE, false, "Line", "LINE", 0, 15, NULL, (create_inst_func *) line_new, NULL, NULL, NULL }, 
 	{ Type::LINEARCOLORKEYFRAME, Type::COLORKEYFRAME, false, "LinearColorKeyFrame", "LINEARCOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_color_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::LINEARDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "LinearDoubleKeyFrame", "LINEARDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_double_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::LINEARGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "LinearGradientBrush", "LINEARGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) linear_gradient_brush_new, NULL, NULL, NULL }, 
@@ -223,16 +238,16 @@ Type type_infos [] = {
 	{ Type::MATRIXTRANSFORM, Type::TRANSFORM, false, "MatrixTransform", "MATRIXTRANSFORM", 0, 1, NULL, (create_inst_func *) matrix_transform_new, NULL, NULL, NULL }, 
 	{ Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, false, "MediaAttribute", "MEDIAATTRIBUTE", 0, 1, NULL, (create_inst_func *) media_attribute_new, NULL, NULL, NULL }, 
 	{ Type::MEDIAATTRIBUTE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "MediaAttributeCollection", "MEDIAATTRIBUTE_COLLECTION", 0, 1, NULL, (create_inst_func *) media_attribute_collection_new, NULL, NULL, NULL }, 
-	{ Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 13, MediaBase_Events, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 19, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL }, 
+	{ Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 16, MediaBase_Events, NULL, NULL, NULL, NULL }, 
+	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 22, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::INVALID, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 12, NULL, (create_inst_func *) panel_new, "Children", NULL, NULL }, 
+	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 15, NULL, (create_inst_func *) panel_new, "Children", NULL, NULL }, 
 	{ Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 1, NULL, (create_inst_func *) parallel_timeline_new, NULL, NULL, NULL }, 
 	{ Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 12, NULL, (create_inst_func *) path_new, NULL, NULL, NULL }, 
+	{ Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 15, NULL, (create_inst_func *) path_new, NULL, NULL, NULL }, 
 	{ Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, false, "PathFigure", "PATHFIGURE", 0, 1, NULL, (create_inst_func *) path_figure_new, "Segments", NULL, NULL }, 
 	{ Type::PATHFIGURE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathFigureCollection", "PATHFIGURE_COLLECTION", 0, 1, NULL, (create_inst_func *) path_figure_collection_new, NULL, NULL, NULL }, 
 	{ Type::PATHGEOMETRY, Type::GEOMETRY, false, "PathGeometry", "PATHGEOMETRY", 0, 1, NULL, (create_inst_func *) path_geometry_new, "Figures", NULL, NULL }, 
@@ -246,14 +261,14 @@ Type type_infos [] = {
 	{ Type::POINTKEYFRAME, Type::KEYFRAME, false, "PointKeyFrame", "POINTKEYFRAME", 0, 1, NULL, (create_inst_func *) point_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::POINTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "PointKeyFrameCollection", "POINTKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) point_key_frame_collection_new, NULL, NULL, NULL }, 
 	{ Type::POLYBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyBezierSegment", "POLYBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_bezier_segment_new, NULL, NULL, NULL }, 
-	{ Type::POLYGON, Type::SHAPE, false, "Polygon", "POLYGON", 0, 12, NULL, (create_inst_func *) polygon_new, NULL, NULL, NULL }, 
-	{ Type::POLYLINE, Type::SHAPE, false, "Polyline", "POLYLINE", 0, 12, NULL, (create_inst_func *) polyline_new, NULL, NULL, NULL }, 
+	{ Type::POLYGON, Type::SHAPE, false, "Polygon", "POLYGON", 0, 15, NULL, (create_inst_func *) polygon_new, NULL, NULL, NULL }, 
+	{ Type::POLYLINE, Type::SHAPE, false, "Polyline", "POLYLINE", 0, 15, NULL, (create_inst_func *) polyline_new, NULL, NULL, NULL }, 
 	{ Type::POLYLINESEGMENT, Type::PATHSEGMENT, false, "PolyLineSegment", "POLYLINESEGMENT", 0, 1, NULL, (create_inst_func *) poly_line_segment_new, NULL, NULL, NULL }, 
 	{ Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyQuadraticBezierSegment", "POLYQUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL, NULL, NULL }, 
 	{ Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "QuadraticBezierSegment", "QUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) quadratic_bezier_segment_new, NULL, NULL, NULL }, 
 	{ Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "RadialGradientBrush", "RADIALGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) radial_gradient_brush_new, NULL, NULL, NULL }, 
 	{ Type::RECT, Type::INVALID, false, "Rect", "RECT", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::RECTANGLE, Type::SHAPE, false, "Rectangle", "RECTANGLE", 0, 12, NULL, (create_inst_func *) rectangle_new, NULL, NULL, NULL }, 
+	{ Type::RECTANGLE, Type::SHAPE, false, "Rectangle", "RECTANGLE", 0, 15, NULL, (create_inst_func *) rectangle_new, NULL, NULL, NULL }, 
 	{ Type::RECTANGLEGEOMETRY, Type::GEOMETRY, false, "RectangleGeometry", "RECTANGLEGEOMETRY", 0, 1, NULL, (create_inst_func *) rectangle_geometry_new, NULL, NULL, NULL }, 
 	{ Type::REPEATBEHAVIOR, Type::INVALID, false, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::RESOURCE_DICTIONARY, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL, NULL, NULL }, 
@@ -271,7 +286,7 @@ Type type_infos [] = {
 #endif
 	{ Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text", NULL, NULL }, 
 	{ Type::SCALETRANSFORM, Type::TRANSFORM, false, "ScaleTransform", "SCALETRANSFORM", 0, 1, NULL, (create_inst_func *) scale_transform_new, NULL, NULL, NULL }, 
-	{ Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 12, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 15, NULL, NULL, NULL, NULL, NULL }, 
 #if SL_2_0
 	{ Type::SIZE, Type::INVALID, false, "Size", "SIZE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 #else
@@ -296,7 +311,7 @@ Type type_infos [] = {
 	{ Type::STYLUSPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL, NULL, NULL }, 
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 12, NULL, (create_inst_func *) text_block_new, "Inlines", NULL, NULL }, 
+	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 15, NULL, (create_inst_func *) text_block_new, "Inlines", NULL, NULL }, 
 	{ Type::THICKNESS, Type::INVALID, false, "Thickness", "THICKNESS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::TIMELINE, Type::DEPENDENCY_OBJECT, false, "Timeline", "TIMELINE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
@@ -319,7 +334,7 @@ Type type_infos [] = {
 	{ Type::UINT32, Type::INVALID, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::UINT64, Type::INVALID, false, "guint64", "UINT64", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 #if SL_2_0
-	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 12, NULL, (create_inst_func *) user_control_new, "Content", NULL, NULL }, 
+	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 15, NULL, (create_inst_func *) user_control_new, "Content", NULL, NULL }, 
 #else
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'USERCONTROL'", "USERCONTROL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 #endif

@@ -1,5 +1,19 @@
 2008-08-08  Chris Toshok  <toshok@ximian.com>
 
+	* template.h, template.cpp: new file, stub implementations for
+	FrameworkTemplate and ControlTemplate.
+
+	* Makefile.am: add template.h/cpp.
+
+	* control.h: add Template property.
+
+	* frameworkelement.h: add some 2.0 events.
+
+	* cbinding.h, cbinding.cpp, type.h, dependencyproperty.g.cpp,
+	value.h, type-generated.cpp: regenerate.
+	
+2008-08-08  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.h, xaml.cpp: we need to propagate the 2.0-ness of the
 	parser around in various methods (starting from the public
 	xaml_set_property_from_str and value_from_str*) in order to get it

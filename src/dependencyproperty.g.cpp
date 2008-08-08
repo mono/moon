@@ -89,6 +89,7 @@ dependency_property_g_init ()
 	Control::PaddingProperty = DependencyProperty::Register (Type::CONTROL, "Padding", new Value (Thickness(0.0)));
 	Control::TabIndexProperty = DependencyProperty::Register (Type::CONTROL, "TabIndex", new Value (INT_MAX));
 	Control::TabNavigationProperty = DependencyProperty::Register (Type::CONTROL, "TabNavigation", new Value (KeyboardNavigationModeLocal));
+	Control::TemplateProperty = DependencyProperty::Register (Type::CONTROL, "Template", Type::CONTROLTEMPLATE);
 	Control::VerticalContentAlignmentProperty = DependencyProperty::Register (Type::CONTROL, "VerticalContentAlignment", new Value (VerticalAlignmentCenter));
 #endif
 	DependencyObject::NameProperty = DependencyProperty::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
@@ -373,6 +374,7 @@ DependencyProperty *Control::IsTabStopProperty = NULL;
 DependencyProperty *Control::PaddingProperty = NULL;
 DependencyProperty *Control::TabIndexProperty = NULL;
 DependencyProperty *Control::TabNavigationProperty = NULL;
+DependencyProperty *Control::TemplateProperty = NULL;
 DependencyProperty *Control::VerticalContentAlignmentProperty = NULL;
 DependencyProperty *DependencyObject::NameProperty = NULL;
 DependencyProperty *Deployment::EntryPointAssemblyProperty = NULL;

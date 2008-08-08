@@ -184,6 +184,18 @@ control_new ()
 #endif
 
 /* 
+ * ControlTemplate
+ */ 
+
+#if SL_2_0
+ControlTemplate*
+control_template_new ()
+{
+	return new ControlTemplate ();
+}
+#endif
+
+/* 
  * DependencyObject
  */ 
 
@@ -455,6 +467,18 @@ framework_element_new ()
 {
 	return new FrameworkElement ();
 }
+
+/* 
+ * FrameworkTemplate
+ */ 
+
+#if SL_2_0
+FrameworkTemplate*
+framework_template_new ()
+{
+	return new FrameworkTemplate ();
+}
+#endif
 
 /* 
  * GeneralTransform

@@ -70,6 +70,7 @@ class FrameworkElement : public UIElement {
 	void SetWidth (double width);
 	double GetWidth ();
 	
+#if SL_2_0
 	//
 	// 2.0 methods
 	//
@@ -89,6 +90,16 @@ class FrameworkElement : public UIElement {
 		//
 		return MeasureOverride (availableSize);
 	}
+
+	/* @SilverlightVersion="2" */
+	const static int BindingValidationErrorEvent;
+	/* @SilverlightVersion="2" */
+	const static int LayoutUpdatedEvent;
+	/* @SilverlightVersion="2" */
+	const static int SizeChangedEvent;
+	// XXX 2.0 also has the Loaded event moved here from
+	// UIElement.
+#endif
 };
 
 G_BEGIN_DECLS

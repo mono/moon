@@ -64,6 +64,8 @@ class Control : public FrameworkElement {
 	static DependencyProperty *TabIndexProperty;
  	/* @PropertyType=gint32,DefaultValue=KeyboardNavigationModeLocal */
 	static DependencyProperty *TabNavigationProperty;
+ 	/* @PropertyType=ControlTemplate */
+	static DependencyProperty *TemplateProperty;
  	/* @PropertyType=gint32,DefaultValue=VerticalAlignmentCenter */
 	static DependencyProperty *VerticalContentAlignmentProperty;
 	

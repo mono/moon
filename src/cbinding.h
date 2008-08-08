@@ -26,6 +26,7 @@
 #include "panel.h"
 #include "shape.h"
 #include "stylus.h"
+#include "template.h"
 #include "text.h"
 #include "transform.h"
 #include "trigger.h"
@@ -128,6 +129,13 @@ ContentControl* content_control_new ();
 
 #if SL_2_0
 Control* control_new ();
+#endif
+/* 
+ * ControlTemplate
+ */ 
+
+#if SL_2_0
+ControlTemplate* control_template_new ();
 #endif
 /* 
  * DependencyObject
@@ -250,6 +258,13 @@ EventTrigger* event_trigger_new ();
  */ 
 
 FrameworkElement* framework_element_new ();
+/* 
+ * FrameworkTemplate
+ */ 
+
+#if SL_2_0
+FrameworkTemplate* framework_template_new ();
+#endif
 /* 
  * GeneralTransform
  */ 
