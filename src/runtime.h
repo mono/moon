@@ -118,6 +118,7 @@ public:
 	bool IsTopLevel (UIElement *top);
 
 	bool IsLoaded () { return toplevel != NULL; }
+	bool IsSilverlight2 () { return silverlight2; }
 
 	const static int ResizeEvent;
 	const static int FullScreenChangeEvent;
