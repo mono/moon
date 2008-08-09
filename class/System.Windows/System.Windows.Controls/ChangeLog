@@ -1,3 +1,8 @@
+2008-08-09  Chris Toshok  <toshok@ximian.com>
+
+	* Image.cs: change the Source property to be the right type for
+	2.0 (doesn't work, though.. the DP is still a string).
+
 2008-08-08  Fernando Herrera  <fherrera@novell.com>
 
 	* Control.cs: Added some stubs methods for SL2

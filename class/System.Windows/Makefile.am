@@ -208,6 +208,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/GradientStop.cs				\
 	$(srcdir)/System.Windows.Media/GradientStopCollection.cs		\
 	$(srcdir)/System.Windows.Media/ImageBrush.cs				\
+	$(srcdir)/System.Windows.Media/ImageSource.cs				\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/LineGeometry.cs				\
 	$(srcdir)/System.Windows.Media/LineSegment.cs				\
@@ -268,6 +269,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/Storyboard.cs			\
 	$(srcdir)/System.Windows.Media.Animation/Timeline.cs			\
 	$(srcdir)/System.Windows.Media.Animation/TimelineGroup.cs		\
+	$(srcdir)/System.Windows.Media.Imaging/BitmapImage.cs			\
+	$(srcdir)/System.Windows.Media.Imaging/DownloadProgressEventArgs.cs	\
 	$(srcdir)/System.Windows.Resources/StreamResourceInfo.cs		\
 	$(srcdir)/System.Windows.Shapes/Ellipse.cs				\
 	$(srcdir)/System.Windows.Shapes/Line.cs					\

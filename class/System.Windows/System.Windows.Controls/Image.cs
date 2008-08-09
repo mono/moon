@@ -31,6 +31,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public sealed class Image : FrameworkElement {
+		// XXX this should be an ImageSource
 		public static readonly DependencyProperty SourceProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (string));
 		
@@ -45,16 +46,9 @@ namespace System.Windows.Controls {
 		{
 		}
 		
-		public Uri Source {
-			get {
-				// Uri is not a DependencyObject, we save it as a string
-				string uri = (string) GetValue (SourceProperty);
-				return new Uri (uri, UriKind.RelativeOrAbsolute);
-			}
-			set {
-				string uri = value.OriginalString;
-				SetValue (SourceProperty, uri); 
-			}
+		public ImageSource Source {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
 		}
 		
 		public Stretch Stretch {

@@ -1,3 +1,7 @@
+2008-08-09  Chris Toshok  <toshok@ximian.com>
+
+	* ImageSource.cs: new stub.
+
 2008-08-05  Chris Toshok  <toshok@ximian.com>
 
 	* GeneralTransform.cs: add.
