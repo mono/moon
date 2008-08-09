@@ -1,0 +1,5 @@
+2008-08-09  Chris Toshok  <toshok@ximian.com>
+
+	* DownloadProgressEventArgs.cs: new stubs.
+
+	* BitmapImage.cs: new stubs.
