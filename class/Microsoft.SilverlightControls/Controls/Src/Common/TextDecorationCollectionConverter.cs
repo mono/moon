@@ -45,7 +45,10 @@ namespace System.Windows
         /// true if the converter can convert the provided type to an instance
         /// of TextDecorationCollection; otherwise, false. 
         /// </returns>
-        public override bool CanConvertFrom(Type sourceType)
+#if NET_2_1
+	override
+#endif
+        public bool CanConvertFrom(Type sourceType)
         { 
             return TypeConverters.CanConvertFrom<TextDecorationCollection>(sourceType);
         }
@@ -59,7 +62,10 @@ namespace System.Windows
         /// The instance of TextDecorationCollection created from the converted
         /// object.
         /// </returns> 
-        public override object ConvertFrom(object value) 
+#if NET_2_1
+	override
+#endif
+        public object ConvertFrom(object value) 
         {
             return TypeConverters.ConvertFrom<TextDecorationCollection>(this, value); 
         }
@@ -75,7 +81,10 @@ namespace System.Windows
         /// The instance of TextDecorationCollection created from the converted
         /// text. 
         /// </returns>
-        public override object ConvertFromString(string text)
+#if NET_2_1
+	override
+#endif
+        public object ConvertFromString(string text)
         { 
             if (text == null) 
             {

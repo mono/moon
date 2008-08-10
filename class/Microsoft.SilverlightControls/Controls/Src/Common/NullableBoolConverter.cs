@@ -33,7 +33,10 @@ namespace System.Windows
         /// true if sourceType is a String type or a Boolean? type that can be
         /// assigned from sourceType; otherwise, false. 
         /// </returns> 
-        public override bool CanConvertFrom(Type sourceType)
+#if NET_2_1
+	override
+#endif
+        public bool CanConvertFrom(Type sourceType)
         { 
             return TypeConverters.CanConvertFrom<bool?>(sourceType) ||
                 (sourceType == typeof(bool));
@@ -44,7 +47,10 @@ namespace System.Windows
         /// </summary> 
         /// <param name="value">Object to convert into a bool?.</param>
         /// <returns>A bool? that represents the converted text.</returns> 
-        public override object ConvertFrom(object value)
+#if NET_2_1
+	override
+#endif
+        public object ConvertFrom(object value)
         {
             if (value is bool) 
             {
@@ -63,7 +69,10 @@ namespace System.Windows
         /// <returns>
         /// A nullable boolean that represents the converted text. 
         /// </returns>
-        public override object ConvertFromString(string text)
+#if NET_2_1
+	override
+#endif
+        public object ConvertFromString(string text)
         { 
             // Let bool.Parse throw any informative exceptions
             return (!string.IsNullOrEmpty(text)) ?

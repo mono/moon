@@ -33,7 +33,10 @@ namespace System
         /// true if sourceType is a String type or a Uri type that can be
         /// assigned from sourceType; otherwise, false. 
         /// </returns> 
-        public override bool CanConvertFrom(Type sourceType)
+#if NET_2_1
+	override
+#endif
+        public bool CanConvertFrom(Type sourceType)
         { 
             return TypeConverters.CanConvertFrom<Uri>(sourceType);
         }
@@ -43,7 +46,10 @@ namespace System
         /// </summary> 
         /// <param name="value">Object to convert into a Uri.</param> 
         /// <returns>A Uri that represents the converted text.</returns>
-        public override object ConvertFrom(object value) 
+#if NET_2_1
+	override
+#endif
+        public object ConvertFrom(object value) 
         {
             return TypeConverters.ConvertFrom<Uri>(this, value);
         } 
@@ -55,7 +61,10 @@ namespace System
         /// The text representation of the Uri to convert. 
         /// </param>
         /// <returns>A Uri that represents the converted text.</returns>
-        public override object ConvertFromString(string text) 
+#if NET_2_1
+	override
+#endif
+        public object ConvertFromString(string text) 
         {
             // Let the Uri constructor throw any informative exceptions
             return (!string.IsNullOrEmpty(text)) ? 

@@ -52,7 +52,10 @@ namespace System.Windows
         /// true if the converter can convert the provided type to an instance
         /// of FontWeight; otherwise, false. 
         /// </returns> 
-        public override bool CanConvertFrom(Type sourceType)
+#if NET_2_1
+	override
+#endif
+        public bool CanConvertFrom(Type sourceType)
         { 
             return TypeConverters.CanConvertFrom<FontWeight>(sourceType);
         }
@@ -64,7 +67,10 @@ namespace System.Windows
         /// <returns>
         /// The instance of FontWeight created from the converted object. 
         /// </returns>
-        public override object ConvertFrom(object value)
+#if NET_2_1
+	override
+#endif
+        public object ConvertFrom(object value)
         { 
             return TypeConverters.ConvertFrom<FontWeight>(this, value);
         }
@@ -78,7 +84,10 @@ namespace System.Windows
         /// <returns>
         /// The instance of FontWeight created from the converted text.
         /// </returns> 
-        public override object ConvertFromString(string text) 
+#if NET_2_1
+	override
+#endif
+        public object ConvertFromString(string text) 
         {
             return TypeConverters.ConvertFromString(text, KnownValues); 
         }

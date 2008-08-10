@@ -33,7 +33,10 @@ namespace System.Windows.Media
         /// true if the converter can convert the provided type to an instance
         /// of FontFamily; otherwise, false.
         /// </returns> 
-        public override bool CanConvertFrom(Type sourceType) 
+#if NET_2_1
+	override
+#endif
+	public bool CanConvertFrom(Type sourceType) 
         {
             return TypeConverters.CanConvertFrom<FontFamily>(sourceType); 
         }
@@ -45,7 +48,10 @@ namespace System.Windows.Media
         /// <returns> 
         /// The instance of FontFamily created from the converted object.
         /// </returns> 
-        public override object ConvertFrom(object value)
+#if NET_2_1
+	override
+#endif
+	public object ConvertFrom(object value)
         {
             return TypeConverters.ConvertFrom<FontFamily>(this, value); 
         }
@@ -59,7 +65,10 @@ namespace System.Windows.Media
         /// <returns> 
         /// The instance of FontFamily created from the converted text.
         /// </returns>
-        public override object ConvertFromString(string text) 
+#if NET_2_1
+	override
+#endif
+        public object ConvertFromString(string text) 
         { 
             return new FontFamily(text);
         } 

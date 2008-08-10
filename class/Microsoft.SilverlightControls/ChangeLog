@@ -1,3 +1,15 @@
+2008-08-09  Chris Toshok  <toshok@ximian.com>
+
+	* Controls/Src/Common/FontFamilyConverter.cs:
+	* Controls/Src/Common/FontStretchConverter.cs:
+	* Controls/Src/Common/FontStyleConverter.cs:
+	* Controls/Src/Common/FontWeightConverter.cs:
+	* Controls/Src/Common/NullableBoolConverter.cs:
+	* Controls/Src/Common/TextDecorationCollectionConverter.cs:
+	* Controls/Src/Common/UriTypeConverter.cs: make these compile
+	under the 3.0 profile as well by making the "overrides" 2.1
+	only.
+
 2008-08-08  Fernando Herrera  <fherrera@novell.com>
 
 	* Controls/Makefile.am: Fix lib/* path
