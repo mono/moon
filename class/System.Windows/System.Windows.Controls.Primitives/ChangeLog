@@ -1,0 +1,5 @@
+2008-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Controls.Primitives/Popup.cs: stub this class
+	out.
+
