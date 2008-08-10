@@ -1,3 +1,9 @@
+2008-08-10  Raja R Harinath  <harinath@hurrynot.org>
+
+	* configure.ac (HAVE_CAIRO_LINE_CAP_TRIANGLE): Look for
+	cairo/src/cairo.h in $srcdir.  Remove Useless Use of cat.
+	(large file support): Name cache variable 'moon_cv_largefile64_source'.
+
 2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* tools/tools.mdp: Updated.

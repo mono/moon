@@ -163,8 +163,8 @@ if test x$with_cairo = xembedded; then
   AC_CONFIG_SUBDIRS([pixman cairo])
 
   # hackish but I couldn't get AC_EGREP_HEADER to work with our embedded cairo :(
-  if cat cairo/src/cairo.h | grep CAIRO_LINE_CAP_TRIANGLE >/dev/null 2>&1; then
-  	AC_DEFINE(HAVE_CAIRO_LINE_CAP_TRIANGLE,,Define if cairo has CAIRO_LINE_CAP_TRIANGLE as a cairo_line_cap_t enum member)
+  if grep CAIRO_LINE_CAP_TRIANGLE $srcdir/cairo/src/cairo.h >/dev/null 2>&1; then
+  	AC_DEFINE(HAVE_CAIRO_LINE_CAP_TRIANGLE,,[Define if cairo has CAIRO_LINE_CAP_TRIANGLE as a cairo_line_cap_t enum member])
   fi
   CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
   CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
@@ -336,7 +336,7 @@ dnl *************************************
 dnl *** Checks for large file support ***
 dnl *************************************
 AC_SYS_LARGEFILE
-AC_CACHE_CHECK([for _LARGEFILE64_SOURCE value needed for large files],largefile64_source,
+AC_CACHE_CHECK([whether _LARGEFILE64_SOURCE needs to be defined for large files],moon_cv_largefile64_source,
 [
    AC_TRY_COMPILE([
       #include <sys/types.h>
@@ -345,7 +345,7 @@ AC_CACHE_CHECK([for _LARGEFILE64_SOURCE value needed for large files],largefile6
    ],[
       int fd = open ("__o_largefile", O_CREAT | O_RDWR | O_LARGEFILE, 0644);
    ],[
-      largefile64_source="no"
+      moon_cv_largefile64_source="no"
    ],[
       AC_TRY_COMPILE([
          #define _LARGEFILE64_SOURCE 1
@@ -355,9 +355,9 @@ AC_CACHE_CHECK([for _LARGEFILE64_SOURCE value needed for large files],largefile6
       ],[
          int fd = open ("__o_largefile", O_CREAT | O_RDWR | O_LARGEFILE, 0644);
       ],[
-         largefile64_source="yes"
+         moon_cv_largefile64_source="yes"
       ],[
-         largefile64_source="undefined"
+         moon_cv_largefile64_source="unknown (large files may not be supported)"
       ])
    ])
 ])
