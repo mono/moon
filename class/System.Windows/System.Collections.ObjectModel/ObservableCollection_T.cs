@@ -32,9 +32,7 @@ using System.ComponentModel;
 
 namespace System.Collections.ObjectModel {
 
-	public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged
-		where T : DependencyObject
-		//  Temporary, need to add back: INotifyPropertyChanged
+	public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged
 	{
 		public ObservableCollection ()
 		{
@@ -74,8 +72,7 @@ namespace System.Collections.ObjectModel {
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-		[MonoTODO]
-		protected event PropertyChangedEventHandler PropertyChanged {
+		public event PropertyChangedEventHandler PropertyChanged {
 			add {
 				throw new NotImplementedException ();
 			}

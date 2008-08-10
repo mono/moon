@@ -1,3 +1,8 @@
+2008-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* System.Collections.ObjectModel/ObservableCollection_T.cs: remove
+	the generic constraint, and add back in INotifyPropertyChanged.
+
 2008-08-09  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): include the MS Controls
