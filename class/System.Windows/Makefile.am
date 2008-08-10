@@ -12,6 +12,8 @@ GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
+MSCONTROLS=$(srcdir)/../Microsoft.SilverlightControls/Controls
+
 system_windows_sources =							\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
@@ -22,14 +24,12 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
 	$(srcdir)/Mono/Report.cs						\
-	$(srcdir)/System/UriTypeConverter.cs					\
 	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedAction.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs \
-	$(srcdir)/System.Windows.Controls/ClickMode.cs				\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Controls/Orientation.cs			\
@@ -59,7 +59,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/Cursor.cs				\
 	$(srcdir)/System.Windows.Input/Cursors.cs				\
 	$(srcdir)/System.Windows.Input/FocusManager.cs				\
-	$(srcdir)/System.Windows.Input/KeyboardNavigation.cs			\
 	$(srcdir)/System.Windows.Input/KeyboardNavigationMode.cs		\
 	$(srcdir)/System.Windows.Input/ModifierKeys.cs				\
 	$(srcdir)/System.Windows.Input/StylusInfo.cs				\
@@ -143,9 +142,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/RoutedEvent.cs					\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
 	$(srcdir)/System.Windows/RoutedEventHandler.cs				\
-	$(srcdir)/System.Windows/RoutedPropertyChangedEventArgs_T.cs		\
-	$(srcdir)/System.Windows/RoutedPropertyChangedEventHandler_T.cs		\
-	$(srcdir)/System.Windows/SetterBaseCollection.cs					\
+	$(srcdir)/System.Windows/SetterBaseCollection.cs			\
 	$(srcdir)/System.Windows/SetterBase.cs					\
 	$(srcdir)/System.Windows/Setter.cs					\
 	$(srcdir)/System.Windows/Size.cs					\
@@ -242,13 +239,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/SkewTransform.cs				\
 	$(srcdir)/System.Windows.Media/SolidColorBrush.cs			\
 	$(srcdir)/System.Windows.Media/Stretch.cs				\
-	$(srcdir)/System.Windows.Media/StyleSimulations.cs				\
+	$(srcdir)/System.Windows.Media/StyleSimulations.cs			\
 	$(srcdir)/System.Windows.Media/SweepDirection.cs			\
 	$(srcdir)/System.Windows.Media/TileBrush.cs				\
 	$(srcdir)/System.Windows.Media/TimelineMarker.cs			\
 	$(srcdir)/System.Windows.Media/TimelineMarkerCollection.cs		\
-	$(srcdir)/System.Windows.Media/TimelineMarkerRoutedEventArgs.cs			\
-	$(srcdir)/System.Windows.Media/TimelineMarkerRoutedEventHandler.cs			\
+	$(srcdir)/System.Windows.Media/TimelineMarkerRoutedEventArgs.cs		\
+	$(srcdir)/System.Windows.Media/TimelineMarkerRoutedEventHandler.cs	\
 	$(srcdir)/System.Windows.Media/TransformCollection.cs			\
 	$(srcdir)/System.Windows.Media/Transform.cs				\
 	$(srcdir)/System.Windows.Media/TransformGroup.cs			\
@@ -282,7 +279,36 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Threading/Dispatcher.cs			\
 	$(srcdir)/System.Windows.Threading/DispatcherOperation.cs		\
 	$(srcdir)/System.Windows.Threading/DispatcherSynchronizationContext.cs	\
-	$(srcdir)/System.Windows.Threading/DispatcherTimer.cs
+	$(srcdir)/System.Windows.Threading/DispatcherTimer.cs			\
+	$(MSCONTROLS)/Src/Resource.Designer.cs					\
+	$(MSCONTROLS)/Src/Button/Button.cs					\
+	$(MSCONTROLS)/Src/ButtonBase/ButtonBase.cs				\
+	$(MSCONTROLS)/Src/ButtonBase/ClickMode.cs				\
+	$(MSCONTROLS)/Src/CheckBox/CheckBox.cs					\
+	$(MSCONTROLS)/Src/Common/DragCompletedEventArgs.cs			\
+	$(MSCONTROLS)/Src/Common/DragDeltaEventArgs.cs				\
+	$(MSCONTROLS)/Src/Common/DragEventArgs.cs				\
+	$(MSCONTROLS)/Src/Common/DragStartedEventArgs.cs			\
+	$(MSCONTROLS)/Src/Common/FontFamilyConverter.cs				\
+	$(MSCONTROLS)/Src/Common/FontStretchConverter.cs			\
+	$(MSCONTROLS)/Src/Common/FontStyleConverter.cs				\
+	$(MSCONTROLS)/Src/Common/FontWeightConverter.cs				\
+	$(MSCONTROLS)/Src/Common/KeyboardNavigation.cs				\
+	$(MSCONTROLS)/Src/Common/NullableBoolConverter.cs			\
+	$(MSCONTROLS)/Src/Common/RoutedPropertyChangedEventArgs.cs		\
+	$(MSCONTROLS)/Src/Common/RoutedPropertyChangedEventHandler.cs		\
+	$(MSCONTROLS)/Src/Common/SelectionChangedEventArgs.cs			\
+	$(MSCONTROLS)/Src/Common/SelectionChangedEventHandler.cs		\
+	$(MSCONTROLS)/Src/Common/TextDecorationCollectionConverter.cs		\
+	$(MSCONTROLS)/Src/Common/TypeConverters.cs				\
+	$(MSCONTROLS)/Src/Common/UriTypeConverter.cs				\
+	$(MSCONTROLS)/Src/ContentControl/ContentControl.cs			\
+	$(MSCONTROLS)/Src/ContentControl/ContentPresenter.cs			\
+	$(MSCONTROLS)/Src/GlobalSuppressions.cs					\
+	$(MSCONTROLS)/Src/RadioButton/RadioButton.cs				\
+	$(MSCONTROLS)/Src/RepeatButton/RepeatButton.cs				\
+	$(MSCONTROLS)/Src/Thumb/Thumb.cs					\
+	$(MSCONTROLS)/Src/ToggleButton/ToggleButton.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\
