@@ -453,8 +453,6 @@ class UIElement : public DependencyObject {
 
 G_BEGIN_DECLS
 
-UIElement *uielement_new                  (void);
-
 Surface   *uielement_get_surface          (UIElement *item);
 void       uielement_invalidate           (UIElement *item);
 void       uielement_update_bounds        (UIElement *item);

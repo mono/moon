@@ -558,7 +558,6 @@ class TimelineCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
 };
 
-TimelineCollection *timeline_collection_new (void);
 
 class TimelineGroup : public Timeline {
  protected:
@@ -580,9 +579,6 @@ class TimelineGroup : public Timeline {
 	void RemoveChild (Timeline *child);
 };
 
-TimelineGroup *timeline_group_new (void);
-
-
 
 class ParallelTimeline : public TimelineGroup {
  protected:
@@ -595,9 +591,6 @@ class ParallelTimeline : public TimelineGroup {
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 };
-
-ParallelTimeline *parallel_timeline_new (void);
-
 
 
 class TimelineMarker : public DependencyObject {
@@ -628,8 +621,6 @@ class TimelineMarker : public DependencyObject {
 	void SetType (const char *type);
 	const char *GetType ();
 };
-
-TimelineMarker *timeline_marker_new (void);
 
 void timeline_marker_set_text (TimelineMarker *marker, const char *text);
 const char *timeline_marker_get_text (TimelineMarker *marker);

@@ -229,15 +229,6 @@ bool collection_iterator_reset (CollectionIterator *iterator);
 void collection_iterator_destroy (CollectionIterator *iterator);
 Value *collection_iterator_get_current (CollectionIterator *iterator, int *error);
 
-DependencyObjectCollection *dependency_object_collection_new (void);
-DoubleCollection *double_collection_new (void);
-PointCollection *point_collection_new (void);
-TriggerCollection *trigger_collection_new (void);
-TriggerActionCollection *trigger_action_collection_new (void);
-ResourceDictionary *resource_dictionary_new (void);
-Inlines *inlines_new (void);
-UIElementCollection *uielement_collection_new (void);
-
 DoubleCollection *double_collection_from_str (const char *s);
 PointCollection *point_collection_from_str (const char *s);
 

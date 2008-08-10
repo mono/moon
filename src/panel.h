@@ -93,8 +93,6 @@ class Panel : public FrameworkElement {
 
 G_BEGIN_DECLS
 
-Panel *panel_new (void);
-
 void panel_set_background (Panel *panel, Brush *background);
 Brush *panel_get_background (Panel *panel);
 

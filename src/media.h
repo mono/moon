@@ -44,6 +44,7 @@ class MediaErrorEventArgs : public ErrorEventArgs {
 	MediaResult GetMediaResult () { return (MediaResult) error_code; }
 };
 
+
 class MediaAttribute : public DependencyObject {
  protected:
 	virtual ~MediaAttribute () {}
@@ -56,8 +57,6 @@ class MediaAttribute : public DependencyObject {
 	MediaAttribute () { }
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE; };
 };
-
-MediaAttribute *media_attribute_new (void);
 
 const char *media_attribute_get_value (MediaAttribute *attribute);
 void media_attribute_set_value (MediaAttribute *attribute, const char *value);
@@ -77,7 +76,6 @@ class MediaAttributeCollection : public DependencyObjectCollection {
 	MediaAttribute *GetItemByName (const char *name);
 };
 
-MediaAttributeCollection *media_attribute_collection_new (void);
 MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name);
 
 
@@ -102,7 +100,6 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 	virtual bool Insert (int index, Value value);
 };
 
-TimelineMarkerCollection *timeline_marker_collection_new (void);
 
 class MarkerReachedEventArgs : public EventArgs {
 	TimelineMarker *marker;
@@ -261,8 +258,6 @@ class Image : public MediaBase {
 	
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 };
-
-Image *image_new (void);
 
 void   image_set_source (Image *img, Downloader *downloader, const char *PartName);
 
@@ -540,8 +535,6 @@ class MediaElement : public MediaBase {
 	void SetVolume (double volume);
 	double GetVolume ();
 };
-
-MediaElement *media_element_new (void);
 
 void media_element_pause (MediaElement *media);
 void media_element_play (MediaElement *media);

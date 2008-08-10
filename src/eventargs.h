@@ -130,7 +130,6 @@ public:
 
 G_BEGIN_DECLS
 
-MouseEventArgs*        mouse_event_args_new (void);
 int                    mouse_event_args_get_state (MouseEventArgs *args);
 void                   mouse_event_args_get_position (MouseEventArgs *args, UIElement *relative_to, double *x, double *y);
 StylusInfo*            mouse_event_args_get_stylus_info (MouseEventArgs *args);
@@ -143,8 +142,7 @@ void                   keyboard_event_args_set_handled (KeyboardEventArgs *args,
 
 ModifierKeys           keyboard_get_modifiers ();
 
-RoutedEventArgs*  routed_event_args_new (void);
-DependencyObject* routed_event_args_get_source (RoutedEventArgs *args);
+DependencyObject *routed_event_args_get_source (RoutedEventArgs *args);
 void              routed_event_args_set_source (RoutedEventArgs *args, DependencyObject *source);
 
 G_END_DECLS

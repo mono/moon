@@ -61,9 +61,4 @@ class Canvas : public Panel {
 	double GetTop ();
 };
 
-G_BEGIN_DECLS
-Canvas *canvas_new (void);
-
-G_END_DECLS
-
 #endif /* __MOON_CANVAS_H__ */

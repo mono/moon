@@ -883,13 +883,6 @@ TileBrush::GetStretch ()
 	return (Stretch) GetValue (TileBrush::StretchProperty)->AsInt32 ();
 }
 
-
-TileBrush *
-tile_brush_new (void)
-{
-	return new TileBrush ();
-}
-
 void
 tile_brush_set_alignment_x (TileBrush *brush, AlignmentX alignment)
 {

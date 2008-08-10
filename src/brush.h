@@ -94,7 +94,6 @@ class Brush : public DependencyObject {
 	Transform *GetTransform ();
 };
 
-Brush     *brush_new                    (void);
 double     brush_get_opacity            (Brush *brush);
 void       brush_set_opacity            (Brush *brush, double opacity);
 Transform *brush_get_relative_transform (Brush *brush);
@@ -127,7 +126,6 @@ class SolidColorBrush : public Brush {
 	Color *GetColor ();
 };
 
-SolidColorBrush	*solid_color_brush_new       (void);
 Color           *solid_color_brush_get_color (SolidColorBrush *solid_color_brush);
 void             solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color);
 
@@ -143,8 +141,6 @@ class GradientStopCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::GRADIENTSTOP; }
 };
-
-GradientStopCollection *gradient_stop_collection_new (void);
 
 
 class GradientStop : public DependencyObject {
@@ -169,7 +165,6 @@ class GradientStop : public DependencyObject {
 	double GetOffset ();
 };
 
-GradientStop *gradient_stop_new        (void);
 Color        *gradient_stop_get_color  (GradientStop *stop);
 void          gradient_stop_set_color  (GradientStop *stop, Color *color);
 double        gradient_stop_get_offset (GradientStop *stop);
@@ -217,7 +212,6 @@ class GradientBrush : public Brush {
 	GradientSpreadMethod GetSpreadMethod ();
 };
 
-GradientBrush          *gradient_brush_new (void);
 ColorInterpolationMode  gradient_brush_get_color_interpolation_mode (GradientBrush *brush);
 void                    gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode);
 GradientStopCollection *gradient_brush_get_gradient_stops           (GradientBrush *brush);
@@ -252,7 +246,6 @@ class LinearGradientBrush : public GradientBrush {
 	Point *GetStartPoint ();
 };
 
-LinearGradientBrush *linear_gradient_brush_new  (void);
 Point	*linear_gradient_brush_get_end_point 	(LinearGradientBrush *brush);
 void	linear_gradient_brush_set_end_point	(LinearGradientBrush *brush, Point *point);
 Point	*linear_gradient_brush_get_start_point	(LinearGradientBrush *brush);
@@ -293,7 +286,6 @@ class RadialGradientBrush : public GradientBrush {
 	double GetRadiusY ();
 };
 
-RadialGradientBrush *radial_gradient_brush_new (void);
 Point*	radial_gradient_brush_get_center		(RadialGradientBrush *brush);
 void	radial_gradient_brush_set_center		(RadialGradientBrush *brush, Point *center);
 Point*	radial_gradient_brush_get_gradientorigin	(RadialGradientBrush *brush);
@@ -329,7 +321,6 @@ class TileBrush : public Brush {
 	Stretch GetStretch ();
 };
 
-TileBrush*	tile_brush_new			(void);
 AlignmentX	tile_brush_get_alignment_x	(TileBrush *brush);
 void		tile_brush_set_alignment_x	(TileBrush *brush, AlignmentX alignment);
 AlignmentY	tile_brush_get_alignment_y	(TileBrush *brush);
@@ -376,7 +367,6 @@ class ImageBrush : public TileBrush {
 	const char *GetImageSource ();
 };
 
-ImageBrush* image_brush_new (void);
 double	image_brush_get_download_progress	(ImageBrush *brush);
 void	image_brush_set_download_progress	(ImageBrush *brush, double progress);
 const char *image_brush_get_image_source       	(ImageBrush *brush);
@@ -386,13 +376,12 @@ cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int hei
 
 
 class VideoBrush : public TileBrush {
-private:
 	MediaElement *media;
 
-protected:
+ protected:
 	virtual ~VideoBrush ();
 
-public:
+ public:
  	/* @PropertyType=char*,DefaultValue=\"\" */
 	static DependencyProperty *SourceNameProperty;
 	
@@ -412,13 +401,11 @@ public:
 	const char *GetSourceName ();
 };
 
-VideoBrush *video_brush_new (void);
 const char *video_brush_get_source_name (VideoBrush *brush);
 void video_brush_set_source_name (VideoBrush *brush, const char *name);
 
 
 class VisualBrush : public TileBrush {
- private:
 	cairo_surface_t *surface;
 
 	static void update_brush (EventObject *, EventArgs *, gpointer closure);
@@ -444,7 +431,6 @@ class VisualBrush : public TileBrush {
 	UIElement *GetVisual ();
 };
 
-VisualBrush	*visual_brush_new (void);
 UIElement       *visual_brush_get_visual (VisualBrush *brush);
 void             visual_brush_set_visual (VisualBrush *brush, UIElement *visual);
 

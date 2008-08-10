@@ -33,8 +33,6 @@ class AssemblyPart : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::ASSEMBLYPART; }
 };
 
-AssemblyPart *assembly_part_new (void);
-
 
 /* @SilverlightVersion="2" */
 class AssemblyPartCollection : public DependencyObjectCollection {
@@ -48,8 +46,6 @@ class AssemblyPartCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType ()  { return Type::ASSEMBLYPART_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::ASSEMBLYPART; }
 };
-
-AssemblyPartCollection *assembly_part_collection_new (void);
 
 enum CrossDomainAccess {
 	CrossDomainAccessNoAccess,
@@ -81,9 +77,6 @@ class Deployment : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::DEPLOYMENT; } 
 };
 
-Deployment *deployment_new (void);
-
-
 
 /* @SilverlightVersion="2" */
 class Application : public DependencyObject {
@@ -96,9 +89,6 @@ class Application : public DependencyObject {
 	Application () {} 
 	virtual Type::Kind GetObjectType () { return Type::APPLICATION; }
 };
-
-Application *application_new (void);
-
 
 G_END_DECLS
 

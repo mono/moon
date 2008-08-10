@@ -241,8 +241,6 @@ class Ellipse : public Shape {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 };
 
-Ellipse *ellipse_new (void);
-
 
 //
 // Rectangle class 
@@ -282,8 +280,6 @@ class Rectangle : public Shape {
 	void SetRadiusY (double radius);
 	double GetRadiusY ();
 };
-
-Rectangle *rectangle_new          (void);
 
 double     rectangle_get_radius_x (Rectangle *rectangle);
 void       rectangle_set_radius_x (Rectangle *rectangle, double radius);
@@ -339,13 +335,15 @@ class Line : public Shape {
 	double GetY2 ();
 };
 
-Line *line_new  (void);
 double line_get_x1 (Line *line);
 void line_set_x1 (Line *line, double x1);
+
 double line_get_y1 (Line *line);
 void line_set_y1 (Line *line, double y1);
+
 double line_get_x2 (Line *line);
 void line_set_x2 (Line *line, double x2);
+
 double line_get_y2 (Line *line);
 void line_set_y2 (Line *line, double y2);
 
@@ -389,8 +387,6 @@ class Polygon : public Shape {
 	
 	void SetPoints (PointCollection *points);
 };
-
-Polygon	       *polygon_new (void);
 
 FillRule	polygon_get_fill_rule	(Polygon *polygon);
 void		polygon_set_fill_rule	(Polygon *polygon, FillRule rule);
@@ -438,8 +434,6 @@ class Polyline : public Shape {
 	void SetPoints (PointCollection *points);
 };
 
-Polyline       *polyline_new		(void);
-
 FillRule	polyline_get_fill_rule	(Polyline *polyline);
 void		polyline_set_fill_rule	(Polyline *polyline, FillRule value);
 
@@ -482,8 +476,6 @@ class Path : public Shape {
 	void SetData (Geometry *data);
 	Geometry *GetData ();
 };
-
-Path *path_new (void);
 
 Geometry *path_get_data (Path *path);
 void path_set_data (Path *path, Geometry *value);

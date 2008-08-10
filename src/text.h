@@ -67,8 +67,6 @@ class Inline : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 };
 
-Inline *inline_new (void);
-
 const char *inline_get_font_family (Inline *inline_);
 void inline_set_font_family (Inline *inline_, const char *value);
 
@@ -101,8 +99,6 @@ class LineBreak : public Inline {
 	virtual Type::Kind GetObjectType () { return Type::LINEBREAK; };
 };
 
-LineBreak *line_break_new (void);
-
 
 /* @ContentProperty="Text" */
 class Run : public Inline {
@@ -121,8 +117,6 @@ class Run : public Inline {
 	void SetText (const char *text);
 	const char *GetText ();
 };
-
-Run *run_new (void);
 
 const char *run_get_text (Run *run);
 void run_set_text (Run *run, const char *value);
@@ -281,8 +275,6 @@ class TextBlock : public FrameworkElement {
 	TextWrapping GetTextWrapping ();
 };
 
-TextBlock *text_block_new (void);
-
 double text_block_get_actual_height (TextBlock *textblock);
 double text_block_get_actual_width (TextBlock *textblock);
 
@@ -416,8 +408,6 @@ class Glyphs : public FrameworkElement {
 	void SetUnicodeString (const char *unicode);
 	const char *GetUnicodeString ();
 };
-
-Glyphs *glyphs_new (void);
 
 Brush *glyphs_get_fill (Glyphs *glyphs);
 void glyphs_set_fill (Glyphs *glyphs, Brush *fill);

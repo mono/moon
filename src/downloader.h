@@ -244,8 +244,6 @@ class DownloaderRequest {
 	virtual void SetBody (void *body, int size) = 0;
 };
 
-Downloader *downloader_new (void);
-
 double downloader_get_download_progress (Downloader *dl);
 
 const char *downloader_get_status_text (Downloader *dl);

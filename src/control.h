@@ -155,8 +155,6 @@ class Control : public FrameworkElement {
 
 G_BEGIN_DECLS
 
-
-Control *control_new (void);
 UIElement *control_initialize_from_xaml (Control *control, const char *xaml,
 					 Type::Kind *element_type);
 UIElement *control_initialize_from_xaml_callbacks (Control *control, const char *xaml, 

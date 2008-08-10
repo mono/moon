@@ -767,46 +767,11 @@ class BeginStoryboard : public TriggerAction {
 
 G_BEGIN_DECLS
 
-KeySpline *key_spline_new (void);
 void key_spline_set_control_point_1 (KeySpline *k, double x, double y);
 void key_spline_set_control_point_2 (KeySpline *k, double x, double y);
 void key_spline_get_control_point_1 (KeySpline *k, double *x, double *y);
 void key_spline_get_control_point_2 (KeySpline *k, double *x, double *y);
 
-DoubleAnimation *double_animation_new (void);
-ColorAnimation  *color_animation_new (void);
-PointAnimation  *point_animation_new (void);
-
-KeyFrame *key_frame_new (void);
-
-ColorKeyFrameCollection *color_key_frame_collection_new (void);
-DoubleKeyFrameCollection *double_key_frame_collection_new (void);
-PointKeyFrameCollection *point_key_frame_collection_new (void);
-
-DoubleKeyFrame* double_key_frame_new (void);
-ColorKeyFrame*  color_key_frame_new (void);
-PointKeyFrame*  point_key_frame_new (void);
-
-DiscreteDoubleKeyFrame *discrete_double_key_frame_new (void);
-DiscreteColorKeyFrame  *discrete_color_key_frame_new (void);
-DiscretePointKeyFrame  *discrete_point_key_frame_new (void);
-
-LinearDoubleKeyFrame *linear_double_key_frame_new (void);
-LinearColorKeyFrame  *linear_color_key_frame_new (void);
-LinearPointKeyFrame  *linear_point_key_frame_new (void);
-
-SplineDoubleKeyFrame *spline_double_key_frame_new (void);
-SplineColorKeyFrame  *spline_color_key_frame_new (void);
-SplinePointKeyFrame  *spline_point_key_frame_new (void);
-
-DoubleAnimationUsingKeyFrames *double_animation_using_key_frames_new (void);
-ColorAnimationUsingKeyFrames  *color_animation_using_key_frames_new (void);
-PointAnimationUsingKeyFrames  *point_animation_using_key_frames_new (void);
-
-
-BeginStoryboard *begin_storyboard_new (void);
-
-Storyboard *storyboard_new    (void);
 void        storyboard_begin  (Storyboard *sb);
 void        storyboard_pause  (Storyboard *sb);
 void        storyboard_resume (Storyboard *sb);

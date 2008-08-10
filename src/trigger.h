@@ -41,19 +41,16 @@ class EventTrigger : public DependencyObject {
 	void RemoveTarget (DependencyObject *target);
 
 	/* @PropertyType=char* */
-	static DependencyProperty* RoutedEventProperty;
+	static DependencyProperty *RoutedEventProperty;
 	/* @PropertyType=TriggerActionCollection */
-	static DependencyProperty* ActionsProperty;
+	static DependencyProperty *ActionsProperty;
 
  private:
 	static void event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
 
 G_BEGIN_DECLS
-
-EventTrigger *event_trigger_new (void);
-void          event_trigger_action_add (EventTrigger *trigger, TriggerAction *action);
-
+void event_trigger_action_add (EventTrigger *trigger, TriggerAction *action);
 G_END_DECLS
 
 #endif /* __MOON_TRIGGER_H__ */

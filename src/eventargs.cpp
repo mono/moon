@@ -30,7 +30,7 @@ RoutedEventArgs::~RoutedEventArgs ()
 }
 
 void
-RoutedEventArgs::SetSource (DependencyObject* el)
+RoutedEventArgs::SetSource (DependencyObject *el)
 {
 	if (source)
 		source->unref();
@@ -42,13 +42,13 @@ RoutedEventArgs::SetSource (DependencyObject* el)
 MouseEventArgs::MouseEventArgs (GdkEvent *event)
 {
 	this->event = gdk_event_copy (event);
-	this->handled = false;
+	handled = false;
 }
 
 MouseEventArgs::MouseEventArgs ()
 {
-	this->event = gdk_event_new (GDK_MOTION_NOTIFY);
-	this->handled = false;
+	event = gdk_event_new (GDK_MOTION_NOTIFY);
+	handled = false;
 }
 
 MouseEventArgs::~MouseEventArgs ()

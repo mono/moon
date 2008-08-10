@@ -148,16 +148,8 @@ class Grid : public Panel {
 
 G_BEGIN_DECLS
 
-ColumnDefinitionCollection *column_definition_collection_new (void);
-RowDefinitionCollection    *row_definition_collection_new (void);
-
-ColumnDefinition           *column_definition_new (void);
-RowDefinition              *row_definition_new (void);
-
 double            row_definition_get_actual_height    (RowDefinition *def);
 double            column_definition_get_actual_width (ColumnDefinition *def);
-
-Grid *grid_new (void);
 
 G_END_DECLS
 

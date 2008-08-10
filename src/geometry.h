@@ -103,8 +103,6 @@ class GeometryCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::GEOMETRY; }
 };
 
-GeometryCollection *geometry_collection_new (void);
-
 
 //
 // GeometryGroup
@@ -136,8 +134,6 @@ class GeometryGroup : public Geometry {
 	void SetChildren (GeometryCollection *children);
 	GeometryCollection *GetChildren ();
 };
-
-GeometryGroup *geometry_group_new (void);
 
 GeometryCollection *geometry_group_get_children (GeometryGroup *group);
 void geometry_group_set_children (GeometryGroup *group, GeometryCollection *children);
@@ -178,8 +174,6 @@ class EllipseGeometry : public Geometry {
 	void SetRadiusY (double radius);
 	double GetRadiusY ();
 };
-
-EllipseGeometry *ellipse_geometry_new (void);
 
 Point *ellipse_geometry_get_center (EllipseGeometry *ellipse);
 void ellipse_geometry_set_center (EllipseGeometry *ellipse, Point *point);
@@ -222,8 +216,6 @@ class LineGeometry : public Geometry {
 	Point *GetStartPoint ();
 };
 
-LineGeometry *line_geometry_new (void);
-
 Point *line_geometry_get_end_point (LineGeometry *line);
 void line_geometry_set_end_point (LineGeometry *line, Point *point);
 
@@ -245,8 +237,6 @@ class PathFigureCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::PATHFIGURE; }
 };
-
-PathFigureCollection *path_figure_collection_new (void);
 
 
 //
@@ -288,8 +278,6 @@ class PathGeometry : public Geometry {
 	void SetFigures (PathFigureCollection *figures);
 	PathFigureCollection *GetFigures ();
 };
-
-PathGeometry *path_geometry_new (void);
 
 PathFigureCollection *path_geometry_get_figures (PathGeometry *path);
 void path_geometry_set_figures (PathGeometry *path, PathFigureCollection *figures);
@@ -333,8 +321,6 @@ class RectangleGeometry : public Geometry {
 	Rect *GetRect ();
 };
 
-RectangleGeometry *rectangle_geometry_new (void);
-
 double rectangle_geometry_get_radius_x (RectangleGeometry *rectangle);
 void rectangle_geometry_set_radius_x (RectangleGeometry *rectangle, double radius);
 
@@ -359,8 +345,6 @@ class PathSegmentCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::PATHSEGMENT; }
 };
-
-PathSegmentCollection *path_segment_collection_new (void);
 
 
 //
@@ -405,8 +389,6 @@ class PathFigure : public DependencyObject {
 	void SetStartPoint (Point *point);
 	Point *GetStartPoint ();
 };
-
-PathFigure *path_figure_new (void);
 
 bool path_figure_get_is_closed (PathFigure *figure);
 void path_figure_set_is_closed (PathFigure *figure, bool closed);
@@ -480,8 +462,6 @@ class ArcSegment : public PathSegment {
 	SweepDirection GetSweepDirection ();
 };
 
-ArcSegment *arc_segment_new (void);
-
 bool arc_segment_get_is_large_arc (ArcSegment *segment);
 void arc_segment_set_is_large_arc (ArcSegment *segment, bool large);
 
@@ -533,8 +513,6 @@ class BezierSegment : public PathSegment {
 	Point *GetPoint3 ();
 };
 
-BezierSegment *bezier_segment_new (void);
-
 Point *bezier_segment_get_point1 (BezierSegment *segment);
 void bezier_segment_set_point1 (BezierSegment *segment, Point *point);
 
@@ -570,8 +548,6 @@ class LineSegment : public PathSegment {
 	Point *GetPoint ();
 };
 
-LineSegment *line_segment_new (void);
-
 Point *line_segment_get_point (LineSegment *segment);
 void line_segment_set_point (LineSegment *segment, Point *point);
 
@@ -603,7 +579,6 @@ class PolyBezierSegment : public PathSegment {
 	void SetPoints (PointCollection *points);
 };
 
-PolyBezierSegment *poly_bezier_segment_new (void);
 void poly_bezier_segment_set_points (PolyBezierSegment *segment, PointCollection *points);
 
 
@@ -634,7 +609,6 @@ class PolyLineSegment : public PathSegment {
 	void SetPoints (PointCollection *points);
 };
 
-PolyLineSegment *poly_line_segment_new (void);
 void poly_line_segment_set_points (PolyLineSegment *segment, PointCollection *points);
 
 
@@ -665,7 +639,6 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	void SetPoints (PointCollection *points);
 };
 
-PolyQuadraticBezierSegment *poly_quadratic_bezier_segment_new (void);
 void poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, PointCollection *points);
 
 
@@ -699,8 +672,6 @@ class QuadraticBezierSegment : public PathSegment {
 	void SetPoint2 (Point *point);
 	Point *GetPoint2 ();
 };
-
-QuadraticBezierSegment *quadratic_bezier_segment_new (void);
 
 Point *quadratic_bezier_segment_get_point1 (QuadraticBezierSegment *segment);
 void quadratic_bezier_segment_set_point1 (QuadraticBezierSegment *segment, Point *point);
