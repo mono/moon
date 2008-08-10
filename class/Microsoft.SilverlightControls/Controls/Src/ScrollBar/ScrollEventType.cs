@@ -3,7 +3,7 @@
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
 
-namespace System.Windows.Controls
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary> 
     /// Specifies the type of action used to raise the Scroll event.

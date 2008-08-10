@@ -3,7 +3,7 @@
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
 
-namespace System.Windows.Controls
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary> 
     /// Provides data for a Scroll event that occurs when the Thumb of a ScrollBar moves.
