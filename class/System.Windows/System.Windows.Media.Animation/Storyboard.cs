@@ -91,6 +91,11 @@ namespace System.Windows.Media.Animation {
 			NativeMethods.storyboard_seek (native, time_span.Ticks);
 		}
 
+		public void SkipToFill ()
+		{
+			throw new NotImplementedException ();
+		}
+
 		public void Stop ()
 		{
 			NativeMethods.storyboard_stop (native);
