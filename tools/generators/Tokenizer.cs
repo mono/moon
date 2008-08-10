@@ -70,7 +70,7 @@ public class Tokenizer {
 	{
 		this.files = new Queue <string> (files);
 	}
-
+	
 	public char ReadNextChar ()
 	{
 		StringBuilder line = new StringBuilder ();
@@ -90,7 +90,7 @@ public class Tokenizer {
 				current_line = 0;
 				//Console.WriteLine ("Parsing {0}...", current_file);
 			}
-		
+			
 			do {
 				line.Append (current_stream.ReadLine ());
 				current_line++;
@@ -105,7 +105,7 @@ public class Tokenizer {
 			} while (true);
 			
 			//Console.WriteLine ("ReadNextChar: Read line: '{0}'", line);
-		
+			
 			if (line.Length == 0) {
 				//Console.WriteLine ("ReadNextChar: Empty line");
 				continue;
@@ -322,6 +322,7 @@ public class Tokenizer {
 			Advance (true);
 		}
 	}
+	
 	public void SyncWithEndBrace ()
 	{
 		int braces = 0;

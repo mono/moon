@@ -33,7 +33,7 @@ class TypeReference {
 	{
 		if (IsConst)
 			text.Append ("const ");
-		text.Append (Value);
+		text.Append (GetPrettyType ());
 	}
 	
 	public void Write (StringBuilder text, SignatureType type)
@@ -49,7 +49,7 @@ class TypeReference {
 		}
 		
 		if (type == SignatureType.Native) {
-			text.Append (Value);
+			text.Append (GetPrettyType ());
 		} else {
 			text.Append (GetManagedType ());
 		}
@@ -67,6 +67,18 @@ class TypeReference {
 			}
 			return is_known.Value;
 		}
+	}
+	
+	public bool IsPointer {
+		get { return Value[Value.Length - 1] == '*'; }
+	}
+	
+	public string GetPrettyType ()
+	{
+		if (IsPointer)
+			return Value.Substring (0, Value.Length - 1) + " *";
+		
+		return Value;
 	}
 	
 	public string GetManagedType ()
@@ -104,8 +116,7 @@ class TypeReference {
 				break;
 			}
 		}
+		
 		return managed_type;
 	}
 }
-
-

@@ -92,6 +92,7 @@ public static class Helper {
 
 		Environment.CurrentDirectory = path;
 	}
+	
 	public static void WriteAllText (string filename, string contents)
 	{
 		filename = filename.Replace ('/', Path.DirectorySeparatorChar).Replace ('\\', Path.DirectorySeparatorChar);

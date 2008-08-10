@@ -23,7 +23,8 @@ class ParameterInfo : MemberInfo {
 	public void WriteSignature (StringBuilder text, SignatureType type)
 	{
 		ParameterType.Write (text, type);
-		text.Append (" ");
+		if (type != SignatureType.Native || !ParameterType.IsPointer)
+			text.Append (" ");
 		text.Append (Name);
 	}
 	
@@ -54,20 +55,24 @@ class Parameters : List <ParameterInfo> {
 	{
 		bool first_done = false;
 		text.Append (" (");
-		foreach (ParameterInfo parameter in this) {
-			if (parameter.DisableWriteOnce) {
-				parameter.DisableWriteOnce = false;
-				continue;
+		if (Count > 0) {
+			foreach (ParameterInfo parameter in this) {
+				if (parameter.DisableWriteOnce) {
+					parameter.DisableWriteOnce = false;
+					continue;
+				}
+				
+				if (first_done)
+					text.Append (", ");
+				first_done = true;
+				
+				if (as_call)
+					parameter.WriteCall (text, type);
+				else
+					parameter.WriteSignature (text, type);
 			}
-			
-			if (first_done)
-				text.Append (", ");
-			first_done = true;
-			
-			if (as_call)
-				parameter.WriteCall (text, type);
-			else
-				parameter.WriteSignature (text, type);
+		} else if (type == SignatureType.Native && !as_call) {
+			text.Append ("void");
 		}
 		text.Append (")");
 	}
