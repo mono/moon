@@ -300,13 +300,13 @@ namespace System.Windows.Controls
             // send the event manually 
             //
 
-            this.Dispatcher.BeginInvoke(new EventHandler(OnPopupClosed), null, EventArgs.Empty); 
+            this.Dispatcher.BeginInvoke(delegate() { OnPopupClosed (null, EventArgs.Empty); }); 
 
             // if the tooltip was forced to stop the closing animation, because it has to reopen,
             // proceed with open 
             if (this._openPopup) 
             {
-                this.Dispatcher.BeginInvoke(new PerformOnNextTick(OpenPopup)); 
+		    this.Dispatcher.BeginInvoke(delegate() { OpenPopup(); }); 
             }
         }
  
@@ -355,7 +355,7 @@ namespace System.Windows.Controls
                 {
                     // close immediatelly if no storyboard provided
                     this._parentPopup.IsOpen = false; 
-                    this.Dispatcher.BeginInvoke(new EventHandler(OnPopupClosed), null, EventArgs.Empty);
+                    this.Dispatcher.BeginInvoke(delegate () { OnPopupClosed (null, EventArgs.Empty); });
                 }
                 else 
                 { 
@@ -373,7 +373,7 @@ namespace System.Windows.Controls
             // Working around temporary limitations in Silverlight:
             // send the Opened event manually
             // 
-            this.Dispatcher.BeginInvoke(new EventHandler(OnPopupOpened), null, EventArgs.Empty);
+            this.Dispatcher.BeginInvoke(delegate () { OnPopupOpened (null, EventArgs.Empty); });
 
             this._openPopup = false; 
         } 
@@ -408,7 +408,7 @@ namespace System.Windows.Controls
  
             if (this._beginClosing)
             {
-                this.Dispatcher.BeginInvoke(new PerformOnNextTick(BeginClosing)); 
+		    this.Dispatcher.BeginInvoke(delegate () { BeginClosing(); }); 
             }
         }
  
