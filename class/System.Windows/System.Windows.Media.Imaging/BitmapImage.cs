@@ -42,6 +42,7 @@ namespace System.Windows.Media.Imaging {
 
 		public BitmapImage (Uri uriSource)
 		{
+			UriSource = uriSource;
 		}
 
 #if NET_2_1
@@ -49,11 +50,15 @@ namespace System.Windows.Media.Imaging {
 #endif
 		public void SetSource (Stream streamSource)
 		{
+			Console.WriteLine ("SetSource (Stream) called");
 		}
 
 		public Uri UriSource {
 			get { return (Uri)GetValue (UriSourceProperty); }
-			set { SetValue (UriSourceProperty, value); }
+			set {
+				Console.WriteLine ("setting UriSource property to {0}", value);
+				SetValue (UriSourceProperty, value);
+			}
 		}
 
 		public event EventHandler<DownloadProgressEventArgs> DownloadProgress;
