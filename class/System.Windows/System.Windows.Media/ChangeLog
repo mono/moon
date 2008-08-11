@@ -1,3 +1,7 @@
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
+	* VisualTreeHelper.cs: implement this so it passes the unit tests.
+
 2008-08-09  Chris Toshok  <toshok@ximian.com>
 
 	* ImageSource.cs: new stub.

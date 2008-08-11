@@ -27,6 +27,7 @@
 //
 
 using System.Windows;
+using System.Windows.Controls;
 using Mono;
 
 namespace System.Windows.Media {
@@ -34,19 +35,40 @@ namespace System.Windows.Media {
 	public static class VisualTreeHelper {
 		public static DependencyObject GetChild (DependencyObject reference, int childIndex)
 		{
-			throw new NotImplementedException ();
+			FrameworkElement ref_fw = reference as FrameworkElement;
+			if (ref_fw == null)
+				throw new InvalidOperationException ("Reference is not a valid visual DependencyObject");
+
+			Panel p = reference as Panel;
+			if (p == null) {
+				// we have no children, so everything is out of range.
+				throw new ArgumentOutOfRangeException ();
+			}
+
+			return p.Children[childIndex];
 		}
 
 		public static int GetChildrenCount (DependencyObject reference)
 		{
-			throw new NotImplementedException ();
+			FrameworkElement ref_fw = reference as FrameworkElement;
+			if (ref_fw == null)
+				throw new InvalidOperationException ("Reference is not a valid visual DependencyObject");
+
+			Panel p = reference as Panel;
+			if (p == null) {
+				// we have no children
+				return 0;
+			}
+
+			return p.Children.Count;
 		}
 
 		public static DependencyObject GetParent (DependencyObject reference)
 		{
-			if (!(reference is UIElement))
+			FrameworkElement fw = reference as FrameworkElement;
+			if (fw == null)
 				throw new InvalidOperationException ("Reference is not a valid visual DependencyObject");
-			throw new NotImplementedException ();
+			return fw.Parent;
 		}
 	}
 }
