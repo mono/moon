@@ -85,6 +85,7 @@ class TypeReference {
 	{
 		if (managed_type == null) {
 			switch (Value) {
+			case "int":
 			case "bool":
 			case "void":
 				managed_type = Value;
@@ -95,6 +96,7 @@ class TypeReference {
 				break;
 			case "void*":
 			case "gpointer":
+			case "Collection*":
 			case "DependencyObject*":
 			case "DependencyProperty*":
 			case "Types*":
