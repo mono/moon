@@ -1,0 +1,7 @@
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
+	* NotifyCollectionChangedEventArgs.cs: correct the constructors to
+	do the right thing, and add documented (but untested at present)
+	behavior where it throws ArgumentExceptions except for the valid
+	values for @action.
+

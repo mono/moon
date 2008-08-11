@@ -38,48 +38,53 @@ namespace System.Collections.ObjectModel {
 		{
 		}
 
-		[MonoTODO("Currently does not raise any change events")]
 		protected override void ClearItems ()
 		{
 			base.ClearItems ();
+			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
-		[MonoTODO("Currently does not raise any change events")]
 		protected override void InsertItem (int index, T item)
 		{
 			base.InsertItem (index, item);
+			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add,
+										   item,
+										   index));
 		}
 
 		protected virtual void OnCollectionChanged (NotifyCollectionChangedEventArgs e)
 		{
+			if (CollectionChanged != null)
+				CollectionChanged (this, e);
 		}
 
 		protected virtual void OnPropertyChanged (PropertyChangedEventArgs e)
 		{
+			if (PropertyChanged != null)
+				PropertyChanged (this, e);
 		}
 
-		[MonoTODO("Currently does not raise any change events")]
 		protected override void RemoveItem (int index)
 		{
+			T old_item = this[index];
 			base.RemoveItem (index);
+			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove,
+										   old_item,
+										   index));
 		}
 
-		[MonoTODO("Currently does not raise any change events")]
 		protected override void SetItem (int index, T item)
 		{
+			T old_item = this[index];
 			base.SetItem (index, item);
+
+			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Replace,
+										   item,
+										   old_item,
+										   index));
 		}
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-		public event PropertyChangedEventHandler PropertyChanged {
-			add {
-				throw new NotImplementedException ();
-			}
-
-			remove {
-				throw new NotImplementedException ();
-			}
-		}
+		public event PropertyChangedEventHandler PropertyChanged;
 	}
 }

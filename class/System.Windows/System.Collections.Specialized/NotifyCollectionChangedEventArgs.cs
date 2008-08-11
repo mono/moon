@@ -30,45 +30,63 @@ using System.Collections.Generic;
 namespace System.Collections.Specialized {
 
 	public sealed class NotifyCollectionChangedEventArgs : EventArgs {
-		public NotifyCollectionChangedAction Action { get; private set; }
 		List<object> new_items, old_items;
 		
-		NotifyCollectionChangedEventArgs ()
+		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action)
 		{
-			new_items = new List<object> (1);
-			old_items = new List<object> (1);
-		}
-		
-		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action) : this ()
-		{
+			if (action != NotifyCollectionChangedAction.Reset)
+				throw new ArgumentException();
+
 			Action = action;
 		}
 
-		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action, object changedItem, int index) : this ()
+		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action, object changedItem, int index)
 		{
+			switch (action) {
+			case NotifyCollectionChangedAction.Add:
+				new_items = new List<object>();
+				new_items.Add (changedItem);
+				NewStartingIndex = index;
+				OldStartingIndex = -1;
+				break;
+			case NotifyCollectionChangedAction.Remove:
+				old_items = new List<object>();
+				old_items.Add (changedItem);
+				OldStartingIndex = index;
+				NewStartingIndex = -1;
+				break;
+			default:
+				throw new ArgumentException ();
+			}
+
 			Action = action;
 		}
 
-		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action, object newItem, object oldItem, int index) : this ()
+		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action, object newItem, object oldItem, int index)
 		{
+			if (action != NotifyCollectionChangedAction.Replace)
+				throw new ArgumentException ();
+
 			Action = action;
 
+			new_items = new List<object>();
 			new_items.Add (newItem);
+
+			old_items = new List<object>();
 			old_items.Add (oldItem);
+
 			NewStartingIndex = index;
 			OldStartingIndex = index;
 		}
 
+		public NotifyCollectionChangedAction Action { get; private set; }
+
 		public IList NewItems {
-			get {
-				return new_items;
-			}
+			get { return new_items; }
 		}
 
 		public IList OldItems {
-			get {
-				return old_items;
-			}
+			get { return old_items; }
 		}
 
 		public int NewStartingIndex { get; private set; }

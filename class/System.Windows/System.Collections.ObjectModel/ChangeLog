@@ -1,0 +1,4 @@
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
+	* ObservableCollection_T.cs: emit the CollectionChanged events.
+
