@@ -18,6 +18,14 @@ namespace MoonTest.System.Windows.Media
 	public class VisualTreeHelperTest
 	{
 		[TestMethod]
+		public void NullTests ()
+		{
+			Assert.Throws (delegate { VisualTreeHelper.GetChild (null, 1); }, typeof (InvalidOperationException));
+			Assert.Throws (delegate { VisualTreeHelper.GetChildrenCount (null); }, typeof (InvalidOperationException));
+			Assert.Throws (delegate { VisualTreeHelper.GetParent (null); }, typeof (InvalidOperationException));
+		}
+
+		[TestMethod]
 		public void GetChild ()
 		{
 			Canvas p = new Canvas();
