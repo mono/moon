@@ -287,7 +287,6 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/CheckBox/CheckBox.cs					\
 	$(MSCONTROLS)/Src/Common/DragCompletedEventArgs.cs			\
 	$(MSCONTROLS)/Src/Common/DragDeltaEventArgs.cs				\
-	$(MSCONTROLS)/Src/Common/DragEventArgs.cs				\
 	$(MSCONTROLS)/Src/Common/DragStartedEventArgs.cs			\
 	$(MSCONTROLS)/Src/Common/FontFamilyConverter.cs				\
 	$(MSCONTROLS)/Src/Common/FontStretchConverter.cs			\
