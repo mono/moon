@@ -1,5 +1,10 @@
 2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* runtime.cpp: Fix a crash (xaml parser tries to access the NULL loader
+	  during parsing).
+
+2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.g.cpp: Surround 2.0 DP declarations in #if SL_2_0.
 
 2008-08-09  Jeffrey Stedfast  <fejj@novell.com>

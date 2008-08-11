@@ -749,7 +749,9 @@ Surface::ShowFullScreenMessage ()
 	g_return_if_fail (toplevel && toplevel->Is (Type::PANEL));
 	
 	Type::Kind dummy;
-	DependencyObject* message = xaml_create_from_str (NULL, FULLSCREEN_MESSAGE, false, &dummy);
+	XamlLoader *loader = new XamlLoader (NULL, FULLSCREEN_MESSAGE, this);
+	DependencyObject* message = xaml_create_from_str (loader, FULLSCREEN_MESSAGE, false, &dummy);
+	delete loader;
 	
 	if (!message) {
 		printf ("Unable to create fullscreen message.\n");
