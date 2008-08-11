@@ -180,7 +180,6 @@
     <File name="System.Windows/RoutedEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/StartupEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/StartupEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono/NativeMethods.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/PropertyMetadata.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/PropertyChangedCallback.cs" subtype="Code" buildaction="Compile" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
@@ -209,20 +208,17 @@
     <File name="System.Windows.Controls/ColumnDefinitionCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ColumnDefinition.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/Report.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono/DLRHost.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/KeyboardNavigationMode.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/ModifierKeys.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/TimelineMarker.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/TimelineMarkerCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ClickMode.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Orientation.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Controls/ScrollBarVisibility.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ValidationErrorEventAction.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ClockState.cs" subtype="Code" buildaction="Compile" />
     <File name="MS.Internal" subtype="Directory" buildaction="Compile" />
     <File name="MS.Internal/IManagedFrameworkInternalHelper.cs" subtype="Code" buildaction="Compile" />
     <File name="System" subtype="Directory" buildaction="Compile" />
-    <File name="System/UriTypeConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ExceptionRoutedEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Expression.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FontStretch.cs" subtype="Code" buildaction="Compile" />
@@ -233,8 +229,6 @@
     <File name="System.Windows/FontWeight.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/PropertyPath.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/RoutedEvent.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/RoutedPropertyChangedEventArgs_T.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/RoutedPropertyChangedEventHandler_T.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TextDecorationKind.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/SizeChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ExceptionRoutedEventHandler.cs" subtype="Code" buildaction="Compile" />
@@ -262,10 +256,40 @@
     <File name="System.Windows.Threading/DispatcherSynchronizationContext.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Threading/DispatcherTimer.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Markup/XamlReader.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DependencyProperty.g.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Setter.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/SetterBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/SetterBaseCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/Style.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TemplateBindingExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TemplatePart.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/VisualState.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/VisualStateGroup.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/VisualStateManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/VisualTransition.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ContentControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ControlTemplate.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/FileDialogFileInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ItemCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ItemsControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ItemsPanelTemplate.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/OpenFileDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/GeneralTransform.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/FontFamily.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/DoubleCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/ImageSource.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PointCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/VisualTreeHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Markup/XmlLanguage.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/Cursor.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/FocusManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/Popup.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Data/BindingExpressionBase.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
   </References>
   <GtkDesignInfo gtkVersion="2.12.2" />
 </Project>

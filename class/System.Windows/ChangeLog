@@ -1,3 +1,7 @@
+2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* System.Windows.mdp: Updated.
+
 2008-08-11  Fernando Herrera  <fherrera@novell.com>
 
 	* Makefile.am: add StackPanel and IValueConverter to the build.
