@@ -38,8 +38,12 @@ namespace MoonTest.System.Windows
 			args.Source = o;
 			Assert.AreEqual (o, args.Source);
 
-			// try null
+#if notyet
+			// try null.  B2 crashes on this line (no
+			// exception, firefox goes away with a crash
+			// in coreclr.dll)
 			args.Source = null;
+#endif
 		}
 	}
 }
