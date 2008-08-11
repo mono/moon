@@ -44,7 +44,7 @@ public:
 /* @SilverlightVersion="2" */
 class SetterBaseCollection : public DependencyObjectCollection {
  protected:
-	virtual ~SetterBaseCollection ();
+	virtual ~SetterBaseCollection () {};
 	
  public:
 	/* @GenerateCBinding */
