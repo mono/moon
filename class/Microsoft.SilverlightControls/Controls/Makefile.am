@@ -42,25 +42,22 @@ Src/Properties/AssemblyInfo.cs \
 Src/RadioButton/RadioButton.cs \
 Src/RepeatButton/RepeatButton.cs \
 Src/Thumb/Thumb.cs \
-Src/ToggleButton/ToggleButton.cs
+Src/ToggleButton/ToggleButton.cs \
+Src/ToolTip/ToolTip.cs \
+Src/ToolTip/ToolTipService.cs \
+Src/ScrollViewer/ScrollContentPresenter.cs \
+Src/ScrollViewer/ScrollViewer.cs \
+Src/ScrollBar/ScrollBar.cs \
+Src/ScrollBar/ScrollBarVisibility.cs \
+Src/ScrollBar/ScrollEventArgs.cs \
+Src/ScrollBar/ScrollEventType.cs \
+Src/RangeBase/RangeBase.cs \
+Src/ListBox/DisplayMemberValueConverter.cs \
+Src/ListBox/ListBox.cs \
+Src/ListBox/ListBoxItem.cs \
+Src/ListBox/SelectionMode.cs
 
-# Commented out because depend on Popup
-#Src/ScrollViewer/ScrollContentPresenter.cs \
-#Src/ScrollViewer/ScrollViewer.cs \
-#Src/ScrollBar/ScrollBar.cs \
-#Src/ScrollBar/ScrollBarVisibility.cs \
-#Src/ScrollBar/ScrollEventArgs.cs \
-#Src/ScrollBar/ScrollEventType.cs \
-#Src/RangeBase/RangeBase.cs \
-#Src/ToolTip/ToolTip.cs \
-#Src/ToolTip/ToolTipService.cs
-# Thes ones too until fixes compliation
 #Src/HyperlinkButton/HyperlinkButton.cs
-#Src/ListBox/DisplayMemberValueConverter.cs \
-#Src/ListBox/ListBox.cs \
-#Src/ListBox/ListBoxItem.cs \
-#Src/ListBox/SelectionMode.cs
-
 
 $(assemblysl): $(system_windows_sources) Makefile $(top_builddir)/class/lib/2.1/Mono.Moonlight.dll $(top_builddir)/class/lib/2.1/System.Windows.dll
 	$(SMCS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../../silverlight.pub -delaysign+ -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll

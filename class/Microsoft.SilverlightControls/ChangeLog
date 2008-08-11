@@ -1,3 +1,8 @@
+2008-08-11  Fernando Herrera  <fherrera@novell.com>
+
+	* Controls/Makefile.am: Add ScrollViewer, ScrollBar, ToolTip,
+	RangeBase and ListBox to the build.
+
 2008-08-09  Chris Toshok  <toshok@ximian.com>
 
 	* Controls/Src/Common/FontFamilyConverter.cs:
