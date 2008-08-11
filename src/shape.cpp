@@ -21,7 +21,6 @@
 #include "runtime.h"
 #include "shape.h"
 #include "brush.h"
-#include "array.h"
 #include "utils.h"
 
 //

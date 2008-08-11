@@ -17,7 +17,7 @@ using System.Text;
 class TypeInfo : MemberInfo {
 	private string _KindName; // The name as it appears in the Kind enum (STRING, POINT_ARRAY, etc)
 	private string c_constructor; // The C constructor
-	private List<string> events;
+	private List<FieldInfo> events;
 	
 	public TypeReference Base; // The parent type
 	public bool IsStruct; // class or struct
@@ -27,10 +27,10 @@ class TypeInfo : MemberInfo {
 	public bool IsValueType;
 	public bool IsEnum;
 	
-	public List<string> Events {
+	public List<FieldInfo> Events {
 		get {
 			if (events == null) {
-				events = new List<string> ();
+				events = new List<FieldInfo> ();
 
 				foreach (MemberInfo member in Children.Values) {
 					FieldInfo field = member as FieldInfo;
@@ -43,9 +43,9 @@ class TypeInfo : MemberInfo {
 					if (!field.IsStatic)
 						continue;
 						
-					events.Add (field.Name.Substring (0, field.Name.LastIndexOf ("Event")));
+					events.Add (field);
 				}
-				events.Sort ();
+				events.Sort (new Members.MembersSortedByFullName <FieldInfo>());
 			}
 			return events;
 		}
@@ -109,13 +109,21 @@ class TypeInfo : MemberInfo {
 		}
 	}
 	
-	public int GetEventId (string Event)
+	public int GetEventId (FieldInfo Event, int version)
 	{
-		if (Events != null && Events.Contains (Event)) {
-			return Events.IndexOf (Event) + GetBaseEventCount ();
-		} else {
-			return ((TypeInfo) Parent.Children [Base.Value]).GetEventId (Event);
+		int found = 0;
+		for (int i = 0; i < Events.Count; i++) {
+			FieldInfo field = Events [i];
+			
+			if (version < field.SilverlightVersion)
+				continue;
+			
+			found++;
+			
+			if (field == Event)
+				return i + GetBaseEventCount (version);
 		}
+		return ((TypeInfo) Parent.Children [Base.Value]).GetEventId (Event, version);
 	}
 	
 	public string KindName {
@@ -131,7 +139,7 @@ class TypeInfo : MemberInfo {
 		}
 	}
 			
-	public int GetBaseEventCount ()	
+	public int GetBaseEventCount (int version)	
 	{
 		int result;
 		if (Base == null || string.IsNullOrEmpty (Base.Value)) {
@@ -141,14 +149,34 @@ class TypeInfo : MemberInfo {
 		} else if (!Parent.Children.ContainsKey (Base.Value)) {
 			result = -3;
 		} else
-			result = ((TypeInfo) Parent.Children [Base.Value]).GetTotalEventCount ();
+			result = ((TypeInfo) Parent.Children [Base.Value]).GetTotalEventCount (version);
 		//Console.WriteLine ("GetBaseEventCount '{2}' {0}, base: '{1}'", result, Base != null ? Base.Value : "<no base>", FullName);
 		return result < 0 ? 0 : result;
 	}
 	
-	public int GetTotalEventCount ()
+	
+	/// <summary>
+	/// Returns the number of events in this class, not counting base classes.
+	/// </summary>
+	/// <param name="version">
+	/// A <see cref="System.Int32"/>
+	/// </param>
+	/// <returns>
+	/// A <see cref="System.Int32"/>
+	/// </returns>
+	public int GetEventCount (int version)
 	{
-		return Events.Count + GetBaseEventCount ();
+		int found = 0;
+		for (int i = 0; i < Events.Count; i++) {
+			if (version >= Events [i].SilverlightVersion)
+				found++;
+		}
+		return found;
+	}
+	
+	public int GetTotalEventCount (int version)
+	{
+		return GetEventCount (version) + GetBaseEventCount (version);
 	}
 	
 	public string ContentProperty {

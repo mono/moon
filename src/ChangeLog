@@ -1,5 +1,16 @@
 2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* array.cpp, array.h: Removed, no longer needed.
+	* collection.cpp, collection.h: Moved double_garray_from_str to
+	  collection.cpp|h.
+	* geometry.cpp, libmoon.h, Makefile.am, point.cpp, point.h, rect.cpp,
+	  shape.cpp, src.mdp, type.h, value.cpp, value.h, value.h.in,
+	  xaml.cpp: Remove the double and point arrays, no longer needed.
+	* type-generated.cpp: Remove the double and point arrays, no longer
+	  needed. Implement support for 2.0 events.
+
+2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* runtime.cpp: Fix a crash (xaml parser tries to access the NULL loader
 	  during parsing).
 

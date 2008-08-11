@@ -395,25 +395,6 @@ namespace System.Windows {
 					UnmanagedThickness *thickness = (UnmanagedThickness*)val->u.p;
 					return new Thickness (thickness->left, thickness->top, thickness->right, thickness->bottom);
 				}
-
-				case Kind.DOUBLE_ARRAY: {
-					UnmanagedArray *array = (UnmanagedArray*)val->u.p;
-					double [] values = new double [array->count];
-					fixed (double* first_d = &array->first_d) {
-						Marshal.Copy ((IntPtr)first_d, values, 0, array->count);
-					}
-					return values;
-				}
-					
-				case Kind.POINT_ARRAY: {
-					UnmanagedArray *array = (UnmanagedArray*)val->u.p;
-					Point [] values = new Point [array->count];
-					fixed (UnmanagedPoint *first = &array->first_pnt) {
-						for (int i = 0; i < array->count; i++)
-							values [i] = new Point (first [i].x, first[i].y);
-					}
-					return values;
-				}
 					
 				case Kind.COLOR: {
 					UnmanagedColor *color = (UnmanagedColor*)val->u.p;
@@ -545,35 +526,6 @@ namespace System.Windows {
 					Marshal.WriteByte (result, bytes.Length, 0);
 
 					value.u.p = result;
-				}
-				else if (v is double []) {
-					double [] dv = (double []) v;
-
-					value.k = Kind.DOUBLE_ARRAY;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedArray) + sizeof (double) * dv.Length);
-					UnmanagedArray* array = (UnmanagedArray*) value.u.p;
-					array->count = dv.Length;
-					array->refcount = 1;
-					fixed (double* first_d = &array->first_d) {
-						Marshal.Copy (dv, 0, (IntPtr) first_d, array->count);
-					}
-				}
-				else if (v is Point []) {
-					Point [] dv = (Point []) v;
-
-					value.k = Kind.POINT_ARRAY;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedArray) + sizeof (Point) * dv.Length);
-					UnmanagedArray* array = (UnmanagedArray*) value.u.p;
-					array->count = dv.Length;
-					array->refcount = 1;
-					fixed (UnmanagedPoint *dp = &array->first_pnt) {
-						for (int i = 0; i < dv.Length; i++) {
-							dp [i] = new UnmanagedPoint ();
-							dp [i].x = dv [i].X;
-							dp [i].y = dv [i].Y;
-						}
-					}
-					
 				}
 				else if (v is Rect) {
 					Rect rect = (Rect) v;

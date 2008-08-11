@@ -11,7 +11,6 @@
 #define __LIBMOON_H__
 
 #include "animation.h"
-#include "array.h"
 #include "brush.h"
 #include "canvas.h"
 #include "clock.h"

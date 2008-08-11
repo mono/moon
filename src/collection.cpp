@@ -9,8 +9,9 @@
  */
 
 #include <config.h>
+#include <glib.h>
+#include <errno.h>
 
-#include "array.h"
 #include "collection.h"
 #include "geometry.h"
 #include "transform.h"
@@ -666,4 +667,35 @@ point_collection_from_str (const char *s)
 
 	g_array_free (values, true);
 	return points;
+}
+
+GArray *double_garray_from_str (const char *s, gint max)
+{
+	char *next = (char *)s;
+	GArray *values = g_array_sized_new (false, true, sizeof (double), max > 0 ? max : 16);
+	double coord = 0.0;
+	guint end = max > 0 ? max : G_MAXINT;
+
+	while (next && values->len < end) {
+		while (g_ascii_isspace (*next) || *next == ',')
+			next = g_utf8_next_char (next);
+		
+		if (next) {
+			errno = 0;
+			char *prev = next;
+			coord = g_ascii_strtod (prev, &next);
+			if (errno != 0 || next == prev)
+				goto error;
+
+			g_array_append_val (values, coord);
+		}
+	}
+
+error:
+	while (values->len < (guint) max) {
+		coord = 0.0;
+		g_array_append_val (values, coord);
+	}
+
+	return values;
 }

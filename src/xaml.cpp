@@ -33,7 +33,6 @@
 #include "list.h"
 #include "rect.h"
 #include "point.h"
-#include "array.h"
 #include "canvas.h"
 #include "color.h"
 #include "namescope.h"
@@ -1706,17 +1705,22 @@ keytime_from_str (const char* str, KeyTime *res)
 bool
 key_spline_from_str (const char *str, KeySpline **res)
 {
-	int count = 0;
-	Point *pts = point_array_from_str (str, &count);
+	printf ("key_spline_from_str ('%s', %p)\n", str, res);
+	
+	PointCollection *pts = point_collection_from_str (str);
 
-	if (!pts || count != 2) {
-		delete pts;
+
+	if (!pts)
+		return false;
+
+	if (pts->GetCount () != 2) { 
+		pts->unref ();
 		return false;
 	}
 
-	*res = new KeySpline (pts [0], pts [1]);
+	*res = new KeySpline (*pts->GetValueAt (0)->AsPoint (), *pts->GetValueAt (1)->AsPoint ());
 	
-	delete [] pts;
+	pts->unref ();
 	
 	return true;
 }
@@ -1725,28 +1729,28 @@ Matrix *
 matrix_from_str (const char *str)
 {
 	Matrix *matrix;
-	int count = 0;
-
-	double *values = double_array_from_str (str, &count);
-
+	printf ("matrix_from_str ('%s')\n", str);
+	DoubleCollection *values = double_collection_from_str (str);
+	
+	
 	if (!values)
 		return new Matrix ();
 
-	if (count < 6) {
-		delete [] values;
+	if (values->GetCount () < 6) {
+		values->unref ();
 		return NULL;
 	}
 
 	matrix = new Matrix ();
 
-	matrix_set_m11 (matrix, values [0]);
-	matrix_set_m12 (matrix, values [1]);
-	matrix_set_m21 (matrix, values [2]);
-	matrix_set_m22 (matrix, values [3]);
-	matrix_set_offset_x (matrix, values [4]);
-	matrix_set_offset_y (matrix, values [5]);
+	matrix_set_m11 (matrix, values->GetValueAt (0)->AsDouble ());
+	matrix_set_m12 (matrix, values->GetValueAt (1)->AsDouble ());
+	matrix_set_m21 (matrix, values->GetValueAt (2)->AsDouble ());
+	matrix_set_m22 (matrix, values->GetValueAt (3)->AsDouble ());
+	matrix_set_offset_x (matrix, values->GetValueAt (4)->AsDouble ());
+	matrix_set_offset_y (matrix, values->GetValueAt (5)->AsDouble ());
 
-	delete [] values;
+	values->unref ();
 
 	return matrix;
 }
@@ -2421,23 +2425,9 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (doubles);
 		break;
 	}
-	case Type::DOUBLE_ARRAY: {
-		int count = 0;
-		double *doubles = double_array_from_str (str, &count);
-
-		*v = new Value (doubles, count);
-		break;
-	}
 	case Type::POINT_COLLECTION: {
 		PointCollection *points = point_collection_from_str (str);
 		*v = new Value (points);
-		break;
-	}
-	case Type::POINT_ARRAY:	{
-		int count = 0;
-		Point *points = point_array_from_str (str, &count);
-
-		*v = new Value (points, count);
 		break;
 	}
 	case Type::TRANSFORM: {

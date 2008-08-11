@@ -25,11 +25,9 @@
  */
 
 struct Color;
-struct DoubleArray;
 struct Duration;
 struct KeyTime;
 struct Point;
-struct PointArray;
 struct Rect;
 struct Size;
 struct RepeatBehavior;
@@ -122,8 +120,6 @@ public:
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize ()	{ checked_get_exact (Type::SIZE, NULL, u.size); }
 	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
-	PointArray*	AsPointArray ()	{ checked_get_exact (Type::POINT_ARRAY, NULL, u.point_array); }
-	DoubleArray*	AsDoubleArray ()	{ checked_get_exact (Type::DOUBLE_ARRAY, NULL, u.double_array); }
 	
 	void *		AsManagedObject () { checked_get_exact (Type::MANAGED, NULL, u.managed_object); }
 	
@@ -166,8 +162,6 @@ public:
 		RepeatBehavior *repeat;
 		Duration *duration;
 		KeyTime *keytime;
-		PointArray *point_array;
-		DoubleArray *double_array;
 		GridLength *grid_length;
 		Thickness *thickness;
 		void *managed_object;

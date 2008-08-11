@@ -1,3 +1,7 @@
+2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Kind.cs: Remove the double and point arrays, no longer needed.
+
 2008-08-07  Chris Toshok  <toshok@ximian.com>
 
 	* NativeMethods.cs: add uielement_get_transform_to_uielement.

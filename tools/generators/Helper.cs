@@ -93,10 +93,17 @@ public static class Helper {
 		Environment.CurrentDirectory = path;
 	}
 	
+	public static void WriteVersion (StringBuilder text, int SilverlightVersion)
+	{
+		text.Append ("SL_");
+		text.Append (SilverlightVersion);
+		text.AppendLine ("_0");
+	}
+	
 	public static void WriteAllText (string filename, string contents)
 	{
 		filename = filename.Replace ('/', Path.DirectorySeparatorChar).Replace ('\\', Path.DirectorySeparatorChar);
-		if (File.ReadAllText (filename) != contents) {
+		if (new FileInfo (filename).Length != contents.Length && File.ReadAllText (filename) != contents) {
 			File.WriteAllText (filename, contents);
 			Console.WriteLine ("Wrote {0}.", filename);
 		} else {

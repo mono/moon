@@ -1,3 +1,9 @@
+2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* FieldInfo.cs, Generator.cs, Helper.cs, MemberInfo.cs, TypeInfo.cs:
+	  Surround 2.0 DP declarations in #if SL_2_0. Added support for 2.0
+	  events.
+
 2008-08-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ParameterInfo.cs: Beautify the output a bit.

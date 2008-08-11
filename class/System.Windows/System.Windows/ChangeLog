@@ -1,3 +1,8 @@
+2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs: Remove the double and point arrays, no longer
+	  needed.
+
 2008-08-08  Fernando Herrera  <fherrera@novell.com>
 
 	* ResourceDictionary.cs:

@@ -17,4 +17,12 @@ class FieldInfo : MemberInfo {
 	public bool IsConst;
 	public bool IsStatic;
 	public bool IsExtern;
+	
+	public string EventName {
+		get {
+			if (!Name.EndsWith ("Event"))
+				throw new System.Exception (string.Format ("The field '{0}' doesn't represent an event", FullName));
+			return Name.Substring (0, Name.LastIndexOf ("Event"));
+		}
+	}
 }

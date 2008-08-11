@@ -13,6 +13,8 @@
 #include <glib.h>
 #include <cairo.h>
 
+#include "collection.h"
+
 /* @IncludeInKinds */
 struct Point {
 public:

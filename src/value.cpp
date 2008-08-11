@@ -24,7 +24,6 @@
 #include "clock.h"
 #include "animation.h"
 #include "control.h"
-#include "array.h"
 #include "point.h"
 #include "grid.h"
 
@@ -75,12 +74,6 @@ Value::Value (const Value& v)
 	switch (k) {
 	case Type::STRING:
 		u.s = g_strdup (v.u.s);
-		break;
-	case Type::POINT_ARRAY:
-		u.point_array->basic.refcount++;
-		break;
-	case Type::DOUBLE_ARRAY:
-		u.double_array->basic.refcount++;
 		break;
 	case Type::COLOR:
 		u.color = g_new (Color, 1);
@@ -241,20 +234,6 @@ Value::Value (const char* s)
 	u.s= g_strdup (s);
 }
 
-Value::Value (Point *points, int count)
-{
-	Init ();
-	k = Type::POINT_ARRAY;
-	u.point_array = point_array_new (count, points);
-}
-
-Value::Value (double *values, int count)
-{
-	Init ();
-	k = Type::DOUBLE_ARRAY;
-	u.double_array = double_array_new (count, values);
-}
-
 Value::Value (GridLength grid_length)
 {
 	Init ();
@@ -277,14 +256,6 @@ Value::FreeValue ()
 	switch (GetKind ()) {
 	case Type::STRING:
 		g_free (u.s);
-		break;
-	case Type::POINT_ARRAY:
-		if (u.point_array != NULL &&--u.point_array->basic.refcount == 0)
-			g_free (u.point_array);
-		break;
-	case Type::DOUBLE_ARRAY:
-		if (u.double_array != NULL && --u.double_array->basic.refcount == 0)
-			g_free (u.double_array);
 		break;
 	case Type::COLOR:
 		g_free (u.color);
@@ -338,28 +309,6 @@ Value::ToString ()
 		g_string_append (str, u.s);
 		break;
 		
-	case Type::POINT_ARRAY: {
-		char *t = g_strdup_printf ("Points [] = { /* refcount = %d */ ", u.point_array->basic.refcount);
-		g_string_append (str, t);
-		g_free (t);
-		
-		for (uint i = 0; i < u.point_array->basic.refcount; i++)
-			g_string_append_printf (str, "(%g, %g), ", u.point_array->points [i].x, u.point_array->points [i].y);
-
-		g_string_append (str, "}");
-		break;
-	}
-	case Type::DOUBLE_ARRAY: {
-		t = g_strdup_printf ("double [] = { /* refcount = %d */ ", u.double_array->basic.refcount);
-		g_string_append (str, t);
-		g_free (t);
-		
-		for (uint i = 0; i < u.double_array->basic.refcount; i++)
-			g_string_append_printf (str, "%g,  ", u.double_array->values [i]);
-
-		g_string_append (str, "}");
-		break;
-	}
 	case Type::COLOR:
 		g_string_append_printf (str, "{%g/%g/%g/%g}", u.color->r, u.color->g, u.color->b, u.color->a);
 		break;

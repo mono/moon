@@ -218,12 +218,23 @@ class Generator {
 		text.AppendLine ("}");
 		text.AppendLine ();
 				
-		foreach (FieldInfo field in fields) {
+		for (int i = 0; i < fields.Count; i++) {
+			FieldInfo field = fields [i];
+			int version = field.SilverlightVersion;
+			int version_next = i + 1 < fields.Count ? fields [i + 1].SilverlightVersion : -1;
+			if (version > 1 && version_previous != version) {
+				text.Append ("#if SL_");
+				text.Append (version);
+				text.AppendLine ("_0");
+			}
 			text.Append ("DependencyProperty *");
 			text.Append (field.Parent.Name);
 			text.Append ("::");
 			text.Append (field.Name);
 			text.AppendLine (" = NULL;");
+			if (version > 1 && version_next != version)
+				text.AppendLine ("#endif");
+			version_previous = version;
 		}
 		text.AppendLine ();
 		
@@ -255,8 +266,6 @@ class Generator {
 		all.Children.Add (new TypeInfo ("guint32", "UINT32", null, true));
 		all.Children.Add (new TypeInfo ("gint32", "INT32", null, true));
 		all.Children.Add (new TypeInfo ("char*", "STRING", null, true));
-		all.Children.Add (new TypeInfo ("double*", "DOUBLE_ARRAY", null, true));
-		all.Children.Add (new TypeInfo ("Point*", "POINT_ARRAY", null, true));
 		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", null, true));
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", null, true, 2));
 		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", null, true));
@@ -958,7 +967,7 @@ class Generator {
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
 			if (t.C_Constructor == string.Empty || t.C_Constructor == null || !t.GenerateCBindingCtor) {
 				//Console.WriteLine ("{0} does not have a C ctor", t.FullName);
-				if (t.GetTotalEventCount () == 0)
+				if (t.GetTotalEventCount (int.MaxValue) == 0)
 					continue;
 			}
 	
@@ -1005,88 +1014,109 @@ class Generator {
 		}
 		text.AppendLine ("#endif");
 		
-		// Set the event ids for all the events
-		text.AppendLine ("");
-		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
-			if (t.Events == null || t.Events.Count == 0)
-				continue;
+		int [] versions = new int [] {2, 1};
+		
+		for (int i = 0; i < versions.Length; i++) {
+			int version = versions [i];
+			// Set the event ids for all the events
+			text.AppendLine ();
 			
-			foreach (string e in t.Events) {
-				text.Append ("const int ");
-				text.Append (t.Name);
-				text.Append ("::");
-				text.Append (e);
-				text.Append ("Event = ");
-				text.Append (t.GetEventId (e));
-				text.AppendLine (";");
-			}
-		}
-
-		// Create the arrays of event names for the classes which have events
-		text.AppendLine ("");
-		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
-			if (t.Events == null || t.Events.Count == 0)
-				continue;
+			text.Append (i == 0 ? "#if " : "#else ");
+			if (i == 0)
+				Helper.WriteVersion (text, version);
+						
+			text.AppendLine ();
 			
-			text.Append ("const char *");
-			text.Append (t.Name);
-			text.Append ("_Events [] = { ");
-			
-			if (t.Events != null && t.Events.Count != 0){
-				for (int k = 0; k < t.Events.Count; k++) {
-					text.Append ("\"");
-					text.Append (t.Events [k]);
-					text.Append ("\", ");
+			foreach (TypeInfo t in all.Children.SortedTypesByKind) {
+				if (version < t.SilverlightVersion)
+					continue;
+				
+				if (t.GetEventCount (version) == 0)
+					continue;
+				
+				
+				foreach (FieldInfo field in t.Events) {
+					if (version < field.SilverlightVersion)
+						continue;
+					text.Append ("const int ");
+					text.Append (t.Name);
+					text.Append ("::");
+					text.Append (field.EventName);
+					text.Append ("Event = ");
+					text.Append (t.GetEventId (field, version));
+					text.AppendLine (";");
 				}
 			}
-			
-			text.AppendLine ("NULL };");
-		}
-
-		// Create the array of type data
-		text.AppendLine ("");
-		text.AppendLine ("Type type_infos [] = {");
-		text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },");
-		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
-			MemberInfo member;
-			TypeInfo parent = null;
-			string events = "NULL";
-			
-			if (!type.ImplementsGetObjectType && !type.Properties.ContainsKey ("IncludeInKinds"))
-				continue;
-			
-			if (type.Base != null && type.Base.Value != null && all.Children.TryGetValue (type.Base.Value, out member))
-				parent = (TypeInfo) member;
-			
-			if (type.Events != null && type.Events.Count != 0)
-				events = type.Name + "_Events";
-
-			if (type.SilverlightVersion == 2)
-				text.AppendLine ("#if SL_2_0");
-			text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL, NULL }}, ",
-			                                "Type::" + type.KindName, 
-			                                "Type::" + (parent != null ? parent.KindName : "INVALID"),
-			                                type.IsValueType ? "true" : "false",
-			                                "\"" + type.Name + "\"", 
-			                                "\"" + type.KindName + "\"", 
-			                                type.Events.Count,
-			                                type.GetTotalEventCount (),
-			                                events,
-			                                (type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL", 
-			                                type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
-			                                )
-			                 );
-			if (type.SilverlightVersion == 2) {
-				text.AppendLine ("#else");
-				text.AppendLine (string.Format ("	{{ Type::INVALID, Type::INVALID, false, \"2.0 specific type '{0}'\", {1}, 0, 0, NULL, NULL, NULL, NULL, NULL }}, ",
-								type.KindName,
-								"\"" + type.KindName + "\""));
-				text.AppendLine ("#endif");
+	
+			// Create the arrays of event names for the classes which have events
+			text.AppendLine ("");
+			foreach (TypeInfo t in all.Children.SortedTypesByKind) {
+				if (t.Events == null || t.Events.Count == 0)
+					continue;
+				
+				if (version < t.SilverlightVersion)
+					continue;
+				
+				text.Append ("const char *");
+				text.Append (t.Name);
+				text.Append ("_Events [] = { ");
+				
+				foreach (FieldInfo field in t.Events) {
+					if (version < field.SilverlightVersion)
+						continue;
+					
+					text.Append ("\"");
+					text.Append (field.EventName);
+					text.Append ("\", ");
+				}
+				
+				text.AppendLine ("NULL };");
 			}
-			
+	
+			// Create the array of type data
+			text.AppendLine ("");
+			text.AppendLine ("Type type_infos [] = {");
+			text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },");
+			foreach (TypeInfo type in all.Children.SortedTypesByKind) {
+				MemberInfo member;
+				TypeInfo parent = null;
+				string events = "NULL";
+				
+				if (!type.ImplementsGetObjectType && !type.Properties.ContainsKey ("IncludeInKinds"))
+					continue;
+				
+				if (type.Base != null && type.Base.Value != null && all.Children.TryGetValue (type.Base.Value, out member))
+					parent = (TypeInfo) member;
+				
+				if (type.Events != null && type.Events.Count != 0)
+					events = type.Name + "_Events";
+	
+				if (version >= type.SilverlightVersion) {
+					text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL, NULL }}, ",
+					                                "Type::" + type.KindName, 
+					                                "Type::" + (parent != null ? parent.KindName : "INVALID"),
+					                                type.IsValueType ? "true" : "false",
+					                                "\"" + type.Name + "\"", 
+					                                "\"" + type.KindName + "\"", 
+					                                type.GetEventCount (version),
+					                                type.GetTotalEventCount (version),
+					                                events,
+					                                (type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL", 
+					                                type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
+					                                )
+					                 );
+				} else {
+					text.AppendLine (string.Format ("	{{ Type::INVALID, Type::INVALID, false, \"2.0 specific type '{0}'\", {1}, 0, 0, NULL, NULL, NULL, NULL, NULL }}, ",
+									type.KindName,
+									"\"" + type.KindName + "\""));
+				}
+				
+			}
+			text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL }");
+			text.AppendLine ("};");
 		}
-		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL }");
-		text.AppendLine ("};");
+		text.AppendLine ("#endif");
+		text.AppendLine ();
 				
 		Helper.WriteAllText ("src/type-generated.cpp", text.ToString ());
 	}

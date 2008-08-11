@@ -36,8 +36,6 @@
     <File name="dependencyproperty.g.cpp" subtype="Code" buildaction="Compile" />
     <File name="animation.cpp" subtype="Code" buildaction="Compile" />
     <File name="animation.h" subtype="Code" buildaction="Nothing" />
-    <File name="array.cpp" subtype="Code" buildaction="Compile" />
-    <File name="array.h" subtype="Code" buildaction="Nothing" />
     <File name="brush.cpp" subtype="Code" buildaction="Compile" />
     <File name="brush.h" subtype="Code" buildaction="Nothing" />
     <File name="canvas.cpp" subtype="Code" buildaction="Compile" />

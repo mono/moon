@@ -231,6 +231,7 @@ Value *collection_iterator_get_current (CollectionIterator *iterator, int *error
 
 DoubleCollection *double_collection_from_str (const char *s);
 PointCollection *point_collection_from_str (const char *s);
+GArray* double_garray_from_str   (const char *s, gint max);
 
 G_END_DECLS
 

@@ -20,7 +20,6 @@
 #include "utils.h"
 #include "geometry.h"
 #include "shape.h"
-#include "array.h"
 
 //
 // Geometry

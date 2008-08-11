@@ -6,7 +6,6 @@ INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\"
 
 libmoon_include_HEADERS = 	\
 	animation.h		\
-	array.h			\
 	asf/asf.h		\
 	asf/asf-generated.h	\
 	asf/asf-guids.h		\
@@ -72,7 +71,6 @@ libmoon_include_HEADERS = 	\
 libmoon_la_SOURCES = 		\
 	$(libmoon_la_headers) 	\
 	animation.cpp		\
-	array.cpp		\
 	asf/asf.cpp		\
 	asf/asf-generated.cpp	\
 	asf/asf-guids.cpp	\

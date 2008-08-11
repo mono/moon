@@ -12,7 +12,6 @@
 
 #include <glib.h>
 
-#include "array.h"
 #include "point.h"
 
 bool

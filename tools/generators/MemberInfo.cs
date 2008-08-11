@@ -29,6 +29,18 @@ class MemberInfo {
 	private string fullname;
 	private Nullable<int> silverlight_version;
 	
+	public void WriteVersionIf (StringBuilder text, bool end)
+	{
+		if (SilverlightVersion > 1) {
+			if (!end) {
+				text.AppendLine ("#if ");
+				Helper.WriteVersion (text, SilverlightVersion);
+			} else {
+				text.AppendLine ("#endif");
+			}
+		}
+	}
+	
 	public bool IsPluginMember {
 		get {
 			if (Header == null || Header == string.Empty)
