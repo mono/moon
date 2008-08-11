@@ -1,3 +1,9 @@
+2008-08-11  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (PluginInstance::StreamAsFile): horrible but
+	temporary hack to load application/x-silverlight objects as sl2
+	files when .xap is present in the filename.
+
 2008-08-11  Geoff Norton  <gnorton@novell.com>
 
 	* moonlight.h:  Some sites are doing an exact string comparison

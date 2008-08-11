@@ -1278,9 +1278,15 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 			delete xaml_loader;
 	
 #if SL_2_0
-		if (IsSilverlight2 ()) 
-			LoadXAP (fname);
-		else {
+		// FIXME horrible hack to test sl2 sites that use the sl1
+		// mimetype.
+		if (IsSilverlight2 ()) {
+			LoadXAP (fname);		
+		} else if (strstr (stream->url, ".xap")) {
+			g_warning ("HACK to use sl2 on uris containing .xap enganged");
+			this->silverlight2 = TRUE;
+			LoadXAP (fname);		
+		} else {
 #else
 			unzFile zf = unzOpen (fname);
 			if (zf) {
