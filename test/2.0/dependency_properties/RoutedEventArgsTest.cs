@@ -37,6 +37,9 @@ namespace MoonTest.System.Windows
 			o = new Ellipse();
 			args.Source = o;
 			Assert.AreEqual (o, args.Source);
+
+			// try null
+			args.Source = null;
 		}
 	}
 }
