@@ -59,7 +59,6 @@ EXTRA_DIST = $(system_windows_browser_sources) 				\
 	System.Windows.Browser.Net/ChangeLog				\
 	System.Windows.Browser.Serialization/ChangeLog			\
 	System.Windows/ChangeLog					\
-	System.Windows.Controls/ChangeLog				\
 	System.Windows.Hosting/ChangeLog				\
 	ChangeLog
 
