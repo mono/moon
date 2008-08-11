@@ -153,6 +153,9 @@ public:
 		ROWDEFINITION_COLLECTION,// Silverlight 2.0 only
 		RUN,
 		SCALETRANSFORM,
+		SETTER,// Silverlight 2.0 only
+		SETTERBASE,// Silverlight 2.0 only
+		SETTERBASE_COLLECTION,// Silverlight 2.0 only
 		SHAPE,
 		SIZE,// Silverlight 2.0 only
 		SIZECHANGEDEVENTARGS,// Silverlight 2.0 only
@@ -165,6 +168,7 @@ public:
 		STRING,
 		STROKE,
 		STROKE_COLLECTION,
+		STYLE,// Silverlight 2.0 only
 		STYLUSINFO,
 		STYLUSPOINT,
 		STYLUSPOINT_COLLECTION,

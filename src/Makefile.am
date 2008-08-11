@@ -141,6 +141,7 @@ libmoon_include_HEADERS += 	\
 	control.h		\
 	deployment.h		\
 	grid.h			\
+	style.h			\
 	template.h		\
 	usercontrol.h		\
 	xap.h
@@ -150,6 +151,7 @@ libmoon_la_SOURCES += 		\
 	control.cpp		\
 	deployment.cpp		\
 	grid.cpp		\
+	style.cpp		\
 	template.cpp		\
 	usercontrol.cpp 	\
 	xap.cpp

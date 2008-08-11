@@ -1077,6 +1077,42 @@ scale_transform_new (void)
 }
 
 
+#if SL_2_0
+/**
+ * Setter
+ **/
+Setter *
+setter_new (void)
+{
+	return new Setter ();
+}
+#endif
+
+
+#if SL_2_0
+/**
+ * SetterBase
+ **/
+SetterBase *
+setter_base_new (void)
+{
+	return new SetterBase ();
+}
+#endif
+
+
+#if SL_2_0
+/**
+ * SetterBaseCollection
+ **/
+SetterBaseCollection *
+setter_base_collection_new (void)
+{
+	return new SetterBaseCollection ();
+}
+#endif
+
+
 /**
  * SkewTransform
  **/
@@ -1155,6 +1191,18 @@ stroke_collection_new (void)
 {
 	return new StrokeCollection ();
 }
+
+
+#if SL_2_0
+/**
+ * Style
+ **/
+Style *
+style_new (void)
+{
+	return new Style ();
+}
+#endif
 
 
 /**

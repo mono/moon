@@ -43,6 +43,7 @@
 #include "deployment.h"
 #include "grid.h"
 #include "size.h"
+#include "style.h"
 #include "template.h"
 #include "usercontrol.h"
 #endif
@@ -230,6 +231,9 @@ Type type_infos [] = {
 	{ Type::ROWDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "RowDefinitionCollection", "ROWDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) row_definition_collection_new, NULL, NULL, NULL }, 
 	{ Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text", NULL, NULL }, 
 	{ Type::SCALETRANSFORM, Type::TRANSFORM, false, "ScaleTransform", "SCALETRANSFORM", 0, 1, NULL, (create_inst_func *) scale_transform_new, NULL, NULL, NULL }, 
+	{ Type::SETTER, Type::SETTERBASE, false, "Setter", "SETTER", 0, 1, NULL, (create_inst_func *) setter_new, NULL, NULL, NULL }, 
+	{ Type::SETTERBASE, Type::DEPENDENCY_OBJECT, false, "SetterBase", "SETTERBASE", 0, 1, NULL, (create_inst_func *) setter_base_new, NULL, NULL, NULL }, 
+	{ Type::SETTERBASE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "SetterBaseCollection", "SETTERBASE_COLLECTION", 0, 1, NULL, (create_inst_func *) setter_base_collection_new, NULL, NULL, NULL }, 
 	{ Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 15, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::SIZE, Type::INVALID, false, "Size", "SIZE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::SIZECHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "SizeChangedEventArgs", "SIZECHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
@@ -242,6 +246,7 @@ Type type_infos [] = {
 	{ Type::STRING, Type::INVALID, false, "char*", "STRING", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::STROKE, Type::DEPENDENCY_OBJECT, false, "Stroke", "STROKE", 0, 1, NULL, (create_inst_func *) stroke_new, NULL, NULL, NULL }, 
 	{ Type::STROKE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StrokeCollection", "STROKE_COLLECTION", 0, 1, NULL, (create_inst_func *) stroke_collection_new, NULL, NULL, NULL }, 
+	{ Type::STYLE, Type::DEPENDENCY_OBJECT, false, "Style", "STYLE", 0, 1, NULL, (create_inst_func *) style_new, "Setters", NULL, NULL }, 
 	{ Type::STYLUSINFO, Type::DEPENDENCY_OBJECT, false, "StylusInfo", "STYLUSINFO", 0, 1, NULL, (create_inst_func *) stylus_info_new, NULL, NULL, NULL }, 
 	{ Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, false, "StylusPoint", "STYLUSPOINT", 0, 1, NULL, (create_inst_func *) stylus_point_new, NULL, NULL, NULL }, 
 	{ Type::STYLUSPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL, NULL, NULL }, 
@@ -454,6 +459,9 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ROWDEFINITION_COLLECTION'", "ROWDEFINITION_COLLECTION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text", NULL, NULL }, 
 	{ Type::SCALETRANSFORM, Type::TRANSFORM, false, "ScaleTransform", "SCALETRANSFORM", 0, 1, NULL, (create_inst_func *) scale_transform_new, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SETTER'", "SETTER", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SETTERBASE'", "SETTERBASE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SETTERBASE_COLLECTION'", "SETTERBASE_COLLECTION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 12, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SIZE'", "SIZE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'SIZECHANGEDEVENTARGS'", "SIZECHANGEDEVENTARGS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
@@ -466,6 +474,7 @@ Type type_infos [] = {
 	{ Type::STRING, Type::INVALID, false, "char*", "STRING", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::STROKE, Type::DEPENDENCY_OBJECT, false, "Stroke", "STROKE", 0, 1, NULL, (create_inst_func *) stroke_new, NULL, NULL, NULL }, 
 	{ Type::STROKE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StrokeCollection", "STROKE_COLLECTION", 0, 1, NULL, (create_inst_func *) stroke_collection_new, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'STYLE'", "STYLE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::STYLUSINFO, Type::DEPENDENCY_OBJECT, false, "StylusInfo", "STYLUSINFO", 0, 1, NULL, (create_inst_func *) stylus_info_new, NULL, NULL, NULL }, 
 	{ Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, false, "StylusPoint", "STYLUSPOINT", 0, 1, NULL, (create_inst_func *) stylus_point_new, NULL, NULL, NULL }, 
 	{ Type::STYLUSPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL, NULL, NULL }, 

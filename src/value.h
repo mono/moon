@@ -155,6 +155,9 @@ class RowDefinition;
 class RowDefinitionCollection;
 class Run;
 class ScaleTransform;
+class Setter;
+class SetterBase;
+class SetterBaseCollection;
 class Shape;
 class SizeChangedEventArgs;
 class SkewTransform;
@@ -165,6 +168,7 @@ class SplinePointKeyFrame;
 class Storyboard;
 class Stroke;
 class StrokeCollection;
+class Style;
 class StylusInfo;
 class StylusPoint;
 class StylusPointCollection;
@@ -396,6 +400,9 @@ public:
 	RowDefinitionCollection*       AsRowDefinitionCollection () { checked_get_subclass (Type::ROWDEFINITION_COLLECTION, RowDefinitionCollection) }
 	Run*                           AsRun () { checked_get_subclass (Type::RUN, Run) }
 	ScaleTransform*                AsScaleTransform () { checked_get_subclass (Type::SCALETRANSFORM, ScaleTransform) }
+	Setter*                        AsSetter () { checked_get_subclass (Type::SETTER, Setter) }
+	SetterBase*                    AsSetterBase () { checked_get_subclass (Type::SETTERBASE, SetterBase) }
+	SetterBaseCollection*          AsSetterBaseCollection () { checked_get_subclass (Type::SETTERBASE_COLLECTION, SetterBaseCollection) }
 	Shape*                         AsShape () { checked_get_subclass (Type::SHAPE, Shape) }
 	SizeChangedEventArgs*          AsSizeChangedEventArgs () { checked_get_subclass (Type::SIZECHANGEDEVENTARGS, SizeChangedEventArgs) }
 	SkewTransform*                 AsSkewTransform () { checked_get_subclass (Type::SKEWTRANSFORM, SkewTransform) }
@@ -406,6 +413,7 @@ public:
 	Storyboard*                    AsStoryboard () { checked_get_subclass (Type::STORYBOARD, Storyboard) }
 	Stroke*                        AsStroke () { checked_get_subclass (Type::STROKE, Stroke) }
 	StrokeCollection*              AsStrokeCollection () { checked_get_subclass (Type::STROKE_COLLECTION, StrokeCollection) }
+	Style*                         AsStyle () { checked_get_subclass (Type::STYLE, Style) }
 	StylusInfo*                    AsStylusInfo () { checked_get_subclass (Type::STYLUSINFO, StylusInfo) }
 	StylusPoint*                   AsStylusPoint () { checked_get_subclass (Type::STYLUSPOINT, StylusPoint) }
 	StylusPointCollection*         AsStylusPointCollection () { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }

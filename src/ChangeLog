@@ -1,3 +1,13 @@
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
+	* style.h, style.cpp: add Style, SetterBase, Setter, and
+	SetterBaseCollection unmanaged types.
+
+	* Makefile.am: add them to the 2.0 build.
+
+	* type.h, type-generated.cpp, value.h, cbinding.h, cbinding.cpp,
+	dependencyproperty.g.cpp: regenerate from style.h/style.cpp.
+	
 2008-08-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* shape.cpp (Polyline::OnCollectionChanged): Invalidate the path

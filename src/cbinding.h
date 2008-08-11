@@ -25,6 +25,7 @@
 #include "media.h"
 #include "panel.h"
 #include "shape.h"
+#include "style.h"
 #include "stylus.h"
 #include "template.h"
 #include "text.h"
@@ -570,6 +571,27 @@ Run *run_new (void);
  **/
 ScaleTransform *scale_transform_new (void);
 
+#if SL_2_0
+/**
+ * Setter
+ **/
+Setter *setter_new (void);
+#endif
+
+#if SL_2_0
+/**
+ * SetterBase
+ **/
+SetterBase *setter_base_new (void);
+#endif
+
+#if SL_2_0
+/**
+ * SetterBaseCollection
+ **/
+SetterBaseCollection *setter_base_collection_new (void);
+#endif
+
 /**
  * SkewTransform
  **/
@@ -609,6 +631,13 @@ Stroke *stroke_new (void);
  * StrokeCollection
  **/
 StrokeCollection *stroke_collection_new (void);
+
+#if SL_2_0
+/**
+ * Style
+ **/
+Style *style_new (void);
+#endif
 
 /**
  * StylusInfo
