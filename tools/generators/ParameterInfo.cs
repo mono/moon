@@ -45,7 +45,8 @@ class ParameterInfo : MemberInfo {
 	public void WriteFormatted (StringBuilder text)
 	{
 		ParameterType.WriteFormatted (text);
-		text.Append (" ");
+		if (!ParameterType.IsPointer)
+			text.Append (" ");
 		text.Append (Name);
 	}
 }

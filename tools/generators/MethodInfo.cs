@@ -108,7 +108,8 @@ class MethodInfo : MemberInfo {
 	public void WriteFormatted (StringBuilder text)
 	{
 		ReturnType.WriteFormatted (text);
-		text.Append (" ");
+		if (!ReturnType.IsPointer)
+			text.Append (" ");
 		text.Append (Name);
 		text.Append (" (");
 		for (int i = 0; i < Parameters.Count; i++) {
@@ -117,6 +118,5 @@ class MethodInfo : MemberInfo {
 			Parameters [i].WriteFormatted (text);
 		}
 		text.Append (");");
-		
 	}
 }
