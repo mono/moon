@@ -1704,9 +1704,7 @@ keytime_from_str (const char* str, KeyTime *res)
 
 bool
 key_spline_from_str (const char *str, KeySpline **res)
-{
-	printf ("key_spline_from_str ('%s', %p)\n", str, res);
-	
+{	
 	PointCollection *pts = point_collection_from_str (str);
 
 
@@ -1729,7 +1727,6 @@ Matrix *
 matrix_from_str (const char *str)
 {
 	Matrix *matrix;
-	printf ("matrix_from_str ('%s')\n", str);
 	DoubleCollection *values = double_collection_from_str (str);
 	
 	

@@ -1,5 +1,9 @@
 2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* xaml.cpp: Remove debug spew.
+
+2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* array.cpp, array.h: Removed, no longer needed.
 	* collection.cpp, collection.h: Moved double_garray_from_str to
 	  collection.cpp|h.
