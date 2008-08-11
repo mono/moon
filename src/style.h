@@ -34,8 +34,8 @@ public:
  	/* @PropertyType=SetterBaseCollection */
 	static DependencyProperty *SettersProperty;
 
- 	/* @PropertyType=Type */
-	static DependencyProperty *TargetTypeProperty;
+ 	/* PropertyType=Type */
+	//static DependencyProperty *TargetTypeProperty;
 };
 
 //
@@ -50,8 +50,8 @@ class SetterBaseCollection : public DependencyObjectCollection {
 	/* @GenerateCBinding */
 	SetterBaseCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::SETTER_BASE_COLLECTION; }
-	virtual Type::Kind GetElementType () { return Type::SETTER_BASE; }
+	virtual Type::Kind GetObjectType () { return Type::SETTERBASE_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::SETTERBASE; }
 };
 
 //
@@ -67,7 +67,7 @@ public:
 	/* @GenerateCBinding */
 	SetterBase ();
 
-	virtual Type::Kind GetObjectType () { return Type::SETTER_BASE; }
+	virtual Type::Kind GetObjectType () { return Type::SETTERBASE; }
 };
 
 //
@@ -85,8 +85,8 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::SETTER; }
 
- 	/* @PropertyType=DependencyProperty */
-	static DependencyProperty *PropertyProperty;
+ 	/* PropertyType=DependencyProperty */
+	//static DependencyProperty *PropertyProperty;
 };
 
 G_BEGIN_DECLS

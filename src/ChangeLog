@@ -1,5 +1,11 @@
 2008-08-11  Chris Toshok  <toshok@ximian.com>
 
+	* style.h: comment out 2 problematic DP's for now.
+
+	* dependencyproperty.g.cpp: regen
+
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
 	* style.h, style.cpp: add Style, SetterBase, Setter, and
 	SetterBaseCollection unmanaged types.
 
