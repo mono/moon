@@ -1,3 +1,9 @@
+2008-08-11  Geoff Norton  <gnorton@novell.com>
+
+	* moonlight.h:  Some sites are doing an exact string comparison
+	in Javascript of this value.  Unfortunately we need to drop
+	out compatability string.
+
 2008-08-08  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp: add sl2 arguments to the various parser/enum
