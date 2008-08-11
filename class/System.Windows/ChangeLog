@@ -1,5 +1,11 @@
 2008-08-10  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (system_windows_sources): add some more
+	MS.SilverlightControls stuff to the build, and remove another
+	overlapping .cs file from our sources.
+
+2008-08-10  Chris Toshok  <toshok@ximian.com>
+
 	* System.Collections.ObjectModel/ObservableCollection_T.cs: remove
 	the generic constraint, and add back in INotifyPropertyChanged.
 

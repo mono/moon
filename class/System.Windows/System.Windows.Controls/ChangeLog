@@ -1,5 +1,9 @@
 2008-08-09  Chris Toshok  <toshok@ximian.com>
 
+	* ScrollBarVisibility.cs: nuke.
+
+2008-08-09  Chris Toshok  <toshok@ximian.com>
+
 	* Image.cs: change the Source property to be the right type for
 	2.0 (doesn't work, though.. the DP is still a string).
 

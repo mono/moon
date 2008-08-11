@@ -33,7 +33,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Controls/Orientation.cs			\
-	$(srcdir)/System.Windows.Controls/ScrollBarVisibility.cs		\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventAction.cs		\
 	$(srcdir)/System.Windows.Controls/Canvas.cs				\
 	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
@@ -53,6 +52,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/RowDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Controls/ControlTemplate.cs			\
+	$(srcdir)/System.Windows.Controls.Primitives/Popup.cs			\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
 	$(srcdir)/System.Windows.Ink/Stroke.cs					\
 	$(srcdir)/System.Windows.Ink/StrokeCollection.cs			\
@@ -305,10 +305,18 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ContentControl/ContentControl.cs			\
 	$(MSCONTROLS)/Src/ContentControl/ContentPresenter.cs			\
 	$(MSCONTROLS)/Src/GlobalSuppressions.cs					\
+	$(MSCONTROLS)/Src/ListBox/SelectionMode.cs				\
 	$(MSCONTROLS)/Src/RadioButton/RadioButton.cs				\
+	$(MSCONTROLS)/Src/RangeBase/RangeBase.cs				\
 	$(MSCONTROLS)/Src/RepeatButton/RepeatButton.cs				\
+	$(MSCONTROLS)/Src/ScrollBar/ScrollBar.cs				\
+	$(MSCONTROLS)/Src/ScrollBar/ScrollBarVisibility.cs			\
+	$(MSCONTROLS)/Src/ScrollBar/ScrollEventArgs.cs				\
+	$(MSCONTROLS)/Src/ScrollBar/ScrollEventType.cs				\
 	$(MSCONTROLS)/Src/Thumb/Thumb.cs					\
-	$(MSCONTROLS)/Src/ToggleButton/ToggleButton.cs
+	$(MSCONTROLS)/Src/ToggleButton/ToggleButton.cs				\
+	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
+	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\
