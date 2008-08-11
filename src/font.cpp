@@ -1098,7 +1098,7 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 	
 	extents->descent = face->size->metrics.descender * scale;
 	extents->ascent = face->size->metrics.ascender * scale;
-	extents->height = face->size->metrics.height * scale;
+	extents->height = FT_MulFix (face->height, face->size->metrics.y_scale) * scale;
 }
 
 static int

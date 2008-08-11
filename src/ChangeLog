@@ -1,3 +1,10 @@
+2008-08-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* layout.cpp: Compute line's height with more precision. This 
+	removes the cumulative difference (over multiple lines) with
+	Silverlight implementation. Fix DRT#209 (enough to PASS) and 
+	improve several	other ones (already passing but imperfect).
+
 2008-08-11  Chris Toshok  <toshok@ximian.com>
 
 	* style.h: comment out 2 problematic DP's for now.
