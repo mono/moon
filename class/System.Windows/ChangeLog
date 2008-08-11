@@ -1,3 +1,10 @@
+2008-08-11  Fernando Herrera  <fherrera@novell.com>
+
+	* Makefile.am: add StackPanel and IValueConverter to the build.
+	* System.Windows.Data/IValueConverter.cs: Added IValueConverter
+	Interface.
+	* System.Windows.Data/Binding.cs: Add Converter property.
+
 2008-08-10  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): add some more

@@ -1,5 +1,5 @@
 //
-// Binding.cs
+// IValueConverter.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -26,19 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Globalization;
+
 namespace System.Windows.Data {
 
-	public class Binding {
-		string path;
-		
-		public Binding (string path)
-		{
-			this.path = path;
-		}
-		
-		public BindingMode Mode { get; set; }
-
-		public IValueConverter Converter { get; set; }
-
+	public interface IValueConverter {
+		Object Convert(Object value, Type targetType, Object parameter, CultureInfo culture);
+		Object ConvertBack(Object value, Type targetType, Object parameter, CultureInfo culture);
 	}
 }

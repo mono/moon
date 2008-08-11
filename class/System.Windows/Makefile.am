@@ -46,6 +46,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ItemsPanelTemplate.cs			\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
+	$(srcdir)/System.Windows.Controls/StackPanel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
 	$(srcdir)/System.Windows.Controls/UserControl.cs			\
 	$(srcdir)/System.Windows.Controls/UIElementCollection.cs		\
@@ -172,6 +173,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
+	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
 	$(srcdir)/System.Windows.Documents/FontSource.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
