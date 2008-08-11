@@ -1952,8 +1952,12 @@ Polygon::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Polygon::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	Shape::OnCollectionChanged (col, args);
+	if (col != GetValue (Polygon::PointsProperty)->AsCollection ()) {
+		Shape::OnCollectionChanged (col, args);
+		return;
+	}
 	
+	InvalidatePathCache ();
 	UpdateBounds (true);
 	Invalidate ();
 }
@@ -2130,9 +2134,13 @@ Polyline::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Polyline::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	Shape::OnCollectionChanged (col, args);
+	if (col != GetValue (Polyline::PointsProperty)->AsCollection ()) {
+		Shape::OnCollectionChanged (col, args);
+		return;
+	}
 	
-	UpdateBounds ();
+	InvalidatePathCache ();
+	UpdateBounds (true);
 	Invalidate ();
 }
 
@@ -2141,7 +2149,7 @@ Polyline::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prope
 {
 	Shape::OnCollectionItemChanged (col, obj, args);
 	
-	UpdateBounds ();
+	UpdateBounds (true);
 	Invalidate ();
 }
 

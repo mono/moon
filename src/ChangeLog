@@ -1,5 +1,9 @@
 2008-08-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* shape.cpp (Polyline::OnCollectionChanged): Invalidate the path
+	cache.
+	(Polygon::OnCollectionChanged): Same.
+
 	* text.cpp (TextBlock::OnPropertyChanged): Set dirty to true when
 	the TextDecorationsProperty changes too. Fixes the "underline
 	hyperlinks" portion of bug #412986.
