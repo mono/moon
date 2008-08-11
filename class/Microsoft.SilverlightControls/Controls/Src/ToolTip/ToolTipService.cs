@@ -36,149 +36,6 @@ namespace System.Windows.Controls
 
         #endregion Data 
 
-        #region BetweenShowDelay Property
- 
-        /// <summary>
-        ///     The DependencyProperty for the BetweenShowDelay property.
-        /// </summary> 
-        public static readonly DependencyProperty BetweenShowDelayProperty = 
-            DependencyProperty.RegisterAttached(
-                "BetweenShowDelay",     // Name 
-                typeof(int),            // Type
-                typeof(ToolTipService), // Owner
-                new PropertyMetadata(new PropertyChangedCallback(PositiveValueValidation)));    // Value validation on changed event 
-
-        /// <summary>
-        ///     Gets the value of the BetweenShowDelay property. 
-        /// </summary> 
-        /// <param name="element">The object on which to query the property.</param>
-        /// <returns>The value of the property.</returns> 
-        public static int GetBetweenShowDelay(DependencyObject element)
-        {
-            if (element == null) 
-            {
-                throw new ArgumentNullException("element");
-            } 
-            int value = (int)element.GetValue(BetweenShowDelayProperty); 
-            if (value == 0)
-            { 
-                value = TOOLTIPSERVICE_betweenShowDelay;
-            }
-            return value; 
-        }
-
-        /// <summary> 
-        ///     Sets the value of the BetweenShowDelay property. 
-        /// </summary>
-        /// <param name="element">The object on which to set the value.</param> 
-        /// <param name="value">The desired value of the property.</param>
-        public static void SetBetweenShowDelay(DependencyObject element, int value)
-        { 
-            if (element == null)
-            {
-                throw new ArgumentNullException("element"); 
-            } 
-            element.SetValue(BetweenShowDelayProperty, value);
-        } 
-
-        #endregion BetweenShowDelay Property
- 
-        #region InitialShowDelay Property
-        /// <summary>
-        ///     The DependencyProperty for the InitialShowDelay property. 
-        /// </summary> 
-        public static readonly DependencyProperty InitialShowDelayProperty =
-                DependencyProperty.RegisterAttached( 
-                "InitialShowDelay",         // Name
-                typeof(int),                // Type
-                typeof(ToolTipService),     // Owner 
-                new PropertyMetadata(new PropertyChangedCallback(PositiveValueValidation)));    // Value validation on changed event
-
-        /// <summary> 
-        ///     Gets the value of the InitialShowDelay property. 
-        /// </summary>
-        /// <param name="element">The object on which to query the property.</param> 
-        /// <returns>The value of the property.</returns>
-        public static int GetInitialShowDelay(DependencyObject element)
-        { 
-            if (element == null)
-            {
-                throw new ArgumentNullException("element"); 
-            } 
-            // Jolt doesn't have default values for custom attached properties
-            // or a way to test if the value exists 
-            // bug 12380
-            int value = (int)element.GetValue(InitialShowDelayProperty);
-            if (value == 0) 
-            {
-                value = TOOLTIPSERVICE_initialShowDelay;
-            } 
-            return value; 
-        }
- 
-        /// <summary>
-        ///     Sets the value of the InitialShowDelay property.
-        /// </summary> 
-        /// <param name="element">The object on which to set the value.</param>
-        /// <param name="value">The desired value of the property.</param>
-        public static void SetInitialShowDelay(DependencyObject element, int value) 
-        { 
-            if (element == null)
-            { 
-                throw new ArgumentNullException("element");
-            }
-            element.SetValue(InitialShowDelayProperty, value); 
-        }
-
-        #endregion InitialShowDelay Property 
- 
-        #region ShowDuration Property
- 
-        /// <summary>
-        ///     The DependencyProperty for the ShowDuration property.
-        /// </summary> 
-        public static readonly DependencyProperty ShowDurationProperty =
-                DependencyProperty.RegisterAttached(
-                "ShowDuration",         // Name 
-                typeof(int),            // Type 
-                typeof(ToolTipService), // Owner
-                new PropertyMetadata(new PropertyChangedCallback(PositiveValueValidation))); // Value validation on changed event 
-
-        /// <summary>
-        ///     Gets the value of the ShowDuration property. 
-        /// </summary>
-        /// <param name="element">The object on which to query the property.</param>
-        /// <returns>The value of the property.</returns> 
-        public static int GetShowDuration(DependencyObject element) 
-        {
-            if (element == null) 
-            {
-                throw new ArgumentNullException("element");
-            } 
-            int value = (int)element.GetValue(ShowDurationProperty);
-            if (value == 0)
-            { 
-                value = TOOLTIPSERVICE_showDuration; 
-            }
-            return value; 
-        }
-
-        /// <summary> 
-        ///     Sets the value of the ShowDuration property.
-        /// </summary>
-        /// <param name="element">The object on which to set the value.</param> 
-        /// <param name="value">The desired value of the property.</param> 
-        public static void SetShowDuration(DependencyObject element, int value)
-        { 
-            if (element == null)
-            {
-                throw new ArgumentNullException("element"); 
-            }
-            element.SetValue(ShowDurationProperty, value);
-        } 
- 
-        #endregion ShowDuration Property
- 
         #region ToolTip Property
         /// <summary>
         ///     The DependencyProperty for the ToolTip property. 
@@ -309,9 +166,8 @@ namespace System.Windows.Controls
 
             SetRootVisual(); 
 
-            int delay = GetBetweenShowDelay(ToolTipService._owner);
             TimeSpan sinceLastOpen = DateTime.Now - ToolTipService._lastToolTipOpenedTime; 
-            if (TimeSpan.Compare(sinceLastOpen, new TimeSpan(0, 0, 0, 0, delay)) <= 0) 
+            if (TimeSpan.Compare(sinceLastOpen, new TimeSpan(0, 0, 0, 0, TOOLTIPSERVICE_betweenShowDelay)) <= 0) 
             {
                 // open the ToolTip immediately 
                 OpenAutomaticToolTip(null, EventArgs.Empty);
@@ -324,8 +180,7 @@ namespace System.Windows.Controls
                     ToolTipService._openTimer = new DispatcherTimer();
                     ToolTipService._openTimer.Tick += new EventHandler(OpenAutomaticToolTip); 
                 }
-                delay = GetInitialShowDelay(ToolTipService._owner);
-                ToolTipService._openTimer.Interval = new TimeSpan(0, 0, 0, 0, delay); 
+                ToolTipService._openTimer.Interval = new TimeSpan(0, 0, 0, 0, TOOLTIPSERVICE_initialShowDelay); 
                 ToolTipService._openTimer.Start();
             }
         } 
@@ -486,7 +341,7 @@ namespace System.Windows.Controls
                 ToolTipService._closeTimer = new DispatcherTimer();
                 ToolTipService._closeTimer.Tick += new EventHandler(CloseAutomaticToolTip); 
             }
-            ToolTipService._closeTimer.Interval = new TimeSpan(0, 0, 0, 0, GetShowDuration(ToolTipService._owner));
+            ToolTipService._closeTimer.Interval = new TimeSpan(0, 0, 0, 0, TOOLTIPSERVICE_showDuration);
             ToolTipService._closeTimer.Start(); 
         }
 

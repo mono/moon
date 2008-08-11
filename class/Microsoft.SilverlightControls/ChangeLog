@@ -1,5 +1,10 @@
 2008-08-11  Fernando Herrera  <fherrera@novell.com>
 
+	* Controls/Src/ToolTip/ToolTipService.cs: Remove some methods/props
+	according to beta2 API. Use default values for delays/duration. 
+
+2008-08-11  Fernando Herrera  <fherrera@novell.com>
+
 	* Controls/Makefile.am: Add ScrollViewer, ScrollBar, ToolTip,
 	RangeBase and ListBox to the build.
 
