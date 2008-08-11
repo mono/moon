@@ -257,6 +257,9 @@ dependency_property_g_init (void)
 	ScaleTransform::CenterYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "CenterY", new Value (0.0));
 	ScaleTransform::ScaleXProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleX", new Value (1.0));
 	ScaleTransform::ScaleYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0));
+#if SL_2_0
+	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::STRING);
+#endif
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
 	Shape::StretchProperty = DependencyProperty::Register (Type::SHAPE, "Stretch", new Value (StretchNone));
 	Shape::StrokeDashArrayProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashArray", Type::DOUBLE_COLLECTION);
@@ -282,6 +285,7 @@ dependency_property_g_init (void)
 	Stroke::StylusPointsProperty = DependencyProperty::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
 #if SL_2_0
 	Style::SettersProperty = DependencyProperty::Register (Type::STYLE, "Setters", Type::SETTERBASE_COLLECTION);
+	Style::TargetTypeProperty = DependencyProperty::Register (Type::STYLE, "TargetType", Type::STRING);
 #endif
 	StylusInfo::DeviceTypeProperty = DependencyProperty::Register (Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse));
 	StylusInfo::IsInvertedProperty = DependencyProperty::Register (Type::STYLUSINFO, "IsInverted", new Value (false));
@@ -548,6 +552,9 @@ DependencyProperty *ScaleTransform::CenterXProperty = NULL;
 DependencyProperty *ScaleTransform::CenterYProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleXProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleYProperty = NULL;
+#if SL_2_0
+DependencyProperty *Setter::PropertyProperty = NULL;
+#endif
 DependencyProperty *Shape::FillProperty = NULL;
 DependencyProperty *Shape::StretchProperty = NULL;
 DependencyProperty *Shape::StrokeDashArrayProperty = NULL;
@@ -573,6 +580,7 @@ DependencyProperty *Stroke::DrawingAttributesProperty = NULL;
 DependencyProperty *Stroke::StylusPointsProperty = NULL;
 #if SL_2_0
 DependencyProperty *Style::SettersProperty = NULL;
+DependencyProperty *Style::TargetTypeProperty = NULL;
 #endif
 DependencyProperty *StylusInfo::DeviceTypeProperty = NULL;
 DependencyProperty *StylusInfo::IsInvertedProperty = NULL;

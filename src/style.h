@@ -34,8 +34,8 @@ public:
  	/* @PropertyType=SetterBaseCollection */
 	static DependencyProperty *SettersProperty;
 
- 	/* PropertyType=Type */
-	//static DependencyProperty *TargetTypeProperty;
+ 	/* @PropertyType=string */
+	static DependencyProperty *TargetTypeProperty;
 };
 
 //
@@ -85,8 +85,8 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::SETTER; }
 
- 	/* PropertyType=DependencyProperty */
-	//static DependencyProperty *PropertyProperty;
+ 	/* @PropertyType=string */
+	static DependencyProperty *PropertyProperty;
 };
 
 G_BEGIN_DECLS
