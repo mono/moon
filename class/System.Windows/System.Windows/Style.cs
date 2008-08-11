@@ -29,17 +29,24 @@
 using System.Security;
 using System.Windows.Markup;
 
+using Mono;
+
 namespace System.Windows {
 
 	[ContentPropertyAttribute("Setters", true)]
 	public sealed class Style : DependencyObject {
+                private static readonly DependencyProperty SettersProperty =
+                        DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
+
+                private static readonly DependencyProperty TargetTypeProperty = null;
+		// DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (Type));
+
 		private bool isSealed;
 		SetterBaseCollection setters;
 		Type targetType;
 
-		public Style ()
+		public Style () : base (NativeMethods.style_new ())
 		{
-			setters = new SetterBaseCollection ();
 		}
 
 		public Style (Type targetType)
@@ -61,7 +68,7 @@ namespace System.Windows {
 		}
 
 		public SetterBaseCollection Setters {
-			get { return setters; }
+			get { return (SetterBaseCollection)GetValue (SettersProperty); }
 		}
 
 		public Type TargetType {

@@ -347,6 +347,9 @@ namespace Mono {
 		public extern static IntPtr stylus_point_collection_new ();
 		
 		[DllImport("moon")]
+		public extern static IntPtr setter_base_collection_new ();
+
+		[DllImport("moon")]
 		public extern static IntPtr stroke_collection_new ();
 
 		[DllImport("moon")]
@@ -598,6 +601,15 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		public extern static IntPtr control_template_new ();
+
+		[DllImport ("moon")]
+		public extern static IntPtr style_new ();
+
+		[DllImport ("moon")]
+		public extern static IntPtr setter_base_new ();
+
+		[DllImport ("moon")]
+		public extern static IntPtr setter_new ();
 #endregion
 
 #region Storyboard

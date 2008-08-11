@@ -26,16 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 
 namespace System.Windows {
 
 	public sealed class Setter : SetterBase {
 
-		public static readonly DependencyProperty PropertyProperty;
+                public static readonly DependencyProperty PropertyProperty = null;
+		//DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (DependencyProperty));
 
 		object value;
 
-		public Setter ()
+		public Setter () : base (NativeMethods.setter_new())
 		{
 		}
 

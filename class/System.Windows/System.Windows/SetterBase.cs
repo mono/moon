@@ -26,13 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 
 namespace System.Windows {
 
 	public abstract class SetterBase : DependencyObject {
 		bool isSealed;
 
-		protected SetterBase ()
+		internal SetterBase (IntPtr raw) : base (raw)
+		{
+		}
+
+		protected SetterBase () : base (NativeMethods.setter_base_new ())
 		{
 		}
 
