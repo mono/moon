@@ -1,3 +1,9 @@
+2008-08-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::OnPropertyChanged): Set dirty to true when
+	the TextDecorationsProperty changes too. Fixes the "underline
+	hyperlinks" portion of bug #412986.
+
 2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml.cpp: Remove debug spew.
