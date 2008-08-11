@@ -1283,7 +1283,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		if (IsSilverlight2 ()) {
 			LoadXAP (fname);		
 		} else if (strstr (stream->url, ".xap")) {
-			g_warning ("HACK to use sl2 on uris containing .xap enganged");
+			g_warning ("HACK to use sl2 on uris containing .xap engaged");
 			this->silverlight2 = TRUE;
 			LoadXAP (fname);		
 		} else {
