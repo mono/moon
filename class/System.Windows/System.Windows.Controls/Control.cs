@@ -82,6 +82,9 @@ namespace System.Windows.Controls {
 		
 		public static readonly DependencyProperty VerticalContentAlignmentProperty =
 			DependencyProperty.Lookup (Kind.CONTROL, "VerticalContentAlignment", typeof (VerticalAlignment));
+
+		public static readonly DependencyProperty StyleProperty =
+			DependencyProperty.Lookup (Kind.CONTROL, "Style", typeof (Style));
 		
 		protected Control ()  : base (NativeMethods.control_new ())
 		{
@@ -174,6 +177,11 @@ namespace System.Windows.Controls {
 		public VerticalAlignment VerticalContentAlignment {
 			get { return (VerticalAlignment) GetValue (VerticalContentAlignmentProperty); }
 			set { SetValue (VerticalContentAlignmentProperty, value); }
+		}
+
+		public Style Style {
+			get { return (Style) GetValue (StyleProperty); }
+			set { SetValue (StyleProperty, value); }
 		}
 
 		public virtual void OnApplyTemplate() {
