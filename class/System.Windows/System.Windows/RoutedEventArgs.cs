@@ -39,9 +39,9 @@ namespace System.Windows {
 
 		~RoutedEventArgs ()
 		{
-			if (this.native != IntPtr.Zero) {
-				NativeMethods.base_unref (this.native);
-				this.native = IntPtr.Zero;
+			if (native != IntPtr.Zero) {
+				NativeMethods.base_unref (native);
+				native = IntPtr.Zero;
 			}
 		}
 
@@ -49,26 +49,44 @@ namespace System.Windows {
 		{
 		}
 
-		object source;
+		DependencyObject source;
+		bool source_set;
 		public object Source {
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			get { return source; }
+			get {
+				if (source_set) {
+					return source;
+				}
+				else {
+					IntPtr v = NativeMethods.routed_event_args_get_source (native);
+					if (v == IntPtr.Zero)
+						return null;
+					return DependencyObject.Lookup (NativeMethods.dependency_object_get_object_type (v),
+									v);
+				}
+			}
 
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
 			set {
-				// not sure what to do here...  test
-				// if there's an exception if you set
-				// it to a non-DO.
-				DependencyObject v = value as DependencyObject;
-				if (v == null)
+				if (value == null) {
 					NativeMethods.routed_event_args_set_source (native, IntPtr.Zero);
-				else
+					source = null;
+					source_set = false;
+				}
+				else {
+					DependencyObject v = value as DependencyObject;
+					if (v == null)
+						throw new ArgumentException ();
+
+					source_set = true;
+					source = v;
+
 					NativeMethods.routed_event_args_set_source (native, v.native);
-				source = value;
+				}
 			}
 		}
 	}

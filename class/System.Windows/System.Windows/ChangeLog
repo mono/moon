@@ -1,3 +1,9 @@
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
+	* RoutedEventArgs.cs: implement the Source property in such a way
+	that it'll work for both fully managed and wrapped unmanaged
+	objects (and such that it passes the simple unit tests.)
+
 2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyObject.cs: Remove the double and point arrays, no longer
