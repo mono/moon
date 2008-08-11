@@ -32,8 +32,9 @@ namespace System.Windows {
 
 	public sealed class Setter : SetterBase {
 
-                public static readonly DependencyProperty PropertyProperty = null;
-		//DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (DependencyProperty));
+		// XXX FIXME - this should be typeof (DependencyProperty)
+                public static readonly DependencyProperty PropertyProperty = 
+			DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (string));
 
 		object value;
 

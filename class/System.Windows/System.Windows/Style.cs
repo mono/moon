@@ -38,8 +38,9 @@ namespace System.Windows {
                 private static readonly DependencyProperty SettersProperty =
                         DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
 
-                private static readonly DependencyProperty TargetTypeProperty = null;
-		// DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (Type));
+		// XXX FIXME - this should be typeof (Type)
+                private static readonly DependencyProperty TargetTypeProperty =
+			DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (string));
 
 		private bool isSealed;
 		SetterBaseCollection setters;
