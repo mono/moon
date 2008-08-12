@@ -1,3 +1,19 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Animation.cs, BeginStoryboard.cs, ColorAnimation.cs,
+	  ColorAnimationUsingKeyFrames.cs, ColorKeyFrame.cs,
+	  ColorKeyFrameCollection.cs, DiscreteColorKeyFrame.cs,
+	  DiscreteDoubleKeyFrame.cs, DiscretePointKeyFrame.cs,
+	  DoubleAnimation.cs, DoubleAnimationUsingKeyFrames.cs,
+	  DoubleKeyFrame.cs, DoubleKeyFrameCollection.cs, KeyFrame.cs,
+	  KeySpline.cs, LinearColorKeyFrame.cs, LinearDoubleKeyFrame.cs,
+	  LinearPointKeyFrame.cs, ParallelTimeline.cs, PointAnimation.cs,
+	  PointAnimationUsingKeyFrames.cs, PointKeyFrame.cs,
+	  PointKeyFrameCollection.cs, SplineColorKeyFrame.cs,
+	  SplineDoubleKeyFrame.cs, SplinePointKeyFrame.cs, Storyboard.cs,
+	  Timeline.cs, TimelineCollection.cs, TimelineGroup.cs: Make classes
+	  partial and remove DP registration, which is now generated.
+
 2008-08-04  Michael Dominic K.  <mdk@mdk.am>
 
 	* Storyboard.cs: Adding SetTarget.

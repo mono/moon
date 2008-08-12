@@ -29,9 +29,7 @@
 using Mono;
 
 namespace System.Windows.Media {
-	public abstract class Geometry : DependencyObject {
-		public static readonly DependencyProperty TransformProperty =
-		       TransformProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "Transform", typeof (Transform));
+	public abstract partial class Geometry : DependencyObject {
 		
 		protected Geometry () : base (NativeMethods.geometry_new ())
 		{

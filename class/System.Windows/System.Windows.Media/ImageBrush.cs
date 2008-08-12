@@ -29,13 +29,7 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class ImageBrush : TileBrush {
-
-		public static readonly DependencyProperty DownloadProgressProperty =
-			DependencyProperty.Lookup (Kind.IMAGEBRUSH, "DownloadProgress", typeof (double));
-		public static readonly DependencyProperty ImageSourceProperty =
-			DependencyProperty.Lookup (Kind.IMAGEBRUSH, "ImageSource", typeof (string));
-
+	public sealed partial class ImageBrush : TileBrush {
 
 		public ImageBrush () : base(NativeMethods.image_brush_new ())
 		{

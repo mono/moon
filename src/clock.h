@@ -492,6 +492,7 @@ void time_manager_add_tick_call (TimeManager *manager, TickCallHandler handler, 
 void time_manager_list_clocks   (TimeManager *manager);
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class Timeline : public DependencyObject {
  protected:
 	virtual ~Timeline () {}
@@ -506,7 +507,7 @@ class Timeline : public DependencyObject {
 	static DependencyProperty *BeginTimeProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::Automatic */
 	static DependencyProperty *DurationProperty;
- 	/* @PropertyType=gint32,DefaultValue=FillBehaviorHoldEnd */
+ 	/* @PropertyType=FillBehavior,DefaultValue=FillBehaviorHoldEnd */
 	static DependencyProperty *FillBehaviorProperty;
  	/* @PropertyType=RepeatBehavior,DefaultValue=RepeatBehavior ((double) 1) */
 	static DependencyProperty *RepeatBehaviorProperty;
@@ -559,6 +560,7 @@ class TimelineCollection : public DependencyObjectCollection {
 };
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class TimelineGroup : public Timeline {
  protected:
 	virtual ~TimelineGroup ();
@@ -580,6 +582,7 @@ class TimelineGroup : public Timeline {
 };
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class ParallelTimeline : public TimelineGroup {
  protected:
 	virtual ~ParallelTimeline () {}
@@ -593,6 +596,7 @@ class ParallelTimeline : public TimelineGroup {
 };
 
 
+/* @Namespace=System.Windows.Media */
 class TimelineMarker : public DependencyObject {
  protected:
 	virtual ~TimelineMarker () {}

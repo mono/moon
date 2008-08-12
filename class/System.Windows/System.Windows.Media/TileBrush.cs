@@ -29,12 +29,7 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public abstract class TileBrush : Brush {
-
-		public static readonly DependencyProperty AlignmentXProperty = DependencyProperty.Lookup (Kind.TILEBRUSH, "AlignmentX", typeof (AlignmentX));
-		public static readonly DependencyProperty AlignmentYProperty = DependencyProperty.Lookup (Kind.TILEBRUSH, "AlignmentY", typeof (AlignmentY));
-		public static readonly DependencyProperty StretchProperty = DependencyProperty.Lookup (Kind.TILEBRUSH, "Stretch", typeof (int));
-
+	public abstract partial class TileBrush : Brush {
 
 		protected TileBrush () : base (NativeMethods.tile_brush_new ())
 		{

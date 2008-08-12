@@ -32,14 +32,8 @@ using Mono;
 
 namespace System.Windows.Input
 {
-	public sealed class StylusInfo : DependencyObject
-	{
-		public static readonly DependencyProperty DeviceTypeProperty = 
-			DependencyProperty.Lookup (Kind.STYLUSINFO, "DeviceType", typeof (TabletDeviceType));
-		
-		public static readonly DependencyProperty IsInvertedProperty = 
-			DependencyProperty.Lookup (Kind.STYLUSINFO, "IsInverted", typeof (bool));
-		
+	public sealed partial class StylusInfo : DependencyObject
+	{		
 		public StylusInfo() : base (NativeMethods.stylus_info_new ())
 		{
 		}

@@ -15,6 +15,7 @@
 
 #include "uielement.h"
 
+/* @Namespace=System.Windows */
 class FrameworkElement : public UIElement {
  protected:
 	virtual ~FrameworkElement () {}
@@ -32,9 +33,9 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty *ActualWidthProperty;
 	/* @PropertyType=Managed,Version=2 */
 	static DependencyProperty *DataContextProperty;
-	/* @PropertyType=gint32,DefaultValue=HorizontalAlignmentStretch,Version=2 */
+	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2 */
 	static DependencyProperty *HorizontalAlignmentProperty;
-	/* @PropertyType=char*,DefaultValue=\"en-US\",Version=2 */
+	/* @PropertyType=char*,DefaultValue=\"en-US\",Version=2,ManagedPropertyType=XmlLanguage */
 	static DependencyProperty *LanguageProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2 */
 	static DependencyProperty *MarginProperty;
@@ -46,7 +47,7 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty *MinHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2 */
 	static DependencyProperty *MinWidthProperty;
-	/* @PropertyType=gint32,DefaultValue=VerticalAlignmentStretch,Version=2 */
+	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2 */
 	static DependencyProperty *VerticalAlignmentProperty;
 
 	/* @GenerateCBinding */

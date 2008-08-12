@@ -30,18 +30,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 
-	public class RowDefinition : DependencyObject {
-		public static readonly DependencyProperty HeightProperty;
-		public static readonly DependencyProperty MaxHeightProperty;
-		public static readonly DependencyProperty MinHeightProperty;
-
-		static RowDefinition ()
-		{
-			HeightProperty = DependencyProperty.Lookup (Kind.GRID, "HeightProperty", typeof (GridLength));
-			MaxHeightProperty = DependencyProperty.Lookup (Kind.GRID, "MaxHeight", typeof (double));
-			MinHeightProperty = DependencyProperty.Lookup (Kind.GRID, "MinHeight", typeof (double));
-		}
-
+	public partial class RowDefinition : DependencyObject {
 		public RowDefinition () : base (NativeMethods.row_definition_new ())
 		{
 		}

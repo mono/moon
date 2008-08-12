@@ -64,6 +64,20 @@ The following annotations are understood by the generator:
 	  defaults to false).
 	* Visibility: Not implemented.
 
+class/System.Windows/System.Windows/DependencyProperty.g.cs
+===========================================================
+All our managed dependency properties.
+
+The following annotations are understood by the generator:
+	* Same as for src/dependencyproperty.g.cpp
+	* ManagedPropertyType: The managed property type (if it differs
+	  from the native type).
+	* ManagedDeclaringType: The managed type where the DependencyProperty
+	  should be declared (used for UIElement/FrameworkElement mess).
+	* Namespace: (On the type where the DP is defined): The namespace
+	  of the managed class. Set to 'None' to tell the generator that 
+	  the native class has no managed equivalent.
+
 src/type.h
 ==========
 Reads type.h.in and:

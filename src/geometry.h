@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 //
 // Geometry
 //
+/* @Namespace=System.Windows.Media */
 class Geometry : public DependencyObject {
  protected:
 #if FALSE
@@ -50,7 +51,7 @@ class Geometry : public DependencyObject {
 	virtual ~Geometry ();
 	
  public:
- 	/* @PropertyType=gint32,DefaultValue=FillRuleEvenOdd */
+ 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd */
 	static DependencyProperty *FillRuleProperty;
  	/* @PropertyType=Transform */
 	static DependencyProperty *TransformProperty;
@@ -91,6 +92,7 @@ void geometry_set_transform (Geometry *geometry, Transform *transform);
 //
 // GeometryCollection
 //
+/* @Namespace=System.Windows.Media */
 class GeometryCollection : public DependencyObjectCollection {
  protected:
 	virtual ~GeometryCollection () {}
@@ -108,6 +110,7 @@ class GeometryCollection : public DependencyObjectCollection {
 // GeometryGroup
 //
 /* @ContentProperty="Children" */
+/* @Namespace=System.Windows.Media */
 class GeometryGroup : public Geometry {
  protected:
 	virtual ~GeometryGroup () {}
@@ -142,6 +145,7 @@ void geometry_group_set_children (GeometryGroup *group, GeometryCollection *chil
 //
 // EllipseGeometry
 //
+/* @Namespace=System.Windows.Media */
 class EllipseGeometry : public Geometry {
  protected:
 	virtual void Build (Path *path);
@@ -188,6 +192,7 @@ void ellipse_geometry_set_radius_y (EllipseGeometry *ellipse, double radius_y);
 //
 // LineGeometry
 //
+/* @Namespace=System.Windows.Media */
 class LineGeometry : public Geometry {
  protected:
 	virtual void Build (Path *path);
@@ -226,6 +231,7 @@ void line_geometry_set_start_point (LineGeometry *line, Point *point);
 //
 // PathFigureCollection
 //
+/* @Namespace=System.Windows.Media */
 class PathFigureCollection : public DependencyObjectCollection {
  protected:
 	virtual ~PathFigureCollection () {}
@@ -243,6 +249,7 @@ class PathFigureCollection : public DependencyObjectCollection {
 // PathGeometry
 //
 /* @ContentProperty="Figures" */
+/* @Namespace=System.Windows.Media */
 class PathGeometry : public Geometry {
 	int logical_bounds_available:1;
 	int physical_bounds_available:1;
@@ -286,6 +293,7 @@ void path_geometry_set_figures (PathGeometry *path, PathFigureCollection *figure
 //
 // RectangleGeometry
 //
+/* @Namespace=System.Windows.Media */
 class RectangleGeometry : public Geometry {
  protected:
 	virtual void Build (Path *path);
@@ -334,6 +342,7 @@ void rectangle_geometry_set_rect (RectangleGeometry *rectangle, Rect *rect);
 //
 // PathSegmentCollection
 //
+/* @Namespace=System.Windows.Media */
 class PathSegmentCollection : public DependencyObjectCollection {
  protected:
 	virtual ~PathSegmentCollection () {}
@@ -351,6 +360,7 @@ class PathSegmentCollection : public DependencyObjectCollection {
 // PathFigure
 //
 /* @ContentProperty="Segments" */
+/* @Namespace=System.Windows.Media */
 class PathFigure : public DependencyObject {
  protected:
 	virtual ~PathFigure ();
@@ -403,6 +413,7 @@ void path_figure_set_start_point (PathFigure *figure, Point *point);
 //
 // PathSegment
 //
+/* @Namespace=System.Windows.Media */
 class PathSegment : public DependencyObject {
  protected:
 	virtual void Build (Path *path) {};
@@ -420,6 +431,7 @@ class PathSegment : public DependencyObject {
 //
 // ArcSegment
 //
+/* @Namespace=System.Windows.Media */
 class ArcSegment : public PathSegment {
  protected:
 	virtual ~ArcSegment () {}
@@ -433,7 +445,7 @@ class ArcSegment : public PathSegment {
 	static DependencyProperty *RotationAngleProperty;
  	/* @PropertyType=Point */
 	static DependencyProperty *SizeProperty;
- 	/* @PropertyType=gint32,DefaultValue=SweepDirectionCounterclockwise */
+ 	/* @PropertyType=SweepDirection,DefaultValue=SweepDirectionCounterclockwise */
 	static DependencyProperty *SweepDirectionProperty;
 	
 	/* @GenerateCBinding */
@@ -481,6 +493,7 @@ void arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direct
 //
 // BezierSegment
 //
+/* @Namespace=System.Windows.Media */
 class BezierSegment : public PathSegment {
  protected:
 	virtual ~BezierSegment () {}
@@ -526,6 +539,7 @@ void bezier_segment_set_point3 (BezierSegment *segment, Point *point);
 //
 // LineSegment
 //
+/* @Namespace=System.Windows.Media */
 class LineSegment : public PathSegment {
  protected:
 	virtual ~LineSegment () {}
@@ -556,6 +570,7 @@ void line_segment_set_point (LineSegment *segment, Point *point);
 // PolyBezierSegment
 //
 
+/* @Namespace=System.Windows.Media */
 class PolyBezierSegment : public PathSegment {
  protected:
 	virtual ~PolyBezierSegment () {}
@@ -586,6 +601,7 @@ void poly_bezier_segment_set_points (PolyBezierSegment *segment, PointCollection
 // PolyLineSegment
 //
 
+/* @Namespace=System.Windows.Media */
 class PolyLineSegment : public PathSegment {
  protected:
 	virtual ~PolyLineSegment () {}
@@ -616,6 +632,7 @@ void poly_line_segment_set_points (PolyLineSegment *segment, PointCollection *po
 // PolyQuadraticBezierSegment
 //
 
+/* @Namespace=System.Windows.Media */
 class PolyQuadraticBezierSegment : public PathSegment {
  protected:
 	virtual ~PolyQuadraticBezierSegment () {}
@@ -646,6 +663,7 @@ void poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segme
 // QuadraticBezierSegment
 //
 
+/* @Namespace=System.Windows.Media */
 class QuadraticBezierSegment : public PathSegment {
  protected:
 	virtual ~QuadraticBezierSegment () {}

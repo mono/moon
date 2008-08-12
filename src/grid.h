@@ -22,6 +22,7 @@ enum GridUnitType {
 
 /* @IncludeInKinds */
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
 struct GridLength {
  public:
 	double val;
@@ -40,6 +41,7 @@ struct GridLength {
 };
 
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
 class ColumnDefinition : public DependencyObject {
  protected:
 	virtual ~ColumnDefinition () {}
@@ -61,6 +63,7 @@ class ColumnDefinition : public DependencyObject {
 };
 
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
 class RowDefinition : public DependencyObject {
  protected:
 	virtual ~RowDefinition() { actual = 0; }
@@ -83,6 +86,7 @@ class RowDefinition : public DependencyObject {
 };
 
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
 class ColumnDefinitionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~ColumnDefinitionCollection () {}
@@ -97,6 +101,7 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
 
 
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
 class RowDefinitionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~RowDefinitionCollection () {}
@@ -111,6 +116,7 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 
 
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
 class Grid : public Panel {
  protected:
 	virtual ~Grid () {}

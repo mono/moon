@@ -30,32 +30,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 
-	public class Grid : Panel {
-		public static readonly DependencyProperty ColumnProperty;
-		public static readonly DependencyProperty ColumnSpanProperty;
-		public static readonly DependencyProperty RowProperty;
-		public static readonly DependencyProperty RowSpanProperty;
-		public static readonly DependencyProperty ShowGridLinesProperty;
-
-		//
-		// These are not exposed to the public but they do exist
-		//
-		public static readonly DependencyProperty ColumnDefinitionsProperty;
-		public static readonly DependencyProperty RowDefinitionsProperty;
-
-		static Grid ()
-		{
-			ColumnProperty = DependencyProperty.Lookup (Kind.GRID, "Column", typeof (int));
-			RowProperty = DependencyProperty.Lookup (Kind.GRID, "Row", typeof (int));
-			ColumnSpanProperty = DependencyProperty.Lookup (Kind.GRID, "ColumnSpan", typeof (int));
-			RowSpanProperty = DependencyProperty.Lookup (Kind.GRID, "RowSpan", typeof (int));
-
-			//
-			// These seem internal, no public field, but they are available to the user
-			//
-			ColumnDefinitionsProperty = DependencyProperty.Lookup (Kind.GRID, "ColumnDefinitions", typeof(ColumnDefinitionCollection));
-			RowDefinitionsProperty    = DependencyProperty.Lookup (Kind.GRID, "RowDefinitions", typeof(RowDefinitionCollection));
-		}
+	public partial class Grid : Panel {
 
 		public Grid () : base (NativeMethods.grid_new ())
 		{

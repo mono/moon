@@ -32,20 +32,8 @@ using Mono;
 
 namespace System.Windows.Ink
 {
-	public sealed class DrawingAttributes : DependencyObject
+	public sealed partial class DrawingAttributes : DependencyObject
 	{
-		public static readonly DependencyProperty ColorProperty = 
-			DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Color", typeof (Color));
-		
-		public static readonly DependencyProperty HeightProperty = 
-			DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Height", typeof (double));
-		
-		public static readonly DependencyProperty OutlineColorProperty = 
-			DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "OutlineColor", typeof (Color));
-		
-		public static readonly DependencyProperty WidthProperty = 
-			DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Width", typeof (double));
-
 		public DrawingAttributes() : base (NativeMethods.drawing_attributes_new ())
 		{
 		}

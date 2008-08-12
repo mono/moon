@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation {
 
-	public sealed class TimelineCollection : PresentationFrameworkCollection<Timeline> {
+	public sealed partial class TimelineCollection : PresentationFrameworkCollection<Timeline> {
 		public TimelineCollection () : base (NativeMethods.timeline_collection_new ())
 		{
 		}

@@ -42,7 +42,7 @@ using System.Windows.Markup;
 
 namespace System.Windows {
 
-	public class Application {
+	public partial class Application {
 		static Application current;
 		static Assembly [] assemblies;
 		

@@ -31,6 +31,124 @@ class Generator {
 		GenerateTypes_G ();
 		
 		GenerateDPs (info);
+		GenerateManagedDPs (info);
+	}
+	
+	static void GenerateManagedDPs (GlobalInfo all)
+	{
+		string base_dir = Environment.CurrentDirectory;
+		string class_dir = Path.Combine (base_dir, "class");
+		string sys_win_dir = Path.Combine (Path.Combine (class_dir, "System.Windows"), "System.Windows");
+		string filename = Path.Combine (sys_win_dir, "DependencyProperty.g.cs");
+		string previous_namespace = "";
+		List<TypeInfo> sorted_types = new List<TypeInfo>  ();
+		StringBuilder text = new StringBuilder ();
+		Dictionary <TypeInfo, List<FieldInfo>> types = new Dictionary<TypeInfo,List<FieldInfo>> ();
+		
+		foreach (FieldInfo field in all.DependencyProperties) {
+			TypeInfo parent = field.Parent as TypeInfo;
+			List <FieldInfo> fields;
+			string managed_parent = field.Properties.GetValue ("ManagedDeclaringType");
+			
+			if (managed_parent != null) {
+				parent = all.Children [managed_parent] as TypeInfo;
+				
+				if (parent == null)
+					throw new Exception (string.Format ("Could not find the type '{0}' set as ManagedDeclaringType of '{1}'", managed_parent, field.FullName));
+			}
+			
+			if (parent == null)
+				throw new Exception (string.Format ("The field '{0}' does not have its parent set.", field.FullName));
+			
+			
+			if (!types.TryGetValue (parent, out fields)) {
+				fields = new List<FieldInfo> ();
+				types.Add (parent, fields);
+				sorted_types.Add (parent);
+			}
+			fields.Add (field);
+		}
+		
+		Helper.WriteWarningGenerated (text);
+		text.AppendLine ("using Mono;");
+		text.AppendLine ("using System;");
+		text.AppendLine ("using System.Collections.Generic;");
+		text.AppendLine ("using System.Windows;");
+		text.AppendLine ("using System.Windows.Controls;");
+		text.AppendLine ("using System.Windows.Documents;");
+		text.AppendLine ("using System.Windows.Ink;");
+		text.AppendLine ("using System.Windows.Input;");
+		text.AppendLine ("using System.Windows.Markup;");
+		text.AppendLine ("using System.Windows.Media;");
+		text.AppendLine ("using System.Windows.Media.Animation;");
+		text.AppendLine ("using System.Windows.Shapes;");
+		text.AppendLine ();
+		
+		sorted_types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
+		for (int i = 0; i < sorted_types.Count; i++) {
+			TypeInfo type = sorted_types [i];
+			List<FieldInfo> fields = types [type];
+			TypeInfo parent = type;
+			string ns;
+			
+			ns = parent.Namespace;
+			
+			if (string.IsNullOrEmpty (ns)) {
+				Console.WriteLine ("The type '{0}' does not have a namespace annotation.", parent.FullName);
+				continue;
+			}
+			
+			if (ns == "None")
+				continue;
+			
+			Console.WriteLine ("{0}.{1}", type.Namespace, type.FullName);
+			
+			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), parent.Name + ".cs");
+			if (!File.Exists (check_ns))
+				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
+			
+			if (previous_namespace != ns) {
+				if (previous_namespace != string.Empty) {
+					text.AppendLine ("}");
+					text.AppendLine ();
+				}
+				text.Append ("namespace ");
+				text.Append (ns);
+				text.AppendLine (" {");
+				previous_namespace = ns;
+			} else {
+				text.AppendLine ();
+			}
+			text.Append ("\tpartial class ");
+			text.Append (parent.Name);
+			text.AppendLine (" {");
+			
+			fields.Sort (new Members.MembersSortedByName <FieldInfo> ());
+			foreach (FieldInfo field in fields) {
+				text.Append ("\t\t");
+				switch (field.Properties.GetValue ("Access")) {
+				case "Internal":
+					text.Append ("private ");
+					break;
+				default:
+					text.Append ("public ");
+					break;
+				}
+				text.Append ("static readonly DependencyProperty ");
+				text.Append (field.Name);
+				text.Append (" = DependencyProperty.Lookup (Kind.");
+				text.Append (field.ParentType.KindName);
+				text.Append (", \"");
+				text.Append (field.Name.Substring (0, field.Name.LastIndexOf ("Property")));
+				text.Append ("\", typeof (");
+				text.Append (field.GetDPManagedPropertyType (all));
+				text.AppendLine ("));");
+			}			
+			text.AppendLine ("\t}");
+		}
+		text.AppendLine ("}");		
+		
+		Helper.WriteAllText (filename, text.ToString ());
 	}
 	
 	static void GenerateDPs (GlobalInfo all)
@@ -40,62 +158,15 @@ class Generator {
 		string last_type = string.Empty;
 		int version_previous = 0;
 		StringBuilder text = new StringBuilder ();
-		List<FieldInfo> fields = new List<FieldInfo> ();
+		List<FieldInfo> fields = all.DependencyProperties;
 		HeaderCollection headers = new HeaderCollection ();
-		Dictionary<string, string> known_properties = new Dictionary <string, string> ();
-		
-		known_properties.Add ("ReadOnly", null);
-		known_properties.Add ("AlwaysChange", null);
-		known_properties.Add ("Version", null);
-		known_properties.Add ("PropertyType", null);
-		known_properties.Add ("DefaultValue", null);
-		known_properties.Add ("Access", null);
-		known_properties.Add ("Nullable", null);
-		known_properties.Add ("Attached", null);
-		
 		
 		headers.Add ("dependencyproperty.h", 1);
 		headers.Add ("color.h", 1);
-		
-		foreach (MemberInfo member in all.Children.Values) {
-			TypeInfo type = member as TypeInfo;
-			
-			if (type == null)
-				continue;
-			
-			foreach (MemberInfo member2 in member.Children.Values) {
-				FieldInfo field = member2 as FieldInfo;
+		foreach (FieldInfo field in fields)
+			headers.Add (field.Header, field.SilverlightVersion);
 				
-				if (field == null)
-					continue;
-				
-				if (field.FieldType == null || field.FieldType.Value != "DependencyProperty*")
-					continue;
-				
-				if (!field.IsStatic)
-					continue;
-				
-				if (!field.Name.EndsWith ("Property")) {
-					Console.WriteLine ("GenerateDPs: Found the static field {0} which returns a DependencyProperty*, but the property name doesn't end with 'Property' (ignore this warning if the field isn't supposed to be a DP).", field.FullName);
-					continue;
-				}
-				
-				fields.Add (field);
-				headers.Add (field.Header, field.SilverlightVersion);
-				
-				
-				foreach (Property p in field.Properties.Values) {
-					if (!known_properties.ContainsKey (p.Name))
-						Console.WriteLine ("The field {0} in {3} has an unknown property: '{1}' = '{2}'", field.FullName, p.Name, p.Value, Path.GetFileName (field.Header));
-				}
-			}
-		}
-		fields.Sort (new Members.MembersSortedByFullName <FieldInfo> ());
-		
-		text.AppendLine ("/*");
-		text.AppendLine (" * Automatically generated, do not edit this file directly");
-		text.AppendLine (" */");
-		text.AppendLine ();
+		Helper.WriteWarningGenerated (text);
 		text.AppendLine ();
 		text.AppendLine ("#ifdef HAVE_CONFIG_H");
 		text.AppendLine ("#include <config.h>");
@@ -113,45 +184,34 @@ class Generator {
 		
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
-			TypeInfo type = (TypeInfo) field.Parent;
-			string property_type = field.Properties.GetValue ("PropertyType");
+			TypeInfo type = field.ParentType;
 			TypeInfo propertyType = null;
-			string default_value = field.Properties.GetValue ("DefaultValue");
+			string property_type = field.DPPropertyType;
+			string default_value = field.DPDefaultValue;
 			bool has_default_value = !string.IsNullOrEmpty (default_value);
-			bool is_nullable = field.Properties.ContainsKey ("Nullable");
-			bool is_attached = field.Properties.ContainsKey ("Attached");
-			bool is_readonly = field.Properties.ContainsKey ("ReadOnly");
-			bool is_always_change = field.Properties.ContainsKey ("AlwaysChange");
+			bool is_nullable = field.IsDPNullable;
+			bool is_attached = field.IsDPAttached;
+			bool is_readonly = field.IsDPReadOnly;
+			bool is_always_change = field.IsDPAlwaysChange;
 			bool is_full = is_attached || is_readonly || is_always_change;
 			int version = field.SilverlightVersion;
 			int version_next = (i + 1 < fields.Count) ? fields [i + 1].SilverlightVersion : -1;
 			
 			if (version > 1 && version_previous != version) {
-				text.Append ("#if SL_");
-				text.Append (version);
-				text.AppendLine ("_0");
+				text.Append ("#if ");
+				Helper.WriteVersion (text, version);
+				text.AppendLine ();
 			}
 			
-			if (property_type == "string")
-				property_type = "char*";
-			if (property_type == "enum")
-				property_type = "gint32";
-			
-			if (!string.IsNullOrEmpty (property_type)) {
-				if (all.Children.ContainsKey (property_type)) {
-					propertyType = (TypeInfo) all.Children [property_type];
-				} else {
-					Console.WriteLine ("{0}'s PropertyType '{1}' was not recognized. Do not use the Kind value, but the real type name.", field.FullName, property_type);
-				}
-			} else {
-				Console.WriteLine ("{0} does not have a PropertyType defined.", field.FullName);
-			}
+			propertyType = field.GetDPPropertyType (all);
 			
 			text.Append ("\t");
-			headers.Add (propertyType.Header, version);
 			
-			if (propertyType == null)
+			if (propertyType == null) {
 				text.Append ("// (no PropertyType was found for this DependencyProperty) ");
+			} else {
+				headers.Add (propertyType.Header, version);
+			}
 			
 			text.Append (type.Name);
 			text.Append ("::");
@@ -669,10 +729,8 @@ class Generator {
 		string magic = "return Kind.";
 		StringBuilder text = new StringBuilder ();
 		
-		text.AppendLine ("/*");
-		text.AppendLine (" * Automatically generated, do not edit this file directly");
-		text.AppendLine (" */");
-		text.AppendLine ();
+		Helper.WriteWarningGenerated (text);
+					
 		text.AppendLine ("using Mono;");
 		text.AppendLine ("using System;");
 		text.AppendLine ("using System.Reflection;");
@@ -756,16 +814,9 @@ class Generator {
 		
 		methods = info.CPPMethodsToBind;
 		
-		header.AppendLine ("/*");
-		header.AppendLine (" * Automatically generated, do not edit this file directly");
-		header.AppendLine (" */");
-		header.AppendLine ();
-		
-		impl.AppendLine ("/*");
-		impl.AppendLine (" * Automatically generated, do not edit this file directly");
-		impl.AppendLine (" */");
-		impl.AppendLine ();
-		
+		Helper.WriteWarningGenerated (header);;
+		Helper.WriteWarningGenerated (impl);
+
 		header.AppendLine ("#ifndef __MOONLIGHT_C_BINDING_H__");
 		header.AppendLine ("#define __MOONLIGHT_C_BINDING_H__");
 		header.AppendLine ();
@@ -957,10 +1008,9 @@ class Generator {
 		List<string> headers2 = new List<string> ();
 		
 		StringBuilder text = new StringBuilder ();
-		text.AppendLine ("/*");
-		text.AppendLine (" * Automatically generated, do not edit this file directly");
-		text.AppendLine (" */");
-		text.AppendLine ();
+		
+		Helper.WriteWarningGenerated (text);
+					
 		text.AppendLine ("#ifdef HAVE_CONFIG_H");
 		text.AppendLine ("#include <config.h>");
 		text.AppendLine ("#endif");
@@ -1134,9 +1184,9 @@ class Generator {
 		contents = contents.Replace ("/*DO_KINDS*/", all.Children.GetKindsForEnum ().ToString ());
 
 		text = new StringBuilder ();
-		text.AppendLine ("/*");
-		text.AppendLine (" * Automatically generated from type.h.in, do not edit this file directly");
-		text.AppendLine (" */");
+					
+		Helper.WriteWarningGenerated (text);
+		
 		contents = text.ToString () + contents;
 
 		Helper.WriteAllText (file, contents);
@@ -1151,10 +1201,8 @@ class Generator {
 		int b = contents.IndexOf ("// END_MANAGED_MAPPING");
 		string values = contents.Substring (a, b - a);		
 		
-		text.AppendLine ("/*");
-		text.AppendLine (" * Automatically generated, do not edit this file directly");
-		text.AppendLine (" */");
-		text.AppendLine ();
+		Helper.WriteWarningGenerated (text);
+					
 		text.AppendLine ("namespace Mono {");
 		text.AppendLine ("\tpublic enum Kind {");
 		text.AppendLine (values);
@@ -1170,9 +1218,8 @@ class Generator {
 		const string file = "src/value.h";
 		StringBuilder result = new StringBuilder ();	
 
-		result.AppendLine ("/*");
-		result.AppendLine (" * Automatically generated from value.h.in, do not edit this file directly");
-		result.AppendLine (" */");
+		Helper.WriteWarningGenerated (result);
+
 		using (StreamReader reader = new StreamReader (file + ".in")) {
 			string line;
 			line = reader.ReadLine ();
@@ -1244,11 +1291,8 @@ class Generator {
 		NativeMethods_cs = File.ReadAllText (Path.Combine (base_dir, "class/Mono.Moonlight/Mono/NativeMethods.cs".Replace ('/', Path.DirectorySeparatorChar)));
 
 		methods = all.CPPMethodsToBind;		
-		
-		text.AppendLine ("/*");
-		text.AppendLine (" * Automatically generated, do not edit this file directly");
-		text.AppendLine (" */");
-		text.AppendLine ();
+	
+		Helper.WriteWarningGenerated (text);
 		text.AppendLine ("using System;");
 		text.AppendLine ("using System.Runtime.InteropServices;");
 		text.AppendLine ("");

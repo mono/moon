@@ -30,7 +30,7 @@ using Mono;
 
 namespace System.Windows.Documents {
 
-	public sealed class LineBreak : Inline {
+	public sealed partial class LineBreak : Inline {
 		public LineBreak () : base (NativeMethods.line_break_new ())
 		{
 		}

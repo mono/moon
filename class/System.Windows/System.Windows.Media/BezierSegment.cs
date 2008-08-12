@@ -27,14 +27,7 @@
 //
 using Mono;
 namespace System.Windows.Media {
-	public sealed class BezierSegment : PathSegment {
-
-		static BezierSegment ()
-		{
-			Point1Property = DependencyProperty.Lookup (Kind.BEZIERSEGMENT, "Point1", typeof (Point));
-			Point2Property = DependencyProperty.Lookup (Kind.BEZIERSEGMENT, "Point2", typeof (Point));
-			Point3Property = DependencyProperty.Lookup (Kind.BEZIERSEGMENT, "Point3", typeof (Point));
-		}
+	public sealed partial class BezierSegment : PathSegment {
 		
 		public BezierSegment () : base (NativeMethods.bezier_segment_new ())
 		{
@@ -73,10 +66,6 @@ namespace System.Windows.Media {
 				SetValue (Point3Property, value);
 			}
 		}
-		
-		public static readonly DependencyProperty Point1Property;
-		public static readonly DependencyProperty Point2Property;
-		public static readonly DependencyProperty Point3Property;
 
 		internal override Kind GetKind ()
 		{

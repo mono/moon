@@ -32,11 +32,8 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public abstract class ColorKeyFrame : KeyFrame
-	{
-		public static readonly DependencyProperty ValueProperty = 
-			DependencyProperty.Lookup (Kind.COLORKEYFRAME, "Value", typeof (Nullable<Color>));
-		
+	public abstract partial class ColorKeyFrame : KeyFrame
+	{		
 		public ColorKeyFrame() : base (NativeMethods.color_key_frame_new ())
 		{
 		}

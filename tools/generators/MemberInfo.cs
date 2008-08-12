@@ -27,7 +27,14 @@ class MemberInfo {
 	private Members children;
 	private Properties properties;
 	private string fullname;
+	private string managed_fullname;
 	private Nullable<int> silverlight_version;
+	
+	public TypeInfo ParentType {
+		get {
+			return (TypeInfo) Parent;
+		}
+	}
 	
 	public void WriteVersionIf (StringBuilder text, bool end)
 	{
@@ -110,6 +117,25 @@ class MemberInfo {
 		}
 	}
 	
+	public string ManagedFullName {
+		get {
+			if (managed_fullname == null) {
+				if (Parent != null && !string.IsNullOrEmpty (Parent.ManagedFullName)) {
+					managed_fullname = Parent.ManagedFullName + "." + Name;
+				} else if (Namespace != null) {
+					managed_fullname = Namespace + "." + FullName;
+				} else {
+					managed_fullname = FullName;
+				}
+			}
+			return managed_fullname;				                            
+		}
+	}
+	
+	public string Namespace {
+		get { return Properties.GetValue ("Namespace"); }			
+	}
+	
 	public int SilverlightVersion {
 		get {
 			string value = null;
@@ -171,10 +197,28 @@ class Members : Dictionary <string, MemberInfo>{
 			return string.Compare (a.KindName, b.KindName);
 		}
 	}
+	
+	public class MembersSortedByName <T> : IComparer<T> where T : MemberInfo  {
+		public int Compare (T a, T b)
+		{
+			return string.Compare (a.Name, b.Name);
+		}
+	}
+	
 	public class MembersSortedByFullName <T> : IComparer<T> where T : MemberInfo  {
 		public int Compare (T a, T b)
 		{
 			return string.Compare (a.FullName, b.FullName);
+		}
+	}
+	
+	public class MembersSortedByManagedFullName <T>  : IComparer<T> where T : MemberInfo {
+		public int Compare (T a, T b)
+		{
+			int result = string.Compare (a.Namespace, b.Namespace);
+			if (result != 0)
+				return result;
+			return string.Compare (a.Name, b.Name);
 		}
 	}
 	

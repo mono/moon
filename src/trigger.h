@@ -27,6 +27,7 @@ class TriggerAction : public DependencyObject {
 
 
 /* @ContentProperty="Actions" */
+/* @Namespace=System.Windows */
 class EventTrigger : public DependencyObject {
  protected:
 	virtual ~EventTrigger ();

@@ -28,11 +28,8 @@
 using Mono;
 namespace System.Windows.Media.Animation 
 {
-	public sealed class DoubleAnimationUsingKeyFrames : DoubleAnimation 
+	public sealed partial class DoubleAnimationUsingKeyFrames : DoubleAnimation 
 	{
-		public static readonly DependencyProperty KeyFramesProperty = 
-			   DependencyProperty.Lookup (Kind.DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (DoubleKeyFrameCollection));
-
 		public DoubleAnimationUsingKeyFrames (): base (Mono.NativeMethods.double_animation_using_key_frames_new ())
 		{
 		}

@@ -29,14 +29,7 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class EllipseGeometry : Geometry {
-
-		public static readonly DependencyProperty CenterProperty =
-			DependencyProperty.Lookup (Kind.ELLIPSEGEOMETRY, "Center", typeof (Point));
-		public static readonly DependencyProperty RadiusXProperty =
-			DependencyProperty.Lookup (Kind.ELLIPSEGEOMETRY, "RadiusX", typeof (double));
-		public static readonly DependencyProperty RadiusYProperty =
-			DependencyProperty.Lookup (Kind.ELLIPSEGEOMETRY, "RadiusY", typeof (double));
+	public sealed partial class EllipseGeometry : Geometry {
 
 		public EllipseGeometry () : base (NativeMethods.ellipse_geometry_new ())
 		{

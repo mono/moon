@@ -31,10 +31,7 @@ using Mono;
 
 namespace System.Windows.Shapes {
 
-	public sealed class Polyline : Shape {
-
-		public static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.POLYLINE, "FillRule", typeof (FillRule));
-		public static readonly DependencyProperty PointsProperty = DependencyProperty.Lookup (Kind.POLYLINE, "Points", typeof (PointCollection));
+	public sealed partial class Polyline : Shape {
 
 		public Polyline () : base (NativeMethods.polyline_new ())
 		{

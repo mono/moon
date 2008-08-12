@@ -30,14 +30,7 @@ using Mono;
 
 namespace System.Windows {
 
-	public sealed class Setter : SetterBase {
-
-		// XXX FIXME - this should be typeof (DependencyProperty)
-                public static readonly DependencyProperty PropertyProperty = 
-			DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (string));
-
-                private static readonly DependencyProperty ValueProperty = 
-			DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
+	public sealed partial class Setter : SetterBase {
 
 		internal Setter (IntPtr raw) : base (raw)
 		{

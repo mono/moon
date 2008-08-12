@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class LinearDoubleKeyFrame : DoubleKeyFrame
+	public sealed partial class LinearDoubleKeyFrame : DoubleKeyFrame
 	{		
 		public LinearDoubleKeyFrame() : base (NativeMethods.linear_double_key_frame_new ())
 		{

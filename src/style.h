@@ -20,6 +20,7 @@
 //
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Setters" */
+/* @Namespace=System.Windows */
 class Style : public DependencyObject
 {
 protected:
@@ -31,10 +32,10 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::STYLE; }
 
- 	/* @PropertyType=SetterBaseCollection */
+ 	/* @PropertyType=SetterBaseCollection,Access=Internal */
 	static DependencyProperty *SettersProperty;
 
- 	/* @PropertyType=string */
+ 	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal */
 	static DependencyProperty *TargetTypeProperty;
 };
 
@@ -74,6 +75,7 @@ public:
 // Setter
 //
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
 class Setter : public SetterBase
 {
 protected:
@@ -85,7 +87,7 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::SETTER; }
 
- 	/* @PropertyType=string */
+ 	/* @PropertyType=DependencyProperty */
 	static DependencyProperty *PropertyProperty;
  	/* @PropertyType=Managed */
 	static DependencyProperty *ValueProperty;

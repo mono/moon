@@ -34,14 +34,7 @@ using Mono;
 namespace System.Windows {
 
 	[ContentPropertyAttribute("Setters", true)]
-	public sealed class Style : DependencyObject {
-                private static readonly DependencyProperty SettersProperty =
-                        DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
-
-		// XXX FIXME - this should be typeof (Type)
-                private static readonly DependencyProperty TargetTypeProperty =
-			DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (string));
-
+	public sealed partial class Style : DependencyObject {
 		private bool isSealed;
 		SetterBaseCollection setters;
 		Type targetType;

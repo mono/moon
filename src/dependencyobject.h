@@ -211,6 +211,7 @@ struct PropertyChangedEventArgs {
 	Value *new_value;
 };
 
+/* @Namespace=System.Windows */
 class DependencyObject : public EventObject {
 	GHashTable        *current_values;
 	GSList            *listener_list;

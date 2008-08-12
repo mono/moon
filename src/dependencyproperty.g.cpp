@@ -34,6 +34,7 @@
 #include "frameworkelement.h"
 #include "grid.h"
 #include "style.h"
+#include "text.h"
 #include "usercontrol.h"
 #endif
 
@@ -45,6 +46,7 @@ dependency_property_g_init (void)
 		return;
 	dependency_properties_initialized = true;
 #if SL_2_0
+
 	Application::ResourcesProperty = DependencyProperty::Register (Type::APPLICATION, "Resources", Type::RESOURCE_DICTIONARY);
 #endif
 	ArcSegment::IsLargeArcProperty = DependencyProperty::Register (Type::ARCSEGMENT, "IsLargeArc", new Value (false));
@@ -53,6 +55,7 @@ dependency_property_g_init (void)
 	ArcSegment::SizeProperty = DependencyProperty::Register (Type::ARCSEGMENT, "Size", Type::POINT);
 	ArcSegment::SweepDirectionProperty = DependencyProperty::Register (Type::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise));
 #if SL_2_0
+
 	AssemblyPart::SourceProperty = DependencyProperty::Register (Type::ASSEMBLYPART, "Source", Type::STRING);
 #endif
 	BeginStoryboard::StoryboardProperty = DependencyProperty::Register (Type::BEGINSTORYBOARD, "Storyboard", Type::STORYBOARD);
@@ -72,6 +75,7 @@ dependency_property_g_init (void)
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);
 	ColorKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);
 #if SL_2_0
+
 	ColumnDefinition::MaxWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MaxWidth", Type::DOUBLE);
 	ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MinWidth", Type::DOUBLE);
 	ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "Width", Type::GRIDLENGTH);
@@ -101,6 +105,7 @@ dependency_property_g_init (void)
 #endif
 	DependencyObject::NameProperty = DependencyProperty::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
 #if SL_2_0
+
 	Deployment::EntryPointAssemblyProperty = DependencyProperty::Register (Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
 	Deployment::EntryPointTypeProperty = DependencyProperty::Register (Type::DEPLOYMENT, "EntryPointType", Type::STRING);
 	Deployment::ExternalCallersFromCrossDomainProperty = DependencyProperty::Register (Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", new Value (CrossDomainAccessNoAccess));
@@ -127,12 +132,14 @@ dependency_property_g_init (void)
 	EventTrigger::ActionsProperty = DependencyProperty::Register (Type::EVENTTRIGGER, "Actions", Type::TRIGGERACTION_COLLECTION);
 	EventTrigger::RoutedEventProperty = DependencyProperty::Register (Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
 #if SL_2_0
+
 	FrameworkElement::ActualHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualHeight", new Value (0.0));
 	FrameworkElement::ActualWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualWidth", new Value (0.0));
 	FrameworkElement::DataContextProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "DataContext", Type::MANAGED);
 #endif
 	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
 #if SL_2_0
+
 	FrameworkElement::HorizontalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "HorizontalAlignment", new Value (HorizontalAlignmentStretch));
 	FrameworkElement::LanguageProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Language", new Value ("en-US"));
 	FrameworkElement::MarginProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Margin", new Value (Thickness (0)));
@@ -157,10 +164,11 @@ dependency_property_g_init (void)
 	GradientBrush::ColorInterpolationModeProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "ColorInterpolationMode", new Value (ColorInterpolationModeSRgbLinearInterpolation));
 	GradientBrush::GradientStopsProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "GradientStops", Type::GRADIENTSTOP_COLLECTION);
 	GradientBrush::MappingModeProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "MappingMode", new Value (BrushMappingModeRelativeToBoundingBox));
-	GradientBrush::SpreadMethodProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "SpreadMethod", new Value (0));
+	GradientBrush::SpreadMethodProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "SpreadMethod", new Value (GradientSpreadMethodPad));
 	GradientStop::ColorProperty = DependencyProperty::Register (Type::GRADIENTSTOP, "Color", new Value (Color (0x00000000)));
 	GradientStop::OffsetProperty = DependencyProperty::Register (Type::GRADIENTSTOP, "Offset", new Value (0.0));
 #if SL_2_0
+
 	Grid::ColumnDefinitionsProperty = DependencyProperty::Register (Type::GRID, "ColumnDefinitions", Type::COLUMNDEFINITION_COLLECTION);
 	Grid::ColumnProperty = DependencyProperty::RegisterFull (Type::GRID, "Column", new Value (0), Type::INT32, true, false);
 	Grid::ColumnSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "ColumnSpan", new Value (0), Type::INT32, true, false);
@@ -178,6 +186,10 @@ dependency_property_g_init (void)
 	Inline::FontStyleProperty = DependencyProperty::Register (Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
 	Inline::FontWeightProperty = DependencyProperty::Register (Type::INLINE, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
 	Inline::ForegroundProperty = DependencyProperty::Register (Type::INLINE, "Foreground", Type::BRUSH);
+#if SL_2_0
+
+	Inline::LanguageProperty = DependencyProperty::Register (Type::INLINE, "Language", new Value ("en-US"));
+#endif
 	Inline::TextDecorationsProperty = DependencyProperty::Register (Type::INLINE, "TextDecorations", new Value (TextDecorationsNone));
 	KeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::KEYFRAME, "KeyTime", Type::KEYTIME);
 	Line::X1Property = DependencyProperty::Register (Type::LINE, "X1", new Value (0.0));
@@ -252,6 +264,7 @@ dependency_property_g_init (void)
 	RotateTransform::CenterXProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "CenterX", new Value (0.0));
 	RotateTransform::CenterYProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "CenterY", new Value (0.0));
 #if SL_2_0
+
 	RowDefinition::HeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Height", Type::GRIDLENGTH);
 	RowDefinition::MaxHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxHeight", Type::DOUBLE);
 	RowDefinition::MinHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinHeight", Type::DOUBLE);
@@ -262,7 +275,8 @@ dependency_property_g_init (void)
 	ScaleTransform::ScaleXProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleX", new Value (1.0));
 	ScaleTransform::ScaleYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0));
 #if SL_2_0
-	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::STRING);
+
+	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::DEPENDENCYPROPERTY);
 	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::MANAGED);
 #endif
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
@@ -289,8 +303,9 @@ dependency_property_g_init (void)
 	Stroke::DrawingAttributesProperty = DependencyProperty::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
 	Stroke::StylusPointsProperty = DependencyProperty::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
 #if SL_2_0
+
 	Style::SettersProperty = DependencyProperty::Register (Type::STYLE, "Setters", Type::SETTERBASE_COLLECTION);
-	Style::TargetTypeProperty = DependencyProperty::Register (Type::STYLE, "TargetType", Type::STRING);
+	Style::TargetTypeProperty = DependencyProperty::Register (Type::STYLE, "TargetType", Type::MANAGED);
 #endif
 	StylusInfo::DeviceTypeProperty = DependencyProperty::Register (Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse));
 	StylusInfo::IsInvertedProperty = DependencyProperty::Register (Type::STYLUSINFO, "IsInverted", new Value (false));
@@ -338,6 +353,7 @@ dependency_property_g_init (void)
 	UIElement::VisibilityProperty = DependencyProperty::Register (Type::UIELEMENT, "Visibility", new Value (VisibilityVisible));
 	UIElement::ZIndexProperty = DependencyProperty::Register (Type::UIELEMENT, "ZIndex", new Value (0));
 #if SL_2_0
+
 	UserControl::ContentProperty = DependencyProperty::Register (Type::USERCONTROL, "Content", Type::UIELEMENT);
 #endif
 	VideoBrush::SourceNameProperty = DependencyProperty::Register (Type::VIDEOBRUSH, "SourceName", new Value (""));
@@ -478,6 +494,9 @@ DependencyProperty *Inline::FontStretchProperty = NULL;
 DependencyProperty *Inline::FontStyleProperty = NULL;
 DependencyProperty *Inline::FontWeightProperty = NULL;
 DependencyProperty *Inline::ForegroundProperty = NULL;
+#if SL_2_0
+DependencyProperty *Inline::LanguageProperty = NULL;
+#endif
 DependencyProperty *Inline::TextDecorationsProperty = NULL;
 DependencyProperty *KeyFrame::KeyTimeProperty = NULL;
 DependencyProperty *Line::X1Property = NULL;

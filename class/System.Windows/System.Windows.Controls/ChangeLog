@@ -1,3 +1,10 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Canvas.cs, ColumnDefinition.cs, Control.cs, Grid.cs, Image.cs,
+	  InkPresenter.cs, MediaElement.cs, Panel.cs, RowDefinition.cs,
+	  TextBlock.cs, UserControl.cs: Make classes partial and remove DP
+	  registration, which is now generated.
+
 2008-08-11  Fernando Herrera  <fherrera@novell.com>
 
 	* Control.cs: Add Style DP.

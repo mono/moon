@@ -36,67 +36,17 @@ using System.Windows.Media.Animation;
 using System.Runtime.InteropServices;
 
 namespace System.Windows.Controls {
-	public sealed class MediaElement : FrameworkElement {
-		public static readonly DependencyProperty AttributesProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Attributes", typeof (Dictionary <string, string>));
-		
-		public static readonly DependencyProperty AudioStreamCountProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "AudioStreamCount", typeof (int));
-		
-		public static readonly DependencyProperty AudioStreamIndexProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "AudioStreamIndex", typeof (int));
-		
-		public static readonly DependencyProperty AutoPlayProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "AutoPlay", typeof (bool));
-		
-		public static readonly DependencyProperty BalanceProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Balance", typeof (double));
-		
-		public static readonly DependencyProperty BufferingProgressProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "BufferingProgress", typeof (double));
-		
-		public static readonly DependencyProperty BufferingTimeProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "BufferingTime", typeof (TimeSpan));
-		
-		public static readonly DependencyProperty CanPauseProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CanPause", typeof (bool));
-		
-		public static readonly DependencyProperty CanSeekProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CanSeek", typeof (bool));
-		
-		public static readonly DependencyProperty CurrentStateProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CurrentState", typeof (MediaElementState));
-		
+	public sealed partial class MediaElement : FrameworkElement {
+		// These are defined on MediaBase for both Image and MediaElement.
+		// The generator can't expand one DP into two managed ones yet.
 		public static readonly DependencyProperty DownloadProgressProperty = 
 			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "DownloadProgress", typeof (double));
-		
-		public static readonly DependencyProperty IsMutedProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "IsMuted", typeof (bool));
-		
-		private static readonly DependencyProperty MarkersProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Markers", typeof (TimelineMarkerCollection));
-		
-		public static readonly DependencyProperty NaturalDurationProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalDuration", typeof (Duration));
-		
-		public static readonly DependencyProperty NaturalVideoHeightProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoHeight", typeof (double));
-		
-		public static readonly DependencyProperty NaturalVideoWidthProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (double));
-		
-		public static readonly DependencyProperty PositionProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Position", typeof (TimeSpan));
 		
 		public static readonly DependencyProperty SourceProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (Uri));
 		
 		public static readonly DependencyProperty StretchProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
-		
-		public static readonly DependencyProperty VolumeProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Volume", typeof (double));
-		
 		
 		public MediaElement () : base (NativeMethods.media_element_new ()) 
 		{

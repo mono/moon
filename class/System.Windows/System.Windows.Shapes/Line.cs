@@ -28,16 +28,7 @@
 using Mono;
 namespace System.Windows.Shapes {
 
-	public sealed class Line : Shape {
-
-		public static readonly DependencyProperty X1Property =
-			DependencyProperty.Lookup (Kind.LINE, "X1", typeof (double));
-		public static readonly DependencyProperty Y1Property =
-			DependencyProperty.Lookup (Kind.LINE, "Y1", typeof (double));
-		public static readonly DependencyProperty X2Property =
-			DependencyProperty.Lookup (Kind.LINE, "X2", typeof (double));
-		public static readonly DependencyProperty Y2Property =
-			DependencyProperty.Lookup (Kind.LINE, "Y2", typeof (double));
+	public sealed partial class Line : Shape {
 
 		public Line () : base (Mono.NativeMethods.line_new ())
 		{

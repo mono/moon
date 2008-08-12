@@ -28,16 +28,7 @@
 using Mono;
 namespace System.Windows.Media {
 
-	public sealed class ScaleTransform : Transform {
-
-		public static readonly DependencyProperty CenterXProperty =
-			DependencyProperty.Lookup (Kind.SCALETRANSFORM, "CenterX", typeof (double));
-		public static readonly DependencyProperty CenterYProperty =
-			DependencyProperty.Lookup (Kind.SCALETRANSFORM, "CenterY", typeof (double));
-		public static readonly DependencyProperty ScaleXProperty =
-			DependencyProperty.Lookup (Kind.SCALETRANSFORM, "ScaleX", typeof (double));
-		public static readonly DependencyProperty ScaleYProperty =
-			DependencyProperty.Lookup (Kind.SCALETRANSFORM, "ScaleY", typeof (double));
+	public sealed partial class ScaleTransform : Transform {
 
 		public ScaleTransform () : base (NativeMethods.scale_transform_new ())
 		{

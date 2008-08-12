@@ -15,6 +15,7 @@
 #include "dependencyobject.h"
 #include "list.h"
 
+/* @Namespace=None */
 class NameScope : public DependencyObject {
 	GHashTable *names;
 	bool temporary;

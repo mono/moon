@@ -29,7 +29,7 @@ using System.Windows;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class PointKeyFrameCollection : PresentationFrameworkCollection<PointKeyFrame> {
+	public sealed partial class PointKeyFrameCollection : PresentationFrameworkCollection<PointKeyFrame> {
 		public PointKeyFrameCollection () : base (NativeMethods.point_key_frame_collection_new ())
 		{
 		}

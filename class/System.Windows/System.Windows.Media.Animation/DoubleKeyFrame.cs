@@ -33,11 +33,8 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public abstract class DoubleKeyFrame : KeyFrame
-	{
-		public static readonly DependencyProperty ValueProperty = 
-			DependencyProperty.Lookup (Kind.DOUBLEKEYFRAME, "Value", typeof (Nullable<double>));
-		
+	public abstract partial class DoubleKeyFrame : KeyFrame
+	{		
 		public DoubleKeyFrame() : base (NativeMethods.double_key_frame_new ())
 		{
 		}

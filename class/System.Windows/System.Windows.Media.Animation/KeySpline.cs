@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class KeySpline : DependencyObject 
+	public sealed partial class KeySpline : DependencyObject 
 	{
 		public Point ControlPoint1 {
 			set {

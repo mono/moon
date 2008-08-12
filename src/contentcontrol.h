@@ -22,6 +22,7 @@ G_BEGIN_DECLS
 //
 /* @ContentProperty="Content" */
 /* @SilverlightVersion="2" */
+/* @Namespace=None  */ // This class is from MS sources, so the DP is registered there.
 class ContentControl : public Control {
  protected:
 	virtual ~ContentControl () {}

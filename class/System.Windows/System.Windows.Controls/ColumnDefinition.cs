@@ -30,17 +30,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 
-	public class ColumnDefinition : DependencyObject {
-		public static readonly DependencyProperty WidthProperty;
-		public static readonly DependencyProperty MaxWidthProperty;
-		public static readonly DependencyProperty MinWidthProperty;
-
-		static ColumnDefinition ()
-		{
-			WidthProperty = DependencyProperty.Lookup (Kind.GRID, "WidthProperty", typeof (GridLength));
-			MaxWidthProperty = DependencyProperty.Lookup (Kind.GRID, "MaxWidth", typeof (double));
-			MinWidthProperty = DependencyProperty.Lookup (Kind.GRID, "MinWidth", typeof (double));
-		}
+	public partial class ColumnDefinition : DependencyObject {
 
 		public ColumnDefinition () : base (NativeMethods.column_definition_new ())
 		{

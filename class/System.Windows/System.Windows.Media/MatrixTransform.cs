@@ -28,10 +28,7 @@
 using Mono;
 namespace System.Windows.Media {
 
-	public sealed class MatrixTransform : Transform {
-
-		public static readonly DependencyProperty MatrixProperty =
-			DependencyProperty.Lookup (Kind.MATRIXTRANSFORM, "Matrix", typeof (Matrix));
+	public sealed partial class MatrixTransform : Transform {
 
 		public MatrixTransform () : base (NativeMethods.matrix_transform_new ())
 		{

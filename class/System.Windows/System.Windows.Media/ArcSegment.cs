@@ -28,17 +28,7 @@
 using Mono;
 
 namespace System.Windows.Media {
-	public sealed class ArcSegment : PathSegment {
-
-		static ArcSegment ()
-		{
-			PointProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "Point", typeof (Point));
-			SizeProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "Size", typeof (Point));
-			RotationAngleProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "RotationAngle", typeof (double));
-			IsLargeArcProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "IsLargeArc", typeof (bool));
-			SweepDirectionProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "SweepDirection", typeof (SweepDirection));
-			
-		}
+	public sealed partial class ArcSegment : PathSegment {
 		
 		public ArcSegment () : base (NativeMethods.arc_segment_new ())
 		{
@@ -96,13 +86,7 @@ namespace System.Windows.Media {
 				SetValue (SweepDirectionProperty, value);
 			}
 	        }
-	
-	        public static readonly DependencyProperty PointProperty;
-	        public static readonly DependencyProperty SizeProperty;
-	        public static readonly DependencyProperty RotationAngleProperty;
-	        public static readonly DependencyProperty IsLargeArcProperty;
-	        public static readonly DependencyProperty SweepDirectionProperty;
-			
+		
 		internal override Kind GetKind ()
 		{
 			return Kind.ARCSEGMENT;

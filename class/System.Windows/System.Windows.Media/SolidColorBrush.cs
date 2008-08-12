@@ -29,10 +29,7 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class SolidColorBrush : Brush {
-
-		public static readonly DependencyProperty ColorProperty =
-			DependencyProperty.Lookup (Kind.SOLIDCOLORBRUSH, "Color", typeof (Color));
+	public sealed partial class SolidColorBrush : Brush {
 
 		public SolidColorBrush () : base (NativeMethods.solid_color_brush_new ())
 		{

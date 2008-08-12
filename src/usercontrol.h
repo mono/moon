@@ -21,6 +21,7 @@ G_BEGIN_DECLS
 //
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Content" */
+/* @Namespace=System.Windows.Controls */
 class UserControl : public Control {
 protected:
 	virtual ~UserControl ();

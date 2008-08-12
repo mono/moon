@@ -38,31 +38,7 @@ using System.Windows.Input;
 using Mono;
 
 namespace System.Windows {
-	public abstract class UIElement : DependencyObject {
-		public static readonly DependencyProperty ClipProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Clip", typeof (Geometry));
-		
-		public static readonly DependencyProperty IsHitTestVisibleProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "IsHitTestVisible", typeof (bool));
-		
-		public static readonly DependencyProperty OpacityMaskProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "OpacityMask", typeof (Brush));
-		
-		public static readonly DependencyProperty OpacityProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Opacity", typeof (double));
-		
-		public static readonly DependencyProperty RenderTransformOriginProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransformOrigin", typeof (Point));
-		
-		public static readonly DependencyProperty RenderTransformProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransform", typeof (Transform));
-		
-		public static readonly DependencyProperty VisibilityProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Visibility", typeof (Visibility));
-		
-		public static readonly DependencyProperty ZIndexProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "ZIndex", typeof (int));
-		
+	public abstract partial class UIElement : DependencyObject {
 		internal UIElement () : base (NativeMethods.uielement_new ())
 		{
 		}

@@ -27,8 +27,7 @@
 //
 using Mono;
 namespace System.Windows.Media {
-	public sealed class TransformGroup : Transform {
-		public static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.TRANSFORMGROUP, "Children", typeof (TransformCollection));
+	public sealed partial class TransformGroup : Transform {
 		
 		public TransformGroup () : base (NativeMethods.transform_group_new ())
 		{

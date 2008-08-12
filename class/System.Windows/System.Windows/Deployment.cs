@@ -31,22 +31,7 @@ using System.Security;
 
 namespace System.Windows {
 
-	public sealed class Deployment : DependencyObject {
-
-		public static readonly DependencyProperty EntryPointAssemblyProperty;
-		public static readonly DependencyProperty EntryPointTypeProperty;
-		public static readonly DependencyProperty ExternalCallersFromCrossDomainProperty;
-		public static readonly DependencyProperty PartsProperty;
-		public static readonly DependencyProperty RuntimeVersionProperty;
-
-		static Deployment ()
-		{
-			EntryPointAssemblyProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointAssembly", typeof (string));
-			EntryPointTypeProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointType", typeof (string));
-			ExternalCallersFromCrossDomainProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalCallersFromCrossDomain", typeof (CrossDomainAccess));
-			PartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Parts", typeof (AssemblyPartCollection));;
-			RuntimeVersionProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "RuntimeVersion", typeof (string));
-		}
+	public sealed partial class Deployment : DependencyObject {
 
 		public static Deployment Current {
 #if NET_2_1

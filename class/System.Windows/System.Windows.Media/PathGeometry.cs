@@ -28,10 +28,7 @@
 using Mono;
 namespace System.Windows.Media {
 
-	public sealed class PathGeometry : Geometry {
-
-		public static readonly DependencyProperty FiguresProperty =
-			DependencyProperty.Lookup (Kind.PATHGEOMETRY, "Figures", typeof (PathFigureCollection));
+	public sealed partial class PathGeometry : Geometry {
 
 		public PathGeometry () : base (NativeMethods.path_geometry_new ())
 		{

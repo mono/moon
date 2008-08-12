@@ -1,3 +1,8 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Glyphs.cs, Inline.cs, LineBreak.cs, Run.cs: Make classes partial and
+	  remove DP registration, which is now generated.
+
 2008-07-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Glyphs.cs: FontUriProperty is not of type string, change it to

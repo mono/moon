@@ -29,17 +29,7 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public abstract class GradientBrush : Brush {
-
-		public static readonly DependencyProperty ColorInterpolationModeProperty =
-			DependencyProperty.Lookup (Kind.GRADIENTBRUSH, "ColorInterpolationMode", typeof (ColorInterpolationMode));
-		public static readonly DependencyProperty GradientStopsProperty =
-			DependencyProperty.Lookup (Kind.GRADIENTBRUSH, "GradientStops", typeof (GradientStopCollection));
-		public static readonly DependencyProperty MappingModeProperty =
-			DependencyProperty.Lookup (Kind.GRADIENTBRUSH, "MappingMode", typeof (BrushMappingMode));
-		public static readonly DependencyProperty SpreadMethodProperty =
-			DependencyProperty.Lookup (Kind.GRADIENTBRUSH, "SpreadMethod", typeof (GradientSpreadMethod));
-
+	public abstract partial class GradientBrush : Brush {
 
 		protected GradientBrush () : base (NativeMethods.gradient_brush_new ())
 		{

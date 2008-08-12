@@ -29,7 +29,7 @@ using Mono;
 using System.Windows;
 namespace System.Windows.Media.Animation 
 {
-	public abstract class Animation : Timeline 
+	public abstract partial class Animation : Timeline 
 	{
 		public Animation(): base (Mono.NativeMethods.animation_new ())
 		{

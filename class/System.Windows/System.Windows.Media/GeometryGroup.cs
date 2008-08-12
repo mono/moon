@@ -29,10 +29,7 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class GeometryGroup : Geometry {
-
-		public static readonly DependencyProperty ChildrenProperty =
-			DependencyProperty.Lookup (Kind.GEOMETRYGROUP, "Children", typeof (GeometryCollection));
+	public sealed partial class GeometryGroup : Geometry {
 
 		public GeometryGroup () : base (NativeMethods.geometry_group_new ())
 		{

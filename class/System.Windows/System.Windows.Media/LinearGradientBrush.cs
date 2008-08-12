@@ -28,13 +28,7 @@
 using Mono;
 namespace System.Windows.Media {
 
-	public sealed class LinearGradientBrush : GradientBrush {
-
-		public static readonly DependencyProperty StartPointProperty =
-			DependencyProperty.Lookup (Kind.LINEARGRADIENTBRUSH, "StartPoint", typeof (Point));
-		public static readonly DependencyProperty EndPointProperty =
-			DependencyProperty.Lookup (Kind.LINEARGRADIENTBRUSH, "EndPoint", typeof (Point));
-
+	public sealed partial class LinearGradientBrush : GradientBrush {
 
 		public LinearGradientBrush () : base (NativeMethods.linear_gradient_brush_new ())
 		{

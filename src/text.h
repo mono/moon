@@ -34,6 +34,7 @@ G_BEGIN_DECLS
 
 void text_shutdown (void);
 
+/* @Namespace=System.Windows.Documents */
 class Inline : public DependencyObject {
  protected:
 	virtual ~Inline ();
@@ -43,16 +44,18 @@ class Inline : public DependencyObject {
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
- 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_STRETCH */
+ 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH */
 	static DependencyProperty *FontStretchProperty;
- 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_STYLE */
+ 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE */
 	static DependencyProperty *FontStyleProperty;
- 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_WEIGHT */
+ 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT */
 	static DependencyProperty *FontWeightProperty;
  	/* @PropertyType=Brush */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=gint32,DefaultValue=TextDecorationsNone */
+ 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone */
 	static DependencyProperty *TextDecorationsProperty;
+	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2,ManagedPropertyType=XmlLanguage */
+	static DependencyProperty *LanguageProperty;
 	
 	TextFontDescription *font;
 	
@@ -89,6 +92,7 @@ TextDecorations inline_get_text_decorations (Inline *inline_);
 void inline_set_text_decorations (Inline *inline_, TextDecorations value);
 
 
+/* @Namespace=System.Windows.Documents */
 class LineBreak : public Inline {
  protected:
 	virtual ~LineBreak () {}
@@ -101,6 +105,7 @@ class LineBreak : public Inline {
 
 
 /* @ContentProperty="Text" */
+/* @Namespace=System.Windows.Documents */
 class Run : public Inline {
  protected:
 	virtual ~Run () {}
@@ -123,6 +128,7 @@ void run_set_text (Run *run, const char *value);
 
 
 /* @ContentProperty="Inlines" */
+/* @Namespace=System.Windows.Controls */
 class TextBlock : public FrameworkElement {
 	TextFontDescription *font;
 	TextLayout *layout;
@@ -189,21 +195,21 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
- 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_STRETCH */
+ 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH */
 	static DependencyProperty *FontStretchProperty;
- 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_STYLE */
+ 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE */
 	static DependencyProperty *FontStyleProperty;
- 	/* @PropertyType=gint32,DefaultValue=TEXTBLOCK_FONT_WEIGHT */
+ 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT */
 	static DependencyProperty *FontWeightProperty;
  	/* @PropertyType=Brush */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=Inlines */
+ 	/* @PropertyType=Inlines,ManagedPropertyType=InlineCollection */
 	static DependencyProperty *InlinesProperty;
  	/* @PropertyType=char* */
 	static DependencyProperty *TextProperty;
- 	/* @PropertyType=gint32,DefaultValue=TextDecorationsNone */
+ 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone */
 	static DependencyProperty *TextDecorationsProperty;
- 	/* @PropertyType=gint32,DefaultValue=TextWrappingNoWrap */
+ 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap */
 	static DependencyProperty *TextWrappingProperty;
 	
 	/* @GenerateCBinding */
@@ -311,6 +317,7 @@ void text_block_set_text_wrapping (TextBlock *textblock, TextWrapping wrapping);
 void text_block_set_font_source (TextBlock *textblock, Downloader *downloader);
 
 
+/* @Namespace=System.Windows.Documents */
 class Glyphs : public FrameworkElement {
 	TextFontDescription *desc;
 	Downloader *downloader;
@@ -353,7 +360,7 @@ class Glyphs : public FrameworkElement {
 	static DependencyProperty *FillProperty;
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *FontRenderingEmSizeProperty;
- 	/* @PropertyType=char* */
+ 	/* @PropertyType=char*,ManagedPropertyType=Uri */
 	static DependencyProperty *FontUriProperty;
  	/* @PropertyType=char* */
 	static DependencyProperty *IndicesProperty;
@@ -361,7 +368,7 @@ class Glyphs : public FrameworkElement {
 	static DependencyProperty *OriginXProperty;
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OriginYProperty;
- 	/* @PropertyType=gint32,DefaultValue=StyleSimulationsNone */
+ 	/* @PropertyType=StyleSimulations,DefaultValue=StyleSimulationsNone */
 	static DependencyProperty *StyleSimulationsProperty;
  	/* @PropertyType=char* */
 	static DependencyProperty *UnicodeStringProperty;

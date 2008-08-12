@@ -112,6 +112,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/Deployment.cs					\
 	$(srcdir)/System.Windows/DependencyObject.cs				\
 	$(srcdir)/System.Windows/DependencyProperty.cs				\
+	$(srcdir)/System.Windows/DependencyProperty.g.cs				\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
 	$(srcdir)/System.Windows/Duration.cs					\
 	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs			\

@@ -32,12 +32,8 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public abstract class PointKeyFrame : KeyFrame
-	{
-		
-		public static readonly DependencyProperty ValueProperty = 
-			DependencyProperty.Lookup (Kind.POINTKEYFRAME, "Value", typeof (Nullable<Point>));
-		
+	public abstract partial class PointKeyFrame : KeyFrame
+	{		
 		public PointKeyFrame() : base (NativeMethods.point_key_frame_new ())
 		{
 		}

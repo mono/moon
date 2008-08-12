@@ -32,11 +32,8 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public abstract class KeyFrame : DependencyObject
+	public abstract partial class KeyFrame : DependencyObject
 	{
-		
-		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.KEYFRAME, "KeyTime", typeof (KeyTime));
-		
 		public KeyFrame() : base (NativeMethods.key_frame_new ())
 		{
 		}

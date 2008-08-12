@@ -22,6 +22,7 @@
 // Canvas Class, the only purpose is to have the Left/Top properties that
 // children can use
 //
+/* @Namespace=System.Windows.Controls */
 class Canvas : public Panel {
  protected:
 	virtual ~Canvas () {}

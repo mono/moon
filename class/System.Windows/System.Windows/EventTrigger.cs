@@ -28,15 +28,8 @@
 using Mono;
 namespace System.Windows 
 {
-	public sealed class EventTrigger : DependencyObject 
+	public sealed partial class EventTrigger : DependencyObject 
 	{
-		public static readonly DependencyProperty ActionsProperty = 
-			   DependencyProperty.Lookup (Kind.EVENTTRIGGER, "Actions", typeof (TriggerActionCollection));
-
-		public static readonly DependencyProperty RoutedEventProperty = 
-			   DependencyProperty.Lookup (Kind.EVENTTRIGGER, "RoutedEvent", typeof (RoutedEvent));
-
-
 		public EventTrigger(): base (Mono.NativeMethods.event_trigger_new ())
 		{
 		}

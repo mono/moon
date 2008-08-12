@@ -53,6 +53,7 @@ enum GradientSpreadMethod {
 };
 
 
+/* @Namespace=System.Windows.Media */
 class Brush : public DependencyObject {
  protected:
 	virtual ~Brush () {}
@@ -102,6 +103,7 @@ Transform *brush_get_transform          (Brush *brush);
 void       brush_set_transform          (Brush *brush, Transform *transform);
 
 
+/* @Namespace=System.Windows.Media */
 class SolidColorBrush : public Brush {
  protected:
 	virtual ~SolidColorBrush () {}
@@ -130,6 +132,7 @@ Color           *solid_color_brush_get_color (SolidColorBrush *solid_color_brush
 void             solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color);
 
 
+/* @Namespace=System.Windows.Media */
 class GradientStopCollection : public DependencyObjectCollection {
  protected:
 	virtual ~GradientStopCollection () {}
@@ -143,6 +146,7 @@ class GradientStopCollection : public DependencyObjectCollection {
 };
 
 
+/* @Namespace=System.Windows.Media */
 class GradientStop : public DependencyObject {
  protected:
 	virtual ~GradientStop () {}
@@ -172,19 +176,20 @@ void          gradient_stop_set_offset (GradientStop *stop, double offset);
 
 
 // note: abstract in C#
+/* @Namespace=System.Windows.Media */
 /* @ContentProperty="GradientStops" */
 class GradientBrush : public Brush {
  protected:
 	virtual ~GradientBrush () {}
 
  public:
- 	/* @PropertyType=gint32,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation */
+ 	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation */
 	static DependencyProperty *ColorInterpolationModeProperty;
  	/* @PropertyType=GradientStopCollection */
 	static DependencyProperty *GradientStopsProperty;
- 	/* @PropertyType=gint32,DefaultValue=BrushMappingModeRelativeToBoundingBox */
+ 	/* @PropertyType=BrushMappingMode,DefaultValue=BrushMappingModeRelativeToBoundingBox */
 	static DependencyProperty *MappingModeProperty;
- 	/* @PropertyType=gint32,DefaultValue=0 */
+ 	/* @PropertyType=GradientSpreadMethod,DefaultValue=GradientSpreadMethodPad */
 	static DependencyProperty *SpreadMethodProperty;
 	
 	/* @GenerateCBinding */
@@ -222,6 +227,7 @@ GradientSpreadMethod    gradient_brush_get_spread_method            (GradientBru
 void                    gradient_brush_set_spread_method            (GradientBrush *brush, GradientSpreadMethod method);
 
 
+/* @Namespace=System.Windows.Media */
 class LinearGradientBrush : public GradientBrush {
  protected:
 	virtual ~LinearGradientBrush () {}
@@ -252,6 +258,7 @@ Point	*linear_gradient_brush_get_start_point	(LinearGradientBrush *brush);
 void	linear_gradient_brush_set_start_point	(LinearGradientBrush *brush, Point *point);
 
 
+/* @Namespace=System.Windows.Media */
 class RadialGradientBrush : public GradientBrush {
  protected:
 	virtual ~RadialGradientBrush () {}
@@ -296,16 +303,17 @@ double	radial_gradient_brush_get_radius_y		(RadialGradientBrush *brush);
 void	radial_gradient_brush_set_radius_y		(RadialGradientBrush *brush, double radiusY);
 
 
+/* @Namespace=System.Windows.Media */
 class TileBrush : public Brush {
  protected:
 	virtual ~TileBrush () {}
 
  public:
- 	/* @PropertyType=gint32,DefaultValue=AlignmentXCenter */
+ 	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter */
 	static DependencyProperty *AlignmentXProperty;
- 	/* @PropertyType=gint32,DefaultValue=AlignmentYCenter */
+ 	/* @PropertyType=AlignmentY,DefaultValue=AlignmentYCenter */
 	static DependencyProperty *AlignmentYProperty;
- 	/* @PropertyType=gint32,DefaultValue=StretchFill */
+ 	/* @PropertyType=Stretch,DefaultValue=StretchFill */
 	static DependencyProperty *StretchProperty;
 	
 	virtual Type::Kind GetObjectType () { return Type::TILEBRUSH; }
@@ -329,6 +337,7 @@ Stretch		tile_brush_get_stretch		(TileBrush *brush);
 void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 
 
+/* @Namespace=System.Windows.Media */
 class ImageBrush : public TileBrush {
 	static void image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -375,6 +384,7 @@ void	image_brush_set_source			(ImageBrush *brush, Downloader *downloader, const 
 cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int height);
 
 
+/* @Namespace=System.Windows.Media */
 class VideoBrush : public TileBrush {
 	MediaElement *media;
 
@@ -405,6 +415,7 @@ const char *video_brush_get_source_name (VideoBrush *brush);
 void video_brush_set_source_name (VideoBrush *brush, const char *name);
 
 
+/* @Namespace=None */
 class VisualBrush : public TileBrush {
 	cairo_surface_t *surface;
 

@@ -10,6 +10,8 @@
  * 
  */
 
+using System;
+
 
 class FieldInfo : MemberInfo {
 	public TypeReference FieldType;
@@ -23,6 +25,92 @@ class FieldInfo : MemberInfo {
 			if (!Name.EndsWith ("Event"))
 				throw new System.Exception (string.Format ("The field '{0}' doesn't represent an event", FullName));
 			return Name.Substring (0, Name.LastIndexOf ("Event"));
+		}
+	}
+	
+	public bool IsDPReadOnly {
+		get { return Properties.ContainsKey ("ReadOnly"); }
+	}
+	
+	public bool IsDPAlwaysChange {
+		get { return Properties.ContainsKey ("AlwaysChange"); }
+	}
+	
+	public bool IsDPAttached  {
+		get { return Properties.ContainsKey ("Attached"); }
+	}
+	
+	public bool IsDPNullable {
+		get { return Properties.ContainsKey ("Nullable"); }
+	}
+	
+	public string DPPropertyType {
+		get { 
+			string result = Properties.GetValue ("PropertyType");
+			
+			if (result != null) {
+				switch (result) {
+				case "string":
+					return "char*";
+				case "FontStretch":	
+					return "FontStretches";
+				case "FontWeight":
+					return "FontWeights";
+				case "FontStyle":
+					return "FontStyles";
+				}
+			}
+			
+			return result;
+		}
+	}
+		
+	public string DPDefaultValue {
+		get { return Properties.GetValue ("DefaultValue"); }
+	}
+	
+	public TypeInfo GetDPPropertyType (GlobalInfo all)
+	{
+		string property_type = DPPropertyType;
+		TypeInfo propertyType = null;
+		
+		if (!string.IsNullOrEmpty (property_type)) {
+			if (all.Children.ContainsKey (property_type)) {
+				propertyType = (TypeInfo) all.Children [property_type];
+			} else {
+				Console.WriteLine ("{0}'s PropertyType '{1}' was not recognized. Do not use the Kind value, but the real type name.", FullName, property_type);
+			}
+		} else {
+			Console.WriteLine ("{0} does not have a PropertyType defined.", FullName);
+		}
+		
+		return propertyType;
+	}
+	
+	public string GetDPManagedPropertyType (GlobalInfo all) 
+	{
+		string property_type = Properties.GetValue ("ManagedPropertyType");
+		
+		if (property_type != null)
+			return property_type;
+		
+		property_type = Properties.GetValue ("PropertyType");
+		
+		if (property_type == null)
+			return null;
+		
+		switch (property_type) {
+		case "char*":
+			return "string";
+		case "gint32":
+			return "int";
+		case "Managed":
+			return "object";
+		default:
+			if (IsDPNullable)
+				return "Nullable<" + property_type + ">";
+			else
+				return property_type;
 		}
 	}
 }

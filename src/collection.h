@@ -24,6 +24,7 @@
 // the managed world, and when a change happens we get a
 // chance to reflect the changes
 //
+/* @Namespace=None */
 class Collection : public DependencyObject {
  protected:
 	GPtrArray *array;

@@ -37,6 +37,7 @@ void calc_line_bounds (double x1, double x2, double y1, double y2, double thickn
 //
 // Shape class 
 // 
+/* @Namespace=System.Windows.Shapes */
 class Shape : public FrameworkElement {
  protected:
 	virtual ~Shape ();
@@ -80,23 +81,23 @@ class Shape : public FrameworkElement {
  public: 
  	/* @PropertyType=Brush */
 	static DependencyProperty *FillProperty;
- 	/* @PropertyType=gint32,DefaultValue=StretchNone */
+ 	/* @PropertyType=Stretch,DefaultValue=StretchNone */
 	static DependencyProperty *StretchProperty;
  	/* @PropertyType=Brush */
 	static DependencyProperty *StrokeProperty;
  	/* @PropertyType=DoubleCollection */
 	static DependencyProperty *StrokeDashArrayProperty;
- 	/* @PropertyType=gint32,DefaultValue=PenLineCapFlat */
+ 	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat */
 	static DependencyProperty *StrokeDashCapProperty;
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *StrokeDashOffsetProperty;
- 	/* @PropertyType=gint32,DefaultValue=PenLineCapFlat */
+ 	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat */
 	static DependencyProperty *StrokeEndLineCapProperty;
- 	/* @PropertyType=gint32,DefaultValue=PenLineJoinMiter */
+ 	/* @PropertyType=PenLineJoin,DefaultValue=PenLineJoinMiter */
 	static DependencyProperty *StrokeLineJoinProperty;
  	/* @PropertyType=double,DefaultValue=10.0 */
 	static DependencyProperty *StrokeMiterLimitProperty;
- 	/* @PropertyType=gint32,DefaultValue=PenLineCapFlat */
+ 	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat */
 	static DependencyProperty *StrokeStartLineCapProperty;
  	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *StrokeThicknessProperty;
@@ -222,6 +223,7 @@ void		shape_set_stroke_dash_array	(Shape *shape, double *dashes, int n);
 //
 // Ellipse
 //
+/* @Namespace=System.Windows.Shapes */
 class Ellipse : public Shape {
  protected:
 	virtual ~Ellipse () {}
@@ -245,6 +247,7 @@ class Ellipse : public Shape {
 //
 // Rectangle class 
 // 
+/* @Namespace=System.Windows.Shapes */
 class Rectangle : public Shape {
  protected:
 	virtual ~Rectangle () {}
@@ -291,6 +294,7 @@ void       rectangle_set_radius_y (Rectangle *rectangle, double radius);
 //
 // Line class 
 // 
+/* @Namespace=System.Windows.Shapes */
 class Line : public Shape {
  protected:
 	virtual ~Line () {}
@@ -351,6 +355,7 @@ void line_set_y2 (Line *line, double y2);
 //
 // Polygon
 //
+/* @Namespace=System.Windows.Shapes */
 class Polygon : public Shape {
  protected:
 	virtual ~Polygon () {}
@@ -359,7 +364,7 @@ class Polygon : public Shape {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=gint32,DefaultValue=FillRuleEvenOdd */
+ 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd */
 	static DependencyProperty *FillRuleProperty;
  	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
@@ -397,6 +402,7 @@ void		polygon_set_points	(Polygon *polygon, PointCollection *points);
 //
 // Polyline
 //
+/* @Namespace=System.Windows.Shapes */
 class Polyline : public Shape {
  protected:
 	virtual ~Polyline () {}
@@ -405,7 +411,7 @@ class Polyline : public Shape {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=gint32,DefaultValue=FillRuleEvenOdd */
+ 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd */
 	static DependencyProperty *FillRuleProperty;
  	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
@@ -443,6 +449,7 @@ void		polyline_set_points	(Polyline *polyline, PointCollection *points);
 //
 // Path
 //
+/* @Namespace=System.Windows.Shapes */
 class Path : public Shape {
  protected:
 	virtual ~Path () {}

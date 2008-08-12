@@ -1,5 +1,16 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* animation.h, brush.h, canvas.h, clock.h, collection.h,
+	  contentcontrol.h, control.h, dependencyobject.h, deployment.h,
+	  downloader.h, frameworkelement.h, geometry.h, grid.h, media.h,
+	  namescope.h, panel.h, shape.h, style.h, stylus.h, text.h,
+	  transform.h, trigger.h, uielement.h, usercontrol.h: Added
+	  @Namespace annotations, and changed @PropertyType which were
+	  declared as gint32 (and are enums) to use the actual enum type.
+	* dependencyproperty.g.cpp: Updated.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Updated.
 
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 

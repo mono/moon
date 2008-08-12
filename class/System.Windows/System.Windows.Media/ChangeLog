@@ -1,3 +1,17 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ArcSegment.cs, BezierSegment.cs, Brush.cs, EllipseGeometry.cs,
+	  Geometry.cs, GeometryGroup.cs, GradientBrush.cs, GradientStop.cs,
+	  ImageBrush.cs, LinearGradientBrush.cs, LineGeometry.cs,
+	  LineSegment.cs, MatrixTransform.cs, PathFigure.cs, PathGeometry.cs,
+	  PolyBezierSegment.cs, PolyLineSegment.cs,
+	  PolyQuadraticBezierSegment.cs, QuadraticBezierSegment.cs,
+	  RadialGradientBrush.cs, RectangleGeometry.cs, RotateTransform.cs,
+	  ScaleTransform.cs, SkewTransform.cs, SolidColorBrush.cs,
+	  TileBrush.cs, TimelineMarker.cs, TransformGroup.cs,
+	  TranslateTransform.cs, VideoBrush.cs: Make classes partial and
+	  remove DP registration, which is now generated.
+
 2008-08-11  Chris Toshok  <toshok@ximian.com>
 
 	* VisualTreeHelper.cs: implement this so it passes the unit tests.

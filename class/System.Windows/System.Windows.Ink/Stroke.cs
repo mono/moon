@@ -32,15 +32,8 @@ using Mono;
 
 namespace System.Windows.Ink
 {
-	public sealed class Stroke : DependencyObject
+	public sealed partial class Stroke : DependencyObject
 	{
-		public static readonly DependencyProperty DrawingAttributesProperty = 
-			DependencyProperty.Lookup (Kind.STROKE, "DrawingAttributes", typeof (DrawingAttributes));
-		
-		public static readonly DependencyProperty StylusPointsProperty = 
-			DependencyProperty.Lookup (Kind.STROKE, "StylusPoints", typeof (StylusPointCollection));
-		
-
 		public Stroke() : base (NativeMethods.stroke_new ())
 		{
 		}

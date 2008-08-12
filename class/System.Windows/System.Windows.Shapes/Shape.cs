@@ -29,30 +29,8 @@
 using System.Windows.Media;
 using Mono;
 namespace System.Windows.Shapes {
-	public abstract class Shape : FrameworkElement {
-		public static readonly DependencyProperty FillProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "Fill", typeof (Brush));
-		public static readonly DependencyProperty StretchProperty = 
-			DependencyProperty.Lookup (Kind.SHAPE, "Stretch", typeof (Stretch));
-		public static readonly DependencyProperty StrokeProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "Stroke", typeof (Brush));
-		public static readonly DependencyProperty StrokeDashArrayProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "StrokeDashArray", typeof (DoubleCollection));
-		public static readonly DependencyProperty StrokeDashCapProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "StrokeDashCap", typeof (PenLineCap));
-		public static readonly DependencyProperty StrokeDashOffsetProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "StrokeDashOffset", typeof (double));
-		public static readonly DependencyProperty StrokeEndLineCapProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "StrokeEndLineCap", typeof (PenLineCap));
-		public static readonly DependencyProperty StrokeLineJoinProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "StrokeLineJoin", typeof (PenLineJoin));
-		public static readonly DependencyProperty StrokeMiterLimitProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "StrokeMiterLimit", typeof (double));
-		public static readonly DependencyProperty StrokeStartLineCapProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "StrokeStartLineCap", typeof (PenLineCap));
-		public static readonly DependencyProperty StrokeThicknessProperty =
-			DependencyProperty.Lookup (Kind.SHAPE, "StrokeThickness", typeof (double));
-		
+	public abstract partial class Shape : FrameworkElement {
+
 		internal Shape (IntPtr raw) : base (raw)
 		{
 		}

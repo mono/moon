@@ -29,13 +29,7 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class SkewTransform : Transform {
-
-		public static readonly DependencyProperty AngleXProperty = DependencyProperty.Lookup (Kind.SKEWTRANSFORM, "AngleX", typeof (double));
-		public static readonly DependencyProperty AngleYProperty = DependencyProperty.Lookup (Kind.SKEWTRANSFORM, "AngleY", typeof (double));
-		public static readonly DependencyProperty CenterXProperty = DependencyProperty.Lookup (Kind.SKEWTRANSFORM, "CenterX", typeof (double));
-		public static readonly DependencyProperty CenterYProperty = DependencyProperty.Lookup (Kind.SKEWTRANSFORM, "CenterY", typeof (double));
-
+	public sealed partial class SkewTransform : Transform {
 
 		public SkewTransform () : base (NativeMethods.skew_transform_new ())
 		{

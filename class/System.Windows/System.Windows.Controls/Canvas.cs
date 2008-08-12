@@ -31,12 +31,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class Canvas : Panel {
-		public static readonly DependencyProperty LeftProperty =
-			DependencyProperty.Lookup (Kind.CANVAS, "Left", typeof (double));
-		
-		public static readonly DependencyProperty TopProperty =
-			DependencyProperty.Lookup (Kind.CANVAS, "Top", typeof (double));
-		
+
 		public Canvas () : base (NativeMethods.canvas_new ())
 		{
 		}

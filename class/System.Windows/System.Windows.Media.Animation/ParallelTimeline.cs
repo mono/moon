@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation {
 
-	public abstract class ParallelTimeline : TimelineGroup {
+	public abstract partial class ParallelTimeline : TimelineGroup {
 
 		internal ParallelTimeline (IntPtr raw) :base (raw)
 		{

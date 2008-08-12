@@ -33,10 +33,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation {
 
-	public sealed class Storyboard : ParallelTimeline {
-		public static readonly DependencyProperty TargetPropertyProperty;
-		public static readonly DependencyProperty TargetNameProperty;
-
+	public sealed partial class Storyboard : ParallelTimeline {
 		public string TargetName {
 			get { return (string) GetValue(TargetNameProperty); }
 			set { 
@@ -58,8 +55,6 @@ namespace System.Windows.Media.Animation {
 
 		static Storyboard ()
 		{
-			TargetPropertyProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetProperty", typeof (string));
-			TargetNameProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetName", typeof (string));
 		}
 
 		internal Storyboard (IntPtr raw) : base (raw)

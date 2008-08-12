@@ -45,7 +45,7 @@ using System.Windows.Threading;
 using System.Threading;
 
 namespace System.Windows {
-	public abstract class DependencyObject {
+	public abstract partial class DependencyObject {
 		static Thread moonlight_thread;
 		static Dictionary<IntPtr, DependencyObject> objects = new Dictionary<IntPtr, DependencyObject> ();
 		internal IntPtr _native;
@@ -73,10 +73,6 @@ namespace System.Windows {
 				objects [value] = this;
 			}
 		}
-
-		public static readonly DependencyProperty NameProperty = 
-			   DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
-
 		public string Name {
 			get { return (string) GetValue(NameProperty); }
 			set { SetValue (NameProperty, value); }

@@ -32,43 +32,8 @@ using System.Windows.Media;
 using System.Windows.Documents;
 
 namespace System.Windows.Controls {
-	public sealed class TextBlock : FrameworkElement {
-		public static readonly DependencyProperty ActualHeightProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualHeight", typeof (double));
-		
-		public static readonly DependencyProperty ActualWidthProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualWidth", typeof (double));
-		
-		public static readonly DependencyProperty FontFamilyProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontFamily", typeof (FontFamily));
-		
-		public static readonly DependencyProperty FontSizeProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontSize", typeof (double));
-		
-		public static readonly DependencyProperty FontStretchProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStretch", typeof (FontStretch));
-		
-		public static readonly DependencyProperty FontStyleProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStyle", typeof (FontStyle));
-		
-		public static readonly DependencyProperty FontWeightProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontWeight", typeof (FontWeight));
-		
-		public static readonly DependencyProperty ForegroundProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Foreground", typeof (Brush));
-		
-		static readonly DependencyProperty InlinesProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (InlineCollection));
-		
-		public static readonly DependencyProperty TextDecorationsProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorationCollection));
-		
-		public static readonly DependencyProperty TextProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "Text", typeof (string));
-		
-		public static readonly DependencyProperty TextWrappingProperty =
-			DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextWrapping", typeof (TextWrapping));
-		
+	public sealed partial class TextBlock : FrameworkElement {
+
 		public TextBlock ()  : base (NativeMethods.text_block_new ())
 		{
 		}

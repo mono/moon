@@ -35,6 +35,7 @@
 
 class Surface;
 
+/* @Namespace=System.Windows */
 class UIElement : public DependencyObject {
 	UIElement *visual_parent;
 	Brush *opacityMask;
@@ -413,19 +414,19 @@ class UIElement : public DependencyObject {
 	static DependencyProperty *RenderTransformOriginProperty;
  	/* @PropertyType=Transform */
 	static DependencyProperty *RenderTransformProperty;
- 	/* @PropertyType=gint32,DefaultValue=VisibilityVisible */
+ 	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible */
 	static DependencyProperty *VisibilityProperty;
  	/* @PropertyType=gint32,DefaultValue=0*/
 	static DependencyProperty *ZIndexProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
- 	/* @PropertyType=gint32,DefaultValue=MouseCursorDefault */
+ 	/* @PropertyType=gint32,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor */
 	static DependencyProperty *CursorProperty;
- 	/* @PropertyType=ResourceDictionary */
+ 	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement */
 	static DependencyProperty *ResourcesProperty;
- 	/* @PropertyType=char* */
+ 	/* @PropertyType=char*,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object */
 	static DependencyProperty *TagProperty;
- 	/* @PropertyType=TriggerCollection */
+ 	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement */
 	static DependencyProperty *TriggersProperty;
 	
 	//

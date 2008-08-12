@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation {
 
-	public abstract class TimelineGroup : Timeline {
+	public abstract partial class TimelineGroup : Timeline {
 
 		internal TimelineGroup (IntPtr raw) :  base (raw)
 		{
@@ -41,11 +41,6 @@ namespace System.Windows.Media.Animation {
 		
 		public TimelineGroup () : base (NativeMethods.timeline_group_new ())
 		{
-		}
-
-		static TimelineGroup ()
-		{
-			ChildrenProperty = DependencyProperty.Lookup (Kind.TIMELINEGROUP, "Children", typeof (TimelineCollection));
 		}
 	
 		public TimelineCollection Children {
@@ -57,8 +52,6 @@ namespace System.Windows.Media.Animation {
 				SetValue (ChildrenProperty, value);
 			}
 		}
-
-		public static readonly DependencyProperty ChildrenProperty;
 		
 		internal override Kind GetKind ()
 		{

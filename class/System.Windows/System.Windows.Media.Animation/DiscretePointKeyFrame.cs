@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class DiscretePointKeyFrame : PointKeyFrame
+	public sealed partial class DiscretePointKeyFrame : PointKeyFrame
 	{		
 		public DiscretePointKeyFrame() : base (NativeMethods.discrete_point_key_frame_new ())
 		{

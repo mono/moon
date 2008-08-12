@@ -28,7 +28,7 @@ using System.Windows;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class ColorKeyFrameCollection : PresentationFrameworkCollection<ColorKeyFrame> {
+	public sealed partial class ColorKeyFrameCollection : PresentationFrameworkCollection<ColorKeyFrame> {
 		public ColorKeyFrameCollection () : base (NativeMethods.color_key_frame_collection_new ())
 		{
 		}

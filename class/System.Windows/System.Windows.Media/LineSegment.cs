@@ -28,11 +28,10 @@
 using Mono;
 
 namespace System.Windows.Media {
-	public sealed class LineSegment : PathSegment {
+	public sealed partial class LineSegment : PathSegment {
 		
 		static LineSegment ()
 		{
-			PointProperty = DependencyProperty.Lookup (Kind.LINESEGMENT, "Point", typeof (Point));
 		}
 
 		public LineSegment () : base (Mono.NativeMethods.line_segment_new ())
@@ -53,8 +52,6 @@ namespace System.Windows.Media {
 			}
 		}
 		
-		public static readonly DependencyProperty PointProperty;
-
 		internal override Kind GetKind ()
 		{
 			return Kind.LINESEGMENT;

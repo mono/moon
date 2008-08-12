@@ -32,12 +32,7 @@ using Mono;
 namespace System.Windows.Controls {
 
 	[ContentProperty ("Content", true)]
-	public class UserControl : Control {
-
-		static UserControl ()
-		{
-			ContentProperty = DependencyProperty.Lookup (Kind.USERCONTROL, "Content", typeof(UIElement));
-		}
+	public partial class UserControl : Control {
 		
 		public UserControl () : base (NativeMethods.user_control_new ())
 		{
@@ -52,8 +47,6 @@ namespace System.Windows.Controls {
 		{
 			return Kind.USERCONTROL;
 		}
-		
-		protected static readonly DependencyProperty ContentProperty;
 
 		protected UIElement Content {
 			get {

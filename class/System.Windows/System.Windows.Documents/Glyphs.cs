@@ -32,30 +32,7 @@ using System.Windows;
 using System.Windows.Media;
 
 namespace System.Windows.Documents {
-	public sealed class Glyphs : FrameworkElement {
-		public static readonly DependencyProperty FillProperty =
-			DependencyProperty.Lookup (Kind.GLYPHS, "Fill", typeof (Brush));
-		
-		public static readonly DependencyProperty FontRenderingEmSizeProperty =
-			DependencyProperty.Lookup (Kind.GLYPHS, "FontRenderingEmSize", typeof (double));
-		
-		public static readonly DependencyProperty FontUriProperty =
-			DependencyProperty.Lookup (Kind.GLYPHS, "FontUri", typeof (Uri));
-		
-		public static readonly DependencyProperty IndicesProperty =
-			DependencyProperty.Lookup (Kind.GLYPHS, "Indices", typeof (string));
-		
-		public static readonly DependencyProperty OriginXProperty =
-			DependencyProperty.Lookup (Kind.GLYPHS, "OriginX", typeof (double));
-		
-		public static readonly DependencyProperty OriginYProperty =
-			DependencyProperty.Lookup (Kind.GLYPHS, "OriginY", typeof (double));
-		
-		public static readonly DependencyProperty StyleSimulationsProperty =
-			DependencyProperty.Lookup (Kind.GLYPHS, "StyleSimulations", typeof (StyleSimulations));
-		
-		public static readonly DependencyProperty UnicodeStringProperty =
-			DependencyProperty.Lookup (Kind.GLYPHS, "UnicodeString", typeof (string));
+	public sealed partial class Glyphs : FrameworkElement {
 		
 		public Glyphs ()  : base (NativeMethods.glyphs_new ())
 		{

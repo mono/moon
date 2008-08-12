@@ -31,10 +31,7 @@ using Mono;
 
 namespace System.Windows.Shapes {
 
-	public sealed class Polygon : Shape {
-
-		public static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.POLYGON, "FillRule", typeof (FillRule));
-		public static readonly DependencyProperty PointsProperty = DependencyProperty.Lookup (Kind.POLYGON, "Points", typeof (PointCollection));
+	public sealed partial class Polygon : Shape {
 
 		public Polygon () : base (NativeMethods.polygon_new())
 		{

@@ -28,14 +28,7 @@
 using Mono;
 namespace System.Windows.Media {
 
-	public sealed class PathFigure : DependencyObject {
-
-		public static readonly DependencyProperty IsClosedProperty =
-			DependencyProperty.Lookup (Kind.PATHFIGURE, "IsClosed", typeof (bool));
-		public static readonly DependencyProperty SegmentsProperty = 
-			DependencyProperty.Lookup (Kind.PATHFIGURE, "Segments", typeof (PathSegmentCollection));
-		public static readonly DependencyProperty StartPointProperty = 
-			DependencyProperty.Lookup (Kind.PATHFIGURE, "StartPoint", typeof (Point));
+	public sealed partial class PathFigure : DependencyObject {
 
 		public PathFigure () : base (NativeMethods.path_figure_new ())
 		{

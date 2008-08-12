@@ -19,6 +19,7 @@ G_BEGIN_DECLS
 #include "collection.h"
 
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
 class AssemblyPart : public DependencyObject {
  protected:
 	virtual ~AssemblyPart () {}
@@ -35,6 +36,7 @@ class AssemblyPart : public DependencyObject {
 
 
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
 class AssemblyPartCollection : public DependencyObjectCollection {
  protected:
 	virtual ~AssemblyPartCollection () {}
@@ -54,13 +56,14 @@ enum CrossDomainAccess {
 };
 
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
 class Deployment : public DependencyObject {
  protected:
 	virtual ~Deployment () {}
 	
  public:
 	// DependencyProperties
- 	/* @PropertyType=gint32,DefaultValue=CrossDomainAccessNoAccess */
+ 	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess */
 	static DependencyProperty *ExternalCallersFromCrossDomainProperty;
  	/* @PropertyType=char* */
 	static DependencyProperty *EntryPointAssemblyProperty;
@@ -79,6 +82,7 @@ class Deployment : public DependencyObject {
 
 
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
 class Application : public DependencyObject {
  protected:
 	virtual ~Application () {}

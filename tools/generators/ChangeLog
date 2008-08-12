@@ -1,3 +1,8 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* FieldInfo.cs, Generator.cs, GlobalInfo.cs, Helper.cs, MemberInfo.cs,
+	  README: Added support for generating managed DP registration.
+
 2008-08-11  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs, TypeReference.cs: I know you're going to hate me,

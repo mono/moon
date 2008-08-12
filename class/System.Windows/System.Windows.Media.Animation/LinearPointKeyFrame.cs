@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class LinearPointKeyFrame : PointKeyFrame
+	public sealed partial class LinearPointKeyFrame : PointKeyFrame
 	{		
 		public LinearPointKeyFrame() : base (NativeMethods.linear_point_key_frame_new ())
 		{

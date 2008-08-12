@@ -29,6 +29,7 @@
 //
 /* @ContentProperty="Content" */
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
 class Control : public FrameworkElement {
 	bool emitting_loaded;
 	
@@ -46,15 +47,15 @@ class Control : public FrameworkElement {
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
- 	/* @PropertyType=gint32,DefaultValue=CONTROL_FONT_STRETCH */
+ 	/* @PropertyType=FontStretch,DefaultValue=CONTROL_FONT_STRETCH */
 	static DependencyProperty *FontStretchProperty;
- 	/* @PropertyType=gint32,DefaultValue=CONTROL_FONT_STYLE */
+ 	/* @PropertyType=FontStyle,DefaultValue=CONTROL_FONT_STYLE */
 	static DependencyProperty *FontStyleProperty;
- 	/* @PropertyType=gint32,DefaultValue=CONTROL_FONT_WEIGHT */
+ 	/* @PropertyType=FontWeight,DefaultValue=CONTROL_FONT_WEIGHT */
 	static DependencyProperty *FontWeightProperty;
  	/* @PropertyType=Brush */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=gint32,DefaultValue=HorizontalAlignmentCenter */
+ 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentCenter */
 	static DependencyProperty *HorizontalContentAlignmentProperty;
  	/* @PropertyType=bool,DefaultValue=true */
 	static DependencyProperty *IsTabStopProperty;
@@ -62,11 +63,11 @@ class Control : public FrameworkElement {
 	static DependencyProperty *PaddingProperty;
  	/* @PropertyType=gint32,DefaultValue=INT_MAX */
 	static DependencyProperty *TabIndexProperty;
- 	/* @PropertyType=gint32,DefaultValue=KeyboardNavigationModeLocal */
+ 	/* @PropertyType=KeyboardNavigationMode,DefaultValue=KeyboardNavigationModeLocal */
 	static DependencyProperty *TabNavigationProperty;
  	/* @PropertyType=ControlTemplate */
 	static DependencyProperty *TemplateProperty;
- 	/* @PropertyType=gint32,DefaultValue=VerticalAlignmentCenter */
+ 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter */
 	static DependencyProperty *VerticalContentAlignmentProperty;
  	/* @PropertyType=Style */
 	static DependencyProperty *StyleProperty;

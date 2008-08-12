@@ -30,7 +30,7 @@ using System.Windows.Media;
 using Mono;
 
 namespace System.Windows.Controls {
-	public sealed class Image : FrameworkElement {
+	public sealed partial class Image : FrameworkElement {
 		// XXX this should be an ImageSource
 		public static readonly DependencyProperty SourceProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (string));

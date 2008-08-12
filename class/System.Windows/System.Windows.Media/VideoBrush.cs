@@ -28,10 +28,7 @@
 using Mono;
 namespace System.Windows.Media {
 
-	public sealed class VideoBrush : TileBrush {
-
-		public static readonly DependencyProperty SourceNameProperty =
-			DependencyProperty.Lookup (Kind.VIDEOBRUSH, "SourceName", typeof (string));
+	public sealed partial class VideoBrush : TileBrush {
 
 		public VideoBrush () : base (NativeMethods.video_brush_new ())
 		{

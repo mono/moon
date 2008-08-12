@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class DiscreteColorKeyFrame : ColorKeyFrame
+	public sealed partial class DiscreteColorKeyFrame : ColorKeyFrame
 	{		
 		public DiscreteColorKeyFrame() : base (NativeMethods.discrete_color_key_frame_new ())
 		{

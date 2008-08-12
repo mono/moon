@@ -32,18 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation {
 
-	public abstract class Timeline : DependencyObject {
-
-		static Timeline ()
-		{
-			AutoReverseProperty = DependencyProperty.Lookup (Kind.TIMELINE, "AutoReverse", typeof (bool));
-			BeginTimeProperty = DependencyProperty.Lookup (Kind.TIMELINE, "BeginTime", typeof (Nullable<TimeSpan>));
-			DurationProperty = DependencyProperty.Lookup (Kind.TIMELINE, "Duration", typeof (Duration));
-			SpeedRatioProperty = DependencyProperty.Lookup (Kind.TIMELINE, "SpeedRatio", typeof (double));
-			FillBehaviorProperty = DependencyProperty.Lookup (Kind.TIMELINE, "FillBehavior", typeof (FillBehavior));
-			RepeatBehaviorProperty = DependencyProperty.Lookup (Kind.TIMELINE, "RepeatBehavior", typeof (RepeatBehavior));
-		}			
-		
+	public abstract partial class Timeline : DependencyObject {
 		internal Timeline (IntPtr raw) : base (raw)
 		{
 		}
@@ -109,13 +98,6 @@ namespace System.Windows.Media.Animation {
 			}
 		}
 		
-		public static readonly DependencyProperty AutoReverseProperty;
-		public static readonly DependencyProperty BeginTimeProperty;
-		public static readonly DependencyProperty DurationProperty;
-		public static readonly DependencyProperty SpeedRatioProperty;
-		public static readonly DependencyProperty FillBehaviorProperty;
-		public static readonly DependencyProperty RepeatBehaviorProperty;
-
 		internal override Kind GetKind ()
 		{
 			return Kind.TIMELINE;

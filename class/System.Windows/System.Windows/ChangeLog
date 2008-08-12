@@ -1,3 +1,10 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Application.cs, AssemblyPart.cs, DependencyObject.cs,
+	  DependencyProperty.g.cs, Deployment.cs, EventTrigger.cs,
+	  FrameworkElement.cs, Setter.cs, Style.cs, UIElement.cs: Make
+	  classes partial and remove DP registration, which is now generated.
+
 2008-08-11  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyObject.cs: add Support for Setter/SetterBaseCollection

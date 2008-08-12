@@ -27,19 +27,8 @@
 //
 using Mono;
 namespace System.Windows.Media {
-	public abstract class Brush : DependencyObject {
-		
-		public static readonly DependencyProperty OpacityProperty;
-		public static readonly DependencyProperty TransformProperty;
-		public static readonly DependencyProperty RelativeTransformProperty;
-
-		static Brush ()
-		{
-			OpacityProperty = DependencyProperty.Lookup (Kind.BRUSH, "Opacity", typeof (double));
-			TransformProperty = DependencyProperty.Lookup (Kind.BRUSH, "Transform", typeof (Transform));
-			RelativeTransformProperty = DependencyProperty.Lookup (Kind.BRUSH, "RelativeTransform", typeof (Transform));
-		}
-		
+	public abstract partial class Brush : DependencyObject {
+			
 		protected Brush () : base (NativeMethods.brush_new ())
 		{
 		}

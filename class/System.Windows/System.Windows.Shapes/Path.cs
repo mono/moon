@@ -31,10 +31,8 @@ using Mono;
 
 namespace System.Windows.Shapes {
 
-	public sealed class Path : Shape {
+	public sealed partial class Path : Shape {
 
-		public static readonly DependencyProperty DataProperty = DependencyProperty.Lookup (Kind.PATH, "Data", typeof (Geometry));
-		
 		public Path () :  base (Mono.NativeMethods.path_new ())
 		{
 		}

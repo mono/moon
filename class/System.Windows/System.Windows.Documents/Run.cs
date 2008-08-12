@@ -30,9 +30,7 @@ using Mono;
 
 namespace System.Windows.Documents {
 
-	public sealed class Run : Inline {
-		public static readonly DependencyProperty TextProperty =
-			DependencyProperty.Lookup (Kind.RUN, "Text", typeof (string));
+	public sealed partial class Run : Inline {
 
 		public Run () : base (NativeMethods.run_new ())
 		{

@@ -32,31 +32,8 @@ using System.Windows.Media;
 using System.Windows.Markup;
 
 namespace System.Windows.Documents {
-	public abstract class Inline : DependencyObject {
-		public static readonly DependencyProperty FontFamilyProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "FontFamily", typeof (FontFamily));
-		
-		public static readonly DependencyProperty FontSizeProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "FontSize", typeof (double));
-		
-		public static readonly DependencyProperty FontStretchProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "FontStretch", typeof (FontStretch));
-		
-		public static readonly DependencyProperty FontStyleProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "FontStyle", typeof (FontStyle));
-		
-		public static readonly DependencyProperty FontWeightProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "FontWeight", typeof (FontWeight));
-		
-		public static readonly DependencyProperty ForegroundProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "Foreground", typeof (Brush));
-		
-		public static readonly DependencyProperty LanguageProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "Language", typeof (XmlLanguage));
-		
-		public static readonly DependencyProperty TextDecorationsProperty =
-			DependencyProperty.Lookup (Kind.INLINE, "TextDecorations", typeof (TextDecorationCollection));
-		
+	public abstract partial class Inline : DependencyObject {
+					
 		protected Inline () : base (NativeMethods.inline_new ())
 		{
 		}

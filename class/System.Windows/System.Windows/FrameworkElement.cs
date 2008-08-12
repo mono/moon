@@ -33,62 +33,7 @@ using System.Windows.Markup;
 using System.Security;
 
 namespace System.Windows {
-	public abstract class FrameworkElement : UIElement {
-		public static readonly DependencyProperty ActualHeightProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "ActualHeight", typeof (double));
-
-		public static readonly DependencyProperty ActualWidthProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "ActualWidth", typeof (double));
-
-		public static readonly DependencyProperty DataContextProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "DataContext", typeof (object));
-
-		public static readonly DependencyProperty HeightProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Height", typeof (double));
-
-		public static readonly DependencyProperty HorizontalAlignmentProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "HorizontalAlignment", typeof (HorizontalAlignment));
-
-		public static readonly DependencyProperty LanguageProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Language", typeof (XmlLanguage));
-
-		public static readonly DependencyProperty MarginProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Margin", typeof (Thickness));
-		
-		public static readonly DependencyProperty MaxHeightProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MaxHeight", typeof (double));
-
-		public static readonly DependencyProperty MaxWidthProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MaxWidth", typeof (double));
-
-		public static readonly DependencyProperty MinHeightProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinHeight", typeof (double));
-
-		public static readonly DependencyProperty MinWidthProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinWidth", typeof (double));
-
-		public static readonly DependencyProperty VerticalAlignmentProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "VerticalAlignment", typeof (VerticalAlignment));
-
-		public static readonly DependencyProperty WidthProperty =
-			DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Width", typeof (double));
-
-		// XXX we look these next four properties up based on
-		// Kind.UIELEMENT due to the fact that in order to
-		// maintain 1.0 and 2.0 working, we have to leave the
-		// unmanaged properties in the UIElement class.
-		private static readonly DependencyProperty CursorProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Cursor", typeof (Cursor));
-
-		private static readonly DependencyProperty ResourcesProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Resources", typeof (ResourceDictionary));
-		
-		public static readonly DependencyProperty TagProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Tag", typeof (object));
-
-		private static readonly DependencyProperty TriggersProperty =
-			DependencyProperty.Lookup (Kind.UIELEMENT, "Triggers", typeof (TriggerCollection));
-
+	public abstract partial class FrameworkElement : UIElement {
 		
 		internal FrameworkElement () : base (NativeMethods.framework_element_new ())
 		{

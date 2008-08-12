@@ -15,6 +15,7 @@
 #include "frameworkelement.h"
 
 /* @ContentProperty="Children" */
+/* @Namespace=System.Windows.Controls */
 class Panel : public FrameworkElement {
  private:
 	//

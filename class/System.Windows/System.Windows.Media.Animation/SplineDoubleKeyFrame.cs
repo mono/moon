@@ -32,12 +32,8 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public sealed class SplineDoubleKeyFrame : DoubleKeyFrame 
+	public sealed partial class SplineDoubleKeyFrame : DoubleKeyFrame 
 	{
-		
-		public static readonly DependencyProperty KeySplineProperty =
-			DependencyProperty.Lookup (Kind.SPLINEDOUBLEKEYFRAME, "KeySpline", typeof (KeySpline));
-		
 		public SplineDoubleKeyFrame () : base (NativeMethods.spline_double_key_frame_new ())
 		{
 		}

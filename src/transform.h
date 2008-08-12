@@ -20,6 +20,7 @@ G_BEGIN_DECLS
 #include <cairo.h>
 #include "collection.h"
 
+/* @Namespace=System.Windows.Media */
 class GeneralTransform : public DependencyObject {
  protected:
 	cairo_matrix_t _matrix;
@@ -45,6 +46,7 @@ void   general_transform_get_transform (GeneralTransform *transform, cairo_matri
 void   general_transform_transform_point (GeneralTransform *t, Point *p, Point *r);
 
 
+/* @Namespace=System.Windows.Media */
 class Transform : public GeneralTransform {
 protected:
 	virtual ~Transform () {}
@@ -57,6 +59,7 @@ public:
 };
 
 
+/* @Namespace=System.Windows.Media */
 class RotateTransform : public Transform {
  protected:
 	virtual ~RotateTransform () {}
@@ -97,6 +100,7 @@ void   rotate_transform_set_center_y (RotateTransform *transform, double centerY
 double rotate_transform_get_center_y (RotateTransform *transform);
 
 
+/* @Namespace=System.Windows.Media */
 class TranslateTransform : public Transform {
  protected:
 	virtual ~TranslateTransform () {}
@@ -129,6 +133,7 @@ void   translate_transform_set_y (TranslateTransform *transform, double y);
 double translate_transform_get_y (TranslateTransform *transform);
 
 
+/* @Namespace=System.Windows.Media */
 class ScaleTransform : public Transform {
  protected:
 	virtual ~ScaleTransform () {}
@@ -163,6 +168,7 @@ void   scale_transform_set_center_y (ScaleTransform *transform, double centerY);
 double scale_transform_get_center_y (ScaleTransform *transform);
 
 
+/* @Namespace=System.Windows.Media */
 class SkewTransform : public Transform {
  protected:
 	virtual ~SkewTransform () {}
@@ -196,6 +202,7 @@ double skew_transform_get_center_x (SkewTransform *transform);
 void   skew_transform_set_center_y (SkewTransform *transform, double centerY);
 double skew_transform_get_center_y (SkewTransform *transform);
 
+/* @Namespace=None */
 class Matrix : public DependencyObject {
 private:
 	cairo_matrix_t matrix;
@@ -247,6 +254,7 @@ double matrix_get_offset_y (Matrix *matrix);
 void matrix_set_offset_y (Matrix *matrix, double value);
 
 
+/* @Namespace=System.Windows.Media */
 class MatrixTransform : public Transform {
  protected:
 	virtual ~MatrixTransform () {}
@@ -267,6 +275,7 @@ void	matrix_transform_set_matrix (MatrixTransform *transform, Matrix *matrix);
 Matrix *matrix_transform_get_matrix (MatrixTransform *transform);
 
 
+/* @Namespace=System.Windows.Media */
 class TransformCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TransformCollection () {}
@@ -281,6 +290,7 @@ class TransformCollection : public DependencyObjectCollection {
 
 
 /* @ContentProperty="Children" */
+/* @Namespace=System.Windows.Media */
 class TransformGroup : public Transform {
 protected:
 	virtual ~TransformGroup ();

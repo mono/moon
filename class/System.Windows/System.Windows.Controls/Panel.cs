@@ -31,12 +31,7 @@ using System.Windows;
 using Mono;
 
 namespace System.Windows.Controls {
-	public abstract class Panel : FrameworkElement {
-		static readonly DependencyProperty ChildrenProperty =
-			DependencyProperty.Lookup (Kind.PANEL, "Children", typeof (UIElementCollection));
-		
-		public static readonly DependencyProperty BackgroundProperty =
-			DependencyProperty.Lookup (Kind.PANEL, "Background", typeof (Brush));
+	public abstract partial class Panel : FrameworkElement {
 		
 		protected Panel () : base (NativeMethods.panel_new ())
 		{

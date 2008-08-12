@@ -28,11 +28,10 @@
 using Mono;
 
 namespace System.Windows.Media {
-	public sealed class PolyLineSegment : PathSegment {
+	public sealed partial class PolyLineSegment : PathSegment {
 		
 		static PolyLineSegment ()
 		{
-			PointsProperty = DependencyProperty.Lookup (Kind.POLYLINESEGMENT, "Points", typeof (Point[]));
 		}
 
 		public PolyLineSegment () : base (NativeMethods.poly_line_segment_new ())
@@ -43,14 +42,12 @@ namespace System.Windows.Media {
 		{
 		}
 		
-		public Point [] Points {
+		public PointCollection Points {
 			set {
 				SetValue (PointsProperty, value);
 			}
 		}
 		
-		public static readonly DependencyProperty PointsProperty;
-
 		internal override Kind GetKind ()
 		{
 			return Kind.POLYLINESEGMENT;

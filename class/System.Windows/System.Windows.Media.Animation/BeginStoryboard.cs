@@ -29,12 +29,8 @@ using Mono;
 using System.Windows;
 namespace System.Windows.Media.Animation 
 {
-	public sealed class BeginStoryboard : DependencyObject 
+	public sealed partial class BeginStoryboard : DependencyObject 
 	{
-		public static readonly DependencyProperty StoryboardProperty = 
-			   DependencyProperty.Lookup (Kind.BEGINSTORYBOARD, "Storyboard", typeof (Storyboard));
-
-
 		public BeginStoryboard(): base (Mono.NativeMethods.begin_storyboard_new ())
 		{
 		}

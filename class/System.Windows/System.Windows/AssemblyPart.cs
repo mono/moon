@@ -34,7 +34,7 @@ using Mono;
 
 namespace System.Windows {
 
-	public sealed class AssemblyPart : DependencyObject {
+	public sealed partial class AssemblyPart : DependencyObject {
 
 		static AssemblyPart ()
 		{
@@ -71,6 +71,5 @@ namespace System.Windows {
 			return null;
 		}
 		
-		public static readonly DependencyProperty SourceProperty;
 	}
 }

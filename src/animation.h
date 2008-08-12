@@ -24,6 +24,7 @@
 #include "moon-curves.h"
 
 // misc types
+/* @Namespace=System.Windows.Media.Animation */
 class KeySpline : public DependencyObject {
 	moon_quadratic quadraticsArray [16];
 	Point controlPoint1;
@@ -50,6 +51,7 @@ class KeySpline : public DependencyObject {
 };
 
 /* @IncludeInKinds */
+/* @Namespace=System.Windows.Media.Animation */
 struct KeyTime {
  public:
 	enum KeyTimeType {
@@ -188,6 +190,7 @@ class AnimationClock : public Clock {
 
 
 /* this is called AnimationTimeline in wpf */
+/* @Namespace=System.Windows.Media.Animation */
 class Animation/*Timeline*/ : public Timeline {
  protected:
 	virtual ~Animation () {}
@@ -212,6 +215,7 @@ class Animation/*Timeline*/ : public Timeline {
 	virtual Type::Kind GetValueKind () { return Type::INVALID; };
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 class DoubleAnimation : public Animation/*Timeline*/ {
  protected:
 	virtual ~DoubleAnimation () {}
@@ -250,6 +254,7 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 };
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class ColorAnimation : public Animation/*Timeline*/ {
  protected:
 	virtual ~ColorAnimation () {}
@@ -288,6 +293,7 @@ class ColorAnimation : public Animation/*Timeline*/ {
 };
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class PointAnimation : public Animation/*Timeline*/ {
  protected:
 	virtual ~PointAnimation () {}
@@ -327,6 +333,7 @@ class PointAnimation : public Animation/*Timeline*/ {
 };
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class KeyFrame : public DependencyObject {
  protected:
 	virtual ~KeyFrame () {}
@@ -374,6 +381,7 @@ class KeyFrameCollection : public DependencyObjectCollection {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 class ColorKeyFrameCollection : public KeyFrameCollection {
  protected:
 	virtual ~ColorKeyFrameCollection () {}
@@ -386,6 +394,7 @@ class ColorKeyFrameCollection : public KeyFrameCollection {
 	virtual Type::Kind GetElementType() { return Type::COLORKEYFRAME; }
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 class DoubleKeyFrameCollection : public KeyFrameCollection {
  protected:
 	virtual ~DoubleKeyFrameCollection () {}
@@ -398,6 +407,7 @@ class DoubleKeyFrameCollection : public KeyFrameCollection {
 	virtual Type::Kind GetElementType() { return Type::DOUBLEKEYFRAME; }
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 class PointKeyFrameCollection : public KeyFrameCollection {
  protected:
 	virtual ~PointKeyFrameCollection () {}
@@ -410,6 +420,7 @@ class PointKeyFrameCollection : public KeyFrameCollection {
 	virtual Type::Kind GetElementType() { return Type::POINTKEYFRAME; }
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 class DoubleKeyFrame : public KeyFrame {
  protected:
 	virtual ~DoubleKeyFrame () {}
@@ -430,6 +441,7 @@ class DoubleKeyFrame : public KeyFrame {
 	void    SetValue (double v);
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 class ColorKeyFrame : public KeyFrame {
  protected:
 	virtual ~ColorKeyFrame () {}
@@ -450,6 +462,7 @@ class ColorKeyFrame : public KeyFrame {
 	void   SetValue (Color v);
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 class PointKeyFrame : public KeyFrame {
  protected:
 	virtual ~PointKeyFrame () {}
@@ -472,6 +485,7 @@ class PointKeyFrame : public KeyFrame {
 
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
  protected:
 	virtual ~DiscreteDoubleKeyFrame () {}
@@ -487,6 +501,7 @@ class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
 
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class DiscreteColorKeyFrame : public ColorKeyFrame {
  protected:
 	virtual ~DiscreteColorKeyFrame () {}
@@ -501,6 +516,7 @@ class DiscreteColorKeyFrame : public ColorKeyFrame {
 
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class DiscretePointKeyFrame : public PointKeyFrame {
  protected:
 	virtual ~DiscretePointKeyFrame () {}
@@ -514,6 +530,7 @@ class DiscretePointKeyFrame : public PointKeyFrame {
 };
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class LinearDoubleKeyFrame : public DoubleKeyFrame {
  protected:
 	virtual ~LinearDoubleKeyFrame () {}
@@ -528,6 +545,7 @@ class LinearDoubleKeyFrame : public DoubleKeyFrame {
 
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class LinearColorKeyFrame : public ColorKeyFrame {
  protected:
 	virtual ~LinearColorKeyFrame () {}
@@ -542,6 +560,7 @@ class LinearColorKeyFrame : public ColorKeyFrame {
 
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class LinearPointKeyFrame : public PointKeyFrame {
  protected:
 	virtual ~LinearPointKeyFrame () {}
@@ -556,6 +575,7 @@ class LinearPointKeyFrame : public PointKeyFrame {
 
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class SplineDoubleKeyFrame : public DoubleKeyFrame {
  protected:
 	virtual ~SplineDoubleKeyFrame () {}
@@ -578,6 +598,7 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class SplineColorKeyFrame : public ColorKeyFrame {
  protected:
 	virtual ~SplineColorKeyFrame () {}
@@ -600,6 +621,7 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 
 
 
+/* @Namespace=System.Windows.Media.Animation */
 class SplinePointKeyFrame : public PointKeyFrame {
  protected:
 	virtual ~SplinePointKeyFrame () {}
@@ -621,6 +643,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 };
 
 
+/* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  protected:
@@ -647,6 +670,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual bool Validate ();
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
 class ColorAnimationUsingKeyFrames : public ColorAnimation {
  protected:
@@ -673,6 +697,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual bool Validate ();
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
 class PointAnimationUsingKeyFrames : public PointAnimation {
  protected:
@@ -699,6 +724,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual bool Validate ();
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="Children" */
 class Storyboard : public ParallelTimeline {
 	static void storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer data);
@@ -742,6 +768,7 @@ class Storyboard : public ParallelTimeline {
 	const static int CompletedEvent;
 };
 
+/* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="Storyboard" */
 class BeginStoryboard : public TriggerAction {
  protected:

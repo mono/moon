@@ -34,57 +34,7 @@ using System.Windows.Media;
 using System.Windows.Markup;
 
 namespace System.Windows.Controls {
-	public abstract class Control : FrameworkElement {
-		public static readonly DependencyProperty BackgroundProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "Background", typeof (Brush));
-		
-		public static readonly DependencyProperty BorderBrushProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "BorderBrush", typeof (Brush));
-		
-		public static readonly DependencyProperty BorderThicknessProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "BorderThickness", typeof (Thickness));
-		
-		public static readonly DependencyProperty FontFamilyProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "FontFamily", typeof (FontFamily));
-		
-		public static readonly DependencyProperty FontSizeProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "FontSize", typeof (double));
-		
-		public static readonly DependencyProperty FontStretchProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "FontStretch", typeof (FontStretch));
-		
-		public static readonly DependencyProperty FontStyleProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "FontStyle", typeof (FontStyle));
-		
-		public static readonly DependencyProperty FontWeightProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "FontWeight", typeof (FontWeight));
-		
-		public static readonly DependencyProperty ForegroundProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "Foreground", typeof (Brush));
-		
-		public static readonly DependencyProperty HorizontalContentAlignmentProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "HorizontalContentAlignment", typeof (HorizontalAlignment));
-		
-		public static readonly DependencyProperty IsTabStopProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "IsTabStop", typeof (bool));
-		
-		public static readonly DependencyProperty PaddingProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "Padding", typeof (Thickness));
-		
-		public static readonly DependencyProperty TabIndexProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "TabIndex", typeof (int));
-		
-		public static readonly DependencyProperty TabNavigationProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "TabNavigation", typeof (KeyboardNavigationMode));
-		
-		public static readonly DependencyProperty TemplateProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "Template", typeof (ControlTemplate));
-		
-		public static readonly DependencyProperty VerticalContentAlignmentProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "VerticalContentAlignment", typeof (VerticalAlignment));
-
-		public static readonly DependencyProperty StyleProperty =
-			DependencyProperty.Lookup (Kind.CONTROL, "Style", typeof (Style));
+	public abstract partial class Control : FrameworkElement {
 		
 		protected Control ()  : base (NativeMethods.control_new ())
 		{

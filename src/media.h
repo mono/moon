@@ -45,6 +45,7 @@ class MediaErrorEventArgs : public ErrorEventArgs {
 };
 
 
+/* @Namespace=None */
 class MediaAttribute : public DependencyObject {
  protected:
 	virtual ~MediaAttribute () {}
@@ -85,6 +86,7 @@ MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeColle
  * collection sorted at all times.
  * We also override Insert to ignore the index and behave just like Add.
  */
+/* @Namespace=System.Windows.Media */
 class TimelineMarkerCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TimelineMarkerCollection () {}
@@ -101,6 +103,7 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 };
 
 
+/* @Namespace=System.Windows.Media */
 class MarkerReachedEventArgs : public EventArgs {
 	TimelineMarker *marker;
 	
@@ -115,6 +118,7 @@ class MarkerReachedEventArgs : public EventArgs {
 };
 
 
+/* @Namespace=None */
 class MediaBase : public FrameworkElement {
  protected:
 	struct {
@@ -188,6 +192,7 @@ void    media_base_set_stretch (MediaBase *media, Stretch stretch);
 double media_base_get_download_progress (MediaBase *media);
 
 
+/* @Namespace=System.Windows.Media */
 class Image : public MediaBase {
 	int create_xlib_surface:1;
 	
@@ -262,6 +267,7 @@ class Image : public MediaBase {
 void   image_set_source (Image *img, Downloader *downloader, const char *PartName);
 
 
+/* @Namespace=System.Windows.Controls */
 class MediaElement : public MediaBase {
  public:
 	enum MediaElementState {
@@ -382,7 +388,7 @@ class MediaElement : public MediaBase {
 	
  public:
 	// properties
- 	/* @PropertyType=MediaAttributeCollection */
+ 	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string> */
 	static DependencyProperty *AttributesProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly */
 	static DependencyProperty *AudioStreamCountProperty;
@@ -400,7 +406,7 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *CanPauseProperty;
  	/* @PropertyType=bool,DefaultValue=false,ReadOnly */
 	static DependencyProperty *CanSeekProperty;
- 	/* @PropertyType=char*,ReadOnly */
+ 	/* @PropertyType=char*,ReadOnly,ManagedPropertyType=MediaElementState */
 	static DependencyProperty *CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *IsMutedProperty;
@@ -416,6 +422,7 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *PositionProperty;
  	/* @PropertyType=double,DefaultValue=0.5 */
 	static DependencyProperty *VolumeProperty;
+
 	
 	// events
 	const static int BufferingProgressChangedEvent;

@@ -27,12 +27,13 @@ enum TabletDeviceType {
 };
 
 
+/* @Namespace=System.Windows.Input */
 class StylusInfo : public DependencyObject {
  protected:
 	virtual ~StylusInfo () {}
 	
  public:
-	/* @PropertyType=gint32,DefaultValue=TabletDeviceTypeMouse */
+	/* @PropertyType=TabletDeviceType,DefaultValue=TabletDeviceTypeMouse */
 	static DependencyProperty *DeviceTypeProperty;
 	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *IsInvertedProperty;
@@ -50,6 +51,7 @@ bool	stylus_info_get_inverted	(StylusInfo *stylus_info);
 void	stylus_info_set_inverted	(StylusInfo *stylus_info, bool inverted);
 
 
+/* @Namespace=None */
 class StylusPoint : public DependencyObject {
  protected:
 	virtual ~StylusPoint () {}
@@ -78,6 +80,7 @@ double	stylus_point_get_pressure_factor (StylusPoint *stylus_point);
 void	stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure);
 
 
+/* @Namespace=System.Windows.Input */
 class StylusPointCollection : public DependencyObjectCollection {
  protected:
 	virtual bool CanAdd (Value *value) { return !Contains (value); }
@@ -99,6 +102,7 @@ class StylusPointCollection : public DependencyObjectCollection {
 double stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection);
 
 
+/* @Namespace=System.Windows.Ink */
 class DrawingAttributes : public DependencyObject {
  protected:
 	virtual ~DrawingAttributes () {}
@@ -135,6 +139,7 @@ double	drawing_attributes_get_width (DrawingAttributes *da);
 void	drawing_attributes_set_width (DrawingAttributes *da, double width);
 
 
+/* @Namespace=System.Windows.Ink */
 class Stroke : public DependencyObject {
 	Rect old_bounds;
 	Rect bounds;
@@ -184,6 +189,7 @@ void                   stroke_get_bounds (Stroke *stroke, Rect *bounds);
 bool                   stroke_hit_test (Stroke *stroke, StylusPointCollection *stylusPointCollection);
 
 
+/* @Namespace=System.Windows.Ink */
 class StrokeCollection : public DependencyObjectCollection {
  protected:
 	virtual bool CanAdd (Value *value) { return !Contains (value); }
@@ -204,6 +210,7 @@ void              stroke_collection_get_bounds (StrokeCollection *col, Rect *bou
 StrokeCollection *stroke_collection_hit_test (StrokeCollection *col, StylusPointCollection *stylusPointCollection);
 
 
+/* @Namespace=System.Windows.Controls */
 class InkPresenter : public Canvas {
 	Rect render_bounds;
 	

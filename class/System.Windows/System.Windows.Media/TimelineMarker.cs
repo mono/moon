@@ -28,14 +28,8 @@ using System.Windows;
 using Mono;
 
 namespace System.Windows.Media {
-	public sealed class TimelineMarker : DependencyObject {
-		public static readonly DependencyProperty TextProperty = 
-			DependencyProperty.Lookup (Kind.TIMELINEMARKER, "Text", typeof (string));
-		public static readonly DependencyProperty TimeProperty = 
-			DependencyProperty.Lookup (Kind.TIMELINEMARKER, "Time", typeof (TimeSpan));
-		public static readonly DependencyProperty TypeProperty = 
-			DependencyProperty.Lookup (Kind.TIMELINEMARKER, "Type", typeof (string));
-		
+	public sealed partial class TimelineMarker : DependencyObject {
+	
 		public TimelineMarker() : base (NativeMethods.timeline_marker_new ())
 		{
 		}

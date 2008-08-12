@@ -28,12 +28,7 @@
 using Mono;
 namespace System.Windows.Media {
 
-	public sealed class QuadraticBezierSegment : PathSegment {
-
-		public static readonly DependencyProperty Point1Property =
-			DependencyProperty.Lookup (Kind.QUADRATICBEZIERSEGMENT, "Point1", typeof (Point));
-		public static readonly DependencyProperty Point2Property =
-			DependencyProperty.Lookup (Kind.QUADRATICBEZIERSEGMENT, "Point2", typeof (Point));
+	public sealed partial class QuadraticBezierSegment : PathSegment {
 
 		public QuadraticBezierSegment () : base (NativeMethods.quadratic_bezier_segment_new ())
 		{

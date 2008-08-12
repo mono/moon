@@ -28,16 +28,8 @@
 using Mono;
 namespace System.Windows.Media.Animation 
 {
-	public class DoubleAnimation : System.Windows.Media.Animation.Animation 
+	public partial class DoubleAnimation : System.Windows.Media.Animation.Animation 
 	{
-		public static readonly DependencyProperty ByProperty = 
-			   DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "By", typeof (Nullable <double>));
-		public static readonly DependencyProperty FromProperty =
-			   DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "From", typeof (Nullable <double>));
-		public static readonly DependencyProperty ToProperty =
-			   DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "To", typeof (Nullable <double>));
-
-
 		public DoubleAnimation(): base (Mono.NativeMethods.double_animation_new ())
 		{
 		}
