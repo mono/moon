@@ -29,6 +29,18 @@ class MemberInfo {
 	private string fullname;
 	private string managed_fullname;
 	private Nullable<int> silverlight_version;
+	private string managed_name;
+	
+	public string ManagedName {
+		get {
+			if (managed_name == null) {
+				managed_name = Annotations.GetValue ("ManagedName");
+				if (string.IsNullOrEmpty (managed_name))
+					managed_name = Name;
+			}
+			return managed_name;
+		}
+	}
 	
 	public TypeInfo ParentType {
 		get {
@@ -218,7 +230,7 @@ class Members : Dictionary <string, MemberInfo>{
 			int result = string.Compare (a.Namespace, b.Namespace);
 			if (result != 0)
 				return result;
-			return string.Compare (a.Name, b.Name);
+			return string.Compare (a.ManagedName, b.ManagedName);
 		}
 	}
 	

@@ -28,7 +28,7 @@ class Generator {
 		GenerateTypeStaticCpp (info);
 		GenerateCBindings (info);
 		GeneratePInvokes (info);
-		GenerateTypes_G ();
+		GenerateTypes_G (info);
 		
 		GenerateDPs (info);
 		GenerateManagedDPs (info);
@@ -95,7 +95,7 @@ class Generator {
 				text.AppendLine ();
 			}
 			text.Append ("\tpartial class ");
-			text.Append (type.Name);
+			text.Append (type.ManagedName);
 			text.AppendLine (" {");
 			
 			// Public ctor
@@ -118,6 +118,7 @@ class Generator {
 				
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, access);
+				text.Append (" ");
 				text.Append (type.Name);
 				text.Append (" () : base (NativeMethods.");
 				text.Append (type.C_Constructor);
@@ -239,7 +240,7 @@ class Generator {
 				text.AppendLine ();
 			}
 			text.Append ("\tpartial class ");
-			text.Append (parent.Name);
+			text.Append (parent.ManagedName);
 			text.AppendLine (" {");
 			
 			fields.Sort (new Members.MembersSortedByName <FieldInfo> ());
@@ -869,12 +870,13 @@ class Generator {
 		return v;
 	}
 	
-	public void GenerateTypes_G ()
+	public void GenerateTypes_G (GlobalInfo all)
 	{
 		string base_dir = Environment.CurrentDirectory;
 		string class_dir = Path.Combine (base_dir, "class");
 		string sys_win_dir = Path.Combine (class_dir, "System.Windows");
 		string moon_moonlight_dir = Path.Combine (class_dir, "Mono.Moonlight");
+		List<TypeInfo> types = new List<TypeInfo> (all.GetDependencyObjects (all));
 		
 		string magic = "return Kind.";
 		StringBuilder text = new StringBuilder ();
@@ -894,43 +896,31 @@ class Generator {
 		text.AppendLine ("\t\t\tType t;");
 		text.AppendLine ("\t\t\ttry {");
 				
-		foreach (string dir in Directory.GetDirectories (sys_win_dir)) {
-			Log.WriteLine ("Checking: {0}", dir);
-			string ns = Path.GetFileName (dir);
-			foreach (string file in Directory.GetFiles (dir, "*.cs")) {
-				string contents = File.ReadAllText (file);
-				string type;
-				string kind;
-				int get_kind_pos = contents.IndexOf (magic);
-				int end_kind_pos;
+		types.Add ((TypeInfo) all.Children ["DependencyObject"]);
+		types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
+		
+		for (int i = 0; i < types.Count; i++) {
+			TypeInfo t = types [i];
+			string type = t.ManagedName;
+			
+			if (t.Namespace == "None")
+				continue;
+			
+			if (type == "PresentationFrameworkCollection")
+				type = "PresentationFrameworkCollection`1";
 				
-				if (get_kind_pos < 0)
-					continue;
-				
-			 	end_kind_pos = contents.IndexOf (";", get_kind_pos + magic.Length);
-				
-				if (end_kind_pos < 0)
-					throw new Exception (string.Format ("Found 'return Kind.' in {0} at pos {1}, but not any ';' after that", file, get_kind_pos));
-				
-				kind = contents.Substring (get_kind_pos + magic.Length, end_kind_pos - (get_kind_pos + magic.Length));
-				type = Path.GetFileNameWithoutExtension (file);
-				
-				if (type == "PresentationFrameworkCollection")
-					type = "PresentationFrameworkCollection`1";
-				
-				Log.WriteLine ("Found Kind.{0} in {1} which result in type: {2}.{3}", kind, file, ns, type);
-				
-				text.Append ("\t\t\t\tt = agclr.GetType (\"");
-				text.Append (ns);
-				text.Append (".");
-				text.Append (type);
-				text.AppendLine ("\", true); ");
+			//Log.WriteLine ("Found Kind.{0} in {1} which result in type: {2}.{3}", kind, file, ns, type);
+			
+			text.Append ("\t\t\t\tt = agclr.GetType (\"");
+			text.Append (t.Namespace);
+			text.Append (".");
+			text.Append (type);
+			text.AppendLine ("\", true); ");
 				
 				
-				text.Append ("\t\t\t\ttypes.Add (t, new ManagedType (t, Kind.");
-				text.Append (kind);
-				text.AppendLine ("));");
-			}
+			text.Append ("\t\t\t\ttypes.Add (t, new ManagedType (t, Kind.");
+			text.Append (t.KindName);
+			text.AppendLine ("));");
 		}
 		
 		text.AppendLine ("\t\t\t} catch (Exception ex) {");

@@ -24,7 +24,9 @@
 // the managed world, and when a change happens we get a
 // chance to reflect the changes
 //
-/* @Namespace=None */
+/* @Namespace=System.Windows */
+/* @ManagedName=PresentationFrameworkCollection`1 */
+/* @ManagedDependencyProperties=Manual */
 class Collection : public DependencyObject {
  protected:
 	GPtrArray *array;

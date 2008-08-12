@@ -1,5 +1,9 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* collection.h: Annotate Collection.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* animation.h, clock.h, collection.h, error.h, eventargs.h, media.h,
 	  size.h, style.h, template.h, trigger.h: Add @Namespace annotations.
 

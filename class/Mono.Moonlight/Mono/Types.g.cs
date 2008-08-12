@@ -14,8 +14,8 @@ namespace Mono {
 			Assembly agclr = Helper.GetAgclr ();
 			Type t;
 			try {
-				t = agclr.GetType ("System.Windows.Application", true); 
-				types.Add (t, new ManagedType (t, Kind.APPLICATION));
+				t = agclr.GetType ("System.Windows.AssemblyPart", true); 
+				types.Add (t, new ManagedType (t, Kind.ASSEMBLYPART));
 				t = agclr.GetType ("System.Windows.AssemblyPartCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.ASSEMBLYPART_COLLECTION));
 				t = agclr.GetType ("System.Windows.DependencyObject", true); 
@@ -26,10 +26,20 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.EVENTTRIGGER));
 				t = agclr.GetType ("System.Windows.FrameworkElement", true); 
 				types.Add (t, new ManagedType (t, Kind.FRAMEWORKELEMENT));
+				t = agclr.GetType ("System.Windows.FrameworkTemplate", true); 
+				types.Add (t, new ManagedType (t, Kind.FRAMEWORKTEMPLATE));
 				t = agclr.GetType ("System.Windows.PresentationFrameworkCollection`1", true); 
 				types.Add (t, new ManagedType (t, Kind.COLLECTION));
 				t = agclr.GetType ("System.Windows.ResourceDictionary", true); 
 				types.Add (t, new ManagedType (t, Kind.RESOURCE_DICTIONARY));
+				t = agclr.GetType ("System.Windows.Setter", true); 
+				types.Add (t, new ManagedType (t, Kind.SETTER));
+				t = agclr.GetType ("System.Windows.SetterBase", true); 
+				types.Add (t, new ManagedType (t, Kind.SETTERBASE));
+				t = agclr.GetType ("System.Windows.SetterBaseCollection", true); 
+				types.Add (t, new ManagedType (t, Kind.SETTERBASE_COLLECTION));
+				t = agclr.GetType ("System.Windows.Style", true); 
+				types.Add (t, new ManagedType (t, Kind.STYLE));
 				t = agclr.GetType ("System.Windows.TriggerActionCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.TRIGGERACTION_COLLECTION));
 				t = agclr.GetType ("System.Windows.TriggerCollection", true); 
@@ -44,6 +54,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.COLUMNDEFINITION_COLLECTION));
 				t = agclr.GetType ("System.Windows.Controls.Control", true); 
 				types.Add (t, new ManagedType (t, Kind.CONTROL));
+				t = agclr.GetType ("System.Windows.Controls.ControlTemplate", true); 
+				types.Add (t, new ManagedType (t, Kind.CONTROLTEMPLATE));
 				t = agclr.GetType ("System.Windows.Controls.Grid", true); 
 				types.Add (t, new ManagedType (t, Kind.GRID));
 				t = agclr.GetType ("System.Windows.Controls.Image", true); 
@@ -58,8 +70,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.ROWDEFINITION));
 				t = agclr.GetType ("System.Windows.Controls.RowDefinitionCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.ROWDEFINITION_COLLECTION));
-				t = agclr.GetType ("System.Windows.Controls.StackPanel", true); 
-				types.Add (t, new ManagedType (t, Kind.PANEL));
 				t = agclr.GetType ("System.Windows.Controls.TextBlock", true); 
 				types.Add (t, new ManagedType (t, Kind.TEXTBLOCK));
 				t = agclr.GetType ("System.Windows.Controls.UIElementCollection", true); 
@@ -112,12 +122,14 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.GRADIENTSTOP_COLLECTION));
 				t = agclr.GetType ("System.Windows.Media.ImageBrush", true); 
 				types.Add (t, new ManagedType (t, Kind.IMAGEBRUSH));
+				t = agclr.GetType ("System.Windows.Media.LinearGradientBrush", true); 
+				types.Add (t, new ManagedType (t, Kind.LINEARGRADIENTBRUSH));
 				t = agclr.GetType ("System.Windows.Media.LineGeometry", true); 
 				types.Add (t, new ManagedType (t, Kind.LINEGEOMETRY));
 				t = agclr.GetType ("System.Windows.Media.LineSegment", true); 
 				types.Add (t, new ManagedType (t, Kind.LINESEGMENT));
-				t = agclr.GetType ("System.Windows.Media.LinearGradientBrush", true); 
-				types.Add (t, new ManagedType (t, Kind.LINEARGRADIENTBRUSH));
+				t = agclr.GetType ("System.Windows.Media.MarkerReachedEventArgs", true); 
+				types.Add (t, new ManagedType (t, Kind.MARKERREACHEDEVENTARGS));
 				t = agclr.GetType ("System.Windows.Media.MatrixTransform", true); 
 				types.Add (t, new ManagedType (t, Kind.MATRIXTRANSFORM));
 				t = agclr.GetType ("System.Windows.Media.PathFigure", true); 
@@ -219,7 +231,7 @@ namespace Mono {
 				t = agclr.GetType ("System.Windows.Media.Animation.SplineDoubleKeyFrame", true); 
 				types.Add (t, new ManagedType (t, Kind.SPLINEDOUBLEKEYFRAME));
 				t = agclr.GetType ("System.Windows.Media.Animation.SplinePointKeyFrame", true); 
-				types.Add (t, new ManagedType (t, Kind.SPLINECOLORKEYFRAME));
+				types.Add (t, new ManagedType (t, Kind.SPLINEPOINTKEYFRAME));
 				t = agclr.GetType ("System.Windows.Media.Animation.Storyboard", true); 
 				types.Add (t, new ManagedType (t, Kind.STORYBOARD));
 				t = agclr.GetType ("System.Windows.Media.Animation.Timeline", true); 

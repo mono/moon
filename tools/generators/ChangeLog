@@ -1,5 +1,10 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Generator.cs, MemberInfo.cs: Honor ManagedName, and fix
+	  GenerateType_G.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Generator.cs, GlobalInfo.cs, Helper.cs, README: Added support for
 	  generating public ctor, internal ctor and GetKind for managed
 	  classes inheriting from DependencyObject.
