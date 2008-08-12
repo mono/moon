@@ -25,6 +25,7 @@
 #include "media.h"
 #include "panel.h"
 #include "shape.h"
+#include "stackpanel.h"
 #include "style.h"
 #include "stylus.h"
 #include "template.h"
@@ -657,6 +658,14 @@ SplineDoubleKeyFrame *spline_double_key_frame_new (void);
  * SplinePointKeyFrame
  **/
 SplinePointKeyFrame *spline_point_key_frame_new (void);
+
+#if SL_2_0
+/**
+ * StackPanel
+ **/
+/* @GeneratePInvoke */
+StackPanel *stack_panel_new (void);
+#endif
 
 /**
  * Storyboard

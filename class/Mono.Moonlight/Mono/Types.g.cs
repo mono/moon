@@ -72,6 +72,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.ROWDEFINITION));
 				t = agclr.GetType ("System.Windows.Controls.RowDefinitionCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.ROWDEFINITION_COLLECTION));
+				t = agclr.GetType ("System.Windows.Controls.StackPanel", true); 
+				types.Add (t, new ManagedType (t, Kind.STACKPANEL));
 				t = agclr.GetType ("System.Windows.Controls.TextBlock", true); 
 				types.Add (t, new ManagedType (t, Kind.TEXTBLOCK));
 				t = agclr.GetType ("System.Windows.Controls.UIElementCollection", true); 

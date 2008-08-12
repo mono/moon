@@ -109,6 +109,11 @@ enum Visibility {
 	VisibilityCollapsed
 };
 
+enum Orientation {
+	OrientationVertical,
+	OrientationHorizontal
+};
+
 // make sure this stays in sync with System.Windows/System.Windows.Input/Cursor.cs (CursorType enum)
 enum MouseCursor {
 	MouseCursorDefault,

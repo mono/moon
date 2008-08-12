@@ -186,6 +186,7 @@
     <File name="style.cpp" subtype="Code" buildaction="Compile" />
     <File name="template.h" subtype="Code" buildaction="Nothing" />
     <File name="template.cpp" subtype="Code" buildaction="Compile" />
+    <File name="stackpanel.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

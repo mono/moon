@@ -51,6 +51,7 @@ libmoon_include_HEADERS = 	\
 	runtime.h		\
 	shape.h			\
 	size.h			\
+	stackpanel.h	\
 	stylus.h		\
 	text.h			\
 	thickness.h		\

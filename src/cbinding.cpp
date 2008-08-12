@@ -1291,6 +1291,18 @@ spline_point_key_frame_new (void)
 }
 
 
+#if SL_2_0
+/**
+ * StackPanel
+ **/
+StackPanel *
+stack_panel_new (void)
+{
+	return new StackPanel ();
+}
+#endif
+
+
 /**
  * Storyboard
  **/

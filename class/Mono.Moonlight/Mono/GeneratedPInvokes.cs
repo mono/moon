@@ -173,6 +173,10 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// StackPanel *stack_panel_new ();
+		public extern static IntPtr stack_panel_new ();
+
+		[DllImport ("moon")]
 		// void types_free (Types *instance);
 		public extern static void types_free (IntPtr instance);
 

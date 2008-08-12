@@ -31,13 +31,7 @@ using System.Windows;
 using Mono;
 
 namespace System.Windows.Controls {
-	public class StackPanel : Panel {
-		public static readonly DependencyProperty OrientationProperty =
-			DependencyProperty.Lookup (Kind.PANEL, "Orientation", typeof (Orientation));
-		
-		public StackPanel() {
-			throw new NotImplementedException ();
-		}
+	public partial class StackPanel : Panel {
 
 		protected override sealed Size ArrangeOverride(Size arrangeSize) {
 			throw new NotImplementedException ();
@@ -46,22 +40,5 @@ namespace System.Windows.Controls {
 		protected override sealed Size MeasureOverride(Size constraint) {
 			throw new NotImplementedException ();
 		}
-
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.PANEL;
-		}
-		
-		public Orientation Orientation {
-			get {
-				return (Orientation) GetValue (OrientationProperty);
-			}
-			
-			set {
-				SetValue (OrientationProperty, value);
-			}
-		}
-		
 	}
 }

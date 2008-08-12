@@ -33,6 +33,7 @@
 #include "deployment.h"
 #include "frameworkelement.h"
 #include "grid.h"
+#include "stackpanel.h"
 #include "style.h"
 #include "template.h"
 #include "text.h"
@@ -301,6 +302,10 @@ dependency_property_g_init (void)
 	SplineColorKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	SplineDoubleKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	SplinePointKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
+#if SL_2_0
+
+	StackPanel::OrientationProperty = DependencyProperty::Register (Type::STACKPANEL, "Orientation", Type::INT32);
+#endif
 	Storyboard::TargetNameProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetName", NULL, Type::STRING, true, false);
 	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", NULL, Type::STRING, true, false);
 	Stroke::DrawingAttributesProperty = DependencyProperty::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
@@ -608,6 +613,9 @@ DependencyProperty *SolidColorBrush::ColorProperty = NULL;
 DependencyProperty *SplineColorKeyFrame::KeySplineProperty = NULL;
 DependencyProperty *SplineDoubleKeyFrame::KeySplineProperty = NULL;
 DependencyProperty *SplinePointKeyFrame::KeySplineProperty = NULL;
+#if SL_2_0
+DependencyProperty *StackPanel::OrientationProperty = NULL;
+#endif
 DependencyProperty *Storyboard::TargetNameProperty = NULL;
 DependencyProperty *Storyboard::TargetPropertyProperty = NULL;
 DependencyProperty *Stroke::DrawingAttributesProperty = NULL;

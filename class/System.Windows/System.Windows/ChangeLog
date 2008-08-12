@@ -1,5 +1,10 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyObject.g.cs, DependencyProperty.g.cs: Added a native
+	  StackPanel class and generate the managed StackPanel.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Application.cs: Split ApplicationInternal out into a separate file
 	  and enable generation for it.
 

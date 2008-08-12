@@ -601,6 +601,15 @@ namespace System.Windows.Controls {
 		}
 	}
 
+	partial class StackPanel {
+		public static readonly DependencyProperty OrientationProperty = DependencyProperty.Lookup (Kind.STACKPANEL, "Orientation", typeof (Orientation));
+
+		public Orientation Orientation {
+			get { return (Orientation) GetValue (OrientationProperty); }
+			set { SetValue (OrientationProperty, value); }
+		}
+	}
+
 	partial class TextBlock {
 		public static readonly DependencyProperty ActualHeightProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualHeight", typeof (double));
 		public static readonly DependencyProperty ActualWidthProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualWidth", typeof (double));

@@ -101,6 +101,7 @@ class TypeReference {
 			case "DependencyObject*":
 			case "DependencyProperty*":
 			case "Types*":
+			case "StackPanel*":
 			case "Type*":
 				managed_type = "IntPtr";
 				break;

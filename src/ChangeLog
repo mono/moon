@@ -1,5 +1,12 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* stackpanel.h, src.mdp, Makefile.am, cbinding.cpp, cbinding.h,
+	  dependencyproperty.g.cpp, enums.cpp, enums.h, type.h,
+	  type-generated.cpp, value.h: Added a native StackPanel class and
+	  generate the managed StackPanel.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* brush.h, contentcontrol.h, deployment.h, downloader.h, media.h,
 	  namescope.h, stylus.h, transform.h: Tweak some annotations.
 
