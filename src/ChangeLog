@@ -1,3 +1,11 @@
+2008-08-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.h:
+	* xaml.cpp: Hydrate now passes in the default assembly name and
+	path (we can probably do away with path's I think that's just a
+	holdover from 1.1).  If no assembly name is specified in the
+	custom xmlns, the default's are used.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* trigger.h, control.h, deployment.h, text.h, dependencyproperty.g.cpp,

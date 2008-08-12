@@ -101,7 +101,7 @@ namespace Mono {
 								  out Kind kind);
 
 		[DllImport("moon")]
-		public extern static IntPtr xaml_hydrate_from_str(IntPtr native_loader, string xaml, IntPtr obj, bool create_namescope, out Kind kind);
+		public extern static IntPtr xaml_hydrate_from_str(IntPtr native_loader, string xaml, string assembly_name, string assembly_path, IntPtr obj, bool create_namescope, out Kind kind);
 		
 		[DllImport ("moon")]
 		public extern static void xaml_set_property_from_str (IntPtr obj, IntPtr prop, string value);

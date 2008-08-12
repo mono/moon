@@ -250,13 +250,15 @@ namespace System.Windows {
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			ManagedXamlLoader loader = new ManagedXamlLoader ();
+			Assembly loading_asm = component.GetType ().Assembly;
 
 			if (cdo != null) {
 				// This can throw a System.Exception if the XAML file is invalid.
-				loader.Hydrate (cdo.native, xaml);
+				
+				loader.Hydrate (cdo.native, loading_asm.GetName ().Name, loading_asm.CodeBase, xaml);
 			} else {
 				ApplicationInternal temp = new ApplicationInternal ();
-				loader.Hydrate (temp.native, xaml);
+				loader.Hydrate (temp.native, loading_asm.GetName ().Name, loading_asm.CodeBase, xaml);
 
 				// TODO: Copy the important stuff such as Resourcesfrom the temp DO to the app
 			}

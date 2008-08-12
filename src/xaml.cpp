@@ -75,7 +75,6 @@ class XamlElementInstanceImportedManaged;
 		
 
 static DefaultNamespace *default_namespace = NULL;
-static DefaultNamespace *deploy_namespace = NULL;
 static XNamespace *x_namespace = NULL;
 
 static const char* default_namespace_names [] = {
@@ -194,6 +193,10 @@ class XamlParserInfo {
 
 	const char *file_name;
 
+	// The assembly that is parsing this XAML (2.0 only)
+	const char *assembly_name;
+	const char *assembly_path;
+
 	NameScope *namescope;
 	XamlElementInstance *top_element;
 	XamlNamespace *current_namespace;
@@ -222,8 +225,8 @@ class XamlParserInfo {
 	}
 
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
-		parser (parser), file_name (file_name), namescope (new NameScope()), top_element (NULL),
-		current_namespace (NULL), current_element (NULL),
+		parser (parser), file_name (file_name), assembly_name (NULL), assembly_path (NULL),
+		namescope (new NameScope()), top_element (NULL), current_namespace (NULL), current_element (NULL),
 		cdata_content (false), cdata (NULL), implicit_default_namespace (false), error_args (NULL),
 		loader (NULL), created_elements (NULL), hydrate_expecting(NULL), hydrating(false)
 	{
@@ -407,12 +410,12 @@ class XNamespace : public XamlNamespace {
 			if (p->loader) {
 				// The managed DependencyObject will unref itself
 				// once it's finalized, so don't unref anything here.
-				dob = p->loader->CreateManagedObject (value, NULL);
+				dob = p->loader->CreateManagedObjectFromXmlns (p->assembly_name, p->assembly_path, value, NULL);
 			}
 
 			if (!dob) {
 				parser_error (p, item->element_name, attr, -1,
-					      g_strdup_printf ("Unable to resolve x:Class type '%s'\n", value));
+					      g_strdup_printf ("2. Unable to resolve x:Class type '%s'\n", value));
 				return false;
 			}
 
@@ -502,11 +505,12 @@ class ManagedNamespace : public XamlNamespace {
 	{
 		DependencyObject *dob = NULL;
 		if (p->loader) {
-			dob = p->loader->CreateManagedObject (xmlns, el);
+			printf ("ABOUT TO CREATE MANAGED OBJECT\n");
+			dob = p->loader->CreateManagedObjectFromXmlns (p->assembly_name, p->assembly_path, xmlns, el);
 		}
 
 		if (!dob) {
-			parser_error (p, el, NULL, -1, g_strdup_printf ("Unable to resolve managed type %s\n", el));
+			parser_error (p, el, NULL, -1, g_strdup_printf ("1. Unable to resolve managed type %s\n", el));
 			return NULL;
 		}
 
@@ -528,20 +532,27 @@ class ManagedNamespace : public XamlNamespace {
 	XamlLoader
 */
 DependencyObject* 
-XamlLoader::CreateManagedObject (const char* xmlns, const char* name)
+XamlLoader::CreateManagedObjectFromXmlns (const char* default_asm_name, const char* default_asm_path, const char* xmlns, const char* name)
 {
 	DependencyObject* result = NULL;
 	char *assembly = NULL, *ns = NULL, *type_name = NULL;
+	const char* assembly_name = NULL, *assembly_path = NULL;
 	
-	//printf ("XamlLoader::CreateManagedObject (%s, %s)\n", xmlns, name);
+	// printf ("XamlLoader::CreateManagedObject (%s, %s)\n", xmlns, name);
 
 	xaml_parse_xmlns (xmlns, &type_name, &ns, &assembly);
 	
-	//printf ("XamlLoader::CreateManagedObject: assembly: %s, ns: %s, typename: %s\n", assembly, ns, type_name);
+	// printf ("XamlLoader::CreateManagedObject: assembly: %s, ns: %s, typename: %s\n", assembly, ns, type_name);
 
 	if (!assembly) {
-		//printf ("XamlLoader::CreateManagedObject (%s, %s): Invalid assembly: %s\n", xmlns, name, assembly);
-		goto cleanup;
+		if (!default_asm_name || !default_asm_path) {
+			printf ("XamlLoader::CreateManagedObject (%s, %s): Invalid assembly: %s and no default assembly info available.\n", xmlns, name, assembly);
+			goto cleanup;
+		}
+		assembly_name = default_asm_name;
+		assembly_path = default_asm_path;
+	} else {
+		assembly_name = assembly_path = assembly;
 	}
 	
 	if (!vm_loaded && !LoadVM ())
@@ -550,9 +561,9 @@ XamlLoader::CreateManagedObject (const char* xmlns, const char* name)
 	if (type_name == NULL)
 		type_name = g_strdup (name);
 	
-	//printf ("XamlLoader::CreateManagedObject: assembly: %s\n", assembly);
+	// printf ("XamlLoader::CreateManagedObject: assembly: (%s, %s)   type: %s::%s\n", assembly_name, assembly_path, ns, type_name);
 	
-	result = CreateManagedObject (assembly, assembly, ns, type_name);
+	result = CreateManagedObject (assembly_name, assembly_path, ns, type_name);
 	
 cleanup:
 	g_free (assembly);
@@ -1385,7 +1396,7 @@ DependencyObject *
 xaml_create_from_str (XamlLoader *loader, const char *xaml, bool create_namescope,
 		      Type::Kind *element_type)
 {
-	return xaml_hydrate_from_str (loader, xaml, NULL, create_namescope, element_type);
+	return xaml_hydrate_from_str (loader, xaml, NULL, NULL, NULL, create_namescope, element_type);
 }
 
 /**
@@ -1393,7 +1404,7 @@ xaml_create_from_str (XamlLoader *loader, const char *xaml, bool create_namescop
  * data
  */
 DependencyObject *
-xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type)
+xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, const char* assembly_name, const char* assembly_path, DependencyObject *object, bool create_namescope, Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
@@ -1424,6 +1435,8 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *o
 	parser_info->namescope->SetTemporary (!create_namescope);
 
 	parser_info->loader = loader;
+	parser_info->assembly_name = assembly_name;
+	parser_info->assembly_path = assembly_path;
 
 	//
 	// If we are hydrating, we are not null

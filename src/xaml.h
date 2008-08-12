@@ -75,7 +75,7 @@ void	    xaml_loader_add_missing (XamlLoader *loader, const char *file);
 
 DependencyObject  *xaml_create_from_file (XamlLoader *loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
 DependencyObject  *xaml_create_from_str  (XamlLoader *loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
-DependencyObject  *xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
+DependencyObject  *xaml_hydrate_from_str (XamlLoader *loader, const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
 
 G_END_DECLS
 
@@ -126,7 +126,7 @@ class XamlLoader {
 	virtual ~XamlLoader ();
 	
 	virtual bool LoadVM ();
-	virtual DependencyObject *CreateManagedObject (const char *xmlns, const char *name);
+	virtual DependencyObject *CreateManagedObjectFromXmlns (const char *default_asm_name, const char *default_asm_path, const char *xmlns, const char *name);
 	virtual DependencyObject *CreateManagedObject (const char *asm_name, const char *asm_path, const char *name, const char *type_name);
 	virtual bool SetAttribute (void *target, const char *name, const char *value);
 	virtual void SetNameAttribute (void *target, const char *name);
