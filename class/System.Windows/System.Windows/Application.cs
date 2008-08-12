@@ -419,23 +419,5 @@ namespace System.Windows {
 			Assembly a = (from def in assemblies where def.GetName ().Name == assembly_name select def).FirstOrDefault ();
 			return a;
 		}
-
-		private class ApplicationInternal : DependencyObject {
-			public static readonly DependencyProperty ResourcesProperty =
-				DependencyProperty.Lookup (Kind.APPLICATION, "Resources", typeof (ResourceDictionary));
-
-
-			public ApplicationInternal () : base (NativeMethods.application_new ())
-			{
-				Console.WriteLine ("*** Created a {0} (Application) with {1}", this.GetType (), native);
-			}
-
-		
-
-			internal override Kind GetKind ()
-			{
-				return Kind.APPLICATION;
-			}
-		}
 	}
 }

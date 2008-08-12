@@ -1,5 +1,10 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Application.cs: Split ApplicationInternal out into a separate file
+	  and enable generation for it.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* ApplicationInternal.cs: Split ApplicationInternal out into a separate
 	  file and enable generation for it.
 	* DependencyObject.g.cs, DependencyProperty.g.cs,
