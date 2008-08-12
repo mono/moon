@@ -33,19 +33,7 @@ using Mono;
 
 namespace System.Windows {
 
-	public sealed class TriggerCollection : PresentationFrameworkCollection<EventTrigger> {
-		public TriggerCollection () : base (NativeMethods.trigger_collection_new ())
-		{
-		}
-		
-		internal TriggerCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.TRIGGER_COLLECTION;
-		}
+	public sealed partial class TriggerCollection : PresentationFrameworkCollection<EventTrigger> {
 
 		public override void Add (EventTrigger value)
 		{

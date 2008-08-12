@@ -30,21 +30,8 @@ using System.Windows.Media.Animation;
 
 namespace System.Windows 
 {
-	public sealed class TriggerActionCollection : PresentationFrameworkCollection<BeginStoryboard>  
+	public sealed partial class TriggerActionCollection : PresentationFrameworkCollection<BeginStoryboard>  
 	{
-		public TriggerActionCollection(): base (Mono.NativeMethods.trigger_action_collection_new ())
-		{
-		}
-
-		internal TriggerActionCollection (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind()
-		{
-			return Kind.TRIGGERACTION_COLLECTION;
-		}
-
 		public override void Add (BeginStoryboard value)
 		{
 			AddImpl (value);

@@ -27,21 +27,8 @@ using Mono;
 using System.Windows;
 
 namespace System.Windows.Media {
-	public sealed class PointCollection : PresentationFrameworkCollection<Point>
+	public sealed partial class PointCollection : PresentationFrameworkCollection<Point>
 	{
-		public PointCollection () : base (NativeMethods.point_collection_new ())
-		{
-		}
-		
-		internal PointCollection (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.POINT_COLLECTION;
-		}
-
 		public override void Add (Point value)
 		{
 			AddImpl (value);

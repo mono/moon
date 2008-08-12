@@ -30,14 +30,7 @@ using Mono;
 
 namespace System.Windows {
 
-	public abstract class FrameworkTemplate : DependencyObject {
+	public abstract partial class FrameworkTemplate : DependencyObject {
 
-		protected FrameworkTemplate () : base (NativeMethods.framework_template_new ())
-		{
-		}
-
-		internal FrameworkTemplate (IntPtr raw) : base (raw)
-		{
-		}
 	}
 }

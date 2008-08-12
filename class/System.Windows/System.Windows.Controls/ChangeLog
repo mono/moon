@@ -1,5 +1,11 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* ControlTemplate.cs, Image.cs, UIElementCollection.cs: Remove more
+	  code, add more partial modifiers and fix DependencyObject.g.cs
+	  whitespace problem.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Canvas.cs, ColumnDefinition.cs, ColumnDefinitionCollection.cs,
 	  Control.cs, Grid.cs, InkPresenter.cs, MediaElement.cs, Panel.cs,
 	  RowDefinition.cs, RowDefinitionCollection.cs, TextBlock.cs,

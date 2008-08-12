@@ -1,5 +1,13 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* TriggerActionCollection.cs, ResourceDictionary.cs,
+	  SetterBaseCollection.cs, TriggerCollection.cs,
+	  FrameworkTemplate.cs, DependencyObject.g.cs, SetterBase.cs: Remove
+	  more code, add more partial modifiers and fix DependencyObject.g.cs
+	  whitespace problem.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* AssemblyPart.cs, AssemblyPartCollection.cs, DependencyObject.g.cs,
 	  DependencyProperty.g.cs, Deployment.cs, EventTrigger.cs,
 	  FrameworkElement.cs, Setter.cs, Style.cs, UIElement.cs: Generate

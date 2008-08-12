@@ -1,5 +1,10 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DoubleCollection.cs, PointCollection.cs: Remove more code, add more
+	  partial modifiers and fix DependencyObject.g.cs whitespace problem.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* ArcSegment.cs, BezierSegment.cs, Brush.cs, EllipseGeometry.cs,
 	  GeneralTransform.cs, Geometry.cs, GeometryCollection.cs,
 	  GeometryGroup.cs, GradientBrush.cs, GradientStop.cs,

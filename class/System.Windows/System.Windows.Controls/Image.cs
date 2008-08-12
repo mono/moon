@@ -37,15 +37,7 @@ namespace System.Windows.Controls {
 		
 		public static readonly DependencyProperty StretchProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
-		
-		public Image ()  : base (NativeMethods.image_new ())
-		{
-		}
-		
-		internal Image (IntPtr raw) : base (raw)
-		{
-		}
-		
+				
 		public ImageSource Source {
 			get { throw new NotImplementedException (); }
 			set { throw new NotImplementedException (); }
@@ -83,11 +75,6 @@ namespace System.Windows.Controls {
 			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) events[ImageFailedEvent];
 			if (h != null)
 				h (this, null); // XXX pass args here
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.IMAGE;
 		}
 	}
 }

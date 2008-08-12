@@ -35,20 +35,8 @@ using Mono;
 
 namespace System.Windows {
 
-public class ResourceDictionary : DependencyObject, IDictionary<Object, Object>, ICollection<KeyValuePair<Object, Object>>, IEnumerable<KeyValuePair<Object, Object>>, IEnumerable {
+public partial class ResourceDictionary : DependencyObject, IDictionary<Object, Object>, ICollection<KeyValuePair<Object, Object>>, IEnumerable<KeyValuePair<Object, Object>>, IEnumerable {
 
-		public ResourceDictionary ()  : base (NativeMethods.resource_dictionary_new ())
-		{
-		}
-		
-		internal ResourceDictionary (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.RESOURCE_DICTIONARY;
-		}
 
 		public void Add(string key, Object value) {
 			throw new NotImplementedException();

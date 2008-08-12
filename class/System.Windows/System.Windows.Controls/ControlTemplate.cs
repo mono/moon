@@ -29,10 +29,7 @@
 using Mono;
 
 namespace System.Windows.Controls {
-	public sealed class ControlTemplate : FrameworkTemplate {
-		public ControlTemplate() : base (NativeMethods.control_template_new ())
-		{
-		}
+	public sealed partial class ControlTemplate : FrameworkTemplate {
 
 		public Type TargetType {
 			get { throw new NotImplementedException(); }

@@ -31,21 +31,8 @@ using System;
 
 namespace System.Windows.Controls
 {
-	public sealed class UIElementCollection : PresentationFrameworkCollection <UIElement>
+	public sealed partial class UIElementCollection : PresentationFrameworkCollection <UIElement>
 	{
-		public UIElementCollection () : base (NativeMethods.uielement_collection_new ())
-		{
-		}
-		
-		internal UIElementCollection (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.UIELEMENT_COLLECTION;
-		}
-		
 		public override void Add (UIElement value)
 		{
 			AddImpl (value);

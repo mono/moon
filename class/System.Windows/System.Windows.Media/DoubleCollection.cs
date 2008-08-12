@@ -27,20 +27,8 @@ using Mono;
 using System.Windows;
 
 namespace System.Windows.Media {
-	public sealed class DoubleCollection : PresentationFrameworkCollection<double>
+	public sealed partial class DoubleCollection : PresentationFrameworkCollection<double>
 	{
-		public DoubleCollection () : base (NativeMethods.double_collection_new ())
-		{
-		}
-		
-		internal DoubleCollection (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.DOUBLE_COLLECTION;
-		}
 
 		public override void Add (double value)
 		{

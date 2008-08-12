@@ -33,18 +33,6 @@ using Mono;
 namespace System.Windows.Media.Animation {
 
 	public sealed partial class TimelineCollection : PresentationFrameworkCollection<Timeline> {
-		public TimelineCollection () : base (NativeMethods.timeline_collection_new ())
-		{
-		}
-		
-		internal TimelineCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.TIMELINE_COLLECTION;
-		}
 
 		public override void Add (Timeline value)
 		{

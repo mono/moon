@@ -30,16 +30,8 @@ using Mono;
 
 namespace System.Windows {
 
-	public abstract class SetterBase : DependencyObject {
+	public abstract partial class SetterBase : DependencyObject {
 		bool isSealed;
-
-		internal SetterBase (IntPtr raw) : base (raw)
-		{
-		}
-
-		protected SetterBase () : base (NativeMethods.setter_base_new ())
-		{
-		}
 
 		public bool IsSealed {
 			get { return isSealed; }
