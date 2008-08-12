@@ -414,6 +414,9 @@ namespace System.Windows {
 		}
 
 		private class ApplicationInternal : DependencyObject {
+			public static readonly DependencyProperty ResourcesProperty =
+				DependencyProperty.Lookup (Kind.APPLICATION, "Resources", typeof (ResourceDictionary));
+
 
 			public ApplicationInternal () : base (NativeMethods.application_new ())
 			{

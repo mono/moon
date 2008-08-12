@@ -1,5 +1,17 @@
 2008-08-11  Chris Toshok  <toshok@ximian.com>
 
+	* DependencyObject.cs: add Support for Setter/SetterBaseCollection
+	to CreateObject, and add SetterBase to the abstract type warning.
+
+	* Setter.cs: add internal IntPtr ctor, as well as the
+	ValueProperty dp (which the Value CLR property uses).
+
+	* Application.cs: add Resources DP.
+
+	* SetterBaseCollection.cs: add internal IntPtr ctor.
+
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
 	* PresentationFrameworkCollection.cs: call
 	NativeMethods.value_free_value to free up the values we create.
 

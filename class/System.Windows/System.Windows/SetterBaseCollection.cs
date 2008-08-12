@@ -33,6 +33,10 @@ namespace System.Windows {
 	public sealed class SetterBaseCollection : PresentationFrameworkCollection<SetterBase> {
 		bool isSealed;
 
+		internal SetterBaseCollection (IntPtr raw) : base (raw)
+		{
+		}
+
 		public SetterBaseCollection () : base (NativeMethods.setter_base_collection_new ())
 		{
 		}

@@ -36,7 +36,12 @@ namespace System.Windows {
                 public static readonly DependencyProperty PropertyProperty = 
 			DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (string));
 
-		object value;
+                private static readonly DependencyProperty ValueProperty = 
+			DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
+
+		internal Setter (IntPtr raw) : base (raw)
+		{
+		}
 
 		public Setter () : base (NativeMethods.setter_new())
 		{
@@ -45,7 +50,7 @@ namespace System.Windows {
 		public Setter (DependencyProperty property, object value)
 		{
 			Property = property;
-			this.value = value;
+			Value = value;
 		}
 
 		public DependencyProperty Property {
@@ -54,8 +59,8 @@ namespace System.Windows {
 		}
 
 		public object Value {
-			get { return value; }
-			set { this.value = value; }
+			get { return (object)GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
 		}
 	}
 

@@ -203,6 +203,8 @@ namespace System.Windows {
 			case Kind.RESOURCE_DICTIONARY: return new ResourceDictionary (raw);
 			case Kind.ROTATETRANSFORM: return new RotateTransform (raw);
 			case Kind.RUN: return new Run (raw);
+			case Kind.SETTERBASE_COLLECTION: return new SetterBaseCollection (raw);
+			case Kind.SETTER: return new Setter (raw);
 			case Kind.SCALETRANSFORM: return new ScaleTransform (raw);
 			case Kind.SOLIDCOLORBRUSH: return new SolidColorBrush (raw);
 			case Kind.SPLINECOLORKEYFRAME: return new SplineColorKeyFrame (raw);
@@ -242,6 +244,7 @@ namespace System.Windows {
 			case Kind.SHAPE:
 			case Kind.GEOMETRY:
 			case Kind.MEDIAATTRIBUTE_COLLECTION: 
+			case Kind.SETTERBASE:
 				throw new Exception (
 					String.Format ("Should never get an abstract class from unmanaged code {0}", k));
 
