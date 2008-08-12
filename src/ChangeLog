@@ -1,3 +1,9 @@
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* collection.cpp (Collection::Clear): make a temporary copy of the
+	array so we can zero out the ptrarray before calling
+	RemovedFromCollection.
+
 2008-08-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.h:

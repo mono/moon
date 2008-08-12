@@ -73,21 +73,23 @@ Collection::Add (Value value)
 void
 Collection::Clear ()
 {
-	Value *value;
-	
 	if (closure)
 		closure->OnCollectionClear (this);
-	
-	for (guint i = 0; i < array->len; i++) {
-		value = (Value *) array->pdata[i];
-		RemovedFromCollection (value);
-		delete value;
-	}
-	
+
+	guint len = array->len;
+	Value** vals = new Value*[len];
+	memmove (vals, array->pdata, len * sizeof(Value*));
+
 	g_ptr_array_set_size (array, 0);
 	generation++;
 	
 	SetCount (0);
+
+	for (guint i = 0; i < len; i++) {
+		RemovedFromCollection (vals[i]);
+		delete vals[i];
+	}
+	delete[] vals;
 	
 	EmitChanged (CollectionChangedActionReset, NULL, NULL, -1);
 }
