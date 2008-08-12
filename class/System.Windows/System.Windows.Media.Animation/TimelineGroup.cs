@@ -42,17 +42,7 @@ namespace System.Windows.Media.Animation {
 		public TimelineGroup () : base (NativeMethods.timeline_group_new ())
 		{
 		}
-	
-		public TimelineCollection Children {
-			get {
-				return ((TimelineCollection) GetValue (ChildrenProperty));
-			}
-		
-			set {
-				SetValue (ChildrenProperty, value);
-			}
-		}
-		
+
 		internal override Kind GetKind ()
 		{
 			return Kind.TIMELINEGROUP;

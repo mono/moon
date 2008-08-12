@@ -106,123 +106,9 @@ namespace System.Windows.Controls {
 			NativeMethods.media_element_stop (native);
 		}
 		
-		public Dictionary <string, string> Attributes { 
-			get {
-				return (Dictionary <string, string>) GetValue (AttributesProperty);
-			}
-		}
-		
-		public int AudioStreamCount {
-			get {
-				return (int) GetValue (AudioStreamCountProperty);
-			}
-		}
-		
-		public int? AudioStreamIndex {
-			get {
-				return (int?) GetValue (AudioStreamIndexProperty);
-			}
-			set {
-				SetValue (AudioStreamIndexProperty, value);
-			}
-		}
-		
-		public bool AutoPlay { 
-			get {
-				return (bool) GetValue (AutoPlayProperty);
-			}
-			set {
-				SetValue (AutoPlayProperty, value);
-			}
-		}
-		
-		public double Balance { 
-			get {
-				return (double) GetValue (BalanceProperty); 
-			}
-			set {
-				SetValue (BalanceProperty, value);
-			}
-		}
-		
-		public double BufferingProgress {
-			get {
-				return (double) GetValue (BufferingProgressProperty); 
-			}
-		}
-		
-		public TimeSpan BufferingTime { 
-			get {
-				return (TimeSpan) GetValue (BufferingTimeProperty);
-			}
-			set {
-				SetValue (BufferingTimeProperty, value);
-			}
-		}
-		
-		public bool CanPause { 
-			get {
-				return (bool) GetValue (CanPauseProperty);
-			}
-		}
-		
-		public bool CanSeek { 
-			get {
-				return (bool) GetValue (CanSeekProperty);
-			}
-		}
-				
 		public double DownloadProgress { 
 			get {
 				return (double) GetValue (DownloadProgressProperty);
-			}
-		}
-		
-		public bool IsMuted { 
-			get {
-				return (bool) GetValue (IsMutedProperty);
-			}
-			set {
-				SetValue (IsMutedProperty, value);
-			}
-		}
-		
-		public TimelineMarkerCollection Markers { 
-			get {
-				return (TimelineMarkerCollection) GetValue (MarkersProperty);
-			}
-		}
-		
-		public Duration NaturalDuration { 
-			get {
-				return (Duration) GetValue (NaturalDurationProperty);
-			}
-		}
-		
-		public int NaturalVideoHeight { 
-			get {
-				return (int) GetValue (NaturalVideoHeightProperty);
-			}
-		}
-		
-		public int NaturalVideoWidth { 
-			get {
-				return (int) GetValue (NaturalVideoWidthProperty);
-			}
-		}
-		
-		public TimeSpan Position { 
-			get {
-				return (TimeSpan) GetValue (PositionProperty);
-			}
-			set {
-				SetValue (PositionProperty, value);
-			}
-		}
-		
-		public MediaElementState CurrentState {
-			get {
-				return (MediaElementState) GetValue (CurrentStateProperty);
 			}
 		}
 		
@@ -238,15 +124,6 @@ namespace System.Windows.Controls {
 		public Stretch Stretch {
 			get { return (Stretch) GetValue (StretchProperty); }
 			set { SetValue (StretchProperty, value); }
-		}
-		
-		public double Volume { 
-			get {
-				return (double) GetValue (VolumeProperty);
-			}
-			set {
-				SetValue (VolumeProperty, value);
-			}
 		}
 		
 		static object BufferingProgressChangedEvent = new object ();

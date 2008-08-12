@@ -37,15 +37,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 		
-		public PointKeyFrameCollection KeyFrames { 
-			get {
-				return (PointKeyFrameCollection) GetValue (KeyFramesProperty);
-			}
-			set {
-				SetValue (KeyFramesProperty, value);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.POINTANIMATIONUSINGKEYFRAMES;

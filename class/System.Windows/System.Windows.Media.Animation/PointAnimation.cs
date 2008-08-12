@@ -38,22 +38,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 
-
-		public Nullable<Point> By {
-			get { return (Nullable<Point>) GetValue(ByProperty); }
-			set { SetValue(ByProperty, value); }
-		}
-
-		public Nullable<Point> From {
-			get { return (Nullable<Point>) GetValue (FromProperty); }
-			set { SetValue (FromProperty, value); }
-		}
-
-		public Nullable<Point> To {
-			get { return (Nullable<Point>) GetValue (ToProperty); }
-			set { SetValue (ToProperty, value); }
-		}
-
 		internal override Kind GetKind()
 		{
 			return Kind.POINTANIMATION;

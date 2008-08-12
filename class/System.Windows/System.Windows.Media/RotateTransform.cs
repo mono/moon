@@ -38,21 +38,6 @@ namespace System.Windows.Media {
 		internal RotateTransform (IntPtr raw) : base (raw)
 		{
 		}
-	
-		public double Angle {
-			get { return (double) GetValue (AngleProperty); }
-			set { SetValue (AngleProperty, value); }
-		}
-
-		public double CenterX {
-			get { return (double) GetValue (CenterXProperty); }
-			set { SetValue (CenterXProperty, value); }
-		}
-
-		public double CenterY {
-			get { return (double) GetValue (CenterYProperty); }
-			set { SetValue (CenterYProperty, value); }
-		}
 
 		internal override Kind GetKind ()
 		{

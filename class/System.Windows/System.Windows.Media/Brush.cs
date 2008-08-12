@@ -37,35 +37,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-		public double Opacity {
-			get {
-				return (double) GetValue (OpacityProperty);
-			}
-			
-			set {
-				SetValue (OpacityProperty, value);
-			}
-		}
-		
-		public Transform RelativeTransform {
-			get {
-				return (Transform) GetValue (RelativeTransformProperty);
-			}
-
-			set {
-				SetValue (RelativeTransformProperty, value);
-			}
-		}
-		
-		public Transform Transform {
-			get {
-				return (Transform) GetValue (TransformProperty);
-			}
-
-			set {
-				SetValue (TransformProperty, value);
-			}
-		}
 		internal override Kind GetKind ()
 		{
 			return Kind.BRUSH;

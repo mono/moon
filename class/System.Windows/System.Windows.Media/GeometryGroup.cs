@@ -39,11 +39,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-		public GeometryCollection Children {
-			get { return (GeometryCollection) GetValue (ChildrenProperty); }
-			set { SetValue (ChildrenProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.GEOMETRYGROUP;

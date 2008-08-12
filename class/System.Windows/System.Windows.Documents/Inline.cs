@@ -46,45 +46,5 @@ namespace System.Windows.Documents {
 		{
 			return Kind.INLINE;
 		}
-		
-		public FontFamily FontFamily {
-			get { return (FontFamily) GetValue (FontFamilyProperty); }
-			set { SetValue (FontFamilyProperty, value); }
-		}
-		
-		public double FontSize {
-			get { return (double) GetValue (FontSizeProperty); }
-			set { SetValue (FontSizeProperty, value); }
-		}
-		
-		public FontStretch FontStretch {
-			get { return (FontStretch) GetValue (FontStretchProperty); }
-			set { SetValue (FontStretchProperty, value); }
-		}
-		
-		public FontStyle FontStyle {
-			get { return (FontStyle) GetValue (FontStyleProperty); }
-			set { SetValue (FontStyleProperty, value); }
-		}
-		
-		public FontWeight FontWeight {
-			get { return (FontWeight) GetValue (FontWeightProperty); }
-			set { SetValue (FontWeightProperty, value); }
-		}
-		
-		public Brush Foreground {
-			get { return (Brush) GetValue (ForegroundProperty); }
-			set { SetValue (ForegroundProperty, value); }
-		}
-		
-		public XmlLanguage Language {
-			get { return (XmlLanguage) GetValue (LanguageProperty); }
-			set { SetValue (LanguageProperty, value); }
-		}
-		
-		public TextDecorationCollection TextDecorations {
-			get { return (TextDecorationCollection) GetValue (TextDecorationsProperty); }
-			set { SetValue (TextDecorationsProperty, value); }
-		}
 	}
 }

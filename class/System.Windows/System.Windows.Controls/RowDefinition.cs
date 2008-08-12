@@ -49,37 +49,5 @@ namespace System.Windows.Controls {
 				return NativeMethods.row_definition_get_actual_height (native);
 			}
 		}
-
-		public GridLength Height {
-			get {
-				return (GridLength) GetValue (HeightProperty);
-			}
-
-			set {
-				SetValue (HeightProperty, value);
-			}
-		}
-
-		public double MaxHeight {
-			get {
-				return (double) GetValue (MaxHeightProperty);
-			}
-
-			set {
-				SetValue (MaxHeightProperty, value);
-			}
-		}
-
-		public double MinHeight {
-			get {
-				return (double) GetValue (MinHeightProperty);
-			}
-
-			set {
-				SetValue (MinHeightProperty, value);
-			}
-		}
-		
-
 	}
 }

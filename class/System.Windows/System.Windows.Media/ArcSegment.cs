@@ -38,55 +38,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-	        public bool IsLargeArc {
-	                get {
-				return (bool) GetValue (IsLargeArcProperty);
-			}
-	                set {
-				SetValue (IsLargeArcProperty, value);
-			}
-	        }
-		
-	        public Point Point {
-	                get {
-				return (Point) GetValue (PointProperty);
-			}
-			
-	                set {
-				SetValue (PointProperty, value);
-			}
-	        }
-		
-	        public double RotationAngle {
-	                get {
-				return (double) GetValue (RotationAngleProperty);
-			}
-			
-	                set {
-				SetValue (RotationAngleProperty, value);
-			}
-	        }
-		
-	        public Point Size {
-	                get {
-				return (Point) GetValue (SizeProperty);
-			}
-			
-	                set {
-				SetValue (SizeProperty, value);
-			}
-	        }
-		
-	        public SweepDirection SweepDirection {
-	                get {
-				return (SweepDirection) GetValue (SweepDirectionProperty);
-			}
-			
-	                set {
-				SetValue (SweepDirectionProperty, value);
-			}
-	        }
-		
 		internal override Kind GetKind ()
 		{
 			return Kind.ARCSEGMENT;

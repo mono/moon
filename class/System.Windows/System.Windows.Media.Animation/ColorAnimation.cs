@@ -38,22 +38,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 
-
-		public Nullable<Color> By {
-			get { return (Nullable<Color>) GetValue(ByProperty); }
-			set { SetValue(ByProperty, value); }
-		}
-
-		public Nullable<Color> From {
-			get { return (Nullable<Color>) GetValue (FromProperty); }
-			set { SetValue (FromProperty, value); }
-		}
-
-		public Nullable<Color> To {
-			get { return (Nullable<Color>) GetValue (ToProperty); }
-			set { SetValue (ToProperty, value); }
-		}
-
 		internal override Kind GetKind()
 		{
 			return Kind.COLORANIMATION;

@@ -38,17 +38,6 @@ namespace System.Windows
 		{
 		}
 
-
-		public TriggerActionCollection Actions {
-			get { return (TriggerActionCollection) GetValue(ActionsProperty); }
-		}
-
-		public RoutedEvent RoutedEvent {
-			get { return (RoutedEvent) GetValue(RoutedEventProperty); }
-			set { SetValue(RoutedEventProperty, value); }
-		}
-
-
 		internal override Kind GetKind()
 		{
 			return Kind.EVENTTRIGGER;

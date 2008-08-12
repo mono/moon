@@ -39,26 +39,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-
-		public double DownloadProgress {
-			get { return (double) GetValue (DownloadProgressProperty); }
-			set { SetValue (DownloadProgressProperty, value); }
-		}
-
-		public Uri ImageSource {
-			get { 
-				// Uri is not a DependencyObject, we save it as a string
-				string uri = (string) GetValue (ImageSourceProperty);
-				if (uri == null || uri == string.Empty)
-					return null;
-				return new Uri (uri);
-			}
-			set { 
-				string uri = value.OriginalString;
-				SetValue (ImageSourceProperty, uri); 
-			}
-		}
-
 		public void SetSource (DependencyObject Downloader, string PartName)
 		{
 			NativeMethods.image_brush_set_source (native, Downloader.native, PartName);

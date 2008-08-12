@@ -37,12 +37,6 @@ namespace System.Windows.Media {
 		{
 		}
 		
-		public PointCollection Points {
-			set {
-				SetValue (PointsProperty, value);
-			}
-		}
-		
 		internal override Kind GetKind ()
 		{
 			return Kind.POLYQUADRATICBEZIERSEGMENT;

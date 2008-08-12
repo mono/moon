@@ -416,7 +416,7 @@ class UIElement : public DependencyObject {
 	static DependencyProperty *RenderTransformProperty;
  	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible */
 	static DependencyProperty *VisibilityProperty;
- 	/* @PropertyType=gint32,DefaultValue=0*/
+ 	/* @PropertyType=gint32,DefaultValue=0,ManagedAccess=Internal*/
 	static DependencyProperty *ZIndexProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement

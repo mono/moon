@@ -41,11 +41,6 @@ namespace System.Windows.Shapes {
 		{
 		}
 
-		public Geometry Data {
-			get { return (Geometry) GetValue (DataProperty); }
-			set { SetValue (DataProperty, value); }
-		}
-		
 		internal override Kind GetKind ()
 		{
 			return Kind.PATH;

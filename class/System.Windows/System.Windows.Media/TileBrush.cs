@@ -39,22 +39,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-
-		public AlignmentX AlignmentX {
-			get { return (AlignmentX) GetValue (AlignmentXProperty); }
-			set { SetValue (AlignmentXProperty, value); }
-		}
-
-		public AlignmentY AlignmentY {
-			get { return (AlignmentY) GetValue (AlignmentYProperty); }
-			set { SetValue (AlignmentYProperty, value); }
-		}
-
-		public Stretch Stretch {
-			get { return (Stretch) GetValue (StretchProperty); }
-			set { SetValue (StretchProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.TILEBRUSH;

@@ -37,11 +37,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-		public TransformCollection Children {
-			get { return (TransformCollection) GetValue (ChildrenProperty); }
-			set { SetValue (ChildrenProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.TRANSFORMGROUP;

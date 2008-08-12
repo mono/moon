@@ -16,16 +16,22 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace System.Windows {
-	partial class Application {
-		public static readonly DependencyProperty ResourcesProperty = DependencyProperty.Lookup (Kind.APPLICATION, "Resources", typeof (ResourceDictionary));
-	}
-
 	partial class AssemblyPart {
 		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.ASSEMBLYPART, "Source", typeof (string));
+
+		public string Source {
+			get { return (string) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
+		}
 	}
 
 	partial class DependencyObject {
 		public static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
+
+		public string Name {
+			get { return (string) GetValue (NameProperty); }
+			set { SetValue (NameProperty, value); }
+		}
 	}
 
 	partial class Deployment {
@@ -34,11 +40,46 @@ namespace System.Windows {
 		public static readonly DependencyProperty ExternalCallersFromCrossDomainProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalCallersFromCrossDomain", typeof (CrossDomainAccess));
 		public static readonly DependencyProperty PartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Parts", typeof (AssemblyPartCollection));
 		public static readonly DependencyProperty RuntimeVersionProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "RuntimeVersion", typeof (string));
+
+		public string EntryPointAssembly {
+			get { return (string) GetValue (EntryPointAssemblyProperty); }
+			set { SetValue (EntryPointAssemblyProperty, value); }
+		}
+
+		public string EntryPointType {
+			get { return (string) GetValue (EntryPointTypeProperty); }
+			set { SetValue (EntryPointTypeProperty, value); }
+		}
+
+		public CrossDomainAccess ExternalCallersFromCrossDomain {
+			get { return (CrossDomainAccess) GetValue (ExternalCallersFromCrossDomainProperty); }
+			set { SetValue (ExternalCallersFromCrossDomainProperty, value); }
+		}
+
+		public AssemblyPartCollection Parts {
+			get { return (AssemblyPartCollection) GetValue (PartsProperty); }
+			set { SetValue (PartsProperty, value); }
+		}
+
+		public string RuntimeVersion {
+			get { return (string) GetValue (RuntimeVersionProperty); }
+			set { SetValue (RuntimeVersionProperty, value); }
+		}
 	}
 
 	partial class EventTrigger {
 		public static readonly DependencyProperty ActionsProperty = DependencyProperty.Lookup (Kind.EVENTTRIGGER, "Actions", typeof (TriggerActionCollection));
-		public static readonly DependencyProperty RoutedEventProperty = DependencyProperty.Lookup (Kind.EVENTTRIGGER, "RoutedEvent", typeof (string));
+		public static readonly DependencyProperty RoutedEventProperty = DependencyProperty.Lookup (Kind.EVENTTRIGGER, "RoutedEvent", typeof (RoutedEvent));
+
+		public TriggerActionCollection Actions {
+			get { return (TriggerActionCollection) GetValue (ActionsProperty); }
+			set { SetValue (ActionsProperty, value); }
+		}
+
+		public RoutedEvent RoutedEvent {
+			get { return (RoutedEvent) GetValue (RoutedEventProperty); }
+			set { SetValue (RoutedEventProperty, value); }
+		}
 	}
 
 	partial class FrameworkElement {
@@ -59,16 +100,121 @@ namespace System.Windows {
 		public static readonly DependencyProperty TriggersProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Triggers", typeof (TriggerCollection));
 		public static readonly DependencyProperty VerticalAlignmentProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "VerticalAlignment", typeof (VerticalAlignment));
 		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Width", typeof (double));
+
+		public double ActualHeight {
+			get { return (double) GetValue (ActualHeightProperty); }
+			set { SetValue (ActualHeightProperty, value); }
+		}
+
+		public double ActualWidth {
+			get { return (double) GetValue (ActualWidthProperty); }
+			set { SetValue (ActualWidthProperty, value); }
+		}
+
+		public Cursor Cursor {
+			get { return (Cursor) GetValue (CursorProperty); }
+			set { SetValue (CursorProperty, value); }
+		}
+
+		public object DataContext {
+			get { return (object) GetValue (DataContextProperty); }
+			set { SetValue (DataContextProperty, value); }
+		}
+
+		public double Height {
+			get { return (double) GetValue (HeightProperty); }
+			set { SetValue (HeightProperty, value); }
+		}
+
+		public HorizontalAlignment HorizontalAlignment {
+			get { return (HorizontalAlignment) GetValue (HorizontalAlignmentProperty); }
+			set { SetValue (HorizontalAlignmentProperty, value); }
+		}
+
+		public XmlLanguage Language {
+			get { return (XmlLanguage) GetValue (LanguageProperty); }
+			set { SetValue (LanguageProperty, value); }
+		}
+
+		public Thickness Margin {
+			get { return (Thickness) GetValue (MarginProperty); }
+			set { SetValue (MarginProperty, value); }
+		}
+
+		public double MaxHeight {
+			get { return (double) GetValue (MaxHeightProperty); }
+			set { SetValue (MaxHeightProperty, value); }
+		}
+
+		public double MaxWidth {
+			get { return (double) GetValue (MaxWidthProperty); }
+			set { SetValue (MaxWidthProperty, value); }
+		}
+
+		public double MinHeight {
+			get { return (double) GetValue (MinHeightProperty); }
+			set { SetValue (MinHeightProperty, value); }
+		}
+
+		public double MinWidth {
+			get { return (double) GetValue (MinWidthProperty); }
+			set { SetValue (MinWidthProperty, value); }
+		}
+
+		public ResourceDictionary Resources {
+			get { return (ResourceDictionary) GetValue (ResourcesProperty); }
+			set { SetValue (ResourcesProperty, value); }
+		}
+
+		public object Tag {
+			get { return (object) GetValue (TagProperty); }
+			set { SetValue (TagProperty, value); }
+		}
+
+		public TriggerCollection Triggers {
+			get { return (TriggerCollection) GetValue (TriggersProperty); }
+			set { SetValue (TriggersProperty, value); }
+		}
+
+		public VerticalAlignment VerticalAlignment {
+			get { return (VerticalAlignment) GetValue (VerticalAlignmentProperty); }
+			set { SetValue (VerticalAlignmentProperty, value); }
+		}
+
+		public double Width {
+			get { return (double) GetValue (WidthProperty); }
+			set { SetValue (WidthProperty, value); }
+		}
 	}
 
 	partial class Setter {
 		public static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (DependencyProperty));
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
+
+		public DependencyProperty Property {
+			get { return (DependencyProperty) GetValue (PropertyProperty); }
+			set { SetValue (PropertyProperty, value); }
+		}
+
+		public object Value {
+			get { return (object) GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
+		}
 	}
 
 	partial class Style {
-		private static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
-		private static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
+		public static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
+		public static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
+
+		public SetterBaseCollection Setters {
+			get { return (SetterBaseCollection) GetValue (SettersProperty); }
+			set { SetValue (SettersProperty, value); }
+		}
+
+		public System.Type TargetType {
+			get { return (System.Type) GetValue (TargetTypeProperty); }
+			set { SetValue (TargetTypeProperty, value); }
+		}
 	}
 
 	partial class UIElement {
@@ -79,7 +225,47 @@ namespace System.Windows {
 		public static readonly DependencyProperty RenderTransformOriginProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransformOrigin", typeof (Point));
 		public static readonly DependencyProperty RenderTransformProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransform", typeof (Transform));
 		public static readonly DependencyProperty VisibilityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Visibility", typeof (Visibility));
-		public static readonly DependencyProperty ZIndexProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "ZIndex", typeof (int));
+		internal static readonly DependencyProperty ZIndexProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "ZIndex", typeof (int));
+
+		public Geometry Clip {
+			get { return (Geometry) GetValue (ClipProperty); }
+			set { SetValue (ClipProperty, value); }
+		}
+
+		public bool IsHitTestVisible {
+			get { return (bool) GetValue (IsHitTestVisibleProperty); }
+			set { SetValue (IsHitTestVisibleProperty, value); }
+		}
+
+		public Brush OpacityMask {
+			get { return (Brush) GetValue (OpacityMaskProperty); }
+			set { SetValue (OpacityMaskProperty, value); }
+		}
+
+		public double Opacity {
+			get { return (double) GetValue (OpacityProperty); }
+			set { SetValue (OpacityProperty, value); }
+		}
+
+		public Point RenderTransformOrigin {
+			get { return (Point) GetValue (RenderTransformOriginProperty); }
+			set { SetValue (RenderTransformOriginProperty, value); }
+		}
+
+		public Transform RenderTransform {
+			get { return (Transform) GetValue (RenderTransformProperty); }
+			set { SetValue (RenderTransformProperty, value); }
+		}
+
+		public Visibility Visibility {
+			get { return (Visibility) GetValue (VisibilityProperty); }
+			set { SetValue (VisibilityProperty, value); }
+		}
+
+		internal int ZIndex {
+			get { return (int) GetValue (ZIndexProperty); }
+			set { SetValue (ZIndexProperty, value); }
+		}
 	}
 }
 
@@ -87,19 +273,44 @@ namespace System.Windows.Controls {
 	partial class Canvas {
 		public static readonly DependencyProperty LeftProperty = DependencyProperty.Lookup (Kind.CANVAS, "Left", typeof (double));
 		public static readonly DependencyProperty TopProperty = DependencyProperty.Lookup (Kind.CANVAS, "Top", typeof (double));
+
+		public double Left {
+			get { return (double) GetValue (LeftProperty); }
+			set { SetValue (LeftProperty, value); }
+		}
+
+		public double Top {
+			get { return (double) GetValue (TopProperty); }
+			set { SetValue (TopProperty, value); }
+		}
 	}
 
 	partial class ColumnDefinition {
 		public static readonly DependencyProperty MaxWidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "MaxWidth", typeof (double));
 		public static readonly DependencyProperty MinWidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "MinWidth", typeof (double));
 		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "Width", typeof (GridLength));
+
+		public double MaxWidth {
+			get { return (double) GetValue (MaxWidthProperty); }
+			set { SetValue (MaxWidthProperty, value); }
+		}
+
+		public double MinWidth {
+			get { return (double) GetValue (MinWidthProperty); }
+			set { SetValue (MinWidthProperty, value); }
+		}
+
+		public GridLength Width {
+			get { return (GridLength) GetValue (WidthProperty); }
+			set { SetValue (WidthProperty, value); }
+		}
 	}
 
 	partial class Control {
 		public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Lookup (Kind.CONTROL, "Background", typeof (Brush));
 		public static readonly DependencyProperty BorderBrushProperty = DependencyProperty.Lookup (Kind.CONTROL, "BorderBrush", typeof (Brush));
 		public static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Lookup (Kind.CONTROL, "BorderThickness", typeof (Thickness));
-		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontFamily", typeof (string));
+		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontFamily", typeof (FontFamily));
 		public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontSize", typeof (double));
 		public static readonly DependencyProperty FontStretchProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontStretch", typeof (FontStretch));
 		public static readonly DependencyProperty FontStyleProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontStyle", typeof (FontStyle));
@@ -113,26 +324,149 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty TabNavigationProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabNavigation", typeof (KeyboardNavigationMode));
 		public static readonly DependencyProperty TemplateProperty = DependencyProperty.Lookup (Kind.CONTROL, "Template", typeof (ControlTemplate));
 		public static readonly DependencyProperty VerticalContentAlignmentProperty = DependencyProperty.Lookup (Kind.CONTROL, "VerticalContentAlignment", typeof (VerticalAlignment));
+
+		public Brush Background {
+			get { return (Brush) GetValue (BackgroundProperty); }
+			set { SetValue (BackgroundProperty, value); }
+		}
+
+		public Brush BorderBrush {
+			get { return (Brush) GetValue (BorderBrushProperty); }
+			set { SetValue (BorderBrushProperty, value); }
+		}
+
+		public Thickness BorderThickness {
+			get { return (Thickness) GetValue (BorderThicknessProperty); }
+			set { SetValue (BorderThicknessProperty, value); }
+		}
+
+		public FontFamily FontFamily {
+			get { return (FontFamily) GetValue (FontFamilyProperty); }
+			set { SetValue (FontFamilyProperty, value); }
+		}
+
+		public double FontSize {
+			get { return (double) GetValue (FontSizeProperty); }
+			set { SetValue (FontSizeProperty, value); }
+		}
+
+		public FontStretch FontStretch {
+			get { return (FontStretch) GetValue (FontStretchProperty); }
+			set { SetValue (FontStretchProperty, value); }
+		}
+
+		public FontStyle FontStyle {
+			get { return (FontStyle) GetValue (FontStyleProperty); }
+			set { SetValue (FontStyleProperty, value); }
+		}
+
+		public FontWeight FontWeight {
+			get { return (FontWeight) GetValue (FontWeightProperty); }
+			set { SetValue (FontWeightProperty, value); }
+		}
+
+		public Brush Foreground {
+			get { return (Brush) GetValue (ForegroundProperty); }
+			set { SetValue (ForegroundProperty, value); }
+		}
+
+		public HorizontalAlignment HorizontalContentAlignment {
+			get { return (HorizontalAlignment) GetValue (HorizontalContentAlignmentProperty); }
+			set { SetValue (HorizontalContentAlignmentProperty, value); }
+		}
+
+		public bool IsTabStop {
+			get { return (bool) GetValue (IsTabStopProperty); }
+			set { SetValue (IsTabStopProperty, value); }
+		}
+
+		public Thickness Padding {
+			get { return (Thickness) GetValue (PaddingProperty); }
+			set { SetValue (PaddingProperty, value); }
+		}
+
+		public Style Style {
+			get { return (Style) GetValue (StyleProperty); }
+			set { SetValue (StyleProperty, value); }
+		}
+
+		public int TabIndex {
+			get { return (int) GetValue (TabIndexProperty); }
+			set { SetValue (TabIndexProperty, value); }
+		}
+
+		public KeyboardNavigationMode TabNavigation {
+			get { return (KeyboardNavigationMode) GetValue (TabNavigationProperty); }
+			set { SetValue (TabNavigationProperty, value); }
+		}
+
+		public ControlTemplate Template {
+			get { return (ControlTemplate) GetValue (TemplateProperty); }
+			set { SetValue (TemplateProperty, value); }
+		}
+
+		public VerticalAlignment VerticalContentAlignment {
+			get { return (VerticalAlignment) GetValue (VerticalContentAlignmentProperty); }
+			set { SetValue (VerticalContentAlignmentProperty, value); }
+		}
 	}
 
 	partial class Grid {
-		private static readonly DependencyProperty ColumnDefinitionsProperty = DependencyProperty.Lookup (Kind.GRID, "ColumnDefinitions", typeof (ColumnDefinitionCollection));
+		public static readonly DependencyProperty ColumnDefinitionsProperty = DependencyProperty.Lookup (Kind.GRID, "ColumnDefinitions", typeof (ColumnDefinitionCollection));
 		public static readonly DependencyProperty ColumnProperty = DependencyProperty.Lookup (Kind.GRID, "Column", typeof (int));
 		public static readonly DependencyProperty ColumnSpanProperty = DependencyProperty.Lookup (Kind.GRID, "ColumnSpan", typeof (int));
-		private static readonly DependencyProperty RowDefinitionsProperty = DependencyProperty.Lookup (Kind.GRID, "RowDefinitions", typeof (RowDefinitionCollection));
+		public static readonly DependencyProperty RowDefinitionsProperty = DependencyProperty.Lookup (Kind.GRID, "RowDefinitions", typeof (RowDefinitionCollection));
 		public static readonly DependencyProperty RowProperty = DependencyProperty.Lookup (Kind.GRID, "Row", typeof (int));
 		public static readonly DependencyProperty RowSpanProperty = DependencyProperty.Lookup (Kind.GRID, "RowSpan", typeof (int));
 		public static readonly DependencyProperty ShowGridLinesProperty = DependencyProperty.Lookup (Kind.GRID, "ShowGridLines", typeof (bool));
+
+		public ColumnDefinitionCollection ColumnDefinitions {
+			get { return (ColumnDefinitionCollection) GetValue (ColumnDefinitionsProperty); }
+		}
+
+		public int Column {
+			get { return (int) GetValue (ColumnProperty); }
+			set { SetValue (ColumnProperty, value); }
+		}
+
+		public int ColumnSpan {
+			get { return (int) GetValue (ColumnSpanProperty); }
+			set { SetValue (ColumnSpanProperty, value); }
+		}
+
+		public RowDefinitionCollection RowDefinitions {
+			get { return (RowDefinitionCollection) GetValue (RowDefinitionsProperty); }
+		}
+
+		public int Row {
+			get { return (int) GetValue (RowProperty); }
+			set { SetValue (RowProperty, value); }
+		}
+
+		public int RowSpan {
+			get { return (int) GetValue (RowSpanProperty); }
+			set { SetValue (RowSpanProperty, value); }
+		}
+
+		public bool ShowGridLines {
+			get { return (bool) GetValue (ShowGridLinesProperty); }
+			set { SetValue (ShowGridLinesProperty, value); }
+		}
 	}
 
 	partial class InkPresenter {
 		public static readonly DependencyProperty StrokesProperty = DependencyProperty.Lookup (Kind.INKPRESENTER, "Strokes", typeof (StrokeCollection));
+
+		public StrokeCollection Strokes {
+			get { return (StrokeCollection) GetValue (StrokesProperty); }
+			set { SetValue (StrokesProperty, value); }
+		}
 	}
 
 	partial class MediaElement {
 		public static readonly DependencyProperty AttributesProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Attributes", typeof (Dictionary<string,string>));
 		public static readonly DependencyProperty AudioStreamCountProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "AudioStreamCount", typeof (int));
-		public static readonly DependencyProperty AudioStreamIndexProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "AudioStreamIndex", typeof (int));
+		public static readonly DependencyProperty AudioStreamIndexProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "AudioStreamIndex", typeof (Nullable<int>));
 		public static readonly DependencyProperty AutoPlayProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "AutoPlay", typeof (bool));
 		public static readonly DependencyProperty BalanceProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Balance", typeof (double));
 		public static readonly DependencyProperty BufferingProgressProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "BufferingProgress", typeof (double));
@@ -143,40 +477,205 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty IsMutedProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "IsMuted", typeof (bool));
 		public static readonly DependencyProperty MarkersProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Markers", typeof (TimelineMarkerCollection));
 		public static readonly DependencyProperty NaturalDurationProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalDuration", typeof (Duration));
-		public static readonly DependencyProperty NaturalVideoHeightProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoHeight", typeof (double));
-		public static readonly DependencyProperty NaturalVideoWidthProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (double));
+		public static readonly DependencyProperty NaturalVideoHeightProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoHeight", typeof (int));
+		public static readonly DependencyProperty NaturalVideoWidthProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (int));
 		public static readonly DependencyProperty PositionProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Position", typeof (TimeSpan));
 		public static readonly DependencyProperty VolumeProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Volume", typeof (double));
+
+		public Dictionary<string,string> Attributes {
+			get { return (Dictionary<string,string>) GetValue (AttributesProperty); }
+			set { SetValue (AttributesProperty, value); }
+		}
+
+		public int AudioStreamCount {
+			get { return (int) GetValue (AudioStreamCountProperty); }
+		}
+
+		public Nullable<int> AudioStreamIndex {
+			get { return (Nullable<int>) GetValue (AudioStreamIndexProperty); }
+			set { SetValue (AudioStreamIndexProperty, value); }
+		}
+
+		public bool AutoPlay {
+			get { return (bool) GetValue (AutoPlayProperty); }
+			set { SetValue (AutoPlayProperty, value); }
+		}
+
+		public double Balance {
+			get { return (double) GetValue (BalanceProperty); }
+			set { SetValue (BalanceProperty, value); }
+		}
+
+		public double BufferingProgress {
+			get { return (double) GetValue (BufferingProgressProperty); }
+		}
+
+		public TimeSpan BufferingTime {
+			get { return (TimeSpan) GetValue (BufferingTimeProperty); }
+			set { SetValue (BufferingTimeProperty, value); }
+		}
+
+		public bool CanPause {
+			get { return (bool) GetValue (CanPauseProperty); }
+		}
+
+		public bool CanSeek {
+			get { return (bool) GetValue (CanSeekProperty); }
+		}
+
+		public MediaElementState CurrentState {
+			get { return (MediaElementState) GetValue (CurrentStateProperty); }
+		}
+
+		public bool IsMuted {
+			get { return (bool) GetValue (IsMutedProperty); }
+			set { SetValue (IsMutedProperty, value); }
+		}
+
+		public TimelineMarkerCollection Markers {
+			get { return (TimelineMarkerCollection) GetValue (MarkersProperty); }
+			set { SetValue (MarkersProperty, value); }
+		}
+
+		public Duration NaturalDuration {
+			get { return (Duration) GetValue (NaturalDurationProperty); }
+		}
+
+		public int NaturalVideoHeight {
+			get { return (int) GetValue (NaturalVideoHeightProperty); }
+		}
+
+		public int NaturalVideoWidth {
+			get { return (int) GetValue (NaturalVideoWidthProperty); }
+		}
+
+		public TimeSpan Position {
+			get { return (TimeSpan) GetValue (PositionProperty); }
+			set { SetValue (PositionProperty, value); }
+		}
+
+		public double Volume {
+			get { return (double) GetValue (VolumeProperty); }
+			set { SetValue (VolumeProperty, value); }
+		}
 	}
 
 	partial class Panel {
 		public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Lookup (Kind.PANEL, "Background", typeof (Brush));
 		public static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.PANEL, "Children", typeof (UIElementCollection));
+
+		public Brush Background {
+			get { return (Brush) GetValue (BackgroundProperty); }
+			set { SetValue (BackgroundProperty, value); }
+		}
+
+		public UIElementCollection Children {
+			get { return (UIElementCollection) GetValue (ChildrenProperty); }
+			set { SetValue (ChildrenProperty, value); }
+		}
 	}
 
 	partial class RowDefinition {
 		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "Height", typeof (GridLength));
 		public static readonly DependencyProperty MaxHeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "MaxHeight", typeof (double));
 		public static readonly DependencyProperty MinHeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "MinHeight", typeof (double));
+
+		public GridLength Height {
+			get { return (GridLength) GetValue (HeightProperty); }
+			set { SetValue (HeightProperty, value); }
+		}
+
+		public double MaxHeight {
+			get { return (double) GetValue (MaxHeightProperty); }
+			set { SetValue (MaxHeightProperty, value); }
+		}
+
+		public double MinHeight {
+			get { return (double) GetValue (MinHeightProperty); }
+			set { SetValue (MinHeightProperty, value); }
+		}
 	}
 
 	partial class TextBlock {
 		public static readonly DependencyProperty ActualHeightProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualHeight", typeof (double));
 		public static readonly DependencyProperty ActualWidthProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualWidth", typeof (double));
-		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontFamily", typeof (string));
+		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontFamily", typeof (FontFamily));
 		public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontSize", typeof (double));
 		public static readonly DependencyProperty FontStretchProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStretch", typeof (FontStretch));
 		public static readonly DependencyProperty FontStyleProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStyle", typeof (FontStyle));
 		public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontWeight", typeof (FontWeight));
 		public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Foreground", typeof (Brush));
 		public static readonly DependencyProperty InlinesProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (InlineCollection));
-		public static readonly DependencyProperty TextDecorationsProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorations));
+		public static readonly DependencyProperty TextDecorationsProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorationCollection));
 		public static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Text", typeof (string));
 		public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextWrapping", typeof (TextWrapping));
+
+		public double ActualHeight {
+			get { return (double) GetValue (ActualHeightProperty); }
+		}
+
+		public double ActualWidth {
+			get { return (double) GetValue (ActualWidthProperty); }
+		}
+
+		public FontFamily FontFamily {
+			get { return (FontFamily) GetValue (FontFamilyProperty); }
+			set { SetValue (FontFamilyProperty, value); }
+		}
+
+		public double FontSize {
+			get { return (double) GetValue (FontSizeProperty); }
+			set { SetValue (FontSizeProperty, value); }
+		}
+
+		public FontStretch FontStretch {
+			get { return (FontStretch) GetValue (FontStretchProperty); }
+			set { SetValue (FontStretchProperty, value); }
+		}
+
+		public FontStyle FontStyle {
+			get { return (FontStyle) GetValue (FontStyleProperty); }
+			set { SetValue (FontStyleProperty, value); }
+		}
+
+		public FontWeight FontWeight {
+			get { return (FontWeight) GetValue (FontWeightProperty); }
+			set { SetValue (FontWeightProperty, value); }
+		}
+
+		public Brush Foreground {
+			get { return (Brush) GetValue (ForegroundProperty); }
+			set { SetValue (ForegroundProperty, value); }
+		}
+
+		public InlineCollection Inlines {
+			get { return (InlineCollection) GetValue (InlinesProperty); }
+			set { SetValue (InlinesProperty, value); }
+		}
+
+		public TextDecorationCollection TextDecorations {
+			get { return (TextDecorationCollection) GetValue (TextDecorationsProperty); }
+			set { SetValue (TextDecorationsProperty, value); }
+		}
+
+		public string Text {
+			get { return (string) GetValue (TextProperty); }
+			set { SetValue (TextProperty, value); }
+		}
+
+		public TextWrapping TextWrapping {
+			get { return (TextWrapping) GetValue (TextWrappingProperty); }
+			set { SetValue (TextWrappingProperty, value); }
+		}
 	}
 
 	partial class UserControl {
 		public static readonly DependencyProperty ContentProperty = DependencyProperty.Lookup (Kind.USERCONTROL, "Content", typeof (UIElement));
+
+		public UIElement Content {
+			get { return (UIElement) GetValue (ContentProperty); }
+			set { SetValue (ContentProperty, value); }
+		}
 	}
 }
 
@@ -190,21 +689,106 @@ namespace System.Windows.Documents {
 		public static readonly DependencyProperty OriginYProperty = DependencyProperty.Lookup (Kind.GLYPHS, "OriginY", typeof (double));
 		public static readonly DependencyProperty StyleSimulationsProperty = DependencyProperty.Lookup (Kind.GLYPHS, "StyleSimulations", typeof (StyleSimulations));
 		public static readonly DependencyProperty UnicodeStringProperty = DependencyProperty.Lookup (Kind.GLYPHS, "UnicodeString", typeof (string));
+
+		public Brush Fill {
+			get { return (Brush) GetValue (FillProperty); }
+			set { SetValue (FillProperty, value); }
+		}
+
+		public double FontRenderingEmSize {
+			get { return (double) GetValue (FontRenderingEmSizeProperty); }
+			set { SetValue (FontRenderingEmSizeProperty, value); }
+		}
+
+		public Uri FontUri {
+			get { return (Uri) GetValue (FontUriProperty); }
+			set { SetValue (FontUriProperty, value); }
+		}
+
+		public string Indices {
+			get { return (string) GetValue (IndicesProperty); }
+			set { SetValue (IndicesProperty, value); }
+		}
+
+		public double OriginX {
+			get { return (double) GetValue (OriginXProperty); }
+			set { SetValue (OriginXProperty, value); }
+		}
+
+		public double OriginY {
+			get { return (double) GetValue (OriginYProperty); }
+			set { SetValue (OriginYProperty, value); }
+		}
+
+		public StyleSimulations StyleSimulations {
+			get { return (StyleSimulations) GetValue (StyleSimulationsProperty); }
+			set { SetValue (StyleSimulationsProperty, value); }
+		}
+
+		public string UnicodeString {
+			get { return (string) GetValue (UnicodeStringProperty); }
+			set { SetValue (UnicodeStringProperty, value); }
+		}
 	}
 
 	partial class Inline {
-		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.INLINE, "FontFamily", typeof (string));
+		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.INLINE, "FontFamily", typeof (FontFamily));
 		public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Lookup (Kind.INLINE, "FontSize", typeof (double));
 		public static readonly DependencyProperty FontStretchProperty = DependencyProperty.Lookup (Kind.INLINE, "FontStretch", typeof (FontStretch));
 		public static readonly DependencyProperty FontStyleProperty = DependencyProperty.Lookup (Kind.INLINE, "FontStyle", typeof (FontStyle));
 		public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Lookup (Kind.INLINE, "FontWeight", typeof (FontWeight));
 		public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Lookup (Kind.INLINE, "Foreground", typeof (Brush));
 		public static readonly DependencyProperty LanguageProperty = DependencyProperty.Lookup (Kind.INLINE, "Language", typeof (XmlLanguage));
-		public static readonly DependencyProperty TextDecorationsProperty = DependencyProperty.Lookup (Kind.INLINE, "TextDecorations", typeof (TextDecorations));
+		public static readonly DependencyProperty TextDecorationsProperty = DependencyProperty.Lookup (Kind.INLINE, "TextDecorations", typeof (TextDecorationCollection));
+
+		public FontFamily FontFamily {
+			get { return (FontFamily) GetValue (FontFamilyProperty); }
+			set { SetValue (FontFamilyProperty, value); }
+		}
+
+		public double FontSize {
+			get { return (double) GetValue (FontSizeProperty); }
+			set { SetValue (FontSizeProperty, value); }
+		}
+
+		public FontStretch FontStretch {
+			get { return (FontStretch) GetValue (FontStretchProperty); }
+			set { SetValue (FontStretchProperty, value); }
+		}
+
+		public FontStyle FontStyle {
+			get { return (FontStyle) GetValue (FontStyleProperty); }
+			set { SetValue (FontStyleProperty, value); }
+		}
+
+		public FontWeight FontWeight {
+			get { return (FontWeight) GetValue (FontWeightProperty); }
+			set { SetValue (FontWeightProperty, value); }
+		}
+
+		public Brush Foreground {
+			get { return (Brush) GetValue (ForegroundProperty); }
+			set { SetValue (ForegroundProperty, value); }
+		}
+
+		public XmlLanguage Language {
+			get { return (XmlLanguage) GetValue (LanguageProperty); }
+			set { SetValue (LanguageProperty, value); }
+		}
+
+		public TextDecorationCollection TextDecorations {
+			get { return (TextDecorationCollection) GetValue (TextDecorationsProperty); }
+			set { SetValue (TextDecorationsProperty, value); }
+		}
 	}
 
 	partial class Run {
 		public static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.RUN, "Text", typeof (string));
+
+		public string Text {
+			get { return (string) GetValue (TextProperty); }
+			set { SetValue (TextProperty, value); }
+		}
 	}
 }
 
@@ -214,11 +798,41 @@ namespace System.Windows.Ink {
 		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Height", typeof (double));
 		public static readonly DependencyProperty OutlineColorProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "OutlineColor", typeof (Color));
 		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Width", typeof (double));
+
+		public Color Color {
+			get { return (Color) GetValue (ColorProperty); }
+			set { SetValue (ColorProperty, value); }
+		}
+
+		public double Height {
+			get { return (double) GetValue (HeightProperty); }
+			set { SetValue (HeightProperty, value); }
+		}
+
+		public Color OutlineColor {
+			get { return (Color) GetValue (OutlineColorProperty); }
+			set { SetValue (OutlineColorProperty, value); }
+		}
+
+		public double Width {
+			get { return (double) GetValue (WidthProperty); }
+			set { SetValue (WidthProperty, value); }
+		}
 	}
 
 	partial class Stroke {
 		public static readonly DependencyProperty DrawingAttributesProperty = DependencyProperty.Lookup (Kind.STROKE, "DrawingAttributes", typeof (DrawingAttributes));
 		public static readonly DependencyProperty StylusPointsProperty = DependencyProperty.Lookup (Kind.STROKE, "StylusPoints", typeof (StylusPointCollection));
+
+		public DrawingAttributes DrawingAttributes {
+			get { return (DrawingAttributes) GetValue (DrawingAttributesProperty); }
+			set { SetValue (DrawingAttributesProperty, value); }
+		}
+
+		public StylusPointCollection StylusPoints {
+			get { return (StylusPointCollection) GetValue (StylusPointsProperty); }
+			set { SetValue (StylusPointsProperty, value); }
+		}
 	}
 }
 
@@ -226,6 +840,16 @@ namespace System.Windows.Input {
 	partial class StylusInfo {
 		public static readonly DependencyProperty DeviceTypeProperty = DependencyProperty.Lookup (Kind.STYLUSINFO, "DeviceType", typeof (TabletDeviceType));
 		public static readonly DependencyProperty IsInvertedProperty = DependencyProperty.Lookup (Kind.STYLUSINFO, "IsInverted", typeof (bool));
+
+		public TabletDeviceType DeviceType {
+			get { return (TabletDeviceType) GetValue (DeviceTypeProperty); }
+			set { SetValue (DeviceTypeProperty, value); }
+		}
+
+		public bool IsInverted {
+			get { return (bool) GetValue (IsInvertedProperty); }
+			set { SetValue (IsInvertedProperty, value); }
+		}
 	}
 }
 
@@ -236,34 +860,124 @@ namespace System.Windows.Media {
 		public static readonly DependencyProperty RotationAngleProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "RotationAngle", typeof (double));
 		public static readonly DependencyProperty SizeProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "Size", typeof (Point));
 		public static readonly DependencyProperty SweepDirectionProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "SweepDirection", typeof (SweepDirection));
+
+		public bool IsLargeArc {
+			get { return (bool) GetValue (IsLargeArcProperty); }
+			set { SetValue (IsLargeArcProperty, value); }
+		}
+
+		public Point Point {
+			get { return (Point) GetValue (PointProperty); }
+			set { SetValue (PointProperty, value); }
+		}
+
+		public double RotationAngle {
+			get { return (double) GetValue (RotationAngleProperty); }
+			set { SetValue (RotationAngleProperty, value); }
+		}
+
+		public Point Size {
+			get { return (Point) GetValue (SizeProperty); }
+			set { SetValue (SizeProperty, value); }
+		}
+
+		public SweepDirection SweepDirection {
+			get { return (SweepDirection) GetValue (SweepDirectionProperty); }
+			set { SetValue (SweepDirectionProperty, value); }
+		}
 	}
 
 	partial class BezierSegment {
 		public static readonly DependencyProperty Point1Property = DependencyProperty.Lookup (Kind.BEZIERSEGMENT, "Point1", typeof (Point));
 		public static readonly DependencyProperty Point2Property = DependencyProperty.Lookup (Kind.BEZIERSEGMENT, "Point2", typeof (Point));
 		public static readonly DependencyProperty Point3Property = DependencyProperty.Lookup (Kind.BEZIERSEGMENT, "Point3", typeof (Point));
+
+		public Point Point1 {
+			get { return (Point) GetValue (Point1Property); }
+			set { SetValue (Point1Property, value); }
+		}
+
+		public Point Point2 {
+			get { return (Point) GetValue (Point2Property); }
+			set { SetValue (Point2Property, value); }
+		}
+
+		public Point Point3 {
+			get { return (Point) GetValue (Point3Property); }
+			set { SetValue (Point3Property, value); }
+		}
 	}
 
 	partial class Brush {
-		private static readonly DependencyProperty ChangedProperty = DependencyProperty.Lookup (Kind.BRUSH, "Changed", typeof (bool));
+		internal static readonly DependencyProperty ChangedProperty = DependencyProperty.Lookup (Kind.BRUSH, "Changed", typeof (bool));
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.BRUSH, "Opacity", typeof (double));
 		public static readonly DependencyProperty RelativeTransformProperty = DependencyProperty.Lookup (Kind.BRUSH, "RelativeTransform", typeof (Transform));
 		public static readonly DependencyProperty TransformProperty = DependencyProperty.Lookup (Kind.BRUSH, "Transform", typeof (Transform));
+
+		internal bool Changed {
+			get { return (bool) GetValue (ChangedProperty); }
+			set { SetValue (ChangedProperty, value); }
+		}
+
+		public double Opacity {
+			get { return (double) GetValue (OpacityProperty); }
+			set { SetValue (OpacityProperty, value); }
+		}
+
+		public Transform RelativeTransform {
+			get { return (Transform) GetValue (RelativeTransformProperty); }
+			set { SetValue (RelativeTransformProperty, value); }
+		}
+
+		public Transform Transform {
+			get { return (Transform) GetValue (TransformProperty); }
+			set { SetValue (TransformProperty, value); }
+		}
 	}
 
 	partial class EllipseGeometry {
 		public static readonly DependencyProperty CenterProperty = DependencyProperty.Lookup (Kind.ELLIPSEGEOMETRY, "Center", typeof (Point));
 		public static readonly DependencyProperty RadiusXProperty = DependencyProperty.Lookup (Kind.ELLIPSEGEOMETRY, "RadiusX", typeof (double));
 		public static readonly DependencyProperty RadiusYProperty = DependencyProperty.Lookup (Kind.ELLIPSEGEOMETRY, "RadiusY", typeof (double));
+
+		public Point Center {
+			get { return (Point) GetValue (CenterProperty); }
+			set { SetValue (CenterProperty, value); }
+		}
+
+		public double RadiusX {
+			get { return (double) GetValue (RadiusXProperty); }
+			set { SetValue (RadiusXProperty, value); }
+		}
+
+		public double RadiusY {
+			get { return (double) GetValue (RadiusYProperty); }
+			set { SetValue (RadiusYProperty, value); }
+		}
 	}
 
 	partial class Geometry {
 		public static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "FillRule", typeof (FillRule));
 		public static readonly DependencyProperty TransformProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "Transform", typeof (Transform));
+
+		public FillRule FillRule {
+			get { return (FillRule) GetValue (FillRuleProperty); }
+			set { SetValue (FillRuleProperty, value); }
+		}
+
+		public Transform Transform {
+			get { return (Transform) GetValue (TransformProperty); }
+			set { SetValue (TransformProperty, value); }
+		}
 	}
 
 	partial class GeometryGroup {
 		public static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.GEOMETRYGROUP, "Children", typeof (GeometryCollection));
+
+		public GeometryCollection Children {
+			get { return (GeometryCollection) GetValue (ChildrenProperty); }
+			set { SetValue (ChildrenProperty, value); }
+		}
 	}
 
 	partial class GradientBrush {
@@ -271,61 +985,176 @@ namespace System.Windows.Media {
 		public static readonly DependencyProperty GradientStopsProperty = DependencyProperty.Lookup (Kind.GRADIENTBRUSH, "GradientStops", typeof (GradientStopCollection));
 		public static readonly DependencyProperty MappingModeProperty = DependencyProperty.Lookup (Kind.GRADIENTBRUSH, "MappingMode", typeof (BrushMappingMode));
 		public static readonly DependencyProperty SpreadMethodProperty = DependencyProperty.Lookup (Kind.GRADIENTBRUSH, "SpreadMethod", typeof (GradientSpreadMethod));
+
+		public ColorInterpolationMode ColorInterpolationMode {
+			get { return (ColorInterpolationMode) GetValue (ColorInterpolationModeProperty); }
+			set { SetValue (ColorInterpolationModeProperty, value); }
+		}
+
+		public GradientStopCollection GradientStops {
+			get { return (GradientStopCollection) GetValue (GradientStopsProperty); }
+			set { SetValue (GradientStopsProperty, value); }
+		}
+
+		public BrushMappingMode MappingMode {
+			get { return (BrushMappingMode) GetValue (MappingModeProperty); }
+			set { SetValue (MappingModeProperty, value); }
+		}
+
+		public GradientSpreadMethod SpreadMethod {
+			get { return (GradientSpreadMethod) GetValue (SpreadMethodProperty); }
+			set { SetValue (SpreadMethodProperty, value); }
+		}
 	}
 
 	partial class GradientStop {
 		public static readonly DependencyProperty ColorProperty = DependencyProperty.Lookup (Kind.GRADIENTSTOP, "Color", typeof (Color));
 		public static readonly DependencyProperty OffsetProperty = DependencyProperty.Lookup (Kind.GRADIENTSTOP, "Offset", typeof (double));
+
+		public Color Color {
+			get { return (Color) GetValue (ColorProperty); }
+			set { SetValue (ColorProperty, value); }
+		}
+
+		public double Offset {
+			get { return (double) GetValue (OffsetProperty); }
+			set { SetValue (OffsetProperty, value); }
+		}
 	}
 
 	partial class ImageBrush {
 		public static readonly DependencyProperty DownloadProgressProperty = DependencyProperty.Lookup (Kind.IMAGEBRUSH, "DownloadProgress", typeof (double));
 		public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Lookup (Kind.IMAGEBRUSH, "ImageSource", typeof (string));
+
+		public double DownloadProgress {
+			get { return (double) GetValue (DownloadProgressProperty); }
+			set { SetValue (DownloadProgressProperty, value); }
+		}
+
+		public string ImageSource {
+			get { return (string) GetValue (ImageSourceProperty); }
+			set { SetValue (ImageSourceProperty, value); }
+		}
 	}
 
 	partial class LinearGradientBrush {
 		public static readonly DependencyProperty EndPointProperty = DependencyProperty.Lookup (Kind.LINEARGRADIENTBRUSH, "EndPoint", typeof (Point));
 		public static readonly DependencyProperty StartPointProperty = DependencyProperty.Lookup (Kind.LINEARGRADIENTBRUSH, "StartPoint", typeof (Point));
+
+		public Point EndPoint {
+			get { return (Point) GetValue (EndPointProperty); }
+			set { SetValue (EndPointProperty, value); }
+		}
+
+		public Point StartPoint {
+			get { return (Point) GetValue (StartPointProperty); }
+			set { SetValue (StartPointProperty, value); }
+		}
 	}
 
 	partial class LineGeometry {
 		public static readonly DependencyProperty EndPointProperty = DependencyProperty.Lookup (Kind.LINEGEOMETRY, "EndPoint", typeof (Point));
 		public static readonly DependencyProperty StartPointProperty = DependencyProperty.Lookup (Kind.LINEGEOMETRY, "StartPoint", typeof (Point));
+
+		public Point EndPoint {
+			get { return (Point) GetValue (EndPointProperty); }
+			set { SetValue (EndPointProperty, value); }
+		}
+
+		public Point StartPoint {
+			get { return (Point) GetValue (StartPointProperty); }
+			set { SetValue (StartPointProperty, value); }
+		}
 	}
 
 	partial class LineSegment {
 		public static readonly DependencyProperty PointProperty = DependencyProperty.Lookup (Kind.LINESEGMENT, "Point", typeof (Point));
+
+		public Point Point {
+			get { return (Point) GetValue (PointProperty); }
+			set { SetValue (PointProperty, value); }
+		}
 	}
 
 	partial class MatrixTransform {
 		public static readonly DependencyProperty MatrixProperty = DependencyProperty.Lookup (Kind.MATRIXTRANSFORM, "Matrix", typeof (Matrix));
+
+		public Matrix Matrix {
+			get { return (Matrix) GetValue (MatrixProperty); }
+			set { SetValue (MatrixProperty, value); }
+		}
 	}
 
 	partial class PathFigure {
 		public static readonly DependencyProperty IsClosedProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "IsClosed", typeof (bool));
 		public static readonly DependencyProperty SegmentsProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "Segments", typeof (PathSegmentCollection));
 		public static readonly DependencyProperty StartPointProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "StartPoint", typeof (Point));
+
+		public bool IsClosed {
+			get { return (bool) GetValue (IsClosedProperty); }
+			set { SetValue (IsClosedProperty, value); }
+		}
+
+		public PathSegmentCollection Segments {
+			get { return (PathSegmentCollection) GetValue (SegmentsProperty); }
+			set { SetValue (SegmentsProperty, value); }
+		}
+
+		public Point StartPoint {
+			get { return (Point) GetValue (StartPointProperty); }
+			set { SetValue (StartPointProperty, value); }
+		}
 	}
 
 	partial class PathGeometry {
 		public static readonly DependencyProperty FiguresProperty = DependencyProperty.Lookup (Kind.PATHGEOMETRY, "Figures", typeof (PathFigureCollection));
+
+		public PathFigureCollection Figures {
+			get { return (PathFigureCollection) GetValue (FiguresProperty); }
+			set { SetValue (FiguresProperty, value); }
+		}
 	}
 
 	partial class PolyBezierSegment {
 		public static readonly DependencyProperty PointsProperty = DependencyProperty.Lookup (Kind.POLYBEZIERSEGMENT, "Points", typeof (PointCollection));
+
+		public PointCollection Points {
+			get { return (PointCollection) GetValue (PointsProperty); }
+			set { SetValue (PointsProperty, value); }
+		}
 	}
 
 	partial class PolyLineSegment {
 		public static readonly DependencyProperty PointsProperty = DependencyProperty.Lookup (Kind.POLYLINESEGMENT, "Points", typeof (PointCollection));
+
+		public PointCollection Points {
+			get { return (PointCollection) GetValue (PointsProperty); }
+			set { SetValue (PointsProperty, value); }
+		}
 	}
 
 	partial class PolyQuadraticBezierSegment {
 		public static readonly DependencyProperty PointsProperty = DependencyProperty.Lookup (Kind.POLYQUADRATICBEZIERSEGMENT, "Points", typeof (PointCollection));
+
+		public PointCollection Points {
+			get { return (PointCollection) GetValue (PointsProperty); }
+			set { SetValue (PointsProperty, value); }
+		}
 	}
 
 	partial class QuadraticBezierSegment {
 		public static readonly DependencyProperty Point1Property = DependencyProperty.Lookup (Kind.QUADRATICBEZIERSEGMENT, "Point1", typeof (Point));
 		public static readonly DependencyProperty Point2Property = DependencyProperty.Lookup (Kind.QUADRATICBEZIERSEGMENT, "Point2", typeof (Point));
+
+		public Point Point1 {
+			get { return (Point) GetValue (Point1Property); }
+			set { SetValue (Point1Property, value); }
+		}
+
+		public Point Point2 {
+			get { return (Point) GetValue (Point2Property); }
+			set { SetValue (Point2Property, value); }
+		}
 	}
 
 	partial class RadialGradientBrush {
@@ -333,18 +1162,68 @@ namespace System.Windows.Media {
 		public static readonly DependencyProperty GradientOriginProperty = DependencyProperty.Lookup (Kind.RADIALGRADIENTBRUSH, "GradientOrigin", typeof (Point));
 		public static readonly DependencyProperty RadiusXProperty = DependencyProperty.Lookup (Kind.RADIALGRADIENTBRUSH, "RadiusX", typeof (double));
 		public static readonly DependencyProperty RadiusYProperty = DependencyProperty.Lookup (Kind.RADIALGRADIENTBRUSH, "RadiusY", typeof (double));
+
+		public Point Center {
+			get { return (Point) GetValue (CenterProperty); }
+			set { SetValue (CenterProperty, value); }
+		}
+
+		public Point GradientOrigin {
+			get { return (Point) GetValue (GradientOriginProperty); }
+			set { SetValue (GradientOriginProperty, value); }
+		}
+
+		public double RadiusX {
+			get { return (double) GetValue (RadiusXProperty); }
+			set { SetValue (RadiusXProperty, value); }
+		}
+
+		public double RadiusY {
+			get { return (double) GetValue (RadiusYProperty); }
+			set { SetValue (RadiusYProperty, value); }
+		}
 	}
 
 	partial class RectangleGeometry {
 		public static readonly DependencyProperty RadiusXProperty = DependencyProperty.Lookup (Kind.RECTANGLEGEOMETRY, "RadiusX", typeof (double));
 		public static readonly DependencyProperty RadiusYProperty = DependencyProperty.Lookup (Kind.RECTANGLEGEOMETRY, "RadiusY", typeof (double));
 		public static readonly DependencyProperty RectProperty = DependencyProperty.Lookup (Kind.RECTANGLEGEOMETRY, "Rect", typeof (Rect));
+
+		public double RadiusX {
+			get { return (double) GetValue (RadiusXProperty); }
+			set { SetValue (RadiusXProperty, value); }
+		}
+
+		public double RadiusY {
+			get { return (double) GetValue (RadiusYProperty); }
+			set { SetValue (RadiusYProperty, value); }
+		}
+
+		public Rect Rect {
+			get { return (Rect) GetValue (RectProperty); }
+			set { SetValue (RectProperty, value); }
+		}
 	}
 
 	partial class RotateTransform {
 		public static readonly DependencyProperty AngleProperty = DependencyProperty.Lookup (Kind.ROTATETRANSFORM, "Angle", typeof (double));
 		public static readonly DependencyProperty CenterXProperty = DependencyProperty.Lookup (Kind.ROTATETRANSFORM, "CenterX", typeof (double));
 		public static readonly DependencyProperty CenterYProperty = DependencyProperty.Lookup (Kind.ROTATETRANSFORM, "CenterY", typeof (double));
+
+		public double Angle {
+			get { return (double) GetValue (AngleProperty); }
+			set { SetValue (AngleProperty, value); }
+		}
+
+		public double CenterX {
+			get { return (double) GetValue (CenterXProperty); }
+			set { SetValue (CenterXProperty, value); }
+		}
+
+		public double CenterY {
+			get { return (double) GetValue (CenterYProperty); }
+			set { SetValue (CenterYProperty, value); }
+		}
 	}
 
 	partial class ScaleTransform {
@@ -352,6 +1231,26 @@ namespace System.Windows.Media {
 		public static readonly DependencyProperty CenterYProperty = DependencyProperty.Lookup (Kind.SCALETRANSFORM, "CenterY", typeof (double));
 		public static readonly DependencyProperty ScaleXProperty = DependencyProperty.Lookup (Kind.SCALETRANSFORM, "ScaleX", typeof (double));
 		public static readonly DependencyProperty ScaleYProperty = DependencyProperty.Lookup (Kind.SCALETRANSFORM, "ScaleY", typeof (double));
+
+		public double CenterX {
+			get { return (double) GetValue (CenterXProperty); }
+			set { SetValue (CenterXProperty, value); }
+		}
+
+		public double CenterY {
+			get { return (double) GetValue (CenterYProperty); }
+			set { SetValue (CenterYProperty, value); }
+		}
+
+		public double ScaleX {
+			get { return (double) GetValue (ScaleXProperty); }
+			set { SetValue (ScaleXProperty, value); }
+		}
+
+		public double ScaleY {
+			get { return (double) GetValue (ScaleYProperty); }
+			set { SetValue (ScaleYProperty, value); }
+		}
 	}
 
 	partial class SkewTransform {
@@ -359,104 +1258,289 @@ namespace System.Windows.Media {
 		public static readonly DependencyProperty AngleYProperty = DependencyProperty.Lookup (Kind.SKEWTRANSFORM, "AngleY", typeof (double));
 		public static readonly DependencyProperty CenterXProperty = DependencyProperty.Lookup (Kind.SKEWTRANSFORM, "CenterX", typeof (double));
 		public static readonly DependencyProperty CenterYProperty = DependencyProperty.Lookup (Kind.SKEWTRANSFORM, "CenterY", typeof (double));
+
+		public double AngleX {
+			get { return (double) GetValue (AngleXProperty); }
+			set { SetValue (AngleXProperty, value); }
+		}
+
+		public double AngleY {
+			get { return (double) GetValue (AngleYProperty); }
+			set { SetValue (AngleYProperty, value); }
+		}
+
+		public double CenterX {
+			get { return (double) GetValue (CenterXProperty); }
+			set { SetValue (CenterXProperty, value); }
+		}
+
+		public double CenterY {
+			get { return (double) GetValue (CenterYProperty); }
+			set { SetValue (CenterYProperty, value); }
+		}
 	}
 
 	partial class SolidColorBrush {
 		public static readonly DependencyProperty ColorProperty = DependencyProperty.Lookup (Kind.SOLIDCOLORBRUSH, "Color", typeof (Color));
+
+		public Color Color {
+			get { return (Color) GetValue (ColorProperty); }
+			set { SetValue (ColorProperty, value); }
+		}
 	}
 
 	partial class TileBrush {
 		public static readonly DependencyProperty AlignmentXProperty = DependencyProperty.Lookup (Kind.TILEBRUSH, "AlignmentX", typeof (AlignmentX));
 		public static readonly DependencyProperty AlignmentYProperty = DependencyProperty.Lookup (Kind.TILEBRUSH, "AlignmentY", typeof (AlignmentY));
 		public static readonly DependencyProperty StretchProperty = DependencyProperty.Lookup (Kind.TILEBRUSH, "Stretch", typeof (Stretch));
+
+		public AlignmentX AlignmentX {
+			get { return (AlignmentX) GetValue (AlignmentXProperty); }
+			set { SetValue (AlignmentXProperty, value); }
+		}
+
+		public AlignmentY AlignmentY {
+			get { return (AlignmentY) GetValue (AlignmentYProperty); }
+			set { SetValue (AlignmentYProperty, value); }
+		}
+
+		public Stretch Stretch {
+			get { return (Stretch) GetValue (StretchProperty); }
+			set { SetValue (StretchProperty, value); }
+		}
 	}
 
 	partial class TimelineMarker {
 		public static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.TIMELINEMARKER, "Text", typeof (string));
 		public static readonly DependencyProperty TimeProperty = DependencyProperty.Lookup (Kind.TIMELINEMARKER, "Time", typeof (TimeSpan));
 		public static readonly DependencyProperty TypeProperty = DependencyProperty.Lookup (Kind.TIMELINEMARKER, "Type", typeof (string));
+
+		public string Text {
+			get { return (string) GetValue (TextProperty); }
+			set { SetValue (TextProperty, value); }
+		}
+
+		public TimeSpan Time {
+			get { return (TimeSpan) GetValue (TimeProperty); }
+			set { SetValue (TimeProperty, value); }
+		}
+
+		public string Type {
+			get { return (string) GetValue (TypeProperty); }
+			set { SetValue (TypeProperty, value); }
+		}
 	}
 
 	partial class TransformGroup {
 		public static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.TRANSFORMGROUP, "Children", typeof (TransformCollection));
+
+		public TransformCollection Children {
+			get { return (TransformCollection) GetValue (ChildrenProperty); }
+			set { SetValue (ChildrenProperty, value); }
+		}
 	}
 
 	partial class TranslateTransform {
 		public static readonly DependencyProperty XProperty = DependencyProperty.Lookup (Kind.TRANSLATETRANSFORM, "X", typeof (double));
 		public static readonly DependencyProperty YProperty = DependencyProperty.Lookup (Kind.TRANSLATETRANSFORM, "Y", typeof (double));
+
+		public double X {
+			get { return (double) GetValue (XProperty); }
+			set { SetValue (XProperty, value); }
+		}
+
+		public double Y {
+			get { return (double) GetValue (YProperty); }
+			set { SetValue (YProperty, value); }
+		}
 	}
 
 	partial class VideoBrush {
 		public static readonly DependencyProperty SourceNameProperty = DependencyProperty.Lookup (Kind.VIDEOBRUSH, "SourceName", typeof (string));
+
+		public string SourceName {
+			get { return (string) GetValue (SourceNameProperty); }
+			set { SetValue (SourceNameProperty, value); }
+		}
 	}
 }
 
 namespace System.Windows.Media.Animation {
 	partial class BeginStoryboard {
 		public static readonly DependencyProperty StoryboardProperty = DependencyProperty.Lookup (Kind.BEGINSTORYBOARD, "Storyboard", typeof (Storyboard));
+
+		public Storyboard Storyboard {
+			get { return (Storyboard) GetValue (StoryboardProperty); }
+			set { SetValue (StoryboardProperty, value); }
+		}
 	}
 
 	partial class ColorAnimation {
 		public static readonly DependencyProperty ByProperty = DependencyProperty.Lookup (Kind.COLORANIMATION, "By", typeof (Nullable<Color>));
 		public static readonly DependencyProperty FromProperty = DependencyProperty.Lookup (Kind.COLORANIMATION, "From", typeof (Nullable<Color>));
 		public static readonly DependencyProperty ToProperty = DependencyProperty.Lookup (Kind.COLORANIMATION, "To", typeof (Nullable<Color>));
+
+		public Nullable<Color> By {
+			get { return (Nullable<Color>) GetValue (ByProperty); }
+			set { SetValue (ByProperty, value); }
+		}
+
+		public Nullable<Color> From {
+			get { return (Nullable<Color>) GetValue (FromProperty); }
+			set { SetValue (FromProperty, value); }
+		}
+
+		public Nullable<Color> To {
+			get { return (Nullable<Color>) GetValue (ToProperty); }
+			set { SetValue (ToProperty, value); }
+		}
 	}
 
 	partial class ColorAnimationUsingKeyFrames {
 		public static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (ColorKeyFrameCollection));
+
+		public ColorKeyFrameCollection KeyFrames {
+			get { return (ColorKeyFrameCollection) GetValue (KeyFramesProperty); }
+			set { SetValue (KeyFramesProperty, value); }
+		}
 	}
 
 	partial class ColorKeyFrame {
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.COLORKEYFRAME, "Value", typeof (Nullable<Color>));
+
+		public Nullable<Color> Value {
+			get { return (Nullable<Color>) GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
+		}
 	}
 
 	partial class DoubleAnimation {
 		public static readonly DependencyProperty ByProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "By", typeof (Nullable<double>));
 		public static readonly DependencyProperty FromProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "From", typeof (Nullable<double>));
 		public static readonly DependencyProperty ToProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "To", typeof (Nullable<double>));
+
+		public Nullable<double> By {
+			get { return (Nullable<double>) GetValue (ByProperty); }
+			set { SetValue (ByProperty, value); }
+		}
+
+		public Nullable<double> From {
+			get { return (Nullable<double>) GetValue (FromProperty); }
+			set { SetValue (FromProperty, value); }
+		}
+
+		public Nullable<double> To {
+			get { return (Nullable<double>) GetValue (ToProperty); }
+			set { SetValue (ToProperty, value); }
+		}
 	}
 
 	partial class DoubleAnimationUsingKeyFrames {
 		public static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (DoubleKeyFrameCollection));
+
+		public DoubleKeyFrameCollection KeyFrames {
+			get { return (DoubleKeyFrameCollection) GetValue (KeyFramesProperty); }
+			set { SetValue (KeyFramesProperty, value); }
+		}
 	}
 
 	partial class DoubleKeyFrame {
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.DOUBLEKEYFRAME, "Value", typeof (Nullable<double>));
+
+		public Nullable<double> Value {
+			get { return (Nullable<double>) GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
+		}
 	}
 
 	partial class KeyFrame {
 		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.KEYFRAME, "KeyTime", typeof (Nullable<KeyTime>));
+
+		public Nullable<KeyTime> KeyTime {
+			get { return (Nullable<KeyTime>) GetValue (KeyTimeProperty); }
+			set { SetValue (KeyTimeProperty, value); }
+		}
 	}
 
 	partial class PointAnimation {
 		public static readonly DependencyProperty ByProperty = DependencyProperty.Lookup (Kind.POINTANIMATION, "By", typeof (Nullable<Point>));
 		public static readonly DependencyProperty FromProperty = DependencyProperty.Lookup (Kind.POINTANIMATION, "From", typeof (Nullable<Point>));
 		public static readonly DependencyProperty ToProperty = DependencyProperty.Lookup (Kind.POINTANIMATION, "To", typeof (Nullable<Point>));
+
+		public Nullable<Point> By {
+			get { return (Nullable<Point>) GetValue (ByProperty); }
+			set { SetValue (ByProperty, value); }
+		}
+
+		public Nullable<Point> From {
+			get { return (Nullable<Point>) GetValue (FromProperty); }
+			set { SetValue (FromProperty, value); }
+		}
+
+		public Nullable<Point> To {
+			get { return (Nullable<Point>) GetValue (ToProperty); }
+			set { SetValue (ToProperty, value); }
+		}
 	}
 
 	partial class PointAnimationUsingKeyFrames {
 		public static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (PointKeyFrameCollection));
+
+		public PointKeyFrameCollection KeyFrames {
+			get { return (PointKeyFrameCollection) GetValue (KeyFramesProperty); }
+			set { SetValue (KeyFramesProperty, value); }
+		}
 	}
 
 	partial class PointKeyFrame {
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.POINTKEYFRAME, "Value", typeof (Nullable<Point>));
+
+		public Nullable<Point> Value {
+			get { return (Nullable<Point>) GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
+		}
 	}
 
 	partial class SplineColorKeyFrame {
 		public static readonly DependencyProperty KeySplineProperty = DependencyProperty.Lookup (Kind.SPLINECOLORKEYFRAME, "KeySpline", typeof (KeySpline));
+
+		public KeySpline KeySpline {
+			get { return (KeySpline) GetValue (KeySplineProperty); }
+			set { SetValue (KeySplineProperty, value); }
+		}
 	}
 
 	partial class SplineDoubleKeyFrame {
 		public static readonly DependencyProperty KeySplineProperty = DependencyProperty.Lookup (Kind.SPLINEDOUBLEKEYFRAME, "KeySpline", typeof (KeySpline));
+
+		public KeySpline KeySpline {
+			get { return (KeySpline) GetValue (KeySplineProperty); }
+			set { SetValue (KeySplineProperty, value); }
+		}
 	}
 
 	partial class SplinePointKeyFrame {
 		public static readonly DependencyProperty KeySplineProperty = DependencyProperty.Lookup (Kind.SPLINEPOINTKEYFRAME, "KeySpline", typeof (KeySpline));
+
+		public KeySpline KeySpline {
+			get { return (KeySpline) GetValue (KeySplineProperty); }
+			set { SetValue (KeySplineProperty, value); }
+		}
 	}
 
 	partial class Storyboard {
 		public static readonly DependencyProperty TargetNameProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetName", typeof (string));
 		public static readonly DependencyProperty TargetPropertyProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetProperty", typeof (string));
+
+		public string TargetName {
+			get { return (string) GetValue (TargetNameProperty); }
+			set { SetValue (TargetNameProperty, value); }
+		}
+
+		public string TargetProperty {
+			get { return (string) GetValue (TargetPropertyProperty); }
+			set { SetValue (TargetPropertyProperty, value); }
+		}
 	}
 
 	partial class Timeline {
@@ -466,10 +1550,45 @@ namespace System.Windows.Media.Animation {
 		public static readonly DependencyProperty FillBehaviorProperty = DependencyProperty.Lookup (Kind.TIMELINE, "FillBehavior", typeof (FillBehavior));
 		public static readonly DependencyProperty RepeatBehaviorProperty = DependencyProperty.Lookup (Kind.TIMELINE, "RepeatBehavior", typeof (RepeatBehavior));
 		public static readonly DependencyProperty SpeedRatioProperty = DependencyProperty.Lookup (Kind.TIMELINE, "SpeedRatio", typeof (double));
+
+		public bool AutoReverse {
+			get { return (bool) GetValue (AutoReverseProperty); }
+			set { SetValue (AutoReverseProperty, value); }
+		}
+
+		public Nullable<TimeSpan> BeginTime {
+			get { return (Nullable<TimeSpan>) GetValue (BeginTimeProperty); }
+			set { SetValue (BeginTimeProperty, value); }
+		}
+
+		public Duration Duration {
+			get { return (Duration) GetValue (DurationProperty); }
+			set { SetValue (DurationProperty, value); }
+		}
+
+		public FillBehavior FillBehavior {
+			get { return (FillBehavior) GetValue (FillBehaviorProperty); }
+			set { SetValue (FillBehaviorProperty, value); }
+		}
+
+		public RepeatBehavior RepeatBehavior {
+			get { return (RepeatBehavior) GetValue (RepeatBehaviorProperty); }
+			set { SetValue (RepeatBehaviorProperty, value); }
+		}
+
+		public double SpeedRatio {
+			get { return (double) GetValue (SpeedRatioProperty); }
+			set { SetValue (SpeedRatioProperty, value); }
+		}
 	}
 
 	partial class TimelineGroup {
 		public static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.TIMELINEGROUP, "Children", typeof (TimelineCollection));
+
+		public TimelineCollection Children {
+			get { return (TimelineCollection) GetValue (ChildrenProperty); }
+			set { SetValue (ChildrenProperty, value); }
+		}
 	}
 }
 
@@ -479,25 +1598,80 @@ namespace System.Windows.Shapes {
 		public static readonly DependencyProperty X2Property = DependencyProperty.Lookup (Kind.LINE, "X2", typeof (double));
 		public static readonly DependencyProperty Y1Property = DependencyProperty.Lookup (Kind.LINE, "Y1", typeof (double));
 		public static readonly DependencyProperty Y2Property = DependencyProperty.Lookup (Kind.LINE, "Y2", typeof (double));
+
+		public double X1 {
+			get { return (double) GetValue (X1Property); }
+			set { SetValue (X1Property, value); }
+		}
+
+		public double X2 {
+			get { return (double) GetValue (X2Property); }
+			set { SetValue (X2Property, value); }
+		}
+
+		public double Y1 {
+			get { return (double) GetValue (Y1Property); }
+			set { SetValue (Y1Property, value); }
+		}
+
+		public double Y2 {
+			get { return (double) GetValue (Y2Property); }
+			set { SetValue (Y2Property, value); }
+		}
 	}
 
 	partial class Path {
 		public static readonly DependencyProperty DataProperty = DependencyProperty.Lookup (Kind.PATH, "Data", typeof (Geometry));
+
+		public Geometry Data {
+			get { return (Geometry) GetValue (DataProperty); }
+			set { SetValue (DataProperty, value); }
+		}
 	}
 
 	partial class Polygon {
 		public static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.POLYGON, "FillRule", typeof (FillRule));
 		public static readonly DependencyProperty PointsProperty = DependencyProperty.Lookup (Kind.POLYGON, "Points", typeof (PointCollection));
+
+		public FillRule FillRule {
+			get { return (FillRule) GetValue (FillRuleProperty); }
+			set { SetValue (FillRuleProperty, value); }
+		}
+
+		public PointCollection Points {
+			get { return (PointCollection) GetValue (PointsProperty); }
+			set { SetValue (PointsProperty, value); }
+		}
 	}
 
 	partial class Polyline {
 		public static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.POLYLINE, "FillRule", typeof (FillRule));
 		public static readonly DependencyProperty PointsProperty = DependencyProperty.Lookup (Kind.POLYLINE, "Points", typeof (PointCollection));
+
+		public FillRule FillRule {
+			get { return (FillRule) GetValue (FillRuleProperty); }
+			set { SetValue (FillRuleProperty, value); }
+		}
+
+		public PointCollection Points {
+			get { return (PointCollection) GetValue (PointsProperty); }
+			set { SetValue (PointsProperty, value); }
+		}
 	}
 
 	partial class Rectangle {
 		public static readonly DependencyProperty RadiusXProperty = DependencyProperty.Lookup (Kind.RECTANGLE, "RadiusX", typeof (double));
 		public static readonly DependencyProperty RadiusYProperty = DependencyProperty.Lookup (Kind.RECTANGLE, "RadiusY", typeof (double));
+
+		public double RadiusX {
+			get { return (double) GetValue (RadiusXProperty); }
+			set { SetValue (RadiusXProperty, value); }
+		}
+
+		public double RadiusY {
+			get { return (double) GetValue (RadiusYProperty); }
+			set { SetValue (RadiusYProperty, value); }
+		}
 	}
 
 	partial class Shape {
@@ -512,5 +1686,60 @@ namespace System.Windows.Shapes {
 		public static readonly DependencyProperty StrokeProperty = DependencyProperty.Lookup (Kind.SHAPE, "Stroke", typeof (Brush));
 		public static readonly DependencyProperty StrokeStartLineCapProperty = DependencyProperty.Lookup (Kind.SHAPE, "StrokeStartLineCap", typeof (PenLineCap));
 		public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Lookup (Kind.SHAPE, "StrokeThickness", typeof (double));
+
+		public Brush Fill {
+			get { return (Brush) GetValue (FillProperty); }
+			set { SetValue (FillProperty, value); }
+		}
+
+		public Stretch Stretch {
+			get { return (Stretch) GetValue (StretchProperty); }
+			set { SetValue (StretchProperty, value); }
+		}
+
+		public DoubleCollection StrokeDashArray {
+			get { return (DoubleCollection) GetValue (StrokeDashArrayProperty); }
+			set { SetValue (StrokeDashArrayProperty, value); }
+		}
+
+		public PenLineCap StrokeDashCap {
+			get { return (PenLineCap) GetValue (StrokeDashCapProperty); }
+			set { SetValue (StrokeDashCapProperty, value); }
+		}
+
+		public double StrokeDashOffset {
+			get { return (double) GetValue (StrokeDashOffsetProperty); }
+			set { SetValue (StrokeDashOffsetProperty, value); }
+		}
+
+		public PenLineCap StrokeEndLineCap {
+			get { return (PenLineCap) GetValue (StrokeEndLineCapProperty); }
+			set { SetValue (StrokeEndLineCapProperty, value); }
+		}
+
+		public PenLineJoin StrokeLineJoin {
+			get { return (PenLineJoin) GetValue (StrokeLineJoinProperty); }
+			set { SetValue (StrokeLineJoinProperty, value); }
+		}
+
+		public double StrokeMiterLimit {
+			get { return (double) GetValue (StrokeMiterLimitProperty); }
+			set { SetValue (StrokeMiterLimitProperty, value); }
+		}
+
+		public Brush Stroke {
+			get { return (Brush) GetValue (StrokeProperty); }
+			set { SetValue (StrokeProperty, value); }
+		}
+
+		public PenLineCap StrokeStartLineCap {
+			get { return (PenLineCap) GetValue (StrokeStartLineCapProperty); }
+			set { SetValue (StrokeStartLineCapProperty, value); }
+		}
+
+		public double StrokeThickness {
+			get { return (double) GetValue (StrokeThicknessProperty); }
+			set { SetValue (StrokeThicknessProperty, value); }
+		}
 	}
 }

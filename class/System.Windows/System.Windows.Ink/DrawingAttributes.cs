@@ -42,42 +42,6 @@ namespace System.Windows.Ink
 		{
 		}
 		
-		public Color Color { 
-			get {
-				return (Color) GetValue (ColorProperty);
-			}
-			set {
-				SetValue (ColorProperty, value);
-			}
-		}
-		
-		public double Height { 
-			get {
-				return (double) GetValue (HeightProperty);
-			}
-			set {
-				SetValue (HeightProperty, value);
-			}
-		}
-		
-		public Color OutlineColor { 
-			get {
-				return (Color) GetValue (OutlineColorProperty);
-			}
-			set {
-				SetValue (OutlineColorProperty, value);
-			}
-		}
-		
-		public double Width { 
-			get {
-				return (double) GetValue (WidthProperty);
-			}
-			set {
-				SetValue (WidthProperty, value);
-			}
-		}
-		
 		internal override Kind GetKind ()
 		{
 			return Kind.DRAWINGATTRIBUTES;

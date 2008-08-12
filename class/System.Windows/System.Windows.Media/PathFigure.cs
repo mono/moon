@@ -38,21 +38,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-		public bool IsClosed {
-			get { return (bool) GetValue (IsClosedProperty); }
-			set { SetValue (IsClosedProperty, value); }
-		}
-			
-		public PathSegmentCollection Segments {
-			get { return (PathSegmentCollection) GetValue (SegmentsProperty); }
-			set { SetValue (SegmentsProperty, value); }
-		}
-
-		public Point StartPoint {
-			get { return (Point) GetValue (StartPointProperty); }
-			set { SetValue (StartPointProperty, value); }
-		}
-		
 		internal override Kind GetKind ()
 		{
 			return Kind.PATHFIGURE;

@@ -37,36 +37,6 @@ namespace System.Windows.Media {
 		{
 		}
 		
-		public Point Point1 {
-			get {
-				return (Point) GetValue (Point1Property);
-			}
-			
-			set {
-				SetValue (Point1Property, value);
-			}
-		}
-		
-		public Point Point2 {
-			get {
-				return (Point) GetValue (Point2Property);
-			}
-			
-			set {
-				SetValue (Point2Property, value);
-			}
-		}
-		
-		public Point Point3 {
-			get {
-				return (Point) GetValue (Point3Property);
-			}
-			
-			set {
-				SetValue (Point3Property, value);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.BEZIERSEGMENT;

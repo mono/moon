@@ -1,5 +1,10 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* GlobalInfo.cs, Helper.cs, Generator.cs, README, FieldInfo.cs:
+	  Implement DP accessor generation.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* GlobalInfo.cs, MemberInfo.cs, Property.cs, Generator.cs, README,
 	  MethodInfo.cs, TypeInfo.cs, FieldInfo.cs: Unify vocabulary: always
 	  use 'annotations' instead of mixing 'annotations' and 'properties'.

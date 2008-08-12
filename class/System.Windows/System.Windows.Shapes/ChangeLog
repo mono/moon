@@ -1,5 +1,10 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Polyline.cs, Path.cs, Shape.cs, Rectangle.cs, Line.cs, Polygon.cs:
+	  Implement DP accessor generation.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Ellipse.cs, Line.cs, Path.cs, Polygon.cs, Polyline.cs, Rectangle.cs,
 	  Shape.cs: Make classes partial and remove DP registration, which is
 	  now generated.

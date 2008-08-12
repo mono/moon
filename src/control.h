@@ -43,7 +43,7 @@ class Control : public FrameworkElement {
 	static DependencyProperty *BorderBrushProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0) */
 	static DependencyProperty *BorderThicknessProperty;
- 	/* @PropertyType=string,DefaultValue=CONTROL_FONT_FAMILY */
+ 	/* @PropertyType=string,DefaultValue=CONTROL_FONT_FAMILY,ManagedPropertyType=FontFamily */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;

@@ -40,26 +40,6 @@ namespace System.Windows {
 			get { throw new NotImplementedException (); }
 		}
 
-		public string EntryPointAssembly {
-			get { return (string) GetValue (EntryPointAssemblyProperty); }
-		}
-
-		public string EntryPointType {
-			get { return (string) GetValue (EntryPointTypeProperty); }
-		}
-
-		public CrossDomainAccess ExternalCallersFromCrossDomain {
-			get { return (CrossDomainAccess) GetValue (ExternalCallersFromCrossDomainProperty); }
-		}
-
-		public AssemblyPartCollection Parts {
-			get { return (AssemblyPartCollection) GetValue (PartsProperty); }
-		}
-
-		public string RuntimeVersion {
-			get { return (string) GetValue (RuntimeVersionProperty); }
-		}
-
 		public Deployment () : base (NativeMethods.deployment_new ())
 		{
 		}

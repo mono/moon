@@ -62,7 +62,7 @@ The following annotations are understood by the generator:
 	* Attached:
 	* Nullable: Creates the DP with the corresponding fields set (all
 	  defaults to false).
-	* Visibility: Not implemented.
+	* Access: Internal
 
 class/System.Windows/System.Windows/DependencyProperty.g.cs
 ===========================================================
@@ -77,6 +77,14 @@ The following annotations are understood by the generator:
 	* Namespace: (On the type where the DP is defined): The namespace
 	  of the managed class. Set to 'None' to tell the generator that 
 	  the native class has no managed equivalent.
+	* ManagedAccess:
+	* ManagedFieldAccess:
+	* ManagedAccessorAccess: 
+	* ManagedGetterAccess: 
+	* ManagedSetterAccess: Public,Internal,Protected,Private,ProtectedInternal.
+	  *Getter*/*Setter* defaults to *Accessor* value, *Accessor*/*Field* 
+	  values defaults to the ManagedAccess value, which defaults to the
+	  Access value, which defaults to Public.
 
 src/type.h
 ==========

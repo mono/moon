@@ -50,37 +50,5 @@ namespace System.Windows.Controls {
 				return NativeMethods.column_definition_get_actual_width (native);
 			}
 		}
-
-		public GridLength Width {
-			get {
-				return (GridLength) GetValue (WidthProperty);
-			}
-
-			set {
-				SetValue (WidthProperty, value);
-			}
-		}
-
-		public double MaxWidth {
-			get {
-				return (double) GetValue (MaxWidthProperty);
-			}
-
-			set {
-				SetValue (MaxWidthProperty, value);
-			}
-		}
-
-		public double MinWidth {
-			get {
-				return (double) GetValue (MinWidthProperty);
-			}
-
-			set {
-				SetValue (MinWidthProperty, value);
-			}
-		}
-		
-
 	}
 }

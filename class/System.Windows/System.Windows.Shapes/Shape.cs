@@ -39,61 +39,6 @@ namespace System.Windows.Shapes {
 		{
 		}
 
-		public Brush Fill {
-			get { return (Brush) GetValue (FillProperty); }
-			set { SetValue (FillProperty, value); }
-		}
-
-		public Stretch Stretch {
-			get { return (Stretch) GetValue (StretchProperty); }
-			set { SetValue (StretchProperty, value); }
-		}
-
-		public Brush Stroke {
-			get { return (Brush) GetValue (StrokeProperty); }
-			set { SetValue (StrokeProperty, value); }
-		}
-
-		public DoubleCollection StrokeDashArray {
-			get { return (DoubleCollection)GetValue(StrokeDashArrayProperty); }
-			set { SetValue (StrokeDashArrayProperty, value); }
-		}
-
-		public PenLineCap StrokeDashCap {
-			get { return (PenLineCap) GetValue (StrokeDashCapProperty); }
-			set { SetValue (StrokeDashCapProperty, value); }
-		}
-
-		public double StrokeDashOffset {
-			get { return (double) GetValue (StrokeDashOffsetProperty); }
-			set { SetValue (StrokeDashOffsetProperty, value); }
-		}
-
-		public PenLineCap StrokeEndLineCap {
-			get { return (PenLineCap) GetValue (StrokeEndLineCapProperty); }
-			set { SetValue (StrokeEndLineCapProperty, value); }
-		}
-
-		public PenLineJoin StrokeLineJoin {
-			get { return (PenLineJoin) GetValue (StrokeLineJoinProperty); }
-			set { SetValue (StrokeLineJoinProperty, value); }
-		}
-
-		public double StrokeMiterLimit {
-			get { return (double) GetValue (StrokeMiterLimitProperty); }
-			set { SetValue (StrokeMiterLimitProperty, value); }
-		}
-
-		public PenLineCap StrokeStartLineCap {
-			get { return (PenLineCap) GetValue (StrokeStartLineCapProperty); }
-			set { SetValue (StrokeStartLineCapProperty, value); }
-		}
-
-		public double StrokeThickness {
-			get { return (double) GetValue (StrokeThicknessProperty); }
-			set { SetValue (StrokeThicknessProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.SHAPE;

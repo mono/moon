@@ -42,16 +42,6 @@ namespace System.Windows.Media {
 		{
 		}
 		
-		public Point Point {
-			get {
-				return (Point) GetValue (PointProperty);
-			}
-			
-			set {
-				SetValue (PointProperty, value);
-			}
-		}
-		
 		internal override Kind GetKind ()
 		{
 			return Kind.LINESEGMENT;

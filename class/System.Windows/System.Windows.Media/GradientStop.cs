@@ -38,17 +38,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-
-		public Color Color {
-			get { return (Color) GetValue (ColorProperty); }
-			set { SetValue (ColorProperty, value); }
-		}
-
-		public double Offset {
-			get { return (double) GetValue (OffsetProperty); }
-			set { SetValue (OffsetProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.GRADIENTSTOP;

@@ -1,5 +1,15 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* SplineColorKeyFrame.cs, PointKeyFrame.cs, ColorAnimation.cs,
+	  TimelineGroup.cs, SplinePointKeyFrame.cs, KeyFrame.cs,
+	  PointAnimationUsingKeyFrames.cs, Timeline.cs,
+	  SplineDoubleKeyFrame.cs, DoubleAnimationUsingKeyFrames.cs,
+	  Storyboard.cs, PointAnimation.cs, ColorAnimationUsingKeyFrames.cs,
+	  BeginStoryboard.cs, DoubleKeyFrame.cs, ColorKeyFrame.cs,
+	  DoubleAnimation.cs: Implement DP accessor generation.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Animation.cs, BeginStoryboard.cs, ColorAnimation.cs,
 	  ColorAnimationUsingKeyFrames.cs, ColorKeyFrame.cs,
 	  ColorKeyFrameCollection.cs, DiscreteColorKeyFrame.cs,

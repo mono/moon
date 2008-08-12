@@ -38,16 +38,6 @@ namespace System.Windows.Media {
 		internal TranslateTransform (IntPtr raw) : base (raw)
 		{
 		}
-		
-		public double X {
-			get { return (double) GetValue (XProperty); }
-			set { SetValue (XProperty, value); }
-		}
-
-		public double Y {
-			get { return (double) GetValue (YProperty); }
-			set { SetValue (YProperty, value); }
-		}
 
 		internal override Kind GetKind ()
 		{

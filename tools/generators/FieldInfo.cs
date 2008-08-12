@@ -87,6 +87,42 @@ class FieldInfo : MemberInfo {
 		return propertyType;
 	}
 	
+	public string GetAccess ()
+	{
+		string result = Annotations.GetValue ("Access");
+		return string.IsNullOrEmpty (result) ? "Public" : result;
+	}
+	
+	public string GetManagedAccess ()
+	{
+		string result = Annotations.GetValue ("ManagedAccess");
+		return string.IsNullOrEmpty (result) ? GetAccess () : result;
+	}
+	
+	public string GetManagedFieldAccess ()
+	{
+		string result = Annotations.GetValue ("ManagedFieldAccess");
+		return string.IsNullOrEmpty (result) ? GetManagedAccess () : result;
+	}
+	
+	public string GetManagedGetterAccess ()
+	{
+		string result = Annotations.GetValue ("ManagedGetterAccess");
+		return string.IsNullOrEmpty (result) ? GetManagedAccessorAccess () : result;
+	}
+	
+	public string GetManagedSetterAccess ()
+	{
+		string result = Annotations.GetValue ("ManagedSetterAccess");
+		return string.IsNullOrEmpty (result) ? GetManagedAccessorAccess () : result;
+	}
+	
+	public string GetManagedAccessorAccess ()
+	{
+		string result = Annotations.GetValue ("ManagedAccessorAccess");
+		return string.IsNullOrEmpty (result) ? GetManagedAccess () : result;
+	}
+	
 	public string GetDPManagedPropertyType (GlobalInfo all) 
 	{
 		string property_type = Annotations.GetValue ("ManagedPropertyType");
@@ -101,16 +137,16 @@ class FieldInfo : MemberInfo {
 		
 		switch (property_type) {
 		case "char*":
-			return "string";
+			property_type = "string"; break;
 		case "gint32":
-			return "int";
+			property_type = "int"; break;
 		case "Managed":
-			return "object";
-		default:
-			if (IsDPNullable)
-				return "Nullable<" + property_type + ">";
-			else
-				return property_type;
+			property_type = "object"; break;
 		}
+
+		if (IsDPNullable)
+			return "Nullable<" + property_type + ">";
+		else
+			return property_type;
 	}
 }

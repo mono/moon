@@ -41,16 +41,7 @@ namespace System.Windows.Media.Animation
 		internal SplineColorKeyFrame (IntPtr raw) : base (raw)
 		{
 		}
-
-		public KeySpline KeySpline { 
-			get {
-				return (KeySpline) GetValue (KeySplineProperty);
-			}
-			set {
-				SetValue (KeySplineProperty, value);
-			}
-		}
-
+		
 		internal override Kind GetKind ()
 		{
 			return Kind.SPLINECOLORKEYFRAME;

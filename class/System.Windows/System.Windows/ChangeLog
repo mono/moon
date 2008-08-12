@@ -1,5 +1,12 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Style.cs, Deployment.cs, DependencyObject.cs, EventTrigger.cs,
+	  AssemblyPart.cs, UIElement.cs, DependencyObject.g.cs, Setter.cs,
+	  FrameworkElement.cs, DependencyProperty.g.cs: Implement DP accessor
+	  generation.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Application.cs, AssemblyPart.cs, DependencyObject.cs,
 	  DependencyProperty.g.cs, Deployment.cs, EventTrigger.cs,
 	  FrameworkElement.cs, Setter.cs, Style.cs, UIElement.cs: Make

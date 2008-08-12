@@ -1,5 +1,11 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Canvas.cs, UserControl.cs, Control.cs, RowDefinition.cs, Grid.cs,
+	  MediaElement.cs, TextBlock.cs, Panel.cs, ColumnDefinition.cs,
+	  InkPresenter.cs: Implement DP accessor generation.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Canvas.cs, ColumnDefinition.cs, Control.cs, Grid.cs, Image.cs,
 	  InkPresenter.cs, MediaElement.cs, Panel.cs, RowDefinition.cs,
 	  TextBlock.cs, UserControl.cs: Make classes partial and remove DP

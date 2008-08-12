@@ -84,27 +84,5 @@ namespace System.Windows.Controls {
 		{
 			element.SetValue (RowSpanProperty, value);
 		}
-
-		public bool ShowGridLines {
-			get {
-				return (bool) GetValue (ShowGridLinesProperty);
-			}
-
-			set {
-				SetValue (ShowGridLinesProperty, value);
-			}
-		}
-
-		public ColumnDefinitionCollection ColumnDefinitions {
-			get {
-				return (ColumnDefinitionCollection) GetValue (ColumnDefinitionsProperty);
-			}
-		}
-
-		public RowDefinitionCollection RowDefinitions {
-			get {
-				return (RowDefinitionCollection) GetValue (RowDefinitionsProperty);
-			}
-		}
 	}
 }

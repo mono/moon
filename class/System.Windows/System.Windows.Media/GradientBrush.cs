@@ -39,27 +39,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-
-		public ColorInterpolationMode ColorInterpolationMode {
-			get { return (ColorInterpolationMode) GetValue (ColorInterpolationModeProperty); }
-			set { SetValue (ColorInterpolationModeProperty, value); }
-		}
-
-		public GradientStopCollection GradientStops {
-			get { return (GradientStopCollection) GetValue (GradientStopsProperty); }
-			set { SetValue (GradientStopsProperty, value); }
-		}
-
-		public BrushMappingMode MappingMode {
-			get { return (BrushMappingMode) GetValue (MappingModeProperty); }
-			set { SetValue (MappingModeProperty, value); }
-		}
-
-		public GradientSpreadMethod SpreadMethod {
-			get { return (GradientSpreadMethod) GetValue (SpreadMethodProperty); }
-			set { SetValue (SpreadMethodProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.GRADIENTBRUSH;

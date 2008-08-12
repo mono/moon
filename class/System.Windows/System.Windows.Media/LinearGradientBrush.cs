@@ -37,17 +37,6 @@ namespace System.Windows.Media {
 		internal LinearGradientBrush (IntPtr raw) : base (raw)
 		{
 		}
-
-
-		public Point StartPoint {
-			get { return (Point) GetValue (StartPointProperty); }
-			set { SetValue (StartPointProperty, value); }
-		}
-
-		public Point EndPoint {
-			get { return (Point) GetValue (EndPointProperty); }
-			set { SetValue (EndPointProperty, value); }
-		}
 		
 		internal override Kind GetKind ()
 		{

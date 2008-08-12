@@ -43,15 +43,6 @@ namespace System.Windows.Controls
 		{
 		}
 		
-		public StrokeCollection Strokes { 
-			get {
-				return (StrokeCollection) GetValue (StrokesProperty);
-			}
-			set {
-				SetValue (StrokesProperty, value);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.INKPRESENTER;

@@ -93,6 +93,24 @@ public static class Helper {
 		Environment.CurrentDirectory = path;
 	}
 	
+	public static void WriteAccess (StringBuilder text, string access)
+	{
+		switch (access) {
+		case "Public":
+			text.Append ("public"); return;
+		case "ProtectedInternal":
+			text.Append ("protected internal"); return;
+		case "Protected":
+			text.Append ("protected"); return;
+		case "Internal":
+			text.Append ("internal"); return;
+		case "Private":
+			text.Append ("private"); return;
+		default:
+			throw new Exception (string.Format ("Invalid access: '{0}'", access));
+		}
+	}
+	
 	public static void WriteVersion (StringBuilder text, int SilverlightVersion)
 	{
 		text.Append ("SL_");

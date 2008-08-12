@@ -42,32 +42,5 @@ namespace System.Windows.Media {
 		{
 			return Kind.TIMELINEMARKER;
 		}
-		
-		public string Text { 
-			get {
-				return (string) GetValue (TextProperty);
-			}
-			set {
-				SetValue (TextProperty, value);
-			}
-		}
-		
-		public TimeSpan Time { 
-			get {
-				return (TimeSpan) GetValue (TimeProperty);
-			}
-			set {
-				SetValue (TimeProperty, value); 
-			}
-		}
-		
-		public string Type { 
-			get {
-				return (string) GetValue (TypeProperty);
-			}
-			set {
-				SetValue (TypeProperty, value);
-			}
-		}
 	}
 }

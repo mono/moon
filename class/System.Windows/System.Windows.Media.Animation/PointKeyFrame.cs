@@ -42,15 +42,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 
-		public Nullable<Point> Value { 
-			get {
-				return (Nullable<Point>) GetValue (ValueProperty);
-			}
-			set {
-				SetValue (ValueProperty, value);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.POINTKEYFRAME;

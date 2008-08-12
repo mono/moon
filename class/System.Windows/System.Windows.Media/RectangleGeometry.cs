@@ -38,21 +38,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-		public double RadiusX {
-			get { return (double) GetValue (RadiusXProperty); }
-			set { SetValue (RadiusXProperty, value); }
-		}
-
-		public double RadiusY {
-			get { return (double) GetValue (RadiusYProperty); }
-			set { SetValue (RadiusYProperty, value); }
-		}
-
-		public Rect Rect {
-			get { return (Rect) GetValue (RectProperty); }
-			set { SetValue (RectProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.RECTANGLEGEOMETRY;

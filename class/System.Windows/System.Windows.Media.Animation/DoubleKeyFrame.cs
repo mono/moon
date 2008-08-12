@@ -43,15 +43,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 
-		public Nullable<double> Value { 
-			get {
-				return (Nullable<double>) GetValue (ValueProperty);
-			}
-			set {
-				SetValue (ValueProperty, value);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.DOUBLEKEYFRAME;

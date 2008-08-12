@@ -122,17 +122,12 @@ class Generator {
 			text.AppendLine (" {");
 			
 			fields.Sort (new Members.MembersSortedByName <FieldInfo> ());
+			
+			// The DP registration
 			foreach (FieldInfo field in fields) {
 				text.Append ("\t\t");
-				switch (field.Annotations.GetValue ("Access")) {
-				case "Internal":
-					text.Append ("private ");
-					break;
-				default:
-					text.Append ("public ");
-					break;
-				}
-				text.Append ("static readonly DependencyProperty ");
+				Helper.WriteAccess (text, field.GetManagedFieldAccess ());
+				text.Append (" static readonly DependencyProperty ");
 				text.Append (field.Name);
 				text.Append (" = DependencyProperty.Lookup (Kind.");
 				text.Append (field.ParentType.KindName);
@@ -141,7 +136,41 @@ class Generator {
 				text.Append ("\", typeof (");
 				text.Append (field.GetDPManagedPropertyType (all));
 				text.AppendLine ("));");
-			}			
+			}
+			
+			foreach (FieldInfo field in fields) {
+				text.AppendLine ();
+				text.Append ("\t\t");
+				Helper.WriteAccess (text, field.GetManagedAccessorAccess ());
+				text.Append (" ");
+				text.Append (field.GetDPManagedPropertyType (all));
+				text.Append (" ");
+				text.Append (field.Name.Substring (0, field.Name.LastIndexOf ("Property")));
+				text.AppendLine (" {");
+				
+				text.Append ("\t\t\t");
+				if (field.GetManagedAccessorAccess () != field.GetManagedGetterAccess ()) {
+					Helper.WriteAccess (text, field.GetManagedGetterAccess ());
+					text.Append (" ");
+				}
+				text.Append ("get { return (");
+				text.Append (field.GetDPManagedPropertyType (all));
+				text.Append (") GetValue (");
+				text.Append (field.Name);
+				text.AppendLine ("); }");
+				if (!field.IsDPReadOnly) {
+					text.Append ("\t\t\t");
+					if (field.GetManagedAccessorAccess () != field.GetManagedSetterAccess ()) {
+						Helper.WriteAccess (text, field.GetManagedSetterAccess ());
+						text.Append (" ");
+					}
+					text.Append ("set { SetValue (");
+					text.Append (field.Name);
+					text.AppendLine (", value); }");
+				}
+				text.AppendLine ("\t\t}");
+			}
+			
 			text.AppendLine ("\t}");
 		}
 		text.AppendLine ("}");		
@@ -247,8 +276,12 @@ class Generator {
 				if (has_default_value || (is_full && !has_default_value))
 					text.Append (", ");
 				if (propertyType != null) {
-					text.Append ("Type::");
-					text.Append (propertyType.KindName);
+					if (propertyType.IsEnum) {
+						text.Append ("Type::INT32");
+					} else {
+						text.Append ("Type::");
+						text.Append (propertyType.KindName);
+					}
 				} else {
 					text.Append ("Type::INVALID");
 					//Console.WriteLine ("{0} does not define its property type.", field.FullName);

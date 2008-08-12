@@ -44,16 +44,5 @@ namespace System.Windows.Documents {
 		{
 			return Kind.RUN;
 		}
-
-		public string Text {
-			get {
-				return (string) GetValue (TextProperty);
-			}
-			
-			set {
-				SetValue (TextProperty, value);
-			}
-		}
-		
 	}
 }

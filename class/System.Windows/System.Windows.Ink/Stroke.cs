@@ -41,24 +41,6 @@ namespace System.Windows.Ink
 		internal Stroke (IntPtr raw) : base (raw)
 		{
 		}
-		
-		public DrawingAttributes DrawingAttributes { 
-			get {
-				return (DrawingAttributes) GetValue (DrawingAttributesProperty);
-			}
-			set {
-				SetValue (DrawingAttributesProperty, value);
-			}
-		}
-		
-		public StylusPointCollection StylusPoints { 
-			get {
-				return (StylusPointCollection) GetValue (StylusPointsProperty);
-			}
-			set {
-				SetValue (StylusPointsProperty, value);
-			}
-		}
 
 		public Rect GetBounds ()
 		{

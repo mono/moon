@@ -49,16 +49,6 @@ namespace System.Windows {
 		{
 		}
 
-		public string Source {
-			get {
-				return (string) GetValue (SourceProperty);
-			}
-
-			set {
-				SetValue (SourceProperty, value);
-			}
-		}
-
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif

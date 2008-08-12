@@ -45,16 +45,6 @@ namespace System.Windows {
 			Property = property;
 			Value = value;
 		}
-
-		public DependencyProperty Property {
-			get { return (DependencyProperty)GetValue (PropertyProperty); }
-			set { SetValue (PropertyProperty, value); }
-		}
-
-		public object Value {
-			get { return (object)GetValue (ValueProperty); }
-			set { SetValue (ValueProperty, value); }
-		}
 	}
 
 }

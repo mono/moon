@@ -37,27 +37,7 @@ namespace System.Windows.Shapes {
 		internal Line (IntPtr raw) : base (raw)
 		{
 		}
-		
-		public double X1 {
-			get { return (double) GetValue (X1Property); }
-			set { SetValue (X1Property, value); }
-		}
-
-		public double Y1 {
-			get { return (double) GetValue (Y1Property); }
-			set { SetValue (Y1Property, value); }
-		}
-
-		public double X2 {
-			get { return (double) GetValue (X2Property); }
-			set { SetValue (X2Property, value); }
-		}
-
-		public double Y2 {
-			get { return (double) GetValue (Y2Property); }
-			set { SetValue (Y2Property, value); }
-		}
-		
+				
 		internal override Kind GetKind ()
 		{
 			return Kind.LINE;

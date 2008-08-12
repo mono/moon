@@ -39,13 +39,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 
-
-		public Storyboard Storyboard {
-			get { return (Storyboard) GetValue(StoryboardProperty); }
-			set { SetValue(StoryboardProperty, value); }
-		}
-
-
 		internal override Kind GetKind()
 		{
 			return Kind.BEGINSTORYBOARD;

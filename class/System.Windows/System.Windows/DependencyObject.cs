@@ -73,11 +73,7 @@ namespace System.Windows {
 				objects [value] = this;
 			}
 		}
-		public string Name {
-			get { return (string) GetValue(NameProperty); }
-			set { SetValue (NameProperty, value); }
-		}
-
+		
 		static DependencyObject ()
 		{
 			NativeMethods.runtime_init (0);

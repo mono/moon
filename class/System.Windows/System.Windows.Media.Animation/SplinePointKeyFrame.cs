@@ -42,15 +42,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 
-		public KeySpline KeySpline { 
-			get {
-				return (KeySpline) GetValue (KeySplineProperty);
-			}
-			set {
-				SetValue (KeySplineProperty, value);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.SPLINEPOINTKEYFRAME;

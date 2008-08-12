@@ -72,12 +72,12 @@ namespace System.Windows.Controls {
 		
                 public static int GetZIndex (UIElement element)
                 {
-                        return (int) element.GetValue (UIElement.ZIndexProperty);
+                        return element.ZIndex;
                 }
 		
 		public static void SetZIndex (UIElement element, int value)
                 {
-                        element.SetValue (UIElement.ZIndexProperty, value);
+                        element.ZIndex = value;
                 }
 	}
 }

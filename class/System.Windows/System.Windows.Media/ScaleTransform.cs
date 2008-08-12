@@ -38,26 +38,6 @@ namespace System.Windows.Media {
 		{
 		}
 		
-		public double CenterX {
-			get { return (double) GetValue (CenterXProperty); }
-			set { SetValue (CenterXProperty, value); }
-		}
-
-		public double CenterY {
-			get { return (double) GetValue (CenterYProperty); }
-			set { SetValue (CenterYProperty, value); }
-		}
-
-		public double ScaleX {
-			get { return (double) GetValue (ScaleXProperty); }
-			set { SetValue (ScaleXProperty, value); }
-		}
-
-		public double ScaleY {
-			get { return (double) GetValue (ScaleYProperty); }
-			set { SetValue (ScaleYProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.SCALETRANSFORM;

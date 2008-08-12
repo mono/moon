@@ -42,15 +42,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 
-		public KeyTime KeyTime { 
-			get {
-				return (KeyTime) GetValue (KeyTimeProperty);
-			}
-			set {
-				SetValue (KeyTimeProperty, value);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.KEYFRAME;

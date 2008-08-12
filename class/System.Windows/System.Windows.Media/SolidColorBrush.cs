@@ -44,11 +44,6 @@ namespace System.Windows.Media {
 			SetValue (ColorProperty, c);
 		}
 		
-		public Color Color {
-			get { return (Color) GetValue (ColorProperty); }
-			set { SetValue (ColorProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.SOLIDCOLORBRUSH;

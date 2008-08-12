@@ -37,15 +37,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 		
-		public ColorKeyFrameCollection KeyFrames { 
-			get {
-				return (ColorKeyFrameCollection) GetValue (KeyFramesProperty);
-			}
-			set {
-				SetValue (KeyFramesProperty, value);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.COLORANIMATIONUSINGKEYFRAMES;

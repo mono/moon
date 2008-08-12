@@ -39,26 +39,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-
-		public Point Center {
-			get { return (Point) GetValue (CenterProperty); }
-			set { SetValue (CenterProperty, value); }
-		}
-
-		public Point GradientOrigin {
-			get { return (Point) GetValue (GradientOriginProperty); }
-			set { SetValue (GradientOriginProperty, value); }
-		}
-
-		public double RadiusX {
-			get { return (double) GetValue (RadiusXProperty); }
-			set { SetValue (RadiusXProperty, value); }
-		}
-
-		public double RadiusY {
-			get { return (double) GetValue (RadiusYProperty); }
-			set { SetValue (RadiusYProperty, value); }
-		}
 		internal override Kind GetKind ()
 		{
 			return Kind.RADIALGRADIENTBRUSH;

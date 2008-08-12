@@ -45,21 +45,5 @@ namespace System.Windows.Controls {
 		{
 			return Kind.PANEL;
 		}
-		
-		public Brush Background {
-			get {
-				return (Brush) GetValue (BackgroundProperty);
-			}
-			
-			set {
-				SetValue (BackgroundProperty, value);
-			}
-		}
-		
-		public UIElementCollection Children {
-			get {
-				return (UIElementCollection) GetValue (ChildrenProperty);
-			}
-		}
 	}
 }

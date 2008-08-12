@@ -47,15 +47,5 @@ namespace System.Windows.Controls {
 		{
 			return Kind.USERCONTROL;
 		}
-
-		protected UIElement Content {
-			get {
-				return (UIElement) GetValue (ContentProperty);
-			}
-
-			set {
-				SetValue (ContentProperty, value);
-			}
-		}
 	}
 } 

@@ -414,9 +414,9 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *MarkersProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly */
 	static DependencyProperty *NaturalDurationProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly */
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int */
 	static DependencyProperty *NaturalVideoHeightProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly */
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int */
 	static DependencyProperty *NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan */
 	static DependencyProperty *PositionProperty;

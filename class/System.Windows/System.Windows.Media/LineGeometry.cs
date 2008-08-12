@@ -39,16 +39,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-		public Point EndPoint {
-			get { return (Point) GetValue (EndPointProperty); }
-			set { SetValue (EndPointProperty, value); }
-		}
-
-		public Point StartPoint {
-			get { return (Point) GetValue (StartPointProperty); }
-			set { SetValue (StartPointProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.LINEGEOMETRY;

@@ -41,16 +41,6 @@ namespace System.Windows.Shapes {
 		{
 		}
 		
-		public FillRule FillRule {
-			get { return (FillRule) GetValue (FillRuleProperty); }
-			set { SetValue (FillRuleProperty, value); }
-		}
-
-		public PointCollection Points {
-			get { return (PointCollection)GetValue (PointsProperty); }
-			set { SetValue (PointsProperty, value); }
-		}
-		
 		internal override Kind GetKind ()
 		{
 			return Kind.POLYGON;

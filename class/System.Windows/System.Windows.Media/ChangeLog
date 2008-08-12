@@ -1,5 +1,19 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* PolyLineSegment.cs, RadialGradientBrush.cs, RotateTransform.cs,
+	  Geometry.cs, LinearGradientBrush.cs, TileBrush.cs,
+	  GradientBrush.cs, BezierSegment.cs, LineGeometry.cs,
+	  GeometryGroup.cs, EllipseGeometry.cs, LineSegment.cs,
+	  RectangleGeometry.cs, ImageBrush.cs, TransformGroup.cs,
+	  ArcSegment.cs, PolyQuadraticBezierSegment.cs, SkewTransform.cs,
+	  PathGeometry.cs, TimelineMarker.cs, VideoBrush.cs, Brush.cs,
+	  TranslateTransform.cs, PathFigure.cs, MatrixTransform.cs,
+	  QuadraticBezierSegment.cs, GradientStop.cs, SolidColorBrush.cs,
+	  ScaleTransform.cs, PolyBezierSegment.cs: Implement DP accessor
+	  generation.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* ArcSegment.cs, BezierSegment.cs, Brush.cs, EllipseGeometry.cs,
 	  Geometry.cs, GeometryGroup.cs, GradientBrush.cs, GradientStop.cs,
 	  ImageBrush.cs, LinearGradientBrush.cs, LineGeometry.cs,

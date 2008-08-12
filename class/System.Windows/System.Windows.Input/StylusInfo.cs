@@ -42,24 +42,6 @@ namespace System.Windows.Input
 		{
 		}
 
-		public TabletDeviceType DeviceType { 
-			get {
-				return (TabletDeviceType) GetValue (DeviceTypeProperty);
-			}
-			set {
-				SetValue (DeviceTypeProperty, value);
-			}
-		}
-		
-		public bool IsInverted {
-			get {
-				return (bool) GetValue (IsInvertedProperty);
-			}
-			set {
-				SetValue (IsInvertedProperty, value);
-			}
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.STYLUSINFO;

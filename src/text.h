@@ -40,7 +40,7 @@ class Inline : public DependencyObject {
 	virtual ~Inline ();
 
  public:
- 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY */
+ 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
@@ -52,7 +52,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *FontWeightProperty;
  	/* @PropertyType=Brush */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone */
+ 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */
 	static DependencyProperty *TextDecorationsProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2,ManagedPropertyType=XmlLanguage */
 	static DependencyProperty *LanguageProperty;
@@ -191,7 +191,7 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *ActualHeightProperty;
  	/* @PropertyType=double,ReadOnly */
 	static DependencyProperty *ActualWidthProperty;
- 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY */
+ 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
@@ -207,7 +207,7 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *InlinesProperty;
  	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
- 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone */
+ 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */
 	static DependencyProperty *TextDecorationsProperty;
  	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap */
 	static DependencyProperty *TextWrappingProperty;

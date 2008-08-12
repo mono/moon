@@ -86,59 +86,6 @@ namespace System.Windows {
 			throw new NotImplementedException ();
 		}
 
-		public double ActualHeight {
-			get { return (double) GetValue (ActualHeightProperty); }
-		}
-
-		public double ActualWidth {
-			get { return (double) GetValue (ActualWidthProperty); }
-		}
-
-		public Cursor Cursor {
-			get { return (Cursor) GetValue (CursorProperty); }
-			set { SetValue (CursorProperty, value);	}
-		}
-
-		public object DataContext {
-			get { return (Cursor) GetValue (DataContextProperty); }
-			set { SetValue (DataContextProperty, value);	}
-		}
-		
-		public double Height {
-			get { return (double) GetValue (HeightProperty); }
-			set { SetValue (HeightProperty, value); }
-		}
-
-		public HorizontalAlignment HorizontalAlignment {
-			get { return (HorizontalAlignment) GetValue (HorizontalAlignmentProperty); }
-			set { SetValue (HorizontalAlignmentProperty, value); }
-		}
-
-		public XmlLanguage Language {
-			get { return (XmlLanguage) GetValue (LanguageProperty); }
-			set { SetValue (LanguageProperty, value); }
-		}
-
-		public double MaxHeight {
-			get { return (double) GetValue (MaxHeightProperty); }
-			set { SetValue (MaxHeightProperty, value); }
-		}
-
-		public double MaxWidth {
-			get { return (double) GetValue (MaxWidthProperty); }
-			set { SetValue (MaxWidthProperty, value); }
-		}
-
-		public double MinHeight {
-			get { return (double) GetValue (MinHeightProperty); }
-			set { SetValue (MinHeightProperty, value); }
-		}
-
-		public double MinWidth {
-			get { return (double) GetValue (MinWidthProperty); }
-			set { SetValue (MinWidthProperty, value); }
-		}
-
 		public DependencyObject Parent {
 #if NET_2_1
 			[SecuritySafeCritical]
@@ -151,35 +98,6 @@ namespace System.Windows {
 				Kind k = NativeMethods.dependency_object_get_object_type (parent_handle);
 				return DependencyObject.Lookup (k, parent_handle);
 			}
-		}
-
-		public ResourceDictionary Resources {
-			get { return (ResourceDictionary)GetValue(ResourcesProperty); }
-		}
-
-		// XXX need to make sure we can set an arbitrary object in an unmanaged DP
-		public object Tag {
-			get { return (object) GetValue (TagProperty); }
-			set { SetValue (TagProperty, value); }
-		}
-
-		public Thickness Margin {
-			get { return (Thickness) GetValue (MarginProperty); }
-			set { SetValue (MarginProperty, value); }
-		}
-
-		public TriggerCollection Triggers {
-			get { return (TriggerCollection) GetValue (TriggersProperty); }
-		}
-		
-		public VerticalAlignment VerticalAlignment {
-			get { return (VerticalAlignment) GetValue (VerticalAlignmentProperty); }
-			set { SetValue (VerticalAlignmentProperty, value); }
-		}
-
-		public double Width {
-			get { return (double) GetValue (WidthProperty); }
-			set { SetValue (WidthProperty, value); }
 		}
 
 		[MonoTODO ("figure out how to construct routed events")]

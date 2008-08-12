@@ -40,64 +40,7 @@ namespace System.Windows.Media.Animation {
 		public Timeline () : base (NativeMethods.timeline_new ())
 		{
 		}
-		
-		public bool AutoReverse {
-			get {
-				return (bool) GetValue (AutoReverseProperty);
-			}
-			
-			set {
-				SetValue (AutoReverseProperty, value);
-			}
-		}
-		
-		public Nullable<TimeSpan> BeginTime {
-			get {
-				return (Nullable<TimeSpan>) GetValue (BeginTimeProperty);
-			}
-			
-			set {
-				SetValue (BeginTimeProperty, value);
-			}
-		}
-		public Duration Duration {
-			get {
-				return (Duration) GetValue (DurationProperty);
-			}
-			
-			set {
-				SetValue (DurationProperty, value);
-			}
-		}
-		public FillBehavior FillBehavior {
-			get {
-				return (FillBehavior) GetValue (FillBehaviorProperty);
-			}
-			
-			set {
-				SetValue (FillBehaviorProperty, value);
-			}
-		}
-		public RepeatBehavior RepeatBehavior {
-			get {
-				return (RepeatBehavior) GetValue (RepeatBehaviorProperty);
-			}
-			
-			set {
-				SetValue (RepeatBehaviorProperty, value);
-			}
-		}
-		
-		public double SpeedRatio {
-			get {
-				return (double) GetValue (SpeedRatioProperty);
-			}
-			
-			set {
-				SetValue (SpeedRatioProperty, value);
-			}
-		}
-		
+				
 		internal override Kind GetKind ()
 		{
 			return Kind.TIMELINE;

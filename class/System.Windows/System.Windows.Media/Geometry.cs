@@ -39,16 +39,6 @@ namespace System.Windows.Media {
 		{
 		}
 		
-		public Transform Transform {
-			get {
-				return (Transform) GetValue (TransformProperty);
-			}
-			
-			set {
-				SetValue (TransformProperty, value);
-			}
-		}
-		
 		internal override Kind GetKind ()
 		{
 			return Kind.GEOMETRY;

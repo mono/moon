@@ -1,3 +1,9 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* trigger.h, control.h, deployment.h, text.h, dependencyproperty.g.cpp,
+	  style.h, uielement.h, grid.h, media.h: Tweaked annotations to
+	  support managed DP accessor generation.
+
 2008-08-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (TimelineMarkerCollection::Add): Chain up to direct

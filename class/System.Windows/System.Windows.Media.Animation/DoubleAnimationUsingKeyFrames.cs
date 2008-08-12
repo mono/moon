@@ -38,12 +38,6 @@ namespace System.Windows.Media.Animation
 		{
 		}
 
-
-		public DoubleKeyFrameCollection KeyFrames {
-			get { return (DoubleKeyFrameCollection) GetValue (KeyFramesProperty); }
-			set { SetValue (KeyFramesProperty, value); }
-		}
-
 		internal override Kind GetKind()
 		{
 			return Kind.DOUBLEANIMATIONUSINGKEYFRAMES;

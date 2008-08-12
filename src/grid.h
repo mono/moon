@@ -146,9 +146,9 @@ class Grid : public Panel {
 	// as DependencyProperties but as regular properties on the c#
 	// side
 	//
- 	/* @PropertyType=ColumnDefinitionCollection,Access=Internal */
+ 	/* @PropertyType=ColumnDefinitionCollection */
 	static DependencyProperty *ColumnDefinitionsProperty;
- 	/* @PropertyType=RowDefinitionCollection,Access=Internal */
+ 	/* @PropertyType=RowDefinitionCollection */
 	static DependencyProperty *RowDefinitionsProperty;
 };
 

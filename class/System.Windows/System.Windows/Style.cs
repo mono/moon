@@ -60,15 +60,6 @@ namespace System.Windows {
 		public bool IsSealed {
 			get { return isSealed; }
 		}
-
-		public SetterBaseCollection Setters {
-			get { return (SetterBaseCollection)GetValue (SettersProperty); }
-		}
-
-		public Type TargetType {
-			get { return targetType; }
-			set { targetType = value; }
-		}
 	}
 
 }

@@ -41,16 +41,7 @@ namespace System.Windows.Media.Animation
 		internal ColorKeyFrame (IntPtr raw) : base (raw)
 		{
 		}
-
-		public Nullable<Color> Value { 
-			get {
-				return (Nullable<Color>) GetValue (ValueProperty);
-			}
-			set {
-				SetValue (ValueProperty, value);
-			}
-		}
-
+		
 		internal override Kind GetKind ()
 		{
 			return Kind.COLORKEYFRAME;

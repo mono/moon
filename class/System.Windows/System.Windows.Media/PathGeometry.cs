@@ -38,11 +38,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-		public PathFigureCollection Figures {
-			get { return (PathFigureCollection) GetValue (FiguresProperty); }
-			set { SetValue (FiguresProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.PATHGEOMETRY;

@@ -34,28 +34,9 @@ using Mono;
 namespace System.Windows.Media.Animation {
 
 	public sealed partial class Storyboard : ParallelTimeline {
-		public string TargetName {
-			get { return (string) GetValue(TargetNameProperty); }
-			set { 
-				// FIXME Exception if setting on running
-				SetValue (TargetNameProperty, value); 
-			}
-		}
-
-		public PropertyPath TargetProperty {
-			get {
-				string p = (string) GetValue (TargetPropertyProperty);
-				return new PropertyPath (p);
-			}
-			set {
-				// FIXME Exception if setting on running
-				SetValue (TargetPropertyProperty, value.Path);
-			}
-		}
-
-		static Storyboard ()
-		{
-		}
+		// FIXME For TargetName and TargetProperty
+		// FIXME Exception if setting on running
+		// This check needs to go in native code
 
 		internal Storyboard (IntPtr raw) : base (raw)
 		{

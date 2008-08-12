@@ -39,27 +39,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-
-		public double AngleX {
-			get { return (double) GetValue (AngleXProperty); }
-			set { SetValue (AngleXProperty, value); }
-		}
-
-		public double AngleY {
-			get { return (double) GetValue (AngleYProperty); }
-			set { SetValue (AngleYProperty, value); }
-		}
-
-		public double CenterX {
-			get { return (double) GetValue (CenterXProperty); }
-			set { SetValue (CenterXProperty, value); }
-		}
-
-		public double CenterY {
-			get { return (double) GetValue (CenterYProperty); }
-			set { SetValue (CenterYProperty, value); }
-		}
-
 		internal override Kind GetKind ()
 		{
 			return Kind.SKEWTRANSFORM;

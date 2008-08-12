@@ -46,45 +46,5 @@ namespace System.Windows.Documents {
 		{
 			return Kind.GLYPHS;
 		}
-		
-		public Brush Fill {
-			get { return (Brush) GetValue (FillProperty); }
-			set { SetValue (FillProperty, value); }
-		}
-		
-		public double FontRenderingEmSize {
-			get { return (double) GetValue (FontRenderingEmSizeProperty); }
-			set { SetValue (FontRenderingEmSizeProperty, value); }
-		}
-		
-		public Uri FontUri {
-			get { return (Uri) GetValue (FontUriProperty); }
-			set { SetValue (FontUriProperty, value); }
-		}
-		
-		public string Indices {
-			get { return (string) GetValue (IndicesProperty); }
-			set { SetValue (IndicesProperty, value); }
-		}
-		
-		public double OriginX {
-			get { return (double) GetValue (OriginXProperty); }
-			set { SetValue (OriginXProperty, value); }
-		}
-		
-		public double OriginY {
-			get { return (double) GetValue (OriginYProperty); }
-			set { SetValue (OriginYProperty, value); }
-		}
-		
-		public StyleSimulations StyleSimulations {
-			get { return (StyleSimulations) GetValue (StyleSimulationsProperty); }
-			set { SetValue (StyleSimulationsProperty, value); }
-		}
-		
-		public string UnicodeString {
-			get { return (string) GetValue (UnicodeStringProperty); }
-			set { SetValue (UnicodeStringProperty, value); }
-		}
 	}
 }
