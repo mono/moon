@@ -30,17 +30,5 @@ namespace System.Windows
 {
 	public sealed partial class EventTrigger : DependencyObject 
 	{
-		public EventTrigger(): base (Mono.NativeMethods.event_trigger_new ())
-		{
-		}
-
-		internal EventTrigger (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind()
-		{
-			return Kind.EVENTTRIGGER;
-		}
 	}
 }

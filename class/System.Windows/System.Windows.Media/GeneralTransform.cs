@@ -32,19 +32,6 @@ using System.Security;
 namespace System.Windows.Media {
 
 	public abstract partial class GeneralTransform : DependencyObject {
-		
-		protected GeneralTransform () : base (NativeMethods.general_transform_new ())
-		{
-		}
-		
-		internal GeneralTransform (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.GENERALTRANSFORM;
-		}
 
 #if NET_2_1
 		[SecuritySafeCritical]

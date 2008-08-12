@@ -1,5 +1,21 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Animation.cs, BeginStoryboard.cs, ColorAnimation.cs,
+	  ColorAnimationUsingKeyFrames.cs, ColorKeyFrame.cs,
+	  ColorKeyFrameCollection.cs, DiscreteColorKeyFrame.cs,
+	  DiscreteDoubleKeyFrame.cs, DiscretePointKeyFrame.cs,
+	  DoubleAnimation.cs, DoubleAnimationUsingKeyFrames.cs,
+	  DoubleKeyFrame.cs, DoubleKeyFrameCollection.cs, KeyFrame.cs,
+	  KeySpline.cs, LinearColorKeyFrame.cs, LinearDoubleKeyFrame.cs,
+	  LinearPointKeyFrame.cs, ParallelTimeline.cs, PointAnimation.cs,
+	  PointAnimationUsingKeyFrames.cs, PointKeyFrame.cs,
+	  PointKeyFrameCollection.cs, SplineColorKeyFrame.cs,
+	  SplineDoubleKeyFrame.cs, SplinePointKeyFrame.cs, Storyboard.cs,
+	  Timeline.cs, TimelineGroup.cs: Generate public ctor, internal ctor
+	  and GetKind for classes inheriting from DependencyObject.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* SplineColorKeyFrame.cs, PointKeyFrame.cs, ColorAnimation.cs,
 	  TimelineGroup.cs, SplinePointKeyFrame.cs, KeyFrame.cs,
 	  PointAnimationUsingKeyFrames.cs, Timeline.cs,

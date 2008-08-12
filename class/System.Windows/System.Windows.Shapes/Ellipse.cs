@@ -31,17 +31,5 @@ namespace System.Windows.Shapes {
 
 	public sealed partial class Ellipse : Shape {
 
-		public Ellipse () : base (Mono.NativeMethods.ellipse_new ())
-		{
-		}
-
-		internal Ellipse (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.ELLIPSE;
-		}
 	}
 }

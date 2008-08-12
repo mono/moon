@@ -31,17 +31,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class RotateTransform : Transform {
 
-		public RotateTransform () : base (NativeMethods.rotate_transform_new ())
-		{
-		}
-
-		internal RotateTransform (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.ROTATETRANSFORM;
-		}
 	}
 }

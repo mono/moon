@@ -30,17 +30,5 @@ using Mono;
 namespace System.Windows.Media {
 	public sealed partial class TimelineMarker : DependencyObject {
 	
-		public TimelineMarker() : base (NativeMethods.timeline_marker_new ())
-		{
-		}
-		
-		internal TimelineMarker (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.TIMELINEMARKER;
-		}
 	}
 }

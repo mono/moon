@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class LinearPointKeyFrame : PointKeyFrame
 	{		
-		public LinearPointKeyFrame() : base (NativeMethods.linear_point_key_frame_new ())
-		{
-		}
-		
-		internal LinearPointKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.LINEARPOINTKEYFRAME;
-		}
 	}
 }

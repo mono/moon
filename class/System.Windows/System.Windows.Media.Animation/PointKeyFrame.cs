@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public abstract partial class PointKeyFrame : KeyFrame
 	{		
-		public PointKeyFrame() : base (NativeMethods.point_key_frame_new ())
-		{
-		}
-		
-		internal PointKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.POINTKEYFRAME;
-		}
 	}
 }

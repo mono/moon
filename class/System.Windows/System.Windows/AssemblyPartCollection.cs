@@ -33,19 +33,7 @@ using Mono;
 
 namespace System.Windows {
 	public sealed partial class AssemblyPartCollection : PresentationFrameworkCollection<AssemblyPart> {
-		public AssemblyPartCollection () : base (NativeMethods.assembly_part_collection_new ())
-		{
-		}
-		
-		internal AssemblyPartCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.ASSEMBLYPART_COLLECTION;
-		}
-
+	
 		public override void Add (AssemblyPart value)
 		{
 			AddImpl (value);

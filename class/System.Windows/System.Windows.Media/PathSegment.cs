@@ -30,17 +30,5 @@ using Mono;
 namespace System.Windows.Media {
 	public abstract partial class PathSegment : DependencyObject {
 		
-		internal PathSegment (IntPtr raw) : base (raw)
-		{
-		}
-		
-		protected PathSegment () : base (NativeMethods.path_segment_new ())
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.PATHSEGMENT;
-		}
 	}
 }

@@ -1,5 +1,11 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* StylusInfo.cs, StylusPointCollection.cs: Generate public ctor,
+	  internal ctor and GetKind for classes inheriting from
+	  DependencyObject.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* StylusPointCollection.cs: Make classes partial.
 
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 

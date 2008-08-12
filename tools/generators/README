@@ -64,6 +64,14 @@ The following annotations are understood by the generator:
 	  defaults to false).
 	* Access: Internal
 
+class/System.Windows/System.Windows/DependencyObject.g.cs
+=========================================================
+	
+The following annotations are understood by the generator:
+	* Namespace: The namespace of the managed class. Set to 
+	  'None' to tell the generator the class has no managed
+	  equivalent.
+
 class/System.Windows/System.Windows/DependencyProperty.g.cs
 ===========================================================
 All our managed dependency properties.
@@ -75,8 +83,10 @@ The following annotations are understood by the generator:
 	* ManagedDeclaringType: The managed type where the DependencyProperty
 	  should be declared (used for UIElement/FrameworkElement mess).
 	* Namespace: (On the type where the DP is defined): The namespace
-	  of the managed class. Set to 'None' to tell the generator that 
-	  the native class has no managed equivalent.
+	  of the managed class.
+	* ManagedDependencyProperties: (On the type where the DP is defined).
+	  Valid values: 'Generate', 'Manual' and 'None'. Defaults to 'Generate',
+	  if 'Manual' or 'None' no DPs are generated for that class.
 	* ManagedAccess:
 	* ManagedFieldAccess:
 	* ManagedAccessorAccess: 

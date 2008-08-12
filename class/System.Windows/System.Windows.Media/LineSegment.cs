@@ -30,21 +30,5 @@ using Mono;
 namespace System.Windows.Media {
 	public sealed partial class LineSegment : PathSegment {
 		
-		static LineSegment ()
-		{
-		}
-
-		public LineSegment () : base (Mono.NativeMethods.line_segment_new ())
-		{
-		}
-		
-		internal LineSegment (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.LINESEGMENT;
-		}
 	}
 }

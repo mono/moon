@@ -28,18 +28,5 @@
 using Mono;
 namespace System.Windows.Media {
 	public sealed partial class BezierSegment : PathSegment {
-		
-		public BezierSegment () : base (NativeMethods.bezier_segment_new ())
-		{
-		}
-		
-		internal BezierSegment (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.BEZIERSEGMENT;
-		}
 	}
 }

@@ -39,14 +39,6 @@ namespace System.Windows {
 		SetterBaseCollection setters;
 		Type targetType;
 
-		internal Style (IntPtr raw) : base (raw)
-		{
-		}
-
-		public Style () : base (NativeMethods.style_new ())
-		{
-		}
-
 		public Style (Type targetType)
 		{
 			this.targetType = targetType;

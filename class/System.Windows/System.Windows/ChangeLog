@@ -1,3 +1,11 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* AssemblyPart.cs, AssemblyPartCollection.cs, DependencyObject.g.cs,
+	  DependencyProperty.g.cs, Deployment.cs, EventTrigger.cs,
+	  FrameworkElement.cs, Setter.cs, Style.cs, UIElement.cs: Generate
+	  public ctor, internal ctor and GetKind for classes inheriting from
+	  DependencyObject.
+
 2008-08-12  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyObject.cs: add Style support to CreateObject.

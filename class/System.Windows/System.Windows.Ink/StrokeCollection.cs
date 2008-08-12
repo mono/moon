@@ -34,19 +34,7 @@ namespace System.Windows.Ink
 {
 	public sealed partial class StrokeCollection : PresentationFrameworkCollection <Stroke>
 	{
-		public StrokeCollection() : base (NativeMethods.stroke_collection_new ())
-		{
-		}
-		
-		internal StrokeCollection (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.STROKE_COLLECTION;
-		}
-
+	
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif

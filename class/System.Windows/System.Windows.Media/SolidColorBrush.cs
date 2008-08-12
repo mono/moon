@@ -31,22 +31,10 @@ namespace System.Windows.Media {
 
 	public sealed partial class SolidColorBrush : Brush {
 
-		public SolidColorBrush () : base (NativeMethods.solid_color_brush_new ())
-		{
-		}
-		
-		internal SolidColorBrush (IntPtr raw) : base (raw)
-		{
-		}
-
 		public SolidColorBrush (Color c) : this ()
 		{
 			SetValue (ColorProperty, c);
 		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.SOLIDCOLORBRUSH;
-		}
+
 	}
 }

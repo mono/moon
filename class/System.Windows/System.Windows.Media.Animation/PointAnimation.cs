@@ -30,17 +30,5 @@ namespace System.Windows.Media.Animation
 {
 	public partial class PointAnimation : System.Windows.Media.Animation.Animation
 	{
-		public PointAnimation(): base (Mono.NativeMethods.point_animation_new ())
-		{
-		}
-
-		internal PointAnimation (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind()
-		{
-			return Kind.POINTANIMATION;
-		}
 	}
 }

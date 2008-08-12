@@ -14,6 +14,7 @@
 
 #include "dependencyobject.h"
 
+/* @Namespace=None */
 class TriggerAction : public DependencyObject {
  protected:
 	virtual ~TriggerAction () {}

@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public abstract partial class ColorKeyFrame : KeyFrame
 	{		
-		public ColorKeyFrame() : base (NativeMethods.color_key_frame_new ())
-		{
-		}
-		
-		internal ColorKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.COLORKEYFRAME;
-		}
 	}
 }

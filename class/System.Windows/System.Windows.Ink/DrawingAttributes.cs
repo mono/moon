@@ -34,18 +34,7 @@ namespace System.Windows.Ink
 {
 	public sealed partial class DrawingAttributes : DependencyObject
 	{
-		public DrawingAttributes() : base (NativeMethods.drawing_attributes_new ())
-		{
-		}
-		
-		internal DrawingAttributes (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.DRAWINGATTRIBUTES;
-		}
+	
 	}
 
 }

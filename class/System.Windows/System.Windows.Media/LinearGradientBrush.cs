@@ -30,17 +30,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class LinearGradientBrush : GradientBrush {
 
-		public LinearGradientBrush () : base (NativeMethods.linear_gradient_brush_new ())
-		{
-		}
-		
-		internal LinearGradientBrush (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.LINEARGRADIENTBRUSH;
-		}
 	}
 }

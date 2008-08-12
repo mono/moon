@@ -30,18 +30,6 @@ using System.Windows;
 namespace System.Windows.Media.Animation
 {
 	public sealed partial class DoubleKeyFrameCollection : PresentationFrameworkCollection<DoubleKeyFrame> {
-		public DoubleKeyFrameCollection () : base (NativeMethods.double_key_frame_collection_new ())
-		{
-		}
-
-		internal DoubleKeyFrameCollection (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.DOUBLEKEYFRAME_COLLECTION;
-		}
 
 		public override void Add (DoubleKeyFrame value)
 		{

@@ -91,6 +91,7 @@ class Collection : public DependencyObject {
 	bool RemoveAtWithError (int index, MoonError *error);
 };
 
+/* @Namespace=None */
 class DependencyObjectCollection : public Collection {
  protected:
 	virtual bool CanAdd (Value *value) { return value->AsDependencyObject ()->GetLogicalParent () == NULL; }
@@ -115,6 +116,7 @@ class DependencyObjectCollection : public Collection {
 	void MergeNames (DependencyObject *new_obj);
 };
 
+/* @Namespace=System.Windows.Media */
 class DoubleCollection : public Collection {
  protected:
 	virtual ~DoubleCollection () {}
@@ -127,6 +129,7 @@ class DoubleCollection : public Collection {
 	virtual Type::Kind GetElementType () { return Type::DOUBLE; }
 };
 
+/* @Namespace=System.Windows.Media */
 class PointCollection : public Collection {
  protected:
 	virtual ~PointCollection () {}
@@ -153,6 +156,7 @@ class CollectionIterator {
 	int index;
 };
 
+/* @Namespace=System.Windows */
 class TriggerCollection : public DependencyObjectCollection {
  protected:
 	virtual void AddedToCollection (Value *value);
@@ -168,6 +172,7 @@ class TriggerCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::EVENTTRIGGER; }
 };
 
+/* @Namespace=System.Windows */
 class TriggerActionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TriggerActionCollection () {}
@@ -180,6 +185,7 @@ class TriggerActionCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::BEGINSTORYBOARD; }
 };
 
+/* @Namespace=System.Windows */
 class ResourceDictionary : public DependencyObjectCollection {
  protected:
 	virtual ~ResourceDictionary () {}
@@ -193,6 +199,7 @@ class ResourceDictionary : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 };
 
+/* @Namespace=System.Windows.Documents,ManagedName=InlineCollection */
 class Inlines : public DependencyObjectCollection {
  protected:
 	virtual ~Inlines () {}
@@ -204,6 +211,7 @@ class Inlines : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::INLINE; }
 };
 
+/* @Namespace=System.Windows.Controls */
 class UIElementCollection : public DependencyObjectCollection {
  protected:
 	virtual void AddedToCollection (Value *value);

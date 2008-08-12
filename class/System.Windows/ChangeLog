@@ -1,5 +1,10 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* System.Windows.mdp, Makefile.am: Generate public ctor, internal ctor
+	  and GetKind for classes inheriting from DependencyObject.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile.am: Added DependencyProperty.g.cs.
 
 2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 

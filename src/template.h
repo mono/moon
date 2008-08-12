@@ -18,6 +18,7 @@
 // FrameworkTemplate
 //
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
 class FrameworkTemplate : public DependencyObject
 {
 protected:
@@ -34,6 +35,7 @@ public:
 // ControlTemplate
 //
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
 class ControlTemplate : public FrameworkTemplate
 {
 protected:

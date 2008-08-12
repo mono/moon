@@ -39,19 +39,7 @@ using Mono;
 
 namespace System.Windows {
 	public abstract partial class UIElement : DependencyObject {
-		internal UIElement () : base (NativeMethods.uielement_new ())
-		{
-		}
-		
-		internal UIElement (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.UIELEMENT;
-		}
-		
+
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif

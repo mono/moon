@@ -31,17 +31,6 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class BeginStoryboard : DependencyObject 
 	{
-		public BeginStoryboard(): base (Mono.NativeMethods.begin_storyboard_new ())
-		{
-		}
 
-		internal BeginStoryboard (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind()
-		{
-			return Kind.BEGINSTORYBOARD;
-		}
 	}
 }

@@ -31,17 +31,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class SkewTransform : Transform {
 
-		public SkewTransform () : base (NativeMethods.skew_transform_new ())
-		{
-		}
-		
-		internal SkewTransform (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.SKEWTRANSFORM;
-		}
 	}
 }

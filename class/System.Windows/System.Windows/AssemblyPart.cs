@@ -41,14 +41,6 @@ namespace System.Windows {
 			SourceProperty = DependencyProperty.Lookup (Kind.ASSEMBLYPART, "Source", typeof (string));
 		}
 
-		public AssemblyPart () : base (NativeMethods.assembly_part_new ())
-		{
-		}
-
-		internal AssemblyPart (IntPtr raw) : base (raw)
-		{
-		}
-
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif

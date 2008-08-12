@@ -34,19 +34,6 @@ namespace System.Windows.Input
 {
 	public sealed partial class StylusPointCollection : PresentationFrameworkCollection <StylusPoint>
 	{
-		public StylusPointCollection() : base (NativeMethods.stylus_point_collection_new ())
-		{
-		}
-		
-		internal StylusPointCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.STYLUSPOINT_COLLECTION;
-		}
-
 		public override void Add (StylusPoint value)
 		{
 			AddImpl (value);

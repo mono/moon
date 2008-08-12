@@ -30,17 +30,6 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class RectangleGeometry : Geometry {
-		public RectangleGeometry () : base (NativeMethods.rectangle_geometry_new ())
-		{
-		}
-		
-		internal RectangleGeometry (IntPtr raw) : base (raw)
-		{
-		}
 
-		internal override Kind GetKind ()
-		{
-			return Kind.RECTANGLEGEOMETRY;
-		}
 	}
 }

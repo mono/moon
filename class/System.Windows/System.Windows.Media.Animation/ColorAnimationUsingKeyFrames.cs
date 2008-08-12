@@ -29,17 +29,5 @@ using System;
 namespace System.Windows.Media.Animation 
 {
 	public sealed partial class ColorAnimationUsingKeyFrames : ColorAnimation {
-		public ColorAnimationUsingKeyFrames() : base (NativeMethods.color_animation_using_key_frames_new ()) 
-		{
-		}
-	
-		internal ColorAnimationUsingKeyFrames (IntPtr raw) : base (raw) 
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.COLORANIMATIONUSINGKEYFRAMES;
-		}
 	}
 }

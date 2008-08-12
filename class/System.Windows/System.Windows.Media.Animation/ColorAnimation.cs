@@ -30,17 +30,5 @@ namespace System.Windows.Media.Animation
 {
 	public partial class ColorAnimation : Animation 
 	{
-		public ColorAnimation(): base (Mono.NativeMethods.color_animation_new ())
-		{
-		}
-
-		internal ColorAnimation (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind()
-		{
-			return Kind.COLORANIMATION;
-		}
 	}
 }

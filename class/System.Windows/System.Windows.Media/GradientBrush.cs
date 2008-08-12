@@ -31,18 +31,5 @@ namespace System.Windows.Media {
 
 	public abstract partial class GradientBrush : Brush {
 
-		protected GradientBrush () : base (NativeMethods.gradient_brush_new ())
-		{
-		}
-		
-		internal GradientBrush (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.GRADIENTBRUSH;
-		}
-
 	}
 }

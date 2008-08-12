@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 #include "error.h"
 
 
+/* @Namespace=None */
 class MediaErrorEventArgs : public ErrorEventArgs {
  protected:
 	virtual ~MediaErrorEventArgs () {}
@@ -63,6 +64,7 @@ const char *media_attribute_get_value (MediaAttribute *attribute);
 void media_attribute_set_value (MediaAttribute *attribute, const char *value);
 
 
+/* @Namespace=None */
 class MediaAttributeCollection : public DependencyObjectCollection {
  protected:
 	virtual ~MediaAttributeCollection () {}
@@ -192,7 +194,7 @@ void    media_base_set_stretch (MediaBase *media, Stretch stretch);
 double media_base_get_download_progress (MediaBase *media);
 
 
-/* @Namespace=System.Windows.Media */
+/* @Namespace=System.Windows.Controls */
 class Image : public MediaBase {
 	int create_xlib_surface:1;
 	

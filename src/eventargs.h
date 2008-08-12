@@ -27,6 +27,7 @@ class UIElement;
  * after the event has been emitted.
  */
 
+/* @Namespace=None */
 class EventArgs : public DependencyObject {
 public:
 	EventArgs () {}
@@ -43,6 +44,7 @@ enum CollectionChangedAction {
 	CollectionChangedActionReset
 };
 
+/* @Namespace=None */
 class CollectionChangedEventArgs : public EventArgs {
 public:
 	CollectionChangedAction action;
@@ -59,6 +61,7 @@ public:
 	}
 };
 
+/* @Namespace=None */
 class RoutedEventArgs : public EventArgs {
 
 public:
@@ -77,6 +80,7 @@ private:
 	DependencyObject *source;
 };
 
+/* @Namespace=None */
 class KeyboardEventArgs : public RoutedEventArgs {
 public:
 	KeyboardEventArgs () { handled = false; }
@@ -100,6 +104,7 @@ private:
 	bool handled;
 };
 
+/* @Namespace=None */
 class MouseEventArgs : public RoutedEventArgs {
 public:
  	/* @GenerateCBinding */

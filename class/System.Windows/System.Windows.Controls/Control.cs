@@ -36,19 +36,6 @@ using System.Windows.Markup;
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
 		
-		protected Control ()  : base (NativeMethods.control_new ())
-		{
-		}
-		
-		internal Control (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.CONTROL;
-		}
-		
 		public virtual void OnApplyTemplate() {
 			// FIXME
 		}

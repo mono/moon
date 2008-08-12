@@ -30,17 +30,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class ScaleTransform : Transform {
 
-		public ScaleTransform () : base (NativeMethods.scale_transform_new ())
-		{
-		}
-
-		internal ScaleTransform (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.SCALETRANSFORM;
-		}
 	}
 }

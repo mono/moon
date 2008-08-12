@@ -18,6 +18,60 @@ using System.Text;
 class GlobalInfo : MemberInfo {
 	private List<FieldInfo> dependency_properties;
 	private List<MethodInfo> cppmethods_to_bind;
+	private List<TypeInfo> dependency_objects;
+	
+	/// <value>
+	/// A list of all the types that inherits from DependencyObject
+	/// </value>
+	public List<TypeInfo> GetDependencyObjects (GlobalInfo all) {
+		if (dependency_objects == null) {
+			dependency_objects = new List<TypeInfo> ();
+			
+			foreach (MemberInfo member in Children.Values) {
+				TypeInfo type = member as TypeInfo;
+				TypeInfo current, parent;
+				bool is_do = false;
+				int limit = 20;
+				
+				if (type == null)
+					continue;
+				
+				if (type.IsEnum || type.IsStruct)
+					continue;
+				
+				current = type;
+				
+				while (limit-- > 0) {
+					if (current.Base == null || string.IsNullOrEmpty (current.Base.Value))
+						break;
+					
+					if (!all.Children.ContainsKey (current.Base.Value))
+						continue;
+					
+					parent = all.Children [current.Base.Value] as TypeInfo;
+					
+					if (parent == null)
+						break;
+					
+					if (parent.Name == "DependencyObject") {
+						is_do = true;
+						break;
+					}
+				
+					current = parent;
+				}
+				
+			//	if (limit <= 0)
+			//		throw new Exception (string.Format ("Infinite loop while checking if '{0}' inherits from DependencyObject.", type.FullName));
+				
+				if (is_do)
+					dependency_objects.Add (type);
+			}
+			
+			dependency_objects.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
+		}
+		return dependency_objects;
+	}
 	
 	public List<FieldInfo> DependencyProperties {
 		get {

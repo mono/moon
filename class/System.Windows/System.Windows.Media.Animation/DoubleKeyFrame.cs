@@ -35,17 +35,5 @@ namespace System.Windows.Media.Animation
 {
 	public abstract partial class DoubleKeyFrame : KeyFrame
 	{		
-		public DoubleKeyFrame() : base (NativeMethods.double_key_frame_new ())
-		{
-		}
-		
-		internal DoubleKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.DOUBLEKEYFRAME;
-		}
 	}
 }

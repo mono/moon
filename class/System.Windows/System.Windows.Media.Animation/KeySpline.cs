@@ -55,18 +55,5 @@ namespace System.Windows.Media.Animation
 				return new Point (x, y);
 			}
 		}
-	
-		public KeySpline () : base (NativeMethods.key_spline_new ())
-		{
-		}
-
-		internal KeySpline (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.KEYSPLINE;
-		}
 	}
 }

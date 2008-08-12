@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class SplineDoubleKeyFrame : DoubleKeyFrame 
 	{
-		public SplineDoubleKeyFrame () : base (NativeMethods.spline_double_key_frame_new ())
-		{
-		}
-		
-		internal SplineDoubleKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.SPLINEDOUBLEKEYFRAME;
-		}
 	}
 }

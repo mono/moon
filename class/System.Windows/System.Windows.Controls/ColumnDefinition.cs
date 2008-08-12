@@ -32,19 +32,6 @@ namespace System.Windows.Controls {
 
 	public partial class ColumnDefinition : DependencyObject {
 
-		public ColumnDefinition () : base (NativeMethods.column_definition_new ())
-		{
-		}
-
-		internal ColumnDefinition (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.COLUMNDEFINITION;
-		}
-
 		public double ActualWidth {
 			get {
 				return NativeMethods.column_definition_get_actual_width (native);

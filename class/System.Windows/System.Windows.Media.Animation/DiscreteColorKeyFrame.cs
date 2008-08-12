@@ -33,18 +33,6 @@ using Mono;
 namespace System.Windows.Media.Animation
 {
 	public sealed partial class DiscreteColorKeyFrame : ColorKeyFrame
-	{		
-		public DiscreteColorKeyFrame() : base (NativeMethods.discrete_color_key_frame_new ())
-		{
-		}
-		
-		internal DiscreteColorKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.DISCRETECOLORKEYFRAME;
-		}
+	{
 	}
 }

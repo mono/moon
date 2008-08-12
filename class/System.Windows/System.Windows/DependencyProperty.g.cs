@@ -422,6 +422,7 @@ namespace System.Windows.Controls {
 
 		public ColumnDefinitionCollection ColumnDefinitions {
 			get { return (ColumnDefinitionCollection) GetValue (ColumnDefinitionsProperty); }
+			set { SetValue (ColumnDefinitionsProperty, value); }
 		}
 
 		public int Column {
@@ -436,6 +437,7 @@ namespace System.Windows.Controls {
 
 		public RowDefinitionCollection RowDefinitions {
 			get { return (RowDefinitionCollection) GetValue (RowDefinitionsProperty); }
+			set { SetValue (RowDefinitionsProperty, value); }
 		}
 
 		public int Row {

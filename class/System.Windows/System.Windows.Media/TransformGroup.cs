@@ -29,17 +29,5 @@ using Mono;
 namespace System.Windows.Media {
 	public sealed partial class TransformGroup : Transform {
 		
-		public TransformGroup () : base (NativeMethods.transform_group_new ())
-		{
-		}
-		
-		internal TransformGroup (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.TRANSFORMGROUP;
-		}
 	}
 }

@@ -29,18 +29,5 @@ using Mono;
 
 namespace System.Windows.Media {
 	public sealed partial class ArcSegment : PathSegment {
-		
-		public ArcSegment () : base (NativeMethods.arc_segment_new ())
-		{
-		}
-		
-		internal ArcSegment (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.ARCSEGMENT;
-		}
 	}
 }

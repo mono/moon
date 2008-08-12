@@ -30,17 +30,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class MatrixTransform : Transform {
 
-		public MatrixTransform () : base (NativeMethods.matrix_transform_new ())
-		{
-		}
-
-		internal MatrixTransform (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.MATRIXTRANSFORM;
-		}
 	}
 }

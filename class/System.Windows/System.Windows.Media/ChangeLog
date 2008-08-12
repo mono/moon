@@ -1,5 +1,23 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* ArcSegment.cs, BezierSegment.cs, Brush.cs, EllipseGeometry.cs,
+	  GeneralTransform.cs, Geometry.cs, GeometryCollection.cs,
+	  GeometryGroup.cs, GradientBrush.cs, GradientStop.cs,
+	  GradientStopCollection.cs, ImageBrush.cs, LinearGradientBrush.cs,
+	  LineGeometry.cs, LineSegment.cs, MatrixTransform.cs, PathFigure.cs,
+	  PathFigureCollection.cs, PathGeometry.cs, PathSegment.cs,
+	  PathSegmentCollection.cs, PolyBezierSegment.cs, PolyLineSegment.cs,
+	  PolyQuadraticBezierSegment.cs, QuadraticBezierSegment.cs,
+	  RadialGradientBrush.cs, RectangleGeometry.cs, RotateTransform.cs,
+	  ScaleTransform.cs, SkewTransform.cs, SolidColorBrush.cs,
+	  TileBrush.cs, TimelineMarker.cs, TimelineMarkerCollection.cs,
+	  Transform.cs, TransformCollection.cs, TransformGroup.cs,
+	  TranslateTransform.cs, VideoBrush.cs: Generate public ctor,
+	  internal ctor and GetKind for classes inheriting from
+	  DependencyObject.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* GeneralTransform.cs, GeometryCollection.cs,
 	  GradientStopCollection.cs, PathFigureCollection.cs, PathSegment.cs,
 	  PathSegmentCollection.cs, TimelineMarkerCollection.cs,

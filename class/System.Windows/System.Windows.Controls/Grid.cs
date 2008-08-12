@@ -32,19 +32,6 @@ namespace System.Windows.Controls {
 
 	public partial class Grid : Panel {
 
-		public Grid () : base (NativeMethods.grid_new ())
-		{
-		}
-
-		internal Grid (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.GRID;
-		}
-
 		public static int GetColumn (FrameworkElement element)
 		{
 			return (int) element.GetValue (ColumnProperty);

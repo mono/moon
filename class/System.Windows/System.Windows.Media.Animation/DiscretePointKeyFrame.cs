@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class DiscretePointKeyFrame : PointKeyFrame
 	{		
-		public DiscretePointKeyFrame() : base (NativeMethods.discrete_point_key_frame_new ())
-		{
-		}
-		
-		internal DiscretePointKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.DISCRETEPOINTKEYFRAME;
-		}
 	}
 }

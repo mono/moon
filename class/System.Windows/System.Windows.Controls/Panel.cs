@@ -32,18 +32,5 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public abstract partial class Panel : FrameworkElement {
-		
-		protected Panel () : base (NativeMethods.panel_new ())
-		{
-		}
-		
-		internal Panel (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.PANEL;
-		}
 	}
 }

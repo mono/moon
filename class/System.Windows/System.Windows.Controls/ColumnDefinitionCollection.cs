@@ -32,18 +32,6 @@ using Mono;
 namespace System.Windows.Controls {
 
 	public sealed partial class ColumnDefinitionCollection : PresentationFrameworkCollection<ColumnDefinition> {
-		public ColumnDefinitionCollection () : base (NativeMethods.column_definition_collection_new ())
-		{
-		}
-		
-		internal ColumnDefinitionCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.COLUMNDEFINITION_COLLECTION;
-		}
 
 		public override void Add (ColumnDefinition value)
 		{

@@ -30,6 +30,7 @@ public:
 };
 
 /* @SilverlightVersion="2" */
+/* @Namespace=None */
 class SizeChangedEventArgs : public RoutedEventArgs {
 public:
 	SizeChangedEventArgs (Size prev_size, Size new_size);

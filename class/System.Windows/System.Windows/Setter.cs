@@ -32,14 +32,6 @@ namespace System.Windows {
 
 	public sealed partial class Setter : SetterBase {
 
-		internal Setter (IntPtr raw) : base (raw)
-		{
-		}
-
-		public Setter () : base (NativeMethods.setter_new())
-		{
-		}
-
 		public Setter (DependencyProperty property, object value)
 		{
 			Property = property;

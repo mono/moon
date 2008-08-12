@@ -32,22 +32,9 @@ using Mono;
 namespace System.Windows.Controls {
 	public partial class Canvas : Panel {
 
-		public Canvas () : base (NativeMethods.canvas_new ())
-		{
-		}
-		
-		internal Canvas (IntPtr raw) : base (raw)
-		{
-		}
-		
 		static internal Canvas FromPtr (IntPtr raw)
 		{
 			return new Canvas (raw);
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.CANVAS;
 		}
 	
 		public static double GetLeft (UIElement element)

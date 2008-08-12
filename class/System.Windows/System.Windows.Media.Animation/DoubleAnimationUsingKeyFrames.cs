@@ -30,17 +30,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class DoubleAnimationUsingKeyFrames : DoubleAnimation 
 	{
-		public DoubleAnimationUsingKeyFrames (): base (Mono.NativeMethods.double_animation_using_key_frames_new ())
-		{
-		}
-
-		internal DoubleAnimationUsingKeyFrames (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind()
-		{
-			return Kind.DOUBLEANIMATIONUSINGKEYFRAMES;
-		}
 	}
 }

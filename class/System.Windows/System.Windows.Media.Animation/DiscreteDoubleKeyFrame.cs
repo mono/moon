@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class DiscreteDoubleKeyFrame : DoubleKeyFrame
 	{		
-		public DiscreteDoubleKeyFrame() : base (NativeMethods.discrete_double_key_frame_new ())
-		{
-		}
-		
-		internal DiscreteDoubleKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.DISCRETEDOUBLEKEYFRAME;
-		}
 	}
 }

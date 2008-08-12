@@ -31,17 +31,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class TranslateTransform : Transform {
 
-		public TranslateTransform () : base (NativeMethods.translate_transform_new ())
-		{
-		}
-
-		internal TranslateTransform (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.TRANSLATETRANSFORM;
-		}
 	}
 }

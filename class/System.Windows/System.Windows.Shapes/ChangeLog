@@ -1,5 +1,11 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Ellipse.cs, Line.cs, Path.cs, Polygon.cs, Polyline.cs, Rectangle.cs,
+	  Shape.cs: Generate public ctor, internal ctor and GetKind for
+	  classes inheriting from DependencyObject.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Polyline.cs, Path.cs, Shape.cs, Rectangle.cs, Line.cs, Polygon.cs:
 	  Implement DP accessor generation.
 

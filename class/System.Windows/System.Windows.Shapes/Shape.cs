@@ -31,17 +31,5 @@ using Mono;
 namespace System.Windows.Shapes {
 	public abstract partial class Shape : FrameworkElement {
 
-		internal Shape (IntPtr raw) : base (raw)
-		{
-		}
-		
-		protected Shape () : base (NativeMethods.shape_new ())
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.SHAPE;
-		}
 	}
 }

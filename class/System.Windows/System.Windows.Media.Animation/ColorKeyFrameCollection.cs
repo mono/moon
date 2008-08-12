@@ -29,18 +29,6 @@ using System.Windows;
 namespace System.Windows.Media.Animation
 {
 	public sealed partial class ColorKeyFrameCollection : PresentationFrameworkCollection<ColorKeyFrame> {
-		public ColorKeyFrameCollection () : base (NativeMethods.color_key_frame_collection_new ())
-		{
-		}
-
-		internal ColorKeyFrameCollection (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.COLORKEYFRAME_COLLECTION;
-		}
 
 		public override void Add (ColorKeyFrame value)
 		{

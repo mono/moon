@@ -40,17 +40,5 @@ namespace System.Windows {
 			get { throw new NotImplementedException (); }
 		}
 
-		public Deployment () : base (NativeMethods.deployment_new ())
-		{
-		}
-
-		internal Deployment (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.DEPLOYMENT;
-		}
 	}
 }

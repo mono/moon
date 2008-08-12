@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class LinearDoubleKeyFrame : DoubleKeyFrame
 	{		
-		public LinearDoubleKeyFrame() : base (NativeMethods.linear_double_key_frame_new ())
-		{
-		}
-		
-		internal LinearDoubleKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.LINEARDOUBLEKEYFRAME;
-		}
 	}
 }

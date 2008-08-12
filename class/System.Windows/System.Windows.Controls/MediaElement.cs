@@ -47,20 +47,7 @@ namespace System.Windows.Controls {
 		
 		public static readonly DependencyProperty StretchProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
-		
-		public MediaElement () : base (NativeMethods.media_element_new ()) 
-		{
-		}
-	
-		internal MediaElement (IntPtr raw) : base (raw) 
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.MEDIAELEMENT;
-		}
-		
+				
 		public override object GetValue (DependencyProperty dp)
 		{
 			return base.GetValue (dp);

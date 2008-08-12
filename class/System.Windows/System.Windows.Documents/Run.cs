@@ -32,17 +32,5 @@ namespace System.Windows.Documents {
 
 	public sealed partial class Run : Inline {
 
-		public Run () : base (NativeMethods.run_new ())
-		{
-		}
-		
-		internal Run (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.RUN;
-		}
 	}
 }

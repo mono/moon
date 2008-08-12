@@ -43,6 +43,7 @@ public:
 // SetterBaseCollection
 //
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
 class SetterBaseCollection : public DependencyObjectCollection {
  protected:
 	virtual ~SetterBaseCollection () {};
@@ -59,6 +60,7 @@ class SetterBaseCollection : public DependencyObjectCollection {
 // SetterBase
 //
 /* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
 class SetterBase : public DependencyObject
 {
 protected:

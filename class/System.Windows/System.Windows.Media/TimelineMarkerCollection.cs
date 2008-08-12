@@ -28,18 +28,6 @@ using Mono;
 
 namespace System.Windows.Media {
 	public sealed partial class TimelineMarkerCollection : PresentationFrameworkCollection<TimelineMarker> {
-		public TimelineMarkerCollection () : base (NativeMethods.timeline_marker_collection_new ())
-		{
-		}
-		
-		internal TimelineMarkerCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.TIMELINEMARKER_COLLECTION;
-		}
 
 		public override void Add (TimelineMarker value)
 		{

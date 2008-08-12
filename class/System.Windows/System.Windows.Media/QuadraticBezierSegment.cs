@@ -30,17 +30,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class QuadraticBezierSegment : PathSegment {
 
-		public QuadraticBezierSegment () : base (NativeMethods.quadratic_bezier_segment_new ())
-		{
-		}
-		
-		internal QuadraticBezierSegment (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.QUADRATICBEZIERSEGMENT;
-		}
 	}
 }

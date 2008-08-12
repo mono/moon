@@ -32,19 +32,7 @@ using Mono;
 namespace System.Windows.Controls {
 
 	public sealed partial class RowDefinitionCollection : PresentationFrameworkCollection<RowDefinition> {
-		public RowDefinitionCollection () : base (NativeMethods.row_definition_collection_new ())
-		{
-		}
-		
-		internal RowDefinitionCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.ROWDEFINITION_COLLECTION;
-		}
-
+	
 		public override void Add (RowDefinition value)
 		{
 			AddImpl (value);

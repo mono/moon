@@ -30,17 +30,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class PathGeometry : Geometry {
 
-		public PathGeometry () : base (NativeMethods.path_geometry_new ())
-		{
-		}
-		
-		internal PathGeometry (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.PATHGEOMETRY;
-		}
 	}
 }

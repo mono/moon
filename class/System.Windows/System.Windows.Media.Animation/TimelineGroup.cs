@@ -34,18 +34,5 @@ namespace System.Windows.Media.Animation {
 
 	public abstract partial class TimelineGroup : Timeline {
 
-		internal TimelineGroup (IntPtr raw) :  base (raw)
-		{
-			// nothing
-		}
-		
-		public TimelineGroup () : base (NativeMethods.timeline_group_new ())
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.TIMELINEGROUP;
-		}
 	}
 }

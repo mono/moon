@@ -30,17 +30,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class GradientStop : DependencyObject {
 
-		public GradientStop () : base (NativeMethods.gradient_stop_new ())
-		{
-		}
-		
-		internal GradientStop (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.GRADIENTSTOP;
-		}
 	}
 }

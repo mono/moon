@@ -31,18 +31,6 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class GradientStopCollection : PresentationFrameworkCollection<GradientStop> {
-		public GradientStopCollection () : base (NativeMethods.gradient_stop_collection_new ())
-		{
-		}
-		
-		internal GradientStopCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.GRADIENTSTOP_COLLECTION;
-		}
 
 		public override void Add (GradientStop value)
 		{

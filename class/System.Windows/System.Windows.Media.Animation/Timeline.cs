@@ -33,17 +33,6 @@ using Mono;
 namespace System.Windows.Media.Animation {
 
 	public abstract partial class Timeline : DependencyObject {
-		internal Timeline (IntPtr raw) : base (raw)
-		{
-		}
-		
-		public Timeline () : base (NativeMethods.timeline_new ())
-		{
-		}
-				
-		internal override Kind GetKind ()
-		{
-			return Kind.TIMELINE;
-		}
+
 	}
 }

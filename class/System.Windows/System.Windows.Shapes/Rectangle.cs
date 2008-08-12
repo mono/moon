@@ -29,17 +29,6 @@ using Mono;
 namespace System.Windows.Shapes {
 
 	public sealed partial class Rectangle : Shape {
-		public Rectangle () : base (NativeMethods.rectangle_new ())
-		{
-		}
 
-		internal Rectangle (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.RECTANGLE;
-		}
 	}
 }

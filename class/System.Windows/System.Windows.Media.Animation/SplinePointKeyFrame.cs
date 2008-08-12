@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class SplinePointKeyFrame : PointKeyFrame 
 	{
-		public SplinePointKeyFrame () : base (NativeMethods.spline_color_key_frame_new ())
-		{
-		}
-		
-		internal SplinePointKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.SPLINEPOINTKEYFRAME;
-		}
 	}
 }

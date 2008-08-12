@@ -30,21 +30,5 @@ using Mono;
 namespace System.Windows.Media {
 	public sealed partial class PolyLineSegment : PathSegment {
 		
-		static PolyLineSegment ()
-		{
-		}
-
-		public PolyLineSegment () : base (NativeMethods.poly_line_segment_new ())
-		{
-		}
-		
-		internal PolyLineSegment (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.POLYLINESEGMENT;
-		}
 	}
 }

@@ -31,17 +31,5 @@ namespace System.Windows.Media {
 
 	public abstract partial class TileBrush : Brush {
 
-		protected TileBrush () : base (NativeMethods.tile_brush_new ())
-		{
-		}
-		
-		internal TileBrush (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.TILEBRUSH;
-		}
 	}
 }

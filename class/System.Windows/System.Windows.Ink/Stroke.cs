@@ -34,14 +34,6 @@ namespace System.Windows.Ink
 {
 	public sealed partial class Stroke : DependencyObject
 	{
-		public Stroke() : base (NativeMethods.stroke_new ())
-		{
-		}
-		
-		internal Stroke (IntPtr raw) : base (raw)
-		{
-		}
-
 		public Rect GetBounds ()
 		{
 			UnmanagedRect urect = new UnmanagedRect();
@@ -53,11 +45,6 @@ namespace System.Windows.Ink
 		{
 			return NativeMethods.stroke_hit_test (native, stylusPointCollection.native);
 		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.STROKE;
-		}
-		                                          
+                               
 	}
 }

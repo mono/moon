@@ -32,19 +32,6 @@ using System.Windows;
 namespace System.Windows.Media {
 	public sealed partial class TransformCollection : PresentationFrameworkCollection <Transform> {
 		
-		public TransformCollection () : base (NativeMethods.transform_collection_new ())
-		{
-		}
-		
-		internal TransformCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.TRANSFORM_COLLECTION;
-		}
-
 		public override void Add (Transform value)
 		{
 			AddImpl (value);

@@ -28,18 +28,6 @@
 using Mono;
 namespace System.Windows.Media {
 	public abstract partial class Brush : DependencyObject {
-			
-		protected Brush () : base (NativeMethods.brush_new ())
-		{
-		}
-		
-		internal Brush (IntPtr raw) : base (raw)
-		{
-		}
 
-		internal override Kind GetKind ()
-		{
-			return Kind.BRUSH;
-		}
 	}
 }

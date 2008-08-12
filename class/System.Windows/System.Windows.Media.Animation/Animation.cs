@@ -31,19 +31,6 @@ namespace System.Windows.Media.Animation
 {
 	public abstract partial class Animation : Timeline 
 	{
-		public Animation(): base (Mono.NativeMethods.animation_new ())
-		{
-		}
 
-
-		internal Animation (IntPtr raw) : base (raw)
-		{
-		}
-
-
-		internal override Kind GetKind()
-		{
-			return Kind.ANIMATION;
-		}
 	}
 }

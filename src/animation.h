@@ -163,6 +163,7 @@ class AnimationStorage {
 
 class Animation/*Timeline*/;
 
+/* @Namespace=None,ManagedDependencyProperties=None */
 class AnimationClock : public Clock {
  protected:
 	virtual ~AnimationClock ();
@@ -357,6 +358,7 @@ class KeyFrame : public DependencyObject {
 	void SetKeyTime (KeyTime keytime);
 };
 
+/* @Namespace=None */
 class KeyFrameCollection : public DependencyObjectCollection {
  protected:
 	virtual void AddedToCollection (Value *value);

@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public abstract partial class KeyFrame : DependencyObject
 	{
-		public KeyFrame() : base (NativeMethods.key_frame_new ())
-		{
-		}
-		
-		internal KeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.KEYFRAME;
-		}
 	}
 }

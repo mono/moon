@@ -32,18 +32,6 @@ using System.Windows;
 namespace System.Windows.Media {
 
 	public sealed partial class GeometryCollection : PresentationFrameworkCollection<Geometry> {
-		internal GeometryCollection (IntPtr native) : base (native)
-		{
-		}
-		
-		public GeometryCollection () : base (NativeMethods.geometry_collection_new ())
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.GEOMETRY_COLLECTION;
-		}
 
 		public override void Add (Geometry value)
 		{

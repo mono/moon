@@ -32,18 +32,6 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class PathSegmentCollection : PresentationFrameworkCollection<PathSegment> {
-		public PathSegmentCollection () : base (NativeMethods.path_segment_collection_new ())
-		{
-		}
-		
-		internal PathSegmentCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.PATHSEGMENT_COLLECTION;
-		}
 
 		public override void Add (PathSegment value)
 		{

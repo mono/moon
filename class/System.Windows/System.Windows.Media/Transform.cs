@@ -28,18 +28,6 @@
 using Mono;
 namespace System.Windows.Media {
 	public abstract partial class Transform : GeneralTransform {
-		
-		protected Transform () : base (NativeMethods.transform_new ())
-		{
-		}
-		
-		internal Transform (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.TRANSFORM;
-		}
+	
 	}
 }

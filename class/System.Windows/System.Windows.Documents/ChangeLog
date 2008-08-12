@@ -1,5 +1,11 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Glyphs.cs, Inline.cs, LineBreak.cs, Run.cs: Generate public ctor,
+	  internal ctor and GetKind for classes inheriting from
+	  DependencyObject.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Inline.cs, Run.cs, Glyphs.cs: Implement DP accessor generation.
 
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 

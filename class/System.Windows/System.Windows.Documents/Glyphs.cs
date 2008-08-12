@@ -34,17 +34,5 @@ using System.Windows.Media;
 namespace System.Windows.Documents {
 	public sealed partial class Glyphs : FrameworkElement {
 		
-		public Glyphs ()  : base (NativeMethods.glyphs_new ())
-		{
-		}
-		
-		internal Glyphs (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.GLYPHS;
-		}
 	}
 }

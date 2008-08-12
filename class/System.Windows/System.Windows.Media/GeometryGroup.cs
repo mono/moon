@@ -31,17 +31,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class GeometryGroup : Geometry {
 
-		public GeometryGroup () : base (NativeMethods.geometry_group_new ())
-		{
-		}
-
-		internal GeometryGroup (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.GEOMETRYGROUP;
-		}
 	}
 }

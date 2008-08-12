@@ -34,17 +34,6 @@ namespace System.Windows.Input
 {
 	public sealed partial class StylusInfo : DependencyObject
 	{		
-		public StylusInfo() : base (NativeMethods.stylus_info_new ())
-		{
-		}
-		
-		internal StylusInfo (IntPtr raw) : base (raw)
-		{
-		}
 
-		internal override Kind GetKind ()
-		{
-			return Kind.STYLUSINFO;
-		}
 	}
 }

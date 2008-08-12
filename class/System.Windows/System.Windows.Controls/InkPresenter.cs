@@ -35,17 +35,5 @@ namespace System.Windows.Controls
 {
 	public sealed partial class InkPresenter : Canvas {
 		
-		public InkPresenter() : base (NativeMethods.ink_presenter_new ()) 
-		{
-		}
-	
-		internal InkPresenter (IntPtr raw) : base (raw) 
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.INKPRESENTER;
-		}
 	}
 }

@@ -33,18 +33,6 @@ using System.Windows.Markup;
 
 namespace System.Windows.Documents {
 	public abstract partial class Inline : DependencyObject {
-					
-		protected Inline () : base (NativeMethods.inline_new ())
-		{
-		}
 		
-		internal Inline (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.INLINE;
-		}
 	}
 }

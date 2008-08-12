@@ -31,17 +31,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class EllipseGeometry : Geometry {
 
-		public EllipseGeometry () : base (NativeMethods.ellipse_geometry_new ())
-		{
-		}
-		
-		internal EllipseGeometry (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.ELLIPSEGEOMETRY;
-		}
 	}
 }

@@ -30,17 +30,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class VideoBrush : TileBrush {
 
-		public VideoBrush () : base (NativeMethods.video_brush_new ())
-		{
-		}
-		
-		internal VideoBrush (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.VIDEOBRUSH;
-		}
 	}
 }

@@ -31,19 +31,7 @@ using Mono;
 namespace System.Windows.Controls {
 
 	public partial class RowDefinition : DependencyObject {
-		public RowDefinition () : base (NativeMethods.row_definition_new ())
-		{
-		}
-
-		internal RowDefinition (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.ROWDEFINITION;
-		}
-
+	
 		public double ActualHeight {
 			get {
 				return NativeMethods.row_definition_get_actual_height (native);

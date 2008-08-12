@@ -30,17 +30,5 @@ namespace System.Windows.Shapes {
 
 	public sealed partial class Line : Shape {
 
-		public Line () : base (Mono.NativeMethods.line_new ())
-		{
-		}
-
-		internal Line (IntPtr raw) : base (raw)
-		{
-		}
-				
-		internal override Kind GetKind ()
-		{
-			return Kind.LINE;
-		}
 	}
 }

@@ -30,18 +30,6 @@ using Mono;
 
 namespace System.Windows.Media {
 	public abstract partial class Geometry : DependencyObject {
-		
-		protected Geometry () : base (NativeMethods.geometry_new ())
-		{
-		}
-		
-		internal Geometry (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.GEOMETRY;
-		}
+
 	}
 }

@@ -35,20 +35,6 @@ using System.Security;
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
 		
-		internal FrameworkElement () : base (NativeMethods.framework_element_new ())
-		{
-			Console.WriteLine ("*** Created a {0} (frameworkelement) with {1}", this.GetType (), native);
-		}
-		
-		internal FrameworkElement (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.FRAMEWORKELEMENT;
-		}
-
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif

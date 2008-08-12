@@ -32,18 +32,6 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class PathFigureCollection : PresentationFrameworkCollection<PathFigure> {
-		public PathFigureCollection () : base (NativeMethods.path_figure_collection_new ())
-		{
-		}
-		
-		internal PathFigureCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.PATHFIGURE_COLLECTION;
-		}
 
 		public override void Add (PathFigure value)
 		{

@@ -34,18 +34,5 @@ namespace System.Windows.Media.Animation {
 
 	public abstract partial class ParallelTimeline : TimelineGroup {
 
-		internal ParallelTimeline (IntPtr raw) :base (raw)
-		{
-			// nothing
-		}
-		
-		public ParallelTimeline () : base (NativeMethods.parallel_timeline_new ())
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.PARALLELTIMELINE; 
-		}
 	}
 }

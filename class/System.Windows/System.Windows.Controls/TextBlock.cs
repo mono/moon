@@ -34,17 +34,5 @@ using System.Windows.Documents;
 namespace System.Windows.Controls {
 	public sealed partial class TextBlock : FrameworkElement {
 
-		public TextBlock ()  : base (NativeMethods.text_block_new ())
-		{
-		}
-		
-		internal TextBlock (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.TEXTBLOCK;
-		}
 	}
 }

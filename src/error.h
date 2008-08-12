@@ -19,6 +19,7 @@ class ErrorEventArgs;
 #include "enums.h"
 #include "eventargs.h"
 
+/* @Namespace=None,ManagedDependencyProperties=None */
 class ErrorEventArgs : public EventArgs  {
 protected:
 	virtual ~ErrorEventArgs ()
@@ -42,6 +43,7 @@ public:
 	ErrorType error_type;
 };
 
+/* @Namespace=None,ManagedDependencyProperties=None */
 class ImageErrorEventArgs : public ErrorEventArgs {
 protected:
 	virtual ~ImageErrorEventArgs () {}
@@ -54,6 +56,7 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::IMAGEERROREVENTARGS; };
 };
 
+/* @Namespace=None,ManagedDependencyProperties=None */
 class ParserErrorEventArgs : public ErrorEventArgs {
 protected:
 	virtual ~ParserErrorEventArgs ()

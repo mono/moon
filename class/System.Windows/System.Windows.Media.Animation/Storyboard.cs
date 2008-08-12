@@ -36,17 +36,8 @@ namespace System.Windows.Media.Animation {
 	public sealed partial class Storyboard : ParallelTimeline {
 		// FIXME For TargetName and TargetProperty
 		// FIXME Exception if setting on running
-		// This check needs to go in native code
-
-		internal Storyboard (IntPtr raw) : base (raw)
-		{
-		}
-
-		public Storyboard ()
-			: base (Mono.NativeMethods.storyboard_new ())
-		{
-		}
-		
+		// This check needs to go in native co
+	
 		public void Begin ()
 		{
 			NativeMethods.storyboard_begin (native);
@@ -134,11 +125,6 @@ namespace System.Windows.Media.Animation {
 			EventHandler h = (EventHandler)events[CompletedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.STORYBOARD;
 		}
 	}
 }

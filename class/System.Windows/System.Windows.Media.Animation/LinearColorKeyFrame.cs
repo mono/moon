@@ -34,17 +34,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class LinearColorKeyFrame : ColorKeyFrame
 	{		
-		public LinearColorKeyFrame() : base (NativeMethods.linear_color_key_frame_new ())
-		{
-		}
-		
-		internal LinearColorKeyFrame (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.LINEARCOLORKEYFRAME;
-		}
 	}
 }

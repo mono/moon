@@ -29,17 +29,5 @@ using Mono;
 namespace System.Windows.Media {
 	public sealed partial class PolyQuadraticBezierSegment : PathSegment {
 		
-		public PolyQuadraticBezierSegment () : base (NativeMethods.poly_quadratic_bezier_segment_new ())
-		{
-		}
-		
-		internal PolyQuadraticBezierSegment (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.POLYQUADRATICBEZIERSEGMENT;
-		}
 	}
 }

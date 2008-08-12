@@ -30,17 +30,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class PathFigure : DependencyObject {
 
-		public PathFigure () : base (NativeMethods.path_figure_new ())
-		{
-		}
-		
-		internal PathFigure (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.PATHFIGURE;
-		}
 	}
 }

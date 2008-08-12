@@ -33,17 +33,5 @@ namespace System.Windows.Shapes {
 
 	public sealed partial class Polyline : Shape {
 
-		public Polyline () : base (NativeMethods.polyline_new ())
-		{
-		}
-
-		internal Polyline (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.POLYLINE;
-		}
 	}
 }

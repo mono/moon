@@ -31,17 +31,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class LineGeometry : Geometry {
 
-		public LineGeometry () : base (Mono.NativeMethods.line_geometry_new ())
-		{
-		}
-		
-		internal LineGeometry (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.LINEGEOMETRY;
-		}
 	}
 }

@@ -33,17 +33,5 @@ namespace System.Windows.Shapes {
 
 	public sealed partial class Path : Shape {
 
-		public Path () :  base (Mono.NativeMethods.path_new ())
-		{
-		}
-
-		internal Path (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind ()
-		{
-			return Kind.PATH;
-		}
 	}
 }

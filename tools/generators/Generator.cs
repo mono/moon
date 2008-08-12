@@ -32,6 +32,113 @@ class Generator {
 		
 		GenerateDPs (info);
 		GenerateManagedDPs (info);
+		GenerateManagedDOs (info);
+	}
+
+	static void GenerateManagedDOs (GlobalInfo all)
+	{
+		string base_dir = Environment.CurrentDirectory;
+		string class_dir = Path.Combine (base_dir, "class");
+		string sys_win_dir = Path.Combine (Path.Combine (class_dir, "System.Windows"), "System.Windows");
+		string filename = Path.Combine (sys_win_dir, "DependencyObject.g.cs");
+		string previous_namespace = "";
+		StringBuilder text = new StringBuilder ();
+		List<TypeInfo> types = all.GetDependencyObjects (all);
+				
+		Helper.WriteWarningGenerated (text);
+		text.AppendLine ("using Mono;");
+		text.AppendLine ("using System;");
+		text.AppendLine ("using System.Collections.Generic;");
+		text.AppendLine ("using System.Windows;");
+		text.AppendLine ("using System.Windows.Controls;");
+		text.AppendLine ("using System.Windows.Documents;");
+		text.AppendLine ("using System.Windows.Ink;");
+		text.AppendLine ("using System.Windows.Input;");
+		text.AppendLine ("using System.Windows.Markup;");
+		text.AppendLine ("using System.Windows.Media;");
+		text.AppendLine ("using System.Windows.Media.Animation;");
+		text.AppendLine ("using System.Windows.Shapes;");
+		text.AppendLine ();
+		
+		for (int i = 0; i < types.Count; i++) {
+			TypeInfo type = types [i];
+			string ns;
+			
+			ns = type.Namespace;
+			
+			if (string.IsNullOrEmpty (ns)) {
+				Console.WriteLine ("The type '{0}' in {1} does not have a namespace annotation.", type.FullName, Path.GetFileName (type.Header));
+				continue;
+			}
+			
+			if (ns == "None") {
+				//Console.WriteLine ("The type '{0}''s Namespace annotation is 'None'.", type.FullName);
+				continue;
+			}
+			
+			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), type.Name + ".cs");
+			if (!File.Exists (check_ns)) {
+				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
+				continue;
+			}
+			
+			if (previous_namespace != ns) {
+				if (previous_namespace != string.Empty) {
+					text.AppendLine ("}");
+					text.AppendLine ();
+				}
+				text.Append ("namespace ");
+				text.Append (ns);
+				text.AppendLine (" {");
+				previous_namespace = ns;
+			} else {
+				text.AppendLine ();
+			}
+			text.Append ("\tpartial class ");
+			text.Append (type.Name);
+			text.AppendLine (" {");
+			
+			// Public ctor
+			if (!string.IsNullOrEmpty (type.C_Constructor)) {
+				string access = "Public";
+				foreach (MemberInfo member in type.Children.Values) {
+					MethodInfo method = member as MethodInfo;
+					
+					if (method == null || !method.IsConstructor || method.IsStatic)
+						continue;
+					
+					if (method.Parameters.Count != 0)
+						continue;
+					
+					if (method.Annotations.ContainsKey ("ManagedAccess"))
+						access = method.Annotations.GetValue ("ManagedAccess");
+					break;
+				}
+				
+				
+				text.Append ("\t\t");
+				Helper.WriteAccess (text, access);
+				text.Append (type.Name);
+				text.Append (" () : base (NativeMethods.");
+				text.Append (type.C_Constructor);
+				text.AppendLine (" ()) {}");
+			}
+			
+			// Internal ctor
+			text.Append ("\t\tinternal ");
+			text.Append (type.Name);
+			text.AppendLine (" (IntPtr raw) : base (raw) {}");
+
+			// GetKind
+			text.Append ("\t\tinternal override Kind GetKind () { return Kind.");
+			text.Append (type.KindName);
+			text.AppendLine ("; }");
+			
+			text.AppendLine ("\t}");
+		}
+		text.AppendLine ("}");		
+		
+		Helper.WriteAllText (filename, text.ToString ());
 	}
 	
 	static void GenerateManagedDPs (GlobalInfo all)
@@ -94,12 +201,26 @@ class Generator {
 			ns = parent.Namespace;
 			
 			if (string.IsNullOrEmpty (ns)) {
-				Console.WriteLine ("The type '{0}' does not have a namespace annotation.", parent.FullName);
+				Console.WriteLine ("The type '{0}' in {1} does not have a namespace annotation.", parent.FullName, parent.Header);
 				continue;
 			}
-			
-			if (ns == "None")
+
+			if (type.Annotations.ContainsKey ("ManagedDependencyProperties")) {
+				string dp_mode = type.Annotations.GetValue ("ManagedDependencyProperties");
+				switch (dp_mode) {
+				case "Manual":
+					continue;
+				case "Generate":
+					break;
+				default:
+					throw new Exception (string.Format ("Invalid value '{0}' for ManagedDependencyProperties in '{1}'", dp_mode, type.FullName));
+				}
+			}
+
+			if (ns == "None") {
+				Console.WriteLine ("'{0}''s Namespace = 'None', this type should have set @ManagedDependencyProperties=Manual to not create DPs.", type.FullName);
 				continue;
+			}
 			
 			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), parent.Name + ".cs");
 			if (!File.Exists (check_ns))
@@ -177,7 +298,7 @@ class Generator {
 		
 		Helper.WriteAllText (filename, text.ToString ());
 	}
-	
+
 	static void GenerateDPs (GlobalInfo all)
 	{	
 		string base_dir = Environment.CurrentDirectory;

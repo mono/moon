@@ -31,17 +31,6 @@ using Mono;
 namespace System.Windows.Documents {
 
 	public sealed partial class LineBreak : Inline {
-		public LineBreak () : base (NativeMethods.line_break_new ())
-		{
-		}
-		
-		internal LineBreak (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.LINEBREAK;
-		}
+
 	}
 }

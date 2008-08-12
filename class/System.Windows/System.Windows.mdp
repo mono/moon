@@ -14,6 +14,8 @@
     </Configuration>
   </Configurations>
   <Contents>
+    <File name="System.Windows/DependencyProperty.g.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DependencyObject.g.cs" subtype="Code" buildaction="Compile" />
     <File name="Assembly/MonoTODOAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="Assembly/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/EventHandlerList.cs" subtype="Code" buildaction="Compile" />
@@ -186,7 +188,6 @@
     <File name="System.Windows/TextDecorationCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/LineStackingStrategy.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Grid.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Collections.ObjectModel/ObservableCollection_T.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Collections.Specialized/INotifyCollectionChanged.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Collections.Specialized/NotifyCollectionChangedAction.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
@@ -256,7 +257,6 @@
     <File name="System.Windows.Threading/DispatcherSynchronizationContext.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Threading/DispatcherTimer.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Markup/XamlReader.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/DependencyProperty.g.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Setter.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/SetterBase.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/SetterBaseCollection.cs" subtype="Code" buildaction="Compile" />
@@ -285,6 +285,11 @@
     <File name="System.Windows.Input/FocusManager.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls.Primitives/Popup.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Data/BindingExpressionBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.ComponentModel/DesignerProperties.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Data/IValueConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Documents/FontSource.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Imaging/BitmapImage.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Imaging/DownloadProgressEventArgs.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

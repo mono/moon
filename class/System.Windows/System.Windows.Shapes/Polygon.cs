@@ -33,17 +33,5 @@ namespace System.Windows.Shapes {
 
 	public sealed partial class Polygon : Shape {
 
-		public Polygon () : base (NativeMethods.polygon_new())
-		{
-		}
-
-		internal Polygon (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.POLYGON;
-		}
 	}
 }

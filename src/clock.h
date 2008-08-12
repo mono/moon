@@ -242,6 +242,7 @@ class TimelineGroup;
 
 /* our clock is a mixture of the WPF Clock and ClockController
    classes.  as such, all clocks are controllable */
+/* @Namespace=None,ManagedDependencyProperties=None */
 class Clock : public DependencyObject {
  protected:
 	virtual ~Clock () {};
@@ -367,6 +368,7 @@ class Clock : public DependencyObject {
 };
 
 
+/* @Namespace=None,ManagedDependencyProperties=None */
 class ClockGroup : public Clock {
  protected:
 	virtual ~ClockGroup ();
@@ -547,6 +549,7 @@ private:
 
 void timeline_set_manual_target (Timeline *timeline, DependencyObject *target);
 
+/* @Namespace=System.Windows.Media.Animation */
 class TimelineCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TimelineCollection () {}

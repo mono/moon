@@ -30,17 +30,5 @@ namespace System.Windows.Media.Animation
 {
 	public partial class DoubleAnimation : System.Windows.Media.Animation.Animation 
 	{
-		public DoubleAnimation(): base (Mono.NativeMethods.double_animation_new ())
-		{
-		}
-
-		internal DoubleAnimation (IntPtr raw) : base (raw)
-		{
-		}
-
-		internal override Kind GetKind()
-		{
-			return Kind.DOUBLEANIMATION;
-		}
 	}
 }
