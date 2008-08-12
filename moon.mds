@@ -9,6 +9,7 @@
       <Entry build="True" name="harness" configuration="Debug" />
       <Entry build="True" name="test" configuration="Debug" />
       <Entry build="True" name="tools" configuration="Debug" />
+      <Entry build="True" name="Microsoft.SilverlightControls" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="src" configuration="Release" />
@@ -19,6 +20,7 @@
       <Entry build="True" name="harness" configuration="Release" />
       <Entry build="True" name="test" configuration="Release" />
       <Entry build="True" name="tools" configuration="Release" />
+      <Entry build="True" name="Microsoft.SilverlightControls" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">
@@ -30,6 +32,7 @@
     <Execute type="None" entry="harness" />
     <Execute type="None" entry="test" />
     <Execute type="None" entry="tools" />
+    <Execute type="None" entry="Microsoft.SilverlightControls" />
   </StartMode>
   <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UpdateNearestChangeLog" />
   <Entries>
@@ -41,5 +44,6 @@
     <Entry filename="test/harness/harness.mdp" />
     <Entry filename="test/test.mdp" />
     <Entry filename="tools/tools.mdp" />
+    <Entry filename="class/Microsoft.SilverlightControls/Microsoft.SilverlightControls.mdp" />
   </Entries>
 </Combine>

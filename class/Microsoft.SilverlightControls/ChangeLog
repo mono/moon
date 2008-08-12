@@ -1,3 +1,7 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Microsoft.SilverlightControls.mdp: Added.
+
 2008-08-11  Fernando Herrera  <fherrera@novell.com>
 
 	* Controls/Src/ToolTip/ToolTipService.cs: Remove some methods/props
