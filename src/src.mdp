@@ -182,6 +182,8 @@
     <File name="thickness.h" subtype="Code" buildaction="Nothing" />
     <File name="src.mdp" subtype="Code" buildaction="Nothing" />
     <File name="contentcontrol.cpp" subtype="Code" buildaction="Compile" />
+    <File name="style.h" subtype="Code" buildaction="Nothing" />
+    <File name="style.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

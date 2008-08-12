@@ -1,5 +1,9 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* src.mdp: Updated.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.h, type.h, type-generated.cpp, value.h: Added
 	  DependencyProperty to the Kind enum.
 
