@@ -251,33 +251,6 @@ namespace Mono {
 		public extern static IntPtr collection_get_iterator (IntPtr collection);
 		
 		[DllImport("moon")]
-		public extern static int collection_get_count (IntPtr collection);
-		
-		[DllImport("moon")]
-		public extern static int collection_add (IntPtr collection, ref Value value);
-		
-		[DllImport("moon")]
-		public extern static void collection_clear (IntPtr collection);
-		
-		[DllImport("moon")]
-		public extern static int collection_index_of (IntPtr collection, ref Value value);
-		
-		[DllImport("moon")]
-		public extern static bool collection_insert (IntPtr collection, int index, ref Value value);
-		
-		[DllImport("moon")]
-		public extern static bool collection_remove (IntPtr collection, ref Value value);
-		
-		[DllImport("moon")]
-		public extern static bool collection_remove_at (IntPtr collection, int index);
-		
-		[DllImport("moon")]
-		public extern static IntPtr collection_get_value_at (IntPtr collection, int index);
-		
-		[DllImport("moon")]
-		public extern static void collection_set_value_at (IntPtr collection, int index, ref Value value);
-		
-		[DllImport("moon")]
 		public extern static int collection_iterator_next (IntPtr iterator);
 
 		[DllImport("moon")]
@@ -916,8 +889,17 @@ namespace Mono {
 			err.Dispose ();
 			
 			switch (err.Number) {
+			case 1:
 			default:
 				throw new Exception (msg);
+			case 2:
+				throw new ArgumentException (msg);
+			case 3:
+				throw new ArgumentNullException (msg);
+			case 4:
+				throw new ArgumentOutOfRangeException (msg);
+			case 5:
+				throw new InvalidOperationException (msg);
 			}
 		}
 	}

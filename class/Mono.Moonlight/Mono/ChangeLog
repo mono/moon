@@ -1,5 +1,12 @@
 2008-08-11  Chris Toshok  <toshok@ximian.com>
 
+	* NativeMethods.cs: remove a lot of collection_ pinvokes from
+	here.
+
+	* GeneratedPInvokes.cs: as they're here now.
+
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
 	* NativeMethods.cs, Kind.cs: add style/setter/etc ctors.
 
 2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 

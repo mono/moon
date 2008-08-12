@@ -13,6 +13,73 @@ namespace Mono {
 	
 		/* libmoon methods */
 	
+		[DllImport ("moon")]
+		// int collection_add (Collection *instance, Value *value);
+		public extern static int collection_add (IntPtr instance, ref Value value);
+
+		[DllImport ("moon")]
+		// void collection_clear (Collection *instance);
+		public extern static void collection_clear (IntPtr instance);
+
+		[DllImport ("moon")]
+		// bool collection_contains (Collection *instance, Value *value);
+		public extern static bool collection_contains (IntPtr instance, ref Value value);
+
+		[DllImport ("moon")]
+		// int collection_get_count (Collection *instance);
+		public extern static int collection_get_count (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="collection_get_value_at_with_error")]
+		// Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
+		private extern static IntPtr collection_get_value_at_with_error_ (IntPtr instance, int index, out MoonError error);
+		public static IntPtr collection_get_value_at (IntPtr instance, int index)
+		{
+			IntPtr result;
+			MoonError error;
+			result = collection_get_value_at_with_error_ (instance, index, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
+
+		[DllImport ("moon")]
+		// int collection_index_of (Collection *instance, Value *value);
+		public extern static int collection_index_of (IntPtr instance, ref Value value);
+
+		[DllImport ("moon")]
+		// bool collection_insert (Collection *instance, int index, Value *value);
+		public extern static bool collection_insert (IntPtr instance, int index, ref Value value);
+
+		[DllImport ("moon")]
+		// bool collection_remove (Collection *instance, Value *value);
+		public extern static bool collection_remove (IntPtr instance, ref Value value);
+
+		[DllImport ("moon", EntryPoint="collection_remove_at_with_error")]
+		// bool collection_remove_at_with_error (Collection *instance, int index, MoonError *error);
+		private extern static bool collection_remove_at_with_error_ (IntPtr instance, int index, out MoonError error);
+		public static bool collection_remove_at (IntPtr instance, int index)
+		{
+			bool result;
+			MoonError error;
+			result = collection_remove_at_with_error_ (instance, index, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
+
+		[DllImport ("moon", EntryPoint="collection_set_value_at_with_error")]
+		// bool collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error);
+		private extern static bool collection_set_value_at_with_error_ (IntPtr instance, int index, ref Value value, out MoonError error);
+		public static bool collection_set_value_at (IntPtr instance, int index, ref Value value)
+		{
+			bool result;
+			MoonError error;
+			result = collection_set_value_at_with_error_ (instance, index, ref value, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
+
 		[DllImport ("moon", EntryPoint="dependency_object_get_default_value_with_error")]
 		// Value *dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
 		private extern static IntPtr dependency_object_get_default_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);
@@ -87,11 +154,11 @@ namespace Mono {
 
 		[DllImport ("moon", EntryPoint="dependency_property_register_full")]
 		// DependencyProperty *dependency_property_register_full (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
-		private extern static IntPtr dependency_property_register_full_ (IntPtr additional_types, Kind type, string name, IntPtr default_value, Kind vtype, bool attached, bool read_only, bool always_change, Mono.NativePropertyChangedHandler changed_callback);
-		public static IntPtr dependency_property_register_full (Kind type, string name, IntPtr default_value, Kind vtype, bool attached, bool read_only, bool always_change, Mono.NativePropertyChangedHandler changed_callback)
+		private extern static IntPtr dependency_property_register_full_ (IntPtr additional_types, Kind type, string name, ref Value default_value, Kind vtype, bool attached, bool read_only, bool always_change, Mono.NativePropertyChangedHandler changed_callback);
+		public static IntPtr dependency_property_register_full (Kind type, string name, ref Value default_value, Kind vtype, bool attached, bool read_only, bool always_change, Mono.NativePropertyChangedHandler changed_callback)
 		{
 			IntPtr result;
-			result = dependency_property_register_full_ (Mono.Types.Native, type, name, default_value, vtype, attached, read_only, always_change, changed_callback);
+			result = dependency_property_register_full_ (Mono.Types.Native, type, name, ref default_value, vtype, attached, read_only, always_change, changed_callback);
 			return result;
 		}
 
