@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 //
 // mopen1.cpp: Moonlight Open Application
 //
@@ -27,7 +28,7 @@
 #include "frameworkelement.h"
 
 static void 
-Help ()
+Help (void)
 {
 	printf ("Usage is: mopen1 [args] [file.xaml]\n\n"
 			   "Arguments are:\n"
@@ -219,16 +220,16 @@ static int LoadXaml (const char* file)
 int
 main (int argc, char *argv [])
 {
+	gtk_init (&argc, &argv);
+	g_thread_init (NULL);
+	gdk_threads_init ();
+	
 	if (argc != 2) {
 		Help ();
 		return 1;
 	}
-
-	gtk_init (&argc, &argv);
-	g_thread_init (NULL);
-	gdk_threads_init ();
-
+	
 	// printf ("nopen::main (): loading '%s'.\n", argv [1]);
-
+	
 	return LoadXaml (argv [1]);
 }
