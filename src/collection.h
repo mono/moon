@@ -31,7 +31,7 @@ class Collection : public DependencyObject {
 	
 	void EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
 	
-	virtual bool CanAdd (Value value) { return true; }
+	virtual bool CanAdd (Value *value) { return true; }
 	virtual void AddedToCollection (Value *value) {}
 	virtual void RemovedFromCollection (Value *value) {}
 	
@@ -40,7 +40,7 @@ class Collection : public DependencyObject {
 	virtual void Dispose ();
 	
  public:
- 	/* @PropertyType=gint32 */
+ 	/* @PropertyType=gint32,DefaultValue=0 */
 	static DependencyProperty *CountProperty;
 	
 	DependencyObject *closure;
@@ -48,28 +48,49 @@ class Collection : public DependencyObject {
 	virtual Type::Kind GetObjectType () = 0;
 	virtual Type::Kind GetElementType () = 0;
 	
-	virtual Value *GetValue (DependencyProperty *property);
-	
 	int Generation () { return generation; }
 	GPtrArray *Array () { return array; }
 	
-	int GetCount () { return array->len; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetCount () { return GetValue (CountProperty)->AsInt32(); }
 	
-	virtual int Add (Value value);
+	int Add (Value value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual int Add (Value *value);
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Clear ();
-	bool Contains (Value value);
-	int IndexOf (Value value);
-	virtual bool Insert (int index, Value value);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool Contains (Value *value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	int IndexOf (Value *value);
+
+	bool Insert (int index, Value value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual bool Insert (int index, Value *value);
+
 	bool Remove (Value value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual bool Remove (Value *value);
+
+	/* @GenerateCBinding */
 	bool RemoveAt (int index);
 	
 	Value *GetValueAt (int index);
-	Value *SetValueAt (int index, Value value);
+	bool   SetValueAt (int index, Value *value);
+
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	Value *GetValueAtWithError (int index, MoonError *error);
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	bool SetValueAtWithError (int index, Value *value, MoonError *error);
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	bool RemoveAtWithError (int index, MoonError *error);
 };
 
 class DependencyObjectCollection : public Collection {
  protected:
-	virtual bool CanAdd (Value value) { return value.AsDependencyObject ()->GetLogicalParent () == NULL; }
+	virtual bool CanAdd (Value *value) { return value->AsDependencyObject ()->GetLogicalParent () == NULL; }
 	virtual void AddedToCollection (Value *value);
 	virtual void RemovedFromCollection (Value *value);
 	
@@ -82,7 +103,7 @@ class DependencyObjectCollection : public Collection {
 	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 	
-	virtual DependencyObject *SetValueAt (int index, DependencyObject *obj);
+	virtual bool SetValueAt (int index, DependencyObject *obj);
 	
 	virtual void SetSurface (Surface *surface);
 	
@@ -198,8 +219,8 @@ class UIElementCollection : public DependencyObjectCollection {
 	
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::UIELEMENT; }
-	
-	virtual bool Insert (int index, Value value);
+
+	virtual bool Insert (int index, Value *value);
 	virtual void Clear ();
 	
 	void ResortByZIndex ();
@@ -210,18 +231,9 @@ G_BEGIN_DECLS
 Collection *collection_new (Type::Kind kind);
 
 Type::Kind collection_get_element_type (Collection *collection);
-int collection_get_count (Collection *collection);
-
-int collection_add (Collection *collection, Value *value);
-void collection_clear (Collection *collection);
-bool collection_contains (Collection *collection, Value *value);
-int collection_index_of (Collection *collection, Value *value);
-bool collection_insert (Collection *collection, int index, Value *value);
-bool collection_remove (Collection *collection, Value *value);
-bool collection_remove_at (Collection *collection, int index);
 
 Value *collection_get_value_at (Collection *collection, int index);
-void collection_set_value_at (Collection *collection, int index, Value *value);
+bool collection_set_value_at (Collection *collection, int index, Value *value);
 
 CollectionIterator *collection_get_iterator (Collection *collection);
 int collection_iterator_next (CollectionIterator *iterator);

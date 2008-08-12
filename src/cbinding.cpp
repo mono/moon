@@ -98,6 +98,128 @@ canvas_new (void)
 
 
 /**
+ * Collection
+ **/
+int
+collection_add (Collection *instance, Value *value)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->Add (value);
+}
+
+
+void
+collection_clear (Collection *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Clear ();
+}
+
+
+bool
+collection_contains (Collection *instance, Value *value)
+{
+	if (instance == NULL)
+		return false;;
+	
+	return instance->Contains (value);
+}
+
+
+int
+collection_get_count (Collection *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetCount ();
+}
+
+
+Value *
+collection_get_value_at_with_error (Collection *instance, int index, MoonError *error)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called collection_get_value_at_with_error () with error == NULL.");
+	return instance->GetValueAtWithError (index, error);
+}
+
+
+int
+collection_index_of (Collection *instance, Value *value)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->IndexOf (value);
+}
+
+
+bool
+collection_insert (Collection *instance, int index, Value *value)
+{
+	if (instance == NULL)
+		return false;;
+	
+	return instance->Insert (index, value);
+}
+
+
+bool
+collection_remove (Collection *instance, Value *value)
+{
+	if (instance == NULL)
+		return false;;
+	
+	return instance->Remove (value);
+}
+
+
+bool
+collection_remove_at (Collection *instance, int index)
+{
+	if (instance == NULL)
+		return false;;
+	
+	return instance->RemoveAt (index);
+}
+
+
+bool
+collection_remove_at_with_error (Collection *instance, int index, MoonError *error)
+{
+	if (instance == NULL)
+		return false;;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called collection_remove_at_with_error () with error == NULL.");
+	return instance->RemoveAtWithError (index, error);
+}
+
+
+bool
+collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error)
+{
+	if (instance == NULL)
+		return false;;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called collection_set_value_at_with_error () with error == NULL.");
+	return instance->SetValueAtWithError (index, value, error);
+}
+
+
+/**
  * ColorAnimation
  **/
 ColorAnimation *

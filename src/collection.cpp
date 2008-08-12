@@ -19,7 +19,7 @@
 #include "trigger.h"
 #include "namescope.h"
 #include "utils.h"
-
+#include "error.h"
 
 Collection::Collection ()
 {
@@ -45,37 +45,17 @@ Collection::Dispose ()
 	}
 }
 
-Value *
-Collection::GetValue (DependencyProperty *property)
+int
+Collection::Add (Value *value)
 {
-	if (property == Collection::CountProperty)
-		return new Value ((int) array->len);
-	
-	return DependencyObject::GetValue (property);
+	bool rv = Insert (array->len, value);
+	return rv ? array->len - 1 : -1;
 }
 
 int
 Collection::Add (Value value)
 {
-	Value *added;
-	
-	// make sure value is of the proper type
-	if (!value.Is (GetElementType ()))
-		return -1;
-	
-	// Check that the item can be added to our collection
-	if (!CanAdd (value))
-		return -1;
-	
-	added = new Value (value);
-	
-	AddedToCollection (added);
-	
-	g_ptr_array_add (array, added);
-	
-	EmitChanged (CollectionChangedActionAdd, added, NULL, array->len - 1);
-	
-	return array->len - 1;
+	return Add (&value);
 }
 
 void
@@ -85,7 +65,7 @@ Collection::Clear ()
 	
 	if (closure)
 		closure->OnCollectionClear (this);
-	
+
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
 		RemovedFromCollection (value);
@@ -94,32 +74,34 @@ Collection::Clear ()
 	
 	g_ptr_array_set_size (array, 0);
 	generation++;
+
+	SetValue (CountProperty, (gint32)array->len);
 	
 	EmitChanged (CollectionChangedActionReset, NULL, NULL, -1);
 }
 
 bool
-Collection::Contains (Value value)
+Collection::Contains (Value *value)
 {
 	// make sure value is of the proper type
-	if (!value.Is (GetElementType ()))
+	if (!value->Is (GetElementType ()))
 		return false;
 	
 	return IndexOf (value) != -1;
 }
 
 int
-Collection::IndexOf (Value value)
+Collection::IndexOf (Value *value)
 {
 	Value *v;
 	
 	// make sure value is of the proper type
-	if (!value.Is (GetElementType ()))
+	if (!value->Is (GetElementType ()))
 		return -1;
 	
 	for (guint i = 0; i < array->len; i++) {
 		v = (Value *) array->pdata[i];
-		if (*v == value)
+		if (*v == *value)
 			return i;
 	}
 	
@@ -129,10 +111,16 @@ Collection::IndexOf (Value value)
 bool
 Collection::Insert (int index, Value value)
 {
+	return Insert (index, &value);
+}
+
+bool
+Collection::Insert (int index, Value *value)
+{
 	Value *added;
 	
 	// make sure value is of the proper type
-	if (!value.Is (GetElementType ()))
+	if (!value->Is (GetElementType ()))
 		return false;
 	
 	// bounds check
@@ -146,11 +134,13 @@ Collection::Insert (int index, Value value)
 	if (index > GetCount ())
 		index = GetCount ();
 	
-	added = new Value (value);
-	
-	AddedToCollection (added);
+	added = new Value (*value);
 	
 	g_ptr_array_insert (array, index, added);
+
+	SetValue (CountProperty, (gint32)array->len);
+
+	AddedToCollection (added);
 	
 	EmitChanged (CollectionChangedActionAdd, added, NULL, index);
 	
@@ -159,6 +149,12 @@ Collection::Insert (int index, Value value)
 
 bool
 Collection::Remove (Value value)
+{
+	return Remove (&value);
+}
+
+bool
+Collection::Remove (Value *value)
 {
 	int index;
 	
@@ -178,16 +174,32 @@ Collection::RemoveAt (int index)
 		return false;
 	
 	value = (Value *) array->pdata[index];
-	RemovedFromCollection (value);
 	
 	g_ptr_array_remove_index (array, index);
+
+	SetValue (CountProperty, (gint32)array->len);
+
 	generation++;
+
+	RemovedFromCollection (value);
 	
 	EmitChanged (CollectionChangedActionRemove, NULL, value, index);
 	
 	delete value;
 	
 	return true;
+}
+
+bool
+Collection::RemoveAtWithError (int index, MoonError *error)
+{
+	// check bounds
+	if (index < 0 || (guint) index >= array->len) {
+		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, "");
+		return false;
+	}
+	
+	return RemoveAt (index);
 }
 
 Value *
@@ -200,32 +212,69 @@ Collection::GetValueAt (int index)
 }
 
 Value *
-Collection::SetValueAt (int index, Value value)
+Collection::GetValueAtWithError (int index, MoonError *error)
+{
+	// check array bounds
+	if (index < 0 || (guint) index >= array->len) {
+		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, "");
+		return NULL;
+	}
+	
+	return GetValueAt (index);
+}
+
+bool
+Collection::SetValueAt (int index, Value *value)
 {
 	Value *added, *removed;
 	
 	// make sure the object is of the correct type
-	if (!value.Is (GetElementType ()))
-		return NULL;
+	if (!value->Is (GetElementType ()))
+		return false;
 	
 	// check array bounds
 	if (index < 0 || (guint) index >= array->len)
-		return NULL;
+		return false;
 	
 	// Check that the value can be added to our collection
 	if (!CanAdd (value))
-		return NULL;
+		return false;
 	
 	removed = (Value *) array->pdata[index];
-	RemovedFromCollection (removed);
-	
-	added = new Value (value);
-	AddedToCollection (added);
+	added = new Value (*value);
+
 	array->pdata[index] = added;
+
+	RemovedFromCollection (removed);
+	AddedToCollection (added);
 	
 	EmitChanged (CollectionChangedActionReplace, added, removed, index);
 	
-	return removed;
+	return true;
+}
+
+bool
+Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
+{
+	// make sure the object is of the correct type
+	if (!value->Is (GetElementType ())) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "");
+		return false;
+	}
+
+	// check array bounds
+	if (index < 0 || (guint) index >= array->len) {
+		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, "");
+		return false;
+	}
+
+	// Check that the value can be added to our collection
+	if (!CanAdd (value)) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "");
+		return false;
+	}
+	
+	return GetValueAt (index);
 }
 
 void
@@ -279,20 +328,11 @@ DependencyObjectCollection::RemovedFromCollection (Value *value)
 	Collection::RemovedFromCollection (value);
 }
 
-DependencyObject *
+bool
 DependencyObjectCollection::SetValueAt (int index, DependencyObject *obj)
 {
-	Value *value = Collection::SetValueAt (index, Value (obj));
-	DependencyObject *old = NULL;
-	
-	if (value) {
-		old = value->AsDependencyObject ();
-		old->ref ();
-		
-		delete value;
-	}
-	
-	return old;
+	Value v (obj);
+	return Collection::SetValueAt (index, &v);
 }
 
 void
@@ -420,7 +460,7 @@ UIElementCollection::AddedToCollection (Value *value)
 	UIElement *item = value->AsUIElement ();
 	
 	g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
-	
+
 	DependencyObjectCollection::AddedToCollection (value);
 }
 
@@ -438,17 +478,17 @@ UIElementCollection::RemovedFromCollection (Value *value)
 }
 
 bool
-UIElementCollection::Insert (int index, Value value)
+UIElementCollection::Insert (int index, Value *value)
 {
 	if (!DependencyObjectCollection::Insert (index, value))
 		return false;
-	
+       
 	// FIXME: If z_sorted was an array of structs containing both
 	// the item *and* the array index, our comparer could take
 	// that into consideration when sorting and so we'd never have
 	// to completely re-sort on Insert()
 	ResortByZIndex ();
-	
+       
 	return true;
 }
 
@@ -459,58 +499,10 @@ UIElementCollection::Clear ()
 	DependencyObjectCollection::Clear ();
 }
 
-int
-collection_get_count (Collection *collection)
-{
-	return collection->GetCount ();
-}
-
 Type::Kind
 collection_get_element_type (Collection *collection)
 {
 	return collection->GetElementType ();
-}
-
-int
-collection_add (Collection *collection, Value *value)
-{
-	return collection->Add (*value);
-}
-
-void 
-collection_clear (Collection *collection)
-{
-	collection->Clear ();
-}
-
-bool
-collection_contains (Collection *collection, Value *value)
-{
-	return collection->Contains (*value);
-}
-
-int
-collection_index_of (Collection *collection, Value *value)
-{
-	return collection->IndexOf (*value);
-}
-
-bool
-collection_insert (Collection *collection, int index, Value *value)
-{
-	return collection->Insert (index, *value);
-}
-
-bool
-collection_remove (Collection *collection, Value *value)
-{
-	return collection->Remove (*value);
-}
-
-bool
-collection_remove_at (Collection *collection, int index)
-{
-	return collection->RemoveAt (index);
 }
 
 Value *
@@ -519,17 +511,11 @@ collection_get_value_at (Collection *collection, int index)
 	return collection->GetValueAt (index);
 }
 
-void
+bool
 collection_set_value_at (Collection *collection, int index, Value *value)
 {
-	Value *v;
-	
-	if (!(v = collection->SetValueAt (index, *value)))
-		return;
-	
-	delete v;
+	return collection->SetValueAt (index, value);
 }
-
 
 CollectionIterator *
 collection_get_iterator (Collection *collection)

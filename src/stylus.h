@@ -80,7 +80,7 @@ void	stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressur
 
 class StylusPointCollection : public DependencyObjectCollection {
  protected:
-	virtual bool CanAdd (Value value) { return !Contains (value); }
+	virtual bool CanAdd (Value *value) { return !Contains (value); }
 	
 	virtual ~StylusPointCollection () {}
 	
@@ -186,7 +186,7 @@ bool                   stroke_hit_test (Stroke *stroke, StylusPointCollection *s
 
 class StrokeCollection : public DependencyObjectCollection {
  protected:
-	virtual bool CanAdd (Value value) { return !Contains (value); }
+	virtual bool CanAdd (Value *value) { return !Contains (value); }
 	
 	virtual ~StrokeCollection () {}
 	

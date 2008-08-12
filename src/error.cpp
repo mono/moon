@@ -13,7 +13,7 @@
  #include "error.h"
  
 void
-MoonError::FillIn (MoonError *error, gint32 number, char *message)
+MoonError::FillIn (MoonError *error, ErrorType number, char *message)
 {
 	if (error) {
 		error->number = number;
@@ -22,7 +22,7 @@ MoonError::FillIn (MoonError *error, gint32 number, char *message)
 }
 	
 void
-MoonError::FillIn (MoonError *error, gint32 number, const char *message)
+MoonError::FillIn (MoonError *error, ErrorType number, const char *message)
 {
 	FillIn (error, number, g_strdup (message));
 }

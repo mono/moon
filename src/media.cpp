@@ -393,7 +393,8 @@ MediaElement::AddStreamedMarkers ()
 		streamed_markers = new TimelineMarkerCollection ();
 
 	while ((node = (MarkerNode *) pending_streamed_markers->Pop ()) != NULL) {
-		streamed_markers->Add (node->marker);
+		Value v(node->marker);
+		streamed_markers->Add (&v);
 		delete node;
 	}
 }
@@ -441,7 +442,10 @@ MediaElement::ReadMarkers ()
 		new_marker->SetText (marker->Text ());
 		new_marker->SetType (marker->Type ());
 		new_marker->SetTime (TimeSpan_FromPts (marker->Pts ()));
-		markers->Add (new_marker);
+
+		Value v(new_marker);
+		markers->Add (&v);
+
 		new_marker->unref ();
 		
 		current = (MediaMarker::Node *) current->next;
@@ -2895,14 +2899,14 @@ media_attribute_collection_get_item_by_name (MediaAttributeCollection *collectio
 // TimelineMarkerCollection
 //
 int
-TimelineMarkerCollection::Add (Value value)
+TimelineMarkerCollection::Add (Value *value)
 {
 	TimelineMarker *marker, *cur;
 	
-	if (!value.Is (Type::TIMELINEMARKER))
+	if (!value->Is (Type::TIMELINEMARKER))
 		return -1;
 	
-	marker = value.AsTimelineMarker ();
+	marker = value->AsTimelineMarker ();
 	
 	for (guint i = 0; i < array->len; i++) {
 		cur = ((Value *) array->pdata[i])->AsTimelineMarker ();
@@ -2916,7 +2920,7 @@ TimelineMarkerCollection::Add (Value value)
 }
 
 bool
-TimelineMarkerCollection::Insert (int index, Value value)
+TimelineMarkerCollection::Insert (int index, Value *value)
 {
 	return Add (value) != -1;
 }

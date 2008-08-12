@@ -84,6 +84,41 @@ Brush *brush_new (void);
 Canvas *canvas_new (void);
 
 /**
+ * Collection
+ **/
+/* @GeneratePInvoke */
+int collection_add (Collection *instance, Value *value);
+
+/* @GeneratePInvoke */
+void collection_clear (Collection *instance);
+
+/* @GeneratePInvoke */
+bool collection_contains (Collection *instance, Value *value);
+
+/* @GeneratePInvoke */
+int collection_get_count (Collection *instance);
+
+/* @GeneratePInvoke */
+Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
+
+/* @GeneratePInvoke */
+int collection_index_of (Collection *instance, Value *value);
+
+/* @GeneratePInvoke */
+bool collection_insert (Collection *instance, int index, Value *value);
+
+/* @GeneratePInvoke */
+bool collection_remove (Collection *instance, Value *value);
+
+bool collection_remove_at (Collection *instance, int index);
+
+/* @GeneratePInvoke */
+bool collection_remove_at_with_error (Collection *instance, int index, MoonError *error);
+
+/* @GeneratePInvoke */
+bool collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error);
+
+/**
  * ColorAnimation
  **/
 ColorAnimation *color_animation_new (void);

@@ -1077,7 +1077,7 @@ DependencyObject::GetDefaultValueWithError (Types *additional_types, DependencyP
 {
 	if (!HasProperty (additional_types, Type::INVALID, property, true)) {
 		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
-		MoonError::FillIn (error, 1, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
+		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
 	return GetDefaultValue (property);
@@ -1088,7 +1088,7 @@ DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami
 {
 	if (!HasProperty (additional_types, whatami, property, true)) {
 		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
-		MoonError::FillIn (error, 1, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
+		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
 	return GetValue (property);
@@ -1118,7 +1118,7 @@ DependencyObject::GetValueNoDefaultWithError (Types *additional_types, Dependenc
 {
 	if (!HasProperty (additional_types, Type::INVALID, property, true)) {
 		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
-		MoonError::FillIn (error, 1, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
+		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("DependencyProperty %s.%s cannot be set on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
 	return GetValueNoDefault (property);	

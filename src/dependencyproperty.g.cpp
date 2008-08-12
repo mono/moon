@@ -62,7 +62,7 @@ dependency_property_g_init (void)
 	Brush::TransformProperty = DependencyProperty::Register (Type::BRUSH, "Transform", Type::TRANSFORM);
 	Canvas::LeftProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, true, false);
 	Canvas::TopProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, true, false);
-	Collection::CountProperty = DependencyProperty::Register (Type::COLLECTION, "Count", Type::INT32);
+	Collection::CountProperty = DependencyProperty::Register (Type::COLLECTION, "Count", new Value (0));
 	ColorAnimation::ByProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "By", Type::COLOR);
 	ColorAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "From", Type::COLOR);
 	ColorAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "To", Type::COLOR);

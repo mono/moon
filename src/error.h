@@ -87,16 +87,24 @@ public:
 };
 
 struct MoonError {
+	enum ErrorType {
+	  EXCEPTION = 1,
+	  ARGUMENT = 2,
+	  ARGUMENT_NULL = 3,
+	  ARGUMENT_OUT_OF_RANGE = 4,
+	  INVALID_OPERATION = 5,
+	};
+
 	// non-zero if an error occurred.
-	gint32 number;
+	ErrorType number;
 	// the caller of the method which returned the error must call Dispose to free this value
 	// (only necessary if there were any errors)
 	char *message;
 	
 	void Dispose ();
 	
-	static void FillIn (MoonError *error, gint32 number, char *message /* this message must be allocated using glib methods */);
-	static void FillIn (MoonError *error, gint32 number, const char *message);
+	static void FillIn (MoonError *error, ErrorType number, char *message /* this message must be allocated using glib methods */);
+	static void FillIn (MoonError *error, ErrorType number, const char *message);
 };
 
 #endif /* __MOON_ERROR_H__ */
