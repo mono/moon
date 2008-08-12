@@ -34,6 +34,8 @@ namespace MoonTest.System.Windows.Media
 
 			Assert.AreEqual (p2, VisualTreeHelper.GetChild (p, 0));
 			Assert.Throws (delegate { VisualTreeHelper.GetChild (p, 1); }, typeof (ArgumentOutOfRangeException));
+
+			Assert.Throws (delegate { VisualTreeHelper.GetChild (new Ellipse(), 1); }, typeof (ArgumentOutOfRangeException));
 		}
 
 		[TestMethod]
@@ -50,6 +52,8 @@ namespace MoonTest.System.Windows.Media
 			//			p.Resources.Add ("foo", new Canvas());
 
 			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (p));
+
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (new Ellipse()));
 		}
 
 		[TestMethod]
