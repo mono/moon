@@ -1,5 +1,9 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Internal.cs: Deleted, no longer used.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	
 
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
