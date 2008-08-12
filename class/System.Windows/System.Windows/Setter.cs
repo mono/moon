@@ -31,11 +31,54 @@ using Mono;
 namespace System.Windows {
 
 	public sealed partial class Setter : SetterBase {
+		private static readonly DependencyProperty PropertyNameProperty = DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (string));
+		private static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "DependencyProperty", typeof (DependencyProperty));
+		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
 
 		public Setter (DependencyProperty property, object value)
 		{
 			Property = property;
 			Value = value;
+		}
+
+		string PropertyName {
+			get { return (string)GetValue (PropertyNameProperty); }
+			set { SetValue (PropertyNameProperty, value); }
+		}
+
+		bool propertySet;
+		public DependencyProperty Property {
+			get {
+				if (propertySet) {
+					return (DependencyProperty)GetValue (PropertyProperty);
+				}
+				else {
+					string name = PropertyName;
+					if (name == null)
+						return null;
+
+					// XXX we need to look up a
+					// DependencyProperty of
+					// named @name from our
+					// containing style's type.
+					// if we have no containing
+					// style, return null here.
+					Console.WriteLine ("Setter.get_Property needs some love");
+					return null;
+				}
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException ();
+
+				propertySet = true;
+				SetValue (PropertyProperty, value);
+			}
+		}
+
+		public object Value {
+			get { return GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
 		}
 	}
 

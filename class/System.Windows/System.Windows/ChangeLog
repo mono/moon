@@ -1,3 +1,9 @@
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* Setter.cs: add in the hacks for the Property property.
+
+	* DependencyProperty.g.cs: regened.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* PresentationFrameworkCollection.cs: Make partial.

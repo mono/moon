@@ -187,21 +187,6 @@ namespace System.Windows {
 		}
 	}
 
-	partial class Setter {
-		public static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (DependencyProperty));
-		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
-
-		public DependencyProperty Property {
-			get { return (DependencyProperty) GetValue (PropertyProperty); }
-			set { SetValue (PropertyProperty, value); }
-		}
-
-		public object Value {
-			get { return (object) GetValue (ValueProperty); }
-			set { SetValue (ValueProperty, value); }
-		}
-	}
-
 	partial class Style {
 		public static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
 		public static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
