@@ -1,3 +1,7 @@
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp: Updated.
+
 2008-08-12  Chris Toshok  <toshok@ximian.com>
 
 	* collection.cpp (Collection::Clear): make a temporary copy of the

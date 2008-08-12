@@ -184,6 +184,8 @@
     <File name="contentcontrol.cpp" subtype="Code" buildaction="Compile" />
     <File name="style.h" subtype="Code" buildaction="Nothing" />
     <File name="style.cpp" subtype="Code" buildaction="Compile" />
+    <File name="template.h" subtype="Code" buildaction="Nothing" />
+    <File name="template.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
