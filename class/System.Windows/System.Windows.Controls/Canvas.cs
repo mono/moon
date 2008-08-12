@@ -49,35 +49,35 @@ namespace System.Windows.Controls {
 		{
 			return Kind.CANVAS;
 		}
+	
+		public static double GetLeft (UIElement element)
+		{
+			return (double) element.GetValue (Canvas.LeftProperty);
+		}
 		
-                public static double GetLeft (UIElement element)
-                {
-                        return (double) element.GetValue (Canvas.LeftProperty);
-                }
+		public static void SetLeft (UIElement element, double value)
+		{
+			element.SetValue (Canvas.LeftProperty, value);
+		}
 		
-                public static void SetLeft (UIElement element, double value)
-                {
-                        element.SetValue (Canvas.LeftProperty, value);
-                }
+		public static double GetTop (UIElement element)
+		{
+			return (double) element.GetValue (Canvas.TopProperty);
+		}
 		
-                public static double GetTop (UIElement element)
-                {
-                        return (double) element.GetValue (Canvas.TopProperty);
-                }
+		public static void SetTop (UIElement element, double value)
+		{
+			element.SetValue (Canvas.TopProperty, value);
+		}
 		
-                public static void SetTop (UIElement element, double value)
-                {
-                        element.SetValue (Canvas.TopProperty, value);
-                }
-		
-                public static int GetZIndex (UIElement element)
-                {
-                        return element.ZIndex;
-                }
+		public static int GetZIndex (UIElement element)
+		{
+			return element.ZIndex;
+		}
 		
 		public static void SetZIndex (UIElement element, int value)
-                {
-                        element.ZIndex = value;
-                }
+		{
+			element.ZIndex = value;
+		}
 	}
 }

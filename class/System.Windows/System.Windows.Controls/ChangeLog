@@ -1,5 +1,9 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Canvas.cs: Spaces->Tabs.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* ColumnDefinitionCollection.cs, RowDefinitionCollection.cs: Make
 	  classes partial.
 
