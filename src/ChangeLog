@@ -1,5 +1,13 @@
 2008-08-12  Chris Toshok  <toshok@ximian.com>
 
+	* style.h (class Style): make the "Setters DP" field private.
+
+	* template.h (class ControlTemplate): add TargetType DP
+
+	* dependencyproperty.g.cpp: regen.
+
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
 	* style.h (class Setter): hack for the DependencyProperty valued
 	property.  we need to parse a string DP name in a context where we
 	don't know the type to apply to it, so we need to have a string

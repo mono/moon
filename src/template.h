@@ -46,6 +46,9 @@ public:
 	ControlTemplate ();
 
 	virtual Type::Kind GetObjectType () { return Type::CONTROLTEMPLATE; }
+
+ 	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedFieldAccess=Private */
+	static DependencyProperty *TargetTypeProperty;
 };
 
 G_BEGIN_DECLS

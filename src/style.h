@@ -32,7 +32,7 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::STYLE; }
 
- 	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedAccess=Public */
+ 	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public */
 	static DependencyProperty *SettersProperty;
 
  	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public */
