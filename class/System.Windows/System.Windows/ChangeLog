@@ -1,5 +1,9 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* PresentationFrameworkCollection.cs: Make partial.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* TriggerActionCollection.cs, ResourceDictionary.cs,
 	  SetterBaseCollection.cs, TriggerCollection.cs,
 	  FrameworkTemplate.cs, DependencyObject.g.cs, SetterBase.cs: Remove

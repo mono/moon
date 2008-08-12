@@ -33,7 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace System.Windows {
-	public abstract class PresentationFrameworkCollection<T> : DependencyObject,
+	public abstract partial class PresentationFrameworkCollection<T> : DependencyObject,
 		IEnumerable, IList,
 		IList<T>, ICollection<T> {
 
