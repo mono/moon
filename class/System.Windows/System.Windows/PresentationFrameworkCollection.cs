@@ -102,18 +102,22 @@ namespace System.Windows {
 		{
 			Value v = DependencyObject.GetAsValue (value);
 			NativeMethods.collection_add (native, ref v);
+			NativeMethods.value_free_value (ref v);
 		}
 
 		internal void InsertImpl (int index, T value)
 		{
 			Value v = DependencyObject.GetAsValue (value);
 			NativeMethods.collection_insert (native, index, ref v);
+			NativeMethods.value_free_value (ref v);
 		}
 
 		internal bool RemoveImpl (T value)
 		{
 			Value v = DependencyObject.GetAsValue (value);
-			return NativeMethods.collection_remove (native, ref v);
+			bool rv = NativeMethods.collection_remove (native, ref v);
+			NativeMethods.value_free_value (ref v);
+			return rv;
 		}
 
 		internal T GetItemImpl (int index)
@@ -128,12 +132,15 @@ namespace System.Windows {
 		{
 			Value v = DependencyObject.GetAsValue (value);
 			NativeMethods.collection_set_value_at (native, index, ref v);
+			NativeMethods.value_free_value (ref v);
 		}
 
 		internal int IndexOfImpl (T value)
 		{
 			Value v = DependencyObject.GetAsValue (value);
-			return NativeMethods.collection_index_of (native, ref v);
+			int rv = NativeMethods.collection_index_of (native, ref v);
+			NativeMethods.value_free_value (ref v);
+			return rv;
 		}
 
 		//

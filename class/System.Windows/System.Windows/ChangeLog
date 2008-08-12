@@ -1,5 +1,10 @@
 2008-08-11  Chris Toshok  <toshok@ximian.com>
 
+	* PresentationFrameworkCollection.cs: call
+	NativeMethods.value_free_value to free up the values we create.
+
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
 	* Style.cs, Setter.cs, SetterBase.cs, SetterBaseCollection.cs:
 	deal with unmanaged peers.
 
