@@ -19,7 +19,8 @@ class TypeReference {
 	public bool IsConst;
 	public bool IsRef;
 	public bool IsOut;
-	
+	public bool IsReturnType;
+
 	private string managed_type;
 	private Nullable <bool> is_known;
 	
@@ -42,9 +43,9 @@ class TypeReference {
 			text.Append ("const ");
 		
 		if (type != SignatureType.Native) {
-			if (IsRef)
+			if (IsRef && !IsReturnType)
 				text.Append ("ref ");
-			if (IsOut)
+			if (IsOut && !IsReturnType)
 				text.Append ("out ");
 		}
 		
@@ -101,8 +102,13 @@ class TypeReference {
 			case "DependencyProperty*":
 			case "Types*":
 			case "Type*":
-			case "Value*":
 				managed_type = "IntPtr";
+				break;
+			case "Value*":
+				if (IsReturnType)
+					managed_type = "IntPtr";
+				else
+					managed_type = "Value";
 				break;
 			case "NativePropertyChangedHandler*":
 				managed_type = "Mono.NativePropertyChangedHandler";

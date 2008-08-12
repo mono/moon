@@ -449,7 +449,8 @@ class Generator {
 				}
 			}
 			returntype.IsConst = is_const;
-			
+			returntype.IsReturnType = true;
+
 			//Console.WriteLine ("ParseMembers: found member '{0}' is_ctor: {1}", name, is_ctor);
 			
 			if (tokenizer.Accept (Token2Type.Punctuation, "(")) {
@@ -638,6 +639,9 @@ class Generator {
 		//Console.WriteLine ("ParseTypeReference: parsed '{0}'", result.ToString ());
 		
 		tr.Value = result.ToString ();
+
+		if (tr.Value == "Value*")
+			tr.IsRef = true;
 		return tr;
 	}
 

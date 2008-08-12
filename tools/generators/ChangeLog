@@ -1,3 +1,10 @@
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs, TypeReference.cs: I know you're going to hate me,
+	rolf :) but special case support for Value* in parameter lists,
+	making it "ref Value" instead of the more common IntPtr.  Use
+	IntPtr for the return type when a method returns Value*, though.
+
 2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* FieldInfo.cs, Generator.cs, Helper.cs, MemberInfo.cs, TypeInfo.cs:
