@@ -78,7 +78,7 @@ class Generator {
 			
 			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), type.Name + ".cs");
 			if (!File.Exists (check_ns)) {
-				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
+				//Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
 				continue;
 			}
 			
@@ -219,7 +219,7 @@ class Generator {
 			}
 
 			if (ns == "None") {
-				Console.WriteLine ("'{0}''s Namespace = 'None', this type should have set @ManagedDependencyProperties=Manual to not create DPs.", type.FullName);
+				//Console.WriteLine ("'{0}''s Namespace = 'None', this type should have set @ManagedDependencyProperties=Manual to not create DPs.", type.FullName);
 				continue;
 			}
 			

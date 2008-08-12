@@ -1,5 +1,9 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Generator.cs: Comment out two warnings until I've fixed them all.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Generator.cs, MemberInfo.cs: Honor ManagedName, and fix
 	  GenerateType_G.
 
