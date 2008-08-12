@@ -6,6 +6,11 @@
 
 2008-08-12  Jeffrey Stedfast  <fejj@novell.com>
 
+	* collection.cpp (Collection::SetCount): Convenience function.
+	(Collection::Clear): Use SetCount().
+	(Collection::Insert): Same.
+	(Collection::RemoveAt): Same.
+
 	* media.cpp (TimelineMarkerCollection::Add): Chain up to direct
 	parent class rather than base class - while the
 	DependencyObjectCollection might not currently override Add/Insert

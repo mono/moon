@@ -36,6 +36,8 @@ class Collection : public DependencyObject {
 	virtual void AddedToCollection (Value *value) {}
 	virtual void RemovedFromCollection (Value *value) {}
 	
+	void SetCount (int count);
+	
 	Collection ();
 	virtual ~Collection ();
 	virtual void Dispose ();
@@ -53,7 +55,7 @@ class Collection : public DependencyObject {
 	GPtrArray *Array () { return array; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	int GetCount () { return GetValue (Collection::CountProperty)->AsInt32 (); }
+	int GetCount ();
 	
 	int Add (Value value);
 	/* @GenerateCBinding,GeneratePInvoke */

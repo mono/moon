@@ -45,6 +45,18 @@ Collection::Dispose ()
 	}
 }
 
+void
+Collection::SetCount (int count)
+{
+	SetValue (Collection::CountProperty, Value (count));
+}
+
+int
+Collection::GetCount ()
+{
+	return GetValue (Collection::CountProperty)->AsInt32 ();
+}
+
 int
 Collection::Add (Value *value)
 {
@@ -75,7 +87,7 @@ Collection::Clear ()
 	g_ptr_array_set_size (array, 0);
 	generation++;
 	
-	SetValue (Collection::CountProperty, 0);
+	SetCount (0);
 	
 	EmitChanged (CollectionChangedActionReset, NULL, NULL, -1);
 }
@@ -138,7 +150,7 @@ Collection::Insert (int index, Value *value)
 	g_ptr_array_insert (array, index, added);
 	AddedToCollection (added);
 	
-	SetValue (Collection::CountProperty, (gint32) array->len);
+	SetCount ((int) array->len);
 	
 	EmitChanged (CollectionChangedActionAdd, added, NULL, index);
 	
@@ -174,9 +186,7 @@ Collection::RemoveAt (int index)
 	value = (Value *) array->pdata[index];
 	
 	g_ptr_array_remove_index (array, index);
-	
-	SetValue (Collection::CountProperty, (gint32) array->len);
-	
+	SetCount ((int) array->len);
 	generation++;
 	
 	RemovedFromCollection (value);
