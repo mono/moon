@@ -142,6 +142,7 @@ collection_get_count (Collection *instance)
 }
 
 
+#if SL_2_0
 Value *
 collection_get_value_at_with_error (Collection *instance, int index, MoonError *error)
 {
@@ -152,6 +153,7 @@ collection_get_value_at_with_error (Collection *instance, int index, MoonError *
 		g_warning ("Moonlight: Called collection_get_value_at_with_error () with error == NULL.");
 	return instance->GetValueAtWithError (index, error);
 }
+#endif
 
 
 int
@@ -195,6 +197,7 @@ collection_remove_at (Collection *instance, int index)
 }
 
 
+#if SL_2_0
 bool
 collection_remove_at_with_error (Collection *instance, int index, MoonError *error)
 {
@@ -205,8 +208,10 @@ collection_remove_at_with_error (Collection *instance, int index, MoonError *err
 		g_warning ("Moonlight: Called collection_remove_at_with_error () with error == NULL.");
 	return instance->RemoveAtWithError (index, error);
 }
+#endif
 
 
+#if SL_2_0
 bool
 collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error)
 {
@@ -217,6 +222,7 @@ collection_set_value_at_with_error (Collection *instance, int index, Value *valu
 		g_warning ("Moonlight: Called collection_set_value_at_with_error () with error == NULL.");
 	return instance->SetValueAtWithError (index, value, error);
 }
+#endif
 
 
 /**

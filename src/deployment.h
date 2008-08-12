@@ -88,6 +88,9 @@ class Application : public DependencyObject {
 	/* @GenerateCBinding */
 	Application () {} 
 	virtual Type::Kind GetObjectType () { return Type::APPLICATION; }
+
+	/* @PropertyType=ResourceDictionary */
+	static DependencyProperty *ResourcesProperty;
 };
 
 G_END_DECLS

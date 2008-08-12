@@ -1,5 +1,16 @@
 2008-08-11  Chris Toshok  <toshok@ximian.com>
 
+	* deployment.h (class Application): add ResourceProperty.
+
+	* style.h: add ValueProperty.
+
+	* cbinding.h, cbinding.cpp: hm, looks like I forgot to regen these
+	after adding the Version=2.0 stuff to the collection api.
+
+	* dependencyproperty.g.cpp: regen.
+
+2008-08-11  Chris Toshok  <toshok@ximian.com>
+
 	* error.h, error.cpp: add an enum to MoonError that lets us
 	specify which exception to raise.
 	

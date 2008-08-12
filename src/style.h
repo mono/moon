@@ -87,6 +87,8 @@ public:
 
  	/* @PropertyType=string */
 	static DependencyProperty *PropertyProperty;
+ 	/* @PropertyType=Managed */
+	static DependencyProperty *ValueProperty;
 };
 
 G_BEGIN_DECLS

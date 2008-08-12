@@ -44,6 +44,9 @@ dependency_property_g_init (void)
 	if (dependency_properties_initialized)
 		return;
 	dependency_properties_initialized = true;
+#if SL_2_0
+	Application::ResourcesProperty = DependencyProperty::Register (Type::APPLICATION, "Resources", Type::RESOURCE_DICTIONARY);
+#endif
 	ArcSegment::IsLargeArcProperty = DependencyProperty::Register (Type::ARCSEGMENT, "IsLargeArc", new Value (false));
 	ArcSegment::PointProperty = DependencyProperty::Register (Type::ARCSEGMENT, "Point", Type::POINT);
 	ArcSegment::RotationAngleProperty = DependencyProperty::Register (Type::ARCSEGMENT, "RotationAngle", new Value (0.0));
@@ -260,6 +263,7 @@ dependency_property_g_init (void)
 	ScaleTransform::ScaleYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0));
 #if SL_2_0
 	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::STRING);
+	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::MANAGED);
 #endif
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
 	Shape::StretchProperty = DependencyProperty::Register (Type::SHAPE, "Stretch", new Value (StretchNone));
@@ -340,6 +344,9 @@ dependency_property_g_init (void)
 	VisualBrush::VisualProperty = DependencyProperty::Register (Type::VISUALBRUSH, "Visual", Type::UIELEMENT);
 }
 
+#if SL_2_0
+DependencyProperty *Application::ResourcesProperty = NULL;
+#endif
 DependencyProperty *ArcSegment::IsLargeArcProperty = NULL;
 DependencyProperty *ArcSegment::PointProperty = NULL;
 DependencyProperty *ArcSegment::RotationAngleProperty = NULL;
@@ -556,6 +563,7 @@ DependencyProperty *ScaleTransform::ScaleXProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleYProperty = NULL;
 #if SL_2_0
 DependencyProperty *Setter::PropertyProperty = NULL;
+DependencyProperty *Setter::ValueProperty = NULL;
 #endif
 DependencyProperty *Shape::FillProperty = NULL;
 DependencyProperty *Shape::StretchProperty = NULL;
