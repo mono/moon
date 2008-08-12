@@ -1,5 +1,10 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* ColumnDefinitionCollection.cs, RowDefinitionCollection.cs: Make
+	  classes partial.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Canvas.cs, UserControl.cs, Control.cs, RowDefinition.cs, Grid.cs,
 	  MediaElement.cs, TextBlock.cs, Panel.cs, ColumnDefinition.cs,
 	  InkPresenter.cs: Implement DP accessor generation.

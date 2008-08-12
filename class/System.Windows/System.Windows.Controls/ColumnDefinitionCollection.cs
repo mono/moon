@@ -31,7 +31,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 
-	public sealed class ColumnDefinitionCollection : PresentationFrameworkCollection<ColumnDefinition> {
+	public sealed partial class ColumnDefinitionCollection : PresentationFrameworkCollection<ColumnDefinition> {
 		public ColumnDefinitionCollection () : base (NativeMethods.column_definition_collection_new ())
 		{
 		}

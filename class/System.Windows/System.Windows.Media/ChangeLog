@@ -1,5 +1,12 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* GeneralTransform.cs, GeometryCollection.cs,
+	  GradientStopCollection.cs, PathFigureCollection.cs, PathSegment.cs,
+	  PathSegmentCollection.cs, TimelineMarkerCollection.cs,
+	  Transform.cs, TransformCollection.cs: Make classes partial.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* PolyLineSegment.cs, RadialGradientBrush.cs, RotateTransform.cs,
 	  Geometry.cs, LinearGradientBrush.cs, TileBrush.cs,
 	  GradientBrush.cs, BezierSegment.cs, LineGeometry.cs,

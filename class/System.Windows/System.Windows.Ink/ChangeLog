@@ -1,5 +1,9 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* StrokeCollection.cs: Make classes partial.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DrawingAttributes.cs, Stroke.cs: Implement DP accessor generation.
 
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 

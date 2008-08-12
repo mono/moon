@@ -31,7 +31,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 
-	public sealed class RowDefinitionCollection : PresentationFrameworkCollection<RowDefinition> {
+	public sealed partial class RowDefinitionCollection : PresentationFrameworkCollection<RowDefinition> {
 		public RowDefinitionCollection () : base (NativeMethods.row_definition_collection_new ())
 		{
 		}

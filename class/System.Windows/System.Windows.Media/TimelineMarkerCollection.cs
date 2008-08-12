@@ -27,7 +27,7 @@ using System.Windows;
 using Mono;
 
 namespace System.Windows.Media {
-	public sealed class TimelineMarkerCollection : PresentationFrameworkCollection<TimelineMarker> {
+	public sealed partial class TimelineMarkerCollection : PresentationFrameworkCollection<TimelineMarker> {
 		public TimelineMarkerCollection () : base (NativeMethods.timeline_marker_collection_new ())
 		{
 		}

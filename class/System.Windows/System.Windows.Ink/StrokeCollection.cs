@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Ink
 {
-	public sealed class StrokeCollection : PresentationFrameworkCollection <Stroke>
+	public sealed partial class StrokeCollection : PresentationFrameworkCollection <Stroke>
 	{
 		public StrokeCollection() : base (NativeMethods.stroke_collection_new ())
 		{

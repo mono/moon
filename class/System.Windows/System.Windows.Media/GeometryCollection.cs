@@ -31,7 +31,7 @@ using System.Windows;
 
 namespace System.Windows.Media {
 
-	public sealed class GeometryCollection : PresentationFrameworkCollection<Geometry> {
+	public sealed partial class GeometryCollection : PresentationFrameworkCollection<Geometry> {
 		internal GeometryCollection (IntPtr native) : base (native)
 		{
 		}

@@ -30,7 +30,7 @@ using Mono;
 using System.Windows;
 
 namespace System.Windows.Media {
-	public sealed class TransformCollection : PresentationFrameworkCollection <Transform> {
+	public sealed partial class TransformCollection : PresentationFrameworkCollection <Transform> {
 		
 		public TransformCollection () : base (NativeMethods.transform_collection_new ())
 		{

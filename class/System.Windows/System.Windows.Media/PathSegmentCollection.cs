@@ -31,7 +31,7 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class PathSegmentCollection : PresentationFrameworkCollection<PathSegment> {
+	public sealed partial class PathSegmentCollection : PresentationFrameworkCollection<PathSegment> {
 		public PathSegmentCollection () : base (NativeMethods.path_segment_collection_new ())
 		{
 		}

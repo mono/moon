@@ -31,7 +31,7 @@ using System.Security;
 
 namespace System.Windows.Media {
 
-	public abstract class GeneralTransform : DependencyObject {
+	public abstract partial class GeneralTransform : DependencyObject {
 		
 		protected GeneralTransform () : base (NativeMethods.general_transform_new ())
 		{

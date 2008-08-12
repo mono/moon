@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Input
 {
-	public sealed class StylusPointCollection : PresentationFrameworkCollection <StylusPoint>
+	public sealed partial class StylusPointCollection : PresentationFrameworkCollection <StylusPoint>
 	{
 		public StylusPointCollection() : base (NativeMethods.stylus_point_collection_new ())
 		{

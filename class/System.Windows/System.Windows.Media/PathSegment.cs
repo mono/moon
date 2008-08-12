@@ -28,7 +28,7 @@
 using Mono;
 
 namespace System.Windows.Media {
-	public abstract class PathSegment : DependencyObject {
+	public abstract partial class PathSegment : DependencyObject {
 		
 		internal PathSegment (IntPtr raw) : base (raw)
 		{

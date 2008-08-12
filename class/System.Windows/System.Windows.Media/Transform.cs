@@ -27,7 +27,7 @@
 //
 using Mono;
 namespace System.Windows.Media {
-	public abstract class Transform : GeneralTransform {
+	public abstract partial class Transform : GeneralTransform {
 		
 		protected Transform () : base (NativeMethods.transform_new ())
 		{

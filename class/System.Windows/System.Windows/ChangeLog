@@ -1,5 +1,9 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* AssemblyPartCollection.cs: Make classes partial.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Style.cs, Deployment.cs, DependencyObject.cs, EventTrigger.cs,
 	  AssemblyPart.cs, UIElement.cs, DependencyObject.g.cs, Setter.cs,
 	  FrameworkElement.cs, DependencyProperty.g.cs: Implement DP accessor

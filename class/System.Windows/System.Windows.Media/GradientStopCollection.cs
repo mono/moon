@@ -30,7 +30,7 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public sealed class GradientStopCollection : PresentationFrameworkCollection<GradientStop> {
+	public sealed partial class GradientStopCollection : PresentationFrameworkCollection<GradientStop> {
 		public GradientStopCollection () : base (NativeMethods.gradient_stop_collection_new ())
 		{
 		}
