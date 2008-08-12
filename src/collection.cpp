@@ -65,7 +65,7 @@ Collection::Clear ()
 	
 	if (closure)
 		closure->OnCollectionClear (this);
-
+	
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
 		RemovedFromCollection (value);
@@ -74,8 +74,8 @@ Collection::Clear ()
 	
 	g_ptr_array_set_size (array, 0);
 	generation++;
-
-	SetValue (CountProperty, (gint32)array->len);
+	
+	SetValue (Collection::CountProperty, 0);
 	
 	EmitChanged (CollectionChangedActionReset, NULL, NULL, -1);
 }
@@ -135,12 +135,10 @@ Collection::Insert (int index, Value *value)
 		index = GetCount ();
 	
 	added = new Value (*value);
-	
 	g_ptr_array_insert (array, index, added);
-
-	SetValue (CountProperty, (gint32)array->len);
-
 	AddedToCollection (added);
+	
+	SetValue (Collection::CountProperty, (gint32) array->len);
 	
 	EmitChanged (CollectionChangedActionAdd, added, NULL, index);
 	
@@ -176,11 +174,11 @@ Collection::RemoveAt (int index)
 	value = (Value *) array->pdata[index];
 	
 	g_ptr_array_remove_index (array, index);
-
-	SetValue (CountProperty, (gint32)array->len);
-
+	
+	SetValue (Collection::CountProperty, (gint32) array->len);
+	
 	generation++;
-
+	
 	RemovedFromCollection (value);
 	
 	EmitChanged (CollectionChangedActionRemove, NULL, value, index);
@@ -242,13 +240,15 @@ Collection::SetValueAt (int index, Value *value)
 	
 	removed = (Value *) array->pdata[index];
 	added = new Value (*value);
-
+	
 	array->pdata[index] = added;
-
+	
 	RemovedFromCollection (removed);
 	AddedToCollection (added);
 	
 	EmitChanged (CollectionChangedActionReplace, added, removed, index);
+	
+	delete removed;
 	
 	return true;
 }
@@ -261,20 +261,20 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 		MoonError::FillIn (error, MoonError::ARGUMENT, "");
 		return false;
 	}
-
+	
 	// check array bounds
 	if (index < 0 || (guint) index >= array->len) {
 		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, "");
 		return false;
 	}
-
+	
 	// Check that the value can be added to our collection
 	if (!CanAdd (value)) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, "");
 		return false;
 	}
 	
-	return GetValueAt (index);
+	return SetValueAt (index, value);
 }
 
 void
@@ -326,13 +326,6 @@ DependencyObjectCollection::RemovedFromCollection (Value *value)
 	}
 	
 	Collection::RemovedFromCollection (value);
-}
-
-bool
-DependencyObjectCollection::SetValueAt (int index, DependencyObject *obj)
-{
-	Value v (obj);
-	return Collection::SetValueAt (index, &v);
 }
 
 void

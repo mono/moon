@@ -1,3 +1,18 @@
+2008-08-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (TimelineMarkerCollection::Add): Chain up to direct
+	parent class rather than base class - while the
+	DependencyObjectCollection might not currently override Add/Insert
+	methods, if at some later point overrides are added, then we need
+	to do no work here.
+
+	* collection.cpp (DependencyObjectCollection::SetValueAt):
+	Removed (not used anywhere).
+	(Collection::SetValueAtWithError): This needs to call
+	SetValueAt(), not GetValueAt().
+	(Collection::SetValueAt): Delete the removed Value after emitting
+	the event so we don't leak it.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* animation.h, brush.h, clock.h, control.h, dependencyobject.h,

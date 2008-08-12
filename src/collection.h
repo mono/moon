@@ -53,34 +53,34 @@ class Collection : public DependencyObject {
 	GPtrArray *Array () { return array; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	int GetCount () { return GetValue (CountProperty)->AsInt32(); }
+	int GetCount () { return GetValue (Collection::CountProperty)->AsInt32 (); }
 	
 	int Add (Value value);
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual int Add (Value *value);
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Clear ();
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool Contains (Value *value);
 	/* @GenerateCBinding,GeneratePInvoke */
 	int IndexOf (Value *value);
-
+	
 	bool Insert (int index, Value value);
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool Insert (int index, Value *value);
-
+	
 	bool Remove (Value value);
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool Remove (Value *value);
-
+	
 	/* @GenerateCBinding */
 	bool RemoveAt (int index);
 	
 	Value *GetValueAt (int index);
 	bool   SetValueAt (int index, Value *value);
-
+	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueAtWithError (int index, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
@@ -103,8 +103,6 @@ class DependencyObjectCollection : public Collection {
 	
 	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
-	
-	virtual bool SetValueAt (int index, DependencyObject *obj);
 	
 	virtual void SetSurface (Surface *surface);
 	

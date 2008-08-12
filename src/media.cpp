@@ -2911,12 +2911,12 @@ TimelineMarkerCollection::Add (Value *value)
 	for (guint i = 0; i < array->len; i++) {
 		cur = ((Value *) array->pdata[i])->AsTimelineMarker ();
 		if (cur->GetTime () >= marker->GetTime ()) {
-			Collection::Insert (i, value);
+			DependencyObjectCollection::Insert (i, value);
 			return i;
 		}
 	}
 	
-	return Collection::Add (value);
+	return DependencyObjectCollection::Add (value);
 }
 
 bool
