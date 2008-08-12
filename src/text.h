@@ -40,7 +40,7 @@ class Inline : public DependencyObject {
 	virtual ~Inline ();
 
  public:
- 	/* @PropertyType=char*,DefaultValue=TEXTBLOCK_FONT_FAMILY */
+ 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
@@ -111,7 +111,7 @@ class Run : public Inline {
 	virtual ~Run () {}
 
  public:
- 	/* @PropertyType=char* */
+ 	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
 	
 	/* @GenerateCBinding */
@@ -191,7 +191,7 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *ActualHeightProperty;
  	/* @PropertyType=double,ReadOnly */
 	static DependencyProperty *ActualWidthProperty;
- 	/* @PropertyType=char*,DefaultValue=TEXTBLOCK_FONT_FAMILY */
+ 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
 	static DependencyProperty *FontSizeProperty;
@@ -205,7 +205,7 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *ForegroundProperty;
  	/* @PropertyType=Inlines,ManagedPropertyType=InlineCollection */
 	static DependencyProperty *InlinesProperty;
- 	/* @PropertyType=char* */
+ 	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone */
 	static DependencyProperty *TextDecorationsProperty;
@@ -360,9 +360,9 @@ class Glyphs : public FrameworkElement {
 	static DependencyProperty *FillProperty;
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *FontRenderingEmSizeProperty;
- 	/* @PropertyType=char*,ManagedPropertyType=Uri */
+ 	/* @PropertyType=string,ManagedPropertyType=Uri */
 	static DependencyProperty *FontUriProperty;
- 	/* @PropertyType=char* */
+ 	/* @PropertyType=string */
 	static DependencyProperty *IndicesProperty;
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OriginXProperty;
@@ -370,7 +370,7 @@ class Glyphs : public FrameworkElement {
 	static DependencyProperty *OriginYProperty;
  	/* @PropertyType=StyleSimulations,DefaultValue=StyleSimulationsNone */
 	static DependencyProperty *StyleSimulationsProperty;
- 	/* @PropertyType=char* */
+ 	/* @PropertyType=string */
 	static DependencyProperty *UnicodeStringProperty;
 	
 	/* @GenerateCBinding */

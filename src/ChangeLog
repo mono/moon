@@ -1,5 +1,12 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* animation.h, brush.h, clock.h, control.h, dependencyobject.h,
+	  deployment.h, downloader.h, frameworkelement.h, media.h, text.h,
+	  trigger.h, uielement.h: Use string instead of char* as
+	  @PropertyType.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* animation.h, brush.h, canvas.h, clock.h, collection.h,
 	  contentcontrol.h, control.h, dependencyobject.h, deployment.h,
 	  downloader.h, frameworkelement.h, geometry.h, grid.h, media.h,

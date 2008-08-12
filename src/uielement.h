@@ -424,7 +424,7 @@ class UIElement : public DependencyObject {
 	static DependencyProperty *CursorProperty;
  	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement */
 	static DependencyProperty *ResourcesProperty;
- 	/* @PropertyType=char*,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object */
+ 	/* @PropertyType=string,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object */
 	static DependencyProperty *TagProperty;
  	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement */
 	static DependencyProperty *TriggersProperty;

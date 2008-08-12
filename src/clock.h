@@ -602,11 +602,11 @@ class TimelineMarker : public DependencyObject {
 	virtual ~TimelineMarker () {}
 
  public:
- 	/* @PropertyType=char* */
+ 	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
  	/* @PropertyType=TimeSpan */
 	static DependencyProperty *TimeProperty;
- 	/* @PropertyType=char* */
+ 	/* @PropertyType=string */
 	static DependencyProperty *TypeProperty;
 	
  	/* @GenerateCBinding */

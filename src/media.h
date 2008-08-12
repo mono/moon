@@ -51,7 +51,7 @@ class MediaAttribute : public DependencyObject {
 	virtual ~MediaAttribute () {}
 
  public:
- 	/* @PropertyType=char* */
+ 	/* @PropertyType=string */
 	static DependencyProperty *ValueProperty;
 	
  	/* @GenerateCBinding */
@@ -150,7 +150,7 @@ class MediaBase : public FrameworkElement {
 	void SetDownloadProgress (double progress);
 	
  public:
- 	/* @PropertyType=char*,AlwaysChange */
+ 	/* @PropertyType=string,AlwaysChange */
 	static DependencyProperty *SourceProperty;
  	/* @PropertyType=gint32,DefaultValue=StretchUniform */
 	static DependencyProperty *StretchProperty;
@@ -406,7 +406,7 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *CanPauseProperty;
  	/* @PropertyType=bool,DefaultValue=false,ReadOnly */
 	static DependencyProperty *CanSeekProperty;
- 	/* @PropertyType=char*,ReadOnly,ManagedPropertyType=MediaElementState */
+ 	/* @PropertyType=string,ReadOnly,ManagedPropertyType=MediaElementState */
 	static DependencyProperty *CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *IsMutedProperty;

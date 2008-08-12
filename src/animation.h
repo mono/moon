@@ -740,9 +740,9 @@ class Storyboard : public ParallelTimeline {
 	virtual ~Storyboard ();
 
  public:
- 	/* @PropertyType=char*,Attached */
+ 	/* @PropertyType=string,Attached */
 	static DependencyProperty *TargetNameProperty;
- 	/* @PropertyType=char*,Attached */
+ 	/* @PropertyType=string,Attached */
 	static DependencyProperty *TargetPropertyProperty;
 	
 	/* @GenerateCBinding */

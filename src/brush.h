@@ -350,7 +350,7 @@ class ImageBrush : public TileBrush {
  public:
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *DownloadProgressProperty;
- 	/* @PropertyType=char*,DefaultValue=\"\" */
+ 	/* @PropertyType=string,DefaultValue=\"\" */
 	static DependencyProperty *ImageSourceProperty;
 	
 	const static int DownloadProgressChangedEvent;
@@ -392,7 +392,7 @@ class VideoBrush : public TileBrush {
 	virtual ~VideoBrush ();
 
  public:
- 	/* @PropertyType=char*,DefaultValue=\"\" */
+ 	/* @PropertyType=string,DefaultValue=\"\" */
 	static DependencyProperty *SourceNameProperty;
 	
 	/* @GenerateCBinding */

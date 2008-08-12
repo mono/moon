@@ -35,7 +35,7 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty *DataContextProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2 */
 	static DependencyProperty *HorizontalAlignmentProperty;
-	/* @PropertyType=char*,DefaultValue=\"en-US\",Version=2,ManagedPropertyType=XmlLanguage */
+	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2,ManagedPropertyType=XmlLanguage */
 	static DependencyProperty *LanguageProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2 */
 	static DependencyProperty *MarginProperty;

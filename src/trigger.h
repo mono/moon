@@ -41,7 +41,7 @@ class EventTrigger : public DependencyObject {
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
 
-	/* @PropertyType=char* */
+	/* @PropertyType=string */
 	static DependencyProperty *RoutedEventProperty;
 	/* @PropertyType=TriggerActionCollection */
 	static DependencyProperty *ActionsProperty;
