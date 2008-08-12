@@ -23,6 +23,7 @@ typedef	void NativePropertyChangedHandler (DependencyProperty *dependency_proper
 //
 // DependencyProperty
 //
+/* @IncludeInKinds */
 class DependencyProperty {
  public:
 	DependencyProperty () {};
