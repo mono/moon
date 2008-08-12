@@ -1,3 +1,7 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* InlineCollection.cs: More DO generation.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Glyphs.cs, Inline.cs, LineBreak.cs, Run.cs: Generate public ctor,

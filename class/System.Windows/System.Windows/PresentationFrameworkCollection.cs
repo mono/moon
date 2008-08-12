@@ -40,10 +40,6 @@ namespace System.Windows {
 		public static readonly System.Windows.DependencyProperty CountProperty =
 			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (int));
 		
-		internal PresentationFrameworkCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
 		int IList.Add (object value)
 		{
 			Add ((T)value);
@@ -192,11 +188,6 @@ namespace System.Windows {
 			}
 		}
 		
-		internal override Kind GetKind ()
-		{
-			return Kind.COLLECTION;
-		}
-
 		static internal Exception GetInvalid ()
 		{
 			return new InvalidOperationException ("The underlying collection has mutated");

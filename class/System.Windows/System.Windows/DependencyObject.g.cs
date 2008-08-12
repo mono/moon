@@ -16,6 +16,12 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace System.Windows {
+	partial class ApplicationInternal {
+		public ApplicationInternal () : base (NativeMethods.application_new ()) {}
+		internal ApplicationInternal (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.APPLICATION; }
+	}
+
 	partial class AssemblyPart {
 		public AssemblyPart () : base (NativeMethods.assembly_part_new ()) {}
 		internal AssemblyPart (IntPtr raw) : base (raw) {}
@@ -50,6 +56,11 @@ namespace System.Windows {
 		public FrameworkTemplate () : base (NativeMethods.framework_template_new ()) {}
 		internal FrameworkTemplate (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.FRAMEWORKTEMPLATE; }
+	}
+
+	partial class PresentationFrameworkCollection<T> {
+		internal PresentationFrameworkCollection (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.COLLECTION; }
 	}
 
 	partial class ResourceDictionary {
@@ -204,6 +215,12 @@ namespace System.Windows.Documents {
 		public Inline () : base (NativeMethods.inline_new ()) {}
 		internal Inline (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.INLINE; }
+	}
+
+	partial class InlineCollection {
+		public InlineCollection () : base (NativeMethods.inlines_new ()) {}
+		internal InlineCollection (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.INLINES; }
 	}
 
 	partial class LineBreak {
@@ -721,7 +738,6 @@ namespace System.Windows.Shapes {
 	}
 
 	partial class Shape {
-		public Shape () : base (NativeMethods.shape_new ()) {}
 		internal Shape (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.SHAPE; }
 	}

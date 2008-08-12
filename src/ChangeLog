@@ -1,3 +1,8 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* brush.h, contentcontrol.h, deployment.h, downloader.h, media.h,
+	  namescope.h, stylus.h, transform.h: Tweak some annotations.
+
 2008-08-12  Chris Toshok  <toshok@ximian.com>
 
 	* style.h (class Style): make the "Setters DP" field private.

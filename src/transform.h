@@ -202,7 +202,8 @@ double skew_transform_get_center_x (SkewTransform *transform);
 void   skew_transform_set_center_y (SkewTransform *transform, double centerY);
 double skew_transform_get_center_y (SkewTransform *transform);
 
-/* @Namespace=None */
+/* @Namespace=None */ // The managed Matrix is a struct
+/* @ManagedDependencyProperties=Manual */
 class Matrix : public DependencyObject {
 private:
 	cairo_matrix_t matrix;

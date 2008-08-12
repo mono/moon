@@ -1,3 +1,8 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am: Split ApplicationInternal out into a separate file and
+	  enable generation for it.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* System.Windows.mdp, Makefile.am: Generate public ctor, internal ctor

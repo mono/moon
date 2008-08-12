@@ -47,6 +47,7 @@ class MediaErrorEventArgs : public ErrorEventArgs {
 
 
 /* @Namespace=None */
+/* @ManagedDependencyProperties=None */
 class MediaAttribute : public DependencyObject {
  protected:
 	virtual ~MediaAttribute () {}
@@ -105,7 +106,7 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 };
 
 
-/* @Namespace=System.Windows.Media */
+/* @Namespace=None */
 class MarkerReachedEventArgs : public EventArgs {
 	TimelineMarker *marker;
 	
@@ -121,6 +122,7 @@ class MarkerReachedEventArgs : public EventArgs {
 
 
 /* @Namespace=None */
+/* @ManagedDependencyProperties=None */
 class MediaBase : public FrameworkElement {
  protected:
 	struct {

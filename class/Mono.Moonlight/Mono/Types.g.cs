@@ -14,6 +14,8 @@ namespace Mono {
 			Assembly agclr = Helper.GetAgclr ();
 			Type t;
 			try {
+				t = agclr.GetType ("System.Windows.ApplicationInternal", true); 
+				types.Add (t, new ManagedType (t, Kind.APPLICATION));
 				t = agclr.GetType ("System.Windows.AssemblyPart", true); 
 				types.Add (t, new ManagedType (t, Kind.ASSEMBLYPART));
 				t = agclr.GetType ("System.Windows.AssemblyPartCollection", true); 
@@ -128,8 +130,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.LINEGEOMETRY));
 				t = agclr.GetType ("System.Windows.Media.LineSegment", true); 
 				types.Add (t, new ManagedType (t, Kind.LINESEGMENT));
-				t = agclr.GetType ("System.Windows.Media.MarkerReachedEventArgs", true); 
-				types.Add (t, new ManagedType (t, Kind.MARKERREACHEDEVENTARGS));
 				t = agclr.GetType ("System.Windows.Media.MatrixTransform", true); 
 				types.Add (t, new ManagedType (t, Kind.MATRIXTRANSFORM));
 				t = agclr.GetType ("System.Windows.Media.PathFigure", true); 

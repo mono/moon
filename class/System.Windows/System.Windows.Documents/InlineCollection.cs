@@ -30,19 +30,7 @@ using System.Windows;
 using Mono;
 
 namespace System.Windows.Documents {
-	public sealed class InlineCollection : PresentationFrameworkCollection<Inline> {
-		public InlineCollection () : base (NativeMethods.inlines_new ())
-		{
-		}
-		
-		internal InlineCollection (IntPtr raw) : base (raw)
-		{
-		}
-		
-		internal override Kind GetKind ()
-		{
-			return Kind.INLINES;
-		}
+	public sealed partial class InlineCollection : PresentationFrameworkCollection<Inline> {
 
 		public override void Add (Inline value)
 		{

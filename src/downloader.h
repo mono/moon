@@ -42,6 +42,7 @@ typedef void     (*downloader_body_func) (gpointer state, void *body, guint32 le
 typedef gpointer (*downloader_create_webrequest_func) (const char *method, const char *uri, gpointer context);
 
 /* @Namespace=None */
+/* @ManagedDependencyProperties=None */
 class Downloader : public DependencyObject {
 	static downloader_create_state_func create_state;
 	static downloader_destroy_state_func destroy_state;

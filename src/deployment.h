@@ -82,7 +82,8 @@ class Deployment : public DependencyObject {
 
 
 /* @SilverlightVersion="2" */
-/* @Namespace=None */ // We have DPs, but the managed class does not inherit from DependencyObject?
+/* @Namespace=System.Windows */
+/* @ManagedName=ApplicationInternal */
 class Application : public DependencyObject {
  protected:
 	virtual ~Application () {}

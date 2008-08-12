@@ -52,6 +52,7 @@ void	stylus_info_set_inverted	(StylusInfo *stylus_info, bool inverted);
 
 
 /* @Namespace=None */
+/* @ManagedDependencyProperties=Manual */ // It's a managed struct
 class StylusPoint : public DependencyObject {
  protected:
 	virtual ~StylusPoint () {}

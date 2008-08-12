@@ -416,6 +416,7 @@ void video_brush_set_source_name (VideoBrush *brush, const char *name);
 
 
 /* @Namespace=None */
+/* @ManagedDependencyProperties=None */
 class VisualBrush : public TileBrush {
 	cairo_surface_t *surface;
 

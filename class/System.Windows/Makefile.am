@@ -102,6 +102,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs		\
 	$(srcdir)/System.Windows/Application.cs					\
+	$(srcdir)/System.Windows/ApplicationInternal.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\

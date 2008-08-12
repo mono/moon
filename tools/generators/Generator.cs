@@ -76,9 +76,9 @@ class Generator {
 				continue;
 			}
 			
-			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), type.Name + ".cs");
+			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), type.ManagedName.Replace ("`1", "") + ".cs");
 			if (!File.Exists (check_ns)) {
-				//Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
+				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
 				continue;
 			}
 			
@@ -95,7 +95,7 @@ class Generator {
 				text.AppendLine ();
 			}
 			text.Append ("\tpartial class ");
-			text.Append (type.ManagedName);
+			text.Append (type.ManagedName.Replace ("`1", "<T>"));
 			text.AppendLine (" {");
 			
 			// Public ctor
@@ -119,7 +119,7 @@ class Generator {
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, access);
 				text.Append (" ");
-				text.Append (type.Name);
+				text.Append (type.ManagedName.Replace ("`1", ""));
 				text.Append (" () : base (NativeMethods.");
 				text.Append (type.C_Constructor);
 				text.AppendLine (" ()) {}");
@@ -127,7 +127,7 @@ class Generator {
 			
 			// Internal ctor
 			text.Append ("\t\tinternal ");
-			text.Append (type.Name);
+			text.Append (type.ManagedName.Replace ("`1", ""));
 			text.AppendLine (" (IntPtr raw) : base (raw) {}");
 
 			// GetKind
@@ -209,6 +209,7 @@ class Generator {
 			if (type.Annotations.ContainsKey ("ManagedDependencyProperties")) {
 				string dp_mode = type.Annotations.GetValue ("ManagedDependencyProperties");
 				switch (dp_mode) {
+				case "None":
 				case "Manual":
 					continue;
 				case "Generate":
@@ -219,7 +220,7 @@ class Generator {
 			}
 
 			if (ns == "None") {
-				//Console.WriteLine ("'{0}''s Namespace = 'None', this type should have set @ManagedDependencyProperties=Manual to not create DPs.", type.FullName);
+				Console.WriteLine ("'{0}''s Namespace = 'None', this type should have set @ManagedDependencyProperties=Manual to not create DPs.", type.FullName);
 				continue;
 			}
 			
@@ -559,7 +560,6 @@ class Generator {
 		bool is_virtual;
 		bool is_static;
 		bool is_const;
-		bool is_abstract;
 		bool is_extern;
 		string name;
 		
@@ -568,7 +568,7 @@ class Generator {
 	 	do {
 			returntype = null;
 			is_dtor = is_ctor = is_virtual = is_static = false;
-			is_extern = is_abstract = is_const = false;
+			is_extern = is_const = false;
 			name = null;
 			properties = new Annotations ();
 			
@@ -676,7 +676,6 @@ class Generator {
 				method.IsDestructor = is_dtor;
 				method.IsVirtual = is_virtual;
 				method.IsStatic = is_static;
-				method.IsAbstract = is_abstract;
 				method.IsPublic = accessibility == "public";
 				method.IsPrivate = accessibility == "private";
 				method.IsProtected = accessibility == "protected";
@@ -720,7 +719,7 @@ class Generator {
 					// pure virtual method
 					tokenizer.AcceptOrThrow (Token2Type.Identifier, "0");
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ";");
-					is_abstract = true;
+					method.IsAbstract = true;
 				} else {
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ";");
 				}

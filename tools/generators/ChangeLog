@@ -1,3 +1,11 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TypeInfo.cs: Added method for determining if type is abstract (i.e.
+	  has any abstract members).
+	* GlobalInfo.cs: Add more valid annotations for DPs.
+	* Generator.cs: GenerateManagedDOs: Use the type's ManagedName instead
+	  of Name.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Generator.cs: Comment out two warnings until I've fixed them all.

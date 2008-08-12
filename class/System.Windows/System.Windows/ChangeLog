@@ -1,3 +1,10 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ApplicationInternal.cs: Split ApplicationInternal out into a separate
+	  file and enable generation for it.
+	* DependencyObject.g.cs, DependencyProperty.g.cs,
+	  PresentationFrameworkCollection.cs: More DO generation.
+
 2008-08-12  Chris Toshok  <toshok@ximian.com>
 
 	* Application.cs (GetComponentTypeFromName): split out the linq

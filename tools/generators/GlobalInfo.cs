@@ -91,6 +91,10 @@ class GlobalInfo : MemberInfo {
 				known_annotations.Add ("Attached", null);
 				known_annotations.Add ("ManagedDeclaringType", null);
 				known_annotations.Add ("ManagedPropertyType", null);
+				known_annotations.Add ("ManagedFieldAccess", null);
+				known_annotations.Add ("ManagedAccessorAccess", null);
+				known_annotations.Add ("ManagedGetterAccess", null);
+				known_annotations.Add ("ManagedSetterAccess", null);
 				
 				dependency_properties = new List<FieldInfo>  ();
 				foreach (MemberInfo member in Children.Values) {

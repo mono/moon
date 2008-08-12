@@ -18,6 +18,7 @@ class TypeInfo : MemberInfo {
 	private string _KindName; // The name as it appears in the Kind enum (STRING, POINT_ARRAY, etc)
 	private string c_constructor; // The C constructor
 	private List<FieldInfo> events;
+	private bool? is_abstract;
 	
 	public TypeReference Base; // The parent type
 	public bool IsStruct; // class or struct
@@ -26,6 +27,28 @@ class TypeInfo : MemberInfo {
 	public bool Include; // Force inclusion of this type into the type system (for manual types, char, point[], etc)
 	public bool IsValueType;
 	public bool IsEnum;
+	
+	public bool IsAbstract {
+		get {
+			if (!is_abstract.HasValue) {
+				foreach (MemberInfo member in Children.Values) {
+					MethodInfo method = member as MethodInfo;
+					
+					if (method == null)
+						continue;
+					
+					if (method.IsAbstract) {
+						is_abstract = new bool? (true);
+						break;
+					}
+				}
+				
+				if (!is_abstract.HasValue)
+					is_abstract = new bool? (false);
+			}
+			return is_abstract.Value;
+		}
+	}
 	
 	public List<FieldInfo> Events {
 		get {
@@ -83,7 +106,7 @@ class TypeInfo : MemberInfo {
 	
 	public string C_Constructor {
 		get {
-			if (IsEnum)
+			if (IsEnum || IsAbstract)
 				return string.Empty;
 			
 			if (c_constructor == null)
