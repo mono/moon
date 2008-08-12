@@ -389,19 +389,24 @@ namespace System.Windows {
 			imported_namespaces.Add (xmlns);
 		}
 
+		internal static Type GetComponentTypeFromName (string name)
+		{
+			return (from def in xmlns_definitions
+				where imported_namespaces.Contains (def.Key.XmlNamespace)
+				let clr_namespace = def.Key.ClrNamespace
+				let assembly = def.Value
+				from type in assembly.GetTypes ()
+				where type.Namespace == clr_namespace && type.Name == name && type.IsSubclassOf (typeof (DependencyObject))
+				select type).FirstOrDefault ();
+		}
+
 		//
 		// Creates the proper component by looking the namespace and name
 		// in the various assemblies loaded
 		//
 		internal static DependencyObject CreateComponentFromName (string name)
 		{
-			Type t = (from def in xmlns_definitions
-					where imported_namespaces.Contains (def.Key.XmlNamespace)
-					let clr_namespace = def.Key.ClrNamespace
-					let assembly = def.Value
-					from type in assembly.GetTypes ()
-				  	where type.Namespace == clr_namespace && type.Name == name && type.IsSubclassOf (typeof (DependencyObject))
-				  	select type).FirstOrDefault ();
+			Type t = GetComponentTypeFromName (name);
 
 			if (t == null)
 				return null;

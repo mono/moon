@@ -1,3 +1,18 @@
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* Helper.cs (SetPropertyFromValue): takes a PropertyInfo now
+	instead of a name.  remove the PropertyInfo lookup, and change the
+	return type to void, as nothing checked this anyway.
+	(SetPropertyFromString): takes a PropertyInfo now instead of a
+	name.  remove the PropertyInfo lookup.  simplify the return value
+	stuff (by changing the type to void - nothing used the return
+	value anyway.) and remove the last error condition (the one that
+	said "need to create a managed wrapper fo this property") since it
+	was getting overwritten by the code in SetCustomAttribute anyway.
+	Split things up into 3 distinct phases - TypeConverter, Special
+	cases (currently just System.Type typed properties), and
+	value_from_str_with_typename fallback.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Types.g.cs: Updated according to generator changes.

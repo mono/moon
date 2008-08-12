@@ -1,3 +1,13 @@
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* ManagedXamlLoader.cs (SetCustomAttribute): do the property
+	lookup here instead of passing the property name into both
+	Helper.SetPropertyFrom* methods.  Also simplify the error
+	checking (and actually check the error and not just
+	unmanaged_value before calling SetPropertyFromValue).  Remove the
+	error assignment before SetPropertyFromValue since it's an out
+	param anyway and will overwrite it.
+
 2008-08-06  Chris Toshok  <toshok@ximian.com>
 
 	* NativeMethods.cs: remove.

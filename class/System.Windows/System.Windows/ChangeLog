@@ -1,5 +1,11 @@
 2008-08-12  Chris Toshok  <toshok@ximian.com>
 
+	* Application.cs (GetComponentTypeFromName): split out the linq
+	expression from CreateComponentFromName so we can use the type
+	lookup elsewhere.
+
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
 	* DependencyObject.cs: add CONTROLTEMPLATE and FRAMEWORKTEMPLATE
 	to the CreateObject switch.
 

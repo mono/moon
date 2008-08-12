@@ -360,15 +360,20 @@ namespace Mono.Xaml
 				return false;
 			}
 
+			PropertyInfo pi = target.GetType ().GetProperty (name);
+			if (pi == null){
+				//Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}) no property descriptor found.", target_ptr, name, value);
+				return false;
+			}
+
 			string error;
 			IntPtr unmanaged_value;
-			Helper.SetPropertyFromString (target, name, value, out error, out unmanaged_value);
 
-			if (unmanaged_value != IntPtr.Zero) {
+			Helper.SetPropertyFromString (target, pi, value, out error, out unmanaged_value);
+
+			if (error == null && unmanaged_value != IntPtr.Zero) {
 				object obj_value = DependencyObject.ValueToObject (null, unmanaged_value);
-				
-				error = null;
-				Helper.SetPropertyFromValue (target, name, obj_value, out error);
+				Helper.SetPropertyFromValue (target, pi, obj_value, out error);
 			}
 			
 			if (error != null) {
@@ -577,6 +582,7 @@ namespace Mono.Xaml
 				return SetCustomAttribute (target_ptr, name, value);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}) threw an exception: {3}.", target_ptr, name, value, ex.Message);
+				Console.Error.WriteLine (ex);
 				return false;
 			}
 		}

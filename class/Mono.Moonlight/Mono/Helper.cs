@@ -35,6 +35,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows;
 using System.IO;
 
 namespace Mono {
@@ -71,59 +72,67 @@ namespace Mono {
 			return converter;
 		}
 		
-		public static bool SetPropertyFromString (object target, string name, string value, out string error, out IntPtr unmanaged_value)
+		public static void SetPropertyFromString (object target, PropertyInfo pi, string value, out string error, out IntPtr unmanaged_value)
 		{
 			unmanaged_value = IntPtr.Zero;
-
-			PropertyInfo pi = target.GetType ().GetProperty (name);
-			if (pi == null){
-				error = "no property descriptor found";
-				return false;
-			}
-
-			TypeConverter converter = GetConverterFor (pi);
-			if (!converter.CanConvertFrom (typeof (string))){
-				//
-				// Attempt to create an unmanaged Value* object, if one is created, the managed parser
-				// will create a managed wrapper for the object and call SetPropertyFromValue with the
-				// managed object
-				//
-
-				unmanaged_value = NativeMethods.value_from_str_with_typename (pi.PropertyType.Name, name, value);
-				if (unmanaged_value == IntPtr.Zero)
-					error = "unable to convert to this type from a string";
-
-				error = "Unmanaged object created, a managed wrapper must be created to set this property.";
-				return false;
-			}
-
 			error = null;
-			try {
-				pi.SetValue (target, converter.ConvertFrom (value), null);
-			} catch (Exception e) {
-				error = e.ToString ();
+
+			// if the property has a TypeConverter
+			// associated with it (or the property's type
+			// does), try to use that first
+			TypeConverter converter = GetConverterFor (pi);
+			if (converter != null && converter.CanConvertFrom (typeof (string))) {
+				try {
+					pi.SetValue (target, converter.ConvertFrom (value), null);
+				} catch (Exception e) {
+					error = e.ToString ();
+				}
+				return;
 			}
 
-			return true;
+			// special case System.Type properties (like
+			// Style.TargetType and
+			// ControlTemplate.TargetType)
+			//
+			// XXX this isn't working.
+			//
+			if (pi.PropertyType == typeof (Type)) {
+
+				// try to find the type based on the name
+				Assembly agclr = GetAgclr ();
+				Type app = agclr.GetType ("System.Windows.Application");
+				MethodInfo lookup = app.GetMethod ("GetComponentTypeFromName", BindingFlags.NonPublic | BindingFlags.Static, null, new Type [] {typeof (string)}, null);
+				Type t = (Type)lookup.Invoke (null, new object [] {value});
+
+				if (t != null) {
+					try {
+						pi.SetValue (target, t, null);
+					} catch (Exception e) {
+						error = e.ToString ();
+					}
+					return;
+				}
+
+			}
+
+			//
+			// lastly, attempt to create an unmanaged Value* object, if one is created, the managed
+			// parser will create a managed wrapper for the object and call SetPropertyFromValue with
+			// the managed object
+			//
+			unmanaged_value = NativeMethods.value_from_str_with_typename (pi.PropertyType.Name, pi.Name, value);
+			if (unmanaged_value == IntPtr.Zero)
+				error = "unable to convert to this type from a string";
 		}
 
-		public static bool SetPropertyFromValue (object target, string name, object value, out string error)
+		public static void SetPropertyFromValue (object target, PropertyInfo pi, object value, out string error)
 		{
-			PropertyInfo pi = target.GetType ().GetProperty (name);
-			if (pi == null){
-				error = "no property descriptor found";
-				return false;
-			}
-
 			error = null;
 			try {
 				pi.SetValue (target, value, null);
 			} catch (Exception e) {
 				error = e.ToString ();
-				return false;
 			}
-
-			return true;
 		}
 
 		public static object ChangeType (object obj, Type type)
