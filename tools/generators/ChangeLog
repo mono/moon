@@ -1,5 +1,10 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Generator.cs, TypeReference.cs: Put Value* special casing in a better
+	  place (together with all the other special casing).
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* FieldInfo.cs, Generator.cs, GlobalInfo.cs, Helper.cs, MemberInfo.cs,
 	  README: Added support for generating managed DP registration.
 

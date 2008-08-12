@@ -101,8 +101,6 @@ class Generator {
 			if (ns == "None")
 				continue;
 			
-			Console.WriteLine ("{0}.{1}", type.Namespace, type.FullName);
-			
 			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), parent.Name + ".cs");
 			if (!File.Exists (check_ns))
 				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
@@ -700,8 +698,6 @@ class Generator {
 		
 		tr.Value = result.ToString ();
 
-		if (tr.Value == "Value*")
-			tr.IsRef = true;
 		return tr;
 	}
 

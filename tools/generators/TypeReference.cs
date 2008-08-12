@@ -105,10 +105,12 @@ class TypeReference {
 				managed_type = "IntPtr";
 				break;
 			case "Value*":
-				if (IsReturnType)
+				if (IsReturnType) {
 					managed_type = "IntPtr";
-				else
+				} else {
+					IsRef = true;
 					managed_type = "Value";
+				}
 				break;
 			case "NativePropertyChangedHandler*":
 				managed_type = "Mono.NativePropertyChangedHandler";
