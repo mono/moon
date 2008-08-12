@@ -30,10 +30,5 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public sealed partial class ControlTemplate : FrameworkTemplate {
-
-		public Type TargetType {
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
-		}
 	}
 }

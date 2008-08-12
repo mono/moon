@@ -188,7 +188,7 @@ namespace System.Windows {
 	}
 
 	partial class Style {
-		public static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
+		private static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
 		public static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
 
 		public SetterBaseCollection Setters {
@@ -393,6 +393,15 @@ namespace System.Windows.Controls {
 		public VerticalAlignment VerticalContentAlignment {
 			get { return (VerticalAlignment) GetValue (VerticalContentAlignmentProperty); }
 			set { SetValue (VerticalContentAlignmentProperty, value); }
+		}
+	}
+
+	partial class ControlTemplate {
+		private static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.CONTROLTEMPLATE, "TargetType", typeof (System.Type));
+
+		internal System.Type TargetType {
+			get { return (System.Type) GetValue (TargetTypeProperty); }
+			set { SetValue (TargetTypeProperty, value); }
 		}
 	}
 

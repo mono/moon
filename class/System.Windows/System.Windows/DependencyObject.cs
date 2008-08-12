@@ -145,6 +145,7 @@ namespace System.Windows {
 			case Kind.CANVAS: return new Canvas (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
+			case Kind.CONTROLTEMPLATE: return new ControlTemplate (raw);
 			case Kind.DEPLOYMENT: return new Deployment (raw);
 			case Kind.DISCRETECOLORKEYFRAME: return new DiscreteColorKeyFrame (raw);
 			case Kind.DISCRETEDOUBLEKEYFRAME: return new DiscreteDoubleKeyFrame (raw);
@@ -238,6 +239,7 @@ namespace System.Windows {
 			case Kind.GEOMETRY:
 			case Kind.MEDIAATTRIBUTE_COLLECTION: 
 			case Kind.SETTERBASE:
+			case Kind.FRAMEWORKTEMPLATE:
 				throw new Exception (
 					String.Format ("Should never get an abstract class from unmanaged code {0}", k));
 

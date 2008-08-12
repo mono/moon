@@ -1,5 +1,12 @@
 2008-08-12  Chris Toshok  <toshok@ximian.com>
 
+	* DependencyObject.cs: add CONTROLTEMPLATE and FRAMEWORKTEMPLATE
+	to the CreateObject switch.
+
+	* DependencyProperty.g.cs: regen.
+
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
 	* Setter.cs: add in the hacks for the Property property.
 
 	* DependencyProperty.g.cs: regened.
