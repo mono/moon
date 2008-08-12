@@ -1,5 +1,9 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile.am: Split ApplicationInternal out into a separate file and
 	  enable generation for it.
 

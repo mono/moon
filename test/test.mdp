@@ -75,6 +75,7 @@
     <File name="media/video/test-playlist-autoplayed-stop.html" subtype="Code" buildaction="Nothing" />
     <File name="media/video/test-playlist-autoplayed-stop.asx" subtype="Code" buildaction="Nothing" />
     <File name="2.0/dependency_properties/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="2.0/dependency_properties/SetterBaseCollectionTest.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <GtkDesignInfo gtkVersion="2.12.2" />
 </Project>
