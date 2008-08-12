@@ -78,6 +78,7 @@ public:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
+/* @ManagedDependencyProperties=Manual */
 class Setter : public SetterBase
 {
 protected:
@@ -89,8 +90,10 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::SETTER; }
 
- 	/* @PropertyType=DependencyProperty */
+ 	/* @PropertyType=string */
 	static DependencyProperty *PropertyProperty;
+ 	/* @PropertyType=DependencyProperty */
+	static DependencyProperty *DependencyPropertyProperty;
  	/* @PropertyType=Managed */
 	static DependencyProperty *ValueProperty;
 };

@@ -1,3 +1,12 @@
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* style.h (class Setter): hack for the DependencyProperty valued
+	property.  we need to parse a string DP name in a context where we
+	don't know the type to apply to it, so we need to have a string
+	backed property.
+
+	* dependencyproperty.g.cpp: regen.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* collection.h: Annotate Collection.
@@ -6,13 +15,6 @@
 
 	* animation.h, clock.h, collection.h, error.h, eventargs.h, media.h,
 	  size.h, style.h, template.h, trigger.h: Add @Namespace annotations.
-
-2008-08-12  Chris Toshok  <toshok@ximian.com>
-
-	* style.h (class Setter): change the PropertyProperty to be
-	managed/DependencyProperty.
-
-	* dependencyproperty.g.cpp: regen
 
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 

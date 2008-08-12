@@ -276,7 +276,8 @@ dependency_property_g_init (void)
 	ScaleTransform::ScaleYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0));
 #if SL_2_0
 
-	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::MANAGED);
+	Setter::DependencyPropertyProperty = DependencyProperty::Register (Type::SETTER, "DependencyProperty", Type::DEPENDENCYPROPERTY);
+	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::STRING);
 	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::MANAGED);
 #endif
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
@@ -581,6 +582,7 @@ DependencyProperty *ScaleTransform::CenterYProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleXProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleYProperty = NULL;
 #if SL_2_0
+DependencyProperty *Setter::DependencyPropertyProperty = NULL;
 DependencyProperty *Setter::PropertyProperty = NULL;
 DependencyProperty *Setter::ValueProperty = NULL;
 #endif
