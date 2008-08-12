@@ -1,3 +1,9 @@
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs: add Style support to CreateObject.
+
+	* Style.cs: add internal IntPtr ctor.
+
 2008-08-12  Jackson Harper  <jackson@ximian.com>
 
 	* Application.cs: When we hydrate an assembly we need to pass in

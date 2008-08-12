@@ -204,6 +204,7 @@ namespace System.Windows {
 			case Kind.SPLINEPOINTKEYFRAME: return new SplinePointKeyFrame (raw);
 			case Kind.STORYBOARD: return new Storyboard (raw);
 			case Kind.STROKE_COLLECTION: return new StrokeCollection (raw);
+			case Kind.STYLE: return new Style (raw);
 			case Kind.STYLUSINFO: return new StylusInfo (raw);
 			case Kind.STYLUSPOINT_COLLECTION: return new StylusPointCollection (raw);
 			case Kind.STYLUSPOINT: return new StylusPoint (raw);
