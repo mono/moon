@@ -169,10 +169,10 @@ dependency_property_g_init (void)
 	GradientStop::OffsetProperty = DependencyProperty::Register (Type::GRADIENTSTOP, "Offset", new Value (0.0));
 #if SL_2_0
 
-	Grid::ColumnDefinitionsProperty = DependencyProperty::RegisterFull (Type::GRID, "ColumnDefinitions", NULL, Type::COLUMNDEFINITION_COLLECTION, false, true);
+	Grid::ColumnDefinitionsProperty = DependencyProperty::Register (Type::GRID, "ColumnDefinitions", Type::COLUMNDEFINITION_COLLECTION);
 	Grid::ColumnProperty = DependencyProperty::RegisterFull (Type::GRID, "Column", new Value (0), Type::INT32, true, false);
 	Grid::ColumnSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "ColumnSpan", new Value (0), Type::INT32, true, false);
-	Grid::RowDefinitionsProperty = DependencyProperty::RegisterFull (Type::GRID, "RowDefinitions", NULL, Type::ROWDEFINITION_COLLECTION, false, true);
+	Grid::RowDefinitionsProperty = DependencyProperty::Register (Type::GRID, "RowDefinitions", Type::ROWDEFINITION_COLLECTION);
 	Grid::RowProperty = DependencyProperty::RegisterFull (Type::GRID, "Row", new Value (0), Type::INT32, true, false);
 	Grid::RowSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "RowSpan", new Value (0), Type::INT32, true, false);
 	Grid::ShowGridLinesProperty = DependencyProperty::RegisterFull (Type::GRID, "ShowGridLines", new Value (false), Type::BOOL, true, false);
@@ -276,7 +276,7 @@ dependency_property_g_init (void)
 	ScaleTransform::ScaleYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0));
 #if SL_2_0
 
-	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::DEPENDENCYPROPERTY);
+	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::MANAGED);
 	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::MANAGED);
 #endif
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);

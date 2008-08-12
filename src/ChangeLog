@@ -1,3 +1,10 @@
+2008-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* style.h (class Setter): change the PropertyProperty to be
+	managed/DependencyProperty.
+
+	* dependencyproperty.g.cpp: regen
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Updated.
