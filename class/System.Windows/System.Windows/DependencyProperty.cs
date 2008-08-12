@@ -36,7 +36,6 @@ namespace System.Windows {
 		private string name;
 		private IntPtr native;
 		private Type property_type;
-		private Kind declaring_kind = Kind.INVALID; // This should be obsoleted
 		private Type declaring_type; 
 		private object default_value;
 		
@@ -47,20 +46,6 @@ namespace System.Windows {
 		static DependencyProperty ()
 		{
 			NativeMethods.runtime_init (0);
-		}
-
-		internal DependencyProperty (IntPtr handle, Type property_type, Kind declaring_kind, string name)
-		{
-			this.native = handle;
-			this.property_type = property_type;
-			this.declaring_kind = declaring_kind;
-			this.name = name;
-			
-			properties.Add (handle, this);
-			
-			if (this.property_type.IsValueType)
-				this.default_value = Activator.CreateInstance (this.property_type);
-			//Console.WriteLine ("DependencyProperty.DependencyProperty ({0:X}, {1}, {2})", handle, property_type.FullName, declaring_kind);
 		}
 		
 		internal DependencyProperty (IntPtr handle, Type property_type, Type declaring_type, string name)
@@ -109,6 +94,7 @@ namespace System.Windows {
 				handler = new NativePropertyChangedHandler(NativePropertyChangedCallback);
 			else
 				handler = null;
+			
 			IntPtr handle = NativeMethods.dependency_property_register_managed_property ( name, property_type.native_handle, owner_type.native_handle, attached, handler);
 			
 			if (handle == IntPtr.Zero)
@@ -168,22 +154,33 @@ namespace System.Windows {
 			
 		}
 		
-		internal static DependencyProperty Lookup (Kind type, string name, Type ownerType)
+		internal static DependencyProperty Lookup (Kind declaring_kind, string name, Type property_type)
 		{
-			IntPtr handle = NativeMethods.dependency_property_get_dependency_property (type, name);
+			IntPtr handle;
 			DependencyProperty result;
 
+			if (name == null)
+				throw new System.ArgumentNullException ("name");
+			
+			if (property_type == null)
+				throw new ArgumentNullException ("property_type");	
+			
+			if (declaring_kind == Kind.INVALID)
+				throw new System.ArgumentOutOfRangeException ("declaring_kind");
+			
+			handle = NativeMethods.dependency_property_get_dependency_property (declaring_kind, name);
+			
 			if (handle == IntPtr.Zero)
 				throw new Exception (
-					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally because System.Windows.dll or Mono.Moonlight.dll and libmoon is out of sync. Update /moon and do 'make install' in /moon/src and 'make clean install' TWICE in /moon/class/ will probably fix it.", type, name));
-
-			if (ownerType == null)
-				throw new ArgumentNullException ("ownerType");	
+					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally " +
+				        "because System.Windows.dll or Mono.Moonlight.dll and libmoon is out of sync. " + 
+						"Update /moon and do 'make install' in /moon/src and 'make clean install' " +
+				        "TWICE in /moon/class/ will probably fix it.", declaring_kind, name));
 			
 			if (properties.TryGetValue (handle, out result))
 				return result;
 			
-			return new DependencyProperty (handle, ownerType, type, name);
+			return new DependencyProperty (handle, property_type, Types.KindToType (declaring_kind), name);
 		}
 		
 		internal string Name {
@@ -193,13 +190,9 @@ namespace System.Windows {
 		internal bool IsNullable {
 			get { return NativeMethods.dependency_property_is_nullable (native); }
 		}
-		
-		internal Kind Kind {
-			get { return NativeMethods.dependency_property_get_property_type (native); }
-		}
-		
+				
 		internal bool IsValueType {
-			get { return NativeMethods.type_get_value_type (this.Kind); }
+			get { return NativeMethods.type_get_value_type (Types.TypeToKind (PropertyType)); }
 		}
 		
 		internal Type DeclaringType {
@@ -213,11 +206,7 @@ namespace System.Windows {
 		internal Type PropertyType {
 			get { return property_type; }
 		}
-		
-		internal Kind DeclaringKind {
-			get { return declaring_kind; }
-		}
-		
+				
 		internal object DefaultValue {
 			get { return default_value; }
 		}

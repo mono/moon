@@ -1,5 +1,10 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyProperty.cs: Store the declaring type in the DP as a type,
+	  not as a Kind. Cleanup a bit.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DependencyObject.g.cs, DependencyProperty.g.cs: Added a native
 	  StackPanel class and generate the managed StackPanel.
 
