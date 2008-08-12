@@ -54,9 +54,9 @@ class TypeInfo : MemberInfo {
 	public bool GenerateCBindingCtor {
 		get {
 			bool result = false;
-			Property property;
+			Annotation property;
 			
-			if (Properties.TryGetValue ("GenerateCBindingCtor", out property))
+			if (Annotations.TryGetValue ("GenerateCBindingCtor", out property))
 				return property.Value != null;
 			
 			foreach (MemberInfo member in Children.Values) {
@@ -68,7 +68,7 @@ class TypeInfo : MemberInfo {
 				if (method.Parameters.Count != 0)
 					continue;
 				
-				if (!method.Properties.ContainsKey ("GenerateCBinding"))
+				if (!method.Annotations.ContainsKey ("GenerateCBinding"))
 					continue;
 				
 				if (method.IsConstructor) {
@@ -76,7 +76,7 @@ class TypeInfo : MemberInfo {
 					break;
 				}
 			}
-			Properties.Add (new Property ("GenerateCBindingCtor", result ? "true" : null));
+			Annotations.Add (new Annotation ("GenerateCBindingCtor", result ? "true" : null));
 			return result;
 		}
 	}
@@ -181,8 +181,8 @@ class TypeInfo : MemberInfo {
 	
 	public string ContentProperty {
 		get {
-			if (Properties.ContainsKey ("ContentProperty"))
-				return Properties ["ContentProperty"].Value;
+			if (Annotations.ContainsKey ("ContentProperty"))
+				return Annotations ["ContentProperty"].Value;
 			return null;
 		}
 	}
@@ -198,7 +198,7 @@ class TypeInfo : MemberInfo {
 		this.Base = new TypeReference (Base);
 		this.Include = Include;
 		if (Include)
-			Properties.Add (new Property ("IncludeInKinds"));
+			Annotations.Add (new Annotation ("IncludeInKinds"));
 	}
 	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion)
 	{
@@ -207,8 +207,8 @@ class TypeInfo : MemberInfo {
 		this.Base = new TypeReference (Base);
 		this.Include = Include;
 		if (Include)
-			Properties.Add (new Property ("IncludeInKinds"));
-		Properties.Add (new Property ("SilverlightVersion", "\"" + SLVersion.ToString () + "\""));
+			Annotations.Add (new Annotation ("IncludeInKinds"));
+		Annotations.Add (new Annotation ("SilverlightVersion", "\"" + SLVersion.ToString () + "\""));
 	}
 	
 }

@@ -12,15 +12,15 @@ Comments
 It's possible to add comments to types and methods to give instructions or more
 information to the generator. The format is:
 
-	/* @Property1[=Value1],Property2[=Value2] */
+	/* @Annotation1[=Value1],Annotation2[=Value2] */
 
-The properties can be split up in several comments, the following is also legal
+The annotations can be split up in several comments, the following is also legal
 (and equivalent to the above):
 
-	/* @Property1[=Value1] */
-	/* @Property2[=Value2] */
+	/* @Annotation1[=Value1] */
+	/* @Annotation2[=Value2] */
 
-The currently understood properties are:
+The currently understood annotations are:
 
 	* Version: = SilverlightVersion
 	* SilverlightVersion: Specifies the SL version for the type/method. If 

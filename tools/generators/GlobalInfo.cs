@@ -24,18 +24,18 @@ class GlobalInfo : MemberInfo {
 			if (dependency_properties == null) {
 				// Check annotations against a list of known properties
 				// to catch typos (DefaulValue, etc).
-				Dictionary<string, string> known_properties = new Dictionary <string, string> ();
+				Dictionary<string, string> known_annotations = new Dictionary <string, string> ();
 				
-				known_properties.Add ("ReadOnly", null);
-				known_properties.Add ("AlwaysChange", null);
-				known_properties.Add ("Version", null);
-				known_properties.Add ("PropertyType", null);
-				known_properties.Add ("DefaultValue", null);
-				known_properties.Add ("Access", null);
-				known_properties.Add ("Nullable", null);
-				known_properties.Add ("Attached", null);
-				known_properties.Add ("ManagedDeclaringType", null);
-				known_properties.Add ("ManagedPropertyType", null);
+				known_annotations.Add ("ReadOnly", null);
+				known_annotations.Add ("AlwaysChange", null);
+				known_annotations.Add ("Version", null);
+				known_annotations.Add ("PropertyType", null);
+				known_annotations.Add ("DefaultValue", null);
+				known_annotations.Add ("Access", null);
+				known_annotations.Add ("Nullable", null);
+				known_annotations.Add ("Attached", null);
+				known_annotations.Add ("ManagedDeclaringType", null);
+				known_annotations.Add ("ManagedPropertyType", null);
 				
 				dependency_properties = new List<FieldInfo>  ();
 				foreach (MemberInfo member in Children.Values) {
@@ -63,8 +63,8 @@ class GlobalInfo : MemberInfo {
 						
 						dependency_properties.Add (field);
 						
-						foreach (Property p in field.Properties.Values) {
-							if (!known_properties.ContainsKey (p.Name))
+						foreach (Annotation p in field.Annotations.Values) {
+							if (!known_annotations.ContainsKey (p.Name))
 								Console.WriteLine ("The field {0} in {3} has an unknown property: '{1}' = '{2}'", field.FullName, p.Name, p.Value, Path.GetFileName (field.Header));
 						}
 					}
@@ -93,7 +93,7 @@ class GlobalInfo : MemberInfo {
 							Console.WriteLine ("The method {0} in type {1} does not have its parent set.", method.Name, type.Name);
 							continue;
 						}
-						if (!method.Properties.ContainsKey ("GenerateCBinding"))
+						if (!method.Annotations.ContainsKey ("GenerateCBinding"))
 							continue;
 						cppmethods_to_bind.Add (method);
 					}

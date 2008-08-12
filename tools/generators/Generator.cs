@@ -48,7 +48,7 @@ class Generator {
 		foreach (FieldInfo field in all.DependencyProperties) {
 			TypeInfo parent = field.Parent as TypeInfo;
 			List <FieldInfo> fields;
-			string managed_parent = field.Properties.GetValue ("ManagedDeclaringType");
+			string managed_parent = field.Annotations.GetValue ("ManagedDeclaringType");
 			
 			if (managed_parent != null) {
 				parent = all.Children [managed_parent] as TypeInfo;
@@ -124,7 +124,7 @@ class Generator {
 			fields.Sort (new Members.MembersSortedByName <FieldInfo> ());
 			foreach (FieldInfo field in fields) {
 				text.Append ("\t\t");
-				switch (field.Properties.GetValue ("Access")) {
+				switch (field.Annotations.GetValue ("Access")) {
 				case "Internal":
 					text.Append ("private ");
 					break;
@@ -332,11 +332,11 @@ class Generator {
 	}
 	
 	// Returns false if there are no more tokens (reached end of code)
-	static bool ParseClassOrStruct (Properties properties, MemberInfo parent, Tokenizer tokenizer)
+	static bool ParseClassOrStruct (Annotations annotations, MemberInfo parent, Tokenizer tokenizer)
 	{
 		TypeInfo type = new TypeInfo ();
 		
-		type.Properties = properties;
+		type.Annotations = annotations;
 		type.Header = tokenizer.CurrentFile;
 		type.Parent = parent;
 		
@@ -395,7 +395,7 @@ class Generator {
 	
 	static bool ParseMembers (MemberInfo parent, Tokenizer tokenizer)
 	{
-		Properties properties = new Properties ();
+		Annotations properties = new Annotations ();
 		TypeInfo parent_type = parent as TypeInfo;
 		string accessibility;
 		TypeReference returntype;
@@ -415,7 +415,7 @@ class Generator {
 			is_dtor = is_ctor = is_virtual = is_static = false;
 			is_extern = is_abstract = is_const = false;
 			name = null;
-			properties = new Properties ();
+			properties = new Annotations ();
 			
 			if (parent_type != null)
 				accessibility = parent_type.IsStruct ? "public" : "private";
@@ -515,7 +515,7 @@ class Generator {
 				// Method
 				MethodInfo method = new MethodInfo ();
 				method.Parent = parent;
-				method.Properties = properties;
+				method.Annotations = properties;
 				method.Name = name;
 				method.IsConstructor = is_ctor;
 				method.IsDestructor = is_dtor;
@@ -596,7 +596,7 @@ class Generator {
 					field.IsPublic = accessibility == "public";
 					field.IsPrivate = accessibility == "private";
 					field.IsProtected = accessibility == "protected";
-					field.Properties = properties;
+					field.Annotations = properties;
 					
 					// Field
 					do {
@@ -904,10 +904,10 @@ class Generator {
 	{
 		Log.WriteLine ("Writing header: {0}::{1} (Version: '{2}', GenerateManaged: {3})", 
 		               cmethod.Parent.Name, cmethod.Name, 
-		               cmethod.Properties.GetValue ("Version"),
-		               cmethod.Properties.ContainsKey ("GenerateManaged"));
+		               cmethod.Annotations.GetValue ("Version"),
+		               cmethod.Annotations.ContainsKey ("GenerateManaged"));
 		
-		if (cmethod.Properties.ContainsKey ("GeneratePInvoke"))
+		if (cmethod.Annotations.ContainsKey ("GeneratePInvoke"))
 			text.AppendLine ("/* @GeneratePInvoke */");
 		cmethod.ReturnType.Write (text, SignatureType.Native);
 		if (!cmethod.ReturnType.IsPointer)
@@ -1132,7 +1132,7 @@ class Generator {
 				TypeInfo parent = null;
 				string events = "NULL";
 				
-				if (!type.ImplementsGetObjectType && !type.Properties.ContainsKey ("IncludeInKinds"))
+				if (!type.ImplementsGetObjectType && !type.Annotations.ContainsKey ("IncludeInKinds"))
 					continue;
 				
 				if (type.Base != null && type.Base.Value != null && all.Children.TryGetValue (type.Base.Value, out member))
@@ -1298,7 +1298,7 @@ class Generator {
 		text.AppendLine ("\t\t/* moonplugin methods */");
 		text.AppendLine ("\t");
 		foreach (MethodInfo method in methods) {
-			if (!method.IsPluginMember || !method.Properties.ContainsKey ("GeneratePInvoke"))
+			if (!method.IsPluginMember || !method.Annotations.ContainsKey ("GeneratePInvoke"))
 				continue;
 			WritePInvokeMethod (NativeMethods_cs, method, text, "moonplugin");
 			text.AppendLine ();
@@ -1308,7 +1308,7 @@ class Generator {
 		text.AppendLine ("\t\t/* libmoon methods */");
 		text.AppendLine ("\t");
 		foreach (MethodInfo method in methods) {
-			if (!method.IsSrcMember || !method.Properties.ContainsKey ("GeneratePInvoke"))
+			if (!method.IsSrcMember || !method.Annotations.ContainsKey ("GeneratePInvoke"))
 				continue;
 			WritePInvokeMethod (NativeMethods_cs, method, text, "moon");
 			text.AppendLine ();

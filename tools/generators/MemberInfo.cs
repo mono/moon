@@ -25,7 +25,7 @@ class MemberInfo {
 	
 	private string header; // The .h file where the member is defined
 	private Members children;
-	private Properties properties;
+	private Annotations annotations;
 	private string fullname;
 	private string managed_fullname;
 	private Nullable<int> silverlight_version;
@@ -78,14 +78,14 @@ class MemberInfo {
 		}
 	}
 	
-	public Properties Properties {
+	public Annotations Annotations {
 		get {
-			if (properties == null)
-				properties = new Properties ();
-			return properties;
+			if (annotations == null)
+				annotations = new Annotations ();
+			return annotations;
 		}
 		set {
-			properties = value;
+			annotations = value;
 		}
 	}
 	
@@ -133,17 +133,17 @@ class MemberInfo {
 	}
 	
 	public string Namespace {
-		get { return Properties.GetValue ("Namespace"); }			
+		get { return Annotations.GetValue ("Namespace"); }			
 	}
 	
 	public int SilverlightVersion {
 		get {
 			string value = null;
-			Property property;
+			Annotation property;
 			if (!silverlight_version.HasValue) {
-				if (Properties.TryGetValue ("Version", out property)) {
+				if (Annotations.TryGetValue ("Version", out property)) {
 					value = property.Value;
-				} else if (Properties.TryGetValue ("SilverlightVersion", out property)) {
+				} else if (Annotations.TryGetValue ("SilverlightVersion", out property)) {
 					value = property.Value;
 				}
 				
@@ -168,8 +168,8 @@ class MemberInfo {
 	
 	public void Dump (int ident)
 	{
-		if (properties != null)
-			properties.Dump ();
+		if (annotations != null)
+			annotations.Dump ();
 		Console.Write (new string ('\t', ident));
 		Console.WriteLine ("{0} {1}", FullName, Header);
 		if (children != null)
@@ -310,7 +310,7 @@ class Members : Dictionary <string, MemberInfo>{
 				if (type == null)
 					continue;
 				
-				if (!type.Properties.ContainsKey ("IncludeInKinds")) {
+				if (!type.Annotations.ContainsKey ("IncludeInKinds")) {
 					if (!type.ImplementsGetObjectType) {
 						continue;
 					}
@@ -319,7 +319,7 @@ class Members : Dictionary <string, MemberInfo>{
 			 	kinds_for_enum.Append ("\t\t");
 				kinds_for_enum.Append (type.KindName);
 				kinds_for_enum.Append (",");
-				if (type.Properties.ContainsKey ("SilverlightVersion"))// && type.Properties ["SilverlightVersion"].Value == "\"2\"")
+				if (type.Annotations.ContainsKey ("SilverlightVersion"))// && type.Annotations ["SilverlightVersion"].Value == "\"2\"")
 					kinds_for_enum.Append ("// Silverlight 2.0 only");
 				kinds_for_enum.AppendLine ();
 			}

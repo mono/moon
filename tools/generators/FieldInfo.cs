@@ -29,24 +29,24 @@ class FieldInfo : MemberInfo {
 	}
 	
 	public bool IsDPReadOnly {
-		get { return Properties.ContainsKey ("ReadOnly"); }
+		get { return Annotations.ContainsKey ("ReadOnly"); }
 	}
 	
 	public bool IsDPAlwaysChange {
-		get { return Properties.ContainsKey ("AlwaysChange"); }
+		get { return Annotations.ContainsKey ("AlwaysChange"); }
 	}
 	
 	public bool IsDPAttached  {
-		get { return Properties.ContainsKey ("Attached"); }
+		get { return Annotations.ContainsKey ("Attached"); }
 	}
 	
 	public bool IsDPNullable {
-		get { return Properties.ContainsKey ("Nullable"); }
+		get { return Annotations.ContainsKey ("Nullable"); }
 	}
 	
 	public string DPPropertyType {
 		get { 
-			string result = Properties.GetValue ("PropertyType");
+			string result = Annotations.GetValue ("PropertyType");
 			
 			if (result != null) {
 				switch (result) {
@@ -66,7 +66,7 @@ class FieldInfo : MemberInfo {
 	}
 		
 	public string DPDefaultValue {
-		get { return Properties.GetValue ("DefaultValue"); }
+		get { return Annotations.GetValue ("DefaultValue"); }
 	}
 	
 	public TypeInfo GetDPPropertyType (GlobalInfo all)
@@ -89,12 +89,12 @@ class FieldInfo : MemberInfo {
 	
 	public string GetDPManagedPropertyType (GlobalInfo all) 
 	{
-		string property_type = Properties.GetValue ("ManagedPropertyType");
+		string property_type = Annotations.GetValue ("ManagedPropertyType");
 		
 		if (property_type != null)
 			return property_type;
 		
-		property_type = Properties.GetValue ("PropertyType");
+		property_type = Annotations.GetValue ("PropertyType");
 		
 		if (property_type == null)
 			return null;

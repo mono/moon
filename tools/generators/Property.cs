@@ -14,20 +14,20 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-class Property {
+class Annotation {
 	public string Name;
 	public string Value;
-	public Property (string Name, string Value)
+	public Annotation (string Name, string Value)
 	{
 		this.Name = Name;
 		this.Value = Value;
 	}
-	public Property (string Name) : this (Name, null)
+	public Annotation (string Name) : this (Name, null)
 	{
 	}
 }
 
-class Properties : Dictionary <string, Property> {
+class Annotations : Dictionary <string, Annotation> {
 	public void Add (string args)
 	{
 		//
@@ -74,7 +74,7 @@ class Properties : Dictionary <string, Property> {
 				if (key.Length == 0)
 					throw new Exception (string.Format ("Invalid format for metadata at position {1} '{2}': '{0}' (found_key: {3})", args, i, input, found_key));
 				
-				Add (new Property (key.ToString (), value.Length > 0 ? value.ToString () : null));
+				Add (new Annotation (key.ToString (), value.Length > 0 ? value.ToString () : null));
 				
 				if (quoted)
 					i++;
@@ -95,11 +95,11 @@ class Properties : Dictionary <string, Property> {
 		}
 		
 		if (key.Length != 0)
-			Add (new Property (key.ToString (), value.Length > 0 ? value.ToString () : null));
+			Add (new Annotation (key.ToString (), value.Length > 0 ? value.ToString () : null));
 		
 	}
 	
-	public void Add (Property p)
+	public void Add (Annotation p)
 	{
 		//Console.WriteLine ("Added metadata: '{0}' = '{1}'", p.Name, p.Value == null ? "null" : p.Value);
 		base.Add (p.Name, p);
@@ -107,7 +107,7 @@ class Properties : Dictionary <string, Property> {
 	
 	public string GetValue (string name)
 	{
-		Property property;
+		Annotation property;
 		if (!TryGetValue (name, out property))
 			return null;
 		if (property != null)
@@ -117,7 +117,7 @@ class Properties : Dictionary <string, Property> {
 	
 	public void Dump ()
 	{
-		foreach (KeyValuePair <string, Property> p in this) {
+		foreach (KeyValuePair <string, Annotation> p in this) {
 			if (p.Value == null)
 				Console.WriteLine ("/* @{0}*/", p.Key);
 			else

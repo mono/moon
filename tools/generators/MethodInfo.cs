@@ -59,7 +59,7 @@ class MethodInfo : MemberInfo {
 				c_method.IsConstructor = IsConstructor;
 				c_method.IsDestructor = IsDestructor;
 				c_method.Name = Helper.CppToCName (Parent.Name, Name);
-				c_method.Properties = Properties;
+				c_method.Annotations = Annotations;
 				c_method.ReturnType = ReturnType == null ? new TypeReference ("void") : ReturnType;
 				c_method.Parent = Parent;
 								

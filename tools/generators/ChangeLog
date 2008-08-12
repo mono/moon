@@ -1,5 +1,11 @@
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* GlobalInfo.cs, MemberInfo.cs, Property.cs, Generator.cs, README,
+	  MethodInfo.cs, TypeInfo.cs, FieldInfo.cs: Unify vocabulary: always
+	  use 'annotations' instead of mixing 'annotations' and 'properties'.
+
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Generator.cs, TypeReference.cs: Put Value* special casing in a better
 	  place (together with all the other special casing).
 
