@@ -25,7 +25,7 @@ protected:
 	virtual ~FrameworkTemplate () {}
 
 public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	FrameworkTemplate ();
 
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKTEMPLATE; }
@@ -47,7 +47,7 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::CONTROLTEMPLATE; }
 
- 	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedFieldAccess=Private */
+ 	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
 	static DependencyProperty *TargetTypeProperty;
 };
 

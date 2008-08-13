@@ -262,6 +262,9 @@ class Generator {
 			}
 			
 			foreach (FieldInfo field in fields) {
+				if (field.IsDPAttached)
+					continue;
+				
 				text.AppendLine ();
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, field.GetManagedAccessorAccess ());

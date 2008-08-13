@@ -69,13 +69,13 @@ class Control : public FrameworkElement {
 	static DependencyProperty *TemplateProperty;
  	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter */
 	static DependencyProperty *VerticalContentAlignmentProperty;
- 	/* @PropertyType=Style */
+ 	/* @PropertyType=Style,ManagedFieldAccess=Internal */
 	static DependencyProperty *StyleProperty;
 	
 	FrameworkElement *real_object;
 	Rect bounds_with_children;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	Control ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }

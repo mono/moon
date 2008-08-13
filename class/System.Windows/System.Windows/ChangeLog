@@ -1,5 +1,10 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyObject.g.cs, DependencyProperty.g.cs, Deployment.cs:
+	  Regenerated.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DependencyProperty.cs: Store the declaring type in the DP as a type,
 	  not as a Kind. Cleanup a bit.
 

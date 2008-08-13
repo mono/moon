@@ -48,7 +48,7 @@ class UIElement : public DependencyObject {
 	void RenderClipPath (cairo_t *cr);
 
  public:
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,ManagedAccess=Internal */
 	UIElement ();
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; };
 
@@ -420,13 +420,13 @@ class UIElement : public DependencyObject {
 	static DependencyProperty *ZIndexProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
- 	/* @PropertyType=gint32,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor */
+ 	/* @PropertyType=gint32,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal */
 	static DependencyProperty *CursorProperty;
- 	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement */
+ 	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *ResourcesProperty;
  	/* @PropertyType=string,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object */
 	static DependencyProperty *TagProperty;
- 	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement */
+ 	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *TriggersProperty;
 	
 	//

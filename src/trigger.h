@@ -42,9 +42,9 @@ class EventTrigger : public DependencyObject {
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
 
-	/* @PropertyType=string,ManagedPropertyType=RoutedEvent */
+	/* @PropertyType=string,ManagedPropertyType=RoutedEvent,ManagedFieldAccess=Internal */
 	static DependencyProperty *RoutedEventProperty;
-	/* @PropertyType=TriggerActionCollection */
+	/* @PropertyType=TriggerActionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *ActionsProperty;
 
  private:

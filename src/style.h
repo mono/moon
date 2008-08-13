@@ -67,7 +67,7 @@ protected:
 	virtual ~SetterBase () {}
 
 public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	SetterBase ();
 
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE; }

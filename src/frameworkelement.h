@@ -27,9 +27,9 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty *WidthProperty;
 
 	// 2.0 only DPs
-	/* @PropertyType=double,DefaultValue=0.0,Version=2 */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal */
 	static DependencyProperty *ActualHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2 */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal */
 	static DependencyProperty *ActualWidthProperty;
 	/* @PropertyType=Managed,Version=2 */
 	static DependencyProperty *DataContextProperty;
@@ -50,7 +50,7 @@ class FrameworkElement : public UIElement {
 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2 */
 	static DependencyProperty *VerticalAlignmentProperty;
 
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Internal */
 	FrameworkElement ();
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }
 

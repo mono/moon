@@ -63,15 +63,15 @@ class Deployment : public DependencyObject {
 	
  public:
 	// DependencyProperties
- 	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess */
+ 	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal */
 	static DependencyProperty *ExternalCallersFromCrossDomainProperty;
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	static DependencyProperty *EntryPointAssemblyProperty;
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	static DependencyProperty *EntryPointTypeProperty;
- 	/* @PropertyType=AssemblyPartCollection */
+ 	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal */
 	static DependencyProperty *PartsProperty;
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	static DependencyProperty *RuntimeVersionProperty;
 
 

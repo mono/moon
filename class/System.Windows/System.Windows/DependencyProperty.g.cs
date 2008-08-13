@@ -35,9 +35,9 @@ namespace System.Windows {
 	}
 
 	partial class DependencyObject {
-		public static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
+		internal static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
 
-		public string Name {
+		internal string Name {
 			get { return (string) GetValue (NameProperty); }
 			set { SetValue (NameProperty, value); }
 		}
@@ -52,37 +52,37 @@ namespace System.Windows {
 
 		public string EntryPointAssembly {
 			get { return (string) GetValue (EntryPointAssemblyProperty); }
-			set { SetValue (EntryPointAssemblyProperty, value); }
+			internal set { SetValue (EntryPointAssemblyProperty, value); }
 		}
 
 		public string EntryPointType {
 			get { return (string) GetValue (EntryPointTypeProperty); }
-			set { SetValue (EntryPointTypeProperty, value); }
+			internal set { SetValue (EntryPointTypeProperty, value); }
 		}
 
 		public CrossDomainAccess ExternalCallersFromCrossDomain {
 			get { return (CrossDomainAccess) GetValue (ExternalCallersFromCrossDomainProperty); }
-			set { SetValue (ExternalCallersFromCrossDomainProperty, value); }
+			internal set { SetValue (ExternalCallersFromCrossDomainProperty, value); }
 		}
 
 		public AssemblyPartCollection Parts {
 			get { return (AssemblyPartCollection) GetValue (PartsProperty); }
-			set { SetValue (PartsProperty, value); }
+			internal set { SetValue (PartsProperty, value); }
 		}
 
 		public string RuntimeVersion {
 			get { return (string) GetValue (RuntimeVersionProperty); }
-			set { SetValue (RuntimeVersionProperty, value); }
+			internal set { SetValue (RuntimeVersionProperty, value); }
 		}
 	}
 
 	partial class EventTrigger {
-		public static readonly DependencyProperty ActionsProperty = DependencyProperty.Lookup (Kind.EVENTTRIGGER, "Actions", typeof (TriggerActionCollection));
-		public static readonly DependencyProperty RoutedEventProperty = DependencyProperty.Lookup (Kind.EVENTTRIGGER, "RoutedEvent", typeof (RoutedEvent));
+		internal static readonly DependencyProperty ActionsProperty = DependencyProperty.Lookup (Kind.EVENTTRIGGER, "Actions", typeof (TriggerActionCollection));
+		internal static readonly DependencyProperty RoutedEventProperty = DependencyProperty.Lookup (Kind.EVENTTRIGGER, "RoutedEvent", typeof (RoutedEvent));
 
 		public TriggerActionCollection Actions {
 			get { return (TriggerActionCollection) GetValue (ActionsProperty); }
-			set { SetValue (ActionsProperty, value); }
+			internal set { SetValue (ActionsProperty, value); }
 		}
 
 		public RoutedEvent RoutedEvent {
@@ -94,7 +94,7 @@ namespace System.Windows {
 	partial class FrameworkElement {
 		public static readonly DependencyProperty ActualHeightProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "ActualHeight", typeof (double));
 		public static readonly DependencyProperty ActualWidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "ActualWidth", typeof (double));
-		public static readonly DependencyProperty CursorProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Cursor", typeof (Cursor));
+		internal static readonly DependencyProperty CursorProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Cursor", typeof (Cursor));
 		public static readonly DependencyProperty DataContextProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "DataContext", typeof (object));
 		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Height", typeof (double));
 		public static readonly DependencyProperty HorizontalAlignmentProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "HorizontalAlignment", typeof (HorizontalAlignment));
@@ -104,20 +104,20 @@ namespace System.Windows {
 		public static readonly DependencyProperty MaxWidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MaxWidth", typeof (double));
 		public static readonly DependencyProperty MinHeightProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinHeight", typeof (double));
 		public static readonly DependencyProperty MinWidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinWidth", typeof (double));
-		public static readonly DependencyProperty ResourcesProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Resources", typeof (ResourceDictionary));
+		internal static readonly DependencyProperty ResourcesProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Resources", typeof (ResourceDictionary));
 		public static readonly DependencyProperty TagProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Tag", typeof (object));
-		public static readonly DependencyProperty TriggersProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Triggers", typeof (TriggerCollection));
+		internal static readonly DependencyProperty TriggersProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Triggers", typeof (TriggerCollection));
 		public static readonly DependencyProperty VerticalAlignmentProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "VerticalAlignment", typeof (VerticalAlignment));
 		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Width", typeof (double));
 
 		public double ActualHeight {
 			get { return (double) GetValue (ActualHeightProperty); }
-			set { SetValue (ActualHeightProperty, value); }
+			internal set { SetValue (ActualHeightProperty, value); }
 		}
 
 		public double ActualWidth {
 			get { return (double) GetValue (ActualWidthProperty); }
-			set { SetValue (ActualWidthProperty, value); }
+			internal set { SetValue (ActualWidthProperty, value); }
 		}
 
 		public Cursor Cursor {
@@ -172,7 +172,7 @@ namespace System.Windows {
 
 		public ResourceDictionary Resources {
 			get { return (ResourceDictionary) GetValue (ResourcesProperty); }
-			set { SetValue (ResourcesProperty, value); }
+			internal set { SetValue (ResourcesProperty, value); }
 		}
 
 		public object Tag {
@@ -182,7 +182,7 @@ namespace System.Windows {
 
 		public TriggerCollection Triggers {
 			get { return (TriggerCollection) GetValue (TriggersProperty); }
-			set { SetValue (TriggersProperty, value); }
+			internal set { SetValue (TriggersProperty, value); }
 		}
 
 		public VerticalAlignment VerticalAlignment {
@@ -267,16 +267,6 @@ namespace System.Windows.Controls {
 	partial class Canvas {
 		public static readonly DependencyProperty LeftProperty = DependencyProperty.Lookup (Kind.CANVAS, "Left", typeof (double));
 		public static readonly DependencyProperty TopProperty = DependencyProperty.Lookup (Kind.CANVAS, "Top", typeof (double));
-
-		public double Left {
-			get { return (double) GetValue (LeftProperty); }
-			set { SetValue (LeftProperty, value); }
-		}
-
-		public double Top {
-			get { return (double) GetValue (TopProperty); }
-			set { SetValue (TopProperty, value); }
-		}
 	}
 
 	partial class ColumnDefinition {
@@ -313,7 +303,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty HorizontalContentAlignmentProperty = DependencyProperty.Lookup (Kind.CONTROL, "HorizontalContentAlignment", typeof (HorizontalAlignment));
 		public static readonly DependencyProperty IsTabStopProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTabStop", typeof (bool));
 		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.CONTROL, "Padding", typeof (Thickness));
-		public static readonly DependencyProperty StyleProperty = DependencyProperty.Lookup (Kind.CONTROL, "Style", typeof (Style));
+		internal static readonly DependencyProperty StyleProperty = DependencyProperty.Lookup (Kind.CONTROL, "Style", typeof (Style));
 		public static readonly DependencyProperty TabIndexProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabIndex", typeof (int));
 		public static readonly DependencyProperty TabNavigationProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabNavigation", typeof (KeyboardNavigationMode));
 		public static readonly DependencyProperty TemplateProperty = DependencyProperty.Lookup (Kind.CONTROL, "Template", typeof (ControlTemplate));
@@ -408,7 +398,7 @@ namespace System.Windows.Controls {
 	partial class ControlTemplate {
 		private static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.CONTROLTEMPLATE, "TargetType", typeof (System.Type));
 
-		internal System.Type TargetType {
+		public System.Type TargetType {
 			get { return (System.Type) GetValue (TargetTypeProperty); }
 			set { SetValue (TargetTypeProperty, value); }
 		}
@@ -428,34 +418,9 @@ namespace System.Windows.Controls {
 			set { SetValue (ColumnDefinitionsProperty, value); }
 		}
 
-		public int Column {
-			get { return (int) GetValue (ColumnProperty); }
-			set { SetValue (ColumnProperty, value); }
-		}
-
-		public int ColumnSpan {
-			get { return (int) GetValue (ColumnSpanProperty); }
-			set { SetValue (ColumnSpanProperty, value); }
-		}
-
 		public RowDefinitionCollection RowDefinitions {
 			get { return (RowDefinitionCollection) GetValue (RowDefinitionsProperty); }
 			set { SetValue (RowDefinitionsProperty, value); }
-		}
-
-		public int Row {
-			get { return (int) GetValue (RowProperty); }
-			set { SetValue (RowProperty, value); }
-		}
-
-		public int RowSpan {
-			get { return (int) GetValue (RowSpanProperty); }
-			set { SetValue (RowSpanProperty, value); }
-		}
-
-		public bool ShowGridLines {
-			get { return (bool) GetValue (ShowGridLinesProperty); }
-			set { SetValue (ShowGridLinesProperty, value); }
 		}
 	}
 
@@ -1545,16 +1510,6 @@ namespace System.Windows.Media.Animation {
 	partial class Storyboard {
 		public static readonly DependencyProperty TargetNameProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetName", typeof (string));
 		public static readonly DependencyProperty TargetPropertyProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetProperty", typeof (string));
-
-		public string TargetName {
-			get { return (string) GetValue (TargetNameProperty); }
-			set { SetValue (TargetNameProperty, value); }
-		}
-
-		public string TargetProperty {
-			get { return (string) GetValue (TargetPropertyProperty); }
-			set { SetValue (TargetPropertyProperty, value); }
-		}
 	}
 
 	partial class Timeline {

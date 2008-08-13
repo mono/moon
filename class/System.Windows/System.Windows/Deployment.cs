@@ -27,6 +27,7 @@
 //
 
 using Mono;
+using System.Reflection;
 using System.Security;
 
 namespace System.Windows {
@@ -39,6 +40,21 @@ namespace System.Windows {
 #endif
 			get { throw new NotImplementedException (); }
 		}
-
+	
+#if NET_2_1
+		[SecurityCritical]
+#endif
+		public static void RegisterAssembly (Assembly assembly)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+#if NET_2_1
+		[SecurityCritical]
+#endif
+		public static void SetCurrentApplication (Application application)
+		{
+			throw new System.NotImplementedException ();
+		}
 	}
 }

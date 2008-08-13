@@ -47,13 +47,13 @@ namespace System.Windows {
 	}
 
 	partial class FrameworkElement {
-		public FrameworkElement () : base (NativeMethods.framework_element_new ()) {}
+		internal FrameworkElement () : base (NativeMethods.framework_element_new ()) {}
 		internal FrameworkElement (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.FRAMEWORKELEMENT; }
 	}
 
 	partial class FrameworkTemplate {
-		public FrameworkTemplate () : base (NativeMethods.framework_template_new ()) {}
+		protected FrameworkTemplate () : base (NativeMethods.framework_template_new ()) {}
 		internal FrameworkTemplate (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.FRAMEWORKTEMPLATE; }
 	}
@@ -76,7 +76,7 @@ namespace System.Windows {
 	}
 
 	partial class SetterBase {
-		public SetterBase () : base (NativeMethods.setter_base_new ()) {}
+		protected SetterBase () : base (NativeMethods.setter_base_new ()) {}
 		internal SetterBase (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.SETTERBASE; }
 	}
@@ -106,7 +106,7 @@ namespace System.Windows {
 	}
 
 	partial class UIElement {
-		public UIElement () : base (NativeMethods.uielement_new ()) {}
+		internal UIElement () : base (NativeMethods.uielement_new ()) {}
 		internal UIElement (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.UIELEMENT; }
 	}
@@ -132,7 +132,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class Control {
-		public Control () : base (NativeMethods.control_new ()) {}
+		protected Control () : base (NativeMethods.control_new ()) {}
 		internal Control (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.CONTROL; }
 	}
