@@ -1,3 +1,8 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Generator.cs: Cast to double before casting to int for int/double
+	  mismatches.
+
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Generator.cs: Add support for excluding single DPs from generation,

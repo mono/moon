@@ -269,6 +269,8 @@ class Generator {
 			}
 			
 			foreach (FieldInfo field in fields) {
+				bool conv_int_to_double = field.GetDPManagedPropertyType (all) == "int" && field.GetDPPropertyType (all).Name == "double";
+				
 				if (field.IsDPAttached)
 					continue;
 				
@@ -288,6 +290,8 @@ class Generator {
 				}
 				text.Append ("get { return (");
 				text.Append (field.GetDPManagedPropertyType (all));
+				if (conv_int_to_double)
+					text.Append (") (double");
 				text.Append (") GetValue (");
 				text.Append (field.Name);
 				text.AppendLine ("); }");

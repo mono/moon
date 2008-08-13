@@ -518,11 +518,11 @@ namespace System.Windows.Controls {
 		}
 
 		public int NaturalVideoHeight {
-			get { return (int) GetValue (NaturalVideoHeightProperty); }
+			get { return (int) (double) GetValue (NaturalVideoHeightProperty); }
 		}
 
 		public int NaturalVideoWidth {
-			get { return (int) GetValue (NaturalVideoWidthProperty); }
+			get { return (int) (double) GetValue (NaturalVideoWidthProperty); }
 		}
 
 		public TimeSpan Position {
