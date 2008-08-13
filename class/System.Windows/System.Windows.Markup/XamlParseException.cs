@@ -29,7 +29,7 @@
 // Temporary namespace, need to fix olive/class/PresentationFramework namespaces
 namespace System.Windows.Markup {
 	public class XamlParseException : SystemException {
-		uint line, col;
+		int line, col;
 		
 		internal XamlParseException ()
 		{
@@ -43,7 +43,7 @@ namespace System.Windows.Markup {
 			col = 0;
 		}
 		
-		internal XamlParseException (uint line, uint col)
+		internal XamlParseException (int line, int col)
 		{
 			this.line = line;
 			this.col = col;
@@ -52,14 +52,15 @@ namespace System.Windows.Markup {
 		internal XamlParseException (int line, int col, string msg)
 			: base (String.Format ("({0},{1}): {2}", line, col, msg))
 		{
-			this.line = (uint) line;
-			this.col = (uint) col;
+			this.line = line;
+			this.col = col;
 		}
 		
-		public uint LineNumber {
+		public int LineNumber {
 			get { return line; }
 		}
-		public uint LinePosition {
+		
+		public int LinePosition {
 			get { return col; }
 		}
 	}
