@@ -89,10 +89,10 @@ namespace System.Windows.Browser
 			IntPtr handle = PluginHost.Handle;
 
 			if (handle != IntPtr.Zero)
-				source_id = NativeMethods.plugin_html_timer_timeout_add (
+				source_id = NativeMethods.plugin_timer_timeout_add (
 					handle, interval, callback, IntPtr.Zero);
 			else
-				source_id = NativeMethods.runtime_html_timer_timeout_add (
+				source_id = NativeMethods.runtime_timer_timeout_add (
 					interval, callback, IntPtr.Zero);
 		}
 
@@ -103,9 +103,9 @@ namespace System.Windows.Browser
 
 			IntPtr handle = PluginHost.Handle;
 			if (handle != IntPtr.Zero)
-				NativeMethods.plugin_html_timer_timeout_stop (PluginHost.Handle, source_id);
+				NativeMethods.plugin_timer_timeout_stop (PluginHost.Handle, source_id);
 			else
-				NativeMethods.runtime_html_timer_timeout_stop (source_id);
+				NativeMethods.runtime_timer_timeout_stop (source_id);
 			source_id = 0;
 			callback = null;
 		}

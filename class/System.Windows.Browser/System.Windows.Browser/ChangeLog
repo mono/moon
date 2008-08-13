@@ -1,3 +1,7 @@
+2008-08-13  Geoff Norton  <gnorton@novell.com>
+
+	* HtmlTimer.cs: Update to replace the new pinvoke signature.
+
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* HtmlWindow.cs: Implemented HtmlWindow.Eval.
