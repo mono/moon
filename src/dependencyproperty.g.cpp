@@ -162,7 +162,7 @@ dependency_property_g_init (void)
 	FrameworkElement::MaxWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MaxWidth", new Value (INFINITY));
 	FrameworkElement::MinHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MinHeight", new Value (0.0));
 	FrameworkElement::MinWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MinWidth", new Value (0.0));
-	FrameworkElement::StyleProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Style", Type::MANAGED);
+	FrameworkElement::StyleProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Style", Type::STYLE);
 	FrameworkElement::VerticalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "VerticalAlignment", new Value (VerticalAlignmentStretch));
 #endif
 	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
