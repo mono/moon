@@ -305,7 +305,6 @@ class Generator {
 	{	
 		string base_dir = Environment.CurrentDirectory;
 		string moon_dir = Path.Combine (base_dir, "src");
-		string last_type = string.Empty;
 		int version_previous = 0;
 		StringBuilder text = new StringBuilder ();
 		List<FieldInfo> fields = all.DependencyProperties;
@@ -336,7 +335,6 @@ class Generator {
 			FieldInfo field = fields [i];
 			TypeInfo type = field.ParentType;
 			TypeInfo propertyType = null;
-			string property_type = field.DPPropertyType;
 			string default_value = field.DPDefaultValue;
 			bool has_default_value = !string.IsNullOrEmpty (default_value);
 			bool is_nullable = field.IsDPNullable;
@@ -873,11 +871,9 @@ class Generator {
 	{
 		string base_dir = Environment.CurrentDirectory;
 		string class_dir = Path.Combine (base_dir, "class");
-		string sys_win_dir = Path.Combine (class_dir, "System.Windows");
 		string moon_moonlight_dir = Path.Combine (class_dir, "Mono.Moonlight");
 		List<TypeInfo> types = new List<TypeInfo> (all.GetDependencyObjects (all));
 		
-		string magic = "return Kind.";
 		StringBuilder text = new StringBuilder ();
 		
 		Helper.WriteWarningGenerated (text);
@@ -1469,7 +1465,6 @@ class Generator {
 		bool generate_wrapper = false;
 		bool is_manually_defined;
 		bool comment_out;
-		bool is_static;
 		bool is_void = false;
 		bool contains_unknown_types;
 		string name;
@@ -1477,8 +1472,6 @@ class Generator {
 		string tabs;
 		TypeReference returntype;
 		MethodInfo cmethod = method.CMethod;
-		ParameterInfo surface_parameter = null;
-		ParameterInfo types_parameter = null;
 		ParameterInfo error_parameter = null;
 		
 		if (method.ReturnType == null)
@@ -1496,11 +1489,9 @@ class Generator {
 			if (parameter.Name == "surface" && parameter.ParameterType.Value == "Surface*") {
 				parameter.ManagedWrapperCode = "Mono.Xaml.XamlLoader.SurfaceInDomain";
 				generate_wrapper = true;
-				surface_parameter = parameter;
 			} else if (parameter.Name == "additional_types" && parameter.ParameterType.Value == "Types*") {
 				parameter.ManagedWrapperCode = "Mono.Types.Native";
 				generate_wrapper = true;
-				types_parameter = parameter;
 			} else if (parameter.Name == "error" && parameter.ParameterType.Value == "MoonError*") {
 				marshal_moonerror = true;
 				generate_wrapper = true;
@@ -1517,7 +1508,6 @@ class Generator {
 		is_manually_defined = IsManuallyDefined (NativeMethods_cs, managed_name);
 		contains_unknown_types = method.ContainsUnknownTypes;
 		comment_out = is_manually_defined || contains_unknown_types;
-		is_static = method.IsStatic;
 		tabs = comment_out ? "\t\t// " : "\t\t";
 				
 		if (is_manually_defined)
