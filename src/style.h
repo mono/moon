@@ -27,9 +27,9 @@ class Style : public DependencyObject {
 	virtual ~Style () { }
 	
  public:
-	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public */
+ 	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private */
 	static DependencyProperty *SettersProperty;
- 	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public */
+ 	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal */
 	static DependencyProperty *TargetTypeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
