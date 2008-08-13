@@ -16,10 +16,10 @@
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
 class ObjectKeyFrame : public KeyFrame /* The managed class derives directly from DependencyObject */ {
-protected:
+ protected:
 	virtual ~ObjectKeyFrame () {}
 	
-public:
+ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ObjectKeyFrame () {}
 	
@@ -31,17 +31,19 @@ public:
 	static DependencyProperty *KeyTimeProperty;
 };
 
+
 /* @Version=2,Namespace=System.Windows.Media.Animation */
 class DiscreteObjectKeyFrame : public ObjectKeyFrame {
-protected:
+ protected:
 	virtual ~DiscreteObjectKeyFrame () {}
 	
-public:
+ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DiscreteObjectKeyFrame () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::DISCRETEOBJECTKEYFRAME; }
 };
+
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
 class ObjectKeyFrameCollection : public KeyFrameCollection {
@@ -55,6 +57,7 @@ class ObjectKeyFrameCollection : public KeyFrameCollection {
 	virtual Type::Kind GetObjectType() { return Type::OBJECTKEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::OBJECTKEYFRAME; }
 };
+
 
 /* @Version=2 */
 /* @Namespace=System.Windows.Media.Animation */
@@ -86,4 +89,4 @@ TODO:
 */
 };
 
-#endif
+#endif /* MOON_ANIMATION2_H */

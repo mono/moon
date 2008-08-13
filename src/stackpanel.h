@@ -15,10 +15,10 @@
 /* @Namespace=System.Windows.Controls */
 /* @Version=2 */
 class StackPanel : public Panel {
-protected:
+ protected:
 	virtual ~StackPanel () {}
 
-public:
+ public:
 	/* @PropertyType=Orientation */
 	static DependencyProperty *OrientationProperty;
 	

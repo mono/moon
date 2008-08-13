@@ -579,7 +579,7 @@ class PolyBezierSegment : public PathSegment {
  protected:
 	virtual ~PolyBezierSegment () {}
 	
-	PointCollection* GetPoints ();
+	PointCollection *GetPoints ();
 	
  public:
  	/* @PropertyType=PointCollection */
@@ -641,7 +641,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
  protected:
 	virtual ~PolyQuadraticBezierSegment () {}
 	
-	PointCollection* GetPoints ();
+	PointCollection *GetPoints ();
 	
  public:
  	/* @PropertyType=PointCollection */

@@ -27,7 +27,7 @@ class Panel : public FrameworkElement {
 	void ChildRemoved (UIElement *child);
 
 	bool emitting_loaded;
-
+	
  protected:
 	virtual ~Panel ();
 	bool UseBackToFront ();
@@ -35,7 +35,7 @@ class Panel : public FrameworkElement {
  public:
  	/* @PropertyType=Brush */
 	static DependencyProperty *BackgroundProperty;
- 	/* @PropertyType=UIElementCollection */
+ 	/* @PropertyType=UIElementCollection,ManagedFieldAccess=Internal,ManagedGetterAccess=Public,ManagedSetterAccess=Internal */
 	static DependencyProperty *ChildrenProperty;
 	
 	Rect bounds_with_children;

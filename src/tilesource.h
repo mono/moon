@@ -18,10 +18,10 @@
 
 /* @Version=2,Namespace=System.Windows.Media */
 class MultiScaleTileSource : public DependencyObject {
-protected:
+ protected:
 	virtual ~MultiScaleTileSource () {}
 
-public:
+ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	MultiScaleTileSource () {}
 
@@ -30,17 +30,17 @@ public:
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
-protected:
+ protected:
 	virtual ~DeepZoomImageTileSource () {}
 
-public:
+ public:
+	/* @PropertyType=string,ManagedPropertyType=Uri */
+	static DependencyProperty *UriSourceProperty;
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DeepZoomImageTileSource () {}
 
 	virtual Type::Kind GetObjectType () { return Type::DEEPZOOMIMAGETILESOURCE; }	
-	
-	/* @PropertyType=string,ManagedPropertyType=Uri */
-	static DependencyProperty *UriSourceProperty;
 };
 
-#endif // 
+#endif /* __TILESOURCE_H__ */
