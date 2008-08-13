@@ -1,5 +1,11 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* site/dependency_propertiesTestPage.html: Updated xap filename.
+	* moon-unit.mdp: Updated.
+	* Makefile: Fix html path names.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* HtmlOutput.cs: Catch Eval exceptions, and properly encode \r.
 
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
