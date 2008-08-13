@@ -64,7 +64,7 @@ main()
   PRINT_SIZEOF (StylusPointCollection);
   PRINT_SIZEOF (TimelineMarkerCollection);
   PRINT_SIZEOF (MediaAttributeCollection);
-  PRINT_SIZEOF (Inlines);
+  PRINT_SIZEOF (InlineCollection);
   PRINT_SIZEOF (Control);
   PRINT_SIZEOF (EventObject);
   PRINT_SIZEOF (DependencyObject);
