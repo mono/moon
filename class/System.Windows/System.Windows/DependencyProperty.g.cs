@@ -590,7 +590,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty FontStyleProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStyle", typeof (FontStyle));
 		public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontWeight", typeof (FontWeight));
 		public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Foreground", typeof (Brush));
-		public static readonly DependencyProperty InlinesProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (InlineCollection));
+		internal static readonly DependencyProperty InlinesProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (InlineCollection));
 		public static readonly DependencyProperty TextDecorationsProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorationCollection));
 		public static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Text", typeof (string));
 		public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextWrapping", typeof (TextWrapping));
@@ -635,7 +635,7 @@ namespace System.Windows.Controls {
 
 		public InlineCollection Inlines {
 			get { return (InlineCollection) GetValue (InlinesProperty); }
-			set { SetValue (InlinesProperty, value); }
+			internal set { SetValue (InlinesProperty, value); }
 		}
 
 		public TextDecorationCollection TextDecorations {

@@ -35,7 +35,7 @@ class Panel : public FrameworkElement {
  public:
  	/* @PropertyType=Brush */
 	static DependencyProperty *BackgroundProperty;
- 	/* @PropertyType=UIElementCollection,ManagedFieldAccess=Internal,ManagedGetterAccess=Public,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=UIElementCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *ChildrenProperty;
 	
 	Rect bounds_with_children;

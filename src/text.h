@@ -203,7 +203,7 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *FontWeightProperty;
  	/* @PropertyType=Brush */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=Inlines,ManagedPropertyType=InlineCollection */
+ 	/* @PropertyType=Inlines,ManagedPropertyType=InlineCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *InlinesProperty;
  	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
