@@ -49,15 +49,11 @@ namespace System.Windows {
 					string param_string = Marshal.PtrToStringAnsi (raw);
 					init_params = new Dictionary<string,string> ();
 					
-					Console.WriteLine ("params = {0}", param_string);
+					//Console.WriteLine ("params = {0}", param_string);
 					foreach (string val in param_string.Split (param_separator)) {
 						string [] kv = val.Split (value_separator);
-						if (kv.Length >= 2) {
-							Console.WriteLine ("adding val {2} key = {0} value = {1}", kv[0], kv[1], val);
+						if (kv.Length >= 2)
 							init_params.Add (kv[0], kv[1]);
-						} else {
-							Console.WriteLine ("not adding val = {0}", val);
-						}
 					}
 				}
 
