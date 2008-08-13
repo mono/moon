@@ -13,6 +13,39 @@ namespace Mono {
 	
 		/* libmoon methods */
 	
+		// This method is already defined manually in NativeMethods.cs. Remove the import from there, and regenerate.
+		// [DllImport ("moon")]
+		// Application *application_new ();
+		// public extern static IntPtr application_new ();
+
+		[DllImport ("moon")]
+		// ArcSegment *arc_segment_new ();
+		public extern static IntPtr arc_segment_new ();
+
+		[DllImport ("moon")]
+		// AssemblyPart *assembly_part_new ();
+		public extern static IntPtr assembly_part_new ();
+
+		[DllImport ("moon")]
+		// AssemblyPartCollection *assembly_part_collection_new ();
+		public extern static IntPtr assembly_part_collection_new ();
+
+		[DllImport ("moon")]
+		// BeginStoryboard *begin_storyboard_new ();
+		public extern static IntPtr begin_storyboard_new ();
+
+		[DllImport ("moon")]
+		// BezierSegment *bezier_segment_new ();
+		public extern static IntPtr bezier_segment_new ();
+
+		[DllImport ("moon")]
+		// Brush *brush_new ();
+		public extern static IntPtr brush_new ();
+
+		[DllImport ("moon")]
+		// Canvas *canvas_new ();
+		public extern static IntPtr canvas_new ();
+
 		[DllImport ("moon")]
 		// int collection_add (Collection *instance, Value *value);
 		public extern static int collection_add (IntPtr instance, ref Value value);
@@ -28,6 +61,11 @@ namespace Mono {
 		[DllImport ("moon")]
 		// int collection_get_count (Collection *instance);
 		public extern static int collection_get_count (IntPtr instance);
+
+		// This method is already defined manually in NativeMethods.cs. Remove the import from there, and regenerate.
+		// [DllImport ("moon")]
+		// Type::Kind collection_get_element_type (Collection *instance);
+		// public extern static Kind collection_get_element_type (IntPtr instance);
 
 		[DllImport ("moon", EntryPoint="collection_get_value_at_with_error")]
 		// Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
@@ -79,6 +117,42 @@ namespace Mono {
 				throw CreateManagedException (error);
 			return result;
 		}
+
+		[DllImport ("moon")]
+		// ColorAnimation *color_animation_new ();
+		public extern static IntPtr color_animation_new ();
+
+		[DllImport ("moon")]
+		// ColorAnimationUsingKeyFrames *color_animation_using_key_frames_new ();
+		public extern static IntPtr color_animation_using_key_frames_new ();
+
+		[DllImport ("moon")]
+		// ColorKeyFrame *color_key_frame_new ();
+		public extern static IntPtr color_key_frame_new ();
+
+		[DllImport ("moon")]
+		// ColorKeyFrameCollection *color_key_frame_collection_new ();
+		public extern static IntPtr color_key_frame_collection_new ();
+
+		[DllImport ("moon")]
+		// ColumnDefinition *column_definition_new ();
+		public extern static IntPtr column_definition_new ();
+
+		[DllImport ("moon")]
+		// ColumnDefinitionCollection *column_definition_collection_new ();
+		public extern static IntPtr column_definition_collection_new ();
+
+		[DllImport ("moon")]
+		// ContentControl *content_control_new ();
+		public extern static IntPtr content_control_new ();
+
+		[DllImport ("moon")]
+		// Control *control_new ();
+		public extern static IntPtr control_new ();
+
+		[DllImport ("moon")]
+		// ControlTemplate *control_template_new ();
+		public extern static IntPtr control_template_new ();
 
 		[DllImport ("moon")]
 		// DeepZoomImageTileSource *deep_zoom_image_tile_source_new ();
@@ -135,6 +209,10 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// DependencyObjectCollection *dependency_object_collection_new ();
+		public extern static IntPtr dependency_object_collection_new ();
+
+		[DllImport ("moon")]
 		// DependencyProperty *dependency_property_get_dependency_property (Type::Kind type, const char *name);
 		public extern static IntPtr dependency_property_get_dependency_property (Kind type, string name);
 
@@ -177,8 +255,192 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// Deployment *deployment_new ();
+		public extern static IntPtr deployment_new ();
+
+		[DllImport ("moon")]
+		// DiscreteColorKeyFrame *discrete_color_key_frame_new ();
+		public extern static IntPtr discrete_color_key_frame_new ();
+
+		[DllImport ("moon")]
+		// DiscreteDoubleKeyFrame *discrete_double_key_frame_new ();
+		public extern static IntPtr discrete_double_key_frame_new ();
+
+		[DllImport ("moon")]
 		// DiscreteObjectKeyFrame *discrete_object_key_frame_new ();
 		public extern static IntPtr discrete_object_key_frame_new ();
+
+		[DllImport ("moon")]
+		// DiscretePointKeyFrame *discrete_point_key_frame_new ();
+		public extern static IntPtr discrete_point_key_frame_new ();
+
+		[DllImport ("moon")]
+		// DoubleAnimation *double_animation_new ();
+		public extern static IntPtr double_animation_new ();
+
+		[DllImport ("moon")]
+		// DoubleAnimationUsingKeyFrames *double_animation_using_key_frames_new ();
+		public extern static IntPtr double_animation_using_key_frames_new ();
+
+		[DllImport ("moon")]
+		// DoubleCollection *double_collection_new ();
+		public extern static IntPtr double_collection_new ();
+
+		[DllImport ("moon")]
+		// DoubleKeyFrame *double_key_frame_new ();
+		public extern static IntPtr double_key_frame_new ();
+
+		[DllImport ("moon")]
+		// DoubleKeyFrameCollection *double_key_frame_collection_new ();
+		public extern static IntPtr double_key_frame_collection_new ();
+
+		[DllImport ("moon")]
+		// DrawingAttributes *drawing_attributes_new ();
+		public extern static IntPtr drawing_attributes_new ();
+
+		[DllImport ("moon")]
+		// Ellipse *ellipse_new ();
+		public extern static IntPtr ellipse_new ();
+
+		[DllImport ("moon")]
+		// EllipseGeometry *ellipse_geometry_new ();
+		public extern static IntPtr ellipse_geometry_new ();
+
+		[DllImport ("moon")]
+		// EventTrigger *event_trigger_new ();
+		public extern static IntPtr event_trigger_new ();
+
+		[DllImport ("moon")]
+		// FrameworkElement *framework_element_new ();
+		public extern static IntPtr framework_element_new ();
+
+		[DllImport ("moon")]
+		// FrameworkTemplate *framework_template_new ();
+		public extern static IntPtr framework_template_new ();
+
+		[DllImport ("moon")]
+		// GeneralTransform *general_transform_new ();
+		public extern static IntPtr general_transform_new ();
+
+		[DllImport ("moon")]
+		// Geometry *geometry_new ();
+		public extern static IntPtr geometry_new ();
+
+		[DllImport ("moon")]
+		// GeometryCollection *geometry_collection_new ();
+		public extern static IntPtr geometry_collection_new ();
+
+		[DllImport ("moon")]
+		// GeometryGroup *geometry_group_new ();
+		public extern static IntPtr geometry_group_new ();
+
+		[DllImport ("moon")]
+		// Glyphs *glyphs_new ();
+		public extern static IntPtr glyphs_new ();
+
+		[DllImport ("moon")]
+		// GradientBrush *gradient_brush_new ();
+		public extern static IntPtr gradient_brush_new ();
+
+		[DllImport ("moon")]
+		// GradientStop *gradient_stop_new ();
+		public extern static IntPtr gradient_stop_new ();
+
+		[DllImport ("moon")]
+		// GradientStopCollection *gradient_stop_collection_new ();
+		public extern static IntPtr gradient_stop_collection_new ();
+
+		[DllImport ("moon")]
+		// Grid *grid_new ();
+		public extern static IntPtr grid_new ();
+
+		[DllImport ("moon")]
+		// Image *image_new ();
+		public extern static IntPtr image_new ();
+
+		[DllImport ("moon")]
+		// ImageBrush *image_brush_new ();
+		public extern static IntPtr image_brush_new ();
+
+		[DllImport ("moon")]
+		// InkPresenter *ink_presenter_new ();
+		public extern static IntPtr ink_presenter_new ();
+
+		[DllImport ("moon")]
+		// Inline *inline_new ();
+		public extern static IntPtr inline_new ();
+
+		[DllImport ("moon")]
+		// InlineCollection *inline_collection_new ();
+		public extern static IntPtr inline_collection_new ();
+
+		[DllImport ("moon")]
+		// KeyFrame *key_frame_new ();
+		public extern static IntPtr key_frame_new ();
+
+		[DllImport ("moon")]
+		// KeyFrameCollection *key_frame_collection_new ();
+		public extern static IntPtr key_frame_collection_new ();
+
+		[DllImport ("moon")]
+		// KeySpline *key_spline_new ();
+		public extern static IntPtr key_spline_new ();
+
+		[DllImport ("moon")]
+		// Line *line_new ();
+		public extern static IntPtr line_new ();
+
+		[DllImport ("moon")]
+		// LinearColorKeyFrame *linear_color_key_frame_new ();
+		public extern static IntPtr linear_color_key_frame_new ();
+
+		[DllImport ("moon")]
+		// LinearDoubleKeyFrame *linear_double_key_frame_new ();
+		public extern static IntPtr linear_double_key_frame_new ();
+
+		[DllImport ("moon")]
+		// LinearGradientBrush *linear_gradient_brush_new ();
+		public extern static IntPtr linear_gradient_brush_new ();
+
+		[DllImport ("moon")]
+		// LinearPointKeyFrame *linear_point_key_frame_new ();
+		public extern static IntPtr linear_point_key_frame_new ();
+
+		[DllImport ("moon")]
+		// LineBreak *line_break_new ();
+		public extern static IntPtr line_break_new ();
+
+		[DllImport ("moon")]
+		// LineGeometry *line_geometry_new ();
+		public extern static IntPtr line_geometry_new ();
+
+		[DllImport ("moon")]
+		// LineSegment *line_segment_new ();
+		public extern static IntPtr line_segment_new ();
+
+		[DllImport ("moon")]
+		// Matrix *matrix_new ();
+		public extern static IntPtr matrix_new ();
+
+		[DllImport ("moon")]
+		// MatrixTransform *matrix_transform_new ();
+		public extern static IntPtr matrix_transform_new ();
+
+		[DllImport ("moon")]
+		// MediaAttribute *media_attribute_new ();
+		public extern static IntPtr media_attribute_new ();
+
+		[DllImport ("moon")]
+		// MediaAttributeCollection *media_attribute_collection_new ();
+		public extern static IntPtr media_attribute_collection_new ();
+
+		[DllImport ("moon")]
+		// MediaBase *media_base_new ();
+		public extern static IntPtr media_base_new ();
+
+		[DllImport ("moon")]
+		// MediaElement *media_element_new ();
+		public extern static IntPtr media_element_new ();
 
 		[DllImport ("moon")]
 		// MultiScaleTileSource *multi_scale_tile_source_new ();
@@ -197,8 +459,241 @@ namespace Mono {
 		public extern static IntPtr object_key_frame_collection_new ();
 
 		[DllImport ("moon")]
+		// Panel *panel_new ();
+		public extern static IntPtr panel_new ();
+
+		[DllImport ("moon")]
+		// ParallelTimeline *parallel_timeline_new ();
+		public extern static IntPtr parallel_timeline_new ();
+
+		[DllImport ("moon")]
+		// Path *path_new ();
+		public extern static IntPtr path_new ();
+
+		[DllImport ("moon")]
+		// PathFigure *path_figure_new ();
+		public extern static IntPtr path_figure_new ();
+
+		[DllImport ("moon")]
+		// PathFigureCollection *path_figure_collection_new ();
+		public extern static IntPtr path_figure_collection_new ();
+
+		[DllImport ("moon")]
+		// PathGeometry *path_geometry_new ();
+		public extern static IntPtr path_geometry_new ();
+
+		[DllImport ("moon")]
+		// PathSegment *path_segment_new ();
+		public extern static IntPtr path_segment_new ();
+
+		[DllImport ("moon")]
+		// PathSegmentCollection *path_segment_collection_new ();
+		public extern static IntPtr path_segment_collection_new ();
+
+		[DllImport ("moon")]
+		// PointAnimation *point_animation_new ();
+		public extern static IntPtr point_animation_new ();
+
+		// This method is already defined manually in NativeMethods.cs. Remove the import from there, and regenerate.
+		// [DllImport ("moon")]
+		// PointAnimationUsingKeyFrames *point_animation_using_key_frames_new ();
+		// public extern static IntPtr point_animation_using_key_frames_new ();
+
+		[DllImport ("moon")]
+		// PointCollection *point_collection_new ();
+		public extern static IntPtr point_collection_new ();
+
+		[DllImport ("moon")]
+		// PointKeyFrame *point_key_frame_new ();
+		public extern static IntPtr point_key_frame_new ();
+
+		[DllImport ("moon")]
+		// PointKeyFrameCollection *point_key_frame_collection_new ();
+		public extern static IntPtr point_key_frame_collection_new ();
+
+		[DllImport ("moon")]
+		// PolyBezierSegment *poly_bezier_segment_new ();
+		public extern static IntPtr poly_bezier_segment_new ();
+
+		[DllImport ("moon")]
+		// Polygon *polygon_new ();
+		public extern static IntPtr polygon_new ();
+
+		[DllImport ("moon")]
+		// Polyline *polyline_new ();
+		public extern static IntPtr polyline_new ();
+
+		[DllImport ("moon")]
+		// PolyLineSegment *poly_line_segment_new ();
+		public extern static IntPtr poly_line_segment_new ();
+
+		[DllImport ("moon")]
+		// PolyQuadraticBezierSegment *poly_quadratic_bezier_segment_new ();
+		public extern static IntPtr poly_quadratic_bezier_segment_new ();
+
+		[DllImport ("moon")]
+		// QuadraticBezierSegment *quadratic_bezier_segment_new ();
+		public extern static IntPtr quadratic_bezier_segment_new ();
+
+		[DllImport ("moon")]
+		// RadialGradientBrush *radial_gradient_brush_new ();
+		public extern static IntPtr radial_gradient_brush_new ();
+
+		[DllImport ("moon")]
+		// Rectangle *rectangle_new ();
+		public extern static IntPtr rectangle_new ();
+
+		[DllImport ("moon")]
+		// RectangleGeometry *rectangle_geometry_new ();
+		public extern static IntPtr rectangle_geometry_new ();
+
+		[DllImport ("moon")]
+		// ResourceDictionary *resource_dictionary_new ();
+		public extern static IntPtr resource_dictionary_new ();
+
+		[DllImport ("moon")]
+		// RotateTransform *rotate_transform_new ();
+		public extern static IntPtr rotate_transform_new ();
+
+		[DllImport ("moon")]
+		// RowDefinition *row_definition_new ();
+		public extern static IntPtr row_definition_new ();
+
+		[DllImport ("moon")]
+		// RowDefinitionCollection *row_definition_collection_new ();
+		public extern static IntPtr row_definition_collection_new ();
+
+		[DllImport ("moon")]
+		// Run *run_new ();
+		public extern static IntPtr run_new ();
+
+		[DllImport ("moon")]
+		// ScaleTransform *scale_transform_new ();
+		public extern static IntPtr scale_transform_new ();
+
+		[DllImport ("moon")]
+		// Setter *setter_new ();
+		public extern static IntPtr setter_new ();
+
+		[DllImport ("moon")]
+		// SetterBase *setter_base_new ();
+		public extern static IntPtr setter_base_new ();
+
+		[DllImport ("moon")]
+		// SetterBaseCollection *setter_base_collection_new ();
+		public extern static IntPtr setter_base_collection_new ();
+
+		[DllImport ("moon")]
+		// Shape *shape_new ();
+		public extern static IntPtr shape_new ();
+
+		[DllImport ("moon")]
+		// SkewTransform *skew_transform_new ();
+		public extern static IntPtr skew_transform_new ();
+
+		[DllImport ("moon")]
+		// SolidColorBrush *solid_color_brush_new ();
+		public extern static IntPtr solid_color_brush_new ();
+
+		[DllImport ("moon")]
+		// SplineColorKeyFrame *spline_color_key_frame_new ();
+		public extern static IntPtr spline_color_key_frame_new ();
+
+		[DllImport ("moon")]
+		// SplineDoubleKeyFrame *spline_double_key_frame_new ();
+		public extern static IntPtr spline_double_key_frame_new ();
+
+		[DllImport ("moon")]
+		// SplinePointKeyFrame *spline_point_key_frame_new ();
+		public extern static IntPtr spline_point_key_frame_new ();
+
+		[DllImport ("moon")]
 		// StackPanel *stack_panel_new ();
 		public extern static IntPtr stack_panel_new ();
+
+		[DllImport ("moon")]
+		// Storyboard *storyboard_new ();
+		public extern static IntPtr storyboard_new ();
+
+		[DllImport ("moon")]
+		// Stroke *stroke_new ();
+		public extern static IntPtr stroke_new ();
+
+		[DllImport ("moon")]
+		// StrokeCollection *stroke_collection_new ();
+		public extern static IntPtr stroke_collection_new ();
+
+		[DllImport ("moon")]
+		// Style *style_new ();
+		public extern static IntPtr style_new ();
+
+		[DllImport ("moon")]
+		// StylusInfo *stylus_info_new ();
+		public extern static IntPtr stylus_info_new ();
+
+		[DllImport ("moon")]
+		// StylusPoint *stylus_point_new ();
+		public extern static IntPtr stylus_point_new ();
+
+		[DllImport ("moon")]
+		// StylusPointCollection *stylus_point_collection_new ();
+		public extern static IntPtr stylus_point_collection_new ();
+
+		[DllImport ("moon")]
+		// TextBlock *text_block_new ();
+		public extern static IntPtr text_block_new ();
+
+		[DllImport ("moon")]
+		// TileBrush *tile_brush_new ();
+		public extern static IntPtr tile_brush_new ();
+
+		[DllImport ("moon")]
+		// Timeline *timeline_new ();
+		public extern static IntPtr timeline_new ();
+
+		[DllImport ("moon")]
+		// TimelineCollection *timeline_collection_new ();
+		public extern static IntPtr timeline_collection_new ();
+
+		[DllImport ("moon")]
+		// TimelineGroup *timeline_group_new ();
+		public extern static IntPtr timeline_group_new ();
+
+		[DllImport ("moon")]
+		// TimelineMarker *timeline_marker_new ();
+		public extern static IntPtr timeline_marker_new ();
+
+		[DllImport ("moon")]
+		// TimelineMarkerCollection *timeline_marker_collection_new ();
+		public extern static IntPtr timeline_marker_collection_new ();
+
+		[DllImport ("moon")]
+		// Transform *transform_new ();
+		public extern static IntPtr transform_new ();
+
+		[DllImport ("moon")]
+		// TransformCollection *transform_collection_new ();
+		public extern static IntPtr transform_collection_new ();
+
+		[DllImport ("moon")]
+		// TransformGroup *transform_group_new ();
+		public extern static IntPtr transform_group_new ();
+
+		[DllImport ("moon")]
+		// TranslateTransform *translate_transform_new ();
+		public extern static IntPtr translate_transform_new ();
+
+		[DllImport ("moon")]
+		// TriggerAction *trigger_action_new ();
+		public extern static IntPtr trigger_action_new ();
+
+		[DllImport ("moon")]
+		// TriggerActionCollection *trigger_action_collection_new ();
+		public extern static IntPtr trigger_action_collection_new ();
+
+		[DllImport ("moon")]
+		// TriggerCollection *trigger_collection_new ();
+		public extern static IntPtr trigger_collection_new ();
 
 		[DllImport ("moon")]
 		// void types_free (Types *instance);
@@ -215,6 +710,26 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Types *types_new ();
 		public extern static IntPtr types_new ();
+
+		[DllImport ("moon")]
+		// UIElement *uielement_new ();
+		public extern static IntPtr uielement_new ();
+
+		[DllImport ("moon")]
+		// UIElementCollection *uielement_collection_new ();
+		public extern static IntPtr uielement_collection_new ();
+
+		[DllImport ("moon")]
+		// UserControl *user_control_new ();
+		public extern static IntPtr user_control_new ();
+
+		[DllImport ("moon")]
+		// VideoBrush *video_brush_new ();
+		public extern static IntPtr video_brush_new ();
+
+		[DllImport ("moon")]
+		// VisualBrush *visual_brush_new ();
+		public extern static IntPtr visual_brush_new ();
 
 	}
 }

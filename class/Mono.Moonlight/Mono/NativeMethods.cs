@@ -54,7 +54,7 @@ namespace Mono {
 		public extern static void surface_register_events (
 			IntPtr surface,
 			PlainEvent surface_resized);
-	
+		
 #region Base
 		[DllImport("moon")]
 		public extern static void base_ref (IntPtr ptr);
@@ -117,33 +117,6 @@ namespace Mono {
 
 #region Transforms
 		[DllImport("moon")]
-		public extern static IntPtr general_transform_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr transform_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr skew_transform_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr rotate_transform_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr translate_transform_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr scale_transform_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr matrix_transform_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr transform_group_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr transform_collection_new ();
-
-		[DllImport("moon")]
 		public extern static void general_transform_transform_point (IntPtr handle, ref UnmanagedPoint p, ref UnmanagedPoint r);
 #endregion
 		
@@ -167,24 +140,7 @@ namespace Mono {
 		public extern static IntPtr uielement_get_transform_to_uielement (IntPtr item, IntPtr to_item);
 #endregion
 
-
-#region Panel
-		[DllImport("moon")]
-		public extern static IntPtr panel_new ();
-#endregion
-
 #region Grid
-		[DllImport("moon")]
-		public extern static IntPtr grid_new ();
-		[DllImport("moon")]
-		public extern static IntPtr column_definition_new ();
-		[DllImport("moon")]
-		public extern static IntPtr row_definition_new ();
-		[DllImport("moon")]
-		public extern static IntPtr column_definition_collection_new ();
-		[DllImport("moon")]
-		public extern static IntPtr row_definition_collection_new ();
-
 		[DllImport("moon")]
 		public extern static double row_definition_get_actual_height (IntPtr handle);
 		[DllImport("moon")]
@@ -208,40 +164,6 @@ namespace Mono {
 		public extern static void timeline_set_manual_target (IntPtr timeline_handle, IntPtr target_handle);
 
 #endregion
-
-#region Controls
-		[DllImport("moon")]
-		public extern static IntPtr control_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr content_control_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr user_control_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr image_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr media_base_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr text_block_new ();
-#endregion
-
-#region Documents
-		[DllImport ("moon")]
-		public extern static IntPtr glyphs_new ();
-		
-		[DllImport ("moon")]
-		public extern static IntPtr inline_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr linebreak_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr run_new ();
-#endregion
 		
 #region Collections
 		[DllImport("moon")]
@@ -261,69 +183,9 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static void collection_iterator_destroy (IntPtr iterator);
-		
-		[DllImport("moon")]
-		public extern static IntPtr dependency_object_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr double_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr point_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr resource_dictionary_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr trigger_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr gradient_stop_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr media_attribute_collection_new ();
 
 		[DllImport("moon")]
 		public extern static IntPtr media_attribute_collection_get_item_by_name (IntPtr collection, string name);
-
-		[DllImport("moon")]
-		public extern static IntPtr path_figure_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr path_segment_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr uielement_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr geometry_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr timeline_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr inline_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr color_key_frame_collection_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr double_key_frame_collection_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr point_key_frame_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr timeline_marker_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr stylus_point_collection_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr setter_base_collection_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr stroke_collection_new ();
 
 		[DllImport("moon")]
 		public extern static IntPtr stroke_collection_hit_test (IntPtr native, IntPtr stylusPointCollection);
@@ -354,235 +216,7 @@ namespace Mono {
 		
 #region Constructors
 		[DllImport("moon")]
-		public extern static IntPtr ink_presenter_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr media_element_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr stroke_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr drawing_attributes_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr stylus_info_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr stylus_point_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr timeline_marker_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr line_break_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr spline_point_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr spline_color_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr linear_double_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr linear_point_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr linear_color_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr discrete_double_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr discrete_point_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr discrete_color_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr color_animation_using_key_frames_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr point_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr double_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr color_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr key_frame_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr spline_double_key_frame_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr key_spline_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr rectangle_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr framework_element_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr visual_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr path_segment_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr geometry_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr timeline_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr timeline_group_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr parallel_timeline_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr shape_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr uielement_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr solid_color_brush_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr radial_gradient_brush_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr brush_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr gradient_brush_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr gradient_stop_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr image_brush_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr linear_gradient_brush_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr media_attribute_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr tile_brush_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr video_brush_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr visual_brush_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr canvas_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr geometry_group_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr ellipse_geometry_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr line_geometry_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr path_geometry_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr rectangle_geometry_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr path_figure_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr arc_segment_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr bezier_segment_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr line_segment_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr poly_bezier_segment_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr poly_line_segment_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr poly_quadratic_bezier_segment_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr quadratic_bezier_segment_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr ellipse_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr line_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr polygon_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr polyline_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr path_new ();
-
-		[DllImport("moon")]
 		public extern static IntPtr downloader_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr storyboard_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr beginstoryboard_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr animation_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr coloranimation_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr trigger_action_collection_new ();
-
-		[DllImport ("moon")]
-		public extern static IntPtr deployment_new ();
-
-		[DllImport ("moon")]
-		public extern static IntPtr assembly_part_new ();
-
-		[DllImport ("moon")]
-		public extern static IntPtr assembly_part_collection_new ();
-
-		[DllImport ("moon")]
-		public extern static IntPtr framework_template_new ();
-
-		[DllImport ("moon")]
-		public extern static IntPtr control_template_new ();
-
-		[DllImport ("moon")]
-		public extern static IntPtr style_new ();
-
-		[DllImport ("moon")]
-		public extern static IntPtr setter_base_new ();
-
-		[DllImport ("moon")]
-		public extern static IntPtr setter_new ();
 #endregion
 
 #region Storyboard
@@ -600,24 +234,6 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static IntPtr storyboard_stop (IntPtr native);
-		
-		[DllImport("moon")]
-		public extern static IntPtr double_animation_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr double_animation_using_key_frames_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr color_animation_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr event_trigger_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr point_animation_new ();
-
-		[DllImport("moon")]
-		public extern static IntPtr begin_storyboard_new ();
 #endregion
 		
 #region APIs that we do not have a Managed class implemented yet.
