@@ -1,3 +1,8 @@
+2008-08-13  Geoff Norton  <gnorton@novell.com>
+
+	 * System.Windows.Markup/XamlReader.cs: Initial implementation of 
+	XamlReader.Load
+
 2008-08-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* System.Windows.Markup/XamlParseException.cs: Fixed to use ints
