@@ -1,3 +1,8 @@
+2008-08-13  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp|h: Reuse the old html_timer infrastructure for the
+	intial DispatcherTimer implementation.
+
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* moonlight.cs: Set Helper.Agclr upon startup.

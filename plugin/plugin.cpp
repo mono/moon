@@ -1658,13 +1658,13 @@ plugin_instance_get_init_params  (PluginInstance *instance)
 }
 
 uint32_t
-plugin_html_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data)
+plugin_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data)
 {
 	return instance->TimeoutAdd (interval, callback, data);
 }
 
 void
-plugin_html_timer_timeout_stop (PluginInstance *instance, uint32_t source_id)
+plugin_timer_timeout_stop (PluginInstance *instance, uint32_t source_id)
 {
 	instance->TimeoutStop (source_id);
 }
