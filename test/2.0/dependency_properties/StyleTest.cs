@@ -30,5 +30,15 @@ namespace MoonTest.System.Windows
 			// This too?
 			/*Assert.Throws (delegate {*/ style.TargetType = typeof (SolidColorBrush);/* }, typeof (Exception));*/
 		}
+
+		[TestMethod]
+		public void SetTwiceOnElement ()
+		{
+			Style style = new Style (typeof (Rectangle));
+			Rectangle r = new Rectangle ();
+
+			r.Style = style;
+			Assert.Throws (delegate { r.Style = style; }, typeof (Exception));
+		}
 	}
 }

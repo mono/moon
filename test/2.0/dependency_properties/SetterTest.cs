@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -27,6 +28,12 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void NullProperty ()
+		{
+			Assert.Throws (delegate { Setter s = new Setter (null, 2.0); }, typeof (NullReferenceException));
+		}
+
+		[TestMethod]
 		public void TypeMismatch ()
 		{
 			Setter s = new Setter (UIElement.OpacityProperty, "does this work?");
@@ -38,6 +45,35 @@ namespace MoonTest.System.Windows
 			Setter s = new Setter (Line.X1Property, 10.0);
 			Style style = new Style (typeof (Rectangle));
 			style.Setters.Add (s);
+		}
+
+		[TestMethod]
+		public void Parse ()
+		{
+			Setter s = (Setter)XamlReader.Load ("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"IsEnabled\" Value=\"hi\" />");
+			Assert.IsNull (s.Property);
+			Assert.AreEqual ("hi", s.Value);
+		}
+
+		[TestMethod]
+		public void ParseAndAddToStyle ()
+		{
+			Setter s = (Setter)XamlReader.Load ("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"ActualWidth\" Value=\"5.0\" />");
+
+			Assert.IsNull (s.Property);
+			Assert.AreEqual ("5.0", s.Value);
+
+			Style style = new Style(typeof (Rectangle));
+			style.Setters.Add (s);
+
+			Assert.IsNull (s.Property);
+			Assert.AreEqual ("5.0", s.Value);
+
+			Rectangle r = new Rectangle ();
+			r.Style = style;
+
+			Assert.IsNull (s.Property);
+			Assert.AreEqual ("5.0", s.Value);
 		}
 	}
 }
