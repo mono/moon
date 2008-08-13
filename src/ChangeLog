@@ -1,5 +1,8 @@
 2008-08-13  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.h (class MediaElement): Make MarkersProperty internal for
+	managed-side.
+
 	* grid.h (class Grid): Make Column/RowDefinitionsProperties
 	internal for managed-side.
 

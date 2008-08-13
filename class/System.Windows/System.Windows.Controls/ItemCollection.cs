@@ -28,8 +28,11 @@
 
 namespace System.Windows.Controls {
 	public sealed class ItemCollection : PresentationFrameworkCollection<Object> {
-
-		public ItemCollection (IntPtr raw) : base (raw) {
+		public ItemCollection () : base (IntPtr.Zero) {
+			throw new NotImplementedException ();
+		}
+		
+		internal ItemCollection (IntPtr raw) : base (raw) {
 			throw new NotImplementedException ();
 		}
 
@@ -40,8 +43,7 @@ namespace System.Windows.Controls {
 		public override bool Contains(Object value) {
 			throw new NotImplementedException ();
 		}
-
-
+		
 		public override int IndexOf(Object value)  {
 			throw new NotImplementedException ();
 		}
@@ -54,7 +56,6 @@ namespace System.Windows.Controls {
 			throw new NotImplementedException ();
 		}
 
-
 		public override Object this[ int index ] {
 			get {
 				throw new NotImplementedException ();
@@ -63,7 +64,6 @@ namespace System.Windows.Controls {
 				throw new NotImplementedException ();
 			}
 		}
-
 	}
 }
 

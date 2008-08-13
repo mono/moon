@@ -451,7 +451,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty CanSeekProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CanSeek", typeof (bool));
 		public static readonly DependencyProperty CurrentStateProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CurrentState", typeof (MediaElementState));
 		public static readonly DependencyProperty IsMutedProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "IsMuted", typeof (bool));
-		public static readonly DependencyProperty MarkersProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Markers", typeof (TimelineMarkerCollection));
+		internal static readonly DependencyProperty MarkersProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Markers", typeof (TimelineMarkerCollection));
 		public static readonly DependencyProperty NaturalDurationProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalDuration", typeof (Duration));
 		public static readonly DependencyProperty NaturalVideoHeightProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoHeight", typeof (int));
 		public static readonly DependencyProperty NaturalVideoWidthProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (int));
@@ -460,7 +460,7 @@ namespace System.Windows.Controls {
 
 		public Dictionary<string,string> Attributes {
 			get { return (Dictionary<string,string>) GetValue (AttributesProperty); }
-			set { SetValue (AttributesProperty, value); }
+			internal set { SetValue (AttributesProperty, value); }
 		}
 
 		public int AudioStreamCount {
@@ -510,7 +510,7 @@ namespace System.Windows.Controls {
 
 		public TimelineMarkerCollection Markers {
 			get { return (TimelineMarkerCollection) GetValue (MarkersProperty); }
-			set { SetValue (MarkersProperty, value); }
+			internal set { SetValue (MarkersProperty, value); }
 		}
 
 		public Duration NaturalDuration {

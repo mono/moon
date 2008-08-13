@@ -392,7 +392,7 @@ class MediaElement : public MediaBase {
 	
  public:
 	// properties
- 	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string> */
+ 	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,ManagedSetterAccess=Internal */
 	static DependencyProperty *AttributesProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly */
 	static DependencyProperty *AudioStreamCountProperty;
@@ -414,7 +414,7 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *IsMutedProperty;
- 	/* @PropertyType=TimelineMarkerCollection */
+ 	/* @PropertyType=TimelineMarkerCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *MarkersProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly */
 	static DependencyProperty *NaturalDurationProperty;
