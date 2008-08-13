@@ -29,6 +29,9 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class LinearGradientBrush : GradientBrush {
-
+		public LinearGradientBrush (GradientStopCollection gradientStops, double angle)
+		{
+			throw new System.NotImplementedException ();
+		}
 	}
 }

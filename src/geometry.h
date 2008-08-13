@@ -378,6 +378,8 @@ class PathFigure : public DependencyObject {
 	static DependencyProperty *SegmentsProperty;
  	/* @PropertyType=Point */
 	static DependencyProperty *StartPointProperty;
+	/* @PropertyType=bool,Version=2 */
+	static DependencyProperty *IsFilledProperty;
 	
 	moon_path *path;
 	

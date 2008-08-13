@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Security;
 
 namespace System.Windows.Media
 {
@@ -40,7 +41,13 @@ namespace System.Windows.Media
 		}
 		
 		public TimelineMarker Marker {
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 			get { return marker; }
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 			set { marker = value; }
 		}
 	}

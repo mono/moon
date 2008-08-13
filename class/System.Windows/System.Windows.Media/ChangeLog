@@ -1,3 +1,10 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* RadialGradientBrush.cs, Color.cs, Geometry.cs,
+	  LinearGradientBrush.cs, MediaStreamSample.cs, ImageBrush.cs,
+	  TransformGroup.cs, VideoBrush.cs, Matrix.cs,
+	  TimelineMarkerRoutedEventArgs.cs: Gui-compare fixes.
+
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DeepZoomImageTileSource.cs, MultiScaleTileSource.cs: Added.

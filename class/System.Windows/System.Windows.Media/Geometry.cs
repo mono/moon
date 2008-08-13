@@ -31,5 +31,16 @@ using Mono;
 namespace System.Windows.Media {
 	public abstract partial class Geometry : DependencyObject {
 
-	}
+		public static double StandardFlatteningTolerance {
+			get { throw new System.NotImplementedException (); }
+		}
+		
+		public static Geometry Empty {
+			get { throw new System.NotImplementedException (); }
+		}
+		
+		public Rect Bounds {
+			get { throw new System.NotImplementedException (); }
+		}
+	}	
 }

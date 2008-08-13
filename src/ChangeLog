@@ -1,3 +1,8 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyproperty.g.cpp: Regenerated.
+	* geometry.h: Added IsFilled property.
+
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* brush.h: Set correct managed DP access and property types.

@@ -1081,12 +1081,18 @@ namespace System.Windows.Media {
 
 	partial class PathFigure {
 		public static readonly DependencyProperty IsClosedProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "IsClosed", typeof (bool));
+		public static readonly DependencyProperty IsFilledProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "IsFilled", typeof (bool));
 		public static readonly DependencyProperty SegmentsProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "Segments", typeof (PathSegmentCollection));
 		public static readonly DependencyProperty StartPointProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "StartPoint", typeof (Point));
 
 		public bool IsClosed {
 			get { return (bool) GetValue (IsClosedProperty); }
 			set { SetValue (IsClosedProperty, value); }
+		}
+
+		public bool IsFilled {
+			get { return (bool) GetValue (IsFilledProperty); }
+			set { SetValue (IsFilledProperty, value); }
 		}
 
 		public PathSegmentCollection Segments {

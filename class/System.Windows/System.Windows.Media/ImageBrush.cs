@@ -31,11 +31,6 @@ namespace System.Windows.Media {
 
 	public sealed partial class ImageBrush : TileBrush {
 
-		public void SetSource (DependencyObject Downloader, string PartName)
-		{
-			NativeMethods.image_brush_set_source (native, Downloader.native, PartName);
-		}
-
 		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed;
 	}
 }

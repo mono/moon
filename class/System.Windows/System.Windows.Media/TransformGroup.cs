@@ -28,6 +28,8 @@
 using Mono;
 namespace System.Windows.Media {
 	public sealed partial class TransformGroup : Transform {
-		
+		public Matrix Value {
+			get { throw new System.NotImplementedException (); }
+		}
 	}
 }

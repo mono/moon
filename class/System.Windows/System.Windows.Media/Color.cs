@@ -28,7 +28,7 @@
 
 namespace System.Windows.Media {
 
-	public struct Color {
+	public struct Color : IFormattable {
 
 		// maybe we should keep the 4 floats value and compute the argb on them
 		// but that would require 4 times the memory
@@ -90,29 +90,15 @@ namespace System.Windows.Media {
 		{
 			return String.Format ("#{0,8:X}", argb);
 		}
-
-		public static Color Add (Color color1, Color color2)
+		
+		public string ToString (IFormatProvider provider)
 		{
-			return (color1 + color2);
+			throw new System.NotImplementedException ();
 		}
 
-		public static Color Multiply (Color color, float coefficient)
+		string IFormattable.ToString (string value, IFormatProvider formatProvider)
 		{
-			return color * coefficient;
-		}
-
-		public static Color operator + (Color color1, Color color2)
-		{
-			return Color.FromArgb ((byte)(color1.A + color2.A), (byte)(color1.R + color2.R), 
-				(byte)(color1.G + color2.G), (byte)(color1.B + color2.B));
-		}
-
-		public static Color operator * (Color color, float coefficient)
-		{
-			return Color.FromArgb ((byte)(color.A * coefficient),
-					       (byte)(color.R * coefficient),
-					       (byte)(color.G * coefficient),
-					       (byte)(color.B * coefficient));
+			throw new System.NotImplementedException ();
 		}
 
 		public static bool operator == (Color color1, Color color2)

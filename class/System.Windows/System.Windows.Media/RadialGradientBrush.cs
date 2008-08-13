@@ -30,6 +30,14 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class RadialGradientBrush : GradientBrush {
-
+		public RadialGradientBrush (Color startColor, Color stopColor)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+		public RadialGradientBrush (GradientStopCollection gradientStops)
+		{
+			throw new System.NotImplementedException ();
+		}
 	}
 }

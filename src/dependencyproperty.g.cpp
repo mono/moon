@@ -34,6 +34,7 @@
 #include "control.h"
 #include "deployment.h"
 #include "frameworkelement.h"
+#include "geometry.h"
 #include "grid.h"
 #include "stackpanel.h"
 #include "style.h"
@@ -256,6 +257,10 @@ dependency_property_g_init (void)
 	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
 	Path::DataProperty = DependencyProperty::Register (Type::PATH, "Data", Type::GEOMETRY);
 	PathFigure::IsClosedProperty = DependencyProperty::Register (Type::PATHFIGURE, "IsClosed", new Value (false));
+#if SL_2_0
+
+	PathFigure::IsFilledProperty = DependencyProperty::Register (Type::PATHFIGURE, "IsFilled", Type::BOOL);
+#endif
 	PathFigure::SegmentsProperty = DependencyProperty::Register (Type::PATHFIGURE, "Segments", Type::PATHSEGMENT_COLLECTION);
 	PathFigure::StartPointProperty = DependencyProperty::Register (Type::PATHFIGURE, "StartPoint", Type::POINT);
 	PathGeometry::FiguresProperty = DependencyProperty::Register (Type::PATHGEOMETRY, "Figures", Type::PATHFIGURE_COLLECTION);
@@ -586,6 +591,9 @@ DependencyProperty *Panel::BackgroundProperty = NULL;
 DependencyProperty *Panel::ChildrenProperty = NULL;
 DependencyProperty *Path::DataProperty = NULL;
 DependencyProperty *PathFigure::IsClosedProperty = NULL;
+#if SL_2_0
+DependencyProperty *PathFigure::IsFilledProperty = NULL;
+#endif
 DependencyProperty *PathFigure::SegmentsProperty = NULL;
 DependencyProperty *PathFigure::StartPointProperty = NULL;
 DependencyProperty *PathGeometry::FiguresProperty = NULL;

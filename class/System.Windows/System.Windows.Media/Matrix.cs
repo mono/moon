@@ -28,7 +28,7 @@
 
 namespace System.Windows.Media {
 
-	public struct Matrix {
+	public struct Matrix : IFormattable {
 
 		private double m_11;
 		private double m_12;
@@ -141,7 +141,7 @@ namespace System.Windows.Media {
 		}
 
 
-		public void SetIdentity ()
+		private void SetIdentity ()
 		{
 			m_11 = 1.0;
 			m_12 = 0.0;
@@ -161,6 +161,11 @@ namespace System.Windows.Media {
 				offset_x.GetHashCode () ^ offset_y.GetHashCode ();
 		}
 		
+		public Point Transform (Point point)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
 		public override string ToString ()
 		{
 			if (IsIdentity)
@@ -168,6 +173,16 @@ namespace System.Windows.Media {
 			return String.Format ("{0},{1},{2},{3},{4},{5}", m_11, m_12, m_21, m_22, offset_x, offset_y);
 		}
 
+		public string ToString (IFormatProvider provider)
+		{
+			throw new System.NotImplementedException ();
+		}
+
+		string IFormattable.ToString (string value, IFormatProvider formatProvider)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
 		// TODO comparing double is problematic, review MS precision
 
 		public override bool Equals (object o)
@@ -180,11 +195,6 @@ namespace System.Windows.Media {
 		public bool Equals (Matrix value)
 		{
 			return (this == value);
-		}
-
-		public static bool Equals (Matrix matrix1, Matrix matrix2)
-		{
-			return (matrix1 == matrix2);
 		}
 
 		public static bool operator == (Matrix matrix1, Matrix matrix2)
