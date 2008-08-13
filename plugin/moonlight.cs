@@ -211,6 +211,7 @@ namespace Moonlight {
 		
 		static void Main ()
 		{
+			Helper.Agclr = typeof (DependencyObject).Assembly;
 			Console.WriteLine ("Running Moonlight.cs, boot instance: {0}", count++);
 			Console.WriteLine ("  mscorlib: {0}", typeof (object).Module.FullyQualifiedName);
 			Console.WriteLine ("  agclr: {0}", typeof (DependencyObject).Module.FullyQualifiedName);
