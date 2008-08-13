@@ -1,3 +1,9 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am: Generate debug info.
+	* mxap.cs: Added another flag, allowing to specify cs files listed in a
+	  sources file.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mxap.cs: Add support for specifying EntryPointType and

@@ -1,5 +1,34 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Makefile, DependencyPropertyAttachedTest.cs,
+	  DependencyPropertyTest.cs, LineGeometryTest.cs, moon-unit.mdp,
+	  ObservableCollectionTest.cs,
+	  PresentationFrameworkCollectionTest.cs, RoutedEventArgsTest.cs,
+	  SetterBaseCollectionTest.cs, SetterTest.cs, SizeTest.cs,
+	  StyleTest.cs, System.Collections.ObjectModel,
+	  System.Collections.ObjectModel/ObservableCollectionTest.cs,
+	  System.Collections.Specialized, System.Windows,
+	  System.Windows.Controls, System.Windows.Controls.Primitives,
+	  System.Windows.Data, System.Windows.Documents, System.Windows.Ink,
+	  System.Windows.Input, System.Windows.Interop,
+	  System.Windows.Markup, System.Windows.Media,
+	  System.Windows.Media.Animation, System.Windows.Media.Imaging,
+	  System.Windows.Media/LineGeometryTest.cs,
+	  System.Windows.Media/VisualTreeHelperTest.cs,
+	  System.Windows.Resources, System.Windows.Shapes,
+	  System.Windows.Threading,
+	  System.Windows/DependencyPropertyAttachedTest.cs,
+	  System.Windows/DependencyPropertyTest.cs,
+	  System.Windows/PresentationFrameworkCollectionTest.cs,
+	  System.Windows/RoutedEventArgsTest.cs,
+	  System.Windows/SetterBaseCollectionTest.cs,
+	  System.Windows/SetterTest.cs, System.Windows/SizeTest.cs,
+	  System.Windows/StyleTest.cs, System.Windows/ThicknessTest.cs,
+	  ThicknessTest.cs, VisualTreeHelperTest.cs: Organized tests into
+	  directories according to their namespace.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependency_properties.html, Makefile, moon-unit.sln, site/ClientBin,
 	  site/dependency_propertiesTestPage.html, site/index.html,
 	  site/tree, tree, tree/i-bottom.gif, tree/index.html,

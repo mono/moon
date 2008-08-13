@@ -20,7 +20,13 @@ namespace Moonlight {
 		private bool generate_manifest = true; 
 		private int result;
 		private string entry_point_type = null;
+		private string cs_sources;
 
+		public string CSSources {
+			get { return cs_sources; }
+			set { cs_sources = value; }
+		}
+		
 		public string EntryPointType {
 			get { return entry_point_type; }
 			set { entry_point_type = value;  }
@@ -260,7 +266,8 @@ namespace Moonlight {
 				{ "include-mdb", v => mxap.IncludeMdb = v != null},
 				{ "application-name=", v => mxap.ApplicationName = v },
 				{ "generate-manifest", v => mxap.GenerateManifest = v != null },
-				{ "entry-point-type=", v => mxap.EntryPointType = v }
+				{ "entry-point-type=", v => mxap.EntryPointType = v },
+				{ "cs-sources=", v => mxap.CSSources = v }
 			};
 
 			List<string> extra = null;
@@ -281,7 +288,11 @@ namespace Moonlight {
 			
 			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (cd, "*.dll"));
 			mxap.XamlFiles.AddRange (Directory.GetFiles (cd, "*.xaml"));
-			mxap.CSharpFiles.AddRange (Directory.GetFiles (cd, "*.cs"));
+			if (mxap.CSSources == null) {
+				mxap.CSharpFiles.AddRange (Directory.GetFiles (cd, "*.cs"));
+			} else {
+				mxap.CSharpFiles.AddRange (File.ReadAllLines (mxap.CSSources));
+			}
 			
 			if (mxap.IncludeMdb)
 				mxap.MdbFiles.AddRange (Directory.GetFiles (cd, "*.mdb"));
