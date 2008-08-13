@@ -119,17 +119,12 @@
 
         function AddTest (testname, status, reason, output)
 	{
-	console.log ("AddTest (" + testname + ", " + status + ", " + reason + ", " + output + ")");
 	    var root = document.getElementById ("testroot");
 	    var names = testname.split ('.');
 	    var test_parent = AddNames (root, names, 0);
 
-	console.log (test_parent);
-
 	    var test = document.createElement ("li");
             test.innerHTML = "<a href=\"javascript:showInfo('" + testname + "')\">" + names[names.length-1] + "</a>";
-
-//	    test.appendChild (document.createElement ("ul"));
 
 	    test_parent.appendChild (test);
 
@@ -157,8 +152,6 @@
 
 	function showInfo (test)
 	{
-	console.log ("showInfo (" + test + ") = { " + Tests[test].Reason + ", " + Tests[test].Output + " }");
-
 	    var testreason = document.getElementById ("testreason");
 	    var testoutput = document.getElementById ("testoutput");
 
@@ -194,7 +187,6 @@
       </ul>
     </div>
 
-    <div >Silverlight test app:</div>
     <div id="silverlightControlHost">
 		<object data="data:application/x-silverlight," type="application/x-silverlight-2-b2" width="20" height="20" name="SLTest">
 			<param name="source" value="dependency_properties.xap"/>
