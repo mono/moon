@@ -744,6 +744,7 @@ namespace System.Windows.Shapes {
 	}
 
 	partial class Shape {
+		protected Shape () : base (NativeMethods.shape_new ()) {}
 		internal Shape (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.SHAPE; }
 	}

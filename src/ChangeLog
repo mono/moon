@@ -1,5 +1,11 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* shape.h: The managed Shape class must be constructable, so make all
+	  pure virtual methods from the native Shape class just virtual.
+	* cbinding.cpp, cbinding.h, type-generated.cpp: Regenerated.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* animation.h, brush.h, cbinding.cpp, cbinding.h, clock.h,
 	  dependencyproperty.g.cpp, frameworkelement.h, geometry.h, panel.h,
 	  text.h, transform.h, type-generated.cpp, usercontrol.h: Added more

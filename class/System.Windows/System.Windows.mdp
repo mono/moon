@@ -160,7 +160,6 @@
     <File name="System.Windows.Shapes/Polyline.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Shapes/Shape.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Shapes/Rectangle.cs" subtype="Code" buildaction="Compile" />
-    <File name="Internal.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Collections.Specialized" subtype="Directory" buildaction="Compile" />
     <File name="System.Collections.ObjectModel" subtype="Directory" buildaction="Compile" />
     <File name="../Consts.cs" subtype="Code" buildaction="Compile" />
@@ -291,11 +290,13 @@
     <File name="System.Windows.Media.Imaging/DownloadProgressEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/StackPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ApplicationInternal.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.ObjectModel/ObservableCollection_T.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Imaging/RenderTargetBitmap.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
   </References>
   <GtkDesignInfo gtkVersion="2.12.2" />
 </Project>

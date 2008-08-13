@@ -26,10 +26,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Windows.Media;
 using Mono;
+using System;
+using System.Windows.Media;
+
 namespace System.Windows.Shapes {
 	public abstract partial class Shape : FrameworkElement {
-
+		public virtual Transform GeometryTransform {
+			get { throw new NotImplementedException (); }
+		}
 	}
 }

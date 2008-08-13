@@ -1,5 +1,9 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyObject.g.cs: Regenerated.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Application.cs, DependencyObject.cs, DependencyObject.g.cs,
 	  Duration.cs, FrameworkElement.cs, GridLength.cs, UIElement.cs:
 	  Changed some parameter names, base types, method signatures, etc to

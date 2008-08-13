@@ -57,7 +57,7 @@ class Shape : public FrameworkElement {
 	bool SetupDashes (cairo_t *cr, double thickness, double offset);
 	bool Fill (cairo_t *cr, bool do_op);
 	void Clip (cairo_t *cr);
-	virtual bool DrawShape (cairo_t *cr, bool do_op) = 0;
+	virtual bool DrawShape (cairo_t *cr, bool do_op) { g_warning ("%s does not implement DrawShape ().", GetTypeName ()); }
 //	virtual bool DrawDegenerateShape (cairo_t *cr, bool do_op) = 0;
 
 	moon_path *path;
@@ -102,6 +102,7 @@ class Shape : public FrameworkElement {
  	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *StrokeThicknessProperty;
 	
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	Shape ();
 	virtual Type::Kind GetObjectType () { return Type::SHAPE; };
 	

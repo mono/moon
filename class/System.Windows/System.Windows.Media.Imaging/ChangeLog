@@ -1,3 +1,7 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* RenderTargetBitmap.cs: Added RenderTargetBitmap.
+
 2008-08-09  Chris Toshok  <toshok@ximian.com>
 
 	* DownloadProgressEventArgs.cs: new stubs.

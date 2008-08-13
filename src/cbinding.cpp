@@ -1262,6 +1262,16 @@ setter_base_collection_new (void)
 
 
 /**
+ * Shape
+ **/
+Shape *
+shape_new (void)
+{
+	return new Shape ();
+}
+
+
+/**
  * SkewTransform
  **/
 SkewTransform *

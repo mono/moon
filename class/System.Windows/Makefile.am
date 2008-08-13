@@ -273,6 +273,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/TimelineGroup.cs		\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapImage.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/DownloadProgressEventArgs.cs	\
+	$(srcdir)/System.Windows.Media.Imaging/RenderTargetBitmap.cs	\
 	$(srcdir)/System.Windows.Resources/StreamResourceInfo.cs		\
 	$(srcdir)/System.Windows.Shapes/Ellipse.cs				\
 	$(srcdir)/System.Windows.Shapes/Line.cs					\

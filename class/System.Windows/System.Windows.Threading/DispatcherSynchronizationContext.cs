@@ -66,5 +66,10 @@ namespace System.Windows.Threading {
 		{
 			throw new NotImplementedException ();
 		}
+		
+		public virtual SynchronizationContext CreateCopy ()
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }

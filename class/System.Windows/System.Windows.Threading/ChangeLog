@@ -1,5 +1,9 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DispatcherSynchronizationContext.cs: Stubbed missing members.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Dispatcher.cs, DispatcherSynchronizationContext.cs: Changed some
 	  parameter names, base types, method signatures, etc to match SL.
 

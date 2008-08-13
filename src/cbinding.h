@@ -645,6 +645,11 @@ SetterBaseCollection *setter_base_collection_new (void);
 #endif
 
 /**
+ * Shape
+ **/
+Shape *shape_new (void);
+
+/**
  * SkewTransform
  **/
 SkewTransform *skew_transform_new (void);
