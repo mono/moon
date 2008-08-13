@@ -13,6 +13,12 @@
   	font-size: 0.8em;
     }
 
+    #testname {
+  	font-size: 0.8em;
+        font-weight: bold;
+        background-color: #ffffff;
+    }
+
     .success {
         color: #00dd00;
     }
@@ -101,14 +107,18 @@
 
             /* create the new node, append it (should really be sorted), and recurse */
 	    var new_parent = document.createElement ("li");
+	    var a_node = document.createElement ("a");
+	    a_node.setAttribute ("href", "#");
 	    var text_node = document.createTextNode (names[level]);
 	    var new_sublist = document.createElement ("ul");
 
 	    addClass (new_parent, "success");
+	    addClass (a_node, "success");
 
 	    new_parent.id = names[level];
 
-	    new_parent.appendChild (text_node);
+	    a_node.appendChild (text_node);
+	    new_parent.appendChild (a_node);
 	    new_parent.appendChild (new_sublist);
 	    parent.appendChild (new_parent);
 
@@ -124,7 +134,7 @@
 	    var test_parent = AddNames (root, names, 0);
 
 	    var test = document.createElement ("li");
-            test.innerHTML = "<a href=\"javascript:showInfo('" + testname + "')\">" + names[names.length-1] + "</a>";
+            test.innerHTML = "<a href=\"javascript:selectTest('" + testname + "')\">" + names[names.length-1] + "</a>";
 
 	    test_parent.appendChild (test);
 
@@ -135,7 +145,9 @@
 	        var node = test.parentNode;
 	        while (node != root) {
 	            removeClass (node, "success");
+	            removeClass (node.childNodes[0], "success");
 	            addClass (node, "failure");
+	            addClass (node.childNodes[0], "failure");
 	            node = node.parentNode;
   	        }
 	    }
@@ -150,11 +162,13 @@
 	    initTree (root);
 	}
 
-	function showInfo (test)
+	function selectTest (test)
 	{
+	    var testname = document.getElementById ("testname");
 	    var testreason = document.getElementById ("testreason");
 	    var testoutput = document.getElementById ("testoutput");
 
+	    testname.innerHTML = test.replace (/\./g, ".&#8203;");
 	    testreason.innerHTML = Tests[test].Reason;
 	    testoutput.innerHTML = Tests[test].Output;
 	}
@@ -167,12 +181,14 @@
 </head>
 
 <body>
-    <div style="position: fixed; top: 20px; right: 10px; width: 50%; height: 300px; border: solid 1px; overflow: auto; background-color:#eeeeee;">
+    <div style="position: fixed; top: 5px; right: 10px; width: 50%;" id="testname">
+    </div>
+    <div style="position: fixed; top: 50px; right: 10px; width: 50%; height: 300px; border: solid 1px; overflow: auto; background-color:#eeeeee;">
       Error:
       <pre id="testreason" class="output">
       </pre>
     </div>
-    <div style="position: fixed; top: 330px; right: 10px; width: 50%; bottom: 20px; border: solid 1px; overflow: auto; background-color:#eeeeee;">
+    <div style="position: fixed; top: 360px; right: 10px; width: 50%; bottom: 20px; border: solid 1px; overflow: auto; background-color:#eeeeee;">
       Output:
       <pre id="testoutput" class="output">
       </pre>
