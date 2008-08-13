@@ -50,6 +50,7 @@ namespace Moonlight {
 				if (application_name == null) {
 					DirectoryInfo di = new DirectoryInfo (Directory.GetCurrentDirectory ());
 					application_name = di.Name;
+					application_name.Replace ("-", "_");
 				}
 
 				return application_name;
