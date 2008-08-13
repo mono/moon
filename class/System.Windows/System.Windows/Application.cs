@@ -186,7 +186,8 @@ namespace System.Windows {
 
 			Type entry_type = startup.GetType (deployment.EntryPointType);
 			if (entry_type == null){
-				Report.Error ("Could not find the startup type {0} on the {1} assembly", entry_type, deployment.EntryPointAssembly);
+				Report.Error ("Could not find the startup type {0} on the {1}",
+					      deployment.EntryPointType, deployment.EntryPointAssembly);
 				return null;
 			}
 
