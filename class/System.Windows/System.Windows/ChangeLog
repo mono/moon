@@ -1,3 +1,9 @@
+2008-08-13  Larry Ewing  <lewing@novell.com>
+
+	* Application.cs: remove the notice about StartupEventArgs.
+
+	* StartupEventArgs.cs: implement the InitParam fetching.
+
 2008-08-13  Chris Toshok  <toshok@ximian.com>
 
 	* Setter.cs: correct the exception in Setter.set_Property, and

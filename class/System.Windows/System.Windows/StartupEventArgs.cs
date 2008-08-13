@@ -26,20 +26,43 @@
 //
 using System.Collections.Generic;
 using System.Security;
+using System.Windows.Interop;
+using System.Runtime.InteropServices;
+using Mono;
 
 namespace System.Windows {
 	public sealed class StartupEventArgs : EventArgs {
+		private Dictionary<string,string> init_params;
 
 		public StartupEventArgs () {}
-
 
 		public IDictionary<string,string> InitParams {
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			get;
+			get {
+				if (init_params == null) {
+					char [] param_separator = new char [] { ',' };
+					char [] value_separator = new char [] { '=' };
+					
+					IntPtr raw = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
+					string param_string = Marshal.PtrToStringAnsi (raw);
+					init_params = new Dictionary<string,string> ();
+					
+					Console.WriteLine ("params = {0}", param_string);
+					foreach (string val in param_string.Split (param_separator)) {
+						string [] kv = val.Split (value_separator);
+						if (kv.Length >= 2) {
+							Console.WriteLine ("adding val {2} key = {0} value = {1}", kv[0], kv[1], val);
+							init_params.Add (kv[0], kv[1]);
+						} else {
+							Console.WriteLine ("not adding val = {0}", val);
+						}
+					}
+				}
 
-			internal set;
+				return init_params;
+			}
 		}
 	}
 }

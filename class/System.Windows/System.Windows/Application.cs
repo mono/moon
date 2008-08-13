@@ -103,6 +103,7 @@ namespace System.Windows {
 		
 		static Application CreateFromXap (IntPtr plugin, IntPtr surface, string xapPath)
 		{			
+
 			if (plugin != IntPtr.Zero)
 				PluginHost.SetPluginHandle (plugin);
 			
@@ -214,10 +215,7 @@ namespace System.Windows {
 			// TODO:
 			// Get the event args to pass to startup
 			if (instance.Startup != null){
-				StartupEventArgs sargs = new StartupEventArgs ();
-
-				Report.Warning ("TODO: Need to pass correct StartupEventArgs");
-				instance.Startup (instance, sargs);
+				instance.Startup (instance, new StartupEventArgs ());
 			}
 
 			return instance;

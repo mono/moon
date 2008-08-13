@@ -425,6 +425,9 @@ namespace Mono {
 
 #region plugin
 		[DllImport("moonplugin")]
+		public extern static IntPtr plugin_instance_get_init_params (IntPtr plugin_handle);
+
+		[DllImport("moonplugin")]
 		public extern static int plugin_instance_get_actual_height (IntPtr plugin_handle);
 
 		[DllImport("moonplugin")]
