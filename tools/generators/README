@@ -33,7 +33,9 @@ The currently understood annotations are:
 	* GeneratePInvoke: Generate a PInvoke for this member (no effect on 
 	  types).
 	
-	* ContentProperty: Jackson knows this one.
+	* ContentProperty: Add a content property name to the type.
+          The content property name should be the name of one of the
+          types DependencyProperties and is used by the XAML parser.
 	
 src/dependencyproperty.g.cpp
 ============================
