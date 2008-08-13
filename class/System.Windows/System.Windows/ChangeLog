@@ -1,3 +1,7 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyProperty.g.cs: Regenerated.
+
 2008-08-13  Larry Ewing  <lewing@novell.com>
 
 	* Application.cs: make Current work in derived cases and implement

@@ -157,6 +157,9 @@ class Generator {
 			TypeInfo parent = field.Parent as TypeInfo;
 			List <FieldInfo> fields;
 			string managed_parent = field.Annotations.GetValue ("ManagedDeclaringType");
+		
+			if (field.Annotations.GetValue ("GenerateManagedDP") == "No")
+				continue;
 			
 			if (managed_parent != null) {
 				parent = all.Children [managed_parent] as TypeInfo;
@@ -167,7 +170,6 @@ class Generator {
 			
 			if (parent == null)
 				throw new Exception (string.Format ("The field '{0}' does not have its parent set.", field.FullName));
-			
 			
 			if (!types.TryGetValue (parent, out fields)) {
 				fields = new List<FieldInfo> ();
@@ -248,6 +250,8 @@ class Generator {
 			
 			// The DP registration
 			foreach (FieldInfo field in fields) {
+				bool conv_int_to_double = field.GetDPManagedPropertyType (all) == "int" && field.GetDPPropertyType (all).Name == "double";
+				
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, field.GetManagedFieldAccess ());
 				text.Append (" static readonly DependencyProperty ");
@@ -257,7 +261,10 @@ class Generator {
 				text.Append (", \"");
 				text.Append (field.Name.Substring (0, field.Name.LastIndexOf ("Property")));
 				text.Append ("\", typeof (");
-				text.Append (field.GetDPManagedPropertyType (all));
+				if (conv_int_to_double)
+					text.Append ("double");
+				else
+					text.Append (field.GetDPManagedPropertyType (all));
 				text.AppendLine ("));");
 			}
 			

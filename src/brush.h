@@ -369,9 +369,9 @@ class ImageBrush : public TileBrush {
 	virtual ~ImageBrush ();
 
  public:
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private */
 	static DependencyProperty *DownloadProgressProperty;
-	/* @PropertyType=string,DefaultValue=\"\" */
+ 	/* @PropertyType=string,DefaultValue=\"\",ManagedPropertyType=ImageSource */
 	static DependencyProperty *ImageSourceProperty;
 	
 	const static int DownloadProgressChangedEvent;

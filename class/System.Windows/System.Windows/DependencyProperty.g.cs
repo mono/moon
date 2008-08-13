@@ -453,8 +453,8 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty IsMutedProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "IsMuted", typeof (bool));
 		internal static readonly DependencyProperty MarkersProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Markers", typeof (TimelineMarkerCollection));
 		public static readonly DependencyProperty NaturalDurationProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalDuration", typeof (Duration));
-		public static readonly DependencyProperty NaturalVideoHeightProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoHeight", typeof (int));
-		public static readonly DependencyProperty NaturalVideoWidthProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (int));
+		public static readonly DependencyProperty NaturalVideoHeightProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoHeight", typeof (double));
+		public static readonly DependencyProperty NaturalVideoWidthProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (double));
 		public static readonly DependencyProperty PositionProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Position", typeof (TimeSpan));
 		public static readonly DependencyProperty VolumeProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Volume", typeof (double));
 
@@ -1017,16 +1017,16 @@ namespace System.Windows.Media {
 	}
 
 	partial class ImageBrush {
-		public static readonly DependencyProperty DownloadProgressProperty = DependencyProperty.Lookup (Kind.IMAGEBRUSH, "DownloadProgress", typeof (double));
-		public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Lookup (Kind.IMAGEBRUSH, "ImageSource", typeof (string));
+		private static readonly DependencyProperty DownloadProgressProperty = DependencyProperty.Lookup (Kind.IMAGEBRUSH, "DownloadProgress", typeof (double));
+		public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Lookup (Kind.IMAGEBRUSH, "ImageSource", typeof (ImageSource));
 
-		public double DownloadProgress {
+		private double DownloadProgress {
 			get { return (double) GetValue (DownloadProgressProperty); }
 			set { SetValue (DownloadProgressProperty, value); }
 		}
 
-		public string ImageSource {
-			get { return (string) GetValue (ImageSourceProperty); }
+		public ImageSource ImageSource {
+			get { return (ImageSource) GetValue (ImageSourceProperty); }
 			set { SetValue (ImageSourceProperty, value); }
 		}
 	}

@@ -1,3 +1,9 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Generator.cs: Add support for excluding single DPs from generation,
+	  and special case int/double DP PropertyType mismatch between 1.0
+	  and 2.0.
+
 2008-08-13  Jackson Harper  <jackson@ximian.com>
 
 	* README: Info on content properties.
