@@ -36,12 +36,14 @@ using System.Net;
 using System.Windows.Interop;
 
 using Mono;
+using Mono.Xaml;
 
 namespace System.Windows.Browser.Net
 {
 	class BrowserHttpWebRequest : HttpWebRequest
 	{
 		IntPtr native;
+		IntPtr downloader;
 		Uri uri;
 		string method = "GET";
 		WebHeaderCollection headers = new WebHeaderCollection ();
@@ -89,8 +91,9 @@ namespace System.Windows.Browser.Net
 			InitializeNativeRequest ();
 
 			async_result = new BrowserHttpWebAsyncResult (callback, state);
-			if (!NativeMethods.browser_http_request_get_async_response (native, OnAsyncResponseAvailable, IntPtr.Zero))
-				throw new InvalidOperationException ();
+
+//			if (!NativeMethods.browser_http_request_get_async_response (native, OnAsyncResponseAvailable, IntPtr.Zero))
+//				throw new InvalidOperationException ();
 
 			return async_result;
 		}
@@ -158,33 +161,34 @@ namespace System.Windows.Browser.Net
 
 			Uri request_uri = uri.IsAbsoluteUri ? uri : GetAbsoluteUri (uri);
 
-			native = NativeMethods.browser_http_request_new (PluginHost.Handle, method, request_uri.AbsoluteUri);
+			downloader = NativeMethods.surface_create_downloader (XamlLoader.SurfaceInDomain);
+			native = NativeMethods.downloader_create_webrequest (downloader, method, request_uri.AbsoluteUri);
 			if (native == IntPtr.Zero)
-				throw new NotSupportedException ("Failed to create unmanaged BrowserHttpRequest object.  unsupported browser.");
+				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
 			foreach (string header in headers.Headers)
-				NativeMethods.browser_http_request_set_header (native, header, headers [header]);
+				NativeMethods.downloader_request_set_http_header (native, header, headers [header]);
 
 			if (request != null && request.Length > 0) {
 				byte [] body = request.ToArray ();
-				NativeMethods.browser_http_request_set_body (native, body, body.Length);
+				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 		}
 
-		public HttpWebResponse GetResponse ()
-		{
-			InitializeNativeRequest ();
-
-			IntPtr resp = NativeMethods.browser_http_request_get_response (native);
-
-			if (resp == IntPtr.Zero)
-				throw new InvalidOperationException ();
-
-			response = new BrowserHttpWebResponse (this, resp);
-			response.Read ();
-
-			return response;
-		}
+//		public HttpWebResponse GetResponse ()
+//		{
+//			InitializeNativeRequest ();
+//
+//			IntPtr resp = NativeMethods.browser_http_request_get_response (native);
+//
+//			if (resp == IntPtr.Zero)
+//				throw new InvalidOperationException ();
+//
+//			response = new BrowserHttpWebResponse (this, resp);
+//			response.Read ();
+//
+//			return response;
+//		}
 
 		public override string ContentType {
 			get { return headers [HttpRequestHeader.ContentType]; }

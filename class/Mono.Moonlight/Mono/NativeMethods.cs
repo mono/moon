@@ -664,7 +664,7 @@ namespace Mono {
 		public extern static void downloader_request_set_http_header (IntPtr doanloader_request, string name, string value);
 
 		[DllImport("moon")]
-		public extern static void downloader_request_set_body (IntPtr downloader_request, IntPtr body, int size);
+		public extern static void downloader_request_set_body (IntPtr downloader_request, byte []body, int size);
 #endregion
 
 		[DllImport ("moon")]
