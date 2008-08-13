@@ -283,7 +283,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeMediaOpened ()
 		{
-			EventHandler h = (EventHandler) events[MediaOpenedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) events[MediaOpenedEvent];
 			if (h != null)
 				h (this, null);
 		}
