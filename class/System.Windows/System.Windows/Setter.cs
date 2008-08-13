@@ -32,8 +32,8 @@ namespace System.Windows {
 
 	public sealed partial class Setter : SetterBase {
 		private static readonly DependencyProperty PropertyNameProperty = DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (string));
-		private static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "DependencyProperty", typeof (DependencyProperty));
-		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
+		public static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "DependencyProperty", typeof (DependencyProperty));
+		private static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
 
 		public Setter (DependencyProperty property, object value)
 		{
@@ -69,7 +69,7 @@ namespace System.Windows {
 			}
 			set {
 				if (value == null)
-					throw new ArgumentNullException ();
+					throw new NullReferenceException ();
 
 				propertySet = true;
 				SetValue (PropertyProperty, value);

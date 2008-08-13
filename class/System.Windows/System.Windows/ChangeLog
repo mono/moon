@@ -1,3 +1,11 @@
+2008-08-13  Chris Toshok  <toshok@ximian.com>
+
+	* Setter.cs: correct the exception in Setter.set_Property, and
+	change the access of our DP's.
+
+	* Style.cs: need to call the internal ctor to get a native handle.
+	Also, use Setters, not a private field.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyProperty.g.cs: Regenerated.

@@ -36,12 +36,10 @@ namespace System.Windows {
 	[ContentPropertyAttribute("Setters", true)]
 	public sealed partial class Style : DependencyObject {
 		private bool isSealed;
-		SetterBaseCollection setters;
-		Type targetType;
 
-		public Style (Type targetType)
+		public Style (Type targetType) : this ()
 		{
-			this.targetType = targetType;
+			TargetType = targetType;
 		}
 
 #if NET_2_1
@@ -50,7 +48,7 @@ namespace System.Windows {
 		public void Seal()
 		{
 			isSealed = true;
-			setters.Seal ();
+			Setters.Seal ();
 		}
 
 		public bool IsSealed {
