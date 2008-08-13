@@ -36,15 +36,15 @@ namespace System.Windows.Media {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public Point Transform (Point p)
+		public Point Transform (Point point)
 		{
 			UnmanagedPoint p1, p2;
 
 			p1 = new UnmanagedPoint ();
 			p2 = new UnmanagedPoint ();
 
-			p1.x = p.X;
-			p1.y = p.Y;
+			p1.x = point.X;
+			p1.y = point.Y;
 
 			NativeMethods.general_transform_transform_point (native, ref p1, ref p2);
 

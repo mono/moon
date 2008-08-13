@@ -28,7 +28,7 @@ using System;
 
 namespace System.Windows.Media.Animation 
 {
-	public sealed partial class PointAnimationUsingKeyFrames : PointAnimation {		
+	public sealed partial class PointAnimationUsingKeyFrames : Timeline {		
 
 	}
 }

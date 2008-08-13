@@ -630,6 +630,16 @@ general_transform_new (void)
 
 
 /**
+ * Geometry
+ **/
+Geometry *
+geometry_new (void)
+{
+	return new Geometry ();
+}
+
+
+/**
  * GeometryCollection
  **/
 GeometryCollection *
@@ -978,6 +988,16 @@ PathGeometry *
 path_geometry_new (void)
 {
 	return new PathGeometry ();
+}
+
+
+/**
+ * PathSegment
+ **/
+PathSegment *
+path_segment_new (void)
+{
+	return new PathSegment ();
 }
 
 
@@ -1382,6 +1402,26 @@ TextBlock *
 text_block_new (void)
 {
 	return new TextBlock ();
+}
+
+
+/**
+ * TileBrush
+ **/
+TileBrush *
+tile_brush_new (void)
+{
+	return new TileBrush ();
+}
+
+
+/**
+ * Timeline
+ **/
+Timeline *
+timeline_new (void)
+{
+	return new Timeline ();
 }
 
 

@@ -28,7 +28,7 @@
 using Mono;
 namespace System.Windows.Media.Animation 
 {
-	public partial class ColorAnimation : Animation 
+	public partial class ColorAnimation : Timeline 
 	{
 	}
 }

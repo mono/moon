@@ -56,6 +56,7 @@ class Geometry : public DependencyObject {
  	/* @PropertyType=Transform */
 	static DependencyProperty *TransformProperty;
 
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	Geometry () : path (NULL) {};
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; };
 
@@ -425,6 +426,9 @@ class PathSegment : public DependencyObject {
 	
 	virtual void Append (moon_path *path) {}
 	virtual int GetPathSize () { return 0; }
+	
+	/* @GenerateCBinding,ManagedAccess=Protected */
+	PathSegment () {}
 };
 
 

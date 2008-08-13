@@ -55,14 +55,14 @@ namespace System.Windows.Interop {
 			}
 		}
 
-		public static bool IsFullScreen {
+		public bool IsFullScreen {
 			get {
 				if (PluginHost.Handle != IntPtr.Zero) {
 					return false;
 				} else
 					return false;
 			}
-
+			[MonoTODO ()]
 			set {
 				// not yet implemented
 			}

@@ -31,9 +31,9 @@ namespace System.Windows.Media {
 
 	public sealed partial class SolidColorBrush : Brush {
 
-		public SolidColorBrush (Color c) : this ()
+		public SolidColorBrush (Color color) : this ()
 		{
-			SetValue (ColorProperty, c);
+			SetValue (ColorProperty, color);
 		}
 
 	}

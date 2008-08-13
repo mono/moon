@@ -43,12 +43,12 @@ namespace System.Windows.Input {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public Point GetPosition (UIElement uiElement)
+		public Point GetPosition (UIElement relativeTo)
 		{
 			double nx;
 			double ny;
 
-			NativeMethods.mouse_event_args_get_position (native, uiElement == null ? IntPtr.Zero : uiElement.native, out nx, out ny);
+			NativeMethods.mouse_event_args_get_position (native, relativeTo == null ? IntPtr.Zero : relativeTo.native, out nx, out ny);
 
 			return new Point (nx, ny);
 		}

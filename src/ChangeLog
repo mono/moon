@@ -1,5 +1,12 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* animation.h, brush.h, cbinding.cpp, cbinding.h, clock.h,
+	  dependencyproperty.g.cpp, frameworkelement.h, geometry.h, panel.h,
+	  text.h, transform.h, type-generated.cpp, usercontrol.h: Added more
+	  annotations to make gui-compare happier.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* control.h, dependencyobject.h, deployment.h, frameworkelement.h,
 	  style.h, template.h, trigger.h, uielement.h: Gui-compare annotation
 	  tweaking.

@@ -42,9 +42,9 @@ namespace System.Windows.Controls {
 			return (double) element.GetValue (Canvas.LeftProperty);
 		}
 		
-		public static void SetLeft (UIElement element, double value)
+		public static void SetLeft (UIElement element, double length)
 		{
-			element.SetValue (Canvas.LeftProperty, value);
+			element.SetValue (Canvas.LeftProperty, length);
 		}
 		
 		public static double GetTop (UIElement element)
@@ -52,9 +52,9 @@ namespace System.Windows.Controls {
 			return (double) element.GetValue (Canvas.TopProperty);
 		}
 		
-		public static void SetTop (UIElement element, double value)
+		public static void SetTop (UIElement element, double length)
 		{
-			element.SetValue (Canvas.TopProperty, value);
+			element.SetValue (Canvas.TopProperty, length);
 		}
 		
 		public static int GetZIndex (UIElement element)

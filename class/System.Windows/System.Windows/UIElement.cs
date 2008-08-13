@@ -59,7 +59,7 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public void Arrange (Rect r)
+		public void Arrange (Rect finalRect)
 		{
 			throw new NotImplementedException ();
 		}
@@ -75,7 +75,7 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public void Measure (Size s)
+		public void Measure (Size availableSize)
 		{
 			throw new NotImplementedException ();
 		}
@@ -99,9 +99,9 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public GeneralTransform TransformToVisual (UIElement el)
+		public GeneralTransform TransformToVisual (UIElement visual)
 		{
-			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, el.native);
+			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, visual.native);
 
 			return (GeneralTransform)DependencyObject.Lookup (Kind.GENERALTRANSFORM, t);
 		}
@@ -110,7 +110,7 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public IEnumerable<UIElement> HitTest (Point p)
+		public IEnumerable<UIElement> HitTest (Point point)
 		{
 			throw new NotImplementedException ();
 		}
@@ -118,7 +118,7 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public IEnumerable<UIElement> HitTest (Rect r)
+		public IEnumerable<UIElement> HitTest (Rect rect)
 		{
 			throw new NotImplementedException ();
 		}

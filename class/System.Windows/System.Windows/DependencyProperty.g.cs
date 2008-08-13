@@ -105,6 +105,7 @@ namespace System.Windows {
 		public static readonly DependencyProperty MinHeightProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinHeight", typeof (double));
 		public static readonly DependencyProperty MinWidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinWidth", typeof (double));
 		internal static readonly DependencyProperty ResourcesProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Resources", typeof (ResourceDictionary));
+		public static readonly DependencyProperty StyleProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Style", typeof (Style));
 		public static readonly DependencyProperty TagProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Tag", typeof (object));
 		internal static readonly DependencyProperty TriggersProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Triggers", typeof (TriggerCollection));
 		public static readonly DependencyProperty VerticalAlignmentProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "VerticalAlignment", typeof (VerticalAlignment));
@@ -173,6 +174,11 @@ namespace System.Windows {
 		public ResourceDictionary Resources {
 			get { return (ResourceDictionary) GetValue (ResourcesProperty); }
 			internal set { SetValue (ResourcesProperty, value); }
+		}
+
+		public Style Style {
+			get { return (Style) GetValue (StyleProperty); }
+			set { SetValue (StyleProperty, value); }
 		}
 
 		public object Tag {
@@ -649,9 +655,9 @@ namespace System.Windows.Controls {
 	}
 
 	partial class UserControl {
-		public static readonly DependencyProperty ContentProperty = DependencyProperty.Lookup (Kind.USERCONTROL, "Content", typeof (UIElement));
+		protected static readonly DependencyProperty ContentProperty = DependencyProperty.Lookup (Kind.USERCONTROL, "Content", typeof (UIElement));
 
-		public UIElement Content {
+		protected UIElement Content {
 			get { return (UIElement) GetValue (ContentProperty); }
 			set { SetValue (ContentProperty, value); }
 		}

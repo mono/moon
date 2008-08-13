@@ -47,6 +47,8 @@ class FrameworkElement : public UIElement {
 	static DependencyProperty *MinHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2 */
 	static DependencyProperty *MinWidthProperty;
+	/* @PropertyType=Managed,Version=2,ManagedPropertyType=Style */ // No idea what the unmanaged property type should be.
+	static DependencyProperty *StyleProperty;
 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2 */
 	static DependencyProperty *VerticalAlignmentProperty;
 

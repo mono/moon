@@ -45,12 +45,12 @@ namespace System.Windows.Threading {
 			throw new NotImplementedException ();
 		}
 
-		public DispatcherOperation BeginInvoke (Action action)
+		public DispatcherOperation BeginInvoke (Action a)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public DispatcherOperation BeginInvoke (Delegate method, object[] args)
+		public DispatcherOperation BeginInvoke (Delegate d, object[] args)
 		{
 			throw new NotImplementedException ();
 		}

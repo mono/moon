@@ -43,23 +43,23 @@ namespace System.Windows {
 			return DepObjectFindName (name);
 		}
 
-		public BindingExpressionBase SetBinding (DependencyProperty property, Binding binding)
+		public BindingExpressionBase SetBinding (DependencyProperty dp, Binding binding)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public override object GetValue (DependencyProperty property)
+		public override object GetValue (DependencyProperty dp)
 		{
 			// XXX reason for the override?  maybe this is
 			// where some portion of databinding is done?
 
-			return base.GetValue (property);
+			return base.GetValue (dp);
 		}
 
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		protected virtual Size MeasureOverride (Size size)
+		protected virtual Size MeasureOverride (Size availableSize)
 		{
 			throw new NotImplementedException ();
 		}
@@ -67,7 +67,7 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		protected virtual Size ArrangeOverride (Size size)
+		protected virtual Size ArrangeOverride (Size finalSize)
 		{
 			throw new NotImplementedException ();
 		}

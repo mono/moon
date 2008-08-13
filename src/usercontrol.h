@@ -32,7 +32,7 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::USERCONTROL; }
 
- 	/* @PropertyType=UIElement */
+ 	/* @PropertyType=UIElement,ManagedAccess=Protected */
 	static DependencyProperty *ContentProperty;
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);

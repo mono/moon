@@ -90,31 +90,31 @@ namespace System.Windows {
 			}
 		}
 		
-		public override bool Equals (object obj)
+		public override bool Equals (object oCompare)
 		{
-			if (obj == null)
+			if (oCompare == null)
 				return false;
 			
-			if (!(obj is GridLength))
+			if (!(oCompare is GridLength))
 				return false;
 			
-			return this == (GridLength) obj;
+			return this == (GridLength) oCompare;
 		}
 		
-		public bool Equals (GridLength obj)
+		public bool Equals (GridLength gridLength)
 		{
-			return this == obj;
+			return this == gridLength;
 		}
 		
-		public static bool operator == (GridLength cr1, GridLength cr2)
+		public static bool operator == (GridLength gl1, GridLength gl2)
 		{
-			return cr1.val == cr2.val &&
-				cr1.type == cr2.type;
+			return gl1.val == gl2.val &&
+				gl1.type == gl2.type;
 		}
 		
-		public static bool operator != (GridLength cr1, GridLength cr2)
+		public static bool operator != (GridLength gl1, GridLength gl2)
 		{
-			return !(cr1 == cr2);
+			return !(gl1 == gl2);
 		}
 		
 		[MonoTODO ("We need a hash code algorithm based on the values in the struct")]

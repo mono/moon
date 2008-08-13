@@ -32,7 +32,7 @@ class GeneralTransform : public DependencyObject {
 	void MaybeUpdateTransform ();
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	GeneralTransform () : need_update (true) { }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual Type::Kind GetObjectType () { return Type::GENERALTRANSFORM; };
@@ -52,7 +52,7 @@ protected:
 	virtual ~Transform () {}
 
 public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	Transform () { }
 
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };

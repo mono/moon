@@ -1,3 +1,8 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Dispatcher.cs, DispatcherSynchronizationContext.cs: Changed some
+	  parameter names, base types, method signatures, etc to match SL.
+
 2008-07-28  Chris Toshok  <toshok@ximian.com>
 
 	* Dispatcher.cs: new stubs.

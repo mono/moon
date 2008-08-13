@@ -33,7 +33,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public abstract partial class DoubleKeyFrame : KeyFrame
+	public abstract partial class DoubleKeyFrame : DependencyObject
 	{		
 	}
 }

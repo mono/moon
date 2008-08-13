@@ -1,3 +1,8 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* MouseEventArgs.cs, StylusPointCollection.cs: Changed some parameter
+	  names, base types, method signatures, etc to match SL.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* StylusInfo.cs, StylusPointCollection.cs: Generate public ctor,

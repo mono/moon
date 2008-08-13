@@ -71,7 +71,7 @@ class Brush : public DependencyObject {
  	/* @PropertyType=bool,Access=Internal */
 	static DependencyProperty *ChangedProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	Brush () { }
 	virtual Type::Kind GetObjectType () { return Type::BRUSH; };
 	
@@ -192,7 +192,7 @@ class GradientBrush : public Brush {
  	/* @PropertyType=GradientSpreadMethod,DefaultValue=GradientSpreadMethodPad */
 	static DependencyProperty *SpreadMethodProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	GradientBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTBRUSH; }
@@ -309,6 +309,9 @@ class TileBrush : public Brush {
 	virtual ~TileBrush () {}
 
  public:
+ 	/* @GenerateCBinding,ManagedAccess=Protected */
+ 	TileBrush () {}
+ 
  	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter */
 	static DependencyProperty *AlignmentXProperty;
  	/* @PropertyType=AlignmentY,DefaultValue=AlignmentYCenter */

@@ -28,7 +28,7 @@
 using Mono;
 namespace System.Windows.Media.Animation 
 {
-	public partial class DoubleAnimation : System.Windows.Media.Animation.Animation 
+	public partial class DoubleAnimation : Timeline
 	{
 	}
 }

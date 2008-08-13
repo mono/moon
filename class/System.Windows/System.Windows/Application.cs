@@ -318,7 +318,7 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPakResourceStreamInfo, Uri resourceUri)
+		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPackageStreamResourceInfo, Uri resourceUri)
 		{
 			throw new NotImplementedException ("GetResourceStream-2");
 		}

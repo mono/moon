@@ -1,4 +1,4 @@
-﻿// Copyright © Microsoft Corporation. 
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -428,7 +428,7 @@ namespace System.Windows.Controls.Primitives
         /// through the Thumb, RepeatButtons, or Keyboard interaction
         /// </summary> 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly", Justification = "Derives from RoutedEventArgs instead of EventArgs")]
-        public event EventHandler<ScrollEventArgs> Scroll;
+        internal event EventHandler<ScrollEventArgs> Scroll;
  
         /// <summary> 
         /// This raises the Scroll event, passing in the scrollEventType

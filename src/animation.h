@@ -431,7 +431,7 @@ class DoubleKeyFrame : public KeyFrame {
  	/* @PropertyType=double,Nullable */
 	static DependencyProperty *ValueProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	DoubleKeyFrame ();
 	virtual Type::Kind GetObjectType() { return Type::DOUBLEKEYFRAME; };
 	
@@ -452,7 +452,7 @@ class ColorKeyFrame : public KeyFrame {
  	/* @PropertyType=Color,Nullable */
 	static DependencyProperty *ValueProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	ColorKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::COLORKEYFRAME; };
 	
@@ -473,7 +473,7 @@ class PointKeyFrame : public KeyFrame {
  	/* @PropertyType=Point,Nullable */
 	static DependencyProperty *ValueProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	PointKeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::POINTKEYFRAME; };
 	

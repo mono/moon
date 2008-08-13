@@ -323,6 +323,11 @@ FrameworkTemplate *framework_template_new (void);
 GeneralTransform *general_transform_new (void);
 
 /**
+ * Geometry
+ **/
+Geometry *geometry_new (void);
+
+/**
  * GeometryCollection
  **/
 GeometryCollection *geometry_collection_new (void);
@@ -498,6 +503,11 @@ PathFigureCollection *path_figure_collection_new (void);
  * PathGeometry
  **/
 PathGeometry *path_geometry_new (void);
+
+/**
+ * PathSegment
+ **/
+PathSegment *path_segment_new (void);
 
 /**
  * PathSegmentCollection
@@ -708,6 +718,16 @@ StylusPointCollection *stylus_point_collection_new (void);
  * TextBlock
  **/
 TextBlock *text_block_new (void);
+
+/**
+ * TileBrush
+ **/
+TileBrush *tile_brush_new (void);
+
+/**
+ * Timeline
+ **/
+Timeline *timeline_new (void);
 
 /**
  * TimelineCollection

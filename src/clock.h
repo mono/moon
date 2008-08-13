@@ -500,6 +500,7 @@ class Timeline : public DependencyObject {
 	virtual ~Timeline () {}
 
  public:
+ 	/* @GenerateCBinding,ManagedAccess=Protected */
 	Timeline ();
 	virtual Type::Kind GetObjectType () { return Type::TIMELINE; };
 

@@ -90,29 +90,29 @@ namespace System.Windows.Media.Animation {
 			}
 		}
 
-		public override bool Equals (object o)
+		public override bool Equals (object value)
 		{
-			if (! (o is RepeatBehavior))
+			if (!(value is RepeatBehavior))
 				return false;
 
-			return Equals (this, (RepeatBehavior) o);
+			return Equals (this, (RepeatBehavior) value);
 		}
 
-		public bool Equals (RepeatBehavior rb)
+		public bool Equals (RepeatBehavior repeatBehavior)
 		{
-			return Equals (this, rb);
+			return Equals (this, repeatBehavior);
 		}
 
-		public static bool Equals (RepeatBehavior ls, RepeatBehavior rs)
+		public static bool Equals (RepeatBehavior repeatBehavior1, RepeatBehavior repeatBehavior2)
 		{
-			if (ls.kind != rs.kind)
+			if (repeatBehavior1.kind != repeatBehavior2.kind)
 				return false;
 
-			switch (ls.kind) {
+			switch (repeatBehavior1.kind) {
 			case COUNT:
-				return ls.count == rs.count;
+				return repeatBehavior1.count == repeatBehavior2.count;
 			case TIMESPAN:
-				return ls.duration == rs.duration;
+				return repeatBehavior1.duration == repeatBehavior2.duration;
 			case FOREVER:
 				return true;
 			default:
@@ -120,14 +120,14 @@ namespace System.Windows.Media.Animation {
 			}
 		}
 
-		public static bool operator == (RepeatBehavior ls, RepeatBehavior rs)
+		public static bool operator == (RepeatBehavior repeatBehavior1, RepeatBehavior repeatBehavior2)
 		{
-			return Equals (ls, rs);
+			return Equals (repeatBehavior1, repeatBehavior2);
 		}
 
-		public static bool operator != (RepeatBehavior ls, RepeatBehavior rs)
+		public static bool operator != (RepeatBehavior repeatBehavior1, RepeatBehavior repeatBehavior2)
 		{
-			return !Equals (ls, rs);
+			return !Equals (repeatBehavior1, repeatBehavior2);
 		}
 
 		public override int GetHashCode ()

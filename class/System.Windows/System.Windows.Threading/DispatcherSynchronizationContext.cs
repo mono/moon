@@ -29,7 +29,7 @@ using System.Threading;
 
 namespace System.Windows.Threading {
 
-	public class DispatcherSynchronizationContext 
+	public class DispatcherSynchronizationContext : System.Threading.SynchronizationContext
 #if notyet
 	: SynchronizationContext
 #endif
@@ -54,7 +54,7 @@ namespace System.Windows.Threading {
 		}
 #endif
 
-		public virtual void Send (SendOrPostCallback cb, object arg)
+		public virtual void Send (SendOrPostCallback d, object state)
 		{
 			throw new NotImplementedException ();
 		}
@@ -62,7 +62,7 @@ namespace System.Windows.Threading {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public virtual void Post (SendOrPostCallback cb, object arg)
+		public virtual void Post (SendOrPostCallback d, object state)
 		{
 			throw new NotImplementedException ();
 		}

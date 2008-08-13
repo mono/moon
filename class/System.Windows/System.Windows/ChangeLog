@@ -1,5 +1,14 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Application.cs, DependencyObject.cs, DependencyObject.g.cs,
+	  Duration.cs, FrameworkElement.cs, GridLength.cs, UIElement.cs:
+	  Changed some parameter names, base types, method signatures, etc to
+	  match SL.
+	* DependencyProperty.g.cs: Changed some parameter names, base types,
+	  method signatures, accessibility, etc to match SL.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DependencyObject.g.cs, DependencyProperty.g.cs, Deployment.cs:
 	  Regenerated.
 

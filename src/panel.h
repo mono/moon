@@ -40,7 +40,7 @@ class Panel : public FrameworkElement {
 	
 	Rect bounds_with_children;
 	
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,ManagedAccess=Protected */
 	Panel ();
 	virtual Type::Kind GetObjectType () { return Type::PANEL; }
 	

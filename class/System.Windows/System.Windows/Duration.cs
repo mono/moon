@@ -77,17 +77,17 @@ namespace System.Windows {
 			return t1.kind == t2.kind;
 		}
 		
-		public override bool Equals (object o)
+		public override bool Equals (object value)
 		{
-			if (!(o is Duration))
+			if (!(value is Duration))
 				return false;
 
-			return Equals (this, (Duration) o);
+			return Equals (this, (Duration) value);
 		}
 		
-		public bool Equals (Duration value)
+		public bool Equals (Duration duration)
 		{
-			return Equals (this, value);
+			return Equals (this, duration);
 		}
 
 		public static int Compare (Duration t1, Duration t2)

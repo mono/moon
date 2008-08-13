@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation
 {
-	public abstract partial class PointKeyFrame : KeyFrame
+	public abstract partial class PointKeyFrame : DependencyObject
 	{		
 	}
 }

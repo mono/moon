@@ -62,7 +62,7 @@ class Inline : public DependencyObject {
 	Brush *foreground;
 	bool autogen;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,ManagedAccess=Protected */
 	Inline ();
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual Value *GetDefaultValue (DependencyProperty *prop);

@@ -33,7 +33,7 @@ using Mono;
 
 namespace System.Windows.Media.Animation {
 
-	public sealed partial class Storyboard : ParallelTimeline {
+	public sealed partial class Storyboard : Timeline {
 		// FIXME For TargetName and TargetProperty
 		// FIXME Exception if setting on running
 		// This check needs to go in native co
@@ -53,9 +53,9 @@ namespace System.Windows.Media.Animation {
 			NativeMethods.storyboard_resume (native);
 		}
 
-		public void Seek (TimeSpan time_span)
+		public void Seek (TimeSpan timespan)
 		{
-			NativeMethods.storyboard_seek (native, time_span.Ticks);
+			NativeMethods.storyboard_seek (native, timespan.Ticks);
 		}
 
 		public void SkipToFill ()
@@ -68,7 +68,10 @@ namespace System.Windows.Media.Animation {
 			NativeMethods.storyboard_stop (native);
 		}
 
-
+		public TimelineCollection Children {
+			get { throw new NotImplementedException (); }
+		}
+		
 		static object CompletedEvent = new object ();
 		public event EventHandler Completed {
 			add {
@@ -83,30 +86,30 @@ namespace System.Windows.Media.Animation {
 			}
 		}
 
-		public void SetTarget (Timeline element, DependencyObject o)
+		public static void SetTarget (Timeline timeline, DependencyObject target)
 		{
 			// FIXME Exception if setting on running
-			NativeMethods.timeline_set_manual_target (native, o.native);
+			NativeMethods.timeline_set_manual_target (timeline.native, target.native);
 		}
 
-		public void SetTargetName (Timeline element, string name)
+		public static void SetTargetName (Timeline element, string name)
 		{
 			// FIXME Exception if setting on running
 			element.SetValue (TargetNameProperty, name);
 		}
 
-		public void SetTargetProperty (Timeline element, PropertyPath path)
+		public static void SetTargetProperty (Timeline element, PropertyPath path)
 		{
 			// FIXME Exception if setting on running
 			element.SetValue (TargetPropertyProperty, path.Path);
 		}
 
-		public string GetTargetName (Timeline element)
+		public static string GetTargetName (Timeline element)
 		{
 			return (string) element.GetValue (TargetNameProperty);
 		}
 
-		public PropertyPath GetTargetProperty (Timeline element)
+		public static PropertyPath GetTargetProperty (Timeline element)
 		{
 			string path = (string) element.GetValue (TargetPropertyProperty);
 			return new PropertyPath (path);

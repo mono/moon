@@ -268,21 +268,21 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public virtual object GetValue (DependencyProperty property)
+		public virtual object GetValue (DependencyProperty dp)
 		{
 			object result = null;
 			
-			if (property == null)
+			if (dp == null)
 				throw new ArgumentNullException ("property");
 			
 			CheckNativeAndThread ();
 			
-			IntPtr val = NativeMethods.dependency_object_get_value (native, Types.TypeToKind (GetType ()), property.Native);
+			IntPtr val = NativeMethods.dependency_object_get_value (native, Types.TypeToKind (GetType ()), dp.Native);
 			if (val != IntPtr.Zero)
-				result = ValueToObject (property.PropertyType, val);
+				result = ValueToObject (dp.PropertyType, val);
 			
-			if (result == null && property.PropertyType.IsValueType)
-				result = Activator.CreateInstance (property.PropertyType);
+			if (result == null && dp.PropertyType.IsValueType)
+				result = Activator.CreateInstance (dp.PropertyType);
 			
 			return result;
 		}
@@ -290,7 +290,7 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public object GetAnimationBaseValue (DependencyProperty property)
+		public object GetAnimationBaseValue (DependencyProperty dp)
 		{
 			throw new System.NotImplementedException ();
 		}
@@ -298,7 +298,7 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public object ReadLocalValue (DependencyProperty property)
+		public object ReadLocalValue (DependencyProperty dp)
 		{
 			throw new System.NotImplementedException ();
 		}
@@ -307,7 +307,7 @@ namespace System.Windows {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public void ClearValue (DependencyProperty property)
+		public void ClearValue (DependencyProperty dp)
 		{
 			throw new System.NotImplementedException ();
 		}
@@ -642,36 +642,36 @@ namespace System.Windows {
 			return value;
 		}
 
-		public void SetValue (DependencyProperty property, object obj)
+		public void SetValue (DependencyProperty dp, object value)
 		{
 			Type object_type;
 			Value v;
 			
-			if (property == null)
+			if (dp == null)
 				throw new ArgumentNullException ("property");
 
 			CheckNativeAndThread ();
 			
-			if (property.DeclaringType != null) {
-				if (property.DeclaringType != GetType () && !property.DeclaringType.IsAssignableFrom (GetType ()))
-					throw new System.ArgumentException (string.Format ("A DependencyProperty registered on type {0} can't be used to set a value on an object of type {1}", property.DeclaringType.FullName, GetType ().FullName));
+			if (dp.DeclaringType != null) {
+				if (dp.DeclaringType != GetType () && !dp.DeclaringType.IsAssignableFrom (GetType ()))
+					throw new System.ArgumentException (string.Format ("A DependencyProperty registered on type {0} can't be used to set a value on an object of type {1}", dp.DeclaringType.FullName, GetType ().FullName));
 			}
 			
-			if (obj == null) {
-				if (property.PropertyType.IsValueType)
-					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", property.Name));
+			if (value == null) {
+				if (dp.PropertyType.IsValueType)
+					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", dp.Name));
 				
-				NativeMethods.dependency_object_set_value (native, property.Native, IntPtr.Zero);
+				NativeMethods.dependency_object_set_value (native, dp.Native, IntPtr.Zero);
 				return;
 			}
 
-			object_type = obj.GetType ();
-			if (!(object_type == property.PropertyType || property.PropertyType.IsAssignableFrom (object_type)))
-				throw new ArgumentException (string.Format ("A DependencyProperty whose property type is {0} can't be set to value whose type is {1}", property.PropertyType.FullName, object_type.FullName));
+			object_type = value.GetType ();
+			if (!(object_type == dp.PropertyType || dp.PropertyType.IsAssignableFrom (object_type)))
+				throw new ArgumentException (string.Format ("A DependencyProperty whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName));
 			
-			v = GetAsValue (obj, property is CustomDependencyProperty);
+			v = GetAsValue (value, dp is CustomDependencyProperty);
 			try {
-				NativeMethods.dependency_object_set_value (native, property.Native, ref v);
+				NativeMethods.dependency_object_set_value (native, dp.Native, ref v);
 			} finally {
 				NativeMethods.value_free_value (ref v);
 			}

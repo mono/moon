@@ -168,7 +168,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class Panel {
-		public Panel () : base (NativeMethods.panel_new ()) {}
+		protected Panel () : base (NativeMethods.panel_new ()) {}
 		internal Panel (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.PANEL; }
 	}
@@ -218,7 +218,7 @@ namespace System.Windows.Documents {
 	}
 
 	partial class Inline {
-		public Inline () : base (NativeMethods.inline_new ()) {}
+		protected Inline () : base (NativeMethods.inline_new ()) {}
 		internal Inline (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.INLINE; }
 	}
@@ -290,7 +290,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class Brush {
-		public Brush () : base (NativeMethods.brush_new ()) {}
+		protected Brush () : base (NativeMethods.brush_new ()) {}
 		internal Brush (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.BRUSH; }
 	}
@@ -308,13 +308,13 @@ namespace System.Windows.Media {
 	}
 
 	partial class GeneralTransform {
-		public GeneralTransform () : base (NativeMethods.general_transform_new ()) {}
+		protected GeneralTransform () : base (NativeMethods.general_transform_new ()) {}
 		internal GeneralTransform (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.GENERALTRANSFORM; }
 	}
 
 	partial class Geometry {
-		public Geometry () : base (NativeMethods.geometry_new ()) {}
+		protected Geometry () : base (NativeMethods.geometry_new ()) {}
 		internal Geometry (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.GEOMETRY; }
 	}
@@ -332,7 +332,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class GradientBrush {
-		public GradientBrush () : base (NativeMethods.gradient_brush_new ()) {}
+		protected GradientBrush () : base (NativeMethods.gradient_brush_new ()) {}
 		internal GradientBrush (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.GRADIENTBRUSH; }
 	}
@@ -398,7 +398,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class PathSegment {
-		public PathSegment () : base (NativeMethods.path_segment_new ()) {}
+		protected PathSegment () : base (NativeMethods.path_segment_new ()) {}
 		internal PathSegment (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.PATHSEGMENT; }
 	}
@@ -476,7 +476,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class TileBrush {
-		public TileBrush () : base (NativeMethods.tile_brush_new ()) {}
+		protected TileBrush () : base (NativeMethods.tile_brush_new ()) {}
 		internal TileBrush (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.TILEBRUSH; }
 	}
@@ -494,7 +494,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class Transform {
-		public Transform () : base (NativeMethods.transform_new ()) {}
+		protected Transform () : base (NativeMethods.transform_new ()) {}
 		internal Transform (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.TRANSFORM; }
 	}
@@ -550,7 +550,7 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class ColorKeyFrame {
-		public ColorKeyFrame () : base (NativeMethods.color_key_frame_new ()) {}
+		protected ColorKeyFrame () : base (NativeMethods.color_key_frame_new ()) {}
 		internal ColorKeyFrame (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.COLORKEYFRAME; }
 	}
@@ -592,7 +592,7 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class DoubleKeyFrame {
-		public DoubleKeyFrame () : base (NativeMethods.double_key_frame_new ()) {}
+		protected DoubleKeyFrame () : base (NativeMethods.double_key_frame_new ()) {}
 		internal DoubleKeyFrame (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.DOUBLEKEYFRAME; }
 	}
@@ -652,7 +652,7 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class PointKeyFrame {
-		public PointKeyFrame () : base (NativeMethods.point_key_frame_new ()) {}
+		protected PointKeyFrame () : base (NativeMethods.point_key_frame_new ()) {}
 		internal PointKeyFrame (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.POINTKEYFRAME; }
 	}
@@ -688,7 +688,7 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class Timeline {
-		public Timeline () : base (NativeMethods.timeline_new ()) {}
+		protected Timeline () : base (NativeMethods.timeline_new ()) {}
 		internal Timeline (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.TIMELINE; }
 	}

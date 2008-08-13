@@ -28,6 +28,6 @@ using System;
 
 namespace System.Windows.Media.Animation 
 {
-	public sealed partial class ColorAnimationUsingKeyFrames : ColorAnimation {
+	public sealed partial class ColorAnimationUsingKeyFrames : Timeline {
 	}
 }

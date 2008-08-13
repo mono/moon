@@ -67,7 +67,7 @@ namespace System.Windows.Input
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public void Add (StylusPointCollection points)
+		public void Add (StylusPointCollection stylusPoints)
 		{
 			throw new NotImplementedException ();
 		}

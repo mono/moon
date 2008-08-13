@@ -46,9 +46,9 @@ namespace System.Windows.Media {
 			}
 		}
 		
-		public override bool Equals (object obj)
+		public override bool Equals (object o)
 		{
-			FontFamily family = obj as FontFamily;
+			FontFamily family = o as FontFamily;
 			
 			if (family == null)
 				return false;
