@@ -164,7 +164,7 @@ namespace System.Windows {
 			case Kind.GRID : return new Grid (raw);
 			case Kind.IMAGEBRUSH: return new ImageBrush (raw);
 			case Kind.IMAGE: return new Image (raw);
-			case Kind.INLINES: return new InlineCollection (raw);
+			case Kind.INLINE_COLLECTION: return new InlineCollection (raw);
 			case Kind.INKPRESENTER: return new InkPresenter (raw);
 			case Kind.KEYSPLINE: return new KeySpline(raw);
 			case Kind.LINEARGRADIENTBRUSH: return new LinearGradientBrush (raw);

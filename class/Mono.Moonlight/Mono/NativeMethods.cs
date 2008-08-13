@@ -302,7 +302,7 @@ namespace Mono {
 		public extern static IntPtr timeline_collection_new ();
 		
 		[DllImport("moon")]
-		public extern static IntPtr inlines_new ();
+		public extern static IntPtr inline_collection_new ();
 		
 		[DllImport("moon")]
 		public extern static IntPtr color_key_frame_collection_new ();

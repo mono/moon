@@ -6,7 +6,7 @@ namespace Mono {
 	public enum Kind {
 
 		INVALID,
-		ANIMATION,
+				ANIMATION,
 		ANIMATIONCLOCK,
 		APPLICATION,// Silverlight 2.0 only
 		ARCSEGMENT,
@@ -71,7 +71,7 @@ namespace Mono {
 		IMAGEERROREVENTARGS,
 		INKPRESENTER,
 		INLINE,
-		INLINES,
+		INLINE_COLLECTION,
 		INT32,
 		INT64,
 		KEYBOARDEVENTARGS,
@@ -186,6 +186,6 @@ namespace Mono {
 		VISUALBRUSH,
 
 		LASTTYPE,
-	
+		
 	}
 }

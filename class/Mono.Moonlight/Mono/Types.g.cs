@@ -85,7 +85,7 @@ namespace Mono {
 				t = agclr.GetType ("System.Windows.Documents.Inline", true); 
 				types.Add (t, new ManagedType (t, Kind.INLINE));
 				t = agclr.GetType ("System.Windows.Documents.InlineCollection", true); 
-				types.Add (t, new ManagedType (t, Kind.INLINES));
+				types.Add (t, new ManagedType (t, Kind.INLINE_COLLECTION));
 				t = agclr.GetType ("System.Windows.Documents.LineBreak", true); 
 				types.Add (t, new ManagedType (t, Kind.LINEBREAK));
 				t = agclr.GetType ("System.Windows.Documents.Run", true); 

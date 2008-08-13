@@ -224,9 +224,9 @@ namespace System.Windows.Documents {
 	}
 
 	partial class InlineCollection {
-		public InlineCollection () : base (NativeMethods.inlines_new ()) {}
+		public InlineCollection () : base (NativeMethods.inline_collection_new ()) {}
 		internal InlineCollection (IntPtr raw) : base (raw) {}
-		internal override Kind GetKind () { return Kind.INLINES; }
+		internal override Kind GetKind () { return Kind.INLINE_COLLECTION; }
 	}
 
 	partial class LineBreak {

@@ -1,3 +1,7 @@
+2008-08-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeMethods.cs: Added inline_collection_new().
+
 2008-08-13  Geoff Norton  <gnorton@novell.com>
 
 	* NativeMethods.cs: Reuse the old html_timer infrastructure for the
