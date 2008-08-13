@@ -1,5 +1,17 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Page.xaml.cs, Page.xaml: Removed, not needed.
+	* App.xaml.cs, Mono.Moonlight.UnitTesting,
+	  Mono.Moonlight.UnitTesting/App.xaml,
+	  Mono.Moonlight.UnitTesting/App.xaml.cs,
+	  Mono.Moonlight.UnitTesting/HtmlOutput.cs,
+	  Mono.Moonlight.UnitTesting/Tester.cs,
+	  Mono.Moonlight.UnitTesting/IOutput.cs, HtmlOutput.cs,
+	  moon-unit.mdp, Tester.cs, IOutput.cs: Moved support files into
+	  their own directory.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile, DependencyPropertyAttachedTest.cs,
 	  DependencyPropertyTest.cs, LineGeometryTest.cs, moon-unit.mdp,
 	  ObservableCollectionTest.cs,

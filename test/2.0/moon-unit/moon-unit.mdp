@@ -14,35 +14,28 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="App.xaml.cs" subtype="Code" buildaction="Compile" dependson="/mono/main/src/ml2/test/2.0/dependency_properties/App.xaml" />
-    <File name="DependencyPropertyAttachedTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="DependencyPropertyTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="HtmlOutput.cs" subtype="Code" buildaction="Compile" />
-    <File name="IOutput.cs" subtype="Code" buildaction="Compile" />
-    <File name="Page.xaml.cs" subtype="Code" buildaction="Compile" dependson="/mono/main/src/ml2/test/2.0/dependency_properties/Page.xaml" />
-    <File name="Tester.cs" subtype="Code" buildaction="Compile" />
-    <File name="ObservableCollectionTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="PresentationFrameworkCollectionTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="SetterBaseCollectionTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="RoutedEventArgsTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="SetterTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="SizeTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="StyleTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="ThicknessTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="VisualTreeHelperTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="App.xaml.g.cs" subtype="Code" buildaction="Compile" />
-    <File name="Page.xaml.g.cs" subtype="Code" buildaction="Compile" />
     <File name="Properties/AppManifest.xml" subtype="Code" buildaction="Nothing" />
-    <File name="App.xaml" subtype="Code" buildaction="Nothing" />
     <File name="AppManifest.xaml" subtype="Code" buildaction="Nothing" />
-    <File name="Page.xaml" subtype="Code" buildaction="Nothing" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="LineGeometryTest.cs" subtype="Code" buildaction="Compile" />
     <File name="moon-unit.mdp" subtype="Code" buildaction="Nothing" />
     <File name="site" subtype="Directory" buildaction="Compile" />
     <File name="site/index.html" subtype="Code" buildaction="Nothing" />
     <File name="site/web.config" subtype="Code" buildaction="Nothing" />
     <File name="Makefile" subtype="Code" buildaction="Nothing" />
+    <File name="System.Collections.ObjectModel/ObservableCollectionTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DependencyPropertyAttachedTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DependencyPropertyTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/PresentationFrameworkCollectionTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/RoutedEventArgsTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/SetterTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/SetterBaseCollectionTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/StyleTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ThicknessTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/SizeTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/LineGeometryTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/VisualTreeHelperTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="App.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="App.xaml.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />

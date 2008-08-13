@@ -25,7 +25,7 @@ namespace dependency_properties
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
-			this.RootVisual = new Canvas ();
+			this.RootVisual = new Page ();
 
 			Tester.Execute (new HtmlOutput ());
 		}
