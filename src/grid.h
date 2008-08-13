@@ -124,10 +124,14 @@ class Grid : public Panel {
  public:
  	/* @PropertyType=gint32,DefaultValue=0,Attached */
 	static DependencyProperty *ColumnProperty;
+	/* @PropertyType=ColumnDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+	static DependencyProperty *ColumnDefinitionsProperty;
  	/* @PropertyType=gint32,DefaultValue=0,Attached */
 	static DependencyProperty *ColumnSpanProperty;
  	/* @PropertyType=gint32,DefaultValue=0,Attached */
 	static DependencyProperty *RowProperty;
+	/* @PropertyType=RowDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+	static DependencyProperty *RowDefinitionsProperty;
  	/* @PropertyType=gint32,DefaultValue=0,Attached */
 	static DependencyProperty *RowSpanProperty;
  	/* @PropertyType=bool,DefaultValue=false,Attached */
@@ -140,16 +144,6 @@ class Grid : public Panel {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	
-	//
-	// Grid: internals, these are not really exposed to the user
-	// as DependencyProperties but as regular properties on the c#
-	// side
-	//
- 	/* @PropertyType=ColumnDefinitionCollection */
-	static DependencyProperty *ColumnDefinitionsProperty;
- 	/* @PropertyType=RowDefinitionCollection */
-	static DependencyProperty *RowDefinitionsProperty;
 };
 
 G_BEGIN_DECLS

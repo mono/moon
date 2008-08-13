@@ -1,5 +1,11 @@
 2008-08-13  Jeffrey Stedfast  <fejj@novell.com>
 
+	* grid.h (class Grid): Make Column/RowDefinitionsProperties
+	internal for managed-side.
+
+	* text.h (class TextBlock): Make InlinesProperty internal for
+	managed-side.
+
 	* panel.h (class Panel): Update ChildrenProperty managed property
 	access.
 

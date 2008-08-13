@@ -411,22 +411,22 @@ namespace System.Windows.Controls {
 	}
 
 	partial class Grid {
-		public static readonly DependencyProperty ColumnDefinitionsProperty = DependencyProperty.Lookup (Kind.GRID, "ColumnDefinitions", typeof (ColumnDefinitionCollection));
+		internal static readonly DependencyProperty ColumnDefinitionsProperty = DependencyProperty.Lookup (Kind.GRID, "ColumnDefinitions", typeof (ColumnDefinitionCollection));
 		public static readonly DependencyProperty ColumnProperty = DependencyProperty.Lookup (Kind.GRID, "Column", typeof (int));
 		public static readonly DependencyProperty ColumnSpanProperty = DependencyProperty.Lookup (Kind.GRID, "ColumnSpan", typeof (int));
-		public static readonly DependencyProperty RowDefinitionsProperty = DependencyProperty.Lookup (Kind.GRID, "RowDefinitions", typeof (RowDefinitionCollection));
+		internal static readonly DependencyProperty RowDefinitionsProperty = DependencyProperty.Lookup (Kind.GRID, "RowDefinitions", typeof (RowDefinitionCollection));
 		public static readonly DependencyProperty RowProperty = DependencyProperty.Lookup (Kind.GRID, "Row", typeof (int));
 		public static readonly DependencyProperty RowSpanProperty = DependencyProperty.Lookup (Kind.GRID, "RowSpan", typeof (int));
 		public static readonly DependencyProperty ShowGridLinesProperty = DependencyProperty.Lookup (Kind.GRID, "ShowGridLines", typeof (bool));
 
 		public ColumnDefinitionCollection ColumnDefinitions {
 			get { return (ColumnDefinitionCollection) GetValue (ColumnDefinitionsProperty); }
-			set { SetValue (ColumnDefinitionsProperty, value); }
+			internal set { SetValue (ColumnDefinitionsProperty, value); }
 		}
 
 		public RowDefinitionCollection RowDefinitions {
 			get { return (RowDefinitionCollection) GetValue (RowDefinitionsProperty); }
-			set { SetValue (RowDefinitionsProperty, value); }
+			internal set { SetValue (RowDefinitionsProperty, value); }
 		}
 	}
 
