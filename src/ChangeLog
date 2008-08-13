@@ -1,5 +1,9 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* shape.h: Fix warning.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* shape.h: The managed Shape class must be constructable, so make all
 	  pure virtual methods from the native Shape class just virtual.
 	* cbinding.cpp, cbinding.h, type-generated.cpp: Regenerated.
