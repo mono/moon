@@ -75,7 +75,7 @@ class Control : public FrameworkElement {
 	FrameworkElement *real_object;
 	Rect bounds_with_children;
 	
-	/* @GenerateCBinding,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }

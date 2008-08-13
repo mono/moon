@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * usercontrol.h:
  *
@@ -25,20 +26,20 @@ G_BEGIN_DECLS
 class UserControl : public Control {
 protected:
 	virtual ~UserControl ();
-
+	
 public:
- 	/* @GenerateCBinding */
-	UserControl ();
-
-	virtual Type::Kind GetObjectType () { return Type::USERCONTROL; }
-
- 	/* @PropertyType=UIElement,ManagedAccess=Protected */
+	/* @PropertyType=UIElement,ManagedAccess=Protected */
 	static DependencyProperty *ContentProperty;
-
+	
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	UserControl ();
+	
+	virtual Type::Kind GetObjectType () { return Type::USERCONTROL; }
+	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 };
 
-UIElement*     user_control_get_content (UserControl *user_control);
+UIElement *user_control_get_content (UserControl *user_control);
 
 G_END_DECLS
 

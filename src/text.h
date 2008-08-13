@@ -62,8 +62,9 @@ class Inline : public DependencyObject {
 	Brush *foreground;
 	bool autogen;
 	
-	/* @GenerateCBinding,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Inline ();
+	
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	virtual Value *GetDefaultValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -98,8 +99,9 @@ class LineBreak : public Inline {
 	virtual ~LineBreak () {}
 
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	LineBreak () { }
+	
 	virtual Type::Kind GetObjectType () { return Type::LINEBREAK; };
 };
 
@@ -114,8 +116,9 @@ class Run : public Inline {
  	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Run () { }
+	
 	virtual Type::Kind GetObjectType () { return Type::RUN; };
 	
 	// property accessors
@@ -212,7 +215,7 @@ class TextBlock : public FrameworkElement {
  	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap */
 	static DependencyProperty *TextWrappingProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	TextBlock ();
 	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; };
 	
@@ -373,7 +376,7 @@ class Glyphs : public FrameworkElement {
  	/* @PropertyType=string */
 	static DependencyProperty *UnicodeStringProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Glyphs ();
 	
 	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };

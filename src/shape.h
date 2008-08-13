@@ -102,9 +102,9 @@ class Shape : public FrameworkElement {
  	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *StrokeThicknessProperty;
 	
-	/* @GenerateCBinding,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Shape ();
-	virtual Type::Kind GetObjectType () { return Type::SHAPE; };
+	virtual Type::Kind GetObjectType () { return Type::SHAPE; }
 	
 	//
 	// Overrides from UIElement.
@@ -234,10 +234,11 @@ class Ellipse : public Shape {
 	virtual Rect ComputeStretchBounds (Rect shape_bounds);
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Ellipse ();
-	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; };
-
+	
+	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; }
+	
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
 
@@ -262,9 +263,10 @@ class Rectangle : public Shape {
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *RadiusYProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Rectangle ();
-	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; };
+	
+	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; }
 	
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
@@ -303,10 +305,7 @@ class Line : public Shape {
 	virtual Rect ComputeShapeBounds (bool logical);
 	
  public:
-	/* @GenerateCBinding */
-	Line () {}
-	
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *X1Property;
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *Y1Property;
@@ -315,7 +314,10 @@ class Line : public Shape {
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *Y2Property;
 	
-	virtual Type::Kind GetObjectType () { return Type::LINE; };
+	/* @GenerateCBinding,GeneratePInvoke */
+	Line () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::LINE; }
 	
 	virtual void BuildPath ();
 	
@@ -370,10 +372,11 @@ class Polygon : public Shape {
  	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 
-	/* @GenerateCBinding */
-	Polygon () { };
-	virtual Type::Kind GetObjectType () { return Type::POLYGON; };
-
+	/* @GenerateCBinding,GeneratePInvoke */
+	Polygon () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::POLYGON; }
+	
 	// Polygon has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
 
@@ -417,9 +420,10 @@ class Polyline : public Shape {
  	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 	
-	/* @GenerateCBinding */
-	Polyline () { };
-	virtual Type::Kind GetObjectType () { return Type::POLYLINE; };
+	/* @GenerateCBinding,GeneratePInvoke */
+	Polyline () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::POLYLINE; }
 	
 	// Polyline has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
@@ -463,9 +467,10 @@ class Path : public Shape {
  	/* @PropertyType=Geometry */
 	static DependencyProperty *DataProperty;
 	
-	/* @GenerateCBinding */
-	Path () {};
-	virtual Type::Kind GetObjectType () { return Type::PATH; };
+	/* @GenerateCBinding,GeneratePInvoke */
+	Path () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::PATH; }
 	
 	// Path has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();

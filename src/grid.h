@@ -57,8 +57,9 @@ class ColumnDefinition : public DependencyObject {
 	// Actual width computed
 	double actual;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	ColumnDefinition () { actual = 0; }
+	
 	virtual Type::Kind GetObjectType () { return Type::COLUMNDEFINITION; }
 };
 
@@ -66,7 +67,7 @@ class ColumnDefinition : public DependencyObject {
 /* @Namespace=System.Windows.Controls */
 class RowDefinition : public DependencyObject {
  protected:
-	virtual ~RowDefinition() { actual = 0; }
+	virtual ~RowDefinition () {}
 	
  public:
  	/* @PropertyType=GridLength */
@@ -79,8 +80,8 @@ class RowDefinition : public DependencyObject {
 	// Actual height computed
 	double actual;
 	
-	/* @GenerateCBinding */
-	RowDefinition () {}
+	/* @GenerateCBinding,GeneratePInvoke */
+	RowDefinition () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::ROWDEFINITION; }
 };
@@ -92,7 +93,7 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
 	virtual ~ColumnDefinitionCollection () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	ColumnDefinitionCollection () {}
 	
 	virtual Type::Kind GetObjectType ()  { return Type::COLUMNDEFINITION_COLLECTION; }
@@ -107,7 +108,7 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 	virtual ~RowDefinitionCollection () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	RowDefinitionCollection () {}
 	
 	virtual Type::Kind GetObjectType ()  { return Type::ROWDEFINITION_COLLECTION; }
@@ -137,8 +138,9 @@ class Grid : public Panel {
  	/* @PropertyType=bool,DefaultValue=false,Attached */
 	static DependencyProperty *ShowGridLinesProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Grid ();
+	
 	virtual Type::Kind GetObjectType () { return Type::GRID; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);

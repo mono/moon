@@ -12,8 +12,6 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-
 #include "enums.h"
 #include "dependencyobject.h"
 #include "collection.h"
@@ -28,8 +26,8 @@ class AssemblyPart : public DependencyObject {
  	/* @PropertyType=string */
 	static DependencyProperty *SourceProperty;
 	
-	/* @GenerateCBinding */
-	AssemblyPart () {}
+	/* @GenerateCBinding,GeneratePInvoke */
+	AssemblyPart () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::ASSEMBLYPART; }
 };
@@ -40,10 +38,10 @@ class AssemblyPart : public DependencyObject {
 class AssemblyPartCollection : public DependencyObjectCollection {
  protected:
 	virtual ~AssemblyPartCollection () {}
-
+	
  public:
-	/* @GenerateCBinding */
-	AssemblyPartCollection () {}
+	/* @GenerateCBinding,GeneratePInvoke */
+	AssemblyPartCollection () { }
 	
 	virtual Type::Kind GetObjectType ()  { return Type::ASSEMBLYPART_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::ASSEMBLYPART; }
@@ -62,7 +60,6 @@ class Deployment : public DependencyObject {
 	virtual ~Deployment () {}
 	
  public:
-	// DependencyProperties
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal */
 	static DependencyProperty *ExternalCallersFromCrossDomainProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
@@ -73,10 +70,10 @@ class Deployment : public DependencyObject {
 	static DependencyProperty *PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	static DependencyProperty *RuntimeVersionProperty;
-
-
-	/* @GenerateCBinding */
-	Deployment () {} 
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Deployment () { }
+	
 	virtual Type::Kind GetObjectType () { return Type::DEPLOYMENT; } 
 };
 
@@ -89,15 +86,13 @@ class Application : public DependencyObject {
 	virtual ~Application () {}
 	
  public:
-
-	/* @GenerateCBinding */
-	Application () {} 
-	virtual Type::Kind GetObjectType () { return Type::APPLICATION; }
-
 	/* @PropertyType=ResourceDictionary */
 	static DependencyProperty *ResourcesProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Application () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::APPLICATION; }
 };
-
-G_END_DECLS
 
 #endif /* __DEPLOYMENT_H__ */

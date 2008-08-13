@@ -43,7 +43,7 @@ class ContentControl : public Control {
  	/* @PropertyType=gint32,DefaultValue=TextWrappingNoWrap */
 	static DependencyProperty *TextWrappingProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	ContentControl () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTENTCONTROL; }

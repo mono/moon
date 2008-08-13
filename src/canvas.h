@@ -33,7 +33,7 @@ class Canvas : public Panel {
  	/* @PropertyType=double,DefaultValue=0.0,Attached */
 	static DependencyProperty *TopProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Canvas ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }

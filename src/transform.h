@@ -32,7 +32,7 @@ class GeneralTransform : public DependencyObject {
 	void MaybeUpdateTransform ();
 	
  public:
-	/* @GenerateCBinding,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	GeneralTransform () : need_update (true) { }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual Type::Kind GetObjectType () { return Type::GENERALTRANSFORM; };
@@ -52,7 +52,7 @@ protected:
 	virtual ~Transform () {}
 
 public:
-	/* @GenerateCBinding,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Transform () { }
 
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };
@@ -66,14 +66,14 @@ class RotateTransform : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *AngleProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *CenterXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *CenterYProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	RotateTransform () { }
 	virtual Type::Kind GetObjectType () { return Type::ROTATETRANSFORM; };
 	
@@ -103,17 +103,17 @@ double rotate_transform_get_center_y (RotateTransform *transform);
 /* @Namespace=System.Windows.Media */
 class TranslateTransform : public Transform {
  protected:
-	virtual ~TranslateTransform () {}
+	virtual ~TranslateTransform () { }
 	virtual void UpdateTransform ();
 	
  public:
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *XProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *YProperty;
 	
-	/* @GenerateCBinding */
-	TranslateTransform () {  }
+	/* @GenerateCBinding,GeneratePInvoke */
+	TranslateTransform () {}
 	virtual Type::Kind GetObjectType () { return Type::TRANSLATETRANSFORM; };
 	
 	//
@@ -140,19 +140,18 @@ class ScaleTransform : public Transform {
 	virtual void UpdateTransform ();
 
  public:
-
-	/* @GenerateCBinding */
-	ScaleTransform () {  }
-	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; };
-
- 	/* @PropertyType=double,DefaultValue=1.0 */
-	static DependencyProperty *ScaleXProperty;
- 	/* @PropertyType=double,DefaultValue=1.0 */
-	static DependencyProperty *ScaleYProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *CenterXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *CenterYProperty;
+	/* @PropertyType=double,DefaultValue=1.0 */
+	static DependencyProperty *ScaleXProperty;
+	/* @PropertyType=double,DefaultValue=1.0 */
+	static DependencyProperty *ScaleYProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	ScaleTransform () { }
+	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; };
 };
 
 void   scale_transform_set_scale_x (ScaleTransform *transform, double scaleX);
@@ -175,19 +174,18 @@ class SkewTransform : public Transform {
 	virtual void UpdateTransform ();
 
  public:
-	
-	/* @GenerateCBinding */
-	SkewTransform () {  }
-	virtual Type::Kind GetObjectType () { return Type::SKEWTRANSFORM; };
-
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *AngleXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *AngleYProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *CenterXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *CenterYProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	SkewTransform () { }
+	virtual Type::Kind GetObjectType () { return Type::SKEWTRANSFORM; };
 };
 
 void   skew_transform_set_angle_x (SkewTransform *transform, double angleX);
@@ -205,27 +203,26 @@ double skew_transform_get_center_y (SkewTransform *transform);
 /* @Namespace=None */ // The managed Matrix is a struct
 /* @ManagedDependencyProperties=Manual */
 class Matrix : public DependencyObject {
-private:
 	cairo_matrix_t matrix;
 
-protected:
+ protected:
 	virtual ~Matrix () {}
 
-public:
- 	/* @PropertyType=double,DefaultValue=1.0 */
+ public:
+	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *M11Property;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *M12Property;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *M21Property;
- 	/* @PropertyType=double,DefaultValue=1.0 */
+	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *M22Property;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OffsetXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OffsetYProperty;
 
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Matrix ();
 	Matrix (cairo_matrix_t *m);
 
@@ -262,11 +259,11 @@ class MatrixTransform : public Transform {
 
 	virtual void UpdateTransform ();
  public:
- 	/* @PropertyType=Matrix */
+	/* @PropertyType=Matrix */
 	static DependencyProperty *MatrixProperty;
 
-	/* @GenerateCBinding */
-	MatrixTransform () {}
+	/* @GenerateCBinding,GeneratePInvoke */
+	MatrixTransform () { }
 	virtual Type::Kind GetObjectType () { return Type::MATRIXTRANSFORM; };
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
@@ -282,8 +279,8 @@ class TransformCollection : public DependencyObjectCollection {
 	virtual ~TransformCollection () {}
 
  public:
-	/* @GenerateCBinding */
-	TransformCollection () {}
+	/* @GenerateCBinding,GeneratePInvoke */
+	TransformCollection () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::TRANSFORM; }
@@ -293,15 +290,16 @@ class TransformCollection : public DependencyObjectCollection {
 /* @ContentProperty="Children" */
 /* @Namespace=System.Windows.Media */
 class TransformGroup : public Transform {
-protected:
+ protected:
 	virtual ~TransformGroup ();
 
 	virtual void UpdateTransform ();
-public:
- 	/* @PropertyType=TransformCollection */
+	
+ public:
+	/* @PropertyType=TransformCollection */
 	static DependencyProperty *ChildrenProperty;
 
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	TransformGroup ();
 	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
 	

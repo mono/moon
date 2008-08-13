@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * style.h:
  *
@@ -21,22 +22,20 @@
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Setters" */
 /* @Namespace=System.Windows */
-class Style : public DependencyObject
-{
-protected:
-	virtual ~Style () {}
-
-public:
-	/* @GenerateCBinding */
-	Style ();
-
-	virtual Type::Kind GetObjectType () { return Type::STYLE; }
-
- 	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public */
+class Style : public DependencyObject {
+ protected:
+	virtual ~Style () { }
+	
+ public:
+	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public */
 	static DependencyProperty *SettersProperty;
-
  	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public */
 	static DependencyProperty *TargetTypeProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Style ();
+	
+	virtual Type::Kind GetObjectType () { return Type::STYLE; }
 };
 
 //
@@ -46,10 +45,10 @@ public:
 /* @Namespace=System.Windows */
 class SetterBaseCollection : public DependencyObjectCollection {
  protected:
-	virtual ~SetterBaseCollection () {};
+	virtual ~SetterBaseCollection () { }
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	SetterBaseCollection ();
 	
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE_COLLECTION; }
@@ -61,15 +60,14 @@ class SetterBaseCollection : public DependencyObjectCollection {
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-class SetterBase : public DependencyObject
-{
-protected:
-	virtual ~SetterBase () {}
-
-public:
-	/* @GenerateCBinding,ManagedAccess=Protected */
+class SetterBase : public DependencyObject {
+ protected:
+	virtual ~SetterBase () { }
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	SetterBase ();
-
+	
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE; }
 };
 
@@ -79,27 +77,22 @@ public:
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 /* @ManagedDependencyProperties=Manual */
-class Setter : public SetterBase
-{
-protected:
-	virtual ~Setter () {}
-
-public:
-	/* @GenerateCBinding */
-	Setter ();
-
-	virtual Type::Kind GetObjectType () { return Type::SETTER; }
-
- 	/* @PropertyType=string */
-	static DependencyProperty *PropertyProperty;
- 	/* @PropertyType=DependencyProperty */
+class Setter : public SetterBase {
+ protected:
+	virtual ~Setter () { }
+	
+ public:
+	/* @PropertyType=DependencyProperty */
 	static DependencyProperty *DependencyPropertyProperty;
- 	/* @PropertyType=Managed */
+	/* @PropertyType=string */
+	static DependencyProperty *PropertyProperty;
+	/* @PropertyType=Managed */
 	static DependencyProperty *ValueProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Setter ();
+	
+	virtual Type::Kind GetObjectType () { return Type::SETTER; }
 };
 
-G_BEGIN_DECLS
-
-G_END_DECLS
-
-#endif // __MOON_TEMPLATE_H__
+#endif /* __MOON_STYLE_H__ */

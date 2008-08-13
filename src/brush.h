@@ -59,20 +59,21 @@ class Brush : public DependencyObject {
 	virtual ~Brush () {}
 
  public:
- 	/* @PropertyType=double,DefaultValue=1.0 */
+	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *OpacityProperty;
- 	/* @PropertyType=Transform */
+	/* @PropertyType=Transform */
 	static DependencyProperty *RelativeTransformProperty;
- 	/* @PropertyType=Transform */
+	/* @PropertyType=Transform */
 	static DependencyProperty *TransformProperty;
 	
 	// internal property - generic brush property change
 	// used only for notifying attachees
- 	/* @PropertyType=bool,Access=Internal */
+	/* @PropertyType=bool,Access=Internal */
 	static DependencyProperty *ChangedProperty;
 	
-	/* @GenerateCBinding,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Brush () { }
+	
 	virtual Type::Kind GetObjectType () { return Type::BRUSH; };
 	
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement);
@@ -84,7 +85,9 @@ class Brush : public DependencyObject {
 	// subclasses override this to deal with their local coloring
 	virtual bool IsOpaque ();
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
 	void SetOpacity (double opacity);
 	double GetOpacity ();
 	
@@ -109,11 +112,11 @@ class SolidColorBrush : public Brush {
 	virtual ~SolidColorBrush () {}
 	
  public:
- 	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
+	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
 	static DependencyProperty *ColorProperty;
 	
-	/* @GenerateCBinding */
-	SolidColorBrush () { };
+	/* @GenerateCBinding,GeneratePInvoke */
+	SolidColorBrush () { }
 	SolidColorBrush (const char *color);
 	
 	virtual Type::Kind GetObjectType () { return Type::SOLIDCOLORBRUSH; };
@@ -123,7 +126,9 @@ class SolidColorBrush : public Brush {
 	
 	virtual bool IsOpaque ();
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
 	void SetColor (Color *color);
 	Color *GetColor ();
 };
@@ -138,8 +143,8 @@ class GradientStopCollection : public DependencyObjectCollection {
 	virtual ~GradientStopCollection () {}
 
  public:
-	/* @GenerateCBinding */
-	GradientStopCollection () {}
+	/* @GenerateCBinding,GeneratePInvoke */
+	GradientStopCollection () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::GRADIENTSTOP; }
@@ -152,16 +157,19 @@ class GradientStop : public DependencyObject {
 	virtual ~GradientStop () {}
 	
  public:
- 	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
+	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
 	static DependencyProperty *ColorProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OffsetProperty;
 	
-	/* @GenerateCBinding */
-	GradientStop () {}
+	/* @GenerateCBinding,GeneratePInvoke */
+	GradientStop () { }
+	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP; }
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
 	void SetColor (Color *color);
 	Color *GetColor ();
 	
@@ -183,16 +191,16 @@ class GradientBrush : public Brush {
 	virtual ~GradientBrush () {}
 
  public:
- 	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation */
+	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation */
 	static DependencyProperty *ColorInterpolationModeProperty;
- 	/* @PropertyType=GradientStopCollection */
+	/* @PropertyType=GradientStopCollection */
 	static DependencyProperty *GradientStopsProperty;
- 	/* @PropertyType=BrushMappingMode,DefaultValue=BrushMappingModeRelativeToBoundingBox */
+	/* @PropertyType=BrushMappingMode,DefaultValue=BrushMappingModeRelativeToBoundingBox */
 	static DependencyProperty *MappingModeProperty;
- 	/* @PropertyType=GradientSpreadMethod,DefaultValue=GradientSpreadMethodPad */
+	/* @PropertyType=GradientSpreadMethod,DefaultValue=GradientSpreadMethodPad */
 	static DependencyProperty *SpreadMethodProperty;
 	
-	/* @GenerateCBinding,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	GradientBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::GRADIENTBRUSH; }
@@ -203,7 +211,9 @@ class GradientBrush : public Brush {
 	
 	virtual bool IsOpaque ();
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
 	void SetColorInterpolationMode (ColorInterpolationMode mode);
 	ColorInterpolationMode GetColorInterpolationMode ();
 	
@@ -233,18 +243,21 @@ class LinearGradientBrush : public GradientBrush {
 	virtual ~LinearGradientBrush () {}
 
  public:
- 	/* @PropertyType=Point */
+	/* @PropertyType=Point */
 	static DependencyProperty *EndPointProperty;
- 	/* @PropertyType=Point */
+	/* @PropertyType=Point */
 	static DependencyProperty *StartPointProperty;
 
-	/* @GenerateCBinding */
-	LinearGradientBrush () {};
+	/* @GenerateCBinding,GeneratePInvoke */
+	LinearGradientBrush () { }
+	
 	virtual Type::Kind GetObjectType () { return Type::LINEARGRADIENTBRUSH; }
 
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
 	void SetEndPoint (Point *point);
 	Point *GetEndPoint ();
 	
@@ -252,7 +265,7 @@ class LinearGradientBrush : public GradientBrush {
 	Point *GetStartPoint ();
 };
 
-Point	*linear_gradient_brush_get_end_point 	(LinearGradientBrush *brush);
+Point	*linear_gradient_brush_get_end_point	(LinearGradientBrush *brush);
 void	linear_gradient_brush_set_end_point	(LinearGradientBrush *brush, Point *point);
 Point	*linear_gradient_brush_get_start_point	(LinearGradientBrush *brush);
 void	linear_gradient_brush_set_start_point	(LinearGradientBrush *brush, Point *point);
@@ -264,22 +277,25 @@ class RadialGradientBrush : public GradientBrush {
 	virtual ~RadialGradientBrush () {}
 
  public:
- 	/* @PropertyType=Point */
+	/* @PropertyType=Point */
 	static DependencyProperty *CenterProperty;
- 	/* @PropertyType=Point */
+	/* @PropertyType=Point */
 	static DependencyProperty *GradientOriginProperty;
- 	/* @PropertyType=double,DefaultValue=0.5 */
+	/* @PropertyType=double,DefaultValue=0.5 */
 	static DependencyProperty *RadiusXProperty;
- 	/* @PropertyType=double,DefaultValue=0.5 */
+	/* @PropertyType=double,DefaultValue=0.5 */
 	static DependencyProperty *RadiusYProperty;
 	
-	/* @GenerateCBinding */
-	RadialGradientBrush () {};
+	/* @GenerateCBinding,GeneratePInvoke */
+	RadialGradientBrush () { }
+	
 	virtual Type::Kind GetObjectType () { return Type::RADIALGRADIENTBRUSH; }
 	
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
 	void SetCenter (Point *center);
 	Point *GetCenter ();
 	
@@ -309,19 +325,21 @@ class TileBrush : public Brush {
 	virtual ~TileBrush () {}
 
  public:
- 	/* @GenerateCBinding,ManagedAccess=Protected */
- 	TileBrush () {}
- 
- 	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter */
+	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter */
 	static DependencyProperty *AlignmentXProperty;
- 	/* @PropertyType=AlignmentY,DefaultValue=AlignmentYCenter */
+	/* @PropertyType=AlignmentY,DefaultValue=AlignmentYCenter */
 	static DependencyProperty *AlignmentYProperty;
- 	/* @PropertyType=Stretch,DefaultValue=StretchFill */
+	/* @PropertyType=Stretch,DefaultValue=StretchFill */
 	static DependencyProperty *StretchProperty;
 	
-	virtual Type::Kind GetObjectType () { return Type::TILEBRUSH; }
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	TileBrush () { }
 	
-	// property accessors
+	virtual Type::Kind GetObjectType () { return Type::TILEBRUSH; }
+
+	//
+	// Property Accessors
+	//
 	void SetAlignmentX (AlignmentX alignment);
 	AlignmentX GetAlignmentX ();
 	
@@ -344,22 +362,22 @@ void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 class ImageBrush : public TileBrush {
 	static void image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
-
+	
 	Image *image;
-
+	
  protected:
 	virtual ~ImageBrush ();
 
  public:
- 	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *DownloadProgressProperty;
- 	/* @PropertyType=string,DefaultValue=\"\" */
+	/* @PropertyType=string,DefaultValue=\"\" */
 	static DependencyProperty *ImageSourceProperty;
 	
 	const static int DownloadProgressChangedEvent;
 	const static int ImageFailedEvent;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	ImageBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGEBRUSH; }
@@ -371,7 +389,9 @@ class ImageBrush : public TileBrush {
 	
 	virtual bool IsOpaque ();
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
 	void SetDownloadProgress (double progress);
 	double GetDownloadProgress ();
 	
@@ -381,7 +401,7 @@ class ImageBrush : public TileBrush {
 
 double	image_brush_get_download_progress	(ImageBrush *brush);
 void	image_brush_set_download_progress	(ImageBrush *brush, double progress);
-const char *image_brush_get_image_source       	(ImageBrush *brush);
+const char *image_brush_get_image_source      	(ImageBrush *brush);
 void	image_brush_set_image_source		(ImageBrush *brush, const char *source);
 void	image_brush_set_source			(ImageBrush *brush, Downloader *downloader, const char *PartName);
 cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int height);
@@ -390,15 +410,15 @@ cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int hei
 /* @Namespace=System.Windows.Media */
 class VideoBrush : public TileBrush {
 	MediaElement *media;
-
+	
  protected:
 	virtual ~VideoBrush ();
-
+	
  public:
- 	/* @PropertyType=string,DefaultValue=\"\" */
+	/* @PropertyType=string,DefaultValue=\"\" */
 	static DependencyProperty *SourceNameProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	VideoBrush ();
 	
 	virtual Type::Kind GetObjectType () { return Type::VIDEOBRUSH; }
@@ -409,7 +429,9 @@ class VideoBrush : public TileBrush {
 
 	virtual bool IsOpaque ();
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
 	void SetSourceName (const char *name);
 	const char *GetSourceName ();
 };
@@ -429,12 +451,12 @@ class VisualBrush : public TileBrush {
 	virtual ~VisualBrush () {}
 
  public:
- 	/* @PropertyType=UIElement */
+	/* @PropertyType=UIElement */
 	static DependencyProperty *VisualProperty;
-
- 	/* @GenerateCBinding */
-	VisualBrush () { };
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	VisualBrush () { }
+	
 	virtual Type::Kind GetObjectType () { return Type::VISUALBRUSH; };
 
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
@@ -442,6 +464,9 @@ class VisualBrush : public TileBrush {
 
 	virtual bool IsOpaque ();
 	
+	//
+	// Property Accessors
+	//
 	void SetVisual (UIElement *visual);
 	UIElement *GetVisual ();
 };

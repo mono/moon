@@ -1,5 +1,9 @@
 2008-08-13  Jeffrey Stedfast  <fejj@novell.com>
 
+	* *.h: Added GeneratePInvoke attribute to each ctor
+
+2008-08-13  Jeffrey Stedfast  <fejj@novell.com>
+
 	* text.cpp: s/Inlines/InlineCollection/g
 
 	* xaml.cpp: s/Inlines/InlineCollection/g

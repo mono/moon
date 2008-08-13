@@ -264,13 +264,6 @@ MediaBase::ComputeBounds ()
 }
 
 
-
-MediaBase *
-media_base_new (void)
-{
-	return new MediaBase ();
-}
-
 const char *
 media_base_get_source (MediaBase *media)
 {

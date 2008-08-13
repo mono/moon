@@ -38,7 +38,7 @@ class StylusInfo : public DependencyObject {
 	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *IsInvertedProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	StylusInfo () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSINFO; };
@@ -65,7 +65,7 @@ class StylusPoint : public DependencyObject {
 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *YProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPoint () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT; };
@@ -89,7 +89,7 @@ class StylusPointCollection : public DependencyObjectCollection {
 	virtual ~StylusPointCollection () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPointCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT_COLLECTION; }
@@ -118,7 +118,7 @@ class DrawingAttributes : public DependencyObject {
 	/* @PropertyType=double,DefaultValue=3.0 */
 	static DependencyProperty *WidthProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	DrawingAttributes () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::DRAWINGATTRIBUTES; };
@@ -165,7 +165,7 @@ class Stroke : public DependencyObject {
 	/* @PropertyType=StylusPointCollection */
 	static DependencyProperty *StylusPointsProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Stroke ();
 
 	virtual Type::Kind GetObjectType () { return Type::STROKE; };
@@ -198,8 +198,9 @@ class StrokeCollection : public DependencyObjectCollection {
 	virtual ~StrokeCollection () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	StrokeCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STROKE; }
 	
@@ -222,7 +223,7 @@ class InkPresenter : public Canvas {
 	/* @PropertyType=StrokeCollection */
 	static DependencyProperty *StrokesProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	InkPresenter ();
 	
 	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };

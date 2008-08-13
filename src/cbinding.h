@@ -44,18 +44,21 @@ G_BEGIN_DECLS
 /**
  * Application
  **/
+/* @GeneratePInvoke */
 Application *application_new (void);
 #endif
 
 /**
  * ArcSegment
  **/
+/* @GeneratePInvoke */
 ArcSegment *arc_segment_new (void);
 
 #if SL_2_0
 /**
  * AssemblyPart
  **/
+/* @GeneratePInvoke */
 AssemblyPart *assembly_part_new (void);
 #endif
 
@@ -63,27 +66,32 @@ AssemblyPart *assembly_part_new (void);
 /**
  * AssemblyPartCollection
  **/
+/* @GeneratePInvoke */
 AssemblyPartCollection *assembly_part_collection_new (void);
 #endif
 
 /**
  * BeginStoryboard
  **/
+/* @GeneratePInvoke */
 BeginStoryboard *begin_storyboard_new (void);
 
 /**
  * BezierSegment
  **/
+/* @GeneratePInvoke */
 BezierSegment *bezier_segment_new (void);
 
 /**
  * Brush
  **/
+/* @GeneratePInvoke */
 Brush *brush_new (void);
 
 /**
  * Canvas
  **/
+/* @GeneratePInvoke */
 Canvas *canvas_new (void);
 
 /**
@@ -101,6 +109,9 @@ bool collection_contains (Collection *instance, Value *value);
 /* @GeneratePInvoke */
 int collection_get_count (Collection *instance);
 
+/* @GeneratePInvoke */
+Type::Kind collection_get_element_type (Collection *instance);
+
 #if SL_2_0
 /* @GeneratePInvoke */
 Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
@@ -115,8 +126,6 @@ bool collection_insert (Collection *instance, int index, Value *value);
 /* @GeneratePInvoke */
 bool collection_remove (Collection *instance, Value *value);
 
-bool collection_remove_at (Collection *instance, int index);
-
 #if SL_2_0
 /* @GeneratePInvoke */
 bool collection_remove_at_with_error (Collection *instance, int index, MoonError *error);
@@ -130,27 +139,32 @@ bool collection_set_value_at_with_error (Collection *instance, int index, Value 
 /**
  * ColorAnimation
  **/
+/* @GeneratePInvoke */
 ColorAnimation *color_animation_new (void);
 
 /**
  * ColorAnimationUsingKeyFrames
  **/
+/* @GeneratePInvoke */
 ColorAnimationUsingKeyFrames *color_animation_using_key_frames_new (void);
 
 /**
  * ColorKeyFrame
  **/
+/* @GeneratePInvoke */
 ColorKeyFrame *color_key_frame_new (void);
 
 /**
  * ColorKeyFrameCollection
  **/
+/* @GeneratePInvoke */
 ColorKeyFrameCollection *color_key_frame_collection_new (void);
 
 #if SL_2_0
 /**
  * ColumnDefinition
  **/
+/* @GeneratePInvoke */
 ColumnDefinition *column_definition_new (void);
 #endif
 
@@ -158,6 +172,7 @@ ColumnDefinition *column_definition_new (void);
 /**
  * ColumnDefinitionCollection
  **/
+/* @GeneratePInvoke */
 ColumnDefinitionCollection *column_definition_collection_new (void);
 #endif
 
@@ -165,6 +180,7 @@ ColumnDefinitionCollection *column_definition_collection_new (void);
 /**
  * ContentControl
  **/
+/* @GeneratePInvoke */
 ContentControl *content_control_new (void);
 #endif
 
@@ -172,6 +188,7 @@ ContentControl *content_control_new (void);
 /**
  * Control
  **/
+/* @GeneratePInvoke */
 Control *control_new (void);
 #endif
 
@@ -179,6 +196,7 @@ Control *control_new (void);
 /**
  * ControlTemplate
  **/
+/* @GeneratePInvoke */
 ControlTemplate *control_template_new (void);
 #endif
 
@@ -214,6 +232,7 @@ Value *dependency_object_get_value_with_error (DependencyObject *instance, Types
 /**
  * DependencyObjectCollection
  **/
+/* @GeneratePInvoke */
 DependencyObjectCollection *dependency_object_collection_new (void);
 
 /**
@@ -247,17 +266,20 @@ DependencyProperty *dependency_property_register_managed_property (Types *additi
 /**
  * Deployment
  **/
+/* @GeneratePInvoke */
 Deployment *deployment_new (void);
 #endif
 
 /**
  * DiscreteColorKeyFrame
  **/
+/* @GeneratePInvoke */
 DiscreteColorKeyFrame *discrete_color_key_frame_new (void);
 
 /**
  * DiscreteDoubleKeyFrame
  **/
+/* @GeneratePInvoke */
 DiscreteDoubleKeyFrame *discrete_double_key_frame_new (void);
 
 #if SL_2_0
@@ -271,31 +293,37 @@ DiscreteObjectKeyFrame *discrete_object_key_frame_new (void);
 /**
  * DiscretePointKeyFrame
  **/
+/* @GeneratePInvoke */
 DiscretePointKeyFrame *discrete_point_key_frame_new (void);
 
 /**
  * DoubleAnimation
  **/
+/* @GeneratePInvoke */
 DoubleAnimation *double_animation_new (void);
 
 /**
  * DoubleAnimationUsingKeyFrames
  **/
+/* @GeneratePInvoke */
 DoubleAnimationUsingKeyFrames *double_animation_using_key_frames_new (void);
 
 /**
  * DoubleCollection
  **/
+/* @GeneratePInvoke */
 DoubleCollection *double_collection_new (void);
 
 /**
  * DoubleKeyFrame
  **/
+/* @GeneratePInvoke */
 DoubleKeyFrame *double_key_frame_new (void);
 
 /**
  * DoubleKeyFrameCollection
  **/
+/* @GeneratePInvoke */
 DoubleKeyFrameCollection *double_key_frame_collection_new (void);
 
 /**
@@ -306,185 +334,227 @@ Downloader *downloader_new (void);
 /**
  * DrawingAttributes
  **/
+/* @GeneratePInvoke */
 DrawingAttributes *drawing_attributes_new (void);
 
 /**
  * Ellipse
  **/
+/* @GeneratePInvoke */
 Ellipse *ellipse_new (void);
 
 /**
  * EllipseGeometry
  **/
+/* @GeneratePInvoke */
 EllipseGeometry *ellipse_geometry_new (void);
 
 /**
  * EventTrigger
  **/
+/* @GeneratePInvoke */
 EventTrigger *event_trigger_new (void);
 
 /**
  * FrameworkElement
  **/
+/* @GeneratePInvoke */
 FrameworkElement *framework_element_new (void);
 
 #if SL_2_0
 /**
  * FrameworkTemplate
  **/
+/* @GeneratePInvoke */
 FrameworkTemplate *framework_template_new (void);
 #endif
 
 /**
  * GeneralTransform
  **/
+/* @GeneratePInvoke */
 GeneralTransform *general_transform_new (void);
 
 /**
  * Geometry
  **/
+/* @GeneratePInvoke */
 Geometry *geometry_new (void);
 
 /**
  * GeometryCollection
  **/
+/* @GeneratePInvoke */
 GeometryCollection *geometry_collection_new (void);
 
 /**
  * GeometryGroup
  **/
+/* @GeneratePInvoke */
 GeometryGroup *geometry_group_new (void);
 
 /**
  * Glyphs
  **/
+/* @GeneratePInvoke */
 Glyphs *glyphs_new (void);
 
 /**
  * GradientBrush
  **/
+/* @GeneratePInvoke */
 GradientBrush *gradient_brush_new (void);
 
 /**
  * GradientStop
  **/
+/* @GeneratePInvoke */
 GradientStop *gradient_stop_new (void);
 
 /**
  * GradientStopCollection
  **/
+/* @GeneratePInvoke */
 GradientStopCollection *gradient_stop_collection_new (void);
 
 #if SL_2_0
 /**
  * Grid
  **/
+/* @GeneratePInvoke */
 Grid *grid_new (void);
 #endif
 
 /**
  * Image
  **/
+/* @GeneratePInvoke */
 Image *image_new (void);
 
 /**
  * ImageBrush
  **/
+/* @GeneratePInvoke */
 ImageBrush *image_brush_new (void);
 
 /**
  * InkPresenter
  **/
+/* @GeneratePInvoke */
 InkPresenter *ink_presenter_new (void);
 
 /**
  * Inline
  **/
+/* @GeneratePInvoke */
 Inline *inline_new (void);
 
 /**
  * InlineCollection
  **/
+/* @GeneratePInvoke */
 InlineCollection *inline_collection_new (void);
 
 /**
  * KeyFrame
  **/
+/* @GeneratePInvoke */
 KeyFrame *key_frame_new (void);
 
 /**
  * KeyFrameCollection
  **/
+/* @GeneratePInvoke */
 KeyFrameCollection *key_frame_collection_new (void);
 
 /**
  * KeySpline
  **/
+/* @GeneratePInvoke */
 KeySpline *key_spline_new (void);
 
 /**
  * Line
  **/
+/* @GeneratePInvoke */
 Line *line_new (void);
 
 /**
  * LinearColorKeyFrame
  **/
+/* @GeneratePInvoke */
 LinearColorKeyFrame *linear_color_key_frame_new (void);
 
 /**
  * LinearDoubleKeyFrame
  **/
+/* @GeneratePInvoke */
 LinearDoubleKeyFrame *linear_double_key_frame_new (void);
 
 /**
  * LinearGradientBrush
  **/
+/* @GeneratePInvoke */
 LinearGradientBrush *linear_gradient_brush_new (void);
 
 /**
  * LinearPointKeyFrame
  **/
+/* @GeneratePInvoke */
 LinearPointKeyFrame *linear_point_key_frame_new (void);
 
 /**
  * LineBreak
  **/
+/* @GeneratePInvoke */
 LineBreak *line_break_new (void);
 
 /**
  * LineGeometry
  **/
+/* @GeneratePInvoke */
 LineGeometry *line_geometry_new (void);
 
 /**
  * LineSegment
  **/
+/* @GeneratePInvoke */
 LineSegment *line_segment_new (void);
 
 /**
  * Matrix
  **/
+/* @GeneratePInvoke */
 Matrix *matrix_new (void);
 
 /**
  * MatrixTransform
  **/
+/* @GeneratePInvoke */
 MatrixTransform *matrix_transform_new (void);
 
 /**
  * MediaAttribute
  **/
+/* @GeneratePInvoke */
 MediaAttribute *media_attribute_new (void);
 
 /**
  * MediaAttributeCollection
  **/
+/* @GeneratePInvoke */
 MediaAttributeCollection *media_attribute_collection_new (void);
+
+/**
+ * MediaBase
+ **/
+/* @GeneratePInvoke */
+MediaBase *media_base_new (void);
 
 /**
  * MediaElement
  **/
+/* @GeneratePInvoke */
 MediaElement *media_element_new (void);
 
 /**
@@ -527,121 +597,145 @@ ObjectKeyFrameCollection *object_key_frame_collection_new (void);
 /**
  * Panel
  **/
+/* @GeneratePInvoke */
 Panel *panel_new (void);
 
 /**
  * ParallelTimeline
  **/
+/* @GeneratePInvoke */
 ParallelTimeline *parallel_timeline_new (void);
 
 /**
  * Path
  **/
+/* @GeneratePInvoke */
 Path *path_new (void);
 
 /**
  * PathFigure
  **/
+/* @GeneratePInvoke */
 PathFigure *path_figure_new (void);
 
 /**
  * PathFigureCollection
  **/
+/* @GeneratePInvoke */
 PathFigureCollection *path_figure_collection_new (void);
 
 /**
  * PathGeometry
  **/
+/* @GeneratePInvoke */
 PathGeometry *path_geometry_new (void);
 
 /**
  * PathSegment
  **/
+/* @GeneratePInvoke */
 PathSegment *path_segment_new (void);
 
 /**
  * PathSegmentCollection
  **/
+/* @GeneratePInvoke */
 PathSegmentCollection *path_segment_collection_new (void);
 
 /**
  * PointAnimation
  **/
+/* @GeneratePInvoke */
 PointAnimation *point_animation_new (void);
 
 /**
  * PointAnimationUsingKeyFrames
  **/
+/* @GeneratePInvoke */
 PointAnimationUsingKeyFrames *point_animation_using_key_frames_new (void);
 
 /**
  * PointCollection
  **/
+/* @GeneratePInvoke */
 PointCollection *point_collection_new (void);
 
 /**
  * PointKeyFrame
  **/
+/* @GeneratePInvoke */
 PointKeyFrame *point_key_frame_new (void);
 
 /**
  * PointKeyFrameCollection
  **/
+/* @GeneratePInvoke */
 PointKeyFrameCollection *point_key_frame_collection_new (void);
 
 /**
  * PolyBezierSegment
  **/
+/* @GeneratePInvoke */
 PolyBezierSegment *poly_bezier_segment_new (void);
 
 /**
  * Polygon
  **/
+/* @GeneratePInvoke */
 Polygon *polygon_new (void);
 
 /**
  * Polyline
  **/
+/* @GeneratePInvoke */
 Polyline *polyline_new (void);
 
 /**
  * PolyLineSegment
  **/
+/* @GeneratePInvoke */
 PolyLineSegment *poly_line_segment_new (void);
 
 /**
  * PolyQuadraticBezierSegment
  **/
+/* @GeneratePInvoke */
 PolyQuadraticBezierSegment *poly_quadratic_bezier_segment_new (void);
 
 /**
  * QuadraticBezierSegment
  **/
+/* @GeneratePInvoke */
 QuadraticBezierSegment *quadratic_bezier_segment_new (void);
 
 /**
  * RadialGradientBrush
  **/
+/* @GeneratePInvoke */
 RadialGradientBrush *radial_gradient_brush_new (void);
 
 /**
  * Rectangle
  **/
+/* @GeneratePInvoke */
 Rectangle *rectangle_new (void);
 
 /**
  * RectangleGeometry
  **/
+/* @GeneratePInvoke */
 RectangleGeometry *rectangle_geometry_new (void);
 
 /**
  * ResourceDictionary
  **/
+/* @GeneratePInvoke */
 ResourceDictionary *resource_dictionary_new (void);
 
 /**
  * RotateTransform
  **/
+/* @GeneratePInvoke */
 RotateTransform *rotate_transform_new (void);
 
 /**
@@ -653,6 +747,7 @@ RoutedEventArgs *routed_event_args_new (void);
 /**
  * RowDefinition
  **/
+/* @GeneratePInvoke */
 RowDefinition *row_definition_new (void);
 #endif
 
@@ -660,23 +755,27 @@ RowDefinition *row_definition_new (void);
 /**
  * RowDefinitionCollection
  **/
+/* @GeneratePInvoke */
 RowDefinitionCollection *row_definition_collection_new (void);
 #endif
 
 /**
  * Run
  **/
+/* @GeneratePInvoke */
 Run *run_new (void);
 
 /**
  * ScaleTransform
  **/
+/* @GeneratePInvoke */
 ScaleTransform *scale_transform_new (void);
 
 #if SL_2_0
 /**
  * Setter
  **/
+/* @GeneratePInvoke */
 Setter *setter_new (void);
 #endif
 
@@ -684,6 +783,7 @@ Setter *setter_new (void);
 /**
  * SetterBase
  **/
+/* @GeneratePInvoke */
 SetterBase *setter_base_new (void);
 #endif
 
@@ -691,37 +791,44 @@ SetterBase *setter_base_new (void);
 /**
  * SetterBaseCollection
  **/
+/* @GeneratePInvoke */
 SetterBaseCollection *setter_base_collection_new (void);
 #endif
 
 /**
  * Shape
  **/
+/* @GeneratePInvoke */
 Shape *shape_new (void);
 
 /**
  * SkewTransform
  **/
+/* @GeneratePInvoke */
 SkewTransform *skew_transform_new (void);
 
 /**
  * SolidColorBrush
  **/
+/* @GeneratePInvoke */
 SolidColorBrush *solid_color_brush_new (void);
 
 /**
  * SplineColorKeyFrame
  **/
+/* @GeneratePInvoke */
 SplineColorKeyFrame *spline_color_key_frame_new (void);
 
 /**
  * SplineDoubleKeyFrame
  **/
+/* @GeneratePInvoke */
 SplineDoubleKeyFrame *spline_double_key_frame_new (void);
 
 /**
  * SplinePointKeyFrame
  **/
+/* @GeneratePInvoke */
 SplinePointKeyFrame *spline_point_key_frame_new (void);
 
 #if SL_2_0
@@ -735,93 +842,111 @@ StackPanel *stack_panel_new (void);
 /**
  * Storyboard
  **/
+/* @GeneratePInvoke */
 Storyboard *storyboard_new (void);
 
 /**
  * Stroke
  **/
+/* @GeneratePInvoke */
 Stroke *stroke_new (void);
 
 /**
  * StrokeCollection
  **/
+/* @GeneratePInvoke */
 StrokeCollection *stroke_collection_new (void);
 
 #if SL_2_0
 /**
  * Style
  **/
+/* @GeneratePInvoke */
 Style *style_new (void);
 #endif
 
 /**
  * StylusInfo
  **/
+/* @GeneratePInvoke */
 StylusInfo *stylus_info_new (void);
 
 /**
  * StylusPoint
  **/
+/* @GeneratePInvoke */
 StylusPoint *stylus_point_new (void);
 
 /**
  * StylusPointCollection
  **/
+/* @GeneratePInvoke */
 StylusPointCollection *stylus_point_collection_new (void);
 
 /**
  * TextBlock
  **/
+/* @GeneratePInvoke */
 TextBlock *text_block_new (void);
 
 /**
  * TileBrush
  **/
+/* @GeneratePInvoke */
 TileBrush *tile_brush_new (void);
 
 /**
  * Timeline
  **/
+/* @GeneratePInvoke */
 Timeline *timeline_new (void);
 
 /**
  * TimelineCollection
  **/
+/* @GeneratePInvoke */
 TimelineCollection *timeline_collection_new (void);
 
 /**
  * TimelineGroup
  **/
+/* @GeneratePInvoke */
 TimelineGroup *timeline_group_new (void);
 
 /**
  * TimelineMarker
  **/
+/* @GeneratePInvoke */
 TimelineMarker *timeline_marker_new (void);
 
 /**
  * TimelineMarkerCollection
  **/
+/* @GeneratePInvoke */
 TimelineMarkerCollection *timeline_marker_collection_new (void);
 
 /**
  * Transform
  **/
+/* @GeneratePInvoke */
 Transform *transform_new (void);
 
 /**
  * TransformCollection
  **/
+/* @GeneratePInvoke */
 TransformCollection *transform_collection_new (void);
 
 /**
  * TransformGroup
  **/
+/* @GeneratePInvoke */
 TransformGroup *transform_group_new (void);
 
 /**
  * TranslateTransform
  **/
+/* @GeneratePInvoke */
 TranslateTransform *translate_transform_new (void);
 
 /**
@@ -829,16 +954,19 @@ TranslateTransform *translate_transform_new (void);
  **/
 void trigger_action_fire (TriggerAction *instance);
 
+/* @GeneratePInvoke */
 TriggerAction *trigger_action_new (void);
 
 /**
  * TriggerActionCollection
  **/
+/* @GeneratePInvoke */
 TriggerActionCollection *trigger_action_collection_new (void);
 
 /**
  * TriggerCollection
  **/
+/* @GeneratePInvoke */
 TriggerCollection *trigger_collection_new (void);
 
 #if SL_2_0
@@ -867,28 +995,33 @@ Types *types_new (void);
 /**
  * UIElement
  **/
+/* @GeneratePInvoke */
 UIElement *uielement_new (void);
 
 /**
  * UIElementCollection
  **/
+/* @GeneratePInvoke */
 UIElementCollection *uielement_collection_new (void);
 
 #if SL_2_0
 /**
  * UserControl
  **/
+/* @GeneratePInvoke */
 UserControl *user_control_new (void);
 #endif
 
 /**
  * VideoBrush
  **/
+/* @GeneratePInvoke */
 VideoBrush *video_brush_new (void);
 
 /**
  * VisualBrush
  **/
+/* @GeneratePInvoke */
 VisualBrush *visual_brush_new (void);
 
 

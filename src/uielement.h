@@ -48,8 +48,9 @@ class UIElement : public DependencyObject {
 	void RenderClipPath (cairo_t *cr);
 
  public:
- 	/* @GenerateCBinding,ManagedAccess=Internal */
+ 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	UIElement ();
+	
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; };
 
 	int dirty_flags;

@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * template.h:
  *
@@ -19,13 +20,12 @@
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-class FrameworkTemplate : public DependencyObject
-{
-protected:
+class FrameworkTemplate : public DependencyObject {
+ protected:
 	virtual ~FrameworkTemplate () {}
 
-public:
-	/* @GenerateCBinding,ManagedAccess=Protected */
+ public:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkTemplate ();
 
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKTEMPLATE; }
@@ -36,23 +36,18 @@ public:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-class ControlTemplate : public FrameworkTemplate
-{
-protected:
+class ControlTemplate : public FrameworkTemplate {
+ protected:
 	virtual ~ControlTemplate () {}
-
-public:
-	/* @GenerateCBinding */
+	
+ public:
+	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
+	static DependencyProperty *TargetTypeProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	ControlTemplate ();
 
 	virtual Type::Kind GetObjectType () { return Type::CONTROLTEMPLATE; }
-
- 	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
-	static DependencyProperty *TargetTypeProperty;
 };
 
-G_BEGIN_DECLS
-
-G_END_DECLS
-
-#endif // __MOON_TEMPLATE_H__
+#endif /* __MOON_TEMPLATE_H__ */

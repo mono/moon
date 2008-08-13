@@ -504,23 +504,6 @@ UIElementCollection::Clear ()
 	DependencyObjectCollection::Clear ();
 }
 
-Type::Kind
-collection_get_element_type (Collection *collection)
-{
-	return collection->GetElementType ();
-}
-
-Value *
-collection_get_value_at (Collection *collection, int index)
-{
-	return collection->GetValueAt (index);
-}
-
-bool
-collection_set_value_at (Collection *collection, int index, Value *value)
-{
-	return collection->SetValueAt (index, value);
-}
 
 CollectionIterator *
 collection_get_iterator (Collection *collection)

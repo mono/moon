@@ -56,8 +56,9 @@ class MediaAttribute : public DependencyObject {
  	/* @PropertyType=string */
 	static DependencyProperty *ValueProperty;
 	
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	MediaAttribute () { }
+	
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE; };
 };
 
@@ -71,7 +72,7 @@ class MediaAttributeCollection : public DependencyObjectCollection {
 	virtual ~MediaAttributeCollection () {}
 
  public:
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	MediaAttributeCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
@@ -95,7 +96,7 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 	virtual ~TimelineMarkerCollection () {}
 	
  public:
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineMarkerCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
@@ -163,6 +164,7 @@ class MediaBase : public FrameworkElement {
 	
 	const static int DownloadProgressChangedEvent;
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	MediaBase ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
 	
@@ -184,8 +186,6 @@ class MediaBase : public FrameworkElement {
 	void SetStretch (Stretch stretch);
 	Stretch GetStretch ();
 };
-
-MediaBase *media_base_new (void);
 
 const char *media_base_get_source (MediaBase *media);
 void media_base_set_source (MediaBase *media, const char *value);
@@ -247,7 +247,7 @@ class Image : public MediaBase {
 	CachedSurface *surface;
 	ImageBrush *brush;
 	
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
@@ -437,7 +437,7 @@ class MediaElement : public MediaBase {
 	// MediaOpened is raised when media is ready to play (we've already started playing, or, if AutoPlay is false, paused).
 	const static int MediaOpenedEvent;
 	
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	MediaElement ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
 	

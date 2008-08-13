@@ -142,6 +142,16 @@ collection_get_count (Collection *instance)
 }
 
 
+Type::Kind
+collection_get_element_type (Collection *instance)
+{
+	if (instance == NULL)
+		return Type::INVALID;
+	
+	return instance->GetElementType ();
+}
+
+
 #if SL_2_0
 Value *
 collection_get_value_at_with_error (Collection *instance, int index, MoonError *error)
@@ -184,16 +194,6 @@ collection_remove (Collection *instance, Value *value)
 		return false;;
 	
 	return instance->Remove (value);
-}
-
-
-bool
-collection_remove_at (Collection *instance, int index)
-{
-	if (instance == NULL)
-		return false;;
-	
-	return instance->RemoveAt (index);
 }
 
 
@@ -932,6 +932,16 @@ MediaAttributeCollection *
 media_attribute_collection_new (void)
 {
 	return new MediaAttributeCollection ();
+}
+
+
+/**
+ * MediaBase
+ **/
+MediaBase *
+media_base_new (void)
+{
+	return new MediaBase ();
 }
 
 

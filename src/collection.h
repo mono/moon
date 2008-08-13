@@ -51,6 +51,8 @@ class Collection : public DependencyObject {
 	DependencyObject *closure;
 	
 	virtual Type::Kind GetObjectType () = 0;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Type::Kind GetElementType () = 0;
 	
 	int Generation () { return generation; }
@@ -79,11 +81,10 @@ class Collection : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool Remove (Value *value);
 	
-	/* @GenerateCBinding */
 	bool RemoveAt (int index);
 	
+	bool SetValueAt (int index, Value *value);
 	Value *GetValueAt (int index);
-	bool   SetValueAt (int index, Value *value);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueAtWithError (int index, MoonError *error);
@@ -103,7 +104,7 @@ class DependencyObjectCollection : public Collection {
 	virtual ~DependencyObjectCollection () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObjectCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
@@ -124,7 +125,7 @@ class DoubleCollection : public Collection {
 	virtual ~DoubleCollection () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	DoubleCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::DOUBLE_COLLECTION; }
@@ -137,7 +138,7 @@ class PointCollection : public Collection {
 	virtual ~PointCollection () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	PointCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::POINT_COLLECTION; }
@@ -167,7 +168,7 @@ class TriggerCollection : public DependencyObjectCollection {
 	virtual ~TriggerCollection () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	TriggerCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
@@ -180,8 +181,9 @@ class TriggerActionCollection : public DependencyObjectCollection {
 	virtual ~TriggerActionCollection () {}
 
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	TriggerActionCollection () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION_COLLECTION; }
 	/* this may seem wrong, but it's what the TriggerActionCollection mandates */
 	virtual Type::Kind GetElementType () { return Type::BEGINSTORYBOARD; }
@@ -193,7 +195,7 @@ class ResourceDictionary : public DependencyObjectCollection {
 	virtual ~ResourceDictionary () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	ResourceDictionary () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::RESOURCE_DICTIONARY; }
@@ -207,7 +209,7 @@ class InlineCollection : public DependencyObjectCollection {
 	virtual ~InlineCollection () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	InlineCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::INLINE_COLLECTION; }
@@ -226,7 +228,7 @@ class UIElementCollection : public DependencyObjectCollection {
  public:
 	GPtrArray *z_sorted;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	UIElementCollection ();
 	
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT_COLLECTION; }
@@ -241,11 +243,6 @@ class UIElementCollection : public DependencyObjectCollection {
 G_BEGIN_DECLS
 
 Collection *collection_new (Type::Kind kind);
-
-Type::Kind collection_get_element_type (Collection *collection);
-
-Value *collection_get_value_at (Collection *collection, int index);
-bool collection_set_value_at (Collection *collection, int index, Value *value);
 
 CollectionIterator *collection_get_iterator (Collection *collection);
 int collection_iterator_next (CollectionIterator *iterator);

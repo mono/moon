@@ -500,11 +500,7 @@ class Timeline : public DependencyObject {
 	virtual ~Timeline () {}
 
  public:
- 	/* @GenerateCBinding,ManagedAccess=Protected */
-	Timeline ();
-	virtual Type::Kind GetObjectType () { return Type::TIMELINE; };
-
- 	/* @PropertyType=bool,DefaultValue=false */
+	/* @PropertyType=bool,DefaultValue=false */
 	static DependencyProperty *AutoReverseProperty;
  	/* @PropertyType=TimeSpan,Nullable */
 	static DependencyProperty *BeginTimeProperty;
@@ -516,6 +512,11 @@ class Timeline : public DependencyObject {
 	static DependencyProperty *RepeatBehaviorProperty;
  	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *SpeedRatioProperty;
+	
+ 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	Timeline ();
+	
+	virtual Type::Kind GetObjectType () { return Type::TIMELINE; }
 	
 	void SetAutoReverse (bool autoreverse);
 	bool GetAutoReverse ();
@@ -537,7 +538,7 @@ class Timeline : public DependencyObject {
 	Duration GetNaturalDuration (Clock *clock);
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 	
-	virtual Clock* AllocateClock () { return new Clock (this); }
+	virtual Clock *AllocateClock () { return new Clock (this); }
 	virtual bool Validate ();
 
 	bool HasManualTarget () { return manual_target != NULL; }
@@ -556,8 +557,8 @@ class TimelineCollection : public DependencyObjectCollection {
 	virtual ~TimelineCollection () {}
 
  public:
- 	/* @GenerateCBinding */
-	TimelineCollection () {}
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	TimelineCollection () { }
 	
 	virtual Type::Kind GetObjectType() { return Type::TIMELINE_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
@@ -570,14 +571,14 @@ class TimelineGroup : public Timeline {
 	virtual ~TimelineGroup ();
 
  public:
- 	/* @GenerateCBinding */
+	/* @PropertyType=TimelineCollection */
+	static DependencyProperty *ChildrenProperty;
+	
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineGroup ();
 	
-	virtual Type::Kind GetObjectType () { return Type::TIMELINEGROUP; };
-
- 	/* @PropertyType=TimelineCollection */
-	static DependencyProperty *ChildrenProperty;
-
+	virtual Type::Kind GetObjectType () { return Type::TIMELINEGROUP; }
+	
 	virtual Clock *AllocateClock ();
 	virtual bool Validate ();
 
@@ -592,9 +593,10 @@ class ParallelTimeline : public TimelineGroup {
 	virtual ~ParallelTimeline () {}
 
  public:
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	ParallelTimeline () { }
-	virtual Type::Kind GetObjectType () { return Type::PARALLELTIMELINE; };
+	
+	virtual Type::Kind GetObjectType () { return Type::PARALLELTIMELINE; }
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 };
@@ -613,9 +615,10 @@ class TimelineMarker : public DependencyObject {
  	/* @PropertyType=string */
 	static DependencyProperty *TypeProperty;
 	
- 	/* @GenerateCBinding */
-	TimelineMarker () {}
-	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER; };
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	TimelineMarker () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER; }
 	
 	//
 	// Property Accessors

@@ -20,7 +20,7 @@ class TriggerAction : public DependencyObject {
 	virtual ~TriggerAction () {}
 	
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	TriggerAction () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION; };
@@ -44,7 +44,7 @@ class EventTrigger : public DependencyObject {
 	/* @PropertyType=string,ManagedPropertyType=RoutedEvent,ManagedFieldAccess=Internal */
 	static DependencyProperty *RoutedEventProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	EventTrigger ();
 	
 	virtual Type::Kind GetObjectType () { return Type::EVENTTRIGGER; };

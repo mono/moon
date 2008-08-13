@@ -52,8 +52,9 @@ class FrameworkElement : public UIElement {
 	/* @PropertyType=Style,Version=2 */
 	static DependencyProperty *StyleProperty;
 
-	/* @GenerateCBinding,ManagedAccess=Internal */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	FrameworkElement ();
+	
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }
 
 	virtual void ComputeBounds ();

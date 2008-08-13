@@ -41,8 +41,8 @@ class Geometry : public DependencyObject {
 		GEOMETRY_MASK		= GEOMETRY_NORMAL | GEOMETRY_DEGENERATE | GEOMETRY_NEEDS_FILL | GEOMETRY_NEEDS_CAPS | GEOMETRY_NEEDS_JOIN
 	};
 	
-	bool IsDegenerate () { return (flags & Geometry::GEOMETRY_DEGENERATE); };
-	void SetGeometryFlags (GeometryFlags sf) { flags &= ~Geometry::GEOMETRY_MASK; flags |= sf; };
+	bool IsDegenerate () { return (flags & Geometry::GEOMETRY_DEGENERATE); }
+	void SetGeometryFlags (GeometryFlags sf) { flags &= ~Geometry::GEOMETRY_MASK; flags |= sf; }
 
 	int flags;
 #endif
@@ -56,19 +56,20 @@ class Geometry : public DependencyObject {
  	/* @PropertyType=Transform */
 	static DependencyProperty *TransformProperty;
 
-	/* @GenerateCBinding,ManagedAccess=Protected */
-	Geometry () : path (NULL) {};
-	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; };
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	Geometry () : path (NULL) { }
+	
+	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual void Draw (Path *path, cairo_t *cr);
-	virtual Rect ComputeBounds (Path *path, bool logical) { return Rect (0.0, 0.0, 0.0, 0.0); };
-	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix) { return ComputeBounds (path, logical); };
+	virtual Rect ComputeBounds (Path *path, bool logical) { return Rect (0.0, 0.0, 0.0, 0.0); }
+	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix) { return ComputeBounds (path, logical); }
 
 //	virtual Point GetOriginPoint (Path *path);
 
-	virtual bool IsFilled () { return true; };
+	virtual bool IsFilled () { return true; }
 
 	virtual void Build (Path *path) {}
 	virtual bool IsBuilt () { return path && path->cairo.num_data != 0; }
@@ -99,8 +100,8 @@ class GeometryCollection : public DependencyObjectCollection {
 	virtual ~GeometryCollection () {}
 
  public:
-	/* @GenerateCBinding */
-	GeometryCollection () {}
+	/* @GenerateCBinding,GeneratePInvoke */
+	GeometryCollection () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::GEOMETRY; }
@@ -120,9 +121,10 @@ class GeometryGroup : public Geometry {
  	/* @PropertyType=GeometryCollection */
 	static DependencyProperty *ChildrenProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	GeometryGroup ();
-	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; };
+	
+	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; }
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
@@ -161,9 +163,10 @@ class EllipseGeometry : public Geometry {
  	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *RadiusYProperty;
 
-	/* @GenerateCBinding */
-	EllipseGeometry () { };
-	virtual Type::Kind GetObjectType () { return Type::ELLIPSEGEOMETRY; };
+	/* @GenerateCBinding,GeneratePInvoke */
+	EllipseGeometry () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::ELLIPSEGEOMETRY; }
 
 	virtual Rect ComputeBounds (Path *path, bool logical);
 	
@@ -206,9 +209,10 @@ class LineGeometry : public Geometry {
  	/* @PropertyType=Point */
 	static DependencyProperty *StartPointProperty;
 	
-	/* @GenerateCBinding */
-	LineGeometry () {}
-	virtual Type::Kind GetObjectType () { return Type::LINEGEOMETRY; };
+	/* @GenerateCBinding,GeneratePInvoke */
+	LineGeometry () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::LINEGEOMETRY; }
 	
 	virtual Rect ComputeBounds (Path *path, bool logical);
 	
@@ -238,8 +242,8 @@ class PathFigureCollection : public DependencyObjectCollection {
 	virtual ~PathFigureCollection () {}
 
  public:
-	/* @GenerateCBinding */
-	PathFigureCollection () {}
+	/* @GenerateCBinding,GeneratePInvoke */
+	PathFigureCollection () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::PATHFIGURE; }
@@ -266,11 +270,11 @@ class PathGeometry : public Geometry {
  	/* @PropertyType=PathFigureCollection */
 	static DependencyProperty *FiguresProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	PathGeometry ();
 	PathGeometry (moon_path *pml_path);
 
-	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; };
+	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; }
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
@@ -309,9 +313,10 @@ class RectangleGeometry : public Geometry {
  	/* @PropertyType=Rect */
 	static DependencyProperty *RectProperty;
 	
-	/* @GenerateCBinding */
-	RectangleGeometry () { };
-	virtual Type::Kind GetObjectType () { return Type::RECTANGLEGEOMETRY; };
+	/* @GenerateCBinding,GeneratePInvoke */
+	RectangleGeometry () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::RECTANGLEGEOMETRY; }
 	
 	virtual Rect ComputeBounds (Path *path, bool logical);
 	
@@ -349,7 +354,7 @@ class PathSegmentCollection : public DependencyObjectCollection {
 	virtual ~PathSegmentCollection () {}
 
  public:
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	PathSegmentCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT_COLLECTION; }
@@ -376,9 +381,10 @@ class PathFigure : public DependencyObject {
 	
 	moon_path *path;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	PathFigure ();
-	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; };
+	
+	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
@@ -417,18 +423,18 @@ void path_figure_set_start_point (PathFigure *figure, Point *point);
 /* @Namespace=System.Windows.Media */
 class PathSegment : public DependencyObject {
  protected:
-	virtual void Build (Path *path) {};
+	virtual void Build (Path *path) {}
 	
 	virtual ~PathSegment () {}
 	
  public:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	PathSegment () {}
+	
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT; }
 	
 	virtual void Append (moon_path *path) {}
 	virtual int GetPathSize () { return 0; }
-	
-	/* @GenerateCBinding,ManagedAccess=Protected */
-	PathSegment () {}
 };
 
 
@@ -452,9 +458,10 @@ class ArcSegment : public PathSegment {
  	/* @PropertyType=SweepDirection,DefaultValue=SweepDirectionCounterclockwise */
 	static DependencyProperty *SweepDirectionProperty;
 	
-	/* @GenerateCBinding */
-	ArcSegment () {}
-	virtual Type::Kind GetObjectType () { return Type::ARCSEGMENT; };
+	/* @GenerateCBinding,GeneratePInvoke */
+	ArcSegment () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::ARCSEGMENT; }
 	virtual int GetPathSize () { return 4 * MOON_PATH_CURVE_TO_LENGTH; } // non-optimal size, depends on angle
 	
 	virtual void Append (moon_path *path);
@@ -510,9 +517,10 @@ class BezierSegment : public PathSegment {
  	/* @PropertyType=Point */
 	static DependencyProperty *Point3Property;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	BezierSegment () { }
-	virtual Type::Kind GetObjectType () { return Type::BEZIERSEGMENT; };
+	
+	virtual Type::Kind GetObjectType () { return Type::BEZIERSEGMENT; }
 	virtual int GetPathSize () { return MOON_PATH_CURVE_TO_LENGTH; }
 	
 	virtual void Append (moon_path *path);
@@ -552,9 +560,10 @@ class LineSegment : public PathSegment {
  	/* @PropertyType=Point */
 	static DependencyProperty *PointProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	LineSegment () { }
-	virtual Type::Kind GetObjectType () { return Type::LINESEGMENT; };
+	
+	virtual Type::Kind GetObjectType () { return Type::LINESEGMENT; }
 	virtual int GetPathSize () { return MOON_PATH_LINE_TO_LENGTH; }
 	
 	virtual void Append (moon_path *path);
@@ -585,9 +594,10 @@ class PolyBezierSegment : public PathSegment {
  	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	PolyBezierSegment () { }
-	virtual Type::Kind GetObjectType () { return Type::POLYBEZIERSEGMENT; };
+	
+	virtual Type::Kind GetObjectType () { return Type::POLYBEZIERSEGMENT; }
 	virtual int GetPathSize ();
 	
 	virtual void Append (moon_path *path);
@@ -616,9 +626,10 @@ class PolyLineSegment : public PathSegment {
  	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	PolyLineSegment () { }
-	virtual Type::Kind GetObjectType () { return Type::POLYLINESEGMENT; };
+	
+	virtual Type::Kind GetObjectType () { return Type::POLYLINESEGMENT; }
 	virtual int GetPathSize ();
 	
 	virtual void Append (moon_path *path);
@@ -647,9 +658,10 @@ class PolyQuadraticBezierSegment : public PathSegment {
  	/* @PropertyType=PointCollection */
 	static DependencyProperty *PointsProperty;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	PolyQuadraticBezierSegment () { }
-	virtual Type::Kind GetObjectType () { return Type::POLYQUADRATICBEZIERSEGMENT; };
+	
+	virtual Type::Kind GetObjectType () { return Type::POLYQUADRATICBEZIERSEGMENT; }
 	virtual int GetPathSize ();
 
 	virtual void Append (moon_path *path);
@@ -678,9 +690,10 @@ class QuadraticBezierSegment : public PathSegment {
  	/* @PropertyType=Point */
 	static DependencyProperty *Point2Property;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	QuadraticBezierSegment () { }
-	virtual Type::Kind GetObjectType () { return Type::QUADRATICBEZIERSEGMENT; };
+	
+	virtual Type::Kind GetObjectType () { return Type::QUADRATICBEZIERSEGMENT; }
 	virtual int GetPathSize () { return MOON_PATH_CURVE_TO_LENGTH; }
 	
 	virtual void Append (moon_path *path);
