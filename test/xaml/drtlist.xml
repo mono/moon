@@ -916,4 +916,8 @@
 	 inputFile="test-gradientbrush-spreadmethod.xaml"
 	 masterFile10="../harness/masters/test-gradientbrush-spreadmethodMaster.png"
 	 />
+   <Test id="204"
+	 inputFile="test-fillrule.xaml"
+	 masterFile10="None"
+	 />
 </DRTList>

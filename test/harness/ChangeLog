@@ -1,3 +1,7 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* masters/test-fillruleMaster.png: Added test-fillrule.xaml.
+
 2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* harness.mdp: Updated.

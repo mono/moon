@@ -1,3 +1,7 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* LineGeometryTest.cs: Added LineGeometryTest.
+
 2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyPropertyAttachedTest.cs: And actually add the file too.
