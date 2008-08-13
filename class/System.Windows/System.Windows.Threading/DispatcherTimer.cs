@@ -25,17 +25,33 @@
 
 using System;
 using System.Security;
+using Mono;
+using System.Windows.Interop;
 
 namespace System.Windows.Threading {
 
 	public class DispatcherTimer {
+		private TimeSpan interval;
+		uint source_id;
+		NativeMethods.GSourceFunc callback;
 
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
 		public void Start ()
 		{
-			throw new NotImplementedException ();
+			if (source_id != 0)
+				return;
+
+			callback = new NativeMethods.GSourceFunc (timer_callback);
+			IntPtr handle = PluginHost.Handle;
+
+			if (handle != IntPtr.Zero)
+				source_id = NativeMethods.plugin_timer_timeout_add (
+					handle, (int) interval.TotalMilliseconds, callback, IntPtr.Zero);
+			else
+				source_id = NativeMethods.runtime_timer_timeout_add (
+					(int) interval.TotalMilliseconds, callback, IntPtr.Zero);
 		}
 
 #if NET_2_1
@@ -43,27 +59,44 @@ namespace System.Windows.Threading {
 #endif
 		public void Stop ()
 		{
-			throw new NotImplementedException ();
+			if (source_id == 0)
+				return;
+
+			IntPtr handle = PluginHost.Handle;
+			if (handle != IntPtr.Zero)
+				NativeMethods.plugin_timer_timeout_stop (PluginHost.Handle, source_id);
+			else
+				NativeMethods.runtime_timer_timeout_stop (source_id);
+			source_id = 0;
+			callback = null;
 		}
 
 		public TimeSpan Interval {
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			get { throw new NotImplementedException (); }
+			get { return interval; }
 
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			set { throw new NotImplementedException (); }
+			set { interval = value; }
 			
 		}
 
 		public bool IsEnabled {
-			get { throw new NotImplementedException (); }
+			get { return source_id != 0; }
 		}
 
 		public event EventHandler Tick;
+
+		bool timer_callback (IntPtr data)
+		{
+			Tick (this, EventArgs.Empty);
+
+			// If we are killed by Enabled or Stop, still return that value
+			return source_id != 0;
+		}
 	}
 
 }

@@ -1,3 +1,8 @@
+2008-08-13  Geoff Norton  <gnorton@novell.com>
+
+	* DispatcherTimer.cs: g_timout_add based implementation of 
+	DispatcherTimer.
+
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DispatcherSynchronizationContext.cs: Stubbed missing members.
