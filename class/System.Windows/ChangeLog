@@ -1,5 +1,9 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Makefile.am, System.Windows.mdp: Added *TileSource.cs
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile.am, System.Windows.mdp: Updated.
 
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 

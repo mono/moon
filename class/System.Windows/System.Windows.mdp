@@ -292,6 +292,8 @@
     <File name="System.Windows.Media.Animation/DiscreteObjectKeyFrame.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ObjectKeyFrameCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ObjectAnimationUsingKeyFrames.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/DeepZoomImageTileSource.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/MultiScaleTileSource.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />

@@ -188,6 +188,7 @@
     <File name="template.cpp" subtype="Code" buildaction="Compile" />
     <File name="stackpanel.h" subtype="Code" buildaction="Nothing" />
     <File name="animation2.h" subtype="Code" buildaction="Nothing" />
+    <File name="tilesource.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

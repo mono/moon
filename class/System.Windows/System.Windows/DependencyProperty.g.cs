@@ -843,7 +843,7 @@ namespace System.Windows.Media {
 		public static readonly DependencyProperty IsLargeArcProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "IsLargeArc", typeof (bool));
 		public static readonly DependencyProperty PointProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "Point", typeof (Point));
 		public static readonly DependencyProperty RotationAngleProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "RotationAngle", typeof (double));
-		public static readonly DependencyProperty SizeProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "Size", typeof (Point));
+		public static readonly DependencyProperty SizeProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "Size", typeof (Size));
 		public static readonly DependencyProperty SweepDirectionProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "SweepDirection", typeof (SweepDirection));
 
 		public bool IsLargeArc {
@@ -861,8 +861,8 @@ namespace System.Windows.Media {
 			set { SetValue (RotationAngleProperty, value); }
 		}
 
-		public Point Size {
-			get { return (Point) GetValue (SizeProperty); }
+		public Size Size {
+			get { return (Size) GetValue (SizeProperty); }
 			set { SetValue (SizeProperty, value); }
 		}
 
@@ -917,6 +917,15 @@ namespace System.Windows.Media {
 		public Transform Transform {
 			get { return (Transform) GetValue (TransformProperty); }
 			set { SetValue (TransformProperty, value); }
+		}
+	}
+
+	partial class DeepZoomImageTileSource {
+		public static readonly DependencyProperty UriSourceProperty = DependencyProperty.Lookup (Kind.DEEPZOOMIMAGETILESOURCE, "UriSource", typeof (Uri));
+
+		public Uri UriSource {
+			get { return (Uri) GetValue (UriSourceProperty); }
+			set { SetValue (UriSourceProperty, value); }
 		}
 	}
 

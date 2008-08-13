@@ -106,6 +106,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.BEZIERSEGMENT));
 				t = agclr.GetType ("System.Windows.Media.Brush", true); 
 				types.Add (t, new ManagedType (t, Kind.BRUSH));
+				t = agclr.GetType ("System.Windows.Media.DeepZoomImageTileSource", true); 
+				types.Add (t, new ManagedType (t, Kind.DEEPZOOMIMAGETILESOURCE));
 				t = agclr.GetType ("System.Windows.Media.DoubleCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.DOUBLE_COLLECTION));
 				t = agclr.GetType ("System.Windows.Media.EllipseGeometry", true); 
@@ -134,6 +136,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.LINESEGMENT));
 				t = agclr.GetType ("System.Windows.Media.MatrixTransform", true); 
 				types.Add (t, new ManagedType (t, Kind.MATRIXTRANSFORM));
+				t = agclr.GetType ("System.Windows.Media.MultiScaleTileSource", true); 
+				types.Add (t, new ManagedType (t, Kind.MULTISCALETILESOURCE));
 				t = agclr.GetType ("System.Windows.Media.PathFigure", true); 
 				types.Add (t, new ManagedType (t, Kind.PATHFIGURE));
 				t = agclr.GetType ("System.Windows.Media.PathFigureCollection", true); 

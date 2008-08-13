@@ -295,6 +295,12 @@ namespace System.Windows.Media {
 		internal override Kind GetKind () { return Kind.BRUSH; }
 	}
 
+	partial class DeepZoomImageTileSource {
+		public DeepZoomImageTileSource () : base (NativeMethods.deep_zoom_image_tile_source_new ()) {}
+		internal DeepZoomImageTileSource (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.DEEPZOOMIMAGETILESOURCE; }
+	}
+
 	partial class DoubleCollection {
 		public DoubleCollection () : base (NativeMethods.double_collection_new ()) {}
 		internal DoubleCollection (IntPtr raw) : base (raw) {}
@@ -377,6 +383,12 @@ namespace System.Windows.Media {
 		public MatrixTransform () : base (NativeMethods.matrix_transform_new ()) {}
 		internal MatrixTransform (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.MATRIXTRANSFORM; }
+	}
+
+	partial class MultiScaleTileSource {
+		internal MultiScaleTileSource () : base (NativeMethods.multi_scale_tile_source_new ()) {}
+		internal MultiScaleTileSource (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.MULTISCALETILESOURCE; }
 	}
 
 	partial class PathFigure {

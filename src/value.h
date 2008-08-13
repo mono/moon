@@ -67,6 +67,7 @@ class ColumnDefinitionCollection;
 class ContentControl;
 class Control;
 class ControlTemplate;
+class DeepZoomImageTileSource;
 class DependencyObject;
 class DependencyObjectCollection;
 class Deployment;
@@ -126,6 +127,7 @@ class MediaBase;
 class MediaElement;
 class MediaErrorEventArgs;
 class MouseEventArgs;
+class MultiScaleTileSource;
 class NameScope;
 class ObjectAnimationUsingKeyFrames;
 class ObjectKeyFrame;
@@ -317,6 +319,7 @@ public:
 	ContentControl*                AsContentControl () { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	ControlTemplate*               AsControlTemplate () { checked_get_subclass (Type::CONTROLTEMPLATE, ControlTemplate) }
+	DeepZoomImageTileSource*       AsDeepZoomImageTileSource () { checked_get_subclass (Type::DEEPZOOMIMAGETILESOURCE, DeepZoomImageTileSource) }
 	DependencyObject*              AsDependencyObject () { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }
 	DependencyObjectCollection*    AsDependencyObjectCollection () { checked_get_subclass (Type::DEPENDENCY_OBJECT_COLLECTION, DependencyObjectCollection) }
 	Deployment*                    AsDeployment () { checked_get_subclass (Type::DEPLOYMENT, Deployment) }
@@ -376,6 +379,7 @@ public:
 	MediaElement*                  AsMediaElement () { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
 	MediaErrorEventArgs*           AsMediaErrorEventArgs () { checked_get_subclass (Type::MEDIAERROREVENTARGS, MediaErrorEventArgs) }
 	MouseEventArgs*                AsMouseEventArgs () { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
+	MultiScaleTileSource*          AsMultiScaleTileSource () { checked_get_subclass (Type::MULTISCALETILESOURCE, MultiScaleTileSource) }
 	NameScope*                     AsNameScope () { checked_get_subclass (Type::NAMESCOPE, NameScope) }
 	ObjectAnimationUsingKeyFrames* AsObjectAnimationUsingKeyFrames () { checked_get_subclass (Type::OBJECTANIMATIONUSINGKEYFRAMES, ObjectAnimationUsingKeyFrames) }
 	ObjectKeyFrame*                AsObjectKeyFrame () { checked_get_subclass (Type::OBJECTKEYFRAME, ObjectKeyFrame) }

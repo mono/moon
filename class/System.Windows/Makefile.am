@@ -200,6 +200,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/Color.cs					\
 	$(srcdir)/System.Windows.Media/Colors.cs				\
 	$(srcdir)/System.Windows.Media/ColorInterpolationMode.cs		\
+	$(srcdir)/System.Windows.Media/DeepZoomImageTileSource.cs			\
 	$(srcdir)/System.Windows.Media/DoubleCollection.cs			\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
 	$(srcdir)/System.Windows.Media/FillRule.cs				\
@@ -228,6 +229,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/MediaStreamSource.cs			\
 	$(srcdir)/System.Windows.Media/MediaStreamSourceDiagnosticKind.cs	\
 	$(srcdir)/System.Windows.Media/MediaStreamType.cs			\
+	$(srcdir)/System.Windows.Media/MultiScaleTileSource.cs			\
 	$(srcdir)/System.Windows.Media/PathFigure.cs				\
 	$(srcdir)/System.Windows.Media/PathFigureCollection.cs			\
 	$(srcdir)/System.Windows.Media/PathGeometry.cs				\

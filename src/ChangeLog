@@ -1,5 +1,13 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyproperty.g.cpp, type.h, type-generated.cpp, value.h,
+	  cbinding.cpp, cbinding.h: Regenerated.
+	* geometry.h: Annotation fix.
+	* Makefile.am, src.mdp: Added tilesource.h
+	* tilesource.h: Added.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp, Makefile.am: Added animation2.h
 	* type.h, type-generated.cpp, value.h, cbinding.cpp, cbinding.h,
 	  dependencyproperty.g.cpp: Regenerated.

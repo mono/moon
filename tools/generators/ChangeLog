@@ -1,5 +1,10 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* TypeReference.cs: Special case a lot less, treat generic pointers as
+	  IntPtr.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* TypeReference.cs: Special case a bit more.
 
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 

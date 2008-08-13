@@ -80,6 +80,10 @@ namespace Mono {
 			return result;
 		}
 
+		[DllImport ("moon")]
+		// DeepZoomImageTileSource *deep_zoom_image_tile_source_new ();
+		public extern static IntPtr deep_zoom_image_tile_source_new ();
+
 		[DllImport ("moon", EntryPoint="dependency_object_get_default_value_with_error")]
 		// Value *dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
 		private extern static IntPtr dependency_object_get_default_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);
@@ -175,6 +179,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// DiscreteObjectKeyFrame *discrete_object_key_frame_new ();
 		public extern static IntPtr discrete_object_key_frame_new ();
+
+		[DllImport ("moon")]
+		// MultiScaleTileSource *multi_scale_tile_source_new ();
+		public extern static IntPtr multi_scale_tile_source_new ();
 
 		[DllImport ("moon")]
 		// ObjectAnimationUsingKeyFrames *object_animation_using_key_frames_new ();

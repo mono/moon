@@ -447,7 +447,7 @@ class ArcSegment : public PathSegment {
 	static DependencyProperty *PointProperty;
  	/* @PropertyType=double,DefaultValue=0.0*/
 	static DependencyProperty *RotationAngleProperty;
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,ManagedPropertyType=Size */
 	static DependencyProperty *SizeProperty;
  	/* @PropertyType=SweepDirection,DefaultValue=SweepDirectionCounterclockwise */
 	static DependencyProperty *SweepDirectionProperty;

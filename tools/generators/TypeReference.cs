@@ -95,20 +95,6 @@ class TypeReference {
 				IsOut = true;
 				managed_type = "MoonError";
 				break;
-			case "void*":
-			case "gpointer":
-			case "Collection*":
-			case "DependencyObject*":
-			case "DependencyProperty*":
-			case "Types*":
-			case "StackPanel*":
-			case "Type*":
-			case "DiscreteObjectKeyFrame*":
-			case "ObjectKeyFrame*":
-			case "ObjectKeyFrameCollection*":
-			case "ObjectAnimationUsingKeyFrames*":
-				managed_type = "IntPtr";
-				break;
 			case "Value*":
 				if (IsReturnType) {
 					managed_type = "IntPtr";
@@ -127,7 +113,10 @@ class TypeReference {
 				managed_type = "Kind";
 				break;
 			default:
-				managed_type = "/* Unknown: '" + Value + "' */";
+				if (Value.Contains ("*"))
+					managed_type = "IntPtr";
+				else
+					managed_type = "/* Unknown: '" + Value + "' */";
 				break;
 			}
 		}

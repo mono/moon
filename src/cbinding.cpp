@@ -327,6 +327,18 @@ control_template_new (void)
 
 #if SL_2_0
 /**
+ * DeepZoomImageTileSource
+ **/
+DeepZoomImageTileSource *
+deep_zoom_image_tile_source_new (void)
+{
+	return new DeepZoomImageTileSource ();
+}
+#endif
+
+
+#if SL_2_0
+/**
  * DependencyObject
  **/
 Value *
@@ -941,6 +953,18 @@ mouse_event_args_new (void)
 {
 	return new MouseEventArgs ();
 }
+
+
+#if SL_2_0
+/**
+ * MultiScaleTileSource
+ **/
+MultiScaleTileSource *
+multi_scale_tile_source_new (void)
+{
+	return new MultiScaleTileSource ();
+}
+#endif
 
 
 #if SL_2_0

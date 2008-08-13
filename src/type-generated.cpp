@@ -47,6 +47,7 @@
 #include "stackpanel.h"
 #include "style.h"
 #include "template.h"
+#include "tilesource.h"
 #include "usercontrol.h"
 #endif
 
@@ -133,6 +134,7 @@ Type type_infos [] = {
 	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 0, 15, NULL, (create_inst_func *) content_control_new, "Content", NULL, NULL }, 
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 15, NULL, (create_inst_func *) control_new, "Content", NULL, NULL }, 
 	{ Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL, NULL, NULL }, 
+	{ Type::DEEPZOOMIMAGETILESOURCE, Type::MULTISCALETILESOURCE, false, "DeepZoomImageTileSource", "DEEPZOOMIMAGETILESOURCE", 0, 1, NULL, (create_inst_func *) deep_zoom_image_tile_source_new, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCYPROPERTY, Type::INVALID, false, "DependencyProperty", "DEPENDENCYPROPERTY", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
@@ -200,6 +202,7 @@ Type type_infos [] = {
 	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 22, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL }, 
+	{ Type::MULTISCALETILESOURCE, Type::DEPENDENCY_OBJECT, false, "MultiScaleTileSource", "MULTISCALETILESOURCE", 0, 1, NULL, (create_inst_func *) multi_scale_tile_source_new, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::INVALID, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::OBJECTANIMATIONUSINGKEYFRAMES, Type::ANIMATION, false, "ObjectAnimationUsingKeyFrames", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) object_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
@@ -367,6 +370,7 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CONTENTCONTROL'", "CONTENTCONTROL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CONTROL'", "CONTROL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CONTROLTEMPLATE'", "CONTROLTEMPLATE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'DEEPZOOMIMAGETILESOURCE'", "DEEPZOOMIMAGETILESOURCE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCYPROPERTY, Type::INVALID, false, "DependencyProperty", "DEPENDENCYPROPERTY", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
@@ -434,6 +438,7 @@ Type type_infos [] = {
 	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 19, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'MULTISCALETILESOURCE'", "MULTISCALETILESOURCE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::INVALID, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'OBJECTANIMATIONUSINGKEYFRAMES'", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 0, NULL, NULL, NULL, NULL, NULL }, 

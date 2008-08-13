@@ -31,6 +31,7 @@
 #include "stylus.h"
 #include "template.h"
 #include "text.h"
+#include "tilesource.h"
 #include "transform.h"
 #include "trigger.h"
 #include "type.h"
@@ -179,6 +180,14 @@ Control *control_new (void);
  * ControlTemplate
  **/
 ControlTemplate *control_template_new (void);
+#endif
+
+#if SL_2_0
+/**
+ * DeepZoomImageTileSource
+ **/
+/* @GeneratePInvoke */
+DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
 #endif
 
 #if SL_2_0
@@ -482,6 +491,14 @@ MediaElement *media_element_new (void);
  * MouseEventArgs
  **/
 MouseEventArgs *mouse_event_args_new (void);
+
+#if SL_2_0
+/**
+ * MultiScaleTileSource
+ **/
+/* @GeneratePInvoke */
+MultiScaleTileSource *multi_scale_tile_source_new (void);
+#endif
 
 #if SL_2_0
 /**

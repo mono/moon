@@ -56,6 +56,7 @@ libmoon_include_HEADERS = 	\
 	stylus.h		\
 	text.h			\
 	thickness.h		\
+	tilesource.h	\
 	transform.h		\
 	trigger.h		\
 	type.h			\
