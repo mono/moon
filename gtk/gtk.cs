@@ -75,9 +75,9 @@ public class GtkSilver : EventBox {
 			ManagedDownloader.Send,
 			ManagedDownloader.Abort);
 
-		// Just touch something in DependencyObject to trigger
-		// its initialization
-		object o = DependencyObject.NameProperty;
+		// Just touch something in a DependencyObject subclass
+                // to trigger its initialization
+		object o = UIElement.ClipProperty;
 	}
 
 	/// <summary>
