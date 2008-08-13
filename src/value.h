@@ -72,6 +72,7 @@ class DependencyObjectCollection;
 class Deployment;
 class DiscreteColorKeyFrame;
 class DiscreteDoubleKeyFrame;
+class DiscreteObjectKeyFrame;
 class DiscretePointKeyFrame;
 class DoubleCollection;
 class DoubleAnimation;
@@ -126,6 +127,9 @@ class MediaElement;
 class MediaErrorEventArgs;
 class MouseEventArgs;
 class NameScope;
+class ObjectAnimationUsingKeyFrames;
+class ObjectKeyFrame;
+class ObjectKeyFrameCollection;
 class Panel;
 class ParallelTimeline;
 class ParserErrorEventArgs;
@@ -318,6 +322,7 @@ public:
 	Deployment*                    AsDeployment () { checked_get_subclass (Type::DEPLOYMENT, Deployment) }
 	DiscreteColorKeyFrame*         AsDiscreteColorKeyFrame () { checked_get_subclass (Type::DISCRETECOLORKEYFRAME, DiscreteColorKeyFrame) }
 	DiscreteDoubleKeyFrame*        AsDiscreteDoubleKeyFrame () { checked_get_subclass (Type::DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame) }
+	DiscreteObjectKeyFrame*        AsDiscreteObjectKeyFrame () { checked_get_subclass (Type::DISCRETEOBJECTKEYFRAME, DiscreteObjectKeyFrame) }
 	DiscretePointKeyFrame*         AsDiscretePointKeyFrame () { checked_get_subclass (Type::DISCRETEPOINTKEYFRAME, DiscretePointKeyFrame) }
 	DoubleCollection*              AsDoubleCollection () { checked_get_subclass (Type::DOUBLE_COLLECTION, DoubleCollection) }
 	DoubleAnimation*               AsDoubleAnimation () { checked_get_subclass (Type::DOUBLEANIMATION, DoubleAnimation) }
@@ -372,6 +377,9 @@ public:
 	MediaErrorEventArgs*           AsMediaErrorEventArgs () { checked_get_subclass (Type::MEDIAERROREVENTARGS, MediaErrorEventArgs) }
 	MouseEventArgs*                AsMouseEventArgs () { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
 	NameScope*                     AsNameScope () { checked_get_subclass (Type::NAMESCOPE, NameScope) }
+	ObjectAnimationUsingKeyFrames* AsObjectAnimationUsingKeyFrames () { checked_get_subclass (Type::OBJECTANIMATIONUSINGKEYFRAMES, ObjectAnimationUsingKeyFrames) }
+	ObjectKeyFrame*                AsObjectKeyFrame () { checked_get_subclass (Type::OBJECTKEYFRAME, ObjectKeyFrame) }
+	ObjectKeyFrameCollection*      AsObjectKeyFrameCollection () { checked_get_subclass (Type::OBJECTKEYFRAME_COLLECTION, ObjectKeyFrameCollection) }
 	Panel*                         AsPanel () { checked_get_subclass (Type::PANEL, Panel) }
 	ParallelTimeline*              AsParallelTimeline () { checked_get_subclass (Type::PARALLELTIMELINE, ParallelTimeline) }
 	ParserErrorEventArgs*          AsParserErrorEventArgs () { checked_get_subclass (Type::PARSERERROREVENTARGS, ParserErrorEventArgs) }

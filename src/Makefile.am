@@ -6,6 +6,7 @@ INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\"
 
 libmoon_include_HEADERS = 	\
 	animation.h		\
+	animation2.h		\
 	asf/asf.h		\
 	asf/asf-generated.h	\
 	asf/asf-guids.h		\

@@ -525,12 +525,6 @@ namespace System.Windows.Media {
 }
 
 namespace System.Windows.Media.Animation {
-	partial class Animation {
-		public Animation () : base (NativeMethods.animation_new ()) {}
-		internal Animation (IntPtr raw) : base (raw) {}
-		internal override Kind GetKind () { return Kind.ANIMATION; }
-	}
-
 	partial class BeginStoryboard {
 		public BeginStoryboard () : base (NativeMethods.begin_storyboard_new ()) {}
 		internal BeginStoryboard (IntPtr raw) : base (raw) {}
@@ -573,6 +567,12 @@ namespace System.Windows.Media.Animation {
 		internal override Kind GetKind () { return Kind.DISCRETEDOUBLEKEYFRAME; }
 	}
 
+	partial class DiscreteObjectKeyFrame {
+		public DiscreteObjectKeyFrame () : base (NativeMethods.discrete_object_key_frame_new ()) {}
+		internal DiscreteObjectKeyFrame (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.DISCRETEOBJECTKEYFRAME; }
+	}
+
 	partial class DiscretePointKeyFrame {
 		public DiscretePointKeyFrame () : base (NativeMethods.discrete_point_key_frame_new ()) {}
 		internal DiscretePointKeyFrame (IntPtr raw) : base (raw) {}
@@ -603,12 +603,6 @@ namespace System.Windows.Media.Animation {
 		internal override Kind GetKind () { return Kind.DOUBLEKEYFRAME_COLLECTION; }
 	}
 
-	partial class KeyFrame {
-		public KeyFrame () : base (NativeMethods.key_frame_new ()) {}
-		internal KeyFrame (IntPtr raw) : base (raw) {}
-		internal override Kind GetKind () { return Kind.KEYFRAME; }
-	}
-
 	partial class KeySpline {
 		public KeySpline () : base (NativeMethods.key_spline_new ()) {}
 		internal KeySpline (IntPtr raw) : base (raw) {}
@@ -633,10 +627,22 @@ namespace System.Windows.Media.Animation {
 		internal override Kind GetKind () { return Kind.LINEARPOINTKEYFRAME; }
 	}
 
-	partial class ParallelTimeline {
-		public ParallelTimeline () : base (NativeMethods.parallel_timeline_new ()) {}
-		internal ParallelTimeline (IntPtr raw) : base (raw) {}
-		internal override Kind GetKind () { return Kind.PARALLELTIMELINE; }
+	partial class ObjectAnimationUsingKeyFrames {
+		public ObjectAnimationUsingKeyFrames () : base (NativeMethods.object_animation_using_key_frames_new ()) {}
+		internal ObjectAnimationUsingKeyFrames (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.OBJECTANIMATIONUSINGKEYFRAMES; }
+	}
+
+	partial class ObjectKeyFrame {
+		protected ObjectKeyFrame () : base (NativeMethods.object_key_frame_new ()) {}
+		internal ObjectKeyFrame (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.OBJECTKEYFRAME; }
+	}
+
+	partial class ObjectKeyFrameCollection {
+		public ObjectKeyFrameCollection () : base (NativeMethods.object_key_frame_collection_new ()) {}
+		internal ObjectKeyFrameCollection (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.OBJECTKEYFRAME_COLLECTION; }
 	}
 
 	partial class PointAnimation {
@@ -697,12 +703,6 @@ namespace System.Windows.Media.Animation {
 		public TimelineCollection () : base (NativeMethods.timeline_collection_new ()) {}
 		internal TimelineCollection (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.TIMELINE_COLLECTION; }
-	}
-
-	partial class TimelineGroup {
-		public TimelineGroup () : base (NativeMethods.timeline_group_new ()) {}
-		internal TimelineGroup (IntPtr raw) : base (raw) {}
-		internal override Kind GetKind () { return Kind.TIMELINEGROUP; }
 	}
 }
 

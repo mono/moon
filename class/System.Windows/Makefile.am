@@ -86,15 +86,18 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/ColorKeyFrameCollection.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DiscreteColorKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DiscreteDoubleKeyFrame.cs	\
+	$(srcdir)/System.Windows.Media.Animation/DiscreteObjectKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DiscretePointKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DoubleKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleKeyFrameCollection.cs	\
-	$(srcdir)/System.Windows.Media.Animation/KeyFrame.cs			\
 	$(srcdir)/System.Windows.Media.Animation/KeyTime.cs			\
 	$(srcdir)/System.Windows.Media.Animation/KeyTimeType.cs			\
 	$(srcdir)/System.Windows.Media.Animation/LinearColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/LinearDoubleKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/LinearPointKeyFrame.cs		\
+	$(srcdir)/System.Windows.Media.Animation/ObjectAnimationUsingKeyFrames.cs		\
+	$(srcdir)/System.Windows.Media.Animation/ObjectKeyFrame.cs		\
+	$(srcdir)/System.Windows.Media.Animation/ObjectKeyFrameCollection.cs	\
 	$(srcdir)/System.Windows.Media.Animation/PointAnimationUsingKeyFrames.cs\
 	$(srcdir)/System.Windows.Media.Animation/PointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/PointKeyFrameCollection.cs	\
@@ -257,20 +260,17 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/TranslateTransform.cs			\
 	$(srcdir)/System.Windows.Media/VideoBrush.cs				\
 	$(srcdir)/System.Windows.Media/VisualTreeHelper.cs			\
-	$(srcdir)/System.Windows.Media.Animation/Animation.cs			\
 	$(srcdir)/System.Windows.Media.Animation/BeginStoryboard.cs		\
 	$(srcdir)/System.Windows.Media.Animation/ColorAnimation.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleAnimation.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleAnimationUsingKeyFrames.cs\
 	$(srcdir)/System.Windows.Media.Animation/FillBehavior.cs		\
 	$(srcdir)/System.Windows.Media.Animation/KeySpline.cs			\
-	$(srcdir)/System.Windows.Media.Animation/ParallelTimeline.cs		\
 	$(srcdir)/System.Windows.Media.Animation/PointAnimation.cs		\
 	$(srcdir)/System.Windows.Media.Animation/RepeatBehavior.cs		\
 	$(srcdir)/System.Windows.Media.Animation/SplineDoubleKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/Storyboard.cs			\
 	$(srcdir)/System.Windows.Media.Animation/Timeline.cs			\
-	$(srcdir)/System.Windows.Media.Animation/TimelineGroup.cs		\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapImage.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/DownloadProgressEventArgs.cs	\
 	$(srcdir)/System.Windows.Media.Imaging/RenderTargetBitmap.cs	\

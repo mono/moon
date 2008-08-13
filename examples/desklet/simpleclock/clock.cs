@@ -87,8 +87,7 @@ namespace Clock {
 			}
 			
 			DoubleAnimation timer = new DoubleAnimation ();
-			//sb.Children.Add (timer);
-			((TimelineCollection)sb.GetValue(TimelineGroup.ChildrenProperty)).Add(timer);
+			sb.Children.Add (timer);
 			timer.Duration = new Duration (TimeSpan.FromSeconds (0.5));
 			
 			sb.Completed += delegate {

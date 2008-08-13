@@ -173,6 +173,22 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// DiscreteObjectKeyFrame *discrete_object_key_frame_new ();
+		public extern static IntPtr discrete_object_key_frame_new ();
+
+		[DllImport ("moon")]
+		// ObjectAnimationUsingKeyFrames *object_animation_using_key_frames_new ();
+		public extern static IntPtr object_animation_using_key_frames_new ();
+
+		[DllImport ("moon")]
+		// ObjectKeyFrame *object_key_frame_new ();
+		public extern static IntPtr object_key_frame_new ();
+
+		[DllImport ("moon")]
+		// ObjectKeyFrameCollection *object_key_frame_collection_new ();
+		public extern static IntPtr object_key_frame_collection_new ();
+
+		[DllImport ("moon")]
 		// StackPanel *stack_panel_new ();
 		public extern static IntPtr stack_panel_new ();
 

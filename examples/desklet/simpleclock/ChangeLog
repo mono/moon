@@ -1,3 +1,7 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* clock.cs: Update according to API changes.
+
 2007-09-20  Zoltan Varga  <vargaz@gmail.com>
 
 	* clock.cs: Use Visibility.Collapsed instead of Hidden.

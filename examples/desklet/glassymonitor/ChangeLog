@@ -1,3 +1,7 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* monitor.cs: Update according to API changes.
+
 2007-07-10  Rodrigo Kumpera  <rkumpera@novell.com>
 
 	* monitor.cs: add patch from Silvio Gissi to select the interface with lower metric

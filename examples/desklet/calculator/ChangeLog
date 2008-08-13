@@ -1,3 +1,7 @@
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* calculator.cs: Update according to API changes.
+
 2007-06-29  Rodrigo Kumpera  <rkumpera@novell.com>
 
 	* Make the button colored and use a transparent background

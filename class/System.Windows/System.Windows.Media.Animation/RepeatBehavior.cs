@@ -27,7 +27,7 @@
 //
 namespace System.Windows.Media.Animation {
 
-	public struct RepeatBehavior {
+	public struct RepeatBehavior : IFormattable {
 		const int COUNT = 1;
 		const int TIMESPAN = 2;
 		const int FOREVER = 3;
@@ -143,5 +143,23 @@ namespace System.Windows.Media.Animation {
 				return base.GetHashCode (); // throw?
 			}
 		}
+		
+		public override string ToString ()
+		{
+			return base.ToString ();
+		}
+
+		public string ToString (IFormatProvider formatProvider)
+		{
+			throw new System.NotImplementedException ();
+		}
+
+		// This method shows up in gui-compare, don't know how I can remove it
+		string System.IFormattable.ToString (string format, IFormatProvider formatProvider)
+		{
+			throw new System.NotImplementedException ();
+		}
+
+		
 	}
 }

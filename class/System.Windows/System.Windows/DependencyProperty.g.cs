@@ -1382,19 +1382,25 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class ColorAnimationUsingKeyFrames {
-		public static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (ColorKeyFrameCollection));
+		internal static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (ColorKeyFrameCollection));
 
 		public ColorKeyFrameCollection KeyFrames {
 			get { return (ColorKeyFrameCollection) GetValue (KeyFramesProperty); }
-			set { SetValue (KeyFramesProperty, value); }
+			internal set { SetValue (KeyFramesProperty, value); }
 		}
 	}
 
 	partial class ColorKeyFrame {
-		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.COLORKEYFRAME, "Value", typeof (Nullable<Color>));
+		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.COLORKEYFRAME, "KeyTime", typeof (KeyTime));
+		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.COLORKEYFRAME, "Value", typeof (Color));
 
-		public Nullable<Color> Value {
-			get { return (Nullable<Color>) GetValue (ValueProperty); }
+		public KeyTime KeyTime {
+			get { return (KeyTime) GetValue (KeyTimeProperty); }
+			set { SetValue (KeyTimeProperty, value); }
+		}
+
+		public Color Value {
+			get { return (Color) GetValue (ValueProperty); }
 			set { SetValue (ValueProperty, value); }
 		}
 	}
@@ -1421,29 +1427,50 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class DoubleAnimationUsingKeyFrames {
-		public static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (DoubleKeyFrameCollection));
+		internal static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (DoubleKeyFrameCollection));
 
 		public DoubleKeyFrameCollection KeyFrames {
 			get { return (DoubleKeyFrameCollection) GetValue (KeyFramesProperty); }
-			set { SetValue (KeyFramesProperty, value); }
+			internal set { SetValue (KeyFramesProperty, value); }
 		}
 	}
 
 	partial class DoubleKeyFrame {
-		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.DOUBLEKEYFRAME, "Value", typeof (Nullable<double>));
+		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.DOUBLEKEYFRAME, "KeyTime", typeof (KeyTime));
+		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.DOUBLEKEYFRAME, "Value", typeof (double));
 
-		public Nullable<double> Value {
-			get { return (Nullable<double>) GetValue (ValueProperty); }
+		public KeyTime KeyTime {
+			get { return (KeyTime) GetValue (KeyTimeProperty); }
+			set { SetValue (KeyTimeProperty, value); }
+		}
+
+		public double Value {
+			get { return (double) GetValue (ValueProperty); }
 			set { SetValue (ValueProperty, value); }
 		}
 	}
 
-	partial class KeyFrame {
-		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.KEYFRAME, "KeyTime", typeof (Nullable<KeyTime>));
+	partial class ObjectAnimationUsingKeyFrames {
+		internal static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (ObjectKeyFrameCollection));
 
-		public Nullable<KeyTime> KeyTime {
-			get { return (Nullable<KeyTime>) GetValue (KeyTimeProperty); }
+		public ObjectKeyFrameCollection KeyFrames {
+			get { return (ObjectKeyFrameCollection) GetValue (KeyFramesProperty); }
+			internal set { SetValue (KeyFramesProperty, value); }
+		}
+	}
+
+	partial class ObjectKeyFrame {
+		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "KeyTime", typeof (KeyTime));
+		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "Value", typeof (object));
+
+		public KeyTime KeyTime {
+			get { return (KeyTime) GetValue (KeyTimeProperty); }
 			set { SetValue (KeyTimeProperty, value); }
+		}
+
+		public object Value {
+			get { return (object) GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
 		}
 	}
 
@@ -1469,19 +1496,25 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class PointAnimationUsingKeyFrames {
-		public static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (PointKeyFrameCollection));
+		internal static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (PointKeyFrameCollection));
 
 		public PointKeyFrameCollection KeyFrames {
 			get { return (PointKeyFrameCollection) GetValue (KeyFramesProperty); }
-			set { SetValue (KeyFramesProperty, value); }
+			internal set { SetValue (KeyFramesProperty, value); }
 		}
 	}
 
 	partial class PointKeyFrame {
-		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.POINTKEYFRAME, "Value", typeof (Nullable<Point>));
+		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.POINTKEYFRAME, "KeyTime", typeof (KeyTime));
+		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.POINTKEYFRAME, "Value", typeof (Point));
 
-		public Nullable<Point> Value {
-			get { return (Nullable<Point>) GetValue (ValueProperty); }
+		public KeyTime KeyTime {
+			get { return (KeyTime) GetValue (KeyTimeProperty); }
+			set { SetValue (KeyTimeProperty, value); }
+		}
+
+		public Point Value {
+			get { return (Point) GetValue (ValueProperty); }
 			set { SetValue (ValueProperty, value); }
 		}
 	}
@@ -1554,15 +1587,6 @@ namespace System.Windows.Media.Animation {
 		public double SpeedRatio {
 			get { return (double) GetValue (SpeedRatioProperty); }
 			set { SetValue (SpeedRatioProperty, value); }
-		}
-	}
-
-	partial class TimelineGroup {
-		public static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.TIMELINEGROUP, "Children", typeof (TimelineCollection));
-
-		public TimelineCollection Children {
-			get { return (TimelineCollection) GetValue (ChildrenProperty); }
-			set { SetValue (ChildrenProperty, value); }
 		}
 	}
 }

@@ -564,7 +564,7 @@ class TimelineCollection : public DependencyObjectCollection {
 };
 
 
-/* @Namespace=System.Windows.Media.Animation */
+/* @Namespace=None,ManagedDependencyProperties=None */
 class TimelineGroup : public Timeline {
  protected:
 	virtual ~TimelineGroup ();
@@ -586,7 +586,7 @@ class TimelineGroup : public Timeline {
 };
 
 
-/* @Namespace=System.Windows.Media.Animation */
+/* @Namespace=None */
 class ParallelTimeline : public TimelineGroup {
  protected:
 	virtual ~ParallelTimeline () {}

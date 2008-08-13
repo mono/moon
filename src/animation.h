@@ -191,7 +191,7 @@ class AnimationClock : public Clock {
 
 
 /* this is called AnimationTimeline in wpf */
-/* @Namespace=System.Windows.Media.Animation */
+/* @Namespace=None */
 class Animation/*Timeline*/ : public Timeline {
  protected:
 	virtual ~Animation () {}
@@ -334,7 +334,7 @@ class PointAnimation : public Animation/*Timeline*/ {
 };
 
 
-/* @Namespace=System.Windows.Media.Animation */
+/* @Namespace=None,ManagedDependencyProperties=None */
 class KeyFrame : public DependencyObject {
  protected:
 	virtual ~KeyFrame () {}
@@ -428,8 +428,10 @@ class DoubleKeyFrame : public KeyFrame {
 	virtual ~DoubleKeyFrame () {}
 
  public:
- 	/* @PropertyType=double,Nullable */
+ 	/* @PropertyType=double,Nullable,ManagedPropertyType=double */
 	static DependencyProperty *ValueProperty;
+	/* @PropertyType=KeyTime,Version=2 */
+	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,ManagedAccess=Protected */
 	DoubleKeyFrame ();
@@ -449,8 +451,10 @@ class ColorKeyFrame : public KeyFrame {
 	virtual ~ColorKeyFrame () {}
 
  public:
- 	/* @PropertyType=Color,Nullable */
+ 	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color */
 	static DependencyProperty *ValueProperty;
+	/* @PropertyType=KeyTime,Version=2 */
+	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,ManagedAccess=Protected */
 	ColorKeyFrame ();
@@ -470,8 +474,10 @@ class PointKeyFrame : public KeyFrame {
 	virtual ~PointKeyFrame () {}
 
  public:
- 	/* @PropertyType=Point,Nullable */
+ 	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point */
 	static DependencyProperty *ValueProperty;
+	/* @PropertyType=KeyTime,Version=2 */
+	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,ManagedAccess=Protected */
 	PointKeyFrame ();
@@ -652,7 +658,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual ~DoubleAnimationUsingKeyFrames ();
 
  public:
- 	/* @PropertyType=DoubleKeyFrameCollection */
+ 	/* @PropertyType=DoubleKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding */
@@ -679,7 +685,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual ~ColorAnimationUsingKeyFrames ();
 
  public:
- 	/* @PropertyType=ColorKeyFrameCollection */
+ 	/* @PropertyType=ColorKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding */
@@ -706,7 +712,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual ~PointAnimationUsingKeyFrames ();
 
  public:
- 	/* @PropertyType=PointKeyFrameCollection */
+ 	/* @PropertyType=PointKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding */

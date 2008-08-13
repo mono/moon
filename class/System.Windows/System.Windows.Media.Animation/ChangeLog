@@ -1,5 +1,14 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Animation.cs, KeyFrame.cs, ParallelTimeline.cs, TimelineGroup.cs:
+	  Removed, these classes do not exist in SL 2.0 anymore.
+	* DiscreteObjectKeyFrame.cs, ObjectAnimationUsingKeyFrames.cs,
+	  ObjectKeyFrame.cs, ObjectKeyFrameCollection.cs: Added.
+	* RepeatBehavior.cs, Storyboard.cs, Timeline.cs: Fixed gui-compare
+	  issues.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* ColorAnimation.cs, ColorAnimationUsingKeyFrames.cs, ColorKeyFrame.cs,
 	  DoubleAnimation.cs, DoubleAnimationUsingKeyFrames.cs,
 	  DoubleKeyFrame.cs, PointAnimation.cs,

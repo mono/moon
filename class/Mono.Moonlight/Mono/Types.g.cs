@@ -182,8 +182,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TRANSLATETRANSFORM));
 				t = agclr.GetType ("System.Windows.Media.VideoBrush", true); 
 				types.Add (t, new ManagedType (t, Kind.VIDEOBRUSH));
-				t = agclr.GetType ("System.Windows.Media.Animation.Animation", true); 
-				types.Add (t, new ManagedType (t, Kind.ANIMATION));
 				t = agclr.GetType ("System.Windows.Media.Animation.BeginStoryboard", true); 
 				types.Add (t, new ManagedType (t, Kind.BEGINSTORYBOARD));
 				t = agclr.GetType ("System.Windows.Media.Animation.ColorAnimation", true); 
@@ -198,6 +196,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.DISCRETECOLORKEYFRAME));
 				t = agclr.GetType ("System.Windows.Media.Animation.DiscreteDoubleKeyFrame", true); 
 				types.Add (t, new ManagedType (t, Kind.DISCRETEDOUBLEKEYFRAME));
+				t = agclr.GetType ("System.Windows.Media.Animation.DiscreteObjectKeyFrame", true); 
+				types.Add (t, new ManagedType (t, Kind.DISCRETEOBJECTKEYFRAME));
 				t = agclr.GetType ("System.Windows.Media.Animation.DiscretePointKeyFrame", true); 
 				types.Add (t, new ManagedType (t, Kind.DISCRETEPOINTKEYFRAME));
 				t = agclr.GetType ("System.Windows.Media.Animation.DoubleAnimation", true); 
@@ -208,8 +208,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.DOUBLEKEYFRAME));
 				t = agclr.GetType ("System.Windows.Media.Animation.DoubleKeyFrameCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.DOUBLEKEYFRAME_COLLECTION));
-				t = agclr.GetType ("System.Windows.Media.Animation.KeyFrame", true); 
-				types.Add (t, new ManagedType (t, Kind.KEYFRAME));
 				t = agclr.GetType ("System.Windows.Media.Animation.KeySpline", true); 
 				types.Add (t, new ManagedType (t, Kind.KEYSPLINE));
 				t = agclr.GetType ("System.Windows.Media.Animation.LinearColorKeyFrame", true); 
@@ -218,8 +216,12 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.LINEARDOUBLEKEYFRAME));
 				t = agclr.GetType ("System.Windows.Media.Animation.LinearPointKeyFrame", true); 
 				types.Add (t, new ManagedType (t, Kind.LINEARPOINTKEYFRAME));
-				t = agclr.GetType ("System.Windows.Media.Animation.ParallelTimeline", true); 
-				types.Add (t, new ManagedType (t, Kind.PARALLELTIMELINE));
+				t = agclr.GetType ("System.Windows.Media.Animation.ObjectAnimationUsingKeyFrames", true); 
+				types.Add (t, new ManagedType (t, Kind.OBJECTANIMATIONUSINGKEYFRAMES));
+				t = agclr.GetType ("System.Windows.Media.Animation.ObjectKeyFrame", true); 
+				types.Add (t, new ManagedType (t, Kind.OBJECTKEYFRAME));
+				t = agclr.GetType ("System.Windows.Media.Animation.ObjectKeyFrameCollection", true); 
+				types.Add (t, new ManagedType (t, Kind.OBJECTKEYFRAME_COLLECTION));
 				t = agclr.GetType ("System.Windows.Media.Animation.PointAnimation", true); 
 				types.Add (t, new ManagedType (t, Kind.POINTANIMATION));
 				t = agclr.GetType ("System.Windows.Media.Animation.PointAnimationUsingKeyFrames", true); 
@@ -240,8 +242,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TIMELINE));
 				t = agclr.GetType ("System.Windows.Media.Animation.TimelineCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.TIMELINE_COLLECTION));
-				t = agclr.GetType ("System.Windows.Media.Animation.TimelineGroup", true); 
-				types.Add (t, new ManagedType (t, Kind.TIMELINEGROUP));
 				t = agclr.GetType ("System.Windows.Shapes.Ellipse", true); 
 				types.Add (t, new ManagedType (t, Kind.ELLIPSE));
 				t = agclr.GetType ("System.Windows.Shapes.Line", true); 

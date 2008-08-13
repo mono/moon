@@ -120,7 +120,6 @@
     <File name="System.Windows.Media/TransformGroup.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/TranslateTransform.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/VideoBrush.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Media.Animation/Animation.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/BeginStoryboard.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ColorAnimation.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ColorAnimationUsingKeyFrames.cs" subtype="Code" buildaction="Compile" />
@@ -134,14 +133,12 @@
     <File name="System.Windows.Media.Animation/DoubleKeyFrame.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/DoubleKeyFrameCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/FillBehavior.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Media.Animation/KeyFrame.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/KeySpline.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/KeyTime.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/KeyTimeType.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/LinearColorKeyFrame.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/LinearDoubleKeyFrame.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/LinearPointKeyFrame.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Media.Animation/ParallelTimeline.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/PointAnimation.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/PointAnimationUsingKeyFrames.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/PointKeyFrame.cs" subtype="Code" buildaction="Compile" />
@@ -152,7 +149,6 @@
     <File name="System.Windows.Media.Animation/SplinePointKeyFrame.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/Storyboard.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/Timeline.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Media.Animation/TimelineGroup.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Shapes/Ellipse.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Shapes/Line.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Shapes/Path.cs" subtype="Code" buildaction="Compile" />
@@ -292,6 +288,10 @@
     <File name="System.Windows/ApplicationInternal.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Collections.ObjectModel/ObservableCollection_T.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Imaging/RenderTargetBitmap.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ObjectKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/DiscreteObjectKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ObjectKeyFrameCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ObjectAnimationUsingKeyFrames.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />

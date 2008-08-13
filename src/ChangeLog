@@ -1,5 +1,15 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* src.mdp, Makefile.am: Added animation2.h
+	* type.h, type-generated.cpp, value.h, cbinding.cpp, cbinding.h,
+	  dependencyproperty.g.cpp: Regenerated.
+	* animation.h: Added missing 2.0 DPs and more annotations.
+	* animation2.h: Added, contains 2.0 animation classes.
+	* clock.h: There are no managed equivalent of TimelineGroup and
+	  ParallelTimeline, remove their Namespace annotation.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* shape.h: Fix warning.
 
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 

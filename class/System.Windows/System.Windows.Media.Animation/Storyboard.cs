@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Security;
 using System.Windows;
 using System.Windows.Media;
 using System.Runtime.InteropServices;
@@ -37,32 +38,53 @@ namespace System.Windows.Media.Animation {
 		// FIXME For TargetName and TargetProperty
 		// FIXME Exception if setting on running
 		// This check needs to go in native co
-	
+
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public void Begin ()
 		{
 			NativeMethods.storyboard_begin (native);
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public void Pause ()
 		{
 			NativeMethods.storyboard_pause (native);
 		}
 
+
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public void Resume ()
 		{
 			NativeMethods.storyboard_resume (native);
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public void Seek (TimeSpan timespan)
 		{
 			NativeMethods.storyboard_seek (native, timespan.Ticks);
 		}
 
+		public void SeekAlignedToLastTick (TimeSpan seekTime)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		public void SkipToFill ()
 		{
 			throw new NotImplementedException ();
 		}
 
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public void Stop ()
 		{
 			NativeMethods.storyboard_stop (native);
@@ -72,20 +94,6 @@ namespace System.Windows.Media.Animation {
 			get { throw new NotImplementedException (); }
 		}
 		
-		static object CompletedEvent = new object ();
-		public event EventHandler Completed {
-			add {
-				if (events[CompletedEvent] == null)
-					Events.AddHandler (this, "Completed", completed_proxy);
-				events.AddHandler (CompletedEvent, value);
-			}
-			remove {
-				events.RemoveHandler (CompletedEvent, value);
-				if (events[CompletedEvent] == null)
-					Events.RemoveHandler (this, "Completed", completed_proxy);
-			}
-		}
-
 		public static void SetTarget (Timeline timeline, DependencyObject target)
 		{
 			// FIXME Exception if setting on running
@@ -115,19 +123,14 @@ namespace System.Windows.Media.Animation {
 			return new PropertyPath (path);
 		}
 
-		static UnmanagedEventHandler completed_proxy = new UnmanagedEventHandler (UnmanagedCompleted);
-
-		private static void UnmanagedCompleted (IntPtr target, IntPtr calldata, IntPtr closure)
+		public TimeSpan GetCurrentTime ()
 		{
-			Storyboard sb = (Storyboard) Helper.GCHandleFromIntPtr (closure).Target;
-			sb.InvokeCompleted ();
+			throw new NotImplementedException ();
 		}
-
-		private void InvokeCompleted ()
+		
+		public ClockState GetCurrentState ()
 		{
-			EventHandler h = (EventHandler)events[CompletedEvent];
-			if (h != null)
-				h (this, EventArgs.Empty);
+			throw new NotImplementedException ();
 		}
 	}
 }

@@ -38,6 +38,7 @@
 #include "uielement.h"
 #include "yuv-converter.h"
 #if SL_2_0
+#include "animation2.h"
 #include "contentcontrol.h"
 #include "control.h"
 #include "deployment.h"
@@ -138,6 +139,7 @@ Type type_infos [] = {
 	{ Type::DEPLOYMENT, Type::DEPENDENCY_OBJECT, false, "Deployment", "DEPLOYMENT", 0, 1, NULL, (create_inst_func *) deployment_new, NULL, NULL, NULL }, 
 	{ Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME, false, "DiscreteColorKeyFrame", "DISCRETECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_color_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::DISCRETEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "DiscreteDoubleKeyFrame", "DISCRETEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_double_key_frame_new, NULL, NULL, NULL }, 
+	{ Type::DISCRETEOBJECTKEYFRAME, Type::OBJECTKEYFRAME, false, "DiscreteObjectKeyFrame", "DISCRETEOBJECTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_object_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::DISCRETEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "DiscretePointKeyFrame", "DISCRETEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_point_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::DOUBLE, Type::INVALID, false, "double", "DOUBLE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DOUBLE_COLLECTION, Type::COLLECTION, false, "DoubleCollection", "DOUBLE_COLLECTION", 0, 1, NULL, (create_inst_func *) double_collection_new, NULL, NULL, NULL }, 
@@ -200,6 +202,9 @@ Type type_infos [] = {
 	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::INVALID, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::OBJECTANIMATIONUSINGKEYFRAMES, Type::ANIMATION, false, "ObjectAnimationUsingKeyFrames", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) object_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
+	{ Type::OBJECTKEYFRAME, Type::KEYFRAME, false, "ObjectKeyFrame", "OBJECTKEYFRAME", 0, 1, NULL, (create_inst_func *) object_key_frame_new, NULL, NULL, NULL }, 
+	{ Type::OBJECTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ObjectKeyFrameCollection", "OBJECTKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) object_key_frame_collection_new, NULL, NULL, NULL }, 
 	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 15, NULL, (create_inst_func *) panel_new, "Children", NULL, NULL }, 
 	{ Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 1, NULL, (create_inst_func *) parallel_timeline_new, NULL, NULL, NULL }, 
 	{ Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
@@ -368,6 +373,7 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'DEPLOYMENT'", "DEPLOYMENT", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME, false, "DiscreteColorKeyFrame", "DISCRETECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_color_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::DISCRETEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "DiscreteDoubleKeyFrame", "DISCRETEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_double_key_frame_new, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'DISCRETEOBJECTKEYFRAME'", "DISCRETEOBJECTKEYFRAME", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DISCRETEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "DiscretePointKeyFrame", "DISCRETEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_point_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::DOUBLE, Type::INVALID, false, "double", "DOUBLE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DOUBLE_COLLECTION, Type::COLLECTION, false, "DoubleCollection", "DOUBLE_COLLECTION", 0, 1, NULL, (create_inst_func *) double_collection_new, NULL, NULL, NULL }, 
@@ -430,6 +436,9 @@ Type type_infos [] = {
 	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::INVALID, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'OBJECTANIMATIONUSINGKEYFRAMES'", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'OBJECTKEYFRAME'", "OBJECTKEYFRAME", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'OBJECTKEYFRAME_COLLECTION'", "OBJECTKEYFRAME_COLLECTION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 12, NULL, (create_inst_func *) panel_new, "Children", NULL, NULL }, 
 	{ Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 1, NULL, (create_inst_func *) parallel_timeline_new, NULL, NULL, NULL }, 
 	{ Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 

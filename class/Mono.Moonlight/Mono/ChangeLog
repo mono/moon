@@ -1,5 +1,9 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* GeneratedPInvokes.cs, Kind.cs, Types.g.cs: Regenerated.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* GeneratedPInvokes.cs, Kind.cs, Types.g.cs: Added a native StackPanel
 	  class and generate the managed StackPanel.
 

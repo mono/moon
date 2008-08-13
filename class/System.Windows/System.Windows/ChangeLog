@@ -1,5 +1,9 @@
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyProperty.g.cs, DependencyObject.g.cs: Regenerated.
+
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DependencyObject.g.cs: Regenerated.
 
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 

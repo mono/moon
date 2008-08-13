@@ -28,6 +28,8 @@
 #include "trigger.h"
 #include "uielement.h"
 #if SL_2_0
+#include "animation.h"
+#include "animation2.h"
 #include "contentcontrol.h"
 #include "control.h"
 #include "deployment.h"
@@ -75,6 +77,10 @@ dependency_property_g_init (void)
 	ColorAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "From", Type::COLOR);
 	ColorAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "To", Type::COLOR);
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);
+#if SL_2_0
+
+	ColorKeyFrame::KeyTimeProperty = DependencyProperty::Register (Type::COLORKEYFRAME, "KeyTime", Type::KEYTIME);
+#endif
 	ColorKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);
 #if SL_2_0
 
@@ -119,6 +125,10 @@ dependency_property_g_init (void)
 	DoubleAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "From", Type::DOUBLE);
 	DoubleAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "To", Type::DOUBLE);
 	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::DOUBLEKEYFRAME_COLLECTION);
+#if SL_2_0
+
+	DoubleKeyFrame::KeyTimeProperty = DependencyProperty::Register (Type::DOUBLEKEYFRAME, "KeyTime", Type::KEYTIME);
+#endif
 	DoubleKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::DOUBLEKEYFRAME, "Value", Type::DOUBLE);
 	Downloader::DownloadProgressProperty = DependencyProperty::Register (Type::DOWNLOADER, "DownloadProgress", new Value (0.0));
 	Downloader::ResponseTextProperty = DependencyProperty::Register (Type::DOWNLOADER, "ResponseText", Type::STRING);
@@ -234,6 +244,12 @@ dependency_property_g_init (void)
 	MediaElement::PositionProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
 	NameScope::NameScopeProperty = DependencyProperty::Register (Type::NAMESCOPE, "NameScope", Type::NAMESCOPE);
+#if SL_2_0
+
+	ObjectAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
+	ObjectKeyFrame::KeyTimeProperty = DependencyProperty::Register (Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
+	ObjectKeyFrame::ValueProperty = DependencyProperty::Register (Type::OBJECTKEYFRAME, "Value", Type::MANAGED);
+#endif
 	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
 	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
 	Path::DataProperty = DependencyProperty::Register (Type::PATH, "Data", Type::GEOMETRY);
@@ -245,6 +261,10 @@ dependency_property_g_init (void)
 	PointAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "From", Type::POINT);
 	PointAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "To", Type::POINT);
 	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::POINTKEYFRAME_COLLECTION);
+#if SL_2_0
+
+	PointKeyFrame::KeyTimeProperty = DependencyProperty::Register (Type::POINTKEYFRAME, "KeyTime", Type::KEYTIME);
+#endif
 	PointKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::POINTKEYFRAME, "Value", Type::POINT);
 	PolyBezierSegment::PointsProperty = DependencyProperty::Register (Type::POLYBEZIERSEGMENT, "Points", Type::POINT_COLLECTION);
 	Polygon::FillRuleProperty = DependencyProperty::Register (Type::POLYGON, "FillRule", new Value (FillRuleEvenOdd));
@@ -395,6 +415,9 @@ DependencyProperty *ColorAnimation::ByProperty = NULL;
 DependencyProperty *ColorAnimation::FromProperty = NULL;
 DependencyProperty *ColorAnimation::ToProperty = NULL;
 DependencyProperty *ColorAnimationUsingKeyFrames::KeyFramesProperty = NULL;
+#if SL_2_0
+DependencyProperty *ColorKeyFrame::KeyTimeProperty = NULL;
+#endif
 DependencyProperty *ColorKeyFrame::ValueProperty = NULL;
 #if SL_2_0
 DependencyProperty *ColumnDefinition::MaxWidthProperty = NULL;
@@ -437,6 +460,9 @@ DependencyProperty *DoubleAnimation::ByProperty = NULL;
 DependencyProperty *DoubleAnimation::FromProperty = NULL;
 DependencyProperty *DoubleAnimation::ToProperty = NULL;
 DependencyProperty *DoubleAnimationUsingKeyFrames::KeyFramesProperty = NULL;
+#if SL_2_0
+DependencyProperty *DoubleKeyFrame::KeyTimeProperty = NULL;
+#endif
 DependencyProperty *DoubleKeyFrame::ValueProperty = NULL;
 DependencyProperty *Downloader::DownloadProgressProperty = NULL;
 DependencyProperty *Downloader::ResponseTextProperty = NULL;
@@ -548,6 +574,11 @@ DependencyProperty *MediaElement::NaturalVideoWidthProperty = NULL;
 DependencyProperty *MediaElement::PositionProperty = NULL;
 DependencyProperty *MediaElement::VolumeProperty = NULL;
 DependencyProperty *NameScope::NameScopeProperty = NULL;
+#if SL_2_0
+DependencyProperty *ObjectAnimationUsingKeyFrames::KeyFramesProperty = NULL;
+DependencyProperty *ObjectKeyFrame::KeyTimeProperty = NULL;
+DependencyProperty *ObjectKeyFrame::ValueProperty = NULL;
+#endif
 DependencyProperty *Panel::BackgroundProperty = NULL;
 DependencyProperty *Panel::ChildrenProperty = NULL;
 DependencyProperty *Path::DataProperty = NULL;
@@ -559,6 +590,9 @@ DependencyProperty *PointAnimation::ByProperty = NULL;
 DependencyProperty *PointAnimation::FromProperty = NULL;
 DependencyProperty *PointAnimation::ToProperty = NULL;
 DependencyProperty *PointAnimationUsingKeyFrames::KeyFramesProperty = NULL;
+#if SL_2_0
+DependencyProperty *PointKeyFrame::KeyTimeProperty = NULL;
+#endif
 DependencyProperty *PointKeyFrame::ValueProperty = NULL;
 DependencyProperty *PolyBezierSegment::PointsProperty = NULL;
 DependencyProperty *Polygon::FillRuleProperty = NULL;

@@ -34,5 +34,35 @@ namespace System.Windows.Media.Animation {
 
 	public abstract partial class Timeline : DependencyObject {
 
+		
+		static UnmanagedEventHandler completed_proxy = new UnmanagedEventHandler (UnmanagedCompleted);
+
+		private static void UnmanagedCompleted (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			Storyboard sb = (Storyboard) Helper.GCHandleFromIntPtr (closure).Target;
+			sb.InvokeCompleted ();
+		}
+
+		private void InvokeCompleted ()
+		{
+			EventHandler h = (EventHandler)events[CompletedEvent];
+			if (h != null)
+				h (this, EventArgs.Empty);
+		}
+		
+		static object CompletedEvent = new object ();
+		public event EventHandler Completed {
+			add {
+				if (events[CompletedEvent] == null)
+					Events.AddHandler (this, "Completed", completed_proxy);
+				events.AddHandler (CompletedEvent, value);
+			}
+			remove {
+				events.RemoveHandler (CompletedEvent, value);
+				if (events[CompletedEvent] == null)
+					Events.RemoveHandler (this, "Completed", completed_proxy);
+			}
+		}
+
 	}
 }

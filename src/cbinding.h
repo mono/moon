@@ -8,6 +8,7 @@
 #include <glib.h>
 // This should probably be changed to somehow not include c++ headers.
 #include "animation.h"
+#include "animation2.h"
 #include "brush.h"
 #include "canvas.h"
 #include "clock.h"
@@ -250,6 +251,14 @@ DiscreteColorKeyFrame *discrete_color_key_frame_new (void);
  **/
 DiscreteDoubleKeyFrame *discrete_double_key_frame_new (void);
 
+#if SL_2_0
+/**
+ * DiscreteObjectKeyFrame
+ **/
+/* @GeneratePInvoke */
+DiscreteObjectKeyFrame *discrete_object_key_frame_new (void);
+#endif
+
 /**
  * DiscretePointKeyFrame
  **/
@@ -473,6 +482,30 @@ MediaElement *media_element_new (void);
  * MouseEventArgs
  **/
 MouseEventArgs *mouse_event_args_new (void);
+
+#if SL_2_0
+/**
+ * ObjectAnimationUsingKeyFrames
+ **/
+/* @GeneratePInvoke */
+ObjectAnimationUsingKeyFrames *object_animation_using_key_frames_new (void);
+#endif
+
+#if SL_2_0
+/**
+ * ObjectKeyFrame
+ **/
+/* @GeneratePInvoke */
+ObjectKeyFrame *object_key_frame_new (void);
+#endif
+
+#if SL_2_0
+/**
+ * ObjectKeyFrameCollection
+ **/
+/* @GeneratePInvoke */
+ObjectKeyFrameCollection *object_key_frame_collection_new (void);
+#endif
 
 /**
  * Panel

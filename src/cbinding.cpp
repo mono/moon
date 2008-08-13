@@ -487,6 +487,18 @@ discrete_double_key_frame_new (void)
 }
 
 
+#if SL_2_0
+/**
+ * DiscreteObjectKeyFrame
+ **/
+DiscreteObjectKeyFrame *
+discrete_object_key_frame_new (void)
+{
+	return new DiscreteObjectKeyFrame ();
+}
+#endif
+
+
 /**
  * DiscretePointKeyFrame
  **/
@@ -929,6 +941,42 @@ mouse_event_args_new (void)
 {
 	return new MouseEventArgs ();
 }
+
+
+#if SL_2_0
+/**
+ * ObjectAnimationUsingKeyFrames
+ **/
+ObjectAnimationUsingKeyFrames *
+object_animation_using_key_frames_new (void)
+{
+	return new ObjectAnimationUsingKeyFrames ();
+}
+#endif
+
+
+#if SL_2_0
+/**
+ * ObjectKeyFrame
+ **/
+ObjectKeyFrame *
+object_key_frame_new (void)
+{
+	return new ObjectKeyFrame ();
+}
+#endif
+
+
+#if SL_2_0
+/**
+ * ObjectKeyFrameCollection
+ **/
+ObjectKeyFrameCollection *
+object_key_frame_collection_new (void)
+{
+	return new ObjectKeyFrameCollection ();
+}
+#endif
 
 
 /**
