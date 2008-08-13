@@ -2009,13 +2009,13 @@ runtime_init (guint32 flags)
 // These are the plugin-less versions of these methods
 //
 guint32
-runtime_html_timer_timeout_add (int interval, GSourceFunc callback, gpointer data)
+runtime_timer_timeout_add (int interval, GSourceFunc callback, gpointer data)
 {
 	return  g_timeout_add (interval, callback, data);
 }
 
 void 
-runtime_html_timer_timeout_stop (guint32 source_id)
+runtime_timer_timeout_stop (guint32 source_id)
 {
 	g_source_remove (source_id);
 }
