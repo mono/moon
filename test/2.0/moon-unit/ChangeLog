@@ -1,5 +1,19 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependency_properties.html, Makefile, moon-unit.sln, site/ClientBin,
+	  site/dependency_propertiesTestPage.html, site/index.html,
+	  site/tree, tree, tree/i-bottom.gif, tree/index.html,
+	  tree/i-repeater.gif, tree/l.gif, tree/minus.gif,
+	  tree/page-file.png, tree/page-foldericon.png,
+	  tree/page-openfoldericon.png, tree/plus.gif, tree/t.gif,
+	  tree/tree.css, tree/tree.js: Move all html stuff into site/, and
+	  change Makefile to copy files where they should be, and open
+	  site/index.html. Avoids the problem of mxap overwriting any html
+	  files in the current directory, and makes it easier to work with
+	  VS.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* site/dependency_propertiesTestPage.html: Updated xap filename.
 	* moon-unit.mdp: Updated.
 	* Makefile: Fix html path names.
