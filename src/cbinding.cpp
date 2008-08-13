@@ -776,12 +776,12 @@ inline_new (void)
 
 
 /**
- * Inlines
+ * InlineCollection
  **/
-Inlines *
-inlines_new (void)
+InlineCollection *
+inline_collection_new (void)
 {
-	return new Inlines ();
+	return new InlineCollection ();
 }
 
 
@@ -1584,6 +1584,26 @@ TranslateTransform *
 translate_transform_new (void)
 {
 	return new TranslateTransform ();
+}
+
+
+/**
+ * TriggerAction
+ **/
+void
+trigger_action_fire (TriggerAction *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Fire ();
+}
+
+
+TriggerAction *
+trigger_action_new (void)
+{
+	return new TriggerAction ();
 }
 
 

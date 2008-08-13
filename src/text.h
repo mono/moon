@@ -203,7 +203,7 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *FontWeightProperty;
  	/* @PropertyType=Brush */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=Inlines,ManagedPropertyType=InlineCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=InlineCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *InlinesProperty;
  	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
@@ -268,8 +268,8 @@ class TextBlock : public FrameworkElement {
 	void SetForeground (Brush *fg);
 	Brush *GetForeground ();
 	
-	void SetInlines (Inlines *inlines);
-	Inlines *GetInlines ();
+	void SetInlines (InlineCollection *inlines);
+	InlineCollection *GetInlines ();
 	
 	void SetText (const char *text);
 	const char *GetText ();
@@ -302,8 +302,8 @@ void text_block_set_font_weight (TextBlock *textblock, FontWeights weight);
 Brush *text_block_get_foreground (TextBlock *textblock);
 void text_block_set_foreground (TextBlock *textblock, Brush *foreground);
 
-Inlines *text_block_get_inlines (TextBlock *textblock);
-void text_block_set_inlines (TextBlock *textblock, Inlines *inlines);
+InlineCollection *text_block_get_inlines (TextBlock *textblock);
+void text_block_set_inlines (TextBlock *textblock, InlineCollection *inlines);
 
 const char *text_block_get_text (TextBlock *textblock);
 void text_block_set_text (TextBlock *textblock, const char *text);

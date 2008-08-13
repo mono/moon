@@ -403,9 +403,9 @@ InkPresenter *ink_presenter_new (void);
 Inline *inline_new (void);
 
 /**
- * Inlines
+ * InlineCollection
  **/
-Inlines *inlines_new (void);
+InlineCollection *inline_collection_new (void);
 
 /**
  * KeyFrame
@@ -823,6 +823,13 @@ TransformGroup *transform_group_new (void);
  * TranslateTransform
  **/
 TranslateTransform *translate_transform_new (void);
+
+/**
+ * TriggerAction
+ **/
+void trigger_action_fire (TriggerAction *instance);
+
+TriggerAction *trigger_action_new (void);
 
 /**
  * TriggerActionCollection

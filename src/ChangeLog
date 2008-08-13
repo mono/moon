@@ -1,8 +1,18 @@
+2008-08-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp: s/Inlines/InlineCollection/g
+
+	* xaml.cpp: s/Inlines/InlineCollection/g
+
+	* collection.h (class InlineCollection): Renamed from Inlines.
+
+	* trigger.h (class TriggerAction): Generate C Binding for ::Fire()
+	and also the ctor. Needed to prevent a crash in test-props.html
+
 2008-08-13  Geoff Norton  <gnorton@novell.com>
 
 	* runtime.cpp|h: Reuse the old html_timer infrastructure for the
 	intial DispatcherTimer implementation.
-
 
 2008-08-13  Jeffrey Stedfast  <fejj@novell.com>
 

@@ -28,9 +28,9 @@ typedef DependencyObject *create_inst_func (void);
 class Type {
 public:
 	enum Kind {
-	// START_MANAGED_MAPPING
+		// START_MANAGED_MAPPING
 		INVALID,
-		ANIMATION,
+				ANIMATION,
 		ANIMATIONCLOCK,
 		APPLICATION,// Silverlight 2.0 only
 		ARCSEGMENT,
@@ -95,7 +95,7 @@ public:
 		IMAGEERROREVENTARGS,
 		INKPRESENTER,
 		INLINE,
-		INLINES,
+		INLINE_COLLECTION,
 		INT32,
 		INT64,
 		KEYBOARDEVENTARGS,
@@ -210,27 +210,27 @@ public:
 		VISUALBRUSH,
 
 		LASTTYPE,
-	// END_MANAGED_MAPPING
-		};
-
-	static Type* Find (const char *name);
-	static Type* Find (Type::Kind type);
-	static Type* Find (Types *additional_types, Type::Kind type);
+		// END_MANAGED_MAPPING
+	};
+	
+	static Type *Find (const char *name);
+	static Type *Find (Type::Kind type);
+	static Type *Find (Types *additional_types, Type::Kind type);
 	
 	bool IsSubclassOf (Type::Kind super);
 	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
-
+	
 	int LookupEvent (const char *event_name);
 	const char *LookupEventName (int id);
 	DependencyObject *CreateInstance ();
 	const char *GetContentPropertyName ();
-
+	
 	Type::Kind GetKind () { return type; }
 	Type::Kind GetParent () { return parent; }
 	bool IsValueType () { return value_type; }
 	const char *GetName () { return name; }
 	int GetEventCount () { return total_event_count; }
-
+	
 	~Type ();
 	
 	Type *Clone ();

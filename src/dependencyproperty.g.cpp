@@ -351,7 +351,7 @@ dependency_property_g_init (void)
 	TextBlock::FontStyleProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
 	TextBlock::FontWeightProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
 	TextBlock::ForegroundProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Foreground", Type::BRUSH);
-	TextBlock::InlinesProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Inlines", Type::INLINES);
+	TextBlock::InlinesProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Inlines", Type::INLINE_COLLECTION);
 	TextBlock::TextDecorationsProperty = DependencyProperty::Register (Type::TEXTBLOCK, "TextDecorations", new Value (TextDecorationsNone));
 	TextBlock::TextProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Text", Type::STRING);
 	TextBlock::TextWrappingProperty = DependencyProperty::Register (Type::TEXTBLOCK, "TextWrapping", new Value (TextWrappingNoWrap));

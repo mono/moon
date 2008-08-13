@@ -104,7 +104,7 @@ class ImageBrush;
 class ImageErrorEventArgs;
 class InkPresenter;
 class Inline;
-class Inlines;
+class InlineCollection;
 class KeyboardEventArgs;
 class KeyFrame;
 class KeyFrameCollection;
@@ -356,7 +356,7 @@ public:
 	ImageErrorEventArgs*           AsImageErrorEventArgs () { checked_get_subclass (Type::IMAGEERROREVENTARGS, ImageErrorEventArgs) }
 	InkPresenter*                  AsInkPresenter () { checked_get_subclass (Type::INKPRESENTER, InkPresenter) }
 	Inline*                        AsInline () { checked_get_subclass (Type::INLINE, Inline) }
-	Inlines*                       AsInlines () { checked_get_subclass (Type::INLINES, Inlines) }
+	InlineCollection*              AsInlineCollection () { checked_get_subclass (Type::INLINE_COLLECTION, InlineCollection) }
 	KeyboardEventArgs*             AsKeyboardEventArgs () { checked_get_subclass (Type::KEYBOARDEVENTARGS, KeyboardEventArgs) }
 	KeyFrame*                      AsKeyFrame () { checked_get_subclass (Type::KEYFRAME, KeyFrame) }
 	KeyFrameCollection*            AsKeyFrameCollection () { checked_get_subclass (Type::KEYFRAME_COLLECTION, KeyFrameCollection) }

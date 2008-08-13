@@ -201,15 +201,16 @@ class ResourceDictionary : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 };
 
-/* @Namespace=System.Windows.Documents,ManagedName=InlineCollection */
-class Inlines : public DependencyObjectCollection {
+/* @Namespace=System.Windows.Documents */
+class InlineCollection : public DependencyObjectCollection {
  protected:
-	virtual ~Inlines () {}
-
+	virtual ~InlineCollection () {}
+	
  public:
 	/* @GenerateCBinding */
-	Inlines () {}
-	virtual Type::Kind GetObjectType () { return Type::INLINES; }
+	InlineCollection () {}
+	
+	virtual Type::Kind GetObjectType () { return Type::INLINE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::INLINE; }
 };
 
@@ -230,7 +231,7 @@ class UIElementCollection : public DependencyObjectCollection {
 	
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::UIELEMENT; }
-
+	
 	virtual bool Insert (int index, Value *value);
 	virtual void Clear ();
 	

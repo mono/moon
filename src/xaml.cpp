@@ -998,7 +998,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		p->current_element->item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 	} else if (Type::Find (p->current_element->info->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) p->current_element->item;
-		Inlines *inlines = textblock->GetInlines ();
+		InlineCollection *inlines = textblock->GetInlines ();
 		Inline *last = NULL;
 		
 		if (inlines && inlines->GetCount () > 0)
@@ -1032,7 +1032,7 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		run->SetText (p->cdata->str);
 		
 		if (!inlines) {
-			inlines = new Inlines ();
+			inlines = new InlineCollection ();
 			textblock->SetInlines (inlines);
 			inlines->unref ();
 		}

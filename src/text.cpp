@@ -318,7 +318,7 @@ TextBlock::TextBlock ()
 	Brush *brush = new SolidColorBrush ("black");
 	
 	SetValue (TextBlock::ForegroundProperty, Value (brush));
-	SetValue (TextBlock::InlinesProperty, Value::CreateUnref (new Inlines ()));
+	SetValue (TextBlock::InlinesProperty, Value::CreateUnref (new InlineCollection ()));
 	brush->unref();
 }
 
@@ -465,7 +465,7 @@ TextBlock::Layout (cairo_t *cr)
 	decorations = GetTextDecorations ();
 	font_mask = font->GetFields ();
 	
-	Inlines *inlines = GetInlines ();
+	InlineCollection *inlines = GetInlines ();
 	
 	if (inlines != NULL) {
 		guint8 run_mask, inherited_mask;
@@ -576,7 +576,7 @@ TextBlock::Paint (cairo_t *cr)
 char *
 TextBlock::GetTextInternal ()
 {
-	Inlines *inlines = GetInlines ();
+	InlineCollection *inlines = GetInlines ();
 	GString *block;
 	char *str;
 	
@@ -612,7 +612,7 @@ TextBlock::GetTextInternal ()
 }
 
 static bool
-inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
+inlines_simple_text_equal (InlineCollection *curInlines, InlineCollection *newInlines)
 {
 	const char *text1, *text2;
 	Inline *run1, *run2;
@@ -657,14 +657,14 @@ inlines_simple_text_equal (Inlines *curInlines, Inlines *newInlines)
 bool
 TextBlock::SetTextInternal (const char *text)
 {
-	Inlines *curInlines = GetInlines ();
-	Inlines *inlines = NULL;
+	InlineCollection *curInlines = GetInlines ();
+	InlineCollection *inlines = NULL;
 	char *inptr, *buf, *d;
 	const char *txt;
 	Inline *run;
 	
 	if (text && text[0]) {
-		inlines = new Inlines ();
+		inlines = new InlineCollection ();
 		
 		d = buf = (char *) g_malloc (strlen (text) + 1);
 		txt = text;
@@ -1091,17 +1091,17 @@ TextBlock::GetForeground ()
 }
 
 void
-TextBlock::SetInlines (Inlines *inlines)
+TextBlock::SetInlines (InlineCollection *inlines)
 {
 	SetValue (TextBlock::InlinesProperty, Value (inlines));
 }
 
-Inlines *
+InlineCollection *
 TextBlock::GetInlines ()
 {
 	Value *value = GetValue (TextBlock::InlinesProperty);
 	
-	return value ? value->AsInlines () : NULL;
+	return value ? value->AsInlineCollection () : NULL;
 }
 
 void
@@ -1226,14 +1226,14 @@ text_block_set_foreground (TextBlock *textblock, Brush *foreground)
 	textblock->SetForeground (foreground);
 }
 
-Inlines *
+InlineCollection *
 text_block_get_inlines (TextBlock *textblock)
 {
 	return textblock->GetInlines ();
 }
 
 void
-text_block_set_inlines (TextBlock *textblock, Inlines *inlines)
+text_block_set_inlines (TextBlock *textblock, InlineCollection *inlines)
 {
 	textblock->SetInlines (inlines);
 }
