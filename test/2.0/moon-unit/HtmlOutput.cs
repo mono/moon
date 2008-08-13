@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,12 +24,16 @@ namespace dependency_properties
 						     result.success ? "success" : "failure",
 						     result.reason == null ? "" : Encode (result.reason),
 						     result.output == null ? "" : Encode (result.output));
-			HtmlPage.Window.Eval (call);
+			try {
+				HtmlPage.Window.Eval (call);
+			} catch (Exception ex) {
+				HtmlPage.Window.Eval ("alert ('" + Encode (ex.Message) + "');");
+			}
 		}
 
 		public string Encode (string text)
 		{
-			return HttpUtility.HtmlEncode (text).Replace ("\n", "<br/>").Replace ("\"", "&#34;").Replace("\'", "&#39;");
+			return HttpUtility.HtmlEncode (text).Replace ("\n", "<br/>").Replace ("\r", "").Replace ("\"", "&#34;").Replace("\'", "&#39;");
 		}
 
 		public void Write (string text)

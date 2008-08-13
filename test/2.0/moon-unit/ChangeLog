@@ -1,5 +1,9 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* HtmlOutput.cs: Catch Eval exceptions, and properly encode \r.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* moon-unit.csproj, dependency_properties.sln,
 	  dependency_properties.csproj, moon-unit.mdp: Propagate name change
 	  to project files.
