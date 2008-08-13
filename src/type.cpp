@@ -182,10 +182,8 @@ Type::Find (Types *additional_types, Type::Kind type)
 		return &type_infos [type];
 
 #if SL_2_0				
-	if (additional_types == NULL) {
-		fprintf (stderr, "Type::Find (%p, %i): No additional types to look in.\n", additional_types, type);
+	if (additional_types == NULL)
 		return NULL;
-	}
 	
 	return additional_types->Find (type);
 #else

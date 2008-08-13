@@ -904,7 +904,12 @@ class Generator {
 		text.AppendLine ("\t\t\tAssembly agclr = Helper.GetAgclr ();");
 		text.AppendLine ("\t\t\tType t;");
 		text.AppendLine ("\t\t\ttry {");
-				
+		
+		text.AppendLine ("\t\t\t\tif (agclr == null) {");
+		text.AppendLine ("\t\t\t\t\tConsole.Error.WriteLine (\"Types.CreateNativeTypes (): Helper.Agclr () has not been set yet.\");");
+		text.AppendLine ("\t\t\t\t\treturn;");
+		text.AppendLine ("\t\t\t\t}");
+		
 		types.Add ((TypeInfo) all.Children ["DependencyObject"]);
 		types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
 		
@@ -933,7 +938,7 @@ class Generator {
 		}
 		
 		text.AppendLine ("\t\t\t} catch (Exception ex) {");
-		text.AppendLine ("\t\t\t\tConsole.WriteLine (\"There was an error while loading native types: \" + ex.Message);");
+		text.AppendLine ("\t\t\t\tConsole.WriteLine (\"There was an error while loading native types: \" + ex.ToString ());");
 		text.AppendLine ("\t\t\t}");
 		text.AppendLine ("\t\t}");
 		text.AppendLine ("\t}");

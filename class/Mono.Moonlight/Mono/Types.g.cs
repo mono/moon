@@ -14,6 +14,10 @@ namespace Mono {
 			Assembly agclr = Helper.GetAgclr ();
 			Type t;
 			try {
+				if (agclr == null) {
+					Console.Error.WriteLine ("Types.CreateNativeTypes (): Helper.Agclr () has not been set yet.");
+					return;
+				}
 				t = agclr.GetType ("System.Windows.ApplicationInternal", true); 
 				types.Add (t, new ManagedType (t, Kind.APPLICATION));
 				t = agclr.GetType ("System.Windows.AssemblyPart", true); 
@@ -261,7 +265,7 @@ namespace Mono {
 				t = agclr.GetType ("System.Windows.Shapes.Shape", true); 
 				types.Add (t, new ManagedType (t, Kind.SHAPE));
 			} catch (Exception ex) {
-				Console.WriteLine ("There was an error while loading native types: " + ex.Message);
+				Console.WriteLine ("There was an error while loading native types: " + ex.ToString ());
 			}
 		}
 	}

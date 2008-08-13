@@ -21,12 +21,14 @@ namespace System.Windows {
 		
 		public override bool Setup (IntPtr plugin, IntPtr surface, string xapFile)
 		{
+			Helper.Agclr = typeof (XapHackProxyImpl).Assembly;
 			return Application.LaunchFromXap (plugin, surface, xapFile);
 		}
 
 		public override void Terminate ()
 		{
-			Application.Current.Terminate ();
+			if (Application.Current != null)
+				Application.Current.Terminate ();
 		}
 		
 	}

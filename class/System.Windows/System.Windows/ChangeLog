@@ -1,3 +1,8 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* XapHackProxyImpl.cs: Initialize Helper.Agclr here, this is in the
+	  right AppDomain.
+
 2008-08-13  Larry Ewing  <lewing@novell.com>
 
 	* Application.cs: remove the notice about StartupEventArgs.

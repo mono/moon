@@ -1,5 +1,9 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Generator.cs: Add some error checking to Types.g.cs.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Generator.cs: Cast to double before casting to int for int/double
 	  mismatches.
 

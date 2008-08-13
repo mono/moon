@@ -1,3 +1,9 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Remove spew.
+	* moonlight.cs: Don't initialize Helper.Agclr here, it's not in the
+	  right AppDomain.
+
 2008-08-13  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp|h: Reuse the old html_timer infrastructure for the

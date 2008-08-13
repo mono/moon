@@ -489,7 +489,7 @@ variant_to_value (const NPVariant *v, Value **result)
 	case NPVariantType_Object:
 		// This should never happen, we should do type checking of the
 		// arguments before this point and refuse arguments we don't understand.
-		d(printf ("Got invalid value from javascript.\n"));
+		//d(printf ("Got invalid value from javascript.\n"));
 		*result = new Value ();
 		break;
 	}
