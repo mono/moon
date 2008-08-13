@@ -84,19 +84,19 @@ namespace dependency_properties
 					while (e != null && e.InnerException != null && e is TargetInvocationException)
 						e = e.InnerException;
 
+					result.output = test_output.ToString ();
+
 					if (e == null) {
 						result.success = true;
 					} else if (e is UnitTestAssertException) {
 						UnitTestAssertException ex = e as UnitTestAssertException;
 						result.success = false;
-						result.ex = e;
 						result.reason = ex.FailedMessage;
-						result.output = ex.ToString ();
+						result.output += "\n" + ex.ToString ();
 					} else {
 						result.success = false;
-						result.ex = e;
+						result.reason = e.ToString();
 					}
-					result.output = test_output.ToString ();
 					if (result.success)
 						succeeded++;
 					else
@@ -105,12 +105,7 @@ namespace dependency_properties
 					//Console.WriteLine (result.success);
 				}
 			}
-			result = new TestResult ();
-			result.name = "Summary:";
-			result.success = failed == 0;
-			result.output = "";
-			result.reason = string.Format ("Succeeded: {0}/{2} Failed: {1}/{2}", succeeded, failed, failed + succeeded);
-			output.EndReport (result);
+			output.EndReport ();
 		}
 
 	}

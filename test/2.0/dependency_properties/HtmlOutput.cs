@@ -19,31 +19,22 @@ namespace dependency_properties
 
 		public void Report (TestResult result)
 		{
-			string html;
-
-			html = @"
-<tr style='color: {4}'>
-<td>{0}</td>
-<td>{1}</td>
-<td>{2}</td>
-<td>{5}</td>
-<td>{3}</td>
-</tr>
-";
-			html = string.Format (html, HttpUtility.HtmlEncode (result.name), result.success ? "SUCCESS" : "FAIL", 
-				result.ex != null ? Encode (result.ex.ToString ()) : null, Encode (result.output),
-				result.success ? "Green" : "Red", HttpUtility.HtmlEncode (result.reason));
-
-			builder.Append (html);
+			string call = string.Format ("AddTest ('{0}', '{1}', '{2}', '{3}');",
+						     result.name,
+						     result.success ? "success" : "failure",
+						     result.reason == null ? "" : Encode (result.reason),
+						     result.output == null ? "" : Encode (result.output));
+			HtmlPage.Window.Eval (call);
 		}
 
 		public string Encode (string text)
 		{
-			return HttpUtility.HtmlEncode (text).Replace ("\n", "<br/>");
+			return HttpUtility.HtmlEncode (text).Replace ("\n", "<br/>").Replace ("\"", "&#34;").Replace("\'", "&#39;");
 		}
 
 		public void Write (string text)
 		{
+#if false
 			HtmlElement TestResult;
 			string innerHTML;
 
@@ -55,6 +46,7 @@ namespace dependency_properties
 			} else {
 				HtmlPage.Window.Eval ("AppendTestResult ('" + text.Replace ("'", "\\'").Replace ("\n", "\\n").Replace ("\r", "\\r") + "');");
 			}
+#endif
 		}
 
 
@@ -63,8 +55,11 @@ namespace dependency_properties
 			builder = new StringBuilder ();
 		}
 
-		public void EndReport (TestResult final_result)
+		public void EndReport ()
 		{
+			HtmlPage.Window.Eval ("EndReport();");
+
+#if false
 			string start_html = @"
 <table border='1'>
 <tr>
@@ -89,6 +84,7 @@ namespace dependency_properties
 			builder.Append (end_html);
 
 			Write (builder.ToString ());
+#endif
 		}
 
 	}

@@ -4,18 +4,31 @@
 <head>
     <title>Silverlight Project Test Page </title>
 
+    <link rel="stylesheet" type="text/css" media="all" href="tree/tree.css" />
+    <script type="text/javascript" src="tree/tree.js"></script>
+
     <style type="text/css">
-    html, body {
-	    height: 100%;
-	    overflow: auto;
+
+    #testroot {
+  	font-size: 0.8em;
     }
-    body {
-	    padding: 0;
-	    margin: 0;
+
+    .success {
+        color: #00dd00;
     }
-    #silverlightControlHost {
-	    height: 100%;
+
+    .failure {
+        color: #dd0000;
     }
+
+    #testreason, #testoutput {
+        margin-left: 5px;
+    }
+
+    .output {
+  	font-size: 0.8em;
+    }
+
     </style>
     
     <script type="text/javascript">
@@ -72,7 +85,80 @@
                 alert (ex.description);
             }
         }
-        
+
+	function AddNames (parent, names, level)
+	{
+	    if (level == names.length - 1)
+	        return parent;
+
+	    /* check for the node in parent's list of children */
+	    for (var node = parent.firstChild; node; node = node.nextSibling) {
+	        if (node.nodeType != 1)
+	            continue;
+	        if (node.id == names[level])
+	            return AddNames (findChildWithTag (node, "ul"), names, level + 1);
+	    }
+
+            /* create the new node, append it (should really be sorted), and recurse */
+	    var new_parent = document.createElement ("li");
+	    var text_node = document.createTextNode (names[level]);
+	    var new_sublist = document.createElement ("ul");
+
+	    addClass (new_parent, "success");
+
+	    new_parent.id = names[level];
+
+	    new_parent.appendChild (text_node);
+	    new_parent.appendChild (new_sublist);
+	    parent.appendChild (new_parent);
+
+	    return AddNames (new_sublist, names, level + 1);
+	}
+
+	var Tests = {};
+
+        function AddTest (testname, status, reason, output)
+	{
+	    var root = document.getElementById ("testroot");
+	    var names = testname.split ('.');
+	    var test_parent = AddNames (root, names, 0);
+
+	    var test = document.createElement ("li");
+            test.innerHTML = "<a href=\"javascript:showInfo('" + testname + "')\">" + names[names.length-1] + "</a>";
+
+	    test_parent.appendChild (test);
+
+	    addClass (test, status);
+	    addClass (test.childNodes[0], status);
+
+	    if (status == "failure") {
+	        var node = test.parentNode;
+	        while (node != root) {
+	            removeClass (node, "success");
+	            addClass (node, "failure");
+	            node = node.parentNode;
+  	        }
+	    }
+
+	    Tests[testname] = { Reason: reason, Output: output };
+	}
+
+	function EndReport ()
+	{
+	    var root = document.getElementById ("testroot");
+	    addClass (root, "tree");
+	    initTree (root);
+	}
+
+	function showInfo (test)
+	{
+	    var testreason = document.getElementById ("testreason");
+	    var testoutput = document.getElementById ("testoutput");
+
+	    testreason.innerHTML = Tests[test].Reason;
+	    testoutput.innerHTML = Tests[test].Output;
+	}
+
         function AppendTestResult (text)
         {
             document.getElementById ("TestResult").innerHTML += text;
@@ -81,13 +167,26 @@
 </head>
 
 <body>
+    <div style="position: fixed; top: 20px; right: 10px; width: 50%; height: 300px; border: solid 1px; overflow: auto; background-color:#eeeeee;">
+      Error:
+      <pre id="testreason" class="output">
+      </pre>
+    </div>
+    <div style="position: fixed; top: 330px; right: 10px; width: 50%; bottom: 20px; border: solid 1px; overflow: auto; background-color:#eeeeee;">
+      Output:
+      <pre id="testoutput" class="output">
+      </pre>
+    </div>
+
     <!-- Runtime errors from Silverlight will be displayed here.
 	This will contain debugging information and should be removed or hidden when debugging is completed -->
-	<div id='errorLocation' style="font-size: small;color: Gray;"></div>
+    <div id='errorLocation' style="font-size: small;color: Gray;"></div>
 
-    <div >Test results:</div>
-    <div id="TestResult" ></div>
-    <div >Silverlight test app:</div>
+    <div id="testtree" >
+      <ul id="testroot">
+      </ul>
+    </div>
+
     <div id="silverlightControlHost">
 		<object data="data:application/x-silverlight," type="application/x-silverlight-2-b2" width="20" height="20" name="SLTest">
 			<param name="source" value="ClientBin/dependency_properties.xap"/>
@@ -95,5 +194,6 @@
 			<param name="background" value="white" />
 		</object>
     </div>
+
 </body>
 </html>
