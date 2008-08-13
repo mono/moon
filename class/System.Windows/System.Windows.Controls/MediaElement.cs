@@ -295,7 +295,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeMediaEnded ()
 		{
-			EventHandler h = (EventHandler) events[MediaEndedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) events[MediaEndedEvent];
 			if (h != null)
 				h (this, null);
 		}

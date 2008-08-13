@@ -30,6 +30,8 @@ using System.Windows.Media;
 
 namespace System.Windows.Interop {
 	public class SilverlightHost {
+		private Content content;
+
 		public SilverlightHost ()
 		{}
 
@@ -43,7 +45,7 @@ namespace System.Windows.Interop {
 		}
 
 		public Content Content {
-			get { throw new NotImplementedException (); }
+			get { return content ?? (content = new Content ()); }
 		}
 
 		public bool IsLoaded {

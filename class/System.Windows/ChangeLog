@@ -1,3 +1,7 @@
+2008-08-13  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Interop/SilverlightHost.cs: implement Content.
+
 2008-08-13  Geoff Norton  <gnorton@novell.com>
 
 	 * System.Windows.Markup/XamlReader.cs: Initial implementation of 

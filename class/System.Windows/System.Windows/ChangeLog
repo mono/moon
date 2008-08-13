@@ -1,3 +1,8 @@
+2008-08-13  Larry Ewing  <lewing@novell.com>
+
+	* Application.cs: make Current work in derived cases and implement
+	Host.
+
 2008-08-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* DependencyObject.cs: Fixed for InlineCollection change.

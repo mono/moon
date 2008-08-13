@@ -62,11 +62,14 @@ namespace System.Windows {
 		string xap_dir;
 		IntPtr surface;
 		UIElement root_visual;
-		
+		SilverlightHost host;
+
 		public Application ()
 		{
 			xap_dir = s_xap_dir;
 			surface = s_surface;
+
+			current = this;
 		}
 
 		internal void Terminate ()
@@ -95,9 +98,7 @@ namespace System.Windows {
 			if (current != null)
 				throw new Exception ("Should only be called once per AppDomain");
 
-			current = CreateFromXap (plugin, surface, xapPath);
-
-			return current != null;
+			return CreateFromXap (plugin, surface, xapPath) != null;
 		}
 		
 		static Application CreateFromXap (IntPtr plugin, IntPtr surface, string xapPath)
@@ -364,7 +365,7 @@ namespace System.Windows {
 		}
 
 		public SilverlightHost Host {
-			get { throw new NotImplementedException (); }
+			get { return host ?? (host = new SilverlightHost ()); }
 		}
 
 		public event EventHandler Exit;
