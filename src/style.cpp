@@ -17,6 +17,7 @@
 
 Style::Style ()
 {
+	SetValue (Style::SettersProperty, Value::CreateUnref (new SetterBaseCollection()));
 }
 
 SetterBaseCollection::SetterBaseCollection ()
