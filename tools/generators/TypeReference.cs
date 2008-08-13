@@ -103,6 +103,10 @@ class TypeReference {
 			case "Types*":
 			case "StackPanel*":
 			case "Type*":
+			case "DiscreteObjectKeyFrame*":
+			case "ObjectKeyFrame*":
+			case "ObjectKeyFrameCollection*":
+			case "ObjectAnimationUsingKeyFrames*":
 				managed_type = "IntPtr";
 				break;
 			case "Value*":
