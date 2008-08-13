@@ -167,9 +167,6 @@ namespace Mono {
 		
 #region Collections
 		[DllImport("moon")]
-		public extern static Kind collection_get_element_type (IntPtr collection);
-		
-		[DllImport("moon")]
 		public extern static IntPtr collection_get_iterator (IntPtr collection);
 		
 		[DllImport("moon")]
@@ -234,13 +231,6 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static IntPtr storyboard_stop (IntPtr native);
-#endregion
-		
-#region APIs that we do not have a Managed class implemented yet.
-
-		[DllImport("moon")]
-		public extern static IntPtr point_animation_using_key_frames_new ();
-
 #endregion
 
 #region Downloader
@@ -492,11 +482,6 @@ namespace Mono {
 #region xap
 		[DllImport("moon")]
 		public extern static string xap_unpack (string xapfile);
-#endregion
-
-#region application
-		[DllImport("moon")]
-		public extern static IntPtr application_new ();
 #endregion
 		
 		private static Exception CreateManagedException (MoonError err)

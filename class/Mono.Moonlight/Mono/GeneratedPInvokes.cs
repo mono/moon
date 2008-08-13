@@ -13,10 +13,9 @@ namespace Mono {
 	
 		/* libmoon methods */
 	
-		// This method is already defined manually in NativeMethods.cs. Remove the import from there, and regenerate.
-		// [DllImport ("moon")]
+		[DllImport ("moon")]
 		// Application *application_new ();
-		// public extern static IntPtr application_new ();
+		public extern static IntPtr application_new ();
 
 		[DllImport ("moon")]
 		// ArcSegment *arc_segment_new ();
@@ -62,10 +61,9 @@ namespace Mono {
 		// int collection_get_count (Collection *instance);
 		public extern static int collection_get_count (IntPtr instance);
 
-		// This method is already defined manually in NativeMethods.cs. Remove the import from there, and regenerate.
-		// [DllImport ("moon")]
+		[DllImport ("moon")]
 		// Type::Kind collection_get_element_type (Collection *instance);
-		// public extern static Kind collection_get_element_type (IntPtr instance);
+		public extern static Kind collection_get_element_type (IntPtr instance);
 
 		[DllImport ("moon", EntryPoint="collection_get_value_at_with_error")]
 		// Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
@@ -494,10 +492,9 @@ namespace Mono {
 		// PointAnimation *point_animation_new ();
 		public extern static IntPtr point_animation_new ();
 
-		// This method is already defined manually in NativeMethods.cs. Remove the import from there, and regenerate.
-		// [DllImport ("moon")]
+		[DllImport ("moon")]
 		// PointAnimationUsingKeyFrames *point_animation_using_key_frames_new ();
-		// public extern static IntPtr point_animation_using_key_frames_new ();
+		public extern static IntPtr point_animation_using_key_frames_new ();
 
 		[DllImport ("moon")]
 		// PointCollection *point_collection_new ();
