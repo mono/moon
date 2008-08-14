@@ -1,3 +1,9 @@
+2008-08-14  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: We now get a 'dest' pointer for hooking up events,
+	this is basically ignored by the javascript event hookup since
+	everything is in a global space.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.h: Don't use base_unref, call unref on the instance.

@@ -1,3 +1,9 @@
+2008-08-14  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs: We need a target object to lookup the
+	event on and a destination object to lookup the delegate on when
+	hooking up events.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* GeneratedPInvokes.cs: Regenerated.

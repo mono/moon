@@ -587,19 +587,20 @@ namespace Mono.Xaml
 			}
 		}
 		
-		private bool cb_hookup_event (IntPtr target_ptr, string name, string value)
+		private bool cb_hookup_event (IntPtr target_ptr, IntPtr dest_ptr, string name, string value)
 		{
-			Kind k = NativeMethods.dependency_object_get_object_type (target_ptr);
-			DependencyObject target = DependencyObject.Lookup (k, target_ptr);
+			DependencyObject target = DependencyObject.Lookup (target_ptr);
+			DependencyObject dest = DependencyObject.Lookup (dest_ptr);
 
 			if (target == null) {
-				//Console.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to create target object.", target_ptr, name, value);
+				Console.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to create target object.", target_ptr, name, value);
 				return false;
 			}
 
+
 			EventInfo src = target.GetType ().GetEvent (name);
 			if (src == null) {
-				//Console.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to find event name.", target_ptr, name, value);
+				Console.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to find event name.", target, name, value);
 				return false;
 			}
 
@@ -618,7 +619,7 @@ namespace Mono.Xaml
 #endif
 
 			try {
-				Delegate d = Delegate.CreateDelegate (src.EventHandlerType, target, value);
+				Delegate d = Delegate.CreateDelegate (src.EventHandlerType, dest, value);
 				if (d == null) {
 					//Console.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to create delegate (src={3} target={4}).", target_ptr, name, value, src.EventHandlerType, target);
 					return false;
@@ -668,7 +669,7 @@ namespace Mono.Xaml
 			try {
 				DependencyObject res = Application.CreateComponentFromName (name);
 				if (res == null) {
-					Console.Error.WriteLine ("Application::CreateComponentFromName ({0}) return null.", name);
+					Console.Error.WriteLine ("Application::CreateComponentFromName ({0}) returned null.", name);
 					return IntPtr.Zero;
 				}
 

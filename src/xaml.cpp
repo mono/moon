@@ -662,10 +662,10 @@ XamlLoader::SetNameAttribute (void* target, const char* name)
 }
 
 bool
-XamlLoader::HookupEvent (void* target, const char* name, const char* value)
+XamlLoader::HookupEvent (void* target, void* dest, const char* name, const char* value)
 {
 	if (callbacks.hookup_event)
-		return callbacks.hookup_event (target, name, value);
+		return callbacks.hookup_event (target, dest, name, value);
 	
 	//printf ("XamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
 	return false;
@@ -3095,7 +3095,7 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 		}
 
 		if (p->loader)
-			p->loader->HookupEvent (item->item, name, value);
+			p->loader->HookupEvent (item->item, p->top_element->item, name, value);
 		
 		return false;
 	}

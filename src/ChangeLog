@@ -1,3 +1,9 @@
+2008-08-14  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: We need to pass a pointer to the top level control
+	when hooking up a managed event, the managed code uses this to
+	find the method to invoke.
+
 2008-08-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	ZIndex sorting optimization for bug #395160

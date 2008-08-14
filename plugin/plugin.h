@@ -273,7 +273,7 @@ class PluginXamlLoader : public XamlLoader
 	}
 	
 	bool IsManaged () { return xaml_is_managed; }
-	virtual bool HookupEvent (void *target, const char *name, const char *value);
+	virtual bool HookupEvent (void *target, void *dest, const char *name, const char *value);
 	virtual bool LoadVM ();
 };
 
