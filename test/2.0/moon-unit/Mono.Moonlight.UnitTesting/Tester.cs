@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 using System.Reflection;
 using System.Text;
 
-namespace dependency_properties
+namespace Mono.Moonlight.UnitTesting
 {
 	public delegate void TestCode ();
 

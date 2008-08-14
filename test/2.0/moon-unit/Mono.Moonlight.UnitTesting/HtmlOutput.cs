@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 using System.Windows.Browser;
 using System.Text;
 
-namespace dependency_properties
+namespace Mono.Moonlight.UnitTesting
 {
 	public class HtmlOutput : IOutput
 	{

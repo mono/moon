@@ -8,8 +8,8 @@
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>dependency_properties</RootNamespace>
-    <AssemblyName>dependency_properties</AssemblyName>
+    <RootNamespace>MoonTest</RootNamespace>
+    <AssemblyName>moon_unit</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <SilverlightApplication>true</SilverlightApplication>
     <SupportedCultures>
@@ -64,6 +64,7 @@
     <Compile Include="Mono.Moonlight.UnitTesting\Tester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System.Collections.ObjectModel\ObservableCollectionTest.cs" />
+    <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
     <Compile Include="System.Windows.Media\VisualTreeHelperTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />
@@ -83,8 +84,22 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\AppManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="System.Collections.Specialized\" />
+    <Folder Include="System.Windows.Controls.Primitives\" />
+    <Folder Include="System.Windows.Controls\" />
+    <Folder Include="System.Windows.Data\" />
+    <Folder Include="System.Windows.Documents\" />
+    <Folder Include="System.Windows.Ink\" />
+    <Folder Include="System.Windows.Interop\" />
+    <Folder Include="System.Windows.Markup\" />
+    <Folder Include="System.Windows.Media.Animation\" />
+    <Folder Include="System.Windows.Media.Imaging\" />
+    <Folder Include="System.Windows.Resources\" />
+    <Folder Include="System.Windows.Shapes\" />
+    <Folder Include="System.Windows.Threading\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

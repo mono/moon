@@ -11,8 +11,8 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using Mono.Moonlight.UnitTesting;
 
-using dependency_properties;
 
 namespace MoonTest.System.Collections.ObjectModel {
 

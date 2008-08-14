@@ -9,7 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace dependency_properties
+namespace Mono.Moonlight.UnitTesting
 {
 	public interface IOutput
 	{

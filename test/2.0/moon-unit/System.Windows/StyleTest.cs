@@ -9,8 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
-
-using dependency_properties;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows
 {

@@ -1,5 +1,24 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* App.xaml, Mono.Moonlight.UnitTesting/HtmlOutput.cs,
+	  Mono.Moonlight.UnitTesting/Tester.cs,
+	  Mono.Moonlight.UnitTesting/IOutput.cs, moon-unit.csproj,
+	  App.xaml.cs,
+	  System.Collections.ObjectModel/ObservableCollectionTest.cs,
+	  System.Windows.Media/LineGeometryTest.cs,
+	  System.Windows.Media/VisualTreeHelperTest.cs,
+	  System.Windows/ThicknessTest.cs,
+	  System.Windows/SetterBaseCollectionTest.cs,
+	  System.Windows/StyleTest.cs,
+	  System.Windows/DependencyPropertyAttachedTest.cs,
+	  System.Windows/RoutedEventArgsTest.cs,
+	  System.Windows/DependencyPropertyTest.cs,
+	  System.Windows/PresentationFrameworkCollectionTest.cs,
+	  System.Windows/SetterTest.cs, System.Windows/SizeTest.cs: Move
+	  testing classes to the Mono.Moonlight.UnitTesting namespace.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* moon-unit.csproj, moon-unit.sln: Updated.
 	* System.Windows/DependencyPropertyAttachedTest.cs: Make this test pass
 	  on SL (and ML too).
