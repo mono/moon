@@ -1,3 +1,8 @@
+2008-08-14  Geoff Norton  <gnorton@novell.com>
+
+	* MediaElement.cs: Turn the Stream SetSource calls into warnings
+	to prevent us crashing until we've implemented those bits.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* MediaElement.cs: Removed classes and members which are no longer in

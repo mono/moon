@@ -74,7 +74,7 @@ namespace System.Windows.Controls {
 #endif
 		public void SetSource (Stream stream)
 		{
-			throw new NotImplementedException ();
+			Console.WriteLine ("WARNING: MediaElement.SetSource(Stream) is unimplemented");
 		}
 		
 #if NET_2_1
@@ -82,7 +82,7 @@ namespace System.Windows.Controls {
 #endif
 		public void SetSource (MediaStreamSource mediaStreamSource)
 		{
-			throw new NotImplementedException ();
+			Console.WriteLine ("WARNING: MediaElement.SetSource(MediaStreamSource) is unimplemented");
 		}
 		
 #if NET_2_1
