@@ -1,3 +1,11 @@
+2008-08-13  Larry Ewing  <lewing@novell.com>
+
+	* HtmlDocument.cs: move QueryString here from HtmlPage clean up
+	the HtmlPage references.
+
+	* HtmlPage.cs: make this static to match b2 move some methods to
+	HtmlDocument.cs.
+	
 2008-08-13  Geoff Norton  <gnorton@novell.com>
 
 	* HtmlTimer.cs: Update to replace the new pinvoke signature.

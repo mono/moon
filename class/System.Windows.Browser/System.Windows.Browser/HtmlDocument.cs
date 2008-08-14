@@ -76,23 +76,56 @@ namespace System.Windows.Browser
 			return new HtmlElementCollection (InvokeInternal<IntPtr> (Handle, "getElementsByTagName", tagName));
 		}
 		
-		public IDictionary<string, string> QueryString {
-			get { throw new NotImplementedException (); }
+		public IDictionary<string,string> QueryString {
+			get {
+				// document.location.search
+				IntPtr loc = GetPropertyInternal<IntPtr> (Handle, "location");
+				string search = GetPropertyInternal<string> (loc, "search");
+
+				Dictionary<string, string> res = new Dictionary<string, string> ();
+
+				if (search == null)
+					return res;
+
+				int li = 1;
+				string name = null;
+				bool in_name = true;
+				for (int i = 1; i < search.Length; i++) {
+					if (in_name) {
+						if (search [i] == '=') {
+							name = search.Substring (li, i - li);
+							in_name = false;
+							li = i + 1;
+						}
+					} else {
+						if (search [i] == '&') {
+							res.Add (name, search.Substring (li, i - li));
+							in_name = true;
+							li = i + 1;
+						}
+					}
+				}
+
+				if (name != null && li < search.Length)
+					res.Add (name, search.Substring (li, search.Length - li));
+
+				return res;
+			}
 		}
 		
 		public string Cookies {
 			get {
-				return GetPropertyInternal<string> (HtmlPage.Document.Handle, "cookie");
+				return GetPropertyInternal<string> (Handle, "cookie");
 			}
 			set {
-				SetPropertyInternal (HtmlPage.Document.Handle, "cookie", value);
+				SetPropertyInternal (Handle, "cookie", value);
 			}
 		}
 
 		public Uri DocumentUri {
 			get {
 
-				return new Uri (GetPropertyInternal<string> (HtmlPage.Document.Handle, "URL"));
+				return new Uri (GetPropertyInternal<string> (Handle, "URL"));
 			}
 		}
 		
@@ -102,7 +135,7 @@ namespace System.Windows.Browser
 		
 		public void Submit ()
 		{
-			HtmlElementCollection forms = HtmlPage.Document.GetElementsByTagName ("form");
+			HtmlElementCollection forms = GetElementsByTagName ("form");
 			if (forms.Count < 1)
 				return;
 			InvokeInternal<object> (forms [0].Handle, "submit");
@@ -110,7 +143,7 @@ namespace System.Windows.Browser
 
 		public void Submit (string formId)
 		{
-			HtmlElement form = HtmlPage.Document.GetElementById (formId);
+			HtmlElement form = GetElementById (formId);
 			if (form == null)
 				return;
 			InvokeInternal<object> (form.Handle, "submit");
