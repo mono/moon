@@ -54,7 +54,7 @@ namespace System.Windows {
 		//
 		static object creation = new object ();
 		static string s_xap_dir;
-		static IntPtr s_surface;
+		internal static IntPtr s_surface;
 		
 		//
 		// Application instance fields

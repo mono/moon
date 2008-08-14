@@ -1,5 +1,9 @@
 2008-08-14  Geoff Norton  <gnorton@novell.com>
 
+	* Application.cs: Make the static surface internal.
+
+2008-08-14  Geoff Norton  <gnorton@novell.com>
+
 	* DependencyObject.cs: Construct and return a ThreadStatic
 	Dispatcher when requested.
 
