@@ -56,10 +56,6 @@
 #include "grid.h"
 #endif
 
-#ifdef DEBUG
-#undef DEBUG
-#endif
-
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
 #define DEBUG_REFCNT 0
