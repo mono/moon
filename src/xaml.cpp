@@ -1016,9 +1016,6 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	if (!p->cdata || !p->current_element)
 		return;
 
-	if (!p->current_element->info || p->current_element->element_type == XamlElementInstance::ELEMENT)
-		goto done;
-
 	if (p->current_element->IsValueType () && p->cdata_content) {
 		XamlElementInstanceValueType *vinst = (XamlElementInstanceValueType *) p->current_element;
 		if (!vinst->CreateValueItemFromString (p->cdata->str)) {
@@ -1027,7 +1024,8 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 		goto done;
 	}
 
-	prop_name = p->current_element->info->GetContentProperty (p);
+	if (p->current_element->info && p->current_element->element_type == XamlElementInstance::ELEMENT)
+		prop_name = p->current_element->info->GetContentProperty (p);
 
 	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);

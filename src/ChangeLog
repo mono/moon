@@ -1,5 +1,9 @@
 2008-08-13  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Make sure we set content properties.
+
+2008-08-13  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Add support for parsing value types.
 
 2008-08-13  Chris Toshok  <toshok@ximian.com>
