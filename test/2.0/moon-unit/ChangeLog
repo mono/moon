@@ -1,5 +1,11 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* moon-unit.csproj, moon-unit.sln: Updated.
+	* System.Windows/DependencyPropertyAttachedTest.cs: Make this test pass
+	  on SL (and ML too).
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Page.xaml.cs, Page.xaml: Removed, not needed.
 	* App.xaml.cs, Mono.Moonlight.UnitTesting,
 	  Mono.Moonlight.UnitTesting/App.xaml,
