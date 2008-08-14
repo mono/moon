@@ -1,5 +1,10 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyproperty.h: Generate CBinding and PInvoke for IsAttached.
+	* cbinding.cpp, cbinding.h: Regenerated.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* type.cpp: Remove spew.
 	* dependencyobject.cpp: GetValue*WithError: Fix error messages to say
 	  we're trying to get values, not set them.

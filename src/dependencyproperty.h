@@ -39,6 +39,7 @@ class DependencyProperty {
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsNullable () { return is_nullable; }
 	bool IsReadOnly () { return is_readonly; }
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsAttached () { return is_attached; }
 	bool AlwaysChange () { return always_change; }
 	bool IsCustom () { return is_custom; }

@@ -1,5 +1,11 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyObject.cs: SetValue: state the name of the dependency
+	  property in error messages, and don't validate attached properties.
+	* DependencyProperty.cs: Added IsAttached.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* XapHackProxyImpl.cs: Initialize Helper.Agclr here, this is in the
 	  right AppDomain.
 

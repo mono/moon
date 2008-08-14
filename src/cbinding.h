@@ -248,6 +248,9 @@ const char *dependency_property_get_name (DependencyProperty *instance);
 Type::Kind dependency_property_get_property_type (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
+bool dependency_property_is_attached (DependencyProperty *instance);
+
+/* @GeneratePInvoke */
 bool dependency_property_is_nullable (DependencyProperty *instance);
 
 DependencyProperty *dependency_property_register (Type::Kind type, const char *name, Value *default_value);

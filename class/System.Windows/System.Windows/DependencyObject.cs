@@ -652,9 +652,9 @@ namespace System.Windows {
 
 			CheckNativeAndThread ();
 			
-			if (dp.DeclaringType != null) {
+			if (dp.DeclaringType != null && !dp.IsAttached) {
 				if (dp.DeclaringType != GetType () && !dp.DeclaringType.IsAssignableFrom (GetType ()))
-					throw new System.ArgumentException (string.Format ("A DependencyProperty registered on type {0} can't be used to set a value on an object of type {1}", dp.DeclaringType.FullName, GetType ().FullName));
+					throw new System.ArgumentException (string.Format ("The DependencyProperty '{2}', registered on type {0} can't be used to set a value on an object of type {1}", dp.DeclaringType.FullName, GetType ().FullName, dp.Name));
 			}
 			
 			if (value == null) {
@@ -667,7 +667,7 @@ namespace System.Windows {
 
 			object_type = value.GetType ();
 			if (!(object_type == dp.PropertyType || dp.PropertyType.IsAssignableFrom (object_type)))
-				throw new ArgumentException (string.Format ("A DependencyProperty whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName));
+				throw new ArgumentException (string.Format ("The DependencyProperty '{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name));
 			
 			v = GetAsValue (value, dp is CustomDependencyProperty);
 			try {

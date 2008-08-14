@@ -229,6 +229,10 @@ namespace Mono {
 		public extern static Kind dependency_property_get_property_type (IntPtr instance);
 
 		[DllImport ("moon")]
+		// bool dependency_property_is_attached (DependencyProperty *instance);
+		public extern static bool dependency_property_is_attached (IntPtr instance);
+
+		[DllImport ("moon")]
 		// bool dependency_property_is_nullable (DependencyProperty *instance);
 		public extern static bool dependency_property_is_nullable (IntPtr instance);
 

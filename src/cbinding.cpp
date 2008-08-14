@@ -433,6 +433,16 @@ dependency_property_get_property_type (DependencyProperty *instance)
 
 
 bool
+dependency_property_is_attached (DependencyProperty *instance)
+{
+	if (instance == NULL)
+		return false;;
+	
+	return instance->IsAttached ();
+}
+
+
+bool
 dependency_property_is_nullable (DependencyProperty *instance)
 {
 	if (instance == NULL)

@@ -38,6 +38,7 @@ namespace System.Windows {
 		private Type property_type;
 		private Type declaring_type; 
 		private object default_value;
+		private bool? attached;
 		
 		private static Dictionary <IntPtr, DependencyProperty> properties = new Dictionary<System.IntPtr,DependencyProperty> ();
 		
@@ -77,6 +78,7 @@ namespace System.Windows {
 			ManagedType property_type = Types.Find (propertyType);
 			ManagedType owner_type = Types.Find (ownerType);
 			NativePropertyChangedHandler handler;
+			DependencyProperty result;
 			
 			if (name == null)
 				throw new System.ArgumentNullException ("name");
@@ -100,7 +102,10 @@ namespace System.Windows {
 			if (handle == IntPtr.Zero)
 				return null;
 			
-			return new CustomDependencyProperty (handle, name, property_type, owner_type, metadata);
+			result = new CustomDependencyProperty (handle, name, property_type, owner_type, metadata);
+			result.attached = attached;
+			
+			return result;
 		}
 		
 		private static void NativePropertyChangedCallback (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value)
@@ -185,6 +190,14 @@ namespace System.Windows {
 		
 		internal string Name {
 			get { return name; }
+		}
+		
+		internal bool IsAttached {
+			get {
+				if (!attached.HasValue)
+					attached = NativeMethods.dependency_property_is_attached (native);
+				return attached.Value;
+			}
 		}
 		
 		internal bool IsNullable {
