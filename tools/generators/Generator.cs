@@ -514,8 +514,10 @@ class Generator {
 			type.IsStruct = false;
 		} else if (tokenizer.Accept (Token2Type.Identifier, "struct")) {
 			type.IsStruct = true;
+			type.IsValueType = true;
 		} else if (tokenizer.Accept (Token2Type.Identifier, "union")) {
 			type.IsStruct = true; // Not entirely correct, but a union can be parsed as a struct
+			type.IsValueType = true;
 		} else {
 			throw new Exception (string.Format ("Expected 'class' or 'struct', not '{0}'", tokenizer.CurrentToken.value));
 		}

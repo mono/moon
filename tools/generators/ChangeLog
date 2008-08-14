@@ -1,3 +1,7 @@
+2008-08-13  Jackson Harper  <jackson@ximian.com>
+
+	* Generator.cs: If a type is a struct, it's a ValueType.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Generator.cs: Add some error checking to Types.g.cs.
