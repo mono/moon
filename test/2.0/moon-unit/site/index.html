@@ -18,15 +18,33 @@
         font-weight: bold;
         background-color: #ffffff;
     }
-
-    .success {
-        color: #00dd00;
+   
+    .Pass 
+    {
+    	color: Green;
+    	background-color:Gray;
     }
 
-    .failure {
-        color: #dd0000;
+    .KnownFailure 
+    {
+    	color: Blue;
     }
-
+    
+    .UnexpectedPass 
+    {
+    	color: #00FFFF; 
+    }
+    
+    .Fail 
+    {
+    	color: Red;
+    }
+    
+    .Ignore
+    {
+    	color: #FF8040;
+    }
+    
     #testreason, #testoutput {
         margin-left: 5px;
     }
@@ -112,8 +130,8 @@
 	    var text_node = document.createTextNode (names[level]);
 	    var new_sublist = document.createElement ("ul");
 
-	    addClass (new_parent, "success");
-	    addClass (a_node, "success");
+	    addClass (new_parent, "Pass");
+	    addClass (a_node, "Pass");
 
 	    new_parent.id = names[level];
 
@@ -141,13 +159,13 @@
 	    addClass (test, status);
 	    addClass (test.childNodes[0], status);
 
-	    if (status == "failure") {
+	    if (status == "Fail") {
 	        var node = test.parentNode;
 	        while (node != root) {
-	            removeClass (node, "success");
-	            removeClass (node.childNodes[0], "success");
-	            addClass (node, "failure");
-	            addClass (node.childNodes[0], "failure");
+	            removeClass (node, "Pass");
+	            removeClass (node.childNodes[0], "Pass");
+	            addClass (node, "Fail");
+	            addClass (node.childNodes[0], "Fail");
 	            node = node.parentNode;
   	        }
 	    }

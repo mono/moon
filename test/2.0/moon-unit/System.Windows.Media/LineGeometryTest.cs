@@ -32,6 +32,7 @@ namespace MoonTest.System.Windows.Media
 	public class LineGeometryTest
 	{
 		[TestMethod]
+		[KnownFailure]
 		public void FillRuleTest ()
 		{
 			string xaml =

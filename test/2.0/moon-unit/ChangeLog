@@ -1,5 +1,18 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Makefile: Updated entry type name.
+	* Mono.Moonlight.UnitTesting/HtmlOutput.cs,
+	  Mono.Moonlight.UnitTesting/IOutput.cs,
+	  Mono.Moonlight.UnitTesting/Tester.cs, site/index.html: Have same
+	  test results as our 1.0 harness (Pass, Fail, KnownFailure,
+	  UnexpectedPass, Ignore) and show them with similar colors.
+	* System.Windows.Media/LineGeometryTest.cs,
+	  System.Windows/SetterBaseCollectionTest.cs,
+	  System.Windows/SetterTest.cs, System.Windows/StyleTest.cs:
+	  Sprinkled [KnownFailure] a bit.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* System.Windows.Input/StylusDeviceTest.cs, moon-unit.csproj: Added
 	  StylusDeviceTest.
 	* Mono.Moonlight.UnitTesting/Tester.cs: Added IgnoreAttribute.

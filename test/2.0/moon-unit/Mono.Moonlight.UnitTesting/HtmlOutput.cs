@@ -17,11 +17,11 @@ namespace Mono.Moonlight.UnitTesting
 	{
 		StringBuilder builder;
 
-		public void Report (TestResult result)
+		public void Report (TestInfo result)
 		{
 			string call = string.Format ("AddTest ('{0}', '{1}', '{2}', '{3}');",
 						     result.name,
-						     result.success ? "success" : "failure",
+						     result.result.ToString (),
 						     result.reason == null ? "" : Encode (result.reason),
 						     result.output == null ? "" : Encode (result.output));
 			try {

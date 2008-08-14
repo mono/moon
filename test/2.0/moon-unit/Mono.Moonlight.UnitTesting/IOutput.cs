@@ -14,7 +14,7 @@ namespace Mono.Moonlight.UnitTesting
 	public interface IOutput
 	{
 		void StartReport ();
-		void Report (TestResult result);
+		void Report (TestInfo result);
 		void EndReport ();
 	}
 }

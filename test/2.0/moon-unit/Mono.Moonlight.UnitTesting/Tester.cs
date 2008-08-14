@@ -33,7 +33,7 @@ namespace Mono.Moonlight.UnitTesting
 		public static void Execute (IOutput output)
 		{
 			ConstructorInfo ctor;
-			TestResult result;
+			TestInfo result;
 			object test;
 			Exception e;
 			int failed = 0, succeeded = 0;
@@ -67,47 +67,57 @@ namespace Mono.Moonlight.UnitTesting
 					if (method.ReturnType != typeof (void))
 						continue;
 
-					result = new TestResult ();
+					result = new TestInfo ();
 					result.name = type.FullName + "." + method.Name;
+					result.result = TestResult.NotRun;
 
 					if (method.IsDefined (typeof (IgnoreAttribute), false)) {
 						IgnoreAttribute ia = (IgnoreAttribute) method.GetCustomAttributes (typeof (IgnoreAttribute), false) [0];
 						Console.WriteLine ("Ignored {0}... (reason: '{1}')", result.name, string.IsNullOrEmpty (ia.Reason) ? "None" : ia.Reason);
-						continue;
-					} else {
-						Console.WriteLine ("Executing {0}...", result.name);
+						result.reason = ia.Reason;
+						result.result = TestResult.Ignore;
 					}
 
+					if (result.result == TestResult.NotRun) {
+						test_output.Length = 0;
 
-					test_output.Length = 0;
+						e = null;
+						try {
+							method.Invoke (test, null);
+						} catch (Exception ex) {
+							e = ex;
+						}
 
-					e = null;
-					try {
-						method.Invoke (test, null);
-					} catch (Exception ex) {
-						e = ex;
+						while (e != null && e.InnerException != null && e is TargetInvocationException)
+							e = e.InnerException;
+
+						result.output = test_output.ToString ();
+
+						if (e == null) {
+							result.result = TestResult.Pass;
+						} else if (e is UnitTestAssertException) {
+							UnitTestAssertException ex = e as UnitTestAssertException;
+							result.result = TestResult.Fail;
+							result.reason = ex.FailedMessage;
+							result.output += "\n" + ex.ToString ();
+						} else {
+							result.result = TestResult.Fail;
+							result.reason = e.ToString ();
+						}
+						
+						if (result.result == TestResult.Pass)
+							succeeded++;
+						else
+							failed++;
+
+						if (method.IsDefined (typeof (KnownFailureAttribute), false)) {
+							if (result.result == TestResult.Pass)
+								result.result = TestResult.UnexpectedPass;
+							else
+								result.result = TestResult.KnownFailure;
+						}
 					}
 
-					while (e != null && e.InnerException != null && e is TargetInvocationException)
-						e = e.InnerException;
-
-					result.output = test_output.ToString ();
-
-					if (e == null) {
-						result.success = true;
-					} else if (e is UnitTestAssertException) {
-						UnitTestAssertException ex = e as UnitTestAssertException;
-						result.success = false;
-						result.reason = ex.FailedMessage;
-						result.output += "\n" + ex.ToString ();
-					} else {
-						result.success = false;
-						result.reason = e.ToString();
-					}
-					if (result.success)
-						succeeded++;
-					else
-						failed++;
 					output.Report (result);
 					//Console.WriteLine (result.success);
 				}
@@ -119,6 +129,7 @@ namespace Mono.Moonlight.UnitTesting
 
 	public class TestMethodAttribute : Attribute { }
 	public class TestClassAttribute : Attribute { }
+	public class KnownFailureAttribute : Attribute { }
 
 	public class IgnoreAttribute : Attribute
 	{
@@ -134,13 +145,22 @@ namespace Mono.Moonlight.UnitTesting
 		}
 	}
 
-	public class TestResult
+	public class TestInfo
 	{
-		public bool success;
-		public string reason;
+		public TestResult result;
 		public Exception ex;
+		public string reason;
 		public string output;
 		public string name;
+	}
+
+	public enum TestResult {
+		NotRun,
+		Pass,
+		Fail,
+		KnownFailure,
+		UnexpectedPass,
+		Ignore
 	}
 
 	public static class Assert

@@ -17,6 +17,7 @@ namespace MoonTest.System.Windows
 	public class StyleTest
 	{
 		[TestMethod]
+		[KnownFailure]
 		public void Sealed ()
 		{
 			Style style = new Style (typeof (UIElement));
@@ -31,6 +32,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void SetTwiceOnElement ()
 		{
 			Style style = new Style (typeof (Rectangle));
