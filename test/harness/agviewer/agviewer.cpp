@@ -385,7 +385,6 @@ new_gtk_browser ()
 static gboolean
 key_press_cb (GtkWidget* widget, GdkEventKey* event, GtkWindow* window)
 {
-	printf ("agviewer keypress:  0x%x\n", event->keyval);
 	if ((event->state & GDK_CONTROL_MASK) == 0)
 		return FALSE;
 
