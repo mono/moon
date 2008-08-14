@@ -298,6 +298,9 @@ namespace Mono {
 		public extern static bool surface_get_trans (IntPtr surface);
 
 		[DllImport ("moon")]
+		public extern static IntPtr surface_get_time_manager (IntPtr surface);
+
+		[DllImport ("moon")]
 		public extern static IntPtr surface_create_downloader (IntPtr surface);
 		
 		[DllImport ("moon")]
@@ -336,27 +339,19 @@ namespace Mono {
 		[DllImport ("moon")]
 		public extern static IntPtr value_from_str_with_typename (string type_name, string prop_name, string str);
 
-#region HtmlTimer
-		public delegate bool GSourceFunc  (IntPtr data);
+#region Time manager
+		public delegate bool GSourceFunc (IntPtr data);
 		
-		[DllImport("moonplugin")]
-		public extern static uint plugin_timer_timeout_add (IntPtr plugin_handle, int interval, GSourceFunc callback, IntPtr data);
-		
-		[DllImport("moonplugin")]
-		public extern static void plugin_timer_timeout_stop (IntPtr plugin_handle, uint source_id);
-
-		//
-		// The version to use outside the plugin
-		//
 		[DllImport("moon")]
-		public extern static uint runtime_timer_timeout_add (int interval, GSourceFunc callback, IntPtr data);
+		public extern static uint time_manager_add_timeout (IntPtr manager, int interval, GSourceFunc callback, IntPtr data);
+		[DllImport("moon")]
+		public extern static void time_manager_remove_timeout (IntPtr manager, uint source_id);
+
+		public delegate void TickCallHandler (IntPtr handle);
 
 		[DllImport("moon")]
-		public extern static void runtime_timer_timeout_stop (uint source_id);
-
+		public extern static uint time_manager_add_tick_call (IntPtr manager, TickCallHandler callback, IntPtr data);
 #endregion
-		[DllImport("moon")]
-		public extern static uint runtime_idle_add (GSourceFunc callback, IntPtr data);
 		
 #region EventObject
 		[DllImport("moon")]
