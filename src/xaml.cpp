@@ -906,10 +906,12 @@ static void
 start_element (void *data, const char *el, const char **attr)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
-	XamlElementInfo *elem;
+	XamlElementInfo *elem = NULL;
 	XamlElementInstance *inst;
 
-	elem = p->current_namespace->FindElement (p, el);
+	char *dot = strchr (el, '.');
+	if (!dot)
+		elem = p->current_namespace->FindElement (p, el);
 
 	if (p->error_args)
 		return;
@@ -960,7 +962,7 @@ start_element (void *data, const char *el, const char **attr)
 		// it's actually valid (from SL point of view) to have <Ellipse.Triggers> inside a <Rectangle>
 		// however we can't add properties to something bad, like a <Recta.gle> element
 		bool property = false;
-		char *dot = strchr (el, '.');
+
 		if (dot) {
 			gchar *prop_elem = g_strndup (el, dot - el);
 			property = (Type::Find (prop_elem) != NULL);

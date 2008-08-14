@@ -1,3 +1,10 @@
+2008-08-14  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: If there is a dot in the element name we can assume
+	it's a property (or at least not an element).  This should prevent
+	some extra calls into managed code to try to create types from
+	property names.
+
 2008-08-13  Geoff Norton  <gnorton@novell.com>
 
 	* runtime.cpp|h: Add a binding for g_idle_add.
