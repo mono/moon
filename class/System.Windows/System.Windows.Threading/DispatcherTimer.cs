@@ -44,14 +44,7 @@ namespace System.Windows.Threading {
 				return;
 
 			callback = new NativeMethods.GSourceFunc (timer_callback);
-			IntPtr handle = PluginHost.Handle;
-
-			if (handle != IntPtr.Zero)
-				source_id = NativeMethods.plugin_timer_timeout_add (
-					handle, (int) interval.TotalMilliseconds, callback, IntPtr.Zero);
-			else
-				source_id = NativeMethods.runtime_timer_timeout_add (
-					(int) interval.TotalMilliseconds, callback, IntPtr.Zero);
+			source_id = NativeMethods.time_manager_add_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), (int) interval.TotalMilliseconds, callback, IntPtr.Zero);
 		}
 
 #if NET_2_1
@@ -63,10 +56,7 @@ namespace System.Windows.Threading {
 				return;
 
 			IntPtr handle = PluginHost.Handle;
-			if (handle != IntPtr.Zero)
-				NativeMethods.plugin_timer_timeout_stop (PluginHost.Handle, source_id);
-			else
-				NativeMethods.runtime_timer_timeout_stop (source_id);
+			NativeMethods.time_manager_remove_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), source_id);
 			source_id = 0;
 			callback = null;
 		}

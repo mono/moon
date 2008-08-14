@@ -36,7 +36,7 @@ namespace System.Windows.Threading {
 		private Action a;
 		private Delegate d;
 		private object[] args;
-		NativeMethods.GSourceFunc callback;
+		NativeMethods.TickCallHandler callback;
 
 		internal Dispatcher ()
 		{
@@ -66,18 +66,16 @@ namespace System.Windows.Threading {
 		
 		private DispatcherOperation BeginInvoke ()
 		{
-			callback = new NativeMethods.GSourceFunc (dispatcher_callback);
-			return new DispatcherOperation (NativeMethods.runtime_idle_add (callback, IntPtr.Zero));
+			callback = new NativeMethods.TickCallHandler (dispatcher_callback);
+			return new DispatcherOperation (NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (Application.s_surface), callback, IntPtr.Zero));
                 }
 
-		bool dispatcher_callback (IntPtr data)
+		void dispatcher_callback (IntPtr data)
 		{
 			if (a != null)
 				a.Invoke ();
 			else if (d != null)
 				d.DynamicInvoke (args);
-
-			return false;
 		}
 
 	}
