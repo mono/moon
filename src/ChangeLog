@@ -1,3 +1,8 @@
+2008-08-13  Chris Toshok  <toshok@ximian.com>
+
+	* panel.cpp (Panel::OnCollectionChanged): we only need to call
+	OnLoaded on the new child.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* stylus.h: StylusInfo doesn't have a managed equivalent.

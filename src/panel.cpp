@@ -587,10 +587,8 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 			ChildAdded (args->new_value->AsUIElement ());
 			UpdateBounds (true);
 			
-			if (flags & UIElement::IS_LOADED) {
-				if (GetSurface() && GetSurface()->GetToplevel())
-					GetSurface()->GetToplevel()->OnLoaded ();
-			}
+			if (flags & UIElement::IS_LOADED)
+				args->new_value->AsUIElement()->OnLoaded();
 			break;
 		case CollectionChangedActionRemove:
 			ChildRemoved (args->old_value->AsUIElement ());
