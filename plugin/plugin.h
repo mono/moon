@@ -298,8 +298,6 @@ void *plugin_instance_load_url (PluginInstance *instance, char *url, int32_t *le
 
 void *plugin_instance_evaluate (PluginInstance *instance, const char *code);
 
-void     plugin_timer_timeout_stop (PluginInstance *instance, uint32_t source_id);
-uint32_t plugin_timer_timeout_add (PluginInstance *instance, int32_t interval, GSourceFunc callback, gpointer data);
 void     plugin_set_unload_callback (PluginInstance *instance, plugin_unload_callback *puc);
 PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface);
 

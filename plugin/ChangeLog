@@ -1,3 +1,7 @@
+2008-08-14  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp|h: The timeout C bindings are no longer used.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp: Remove spew.
