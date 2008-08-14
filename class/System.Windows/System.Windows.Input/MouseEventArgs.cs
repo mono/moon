@@ -32,6 +32,8 @@ using System.Security;
 namespace System.Windows.Input {
 	
 	public class MouseEventArgs : RoutedEventArgs {
+		private StylusDevice stylus_device;
+		
 		internal MouseEventArgs (IntPtr raw) : base (raw)
 		{
 		}
@@ -62,6 +64,17 @@ namespace System.Windows.Input {
 			[SecuritySafeCritical]
 #endif
 			set { NativeMethods.mouse_event_args_set_handled (native, value); }
+		}
+		
+		public StylusDevice StylusDevice {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
+			get {
+				if (stylus_device == null)
+					stylus_device = new StylusDevice (this);
+				return stylus_device;
+			}
 		}
 	}
 }

@@ -293,6 +293,7 @@
     <File name="System.Windows.mdp" subtype="Code" buildaction="Nothing" />
     <File name="System.Windows.Markup/ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="System.Windows.Interop/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Input/StylusDevice.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />

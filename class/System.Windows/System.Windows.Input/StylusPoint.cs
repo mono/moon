@@ -40,8 +40,13 @@ namespace System.Windows.Input
 			// require some changes elsewhere
 			// (DependencyObject.cs, for instance).
 		}
+		
+		public StylusPoint (double x, double y)
+		{
+			throw new NotImplementedException ();
+		}
 
-		public double PressureFactor { 
+		public float PressureFactor { 
 			get { throw new NotImplementedException (); }
 			set { throw new NotImplementedException (); }
 		}

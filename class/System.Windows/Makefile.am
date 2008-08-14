@@ -62,6 +62,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/FocusManager.cs				\
 	$(srcdir)/System.Windows.Input/KeyboardNavigationMode.cs		\
 	$(srcdir)/System.Windows.Input/ModifierKeys.cs				\
+	$(srcdir)/System.Windows.Input/StylusDevice.cs				\
 	$(srcdir)/System.Windows.Input/StylusPoint.cs				\
 	$(srcdir)/System.Windows.Input/StylusPointCollection.cs			\
 	$(srcdir)/System.Windows.Input/Key.cs					\

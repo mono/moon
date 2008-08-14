@@ -1,5 +1,10 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Makefile.am, System.Windows.mdp: Implemented StylusDevice, some
+	  gui-compare fixes.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile.am, System.Windows.mdp: Removed classes and members which
 	  are no longer in SL2B2.
 
