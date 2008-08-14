@@ -35,7 +35,6 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser/HtmlEventArgs.cs				\
 	$(srcdir)/System.Windows.Browser/HtmlObject.cs				\
 	$(srcdir)/System.Windows.Browser/HtmlPage.cs				\
-	$(srcdir)/System.Windows.Browser/HtmlTimer.cs				\
 	$(srcdir)/System.Windows.Browser/HtmlWindow.cs				\
 	$(srcdir)/System.Windows.Browser/HttpUtility.cs				\
 	$(srcdir)/System.Windows.Browser/MouseButtons.cs				\
