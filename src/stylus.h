@@ -27,7 +27,7 @@ enum TabletDeviceType {
 };
 
 
-/* @Namespace=System.Windows.Input */
+/* @Namespace=None,ManagedDependencyProperties=None */
 class StylusInfo : public DependencyObject {
  protected:
 	virtual ~StylusInfo () {}

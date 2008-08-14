@@ -63,12 +63,8 @@
     <File name="System.Windows.Input/Cursors.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/MouseEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/MouseEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Input/StylusInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/StylusPoint.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/StylusPointCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Input/TabletDeviceType.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Input/TimelineMarkerEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Input/TimelineMarkerEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Interop/BrowserHost.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Markup/XamlParseException.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/AlignmentX.cs" subtype="Code" buildaction="Compile" />
@@ -294,6 +290,9 @@
     <File name="System.Windows.Media.Animation/ObjectAnimationUsingKeyFrames.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/DeepZoomImageTileSource.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/MultiScaleTileSource.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.mdp" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Markup/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Interop/ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />

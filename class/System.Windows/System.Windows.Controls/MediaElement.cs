@@ -266,14 +266,14 @@ namespace System.Windows.Controls {
 		
 		private void InvokeMarkerReached (IntPtr calldata)
 		{
-			TimelineMarkerEventHandler h = (TimelineMarkerEventHandler) events[MarkerReachedEvent];
+			TimelineMarkerRoutedEventHandler h = (TimelineMarkerRoutedEventHandler) events[MarkerReachedEvent];
 			
 			if (h == null)
 				return;
 			
 			TimelineMarker marker = new TimelineMarker (calldata);
 			
-			h (this, new TimelineMarkerEventArgs (marker));
+			h (this, new TimelineMarkerRoutedEventArgs (marker));
 		}
 		
 		private static void media_opened_cb (IntPtr target, IntPtr calldata, IntPtr closure)

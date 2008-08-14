@@ -38,6 +38,12 @@ namespace System.Windows.Media
 		
 		public TimelineMarkerRoutedEventArgs ()
 		{
+			
+		}
+		
+		internal TimelineMarkerRoutedEventArgs (TimelineMarker marker)
+		{
+			this.marker = marker;
 		}
 		
 		public TimelineMarker Marker {

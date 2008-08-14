@@ -62,12 +62,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/FocusManager.cs				\
 	$(srcdir)/System.Windows.Input/KeyboardNavigationMode.cs		\
 	$(srcdir)/System.Windows.Input/ModifierKeys.cs				\
-	$(srcdir)/System.Windows.Input/StylusInfo.cs				\
 	$(srcdir)/System.Windows.Input/StylusPoint.cs				\
 	$(srcdir)/System.Windows.Input/StylusPointCollection.cs			\
-	$(srcdir)/System.Windows.Input/TabletDeviceType.cs			\
-	$(srcdir)/System.Windows.Input/TimelineMarkerEventArgs.cs		\
-	$(srcdir)/System.Windows.Input/TimelineMarkerEventHandler.cs		\
 	$(srcdir)/System.Windows.Input/Key.cs					\
 	$(srcdir)/System.Windows.Input/Keyboard.cs				\
 	$(srcdir)/System.Windows.Input/KeyEventArgs.cs				\

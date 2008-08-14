@@ -204,11 +204,11 @@ namespace System.Windows {
 
 	partial class Style {
 		private static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
-		public static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
+		internal static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
 
 		public SetterBaseCollection Setters {
 			get { return (SetterBaseCollection) GetValue (SettersProperty); }
-			set { SetValue (SettersProperty, value); }
+			private set { SetValue (SettersProperty, value); }
 		}
 
 		public System.Type TargetType {
@@ -817,23 +817,6 @@ namespace System.Windows.Ink {
 		public StylusPointCollection StylusPoints {
 			get { return (StylusPointCollection) GetValue (StylusPointsProperty); }
 			set { SetValue (StylusPointsProperty, value); }
-		}
-	}
-}
-
-namespace System.Windows.Input {
-	partial class StylusInfo {
-		public static readonly DependencyProperty DeviceTypeProperty = DependencyProperty.Lookup (Kind.STYLUSINFO, "DeviceType", typeof (TabletDeviceType));
-		public static readonly DependencyProperty IsInvertedProperty = DependencyProperty.Lookup (Kind.STYLUSINFO, "IsInverted", typeof (bool));
-
-		public TabletDeviceType DeviceType {
-			get { return (TabletDeviceType) GetValue (DeviceTypeProperty); }
-			set { SetValue (DeviceTypeProperty, value); }
-		}
-
-		public bool IsInverted {
-			get { return (bool) GetValue (IsInvertedProperty); }
-			set { SetValue (IsInvertedProperty, value); }
 		}
 	}
 }

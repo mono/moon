@@ -1,5 +1,9 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* TimelineMarkerRoutedEventArgs.cs: Added internal ctor.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* RadialGradientBrush.cs, Color.cs, Geometry.cs,
 	  LinearGradientBrush.cs, MediaStreamSample.cs, ImageBrush.cs,
 	  TransformGroup.cs, VideoBrush.cs, Matrix.cs,

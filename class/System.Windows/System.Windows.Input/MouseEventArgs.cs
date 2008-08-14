@@ -53,24 +53,6 @@ namespace System.Windows.Input {
 			return new Point (nx, ny);
 		}
 
-		public StylusInfo GetStylusInfo ()
-		{
-			IntPtr info = NativeMethods.mouse_event_args_get_stylus_info (native);
-			if (info == IntPtr.Zero)
-				return null;
-
-			return (StylusInfo)DependencyObject.Lookup (Kind.STYLUSINFO, info);
-		}
-		
-		public StylusPointCollection GetStylusPoints (UIElement uiElement)
-		{
-			IntPtr col = NativeMethods.mouse_event_args_get_stylus_points (native, uiElement == null ? IntPtr.Zero : uiElement.native);
-			if (col == IntPtr.Zero)
-				return null;
-
-			return (StylusPointCollection)DependencyObject.Lookup (Kind.STYLUSPOINT_COLLECTION, col);
-		}
-		
 		public bool Handled {
 #if NET_2_1
 			[SecuritySafeCritical]

@@ -1,3 +1,8 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am, System.Windows.mdp: Removed classes and members which
+	  are no longer in SL2B2.
+
 2008-08-13  Larry Ewing  <lewing@novell.com>
 
 	* System.Windows.Interop/SilverlightHost.cs: implement Content.

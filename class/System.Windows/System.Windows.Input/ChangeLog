@@ -1,3 +1,9 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* StylusInfo.cs, TabletDeviceType.cs, TimelineMarkerEventHandler.cs,
+	  MouseEventArgs.cs, TimelineMarkerEventArgs.cs: Removed classes and
+	  members which are no longer in SL2B2.
+
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* MouseEventArgs.cs, StylusPointCollection.cs: Changed some parameter

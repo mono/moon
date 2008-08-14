@@ -263,12 +263,6 @@ namespace System.Windows.Ink {
 }
 
 namespace System.Windows.Input {
-	partial class StylusInfo {
-		public StylusInfo () : base (NativeMethods.stylus_info_new ()) {}
-		internal StylusInfo (IntPtr raw) : base (raw) {}
-		internal override Kind GetKind () { return Kind.STYLUSINFO; }
-	}
-
 	partial class StylusPointCollection {
 		public StylusPointCollection () : base (NativeMethods.stylus_point_collection_new ()) {}
 		internal StylusPointCollection (IntPtr raw) : base (raw) {}
