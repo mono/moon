@@ -340,6 +340,8 @@ GList*   runtime_get_surface_list (void);
 guint32  runtime_timer_timeout_add (gint32 interval, GSourceFunc callback, gpointer data);
 void     runtime_timer_timeout_stop (guint32 source_id);
 
+guint32  runtime_idle_add (GSourceFunc callback, gpointer data);
+
 
 void	 runtime_flags_set_manual_timesource (gboolean flag);
 void	 runtime_flags_set_show_fps (gboolean flag);

@@ -1,3 +1,7 @@
+2008-08-13  Geoff Norton  <gnorton@novell.com>
+
+	* runtime.cpp|h: Add a binding for g_idle_add.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* cbinding.cpp, cbinding.h, eventargs.cpp, eventargs.h: Generate two
