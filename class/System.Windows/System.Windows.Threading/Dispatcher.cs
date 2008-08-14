@@ -26,11 +26,17 @@
 using System;
 using System.ComponentModel;
 using System.Security;
+using System.Threading;
+using Mono;
 
 namespace System.Windows.Threading {
 
 	[CLSCompliant (false)]
 	public class Dispatcher {
+		private Action a;
+		private Delegate d;
+		private object[] args;
+		NativeMethods.GSourceFunc callback;
 
 		internal Dispatcher ()
 		{
@@ -47,13 +53,33 @@ namespace System.Windows.Threading {
 
 		public DispatcherOperation BeginInvoke (Action a)
 		{
-			throw new NotImplementedException ();
+			this.a = a;
+			return BeginInvoke ();
 		}
 
 		public DispatcherOperation BeginInvoke (Delegate d, object[] args)
 		{
-			throw new NotImplementedException ();
+			this.d = d;
+			this.args = args;
+			return BeginInvoke ();
 		}
+		
+		private DispatcherOperation BeginInvoke ()
+		{
+			callback = new NativeMethods.GSourceFunc (dispatcher_callback);
+			return new DispatcherOperation (NativeMethods.runtime_idle_add (callback, IntPtr.Zero));
+                }
+
+		bool dispatcher_callback (IntPtr data)
+		{
+			if (a != null)
+				a.Invoke ();
+			else if (d != null)
+				d.DynamicInvoke (args);
+
+			return false;
+		}
+
 	}
 
 }

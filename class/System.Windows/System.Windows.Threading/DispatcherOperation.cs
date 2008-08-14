@@ -30,9 +30,15 @@ namespace System.Windows.Threading {
 
 	[CLSCompliant (false)]
 	public class DispatcherOperation {
+		internal uint source_id;
 
 		internal DispatcherOperation ()
 		{
+		}
+
+		internal DispatcherOperation (uint source_id)
+		{
+			this.source_id = source_id;
 		}
 
 	}

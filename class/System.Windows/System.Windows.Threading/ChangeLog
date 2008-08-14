@@ -1,3 +1,9 @@
+2008-08-14  Geoff Norton  <gnorton@novell.com>
+
+	* Dispatcher.cs, DispatcherOperation.cs: g_idle_add based
+	initial implementation supporting simple dispatcher operations
+	posted to the main thread.
+
 2008-08-13  Geoff Norton  <gnorton@novell.com>
 
 	* DispatcherTimer.cs: g_timout_add based implementation of 
