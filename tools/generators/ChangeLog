@@ -1,3 +1,8 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Property.cs, Annotation.cs: Rename Property.cs to Annotation.cs to
+	  keep vocabulary consistent.
+
 2008-08-13  Jackson Harper  <jackson@ximian.com>
 
 	* Generator.cs: If a type is a struct, it's a ValueType.
