@@ -1,0 +1,4 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* XmlnsDefinitionAttribute.cs, XmlLanguage.cs: Gui-compare fixes.
+

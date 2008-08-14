@@ -28,6 +28,7 @@
 
 using Mono;
 using System;
+using System.Security;
 using System.Windows;
 using System.Windows.Media;
 
@@ -40,6 +41,9 @@ namespace System.Windows.Markup {
 			lang = ietfLanguageTag;
 		}
 		
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
 		public static XmlLanguage GetLanguage (string ietfLanguageTag)
 		{
 			return new XmlLanguage (ietfLanguageTag);

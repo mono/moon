@@ -31,6 +31,9 @@ namespace System.Windows.Markup {
 
 	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple= true)]
 	public sealed class XmlnsDefinitionAttribute : Attribute {
+		private string clr_namespace;
+		private string xml_namespace;
+		private string assembly_name;
 
 		public XmlnsDefinitionAttribute (string xmlNamespace, string clrNamespace)
 		{
@@ -39,18 +42,18 @@ namespace System.Windows.Markup {
 		}
 
 		public string ClrNamespace {
-			get;
-			internal set;
+			get { return clr_namespace; }
+			internal set { clr_namespace = value; }
 		}
 
 		public string XmlNamespace {
-			get;
-			internal set;
+			get { return xml_namespace; }
+			internal set { xml_namespace = value; }
 		}
 
 		public string AssemblyName {
-			get;
-			set;
+			get { return assembly_name; }
+			set { assembly_name = value; }
 		}
 	}
 }
