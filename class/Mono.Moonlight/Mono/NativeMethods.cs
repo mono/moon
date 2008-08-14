@@ -387,12 +387,6 @@ namespace Mono {
 		public extern static void mouse_event_args_get_position (IntPtr handle, IntPtr uielement_handle, out double x, out double y);
 
 		[DllImport("moon")]
-		public extern static IntPtr mouse_event_args_get_stylus_info (IntPtr handle);
-
-		[DllImport("moon")]
-		public extern static IntPtr mouse_event_args_get_stylus_points (IntPtr handle, IntPtr uielement_handle);
-
-		[DllImport("moon")]
 		public extern static bool mouse_event_args_get_handled (IntPtr handle);
 
 		[DllImport("moon")]

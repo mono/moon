@@ -563,6 +563,12 @@ MediaElement *media_element_new (void);
 /**
  * MouseEventArgs
  **/
+/* @GeneratePInvoke */
+StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *instance);
+
+/* @GeneratePInvoke */
+StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter);
+
 MouseEventArgs *mouse_event_args_new (void);
 
 #if SL_2_0

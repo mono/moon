@@ -1,5 +1,10 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* NativeMethods.cs, GeneratedPInvokes.cs: Generate two MouseEventArgs
+	  methods.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Types.g.cs: Regenerated.
 
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 

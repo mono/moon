@@ -968,6 +968,26 @@ media_element_new (void)
 /**
  * MouseEventArgs
  **/
+StylusInfo *
+mouse_event_args_get_stylus_info (MouseEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetStylusInfo ();
+}
+
+
+StylusPointCollection *
+mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetStylusPoints (ink_presenter);
+}
+
+
 MouseEventArgs *
 mouse_event_args_new (void)
 {

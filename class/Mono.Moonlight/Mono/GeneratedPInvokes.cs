@@ -445,6 +445,14 @@ namespace Mono {
 		public extern static IntPtr media_element_new ();
 
 		[DllImport ("moon")]
+		// StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *instance);
+		public extern static IntPtr mouse_event_args_get_stylus_info (IntPtr instance);
+
+		[DllImport ("moon")]
+		// StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter);
+		public extern static IntPtr mouse_event_args_get_stylus_points (IntPtr instance, IntPtr ink_presenter);
+
+		[DllImport ("moon")]
 		// MultiScaleTileSource *multi_scale_tile_source_new ();
 		public extern static IntPtr multi_scale_tile_source_new ();
 

@@ -165,18 +165,6 @@ mouse_event_args_get_position (MouseEventArgs *args, UIElement *relative_to, dou
 	args->GetPosition (relative_to, x, y);
 }
 
-StylusInfo*
-mouse_event_args_get_stylus_info (MouseEventArgs *args)
-{
-	return args->GetStylusInfo ();
-}
-
-StylusPointCollection*
-mouse_event_args_get_stylus_points (MouseEventArgs *args, UIElement *ink_presenter)
-{
-	return args->GetStylusPoints (ink_presenter);
-}
-
 bool
 mouse_event_args_get_handled (MouseEventArgs *args)
 {

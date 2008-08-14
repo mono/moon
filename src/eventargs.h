@@ -114,7 +114,9 @@ public:
 
 	int GetState ();
 	void GetPosition (UIElement *relative_to, double *x, double *y);
+	/* @GenerateCBinding,GeneratePInvoke */
 	StylusInfo *GetStylusInfo ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
 
 	void SetHandled (bool handled) { this->handled = handled; }
@@ -137,8 +139,6 @@ G_BEGIN_DECLS
 
 int                    mouse_event_args_get_state (MouseEventArgs *args);
 void                   mouse_event_args_get_position (MouseEventArgs *args, UIElement *relative_to, double *x, double *y);
-StylusInfo*            mouse_event_args_get_stylus_info (MouseEventArgs *args);
-StylusPointCollection* mouse_event_args_get_stylus_points (MouseEventArgs *args, UIElement *ink_presenter);
 bool                   mouse_event_args_get_handled (MouseEventArgs *args);
 void                   mouse_event_args_set_handled (MouseEventArgs *args, bool handled);
 
