@@ -711,7 +711,7 @@ namespace System.Windows {
 		{
 			if (native == IntPtr.Zero) {
 				throw new Exception (
-					string.Format ("Uninitialized object: this object ({0}) has not set its native handle or overwritten SetValue", GetType ().FullName));
+					string.Format ("Uninitialized object: this object ({0}) has not set its native handle set", GetType ().FullName));
 			}
 
 			if (!CheckAccess ())
