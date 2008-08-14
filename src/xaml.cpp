@@ -46,6 +46,8 @@
 #include "grid.h"
 #endif
 
+#define DEBUG_XAML
+
 #ifdef DEBUG_XAML
 #define d(x) x
 #else
@@ -67,6 +69,7 @@ class DefaultNamespace;
 class XNamespace;
 class XamlElementInfoNative;
 class XamlElementInstanceNative;
+class XamlElementInstanceValueType;
 class XamlElementInfoManaged;
 class XamlElementInstanceManaged;
 class XamlElementInfoImportedManaged;
@@ -145,6 +148,16 @@ class XamlElementInstance : public List::Node {
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) = 0;
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) = 0;
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr) = 0;
+
+	virtual bool IsValueType ()
+	{
+		return false;
+	}
+
+	virtual Value *GetAsValue ()
+	{
+		return new Value (item);
+	}
 
 	bool IsPropertySet (const char *name)
 	{
@@ -317,6 +330,34 @@ class XamlElementInstanceNative : public XamlElementInstance {
 };
 
 
+class XamlElementInstanceValueType : public XamlElementInstance {
+	XamlElementInfoNative *element_info;
+	XamlParserInfo *parser_info;
+	Value *value_item;
+
+ public:
+	XamlElementInstanceValueType (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type);
+
+	virtual bool IsValueType ()
+	{
+		return true;
+	}
+
+	virtual Value *GetAsValue ()
+	{
+		return value_item;
+	}
+
+	bool CreateValueItemFromString (const char* str);
+
+	// A Value type doesn't really support anything. It's just here so people can do <SolidColorBrush.Color><Color>#FF00FF</Color></SolidColorBrush.Color>
+	virtual DependencyObject *CreateItem () { return NULL; }
+	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { }
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
+	virtual void SetAttributes (XamlParserInfo *p, const char **attr) { }
+};
+
+
 
 class XamlNamespace {
  public:
@@ -415,7 +456,7 @@ class XNamespace : public XamlNamespace {
 
 			if (!dob) {
 				parser_error (p, item->element_name, attr, -1,
-					      g_strdup_printf ("2. Unable to resolve x:Class type '%s'\n", value));
+					      g_strdup_printf ("Unable to resolve x:Class type '%s'\n", value));
 				return false;
 			}
 
@@ -505,12 +546,11 @@ class ManagedNamespace : public XamlNamespace {
 	{
 		DependencyObject *dob = NULL;
 		if (p->loader) {
-			printf ("ABOUT TO CREATE MANAGED OBJECT\n");
 			dob = p->loader->CreateManagedObjectFromXmlns (p->assembly_name, p->assembly_path, xmlns, el);
 		}
 
 		if (!dob) {
-			parser_error (p, el, NULL, -1, g_strdup_printf ("1. Unable to resolve managed type %s\n", el));
+			parser_error (p, el, NULL, -1, g_strdup_printf ("Unable to resolve managed type %s\n", el));
 			return NULL;
 		}
 
@@ -857,6 +897,8 @@ get_parent (XamlElementInstance *inst)
 static void
 set_parent (XamlElementInstance *inst, DependencyObject *parent)
 {
+	if (inst->IsValueType ())
+		return;
 
 	DependencyObject *item = inst->item;
 	item->SetLogicalParent (parent);
@@ -874,6 +916,7 @@ start_element (void *data, const char *el, const char **attr)
 	if (p->error_args)
 		return;
 
+	
 	if (elem) {
 		if (p->hydrate_expecting){
 			Type::Kind expecting_type =  p->hydrate_expecting->GetObjectType ();
@@ -889,7 +932,7 @@ start_element (void *data, const char *el, const char **attr)
 		} else
 			inst = elem->CreateElementInstance (p);
 
-		if (!inst && !inst->item)
+		if (!inst || (!inst->IsValueType () && !inst->item))
 			return;
 
 		if (!p->top_element) {
@@ -904,8 +947,8 @@ start_element (void *data, const char *el, const char **attr)
 
 		inst->SetAttributes (p, attr);
 
-		// Setting the attributes can kill the item
-		if (!inst->item)
+		// Setting the attributes can kill the item (but not if it's a value type)
+		if (!inst->IsValueType () && !inst->item)
 			return;
 
 		if (p->current_element){			
@@ -962,7 +1005,7 @@ start_element (void *data, const char *el, const char **attr)
 	if (p->current_element) {
 		p->current_element->children->Append (inst);
 	}
-	p->current_element = inst;	
+	p->current_element = inst;
 }
 
 static void
@@ -975,8 +1018,18 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	if (!p->cdata || !p->current_element)
 		return;
 
-	if (p->current_element->info && p->current_element->element_type == XamlElementInstance::ELEMENT)
-		prop_name = p->current_element->info->GetContentProperty (p);
+	if (!p->current_element->info || p->current_element->element_type == XamlElementInstance::ELEMENT)
+		goto done;
+
+	if (p->current_element->IsValueType () && p->cdata_content) {
+		XamlElementInstanceValueType *vinst = (XamlElementInstanceValueType *) p->current_element;
+		if (!vinst->CreateValueItemFromString (p->cdata->str)) {
+			parser_error (p, p->current_element->element_name, NULL, -1, g_strdup_printf ("Unable to create value item for string: %s\n", p->cdata->str));
+		}
+		goto done;
+	}
+
+	prop_name = p->current_element->info->GetContentProperty (p);
 
 	if (!prop_name && p->cdata_content) {
 		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
@@ -1244,10 +1297,10 @@ print_tree (XamlElementInstance *el, int depth)
 	
 	Value *v = NULL;
 
-	if (el->element_type == XamlElementInstance::ELEMENT)
+	if (el->element_type == XamlElementInstance::ELEMENT && !el->IsValueType ())
 		v = el->item->GetValue (DependencyObject::NameProperty);
 	printf ("%s  (%s)  (%p)\n", el->element_name, v ? v->AsString () : "-no name-", el->parent);
-	
+
 	for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->next) {
 		XamlElementInstance *el = (XamlElementInstance *) walk;
 		print_tree (el, depth + 1);
@@ -1496,6 +1549,7 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, const char* assembl
 			loader->error_args->xml_element,
 			loader->error_args->xml_attribute,
 			loader->error_args->error_message);
+		print_tree (parser_info->top_element, 0);
 	}
 	
 	if (p)
@@ -2261,7 +2315,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = NULL;
 		return true;
 	}
-	
+
 	switch (type) {
 	case Type::BOOL: {
 		bool b;
@@ -2540,6 +2594,10 @@ XamlElementInfoNative::GetContentProperty (XamlParserInfo *p)
 XamlElementInstance *
 XamlElementInfoNative::CreateElementInstance (XamlParserInfo *p)
 {
+	if (type->IsValueType ()) {
+		return new XamlElementInstanceValueType (this, p, GetName (), XamlElementInstance::ELEMENT);
+	}
+	
 	return new XamlElementInstanceNative (this, p, GetName (), XamlElementInstance::ELEMENT);
 }
 
@@ -2641,6 +2699,21 @@ XamlElementInstanceNative::SetAttributes (XamlParserInfo *p, const char **attr)
 {
 	dependency_object_set_attributes (p, this, attr);
 }
+
+
+XamlElementInstanceValueType::XamlElementInstanceValueType (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type) :
+	XamlElementInstance (element_info, name, type)
+{
+	this->element_info = element_info;
+	this->parser_info = parser_info;
+}
+
+bool
+XamlElementInstanceValueType::CreateValueItemFromString (const char* str)
+{
+	return value_from_str (element_info->GetType ()->GetKind (), NULL, str, &value_item, parser_info->loader->GetSurface()->IsSilverlight2 ());
+}
+
 
 const char *
 XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
@@ -2838,7 +2911,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			col = (Collection *) col_v->AsCollection ();
 		}
 
-		((DependencyObject *) child->item)->SetLogicalParent (NULL);
+		set_parent (child, NULL);
 		
 		col->Add ((DependencyObject*)child->item);
 		return;
@@ -3125,6 +3198,12 @@ start_parse:
 
 			Value *v = NULL;
 			if (!value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
+				if (prop->GetPropertyType () == Type::MANAGED) {
+					if (!p->loader->callbacks.set_custom_attribute (item->item, prop->GetName (), attr [i + 1])) {
+						return;
+					}
+				}
+
 				parser_error (p, item->element_name, attr [i], 2024,
 					      g_strdup_printf ("Invalid attribute value %s for property %s.",
 							       attr [i + 1], attr [i]));
