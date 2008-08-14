@@ -1,5 +1,9 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* StylusDevice.cs: Fix build.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* MouseEventArgs.cs, StylusDevice.cs, StylusPoint.cs: Implemented
 	  StylusDevice, some gui-compare fixes.
 

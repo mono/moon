@@ -10,6 +10,7 @@
  * 
  */
 
+using Mono;
 using System;
 using System.Security;
 
@@ -33,7 +34,7 @@ namespace System.Windows.Input
 #endif
 		public StylusPointCollection GetStylusPoints (UIElement relativeTo)
 		{
-			IntPtr col = NativeMethods.mouse_event_args_get_stylus_points (mouse_event_args.native, uiElement == null ? IntPtr.Zero : uiElement.native);
+			IntPtr col = NativeMethods.mouse_event_args_get_stylus_points (mouse_event_args.native, relativeTo == null ? IntPtr.Zero : relativeTo.native);
 			if (col == IntPtr.Zero)
 				return null;
 
