@@ -1,3 +1,8 @@
+2008-08-14  Geoff Norton  <gnorton@novell.com>
+
+	* DependencyObject.cs: Construct and return a ThreadStatic
+	Dispatcher when requested.
+
 2008-08-13  Chris Toshok  <toshok@ximian.com>
 
 	* Application.cs: move the surface_attach call out of the

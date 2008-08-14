@@ -52,6 +52,7 @@ namespace System.Windows {
 
 		internal EventHandlerList events;
 
+		[ThreadStatic] static private Dispatcher dispatcher;
 		private GCHandle _handle;
 		internal GCHandle GCHandle {
 			get {
@@ -313,7 +314,12 @@ namespace System.Windows {
 		
 		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Advanced)]
 		public Dispatcher Dispatcher {
-			get { throw new System.NotImplementedException (); }
+			get {
+				if (dispatcher == null)
+					dispatcher = new Dispatcher ();
+
+				return dispatcher;
+			}
 		}
 		
 		static bool slow_codepath_error_shown = false;
