@@ -217,6 +217,10 @@ namespace System.Windows {
 			if (instance.Startup != null){
 				instance.Startup (instance, new StartupEventArgs ());
 			}
+			
+			if (instance.root_visual != null) {
+				NativeMethods.surface_attach (instance.surface, instance.root_visual.native);
+			}
 
 			return instance;
 		}
@@ -357,8 +361,6 @@ namespace System.Windows {
 					return;
 				
 				root_visual = value;
-
-				NativeMethods.surface_attach (surface, root_visual.native);
 			}
 		}
 

@@ -1,3 +1,9 @@
+2008-08-13  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs: move the surface_attach call out of the
+	RootVisual setter.  put it in CreateApplication, *after* the
+	Startup event is emitted.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyProperty.g.cs, DependencyObject.g.cs: Regenerated.
