@@ -646,12 +646,12 @@ static GSList *pending_unrefs = NULL;
 static gboolean
 drain_unrefs_idle_call (gpointer data)
 {
-	drain_unrefs ();
+	EventObject::DrainUnrefs ();
 	return false;
 }
 
 void
-drain_unrefs ()
+EventObject::DrainUnrefs ()
 {
 	GSList *list;
 
@@ -1378,13 +1378,11 @@ DependencyObject::FindNameScope ()
 }
 		 
 DependencyObject *
-dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind *element_kind)
+DependencyObject::FindName (const char *name, Type::Kind *element_kind)
 {
-	if (obj == NULL)
-		return NULL;
 	//printf ("Looking up in %p the string %p\n", obj, name);
 	//printf ("        String: %s\n", name);
-	DependencyObject *ret = obj->FindName (name);
+	DependencyObject *ret = FindName (name);
 
 	if (ret == NULL)
 		return NULL;
@@ -1425,7 +1423,7 @@ dependency_object_set_name (DependencyObject *obj, const char *name)
 void
 DependencyObject::Shutdown ()
 {
-	drain_unrefs ();
+	EventObject::DrainUnrefs ();
 }
 
 static void

@@ -34,13 +34,13 @@ namespace System.Windows {
 		internal RoutedEventArgs (IntPtr raw)
 		{
 			native = raw;
-			NativeMethods.base_ref (native);
+			NativeMethods.event_object_ref (native);
 		}
 
 		~RoutedEventArgs ()
 		{
 			if (native != IntPtr.Zero) {
-				NativeMethods.base_unref (native);
+				NativeMethods.event_object_unref (native);
 				native = IntPtr.Zero;
 			}
 		}

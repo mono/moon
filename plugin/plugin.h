@@ -235,13 +235,14 @@ class StreamNotify
 	StreamNotify (StreamNotifyFlags type, void *data) : type (type), pdata (data) {};
 	StreamNotify (StreamNotifyFlags type, DependencyObject *dob) : type (type), pdata (dob)
 	{
-		base_ref (dob);
+		if (dob)
+			dob->ref ();
 	}
 	
 	~StreamNotify ()
 	{
-		if (type == DOWNLOADER)
-			base_unref ((DependencyObject *) pdata);
+		if (type == DOWNLOADER && pdata)
+			((DependencyObject *) pdata)->unref ();
 	}
 };
 

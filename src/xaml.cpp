@@ -195,7 +195,8 @@ unref_xaml_element (gpointer data, gpointer user_data)
 {
 	DependencyObject* dob = (DependencyObject*) data;
 	//printf ("unref_xaml_element: %i\n", dob->id);
-	base_unref (dob);
+	if (dob)
+		dob->unref ();
 }
 
 class XamlParserInfo {

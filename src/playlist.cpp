@@ -285,7 +285,7 @@ add_attribute (MediaAttributeCollection *attributes, const char *name, const cha
 		return;
 
 	MediaAttribute *attribute = new MediaAttribute ();
-	dependency_object_set_name (attribute, name);
+	attribute->SetName (name);
 	media_attribute_set_value (attribute, g_strdup (attr));
 
 	attributes->Add (attribute);

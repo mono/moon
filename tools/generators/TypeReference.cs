@@ -109,8 +109,22 @@ class TypeReference {
 			case "char*":
 				managed_type = "string";
 				break;
+			case "EventHandler":
+				managed_type = "UnmanagedEventHandler";
+				break;
+			case "Type::Kind*":
+				if (IsReturnType) {
+					managed_type = "IntPtr";
+				} else {
+					IsOut = true;
+					managed_type = "Kind";
+				}
+				break;
 			case "Type::Kind":
 				managed_type = "Kind";
+				break;
+			case "gpointer":
+				managed_type = "IntPtr";
 				break;
 			default:
 				if (Value.Contains ("*"))

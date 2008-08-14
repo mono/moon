@@ -156,6 +156,10 @@ namespace Mono {
 		// DeepZoomImageTileSource *deep_zoom_image_tile_source_new ();
 		public extern static IntPtr deep_zoom_image_tile_source_new ();
 
+		[DllImport ("moon")]
+		// DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
+		public extern static IntPtr dependency_object_find_name (IntPtr instance, string name, out Kind element_kind);
+
 		[DllImport ("moon", EntryPoint="dependency_object_get_default_value_with_error")]
 		// Value *dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
 		private extern static IntPtr dependency_object_get_default_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);
@@ -169,16 +173,19 @@ namespace Mono {
 			return result;
 		}
 
-		// This method is already defined manually in NativeMethods.cs. Remove the import from there, and regenerate.
-		// [DllImport ("moon", EntryPoint="dependency_object_get_name")]
+		[DllImport ("moon", EntryPoint="dependency_object_get_name")]
 		// const char *dependency_object_get_name (DependencyObject *instance);
-		// private extern static IntPtr dependency_object_get_name_ (IntPtr instance);
-		// public static string dependency_object_get_name (IntPtr instance)
-		// {
-		// 	IntPtr result;
-		// 	result = dependency_object_get_name_ (instance);
-		// 	return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
-		// }
+		private extern static IntPtr dependency_object_get_name_ (IntPtr instance);
+		public static string dependency_object_get_name (IntPtr instance)
+		{
+			IntPtr result;
+			result = dependency_object_get_name_ (instance);
+			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+		}
+
+		[DllImport ("moon")]
+		// Type::Kind dependency_object_get_object_type (DependencyObject *instance);
+		public extern static Kind dependency_object_get_object_type (IntPtr instance);
 
 		[DllImport ("moon", EntryPoint="dependency_object_get_value_no_default_with_error")]
 		// Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
@@ -205,6 +212,14 @@ namespace Mono {
 				throw CreateManagedException (error);
 			return result;
 		}
+
+		[DllImport ("moon")]
+		// void dependency_object_set_name (DependencyObject *instance, const char *name);
+		public extern static void dependency_object_set_name (IntPtr instance, string name);
+
+		[DllImport ("moon")]
+		// void dependency_object_set_value (DependencyObject *instance, DependencyProperty *property, Value *value);
+		public extern static void dependency_object_set_value (IntPtr instance, IntPtr property, ref Value value);
 
 		[DllImport ("moon")]
 		// DependencyObjectCollection *dependency_object_collection_new ();
@@ -307,6 +322,32 @@ namespace Mono {
 		[DllImport ("moon")]
 		// EllipseGeometry *ellipse_geometry_new ();
 		public extern static IntPtr ellipse_geometry_new ();
+
+		[DllImport ("moon")]
+		// int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
+		public extern static int event_object_add_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data);
+
+		[DllImport ("moon", EntryPoint="event_object_get_type_name")]
+		// const char *event_object_get_type_name (EventObject *instance);
+		private extern static IntPtr event_object_get_type_name_ (IntPtr instance);
+		public static string event_object_get_type_name (IntPtr instance)
+		{
+			IntPtr result;
+			result = event_object_get_type_name_ (instance);
+			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+		}
+
+		[DllImport ("moon")]
+		// void event_object_ref (EventObject *instance);
+		public extern static void event_object_ref (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
+		public extern static void event_object_remove_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data);
+
+		[DllImport ("moon")]
+		// void event_object_unref (EventObject *instance);
+		public extern static void event_object_unref (IntPtr instance);
 
 		[DllImport ("moon")]
 		// EventTrigger *event_trigger_new ();

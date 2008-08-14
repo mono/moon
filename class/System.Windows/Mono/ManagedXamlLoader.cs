@@ -128,7 +128,7 @@ namespace Mono.Xaml
 			
 			if (result != null) {
 				// Delete our reference, result already has one.
-				NativeMethods.base_unref (top);
+				NativeMethods.event_object_unref (top);
 			}
 			
 			return result;
@@ -160,7 +160,7 @@ namespace Mono.Xaml
 			
 			if (result != null) {
 				// Delete our reference, result already has one.
-				NativeMethods.base_unref (top);
+				NativeMethods.event_object_unref (top);
 			}
 			
 			return result;
@@ -345,7 +345,7 @@ namespace Mono.Xaml
 				return IntPtr.Zero;
 			}
 
-			NativeMethods.base_ref (dob.native);
+			NativeMethods.event_object_ref (dob.native);
 
 			return dob.native;
 		}
@@ -672,7 +672,7 @@ namespace Mono.Xaml
 					return IntPtr.Zero;
 				}
 
-				NativeMethods.base_ref (res.native);
+				NativeMethods.event_object_ref (res.native);
 				return res.native;
 			} catch (Exception ex) {
 				Console.WriteLine ("Application::CreateComponentFromName ({0}) threw an exception:\n{1}", name, ex);

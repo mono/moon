@@ -55,46 +55,17 @@ namespace Mono {
 			IntPtr surface,
 			PlainEvent surface_resized);
 		
-#region Base
-		[DllImport("moon")]
-		public extern static void base_ref (IntPtr ptr);
-
-		[DllImport("moon")]
-		public extern static void base_unref (IntPtr ptr);
-#endregion
-
 		[DllImport("moon")]
 		public extern static bool type_get_value_type (Kind type);
 
-                [DllImport("moon")]
+		[DllImport("moon")]
 		public extern static bool type_create_instance_from_kind (Kind type);
 
 		[DllImport("moon")]
 		public extern static bool type_is_dependency_object (Kind type);
-		
-		[DllImport("moon")]
-		public extern static IntPtr dependency_object_set_value (IntPtr obj, IntPtr property, ref Value val);
 
 		[DllImport("moon")]
 		public extern static IntPtr dependency_object_set_value (IntPtr obj, IntPtr property, IntPtr zero);
-
-		[DllImport("moon")]
-		public extern static IntPtr dependency_object_find_name (IntPtr obj, string name, out Kind kind);
-
-		[DllImport("moon", EntryPoint="dependency_object_get_name")]
-		public extern static IntPtr _dependency_object_get_name (IntPtr obj);
-
-		public static string dependency_object_get_name (IntPtr obj)
-		{
-			IntPtr p = _dependency_object_get_name (obj);
-			if (p == IntPtr.Zero)
-				return null;
-			
-			return Marshal.PtrToStringAnsi (p);
-		}
-		
-		[DllImport("moon")]
-		public extern static Kind dependency_object_get_object_type (IntPtr obj);
 		
 		[DllImport("moon")]
 		public extern static IntPtr xaml_create_from_str (IntPtr native_loader, string xaml, bool create_namescope,
@@ -351,14 +322,6 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static uint time_manager_add_tick_call (IntPtr manager, TickCallHandler callback, IntPtr data);
-#endregion
-		
-#region EventObject
-		[DllImport("moon")]
-		public extern static void event_object_add_event_handler (IntPtr handle, string eventName, UnmanagedEventHandler handler, IntPtr closure);
-
-		[DllImport("moon")]
-		public extern static void event_object_remove_event_handler (IntPtr handle, string eventName, UnmanagedEventHandler handler, IntPtr closure);
 #endregion
 
 #region RoutedEventArgs

@@ -1,3 +1,13 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml.cpp, pipeline.cpp: Don't use base_unref, call unref on the
+	  instance.
+	* playlist.cpp: Use DependencyObject::SetName instead of the C method.
+	* dependencyobject.h, dependencyobject.cpp: Generate all c methods, as
+	  well as Name accessors.
+	* cbinding.h, dependencyproperty.g.cpp, cbinding.cpp: Regenerated.
+	* runtime.cpp: Updated according to new method names.
+
 2008-08-14  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: We now create property instances from the property's

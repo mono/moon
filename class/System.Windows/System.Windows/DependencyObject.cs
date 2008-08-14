@@ -136,7 +136,7 @@ namespace System.Windows {
 		
 		static object CreateObject (Kind k, IntPtr raw)
 		{
-			NativeMethods.base_ref (raw);
+			NativeMethods.event_object_ref (raw);
 			switch (k){
 			case Kind.ARCSEGMENT: return new ArcSegment (raw);
 			case Kind.ASSEMBLYPART: return new AssemblyPart (raw);
@@ -252,7 +252,7 @@ namespace System.Windows {
 		internal void Free ()
 		{
 			if (this.native != IntPtr.Zero) {
-				NativeMethods.base_unref (this.native);
+				NativeMethods.event_object_unref(this.native);
 				this.native = IntPtr.Zero;
 			}
 		}
@@ -493,7 +493,7 @@ namespace System.Windows {
 					objects [dov_native] = dov;
 					value.k = dov.GetKind ();
 					value.u.p = dov_native;
-					NativeMethods.base_ref (dov_native);
+					NativeMethods.event_object_ref (dov_native);
 				}
 				else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
 					value.k = Kind.INT32;

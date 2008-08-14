@@ -208,16 +208,22 @@ ControlTemplate *control_template_new (void);
 DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
 #endif
 
-#if SL_2_0
 /**
  * DependencyObject
  **/
+/* @GeneratePInvoke */
+DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
+
+#if SL_2_0
 /* @GeneratePInvoke */
 Value *dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
 #endif
 
 /* @GeneratePInvoke */
 const char *dependency_object_get_name (DependencyObject *instance);
+
+/* @GeneratePInvoke */
+Type::Kind dependency_object_get_object_type (DependencyObject *instance);
 
 #if SL_2_0
 /* @GeneratePInvoke */
@@ -228,6 +234,12 @@ Value *dependency_object_get_value_no_default_with_error (DependencyObject *inst
 /* @GeneratePInvoke */
 Value *dependency_object_get_value_with_error (DependencyObject *instance, Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
 #endif
+
+/* @GeneratePInvoke */
+void dependency_object_set_name (DependencyObject *instance, const char *name);
+
+/* @GeneratePInvoke */
+void dependency_object_set_value (DependencyObject *instance, DependencyProperty *property, Value *value);
 
 /**
  * DependencyObjectCollection
@@ -351,6 +363,28 @@ Ellipse *ellipse_new (void);
  **/
 /* @GeneratePInvoke */
 EllipseGeometry *ellipse_geometry_new (void);
+
+/**
+ * EventObject
+ **/
+/* @GeneratePInvoke */
+int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
+
+void event_object_drain_unrefs (void);
+
+Surface *event_object_get_surface (EventObject *instance);
+
+/* @GeneratePInvoke */
+const char *event_object_get_type_name (EventObject *instance);
+
+/* @GeneratePInvoke */
+void event_object_ref (EventObject *instance);
+
+/* @GeneratePInvoke */
+void event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
+
+/* @GeneratePInvoke */
+void event_object_unref (EventObject *instance);
 
 /**
  * EventTrigger

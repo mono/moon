@@ -1,3 +1,8 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs, RoutedEventArgs.cs: Updated according to new
+	  method names.
+
 2008-08-14  Geoff Norton  <gnorton@novell.com>
 
 	* Application.cs: Make the static surface internal.

@@ -722,3 +722,18 @@ DependencyProperty *UserControl::ContentProperty = NULL;
 DependencyProperty *VideoBrush::SourceNameProperty = NULL;
 DependencyProperty *VisualBrush::VisualProperty = NULL;
 
+const char *
+DependencyObject::GetName ()
+{
+	Value *value = GetValue (DependencyObject::NameProperty);
+	if (value == NULL)
+		return NULL;
+	return value->AsString ();
+}
+
+void
+DependencyObject::SetName (const char * value)
+{
+	SetValue (DependencyObject::NameProperty, Value (value));
+}
+

@@ -2169,9 +2169,10 @@ MediaClosure::~MediaClosure ()
 {
 	delete frame;
 
-	if (context_refcounted)
-		base_unref (context);
-	base_unref (media);
+	if (context_refcounted && context)
+		context->unref ();
+	if (media)
+		media->unref ();
 }
 
 MediaResult
@@ -2752,12 +2753,14 @@ MediaWork::~MediaWork ()
 {
 	switch (type) {
 	case WorkTypeOpen:
-		base_unref (data.open.source);
+		if (data.open.source)
+			data.open.source->unref ();
 		break;
 	case WorkTypeVideo:
 	case WorkTypeAudio:
 	case WorkTypeMarker:
-		base_unref (data.frame.stream);
+		if (data.frame.stream)
+			data.frame.stream->unref ();
 		break;
 	case WorkTypeSeek:
 		break; // Nothing to do

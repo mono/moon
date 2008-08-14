@@ -310,7 +310,7 @@ Surface::~Surface ()
 	
 	time_manager->unref ();
 	
-	drain_unrefs ();
+	EventObject::DrainUnrefs ();
 	
 	delete up_dirty;
 	delete down_dirty;
@@ -2039,7 +2039,7 @@ runtime_shutdown (void)
 	if (!inited)
 		return;
 
-	drain_unrefs ();
+	EventObject::DrainUnrefs ();
 	
 	Media::Shutdown ();
 	

@@ -109,6 +109,7 @@ class EventObject {
 	void Track (const char *done, const char *typname);
 #endif
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void ref ()
 	{
 		if (refcount == 0) {
@@ -125,8 +126,12 @@ class EventObject {
 		OBJECT_TRACK ("Ref", GetTypeName ());
 	}
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void unref ();
 	
+	/* @GenerateCBinding */
+	static void DrainUnrefs ();
+
 	int GetRefCount () { return refcount; }
 	
 	//
@@ -144,12 +149,15 @@ class EventObject {
 		return Type::Find (GetObjectType ());
 	}
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetTypeName ()
 	{
 		return Type::Find (GetObjectType ())->GetName ();
 	}
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
+	/* @GenerateCBinding,GeneratePInvoke */
 	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 	void RemoveHandler (const char *event_name, int token);
 	void RemoveMatchingHandlers (const char *event_name, EventHandlerPredicate predicate, gpointer closure);
@@ -159,6 +167,7 @@ class EventObject {
 	void RemoveHandler (int event_id, int token);
 	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);
 	
+	/* @GenerateCBinding */
 	Surface *GetSurface () { return surface; }
 	virtual void SetSurface (Surface *surface);
 	// SetSurfaceLock/Unlock
@@ -239,6 +248,7 @@ class DependencyObject : public EventObject {
 	
 	bool SetValue (DependencyProperty *property, Value *value, GError **error);
 	bool SetValue (DependencyProperty *property, Value value, GError **error);
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetValue (DependencyProperty *property, Value *value);
 	void SetValue (DependencyProperty *property, Value value);
 	void SetValue (const char *name, Value *value);
@@ -261,17 +271,18 @@ class DependencyObject : public EventObject {
 	bool HasProperty (const char *name, bool inherits);
 	bool HasProperty (Types *additional_types, Type::Kind whatami, DependencyProperty *property, bool inherits);
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Type::Kind GetObjectType ();
 
 	DependencyObject *FindName (const char *name);
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject *FindName (const char *name, Type::Kind *element_kind);
 	NameScope *FindNameScope ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetName ()
-	{
-		Value *v = GetValue (DependencyObject::NameProperty);
-		return v ? v->AsString () : NULL;
-	}
+	const char *GetName ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetName (const char *name);
 
 	virtual void SetSurface (Surface *surface);
 
@@ -332,7 +343,7 @@ class DependencyObject : public EventObject {
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
 
-	/* @PropertyType=string,ManagedAccess=Internal */
+	/* @PropertyType=string,ManagedAccess=Internal,GenerateAccessors */
 	static DependencyProperty *NameProperty;
 
 	static void Shutdown ();
@@ -342,20 +353,6 @@ G_BEGIN_DECLS
 
 void base_ref (EventObject *obj);
 void base_unref (EventObject *obj);
-
-void drain_unrefs ();
-
-void   dependency_object_set_value (DependencyObject *object, DependencyProperty *prop, Value *val);
-
-DependencyObject *dependency_object_find_name (DependencyObject *obj, const char *name, Type::Kind *element_type);
-void dependency_object_set_name (DependencyObject *obj, const char *name);
-
-Type::Kind dependency_object_get_object_type (DependencyObject *obj);
-const char *dependency_object_get_type_name (DependencyObject *obj);
-
-Surface *event_object_get_surface (EventObject *o);
-void event_object_add_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure);
-void event_object_remove_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure);
 
 G_END_DECLS
 

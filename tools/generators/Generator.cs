@@ -259,7 +259,7 @@ class Generator {
 				text.Append (" = DependencyProperty.Lookup (Kind.");
 				text.Append (field.ParentType.KindName);
 				text.Append (", \"");
-				text.Append (field.Name.Substring (0, field.Name.LastIndexOf ("Property")));
+				text.Append (field.GetDependencyPropertyName ());
 				text.Append ("\", typeof (");
 				if (conv_int_to_double)
 					text.Append ("double");
@@ -280,7 +280,7 @@ class Generator {
 				text.Append (" ");
 				text.Append (field.GetDPManagedPropertyType (all));
 				text.Append (" ");
-				text.Append (field.Name.Substring (0, field.Name.LastIndexOf ("Property")));
+				text.Append (field.GetDependencyPropertyName ());
 				text.AppendLine (" {");
 				
 				text.Append ("\t\t\t");
@@ -387,7 +387,7 @@ class Generator {
 			text.Append (type.KindName);
 			text.Append (", \"");
 			
-			text.Append (field.Name, 0, field.Name.LastIndexOf ("Property"));
+			text.Append (field.GetDependencyPropertyName ());
 			text.Append ("\"");
 			text.Append (", ");
 			
@@ -443,7 +443,8 @@ class Generator {
 		}
 		text.AppendLine ("}");
 		text.AppendLine ();
-				
+			
+		// Static initializers
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
 			int version = field.SilverlightVersion;
@@ -463,6 +464,88 @@ class Generator {
 			version_previous = version;
 		}
 		text.AppendLine ();
+		
+		// C++ Accessors
+		for (int i = 0; i < fields.Count; i++) {
+			FieldInfo field = fields [i];
+			TypeInfo prop_type;
+			string prop_type_str;
+			string value_str;
+			bool both = field.Annotations.ContainsKey ("GenerateAccessors");
+			bool setter = both || field.Annotations.ContainsKey ("GenerateSetter");
+			bool getter = both || field.Annotations.ContainsKey ("GenerateGetter");
+			
+			if (!setter && !getter)
+				continue;
+		
+			prop_type = field.GetDPPropertyType (all);
+			
+			switch (prop_type.Name) {
+			case "char*": 
+				prop_type_str = "const char *"; 
+				value_str = "String";
+				break;
+			default: 
+				prop_type_str = prop_type.Name; 
+				value_str = prop_type.Name;
+				break;
+			}
+		
+			if (getter) {
+				text.AppendLine (prop_type_str);
+				text.Append (field.ParentType.Name);
+				text.Append ("::Get");
+				text.Append (field.GetDependencyPropertyName ());
+				text.AppendLine (" ()");
+				text.AppendLine ("{");
+				
+				text.Append ("\tValue *value = GetValue (");
+				text.Append (field.ParentType.Name);
+				text.Append ("::");
+				text.Append (field.Name);
+				text.AppendLine (");");
+				
+				text.AppendLine ("\tif (value == NULL)");
+				text.Append ("\t\treturn ");
+				if (prop_type.IsEnum) {
+					text.Append ("(");
+					text.Append (prop_type.Name);
+					text.Append (") 0");
+				} else if (prop_type.IsStruct) {
+					throw new NotImplementedException ("Generation of DependencyProperties with struct values");
+				} else {
+					text.Append ("NULL");
+				}
+				text.AppendLine (";");
+				
+				text.Append ("\treturn value->As");
+				text.Append (value_str);
+				text.AppendLine (" ();");
+			
+				text.AppendLine ("}");
+				text.AppendLine ();
+			}
+			
+			if (setter) {		
+				text.AppendLine ("void");
+				text.Append (field.ParentType.Name);
+				text.Append ("::Set");
+				text.Append (field.GetDependencyPropertyName ());
+				text.Append (" (");
+				text.Append (prop_type_str);
+				text.AppendLine (" value)");
+				
+				text.AppendLine ("{");
+				text.Append ("\tSetValue (");
+				text.Append (field.ParentType.Name);
+				text.Append ("::");
+				text.Append (field.Name);
+				text.AppendLine (", Value (value));");
+				text.AppendLine ("}");
+				text.AppendLine ();
+			}
+		}
+		
 		
 		Helper.WriteAllText (Path.Combine (moon_dir, "dependencyproperty.g.cpp"), text.ToString ());
 		
@@ -1484,7 +1567,7 @@ class Generator {
 		bool marshal_string_returntype = false;
 		bool marshal_moonerror = false;
 		bool generate_wrapper = false;
-		bool is_manually_defined;
+//		bool is_manually_defined;
 		bool comment_out;
 		bool is_void = false;
 		bool contains_unknown_types;
@@ -1526,13 +1609,13 @@ class Generator {
 			managed_name = managed_name.Replace ("_with_error", "");
 		
 		returntype = method.ReturnType;
-		is_manually_defined = IsManuallyDefined (NativeMethods_cs, managed_name);
+//		is_manually_defined = IsManuallyDefined (NativeMethods_cs, managed_name);
 		contains_unknown_types = method.ContainsUnknownTypes;
-		comment_out = is_manually_defined || contains_unknown_types;
+		comment_out = contains_unknown_types;
 		tabs = comment_out ? "\t\t// " : "\t\t";
 				
-		if (is_manually_defined)
-			text.AppendLine ("\t\t// This method is already defined manually in NativeMethods.cs. Remove the import from there, and regenerate.");
+//		if (is_manually_defined)
+//			text.AppendLine ("\t\t// NOTE: There is a method in NativeMethod.cs with the same name.");
 
 		if (contains_unknown_types)
 			text.AppendLine ("\t\t// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in typegen.cs and add the missing case) and try again.");

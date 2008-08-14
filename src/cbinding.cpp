@@ -337,10 +337,20 @@ deep_zoom_image_tile_source_new (void)
 #endif
 
 
-#if SL_2_0
 /**
  * DependencyObject
  **/
+DependencyObject *
+dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->FindName (name, element_kind);
+}
+
+
+#if SL_2_0
 Value *
 dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error)
 {
@@ -361,6 +371,16 @@ dependency_object_get_name (DependencyObject *instance)
 		return NULL;
 	
 	return instance->GetName ();
+}
+
+
+Type::Kind
+dependency_object_get_object_type (DependencyObject *instance)
+{
+	if (instance == NULL)
+		return Type::INVALID;
+	
+	return instance->GetObjectType ();
 }
 
 
@@ -390,6 +410,26 @@ dependency_object_get_value_with_error (DependencyObject *instance, Types *addit
 	return instance->GetValueWithError (additional_types, whatami, property, error);
 }
 #endif
+
+
+void
+dependency_object_set_name (DependencyObject *instance, const char *name)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetName (name);
+}
+
+
+void
+dependency_object_set_value (DependencyObject *instance, DependencyProperty *property, Value *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetValue (property, value);
+}
 
 
 /**
@@ -618,6 +658,77 @@ EllipseGeometry *
 ellipse_geometry_new (void)
 {
 	return new EllipseGeometry ();
+}
+
+
+/**
+ * EventObject
+ **/
+int
+event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->AddHandler (event_name, handler, data);
+}
+
+
+void
+event_object_drain_unrefs (void)
+{
+	EventObject::DrainUnrefs ();
+}
+
+
+Surface *
+event_object_get_surface (EventObject *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSurface ();
+}
+
+
+const char *
+event_object_get_type_name (EventObject *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTypeName ();
+}
+
+
+void
+event_object_ref (EventObject *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ref ();
+}
+
+
+void
+event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->RemoveHandler (event_name, handler, data);
+}
+
+
+void
+event_object_unref (EventObject *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->unref ();
 }
 
 

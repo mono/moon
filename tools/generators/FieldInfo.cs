@@ -149,4 +149,9 @@ class FieldInfo : MemberInfo {
 		else
 			return property_type;
 	}
+	
+	public string GetDependencyPropertyName ()
+	{
+		return Name.Substring (0, Name.LastIndexOf ("Property"));
+	}
 }

@@ -1,3 +1,8 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Events.cs, ManagedXamlLoader.cs: Updated according to new method
+	  names.
+
 2008-08-12  Chris Toshok  <toshok@ximian.com>
 
 	* ManagedXamlLoader.cs (SetCustomAttribute): do the property

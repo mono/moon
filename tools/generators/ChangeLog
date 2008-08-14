@@ -1,5 +1,13 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* GlobalInfo.cs: Add more known annotations.
+	* Generator.cs, FieldInfo.cs: Add support for generating C++ DP
+	  accessors.
+	* TypeReference.cs: Include support for Type::Kind*, EventHandler and
+	  gpointer.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Property.cs, Annotation.cs: Rename Property.cs to Annotation.cs to
 	  keep vocabulary consistent.
 

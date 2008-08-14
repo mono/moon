@@ -1,3 +1,8 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* GeneratedPInvokes.cs: Regenerated.
+	* NativeMethods.cs: Removed generated methods.
+
 2008-08-14  Geoff Norton  <gnorton@novell.com>
 
 	* NativeMethods.cs: Move the timeout/idle bindings from runtime
