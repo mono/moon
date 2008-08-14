@@ -491,6 +491,8 @@ class TimeManager : public EventObject {
 };
 
 void time_manager_add_tick_call (TimeManager *manager, TickCallHandler handler, EventObject *obj);
+guint time_manager_add_timeout (TimeManager *manager, guint32 interval, GSourceFunc handler, gpointer obj);
+void time_manager_remove_timeout (TimeManager *manager, guint32 source_id);
 void time_manager_list_clocks   (TimeManager *manager);
 
 

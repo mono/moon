@@ -12,6 +12,11 @@
 
 2008-08-13  Geoff Norton  <gnorton@novell.com>
 
+	* runtime.cpp|h, clock.cpp|h: Move the g_idle_idd and g_timeout
+	calls into the time manager.
+
+2008-08-13  Geoff Norton  <gnorton@novell.com>
+
 	* runtime.cpp|h: Add a binding for g_idle_add.
 
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 

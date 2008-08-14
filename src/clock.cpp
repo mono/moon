@@ -538,6 +538,19 @@ TimeManager::NeedClockTick ()
 #endif
 }
 
+
+guint
+time_manager_add_timeout (TimeManager *manager, guint ms_interval, GSourceFunc func, gpointer tick_data)
+{
+	return manager->AddTimeout (ms_interval, func, tick_data);
+}
+
+void
+time_manager_remove_timeout (TimeManager *manager, guint timeout_id)
+{
+	manager->RemoveTimeout (timeout_id);
+}
+
 void
 time_manager_add_tick_call (TimeManager *manager, TickCallHandler func, EventObject *tick_data)
 {
