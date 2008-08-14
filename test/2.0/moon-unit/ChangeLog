@@ -1,5 +1,11 @@
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* System.Windows.Input/StylusDeviceTest.cs, moon-unit.csproj: Added
+	  StylusDeviceTest.
+	* Mono.Moonlight.UnitTesting/Tester.cs: Added IgnoreAttribute.
+
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* App.xaml, Mono.Moonlight.UnitTesting/HtmlOutput.cs,
 	  Mono.Moonlight.UnitTesting/Tester.cs,
 	  Mono.Moonlight.UnitTesting/IOutput.cs, moon-unit.csproj,

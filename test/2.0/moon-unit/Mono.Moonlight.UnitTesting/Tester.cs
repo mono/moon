@@ -70,7 +70,14 @@ namespace Mono.Moonlight.UnitTesting
 					result = new TestResult ();
 					result.name = type.FullName + "." + method.Name;
 
-					Console.WriteLine ("Executing {0}...", result.name);
+					if (method.IsDefined (typeof (IgnoreAttribute), false)) {
+						IgnoreAttribute ia = (IgnoreAttribute) method.GetCustomAttributes (typeof (IgnoreAttribute), false) [0];
+						Console.WriteLine ("Ignored {0}... (reason: '{1}')", result.name, string.IsNullOrEmpty (ia.Reason) ? "None" : ia.Reason);
+						continue;
+					} else {
+						Console.WriteLine ("Executing {0}...", result.name);
+					}
+
 
 					test_output.Length = 0;
 
@@ -112,6 +119,20 @@ namespace Mono.Moonlight.UnitTesting
 
 	public class TestMethodAttribute : Attribute { }
 	public class TestClassAttribute : Attribute { }
+
+	public class IgnoreAttribute : Attribute
+	{
+		private string reason;
+		public IgnoreAttribute () { }
+		public IgnoreAttribute (string reason) 
+		{
+			this.reason = reason; 
+		}
+		public string Reason {
+			get { return reason; }
+			set { reason = value; }
+		}
+	}
 
 	public class TestResult
 	{
