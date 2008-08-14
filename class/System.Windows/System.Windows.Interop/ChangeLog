@@ -1,0 +1,4 @@
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Settings.cs, Content.cs, SilverlightHost.cs: Gui-compare fixes.
+

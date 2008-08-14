@@ -25,7 +25,9 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using System;
+using System.Security;
 using System.Windows.Media;
 
 namespace System.Windows.Interop {
@@ -35,12 +37,18 @@ namespace System.Windows.Interop {
 		public SilverlightHost ()
 		{}
 
-		public bool isVersionSupported ()
+#if NET_2_1
+		[SecuritySafeCritical ()]
+#endif
+		public bool IsVersionSupported (string versionStr)
 		{
 			throw new NotImplementedException ();
 		}
 
 		public Color Background {
+#if NET_2_1
+			[SecuritySafeCritical ()]
+#endif
 			get { throw new NotImplementedException (); }
 		}
 
@@ -49,6 +57,9 @@ namespace System.Windows.Interop {
 		}
 
 		public bool IsLoaded {
+#if NET_2_1
+			[SecuritySafeCritical ()]
+#endif
 			get { throw new NotImplementedException (); }
 		}
 
@@ -57,6 +68,9 @@ namespace System.Windows.Interop {
 		}
 
 		public Uri Source {
+#if NET_2_1
+			[SecuritySafeCritical ()]
+#endif
 			get { throw new NotImplementedException (); }
 		}
 	}
