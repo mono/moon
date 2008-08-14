@@ -103,7 +103,6 @@ namespace System.Windows {
 		
 		static Application CreateFromXap (IntPtr plugin, IntPtr surface, string xapPath)
 		{			
-
 			if (plugin != IntPtr.Zero)
 				PluginHost.SetPluginHandle (plugin);
 			
@@ -157,9 +156,10 @@ namespace System.Windows {
 			//
 			Assembly a;
 			Assembly startup = null;
-			assemblies = new Assembly [deployment.Parts.Count];
-			int i = 0;
+			assemblies = new Assembly [deployment.Parts.Count + 1];
+			assemblies [0] = typeof (Application).Assembly; // Add System.Windows.dll
 
+			int i = 1;
 			foreach (var part in deployment.Parts){
 				try {
 					a = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
