@@ -384,14 +384,26 @@ TimeManager::SourceTick ()
 
 	if (current_flags & TIME_MANAGER_TICK_CALL) {
 		STARTTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
-		bool remaining_tick_calls = InvokeTickCall ();
+		bool remaining_tick_calls;
+		TimeSpan start, now;
+		
+		// Invoke as many async tick calls as we can in 1/30th of a second
+		now = start = get_now ();
+		while (now < start + (TIMESPANTICKS_IN_SECOND / 30)) {
+			if (!(remaining_tick_calls = InvokeTickCall ()))
+				break;
+			
+			now = get_now ();
+		}
+		
 		if (remaining_tick_calls)
 			flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
+		
 		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
 	}
 
 	if (current_flags & TIME_MANAGER_RENDER) {
-	  //	  fprintf (stderr, "rendering\n"); fflush (stderr);
+		// fprintf (stderr, "rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
 		Emit (RenderEvent);
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
