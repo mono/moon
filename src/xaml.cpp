@@ -42,6 +42,7 @@
 #include "control.h"
 
 #if SL_2_0
+#include "thickness.h"
 #include "deployment.h"
 #include "grid.h"
 #endif
@@ -2528,6 +2529,15 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		break;
 	}
 #if SL_2_0
+	case Type::THICKNESS: {
+		Thickness *t = thickness_from_str (str);
+		if (t == NULL)
+			return false;
+		*v = new Value (*t);
+		delete t;
+		break;
+	}
+
 	case Type::GRIDLENGTH: {
 		GridLength grid_length;
 

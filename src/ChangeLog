@@ -1,3 +1,11 @@
+2008-08-14  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmoon_la_SOURCES): add thickness.cpp
+
+	* thickness.h, thickness.cpp: add thickness_from_str.
+
+	* xaml.cpp: add thickness parsing.
+
 2008-08-14  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Need to lookup property element name's in their

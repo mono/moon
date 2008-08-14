@@ -121,6 +121,7 @@ libmoon_la_SOURCES = 		\
 	size.cpp		\
 	stylus.cpp		\
 	text.cpp		\
+	thickness.cpp		\
 	transform.cpp		\
 	trigger.cpp		\
 	type.cpp		\

@@ -53,4 +53,10 @@ struct Thickness {
 	}
 };
 
+G_BEGIN_DECLS
+
+Thickness *thickness_from_str (const char *str);
+
+G_END_DECLS
+
 #endif /* __MOON_THICKNESS_H__ */
