@@ -6,6 +6,14 @@
 
 2008-08-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* uielement.cpp: Implemented property accessors for ZIndex
+
+	* collection.cpp (UIElementZIndexComparer): Use
+	UIElement::GetZIndex(). If, in the future, we make GetZIndex()
+	return a cached value, now we'll automagically benefit from it.
+
+2008-08-14  Jeffrey Stedfast  <fejj@novell.com>
+
 	ZIndex sorting optimization for bug #395160
 
 	* panel.cpp (Panel::UpdateTotalHitTestVisibility): Don't iterate

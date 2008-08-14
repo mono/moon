@@ -30,6 +30,7 @@ UIElement::UIElement ()
 {
 	visual_parent = NULL;
 	opacityMask = NULL;
+	
 	flags = UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE;
 
 	bounds = Rect (0,0,0,0);
@@ -109,8 +110,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	if (args->property == UIElement::OpacityProperty) {
 		UpdateTotalRenderVisibility ();
 		Invalidate (GetSubtreeBounds ());
-	}
-	else if (args->property == UIElement::VisibilityProperty) {
+	} else if (args->property == UIElement::VisibilityProperty) {
 		// note: invalid enum values are only validated in 1.1 (managed code),
 		// the default value for VisibilityProperty is VisibilityCollapsed
 		// (see bug #340799 for more details)
@@ -120,25 +120,21 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 			flags &= ~UIElement::RENDER_VISIBLE;
 		UpdateTotalRenderVisibility();
 		Invalidate (GetSubtreeBounds ());
-	}
-	else if (args->property == UIElement::IsHitTestVisibleProperty) {
+	} else if (args->property == UIElement::IsHitTestVisibleProperty) {
 		if (args->new_value->AsBool())
 			flags |= UIElement::HIT_TEST_VISIBLE;
 		else
 			flags &= ~UIElement::HIT_TEST_VISIBLE;
 		UpdateTotalHitTestVisibility();
-	}
-	else if (args->property == UIElement::ClipProperty) {
+	} else if (args->property == UIElement::ClipProperty) {
 		Invalidate(GetSubtreeBounds());
 		// force invalidation even if the bounding rectangle
 		// changes (since the clip can be concave)
 		UpdateBounds (true);
-	}
-	else if (args->property == UIElement::OpacityMaskProperty) {
+	} else if (args->property == UIElement::OpacityMaskProperty) {
 		opacityMask = args->new_value ? args->new_value->AsBrush() : NULL;
 		Invalidate (GetSubtreeBounds ());
-	}
-	else if (args->property == UIElement::RenderTransformProperty || args->property == UIElement::RenderTransformOriginProperty) {
+	} else if (args->property == UIElement::RenderTransformProperty || args->property == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
 	}
 
@@ -799,6 +795,18 @@ double
 UIElement::GetOpacity ()
 {
 	return GetValue (UIElement::OpacityProperty)->AsDouble ();
+}
+
+void
+UIElement::SetZIndex (int zindex)
+{
+	SetValue (UIElement::ZIndexProperty, Value (zindex));
+}
+
+int
+UIElement::GetZIndex ()
+{
+	return GetValue (UIElement::ZIndexProperty)->AsInt32 ();
 }
 
 TimeManager *

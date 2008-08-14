@@ -38,10 +38,9 @@ class Surface;
 /* @Namespace=System.Windows */
 class UIElement : public DependencyObject {
 	UIElement *visual_parent;
-	Brush *opacityMask;
-
 	double total_opacity;
-
+	Brush *opacityMask;
+	
  protected:
 	virtual ~UIElement ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
@@ -438,6 +437,9 @@ class UIElement : public DependencyObject {
 	
 	void SetOpacity (double opacity);
 	double GetOpacity ();
+	
+	void SetZIndex (int zindex);
+	int GetZIndex ();
 	
 	// Events you can AddHandler to
 	const static int LoadedEvent;

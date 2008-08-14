@@ -440,8 +440,8 @@ UIElementCollection::Dispose ()
 static int
 UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 {
-	int z1 = (*((UIElement **) ui1))->GetValue (UIElement::ZIndexProperty)->AsInt32 ();
-	int z2 = (*((UIElement **) ui2))->GetValue (UIElement::ZIndexProperty)->AsInt32 ();
+	int z1 = (*((UIElement **) ui1))->GetZIndex ();
+	int z2 = (*((UIElement **) ui2))->GetZIndex ();
 	
 	return z1 - z2;
 }
