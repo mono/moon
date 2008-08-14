@@ -1549,7 +1549,6 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, const char* assembl
 			loader->error_args->xml_element,
 			loader->error_args->xml_attribute,
 			loader->error_args->error_message);
-		print_tree (parser_info->top_element, 0);
 	}
 	
 	if (p)
