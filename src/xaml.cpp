@@ -93,7 +93,6 @@ void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent
 void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
-XamlElementInstance* create_toplevel_property_element_instance (XamlParserInfo *p, const char *name);
 XamlElementInfo* create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
 static XamlElementInstance *wrap_type (XamlParserInfo *p, Type *t);
 static Type *get_type_for_property_name (const char* prop_name);
@@ -962,22 +961,16 @@ start_element (void *data, const char *el, const char **attr)
 	} else {
 		// it's actually valid (from SL point of view) to have <Ellipse.Triggers> inside a <Rectangle>
 		// however we can't add properties to something bad, like a <Recta.gle> element
-		XamlElementInfo *property_type = NULL;
+		XamlElementInfo *prop_info = NULL;
 
 		if (dot) {
 			gchar *prop_elem = g_strndup (el, dot - el);
-			property_type = p->current_namespace->FindElement (p, prop_elem);
+			prop_info = p->current_namespace->FindElement (p, prop_elem);
 			g_free (prop_elem);
 		}
 
-		if (property_type != NULL) {
-			XamlElementInfo *prop_info = (p->current_element ? p->current_element->info : NULL);
-
-			if (!prop_info) {
-				// hmmmmm.  this is legal but i is not exactly sure how to handle it
-				inst = create_toplevel_property_element_instance (p, g_strdup (el));
-			} else
-				inst = prop_info->CreatePropertyElementInstance (p, g_strdup (el));
+		if (prop_info != NULL) {
+			inst = prop_info->CreatePropertyElementInstance (p, g_strdup (el));
 
 			if (attr [0] != NULL) {
 				// It appears there is a bug in the error string but it matches the MS runtime
@@ -986,9 +979,8 @@ start_element (void *data, const char *el, const char **attr)
 			}
 
 			if (!p->top_element) {
-				Type* property_type = get_type_for_property_name (inst->element_name);
-				if (property_type->IsSubclassOf (Type::COLLECTION)) {
-					XamlElementInstance *wrap = wrap_type (p, property_type);
+				if (Type::Find (prop_info->GetKind ())->IsSubclassOf (Type::COLLECTION)) {
+					XamlElementInstance *wrap = prop_info->CreateElementInstance (p);
 					NameScope::SetNameScope (wrap->item, p->namescope);
 					p->top_element = wrap;
 					p->current_element = wrap;
@@ -2556,16 +2548,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	return true;
 }
 
-//
-//  This is used in a scenario like this:
-//    createFromXaml ("<UIElement.Triggers> .... ");
-//  essentially it's just a wrapper that does nothing at all
-//
-XamlElementInstance *
-create_toplevel_property_element_instance (XamlParserInfo *p, const char *name)
-{
-	return new XamlElementInstanceNative (NULL, p, name, XamlElementInstance::PROPERTY, false);
-}
 
 XamlElementInfo *
 create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name)

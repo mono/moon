@@ -1,3 +1,9 @@
+2008-08-14  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: We now create property instances from the property's
+	type info not the property's parent type. This will allow us to
+	have a managed attached property on a native object.
+
 2008-08-14  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (libmoon_la_SOURCES): add thickness.cpp
