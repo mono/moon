@@ -1,3 +1,7 @@
+2008-08-14  Geoff Norton  <gnorton@novell.com>
+
+	* NativeMethods.cs: Bind runtime_idle_add.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* NativeMethods.cs, GeneratedPInvokes.cs: Generate two MouseEventArgs

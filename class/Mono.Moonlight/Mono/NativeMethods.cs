@@ -355,6 +355,8 @@ namespace Mono {
 		public extern static void runtime_timer_timeout_stop (uint source_id);
 
 #endregion
+		[DllImport("moon")]
+		public extern static uint runtime_idle_add (GSourceFunc callback, IntPtr data);
 		
 #region EventObject
 		[DllImport("moon")]
