@@ -46,8 +46,6 @@
 #include "grid.h"
 #endif
 
-#define DEBUG_XAML
-
 #ifdef DEBUG_XAML
 #define d(x) x
 #else
