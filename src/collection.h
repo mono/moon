@@ -219,7 +219,6 @@ class InlineCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class UIElementCollection : public DependencyObjectCollection {
  protected:
-	virtual void AddedToCollection (Value *value);
 	virtual void RemovedFromCollection (Value *value);
 	
 	virtual ~UIElementCollection ();
@@ -234,7 +233,6 @@ class UIElementCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::UIELEMENT; }
 	
-	virtual bool Insert (int index, Value *value);
 	virtual void Clear ();
 	
 	void ResortByZIndex ();

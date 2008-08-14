@@ -449,24 +449,16 @@ UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 void
 UIElementCollection::ResortByZIndex ()
 {
-	if (array->len <= 1)
+	g_ptr_array_set_size (z_sorted, array->len);
+	
+	if (array->len == 0)
 		return;
 	
-	g_ptr_array_set_size (z_sorted, array->len);
 	for (guint i = 0; i < array->len; i++)
 		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsUIElement ();
 	
-	g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
-}
-
-void
-UIElementCollection::AddedToCollection (Value *value)
-{
-	UIElement *item = value->AsUIElement ();
-	
-	g_ptr_array_insert_sorted (z_sorted, UIElementZIndexComparer, item);
-
-	DependencyObjectCollection::AddedToCollection (value);
+	if (array->len > 1)
+		g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
 }
 
 void
@@ -480,21 +472,6 @@ UIElementCollection::RemovedFromCollection (Value *value)
 	g_ptr_array_remove (z_sorted, item);
 	
 	DependencyObjectCollection::RemovedFromCollection (value);
-}
-
-bool
-UIElementCollection::Insert (int index, Value *value)
-{
-	if (!DependencyObjectCollection::Insert (index, value))
-		return false;
-       
-	// FIXME: If z_sorted was an array of structs containing both
-	// the item *and* the array index, our comparer could take
-	// that into consideration when sorting and so we'd never have
-	// to completely re-sort on Insert()
-	ResortByZIndex ();
-       
-	return true;
 }
 
 void

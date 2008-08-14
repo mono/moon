@@ -63,7 +63,7 @@ Panel::SetSurface (Surface *s)
 	UIElement *item;
 	
 	FrameworkElement::SetSurface (s);
-
+	
 	if (!(children = GetChildren ()))
 		return;
 	
@@ -170,12 +170,13 @@ Panel::UpdateTotalHitTestVisibility ()
 #if 1
 	// this really shouldn't need to be here, but our dirty code is broken
 	UIElementCollection *children = GetChildren ();
-	for (guint i = 0; i < children->z_sorted->len; i++) {
-		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
+	
+	for (int i = 0; i < children->GetCount (); i++) {
+		UIElement *item = children->GetValueAt (i)->AsUIElement ();
 		item->UpdateTotalHitTestVisibility ();
 	}
 #endif
-
+	
 	FrameworkElement::UpdateTotalHitTestVisibility ();
 }
 
@@ -228,7 +229,7 @@ void
 Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 {
 	UIElementCollection *children = GetChildren ();
-
+	
 	Region *clipped_region = new Region (bounds_with_children);
 	clipped_region->Intersect (parent_region);
 
@@ -521,6 +522,11 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 			collection = args->new_value->AsCollection ();
 			for (int i = 0; i < collection->GetCount (); i++)
 				ChildAdded (collection->GetValueAt (i)->AsUIElement ());
+			
+			if (GetSurface ()) {
+				// queue a resort based on ZIndex
+				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+			}
 		}
 
 		UpdateBounds();
@@ -588,7 +594,12 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 			UpdateBounds (true);
 			
 			if (flags & UIElement::IS_LOADED)
-				args->new_value->AsUIElement()->OnLoaded();
+				args->new_value->AsUIElement ()->OnLoaded ();
+			
+			if (GetSurface ()) {
+				// queue a resort based on ZIndex
+				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+			}
 			break;
 		case CollectionChangedActionRemove:
 			ChildRemoved (args->old_value->AsUIElement ());
@@ -597,6 +608,12 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 		case CollectionChangedActionReset:
 			for (int i = 0; i < col->GetCount (); i++)
 				ChildAdded (col->GetValueAt (i)->AsUIElement ());
+			
+			if (GetSurface ()) {
+				// queue a resort based on ZIndex
+				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+			}
+			
 			break;
 		}
 	} else {
@@ -611,8 +628,10 @@ Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Property
 		// if a child changes its ZIndex property we need to resort our Children
 		if (args->property == UIElement::ZIndexProperty) {
 			((UIElement *) obj)->Invalidate ();
-			if (GetSurface ())
+			if (GetSurface ()) {
+				// queue a resort based on ZIndex
 				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+			}
 		}
 	} else {
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
@@ -636,9 +655,14 @@ Panel::OnLoaded ()
 
 		item->OnLoaded ();
 	}
-
+	
 	FrameworkElement::OnLoaded ();
-
+	
+	if (GetSurface ()) {
+		// queue a resort based on ZIndex
+		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+	}
+	
  	emitting_loaded = false;
 }
 

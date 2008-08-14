@@ -1,3 +1,26 @@
+2008-08-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	ZIndex sorting optimization for bug #395160
+
+	* panel.cpp (Panel::UpdateTotalHitTestVisibility): Don't iterate
+	over the z_sorted list, it might not yet be
+	populated (e.g. ResortZIndex() may not have been called yet).
+	(Panel::OnPropertyChanged): Set a DirtyChildrenZIndices bit if the
+	new collection is non-null.
+	(Panel::OnCollectionChanged): Queue ZIndex resorts as appropriate.
+	(Panel::OnLoaded): Queue a resort here too.
+
+	* collection.cpp (UIElementCollection::AddedToCollection):
+	Removed. We don't want to do the zindex sortign here anymore. Too
+	slow. Instead, we'll have Panel::OnCollectionChanged() set the
+	DirtyChildrenZIndices dirty flag so that the renderer forces a
+	resort.
+	(UIElementCollection::Insert): Removed, no need to override
+	anymore since we won't be resorting by zindex here anymore.
+	(UIElementCollection::ResortByZIndex): Now that z_sorted isn't
+	maintained as items are added/inserted, we need to always init the
+	z_sorted array here even if we only have 1 item.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml.cpp, pipeline.cpp: Don't use base_unref, call unref on the
