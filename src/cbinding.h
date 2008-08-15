@@ -493,6 +493,15 @@ Inline *inline_new (void);
 InlineCollection *inline_collection_new (void);
 
 /**
+ * KeyboardEventArgs
+ **/
+/* @GeneratePInvoke */
+bool keyboard_event_args_get_handled (KeyboardEventArgs *instance);
+
+/* @GeneratePInvoke */
+void keyboard_event_args_set_handled (KeyboardEventArgs *instance, bool handled);
+
+/**
  * KeyFrameCollection
  **/
 /* @GeneratePInvoke */
@@ -597,12 +606,19 @@ void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallb
  * MouseEventArgs
  **/
 /* @GeneratePInvoke */
-StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *instance);
+bool mouse_event_args_get_handled (MouseEventArgs *instance);
+
+/* @GeneratePInvoke */
+void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);
 
 /* @GeneratePInvoke */
 StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter);
 
+/* @GeneratePInvoke */
 MouseEventArgs *mouse_event_args_new (void);
+
+/* @GeneratePInvoke */
+void mouse_event_args_set_handled (MouseEventArgs *instance, bool handled);
 
 #if SL_2_0
 /**
@@ -783,7 +799,14 @@ RotateTransform *rotate_transform_new (void);
 /**
  * RoutedEventArgs
  **/
+/* @GeneratePInvoke */
+DependencyObject *routed_event_args_get_source (RoutedEventArgs *instance);
+
+/* @GeneratePInvoke */
 RoutedEventArgs *routed_event_args_new (void);
+
+/* @GeneratePInvoke */
+void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el);
 
 #if SL_2_0
 /**
@@ -885,17 +908,38 @@ StackPanel *stack_panel_new (void);
  * Storyboard
  **/
 /* @GeneratePInvoke */
+bool storyboard_begin (Storyboard *instance);
+
+/* @GeneratePInvoke */
+void storyboard_pause (Storyboard *instance);
+
+/* @GeneratePInvoke */
+void storyboard_resume (Storyboard *instance);
+
+/* @GeneratePInvoke */
+void storyboard_seek (Storyboard *instance, TimeSpan timespan);
+
+/* @GeneratePInvoke */
+void storyboard_stop (Storyboard *instance);
+
+/* @GeneratePInvoke */
 Storyboard *storyboard_new (void);
 
 /**
  * Stroke
  **/
 /* @GeneratePInvoke */
+bool stroke_hit_test (Stroke *instance, StylusPointCollection *stylusPoints);
+
+/* @GeneratePInvoke */
 Stroke *stroke_new (void);
 
 /**
  * StrokeCollection
  **/
+/* @GeneratePInvoke */
+StrokeCollection *stroke_collection_hit_test (StrokeCollection *instance, StylusPointCollection *stylusPoints);
+
 /* @GeneratePInvoke */
 StrokeCollection *stroke_collection_new (void);
 

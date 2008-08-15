@@ -907,6 +907,29 @@ inline_collection_new (void)
 
 
 /**
+ * KeyboardEventArgs
+ **/
+bool
+keyboard_event_args_get_handled (KeyboardEventArgs *instance)
+{
+	if (instance == NULL)
+		return false;;
+	
+	return instance->GetHandled ();
+}
+
+
+void
+keyboard_event_args_set_handled (KeyboardEventArgs *instance, bool handled)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetHandled (handled);
+}
+
+
+/**
  * KeyFrameCollection
  **/
 KeyFrameCollection *
@@ -1081,13 +1104,23 @@ media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks 
 /**
  * MouseEventArgs
  **/
-StylusInfo *
-mouse_event_args_get_stylus_info (MouseEventArgs *instance)
+bool
+mouse_event_args_get_handled (MouseEventArgs *instance)
 {
 	if (instance == NULL)
-		return NULL;
+		return false;;
 	
-	return instance->GetStylusInfo ();
+	return instance->GetHandled ();
+}
+
+
+void
+mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->GetPosition (relative_to, x, y);
 }
 
 
@@ -1105,6 +1138,16 @@ MouseEventArgs *
 mouse_event_args_new (void)
 {
 	return new MouseEventArgs ();
+}
+
+
+void
+mouse_event_args_set_handled (MouseEventArgs *instance, bool handled)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetHandled (handled);
 }
 
 
@@ -1399,10 +1442,30 @@ rotate_transform_new (void)
 /**
  * RoutedEventArgs
  **/
+DependencyObject *
+routed_event_args_get_source (RoutedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSource ();
+}
+
+
 RoutedEventArgs *
 routed_event_args_new (void)
 {
 	return new RoutedEventArgs ();
+}
+
+
+void
+routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSource (el);
 }
 
 
@@ -1561,6 +1624,56 @@ stack_panel_new (void)
 /**
  * Storyboard
  **/
+bool
+storyboard_begin (Storyboard *instance)
+{
+	if (instance == NULL)
+		return false;;
+	
+	return instance->Begin ();
+}
+
+
+void
+storyboard_pause (Storyboard *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Pause ();
+}
+
+
+void
+storyboard_resume (Storyboard *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Resume ();
+}
+
+
+void
+storyboard_seek (Storyboard *instance, TimeSpan timespan)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Seek (timespan);
+}
+
+
+void
+storyboard_stop (Storyboard *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Stop ();
+}
+
+
 Storyboard *
 storyboard_new (void)
 {
@@ -1571,6 +1684,16 @@ storyboard_new (void)
 /**
  * Stroke
  **/
+bool
+stroke_hit_test (Stroke *instance, StylusPointCollection *stylusPoints)
+{
+	if (instance == NULL)
+		return false;;
+	
+	return instance->HitTest (stylusPoints);
+}
+
+
 Stroke *
 stroke_new (void)
 {
@@ -1581,6 +1704,16 @@ stroke_new (void)
 /**
  * StrokeCollection
  **/
+StrokeCollection *
+stroke_collection_hit_test (StrokeCollection *instance, StylusPointCollection *stylusPoints)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->HitTest (stylusPoints);
+}
+
+
 StrokeCollection *
 stroke_collection_new (void)
 {

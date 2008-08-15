@@ -175,9 +175,11 @@ class Stroke : public DependencyObject {
 
 	virtual Type::Kind GetObjectType () { return Type::STROKE; }
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool HitTest (StylusPointCollection *stylusPoints);
+	
 	Rect GetBounds ();
 	Rect GetOldBounds ();
-	bool HitTest (StylusPointCollection *stylusPoints);
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
@@ -194,6 +196,8 @@ class Stroke : public DependencyObject {
 	StylusPointCollection *GetStylusPoints ();
 };
 
+void stroke_get_bounds (Stroke *stroke, Rect *bounds);
+
 
 /* @Namespace=System.Windows.Ink */
 class StrokeCollection : public DependencyObjectCollection {
@@ -209,9 +213,13 @@ class StrokeCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STROKE; }
 	
-	Rect GetBounds ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	StrokeCollection *HitTest (StylusPointCollection *stylusPoints);
+	
+	Rect GetBounds ();
 };
+
+void stroke_collection_get_bounds (StrokeCollection *collection, Rect *bounds);
 
 
 /* @Namespace=System.Windows.Controls */

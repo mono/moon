@@ -545,37 +545,6 @@ Storyboard::Stop ()
 }
 
 void
-storyboard_begin  (Storyboard *sb)
-{
-	sb->Begin ();
-}
-
-void
-storyboard_pause  (Storyboard *sb)
-{
-	sb->Pause ();
-}
-
-void
-storyboard_resume (Storyboard *sb)
-{
-	sb->Resume ();
-}
-
-void
-storyboard_seek   (Storyboard *sb, TimeSpan ts)
-{
-	sb->Seek (ts);
-}
-
-void
-storyboard_stop   (Storyboard *sb)
-{
-	sb->Stop ();
-}
-
-
-void
 Storyboard::SetTargetProperty (DependencyObject *o,
 			       const char *targetProperty)
 {
@@ -750,47 +719,6 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	return new Value (LERP (start, end, progress));
 }
 
-void
-color_animation_set_by (ColorAnimation *da, Color by)
-{
-	da->SetValue (ColorAnimation::ByProperty, Value(by));
-}
-
-Color*
-color_animation_get_by (ColorAnimation *da)
-{
-	Value *v = da->GetValue (ColorAnimation::ByProperty);
-	return v == NULL ? NULL : v->AsColor();
-}
-
-void
-color_animation_set_from (ColorAnimation *da, Color from)
-{
-	da->SetValue (ColorAnimation::FromProperty, Value(from));
-}
-
-Color*
-color_animation_get_from (ColorAnimation *da)
-{
-	Value *v = da->GetValue (ColorAnimation::FromProperty);
-	return v == NULL ? NULL : v->AsColor();
-}
-
-void
-color_animation_set_to (ColorAnimation *da, Color to)
-{
-	da->SetValue (ColorAnimation::ToProperty, Value(to));
-}
-
-Color*
-color_animation_get_to (ColorAnimation *da)
-{
-	Value *v = da->GetValue (ColorAnimation::ToProperty);
-	return v == NULL ? NULL : v->AsColor();
-}
-
-
-
 
 Value*
 PointAnimation::GetTargetValue (Value *defaultOriginValue)
@@ -884,35 +812,6 @@ KeySpline::SetControlPoint1 (Point controlPoint1)
 	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
 }
 
-void
-key_spline_set_control_point_1 (KeySpline *k, double x, double y)
-{
-	Point p;
-	p.x = x; p.y = y;
-	k->SetControlPoint1 (p);
-}
-
-void
-key_spline_set_control_point_2 (KeySpline *k, double x, double y)
-{
-	Point p;
-	p.x = x; p.y = y;
-	k->SetControlPoint2 (p);
-}
-
-void
-key_spline_get_control_point_1 (KeySpline *k, double *x, double *y)
-{
-	Point p = k->GetControlPoint1 ();
-	*x = p.x; *y = p.y;
-}
-
-void
-key_spline_get_control_point_2 (KeySpline *k, double *x, double *y)
-{
-	Point p = k->GetControlPoint2 ();
-	*x = p.x; *y = p.y;
-}
 
 Point
 KeySpline::GetControlPoint2 ()
@@ -1431,7 +1330,7 @@ DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()
 void
 DoubleAnimationUsingKeyFrames::AddKeyFrame (DoubleKeyFrame *frame)
 {
-	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
+	DoubleKeyFrameCollection *key_frames = GetKeyFrames ();
 
 	key_frames->Add (frame);
 }
@@ -1439,7 +1338,7 @@ DoubleAnimationUsingKeyFrames::AddKeyFrame (DoubleKeyFrame *frame)
 void
 DoubleAnimationUsingKeyFrames::RemoveKeyFrame (DoubleKeyFrame *frame)
 {
-	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
+	DoubleKeyFrameCollection *key_frames = GetKeyFrames ();
 
 	key_frames->Remove (frame);
 }
@@ -1448,7 +1347,7 @@ Value*
 DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 						AnimationClock* animationClock)
 {
-	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
+	DoubleKeyFrameCollection *key_frames = GetKeyFrames ();
 
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
@@ -1503,7 +1402,7 @@ DoubleAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 Duration
 DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 {
-	DoubleKeyFrameCollection *key_frames = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ();
+	DoubleKeyFrameCollection *key_frames = GetKeyFrames ();
 	
 	KeyFrameAnimation_ResolveKeyFrames (this, key_frames);
 
@@ -1517,21 +1416,27 @@ DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 void
 DoubleAnimationUsingKeyFrames::Resolve ()
 {
-	KeyFrameAnimation_ResolveKeyFrames (this,
-					    GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsDoubleKeyFrameCollection ());
+	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
 }
 
 bool
 DoubleAnimationUsingKeyFrames::Validate ()
 {
-	KeyFrameCollection *col = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
-	return generic_keyframe_validator (col);
+	return generic_keyframe_validator (GetKeyFrames ());
+}
+
+DoubleKeyFrameCollection *
+DoubleAnimationUsingKeyFrames::GetKeyFrames ()
+{
+	Value *value = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty);
+	
+	return value ? value->AsDoubleKeyFrameCollection () : NULL;
 }
 
 
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
-	this->SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new ColorKeyFrameCollection ()));
+	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new ColorKeyFrameCollection ()));
 }
 
 ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
@@ -1541,7 +1446,7 @@ ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
 void
 ColorAnimationUsingKeyFrames::AddKeyFrame (ColorKeyFrame *frame)
 {
-	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
+	ColorKeyFrameCollection *key_frames = GetKeyFrames ();
 
 	key_frames->Add (frame);
 }
@@ -1549,7 +1454,7 @@ ColorAnimationUsingKeyFrames::AddKeyFrame (ColorKeyFrame *frame)
 void
 ColorAnimationUsingKeyFrames::RemoveKeyFrame (ColorKeyFrame *frame)
 {
-	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
+	ColorKeyFrameCollection *key_frames = GetKeyFrames ();
 
 	key_frames->Remove (frame);
 }
@@ -1558,7 +1463,7 @@ Value*
 ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
-	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
+	ColorKeyFrameCollection *key_frames = GetKeyFrames ();
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	ColorKeyFrame *current_keyframe;
@@ -1610,7 +1515,7 @@ ColorAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 Duration
 ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 {
-	ColorKeyFrameCollection *key_frames = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ();
+	ColorKeyFrameCollection *key_frames = GetKeyFrames ();
 	
 	KeyFrameAnimation_ResolveKeyFrames (this, key_frames);
 
@@ -1624,21 +1529,26 @@ ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 void
 ColorAnimationUsingKeyFrames::Resolve ()
 {
-	KeyFrameAnimation_ResolveKeyFrames (this,
-					    GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsColorKeyFrameCollection ());
+	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
 }
 
 bool
 ColorAnimationUsingKeyFrames::Validate ()
 {
-	KeyFrameCollection *col = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
-	return generic_keyframe_validator (col);
+	return generic_keyframe_validator (GetKeyFrames ());
 }
 
+ColorKeyFrameCollection *
+ColorAnimationUsingKeyFrames::GetKeyFrames ()
+{
+	Value *value = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty);
+	
+	return value ? value->AsColorKeyFrameCollection () : NULL;
+}
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
-	this->SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new PointKeyFrameCollection ()));
+	SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new PointKeyFrameCollection ()));
 }
 
 PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()
@@ -1648,7 +1558,7 @@ PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()
 void
 PointAnimationUsingKeyFrames::AddKeyFrame (PointKeyFrame *frame)
 {
-	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
+	PointKeyFrameCollection *key_frames = GetKeyFrames ();
 
 	key_frames->Add (frame);
 }
@@ -1656,7 +1566,7 @@ PointAnimationUsingKeyFrames::AddKeyFrame (PointKeyFrame *frame)
 void
 PointAnimationUsingKeyFrames::RemoveKeyFrame (PointKeyFrame *frame)
 {
-	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
+	PointKeyFrameCollection *key_frames = GetKeyFrames ();
 
 	key_frames->Remove (frame);
 }
@@ -1665,7 +1575,7 @@ Value*
 PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					       AnimationClock* animationClock)
 {
-	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
+	PointKeyFrameCollection *key_frames = GetKeyFrames ();
 	/* current segment info */
 	TimeSpan current_time = animationClock->GetCurrentTime();
 	PointKeyFrame *current_keyframe;
@@ -1717,7 +1627,7 @@ PointAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value 
 Duration
 PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 {
-	PointKeyFrameCollection *key_frames = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ();
+	PointKeyFrameCollection *key_frames = GetKeyFrames ();
 	
 	KeyFrameAnimation_ResolveKeyFrames (this, key_frames);
 
@@ -1731,17 +1641,22 @@ PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 void
 PointAnimationUsingKeyFrames::Resolve ()
 {
-	KeyFrameAnimation_ResolveKeyFrames (this,
-					    GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsPointKeyFrameCollection ());
+	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
 }
 
 bool
 PointAnimationUsingKeyFrames::Validate ()
 {
-	KeyFrameCollection *col = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty)->AsKeyFrameCollection ();
-	return generic_keyframe_validator (col);
+	return generic_keyframe_validator (GetKeyFrames ());
 }
 
+PointKeyFrameCollection *
+PointAnimationUsingKeyFrames::GetKeyFrames ()
+{
+	Value *value = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty);
+	
+	return value ? value->AsPointKeyFrameCollection () : NULL;
+}
 
 
 RepeatBehavior RepeatBehavior::Forever (RepeatBehavior::FOREVER);

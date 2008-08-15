@@ -576,24 +576,6 @@ TimeManager::NeedClockTick ()
 }
 
 
-guint
-time_manager_add_timeout (TimeManager *manager, guint ms_interval, GSourceFunc func, gpointer tick_data)
-{
-	return manager->AddTimeout (ms_interval, func, tick_data);
-}
-
-void
-time_manager_remove_timeout (TimeManager *manager, guint timeout_id)
-{
-	manager->RemoveTimeout (timeout_id);
-}
-
-void
-time_manager_add_tick_call (TimeManager *manager, TickCallHandler func, EventObject *tick_data)
-{
-	manager->AddTickCall (func, tick_data);
-}
-
 static void
 spaces (int n)
 {
@@ -656,11 +638,6 @@ TimeManager::ListClocks()
 	printf ("============================\n");
 }
 
-void
-time_manager_list_clocks (TimeManager *manager)
-{
-	manager->ListClocks();
-}
 
 Clock::Clock (Timeline *tl)
   : natural_duration (Duration::Automatic)
@@ -1340,12 +1317,6 @@ Timeline::Timeline ()
 	manual_target = NULL;
 }
 
-void 
-timeline_set_manual_target (Timeline *timeline, DependencyObject *target)
-{
-	timeline->SetManualTarget (target);
-}
-
 bool
 Timeline::Validate ()
 {
@@ -1609,40 +1580,4 @@ TimelineMarker::GetType ()
 	Value *value = GetValue (TimelineMarker::TypeProperty);
 	
 	return value ? value->AsString () : NULL;
-}
-
-void
-timeline_marker_set_text (TimelineMarker *marker, const char *text)
-{
-	marker->SetText (text);
-}
-
-const char *
-timeline_marker_get_text (TimelineMarker *marker)
-{
-	return marker->GetText ();
-}
-
-void
-timeline_marker_set_type (TimelineMarker *marker, const char *type)
-{
-	marker->SetType (type);
-}
-
-const char *
-timeline_marker_get_type (TimelineMarker *marker)
-{
-	return marker->GetType ();
-}
-
-void
-timeline_marker_set_time (TimelineMarker *marker, TimeSpan time)
-{
-	marker->SetTime (time);
-}
-
-TimeSpan
-timeline_marker_get_time (TimelineMarker *marker)
-{
-	return marker->GetTime ();
 }

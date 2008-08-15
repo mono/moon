@@ -163,51 +163,6 @@ UIElement *control_initialize_from_xaml (Control *control, const char *xaml,
 UIElement *control_initialize_from_xaml_callbacks (Control *control, const char *xaml, 
 						   Type::Kind *element_type, XamlLoader *loader);
 
-void control_set_background (Control *control, Brush *bg);
-Brush *control_get_background (Control *control);
-
-void control_set_border_brush (Control *control, Brush *brush);
-Brush *control_get_border_brush (Control *control);
-
-void control_set_border_thickness (Control *control, Thickness *thickness);
-Thickness *control_get_border_thickness (Control *control);
-
-void control_set_font_family (Control *control, const char *family);
-const char *control_get_font_family (Control *control);
-
-void control_set_font_size (Control *control, double size);
-double control_get_font_size (Control *control);
-
-void control_set_font_stretch (Control *control, FontStretches stretch);
-FontStretches control_get_font_stretch (Control *control);
-
-void control_set_font_style (Control *control, FontStyles style);
-FontStyles control_get_font_style (Control *control);
-
-void control_set_font_weight (Control *control, FontWeights weight);
-FontWeights control_get_font_weight (Control *control);
-
-void control_set_foreground (Control *control, Brush *fg);
-Brush *control_get_foreground (Control *control);
-
-void control_set_horizontal_content_alignment (Control *control, HorizontalAlignment alignment);
-HorizontalAlignment control_get_horizontal_content_alignment (Control *control);
-
-void control_set_is_tab_stop (Control *control, bool value);
-bool control_get_is_tab_stop (Control *control);
-
-void control_set_padding (Control *control, Thickness *padding);
-Thickness *control_get_padding (Control *control);
-
-void control_set_tab_index (Control *control, int index);
-int control_get_tab_index (Control *control);
-
-void control_set_tab_navigation (Control *control, KeyboardNavigationMode mode);
-KeyboardNavigationMode control_get_tab_navigation (Control *control);
-
-void control_set_vertical_content_alignment (Control *control, VerticalAlignment alignment);
-VerticalAlignment control_get_vertical_content_alignment (Control *control);
-
 G_END_DECLS
 
 #endif /* __MOON_CONTROL_H__ */

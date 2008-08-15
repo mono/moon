@@ -98,13 +98,6 @@ class Brush : public DependencyObject {
 	Transform *GetTransform ();
 };
 
-double     brush_get_opacity            (Brush *brush);
-void       brush_set_opacity            (Brush *brush, double opacity);
-Transform *brush_get_relative_transform (Brush *brush);
-void       brush_set_relative_transform (Brush *brush, Transform *transform);
-Transform *brush_get_transform          (Brush *brush);
-void       brush_set_transform          (Brush *brush, Transform *transform);
-
 
 /* @Namespace=System.Windows.Media */
 class SolidColorBrush : public Brush {
@@ -132,9 +125,6 @@ class SolidColorBrush : public Brush {
 	void SetColor (Color *color);
 	Color *GetColor ();
 };
-
-Color           *solid_color_brush_get_color (SolidColorBrush *solid_color_brush);
-void             solid_color_brush_set_color (SolidColorBrush *solid_color_brush, Color *color);
 
 
 /* @Namespace=System.Windows.Media */
@@ -176,11 +166,6 @@ class GradientStop : public DependencyObject {
 	void SetOffset (double offset);
 	double GetOffset ();
 };
-
-Color        *gradient_stop_get_color  (GradientStop *stop);
-void          gradient_stop_set_color  (GradientStop *stop, Color *color);
-double        gradient_stop_get_offset (GradientStop *stop);
-void          gradient_stop_set_offset (GradientStop *stop, double offset);
 
 
 // note: abstract in C#
@@ -227,15 +212,6 @@ class GradientBrush : public Brush {
 	GradientSpreadMethod GetSpreadMethod ();
 };
 
-ColorInterpolationMode  gradient_brush_get_color_interpolation_mode (GradientBrush *brush);
-void                    gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode);
-GradientStopCollection *gradient_brush_get_gradient_stops           (GradientBrush *brush);
-void                    gradient_brush_set_gradient_stops           (GradientBrush *brush, GradientStopCollection *collection);
-BrushMappingMode        gradient_brush_get_mapping_mode             (GradientBrush *brush);
-void                    gradient_brush_set_mapping_mode             (GradientBrush *brush, BrushMappingMode mode);
-GradientSpreadMethod    gradient_brush_get_spread_method            (GradientBrush *brush);
-void                    gradient_brush_set_spread_method            (GradientBrush *brush, GradientSpreadMethod method);
-
 
 /* @Namespace=System.Windows.Media */
 class LinearGradientBrush : public GradientBrush {
@@ -264,11 +240,6 @@ class LinearGradientBrush : public GradientBrush {
 	void SetStartPoint (Point *point);
 	Point *GetStartPoint ();
 };
-
-Point	*linear_gradient_brush_get_end_point	(LinearGradientBrush *brush);
-void	linear_gradient_brush_set_end_point	(LinearGradientBrush *brush, Point *point);
-Point	*linear_gradient_brush_get_start_point	(LinearGradientBrush *brush);
-void	linear_gradient_brush_set_start_point	(LinearGradientBrush *brush, Point *point);
 
 
 /* @Namespace=System.Windows.Media */
@@ -309,15 +280,6 @@ class RadialGradientBrush : public GradientBrush {
 	double GetRadiusY ();
 };
 
-Point*	radial_gradient_brush_get_center		(RadialGradientBrush *brush);
-void	radial_gradient_brush_set_center		(RadialGradientBrush *brush, Point *center);
-Point*	radial_gradient_brush_get_gradientorigin	(RadialGradientBrush *brush);
-void	radial_gradient_brush_set_gradientorigin	(RadialGradientBrush *brush, Point *origin);
-double	radial_gradient_brush_get_radius_x		(RadialGradientBrush *brush);
-void	radial_gradient_brush_set_radius_x		(RadialGradientBrush *brush, double radiusX);
-double	radial_gradient_brush_get_radius_y		(RadialGradientBrush *brush);
-void	radial_gradient_brush_set_radius_y		(RadialGradientBrush *brush, double radiusY);
-
 
 /* @Namespace=System.Windows.Media */
 class TileBrush : public Brush {
@@ -349,13 +311,6 @@ class TileBrush : public Brush {
 	void SetStretch (Stretch stretch);
 	Stretch GetStretch ();
 };
-
-AlignmentX	tile_brush_get_alignment_x	(TileBrush *brush);
-void		tile_brush_set_alignment_x	(TileBrush *brush, AlignmentX alignment);
-AlignmentY	tile_brush_get_alignment_y	(TileBrush *brush);
-void		tile_brush_set_alignment_y	(TileBrush *brush, AlignmentY alignment);
-Stretch		tile_brush_get_stretch		(TileBrush *brush);
-void		tile_brush_set_stretch		(TileBrush *brush, Stretch stretch);
 
 
 /* @Namespace=System.Windows.Media */
@@ -399,11 +354,6 @@ class ImageBrush : public TileBrush {
 	const char *GetImageSource ();
 };
 
-double	image_brush_get_download_progress	(ImageBrush *brush);
-void	image_brush_set_download_progress	(ImageBrush *brush, double progress);
-const char *image_brush_get_image_source      	(ImageBrush *brush);
-void	image_brush_set_image_source		(ImageBrush *brush, const char *source);
-void	image_brush_set_source			(ImageBrush *brush, Downloader *downloader, const char *PartName);
 cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int height);
 
 
@@ -436,9 +386,6 @@ class VideoBrush : public TileBrush {
 	const char *GetSourceName ();
 };
 
-const char *video_brush_get_source_name (VideoBrush *brush);
-void video_brush_set_source_name (VideoBrush *brush, const char *name);
-
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
@@ -470,9 +417,6 @@ class VisualBrush : public TileBrush {
 	void SetVisual (UIElement *visual);
 	UIElement *GetVisual ();
 };
-
-UIElement       *visual_brush_get_visual (VisualBrush *brush);
-void             visual_brush_set_visual (VisualBrush *brush, UIElement *visual);
 
 G_END_DECLS
 

@@ -153,58 +153,10 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 	return points;
 }
 
-int
-mouse_event_args_get_state (MouseEventArgs *args)
-{
-	return args->GetState ();
-}
-
-void
-mouse_event_args_get_position (MouseEventArgs *args, UIElement *relative_to, double *x, double *y)
-{
-	args->GetPosition (relative_to, x, y);
-}
-
-bool
-mouse_event_args_get_handled (MouseEventArgs *args)
-{
-	return args->GetHandled ();
-}
-
-void
-mouse_event_args_set_handled (MouseEventArgs *args, bool handled)
-{
-	args->SetHandled (handled);
-}
-
-bool
-keyboard_event_args_get_handled (KeyboardEventArgs *args)
-{
-	return args->GetHandled ();
-}
-
-void
-keyboard_event_args_set_handled (KeyboardEventArgs *args, bool handled)
-{
-	args->SetHandled (handled);
-}
-
 ModifierKeys Keyboard::Modifiers = ModifierKeyNone;
 
 ModifierKeys
-keyboard_get_modifiers ()
+keyboard_get_modifiers (void)
 {
 	return Keyboard::Modifiers;
-}
-
-DependencyObject*
-routed_event_args_get_source (RoutedEventArgs *args)
-{
-	return args->GetSource();
-}
-
-void
-routed_event_args_set_source (RoutedEventArgs *args, DependencyObject *source)
-{
-	args->SetSource (source);
 }

@@ -1066,3 +1066,16 @@ InkPresenter::GetStrokes ()
 	
 	return value ? value->AsStrokeCollection () : NULL;
 }
+
+
+void
+stroke_get_bounds (Stroke *stroke, Rect *bounds)
+{
+	*bounds = stroke->GetBounds ();
+}
+
+void
+stroke_collection_get_bounds (StrokeCollection *collection, Rect *bounds)
+{
+	*bounds = collection->GetBounds ();
+}

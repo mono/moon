@@ -122,42 +122,6 @@ Brush::GetTransform ()
 	return value ? value->AsTransform () : NULL;
 }
 
-double
-brush_get_opacity (Brush *brush)
-{
-	return brush->GetOpacity ();
-}
-
-void
-brush_set_opacity (Brush *brush, double opacity)
-{
-	brush->SetOpacity (opacity);
-}
-
-Transform *
-brush_get_relative_transform (Brush *brush)
-{
-	return brush->GetRelativeTransform ();
-}
-
-void
-brush_set_relative_transform (Brush *brush, Transform *transform)
-{
-	brush->SetRelativeTransform (transform);
-}
-
-Transform *
-brush_get_transform (Brush *brush)
-{
-	return brush->GetTransform ();
-}
-
-void
-brush_set_transform (Brush *brush, Transform *transform)
-{
-	brush->SetTransform (transform);
-}
-
 static void
 transform_get_absolute_transform (Transform *relative_transform, double width, double height, cairo_matrix_t *result)
 {
@@ -217,18 +181,6 @@ bool
 SolidColorBrush::IsOpaque ()
 {
 	return Brush::IsOpaque () && !IS_TRANSLUCENT (GetColor ()->a);
-}
-
-Color *
-solid_color_brush_get_color (SolidColorBrush *brush)
-{
-	return brush->GetColor ();
-}
-
-void
-solid_color_brush_set_color (SolidColorBrush *brush, Color *color)
-{
-	brush->SetColor (color);
 }
 
 
@@ -447,54 +399,6 @@ GradientBrush::GetSpreadMethod ()
 	return (GradientSpreadMethod) GetValue (GradientBrush::SpreadMethodProperty)->AsInt32 ();
 }
 
-void
-gradient_brush_set_color_interpolation_mode (GradientBrush *brush, ColorInterpolationMode mode)
-{
-	brush->SetColorInterpolationMode (mode);
-}
-
-ColorInterpolationMode
-gradient_brush_get_color_interpolation_mode (GradientBrush *brush)
-{
-	return brush->GetColorInterpolationMode ();
-}
-
-void
-gradient_brush_set_gradient_stops (GradientBrush *brush, GradientStopCollection *collection)
-{
-	brush->SetGradientStops (collection);
-}
-
-GradientStopCollection *
-gradient_brush_get_gradient_stops (GradientBrush *brush)
-{
-	return brush->GetGradientStops ();
-}
-
-void
-gradient_brush_set_mapping_mode (GradientBrush *brush, BrushMappingMode mode)
-{
-	brush->SetMappingMode (mode);
-}
-
-BrushMappingMode
-gradient_brush_get_mapping_mode (GradientBrush *brush)
-{
-	return brush->GetMappingMode ();
-}
-
-void
-gradient_brush_set_spread_method (GradientBrush *brush, GradientSpreadMethod method)
-{
-	brush->SetSpreadMethod (method);
-}
-
-GradientSpreadMethod 
-gradient_brush_get_spread_method (GradientBrush *brush)
-{
-	return brush->GetSpreadMethod ();
-}
-
 
 //
 // LinearGradientBrush
@@ -589,31 +493,6 @@ LinearGradientBrush::GetStartPoint ()
 	
 	return value ? value->AsPoint () : NULL;
 }
-
-void
-linear_gradient_brush_set_end_point (LinearGradientBrush *brush, Point *point)
-{
-	brush->SetEndPoint (point);
-}
-
-Point *
-linear_gradient_brush_get_end_point (LinearGradientBrush *brush)
-{
-	return brush->GetEndPoint ();
-}
-
-void
-linear_gradient_brush_set_start_point (LinearGradientBrush *brush, Point *point)
-{
-	brush->SetStartPoint (point);
-}
-
-Point *
-linear_gradient_brush_get_start_point (LinearGradientBrush *brush)
-{
-	return brush->GetStartPoint ();
-}
-
 
 
 //
@@ -741,54 +620,6 @@ RadialGradientBrush::GetRadiusY ()
 	return GetValue (RadialGradientBrush::RadiusYProperty)->AsDouble ();
 }
 
-void
-radial_gradient_brush_set_center (RadialGradientBrush *brush, Point *center)
-{
-	brush->SetCenter (center);
-}
-
-Point *
-radial_gradient_brush_get_center (RadialGradientBrush *brush)
-{
-	return brush->GetCenter ();
-}
-
-void
-radial_gradient_brush_set_gradientorigin (RadialGradientBrush *brush, Point *origin)
-{
-	brush->SetGradientOrigin (origin);
-}
-
-Point *
-radial_gradient_brush_get_gradientorigin (RadialGradientBrush *brush)
-{
-	return brush->GetGradientOrigin ();
-}
-
-void
-radial_gradient_brush_set_radius_x (RadialGradientBrush *brush, double radiusX)
-{
-	brush->SetRadiusX (radiusX);
-}
-
-double
-radial_gradient_brush_get_radius_x (RadialGradientBrush *brush)
-{
-	return brush->GetRadiusX ();
-}
-
-void
-radial_gradient_brush_set_radius_y (RadialGradientBrush *brush, double radiusY)
-{
-	brush->SetRadiusY (radiusY);
-}
-
-double
-radial_gradient_brush_get_radius_y (RadialGradientBrush *brush)
-{
-	return brush->GetRadiusY ();
-}
-
 
 //
 // GradientStop
@@ -816,30 +647,6 @@ double
 GradientStop::GetOffset ()
 {
 	return GetValue (GradientStop::OffsetProperty)->AsDouble ();
-}
-
-void
-gradient_stop_set_color (GradientStop *stop, Color *color)
-{
-	stop->SetColor (color);
-}
-
-Color *
-gradient_stop_get_color (GradientStop *stop)
-{
-	return stop->GetColor ();
-}
-
-void
-gradient_stop_set_offset (GradientStop *stop, double offset)
-{
-	stop->SetValue (GradientStop::OffsetProperty, Value (offset));
-}
-
-double
-gradient_stop_get_offset (GradientStop *stop)
-{
-	return stop->GetValue (GradientStop::OffsetProperty)->AsDouble();
 }
 
 
@@ -881,42 +688,6 @@ Stretch
 TileBrush::GetStretch ()
 {
 	return (Stretch) GetValue (TileBrush::StretchProperty)->AsInt32 ();
-}
-
-void
-tile_brush_set_alignment_x (TileBrush *brush, AlignmentX alignment)
-{
-	brush->SetAlignmentX (alignment);
-}
-
-AlignmentX
-tile_brush_get_alignment_x (TileBrush *brush)
-{
-	return brush->GetAlignmentX ();
-}
-
-void
-tile_brush_set_alignment_y (TileBrush *brush, AlignmentY alignment)
-{
-	brush->SetAlignmentY (alignment);
-}
-
-AlignmentY
-tile_brush_get_alignment_y (TileBrush *brush)
-{
-	return brush->GetAlignmentY ();
-}
-
-void
-tile_brush_set_stretch (TileBrush *brush, Stretch stretch)
-{
-	brush->SetStretch (stretch);
-}
-
-Stretch
-tile_brush_get_stretch (TileBrush *brush)
-{
-	return brush->GetStretch ();
 }
 
 
@@ -1167,41 +938,10 @@ ImageBrush::GetImageSource ()
 	return value ? value->AsString () : NULL;
 }
 
-void
-image_brush_set_download_progress (ImageBrush *brush, double progress)
-{
-	brush->SetDownloadProgress (progress);
-}
-
-double
-image_brush_get_download_progress (ImageBrush *brush)
-{
-	return brush->GetDownloadProgress ();
-}
-
-void
-image_brush_set_image_source (ImageBrush *brush, const char *source)
-{
-	brush->SetImageSource (source);
-}
-
-const char *
-image_brush_get_image_source (ImageBrush *brush)
-{
-	return brush->GetImageSource ();
-}
-
-void
-image_brush_set_source (ImageBrush *brush, Downloader *downloader, const char *PartName)
-{
-	brush->SetSource (downloader, PartName);
-}
-
 
 //
 // VideoBrush
 //
-
 
 VideoBrush::VideoBrush ()
 {
@@ -1343,18 +1083,6 @@ VideoBrush::GetSourceName ()
 	return value ? value->AsString () : NULL;
 }
 
-void
-video_brush_set_source_name (VideoBrush *brush, const char *name)
-{
-	brush->SetSourceName (name);
-}
-
-const char *
-video_brush_get_source_name (VideoBrush *brush)
-{
-	return brush->GetSourceName ();
-}
-
 
 //
 // VisualBrush
@@ -1445,16 +1173,4 @@ UIElement *
 VisualBrush::GetVisual ()
 {
 	return GetValue (VisualBrush::VisualProperty)->AsUIElement ();
-}
-
-void
-visual_brush_set_visual (VisualBrush *brush, UIElement *visual)
-{
-	brush->SetVisual (visual);
-}
-
-UIElement *
-visual_brush_get_visual (VisualBrush *brush)
-{
-	return brush->GetVisual ();
 }

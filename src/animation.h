@@ -686,6 +686,11 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 
 	virtual bool Validate ();
+	
+	//
+	// Property Accessors
+	//
+	DoubleKeyFrameCollection *GetKeyFrames ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -701,7 +706,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColorAnimationUsingKeyFrames ();
 	
-	virtual Type::Kind GetObjectType () { return Type::COLORANIMATIONUSINGKEYFRAMES; };
+	virtual Type::Kind GetObjectType () { return Type::COLORANIMATIONUSINGKEYFRAMES; }
 	
 	void AddKeyFrame (ColorKeyFrame *frame);
 	void RemoveKeyFrame (ColorKeyFrame *frame);
@@ -714,6 +719,11 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 	
 	virtual bool Validate ();
+	
+	//
+	// Property Accessors
+	//
+	ColorKeyFrameCollection *GetKeyFrames ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -742,6 +752,11 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 
 	virtual bool Validate ();
+	
+	//
+	// Property Accessors
+	//
+	PointKeyFrameCollection *GetKeyFrames ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -772,10 +787,19 @@ class Storyboard : public ParallelTimeline {
 	
 	virtual void SetSurface (Surface *surface);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool Begin ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Pause ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Resume ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Seek (TimeSpan timespan);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Stop ();
 	
 	// XXX event Completed
@@ -814,17 +838,6 @@ class BeginStoryboard : public TriggerAction {
 };
 
 G_BEGIN_DECLS
-
-void key_spline_set_control_point_1 (KeySpline *k, double x, double y);
-void key_spline_set_control_point_2 (KeySpline *k, double x, double y);
-void key_spline_get_control_point_1 (KeySpline *k, double *x, double *y);
-void key_spline_get_control_point_2 (KeySpline *k, double *x, double *y);
-
-void        storyboard_begin  (Storyboard *sb);
-void        storyboard_pause  (Storyboard *sb);
-void        storyboard_resume (Storyboard *sb);
-void        storyboard_seek   (Storyboard *sb, TimeSpan ts);
-void        storyboard_stop   (Storyboard *sb);
 
 void animation_shutdown (void);
 

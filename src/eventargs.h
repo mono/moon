@@ -66,12 +66,15 @@ public:
 class RoutedEventArgs : public EventArgs {
 
 public:
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	RoutedEventArgs ();
 
 	virtual Type::Kind GetObjectType () { return Type::ROUTEDEVENTARGS; };
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject* GetSource() { return source; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetSource(DependencyObject *el);
 
 protected:
@@ -90,8 +93,11 @@ public:
 	{
 	}
 	virtual Type::Kind GetObjectType () { return Type::KEYBOARDEVENTARGS; };
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetHandled (bool handled) { this->handled = handled; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetHandled () { return handled; }
 
 	int state;
@@ -108,19 +114,25 @@ private:
 /* @Namespace=None */
 class MouseEventArgs : public RoutedEventArgs {
 public:
- 	/* @GenerateCBinding */
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	MouseEventArgs ();
 	MouseEventArgs (GdkEvent *event);
 	virtual Type::Kind GetObjectType () { return Type::MOUSEEVENTARGS; };
-
+	
 	int GetState ();
-	void GetPosition (UIElement *relative_to, double *x, double *y);
+	
 	/* @GenerateCBinding,GeneratePInvoke */
+	void GetPosition (UIElement *relative_to, double *x, double *y);
+	
 	StylusInfo *GetStylusInfo ();
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetHandled (bool handled) { this->handled = handled; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetHandled () { return handled; }
 
 protected:
@@ -138,18 +150,7 @@ public:
 
 G_BEGIN_DECLS
 
-int                    mouse_event_args_get_state (MouseEventArgs *args);
-void                   mouse_event_args_get_position (MouseEventArgs *args, UIElement *relative_to, double *x, double *y);
-bool                   mouse_event_args_get_handled (MouseEventArgs *args);
-void                   mouse_event_args_set_handled (MouseEventArgs *args, bool handled);
-
-bool                   keyboard_event_args_get_handled (KeyboardEventArgs *args);
-void                   keyboard_event_args_set_handled (KeyboardEventArgs *args, bool handled);
-
-ModifierKeys           keyboard_get_modifiers ();
-
-DependencyObject *routed_event_args_get_source (RoutedEventArgs *args);
-void              routed_event_args_set_source (RoutedEventArgs *args, DependencyObject *source);
+ModifierKeys keyboard_get_modifiers (void);
 
 G_END_DECLS
 

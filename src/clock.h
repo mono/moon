@@ -490,14 +490,11 @@ class TimeManager : public EventObject {
 	GList *registered_timeouts;
 };
 
-void time_manager_add_tick_call (TimeManager *manager, TickCallHandler handler, EventObject *obj);
-guint time_manager_add_timeout (TimeManager *manager, guint32 interval, GSourceFunc handler, gpointer obj);
-void time_manager_remove_timeout (TimeManager *manager, guint32 source_id);
-void time_manager_list_clocks   (TimeManager *manager);
-
 
 /* @Namespace=System.Windows.Media.Animation */
 class Timeline : public DependencyObject {
+	DependencyObject *manual_target;
+	
  protected:
 	virtual ~Timeline () {}
 
@@ -546,12 +543,8 @@ class Timeline : public DependencyObject {
 	bool HasManualTarget () { return manual_target != NULL; }
 	DependencyObject* GetManualTarget () { return manual_target; }
 	void SetManualTarget (DependencyObject *o) { manual_target = o; }
-
-private:
-	DependencyObject *manual_target;
 };
 
-void timeline_set_manual_target (Timeline *timeline, DependencyObject *target);
 
 /* @Namespace=System.Windows.Media.Animation */
 class TimelineCollection : public DependencyObjectCollection {
@@ -634,15 +627,6 @@ class TimelineMarker : public DependencyObject {
 	void SetType (const char *type);
 	const char *GetType ();
 };
-
-void timeline_marker_set_text (TimelineMarker *marker, const char *text);
-const char *timeline_marker_get_text (TimelineMarker *marker);
-
-void timeline_marker_set_type (TimelineMarker *marker, const char *type);
-const char *timeline_marker_get_type (TimelineMarker *marker);
-
-void timeline_marker_set_time (TimelineMarker *marker, TimeSpan time);
-TimeSpan timeline_marker_get_time (TimelineMarker *marker);
 
 
 /* useful for timing things */
