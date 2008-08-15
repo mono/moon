@@ -1272,7 +1272,6 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 #if DEBUG
 	AddSource (stream->url, fname);
 #endif
-	
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		if (xaml_loader != NULL)
 			delete xaml_loader;
@@ -1655,6 +1654,12 @@ char*
 plugin_instance_get_init_params  (PluginInstance *instance)
 {
 	return instance->GetInitParams();
+}
+
+char*
+plugin_instance_get_source  (PluginInstance *instance)
+{
+	return instance->GetSource();
 }
 
 void

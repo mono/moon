@@ -285,6 +285,7 @@ int32_t plugin_instance_get_actual_height (PluginInstance *instance);
 Surface *plugin_instance_get_surface (PluginInstance *instance);
 
 char *plugin_instance_get_init_params  (PluginInstance *instance);
+char *plugin_instance_get_source  (PluginInstance *instance);
 
 void plugin_instance_get_browser_information (PluginInstance *instance,
 					      char **name, char **version,

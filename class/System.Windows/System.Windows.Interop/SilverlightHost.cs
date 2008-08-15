@@ -27,8 +27,10 @@
 //
 
 using System;
-using System.Security;
 using System.Windows.Media;
+using System.Security;
+using System.Runtime.InteropServices;
+using Mono;
 
 namespace System.Windows.Interop {
 	public class SilverlightHost {
@@ -71,7 +73,16 @@ namespace System.Windows.Interop {
 #if NET_2_1
 			[SecuritySafeCritical ()]
 #endif
-			get { throw new NotImplementedException (); }
+			get {
+				if (PluginHost.Handle == IntPtr.Zero)
+					return null;
+
+				IntPtr raw = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
+				if (raw == IntPtr.Zero)
+					return null;
+
+				return new Uri (Marshal.PtrToStringAnsi (raw), UriKind.RelativeOrAbsolute);
+			}
 		}
 	}
 }
