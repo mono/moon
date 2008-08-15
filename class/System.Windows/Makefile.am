@@ -24,6 +24,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
 	$(srcdir)/Mono/Report.cs						\
+	$(srcdir)/Mono/StreamWrapper.cs						\
 	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\

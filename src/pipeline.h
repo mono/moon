@@ -101,6 +101,7 @@ class MarkerStream;
 class IImageConverter;
 class MediaMarker;
 class ProgressiveSource;
+struct ManagedStreamCallbacks;
 
 typedef gint32 MediaResult;
 
@@ -147,7 +148,8 @@ enum MediaSourceType {
 	MediaSourceTypeLive = 2,
 	MediaSourceTypeProgressive = 3,
 	MediaSourceTypeMemory = 4,
-	MediaSourceTypeQueueMemory = 5
+	MediaSourceTypeQueueMemory = 5,
+	MediaSourceTypeManagedStream = 6,
 };
 
 enum FrameEvent {
@@ -710,6 +712,51 @@ public:
 };
 
 // Implementations
+
+typedef bool   Stream_CanSeek  (void *handle);
+typedef bool   Stream_CanRead  (void *handle);
+typedef gint64 Stream_Length   (void *handle);
+typedef gint64 Stream_Position (void *handle);
+typedef gint32 Stream_Read     (void *handle,  void *buffer, gint32 offset, gint32 count);
+typedef void   Stream_Seek     (void *handle, gint64 offset, gint32 origin);
+
+struct ManagedStreamCallbacks {
+	void *handle;
+	Stream_CanSeek *CanSeek;
+	Stream_CanRead *CanRead;
+	Stream_Length *Length;
+	Stream_Position *Position;
+	Stream_Read *Read;
+	Stream_Seek *Seek;
+};
+ 
+class ManagedStreamSource : public IMediaSource {
+private:
+	ManagedStreamCallbacks stream;
+	
+protected:	
+	virtual ~ManagedStreamSource ();
+
+	virtual gint32 ReadInternal (void *buf, guint32 n);
+	virtual gint32 PeekInternal (void *buf, guint32 n, gint64 start);
+	virtual bool SeekInternal (gint64 offset, int mode);
+	virtual gint64 GetPositionInternal ();
+	virtual gint64 GetSizeInternal ();
+
+public:
+	ManagedStreamSource (Media *media, ManagedStreamCallbacks *stream);
+	
+	virtual MediaResult Initialize () { return MEDIA_SUCCESS; }
+	virtual MediaSourceType GetType () { return MediaSourceTypeManagedStream; }
+	
+	virtual bool Eof () { return GetPositionInternal () == GetSizeInternal (); }
+
+	virtual const char *ToString () { return "ManagedStreamSource"; }
+
+#if OBJECT_TRACKING
+	virtual const char* GetTypeName () { return "ManagedStreamSource"; }
+#endif
+};
  
 class FileSource : public IMediaSource {
 private:

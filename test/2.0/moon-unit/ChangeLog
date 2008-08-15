@@ -1,5 +1,10 @@
 2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* System.Windows/MediaElementTest.cs: Added SetSourceTest2, using a
+	  filename until WebClient is ready to download.
+
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* System.Windows/MediaElementTest.cs,
 	  System.Windows/MediaElementTest.SlowStream.cs, moon-unit.mdp: Added
 	  MediaElement:SetSource (stream) test.

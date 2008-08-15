@@ -588,6 +588,11 @@ MediaBase *media_base_new (void);
 /* @GeneratePInvoke */
 MediaElement *media_element_new (void);
 
+#if SL_2_0
+/* @GeneratePInvoke */
+void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);
+#endif
+
 /**
  * MouseEventArgs
  **/

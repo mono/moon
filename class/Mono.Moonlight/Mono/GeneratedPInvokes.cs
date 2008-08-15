@@ -482,6 +482,10 @@ namespace Mono {
 		public extern static IntPtr media_element_new ();
 
 		[DllImport ("moon")]
+		// void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);
+		public extern static void media_element_set_stream_source (IntPtr instance, ref ManagedStreamCallbacks stream);
+
+		[DllImport ("moon")]
 		// StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *instance);
 		public extern static IntPtr mouse_event_args_get_stylus_info (IntPtr instance);
 

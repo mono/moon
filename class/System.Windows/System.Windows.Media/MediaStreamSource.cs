@@ -45,7 +45,7 @@ namespace System.Windows.Media
 		protected abstract void SeekAsync (long seekToTime);
 		protected abstract void SwitchMediaStreamAsync (MediaStreamDescription mediaStreamDescription);
 
-		protected void ErrorOccurred(string errorDescription)
+		protected void ErrorOccurred (string errorDescription)
 		{
 			throw new NotImplementedException ();
 		}

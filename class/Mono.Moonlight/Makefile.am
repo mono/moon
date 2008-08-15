@@ -19,6 +19,7 @@ mono_moonlight_sources =				\
 	$(srcdir)/Mono/GeneratedPInvokes.cs			\
 	$(srcdir)/Mono/NativeMethods.cs			\
 	$(srcdir)/Mono/Value.cs				\
+	$(srcdir)/Mono/StreamCallbacks.cs						\
 	$(srcdir)/Mono/ManagedType.cs			\
 	$(srcdir)/Mono/MoonError.cs			\
 	$(srcdir)/Mono/Moonlight.cs			\

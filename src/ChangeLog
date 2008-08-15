@@ -1,3 +1,10 @@
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* cbinding.cpp, cbinding.h: Regenerated.
+	* media.cpp, media.h: Add a MediaElement::SetStreamSource, and hack it
+	  to at least open the source.
+	* pipeline.cpp, pipeline.h: Added ManagedStreamSource.
+
 2008-08-15  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Need to advance after F.

@@ -33,7 +33,7 @@
 #include "runtime.h"
 #include "mms-downloader.h"
 
-#define LOG_PIPELINE(...) //printf (__VA_ARGS__);
+#define LOG_PIPELINE(...)// printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR(...) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (x) printf (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
@@ -1164,7 +1164,7 @@ ASFDemuxer::ReadFrame (MediaFrame *frame)
 	
 	result = reader->Advance ();
 	if (result == MEDIA_NO_MORE_DATA) {
-		media->AddMessage (MEDIA_NO_MORE_DATA, "Reached end of data.");
+		//media->AddMessage (MEDIA_NO_MORE_DATA, "Reached end of data.");
 		frame->event = FrameEventEOF;
 		return MEDIA_NO_MORE_DATA;
 	}
@@ -1357,6 +1357,67 @@ ASXDemuxerInfo::Create (Media *media, IMediaSource *source)
 {
 	return new ASXDemuxer (media, source);
 }
+
+/*
+ * ManagedStreamSource
+ */
+
+#if SL_2_0
+
+ManagedStreamSource::ManagedStreamSource (Media *media, ManagedStreamCallbacks *stream) : IMediaSource (media)
+{
+	memcpy (&this->stream, stream, sizeof (this->stream));
+}
+
+ManagedStreamSource::~ManagedStreamSource ()
+{
+	stream.handle = NULL;
+}
+
+gint32 
+ManagedStreamSource::ReadInternal (void *buf, guint32 n)
+{
+	return stream.Read (stream.handle, buf, 0, n);
+}
+
+gint32 
+ManagedStreamSource::PeekInternal (void *buf, guint32 n, gint64 start)
+{
+	int read;
+	gint64 position;
+	
+	if (start != -1) {
+		position = stream.Position (stream.handle);
+		read = stream.Read (stream.handle, buf, 0, n);
+		stream.Seek (stream.handle, position, 0 /* SeekOrigin.Begin */);	
+		return read;
+	} else {
+		read = stream.Read (stream.handle, buf, 0, n);
+		stream.Seek (stream.handle, -read, 1 /* SeekOrigin.Current */);
+		return read;
+	}
+}
+
+bool 
+ManagedStreamSource::SeekInternal (gint64 offset, int mode)
+{
+	stream.Seek (stream.handle, offset, mode /* FIXME: check if mode values matches SeekOrigin values */);
+	return true;
+}
+
+gint64
+ManagedStreamSource::GetPositionInternal ()
+{
+	return stream.Position (stream.handle);
+}
+
+gint64 
+ManagedStreamSource::GetSizeInternal ()
+{
+	return stream.Length (stream.handle);
+}
+	
+#endif
 
 /*
  * FileSource

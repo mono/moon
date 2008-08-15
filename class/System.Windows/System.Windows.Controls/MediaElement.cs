@@ -37,6 +37,8 @@ using System.Runtime.InteropServices;
 
 namespace System.Windows.Controls {
 	public sealed partial class MediaElement : FrameworkElement {
+		private StreamWrapper wrapper;
+		
 		// These are defined on MediaBase for both Image and MediaElement.
 		// The generator can't expand one DP into two managed ones yet.
 		public static readonly DependencyProperty DownloadProgressProperty = 
@@ -74,7 +76,13 @@ namespace System.Windows.Controls {
 #endif
 		public void SetSource (Stream stream)
 		{
-			Console.WriteLine ("WARNING: MediaElement.SetSource(Stream) is unimplemented");
+			if (stream == null)
+				throw new ArgumentNullException ("stream");
+			
+			ManagedStreamCallbacks callbacks;
+			wrapper = new StreamWrapper (stream);
+			callbacks = wrapper.GetCallbacks ();
+			NativeMethods.media_element_set_stream_source (this.native, ref callbacks);
 		}
 		
 #if NET_2_1

@@ -27,13 +27,21 @@ namespace MoonTest.System.Windows
 			client.OpenReadCompleted += new OpenReadCompletedEventHandler (client_OpenReadCompleted);
 			client.OpenReadAsync (new Uri ("http://localhost:8080/elephants-dream-320x180-first-minute.wmv", UriKind.Absolute));
 		}
+		
+		[TestMethod]
+		public void SetSourceTest2 ()
+		{
+			MediaElement media = new MediaElement ();
+			Stream s = new FileStream ("/mono/main/src/ml2/test/media/video/elephants-dream-320x180-first-minute.wmv", FileMode.Open);
+			media.SetSource (s);
+		}
 
 		void client_DownloadProgressChanged (object sender, DownloadProgressChangedEventArgs e) {
 			Debug.WriteLine ("client_DownloadProgressChanged: " + e.ProgressPercentage.ToString ());
 		}
 
 		void client_OpenReadCompleted (object sender, OpenReadCompletedEventArgs e) {
-			Console.WriteLine ("client_OpenRead: e.Result: {0}", e.Result == null ? "null" : e.Result.ToString ());
+			Console.WriteLine ("client_OpenRead: e.Result: {0}, e.ex: {1}", e.Result, e.Error);
 			if (e.Result != null)
 				media.SetSource (new SlowStream (e.Result));
 		}

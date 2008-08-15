@@ -26,6 +26,7 @@ G_BEGIN_DECLS
 #include "brush.h"
 #include "frameworkelement.h"
 #include "error.h"
+#include "pipeline.h"
 
 
 /* @Namespace=None */
@@ -458,6 +459,8 @@ class MediaElement : public MediaBase {
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
+	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
+	void SetStreamSource (ManagedStreamCallbacks *stream);
 	
 	void Pause ();
 	void Play ();

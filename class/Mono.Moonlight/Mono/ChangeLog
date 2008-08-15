@@ -1,3 +1,7 @@
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* StreamCallbacks.cs, GeneratedPInvokes.cs: Added StreamCallbacks.
+
 2008-08-14  Jackson Harper  <jackson@ximian.com>
 
 	* XamlLoaderCallbacks.cs: We need a target object to lookup the

@@ -91,6 +91,10 @@ class TypeReference {
 			case "void":
 				managed_type = Value;
 				break;
+			case "ManagedStreamCallbacks*":
+				IsRef = true;
+				managed_type = "ManagedStreamCallbacks";
+				break;
 			case "MoonError*":
 				IsOut = true;
 				managed_type = "MoonError";

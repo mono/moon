@@ -1066,6 +1066,18 @@ media_element_new (void)
 }
 
 
+#if SL_2_0
+void
+media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetStreamSource (stream);
+}
+#endif
+
+
 /**
  * MouseEventArgs
  **/

@@ -1530,6 +1530,18 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 	MediaBase::SetSource (downloader, PartName);
 }
 
+#if SL_2_0
+void
+MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
+{
+	// This is a big hack just to get things working
+	downloaded_file = new ManagedStreamSource (media, callbacks);
+	SetState (Opening);
+	flags |= Loaded;
+	TryOpen ();
+}
+#endif
+
 void
 MediaElement::SetPlayRequested ()
 {

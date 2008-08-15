@@ -1,3 +1,7 @@
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* StreamWrapper.cs: Implement MediaElement.SetSource (stream)
+
 2008-08-14  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: We need a target object to lookup the

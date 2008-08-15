@@ -1,3 +1,7 @@
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* MediaStreamSource.cs: Implement MediaElement.SetSource (stream)
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* TimelineMarkerRoutedEventArgs.cs: Added internal ctor.

@@ -1,3 +1,7 @@
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Mono.Moonlight.mdp, Makefile.am: Added StreamCallbacks.
+
 2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am, Mono.Moonlight.mdp: Added Types(.g).cs and removed

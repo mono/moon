@@ -1,3 +1,8 @@
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* System.Windows.mdp: Implement MediaElement.SetSource (stream)
+	* Makefile.am: Added StreamCallbacks.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am, System.Windows.mdp: Implemented StylusDevice, some
