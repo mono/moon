@@ -985,6 +985,9 @@ TileBrush *tile_brush_new (void);
  * Timeline
  **/
 /* @GeneratePInvoke */
+void timeline_set_manual_target (Timeline *instance, DependencyObject *o);
+
+/* @GeneratePInvoke */
 Timeline *timeline_new (void);
 
 /**

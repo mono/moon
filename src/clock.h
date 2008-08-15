@@ -542,6 +542,8 @@ class Timeline : public DependencyObject {
 
 	bool HasManualTarget () { return manual_target != NULL; }
 	DependencyObject* GetManualTarget () { return manual_target; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetManualTarget (DependencyObject *o) { manual_target = o; }
 };
 

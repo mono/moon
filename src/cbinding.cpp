@@ -1786,6 +1786,16 @@ tile_brush_new (void)
 /**
  * Timeline
  **/
+void
+timeline_set_manual_target (Timeline *instance, DependencyObject *o)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetManualTarget (o);
+}
+
+
 Timeline *
 timeline_new (void)
 {
