@@ -43,6 +43,9 @@ struct GridLength {
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class ColumnDefinition : public DependencyObject {
+	// Actual width computed
+	double actual;
+	
  protected:
 	virtual ~ColumnDefinition () {}
 	
@@ -54,11 +57,11 @@ class ColumnDefinition : public DependencyObject {
  	/* @PropertyType=GridLength */
 	static DependencyProperty *WidthProperty;
 	
-	// Actual width computed
-	double actual;
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColumnDefinition () { actual = 0; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	double GetActualWidth () { return actual; }
 	
 	virtual Type::Kind GetObjectType () { return Type::COLUMNDEFINITION; }
 };
@@ -66,6 +69,9 @@ class ColumnDefinition : public DependencyObject {
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class RowDefinition : public DependencyObject {
+	// Actual height computed
+	double actual;
+	
  protected:
 	virtual ~RowDefinition () {}
 	
@@ -77,11 +83,11 @@ class RowDefinition : public DependencyObject {
  	/* @PropertyType=double */
 	static DependencyProperty *MinHeightProperty;
 	
-	// Actual height computed
-	double actual;
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	RowDefinition () { }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	double GetActualHeight () { return actual; }
 	
 	virtual Type::Kind GetObjectType () { return Type::ROWDEFINITION; }
 };
@@ -147,12 +153,5 @@ class Grid : public Panel {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 };
-
-G_BEGIN_DECLS
-
-double            row_definition_get_actual_height    (RowDefinition *def);
-double            column_definition_get_actual_width (ColumnDefinition *def);
-
-G_END_DECLS
 
 #endif /* __MOON_PANEL_H__ */

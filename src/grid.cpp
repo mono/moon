@@ -73,15 +73,3 @@ Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
                fprintf (stderr, "Grid:OnCollectionChanged: do something\n");
        }
 }
-
-double
-row_definition_get_actual_height (RowDefinition *def)
-{
-       return def->actual;
-}
-
-double
-column_definition_get_actual_width (ColumnDefinition *def)
-{
-       return def->actual;
-}

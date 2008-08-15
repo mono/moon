@@ -278,6 +278,19 @@ column_definition_new (void)
 
 
 #if SL_2_0
+double
+column_definition_get_actual_width (ColumnDefinition *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetActualWidth ();
+}
+#endif
+
+
+#if SL_2_0
 /**
  * ColumnDefinitionCollection
  **/
@@ -1473,6 +1486,19 @@ routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el)
 /**
  * RowDefinition
  **/
+double
+row_definition_get_actual_height (RowDefinition *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetActualHeight ();
+}
+#endif
+
+
+#if SL_2_0
 RowDefinition *
 row_definition_new (void)
 {

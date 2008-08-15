@@ -1,5 +1,9 @@
 2008-08-15  Jeffrey Stedfast  <fejj@novell.com>
 
+	* grid.h: Autogenerate bindings for GetActualWidth/Height
+
+	* grid.cpp: Removed manual c-bindings.
+
 	* frameworkelement.cpp: Removed manual c-bindings.
 
 2008-08-15  Chris Toshok  <toshok@ximian.com>

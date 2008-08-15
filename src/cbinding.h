@@ -169,6 +169,11 @@ ColumnDefinition *column_definition_new (void);
 #endif
 
 #if SL_2_0
+/* @GeneratePInvoke */
+double column_definition_get_actual_width (ColumnDefinition *instance);
+#endif
+
+#if SL_2_0
 /**
  * ColumnDefinitionCollection
  **/
@@ -812,6 +817,11 @@ void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *
 /**
  * RowDefinition
  **/
+/* @GeneratePInvoke */
+double row_definition_get_actual_height (RowDefinition *instance);
+#endif
+
+#if SL_2_0
 /* @GeneratePInvoke */
 RowDefinition *row_definition_new (void);
 #endif
