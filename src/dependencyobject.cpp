@@ -607,24 +607,6 @@ EventObject::FinishEmit (int event_id, EmitContext *ctx)
 	delete ctx;
 }
 
-Surface*
-event_object_get_surface (EventObject *o)
-{
-	return o->GetSurface ();
-}
-
-void
-event_object_add_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure)
-{
-	o->AddHandler (event, handler, closure);
-}
-
-void
-event_object_remove_event_handler (EventObject *o, const char *event, EventHandler handler, gpointer closure)
-{
-	o->RemoveHandler (event, handler, closure);
-}
-
 void 
 base_ref (EventObject *obj)
 {
