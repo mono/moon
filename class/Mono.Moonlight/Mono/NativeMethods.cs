@@ -111,13 +111,6 @@ namespace Mono {
 		public extern static IntPtr uielement_get_transform_to_uielement (IntPtr item, IntPtr to_item);
 #endregion
 
-#region Grid
-		[DllImport("moon")]
-		public extern static double row_definition_get_actual_height (IntPtr handle);
-		[DllImport("moon")]
-		public extern static double column_definition_get_actual_width (IntPtr handle);
-#endregion
-
 #region Animations
 		[DllImport("moon")]
 		public extern static void key_spline_set_control_point_1 (IntPtr handle, double x, double y);
