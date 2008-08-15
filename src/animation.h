@@ -841,6 +841,12 @@ G_BEGIN_DECLS
 
 void animation_shutdown (void);
 
+void key_spline_get_control_point_1 (KeySpline *ks, double *x, double *y);
+void key_spline_set_control_point_1 (KeySpline *ks, double x, double y);
+
+void key_spline_get_control_point_2 (KeySpline *ks, double *x, double *y);
+void key_spline_set_control_point_2 (KeySpline *ks, double x, double y);
+
 G_END_DECLS
 
 #endif /* MOON_ANIMATION_H */

@@ -838,6 +838,36 @@ KeySpline::GetSplineProgress (double linearProgress)
 	return moon_quadratic_array_y_for_x (quadraticsArray, linearProgress, 16);
 }
 
+void
+key_spline_get_control_point_1 (KeySpline *ks, double *x, double *y)
+{
+	Point p = ks->GetControlPoint1 ();
+	
+	*x = p.x;
+	*y = p.y;
+}
+
+void
+key_spline_get_control_point_1 (KeySpline *ks, double x, double y)
+{
+	ks->SetControlPoint1 (x, y);
+}
+
+void
+key_spline_get_control_point_2 (KeySpline *ks, double *x, double *y)
+{
+	Point p = ks->GetControlPoint2 ();
+	
+	*x = p.x;
+	*y = p.y;
+}
+
+void
+key_spline_get_control_point_2 (KeySpline *ks, double x, double y)
+{
+	ks->SetControlPoint2 (x, y);
+}
+
 
 KeyFrame::KeyFrame ()
 {
