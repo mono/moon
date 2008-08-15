@@ -78,7 +78,7 @@ dependency_property_g_init (void)
 	ColorAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "From", Type::COLOR);
 	ColorAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "To", Type::COLOR);
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);
-	ColorKeyFrame::KeyTimeProperty = DependencyProperty::Register (Type::COLORKEYFRAME, "KeyTime", Type::KEYTIME);
+	ColorKeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "KeyTime", Type::KEYTIME);
 	ColorKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);
 #if SL_2_0
 
@@ -124,7 +124,7 @@ dependency_property_g_init (void)
 	DoubleAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "From", Type::DOUBLE);
 	DoubleAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "To", Type::DOUBLE);
 	DoubleAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::DOUBLEKEYFRAME_COLLECTION);
-	DoubleKeyFrame::KeyTimeProperty = DependencyProperty::Register (Type::DOUBLEKEYFRAME, "KeyTime", Type::KEYTIME);
+	DoubleKeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::DOUBLEKEYFRAME, "KeyTime", Type::KEYTIME);
 	DoubleKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::DOUBLEKEYFRAME, "Value", Type::DOUBLE);
 	Downloader::DownloadProgressProperty = DependencyProperty::Register (Type::DOWNLOADER, "DownloadProgress", new Value (0.0));
 	Downloader::ResponseTextProperty = DependencyProperty::Register (Type::DOWNLOADER, "ResponseText", Type::STRING);
@@ -260,7 +260,7 @@ dependency_property_g_init (void)
 	PointAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "From", Type::POINT);
 	PointAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "To", Type::POINT);
 	PointAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::POINTKEYFRAME_COLLECTION);
-	PointKeyFrame::KeyTimeProperty = DependencyProperty::Register (Type::POINTKEYFRAME, "KeyTime", Type::KEYTIME);
+	PointKeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::POINTKEYFRAME, "KeyTime", Type::KEYTIME);
 	PointKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::POINTKEYFRAME, "Value", Type::POINT);
 	PolyBezierSegment::PointsProperty = DependencyProperty::Register (Type::POLYBEZIERSEGMENT, "Points", Type::POINT_COLLECTION);
 	Polygon::FillRuleProperty = DependencyProperty::Register (Type::POLYGON, "FillRule", new Value (FillRuleEvenOdd));
