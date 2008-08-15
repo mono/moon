@@ -179,8 +179,8 @@ static int LoadXaml (const char* file)
 		surface->Attach ((Canvas*) ui);
 		ui->unref ();
 
-		int width = framework_element_get_width (ui);
-		int height = framework_element_get_height (ui);
+		int width = ui->GetWidth ();
+		int height = ui->GetHeight ();
 
 		if (width < 300)
 			width = 300;
