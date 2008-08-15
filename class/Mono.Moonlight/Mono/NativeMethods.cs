@@ -130,10 +130,6 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static void key_spline_get_control_point_2 (IntPtr handle, out double x, out double y);
-
-		[DllImport("moon")]
-		public extern static void timeline_set_manual_target (IntPtr timeline_handle, IntPtr target_handle);
-
 #endregion
 		
 #region Collections
