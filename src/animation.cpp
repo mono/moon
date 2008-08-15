@@ -848,9 +848,9 @@ key_spline_get_control_point_1 (KeySpline *ks, double *x, double *y)
 }
 
 void
-key_spline_get_control_point_1 (KeySpline *ks, double x, double y)
+key_spline_set_control_point_1 (KeySpline *ks, double x, double y)
 {
-	ks->SetControlPoint1 (x, y);
+	ks->SetControlPoint1 (Point (x, y));
 }
 
 void
@@ -863,9 +863,9 @@ key_spline_get_control_point_2 (KeySpline *ks, double *x, double *y)
 }
 
 void
-key_spline_get_control_point_2 (KeySpline *ks, double x, double y)
+key_spline_set_control_point_2 (KeySpline *ks, double x, double y)
 {
-	ks->SetControlPoint2 (x, y);
+	ks->SetControlPoint2 (Point (x, y));
 }
 
 
