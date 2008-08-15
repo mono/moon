@@ -5,7 +5,6 @@ rating:2
  *  color gradient is wrong. Should go purple(top) to light blue(bottom)
  *  Mouse over animation is slow
 
-
 site:Asset Allocator
 url:http://weihong.us/silverlight/asset.htm 
 rating:4
@@ -32,7 +31,6 @@ rating:4
  * Works
  * Canvas isn't transparent - windowless == true
 
-
 site:Comic Book Viewer
 url:http://mycomix.wintellect.com/Spotlight.aspx?Item=1041
 rating:4
@@ -58,28 +56,17 @@ rating:4
 
 site:Glyph Map
 url:http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx
-rating:3
- * Glyphs load slowly Bug 395160
+rating:4
+ * Works great!  Glyphs load super fast now!
 
 site:Grand Piano
 url:http://silverlight.net/samples/1.0/Grand-Piano/default.html
 rating:4
  * Works
 
-site:Halo 3
-url:http://halo3.msn.com/videos.aspx
-rating:4
- * Works
-
-site:HHH Comic Archive
-url:http://www.microsoft.com/heroeshappenhere/comicviewer/default.html
-rating:4
- * Works
- * Seems to have something to do with Visibility=Collapsed set on Images 
-
 site:Ink Journal
 url:http://www.thedatafarm.com/silverlight/journalsample
-rating:2
+rating:3
  * Line drawing lags behind the mouse cursor Bug 409793
 
 site:Ink Tattoo Studio
@@ -143,11 +130,6 @@ rating:3
  * right page is black while page is turning Bug 385682
  * turning page is slow Bug 383907
 
-site:Photo Carousel (SL 2.0)
-url:http://www.nikhilk.net/Prototypes/PhotoCarousel
-rating:2
- * Flickr page loads, entering search term does nothing. Bug 351583
-
 site:Photo Gallery Viewer
 url:http://www.designwithsilverlight.com/tutorials/photoGallery/gallery.html
 rating:4
@@ -165,20 +147,11 @@ url:http://blogs.msdn.com/synergist/archive/2007/07/30/groove-and-virtual-earth.
 rating:4
  * Works!
 
-site:Podium '08
-url:http://election.msn.com/podium08.aspx
-rating:3
- * Works, but animation on for the Issues column is slow
-
-site:Poker
-url:http://home.people.net.au/~chriso/poker/poker.html
-rating:3
- * Audio doesn't play Bug 375234
-
 site:Popfly
 url:http://www.popfly.com
 rating:3
  * Controls 
+
 site:Scrolling Video Playlist
 url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
 rating:4
@@ -194,13 +167,11 @@ site:Silverlight Pad
 url:http://silverlight.net/samples/1.0/Silverlight-Pad/default.html
 rating:3
  * Xaml/Javascript sections are windowless, ie FF3 only
- * xaml not showing in workspace Bug 410632
 
 site:Silverlight Showcase
 url:http://silverlight.net/Showcase/default.aspx
 rating:3
  * World map is slow Bug 375234
- * video is whitewashed Bug 375259
 
 site:Silverlight Slide Show
 url:http://www.vertigo.com/SlideShow.aspx
@@ -211,11 +182,6 @@ site:Simon
 url:http://www.vertigo.com/downloads/Simon/
 rating:4
  * Works!
-
-site:Space Invaders
-url:http://www.tek.co.jp/Legend/
-rating:4
- * Works
 
 site:Sparkleball
 url:http://www.ddjsilverlight.com/sparkleball
@@ -231,18 +197,12 @@ site:Tafiti
 url:http://www.tafiti.com
 rating:2
  * Mouse over event not working Bug 412986
- * Cannot drag search result to the list on the right  Bug 412985
 
 site:Tile Text
 url:http://silverlight.net/samples/1.0/Tile-Text/default.html
 rating:4
  * Works on FF3
  * Missing text box on FF2 due to the "windowless" issue
-
-site:TI-M Silverlight
-url:http://silverlight.timovil.com
-rating:-1
- * Site has moved?
 
 site:Trainmaster Cannonball Watch
 url: http://xmldocs.net/ball/
