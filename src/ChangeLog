@@ -1,3 +1,25 @@
+2008-08-15  Chris Toshok  <toshok@ximian.com>
+
+	* eventargs.h (enum CollectionChangedAction): change Reset to
+	Cleared, and add Clearing to handle the old functionality in
+	DependencyObject::OnCollectionClear.
+
+	* dependencyobject.h (class DependencyObject): remove
+	OnCollectionClear.  we handle that case in OnCollectionChanged
+	now.
+
+	* panel.h, panel.cpp (Panel::OnCollectionChanged): move
+	OnCollectionClear code to here.
+
+	* uielement.cpp (UIElement::OnCollectionChanged): add
+	ActionClearing code here.
+
+	* stylus.cpp, text.cpp: track CollectionChangedAction enum change.
+
+	* collection.cpp (Collection::Clear): use
+	EmitChanged (CollectionChangedActionClearing,...) instead of
+	OnCollectionClear.
+
 2008-08-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* stylus.cpp: Added c++ property accessors and updated the code to
