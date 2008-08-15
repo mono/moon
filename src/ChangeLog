@@ -1,3 +1,10 @@
+2008-08-14  Larry Ewing  <lewing@novell.com>
+
+	* animation.h (class KeyFrame): remove the KeyTime DP and make
+	the ctor private this is an abstract class.
+
+	* animation.cpp: retrieve the property via name.
+
 2008-08-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* clock.cpp (TimeManager::SourceTick): Call InvokeTickCall() as

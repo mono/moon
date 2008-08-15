@@ -418,10 +418,6 @@ namespace Mono {
 		public extern static IntPtr inline_collection_new ();
 
 		[DllImport ("moon")]
-		// KeyFrame *key_frame_new ();
-		public extern static IntPtr key_frame_new ();
-
-		[DllImport ("moon")]
 		// KeyFrameCollection *key_frame_collection_new ();
 		public extern static IntPtr key_frame_collection_new ();
 

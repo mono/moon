@@ -341,16 +341,12 @@ class PointAnimation : public Animation/*Timeline*/ {
 class KeyFrame : public DependencyObject {
  protected:
 	virtual ~KeyFrame () {}
+	KeyFrame ();
 
  public:
- 	/* @PropertyType=KeyTime,Nullable */
-	static DependencyProperty *KeyTimeProperty;
-	
 	TimeSpan resolved_keytime;
 	bool resolved;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	KeyFrame ();
 	virtual Type::Kind GetObjectType () { return Type::KEYFRAME; };
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
@@ -434,7 +430,7 @@ class DoubleKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=double,Nullable,ManagedPropertyType=double */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Version=2 */
+	/* @PropertyType=KeyTime */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -457,7 +453,7 @@ class ColorKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Version=2 */
+	/* @PropertyType=KeyTime */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -480,7 +476,7 @@ class PointKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Version=2 */
+	/* @PropertyType=KeyTime */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */

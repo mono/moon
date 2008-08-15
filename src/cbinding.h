@@ -493,12 +493,6 @@ Inline *inline_new (void);
 InlineCollection *inline_collection_new (void);
 
 /**
- * KeyFrame
- **/
-/* @GeneratePInvoke */
-KeyFrame *key_frame_new (void);
-
-/**
  * KeyFrameCollection
  **/
 /* @GeneratePInvoke */

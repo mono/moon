@@ -947,7 +947,7 @@ KeyFrame::KeyFrame ()
 KeyTime*
 KeyFrame::GetKeyTime()
 {
-	Value *v = GetValue (KeyFrame::KeyTimeProperty);
+	Value *v = GetValue ("KeyTime");
 	if (v == NULL)
 		return NULL;
 	else
@@ -957,7 +957,7 @@ KeyFrame::GetKeyTime()
 void
 KeyFrame::SetKeyTime (KeyTime keytime)
 {
-	SetValue (KeyFrame::KeyTimeProperty, Value(keytime));
+	SetValue ("KeyTime", Value(keytime));
 }
 
 Value *
@@ -1070,9 +1070,12 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 void
 KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (subobj_args->property == KeyFrame::KeyTimeProperty) {
+	printf ("KeyFrame subprob %s\n", subobj_args->property->GetName ());
+	if (strcmp (subobj_args->property->GetName (), "KeyTime") == 0) {
 		resolved = false;
 	}
+	
+
 
 	Collection::OnSubPropertyChanged (prop, obj, subobj_args);
 }

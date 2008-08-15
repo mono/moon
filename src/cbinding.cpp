@@ -907,16 +907,6 @@ inline_collection_new (void)
 
 
 /**
- * KeyFrame
- **/
-KeyFrame *
-key_frame_new (void)
-{
-	return new KeyFrame ();
-}
-
-
-/**
  * KeyFrameCollection
  **/
 KeyFrameCollection *
