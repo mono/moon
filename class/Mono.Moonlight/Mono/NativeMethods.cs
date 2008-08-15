@@ -156,13 +156,7 @@ namespace Mono {
 		public extern static IntPtr media_attribute_collection_get_item_by_name (IntPtr collection, string name);
 
 		[DllImport("moon")]
-		public extern static IntPtr stroke_collection_hit_test (IntPtr native, IntPtr stylusPointCollection);
-
-		[DllImport("moon")]
 		public extern static void stroke_collection_get_bounds (IntPtr native, ref UnmanagedRect urect);
-
-		[DllImport("moon")]
-		public extern static bool stroke_hit_test (IntPtr native, IntPtr stylusPointCollection);
 
 		[DllImport("moon")]
 		public extern static void stroke_get_bounds (IntPtr native, ref UnmanagedRect urect);
@@ -185,23 +179,6 @@ namespace Mono {
 #region Constructors
 		[DllImport("moon")]
 		public extern static IntPtr downloader_new ();
-#endregion
-
-#region Storyboard
-		[DllImport("moon")]
-		public extern static IntPtr storyboard_begin (IntPtr native);
-		
-		[DllImport("moon")]
-		public extern static IntPtr storyboard_pause (IntPtr native);
-		
-		[DllImport("moon")]
-		public extern static IntPtr storyboard_resume (IntPtr native);
-		
-		[DllImport("moon")]
-		public extern static IntPtr storyboard_seek (IntPtr native, long timespan);
-		
-		[DllImport("moon")]
-		public extern static IntPtr storyboard_stop (IntPtr native);
 #endregion
 
 #region Downloader
@@ -322,43 +299,6 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static uint time_manager_add_tick_call (IntPtr manager, TickCallHandler callback, IntPtr data);
-#endregion
-
-#region RoutedEventArgs
-		[DllImport("moon")]
-		public extern static IntPtr routed_event_args_new ();
-		
-		[DllImport("moon")]
-		public extern static IntPtr routed_event_args_get_source (IntPtr handle);
-
-		[DllImport("moon")]
-		public extern static void routed_event_args_set_source (IntPtr handle, IntPtr source_handle);
-#endregion
-
-#region MouseEventArgs
-		// No longer exposed
-		//[DllImport("moon")]
-		//public extern static int mouse_event_args_get_state (IntPtr handle);
-
-		[DllImport("moon")]
-		public extern static IntPtr mouse_event_args_new ();
-
-		[DllImport("moon")]
-		public extern static void mouse_event_args_get_position (IntPtr handle, IntPtr uielement_handle, out double x, out double y);
-
-		[DllImport("moon")]
-		public extern static bool mouse_event_args_get_handled (IntPtr handle);
-
-		[DllImport("moon")]
-		public extern static void mouse_event_args_set_handled (IntPtr handle, bool handled);
-#endregion
-
-#region KeyEventArgs
-		[DllImport("moon")]
-		public extern static bool keyboard_event_args_get_handled (IntPtr handle);
-
-		[DllImport("moon")]
-		public extern static void keyboard_event_args_set_handled (IntPtr handle, bool handled);
 #endregion
 
 #region SizeChangedEventArgs

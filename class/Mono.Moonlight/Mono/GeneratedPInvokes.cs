@@ -418,6 +418,14 @@ namespace Mono {
 		public extern static IntPtr inline_collection_new ();
 
 		[DllImport ("moon")]
+		// bool keyboard_event_args_get_handled (KeyboardEventArgs *instance);
+		public extern static bool keyboard_event_args_get_handled (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void keyboard_event_args_set_handled (KeyboardEventArgs *instance, bool handled);
+		public extern static void keyboard_event_args_set_handled (IntPtr instance, bool handled);
+
+		[DllImport ("moon")]
 		// KeyFrameCollection *key_frame_collection_new ();
 		public extern static IntPtr key_frame_collection_new ();
 
@@ -486,12 +494,24 @@ namespace Mono {
 		public extern static void media_element_set_stream_source (IntPtr instance, ref ManagedStreamCallbacks stream);
 
 		[DllImport ("moon")]
-		// StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *instance);
-		public extern static IntPtr mouse_event_args_get_stylus_info (IntPtr instance);
+		// bool mouse_event_args_get_handled (MouseEventArgs *instance);
+		public extern static bool mouse_event_args_get_handled (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);
+		public extern static void mouse_event_args_get_position (IntPtr instance, IntPtr relative_to, out double x, out double y);
 
 		[DllImport ("moon")]
 		// StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter);
 		public extern static IntPtr mouse_event_args_get_stylus_points (IntPtr instance, IntPtr ink_presenter);
+
+		[DllImport ("moon")]
+		// MouseEventArgs *mouse_event_args_new ();
+		public extern static IntPtr mouse_event_args_new ();
+
+		[DllImport ("moon")]
+		// void mouse_event_args_set_handled (MouseEventArgs *instance, bool handled);
+		public extern static void mouse_event_args_set_handled (IntPtr instance, bool handled);
 
 		[DllImport ("moon")]
 		// MultiScaleTileSource *multi_scale_tile_source_new ();
@@ -606,6 +626,18 @@ namespace Mono {
 		public extern static IntPtr rotate_transform_new ();
 
 		[DllImport ("moon")]
+		// DependencyObject *routed_event_args_get_source (RoutedEventArgs *instance);
+		public extern static IntPtr routed_event_args_get_source (IntPtr instance);
+
+		[DllImport ("moon")]
+		// RoutedEventArgs *routed_event_args_new ();
+		public extern static IntPtr routed_event_args_new ();
+
+		[DllImport ("moon")]
+		// void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el);
+		public extern static void routed_event_args_set_source (IntPtr instance, IntPtr el);
+
+		[DllImport ("moon")]
 		// RowDefinition *row_definition_new ();
 		public extern static IntPtr row_definition_new ();
 
@@ -662,12 +694,40 @@ namespace Mono {
 		public extern static IntPtr stack_panel_new ();
 
 		[DllImport ("moon")]
+		// bool storyboard_begin (Storyboard *instance);
+		public extern static bool storyboard_begin (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void storyboard_pause (Storyboard *instance);
+		public extern static void storyboard_pause (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void storyboard_resume (Storyboard *instance);
+		public extern static void storyboard_resume (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void storyboard_seek (Storyboard *instance, TimeSpan timespan);
+		public extern static void storyboard_seek (IntPtr instance, long timespan);
+
+		[DllImport ("moon")]
+		// void storyboard_stop (Storyboard *instance);
+		public extern static void storyboard_stop (IntPtr instance);
+
+		[DllImport ("moon")]
 		// Storyboard *storyboard_new ();
 		public extern static IntPtr storyboard_new ();
 
 		[DllImport ("moon")]
+		// bool stroke_hit_test (Stroke *instance, StylusPointCollection *stylusPoints);
+		public extern static bool stroke_hit_test (IntPtr instance, IntPtr stylusPoints);
+
+		[DllImport ("moon")]
 		// Stroke *stroke_new ();
 		public extern static IntPtr stroke_new ();
+
+		[DllImport ("moon")]
+		// StrokeCollection *stroke_collection_hit_test (StrokeCollection *instance, StylusPointCollection *stylusPoints);
+		public extern static IntPtr stroke_collection_hit_test (IntPtr instance, IntPtr stylusPoints);
 
 		[DllImport ("moon")]
 		// StrokeCollection *stroke_collection_new ();
