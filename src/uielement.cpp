@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "trigger.h"
 #include "uielement.h"
 #include "collection.h"
 #include "canvas.h"
@@ -48,11 +49,25 @@ UIElement::UIElement ()
 	ComputeLocalTransform ();
 	ComputeTotalRenderVisibility ();
 	ComputeTotalHitTestVisibility ();
+
+	// XXX bad bad bad.  no virtual method calls in ctors
+	SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
+	SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 }
 
-UIElement::~UIElement ()
+UIElement::~UIElement()
 {
 	delete dirty_region;
+}
+
+void
+UIElement::Dispose()
+{
+	TriggerCollection *triggers = GetValue (UIElement::TriggersProperty)->AsTriggerCollection();
+	for (int i = 0; i < triggers->GetCount (); i++)
+		triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
+
+	DependencyObject::Dispose();
 }
 
 void
@@ -137,8 +152,47 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == UIElement::RenderTransformProperty || args->property == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
 	}
+	else if (args->property == UIElement::TriggersProperty) {
+		if (args->old_value) {
+			// remove the old trigger targets
+			TriggerCollection *triggers = args->old_value->AsTriggerCollection();
+			for (int i = 0; i < triggers->GetCount (); i++)
+				triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
+		}
+
+		if (args->new_value) {
+			// set the new ones
+			TriggerCollection *triggers = args->new_value->AsTriggerCollection();
+			for (int i = 0; i < triggers->GetCount (); i++)
+				triggers->GetValueAt (i)->AsEventTrigger ()->SetTarget (this);
+		}
+	}
 
 	NotifyListenersOfPropertyChange (args);
+}
+
+void
+UIElement::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	if (col == GetValue (UIElement::TriggersProperty)->AsCollection ()) {
+		switch (args->action) {
+		case CollectionChangedActionReplace:
+			args->old_value->AsEventTrigger ()->RemoveTarget (this);
+			// fall thru to Add
+		case CollectionChangedActionAdd:
+			args->new_value->AsEventTrigger ()->SetTarget (this);
+			break;
+		case CollectionChangedActionRemove:
+			args->old_value->AsEventTrigger ()->RemoveTarget (this);
+			break;
+		case CollectionChangedActionReset:
+			// nothing here, the collection is empty
+			break;
+		}
+	}
+	else {
+		DependencyObject::OnCollectionChanged (col, args);
+	}
 }
 
 #if true

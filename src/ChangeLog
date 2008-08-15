@@ -1,3 +1,31 @@
+2008-08-15  Chris Toshok  <toshok@ximian.com>
+
+	* panel.cpp (Panel::ChildRemoved): queue a ZIndex re-sort here.
+	(Panel::ChildAdded): call item->OnLoaded if we're loaded, and
+	queue a re-sort.
+	(Panel::OnCollectionChanged): simplify this since the code moved
+	to ChildAdded/ChildRemoved.
+
+	* panel.h, panel.cpp (Panel::Dispose): loop over our children
+	setting their visual parent to NULL.
+
+	* uielement.h, uielement.cpp (UIElement::Dispose): loop over the
+	trigger collection removing ourselves as the target.
+	(UIElement::OnPropertyChanged): handle TriggersProperty here -
+	remove target from the old triggers and set target on the new
+	ones.
+	(UIElement::OnCollectionChanged): new method, handle
+	TriggersCollection.
+
+	* dependencyobject.cpp: be consistent in our treatment of
+	LogicalParent - clear it in every place we're removing a DO.  Warn
+	if we're setting it again on the same DO.
+
+	* collection.h, collection.cpp: remove triggercollection's
+	added/removedfromcollection, adn remove uielementcollection's
+	removedfromcollection.  Also, stop using a separate closure.  The
+	collection's LogicalParent always has the same value - use that.
+
 2008-08-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* clock.cpp (TimeManager::SourceTick): Instead of always using up

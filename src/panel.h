@@ -30,6 +30,8 @@ class Panel : public FrameworkElement {
 	
  protected:
 	virtual ~Panel ();
+
+	virtual void Dispose ();
 	bool UseBackToFront ();
 
  public:

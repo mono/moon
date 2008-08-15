@@ -16,7 +16,6 @@
 #include "geometry.h"
 #include "transform.h"
 #include "frameworkelement.h"
-#include "trigger.h"
 #include "namescope.h"
 #include "utils.h"
 #include "error.h"
@@ -25,7 +24,6 @@ Collection::Collection ()
 {
 	array = g_ptr_array_new ();
 	generation = 0;
-	closure = NULL;
 }
 
 Collection::~Collection ()
@@ -73,8 +71,8 @@ Collection::Add (Value value)
 void
 Collection::Clear ()
 {
-	if (closure)
-		closure->OnCollectionClear (this);
+	if (GetLogicalParent())
+		GetLogicalParent()->OnCollectionClear (this);
 
 	guint len = array->len;
 	Value** vals = new Value*[len];
@@ -294,9 +292,9 @@ Collection::EmitChanged (CollectionChangedAction action, Value *new_value, Value
 {
 	CollectionChangedEventArgs *args;
 	
-	if (closure) {
+	if (GetLogicalParent()) {
 		args = new CollectionChangedEventArgs (action, new_value, old_value, index);
-		closure->OnCollectionChanged (this, args);
+		GetLogicalParent()->OnCollectionChanged (this, args);
 		args->unref ();
 	}
 }
@@ -358,8 +356,8 @@ DependencyObjectCollection::SetSurface (Surface *surface)
 void
 DependencyObjectCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (closure)
-		closure->OnCollectionItemChanged (this, obj, subobj_args);
+	if (GetLogicalParent())
+		GetLogicalParent()->OnCollectionItemChanged (this, obj, subobj_args);
 }
 
 void
@@ -395,7 +393,7 @@ DependencyObjectCollection::RegisterAllNamesRootedAt (NameScope *to_ns)
 void
 DependencyObjectCollection::MergeNames (DependencyObject *new_obj)
 {
-	if (!closure)
+	if (!GetLogicalParent())
 		return;
 	
 	NameScope *ns = NameScope::GetNameScope (new_obj);
@@ -403,7 +401,7 @@ DependencyObjectCollection::MergeNames (DependencyObject *new_obj)
 	/* this should always be true for Canvas subclasses */
 	if (ns) {
 		if (ns->GetTemporary ()) {
-			NameScope *con_ns = closure->FindNameScope ();
+			NameScope *con_ns = GetLogicalParent()->FindNameScope ();
 			if (con_ns) {
 				con_ns->MergeTemporaryScope (ns);
 				// get rid of the old namescope after we merge
@@ -411,7 +409,7 @@ DependencyObjectCollection::MergeNames (DependencyObject *new_obj)
 			}
 		}
 	} else {
-		NameScope *con_ns = closure->FindNameScope ();
+		NameScope *con_ns = GetLogicalParent()->FindNameScope ();
 		if (con_ns)
 			new_obj->RegisterAllNamesRootedAt (con_ns);
 	}
@@ -427,14 +425,6 @@ UIElementCollection::UIElementCollection ()
 UIElementCollection::~UIElementCollection ()
 {
 	g_ptr_array_free (z_sorted, true);
-}
-
-void
-UIElementCollection::Dispose ()
-{
-	g_ptr_array_set_size (z_sorted, 0);
-	
-	DependencyObjectCollection::Dispose ();
 }
 
 static int
@@ -459,19 +449,6 @@ UIElementCollection::ResortByZIndex ()
 	
 	if (array->len > 1)
 		g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
-}
-
-void
-UIElementCollection::RemovedFromCollection (Value *value)
-{
-	UIElement *item = value->AsUIElement ();
-	
-	if (IsDisposed ())
-		item->SetVisualParent (NULL);
-	
-	g_ptr_array_remove (z_sorted, item);
-	
-	DependencyObjectCollection::RemovedFromCollection (value);
 }
 
 void
@@ -536,34 +513,6 @@ collection_iterator_destroy (CollectionIterator *iterator)
 {
 	delete iterator;
 }
-
-
-
-void
-TriggerCollection::AddedToCollection (Value *value)
-{
-	FrameworkElement *fwe = (FrameworkElement *) closure;
-	EventTrigger *trigger = value->AsEventTrigger ();
-
-	if (fwe)
-		trigger->SetTarget (fwe);
-	
-	DependencyObjectCollection::AddedToCollection (value);
-}
-
-void
-TriggerCollection::RemovedFromCollection (Value *value)
-{
-	FrameworkElement *fwe = (FrameworkElement *) closure;
-	EventTrigger *trigger = value->AsEventTrigger ();
-
-	if (fwe)
-		trigger->RemoveTarget (fwe);
-	
-	DependencyObjectCollection::RemovedFromCollection (value);
-}
-
-
 
 Collection *
 collection_new (Type::Kind kind)

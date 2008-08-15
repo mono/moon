@@ -48,8 +48,6 @@ class Collection : public DependencyObject {
  	/* @PropertyType=gint32,DefaultValue=0 */
 	static DependencyProperty *CountProperty;
 	
-	DependencyObject *closure;
-	
 	virtual Type::Kind GetObjectType () = 0;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -162,9 +160,6 @@ class CollectionIterator {
 /* @Namespace=System.Windows */
 class TriggerCollection : public DependencyObjectCollection {
  protected:
-	virtual void AddedToCollection (Value *value);
-	virtual void RemovedFromCollection (Value *value);
-	
 	virtual ~TriggerCollection () {}
 	
  public:
@@ -219,10 +214,7 @@ class InlineCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class UIElementCollection : public DependencyObjectCollection {
  protected:
-	virtual void RemovedFromCollection (Value *value);
-	
 	virtual ~UIElementCollection ();
-	virtual void Dispose ();
 	
  public:
 	GPtrArray *z_sorted;

@@ -43,6 +43,7 @@ class UIElement : public DependencyObject {
 	
  protected:
 	virtual ~UIElement ();
+	virtual void Dispose ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
 	void RenderClipPath (cairo_t *cr);
 
@@ -369,6 +370,7 @@ class UIElement : public DependencyObject {
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 
 	//
 	// CacheInvalidateHint:

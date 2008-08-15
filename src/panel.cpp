@@ -24,8 +24,18 @@ Panel::Panel ()
 	emitting_loaded = false;
 }
 
-Panel::~Panel ()
+Panel::~Panel()
 {
+}
+
+void
+Panel::Dispose ()
+{
+	UIElementCollection *children = GetChildren();
+	for (int i = 0; i < children->GetCount (); i++)
+		children->GetValueAt (i)->AsUIElement ()->SetVisualParent (NULL);
+
+	FrameworkElement::Dispose ();
 }
 
 Brush *
@@ -545,6 +555,16 @@ Panel::ChildAdded (UIElement *child)
 	item->UpdateTotalRenderVisibility ();
 	item->UpdateTotalHitTestVisibility ();
 	item->Invalidate ();
+
+	if (flags & UIElement::IS_LOADED)
+		item->OnLoaded ();
+			
+	if (GetSurface ()) {
+		// queue a resort based on ZIndex
+		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+	}
+
+	UpdateBounds (true);
 }
 
 void
@@ -557,6 +577,13 @@ Panel::ChildRemoved (UIElement *child)
 	item->CacheInvalidateHint ();
 	item->SetVisualParent (NULL);
 	item->flags &= ~UIElement::IS_LOADED;
+
+	if (GetSurface ()) {
+		// queue a resort based on ZIndex
+		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+	}
+
+	UpdateBounds (true);
 }
 
 void
@@ -591,29 +618,13 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 			// now fall thru to Add
 		case CollectionChangedActionAdd:
 			ChildAdded (args->new_value->AsUIElement ());
-			UpdateBounds (true);
-			
-			if (flags & UIElement::IS_LOADED)
-				args->new_value->AsUIElement ()->OnLoaded ();
-			
-			if (GetSurface ()) {
-				// queue a resort based on ZIndex
-				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-			}
 			break;
 		case CollectionChangedActionRemove:
 			ChildRemoved (args->old_value->AsUIElement ());
 			UpdateBounds (true);
 			break;
 		case CollectionChangedActionReset:
-			for (int i = 0; i < col->GetCount (); i++)
-				ChildAdded (col->GetValueAt (i)->AsUIElement ());
-			
-			if (GetSurface ()) {
-				// queue a resort based on ZIndex
-				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-			}
-			
+			// nothing needed here, the collection is empty
 			break;
 		}
 	} else {

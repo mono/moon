@@ -910,12 +910,6 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 			// unregister from the existing value
 			current_as_dep->RemovePropertyChangeListener (this, property);
 			current_as_dep->SetSurface (NULL);
-
-			// and remove its closure.
-			if (current_as_dep->Is (Type::COLLECTION)) {
-				Collection *col = (Collection*)current_as_dep;
-				col->closure = NULL;
-			}
 		}
 
 		Value *new_value = value ? new Value (*value) : NULL;
@@ -925,19 +919,13 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 
 		if (new_as_dep) {
 			// set its logical parent
+			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this)
+				g_warning ("DependencyObject already has a logical parent");
 			new_as_dep->SetLogicalParent (this);
 			
 			// listen for property changes on the new object
 			new_as_dep->AddPropertyChangeListener (this, property);
 			new_as_dep->SetSurface (GetSurface ());
-
-			// and set its closure to us.
-			if (new_as_dep->Is (Type::COLLECTION)) {
-				Collection *col = (Collection*)new_as_dep;
-				if (col->closure)
-					g_warning ("Collection added as property of more than 1 dependency object");
-				col->closure = this;
-			}
 
 			// merge any temporary namescopes in its
 			// subtree.
@@ -1153,17 +1141,14 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	if (current_value->Is (Type::DEPENDENCY_OBJECT)){
 		DependencyObject *dob = current_value->AsDependencyObject();
 
-		if (dob != NULL)
+		if (dob != NULL) {
+			// unset its logical parent
+			dob->SetLogicalParent (NULL);
+
+			// unregister from the existing value
 			dob->RemovePropertyChangeListener (this, property);
-
-		dob->SetSurface (NULL);
-	}
-
-	// and remove it's closure
-	if (Type::Find(current_value->GetKind())->IsSubclassOf (Type::COLLECTION)) {
-		Collection *col = current_value->AsCollection ();
-		if (col)
-			col->closure = NULL;
+			dob->SetSurface (NULL);
+		}
 	}
 
 	g_hash_table_remove (current_values, property);
@@ -1218,15 +1203,14 @@ free_value (gpointer key, gpointer value, gpointer data)
 	if (v->Is (Type::DEPENDENCY_OBJECT)){
 		DependencyObject *dob = v->AsDependencyObject();
 		
-		if (dob != NULL)
+		if (dob != NULL) {
+			// unset its logical parent
+			dob->SetLogicalParent (NULL);
+
+			// unregister from the existing value
 			dob->RemovePropertyChangeListener ((DependencyObject*)data, NULL);
-	}
-	
-	// and remove it's closure
-	if (Type::Find(v->GetKind())->IsSubclassOf (Type::COLLECTION)) {
-		Collection *col = v->AsCollection ();
-		if (col)
-			col->closure = NULL;
+			dob->SetSurface (NULL);
+		}
 	}
 	
 	delete (Value *) value;

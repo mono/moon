@@ -14,14 +14,12 @@
 #include <math.h>
 
 #include "frameworkelement.h"
+#include "trigger.h"
 #include "thickness.h"
 #include "collection.h"
 
 FrameworkElement::FrameworkElement ()
 {
-	// XXX bad bad bad.  no virtual method calls in ctors
-	SetValue (FrameworkElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
-	SetValue (FrameworkElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 }
 
 void
