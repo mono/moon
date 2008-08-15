@@ -23,6 +23,15 @@
 #define BBOX_MARGIN 1.0
 #define BBOX_PADDING 2.0
 
+/*
+ * Silverlight does not apply any kerning on a DOT, so we exclude them
+ * 	U+002E FULL STOP
+ * 	U+06D4 ARABIC FULL STOP
+ *	U+3002 IDEOGRAPHIC FULL STOP
+ * Note: this is different than using the "sliding dot" algorithm from
+ * http://www.freetype.org/freetype2/docs/glyphs/glyphs-4.html
+ */
+#define APPLY_KERNING(uc)	((uc != 0x002E) && (uc != 0x06D4) && (uc != 3002))
 
 TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg)
 {
@@ -409,7 +418,7 @@ TextLayout::LayoutWrapWithOverflow ()
 			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-						if (prev != 0)
+						if ((prev != 0) && APPLY_KERNING (*inptr))
 							advance += run->font->Kerning (prev, glyph->index);
 						else if (glyph->metrics.horiBearingX < 0)
 							advance -= glyph->metrics.horiBearingX;
@@ -478,7 +487,7 @@ TextLayout::LayoutWrapWithOverflow ()
 			while (*inptr && !BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-						if (prev != 0)
+						if ((prev != 0) && APPLY_KERNING (*inptr))
 							advance += run->font->Kerning (prev, glyph->index);
 						else if (glyph->metrics.horiBearingX < 0)
 							advance -= glyph->metrics.horiBearingX;
@@ -595,7 +604,7 @@ TextLayout::LayoutNoWrap ()
 			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-						if (prev != 0)
+						if ((prev != 0) && APPLY_KERNING (*inptr))
 							advance += run->font->Kerning (prev, glyph->index);
 						else if (glyph->metrics.horiBearingX < 0)
 							advance -= glyph->metrics.horiBearingX;
@@ -624,7 +633,7 @@ TextLayout::LayoutNoWrap ()
 			while (*inptr && !BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-						if (prev != 0)
+						if ((prev != 0) && APPLY_KERNING (*inptr))
 							advance += run->font->Kerning (prev, glyph->index);
 						else if (glyph->metrics.horiBearingX < 0)
 							advance -= glyph->metrics.horiBearingX;
@@ -805,7 +814,7 @@ TextLayout::LayoutWrap ()
 			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					advance = glyph->metrics.horiAdvance;
-					if (prev != 0)
+					if ((prev != 0) && APPLY_KERNING (*inptr))
 						advance += run->font->Kerning (prev, glyph->index);
 					else if (glyph->metrics.horiBearingX < 0) {
 						bearing_adj = glyph->metrics.horiBearingX;
@@ -882,7 +891,7 @@ TextLayout::LayoutWrap ()
 					goto next;
 				
 				advance = glyph->metrics.horiAdvance;
-				if (prev != 0)
+				if ((prev != 0) && APPLY_KERNING (*inptr))
 					advance += run->font->Kerning (prev, glyph->index);
 				else if (glyph->metrics.horiBearingX < 0) {
 					bearing_adj = glyph->metrics.horiBearingX;
@@ -1158,10 +1167,11 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 			}
 			
 			for (i = segment->start, prev = 0; i < segment->end; i++) {
-				if (!(glyph = font->GetGlyphInfo (text[i])))
+				gunichar uc = text[i];
+				if (!(glyph = font->GetGlyphInfo (uc)))
 					continue;
 				
-				if (prev != 0)
+				if ((prev != 0) && APPLY_KERNING (uc))
 					x1 += font->Kerning (prev, glyph->index);
 				else if (glyph->metrics.horiBearingX < 0)
 					x1 += glyph->metrics.horiBearingX;

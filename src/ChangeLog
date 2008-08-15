@@ -1,3 +1,9 @@
+2008-08-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* layout.cpp: Don't add kerning before a dot (.). This match SL
+	behavior (i.e. it's not a "sliding dot" algorithm like I expected)
+	and the effect is visible in a few DRT (like #184).
+
 2008-08-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* uielement.cpp (UIElement::GetTriggers): Added for convenience.
