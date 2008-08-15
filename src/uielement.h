@@ -440,6 +440,8 @@ class UIElement : public DependencyObject {
 	void SetOpacity (double opacity);
 	double GetOpacity ();
 	
+	TriggerCollection *GetTriggers ();
+	
 	void SetZIndex (int zindex);
 	int GetZIndex ();
 	

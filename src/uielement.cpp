@@ -63,7 +63,8 @@ UIElement::~UIElement()
 void
 UIElement::Dispose()
 {
-	TriggerCollection *triggers = GetValue (UIElement::TriggersProperty)->AsTriggerCollection();
+	TriggerCollection *triggers = GetTriggers ();
+	
 	for (int i = 0; i < triggers->GetCount (); i++)
 		triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
 
@@ -849,6 +850,14 @@ double
 UIElement::GetOpacity ()
 {
 	return GetValue (UIElement::OpacityProperty)->AsDouble ();
+}
+
+TriggerCollection *
+UIElement::GetTriggers ()
+{
+	Value *value = GetValue (UIElement::TriggersProperty);
+	
+	return value ? value->AsTriggersCollection () : NULL;
 }
 
 void
