@@ -19,9 +19,8 @@ AC_DEFINE(__STDC_LIMIT_MACROS,[],[To get limits of specified-width integer types
 
 AC_SEARCH_LIBS(clock_gettime,rt)
 
-dnl from berkman the genius
 changequote(,)dnl
-LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"--silent\" }')"
+dnl LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"--silent\" }')"
 changequote([,])dnl
 
 dnl *****************************
