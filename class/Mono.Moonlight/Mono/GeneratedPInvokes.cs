@@ -758,6 +758,10 @@ namespace Mono {
 		public extern static IntPtr tile_brush_new ();
 
 		[DllImport ("moon")]
+		// void timeline_set_manual_target (Timeline *instance, DependencyObject *o);
+		public extern static void timeline_set_manual_target (IntPtr instance, IntPtr o);
+
+		[DllImport ("moon")]
 		// Timeline *timeline_new ();
 		public extern static IntPtr timeline_new ();
 
