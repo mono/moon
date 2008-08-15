@@ -89,6 +89,7 @@ class TypeReference {
 			case "int":
 			case "bool":
 			case "void":
+			case "double":
 				managed_type = Value;
 				break;
 			case "ManagedStreamCallbacks*":
