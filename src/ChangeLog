@@ -1,5 +1,9 @@
 2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* animation.h: KeyTimeProperty isn't nullable in managed code.
+
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* cbinding.cpp, cbinding.h: Regenerated.
 	* media.cpp, media.h: Add a MediaElement::SetStreamSource, and hack it
 	  to at least open the source.

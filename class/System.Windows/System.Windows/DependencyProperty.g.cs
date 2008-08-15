@@ -1389,11 +1389,11 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class ColorKeyFrame {
-		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.COLORKEYFRAME, "KeyTime", typeof (Nullable<KeyTime>));
+		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.COLORKEYFRAME, "KeyTime", typeof (KeyTime));
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.COLORKEYFRAME, "Value", typeof (Color));
 
-		public Nullable<KeyTime> KeyTime {
-			get { return (Nullable<KeyTime>) GetValue (KeyTimeProperty); }
+		public KeyTime KeyTime {
+			get { return (KeyTime) GetValue (KeyTimeProperty); }
 			set { SetValue (KeyTimeProperty, value); }
 		}
 
@@ -1434,11 +1434,11 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class DoubleKeyFrame {
-		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.DOUBLEKEYFRAME, "KeyTime", typeof (Nullable<KeyTime>));
+		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.DOUBLEKEYFRAME, "KeyTime", typeof (KeyTime));
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.DOUBLEKEYFRAME, "Value", typeof (double));
 
-		public Nullable<KeyTime> KeyTime {
-			get { return (Nullable<KeyTime>) GetValue (KeyTimeProperty); }
+		public KeyTime KeyTime {
+			get { return (KeyTime) GetValue (KeyTimeProperty); }
 			set { SetValue (KeyTimeProperty, value); }
 		}
 
@@ -1503,11 +1503,11 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class PointKeyFrame {
-		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.POINTKEYFRAME, "KeyTime", typeof (Nullable<KeyTime>));
+		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.POINTKEYFRAME, "KeyTime", typeof (KeyTime));
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.POINTKEYFRAME, "Value", typeof (Point));
 
-		public Nullable<KeyTime> KeyTime {
-			get { return (Nullable<KeyTime>) GetValue (KeyTimeProperty); }
+		public KeyTime KeyTime {
+			get { return (KeyTime) GetValue (KeyTimeProperty); }
 			set { SetValue (KeyTimeProperty, value); }
 		}
 

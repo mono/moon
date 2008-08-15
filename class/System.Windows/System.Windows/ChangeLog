@@ -1,5 +1,10 @@
 2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyProperty.g.cs: KeyTimeProperty isn't nullable in managed
+	  code.
+
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DependencyProperty.g.cs: Regenerated after last changes.
 
 2008-08-14  Jackson Harper  <jackson@ximian.com>

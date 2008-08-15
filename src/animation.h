@@ -430,7 +430,7 @@ class DoubleKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=double,Nullable,ManagedPropertyType=double */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Nullable */
+	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -453,7 +453,7 @@ class ColorKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Nullable */
+	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -476,7 +476,7 @@ class PointKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Nullable */
+	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
