@@ -1970,6 +1970,8 @@ geometry_from_str (const char *str)
 		switch (c) {
 		case 'f':
 		case 'F':
+			advance (&inptr);
+
 			if (*inptr == '0')
 				fill_rule = FillRuleEvenOdd;
 			else if (*inptr == '1')
@@ -3124,6 +3126,7 @@ start_parse:
 		char **attr_name = g_strsplit (attr [i], "|", -1);
 
 		if (attr_name [1]) {
+			
 			XamlNamespace *ns = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, attr_name [0]);
 
 			if (!ns)

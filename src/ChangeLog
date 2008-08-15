@@ -1,3 +1,7 @@
+2008-08-15  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Need to advance after F.
+
 2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* animation.h, dependencyproperty.g.cpp: KeyTime is nullable. Fixes MS
