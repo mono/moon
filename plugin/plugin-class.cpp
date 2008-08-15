@@ -3530,7 +3530,7 @@ MoonlightStylusInfoObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 
 	switch (id) {
 	case MoonId_DeviceType: {
-		switch (stylus_info_get_device_type (info)) {
+		switch (info->GetDeviceType ()) {
 		case TabletDeviceTypeMouse:
 			string_to_npvariant ("Mouse", result);
 			break;
@@ -3546,7 +3546,7 @@ MoonlightStylusInfoObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 		return true;
 	}
 	case MoonId_IsInverted: {
-		BOOLEAN_TO_NPVARIANT (stylus_info_get_inverted (info), *result);
+		BOOLEAN_TO_NPVARIANT (info->GetIsInverted (), *result);
 		return true;
 	}
 
