@@ -382,40 +382,67 @@ TimeManager::SourceTick ()
 		ENDTICKTIMER (tick_input, "TimeManager::Tick - Input");
 	}
 
-	if (current_flags & TIME_MANAGER_TICK_CALL) {
-		STARTTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
-		bool remaining_tick_calls;
-		TimeSpan start, now;
-		
-		// Invoke as many async tick calls as we can in 1/30th of a second
-		now = start = get_now ();
-		while (now < start + (TIMESPANTICKS_IN_SECOND / 30)) {
-			if (!(remaining_tick_calls = InvokeTickCall ()))
-				break;
-			
-			now = get_now ();
-		}
-		
-		if (remaining_tick_calls)
-			flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
-		
-		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
-	}
-
 	if (current_flags & TIME_MANAGER_RENDER) {
 		// fprintf (stderr, "rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
 		Emit (RenderEvent);
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
-
+	
+	TimeSpan post_tick = source->GetNow ();
+	TimeSpan xt = post_tick - pre_tick;
+	TimeSpan target;
+	
+	// Flush as many async operations from our queue as we can in
+	// the time we have left for rendering this frame.
+	//
+	// Note: If this is our first frame, we allow 1/10 of a second
+	// to process queued operations regardless of how much time we
+	// have remaining to render this frame and we also do not
+	// include the time taken to flush async operations in the FPS
+	// smoothing calculation.
+	
+	if (first_tick)
+		target = post_tick + (TIMESPANTICKS_IN_SECOND / 10);
+	else
+		target = pre_tick + (TIMESPANTICKS_IN_SECOND / max_fps);
+	
+	if (current_flags & TIME_MANAGER_TICK_CALL) {
+		STARTTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
+		bool remaining_tick_calls;
+		TimeSpan now = post_tick;
+		//int fired = 0;
+		
+		// Invoke as many async tick calls as we can in the remaining time alotted for rendering this frame
+		do {
+			remaining_tick_calls = InvokeTickCall ();
+			now = get_now ();
+			//fired++;
+		} while (remaining_tick_calls && now < target);
+		
+		if (remaining_tick_calls) {
+			flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
+			//printf ("Render Statistics:\n");
+			//printf ("\ttime alotted per render pass = %d (%d FPS), time needed for render = %lld, time remaining for tick-calls = %lld\n",
+			//	(TIMESPANTICKS_IN_SECOND / max_fps), max_fps, xt, target - post_tick);
+			//printf ("\tfired %d TickCalls in %lld usec\n", fired, now - post_tick);
+		}
+		
+		if (!first_tick) {
+			// update our post_tick and time-elapsed variables
+			xt = now - pre_tick;
+			post_tick = now;
+		}
+		
+		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
+	}
+	
 #if CLOCK_DEBUG
 	ListClocks ();
 #endif
 
 	ENDTICKTIMER (tick, "TimeManager::Tick");
-	TimeSpan post_tick = source->GetNow();
-
+	
 	/* implement an exponential moving average by way of simple
 	   exponential smoothing:
 
@@ -429,9 +456,7 @@ TimeManager::SourceTick ()
 #if USE_SMOOTHING
 #define SMOOTHING_ALPHA 0.03 /* we probably want to play with this value some.. - toshok */
 #define TIMEOUT_ERROR_DELTA 20 /* how far off of the current_timeout can we be */
-
-	TimeSpan xt = post_tick - pre_tick;
-
+	
 	/* the s(0) case */
 	if (first_tick) {
 		first_tick = false;
@@ -454,7 +479,7 @@ TimeManager::SourceTick ()
 	}
 
 	current_timeout = suggested_timeout;
-
+	
 #if PUT_TIME_MANAGER_TO_SLEEP
 	// set up the next timeout here, but only if we need to
 	if (flags || registered_timeouts) {

@@ -1,3 +1,9 @@
+2008-08-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* clock.cpp (TimeManager::SourceTick): Instead of always using up
+	to 1/30 of a second for flushing the async queue, use only the
+	time remaining in our render pass to flush it.
+
 2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* animation.h: KeyTimeProperty isn't nullable in managed code.
