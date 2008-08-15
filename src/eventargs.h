@@ -41,7 +41,8 @@ enum CollectionChangedAction {
 	CollectionChangedActionAdd,
 	CollectionChangedActionRemove,
 	CollectionChangedActionReplace,
-	CollectionChangedActionReset
+	CollectionChangedActionClearing,
+	CollectionChangedActionCleared,
 };
 
 /* @Namespace=None */

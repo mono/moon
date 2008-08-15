@@ -297,13 +297,6 @@ class DependencyObject : public EventObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args) { }
 	
 	//
-	// OnCollectionClear:
-	//
-	// This method is invoked when the @col is being cleared.
-	//
-	virtual void OnCollectionClear (Collection *col) { }
-	
-	//
 	// OnCollectionChanged:
 	//
 	// This method is invoked when a change has happened in the @col

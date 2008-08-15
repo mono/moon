@@ -598,17 +598,6 @@ Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 }
 
 void
-Panel::OnCollectionClear (Collection *col)
-{
-	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
-		for (int i = 0; i < col->GetCount (); i++)
-			ChildRemoved (col->GetValueAt (i)->AsUIElement ());
-	}
-	
-	FrameworkElement::OnCollectionClear (col);
-}
-
-void
 Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
@@ -621,10 +610,13 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 			break;
 		case CollectionChangedActionRemove:
 			ChildRemoved (args->old_value->AsUIElement ());
-			UpdateBounds (true);
 			break;
-		case CollectionChangedActionReset:
-			// nothing needed here, the collection is empty
+		case CollectionChangedActionClearing:
+			for (int i = 0; i < col->GetCount (); i++)
+				ChildRemoved (col->GetValueAt (i)->AsUIElement ());
+			break;
+		case CollectionChangedActionCleared:
+			// nothing needed here.
 			break;
 		}
 	} else {

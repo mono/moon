@@ -71,8 +71,7 @@ Collection::Add (Value value)
 void
 Collection::Clear ()
 {
-	if (GetLogicalParent())
-		GetLogicalParent()->OnCollectionClear (this);
+	EmitChanged (CollectionChangedActionClearing, NULL, NULL, -1);
 
 	guint len = array->len;
 	Value** vals = new Value*[len];
@@ -89,7 +88,7 @@ Collection::Clear ()
 	}
 	delete[] vals;
 	
-	EmitChanged (CollectionChangedActionReset, NULL, NULL, -1);
+	EmitChanged (CollectionChangedActionCleared, NULL, NULL, -1);
 }
 
 bool

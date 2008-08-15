@@ -186,8 +186,12 @@ UIElement::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 		case CollectionChangedActionRemove:
 			args->old_value->AsEventTrigger ()->RemoveTarget (this);
 			break;
-		case CollectionChangedActionReset:
-			// nothing here, the collection is empty
+		case CollectionChangedActionClearing:
+			for (int i = 0; i < col->GetCount (); i++)
+				col->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
+			break;
+		case CollectionChangedActionCleared:
+			// nothing needed here.
 			break;
 		}
 	}

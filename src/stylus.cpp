@@ -661,8 +661,11 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 		break;
 	case CollectionChangedActionRemove:
 	case CollectionChangedActionReplace:
-	case CollectionChangedActionReset:
+	case CollectionChangedActionCleared:
 		ComputeBounds ();
+		break;
+	case CollectionChangedActionClearing:
+		// nothing needed here.
 		break;
 	}
 	
@@ -987,10 +990,13 @@ InkPresenter::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *
 		Invalidate (stroke->GetBounds().Transform (&absolute_xform));
 		UpdateBounds ();
 		break;
-	case CollectionChangedActionReset:
+	case CollectionChangedActionCleared:
 		Invalidate (render_bounds);
 		Invalidate (((StrokeCollection*)col)->GetBounds().Transform (&absolute_xform));
 		UpdateBounds ();
+		break;
+	case CollectionChangedActionClearing:
+		// nothing needed here.
 		break;
 	}
 }

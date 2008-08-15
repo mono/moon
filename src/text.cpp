@@ -838,7 +838,7 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 		update_text = true;
 		dirty = true;
 		break;
-	case CollectionChangedActionReset:
+	case CollectionChangedActionCleared:
 		// the collection has changed, only update our TextProperty if it was the result of a SetValue
 		update_bounds = setvalue;
 		update_text = setvalue;
