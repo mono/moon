@@ -101,34 +101,3 @@ FrameworkElement::GetWidth ()
 {
 	return GetValue (FrameworkElement::WidthProperty)->AsDouble ();
 }
-
-void
-framework_element_set_height (FrameworkElement *element, double height)
-{
-	element->SetHeight (height);
-}
-
-double
-framework_element_get_height (FrameworkElement *element)
-{
-	return element->GetHeight ();
-}
-
-void
-framework_element_set_width (FrameworkElement *element, double width)
-{
-	element->SetWidth (width);
-}
-
-double
-framework_element_get_width (FrameworkElement *element)
-{
-	return element->GetWidth ();
-}
-
-
-void
-framework_element_init (void)
-{
-	// no-op
-}

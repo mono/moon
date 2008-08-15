@@ -1,3 +1,7 @@
+2008-08-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* frameworkelement.cpp: Removed manual c-bindings.
+
 2008-08-15  Chris Toshok  <toshok@ximian.com>
 
 	* eventargs.h (enum CollectionChangedAction): change Reset to

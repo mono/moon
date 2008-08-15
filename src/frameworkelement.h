@@ -106,14 +106,4 @@ class FrameworkElement : public UIElement {
 #endif
 };
 
-G_BEGIN_DECLS
-
-double	framework_element_get_height	(FrameworkElement *framework_element);
-void	framework_element_set_height	(FrameworkElement *framework_element, double height);
-double	framework_element_get_width	(FrameworkElement *framework_element);
-void	framework_element_set_width	(FrameworkElement *framework_element, double width);
-
-G_END_DECLS
-
-
 #endif /* __MOON_FRAMEWORKELEMENT_H__ */
