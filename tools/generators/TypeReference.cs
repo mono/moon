@@ -113,8 +113,15 @@ class TypeReference {
 			case "char*":
 				managed_type = "string";
 				break;
+			case "double*":
+				managed_type = "double";
+				IsOut = true;
+				break;
 			case "EventHandler":
 				managed_type = "UnmanagedEventHandler";
+				break;
+			case "TimeSpan":
+				managed_type = "long";
 				break;
 			case "Type::Kind*":
 				if (IsReturnType) {
