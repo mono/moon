@@ -39,6 +39,8 @@
     <File name="Mono.Moonlight.UnitTesting/HtmlOutput.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Moonlight.UnitTesting/IOutput.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Moonlight.UnitTesting/Tester.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/MediaElementTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/MediaElementTest.SlowStream.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
