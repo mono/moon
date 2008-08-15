@@ -22,70 +22,64 @@
 
 #define DEBUG_HITTEST 0
 
-TabletDeviceType
-stylus_info_get_device_type (StylusInfo *stylus_info)
+void
+StylusInfo::SetDeviceType (TabletDeviceType type)
 {
-	return (TabletDeviceType) stylus_info->GetValue (StylusInfo::DeviceTypeProperty)->AsInt32 ();
+	SetValue (StylusInfo::DeviceTypeProperty, Value (type));
+}
+
+TabletDeviceType
+StylusInfo::GetDeviceType ()
+{
+	return (TabletDeviceType) GetValue (StylusInfo::DeviceTypeProperty)->AsInt32 ();
 }
 
 void
-stylus_info_set_device_type (StylusInfo* stylus_info, TabletDeviceType type)
+StylusInfo::SetIsInverted (bool inverted)
 {
-	stylus_info->SetValue (StylusInfo::DeviceTypeProperty, Value (type));
+	SetValue (StylusInfo::IsInvertedProperty, Value (inverted));
 }
 
 bool
-stylus_info_get_inverted (StylusInfo* stylus_info)
+StylusInfo::GetIsInverted ()
 {
-	return stylus_info->GetValue (StylusInfo::IsInvertedProperty)->AsBool ();
+	return GetValue (StylusInfo::IsInvertedProperty)->AsBool ();
 }
 
 void
-stylus_info_set_inverted (StylusInfo* stylus_info, bool inverted)
+StylusPoint::SetPressureFactor (double factor)
 {
-	stylus_info->SetValue (StylusInfo::IsInvertedProperty, Value (inverted));
+	SetValue (StylusPoint::PressureFactorProperty, Value (factor));
 }
 
 double
-stylus_point_get_x (StylusPoint *stylus_point)
+StylusPoint::GetPressureFactor ()
 {
-	return stylus_point->GetValue (StylusPoint::XProperty)->AsDouble();
+	return GetValue (StylusPoint::PressureFactorProperty)->AsDouble ();
 }
 
 void
-stylus_point_set_x (StylusPoint *stylus_point, double x)
+StylusPoint::SetX (double x)
 {
-	stylus_point->SetValue (StylusPoint::XProperty, Value (x));
+	SetValue (StylusPoint::XProperty, Value (x));
 }
 
 double
-stylus_point_get_y (StylusPoint *stylus_point)
+StylusPoint::GetX ()
 {
-	return stylus_point->GetValue (StylusPoint::YProperty)->AsDouble();
+	return GetValue (StylusPoint::XProperty)->AsDouble ();
 }
 
 void
-stylus_point_set_y (StylusPoint *stylus_point, double y)
+StylusPoint::SetY (double y)
 {
-	stylus_point->SetValue (StylusPoint::YProperty, Value (y));
+	SetValue (StylusPoint::YProperty, Value (y));
 }
 
 double
-stylus_point_get_pressure_factor (StylusPoint *stylus_point)
+StylusPoint::GetY ()
 {
-	return stylus_point->GetValue (StylusPoint::PressureFactorProperty)->AsDouble();
-}
-
-void
-stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure)
-{
-	stylus_point->SetValue (StylusPoint::PressureFactorProperty, Value (pressure));
-}
-
-double
-stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *points)
-{
-	return col->AddStylusPoints (points);
+	return GetValue (StylusPoint::YProperty)->AsDouble ();
 }
 
 double
@@ -107,11 +101,11 @@ StylusPointCollection::GetBounds ()
 		return Rect (0, 0, 0, 0);
 	
 	StylusPoint *point = GetValueAt (0)->AsStylusPoint ();
-	Rect r = Rect (stylus_point_get_x (point), stylus_point_get_y (point), 0, 0);
+	Rect r = Rect (point->GetX (), point->GetY (), 0, 0);
 	
 	for (guint i = 1; i < array->len; i++) {
 		point = GetValueAt (i)->AsStylusPoint ();
-		r = r.ExtendTo (stylus_point_get_x (point), stylus_point_get_y (point));
+		r = r.ExtendTo (point->GetX (), point->GetY ());
 	}
 	
 	return r;
@@ -440,9 +434,8 @@ Stroke::HitTestSegment (Point p1, Point p2, double w, double h, StylusPointColle
 		sp = stylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
 		if (i + 1 == stylusPoints->GetCount ()) {
-			Point p (stylus_point_get_x (sp),
-				 stylus_point_get_y (sp));
-
+			Point p (sp->GetX (), sp->GetY ());
+			
 			if (!bounds.PointInside (p))
 				continue;
 
@@ -455,10 +448,8 @@ Stroke::HitTestSegment (Point p1, Point p2, double w, double h, StylusPointColle
 			StylusPoint *next_sp = stylusPoints->GetValueAt (i + 1)->AsStylusPoint ();
 			i++;
 			
-			Point p (stylus_point_get_x (sp),
-				 stylus_point_get_y (sp));
-			Point next_p (stylus_point_get_x (next_sp),
-				      stylus_point_get_y (next_sp));
+			Point p (sp->GetX (), sp->GetY ());
+			Point next_p (next_sp->GetX (), next_sp->GetY ());
 			
 			if (HitTestSegmentSegment (p1, p2,
 						   w, h,
@@ -476,8 +467,8 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 	StylusPoint *sp = stylusPoints->GetValueAt (0)->AsStylusPoint ();
 	Point cur, next;
 	
-	cur.x = stylus_point_get_x (sp);
-	cur.y = stylus_point_get_y (sp);
+	cur.x = sp->GetX ();
+	cur.y = sp->GetY ();
 	
 	if (stylusPoints->GetCount () < 2) {
 		// singleton input point to match against
@@ -499,8 +490,8 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 	
 	for (int i = 1; i < stylusPoints->GetCount (); i++) {
 		sp = stylusPoints->GetValueAt (i)->AsStylusPoint ();
-		next.x = stylus_point_get_x (sp);
-		next.y = stylus_point_get_y (sp);
+		next.x = sp->GetX ();
+		next.y = sp->GetY ();
 		
 		if (HitTestEndcapSegment (p, w, h, cur, next))
 			return true;
@@ -520,7 +511,7 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 bool
 Stroke::HitTest (StylusPointCollection *stylusPoints)
 {
-	StylusPointCollection *myStylusPoints = stroke_get_stylus_points (this);
+	StylusPointCollection *myStylusPoints = GetStylusPoints ();
 	
 	if (myStylusPoints->GetCount () == 0) {
 #if DEBUG_HITTEST
@@ -529,16 +520,16 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 		return false;
 	}
 	
-	DrawingAttributes *da = stroke_get_drawing_attributes (this);
+	DrawingAttributes *da = GetDrawingAttributes ();
 	StylusPoint *sp;
 	
 	double height, width;
 
 	if (da) {
-		height = drawing_attributes_get_height (da);
-		width = drawing_attributes_get_width (da);
+		height = da->GetHeight ();
+		width = da->GetWidth ();
 
-		Color *col = drawing_attributes_get_outline_color (da);
+		Color *col = da->GetOutlineColor ();
 		if (col->a != 0x00) {
 			height += 4.0;
 			width += 4.0;
@@ -556,8 +547,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	for (int i = 0; i < stylusPoints->GetCount (); i++) {
 		sp = stylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
-		fprintf (stderr, "\t\tPoint: (%f, %f)\n", stylus_point_get_x (sp),
-			stylus_point_get_y (sp));
+		fprintf (stderr, "\t\tPoint: (%f, %f)\n", sp->GetX (), sp->GetY ());
 	}
 	
 	fprintf (stderr, "\tStroke points:\n");
@@ -565,8 +555,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	for (int i = 0; i < myStylusPoints->GetCount (); i++) {
 		sp = myStylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
-		fprintf (stderr, "\t\tPoint: (%f, %f)\n", stylus_point_get_x (sp),
-			stylus_point_get_y (sp));
+		fprintf (stderr, "\t\tPoint: (%f, %f)\n", sp->GetX (), sp->GetY ());
 	}
 #endif	
 	if (!GetBounds ().IntersectsWith (stylusPoints->GetBounds ()))
@@ -575,8 +564,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	/* test the beginning endcap */
 	sp = myStylusPoints->GetValueAt (0)->AsStylusPoint ();
 	
-	if (HitTestEndcap (Point (stylus_point_get_x (sp),
-				  stylus_point_get_y (sp)),
+	if (HitTestEndcap (Point (sp->GetX (), sp->GetY ()),
 			   width, height, stylusPoints)) {
 #if DEBUG_HITTEST
 		fprintf (stderr, "\tA point matched the beginning endcap\n");
@@ -589,10 +577,8 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	for (int i = 1; i < myStylusPoints->GetCount (); i++) {
 		sp = myStylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
-		if (HitTestSegment (Point (stylus_point_get_x (prev_point),
-					   stylus_point_get_y (prev_point)),
-				    Point (stylus_point_get_x (sp),
-					   stylus_point_get_y (sp)),
+		if (HitTestSegment (Point (prev_point->GetX (), prev_point->GetY ()),
+				    Point (sp->GetX (), sp->GetY ()),
 				    width, height, stylusPoints)) {
 #if DEBUG_HITTEST
 			fprintf (stderr, "\tA point matched an interior line segment\n");
@@ -605,8 +591,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	if (myStylusPoints->GetCount () > 1) {
 		sp = myStylusPoints->GetValueAt (myStylusPoints->GetCount () - 1)->AsStylusPoint ();
 		
-		if (HitTestEndcap (Point (stylus_point_get_x (sp),
-					  stylus_point_get_y (sp)),
+		if (HitTestEndcap (Point (sp->GetX (), sp->GetY ()),
 				   width, height, stylusPoints)) {
 #if DEBUG_HITTEST
 			fprintf (stderr, "\tA point matched the ending endcap\n");
@@ -625,14 +610,14 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 void
 Stroke::AddStylusPointToBounds (StylusPoint *stylus_point)
 {
-	DrawingAttributes *da = stroke_get_drawing_attributes (this);
+	DrawingAttributes *da = GetDrawingAttributes ();
 	double height, width;
 
 	if (da) {
-		height = drawing_attributes_get_height (da);
-		width = drawing_attributes_get_width (da);
-
-		Color *col = drawing_attributes_get_outline_color (da);
+		height = da->GetHeight ();
+		width = da->GetWidth ();
+		
+		Color *col = da->GetOutlineColor ();
 		if (col->a != 0x00) {
 			height += 4.0;
 			width += 4.0;
@@ -642,8 +627,8 @@ Stroke::AddStylusPointToBounds (StylusPoint *stylus_point)
 		height = width = 6.0;
 
 	}
-	bounds = bounds.Union (Rect (stylus_point_get_x (stylus_point) - width / 2,
-				     stylus_point_get_y (stylus_point) - height / 2,
+	bounds = bounds.Union (Rect (stylus_point->GetX () - width / 2,
+				     stylus_point->GetY () - height / 2,
 				     width, height));
 }
 
@@ -652,7 +637,7 @@ Stroke::ComputeBounds ()
 {
 	bounds = Rect (0,0,0,0);
 
-	StylusPointCollection *spc = stroke_get_stylus_points (this);
+	StylusPointCollection *spc = GetStylusPoints ();
 	if (!spc)
 		return;
 	
@@ -723,42 +708,32 @@ Stroke::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-DrawingAttributes*
-stroke_get_drawing_attributes (Stroke *stroke)
+void
+Stroke::SetDrawingAttributes (DrawingAttributes *attrs)
 {
-	Value *value = stroke->GetValue (Stroke::DrawingAttributesProperty);
+	SetValue (Stroke::DrawingAttributesProperty, Value (attrs));
+}
+
+DrawingAttributes *
+Stroke::GetDrawingAttributes ()
+{
+	Value *value = GetValue (Stroke::DrawingAttributesProperty);
+	
 	return value ? value->AsDrawingAttributes () : NULL;
 }
 
 void
-stroke_set_drawing_attributes (Stroke *stroke, DrawingAttributes *attributes)
+Stroke::SetStylusPoints (StylusPointCollection *points)
 {
-	stroke->SetValue (Stroke::DrawingAttributesProperty, Value (attributes));
+	SetValue (Stroke::StylusPointsProperty, Value (points));
 }
 
-StylusPointCollection*
-stroke_get_stylus_points (Stroke *stroke)
+StylusPointCollection *
+Stroke::GetStylusPoints ()
 {
-	Value *value = stroke->GetValue (Stroke::StylusPointsProperty);
-	return (value ? value->AsStylusPointCollection () : NULL);
-}
-
-void
-stroke_set_stylus_points (Stroke *stroke, StylusPointCollection* collection)
-{
-	stroke->SetValue (Stroke::StylusPointsProperty, Value (collection));
-}
-
-void
-stroke_get_bounds (Stroke *stroke, Rect *bounds)
-{
-	*bounds = stroke->GetBounds ();
-}
-
-bool
-stroke_hit_test (Stroke *stroke, StylusPointCollection *stylusPointCollection)
-{
-	return stroke->HitTest (stylusPointCollection);
+	Value *value = GetValue (Stroke::StylusPointsProperty);
+	
+	return value ? value->AsStylusPointCollection () : NULL;
 }
 
 Rect
@@ -790,67 +765,6 @@ StrokeCollection::HitTest (StylusPointCollection *stylusPoints)
 	return result;
 }
 
-void
-stroke_collection_get_bounds (StrokeCollection *col, Rect *bounds)
-{
-	*bounds = col->GetBounds();
-}
-
-StrokeCollection* 
-stroke_collection_hit_test (StrokeCollection* col, StylusPointCollection* stylusPointCollection)
-{
-	return col->HitTest (stylusPointCollection);
-}
-
-
-Color*
-drawing_attributes_get_color (DrawingAttributes* da)
-{
-	return da->GetValue (DrawingAttributes::ColorProperty)->AsColor();
-}
-
-void
-drawing_attributes_set_color (DrawingAttributes* da, Color *color)
-{
-	da->SetValue (DrawingAttributes::ColorProperty, Value (*color));
-}
-
-Color*
-drawing_attributes_get_outline_color (DrawingAttributes* da)
-{
-	return da->GetValue (DrawingAttributes::OutlineColorProperty)->AsColor();
-}
-
-void
-drawing_attributes_set_outline_color (DrawingAttributes* da, Color *color)
-{
-	da->SetValue (DrawingAttributes::OutlineColorProperty, Value (*color));
-}
-
-double
-drawing_attributes_get_height (DrawingAttributes* da)
-{
-	return da->GetValue (DrawingAttributes::HeightProperty)->AsDouble();
-}
-
-void
-drawing_attributes_set_height (DrawingAttributes* da, double height)
-{
-	da->SetValue (DrawingAttributes::HeightProperty, Value (height));
-}
-
-double
-drawing_attributes_get_width (DrawingAttributes* da)
-{
-	return da->GetValue (DrawingAttributes::WidthProperty)->AsDouble();
-}
-
-void
-drawing_attributes_set_width (DrawingAttributes* da, double width)
-{
-	da->SetValue (DrawingAttributes::WidthProperty, Value (width));
-}
-
 static void
 drawing_attributes_quick_render (cairo_t *cr, double thickness, Color *color, StylusPointCollection *collection)
 {
@@ -861,16 +775,16 @@ drawing_attributes_quick_render (cairo_t *cr, double thickness, Color *color, St
 		return;
 	
 	sp = collection->GetValueAt (0)->AsStylusPoint ();
-	x = stylus_point_get_x (sp);
-	y = stylus_point_get_y (sp);
+	x = sp->GetX ();
+	y = sp->GetY ();
 	
 	cairo_move_to (cr, x, y);
 	
 	if (collection->GetCount () > 1) {
 		for (int i = 1; i < collection->GetCount (); i++) {
 			sp = collection->GetValueAt (i)->AsStylusPoint ();
-			x = stylus_point_get_x (sp);
-			y = stylus_point_get_y (sp);
+			x = sp->GetX ();
+			y = sp->GetY ();
 			
 			cairo_line_to (cr, x, y);
 		}
@@ -902,10 +816,10 @@ DrawingAttributes::Render (cairo_t *cr, StylusPointCollection *collection)
 	if (!collection)
 		return;
 
-	double height = drawing_attributes_get_height (this);
-	double width = drawing_attributes_get_width (this);
-	Color *color = drawing_attributes_get_color (this);
-	Color *outline = drawing_attributes_get_outline_color (this);
+	double height = GetHeight ();
+	double width = GetWidth ();
+	Color *color = GetColor ();
+	Color *outline = GetOutlineColor ();
 	
 	// we can render very quickly if the pen is round, i.e. Width==Height (circle)
 	// and when no OutlineColor are specified (e.g. NULL, transparent)
@@ -925,6 +839,58 @@ DrawingAttributes::RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointColle
 	drawing_attributes_quick_render (cr, 2.0, NULL, collection);
 }
 
+void
+DrawingAttributes::SetColor (Color *color)
+{
+	SetValue (DrawingAttributes::ColorProperty, Value (*color));
+}
+
+Color *
+DrawingAttributes::GetColor ()
+{
+	Value *value = GetValue (DrawingAttributes::ColorProperty);
+	
+	return value ? value->AsColor () : NULL;
+}
+
+void
+DrawingAttributes::SetOutlineColor (Color *color)
+{
+	SetValue (DrawingAttributes::OutlineColorProperty, Value (*color));
+}
+
+Color *
+DrawingAttributes::GetOutlineColor ()
+{
+	Value *value = GetValue (DrawingAttributes::OutlineColorProperty);
+	
+	return value ? value->AsColor () : NULL;
+}
+
+void
+DrawingAttributes::SetHeight (double height)
+{
+	SetValue (DrawingAttributes::HeightProperty, Value (height));
+}
+
+double
+DrawingAttributes::GetHeight ()
+{
+	return GetValue (DrawingAttributes::HeightProperty)->AsDouble ();
+}
+
+void
+DrawingAttributes::SetWidth (double width)
+{
+	SetValue (DrawingAttributes::WidthProperty, Value (width));
+}
+
+double
+DrawingAttributes::GetWidth ()
+{
+	return GetValue (DrawingAttributes::WidthProperty)->AsDouble ();
+}
+
 InkPresenter::InkPresenter ()
 {
 	SetValue (InkPresenter::StrokesProperty, Value::CreateUnref (new StrokeCollection ()));
@@ -937,12 +903,8 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	if (!front_to_back || !UseBackToFront ()) {
 		RenderChildren (cr, region);
 	}
-
-	Value *value = GetValue (InkPresenter::StrokesProperty);
-	if (!value)
-		return;
-
-	StrokeCollection *strokes = value->AsStrokeCollection ();
+	
+	StrokeCollection *strokes = GetStrokes ();
 	if (!strokes)
 		return;
 
@@ -954,11 +916,9 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	for (int i = 0; i < strokes->GetCount (); i++) {
 		Stroke *stroke = strokes->GetValueAt (i)->AsStroke ();
 		
-		value = stroke->GetValue (Stroke::DrawingAttributesProperty);
-		DrawingAttributes *da = value ? value->AsDrawingAttributes () : NULL;
+		DrawingAttributes *da = stroke->GetDrawingAttributes ();
 		
-		value = stroke->GetValue (Stroke::StylusPointsProperty);
-		StylusPointCollection *spc = value ? value->AsStylusPointCollection () : NULL;
+		StylusPointCollection *spc = stroke->GetStylusPoints ();
 		
 		if (da) {
 			da->Render (cr, spc);
@@ -1056,12 +1016,8 @@ InkPresenter::ComputeBounds ()
 	Canvas::ComputeBounds ();
 
 	render_bounds = bounds;
-
-	Value* value = GetValue (InkPresenter::StrokesProperty);
-	if (!value)
-		return;
-
-	StrokeCollection *strokes = value->AsStrokeCollection ();
+	
+	StrokeCollection *strokes = GetStrokes ();
 	if (!strokes)
 		return;
 
@@ -1091,15 +1047,16 @@ InkPresenter::ShiftPosition (Point p)
 	render_bounds.y += dy;
 }
 
-StrokeCollection*
-ink_presenter_get_strokes (InkPresenter *ink_presenter)
+void
+InkPresenter::SetStrokes (StrokeCollection *strokes)
 {
-	Value *value = ink_presenter->GetValue (InkPresenter::StrokesProperty);
-	return (value ? value->AsStrokeCollection () : NULL);
+	SetValue (InkPresenter::StrokesProperty, Value (strokes));
 }
 
-void
-ink_presenter_set_strokes (InkPresenter *ink_presenter, StrokeCollection* collection)
+StrokeCollection *
+InkPresenter::GetStrokes ()
 {
-	ink_presenter->SetValue (InkPresenter::StrokesProperty, Value (collection));
+	Value *value = GetValue (InkPresenter::StrokesProperty);
+	
+	return value ? value->AsStrokeCollection () : NULL;
 }

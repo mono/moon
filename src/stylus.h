@@ -18,8 +18,6 @@
 #include "canvas.h"
 #include "collection.h"
 
-G_BEGIN_DECLS
-
 enum TabletDeviceType {
 	TabletDeviceTypeMouse,
 	TabletDeviceTypeStylus,
@@ -41,14 +39,17 @@ class StylusInfo : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusInfo () { }
 	
-	virtual Type::Kind GetObjectType () { return Type::STYLUSINFO; };
+	virtual Type::Kind GetObjectType () { return Type::STYLUSINFO; }
+	
+	//
+	// Property Accessors
+	//
+	void SetDeviceType (TabletDeviceType type);
+	TabletDeviceType GetDeviceType ();
+	
+	void SetIsInverted (bool inverted);
+	bool GetIsInverted ();
 };
-
-TabletDeviceType stylus_info_get_device_type (StylusInfo *stylus_info);
-void	stylus_info_set_device_type	(StylusInfo *stylus_info, TabletDeviceType type);
-
-bool	stylus_info_get_inverted	(StylusInfo *stylus_info);
-void	stylus_info_set_inverted	(StylusInfo *stylus_info, bool inverted);
 
 
 /* @Namespace=None */
@@ -68,17 +69,20 @@ class StylusPoint : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPoint () { }
 	
-	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT; };
+	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT; }
+	
+	//
+	// Property Accessors
+	//
+	void SetPressureFactor (double factor);
+	double GetPressureFactor ();
+	
+	void SetX (double x);
+	double GetX ();
+	
+	void SetY (double y);
+	double GetY ();
 };
-
-double	stylus_point_get_x (StylusPoint *stylus_point);
-void	stylus_point_set_x (StylusPoint *stylus_point, double x);
-
-double	stylus_point_get_y (StylusPoint *stylus_point);
-void	stylus_point_set_y (StylusPoint *stylus_point, double y);
-
-double	stylus_point_get_pressure_factor (StylusPoint *stylus_point);
-void	stylus_point_set_pressure_factor (StylusPoint *stylus_point, double pressure);
 
 
 /* @Namespace=System.Windows.Input */
@@ -100,8 +104,6 @@ class StylusPointCollection : public DependencyObjectCollection {
 	Rect GetBounds ();
 };
 
-double stylus_point_collection_add_stylus_points (StylusPointCollection *col, StylusPointCollection *stylusPointCollection);
-
 
 /* @Namespace=System.Windows.Ink */
 class DrawingAttributes : public DependencyObject {
@@ -121,23 +123,26 @@ class DrawingAttributes : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	DrawingAttributes () { }
 	
-	virtual Type::Kind GetObjectType () { return Type::DRAWINGATTRIBUTES; };
-
-	void Render (cairo_t *cr, StylusPointCollection* collection);
-	static void RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointCollection* collection);
+	virtual Type::Kind GetObjectType () { return Type::DRAWINGATTRIBUTES; }
+	
+	void Render (cairo_t *cr, StylusPointCollection *collection);
+	static void RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointCollection *collection);
+	
+	//
+	// Property Accessors
+	//
+	void SetColor (Color *color);
+	Color *GetColor ();
+	
+	void SetOutlineColor (Color *color);
+	Color *GetOutlineColor ();
+	
+	void SetHeight (double height);
+	double GetHeight ();
+	
+	void SetWidth (double width);
+	double GetWidth ();
 };
-
-Color  *drawing_attributes_get_color (DrawingAttributes *da);
-void	drawing_attributes_set_color (DrawingAttributes *da, Color *color);
-
-Color  *drawing_attributes_get_outline_color (DrawingAttributes *da);
-void	drawing_attributes_set_outline_color (DrawingAttributes *da, Color *color);
-
-double	drawing_attributes_get_height (DrawingAttributes *da);
-void	drawing_attributes_set_height (DrawingAttributes *da, double height);
-
-double	drawing_attributes_get_width (DrawingAttributes *da);
-void	drawing_attributes_set_width (DrawingAttributes *da, double width);
 
 
 /* @Namespace=System.Windows.Ink */
@@ -168,8 +173,8 @@ class Stroke : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Stroke ();
 
-	virtual Type::Kind GetObjectType () { return Type::STROKE; };
-
+	virtual Type::Kind GetObjectType () { return Type::STROKE; }
+	
 	Rect GetBounds ();
 	Rect GetOldBounds ();
 	bool HitTest (StylusPointCollection *stylusPoints);
@@ -178,16 +183,16 @@ class Stroke : public DependencyObject {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	
+	//
+	// Property Accessors
+	//
+	void SetDrawingAttributes (DrawingAttributes *attrs);
+	DrawingAttributes *GetDrawingAttributes ();
+	
+	void SetStylusPoints (StylusPointCollection *points);
+	StylusPointCollection *GetStylusPoints ();
 };
-
-DrawingAttributes     *stroke_get_drawing_attributes (Stroke *stroke);
-void                   stroke_set_drawing_attributes (Stroke *stroke, DrawingAttributes *attributes);
-
-StylusPointCollection *stroke_get_stylus_points (Stroke *stroke);
-void                   stroke_set_stylus_points (Stroke *stroke, StylusPointCollection *collection);
-
-void                   stroke_get_bounds (Stroke *stroke, Rect *bounds);
-bool                   stroke_hit_test (Stroke *stroke, StylusPointCollection *stylusPointCollection);
 
 
 /* @Namespace=System.Windows.Ink */
@@ -208,9 +213,6 @@ class StrokeCollection : public DependencyObjectCollection {
 	StrokeCollection *HitTest (StylusPointCollection *stylusPoints);
 };
 
-void              stroke_collection_get_bounds (StrokeCollection *col, Rect *bounds);
-StrokeCollection *stroke_collection_hit_test (StrokeCollection *col, StylusPointCollection *stylusPointCollection);
-
 
 /* @Namespace=System.Windows.Controls */
 class InkPresenter : public Canvas {
@@ -226,8 +228,8 @@ class InkPresenter : public Canvas {
 	/* @GenerateCBinding,GeneratePInvoke */
 	InkPresenter ();
 	
-	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; };
-
+	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; }
+	
 	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
@@ -238,11 +240,12 @@ class InkPresenter : public Canvas {
 	virtual Rect GetRenderBounds ();
 
 	virtual void ShiftPosition (Point p);
+	
+	//
+	// Property Accessors
+	//
+	void SetStrokes (StrokeCollection *strokes);
+	StrokeCollection *GetStrokes ();
 };
-
-StrokeCollection *ink_presenter_get_strokes (InkPresenter *ink_presenter);
-void ink_presenter_set_strokes (InkPresenter *ink_presenter, StrokeCollection *collection);
-
-G_END_DECLS
 
 #endif /* MOON_STYLUS_H */

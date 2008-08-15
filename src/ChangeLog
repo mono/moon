@@ -1,3 +1,9 @@
+2008-08-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* stylus.cpp: Added c++ property accessors and updated the code to
+	use them (cleans up some code) and also got rid of the c binding
+	accessors. We'll autogenerate these.
+
 2008-08-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* layout.cpp: Don't add kerning before a dot (.). This match SL

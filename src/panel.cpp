@@ -120,12 +120,12 @@ Panel::ComputeBounds ()
 				continue;
 			
 			Rect r = item->GetSubtreeBounds ();
-				
+			
 			r = IntersectBoundsWithClipPath (r, true);
 #if DEBUG_BOUNDS
 			space (levelb + 4);
-			printf ("Item (%s, %s) bounds %g %g %g %g\n", 
-				dependency_object_get_name (item), item->GetTypeName(),r.x, r.y, r.w, r.h);
+			printf ("Item (%s, %s) bounds %g %g %g %g\n", item->GetName (), item->GetTypeName ()
+				r.x, r.y, r.w, r.h);
 #endif
 			if (i > 0)
 				bounds_with_children = bounds_with_children.Union (r);

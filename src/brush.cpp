@@ -1240,7 +1240,7 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 		DependencyObject *obj;
 		const char *name;
 		
-		name = video_brush_get_source_name (this);
+		name = GetSourceName ();
 		
 		if (name == NULL || *name == '\0')
 			return;
