@@ -857,7 +857,7 @@ UIElement::GetTriggers ()
 {
 	Value *value = GetValue (UIElement::TriggersProperty);
 	
-	return value ? value->AsTriggersCollection () : NULL;
+	return value ? value->AsTriggerCollection () : NULL;
 }
 
 void

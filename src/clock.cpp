@@ -419,7 +419,7 @@ TimeManager::SourceTick ()
 			now = get_now ();
 			//fired++;
 		} while (remaining_tick_calls && now < target);
-		
+
 		if (remaining_tick_calls) {
 			flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
 			//printf ("Render Statistics:\n");
