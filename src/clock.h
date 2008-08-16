@@ -490,6 +490,9 @@ class TimeManager : public EventObject {
 	GList *registered_timeouts;
 };
 
+void time_manager_add_tick_call (TimeManager *manager, TickCallHandler handler, EventObject *obj);
+guint time_manager_add_timeout (TimeManager *manager, guint32 interval, GSourceFunc handler, gpointer obj);
+void time_manager_remove_timeout (TimeManager *manager, guint32 source_id);
 
 /* @Namespace=System.Windows.Media.Animation */
 class Timeline : public DependencyObject {
