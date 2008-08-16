@@ -26,11 +26,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.ComponentModel;
+using System.Globalization;
+using System.Windows;
+
 namespace System.Windows.Data {
 
 	public class Binding {
 		string path;
-		
+
+		public Binding ()
+		{
+		}
+
 		public Binding (string path)
 		{
 			this.path = path;
@@ -40,5 +48,16 @@ namespace System.Windows.Data {
 
 		public IValueConverter Converter { get; set; }
 
+		public bool NotifyOnValidationError { get; set; }
+
+		public bool ValidatesOnExceptions { get; set; }
+
+		public CultureInfo ConverterCulture { get; set; }
+		public object ConverterParameter { get; set; }
+
+		public object Source { get; set; }
+
+		[TypeConverter (typeof (PropertyPathConverter))]
+		public PropertyPath Path { get; set; }
 	}
 }
