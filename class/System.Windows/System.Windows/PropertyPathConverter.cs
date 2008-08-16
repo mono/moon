@@ -1,5 +1,5 @@
 //
-// VisualTransition.cs
+// PropertyPathConverter.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -26,29 +26,42 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
 using System.ComponentModel;
-using System.Windows.Markup;
-using System.Windows.Media.Animation;
+using System.Windows.Controls;
 
-namespace System.Windows {
-
-	[ContentPropertyAttribute("Storyboard")]
-	public class VisualTransition
+namespace System.Windows
+{
+	public sealed class PropertyPathConverter : TypeConverter
 	{
-		public VisualTransition()
+		public PropertyPathConverter ()
 		{
-			throw new NotImplementedException ();
 		}
 
-		[TypeConverterAttribute(typeof(DurationConverter))]
-		public Duration Duration {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+#if NET_2_1
+		override
+#endif
+		public bool CanConvertFrom (Type sourceType)
+		{
+			return TypeConverters.CanConvertFrom<PropertyPath>(sourceType);
 		}
 
-		public string From { get; set; }
-		public Storyboard Storyboard { get; set; }
-		public string To { get; set; }
+#if NET_2_1
+		override
+#endif
+		public object ConvertFrom (object value)
+		{
+			return TypeConverters.ConvertFrom<PropertyPath>(this, value);
+		}
+
+#if NET_2_1
+		override
+#endif
+		public object ConvertFromString (string text)
+		{
+			return (!string.IsNullOrEmpty(text)) ?
+				new PropertyPath(text) :
+				null;
+		}
 	}
-
 }

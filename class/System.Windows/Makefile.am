@@ -6,7 +6,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:System.Core -r:Mono.Moonlight -d:AGCLR -unsafe
+CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:Mono.Moonlight -d:AGCLR -unsafe
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
@@ -84,7 +84,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/ColorKeyFrameCollection.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DiscreteColorKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DiscreteDoubleKeyFrame.cs	\
-	$(srcdir)/System.Windows.Media.Animation/DiscreteObjectKeyFrame.cs		\
+	$(srcdir)/System.Windows.Media.Animation/DiscreteObjectKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DiscretePointKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DoubleKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleKeyFrameCollection.cs	\
@@ -103,20 +103,21 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs		\
 	$(srcdir)/System.Windows/Application.cs					\
-	$(srcdir)/System.Windows/ApplicationInternal.cs					\
+	$(srcdir)/System.Windows/ApplicationInternal.cs				\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
 	$(srcdir)/System.Windows/CornerRadius.cs				\
-	$(srcdir)/System.Windows/CustomDependencyProperty.cs				\
+	$(srcdir)/System.Windows/CustomDependencyProperty.cs			\
 	$(srcdir)/System.Windows/CrossDomainAccess.cs				\
 	$(srcdir)/System.Windows/DataTemplate.cs				\
 	$(srcdir)/System.Windows/Deployment.cs					\
 	$(srcdir)/System.Windows/DependencyObject.cs				\
 	$(srcdir)/System.Windows/DependencyObject.g.cs				\
 	$(srcdir)/System.Windows/DependencyProperty.cs				\
-	$(srcdir)/System.Windows/DependencyProperty.g.cs				\
+	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
+	$(srcdir)/System.Windows/DurationConverter.cs				\
 	$(srcdir)/System.Windows/Duration.cs					\
 	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs			\
 	$(srcdir)/System.Windows/ExceptionRoutedEventHandler.cs			\
@@ -141,6 +142,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/PropertyChangedCallback.cs			\
 	$(srcdir)/System.Windows/PropertyMetadata.cs				\
+	$(srcdir)/System.Windows/PropertyPathConverter.cs			\
 	$(srcdir)/System.Windows/PropertyPath.cs				\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
 	$(srcdir)/System.Windows/Rect.cs					\
@@ -185,7 +187,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
 	$(srcdir)/System.Windows.Documents/Run.cs				\
 	$(srcdir)/System.Windows.Markup/XamlParseException.cs			\
-	$(srcdir)/System.Windows.Markup/XamlReader.cs		\
+	$(srcdir)/System.Windows.Markup/XamlReader.cs				\
 	$(srcdir)/System.Windows.Markup/XmlLanguage.cs				\
 	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
@@ -198,7 +200,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/Color.cs					\
 	$(srcdir)/System.Windows.Media/Colors.cs				\
 	$(srcdir)/System.Windows.Media/ColorInterpolationMode.cs		\
-	$(srcdir)/System.Windows.Media/DeepZoomImageTileSource.cs			\
+	$(srcdir)/System.Windows.Media/DeepZoomImageTileSource.cs		\
 	$(srcdir)/System.Windows.Media/DoubleCollection.cs			\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
 	$(srcdir)/System.Windows.Media/FillRule.cs				\

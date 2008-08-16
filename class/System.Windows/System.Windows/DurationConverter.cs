@@ -1,5 +1,5 @@
 //
-// VisualTransition.cs
+// DurationConverter.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -26,29 +26,49 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
 using System.ComponentModel;
-using System.Windows.Markup;
-using System.Windows.Media.Animation;
+using System.Windows.Controls;
 
-namespace System.Windows {
-
-	[ContentPropertyAttribute("Storyboard")]
-	public class VisualTransition
+namespace System.Windows
+{
+	public sealed class DurationConverter : TypeConverter
 	{
-		public VisualTransition()
+		public DurationConverter ()
 		{
-			throw new NotImplementedException ();
 		}
 
-		[TypeConverterAttribute(typeof(DurationConverter))]
-		public Duration Duration {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+#if NET_2_1
+		override
+#endif
+		public bool CanConvertFrom (Type sourceType)
+		{
+			return TypeConverters.CanConvertFrom<Duration>(sourceType);
 		}
 
-		public string From { get; set; }
-		public Storyboard Storyboard { get; set; }
-		public string To { get; set; }
+#if NET_2_1
+		override
+#endif
+		public object ConvertFrom (object value)
+		{
+			return TypeConverters.ConvertFrom<Duration>(this, value);
+		}
+
+		[MonoTODO("we need unit tests for this")]
+#if NET_2_1
+		override
+#endif
+		public object ConvertFromString (string text)
+		{
+			if (string.IsNullOrEmpty(text))
+				return Duration.Automatic;
+
+			if (text.ToLower () == "automatic")
+				return Duration.Automatic;
+			else if (text.ToLower () == "forever")
+				return Duration.Forever;
+			else
+				return new Duration(TimeSpan.Parse (text));
+		}
 	}
-
 }
