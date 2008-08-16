@@ -779,10 +779,10 @@ namespace System.Windows.Documents {
 
 namespace System.Windows.Ink {
 	partial class DrawingAttributes {
-		public static readonly DependencyProperty ColorProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Color", typeof (Color));
-		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Height", typeof (double));
-		public static readonly DependencyProperty OutlineColorProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "OutlineColor", typeof (Color));
-		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Width", typeof (double));
+		private static readonly DependencyProperty ColorProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Color", typeof (Color));
+		private static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Height", typeof (double));
+		private static readonly DependencyProperty OutlineColorProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "OutlineColor", typeof (Color));
+		private static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.DRAWINGATTRIBUTES, "Width", typeof (double));
 
 		public Color Color {
 			get { return (Color) GetValue (ColorProperty); }
@@ -806,8 +806,8 @@ namespace System.Windows.Ink {
 	}
 
 	partial class Stroke {
-		public static readonly DependencyProperty DrawingAttributesProperty = DependencyProperty.Lookup (Kind.STROKE, "DrawingAttributes", typeof (DrawingAttributes));
-		public static readonly DependencyProperty StylusPointsProperty = DependencyProperty.Lookup (Kind.STROKE, "StylusPoints", typeof (StylusPointCollection));
+		private static readonly DependencyProperty DrawingAttributesProperty = DependencyProperty.Lookup (Kind.STROKE, "DrawingAttributes", typeof (DrawingAttributes));
+		private static readonly DependencyProperty StylusPointsProperty = DependencyProperty.Lookup (Kind.STROKE, "StylusPoints", typeof (StylusPointCollection));
 
 		public DrawingAttributes DrawingAttributes {
 			get { return (DrawingAttributes) GetValue (DrawingAttributesProperty); }

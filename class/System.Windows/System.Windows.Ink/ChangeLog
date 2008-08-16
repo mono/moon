@@ -1,3 +1,7 @@
+2008-08-15  Chris Toshok  <toshok@ximian.com>
+
+	* Stroke.cs: add SecuritySafeCriticals.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DrawingAttributes.cs, Stroke.cs, StrokeCollection.cs: Generate public

@@ -111,13 +111,13 @@ class DrawingAttributes : public DependencyObject {
 	virtual ~DrawingAttributes () {}
 
  public:
-	/* @PropertyType=Color,DefaultValue=Color (0xFF000000) */
+	/* @PropertyType=Color,DefaultValue=Color (0xFF000000),ManagedFieldAccess=Private */
 	static DependencyProperty *ColorProperty;
-	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
+	/* @PropertyType=Color,DefaultValue=Color (0x00000000),ManagedFieldAccess=Private */
 	static DependencyProperty *OutlineColorProperty;
-	/* @PropertyType=double,DefaultValue=3.0 */
+	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private */
 	static DependencyProperty *HeightProperty;
-	/* @PropertyType=double,DefaultValue=3.0 */
+	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private*/
 	static DependencyProperty *WidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -165,9 +165,9 @@ class Stroke : public DependencyObject {
 	virtual ~Stroke () {}
 	
  public:
-	/* @PropertyType=DrawingAttributes */
+	/* @PropertyType=DrawingAttributes,ManagedFieldAccess=Private */
 	static DependencyProperty *DrawingAttributesProperty;
-	/* @PropertyType=StylusPointCollection */
+	/* @PropertyType=StylusPointCollection,ManagedFieldAccess=Private */
 	static DependencyProperty *StylusPointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -1,3 +1,7 @@
+2008-08-15  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyProperty.g.cs: regen.
+
 2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyProperty.g.cs: KeyTimeProperty isn't nullable in managed
