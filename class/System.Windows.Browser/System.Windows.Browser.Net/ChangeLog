@@ -1,3 +1,10 @@
+2008-08-17  Geoff Norton  <gnorton@novell.com>
+
+	* BrowserHttpWebRequest.cs: Updated to emit firefox calls on the main thread
+	and use the new DownloaderRequest mechanism.
+	* BrowserHttpWebResponse.cs: Setup to use a MemoryStream driven by the data
+	available callback.
+
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* BrowserHttpWebRequest.cs: Moved and stubbed stuff according to SL2B2.

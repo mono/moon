@@ -29,11 +29,13 @@
 #if NET_2_1
 
 using System;
+using System.Threading;
 using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Windows.Interop;
+using System.Runtime.InteropServices;
 
 using Mono;
 using Mono.Xaml;
@@ -50,6 +52,7 @@ namespace System.Windows.Browser.Net
 		MemoryStream request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
+		ManualResetEvent wait_handle = new ManualResetEvent (false);
 
 		public BrowserHttpWebRequest (Uri uri)
 		{
@@ -88,24 +91,45 @@ namespace System.Windows.Browser.Net
 
 		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
 		{
-			InitializeNativeRequest ();
+			NativeMethods.TickCallHandler tch = new NativeMethods.TickCallHandler (InitializeNativeRequest);
+
+			NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (NativeMethods.plugin_instance_get_surface (PluginHost.Handle)), tch, IntPtr.Zero);
+
+			wait_handle.WaitOne ();
 
 			async_result = new BrowserHttpWebAsyncResult (callback, state);
-
-//			if (!NativeMethods.browser_http_request_get_async_response (native, OnAsyncResponseAvailable, IntPtr.Zero))
-//				throw new InvalidOperationException ();
 
 			return async_result;
 		}
 
-		void OnAsyncResponseAvailable (IntPtr native, IntPtr context)
+		uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
 		{
 			try {
 				async_result.Response = new BrowserHttpWebResponse (this, native);
+			} catch (Exception e) {
+				async_result.Exception = e;
+			}
+			return 0;
+		}
+
+		uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
+		{
+			try {
 				async_result.SetComplete ();
 			} catch (Exception e) {
 				async_result.Exception = e;
 			}
+			return 0;
+		}
+
+		uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
+		{
+			try {
+				async_result.Response.Write (data, (int) length);
+			} catch (Exception e) {
+				async_result.Exception = e;
+			}
+			return 0;
 		}
 
 		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
@@ -129,7 +153,6 @@ namespace System.Windows.Browser.Net
 			response = async_result.Response;
 			async_result.Dispose ();
 
-			response.Read ();
 			return response;
 		}
 
@@ -145,7 +168,7 @@ namespace System.Windows.Browser.Net
 		{
 			//FIXME: there's most probably a better way to do this.
 
-			string uri = HtmlPage.Document.DocumentUri.AbsoluteUri;
+			string uri = Marshal.PtrToStringAnsi (NativeMethods.plugin_instance_get_source_location (PluginHost.Handle));
 			return new Uri (uri.Substring (0, uri.LastIndexOf ("/") + 1));
 		}
 
@@ -154,7 +177,7 @@ namespace System.Windows.Browser.Net
 			return new Uri (GetBaseUri (), uri);
 		}
 
-		void InitializeNativeRequest ()
+		void InitializeNativeRequest (IntPtr context)
 		{
 			if (native != IntPtr.Zero)
 				return;
@@ -173,6 +196,10 @@ namespace System.Windows.Browser.Net
 				byte [] body = request.ToArray ();
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
+			
+			NativeMethods.downloader_request_get_response (native, OnAsyncResponseStarted, OnAsyncDataAvailable, OnAsyncResponseFinished, IntPtr.Zero);
+
+			wait_handle.Set ();
 		}
 
 //		public HttpWebResponse GetResponse ()

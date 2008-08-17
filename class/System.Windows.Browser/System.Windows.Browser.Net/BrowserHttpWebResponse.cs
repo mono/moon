@@ -32,6 +32,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Runtime.InteropServices;
 
 using Mono;
 
@@ -52,19 +53,16 @@ namespace System.Windows.Browser.Net
 		{
 			this.request = request;
 			this.native = native;
+			this.response = new MemoryStream ();
 
 			if (native == IntPtr.Zero)
 				return;
-
-			NativeMethods.browser_http_response_visit_headers (native, OnHttpHeader);
 		}
 
 		~BrowserHttpWebResponse ()
 		{
 			if (native == IntPtr.Zero)
 				return;
-
-			NativeMethods.browser_http_response_destroy (native);
 		}
 
 		void OnHttpHeader (string name, string value)
@@ -85,24 +83,16 @@ namespace System.Windows.Browser.Net
 				Close ();
 		}
 
-		internal void Read ()
+		internal void Write (IntPtr buffer, int count)
 		{
-			int size;
-			IntPtr p = NativeMethods.browser_http_response_read (native, out size);
-
-			byte [] data = new byte [size];
-			unsafe {
-				using (Stream stream = new SimpleUnmanagedMemoryStream ((byte *) p, size))
-					stream.Read (data, 0, size);
-			}
-
-			Helper.FreeHGlobal (p);
-
-			response = new MemoryStream (data);
+			byte[] data = new byte [count];
+			Marshal.Copy (buffer, data, 0, count);
+			response.Write (data, 0, count);
 		}
 
 		public override Stream GetResponseStream ()
 		{
+			response.Seek (0, SeekOrigin.Begin);
 			return response;
 		}
 
