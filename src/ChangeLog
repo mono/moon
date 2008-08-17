@@ -1,5 +1,9 @@
 2008-08-17  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h, frameworkelement.h: can't use SL_2_0 in headers.
+
+2008-08-17  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (libmoon_include_HEADERS): INCLUDE_MONO_RUNTIME ->
 	INCLUDE_MANAGED_CODE.
 

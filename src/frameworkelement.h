@@ -74,7 +74,6 @@ class FrameworkElement : public UIElement {
 	void SetWidth (double width);
 	double GetWidth ();
 	
-#if SL_2_0
 	//
 	// 2.0 methods
 	//
@@ -103,7 +102,6 @@ class FrameworkElement : public UIElement {
 	const static int SizeChangedEvent;
 	// XXX 2.0 also has the Loaded event moved here from
 	// UIElement.
-#endif
 };
 
 #endif /* __MOON_FRAMEWORKELEMENT_H__ */

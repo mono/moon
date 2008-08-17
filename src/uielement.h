@@ -40,6 +40,7 @@ class UIElement : public DependencyObject {
 	UIElement *visual_parent;
 	double total_opacity;
 	Brush *opacityMask;
+	Size desired_size;
 	
  protected:
 	virtual ~UIElement ();
@@ -385,15 +386,13 @@ class UIElement : public DependencyObject {
 		return *vu->AsPoint ();
 	}
 
-#if SL_2_0
 	//
 	// 2.0 methods
 	//
-	Size desired_size;
-	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Measure (Size availableSize)
 	{
-		desired_size = MeasureCore (availableSize);
+		desired_size = MeasureCore (availableSize)
 	}
 
 	virtual Size MeasureCore (Size availableSize)
@@ -402,7 +401,6 @@ class UIElement : public DependencyObject {
 	}
 
 	GeneralTransform *GetTransformToUIElement (UIElement *to_element);
-#endif
 	
  	/* @PropertyType=Geometry */
 	static DependencyProperty *ClipProperty;
@@ -479,11 +477,9 @@ UIElement *uielement_get_parent           (UIElement *item);
 
 void       uielement_set_surface          (UIElement *item, Surface* surface);
 
-#if SL_2_0
 GeneralTransform *uielement_get_transform_to_uielement (UIElement *from, UIElement *to);
 
 Size       uielement_get_desired_size     (UIElement *item);
-#endif
 
 bool       uielement_capture_mouse         (UIElement *item);
 void       uielement_release_mouse_capture (UIElement *item);
