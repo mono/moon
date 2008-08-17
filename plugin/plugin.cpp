@@ -1662,6 +1662,12 @@ plugin_instance_get_source  (PluginInstance *instance)
 	return instance->GetSource();
 }
 
+char*
+plugin_instance_get_source_location  (PluginInstance *instance)
+{
+	return instance->GetSourceLocation();
+}
+
 void
 plugin_instance_get_browser_information (PluginInstance *instance,
 					 char **name, char **version,

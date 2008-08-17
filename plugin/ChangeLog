@@ -1,3 +1,7 @@
+2008-08-17  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp|h: Add a C binding for GetSourceLocation ()
+
 2008-08-17  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp, plugin-class.cpp, mono.cpp, plugin-proxy.cpp,
