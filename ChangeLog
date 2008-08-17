@@ -1,3 +1,35 @@
+2008-08-17  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: rework the SL2 checks so that we can enable
+	browser (2.1) assemblies separate from the desktop (3.0)
+	assemblies.
+
+	1) new configure arg --with-managed replaces --with-mono.  It's
+	not yes/no only.  It allows for: "yes" (both desktop and browser),
+	"no" (neither), "desktop" (just desktop), and "browser" (just
+	browser.)
+
+	2) replace the INCLUDE_MONO_RUNTIME AM_CONDITIONAL with 3 distinct
+	ones.  INCLUDE_MANAGED_CODE (for when either desktop/browser are
+	enabled), INCLUDE_BROWSER_MANAGED_CODE (for when 2.1 is enabled),
+	and INCLUDE_DESKTOP_MANAGED_CODE (for when 3.0 is enabled.)
+
+	3) add a SL_PLUGIN_2_0 AC_DEFINE alongside the SL_2_0 one that's
+	already there, to deal with the fact that if you don't enable the
+	browser assemblies, we need to build a 1.0-only plugin.  But this
+	plugin might be talking to a 2.0-enabled core (due to desktop
+	assemblies being enabled.)
+
+	4) clean up the configuration output at the end to show
+	everything.
+	
+	* Makefile.am (MONO_SUBDIRS): include class/ if
+	INCLUDE_MANAGED_CODE.  also, include the gtk/examples/man/data
+	directories if INCLUDE_DESKTOP_MANAGED_CODE is enabled.
+
+	* tools/Makefile.am: INCLUDE_MONO_RUNTIME ->
+	INCLUDE_DESKTOP_MANAGED_CODE.
+
 2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* moon.mds: Updated.

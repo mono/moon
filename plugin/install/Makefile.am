@@ -27,10 +27,10 @@ novell_moonlight_xpi_CONTENTS += $(avutil_libdir)/libavutil.so \
 
 endif INCLUDE_FFMPEG
 
-if INCLUDE_MONO_RUNTIME
+if INCLUDE_BROWSER_MANAGED_CODE
 novell_moonlight_xpi_CONTENTS += ../moonlight.exe \
 				$(srcdir)/../moon.config
-endif INCLUDE_MONO_RUNTIME
+endif INCLUDE_BROWSER_MANAGED_CODE
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	-rm -f $@
@@ -53,7 +53,7 @@ if INCLUDE_FFMPEG
 	cp -L $(avutil_libdir)/libavutil.so .xpinstall/plugins/moonlight/
 	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/plugins/moonlight/
 endif INCLUDE_FFMPEG
-if INCLUDE_MONO_RUNTIME
+if INCLUDE_BROWSER_MANAGED_CODE
 	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/
 	cp -L ../moonlight.exe .xpinstall/plugins/moonlight/
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.1/
@@ -64,7 +64,7 @@ if INCLUDE_MONO_RUNTIME
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
 	cp -L $(srcdir)/../moon.config .xpinstall/plugins/moonlight/mono/config
 	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/plugins/moonlight/mono/2.0/
-endif INCLUDE_MONO_RUNTIME
+endif INCLUDE_BROWSER_MANAGED_CODE
 	find .xpinstall -name \*.so -exec strip '{}' ';'
 	cd .xpinstall/ && zip -r9 ../$@ *
 

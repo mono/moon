@@ -5,7 +5,7 @@ mopen1_SOURCES = $(srcdir)/mopen1.cpp
 INCLUDES = $(MOON_PROG_CFLAGS) -Wall
 LIBS = $(MOON_PROG_LIBS)
 
-if INCLUDE_MONO_RUNTIME
+if INCLUDE_DESKTOP_MANAGED_CODE
 moon_DATA = mopen.exe mopen.exe.mdb mopen.exe.config
 
 bin_SCRIPTS = mopen
@@ -19,7 +19,7 @@ CLEANFILES = mopen mopen.exe mopen.exe.mdb
 DISTCLEANFILES=$(CLEANFILES)
 
 mopen_exe_CS = 	$(srcdir)/mopen.cs		\
-               	$(srcdir)/CompositeHelper.cs	\
+		$(srcdir)/CompositeHelper.cs	\
 		$(srcdir)/../Options.cs
 
 mopen.exe mopen.exe.mdb: $(mopen_exe_CS) $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(top_builddir)/gtk/gtksilver.dll

@@ -1,3 +1,12 @@
+2008-08-17  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (SUBDIRS): don't include
+	Microsoft.SilverlightControls in the build here.  add a dist-hook
+	that copies the directory tree.
+
+	Also, split up the 2.1/3.0 stuff here so we only do the things we
+	need to.
+
 2008-08-08  Fernando Herrera  <fherrera@novell.com>
 
 	* Makefile.am: Add Microsoft.SilverlightControls.

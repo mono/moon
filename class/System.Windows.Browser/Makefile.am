@@ -1,6 +1,12 @@
 assembly = System.Windows.Browser
+
+if INCLUDE_BROWSER_MANAGED_CODE
 assemblysl = ../lib/2.1/$(assembly).dll
+endif
+
+if INCLUDE_DESKTOP_MANAGED_CODE
 assemblydesktop = ../lib/3.0/$(assembly).dll
+endif
 
 assemblies = $(assemblysl) $(assemblydesktop)
 
@@ -76,9 +82,21 @@ clean-local:
 	-rm -rf $(assemblies) 
 	-rm -rf *.dll *.mdb tester.cs
 
-install-data-local:
-	$(GACUTIL) /i $(assemblydesktop) /f /package 3.0
+if INCLUDE_BROWSER_MANAGED_CODE
+install-sl:
 	$(GACUTIL) /i $(assemblysl)      /f /package 2.1
+else
+install-sl:
+endif
+
+if INCLUDE_DESKTOP_MANAGED_CODE
+install-desktop:
+	$(GACUTIL) /i $(assemblydesktop) /f /package 3.0
+else
+install-desktop:
+endif
+
+install-data-local: install-sl install-desktop
 
 uninstall-local:
 	$(GACUTIL) /u $(assembly)

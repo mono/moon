@@ -139,7 +139,7 @@ libmoon_la_SOURCES = 		\
 	zip/unzip.h		\
 	zip/crypt.h
 
-if INCLUDE_MONO_RUNTIME
+if INCLUDE_MANAGED_CODE
 libmoon_include_HEADERS += 	\
 	contentcontrol.h	\
 	control.h		\

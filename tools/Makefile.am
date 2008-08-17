@@ -1,5 +1,5 @@
 SUBDIRS = mopen
-if INCLUDE_MONO_RUNTIME
+if INCLUDE_DESKTOP_MANAGED_CODE
 SUBDIRS += xamlg xaml2html respack mxap
 endif
 

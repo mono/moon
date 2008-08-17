@@ -117,16 +117,58 @@ AC_SUBST([MAX_FIREFOX_VERSION])
 AM_CONDITIONAL(HAVE_MOZILLA, test x$with_mozilla = xyes)
 
 dnl
-dnl Mono (Silverlight 2.0) checks
+dnl Mono (both 2.1 and 3.0 profiles) checks
 dnl
-AC_ARG_WITH(mono,[  --with-mono=yes,no   If you want to enable support for Silverlight 2.0],[],[with_mono=no])
-if test x$with_mono = xyes; then
+managed_code=no
+desktop_assemblies=no
+browser_assemblies=no
+
+AC_ARG_WITH(managed,
+	    [ --with-managed=yes/no/browser/desktop   If you want to enable support for managed code.  Default is "no"],
+	    [case "$with_managed" in
+    	     yes)
+	     	 managed_code=yes
+		 desktop_assemblies=yes
+		 browser_assemblies=yes
+	     ;;
+	     browser)
+	         managed_code=yes
+		 browser_assemblies=yes
+	     ;;
+	     desktop)
+	         managed_code=yes
+		 desktop_assemblies=yes
+	     ;;
+	     no)
+	     ;;
+	     *)
+	         AC_MSG_ERROR([Unknown value for --with-managed.  Please specify "yes", "no", "desktop", or "browser"])
+	     ;;
+	     esac],[])
+
+if test x$managed_code = xyes; then
   if pkg-config mono; then
     PKG_CHECK_MODULES(MONO,mono)
-    if pkg-config --variable=Libraries smcs; then
-        PKG_CHECK_MODULES(SMCS,smcs,
-      		    [SMCS_ASM=`pkg-config --variable=Libraries smcs`
-     		     AC_SUBST(SMCS_ASM)])
+    # browser assembly specific checks
+    #
+    # the browser assemblies require smcs
+    if test x$browser_assemblies = xyes; then
+	if pkg-config --variable=Libraries smcs; then
+		PKG_CHECK_MODULES(SMCS,smcs,
+				  [SMCS_ASM=`pkg-config --variable=Libraries smcs`
+				  AC_SUBST(SMCS_ASM)])
+        else
+            browser_assemblies = no
+	    browser_reason="(reason: could not find smcs package, Mono >= 1.9 not installed)"
+	fi
+    fi
+
+    # desktop assembly specific checks
+    #
+    # desktop assemblies/tools require gtk-sharp-2.0 and an
+    # rsvg-sharp-2.0 package (name varies with distro)
+    #
+    if test x$desktop_assemblies = xyes; then
         rsvg_sharp_pcs="rsvg-sharp-2.0 rsvg2-sharp-2.0"
         for pc in $rsvg_sharp_pcs; do
             PKG_CHECK_EXISTS($pc,[rsvg_sharp=$pc])
@@ -136,22 +178,42 @@ if test x$with_mono = xyes; then
             PKG_CHECK_MODULES(RSVGSHARP,$rsvg_sharp,[
             		    RSVG_SHARP=$rsvg_sharp
           		    AC_SUBST(RSVG_SHARP)])
-            AC_DEFINE([SL_2_0],[1],[Enable Silverlight 2.0 support)])
         else
-	    with_mono=no
-	    mreason="(reason: gtk-sharp-2.0 or rsvg-sharp-2.0 is missing)"
+	    desktop_assemblies=no
+	    desktop_reason="(reason: gtk-sharp-2.0 or rsvg-sharp-2.0 is missing)"
 	fi
-    else
-        with_mono=no
-	mreason="(reason: Mono newer than 1.9 not installed)"
     fi
+
+    if test x$desktop_assemblies = xno -a x$browser_assemblies = xno; then
+	# if browser and desktop failed to configure, disable managed code
+	# entirely
+        managed_code=no
+	managed_reason="(reason: desktop and browser assemblies failed to configure)"
+    else
+	# we need 2 AC_DEFINES to deal with the case where the src/
+	# dir might need to have managed code support enabled (with
+	# --enable-desktop-assemblies), but the plugin/ dir might need
+	# to have it disabled (for --disable-desktop-assemblies).
+	AC_DEFINE([SL_2_0],[1],[Enable Silverlight 2.0 support in the runtime])
+	if test $browser_assemblies = yes; then
+	    AC_DEFINE([SL_PLUGIN_2_0],[1],[Enable Silverlight 2.0 support for the plugin])
+	fi
+    fi
+
   else
-    mreason="(reason: Mono newer than 1.9 not installed)"
+    # mono.pc wasn't found at all
+    managed_code=no
+    browser_assemblies=no
+    desktop_assemblies=no
+
+    managed_reason="(reason: Mono >= 1.9 not installed)"
+    browser_reason="(reason: Mono >= 1.9 not installed)"
+    desktop_reason="(reason: Mono >= 1.9 not installed)"
   fi
-else
-    mreason="(reason: disabled at configure time)"
 fi
-AM_CONDITIONAL(INCLUDE_MONO_RUNTIME,test x$with_mono = xyes)
+AM_CONDITIONAL(INCLUDE_MANAGED_CODE,test x$managed_code = xyes)
+AM_CONDITIONAL(INCLUDE_BROWSER_MANAGED_CODE,test x$browser_assemblies = xyes)
+AM_CONDITIONAL(INCLUDE_DESKTOP_MANAGED_CODE,test x$desktop_assemblies = xyes)
 
 dnl
 dnl Cairo checks
@@ -467,16 +529,32 @@ plugin/test/Makefile
 plugin/samples/Makefile
 ])
 
+# general configuration info
 cat <<EOF
 Moonlight configuration:
 
-	Support for 1.0: yes
-	Support for 2.0: $with_mono $mreason
 	Support for ffmpeg: $with_ffmpeg $ffmpeg_warning
 	Support for running the test harness: $with_testing
 	Using cairo: $with_cairo
+EOF
+
+# silverlight version info
+cat <<EOF
+	Support for Silverlight 1.0: yes
+	  Silverlight 1.0 bug compatibility: $with_compatibility_bugs
+	Support for Silverlight 2.0 (managed code): $managed_code $managed_reason
+EOF
+
+if test x$managed_code = xyes; then
+cat <<EOF
+          Browser plugin assemblies: $browser_assemblies $browser_reason
+          Desktop application assemblies: $desktop_assemblies $desktop_reason
+EOF
+fi
+
+# plugin installer/bridge info
+cat <<EOF
 	Support for Firefox: $with_mozilla
-	With Silverlight 1.0 bugs: $with_compatibility_bugs
 EOF
 
 if test x$with_mozilla = xyes; then
@@ -484,10 +562,10 @@ cat <<EOF
           Support for plugin installer: $user_plugin
           Support for Gecko 1.8 (Firefox 2): $with_ff2
           Support for Gecko 1.9 (Firefox 3): $with_ff3
-
 EOF
-else
+fi
+
+# blank line
 cat <<EOF
 
 EOF
-fi

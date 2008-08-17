@@ -13,7 +13,7 @@ pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
 
 pluginlib_DATA=README
 
-if INCLUDE_MONO_RUNTIME
+if INCLUDE_BROWSER_MANAGED_CODE
 pluginlib_DATA += moonlight.exe moonlight.exe.mdb
 endif
 
@@ -88,7 +88,7 @@ all-local:
 
 moonlight_CS=  $(srcdir)/moonlight.cs
 
-if INCLUDE_MONO_RUNTIME
+if INCLUDE_BROWSER_MANAGED_CODE
 moonlight.exe moonlight.exe.mdb: $(moonlight_CS) $(top_builddir)/class/lib/2.1/Mono.Moonlight.dll $(top_builddir)/class/lib/2.1/System.Windows.dll
 	$(SMCS) -debug -out:moonlight.exe $(moonlight_CS) -r:$(top_builddir)/class/lib/2.1/Mono.Moonlight.dll -r:$(top_builddir)/class/lib/2.1/System.Windows.dll
 CLEANFILES += moonlight.exe moonlight.exe.mdb
