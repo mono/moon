@@ -40,7 +40,6 @@ class UIElement : public DependencyObject {
 	UIElement *visual_parent;
 	double total_opacity;
 	Brush *opacityMask;
-	Size desired_size;
 	
  protected:
 	virtual ~UIElement ();
@@ -96,6 +95,8 @@ class UIElement : public DependencyObject {
 	cairo_matrix_t parent_transform;
 
 	Point transform_origin;
+
+	Size desired_size;
 
 	virtual TimeManager *GetTimeManager ();
 	
