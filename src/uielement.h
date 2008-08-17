@@ -392,7 +392,7 @@ class UIElement : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Measure (Size availableSize)
 	{
-		desired_size = MeasureCore (availableSize)
+		desired_size = MeasureCore (availableSize);
 	}
 
 	virtual Size MeasureCore (Size availableSize)
