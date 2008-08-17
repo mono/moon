@@ -196,7 +196,7 @@ if test x$managed_code = xyes; then
 	# to have it disabled (for --disable-desktop-assemblies).
 	AC_DEFINE([SL_2_0],[1],[Enable Silverlight 2.0 support in the runtime])
 	if test $browser_assemblies = yes; then
-	    AC_DEFINE([SL_PLUGIN_2_0],[1],[Enable Silverlight 2.0 support for the plugin])
+	    AC_DEFINE([PLUGIN_SL_2_0],[1],[Enable Silverlight 2.0 support for the plugin])
 	fi
     fi
 
