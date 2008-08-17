@@ -194,11 +194,15 @@ namespace Mono {
 #endregion
 
 #region DownloaderRequest
+		public delegate uint DownloaderResponseStartedDelegate (IntPtr native, IntPtr context);
+		public delegate uint DownloaderResponseAvailableDelegate (IntPtr native, IntPtr context, IntPtr data, uint length);
+		public delegate uint DownloaderResponseFinishedDelegate (IntPtr native, IntPtr context, bool success, IntPtr data);
+
 		[DllImport("moon")]
 		public extern static void downloader_request_abort (IntPtr downloader_request);
 
 		[DllImport("moon")]
-		public extern static void downloader_request_get_response (IntPtr downloader_request, IntPtr started, IntPtr available, IntPtr finished, IntPtr context);
+		public extern static void downloader_request_get_response (IntPtr downloader_request, DownloaderResponseStartedDelegate started, DownloaderResponseAvailableDelegate available, DownloaderResponseFinishedDelegate finished, IntPtr context);
 
 		[DllImport("moon")]
 		public extern static bool downloader_request_is_aborted (IntPtr downloader_request);
@@ -312,6 +316,9 @@ namespace Mono {
 
 		[DllImport("moonplugin")]
 		public extern static IntPtr plugin_instance_get_source (IntPtr plugin_handle);
+		
+		[DllImport("moonplugin")]
+		public extern static IntPtr plugin_instance_get_source_location (IntPtr plugin_handle);
 
 		[DllImport("moonplugin")]
 		public extern static int plugin_instance_get_actual_height (IntPtr plugin_handle);
