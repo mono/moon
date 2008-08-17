@@ -11,7 +11,7 @@
  *
  */
 
-#if SL_2_0
+#if PLUGIN_SL_2_0
 G_BEGIN_DECLS
 
 bool vm_is_loaded (void);

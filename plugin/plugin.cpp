@@ -371,7 +371,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	
 	vm_missing_file = NULL;
 	xaml_loader = NULL;
-#if SL_2_0
+#if PLUGIN_SL_2_0
 	xap_loaded = false;
 #endif
 	plugin_unload = NULL;
@@ -421,7 +421,7 @@ PluginInstance::~PluginInstance ()
 	g_free (id);
 	delete xaml_loader;
 
-#if SL_2_0
+#if PLUGIN_SL_2_0
 	// Destroy the XAP application
 	DestroyApplication ();
 #endif
@@ -1032,7 +1032,7 @@ PluginInstance::LoadXAML ()
 	}
 }
 
-#if SL_2_0
+#if PLUGIN_SL_2_0
 //
 // Loads a XAP file
 //
@@ -1276,7 +1276,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		if (xaml_loader != NULL)
 			delete xaml_loader;
 	
-#if SL_2_0
+#if PLUGIN_SL_2_0
 		// FIXME horrible hack to test sl2 sites that use the sl1
 		// mimetype.
 		if (IsSilverlight2 ()) {
@@ -1298,7 +1298,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 				xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
 	
 			LoadXAML ();
-#if SL_2_0
+#if PLUGIN_SL_2_0
 		}
 #endif
 	} else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
@@ -1703,7 +1703,7 @@ plugin_instance_evaluate (PluginInstance *instance, const char *code)
 bool
 PluginXamlLoader::LoadVM ()
 {
-#if SL_2_0
+#if PLUGIN_SL_2_0
 	if (!vm_is_loaded ())
 		vm_init ();
 
@@ -1719,7 +1719,7 @@ PluginXamlLoader::InitializeLoader ()
 	if (initialized)
 		return true;
 
-#if SL_2_0
+#if PLUGIN_SL_2_0
 	if (!vm_is_loaded ())
 		return false;
 
@@ -1825,7 +1825,7 @@ PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, Plugi
 	xaml_is_managed = false;
 	initialized = false;
 	error_args = NULL;
-#if SL_2_0
+#if PLUGIN_SL_2_0
 	xap = NULL;
 
 	managed_loader = NULL;
@@ -1834,7 +1834,7 @@ PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, Plugi
 
 PluginXamlLoader::~PluginXamlLoader ()
 {
-#if SL_2_0
+#if PLUGIN_SL_2_0
 	if (xap)
 		delete xap;
 	

@@ -20,7 +20,7 @@ class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
 class BrowserBridge;
-#if SL_2_0
+#if PLUGIN_SL_2_0
 class Xap;
 #endif
 
@@ -167,7 +167,7 @@ class PluginInstance
 	// The XAML loader, contains a handle to a MonoObject *
 	//
 	PluginXamlLoader *xaml_loader;
-#if SL_2_0
+#if PLUGIN_SL_2_0
 	bool xap_loaded;
 #endif
 	
@@ -184,7 +184,7 @@ class PluginInstance
 	void UpdateSource ();
 	void UpdateSourceByReference (const char *value);
 	void LoadXAML ();
-#if SL_2_0
+#if PLUGIN_SL_2_0
 	void LoadXAP  (const char *fname);
 	void DestroyApplication ();
 #endif
@@ -254,7 +254,7 @@ class PluginXamlLoader : public XamlLoader
 	bool initialized;
 	bool xaml_is_managed;
 	
-#if SL_2_0
+#if PLUGIN_SL_2_0
 	gpointer managed_loader;
 	Xap *xap;
 #endif

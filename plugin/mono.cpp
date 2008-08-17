@@ -20,7 +20,7 @@
 #include <dlfcn.h>
 
 #include "moonlight.h"
-#if SL_2_0
+#if PLUGIN_SL_2_0
 #include "moon-mono.h"
 G_BEGIN_DECLS
 #include <mono/jit/jit.h>
