@@ -1,5 +1,11 @@
 2008-08-07  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-set/drtlist.xml:
+	* perf-suite-set/mono.png:
+	* perf-suite-set/scaling-image.html: Adding a scaling image set to have two sane ones.
+
+2008-08-07  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile:
 	* perf-suite-lib/Database.cs: Adding a base core of perf-suite-lib -- a shared part
 	bettwen the perf-suite-runner and perf-suite-generator. Will contain all the database

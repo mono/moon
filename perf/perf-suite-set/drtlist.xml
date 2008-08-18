@@ -6,7 +6,7 @@
 	interval="40"
    />
   <Item id="2"
-	inputFile="rotating-balls.html"
+	inputFile="scaling-image.html"
 	endTime="5000"
 	interval="40"
    />
