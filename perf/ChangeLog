@@ -1,5 +1,10 @@
 2008-08-18  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-lib/Database.cs: Actually do run the query with the
+	limit specified.
+
+2008-08-18  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile.am:
 	* perf-suite-generator/AssemblyInfo.cs:
 	* perf-suite-generator/Options.cs:

@@ -111,12 +111,12 @@ namespace PerfSuiteLib {
 		public static List <ResultDbEntry> GetResultEntriesForItemEntry (ItemDbEntry item, int limit)
 		{
 			IDbCommand cmd = connection.CreateCommand ();
-			// FIXME Limit!
-			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time, passes.id, passes.short_name, passes.author, passes.changelog, passes.date " + 
+			
+			cmd.CommandText = (String.Format ("SELECT results.id, results.item_id, results.pass_id, results.time, passes.id, passes.short_name, passes.author, passes.changelog, passes.date " + 
 					   "FROM results, passes " + 
 					   "WHERE results.pass_id = passes.id AND results.item_id = :it " + 
 					   "ORDER BY passes.date DESC " + 
-					   "LIMIT 50");
+					   "LIMIT {0}", limit));
 
 			IDataParameter p1 = cmd.CreateParameter ();
 			p1.ParameterName = ":it";
