@@ -85,7 +85,8 @@ namespace PerfSuiteGenerator {
 				
 					hasPrevResult = true;
 					prevResult = entry.Time;
-				}
+				} else 
+					cls = "black";
 
 				string html = DetailRowTemplate;
 				html = html.Replace ("@@DETAIL_CLASS@@", cls);
@@ -98,7 +99,12 @@ namespace PerfSuiteGenerator {
 				html = html.Replace ("@@PASS_AUTHOR@@", author);
 				
 				html = html.Replace ("@@DATE@@", entry.Pass.Date.ToString ());
-				html = html.Replace ("@@RESULT@@", (entry.Time / (float) 1000000).ToString ());
+
+				if (! entry.Failure) 
+					html = html.Replace ("@@RESULT@@", (entry.Time / (float) 1000000).ToString ());
+				else
+					html = html.Replace ("@@RESULT@@", "FAILURE");
+
 
 				output = html + output;
 

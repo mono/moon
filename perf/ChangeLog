@@ -1,5 +1,10 @@
 2008-08-13  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-generator/HtmlGenerator.cs:
+	* report.css: Better theming for test run failures.
+
+2008-08-13  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-generator/GraphGenerator.cs:
 	* perf-suite-generator/HtmlGenerator.cs:
 	* perf-suite-lib/ResultDbEntry.cs: Do not treat the failed tests as regressions, 

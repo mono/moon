@@ -77,6 +77,10 @@ h3 {
   background-color: #f00; 
   color: #fff; }
 
+.black {
+  background-color: #000;
+  color: #fff; }
+
 .green {
   background-color: #0f0; 
   color: #fff; }
