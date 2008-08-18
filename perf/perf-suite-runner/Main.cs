@@ -40,11 +40,11 @@ namespace PerfSuiteRunner {
 		{
 			Database.Initialize ();
 
-			PassDbEntry pass = new PassDbEntry ();
-			pass.Description = "TestPass";
-			pass.Date = DateTime.Now;
+			PassDbEntry passEntry = new PassDbEntry ();
+			passEntry.Description = "TestPass";
+			passEntry.Date = DateTime.Now;
 
-			Database.Put (pass);
+			Database.Put (passEntry);
 
 			DrtStore store = new DrtStore ("perf-suite-set/drtlist.xml");
 			foreach (DrtItem item in store.Items) {
@@ -52,9 +52,10 @@ namespace PerfSuiteRunner {
 
 				ItemDbEntry itemEntry = Database.GetItemEntryByUniqueId (item.UniqueId);
 				if (itemEntry == null) {
-					Console.WriteLine ("*** [{0}] not yet in the database, adding...");
+					Console.WriteLine ("*** [{0}] not yet in the database, adding...", item);
 					itemEntry = new ItemDbEntry ();
 					itemEntry.UniqueId = item.UniqueId;
+					itemEntry.Name = item.Name;
 					Database.Put (itemEntry);
 				}
 				
@@ -62,7 +63,7 @@ namespace PerfSuiteRunner {
 				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
 
 				ResultDbEntry resultEntry = new ResultDbEntry ();
-				resultEntry.PassId = pass.Id.ToString ();
+				resultEntry.PassId = passEntry.Id.ToString ();
 				resultEntry.ItemId = itemEntry.Id.ToString ();
 				resultEntry.Time = r.AveragedTime;
 				Database.Put (resultEntry);

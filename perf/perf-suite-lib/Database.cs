@@ -90,7 +90,7 @@ namespace PerfSuiteLib {
 			ExecuteCreateCommand ("INSERT INTO meta VALUES ('1')");
 		
 			ExecuteCreateCommand ("CREATE TABLE passes (id INTEGER PRIMARY KEY, description TEXT, date TEXT)");
-			ExecuteCreateCommand ("CREATE TABLE items (id INTEGER PRIMARY KEY, unique_id TEXT)");
+			ExecuteCreateCommand ("CREATE TABLE items (id INTEGER PRIMARY KEY, unique_id TEXT, name TEXT)");
 			ExecuteCreateCommand ("CREATE TABLE results (id INTEGER PRIMARY KEY, item_id INTEGER, pass_id INTEGER, time INTEGER)");
 		}
 

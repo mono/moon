@@ -1,11 +1,13 @@
 <DrtList>
   <DrtItem uniqueId="1"
+	name="Two rotating balls"
 	inputFile="rotating-balls.html"
 	startTime="0"
 	endTime="5000"
 	interval="40"
    />
   <DrtItem uniqueId="2"
+	name="Simple image scaling"
 	inputFile="scaling-image.html"
 	endTime="5000"
 	interval="40"

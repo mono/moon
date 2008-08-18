@@ -1,5 +1,13 @@
 2008-08-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-lib/Database.cs:
+	* perf-suite-lib/ItemDbEntry.cs:
+	* perf-suite-runner/DrtItem.cs:
+	* perf-suite-runner/Main.cs:
+	* perf-suite-set/drtlist.xml: Adding ability to name the DrtItems.
+
+2008-08-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-runner/DrtResult.cs:
 	* perf-suite-tool/perf-suite-tool.cpp: Results -> DrtResult in the output from
 	the perf-suite-tool.

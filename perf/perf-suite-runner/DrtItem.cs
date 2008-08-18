@@ -40,6 +40,7 @@ namespace PerfSuiteRunner {
 		public int Interval = 40;
 		public string InputFile = String.Empty;
 		public string UniqueId = String.Empty;
+		public string Name = String.Empty;
 
 		public static string ItemsDirectory = "perf-suite-set";
 		public static int Runs = 3;
@@ -67,6 +68,9 @@ namespace PerfSuiteRunner {
 
 			if (node.Attributes ["uniqueId"] != null)
 				UniqueId = node.Attributes ["uniqueId"].Value;
+
+			if (node.Attributes ["name"] != null)
+				Name = node.Attributes ["name"].Value;
 		}
 
 		public bool IsValid ()
@@ -87,6 +91,9 @@ namespace PerfSuiteRunner {
 				return false;
 
 			if (Interval < 0)
+				return false;
+
+			if (Name == String.Empty)
 				return false;
 
 			return true;
@@ -115,7 +122,7 @@ namespace PerfSuiteRunner {
 
 		public override string ToString ()
 		{
-			return String.Format ("{0} - {1}", UniqueId, InputFile);
+			return String.Format ("{0} - {1}", UniqueId, Name);
 		}
 
 	}
