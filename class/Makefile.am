@@ -21,6 +21,7 @@ clean-local:
 	-rm -rf lib
 
 dist-hook:
-	cp -a $(srcdir)/Microsoft.SilverlightControls $(distdir)/Microsoft.SilverlightControls
+	-mkdir $(distdir)/Microsoft.SilverlightControls
+	cp -a $(srcdir)/Microsoft.SilverlightControls/* $(distdir)/Microsoft.SilverlightControls
 	find $(distdir)/Microsoft.SilverlightControls -name .svn | xargs rm -rf
 
