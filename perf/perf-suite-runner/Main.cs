@@ -42,14 +42,14 @@ namespace PerfSuiteRunner {
 			Options opts = new Options ();
 			opts.ProcessArgs (args);
 
-			string passName = opts.Description;
-			
-			Console.WriteLine ("*** Pass name is '{0}'...", passName);
+			Console.WriteLine ("*** Pass name is '{0}'...", opts.ShortName);
 
 			Database.Initialize ();
 
 			PassDbEntry passEntry = new PassDbEntry ();
-			passEntry.Description = passName;
+			passEntry.ShortName = opts.ShortName;
+			passEntry.Author = opts.Author;
+			passEntry.ChangeLog = opts.ChangeLog;
 			passEntry.Date = DateTime.Now;
 
 			Database.Put (passEntry);

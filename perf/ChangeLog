@@ -1,5 +1,14 @@
 2008-08-12  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-generator/HtmlGenerator.cs:
+	* perf-suite-lib/Database.cs:
+	* perf-suite-lib/PassDbEntry.cs:
+	* perf-suite-runner/Main.cs:
+	* perf-suite-runner/Options.cs: Adding author and changelog to the pass fields + 
+	command-line options to specify that. Also changing the pass Description to ShortName.
+
+2008-08-12  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile:
 	* perf-suite-runner/DrtItem.cs:
 	* perf-suite-runner/Main.cs:

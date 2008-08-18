@@ -37,7 +37,7 @@ namespace PerfSuiteGenerator {
 	public static class HtmlGenerator {
 
 		static readonly string DetailRowTemplate = "<div class=\"detail @@DETAIL_CLASS@@\">" + 
-							   "<div class=\"left\">@@PASS_DESCRIPTION@@ @@DATE@@</div>" + 
+							   "<div class=\"left\">@@PASS_SHORT_NAME@@ @@PASS_AUTHOR@@ @@DATE@@</div>" + 
 							   "<div class=\"right\">@@RESULT@@</div>" +
 							   "</div>";
 
@@ -84,7 +84,14 @@ namespace PerfSuiteGenerator {
 
 				string html = DetailRowTemplate;
 				html = html.Replace ("@@DETAIL_CLASS@@", cls);
-				html = html.Replace ("@@PASS_DESCRIPTION@@", entry.Pass.Description);
+				html = html.Replace ("@@PASS_SHORT_NAME@@", entry.Pass.ShortName);
+				
+				string author = String.Empty;
+				if (entry.Pass.Author != String.Empty)
+					author = String.Format ("[{0}]", entry.Pass.Author);
+
+				html = html.Replace ("@@PASS_AUTHOR@@", author);
+				
 				html = html.Replace ("@@DATE@@", entry.Pass.Date.ToString ());
 				html = html.Replace ("@@RESULT@@", (entry.Time / (float) 1000000).ToString ());
 
@@ -104,7 +111,7 @@ namespace PerfSuiteGenerator {
 			PassDbEntry pass = Database.GetLastPass ();
 
 			html = html.Replace ("@@GENERATED_DATE@@", DateTime.Now.ToString ());
-			html = html.Replace ("@@LAST_PASS_DATE@@", String.Format ("{0} ({1})", pass.Date.ToString (), pass.Description));
+			html = html.Replace ("@@LAST_PASS_DATE@@", String.Format ("{0} ({1})", pass.Date.ToString (), pass.ShortName));
 			return html;
 		}
 

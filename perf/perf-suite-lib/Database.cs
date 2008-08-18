@@ -97,7 +97,7 @@ namespace PerfSuiteLib {
 		{
 			IDbCommand cmd = connection.CreateCommand ();
 			// FIXME Limit!
-			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time, passes.id, passes.description, passes.date " + 
+			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time, passes.id, passes.short_name, passes.author, passes.changelog, passes.date " + 
 					   "FROM results, passes " + 
 					   "WHERE results.pass_id = passes.id AND results.item_id = :it " + 
 					   "ORDER BY passes.date DESC " + 
@@ -144,7 +144,7 @@ namespace PerfSuiteLib {
 			ExecuteCreateCommand ("CREATE TABLE meta (version INTEGER)");
 			ExecuteCreateCommand ("INSERT INTO meta VALUES ('1')");
 		
-			ExecuteCreateCommand ("CREATE TABLE passes (id INTEGER PRIMARY KEY, description TEXT, date TEXT)");
+			ExecuteCreateCommand ("CREATE TABLE passes (id INTEGER PRIMARY KEY, short_name TEXT, author TEXT, changelog TEXT, date TEXT)");
 			ExecuteCreateCommand ("CREATE TABLE items (id INTEGER PRIMARY KEY, unique_id TEXT, name TEXT, input_file TEXT)");
 			ExecuteCreateCommand ("CREATE TABLE results (id INTEGER PRIMARY KEY, item_id INTEGER, pass_id INTEGER, time INTEGER)");
 		}

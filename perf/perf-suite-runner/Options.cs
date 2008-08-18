@@ -38,8 +38,14 @@ namespace PerfSuiteRunner {
 	public class Options : Mono.GetOptions.Options {
 
 		// Long option is the variable name ("--file"), short option is -f
-		[Option ("A test run description", 'd', "description")]
-		public string Description = "Unknown";
+		[Option ("A test run short name (ie. revision number)", 'n', "short-name")]
+		public string ShortName = "Unknown";
+
+		[Option ("Author of the commit (or last change)", 'a', "author")]
+		public string Author = String.Empty;
+
+		[Option ("Changelog entry related to this pass", 'c', "changelog")]
+		public string ChangeLog = String.Empty;
 
 		public Options ()
 		{

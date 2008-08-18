@@ -34,14 +34,18 @@ namespace PerfSuiteLib {
 
 	public class PassDbEntry : DbEntry {
 
-		public string Description;
+		public string ShortName = String.Empty;
+		public string Author = String.Empty;
+		public string ChangeLog = String.Empty;
 		public DateTime Date;
 
 		public PassDbEntry (IDataReader reader, int index)
 		{
 			id = Convert.ToInt32 (reader [0 + index]);
-			Description = (string) reader [1 + index];
-			Date = new DateTime (Convert.ToInt64 ((string) reader [2 + index]));
+			ShortName = (string) reader [1 + index];
+			Author = (string) reader [2 + index];
+			ChangeLog = (string) reader [3 + index];
+			Date = new DateTime (Convert.ToInt64 ((string) reader [4 + index]));
 		}
 
 		public PassDbEntry ()
@@ -50,16 +54,18 @@ namespace PerfSuiteLib {
 
 		public override void CreateCommand (ref IDbCommand command)
 		{
-			AddParameter (command, ":description", Description);
-			AddParameter (command, ":date", Date.Ticks);
+			AddParameter (command, ":sn", ShortName);
+			AddParameter (command, ":a", Author);
+			AddParameter (command, ":cl", ChangeLog);
+			AddParameter (command, ":d", Date.Ticks);
 
 			command.CommandText = ("INSERT INTO passes VALUES " +
-					       "(null, :description, :date)");
+					       "(null, :sn, :a, :cl, :d)");
 		}
 
 		public override bool IsValid ()
 		{
-			if (Description == String.Empty)
+			if (ShortName == String.Empty)
 				return false;
 
 			return true;
