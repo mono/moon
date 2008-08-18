@@ -482,6 +482,10 @@ namespace Mono {
 		public extern static IntPtr media_attribute_new ();
 
 		[DllImport ("moon")]
+		// MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *instance, const char *name);
+		public extern static IntPtr media_attribute_collection_get_item_by_name (IntPtr instance, string name);
+
+		[DllImport ("moon")]
 		// MediaAttributeCollection *media_attribute_collection_new ();
 		public extern static IntPtr media_attribute_collection_new ();
 
@@ -494,8 +498,20 @@ namespace Mono {
 		public extern static IntPtr media_element_new ();
 
 		[DllImport ("moon")]
+		// void media_element_pause (MediaElement *instance);
+		public extern static void media_element_pause (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void media_element_play (MediaElement *instance);
+		public extern static void media_element_play (IntPtr instance);
+
+		[DllImport ("moon")]
 		// void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);
 		public extern static void media_element_set_stream_source (IntPtr instance, ref ManagedStreamCallbacks stream);
+
+		[DllImport ("moon")]
+		// void media_element_stop (MediaElement *instance);
+		public extern static void media_element_stop (IntPtr instance);
 
 		[DllImport ("moon")]
 		// bool mouse_event_args_get_handled (MouseEventArgs *instance);
@@ -832,6 +848,11 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Types *types_new ();
 		public extern static IntPtr types_new ();
+
+		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in typegen.cs and add the missing case) and try again.
+		// [DllImport ("moon")]
+		// void uielement_measure (UIElement *instance, Size availableSize);
+		// public extern static void uielement_measure (IntPtr instance, /* Unknown: 'Size' */ availableSize);
 
 		[DllImport ("moon")]
 		// UIElement *uielement_new ();

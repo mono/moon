@@ -140,29 +140,12 @@ namespace Mono {
 		
 		[DllImport("moon")]
 		public extern static void collection_iterator_destroy (IntPtr iterator);
-
-		[DllImport("moon")]
-		public extern static IntPtr media_attribute_collection_get_item_by_name (IntPtr collection, string name);
-
+		
 		[DllImport("moon")]
 		public extern static void stroke_collection_get_bounds (IntPtr native, ref UnmanagedRect urect);
 
 		[DllImport("moon")]
 		public extern static void stroke_get_bounds (IntPtr native, ref UnmanagedRect urect);
-#endregion
-		
-#region MediaElement
-		[DllImport("moon")]
-		public extern static IntPtr media_element_stop (IntPtr native);
-		
-		[DllImport("moon")]
-		public extern static IntPtr media_element_play (IntPtr native);
-		
-		[DllImport("moon")]
-		public extern static IntPtr media_element_pause (IntPtr native);
-		
-		[DllImport("moon")]
-		public extern static IntPtr media_element_set_source (IntPtr native, IntPtr downloader, string PartName);		
 #endregion
 		
 #region Constructors
