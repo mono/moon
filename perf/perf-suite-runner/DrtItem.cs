@@ -132,7 +132,7 @@ namespace PerfSuiteRunner {
 			try {
 				string tmpFileName = Path.GetTempFileName ();
 
-				string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5} -t {6} -w {7} -h {8}", 
+				string arguments = String.Format ("-f \"{0}\" -s \"{1}\" -e \"{2}\" -i \"{3}\" -n \"{4}\" -r \"{5}\" -t \"{6}\" -w \"{7}\" -h \"{8}\"", 
 								  FullFileName, 
 								  StartTime, 
 								  EndTime, 
