@@ -30,20 +30,41 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace PerfSuiteRunner {
 
-	public static class PerfSuiteRunner {
+	public class Result {
 
-		public static int Main (string [] args)
-		{
-			DrtStore store = new DrtStore ("perf-suite-set/drtlist.xml");
-			foreach (DrtItem item in store.Items) {
-				Console.WriteLine ("*** Running [{0}]", item);
-				Result r = item.Run ();
-				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
+		public List <long> TimesList = new List <long> ();
+
+		public long AveragedTime {
+			get {
+				long sum = 0;
+				foreach (long time in TimesList) {
+					sum += time;
+				} 
+
+				// FIXME Use an avarage of two best results
+				return sum / TimesList.Count;
 			}
-			return 0;
+		}
+
+		/* CONSTRUCTOR */
+		public Result (string fileName)
+		{
+			using (StreamReader streamReader = File.OpenText (fileName)) {
+				XmlDocument document = new XmlDocument ();
+				document.Load (streamReader);
+                
+				foreach (XmlNode node in document.GetElementsByTagName ("Run")) {
+					if (node.Attributes ["time"] != null) {
+						long time = Convert.ToInt64 (node.Attributes ["time"].Value);
+						if (time != 0)
+							TimesList.Add (time);
+					}
+				}
+			}
 		}
 
 	}

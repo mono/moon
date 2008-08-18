@@ -92,15 +92,16 @@ namespace PerfSuiteRunner {
 			return true;
 		}
 
-		public void Run ()
+		public Result Run ()
 		{
 			// FIXME: Crappy for now
-			string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4}", 
+			string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5}", 
 							  FullFileName, 
 							  StartTime, 
 							  EndTime, 
 							  Interval, 
-							  Runs);
+							  Runs, 
+							  "tmp.xml");
 
 			Process proc = new Process();
 			proc.EnableRaisingEvents = false; 
@@ -108,6 +109,8 @@ namespace PerfSuiteRunner {
 			proc.StartInfo.Arguments = arguments;
 			proc.Start();
 			proc.WaitForExit();
+
+			return new Result ("tmp.xml");
 		}
 
 		public override string ToString ()
