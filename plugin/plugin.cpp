@@ -764,7 +764,7 @@ PluginInstance::CreateWindow ()
 	moon_window->SetSurface (surface);
 
 	if (windowless)
-		surface->SetTrans (true);
+		surface->SetTransparent (true);
 
 	if (onError != NULL) {
 		char *retval = NPN_strdup (onError);
