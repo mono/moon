@@ -1,0 +1,3 @@
+2008-08-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* IsolatedStorageSettings.cs: New. Starting point (stub).
