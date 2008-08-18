@@ -1,5 +1,9 @@
 2008-08-13  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-generator/HtmlGenerator.cs: Pad the results in details section.
+
+2008-08-13  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-runner/DrtItem.cs:
 	* perf-suite-set/drtlist.xml: Make it possible to specify the number of runs.
 

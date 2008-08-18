@@ -101,7 +101,7 @@ namespace PerfSuiteGenerator {
 				html = html.Replace ("@@DATE@@", entry.Pass.Date.ToString ());
 
 				if (! entry.Failure) 
-					html = html.Replace ("@@RESULT@@", (entry.Time / (float) 1000000).ToString ());
+					html = html.Replace ("@@RESULT@@", String.Format ("{0:0.000}", (entry.Time / (float) 1000000)));
 				else
 					html = html.Replace ("@@RESULT@@", "FAILURE");
 
