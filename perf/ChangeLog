@@ -1,5 +1,10 @@
 2008-08-12  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-generator/HtmlGenerator.cs:
+	* report.css: Slightly upgrading the CSS theming.
+
+2008-08-12  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-runner/DrtItem.cs:
 	* perf-suite-runner/Main.cs: Use temporary directory for XML output of the test tool.
 

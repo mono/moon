@@ -70,29 +70,19 @@ h3 {
   clear: both;
   font-size: 8pt;
   font-family: DejaVu Sans Mono, Courier New, monospace;
-  height: 8pt; }
+  height: 8pt; 
+}
+  
+.red {
+  background-color: #f00; 
+  color: #fff; }
 
-.red-detail {
-  padding: 3pt;
-  margin: 3pt;
-  background-color: #eee;
-  color: #f00;
-  clear: both;
-  font-size: 8pt;
-  font-family: DejaVu Sans Mono, Courier New, monospace;
-  height: 8pt; }
+.green {
+  background-color: #0f0; 
+  color: #fff; }
 
-.green-detail {
-  padding: 3pt;
-  margin: 3pt;
-  background-color: #eee;
-  color: #0f0;
-  clear: both;
-  font-size: 8pt;
-  font-family: DejaVu Sans Mono, Courier New, monospace;
-  height: 8pt; }
-
-
+.normal {
+}
 
 .left {
   float: left;

@@ -36,7 +36,7 @@ namespace PerfSuiteGenerator {
 
 	public static class HtmlGenerator {
 
-		static readonly string DetailRowTemplate = "<div class=\"@@DETAIL_CLASS@@\">" + 
+		static readonly string DetailRowTemplate = "<div class=\"detail @@DETAIL_CLASS@@\">" + 
 							   "<div class=\"left\">@@PASS_DESCRIPTION@@ @@DATE@@</div>" + 
 							   "<div class=\"right\">@@RESULT@@</div>" +
 							   "</div>";
@@ -76,11 +76,11 @@ namespace PerfSuiteGenerator {
 
 				string cls;
 				if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) > 0.1)
-					cls = "red-detail";
+					cls = "red";
 				else if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) < -0.1)
-					cls = "green-detail";
+					cls = "green";
 				else
-					cls = "detail";
+					cls = "normal";
 
 				string html = DetailRowTemplate;
 				html = html.Replace ("@@DETAIL_CLASS@@", cls);
