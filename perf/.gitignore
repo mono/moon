@@ -1,0 +1,10 @@
+/*exe
+/*dll
+/*.mdb
+/Makefile.in
+/Makefile
+/*.o
+/.libs
+/.deps
+/perf-tool
+/results.db
