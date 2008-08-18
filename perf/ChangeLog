@@ -1,3 +1,8 @@
+2008-08-08  Michael Dominic K.  <mdk@mdk.am>
+
+	* perf-suite-lib/Database.cs:
+	* perf-suite-lib/DbEntry.cs: Put pass information in the database.
+
 2008-08-07  Michael Dominic K.  <mdk@mdk.am>
 
 	* Makefile:

@@ -59,7 +59,9 @@ namespace PerfSuiteLib {
 
 			IDbCommand cmd = connection.CreateCommand ();
 			entry.CreateCommand (ref cmd);
+
 			cmd.ExecuteNonQuery ();
+			entry.GiveId (connection.LastInsertRowId);
 		}
 
 		private static void CreateTables ()

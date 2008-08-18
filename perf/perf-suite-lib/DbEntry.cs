@@ -34,17 +34,17 @@ namespace PerfSuiteLib {
 
 	public abstract class DbEntry {
 
-		protected string id = String.Empty;
+		protected int id = -1;
 
-		public string Id { 
+		public int Id { 
 			get { return id; }
 		}
 
 		public bool IsInTheDatabase {
-			get { return (id != String.Empty); }
+			get { return (id != -1); }
 		}
 
-		public void GiveId (string id)
+		public void GiveId (int id)
 		{
 			this.id = id;
 		}
