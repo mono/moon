@@ -153,7 +153,7 @@ class EventObject {
 	virtual const char *GetTypeName ()
 	{
 		return Type::Find (GetObjectType ())->GetName ();
-	}
+	}	
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	int AddHandler (const char *event_name, EventHandler handler, gpointer data);

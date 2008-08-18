@@ -588,6 +588,9 @@ MediaAttribute *media_attribute_new (void);
  * MediaAttributeCollection
  **/
 /* @GeneratePInvoke */
+MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *instance, const char *name);
+
+/* @GeneratePInvoke */
 MediaAttributeCollection *media_attribute_collection_new (void);
 
 /**
@@ -602,10 +605,19 @@ MediaBase *media_base_new (void);
 /* @GeneratePInvoke */
 MediaElement *media_element_new (void);
 
+/* @GeneratePInvoke */
+void media_element_pause (MediaElement *instance);
+
+/* @GeneratePInvoke */
+void media_element_play (MediaElement *instance);
+
 #if SL_2_0
 /* @GeneratePInvoke */
 void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);
 #endif
+
+/* @GeneratePInvoke */
+void media_element_stop (MediaElement *instance);
 
 /**
  * MouseEventArgs
@@ -1094,6 +1106,9 @@ Types *types_new (void);
 /**
  * UIElement
  **/
+/* @GeneratePInvoke */
+void uielement_measure (UIElement *instance, Size availableSize);
+
 /* @GeneratePInvoke */
 UIElement *uielement_new (void);
 

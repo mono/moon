@@ -1075,6 +1075,16 @@ media_attribute_new (void)
 /**
  * MediaAttributeCollection
  **/
+MediaAttribute *
+media_attribute_collection_get_item_by_name (MediaAttributeCollection *instance, const char *name)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetItemByName (name);
+}
+
+
 MediaAttributeCollection *
 media_attribute_collection_new (void)
 {
@@ -1102,6 +1112,26 @@ media_element_new (void)
 }
 
 
+void
+media_element_pause (MediaElement *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Pause ();
+}
+
+
+void
+media_element_play (MediaElement *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Play ();
+}
+
+
 #if SL_2_0
 void
 media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream)
@@ -1112,6 +1142,16 @@ media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks 
 	instance->SetStreamSource (stream);
 }
 #endif
+
+
+void
+media_element_stop (MediaElement *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Stop ();
+}
 
 
 /**
@@ -1997,6 +2037,16 @@ types_new (void)
 /**
  * UIElement
  **/
+void
+uielement_measure (UIElement *instance, Size availableSize)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Measure (availableSize);
+}
+
+
 UIElement *
 uielement_new (void)
 {

@@ -41,7 +41,7 @@ class MediaErrorEventArgs : public ErrorEventArgs {
 		
 	}
 	
-	virtual Type::Kind GetObjectType () { return Type::MEDIAERROREVENTARGS; };
+	virtual Type::Kind GetObjectType () { return Type::MEDIAERROREVENTARGS; }
 
 	MediaResult GetMediaResult () { return (MediaResult) error_code; }
 };
@@ -60,11 +60,8 @@ class MediaAttribute : public DependencyObject {
  	/* @GenerateCBinding,GeneratePInvoke */
 	MediaAttribute () { }
 	
-	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE; };
+	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE; }
 };
-
-const char *media_attribute_get_value (MediaAttribute *attribute);
-void media_attribute_set_value (MediaAttribute *attribute, const char *value);
 
 
 /* @Namespace=None */
@@ -78,11 +75,10 @@ class MediaAttributeCollection : public DependencyObjectCollection {
 	
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	MediaAttribute *GetItemByName (const char *name);
 };
-
-MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name);
 
 
 /*
@@ -117,7 +113,7 @@ class MarkerReachedEventArgs : public EventArgs {
 	
  public:
 	MarkerReachedEventArgs (TimelineMarker *marker);
-	virtual Type::Kind GetObjectType () { return Type::MARKERREACHEDEVENTARGS; };
+	virtual Type::Kind GetObjectType () { return Type::MARKERREACHEDEVENTARGS; }
 
 	TimelineMarker *GetMarker () { return marker; }
 };
@@ -167,7 +163,7 @@ class MediaBase : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MediaBase ();
-	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; };
+	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; }
 	
 	void SetSourceAsyncCallback ();
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
@@ -187,14 +183,6 @@ class MediaBase : public FrameworkElement {
 	void SetStretch (Stretch stretch);
 	Stretch GetStretch ();
 };
-
-const char *media_base_get_source (MediaBase *media);
-void media_base_set_source (MediaBase *media, const char *value);
-
-Stretch media_base_get_stretch (MediaBase *media);
-void    media_base_set_stretch (MediaBase *media, Stretch stretch);
-
-double media_base_get_download_progress (MediaBase *media);
 
 
 /* @Namespace=System.Windows.Controls */
@@ -268,8 +256,6 @@ class Image : public MediaBase {
 	
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 };
-
-void   image_set_source (Image *img, Downloader *downloader, const char *PartName);
 
 
 /* @Namespace=System.Windows.Controls */
@@ -440,7 +426,7 @@ class MediaElement : public MediaBase {
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	MediaElement ();
-	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; };
+	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; }
 	
 	virtual void SetSurface (Surface *surface);
 	void SetPreviousPosition (guint64 pos);
@@ -448,7 +434,7 @@ class MediaElement : public MediaBase {
 	bool AdvanceFrame ();
 	void AudioFinished (); // Called by MediaPlayer when the audio reaches its end. Only called if we have no video.
 	
-	MediaPlayer *GetMediaPlayer () { return mplayer;  }
+	MediaPlayer *GetMediaPlayer () { return mplayer; }
 	
 	// overrides
 	virtual void Render (cairo_t *cr, Region *region);
@@ -459,11 +445,17 @@ class MediaElement : public MediaBase {
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
+	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
 	void SetStreamSource (ManagedStreamCallbacks *stream);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Pause ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Play ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Stop ();
 	
 	// These methods are the ones that actually call the appropiate methods on the MediaPlayer
@@ -550,53 +542,8 @@ class MediaElement : public MediaBase {
 	double GetVolume ();
 };
 
-void media_element_pause (MediaElement *media);
-void media_element_play (MediaElement *media);
-void media_element_stop (MediaElement *media);
-void media_element_set_source (MediaElement *media, Downloader *downloader, const char *PartName);
-
 gboolean media_element_advance_frame (gpointer data);
 
-MediaAttributeCollection *media_element_get_attributes (MediaElement *media);
-void media_element_set_attributes (MediaElement *media, MediaAttributeCollection *value);
-
-int media_element_get_audio_stream_count (MediaElement *media);
-
-int media_element_get_audio_stream_index (MediaElement *media);
-void media_element_set_audio_stream_index (MediaElement *media, int value);
-
-bool media_element_get_auto_play (MediaElement *media);
-void media_element_set_auto_play (MediaElement *media, bool value);
-
-double media_element_get_balance (MediaElement *media);
-void media_element_set_balance (MediaElement *media, double value);
-
-double media_element_get_buffering_progress (MediaElement *media);
-
-TimeSpan media_element_get_buffering_time (MediaElement *media);
-void media_element_set_buffering_time (MediaElement *media, TimeSpan value);
-
-bool media_element_get_can_pause (MediaElement *media);
-bool media_element_get_can_seek (MediaElement *media);
-
-const char *media_element_get_current_state (MediaElement *media);
-void media_element_set_current_state (MediaElement *media, const char *value);
-
-bool media_element_get_is_muted (MediaElement *media);
-void media_element_set_is_muted (MediaElement *media, bool value);
-
-TimelineMarkerCollection *media_element_get_markers (MediaElement *media);
-void media_element_set_markers (MediaElement *media, TimelineMarkerCollection *value);
-
-Duration *media_element_get_natural_duration (MediaElement *media);
-double media_element_get_natural_video_height (MediaElement *media);
-double media_element_get_natural_video_width (MediaElement *media);
-
-TimeSpan media_element_get_position (MediaElement *media);
-void media_element_set_position (MediaElement *media, TimeSpan value);
-
-double media_element_get_volume (MediaElement *media);
-void media_element_set_volume (MediaElement *media, double value);
 
 void media_init (void);
 

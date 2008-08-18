@@ -264,41 +264,9 @@ MediaBase::ComputeBounds ()
 }
 
 
-const char *
-media_base_get_source (MediaBase *media)
-{
-	Value *value = media->GetValue (MediaBase::SourceProperty);
-	
-	return value ? (char *) value->AsString () : NULL;
-}
-
-void
-media_base_set_source (MediaBase *media, const char *source)
-{
-	media->SetValue (MediaBase::SourceProperty, Value (source));
-}
-
-Stretch
-media_base_get_stretch (MediaBase *media)
-{
-	return media->GetStretch ();
-}
-
-void
-media_base_set_stretch (MediaBase *media, Stretch stretch)
-{
-	media->SetStretch (stretch);
-}
-
-double
-media_base_get_download_progress (MediaBase *media)
-{
-	return media->GetDownloadProgress ();
-}
-
-/*
- * MediaElement
- */
+//
+// MediaElement
+//
 
 enum MediaElementFlags {
 	Loaded              = (1 << 0),  // set once OnLoaded has been called
@@ -315,7 +283,7 @@ enum MediaElementFlags {
 };
 
 
-const char *media_element_states[] = { "Closed", "Opening", "Buffering", "Playing", "Paused", "Stopped", "Error" };
+static const char *media_element_states[] = { "Closed", "Opening", "Buffering", "Playing", "Paused", "Stopped", "Error" };
 
 const char *
 MediaElement::GetStateName (MediaElementState state)
@@ -353,8 +321,9 @@ marker_callback (MediaClosure *closure)
 class MarkerNode : public List::Node {
  public:
 	TimelineMarker *marker;
-	MarkerNode (TimelineMarker *marker) { this->marker = marker; this->marker->ref (); }
-	virtual ~MarkerNode () { this->marker->unref (); }
+	
+	MarkerNode (TimelineMarker *marker) { this->marker = marker; marker->ref (); }
+	virtual ~MarkerNode () { marker->unref (); }
 };
 
 void
@@ -1234,7 +1203,7 @@ MediaElement::BufferingComplete ()
 	}
 }
 
-MediaResult
+static MediaResult
 media_element_open_callback (MediaClosure *closure)
 {
 	MediaElement *element = (MediaElement *) closure->GetContext ();
@@ -2120,191 +2089,6 @@ MediaElement::GetVolume ()
 	return GetValue (MediaElement::VolumeProperty)->AsDouble ();
 }
 
-void
-media_element_stop (MediaElement *media)
-{
-	media->Stop ();
-}
-
-void 
-media_element_play (MediaElement *media)
-{
-	media->Play ();
-}
-
-void
-media_element_pause (MediaElement *media)
-{
-	media->Pause ();
-}
-
-void
-media_element_set_source (MediaElement *media, Downloader *downloader, const char *PartName)
-{
-	media->SetSource (downloader, PartName);
-}
-
-MediaAttributeCollection *
-media_element_get_attributes (MediaElement *media)
-{
-	return media->GetAttributes ();
-}
-
-void
-media_element_set_attributes (MediaElement *media, MediaAttributeCollection *attrs)
-{
-	media->SetAttributes (attrs);
-}
-
-int
-media_element_get_audio_stream_count (MediaElement *media)
-{
-	return media->GetAudioStreamCount ();
-}
-
-int
-media_element_get_audio_stream_index (MediaElement *media)
-{
-	return media->GetAudioStreamIndex ();
-}
-
-void
-media_element_set_audio_stream_index (MediaElement *media, int index)
-{
-	media->SetAudioStreamIndex (index);
-}
-
-bool
-media_element_get_auto_play (MediaElement *media)
-{
-	return media->GetAutoPlay ();
-}
-
-void
-media_element_set_auto_play (MediaElement *media, bool set)
-{
-	media->SetAutoPlay (set);
-}
-
-double
-media_element_get_balance (MediaElement *media)
-{
-	return media->GetBalance ();
-}
-
-void
-media_element_set_balance (MediaElement *media, double balance)
-{
-	media->SetBalance (balance);
-}
-
-double
-media_element_get_buffering_progress (MediaElement *media)
-{
-	return media->GetBufferingProgress ();
-}
-
-TimeSpan
-media_element_get_buffering_time (MediaElement *media)
-{
-	return media->GetBufferingTime ();
-}
-
-void
-media_element_set_buffering_time (MediaElement *media, TimeSpan time)
-{
-	media->SetBufferingTime (time);
-}
-
-bool
-media_element_get_can_pause (MediaElement *media)
-{
-	return media->GetCanPause ();
-}
-
-bool
-media_element_get_can_seek (MediaElement *media)
-{
-	return media->GetCanSeek ();
-}
-
-const char *
-media_element_get_current_state (MediaElement *media)
-{
-	return media->GetCurrentState ();
-}
-
-void
-media_element_set_current_state (MediaElement *media, const char *state)
-{
-	media->SetCurrentState (state);
-}
-
-bool
-media_element_get_is_muted (MediaElement *media)
-{
-	return media->GetIsMuted ();
-}
-
-void
-media_element_set_is_muted (MediaElement *media, bool set)
-{
-	media->SetIsMuted (set);
-}
-
-TimelineMarkerCollection *
-media_element_get_markers (MediaElement *media)
-{
-	return media->GetMarkers ();
-}
-
-void
-media_element_set_markers (MediaElement *media, TimelineMarkerCollection *markers)
-{
-	media->SetMarkers (markers);
-}
-
-Duration *
-media_element_get_natural_duration (MediaElement *media)
-{
-	return media->GetNaturalDuration ();
-}
-
-double
-media_element_get_natural_video_height (MediaElement *media)
-{
-	return media->GetNaturalVideoHeight ();
-}
-
-double
-media_element_get_natural_video_width (MediaElement *media)
-{
-	return media->GetNaturalVideoWidth ();
-}
-
-TimeSpan
-media_element_get_position (MediaElement *media)
-{
-	return media->GetPosition ();
-}
-
-void
-media_element_set_position (MediaElement *media, TimeSpan position)
-{
-	media->SetPosition (position);
-}
-
-double
-media_element_get_volume (MediaElement *media)
-{
-	return media->GetVolume ();
-}
-
-void
-media_element_set_volume (MediaElement *media, double volume)
-{
-	media->SetVolume (volume);
-}
 
 //
 // Image
@@ -2849,28 +2633,6 @@ Image::InsideObject (cairo_t *cr, double x, double y)
 	return FrameworkElement::InsideObject (cr, x, y);
 }
 
-void
-image_set_source (Image *img, Downloader *downloader, const char *PartName)
-{
-	img->SetSource (downloader, PartName);
-}
-
-//
-// MediaAttribute
-//
-
-const char *
-media_attribute_get_value (MediaAttribute *attribute)
-{
-	Value *value = attribute->GetValue (MediaAttribute::ValueProperty);
-	return value ? value->AsString () : NULL;
-}
-
-void
-media_attribute_set_value (MediaAttribute *attribute, const char *value)
-{
-	attribute->SetValue (MediaAttribute::ValueProperty, Value (value));
-}
 
 //
 // MediaAttributeCollection
@@ -2894,15 +2656,11 @@ MediaAttributeCollection::GetItemByName (const char *name)
 	return NULL;
 }
 
-MediaAttribute *
-media_attribute_collection_get_item_by_name (MediaAttributeCollection *collection, const char *name)
-{
-	return collection->GetItemByName (name);
-}
 
 //
 // TimelineMarkerCollection
 //
+
 int
 TimelineMarkerCollection::Add (Value *value)
 {
@@ -2929,6 +2687,7 @@ TimelineMarkerCollection::Insert (int index, Value *value)
 {
 	return Add (value) != -1;
 }
+
 
 //
 // MarkerReachedEventArgs

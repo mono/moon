@@ -285,9 +285,9 @@ add_attribute (MediaAttributeCollection *attributes, const char *name, const cha
 		return;
 
 	MediaAttribute *attribute = new MediaAttribute ();
+	attribute->SetValue (MediaAttribute::ValueProperty, Value (attr));
 	attribute->SetName (name);
-	media_attribute_set_value (attribute, g_strdup (attr));
-
+	
 	attributes->Add (attribute);
 	attribute->unref ();
 }
@@ -306,16 +306,14 @@ PlaylistEntry::PopulateMediaAttributes ()
 
 	PlaylistEntry *current = this;
 	MediaAttributeCollection *attributes;
-
-	Value *value = element->GetValue (MediaElement::AttributesProperty);
-	if (!value) {
+	
+	if (!(attributes = element->GetAttributes ())) {
 		attributes = new MediaAttributeCollection ();
-		element->SetValue (MediaElement::AttributesProperty, Value (attributes));
+		element->SetAttributes (attributes);
 	} else {
-		attributes = value->AsMediaAttributeCollection ();
 		attributes->Clear ();
 	}
-
+	
 	while (current != NULL) {
 		if (abstract == NULL)
 			abstract = current->GetAbstract ();
