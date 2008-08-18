@@ -896,6 +896,20 @@ UIElement::GetRenderTransform ()
 	return value ? value->AsTransform () : NULL;
 }
 
+void
+UIElement::SetRenderTransformOrigin (Point *origin)
+{
+	SetValue (UIElement::RenderTransformOriginProperty, Value (origin));
+}
+
+Point *
+UIElement::GetRenderTransformOrigin ()
+{
+	Value *value = GetValue (UIElement::RenderTransformOriginProperty);
+	
+	return value ? value->AsPoint () : NULL;
+}
+
 TriggerCollection *
 UIElement::GetTriggers ()
 {
