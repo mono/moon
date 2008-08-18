@@ -1,7 +1,7 @@
 all: perf-suite-runner.exe perf-suite-lib.dll tool perf-suite-generator.exe
 
-perf-suite-runner.exe: perf-suite-runner/DrtStore.cs perf-suite-runner/DrtItem.cs perf-suite-runner/Main.cs perf-suite-runner/DrtResult.cs perf-suite-lib.dll
-	gmcs perf-suite-runner/DrtResult.cs perf-suite-runner/DrtStore.cs perf-suite-runner/DrtItem.cs perf-suite-runner/Main.cs -out:perf-suite-runner.exe -r:perf-suite-lib.dll
+perf-suite-runner.exe: perf-suite-runner/DrtStore.cs perf-suite-runner/DrtItem.cs perf-suite-runner/Main.cs perf-suite-runner/DrtResult.cs perf-suite-runner/Options.cs perf-suite-runner/AssemblyInfo.cs perf-suite-lib.dll 
+	gmcs perf-suite-runner/DrtResult.cs perf-suite-runner/DrtStore.cs perf-suite-runner/DrtItem.cs perf-suite-runner/Main.cs perf-suite-runner/Options.cs perf-suite-runner/AssemblyInfo.cs -out:perf-suite-runner.exe -r:perf-suite-lib.dll -r:Mono.GetOptions
 
 perf-suite-generator.exe: perf-suite-generator/GraphGenerator.cs perf-suite-generator/HtmlGenerator.cs perf-suite-generator/Main.cs perf-suite-lib.dll perf-suite-generator/UtilFu.cs
 	gmcs perf-suite-generator/GraphGenerator.cs perf-suite-generator/HtmlGenerator.cs perf-suite-generator/Main.cs perf-suite-generator/UtilFu.cs -out:perf-suite-generator.exe -r:perf-suite-lib.dll -r:Mono.Cairo

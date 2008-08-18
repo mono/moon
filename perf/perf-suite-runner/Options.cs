@@ -35,50 +35,15 @@ using Mono.GetOptions;
 
 namespace PerfSuiteRunner {
 
-	public static class PerfSuiteRunner {
+	public class Options : Mono.GetOptions.Options {
 
-		public static int Main (string [] args)
+		// Long option is the variable name ("--file"), short option is -f
+		[Option ("A test run description", 'd', "description")]
+		public string Description = "Unknown";
+
+		public Options ()
 		{
-			Options opts = new Options ();
-			opts.ProcessArgs (args);
-
-			string passName = opts.Description;
-			
-			Console.WriteLine ("*** Pass name is '{0}'...", passName);
-
-			Database.Initialize ();
-
-			PassDbEntry passEntry = new PassDbEntry ();
-			passEntry.Description = passName;
-			passEntry.Date = DateTime.Now;
-
-			Database.Put (passEntry);
-
-			DrtStore store = new DrtStore ("perf-suite-set/drtlist.xml");
-			foreach (DrtItem item in store.Items) {
-				Console.WriteLine ("*** Running [{0}]", item);
-
-				ItemDbEntry itemEntry = Database.GetItemEntryByUniqueId (item.UniqueId);
-				if (itemEntry == null) {
-					Console.WriteLine ("*** [{0}] not yet in the database, adding...", item);
-					itemEntry = new ItemDbEntry ();
-					itemEntry.UniqueId = item.UniqueId;
-					itemEntry.Name = item.Name;
-					itemEntry.InputFile = item.InputFile;
-					Database.Put (itemEntry);
-				}
-			
-				DrtResult r = item.Run ();
-				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
-
-				ResultDbEntry resultEntry = new ResultDbEntry ();
-				resultEntry.Pass = passEntry;
-				resultEntry.Item = itemEntry;
-				resultEntry.Time = r.AveragedTime;
-
-				Database.Put (resultEntry);
-			}
-			return 0;
+			base.ParsingMode = OptionsParsingMode.Both;
 		}
 
 	}

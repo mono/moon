@@ -119,6 +119,8 @@ namespace PerfSuiteRunner {
 			proc.StartInfo.Arguments = arguments;
 			proc.Start();
 			proc.WaitForExit();
+			proc.Close ();
+			proc.Dispose ();
 
 			return new DrtResult (tmpFileName);
 		}
