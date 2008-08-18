@@ -46,24 +46,24 @@ static const GREVersionRange gre_version = {
 	"9.9", PR_TRUE
 };
 
-double interval = 1.0 / 25.0;   // By default 25 frames per second
-double start_time = 0.0;	// By default start from 0
-double end_time = 5.0;		// By default end after 5 seconds
+int interval = 40;		// By default 25 frames per second
+int start_time = 0;		// By default start from 0
+int end_time = 5000;		// By default end after 5 seconds
 gint runs_left = 1;		// Do just one run by default
 char *filename = NULL;
 
 void do_run (void);
 
-double current_time;
+int current_time;
 GtkWidget *moz_embed;
 GtkWindow *window;
 glong benchmark_start;
 
 static GOptionEntry entries [] =
 {
-	{ "start-time", 's', 0, G_OPTION_ARG_DOUBLE, &start_time, "Start time is S seconds", "S" },
-	{ "end-time", 'e', 0, G_OPTION_ARG_DOUBLE, &end_time, "End time is S seconds", "S" },
-	{ "interval", 'i', 0, G_OPTION_ARG_DOUBLE, &interval, "Interval between frames in S seconds", "S" },
+	{ "start-time", 's', 0, G_OPTION_ARG_INT, &start_time, "Start time is S mseconds", "S" },
+	{ "end-time", 'e', 0, G_OPTION_ARG_INT, &end_time, "End time is S mseconds", "S" },
+	{ "interval", 'i', 0, G_OPTION_ARG_INT, &interval, "Interval between frames in S mseconds", "S" },
 	{ "runs", 'n', 0, G_OPTION_ARG_INT, &runs_left, "Do N runs", "N" },
 	{ "filename", 'f', 0, G_OPTION_ARG_STRING, &filename, "Filename to load", NULL },
 	{ NULL }
@@ -123,7 +123,7 @@ gboolean increase_timer (void *data)
 		}
 	}
 
-	source->SetCurrentTime (TimeSpan_FromSecondsFloat (current_time));
+	source->SetCurrentTime (TimeSpan_FromSecondsFloat ((float) current_time / 1000));
 	current_time += interval;
 
 	return FALSE;
@@ -191,7 +191,7 @@ main (int argc, char **argv)
 		g_print ("!!! File to load not specified!\n");
 		exit (1);
 	}
-	
+
 	gtk_init (&argc, &argv);
 	runtime_init (RUNTIME_INIT_BROWSER);
 

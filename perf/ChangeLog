@@ -1,5 +1,9 @@
 2008-08-07  Michael Dominic K.  <mdk@mdk.am>
 
+	* benchmark-runner/benchmark-runner.cpp: Use mseconds instead of seconds float.
+
+2008-08-07  Michael Dominic K.  <mdk@mdk.am>
+
 	* benchmark-runner/benchmark-runner.cpp: Allow to specify a file to use.
 
 2008-08-07  Michael Dominic K.  <mdk@mdk.am>
