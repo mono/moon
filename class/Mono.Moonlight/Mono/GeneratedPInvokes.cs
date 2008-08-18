@@ -774,6 +774,38 @@ namespace Mono {
 		public extern static IntPtr stylus_point_collection_new ();
 
 		[DllImport ("moon")]
+		// void surface_attach (Surface *instance, UIElement *toplevel);
+		public extern static void surface_attach (IntPtr instance, IntPtr toplevel);
+
+		[DllImport ("moon")]
+		// Downloader *surface_create_downloader (Surface *instance);
+		public extern static IntPtr surface_create_downloader (IntPtr instance);
+
+		[DllImport ("moon")]
+		// TimeManager *surface_get_time_manager (Surface *instance);
+		public extern static IntPtr surface_get_time_manager (IntPtr instance);
+
+		[DllImport ("moon")]
+		// bool surface_get_transparent (Surface *instance);
+		public extern static bool surface_get_transparent (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, int height);
+		public extern static void surface_paint (IntPtr instance, IntPtr ctx, int x, int y, int width, int height);
+
+		[DllImport ("moon")]
+		// void surface_resize (Surface *instance, int width, int height);
+		public extern static void surface_resize (IntPtr instance, int width, int height);
+
+		[DllImport ("moon")]
+		// void surface_set_transparent (Surface *instance, bool transparent);
+		public extern static void surface_set_transparent (IntPtr instance, bool transparent);
+
+		[DllImport ("moon")]
+		// Surface *surface_new (MoonWindow *window, bool silverlight2);
+		public extern static IntPtr surface_new (IntPtr window, bool silverlight2);
+
+		[DllImport ("moon")]
 		// TextBlock *text_block_new ();
 		public extern static IntPtr text_block_new ();
 

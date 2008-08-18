@@ -137,11 +137,11 @@ public class GtkSilver : EventBox {
 	/// </remarks>
 	public bool Transparent {
 		get {
-			return NativeMethods.surface_get_trans (surface);
+			return NativeMethods.surface_get_transparent (surface);
 		}
 
 		set {
-			NativeMethods.surface_set_trans (surface, value);
+			NativeMethods.surface_set_transparent (surface, value);
 		}
 	}
 	

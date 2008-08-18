@@ -206,30 +206,6 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		public extern static IntPtr moon_window_gtk_get_widget (IntPtr window);
-
-		[DllImport ("moon")]
-		public extern static void surface_attach (IntPtr surface, IntPtr toplevel);
-
-		[DllImport ("moon")]
-		public extern static void surface_resize (IntPtr surface, int width, int height);
-		
-		[DllImport ("moon")]
-		public extern static void surface_paint (IntPtr surface, IntPtr ctx, int x, int y, int width, int height);
-		
-		[DllImport ("moon")]
-		public extern static IntPtr surface_new (IntPtr window, bool silverlight2);
-
-		[DllImport ("moon")]
-		public extern static void surface_set_trans (IntPtr surface, bool trans);
-		
-		[DllImport ("moon")]
-		public extern static bool surface_get_trans (IntPtr surface);
-
-		[DllImport ("moon")]
-		public extern static IntPtr surface_get_time_manager (IntPtr surface);
-
-		[DllImport ("moon")]
-		public extern static IntPtr surface_create_downloader (IntPtr surface);
 		
 		[DllImport ("moon")]
 		public extern static void image_set_source (IntPtr image, IntPtr downloader, string PartName);
