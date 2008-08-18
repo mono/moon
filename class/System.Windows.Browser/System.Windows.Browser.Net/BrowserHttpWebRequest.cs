@@ -54,12 +54,19 @@ namespace System.Windows.Browser.Net
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
 		ManualResetEvent wait_handle = new ManualResetEvent (false);
+
+		NativeMethods.DownloaderResponseStartedDelegate started;
+		NativeMethods.DownloaderResponseAvailableDelegate available;
+		NativeMethods.DownloaderResponseFinishedDelegate finished;
 		
 		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
 		Delegate progress_delegate;
 
 		public BrowserHttpWebRequest (Uri uri)
 		{
+			started = new NativeMethods.DownloaderResponseStartedDelegate (OnAsyncResponseStarted);
+			available = new NativeMethods.DownloaderResponseAvailableDelegate (OnAsyncDataAvailable);
+			finished = new NativeMethods.DownloaderResponseFinishedDelegate (OnAsyncResponseFinished);
 			this.uri = uri;
 		}
 
@@ -210,7 +217,7 @@ namespace System.Windows.Browser.Net
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			
-			NativeMethods.downloader_request_get_response (native, OnAsyncResponseStarted, OnAsyncDataAvailable, OnAsyncResponseFinished, IntPtr.Zero);
+			NativeMethods.downloader_request_get_response (native, started, available, finished, IntPtr.Zero);
 
 			wait_handle.Set ();
 		}

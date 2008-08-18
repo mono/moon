@@ -1,5 +1,10 @@
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 
+	* BrowserHttpWebRequest.cs: Ensure we keep the delegates we pass to firefox
+	around so they don't get GC'd.
+
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
 	* BrowserHttpWebRequest.cs: Prevent the TickCallHandler from being gc'd
 	before its executed.
 
