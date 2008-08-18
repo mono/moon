@@ -1,5 +1,12 @@
 2008-08-18  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-runner/DrtItem.cs:
+	* perf-suite-set/drtlist.xml:
+	* perf-suite-tool/perf-suite-tool.cpp: Adding a possibility to specify Width and
+	Height for the test window etc.
+
+2008-08-18  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile.am:  Do not install the perf-tool (noinst).
 
 2008-08-18  Michael Dominic K.  <mdk@mdk.am>
