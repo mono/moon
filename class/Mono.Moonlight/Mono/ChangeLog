@@ -1,5 +1,10 @@
 2008-08-17  Geoff Norton  <gnorton@novell.com>
 
+	* NativeMethods.cs: Add delegates/bindings for the HTTP 
+	header visitor on DownloaderReponse.
+
+2008-08-17  Geoff Norton  <gnorton@novell.com>
+
 	* NativeMethods.cs: Add the DownloaderRequest delegate types.
 	Add plugin->GetSourceLocation() binding.  Fixup dr->GetResponse()
 	signautre.

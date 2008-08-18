@@ -197,6 +197,7 @@ namespace Mono {
 		public delegate uint DownloaderResponseStartedDelegate (IntPtr native, IntPtr context);
 		public delegate uint DownloaderResponseAvailableDelegate (IntPtr native, IntPtr context, IntPtr data, uint length);
 		public delegate uint DownloaderResponseFinishedDelegate (IntPtr native, IntPtr context, bool success, IntPtr data);
+		public delegate void HeaderVisitor (IntPtr name, IntPtr val);
 
 		[DllImport("moon")]
 		public extern static void downloader_request_abort (IntPtr downloader_request);
@@ -212,6 +213,9 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static void downloader_request_set_body (IntPtr downloader_request, byte []body, int size);
+		
+		[DllImport("moon")]
+		public extern static void downloader_response_set_header_visitor (IntPtr downloader_response, HeaderVisitor visitor);
 #endregion
 
 		[DllImport ("moon")]
