@@ -149,11 +149,8 @@ class EventObject {
 		return Type::Find (GetObjectType ());
 	}
 	
-#if OBJECT_TRACKING
-	virtual
-#endif
 	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetTypeName ()
+	virtual const char *GetTypeName ()
 	{
 		return Type::Find (GetObjectType ())->GetName ();
 	}
