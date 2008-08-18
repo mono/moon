@@ -902,8 +902,28 @@ namespace Mono {
 		public extern static IntPtr types_new ();
 
 		[DllImport ("moon")]
+		// bool uielement_capture_mouse (UIElement *instance);
+		public extern static bool uielement_capture_mouse (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Size uielement_get_desired_size (UIElement *instance);
+		public extern static UnmanagedSize uielement_get_desired_size (IntPtr instance);
+
+		[DllImport ("moon")]
+		// GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element);
+		public extern static IntPtr uielement_get_transform_to_uielement (IntPtr instance, IntPtr to_element);
+
+		[DllImport ("moon")]
+		// UIElement *uielement_get_visual_parent (UIElement *instance);
+		public extern static IntPtr uielement_get_visual_parent (IntPtr instance);
+
+		[DllImport ("moon")]
 		// void uielement_measure (UIElement *instance, Size availableSize);
 		public extern static void uielement_measure (IntPtr instance, UnmanagedSize availableSize);
+
+		[DllImport ("moon")]
+		// void uielement_release_mouse_capture (UIElement *instance);
+		public extern static void uielement_release_mouse_capture (IntPtr instance);
 
 		[DllImport ("moon")]
 		// UIElement *uielement_new ();

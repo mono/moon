@@ -77,10 +77,10 @@ namespace System.Windows {
 			[SecuritySafeCritical]
 #endif
 			get {
-				IntPtr parent_handle = NativeMethods.uielement_get_parent (native);
+				IntPtr parent_handle = NativeMethods.uielement_get_visual_parent (native);
 				if (parent_handle == IntPtr.Zero)
 					return null;
-
+				
 				Kind k = NativeMethods.dependency_object_get_object_type (parent_handle);
 				return DependencyObject.Lookup (k, parent_handle);
 			}

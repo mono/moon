@@ -94,21 +94,6 @@ namespace Mono {
 #region UIElements
 		[DllImport("moon")]
 		public extern static void uielement_transform_point (IntPtr item, ref double x, ref double y);
-
-		[DllImport("moon")]
-		public extern static IntPtr uielement_get_parent (IntPtr item);
-
-		[DllImport("moon")]
-		public extern static bool uielement_capture_mouse (IntPtr item);
-
-		[DllImport("moon")]
-		public extern static void uielement_release_mouse_capture (IntPtr item);
-
-		[DllImport ("moon")]
-		public extern static UnmanagedSize uielement_get_desired_size (IntPtr item);
-
-		[DllImport ("moon")]
-		public extern static IntPtr uielement_get_transform_to_uielement (IntPtr item, IntPtr to_item);
 #endregion
 
 #region Animations
