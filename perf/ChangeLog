@@ -1,5 +1,12 @@
 2008-08-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* Makefile:
+	* perf-suite-generator/GraphGenerator.cs:
+	* perf-suite-generator/Main.cs: Bootstrapping the perf-suite-generator that
+	will generate the HTML reports.
+
+2008-08-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-lib/Database.cs:
 	* perf-suite-lib/ItemDbEntry.cs:
 	* perf-suite-runner/DrtItem.cs:
