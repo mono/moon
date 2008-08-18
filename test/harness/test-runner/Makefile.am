@@ -3,7 +3,7 @@ MCS = gmcs
 RUNTIME = mono
 MCSFLAGS = -debug+ -unsafe -r:System.Drawing.dll -r:Mono.Posix.dll -r:System.Data.dll -r:$(srcdir)/MySql.Data.dll -r:$(srcdir)/NDesk.Options.dll -pkg:ndesk-dbus-1.0
 
-CLEANFILES = test-runner.exe test-runner.exe.mdb logging-server.exe ndesk-options.flags
+CLEANFILES = test-runner.exe test-runner.exe.mdb logging-server.exe logging-server.exe.mdb ndesk-options.flags
 
 test_runner_sources = 		\
 	Agviewer.cs		\
