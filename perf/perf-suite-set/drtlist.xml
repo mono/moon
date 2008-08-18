@@ -5,6 +5,8 @@
 	startTime="0"
 	endTime="5000"
 	interval="40"
+	width="400"
+	height="400"
    />
   <DrtItem uniqueId="2"
 	name="Simple image scaling"
@@ -12,6 +14,8 @@
 	endTime="5000"
 	interval="20"
 	runs="5"
+	width="400"
+	height="400"
    />
   <DrtItem uniqueId="3"
 	name="Simple blending"
@@ -19,5 +23,7 @@
 	endTime="5000"
 	interval="20"
 	runs="5"
+	width="400"
+	height="400"
    />
 </DrtList>

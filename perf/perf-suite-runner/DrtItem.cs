@@ -41,6 +41,8 @@ namespace PerfSuiteRunner {
 		public int Interval = 40;
 		public int Timeout = 20000;
 		public int Runs = 3;
+		public int Width = 400;
+		public int Height = 400;
 		public string InputFile = String.Empty;
 		public string UniqueId = String.Empty;
 		public string Name = String.Empty;
@@ -79,6 +81,12 @@ namespace PerfSuiteRunner {
 
 			if (node.Attributes ["runs"] != null)
 				Runs = Convert.ToInt32 (node.Attributes ["runs"].Value);
+
+			if (node.Attributes ["width"] != null)
+				Width = Convert.ToInt32 (node.Attributes ["width"].Value);
+
+			if (node.Attributes ["height"] != null)
+				Height = Convert.ToInt32 (node.Attributes ["height"].Value);
 		}
 
 		public bool IsValid ()
@@ -107,6 +115,9 @@ namespace PerfSuiteRunner {
 			if (Timeout < 1000)
 				return false;
 
+			if (Width < 1 || Height < 1)
+				return false;
+
 			if (Runs < 1)
 				return false;
 
@@ -121,14 +132,16 @@ namespace PerfSuiteRunner {
 			try {
 				string tmpFileName = Path.GetTempFileName ();
 
-				string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5} -t {6}", 
+				string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5} -t {6} -w {7} -h {8}", 
 								  FullFileName, 
 								  StartTime, 
 								  EndTime, 
 								  Interval, 
 								  Runs, 
 							 	  tmpFileName, 
-								  Timeout);
+								  Timeout, 
+								  Width, 
+								  Height);
 
 				proc.EnableRaisingEvents = false; 
 				proc.StartInfo.FileName = "perf-tool";

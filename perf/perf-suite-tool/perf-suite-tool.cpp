@@ -56,6 +56,8 @@ int timeout = 20000;		// By default 20 seconds
 gint runs_left = 1;		// Do just one run by default
 char *filename = NULL;		// No default filename
 char *results_filename = NULL;	// No default results filename
+int width = 400;
+int height = 400;
 
 /* Globals, other */
 
@@ -77,6 +79,8 @@ static GOptionEntry entries [] =
 	{ "filename", 'f', 0, G_OPTION_ARG_STRING, &filename, "Filename to load", NULL },
 	{ "results-filename", 'r', 0, G_OPTION_ARG_STRING, &results_filename, "Filename to save results to", NULL },
 	{ "timeout", 't', 0, G_OPTION_ARG_INT, &timeout, "Timeout the test (failure) in S mseconds", "S" },
+	{ "width", 'w', 0, G_OPTION_ARG_INT, &width, "Width of the test window in P pixels", "P" },
+	{ "height", 'h', 0, G_OPTION_ARG_INT, &height, "Height of the test window in H pixels", "H" },
 	{ NULL }
 };
 
@@ -285,7 +289,7 @@ main (int argc, char **argv)
 	moz_embed = gtk_moz_embed_new();
 	gtk_container_add (GTK_CONTAINER (window), moz_embed);
 
-	gtk_widget_set_usize (moz_embed, 416, 416);
+	gtk_widget_set_usize (moz_embed, width + 16, height + 16);
 
 	gtk_widget_show_all (moz_embed);
 	gtk_widget_show_all (GTK_WIDGET (window));
