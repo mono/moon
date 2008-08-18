@@ -1,0 +1,5 @@
+2008-08-07  Michael Dominic K.  <mdk@mdk.am>
+
+	* benchmark-runner/benchmark-runner.cpp: Adding some more params, making it
+	possible to make many runs.
+
