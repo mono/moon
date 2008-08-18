@@ -70,13 +70,19 @@ namespace PerfSuiteRunner {
 				}
 			
 				DrtResult r = item.Run ();
-				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
-
+				
 				ResultDbEntry resultEntry = new ResultDbEntry ();
 				resultEntry.Pass = passEntry;
 				resultEntry.Item = itemEntry;
-				resultEntry.Time = r.AveragedTime;
 
+				if (r == null) {
+					resultEntry.Time = 0;
+					Console.WriteLine ("*** Averaged result: 0 (FAILURE)");
+				} else {
+					resultEntry.Time = r.AveragedTime;
+					Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
+				}
+				
 				Database.Put (resultEntry);
 			}
 

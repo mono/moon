@@ -102,27 +102,36 @@ namespace PerfSuiteRunner {
 
 		public DrtResult Run ()
 		{
-			string tmpFileName = Path.GetTempFileName ();
+			DrtResult result = null;
+			Process proc = new Process ();
 
-			// FIXME: Crappy for now
-			string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5}", 
-							  FullFileName, 
-							  StartTime, 
-							  EndTime, 
-							  Interval, 
-							  Runs, 
-						 	  tmpFileName);
+			try {
+				string tmpFileName = Path.GetTempFileName ();
 
-			Process proc = new Process();
-			proc.EnableRaisingEvents = false; 
-			proc.StartInfo.FileName = "tool";
-			proc.StartInfo.Arguments = arguments;
-			proc.Start();
-			proc.WaitForExit();
-			proc.Close ();
-			proc.Dispose ();
+				string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5}", 
+								  FullFileName, 
+								  StartTime, 
+								  EndTime, 
+								  Interval, 
+								  Runs, 
+							 	  tmpFileName);
 
-			return new DrtResult (tmpFileName);
+				proc.EnableRaisingEvents = false; 
+				proc.StartInfo.FileName = "tool";
+				proc.StartInfo.Arguments = arguments;
+				proc.Start();
+				proc.WaitForExit();
+
+				if (proc.ExitCode == 0)
+					result = new DrtResult (tmpFileName);
+			} catch {
+				result = null;
+			} finally {
+				proc.Close ();
+				proc.Dispose ();
+			}
+
+			return result;
 		}
 
 		public override string ToString ()
