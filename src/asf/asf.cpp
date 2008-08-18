@@ -252,7 +252,7 @@ ASFParser::ReadPacket (ASFPacket **packet)
 	*packet = new ASFPacket (this, source);
 
 	result = (*packet)->Read ();
-	if (MEDIA_SUCCEEDED (result)) {
+	if (!MEDIA_SUCCEEDED (result)) {
 		source->Seek (next_pos, SEEK_SET);
 		return result;
 	}
