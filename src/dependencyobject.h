@@ -149,6 +149,9 @@ class EventObject {
 		return Type::Find (GetObjectType ());
 	}
 	
+#if OBJECT_TRACKING
+	virtual
+#endif
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetTypeName ()
 	{
@@ -181,7 +184,6 @@ class EventObject {
 	// AddTickCall*: 
 	//  Queues a delegate which will be called on the main thread.
 	//  The delegate's parameter will be the 'this' pointer.
-	//  AddTickCall will also ref itself, the callback has to unref.
 	//  Only AddTickCallSafe is safe to call on threads other than the main thread,
 	//  and only if the type on which it is called overrides SetSurface and surrounds
 	//  the call to the base type's SetSurface with SetSurfaceLock/Unlock.
