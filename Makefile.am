@@ -40,3 +40,7 @@ run-tests:
 
 run-ms-tests:
 	$(MAKE) $(AM_MAKEFLAGS) -C test run-ms-tests
+
+run-perf: 
+	$(MAKE) $(AM_MAKEFLAGS) -C perf run-perf
+

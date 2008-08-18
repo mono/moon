@@ -1,6 +1,11 @@
 2008-08-18  Michael Dominic K.  <mdk@mdk.am>
 
 	* Makefile.am:
+	* perf/Makefile.am: Adding make targets for perf runs.
+
+2008-08-18  Michael Dominic K.  <mdk@mdk.am>
+
+	* Makefile.am:
 	* configure.ac:
 	* perf/Makefile:
 	* perf/Makefile.am:
