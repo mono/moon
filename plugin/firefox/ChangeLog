@@ -1,3 +1,7 @@
+2008-08-17  Geoff Norton  <gnorton@novell.com>
+	
+	* browser-http.inc: Implement support for DownloaderReponse::SetHeaderVisitor
+
 2008-06-27  Geoff Norton  <gnorton@novell.com>
 
 	* browser-http.inc: Set the failure condition for the finished event based

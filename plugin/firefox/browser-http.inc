@@ -27,6 +27,45 @@
 #include <xpcom/nsIStorageStream.h>
 #endif
 
+class GECKO_SYM(HeaderVisitor) : public nsIHttpHeaderVisitor {
+ public:
+	NS_DECL_ISUPPORTS
+	NS_DECL_NSIHTTPHEADERVISITOR
+ 
+	GECKO_SYM(HeaderVisitor) (DownloaderResponseHeaderVisitorCallback cb)
+	{
+		this->callback = cb;
+	}
+	virtual ~GECKO_SYM(HeaderVisitor)()
+	{
+	}
+
+ private:
+	DownloaderResponseHeaderVisitorCallback callback;
+};
+
+NS_IMPL_ISUPPORTS1(GECKO_SYM(HeaderVisitor), nsIHttpHeaderVisitor)
+
+NS_IMETHODIMP
+GECKO_SYM(HeaderVisitor)::VisitHeader(const nsACString &header, const nsACString &value)
+{
+	const char *name, *val;
+	PRUint32 nl, vl;
+
+	nl = NS_CStringGetData (header, &name);
+	vl = NS_CStringGetData (value, &val);
+
+	name = g_strndup (name, nl);
+	val = g_strndup (val, vl);
+
+	callback (name, val);
+
+	g_free ((gpointer) name);
+	g_free ((gpointer) val);
+
+	return NS_OK;
+}
+
 class GECKO_SYM(DownloaderResponse) : public DownloaderResponse, public nsIStreamListener {
  private:
 	nsCOMPtr<nsIChannel> channel;
@@ -51,6 +90,7 @@ class GECKO_SYM(DownloaderResponse) : public DownloaderResponse, public nsIStrea
 	}
 
 	void Abort ();
+	void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor);
 };
 
 class GECKO_SYM(DownloaderRequest) : public DownloaderRequest {
@@ -81,6 +121,15 @@ class GECKO_SYM(DownloaderRequest) : public DownloaderRequest {
 // DownloaderResponse
 
 NS_IMPL_ISUPPORTS1 (GECKO_SYM(DownloaderResponse), nsIStreamListener)
+
+void
+GECKO_SYM(DownloaderResponse)::SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor)
+{
+	GECKO_SYM(HeaderVisitor) *hv = new GECKO_SYM(HeaderVisitor) (visitor);
+	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
+
+	httpchannel->VisitResponseHeaders (hv);	
+}
 
 void
 GECKO_SYM(DownloaderResponse)::Abort ()
