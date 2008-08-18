@@ -95,7 +95,7 @@ public:
 	int GetState ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	Key GetKey ();
+	int GetKey ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetPlatformKeyCode ();
@@ -106,7 +106,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetHandled () { return handled; }
 	
-	static Key gdk_keyval_to_key (guint keyval);
+	static int gdk_keyval_to_key (guint keyval);
 
 protected:
 	virtual ~KeyEventArgs ();

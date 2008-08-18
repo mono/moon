@@ -1,3 +1,7 @@
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+	
+	* eventargs.cpp|h: Change the return type to int, fix the build.
+
 2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* transform.cpp: Removed manual c-bindings.

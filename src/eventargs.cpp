@@ -188,7 +188,7 @@ KeyEventArgs::GetState ()
 	return (int)state;
 }
 
-Key
+int
 KeyEventArgs::GetKey ()
 {
 	return gdk_keyval_to_key (event->keyval);
@@ -200,7 +200,7 @@ KeyEventArgs::GetPlatformKeyCode ()
 	return event->hardware_keycode;
 }
 
-Key
+int
 KeyEventArgs::gdk_keyval_to_key (guint keyval)
 {
 	switch (keyval) {
