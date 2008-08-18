@@ -43,6 +43,7 @@ namespace PerfSuiteGenerator {
 			
 			string output = HtmlGenerator.GenerateHTML ();
 			File.WriteAllText ("perf-report/index.html", output);
+			Console.WriteLine ("Generated report in perf-report/");
 
 			return 0;
 		}
