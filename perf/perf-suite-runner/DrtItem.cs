@@ -40,12 +40,12 @@ namespace PerfSuiteRunner {
 		public int EndTime = 5000;
 		public int Interval = 40;
 		public int Timeout = 20000;
+		public int Runs = 3;
 		public string InputFile = String.Empty;
 		public string UniqueId = String.Empty;
 		public string Name = String.Empty;
 
 		public static string ItemsDirectory = "perf-suite-set";
-		public static int Runs = 3;
 
 		public string FullFileName { 
 			get { 
@@ -76,6 +76,9 @@ namespace PerfSuiteRunner {
 		
 			if (node.Attributes ["timeout"] != null)
 				Timeout = Convert.ToInt32 (node.Attributes ["timeout"].Value);
+
+			if (node.Attributes ["runs"] != null)
+				Runs = Convert.ToInt32 (node.Attributes ["runs"].Value);
 		}
 
 		public bool IsValid ()
@@ -102,6 +105,9 @@ namespace PerfSuiteRunner {
 				return false;
 
 			if (Timeout < 1000)
+				return false;
+
+			if (Runs < 1)
 				return false;
 
 			return true;

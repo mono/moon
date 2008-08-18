@@ -11,11 +11,13 @@
 	inputFile="scaling-image.html"
 	endTime="5000"
 	interval="20"
+	runs="5"
    />
   <DrtItem uniqueId="3"
 	name="Simple blending"
 	inputFile="simple-blending.html"
 	endTime="5000"
 	interval="20"
+	runs="5"
    />
 </DrtList>
