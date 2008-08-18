@@ -57,6 +57,8 @@ namespace System.Windows.Browser.Net
 
 			if (native == IntPtr.Zero)
 				return;
+
+			NativeMethods.downloader_response_set_header_visitor (native, OnHttpHeader);
 		}
 
 		~BrowserHttpWebResponse ()
@@ -65,10 +67,10 @@ namespace System.Windows.Browser.Net
 				return;
 		}
 
-		void OnHttpHeader (string name, string value)
+		void OnHttpHeader (IntPtr name, IntPtr value)
 		{
 			try {
-				headers [name] = value;
+				headers [Marshal.PtrToStringAnsi (name)] = Marshal.PtrToStringAnsi (value);
 			} catch {}
 		}
 
@@ -97,7 +99,9 @@ namespace System.Windows.Browser.Net
 		}
 
 		public override long ContentLength {
-			get { return long.Parse (headers [HttpRequestHeader.ContentLength], NumberStyles.Integer, CultureInfo.InvariantCulture);; }
+			get { 
+				return long.Parse (headers ["Content-Length"], NumberStyles.Integer, CultureInfo.InvariantCulture);
+			}
 		}
 
 		public override string ContentType {

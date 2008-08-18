@@ -47,12 +47,16 @@ namespace System.Windows.Browser.Net
 		IntPtr native;
 		IntPtr downloader;
 		Uri uri;
+		long bytes_read;
 		string method = "GET";
 		WebHeaderCollection headers = new WebHeaderCollection ();
 		MemoryStream request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
 		ManualResetEvent wait_handle = new ManualResetEvent (false);
+		
+		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
+		Delegate progress_delegate;
 
 		public BrowserHttpWebRequest (Uri uri)
 		{
@@ -105,6 +109,7 @@ namespace System.Windows.Browser.Net
 		uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
 		{
 			try {
+				bytes_read = 0;
 				async_result.Response = new BrowserHttpWebResponse (this, native);
 			} catch (Exception e) {
 				async_result.Exception = e;
@@ -124,6 +129,12 @@ namespace System.Windows.Browser.Net
 
 		uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
 		{
+			try {
+				bytes_read += length;
+				if (progress_delegate != null)
+					progress_delegate.DynamicInvoke (new object[] { bytes_read, async_result.Response.ContentLength, async_result.AsyncState});
+			} catch {}
+
 			try {
 				async_result.Response.Write (data, (int) length);
 			} catch (Exception e) {

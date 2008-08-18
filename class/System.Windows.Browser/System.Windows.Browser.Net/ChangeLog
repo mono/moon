@@ -1,5 +1,12 @@
 2008-08-17  Geoff Norton  <gnorton@novell.com>
 
+	* BrowserHttpWebRequest.cs: Implement support to update WebClient with
+	the progress of the download
+	* BrowserHttpWebResponse.cS: Implmenet a HeaderVisitor to support
+	Content-Length
+
+2008-08-17  Geoff Norton  <gnorton@novell.com>
+
 	* BrowserHttpWebRequest.cs: Updated to emit firefox calls on the main thread
 	and use the new DownloaderRequest mechanism.
 	* BrowserHttpWebResponse.cs: Setup to use a MemoryStream driven by the data
