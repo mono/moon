@@ -183,7 +183,7 @@ library_of_ip (gpointer ip, gpointer* base_address)
 		current_base_address = start;
 		
 		if (start <= ip && end >= ip) {
-			result = g_strdup (lib);
+			result = lib;
 			*base_address = current_base_address;
 			// printf ("IP %p is in library %s\n", ip, result);
 			break;
