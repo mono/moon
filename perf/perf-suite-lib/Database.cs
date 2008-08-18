@@ -39,6 +39,7 @@ namespace PerfSuiteLib {
 	public static class Database {
 	
 		static SqliteConnection connection;
+		static IDbTransaction transaction;
 
 		public static void Initialize ()
 		{
@@ -47,6 +48,16 @@ namespace PerfSuiteLib {
 
 			if (CheckDatabaseVersion ())
 				CreateTables ();
+		}
+
+		public static void BeginTransaction ()
+		{
+			transaction = connection.BeginTransaction ();
+		}
+
+		public static void CommitTransaction ()
+		{
+			transaction.Commit ();
 		}
 
 		public static void Put (DbEntry entry)

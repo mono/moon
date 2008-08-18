@@ -1,3 +1,9 @@
+2008-08-13  Michael Dominic K.  <mdk@mdk.am>
+
+	* perf-suite-lib/Database.cs:
+	* perf-suite-runner/Main.cs: Make the whole perf-suite-runner run transactional to the
+	Database. 
+
 2008-08-12  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-suite-generator/HtmlGenerator.cs:
