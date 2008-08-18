@@ -13,10 +13,14 @@ if INCLUDE_TESTING
 TEST_SUBDIR = test
 endif INCLUDE_TESTING
 
+if INCLUDE_PERFORMANCE
+PERF_SUBDIR = perf
+endif INCLUDE_PERFORMANCE
+
 TOOLS_SUBDIR = tools
 endif !PLUGIN_INSTALL
 
-SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) $(TOOLS_SUBDIR) plugin $(TEST_SUBDIR)
+SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) $(TOOLS_SUBDIR) plugin $(TEST_SUBDIR) $(PERF_SUBDIR)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc

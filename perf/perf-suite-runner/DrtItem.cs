@@ -131,7 +131,7 @@ namespace PerfSuiteRunner {
 								  Timeout);
 
 				proc.EnableRaisingEvents = false; 
-				proc.StartInfo.FileName = "tool";
+				proc.StartInfo.FileName = "perf-tool";
 				proc.StartInfo.Arguments = arguments;
 				proc.Start();
 				proc.WaitForExit();

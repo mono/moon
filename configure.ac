@@ -277,6 +277,18 @@ PKG_CHECK_MODULES(NDESK_DBUS,ndesk-dbus-1.0 >= 0.6.0,,
 		  [with_testing=no])
 AM_CONDITIONAL(INCLUDE_TESTING,test x$with_testing = xyes)
 
+dnl
+dnl performance tests
+dnl 
+with_performance=yes
+if test x$with_ff3 = xyes; then
+  PKG_CHECK_MODULES(XULRUNNER,[mozilla-gtkmozembed mozilla-js],,
+		  [with_performance=no])
+elif test x$with_ff2 = xyes; then
+  with_performance=no
+fi
+AM_CONDITIONAL(INCLUDE_PERFORMANCE,test x$with_performance = xyes)
+
 MS_DRTLIST=none
 # Look to see if the MS tests are installed
 if test -f $PWD/../moonlight-ms/tests/port/drop1030/built/drtlist.xml; then
@@ -442,6 +454,11 @@ AGVIEWER_LIBS="$GTK_LIBS $DBUS_GLIB_LIBS $XULRUNNER_LIBS"
 AC_SUBST(AGVIEWER_CFLAGS)
 AC_SUBST(AGVIEWER_LIBS)
 
+PERF_TOOL_CFLAGS="$GTK_CFLAGS $XULRUNNER_CFLAGS"
+PERF_TOOL_LIBS="$GTK_LIBS $XULRUNNER_LIBS"
+AC_SUBST(PERF_TOOL_CFLAGS)
+AC_SUBST(PERF_TOOL_LIBS)
+
 MOON_CFLAGS="$CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $MONO_CFLAGS"
 dnl MOON_LIBS is partially defined above for the user-plugin build
 MOON_LIBS="$MOON_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ALSA_LIBS $ZLIB $PTHREAD_LIBS"
@@ -527,6 +544,7 @@ plugin/install/Makefile
 plugin/install/install.rdf
 plugin/test/Makefile
 plugin/samples/Makefile
+perf/Makefile
 ])
 
 # general configuration info
@@ -535,6 +553,7 @@ Moonlight configuration:
 
 	Support for ffmpeg: $with_ffmpeg $ffmpeg_warning
 	Support for running the test harness: $with_testing
+	Support for running the performance suite: $with_performance
 	Using cairo: $with_cairo
 EOF
 
