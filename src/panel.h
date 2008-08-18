@@ -93,16 +93,4 @@ class Panel : public FrameworkElement {
 	UIElementCollection *GetChildren ();
 };
 
-G_BEGIN_DECLS
-
-void panel_set_background (Panel *panel, Brush *background);
-Brush *panel_get_background (Panel *panel);
-
-void panel_set_children (Panel *panel, UIElementCollection *children);
-UIElementCollection *panel_get_children (Panel *panel);
-
-void panel_child_add (Panel *panel, UIElement *element);
-
-G_END_DECLS
-
 #endif /* __MOON_PANEL_H__ */

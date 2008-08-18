@@ -668,33 +668,3 @@ Panel::OnLoaded ()
 	
  	emitting_loaded = false;
 }
-
-void
-panel_set_background (Panel *panel, Brush *background)
-{
-	panel->SetBackground (background);
-}
-
-Brush *
-panel_get_background (Panel *panel)
-{
-	return panel->GetBackground ();
-}
-
-void
-panel_set_children (Panel *panel, UIElementCollection *children)
-{
-	panel->SetChildren (children);
-}
-
-UIElementCollection *
-panel_get_children (Panel *panel)
-{
-	return panel->GetChildren ();
-}
-
-void
-panel_child_add (Panel *panel, UIElement *element)
-{
-	panel->GetChildren ()->Add (element);
-}
