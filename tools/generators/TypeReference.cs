@@ -121,6 +121,9 @@ class TypeReference {
 			case "EventHandler":
 				managed_type = "UnmanagedEventHandler";
 				break;
+			case "Size":
+				managed_type = "UnmanagedSize";
+				break;
 			case "TimeSpan":
 				managed_type = "long";
 				break;

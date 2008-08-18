@@ -1,3 +1,7 @@
+2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TypeReference.cs: Added Size->UnmanagedSize mapping.
+
 2008-08-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TypeReference.cs: Handle double* and TimeSpan.
