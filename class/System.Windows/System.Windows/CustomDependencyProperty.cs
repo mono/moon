@@ -56,8 +56,7 @@ namespace System.Windows
 		
 		internal NativePropertyChangedHandler PropertyChangedHandler {
 			get { return property_changed_handler; }
-			set { property_changed_handler = value; }
-				
-		};
+			set { property_changed_handler = value; }		
+		}
 	}
 }
