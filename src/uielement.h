@@ -452,7 +452,7 @@ class UIElement : public DependencyObject {
 	void SetRenderTransform (Transform *transform);
 	Transform *GetRenderTransform ();
 	
-	void SetRenderTransformOrigin (Point *point);
+	void SetRenderTransformOrigin (Point *origin);
 	Point *GetRenderTransformOrigin ();
 	
 	TriggerCollection *GetTriggers ();

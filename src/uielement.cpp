@@ -899,7 +899,7 @@ UIElement::GetRenderTransform ()
 void
 UIElement::SetRenderTransformOrigin (Point *origin)
 {
-	SetValue (UIElement::RenderTransformOriginProperty, Value (origin));
+	SetValue (UIElement::RenderTransformOriginProperty, Value (*origin));
 }
 
 Point *
