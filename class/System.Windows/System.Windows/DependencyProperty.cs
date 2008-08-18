@@ -104,6 +104,7 @@ namespace System.Windows {
 			
 			result = new CustomDependencyProperty (handle, name, property_type, owner_type, metadata);
 			result.attached = attached;
+			result.PropertyChangedHandler = handler;
 			
 			return result;
 		}

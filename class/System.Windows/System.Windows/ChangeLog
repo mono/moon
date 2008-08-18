@@ -1,3 +1,8 @@
+2008-08-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* CustomDependencyProperty.cs, DependencyProperty.cs: Store the
+	  PropertyChanged handler so that the GC doesn't free it.
+
 2008-08-15  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyProperty.g.cs: regen.
