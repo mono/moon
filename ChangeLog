@@ -1,5 +1,13 @@
-2008-08-17  Chris Toshok  <toshok@ximian.com>
+2008-08-18  Michael Dominic K.  <mdk@mdk.am>
 
+	* Makefile.am:
+	* configure.ac:
+	* perf/Makefile:
+	* perf/Makefile.am:
+	* perf/perf-suite-runner/DrtItem.cs: Adding the perf suite to the build system.
+
+2008-08-17  Chris Toshok  <toshok@ximian.com>
+	
 	* configure.ac: rework the SL2 checks so that we can enable
 	browser (2.1) assemblies separate from the desktop (3.0)
 	assemblies.
