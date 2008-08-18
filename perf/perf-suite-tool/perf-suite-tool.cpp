@@ -76,13 +76,13 @@ static GOptionEntry entries [] =
 void start_xml (void)
 {
 	if (results_io)
-		fprintf (results_io, "<Results>\n");
+		fprintf (results_io, "<DrtResult>\n");
 }
 
 void end_xml (void)
 {
 	if (results_io) {
-		fprintf (results_io, "</Results>\n");
+		fprintf (results_io, "</DrtResult>\n");
 		fclose (results_io);
 		results_io = NULL;
 	}
@@ -91,7 +91,7 @@ void end_xml (void)
 void save_result (long v)
 {
 	if (results_io) {
-		fprintf (results_io, "  <Run time=\"%ld\" />\n", v);
+		fprintf (results_io, "  <DrtRun time=\"%ld\" />\n", v);
 	}
 }
 

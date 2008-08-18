@@ -57,7 +57,7 @@ namespace PerfSuiteRunner {
 				XmlDocument document = new XmlDocument ();
 				document.Load (streamReader);
                 
-				foreach (XmlNode node in document.GetElementsByTagName ("Run")) {
+				foreach (XmlNode node in document.GetElementsByTagName ("DrtRun")) {
 					if (node.Attributes ["time"] != null) {
 						long time = Convert.ToInt64 (node.Attributes ["time"].Value);
 						if (time != 0)

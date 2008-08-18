@@ -1,5 +1,11 @@
 2008-08-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-runner/DrtResult.cs:
+	* perf-suite-tool/perf-suite-tool.cpp: Results -> DrtResult in the output from
+	the perf-suite-tool.
+
+2008-08-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile:
 	* perf-suite-runner/DrtItem.cs:
 	* perf-suite-runner/Main.cs:
