@@ -1,5 +1,13 @@
 2008-08-07  Michael Dominic K.  <mdk@mdk.am>
 
+	* Makefile:
+	* perf-suite-runner/DrtItem.cs:
+	* perf-suite-runner/DrtStore.cs:
+	* perf-suite-runner/Main.cs: Adding the core of the perf-suite-runner +
+	a Makefile to build the whole thing.
+
+2008-08-07  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-set/drtlist.xml:
 	* perf-suite-set/rotating-balls.html: Adding a basic set of files for performance
 	benchmarking.

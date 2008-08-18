@@ -1,0 +1,117 @@
+/*
+ * Copyright (c) 2008 Novell, Inc. (http://www.novell.com)
+ *
+ * Contact:
+ *  Moonlight List (moonlight-list@lists.ximian.com)
+ * 
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
+
+using System;
+using System.Xml;
+using System.Diagnostics;
+
+namespace PerfSuiteRunner {
+
+	public class DrtItem {
+
+		public int StartTime = 0;
+		public int EndTime = 5000;
+		public int Interval = 40;
+		public string InputFile = String.Empty;
+		public string Id = String.Empty;
+
+		public static string ItemsDirectory = "perf-suite-set";
+		public static int Runs = 3;
+
+		public string FullFileName { 
+			get { 
+				return String.Format ("{0}/{1}", ItemsDirectory, InputFile);
+			}
+		}
+
+		/* CONSTRUCTOR */
+		public DrtItem (XmlNode node)
+		{
+			if (node.Attributes ["startTime"] != null)
+				StartTime = Convert.ToInt32 (node.Attributes ["startTime"].Value);
+
+			if (node.Attributes ["endTime"] != null)
+				EndTime = Convert.ToInt32 (node.Attributes ["endTime"].Value);
+
+			if (node.Attributes ["interval"] != null)
+				Interval = Convert.ToInt32 (node.Attributes ["interval"].Value);
+
+			if (node.Attributes ["inputFile"] != null)
+				InputFile = node.Attributes ["inputFile"].Value;
+
+			if (node.Attributes ["id"] != null)
+				Id = node.Attributes ["id"].Value;
+		}
+
+		public bool IsValid ()
+		{
+			if (StartTime < 0)
+				return false;
+
+			if (EndTime < 0)
+				return false;
+
+			if (EndTime < StartTime)
+				return false;
+
+			if (InputFile == String.Empty)
+				return false;
+
+			if (Id == String.Empty)
+				return false;
+
+			if (Interval < 0)
+				return false;
+
+			return true;
+		}
+
+		public void Run ()
+		{
+			// FIXME: Crappy for now
+			string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4}", 
+							  FullFileName, 
+							  StartTime, 
+							  EndTime, 
+							  Interval, 
+							  Runs);
+
+			Process proc = new Process();
+			proc.EnableRaisingEvents = false; 
+			proc.StartInfo.FileName = "tool";
+			proc.StartInfo.Arguments = arguments;
+			proc.Start();
+			proc.WaitForExit();
+		}
+
+	}
+
+}
+
+
