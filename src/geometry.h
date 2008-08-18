@@ -16,8 +16,6 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-
 #include <stdint.h>
 #include <cairo.h>
 #include "enums.h"
@@ -31,7 +29,7 @@ G_BEGIN_DECLS
 /* @Namespace=System.Windows.Media */
 class Geometry : public DependencyObject {
  protected:
-#if FALSE
+#if false
 	enum GeometryFlags {
 		GEOMETRY_NORMAL		= 0x01,	// normal drawing
 		GEOMETRY_DEGENERATE	= 0x02,	// degenerate drawing, use the Stroke brush for filling
@@ -67,7 +65,7 @@ class Geometry : public DependencyObject {
 	virtual Rect ComputeBounds (Path *path, bool logical) { return Rect (0.0, 0.0, 0.0, 0.0); }
 	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix) { return ComputeBounds (path, logical); }
 
-//	virtual Point GetOriginPoint (Path *path);
+	//virtual Point GetOriginPoint (Path *path);
 
 	virtual bool IsFilled () { return true; }
 
@@ -84,11 +82,6 @@ class Geometry : public DependencyObject {
 	void SetTransform (Transform *transform);
 	Transform *GetTransform ();
 };
-
-FillRule geometry_get_fill_rule (Geometry *geometry);
-void geometry_set_fill_rule (Geometry *geometry, FillRule fill_rule);
-Transform *geometry_get_transform (Geometry *geometry);
-void geometry_set_transform (Geometry *geometry, Transform *transform);
 
 
 //
@@ -141,9 +134,6 @@ class GeometryGroup : public Geometry {
 	GeometryCollection *GetChildren ();
 };
 
-GeometryCollection *geometry_group_get_children (GeometryGroup *group);
-void geometry_group_set_children (GeometryGroup *group, GeometryCollection *children);
-
 
 //
 // EllipseGeometry
@@ -183,15 +173,6 @@ class EllipseGeometry : public Geometry {
 	double GetRadiusY ();
 };
 
-Point *ellipse_geometry_get_center (EllipseGeometry *ellipse);
-void ellipse_geometry_set_center (EllipseGeometry *ellipse, Point *point);
-
-double ellipse_geometry_get_radius_x (EllipseGeometry *ellipse);
-void ellipse_geometry_set_radius_x (EllipseGeometry *ellipse, double radius_x);
-
-double ellipse_geometry_get_radius_y (EllipseGeometry *ellipse);
-void ellipse_geometry_set_radius_y (EllipseGeometry *ellipse, double radius_y);
-
 
 //
 // LineGeometry
@@ -225,12 +206,6 @@ class LineGeometry : public Geometry {
 	void SetStartPoint (Point *point);
 	Point *GetStartPoint ();
 };
-
-Point *line_geometry_get_end_point (LineGeometry *line);
-void line_geometry_set_end_point (LineGeometry *line, Point *point);
-
-Point *line_geometry_get_start_point (LineGeometry *line);
-void line_geometry_set_start_point (LineGeometry *line, Point *point);
 
 
 //
@@ -291,9 +266,6 @@ class PathGeometry : public Geometry {
 	PathFigureCollection *GetFigures ();
 };
 
-PathFigureCollection *path_geometry_get_figures (PathGeometry *path);
-void path_geometry_set_figures (PathGeometry *path, PathFigureCollection *figures);
-
 
 //
 // RectangleGeometry
@@ -334,15 +306,6 @@ class RectangleGeometry : public Geometry {
 	void SetRect (Rect *rect);
 	Rect *GetRect ();
 };
-
-double rectangle_geometry_get_radius_x (RectangleGeometry *rectangle);
-void rectangle_geometry_set_radius_x (RectangleGeometry *rectangle, double radius);
-
-double rectangle_geometry_get_radius_y (RectangleGeometry *rectangle);
-void rectangle_geometry_set_radius_y (RectangleGeometry *rectangle, double radius);
-
-Rect *rectangle_geometry_get_rect (RectangleGeometry *rectangle);
-void rectangle_geometry_set_rect (RectangleGeometry *rectangle, Rect *rect);
 
 
 //
@@ -408,15 +371,6 @@ class PathFigure : public DependencyObject {
 	void SetStartPoint (Point *point);
 	Point *GetStartPoint ();
 };
-
-bool path_figure_get_is_closed (PathFigure *figure);
-void path_figure_set_is_closed (PathFigure *figure, bool closed);
-
-PathSegmentCollection *path_figure_get_segments (PathFigure *figure);
-void path_figure_set_segments (PathFigure *figure, PathSegmentCollection *segments);
-
-Point *path_figure_get_start_point (PathFigure *figure);
-void path_figure_set_start_point (PathFigure *figure, Point *point);
 
 
 //
@@ -487,21 +441,6 @@ class ArcSegment : public PathSegment {
 	SweepDirection GetSweepDirection ();
 };
 
-bool arc_segment_get_is_large_arc (ArcSegment *segment);
-void arc_segment_set_is_large_arc (ArcSegment *segment, bool large);
-
-Point *arc_segment_get_point (ArcSegment *segment);
-void arc_segment_set_point (ArcSegment *segment, Point *point);
-
-double arc_segment_get_rotation_angle (ArcSegment *segment);
-void arc_segment_set_rotation_angle (ArcSegment *segment, double angle);
-
-Point *arc_segment_get_size (ArcSegment *segment);
-void arc_segment_set_size (ArcSegment *segment, Point *size);
-
-SweepDirection arc_segment_get_sweep_direction (ArcSegment *segment);
-void arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction);
-
 
 //
 // BezierSegment
@@ -540,15 +479,6 @@ class BezierSegment : public PathSegment {
 	Point *GetPoint3 ();
 };
 
-Point *bezier_segment_get_point1 (BezierSegment *segment);
-void bezier_segment_set_point1 (BezierSegment *segment, Point *point);
-
-Point *bezier_segment_get_point2 (BezierSegment *segment);
-void bezier_segment_set_point2 (BezierSegment *segment, Point *point);
-
-Point *bezier_segment_get_point3 (BezierSegment *segment);
-void bezier_segment_set_point3 (BezierSegment *segment, Point *point);
-
 
 //
 // LineSegment
@@ -577,14 +507,10 @@ class LineSegment : public PathSegment {
 	Point *GetPoint ();
 };
 
-Point *line_segment_get_point (LineSegment *segment);
-void line_segment_set_point (LineSegment *segment, Point *point);
-
 
 //
 // PolyBezierSegment
 //
-
 /* @Namespace=System.Windows.Media */
 class PolyBezierSegment : public PathSegment {
  protected:
@@ -610,13 +536,10 @@ class PolyBezierSegment : public PathSegment {
 	void SetPoints (PointCollection *points);
 };
 
-void poly_bezier_segment_set_points (PolyBezierSegment *segment, PointCollection *points);
-
 
 //
 // PolyLineSegment
 //
-
 /* @Namespace=System.Windows.Media */
 class PolyLineSegment : public PathSegment {
  protected:
@@ -642,13 +565,10 @@ class PolyLineSegment : public PathSegment {
 	void SetPoints (PointCollection *points);
 };
 
-void poly_line_segment_set_points (PolyLineSegment *segment, PointCollection *points);
-
 
 //
 // PolyQuadraticBezierSegment
 //
-
 /* @Namespace=System.Windows.Media */
 class PolyQuadraticBezierSegment : public PathSegment {
  protected:
@@ -674,13 +594,10 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	void SetPoints (PointCollection *points);
 };
 
-void poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, PointCollection *points);
-
 
 //
 // QuadraticBezierSegment
 //
-
 /* @Namespace=System.Windows.Media */
 class QuadraticBezierSegment : public PathSegment {
  protected:
@@ -709,13 +626,5 @@ class QuadraticBezierSegment : public PathSegment {
 	void SetPoint2 (Point *point);
 	Point *GetPoint2 ();
 };
-
-Point *quadratic_bezier_segment_get_point1 (QuadraticBezierSegment *segment);
-void quadratic_bezier_segment_set_point1 (QuadraticBezierSegment *segment, Point *point);
-
-Point *quadratic_bezier_segment_get_point2 (QuadraticBezierSegment *segment);
-void quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *point);
-
-G_END_DECLS
 
 #endif

@@ -85,36 +85,10 @@ Geometry::GetTransform ()
 	return value ? value->AsTransform () : NULL;
 }
 
-FillRule
-geometry_get_fill_rule (Geometry *geometry)
-{
-	return geometry->GetFillRule ();
-}
-
-void
-geometry_set_fill_rule (Geometry *geometry, FillRule rule)
-{
-	geometry->SetFillRule (rule);
-}
-
-Transform *
-geometry_get_transform (Geometry *geometry)
-{
-	return geometry->GetTransform ();
-}
-
-void
-geometry_set_transform (Geometry *geometry, Transform *transform)
-{
-	geometry->SetTransform (transform);
-}
-
-
 
 //
 // GeometryGroup
 //
-
 
 GeometryGroup::GeometryGroup ()
 {
@@ -222,17 +196,6 @@ GeometryGroup::GetChildren ()
 	return value ? value->AsGeometryCollection () : NULL;
 }
 
-GeometryCollection *
-geometry_group_get_children (GeometryGroup *group)
-{
-	return group->GetChildren ();
-}
-
-void
-geometry_group_set_children (GeometryGroup *group, GeometryCollection *children)
-{
-	group->SetChildren (children);
-}
 
 //
 // EllipseGeometry
@@ -319,48 +282,10 @@ EllipseGeometry::GetRadiusY ()
 	return GetValue (EllipseGeometry::RadiusYProperty)->AsDouble ();
 }
 
-Point *
-ellipse_geometry_get_center (EllipseGeometry *ellipse)
-{
-	return ellipse->GetCenter ();
-}
-
-void
-ellipse_geometry_set_center (EllipseGeometry *ellipse, Point *center)
-{
-	ellipse->SetCenter (center);
-}
-
-double
-ellipse_geometry_get_radius_x (EllipseGeometry *ellipse)
-{
-	return ellipse->GetRadiusX ();
-}
-
-void
-ellipse_geometry_set_radius_x (EllipseGeometry *ellipse, double radius)
-{
-	ellipse->SetRadiusX (radius);
-}
-
-double
-ellipse_geometry_get_radius_y (EllipseGeometry *ellipse)
-{
-	return ellipse->GetRadiusY ();
-}
-
-void
-ellipse_geometry_set_radius_y (EllipseGeometry *ellipse, double radius)
-{
-	ellipse->SetRadiusY (radius);
-}
-
-
 
 //
 // LineGeometry
 //
-
 
 void
 LineGeometry::Build (Path *shape)
@@ -432,31 +357,6 @@ LineGeometry::GetStartPoint ()
 	Value *value = GetValue (LineGeometry::StartPointProperty);
 	
 	return value ? value->AsPoint () : NULL;
-}
-
-
-Point *
-line_geometry_get_end_point (LineGeometry *line)
-{
-	return line->GetEndPoint ();
-}
-
-void
-line_geometry_set_end_point (LineGeometry *line, Point *point)
-{
-	line->SetEndPoint (point);
-}
-
-Point *
-line_geometry_get_start_point (LineGeometry *line)
-{
-	return line->GetStartPoint ();
-}
-
-void
-line_geometry_set_start_point (LineGeometry *line, Point *point)
-{
-	line->SetStartPoint (point);
 }
 
 
@@ -608,18 +508,6 @@ PathGeometry::GetFigures ()
 	return value ? value->AsPathFigureCollection () : NULL;
 }
 
-PathFigureCollection *
-path_geometry_get_figures (PathGeometry *path)
-{
-	return path->GetFigures ();
-}
-
-void
-path_geometry_set_figures (PathGeometry *path, PathFigureCollection *figures)
-{
-	path->SetFigures (figures);
-}
-
 
 //
 // RectangleGeometry
@@ -719,42 +607,6 @@ RectangleGeometry::GetRect ()
 	Value *value = GetValue (RectangleGeometry::RectProperty);
 	
 	return value ? value->AsRect () : NULL;
-}
-
-double
-rectangle_geometry_get_radius_x (RectangleGeometry *rectangle)
-{
-	return rectangle->GetRadiusX ();
-}
-
-void
-rectangle_geometry_set_radius_x (RectangleGeometry *rectangle, double radius)
-{
-	rectangle->SetRadiusX (radius);
-}
-
-double
-rectangle_geometry_get_radius_y (RectangleGeometry *rectangle)
-{
-	return rectangle->GetRadiusY ();
-}
-
-void
-rectangle_geometry_set_radius_y (RectangleGeometry *rectangle, double radius)
-{
-	rectangle->SetRadiusY (radius);
-}
-
-Rect *
-rectangle_geometry_get_rect (RectangleGeometry *rectangle)
-{
-	return rectangle->GetRect ();
-}
-
-void
-rectangle_geometry_set_rect (RectangleGeometry *rectangle, Rect *rect)
-{
-	rectangle->SetRect (rect);
 }
 
 
@@ -880,42 +732,6 @@ PathFigure::GetStartPoint ()
 	return value ? value->AsPoint () : NULL;
 }
 
-bool
-path_figure_get_is_closed (PathFigure *figure)
-{
-	return figure->GetIsClosed ();
-}
-
-void
-path_figure_set_is_closed (PathFigure *figure, bool closed)
-{
-	figure->SetIsClosed (closed);
-}
-
-PathSegmentCollection *
-path_figure_get_segments (PathFigure *figure)
-{
-	return figure->GetSegments ();
-}
-
-void
-path_figure_set_segments (PathFigure *figure, PathSegmentCollection *segments)
-{
-	figure->SetSegments (segments);
-}
-
-Point *
-path_figure_get_start_point (PathFigure *figure)
-{
-	return figure->GetStartPoint ();
-}
-
-void
-path_figure_set_start_point (PathFigure *figure, Point *point)
-{
-	figure->SetStartPoint (point);
-}
-
 
 //
 // ArcSegment
@@ -1000,67 +816,6 @@ ArcSegment::GetSweepDirection ()
 }
 
 
-bool
-arc_segment_get_is_large_arc (ArcSegment *segment)
-{
-	return segment->GetIsLargeArc ();
-}
-
-void
-arc_segment_set_is_large_arc (ArcSegment *segment, bool large)
-{
-	segment->SetIsLargeArc (large);
-}
-
-Point *
-arc_segment_get_point (ArcSegment *segment)
-{
-	return segment->GetPoint ();
-}
-
-void
-arc_segment_set_point (ArcSegment *segment, Point *point)
-{
-	segment->SetPoint (point);
-}
-
-double
-arc_segment_get_rotation_angle (ArcSegment *segment)
-{
-	return segment->GetRotationAngle ();
-}
-
-void
-arc_segment_set_rotation_angle (ArcSegment *segment, double angle)
-{
-	segment->SetRotationAngle (angle);
-}
-
-Point *
-arc_segment_get_size (ArcSegment *segment)
-{
-	return segment->GetSize ();
-}
-
-void
-arc_segment_set_size (ArcSegment *segment, Point *size)
-{
-	segment->SetSize (size);
-}
-
-SweepDirection
-arc_segment_get_sweep_direction (ArcSegment *segment)
-{
-	return segment->GetSweepDirection ();
-}
-
-void
-arc_segment_set_sweep_direction (ArcSegment *segment, SweepDirection direction)
-{
-	segment->SetSweepDirection (direction);
-}
-
-
 //
 // BezierSegment
 //
@@ -1125,43 +880,6 @@ BezierSegment::GetPoint3 ()
 }
 
 
-Point *
-bezier_segment_get_point1 (BezierSegment *segment)
-{
-	return segment->GetPoint1 ();
-}
-
-void
-bezier_segment_set_point1 (BezierSegment *segment, Point *point)
-{
-	segment->SetPoint1 (point);
-}
-
-Point *
-bezier_segment_get_point2 (BezierSegment *segment)
-{
-	return segment->GetPoint2 ();
-}
-
-void
-bezier_segment_set_point2 (BezierSegment *segment, Point *point)
-{
-	segment->SetPoint2 (point);
-}
-
-Point *
-bezier_segment_get_point3 (BezierSegment *segment)
-{
-	return segment->GetPoint3 ();
-}
-
-void
-bezier_segment_set_point3 (BezierSegment *segment, Point *point)
-{
-	segment->SetPoint3 (point);
-}
-
-
 //
 // LineSegment
 //
@@ -1189,19 +907,6 @@ LineSegment::GetPoint ()
 	Value *value = GetValue (LineSegment::PointProperty);
 	
 	return value ? value->AsPoint () : NULL;
-}
-
-
-Point *
-line_segment_get_point (LineSegment *segment)
-{
-	return segment->GetPoint ();
-}
-
-void
-line_segment_set_point (LineSegment *segment, Point *point)
-{
-	segment->SetPoint (point);
 }
 
 
@@ -1457,29 +1162,4 @@ QuadraticBezierSegment::GetPoint2 ()
 	Value *value = GetValue (QuadraticBezierSegment::Point2Property);
 	
 	return value ? value->AsPoint () : NULL;
-}
-
-
-Point *
-quadratic_bezier_segment_get_point1 (QuadraticBezierSegment *segment)
-{
-	return segment->GetPoint1 ();
-}
-
-void
-quadratic_bezier_segment_set_point1 (QuadraticBezierSegment *segment, Point *point)
-{
-	segment->SetPoint1 (point);
-}
-
-Point *
-quadratic_bezier_segment_get_point2 (QuadraticBezierSegment *segment)
-{
-	return segment->GetPoint2 ();
-}
-
-void
-quadratic_bezier_segment_set_point2 (QuadraticBezierSegment *segment, Point *point)
-{
-	segment->SetPoint2 (point);
 }
