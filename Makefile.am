@@ -23,6 +23,10 @@ pkgconfig_DATA=moon.pc
 
 EXTRA_DIST=moon.pc.in
 
+# this should be handled by dolt.m4
+DISTCLEANFILES=	doltcompile \
+		doltlibtool
+
 # custom install rule
 test-plugin:
 	$(MAKE) $(AM_MAKEFLAGS) -C plugin test-plugin
