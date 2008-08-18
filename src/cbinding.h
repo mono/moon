@@ -27,6 +27,7 @@
 #include "panel.h"
 #include "runtime.h"
 #include "shape.h"
+#include "size.h"
 #include "stackpanel.h"
 #include "style.h"
 #include "stylus.h"
@@ -893,6 +894,14 @@ SetterBaseCollection *setter_base_collection_new (void);
  **/
 /* @GeneratePInvoke */
 Shape *shape_new (void);
+
+#if SL_2_0
+/**
+ * SizeChangedEventArgs
+ **/
+/* @GeneratePInvoke */
+SizeChangedEventArgs *size_changed_event_args_new (Size prev_size, Size new_size);
+#endif
 
 /**
  * SkewTransform

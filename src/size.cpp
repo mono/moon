@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * eventargs.cpp: specialized code for dealing with mouse/stylus/keyboard event args.
+ * size.cpp: specialized code for dealing with SizeChangedEventArgs
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -18,13 +18,6 @@ SizeChangedEventArgs::SizeChangedEventArgs (Size prev_size, Size new_size)
 {
 	this->prev_size = prev_size;
 	this->new_size = new_size;
-}
-
-
-SizeChangedEventArgs*
-size_changed_event_args_new (Size prev_size, Size new_size)
-{
-	return new SizeChangedEventArgs (prev_size, new_size);
 }
 
 void

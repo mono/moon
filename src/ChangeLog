@@ -1,5 +1,7 @@
 2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
 
+	* size.cpp: Removed manual ctor c-binding.
+
 	* shape.cpp: Removed manual c-bindings for property accessors.
 
 2008-08-18  Geoff Norton  <gnorton@novell.com>

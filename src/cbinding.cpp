@@ -1637,6 +1637,18 @@ shape_new (void)
 }
 
 
+#if SL_2_0
+/**
+ * SizeChangedEventArgs
+ **/
+SizeChangedEventArgs *
+size_changed_event_args_new (Size prev_size, Size new_size)
+{
+	return new SizeChangedEventArgs (prev_size, new_size);
+}
+#endif
+
+
 /**
  * SkewTransform
  **/
