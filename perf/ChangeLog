@@ -1,5 +1,11 @@
 2008-08-07  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-set/drtlist.xml:
+	* perf-suite-set/rotating-balls.html: Adding a basic set of files for performance
+	benchmarking.
+
+2008-08-07  Michael Dominic K.  <mdk@mdk.am>
+
 	* benchmark-runner/benchmark-runner.cpp: Adding an option to save results as XML.
 
 2008-08-07  Michael Dominic K.  <mdk@mdk.am>

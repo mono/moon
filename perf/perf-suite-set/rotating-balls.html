@@ -1,0 +1,92 @@
+<html>
+<head>
+    <style type="text/css">
+    body { 
+      margin-left: 0;
+      margin-top: 0;
+      padding: 0;
+    };
+
+    embed {
+      margin-left: 0;
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+    };
+    </style>
+</head>
+<body>
+<embed type="application/x-silverlight" data="data:," id="slControl" width="400" height="400" source="#xamlContent">
+</embed>
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="OnLoaded" x:Name="MasterCanvas">
+
+    <Ellipse Width="400" Height="400" Canvas.Left="0" Canvas.Top="0">
+    <Ellipse.Fill>
+       	<RadialGradientBrush>
+			<RadialGradientBrush.GradientStops>
+				<GradientStop x:Name="color1" Offset="0" Color="Red" />
+				<GradientStop x:Name="color2" Offset="1" Color="Green" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Ellipse.Fill>
+    <Ellipse.Triggers>
+        <EventTrigger RoutedEvent="Ellipse.Loaded">
+           <BeginStoryboard>
+	            <Storyboard>
+			        <ColorAnimation BeginTime="00:00:00" Storyboard.TargetName="color1" Storyboard.TargetProperty="Color" To="RoyalBlue" Duration="0:0:5" />
+		            <ColorAnimation BeginTime="00:00:00" Storyboard.TargetName="color2" Storyboard.TargetProperty="Color" To="Yellow" Duration="0:0:5" />
+                </Storyboard>
+           </BeginStoryboard>
+        </EventTrigger>
+    </Ellipse.Triggers>
+    </Ellipse>
+
+    <Ellipse Width="50" Height="50" Canvas.Left="175" Canvas.Top="40" Fill="Orange" Stroke="White" StrokeThickness="5" RenderTransformOrigin="0.5, 3">
+					<Ellipse.RenderTransform>
+						<TransformGroup>
+							<ScaleTransform ScaleX="1" ScaleY="1"/>
+							<SkewTransform AngleX="0" AngleY="0"/>
+							<RotateTransform x:Name="angle1" Angle="0"/>
+							<TranslateTransform X="0" Y="0"/>
+						</TransformGroup>
+					</Ellipse.RenderTransform>
+    <Ellipse.Triggers>
+        <EventTrigger RoutedEvent="Ellipse.Loaded">
+        <BeginStoryboard>
+	        <Storyboard SpeedRatio="1.0">
+			    <DoubleAnimation BeginTime="00:00:00" Storyboard.TargetName="angle1" Storyboard.TargetProperty="Angle" To="360.0" Duration="0:0:5" />
+      </Storyboard>
+        </BeginStoryboard>
+        </EventTrigger>
+    </Ellipse.Triggers>
+	</Ellipse>
+
+    <Ellipse Width="50" Height="50" Canvas.Left="175" Canvas.Top="40" Fill="LightGray" Stroke="White" StrokeThickness="5" RenderTransformOrigin="0.5, 3">
+					<Ellipse.RenderTransform>
+						<TransformGroup>
+							<ScaleTransform ScaleX="1" ScaleY="1"/>
+							<SkewTransform AngleX="0" AngleY="0"/>
+							<RotateTransform Angle="180"/>
+							<RotateTransform x:Name="angle2" Angle="0"/>
+							<TranslateTransform X="0" Y="0"/>
+						</TransformGroup>
+					</Ellipse.RenderTransform>
+    <Ellipse.Triggers>
+        <EventTrigger RoutedEvent="Ellipse.Loaded">
+        <BeginStoryboard>
+	        <Storyboard SpeedRatio="1.0">
+			    <DoubleAnimation BeginTime="00:00:00" Storyboard.TargetName="angle2" Storyboard.TargetProperty="Angle" To="360.0" Duration="0:0:5" />
+      </Storyboard>
+        </BeginStoryboard>
+        </EventTrigger>
+    </Ellipse.Triggers>
+	</Ellipse>
+</Canvas>
+</script>
+</body>
+</html>
+
+
