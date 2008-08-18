@@ -503,7 +503,16 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			onResize = argv[i];
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "src") || !g_ascii_strcasecmp (argn[i], "source")) {
-			source = g_strdup (argv[i]);
+			/* There is a new design pattern that creates a silverlight object with data="data:application/x-silverlight,"
+			 * firefox is passing this to us as the src element.  We need to ensure we dont set source to this value
+			 * as this design pattern sets a xap up after the fact, but checks to ensure Source hasn't been set yet.
+			 * 
+			 * eg: http://theamazingalbumcoveratlas.org/
+			 *
+			 * TODO: Find a site that has data:application/x-silverlight,SOMEDATA and figure out what we do with it
+			 */
+			if (g_ascii_strncasecmp (argv[i], "data:application/x-silverlight", 30) != 0 && argv[i][strlen(argv[i])-1] != ',')
+				source = g_strdup (argv[i]);
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "background")) {
 			background = g_strdup (argv[i]);
