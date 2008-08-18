@@ -187,7 +187,7 @@ public:
 	bool IsAnythingDirty ();
 
 	static pthread_t main_thread;
-	static bool InMainThread () { return pthread_equal (main_thread, pthread_self ()); }
+	static bool InMainThread () { return (pthread_equal (main_thread, pthread_self ()) || pthread_equal (main_thread, NULL)); }
 	
 protected:
 	// The current window we are drawing to

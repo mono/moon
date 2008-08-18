@@ -1,3 +1,8 @@
+2008-08-18  Michael Dominic K.  <mdk@mdk.am>
+
+	* runtime.h: Caller is "in main thread" also when the main_thread
+	pointer equals NULL (no surface has been created).
+
 2008-08-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* debug.cpp: Fix a leak found by valgrind.
