@@ -710,8 +710,8 @@ namespace Mono {
 		public extern static IntPtr shape_new ();
 
 		[DllImport ("moon")]
-		// SizeChangedEventArgs *size_changed_event_args_new (Size prev_size, Size new_size);
-		public extern static IntPtr size_changed_event_args_new (UnmanagedSize prev_size, UnmanagedSize new_size);
+		// SizeChangedEventArgs *size_changed_event_args_new ();
+		public extern static IntPtr size_changed_event_args_new ();
 
 		[DllImport ("moon")]
 		// SkewTransform *skew_transform_new ();
