@@ -1,5 +1,13 @@
 2008-08-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-runner/DrtItem.cs:
+	* perf-suite-runner/DrtStore.cs:
+	* perf-suite-runner/Main.cs:
+	* perf-suite-set/drtlist.xml: Changing the 'id' in drt list item to 'uniqueId' 
+	not to be confusing with Database id.
+
+2008-08-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile:
 	* perf-suite-lib/Database.cs:
 	* perf-suite-lib/ResultDbEntry.cs:

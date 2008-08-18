@@ -50,11 +50,11 @@ namespace PerfSuiteRunner {
 			foreach (DrtItem item in store.Items) {
 				Console.WriteLine ("*** Running [{0}]", item);
 
-				ItemDbEntry itemEntry = Database.GetItemEntryByUniqueId (item.Id);
+				ItemDbEntry itemEntry = Database.GetItemEntryByUniqueId (item.UniqueId);
 				if (itemEntry == null) {
 					Console.WriteLine ("*** [{0}] not yet in the database, adding...");
 					itemEntry = new ItemDbEntry ();
-					itemEntry.UniqueId = item.Id;
+					itemEntry.UniqueId = item.UniqueId;
 					Database.Put (itemEntry);
 				}
 				

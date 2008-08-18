@@ -1,11 +1,11 @@
 <DRTList>
-  <Item id="1"
+  <Item uniqueId="1"
 	inputFile="rotating-balls.html"
 	startTime="0"
 	endTime="5000"
 	interval="40"
    />
-  <Item id="2"
+  <Item uniqueId="2"
 	inputFile="scaling-image.html"
 	endTime="5000"
 	interval="40"
