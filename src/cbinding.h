@@ -900,7 +900,7 @@ Shape *shape_new (void);
  * SizeChangedEventArgs
  **/
 /* @GeneratePInvoke */
-SizeChangedEventArgs *size_changed_event_args_new (Size prev_size, Size new_size);
+SizeChangedEventArgs *size_changed_event_args_new (void);
 #endif
 
 /**

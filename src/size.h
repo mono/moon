@@ -36,6 +36,8 @@ class SizeChangedEventArgs : public RoutedEventArgs {
 	
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
+	SizeChangedEventArgs () { prev_size = Size (); new_size = Size (); }
+	
 	SizeChangedEventArgs (Size prev_size, Size new_size);
 	
 	virtual Type::Kind GetObjectType () { return Type::SIZECHANGEDEVENTARGS; }

@@ -246,7 +246,7 @@ Type type_infos [] = {
 	{ Type::SETTERBASE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "SetterBaseCollection", "SETTERBASE_COLLECTION", 0, 1, NULL, (create_inst_func *) setter_base_collection_new, NULL, NULL, NULL }, 
 	{ Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 15, NULL, (create_inst_func *) shape_new, NULL, NULL, NULL }, 
 	{ Type::SIZE, Type::INVALID, true, "Size", "SIZE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::SIZECHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "SizeChangedEventArgs", "SIZECHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::SIZECHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "SizeChangedEventArgs", "SIZECHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) size_changed_event_args_new, NULL, NULL, NULL }, 
 	{ Type::SKEWTRANSFORM, Type::TRANSFORM, false, "SkewTransform", "SKEWTRANSFORM", 0, 1, NULL, (create_inst_func *) skew_transform_new, NULL, NULL, NULL }, 
 	{ Type::SOLIDCOLORBRUSH, Type::BRUSH, false, "SolidColorBrush", "SOLIDCOLORBRUSH", 0, 1, NULL, (create_inst_func *) solid_color_brush_new, NULL, NULL, NULL }, 
 	{ Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME, false, "SplineColorKeyFrame", "SPLINECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_color_key_frame_new, NULL, NULL, NULL }, 
