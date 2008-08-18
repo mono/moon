@@ -906,7 +906,7 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 Point
 MediaElement::GetTransformOrigin ()
 {
-	Point user_xform_origin = GetRenderTransformOrigin ();
+	Point *user_xform_origin = GetRenderTransformOrigin ();
 	double h = GetHeight ();
 	double w = GetWidth ();
 	
@@ -915,7 +915,7 @@ MediaElement::GetTransformOrigin ()
 		w = (double) mplayer->GetVideoWidth ();
 	}
 	
-	return Point (user_xform_origin.x * w, user_xform_origin.y * h);
+	return Point (user_xform_origin->x * w, user_xform_origin->y * h);
 }
 
 void
@@ -2647,10 +2647,10 @@ Image::Render (cairo_t *cr, Region *region)
 Point
 Image::GetTransformOrigin ()
 {
-	Point user_xform_origin = GetRenderTransformOrigin ();
+	Point *user_xform_origin = GetRenderTransformOrigin ();
 	
-	return Point (GetWidth () * user_xform_origin.x, 
-		      GetHeight () * user_xform_origin.y);
+	return Point (GetWidth () * user_xform_origin->x, 
+		      GetHeight () * user_xform_origin->y);
 }
 
 cairo_surface_t *

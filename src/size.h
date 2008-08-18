@@ -21,6 +21,8 @@ struct Size {
 	
 	Size () : width(0), height(0) {}
 	
+	Size (int zero) : width(0), height(0) {}
+	
 	Size (double w, double h)
 	{
 		this->width = w;

@@ -93,9 +93,10 @@ Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 Point
 Canvas::GetTransformOrigin ()
 {
-	Point user_xform_origin = GetRenderTransformOrigin ();
-	return Point (GetWidth () * user_xform_origin.x, 
-		      GetHeight () * user_xform_origin.y);
+	Point *user_xform_origin = GetRenderTransformOrigin ();
+	
+	return Point (GetWidth () * user_xform_origin->x, 
+		      GetHeight () * user_xform_origin->y);
 }
 
 void

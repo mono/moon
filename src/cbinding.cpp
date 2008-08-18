@@ -125,7 +125,7 @@ bool
 collection_contains (Collection *instance, Value *value)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->Contains (value);
 }
@@ -181,7 +181,7 @@ bool
 collection_insert (Collection *instance, int index, Value *value)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->Insert (index, value);
 }
@@ -191,7 +191,7 @@ bool
 collection_remove (Collection *instance, Value *value)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->Remove (value);
 }
@@ -202,7 +202,7 @@ bool
 collection_remove_at_with_error (Collection *instance, int index, MoonError *error)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called collection_remove_at_with_error () with error == NULL.");
@@ -216,7 +216,7 @@ bool
 collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called collection_set_value_at_with_error () with error == NULL.");
@@ -489,7 +489,7 @@ bool
 dependency_property_is_attached (DependencyProperty *instance)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->IsAttached ();
 }
@@ -499,7 +499,7 @@ bool
 dependency_property_is_nullable (DependencyProperty *instance)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->IsNullable ();
 }
@@ -938,7 +938,7 @@ bool
 key_event_args_get_handled (KeyEventArgs *instance)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->GetHandled ();
 }
@@ -1202,7 +1202,7 @@ bool
 mouse_event_args_get_handled (MouseEventArgs *instance)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->GetHandled ();
 }
@@ -1747,7 +1747,7 @@ bool
 storyboard_begin (Storyboard *instance)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->Begin ();
 }
@@ -1807,7 +1807,7 @@ bool
 stroke_hit_test (Stroke *instance, StylusPointCollection *stylusPoints)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->HitTest (stylusPoints);
 }
@@ -1919,7 +1919,7 @@ bool
 surface_get_transparent (Surface *instance)
 {
 	if (instance == NULL)
-		return false;;
+		return false;
 	
 	return instance->GetTransparent ();
 }
@@ -2180,6 +2180,47 @@ types_new (void)
 /**
  * UIElement
  **/
+bool
+uielement_capture_mouse (UIElement *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->CaptureMouse ();
+}
+
+
+Size
+uielement_get_desired_size (UIElement *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (Size) 0;
+	
+	return instance->GetDesiredSize ();
+}
+
+
+GeneralTransform *
+uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTransformToUIElement (to_element);
+}
+
+
+UIElement *
+uielement_get_visual_parent (UIElement *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetVisualParent ();
+}
+
+
 void
 uielement_measure (UIElement *instance, Size availableSize)
 {
@@ -2187,6 +2228,16 @@ uielement_measure (UIElement *instance, Size availableSize)
 		return;
 	
 	instance->Measure (availableSize);
+}
+
+
+void
+uielement_release_mouse_capture (UIElement *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReleaseMouseCapture ();
 }
 
 

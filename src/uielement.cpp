@@ -310,9 +310,9 @@ UIElement::UpdateTransform ()
 void
 UIElement::ComputeLocalTransform ()
 {
-	uielement_get_render_affine (this, &local_transform);
+	GetRenderAffine (&local_transform);
 	transform_origin = GetTransformOrigin ();
-
+	
 	if (GetVisualParent () != NULL)
 		GetVisualParent ()->GetTransformFor (this, &parent_transform);
 	else
@@ -831,6 +831,44 @@ UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 }
 
 void
+UIElement::SetClip (Geometry *clip)
+{
+	SetValue (UIElement::ClipProperty, Value (clip));
+}
+
+Geometry *
+UIElement::GetClip ()
+{
+	Value *value = GetValue (UIElement::ClipProperty);
+	
+	return value ? value->AsGeometry () : NULL;
+}
+
+void
+UIElement::SetIsHitTestVisible (bool visible)
+{
+	SetValue (UIElement::IsHitTestVisibleProperty, Value (visible));
+}
+
+bool
+UIElement::GetIsHitTestVisible ()
+{
+	return GetValue (UIElement::IsHitTestVisibleProperty)->AsBool ();
+}
+
+void
+UIElement::SetOpacity (double opacity)
+{
+	SetValue (UIElement::OpacityProperty, Value (opacity));
+}
+
+double
+UIElement::GetOpacity ()
+{
+	return GetValue (UIElement::OpacityProperty)->AsDouble ();
+}
+
+void
 UIElement::SetOpacityMask (Brush *mask)
 {
 	SetValue (UIElement::OpacityMaskProperty, Value (mask));
@@ -845,15 +883,17 @@ UIElement::GetOpacityMask ()
 }
 
 void
-UIElement::SetOpacity (double opacity)
+UIElement::SetRenderTransform (Transform *transform)
 {
-	SetValue (UIElement::OpacityProperty, Value (opacity));
+	SetValue (UIElement::RenderTransformProperty, Value (transform));
 }
 
-double
-UIElement::GetOpacity ()
+Transform *
+UIElement::GetRenderTransform ()
 {
-	return GetValue (UIElement::OpacityProperty)->AsDouble ();
+	Value *value = GetValue (UIElement::RenderTransformProperty);
+	
+	return value ? value->AsTransform () : NULL;
 }
 
 TriggerCollection *
@@ -883,94 +923,15 @@ UIElement::GetTimeManager ()
 	return surface ? surface->GetTimeManager() : NULL;
 }
 
-Surface *
-uielement_get_surface (UIElement *item)
-{
-	return item->GetSurface ();
-}
-
-void 
-uielement_invalidate (UIElement *item)
-{
-	item->Invalidate ();
-}
-
-void 
-uielement_set_transform_origin (UIElement *item, Point p)
-{
-	item->SetValue (UIElement::RenderTransformOriginProperty, p);
-}
-
 void
-uielement_get_render_affine (UIElement *item, cairo_matrix_t *result)
+UIElement::GetRenderAffine (cairo_matrix_t *result)
 {
-	Value* v = item->GetValue (UIElement::RenderTransformProperty);
-	if (v == NULL)
+	Transform *transform = GetRenderTransform ();
+	
+	if (transform == NULL)
 		cairo_matrix_init_identity (result);
-	else {
-		Transform *t = v->AsTransform();
-		t->GetTransform (result);
-	}
-}
-
-/**
- * uielement_getbounds:
- * @item: the item to update the bounds of
- *
- * Does this by requesting bounds update to all of its parents. 
- */
-void
-uielement_update_bounds (UIElement *item)
-{
-	item->UpdateBounds();
-}
-
-void
-uielement_set_render_transform (UIElement *item, Transform *transform)
-{
-	item->SetValue (UIElement::RenderTransformProperty, Value(transform));
-}
-
-void
-uielement_set_opacity_mask (UIElement *item, Brush *mask)
-{
-	item->SetOpacityMask (mask);
-}
-
-Brush *
-uielement_get_opacity_mask (UIElement *item)
-{
-	return item->GetOpacityMask ();
-}
-
-void
-uielement_set_opacity (UIElement *item, double opacity)
-{
-	item->SetOpacity (opacity);
-}
-
-double
-uielement_get_opacity (UIElement *item)
-{
-	return item->GetOpacity ();
-}
-
-//
-// Maps the x, y coordinate to the space of the given item
-//
-void
-uielement_transform_point (UIElement *item, double *x, double *y)
-{
-	cairo_matrix_t inverse = item->absolute_xform;
-	cairo_matrix_invert (&inverse);
-
-	cairo_matrix_transform_point (&inverse, x, y);
-}
-
-UIElement *
-uielement_get_parent (UIElement *item)
-{
-	return item->GetVisualParent ();
+	else
+		transform->GetTransform (result);
 }
 
 #if SL_2_0
@@ -990,35 +951,17 @@ UIElement::GetTransformToUIElement (UIElement *to_element)
 
 	return transform;
 }
-
-GeneralTransform *
-uielement_get_transform_to_uielement (UIElement *from, UIElement *to)
-{
-	return from->GetTransformToUIElement (to);
-}
-
-Size
-uielement_get_desired_size (UIElement *item)
-{
-	return item->desired_size; 
-}
 #endif
 
-bool
-uielement_capture_mouse (UIElement *item)
-{
-	return item->CaptureMouse ();
-}
 
+//
+// Maps the x, y coordinate to the space of the given item
+//
 void
-uielement_release_mouse_capture (UIElement *item)
+uielement_transform_point (UIElement *item, double *x, double *y)
 {
-	item->ReleaseMouseCapture ();
-}
-
-void
-uielement_set_surface (UIElement *item, Surface* surface)
-{
-	if (item)
-		item->SetSurface (surface);
+	cairo_matrix_t inverse = item->absolute_xform;
+	cairo_matrix_invert (&inverse);
+	
+	cairo_matrix_transform_point (&inverse, x, y);
 }

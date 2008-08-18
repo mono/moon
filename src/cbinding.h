@@ -1160,7 +1160,22 @@ Types *types_new (void);
  * UIElement
  **/
 /* @GeneratePInvoke */
+bool uielement_capture_mouse (UIElement *instance);
+
+/* @GeneratePInvoke */
+Size uielement_get_desired_size (UIElement *instance);
+
+/* @GeneratePInvoke */
+GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element);
+
+/* @GeneratePInvoke */
+UIElement *uielement_get_visual_parent (UIElement *instance);
+
+/* @GeneratePInvoke */
 void uielement_measure (UIElement *instance, Size availableSize);
+
+/* @GeneratePInvoke */
+void uielement_release_mouse_capture (UIElement *instance);
 
 /* @GeneratePInvoke */
 UIElement *uielement_new (void);

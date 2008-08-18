@@ -32,13 +32,13 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	if (args->property == FrameworkElement::WidthProperty ||
 	    args->property == FrameworkElement::HeightProperty) {
-		Point p = GetRenderTransformOrigin ();
+		Point *p = GetRenderTransformOrigin ();
 
 		/* normally we'd only update the bounds of this
 		   element on a width/height change, but if the render
 		   transform is someplace other than (0,0), the
 		   transform needs to be updated as well. */
-		FullInvalidate (p.x != 0.0 || p.y != 0.0);
+		FullInvalidate (p->x != 0.0 || p->y != 0.0);
 	}
 
 	NotifyListenersOfPropertyChange (args);

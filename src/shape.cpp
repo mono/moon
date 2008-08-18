@@ -714,10 +714,10 @@ Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 Point
 Shape::GetTransformOrigin ()
 {
-	Point user_xform_origin = GetRenderTransformOrigin ();
+	Point *user_xform_origin = GetRenderTransformOrigin ();
 	
-	return Point (GetWidth () * user_xform_origin.x, 
-		      GetHeight () * user_xform_origin.y);
+	return Point (GetWidth () * user_xform_origin->x, 
+		      GetHeight () * user_xform_origin->y);
 }
 
 void

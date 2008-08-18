@@ -314,9 +314,9 @@ TextBlock::InsideObject (cairo_t *cr, double x, double y)
 Point
 TextBlock::GetTransformOrigin ()
 {
-	Point user_xform_origin = GetRenderTransformOrigin ();
+	Point *user_xform_origin = GetRenderTransformOrigin ();
 	
-	return Point (user_xform_origin.x * GetBoundingWidth (), user_xform_origin.y * GetBoundingHeight ());
+	return Point (user_xform_origin->x * GetBoundingWidth (), user_xform_origin->y * GetBoundingHeight ());
 }
 
 void

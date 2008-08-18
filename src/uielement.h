@@ -40,6 +40,9 @@ class UIElement : public DependencyObject {
 	UIElement *visual_parent;
 	double total_opacity;
 	Brush *opacityMask;
+	Size desired_size;
+	
+	void GetRenderAffine (cairo_matrix_t *result);
 	
  protected:
 	virtual ~UIElement ();
@@ -51,8 +54,8 @@ class UIElement : public DependencyObject {
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	UIElement ();
 	
-	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; };
-
+	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; }
+	
 	int dirty_flags;
 	List::Node *up_dirty_node;
 	List::Node *down_dirty_node;
@@ -95,12 +98,12 @@ class UIElement : public DependencyObject {
 	cairo_matrix_t parent_transform;
 
 	Point transform_origin;
-
-	Size desired_size;
-
+	
 	virtual TimeManager *GetTimeManager ();
 	
 	void SetVisualParent (UIElement *visual_parent) { this->visual_parent = visual_parent; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }
 	
 	virtual bool EnableAntiAlias() { return true; }
@@ -294,7 +297,7 @@ class UIElement : public DependencyObject {
 	virtual Point GetTransformOrigin () {
 		return Point (0, 0);
 	}
-
+	
 	//
 	// EmitMouseMove:
 	//   handles an mouse motion event, and dispatches it to anyone that
@@ -357,6 +360,7 @@ class UIElement : public DependencyObject {
 	//    events will be transmitted directly to this element.
 	//    Leave/Enter events will no longer be sent.
 	//
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool CaptureMouse ();
 
 	//
@@ -366,6 +370,7 @@ class UIElement : public DependencyObject {
 	//    applicable Leave/Enter events for the current mouse
 	//    position will be sent.
 	//
+	/* @GenerateCBinding,GeneratePInvoke */
 	void ReleaseMouseCapture ();
 
 	virtual void OnLoaded ();
@@ -381,12 +386,7 @@ class UIElement : public DependencyObject {
 	//   element is removed from a collection, becomes invisible, etc.
 	//
 	virtual void CacheInvalidateHint () {}
-
-	Point GetRenderTransformOrigin () {
-		Value *vu = GetValue (UIElement::RenderTransformOriginProperty);
-		return *vu->AsPoint ();
-	}
-
+	
 	//
 	// 2.0 methods
 	//
@@ -400,7 +400,11 @@ class UIElement : public DependencyObject {
 	{
 		return Size (0, 0);
 	}
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Size GetDesiredSize () { return desired_size; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	GeneralTransform *GetTransformToUIElement (UIElement *to_element);
 	
  	/* @PropertyType=Geometry */
@@ -433,11 +437,23 @@ class UIElement : public DependencyObject {
 	//
 	// Property Accessors
 	//
+	void SetClip (Geometry *clip);
+	Geometry *GetClip ();
+	
+	void SetIsHitTestVisible (bool visible);
+	bool GetIsHitTestVisible ();
+	
 	void SetOpacityMask (Brush *mask);
 	Brush *GetOpacityMask ();
 	
 	void SetOpacity (double opacity);
 	double GetOpacity ();
+	
+	void SetRenderTransform (Transform *transform);
+	Transform *GetRenderTransform ();
+	
+	void SetRenderTransformOrigin (Point *point);
+	Point *GetRenderTransformOrigin ();
 	
 	TriggerCollection *GetTriggers ();
 	
@@ -460,30 +476,7 @@ class UIElement : public DependencyObject {
 
 G_BEGIN_DECLS
 
-Surface   *uielement_get_surface          (UIElement *item);
-void       uielement_invalidate           (UIElement *item);
-void       uielement_update_bounds        (UIElement *item);
-void       uielement_set_transform        (UIElement *item, double *transform);
-void       uielement_set_transform_origin (UIElement *item, Point p);
-         
-void       uielement_set_render_transform (UIElement *item, Transform *transform);
-void       uielement_get_render_affine    (UIElement *item, cairo_matrix_t *result);
-         
-double     uielement_get_opacity          (UIElement *item);
-void       uielement_set_opacity          (UIElement *item, double opacity);
-         
-Brush     *uielement_get_opacity_mask     (UIElement *item);
-void       uielement_transform_point      (UIElement *item, double *x, double *y);
-UIElement *uielement_get_parent           (UIElement *item);
-
-void       uielement_set_surface          (UIElement *item, Surface* surface);
-
-GeneralTransform *uielement_get_transform_to_uielement (UIElement *from, UIElement *to);
-
-Size       uielement_get_desired_size     (UIElement *item);
-
-bool       uielement_capture_mouse         (UIElement *item);
-void       uielement_release_mouse_capture (UIElement *item);
+void uielement_transform_point (UIElement *item, double *x, double *y);
 
 G_END_DECLS
 

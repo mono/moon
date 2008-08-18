@@ -1,8 +1,17 @@
+2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uielement.cpp: Autogenerate more of the bindings, make
+	desired_size private, etc.
+
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 	
 	* eventargs.cpp|h: Change the return type to int, fix the build.
 
 2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uielement.cpp (uielement_get_surface): Removed.
+	(uielement_invalidate): Removed.
+	(uielement_set_transform_origin): Removed.
 
 	* transform.cpp: Removed manual c-bindings.
 
