@@ -40,30 +40,9 @@ namespace PerfSuiteGenerator {
 		public static int Main (string [] args)
 		{
 			Database.Initialize ();
-			/*
-			double p = 0.5;
-			List <ResultDbEntry> list = new List <ResultDbEntry> ();
-			for (int i = 0; i < 50; i++) {
-				ResultDbEntry result = new ResultDbEntry ();
-				if (i < 25) 
-					result.Time = (long) (Math.Sin (p) * 100 + 100);
-				else
-					result.Time = (long) (Math.Cos (p) * 100 + 100);
-
-				list.Add (result);
-				p += 0.03;
-			}*/
-
-			//List <ItemDbEntry> itemList = Database.GetAllItemEntries ();
-			//ItemDbEntry item = new ItemDbEntry ();
-			//item.GiveId (1);
-
-			//List <ResultWithDateDbEntry> list = Database.GetResultEntriesForItemEntry (item, 50);
-			//GraphGenerator.GenerateGraph (list, "test.png");
-			//HtmlGenerator.GenerateDetailRows (list);
-			//HtmlGenerator.GenerateItemRows (itemList);
+			
 			string output = HtmlGenerator.GenerateHTML ();
-			File.WriteAllText ("report.html", output);
+			File.WriteAllText ("perf-report/index.html", output);
 
 			return 0;
 		}

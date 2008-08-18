@@ -1,3 +1,12 @@
+2008-08-14  Michael Dominic K.  <mdk@mdk.am>
+
+	* perf-report/helpers.js:
+	* perf-report/jquery.js:
+	* perf-report/logo.png:
+	* perf-report/report.css:
+	* perf-suite-generator/HtmlGenerator.cs:
+	* perf-suite-generator/Main.cs: Generate the report in the perf-report directory.
+
 2008-08-13  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-suite-generator/HtmlGenerator.cs: Pad the results in details section.

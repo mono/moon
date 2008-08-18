@@ -130,7 +130,9 @@ namespace PerfSuiteGenerator {
 
 			foreach (ItemDbEntry entry in itemList) {
 
-				string graphFilename = String.Format ("graph-{0}.png", entry.UniqueId);
+				string graphBaseName = String.Format ("graph-{0}.png", entry.UniqueId);
+				string graphFilename = "perf-report/" + graphBaseName;
+
 				List <ResultDbEntry> list = Database.GetResultEntriesForItemEntry (entry, 50);
 				GraphGenerator.GenerateGraph (list, graphFilename);
 
@@ -138,7 +140,7 @@ namespace PerfSuiteGenerator {
 				html = html.Replace ("@@ITEM_UNIQUE_ID@@", entry.UniqueId);
 				html = html.Replace ("@@ITEM_NAME@@", entry.Name);
 				html = html.Replace ("@@ITEM_INPUT_FILE@@", entry.InputFile);
-				html = html.Replace ("@@IMG_SRC@@", graphFilename);
+				html = html.Replace ("@@IMG_SRC@@", graphBaseName);
 				html = html.Replace ("@@DETAILS@@", GenerateDetailRows (list));
 
 				output += html;
