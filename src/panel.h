@@ -46,8 +46,6 @@ class Panel : public FrameworkElement {
 	Panel ();
 	virtual Type::Kind GetObjectType () { return Type::PANEL; }
 	
-	virtual void SetSurface (Surface *s);
-
 	virtual void ComputeBounds ();
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual void RenderChildren (cairo_t *cr, Region *region);

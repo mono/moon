@@ -1,3 +1,8 @@
+2008-08-18  Larry Ewing  <lewing@novell.com>
+
+	* panel.cpp|h: remove SetSurface override, the
+	DependencyObjectCollection::SetSurface does the work already.
+
 2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* uielement.cpp: Autogenerate more of the bindings, make

@@ -67,23 +67,6 @@ Panel::SetChildren (UIElementCollection *children)
 }
 
 void
-Panel::SetSurface (Surface *s)
-{
-	UIElementCollection *children;
-	UIElement *item;
-	
-	FrameworkElement::SetSurface (s);
-	
-	if (!(children = GetChildren ()))
-		return;
-	
-	for (int i = 0; i < children->GetCount (); i++) {
-		item = children->GetValueAt (i)->AsUIElement ();
-		item->SetSurface (s);
-	}
-}
-
-void
 Panel::AddChild (UIElement *item)
 {
 	GetChildren ()->Add (item);
