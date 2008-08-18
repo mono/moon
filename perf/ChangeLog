@@ -1,5 +1,9 @@
 2008-08-13  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-tool/perf-suite-tool.cpp: Adding a timeout timer for failing items.
+
+2008-08-13  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-runner/DrtItem.cs:
 	* perf-suite-runner/Main.cs: Detect a failure in running test and act accordingly.
 

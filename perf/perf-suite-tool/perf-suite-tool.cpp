@@ -61,6 +61,7 @@ GtkWidget *moz_embed;
 GtkWindow *window;
 glong benchmark_start;
 FILE *results_io = NULL;
+uint critical_timeout_id = 0;
 
 static GOptionEntry entries [] =
 {
@@ -163,6 +164,13 @@ void expose_handoff (Surface *s, TimeSpan time, void* data)
 	g_idle_add (increase_timer, NULL);
 }
 
+gboolean critical_timeout (void* data)
+{
+	// If the timeout occurs, we automatically exit with fault
+	printf ("*** Timeout occured! Failure...\n");
+	exit (128);
+}
+
 gboolean setup (void* data)
 {
 	printf ("*** Setting up a run...\n");
@@ -197,6 +205,11 @@ void do_run (void)
 	g_free (html_path);
 	
 	g_timeout_add (1000, setup, NULL);
+
+	if (critical_timeout_id != 0) 
+		g_source_remove (critical_timeout_id);
+
+	critical_timeout_id = g_timeout_add (20000, critical_timeout, NULL);
 
 	runs_left--;
 }
