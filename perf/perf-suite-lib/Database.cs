@@ -78,10 +78,10 @@ namespace PerfSuiteLib {
 			return list;
 		}
 
-		public static List <ResultDbEntry> GetResultEntriesForItemEntry (ItemDbEntry item, int limit)
+		public static List <ResultWithDateDbEntry> GetResultEntriesForItemEntry (ItemDbEntry item, int limit)
 		{
 			IDbCommand cmd = connection.CreateCommand ();
-			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time " + 
+			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time, passes.date " + 
 					   "FROM results, passes " + 
 					   "WHERE results.pass_id = passes.id AND results.item_id = :it " + 
 					   "ORDER BY passes.date DESC " + 
@@ -93,10 +93,10 @@ namespace PerfSuiteLib {
 			cmd.Parameters.Add (p1);
 
 			IDataReader reader = cmd.ExecuteReader ();
-			List <ResultDbEntry> list = new List <ResultDbEntry> ();
+			List <ResultWithDateDbEntry> list = new List <ResultWithDateDbEntry> ();
 
 			while (reader.Read ()) 
-				list.Add (new ResultDbEntry (reader));
+				list.Add (new ResultWithDateDbEntry (reader));
 
 			return list;
 		}

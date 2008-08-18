@@ -40,7 +40,7 @@ namespace PerfSuiteLib {
 		public override void CreateCommand (ref IDbCommand command)
 		{
 			AddParameter (command, ":description", Description);
-			AddParameter (command, ":date", Date);
+			AddParameter (command, ":date", Date.Ticks);
 
 			command.CommandText = ("INSERT INTO passes VALUES " +
 					       "(null, :description, :date)");

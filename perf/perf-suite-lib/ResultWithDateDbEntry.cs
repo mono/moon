@@ -28,39 +28,26 @@
  */
 
 using System;
-using System.IO;
-using System.Xml;
-using PerfSuiteLib;
-using System.Collections.Generic;
+using System.Data;
 
-namespace PerfSuiteGenerator {
+namespace PerfSuiteLib {
 
-	public static class PerfSuiteGenerator {
+	public class ResultWithDateDbEntry : ResultDbEntry {
 
-		public static int Main (string [] args)
+		public DateTime Date;
+
+		public ResultWithDateDbEntry (IDataReader reader) : base (reader)
 		{
-			Database.Initialize ();
-			/*
-			double p = 0.5;
-			List <ResultDbEntry> list = new List <ResultDbEntry> ();
-			for (int i = 0; i < 50; i++) {
-				ResultDbEntry result = new ResultDbEntry ();
-				if (i < 25) 
-					result.Time = (long) (Math.Sin (p) * 100 + 100);
-				else
-					result.Time = (long) (Math.Cos (p) * 100 + 100);
+			Date = new DateTime (Convert.ToInt64 ((string) reader [4]));
+		}
 
-				list.Add (result);
-				p += 0.03;
-			}*/
+		public ResultWithDateDbEntry () : base ()
+		{
+		}
 
-			ItemDbEntry item = new ItemDbEntry ();
-			item.GiveId (2);
-
-			List <ResultWithDateDbEntry> list = Database.GetResultEntriesForItemEntry (item, 50);
-			GraphGenerator.GenerateGraph (list, "test.png");
-
-			return 0;
+		public override void CreateCommand (ref IDbCommand command)
+		{
+			throw new Exception ("Unimplemented!");
 		}
 
 	}

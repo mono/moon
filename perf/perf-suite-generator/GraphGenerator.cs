@@ -36,7 +36,7 @@ namespace PerfSuiteGenerator {
 
 	public static class GraphGenerator {
 
-		public static void GenerateGraph (List <ResultDbEntry> resultList, string filename)
+		public static void GenerateGraph (List <ResultWithDateDbEntry> resultList, string filename)
 		{
 			// FIXME Exception if more than 50 results...
 
@@ -64,7 +64,7 @@ namespace PerfSuiteGenerator {
 			bool hasPrevResult = false;
 			long prevResult = 0;
 
-			foreach (ResultDbEntry entry in resultList) {
+			foreach (ResultWithDateDbEntry entry in resultList) {
 
 				double sz = ((double) entry.Time / denominator) * 50.0;
 
@@ -91,10 +91,10 @@ namespace PerfSuiteGenerator {
 			((IDisposable) surface).Dispose ();
 		}
 
-		private static long FindBiggestResult (List <ResultDbEntry> resultList)
+		private static long FindBiggestResult (List <ResultWithDateDbEntry> resultList)
 		{
 			long biggest = 0;
-			foreach (ResultDbEntry entry in resultList) 
+			foreach (ResultWithDateDbEntry entry in resultList) 
 				biggest = Math.Max (biggest, entry.Time);
 
 			return biggest;

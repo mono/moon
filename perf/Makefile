@@ -6,8 +6,8 @@ perf-suite-runner.exe: perf-suite-runner/DrtStore.cs perf-suite-runner/DrtItem.c
 perf-suite-generator.exe: perf-suite-generator/GraphGenerator.cs perf-suite-generator/Main.cs perf-suite-lib.dll
 	gmcs perf-suite-generator/GraphGenerator.cs perf-suite-generator/Main.cs -out:perf-suite-generator.exe -r:perf-suite-lib.dll -r:Mono.Cairo
 
-perf-suite-lib.dll: perf-suite-lib/Database.cs perf-suite-lib/DbEntry.cs perf-suite-lib/PassDbEntry.cs perf-suite-lib/ItemDbEntry.cs perf-suite-lib/ResultDbEntry.cs
-	gmcs perf-suite-lib/ResultDbEntry.cs perf-suite-lib/Database.cs perf-suite-lib/DbEntry.cs perf-suite-lib/PassDbEntry.cs perf-suite-lib/ItemDbEntry.cs -out:perf-suite-lib.dll -r:Mono.Data.SqliteClient -r:System.Data -target:library
+perf-suite-lib.dll: perf-suite-lib/Database.cs perf-suite-lib/DbEntry.cs perf-suite-lib/PassDbEntry.cs perf-suite-lib/ItemDbEntry.cs perf-suite-lib/ResultDbEntry.cs perf-suite-lib/ResultWithDateDbEntry.cs
+	gmcs perf-suite-lib/ResultDbEntry.cs perf-suite-lib/Database.cs perf-suite-lib/DbEntry.cs perf-suite-lib/PassDbEntry.cs perf-suite-lib/ItemDbEntry.cs perf-suite-lib/ResultWithDateDbEntry.cs -out:perf-suite-lib.dll -r:Mono.Data.SqliteClient -r:System.Data -target:library
 
 tool: perf-suite-tool
 	gcc perf-suite-tool/perf-suite-tool.cpp -o tool `pkg-config --libs --cflags gtk+-2.0 mozilla-gtkmozembed mozilla-js moon`
