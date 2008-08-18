@@ -47,6 +47,8 @@ static const GREVersionRange gre_version = {
 	"9.9", PR_TRUE
 };
 
+/* Globals, parameters */
+
 int interval = 40;		// By default 25 frames per second
 int start_time = 0;		// By default start from 0
 int end_time = 5000;		// By default end after 5 seconds
@@ -55,7 +57,7 @@ gint runs_left = 1;		// Do just one run by default
 char *filename = NULL;		// No default filename
 char *results_filename = NULL;	// No default results filename
 
-void do_run (void);
+/* Globals, other */
 
 int current_time;
 GtkWidget *moz_embed;
@@ -63,6 +65,8 @@ GtkWindow *window;
 glong benchmark_start;
 FILE *results_io = NULL;
 uint critical_timeout_id = 0;
+
+/* For parameter parsing */
 
 static GOptionEntry entries [] =
 {
@@ -75,6 +79,32 @@ static GOptionEntry entries [] =
 	{ "timeout", 't', 0, G_OPTION_ARG_INT, &timeout, "Timeout the test (failure) in S mseconds", "S" },
 	{ NULL }
 };
+
+/* Decls */
+
+void start_xml (void);
+
+void end_xml (void);
+
+void save_result (long v);
+
+glong get_time (void);
+
+void fake_capture (void);
+
+void unsetup (void);
+
+gboolean increase_timer (void *data);
+
+void expose_handoff (Surface *s, TimeSpan time, void* data);
+
+gboolean critical_timeout (void* data);
+
+gboolean setup (void* data);
+
+void do_run (void);
+
+/* Code */
 
 void start_xml (void)
 {
@@ -114,7 +144,9 @@ void fake_capture (void)
     
 	GdkWindow* root = gdk_window_foreign_new (GDK_ROOT_WINDOW ());
 	GdkPixbuf* buf = gdk_pixbuf_get_from_drawable (NULL, root, NULL, x, y, 0, 0, w, h);
+	
 	gdk_pixbuf_unref (buf);
+	g_object_unref (root);
 }
 
 void unsetup (void)

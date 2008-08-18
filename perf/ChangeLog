@@ -1,5 +1,9 @@
 2008-08-14  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-tool/perf-suite-tool.cpp: Slightly cleaning up the perf tool.
+
+2008-08-14  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-report/helpers.js:
 	* perf-report/jquery.js:
 	* perf-report/logo.png:
