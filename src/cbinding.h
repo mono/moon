@@ -1165,8 +1165,10 @@ bool uielement_capture_mouse (UIElement *instance);
 /* @GeneratePInvoke */
 Size uielement_get_desired_size (UIElement *instance);
 
+#if SL_2_0
 /* @GeneratePInvoke */
 GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element);
+#endif
 
 /* @GeneratePInvoke */
 UIElement *uielement_get_visual_parent (UIElement *instance);

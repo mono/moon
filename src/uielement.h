@@ -404,7 +404,7 @@ class UIElement : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
 	GeneralTransform *GetTransformToUIElement (UIElement *to_element);
 	
  	/* @PropertyType=Geometry */

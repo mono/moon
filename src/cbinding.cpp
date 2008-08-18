@@ -2201,6 +2201,7 @@ uielement_get_desired_size (UIElement *instance)
 }
 
 
+#if SL_2_0
 GeneralTransform *
 uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element)
 {
@@ -2209,6 +2210,7 @@ uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element
 	
 	return instance->GetTransformToUIElement (to_element);
 }
+#endif
 
 
 UIElement *
