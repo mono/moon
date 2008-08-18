@@ -50,6 +50,7 @@ static const GREVersionRange gre_version = {
 int interval = 40;		// By default 25 frames per second
 int start_time = 0;		// By default start from 0
 int end_time = 5000;		// By default end after 5 seconds
+int timeout = 20000;		// By default 20 seconds
 gint runs_left = 1;		// Do just one run by default
 char *filename = NULL;		// No default filename
 char *results_filename = NULL;	// No default results filename
@@ -71,6 +72,7 @@ static GOptionEntry entries [] =
 	{ "runs", 'n', 0, G_OPTION_ARG_INT, &runs_left, "Do N runs", "N" },
 	{ "filename", 'f', 0, G_OPTION_ARG_STRING, &filename, "Filename to load", NULL },
 	{ "results-filename", 'r', 0, G_OPTION_ARG_STRING, &results_filename, "Filename to save results to", NULL },
+	{ "timeout", 't', 0, G_OPTION_ARG_INT, &timeout, "Timeout the test (failure) in S mseconds", "S" },
 	{ NULL }
 };
 
@@ -209,7 +211,7 @@ void do_run (void)
 	if (critical_timeout_id != 0) 
 		g_source_remove (critical_timeout_id);
 
-	critical_timeout_id = g_timeout_add (20000, critical_timeout, NULL);
+	critical_timeout_id = g_timeout_add (timeout, critical_timeout, NULL);
 
 	runs_left--;
 }

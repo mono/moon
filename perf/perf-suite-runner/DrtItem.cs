@@ -39,6 +39,7 @@ namespace PerfSuiteRunner {
 		public int StartTime = 0;
 		public int EndTime = 5000;
 		public int Interval = 40;
+		public int Timeout = 20000;
 		public string InputFile = String.Empty;
 		public string UniqueId = String.Empty;
 		public string Name = String.Empty;
@@ -72,6 +73,9 @@ namespace PerfSuiteRunner {
 
 			if (node.Attributes ["name"] != null)
 				Name = node.Attributes ["name"].Value;
+		
+			if (node.Attributes ["timeout"] != null)
+				Timeout = Convert.ToInt32 (node.Attributes ["timeout"].Value);
 		}
 
 		public bool IsValid ()
@@ -97,6 +101,9 @@ namespace PerfSuiteRunner {
 			if (Name == String.Empty)
 				return false;
 
+			if (Timeout < 1000)
+				return false;
+
 			return true;
 		}
 
@@ -108,13 +115,14 @@ namespace PerfSuiteRunner {
 			try {
 				string tmpFileName = Path.GetTempFileName ();
 
-				string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5}", 
+				string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5} -t {6}", 
 								  FullFileName, 
 								  StartTime, 
 								  EndTime, 
 								  Interval, 
 								  Runs, 
-							 	  tmpFileName);
+							 	  tmpFileName, 
+								  Timeout);
 
 				proc.EnableRaisingEvents = false; 
 				proc.StartInfo.FileName = "tool";

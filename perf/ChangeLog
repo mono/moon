@@ -1,5 +1,12 @@
 2008-08-13  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-tool/perf-suite-tool.cpp: Timeout setting can be modified via a
+	parameter.
+
+	* perf-suite-runner/DrtItem.cs: 'timeout' can be specified in the drt list.
+
+2008-08-13  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-generator/HtmlGenerator.cs:
 	* report.css: Better theming for test run failures.
 
