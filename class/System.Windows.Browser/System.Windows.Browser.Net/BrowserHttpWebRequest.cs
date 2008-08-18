@@ -101,6 +101,8 @@ namespace System.Windows.Browser.Net
 
 			wait_handle.WaitOne ();
 
+			GC.KeepAlive (tch);
+
 			async_result = new BrowserHttpWebAsyncResult (callback, state);
 
 			return async_result;
