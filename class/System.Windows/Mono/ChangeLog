@@ -1,3 +1,7 @@
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
+	* Events.cs: Update to support the final 2.0 KeyEventArgs
+
 2008-08-17  Geoff Norton  <gnorton@novell.com>
 
 	* StreamWrapper.cs: Remove a ton of debug spew.

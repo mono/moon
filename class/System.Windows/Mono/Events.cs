@@ -137,20 +137,11 @@ namespace Mono {
 			}
 		}
 
-		static KeyEventArgs MarshalKeyEventArgs (IntPtr calldata)
-		{
-			UnmanagedKeyEventArgs args =
-				(UnmanagedKeyEventArgs)Marshal.PtrToStructure (calldata,
-									       typeof (UnmanagedKeyEventArgs));
-
-			return new KeyEventArgs ((args.state & 4) != 0, (args.state & 1) != 0, args.key, args.platformcode);
-		}
-
 		static void key_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			try {
 				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeKeyUp (MarshalKeyEventArgs (calldata));
+				e.InvokeKeyUp (new KeyEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())
@@ -164,7 +155,7 @@ namespace Mono {
 		{
 			try {
 				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeKeyDown (MarshalKeyEventArgs (calldata));
+				e.InvokeKeyDown (new KeyEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())
