@@ -78,10 +78,25 @@ namespace PerfSuiteLib {
 			return list;
 		}
 
+		public static PassDbEntry GetLastPass ()
+		{
+			IDbCommand cmd = connection.CreateCommand ();
+			cmd.CommandText = ("SELECT * " + 
+					   "FROM passes " + 
+					   "ORDER BY passes.date DESC " + 
+					   "LIMIT 1");
+
+			IDataReader reader = cmd.ExecuteReader ();
+			if (! reader.Read ())
+				return null;
+
+			return new PassDbEntry (reader);
+		}
+
 		public static List <ResultWithDateDbEntry> GetResultEntriesForItemEntry (ItemDbEntry item, int limit)
 		{
 			IDbCommand cmd = connection.CreateCommand ();
-			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time, passes.date " + 
+			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time, passes.date, passes.description " + 
 					   "FROM results, passes " + 
 					   "WHERE results.pass_id = passes.id AND results.item_id = :it " + 
 					   "ORDER BY passes.date DESC " + 
@@ -127,7 +142,7 @@ namespace PerfSuiteLib {
 			ExecuteCreateCommand ("INSERT INTO meta VALUES ('1')");
 		
 			ExecuteCreateCommand ("CREATE TABLE passes (id INTEGER PRIMARY KEY, description TEXT, date TEXT)");
-			ExecuteCreateCommand ("CREATE TABLE items (id INTEGER PRIMARY KEY, unique_id TEXT, name TEXT)");
+			ExecuteCreateCommand ("CREATE TABLE items (id INTEGER PRIMARY KEY, unique_id TEXT, name TEXT, input_file TEXT)");
 			ExecuteCreateCommand ("CREATE TABLE results (id INTEGER PRIMARY KEY, item_id INTEGER, pass_id INTEGER, time INTEGER)");
 		}
 

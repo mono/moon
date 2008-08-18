@@ -60,7 +60,9 @@ namespace PerfSuiteGenerator {
 
 			context.LineWidth = 1.5;
 
-			double x = 100.5;
+			resultList.Reverse ();
+
+			double x = 100.5 - ((resultList.Count - 1) * 2.0);
 			bool hasPrevResult = false;
 			long prevResult = 0;
 
@@ -68,9 +70,9 @@ namespace PerfSuiteGenerator {
 
 				double sz = ((double) entry.Time / denominator) * 50.0;
 
-				if (hasPrevResult && PercentDifference (prevResult, entry.Time) < -0.1)
+				if (hasPrevResult && PercentDifference (prevResult, entry.Time) > 0.1)
 					context.SetSourceRGB (1.0, 0.0, 0.0);
-				else if (hasPrevResult && PercentDifference (prevResult, entry.Time) > 0.1)
+				else if (hasPrevResult && PercentDifference (prevResult, entry.Time) < -0.1)
 					context.SetSourceRGB (0.0, 1.0, 0.0);
 				else
 					context.SetSourceRGB (0.4, 0.4, 0.4);
@@ -79,7 +81,7 @@ namespace PerfSuiteGenerator {
 				context.LineTo (x, 51 - sz);
 				context.Stroke ();
 
-				x -= 2.0;
+				x += 2.0;
 
 				hasPrevResult = true;
 				prevResult = entry.Time;
@@ -87,6 +89,7 @@ namespace PerfSuiteGenerator {
 
 			surface.WriteToPng (filename);
 
+			resultList.Reverse ();
 			((IDisposable) context).Dispose ();
 			((IDisposable) surface).Dispose ();
 		}

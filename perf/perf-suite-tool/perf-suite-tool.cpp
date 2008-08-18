@@ -196,7 +196,7 @@ void do_run (void)
 	g_free (current_directory);
 	g_free (html_path);
 	
-	g_timeout_add (500, setup, NULL);
+	g_timeout_add (1000, setup, NULL);
 
 	runs_left--;
 }

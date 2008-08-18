@@ -37,6 +37,17 @@ namespace PerfSuiteLib {
 		public string Description;
 		public DateTime Date;
 
+		public PassDbEntry (IDataReader reader)
+		{
+			id = Convert.ToInt32 (reader [0]);
+			Description = (string) reader [1];
+			Date = new DateTime (Convert.ToInt64 ((string) reader [2]));
+		}
+
+		public PassDbEntry ()
+		{
+		}
+
 		public override void CreateCommand (ref IDbCommand command)
 		{
 			AddParameter (command, ":description", Description);

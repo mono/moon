@@ -36,12 +36,14 @@ namespace PerfSuiteLib {
 
 		public string UniqueId = String.Empty;
 		public string Name = String.Empty;
+		public string InputFile = String.Empty;
 
 		public ItemDbEntry (IDataReader reader)
 		{
 			id = Convert.ToInt32 (reader [0]);
 			UniqueId = (string) reader [1];
 			Name = (string) reader [2];
+			InputFile = (string) reader [3];
 		}
 
 		public ItemDbEntry ()
@@ -52,9 +54,10 @@ namespace PerfSuiteLib {
 		{
 			AddParameter (command, ":uq", UniqueId);
 			AddParameter (command, ":n", Name);
+			AddParameter (command, ":f", InputFile);
 
 			command.CommandText = ("INSERT INTO items VALUES " +
-					       "(null, :uq, :n)");
+					       "(null, :uq, :n, :f)");
 		}
 
 		public override bool IsValid ()
@@ -63,6 +66,9 @@ namespace PerfSuiteLib {
 				return false;
 
 			if (Name == String.Empty)
+				return false;
+
+			if (InputFile == String.Empty)
 				return false;
 
 			return true;

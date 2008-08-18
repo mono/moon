@@ -54,11 +54,16 @@ namespace PerfSuiteGenerator {
 				p += 0.03;
 			}*/
 
-			ItemDbEntry item = new ItemDbEntry ();
-			item.GiveId (2);
+			//List <ItemDbEntry> itemList = Database.GetAllItemEntries ();
+			//ItemDbEntry item = new ItemDbEntry ();
+			//item.GiveId (1);
 
-			List <ResultWithDateDbEntry> list = Database.GetResultEntriesForItemEntry (item, 50);
-			GraphGenerator.GenerateGraph (list, "test.png");
+			//List <ResultWithDateDbEntry> list = Database.GetResultEntriesForItemEntry (item, 50);
+			//GraphGenerator.GenerateGraph (list, "test.png");
+			//HtmlGenerator.GenerateDetailRows (list);
+			//HtmlGenerator.GenerateItemRows (itemList);
+			string output = HtmlGenerator.GenerateHTML ();
+			File.WriteAllText ("report.html", output);
 
 			return 0;
 		}

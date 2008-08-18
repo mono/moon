@@ -38,10 +38,19 @@ namespace PerfSuiteRunner {
 
 		public static int Main (string [] args)
 		{
+			Random rnd = new Random ();
+
+			// FIXME For now use first argument as pass name
+			string passName = "(Unknown)";
+			if (args.Length > 0)
+				passName = args [0];
+
+			Console.WriteLine ("*** Pass name is '{0}'...", passName);
+
 			Database.Initialize ();
 
 			PassDbEntry passEntry = new PassDbEntry ();
-			passEntry.Description = "TestPass";
+			passEntry.Description = passName;
 			passEntry.Date = DateTime.Now;
 
 			Database.Put (passEntry);
@@ -56,9 +65,10 @@ namespace PerfSuiteRunner {
 					itemEntry = new ItemDbEntry ();
 					itemEntry.UniqueId = item.UniqueId;
 					itemEntry.Name = item.Name;
+					itemEntry.InputFile = item.InputFile;
 					Database.Put (itemEntry);
 				}
-				
+			
 				DrtResult r = item.Run ();
 				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
 
@@ -66,6 +76,7 @@ namespace PerfSuiteRunner {
 				resultEntry.PassId = passEntry.Id.ToString ();
 				resultEntry.ItemId = itemEntry.Id.ToString ();
 				resultEntry.Time = r.AveragedTime;
+
 				Database.Put (resultEntry);
 			}
 			return 0;

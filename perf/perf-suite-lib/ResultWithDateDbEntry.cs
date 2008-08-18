@@ -35,10 +35,12 @@ namespace PerfSuiteLib {
 	public class ResultWithDateDbEntry : ResultDbEntry {
 
 		public DateTime Date;
+		public string Description;
 
 		public ResultWithDateDbEntry (IDataReader reader) : base (reader)
 		{
 			Date = new DateTime (Convert.ToInt64 ((string) reader [4]));
+			Description = (string) reader [5];
 		}
 
 		public ResultWithDateDbEntry () : base ()

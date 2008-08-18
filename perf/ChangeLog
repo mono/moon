@@ -1,3 +1,33 @@
+2008-08-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* ChangeLog:
+	* Makefile:
+	* helpers.js:
+	* jquery.js:
+	* logo.png:
+	* perf-suite-generator/GraphGenerator.cs:
+	* perf-suite-generator/HtmlGenerator.cs:
+	* perf-suite-generator/Main.cs:
+	* perf-suite-lib/Database.cs:
+	* perf-suite-lib/ItemDbEntry.cs:
+	* perf-suite-lib/PassDbEntry.cs:
+	* perf-suite-lib/ResultWithDateDbEntry.cs:
+	* perf-suite-runner/Main.cs:
+	* perf-suite-set/drtlist.xml:
+	* perf-suite-set/simple-blending.html:
+	* perf-suite-tool/perf-suite-tool.cpp:
+	* report.css: Lots of changes, lots of new stuff. Too much to even mention.
+	Whole thing almost done, needs a lot of refactoring.
+
+2008-08-11  Michael Dominic K.  <mdk@mdk.am>
+
+	* Makefile:
+	* perf-suite-generator/GraphGenerator.cs:
+	* perf-suite-generator/Main.cs:
+	* perf-suite-lib/Database.cs:
+	* perf-suite-lib/PassDbEntry.cs: Store pass date properly as string. A helper 
+	ResultWithDateDbEntry.cs.
+
 2008-08-11  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-suite-generator/Main.cs:
