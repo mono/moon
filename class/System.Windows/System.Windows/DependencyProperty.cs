@@ -78,7 +78,7 @@ namespace System.Windows {
 			ManagedType property_type = Types.Find (propertyType);
 			ManagedType owner_type = Types.Find (ownerType);
 			NativePropertyChangedHandler handler;
-			DependencyProperty result;
+			CustomDependencyProperty result;
 			
 			if (name == null)
 				throw new System.ArgumentNullException ("name");

@@ -39,7 +39,7 @@ namespace System.Windows
 		private ManagedType owner_type;
 		private ManagedType property_type;
 		private PropertyMetadata type_metadata;
-		private	NativePropertyChangedHandler handler;
+		private	NativePropertyChangedHandler property_changed_handler;
 		
 		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType, PropertyMetadata typeMetadata)
 			: base (handle, propertyType.type, ownerType.type, name)
