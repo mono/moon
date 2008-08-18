@@ -1,5 +1,7 @@
 2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
 
+	* stylus.h: Moved required manual c-bindings into G_*_DECLS block.
+
 	* size.cpp: Removed manual ctor c-binding.
 
 	* shape.cpp: Removed manual c-bindings for property accessors.

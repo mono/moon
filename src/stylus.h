@@ -11,8 +11,8 @@
  * 
  */
 
-#ifndef MOON_STYLUS_H
-#define MOON_STYLUS_H
+#ifndef __STYLUS_H__
+#define __STYLUS_H__
 
 #include <glib.h>
 #include "canvas.h"
@@ -196,8 +196,6 @@ class Stroke : public DependencyObject {
 	StylusPointCollection *GetStylusPoints ();
 };
 
-void stroke_get_bounds (Stroke *stroke, Rect *bounds);
-
 
 /* @Namespace=System.Windows.Ink */
 class StrokeCollection : public DependencyObjectCollection {
@@ -218,8 +216,6 @@ class StrokeCollection : public DependencyObjectCollection {
 	
 	Rect GetBounds ();
 };
-
-void stroke_collection_get_bounds (StrokeCollection *collection, Rect *bounds);
 
 
 /* @Namespace=System.Windows.Controls */
@@ -256,4 +252,12 @@ class InkPresenter : public Canvas {
 	StrokeCollection *GetStrokes ();
 };
 
-#endif /* MOON_STYLUS_H */
+
+G_BEGIN_DECLS
+
+void stroke_get_bounds (Stroke *stroke, Rect *bounds);
+void stroke_collection_get_bounds (StrokeCollection *collection, Rect *bounds);
+
+G_END_DECLS
+
+#endif /* __STYLUS_H__ */
