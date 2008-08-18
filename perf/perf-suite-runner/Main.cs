@@ -38,8 +38,6 @@ namespace PerfSuiteRunner {
 
 		public static int Main (string [] args)
 		{
-			Random rnd = new Random ();
-
 			// FIXME For now use first argument as pass name
 			string passName = "Unknown";
 			if (args.Length > 0)

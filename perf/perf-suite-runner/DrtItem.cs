@@ -29,6 +29,7 @@
 
 using System;
 using System.Xml;
+using System.IO;
 using System.Diagnostics;
 
 namespace PerfSuiteRunner {
@@ -101,6 +102,8 @@ namespace PerfSuiteRunner {
 
 		public DrtResult Run ()
 		{
+			string tmpFileName = Path.GetTempFileName ();
+
 			// FIXME: Crappy for now
 			string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5}", 
 							  FullFileName, 
@@ -108,7 +111,7 @@ namespace PerfSuiteRunner {
 							  EndTime, 
 							  Interval, 
 							  Runs, 
-							  "tmp.xml");
+						 	  tmpFileName);
 
 			Process proc = new Process();
 			proc.EnableRaisingEvents = false; 
@@ -117,7 +120,7 @@ namespace PerfSuiteRunner {
 			proc.Start();
 			proc.WaitForExit();
 
-			return new DrtResult ("tmp.xml");
+			return new DrtResult (tmpFileName);
 		}
 
 		public override string ToString ()
