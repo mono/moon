@@ -2145,6 +2145,9 @@ Image::CleanupSurface ()
 void
 Image::UpdateProgress ()
 {
+	if (downloader == NULL)
+		return;
+
 	double progress = downloader->GetDownloadProgress ();
 	double current = GetDownloadProgress ();
 	
@@ -2154,6 +2157,62 @@ Image::UpdateProgress ()
 	if (progress == 1.0 || (progress - current) > 0.0005)
 		Emit (DownloadProgressChangedEvent);
 }
+
+
+#if SL_2_0
+void
+Image::SetStreamSource (ManagedStreamCallbacks *callbacks)
+{
+	void *buf;
+	guint64 length = callbacks->Length (callbacks->handle);
+
+	buf = (void *)g_malloc (length);
+
+	callbacks->Read (callbacks->handle, buf, 0, length);
+
+	PixbufWrite (buf, 0, (gint32) length);
+
+	CleanupSurface ();
+	
+	if (!CreateSurface (NULL)) {
+		Invalidate ();
+		return;
+	}
+	
+	updating_size_from_media = true;
+	
+	if (use_media_width) {
+		Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
+
+		if (!use_media_height)
+			SetWidth ((double) surface->width * height->AsDouble () / (double) surface->height);
+		else
+			SetWidth ((double) surface->width);
+	}
+	
+	if (use_media_height) {
+		Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+
+		if (!use_media_width)
+			SetHeight ((double) surface->height * width->AsDouble () / (double) surface->width);
+		else
+			SetHeight ((double) surface->height);
+	}
+	
+	updating_size_from_media = false;
+	
+	if (brush) {
+		// FIXME: this is wrong, we probably need to set the
+		// property, or use some other mechanism, but this is
+		// gross.
+		PropertyChangedEventArgs args (ImageBrush::DownloadProgressProperty, NULL, 
+					       brush->GetValue (ImageBrush::DownloadProgressProperty));
+		
+		brush->OnPropertyChanged (&args);
+	} else
+		Invalidate ();
+}
+#endif
 
 void
 Image::SetSourceInternal (Downloader *downloader, char *PartName)
@@ -2408,15 +2467,10 @@ Image::CreateSurface (const char *uri)
 
 	CleanupPattern ();
 
-    if (uri == NULL) {
-        g_warning ("URI is NULL!");
-        return false;
-    }
-
 	if (!surface_cache)
 		surface_cache = g_hash_table_new (g_str_hash, g_str_equal);
 	
-	if (!(surface = (CachedSurface *) g_hash_table_lookup (surface_cache, uri))) {
+	if (uri == NULL || !(surface = (CachedSurface *) g_hash_table_lookup (surface_cache, uri))) {
 		GdkPixbuf *pixbuf = NULL;
 		char *msg;
 		
@@ -2506,7 +2560,8 @@ Image::CreateSurface (const char *uri)
 #if USE_OPT_RGB24
 		surface->has_alpha = has_alpha;
 #endif
-		g_hash_table_insert (surface_cache, surface->filename, surface);
+		if (surface->filename != NULL)
+			g_hash_table_insert (surface_cache, surface->filename, surface);
 	} else {
 		surface->ref_count++;
 	}

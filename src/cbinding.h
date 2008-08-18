@@ -474,6 +474,11 @@ Grid *grid_new (void);
 /* @GeneratePInvoke */
 Image *image_new (void);
 
+#if SL_2_0
+/* @GeneratePInvoke */
+void image_set_stream_source (Image *instance, ManagedStreamCallbacks *stream);
+#endif
+
 /**
  * ImageBrush
  **/

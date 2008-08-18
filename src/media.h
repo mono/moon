@@ -238,6 +238,8 @@ class Image : public MediaBase {
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
+	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
+	void SetStreamSource (ManagedStreamCallbacks *stream);
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	

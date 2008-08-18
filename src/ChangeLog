@@ -1,3 +1,8 @@
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp|h, cbinding.cpp|h: Implement support for generating Image's
+	from managed Streams.
+
 2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp: Removed manual c-bindings for Surface and renamed

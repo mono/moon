@@ -879,6 +879,18 @@ image_new (void)
 }
 
 
+#if SL_2_0
+void
+image_set_stream_source (Image *instance, ManagedStreamCallbacks *stream)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetStreamSource (stream);
+}
+#endif
+
+
 /**
  * ImageBrush
  **/
