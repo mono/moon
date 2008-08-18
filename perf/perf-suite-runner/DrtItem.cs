@@ -110,6 +110,11 @@ namespace PerfSuiteRunner {
 			proc.WaitForExit();
 		}
 
+		public override string ToString ()
+		{
+			return String.Format ("{0} - {1}", Id, InputFile);
+		}
+
 	}
 
 }

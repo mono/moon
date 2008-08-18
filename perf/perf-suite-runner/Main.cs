@@ -39,6 +39,7 @@ namespace PerfSuiteRunner {
 		{
 			DrtStore store = new DrtStore ("perf-suite-set/drtlist.xml");
 			foreach (DrtItem item in store.Items) {
+				Console.WriteLine ("*** Running [{0}]", item);
 				item.Run ();
 			}
 			return 0;
