@@ -156,9 +156,9 @@ void fake_capture (void)
 void unsetup (void)
 {
 	Surface *surface = (Surface *) runtime_get_surface_list ()->data; 
-	TimeManager *manager = surface_get_time_manager (surface);
+	TimeManager *manager = surface->GetTimeManager ();
 	ManualTimeSource *source = (ManualTimeSource *) manager->GetSource ();
-    
+	
 	surface->SetExposeHandoffFunc (NULL, NULL);
 }
 
@@ -172,7 +172,7 @@ gboolean increase_timer (void *data)
 	if (surface == NULL)
 		return TRUE;
     
-	TimeManager *manager = surface_get_time_manager (surface);
+	TimeManager *manager = surface->GetTimeManager ();
 	ManualTimeSource *source = (ManualTimeSource *) manager->GetSource ();
 
 	if (current_time > end_time) {
@@ -220,7 +220,7 @@ gboolean setup (void* data)
 	if (surface == NULL)
 		return TRUE;
  
-	TimeManager *manager = surface_get_time_manager (surface);
+	TimeManager *manager = surface->GetTimeManager ();
 	ManualTimeSource *source = (ManualTimeSource *) manager->GetSource ();
     
 	surface->SetExposeHandoffFunc (expose_handoff, NULL);
