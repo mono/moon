@@ -14,10 +14,8 @@
 #define __TRANSFORM_H__
 
 #include <glib.h>
-
-G_BEGIN_DECLS
-
 #include <cairo.h>
+
 #include "collection.h"
 
 /* @Namespace=System.Windows.Media */
@@ -34,16 +32,15 @@ class GeneralTransform : public DependencyObject {
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	GeneralTransform () : need_update (true) { }
+	
+	virtual Type::Kind GetObjectType () { return Type::GENERALTRANSFORM; }
+	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	virtual Type::Kind GetObjectType () { return Type::GENERALTRANSFORM; };
 	
 	virtual void GetTransform (cairo_matrix_t *value);
 	
 	Point Transform (Point point);
 };
-
-void   general_transform_get_transform (GeneralTransform *transform, cairo_matrix_t *value);
-void   general_transform_transform_point (GeneralTransform *t, Point *p, Point *r);
 
 
 /* @Namespace=System.Windows.Media */
@@ -54,8 +51,8 @@ protected:
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Transform () { }
-
-	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; };
+	
+	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; }
 };
 
 
@@ -75,7 +72,8 @@ class RotateTransform : public Transform {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	RotateTransform () { }
-	virtual Type::Kind GetObjectType () { return Type::ROTATETRANSFORM; };
+	
+	virtual Type::Kind GetObjectType () { return Type::ROTATETRANSFORM; }
 	
 	//
 	// Property Accessors
@@ -89,15 +87,6 @@ class RotateTransform : public Transform {
 	void SetCenterY (double centerY);
 	double GetCenterY ();
 };
-
-void   rotate_transform_set_angle (RotateTransform *transform, double angle);
-double rotate_transform_get_angle (RotateTransform *transform);
-
-void   rotate_transform_set_center_x (RotateTransform *transform, double centerX);
-double rotate_transform_get_center_x (RotateTransform *transform);
-
-void   rotate_transform_set_center_y (RotateTransform *transform, double centerY);
-double rotate_transform_get_center_y (RotateTransform *transform);
 
 
 /* @Namespace=System.Windows.Media */
@@ -113,8 +102,9 @@ class TranslateTransform : public Transform {
 	static DependencyProperty *YProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	TranslateTransform () {}
-	virtual Type::Kind GetObjectType () { return Type::TRANSLATETRANSFORM; };
+	TranslateTransform () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::TRANSLATETRANSFORM; }
 	
 	//
 	// Property Accessors
@@ -125,12 +115,6 @@ class TranslateTransform : public Transform {
 	void SetY (double y);
 	double GetY ();
 };
-
-void   translate_transform_set_x (TranslateTransform *transform, double x);
-double translate_transform_get_x (TranslateTransform *transform);
-
-void   translate_transform_set_y (TranslateTransform *transform, double y);
-double translate_transform_get_y (TranslateTransform *transform);
 
 
 /* @Namespace=System.Windows.Media */
@@ -151,20 +135,23 @@ class ScaleTransform : public Transform {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ScaleTransform () { }
-	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; };
+	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; }
+	
+	//
+	// Property Accessors
+	//
+	void SetCenterX (double centerX);
+	double GetCenterX ();
+	
+	void SetCenterY (double centerY);
+	double GetCenterY ();
+	
+	void SetScaleX (double scaleX);
+	double GetScaleX ();
+	
+	void SetScaleY (double scaleY);
+	double GetScaleY ();
 };
-
-void   scale_transform_set_scale_x (ScaleTransform *transform, double scaleX);
-double scale_transform_get_scale_x (ScaleTransform *transform);
-
-void   scale_transform_set_scale_y (ScaleTransform *transform, double scaleY);
-double scale_transform_get_scale_y (ScaleTransform *transform);
-
-void   scale_transform_set_center_x (ScaleTransform *transform, double centerX);
-double scale_transform_get_center_x (ScaleTransform *transform);
-
-void   scale_transform_set_center_y (ScaleTransform *transform, double centerY);
-double scale_transform_get_center_y (ScaleTransform *transform);
 
 
 /* @Namespace=System.Windows.Media */
@@ -172,7 +159,7 @@ class SkewTransform : public Transform {
  protected:
 	virtual ~SkewTransform () {}
 	virtual void UpdateTransform ();
-
+	
  public:
 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *AngleXProperty;
@@ -185,29 +172,34 @@ class SkewTransform : public Transform {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	SkewTransform () { }
-	virtual Type::Kind GetObjectType () { return Type::SKEWTRANSFORM; };
+	
+	virtual Type::Kind GetObjectType () { return Type::SKEWTRANSFORM; }
+	
+	//
+	// Property Accessors
+	//
+	void SetAngleX (double angleX);
+	double GetAngleX ();
+	
+	void SetAngleY (double angleY);
+	double GetAngleY ();
+	
+	void SetCenterX (double centerX);
+	double GetCenterX ();
+	
+	void SetCenterY (double centerY);
+	double GetCenterY ();
 };
 
-void   skew_transform_set_angle_x (SkewTransform *transform, double angleX);
-double skew_transform_get_angle_x (SkewTransform *transform);
-
-void   skew_transform_set_angle_y (SkewTransform *transform, double angleY);
-double skew_transform_get_angle_y (SkewTransform *transform);
-
-void   skew_transform_set_center_x (SkewTransform *transform, double centerX);
-double skew_transform_get_center_x (SkewTransform *transform);
-
-void   skew_transform_set_center_y (SkewTransform *transform, double centerY);
-double skew_transform_get_center_y (SkewTransform *transform);
 
 /* @Namespace=None */ // The managed Matrix is a struct
 /* @ManagedDependencyProperties=Manual */
 class Matrix : public DependencyObject {
 	cairo_matrix_t matrix;
-
+	
  protected:
 	virtual ~Matrix () {}
-
+	
  public:
 	/* @PropertyType=double,DefaultValue=1.0 */
 	static DependencyProperty *M11Property;
@@ -221,63 +213,71 @@ class Matrix : public DependencyObject {
 	static DependencyProperty *OffsetXProperty;
 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *OffsetYProperty;
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Matrix ();
 	Matrix (cairo_matrix_t *m);
-
+	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-
+	
 	virtual Type::Kind GetObjectType () { return Type::MATRIX; }
-
+	
 	cairo_matrix_t GetUnderlyingMatrix ();
+	
+	//
+	// Property Accessors
+	//
+	void SetM11 (double m11);
+	double GetM11 ();
+	
+	void SetM12 (double m12);
+	double GetM12 ();
+	
+	void SetM21 (double m21);
+	double GetM21 ();
+	
+	void SetM22 (double m22);
+	double GetM22 ();
+	
+	void SetOffsetX (double offsetX);
+	double GetOffsetX ();
+	
+	void SetOffsetY (double offsetY);
+	double GetOffsetY ();
 };
-
-double matrix_get_m11 (Matrix *matrix);
-void matrix_set_m11 (Matrix *matrix, double value);
-
-double matrix_get_m12 (Matrix *matrix);
-void matrix_set_m12 (Matrix *matrix, double value);
-
-double matrix_get_m21 (Matrix *matrix);
-void matrix_set_m21 (Matrix *matrix, double value);
-
-double matrix_get_m22 (Matrix *matrix);
-void matrix_set_m22 (Matrix *matrix, double value);
-
-double matrix_get_offset_x (Matrix *matrix);
-void matrix_set_offset_x (Matrix *matrix, double value);
-
-double matrix_get_offset_y (Matrix *matrix);
-void matrix_set_offset_y (Matrix *matrix, double value);
 
 
 /* @Namespace=System.Windows.Media */
 class MatrixTransform : public Transform {
  protected:
 	virtual ~MatrixTransform () {}
-
+	
 	virtual void UpdateTransform ();
+	
  public:
 	/* @PropertyType=Matrix */
 	static DependencyProperty *MatrixProperty;
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MatrixTransform () { }
-	virtual Type::Kind GetObjectType () { return Type::MATRIXTRANSFORM; };
-
+	
+	virtual Type::Kind GetObjectType () { return Type::MATRIXTRANSFORM; }
+	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	
+	//
+	// Property Accessors
+	//
+	void SetMatrix (Matrix *matrix);
+	Matrix *GetMatrix ();
 };
-
-void	matrix_transform_set_matrix (MatrixTransform *transform, Matrix *matrix);
-Matrix *matrix_transform_get_matrix (MatrixTransform *transform);
 
 
 /* @Namespace=System.Windows.Media */
 class TransformCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TransformCollection () {}
-
+	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	TransformCollection () { }
@@ -292,21 +292,32 @@ class TransformCollection : public DependencyObjectCollection {
 class TransformGroup : public Transform {
  protected:
 	virtual ~TransformGroup ();
-
+	
 	virtual void UpdateTransform ();
 	
  public:
 	/* @PropertyType=TransformCollection */
 	static DependencyProperty *ChildrenProperty;
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TransformGroup ();
-	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; };
+	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; }
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	
+	//
+	// Property Accessors
+	//
+	void SetChildren (TransformCollection *children);
+	TransformCollection *GetChildren ();
 };
+
+
+G_BEGIN_DECLS
+
+void   general_transform_transform_point (GeneralTransform *t, Point *p, Point *r);
 
 G_END_DECLS
 

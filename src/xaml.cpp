@@ -1784,9 +1784,8 @@ key_spline_from_str (const char *str, KeySpline **res)
 Matrix *
 matrix_from_str (const char *str)
 {
-	Matrix *matrix;
 	DoubleCollection *values = double_collection_from_str (str);
-	
+	Matrix *matrix;
 	
 	if (!values)
 		return new Matrix ();
@@ -1797,14 +1796,13 @@ matrix_from_str (const char *str)
 	}
 
 	matrix = new Matrix ();
-
-	matrix_set_m11 (matrix, values->GetValueAt (0)->AsDouble ());
-	matrix_set_m12 (matrix, values->GetValueAt (1)->AsDouble ());
-	matrix_set_m21 (matrix, values->GetValueAt (2)->AsDouble ());
-	matrix_set_m22 (matrix, values->GetValueAt (3)->AsDouble ());
-	matrix_set_offset_x (matrix, values->GetValueAt (4)->AsDouble ());
-	matrix_set_offset_y (matrix, values->GetValueAt (5)->AsDouble ());
-
+	matrix->SetM11 (values->GetValueAt (0)->AsDouble ());
+	matrix->SetM12 (values->GetValueAt (1)->AsDouble ());
+	matrix->SetM21 (values->GetValueAt (2)->AsDouble ());
+	matrix->SetM22 (values->GetValueAt (3)->AsDouble ());
+	matrix->SetOffsetX (values->GetValueAt (4)->AsDouble ());
+	matrix->SetOffsetY (values->GetValueAt (5)->AsDouble ());
+	
 	values->unref ();
 
 	return matrix;

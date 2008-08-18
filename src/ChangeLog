@@ -1,5 +1,7 @@
 2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
 
+	* transform.cpp: Removed manual c-bindings.
+
 	* text.cpp: Removed manual c-bindings for property accessors.
 
 2008-08-18  Geoff Norton  <gnorton@novell.com>
