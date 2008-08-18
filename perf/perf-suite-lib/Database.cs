@@ -64,6 +64,43 @@ namespace PerfSuiteLib {
 			entry.GiveId (connection.LastInsertRowId);
 		}
 
+		public static List <ItemDbEntry> GetAllItemEntries ()
+		{
+			IDbCommand cmd = connection.CreateCommand ();
+			cmd.CommandText = ("SELECT * FROM items");
+
+			IDataReader reader = cmd.ExecuteReader ();
+			List <ItemDbEntry> list = new List <ItemDbEntry> ();
+
+			while (reader.Read ())
+				list.Add (new ItemDbEntry (reader));
+
+			return list;
+		}
+
+		public static List <ResultDbEntry> GetResultEntriesForItemEntry (ItemDbEntry item, int limit)
+		{
+			IDbCommand cmd = connection.CreateCommand ();
+			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time " + 
+					   "FROM results, passes " + 
+					   "WHERE results.pass_id = passes.id AND results.item_id = :it " + 
+					   "ORDER BY passes.date DESC " + 
+					   "LIMIT 50");
+
+			IDataParameter p1 = cmd.CreateParameter ();
+			p1.ParameterName = ":it";
+			p1.Value = item.Id.ToString ();
+			cmd.Parameters.Add (p1);
+
+			IDataReader reader = cmd.ExecuteReader ();
+			List <ResultDbEntry> list = new List <ResultDbEntry> ();
+
+			while (reader.Read ()) 
+				list.Add (new ResultDbEntry (reader));
+
+			return list;
+		}
+
 		public static ItemDbEntry GetItemEntryByUniqueId (string uniqueId)
 		{
 			IDbCommand cmd = connection.CreateCommand ();

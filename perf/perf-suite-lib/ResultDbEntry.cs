@@ -38,6 +38,18 @@ namespace PerfSuiteLib {
 		public string PassId;
 		public long Time;
 
+		public ResultDbEntry (IDataReader reader)
+		{
+			id = Convert.ToInt32 (reader [0]);
+			ItemId = (string) reader [1];
+			PassId = (string) reader [2];
+			Time = Convert.ToInt64 ((string) reader [3]);
+		}
+
+		public ResultDbEntry ()
+		{
+		}
+
 		public override void CreateCommand (ref IDbCommand command)
 		{
 			AddParameter (command, ":it", ItemId);

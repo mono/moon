@@ -39,6 +39,8 @@ namespace PerfSuiteGenerator {
 
 		public static int Main (string [] args)
 		{
+			Database.Initialize ();
+			/*
 			double p = 0.5;
 			List <ResultDbEntry> list = new List <ResultDbEntry> ();
 			for (int i = 0; i < 50; i++) {
@@ -50,8 +52,12 @@ namespace PerfSuiteGenerator {
 
 				list.Add (result);
 				p += 0.03;
-			}
+			}*/
 
+			ItemDbEntry item = new ItemDbEntry ();
+			item.GiveId (2);
+
+			List <ResultDbEntry> list = Database.GetResultEntriesForItemEntry (item, 50);
 			GraphGenerator.GenerateGraph (list, "test.png");
 
 			return 0;
