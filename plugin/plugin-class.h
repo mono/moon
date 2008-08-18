@@ -450,19 +450,19 @@ struct MoonlightMarkerReachedEventArgsObject : MoonlightRoutedEventArgs {
 	MarkerReachedEventArgs *GetMarkerReachedEventArgs () { return (MarkerReachedEventArgs *) eo; }
 };
 
-/*** MoonlightKeyboardEventArgsClass  **************************************************************/
-struct MoonlightKeyboardEventArgsType : MoonlightEventArgsType {
-	MoonlightKeyboardEventArgsType ();
+/*** MoonlightKeyEventArgsClass  **************************************************************/
+struct MoonlightKeyEventArgsType : MoonlightEventArgsType {
+	MoonlightKeyEventArgsType ();
 };
 
-struct MoonlightKeyboardEventArgsObject : MoonlightEventArgs {
-	MoonlightKeyboardEventArgsObject (NPP instance) : MoonlightEventArgs (instance)
+struct MoonlightKeyEventArgsObject : MoonlightEventArgs {
+	MoonlightKeyEventArgsObject (NPP instance) : MoonlightEventArgs (instance)
 	{
-		moonlight_type = Type::KEYBOARDEVENTARGS;
+		moonlight_type = Type::KEYEVENTARGS;
 	}
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
-	KeyboardEventArgs *GetKeyboardEventArgs () { return (KeyboardEventArgs *) eo; }
+	KeyEventArgs *GetKeyEventArgs () { return (KeyEventArgs *) eo; }
 };
 
 /*** MoonlightErrorEventArgsClass ******************************************************/

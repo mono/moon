@@ -180,6 +180,7 @@ MoonWindowless::HandleEvent (XEvent *event)
 		GdkEventKey key;
 
 		key.type = xev->type == KeyPress ? GDK_KEY_PRESS : GDK_KEY_RELEASE;
+		key.string = NULL;
 		key.window = NULL;
 		key.send_event = xev->xkey.send_event;
 		key.time = xev->xkey.time;

@@ -1,3 +1,10 @@
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
+	* windowless.cpp: Null the GdkEventKey.string value.
+	* plugin-class.cpp|h: Rename KeyboardEventArgs->KeyEventArgs, 
+	but support returning "KeyboardEventArgs" to javacsript toString()
+	when in 1.0 mode.
+
 2008-08-17  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp|h: Add a C binding for GetSourceLocation ()
