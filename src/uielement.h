@@ -319,12 +319,12 @@ class UIElement : public DependencyObject {
 	//
 	// EmitKeyDown:
 	//
-	bool EmitKeyDown (int state, Key key, int platform_key_code);
+	bool EmitKeyDown (GdkEventKey *key);
 
 	//
 	// EmitKeyUp:
 	//
-	bool EmitKeyUp (int state, Key key, int platform_key_code);
+	bool EmitKeyUp (GdkEventKey *key);
 
 	//
 	// EmitMouseEnter:

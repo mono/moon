@@ -505,13 +505,22 @@ Inline *inline_new (void);
 InlineCollection *inline_collection_new (void);
 
 /**
- * KeyboardEventArgs
+ * KeyEventArgs
  **/
 /* @GeneratePInvoke */
-bool keyboard_event_args_get_handled (KeyboardEventArgs *instance);
+bool key_event_args_get_handled (KeyEventArgs *instance);
 
 /* @GeneratePInvoke */
-void keyboard_event_args_set_handled (KeyboardEventArgs *instance, bool handled);
+int key_event_args_get_key (KeyEventArgs *instance);
+
+/* @GeneratePInvoke */
+int key_event_args_get_platform_key_code (KeyEventArgs *instance);
+
+/* @GeneratePInvoke */
+KeyEventArgs *key_event_args_new (void);
+
+/* @GeneratePInvoke */
+void key_event_args_set_handled (KeyEventArgs *instance, bool handled);
 
 /**
  * KeyFrameCollection

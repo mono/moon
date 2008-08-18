@@ -537,15 +537,15 @@ UIElement::EmitMouseLeftButtonUp (GdkEvent *event)
 }
 
 bool
-UIElement::EmitKeyDown (int state, Key key, int platform_key_code)
+UIElement::EmitKeyDown (GdkEventKey *event)
 {
-	return Emit (KeyDownEvent, new KeyboardEventArgs (state, platform_key_code, key));
+	return Emit (KeyDownEvent, new KeyEventArgs (event));
 }
 
 bool
-UIElement::EmitKeyUp (int state, Key key, int platform_key_code)
+UIElement::EmitKeyUp (GdkEventKey *event)
 {
-	return Emit (KeyUpEvent, new KeyboardEventArgs (state, platform_key_code, key));
+	return Emit (KeyUpEvent, new KeyEventArgs (event));
 }
 
 bool

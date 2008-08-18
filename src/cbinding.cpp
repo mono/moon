@@ -932,10 +932,10 @@ inline_collection_new (void)
 
 
 /**
- * KeyboardEventArgs
+ * KeyEventArgs
  **/
 bool
-keyboard_event_args_get_handled (KeyboardEventArgs *instance)
+key_event_args_get_handled (KeyEventArgs *instance)
 {
 	if (instance == NULL)
 		return false;;
@@ -944,8 +944,37 @@ keyboard_event_args_get_handled (KeyboardEventArgs *instance)
 }
 
 
+int
+key_event_args_get_key (KeyEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetKey ();
+}
+
+
+int
+key_event_args_get_platform_key_code (KeyEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetPlatformKeyCode ();
+}
+
+
+KeyEventArgs *
+key_event_args_new (void)
+{
+	return new KeyEventArgs ();
+}
+
+
 void
-keyboard_event_args_set_handled (KeyboardEventArgs *instance, bool handled)
+key_event_args_set_handled (KeyEventArgs *instance, bool handled)
 {
 	if (instance == NULL)
 		return;

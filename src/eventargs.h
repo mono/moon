@@ -85,29 +85,34 @@ private:
 };
 
 /* @Namespace=None */
-class KeyboardEventArgs : public RoutedEventArgs {
+class KeyEventArgs : public RoutedEventArgs {
 public:
-	KeyboardEventArgs () { handled = false; }
-	KeyboardEventArgs (int state_, int platformcode_, int key_) : 
-		state (state_), platformcode (platformcode_), key (key_)
-	{
-	}
-	virtual Type::Kind GetObjectType () { return Type::KEYBOARDEVENTARGS; };
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	KeyEventArgs ();
+	KeyEventArgs (GdkEventKey *event);
+	virtual Type::Kind GetObjectType () { return Type::KEYEVENTARGS; };
 	
+	int GetState ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	Key GetKey ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetPlatformKeyCode ();
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetHandled (bool handled) { this->handled = handled; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetHandled () { return handled; }
-
-	int state;
-	int platformcode;
-	int key;
+	
+	static Key gdk_keyval_to_key (guint keyval);
 
 protected:
-	virtual ~KeyboardEventArgs () {}
+	virtual ~KeyEventArgs ();
 
 private:
+	GdkEventKey *event;
 	bool handled;
 };
 
