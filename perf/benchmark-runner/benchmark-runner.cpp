@@ -30,6 +30,7 @@
 #include <runtime.h>
 #include <clock.h>
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
@@ -50,7 +51,8 @@ int interval = 40;		// By default 25 frames per second
 int start_time = 0;		// By default start from 0
 int end_time = 5000;		// By default end after 5 seconds
 gint runs_left = 1;		// Do just one run by default
-char *filename = NULL;
+char *filename = NULL;		// No default filename
+char *results_filename = NULL;	// No default results filename
 
 void do_run (void);
 
@@ -58,6 +60,7 @@ int current_time;
 GtkWidget *moz_embed;
 GtkWindow *window;
 glong benchmark_start;
+FILE *results_io = NULL;
 
 static GOptionEntry entries [] =
 {
@@ -66,8 +69,31 @@ static GOptionEntry entries [] =
 	{ "interval", 'i', 0, G_OPTION_ARG_INT, &interval, "Interval between frames in S mseconds", "S" },
 	{ "runs", 'n', 0, G_OPTION_ARG_INT, &runs_left, "Do N runs", "N" },
 	{ "filename", 'f', 0, G_OPTION_ARG_STRING, &filename, "Filename to load", NULL },
+	{ "results-filename", 'r', 0, G_OPTION_ARG_STRING, &results_filename, "Filename to save results to", NULL },
 	{ NULL }
 };
+
+void start_xml (void)
+{
+	if (results_io)
+		fprintf (results_io, "<Results>\n");
+}
+
+void end_xml (void)
+{
+	if (results_io) {
+		fprintf (results_io, "</Results>\n");
+		fclose (results_io);
+		results_io = NULL;
+	}
+}
+
+void save_result (long v)
+{
+	if (results_io) {
+		fprintf (results_io, "  <Run time=\"%ld\" />\n", v);
+	}
+}
 
 glong get_time (void)
 {
@@ -111,7 +137,9 @@ gboolean increase_timer (void *data)
 	ManualTimeSource *source = (ManualTimeSource *) manager->GetSource ();
 
 	if (current_time > end_time) {
-		printf ("*** Run finished, result: %.5fs\n", (get_time () - benchmark_start) / (float) G_USEC_PER_SEC);
+		long result = get_time () - benchmark_start;
+		printf ("*** Run finished, result: %.5fs\n", result / (float) G_USEC_PER_SEC);
+		save_result (result);
 		unsetup ();
 
 		if (runs_left > 0) {
@@ -119,6 +147,7 @@ gboolean increase_timer (void *data)
 			return FALSE;
 		} else {
 			printf ("*** All done, exiting...\n");
+			end_xml ();
 			exit (0);
 		}
 	}
@@ -213,6 +242,12 @@ main (int argc, char **argv)
 
 	gtk_widget_show_all (moz_embed);
 	gtk_widget_show_all (GTK_WIDGET (window));
+
+	if (results_filename) {
+		results_io = fopen (results_filename, "w");
+	}
+
+	start_xml ();
 
 	runtime_flags_set_manual_timesource (TRUE);
 	runtime_flags_set_use_shapecache (FALSE);
