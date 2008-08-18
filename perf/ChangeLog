@@ -1,5 +1,10 @@
 2008-08-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-runner/DrtStore.cs:
+	* perf-suite-set/drtlist.xml: Item => DrtItem.
+
+2008-08-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-runner/DrtItem.cs:
 	* perf-suite-runner/DrtStore.cs:
 	* perf-suite-runner/Main.cs:

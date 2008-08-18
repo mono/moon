@@ -49,7 +49,7 @@ namespace PerfSuiteRunner {
 					XmlDocument document = new XmlDocument ();
 					document.Load (streamReader);
                 
-					foreach (XmlNode node in document.GetElementsByTagName ("Item")) {
+					foreach (XmlNode node in document.GetElementsByTagName ("DrtItem")) {
 						DrtItem item = new DrtItem (node);
 						if (item.IsValid () == false) {
 							string error = String.Format ("Drt Item with id {0} is invalid!", item.UniqueId);
