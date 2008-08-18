@@ -20,8 +20,11 @@ endif
 clean-local:
 	-rm -rf lib
 
+DISTCLEANFILES=	Microsoft.SilverlightControls/Makefile \
+		Microsoft.SilverlightControls/Controls/Makefile
+
 dist-hook:
 	-mkdir $(distdir)/Microsoft.SilverlightControls
-	cp -a $(srcdir)/Microsoft.SilverlightControls/* $(distdir)/Microsoft.SilverlightControls
+	-cp -a $(srcdir)/Microsoft.SilverlightControls/* $(distdir)/Microsoft.SilverlightControls
 	find $(distdir)/Microsoft.SilverlightControls -name .svn | xargs rm -rf
 
