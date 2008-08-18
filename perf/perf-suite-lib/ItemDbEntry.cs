@@ -38,12 +38,12 @@ namespace PerfSuiteLib {
 		public string Name = String.Empty;
 		public string InputFile = String.Empty;
 
-		public ItemDbEntry (IDataReader reader)
+		public ItemDbEntry (IDataReader reader, int index)
 		{
-			id = Convert.ToInt32 (reader [0]);
-			UniqueId = (string) reader [1];
-			Name = (string) reader [2];
-			InputFile = (string) reader [3];
+			id = Convert.ToInt32 (reader [0 + index]);
+			UniqueId = (string) reader [1 + index];
+			Name = (string) reader [2 + index];
+			InputFile = (string) reader [3 + index];
 		}
 
 		public ItemDbEntry ()

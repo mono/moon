@@ -28,43 +28,19 @@
  */
 
 using System;
-using System.Data;
+using System.Collections.Generic;
+using PerfSuiteLib;
+using Cairo;
 
-namespace PerfSuiteLib {
+namespace PerfSuiteGenerator {
 
-	public class PassDbEntry : DbEntry {
+	public static class UtilFu {
 
-		public string Description;
-		public DateTime Date;
-
-		public PassDbEntry (IDataReader reader, int index)
+		public static double GetValueDifference (long t1, long t2)
 		{
-			id = Convert.ToInt32 (reader [0 + index]);
-			Description = (string) reader [1 + index];
-			Date = new DateTime (Convert.ToInt64 ((string) reader [2 + index]));
+			return (t2 - t1) / (double) t1;
 		}
-
-		public PassDbEntry ()
-		{
-		}
-
-		public override void CreateCommand (ref IDbCommand command)
-		{
-			AddParameter (command, ":description", Description);
-			AddParameter (command, ":date", Date.Ticks);
-
-			command.CommandText = ("INSERT INTO passes VALUES " +
-					       "(null, :description, :date)");
-		}
-
-		public override bool IsValid ()
-		{
-			if (Description == String.Empty)
-				return false;
-
-			return true;
-		}
-
+	
 	}
 }
 

@@ -36,7 +36,7 @@ namespace PerfSuiteGenerator {
 
 	public static class GraphGenerator {
 
-		public static void GenerateGraph (List <ResultWithDateDbEntry> resultList, string filename)
+		public static void GenerateGraph (List <ResultDbEntry> resultList, string filename)
 		{
 			// FIXME Exception if more than 50 results...
 
@@ -60,19 +60,20 @@ namespace PerfSuiteGenerator {
 
 			context.LineWidth = 1.5;
 
+			// FIXME Reverse to copy
 			resultList.Reverse ();
 
 			double x = 100.5 - ((resultList.Count - 1) * 2.0);
 			bool hasPrevResult = false;
 			long prevResult = 0;
 
-			foreach (ResultWithDateDbEntry entry in resultList) {
+			foreach (ResultDbEntry entry in resultList) {
 
 				double sz = ((double) entry.Time / denominator) * 50.0;
 
-				if (hasPrevResult && PercentDifference (prevResult, entry.Time) > 0.1)
+				if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) > 0.1)
 					context.SetSourceRGB (1.0, 0.0, 0.0);
-				else if (hasPrevResult && PercentDifference (prevResult, entry.Time) < -0.1)
+				else if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) < -0.1)
 					context.SetSourceRGB (0.0, 1.0, 0.0);
 				else
 					context.SetSourceRGB (0.4, 0.4, 0.4);
@@ -94,20 +95,15 @@ namespace PerfSuiteGenerator {
 			((IDisposable) surface).Dispose ();
 		}
 
-		private static long FindBiggestResult (List <ResultWithDateDbEntry> resultList)
+		private static long FindBiggestResult (List <ResultDbEntry> resultList)
 		{
 			long biggest = 0;
-			foreach (ResultWithDateDbEntry entry in resultList) 
+			foreach (ResultDbEntry entry in resultList) 
 				biggest = Math.Max (biggest, entry.Time);
 
 			return biggest;
 		}
 
-		private static double PercentDifference (long t1, long t2)
-		{
-			return (t2 - t1) / (double) t1;
-		}
-	
 	}
 }
 

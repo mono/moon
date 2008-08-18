@@ -2,6 +2,33 @@
 
 	* ChangeLog:
 	* Makefile:
+	* perf-suite-generator/GraphGenerator.cs:
+	* perf-suite-generator/HtmlGenerator.cs:
+	* perf-suite-generator/UtilFu.cs:
+	* perf-suite-lib/Database.cs:
+	* perf-suite-lib/ItemDbEntry.cs:
+	* perf-suite-lib/PassDbEntry.cs:
+	* perf-suite-lib/ResultDbEntry.cs:
+	* perf-suite-runner/Main.cs: Moving some common method to UtilFu. Ooops, forgot 
+	to actually add files to last commit.
+
+2008-08-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* Makefile:
+	* perf-suite-generator/GraphGenerator.cs:
+	* perf-suite-generator/HtmlGenerator.cs:
+	* perf-suite-lib/Database.cs:
+	* perf-suite-lib/ItemDbEntry.cs:
+	* perf-suite-lib/PassDbEntry.cs:
+	* perf-suite-lib/ResultDbEntry.cs:
+	* perf-suite-lib/ResultWithDateDbEntry.cs:
+	* perf-suite-runner/Main.cs: More sane approach to storing the relations between 
+	Database items created from the storage.
+
+2008-08-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* ChangeLog:
+	* Makefile:
 	* helpers.js:
 	* jquery.js:
 	* logo.png:

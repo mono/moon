@@ -34,16 +34,16 @@ namespace PerfSuiteLib {
 
 	public class ResultDbEntry : DbEntry {
 
-		public string ItemId;
-		public string PassId;
+		public ItemDbEntry Item;
+		public PassDbEntry Pass;
 		public long Time;
 
-		public ResultDbEntry (IDataReader reader)
+		public ResultDbEntry (IDataReader reader, int index, ItemDbEntry item, PassDbEntry pass)
 		{
-			id = Convert.ToInt32 (reader [0]);
-			ItemId = (string) reader [1];
-			PassId = (string) reader [2];
-			Time = Convert.ToInt64 ((string) reader [3]);
+			id = Convert.ToInt32 (reader [0 + index]);
+			Item = item;
+			Pass = pass;
+			Time = Convert.ToInt64 ((string) reader [3 + index]);
 		}
 
 		public ResultDbEntry ()
@@ -52,8 +52,8 @@ namespace PerfSuiteLib {
 
 		public override void CreateCommand (ref IDbCommand command)
 		{
-			AddParameter (command, ":it", ItemId);
-			AddParameter (command, ":pa", PassId);
+			AddParameter (command, ":it", Item.Id.ToString ());
+			AddParameter (command, ":pa", Pass.Id.ToString ());
 			AddParameter (command, ":t", Time.ToString ());
 
 			command.CommandText = ("INSERT INTO results VALUES " +
@@ -62,10 +62,10 @@ namespace PerfSuiteLib {
 
 		public override bool IsValid ()
 		{
-			if (ItemId == String.Empty)
+			if (Item == null)
 				return false;
 
-			if (PassId == String.Empty)
+			if (Pass == null)
 				return false;
 
 			if (Time < 0)

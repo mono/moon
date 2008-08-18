@@ -41,7 +41,7 @@ namespace PerfSuiteRunner {
 			Random rnd = new Random ();
 
 			// FIXME For now use first argument as pass name
-			string passName = "(Unknown)";
+			string passName = "Unknown";
 			if (args.Length > 0)
 				passName = args [0];
 
@@ -73,8 +73,8 @@ namespace PerfSuiteRunner {
 				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
 
 				ResultDbEntry resultEntry = new ResultDbEntry ();
-				resultEntry.PassId = passEntry.Id.ToString ();
-				resultEntry.ItemId = itemEntry.Id.ToString ();
+				resultEntry.Pass = passEntry;
+				resultEntry.Item = itemEntry;
 				resultEntry.Time = r.AveragedTime;
 
 				Database.Put (resultEntry);

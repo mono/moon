@@ -73,7 +73,7 @@ namespace PerfSuiteLib {
 			List <ItemDbEntry> list = new List <ItemDbEntry> ();
 
 			while (reader.Read ())
-				list.Add (new ItemDbEntry (reader));
+				list.Add (new ItemDbEntry (reader, 0));
 
 			return list;
 		}
@@ -90,13 +90,14 @@ namespace PerfSuiteLib {
 			if (! reader.Read ())
 				return null;
 
-			return new PassDbEntry (reader);
+			return new PassDbEntry (reader, 0);
 		}
 
-		public static List <ResultWithDateDbEntry> GetResultEntriesForItemEntry (ItemDbEntry item, int limit)
+		public static List <ResultDbEntry> GetResultEntriesForItemEntry (ItemDbEntry item, int limit)
 		{
 			IDbCommand cmd = connection.CreateCommand ();
-			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time, passes.date, passes.description " + 
+			// FIXME Limit!
+			cmd.CommandText = ("SELECT results.id, results.item_id, results.pass_id, results.time, passes.id, passes.description, passes.date " + 
 					   "FROM results, passes " + 
 					   "WHERE results.pass_id = passes.id AND results.item_id = :it " + 
 					   "ORDER BY passes.date DESC " + 
@@ -108,10 +109,12 @@ namespace PerfSuiteLib {
 			cmd.Parameters.Add (p1);
 
 			IDataReader reader = cmd.ExecuteReader ();
-			List <ResultWithDateDbEntry> list = new List <ResultWithDateDbEntry> ();
+			List <ResultDbEntry> list = new List <ResultDbEntry> ();
 
-			while (reader.Read ()) 
-				list.Add (new ResultWithDateDbEntry (reader));
+			while (reader.Read ()) {
+				PassDbEntry pass = new PassDbEntry (reader, 4);
+				list.Add (new ResultDbEntry (reader, 0, item, pass));
+			}
 
 			return list;
 		}
@@ -131,7 +134,7 @@ namespace PerfSuiteLib {
 			if (! reader.Read ())
 				return null;
 			else {
-				return new ItemDbEntry (reader);
+				return new ItemDbEntry (reader, 0);
 			}
 		}
 

@@ -62,30 +62,30 @@ namespace PerfSuiteGenerator {
 							"<h2>Lass pass on: @@LAST_PASS_DATE@@</h2>" +
 							"</div>";
 
-		public static string GenerateDetailRows (List <ResultWithDateDbEntry> resultList)
+		public static string GenerateDetailRows (List <ResultDbEntry> resultList)
 		{
 			string output = String.Empty;
 
 			// FIXME Exception if more than 50 results...
-
+			// FIXME Reverse the copy
 			resultList.Reverse ();
 			bool hasPrevResult = false;
 			long prevResult = 0;
 
-			foreach (ResultWithDateDbEntry entry in resultList) {
+			foreach (ResultDbEntry entry in resultList) {
 
 				string cls;
-				if (hasPrevResult && PercentDifference (prevResult, entry.Time) > 0.1)
+				if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) > 0.1)
 					cls = "red-detail";
-				else if (hasPrevResult && PercentDifference (prevResult, entry.Time) < -0.1)
+				else if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) < -0.1)
 					cls = "green-detail";
 				else
 					cls = "detail";
 
 				string html = DetailRowTemplate;
 				html = html.Replace ("@@DETAIL_CLASS@@", cls);
-				html = html.Replace ("@@PASS_DESCRIPTION@@", entry.Description);
-				html = html.Replace ("@@DATE@@", entry.Date.ToString ());
+				html = html.Replace ("@@PASS_DESCRIPTION@@", entry.Pass.Description);
+				html = html.Replace ("@@DATE@@", entry.Pass.Date.ToString ());
 				html = html.Replace ("@@RESULT@@", (entry.Time / (float) 1000000).ToString ());
 
 				output = html + output;
@@ -115,7 +115,7 @@ namespace PerfSuiteGenerator {
 			foreach (ItemDbEntry entry in itemList) {
 
 				string graphFilename = String.Format ("graph-{0}.png", entry.UniqueId);
-				List <ResultWithDateDbEntry> list = Database.GetResultEntriesForItemEntry (entry, 50);
+				List <ResultDbEntry> list = Database.GetResultEntriesForItemEntry (entry, 50);
 				GraphGenerator.GenerateGraph (list, graphFilename);
 
 				string html = ItemRowTemplate;
@@ -143,11 +143,6 @@ namespace PerfSuiteGenerator {
 			html = html.Replace ("@@HEADER@@", header);
 
 			return html;
-		}
-
-		private static double PercentDifference (long t1, long t2)
-		{
-			return (t2 - t1) / (double) t1;
 		}
 
 	}
