@@ -15,9 +15,6 @@
 #define __SHAPE_H__
 
 #include <glib.h>
-
-G_BEGIN_DECLS
-
 #include <cairo.h>
 
 #include "geometry.h"
@@ -30,8 +27,12 @@ class Brush;
 // Helpers
 //
 
+G_BEGIN_DECLS
+
 cairo_fill_rule_t convert_fill_rule (FillRule fill_rule);
 void calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, PenLineCap start_cap, PenLineCap end_cap, Rect* bounds);
+
+G_END_DECLS
 
 
 //
