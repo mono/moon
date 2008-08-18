@@ -49,11 +49,26 @@ namespace PerfSuiteLib {
 				CreateTables ();
 		}
 
+		public static void Put (DbEntry entry)
+		{
+			if (entry.IsValid () == false)
+				throw new Exception ("Can't put invalid entry in the database!");
+
+			if (entry.IsInTheDatabase)
+				throw new Exception ("Entry already in the database!");
+
+			IDbCommand cmd = connection.CreateCommand ();
+			entry.CreateCommand (ref cmd);
+			cmd.ExecuteNonQuery ();
+		}
+
 		private static void CreateTables ()
 		{
 			Console.WriteLine ("*** Creating database tables...");
 			ExecuteCreateCommand ("CREATE TABLE meta (version INTEGER)");
 			ExecuteCreateCommand ("INSERT INTO meta VALUES ('1')");
+		
+			ExecuteCreateCommand ("CREATE TABLE passes (id INTEGER PRIMARY KEY, description TEXT, date TEXT)");
 		}
 
 		private static void ExecuteCreateCommand (string cmdString)

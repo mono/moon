@@ -28,35 +28,33 @@
  */
 
 using System;
-using System.IO;
-using System.Xml;
-using PerfSuiteLib;
+using System.Data;
 
-namespace PerfSuiteRunner {
+namespace PerfSuiteLib {
 
-	public static class PerfSuiteRunner {
+	public class PassDbEntry : DbEntry {
 
-		public static int Main (string [] args)
+		public string Description;
+		public DateTime Date;
+
+		public override void CreateCommand (ref IDbCommand command)
 		{
-			Database.Initialize ();
+			AddParameter (command, ":description", Description);
+			AddParameter (command, ":date", Date);
 
-			PassDbEntry pass = new PassDbEntry ();
-			pass.Description = "TestPass";
-			pass.Date = DateTime.Now;
+			command.CommandText = ("INSERT INTO passes VALUES " +
+					       "(null, :description, :date)");
+		}
 
-			Database.Put (pass);
+		public override bool IsValid ()
+		{
+			if (Description == String.Empty)
+				return false;
 
-			DrtStore store = new DrtStore ("perf-suite-set/drtlist.xml");
-			foreach (DrtItem item in store.Items) {
-				Console.WriteLine ("*** Running [{0}]", item);
-				Result r = item.Run ();
-				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
-			}
-			return 0;
+			return true;
 		}
 
 	}
-
 }
 
 

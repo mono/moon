@@ -1,5 +1,15 @@
 2008-08-07  Michael Dominic K.  <mdk@mdk.am>
 
+	* Makefile:
+	* perf-suite-lib/Database.cs:
+	* perf-suite-lib/DbEntry.cs:
+	* perf-suite-lib/PassDbEntry.cs:
+	* perf-suite-runner/Main.cs: Adding a basic abstract DbEntry class that will be a base
+	for all storage classes. Adding PassDbEntry implementation which will be representing a 
+	complete run of all the tests at a given time with a given name. 
+
+2008-08-07  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-set/drtlist.xml:
 	* perf-suite-set/mono.png:
 	* perf-suite-set/scaling-image.html: Adding a scaling image set to have two sane ones.
