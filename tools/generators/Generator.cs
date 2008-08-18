@@ -1201,7 +1201,7 @@ class Generator {
 				} else if (cmethod.ReturnType.Value == "Type::Kind") {
 					text.Append ("\t\treturn Type::INVALID");
 				} else if (cmethod.ReturnType.Value == "bool") {
-					text.Append ("\t\treturn false;");
+					text.Append ("\t\treturn false");
 				} else {
 					text.AppendLine ("\t\t// Need to find a property way to get the default value for the specified type and return that if instance is NULL.");
 					text.Append ("\t\treturn");
