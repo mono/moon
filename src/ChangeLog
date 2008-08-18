@@ -1,3 +1,9 @@
+2008-08-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: DrainUnrefs: since unreffing objects may cause
+	  more objects to be enqueued for unref, loop until there are none
+	  left.
+
 2008-08-17  Geoff Norton  <gnorton@novell.com>
 
 	* downloader.cpp|h: Add a method for DownloaderResponse to 

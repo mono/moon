@@ -637,18 +637,20 @@ EventObject::DrainUnrefs ()
 {
 	GSList *list;
 
-	// We need to unlock our mutex before unreffing the objects,
-	// since unreffing any object might cause unref_delayed to be
-	// called (on the same thread), which will then try to lock the
-	// mutex again, causing a dead-lock.
-	pthread_mutex_lock (&delayed_unref_mutex);
-	list = pending_unrefs;
-	pending_unrefs = NULL;
-	drain_tick_call_added = false;
-	pthread_mutex_unlock (&delayed_unref_mutex);
-
-	g_slist_foreach (list, (GFunc) base_unref, NULL);
-	g_slist_free (list);
+	do {
+		// We need to unlock our mutex before unreffing the objects,
+		// since unreffing any object might cause unref_delayed to be
+		// called (on the same thread), which will then try to lock the
+		// mutex again, causing a dead-lock.
+		pthread_mutex_lock (&delayed_unref_mutex);
+		list = pending_unrefs;
+		pending_unrefs = NULL;
+		drain_tick_call_added = false;
+		pthread_mutex_unlock (&delayed_unref_mutex);
+	
+		g_slist_foreach (list, (GFunc) base_unref, NULL);
+		g_slist_free (list);
+	} while (pending_unrefs != NULL);
 }
 
 void
