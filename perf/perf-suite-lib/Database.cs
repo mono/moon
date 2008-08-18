@@ -64,6 +64,25 @@ namespace PerfSuiteLib {
 			entry.GiveId (connection.LastInsertRowId);
 		}
 
+		public static ItemDbEntry GetItemEntryByUniqueId (string uniqueId)
+		{
+			IDbCommand cmd = connection.CreateCommand ();
+			cmd.CommandText = ("SELECT * FROM items " +
+					   "WHERE unique_id = :uq");
+
+			IDataParameter p = cmd.CreateParameter ();
+			p.ParameterName = ":uq";
+			p.Value = uniqueId;
+			cmd.Parameters.Add (p);
+
+			IDataReader reader = cmd.ExecuteReader ();
+			if (! reader.Read ())
+				return null;
+			else {
+				return new ItemDbEntry (reader);
+			}
+		}
+
 		private static void CreateTables ()
 		{
 			Console.WriteLine ("*** Creating database tables...");
@@ -71,6 +90,7 @@ namespace PerfSuiteLib {
 			ExecuteCreateCommand ("INSERT INTO meta VALUES ('1')");
 		
 			ExecuteCreateCommand ("CREATE TABLE passes (id INTEGER PRIMARY KEY, description TEXT, date TEXT)");
+			ExecuteCreateCommand ("CREATE TABLE items (id INTEGER PRIMARY KEY, unique_id TEXT)");
 		}
 
 		private static void ExecuteCreateCommand (string cmdString)
