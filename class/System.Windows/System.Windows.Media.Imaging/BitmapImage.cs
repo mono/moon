@@ -32,6 +32,7 @@ using Mono;
 namespace System.Windows.Media.Imaging {
 
 	public sealed class BitmapImage : ImageSource {
+		internal Stream stream;
 
 		// XXX
 		public static readonly DependencyProperty UriSourceProperty = null;
@@ -50,7 +51,7 @@ namespace System.Windows.Media.Imaging {
 #endif
 		public void SetSource (Stream streamSource)
 		{
-			Console.WriteLine ("SetSource (Stream) called");
+			this.stream = streamSource;
 		}
 
 		public Uri UriSource {

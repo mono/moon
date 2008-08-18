@@ -1,3 +1,7 @@
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
+	* BitmapImage.cs: Keep a reference to the stream around for later use.
+
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* RenderTargetBitmap.cs: Added RenderTargetBitmap.
