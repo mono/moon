@@ -1,3 +1,7 @@
+2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp: Removed manual c-bindings for property accessors.
+
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 
 	* type-generated.cpp, cbinding.cpp|h: Rengerated

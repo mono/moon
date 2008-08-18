@@ -14,9 +14,6 @@
 #define __TEXT_H__
 
 #include <glib.h>
-
-G_BEGIN_DECLS
-
 #include <cairo.h>
 
 #include <frameworkelement.h>
@@ -32,7 +29,12 @@ G_BEGIN_DECLS
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
 #define TEXTBLOCK_FONT_SIZE    14.666666984558105
 
+G_BEGIN_DECLS
+
 void text_shutdown (void);
+
+G_END_DECLS
+
 
 /* @Namespace=System.Windows.Documents */
 class Inline : public DependencyObject {
@@ -71,27 +73,6 @@ class Inline : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 };
 
-const char *inline_get_font_family (Inline *inline_);
-void inline_set_font_family (Inline *inline_, const char *value);
-
-double inline_get_font_size (Inline *inline_);
-void inline_set_font_size (Inline *inline_, double value);
-
-FontStretches inline_get_font_stretch (Inline *inline_);
-void inline_set_font_stretch (Inline *inline_, FontStretches value);
-
-FontStyles inline_get_font_style (Inline *inline_);
-void inline_set_font_style (Inline *inline_, FontStyles value);
-
-FontWeights inline_get_font_weight (Inline *inline_);
-void inline_set_font_weight (Inline *inline_, FontWeights value);
-
-Brush *inline_get_foreground (Inline *inline_);
-void inline_set_foreground (Inline *inline_, Brush *value);
-
-TextDecorations inline_get_text_decorations (Inline *inline_);
-void inline_set_text_decorations (Inline *inline_, TextDecorations value);
-
 
 /* @Namespace=System.Windows.Documents */
 class LineBreak : public Inline {
@@ -125,9 +106,6 @@ class Run : public Inline {
 	void SetText (const char *text);
 	const char *GetText ();
 };
-
-const char *run_get_text (Run *run);
-void run_set_text (Run *run, const char *value);
 
 
 /* @ContentProperty="Inlines" */
@@ -217,7 +195,7 @@ class TextBlock : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBlock ();
-	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; };
+	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; }
 	
 	void SetFontSource (Downloader *downloader);
 	
@@ -283,41 +261,6 @@ class TextBlock : public FrameworkElement {
 	void SetTextWrapping (TextWrapping wrapping);
 	TextWrapping GetTextWrapping ();
 };
-
-double text_block_get_actual_height (TextBlock *textblock);
-double text_block_get_actual_width (TextBlock *textblock);
-
-const char *text_block_get_font_family (TextBlock *textblock);
-void text_block_set_font_family (TextBlock *textblock, const char *family);
-
-double text_block_get_font_size (TextBlock *textblock);
-void text_block_set_font_size (TextBlock *textblock, double size);
-
-FontStretches text_block_get_font_stretch (TextBlock *textblock);
-void text_block_set_font_stretch (TextBlock *textblock, FontStretches stretch);
-
-FontStyles text_block_get_font_style (TextBlock *textblock);
-void text_block_set_font_style (TextBlock *textblock, FontStyles style);
-
-FontWeights text_block_get_font_weight (TextBlock *textblock);
-void text_block_set_font_weight (TextBlock *textblock, FontWeights weight);
-
-Brush *text_block_get_foreground (TextBlock *textblock);
-void text_block_set_foreground (TextBlock *textblock, Brush *foreground);
-
-InlineCollection *text_block_get_inlines (TextBlock *textblock);
-void text_block_set_inlines (TextBlock *textblock, InlineCollection *inlines);
-
-const char *text_block_get_text (TextBlock *textblock);
-void text_block_set_text (TextBlock *textblock, const char *text);
-
-TextDecorations text_block_get_text_decorations (TextBlock *textblock);
-void text_block_set_text_decorations (TextBlock *textblock, TextDecorations decorations);
-
-TextWrapping text_block_get_text_wrapping (TextBlock *textblock);
-void text_block_set_text_wrapping (TextBlock *textblock, TextWrapping wrapping);
-
-void text_block_set_font_source (TextBlock *textblock, Downloader *downloader);
 
 
 /* @Namespace=System.Windows.Documents */
@@ -418,31 +361,5 @@ class Glyphs : public FrameworkElement {
 	void SetUnicodeString (const char *unicode);
 	const char *GetUnicodeString ();
 };
-
-Brush *glyphs_get_fill (Glyphs *glyphs);
-void glyphs_set_fill (Glyphs *glyphs, Brush *fill);
-
-double glyphs_get_font_rendering_em_size (Glyphs *glyphs);
-void glyphs_set_font_rendering_em_size (Glyphs *glyphs, double size);
-
-const char *glyphs_get_font_uri (Glyphs *glyphs);
-void glyphs_set_font_uri (Glyphs *glyphs, const char *uri);
-
-const char *glyphs_get_indices (Glyphs *glyphs);
-void glyphs_set_indices (Glyphs *glyphs, const char *indices);
-
-double glyphs_get_origin_x (Glyphs *glyphs);
-void glyphs_set_origin_x (Glyphs *glyphs, double origin);
-
-double glyphs_get_origin_y (Glyphs *glyphs);
-void glyphs_set_origin_y (Glyphs *glyphs, double origin);
-
-StyleSimulations glyphs_get_style_simulations (Glyphs *glyphs);
-void glyphs_set_style_simulations (Glyphs *glyphs, StyleSimulations style);
-
-const char *glyphs_get_unicode_string (Glyphs *glyphs);
-void glyphs_set_unicode_string (Glyphs *glyphs, const char *unicode);
-
-G_END_DECLS
 
 #endif /* __TEXT_H__ */
