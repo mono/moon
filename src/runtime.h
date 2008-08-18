@@ -82,30 +82,38 @@ typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, vo
 
 class Surface : public EventObject {
 public:
+	/* @GenerateCBinding,GeneratePInvoke */
 	Surface (MoonWindow *window, bool silverlight2);
-
-	MoonWindow* GetWindow () { return active_window; }
-
+	
+	/* @GenerateCBinding */
+	MoonWindow *GetWindow () { return active_window; }
+	
 	// allows you to redirect painting of the surface to an
 	// arbitrary cairo context.
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Paint (cairo_t *ctx, int x, int y, int width, int height);
 	void Paint (cairo_t *ctx, Region *);
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);
 
 	virtual void SetCursor (GdkCursor *cursor);
 	void SetCursor (MouseCursor cursor);
 
 	bool SetMouseCapture (UIElement *capture);
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Resize (int width, int height);
 
 	void EmitError (ErrorEventArgs *args);
 	void EmitLoad ();
-
-	void SetTrans (bool trans);
-	bool GetTrans () { return transparent; }
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetTransparent (bool transparent);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetTransparent () { return transparent; }
+	
 	void SetBackgroundColor (Color *color);
 
 	int GetFrameCount () { return frames; }
@@ -130,7 +138,8 @@ public:
 	void SetCanFullScreen (bool value) { can_full_screen = value; }
 	void SetSourceLocation (const char *location);
 	bool FullScreenKeyHandled (GdkEventKey *key);
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	TimeManager *GetTimeManager () { return time_manager; }
 
 	virtual Type::Kind GetObjectType () { return Type::SURFACE; };
@@ -138,6 +147,7 @@ public:
 	void SetDownloaderContext (gpointer context) { downloader_context = context; }
 	gpointer GetDownloaderContext () { return downloader_context; }
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	Downloader *CreateDownloader ();
 	static Downloader *CreateDownloader (UIElement *element);
 
@@ -321,21 +331,9 @@ class RenderNode : public List::Node {
 };
 
 
-Surface *surface_new       (MoonWindow *window, bool silverlight2);
-void     surface_resize    (Surface *s, int width, int height);
-void     surface_attach    (Surface *s, UIElement *element);
-void     surface_init      (Surface *s, int width, int height);
-void     surface_destroy   (Surface *s);
-void     surface_set_trans (Surface *s, bool trans);
-bool     surface_get_trans (Surface *s);
-void     surface_paint     (Surface *s, cairo_t *ctx, int x, int y, int width, int height);
-
-TimeManager* surface_get_time_manager (Surface* s);
-Downloader* surface_create_downloader (Surface *s);
-
 void     runtime_init (guint32 flags);
 
-GList*   runtime_get_surface_list (void);
+GList   *runtime_get_surface_list (void);
 
 void	 runtime_flags_set_manual_timesource (gboolean flag);
 void	 runtime_flags_set_show_fps (gboolean flag);

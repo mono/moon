@@ -1830,6 +1830,96 @@ stylus_point_collection_new (void)
 
 
 /**
+ * Surface
+ **/
+void
+surface_attach (Surface *instance, UIElement *toplevel)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Attach (toplevel);
+}
+
+
+Downloader *
+surface_create_downloader (Surface *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->CreateDownloader ();
+}
+
+
+TimeManager *
+surface_get_time_manager (Surface *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTimeManager ();
+}
+
+
+bool
+surface_get_transparent (Surface *instance)
+{
+	if (instance == NULL)
+		return false;;
+	
+	return instance->GetTransparent ();
+}
+
+
+MoonWindow *
+surface_get_window (Surface *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetWindow ();
+}
+
+
+void
+surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, int height)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Paint (ctx, x, y, width, height);
+}
+
+
+void
+surface_resize (Surface *instance, int width, int height)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Resize (width, height);
+}
+
+
+void
+surface_set_transparent (Surface *instance, bool transparent)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTransparent (transparent);
+}
+
+
+Surface *
+surface_new (MoonWindow *window, bool silverlight2)
+{
+	return new Surface (window, silverlight2);
+}
+
+
+/**
  * TextBlock
  **/
 TextBlock *

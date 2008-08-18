@@ -1,5 +1,8 @@
 2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp: Removed manual c-bindings for Surface and renamed
+	Get/SetTrans() to Get/SetTransparent().
+
 	* panel.cpp: Removed manual c-bindings for property accessors.
 
 	* media.cpp: Removed manual c-bindings for property accessors and

@@ -125,7 +125,7 @@ cache_report_default (Surface *surface, long bytes, void *user_data)
 	printf ("Cache size is ~%.3f MB\n", bytes / 1048576.0);
 }
 
-GList*
+GList *
 runtime_get_surface_list (void)
 {
 	if (!Surface::InMainThread ()) {
@@ -1844,53 +1844,11 @@ Surface::HandleUIWindowDestroyed (MoonWindow *window)
 		active_window = NULL;
 }
 
-Surface *
-surface_new (MoonWindow *window, bool silverlight2)
-{
-	return new Surface (window, silverlight2);
-}
-
-void 
-surface_destroy (Surface *s)
-{
-	s->unref ();
-}
-
 void
-surface_resize (Surface *s, int width, int height)
+Surface::SetTransparent (bool transparent)
 {
-	s->Resize (width, height);
-}
-
-void
-surface_attach (Surface *surface, UIElement *toplevel)
-{
-	surface->Attach (toplevel);
-}
-
-void
-surface_paint (Surface *s, cairo_t *ctx, int x, int y, int width, int height)
-{
-	s->Paint (ctx, x, y, width, height);
-}
-
-TimeManager*
-surface_get_time_manager (Surface* s)
-{
-	return s->GetTimeManager();
-}
-
-Downloader *
-surface_create_downloader (Surface *s)
-{
-	return s->CreateDownloader ();
-}
-
-void
-Surface::SetTrans (bool trans)
-{
-	transparent = trans;
-
+	this->transparent = transparent;
+	
 	active_window->Invalidate ();
 }
 
@@ -1903,18 +1861,6 @@ Surface::SetBackgroundColor (Color *color)
 	background_color = new Color (*color);
 
 	active_window->Invalidate ();
-}
-
-void 
-surface_set_trans (Surface *s, bool trans)
-{
-	s->SetTrans (trans);
-}
-
-bool
-surface_get_trans (Surface *s)
-{
-	return s->GetTrans ();
 }
 
 

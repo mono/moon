@@ -25,6 +25,7 @@
 #include "grid.h"
 #include "media.h"
 #include "panel.h"
+#include "runtime.h"
 #include "shape.h"
 #include "stackpanel.h"
 #include "style.h"
@@ -990,6 +991,35 @@ StylusPoint *stylus_point_new (void);
  **/
 /* @GeneratePInvoke */
 StylusPointCollection *stylus_point_collection_new (void);
+
+/**
+ * Surface
+ **/
+/* @GeneratePInvoke */
+void surface_attach (Surface *instance, UIElement *toplevel);
+
+/* @GeneratePInvoke */
+Downloader *surface_create_downloader (Surface *instance);
+
+/* @GeneratePInvoke */
+TimeManager *surface_get_time_manager (Surface *instance);
+
+/* @GeneratePInvoke */
+bool surface_get_transparent (Surface *instance);
+
+MoonWindow *surface_get_window (Surface *instance);
+
+/* @GeneratePInvoke */
+void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, int height);
+
+/* @GeneratePInvoke */
+void surface_resize (Surface *instance, int width, int height);
+
+/* @GeneratePInvoke */
+void surface_set_transparent (Surface *instance, bool transparent);
+
+/* @GeneratePInvoke */
+Surface *surface_new (MoonWindow *window, bool silverlight2);
 
 /**
  * TextBlock
