@@ -50,6 +50,7 @@ double interval = 1.0 / 25.0;   // By default 25 frames per second
 double start_time = 0.0;	// By default start from 0
 double end_time = 5.0;		// By default end after 5 seconds
 gint runs_left = 1;		// Do just one run by default
+char *filename = NULL;
 
 void do_run (void);
 
@@ -64,6 +65,7 @@ static GOptionEntry entries [] =
 	{ "end-time", 'e', 0, G_OPTION_ARG_DOUBLE, &end_time, "End time is S seconds", "S" },
 	{ "interval", 'i', 0, G_OPTION_ARG_DOUBLE, &interval, "Interval between frames in S seconds", "S" },
 	{ "runs", 'n', 0, G_OPTION_ARG_INT, &runs_left, "Do N runs", "N" },
+	{ "filename", 'f', 0, G_OPTION_ARG_STRING, &filename, "Filename to load", NULL },
 	{ NULL }
 };
 
@@ -159,7 +161,7 @@ void do_run (void)
 	printf ("*** Starting up a run...\n");
 
 	char *current_directory = g_get_current_dir ();
-	char *html_path = g_strdup_printf ("file://%s/test.html", current_directory);
+	char *html_path = g_strdup_printf ("file://%s/%s", current_directory, filename);
 	gtk_moz_embed_load_url (GTK_MOZ_EMBED (moz_embed), html_path);
 
 	g_free (current_directory);
@@ -182,6 +184,11 @@ main (int argc, char **argv)
 
 	if (! g_option_context_parse (context, &argc, &argv, &error)) {
 		g_print ("!!! Option parsing failed: %s\n", error->message);
+		exit (1);
+	}
+
+	if (filename == NULL) {
+		g_print ("!!! File to load not specified!\n");
 		exit (1);
 	}
 	
