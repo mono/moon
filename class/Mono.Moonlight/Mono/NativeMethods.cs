@@ -206,15 +206,6 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		public extern static IntPtr moon_window_gtk_get_widget (IntPtr window);
-		
-		[DllImport ("moon")]
-		public extern static void image_set_source (IntPtr image, IntPtr downloader, string PartName);
-
-		[DllImport ("moon")]
-		public extern static void image_brush_set_source (IntPtr image_brush, IntPtr downloader, string PartName);
-
-		[DllImport ("moon")]
-		public extern static void text_block_set_font_source (IntPtr textblock, IntPtr downloader);
 
 		[DllImport ("moon")]
 		public extern static IntPtr control_initialize_from_xaml (IntPtr control, string xaml,
