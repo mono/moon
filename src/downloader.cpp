@@ -622,6 +622,11 @@ downloader_request_get_response (DownloaderRequest *dr, DownloaderResponseStarte
 	dr->GetResponse (started, available, finished, context);
 }
 
+void downloader_response_set_header_visitor (DownloaderResponse *dr, DownloaderResponseHeaderVisitorCallback visitor)
+{
+	dr->SetHeaderVisitor (visitor);
+}
+
 bool
 downloader_request_is_aborted (DownloaderRequest *dr)
 {

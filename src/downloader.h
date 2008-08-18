@@ -185,7 +185,7 @@ class DownloaderResponse;
 typedef uint32_t (* DownloaderResponseStartedHandler) (DownloaderResponse *response, gpointer context);
 typedef uint32_t (* DownloaderResponseDataAvailableHandler) (DownloaderResponse *response, gpointer context, char *buffer, uint32_t length);
 typedef uint32_t (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data);
-
+typedef void (*DownloaderResponseHeaderVisitorCallback) (const char *header, const char *value);
 
 class DownloaderResponse {
  protected:
@@ -217,6 +217,7 @@ class DownloaderResponse {
 
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () { return this->aborted; }
+	virtual void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor) = 0;
 };
 
 class DownloaderRequest {
@@ -294,6 +295,8 @@ void downloader_request_get_response (DownloaderRequest *dr, DownloaderResponseS
 bool downloader_request_is_aborted (DownloaderRequest *dr);
 void downloader_request_set_http_header (DownloaderRequest *dr, const char *name, const char *value);
 void downloader_request_set_body (DownloaderRequest *dr, void *body, int size);
+
+void downloader_response_set_header_visitor (DownloaderResponse *dr, DownloaderResponseHeaderVisitorCallback visitor);
 
 G_END_DECLS
 
