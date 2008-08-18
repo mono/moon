@@ -91,6 +91,7 @@ namespace PerfSuiteLib {
 		
 			ExecuteCreateCommand ("CREATE TABLE passes (id INTEGER PRIMARY KEY, description TEXT, date TEXT)");
 			ExecuteCreateCommand ("CREATE TABLE items (id INTEGER PRIMARY KEY, unique_id TEXT)");
+			ExecuteCreateCommand ("CREATE TABLE results (id INTEGER PRIMARY KEY, item_id INTEGER, pass_id INTEGER, time INTEGER)");
 		}
 
 		private static void ExecuteCreateCommand (string cmdString)

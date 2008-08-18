@@ -2,6 +2,14 @@
 
 	* Makefile:
 	* perf-suite-lib/Database.cs:
+	* perf-suite-lib/ResultDbEntry.cs:
+	* perf-suite-runner/Main.cs: Adding the results db entry and storing. This makes the 
+	system basically complete, now for some refactoring...
+
+2008-08-08  Michael Dominic K.  <mdk@mdk.am>
+
+	* Makefile:
+	* perf-suite-lib/Database.cs:
 	* perf-suite-lib/ItemDbEntry.cs:
 	* perf-suite-runner/Main.cs: Adding ItemDbEntry that stores information about DrtItems.
 

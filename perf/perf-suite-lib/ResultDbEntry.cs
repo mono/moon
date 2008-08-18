@@ -28,46 +28,38 @@
  */
 
 using System;
-using System.IO;
-using System.Xml;
-using PerfSuiteLib;
+using System.Data;
 
-namespace PerfSuiteRunner {
+namespace PerfSuiteLib {
 
-	public static class PerfSuiteRunner {
+	public class ResultDbEntry : DbEntry {
 
-		public static int Main (string [] args)
+		public string ItemId;
+		public string PassId;
+		public long Time;
+
+		public override void CreateCommand (ref IDbCommand command)
 		{
-			Database.Initialize ();
+			AddParameter (command, ":it", ItemId);
+			AddParameter (command, ":pa", PassId);
+			AddParameter (command, ":t", Time.ToString ());
 
-			PassDbEntry pass = new PassDbEntry ();
-			pass.Description = "TestPass";
-			pass.Date = DateTime.Now;
+			command.CommandText = ("INSERT INTO results VALUES " +
+					       "(null, :it, :pa, :t)");
+		}
 
-			Database.Put (pass);
+		public override bool IsValid ()
+		{
+			if (ItemId == String.Empty)
+				return false;
 
-			DrtStore store = new DrtStore ("perf-suite-set/drtlist.xml");
-			foreach (DrtItem item in store.Items) {
-				Console.WriteLine ("*** Running [{0}]", item);
+			if (PassId == String.Empty)
+				return false;
 
-				ItemDbEntry itemEntry = Database.GetItemEntryByUniqueId (item.Id);
-				if (itemEntry == null) {
-					Console.WriteLine ("*** [{0}] not yet in the database, adding...");
-					itemEntry = new ItemDbEntry ();
-					itemEntry.UniqueId = item.Id;
-					Database.Put (itemEntry);
-				}
-				
-				Result r = item.Run ();
-				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
+			if (Time < 0)
+				return false;
 
-				ResultDbEntry resultEntry = new ResultDbEntry ();
-				resultEntry.PassId = pass.Id.ToString ();
-				resultEntry.ItemId = itemEntry.Id.ToString ();
-				resultEntry.Time = r.AveragedTime;
-				Database.Put (resultEntry);
-			}
-			return 0;
+			return true;
 		}
 
 	}
