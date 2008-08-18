@@ -92,7 +92,7 @@ namespace PerfSuiteRunner {
 			return true;
 		}
 
-		public Result Run ()
+		public DrtResult Run ()
 		{
 			// FIXME: Crappy for now
 			string arguments = String.Format ("-f {0} -s {1} -e {2} -i {3} -n {4} -r {5}", 
@@ -110,7 +110,7 @@ namespace PerfSuiteRunner {
 			proc.Start();
 			proc.WaitForExit();
 
-			return new Result ("tmp.xml");
+			return new DrtResult ("tmp.xml");
 		}
 
 		public override string ToString ()

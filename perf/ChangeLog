@@ -1,5 +1,12 @@
 2008-08-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* Makefile:
+	* perf-suite-runner/DrtItem.cs:
+	* perf-suite-runner/Main.cs:
+	* perf-suite-runner/Result.cs: Result => DrtResult.
+
+2008-08-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-runner/DrtStore.cs:
 	* perf-suite-set/drtlist.xml: Item => DrtItem.
 

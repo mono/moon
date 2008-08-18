@@ -58,7 +58,7 @@ namespace PerfSuiteRunner {
 					Database.Put (itemEntry);
 				}
 				
-				Result r = item.Run ();
+				DrtResult r = item.Run ();
 				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
 
 				ResultDbEntry resultEntry = new ResultDbEntry ();

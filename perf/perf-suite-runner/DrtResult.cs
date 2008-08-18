@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace PerfSuiteRunner {
 
-	public class Result {
+	public class DrtResult {
 
 		public List <long> TimesList = new List <long> ();
 
@@ -51,7 +51,7 @@ namespace PerfSuiteRunner {
 		}
 
 		/* CONSTRUCTOR */
-		public Result (string fileName)
+		public DrtResult (string fileName)
 		{
 			using (StreamReader streamReader = File.OpenText (fileName)) {
 				XmlDocument document = new XmlDocument ();
