@@ -406,6 +406,10 @@ namespace Mono {
 		public extern static IntPtr image_new ();
 
 		[DllImport ("moon")]
+		// void image_set_stream_source (Image *instance, ManagedStreamCallbacks *stream);
+		public extern static void image_set_stream_source (IntPtr instance, ref ManagedStreamCallbacks stream);
+
+		[DllImport ("moon")]
 		// ImageBrush *image_brush_new ();
 		public extern static IntPtr image_brush_new ();
 
