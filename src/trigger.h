@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * trigger.h
  *
@@ -23,7 +24,7 @@ class TriggerAction : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	TriggerAction () {}
 	
-	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION; };
+	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION; }
 	
 	/* @GenerateCBinding */
 	virtual void Fire () {}
@@ -47,7 +48,7 @@ class EventTrigger : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	EventTrigger ();
 	
-	virtual Type::Kind GetObjectType () { return Type::EVENTTRIGGER; };
+	virtual Type::Kind GetObjectType () { return Type::EVENTTRIGGER; }
 
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
