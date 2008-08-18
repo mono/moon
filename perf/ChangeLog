@@ -1,6 +1,15 @@
 2008-08-07  Michael Dominic K.  <mdk@mdk.am>
 
 	* Makefile:
+	* perf-suite-lib/Database.cs: Adding a base core of perf-suite-lib -- a shared part
+	bettwen the perf-suite-runner and perf-suite-generator. Will contain all the database
+	access code, etc. 
+
+	* perf-suite-runner/Main.cs:  Make use of the perf-suite-lib.
+
+2008-08-07  Michael Dominic K.  <mdk@mdk.am>
+
+	* Makefile:
 	* perf-suite-runner/DrtItem.cs:
 	* perf-suite-runner/Main.cs:
 	* perf-suite-runner/Result.cs: Adding Result class that can read self from XML.

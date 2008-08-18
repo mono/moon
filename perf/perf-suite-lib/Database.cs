@@ -30,27 +30,60 @@
 using System;
 using System.IO;
 using System.Xml;
-using PerfSuiteLib;
+using System.Collections.Generic;
+using Mono.Data.SqliteClient;
+using System.Data;
 
-namespace PerfSuiteRunner {
+namespace PerfSuiteLib {
 
-	public static class PerfSuiteRunner {
+	public static class Database {
+	
+		static SqliteConnection connection;
 
-		public static int Main (string [] args)
+		public static void Initialize ()
 		{
-			Database.Initialize ();
+			connection = new SqliteConnection ("URI=file:results.db"); 
+			connection.Open ();
 
-			DrtStore store = new DrtStore ("perf-suite-set/drtlist.xml");
-			foreach (DrtItem item in store.Items) {
-				Console.WriteLine ("*** Running [{0}]", item);
-				Result r = item.Run ();
-				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
+			if (CheckDatabaseVersion ())
+				CreateTables ();
+		}
+
+		private static void CreateTables ()
+		{
+			Console.WriteLine ("*** Creating database tables...");
+			ExecuteCreateCommand ("CREATE TABLE meta (version INTEGER)");
+			ExecuteCreateCommand ("INSERT INTO meta VALUES ('1')");
+		}
+
+		private static void ExecuteCreateCommand (string cmdString)
+		{
+			IDbCommand cmd = connection.CreateCommand ();
+			cmd.CommandText = cmdString;
+			cmd.ExecuteNonQuery ();
+		}
+
+		private static bool CheckDatabaseVersion ()
+		{
+			// FIXME Man, that's ugly
+			IDbCommand cmd = connection.CreateCommand ();
+			cmd.CommandText = "SELECT * from meta";	
+			IDataReader reader;
+			try {
+				reader = cmd.ExecuteReader ();
+				if (! reader.Read ())
+					return true;
+			} catch { 
+				return true;
 			}
-			return 0;
+
+			if (reader [0].ToString () != "1") 
+				throw new Exception ("Incompatible database version!");
+
+			return false;
 		}
 
 	}
-
 }
 
 
