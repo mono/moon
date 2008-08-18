@@ -698,6 +698,10 @@ namespace Mono {
 		public extern static IntPtr shape_new ();
 
 		[DllImport ("moon")]
+		// SizeChangedEventArgs *size_changed_event_args_new (Size prev_size, Size new_size);
+		public extern static IntPtr size_changed_event_args_new (UnmanagedSize prev_size, UnmanagedSize new_size);
+
+		[DllImport ("moon")]
 		// SkewTransform *skew_transform_new ();
 		public extern static IntPtr skew_transform_new ();
 
@@ -885,10 +889,9 @@ namespace Mono {
 		// Types *types_new ();
 		public extern static IntPtr types_new ();
 
-		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in typegen.cs and add the missing case) and try again.
-		// [DllImport ("moon")]
+		[DllImport ("moon")]
 		// void uielement_measure (UIElement *instance, Size availableSize);
-		// public extern static void uielement_measure (IntPtr instance, /* Unknown: 'Size' */ availableSize);
+		public extern static void uielement_measure (IntPtr instance, UnmanagedSize availableSize);
 
 		[DllImport ("moon")]
 		// UIElement *uielement_new ();

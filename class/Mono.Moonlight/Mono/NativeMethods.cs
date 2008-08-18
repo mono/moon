@@ -250,9 +250,6 @@ namespace Mono {
 
 #region SizeChangedEventArgs
 		[DllImport("moon")]
-		public extern static IntPtr size_changed_event_args_new ();
-
-		[DllImport("moon")]
 		public extern static void size_changed_event_args_get_new_size (IntPtr handle, ref UnmanagedSize size);
 
 		[DllImport("moon")]
