@@ -206,8 +206,8 @@ class Image : public MediaBase {
 	cairo_pattern_t *pattern;
 
 	// pixbuf loading
-	 GdkPixbufLoader *loader;
-	 GError *loader_err;
+	GdkPixbufLoader *loader;
+	GError *loader_err;
 	
  protected:
 	virtual ~Image ();
@@ -238,6 +238,7 @@ class Image : public MediaBase {
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
+	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
 	void SetStreamSource (ManagedStreamCallbacks *stream);
 	

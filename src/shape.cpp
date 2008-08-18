@@ -891,133 +891,6 @@ Shape::GetStrokeThickness ()
 }
 
 
-Brush *
-shape_get_fill (Shape *shape)
-{
-	return shape->GetFill ();
-}
-
-void 
-shape_set_fill (Shape *shape, Brush *fill)
-{
-	shape->SetFill (fill);
-}
-
-Brush *
-shape_get_stroke (Shape *shape)
-{
-	return shape->GetStroke ();
-}
-
-void 
-shape_set_stroke (Shape *shape, Brush *stroke)
-{
-	shape->SetStroke (stroke);
-}
-
-Stretch
-shape_get_stretch (Shape *shape)
-{
-	return shape->GetStretch ();
-}
-
-void
-shape_set_stretch (Shape *shape, Stretch stretch)
-{
-	shape->SetStretch (stretch);
-}
-
-void
-shape_set_stroke_dash_array (Shape *shape, DoubleCollection *dashes)
-{
-	shape->SetStrokeDashArray (dashes);
-}
-
-PenLineCap
-shape_get_stroke_dash_cap (Shape *shape)
-{
-	return shape->GetStrokeDashCap ();
-}
-
-void
-shape_set_stroke_dash_cap (Shape *shape, PenLineCap cap)
-{
-	shape->SetStrokeDashCap (cap);
-}
-
-double
-shape_get_stroke_dash_offset (Shape *shape)
-{
-	return shape->GetValue (Shape::StrokeDashOffsetProperty)->AsDouble ();
-}
-
-void
-shape_set_stroke_dash_offset (Shape *shape, double offset)
-{
-	shape->SetStrokeDashOffset (offset);
-}
-
-PenLineCap
-shape_get_stroke_end_line_cap (Shape *shape)
-{
-	return shape->GetStrokeEndLineCap ();
-}
-
-void
-shape_set_stroke_end_line_cap (Shape *shape, PenLineCap cap)
-{
-	shape->SetStrokeEndLineCap (cap);
-}
-
-PenLineJoin
-shape_get_stroke_line_join (Shape *shape)
-{
-	return shape->GetStrokeLineJoin ();
-}
-
-void
-shape_set_stroke_line_join (Shape *shape, PenLineJoin join)
-{
-	shape->SetStrokeLineJoin (join);
-}
-
-double
-shape_get_stroke_miter_limit (Shape *shape)
-{
-	return shape->GetStrokeMiterLimit ();
-}
-
-void
-shape_set_stroke_miter_limit (Shape *shape, double limit)
-{
-	shape->SetStrokeMiterLimit (limit);
-}
-
-PenLineCap
-shape_get_stroke_start_line_cap (Shape *shape)
-{
-	return shape->GetStrokeStartLineCap ();
-}
-
-void
-shape_set_stroke_start_line_cap (Shape *shape, PenLineCap cap)
-{
-	shape->SetStrokeStartLineCap (cap);
-}
-
-double
-shape_get_stroke_thickness (Shape *shape)
-{
-	return shape->GetStrokeThickness ();
-}
-
-void
-shape_set_stroke_thickness (Shape *shape, double thickness)
-{
-	shape->SetStrokeThickness (thickness);
-}
-
-
 
 //
 // Ellipse
@@ -1390,30 +1263,6 @@ Rectangle::GetRadiusY ()
 }
 
 
-double
-rectangle_get_radius_x (Rectangle *rectangle)
-{
-	return rectangle->GetRadiusX ();
-}
-
-void
-rectangle_set_radius_x (Rectangle *rectangle, double radius)
-{
-	rectangle->SetRadiusX (radius);
-}
-
-double
-rectangle_get_radius_y (Rectangle *rectangle)
-{
-	return rectangle->GetRadiusY ();
-}
-
-void
-rectangle_set_radius_y (Rectangle *rectangle, double radius)
-{
-	rectangle->SetRadiusY (radius);
-}
-
 //
 // Line
 //
@@ -1751,56 +1600,6 @@ Line::GetY2 ()
 }
 
 
-double
-line_get_x1 (Line *line)
-{
-	return line->GetX1 ();
-}
-
-void
-line_set_x1 (Line *line, double x1)
-{
-	line->SetX1 (x1);
-}
-
-double
-line_get_y1 (Line *line)
-{
-	return line->GetY1 ();
-}
-
-void
-line_set_y1 (Line *line, double y1)
-{
-	line->SetY1 (y1);
-}
-
-double
-line_get_x2 (Line *line)
-{
-	return line->GetX2 ();
-}
-
-void
-line_set_x2 (Line *line, double x2)
-{
-	line->SetX2 (x2);
-}
-
-double
-line_get_y2 (Line *line)
-{
-	return line->GetY2 ();
-}
-
-void
-line_set_y2 (Line *line, double y2)
-{
-	line->SetY2 (y2);
-}
-
-
-
 //
 // Polygon
 //
@@ -2001,25 +1800,6 @@ Polygon::GetPoints ()
 	return value ? value->AsPointCollection() : NULL;
 }
 
-FillRule
-polygon_get_fill_rule (Polygon *polygon)
-{
-	return polygon->GetFillRule ();
-}
-
-void
-polygon_set_fill_rule (Polygon *polygon, FillRule rule)
-{
-	polygon->SetFillRule (rule);
-}
-
-void
-polygon_set_points (Polygon *polygon, PointCollection *points)
-{
-	polygon->SetPoints (points);
-}
-
-
 
 //
 // Polyline
@@ -2183,24 +1963,6 @@ Polyline::GetPoints ()
 	return value ? value->AsPointCollection() : NULL;
 }
 
-FillRule
-polyline_get_fill_rule (Polyline *polyline)
-{
-	return polyline->GetFillRule ();
-}
-
-void
-polyline_set_fill_rule (Polyline *polyline, FillRule rule)
-{
-	polyline->SetFillRule (rule);
-}
-
-void
-polyline_set_points (Polyline *polyline, PointCollection *points)
-{
-	polyline->SetPoints (points);
-}
-
 
 //
 // Path
@@ -2348,17 +2110,4 @@ Path::GetData ()
 	Value *value = GetValue (Path::DataProperty);
 	
 	return value ? value->AsGeometry () : NULL;
-}
-
-
-Geometry *
-path_get_data (Path *path)
-{
-	return path->GetData ();
-}
-
-void
-path_set_data (Path *path, Geometry *data)
-{
-	path->SetData (data);
 }
