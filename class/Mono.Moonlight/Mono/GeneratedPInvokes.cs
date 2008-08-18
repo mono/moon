@@ -426,12 +426,24 @@ namespace Mono {
 		public extern static IntPtr inline_collection_new ();
 
 		[DllImport ("moon")]
-		// bool keyboard_event_args_get_handled (KeyboardEventArgs *instance);
-		public extern static bool keyboard_event_args_get_handled (IntPtr instance);
+		// bool key_event_args_get_handled (KeyEventArgs *instance);
+		public extern static bool key_event_args_get_handled (IntPtr instance);
 
 		[DllImport ("moon")]
-		// void keyboard_event_args_set_handled (KeyboardEventArgs *instance, bool handled);
-		public extern static void keyboard_event_args_set_handled (IntPtr instance, bool handled);
+		// int key_event_args_get_key (KeyEventArgs *instance);
+		public extern static int key_event_args_get_key (IntPtr instance);
+
+		[DllImport ("moon")]
+		// int key_event_args_get_platform_key_code (KeyEventArgs *instance);
+		public extern static int key_event_args_get_platform_key_code (IntPtr instance);
+
+		[DllImport ("moon")]
+		// KeyEventArgs *key_event_args_new ();
+		public extern static IntPtr key_event_args_new ();
+
+		[DllImport ("moon")]
+		// void key_event_args_set_handled (KeyEventArgs *instance, bool handled);
+		public extern static void key_event_args_set_handled (IntPtr instance, bool handled);
 
 		[DllImport ("moon")]
 		// KeyFrameCollection *key_frame_collection_new ();
