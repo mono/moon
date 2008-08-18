@@ -74,13 +74,18 @@ namespace PerfSuiteGenerator {
 
 			foreach (ResultDbEntry entry in resultList) {
 
-				string cls;
-				if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) > 0.1)
-					cls = "red";
-				else if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) < -0.1)
-					cls = "green";
-				else
-					cls = "normal";
+				string cls = "normal";
+				
+				if (! entry.Failure) {
+
+					if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) > 0.1)
+						cls = "red";
+					else if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) < -0.1)
+						cls = "green";
+				
+					hasPrevResult = true;
+					prevResult = entry.Time;
+				}
 
 				string html = DetailRowTemplate;
 				html = html.Replace ("@@DETAIL_CLASS@@", cls);
@@ -96,11 +101,9 @@ namespace PerfSuiteGenerator {
 				html = html.Replace ("@@RESULT@@", (entry.Time / (float) 1000000).ToString ());
 
 				output = html + output;
-				
-				hasPrevResult = true;
-				prevResult = entry.Time;
-			}
 
+			}
+				
 			return output;
 		}
 

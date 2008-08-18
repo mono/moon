@@ -1,5 +1,12 @@
 2008-08-13  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-generator/GraphGenerator.cs:
+	* perf-suite-generator/HtmlGenerator.cs:
+	* perf-suite-lib/ResultDbEntry.cs: Do not treat the failed tests as regressions, 
+	instead mark them out in other ways.
+
+2008-08-13  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-tool/perf-suite-tool.cpp: Adding a timeout timer for failing items.
 
 2008-08-13  Michael Dominic K.  <mdk@mdk.am>

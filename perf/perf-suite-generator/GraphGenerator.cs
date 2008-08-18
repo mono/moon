@@ -69,6 +69,11 @@ namespace PerfSuiteGenerator {
 
 			foreach (ResultDbEntry entry in resultList) {
 
+				if (entry.Failure) {
+					x += 2.0;
+					continue;
+				}
+
 				double sz = ((double) entry.Time / denominator) * 50.0;
 
 				if (hasPrevResult && UtilFu.GetValueDifference (prevResult, entry.Time) > 0.1)

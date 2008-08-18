@@ -38,6 +38,10 @@ namespace PerfSuiteLib {
 		public PassDbEntry Pass;
 		public long Time;
 
+		public bool Failure {
+			get { return (Time == 0); }
+		}
+
 		public ResultDbEntry (IDataReader reader, int index, ItemDbEntry item, PassDbEntry pass)
 		{
 			id = Convert.ToInt32 (reader [0 + index]);
