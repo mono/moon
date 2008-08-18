@@ -32,44 +32,37 @@ using Mono;
 namespace System.Windows.Input {
 
 	public sealed class KeyEventArgs : RoutedEventArgs {
-		Key key;
-		int platform_key_code;
-
-		public KeyEventArgs ()
+		internal KeyEventArgs (IntPtr raw) : base (raw)
 		{
 		}
 
-		internal KeyEventArgs (bool ctrl, bool shift, int key, int platform_key_code)
+		public KeyEventArgs () : base (NativeMethods.key_event_args_new ())
 		{
-			this.key = (Key)key;
-			this.platform_key_code = platform_key_code;
-			//this.ctrl = ctrl;
-			//this.shift = shift;
 		}
 
 		public bool Handled {
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			get { return NativeMethods.keyboard_event_args_get_handled (native); }
+			get { return NativeMethods.key_event_args_get_handled (native); }
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			set { NativeMethods.keyboard_event_args_set_handled (native, value); }
+			set { NativeMethods.key_event_args_set_handled (native, value); }
 		}
 
 		public Key Key {
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			get { return key; }
+			get { return (Key) NativeMethods.key_event_args_get_key (native); }
 		}
 
 		public int PlatformKeyCode {
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			get { return platform_key_code; }
+			get { return NativeMethods.key_event_args_get_platform_key_code (native); }
 		}
 	}
 }

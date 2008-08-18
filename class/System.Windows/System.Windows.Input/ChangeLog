@@ -1,3 +1,7 @@
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
+	* KeyEventArgs.cs: Support the new RoutedEventArgs based KeyEventArgs
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* StylusDevice.cs: Fix build.
