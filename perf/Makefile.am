@@ -3,6 +3,7 @@ noinst_PROGRAMS = perf-tool
 MOZ_PATH = `pwd`/$(top_builddir)/plugin/.libs
 LD_PATH = $(top_builddir)/plugin/.libs:$(top_builddir)/src/.libs:`pkg-config --variable=sdkdir mozilla-gtkmozembed`/lib
 MOON_PLUGIN_DIR = `pwd`/$(top_builddir)/plugin/.libs
+PERF_DATABASE_FILE='../../perf-results.db'
 
 INCLUDES = $(PERF_TOOL_CFLAGS) $(MOON_PROG_CFLAGS) -Wall -DG_LOG_DOMAIN=\"perf-tool\"
 
@@ -38,7 +39,9 @@ perf_suite_generator_sources =				\
 	perf-suite-generator/GraphGenerator.cs		\
 	perf-suite-generator/HtmlGenerator.cs		\
 	perf-suite-generator/PerfSuiteGenerator.cs	\
-	perf-suite-generator/UtilFu.cs
+	perf-suite-generator/UtilFu.cs			\
+	perf-suite-generator/AssemblyInfo.cs		\
+	perf-suite-generator/Options.cs
 
 perf-suite-lib.dll: $(perf_suite_lib_sources)
 	$(MCS) $(MCS_COMMON_FLAGS) $(MCS_LIB_FLAGS) $(perf_suite_lib_sources) /target:library /out:$@
@@ -52,8 +55,8 @@ perf-suite-generator.exe: $(perf_suite_generator_sources) perf-suite-lib.dll
 all: perf-suite-lib.dll perf-suite-runner.exe perf-suite-generator.exe perf-tool
 
 run-perf: all
-	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) $(RUNTIME) perf-suite-runner.exe
-	$(RUNTIME) perf-suite-generator.exe
+	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) $(RUNTIME) perf-suite-runner.exe --database $(PERF_DATABASE_FILE)
+	$(RUNTIME) perf-suite-generator.exe --database $(PERF_DATABASE_FILE)
 
 EXTRA_DIST = $(perf_suite_lib_sources) $(perf_suite_runner_sources) $(perf_suite_generator_sources) perf-report/helpers.js perf-report/jquery.js  perf-report/logo.png  perf-report/report.css perf-suite-set
 

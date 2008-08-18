@@ -31,24 +31,18 @@ using System;
 using System.IO;
 using System.Xml;
 using PerfSuiteLib;
-using System.Collections.Generic;
+using Mono.GetOptions;
 
 namespace PerfSuiteGenerator {
 
-	public static class PerfSuiteGenerator {
+	public class Options : Mono.GetOptions.Options {
 
-		public static int Main (string [] args)
+		[Option ("Location of the file with the database", 'd', "database")]
+		public string DatabaseFile = "results.db";
+
+		public Options ()
 		{
-			Options opts = new Options ();
-			opts.ProcessArgs (args);
-
-			Database.Initialize (opts.DatabaseFile);
-			
-			string output = HtmlGenerator.GenerateHTML ();
-			File.WriteAllText ("perf-report/index.html", output);
-			Console.WriteLine ("Generated report in perf-report/");
-
-			return 0;
+			base.ParsingMode = OptionsParsingMode.Both;
 		}
 
 	}

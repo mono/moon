@@ -47,6 +47,9 @@ namespace PerfSuiteRunner {
 		[Option ("Changelog entry related to this pass", 'c', "changelog")]
 		public string ChangeLog = String.Empty;
 
+		[Option ("Location of the file with the database", 'd', "database")]
+		public string DatabaseFile = "results.db";
+
 		public Options ()
 		{
 			base.ParsingMode = OptionsParsingMode.Both;

@@ -1,5 +1,16 @@
 2008-08-18  Michael Dominic K.  <mdk@mdk.am>
 
+	* Makefile.am:
+	* perf-suite-generator/AssemblyInfo.cs:
+	* perf-suite-generator/Options.cs:
+	* perf-suite-generator/PerfSuiteGenerator.cs:
+	* perf-suite-lib/Database.cs:
+	* perf-suite-runner/Options.cs:
+	* perf-suite-runner/PerfSuiteRunner.cs: Adding support for user-specified 
+	database location file. By Makefile default that is '../../perf-results.db'.
+
+2008-08-18  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-generator/PerfSuiteGenerator.cs: Inform about the report being 
 	generated.
 

@@ -41,9 +41,13 @@ namespace PerfSuiteLib {
 		static SqliteConnection connection;
 		static IDbTransaction transaction;
 
-		public static void Initialize ()
+		public static void Initialize (string file)
 		{
-			connection = new SqliteConnection ("URI=file:results.db"); 
+			Console.WriteLine ("*** Initializing database from '{0}' ...", file);
+			
+			string uri = String.Format ("URI=file:{0}", file);
+			
+			connection = new SqliteConnection (uri); 
 			connection.Open ();
 
 			if (CheckDatabaseVersion ())

@@ -44,7 +44,7 @@ namespace PerfSuiteRunner {
 
 			Console.WriteLine ("*** Pass name is '{0}'...", opts.ShortName);
 
-			Database.Initialize ();
+			Database.Initialize (opts.DatabaseFile);
 			Database.BeginTransaction ();
 
 			PassDbEntry passEntry = new PassDbEntry ();
