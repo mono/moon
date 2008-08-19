@@ -9,6 +9,8 @@
 
 2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mplayer.cpp: Silence the compile warning.
+
 	* color.cpp (color_from_str): Got rid of unused variable.
 
 	* xaml.cpp (dependency_object_set_attributes): Don't need to use

@@ -36,11 +36,18 @@
 
 #define DEBUG_ADVANCEFRAME 0
 #define LOG_MEDIAPLAYER(...)// printf (__VA_ARGS__);
-// This one prints out spew on every frame
-#define LOG_MEDIAPLAYER_EX(...)// printf (__VA_ARGS__);
 #define LOG_AUDIO(...)// printf (__VA_ARGS__);
-// This one prints out spew on every sample
-#define LOG_AUDIO_EX(...)// printf (__VA_ARGS__);
+
+// This one prints out spew on every frame
+//#define VERBOSE_DEBUG
+#ifdef VERBOSE_DEBUG
+#define LOG_MEDIAPLAYER_EX(...) printf (__VA_ARGS__);
+#define LOG_AUDIO_EX(...) printf (__VA_ARGS__);
+#else
+#define LOG_MEDIAPLAYER_EX(...)
+#define LOG_AUDIO_EX(...)
+#endif
+
 
 /*
  * Packet
@@ -151,9 +158,11 @@ MediaPlayer::LoadFrameCallback (EventObject *user_data)
 	}		
 }
 
+#ifdef VERBOSE_DEBUG
 static const char *media_type_name[] = {
 	"None", "Video", "Audio", "Marker"
 };
+#endif
 
 MediaResult
 MediaPlayer::FrameCallback (MediaClosure *closure)
