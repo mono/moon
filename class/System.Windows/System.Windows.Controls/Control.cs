@@ -28,6 +28,7 @@
 
 using Mono;
 using Mono.Xaml;
+using System.Security;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -40,8 +41,12 @@ namespace System.Windows.Controls {
 			// FIXME
 		}
 
-		public bool Focus() {
-			throw new NotImplementedException ();
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public bool Focus()
+		{
+			return NativeMethods.surface_focus_element (Application.s_surface, native);
 		}
 
 		public double ActualWidth {

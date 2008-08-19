@@ -59,11 +59,11 @@ namespace System.Windows.Input {
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			get { return NativeMethods.mouse_event_args_get_handled (native); }
+			get { return NativeMethods.routed_event_args_get_handled (native); }
 #if NET_2_1
 			[SecuritySafeCritical]
 #endif
-			set { NativeMethods.mouse_event_args_set_handled (native, value); }
+			set { NativeMethods.routed_event_args_set_handled (native, value); }
 		}
 		
 		public StylusDevice StylusDevice {

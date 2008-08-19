@@ -27,6 +27,8 @@
 using System.Security;
 using System.Windows;
 
+using Mono;
+
 namespace System.Windows.Input {
 
 	public static class FocusManager {
@@ -35,7 +37,12 @@ namespace System.Windows.Input {
 #endif
 		public static object GetFocusedElement ()
 		{
-			throw new NotImplementedException ();
+			IntPtr v = NativeMethods.surface_get_focused_element (Application.s_surface);
+			if (v == IntPtr.Zero)
+				return null;
+
+			return DependencyObject.Lookup (NativeMethods.dependency_object_get_object_type (v),
+							v);
 		}
 	}
 

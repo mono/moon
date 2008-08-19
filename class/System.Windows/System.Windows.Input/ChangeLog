@@ -1,3 +1,12 @@
+2008-08-18  Chris Toshok  <toshok@ximian.com>
+
+	* MouseEventArgs.cs: the Handled property in unmanaged code is on
+	RoutedEventArgs now, so it can be shared between mouse/key events.
+
+	* KeyEventArgs.cs: same.
+
+	* FocusManager.cs: implement GetFocusedElement.
+
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 
 	* KeyEventArgs.cs: Support the new RoutedEventArgs based KeyEventArgs
