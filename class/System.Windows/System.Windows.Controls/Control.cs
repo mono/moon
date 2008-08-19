@@ -56,6 +56,15 @@ namespace System.Windows.Controls {
 			}
 		}
 
+		public object DefaultStyleKey {
+			get {
+				throw new NotImplementedException ();
+			}
+			set {
+				throw new NotImplementedException ();
+			}
+		}
+
 		protected DependencyObject GetTemplateChild(string childName) {
 			throw new NotImplementedException ();
 		}

@@ -1,5 +1,9 @@
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 
+	* Control.cs: Add DefaultStyleKey
+
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
 	* Image.cs: Implement Image.Source = BitmapImage(Stream)
 
 2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
