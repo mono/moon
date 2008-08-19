@@ -66,10 +66,16 @@ vm_is_loaded (void)
 	return moon_vm_loaded;
 }
 
+extern "C" {
+extern gpointer mono_jit_trace_calls;
+extern gpointer mono_trace_parse_options (char *options);
+};
+
 bool
 vm_init (void)
 {
 	bool result = false;
+	char *trace_options;
 	
 	if (moon_vm_loaded)
 		return true;
@@ -93,6 +99,12 @@ vm_init (void)
 	d(printf ("The file is %s\n", boot_assembly));
 	
 	mono_config_parse (NULL);
+	trace_options = getenv ("MOON_TRACE");
+	if (trace_options != NULL){
+		printf ("Setting trace options to: %s\n", trace_options);
+		mono_jit_trace_calls = mono_trace_parse_options (trace_options);
+	}
+	
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
 	moon_domain = mono_jit_init_version (boot_assembly, "moonlight");
 	moon_boot_assembly = mono_domain_assembly_open (moon_domain, boot_assembly);
