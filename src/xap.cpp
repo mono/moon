@@ -48,6 +48,7 @@ xap_unpack (const char *fname)
 	do {
 		int fd;
 		char *fname, *output, *dirname;
+		int i;
 		unz_file_info finfo;
 
 		unzGetCurrentFileInfo (zipfile, &finfo, NULL, 0, NULL, 0, NULL, 0);
@@ -57,6 +58,9 @@ xap_unpack (const char *fname)
 		unzGetCurrentFileInfo (zipfile, NULL, fname, finfo.size_filename+1, NULL, 0, NULL, 0);
 
 		output = g_build_filename (xap_dir, fname, NULL);
+		for (i = 0; i < strlen (output); i++)
+			if (output[i] == '\\')
+				output [i] = '/';
 		dirname = g_path_get_dirname (output);
 		g_mkdir_with_parents (dirname, 0644);
 		g_free (dirname);
