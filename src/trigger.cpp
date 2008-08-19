@@ -39,9 +39,11 @@ EventTrigger::SetTarget (DependencyObject *target)
 	else {
 		/* Despite the name, in silverlight 1.0 it can only be
 		   loaded (according to the docs) */
-		target->AddHandler (UIElement::LoadedEvent, event_trigger_fire_actions, this);
 		registered_event_id = UIElement::LoadedEvent;
 	}
+
+	if (registered_event_id != -1)
+		target->AddHandler (registered_event_id, event_trigger_fire_actions, this);
 }
 
 void
