@@ -12,8 +12,8 @@
 
 #if INCLUDE_ALSA
 
-#ifndef __MOON_AUDIO_ALSA_H__
-#define __MOON_AUDIO_ALSA_H__
+#ifndef __AUDIO_ALSA_H__
+#define __AUDIO_ALSA_H__
 
 #include <pthread.h>
 #include <poll.h>
@@ -24,7 +24,6 @@
 class AlsaPlayer;
 
 class AlsaSource : public AudioSource {
-private:
 	AlsaPlayer *player;
 	snd_pcm_t *pcm;
 	snd_pcm_uframes_t period_size;
@@ -47,7 +46,7 @@ private:
 
 	void Drain ();
 
-protected:
+ protected:
 	virtual ~AlsaSource ();
 
 	virtual void Played ();
@@ -59,7 +58,7 @@ protected:
 	virtual bool InitializeInternal ();
 	virtual void CloseInternal ();
 	
-public:
+ public:
 	pollfd *udfs;
 	int ndfs;
 	
@@ -77,7 +76,6 @@ public:
 };
 
 class AlsaPlayer : public AudioPlayer {
-private:
 	// The audio thread	
 	pthread_t *audio_thread;
 	bool shutdown; // set to true to exit the audio thread.
@@ -105,7 +103,7 @@ private:
 	
 	void WakeUp (); // Wakes up the audio thread.
 	
-protected:				
+ protected:				
 	virtual ~AlsaPlayer ();
 
 	virtual void AddInternal (AudioSource *node);
@@ -114,7 +112,7 @@ protected:
 	virtual bool Initialize ();
 	virtual AudioSource *CreateNode (MediaPlayer *mplayer, AudioStream *stream);
 	
-public:
+ public:
 	AlsaPlayer ();
 
 	void UpdatePollList ();
@@ -122,6 +120,6 @@ public:
 	static bool IsInstalled ();
 };
 
-#endif // __MOON_AUDIO_ALSA_H__
+#endif /* __AUDI_ALSA_H__ */
 
-#endif // INCLUDE_ALSA
+#endif /* INCLUDE_ALSA */
