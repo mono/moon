@@ -12,8 +12,8 @@
 
 #if INCLUDE_PULSEAUDIO
 
-#ifndef __MOON_AUDIO_PULSE_H__
-#define __MOON_AUDIO_PULSE_H__
+#ifndef __AUDIO_PULSE_H__
+#define __AUDIO_PULSE_H__
 
 #include <pulse/pulseaudio.h>
 
@@ -22,7 +22,6 @@
 class PulsePlayer;
 
 class PulseSource: public AudioSource {
-private:
 	PulsePlayer *player;
 	pa_stream *pulse_stream;
 	bool triggered;
@@ -51,7 +50,7 @@ private:
 	
 	pa_stream_state_t GetPAState (pa_stream *pulse_stream = NULL);
 	
-protected:
+ protected:
 	virtual ~PulseSource ();
 
 	virtual void Played ();
@@ -62,13 +61,12 @@ protected:
 	virtual bool InitializeInternal ();
 	virtual void CloseInternal ();
 
-public:
+ public:
 	PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream *stream);
-	
 };
 
 class PulsePlayer : public AudioPlayer {
-public:
+ public:
 	pa_context *context;
 	pa_threaded_mainloop *loop;
 	pa_mainloop_api *api;
@@ -78,15 +76,14 @@ public:
 	static void OnContextStateChanged (pa_context *context, void *userdata);
 	void OnContextStateChanged ();
 	
-protected:
-
+ protected:
 	virtual void AddInternal (AudioSource *node);
 	virtual void RemoveInternal (AudioSource *node);
 	virtual void ShutdownInternal ();
 	virtual bool Initialize ();
 	virtual AudioSource *CreateNode (MediaPlayer *mplayer, AudioStream *stream);
 	
-public:
+ public:
 	PulsePlayer ();
 	~PulsePlayer ();
 	
@@ -101,10 +98,9 @@ public:
 	void WaitForOperation (pa_operation *op);
 	void SignalLoop ();
 	
-	
 	static bool IsInstalled ();
 };
 
-#endif // __MOON_AUDIO_PULSE_H
+#endif /* __AUDIO_PULSE_H__ */
 
-#endif // INCLUDE_PULSEAUDIO
+#endif /* INCLUDE_PULSE */
