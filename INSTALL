@@ -75,6 +75,16 @@ Configuration Options
 
 		Use this flag to disable all use of ffmpeg.
 
+	--with-alsa=yes,no
+
+		To enable audio using the ALSA stack, this can be
+		mixed with --with-pulse-audio=yes
+
+	--with-pulse-audio=yes,no
+
+		To enable audio using the Pulse Audio stack, this can
+		be mixed with --with-alsa=yes
+
 Moonlight: Silverlight 2.0 API support
 ======================================
 
