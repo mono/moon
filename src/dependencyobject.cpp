@@ -1218,9 +1218,6 @@ dump (gpointer key, gpointer value, gpointer data)
 Type::Kind
 DependencyObject::GetObjectType ()
 {
-	g_critical ("%p This class is missing an override of GetObjectType ()", this);
-	d(print_stack_trace ());
-	
 	g_hash_table_foreach (current_values, dump, NULL);
 	return Type::DEPENDENCY_OBJECT; 
 }

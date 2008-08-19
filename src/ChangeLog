@@ -1,3 +1,8 @@
+2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (DependencyObject::GetObjectType): Get rid
+	of a warning that is no longer valid.
+
 2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* downloader.h, downloader.cpp: Add a request field to
