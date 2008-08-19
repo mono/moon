@@ -1,3 +1,8 @@
+2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.h: EventObject::ref: print a stack trace before the
+	  abort if we can, and fix typo in the abort message.
+
 2008-08-19  Geoff Norton  <gnorton@novell.com>
 
 	* xap.cpp: Ensure we can actually enter the directory we're creating.
