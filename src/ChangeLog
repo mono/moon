@@ -1,3 +1,9 @@
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
+	* trigger.cpp (EventTrigger::SetTarget): make the 2.0 case more
+	robust - handle Type.Event notation, making sure that the type is
+	valid for the target.
+
 2008-08-19  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp|h: add override to use sofware fallbacks for

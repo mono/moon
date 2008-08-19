@@ -32,7 +32,30 @@ EventTrigger::SetTarget (DependencyObject *target)
 	g_return_if_fail (target);
 
 	if (target->GetSurface() && target->GetSurface()->IsSilverlight2()) {
-		registered_event_id = target->GetType()->LookupEvent (GetValue (EventTrigger::RoutedEventProperty)->AsString());
+		char* event = GetValue (EventTrigger::RoutedEventProperty)->AsString();
+		char* dot;
+		if ((dot = strchr (event, '.')) == NULL) {
+			registered_event_id = target->GetType()->LookupEvent (GetValue (EventTrigger::RoutedEventProperty)->AsString());
+		}
+		else {
+			char *type = g_strndup (event, dot-event);
+			char *event_name = g_strdup (dot + 1);
+
+			Type *event_type = Type::Find(type);
+			if (event_type) {
+				// event type has to exist
+				if (target->GetType()->IsSubclassOf(event_type->GetKind())) {
+					// the type of the target has
+					// to be a subclass of the
+					// event type for the event to
+					// be available.
+					registered_event_id = event_type->LookupEvent (event_name);
+				}
+			}
+
+			g_free (type);
+			g_free (event_name);
+		}
 		if (registered_event_id == -1)
 			g_warning ("failed to set target");
 	}
