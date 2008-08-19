@@ -105,9 +105,11 @@ static struct {
 	{ "windowless=yes",    RUNTIME_INIT_ALLOW_WINDOWLESS,      true  },
 	{ "windowless=no",     RUNTIME_INIT_ALLOW_WINDOWLESS,      false },
 	{ "audio=mmap",        RUNTIME_INIT_AUDIO_NO_MMAP,         false },
-	{ "audio=rw",          RUNTIME_INIT_AUDIO_NO_MMAP,         true },
+	{ "audio=rw",          RUNTIME_INIT_AUDIO_NO_MMAP,         true  },
 	{ "idlehint=yes",      RUNTIME_INIT_USE_IDLE_HINT,         false },
-	{ "idlehint=no",       RUNTIME_INIT_USE_IDLE_HINT,         true },
+	{ "idlehint=no",       RUNTIME_INIT_USE_IDLE_HINT,         true  },
+	{ "backend=xlib",      RUNTIME_INIT_USE_BACKEND_XLIB,      true  },
+	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      false }
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
@@ -137,18 +139,22 @@ runtime_get_surface_list (void)
 }
 
 static cairo_t *
-runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual)
+runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual, bool native)
 {
 	int width, height;
 	cairo_surface_t *surface;
 	cairo_t *cr;
 
 	gdk_drawable_get_size (drawable, &width, &height);
-	surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
-					     gdk_x11_drawable_get_xid (drawable),
-					     GDK_VISUAL_XVISUAL (visual),
-					     width, height);
-      
+
+	if (native)
+		surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
+						     gdk_x11_drawable_get_xid (drawable),
+						     GDK_VISUAL_XVISUAL (visual),
+						     width, height);
+	else 
+		surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+
 	cr = cairo_create (surface);
 	cairo_surface_destroy (surface);
 			    
@@ -254,6 +260,8 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 #ifdef DEBUG
 	debug_selected_element = NULL;
 #endif
+	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB))
+		g_warning ("using software backend");
 
 	up_dirty = new List ();
 	down_dirty = new List ();
@@ -978,7 +986,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
-	cairo_t *ctx = runtime_cairo_create (drawable, visual);
+	cairo_t *ctx = runtime_cairo_create (drawable, visual, moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB);
 	Region *region = new Region (event->region);
 
 	region->Offset (-off_x, -off_y);
@@ -1042,9 +1050,28 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 		cairo_stroke (ctx);
 	}
 
+	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB)) {
+		cairo_surface_flush (cairo_get_target (ctx));
+		cairo_t *native = runtime_cairo_create (drawable, visual, true);
+
+		cairo_surface_set_device_offset (cairo_get_target (native),
+						 0, 0);
+		cairo_surface_set_device_offset (cairo_get_target (ctx),
+						 0, 0);
+
+		cairo_set_source_surface (native, cairo_get_target (ctx),
+					  0, 0);
+
+		region->Offset (-event->area.x, -event->area.y);
+		region->Draw (native);
+
+		cairo_fill (native);
+		cairo_destroy (native);
+	} else
+		cairo_destroy (ctx);
+
 	delete region;
 
-	cairo_destroy (ctx);
 
 #if TIME_REDRAW
 	ENDTIMER (expose, "redraw");

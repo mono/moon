@@ -1,3 +1,8 @@
+2008-08-19  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp|h: add override to use sofware fallbacks for
+	rendering.
+
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
 	* trigger.cpp (EventTrigger::SetTarget): do the AddHandler in both
