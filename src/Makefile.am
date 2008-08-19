@@ -12,6 +12,7 @@ libmoon_include_HEADERS = 	\
 	asf/asf-guids.h		\
 	asf/asf-structures.h	\
 	asf/asf-debug.h		\
+	audio.h		\
 	brush.h			\
 	canvas.h		\
 	cbinding.h		\
@@ -79,6 +80,7 @@ libmoon_la_SOURCES = 		\
 	asf/asf-guids.cpp	\
 	asf/asf-structures.cpp	\
 	asf/asf-debug.cpp	\
+	audio.cpp	\
 	brush.cpp		\
 	canvas.cpp		\
 	cbinding.cpp	\
@@ -163,6 +165,14 @@ endif
 
 if INCLUDE_FFMPEG
 libmoon_la_SOURCES += pipeline-ffmpeg.cpp pipeline-ffmpeg.h
+endif
+
+if INCLUDE_ALSA
+libmoon_la_SOURCES += audio-alsa.cpp audio-alsa.h
+endif
+
+if INCLUDE_PULSEAUDIO
+libmoon_la_SOURCES += audio-pulse.cpp audio-pulse.h
 endif
 
 EXTRA_DIST = \

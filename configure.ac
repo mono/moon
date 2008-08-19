@@ -247,7 +247,33 @@ PKG_CHECK_MODULES(XRANDR,xrandr,
 dnl
 dnl sound checks
 dnl
-PKG_CHECK_MODULES(ALSA,alsa)
+AC_ARG_WITH(alsa,[  --with-alsa=yes,no   If you want to enable alsa sound support],[],[with_alsa=yes])
+if test x$with_alsa = xyes; then
+  if pkg-config --exists alsa; then
+    AC_DEFINE([INCLUDE_ALSA],[1],[Include alsa sound support])
+    PKG_CHECK_MODULES(ALSA,alsa)
+  else
+    with_alsa=no
+    alsa_reason="(could not find alsa development package)"
+  fi
+else
+  alsa_reason="(disabled at configure time)"
+fi
+AM_CONDITIONAL(INCLUDE_ALSA,test x$with_alsa = xyes)
+
+AC_ARG_WITH(pulseaudio,[  --with-pulseaudio=yes,no   If you want to enable pulseaudio sound support],[],[with_pulseaudio=yes])
+if test x$with_pulseaudio = xyes; then
+  if pkg-config --exists libpulse; then
+    AC_DEFINE([INCLUDE_PULSEAUDIO],[1],[Include pulseaudio sound support])
+    PKG_CHECK_MODULES(PULSEAUDIO,libpulse)
+  else
+    with_pulseaudio=no
+    pulseaudio_reason="(could not find libpulse development package)"
+  fi
+else
+  pulseaudio_reason="(disabled at configure time)"
+fi
+AM_CONDITIONAL(INCLUDE_PULSEAUDIO,test x$with_pulseaudio = xyes)
 
 dnl
 dnl font checks
@@ -459,9 +485,9 @@ PERF_TOOL_LIBS="$GTK_LIBS $XULRUNNER_LIBS"
 AC_SUBST(PERF_TOOL_CFLAGS)
 AC_SUBST(PERF_TOOL_LIBS)
 
-MOON_CFLAGS="$CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $MONO_CFLAGS"
+MOON_CFLAGS="$CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $MONO_CFLAGS"
 dnl MOON_LIBS is partially defined above for the user-plugin build
-MOON_LIBS="$MOON_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ALSA_LIBS $ZLIB $PTHREAD_LIBS"
+MOON_LIBS="$MOON_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ALSA_LIBS $PULSEAUDIO_LIBS $ZLIB $PTHREAD_LIBS"
 
 # Remove glitz from the link flags (fixes Bug 338506)
 MOON_LIBS="$(echo $MOON_LIBS | sed -e s/-lglitz//g)"
@@ -469,13 +495,13 @@ MOON_LIBS="$(echo $MOON_LIBS | sed -e s/-lglitz//g)"
 AC_SUBST(MOON_CFLAGS)
 AC_SUBST(MOON_LIBS)
 
-MOON_EXTRA_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS"
-MOON_EXTRA_LIBS="$GTK_LIBS $ALSA_LIBS $FFMPEG_LIBS $SWSCALE_LIBS"
+MOON_EXTRA_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $PULSEAUDIO_CFLAGS"
+MOON_EXTRA_LIBS="$GTK_LIBS $ALSA_LIBS $FFMPEG_LIBS $SWSCALE_LIBS $PULSEAUDIO_LIBS"
 AC_SUBST(MOON_EXTRA_CFLAGS)
 AC_SUBST(MOON_EXTRA_LIBS)
 
-MOON_PROG_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS -I\$(top_srcdir)/src/"
-MOON_PROG_LIBS="$GTK_LIBS $ALSA_LIBS $FFMPEG_LIBS $SWSCALE_LIBS \$(top_builddir)/src/libmoon.la"
+MOON_PROG_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $PULSEAUDIO_CFLAGS -I\$(top_srcdir)/src/"
+MOON_PROG_LIBS="$GTK_LIBS $ALSA_LIBS $FFMPEG_LIBS $SWSCALE_LIBS $PULSEAUDIO_LIBS \$(top_builddir)/src/libmoon.la"
 AC_SUBST(MOON_PROG_CFLAGS)
 AC_SUBST(MOON_PROG_LIBS)
 
@@ -552,6 +578,8 @@ cat <<EOF
 Moonlight configuration:
 
 	Support for ffmpeg: $with_ffmpeg $ffmpeg_warning
+	Support for alsa: $with_alsa $alsa_reason
+	Support for pulseaudio: $with_pulseaudio $pulseaudio_reason
 	Support for running the test harness: $with_testing
 	Support for running the performance suite: $with_performance
 	Using cairo: $with_cairo

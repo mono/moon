@@ -1,3 +1,11 @@
+2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio.cpp, audio.h, audio-alsa.cpp, audio-alsa.h, audio-pulse.cpp,
+	  audio-pulse.h: Added, our new audio abstraction/implementation.
+	* Makefile.am, src.mdp, type-generated.cpp: Updated.
+	* mplayer.cpp, mplayer.h: Moved audio code into its own file(s).
+	* runtime.cpp, runtime.h: Add runtime overrides for audio.
+
 2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xap.cpp (xap_unpack): Fixed compiler warning.

@@ -1611,6 +1611,8 @@ FileSource::ReadInternal (void *buf, guint32 n)
 		}
 		
 		if (r == 0) {
+			LOG_PIPELINE ("FileSource<%d>::ReadInternal ('%s', %p, %u): Could not read all the data, eof reached. Current position: %lld\n",
+					    GET_OBJ_ID (this), filename, buf, n, GetPositionInternal ());
 			eof = true;
 			break;
 		}
@@ -2575,9 +2577,6 @@ IMediaSource::ReadAll (void *buf, guint32 n, bool block, gint64 start)
 	
 	read = ReadSome (buf, n, block, start);
 	
-	LOG_PIPELINE_ERROR_CONDITIONAL ((gint64) read != (gint64) n,
-					"IMediaSource<%d>::ReadAll (%p, %u, %s, %lld): Could only read %i bytes.\n",
-					GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
 	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld), read: %d [Done].\n",
 		      GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
 	

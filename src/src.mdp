@@ -161,6 +161,12 @@
     <File name="file-downloader.cpp" subtype="Code" buildaction="Compile" />
     <File name="deployment.h" subtype="Code" buildaction="Nothing" />
     <File name="deployment.cpp" subtype="Code" buildaction="Compile" />
+    <File name="audio-alsa.cpp" subtype="Code" buildaction="Compile" />
+    <File name="audio-alsa.h" subtype="Code" buildaction="Nothing" />
+    <File name="audio-pulse.cpp" subtype="Code" buildaction="Compile" />
+    <File name="audio-pulse.h" subtype="Code" buildaction="Nothing" />
+    <File name="audio.cpp" subtype="Code" buildaction="Compile" />
+    <File name="audio.h" subtype="Code" buildaction="Nothing" />
     <File name="dependencyproperty.cpp" subtype="Code" buildaction="Compile" />
     <File name="dependencyproperty.h" subtype="Code" buildaction="Nothing" />
     <File name="contentcontrol.h" subtype="Code" buildaction="Nothing" />

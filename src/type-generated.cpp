@@ -9,6 +9,9 @@
 #include <stdlib.h>
 
 #include "animation.h"
+#include "audio.h"
+#include "audio-alsa.h"
+#include "audio-pulse.h"
 #include "brush.h"
 #include "canvas.h"
 #include "cbinding.h"
