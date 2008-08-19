@@ -1,5 +1,14 @@
 2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: Include headers mplayer.h doesn't include anymore.
+	  MediaElement::SetMedia: only set audio data on the MediaPlayer if
+	  the media has audio. TImelineMarkerCollection::Add: don't call the
+	  base class' Add, call base's Insert instead. Fixes a stack overflow
+	  since base class' Add calls Insert, which TimelineMarkerCollection
+	  overrides to call Add.
+
+2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* enums.cpp: Wrap 2.0-only code in SL_2_0.
 
 2008-08-19  Jeffrey Stedfast  <fejj@novell.com>

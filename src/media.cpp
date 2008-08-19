@@ -14,6 +14,10 @@
 #include <config.h>
 #endif
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "runtime.h"
 #include "media.h"
 #include "error.h"
@@ -427,6 +431,8 @@ MediaElement::CheckMarkers (guint64 from, guint64 to)
 {
 	TimelineMarkerCollection *markers;
 	
+	LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu)\n", from, to);
+	
 	if (from == to) {
 		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). from == to\n", from, to);
 		return;
@@ -778,10 +784,11 @@ MediaElement::SetMedia (Media *media)
 	SetNaturalVideoWidth ((double) mplayer->GetVideoWidth ());
 	SetAudioStreamCount (mplayer->GetAudioStreamCount ());
 	
-	mplayer->SetMuted (GetIsMuted ());
-	mplayer->SetVolume (GetVolume ());
-	mplayer->SetBalance (GetBalance ());
-	
+	if (mplayer->HasAudio ()) {
+		mplayer->SetMuted (GetIsMuted ());
+		mplayer->SetVolume (GetVolume ());
+		mplayer->SetBalance (GetBalance ());
+	}
 	
 	if (playlist != NULL && playlist->GetCurrentPlaylistEntry () != NULL) {
 		if (!playlist->GetCurrentPlaylistEntry ()->GetClientSkip ()) {
@@ -2734,7 +2741,7 @@ TimelineMarkerCollection::Add (Value *value)
 		}
 	}
 	
-	return DependencyObjectCollection::Add (value);
+	return DependencyObjectCollection::Insert (array->len, value) ? array->len - 1 : -1;
 }
 
 bool
