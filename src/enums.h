@@ -251,6 +251,12 @@ enum VerticalAlignment {
 	VerticalAlignmentStretch
 };
 
+enum CrossDomainAccess {
+        CrossDomainAccessNoAccess,
+        CrossDomainAccessFullAccess,
+        CrossDomainAccessScriptableOnly,
+};
+
 G_BEGIN_DECLS
 
 int		enums_str_to_int (const char *prop_name, const char *str, bool sl2);

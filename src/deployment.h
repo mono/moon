@@ -47,12 +47,6 @@ class AssemblyPartCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::ASSEMBLYPART; }
 };
 
-enum CrossDomainAccess {
-	CrossDomainAccessNoAccess,
-	CrossDomainAccessFullAccess,
-	CrossDomainAccessScriptableOnly,
-};
-
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class Deployment : public DependencyObject {

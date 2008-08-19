@@ -234,6 +234,13 @@ static enum_map_t orientation_map [] = {
 	END_MAPPING
 };
 
+static enum_map_t cross_domain_access_map [] = {
+	MAP_ENUM (CrossDomainAccess, NoAccess), 
+	MAP_ENUM (CrossDomainAccess, FullAccess), 
+	MAP_ENUM (CrossDomainAccess, ScriptableOnly),
+	END_MAPPING 
+};
+
 static void
 initialize_enums (void)
 {
@@ -266,6 +273,7 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "Visibility", visibility_map);
 
 #if SL_2_0
+	g_hash_table_insert (enum_map, (char *) "ExternalCallersFromCrossDomain", cross_domain_access_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalAlignment", horizontal_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "VerticalAlignment", vertical_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "Orientation", orientation_map);
