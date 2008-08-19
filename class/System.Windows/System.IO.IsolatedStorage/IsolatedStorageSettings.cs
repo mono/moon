@@ -37,44 +37,66 @@ namespace System.IO.IsolatedStorage {
 		ICollection<KeyValuePair<string, object>>, ICollection,
 		IEnumerable<KeyValuePair<string, object>>, IEnumerable {
 
-		internal IsolatedStorageSettings ()
+		static private IsolatedStorageSettings application_settings;
+		static private IsolatedStorageSettings site_settings;
+
+		private IsolatedStorageFile storage;
+		private Dictionary<string, object> settings;
+
+		internal IsolatedStorageSettings (string filename)
 		{
+			settings = new Dictionary<string, object> ();
 		}
 
 		~IsolatedStorageSettings ()
 		{
+			settings.Clear ();
 		}
 
 		// static properties
 
+		[MonoTODO ("not loaded from file, isolated or not")]
 		public static IsolatedStorageSettings ApplicationSettings {
-			get { throw new NotImplementedException (); }
+			get {
+				if (application_settings == null) {
+					// FIXME: supply a constant, mangled, filename for the application
+					application_settings = new IsolatedStorageSettings (null);
+				}
+				return application_settings;
+			}
 		}
 
+		[MonoTODO ("not loaded from file, isolated or not")]
 		public static IsolatedStorageSettings SiteSettings {
-			get { throw new NotImplementedException (); }
+			get {
+				if (site_settings == null) {
+					// FIXME: supply a constant, mangled, filename for the site
+					site_settings = new IsolatedStorageSettings (null);
+				}
+				return site_settings;
+			}
 		}
 
 		// properties
 
 		public int Count {
-			get { throw new NotImplementedException (); }
+			get { return settings.Count; }
 		}
 
 		public ICollection Keys {
-			get { throw new NotImplementedException (); }
+			get { return settings.Keys; }
 		}
 
 		public ICollection Values {
-			get { throw new NotImplementedException (); }
+			get { return settings.Values; }
 		}
 
 		public object this [string key] {
 			get {
-				throw new NotImplementedException ();
+				return settings [key];
 			}
 			set {
-				throw new NotImplementedException ();
+				settings [key] = value;
 			}
 		}
 
@@ -82,24 +104,25 @@ namespace System.IO.IsolatedStorage {
 
 		public void Add (string key, object value)
 		{
-			throw new NotImplementedException ();
+			settings.Add (key, value);
 		}
 
 		public void Clear ()
 		{
-			throw new NotImplementedException ();
+			settings.Clear ();
 		}
 
 		public bool Contains (string key)
 		{
-			throw new NotImplementedException ();
+			return settings.ContainsKey (key);
 		}
 
 		public bool Remove (string key)
 		{
-			throw new NotImplementedException ();
+			return settings.Remove (key);
 		}
 
+		[MonoTODO ("not saved to file, isolated or not")]
 		public void Save ()
 		{
 			throw new NotImplementedException ();
@@ -107,40 +130,46 @@ namespace System.IO.IsolatedStorage {
 
 		public bool TryGetValue<T> (string key, out T value)
 		{
-			throw new NotImplementedException ();
+			object v;
+			if (!settings.TryGetValue (key, out v)) {
+				value = default (T);
+				return false;
+			}
+			value = (T) v;
+			return true;
 		}
 
 		// explicit interface implementations
 
 		int ICollection<KeyValuePair<string, object>>.Count {
-			get { throw new NotImplementedException (); }
+			get { return settings.Count; }
 		}
 
 		bool ICollection<KeyValuePair<string, object>>.IsReadOnly {
-			get { throw new NotImplementedException (); }
+			get { return false; }
 		}
 
 		ICollection<string> IDictionary<string, object>.Keys {
-			get { throw new NotImplementedException (); }
+			get { return settings.Keys; }
 		}
 
 		ICollection<object> IDictionary<string, object>.Values {
-			get { throw new NotImplementedException (); }
+			get { return settings.Values; }
 		}
 
 		void ICollection<KeyValuePair<string, object>>.Add (KeyValuePair<string, object> item)
 		{
-			throw new NotImplementedException ();
+			settings.Add (item.Key, item.Value);
 		}
 
 		void ICollection<KeyValuePair<string, object>>.Clear ()
 		{
-			throw new NotImplementedException ();
+			settings.Clear ();
 		}
 
 		bool ICollection<KeyValuePair<string, object>>.Contains (KeyValuePair<string, object> item)
 		{
-			throw new NotImplementedException ();
+			return settings.ContainsKey (item.Key);
 		}
 
 		void ICollection<KeyValuePair<string, object>>.CopyTo (KeyValuePair<string, object> [] array, int arrayIndex)
@@ -150,86 +179,86 @@ namespace System.IO.IsolatedStorage {
 
 		bool ICollection<KeyValuePair<string, object>>.Remove (KeyValuePair<string, object> item)
 		{
-			throw new NotImplementedException ();
+			return settings.Remove (item.Key);
 		}
 
 
 		bool IDictionary<string, object>.ContainsKey (string key)
 		{
-			throw new NotImplementedException ();
+			return settings.Remove (key);
 		}
 
 		bool IDictionary<string, object>.TryGetValue (string key, out object value)
 		{
-			throw new NotImplementedException ();
+			return settings.TryGetValue (key, out value);
 		}
 
 		void IDictionary.Add (object key, object value)
 		{
-			throw new NotImplementedException ();
+			settings.Add ((key as string), value);
 		}
 
 		void IDictionary.Clear ()
 		{
-			throw new NotImplementedException ();
+			settings.Clear ();
 		}
 
 		bool IDictionary.Contains (object key)
 		{
-			throw new NotImplementedException ();
+			return settings.ContainsKey (key as string);
 		}
 
 
 		IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator ()
 		{
-			throw new NotImplementedException ();
+			return settings.GetEnumerator ();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
-			throw new NotImplementedException ();
+			return settings.GetEnumerator ();
 		}
 
 
 		IDictionaryEnumerator IDictionary.GetEnumerator ()
 		{
-			throw new NotImplementedException ();
+			return settings.GetEnumerator ();
 		}
 
 		object IDictionary.this [object key] {
 			get {
-				throw new NotImplementedException ();
+				return settings [(key as string)];
 			}
 			set {
-				throw new NotImplementedException ();
+				settings [(key as string)] = value;
 			}
 		}
 
 		bool IDictionary.IsFixedSize {
-			get { throw new NotImplementedException (); }
+			get { return false; }
 		}
 
 		bool IDictionary.IsReadOnly {
-			get { throw new NotImplementedException (); }
+			get { return false; }
 		}
 
 		void IDictionary.Remove (object key)
 		{
-			throw new NotImplementedException ();
+			settings.Remove (key as string);
 		}
 
 
 		void ICollection.CopyTo (Array array, int index)
 		{
-			throw new NotImplementedException ();
+			(settings as ICollection).CopyTo (array, index);
 		}
 
 		bool ICollection.IsSynchronized {
-			get { throw new NotImplementedException (); }
+			get { return (settings as ICollection).IsSynchronized; }
 		}
 
 		object ICollection.SyncRoot {
-			get { throw new NotImplementedException (); }
+			get { return (settings as ICollection).SyncRoot; }
 		}
 	}
 }
