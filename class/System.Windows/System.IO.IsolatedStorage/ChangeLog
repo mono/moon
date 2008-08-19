@@ -1,5 +1,9 @@
 2008-08-19  Sebastien Pouliot  <sebastien@ximian.com>
 
+	* IsolatedStorageSettings.cs: Fix a few things wrt new unit tests
+
+2008-08-19  Sebastien Pouliot  <sebastien@ximian.com>
+
 	* IsolatedStorageSettings.cs: Basic implementation without any file
 	backing (isolated or not), but enough to start unit testing
 

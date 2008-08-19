@@ -55,8 +55,8 @@ namespace System.IO.IsolatedStorage {
 
 		// static properties
 
-		[MonoTODO ("not loaded from file, isolated or not")]
 		public static IsolatedStorageSettings ApplicationSettings {
+			[MonoTODO ("not loaded from file, isolated or not")]
 			get {
 				if (application_settings == null) {
 					// FIXME: supply a constant, mangled, filename for the application
@@ -66,8 +66,8 @@ namespace System.IO.IsolatedStorage {
 			}
 		}
 
-		[MonoTODO ("not loaded from file, isolated or not")]
 		public static IsolatedStorageSettings SiteSettings {
+			[MonoTODO ("not loaded from file, isolated or not")]
 			get {
 				if (site_settings == null) {
 					// FIXME: supply a constant, mangled, filename for the site
@@ -114,6 +114,8 @@ namespace System.IO.IsolatedStorage {
 
 		public bool Contains (string key)
 		{
+			if (key == null)
+				throw new ArgumentNullException ("key");
 			return settings.ContainsKey (key);
 		}
 
@@ -149,14 +151,6 @@ namespace System.IO.IsolatedStorage {
 			get { return false; }
 		}
 
-		ICollection<string> IDictionary<string, object>.Keys {
-			get { return settings.Keys; }
-		}
-
-		ICollection<object> IDictionary<string, object>.Values {
-			get { return settings.Values; }
-		}
-
 		void ICollection<KeyValuePair<string, object>>.Add (KeyValuePair<string, object> item)
 		{
 			settings.Add (item.Key, item.Value);
@@ -174,7 +168,7 @@ namespace System.IO.IsolatedStorage {
 
 		void ICollection<KeyValuePair<string, object>>.CopyTo (KeyValuePair<string, object> [] array, int arrayIndex)
 		{
-			throw new NotImplementedException ();
+			(settings as ICollection<KeyValuePair<string, object>>).CopyTo (array, arrayIndex);
 		}
 
 		bool ICollection<KeyValuePair<string, object>>.Remove (KeyValuePair<string, object> item)
@@ -183,9 +177,17 @@ namespace System.IO.IsolatedStorage {
 		}
 
 
+		ICollection<string> IDictionary<string, object>.Keys {
+			get { return settings.Keys; }
+		}
+
+		ICollection<object> IDictionary<string, object>.Values {
+			get { return settings.Values; }
+		}
+
 		bool IDictionary<string, object>.ContainsKey (string key)
 		{
-			return settings.Remove (key);
+			return settings.ContainsKey (key);
 		}
 
 		bool IDictionary<string, object>.TryGetValue (string key, out object value)
@@ -193,9 +195,21 @@ namespace System.IO.IsolatedStorage {
 			return settings.TryGetValue (key, out value);
 		}
 
+
+		private string ExtractKey (object key)
+		{
+			if (key == null)
+				throw new ArgumentNullException ("key");
+			return (key as string);
+		}
+
 		void IDictionary.Add (object key, object value)
 		{
-			settings.Add ((key as string), value);
+			string s = ExtractKey (key);
+			if (s == null)
+				throw new ArgumentException ("key");
+
+			settings.Add (s, value);
 		}
 
 		void IDictionary.Clear ()
@@ -205,7 +219,49 @@ namespace System.IO.IsolatedStorage {
 
 		bool IDictionary.Contains (object key)
 		{
-			return settings.ContainsKey (key as string);
+			return settings.ContainsKey (ExtractKey (key));
+		}
+
+		object IDictionary.this [object key] {
+			get {
+				string s = ExtractKey (key);
+				return (s == null) ? null : settings [s];
+			}
+			set {
+				string s = ExtractKey (key);
+				if (s == null)
+					throw new ArgumentException ("key");
+				settings [s] = value;
+			}
+		}
+
+		bool IDictionary.IsFixedSize {
+			get { return false; }
+		}
+
+		bool IDictionary.IsReadOnly {
+			get { return false; }
+		}
+
+		void IDictionary.Remove (object key)
+		{
+			string s = ExtractKey (key);
+			if (s != null)
+				settings.Remove (s);
+		}
+
+
+		void ICollection.CopyTo (Array array, int index)
+		{
+			(settings as ICollection).CopyTo (array, index);
+		}
+
+		bool ICollection.IsSynchronized {
+			get { return (settings as ICollection).IsSynchronized; }
+		}
+
+		object ICollection.SyncRoot {
+			get { return (settings as ICollection).SyncRoot; }
 		}
 
 
@@ -223,42 +279,6 @@ namespace System.IO.IsolatedStorage {
 		IDictionaryEnumerator IDictionary.GetEnumerator ()
 		{
 			return settings.GetEnumerator ();
-		}
-
-		object IDictionary.this [object key] {
-			get {
-				return settings [(key as string)];
-			}
-			set {
-				settings [(key as string)] = value;
-			}
-		}
-
-		bool IDictionary.IsFixedSize {
-			get { return false; }
-		}
-
-		bool IDictionary.IsReadOnly {
-			get { return false; }
-		}
-
-		void IDictionary.Remove (object key)
-		{
-			settings.Remove (key as string);
-		}
-
-
-		void ICollection.CopyTo (Array array, int index)
-		{
-			(settings as ICollection).CopyTo (array, index);
-		}
-
-		bool ICollection.IsSynchronized {
-			get { return (settings as ICollection).IsSynchronized; }
-		}
-
-		object ICollection.SyncRoot {
-			get { return (settings as ICollection).SyncRoot; }
 		}
 	}
 }
