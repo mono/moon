@@ -3668,6 +3668,7 @@ MoonlightStrokeCollectionObject::Invoke (int id, NPIdentifier name,
 		StrokeCollection *hit_col = col->HitTest ((StylusPointCollection*)dob);
 
 		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, hit_col), *result);
+		hit_col->unref ();
 		return true;
 	}
 

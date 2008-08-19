@@ -1,3 +1,8 @@
+2008-08-18  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.cpp (MoonlightStrokeCollectionObject::Invoke):
+	unref the collection we've created.
+
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-class.cpp: Its possible that we dont have a surface in the
