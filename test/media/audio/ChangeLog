@@ -1,3 +1,7 @@
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-pause.html, drtlist.xml: Added new test.
+
 2008-07-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-mp3-media-properties.html: Remove Silverlight.js and reorder
