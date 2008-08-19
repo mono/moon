@@ -1,5 +1,7 @@
 2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* color.cpp (color_from_str): Got rid of unused variable.
+
 	* xaml.cpp (dependency_object_set_attributes): Don't need to use
 	strlen(str) == 0 to figure out if the string is empty, just check
 	the first char.

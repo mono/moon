@@ -204,7 +204,6 @@ Color *
 color_from_str (const char *name)
 {
 	size_t len;
-	char *end;
 	
 	if (!name)
 		return new Color (0x00FFFFFF);
@@ -244,11 +243,11 @@ color_from_str (const char *name)
 			g [1] = g [0] = name [2];
 			b [1] = b [0] = name [3];
 		}
-
+		
 		return new Color (strtol (r, NULL, 16) / 255.0F, strtol (g, NULL, 16) / 255.0F,
 				  strtol (b, NULL, 16) / 255.0F, strtol (a, NULL, 16) / 255.0F);
 	}
-
+	
 	if (name [0] == 's' && name [1] == 'c' && name [2] == '#') {
 		char *iter = (char *) name + 3;
 		double a = read_next_double (&iter);
