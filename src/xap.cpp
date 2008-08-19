@@ -62,7 +62,7 @@ xap_unpack (const char *fname)
 			if (output[i] == '\\')
 				output [i] = '/';
 		dirname = g_path_get_dirname (output);
-		g_mkdir_with_parents (dirname, 0644);
+		g_mkdir_with_parents (dirname, 0700);
 		g_free (dirname);
 
 		fd = open (output, O_CREAT | O_WRONLY, 0644);

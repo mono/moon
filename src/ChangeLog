@@ -1,3 +1,7 @@
+2008-08-19  Geoff Norton  <gnorton@novell.com>
+
+	* xap.cpp: Ensure we can actually enter the directory we're creating.
+
 2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* color.cpp (color_from_str): Got rid of unused variable.
