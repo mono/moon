@@ -88,14 +88,12 @@ static const char* default_namespace_names [] = {
 };
 
 
-void dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
-void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
-void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
+static void dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
+static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
+static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
-XamlElementInfo* create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
-static XamlElementInstance *wrap_type (XamlParserInfo *p, Type *t);
-static Type *get_type_for_property_name (const char* prop_name);
+static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
 
 
 class XamlElementInstance : public List::Node {
@@ -1729,7 +1727,7 @@ duration_from_str (const char *str, Duration *res)
 }
 
 bool
-keytime_from_str (const char* str, KeyTime *res)
+keytime_from_str (const char *str, KeyTime *res)
 {
 	if (!g_strcasecmp ("Uniform", str)) {
 		*res = KeyTime::Uniform;
@@ -1834,7 +1832,7 @@ grid_length_from_str (const char *str, GridLength *grid_length)
 }
 #endif
 
-void
+static void
 advance (char **in)
 {
 	char *inptr = *in;
@@ -1845,7 +1843,7 @@ advance (char **in)
 	*in = inptr;
 }
 
-bool
+static bool
 get_point (Point *p, char **in)
 {
 	char *end, *inptr = *in;
@@ -1877,14 +1875,14 @@ get_point (Point *p, char **in)
 	return true;
 }
 
-void
+static void
 make_relative (const Point *cp, Point *mv)
 {
 	mv->x += cp->x;
 	mv->y += cp->y;
 }
 
-bool
+static bool
 more_points_available (char **in)
 {
 	char *inptr = *in;
@@ -2550,7 +2548,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 }
 
 
-XamlElementInfo *
+static XamlElementInfo *
 create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name)
 {
 	if (!p->loader)
@@ -2565,14 +2563,6 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 	obj->SetSurface (p->loader->GetSurface ());
 
 	return info;
-}
-
-static XamlElementInstance *
-wrap_type (XamlParserInfo *p, Type *t)
-{
-	XamlElementInfo *info = p->current_namespace->FindElement (p, t->name);
-	XamlElementInstance *inst = info->CreateElementInstance (p);
-	return inst;
 }
 
 const char *
@@ -2857,7 +2847,7 @@ XamlElementInstanceImportedManaged::SetAttributes (XamlParserInfo *p, const char
 /// Add Child funcs
 ///
 
-void
+static void
 dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
 	if (parent->element_type == XamlElementInstance::PROPERTY) {
@@ -2958,34 +2948,25 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	// Do nothing if we aren't adding to a collection, or a content property collection
 }
 
-void
-panel_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
-{
-	if (parent->element_type != XamlElementInstance::PROPERTY)
-		((Panel *) parent->item)->AddChild ((UIElement *) child->item);
-
-	dependency_object_add_child (p, parent, child);
-}
 
 ///
 /// set property funcs
 ///
 
 // these are just a bunch of special cases
-void
+static void
 dependency_object_missed_property (XamlElementInstance *item, XamlElementInstance *prop, XamlElementInstance *value, char **prop_name)
 {
 
 }
 
-void
+static void
 dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
 {
 	char **prop_name = g_strsplit (property->element_name, ".", -1);
-
 	DependencyObject *dep = (DependencyObject *) item->item;
 	DependencyProperty *prop = NULL;
-
+	
 	if (!dep) {
 		// FIXME is this really where this check should live
 		parser_error (p, item->element_name, NULL, 2030,
@@ -3077,7 +3058,7 @@ is_valid_event_name (const char *name)
 		!strcmp (name, "MouseMove"));
 }
 
-bool
+static bool
 dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, const char *name, const char *value)
 {
 	if (is_valid_event_name (name)) {
@@ -3104,7 +3085,7 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 }
 
 
-void
+static void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
 	int skip_attribute = -1;
@@ -3115,9 +3096,9 @@ start_parse:
 			continue;
 
 		// Skip empty attrs
-		if (attr [i + 1] == NULL || strlen (attr [i + 1]) == 0)
+		if (attr[i + 1] == NULL || attr[i + 1][0] == '\0')
 			continue;
-
+		
 		// Setting attributes like x:Class can change item->item, so we
 		// need to make sure we have an up to date pointer
 		DependencyObject *dep = (DependencyObject *) item->item;
@@ -3236,42 +3217,6 @@ start_parse:
 		if (atchname)
 			g_free (atchname);
 	}
-}
-
-
-static Type*
-get_type_for_property_name (const char* prop)
-{
-	Type *t  = NULL;
-	DependencyObject *o = NULL;
-	DependencyProperty *p = NULL;
-
-	char **prop_name = g_strsplit (prop, ".", -1);
-	if (!prop_name [0] || !prop_name [1])
-		return NULL;
-
-	t = Type::Find (prop_name [0]);
-	if (!t) {
-
-		g_strfreev (prop_name);
-		return NULL;
-	}
-
-	o = t->CreateInstance ();
-	if (!o) {
-
-		g_strfreev (prop_name);
-		return NULL;
-	}
-
-	p = o->GetDependencyProperty (prop_name [1]);
-	if (!p) {
-
-		g_strfreev (prop_name);
-		return NULL;
-	}
-
-	return Type::Find (p->GetPropertyType());
 }
 
 void

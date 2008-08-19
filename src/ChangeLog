@@ -1,5 +1,16 @@
 2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp (dependency_object_set_attributes): Don't need to use
+	strlen(str) == 0 to figure out if the string is empty, just check
+	the first char.
+	(wrap_type): Removed. Doesn't seem to be used any longer.
+	(get_type_for_property_name): Same.
+	(panel_add_child): Same.
+	(dependency_object_set_property): Made static.
+	(dependency_object_set_attributes): Same.
+	(dependency_object_hookup_event): Same.
+	(dependency_object_missed_property): Same.
+
 	* dependencyproperty.cpp (resolve_property_path): Use proper
 	integer types and avoid calling strlen if all we care to know is
 	if the string is empty.
