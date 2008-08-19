@@ -54,14 +54,21 @@ Configuration Options
 
 		We build ffmpeg with ./configure --disable-static --enable-shared --disable-ffmpeg --disable-ffserver --disable-ffplay --disable-zlib --disable-network --disable-vhook --disable-debug --disable-muxers --disable-encoders --disable-demuxers --disable-bsfs --disable-protocols
 
-	--with-mono-runtime=yes,no
+	--with-managed=yes,no,desktop,browser
 
-		By default Moonlight will build the 2.0 profile of Silverlight
-		and will try to link with Mono to provide the required managed
-		support.
+		Controls how Moonlight is compiled:
 
-		Use this flag to disable support for Mono from your plugin build.
+		no	 Only builds Moonlight 1.0, with no managed code.
 
+		yes	 Builds Moonlight 2.0 with both desktop and plugin
+		 	 assemblies
+
+		desktop  Only builds the desktop assemblies (GtkSilver widget).
+
+		browser	 Only builds the assemblies required for the browser
+		 	 plugin.
+
+		
 	--with-ffmpeg=yes,no
 
 		By default Moonlight will build with media support using ffmpeg.
