@@ -1,5 +1,9 @@
 2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* dependencyproperty.cpp (resolve_property_path): Use proper
+	integer types and avoid calling strlen if all we care to know is
+	if the string is empty.
+
 	* runtime.cpp (Surface::Paint): Get rid of an annoying debug
 	printf.
 	(Surface::HandleMouseEvent): Removed unused variable.

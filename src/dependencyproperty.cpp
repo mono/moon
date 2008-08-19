@@ -275,8 +275,8 @@ resolve_property_path (DependencyObject **o, const char *path)
 	g_return_val_if_fail (o != NULL, NULL);
 	g_return_val_if_fail (path != NULL, NULL);
 
-	int c;
-	int len = strlen (path);
+	size_t c;
+	size_t len = strlen (path);
 	char *typen = NULL;
 	char *propn = NULL;
 	bool expression_found = false;
@@ -284,7 +284,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 	DependencyObject *lu = *o;
 	const char *prop = path;
 	
-	for (int i = 0; i < len; i++) {
+	for (size_t i = 0; i < len; i++) {
 		switch (path [i]) {
 		case '(':
 		{
@@ -292,7 +292,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 
 			typen = NULL;
 			propn = NULL;
-			int estart = i + 1;
+			size_t estart = i + 1;
 			for (c = estart; c < len; c++) {
 				if (path [c] == '.') {
 					// Some Beta versions of Blend had a bug where they would save the TextBlock
@@ -311,7 +311,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 					break;
 				}
 			}
-
+			
 			i = c;
 			
 			Type *t = NULL;
@@ -319,14 +319,14 @@ resolve_property_path (DependencyObject **o, const char *path)
 				t = Type::Find (typen);
 			} else
 				t = Type::Find (lu->GetObjectType ());
-
-			if (!t || !propn || (strlen (propn) == 0)) {
+			
+			if (!t || !propn || *propn == '\0') {
 				g_free (propn);
 				g_free (typen);
 				*o = NULL;
 				return NULL;
 			}
-	
+			
 			res = DependencyProperty::GetDependencyProperty (t->GetKind (), propn);
 			if (!res) {
 				g_warning ("Can't find '%s' property in '%s'", propn, typen);
@@ -336,10 +336,10 @@ resolve_property_path (DependencyObject **o, const char *path)
 				return NULL;
 			}
 
-			if (! res->IsAttached() && ! lu->Is (t->GetKind ())) {
+			if (!res->IsAttached() && !lu->Is (t->GetKind ())) {
 				// We try to be gracefull here and do something smart...
 				res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), propn);
-
+				
 				if (! res) {
 					g_warning ("Got '%s' but expected a type of '%s'!", typen, lu->GetTypeName ());
 					g_free (propn);
