@@ -1,3 +1,8 @@
+2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MediaElement.cs (SetSource): Handle null inputs, it is not an
+	exception case.
+
 2008-08-18  Chris Toshok  <toshok@ximian.com>
 
 	* Control.cs: implement Focus.

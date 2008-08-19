@@ -76,13 +76,16 @@ namespace System.Windows.Controls {
 #endif
 		public void SetSource (Stream stream)
 		{
-			if (stream == null)
-				throw new ArgumentNullException ("stream");
-			
-			ManagedStreamCallbacks callbacks;
-			wrapper = new StreamWrapper (stream);
-			callbacks = wrapper.GetCallbacks ();
-			NativeMethods.media_element_set_stream_source (this.native, ref callbacks);
+			if (stream != null) {
+				ManagedStreamCallbacks callbacks;
+				
+				wrapper = new StreamWrapper (stream);
+				callbacks = wrapper.GetCallbacks ();
+				
+				NativeMethods.media_element_set_stream_source (this.native, ref callbacks);
+			} else {
+				Source = null;
+			}
 		}
 		
 #if NET_2_1
