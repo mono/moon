@@ -354,6 +354,13 @@ deep_zoom_image_tile_source_new (void)
  * DependencyObject
  **/
 DependencyObject *
+dependency_object_new (void)
+{
+	return new DependencyObject ();
+}
+
+
+DependencyObject *
 dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind)
 {
 	if (instance == NULL)

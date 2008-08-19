@@ -219,6 +219,9 @@ DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
  * DependencyObject
  **/
 /* @GeneratePInvoke */
+DependencyObject *dependency_object_new (void);
+
+/* @GeneratePInvoke */
 DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 
 #if SL_2_0

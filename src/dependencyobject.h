@@ -234,6 +234,7 @@ class DependencyObject : public EventObject {
 	void RemoveAllListeners ();
 	
  public:
+ 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject ();
 
 	DependencyProperty *GetDependencyProperty (const char *name);
