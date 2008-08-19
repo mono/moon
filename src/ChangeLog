@@ -4,6 +4,8 @@
 
 2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* zip/unzip.c: Get rid of unused variable.
+
 	* value.cpp (Value::ToString): Get rid of unused variable.
 
 2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
