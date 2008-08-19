@@ -145,6 +145,7 @@ static enum_map_t font_weights_map [] = {
 	END_MAPPING
 };
 
+#if SL_2_0
 static enum_map_t horizontal_alignment_map [] = {
 	MAP_ENUM_SL2 (HorizontalAlignment, Left),
 	MAP_ENUM_SL2 (HorizontalAlignment, Center),
@@ -152,6 +153,7 @@ static enum_map_t horizontal_alignment_map [] = {
 	MAP_ENUM_SL2 (HorizontalAlignment, Stretch),
 	END_MAPPING
 };
+#endif
 
 static enum_map_t gradient_spread_method_map [] = {
 	MAP_ENUM (GradientSpreadMethod, Pad),
@@ -214,6 +216,7 @@ static enum_map_t text_wrapping_map [] = {
 	END_MAPPING
 };
 
+#if SL_2_0
 static enum_map_t vertical_alignment_map [] = {
 	MAP_ENUM_SL2 (VerticalAlignment, Top),
 	MAP_ENUM_SL2 (VerticalAlignment, Center),
@@ -221,6 +224,7 @@ static enum_map_t vertical_alignment_map [] = {
 	MAP_ENUM_SL2 (VerticalAlignment, Stretch),
 	END_MAPPING
 };
+#endif
 
 static enum_map_t visibility_map [] = {
 	MAP_ENUM (Visibility, Visible),
@@ -228,6 +232,7 @@ static enum_map_t visibility_map [] = {
 	END_MAPPING
 };
 
+#if SL_2_0
 static enum_map_t orientation_map [] = {
 	MAP_ENUM (Orientation, Vertical),
 	MAP_ENUM (Orientation, Horizontal),
@@ -240,6 +245,7 @@ static enum_map_t cross_domain_access_map [] = {
 	MAP_ENUM (CrossDomainAccess, ScriptableOnly),
 	END_MAPPING 
 };
+#endif
 
 static void
 initialize_enums (void)

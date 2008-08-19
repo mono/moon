@@ -1,3 +1,7 @@
+2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* enums.cpp: Wrap 2.0-only code in SL_2_0.
+
 2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* value.cpp (Value::ToString): Get rid of unused variable.
