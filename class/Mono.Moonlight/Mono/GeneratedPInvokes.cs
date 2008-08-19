@@ -430,10 +430,6 @@ namespace Mono {
 		public extern static IntPtr inline_collection_new ();
 
 		[DllImport ("moon")]
-		// bool key_event_args_get_handled (KeyEventArgs *instance);
-		public extern static bool key_event_args_get_handled (IntPtr instance);
-
-		[DllImport ("moon")]
 		// int key_event_args_get_key (KeyEventArgs *instance);
 		public extern static int key_event_args_get_key (IntPtr instance);
 
@@ -444,10 +440,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// KeyEventArgs *key_event_args_new ();
 		public extern static IntPtr key_event_args_new ();
-
-		[DllImport ("moon")]
-		// void key_event_args_set_handled (KeyEventArgs *instance, bool handled);
-		public extern static void key_event_args_set_handled (IntPtr instance, bool handled);
 
 		[DllImport ("moon")]
 		// KeyFrameCollection *key_frame_collection_new ();
@@ -534,10 +526,6 @@ namespace Mono {
 		public extern static void media_element_stop (IntPtr instance);
 
 		[DllImport ("moon")]
-		// bool mouse_event_args_get_handled (MouseEventArgs *instance);
-		public extern static bool mouse_event_args_get_handled (IntPtr instance);
-
-		[DllImport ("moon")]
 		// void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);
 		public extern static void mouse_event_args_get_position (IntPtr instance, IntPtr relative_to, out double x, out double y);
 
@@ -548,10 +536,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// MouseEventArgs *mouse_event_args_new ();
 		public extern static IntPtr mouse_event_args_new ();
-
-		[DllImport ("moon")]
-		// void mouse_event_args_set_handled (MouseEventArgs *instance, bool handled);
-		public extern static void mouse_event_args_set_handled (IntPtr instance, bool handled);
 
 		[DllImport ("moon")]
 		// MultiScaleTileSource *multi_scale_tile_source_new ();
@@ -666,12 +650,20 @@ namespace Mono {
 		public extern static IntPtr rotate_transform_new ();
 
 		[DllImport ("moon")]
+		// bool routed_event_args_get_handled (RoutedEventArgs *instance);
+		public extern static bool routed_event_args_get_handled (IntPtr instance);
+
+		[DllImport ("moon")]
 		// DependencyObject *routed_event_args_get_source (RoutedEventArgs *instance);
 		public extern static IntPtr routed_event_args_get_source (IntPtr instance);
 
 		[DllImport ("moon")]
 		// RoutedEventArgs *routed_event_args_new ();
 		public extern static IntPtr routed_event_args_new ();
+
+		[DllImport ("moon")]
+		// void routed_event_args_set_handled (RoutedEventArgs *instance, bool handled);
+		public extern static void routed_event_args_set_handled (IntPtr instance, bool handled);
 
 		[DllImport ("moon")]
 		// void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el);
@@ -804,6 +796,14 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Downloader *surface_create_downloader (Surface *instance);
 		public extern static IntPtr surface_create_downloader (IntPtr instance);
+
+		[DllImport ("moon")]
+		// bool surface_focus_element (Surface *instance, UIElement *element);
+		public extern static bool surface_focus_element (IntPtr instance, IntPtr element);
+
+		[DllImport ("moon")]
+		// UIElement *surface_get_focused_element (Surface *instance);
+		public extern static IntPtr surface_get_focused_element (IntPtr instance);
 
 		[DllImport ("moon")]
 		// TimeManager *surface_get_time_manager (Surface *instance);
