@@ -1,3 +1,8 @@
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
+	* DependencyObject.cs: Generate a native pointer for managed
+	DO subclasses.  Support Type::USERCONTROL contstruction.
+
 2008-08-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FrameworkElement.cs: Updated.

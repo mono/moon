@@ -84,6 +84,7 @@ namespace System.Windows {
 
 		internal DependencyObject ()
 		{
+			native = NativeMethods.dependency_object_new ();
 			events = new EventHandlerList ();
 		}
 
@@ -218,6 +219,7 @@ namespace System.Windows {
 			case Kind.TRIGGERACTION_COLLECTION: return new TriggerActionCollection (raw);
 			case Kind.TRIGGER_COLLECTION: return new TriggerCollection (raw);
 			case Kind.UIELEMENT_COLLECTION: return new UIElementCollection (raw);
+			case Kind.USERCONTROL: return new UserControl (raw);
 							
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:
