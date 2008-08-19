@@ -1,5 +1,10 @@
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 
+	* plugin-class.cpp: Its possible that we dont have a surface in the
+	OnError case at this point, guard against this.
+
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
 	* plugin.cpp: Ensure we dont set object.Source to a data mime-type value.
 
 2008-08-18  Geoff Norton  <gnorton@novell.com>

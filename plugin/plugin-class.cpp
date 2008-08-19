@@ -1889,9 +1889,15 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 	case MoonId_OnError:
 	case MoonId_OnLoad: {
 		const char *event_name = map_moon_id_to_event_name (id);
-		int event_id = plugin->GetSurface()->GetType()->LookupEvent (event_name);
-		EventListenerProxy *proxy = LookupEventProxy (event_id);
-		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
+		EventObject *obj = plugin->GetSurface ();
+
+		if (obj != NULL) {
+			int event_id = obj->GetType()->LookupEvent (event_name);
+			EventListenerProxy *proxy = LookupEventProxy (event_id);
+			string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
+		} else {
+			string_to_npvariant ("", result);
+		}
 		return true;
 	}
 	case MoonId_Source:
@@ -1928,28 +1934,33 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 	case MoonId_OnError:
 	case MoonId_OnLoad: {
 		const char *event_name = map_moon_id_to_event_name (id);
-		int event_id = plugin->GetSurface()->GetType()->LookupEvent (event_name);
+		EventObject *obj = plugin->GetSurface ();
 
-		if (event_id != -1) {
-			// If we have a handler, remove it.
-			ClearEventProxy (event_id);
+		if (obj != NULL) {
+			int event_id = obj->GetType()->LookupEvent (event_name);
 
-			if (!NPVARIANT_IS_NULL (*value)) {
-				EventListenerProxy *proxy = new EventListenerProxy (instance,
+			if (event_id != -1) {
+				// If we have a handler, remove it.
+				ClearEventProxy (event_id);
+
+				if (!NPVARIANT_IS_NULL (*value)) {
+					EventListenerProxy *proxy = new EventListenerProxy (instance,
 										    event_name,
 										    value);
-				proxy->AddHandler (plugin->GetSurface());
-				// we only emit that event once, when
-				// the plugin is initialized, so don't
-				// leave it in the event list
-				// afterward.
-				if (id == MoonId_OnLoad)
-					proxy->SetOneShot ();
-				SetEventProxy (event_id, proxy);
-			}
+					proxy->AddHandler (plugin->GetSurface());
+					// we only emit that event once, when
+					// the plugin is initialized, so don't
+					// leave it in the event list
+					// afterward.
+					if (id == MoonId_OnLoad)
+						proxy->SetOneShot ();
+					SetEventProxy (event_id, proxy);
+				}
 
-			return true;
+				return true;
+			}
 		}
+		return false;
 	}
 	default:
 		return MoonlightObject::SetProperty (id, name, value);
