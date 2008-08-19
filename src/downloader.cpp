@@ -604,6 +604,51 @@ downloader_set_functions (downloader_create_state_func create_state,
 				  open, send, abort, header, body, request, false);
 }
 
+/*
+ * DownloaderRequest / DownloaderResponse
+ */
+
+DownloaderResponse::~DownloaderResponse ()
+{
+	if (request != NULL && request->GetDownloaderResponse () == this)
+		request->SetDownloaderResponse (NULL);
+}
+
+DownloaderResponse::DownloaderResponse ()
+{
+	aborted = false;
+	started = NULL;
+	available = NULL;
+	finished = NULL;
+	context = NULL;
+	request = NULL;
+}
+
+DownloaderResponse::DownloaderResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
+{
+	this->aborted = false;
+	this->started = started;
+	this->available = available;
+	this->finished = finished;
+	this->context = context;
+	this->request = NULL;
+}
+
+DownloaderRequest::DownloaderRequest (const char *method, const char *uri)
+{
+	this->method = g_strdup (method);
+	this->uri = g_strdup (uri);
+	this->response = NULL;
+}
+
+DownloaderRequest::~DownloaderRequest ()
+{
+	g_free (method);
+	g_free (uri);
+	if (response != NULL && response->GetDownloaderRequest () == this)
+		response->SetDownloaderRequest (NULL);
+}
+
 void
 *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri)
 {
@@ -730,9 +775,7 @@ dummy_downloader_create_web_request (const char *method, const char *uri, gpoint
 
 void
 downloader_init (void)
-{
-	// no-op
-	
+{	
 	Downloader::SetFunctions (dummy_downloader_create_state,
 				  dummy_downloader_destroy_state,
 				  dummy_downloader_open,

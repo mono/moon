@@ -218,6 +218,9 @@ void
 GECKO_SYM(DownloaderRequest)::Abort ()
 {
 	channel->Cancel (NS_BINDING_ABORTED);
+	
+	if (response != NULL && !response->IsAborted ())
+		response->Abort ();
 }
 
 bool
@@ -228,6 +231,8 @@ GECKO_SYM(DownloaderRequest)::GetResponse (DownloaderResponseStartedHandler star
 
 	response = new GECKO_SYM(DownloaderResponse) (channel, started, available, finished, context);
 	rs = channel->AsyncOpen (response, (GECKO_SYM(DownloaderResponse)*)response);
+	
+	this->response = response;
 	return !NS_FAILED (rs);
 }
 

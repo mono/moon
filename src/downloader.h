@@ -181,6 +181,7 @@ class Downloader : public DependencyObject {
 };
 
 class DownloaderResponse;
+class DownloaderRequest;
 
 typedef uint32_t (* DownloaderResponseStartedHandler) (DownloaderResponse *response, gpointer context);
 typedef uint32_t (* DownloaderResponseDataAvailableHandler) (DownloaderResponse *response, gpointer context, char *buffer, uint32_t length);
@@ -193,58 +194,40 @@ class DownloaderResponse {
 	DownloaderResponseDataAvailableHandler available;
 	DownloaderResponseFinishedHandler finished;
 	gpointer context;
-
+	DownloaderRequest *request;
 	bool aborted;
 
  public:
-	DownloaderResponse ()
-	{
-		aborted = false;
-	}
-
-	DownloaderResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
-	{
-		this->aborted = false;
-		this->started = started;
-		this->available = available;
-		this->finished = finished;
-		this->context = context;
-	}
-
-	virtual ~DownloaderResponse ()
-	{
-	}
+	DownloaderResponse ();
+	DownloaderResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
+	virtual ~DownloaderResponse ();
 
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () { return this->aborted; }
 	virtual void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor) = 0;
+	DownloaderRequest *GetDownloaderRequest () { return request; }
+	void SetDownloaderRequest (DownloaderRequest *value) { request = value; }
 };
 
 class DownloaderRequest {
  protected:
+ 	DownloaderResponse *response;
 	char *uri;
 	char *method;
 
 	bool aborted;
 
  public:
-	DownloaderRequest (const char *method, const char *uri)
-	{
-		this->method = g_strdup (method);
-		this->uri = g_strdup (uri);
-	}
-
-	virtual ~DownloaderRequest ()
-	{
-		g_free (method);
-		g_free (uri);
-	}
+	DownloaderRequest (const char *method, const char *uri);
+	virtual ~DownloaderRequest ();
 
 	virtual void Abort () = 0;
 	virtual bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context) = 0;
 	virtual const bool IsAborted () { return this->aborted; }
 	virtual void SetHttpHeader (const char *name, const char *value) = 0;
 	virtual void SetBody (void *body, int size) = 0;
+	DownloaderResponse *GetDownloaderResponse () { return response; }
+	void SetDownloaderResponse (DownloaderResponse *value) { response = value; }
 };
 
 double downloader_get_download_progress (Downloader *dl);

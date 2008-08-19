@@ -1,3 +1,14 @@
+2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* downloader.h, downloader.cpp: Add a request field to
+	  DownloaderResponse, and a response field to DownloaderRequest. When
+	  a request is aborted, also abort the response. This fixes a crash
+	  when we aborted the request before receiving a response, the
+	  response had no idea the request had been aborted (since the
+	  request didn't store the response after creating it, it couldn't
+	  notify the response of the abort), and happily accessed deleted
+	  objects.
+
 2008-08-18  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::CreateArgsForEvent): new method, create
