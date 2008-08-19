@@ -77,11 +77,18 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetSource(DependencyObject *el);
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetHandled (bool handled) { this->handled = handled; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetHandled () { return handled; }
+
 protected:
 	virtual ~RoutedEventArgs ();
 
 private:
 	DependencyObject *source;
+	bool handled;
 };
 
 /* @Namespace=None */
@@ -100,12 +107,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetPlatformKeyCode ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetHandled (bool handled) { this->handled = handled; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	bool GetHandled () { return handled; }
-	
 	static int gdk_keyval_to_key (guint keyval);
 
 protected:
@@ -113,7 +114,6 @@ protected:
 
 private:
 	GdkEventKey *event;
-	bool handled;
 };
 
 /* @Namespace=None */
@@ -133,19 +133,12 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetHandled (bool handled) { this->handled = handled; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	bool GetHandled () { return handled; }
 
 protected:
 	virtual ~MouseEventArgs ();
 
 private:
 	GdkEvent *event;
-	bool handled;
 };
 
 class Keyboard {

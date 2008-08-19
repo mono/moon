@@ -519,24 +519,6 @@ UIElement::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 }
 
 bool
-UIElement::EmitMouseMove (GdkEvent *event)
-{
-	return Emit (MouseMoveEvent, new MouseEventArgs (event));
-}
-
-bool
-UIElement::EmitMouseLeftButtonDown (GdkEvent *event)
-{
-	return Emit (MouseLeftButtonDownEvent, new MouseEventArgs (event));
-}
-
-bool
-UIElement::EmitMouseLeftButtonUp (GdkEvent *event)
-{
-	return Emit (MouseLeftButtonUpEvent, new MouseEventArgs (event));
-}
-
-bool
 UIElement::EmitKeyDown (GdkEventKey *event)
 {
 	return Emit (KeyDownEvent, new KeyEventArgs (event));
@@ -546,20 +528,6 @@ bool
 UIElement::EmitKeyUp (GdkEventKey *event)
 {
 	return Emit (KeyUpEvent, new KeyEventArgs (event));
-}
-
-bool
-UIElement::EmitMouseEnter (GdkEvent *event)
-{
-	return Emit (MouseEnterEvent, new MouseEventArgs (event));
-}
-
-bool
-UIElement::EmitMouseLeave ()
-{
-	// LAMESPEC: msdn2 says this event is raised with null args in JS,
-	// but the JS is clearly passed an EventArgs instance.
-	return Emit (MouseLeaveEvent, new EventArgs ());
 }
 
 bool

@@ -220,7 +220,10 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 	input_list = new List ();
 	captured = false;
 	
-	
+	focused_element = NULL;
+	prev_focused_element = NULL;
+	focus_tick_call_added = false;
+
 	full_screen = false;
 	can_full_screen = false;
 
@@ -1155,6 +1158,28 @@ Surface::SetMouseCapture (UIElement *capture)
 	return true;
 }
 
+EventArgs*
+Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
+{
+	if (event_id == UIElement::MouseLeaveEvent
+	    || event_id ==UIElement::InvalidatedEvent
+	    || event_id ==UIElement::GotFocusEvent
+	    || event_id ==UIElement::LostFocusEvent)
+		return new EventArgs ();
+	else if (event_id == UIElement::MouseMoveEvent
+		 || event_id ==UIElement::MouseLeftButtonDownEvent
+		 || event_id ==UIElement::MouseLeftButtonUpEvent
+		 || event_id ==UIElement::MouseEnterEvent)
+		return new MouseEventArgs(event);
+	else if (event_id == UIElement::KeyDownEvent
+		 || event_id == UIElement::KeyUpEvent)
+		return new KeyEventArgs((GdkEventKey*)event);
+	else {
+		g_warning ("Unknown event id %d\n", event_id);
+		return new EventArgs();
+	}
+}
+
 bool
 Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx)
 {
@@ -1172,20 +1197,26 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 	}
 
 	emittingMouseEvent = true;
+
+	EventArgs *args = CreateArgsForEvent(event_id, event);
+	bool args_are_routed = args->Is (Type::ROUTEDEVENTARGS);
+
+	if (args_are_routed)
+		((RoutedEventArgs*)args)->SetSource(((UIElementNode*)element_list->First())->uielement);
+
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-		// XXX i don't like how i'm doing this here... we need a way to remove this logic and
-		// put it in the UIElement... maybe UIElement::GetEventArgsForMouseEvent(event_id, GdkEvent)?
-		EventArgs *args = event_id == UIElement::MouseLeaveEvent ? new EventArgs() : new MouseEventArgs (event);
 		bool h = node->uielement->DoEmit (event_id, emit_ctxs[idx], args);
-		args->unref();
 		if (h)
 			handled = true;
 		if (zombie) {
 			handled = false;
 			break;
 		}
+		if (silverlight2 && args_are_routed && ((RoutedEventArgs*)args)->GetHandled())
+			break;
 	}
 	emittingMouseEvent = false;
+	args->unref();
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
 		node->uielement->FinishEmit (event_id, emit_ctxs[idx]);
@@ -1343,6 +1374,17 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 
 		if (event_id != NO_EVENT_ID && ((surface_index == 0 && new_index == 0) || force_emit)) {
 			handled = EmitEventOnList (event_id, new_input_list, event, -1) || handled;
+
+			if (handled && event_id == UIElement::MouseLeftButtonDownEvent) {
+				bool focus = false;
+				UIElement *el, *el2;
+
+				el = input_list->First() ? ((UIElementNode*)input_list->First())->uielement : NULL;
+				el2 = new_input_list->First() ? ((UIElementNode*)new_input_list->First())->uielement : NULL;
+
+				if (el != el2)
+					FocusElement (el2);
+			}
 		}
 
 		// We need to remove from the new_input_list the events which have just 
@@ -1681,6 +1723,73 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 	return handled;
 }
 
+void
+Surface::GenerateFocusChangeEvents()
+{
+	focus_tick_call_added = false;
+
+	List *el_list;
+	if (prev_focused_element) {
+		el_list = ElementPathToRoot (prev_focused_element);
+		EmitEventOnList (UIElement::LostFocusEvent, el_list, NULL, -1);
+		delete (el_list);
+	}
+
+	if (focused_element) {
+		el_list = ElementPathToRoot (focused_element);
+		EmitEventOnList (UIElement::GotFocusEvent, el_list, NULL, -1);
+		delete (el_list);
+	}
+}
+
+void
+Surface::generate_focus_change_events (EventObject *object)
+{
+	Surface *s = (Surface*)object;
+	s->GenerateFocusChangeEvents();
+}
+
+bool
+Surface::FocusElement (UIElement *focused)
+{
+	if (focused == focused_element)
+		return true;
+
+	/* according to msdn, these three things must be true for an element to be focusable:
+
+	   1. the element must be visible
+	   2. the element must have IsTabStop = true
+	   3. the element must be part of the plugin's visual tree, and must have had its Loaded event fired.
+	*/
+	if (!focused->GetRenderVisible()
+	    || false /* XXX !IsTabStop */
+	    || !((focused->flags & UIElement::IS_LOADED) == UIElement::IS_LOADED)
+	    || focused->GetSurface () != this)
+		return false;
+
+	if (!focus_tick_call_added) {
+		prev_focused_element = focused_element;
+	}
+	focused_element = focused;
+	if ((focused_element || prev_focused_element) && !focus_tick_call_added) {
+		time_manager->AddTickCall (generate_focus_change_events, this);
+		focus_tick_call_added = true;
+	}
+
+	return true;
+}
+
+List*
+Surface::ElementPathToRoot (UIElement *source)
+{
+	List *list = new List();
+	while (source) {
+		list->Append (new UIElementNode (source));
+		source = source->GetVisualParent();
+	}
+	return list;
+}
+
 gboolean 
 Surface::HandleUIKeyPress (GdkEventKey *event)
 {
@@ -1700,12 +1809,21 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 #endif
 	
 	SetCanFullScreen (true);
-	// key events are only ever delivered to the toplevel
-	toplevel->EmitKeyDown (event);
+	bool handled;
+	if (silverlight2 && focused_element) {
+		List *focus_to_root = ElementPathToRoot (focused_element);
+		handled = EmitEventOnList (UIElement::KeyDownEvent, focus_to_root, (GdkEvent*)event, -1);
+		delete focus_to_root;
+	}
+	else {
+		// in silverlight 1.0, key events are only ever delivered to the toplevel
+		toplevel->EmitKeyDown (event);
+		handled = true;
+	}
 				    
 	SetCanFullScreen (false);
 	
-	return true;
+	return handled;
 }
 
 gboolean 
@@ -1715,13 +1833,22 @@ Surface::HandleUIKeyRelease (GdkEventKey *event)
 		return true;
 
 	SetCanFullScreen (true);
-	
-	// key events are only ever delivered to the toplevel
-	toplevel->EmitKeyUp (event);
+
+	bool handled;
+	if (silverlight2 && focused_element) {
+		List *focus_to_root = ElementPathToRoot (focused_element);
+		handled = EmitEventOnList (UIElement::KeyUpEvent, focus_to_root, (GdkEvent*)event, -1);
+		delete focus_to_root;
+	}
+	else {
+		// in silverlight 1.0, key events are only ever delivered to the toplevel
+		toplevel->EmitKeyUp (event);
+		handled = true;
+	}
 	
 	SetCanFullScreen (false);
 	
-	return true;
+	return handled;
 }
 
 void

@@ -125,6 +125,12 @@ public:
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
 
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	UIElement *GetFocusedElement () { return focused_element; }
+
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	bool FocusElement (UIElement *element);
+
 	bool IsLoaded () { return toplevel != NULL; }
 	bool IsSilverlight2 () { return silverlight2; }
 
@@ -236,6 +242,11 @@ private:
 	// This currently can only be a canvas.
 	UIElement *toplevel;
 
+	// The element holding the keyboard focus, and the one that
+	// held it previously (so we can emit lostfocus events async)
+	UIElement *focused_element;
+	UIElement *prev_focused_element;
+
 	// the list of elements (from most deeply nested to the
 	// toplevel) we've most recently sent a mouse event to.
 	List *input_list;
@@ -295,6 +306,13 @@ private:
 	static void update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void widget_destroyed (GtkWidget *w, gpointer data);
 	
+	EventArgs* CreateArgsForEvent (int event_id, GdkEvent *event);
+
+	List* ElementPathToRoot (UIElement *source);
+	void GenerateFocusChangeEvents();
+	static void generate_focus_change_events (EventObject *object);
+	bool focus_tick_call_added;
+
 	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
 	bool EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx);
 	void UpdateCursorFromInputList ();

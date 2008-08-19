@@ -299,27 +299,6 @@ class UIElement : public DependencyObject {
 	}
 	
 	//
-	// EmitMouseMove:
-	//   handles an mouse motion event, and dispatches it to anyone that
-	//   might want it.
-	//
-	bool EmitMouseMove (GdkEvent *event);
-
-	//
-	// EmitMouseLeftButtonDown:
-	//   handles the button press event and dispatches it to all
-	//   the objects that might be interested in it.
-	//
-	bool EmitMouseLeftButtonDown (GdkEvent *event);
-
-	//
-	// EmitMouseLeftButtonUp:
-	//   handles the button release event and dispatches it to all
-	//   the objects that might be interested in it.
-	//
-	bool EmitMouseLeftButtonUp (GdkEvent *event);
-
-	//
 	// EmitKeyDown:
 	//
 	bool EmitKeyDown (GdkEventKey *key);
@@ -329,18 +308,6 @@ class UIElement : public DependencyObject {
 	//
 	bool EmitKeyUp (GdkEventKey *key);
 
-	//
-	// EmitMouseEnter:
-	//   Invoked when the mouse first enters this given object
-	//
-	bool EmitMouseEnter (GdkEvent *event);
-	
-	//
-	// EmitMouseLeave:
-	//   Invoked when the mouse leaves this given object
-	//
-	bool EmitMouseLeave ();
-	
 	//
 	// EmitGotFocus:
 	//   Invoked when the mouse focuses the given object

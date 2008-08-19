@@ -10,6 +10,7 @@
 
 #include <config.h>
 
+#include "runtime.h"
 #include "trigger.h"
 #include "collection.h"
 #include "uielement.h"
@@ -18,6 +19,11 @@
 EventTrigger::EventTrigger ()
 {
 	SetValue (EventTrigger::ActionsProperty, Value::CreateUnref (new TriggerActionCollection ()));
+	registered_event_id = -1;
+}
+
+EventTrigger::~EventTrigger ()
+{
 }
 
 void
@@ -25,8 +31,17 @@ EventTrigger::SetTarget (DependencyObject *target)
 {
 	g_return_if_fail (target);
 
-	// Despite the name, it can only be loaded (according to the docs)
-	target->AddHandler (UIElement::LoadedEvent, event_trigger_fire_actions, this);
+	if (target->GetSurface() && target->GetSurface()->IsSilverlight2()) {
+		registered_event_id = target->GetType()->LookupEvent (GetValue (EventTrigger::RoutedEventProperty)->AsString());
+		if (registered_event_id == -1)
+			g_warning ("failed to set target");
+	}
+	else {
+		/* Despite the name, in silverlight 1.0 it can only be
+		   loaded (according to the docs) */
+		target->AddHandler (UIElement::LoadedEvent, event_trigger_fire_actions, this);
+		registered_event_id = UIElement::LoadedEvent;
+	}
 }
 
 void
@@ -34,11 +49,10 @@ EventTrigger::RemoveTarget (DependencyObject *target)
 {
 	g_return_if_fail (target);
 
-	target->RemoveHandler (UIElement::LoadedEvent, event_trigger_fire_actions, this);
-}
-
-EventTrigger::~EventTrigger ()
-{
+	if (registered_event_id != -1) {
+		target->RemoveHandler (registered_event_id, event_trigger_fire_actions, this);
+		registered_event_id = -1;
+	}
 }
 
 void

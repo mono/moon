@@ -941,16 +941,6 @@ inline_collection_new (void)
 /**
  * KeyEventArgs
  **/
-bool
-key_event_args_get_handled (KeyEventArgs *instance)
-{
-	if (instance == NULL)
-		return false;
-	
-	return instance->GetHandled ();
-}
-
-
 int
 key_event_args_get_key (KeyEventArgs *instance)
 {
@@ -977,16 +967,6 @@ KeyEventArgs *
 key_event_args_new (void)
 {
 	return new KeyEventArgs ();
-}
-
-
-void
-key_event_args_set_handled (KeyEventArgs *instance, bool handled)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetHandled (handled);
 }
 
 
@@ -1205,16 +1185,6 @@ media_element_stop (MediaElement *instance)
 /**
  * MouseEventArgs
  **/
-bool
-mouse_event_args_get_handled (MouseEventArgs *instance)
-{
-	if (instance == NULL)
-		return false;
-	
-	return instance->GetHandled ();
-}
-
-
 void
 mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y)
 {
@@ -1239,16 +1209,6 @@ MouseEventArgs *
 mouse_event_args_new (void)
 {
 	return new MouseEventArgs ();
-}
-
-
-void
-mouse_event_args_set_handled (MouseEventArgs *instance, bool handled)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetHandled (handled);
 }
 
 
@@ -1543,6 +1503,16 @@ rotate_transform_new (void)
 /**
  * RoutedEventArgs
  **/
+bool
+routed_event_args_get_handled (RoutedEventArgs *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetHandled ();
+}
+
+
 DependencyObject *
 routed_event_args_get_source (RoutedEventArgs *instance)
 {
@@ -1557,6 +1527,16 @@ RoutedEventArgs *
 routed_event_args_new (void)
 {
 	return new RoutedEventArgs ();
+}
+
+
+void
+routed_event_args_set_handled (RoutedEventArgs *instance, bool handled)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetHandled (handled);
 }
 
 
@@ -1910,6 +1890,30 @@ surface_create_downloader (Surface *instance)
 	
 	return instance->CreateDownloader ();
 }
+
+
+#if SL_2_0
+bool
+surface_focus_element (Surface *instance, UIElement *element)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->FocusElement (element);
+}
+#endif
+
+
+#if SL_2_0
+UIElement *
+surface_get_focused_element (Surface *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetFocusedElement ();
+}
+#endif
 
 
 TimeManager *

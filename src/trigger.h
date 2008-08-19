@@ -17,10 +17,7 @@
 
 /* @Namespace=None */
 class TriggerAction : public DependencyObject {
- protected:
-	virtual ~TriggerAction () {}
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	TriggerAction () {}
 	
@@ -28,18 +25,16 @@ class TriggerAction : public DependencyObject {
 	
 	/* @GenerateCBinding */
 	virtual void Fire () {}
+
+protected:
+	virtual ~TriggerAction () {}
 };
 
 
 /* @ContentProperty="Actions" */
 /* @Namespace=System.Windows */
 class EventTrigger : public DependencyObject {
-	static void event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure);
-	
- protected:
-	virtual ~EventTrigger ();
-
- public:
+public:
 	/* @PropertyType=TriggerActionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *ActionsProperty;
 	/* @PropertyType=string,ManagedPropertyType=RoutedEvent,ManagedFieldAccess=Internal */
@@ -52,6 +47,13 @@ class EventTrigger : public DependencyObject {
 
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
+
+protected:
+	virtual ~EventTrigger ();
+
+private:
+	int registered_event_id;
+	static void event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
 
 G_BEGIN_DECLS

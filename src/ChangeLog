@@ -1,3 +1,40 @@
+2008-08-18  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::CreateArgsForEvent): new method, create
+	the right kind of args for a given event.  we should probably
+	autogenerate this.
+	(Surface::EmitEventOnList): use CreateArgsForEvent.  Only create
+	one instance of the event args that we use to bubble along the
+	element list.  If it's a RoutedEventArgs subclass, set the source
+	to be the first element in the list, and check the "Handled"
+	attribute after every emit to see if we should finish early (this
+	provides for 2.0 semantics).
+	(Surface::FocusElement): unfortunately the event generation is
+	async, so add a tick call if we need to.  if we already have a
+	tick call (meaning >= 1 focus change has happened already in this
+	tick), we drop the intervening change(s).  This is likely wrong.
+	(Surface::GenerateFocusChangeEvents): emit GotFocus/LostFocus on
+	the proper element lists.
+	(Surface::HandleUIKeyPress, Surface::HandleUIKeyRelease): if we're
+	silverlight2 (and we have a focused element), emit the event on
+	the list of elements from the focused element back up to the root.
+	Otherwise just emit it on the toplevel.
+
+	* runtime.h (class Surface): add GetFocusedElement/FocusElement
+	methods, which are used to implement
+	FocusManager.GetFocusElement() and Control.Focus().
+
+	* uielement.h, uielement.cpp (class UIElement): remove a bunch of
+	Emit$Event() methods that were never used.
+
+	* trigger.cpp: in 2.0, you can put other events in RoutedEvent,
+	not just "Loaded".  there are parsing rules that we can't make use
+	of here, so more work will likely have to happen in the parser.
+
+	* trigger.h (class EventTrigger): add registered_event_id.
+
+	* cbinding.h, cbinding.cpp: regenerate.
+
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 	
 	* type-generated.cpp, cbinding.cpp|h: Rengerated

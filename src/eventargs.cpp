@@ -23,6 +23,7 @@
 RoutedEventArgs::RoutedEventArgs ()
 {
 	source = NULL;
+	handled = false;
 }
 
 RoutedEventArgs::~RoutedEventArgs ()
@@ -44,13 +45,11 @@ RoutedEventArgs::SetSource (DependencyObject *el)
 MouseEventArgs::MouseEventArgs (GdkEvent *event)
 {
 	this->event = gdk_event_copy (event);
-	handled = false;
 }
 
 MouseEventArgs::MouseEventArgs ()
 {
 	event = gdk_event_new (GDK_MOTION_NOTIFY);
-	handled = false;
 }
 
 MouseEventArgs::~MouseEventArgs ()
@@ -165,14 +164,12 @@ keyboard_get_modifiers (void)
 
 KeyEventArgs::KeyEventArgs (GdkEventKey *event)
 {
-	this->event = (GdkEventKey *) gdk_event_copy ((GdkEvent *) event);
-	handled = false;
+	this->event = (GdkEventKey *) gdk_event_copy ((GdkEvent *)event);
 }
 
 KeyEventArgs::KeyEventArgs ()
 {
 	event = (GdkEventKey *) gdk_event_new (GDK_KEY_PRESS);
-	handled = false;
 }
 
 KeyEventArgs::~KeyEventArgs ()

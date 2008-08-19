@@ -511,9 +511,6 @@ InlineCollection *inline_collection_new (void);
  * KeyEventArgs
  **/
 /* @GeneratePInvoke */
-bool key_event_args_get_handled (KeyEventArgs *instance);
-
-/* @GeneratePInvoke */
 int key_event_args_get_key (KeyEventArgs *instance);
 
 /* @GeneratePInvoke */
@@ -521,9 +518,6 @@ int key_event_args_get_platform_key_code (KeyEventArgs *instance);
 
 /* @GeneratePInvoke */
 KeyEventArgs *key_event_args_new (void);
-
-/* @GeneratePInvoke */
-void key_event_args_set_handled (KeyEventArgs *instance, bool handled);
 
 /**
  * KeyFrameCollection
@@ -642,9 +636,6 @@ void media_element_stop (MediaElement *instance);
  * MouseEventArgs
  **/
 /* @GeneratePInvoke */
-bool mouse_event_args_get_handled (MouseEventArgs *instance);
-
-/* @GeneratePInvoke */
 void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);
 
 /* @GeneratePInvoke */
@@ -652,9 +643,6 @@ StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *insta
 
 /* @GeneratePInvoke */
 MouseEventArgs *mouse_event_args_new (void);
-
-/* @GeneratePInvoke */
-void mouse_event_args_set_handled (MouseEventArgs *instance, bool handled);
 
 #if SL_2_0
 /**
@@ -836,10 +824,16 @@ RotateTransform *rotate_transform_new (void);
  * RoutedEventArgs
  **/
 /* @GeneratePInvoke */
+bool routed_event_args_get_handled (RoutedEventArgs *instance);
+
+/* @GeneratePInvoke */
 DependencyObject *routed_event_args_get_source (RoutedEventArgs *instance);
 
 /* @GeneratePInvoke */
 RoutedEventArgs *routed_event_args_new (void);
+
+/* @GeneratePInvoke */
+void routed_event_args_set_handled (RoutedEventArgs *instance, bool handled);
 
 /* @GeneratePInvoke */
 void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el);
@@ -1026,6 +1020,16 @@ void surface_attach (Surface *instance, UIElement *toplevel);
 
 /* @GeneratePInvoke */
 Downloader *surface_create_downloader (Surface *instance);
+
+#if SL_2_0
+/* @GeneratePInvoke */
+bool surface_focus_element (Surface *instance, UIElement *element);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+UIElement *surface_get_focused_element (Surface *instance);
+#endif
 
 /* @GeneratePInvoke */
 TimeManager *surface_get_time_manager (Surface *instance);
