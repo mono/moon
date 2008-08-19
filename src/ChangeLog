@@ -1,3 +1,8 @@
+2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (Surface::Paint): Get rid of an annoying debug
+	printf.
+
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
 	* trigger.cpp (EventTrigger::SetTarget): make the 2.0 case more
