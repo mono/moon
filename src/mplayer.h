@@ -172,9 +172,7 @@ class MediaPlayer : public EventObject {
 	
 	guint64 GetTargetPts ();
 	
-#if OBJECT_TRACKING
 	virtual const char * GetTypeName () { return "MediaPlayer"; }
-#endif
 };
 
 #endif /* __MOON_MPLAYER_H__ */

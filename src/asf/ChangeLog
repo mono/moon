@@ -1,3 +1,7 @@
+2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.h: No need to surround GetTypeName with OBJECT_TRACKING anymore.
+
 2008-08-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Add ! to fix logic.

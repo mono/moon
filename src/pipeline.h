@@ -373,9 +373,7 @@ public:
 	static Queue* media_objects;
 	static int media_thread_count;
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "Media"; }
-#endif
 };
  
 class MediaFrame {
@@ -446,9 +444,7 @@ public:
 	
 	Media *GetMedia () { return media; }
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "IMediaObject"; }
-#endif
 };
 
 
@@ -499,9 +495,7 @@ public:
 	// set by the demuxer, until then its value must be -1
 	int index; 
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "IMediaStream"; }
-#endif
 };
 
 class IMediaDemuxer : public IMediaObject {
@@ -537,9 +531,7 @@ public:
 	virtual void UpdateSelected (IMediaStream *stream) {};
 	virtual guint64 GetLastAvailablePts () { return 0; }
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return GetName (); }
-#endif
 };
 
 class IMediaDecoder : public IMediaObject {
@@ -559,9 +551,7 @@ public:
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream *stream;
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "IMediaDecoder"; }
-#endif
 }; // Set when this is the callback in Media::GetNextFrameAsync
 
 
@@ -582,9 +572,7 @@ public:
 	virtual MediaResult Open () = 0;
 	virtual MediaResult Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8 *dest[], int dstStride []) = 0;
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "IImageConverter"; }
-#endif
 };
 
 /*
@@ -706,9 +694,7 @@ public:
 
 	virtual void Write (void *buf, gint64 offset, gint32 n) { return; }
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "IMediaSource"; }
-#endif
 };
 
 // Implementations
@@ -753,9 +739,7 @@ public:
 
 	virtual const char *ToString () { return "ManagedStreamSource"; }
 
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "ManagedStreamSource"; }
-#endif
 };
  
 class FileSource : public IMediaSource {
@@ -793,9 +777,7 @@ public:
 
 	const char *GetFileName () { return filename; }
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "FileSource"; }
-#endif
 };
 
 class ProgressiveSource : public FileSource {
@@ -823,9 +805,7 @@ public:
 	void NotifySize (gint64 size);
 	virtual void NotifyFinished ();
 
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "ProgressiveSource"; }
-#endif
 };
 
 class MemorySource : public IMediaSource {
@@ -863,9 +843,7 @@ public:
 
 	virtual const char *ToString () { return "MemorySource"; }
 
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "MemorySource"; }
-#endif
 };
 
 
@@ -963,9 +941,7 @@ public:
 	virtual MoonMediaType GetType () { return MediaTypeVideo; } 
 	guint32 GetBitRate () { return (guint32) bit_rate; }
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "VideoStream"; }
-#endif
 };
  
 class AudioStream : public IMediaStream {
@@ -984,9 +960,7 @@ public:
 	virtual MoonMediaType GetType () { return MediaTypeAudio; }
 	guint32 GetBitRate () { return (guint32) bit_rate; }
 	
-#if OBJECT_TRACKING
 	virtual const char* GetTypeName () { return "AudioStream"; }
-#endif
 };
 
 /*

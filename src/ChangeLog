@@ -1,5 +1,10 @@
 2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.h, pipeline.h: No need to surround GetTypeName with
+	  OBJECT_TRACKING anymore.
+
+2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* audio.cpp, audio.h, audio-alsa.cpp, audio-alsa.h, audio-pulse.cpp,
 	  audio-pulse.h: Added, our new audio abstraction/implementation.
 	* Makefile.am, src.mdp, type-generated.cpp: Updated.

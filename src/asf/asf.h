@@ -377,9 +377,7 @@ public:
 	int64_t packet_offset; // location of the beginning of the first packet
 	int64_t packet_offset_end; // location of the end of the last packet
 	
-#if OBJECT_TRACKING
 	virtual const char *GetTypeName () { return "ASFParser"; }
-#endif
 };
 
 
