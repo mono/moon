@@ -1201,7 +1201,7 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 	EventArgs *args = CreateArgsForEvent(event_id, event);
 	bool args_are_routed = args->Is (Type::ROUTEDEVENTARGS);
 
-	if (args_are_routed)
+	if (args_are_routed && element_list->First())
 		((RoutedEventArgs*)args)->SetSource(((UIElementNode*)element_list->First())->uielement);
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
