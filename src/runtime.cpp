@@ -1398,9 +1398,8 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			handled = EmitEventOnList (event_id, new_input_list, event, -1) || handled;
 
 			if (handled && event_id == UIElement::MouseLeftButtonDownEvent) {
-				bool focus = false;
 				UIElement *el, *el2;
-
+				
 				el = input_list->First() ? ((UIElementNode*)input_list->First())->uielement : NULL;
 				el2 = new_input_list->First() ? ((UIElementNode*)new_input_list->First())->uielement : NULL;
 

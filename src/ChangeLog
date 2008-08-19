@@ -2,6 +2,7 @@
 
 	* runtime.cpp (Surface::Paint): Get rid of an annoying debug
 	printf.
+	(Surface::HandleMouseEvent): Removed unused variable.
 
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
