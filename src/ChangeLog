@@ -1,3 +1,10 @@
+2008-08-19  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (Shape::InsideObject): check the extents first, then
+	reorder the stroke/fill tests to test for the most likely first.
+
+	Helps speed up sliverlight.net/world a bit.
+
 2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.h, pipeline.h: No need to surround GetTypeName with

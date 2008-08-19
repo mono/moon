@@ -599,6 +599,8 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	bool ret = true;
 
 	uielement_transform_point (this, &x ,&y);
+	if (!extents.PointInside (x, y))
+		return false;
 	
 	// cairo_in_* functions which we're using to check if point inside
 	// the path don't take the clipping into account. Therefore, we need 
@@ -624,8 +626,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	DoDraw (cr, false);
 
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)
-	ret = ((stroke && cairo_in_stroke (cr, x, y)) || (fill && CanFill () && cairo_in_fill (cr, x, y)));
-
+	ret = ((fill && CanFill () && cairo_in_fill (cr, x, y)) || (stroke && cairo_in_stroke (cr, x, y)));
 	cairo_new_path (cr);
 	cairo_restore (cr);
 		
