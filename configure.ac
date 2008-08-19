@@ -325,7 +325,7 @@ if test x$with_ff3 = xyes; then
   PKG_CHECK_MODULES(XULRUNNER,[mozilla-gtkmozembed mozilla-js],,
 		  [with_performance=no
 		   performance_reason="(reason: failed to find FF3 development packages)"])
-elif test x$with_ff2 = xyes; then
+else
   with_performance=no
   testing_reason="(reason: performance suite requires FF3)"
 fi
