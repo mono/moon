@@ -1,3 +1,8 @@
+2008-08-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Moonlight.UnitTesting/Tester.cs: Add support for IsNotNull, 
+	IsTrue and IsFalse.
+
 2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* System.Windows/MediaElementTest.cs: Added SetSourceTest2, using a

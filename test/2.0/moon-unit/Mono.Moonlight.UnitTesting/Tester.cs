@@ -179,6 +179,61 @@ namespace Mono.Moonlight.UnitTesting
 			if (obj != null)
 				throw new AssertFailedException (string.Format (message, parameters));
 		}
+
+		public static void IsNotNull (object obj)
+		{
+			if (obj == null)
+				throw new AssertFailedException ();
+		}
+
+		public static void IsNotNull (object obj, string message)
+		{
+			if (obj == null)
+				throw new AssertFailedException (message);
+		}
+
+		public static void IsNotNull (object obj, string message, params object [] parameters)
+		{
+			if (obj == null)
+				throw new AssertFailedException (string.Format (message, parameters));
+		}
+
+		public static void IsFalse (bool condition)
+		{
+			if (condition)
+				throw new AssertFailedException ();
+		}
+
+		public static void IsFalse (bool condition, string message)
+		{
+			if (condition)
+				throw new AssertFailedException (message);
+		}
+
+		public static void IsFalse (bool condition, string message, params object [] parameters)
+		{
+			if (condition)
+				throw new AssertFailedException (string.Format (message, parameters));
+		}
+
+		public static void IsTrue (bool condition)
+		{
+			if (!condition)
+				throw new AssertFailedException ();
+		}
+
+		public static void IsTrue (bool condition, string message)
+		{
+			if (!condition)
+				throw new AssertFailedException (message);
+		}
+
+		public static void IsTrue (bool condition, string message, params object [] parameters)
+		{
+			if (!condition)
+				throw new AssertFailedException (string.Format (message, parameters));
+		}
+
 		public static void AreSame (object expected, object actual)
 		{
 			if (expected != actual)
