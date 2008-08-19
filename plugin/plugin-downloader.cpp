@@ -146,7 +146,7 @@ static void
 
 PluginDownloader::PluginDownloader (Downloader *dl)
 {
-	d (printf ("PluginDownloader::PluginDownloader (), dl: %p\n", dl));
+	d (printf ("PluginDownloader::PluginDownloader (), this: %p, dl: %p\n", this, dl));
 	this->dl = dl;
 	this->uri = NULL;
 	this->verb = NULL;
@@ -157,7 +157,7 @@ PluginDownloader::PluginDownloader (Downloader *dl)
 
 PluginDownloader::~PluginDownloader ()
 {
-	d (printf ("PluginDownloader::~PluginDownloader (), dl: %p\n", dl));
+	d (printf ("PluginDownloader::~PluginDownloader (), this: %p, dl: %p\n", this, dl));
 
 	Abort ();
 
@@ -169,6 +169,8 @@ PluginDownloader::~PluginDownloader ()
 void
 PluginDownloader::Abort ()
 {
+	d (printf ("PluginDownloader::Abort (), this: %p, dl: %p, finished: %i, request: %p, response: %p\n", this, dl, finished, request, response));
+
 	if (finished)
 		return;
 
@@ -188,6 +190,8 @@ PluginDownloader::Abort ()
 void
 PluginDownloader::Open (const char *verb, const char *uri, bool streaming)
 {
+	d (printf ("PluginDownloader::Open (), this: %p, dl: %p\n", this, dl));
+	
 	//delete this->bdl;
 	g_free (this->uri);
 	g_free (this->verb);
@@ -205,6 +209,8 @@ PluginDownloader::Open (const char *verb, const char *uri, bool streaming)
 void
 PluginDownloader::Send ()
 {
+	d (printf ("PluginDownloader::Send (), this: %p, dl: %p\n", this, dl));
+	
 	this->offset = 0;
 	this->request->GetResponse (plugin_downloader_started, plugin_downloader_available, plugin_downloader_finished, this);
 }
@@ -212,11 +218,14 @@ PluginDownloader::Send ()
 void
 PluginDownloader::Started ()
 {
+	d (printf ("PluginDownloader::Started (), this: %p, dl: %p\n", this, dl));
 }
 
 uint32_t
 PluginDownloader::Read (char *buffer, uint32_t length)
 {
+	d (printf ("PluginDownloader::Read (), this: %p, dl: %p\n", this, dl));
+	
 	if (dl != NULL) {
 		dl->Write (buffer, this->offset, length);
 		this->offset += length;
@@ -229,6 +238,8 @@ PluginDownloader::Read (char *buffer, uint32_t length)
 void
 PluginDownloader::Finished (bool success, gpointer data)
 {
+	d (printf ("PluginDownloader::Finished (), this: %p, dl: %p\n", this, dl));
+
 	finished = true;
 
 	if (dl != NULL) {
@@ -245,6 +256,8 @@ PluginDownloader::Finished (bool success, gpointer data)
 void
 PluginDownloader::SetHttpHeader (const char *header, const char *value)
 {
+	d (printf ("PluginDownloader::SetHttpHeader (), this: %p, dl: %p\n", this, dl));
+	
 	if (request != NULL)
 		request->SetHttpHeader (header, value);
 }
@@ -252,6 +265,8 @@ PluginDownloader::SetHttpHeader (const char *header, const char *value)
 void
 PluginDownloader::SetBody (void *body, uint32_t length)
 {
+	d (printf ("PluginDownloader::SetBody (), this: %p, dl: %p\n", this, dl));
+	
 	if (request != NULL)
 		request->SetBody (body, length);
 }
