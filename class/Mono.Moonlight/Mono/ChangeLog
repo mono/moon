@@ -1,5 +1,9 @@
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 
+	* GeneratedPInvokes.cs: Regenerated
+
+2008-08-18  Geoff Norton  <gnorton@novell.com>
+
 	* GeneratedPInvokes.cs, Kind.cs: Regenerated
 
 2008-08-17  Geoff Norton  <gnorton@novell.com>

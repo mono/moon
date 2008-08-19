@@ -161,6 +161,10 @@ namespace Mono {
 		public extern static IntPtr deep_zoom_image_tile_source_new ();
 
 		[DllImport ("moon")]
+		// DependencyObject *dependency_object_new ();
+		public extern static IntPtr dependency_object_new ();
+
+		[DllImport ("moon")]
 		// DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 		public extern static IntPtr dependency_object_find_name (IntPtr instance, string name, out Kind element_kind);
 
