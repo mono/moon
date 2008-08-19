@@ -1,3 +1,7 @@
+2008-08-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xap.cpp (xap_unpack): Fixed compiler warning.
+
 2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: Include headers mplayer.h doesn't include anymore.

@@ -46,40 +46,44 @@ xap_unpack (const char *fname)
 		goto exception1;
 
 	do {
-		int fd;
 		char *fname, *output, *dirname;
-		int i;
 		unz_file_info finfo;
-
+		size_t len, i;
+		int fd;
+		
 		unzGetCurrentFileInfo (zipfile, &finfo, NULL, 0, NULL, 0, NULL, 0);
 		fname = (char *) malloc (finfo.size_filename + 2);
 		if (fname == 0)
 			goto exception1;
+		
 		unzGetCurrentFileInfo (zipfile, NULL, fname, finfo.size_filename+1, NULL, 0, NULL, 0);
-
+		
 		output = g_build_filename (xap_dir, fname, NULL);
-		for (i = 0; i < strlen (output); i++)
+		len = strlen (output);
+		
+		for (i = 0; i < len; i++) {
 			if (output[i] == '\\')
-				output [i] = '/';
+				output[i] = '/';
+		}
+		
 		dirname = g_path_get_dirname (output);
 		g_mkdir_with_parents (dirname, 0700);
 		g_free (dirname);
-
+		
 		fd = open (output, O_CREAT | O_WRONLY, 0644);
 		g_free (output);
 		g_free (fname);
-
+		
 		if (fd == -1)
 			goto exception1;
-
+		
 		if (unzOpenCurrentFile (zipfile) != UNZ_OK)
 			goto exception1;
-
+		
 		bool exc = ExtractFile (zipfile, fd);
 		unzCloseCurrentFile (zipfile);
 		if (exc == false)
 			goto exception1;
-
 	} while (unzGoToNextFile (zipfile) == UNZ_OK);
 	unzClose (zipfile);
 
