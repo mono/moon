@@ -27,6 +27,7 @@
  *
  */
 
+#include <config.h>
 #include <runtime.h>
 #include <clock.h>
 #include <string.h>
@@ -156,9 +157,6 @@ void fake_capture (void)
 void unsetup (void)
 {
 	Surface *surface = (Surface *) runtime_get_surface_list ()->data; 
-	TimeManager *manager = surface->GetTimeManager ();
-	ManualTimeSource *source = (ManualTimeSource *) manager->GetSource ();
-	
 	surface->SetExposeHandoffFunc (NULL, NULL);
 }
 
@@ -220,9 +218,6 @@ gboolean setup (void* data)
 	if (surface == NULL)
 		return TRUE;
  
-	TimeManager *manager = surface->GetTimeManager ();
-	ManualTimeSource *source = (ManualTimeSource *) manager->GetSource ();
-    
 	surface->SetExposeHandoffFunc (expose_handoff, NULL);
 	g_idle_add (increase_timer, NULL);
 	current_time = start_time;
