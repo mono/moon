@@ -295,20 +295,16 @@ Value::ToString ()
 {
 	if (this == NULL)
 		return g_strdup ("NULL");
-
-	GString *str = g_string_new ("");
-	char *t = NULL;
 	
-	switch (k){
-
+	GString *str = g_string_new ("");
+	
+	switch (k) {
 	case Type::DOUBLE:
 		g_string_append_printf (str, "{ %f }", u.d);
 		break;
-
 	case Type::STRING:
 		g_string_append (str, u.s);
 		break;
-		
 	case Type::COLOR:
 		g_string_append_printf (str, "{%g/%g/%g/%g}", u.color->r, u.color->g, u.color->b, u.color->a);
 		break;
@@ -348,6 +344,7 @@ Value::ToString ()
 			g_string_append_printf (str, "UnknownType");
 		break;
 	}
+	
 	return g_string_free (str, FALSE);
 }
 
