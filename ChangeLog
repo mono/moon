@@ -1,3 +1,8 @@
+2008-08-02  Miguel de Icaza  <miguel@novell.com>
+
+	* tools/mxap/mxap.cs: Use NDesk.GetOptions instead of another
+	custom parser.
+
 2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* configure.ac: Add configure options for alsa and pulseaudio.
