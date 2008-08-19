@@ -11,8 +11,8 @@
  */
 
 
-#ifndef __MOON_AUDIO_H__
-#define __MOON_AUDIO_H__
+#ifndef __AUDIO_H__
+#define __AUDIO_H__
 
 class AudioStream;
 class MediaPlayer;
@@ -30,18 +30,18 @@ class AudioPlayer;
 enum AudioFlags {
 	// The AudioSource has been initialized correctly.
 	// This flag is removed if SetState (AudioError) is called.
-	AudioInitialized	= 1 << 0, 
+	AudioInitialized = 1 << 0,
 	// The audio source has run out of data to write (the last frame had FrameEventEOF set).
 	// There still may be samples in the pipeline somewhere causing audio to be played.
 	// This flag is removed when AppendFrame is called.
-	AudioEOF			= 1 << 1, 
+	AudioEOF         = 1 << 1,
 	// The audio source has run out of data to write, and is waiting for more.
 	// There still may be samples in the pipeline somewhere causing audio to be played.
 	// This flag is removed when AppendFrame is called.
-	AudioWaiting		= 1 << 2, 
+	AudioWaiting     = 1 << 2,
 	// The audio source has run out of data to write and has played all available samples.
 	// This flag is removed when Play/Pause/Stop/AppendFrame is called.
-	AudioEnded			= 1 << 3,
+	AudioEnded       = 1 << 3,
 };
 
 enum AudioState {
@@ -59,7 +59,6 @@ struct AudioData {
 
 // All AudioSource's public methods must be safe to call from any thread.
 class AudioSource : public EventObject {
-private:
 	MediaPlayer *mplayer;
 	AudioStream *stream;
 	AudioPlayer *player;
@@ -77,7 +76,7 @@ private:
 		
 	guint32 channels; // The number of channels
 	guint32 sample_rate; // The sample rate in the audio source
-
+	
 	pthread_mutex_t mutex;
 	
 	void Lock ();
@@ -85,7 +84,7 @@ private:
 	
 	static MediaResult FrameCallback (MediaClosure *closure);
 	
-protected:
+ protected:
 	AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
 	virtual ~AudioSource ();
 		
@@ -95,16 +94,16 @@ protected:
 	guint32 Write (void *dest, guint32 samples);
 	guint32 WriteFull (AudioData **channel_data /* Array of info about channels, NULL ended. */, guint32 samples);
 	
-	virtual void Played () {};
-	virtual void Paused () {};
-	virtual void Stopped () {};
+	virtual void Played () { }
+	virtual void Paused () { }
+	virtual void Stopped () { }
 	
 	// The deriving class must call this method when it has finished playing
 	// all the written samples.
 	void Underflowed ();
 	
 	// Called whenever the state changes
-	virtual void StateChanged (AudioState old_state) {};
+	virtual void StateChanged (AudioState old_state) {}
 	
 	// Must return the time difference between the last written sample
 	// and what the audio hw is playing now (in pts).
@@ -117,12 +116,12 @@ protected:
 	// There's no guarantee CloseInternal won't be called more than once.
 	virtual void CloseInternal () {};
 	
-public:
+ public:
 	void Play ();
 	void Pause ();
 	void Stop ();
 	guint64 GetDelay ();
-
+	
 	// Initialize(Internal) is called before adding the source to the list of sources
 	// If Initialize fails (returns false), the source is not added to the list of sources.
 	bool Initialize ();
@@ -165,15 +164,15 @@ public:
 };
 
 class AudioListNode : public List::Node {
-public:
+ public:
 	AudioSource *source;
 	gint32 generation;
+	
 	AudioListNode (AudioSource *source);
 	virtual ~AudioListNode ();
 };
 
 class AudioSources {
-private:
 	pthread_mutex_t mutex;
 	List list;
 	gint32 current_generation;
@@ -182,9 +181,10 @@ private:
 	void Lock ();
 	void Unlock ();
 	
-public:
+ public:
 	AudioSources ();
 	~AudioSources ();
+	
 	void Add (AudioSource *node);
 	// Returns true if the node existed in the list
 	bool Remove (AudioSource *node);
@@ -206,7 +206,6 @@ public:
 };
 
 class AudioPlayer {
-private:
 	// our AudioPlayer instance
 	static AudioPlayer *instance;
 	static pthread_mutex_t instance_mutex;
@@ -217,7 +216,7 @@ private:
 	void RemoveImpl (AudioSource *node);
 	void ShutdownImpl ();
 	
-protected:
+ protected:
 	// The list of all the audio sources.
 	// This is protected so that derived classes can enumerate the sources,
 	// derived classes must not add/remove sources.
@@ -239,18 +238,17 @@ protected:
 	// Must return a new AudioSource specific for each backend.
 	virtual AudioSource *CreateNode (MediaPlayer *mplayer, AudioStream *stream) = 0;
 	
-public:
+ public:
 	// Creates a audio source from the MediaPlayer and AudioStream.
 	// Returns NULL if there were any errors.
 	// Note: Actually returning an object doesn't mean audio will be played.
 	// some backends are async and will only cause an error to be raised
 	// later (in which case the AudioSource's state would be AudioError)
-	static AudioSource* Add (MediaPlayer *mplayer, AudioStream *stream);
+	static AudioSource *Add (MediaPlayer *mplayer, AudioStream *stream);
 	// Removes an audio source.
 	static void Remove (AudioSource *source);
 	// Shuts down the audio engine
 	static void Shutdown ();
 };
 
-
-#endif
+#endif /* __AUDIO_H__ */
