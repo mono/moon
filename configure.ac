@@ -49,10 +49,14 @@ if test x$with_ffmpeg = xyes; then
     CFLAGS=$save_CFLAGS
   else
     with_ffmpeg=no
-    ffmpeg_warning="(WARNING: AUDIO AND VIDEO WON'T WORK)"
+    ffmpeg_reason="(reason: could not find libavutil and libavcodec packages)"
   fi
 fi
 AM_CONDITIONAL(INCLUDE_FFMPEG,test x$with_ffmpeg = xyes)
+
+if test x$with_ffmpeg = no; then
+  media_warning = "WARNING: No media decoding backends configured.  AUDIO AND VIDEO WON'T WORK"
+fi
 
 dnl
 dnl Mozilla checks
@@ -63,7 +67,10 @@ AC_ARG_WITH(ff3,[  --with-ff3=no,yes  If you want to enable the xulrunner 1.9 (F
 if test x$with_ff3 = xyes; then
   FF3_MODULES="libxul-unstable mozilla-plugin mozilla-js"
 
-  PKG_CHECK_EXISTS($FF3_MODULES,[with_ff3=yes],[with_ff3=no])
+  PKG_CHECK_EXISTS($FF3_MODULES,
+		   [with_ff3=yes],
+		   [with_ff3=no
+		    ff3_reason="(reason: missing FF3 development packages)"])
 
   if test x$with_ff3 = xyes; then
     AC_DEFINE([HAVE_GECKO_1_9],[1],[Gecko 1.9 support])
@@ -89,6 +96,7 @@ if test x$with_ff2 = xyes; then
 
   if test $mozilla_xpcom = "libxul-missing" -o $mozilla_plugin = "plugin-missing"; then
     with_ff2=no
+    ff2_reason="(reason: missing FF2 development packages)"
   else
     PKG_CHECK_MODULES(FF2,[$mozilla_xpcom $mozilla_plugin])
     dnl Strip out problem libraries (should already be in process space)
@@ -254,10 +262,10 @@ if test x$with_alsa = xyes; then
     PKG_CHECK_MODULES(ALSA,alsa)
   else
     with_alsa=no
-    alsa_reason="(could not find alsa development package)"
+    alsa_reason="(reason: could not find alsa development package)"
   fi
 else
-  alsa_reason="(disabled at configure time)"
+  alsa_reason="(reason: disabled at configure time)"
 fi
 AM_CONDITIONAL(INCLUDE_ALSA,test x$with_alsa = xyes)
 
@@ -268,10 +276,10 @@ if test x$with_pulseaudio = xyes; then
     PKG_CHECK_MODULES(PULSEAUDIO,libpulse)
   else
     with_pulseaudio=no
-    pulseaudio_reason="(could not find libpulse development package)"
+    pulseaudio_reason="(reason: could not find libpulse development package)"
   fi
 else
-  pulseaudio_reason="(disabled at configure time)"
+  pulseaudio_reason="(reason: disabled at configure time)"
 fi
 AM_CONDITIONAL(INCLUDE_PULSEAUDIO,test x$with_pulseaudio = xyes)
 
@@ -287,20 +295,26 @@ dnl
 with_testing=yes
 if test x$with_ff3 = xyes; then
   PKG_CHECK_MODULES(XULRUNNER,[mozilla-gtkmozembed mozilla-js],,
-		  [with_testing=no])
+		  [with_testing=no
+		   testing_reason="(reason: failed to find FF3 development packages)"])
 elif test x$with_ff2 = xyes; then
   PKG_CHECK_MODULES(XULRUNNER,xulrunner-gtkmozembed,,
-		  [with_testing=no])
+		  [with_testing=no
+		   testing_reason="(reason: failed to find FF2 development packages)"])
 fi
 
 PKG_CHECK_MODULES(XTST,xtst >= 1.0,,
-		  [with_testing=no])
+		  [with_testing=no
+		   testing_reason="(reason: failed to find xtst >= 1.0)"])
 PKG_CHECK_MODULES(IMAGEMAGICK,ImageMagick++ >= 6.3.5,,
-		  [with_testing=no])
+		  [with_testing=no
+		   testing_reason="(reason: failed to find ImageMagick++ >= 6.3.5)"])
 PKG_CHECK_MODULES(DBUS_GLIB,dbus-glib-1 >= 0.60,,
-		  [with_testing=no])
+		  [with_testing=no
+		   testing_reason="(reason: failed to find dbus-glib-1 >= 0.60)"])
 PKG_CHECK_MODULES(NDESK_DBUS,ndesk-dbus-1.0 >= 0.6.0,,
-		  [with_testing=no])
+		  [with_testing=no
+		   testing_reason="(reason: failed to find ndesk-dbus-1.0 >= 0.6.0)"])
 AM_CONDITIONAL(INCLUDE_TESTING,test x$with_testing = xyes)
 
 dnl
@@ -309,9 +323,11 @@ dnl
 with_performance=yes
 if test x$with_ff3 = xyes; then
   PKG_CHECK_MODULES(XULRUNNER,[mozilla-gtkmozembed mozilla-js],,
-		  [with_performance=no])
+		  [with_performance=no
+		   performance_reason="(reason: failed to find FF3 development packages)"])
 elif test x$with_ff2 = xyes; then
   with_performance=no
+  testing_reason="(reason: performance suite requires FF3)"
 fi
 AM_CONDITIONAL(INCLUDE_PERFORMANCE,test x$with_performance = xyes)
 
@@ -575,21 +591,30 @@ perf/Makefile
 
 # general configuration info
 cat <<EOF
-Moonlight configuration:
+Moonlight configuration
+=======================
 
-	Support for ffmpeg: $with_ffmpeg $ffmpeg_warning
-	Support for alsa: $with_alsa $alsa_reason
-	Support for pulseaudio: $with_pulseaudio $pulseaudio_reason
-	Support for running the test harness: $with_testing
-	Support for running the performance suite: $with_performance
+  General configuration:
 	Using cairo: $with_cairo
+	Test Harness: $with_testing $testing_reason
+	Performance Suite: $with_performance $performance_reason
+EOF
+
+# media info
+cat <<EOF
+
+  Media Support: $media_warning
+	FFmpeg: $with_ffmpeg $ffmpeg_reason
+	Alsa: $with_alsa $alsa_reason
+	Pulseaudio: $with_pulseaudio $pulseaudio_reason
 EOF
 
 # silverlight version info
 cat <<EOF
-	Support for Silverlight 1.0: yes
-	  Silverlight 1.0 bug compatibility: $with_compatibility_bugs
-	Support for Silverlight 2.0 (managed code): $managed_code $managed_reason
+
+  Silverlight Support:
+	Silverlight 1.0: yes (bug compatibility: $with_compatibility_bugs)
+	Silverlight 2.0 (managed code): $managed_code $managed_reason
 EOF
 
 if test x$managed_code = xyes; then
@@ -601,14 +626,16 @@ fi
 
 # plugin installer/bridge info
 cat <<EOF
-	Support for Firefox: $with_mozilla
+
+  Browser Support:
+	Firefox: $with_mozilla
 EOF
 
 if test x$with_mozilla = xyes; then
 cat <<EOF
-          Support for plugin installer: $user_plugin
-          Support for Gecko 1.8 (Firefox 2): $with_ff2
-          Support for Gecko 1.9 (Firefox 3): $with_ff3
+          Plugin Installer (.xpi): $user_plugin
+          Gecko 1.8 (Firefox 2): $with_ff2 $ff2_reason
+          Gecko 1.9 (Firefox 3): $with_ff3 $ff3_reason
 EOF
 fi
 

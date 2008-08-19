@@ -1,3 +1,7 @@
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: beautify the configuration output.
+
 2008-08-02  Miguel de Icaza  <miguel@novell.com>
 
 	* tools/mxap/mxap.cs: Use NDesk.GetOptions instead of another
