@@ -76,6 +76,9 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 	pthread_mutexattr_settype (&attribs, PTHREAD_MUTEX_RECURSIVE);
 	pthread_mutex_init (&mutex, &attribs);
 	pthread_mutexattr_destroy (&attribs);
+	
+	if (channels != 1 && channels != 2)
+		SetState (AudioError);
 }
 
 AudioSource::~AudioSource ()
