@@ -21,12 +21,13 @@ class TypeInfo : MemberInfo {
 	private bool? is_abstract;
 	
 	public TypeReference Base; // The parent type
-	public bool IsStruct; // class or struct
+	public bool IsStruct;
+	public bool IsClass;
+	public bool IsEnum;
 	public int TotalEventCount;
 
 	public bool Include; // Force inclusion of this type into the type system (for manual types, char, point[], etc)
 	public bool IsValueType;
-	public bool IsEnum;
 	
 	public bool IsAbstract {
 		get {

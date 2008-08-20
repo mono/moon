@@ -485,8 +485,10 @@ class Generator {
 				prop_type_str = "const char *"; 
 				value_str = "String";
 				break;
-			default: 
+			default:
 				prop_type_str = prop_type.Name; 
+				if (prop_type.IsClass)
+					prop_type_str += " *";
 				value_str = prop_type.Name;
 				break;
 			}
@@ -594,7 +596,7 @@ class Generator {
 		type.IsPublic = tokenizer.Accept (Token2Type.Identifier, "public");
 
 		if (tokenizer.Accept (Token2Type.Identifier, "class")) {
-			type.IsStruct = false;
+			type.IsClass = true;
 		} else if (tokenizer.Accept (Token2Type.Identifier, "struct")) {
 			type.IsStruct = true;
 			type.IsValueType = true;
