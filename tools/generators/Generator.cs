@@ -475,6 +475,7 @@ class Generator {
 			bool both = field.Annotations.ContainsKey ("GenerateAccessors");
 			bool setter = both || field.Annotations.ContainsKey ("GenerateSetter");
 			bool getter = both || field.Annotations.ContainsKey ("GenerateGetter");
+			bool is_attached = field.IsDPAttached;
 			bool nullable_setter = setter && field.IsDPNullable;
 			bool doing_nullable_setter = false;
 			
@@ -501,13 +502,11 @@ class Generator {
 				break;
 			case "bool":
 				prop_type_str = prop_type.Name;
-				value_str = prop_type.Name;
+				value_str = "Bool";
 				prop_default = "false";
 				break;
 			default:
 				prop_type_str = prop_type.Name; 
-				if (prop_type.IsClass)
-					prop_type_str += " *";
 				value_str = prop_type.Name;
 				break;
 			}
@@ -519,16 +518,30 @@ class Generator {
 			
 			if (getter) {
 				text.Append (prop_type_str);
-				if (field.IsDPNullable)
+				if (field.IsDPNullable || (prop_type.IsClass || prop_type.IsStruct))
 					text.Append (" *");
 				text.AppendLine ();
 				text.Append (field.ParentType.Name);
 				text.Append ("::Get");
 				text.Append (field.GetDependencyPropertyName ());
-				text.AppendLine (" ()");
+				if (is_attached)
+					text.AppendLine (" (DependencyObject *obj)");
+				else
+					text.AppendLine (" ()");
 				text.AppendLine ("{");
-				
-				text.Append ("\tValue *value = GetValue (");
+
+				text.AppendLine ("\tValue *value = NULL;");
+				if (is_attached) {
+					text.AppendLine ("\tif (obj) ");
+					text.Append ("\t");
+				}
+
+				text.Append ("\tvalue = ");
+				if (is_attached)
+					text.Append ("obj");
+				else
+					text.Append ("this");
+				text.Append ("->DependencyObject::GetValue (");
 				text.Append (field.ParentType.Name);
 				text.Append ("::");
 				text.Append (field.Name);
@@ -540,21 +553,27 @@ class Generator {
 					text.Append ("(");
 					text.Append (prop_type.Name);
 					text.Append (") 0");
-				} else if (!field.IsDPNullable && (prop_type.IsStruct || prop_default != null)) {
+				} else if (!field.IsDPNullable && (/*prop_type.IsStruct || */prop_default != null)) {
 					if (string.IsNullOrEmpty (prop_default))
-						throw new NotImplementedException ("Generation of DependencyProperties with struct values");
+						throw new NotImplementedException (string.Format ("Generation of DependencyProperties with struct values ({0}.{1})", field.ParentType.Name, field.Name));
 					text.Append (prop_default);
 				} else {
 					text.Append ("NULL");
 				}
 				text.AppendLine (";");
-				
-				text.Append ("\treturn value->As");
-				if (field.IsDPNullable)
-					text.Append ("Nullable");
-				text.Append (value_str);
-				text.AppendLine (" ();");
-			
+
+				if (prop_type.IsEnum) {
+					text.Append ("\treturn (");
+					text.Append (prop_type.Name);
+					text.AppendLine (")value->AsInt32();");
+				}
+				else {
+					text.Append ("\treturn value->As");
+					if (field.IsDPNullable && !(prop_type.IsStruct || prop_type.IsClass))
+						text.Append ("Nullable");
+					text.Append (value_str);
+					text.AppendLine (" ();");
+				}
 				text.AppendLine ("}");
 				text.AppendLine ();
 			}
@@ -566,36 +585,70 @@ class Generator {
 				text.Append ("::Set");
 				text.Append (field.GetDependencyPropertyName ());
 				text.Append (" (");
+				if (is_attached)
+					text.Append ("DependencyObject *obj, ");
+				if (!nullable_setter && (prop_type.IsClass || prop_type.IsStruct))
+					prop_type_str += " *";
 				text.Append (prop_type_str);
 				text.AppendLine (" value)");
 				
 				text.AppendLine ("{");
+				if (is_attached)
+					text.AppendLine ("\tif (obj == NULL) return;");
 				if (doing_nullable_setter) {
 					text.AppendLine ("\tif (value == NULL)");
-					text.Append ("\t\tSetValue (");
+					text.Append ("\t\t");
+					if (is_attached)
+						text.Append ("obj");
+					else
+						text.Append ("this");
+					text.Append ("->DependencyObject::SetValue (");
 					text.Append (field.ParentType.Name);
 					text.Append ("::");
 					text.Append (field.Name);
 					text.AppendLine (", Value (NULL));");
 					text.AppendLine ("\telse");
-					text.Append ("\t\tSetValue (");
+					text.Append ("\t\t");
+					if (is_attached)
+						text.Append ("obj");
+					else
+						text.Append ("this");
+					text.Append ("->DependencyObject::SetValue (");
 					text.Append (field.ParentType.Name);
 					text.Append ("::");
 					text.Append (field.Name);
 					text.AppendLine (", Value (*value));");
 				} else {
-					text.Append ("\tSetValue (");
+					if (!nullable_setter && prop_type.IsStruct)
+						text.AppendLine ("\tif (value == NULL) return;");
+					text.Append ("\t");
+					if (is_attached)
+						text.Append ("obj");
+					else
+						text.Append ("this");
+					text.Append ("->DependencyObject::SetValue (");
 					text.Append (field.ParentType.Name);
 					text.Append ("::");
 					text.Append (field.Name);
-					text.AppendLine (", Value (value));");
+					if (prop_type.Name == "guint64" || prop_type.Name == "TimeSpan") {
+						text.Append (", Value (value, Type::");
+						text.Append (prop_type.KindName);
+						text.AppendLine ("));");
+					}
+					else if (!nullable_setter && prop_type.IsStruct) {
+						text.AppendLine (", Value (*value));");
+					}
+					else {
+						text.AppendLine (", Value (value));");
+					}
 				}
 				text.AppendLine ("}");
 				text.AppendLine ();
 			}
 			
 			if (nullable_setter) {
-				prop_type_str += " *";
+				if (!prop_type.IsStruct)
+					prop_type_str += " *";
 				nullable_setter = false;
 				doing_nullable_setter = true;
 				goto do_nullable_setter;
