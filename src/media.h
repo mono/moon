@@ -14,14 +14,9 @@
 #define __MEDIA_H__
 
 #include <glib.h>
-
-G_BEGIN_DECLS
-
 #include <gdk/gdkpixbuf.h>
 
 #include "mplayer.h"
-#include "enums.h"
-#include "clock.h"
 #include "value.h"
 #include "brush.h"
 #include "frameworkelement.h"
@@ -543,7 +538,5 @@ class MediaElement : public MediaBase {
 	void SetVolume (double volume);
 	double GetVolume ();
 };
-
-G_END_DECLS
 
 #endif /* __MEDIA_H__ */

@@ -1,5 +1,9 @@
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.h: Remove G_BEGIN/END_DECLS and two unnecessary #includes.
+
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp, media.h, runtime.cpp: Remove media_init, just make
 	  runtime_init call Media::Initialize directly.
 
