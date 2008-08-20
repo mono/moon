@@ -126,7 +126,7 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		// Value *collection_iterator_get_current (CollectionIterator *instance, int *error);
-		public extern static IntPtr collection_iterator_get_current (IntPtr instance, IntPtr error);
+		public extern static IntPtr collection_iterator_get_current (IntPtr instance, out int error);
 
 		[DllImport ("moon")]
 		// int collection_iterator_next (CollectionIterator *instance);
