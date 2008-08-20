@@ -886,18 +886,6 @@ UIElement::GetTriggers ()
 	return value ? value->AsTriggerCollection () : NULL;
 }
 
-void
-UIElement::SetZIndex (int zindex)
-{
-	SetValue (UIElement::ZIndexProperty, Value (zindex));
-}
-
-int
-UIElement::GetZIndex ()
-{
-	return GetValue (UIElement::ZIndexProperty)->AsInt32 ();
-}
-
 TimeManager *
 UIElement::GetTimeManager ()
 {

@@ -10,6 +10,7 @@
 
 #include <config.h>
 
+#include "canvas.h"
 #include "geometry.h"
 #include "panel.h"
 #include "brush.h"
@@ -612,7 +613,7 @@ Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Property
 {
 	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
 		// if a child changes its ZIndex property we need to resort our Children
-		if (args->property == UIElement::ZIndexProperty) {
+		if (args->property == Canvas::ZIndexProperty) {
 			((UIElement *) obj)->Invalidate ();
 			if (GetSurface ()) {
 				// queue a resort based on ZIndex

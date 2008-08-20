@@ -32,6 +32,8 @@ class Canvas : public Panel {
 	static DependencyProperty *LeftProperty;
  	/* @PropertyType=double,DefaultValue=0.0,Attached */
 	static DependencyProperty *TopProperty;
+	/* @PropertyType=gint32,DefaultValue=0,Attached*/
+	static DependencyProperty *ZIndexProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Canvas ();
@@ -55,11 +57,8 @@ class Canvas : public Panel {
 	static void SetTop (UIElement *item, double top);
 	static double GetTop (UIElement *item);
 	
-	void SetLeft (double left);
-	double GetLeft ();
-	
-	void SetTop (double top);
-	double GetTop ();
+	static void SetZIndex (UIElement *item, int zindex);
+	static int GetZIndex (UIElement *item);
 };
 
 #endif /* __MOON_CANVAS_H__ */

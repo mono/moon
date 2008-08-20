@@ -1,5 +1,13 @@
 2008-08-20  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* canvas.h, canvas.cpp:
+	* uielement.h, uielement.cpp: move the ZIndexProperty and Get/Set-ers
+	from uielement to Canvas. Drop the non-static Get/Set-Top/Left ()
+
+	* panel.cpp, collection.cpp: related changes.
+
+2008-08-20  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* uielement.h: change the generator instructions so the 
 	NameProperty is generated in FrameworkElement.
 

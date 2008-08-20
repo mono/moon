@@ -376,8 +376,6 @@ public:
 	static DependencyProperty *RenderTransformProperty;
  	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible */
 	static DependencyProperty *VisibilityProperty;
- 	/* @PropertyType=gint32,DefaultValue=0,ManagedAccess=Internal*/
-	static DependencyProperty *ZIndexProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
  	/* @PropertyType=gint32,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal */
@@ -411,9 +409,6 @@ public:
 	Point *GetRenderTransformOrigin ();
 	
 	TriggerCollection *GetTriggers ();
-	
-	void SetZIndex (int zindex);
-	int GetZIndex ();
 	
 	// Events you can AddHandler to
 	const static int LoadedEvent;

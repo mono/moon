@@ -73,6 +73,7 @@ dependency_property_g_init (void)
 	Brush::TransformProperty = DependencyProperty::Register (Type::BRUSH, "Transform", Type::TRANSFORM);
 	Canvas::LeftProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, true, false);
 	Canvas::TopProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, true, false);
+	Canvas::ZIndexProperty = DependencyProperty::RegisterFull (Type::CANVAS, "ZIndex", new Value (0), Type::INT32, true, false);
 	Collection::CountProperty = DependencyProperty::Register (Type::COLLECTION, "Count", new Value (0));
 	ColorAnimation::ByProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "By", Type::COLOR);
 	ColorAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::COLORANIMATION, "From", Type::COLOR);
@@ -376,7 +377,6 @@ dependency_property_g_init (void)
 	UIElement::TagProperty = DependencyProperty::Register (Type::UIELEMENT, "Tag", Type::STRING);
 	UIElement::TriggersProperty = DependencyProperty::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
 	UIElement::VisibilityProperty = DependencyProperty::Register (Type::UIELEMENT, "Visibility", new Value (VisibilityVisible));
-	UIElement::ZIndexProperty = DependencyProperty::Register (Type::UIELEMENT, "ZIndex", new Value (0));
 #if SL_2_0
 
 	UserControl::ContentProperty = DependencyProperty::Register (Type::USERCONTROL, "Content", Type::UIELEMENT);
@@ -406,6 +406,7 @@ DependencyProperty *Brush::RelativeTransformProperty = NULL;
 DependencyProperty *Brush::TransformProperty = NULL;
 DependencyProperty *Canvas::LeftProperty = NULL;
 DependencyProperty *Canvas::TopProperty = NULL;
+DependencyProperty *Canvas::ZIndexProperty = NULL;
 DependencyProperty *Collection::CountProperty = NULL;
 DependencyProperty *ColorAnimation::ByProperty = NULL;
 DependencyProperty *ColorAnimation::FromProperty = NULL;
@@ -697,7 +698,6 @@ DependencyProperty *UIElement::ResourcesProperty = NULL;
 DependencyProperty *UIElement::TagProperty = NULL;
 DependencyProperty *UIElement::TriggersProperty = NULL;
 DependencyProperty *UIElement::VisibilityProperty = NULL;
-DependencyProperty *UIElement::ZIndexProperty = NULL;
 #if SL_2_0
 DependencyProperty *UserControl::ContentProperty = NULL;
 #endif

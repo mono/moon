@@ -128,25 +128,15 @@ Canvas::GetTop (UIElement *item)
 }
 
 void
-Canvas::SetLeft (double left)
+Canvas::SetZIndex (UIElement *item, int zindex)
 {
-	SetValue (Canvas::LeftProperty, Value (left));
+	item->SetValue (Canvas::ZIndexProperty, Value (zindex));
 }
 
-double
-Canvas::GetLeft ()
+int
+Canvas::GetZIndex (UIElement *item)
 {
-	return GetValue (Canvas::LeftProperty)->AsDouble ();
-}
+	Value *value = item->GetValue (Canvas::ZIndexProperty);
 
-void
-Canvas::SetTop (double top)
-{
-	SetValue (Canvas::TopProperty, Value (top));
-}
-
-double
-Canvas::GetTop ()
-{
-	return GetValue (Canvas::TopProperty)->AsDouble ();
+	return value ? value->AsInt32 () : 0;
 }

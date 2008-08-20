@@ -34,15 +34,6 @@ namespace System.Windows {
 		}
 	}
 
-	partial class DependencyObject {
-		internal static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
-
-		internal string Name {
-			get { return (string) GetValue (NameProperty); }
-			set { SetValue (NameProperty, value); }
-		}
-	}
-
 	partial class Deployment {
 		public static readonly DependencyProperty EntryPointAssemblyProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointAssembly", typeof (string));
 		public static readonly DependencyProperty EntryPointTypeProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointType", typeof (string));
@@ -104,6 +95,7 @@ namespace System.Windows {
 		public static readonly DependencyProperty MaxWidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MaxWidth", typeof (double));
 		public static readonly DependencyProperty MinHeightProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinHeight", typeof (double));
 		public static readonly DependencyProperty MinWidthProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "MinWidth", typeof (double));
+		public static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
 		internal static readonly DependencyProperty ResourcesProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Resources", typeof (ResourceDictionary));
 		public static readonly DependencyProperty StyleProperty = DependencyProperty.Lookup (Kind.FRAMEWORKELEMENT, "Style", typeof (Style));
 		public static readonly DependencyProperty TagProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Tag", typeof (object));
@@ -171,6 +163,11 @@ namespace System.Windows {
 			set { SetValue (MinWidthProperty, value); }
 		}
 
+		public string Name {
+			get { return (string) GetValue (NameProperty); }
+			internal set { SetValue (NameProperty, value); }
+		}
+
 		public ResourceDictionary Resources {
 			get { return (ResourceDictionary) GetValue (ResourcesProperty); }
 			internal set { SetValue (ResourcesProperty, value); }
@@ -225,7 +222,6 @@ namespace System.Windows {
 		public static readonly DependencyProperty RenderTransformOriginProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransformOrigin", typeof (Point));
 		public static readonly DependencyProperty RenderTransformProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransform", typeof (Transform));
 		public static readonly DependencyProperty VisibilityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Visibility", typeof (Visibility));
-		internal static readonly DependencyProperty ZIndexProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "ZIndex", typeof (int));
 
 		public Geometry Clip {
 			get { return (Geometry) GetValue (ClipProperty); }
@@ -261,11 +257,6 @@ namespace System.Windows {
 			get { return (Visibility) GetValue (VisibilityProperty); }
 			set { SetValue (VisibilityProperty, value); }
 		}
-
-		internal int ZIndex {
-			get { return (int) GetValue (ZIndexProperty); }
-			set { SetValue (ZIndexProperty, value); }
-		}
 	}
 }
 
@@ -273,6 +264,7 @@ namespace System.Windows.Controls {
 	partial class Canvas {
 		public static readonly DependencyProperty LeftProperty = DependencyProperty.Lookup (Kind.CANVAS, "Left", typeof (double));
 		public static readonly DependencyProperty TopProperty = DependencyProperty.Lookup (Kind.CANVAS, "Top", typeof (double));
+		public static readonly DependencyProperty ZIndexProperty = DependencyProperty.Lookup (Kind.CANVAS, "ZIndex", typeof (int));
 	}
 
 	partial class ColumnDefinition {

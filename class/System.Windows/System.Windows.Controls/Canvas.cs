@@ -59,12 +59,12 @@ namespace System.Windows.Controls {
 		
 		public static int GetZIndex (UIElement element)
 		{
-			return element.ZIndex;
+			return (int) element.GetValue (Canvas.ZIndexProperty);
 		}
 		
-		public static void SetZIndex (UIElement element, int value)
+		public static void SetZIndex (UIElement element, int zindex)
 		{
-			element.ZIndex = value;
+			element.SetValue (Canvas.ZIndexProperty, zindex);
 		}
 	}
 }

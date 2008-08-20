@@ -12,6 +12,7 @@
 #include <glib.h>
 #include <errno.h>
 
+#include "canvas.h"
 #include "collection.h"
 #include "geometry.h"
 #include "transform.h"
@@ -435,8 +436,8 @@ UIElementCollection::~UIElementCollection ()
 static int
 UIElementZIndexComparer (gconstpointer ui1, gconstpointer ui2)
 {
-	int z1 = (*((UIElement **) ui1))->GetZIndex ();
-	int z2 = (*((UIElement **) ui2))->GetZIndex ();
+	int z1 = Canvas::GetZIndex (*((UIElement **) ui1));
+	int z2 = Canvas::GetZIndex (*((UIElement **) ui2));
 	
 	return z1 - z2;
 }
