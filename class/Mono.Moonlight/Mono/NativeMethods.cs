@@ -83,9 +83,6 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static void value_free_value (ref Value val);
 		
-		[DllImport("moon")]
-		public extern static void visual_set_surface (IntPtr visual, IntPtr surface);
-
 #region Transforms
 		[DllImport("moon")]
 		public extern static void general_transform_transform_point (IntPtr handle, ref UnmanagedPoint p, ref UnmanagedPoint r);
