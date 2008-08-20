@@ -66,6 +66,12 @@ enum StyleSimulations {
 	StyleSimulationsNone
 };
 
+enum TextAlignment {
+	TextAlignmentCenter,
+	TextAlignmentLeft,
+	TextAlignmentRight
+};
+
 // TextDecorations would appear to be a collection of bit flags rather
 // than a normal enumeration of values
 enum TextDecorations {
@@ -241,12 +247,6 @@ enum ModifierKeys {
 	ModifierKeyShift    = (1 << 2),
 	ModifierKeyWindows  = (1 << 3),
 	ModifierKeyApple    = (1 << 3)
-};
-
-enum TextAlignment {
-	TextAlignmentCenter,
-	TextAlignmentLeft,
-	TextAlignmentRight
 };
 
 enum VerticalAlignment {

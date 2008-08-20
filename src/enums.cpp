@@ -211,6 +211,15 @@ static enum_map_t tablet_device_type_map [] = {
 	END_MAPPING
 };
 
+#if SL_2_0
+static enum_map_t text_alignment_map [] = {
+	MAP_ENUM (TextAlignment, Center),
+	MAP_ENUM (TextAlignment, Left),
+	MAP_ENUM (TextAlignment, Right),
+	END_MAPPING
+};
+#endif
+
 static enum_map_t text_decorations_map [] = {
 	MAP_ENUM (TextDecorations, None),
 	MAP_ENUM (TextDecorations, Underline),
@@ -291,6 +300,7 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "LineStackingStrategy", line_stacking_strategy_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalAlignment", horizontal_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "VerticalAlignment", vertical_alignment_map);
+	g_hash_table_insert (enum_map, (char *) "TextAlignment", text_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "Orientation", orientation_map);
 #endif
 }

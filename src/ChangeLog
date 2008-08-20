@@ -1,6 +1,6 @@
 2008-08-20  Jeffrey Stedfast  <fejj@novell.com>
 
-	* enums.cpp|h: Added LineStackingStrategy enum.
+	* enums.cpp|h: Added LineStackingStrategy and TextAlignment enums.
 
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
