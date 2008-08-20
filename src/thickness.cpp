@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "collection.h"
+#include "utils.h"
 #include "thickness.h"
 
 Thickness*

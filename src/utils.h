@@ -36,6 +36,8 @@ int CopyFileTo (const char *filename, int fd);
 cairo_t *measuring_context_create (void);
 void     measuring_context_destroy (cairo_t *cr);
 
+GArray *double_garray_from_str (const char *s, gint max);
+
 G_END_DECLS
 
 class TextStream {

@@ -23,8 +23,10 @@ G_BEGIN_DECLS
 #include "window.h"
 #include "runtime.h"
 
+/* @Namespace=System.Windows */
 class MoonWindowGtk : public MoonWindow {
 public:
+	/* @GenerateCBinding,GeneratePInvoke */
 	MoonWindowGtk (bool fullscreen, int w = -1, int h = -1);
 
 	virtual ~MoonWindowGtk ();
@@ -42,6 +44,7 @@ public:
 	virtual void GrabFocus ();
 	virtual bool HasFocus ();
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	GtkWidget* GetWidget() { return widget; }
 
 	virtual bool IsFullScreen () { return fullscreen; }
@@ -69,9 +72,6 @@ private:
 	void InitializeNormal ();
 	void InitializeCommon ();
 };
-
-MoonWindowGtk* moon_window_gtk_new (bool fullscreen, int width, int height);
-GtkWidget*     moon_window_gtk_get_widget (MoonWindowGtk *window);
 
 G_END_DECLS
 

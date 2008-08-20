@@ -1764,8 +1764,7 @@ keytime_from_str (const char *str, KeyTime *res)
 bool
 key_spline_from_str (const char *str, KeySpline **res)
 {	
-	PointCollection *pts = point_collection_from_str (str);
-
+	PointCollection *pts = PointCollection::FromStr (str);
 
 	if (!pts)
 		return false;
@@ -1785,7 +1784,7 @@ key_spline_from_str (const char *str, KeySpline **res)
 Matrix *
 matrix_from_str (const char *str)
 {
-	DoubleCollection *values = double_collection_from_str (str);
+	DoubleCollection *values = DoubleCollection::FromStr (str);
 	Matrix *matrix;
 	
 	if (!values)
@@ -2461,7 +2460,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	case Type::POINT: {
 		Point p;
 
-		if (!point_from_str (str, &p))
+		if (!Point::FromStr (str, &p))
 			return false;
 
 		*v = new Value (p);
@@ -2470,19 +2469,19 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	case Type::RECT: {
 		Rect rect;
 
-		if (!rect_from_str (str, &rect))
+		if (!Rect::FromStr (str, &rect))
 			return false;
 
 		*v = new Value (rect);
 		break;
 	}
 	case Type::DOUBLE_COLLECTION: {
-		DoubleCollection *doubles = double_collection_from_str (str);
+		DoubleCollection *doubles = DoubleCollection::FromStr (str);
 		*v = new Value (doubles);
 		break;
 	}
 	case Type::POINT_COLLECTION: {
-		PointCollection *points = point_collection_from_str (str);
+		PointCollection *points = PointCollection::FromStr (str);
 		*v = new Value (points);
 		break;
 	}

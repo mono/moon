@@ -154,12 +154,18 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 	return points;
 }
 
-ModifierKeys Keyboard::Modifiers = ModifierKeyNone;
+ModifierKeys Keyboard::modifiers = ModifierKeyNone;
 
 ModifierKeys
-keyboard_get_modifiers (void)
+Keyboard::GetModifiers ()
 {
-	return Keyboard::Modifiers;
+	return modifiers;
+}
+
+void
+Keyboard::SetModifiers (ModifierKeys m)
+{
+	modifiers = m;
 }
 
 KeyEventArgs::KeyEventArgs (GdkEventKey *event)

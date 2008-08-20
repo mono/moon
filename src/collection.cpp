@@ -55,6 +55,12 @@ Collection::GetCount ()
 	return GetValue (Collection::CountProperty)->AsInt32 ();
 }
 
+CollectionIterator *
+Collection::GetIterator ()
+{
+	return new CollectionIterator (this);
+}
+
 int
 Collection::Add (Value *value)
 {
@@ -457,77 +463,8 @@ UIElementCollection::Clear ()
 	DependencyObjectCollection::Clear ();
 }
 
-
-CollectionIterator *
-collection_get_iterator (Collection *collection)
-{
-	return new CollectionIterator (collection);
-}
-
-int
-collection_iterator_next (CollectionIterator *iterator)
-{
-	if (iterator->generation != iterator->collection->Generation ())
-		return -1;
-	
-	iterator->index++;
-	
-	if (iterator->index >= iterator->collection->GetCount ())
-		return 0;
-	
-	return 1;
-}
-
-bool
-collection_iterator_reset (CollectionIterator *iterator)
-{
-	if (iterator->generation != iterator->collection->Generation ())
-		return false;
-	
-	iterator->index = -1;
-	
-	return true;
-}
-
-Value *
-collection_iterator_get_current (CollectionIterator *iterator, int *error)
-{
-	if (iterator->generation != iterator->collection->Generation ()) {
-		*error = 1;
-		return NULL;
-	}
-	
-	if (iterator->index < 0) {
-		*error = 1;
-		return NULL;
-	}
-	
-	*error = 0;
-	
-	return iterator->collection->GetValueAt (iterator->index);
-}
-
-void
-collection_iterator_destroy (CollectionIterator *iterator)
-{
-	delete iterator;
-}
-
-Collection *
-collection_new (Type::Kind kind)
-{
-	Type *t = Type::Find (kind);
-	
-	if (!t->IsSubclassOf (Type::COLLECTION)) {
-		g_warning ("create_collection passed non-collection type");
-		return NULL;
-	}
-	
-	return (Collection *) t->CreateInstance();
-}
-
 DoubleCollection *
-double_collection_from_str (const char *s)
+DoubleCollection::FromStr (const char *s)
 {
 	GArray *values = double_garray_from_str (s, 0);
 
@@ -545,7 +482,7 @@ double_collection_from_str (const char *s)
 }
 
 PointCollection *
-point_collection_from_str (const char *s)
+PointCollection::FromStr (const char *s)
 {
 	int i, j, n = 0;
 	GArray *values = double_garray_from_str (s, 0);
@@ -568,33 +505,77 @@ point_collection_from_str (const char *s)
 	return points;
 }
 
-GArray *double_garray_from_str (const char *s, gint max)
+CollectionIterator::CollectionIterator (Collection *c)
 {
-	char *next = (char *)s;
-	GArray *values = g_array_sized_new (false, true, sizeof (double), max > 0 ? max : 16);
-	double coord = 0.0;
-	guint end = max > 0 ? max : G_MAXINT;
+	generation = c->Generation ();
+	collection = c;
+	collection->ref ();
+	index = -1;
+}
 
-	while (next && values->len < end) {
-		while (g_ascii_isspace (*next) || *next == ',')
-			next = g_utf8_next_char (next);
-		
-		if (next) {
-			errno = 0;
-			char *prev = next;
-			coord = g_ascii_strtod (prev, &next);
-			if (errno != 0 || next == prev)
-				goto error;
+CollectionIterator::~CollectionIterator ()
+{
+	collection->unref ();
+}
 
-			g_array_append_val (values, coord);
-		}
+int
+CollectionIterator::Next ()
+{
+	if (generation != collection->Generation ())
+		return -1;
+	
+	index++;
+	
+	if (index >= collection->GetCount ())
+		return 0;
+	
+	return 1;
+}
+
+bool
+CollectionIterator::Reset()
+{
+	if (generation != collection->Generation ())
+		return false;
+	
+	index = -1;
+	
+	return true;
+}
+
+Value *
+CollectionIterator::GetCurrent (int *error)
+{
+	if (generation != collection->Generation ()) {
+		*error = 1;
+		return NULL;
 	}
-
-error:
-	while (values->len < (guint) max) {
-		coord = 0.0;
-		g_array_append_val (values, coord);
+	
+	if (index < 0) {
+		*error = 1;
+		return NULL;
 	}
+	
+	*error = 0;
+	
+	return collection->GetValueAt (index);
+}
 
-	return values;
+void
+CollectionIterator::Destroy (CollectionIterator *iterator)
+{
+	delete iterator;
+}
+
+Collection *
+collection_new (Type::Kind kind)
+{
+	Type *t = Type::Find (kind);
+	
+	if (!t->IsSubclassOf (Type::COLLECTION)) {
+		g_warning ("create_collection passed non-collection type");
+		return NULL;
+	}
+	
+	return (Collection *) t->CreateInstance();
 }

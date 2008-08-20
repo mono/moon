@@ -17,6 +17,7 @@
 #include "eventargs.h"
 #include "point.h"
 
+class CollectionIterator;
 
 //
 // Collection: provides a collection that we can monitor for
@@ -28,23 +29,7 @@
 /* @ManagedName=PresentationFrameworkCollection`1 */
 /* @ManagedDependencyProperties=Manual */
 class Collection : public DependencyObject {
- protected:
-	GPtrArray *array;
-	int generation;
-	
-	void EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
-	
-	virtual bool CanAdd (Value *value) { return true; }
-	virtual void AddedToCollection (Value *value) {}
-	virtual void RemovedFromCollection (Value *value) {}
-	
-	void SetCount (int count);
-	
-	Collection ();
-	virtual ~Collection ();
-	virtual void Dispose ();
-	
- public:
+public:
  	/* @PropertyType=gint32,DefaultValue=0 */
 	static DependencyProperty *CountProperty;
 	
@@ -55,7 +40,10 @@ class Collection : public DependencyObject {
 	
 	int Generation () { return generation; }
 	GPtrArray *Array () { return array; }
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	CollectionIterator *GetIterator ();
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetCount ();
 	
@@ -90,18 +78,28 @@ class Collection : public DependencyObject {
 	bool SetValueAtWithError (int index, Value *value, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool RemoveAtWithError (int index, MoonError *error);
+
+protected:
+	GPtrArray *array;
+	int generation;
+	
+	void EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
+	
+	virtual bool CanAdd (Value *value) { return true; }
+	virtual void AddedToCollection (Value *value) {}
+	virtual void RemovedFromCollection (Value *value) {}
+	
+	void SetCount (int count);
+	
+	Collection ();
+	virtual ~Collection ();
+	virtual void Dispose ();
+	
 };
 
 /* @Namespace=None */
 class DependencyObjectCollection : public Collection {
- protected:
-	virtual bool CanAdd (Value *value) { return value->AsDependencyObject ()->GetLogicalParent () == NULL; }
-	virtual void AddedToCollection (Value *value);
-	virtual void RemovedFromCollection (Value *value);
-	
-	virtual ~DependencyObjectCollection () {}
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObjectCollection () {}
 	
@@ -115,43 +113,63 @@ class DependencyObjectCollection : public Collection {
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
 	
 	void MergeNames (DependencyObject *new_obj);
+
+protected:
+	virtual bool CanAdd (Value *value) { return value->AsDependencyObject ()->GetLogicalParent () == NULL; }
+	virtual void AddedToCollection (Value *value);
+	virtual void RemovedFromCollection (Value *value);
+	
+	virtual ~DependencyObjectCollection () {}
 };
 
 /* @Namespace=System.Windows.Media */
 class DoubleCollection : public Collection {
- protected:
-	virtual ~DoubleCollection () {}
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DoubleCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::DOUBLE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DOUBLE; }
+
+	static DoubleCollection* FromStr (const char *str);
+
+protected:
+	virtual ~DoubleCollection () {}
 };
 
 /* @Namespace=System.Windows.Media */
 class PointCollection : public Collection {
- protected:
-	virtual ~PointCollection () {}
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	PointCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::POINT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::POINT; }
+
+	static PointCollection* FromStr (const char *str);
+
+protected:
+	virtual ~PointCollection () {}
 };
 
 class CollectionIterator {
- public:
-	CollectionIterator (Collection *c)
-	{
-		generation = c->Generation ();
-		collection = c;
-		index = -1;
-	}
-	
+public:
+	CollectionIterator (Collection *c);
+	~CollectionIterator ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	int Next ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool Reset ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value* GetCurrent (int *error);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	static void Destroy (CollectionIterator *iterator);
+
+private:
 	Collection *collection;
 	int generation;
 	int index;
@@ -233,16 +251,6 @@ class UIElementCollection : public DependencyObjectCollection {
 G_BEGIN_DECLS
 
 Collection *collection_new (Type::Kind kind);
-
-CollectionIterator *collection_get_iterator (Collection *collection);
-int collection_iterator_next (CollectionIterator *iterator);
-bool collection_iterator_reset (CollectionIterator *iterator);
-void collection_iterator_destroy (CollectionIterator *iterator);
-Value *collection_iterator_get_current (CollectionIterator *iterator, int *error);
-
-DoubleCollection *double_collection_from_str (const char *s);
-PointCollection *point_collection_from_str (const char *s);
-GArray *double_garray_from_str (const char *s, gint max);
 
 G_END_DECLS
 

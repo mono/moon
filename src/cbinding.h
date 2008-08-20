@@ -39,6 +39,7 @@
 #include "type.h"
 #include "uielement.h"
 #include "usercontrol.h"
+#include "window-gtk.h"
 
 G_BEGIN_DECLS
 
@@ -114,6 +115,9 @@ int collection_get_count (Collection *instance);
 /* @GeneratePInvoke */
 Type::Kind collection_get_element_type (Collection *instance);
 
+/* @GeneratePInvoke */
+CollectionIterator *collection_get_iterator (Collection *instance);
+
 #if SL_2_0
 /* @GeneratePInvoke */
 Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
@@ -137,6 +141,21 @@ bool collection_remove_at_with_error (Collection *instance, int index, MoonError
 /* @GeneratePInvoke */
 bool collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error);
 #endif
+
+/**
+ * CollectionIterator
+ **/
+/* @GeneratePInvoke */
+void collection_iterator_destroy (CollectionIterator *iterator);
+
+/* @GeneratePInvoke */
+Value *collection_iterator_get_current (CollectionIterator *instance, int *error);
+
+/* @GeneratePInvoke */
+int collection_iterator_next (CollectionIterator *instance);
+
+/* @GeneratePInvoke */
+bool collection_iterator_reset (CollectionIterator *instance);
 
 /**
  * ColorAnimation
@@ -508,6 +527,12 @@ Inline *inline_new (void);
 InlineCollection *inline_collection_new (void);
 
 /**
+ * Keyboard
+ **/
+/* @GeneratePInvoke */
+ModifierKeys keyboard_get_modifiers (void);
+
+/**
  * KeyEventArgs
  **/
 /* @GeneratePInvoke */
@@ -631,6 +656,15 @@ void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallb
 
 /* @GeneratePInvoke */
 void media_element_stop (MediaElement *instance);
+
+/**
+ * MoonWindowGtk
+ **/
+/* @GeneratePInvoke */
+GtkWidget *moon_window_gtk_get_widget (MoonWindowGtk *instance);
+
+/* @GeneratePInvoke */
+MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h);
 
 /**
  * MouseEventArgs

@@ -368,15 +368,3 @@ MoonWindowGtk::unrealized (GtkWidget *widget, gpointer user_data)
 
 	return true;
 }
-
-MoonWindowGtk*
-moon_window_gtk_new (bool fullscreen, int width, int height)
-{
-	return new MoonWindowGtk (fullscreen, width, height);
-}
-
-GtkWidget*
-moon_window_gtk_get_widget (MoonWindowGtk *window)
-{
-	return window->GetWidget();
-}

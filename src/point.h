@@ -14,8 +14,6 @@
 #include <glib.h>
 #include <cairo.h>
 
-#include "collection.h"
-
 /* @IncludeInKinds */
 struct Point {
 public:
@@ -53,12 +51,13 @@ public:
 	}
 
 	Point Transform (cairo_matrix_t *matrix);
+
+	//
+	// FromStr
+	//   Parses @s and return a new point in @p.  Returns true if
+	//   this was successful, false otherwise.
+	//
+	static bool FromStr (const char *s, Point *p);
 };
-
-G_BEGIN_DECLS
-
-bool point_from_str (const char *s, Point *p);
-
-G_END_DECLS
 
 #endif /* __MOON_POINT_H__ */

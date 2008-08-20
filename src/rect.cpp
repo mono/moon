@@ -11,11 +11,11 @@
 #include <config.h>
 #include <stdlib.h>
 
-#include "collection.h"
 #include "rect.h"
+#include "utils.h"
 
 bool
-rect_from_str (const char *s, Rect *r)
+Rect::FromStr (const char *s, Rect *r)
 {
 	GArray *values = double_garray_from_str (s, 4);
 

@@ -143,13 +143,13 @@ private:
 
 class Keyboard {
 public:
-	static ModifierKeys Modifiers;
+	/* @GenerateCBinding,GeneratePInvoke */
+	static ModifierKeys GetModifiers ();
+
+	static ModifierKeys SetModifiers (ModifierKeys m);
+
+private:
+	static ModifierKeys modifiers;
 };
-
-G_BEGIN_DECLS
-
-ModifierKeys keyboard_get_modifiers (void);
-
-G_END_DECLS
 
 #endif /* __MOON_EVENTARGS_H__ */

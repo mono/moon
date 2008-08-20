@@ -152,6 +152,16 @@ collection_get_element_type (Collection *instance)
 }
 
 
+CollectionIterator *
+collection_get_iterator (Collection *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetIterator ();
+}
+
+
 #if SL_2_0
 Value *
 collection_get_value_at_with_error (Collection *instance, int index, MoonError *error)
@@ -223,6 +233,47 @@ collection_set_value_at_with_error (Collection *instance, int index, Value *valu
 	return instance->SetValueAtWithError (index, value, error);
 }
 #endif
+
+
+/**
+ * CollectionIterator
+ **/
+void
+collection_iterator_destroy (CollectionIterator *iterator)
+{
+	CollectionIterator::Destroy (iterator);
+}
+
+
+Value *
+collection_iterator_get_current (CollectionIterator *instance, int *error)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetCurrent (error);
+}
+
+
+int
+collection_iterator_next (CollectionIterator *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->Next ();
+}
+
+
+bool
+collection_iterator_reset (CollectionIterator *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->Reset ();
+}
 
 
 /**
@@ -939,6 +990,16 @@ inline_collection_new (void)
 
 
 /**
+ * Keyboard
+ **/
+ModifierKeys
+keyboard_get_modifiers (void)
+{
+	return Keyboard::GetModifiers ();
+}
+
+
+/**
  * KeyEventArgs
  **/
 int
@@ -1179,6 +1240,26 @@ media_element_stop (MediaElement *instance)
 		return;
 	
 	instance->Stop ();
+}
+
+
+/**
+ * MoonWindowGtk
+ **/
+GtkWidget *
+moon_window_gtk_get_widget (MoonWindowGtk *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetWidget ();
+}
+
+
+MoonWindowGtk *
+moon_window_gtk_new (bool fullscreen, int w, int h)
+{
+	return new MoonWindowGtk (fullscreen, w, h);
 }
 
 

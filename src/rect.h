@@ -210,12 +210,13 @@ struct Rect {
 	{
 		return Point (x + w, y + h);
 	}
+
+	//
+	// FromStr
+	//   Parses @s and return a new rect in @r.  Returns true if
+	//   this was successful, false otherwise.
+	//
+	static bool FromStr (const char *s, Rect *r);
 };
-
-G_BEGIN_DECLS
-
-bool rect_from_str (const char *s, Rect *r);
-
-G_END_DECLS
 
 #endif /* __MOON_RECT_H__ */

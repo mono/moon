@@ -14,9 +14,10 @@
 #include <glib.h>
 
 #include "point.h"
+#include "utils.h"
 
 bool
-point_from_str (const char *s, Point *p)
+Point::FromStr (const char *s, Point *p)
 {
 	GArray *values = double_garray_from_str (s, 2);
 

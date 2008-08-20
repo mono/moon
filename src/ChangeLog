@@ -1,5 +1,40 @@
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
+	* eventargs.h, eventargs.cpp (class Keyboard): make this more of a
+	real class, and remove the implementation of
+	keyboard_get_modifiers.  instead, provide a c++ method (both a
+	getter and setter) and annotate the Getter with
+	GenerateCBinding/GeneratePInvoke.
+
+	* collection.h, collection.cpp: reorder the class decls (why do
+	people put private first?) and make CollectionIterator a real
+	class, with annotated methods.  Also, move
+	double_collection_from_str and point_collection_from_str to
+	DoubleCollection::FromStr and PointCollection::FromStr
+	respectively.  move double_garray_from_str out of here (to
+	utils.h/utils.cpp)
+
+	* utils.h, utils.cpp: new (hopefully last) home for
+	double_garray_from_str.
+
+	* point.h, point.cpp (struct Point): rename point_from_str to
+	Point::FromStr.  no reason to have a C method for that.
+
+	* rect.h, rect.cpp (struct Rect): same thing with Rect::FromStr.
+
+	* window-gtk.h (class MoonWindowGtk): mark the ctor and
+	GetWidget() with GenerateCBinding/GeneratePInvoke.
+
+	* window-gtk.cpp: and remove their implementations.
+
+	* xaml.cpp: convert over to all the new ::FromStr methods.
+
+	* thickness.cpp: track new home of double_garray_from_str.
+
+	* cbinding.h, cbinding.cpp: regen.
+
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h, uielement.cpp: make almost all data
 	private/protected.  Add a couple of methods to aid in
 	this (IsLoaded, ClearLoaded, TransformPoint).  Get rid of the
