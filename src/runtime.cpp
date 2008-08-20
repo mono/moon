@@ -1783,7 +1783,7 @@ Surface::FocusElement (UIElement *focused)
 	   3. the element must be part of the plugin's visual tree, and must have had its Loaded event fired.
 	*/
 	if (!focused->GetRenderVisible()
-	    || false /* XXX !IsTabStop */
+	    || (!focused->Is(Type::CONTROL) || !((Control*)focused)->GetIsTabStop())
 	    || !focused->IsLoaded()
 	    || focused->GetSurface () != this)
 		return false;

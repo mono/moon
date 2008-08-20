@@ -1,5 +1,9 @@
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::FocusElement): fix the IsTabStop check.
+
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
 	* control.h, control.cpp (class Control): generate a binding for
 	Control::InitializeFromXaml and drop the 2 manual C bindings.
 
