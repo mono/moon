@@ -345,7 +345,7 @@ class DependencyObject : public EventObject {
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
 
-	/* @PropertyType=string,ManagedAccess=Internal,GenerateAccessors */
+	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,ManagedSetterAccess=Internal */
 	static DependencyProperty *NameProperty;
 
 	static void Shutdown ();
