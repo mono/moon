@@ -146,7 +146,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	static ModifierKeys GetModifiers ();
 
-	static ModifierKeys SetModifiers (ModifierKeys m);
+	static void SetModifiers (ModifierKeys m);
 
 private:
 	static ModifierKeys modifiers;
