@@ -115,7 +115,7 @@ Xap::~Xap ()
 Xap *
 xap_create_from_file (XamlLoader *loader, const char *filename)
 {
-	char *xap_dir = xap_unpack (filename);
+	char *xap_dir = Xap::Unpack (filename);
 	Type::Kind element_type;
 	DependencyObject *element;
 
