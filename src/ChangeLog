@@ -1,5 +1,12 @@
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: test-inexistent-media(s) were failing due to ISP's
+	  tendency to return search pages for failed dns lookups. Fixed tests
+	  after testing with sane DNS settings and did the appropiate change
+	  in code (raise correct error message/number).
+
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* runtime.h: Make RUNTIME_INIT values sequential.
 
 2008-08-19  Chris Toshok  <toshok@ximian.com>

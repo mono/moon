@@ -14,8 +14,8 @@
 		var content = null;
 		var sources = [ "inexistent.wmv", "http://never.ever.land/inexistent.wmv", "mms://never.ever.land/inexistent.wmv", "rtsp://never.ever.land/inexistent.wmv" ];
 		var results = [0, 0, 0, 0]; // 0 = not executed, 1 = MediaFailed, 2 = MediaOpened
-		var errors = ["AG_E_UNKNOWN_ERROR", "AG_E_NETWORK_ERROR", "AG_E_NETWORK_ERROR", "AG_E_NETWORK_ERROR"];
-		var errornumbers = [1001, 4001, 4001, 4001];
+		var errors = ["AG_E_NETWORK_ERROR", "AG_E_NETWORK_ERROR", "AG_E_NETWORK_ERROR", "AG_E_NETWORK_ERROR"];
+		var errornumbers = [4001, 4001, 4001, 4001];
 		var msg = [ "", "", "", ""];
 		var current_test = -1;
 		var test_count = sources.length;
@@ -25,6 +25,8 @@
 			var failed = false;
 			current_test++;
 
+			TestLogger.LogDebug ("NextTest: current_test: " + current_test);
+			
 			if (current_test >= test_count) {
 				for (var i = 0; i < test_count; i++) {
 					if (results [i] != 1) {
@@ -36,7 +38,9 @@
 					}
 				}
 				TestLogger.LogResult (failed ? -1 : 1);
-				SignalShutdown ();
+				if (failed)
+					TestLogger.LogError ("This test depends on DNS resolution to fail. This means that if your ISP (or whoever is handling your DNS lookups) redirects failed dns lookups to some search page, this test will fail");
+				SignalShutdown (); 
 			} else {
 				root.Children.Clear ();
 				mediaElement = content.createFromXaml ('<MediaElement MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" />');
@@ -88,7 +92,7 @@
 		function OnPluginLoad (sender, args)
 		{
 			TestLogger.LogDebug ("OnPluginLoad");
-			setTimeout ("timeOut ();", 10000);
+			setTimeout ("timeOut ();", 30000);
 			root = sender;
 			content = document.getElementById ("_MoonlightControl").content;
 			NextTest ();

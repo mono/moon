@@ -38,16 +38,16 @@
 
 			TestLogger.LogDebug ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
 			try {
-				if (args.ErrorMessage != "AG_E_UNKNOWN_ERROR") { 
-					TestLogger.LogError ("Expected ErrorMessage to be 'AG_E_UNKNOWN_ERROR', but got: '" + args.ErrorMessage + "'");
+				if (args.ErrorMessage != "AG_E_NETWORK_ERROR") { 
+					TestLogger.LogError ("Expected ErrorMessage to be 'AG_E_NETWORK_ERROR', but got: '" + args.ErrorMessage + "'");
 					succeeded = false;
 				}
 				if (args.ErrorType != "MediaError") {
 					TestLogger.LogError ("Expected ErrorType to be 'MediaError', but got: '" + args.ErrorType + "'");
 					succeeded = false;
 				}
-				if (args.ErrorCode != 1001) {
-					TestLogger.LogError ("Expected ErrorCode to be 1001, but got: " + args.ErrorCode);
+				if (args.ErrorCode != 4001) {
+					TestLogger.LogError ("Expected ErrorCode to be 4001, but got: " + args.ErrorCode);
 					succeeded = false;
 				}
 			} catch (ex) {
@@ -55,6 +55,9 @@
 				TestLogger.LogError ("Exception: " + ex);
 			}
 			TestLogger.LogResult (succeeded ? 1 : -1);
+			if (!succeeded)
+				TestLogger.LogError ("This test depends on DNS resolution to fail. This means that if your ISP (or whoever is handling your DNS lookups) redirects failed dns lookups to some search page, this test will fail");
+		
 			SignalShutdown ();
 		}
 

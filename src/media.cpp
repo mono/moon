@@ -1379,7 +1379,7 @@ MediaElement::DownloaderFailed (EventArgs *args)
 		}
 	}
 	
-	MediaFailed (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
+	MediaFailed (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
 }
 
 void
