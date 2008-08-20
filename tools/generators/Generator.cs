@@ -471,9 +471,12 @@ class Generator {
 			TypeInfo prop_type;
 			string prop_type_str;
 			string value_str;
+			string prop_default = null;
 			bool both = field.Annotations.ContainsKey ("GenerateAccessors");
 			bool setter = both || field.Annotations.ContainsKey ("GenerateSetter");
 			bool getter = both || field.Annotations.ContainsKey ("GenerateGetter");
+			bool nullable_setter = setter && field.IsDPNullable;
+			bool doing_nullable_setter = false;
 			
 			if (!setter && !getter)
 				continue;
@@ -485,6 +488,22 @@ class Generator {
 				prop_type_str = "const char *"; 
 				value_str = "String";
 				break;
+			case "int":
+			case "gint32":
+				value_str = "Int32";
+				prop_type_str = prop_type.Name;
+				prop_default = "0";
+				break;
+			case "double":
+				value_str = "Double";
+				prop_type_str = prop_type.Name;
+				prop_default = "0.0";
+				break;
+			case "bool":
+				prop_type_str = prop_type.Name;
+				value_str = prop_type.Name;
+				prop_default = "false";
+				break;
 			default:
 				prop_type_str = prop_type.Name; 
 				if (prop_type.IsClass)
@@ -493,8 +512,16 @@ class Generator {
 				break;
 			}
 		
+			if (field.SilverlightVersion > 1) {
+				text.Append ("#if ");
+				Helper.WriteVersion (text, field.SilverlightVersion);
+			}
+			
 			if (getter) {
-				text.AppendLine (prop_type_str);
+				text.Append (prop_type_str);
+				if (field.IsDPNullable)
+					text.Append (" *");
+				text.AppendLine ();
 				text.Append (field.ParentType.Name);
 				text.Append ("::Get");
 				text.Append (field.GetDependencyPropertyName ());
@@ -513,14 +540,18 @@ class Generator {
 					text.Append ("(");
 					text.Append (prop_type.Name);
 					text.Append (") 0");
-				} else if (prop_type.IsStruct) {
-					throw new NotImplementedException ("Generation of DependencyProperties with struct values");
+				} else if (!field.IsDPNullable && (prop_type.IsStruct || prop_default != null)) {
+					if (string.IsNullOrEmpty (prop_default))
+						throw new NotImplementedException ("Generation of DependencyProperties with struct values");
+					text.Append (prop_default);
 				} else {
 					text.Append ("NULL");
 				}
 				text.AppendLine (";");
 				
 				text.Append ("\treturn value->As");
+				if (field.IsDPNullable)
+					text.Append ("Nullable");
 				text.Append (value_str);
 				text.AppendLine (" ();");
 			
@@ -528,6 +559,7 @@ class Generator {
 				text.AppendLine ();
 			}
 			
+		 do_nullable_setter:
 			if (setter) {		
 				text.AppendLine ("void");
 				text.Append (field.ParentType.Name);
@@ -538,13 +570,39 @@ class Generator {
 				text.AppendLine (" value)");
 				
 				text.AppendLine ("{");
-				text.Append ("\tSetValue (");
-				text.Append (field.ParentType.Name);
-				text.Append ("::");
-				text.Append (field.Name);
-				text.AppendLine (", Value (value));");
+				if (doing_nullable_setter) {
+					text.AppendLine ("\tif (value == NULL)");
+					text.Append ("\t\tSetValue (");
+					text.Append (field.ParentType.Name);
+					text.Append ("::");
+					text.Append (field.Name);
+					text.AppendLine (", Value (NULL));");
+					text.AppendLine ("\telse");
+					text.Append ("\t\tSetValue (");
+					text.Append (field.ParentType.Name);
+					text.Append ("::");
+					text.Append (field.Name);
+					text.AppendLine (", Value (*value));");
+				} else {
+					text.Append ("\tSetValue (");
+					text.Append (field.ParentType.Name);
+					text.Append ("::");
+					text.Append (field.Name);
+					text.AppendLine (", Value (value));");
+				}
 				text.AppendLine ("}");
 				text.AppendLine ();
+			}
+			
+			if (nullable_setter) {
+				prop_type_str += " *";
+				nullable_setter = false;
+				doing_nullable_setter = true;
+				goto do_nullable_setter;
+			}
+			
+			if (field.SilverlightVersion > 1) {
+				text.AppendLine ("#endif");
 			}
 		}
 		
