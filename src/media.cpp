@@ -526,8 +526,8 @@ MediaElement::AdvanceFrame ()
 	guint64 position; // pts
 	bool advanced;
 	
-	e(printf ("MediaElement::AdvanceFrame (), IsPlaying: %i, HasVideo: %i, HasAudio: %i\n",
-		  IsPlaying (), mplayer->HasVideo (), mplayer->HasAudio ()));
+	e(printf ("MediaElement::AdvanceFrame (), IsPlaying: %i, HasVideo: %i, HasAudio: %i, IsSeeking: %i\n",
+		  IsPlaying (), mplayer->HasVideo (), mplayer->HasAudio (), mplayer->IsSeeking ()));
 	
 	if (!IsPlaying ())
 		return false;
@@ -553,11 +553,13 @@ MediaElement::AdvanceFrame ()
 		CheckMarkers (previous_position, position);
 	}
 	
-	// Add 1 to avoid the same position to be able to be both
-	// beginning and end of a range (otherwise the same marker
-	// might raise two events).
-	previous_position = position + 1;
-	
+	if (!mplayer->IsSeeking () && position > previous_position) {
+		// Add 1 to avoid the same position to be able to be both
+		// beginning and end of a range (otherwise the same marker
+		// might raise two events).
+		previous_position = position + 1;
+	}
+
 	if (!advanced && mplayer->GetEof ()) {	
 		mplayer->Stop ();
 		SetState (Stopped);
@@ -611,14 +613,6 @@ MediaElement::~MediaElement ()
 	delete pending_streamed_markers;
 	
 	pthread_mutex_destroy (&open_mutex);
-}
-
-void 
-MediaElement::SetPreviousPosition (guint64 pos)
-{
-	d(printf ("MediaElement::SetPreviousPosition (%llu)\n", pos));
-	
-	previous_position = pos;
 }
 
 void
@@ -1749,6 +1743,8 @@ MediaElement::UpdatePlayerPosition (TimeSpan position)
 	d(printf ("MediaElement::UpdatePlayerPosition (%llu = %llu ms, "
 		  "mplayer->GetPosition (): %llu = %llu ms\n", position, MilliSeconds_FromPts (position),
 		  mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ())));
+	
+	previous_position = position;
 	
 	return position;
 }

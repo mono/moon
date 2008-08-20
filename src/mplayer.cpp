@@ -520,6 +520,7 @@ MediaPlayer::AdvanceFrame ()
 	guint64 target_pts_end = 0;
 	guint64 target_pts_delta = MilliSeconds_ToPts (100);
 	bool update = false;
+	bool result = false;
 	
 #if DEBUG_ADVANCEFRAME
 	static int frames_per_second = 0;
@@ -592,6 +593,7 @@ MediaPlayer::AdvanceFrame ()
 		stream = frame->stream;
 		current_pts = frame->pts;
 		update = true;
+		result = true;
 		
 		//printf ("MediaPlayer::AdvanceFrame (): current_pts: %llu = %llu ms, duration: %llu = %llu ms\n",
 		//		current_pts, MilliSeconds_FromPts (current_pts),
@@ -681,7 +683,7 @@ MediaPlayer::AdvanceFrame ()
 	
 	delete pkt;
 		
-	return !GetEof ();
+	return result & !GetEof ();
 }
 
 bool
@@ -826,10 +828,10 @@ MediaPlayer::SeekCallback ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::SeekCallback ()\n");
 
-	element->SetPreviousPosition (GetTargetPts ());
-
 	// Clear all queues.
 	video.queue.Clear (true);
+	if (audio != NULL)
+		audio->ClearFrames ();
 	
 	RemoveBit (Seeking);
 	current_pts = 0;

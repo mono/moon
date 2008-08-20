@@ -1,5 +1,14 @@
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: AdvanceFrame: only return true if we actually processed
+	  any frames. SeekCallback: clear the queue of audio frames as well.
+	* media.h, media.cpp: Removed SetPreviousPosition, no longer needed.
+	  Don't change previous_position while we're seeking, and don't make
+	  it go backwards.
+	* audio.cpp, audio.h: Added AudioSource::ClearFrames.
+
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* runtime.cpp: Fix 1.0 build. No idea if the fix is correct.
 
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 

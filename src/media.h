@@ -432,7 +432,6 @@ class MediaElement : public MediaBase {
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; }
 	
 	virtual void SetSurface (Surface *surface);
-	void SetPreviousPosition (guint64 pos);
 	
 	bool AdvanceFrame ();
 	void AudioFinished (); // Called by MediaPlayer when the audio reaches its end. Only called if we have no video.

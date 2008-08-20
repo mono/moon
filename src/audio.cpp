@@ -278,6 +278,13 @@ AudioSource::GetSampleRate ()
 }
 
 void
+AudioSource::ClearFrames ()
+{
+	LOG_AUDIO ("AudioSource::ClearFrames (), %i frames will be removed.\n", frames.Length ());
+	frames.Clear (true);
+}
+
+void
 AudioSource::AppendFrame (MediaFrame *frame)
 {
 	LOG_AUDIO_EX ("AudioSource::AppendFrame (%p): now got %i frames, this frame's EOF: %i, buflen: %i\n", frame, frames.Length () + 1, frame->event == FrameEventEOF, frame->buflen);

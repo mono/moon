@@ -136,6 +136,7 @@ class AudioSource : public EventObject {
 	bool IsQueueEmpty () { return frames.IsEmpty (); }
 	
 	void AppendFrame (MediaFrame *frame);
+	void ClearFrames ();
 
 	AudioState GetState ();
 	void SetState (AudioState value);
