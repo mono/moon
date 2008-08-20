@@ -37,31 +37,7 @@ using System.Windows.Markup;
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
 		
-		public virtual void OnApplyTemplate() {
-			// FIXME
-		}
-
-#if NET_2_1
-		[SecuritySafeCritical]
-#endif
-		public bool Focus()
-		{
-			return NativeMethods.surface_focus_element (Application.s_surface, native);
-		}
-
-		public double ActualWidth {
-			get {
-				throw new NotImplementedException ();
-			}
-		}
-
-		public double ActualHeight {
-			get {
-				throw new NotImplementedException ();
-			}
-		}
-
-		public object DefaultStyleKey {
+		protected object DefaultStyleKey {
 			get {
 				throw new NotImplementedException ();
 			}
@@ -70,13 +46,37 @@ namespace System.Windows.Controls {
 			}
 		}
 
-		protected DependencyObject GetTemplateChild(string childName) {
-			throw new NotImplementedException ();
-		}
-
-		public bool ApplyTemplate() {
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public bool ApplyTemplate()
+		{
 			throw new NotImplementedException ();
 		}
 		
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public bool Focus()
+		{
+			return NativeMethods.surface_focus_element (Application.s_surface, native);
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		protected DependencyObject GetTemplateChild(string childName)
+		{
+			throw new NotImplementedException ();
+		}
+
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public virtual void OnApplyTemplate()
+		{
+			// FIXME
+		}
+
 	}
 }
