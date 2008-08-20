@@ -226,6 +226,32 @@ gboolean setup (void* data)
 	return FALSE;    
 }
 
+gboolean poke (void* data)
+{
+	int poke_no = (int) data;
+	printf ("*** Poking %d\n", poke_no);
+
+	if (runtime_get_surface_list () == NULL)
+		return TRUE;
+
+	Surface *surface = (Surface *) runtime_get_surface_list ()->data; 
+
+	if (surface == NULL)
+		return TRUE;
+    
+	TimeManager *manager = surface->GetTimeManager ();
+	ManualTimeSource *source = (ManualTimeSource *) manager->GetSource ();
+
+	source->SetCurrentTime (0);
+
+	if (poke_no == 3) 
+		g_timeout_add (1000, setup, NULL);
+	else
+		g_timeout_add (1000, poke, (void *) (poke_no + 1));
+
+	return FALSE;
+}
+
 void do_run (void)
 {
 	printf ("*** Starting up a run...\n");
@@ -237,7 +263,7 @@ void do_run (void)
 	g_free (current_directory);
 	g_free (html_path);
 	
-	g_timeout_add (1000, setup, NULL);
+	g_timeout_add (1000, poke, (void *) 1);
 
 	if (critical_timeout_id != 0) 
 		g_source_remove (critical_timeout_id);

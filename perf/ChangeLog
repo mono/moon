@@ -1,5 +1,11 @@
 2008-08-20  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-tool/perf-suite-tool.cpp: When running a test, before setting it
+	up "poke" the timer a little (at time == 0) to make sure we've got the resources 
+	loaded etc. That seems to fix some ugly race conditions.
+
+2008-08-20  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-generator/HtmlGenerator.cs: Protect against a situation when 
 	trying to generate a report but no data is present.
 
