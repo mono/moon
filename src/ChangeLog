@@ -1,3 +1,7 @@
+2008-08-20  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h (ClearLoaded): use &=, not |=, here.  fixes tests.
+
 2008-08-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::Layout): Updated to take a

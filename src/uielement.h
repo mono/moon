@@ -123,7 +123,7 @@ public:
 	//
 	bool IsLoaded () { return (flags & UIElement::IS_LOADED) != 0; }
 
-	void ClearLoaded () { flags |= ~UIElement::IS_LOADED; }
+	void ClearLoaded () { flags &= ~UIElement::IS_LOADED; }
 
 	//
 	// Render: 
