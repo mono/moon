@@ -1,0 +1,62 @@
+General info
+============
+
+A couple of parts make up the performance suite:
+
+* perf-suite-tool - a simple tool that runs a given (HTML) test with given
+  settings (passed via command line) and outputs the results to an XML file.
+
+* perf-suite-runner - the main tool that runs the whole performance suite
+  according to the drtlist.xml file describing the tests and puts the results
+  in the database.
+
+* perf-suite-generator - generates an up-to-date HTML report file by
+  processing the current data in the database.
+
+* perf-suite-set - contains the tests. Index in drtlist.xml. 
+
+* perf-report - the index.html file is generated here by the
+  perf-suite-generator.
+
+
+Running the suite
+=================
+
+To run an iteration of the performance tests (and generate the results) one
+needs to run the perf-suite-runner and later perf-suite-generator. The easiest
+way to do that is:
+
+  $> make run-perf
+  
+To view the results, open perf-report/index.html in your web browser.
+
+
+Configuring runs (passes)
+=========================
+
+Each iteration of the performance tests (a "pass") can have some data
+associated with it. This data (if available) is displayed in the report. The
+basic pass data includes:
+
+* Short name - a short name of the pass, ie. revision number ("r1212121")
+* Author - author associated with the pass, ie. commiter ("michael")
+* ChangeLog - changelog entry associated with the pass
+
+Those options can be specified via command line when running the tools (use
+--help switch to get more details). Additionally, one can use env vars to 
+set them. Respective variables are:
+
+* PERF_SHORT_NAME
+* PERF_AUTHOR
+* PERF_CHANGE_LOG
+
+So, in example, to set the short name:
+
+  $> PERF_SHORT_NAME="r123" PERF_AUTHOR="mdk" make run-perf
+  
+Options passed via command line have higher precedence than those passed via
+env variables. The `make` command runs the tools with no cmd line options.
+
+Additionally, the PERF_DATABASE_FILE variable can be used to specify a
+location for storing the results.
+
