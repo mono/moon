@@ -1,5 +1,12 @@
 2008-08-20  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-set/drtlist.xml:
+	* perf-suite-set/purple-mystery.html:
+	* perf-suite-set/purple.png: Adding the purple thing (bug #412204) to performance
+	test.
+
+2008-08-20  Michael Dominic K.  <mdk@mdk.am>
+
 	* README: Adding a README file with some basic info.
 
 2008-08-20  Michael Dominic K.  <mdk@mdk.am>

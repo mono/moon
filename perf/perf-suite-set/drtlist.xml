@@ -26,4 +26,13 @@
 	width="400"
 	height="400"
    />
+  <DrtItem uniqueId="4"
+	name="Purple mystery #412204"
+	inputFile="purple-mystery.html"
+	endTime="5000"
+	interval="20"
+	runs="3"
+	width="400"
+	height="400"
+   />
 </DrtList>

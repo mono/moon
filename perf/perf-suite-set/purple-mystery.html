@@ -1,0 +1,59 @@
+<html>
+<head>
+    <style type="text/css">
+    body { 
+      margin-left: 0;
+      margin-top: 0;
+      padding: 0;
+    };
+
+    embed {
+      margin-left: 0;
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+    };
+    </style>
+</head>
+<body>
+<embed type="application/x-silverlight" data="data:," id="slControl" width="400" height="400" source="#xamlContent">
+</embed>
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas
+   xmlns="http://schemas.microsoft.com/client/2007"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Image x:Name="Background"
+   Canvas.Left="-150" Canvas.Top="-150"
+   Source="purple.png">
+    <Image.RenderTransform>
+      <RotateTransform x:Name="BackgroundAngle" Angle="0" CenterX="350"
+CenterY="350"/>
+    </Image.RenderTransform>
+  </Image>
+
+  <Canvas.Triggers>
+    <EventTrigger RoutedEvent="Canvas.Loaded">
+      <EventTrigger.Actions>
+        <BeginStoryboard>
+
+          <Storyboard BeginTime="0:0:0">
+
+            <DoubleAnimation 
+              Storyboard.TargetName="BackgroundAngle"
+              Storyboard.TargetProperty="(Angle)"
+              To="360" BeginTime="0:0:0" Duration="0:0:10" />
+
+          </Storyboard>
+
+        </BeginStoryboard>
+      </EventTrigger.Actions>
+    </EventTrigger>
+  </Canvas.Triggers>
+</Canvas>
+</script>
+</body>
+</html>
+
+
