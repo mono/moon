@@ -981,5 +981,15 @@ namespace Mono {
 		// VisualBrush *visual_brush_new ();
 		public extern static IntPtr visual_brush_new ();
 
+		[DllImport ("moon", EntryPoint="xap_unpack")]
+		// char *xap_unpack (const char *fname);
+		private extern static IntPtr xap_unpack_ (string fname);
+		public static string xap_unpack (string fname)
+		{
+			IntPtr result;
+			result = xap_unpack_ (fname);
+			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+		}
+
 	}
 }

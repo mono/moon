@@ -280,11 +280,6 @@ namespace Mono {
 		
 #endregion
 
-#region xap
-		[DllImport("moon")]
-		public extern static string xap_unpack (string xapfile);
-#endregion
-		
 		private static Exception CreateManagedException (MoonError err)
 		{
 			string msg = err.Message;
