@@ -1,5 +1,9 @@
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* plugin.cpp: Fix build.
+
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* plugin-downloader.cpp: Drastically enhance the debugging experience
 	  here.
 
