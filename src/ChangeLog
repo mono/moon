@@ -1,3 +1,10 @@
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (xaml_hydrate_from_str): make sure to set the surface
+	of the object before parsing so that objects don't switch from the
+	loader's surface to NULL as they're added to the hierarchy while
+	being parsed.
+
 2008-08-19  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Shape::InsideObject): check the extents first, then

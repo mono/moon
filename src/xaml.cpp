@@ -1484,8 +1484,11 @@ xaml_hydrate_from_str (XamlLoader *loader, const char *xaml, const char* assembl
 	//
 	// If we are hydrating, we are not null
 	//
-	if (object != NULL)
+	if (object != NULL) {
+		if (loader)
+			object->SetSurface (loader->GetSurface());
 		object->ref ();
+	}
 	
 	parser_info->hydrate_expecting = object;
 	parser_info->hydrating = true;
