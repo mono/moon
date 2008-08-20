@@ -22,7 +22,7 @@
 class XamlLoader;
 
 typedef DependencyObject *xaml_load_managed_object_callback (const char *asm_name, const char *asm_path, const char *name, const char *type_name);
-typedef bool xaml_set_custom_attribute_callback (void *target, const char *name, const char *value);
+typedef bool xaml_set_custom_attribute_callback (void *target, const char* xmlns, const char *name, const char *value);
 typedef bool xaml_hookup_event_callback (void *target, void *dest, const char *ename, const char *evalue);
 typedef void xaml_insert_mapping_callback (const char *key, const char *value); 
 typedef const char *xaml_get_mapping_callback (const char *key);
@@ -128,7 +128,7 @@ class XamlLoader {
 	virtual bool LoadVM ();
 	virtual DependencyObject *CreateManagedObjectFromXmlns (const char *default_asm_name, const char *default_asm_path, const char *xmlns, const char *name);
 	virtual DependencyObject *CreateManagedObject (const char *asm_name, const char *asm_path, const char *name, const char *type_name);
-	virtual bool SetAttribute (void *target, const char *name, const char *value);
+	virtual bool SetAttribute (void *target, const char *xmlns, const char *name, const char *value);
 	virtual void SetNameAttribute (void *target, const char *name);
 	virtual bool HookupEvent (void *target, void *dest, const char *name, const char *value);
 	virtual void InsertMapping (const char *key, const char *value);

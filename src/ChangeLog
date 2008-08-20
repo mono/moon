@@ -1,3 +1,9 @@
+2008-08-20  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Setting properties requires the xaml namespace so it
+	can lookup managed types. TODO: It also needs the default
+	assembly, but I am thinking of moving that to the loader.
+
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: Properly ref/unref the AudioSource.

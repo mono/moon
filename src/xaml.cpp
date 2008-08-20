@@ -559,7 +559,7 @@ class ManagedNamespace : public XamlNamespace {
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
 		if (p->loader)
-			return p->loader->SetAttribute (item->item, attr, value);
+			return p->loader->SetAttribute (item->item, xmlns, attr, value);
 		return false;
 	}
 };
@@ -642,10 +642,10 @@ XamlLoader::GetContentPropertyName (DependencyObject *dob)
 }
 
 bool
-XamlLoader::SetAttribute (void* target, const char* name, const char* value)
+XamlLoader::SetAttribute (void* target, const char* xmlns, const char* name, const char* value)
 {
 	if (callbacks.set_custom_attribute)
-		return callbacks.set_custom_attribute (target, name, value);
+		return callbacks.set_custom_attribute (target, xmlns, name, value);
 
 	return false;
 }
@@ -3173,7 +3173,7 @@ start_parse:
 			Value *v = NULL;
 			if (!value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
 				if (prop->GetPropertyType () == Type::MANAGED) {
-					if (!p->loader->callbacks.set_custom_attribute (item->item, prop->GetName (), attr [i + 1])) {
+					if (!p->loader->callbacks.set_custom_attribute (item->item, NULL, prop->GetName (), attr [i + 1])) {
 						return;
 					}
 				}
@@ -3204,7 +3204,7 @@ start_parse:
 			}
 		} else {
 			// This might be a property of a managed object
-			if (p->loader && p->loader->SetAttribute (item->item, attr [i], attr [i + 1])) {
+			if (p->loader && p->loader->SetAttribute (item->item, NULL, attr [i], attr [i + 1])) {
 				if (atchname)
 					g_free (atchname);
 				continue;

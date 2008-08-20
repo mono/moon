@@ -43,7 +43,7 @@ namespace Mono {
 	public class Helper {
 		public static Assembly Agclr;
 
-		private static TypeConverter GetConverterFor (PropertyInfo info)
+		private static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
 			Attribute[] attrs = (Attribute[])info.GetCustomAttributes (true);
 			TypeConverterAttribute at = null;
@@ -65,13 +65,40 @@ namespace Mono {
 
 			ConstructorInfo ci = t.GetConstructor (new Type[] { typeof(Type) });
 			if (ci != null)
-				converter = (TypeConverter) ci.Invoke (new object[] { info.PropertyType });
+				converter = (TypeConverter) ci.Invoke (new object[] { target_type });
 			else
 				converter = (TypeConverter) Activator.CreateInstance (t);
 
 			return converter;
 		}
-		
+
+		public static object ValueFromString (Type value_type, string value, string prop_name, out string error, out IntPtr unmanaged_value)
+		{
+			unmanaged_value = IntPtr.Zero;
+			error = null;
+
+			TypeConverter converter = GetConverterFor (value_type, value_type);
+			if (converter != null && converter.CanConvertFrom (typeof (string))) {
+				return converter.ConvertFrom (value);
+			}
+
+			if (value_type.GetInterface ("IConvertible") != null) {
+				object res = ValueFromConvertible (value_type, value);
+				if (res != null)
+					return res;
+			}
+
+			//
+			// XXX Add Special case for System.Type (see SetPropertyFromString)
+			//
+
+			unmanaged_value = NativeMethods.value_from_str_with_typename (TypeToMoonType (value_type), prop_name, value);
+			if (unmanaged_value == IntPtr.Zero)
+				error = "unable to convert to this type from a string";
+
+			return null;
+		}
+
 		public static void SetPropertyFromString (object target, PropertyInfo pi, string value, out string error, out IntPtr unmanaged_value)
 		{
 			unmanaged_value = IntPtr.Zero;
@@ -80,7 +107,7 @@ namespace Mono {
 			// if the property has a TypeConverter
 			// associated with it (or the property's type
 			// does), try to use that first
-			TypeConverter converter = GetConverterFor (pi);
+			TypeConverter converter = GetConverterFor (pi, pi.PropertyType);
 			if (converter != null && converter.CanConvertFrom (typeof (string))) {
 				try {
 					pi.SetValue (target, converter.ConvertFrom (value), null);
@@ -88,6 +115,22 @@ namespace Mono {
 					error = e.ToString ();
 				}
 				return;
+			}
+
+			//
+			// If the property is a simple IConvertible type we might
+			// be able to just convert it in managed code.
+			//
+			if (pi.PropertyType.GetInterface ("IConvertible") != null) {
+				object res = ValueFromConvertible (pi.PropertyType, value);
+				if (res != null) {
+					try {
+						pi.SetValue (target, res, null);
+					} catch (Exception e) {
+						error = e.ToString ();
+					}
+					return;
+				}
 			}
 
 			// special case System.Type properties (like
@@ -120,7 +163,7 @@ namespace Mono {
 			// parser will create a managed wrapper for the object and call SetPropertyFromValue with
 			// the managed object
 			//
-			unmanaged_value = NativeMethods.value_from_str_with_typename (pi.PropertyType.Name, pi.Name, value);
+			unmanaged_value = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value);
 			if (unmanaged_value == IntPtr.Zero)
 				error = "unable to convert to this type from a string";
 		}
@@ -243,6 +286,50 @@ namespace Mono {
 		public static void DeleteDirectory (string path)
 		{
 			Directory.Delete (path, true);
+		}
+
+		private static object ValueFromConvertible (Type type, string value)
+		{
+			if (type == typeof (string))
+				return value;
+			if (type == typeof (bool))
+				return Convert.ToBoolean (value);
+			if (type == typeof (byte))
+				return Convert.ToByte (value);
+			if (type == typeof (char))
+				return Convert.ToChar (value);
+			if (type == typeof (DateTime))
+				return Convert.ToDateTime (value);
+			if (type == typeof (Decimal))
+				return Convert.ToDecimal (value);
+			if (type == typeof (double))
+				return Convert.ToDouble (value);
+			if (type == typeof (Int16))
+				return Convert.ToInt16 (value);
+			if (type == typeof (Int32))
+				return Convert.ToInt32 (value);
+			if (type == typeof (Int64))
+				return Convert.ToInt64 (value);
+			if (type == typeof (SByte))
+				return Convert.ToSByte (value);
+			if (type == typeof (Single))
+				return Convert.ToSingle (value);
+			if (type == typeof (UInt16))
+				return Convert.ToUInt16 (value);
+			if (type == typeof (UInt32))
+				return Convert.ToUInt32 (value);
+			if (type == typeof (UInt64))
+				return Convert.ToUInt64 (value);
+			return null;
+		}
+
+		private static string TypeToMoonType (Type t)
+		{
+			if (t == typeof (double))
+				return "double";
+			if (t == typeof (bool))
+				return "bool";
+			return t.Name;
 		}
 	}
 }
