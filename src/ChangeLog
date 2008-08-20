@@ -1,5 +1,9 @@
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: Properly ref/unref the AudioSource.
+
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.h: Remove G_BEGIN/END_DECLS and two unnecessary #includes.
 
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 

@@ -370,6 +370,7 @@ MediaPlayer::Open (Media *media)
 			// Only select the audio stream if we can actually play it
 			astream->SetSelected (true);
 		}
+		audio->ref ();
 	}
 	
 	current_pts = 0;
@@ -439,6 +440,7 @@ MediaPlayer::Close (bool dtor)
 
 	if (audio) {
 		AudioPlayer::Remove (audio);
+		audio->unref ();
 		audio = NULL;
 	}
 
