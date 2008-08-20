@@ -120,7 +120,13 @@ namespace PerfSuiteGenerator {
 			PassDbEntry pass = Database.GetLastPass ();
 
 			html = html.Replace ("@@GENERATED_DATE@@", DateTime.Now.ToString ());
-			html = html.Replace ("@@LAST_PASS_DATE@@", String.Format ("{0} ({1})", pass.Date.ToString (), pass.ShortName));
+			
+			if (pass != null)
+				html = html.Replace ("@@LAST_PASS_DATE@@", String.Format ("{0} ({1})", pass.Date.ToString (), pass.ShortName));
+			else
+				html = html.Replace ("@@LAST_PASS_DATE@@", "NO DATA!");
+
+			
 			return html;
 		}
 
