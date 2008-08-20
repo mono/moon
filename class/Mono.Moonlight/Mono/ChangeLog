@@ -1,5 +1,16 @@
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
+	* NativeMethods.cs: remove the two bindings to
+	control_initialize_from_xaml{_callbacks}.
+
+	* GeneratedPInvokes.cs: and have the 1 binding show up here.
+
+	* XamlLoaderCallbacks.cs: use
+	NativeMethods.control_initialize_from_xaml instead of
+	_from_xaml_callbacks.
+
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
 	* NativeMethods.cs: remove a lot of these.
 
 	* GeneratedPInvokes.cs: and have them show up here.

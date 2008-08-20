@@ -173,6 +173,10 @@ namespace Mono {
 		public extern static IntPtr control_new ();
 
 		[DllImport ("moon")]
+		// UIElement *control_initialize_from_xaml (Control *instance, const char *xaml, Type::Kind *element_type, XamlLoader *loader);
+		public extern static IntPtr control_initialize_from_xaml (IntPtr instance, string xaml, out Kind element_type, IntPtr loader);
+
+		[DllImport ("moon")]
 		// ControlTemplate *control_template_new ();
 		public extern static IntPtr control_template_new ();
 

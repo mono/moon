@@ -297,8 +297,8 @@ namespace Mono.Xaml
 			
 			LoadDepsSynch = true;
 			CreateNativeLoader (null, xaml);
-			native_child = NativeMethods.control_initialize_from_xaml_callbacks (native, xaml,
-											  out kind, NativeLoader);
+			native_child = NativeMethods.control_initialize_from_xaml (native, xaml,
+										   out kind, NativeLoader);
 			FreeNativeLoader ();
 		
 			if (native_child == IntPtr.Zero)
