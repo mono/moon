@@ -1784,7 +1784,7 @@ Surface::FocusElement (UIElement *focused)
 	*/
 	if (!focused->GetRenderVisible()
 	    || false /* XXX !IsTabStop */
-	    || !((focused->flags & UIElement::IS_LOADED) == UIElement::IS_LOADED)
+	    || !focused->IsLoaded()
 	    || focused->GetSurface () != this)
 		return false;
 

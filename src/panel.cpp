@@ -559,7 +559,7 @@ Panel::ChildRemoved (UIElement *child)
 
 	item->CacheInvalidateHint ();
 	item->SetVisualParent (NULL);
-	item->flags &= ~UIElement::IS_LOADED;
+	item->ClearLoaded ();
 
 	if (GetSurface ()) {
 		// queue a resort based on ZIndex

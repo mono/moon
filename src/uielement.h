@@ -37,20 +37,7 @@ class Surface;
 
 /* @Namespace=System.Windows */
 class UIElement : public DependencyObject {
-	UIElement *visual_parent;
-	double total_opacity;
-	Brush *opacityMask;
-	Size desired_size;
-	
-	void GetRenderAffine (cairo_matrix_t *result);
-	
- protected:
-	virtual ~UIElement ();
-	virtual void Dispose ();
-	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
-	void RenderClipPath (cairo_t *cr);
-
- public:
+public:
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	UIElement ();
 	
@@ -83,21 +70,6 @@ class UIElement : public DependencyObject {
 		SHAPE_RADII      = 0x100,
 		SHAPE_MASK       = (SHAPE_EMPTY | SHAPE_NORMAL | SHAPE_DEGENERATE | SHAPE_RADII)
 	};
-	
-	int flags;
-
-	// The computed bounding box
-	Rect bounds;
-
-	// Absolute affine transform, precomputed with all of its data
-	cairo_matrix_t absolute_xform;
-
-	// the transform to be multiplied by our parent transform to compute absolute_xform
-	cairo_matrix_t local_transform;
-
-	cairo_matrix_t parent_transform;
-
-	Point transform_origin;
 	
 	virtual TimeManager *GetTimeManager ();
 	
@@ -145,6 +117,15 @@ class UIElement : public DependencyObject {
 	bool GetHitTestVisible () { return (flags & UIElement::TOTAL_HIT_TEST_VISIBLE) != 0; }
 
 	//
+	// IsLoaded:
+	//   Returns true if the element has been attached to a
+	//   surface and is part of the visual hierarchy.
+	//
+	bool IsLoaded () { return (flags & UIElement::IS_LOADED) != 0; }
+
+	void ClearLoaded () { flags |= ~UIElement::IS_LOADED; }
+
+	//
 	// Render: 
 	//   Renders the given @item on the @surface.  the area that is
 	//   exposed is delimited by x, y, width, height
@@ -183,7 +164,7 @@ class UIElement : public DependencyObject {
 	void UpdatePosition ();
 
 	// 
-	// ComputeBounds:
+	// ComputePosition:
 	//   Updates the bounding box for the given item, this uses the parent
 	//   chain to compute the composite affine.
 	//
@@ -224,7 +205,7 @@ class UIElement : public DependencyObject {
 	// GetBounds:
 	//   returns the current bounding box for the given item.
 	// 
-	virtual Rect GetBounds () { return bounds; }
+	Rect GetBounds () { return bounds; }
 
 	// 
 	// GetSubtreeBounds:
@@ -297,7 +278,7 @@ class UIElement : public DependencyObject {
 	virtual Point GetTransformOrigin () {
 		return Point (0, 0);
 	}
-	
+
 	//
 	// EmitKeyDown:
 	//
@@ -373,6 +354,13 @@ class UIElement : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
 	GeneralTransform *GetTransformToUIElement (UIElement *to_element);
+
+	//
+	// TransformPoint:
+	//
+	// Maps the point to the coordinate space of this item
+	//
+	void TransformPoint (double *x, double *y);
 	
  	/* @PropertyType=Geometry */
 	static DependencyProperty *ClipProperty;
@@ -439,12 +427,36 @@ class UIElement : public DependencyObject {
 	const static int InvalidatedEvent;
 	const static int GotFocusEvent;
 	const static int LostFocusEvent;
+
+protected:
+	virtual ~UIElement ();
+	virtual void Dispose ();
+	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
+	void RenderClipPath (cairo_t *cr);
+
+	// The computed bounding box
+	Rect bounds;
+
+	int flags;
+
+	// Absolute affine transform, precomputed with all of its data
+	cairo_matrix_t absolute_xform;
+
+private:
+	UIElement *visual_parent;
+	double total_opacity;
+	Brush *opacityMask;
+	Size desired_size;
+
+	// the transform to be multiplied by our parent transform to compute absolute_xform
+	cairo_matrix_t local_transform;
+
+	cairo_matrix_t parent_transform;
+
+	Point transform_origin;
+	
+	void GetRenderAffine (cairo_matrix_t *result);
+	
 };
-
-G_BEGIN_DECLS
-
-void uielement_transform_point (UIElement *item, double *x, double *y);
-
-G_END_DECLS
 
 #endif /* __MOON_UIELEMENT_H__ */

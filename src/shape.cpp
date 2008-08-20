@@ -598,7 +598,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 
 	bool ret = true;
 
-	uielement_transform_point (this, &x ,&y);
+	TransformPoint (&x, &y);
 	if (!extents.PointInside (x, y))
 		return false;
 	

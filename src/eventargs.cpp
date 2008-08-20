@@ -78,7 +78,7 @@ MouseEventArgs::GetPosition (UIElement *relative_to, double *x, double *y)
 				relative_to->GetSurface()->ProcessDirtyElements ();
 
 
-			uielement_transform_point (relative_to, x, y);
+			relative_to->TransformPoint (x, y);
 		}
 	}
 }

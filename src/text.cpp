@@ -301,8 +301,8 @@ TextBlock::InsideObject (cairo_t *cr, double x, double y)
 	
 	double nx = x;
 	double ny = y;
-	
-	uielement_transform_point (this, &nx, &ny);
+		
+	TransformPoint (&nx, &ny);
 	
 	if (nx >= 0.0 && ny >= 0.0 && nx < GetBoundingWidth () && ny < GetBoundingHeight ())
 		ret = true;
@@ -1445,7 +1445,7 @@ Glyphs::InsideObject (cairo_t *cr, double x, double y)
 	double nx = x;
 	double ny = y;
 
-	uielement_transform_point (this, &nx, &ny);
+	TransformPoint (&nx, &ny);
 	
 	return (nx >= left && ny >= top && nx < left + width && ny < top + height);
 }

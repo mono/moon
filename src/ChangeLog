@@ -1,5 +1,21 @@
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h, uielement.cpp: make almost all data
+	private/protected.  Add a couple of methods to aid in
+	this (IsLoaded, ClearLoaded, TransformPoint).  Get rid of the
+	cbinding for transform_point - it's never used.  Also, re-order
+	the header to put public things first, then protected then
+	private.
+
+	* runtime.cpp: use IsLoaded.
+
+	* panel.cpp: use ClearLoaded.
+
+	* text.cpp, shape.cpp, eventargs.cpp, frameworkelement.cpp: use
+	TransformPoint.
+
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (Surface::HandleMouseEvent): don't compare the input
 	lists, as we will almost always have identical lists.  compare the
 	head of the new list to focused_element to determine if focus

@@ -64,7 +64,7 @@ FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 	double width = GetWidth ();
 	double nx = x, ny = y;
 	
-	uielement_transform_point (this, &nx, &ny);
+	TransformPoint (&nx, &ny);
 	if (nx < 0 || ny < 0 || nx > width || ny > height)
 		return false;
 	

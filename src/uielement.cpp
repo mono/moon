@@ -420,7 +420,7 @@ UIElement::InsideClip (cairo_t *cr, double x, double y)
 
 	clip->Draw (NULL, cr);
 
-	uielement_transform_point (this, &nx, &ny);
+	TransformPoint (&nx, &ny);
 
 	if (cairo_in_stroke (cr, nx, ny) || (clip->IsFilled () && cairo_in_fill (cr, nx, ny)))
 		ret = true;
@@ -936,13 +936,11 @@ UIElement::GetTransformToUIElement (UIElement *to_element)
 #endif
 
 
-//
-// Maps the x, y coordinate to the space of the given item
-//
+
 void
-uielement_transform_point (UIElement *item, double *x, double *y)
+UIElement::TransformPoint (double *x, double *y)
 {
-	cairo_matrix_t inverse = item->absolute_xform;
+	cairo_matrix_t inverse = absolute_xform;
 	cairo_matrix_invert (&inverse);
 	
 	cairo_matrix_transform_point (&inverse, x, y);
