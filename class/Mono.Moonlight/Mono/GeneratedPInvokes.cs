@@ -65,6 +65,10 @@ namespace Mono {
 		// Type::Kind collection_get_element_type (Collection *instance);
 		public extern static Kind collection_get_element_type (IntPtr instance);
 
+		[DllImport ("moon")]
+		// CollectionIterator *collection_get_iterator (Collection *instance);
+		public extern static IntPtr collection_get_iterator (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="collection_get_value_at_with_error")]
 		// Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
 		private extern static IntPtr collection_get_value_at_with_error_ (IntPtr instance, int index, out MoonError error);
@@ -115,6 +119,22 @@ namespace Mono {
 				throw CreateManagedException (error);
 			return result;
 		}
+
+		[DllImport ("moon")]
+		// void collection_iterator_destroy (CollectionIterator *iterator);
+		public extern static void collection_iterator_destroy (IntPtr iterator);
+
+		[DllImport ("moon")]
+		// Value *collection_iterator_get_current (CollectionIterator *instance, int *error);
+		public extern static IntPtr collection_iterator_get_current (IntPtr instance, IntPtr error);
+
+		[DllImport ("moon")]
+		// int collection_iterator_next (CollectionIterator *instance);
+		public extern static int collection_iterator_next (IntPtr instance);
+
+		[DllImport ("moon")]
+		// bool collection_iterator_reset (CollectionIterator *instance);
+		public extern static bool collection_iterator_reset (IntPtr instance);
 
 		[DllImport ("moon")]
 		// ColorAnimation *color_animation_new ();
@@ -430,6 +450,10 @@ namespace Mono {
 		public extern static IntPtr inline_collection_new ();
 
 		[DllImport ("moon")]
+		// ModifierKeys keyboard_get_modifiers ();
+		public extern static int keyboard_get_modifiers ();
+
+		[DllImport ("moon")]
 		// int key_event_args_get_key (KeyEventArgs *instance);
 		public extern static int key_event_args_get_key (IntPtr instance);
 
@@ -524,6 +548,14 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void media_element_stop (MediaElement *instance);
 		public extern static void media_element_stop (IntPtr instance);
+
+		[DllImport ("moon")]
+		// GtkWidget *moon_window_gtk_get_widget (MoonWindowGtk *instance);
+		public extern static IntPtr moon_window_gtk_get_widget (IntPtr instance);
+
+		[DllImport ("moon")]
+		// MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h);
+		public extern static IntPtr moon_window_gtk_new (bool fullscreen, int w, int h);
 
 		[DllImport ("moon")]
 		// void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);

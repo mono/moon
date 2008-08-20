@@ -1,5 +1,11 @@
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
+	* NativeMethods.cs: remove a lot of these.
+
+	* GeneratedPInvokes.cs: and have them show up here.
+
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
 	* NativeMethods.cs: remove uielement_transform_point as nothing
 	ever calls it anymore.
 

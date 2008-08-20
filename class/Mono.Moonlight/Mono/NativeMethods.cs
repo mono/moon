@@ -107,21 +107,6 @@ namespace Mono {
 		
 #region Collections
 		[DllImport("moon")]
-		public extern static IntPtr collection_get_iterator (IntPtr collection);
-		
-		[DllImport("moon")]
-		public extern static int collection_iterator_next (IntPtr iterator);
-
-		[DllImport("moon")]
-		public extern static bool collection_iterator_reset (IntPtr iterator);
-
-		[DllImport("moon")]
-		public extern static IntPtr collection_iterator_get_current (IntPtr iterator, out int error);
-		
-		[DllImport("moon")]
-		public extern static void collection_iterator_destroy (IntPtr iterator);
-		
-		[DllImport("moon")]
 		public extern static void stroke_collection_get_bounds (IntPtr native, ref UnmanagedRect urect);
 
 		[DllImport("moon")]
@@ -182,12 +167,6 @@ namespace Mono {
 #endregion
 
 		[DllImport ("moon")]
-		public extern static IntPtr moon_window_gtk_new (bool fullscreen, int w, int h);
-
-		[DllImport ("moon")]
-		public extern static IntPtr moon_window_gtk_get_widget (IntPtr window);
-
-		[DllImport ("moon")]
 		public extern static IntPtr control_initialize_from_xaml (IntPtr control, string xaml,
 									  out Kind kind);
 
@@ -234,11 +213,6 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static void size_changed_event_args_get_prev_size (IntPtr handle, ref UnmanagedSize size);
-#endregion
-
-#region Keyboard
-		[DllImport("moon")]
-		public extern static int keyboard_get_modifiers ();
 #endregion
 
 #region plugin
