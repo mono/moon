@@ -163,8 +163,6 @@ namespace System.Windows {
 			foreach (var part in deployment.Parts){
 				try {
 					a = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
-//					if (part.Name == entry_point_assembly.Name)
-//						startup = a;
 					assemblies [i++] = a;
 				} catch (Exception e) {
 					Report.Error ("Error while loading the {0} assembly  {1}", part.Source, e);
