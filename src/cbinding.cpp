@@ -2396,6 +2396,7 @@ visual_brush_new (void)
 }
 
 
+#if SL_2_0
 /**
  * Xap
  **/
@@ -2404,5 +2405,6 @@ xap_unpack (const char *fname)
 {
 	return Xap::Unpack (fname);
 }
+#endif
 
 

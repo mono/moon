@@ -1255,11 +1255,13 @@ VideoBrush *video_brush_new (void);
 /* @GeneratePInvoke */
 VisualBrush *visual_brush_new (void);
 
+#if SL_2_0
 /**
  * Xap
  **/
 /* @GeneratePInvoke */
 char *xap_unpack (const char *fname);
+#endif
 
 
 G_END_DECLS

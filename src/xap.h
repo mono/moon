@@ -15,6 +15,7 @@
 #include <glib.h>
 
 G_BEGIN_DECLS
+/* @Version=2 */
 class Xap {
 	char *xap_dir;
 	XamlLoader *loader;
