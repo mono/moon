@@ -19,6 +19,7 @@
 #include <frameworkelement.h>
 #include <downloader.h>
 #include <moon-path.h>
+#include <thickness.h>
 #include <layout.h>
 #include <brush.h>
 #include <font.h>
