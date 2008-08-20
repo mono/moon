@@ -1,0 +1,191 @@
+//
+// Unit tests for System.IO.IsolatedStorage.IsolatedStorageFile
+//
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
+//
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+using System;
+using System.IO.IsolatedStorage;
+using Mono.Moonlight.UnitTesting;
+
+namespace MoonTest.System.IO.IsolatedStorage {
+
+	[TestClass]
+	public class IsolatedStorageFileTest {
+
+		[TestMethod]
+		public void AvailableFreeSpace ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.IsTrue (isf.AvailableFreeSpace > 0, "AvailableFreeSpace");
+
+			isf.Remove ();
+			Assert.Throws (delegate { Console.WriteLine (isf.AvailableFreeSpace); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { Console.WriteLine (isf.AvailableFreeSpace); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
+		public void CreateFile ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+
+			isf.DeleteFile ("create-file");
+			Assert.IsFalse (isf.FileExists ("create-file"), "before");
+			IsolatedStorageFileStream fs = isf.CreateFile ("create-file");
+			try {
+				Assert.IsTrue (isf.FileExists ("create-file"), "after");
+
+				Assert.Throws (delegate { isf.CreateFile (null); }, typeof (ArgumentNullException), "null");
+				Assert.Throws (delegate { isf.CreateFile (String.Empty); }, typeof (ArgumentException), "empty");
+				Assert.Throws (delegate { isf.CreateFile ("does-not-exist/new"); }, typeof (IsolatedStorageException), "subdir does not exist");
+			}
+			finally {
+				fs.Close ();
+				isf.DeleteFile ("create-file");
+				Assert.IsFalse (isf.FileExists ("create-file"), "deleted");
+			}
+			isf.Remove ();
+			Assert.Throws (delegate { isf.CreateFile (null); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { isf.CreateFile (null); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
+		public void Dispose ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			isf.Dispose ();
+			isf.Dispose (); // can be disposed multiple times
+		}
+
+		[TestMethod]
+		public void DirectoryDelete ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.IsFalse (isf.DirectoryExists ("dir-exist"), "Before/Exists(dir-exist)");
+			isf.CreateDirectory ("dir-exist");
+			Assert.IsTrue (isf.DirectoryExists ("dir-exist"), "After/Exists(dir-exist)");
+			isf.DeleteDirectory ("dir-exist");
+			Assert.IsFalse (isf.DirectoryExists ("dir-exist"), "Delete/Exists(dir-exist)");
+
+			isf.Remove ();
+			Assert.Throws (delegate { isf.DeleteDirectory ("does not exists"); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { isf.DeleteDirectory ("does not exists"); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
+		public void DirectoryExists ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+
+			Assert.IsFalse (isf.DirectoryExists ("does not exists"), "DirectoryExists(doesnotexists)");
+			Assert.IsFalse (isf.DirectoryExists ("dir-exist"), "DirectoryExists(dir-exist)");
+			string[] dirs = isf.GetDirectoryNames ();
+			int ndir = dirs.Length;
+			try {
+				isf.CreateDirectory ("dir-exist");
+				Assert.IsTrue (isf.DirectoryExists ("dir-exist"), "DirectoryExists(dir-exist)");
+				Assert.AreEqual (ndir + 1, isf.GetDirectoryNames ().Length, "GetDirectoryNames");
+				dirs = isf.GetDirectoryNames ("dir-exist");
+				Assert.AreEqual (1, dirs.Length, "Length");
+				// make sure we're not leaking the full path to the directory
+				Assert.AreEqual ("dir-exist", dirs [0], "dir-exist");
+			}
+			finally {
+				isf.DeleteDirectory ("dir-exist");
+				Assert.IsFalse (isf.DirectoryExists ("dir-exist"), "Delete/Exists(dir-exist)");
+				Assert.AreEqual (ndir, isf.GetDirectoryNames ().Length, "Delete/GetDirectoryNames");
+				dirs = isf.GetDirectoryNames ("dir-exist");
+				Assert.AreEqual (0, dirs.Length, "Delete/Length");
+			}
+
+			isf.Remove ();
+			Assert.Throws (delegate { isf.DirectoryExists ("does not exists"); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { isf.DirectoryExists ("does not exists"); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
+		public void FileExists ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+
+			Assert.IsFalse (isf.FileExists ("does not exists"), "FileExists(doesnotexists)");
+
+			isf.Remove ();
+			Assert.Throws (delegate { isf.FileExists ("does not exists"); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { isf.FileExists ("does not exists"); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
+		public void IncreaseQuotaTo ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+
+			// LAMESPEC: documented as ArgumentOutOfRangeException on MSDN (reported)
+			Assert.Throws (delegate { isf.IncreaseQuotaTo (-1); }, typeof (ArgumentException), "negative");
+			Assert.Throws (delegate { isf.IncreaseQuotaTo (isf.Quota); }, typeof (ArgumentException), "current quota");
+
+			isf.Remove ();
+			Assert.Throws (delegate { isf.IncreaseQuotaTo (1); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { isf.IncreaseQuotaTo (1); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
+		public void Quota ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.IsTrue (isf.Quota > 0, "Quota");
+
+			isf.Remove ();
+			Assert.Throws (delegate { Console.WriteLine (isf.Quota); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { Console.WriteLine (isf.Quota); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
+		public void Remove ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+
+			isf.Remove ();
+			Assert.Throws (delegate { isf.Remove (); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { isf.Remove (); }, typeof (ObjectDisposedException), "Dispose");
+		}
+	}
+}
