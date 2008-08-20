@@ -51,11 +51,6 @@ namespace Mono {
 		public extern static void runtime_shutdown ();
 
 		[DllImport("moon")]
-		public extern static void surface_register_events (
-			IntPtr surface,
-			PlainEvent surface_resized);
-		
-		[DllImport("moon")]
 		public extern static bool type_get_value_type (Kind type);
 
 		[DllImport("moon")]
