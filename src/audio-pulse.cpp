@@ -35,6 +35,7 @@ PulseSource::PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream
 	triggered = false;
 	is_ready = false;
 	play_pending = false;
+	closed = false;
 }
 
 PulseSource::~PulseSource ()
@@ -119,6 +120,10 @@ PulseSource::CloseInternal ()
 	LOG_PULSE ("PulseSource::CloseInternal ()\n");
 	
 	is_ready = false;
+	
+	if (closed)
+		return;
+	closed = true;
 	
 	player->LockLoop ();
 	if (pulse_stream) {

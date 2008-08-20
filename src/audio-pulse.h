@@ -28,6 +28,7 @@ class PulseSource: public AudioSource {
 	bool is_ready;
 	bool initialized;
 	bool play_pending;
+	bool closed;
 	
 	void PACork (bool cork);
 	void PADrain ();
