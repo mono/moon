@@ -228,7 +228,7 @@ gboolean setup (void* data)
 
 gboolean poke (void* data)
 {
-	int poke_no = (int) data;
+	int poke_no = GPOINTER_TO_INT (data);
 	printf ("*** Poking %d\n", poke_no);
 
 	if (runtime_get_surface_list () == NULL)
