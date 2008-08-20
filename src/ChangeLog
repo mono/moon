@@ -1,5 +1,9 @@
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* runtime.cpp: Fix 1.0 build. No idea if the fix is correct.
+
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* cbinding.cpp, cbinding.h, xap.h: Mark Xap as 2.0 only for the
 	  generator.
 
