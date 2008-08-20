@@ -792,12 +792,15 @@ AudioPlayer::Remove (AudioSource *source)
 void
 AudioPlayer::Shutdown ()
 {
+	AudioPlayer *player;
 	LOG_AUDIO ("AudioPlayer::Shutdown ()\n");
 	
 	pthread_mutex_lock (&instance_mutex);
 	if (instance != NULL) {
-		instance->ShutdownImpl ();
-		delete instance;
+		player = instance;
+		instance = NULL;
+		player->ShutdownImpl ();
+		delete player;
 	}
 	pthread_mutex_unlock (&instance_mutex);
 }
