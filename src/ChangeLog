@@ -1,3 +1,10 @@
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::HandleMouseEvent): don't compare the input
+	lists, as we will almost always have identical lists.  compare the
+	head of the new list to focused_element to determine if focus
+	changes.
+
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: Beautify error messages.
