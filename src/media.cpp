@@ -569,14 +569,6 @@ MediaElement::AdvanceFrame ()
 	return !IsStopped ();
 }
 
-gboolean
-media_element_advance_frame (void *user_data)
-{
-	MediaElement *media = (MediaElement *) user_data;
-	
-	return (gboolean) media->AdvanceFrame ();
-}
-
 MediaElement::MediaElement ()
 {
 	pthread_mutex_init (&open_mutex, NULL);
@@ -1617,6 +1609,12 @@ MediaElement::PlayNow ()
 		playlist->Play ();
 		break;
 	}
+}
+
+static gboolean
+media_element_advance_frame (void *user_data)
+{
+	return (gboolean) ((MediaElement *) user_data)->AdvanceFrame ();
 }
 
 void

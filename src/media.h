@@ -544,9 +544,6 @@ class MediaElement : public MediaBase {
 	double GetVolume ();
 };
 
-gboolean media_element_advance_frame (gpointer data);
-
-
 void media_init (void);
 
 G_END_DECLS

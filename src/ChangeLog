@@ -1,5 +1,10 @@
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.h, media.cpp: Remove media_element_advance_frame from header,
+	  no need to make it public.
+
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp: AdvanceFrame: only return true if we actually processed
 	  any frames. SeekCallback: clear the queue of audio frames as well.
 	* media.h, media.cpp: Removed SetPreviousPosition, no longer needed.
