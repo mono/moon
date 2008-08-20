@@ -147,8 +147,8 @@ static enum_map_t font_weights_map [] = {
 
 #if SL_2_0
 static enum_map_t line_stacking_strategy_map [] = {
-	MAP_ENUM (LineStackingStrategy, MaxHeight),
-	MAP_ENUM (LineStackingStrategy, BlockLineHeight),
+	MAP_ENUM_SL2 (LineStackingStrategy, MaxHeight),
+	MAP_ENUM_SL2 (LineStackingStrategy, BlockLineHeight),
 	END_MAPPING
 };
 #endif
@@ -213,9 +213,9 @@ static enum_map_t tablet_device_type_map [] = {
 
 #if SL_2_0
 static enum_map_t text_alignment_map [] = {
-	MAP_ENUM (TextAlignment, Center),
-	MAP_ENUM (TextAlignment, Left),
-	MAP_ENUM (TextAlignment, Right),
+	MAP_ENUM_SL2 (TextAlignment, Center),
+	MAP_ENUM_SL2 (TextAlignment, Left),
+	MAP_ENUM_SL2 (TextAlignment, Right),
 	END_MAPPING
 };
 #endif
@@ -251,15 +251,15 @@ static enum_map_t visibility_map [] = {
 
 #if SL_2_0
 static enum_map_t orientation_map [] = {
-	MAP_ENUM (Orientation, Vertical),
-	MAP_ENUM (Orientation, Horizontal),
+	MAP_ENUM_SL2 (Orientation, Vertical),
+	MAP_ENUM_SL2 (Orientation, Horizontal),
 	END_MAPPING
 };
 
 static enum_map_t cross_domain_access_map [] = {
-	MAP_ENUM (CrossDomainAccess, NoAccess), 
-	MAP_ENUM (CrossDomainAccess, FullAccess), 
-	MAP_ENUM (CrossDomainAccess, ScriptableOnly),
+	MAP_ENUM_SL2 (CrossDomainAccess, NoAccess), 
+	MAP_ENUM_SL2 (CrossDomainAccess, FullAccess), 
+	MAP_ENUM_SL2 (CrossDomainAccess, ScriptableOnly),
 	END_MAPPING 
 };
 #endif
