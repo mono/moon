@@ -2384,3 +2384,13 @@ visual_brush_new (void)
 }
 
 
+/**
+ * Xap
+ **/
+char *
+xap_unpack (const char *fname)
+{
+	return Xap::Unpack (fname);
+}
+
+

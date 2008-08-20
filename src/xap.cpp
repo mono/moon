@@ -27,7 +27,7 @@
 #include "xap.h"
 
 char *
-xap_unpack (const char *fname)
+Xap::Unpack (const char *fname)
 {
 	char *xap_dir;
 

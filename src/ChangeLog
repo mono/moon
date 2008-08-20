@@ -1,5 +1,12 @@
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
+	* xap.h, xap.cpp (class Xap): rename xap_unpack to Xap::Unpack.
+	autogenerate our binding for it.
+
+	* cbinding.h, cbinding.cpp: regen.
+
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
 	* eventargs.h, eventargs.cpp (class Keyboard): make this more of a
 	real class, and remove the implementation of
 	keyboard_get_modifiers.  instead, provide a c++ method (both a

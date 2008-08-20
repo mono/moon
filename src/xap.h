@@ -25,9 +25,10 @@ class Xap {
 	virtual ~Xap ();
 
 	DependencyObject *getRoot () { return root; } 
-};
 
-char *xap_unpack (const char *fname);
+	/* @GenerateCBinding,GeneratePInvoke */
+	static char *Unpack (const char *fname);
+};
 
 Xap *xap_create_from_file (XamlLoader *loader, const char *filename);
 G_END_DECLS

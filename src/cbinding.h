@@ -40,6 +40,7 @@
 #include "uielement.h"
 #include "usercontrol.h"
 #include "window-gtk.h"
+#include "xap.h"
 
 G_BEGIN_DECLS
 
@@ -1248,6 +1249,12 @@ VideoBrush *video_brush_new (void);
  **/
 /* @GeneratePInvoke */
 VisualBrush *visual_brush_new (void);
+
+/**
+ * Xap
+ **/
+/* @GeneratePInvoke */
+char *xap_unpack (const char *fname);
 
 
 G_END_DECLS
