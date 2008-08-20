@@ -1471,3 +1471,17 @@ DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	NotifyListenersOfPropertyChange (args);
 }
+
+DependencyObject*
+DependencyObject::GetContent()
+{
+	const char *content_property_name = GetType()->GetContentPropertyName();
+	if (!content_property_name)
+		return NULL;
+
+	DependencyProperty *content_property = GetDependencyProperty(content_property_name);
+	if (!content_property)
+		return NULL;
+
+	return GetValue(content_property)->AsDependencyObject();
+}

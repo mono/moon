@@ -1,5 +1,11 @@
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.h,
+	dependencyobject.cpp (DependencyObject::GetContent): ripped this
+	out of a hack, should prove useful for the work coming up.
+
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (Surface::FocusElement): fix the IsTabStop check.
 
 2008-08-19  Chris Toshok  <toshok@ximian.com>
