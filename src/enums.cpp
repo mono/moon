@@ -146,6 +146,14 @@ static enum_map_t font_weights_map [] = {
 };
 
 #if SL_2_0
+static enum_map_t line_stacking_strategy_map [] = {
+	MAP_ENUM (LineStackingStrategy, MaxHeight),
+	MAP_ENUM (LineStackingStrategy, BlockLineHeight),
+	END_MAPPING
+};
+#endif
+
+#if SL_2_0
 static enum_map_t horizontal_alignment_map [] = {
 	MAP_ENUM_SL2 (HorizontalAlignment, Left),
 	MAP_ENUM_SL2 (HorizontalAlignment, Center),
@@ -280,6 +288,7 @@ initialize_enums (void)
 
 #if SL_2_0
 	g_hash_table_insert (enum_map, (char *) "ExternalCallersFromCrossDomain", cross_domain_access_map);
+	g_hash_table_insert (enum_map, (char *) "LineStackingStrategy", line_stacking_strategy_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalAlignment", horizontal_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "VerticalAlignment", vertical_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "Orientation", orientation_map);

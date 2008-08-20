@@ -1,3 +1,7 @@
+2008-08-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* enums.cpp|h: Added LineStackingStrategy enum.
+
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio.cpp: NULL out the player instance after deleting it.

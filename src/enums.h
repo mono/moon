@@ -57,6 +57,11 @@ enum FontWeights {
 	FontWeightsExtraBlack = 950,
 };
 
+enum LineStackingStrategy {
+	LineStackingStrategyMaxHeight,
+	LineStackingStrategyBlockLineHeight
+};
+
 enum StyleSimulations {
 	StyleSimulationsNone
 };
@@ -259,8 +264,8 @@ enum CrossDomainAccess {
 
 G_BEGIN_DECLS
 
-int		enums_str_to_int (const char *prop_name, const char *str, bool sl2);
-const char*	enums_int_to_str (const char *prop_name, int e, bool sl2);
+int enums_str_to_int (const char *prop_name, const char *str, bool sl2);
+const char *enums_int_to_str (const char *prop_name, int e, bool sl2);
 
 G_END_DECLS
 
