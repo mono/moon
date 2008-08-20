@@ -1,0 +1,34 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="KeyTest.Page" Width="500" Height="500">
+    <Canvas.Background>
+	<SolidColorBrush x:Name="rootbackground" Color="Blue"/>
+    </Canvas.Background>
+    <Canvas.Triggers>
+      <EventTrigger RoutedEvent="UIElement.KeyDown">
+	  <BeginStoryboard>
+		  <Storyboard>
+			  <ColorAnimation Duration="00:00:02" Storyboard.TargetProperty="Color" Storyboard.TargetName="rootbackground" From="Blue" To="Black" />
+		  </Storyboard>
+	  </BeginStoryboard>
+      </EventTrigger>
+    </Canvas.Triggers>
+
+
+  <Rectangle x:Name="rect" Width="250" Height="250" Canvas.Top="100" Canvas.Left="100">
+  <Rectangle.Fill>
+	<SolidColorBrush x:Name="rectfill" Color="Black"/>
+  </Rectangle.Fill>
+  <Rectangle.Triggers>
+    <EventTrigger RoutedEvent="UIElement.KeyDown">
+	<BeginStoryboard>
+		<Storyboard>
+			<ColorAnimation Duration="00:00:02" Storyboard.TargetProperty="Color" Storyboard.TargetName="rectfill" To="Red" />
+		</Storyboard>
+	</BeginStoryboard>
+    </EventTrigger>
+  </Rectangle.Triggers>
+
+  </Rectangle>
+	
+</Canvas>
