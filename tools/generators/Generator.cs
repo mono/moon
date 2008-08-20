@@ -1618,7 +1618,7 @@ class Generator {
 //			text.AppendLine ("\t\t// NOTE: There is a method in NativeMethod.cs with the same name.");
 
 		if (contains_unknown_types)
-			text.AppendLine ("\t\t// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in typegen.cs and add the missing case) and try again.");
+			text.AppendLine ("\t\t// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.");
 			
 		text.Append (tabs);
 		text.Append ("[DllImport (\"");
