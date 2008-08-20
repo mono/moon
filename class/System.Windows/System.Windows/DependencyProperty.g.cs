@@ -583,6 +583,10 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontWeight", typeof (FontWeight));
 		public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Foreground", typeof (Brush));
 		internal static readonly DependencyProperty InlinesProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Inlines", typeof (InlineCollection));
+		public static readonly DependencyProperty LineHeightProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "LineHeight", typeof (double));
+		public static readonly DependencyProperty LineStackingStrategyProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "LineStackingStrategy", typeof (LineStackingStrategy));
+		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Padding", typeof (Thickness));
+		public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextAlignment", typeof (TextAlignment));
 		public static readonly DependencyProperty TextDecorationsProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorationCollection));
 		public static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Text", typeof (string));
 		public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextWrapping", typeof (TextWrapping));
@@ -628,6 +632,26 @@ namespace System.Windows.Controls {
 		public InlineCollection Inlines {
 			get { return (InlineCollection) GetValue (InlinesProperty); }
 			internal set { SetValue (InlinesProperty, value); }
+		}
+
+		public double LineHeight {
+			get { return (double) GetValue (LineHeightProperty); }
+			set { SetValue (LineHeightProperty, value); }
+		}
+
+		public LineStackingStrategy LineStackingStrategy {
+			get { return (LineStackingStrategy) GetValue (LineStackingStrategyProperty); }
+			set { SetValue (LineStackingStrategyProperty, value); }
+		}
+
+		public Thickness Padding {
+			get { return (Thickness) GetValue (PaddingProperty); }
+			set { SetValue (PaddingProperty, value); }
+		}
+
+		public TextAlignment TextAlignment {
+			get { return (TextAlignment) GetValue (TextAlignmentProperty); }
+			set { SetValue (TextAlignmentProperty, value); }
 		}
 
 		public TextDecorationCollection TextDecorations {
