@@ -544,8 +544,6 @@ class MediaElement : public MediaBase {
 	double GetVolume ();
 };
 
-void media_init (void);
-
 G_END_DECLS
 
 #endif /* __MEDIA_H__ */

@@ -1999,7 +1999,7 @@ runtime_init (guint32 flags)
 	xaml_init ();
 	font_init ();
 	downloader_init ();
-	media_init ();
+	Media::Initialize ();
 }
 
 #if OBJECT_TRACKING

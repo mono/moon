@@ -2759,11 +2759,3 @@ MarkerReachedEventArgs::~MarkerReachedEventArgs ()
 {
 	marker->unref ();
 }
-
-
-
-void
-media_init (void)
-{
-	Media::Initialize ();
-}
