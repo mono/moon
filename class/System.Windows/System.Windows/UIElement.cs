@@ -277,18 +277,18 @@ namespace System.Windows {
 		}
 
 
-		internal void InvokeGotFocus ()
+		internal void InvokeGotFocus (RoutedEventArgs r)
 		{
-			EventHandler h = (EventHandler)events[GotFocusEvent];
+			RoutedEventHandler h = (RoutedEventHandler)events[GotFocusEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, r);
 		}
 
-		internal void InvokeLostFocus ()
+		internal void InvokeLostFocus (RoutedEventArgs r)
 		{
-			EventHandler h = (EventHandler)events[LostFocusEvent];
+			RoutedEventHandler h = (RoutedEventHandler)events[LostFocusEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, r);
 		}
 
 		internal void InvokeMouseMove (MouseEventArgs m)

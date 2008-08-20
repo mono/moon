@@ -67,7 +67,7 @@ namespace Mono {
 		{
 			try {
 				UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeGotFocus ();
+				e.InvokeGotFocus (new RoutedEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())
@@ -81,7 +81,7 @@ namespace Mono {
 		{
 			try {
 				UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeLostFocus ();
+				e.InvokeLostFocus (new RoutedEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())

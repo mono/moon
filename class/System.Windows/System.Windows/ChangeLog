@@ -1,3 +1,8 @@
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: fix up cast errors in InvokeGotFocus and
+	InvokeLostFocus, and add RoutedEventArgs parameters.
+
 2008-08-18  Geoff Norton  <gnorton@novell.com>
 
 	* DependencyObject.cs: Generate a native pointer for managed
