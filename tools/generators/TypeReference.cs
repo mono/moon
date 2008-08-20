@@ -141,6 +141,9 @@ class TypeReference {
 			case "gpointer":
 				managed_type = "IntPtr";
 				break;
+			case "ModifierKeys":
+				managed_type = "int";
+				break;
 			default:
 				if (Value.Contains ("*"))
 					managed_type = "IntPtr";
