@@ -38,7 +38,7 @@ namespace PerfSuiteGenerator {
 	public class Options : Mono.GetOptions.Options {
 
 		[Option ("Location of the file with the database", 'd', "database")]
-		public string DatabaseFile = "results.db";
+		public string DatabaseFile = "perf-results.db";
 
 		public Options ()
 		{
