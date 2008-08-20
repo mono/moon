@@ -1,3 +1,7 @@
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* runtime.h: Make RUNTIME_INIT values sequential.
+
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (xaml_hydrate_from_str): make sure to set the surface
