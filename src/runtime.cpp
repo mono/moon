@@ -1400,7 +1400,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		if (event_id != NO_EVENT_ID && ((surface_index == 0 && new_index == 0) || force_emit)) {
 			handled = EmitEventOnList (event_id, new_input_list, event, -1) || handled;
 
-			if (event_id == UIElement::MouseLeftButtonDownEvent) {
+			if (silverlight2 && event_id == UIElement::MouseLeftButtonDownEvent) {
 				UIElement *el = new_input_list->First() ? ((UIElementNode*)new_input_list->First())->uielement : NULL;
 
 				if (el != focused_element)
