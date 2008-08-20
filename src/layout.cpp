@@ -13,6 +13,8 @@
 #include <config.h>
 #endif
 
+#include <math.h>
+
 #include "moon-path.h"
 #include "layout.h"
 
@@ -351,7 +353,7 @@ print_break_info (gunichar *text)
 #define BreakBefore(btype) (btype == G_UNICODE_BREAK_BEFORE || btype == G_UNICODE_BREAK_PREFIX)
 
 void
-TextLayout::LayoutWrapWithOverflow ()
+TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 {
 	double x0 = 0.0, x1 = 0.0, wx = 0.0, dy = 0.0;
 	register gunichar *start, *word, *inptr;
@@ -367,13 +369,18 @@ TextLayout::LayoutWrapWithOverflow ()
 	guint32 prev;
 	TextRun *run;
 	
+	if (hints->OverrideLineHeight ())
+		height = hints->GetLineHeight ();
+	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		if (run->text == NULL) {
 			// LineBreak
 			if (height == 0.0) {
+				if (!hints->OverrideLineHeight ())
+					height = run->font->Height ();
+				
 				descend = run->font->Descender ();
-				height = run->font->Height ();
 			}
 			
 			line->descend = descend;
@@ -395,8 +402,10 @@ TextLayout::LayoutWrapWithOverflow ()
 			underlined = false;
 			blank = true;
 			
+			if (!hints->OverrideLineHeight ())
+				height = 0.0;
+			
 			descend = 0.0;
-			height = 0.0;
 			x0 = 0.0;
 			
 			continue;
@@ -405,7 +414,9 @@ TextLayout::LayoutWrapWithOverflow ()
 		if (!underlined)
 			underlined = run->IsUnderlined ();
 		descend = MIN (descend, run->font->Descender ());
-		height = MAX (height, run->font->Height ());
+		
+		if (!hints->OverrideLineHeight ())
+			height = MAX (height, run->font->Height ());
 		
 		segment = new TextSegment (run, 0);
 		inptr = start = run->text;
@@ -473,7 +484,9 @@ TextLayout::LayoutWrapWithOverflow ()
 				
 				underlined = run->IsUnderlined ();
 				descend = run->font->Descender ();
-				height = run->font->Height ();
+				
+				if (!hints->OverrideLineHeight ())
+					height = run->font->Height ();
 				
 				prev = 0;
 				x0 = 0.0;
@@ -532,7 +545,7 @@ TextLayout::LayoutWrapWithOverflow ()
 }
 
 void
-TextLayout::LayoutNoWrap ()
+TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 {
 	double x0 = 0.0, x1 = 0.0, dy = 0.0;
 	register gunichar *inptr;
@@ -549,13 +562,18 @@ TextLayout::LayoutNoWrap ()
 	guint32 prev;
 	TextRun *run;
 	
+	if (hints->OverrideLineHeight ())
+		height = hints->GetLineHeight ();
+	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		if (run->text == NULL) {
 			// LineBreak
 			if (height == 0.0) {
+				if (!hints->OverrideLineHeight ())
+					height = run->font->Height ();
+				
 				descend = run->font->Descender ();
-				height = run->font->Height ();
 			}
 			
 			line->descend = descend;
@@ -578,8 +596,10 @@ TextLayout::LayoutNoWrap ()
 			clipped = false;
 			blank = true;
 			
+			if (!hints->OverrideLineHeight ())
+				height = 0.0;
+			
 			descend = 0.0;
-			height = 0.0;
 			x0 = 0.0;
 			
 			continue;
@@ -591,7 +611,9 @@ TextLayout::LayoutNoWrap ()
 		if (!underlined)
 			underlined = run->IsUnderlined ();
 		descend = MIN (descend, run->font->Descender ());
-		height = MAX (height, run->font->Height ());
+		
+		if (!hints->OverrideLineHeight ())
+			height = MAX (height, run->font->Height ());
 		
 		segment = new TextSegment (run, 0);
 		inptr = run->text;
@@ -734,7 +756,7 @@ struct WordChar {
  * Silverlight's text layout)
  **/
 void
-TextLayout::LayoutWrap ()
+TextLayout::LayoutWrap (TextLayoutHints *hints)
 {
 	double x0 = 0.0, x1 = 0.0, wx = 0.0, dy = 0.0;
 	register gunichar *start, *word, *inptr;
@@ -758,13 +780,18 @@ TextLayout::LayoutWrap ()
 	
 	array = g_array_new (false, false, sizeof (WordChar));
 	
+	if (hints->OverrideLineHeight ())
+		height = hints->GetLineHeight ();
+	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		if (run->text == NULL) {
 			// LineBreak
 			if (height == 0.0) {
+				if (!hints->OverrideLineHeight ())
+					height = run->font->Height ();
+				
 				descend = run->font->Descender ();
-				height = run->font->Height ();
 			}
 			
 			line->descend = descend;
@@ -787,8 +814,10 @@ TextLayout::LayoutWrap ()
 			last_word = false;
 			blank = true;
 			
+			if (!hints->OverrideLineHeight ())
+				height = 0.0;
+			
 			descend = 0.0;
-			height = 0.0;
 			x0 = 0.0;
 			
 			continue;
@@ -797,7 +826,9 @@ TextLayout::LayoutWrap ()
 		if (!underlined)
 			underlined = run->IsUnderlined ();
 		descend = MIN (descend, run->font->Descender ());
-		height = MAX (height, run->font->Height ());
+		
+		if (!hints->OverrideLineHeight ())
+			height = MAX (height, run->font->Height ());
 		
 		segment = new TextSegment (run, 0);
 		d(print_run_text ("Laying out Run.Text", run->text, NULL));
@@ -874,7 +905,9 @@ TextLayout::LayoutWrap ()
 				
 				underlined = run->IsUnderlined ();
 				descend = run->font->Descender ();
-				height = run->font->Height ();
+				
+				if (!hints->OverrideLineHeight ())
+					height = run->font->Height ();
 				
 				prev = 0;
 				x0 = 0.0;
@@ -1055,7 +1088,7 @@ print_lines (List *lines)
 #endif
 
 void
-TextLayout::Layout ()
+TextLayout::Layout (TextLayoutHints *hints)
 {
 	if (actual_width != -1.0)
 		return;
@@ -1075,7 +1108,7 @@ TextLayout::Layout ()
 		else
 			printf ("TextLayout::LayoutWrapWithOverflow()\n");
 #endif
-		LayoutWrapWithOverflow ();
+		LayoutWrapWithOverflow (hints);
 		break;
 	case TextWrappingNoWrap:
 #if d(!)0
@@ -1084,7 +1117,7 @@ TextLayout::Layout ()
 		else
 			printf ("TextLayout::LayoutNoWrap()\n");
 #endif
-		LayoutNoWrap ();
+		LayoutNoWrap (hints);
 		break;
 	case TextWrappingWrap:
 	// Silverlight default is to wrap for invalid values
@@ -1095,7 +1128,7 @@ TextLayout::Layout ()
 		else
 			printf ("TextLayout::LayoutWrap()\n");
 #endif
-		LayoutWrap ();
+		LayoutWrap (hints);
 		break;
 	}
 	
@@ -1109,7 +1142,7 @@ TextLayout::Layout ()
 }
 
 static inline void
-RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, double x, double y)
+RenderLine (cairo_t *cr, TextLayoutHints *hints, UIElement *element, TextLine *line, Brush *default_fg, double x, double y)
 {
 	TextFont *font = NULL;
 	TextDecorations deco;
@@ -1229,17 +1262,17 @@ RenderLine (cairo_t *cr, UIElement *element, TextLine *line, Brush *default_fg, 
 }
 
 void
-TextLayout::Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y)
+TextLayout::Render (cairo_t *cr, TextLayoutHints *hints, UIElement *element, Brush *default_fg, double x, double y)
 {
 	TextLine *line;
 	double y1 = y;
 	
-	Layout ();
+	Layout (hints);
 	
 	line = (TextLine *) lines->First ();
 	
 	while (line) {
-		RenderLine (cr, element, line, default_fg, x, y1);
+		RenderLine (cr, hints, element, line, default_fg, x, y1);
 		y1 += (double) line->height;
 		
 		line = (TextLine *) line->next;

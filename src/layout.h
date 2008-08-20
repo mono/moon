@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * layout.h: 
  *
@@ -14,8 +15,10 @@
 
 #include <cairo.h>
 #include <glib.h>
+#include <math.h>
 
 #include <brush.h>
+#include <enums.h>
 #include <font.h>
 #include <list.h>
 
@@ -34,6 +37,30 @@ class TextRun : public List::Node {
 	bool IsUnderlined () { return (deco & TextDecorationsUnderline); }
 };
 
+class TextLayoutHints {
+	LineStackingStrategy strategy;
+	TextAlignment alignment;
+	double lineHeight;
+	
+ public:
+	TextLayoutHints (TextAlignment align, LineStackingStrategy strat, double height)
+	{
+		lineHeight = height;
+		strategy = strat;
+		alignment = align;
+	}
+	
+	void SetLineStackingStrategy (LineStackingStrategy strat) { strategy = strat; }
+	//LineStackingStrategy GetLineStackingStrtegy () { return strategy; }
+	
+	void SetLineHeight (double height) { lineHeight = height; }
+	double GetLineHeight () { return lineHeight; }
+	
+	void SetTextAlignment (TextAlignment align) { alignment = align; }
+	TextAlignment GetTextAlignment () { return alignment; }
+	
+	bool OverrideLineHeight () { return (strategy == LineStackingStrategyBlockLineHeight && !isnan (lineHeight)); }
+};
 
 class TextLayout {
 	// User-set data
@@ -49,9 +76,9 @@ class TextLayout {
 	double actual_height;
 	double actual_width;
 	
-	void LayoutWrapWithOverflow ();
-	void LayoutNoWrap ();
-	void LayoutWrap ();
+	void LayoutWrapWithOverflow (TextLayoutHints *hints);
+	void LayoutNoWrap (TextLayoutHints *hints);
+	void LayoutWrap (TextLayoutHints *hints);
 	
  public:
 	
@@ -70,10 +97,12 @@ class TextLayout {
 	List *GetTextRuns ();
 	void SetTextRuns (List *runs);
 	
-	void Layout ();
+	void Layout (TextLayoutHints *hints);
+	
 	void GetActualExtents (double *width, double *height);
 	//void GetLayoutExtents (double *width, double *height);
-	void Render (cairo_t *cr, UIElement *element, Brush *default_fg, double x, double y);
+	
+	void Render (cairo_t *cr, TextLayoutHints *hints, UIElement *element, Brush *default_fg, double x, double y);
 };
 
 #endif /* __LAYOUT_H__ */

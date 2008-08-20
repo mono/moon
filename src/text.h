@@ -40,7 +40,7 @@ G_END_DECLS
 class Inline : public DependencyObject {
  protected:
 	virtual ~Inline ();
-
+	
  public:
  	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily */
 	static DependencyProperty *FontFamilyProperty;
@@ -59,8 +59,8 @@ class Inline : public DependencyObject {
 	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2,ManagedPropertyType=XmlLanguage */
 	static DependencyProperty *LanguageProperty;
 	
+	/* Member variables should be considered private, for use only with the parent TextBlock */
 	TextFontDescription *font;
-	
 	Brush *foreground;
 	bool autogen;
 	
@@ -68,6 +68,7 @@ class Inline : public DependencyObject {
 	Inline ();
 	
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
+	
 	virtual Value *GetDefaultValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
@@ -78,12 +79,12 @@ class Inline : public DependencyObject {
 class LineBreak : public Inline {
  protected:
 	virtual ~LineBreak () {}
-
+	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	LineBreak () { }
 	
-	virtual Type::Kind GetObjectType () { return Type::LINEBREAK; };
+	virtual Type::Kind GetObjectType () { return Type::LINEBREAK; }
 };
 
 
@@ -92,7 +93,7 @@ class LineBreak : public Inline {
 class Run : public Inline {
  protected:
 	virtual ~Run () {}
-
+	
  public:
  	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
@@ -100,9 +101,11 @@ class Run : public Inline {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Run () { }
 	
-	virtual Type::Kind GetObjectType () { return Type::RUN; };
+	virtual Type::Kind GetObjectType () { return Type::RUN; }
 	
-	// property accessors
+	//
+	// Property Accessors
+	//
 	void SetText (const char *text);
 	const char *GetText ();
 };
@@ -112,6 +115,7 @@ class Run : public Inline {
 /* @Namespace=System.Windows.Controls */
 class TextBlock : public FrameworkElement {
 	TextFontDescription *font;
+	TextLayoutHints *hints;
 	TextLayout *layout;
 	Downloader *downloader;
 	
@@ -186,8 +190,20 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *ForegroundProperty;
  	/* @PropertyType=InlineCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *InlinesProperty;
+#if SL_2_0
+	/* @PropertyType=double,DefaultValue=NAN */
+	static DependencyProperty *LineHeightProperty;
+	/* @PropertyType=LineStackingStrategy,DefaultValue=LineStackingStrategyMaxHeight */
+	static DependencyProperty *LineStackingStrategyProperty;
+	/* @PropertyType=Thickness,DefaultValue=Thickness (0) */
+	static DependencyProperty *PaddingProperty;
+#endif
  	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
+#if SL_2_0
+	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft */
+	static DependencyProperty *TextAlignmentProperty;
+#endif
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */
 	static DependencyProperty *TextDecorationsProperty;
  	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap */
@@ -252,8 +268,24 @@ class TextBlock : public FrameworkElement {
 	void SetInlines (InlineCollection *inlines);
 	InlineCollection *GetInlines ();
 	
+#if SL_2_0
+	void SetLineHeight (double height);
+	double GetLineHeight ();
+	
+	void SetLineStackingStrategy (LineStackingStrategy strategy);
+	LineStackingStrategy GetLineStackingStrategy ();
+	
+	void SetPadding (Thickness *padding);
+	Thickness *GetPadding ();
+#endif
+	
 	void SetText (const char *text);
 	const char *GetText ();
+	
+#if SL_2_0
+	void SetTextAlignment (TextAlignment alignment);
+	TextAlignment GetTextAlignment ();
+#endif
 	
 	void SetTextDecorations (TextDecorations decorations);
 	TextDecorations GetTextDecorations ();

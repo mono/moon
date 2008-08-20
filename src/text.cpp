@@ -212,6 +212,7 @@ TextBlock::TextBlock ()
 	actual_width = 0.0;
 	
 	/* initialize the font description and layout */
+	hints = new TextLayoutHints (TextAlignmentLeft, LineStackingStrategyMaxHeight, 0.0);
 	layout = new TextLayout ();
 	
 	font = new TextFontDescription ();
@@ -231,6 +232,7 @@ TextBlock::TextBlock ()
 TextBlock::~TextBlock ()
 {
 	delete layout;
+	delete hints;
 	delete font;
 	
 	if (downloader != NULL) {
@@ -441,7 +443,7 @@ TextBlock::Layout (cairo_t *cr)
 	}
 	
 	layout->SetTextRuns (runs);
-	layout->Layout ();
+	layout->Layout (hints);
 	
 	layout->GetActualExtents (&actual_width, &actual_height);
 	//layout->GetLayoutExtents (&bbox_width, &bbox_height);
@@ -469,7 +471,7 @@ TextBlock::Paint (cairo_t *cr)
 	if (!(fg = GetForeground ()))
 		fg = default_foreground ();
 	
-	layout->Render (cr, this, fg, 0.0, 0.0);
+	layout->Render (cr, hints, this, fg, 0.0, 0.0);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
@@ -699,6 +701,19 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 			// result of a change to the TextBlock.Text property
 			invalidate = false;
 		}
+#if SL_2_0
+	} else if (args->property == TextBlock::LineStackingStrategyProperty) {
+		hints->SetLineStackingStrategy ((LineStackingStrategy) args->new_value->AsInt32 ());
+		dirty = true;
+	} else if (args->property == TextBlock::LineHeightProperty) {
+		hints->SetLineHeight (args->new_value->AsDouble ());
+		dirty = true;
+	} else if (args->property == TextBlock::TextAlignmentProperty) {
+		hints->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
+		dirty = true;
+	} else if (args->property == TextBlock::PaddingProperty) {
+		dirty = true;
+#endif
 	} else if (args->property == TextBlock::ActualHeightProperty) {
 		invalidate = false;
 	} else if (args->property == TextBlock::ActualWidthProperty) {
@@ -1010,6 +1025,44 @@ TextBlock::GetInlines ()
 	return value ? value->AsInlineCollection () : NULL;
 }
 
+#if SL_2_0
+void
+TextBlock::SetLineHeight (double height)
+{
+	SetValue (TextBlock::LineHeightProperty, Value (height));
+}
+
+double
+TextBlock::GetLineHeight ()
+{
+	return GetValue (TextBlock::LineHeightProperty)->AsDouble ();
+}
+
+void
+TextBlock::SetLineStackingStrategy (LineStackingStrategy strategy)
+{
+	SetValue (TextBlock::LineStackingStrategyProperty, Value (strategy));
+}
+
+LineStackingStrategy
+TextBlock::GetLineStackingStrategy ()
+{
+	return (LineStackingStrategy) GetValue (TextBlock::LineStackingStrategyProperty)->AsInt32 ();
+}
+
+void
+TextBlock::SetPadding (Thickness *padding)
+{
+	SetValue (TextBlock::PaddingProperty, Value (*padding));
+}
+
+Thickness *
+TextBlock::GetPadding ()
+{
+	return GetValue (TextBlock::PaddingProperty)->AsThickness ();
+}
+#endif
+
 void
 TextBlock::SetText (const char *text)
 {
@@ -1023,6 +1076,20 @@ TextBlock::GetText ()
 	
 	return value ? value->AsString () : NULL;
 }
+
+#if SL_2_0
+void
+TextBlock::SetTextAlignment (TextAlignment alignment)
+{
+	SetValue (TextBlock::TextAlignmentProperty, Value (alignment));
+}
+
+TextAlignment
+TextBlock::GetTextAlignment ()
+{
+	return (TextAlignment) GetValue (TextBlock::TextAlignmentProperty)->AsInt32 ();
+}
+#endif
 
 void
 TextBlock::SetTextDecorations (TextDecorations decorations)

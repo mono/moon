@@ -8,8 +8,8 @@
  * 
  */
 
-#ifndef __MOON_CONTROL_H__
-#define __MOON_CONTROL_H__
+#ifndef __CONTROL_H__
+#define __CONTROL_H__
 
 #include <glib.h>
 
@@ -24,6 +24,7 @@
 #define CONTROL_FONT_WEIGHT  FontWeightsNormal
 #define CONTROL_FONT_STYLE   FontStylesNormal
 #define CONTROL_FONT_SIZE    14.666666984558105
+
 //
 // Control Class
 //
@@ -158,4 +159,4 @@ class Control : public FrameworkElement {
 };
 
 
-#endif /* __MOON_CONTROL_H__ */
+#endif /* __CONTROL_H__ */

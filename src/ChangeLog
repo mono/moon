@@ -1,5 +1,14 @@
 2008-08-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (TextLayout::Layout): Updated to take a
+	TextLayoutHints argument for providing hints like text alignment
+	and line stacking/height.
+
+	* text.cpp (class TextBlock): Updated a bit for Silverlight
+	2.0. All of the properties added in 2.0 are now there, although
+	only 2 of them are respected at the moment (line stacking strategy
+	& line height).
+
 	* enums.cpp|h: Added LineStackingStrategy and TextAlignment enums.
 
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
