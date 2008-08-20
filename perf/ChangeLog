@@ -1,3 +1,11 @@
+2008-08-20  Michael Dominic K.  <mdk@mdk.am>
+
+	* perf-suite-generator/Options.cs:
+	* perf-suite-runner/Options.cs: Get the default parameters from env variables.
+	So now it's possible to run something like:
+
+	$> PERF_SHORT_NAME="r1444" PERF_AUTHOR="mdk" make run-perf
+
 2008-08-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-suite-tool/perf-suite-tool.cpp: Adding config.h to 

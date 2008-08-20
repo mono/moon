@@ -43,6 +43,19 @@ namespace PerfSuiteGenerator {
 		public Options ()
 		{
 			base.ParsingMode = OptionsParsingMode.Both;
+
+			/* Try getting defaults from env vars */
+			DatabaseFile = GetEnvVarIfPresentOrDefault ("PERF_DATABASE_FILE", DatabaseFile);
+		}
+
+		private string GetEnvVarIfPresentOrDefault (string var, string def)
+		{
+			string val = Environment.GetEnvironmentVariable (var);
+
+			if (val != null)
+				return val;
+			else
+				return def;
 		}
 
 	}

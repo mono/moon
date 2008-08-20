@@ -37,7 +37,6 @@ namespace PerfSuiteRunner {
 
 	public class Options : Mono.GetOptions.Options {
 
-		// Long option is the variable name ("--file"), short option is -f
 		[Option ("A test run short name (ie. revision number)", 'n', "short-name")]
 		public string ShortName = "Unknown";
 
@@ -53,6 +52,22 @@ namespace PerfSuiteRunner {
 		public Options ()
 		{
 			base.ParsingMode = OptionsParsingMode.Both;
+
+			/* Try getting defaults from env vars */
+			ShortName = GetEnvVarIfPresentOrDefault ("PERF_SHORT_NAME", ShortName);
+			Author = GetEnvVarIfPresentOrDefault ("PERF_AUTHOR", Author);
+			ChangeLog = GetEnvVarIfPresentOrDefault ("PERF_CHANGE_LOG", ChangeLog);
+			DatabaseFile = GetEnvVarIfPresentOrDefault ("PERF_DATABASE_FILE", DatabaseFile);
+		}
+
+		private string GetEnvVarIfPresentOrDefault (string var, string def)
+		{
+			string val = Environment.GetEnvironmentVariable (var);
+
+			if (val != null)
+				return val;
+			else
+				return def;
 		}
 
 	}
