@@ -544,6 +544,9 @@ MediaElement::AdvanceFrame ()
 		SetPosition (TimeSpan_FromPts (position));
 		flags &= ~UpdatingPosition;
 		last_played_pts = position;
+		
+		if (first_pts == G_MAXUINT64)
+			first_pts = position;
 	}
 	
 	if (advanced || !mplayer->IsSeeking ()) {
@@ -702,6 +705,7 @@ MediaElement::Reinitialize (bool dtor)
 	// playlist->unref ();
 	
 	last_played_pts = 0;
+	first_pts = G_MAXUINT64;
 	seek_to_position = -1;
 	
 	if (streamed_markers) {
@@ -1001,7 +1005,15 @@ MediaElement::GetBufferedSize ()
 	buffer_pts = TimeSpan_ToPts (GetBufferingTime ());
 	demuxer = media ? media->GetDemuxer () : NULL;
 	currently_available_pts = demuxer ? demuxer->GetLastAvailablePts () : 0;
-		
+	
+	if (first_pts == G_MAXUINT64)
+		first_pts = currently_available_pts;
+	
+	if (first_pts > currently_available_pts)
+		currently_available_pts = 0;
+	else 
+		currently_available_pts -= first_pts;
+	
 	// Check that we don't cause any div/0.
 	if (currently_available_pts == 0) {
 		progress = 0.0;

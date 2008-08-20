@@ -312,6 +312,7 @@ class MediaElement : public MediaBase {
 	//   So the general formula turns out to be:
 	//     ("currently available pts" - last_played_pts) / (mplayer->GetPosition () - last_played_pts + BufferingTime)
 	guint64 last_played_pts;
+	guint64 first_pts; // the first pts, starts off at GUINT_MAX
 	
 	// this is used to know what to do after a Buffering state finishes
 	MediaElementState prev_state;

@@ -1,3 +1,8 @@
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp, media.h: Fix buffering progress to take into account that
+	  the first pts isn't necessarily 0 (happens for live media).
+
 2008-08-20  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::HandleMouseEvent): make sure not to emit
