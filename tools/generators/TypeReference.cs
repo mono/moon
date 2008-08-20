@@ -127,6 +127,14 @@ class TypeReference {
 			case "TimeSpan":
 				managed_type = "long";
 				break;
+			case "int*":
+				if (IsReturnType) {
+					managed_type = "IntPtr";
+				} else {
+					IsOut = true;
+					managed_type = "int";
+				}
+				break;
 			case "Type::Kind*":
 				if (IsReturnType) {
 					managed_type = "IntPtr";
