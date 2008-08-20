@@ -192,17 +192,17 @@ class TextBlock : public FrameworkElement {
  	/* @PropertyType=InlineCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	static DependencyProperty *InlinesProperty;
 #if SL_2_0
-	/* @PropertyType=double,DefaultValue=NAN */
+	/* @PropertyType=double,DefaultValue=NAN,Version=2.0 */
 	static DependencyProperty *LineHeightProperty;
-	/* @PropertyType=LineStackingStrategy,DefaultValue=LineStackingStrategyMaxHeight */
+	/* @PropertyType=LineStackingStrategy,DefaultValue=LineStackingStrategyMaxHeight,Version=2.0 */
 	static DependencyProperty *LineStackingStrategyProperty;
-	/* @PropertyType=Thickness,DefaultValue=Thickness (0) */
+	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0 */
 	static DependencyProperty *PaddingProperty;
 #endif
  	/* @PropertyType=string */
 	static DependencyProperty *TextProperty;
 #if SL_2_0
-	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft */
+	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0 */
 	static DependencyProperty *TextAlignmentProperty;
 #endif
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */

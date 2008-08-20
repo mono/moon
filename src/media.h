@@ -234,7 +234,7 @@ class Image : public MediaBase {
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetStreamSource (ManagedStreamCallbacks *stream);
 	
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
@@ -444,7 +444,7 @@ class MediaElement : public MediaBase {
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetStreamSource (ManagedStreamCallbacks *stream);
 	
 	/* @GenerateCBinding,GeneratePInvoke */

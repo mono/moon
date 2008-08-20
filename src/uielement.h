@@ -352,7 +352,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	GeneralTransform *GetTransformToUIElement (UIElement *to_element);
 
 	//

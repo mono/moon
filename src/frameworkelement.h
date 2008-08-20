@@ -26,32 +26,33 @@ class FrameworkElement : public UIElement {
 	/* @PropertyType=double,DefaultValue=0.0 */
 	static DependencyProperty *WidthProperty;
 
-	// 2.0 only DPs
+#if SL_2_0
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal */
 	static DependencyProperty *ActualHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal */
 	static DependencyProperty *ActualWidthProperty;
-	/* @PropertyType=Managed,Version=2 */
+	/* @PropertyType=Managed,Version=2.0 */
 	static DependencyProperty *DataContextProperty;
-	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2 */
+	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2.0 */
 	static DependencyProperty *HorizontalAlignmentProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2,ManagedPropertyType=XmlLanguage */
+	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage */
 	static DependencyProperty *LanguageProperty;
-	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2 */
+	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0 */
 	static DependencyProperty *MarginProperty;
-	/* @PropertyType=double,DefaultValue=INFINITY,Version=2 */
+	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0 */
 	static DependencyProperty *MaxHeightProperty;
-	/* @PropertyType=double,DefaultValue=INFINITY,Version=2 */
+	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0 */
 	static DependencyProperty *MaxWidthProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2 */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0 */
 	static DependencyProperty *MinHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2 */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0 */
 	static DependencyProperty *MinWidthProperty;
-	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2 */
+	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0 */
 	static DependencyProperty *VerticalAlignmentProperty;
-	/* @PropertyType=Style,Version=2 */
+	/* @PropertyType=Style,Version=2.0 */
 	static DependencyProperty *StyleProperty;
-
+#endif
+	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	FrameworkElement ();
 	
