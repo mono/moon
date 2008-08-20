@@ -91,11 +91,6 @@ namespace Mono {
 		public extern static void general_transform_transform_point (IntPtr handle, ref UnmanagedPoint p, ref UnmanagedPoint r);
 #endregion
 		
-#region UIElements
-		[DllImport("moon")]
-		public extern static void uielement_transform_point (IntPtr item, ref double x, ref double y);
-#endregion
-
 #region Animations
 		[DllImport("moon")]
 		public extern static void key_spline_set_control_point_1 (IntPtr handle, double x, double y);
