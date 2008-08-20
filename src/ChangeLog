@@ -1,5 +1,12 @@
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
+	* control.h, control.cpp (class Control): generate a binding for
+	Control::InitializeFromXaml and drop the 2 manual C bindings.
+
+	* cbinding.h, cbinding.cpp: regen.
+
+2008-08-19  Chris Toshok  <toshok@ximian.com>
+
 	* xap.h, xap.cpp (class Xap): rename xap_unpack to Xap::Unpack.
 	autogenerate our binding for it.
 

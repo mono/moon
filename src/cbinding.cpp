@@ -378,6 +378,18 @@ control_new (void)
 
 
 #if SL_2_0
+UIElement *
+control_initialize_from_xaml (Control *instance, const char *xaml, Type::Kind *element_type, XamlLoader *loader)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->InitializeFromXaml (xaml, element_type, loader);
+}
+#endif
+
+
+#if SL_2_0
 /**
  * ControlTemplate
  **/

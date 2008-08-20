@@ -104,6 +104,8 @@ class Control : public FrameworkElement {
 	virtual void OnLoaded ();
 	
 	void SetContent (UIElement *element, Surface *surface);
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *InitializeFromXaml (const char *xaml, Type::Kind *element_type, XamlLoader *loader);
 	
 	//
@@ -155,14 +157,5 @@ class Control : public FrameworkElement {
 	VerticalAlignment GetVerticalContentAlignment ();
 };
 
-
-G_BEGIN_DECLS
-
-UIElement *control_initialize_from_xaml (Control *control, const char *xaml,
-					 Type::Kind *element_type);
-UIElement *control_initialize_from_xaml_callbacks (Control *control, const char *xaml, 
-						   Type::Kind *element_type, XamlLoader *loader);
-
-G_END_DECLS
 
 #endif /* __MOON_CONTROL_H__ */

@@ -389,19 +389,3 @@ Control::GetVerticalContentAlignment ()
 {
 	return (VerticalAlignment) GetValue (Control::VerticalContentAlignmentProperty)->AsInt32 ();
 }
-
-
-
-UIElement *
-control_initialize_from_xaml (Control *control, const char *xaml,
-			      Type::Kind *element_type)
-{
-	return control->InitializeFromXaml (xaml, element_type, NULL);
-}
-
-UIElement *
-control_initialize_from_xaml_callbacks (Control *control, const char *xaml,
-					Type::Kind *element_type, XamlLoader *loader)
-{
-	return control->InitializeFromXaml (xaml, element_type, loader);
-}
