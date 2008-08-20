@@ -303,7 +303,7 @@ void
 Media::AddMessage (MediaResult result, const char *msg)
 {
 	if (!MEDIA_SUCCEEDED (result))
-		printf ("Media::AddMessage (%i, '%s').\n", result, msg);
+		printf ("Moonlight: %s (%i)\n", msg, result);
 }
 
 void

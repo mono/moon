@@ -1,5 +1,9 @@
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Beautify error messages.
+
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: test-inexistent-media(s) were failing due to ISP's
 	  tendency to return search pages for failed dns lookups. Fixed tests
 	  after testing with sane DNS settings and did the appropiate change
