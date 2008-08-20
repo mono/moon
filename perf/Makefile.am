@@ -55,7 +55,7 @@ all: perf-suite-lib.dll perf-suite-runner.exe perf-suite-generator.exe perf-tool
 
 run-perf: all
 	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) $(RUNTIME) perf-suite-runner.exe
-	$(RUNTIME) perf-suite-generator.exe --database $(PERF_DATABASE_FILE)
+	$(RUNTIME) perf-suite-generator.exe
 
 EXTRA_DIST = $(perf_suite_lib_sources) $(perf_suite_runner_sources) $(perf_suite_generator_sources) perf-report/helpers.js perf-report/jquery.js  perf-report/logo.png  perf-report/report.css perf-suite-set
 

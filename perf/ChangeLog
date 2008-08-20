@@ -1,5 +1,9 @@
 2008-08-20  Michael Dominic K.  <mdk@mdk.am>
 
+	* Makefile.am: Remove the --database specifier from here too. Fix.
+
+2008-08-20  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile.am:
 	* perf-suite-generator/Options.cs:
 	* perf-suite-runner/Options.cs: Stop polluting the ../../ directory with 
