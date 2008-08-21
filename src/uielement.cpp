@@ -37,6 +37,7 @@ UIElement::UIElement ()
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
 
+	emitting_loaded = false;
 	dirty_flags = 0;
 	up_dirty_node = down_dirty_node = NULL;
 	force_invalidate_of_new_bounds = false;
@@ -395,6 +396,43 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
+void
+UIElement::ContentRemoved (DependencyObject *obj)
+{
+	DependencyObject:: ContentRemoved (obj);
+
+	if (obj->Is (Type::UIELEMENT)) {
+		UIElement *item = (UIElement *) obj;
+		
+		Invalidate (item->GetSubtreeBounds());
+		
+		item->CacheInvalidateHint ();
+		item->SetVisualParent (NULL);
+		item->ClearLoaded ();
+	}
+}
+
+void
+UIElement::ContentAdded (DependencyObject *obj)
+{
+	DependencyObject::ContentAdded (obj);
+
+	if (obj->Is (Type::UIELEMENT)) {
+		UIElement *item = (UIElement *) obj;
+		
+		item->SetVisualParent (this);
+		item->UpdateTransform ();
+		item->UpdateTotalRenderVisibility ();
+		item->UpdateTotalHitTestVisibility ();
+		item->Invalidate ();
+
+		if (IsLoaded ())
+			item->OnLoaded ();
+		
+		UpdateBounds (true);
+	}
+}
+
 bool 
 UIElement::InsideClip (cairo_t *cr, double x, double y)
 {
@@ -433,9 +471,32 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 void
 UIElement::OnLoaded ()
 {
+	if (emitting_loaded)
+		return;
+
+	emitting_loaded = true;
+
+	DependencyObject *content = DependencyObject::GetContent ();
+	if (content && content->Is (Type::COLLECTION)) {
+		Collection *children = (Collection *)content;
+
+		for (int i = 0; i < children->GetCount (); i++) {
+			DependencyObject *child = children->GetValueAt (i)->AsDependencyObject ();
+
+			if (child->Is (Type::UIELEMENT))
+				((UIElement *)child)->OnLoaded ();
+		} 
+	} 
+	else if (content && content->Is (Type::UIELEMENT)) {
+		((UIElement *)content)->OnLoaded ();
+	}
+		   
 	flags |= UIElement::IS_LOADED;
 
 	Emit (LoadedEvent, NULL, true);
+
+ 	emitting_loaded = false;
+
 }
 
 //

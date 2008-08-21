@@ -28,12 +28,9 @@
 //
 // Control Class
 //
-/* @ContentProperty="Content" */
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class Control : public FrameworkElement {
-	bool emitting_loaded;
-	
  protected:
 	virtual ~Control ();
 	
@@ -81,11 +78,6 @@ class Control : public FrameworkElement {
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
 	
-	virtual void SetSurface (Surface *s);
-	
-	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
-	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
-	
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual void FrontToBack (Region *surface_region, List *render_list);
 	virtual void ComputeBounds ();
@@ -101,9 +93,7 @@ class Control : public FrameworkElement {
 	
 	virtual bool GetRenderVisible () { return real_object && real_object->GetRenderVisible(); }
 	virtual bool GetHitTestVisible () { return real_object && real_object->GetHitTestVisible(); }
-	
-	virtual void OnLoaded ();
-	
+
 	void SetContent (UIElement *element, Surface *surface);
 
 	/* @GenerateCBinding,GeneratePInvoke */

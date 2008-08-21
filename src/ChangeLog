@@ -1,3 +1,25 @@
+2008-08-20  Larry Ewing  <lewing@novell.com>
+
+	* dependencyobject.cpp|h: Add ContenAdded and ContentRemoved
+	virtual methods so that we can begin to simplify content rules.
+
+	* dirty.cpp (Surface::PropagateDirtyFlagToChildren): use
+	GetContent to handle the children in a generic way.
+
+	* uielement.cpp|h: start moving generic uielement content logic
+	here.  Implement OnLoaded and deal with content directly.
+	
+	* canvas.cpp|h: remove obsolete methods. Move most of zindex
+	property logic from panel to here.
+
+	* panel.cpp|h: move ZIndex logic to canvas and move OnLoaded logic
+	to uielement.
+
+	* control.cpp|h: generate accessors, start remove OnLoaded and
+	SetSurface.
+
+	* dependencyproperty.g.cpp: regen.
+	
 2008-08-20  Chris Toshok  <toshok@ximian.com>
 
 	* text.cpp, text.h: generate accessors for Glyph properties.

@@ -245,6 +245,8 @@ class DependencyObject : public EventObject {
 	// returns the value of that dependency property.
 	//
 	DependencyObject *GetContent ();
+	virtual void ContentAdded (DependencyObject *obj) { }
+	virtual void ContentRemoved (DependencyObject *obj) { }
 
 	DependencyProperty *GetDependencyProperty (const char *name);
 

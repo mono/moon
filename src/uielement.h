@@ -48,6 +48,8 @@ public:
 	List::Node *down_dirty_node;
 
 	bool force_invalidate_of_new_bounds;
+	bool emitting_loaded;
+
 	Region *dirty_region;
 
 	int DumpHierarchy (UIElement *obj);
@@ -74,7 +76,10 @@ public:
 	virtual TimeManager *GetTimeManager ();
 	
 	void SetVisualParent (UIElement *visual_parent) { this->visual_parent = visual_parent; }
-	
+
+	virtual void ContentAdded (DependencyObject *obj);
+	virtual void ContentRemoved (DependencyObject *obj);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }
 	

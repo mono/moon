@@ -63,7 +63,6 @@ Canvas::OnPropertyChanged (PropertyChangedEventArgs *args)
 		if (GetVisualParent () == NULL)
 			UpdateTransform ();
 	}
-
 	NotifyListenersOfPropertyChange (args);
 }
 
@@ -88,6 +87,39 @@ Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	}
 	else
 		Panel::OnSubPropertyChanged (prop, obj, subobj_args);
+}
+
+void
+Canvas::OnLoaded ()
+{
+	UIElement::OnLoaded ();
+
+       if (GetSurface ()) {
+	       // queue a resort based on ZIndex
+	       GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+       }
+}
+
+void
+Canvas::ContentAdded (DependencyObject *obj)
+{
+	Panel::ContentAdded (obj);
+	
+	if (GetSurface ()) {
+		// queue a resort based on ZIndex
+		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+	}
+}
+
+void
+Canvas::ContentRemoved (DependencyObject *obj)
+{
+	Panel::ContentRemoved (obj);
+	
+	if (GetSurface ()) {
+		// queue a resort based on ZIndex
+		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+	}
 }
 
 Point

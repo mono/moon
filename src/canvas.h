@@ -41,9 +41,13 @@ class Canvas : public Panel {
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
 	virtual Point GetTransformOrigin ();
+	virtual void OnLoaded ();
 
 	virtual void ComputeBounds ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
+	
+	virtual void ContentAdded (DependencyObject *obj);
+	virtual void ContentRemoved (DependencyObject *obj);
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);

@@ -20,13 +20,10 @@
 Control::Control ()
 {
 	real_object = NULL;
-	emitting_loaded = false;
 }
 
 Control::~Control ()
 {
-	if (real_object)
-		real_object->unref ();
 }
 
 void 
@@ -74,33 +71,6 @@ Control::ComputeBounds ()
 }
 
 void
-Control::SetSurface (Surface *s)
-{
-	FrameworkElement::SetSurface (s);
-	
-	if (real_object)
-		real_object->SetSurface (s);
-}
-
-void
-Control::UnregisterAllNamesRootedAt (NameScope *from_ns)
-{
-	FrameworkElement::UnregisterAllNamesRootedAt (from_ns);
-
-	if (real_object)
-		real_object->UnregisterAllNamesRootedAt (from_ns);
-}
-
-void
-Control::RegisterAllNamesRootedAt (NameScope *to_ns)
-{
-	FrameworkElement::RegisterAllNamesRootedAt (to_ns);
-
-	if (real_object)
-		real_object->RegisterAllNamesRootedAt (to_ns);
-}
-
-void
 Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (subobj_args->property == Canvas::TopProperty || subobj_args->property == Canvas::LeftProperty)
@@ -139,24 +109,6 @@ Control::HitTest (cairo_t *cr, Point p, List *uielement_list)
 void
 Control::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 {
-}
-
-void
-Control::OnLoaded ()
-{
-	if (emitting_loaded)
-		return;
-
-	emitting_loaded = true;
-
-	flags |= UIElement::IS_LOADED;
-
-	if (real_object)
-		real_object->OnLoaded ();
-
-	FrameworkElement::OnLoaded ();
-
-	emitting_loaded = false;
 }
 
 void
@@ -203,34 +155,6 @@ Control::InitializeFromXaml (const char *xaml, Type::Kind *element_type, XamlLoa
 }
 
 void
-Control::SetBackground (Brush *bg)
-{
-	SetValue (Control::BackgroundProperty, Value (bg));
-}
-
-Brush *
-Control::GetBackground ()
-{
-	Value *value = GetValue (Control::BackgroundProperty);
-	
-	return value ? value->AsBrush () : NULL;
-}
-
-void
-Control::SetBorderBrush (Brush *brush)
-{
-	SetValue (Control::BorderBrushProperty, Value (brush));
-}
-
-Brush *
-Control::GetBorderBrush ()
-{
-	Value *value = GetValue (Control::BorderBrushProperty);
-	
-	return value ? value->AsBrush () : NULL;
-}
-
-void
 Control::SetBorderThickness (Thickness *thickness)
 {
 	SetValue (Control::BorderThicknessProperty, Value (*thickness));
@@ -243,106 +167,6 @@ Control::GetBorderThickness ()
 }
 
 void
-Control::SetFontFamily (const char *family)
-{
-	SetValue (Control::FontFamilyProperty, Value (family));
-}
-
-const char *
-Control::GetFontFamily ()
-{
-	Value *value = GetValue (Control::FontFamilyProperty);
-	
-	return value ? value->AsString () : NULL;
-}
-
-void
-Control::SetFontSize (double size)
-{
-	SetValue (Control::FontSizeProperty, Value (size));
-}
-
-double
-Control::GetFontSize ()
-{
-	return GetValue (Control::FontSizeProperty)->AsDouble ();
-}
-
-void
-Control::SetFontStretch (FontStretches stretch)
-{
-	SetValue (Control::FontStretchProperty, Value (stretch));
-}
-
-FontStretches
-Control::GetFontStretch ()
-{
-	return (FontStretches) GetValue (Control::FontStretchProperty)->AsInt32 ();
-}
-
-void
-Control::SetFontStyle (FontStyles style)
-{
-	SetValue (Control::FontStyleProperty, Value (style));
-}
-
-FontStyles
-Control::GetFontStyle ()
-{
-	return (FontStyles) GetValue (Control::FontStyleProperty)->AsInt32 ();
-}
-
-void
-Control::SetFontWeight (FontWeights weight)
-{
-	SetValue (Control::FontWeightProperty, Value (weight));
-}
-
-FontWeights
-Control::GetFontWeight ()
-{
-	return (FontWeights) GetValue (Control::FontWeightProperty)->AsInt32 ();
-}
-
-void
-Control::SetForeground (Brush *fg)
-{
-	SetValue (Control::ForegroundProperty, Value (fg));
-}
-
-Brush *
-Control::GetForeground ()
-{
-	Value *value = GetValue (Control::ForegroundProperty);
-	
-	return value ? value->AsBrush () : NULL;
-}
-
-void
-Control::SetHorizontalContentAlignment (HorizontalAlignment alignment)
-{
-	SetValue (Control::HorizontalContentAlignmentProperty, Value (alignment));
-}
-
-HorizontalAlignment
-Control::GetHorizontalContentAlignment ()
-{
-	return (HorizontalAlignment) GetValue (Control::HorizontalContentAlignmentProperty)->AsInt32 ();
-}
-
-void
-Control::SetIsTabStop (bool value)
-{
-	SetValue (Control::IsTabStopProperty, Value (value));
-}
-
-bool
-Control::GetIsTabStop ()
-{
-	return GetValue (Control::IsTabStopProperty)->AsBool ();
-}
-
-void
 Control::SetPadding (Thickness *padding)
 {
 	SetValue (Control::PaddingProperty, Value (*padding));
@@ -352,40 +176,4 @@ Thickness *
 Control::GetPadding ()
 {
 	return GetValue (Control::PaddingProperty)->AsThickness ();
-}
-
-void
-Control::SetTabIndex (int index)
-{
-	SetValue (Control::TabIndexProperty, Value (index));
-}
-
-int
-Control::GetTabIndex ()
-{
-	return (int) GetValue (Control::TabIndexProperty)->AsInt32 ();
-}
-
-void
-Control::SetTabNavigation (KeyboardNavigationMode mode)
-{
-	SetValue (Control::TabNavigationProperty, Value (mode));
-}
-
-KeyboardNavigationMode
-Control::GetTabNavigation ()
-{
-	return (KeyboardNavigationMode) GetValue (Control::TabNavigationProperty)->AsInt32 ();
-}
-
-void
-Control::SetVerticalContentAlignment (VerticalAlignment alignment)
-{
-	SetValue (Control::VerticalContentAlignmentProperty, Value (alignment));
-}
-
-VerticalAlignment
-Control::GetVerticalContentAlignment ()
-{
-	return (VerticalAlignment) GetValue (Control::VerticalContentAlignmentProperty)->AsInt32 ();
 }

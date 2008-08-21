@@ -26,8 +26,6 @@ class Panel : public FrameworkElement {
 	void ChildAdded (UIElement *child);
 	void ChildRemoved (UIElement *child);
 
-	bool emitting_loaded;
-	
  protected:
 	virtual ~Panel ();
 
@@ -77,10 +75,6 @@ class Panel : public FrameworkElement {
 	
 	virtual void CacheInvalidateHint ();
 
-	virtual void OnLoaded ();
-	
-	void AddChild (UIElement *item);
-	
 	//
 	// Property Accessors
 	//

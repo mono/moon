@@ -22,7 +22,6 @@ Panel::Panel ()
 {
 	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new UIElementCollection ()));
 	mouse_over = NULL;
-	emitting_loaded = false;
 }
 
 Panel::~Panel()
@@ -37,12 +36,6 @@ Panel::Dispose ()
 		children->GetValueAt (i)->AsUIElement ()->SetVisualParent (NULL);
 
 	FrameworkElement::Dispose ();
-}
-
-void
-Panel::AddChild (UIElement *item)
-{
-	GetChildren ()->Add (item);
 }
 
 #define DEBUG_BOUNDS 0
@@ -480,65 +473,19 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 		if (args->old_value) {
 			collection = args->old_value->AsCollection ();
 			for (int i = 0; i < collection->GetCount (); i++)
-				ChildRemoved (collection->GetValueAt (i)->AsUIElement());
+				ContentRemoved (collection->GetValueAt (i)->AsUIElement());
 		}
 		
 		if (args->new_value) {
 			collection = args->new_value->AsCollection ();
 			for (int i = 0; i < collection->GetCount (); i++)
-				ChildAdded (collection->GetValueAt (i)->AsUIElement ());
-			
-			if (GetSurface ()) {
-				// queue a resort based on ZIndex
-				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-			}
+				ContentAdded (collection->GetValueAt (i)->AsUIElement ());
 		}
 
 		UpdateBounds();
 	}
 
 	NotifyListenersOfPropertyChange (args);
-}
-
-void
-Panel::ChildAdded (UIElement *child)
-{
-	UIElement *item = (UIElement *) child;
-
-	item->SetVisualParent (this);
-	item->UpdateTransform ();
-	item->UpdateTotalRenderVisibility ();
-	item->UpdateTotalHitTestVisibility ();
-	item->Invalidate ();
-
-	if (flags & UIElement::IS_LOADED)
-		item->OnLoaded ();
-			
-	if (GetSurface ()) {
-		// queue a resort based on ZIndex
-		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-	}
-
-	UpdateBounds (true);
-}
-
-void
-Panel::ChildRemoved (UIElement *child)
-{
-	UIElement *item = (UIElement *) child;
-
-	Invalidate (item->GetSubtreeBounds());
-
-	item->CacheInvalidateHint ();
-	item->SetVisualParent (NULL);
-	item->ClearLoaded ();
-
-	if (GetSurface ()) {
-		// queue a resort based on ZIndex
-		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-	}
-
-	UpdateBounds (true);
 }
 
 void
@@ -558,17 +505,17 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	if (col == GetChildren ()) {
 		switch (args->action) {
 		case CollectionChangedActionReplace:
-			ChildRemoved (args->old_value->AsUIElement ());
+			ContentRemoved (args->old_value->AsUIElement ());
 			// now fall thru to Add
 		case CollectionChangedActionAdd:
-			ChildAdded (args->new_value->AsUIElement ());
+			ContentAdded (args->new_value->AsUIElement ());
 			break;
 		case CollectionChangedActionRemove:
-			ChildRemoved (args->old_value->AsUIElement ());
+			ContentRemoved (args->old_value->AsUIElement ());
 			break;
 		case CollectionChangedActionClearing:
 			for (int i = 0; i < col->GetCount (); i++)
-				ChildRemoved (col->GetValueAt (i)->AsUIElement ());
+				ContentRemoved (col->GetValueAt (i)->AsUIElement ());
 			break;
 		case CollectionChangedActionCleared:
 			// nothing needed here.
@@ -594,32 +541,4 @@ Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Property
 	} else {
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
 	}
-}
-
-void
-Panel::OnLoaded ()
-{
- 	if (emitting_loaded)
- 		return;
-	
- 	emitting_loaded = true;
-	
-	flags |= UIElement::IS_LOADED;
-	
-	UIElementCollection *children = GetChildren ();
-	
-	for (int i = 0; i < children->GetCount (); i++) {
-		UIElement *item = children->GetValueAt (i)->AsUIElement ();
-
-		item->OnLoaded ();
-	}
-	
-	FrameworkElement::OnLoaded ();
-	
-	if (GetSurface ()) {
-		// queue a resort based on ZIndex
-		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-	}
-	
- 	emitting_loaded = false;
 }

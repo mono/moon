@@ -205,19 +205,23 @@ Surface::RemoveDirtyElement (UIElement *element)
 void
 Surface::PropagateDirtyFlagToChildren (UIElement *el, DirtyType flags)
 {
-	if (el->Is (Type::PANEL)) {
-		UIElementCollection *children = ((Panel *) el)->GetChildren ();
-		DependencyObject *obj;
+	DependencyObject *content = el->GetContent ();
+
+	if (!content)
+		return;
+
+	if (content->Is (Type::COLLECTION)) {
+		Collection *children = (Collection *)content;
 		
 		for (int i = 0; i < children->GetCount (); i++) {
-			obj = children->GetValueAt (i)->AsDependencyObject ();
-			AddDirtyElement ((UIElement *) obj, flags);
+			DependencyObject *child = children->GetValueAt (i)->AsDependencyObject ();
+
+			if (child->Is (Type::UIELEMENT)) 
+				AddDirtyElement ((UIElement *) child, flags);
 		}
 	}
-	else if (el->Is (Type::CONTROL)) {
-		Control *c = (Control*)el;
-		if (c->real_object)
-			AddDirtyElement (c->real_object, flags);
+	else if (content->Is (Type::UIELEMENT)) {
+		AddDirtyElement ((UIElement *)content, flags);
 	}
 }
 
