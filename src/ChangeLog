@@ -1,3 +1,16 @@
+2008-08-21  Chris Toshok  <toshok@ximian.com>
+
+	* value.h.in (struct Value): make all single arg primitive value
+	typed ctors "explicit" so c++ won't do any magic implicit
+	conversion from value type to Value.
+
+	* value.h: regen
+
+	* runtime.cpp (Surface::ShowFullScreenMessage): need to create the
+	Value()'s explicitly.
+
+	* collection.cpp (DoubleCollection::FromStr): same.
+
 2008-08-20  Larry Ewing  <lewing@novell.com>
 
 	* dependencyobject.cpp (create_temp_namescope): don't leak the

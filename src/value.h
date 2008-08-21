@@ -214,11 +214,11 @@ public:
 
 	Value ();
 	Value (const Value& v);
-	Value (Type::Kind k);
-	Value (bool z);
-	Value (double d);
+	explicit Value (Type::Kind k);
+	explicit Value (bool z);
+	explicit Value (double d);
+	explicit Value (gint32 i);
 	Value (gint64 i, Type::Kind as); // Use for TimeSpan and int64 values.
-	Value (gint32 i);
 	Value (Color c);
 	Value (EventObject *obj);
 	Value (Point pt);
@@ -500,7 +500,7 @@ public:
 	// This one is bad because it get used by either int64_t
 	// and TimeSpan, and the constructor doesn't know which 
 	// of the two types it is.
-	Value (gint64 i) {};
+	explicit Value (gint64 i) {};
 };
 
 G_BEGIN_DECLS

@@ -464,7 +464,7 @@ DoubleCollection::FromStr (const char *s)
 
 	DoubleCollection *doubles = new DoubleCollection ();
 	for (guint i = 0; i < values->len; i ++)
-		doubles->Add (g_array_index (values, double, i));
+		doubles->Add (Value (g_array_index (values, double, i)));
 	g_array_free (values, true);
 
 	return doubles;

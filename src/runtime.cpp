@@ -821,8 +821,8 @@ Surface::ShowFullScreenMessage ()
 	}	
 
 	// Put the box in the middle of the screen
-	transform->SetValue (TranslateTransform::XProperty, (active_window->GetWidth() - box_width) / 2);
-	transform->SetValue (TranslateTransform::YProperty, (active_window->GetHeight() - box_height) / 2);
+	transform->SetValue (TranslateTransform::XProperty, Value ((active_window->GetWidth() - box_width) / 2));
+	transform->SetValue (TranslateTransform::YProperty, Value ((active_window->GetHeight() - box_height) / 2));
 	
 	full_screen_message->UpdateTotalRenderVisibility ();
 	full_screen_message->UpdateTotalHitTestVisibility ();
