@@ -1080,6 +1080,201 @@ ColumnDefinition::SetWidth (GridLength * value)
 }
 
 #endif
+#if SL_2_0
+Brush *
+Control::GetBackground ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::BackgroundProperty);
+	return (!value) ? NULL : value->AsBrush ();
+}
+
+void
+Control::SetBackground (Brush * value)
+{
+	this->DependencyObject::SetValue (Control::BackgroundProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+Brush *
+Control::GetBorderBrush ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::BorderBrushProperty);
+	return (!value) ? NULL : value->AsBrush ();
+}
+
+void
+Control::SetBorderBrush (Brush * value)
+{
+	this->DependencyObject::SetValue (Control::BorderBrushProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+const char *
+Control::GetFontFamily ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::FontFamilyProperty);
+	return (!value) ? NULL : value->AsString ();
+}
+
+void
+Control::SetFontFamily (const char * value)
+{
+	this->DependencyObject::SetValue (Control::FontFamilyProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+double
+Control::GetFontSize ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::FontSizeProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
+}
+
+void
+Control::SetFontSize (double value)
+{
+	this->DependencyObject::SetValue (Control::FontSizeProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+FontStretches
+Control::GetFontStretch ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::FontStretchProperty);
+	return (!value) ? (FontStretches) 0 : (FontStretches)value->AsInt32();
+}
+
+void
+Control::SetFontStretch (FontStretches value)
+{
+	this->DependencyObject::SetValue (Control::FontStretchProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+FontStyles
+Control::GetFontStyle ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::FontStyleProperty);
+	return (!value) ? (FontStyles) 0 : (FontStyles)value->AsInt32();
+}
+
+void
+Control::SetFontStyle (FontStyles value)
+{
+	this->DependencyObject::SetValue (Control::FontStyleProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+FontWeights
+Control::GetFontWeight ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::FontWeightProperty);
+	return (!value) ? (FontWeights) 0 : (FontWeights)value->AsInt32();
+}
+
+void
+Control::SetFontWeight (FontWeights value)
+{
+	this->DependencyObject::SetValue (Control::FontWeightProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+Brush *
+Control::GetForeground ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::ForegroundProperty);
+	return (!value) ? NULL : value->AsBrush ();
+}
+
+void
+Control::SetForeground (Brush * value)
+{
+	this->DependencyObject::SetValue (Control::ForegroundProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+HorizontalAlignment
+Control::GetHorizontalContentAlignment ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::HorizontalContentAlignmentProperty);
+	return (!value) ? (HorizontalAlignment) 0 : (HorizontalAlignment)value->AsInt32();
+}
+
+void
+Control::SetHorizontalContentAlignment (HorizontalAlignment value)
+{
+	this->DependencyObject::SetValue (Control::HorizontalContentAlignmentProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+bool
+Control::GetIsTabStop ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::IsTabStopProperty);
+	return (!value) ? false : value->AsBool ();
+}
+
+void
+Control::SetIsTabStop (bool value)
+{
+	this->DependencyObject::SetValue (Control::IsTabStopProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+gint32
+Control::GetTabIndex ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::TabIndexProperty);
+	return (!value) ? 0 : value->AsInt32 ();
+}
+
+void
+Control::SetTabIndex (gint32 value)
+{
+	this->DependencyObject::SetValue (Control::TabIndexProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+KeyboardNavigationMode
+Control::GetTabNavigation ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::TabNavigationProperty);
+	return (!value) ? (KeyboardNavigationMode) 0 : (KeyboardNavigationMode)value->AsInt32();
+}
+
+void
+Control::SetTabNavigation (KeyboardNavigationMode value)
+{
+	this->DependencyObject::SetValue (Control::TabNavigationProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+VerticalAlignment
+Control::GetVerticalContentAlignment ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::VerticalContentAlignmentProperty);
+	return (!value) ? (VerticalAlignment) 0 : (VerticalAlignment)value->AsInt32();
+}
+
+void
+Control::SetVerticalContentAlignment (VerticalAlignment value)
+{
+	this->DependencyObject::SetValue (Control::VerticalContentAlignmentProperty, Value (value));
+}
+
+#endif
 const char *
 DependencyObject::GetName ()
 {

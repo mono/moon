@@ -35,37 +35,37 @@ class Control : public FrameworkElement {
 	virtual ~Control ();
 	
  public:
- 	/* @PropertyType=Brush */
+ 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BackgroundProperty;
- 	/* @PropertyType=Brush */
+ 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BorderBrushProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0) */
 	static DependencyProperty *BorderThicknessProperty;
- 	/* @PropertyType=string,DefaultValue=CONTROL_FONT_FAMILY,ManagedPropertyType=FontFamily */
+ 	/* @PropertyType=string,DefaultValue=CONTROL_FONT_FAMILY,ManagedPropertyType=FontFamily,GenerateAccessors */
 	static DependencyProperty *FontFamilyProperty;
- 	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE */
+ 	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE,GenerateAccessors */
 	static DependencyProperty *FontSizeProperty;
- 	/* @PropertyType=FontStretch,DefaultValue=CONTROL_FONT_STRETCH */
+ 	/* @PropertyType=FontStretch,DefaultValue=CONTROL_FONT_STRETCH,GenerateAccessors */
 	static DependencyProperty *FontStretchProperty;
- 	/* @PropertyType=FontStyle,DefaultValue=CONTROL_FONT_STYLE */
+ 	/* @PropertyType=FontStyle,DefaultValue=CONTROL_FONT_STYLE,GenerateAccessors */
 	static DependencyProperty *FontStyleProperty;
- 	/* @PropertyType=FontWeight,DefaultValue=CONTROL_FONT_WEIGHT */
+ 	/* @PropertyType=FontWeight,DefaultValue=CONTROL_FONT_WEIGHT,GenerateAccessors */
 	static DependencyProperty *FontWeightProperty;
- 	/* @PropertyType=Brush */
+ 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentCenter */
+ 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentCenter,GenerateAccessors */
 	static DependencyProperty *HorizontalContentAlignmentProperty;
- 	/* @PropertyType=bool,DefaultValue=true */
+ 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	static DependencyProperty *IsTabStopProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0) */
 	static DependencyProperty *PaddingProperty;
- 	/* @PropertyType=gint32,DefaultValue=INT_MAX */
+ 	/* @PropertyType=gint32,DefaultValue=INT_MAX,GenerateAccessors */
 	static DependencyProperty *TabIndexProperty;
- 	/* @PropertyType=KeyboardNavigationMode,DefaultValue=KeyboardNavigationModeLocal */
+ 	/* @PropertyType=KeyboardNavigationMode,DefaultValue=KeyboardNavigationModeLocal,GenerateAccessors */
 	static DependencyProperty *TabNavigationProperty;
  	/* @PropertyType=ControlTemplate */
 	static DependencyProperty *TemplateProperty;
- 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter */
+ 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter,GenerateAccessors */
 	static DependencyProperty *VerticalContentAlignmentProperty;
  	/* @PropertyType=Style,ManagedFieldAccess=Internal */
 	static DependencyProperty *StyleProperty;
