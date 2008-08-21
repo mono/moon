@@ -946,6 +946,7 @@ create_temp_namescope (DependencyObject *o)
 	NameScope *ns = new NameScope ();
 	ns->SetTemporary (true);
 	NameScope::SetNameScope (o, ns);
+	ns->unref ();
 
 	return ns;
 }
@@ -966,7 +967,7 @@ DependencyObject::MergeTemporaryNameScopes (DependencyObject *dob)
 {
 	NameScope *ns = NameScope::GetNameScope (this);
 	NameScope *dob_ns = NameScope::GetNameScope (dob);
-	
+
 	if (dob_ns && dob_ns->GetTemporary ())
 		merge_namescope (ns, dob_ns, this);
 
@@ -975,6 +976,7 @@ DependencyObject::MergeTemporaryNameScopes (DependencyObject *dob)
 		
 		for (int i = 0; i < c->GetCount (); i++) {
 			NameScope *c_ns = NameScope::GetNameScope (c->GetValueAt (i)->AsDependencyObject ());
+			ns = NameScope::GetNameScope (this);
 			if (c_ns && c_ns->GetTemporary ())
 				merge_namescope (ns, c_ns, this);
 		}

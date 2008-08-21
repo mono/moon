@@ -1,5 +1,11 @@
 2008-08-20  Larry Ewing  <lewing@novell.com>
 
+	* dependencyobject.cpp (create_temp_namescope): don't leak the
+	temporary namescope we create.  Also don't create it over and over
+	again.
+
+2008-08-20  Larry Ewing  <lewing@novell.com>
+
 	* dependencyobject.cpp|h: Add ContenAdded and ContentRemoved
 	virtual methods so that we can begin to simplify content rules.
 
