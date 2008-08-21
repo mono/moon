@@ -958,12 +958,9 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 void
 KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	printf ("KeyFrame subprob %s\n", subobj_args->property->GetName ());
 	if (strcmp (subobj_args->property->GetName (), "KeyTime") == 0) {
 		resolved = false;
 	}
-	
-
 
 	Collection::OnSubPropertyChanged (prop, obj, subobj_args);
 }

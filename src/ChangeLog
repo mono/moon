@@ -1,5 +1,8 @@
 2008-08-21  Larry Ewing  <lewing@novell.com>
 
+	* animation.cpp (KeyFrameCollection::OnSubPropertyChanged): remove
+	debug spew.
+
 	* xaml.cpp (value_from_str): unref the collections we create after
 	setting them.
 
@@ -18,7 +21,7 @@
 	additional_types.  Fixes lookup problems of non-custom DP's on
 	managed subclasses.
 
-2008-08-21  Chris Toshok  <toshok@ximian.com>
+2008-08-21  Chris Toshok <toshok@ximian.com>
 
 	* value.h.in (struct Value): make all single arg primitive value
 	typed ctors "explicit" so c++ won't do any magic implicit
