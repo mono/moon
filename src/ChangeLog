@@ -1,5 +1,12 @@
 2008-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.h (class TextBox): The TextBox namespace should be
+	System.Windows.Controls
+
+	* stackpanel.h (class StackPanel): #include panel.h
+
+2008-08-21  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.h: Initial implementation of the TextBox class (just
 	stubs atm).
 

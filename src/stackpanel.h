@@ -8,10 +8,11 @@
  * 
  */
  
-#ifndef __MOON_STACKPANEL_H__
-#define __MOON_STACKPANEL_H__
+#ifndef __STACKPANEL_H__
+#define __STACKPANEL_H__
 
- 
+#include <panel.h>
+
 /* @Namespace=System.Windows.Controls */
 /* @Version=2 */
 class StackPanel : public Panel {
@@ -31,4 +32,4 @@ class StackPanel : public Panel {
 	void SetOrientation (Orientation value);
 };
 
-#endif // __MOON_STACKPANEL_H__
+#endif // __STACKPANEL_H__

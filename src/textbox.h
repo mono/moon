@@ -27,7 +27,7 @@
 
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Text" */
-/* @Namespace=System.Windows.Documents */
+/* @Namespace=System.Windows.Controls */
 class TextBox : public Control {
  protected:
 	virtual ~TextBox () { }
@@ -58,6 +58,7 @@ class TextBox : public Control {
 	//
 	// Overrides
 	//
+#if 0
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
@@ -69,6 +70,7 @@ class TextBox : public Control {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
 	virtual Value *GetValue (DependencyProperty *property);
+#endif
 	
 	//
 	// Property Accessors
