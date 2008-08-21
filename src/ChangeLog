@@ -1,3 +1,13 @@
+2008-08-21  Chris Toshok  <toshok@ximian.com>
+
+	* border.h, border.cpp, cornerradius.h: add new
+	types.
+
+	* Makefile.am: add border/cornerradius to the file list.
+
+	* type.h, value.h, cbinding.cpp, cbinding.h, type-generated.cpp,
+	dependencyproperty.g.cpp: regen.
+	
 2008-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.h (class TextBox): The TextBox namespace should be

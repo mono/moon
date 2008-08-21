@@ -9,6 +9,7 @@
 // This should probably be changed to somehow not include c++ headers.
 #include "animation.h"
 #include "animation2.h"
+#include "border.h"
 #include "brush.h"
 #include "canvas.h"
 #include "clock.h"
@@ -86,6 +87,14 @@ BeginStoryboard *begin_storyboard_new (void);
  **/
 /* @GeneratePInvoke */
 BezierSegment *bezier_segment_new (void);
+
+#if SL_2_0
+/**
+ * Border
+ **/
+/* @GeneratePInvoke */
+Border *border_new (void);
+#endif
 
 /**
  * Brush

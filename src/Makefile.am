@@ -139,8 +139,10 @@ libmoon_la_SOURCES = 		\
 
 if INCLUDE_MANAGED_CODE
 libmoon_include_HEADERS += 	\
+	border.h		\
 	contentcontrol.h	\
 	control.h		\
+	cornerradius.h		\
 	deployment.h		\
 	grid.h			\
 	stackpanel.h		\
@@ -153,6 +155,7 @@ libmoon_include_HEADERS += 	\
 	xap.h
 
 libmoon_la_SOURCES += 		\
+	border.cpp		\
 	contentcontrol.cpp	\
 	control.cpp		\
 	deployment.cpp		\

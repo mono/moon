@@ -77,6 +77,18 @@ bezier_segment_new (void)
 }
 
 
+#if SL_2_0
+/**
+ * Border
+ **/
+Border *
+border_new (void)
+{
+	return new Border ();
+}
+#endif
+
+
 /**
  * Brush
  **/

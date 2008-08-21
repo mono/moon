@@ -29,6 +29,7 @@
 #include "uielement.h"
 #if SL_2_0
 #include "animation2.h"
+#include "border.h"
 #include "contentcontrol.h"
 #include "control.h"
 #include "deployment.h"
@@ -66,6 +67,15 @@ dependency_property_g_init (void)
 	BezierSegment::Point1Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point1", Type::POINT);
 	BezierSegment::Point2Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point2", Type::POINT);
 	BezierSegment::Point3Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point3", Type::POINT);
+#if SL_2_0
+
+	Border::BackgroundProperty = DependencyProperty::Register (Type::BORDER, "Background", Type::BRUSH);
+	Border::BorderBrushProperty = DependencyProperty::Register (Type::BORDER, "BorderBrush", Type::BRUSH);
+	Border::BorderThicknessProperty = DependencyProperty::Register (Type::BORDER, "BorderThickness", Type::THICKNESS);
+	Border::ChildProperty = DependencyProperty::Register (Type::BORDER, "Child", Type::UIELEMENT);
+	Border::CornerRadiusProperty = DependencyProperty::Register (Type::BORDER, "CornerRadius", Type::CORNERRADIUS);
+	Border::PaddingProperty = DependencyProperty::Register (Type::BORDER, "Padding", Type::THICKNESS);
+#endif
 	Brush::ChangedProperty = DependencyProperty::Register (Type::BRUSH, "Changed", Type::BOOL);
 	Brush::OpacityProperty = DependencyProperty::Register (Type::BRUSH, "Opacity", new Value (1.0));
 	Brush::RelativeTransformProperty = DependencyProperty::Register (Type::BRUSH, "RelativeTransform", Type::TRANSFORM);
@@ -402,6 +412,14 @@ DependencyProperty *BeginStoryboard::StoryboardProperty = NULL;
 DependencyProperty *BezierSegment::Point1Property = NULL;
 DependencyProperty *BezierSegment::Point2Property = NULL;
 DependencyProperty *BezierSegment::Point3Property = NULL;
+#if SL_2_0
+DependencyProperty *Border::BackgroundProperty = NULL;
+DependencyProperty *Border::BorderBrushProperty = NULL;
+DependencyProperty *Border::BorderThicknessProperty = NULL;
+DependencyProperty *Border::ChildProperty = NULL;
+DependencyProperty *Border::CornerRadiusProperty = NULL;
+DependencyProperty *Border::PaddingProperty = NULL;
+#endif
 DependencyProperty *Brush::ChangedProperty = NULL;
 DependencyProperty *Brush::OpacityProperty = NULL;
 DependencyProperty *Brush::RelativeTransformProperty = NULL;

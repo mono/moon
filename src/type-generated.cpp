@@ -42,6 +42,7 @@
 #include "yuv-converter.h"
 #if SL_2_0
 #include "animation2.h"
+#include "border.h"
 #include "contentcontrol.h"
 #include "control.h"
 #include "deployment.h"
@@ -123,6 +124,7 @@ Type type_infos [] = {
 	{ Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard", NULL, NULL }, 
 	{ Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL, NULL, NULL }, 
 	{ Type::BOOL, Type::INVALID, false, "bool", "BOOL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::BORDER, Type::FRAMEWORKELEMENT, false, "Border", "BORDER", 0, 15, NULL, (create_inst_func *) border_new, "Child", NULL, NULL }, 
 	{ Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL, NULL, NULL }, 
 	{ Type::CANVAS, Type::PANEL, false, "Canvas", "CANVAS", 0, 15, NULL, (create_inst_func *) canvas_new, NULL, NULL, NULL }, 
 	{ Type::CLOCK, Type::DEPENDENCY_OBJECT, false, "Clock", "CLOCK", 4, 5, Clock_Events, NULL, NULL, NULL, NULL }, 
@@ -138,6 +140,7 @@ Type type_infos [] = {
 	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 0, 15, NULL, (create_inst_func *) content_control_new, "Content", NULL, NULL }, 
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 15, NULL, (create_inst_func *) control_new, NULL, NULL, NULL }, 
 	{ Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL, NULL, NULL }, 
+	{ Type::CORNERRADIUS, Type::INVALID, true, "CornerRadius", "CORNERRADIUS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DEEPZOOMIMAGETILESOURCE, Type::MULTISCALETILESOURCE, false, "DeepZoomImageTileSource", "DEEPZOOMIMAGETILESOURCE", 0, 1, NULL, (create_inst_func *) deep_zoom_image_tile_source_new, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, (create_inst_func *) dependency_object_new, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL, NULL, NULL }, 
@@ -360,6 +363,7 @@ Type type_infos [] = {
 	{ Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard", NULL, NULL }, 
 	{ Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL, NULL, NULL }, 
 	{ Type::BOOL, Type::INVALID, false, "bool", "BOOL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'BORDER'", "BORDER", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL, NULL, NULL }, 
 	{ Type::CANVAS, Type::PANEL, false, "Canvas", "CANVAS", 0, 12, NULL, (create_inst_func *) canvas_new, NULL, NULL, NULL }, 
 	{ Type::CLOCK, Type::DEPENDENCY_OBJECT, false, "Clock", "CLOCK", 4, 5, Clock_Events, NULL, NULL, NULL, NULL }, 
@@ -375,6 +379,7 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CONTENTCONTROL'", "CONTENTCONTROL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CONTROL'", "CONTROL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CONTROLTEMPLATE'", "CONTROLTEMPLATE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'CORNERRADIUS'", "CORNERRADIUS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'DEEPZOOMIMAGETILESOURCE'", "DEEPZOOMIMAGETILESOURCE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, (create_inst_func *) dependency_object_new, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL, NULL, NULL }, 
