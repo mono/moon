@@ -1,7 +1,7 @@
 
 MCS = gmcs
 RUNTIME = mono
-MCSFLAGS = -debug+ -unsafe -r:System.Drawing.dll -r:Mono.Posix.dll -r:System.Data.dll -r:$(srcdir)/MySql.Data.dll -r:$(srcdir)/NDesk.Options.dll -pkg:ndesk-dbus-1.0
+MCSFLAGS = -debug+ -unsafe -r:System.Drawing.dll -r:Mono.Posix.dll -r:System.Data.dll -r:$(srcdir)/Npgsql.dll -r:$(srcdir)/NDesk.Options.dll -pkg:ndesk-dbus-1.0
 
 CLEANFILES = test-runner.exe test-runner.exe.mdb logging-server.exe logging-server.exe.mdb ndesk-options.flags
 
@@ -53,7 +53,7 @@ exocortex_sources = 				\
 	ExocortexDSP/src/Fourier.cs
 
 
-EXTRA_DIST = html_template.html comparison_report.html regression_report.txt $(test_runner_sources) $(exocortex_sources) $(srcdir)/NDesk.Options.dll MySql.Data.dll
+EXTRA_DIST = html_template.html comparison_report.html regression_report.txt $(test_runner_sources) $(exocortex_sources) $(srcdir)/NDesk.Options.dll
 
 all: test-runner.exe logging-server.exe
 

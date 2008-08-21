@@ -29,7 +29,7 @@ using System.IO;
 using System.Data;
 using System.Collections.Generic;
 using System.Diagnostics;
-using MySql.Data.MySqlClient;
+using Npgsql;
 
 
 namespace MoonlightTests {
@@ -60,8 +60,7 @@ namespace MoonlightTests {
 				connectionString = reader.ReadLine();
 				reader.Close();
 				
-				//test out the 
-				dbcon =  new MySqlConnection(connectionString);
+				dbcon =  new NpgsqlConnection(connectionString);
 				dbcon.Open();
 				dbcmd = dbcon.CreateCommand();
 				string query = "select id from testcases;";
