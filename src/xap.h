@@ -10,11 +10,8 @@
 #ifndef __MOON_XAP_H__
 #define __MOON_XAP_H__
 
-#if SL_2_0
-
 #include <glib.h>
 
-G_BEGIN_DECLS
 /* @Version=2 */
 class Xap {
 	char *xap_dir;
@@ -32,8 +29,5 @@ class Xap {
 };
 
 Xap *xap_create_from_file (XamlLoader *loader, const char *filename);
-G_END_DECLS
-
-#endif
 
 #endif /* __MOON_XAP_H__ */

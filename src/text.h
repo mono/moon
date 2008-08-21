@@ -45,15 +45,15 @@ class Inline : public DependencyObject {
  public:
  	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily */
 	static DependencyProperty *FontFamilyProperty;
- 	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
+ 	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
 	static DependencyProperty *FontSizeProperty;
- 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH */
+ 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
 	static DependencyProperty *FontStretchProperty;
- 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE */
+ 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE,GenerateAccessors */
 	static DependencyProperty *FontStyleProperty;
- 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT */
+ 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
 	static DependencyProperty *FontWeightProperty;
- 	/* @PropertyType=Brush */
+ 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *ForegroundProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */
 	static DependencyProperty *TextDecorationsProperty;
@@ -73,6 +73,22 @@ class Inline : public DependencyObject {
 	virtual Value *GetDefaultValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+
+	// property accessors
+	double GetFontSize ();
+	void SetFontSize (double value);
+
+	FontStretches GetFontStretch ();
+	void SetFontStretch (FontStretches value);
+
+	FontStyles GetFontStyle ();
+	void SetFontStyle (FontStyles value);
+
+	FontWeights GetFontWeight ();
+	void SetFontWeight (FontWeights value);
+
+	Brush* GetForeground ();
+	void SetForeground (Brush* value);
 };
 
 
@@ -96,7 +112,7 @@ class Run : public Inline {
 	virtual ~Run () {}
 	
  public:
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,GenerateAccessors */
 	static DependencyProperty *TextProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -177,37 +193,33 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *ActualHeightProperty;
  	/* @PropertyType=double,ReadOnly */
 	static DependencyProperty *ActualWidthProperty;
- 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily */
+ 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily,GenerateAccessors */
 	static DependencyProperty *FontFamilyProperty;
- 	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE */
+ 	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
 	static DependencyProperty *FontSizeProperty;
- 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH */
+ 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
 	static DependencyProperty *FontStretchProperty;
- 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE */
+ 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE,GenerateAccessors */
 	static DependencyProperty *FontStyleProperty;
- 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT */
+ 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
 	static DependencyProperty *FontWeightProperty;
- 	/* @PropertyType=Brush */
+ 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=InlineCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=InlineCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *InlinesProperty;
-#if SL_2_0
-	/* @PropertyType=double,DefaultValue=NAN,Version=2.0 */
-	static DependencyProperty *LineHeightProperty;
-	/* @PropertyType=LineStackingStrategy,DefaultValue=LineStackingStrategyMaxHeight,Version=2.0 */
-	static DependencyProperty *LineStackingStrategyProperty;
-	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0 */
-	static DependencyProperty *PaddingProperty;
-#endif
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,GenerateAccessors */
 	static DependencyProperty *TextProperty;
-#if SL_2_0
-	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0 */
+	/* @PropertyType=double,DefaultValue=NAN,Version=2.0,GenerateAccessors */
+	static DependencyProperty *LineHeightProperty;
+	/* @PropertyType=LineStackingStrategy,DefaultValue=LineStackingStrategyMaxHeight,Version=2.0,GenerateAccessors */
+	static DependencyProperty *LineStackingStrategyProperty;
+	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0,GenerateAccessors */
+	static DependencyProperty *PaddingProperty;
+	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
 	static DependencyProperty *TextAlignmentProperty;
-#endif
- 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */
+ 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	static DependencyProperty *TextDecorationsProperty;
- 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap */
+ 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	static DependencyProperty *TextWrappingProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -269,7 +281,6 @@ class TextBlock : public FrameworkElement {
 	void SetInlines (InlineCollection *inlines);
 	InlineCollection *GetInlines ();
 	
-#if SL_2_0
 	void SetLineHeight (double height);
 	double GetLineHeight ();
 	
@@ -278,15 +289,12 @@ class TextBlock : public FrameworkElement {
 	
 	void SetPadding (Thickness *padding);
 	Thickness *GetPadding ();
-#endif
 	
 	void SetText (const char *text);
 	const char *GetText ();
 	
-#if SL_2_0
 	void SetTextAlignment (TextAlignment alignment);
 	TextAlignment GetTextAlignment ();
-#endif
 	
 	void SetTextDecorations (TextDecorations decorations);
 	TextDecorations GetTextDecorations ();

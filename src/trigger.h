@@ -35,7 +35,7 @@ protected:
 /* @Namespace=System.Windows */
 class EventTrigger : public DependencyObject {
 public:
-	/* @PropertyType=TriggerActionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+	/* @PropertyType=TriggerActionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ActionsProperty;
 	/* @PropertyType=string,ManagedPropertyType=RoutedEvent,ManagedFieldAccess=Internal */
 	static DependencyProperty *RoutedEventProperty;
@@ -48,6 +48,9 @@ public:
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
 
+	// Property Accessors
+	TriggerActionCollection* GetActions();
+	void SetActions (TriggerActionCollection* value);
 protected:
 	virtual ~EventTrigger ();
 

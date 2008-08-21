@@ -77,27 +77,3 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	*height = GetHeight ();
 	*width = GetWidth ();
 }
-
-void
-FrameworkElement::SetHeight (double height)
-{
-	SetValue (FrameworkElement::HeightProperty, Value (height));
-}
-
-double
-FrameworkElement::GetHeight ()
-{
-	return GetValue (FrameworkElement::HeightProperty)->AsDouble ();
-}
-
-void
-FrameworkElement::SetWidth (double width)
-{
-	SetValue (FrameworkElement::WidthProperty, Value (width));
-}
-
-double
-FrameworkElement::GetWidth ()
-{
-	return GetValue (FrameworkElement::WidthProperty)->AsDouble ();
-}

@@ -44,18 +44,6 @@ Collection::Dispose ()
 	}
 }
 
-void
-Collection::SetCount (int count)
-{
-	SetValue (Collection::CountProperty, Value (count));
-}
-
-int
-Collection::GetCount ()
-{
-	return GetValue (Collection::CountProperty)->AsInt32 ();
-}
-
 CollectionIterator *
 Collection::GetIterator ()
 {

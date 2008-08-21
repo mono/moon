@@ -106,42 +106,6 @@ RotateTransform::UpdateTransform ()
 	//printf ("Returning2 %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
-void
-RotateTransform::SetAngle (double angle)
-{
-	SetValue (RotateTransform::AngleProperty, Value (angle));
-}
-
-double
-RotateTransform::GetAngle ()
-{
-	return GetValue (RotateTransform::AngleProperty)->AsDouble ();
-}
-
-void
-RotateTransform::SetCenterX (double centerX)
-{
-	SetValue (RotateTransform::CenterXProperty, Value (centerX));
-}
-
-double
-RotateTransform::GetCenterX ()
-{
-	return GetValue (RotateTransform::CenterXProperty)->AsDouble ();
-}
-
-void
-RotateTransform::SetCenterY (double centerY)
-{
-	SetValue (RotateTransform::CenterYProperty, Value (centerY));
-}
-
-double
-RotateTransform::GetCenterY ()
-{
-	return GetValue (RotateTransform::CenterYProperty)->AsDouble ();
-}
-
 
 //
 // TranslateTransform
@@ -157,31 +121,6 @@ TranslateTransform::UpdateTransform ()
 	//printf ("translating dx %g dy %g", x, y);
 	//printf ("TranslateTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
-
-void
-TranslateTransform::SetX (double x)
-{
-	SetValue (TranslateTransform::XProperty, Value (x));
-}
-
-double
-TranslateTransform::GetX ()
-{
-	return GetValue (TranslateTransform::XProperty)->AsDouble ();
-}
-
-void
-TranslateTransform::SetY (double y)
-{
-	SetValue (TranslateTransform::YProperty, Value (y));
-}
-
-double
-TranslateTransform::GetY ()
-{
-	return GetValue (TranslateTransform::YProperty)->AsDouble ();
-}
-
 
 //
 // ScaleTransform
@@ -218,55 +157,6 @@ ScaleTransform::UpdateTransform ()
 	//printf ("ScaleTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
 
-void
-ScaleTransform::SetCenterX (double centerX)
-{
-	SetValue (ScaleTransform::CenterXProperty, Value (centerX));
-}
-
-double
-ScaleTransform::GetCenterX ()
-{
-	return GetValue (ScaleTransform::CenterXProperty)->AsDouble ();
-}
-
-void
-ScaleTransform::SetCenterY (double centerY)
-{
-	SetValue (ScaleTransform::CenterYProperty, Value (centerY));
-}
-
-double
-ScaleTransform::GetCenterY ()
-{
-	return GetValue (ScaleTransform::CenterYProperty)->AsDouble ();
-}
-
-void
-ScaleTransform::SetScaleX (double scaleX)
-{
-	SetValue (ScaleTransform::ScaleXProperty, Value (scaleX));
-}
-
-double
-ScaleTransform::GetScaleX ()
-{
-	return GetValue (ScaleTransform::ScaleXProperty)->AsDouble ();
-}
-
-void
-ScaleTransform::SetScaleY (double scaleY)
-{
-	SetValue (ScaleTransform::ScaleYProperty, Value (scaleY));
-}
-
-double
-ScaleTransform::GetScaleY ()
-{
-	return GetValue (ScaleTransform::ScaleYProperty)->AsDouble ();
-}
-
-
 //
 // SkewTransform
 //
@@ -296,55 +186,6 @@ SkewTransform::UpdateTransform ()
 
 	//printf ("SkewTransform %g %g %g %g %g %g\n", value->xx, value->yx, value->xy, value->yy, value->x0, value->y0);
 }
-
-void
-SkewTransform::SetAngleX (double angleX)
-{
-	SetValue (SkewTransform::AngleXProperty, Value (angleX));
-}
-
-double
-SkewTransform::GetAngleX ()
-{
-	return GetValue (SkewTransform::AngleXProperty)->AsDouble ();
-}
-
-void
-SkewTransform::SetAngleY (double angleY)
-{
-	SetValue (SkewTransform::AngleYProperty, Value (angleY));
-}
-
-double
-SkewTransform::GetAngleY ()
-{
-	return GetValue (SkewTransform::AngleYProperty)->AsDouble ();
-}
-
-void
-SkewTransform::SetCenterX (double centerX)
-{
-	SetValue (SkewTransform::CenterXProperty, Value (centerX));
-}
-
-double
-SkewTransform::GetCenterX ()
-{
-	return GetValue (SkewTransform::CenterXProperty)->AsDouble ();
-}
-
-void
-SkewTransform::SetCenterY (double centerY)
-{
-	SetValue (SkewTransform::CenterYProperty, Value (centerY));
-}
-
-double
-SkewTransform::GetCenterY ()
-{
-	return GetValue (SkewTransform::CenterYProperty)->AsDouble ();
-}
-
 
 //
 // Matrix
@@ -390,79 +231,6 @@ Matrix::GetUnderlyingMatrix ()
 	return matrix;
 }
 
-void
-Matrix::SetM11 (double m11)
-{
-	SetValue (Matrix::M11Property, Value (m11));
-}
-
-double
-Matrix::GetM11 ()
-{
-	return GetValue (Matrix::M11Property)->AsDouble ();
-}
-
-void
-Matrix::SetM12 (double m12)
-{
-	SetValue (Matrix::M12Property, Value (m12));
-}
-
-double
-Matrix::GetM12 ()
-{
-	return GetValue (Matrix::M12Property)->AsDouble ();
-}
-
-void
-Matrix::SetM21 (double m21)
-{
-	SetValue (Matrix::M21Property, Value (m21));
-}
-
-double
-Matrix::GetM21 ()
-{
-	return GetValue (Matrix::M21Property)->AsDouble ();
-}
-
-void
-Matrix::SetM22 (double m22)
-{
-	SetValue (Matrix::M22Property, Value (m22));
-}
-
-double
-Matrix::GetM22 ()
-{
-	return GetValue (Matrix::M22Property)->AsDouble ();
-}
-
-void
-Matrix::SetOffsetX (double offsetX)
-{
-	SetValue (Matrix::OffsetXProperty, Value (offsetX));
-}
-
-double
-Matrix::GetOffsetX ()
-{
-	return GetValue (Matrix::OffsetXProperty)->AsDouble ();
-}
-
-void
-Matrix::SetOffsetY (double offsetY)
-{
-	SetValue (Matrix::OffsetYProperty, Value (offsetY));
-}
-
-double
-Matrix::GetOffsetY ()
-{
-	return GetValue (Matrix::OffsetYProperty)->AsDouble ();
-}
-
-
 //
 // MatrixTransform
 //
@@ -486,21 +254,6 @@ MatrixTransform::UpdateTransform ()
 	else
 		cairo_matrix_init_identity (&_matrix);
 }
-
-void
-MatrixTransform::SetMatrix (Matrix *matrix)
-{
-	SetValue (MatrixTransform::MatrixProperty, Value (matrix));
-}
-
-Matrix *
-MatrixTransform::GetMatrix ()
-{
-	Value *value = GetValue (MatrixTransform::MatrixProperty);
-	
-	return value ? value->AsMatrix () : NULL;
-}
-
 
 //
 // TransformGroup
@@ -568,18 +321,4 @@ TransformGroup::UpdateTransform ()
 		transform->GetTransform (&matrix);
 		cairo_matrix_multiply (&_matrix, &_matrix, &matrix);
 	}
-}
-
-void
-TransformGroup::SetChildren (TransformCollection *children)
-{
-	SetValue (TransformGroup::ChildrenProperty, Value (children));
-}
-
-TransformCollection *
-TransformGroup::GetChildren ()
-{
-	Value *value = GetValue (TransformGroup::ChildrenProperty);
-	
-	return value ? value->AsTransformCollection () : NULL;
 }

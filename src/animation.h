@@ -223,11 +223,11 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	virtual ~DoubleAnimation () {}
 
  public:
- 	/* @PropertyType=double,Nullable */
+ 	/* @PropertyType=double,Nullable,GenerateAccessors */
 	static DependencyProperty *ByProperty;
-	/* @PropertyType=double,Nullable */
+	/* @PropertyType=double,Nullable,GenerateAccessors */
 	static DependencyProperty *FromProperty;
-	/* @PropertyType=double,Nullable */
+	/* @PropertyType=double,Nullable,GenerateAccessors */
 	static DependencyProperty *ToProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -263,11 +263,11 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	virtual ~ColorAnimation () {}
 
  public:
- 	/* @PropertyType=Color,Nullable */
+ 	/* @PropertyType=Color,Nullable,GenerateAccessors */
 	static DependencyProperty *ByProperty;
- 	/* @PropertyType=Color,Nullable */
+ 	/* @PropertyType=Color,Nullable,GenerateAccessors */
 	static DependencyProperty *FromProperty;
- 	/* @PropertyType=Color,Nullable */
+ 	/* @PropertyType=Color,Nullable,GenerateAccessors */
 	static DependencyProperty *ToProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -303,11 +303,11 @@ class PointAnimation : public Animation/*Timeline*/ {
 	virtual ~PointAnimation () {}
 
  public:
- 	/* @PropertyType=Point,Nullable */
+ 	/* @PropertyType=Point,Nullable,GenerateAccessors */
 	static DependencyProperty *ByProperty;
- 	/* @PropertyType=Point,Nullable */
+ 	/* @PropertyType=Point,Nullable,GenerateAccessors */
 	static DependencyProperty *FromProperty;
- 	/* @PropertyType=Point,Nullable */
+ 	/* @PropertyType=Point,Nullable,GenerateAccessors */
 	static DependencyProperty *ToProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
@@ -428,7 +428,7 @@ class DoubleKeyFrame : public KeyFrame {
 	virtual ~DoubleKeyFrame () {}
 
  public:
- 	/* @PropertyType=double,Nullable,ManagedPropertyType=double */
+ 	/* @PropertyType=double,Nullable,ManagedPropertyType=double,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime */
 	static DependencyProperty *KeyTimeProperty;
@@ -451,7 +451,7 @@ class ColorKeyFrame : public KeyFrame {
 	virtual ~ColorKeyFrame () {}
 
  public:
- 	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color */
+ 	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime */
 	static DependencyProperty *KeyTimeProperty;
@@ -474,7 +474,7 @@ class PointKeyFrame : public KeyFrame {
 	virtual ~PointKeyFrame () {}
 	
  public:
- 	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point */
+ 	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime */
 	static DependencyProperty *KeyTimeProperty;
@@ -596,7 +596,7 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	virtual ~SplineDoubleKeyFrame () {}
 
  public:
- 	/* @PropertyType=KeySpline */
+ 	/* @PropertyType=KeySpline,GenerateAccessors */
 	static DependencyProperty *KeySplineProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -610,6 +610,7 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	// Property Accessors
 	//
 	KeySpline *GetKeySpline ();
+	void SetKeySpline (KeySpline* value);
 };
 
 
@@ -620,7 +621,7 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 	virtual ~SplineColorKeyFrame () {}
 
  public:
- 	/* @PropertyType=KeySpline */
+ 	/* @PropertyType=KeySpline,GenerateAccessors */
 	static DependencyProperty *KeySplineProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -634,6 +635,7 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 	// Property Accessors
 	//
 	KeySpline *GetKeySpline ();
+	void SetKeySpline (KeySpline* value);
 };
 
 
@@ -644,7 +646,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 	virtual ~SplinePointKeyFrame () {}
 	
  public:
- 	/* @PropertyType=KeySpline */
+ 	/* @PropertyType=KeySpline,GenerateAccessors */
 	static DependencyProperty *KeySplineProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -657,6 +659,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 	// Property Accessors
 	//
 	KeySpline *GetKeySpline ();
+	void SetKeySpline (KeySpline* value);
 };
 
 
@@ -667,7 +670,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual ~DoubleAnimationUsingKeyFrames ();
 
  public:
- 	/* @PropertyType=DoubleKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=DoubleKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -691,6 +694,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	// Property Accessors
 	//
 	DoubleKeyFrameCollection *GetKeyFrames ();
+	void SetKeyFrames (DoubleKeyFrameCollection* value);
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -700,7 +704,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual ~ColorAnimationUsingKeyFrames ();
 
  public:
- 	/* @PropertyType=ColorKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=ColorKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -724,6 +728,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	// Property Accessors
 	//
 	ColorKeyFrameCollection *GetKeyFrames ();
+	void SetKeyFrames (ColorKeyFrameCollection* value);
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -733,7 +738,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual ~PointAnimationUsingKeyFrames ();
 
  public:
- 	/* @PropertyType=PointKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=PointKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -757,6 +762,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	// Property Accessors
 	//
 	PointKeyFrameCollection *GetKeyFrames ();
+	void SetKeyFrames (PointKeyFrameCollection* value);
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -775,9 +781,9 @@ class Storyboard : public ParallelTimeline {
 	virtual ~Storyboard ();
 
  public:
- 	/* @PropertyType=string,Attached */
+ 	/* @PropertyType=string,Attached,GenerateAccessors */
 	static DependencyProperty *TargetNameProperty;
- 	/* @PropertyType=string,Attached */
+ 	/* @PropertyType=string,Attached,GenerateAccessors */
 	static DependencyProperty *TargetPropertyProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -805,9 +811,9 @@ class Storyboard : public ParallelTimeline {
 	// XXX event Completed
 	
 	static void SetTargetName (DependencyObject *o, const char *targetName);
-	static char *GetTargetName (DependencyObject *o);
+	static const char *GetTargetName (DependencyObject *o);
 	static void SetTargetProperty (DependencyObject *o, const char *targetProperty);
-	static char *GetTargetProperty (DependencyObject *o);
+	static const char *GetTargetProperty (DependencyObject *o);
 	
 	// events you can AddHandler to
 	const static int CompletedEvent;
@@ -820,7 +826,7 @@ class BeginStoryboard : public TriggerAction {
 	virtual ~BeginStoryboard ();
 
  public:
- 	/* @PropertyType=Storyboard */
+ 	/* @PropertyType=Storyboard,GenerateAccessors */
 	static DependencyProperty *StoryboardProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

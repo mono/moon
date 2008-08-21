@@ -29,7 +29,7 @@ class NameScope : public DependencyObject {
 	virtual ~NameScope ();
 
  public:
- 	/* @PropertyType=NameScope */
+ 	/* @PropertyType=NameScope,Attached,GenerateAccessors */
 	static DependencyProperty *NameScopeProperty;
 	
 	NameScope ();

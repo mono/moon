@@ -27,7 +27,7 @@ class Style : public DependencyObject {
 	virtual ~Style () { }
 	
  public:
- 	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private */
+ 	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private,GenerateAccessors */
 	static DependencyProperty *SettersProperty;
  	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal */
 	static DependencyProperty *TargetTypeProperty;
@@ -36,6 +36,9 @@ class Style : public DependencyObject {
 	Style ();
 	
 	virtual Type::Kind GetObjectType () { return Type::STYLE; }
+
+	SetterBaseCollection* GetSetters();
+	void SetSetters (SetterBaseCollection* value);
 };
 
 //

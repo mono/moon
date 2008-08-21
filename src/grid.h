@@ -50,11 +50,11 @@ class ColumnDefinition : public DependencyObject {
 	virtual ~ColumnDefinition () {}
 	
  public:
- 	/* @PropertyType=double */
+ 	/* @PropertyType=double,GenerateAccessors */
 	static DependencyProperty *MaxWidthProperty;
- 	/* @PropertyType=double */
+ 	/* @PropertyType=double,GenerateAccessors */
 	static DependencyProperty *MinWidthProperty;
- 	/* @PropertyType=GridLength */
+ 	/* @PropertyType=GridLength,GenerateAccessors */
 	static DependencyProperty *WidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -64,6 +64,16 @@ class ColumnDefinition : public DependencyObject {
 	double GetActualWidth () { return actual; }
 	
 	virtual Type::Kind GetObjectType () { return Type::COLUMNDEFINITION; }
+
+	// property accessors
+	double GetMaxWidth();
+	void SetMaxWidth (double value);
+
+	double GetMinWidth();
+	void SetMinWidth (double value);
+
+	GridLength* GetWidth();
+	void SetWidth (GridLength *value);
 };
 
 /* @SilverlightVersion="2" */
@@ -76,11 +86,11 @@ class RowDefinition : public DependencyObject {
 	virtual ~RowDefinition () {}
 	
  public:
- 	/* @PropertyType=GridLength */
+ 	/* @PropertyType=GridLength,GenerateAccessors */
 	static DependencyProperty *HeightProperty;
- 	/* @PropertyType=double */
+ 	/* @PropertyType=double,GenerateAccessors */
 	static DependencyProperty *MaxHeightProperty;
- 	/* @PropertyType=double */
+ 	/* @PropertyType=double,GenerateAccessors */
 	static DependencyProperty *MinHeightProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -90,6 +100,16 @@ class RowDefinition : public DependencyObject {
 	double GetActualHeight () { return actual; }
 	
 	virtual Type::Kind GetObjectType () { return Type::ROWDEFINITION; }
+
+	// property accessors
+	double GetMaxHeight();
+	void SetMaxHeight (double value);
+
+	double GetMinHeight();
+	void SetMinHeight (double value);
+
+	GridLength* GetHeight();
+	void SetHeight (GridLength *value);
 };
 
 /* @SilverlightVersion="2" */
@@ -129,19 +149,19 @@ class Grid : public Panel {
 	virtual ~Grid () {}
 
  public:
- 	/* @PropertyType=gint32,DefaultValue=0,Attached */
+ 	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
 	static DependencyProperty *ColumnProperty;
-	/* @PropertyType=ColumnDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+	/* @PropertyType=ColumnDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ColumnDefinitionsProperty;
- 	/* @PropertyType=gint32,DefaultValue=0,Attached */
+ 	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
 	static DependencyProperty *ColumnSpanProperty;
- 	/* @PropertyType=gint32,DefaultValue=0,Attached */
+ 	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
 	static DependencyProperty *RowProperty;
-	/* @PropertyType=RowDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+	/* @PropertyType=RowDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *RowDefinitionsProperty;
- 	/* @PropertyType=gint32,DefaultValue=0,Attached */
+ 	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
 	static DependencyProperty *RowSpanProperty;
- 	/* @PropertyType=bool,DefaultValue=false,Attached */
+ 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *ShowGridLinesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -152,6 +172,28 @@ class Grid : public Panel {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+
+	// property accessors
+	ColumnDefinitionCollection *GetColumnDefinitions ();
+	void SetColumnDefinitions (ColumnDefinitionCollection* value);
+
+	static gint32 GetColumn (DependencyObject *obj);
+	static void SetColumn (DependencyObject *obj, gint32 value);
+
+	static gint32 GetColumnSpan (DependencyObject *obj);
+	static void SetColumnSpan (DependencyObject *obj, gint32 value);
+
+	RowDefinitionCollection *GetRowDefinitions ();
+	void SetRowDefinitions (RowDefinitionCollection* value);
+
+	static gint32 GetRow (DependencyObject *obj);
+	static void SetRow (DependencyObject *obj, gint32 value);
+
+	static gint32 GetRowSpan (DependencyObject *obj);
+	static void SetRowSpan (DependencyObject *obj, gint32 value);
+
+	bool GetShowGridLines ();
+	void SetShowGridLines (bool value);
 };
 
 #endif /* __MOON_PANEL_H__ */

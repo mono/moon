@@ -1493,6 +1493,16 @@ poly_bezier_segment_new (void)
 }
 
 
+void
+poly_bezier_segment_set_points (PolyBezierSegment *instance, PointCollection *points)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetPoints (points);
+}
+
+
 /**
  * Polygon
  **/

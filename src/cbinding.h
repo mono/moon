@@ -800,6 +800,8 @@ PointKeyFrameCollection *point_key_frame_collection_new (void);
 /* @GeneratePInvoke */
 PolyBezierSegment *poly_bezier_segment_new (void);
 
+void poly_bezier_segment_set_points (PolyBezierSegment *instance, PointCollection *points);
+
 /**
  * Polygon
  **/

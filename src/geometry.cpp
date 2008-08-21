@@ -59,33 +59,6 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
-void
-Geometry::SetFillRule (FillRule rule)
-{
-	SetValue (Geometry::FillRuleProperty, Value (rule));
-}
-
-FillRule
-Geometry::GetFillRule ()
-{
-	return (FillRule) GetValue (Geometry::FillRuleProperty)->AsInt32 ();
-}
-
-void
-Geometry::SetTransform (Transform *transform)
-{
-	SetValue (Geometry::TransformProperty, Value (transform));
-}
-
-Transform *
-Geometry::GetTransform ()
-{
-	Value *value = GetValue (Geometry::TransformProperty);
-	
-	return value ? value->AsTransform () : NULL;
-}
-
-
 //
 // GeometryGroup
 //
@@ -182,21 +155,6 @@ Geometry::GetOriginPoint (Path *shape)
 }
 #endif
 
-void
-GeometryGroup::SetChildren (GeometryCollection *children)
-{
-	SetValue (GeometryGroup::ChildrenProperty, Value (children));
-}
-
-GeometryCollection *
-GeometryGroup::GetChildren ()
-{
-	Value *value = GetValue (GeometryGroup::ChildrenProperty);
-	
-	return value ? value->AsGeometryCollection () : NULL;
-}
-
-
 //
 // EllipseGeometry
 //
@@ -243,45 +201,6 @@ EllipseGeometry::ComputeBounds (Path *path, bool logical)
 	
 	return bounds;
 }
-
-void
-EllipseGeometry::SetCenter (Point *center)
-{
-	SetValue (EllipseGeometry::CenterProperty, Value (*center));
-}
-
-Point *
-EllipseGeometry::GetCenter ()
-{
-	Value *value = GetValue (EllipseGeometry::CenterProperty);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-EllipseGeometry::SetRadiusX (double radius)
-{
-	SetValue (EllipseGeometry::RadiusXProperty, Value (radius));
-}
-
-double
-EllipseGeometry::GetRadiusX ()
-{
-	return GetValue (EllipseGeometry::RadiusXProperty)->AsDouble ();
-}
-
-void
-EllipseGeometry::SetRadiusY (double radius)
-{
-	SetValue (EllipseGeometry::RadiusYProperty, Value (radius));
-}
-
-double
-EllipseGeometry::GetRadiusY ()
-{
-	return GetValue (EllipseGeometry::RadiusYProperty)->AsDouble ();
-}
-
 
 //
 // LineGeometry
@@ -330,35 +249,6 @@ LineGeometry::ComputeBounds (Path *shape, bool logical)
 
 	return bounds;
 }
-
-void
-LineGeometry::SetEndPoint (Point *point)
-{
-	SetValue (LineGeometry::EndPointProperty, Value (*point));
-}
-
-Point *
-LineGeometry::GetEndPoint ()
-{
-	Value *value = GetValue (LineGeometry::EndPointProperty);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-LineGeometry::SetStartPoint (Point *point)
-{
-	SetValue (LineGeometry::StartPointProperty, Value (*point));
-}
-
-Point *
-LineGeometry::GetStartPoint ()
-{
-	Value *value = GetValue (LineGeometry::StartPointProperty);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
 
 //
 // PathGeometry
@@ -494,21 +384,6 @@ PathGeometry::CacheBounds (Path *shape, bool logical, cairo_matrix_t *matrix)
 	return bounds;
 }
 
-void
-PathGeometry::SetFigures (PathFigureCollection *figures)
-{
-	SetValue (PathGeometry::FiguresProperty, Value (figures));
-}
-
-PathFigureCollection *
-PathGeometry::GetFigures ()
-{
-	Value *value = GetValue (PathGeometry::FiguresProperty);
-	
-	return value ? value->AsPathFigureCollection () : NULL;
-}
-
-
 //
 // RectangleGeometry
 //
@@ -570,45 +445,6 @@ RectangleGeometry::GetRadius (double *rx, double *ry)
 
 	return ((*rx != 0.0) && (*ry != 0.0));
 }
-
-void
-RectangleGeometry::SetRadiusX (double radius)
-{
-	SetValue (RectangleGeometry::RadiusXProperty, Value (radius));
-}
-
-double
-RectangleGeometry::GetRadiusX ()
-{
-	return GetValue (RectangleGeometry::RadiusXProperty)->AsDouble ();
-}
-
-void
-RectangleGeometry::SetRadiusY (double radius)
-{
-	SetValue (RectangleGeometry::RadiusYProperty, Value (radius));
-}
-
-double
-RectangleGeometry::GetRadiusY ()
-{
-	return GetValue (RectangleGeometry::RadiusYProperty)->AsDouble ();
-}
-
-void
-RectangleGeometry::SetRect (Rect *rect)
-{
-	SetValue (RectangleGeometry::RectProperty, Value (*rect));
-}
-
-Rect *
-RectangleGeometry::GetRect ()
-{
-	Value *value = GetValue (RectangleGeometry::RectProperty);
-	
-	return value ? value->AsRect () : NULL;
-}
-
 
 //
 // PathFigure
@@ -692,47 +528,6 @@ PathFigure::Build (Path *shape)
 		moon_close_path (path);
 }
 
-void
-PathFigure::SetIsClosed (bool closed)
-{
-	SetValue (PathFigure::IsClosedProperty, Value (closed));
-}
-
-bool
-PathFigure::GetIsClosed ()
-{
-	return GetValue (PathFigure::IsClosedProperty)->AsBool ();
-}
-
-void
-PathFigure::SetSegments (PathSegmentCollection *segments)
-{
-	SetValue (PathFigure::SegmentsProperty, Value (segments));
-}
-
-PathSegmentCollection *
-PathFigure::GetSegments ()
-{
-	Value *value = GetValue (PathFigure::SegmentsProperty);
-	
-	return value ? value->AsPathSegmentCollection () : NULL;
-}
-
-void
-PathFigure::SetStartPoint (Point *point)
-{
-	SetValue (PathFigure::StartPointProperty, Value (*point));
-}
-
-Point *
-PathFigure::GetStartPoint ()
-{
-	Value *value = GetValue (PathFigure::StartPointProperty);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
-
 //
 // ArcSegment
 //
@@ -750,71 +545,6 @@ ArcSegment::Append (moon_path *path)
 
 	moon_arc_to (path, width, height, GetRotationAngle (), GetIsLargeArc (), GetSweepDirection (), ex, ey);
 }
-
-void
-ArcSegment::SetIsLargeArc (bool large)
-{
-	SetValue (ArcSegment::IsLargeArcProperty, Value (large));
-}
-
-bool
-ArcSegment::GetIsLargeArc ()
-{
-	return GetValue (ArcSegment::IsLargeArcProperty)->AsBool ();
-}
-
-void
-ArcSegment::SetPoint (Point *point)
-{
-	SetValue (ArcSegment::PointProperty, Value (*point));
-}
-
-Point *
-ArcSegment::GetPoint ()
-{
-	Value *value = GetValue (ArcSegment::PointProperty);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-ArcSegment::SetRotationAngle (double angle)
-{
-	SetValue (ArcSegment::RotationAngleProperty, Value (angle));
-}
-
-double
-ArcSegment::GetRotationAngle ()
-{
-	return GetValue (ArcSegment::RotationAngleProperty)->AsDouble ();
-}
-
-void
-ArcSegment::SetSize (Point *size)
-{
-	SetValue (ArcSegment::SizeProperty, Value (*size));
-}
-
-Point *
-ArcSegment::GetSize ()
-{
-	Value *value = GetValue (ArcSegment::SizeProperty);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-ArcSegment::SetSweepDirection (SweepDirection direction)
-{
-	SetValue (ArcSegment::SweepDirectionProperty, Value (direction));
-}
-
-SweepDirection
-ArcSegment::GetSweepDirection ()
-{
-	return (SweepDirection) GetValue (ArcSegment::SweepDirectionProperty)->AsInt32 ();
-}
-
 
 //
 // BezierSegment
@@ -837,49 +567,6 @@ BezierSegment::Append (moon_path *path)
 	moon_curve_to (path, x1, y1, x2, y2, x3, y3);
 }
 
-void
-BezierSegment::SetPoint1 (Point *point)
-{
-	SetValue (BezierSegment::Point1Property, Value (*point));
-}
-
-Point *
-BezierSegment::GetPoint1 ()
-{
-	Value *value = GetValue (BezierSegment::Point1Property);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-BezierSegment::SetPoint2 (Point *point)
-{
-	SetValue (BezierSegment::Point2Property, Value (*point));
-}
-
-Point *
-BezierSegment::GetPoint2 ()
-{
-	Value *value = GetValue (BezierSegment::Point2Property);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-BezierSegment::SetPoint3 (Point *point)
-{
-	SetValue (BezierSegment::Point3Property, Value (*point));
-}
-
-Point *
-BezierSegment::GetPoint3 ()
-{
-	Value *value = GetValue (BezierSegment::Point3Property);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
-
 //
 // LineSegment
 //
@@ -894,21 +581,6 @@ LineSegment::Append (moon_path *path)
 
 	moon_line_to (path, x, y);
 }
-
-void
-LineSegment::SetPoint (Point *point)
-{
-	SetValue (LineSegment::PointProperty, Value (*point));
-}
-
-Point *
-LineSegment::GetPoint ()
-{
-	Value *value = GetValue (LineSegment::PointProperty);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
 
 //
 // PolyBezierSegment
@@ -950,31 +622,6 @@ PolyBezierSegment::GetPathSize ()
 	return (n / 3) * MOON_PATH_CURVE_TO_LENGTH;
 }
 
-void
-PolyBezierSegment::SetPoints (PointCollection *points)
-{
-	SetValue (PolyBezierSegment::PointsProperty, Value (points));
-}
-
-/*
- * note: We return a reference, not a copy, of the points. Not a big issue as
- * Silverlight PolyBezierSegment.Points only has a setter (no getter), so it's
- * use is only internal.
- */
-PointCollection *
-PolyBezierSegment::GetPoints ()
-{
-	Value *value = GetValue (PolyBezierSegment::PointsProperty);
-	return value ? value->AsPointCollection() : NULL;
-}
-
-void
-poly_bezier_segment_set_points (PolyBezierSegment *segment, PointCollection *points)
-{
-	segment->SetPoints (points);
-}
-
-
 //
 // PolyLineSegment
 //
@@ -1006,33 +653,6 @@ PolyLineSegment::GetPathSize ()
 	
 	return n * MOON_PATH_LINE_TO_LENGTH;
 }
-
-void
-PolyLineSegment::SetPoints (PointCollection *points)
-{
-	SetValue (PolyLineSegment::PointsProperty, Value (points));
-}
-
-/*
- * note: We return a reference, not a copy, of the points. Not a big issue as
- * Silverlight PolyLineSegment.Points only has a setter (no getter), so it's
- * use is only internal.
- */
-PointCollection *
-PolyLineSegment::GetPoints ()
-{
-	Value *value = GetValue (PolyLineSegment::PointsProperty);
-	return value ? value->AsPointCollection() : NULL;
-}
-
-
-void
-poly_line_segment_set_points (PolyLineSegment *segment, PointCollection *points)
-{
-	segment->SetPoints (points);
-}
-
-
 
 //
 // PolyQuadraticBezierSegment
@@ -1093,31 +713,6 @@ PolyQuadraticBezierSegment::GetPathSize ()
 	return (n / 2) * MOON_PATH_CURVE_TO_LENGTH;
 }
 
-void
-PolyQuadraticBezierSegment::SetPoints (PointCollection *points)
-{
-	SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (points));
-}
-
-/*
- * note: We return a reference, not a copy, of the points. Not a big issue as
- * Silverlight PolyQuadraticBezierSegment.Points only has a setter (no getter), so it's
- * use is only internal.
- */
-PointCollection*
-PolyQuadraticBezierSegment::GetPoints ()
-{
-	Value *value = GetValue (PolyQuadraticBezierSegment::PointsProperty);
-	return value ? value->AsPointCollection() : NULL;
-}
-
-void
-poly_quadratic_bezier_segment_set_points (PolyQuadraticBezierSegment *segment, PointCollection *points)
-{
-	segment->SetPoints (points);
-}
-
-
 //
 // QuadraticBezierSegment
 //
@@ -1134,32 +729,4 @@ QuadraticBezierSegment::Append (moon_path *path)
 	double y2 = p2 ? p2->y : 0.0;
 
 	moon_quad_curve_to (path, x1, y1, x2, y2);
-}
-
-void
-QuadraticBezierSegment::SetPoint1 (Point *point)
-{
-	SetValue (QuadraticBezierSegment::Point1Property, Value (*point));
-}
-
-Point *
-QuadraticBezierSegment::GetPoint1 ()
-{
-	Value *value = GetValue (QuadraticBezierSegment::Point1Property);
-	
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-QuadraticBezierSegment::SetPoint2 (Point *point)
-{
-	SetValue (QuadraticBezierSegment::Point2Property, Value (*point));
-}
-
-Point *
-QuadraticBezierSegment::GetPoint2 ()
-{
-	Value *value = GetValue (QuadraticBezierSegment::Point2Property);
-	
-	return value ? value->AsPoint () : NULL;
 }

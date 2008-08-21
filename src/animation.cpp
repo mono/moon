@@ -349,8 +349,8 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 	case Type::ANIMATIONCLOCK: {
 		AnimationClock *ac = (AnimationClock*)clock;
 
-		char *targetProperty = NULL;
-		char *targetName = NULL;
+		const char *targetProperty = NULL;
+		const char *targetName = NULL;
 		DependencyObject *o = NULL; 
 		DependencyObject *real_target_o = NULL;
 		DependencyProperty *prop = NULL;
@@ -545,34 +545,6 @@ Storyboard::Stop ()
 }
 
 void
-Storyboard::SetTargetProperty (DependencyObject *o,
-			       const char *targetProperty)
-{
-	o->SetValue (Storyboard::TargetPropertyProperty, Value (targetProperty));
-}
-
-char*
-Storyboard::GetTargetProperty (DependencyObject *o)
-{
-	Value *v = o->GetValue (Storyboard::TargetPropertyProperty);
-	return v == NULL ? NULL : v->AsString();
-}
-
-void
-Storyboard::SetTargetName (DependencyObject *o,
-			   const char *targetName)
-{
-	o->SetValue (Storyboard::TargetNameProperty, Value (targetName));
-}
-
-char*
-Storyboard::GetTargetName (DependencyObject *o)
-{
-	Value *v = o->GetValue (Storyboard::TargetNameProperty);
-	return v == NULL ? NULL : v->AsString();
-}
-
-void
 Storyboard::SetSurface (Surface *surface)
 {
 	if (GetSurface() && surface == NULL && root_clock && root_clock->GetClockState() == Clock::Active) {
@@ -605,19 +577,6 @@ BeginStoryboard::Fire ()
 	Storyboard *sb = GetStoryboard ();
 	if (sb)
 		sb->Begin ();
-}
-
-void
-BeginStoryboard::SetStoryboard (Storyboard *sb)
-{
-	SetValue (BeginStoryboard::StoryboardProperty, Value (sb));
-}
-
-Storyboard *
-BeginStoryboard::GetStoryboard ()
-{
-	Value *v = GetValue (BeginStoryboard::StoryboardProperty);
-	return v ? v->AsStoryboard () : NULL;
 }
 
 BeginStoryboard::~BeginStoryboard ()
@@ -1115,12 +1074,6 @@ SplineDoubleKeyFrame::SplineDoubleKeyFrame ()
 	this->DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
 }
 
-KeySpline*
-SplineDoubleKeyFrame::GetKeySpline ()
-{
-	return this->DependencyObject::GetValue (SplineDoubleKeyFrame::KeySplineProperty)->AsKeySpline();
-}
-
 Value*
 SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1147,13 +1100,6 @@ SplineColorKeyFrame::SplineColorKeyFrame ()
 	this->DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
 }
 
-
-KeySpline*
-SplineColorKeyFrame::GetKeySpline ()
-{
-	return this->DependencyObject::GetValue (SplineColorKeyFrame::KeySplineProperty)->AsKeySpline();
-}
-
 Value*
 SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1178,12 +1124,6 @@ SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 SplinePointKeyFrame::SplinePointKeyFrame ()
 {
 	this->DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
-}
-
-KeySpline*
-SplinePointKeyFrame::GetKeySpline ()
-{
-	return this->DependencyObject::GetValue (SplinePointKeyFrame::KeySplineProperty)->AsKeySpline();
 }
 
 Value*
@@ -1455,15 +1395,6 @@ DoubleAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (GetKeyFrames ());
 }
 
-DoubleKeyFrameCollection *
-DoubleAnimationUsingKeyFrames::GetKeyFrames ()
-{
-	Value *value = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty);
-	
-	return value ? value->AsDoubleKeyFrameCollection () : NULL;
-}
-
-
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
 	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new ColorKeyFrameCollection ()));
@@ -1566,14 +1497,6 @@ bool
 ColorAnimationUsingKeyFrames::Validate ()
 {
 	return generic_keyframe_validator (GetKeyFrames ());
-}
-
-ColorKeyFrameCollection *
-ColorAnimationUsingKeyFrames::GetKeyFrames ()
-{
-	Value *value = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty);
-	
-	return value ? value->AsColorKeyFrameCollection () : NULL;
 }
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
@@ -1680,15 +1603,6 @@ PointAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (GetKeyFrames ());
 }
 
-PointKeyFrameCollection *
-PointAnimationUsingKeyFrames::GetKeyFrames ()
-{
-	Value *value = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty);
-	
-	return value ? value->AsPointKeyFrameCollection () : NULL;
-}
-
-
 RepeatBehavior RepeatBehavior::Forever (RepeatBehavior::FOREVER);
 Duration Duration::Automatic (Duration::AUTOMATIC);
 Duration Duration::Forever (Duration::FOREVER);
@@ -1700,46 +1614,3 @@ animation_shutdown (void)
 {
 	// no-op
 }
-
-/* The nullable setters/getters for the various animation types */
-#define SET_NULLABLE_FUNC(t) \
-static void SetNullable##t##Prop (DependencyObject *obj, DependencyProperty *prop, t *pv) \
-{ \
-	if (!pv) \
-		obj->SetValue (prop, NULL); \
-	else \
-		obj->SetValue (prop, Value(*pv)); \
-}
-
-#define NULLABLE_GETSET_IMPL(klass,prop,t,T) \
-void klass::Set##prop (t v) { Set##prop (&v); } \
-void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
-t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::prop##Property);  return v ? v->As##T () : NULL; }
-
-#define NULLABLE_PRIM_GETSET_IMPL(klass,prop,t,T) \
-void klass::Set##prop (t v) { Set##prop (&v); } \
-void klass::Set##prop (t *pv) { SetNullable##t##Prop (this, klass::prop##Property, pv); } \
-t* klass::Get##prop () { Value* v = this->DependencyObject::GetValue (klass::prop##Property);  return v ? v->AsNullable##T () : NULL; }
-
-
-
-SET_NULLABLE_FUNC(double)
-SET_NULLABLE_FUNC(Color)
-SET_NULLABLE_FUNC(Point)
-
-NULLABLE_PRIM_GETSET_IMPL (DoubleAnimation, By, double, Double)
-NULLABLE_PRIM_GETSET_IMPL (DoubleAnimation, To, double, Double)
-NULLABLE_PRIM_GETSET_IMPL (DoubleAnimation, From, double, Double)
-
-NULLABLE_GETSET_IMPL (ColorAnimation, By, Color, Color)
-NULLABLE_GETSET_IMPL (ColorAnimation, To, Color, Color)
-NULLABLE_GETSET_IMPL (ColorAnimation, From, Color, Color)
-
-NULLABLE_GETSET_IMPL (PointAnimation, By, Point, Point)
-NULLABLE_GETSET_IMPL (PointAnimation, To, Point, Point)
-NULLABLE_GETSET_IMPL (PointAnimation, From, Point, Point)
-
-
-NULLABLE_GETSET_IMPL (ColorKeyFrame, Value, Color, Color)
-NULLABLE_GETSET_IMPL (PointKeyFrame, Value, Point, Point)
-NULLABLE_PRIM_GETSET_IMPL (DoubleKeyFrame, Value, double, Double)

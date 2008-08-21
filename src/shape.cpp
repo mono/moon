@@ -749,150 +749,6 @@ Shape::InvalidateSurfaceCache (void)
 	}
 }
 
-void
-Shape::SetFill (Brush *fill)
-{
-	SetValue (Shape::FillProperty, Value (fill));
-}
-
-Brush *
-Shape::GetFill ()
-{
-	Value *value = GetValue (Shape::FillProperty);
-	
-	return value ? value->AsBrush () : NULL;
-}
-
-void
-Shape::SetStroke (Brush *stroke)
-{
-	SetValue (Shape::StrokeProperty, Value (stroke));
-}
-
-Brush *
-Shape::GetStroke ()
-{
-	Value *value = GetValue (Shape::StrokeProperty);
-	
-	return value ? value->AsBrush () : NULL;
-}
-
-void
-Shape::SetStretch (Stretch stretch)
-{
-	SetValue (Shape::StretchProperty, Value (stretch));
-}
-
-Stretch
-Shape::GetStretch ()
-{
-	return (Stretch) GetValue (Shape::StretchProperty)->AsInt32 ();
-}
-
-void
-Shape::SetStrokeDashArray (DoubleCollection *dashes)
-{
-	SetValue (Shape::StrokeDashArrayProperty, Value (dashes));
-}
-
-/*
- * note: We return a reference, not a copy, of the dashes. Not a big issue as
- * Silverlight Shape.StrokeDashArray only has a setter (no getter), so it's 
- * use is only internal.
- */
-DoubleCollection*
-Shape::GetStrokeDashArray ()
-{
-	Value *value = GetValue (Shape::StrokeDashArrayProperty);
-	return value ? value->AsDoubleCollection() : NULL;
-}
-
-void
-Shape::SetStrokeDashCap (PenLineCap cap)
-{
-	SetValue (Shape::StrokeDashCapProperty, Value (cap));
-}
-
-PenLineCap
-Shape::GetStrokeDashCap ()
-{
-	return (PenLineCap) GetValue (Shape::StrokeDashCapProperty)->AsInt32 ();
-}
-
-void
-Shape::SetStrokeDashOffset (double offset)
-{
-	SetValue (Shape::StrokeDashOffsetProperty, Value (offset));
-}
-
-double
-Shape::GetStrokeDashOffset ()
-{
-	return GetValue (Shape::StrokeDashOffsetProperty)->AsDouble ();
-}
-
-void
-Shape::SetStrokeEndLineCap (PenLineCap cap)
-{
-	SetValue (Shape::StrokeEndLineCapProperty, Value (cap));
-}
-
-PenLineCap
-Shape::GetStrokeEndLineCap ()
-{
-	return (PenLineCap) GetValue (Shape::StrokeEndLineCapProperty)->AsInt32 ();
-}
-
-void
-Shape::SetStrokeLineJoin (PenLineJoin join)
-{
-	SetValue (Shape::StrokeLineJoinProperty, Value (join));
-}
-
-PenLineJoin
-Shape::GetStrokeLineJoin ()
-{
-	return (PenLineJoin) GetValue (Shape::StrokeLineJoinProperty)->AsInt32 ();
-}
-
-void
-Shape::SetStrokeMiterLimit (double limit)
-{
-	SetValue (Shape::StrokeMiterLimitProperty, Value (limit));
-}
-
-double
-Shape::GetStrokeMiterLimit ()
-{
-	return GetValue (Shape::StrokeMiterLimitProperty)->AsDouble ();
-}
-
-void
-Shape::SetStrokeStartLineCap (PenLineCap cap)
-{
-	SetValue (Shape::StrokeStartLineCapProperty, Value (cap));
-}
-
-PenLineCap
-Shape::GetStrokeStartLineCap ()
-{
-	return (PenLineCap) GetValue (Shape::StrokeStartLineCapProperty)->AsInt32 ();
-}
-
-void
-Shape::SetStrokeThickness (double thickness)
-{
-	SetValue (Shape::StrokeThicknessProperty, Value (thickness));
-}
-
-double
-Shape::GetStrokeThickness ()
-{
-	return GetValue (Shape::StrokeThicknessProperty)->AsDouble ();
-}
-
-
-
 //
 // Ellipse
 //
@@ -1239,31 +1095,6 @@ Rectangle::ComputeLargestRectangle ()
 	return ComputeShapeBounds (false).GrowBy (-x, -y).RoundIn ();
 }
 
-void
-Rectangle::SetRadiusX (double radius)
-{
-	SetValue (Rectangle::RadiusXProperty, Value (radius));
-}
-
-double
-Rectangle::GetRadiusX ()
-{
-	return GetValue (Rectangle::RadiusXProperty)->AsDouble ();
-}
-
-void
-Rectangle::SetRadiusY (double radius)
-{
-	SetValue (Rectangle::RadiusYProperty, Value (radius));
-}
-
-double
-Rectangle::GetRadiusY ()
-{
-	return GetValue (Rectangle::RadiusYProperty)->AsDouble ();
-}
-
-
 //
 // Line
 //
@@ -1552,55 +1383,6 @@ Line::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
-void
-Line::SetX1 (double x1)
-{
-	SetValue (Line::X1Property, Value (x1));
-}
-
-double
-Line::GetX1 ()
-{
-	return GetValue (Line::X1Property)->AsDouble ();
-}
-
-void
-Line::SetY1 (double y1)
-{
-	SetValue (Line::Y1Property, Value (y1));
-}
-
-double
-Line::GetY1 ()
-{
-	return GetValue (Line::Y1Property)->AsDouble ();
-}
-
-void
-Line::SetX2 (double x2)
-{
-	SetValue (Line::X2Property, Value (x2));
-}
-
-double
-Line::GetX2 ()
-{
-	return GetValue (Line::X2Property)->AsDouble ();
-}
-
-void
-Line::SetY2 (double y2)
-{
-	SetValue (Line::Y2Property, Value (y2));
-}
-
-double
-Line::GetY2 ()
-{
-	return GetValue (Line::Y2Property)->AsDouble ();
-}
-
-
 //
 // Polygon
 //
@@ -1771,37 +1553,6 @@ Polygon::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Proper
 	Invalidate ();
 }
 
-void
-Polygon::SetFillRule (FillRule rule)
-{
-	SetValue (Polygon::FillRuleProperty, Value (rule));
-}
-
-FillRule
-Polygon::GetFillRule ()
-{
-	return (FillRule) GetValue (Polygon::FillRuleProperty)->AsInt32 ();
-}
-
-void
-Polygon::SetPoints (PointCollection *points)
-{
-	SetValue (Polygon::PointsProperty, Value (points));
-}
-
-/*
- * note: We return a reference, not a copy, of the points. Not a big issue as
- * Silverlight Polygon.Points only has a setter (no getter), so it's use is 
- * only internal.
- */
-PointCollection *
-Polygon::GetPoints ()
-{
-	Value *value = GetValue (Polygon::PointsProperty);
-	return value ? value->AsPointCollection() : NULL;
-}
-
-
 //
 // Polyline
 //
@@ -1933,37 +1684,6 @@ Polyline::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prope
 	UpdateBounds (true);
 	Invalidate ();
 }
-
-void
-Polyline::SetFillRule (FillRule rule)
-{
-	SetValue (Polyline::FillRuleProperty, Value (rule));
-}
-
-FillRule
-Polyline::GetFillRule ()
-{
-	return (FillRule) GetValue (Polyline::FillRuleProperty)->AsInt32 ();
-}
-
-void
-Polyline::SetPoints (PointCollection *points)
-{
-	SetValue (Polyline::PointsProperty, Value (points));
-}
-
-/*
- * note: We return a reference, not a copy, of the points. Not a big issue as
- * Silverlight Polyline.Points only has a setter (no getter), so it's use is 
- * only internal.
- */
-PointCollection *
-Polyline::GetPoints ()
-{
-	Value *value = GetValue (Polyline::PointsProperty);
-	return value ? value->AsPointCollection() : NULL;
-}
-
 
 //
 // Path
@@ -2098,17 +1818,3 @@ Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pro
  * - find the largest rectangle inside the (or each) convex polygon(s)
  * 	http://cgm.cs.mcgill.ca/~athens/cs507/Projects/2003/DanielSud/complete.html
  */
-
-void
-Path::SetData (Geometry *data)
-{
-	SetValue (Path::DataProperty, Value (data));
-}
-
-Geometry *
-Path::GetData ()
-{
-	Value *value = GetValue (Path::DataProperty);
-	
-	return value ? value->AsGeometry () : NULL;
-}

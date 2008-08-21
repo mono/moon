@@ -22,66 +22,6 @@
 
 #define DEBUG_HITTEST 0
 
-void
-StylusInfo::SetDeviceType (TabletDeviceType type)
-{
-	SetValue (StylusInfo::DeviceTypeProperty, Value (type));
-}
-
-TabletDeviceType
-StylusInfo::GetDeviceType ()
-{
-	return (TabletDeviceType) GetValue (StylusInfo::DeviceTypeProperty)->AsInt32 ();
-}
-
-void
-StylusInfo::SetIsInverted (bool inverted)
-{
-	SetValue (StylusInfo::IsInvertedProperty, Value (inverted));
-}
-
-bool
-StylusInfo::GetIsInverted ()
-{
-	return GetValue (StylusInfo::IsInvertedProperty)->AsBool ();
-}
-
-void
-StylusPoint::SetPressureFactor (double factor)
-{
-	SetValue (StylusPoint::PressureFactorProperty, Value (factor));
-}
-
-double
-StylusPoint::GetPressureFactor ()
-{
-	return GetValue (StylusPoint::PressureFactorProperty)->AsDouble ();
-}
-
-void
-StylusPoint::SetX (double x)
-{
-	SetValue (StylusPoint::XProperty, Value (x));
-}
-
-double
-StylusPoint::GetX ()
-{
-	return GetValue (StylusPoint::XProperty)->AsDouble ();
-}
-
-void
-StylusPoint::SetY (double y)
-{
-	SetValue (StylusPoint::YProperty, Value (y));
-}
-
-double
-StylusPoint::GetY ()
-{
-	return GetValue (StylusPoint::YProperty)->AsDouble ();
-}
-
 double
 StylusPointCollection::AddStylusPoints (StylusPointCollection *points)
 {
@@ -711,34 +651,6 @@ Stroke::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-void
-Stroke::SetDrawingAttributes (DrawingAttributes *attrs)
-{
-	SetValue (Stroke::DrawingAttributesProperty, Value (attrs));
-}
-
-DrawingAttributes *
-Stroke::GetDrawingAttributes ()
-{
-	Value *value = GetValue (Stroke::DrawingAttributesProperty);
-	
-	return value ? value->AsDrawingAttributes () : NULL;
-}
-
-void
-Stroke::SetStylusPoints (StylusPointCollection *points)
-{
-	SetValue (Stroke::StylusPointsProperty, Value (points));
-}
-
-StylusPointCollection *
-Stroke::GetStylusPoints ()
-{
-	Value *value = GetValue (Stroke::StylusPointsProperty);
-	
-	return value ? value->AsStylusPointCollection () : NULL;
-}
-
 Rect
 StrokeCollection::GetBounds ()
 {
@@ -840,58 +752,6 @@ DrawingAttributes::RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointColle
 {
 	// default values that (seems to) match the output when no DrawingAttributes are specified
 	drawing_attributes_quick_render (cr, 2.0, NULL, collection);
-}
-
-void
-DrawingAttributes::SetColor (Color *color)
-{
-	SetValue (DrawingAttributes::ColorProperty, Value (*color));
-}
-
-Color *
-DrawingAttributes::GetColor ()
-{
-	Value *value = GetValue (DrawingAttributes::ColorProperty);
-	
-	return value ? value->AsColor () : NULL;
-}
-
-void
-DrawingAttributes::SetOutlineColor (Color *color)
-{
-	SetValue (DrawingAttributes::OutlineColorProperty, Value (*color));
-}
-
-Color *
-DrawingAttributes::GetOutlineColor ()
-{
-	Value *value = GetValue (DrawingAttributes::OutlineColorProperty);
-	
-	return value ? value->AsColor () : NULL;
-}
-
-void
-DrawingAttributes::SetHeight (double height)
-{
-	SetValue (DrawingAttributes::HeightProperty, Value (height));
-}
-
-double
-DrawingAttributes::GetHeight ()
-{
-	return GetValue (DrawingAttributes::HeightProperty)->AsDouble ();
-}
-
-void
-DrawingAttributes::SetWidth (double width)
-{
-	SetValue (DrawingAttributes::WidthProperty, Value (width));
-}
-
-double
-DrawingAttributes::GetWidth ()
-{
-	return GetValue (DrawingAttributes::WidthProperty)->AsDouble ();
 }
 
 InkPresenter::InkPresenter ()
@@ -1052,21 +912,6 @@ InkPresenter::ShiftPosition (Point p)
 	render_bounds.x += dx;
 	render_bounds.y += dy;
 }
-
-void
-InkPresenter::SetStrokes (StrokeCollection *strokes)
-{
-	SetValue (InkPresenter::StrokesProperty, Value (strokes));
-}
-
-StrokeCollection *
-InkPresenter::GetStrokes ()
-{
-	Value *value = GetValue (InkPresenter::StrokesProperty);
-	
-	return value ? value->AsStrokeCollection () : NULL;
-}
-
 
 void
 stroke_get_bounds (Stroke *stroke, Rect *bounds)

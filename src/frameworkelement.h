@@ -21,37 +21,35 @@ class FrameworkElement : public UIElement {
 	virtual ~FrameworkElement () {}
 
  public:
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *HeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *WidthProperty;
 
-#if SL_2_0
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateGetter */
 	static DependencyProperty *ActualHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateGetter */
 	static DependencyProperty *ActualWidthProperty;
 	/* @PropertyType=Managed,Version=2.0 */
 	static DependencyProperty *DataContextProperty;
-	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2.0 */
+	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2.0,GenerateAccessors */
 	static DependencyProperty *HorizontalAlignmentProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage */
 	static DependencyProperty *LanguageProperty;
-	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0 */
+	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0,GenerateAccessors */
 	static DependencyProperty *MarginProperty;
-	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0 */
+	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors */
 	static DependencyProperty *MaxHeightProperty;
-	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0 */
+	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors */
 	static DependencyProperty *MaxWidthProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0 */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *MinHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0 */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *MinWidthProperty;
-	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0 */
+	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
 	static DependencyProperty *VerticalAlignmentProperty;
-	/* @PropertyType=Style,Version=2.0 */
+	/* @PropertyType=Style,Version=2.0,GenerateAccessors */
 	static DependencyProperty *StyleProperty;
-#endif
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	FrameworkElement ();
@@ -103,6 +101,35 @@ class FrameworkElement : public UIElement {
 	const static int SizeChangedEvent;
 	// XXX 2.0 also has the Loaded event moved here from
 	// UIElement.
+
+	// Property Accessors
+
+	double GetActualWidth ();
+	double GetActualHeight ();
+
+	Thickness* GetMargin ();
+	void SetMargin (Thickness* value);
+
+	double GetMaxHeight ();
+	void SetMaxHeight (double value);
+
+	double GetMinHeight ();
+	void SetMinHeight (double value);
+
+	double GetMaxWidth ();
+	void SetMaxWidth (double value);
+
+	double GetMinWidth ();
+	void SetMinWidth (double value);
+
+	HorizontalAlignment GetHorizontalAlignment ();
+	void SetHorizontalAlignment (HorizontalAlignment value);
+
+	Style* GetStyle();
+	void SetStyle (Style* value);
+
+	VerticalAlignment GetVerticalAlignment ();
+	void SetVerticalAlignment (VerticalAlignment value);
 };
 
 #endif /* __MOON_FRAMEWORKELEMENT_H__ */

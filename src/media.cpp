@@ -227,36 +227,12 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
-void
-MediaBase::SetDownloadProgress (double progress)
-{
-	SetValue (MediaBase::DownloadProgressProperty, Value (progress));
-}
-
-double
-MediaBase::GetDownloadProgress ()
-{
-	return GetValue (MediaBase::DownloadProgressProperty)->AsDouble ();
-}
-
 const char *
 MediaBase::GetSource ()
 {
 	Value *value = GetValue (MediaBase::SourceProperty);
 	
 	return value ? value->AsString () : NULL;
-}
-
-void
-MediaBase::SetStretch (Stretch stretch)
-{
-	SetValue (MediaBase::StretchProperty, Value (stretch));
-}
-
-Stretch
-MediaBase::GetStretch ()
-{
-	return (Stretch) GetValue (MediaBase::StretchProperty)->AsInt32 ();
 }
 
 void
@@ -1884,224 +1860,10 @@ MediaElement::EnableAntiAlias (void)
 }
 
 void
-MediaElement::SetAttributes (MediaAttributeCollection *attrs)
-{
-	SetValue (MediaElement::AttributesProperty, Value (attrs));
-}
-
-MediaAttributeCollection *
-MediaElement::GetAttributes ()
-{
-	Value *value = GetValue (MediaElement::AttributesProperty);
-	
-	return value ? value->AsMediaAttributeCollection () : NULL;
-}
-
-void
-MediaElement::SetAudioStreamCount (int count)
-{
-	SetValue (MediaElement::AudioStreamCountProperty, Value (count));
-}
-
-int
-MediaElement::GetAudioStreamCount ()
-{
-	return GetValue (MediaElement::AudioStreamCountProperty)->AsInt32 ();
-}
-
-void
-MediaElement::SetAudioStreamIndex (int index)
-{
-	if (index >= 0)
-		SetValue (MediaElement::AudioStreamIndexProperty, Value (index));
-	else
-		SetValue (MediaElement::AudioStreamIndexProperty, NULL);
-}
-
-int
-MediaElement::GetAudioStreamIndex ()
-{
-	Value *value = GetValue (MediaElement::AudioStreamIndexProperty);
-	int index = -1;
-	
-	if (value && value->AsNullableInt32 ())
-		index = *value->AsNullableInt32 ();
-	
-	return index;
-}
-
-void
-MediaElement::SetAutoPlay (bool set)
-{
-	SetValue (MediaElement::AutoPlayProperty, Value (set));
-}
-
-bool
-MediaElement::GetAutoPlay ()
-{
-	return GetValue (MediaElement::AutoPlayProperty)->AsBool ();
-}
-
-void
-MediaElement::SetBalance (double balance)
-{
-	SetValue (MediaElement::BalanceProperty, Value (balance));
-}
-
-double
-MediaElement::GetBalance ()
-{
-	return GetValue (MediaElement::BalanceProperty)->AsDouble ();
-}
-
-void
-MediaElement::SetBufferingProgress (double progress)
-{
-	SetValue (MediaElement::BufferingProgressProperty, Value (progress));
-}
-
-double
-MediaElement::GetBufferingProgress ()
-{
-	return GetValue (MediaElement::BufferingProgressProperty)->AsDouble ();
-}
-
-void
-MediaElement::SetBufferingTime (TimeSpan time)
-{
-	SetValue (MediaElement::BufferingTimeProperty, Value (time, Type::TIMESPAN));
-}
-
-TimeSpan
-MediaElement::GetBufferingTime ()
-{
-	return (TimeSpan) GetValue (MediaElement::BufferingTimeProperty)->AsTimeSpan ();
-}
-
-void
-MediaElement::SetCanPause (bool set)
-{
-	SetValue (MediaElement::CanPauseProperty, Value (set));
-}
-
-bool
-MediaElement::GetCanPause ()
-{
-	return GetValue (MediaElement::CanPauseProperty)->AsBool ();
-}
-
-void
-MediaElement::SetCanSeek (bool set)
-{
-	SetValue (MediaElement::CanSeekProperty, Value (set));
-}
-
-bool
-MediaElement::GetCanSeek ()
-{
-	return GetValue (MediaElement::CanSeekProperty)->AsBool ();
-}
-
-void
-MediaElement::SetCurrentState (const char *state)
-{
-	SetValue (MediaElement::CurrentStateProperty, Value (state));
-}
-
-const char *
-MediaElement::GetCurrentState ()
-{
-	Value *value = GetValue (MediaElement::CurrentStateProperty);
-	
-	return value ? value->AsString () : NULL;
-}
-
-void
-MediaElement::SetIsMuted (bool set)
-{
-	SetValue (MediaElement::IsMutedProperty, Value (set));
-}
-
-bool
-MediaElement::GetIsMuted ()
-{
-	return GetValue (MediaElement::IsMutedProperty)->AsBool ();
-}
-
-void
-MediaElement::SetMarkers (TimelineMarkerCollection *markers)
-{
-	SetValue (MediaElement::MarkersProperty, Value (markers));
-}
-
-TimelineMarkerCollection *
-MediaElement::GetMarkers ()
-{
-	Value *value = GetValue (MediaElement::MarkersProperty);
-	
-	return value ? value->AsTimelineMarkerCollection () : NULL;
-}
-
-void
 MediaElement::SetNaturalDuration (TimeSpan duration)
 {
 	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (duration)));
 }
-
-Duration *
-MediaElement::GetNaturalDuration ()
-{
-	return GetValue (MediaElement::NaturalDurationProperty)->AsDuration ();
-}
-
-void
-MediaElement::SetNaturalVideoHeight (double height)
-{
-	SetValue (MediaElement::NaturalVideoHeightProperty, Value (height));
-}
-
-double
-MediaElement::GetNaturalVideoHeight ()
-{
-	return GetValue (MediaElement::NaturalVideoHeightProperty)->AsDouble ();
-}
-
-void
-MediaElement::SetNaturalVideoWidth (double width)
-{
-	SetValue (MediaElement::NaturalVideoWidthProperty, Value (width));
-}
-
-double
-MediaElement::GetNaturalVideoWidth ()
-{
-	return GetValue (MediaElement::NaturalVideoWidthProperty)->AsDouble ();
-}
-
-void
-MediaElement::SetPosition (TimeSpan position)
-{
-	SetValue (MediaElement::PositionProperty, Value (position, Type::TIMESPAN));
-}
-
-TimeSpan
-MediaElement::GetPosition ()
-{
-	return (TimeSpan) GetValue (MediaElement::PositionProperty)->AsTimeSpan ();
-}
-
-void
-MediaElement::SetVolume (double volume)
-{
-	SetValue (MediaElement::VolumeProperty, Value (volume));
-}
-
-double
-MediaElement::GetVolume ()
-{
-	return GetValue (MediaElement::VolumeProperty)->AsDouble ();
-}
-
 
 //
 // Image
@@ -2710,14 +2472,14 @@ MediaAttribute *
 MediaAttributeCollection::GetItemByName (const char *name)
 {
 	MediaAttribute *attr;
-	Value *value;
+	const char *value;
 	
 	for (guint i = 0; i < array->len; i++) {
 		attr = ((Value *) array->pdata[i])->AsMediaAttribute ();
-		if (!(value = attr->GetValue (DependencyObject::NameProperty)))
+		if (!(value = attr->GetName ()))
 			continue;
 		
-		if (!strcmp (value->AsString (), name))
+		if (!strcmp (value, name))
 			return attr;
 	}
 	

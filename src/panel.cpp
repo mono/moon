@@ -39,34 +39,6 @@ Panel::Dispose ()
 	FrameworkElement::Dispose ();
 }
 
-Brush *
-Panel::GetBackground ()
-{
-	Value *value = GetValue (Panel::BackgroundProperty);
-	
-	return value ? value->AsBrush () : NULL;
-}
-
-void
-Panel::SetBackground (Brush *background)
-{
-	SetValue (Panel::BackgroundProperty, Value (background));
-}
-
-UIElementCollection *
-Panel::GetChildren ()
-{
-	Value *value = GetValue (Panel::ChildrenProperty);
-	
-	return value ? value->AsUIElementCollection () : NULL;
-}
-
-void
-Panel::SetChildren (UIElementCollection *children)
-{
-	SetValue (Panel::ChildrenProperty, children);
-}
-
 void
 Panel::AddChild (UIElement *item)
 {

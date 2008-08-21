@@ -63,11 +63,11 @@ class RotateTransform : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *AngleProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *CenterXProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *CenterYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -96,9 +96,9 @@ class TranslateTransform : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *XProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *YProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -124,13 +124,13 @@ class ScaleTransform : public Transform {
 	virtual void UpdateTransform ();
 
  public:
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *CenterXProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *CenterYProperty;
-	/* @PropertyType=double,DefaultValue=1.0 */
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	static DependencyProperty *ScaleXProperty;
-	/* @PropertyType=double,DefaultValue=1.0 */
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	static DependencyProperty *ScaleYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -161,13 +161,13 @@ class SkewTransform : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *AngleXProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *AngleYProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *CenterXProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *CenterYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -201,17 +201,17 @@ class Matrix : public DependencyObject {
 	virtual ~Matrix () {}
 	
  public:
-	/* @PropertyType=double,DefaultValue=1.0 */
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	static DependencyProperty *M11Property;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *M12Property;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *M21Property;
-	/* @PropertyType=double,DefaultValue=1.0 */
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	static DependencyProperty *M22Property;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *OffsetXProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *OffsetYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -255,7 +255,7 @@ class MatrixTransform : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
-	/* @PropertyType=Matrix */
+	/* @PropertyType=Matrix,GenerateAccessors */
 	static DependencyProperty *MatrixProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -296,7 +296,7 @@ class TransformGroup : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
-	/* @PropertyType=TransformCollection */
+	/* @PropertyType=TransformCollection,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -59,11 +59,11 @@ class Brush : public DependencyObject {
 	virtual ~Brush () {}
 
  public:
-	/* @PropertyType=double,DefaultValue=1.0 */
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	static DependencyProperty *OpacityProperty;
-	/* @PropertyType=Transform */
+	/* @PropertyType=Transform,GenerateAccessors */
 	static DependencyProperty *RelativeTransformProperty;
-	/* @PropertyType=Transform */
+	/* @PropertyType=Transform,GenerateAccessors */
 	static DependencyProperty *TransformProperty;
 	
 	// internal property - generic brush property change
@@ -105,7 +105,7 @@ class SolidColorBrush : public Brush {
 	virtual ~SolidColorBrush () {}
 	
  public:
-	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
+	/* @PropertyType=Color,DefaultValue=Color (0x00000000),GenerateAccessors */
 	static DependencyProperty *ColorProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -147,9 +147,9 @@ class GradientStop : public DependencyObject {
 	virtual ~GradientStop () {}
 	
  public:
-	/* @PropertyType=Color,DefaultValue=Color (0x00000000) */
+	/* @PropertyType=Color,DefaultValue=Color (0x00000000),GenerateAccessors */
 	static DependencyProperty *ColorProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *OffsetProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -176,13 +176,13 @@ class GradientBrush : public Brush {
 	virtual ~GradientBrush () {}
 
  public:
-	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation */
+	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation,GenerateAccessors */
 	static DependencyProperty *ColorInterpolationModeProperty;
-	/* @PropertyType=GradientStopCollection */
+	/* @PropertyType=GradientStopCollection,GenerateAccessors */
 	static DependencyProperty *GradientStopsProperty;
-	/* @PropertyType=BrushMappingMode,DefaultValue=BrushMappingModeRelativeToBoundingBox */
+	/* @PropertyType=BrushMappingMode,DefaultValue=BrushMappingModeRelativeToBoundingBox,GenerateAccessors */
 	static DependencyProperty *MappingModeProperty;
-	/* @PropertyType=GradientSpreadMethod,DefaultValue=GradientSpreadMethodPad */
+	/* @PropertyType=GradientSpreadMethod,DefaultValue=GradientSpreadMethodPad,GenerateAccessors */
 	static DependencyProperty *SpreadMethodProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -219,9 +219,9 @@ class LinearGradientBrush : public GradientBrush {
 	virtual ~LinearGradientBrush () {}
 
  public:
-	/* @PropertyType=Point */
+	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *EndPointProperty;
-	/* @PropertyType=Point */
+	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *StartPointProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -248,13 +248,13 @@ class RadialGradientBrush : public GradientBrush {
 	virtual ~RadialGradientBrush () {}
 
  public:
-	/* @PropertyType=Point */
+	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *CenterProperty;
-	/* @PropertyType=Point */
+	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *GradientOriginProperty;
-	/* @PropertyType=double,DefaultValue=0.5 */
+	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	static DependencyProperty *RadiusXProperty;
-	/* @PropertyType=double,DefaultValue=0.5 */
+	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	static DependencyProperty *RadiusYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -287,11 +287,11 @@ class TileBrush : public Brush {
 	virtual ~TileBrush () {}
 
  public:
-	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter */
+	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter,GenerateAccessors */
 	static DependencyProperty *AlignmentXProperty;
-	/* @PropertyType=AlignmentY,DefaultValue=AlignmentYCenter */
+	/* @PropertyType=AlignmentY,DefaultValue=AlignmentYCenter,GenerateAccessors */
 	static DependencyProperty *AlignmentYProperty;
-	/* @PropertyType=Stretch,DefaultValue=StretchFill */
+	/* @PropertyType=Stretch,DefaultValue=StretchFill,GenerateAccessors */
 	static DependencyProperty *StretchProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -324,9 +324,9 @@ class ImageBrush : public TileBrush {
 	virtual ~ImageBrush ();
 
  public:
-	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private */
+	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private,GenerateAccessors */
 	static DependencyProperty *DownloadProgressProperty;
- 	/* @PropertyType=string,DefaultValue=\"\",ManagedPropertyType=ImageSource */
+ 	/* @PropertyType=string,DefaultValue=\"\",ManagedPropertyType=ImageSource,GenerateAccessors */
 	static DependencyProperty *ImageSourceProperty;
 	
 	const static int DownloadProgressChangedEvent;
@@ -365,7 +365,7 @@ class VideoBrush : public TileBrush {
 	virtual ~VideoBrush ();
 	
  public:
-	/* @PropertyType=string,DefaultValue=\"\" */
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	static DependencyProperty *SourceNameProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -398,7 +398,7 @@ class VisualBrush : public TileBrush {
 	virtual ~VisualBrush () {}
 
  public:
-	/* @PropertyType=UIElement */
+	/* @PropertyType=UIElement,GenerateAccessors */
 	static DependencyProperty *VisualProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

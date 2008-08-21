@@ -30,7 +30,7 @@ class CollectionIterator;
 /* @ManagedDependencyProperties=Manual */
 class Collection : public DependencyObject {
 public:
- 	/* @PropertyType=gint32,DefaultValue=0 */
+ 	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
 	static DependencyProperty *CountProperty;
 	
 	virtual Type::Kind GetObjectType () = 0;

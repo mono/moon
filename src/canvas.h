@@ -28,11 +28,11 @@ class Canvas : public Panel {
 	virtual ~Canvas () {}
 	
  public:
- 	/* @PropertyType=double,DefaultValue=0.0,Attached */
+ 	/* @PropertyType=double,DefaultValue=0.0,Attached,GenerateAccessors */
 	static DependencyProperty *LeftProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,Attached */
+ 	/* @PropertyType=double,DefaultValue=0.0,Attached,GenerateAccessors */
 	static DependencyProperty *TopProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Attached*/
+	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
 	static DependencyProperty *ZIndexProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -51,14 +51,14 @@ class Canvas : public Panel {
 	//
 	// Property Accessors
 	//
-	static void SetLeft (UIElement *item, double left);
-	static double GetLeft (UIElement *item);
+	static void SetLeft (DependencyObject *item, double left);
+	static double GetLeft (DependencyObject *item);
 	
-	static void SetTop (UIElement *item, double top);
-	static double GetTop (UIElement *item);
+	static void SetTop (DependencyObject *item, double top);
+	static double GetTop (DependencyObject *item);
 	
-	static void SetZIndex (UIElement *item, int zindex);
-	static int GetZIndex (UIElement *item);
+	static void SetZIndex (DependencyObject *item, int zindex);
+	static int GetZIndex (DependencyObject *item);
 };
 
 #endif /* __MOON_CANVAS_H__ */

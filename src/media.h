@@ -49,13 +49,18 @@ class MediaAttribute : public DependencyObject {
 	virtual ~MediaAttribute () {}
 
  public:
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	MediaAttribute () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE; }
+
+	// property accessors
+
+	const char *GetValue();
+	void SetValue (const char *value);
 };
 
 
@@ -149,9 +154,9 @@ class MediaBase : public FrameworkElement {
  public:
  	/* @PropertyType=string,AlwaysChange */
 	static DependencyProperty *SourceProperty;
- 	/* @PropertyType=gint32,DefaultValue=StretchUniform */
+ 	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	static DependencyProperty *StretchProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *DownloadProgressProperty;
 	
 	const static int DownloadProgressChangedEvent;
@@ -358,8 +363,11 @@ class MediaElement : public MediaBase {
 	
 	void SetCanPause (bool set);
 	void SetCanSeek (bool set);
-	
+
+	// XXX NaturalDurationProperty only generates a getter because
+	// this setter doesn't take a Duration.  why the disconnect?
 	void SetNaturalDuration (TimeSpan duration);
+
 	void SetNaturalVideoHeight (double height);
 	void SetNaturalVideoWidth (double width);
 	
@@ -378,39 +386,39 @@ class MediaElement : public MediaBase {
 	
  public:
 	// properties
- 	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *AttributesProperty;
- 	/* @PropertyType=gint32,DefaultValue=0,ReadOnly */
+ 	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors */
 	static DependencyProperty *AudioStreamCountProperty;
- 	/* @PropertyType=gint32,Nullable */
+ 	/* @PropertyType=gint32,Nullable,GenerateAccessors */
 	static DependencyProperty *AudioStreamIndexProperty;
- 	/* @PropertyType=bool,DefaultValue=true */
+ 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	static DependencyProperty *AutoPlayProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *BalanceProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly */
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,GenerateAccessors */
 	static DependencyProperty *BufferingProgressProperty;
- 	/* @PropertyType=TimeSpan,DefaultValue="TimeSpan_FromSeconds (5)\,Type::TIMESPAN" */
+ 	/* @PropertyType=TimeSpan,DefaultValue="TimeSpan_FromSeconds (5)\,Type::TIMESPAN",GenerateAccessors */
 	static DependencyProperty *BufferingTimeProperty;
- 	/* @PropertyType=bool,DefaultValue=false,ReadOnly */
+ 	/* @PropertyType=bool,DefaultValue=false,ReadOnly,GenerateAccessors */
 	static DependencyProperty *CanPauseProperty;
- 	/* @PropertyType=bool,DefaultValue=false,ReadOnly */
+ 	/* @PropertyType=bool,DefaultValue=false,ReadOnly,GenerateAccessors */
 	static DependencyProperty *CanSeekProperty;
- 	/* @PropertyType=string,ReadOnly,ManagedPropertyType=MediaElementState */
+ 	/* @PropertyType=string,ReadOnly,ManagedPropertyType=MediaElementState,GenerateAccessors */
 	static DependencyProperty *CurrentStateProperty;
- 	/* @PropertyType=bool,DefaultValue=false */
+ 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *IsMutedProperty;
- 	/* @PropertyType=TimelineMarkerCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=TimelineMarkerCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *MarkersProperty;
- 	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly */
+ 	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateGetter */
 	static DependencyProperty *NaturalDurationProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int */
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors */
 	static DependencyProperty *NaturalVideoHeightProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int */
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors */
 	static DependencyProperty *NaturalVideoWidthProperty;
- 	/* @PropertyType=TimeSpan */
+ 	/* @PropertyType=TimeSpan,GenerateAccessors */
 	static DependencyProperty *PositionProperty;
- 	/* @PropertyType=double,DefaultValue=0.5 */
+ 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	static DependencyProperty *VolumeProperty;
 
 	
@@ -503,8 +511,9 @@ class MediaElement : public MediaBase {
 	
 	int GetAudioStreamCount ();
 	
-	void SetAudioStreamIndex (int index);
-	int GetAudioStreamIndex ();
+	void SetAudioStreamIndex (gint32 index);
+	void SetAudioStreamIndex (gint32* index);
+	gint32* GetAudioStreamIndex ();
 	
 	void SetAutoPlay (bool set);
 	bool GetAutoPlay ();

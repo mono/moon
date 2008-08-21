@@ -285,7 +285,7 @@ add_attribute (MediaAttributeCollection *attributes, const char *name, const cha
 		return;
 
 	MediaAttribute *attribute = new MediaAttribute ();
-	attribute->SetValue (MediaAttribute::ValueProperty, Value (attr));
+	attribute->SetValue (attr);
 	attribute->SetName (name);
 	
 	attributes->Add (attribute);

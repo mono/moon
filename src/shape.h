@@ -80,27 +80,27 @@ class Shape : public FrameworkElement {
 	DoubleCollection *GetStrokeDashArray ();
 	
  public: 
- 	/* @PropertyType=Brush */
+ 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *FillProperty;
- 	/* @PropertyType=Stretch,DefaultValue=StretchNone */
+ 	/* @PropertyType=Stretch,DefaultValue=StretchNone,GenerateAccessors */
 	static DependencyProperty *StretchProperty;
- 	/* @PropertyType=Brush */
+ 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *StrokeProperty;
- 	/* @PropertyType=DoubleCollection */
+ 	/* @PropertyType=DoubleCollection,GenerateAccessors */
 	static DependencyProperty *StrokeDashArrayProperty;
- 	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat */
+ 	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat,GenerateAccessors */
 	static DependencyProperty *StrokeDashCapProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *StrokeDashOffsetProperty;
- 	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat */
+ 	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat,GenerateAccessors */
 	static DependencyProperty *StrokeEndLineCapProperty;
- 	/* @PropertyType=PenLineJoin,DefaultValue=PenLineJoinMiter */
+ 	/* @PropertyType=PenLineJoin,DefaultValue=PenLineJoinMiter,GenerateAccessors */
 	static DependencyProperty *StrokeLineJoinProperty;
- 	/* @PropertyType=double,DefaultValue=10.0 */
+ 	/* @PropertyType=double,DefaultValue=10.0,GenerateAccessors */
 	static DependencyProperty *StrokeMiterLimitProperty;
- 	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat */
+ 	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat,GenerateAccessors */
 	static DependencyProperty *StrokeStartLineCapProperty;
- 	/* @PropertyType=double,DefaultValue=1.0 */
+ 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	static DependencyProperty *StrokeThicknessProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -226,9 +226,9 @@ class Rectangle : public Shape {
 	virtual Rect ComputeStretchBounds (Rect shape_bounds);
 
  public:
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *RadiusXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *RadiusYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -267,13 +267,13 @@ class Line : public Shape {
 	virtual Rect ComputeShapeBounds (bool logical);
 	
  public:
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *X1Property;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *Y1Property;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *X2Property;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *Y2Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -317,9 +317,9 @@ class Polygon : public Shape {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd */
+ 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	static DependencyProperty *FillRuleProperty;
- 	/* @PropertyType=PointCollection */
+ 	/* @PropertyType=PointCollection,GenerateAccessors */
 	static DependencyProperty *PointsProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -360,9 +360,9 @@ class Polyline : public Shape {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd */
+ 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	static DependencyProperty *FillRuleProperty;
- 	/* @PropertyType=PointCollection */
+ 	/* @PropertyType=PointCollection,GenerateAccessors */
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -404,7 +404,7 @@ class Path : public Shape {
 	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t *matrix);
 
  public:
- 	/* @PropertyType=Geometry */
+ 	/* @PropertyType=Geometry,GenerateAccessors */
 	static DependencyProperty *DataProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

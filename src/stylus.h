@@ -31,9 +31,9 @@ class StylusInfo : public DependencyObject {
 	virtual ~StylusInfo () {}
 	
  public:
-	/* @PropertyType=TabletDeviceType,DefaultValue=TabletDeviceTypeMouse */
+	/* @PropertyType=TabletDeviceType,DefaultValue=TabletDeviceTypeMouse,GenerateAccessors */
 	static DependencyProperty *DeviceTypeProperty;
-	/* @PropertyType=bool,DefaultValue=false */
+	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *IsInvertedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -59,11 +59,11 @@ class StylusPoint : public DependencyObject {
 	virtual ~StylusPoint () {}
 	
  public:
-	/* @PropertyType=double,DefaultValue=0.5 */
+	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	static DependencyProperty *PressureFactorProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *XProperty;
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *YProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -111,13 +111,13 @@ class DrawingAttributes : public DependencyObject {
 	virtual ~DrawingAttributes () {}
 
  public:
-	/* @PropertyType=Color,DefaultValue=Color (0xFF000000),ManagedFieldAccess=Private */
+	/* @PropertyType=Color,DefaultValue=Color (0xFF000000),ManagedFieldAccess=Private,GenerateAccessors */
 	static DependencyProperty *ColorProperty;
-	/* @PropertyType=Color,DefaultValue=Color (0x00000000),ManagedFieldAccess=Private */
+	/* @PropertyType=Color,DefaultValue=Color (0x00000000),ManagedFieldAccess=Private,GenerateAccessors */
 	static DependencyProperty *OutlineColorProperty;
-	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private */
+	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private,GenerateAccessors */
 	static DependencyProperty *HeightProperty;
-	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private*/
+	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private,GenerateAccessors */
 	static DependencyProperty *WidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -165,9 +165,9 @@ class Stroke : public DependencyObject {
 	virtual ~Stroke () {}
 	
  public:
-	/* @PropertyType=DrawingAttributes,ManagedFieldAccess=Private */
+	/* @PropertyType=DrawingAttributes,ManagedFieldAccess=Private,GenerateAccessors */
 	static DependencyProperty *DrawingAttributesProperty;
-	/* @PropertyType=StylusPointCollection,ManagedFieldAccess=Private */
+	/* @PropertyType=StylusPointCollection,ManagedFieldAccess=Private,GenerateAccessors */
 	static DependencyProperty *StylusPointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -226,7 +226,7 @@ class InkPresenter : public Canvas {
 	virtual ~InkPresenter () {}
 
  public:
-	/* @PropertyType=StrokeCollection */
+	/* @PropertyType=StrokeCollection,GenerateAccessors */
 	static DependencyProperty *StrokesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -17,8 +17,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#if SL_2_0
-
 #include "xaml.h"
 #include "error.h"
 #include "utils.h"
@@ -135,5 +133,3 @@ xap_create_from_file (XamlLoader *loader, const char *filename)
 	Xap *xap = new Xap (loader, xap_dir, element);
 	return xap;
 }
-
-#endif /* MONO_STACK_ENABLED */

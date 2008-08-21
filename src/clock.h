@@ -502,17 +502,17 @@ class Timeline : public DependencyObject {
 	virtual ~Timeline () {}
 
  public:
-	/* @PropertyType=bool,DefaultValue=false */
+	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *AutoReverseProperty;
  	/* @PropertyType=TimeSpan,Nullable */
 	static DependencyProperty *BeginTimeProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::Automatic */
 	static DependencyProperty *DurationProperty;
- 	/* @PropertyType=FillBehavior,DefaultValue=FillBehaviorHoldEnd */
+ 	/* @PropertyType=FillBehavior,DefaultValue=FillBehaviorHoldEnd,GenerateAccessors */
 	static DependencyProperty *FillBehaviorProperty;
  	/* @PropertyType=RepeatBehavior,DefaultValue=RepeatBehavior ((double) 1) */
 	static DependencyProperty *RepeatBehaviorProperty;
- 	/* @PropertyType=double,DefaultValue=1.0 */
+ 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	static DependencyProperty *SpeedRatioProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -530,7 +530,8 @@ class Timeline : public DependencyObject {
 	Duration *GetDuration ();
 	
 	FillBehavior GetFillBehavior ();
-	
+	void SetFillBehavior (FillBehavior behavior);
+
 	void SetRepeatBehavior (RepeatBehavior behavior);
 	RepeatBehavior *GetRepeatBehavior ();
 	
@@ -571,7 +572,7 @@ class TimelineGroup : public Timeline {
 	virtual ~TimelineGroup ();
 
  public:
-	/* @PropertyType=TimelineCollection */
+	/* @PropertyType=TimelineCollection,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
@@ -584,6 +585,10 @@ class TimelineGroup : public Timeline {
 
 	void AddChild (Timeline *child);
 	void RemoveChild (Timeline *child);
+
+	// property accessors
+	TimelineCollection* GetChildren ();
+	void SetChildren (TimelineCollection *value);
 };
 
 
@@ -608,11 +613,11 @@ class TimelineMarker : public DependencyObject {
 	virtual ~TimelineMarker () {}
 
  public:
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,GenerateAccessors */
 	static DependencyProperty *TextProperty;
- 	/* @PropertyType=TimeSpan */
+ 	/* @PropertyType=TimeSpan,GenerateAccessors */
 	static DependencyProperty *TimeProperty;
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,GenerateAccessors */
 	static DependencyProperty *TypeProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */

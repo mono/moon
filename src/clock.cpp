@@ -1366,18 +1366,6 @@ Timeline::GetRepeatBehavior ()
 }
 
 void
-Timeline::SetAutoReverse (bool autoreverse)
-{
-	SetValue (Timeline::AutoReverseProperty, Value(autoreverse));
-}
-
-bool
-Timeline::GetAutoReverse ()
-{
-	return GetValue (Timeline::AutoReverseProperty)->AsBool();
-}
-
-void
 Timeline::SetDuration (Duration duration)
 {
 	SetValue (Timeline::DurationProperty, Value(duration));
@@ -1387,24 +1375,6 @@ Duration*
 Timeline::GetDuration ()
 {
 	return GetValue (Timeline::DurationProperty)->AsDuration();
-}
-
-void
-Timeline::SetSpeedRatio (double ratio)
-{
-	SetValue (Timeline::SpeedRatioProperty, Value(ratio));
-}
-
-double
-Timeline::GetSpeedRatio ()
-{
-	return GetValue (Timeline::SpeedRatioProperty)->AsDouble();
-}
-
-FillBehavior
-Timeline::GetFillBehavior ()
-{
-	return (FillBehavior)GetValue (Timeline::FillBehaviorProperty)->AsInt32();
 }
 
 Duration
@@ -1552,50 +1522,4 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 	}
 
 	return d;
-}
-
-/*
-	TimelineMarker
-*/
-
-void
-TimelineMarker::SetTime (TimeSpan time)
-{
-	SetValue (TimelineMarker::TimeProperty, Value (time, Type::TIMESPAN));
-}
-
-TimeSpan
-TimelineMarker::GetTime ()
-{
-	Value *value = GetValue (TimelineMarker::TimeProperty);
-	
-	return value ? value->AsTimeSpan () : 0;
-}
-
-void
-TimelineMarker::SetText (const char *text)
-{
-	SetValue (TimelineMarker::TextProperty, Value (text));
-}
-
-const char *
-TimelineMarker::GetText ()
-{
-	Value *value = GetValue (TimelineMarker::TextProperty);
-	
-	return value ? value->AsString () : NULL;
-}
-
-void
-TimelineMarker::SetType (const char *type)
-{
-	SetValue (TimelineMarker::TypeProperty, Value (type));
-}
-
-const char *
-TimelineMarker::GetType ()
-{
-	Value *value = GetValue (TimelineMarker::TypeProperty);
-	
-	return value ? value->AsString () : NULL;
 }

@@ -49,9 +49,9 @@ class Geometry : public DependencyObject {
 	virtual ~Geometry ();
 	
  public:
- 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd */
+ 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	static DependencyProperty *FillRuleProperty;
- 	/* @PropertyType=Transform */
+ 	/* @PropertyType=Transform,GenerateAccessors */
 	static DependencyProperty *TransformProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -111,7 +111,7 @@ class GeometryGroup : public Geometry {
 	virtual ~GeometryGroup () {}
 
  public:
- 	/* @PropertyType=GeometryCollection */
+ 	/* @PropertyType=GeometryCollection,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -146,11 +146,11 @@ class EllipseGeometry : public Geometry {
 	virtual ~EllipseGeometry () {}
 	
  public:
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *CenterProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *RadiusXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *RadiusYProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -185,9 +185,9 @@ class LineGeometry : public Geometry {
 	virtual ~LineGeometry () {}
 	
  public:
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *EndPointProperty;
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *StartPointProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -242,7 +242,7 @@ class PathGeometry : public Geometry {
 	virtual ~PathGeometry () {}
 	
  public:
- 	/* @PropertyType=PathFigureCollection */
+ 	/* @PropertyType=PathFigureCollection,GenerateAccessors */
 	static DependencyProperty *FiguresProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -278,11 +278,11 @@ class RectangleGeometry : public Geometry {
 	virtual ~RectangleGeometry () {}
 	
  public:
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *RadiusXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *RadiusYProperty;
- 	/* @PropertyType=Rect */
+ 	/* @PropertyType=Rect,GenerateAccessors */
 	static DependencyProperty *RectProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -335,13 +335,13 @@ class PathFigure : public DependencyObject {
 	virtual ~PathFigure ();
 	
  public:
- 	/* @PropertyType=bool,DefaultValue=false */
+ 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *IsClosedProperty;
- 	/* @PropertyType=PathSegmentCollection */
+ 	/* @PropertyType=PathSegmentCollection,GenerateAccessors */
 	static DependencyProperty *SegmentsProperty;
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *StartPointProperty;
-	/* @PropertyType=bool,Version=2 */
+	/* @PropertyType=bool,Version=2,GenerateAccessors */
 	static DependencyProperty *IsFilledProperty;
 	
 	moon_path *path;
@@ -365,6 +365,9 @@ class PathFigure : public DependencyObject {
 	void SetIsClosed (bool closed);
 	bool GetIsClosed ();
 	
+	void SetIsFilled (bool value);
+	bool GetIsFilled ();
+
 	void SetSegments (PathSegmentCollection *segments);
 	PathSegmentCollection *GetSegments ();
 	
@@ -403,15 +406,15 @@ class ArcSegment : public PathSegment {
 	virtual ~ArcSegment () {}
 
  public:
- 	/* @PropertyType=bool,DefaultValue=false */
+ 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *IsLargeArcProperty;
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *PointProperty;
- 	/* @PropertyType=double,DefaultValue=0.0*/
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *RotationAngleProperty;
- 	/* @PropertyType=Point,ManagedPropertyType=Size */
+ 	/* @PropertyType=Point,ManagedPropertyType=Size,GenerateAccessors */
 	static DependencyProperty *SizeProperty;
- 	/* @PropertyType=SweepDirection,DefaultValue=SweepDirectionCounterclockwise */
+ 	/* @PropertyType=SweepDirection,DefaultValue=SweepDirectionCounterclockwise,GenerateAccessors */
 	static DependencyProperty *SweepDirectionProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -451,11 +454,11 @@ class BezierSegment : public PathSegment {
 	virtual ~BezierSegment () {}
 
  public:
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *Point1Property;
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *Point2Property;
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *Point3Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -489,7 +492,7 @@ class LineSegment : public PathSegment {
 	virtual ~LineSegment () {}
 
  public:
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *PointProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -519,7 +522,7 @@ class PolyBezierSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=PointCollection */
+ 	/* @PropertyType=PointCollection,GenerateAccessors */
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -533,6 +536,7 @@ class PolyBezierSegment : public PathSegment {
 	//
 	// Property Accessors
 	//
+	/* @GenerateCBinding */
 	void SetPoints (PointCollection *points);
 };
 
@@ -548,7 +552,7 @@ class PolyLineSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=PointCollection */
+ 	/* @PropertyType=PointCollection,GenerateAccessors */
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -577,7 +581,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=PointCollection */
+ 	/* @PropertyType=PointCollection,GenerateAccessors */
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -604,9 +608,9 @@ class QuadraticBezierSegment : public PathSegment {
 	virtual ~QuadraticBezierSegment () {}
 
  public:
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *Point1Property;
- 	/* @PropertyType=Point */
+ 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *Point2Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

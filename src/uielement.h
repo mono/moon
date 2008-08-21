@@ -362,29 +362,29 @@ public:
 	//
 	void TransformPoint (double *x, double *y);
 	
- 	/* @PropertyType=Geometry */
+ 	/* @PropertyType=Geometry,GenerateAccessors */
 	static DependencyProperty *ClipProperty;
- 	/* @PropertyType=bool,DefaultValue=true */
+ 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	static DependencyProperty *IsHitTestVisibleProperty;
- 	/* @PropertyType=Brush */
+ 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *OpacityMaskProperty;
- 	/* @PropertyType=double,DefaultValue=1.0 */
+ 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	static DependencyProperty *OpacityProperty;
- 	/* @PropertyType=Point,DefaultValue=Point (0\,0) */
+ 	/* @PropertyType=Point,DefaultValue=Point (0\,0),GenerateAccessors */
 	static DependencyProperty *RenderTransformOriginProperty;
- 	/* @PropertyType=Transform */
+ 	/* @PropertyType=Transform,GenerateAccessors */
 	static DependencyProperty *RenderTransformProperty;
- 	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible */
+ 	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible,GenerateAccessors */
 	static DependencyProperty *VisibilityProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
- 	/* @PropertyType=gint32,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal */
+ 	/* @PropertyType=MouseCursor,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *CursorProperty;
- 	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ResourcesProperty;
- 	/* @PropertyType=string,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object */
+ 	/* @PropertyType=string,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object,GenerateAccessors */
 	static DependencyProperty *TagProperty;
- 	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *TriggersProperty;
 	
 	//
@@ -392,7 +392,10 @@ public:
 	//
 	void SetClip (Geometry *clip);
 	Geometry *GetClip ();
-	
+
+	MouseCursor GetCursor ();
+	void SetCursor (MouseCursor value);
+
 	void SetIsHitTestVisible (bool visible);
 	bool GetIsHitTestVisible ();
 	
@@ -407,9 +410,19 @@ public:
 	
 	void SetRenderTransformOrigin (Point *origin);
 	Point *GetRenderTransformOrigin ();
-	
+
+	ResourceDictionary* GetResources();
+	void SetResources (ResourceDictionary *value);
+
+	const char *GetTag ();
+	void SetTag (const char *value);
+
 	TriggerCollection *GetTriggers ();
+	void SetTriggers (TriggerCollection* value);
 	
+	Visibility GetVisibility ();
+	void SetVisibility (Visibility value);
+
 	// Events you can AddHandler to
 	const static int LoadedEvent;
 	const static int MouseMoveEvent;

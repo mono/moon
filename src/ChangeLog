@@ -1,5 +1,31 @@
 2008-08-20  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp, animation.h, brush.cpp, brush.h, canvas.cpp,
+	  canvas.h, clock.cpp, clock.h, collection.cpp, collection.h,
+	  frameworkelement.cpp, frameworkelement.h, geometry.cpp,
+	  geometry.h, grid.h, media.cpp, media.h, namescope.cpp,
+	  namescope.h, panel.cpp, panel.h, playlist.cpp, shape.cpp,
+	  shape.h, stackpanel.h, style.h, stylus.cpp, stylus.h, text.cpp,
+	  text.h, transform.cpp, transform.h, trigger.h, uielement.cpp,
+	  uielement.h, xap.cpp, xap.h:
+
+	  mostly, decorate almost all DependencyProperties with
+	  @GenerateAccessors, add in lots of new ones that weren't present
+	  before (to the .h), and remove all those implementations from
+	  the .cpp files.
+
+	  Also, don't use #if SL_2_0 in the headers.  we can't depend on
+	  that being defined (especially once we install).  Any
+	  2.0-specific behavior needs to be done in the .cpp files.  There
+	  are still a few things that are wrong wrt
+	  this (dependencyproperty.g.cpp needs to define the DP's
+	  regardless of version, they can just be NULL in the 1.0 case for
+	  2.0 properties, for instance.)
+
+	* cbinding.cpp, cbinding.h, dependencyproperty.g.cpp: regen
+
+2008-08-20  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h (ClearLoaded): use &=, not |=, here.  fixes tests.
 
 2008-08-20  Jeffrey Stedfast  <fejj@novell.com>

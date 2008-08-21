@@ -19,12 +19,16 @@ class StackPanel : public Panel {
 	virtual ~StackPanel () {}
 
  public:
-	/* @PropertyType=Orientation */
+	/* @PropertyType=Orientation,GenerateAccessors */
 	static DependencyProperty *OrientationProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StackPanel () {}
 	virtual Type::Kind GetObjectType () { return Type::STACKPANEL; }
+
+	// property accessors
+	Orientation GetOrientation ();
+	void SetOrientation (Orientation value);
 };
 
 #endif // __MOON_STACKPANEL_H__
