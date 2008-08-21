@@ -1113,6 +1113,10 @@ TextBlock *text_block_new (void);
 /**
  * TextBox
  **/
+void text_box_select (TextBox *instance, int start, int length);
+#endif
+
+#if SL_2_0
 /* @GeneratePInvoke */
 TextBox *text_box_new (void);
 #endif

@@ -354,13 +354,18 @@ dependency_property_g_init (void)
 	TextBlock::TextWrappingProperty = DependencyProperty::Register (Type::TEXTBLOCK, "TextWrapping", new Value (TextWrappingNoWrap));
 #if SL_2_0
 	TextBox::AcceptsReturnProperty = DependencyProperty::Register (Type::TEXTBOX, "AcceptsReturn", new Value (false));
+	TextBox::HorizontalScrollBarVisibilityProperty = DependencyProperty::Register (Type::TEXTBOX, "HorizontalScrollBarVisibility", new Value (ScrollBarVisibilityHidden));
 	TextBox::IsReadOnlyProperty = DependencyProperty::Register (Type::TEXTBOX, "IsReadOnly", new Value (false));
 	TextBox::MaxLengthProperty = DependencyProperty::Register (Type::TEXTBOX, "MaxLength", new Value (0));
+	TextBox::SelectedTextProperty = DependencyProperty::Register (Type::TEXTBOX, "SelectedText", Type::STRING);
 	TextBox::SelectionBackgroundProperty = DependencyProperty::Register (Type::TEXTBOX, "SelectionBackground", new Value (0));
 	TextBox::SelectionForegroundProperty = DependencyProperty::Register (Type::TEXTBOX, "SelectionForeground", new Value (0));
+	TextBox::SelectionLengthProperty = DependencyProperty::Register (Type::TEXTBOX, "SelectionLength", new Value (0));
+	TextBox::SelectionStartProperty = DependencyProperty::Register (Type::TEXTBOX, "SelectionStart", new Value (0));
 	TextBox::TextAlignmentProperty = DependencyProperty::Register (Type::TEXTBOX, "TextAlignment", new Value (TextAlignmentLeft));
 	TextBox::TextProperty = DependencyProperty::Register (Type::TEXTBOX, "Text", Type::STRING);
 	TextBox::TextWrappingProperty = DependencyProperty::Register (Type::TEXTBOX, "TextWrapping", new Value (TextWrappingNoWrap));
+	TextBox::VerticalScrollBarVisibilityProperty = DependencyProperty::Register (Type::TEXTBOX, "VerticalScrollBarVisibility", new Value (ScrollBarVisibilityHidden));
 #endif
 	TileBrush::AlignmentXProperty = DependencyProperty::Register (Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter));
 	TileBrush::AlignmentYProperty = DependencyProperty::Register (Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter));
@@ -698,13 +703,18 @@ DependencyProperty *TextBlock::TextProperty = NULL;
 DependencyProperty *TextBlock::TextWrappingProperty = NULL;
 #if SL_2_0
 DependencyProperty *TextBox::AcceptsReturnProperty = NULL;
+DependencyProperty *TextBox::HorizontalScrollBarVisibilityProperty = NULL;
 DependencyProperty *TextBox::IsReadOnlyProperty = NULL;
 DependencyProperty *TextBox::MaxLengthProperty = NULL;
+DependencyProperty *TextBox::SelectedTextProperty = NULL;
 DependencyProperty *TextBox::SelectionBackgroundProperty = NULL;
 DependencyProperty *TextBox::SelectionForegroundProperty = NULL;
+DependencyProperty *TextBox::SelectionLengthProperty = NULL;
+DependencyProperty *TextBox::SelectionStartProperty = NULL;
 DependencyProperty *TextBox::TextAlignmentProperty = NULL;
 DependencyProperty *TextBox::TextProperty = NULL;
 DependencyProperty *TextBox::TextWrappingProperty = NULL;
+DependencyProperty *TextBox::VerticalScrollBarVisibilityProperty = NULL;
 #endif
 DependencyProperty *TileBrush::AlignmentXProperty = NULL;
 DependencyProperty *TileBrush::AlignmentYProperty = NULL;
@@ -3918,6 +3928,21 @@ TextBox::SetAcceptsReturn (bool value)
 
 #endif
 #if SL_2_0
+ScrollBarVisibility
+TextBox::GetHorizontalScrollBarVisibility ()
+{
+	Value *value = GetValue (TextBox::HorizontalScrollBarVisibilityProperty);
+	return (ScrollBarVisibility) value->AsInt32 ();
+}
+
+void
+TextBox::SetHorizontalScrollBarVisibility (ScrollBarVisibility value)
+{
+	SetValue (TextBox::HorizontalScrollBarVisibilityProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
 bool
 TextBox::GetIsReadOnly ()
 {
@@ -3948,6 +3973,21 @@ TextBox::SetMaxLength (gint32 value)
 
 #endif
 #if SL_2_0
+const char *
+TextBox::GetSelectedText ()
+{
+	Value *value = GetValue (TextBox::SelectedTextProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+TextBox::SetSelectedText (const char * value)
+{
+	SetValue (TextBox::SelectedTextProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
 Brush *
 TextBox::GetSelectionBackground ()
 {
@@ -3974,6 +4014,36 @@ void
 TextBox::SetSelectionForeground (Brush * value)
 {
 	SetValue (TextBox::SelectionForegroundProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+gint32
+TextBox::GetSelectionLength ()
+{
+	Value *value = GetValue (TextBox::SelectionLengthProperty);
+	return value->AsInt32 ();
+}
+
+void
+TextBox::SetSelectionLength (gint32 value)
+{
+	SetValue (TextBox::SelectionLengthProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+gint32
+TextBox::GetSelectionStart ()
+{
+	Value *value = GetValue (TextBox::SelectionStartProperty);
+	return value->AsInt32 ();
+}
+
+void
+TextBox::SetSelectionStart (gint32 value)
+{
+	SetValue (TextBox::SelectionStartProperty, Value (value));
 }
 
 #endif
@@ -4019,6 +4089,21 @@ void
 TextBox::SetTextWrapping (TextWrapping value)
 {
 	SetValue (TextBox::TextWrappingProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+ScrollBarVisibility
+TextBox::GetVerticalScrollBarVisibility ()
+{
+	Value *value = GetValue (TextBox::VerticalScrollBarVisibilityProperty);
+	return (ScrollBarVisibility) value->AsInt32 ();
+}
+
+void
+TextBox::SetVerticalScrollBarVisibility (ScrollBarVisibility value)
+{
+	SetValue (TextBox::VerticalScrollBarVisibilityProperty, Value (value));
 }
 
 #endif

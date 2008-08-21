@@ -24,59 +24,101 @@
 #include <brush.h>
 #include <font.h>
 
+G_BEGIN_DECLS
+
+void textbox_shutdown (void);
+
+G_END_DECLS
+
+
+class TextBuffer;
 
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Text" */
 /* @Namespace=System.Windows.Controls */
 class TextBox : public Control {
+	TextFontDescription *font;
+	TextLayoutHints *hints;
+	TextLayout *layout;
+	TextBuffer *buffer;
+	int maxlen;
+	int caret;
+	
+	struct {
+		int length;
+		int start;
+	} selection;
+	
+	double actual_height;
+	double actual_width;
+	bool setvalue;
+	bool dirty;
+	
+	void CalcActualWidthHeight (cairo_t *cr);
+	void Layout (cairo_t *cr);
+	void Paint (cairo_t *cr);
+	
  protected:
-	virtual ~TextBox () { }
+	virtual ~TextBox ();
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
 	static DependencyProperty *AcceptsReturnProperty;
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	static DependencyProperty *HorizontalScrollBarVisibilityProperty;
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
 	static DependencyProperty *IsReadOnlyProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *MaxLengthProperty;
+	/* @PropertyType=string,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	static DependencyProperty *SelectedTextProperty;
 	/* @PropertyType=Brush,DefaultValue=0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SelectionBackgroundProperty;
 	/* @PropertyType=Brush,DefaultValue=0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SelectionForegroundProperty;
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	static DependencyProperty *SelectionLengthProperty;
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	static DependencyProperty *SelectionStartProperty;
 	/* @PropertyType=string,Version=2.0,GenerateAccessors */
 	static DependencyProperty *TextProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
 	static DependencyProperty *TextAlignmentProperty;
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,Version=2.0,GenerateAccessors */
 	static DependencyProperty *TextWrappingProperty;
+	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	static DependencyProperty *VerticalScrollBarVisibilityProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	TextBox () { }
+	TextBox ();
 	
 	virtual Type::Kind GetObjectType () { return Type::TEXTBOX; }
 	
 	//
 	// Overrides
 	//
-#if 0
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void ComputeBounds ();
-	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
-	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
 	virtual Value *GetValue (DependencyProperty *property);
-#endif
+	
+	//
+	// Methods
+	//
+	/* @GenerateCBinding,@GeneratePInvoke */
+	void Select (int start, int length);
 	
 	//
 	// Property Accessors
 	//
 	void SetAcceptsReturn (bool accept);
 	bool GetAcceptsReturn ();
+	
+	void SetHorizontalScrollBarVisibility (ScrollBarVisibility visibility);
+	ScrollBarVisibility GetHorizontalScrollBarVisibility ();
 	
 	void SetIsReadOnly (bool readOnly);
 	bool GetIsReadOnly ();
@@ -90,6 +132,15 @@ class TextBox : public Control {
 	void SetSelectionForeground (Brush *foreground);
 	Brush *GetSelectionForeground ();
 	
+	void SetSelectedText (const char *text);
+	const char *GetSelectedText ();
+	
+	void SetSelectionStart (int start);
+	int GetSelectionStart ();
+	
+	void SetSelectionLength (int length);
+	int GetSelectionLength ();
+	
 	void SetText (const char *text);
 	const char *GetText ();
 	
@@ -98,6 +149,9 @@ class TextBox : public Control {
 	
 	void SetTextWrapping (TextWrapping wrapping);
 	TextWrapping GetTextWrapping ();
+	
+	void SetVerticalScrollBarVisibility (ScrollBarVisibility visibility);
+	ScrollBarVisibility GetVerticalScrollBarVisibility ();
 };
 
 #endif /* __TEXTBOX_H__ */

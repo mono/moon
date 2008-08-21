@@ -148,7 +148,6 @@ libmoon_include_HEADERS += 	\
 	stackpanel.h		\
 	style.h			\
 	template.h		\
-	textbox.h		\
 	thickness.h		\
 	tilesource.h		\
 	usercontrol.h		\
