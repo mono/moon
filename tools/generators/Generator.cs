@@ -530,13 +530,13 @@ class Generator {
 					text.AppendLine (" ()");
 				text.AppendLine ("{");
 
-				text.AppendLine ("\tValue *value = NULL;");
 				if (is_attached) {
-					text.AppendLine ("\tif (obj) ");
-					text.Append ("\t");
+					text.Append ("\tValue *value = (!obj) ? NULL : ");
+				}
+				else {
+					text.Append ("\tValue *value = ");
 				}
 
-				text.Append ("\tvalue = ");
 				if (is_attached)
 					text.Append ("obj");
 				else
@@ -547,8 +547,7 @@ class Generator {
 				text.Append (field.Name);
 				text.AppendLine (");");
 				
-				text.AppendLine ("\tif (value == NULL)");
-				text.Append ("\t\treturn ");
+				text.Append ("\treturn (!value) ? ");
 				if (prop_type.IsEnum) {
 					text.Append ("(");
 					text.Append (prop_type.Name);
@@ -560,15 +559,15 @@ class Generator {
 				} else {
 					text.Append ("NULL");
 				}
-				text.AppendLine (";");
+				text.Append (" : ");
 
 				if (prop_type.IsEnum) {
-					text.Append ("\treturn (");
+					text.Append ("(");
 					text.Append (prop_type.Name);
 					text.AppendLine (")value->AsInt32();");
 				}
 				else {
-					text.Append ("\treturn value->As");
+					text.Append ("value->As");
 					if (field.IsDPNullable && !(prop_type.IsStruct || prop_type.IsClass))
 						text.Append ("Nullable");
 					text.Append (value_str);
@@ -594,9 +593,9 @@ class Generator {
 				
 				text.AppendLine ("{");
 				if (is_attached)
-					text.AppendLine ("\tif (obj == NULL) return;");
+					text.AppendLine ("\tif (!obj) return;");
 				if (doing_nullable_setter) {
-					text.AppendLine ("\tif (value == NULL)");
+					text.AppendLine ("\tif (!value)");
 					text.Append ("\t\t");
 					if (is_attached)
 						text.Append ("obj");
@@ -620,7 +619,7 @@ class Generator {
 					text.AppendLine (", Value (*value));");
 				} else {
 					if (!nullable_setter && prop_type.IsStruct)
-						text.AppendLine ("\tif (value == NULL) return;");
+						text.AppendLine ("\tif (!value) return;");
 					text.Append ("\t");
 					if (is_attached)
 						text.Append ("obj");
