@@ -681,7 +681,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBlock::TextDecorationsProperty) {
 		dirty = true;
 	} else if (args->property == TextBlock::TextWrappingProperty) {
-		dirty = true
+		dirty = true;
 	} else if (args->property == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
