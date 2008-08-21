@@ -305,8 +305,9 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 
 	if (!GetOpacityMask () && !IS_TRANSLUCENT (local_opacity)) {
 		delete self_region;
-		if (GetBackground () == NULL)
+		if (EmptyBackground ()) {
 			self_region = new Region ();
+		}
 		else {
 			self_region = new Region (region);
 			self_region->Intersect (GetRenderBounds().RoundOut ()); // note the RoundOut
@@ -450,6 +451,12 @@ Panel::HitTest (cairo_t *cr, Point p, List *uielement_list)
 void
 Panel::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 {
+}
+
+bool
+Panel::EmptyBackground ()
+{
+	return GetBackground () == NULL;
 }
 
 //

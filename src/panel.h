@@ -32,6 +32,7 @@ class Panel : public FrameworkElement {
 	virtual void Dispose ();
 	bool UseBackToFront ();
 
+	virtual bool EmptyBackground ();
  public:
  	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BackgroundProperty;

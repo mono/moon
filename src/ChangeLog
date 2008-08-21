@@ -1,3 +1,18 @@
+2008-08-21  Chris Toshok  <toshok@ximian.com>
+
+	[ fixes annotations not showing up in pageturn due to a NULL
+	background on the ink presenter ]
+
+	* stylus.h, stylus.cpp (class InkPresenter): add an override of
+	EmptyBackground().  If we have a non-empty stroke bounding
+	rectangle, return false.  Otherwise fall back to
+	Panel::EmptyBackground.
+
+	* panel.h, panel.cpp (class Panel): add EmptyBackground() virtual
+	method.  the panel implementation returns true if GetBackground()
+	returns NULL.  Use this virtual method instead of an explicit
+	GetBackground() call in Panel::FrontToBack.
+
 2008-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* enums.cpp: Added ScrollBarVisibility enum
