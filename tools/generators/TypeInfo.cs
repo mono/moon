@@ -117,6 +117,17 @@ class TypeInfo : MemberInfo {
 		}
 	}
 	
+	public bool NeedsQualifiedGetValue (GlobalInfo all)
+	{
+		foreach (MemberInfo child in Children.Values) {
+			if (child is FieldInfo && child.Name == "ValueProperty")
+				return true;
+		}
+		if (Base != null)
+			return ((TypeInfo)all.Children[Base.Value]).NeedsQualifiedGetValue (all);
+		return false;
+	}
+
 	public bool ImplementsGetObjectType {
 		get {
 			foreach (MemberInfo child in Children.Values) {

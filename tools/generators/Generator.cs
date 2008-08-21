@@ -537,8 +537,9 @@ class Generator {
 				
 				if (is_attached)
 					text.Append ("obj->");
-				
-				text.Append ("DependencyObject::GetValue (");
+				if (field.ParentType.NeedsQualifiedGetValue(all))
+					text.Append ("DependencyObject::");
+				text.Append ("GetValue (");
 				text.Append (field.ParentType.Name);
 				text.Append ("::");
 				text.Append (field.Name);
@@ -611,10 +612,10 @@ class Generator {
 					text.AppendLine ("\tif (!value)");
 					text.Append ("\t\t");
 					if (is_attached)
-						text.Append ("obj");
-					else
-						text.Append ("this");
-					text.Append ("->DependencyObject::SetValue (");
+						text.Append ("obj->");
+					if (field.ParentType.NeedsQualifiedGetValue(all))
+						text.Append ("DependencyObject::");
+					text.Append ("SetValue (");
 					text.Append (field.ParentType.Name);
 					text.Append ("::");
 					text.Append (field.Name);
@@ -622,10 +623,10 @@ class Generator {
 					text.AppendLine ("\telse");
 					text.Append ("\t\t");
 					if (is_attached)
-						text.Append ("obj");
-					else
-						text.Append ("this");
-					text.Append ("->DependencyObject::SetValue (");
+						text.Append ("obj->");
+					if (field.ParentType.NeedsQualifiedGetValue(all))
+						text.Append ("DependencyObject::");
+					text.Append ("SetValue (");
 					text.Append (field.ParentType.Name);
 					text.Append ("::");
 					text.Append (field.Name);
@@ -635,10 +636,10 @@ class Generator {
 						text.AppendLine ("\tif (!value) return;");
 					text.Append ("\t");
 					if (is_attached)
-						text.Append ("obj");
-					else
-						text.Append ("this");
-					text.Append ("->DependencyObject::SetValue (");
+						text.Append ("obj->");
+					if (field.ParentType.NeedsQualifiedGetValue(all))
+						text.Append ("DependencyObject::");
+					text.Append ("SetValue (");
 					text.Append (field.ParentType.Name);
 					text.Append ("::");
 					text.Append (field.Name);
